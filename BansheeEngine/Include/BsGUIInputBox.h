@@ -8,6 +8,12 @@
 
 namespace BansheeEngine
 {
+	enum class SelectionDir
+	{
+		Left,
+		Right
+	};
+
 	class BS_EXPORT GUIInputBox : public GUIElement
 	{
 	public:
@@ -84,6 +90,8 @@ namespace BansheeEngine
 
 		void showSelection(CM::UINT32 startChar);
 		void clearSelection();
+		CM::UINT32 getCaretSelectionCharIdx(SelectionDir dir);
+		bool isNewlineChar(CM::UINT32 charIdx);
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
 
 		CM::Rect getTextBounds() const;

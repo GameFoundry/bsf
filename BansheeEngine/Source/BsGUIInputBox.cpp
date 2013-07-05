@@ -437,23 +437,23 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(mInputCaret->getCharIdxAtCaretPos());
+						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
 
-					bool isAtNewline = false;
+					mInputCaret->moveCaretLeft();
+					UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 
-					do 
+					if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() > 0)
 					{
-						isAtNewline = mInputCaret->isCaretAtNewline();
 						mInputCaret->moveCaretLeft();
-
-					} while (isAtNewline && mInputCaret->getCaretPos() > 0);
+						charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+					} 
 
 					scrollTextToCaret();
 
 					if(mSelectionAnchor == mSelectionEnd)
-						mSelectionStart = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
+						mSelectionStart = charIdx;
 					else
-						mSelectionEnd = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
+						mSelectionEnd = charIdx;
 
 					markAsDirty();
 					return true;
@@ -474,23 +474,39 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(mInputCaret->getCharIdxAtCaretPos());
-
-					mInputCaret->moveCaretRight();
-
-					UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
-					while (mInputCaret->isCaretAtNewline() && mInputCaret->getCaretPos() <= maxCaretPos)
-					{
-						mInputCaret->moveCaretRight();
-					} 
-
-					scrollTextToCaret();
+						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
 
 					if(mSelectionAnchor == mSelectionStart)
-						mSelectionEnd = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
+					{
+						mInputCaret->moveCaretRight();
+						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+
+						UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
+						if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)) && mInputCaret->getCaretPos() <= maxCaretPos)
+						{
+							mInputCaret->moveCaretRight();
+							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+						} 
+
+						mSelectionEnd = charIdx;
+					}
 					else
-						mSelectionStart = std::max(0U, mInputCaret->getCharIdxAtCaretPos());
+					{
+						mInputCaret->moveCaretRight();
+						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+
+						UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
+						if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() <= maxCaretPos)
+						{
+							mInputCaret->moveCaretRight();
+							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+						} 
+
+						mSelectionStart = charIdx;
+					}
 						
+					scrollTextToCaret();
+
 					markAsDirty();
 					return true;
 				}
@@ -689,6 +705,24 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
+	UINT32 GUIInputBox::getCaretSelectionCharIdx(SelectionDir dir)
+	{
+		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
+
+		if(dir == SelectionDir::Right)
+			charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
+
+		return charIdx;
+	}
+
+	bool GUIInputBox::isNewlineChar(CM::UINT32 charIdx)
+	{
+		if(mText[charIdx] == '\n')
+			return true;
+
+		return false;
+	}
+
 	Vector<Rect>::type GUIInputBox::getSelectionRects() const
 	{
 		Vector<Rect>::type selectionRects;
@@ -704,25 +738,38 @@ namespace BansheeEngine
 
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(startLine);
-			Rect startChar = mTextSprite->getCharRect(mSelectionStart);
+			
+			UINT32 startCharIdx = mSelectionStart;
+
 			UINT32 endCharIdx = mSelectionEnd - 1;
-			if(endCharIdx >= lineDesc.endChar && endCharIdx > 0)
-			{
+			if(startLine != endLine)
 				endCharIdx = lineDesc.endChar - 1;
 
-				if(startLine != (mTextSprite->getNumLines() - 1) && endCharIdx > 0) // Ignore newline char
-					endCharIdx -= 1;
+			if(startCharIdx != endCharIdx)
+			{
+				if(startCharIdx == (lineDesc.endChar - 1) && startCharIdx < ((UINT32)mText.size() - 1)) // Ignore newline char
+				{
+					if(startLine != (mTextSprite->getNumLines() - 1))
+						startCharIdx += 1;
+				}
+
+				if(endCharIdx == (lineDesc.endChar - 1) && endCharIdx > 0) // Ignore newline char
+				{
+					if(startLine != (mTextSprite->getNumLines() - 1))
+						endCharIdx -= 1;
+				}
+
+				Rect startChar = mTextSprite->getCharRect(startCharIdx);
+				Rect endChar = mTextSprite->getCharRect(endCharIdx);
+
+				Rect selectionRect;
+				selectionRect.x = startChar.x;
+				selectionRect.y = lineDesc.lineYStart;
+				selectionRect.height = lineDesc.lineHeight;
+				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+
+				selectionRects.push_back(selectionRect);
 			}
-			
-			Rect endChar = mTextSprite->getCharRect(endCharIdx);
-
-			Rect selectionRect;
-			selectionRect.x = startChar.x;
-			selectionRect.y = lineDesc.lineYStart;
-			selectionRect.height = lineDesc.lineHeight;
-			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
-
-			selectionRects.push_back(selectionRect);
 		}
 
 		for(UINT32 i = startLine + 1; i < endLine; i++)
@@ -731,12 +778,18 @@ namespace BansheeEngine
 			if(lineDesc.startChar == lineDesc.endChar)
 				continue;
 
-			UINT32 endCharIdx = lineDesc.endChar;
+			UINT32 startCharIdx = lineDesc.startChar;
+			if(startCharIdx == (lineDesc.endChar - 1) && startCharIdx > 0) // Ignore newline char
+			{
+				startCharIdx -= 1;
+			}
+
+			UINT32 endCharIdx = lineDesc.endChar - 1;
 			if(endCharIdx > 0) // Ignore newline char
 				endCharIdx -= 1;
 
 			Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
-			Rect endChar = mTextSprite->getCharRect(lineDesc.endChar);
+			Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
 			Rect selectionRect;
 			selectionRect.x = startChar.x;
@@ -753,17 +806,22 @@ namespace BansheeEngine
 
 			if(lineDesc.startChar != lineDesc.endChar)
 			{
-				UINT32 endCharIdx = mSelectionEnd - 1;
-				if(endCharIdx > 0) // Ignore newline char
+				UINT32 startCharIdx = lineDesc.startChar;
+				if(startCharIdx == (lineDesc.endChar - 1) && startCharIdx > 0) // Ignore newline char
 				{
-					endCharIdx -= 1;
+					if(startLine != (mTextSprite->getNumLines() - 1))
+						startCharIdx -= 1;
+				}
 
-					if(endLine != (mTextSprite->getNumLines() - 1) && endCharIdx > 0) // Ignore newline char
+				UINT32 endCharIdx = mSelectionEnd - 1;
+				if(endCharIdx == (lineDesc.endChar - 1) && endCharIdx > 0)
+				{
+					if(endLine != (mTextSprite->getNumLines() - 1)) // Ignore newline char
 						endCharIdx -= 1;
 				}
 
 				Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
-				Rect endChar = mTextSprite->getCharRect(mSelectionEnd - 1);
+				Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
 				Rect selectionRect;
 				selectionRect.x = startChar.x;
