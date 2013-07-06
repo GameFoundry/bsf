@@ -436,11 +436,13 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
+					bool caretMovedDueToNewline = false;
 					if(!mSelectionShown)
 					{
 						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)))
 						{
 							mInputCaret->moveCaretLeft();
+							caretMovedDueToNewline = true;
 						}
 
 						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
@@ -451,12 +453,32 @@ namespace BansheeEngine
 						mInputCaret->moveCaretLeft();
 						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 
-						if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() > 0)
+						if(!caretMovedDueToNewline) // Only move if we didn't already move due to newline, so we don't move twice
 						{
-							mInputCaret->moveCaretLeft();
-							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
-						} 
+							if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() > 0)
+							{
+								mInputCaret->moveCaretLeft();
 
+								charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+								// Reverse caret movement if previous char was a newline, and this one is as well
+								// so we don't skip a line
+								if (isNewlineChar(charIdx)) 
+								{
+									mInputCaret->moveCaretRight();
+								}
+							} 
+						}
+						else
+						{
+							// Reverse caret movement if previous char was a newline, and this one is as well
+							// so we don't skip a line
+							if (isNewlineChar(charIdx)) 
+							{
+								mInputCaret->moveCaretRight();
+							}
+						}
+
+						charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 						mSelectionStart = std::min(mSelectionEnd, charIdx);
 					}
 					else
@@ -464,12 +486,33 @@ namespace BansheeEngine
 						mInputCaret->moveCaretLeft();
 						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 
-						if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)) && mInputCaret->getCaretPos() > 0)
+						if(!caretMovedDueToNewline) // Only move if we didn't already move due to newline, so we don't move twice
 						{
-							mInputCaret->moveCaretLeft();
-							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
-						} 
+							if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)) 
+								&& mInputCaret->getCaretPos() > 0)
+							{
+								mInputCaret->moveCaretLeft();
 
+								charIdx = getCaretSelectionCharIdx(SelectionDir::Right);
+								// Reverse caret movement if previous char was a newline, and this one is as well
+								// so we don't skip a line
+								if (isNewlineChar(charIdx)) 
+								{
+									mInputCaret->moveCaretRight();
+								}
+							} 
+						}
+						else
+						{
+							// Reverse caret movement if previous char was a newline, and this one is as well
+							// so we don't skip a line
+							if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right))) 
+							{
+								mInputCaret->moveCaretRight();
+							}
+						}
+
+						charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 						mSelectionEnd = std::max(mSelectionStart, charIdx);
 					}
 
@@ -496,11 +539,13 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
+					bool caretMovedDueToNewline = false;
 					if(!mSelectionShown)
 					{
 						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Left)))
 						{
 							mInputCaret->moveCaretRight();
+							caretMovedDueToNewline = true;
 						}
 
 						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
@@ -511,13 +556,33 @@ namespace BansheeEngine
 						mInputCaret->moveCaretRight();
 						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 
-						UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
-						if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)) && mInputCaret->getCaretPos() <= maxCaretPos)
+						if(!caretMovedDueToNewline) // Only move if we didn't already move due to newline, so we don't move twice
 						{
-							mInputCaret->moveCaretRight();
-							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
-						} 
+							UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
+							if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)) && mInputCaret->getCaretPos() <= maxCaretPos)
+							{
+								mInputCaret->moveCaretRight();
 
+								charIdx = getCaretSelectionCharIdx(SelectionDir::Right);
+								// Reverse caret movement if previous char was a newline, and this one is as well
+								// so we don't skip a line
+								if (isNewlineChar(charIdx)) 
+								{
+									mInputCaret->moveCaretLeft();
+								}
+							} 
+						}
+						else
+						{
+							// Reverse caret movement if previous char was a newline, and this one is as well
+							// so we don't skip a line
+							if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right))) 
+							{
+								mInputCaret->moveCaretLeft();
+							}
+						}
+
+						charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 						mSelectionEnd = std::max(mSelectionStart, charIdx);
 					}
 					else
@@ -525,14 +590,33 @@ namespace BansheeEngine
 						mInputCaret->moveCaretRight();
 						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 
-						UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
-						if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() <= maxCaretPos)
+						if(!caretMovedDueToNewline) // Only move if we didn't already move due to newline, so we don't move twice
 						{
-							mInputCaret->moveCaretRight();
-							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
-						} 
+							UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
+							if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() <= maxCaretPos)
+							{
+								mInputCaret->moveCaretRight();
 
+								charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+								// Reverse caret movement if previous char was a newline, and this one is as well
+								// so we don't skip a line
+								if (isNewlineChar(charIdx)) 
+								{
+									mInputCaret->moveCaretLeft();
+								}
+							} 
+						}
+						else
+						{
+							// Reverse caret movement if previous char was a newline, and this one is as well
+							// so we don't skip a line
+							if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right))) 
+							{
+								mInputCaret->moveCaretLeft();
+							}
+						}
 
+						charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 						mSelectionStart = std::min(mSelectionEnd, charIdx);
 					}
 
@@ -768,7 +852,16 @@ namespace BansheeEngine
 
 		UINT32 endLine = startLine;
 		if(mSelectionEnd > 0)
+		{
 			endLine = mTextSprite->getLineForChar(mSelectionEnd - 1);
+
+			// Newline chars should count on the second line, but that not how the sprite reports them, so fix that
+			if(endLine < (mTextSprite->getNumLines() - 1))
+			{
+				if((mSelectionEnd - 1) == (mTextSprite->getLineDesc(endLine).endChar - 1)) 
+					endLine++;
+			}
+		}
 
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(startLine);
@@ -784,24 +877,19 @@ namespace BansheeEngine
 					endCharIdx -= 1;
 			}
 
-#ifdef CM_DEBUG_MODE
-			if(isNewlineChar(startCharIdx))
-				CM_EXCEPT(InternalErrorException, "Selection marker placed on newline. That's not allowed");
+			if(!isNewlineChar(startCharIdx) && !isNewlineChar(endCharIdx))
+			{
+				Rect startChar = mTextSprite->getCharRect(startCharIdx);
+				Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
-			if(isNewlineChar(endCharIdx))
-				CM_EXCEPT(InternalErrorException, "Selection marker placed on newline. That's not allowed");
-#endif
+				Rect selectionRect;
+				selectionRect.x = startChar.x;
+				selectionRect.y = lineDesc.lineYStart;
+				selectionRect.height = lineDesc.lineHeight;
+				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
-			Rect startChar = mTextSprite->getCharRect(startCharIdx);
-			Rect endChar = mTextSprite->getCharRect(endCharIdx);
-
-			Rect selectionRect;
-			selectionRect.x = startChar.x;
-			selectionRect.y = lineDesc.lineYStart;
-			selectionRect.height = lineDesc.lineHeight;
-			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
-
-			selectionRects.push_back(selectionRect);
+				selectionRects.push_back(selectionRect);
+			}
 		}
 
 		for(UINT32 i = startLine + 1; i < endLine; i++)
@@ -833,21 +921,20 @@ namespace BansheeEngine
 			if(lineDesc.startChar != lineDesc.endChar && !isNewlineChar(lineDesc.startChar))
 			{
 				UINT32 endCharIdx = mSelectionEnd - 1;
-#ifdef CM_DEBUG_MODE
-				if(isNewlineChar(endCharIdx))
-					CM_EXCEPT(InternalErrorException, "Selection marker placed on newline. That's not allowed");
-#endif
 
-				Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
-				Rect endChar = mTextSprite->getCharRect(endCharIdx);
+				if(!isNewlineChar(endCharIdx))
+				{
+					Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
+					Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
-				Rect selectionRect;
-				selectionRect.x = startChar.x;
-				selectionRect.y = lineDesc.lineYStart;
-				selectionRect.height = lineDesc.lineHeight;
-				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+					Rect selectionRect;
+					selectionRect.x = startChar.x;
+					selectionRect.y = lineDesc.lineYStart;
+					selectionRect.height = lineDesc.lineHeight;
+					selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
-				selectionRects.push_back(selectionRect);
+					selectionRects.push_back(selectionRect);
+				}
 			}
 		}
 		
