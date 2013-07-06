@@ -22,6 +22,7 @@ namespace BansheeEngine
 		void updateSprite(const CM::Int2& offset);
 
 		void moveCaretToStart();
+		void moveCaretToEnd();
 		void moveCaretLeft();
 		void moveCaretRight();
 		void moveCaretUp();

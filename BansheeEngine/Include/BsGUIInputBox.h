@@ -91,8 +91,12 @@ namespace BansheeEngine
 
 		void showSelection(CM::UINT32 startChar);
 		void clearSelection();
+
 		void moveSelectionLeft(bool skipNewline);
 		void moveSelectionRight(bool skipnewLine);
+		void moveSelectionUp();
+		void moveSelectionDown();
+
 		CM::UINT32 getCaretSelectionCharIdx(SelectionDir dir) const;
 		bool isNewlineChar(CM::UINT32 charIdx) const;
 		CM::Vector<CM::Rect>::type getSelectionRects() const;

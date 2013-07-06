@@ -49,6 +49,11 @@ namespace BansheeEngine
 		mCaretPos = 0;
 	}
 
+	void GUIInputCaret::moveCaretToEnd()
+	{
+		mCaretPos = getMaxCaretPos();
+	}
+
 	void GUIInputCaret::moveCaretLeft()
 	{
 		mCaretPos = (UINT32)std::max(0, (INT32)mCaretPos - 1);

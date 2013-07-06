@@ -503,7 +503,18 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
-					// TODO
+					if(!mSelectionShown)
+					{
+						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)))
+						{
+							mInputCaret->moveCaretLeft();
+						}
+
+						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+					}
+
+					moveSelectionUp();
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -523,7 +534,18 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
-					// TODO
+					if(!mSelectionShown)
+					{
+						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Left)))
+						{
+							mInputCaret->moveCaretRight();
+						}
+
+						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+					}
+
+					moveSelectionDown();
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -785,6 +807,88 @@ namespace BansheeEngine
 			mSelectionEnd = std::max(mSelectionStart, charIdx);
 		else
 			mSelectionStart = std::min(mSelectionEnd, charIdx);
+
+		if(mSelectionStart == mSelectionEnd)
+			clearSelection();
+	}
+
+	void GUIInputBox::moveSelectionUp()
+	{
+		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
+		if(charIdx > 0)
+			charIdx--;
+
+		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
+		// Newline chars should count on the second line, but that not how the sprite reports them, so fix that
+		if(lineIdx < (mTextSprite->getNumLines() - 1))
+		{
+			if(charIdx == (mTextSprite->getLineDesc(lineIdx).endChar - 1)) 
+				lineIdx++;
+		}
+
+		if(lineIdx == 0)
+		{
+			mInputCaret->moveCaretToStart();
+			mSelectionStart = 0; 
+			mSelectionEnd = mSelectionAnchor;
+		}
+		else
+		{
+			mInputCaret->moveCaretUp();
+			UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+
+			if(charIdx > mSelectionAnchor)
+			{
+				mSelectionStart = mSelectionAnchor;
+				mSelectionEnd = charIdx;
+			}
+			else
+			{
+				mSelectionStart = charIdx;
+				mSelectionEnd = mSelectionAnchor;
+			}
+		}
+
+		if(mSelectionStart == mSelectionEnd)
+			clearSelection();
+	}
+
+	void GUIInputBox::moveSelectionDown()
+	{
+		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
+		if(charIdx > 0)
+			charIdx--;
+
+		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
+		// Newline chars should count on the second line, but that not how the sprite reports them, so fix that
+		if(lineIdx < (mTextSprite->getNumLines() - 1))
+		{
+			if(charIdx == (mTextSprite->getLineDesc(lineIdx).endChar - 1)) 
+				lineIdx++;
+		}
+
+		if(lineIdx == (mTextSprite->getNumLines() - 1))
+		{
+			mInputCaret->moveCaretToEnd();
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = (UINT32)mText.size();
+		}
+		else
+		{
+			mInputCaret->moveCaretDown();
+			UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+
+			if(charIdx > mSelectionAnchor)
+			{
+				mSelectionStart = mSelectionAnchor;
+				mSelectionEnd = charIdx;
+			}
+			else
+			{
+				mSelectionStart = charIdx;
+				mSelectionEnd = mSelectionAnchor;
+			}
+		}
 
 		if(mSelectionStart == mSelectionEnd)
 			clearSelection();
