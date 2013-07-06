@@ -29,7 +29,6 @@ TextBox needed elements:
      - I really need to update InputCaret so it holds its own sprite data
  - Add a way to move selection up/down
  - Update selection move right so it correctly moves to next line. Currently I fixed some issues but there are still problems.
- - There's an issue when selecting an empty line.
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
  - LATER

@@ -437,23 +437,46 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
-
-					mInputCaret->moveCaretLeft();
-					UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
-
-					if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() > 0)
 					{
-						mInputCaret->moveCaretLeft();
-						charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
-					} 
+						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)))
+						{
+							mInputCaret->moveCaretLeft();
+						}
 
-					scrollTextToCaret();
+						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+					}
 
 					if(mSelectionAnchor == mSelectionEnd)
-						mSelectionStart = charIdx;
+					{
+						mInputCaret->moveCaretLeft();
+						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+
+						if (isNewlineChar(charIdx) && mInputCaret->getCaretPos() > 0)
+						{
+							mInputCaret->moveCaretLeft();
+							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+						} 
+
+						mSelectionStart = std::min(mSelectionEnd, charIdx);
+					}
 					else
-						mSelectionEnd = charIdx;
+					{
+						mInputCaret->moveCaretLeft();
+						UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+
+						if (isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)) && mInputCaret->getCaretPos() > 0)
+						{
+							mInputCaret->moveCaretLeft();
+							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+						} 
+
+						mSelectionEnd = std::max(mSelectionStart, charIdx);
+					}
+
+					if(mSelectionStart == mSelectionEnd)
+						clearSelection();
+
+					scrollTextToCaret();
 
 					markAsDirty();
 					return true;
@@ -474,8 +497,15 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+					{
+						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Left)))
+						{
+							mInputCaret->moveCaretRight();
+						}
 
+						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+					}
+						
 					if(mSelectionAnchor == mSelectionStart)
 					{
 						mInputCaret->moveCaretRight();
@@ -488,7 +518,7 @@ namespace BansheeEngine
 							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 						} 
 
-						mSelectionEnd = charIdx;
+						mSelectionEnd = std::max(mSelectionStart, charIdx);
 					}
 					else
 					{
@@ -502,9 +532,13 @@ namespace BansheeEngine
 							charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
 						} 
 
-						mSelectionStart = charIdx;
+
+						mSelectionStart = std::min(mSelectionEnd, charIdx);
 					}
-						
+
+					if(mSelectionStart == mSelectionEnd)
+						clearSelection();
+
 					scrollTextToCaret();
 
 					markAsDirty();
@@ -705,7 +739,7 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	UINT32 GUIInputBox::getCaretSelectionCharIdx(SelectionDir dir)
+	UINT32 GUIInputBox::getCaretSelectionCharIdx(SelectionDir dir) const
 	{
 		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
 
@@ -715,7 +749,7 @@ namespace BansheeEngine
 		return charIdx;
 	}
 
-	bool GUIInputBox::isNewlineChar(CM::UINT32 charIdx)
+	bool GUIInputBox::isNewlineChar(CM::UINT32 charIdx) const
 	{
 		if(mText[charIdx] == '\n')
 			return true;
@@ -743,46 +777,38 @@ namespace BansheeEngine
 
 			UINT32 endCharIdx = mSelectionEnd - 1;
 			if(startLine != endLine)
+			{
 				endCharIdx = lineDesc.endChar - 1;
 
-			if(startCharIdx != endCharIdx)
-			{
-				if(startCharIdx == (lineDesc.endChar - 1) && startCharIdx < ((UINT32)mText.size() - 1)) // Ignore newline char
-				{
-					if(startLine != (mTextSprite->getNumLines() - 1))
-						startCharIdx += 1;
-				}
-
-				if(endCharIdx == (lineDesc.endChar - 1) && endCharIdx > 0) // Ignore newline char
-				{
-					if(startLine != (mTextSprite->getNumLines() - 1))
-						endCharIdx -= 1;
-				}
-
-				Rect startChar = mTextSprite->getCharRect(startCharIdx);
-				Rect endChar = mTextSprite->getCharRect(endCharIdx);
-
-				Rect selectionRect;
-				selectionRect.x = startChar.x;
-				selectionRect.y = lineDesc.lineYStart;
-				selectionRect.height = lineDesc.lineHeight;
-				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
-
-				selectionRects.push_back(selectionRect);
+				if(startLine != (mTextSprite->getNumLines() - 1) && endCharIdx > 0) // Ignore newline char
+					endCharIdx -= 1;
 			}
+
+#ifdef CM_DEBUG_MODE
+			if(isNewlineChar(startCharIdx))
+				CM_EXCEPT(InternalErrorException, "Selection marker placed on newline. That's not allowed");
+
+			if(isNewlineChar(endCharIdx))
+				CM_EXCEPT(InternalErrorException, "Selection marker placed on newline. That's not allowed");
+#endif
+
+			Rect startChar = mTextSprite->getCharRect(startCharIdx);
+			Rect endChar = mTextSprite->getCharRect(endCharIdx);
+
+			Rect selectionRect;
+			selectionRect.x = startChar.x;
+			selectionRect.y = lineDesc.lineYStart;
+			selectionRect.height = lineDesc.lineHeight;
+			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+
+			selectionRects.push_back(selectionRect);
 		}
 
 		for(UINT32 i = startLine + 1; i < endLine; i++)
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-			if(lineDesc.startChar == lineDesc.endChar)
+			if(lineDesc.startChar == lineDesc.endChar || isNewlineChar(lineDesc.startChar))
 				continue;
-
-			UINT32 startCharIdx = lineDesc.startChar;
-			if(startCharIdx == (lineDesc.endChar - 1) && startCharIdx > 0) // Ignore newline char
-			{
-				startCharIdx -= 1;
-			}
 
 			UINT32 endCharIdx = lineDesc.endChar - 1;
 			if(endCharIdx > 0) // Ignore newline char
@@ -804,21 +830,13 @@ namespace BansheeEngine
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(endLine);
 
-			if(lineDesc.startChar != lineDesc.endChar)
+			if(lineDesc.startChar != lineDesc.endChar && !isNewlineChar(lineDesc.startChar))
 			{
-				UINT32 startCharIdx = lineDesc.startChar;
-				if(startCharIdx == (lineDesc.endChar - 1) && startCharIdx > 0) // Ignore newline char
-				{
-					if(startLine != (mTextSprite->getNumLines() - 1))
-						startCharIdx -= 1;
-				}
-
 				UINT32 endCharIdx = mSelectionEnd - 1;
-				if(endCharIdx == (lineDesc.endChar - 1) && endCharIdx > 0)
-				{
-					if(endLine != (mTextSprite->getNumLines() - 1)) // Ignore newline char
-						endCharIdx -= 1;
-				}
+#ifdef CM_DEBUG_MODE
+				if(isNewlineChar(endCharIdx))
+					CM_EXCEPT(InternalErrorException, "Selection marker placed on newline. That's not allowed");
+#endif
 
 				Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
 				Rect endChar = mTextSprite->getCharRect(endCharIdx);
