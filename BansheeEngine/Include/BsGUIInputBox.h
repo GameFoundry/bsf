@@ -80,6 +80,7 @@ namespace BansheeEngine
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool keyEvent(const GUIKeyEvent& ev);
+
 		virtual bool commandEvent(const GUICommandEvent& ev);
 
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
@@ -90,6 +91,8 @@ namespace BansheeEngine
 
 		void showSelection(CM::UINT32 startChar);
 		void clearSelection();
+		void moveSelectionLeft(bool skipNewline);
+		void moveSelectionRight(bool skipnewLine);
 		CM::UINT32 getCaretSelectionCharIdx(SelectionDir dir) const;
 		bool isNewlineChar(CM::UINT32 charIdx) const;
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
