@@ -15,7 +15,7 @@ IMMEDIATE:
  - Clicking on a window to focus and immediately trying to drag/resize it, doesn't work. I first need to click, then click again to drag/resize.
  - OpenGL rendering slows to extremely with time (seems to be related to rendering, possibly GUI, possibly in general Pass/Material/Shader/PassParams)
  - Update debug camera so it uses callbacks
-
+ 
  - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
  - Enable alpha test so I don't render completely transparent pixels.
  - What happens when I don't set a texture for a state of a GUI element. Use a dummy white texture probably?
@@ -23,14 +23,16 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
+ - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys
  - Drag mouse to update selection
  - Input caret positioning ignores kerning which means the caret is sometimes 
    in the middle of another char. Try typing "fa" and moving caret in front of "f".
      - I really need to update InputCaret so it holds its own sprite data
- - Add a way to move selection up/down
- - Update selection move right so it correctly moves to next line. Currently I fixed some issues but there are still problems.
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
+ - Make a separate class for InputSelection like I have for InputCaret. 
+  - Make them use their own text rendering methods instead of relying on TextSprite.
+  - Make them a singleton so that any input element can use them, and not every element needs to have its own copy.
  - LATER
   - TAB between input elements
   - Context menu with copy/cut/paste

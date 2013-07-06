@@ -1022,6 +1022,7 @@ namespace BansheeEngine
 		textDesc.clipRect = Rect(-mTextOffset.x, -mTextOffset.y, textDesc.width, textDesc.height);
 		textDesc.horzAlign = mStyle->textHorzAlign;
 		textDesc.vertAlign = mStyle->textVertAlign;
+		textDesc.wordWrap = mIsMultiline;
 
 		return textDesc;
 	}

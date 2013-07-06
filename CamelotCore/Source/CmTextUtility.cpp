@@ -383,15 +383,27 @@ namespace CamelotFramework
 				if(wordWrap)
 				{
 					TextWord lastWord = curLine->removeLastWord();
+					bool moveLastWord = true;
 					if(lastWord.isSpacer())
+					{
 						curLine->addWord(lastWord); // Spaces can stay on previous line even if they don't technically fit
+						moveLastWord = false;
+					}
 
-					textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
-					curLine = &textData->mLines.back();
+					if(lastWord.getWidth() > width) // If the word doesn't fit on the next line, don't bother moving it
+					{
+						curLine->addWord(lastWord);
+						moveLastWord = false;
+					}
+					else
+					{
+						textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
+						curLine = &textData->mLines.back();
 
-					curHeight += fontData->fontDesc.lineHeight;
+						curHeight += fontData->fontDesc.lineHeight;
+					}
 
-					if(!lastWord.isSpacer())
+					if(moveLastWord)
 						curLine->addWord(lastWord);
 				}
 			}
