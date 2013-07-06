@@ -163,7 +163,8 @@ namespace BansheeEngine
 				desc.offset = Int2(selectionRects[idx].x, selectionRects[idx].y);
 				desc.width = selectionRects[idx].width;
 				desc.height = selectionRects[idx].height;
-				desc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
+				desc.clipRect = Rect(getTextBounds().x - selectionRects[idx].x, 
+					getTextBounds().y - selectionRects[idx].y, textDesc.width, textDesc.height);
 				desc.texture = GUIManager::instance().getTextSelectionTexture();
 
 				sprite->update(desc);
