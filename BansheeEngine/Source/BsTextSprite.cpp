@@ -135,18 +135,19 @@ namespace BansheeEngine
 		UINT32 curLineIdx = 0;
 		for(auto& line : lines)
 		{
-			UINT32 newlineChar = (curLineIdx == ((UINT32)lines.size() - 1)) ? 0 : 1;
+			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
+			bool hasNewline = line.hasNewlineChar() && (curLineIdx != ((UINT32)lines.size() - 1));
 
-			SpriteLineDesc lineDesc;
-			lineDesc.startChar = curCharIdx;
-			lineDesc.endChar = curCharIdx + line.getNumChars() + newlineChar;
-			lineDesc.lineHeight = line.getYOffset();
-			lineDesc.lineYStart = alignmentOffsets[curLineIdx].y + desc.offset.y;
+			UINT32 startChar = curCharIdx;
+			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
+			UINT32 lineHeight = line.getYOffset();
+			INT32 lineYStart = alignmentOffsets[curLineIdx].y + desc.offset.y;
 
+			SpriteLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
 			mLineDescs.push_back(lineDesc);
 
-			curCharIdx = lineDesc.endChar;
-			cachedLineY += lineDesc.lineHeight;
+			curCharIdx = lineDesc.getEndChar();
+			cachedLineY += lineDesc.getLineHeight();
 			curLineIdx++;
 		}
 
@@ -159,10 +160,13 @@ namespace BansheeEngine
 
 		// If char is newline we don't have any geometry to return
 		const SpriteLineDesc& lineDesc = getLineDesc(lineIdx);
-		if(lineIdx != (getNumLines() - 1) && (lineDesc.endChar - 1) == charIdx)
+		if(lineDesc.isNewline(charIdx))
 			return Rect();
 
-		UINT32 numNewlineChars = lineIdx;
+		UINT32 numNewlineChars = 0;
+		for(UINT32 i = 0; i < lineIdx; i++)
+			numNewlineChars += (getLineDesc(i).hasNewlineChar() ? 1 : 0);
+
 		UINT32 quadIdx = charIdx - numNewlineChars;
 
 		UINT32 curQuadIdx = 0;
@@ -193,26 +197,26 @@ namespace BansheeEngine
 
 		UINT32 lineStartChar = 0;
 		UINT32 lineEndChar = 0;
-		UINT32 newlineChars = 0;
+		UINT32 numNewlineChars = 0;
 		UINT32 lineIdx = 0;
 		for(auto& line : mLineDescs)
 		{
-			if(pos.y >= line.lineYStart && pos.y < (line.lineYStart + (INT32)line.lineHeight))
+			if(pos.y >= line.getLineYStart() && pos.y < (line.getLineYStart() + (INT32)line.getLineHeight()))
 			{
-				lineStartChar = line.startChar;
-				lineEndChar = line.endChar;
+				lineStartChar = line.getStartChar();
+				lineEndChar = line.getEndChar(false);
 				break;
 			}
 
-			newlineChars++; // Newline chars count in the startChar/endChar variables, but don't actually exist in the buffers
+			// Newline chars count in the startChar/endChar variables, but don't actually exist in the buffers
 			// so we need to filter them out
+			numNewlineChars += (line.hasNewlineChar() ? 1 : 0); 
+
 			lineIdx++;
 		}
 
-		bool hasNewlineChar = lineIdx < (mLineDescs.size() - 1);
-
-		UINT32 lineStartQuad = lineStartChar - newlineChars;
-		UINT32 lineEndQuad = lineEndChar - newlineChars - (hasNewlineChar ? 1 : 0);
+		UINT32 lineStartQuad = lineStartChar - numNewlineChars;
+		UINT32 lineEndQuad = lineEndChar - numNewlineChars;
 
 		float nearestDist = std::numeric_limits<float>::max();
 		UINT32 nearestChar = 0;
@@ -239,7 +243,7 @@ namespace BansheeEngine
 				float dist = Math::Abs(centerX - vecPos.x);
 				if(dist < nearestDist)
 				{
-					nearestChar = quadIdx + newlineChars;
+					nearestChar = quadIdx + numNewlineChars;
 					nearestDist = dist;
 					foundChar = true;
 				}
@@ -254,13 +258,16 @@ namespace BansheeEngine
 		return nearestChar;
 	}
 
-	CM::UINT32 TextSprite::getLineForChar(CM::UINT32 charIdx) const
+	CM::UINT32 TextSprite::getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine) const
 	{
 		UINT32 idx = 0;
 		for(auto& line : mLineDescs)
 		{
-			if(charIdx >= line.startChar && charIdx < line.endChar)
+			if(charIdx >= line.getStartChar() && charIdx < line.getEndChar())
 			{
+				if(line.isNewline(charIdx) && newlineCountsOnNextLine)
+					return idx + 1; // Incrementing is safe because next line must exist, since we just found a newline char
+
 				return idx;
 			}
 
@@ -317,5 +324,39 @@ namespace BansheeEngine
 		}
 
 		return lineOffsets;
+	}
+
+	SpriteLineDesc::SpriteLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline)
+		:mStartChar(startChar), mEndChar(endChar), mLineHeight(lineHeight), mLineYStart(lineYStart), mIncludesNewline(includesNewline)
+	{
+
+	}
+
+	UINT32 SpriteLineDesc::getEndChar(bool includeNewline) const
+	{
+		if(mIncludesNewline)
+		{
+			if(includeNewline)
+				return mEndChar;
+			else
+			{
+				if(mEndChar > 0)
+					return mEndChar - 1;
+				else
+					return mStartChar;
+			}
+		}
+		else
+			return mEndChar;
+	}
+
+	bool SpriteLineDesc::isNewline(UINT32 charIdx) const
+	{
+		if(mIncludesNewline)
+		{
+			return (mEndChar - 1) == charIdx;
+		}
+		else
+			return false;
 	}
 }

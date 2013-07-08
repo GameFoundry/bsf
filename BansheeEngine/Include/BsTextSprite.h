@@ -37,12 +37,24 @@ namespace BansheeEngine
 		bool wordWrap;
 	};
 
-	struct SpriteLineDesc
+	class BS_EXPORT SpriteLineDesc
 	{
-		CM::UINT32 startChar;
-		CM::UINT32 endChar;
-		CM::UINT32 lineHeight;
-		CM::INT32 lineYStart;
+	public:
+		SpriteLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline);
+
+		CM::UINT32 getEndChar(bool includeNewline = true) const;
+		CM::UINT32 getStartChar() const { return mStartChar; }
+		CM::UINT32 getLineHeight() const { return mLineHeight; }
+		CM::INT32 getLineYStart() const { return mLineYStart; }
+		bool isNewline(CM::UINT32 charIdx) const;
+		bool hasNewlineChar() const { return mIncludesNewline; }
+
+	private:
+		CM::UINT32 mStartChar;
+		CM::UINT32 mEndChar;
+		CM::UINT32 mLineHeight;
+		CM::INT32 mLineYStart;
+		bool mIncludesNewline;
 	};
 
 	class BS_EXPORT TextSprite : public Sprite
@@ -54,7 +66,7 @@ namespace BansheeEngine
 
 		CM::UINT32 getNumLines() const { return (CM::UINT32)mLineDescs.size(); }
 		const SpriteLineDesc& getLineDesc(CM::UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
-		CM::UINT32 getLineForChar(CM::UINT32 charIdx) const;
+		CM::UINT32 getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine = false) const;
 		CM::Rect getCharRect(CM::UINT32 charIdx) const;
 		CM::INT32 getCharIdxAtPos(const CM::Int2& pos) const;
 

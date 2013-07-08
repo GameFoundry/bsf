@@ -818,13 +818,7 @@ namespace BansheeEngine
 		if(charIdx > 0)
 			charIdx--;
 
-		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-		// Newline chars should count on the second line, but that not how the sprite reports them, so fix that
-		if(lineIdx < (mTextSprite->getNumLines() - 1))
-		{
-			if(charIdx == (mTextSprite->getLineDesc(lineIdx).endChar - 1)) 
-				lineIdx++;
-		}
+		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx, true);
 
 		if(lineIdx == 0)
 		{
@@ -859,13 +853,7 @@ namespace BansheeEngine
 		if(charIdx > 0)
 			charIdx--;
 
-		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-		// Newline chars should count on the second line, but that not how the sprite reports them, so fix that
-		if(lineIdx < (mTextSprite->getNumLines() - 1))
-		{
-			if(charIdx == (mTextSprite->getLineDesc(lineIdx).endChar - 1)) 
-				lineIdx++;
-		}
+		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx, true);
 
 		if(lineIdx == (mTextSprite->getNumLines() - 1))
 		{
@@ -905,16 +893,7 @@ namespace BansheeEngine
 
 		UINT32 endLine = startLine;
 		if(mSelectionEnd > 0)
-		{
-			endLine = mTextSprite->getLineForChar(mSelectionEnd - 1);
-
-			// Newline chars should count on the second line, but that not how the sprite reports them, so fix that
-			if(endLine < (mTextSprite->getNumLines() - 1))
-			{
-				if((mSelectionEnd - 1) == (mTextSprite->getLineDesc(endLine).endChar - 1)) 
-					endLine++;
-			}
-		}
+			endLine = mTextSprite->getLineForChar(mSelectionEnd - 1, true);
 
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(startLine);
@@ -924,10 +903,9 @@ namespace BansheeEngine
 			UINT32 endCharIdx = mSelectionEnd - 1;
 			if(startLine != endLine)
 			{
-				endCharIdx = lineDesc.endChar - 1;
-
-				if(startLine != (mTextSprite->getNumLines() - 1) && endCharIdx > 0) // Ignore newline char
-					endCharIdx -= 1;
+				endCharIdx = lineDesc.getEndChar(false);
+				if(endCharIdx > 0)
+					endCharIdx = endCharIdx - 1;
 			}
 
 			if(!isNewlineChar(startCharIdx) && !isNewlineChar(endCharIdx))
@@ -937,8 +915,8 @@ namespace BansheeEngine
 
 				Rect selectionRect;
 				selectionRect.x = startChar.x;
-				selectionRect.y = lineDesc.lineYStart;
-				selectionRect.height = lineDesc.lineHeight;
+				selectionRect.y = lineDesc.getLineYStart();
+				selectionRect.height = lineDesc.getLineHeight();
 				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
 				selectionRects.push_back(selectionRect);
@@ -948,20 +926,20 @@ namespace BansheeEngine
 		for(UINT32 i = startLine + 1; i < endLine; i++)
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-			if(lineDesc.startChar == lineDesc.endChar || isNewlineChar(lineDesc.startChar))
+			if(lineDesc.getStartChar() == lineDesc.getEndChar() || isNewlineChar(lineDesc.getStartChar()))
 				continue;
 
-			UINT32 endCharIdx = lineDesc.endChar - 1;
-			if(endCharIdx > 0) // Ignore newline char
-				endCharIdx -= 1;
+			UINT32 endCharIdx = lineDesc.getEndChar(true);
+			if(endCharIdx > 0)
+				endCharIdx = endCharIdx - 1;
 
-			Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
+			Rect startChar = mTextSprite->getCharRect(lineDesc.getStartChar());
 			Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
 			Rect selectionRect;
 			selectionRect.x = startChar.x;
-			selectionRect.y = lineDesc.lineYStart;
-			selectionRect.height = lineDesc.lineHeight;
+			selectionRect.y = lineDesc.getLineYStart();
+			selectionRect.height = lineDesc.getLineHeight();
 			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
 			selectionRects.push_back(selectionRect);
@@ -971,19 +949,19 @@ namespace BansheeEngine
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(endLine);
 
-			if(lineDesc.startChar != lineDesc.endChar && !isNewlineChar(lineDesc.startChar))
+			if(lineDesc.getStartChar() != lineDesc.getEndChar() && !isNewlineChar(lineDesc.getStartChar()))
 			{
 				UINT32 endCharIdx = mSelectionEnd - 1;
 
 				if(!isNewlineChar(endCharIdx))
 				{
-					Rect startChar = mTextSprite->getCharRect(lineDesc.startChar);
+					Rect startChar = mTextSprite->getCharRect(lineDesc.getStartChar());
 					Rect endChar = mTextSprite->getCharRect(endCharIdx);
 
 					Rect selectionRect;
 					selectionRect.x = startChar.x;
-					selectionRect.y = lineDesc.lineYStart;
-					selectionRect.height = lineDesc.lineHeight;
+					selectionRect.y = lineDesc.getLineYStart();
+					selectionRect.height = lineDesc.getLineHeight();
 					selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
 					selectionRects.push_back(selectionRect);

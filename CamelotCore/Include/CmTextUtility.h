@@ -79,6 +79,12 @@ namespace CamelotFramework
 			 * @brief	Returns the total number of characters on this line.
 			 */
 			UINT32 getNumChars() const;
+
+			/**
+			 * @brief	Query if this line was created explicitly due to a newline character.
+			 * 			As opposed to a line that was created because a word couldn't fit on the previous line.
+			 */
+			bool hasNewlineChar() const { return mHasNewline; }
 		private:
 			friend class TextUtility;
 
@@ -89,10 +95,13 @@ namespace CamelotFramework
 			UINT32 mSpaceWidth;
 			Vector<TextWord>::type mWords;
 			TextWord* mLastWord;
+			bool mHasNewline;
 
 			void add(const CHAR_DESC& charDesc);
 			void addSpace();
 			void addWord(const TextWord& word);
+
+			void finalize(bool hasNewlineChar);
 
 			TextWord removeLastWord();
 

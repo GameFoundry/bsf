@@ -73,13 +73,19 @@ namespace CamelotFramework
 	}
 
 	TextUtility::TextLine::TextLine(UINT32 baselineOffset, UINT32 lineHeight, UINT32 spaceWidth)
-		:mWidth(0), mHeight(0), mLastWord(nullptr), mBaselineOffset(baselineOffset), mLineHeight(lineHeight), mSpaceWidth(spaceWidth)
+		:mWidth(0), mHeight(0), mLastWord(nullptr), mBaselineOffset(baselineOffset), 
+		mLineHeight(lineHeight), mSpaceWidth(spaceWidth)
 	{
 
 	}
 
 	TextUtility::TextLine::~TextLine()
 	{
+	}
+
+	void TextUtility::TextLine::finalize(bool hasNewlineChar)
+	{
+		mHasNewline = hasNewlineChar;
 	}
 
 	void TextUtility::TextLine::add(const CHAR_DESC& charDesc)
@@ -358,6 +364,7 @@ namespace CamelotFramework
 
 			if(text[charIdx] == '\n')
 			{
+				curLine->finalize(true);
 				textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
 				curLine = &textData->mLines.back();
 
@@ -383,33 +390,24 @@ namespace CamelotFramework
 				if(wordWrap)
 				{
 					TextWord lastWord = curLine->removeLastWord();
-					bool moveLastWord = true;
-					if(lastWord.isSpacer())
-					{
-						curLine->addWord(lastWord); // Spaces can stay on previous line even if they don't technically fit
-						moveLastWord = false;
-					}
 
-					if(lastWord.getWidth() > width) // If the word doesn't fit on the next line, don't bother moving it
+					if(lastWord.getWidth() <= width) // If the world fits, attempt to add it to a new line
 					{
-						curLine->addWord(lastWord);
-						moveLastWord = false;
-					}
-					else
-					{
+						curLine->finalize(false);
 						textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
 						curLine = &textData->mLines.back();
 
 						curHeight += fontData->fontDesc.lineHeight;
 					}
 
-					if(moveLastWord)
-						curLine->addWord(lastWord);
+					curLine->addWord(lastWord);
 				}
 			}
 
 			charIdx++;
 		}
+
+		curLine->finalize(true);
 
 		return textData;
 	}
