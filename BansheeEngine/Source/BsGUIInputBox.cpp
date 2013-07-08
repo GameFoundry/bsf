@@ -340,6 +340,14 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
+			if(mText.size() > 0)
+				mInputCaret->moveCaretToPos(ev.getPosition());
+			else
+				mInputCaret->moveCaretToStart();
+
+			scrollTextToCaret();
+
+
 			// TODO - Update selection
 			//  - If mouse is over control, place selection marker there (make sure start < end)
 			//  - Else move the selection by a certain amount of pixels depending on drag amount
@@ -657,7 +665,9 @@ namespace BansheeEngine
 		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
 
 		INT32 left = textDesc.offset.x - mTextOffset.x;
-		INT32 right = left + (INT32)textDesc.width;
+		// Include caret width here because we don't want to scroll if just the caret is outside the bounds
+		// (Possible if the text width is exactly the maximum width)
+		INT32 right = left + (INT32)textDesc.width + caretWidth; 
 		INT32 top = textDesc.offset.y - mTextOffset.y;
 		INT32 bottom = top + (INT32)textDesc.height;
 

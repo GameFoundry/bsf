@@ -38,7 +38,7 @@ namespace BansheeEngine
 		mCaretDesc.width = 1;
 		mCaretDesc.height = getCaretHeight();
 		mCaretDesc.clipRect = Rect(-mCaretDesc.offset.x + mTextDesc.offset.x - offset.x, -mCaretDesc.offset.y + mTextDesc.offset.y - offset.y, 
-			mTextDesc.width, mTextDesc.height);
+			mTextDesc.width + 1, mTextDesc.height); // Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
 		mCaretDesc.texture = GUIManager::instance().getCaretTexture();
 
 		mCaretSprite->update(mCaretDesc);
@@ -265,7 +265,7 @@ namespace BansheeEngine
 			UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
 			UINT32 yOffset = mTextSprite->getLineDesc(lineIdx).getLineYStart();
 
-			return Int2(charRect.x + charRect.width + 1, yOffset);
+			return Int2(charRect.x + charRect.width, yOffset);
 		}
 		else
 		{

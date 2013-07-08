@@ -23,8 +23,6 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
- - IMPORTANT: Word wrap won't work with my current approach. In a lot of places I assume lines 
-    end with a newline char but in word wrap case a lot of them wont.
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
  - Drag mouse to update selection
  - Input caret positioning ignores kerning which means the caret is sometimes 
@@ -38,7 +36,7 @@ TextBox needed elements:
  - LATER
   - TAB between input elements
   - Context menu with copy/cut/paste
-  - Sprites. Perform clipping when fillbuffer is called? 
+  - Sprites. Perform clipping when fillbuffer is called? (Also deal with offset?)
     This way I can change clip rect without recreating the entire sprite. 
 	Which is important for text, especially when I'll be scrolling it. 
 	Plus its important for all other elements that will be inside scroll areas.
