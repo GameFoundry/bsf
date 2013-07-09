@@ -166,7 +166,7 @@ namespace BansheeEngine
 
 			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
 			UINT32 numCaretPositions = lineDesc.getEndChar(false) - lineDesc.getStartChar();
-			if(charIdx > (curCharIdx + numChars))
+			if(charIdx >= (curCharIdx + numChars))
 			{
 				curCharIdx += numChars;
 				curPos += numCaretPositions;

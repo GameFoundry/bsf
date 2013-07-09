@@ -24,7 +24,6 @@ IMMEDIATE:
 
 TextBox needed elements:
  - Clicking on text seems to return slightly offset caret location
- - Moving to the new line due to word wrap should move the caret twice (same as going backwards when deleting most likely)
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
  - Drag mouse to update selection
  - Get DebugCamera to ignore input if GUI has already processed it

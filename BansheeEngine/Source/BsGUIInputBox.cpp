@@ -392,7 +392,11 @@ namespace BansheeEngine
 							mText.erase(charIdx, 1);
 							mInputCaret->updateText(getTextDesc());
 
-							mInputCaret->moveCaretLeft();
+							if(charIdx > 0)
+								charIdx--;
+
+							mInputCaret->moveCaretToChar(charIdx, CARET_AFTER);
+
 							scrollTextToCaret();
 						}
 					}
@@ -432,6 +436,13 @@ namespace BansheeEngine
 						{
 							mText.erase(charIdx, 1);
 							mInputCaret->updateText(getTextDesc());
+
+							if(charIdx > 0)
+								charIdx--;
+
+							mInputCaret->moveCaretToChar(charIdx, CARET_AFTER);
+
+							scrollTextToCaret();
 						}
 					}
 
@@ -617,10 +628,12 @@ namespace BansheeEngine
 				clearSelection();
 			}
 
-			mText.insert(mText.begin() + mInputCaret->getCharIdxAtCaretPos(), ev.getInputChar());
+			UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
+			mText.insert(mText.begin() + charIdx, ev.getInputChar());
 			mInputCaret->updateText(getTextDesc());
 
-			mInputCaret->moveCaretRight();
+			mInputCaret->moveCaretToChar(charIdx, CARET_AFTER);
+
 			scrollTextToCaret();
 
 			markAsDirty();
