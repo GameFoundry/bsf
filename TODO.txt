@@ -23,11 +23,10 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
+ - Clicking on text seems to return slightly offset caret location
+ - Moving to the new line due to word wrap should move the caret twice (same as going backwards when deleting most likely)
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
  - Drag mouse to update selection
- - Input caret positioning ignores kerning which means the caret is sometimes 
-   in the middle of another char. Try typing "fa" and moving caret in front of "f".
-     - I really need to update InputCaret so it holds its own sprite data
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
  - Make a separate class for InputSelection like I have for InputCaret. 

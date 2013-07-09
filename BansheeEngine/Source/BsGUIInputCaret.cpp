@@ -61,7 +61,7 @@ namespace BansheeEngine
 
 	void GUIInputCaret::moveCaretRight()
 	{
-		UINT32 maxCaretPos = (UINT32)mTextDesc.text.size(); // One extra because beginning of first line has an extra "fake" char
+		UINT32 maxCaretPos = getMaxCaretPos();
 
 		mCaretPos = std::min(maxCaretPos, mCaretPos + 1);
 	}
@@ -122,15 +122,7 @@ namespace BansheeEngine
 			if(pos.x <= xCenter)
 				moveCaretToChar(charIdx, CARET_BEFORE);
 			else
-			{
-				//UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-				//const SpriteLineDesc& line = mTextSprite->getLineDesc(lineIdx);
-
-				//if(charIdx == (line.getEndChar(false) - 1)) // If last char on the line don't move beyond it
-				//	moveCaretToChar(charIdx, CARET_BEFORE);
-				//else
-					moveCaretToChar(charIdx, CARET_AFTER);
-			}
+				moveCaretToChar(charIdx, CARET_AFTER);
 		}
 		else
 		{
@@ -147,7 +139,7 @@ namespace BansheeEngine
 					return;
 				}
 
-				UINT32 numChars = line.getEndChar() - line.getStartChar();
+				UINT32 numChars = line.getEndChar(false) - line.getStartChar() + 1; // +1 For extra line start position
 				curPos += numChars;
 			}
 
@@ -168,16 +160,16 @@ namespace BansheeEngine
 		UINT32 curCharIdx = 0;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			if(i == 0)
-				curPos++; // Beginning of the line has a special caret position, primarily so we can
-			// still place a caret on an empty line
-
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+		
+			curPos++; // Move past line start position
+
 			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
+			UINT32 numCaretPositions = lineDesc.getEndChar(false) - lineDesc.getStartChar();
 			if(charIdx > (curCharIdx + numChars))
 			{
 				curCharIdx += numChars;
-				curPos += numChars;
+				curPos += numCaretPositions;
 				continue;
 			}
 
@@ -207,24 +199,21 @@ namespace BansheeEngine
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
 
 			if(curPos == mCaretPos)
-			{
 				return lineDesc.getStartChar();
-			}
 
-			if(i == 0)
-				curPos++; // Beginning of the line has a special caret position, primarily so we can
-			// still place a caret on an empty line
+			curPos++; // Move past line start position
 
 			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
-			if(mCaretPos > (curPos + numChars))
+			UINT32 numCaretPositions = lineDesc.getEndChar(false) - lineDesc.getStartChar();
+			if(mCaretPos >= (curPos + numCaretPositions))
 			{
 				curCharIdx += numChars;
-				curPos += numChars;
+				curPos += numCaretPositions;
 				continue;
 			}
 
 			UINT32 diff = mCaretPos - curPos; 
-			curCharIdx += diff + 1; // +1 because we want the caret to reference the char in front of it on most cases
+			curCharIdx += diff + 1; // Character after the caret
 
 			return curCharIdx;
 		}
@@ -240,19 +229,15 @@ namespace BansheeEngine
 			UINT32 numLines = mTextSprite->getNumLines();
 			for(UINT32 i = 0; i < numLines; i++)
 			{
+				const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+
 				if(mCaretPos == curPos)
 				{
 					// Caret is on line start
-					return Int2(offset.x, mTextSprite->getLineDesc(i).getLineYStart());
+					return Int2(offset.x, lineDesc.getLineYStart());
 				}
 
-				if(i == 0)
-					curPos++; // Beginning of the line has a special caret position, primarily so we can
-				// still place a caret on an empty line
-
-				const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-				UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
-				curPos += numChars;
+				curPos += lineDesc.getEndChar(false) - lineDesc.getStartChar() + 1; // + 1 for special line start position
 			}
 
 			UINT32 charIdx = getCharIdxAtCaretPos();
@@ -313,11 +298,7 @@ namespace BansheeEngine
 			if(curPos == mCaretPos)
 				return true;
 
-			if(i == 0)
-				curPos++; // Beginning of the line has a special caret position, primarily so we can
-						  // still place a caret on an empty line
-
-			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar() - 1;
+			UINT32 numChars = lineDesc.getEndChar(false) - lineDesc.getStartChar();
 			curPos += numChars;
 		}
 
@@ -335,11 +316,7 @@ namespace BansheeEngine
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
 
-			if(i == 0)
-				maxPos++; // Beginning of the line has a special caret position, primarily so we can
-						  // still place a caret on an empty line
-
-			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
+			UINT32 numChars = lineDesc.getEndChar(false) - lineDesc.getStartChar() + 1; // + 1 for special line start position
 			maxPos += numChars;
 		}
 
