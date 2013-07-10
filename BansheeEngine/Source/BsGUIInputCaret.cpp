@@ -128,6 +128,12 @@ namespace BansheeEngine
 		{
 			UINT32 numLines = mTextSprite->getNumLines();
 
+			if(numLines == 0)
+			{
+				mCaretPos = 0;
+				return;
+			}
+
 			UINT32 curPos = 0;
 			for(UINT32 i = 0; i < numLines; i++)
 			{
@@ -143,7 +149,12 @@ namespace BansheeEngine
 				curPos += numChars;
 			}
 
-			mCaretPos = curPos;
+			const SpriteLineDesc& firstLine = mTextSprite->getLineDesc(0);
+
+			if(pos.y < firstLine.getLineYStart()) // Before first line
+				mCaretPos = 0;
+			else // After last line
+				mCaretPos = curPos - 1;
 		}
 	}
 
@@ -188,6 +199,11 @@ namespace BansheeEngine
 
 	UINT32 GUIInputCaret::getCharIdxAtCaretPos() const
 	{
+		return getCharIdxAtCaretPos(mCaretPos);
+	}
+
+	UINT32 GUIInputCaret::getCharIdxAtCaretPos(UINT32 caretPos) const
+	{
 		if(mTextDesc.text.size() == 0)
 			return 0;
 
@@ -198,21 +214,21 @@ namespace BansheeEngine
 		{
 			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
 
-			if(curPos == mCaretPos)
+			if(curPos == caretPos)
 				return lineDesc.getStartChar();
 
 			curPos++; // Move past line start position
 
 			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
 			UINT32 numCaretPositions = lineDesc.getEndChar(false) - lineDesc.getStartChar();
-			if(mCaretPos >= (curPos + numCaretPositions))
+			if(caretPos >= (curPos + numCaretPositions))
 			{
 				curCharIdx += numChars;
 				curPos += numCaretPositions;
 				continue;
 			}
 
-			UINT32 diff = mCaretPos - curPos; 
+			UINT32 diff = caretPos - curPos; 
 			curCharIdx += diff + 1; // Character after the caret
 
 			return curCharIdx;

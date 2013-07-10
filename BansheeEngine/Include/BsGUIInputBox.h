@@ -73,6 +73,7 @@ namespace BansheeEngine
 		CM::UINT32 mSelectionStart;
 		CM::UINT32 mSelectionEnd;
 		CM::UINT32 mSelectionAnchor;
+		CM::UINT32 mSelectionDragAnchor;
 		bool mCaretShown;
 		bool mSelectionShown;
 

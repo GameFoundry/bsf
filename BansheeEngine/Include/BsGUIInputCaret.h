@@ -31,6 +31,7 @@ namespace BansheeEngine
 		void moveCaretToChar(CM::UINT32 charIdx, CaretPos caretPos);
 
 		CM::UINT32 getCharIdxAtCaretPos() const;
+		CM::UINT32 getCharIdxAtCaretPos(CM::UINT32 caretPos) const;
 		CM::Int2 getCaretPosition(const CM::Int2& offset) const;
 		CM::UINT32 getCaretHeight() const;
 

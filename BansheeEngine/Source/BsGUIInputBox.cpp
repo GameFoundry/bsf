@@ -27,7 +27,7 @@ namespace BansheeEngine
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
 		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
 		mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mInputCaret(nullptr), mCaretShown(false), 
-		mSelectionShown(false), mIsMultiline(multiline)
+		mSelectionShown(false), mIsMultiline(multiline), mSelectionDragAnchor(0)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -316,6 +316,10 @@ namespace BansheeEngine
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
 			mImageDesc.texture = mStyle->hover.texture;
+
+			if(mSelectionStart == mSelectionEnd)
+				clearSelection();
+
 			markAsDirty();
 
 			return true;
@@ -340,18 +344,45 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
+			Rect bounds = getTextBounds();
 			if(mText.size() > 0)
 				mInputCaret->moveCaretToPos(ev.getPosition());
 			else
 				mInputCaret->moveCaretToStart();
 
+			if(!mSelectionShown)
+			{
+				showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+				mSelectionDragAnchor = mInputCaret->getCaretPos();
+			}
+
+			UINT32 curCaretPos = mInputCaret->getCaretPos();
+			if(curCaretPos < mSelectionDragAnchor)
+			{
+				mSelectionStart = mInputCaret->getCharIdxAtCaretPos(curCaretPos);
+				mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
+
+				mSelectionAnchor = mSelectionStart;
+			}
+
+			if(curCaretPos > mSelectionDragAnchor)
+			{
+				mSelectionStart = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
+				mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(curCaretPos);
+
+				mSelectionAnchor = mSelectionEnd;
+			}
+
+			if(curCaretPos == mSelectionDragAnchor)
+			{
+				mSelectionStart = mSelectionAnchor;
+				mSelectionEnd = mSelectionAnchor;
+			}
+
 			scrollTextToCaret();
 
-
-			// TODO - Update selection
-			//  - If mouse is over control, place selection marker there (make sure start < end)
-			//  - Else move the selection by a certain amount of pixels depending on drag amount
 			markAsDirty();
+			return true;
 		}
 
 		return false;
