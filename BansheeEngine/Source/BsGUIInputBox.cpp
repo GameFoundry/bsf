@@ -952,7 +952,7 @@ namespace BansheeEngine
 			if(lineDesc.getStartChar() == lineDesc.getEndChar() || isNewlineChar(lineDesc.getStartChar()))
 				continue;
 
-			UINT32 endCharIdx = lineDesc.getEndChar(true);
+			UINT32 endCharIdx = lineDesc.getEndChar(false);
 			if(endCharIdx > 0)
 				endCharIdx = endCharIdx - 1;
 
