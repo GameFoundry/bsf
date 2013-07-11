@@ -362,45 +362,6 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIInputBox::selectionDragStart(UINT32 caretPos)
-	{
-		clearSelection();
-
-		showSelection(caretPos, SelectionDir::Left); 
-		mSelectionDragAnchor = caretPos;
-	}
-
-	void GUIInputBox::selectionDragUpdate(UINT32 caretPos)
-	{
-		if(caretPos < mSelectionDragAnchor)
-		{
-			mSelectionStart = mInputCaret->getCharIdxAtCaretPos(caretPos);
-			mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
-
-			mSelectionAnchor = mSelectionStart;
-		}
-
-		if(caretPos > mSelectionDragAnchor)
-		{
-			mSelectionStart = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
-			mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(caretPos);
-
-			mSelectionAnchor = mSelectionEnd;
-		}
-
-		if(caretPos == mSelectionDragAnchor)
-		{
-			mSelectionStart = mSelectionAnchor;
-			mSelectionEnd = mSelectionAnchor;
-		}
-	}
-
-	void GUIInputBox::selectionDragEnd()
-	{
-		if(isSelectionEmpty())
-			clearSelection();
-	}
-
 	bool GUIInputBox::keyEvent(const GUIKeyEvent& ev)
 	{
 		if(ev.getType() == GUIKeyEventType::KeyDown)
@@ -577,22 +538,50 @@ namespace BansheeEngine
 
 						showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
 					}
-
-					moveSelectionUp();
-					scrollTextToCaret();
-
-					markAsDirty();
-					return true;
 				}
 				else
 				{
 					clearSelection();
-					mInputCaret->moveCaretUp();
-					scrollTextToCaret();
-
-					markAsDirty();
-					return true;
 				}
+
+				mInputCaret->moveCaretUp();
+				scrollTextToCaret();
+
+				if(ev.isShiftDown())
+				{
+					moveSelectionToCaret(mInputCaret->getCaretPos());
+				}
+
+				markAsDirty();
+				return true;
+
+				//if(ev.isShiftDown())
+				//{
+				//	if(!mSelectionShown)
+				//	{
+				//		if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Right)))
+				//		{
+				//			mInputCaret->moveCaretLeft();
+				//		}
+
+				//		showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
+				//	}
+
+				//	moveSelectionUp();
+				//	scrollTextToCaret();
+
+				//	markAsDirty();
+				//	return true;
+				//}
+				//else
+				//{
+				//	clearSelection();
+				//	mInputCaret->moveCaretUp();
+				//	scrollTextToCaret();
+
+				//	markAsDirty();
+				//	return true;
+				//}
 			}
 
 			if(ev.getKey() == BC_DOWN)
@@ -608,22 +597,50 @@ namespace BansheeEngine
 
 						showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
 					}
-
-					moveSelectionDown();
-					scrollTextToCaret();
-
-					markAsDirty();
-					return true;
 				}
 				else
 				{
 					clearSelection();
-					mInputCaret->moveCaretDown();
-					scrollTextToCaret();
-
-					markAsDirty();
-					return true;
 				}
+
+				mInputCaret->moveCaretDown();
+				scrollTextToCaret();
+
+				if(ev.isShiftDown())
+				{
+					moveSelectionToCaret(mInputCaret->getCaretPos());
+				}
+
+				markAsDirty();
+				return true;
+
+				//if(ev.isShiftDown())
+				//{
+				//	if(!mSelectionShown)
+				//	{
+				//		if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left)))
+				//		{
+				//			mInputCaret->moveCaretRight();
+				//		}
+
+				//		showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
+				//	}
+
+				//	moveSelectionDown();
+				//	scrollTextToCaret();
+
+				//	markAsDirty();
+				//	return true;
+				//}
+				//else
+				//{
+				//	clearSelection();
+				//	mInputCaret->moveCaretDown();
+				//	scrollTextToCaret();
+
+				//	markAsDirty();
+				//	return true;
+				//}
 			}
 
 			if(ev.getKey() == BC_RETURN)
@@ -797,6 +814,45 @@ namespace BansheeEngine
 		return false;
 	}
 
+	void GUIInputBox::selectionDragStart(UINT32 caretPos)
+	{
+		clearSelection();
+
+		showSelection(caretPos, SelectionDir::Left); 
+		mSelectionDragAnchor = caretPos;
+	}
+
+	void GUIInputBox::selectionDragUpdate(UINT32 caretPos)
+	{
+		if(caretPos < mSelectionDragAnchor)
+		{
+			mSelectionStart = mInputCaret->getCharIdxAtCaretPos(caretPos);
+			mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
+
+			mSelectionAnchor = mSelectionStart;
+		}
+
+		if(caretPos > mSelectionDragAnchor)
+		{
+			mSelectionStart = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
+			mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(caretPos);
+
+			mSelectionAnchor = mSelectionEnd;
+		}
+
+		if(caretPos == mSelectionDragAnchor)
+		{
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = mSelectionAnchor;
+		}
+	}
+
+	void GUIInputBox::selectionDragEnd()
+	{
+		if(isSelectionEmpty())
+			clearSelection();
+	}
+
 	void GUIInputBox::moveSelectionLeft(bool skipNewline) 
 	{
 		SelectionDir newlineTestSelectionDir;
@@ -950,6 +1006,25 @@ namespace BansheeEngine
 				mSelectionStart = charIdx;
 				mSelectionEnd = mSelectionAnchor;
 			}
+		}
+
+		if(mSelectionStart == mSelectionEnd)
+			clearSelection();
+	}
+
+	void GUIInputBox::moveSelectionToCaret(UINT32 caretPos)
+	{
+		UINT32 charIdx = caretPosToSelectionChar(caretPos, SelectionDir::Left);
+
+		if(charIdx > mSelectionAnchor)
+		{
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = charIdx;
+		}
+		else
+		{
+			mSelectionStart = charIdx;
+			mSelectionEnd = mSelectionAnchor;
 		}
 
 		if(mSelectionStart == mSelectionEnd)

@@ -80,7 +80,10 @@ namespace BansheeEngine
 			lineIdx++;	
 
 		if(lineIdx == 0)
+		{
+			moveCaretToStart();
 			return;
+		}
 
 		Int2 caretCoords = getCaretPosition(mTextDesc.offset);
 		caretCoords.y -= getCaretHeight();
@@ -102,7 +105,10 @@ namespace BansheeEngine
 			lineIdx++;					  
 
 		if(lineIdx == (mTextSprite->getNumLines() - 1))
+		{
+			moveCaretToEnd();
 			return;
+		}
 
 		Int2 caretCoords = getCaretPosition(mTextDesc.offset);
 		caretCoords.y += getCaretHeight();

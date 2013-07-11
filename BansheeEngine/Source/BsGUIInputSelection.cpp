@@ -160,11 +160,113 @@ namespace BansheeEngine
 		return selectionRects;
 	}
 
+	void GUIInputSelection::showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir)
+	{
+		UINT32 charIdx = caretPosToSelectionChar(anchorCaretPos, dir);
+
+		mSelectionStart = charIdx;
+		mSelectionEnd = charIdx;
+		mSelectionAnchor = charIdx;
+	}
+
+	void GUIInputSelection::clearSelection()
+	{
+		for(auto& sprite : mSprites)
+			cm_delete(sprite);
+
+		mSprites.clear();
+	}
+
+	UINT32 GUIInputSelection::caretPosToSelectionChar(UINT32 caretPos, SelectionDir dir) const
+	{
+		UINT32 charIdx = getCharIdxAtCaretPos(caretPos);
+
+		if(dir == SelectionDir::Right)
+			charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
+
+		return charIdx;
+	}
+
+	void GUIInputSelection::selectionDragStart(UINT32 caretPos)
+	{
+		clearSelection();
+
+		showSelection(caretPos, SelectionDir::Left); 
+		mSelectionDragAnchor = caretPos;
+	}
+
+	void GUIInputSelection::selectionDragUpdate(UINT32 caretPos)
+	{
+		if(caretPos < mSelectionDragAnchor)
+		{
+			mSelectionStart = getCharIdxAtCaretPos(caretPos);
+			mSelectionEnd = getCharIdxAtCaretPos(mSelectionDragAnchor);
+
+			mSelectionAnchor = mSelectionStart;
+		}
+
+		if(caretPos > mSelectionDragAnchor)
+		{
+			mSelectionStart = getCharIdxAtCaretPos(mSelectionDragAnchor);
+			mSelectionEnd = getCharIdxAtCaretPos(caretPos);
+
+			mSelectionAnchor = mSelectionEnd;
+		}
+
+		if(caretPos == mSelectionDragAnchor)
+		{
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = mSelectionAnchor;
+		}
+	}
+
+	void GUIInputSelection::selectionDragEnd()
+	{
+		if(isSelectionEmpty())
+			clearSelection();
+	}
+
+	void GUIInputSelection::moveSelectionToCaret(UINT32 caretPos)
+	{
+		UINT32 charIdx = caretPosToSelectionChar(caretPos, SelectionDir::Left);
+
+		if(charIdx > mSelectionAnchor)
+		{
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = charIdx;
+		}
+		else
+		{
+			mSelectionStart = charIdx;
+			mSelectionEnd = mSelectionAnchor;
+		}
+
+		if(mSelectionStart == mSelectionEnd)
+			clearSelection();
+	}
+
+	void GUIInputSelection::selectAll()
+	{
+		mSelectionStart = 0;
+		mSelectionEnd = (UINT32)mTextDesc.text.size();
+	}
+
+	bool GUIInputSelection::isSelectionEmpty() const
+	{
+		return mSelectionStart == mSelectionEnd;
+	}
+
 	bool GUIInputSelection::isNewlineChar(CM::UINT32 charIdx) const
 	{
 		if(mTextDesc.text[charIdx] == '\n')
 			return true;
 
 		return false;
+	}
+
+	CM::UINT32 GUIInputSelection::getCharIdxAtCaretPos(CM::UINT32 caretPos) const
+	{
+		// TODO - Needs to be implemented in the base class
+		return 0;
 	}
 }

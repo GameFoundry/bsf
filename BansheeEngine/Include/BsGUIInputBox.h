@@ -5,15 +5,10 @@
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
 #include "BsGUIInputCaret.h"
+#include "BsGUIInputSelection.h"
 
 namespace BansheeEngine
 {
-	enum class SelectionDir
-	{
-		Left,
-		Right
-	};
-
 	class BS_EXPORT GUIInputBox : public GUIElement
 	{
 	public:
@@ -97,6 +92,7 @@ namespace BansheeEngine
 		void moveSelectionRight(bool skipnewLine);
 		void moveSelectionUp();
 		void moveSelectionDown();
+		void moveSelectionToCaret(CM::UINT32 caretPos);
 		bool isSelectionEmpty() const;
 		void selectAll();
 
