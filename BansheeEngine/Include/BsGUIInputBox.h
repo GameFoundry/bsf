@@ -90,15 +90,24 @@ namespace BansheeEngine
 		void hideCaret();
 		void scrollTextToCaret();
 
-		void showSelection(CM::UINT32 startChar);
+		void showSelection(CM::UINT32 caretPos, SelectionDir dir);
 		void clearSelection();
 
 		void moveSelectionLeft(bool skipNewline);
 		void moveSelectionRight(bool skipnewLine);
 		void moveSelectionUp();
 		void moveSelectionDown();
+		bool isSelectionEmpty() const;
+		void selectAll();
 
-		CM::UINT32 getCaretSelectionCharIdx(SelectionDir dir) const;
+		void selectionDragStart(CM::UINT32 caretPos);
+		void selectionDragUpdate(CM::UINT32 caretPos);
+		void selectionDragEnd();
+
+		CM::UINT32 getSelectionStart() const { return mSelectionStart; }
+		CM::UINT32 getSelectionEnd() const { return mSelectionEnd; }
+
+		CM::UINT32 caretPosToSelectionChar(CM::UINT32 caretPos, SelectionDir dir) const;
 		bool isNewlineChar(CM::UINT32 charIdx) const;
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
 

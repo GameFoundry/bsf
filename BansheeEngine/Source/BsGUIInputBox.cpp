@@ -317,9 +317,6 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->hover.texture;
 
-			if(mSelectionStart == mSelectionEnd)
-				clearSelection();
-
 			markAsDirty();
 
 			return true;
@@ -327,6 +324,8 @@ namespace BansheeEngine
 		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
 			mDragInProgress = true;
+
+			selectionDragStart(mInputCaret->getCaretPos());
 
 			return true;
 		}
@@ -340,6 +339,8 @@ namespace BansheeEngine
 				mInputCursorSet = false;
 			}
 
+			selectionDragEnd();
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
@@ -350,34 +351,7 @@ namespace BansheeEngine
 			else
 				mInputCaret->moveCaretToStart();
 
-			if(!mSelectionShown)
-			{
-				showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
-				mSelectionDragAnchor = mInputCaret->getCaretPos();
-			}
-
-			UINT32 curCaretPos = mInputCaret->getCaretPos();
-			if(curCaretPos < mSelectionDragAnchor)
-			{
-				mSelectionStart = mInputCaret->getCharIdxAtCaretPos(curCaretPos);
-				mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
-
-				mSelectionAnchor = mSelectionStart;
-			}
-
-			if(curCaretPos > mSelectionDragAnchor)
-			{
-				mSelectionStart = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
-				mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(curCaretPos);
-
-				mSelectionAnchor = mSelectionEnd;
-			}
-
-			if(curCaretPos == mSelectionDragAnchor)
-			{
-				mSelectionStart = mSelectionAnchor;
-				mSelectionEnd = mSelectionAnchor;
-			}
+			selectionDragUpdate(mInputCaret->getCaretPos());
 
 			scrollTextToCaret();
 
@@ -386,6 +360,45 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	void GUIInputBox::selectionDragStart(UINT32 caretPos)
+	{
+		clearSelection();
+
+		showSelection(caretPos, SelectionDir::Left); 
+		mSelectionDragAnchor = caretPos;
+	}
+
+	void GUIInputBox::selectionDragUpdate(UINT32 caretPos)
+	{
+		if(caretPos < mSelectionDragAnchor)
+		{
+			mSelectionStart = mInputCaret->getCharIdxAtCaretPos(caretPos);
+			mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
+
+			mSelectionAnchor = mSelectionStart;
+		}
+
+		if(caretPos > mSelectionDragAnchor)
+		{
+			mSelectionStart = mInputCaret->getCharIdxAtCaretPos(mSelectionDragAnchor);
+			mSelectionEnd = mInputCaret->getCharIdxAtCaretPos(caretPos);
+
+			mSelectionAnchor = mSelectionEnd;
+		}
+
+		if(caretPos == mSelectionDragAnchor)
+		{
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = mSelectionAnchor;
+		}
+	}
+
+	void GUIInputBox::selectionDragEnd()
+	{
+		if(isSelectionEmpty())
+			clearSelection();
 	}
 
 	bool GUIInputBox::keyEvent(const GUIKeyEvent& ev)
@@ -398,12 +411,13 @@ namespace BansheeEngine
 				{
 					if(mSelectionShown)
 					{
-						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+						UINT32 selStart = getSelectionStart();
+						mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
 						mInputCaret->updateText(getTextDesc());
 
-						if(mSelectionStart > 0)
+						if(selStart > 0)
 						{
-							UINT32 newCaretPos = mSelectionStart - 1;
+							UINT32 newCaretPos = selStart - 1;
 							mInputCaret->moveCaretToChar(newCaretPos, CARET_AFTER);
 						}
 						else
@@ -444,12 +458,13 @@ namespace BansheeEngine
 				{
 					if(mSelectionShown)
 					{
-						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+						UINT32 selStart = getSelectionStart();
+						mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
 						mInputCaret->updateText(getTextDesc());
 
-						if(mSelectionStart > 0)
+						if(selStart > 0)
 						{
-							UINT32 newCaretPos = mSelectionStart - 1;
+							UINT32 newCaretPos = selStart - 1;
 							mInputCaret->moveCaretToChar(newCaretPos, CARET_AFTER);
 						}
 						else
@@ -490,13 +505,13 @@ namespace BansheeEngine
 					bool caretMovedDueToNewline = false;
 					if(!mSelectionShown)
 					{
-						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)))
+						if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Right)))
 						{
 							mInputCaret->moveCaretLeft();
 							caretMovedDueToNewline = true;
 						}
 
-						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+						showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
 					}
 
 					moveSelectionLeft(caretMovedDueToNewline);
@@ -523,13 +538,13 @@ namespace BansheeEngine
 					bool caretMovedDueToNewline = false;
 					if(!mSelectionShown)
 					{
-						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Left)))
+						if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left)))
 						{
 							mInputCaret->moveCaretRight();
 							caretMovedDueToNewline = true;
 						}
 
-						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+						showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
 					}
 						
 					moveSelectionRight(caretMovedDueToNewline);
@@ -555,12 +570,12 @@ namespace BansheeEngine
 				{
 					if(!mSelectionShown)
 					{
-						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Right)))
+						if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Right)))
 						{
 							mInputCaret->moveCaretLeft();
 						}
 
-						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+						showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
 					}
 
 					moveSelectionUp();
@@ -586,12 +601,12 @@ namespace BansheeEngine
 				{
 					if(!mSelectionShown)
 					{
-						if(isNewlineChar(getCaretSelectionCharIdx(SelectionDir::Left)))
+						if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left)))
 						{
 							mInputCaret->moveCaretRight();
 						}
 
-						showSelection(getCaretSelectionCharIdx(SelectionDir::Left));
+						showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
 					}
 
 					moveSelectionDown();
@@ -617,10 +632,11 @@ namespace BansheeEngine
 				{
 					if(mSelectionShown)
 					{
-						mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+						UINT32 selStart = getSelectionStart();
+						mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
 						mInputCaret->updateText(getTextDesc());
 
-						mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
+						mInputCaret->moveCaretToChar(selStart, CARET_BEFORE);
 						scrollTextToCaret();
 						clearSelection();
 					}
@@ -639,10 +655,8 @@ namespace BansheeEngine
 
 			if(ev.getKey() == BC_A && ev.isCtrlDown())
 			{
-				showSelection(0);
-
-				mSelectionStart = 0;
-				mSelectionEnd = (UINT32)mText.size();
+				showSelection(0, SelectionDir::Left);
+				selectAll();
 
 				markAsDirty();
 				return true;
@@ -652,10 +666,11 @@ namespace BansheeEngine
 		{
 			if(mSelectionShown)
 			{
-				mText.erase(mText.begin() + mSelectionStart, mText.begin() + mSelectionEnd);
+				UINT32 selStart = getSelectionStart();
+				mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
 				mInputCaret->updateText(getTextDesc());
 
-				mInputCaret->moveCaretToChar(mSelectionStart, CARET_BEFORE);
+				mInputCaret->moveCaretToChar(selStart, CARET_BEFORE);
 				clearSelection();
 			}
 
@@ -740,11 +755,16 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	void GUIInputBox::showSelection(UINT32 startChar)
+	void GUIInputBox::showSelection(CM::UINT32 caretPos, SelectionDir dir)
 	{
-		mSelectionStart = startChar;
-		mSelectionEnd = startChar;
-		mSelectionAnchor = startChar;
+		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos(caretPos);
+
+		if(dir == SelectionDir::Right)
+			charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
+
+		mSelectionStart = charIdx;
+		mSelectionEnd = charIdx;
+		mSelectionAnchor = charIdx;
 		mSelectionShown = true;
 		markAsDirty();
 	}
@@ -759,9 +779,9 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	UINT32 GUIInputBox::getCaretSelectionCharIdx(SelectionDir dir) const
+	UINT32 GUIInputBox::caretPosToSelectionChar(UINT32 caretPos, SelectionDir dir) const
 	{
-		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
+		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos(caretPos);
 
 		if(dir == SelectionDir::Right)
 			charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
@@ -791,13 +811,13 @@ namespace BansheeEngine
 
 			if(!skipNewline) // Move one more if we moved to a new line (we can't select newline char so we skip it)
 			{
-				if (isNewlineChar(getCaretSelectionCharIdx(newlineTestSelectionDir)) && mInputCaret->getCaretPos() > 0)
+				if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir)) && mInputCaret->getCaretPos() > 0)
 				{
 					mInputCaret->moveCaretLeft();
 
 					// Reverse caret movement if previous char was a newline, and this one is as well.
 					// Otherwise we skip an entire line which is not what we want.
-					if (isNewlineChar(getCaretSelectionCharIdx(newlineTestSelectionDir))) 
+					if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
 						mInputCaret->moveCaretRight();
 				} 
 			}
@@ -805,12 +825,12 @@ namespace BansheeEngine
 			{
 				// Reverse caret movement if previous char was a newline, and this one is as well
 				// so we don't skip a line
-				if (isNewlineChar(getCaretSelectionCharIdx(newlineTestSelectionDir))) 
+				if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
 					mInputCaret->moveCaretRight();
 			}
 		}
 
-		UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+		UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
 		
 		if(mSelectionAnchor == mSelectionEnd)
 			mSelectionStart = std::min(mSelectionEnd, charIdx); 
@@ -836,13 +856,13 @@ namespace BansheeEngine
 
 			if(!skipNewline) // Move one more if we moved to a new line (we can't select newline char so we skip it)
 			{
-				if (isNewlineChar(getCaretSelectionCharIdx(newlineTestSelectionDir)) && mInputCaret->getCaretPos() < maxCaretPos)
+				if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir)) && mInputCaret->getCaretPos() < maxCaretPos)
 				{
 					mInputCaret->moveCaretRight();
 
 					// Reverse caret movement if previous char was a newline, and this one is as well.
 					// Otherwise we skip an entire line which is not what we want.
-					if (isNewlineChar(getCaretSelectionCharIdx(newlineTestSelectionDir))) 
+					if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
 						mInputCaret->moveCaretLeft();
 				} 
 			}
@@ -850,12 +870,12 @@ namespace BansheeEngine
 			{
 				// Reverse caret movement if previous char was a newline, and this one is as well.
 				// Otherwise we skip an entire line which is not what we want.
-				if (isNewlineChar(getCaretSelectionCharIdx(newlineTestSelectionDir))) 
+				if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
 					mInputCaret->moveCaretLeft();
 			}
 		}
 
-		UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+		UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
 
 		if(mSelectionAnchor == mSelectionStart)
 			mSelectionEnd = std::max(mSelectionStart, charIdx);
@@ -883,7 +903,7 @@ namespace BansheeEngine
 		else
 		{
 			mInputCaret->moveCaretUp();
-			UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+			UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
 
 			if(charIdx > mSelectionAnchor)
 			{
@@ -918,7 +938,7 @@ namespace BansheeEngine
 		else
 		{
 			mInputCaret->moveCaretDown();
-			UINT32 charIdx = getCaretSelectionCharIdx(SelectionDir::Left);
+			UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
 
 			if(charIdx > mSelectionAnchor)
 			{
@@ -934,6 +954,17 @@ namespace BansheeEngine
 
 		if(mSelectionStart == mSelectionEnd)
 			clearSelection();
+	}
+
+	void GUIInputBox::selectAll()
+	{
+		mSelectionStart = 0;
+		mSelectionEnd = (UINT32)mText.size();
+	}
+
+	bool GUIInputBox::isSelectionEmpty() const
+	{
+		return mSelectionStart == mSelectionEnd;
 	}
 
 	Vector<Rect>::type GUIInputBox::getSelectionRects() const
