@@ -72,6 +72,35 @@ namespace BansheeEngine
 
 		static CM::Vector<CM::Int2>::type getAlignmentOffsets(const CM::Vector<CM::TextUtility::TextLine>::type& lines, 
 			CM::UINT32 width, CM::UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+
+		/**
+		 * @brief	Calculates text quads you may use for text rendering, based on the specified text
+		 * 			data. Only generates quads for the specified page.
+		 * 			
+		 * 			You must provide pre-allocated vertex/uv/index buffers of adequate size to hold all
+		 * 			quads for the specified page.
+		 * 			
+		 * @note	uv and/or index array may be null.
+		 *
+		 * @return	Number of generated quads.
+		 */
+		static CM::UINT32 genTextQuads(CM::UINT32 page, const CM::TextUtility::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
+			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32* indices, 
+			CM::UINT32 bufferSizeQuads);
+
+		/**
+		 * @brief	Calculates text quads you may use for text rendering, based on the specified text data. Generates quads for all pages.
+		 * 			
+		 *			You must provide pre-allocated vertex/uv/index buffers of adequate size to hold all quads for all characters
+		 *			on all pages.
+		 *			
+		 * @note	uv and/or index array may be null.
+		 *
+		 * @return	Number of generated quads.
+		 */
+		static CM::UINT32 genTextQuads(const CM::TextUtility::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
+			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32* indices, 
+			CM::UINT32 bufferSizeQuads);
 	private:
 		CM::Vector<SpriteLineDesc>::type mLineDescs;
 	};

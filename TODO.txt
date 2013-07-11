@@ -23,14 +23,21 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 TextBox needed elements:
- - Clicking on text seems to return slightly offset caret location
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
- - Drag mouse to update selection
+  - Add special text input commands, which will get repeatedly sent as long as their corresponding key is set in GUIManager
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
  - Make a separate class for InputSelection like I have for InputCaret. 
   - Make them use their own text rendering methods instead of relying on TextSprite.
   - Make them a singleton so that any input element can use them, and not every element needs to have its own copy.
+  - Since caret and selection are so connected make sure their classes share a common base class.
+
+TextData::getVertexData(vertex, uv, bool splitByPages)
+ - Called by both TextSprite, InputCaret and InputSelection
+ - I move clipping/offset outside of TEXT_SPRITE_DESC and IMAGE_SPRITE_DESC and into fillBuffer()
+   - make sure that I don't call markDirty when clipping and/or offset changes
+ - Move SpriteLineDesc out of TextSprite and into InputCaret (I don't think InputSelection needs it)
+
  - LATER
   - TAB between input elements
   - Context menu with copy/cut/paste

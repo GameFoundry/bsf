@@ -85,31 +85,14 @@ namespace BansheeEngine
 		}
 
 		// Calc alignment and anchor offsets and set final line positions
-		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(lines, desc.width, desc.height, desc.horzAlign, desc.vertAlign);
-		Int2 offset = getAnchorOffset(desc.anchor, desc.width, desc.height);
-
 		UINT32 numPages = (UINT32)quadsPerPage.size();
-		Vector<UINT32>::type faceOffsets(mCachedRenderElements.size(), 0);
-		for(size_t i = 0; i < lines.size(); i++)
+		
+		for(UINT32 j = 0; j < numPages; j++)
 		{
-			Int2 position = offset + alignmentOffsets[i];
+			SpriteRenderElement& renderElem = mCachedRenderElements[j];
 
-			for(size_t j = 0; j < numPages; j++)
-			{
-				SpriteRenderElement& renderElem = mCachedRenderElements[j];
-				UINT32 offset = faceOffsets[j];
-
-				UINT32 writtenQuads = lines[i].fillBuffer((UINT32)j, renderElem.vertices, renderElem.uvs, renderElem.indexes, offset, renderElem.numQuads);
-				
-				UINT32 numVertices = writtenQuads * 4;
-				for(size_t i = 0; i < numVertices; i++)
-				{
-					renderElem.vertices[offset * 4 + i].x += (float)position.x;
-					renderElem.vertices[offset * 4 + i].y += (float)position.y;
-				}
-
-				faceOffsets[j] += writtenQuads;
-			}
+			genTextQuads(j, *textData, desc.width, desc.height, desc.horzAlign, desc.vertAlign, desc.anchor, 
+				renderElem.vertices, renderElem.uvs, renderElem.indexes, renderElem.numQuads);
 		}
 
 		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
@@ -133,6 +116,7 @@ namespace BansheeEngine
 		UINT32 curCharIdx = 0;
 		UINT32 cachedLineY = 0;
 		UINT32 curLineIdx = 0;
+		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(lines, desc.width, desc.height, desc.horzAlign, desc.vertAlign);
 		for(auto& line : lines)
 		{
 			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
@@ -152,6 +136,70 @@ namespace BansheeEngine
 		}
 
 		updateBounds();
+	}
+
+	UINT32 TextSprite::genTextQuads(UINT32 page, const TextUtility::TextData& textData, UINT32 width, UINT32 height, 
+		TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 bufferSizeQuads)
+	{
+		const CM::Vector<TextUtility::TextLine>::type& lines = textData.getLines();
+		const CM::Vector<UINT32>::type& quadsPerPage = textData.getNumQuadsPerPage();
+
+		UINT32 newNumQuads = quadsPerPage[page];
+
+		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(lines, width, height, horzAlign, vertAlign);
+		Int2 offset = getAnchorOffset(anchor, width, height);
+
+		UINT32 quadOffset = 0;
+		for(size_t i = 0; i < lines.size(); i++)
+		{
+			UINT32 writtenQuads = lines[i].fillBuffer(page, vertices, uv, indices, quadOffset, bufferSizeQuads);
+
+			Int2 position = offset + alignmentOffsets[i];
+			UINT32 numVertices = writtenQuads * 4;
+			for(UINT32 i = 0; i < numVertices; i++)
+			{
+				vertices[quadOffset * 4 + i].x += (float)position.x;
+				vertices[quadOffset * 4 + i].y += (float)position.y;
+			}
+
+			quadOffset += writtenQuads;
+		}
+
+		return newNumQuads;
+	}
+
+
+	UINT32 TextSprite::genTextQuads(const TextUtility::TextData& textData, UINT32 width, UINT32 height, 
+		TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 bufferSizeQuads)
+	{
+		const CM::Vector<TextUtility::TextLine>::type& lines = textData.getLines();
+		const CM::Vector<UINT32>::type& quadsPerPage = textData.getNumQuadsPerPage();
+
+		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(lines, width, height, horzAlign, vertAlign);
+		Int2 offset = getAnchorOffset(anchor, width, height);
+
+		UINT32 quadOffset = 0;
+		UINT32 numPages = (UINT32)quadsPerPage.size();
+		for(size_t i = 0; i < lines.size(); i++)
+		{
+			for(UINT32 j = 0; j < numPages; j++)
+			{
+				UINT32 writtenQuads = lines[i].fillBuffer(j, vertices, uv, indices, quadOffset, bufferSizeQuads);
+
+				Int2 position = offset + alignmentOffsets[i];
+
+				UINT32 numVertices = writtenQuads * 4;
+				for(UINT32 i = 0; i < numVertices; i++)
+				{
+					vertices[quadOffset * 4 + i].x += (float)position.x;
+					vertices[quadOffset * 4 + i].y += (float)position.y;
+				}
+
+				quadOffset += writtenQuads;
+			}
+		}
+
+		return quadOffset;
 	}
 
 	CM::Rect TextSprite::getCharRect(UINT32 charIdx) const
