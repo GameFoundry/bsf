@@ -8,18 +8,16 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIInputCaret::GUIInputCaret(const TEXT_SPRITE_DESC& textDesc, const Int2& offset, const Int2 clipOffset)
-		:mCaretPos(0), mTextDesc(textDesc), mTextOffset(offset), mClipOffset(clipOffset)
+		:mCaretPos(0), mTextDesc(textDesc), mTextOffset(offset), mClipOffset(clipOffset), mQuads(nullptr), mNumQuads(0)
 	{
 		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
-		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
-		mTextSprite->update(mTextDesc);
+		updateText(textDesc, offset, clipOffset);
 	}
 
 	GUIInputCaret::~GUIInputCaret()
 	{
 		cm_delete<PoolAlloc>(mCaretSprite);
-		cm_delete<PoolAlloc>(mTextSprite);
 	}
 
 	void GUIInputCaret::updateText(const TEXT_SPRITE_DESC& textDesc, const Int2& offset, const Int2 clipOffset)
@@ -28,7 +26,58 @@ namespace BansheeEngine
 		mTextOffset = offset;
 		mClipOffset = clipOffset;
 
-		mTextSprite->update(mTextDesc);
+		mLineDescs.clear();
+
+		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize, 
+			mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap);
+
+		if(textData == nullptr)
+			return;
+
+		const CM::Vector<TextUtility::TextLine>::type& lines = textData->getLines();
+		const CM::Vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
+
+		mNumQuads = 0;
+		for(auto& numQuads : quadsPerPage)
+			mNumQuads += numQuads;
+
+		if(mQuads != nullptr)
+			cm_delete<ScratchAlloc>(mQuads);
+		
+		mQuads = cm_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
+
+		TextSprite::genTextQuads(*textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor, 
+			mQuads, nullptr, nullptr, mNumQuads);
+
+		UINT32 numVerts = mNumQuads * 4;
+		Vector2 vecOffset(mTextOffset.x, mTextOffset.y);
+		for(UINT32 i = 0; i < numVerts; i++)
+			mQuads[i] = mQuads[i] + vecOffset;
+
+		// Store cached line data
+		UINT32 curCharIdx = 0;
+		UINT32 cachedLineY = 0;
+		UINT32 curLineIdx = 0;
+		Vector<Int2>::type alignmentOffsets = TextSprite::getAlignmentOffsets(lines, mTextDesc.width, 
+			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
+
+		for(auto& line : lines)
+		{
+			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
+			bool hasNewline = line.hasNewlineChar() && (curLineIdx != ((UINT32)lines.size() - 1));
+
+			UINT32 startChar = curCharIdx;
+			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
+			UINT32 lineHeight = line.getYOffset();
+			INT32 lineYStart = alignmentOffsets[curLineIdx].y + mTextOffset.y;
+
+			GUIInputLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
+			mLineDescs.push_back(lineDesc);
+
+			curCharIdx = lineDesc.getEndChar();
+			cachedLineY += lineDesc.getLineHeight();
+			curLineIdx++;
+		}
 	}
 
 	Int2 GUIInputCaret::getSpriteOffset() const
@@ -82,8 +131,8 @@ namespace BansheeEngine
 		if(charIdx > 0)
 			charIdx -= 1;	
 
-		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-		const SpriteLineDesc& desc = mTextSprite->getLineDesc(lineIdx);
+		UINT32 lineIdx = getLineForChar(charIdx);
+		const GUIInputLineDesc& desc = getLineDesc(lineIdx);
 		// If char is a newline, I want that to count as being on the next line because that's
 		// how user sees it
 		if(desc.isNewline(charIdx))
@@ -107,14 +156,14 @@ namespace BansheeEngine
 		if(charIdx > 0)
 			charIdx -= 1;	
 
-		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-		const SpriteLineDesc& desc = mTextSprite->getLineDesc(lineIdx);
+		UINT32 lineIdx = getLineForChar(charIdx);
+		const GUIInputLineDesc& desc = getLineDesc(lineIdx);
 		// If char is a newline, I want that to count as being on the next line because that's
 		// how user sees it
 		if(desc.isNewline(charIdx))
 			lineIdx++;					  
 
-		if(lineIdx == (mTextSprite->getNumLines() - 1))
+		if(lineIdx == (getNumLines() - 1))
 		{
 			moveCaretToEnd();
 			return;
@@ -128,11 +177,11 @@ namespace BansheeEngine
 
 	void GUIInputCaret::moveCaretToPos(const CM::Int2& pos)
 	{
-		INT32 charIdx = mTextSprite->getCharIdxAtPos(pos);
+		INT32 charIdx = getCharIdxAtPos(pos);
 
 		if(charIdx != -1)
 		{
-			Rect charRect = mTextSprite->getCharRect(charIdx);
+			Rect charRect = getCharRect(charIdx);
 
 			float xCenter = charRect.x + charRect.width * 0.5f;
 			if(pos.x <= xCenter)
@@ -142,7 +191,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			UINT32 numLines = mTextSprite->getNumLines();
+			UINT32 numLines = getNumLines();
 
 			if(numLines == 0)
 			{
@@ -153,7 +202,7 @@ namespace BansheeEngine
 			UINT32 curPos = 0;
 			for(UINT32 i = 0; i < numLines; i++)
 			{
-				const SpriteLineDesc& line = mTextSprite->getLineDesc(i);
+				const GUIInputLineDesc& line = getLineDesc(i);
 
 				if(pos.y >= line.getLineYStart() && pos.y < (line.getLineYStart() + (INT32)line.getLineHeight()))
 				{
@@ -165,7 +214,7 @@ namespace BansheeEngine
 				curPos += numChars;
 			}
 
-			const SpriteLineDesc& firstLine = mTextSprite->getLineDesc(0);
+			const GUIInputLineDesc& firstLine = getLineDesc(0);
 
 			if(pos.y < firstLine.getLineYStart()) // Before first line
 				mCaretPos = 0;
@@ -182,12 +231,12 @@ namespace BansheeEngine
 			return;
 		}
 
-		UINT32 numLines = mTextSprite->getNumLines();
+		UINT32 numLines = getNumLines();
 		UINT32 curPos = 0;
 		UINT32 curCharIdx = 0;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+			const GUIInputLineDesc& lineDesc = getLineDesc(i);
 		
 			curPos++; // Move past line start position
 
@@ -223,12 +272,12 @@ namespace BansheeEngine
 		if(mTextDesc.text.size() == 0)
 			return 0;
 
-		UINT32 numLines = mTextSprite->getNumLines();
+		UINT32 numLines = getNumLines();
 		UINT32 curPos = 0;
 		UINT32 curCharIdx = 0;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+			const GUIInputLineDesc& lineDesc = getLineDesc(i);
 
 			if(curPos == caretPos)
 				return lineDesc.getStartChar();
@@ -258,10 +307,10 @@ namespace BansheeEngine
 		if(mTextDesc.text.size() > 0)
 		{
 			UINT32 curPos = 0;
-			UINT32 numLines = mTextSprite->getNumLines();
+			UINT32 numLines = getNumLines();
 			for(UINT32 i = 0; i < numLines; i++)
 			{
-				const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+				const GUIInputLineDesc& lineDesc = getLineDesc(i);
 
 				if(mCaretPos == curPos)
 				{
@@ -278,9 +327,9 @@ namespace BansheeEngine
 
 			charIdx = std::min((UINT32)(mTextDesc.text.size() - 1), charIdx);
 
-			Rect charRect = mTextSprite->getCharRect(charIdx);
-			UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-			UINT32 yOffset = mTextSprite->getLineDesc(lineIdx).getLineYStart();
+			Rect charRect = getCharRect(charIdx);
+			UINT32 lineIdx = getLineForChar(charIdx);
+			UINT32 yOffset = getLineDesc(lineIdx).getLineYStart();
 
 			return Int2(charRect.x + charRect.width, yOffset);
 		}
@@ -298,8 +347,8 @@ namespace BansheeEngine
 
 		if(charIdx < (UINT32)mTextDesc.text.size())
 		{
-			UINT32 lineIdx = mTextSprite->getLineForChar(charIdx);
-			return mTextSprite->getLineDesc(lineIdx).getLineHeight();
+			UINT32 lineIdx = getLineForChar(charIdx);
+			return getLineDesc(lineIdx).getLineHeight();
 		}
 		else
 		{
@@ -321,11 +370,11 @@ namespace BansheeEngine
 		if(mTextDesc.text.size() == 0)
 			return true;
 
-		UINT32 numLines = mTextSprite->getNumLines();
+		UINT32 numLines = getNumLines();
 		UINT32 curPos = 0;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+			const GUIInputLineDesc& lineDesc = getLineDesc(i);
 
 			if(curPos == mCaretPos)
 				return true;
@@ -342,16 +391,152 @@ namespace BansheeEngine
 		if(mTextDesc.text.size() == 0)
 			return 0;
 
-		UINT32 numLines = mTextSprite->getNumLines();
+		UINT32 numLines = getNumLines();
 		UINT32 maxPos = 0;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
+			const GUIInputLineDesc& lineDesc = getLineDesc(i);
 
 			UINT32 numChars = lineDesc.getEndChar(false) - lineDesc.getStartChar() + 1; // + 1 for special line start position
 			maxPos += numChars;
 		}
 
 		return maxPos - 1;
+	}
+
+	CM::Rect GUIInputCaret::getCharRect(UINT32 charIdx) const
+	{
+		UINT32 lineIdx = getLineForChar(charIdx);
+
+		// If char is newline we don't have any geometry to return
+		const GUIInputLineDesc& lineDesc = getLineDesc(lineIdx);
+		if(lineDesc.isNewline(charIdx))
+			return Rect();
+
+		UINT32 numNewlineChars = 0;
+		for(UINT32 i = 0; i < lineIdx; i++)
+			numNewlineChars += (getLineDesc(i).hasNewlineChar() ? 1 : 0);
+
+		UINT32 quadIdx = charIdx - numNewlineChars;
+		if(quadIdx >= 0 && quadIdx < mNumQuads)
+		{
+			UINT32 vertIdx = quadIdx * 4;
+
+			Rect charRect;
+			charRect.x = Math::RoundToInt(mQuads[vertIdx + 0].x);
+			charRect.y = Math::RoundToInt(mQuads[vertIdx + 0].y);
+			charRect.width = Math::RoundToInt(mQuads[vertIdx + 3].x - charRect.x);
+			charRect.height = Math::RoundToInt(mQuads[vertIdx + 3].y - charRect.y);
+
+			return charRect;
+		}
+
+		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+	}
+
+	INT32 GUIInputCaret::getCharIdxAtPos(const Int2& pos) const
+	{
+		Vector2 vecPos((float)pos.x, (float)pos.y);
+
+		UINT32 lineStartChar = 0;
+		UINT32 lineEndChar = 0;
+		UINT32 numNewlineChars = 0;
+		UINT32 lineIdx = 0;
+		for(auto& line : mLineDescs)
+		{
+			if(pos.y >= line.getLineYStart() && pos.y < (line.getLineYStart() + (INT32)line.getLineHeight()))
+			{
+				lineStartChar = line.getStartChar();
+				lineEndChar = line.getEndChar(false);
+				break;
+			}
+
+			// Newline chars count in the startChar/endChar variables, but don't actually exist in the buffers
+			// so we need to filter them out
+			numNewlineChars += (line.hasNewlineChar() ? 1 : 0); 
+
+			lineIdx++;
+		}
+
+		UINT32 lineStartQuad = lineStartChar - numNewlineChars;
+		UINT32 lineEndQuad = lineEndChar - numNewlineChars;
+
+		float nearestDist = std::numeric_limits<float>::max();
+		UINT32 nearestChar = 0;
+		bool foundChar = false;
+
+		for(UINT32 i = lineStartQuad; i < lineEndQuad; i++)
+		{
+			UINT32 curVert = i * 4;
+
+			float centerX = mQuads[curVert + 0].x + mQuads[curVert + 1].x;
+			centerX *= 0.5f;
+
+			float dist = Math::Abs(centerX - vecPos.x);
+			if(dist < nearestDist)
+			{
+				nearestChar = i + numNewlineChars;
+				nearestDist = dist;
+				foundChar = true;
+			}
+		}
+
+		if(!foundChar)
+			return -1;
+
+		return nearestChar;
+	}
+
+	CM::UINT32 GUIInputCaret::getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine) const
+	{
+		UINT32 idx = 0;
+		for(auto& line : mLineDescs)
+		{
+			if(charIdx >= line.getStartChar() && charIdx < line.getEndChar())
+			{
+				if(line.isNewline(charIdx) && newlineCountsOnNextLine)
+					return idx + 1; // Incrementing is safe because next line must exist, since we just found a newline char
+
+				return idx;
+			}
+
+			idx++;
+		}
+
+		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+	}
+
+	GUIInputLineDesc::GUIInputLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline)
+		:mStartChar(startChar), mEndChar(endChar), mLineHeight(lineHeight), mLineYStart(lineYStart), mIncludesNewline(includesNewline)
+	{
+
+	}
+
+	UINT32 GUIInputLineDesc::getEndChar(bool includeNewline) const
+	{
+		if(mIncludesNewline)
+		{
+			if(includeNewline)
+				return mEndChar;
+			else
+			{
+				if(mEndChar > 0)
+					return mEndChar - 1;
+				else
+					return mStartChar;
+			}
+		}
+		else
+			return mEndChar;
+	}
+
+	bool GUIInputLineDesc::isNewline(UINT32 charIdx) const
+	{
+		if(mIncludesNewline)
+		{
+			return (mEndChar - 1) == charIdx;
+		}
+		else
+			return false;
 	}
 }

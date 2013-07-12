@@ -92,8 +92,6 @@ namespace BansheeEngine
 
 		void moveSelectionLeft(bool skipNewline);
 		void moveSelectionRight(bool skipnewLine);
-		void moveSelectionUp();
-		void moveSelectionDown();
 		void moveSelectionToCaret(CM::UINT32 caretPos);
 		bool isSelectionEmpty() const;
 		void selectAll();

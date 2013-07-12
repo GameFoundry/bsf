@@ -964,76 +964,6 @@ namespace BansheeEngine
 			clearSelection();
 	}
 
-	void GUIInputBox::moveSelectionUp()
-	{
-		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
-		if(charIdx > 0)
-			charIdx--;
-
-		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx, true);
-
-		if(lineIdx == 0)
-		{
-			mInputCaret->moveCaretToStart();
-			mSelectionStart = 0; 
-			mSelectionEnd = mSelectionAnchor;
-		}
-		else
-		{
-			mInputCaret->moveCaretUp();
-			UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
-
-			if(charIdx > mSelectionAnchor)
-			{
-				mSelectionStart = mSelectionAnchor;
-				mSelectionEnd = charIdx;
-			}
-			else
-			{
-				mSelectionStart = charIdx;
-				mSelectionEnd = mSelectionAnchor;
-			}
-		}
-
-		if(mSelectionStart == mSelectionEnd)
-			clearSelection();
-	}
-
-	void GUIInputBox::moveSelectionDown()
-	{
-		UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
-		if(charIdx > 0)
-			charIdx--;
-
-		UINT32 lineIdx = mTextSprite->getLineForChar(charIdx, true);
-
-		if(lineIdx == (mTextSprite->getNumLines() - 1))
-		{
-			mInputCaret->moveCaretToEnd();
-			mSelectionStart = mSelectionAnchor;
-			mSelectionEnd = (UINT32)mText.size();
-		}
-		else
-		{
-			mInputCaret->moveCaretDown();
-			UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
-
-			if(charIdx > mSelectionAnchor)
-			{
-				mSelectionStart = mSelectionAnchor;
-				mSelectionEnd = charIdx;
-			}
-			else
-			{
-				mSelectionStart = charIdx;
-				mSelectionEnd = mSelectionAnchor;
-			}
-		}
-
-		if(mSelectionStart == mSelectionEnd)
-			clearSelection();
-	}
-
 	void GUIInputBox::moveSelectionToCaret(UINT32 caretPos)
 	{
 		UINT32 charIdx = caretPosToSelectionChar(caretPos, SelectionDir::Left);
@@ -1071,7 +1001,7 @@ namespace BansheeEngine
 		if(mSelectionStart == mSelectionEnd)
 			return selectionRects;
 
-		UINT32 startLine = mTextSprite->getLineForChar(mSelectionStart);
+		/*UINT32 startLine = mTextSprite->getLineForChar(mSelectionStart);
 
 		UINT32 endLine = startLine;
 		if(mSelectionEnd > 0)
@@ -1149,7 +1079,7 @@ namespace BansheeEngine
 					selectionRects.push_back(selectionRect);
 				}
 			}
-		}
+		}*/
 		
 		return selectionRects;
 	}

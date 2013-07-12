@@ -15,8 +15,6 @@ namespace BansheeEngine
 
 	void TextSprite::update(const TEXT_SPRITE_DESC& desc)
 	{
-		mLineDescs.clear();
-
 		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
 
 		if(textData == nullptr)
@@ -95,29 +93,6 @@ namespace BansheeEngine
 				renderElem.vertices, renderElem.uvs, renderElem.indexes, renderElem.numQuads);
 		}
 
-		// Store cached line data
-		UINT32 curCharIdx = 0;
-		UINT32 cachedLineY = 0;
-		UINT32 curLineIdx = 0;
-		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(lines, desc.width, desc.height, desc.horzAlign, desc.vertAlign);
-		for(auto& line : lines)
-		{
-			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
-			bool hasNewline = line.hasNewlineChar() && (curLineIdx != ((UINT32)lines.size() - 1));
-
-			UINT32 startChar = curCharIdx;
-			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
-			UINT32 lineHeight = line.getYOffset();
-			INT32 lineYStart = alignmentOffsets[curLineIdx].y + 0; // TODO - Ignoring offset
-
-			SpriteLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
-			mLineDescs.push_back(lineDesc);
-
-			curCharIdx = lineDesc.getEndChar();
-			cachedLineY += lineDesc.getLineHeight();
-			curLineIdx++;
-		}
-
 		updateBounds();
 	}
 
@@ -185,129 +160,6 @@ namespace BansheeEngine
 		return quadOffset;
 	}
 
-	CM::Rect TextSprite::getCharRect(UINT32 charIdx) const
-	{
-		UINT32 lineIdx = getLineForChar(charIdx);
-
-		// If char is newline we don't have any geometry to return
-		const SpriteLineDesc& lineDesc = getLineDesc(lineIdx);
-		if(lineDesc.isNewline(charIdx))
-			return Rect();
-
-		UINT32 numNewlineChars = 0;
-		for(UINT32 i = 0; i < lineIdx; i++)
-			numNewlineChars += (getLineDesc(i).hasNewlineChar() ? 1 : 0);
-
-		UINT32 quadIdx = charIdx - numNewlineChars;
-
-		UINT32 curQuadIdx = 0;
-		for(auto& renderElem : mCachedRenderElements)
-		{
-			if(quadIdx >= curQuadIdx && quadIdx < renderElem.numQuads)
-			{
-				UINT32 localIdx = (quadIdx - curQuadIdx) * 4;
-
-				Rect charRect;
-				charRect.x = Math::RoundToInt(renderElem.vertices[localIdx + 0].x);
-				charRect.y = Math::RoundToInt(renderElem.vertices[localIdx + 0].y);
-				charRect.width = Math::RoundToInt(renderElem.vertices[localIdx + 3].x - charRect.x);
-				charRect.height = Math::RoundToInt(renderElem.vertices[localIdx + 3].y - charRect.y);
-
-				return charRect;
-			}
-
-			curQuadIdx += renderElem.numQuads;
-		}
-
-		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
-	}
-
-	INT32 TextSprite::getCharIdxAtPos(const Int2& pos) const
-	{
-		Vector2 vecPos((float)pos.x, (float)pos.y);
-
-		UINT32 lineStartChar = 0;
-		UINT32 lineEndChar = 0;
-		UINT32 numNewlineChars = 0;
-		UINT32 lineIdx = 0;
-		for(auto& line : mLineDescs)
-		{
-			if(pos.y >= line.getLineYStart() && pos.y < (line.getLineYStart() + (INT32)line.getLineHeight()))
-			{
-				lineStartChar = line.getStartChar();
-				lineEndChar = line.getEndChar(false);
-				break;
-			}
-
-			// Newline chars count in the startChar/endChar variables, but don't actually exist in the buffers
-			// so we need to filter them out
-			numNewlineChars += (line.hasNewlineChar() ? 1 : 0); 
-
-			lineIdx++;
-		}
-
-		UINT32 lineStartQuad = lineStartChar - numNewlineChars;
-		UINT32 lineEndQuad = lineEndChar - numNewlineChars;
-
-		float nearestDist = std::numeric_limits<float>::max();
-		UINT32 nearestChar = 0;
-		UINT32 quadIdx = 0;
-		bool foundChar = false;
-		for(auto& renderElem : mCachedRenderElements)
-		{
-			for(UINT32 i = 0; i < renderElem.numQuads; i++)
-			{
-				if(quadIdx < lineStartQuad)
-				{
-					quadIdx++;
-					continue;
-				}
-
-				if(quadIdx >= lineEndQuad)
-					break;
-
-				UINT32 curVert = quadIdx * 4;
-
-				float centerX = renderElem.vertices[curVert + 0].x + renderElem.vertices[curVert + 1].x;
-				centerX *= 0.5f;
-
-				float dist = Math::Abs(centerX - vecPos.x);
-				if(dist < nearestDist)
-				{
-					nearestChar = quadIdx + numNewlineChars;
-					nearestDist = dist;
-					foundChar = true;
-				}
-
-				quadIdx++;
-			}
-		}
-
-		if(!foundChar)
-			return -1;
-
-		return nearestChar;
-	}
-
-	CM::UINT32 TextSprite::getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine) const
-	{
-		UINT32 idx = 0;
-		for(auto& line : mLineDescs)
-		{
-			if(charIdx >= line.getStartChar() && charIdx < line.getEndChar())
-			{
-				if(line.isNewline(charIdx) && newlineCountsOnNextLine)
-					return idx + 1; // Incrementing is safe because next line must exist, since we just found a newline char
-
-				return idx;
-			}
-
-			idx++;
-		}
-		
-		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
-	}
-
 	Vector<Int2>::type TextSprite::getAlignmentOffsets(const Vector<TextUtility::TextLine>::type& lines, 
 		UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign)
 	{
@@ -355,39 +207,5 @@ namespace BansheeEngine
 		}
 
 		return lineOffsets;
-	}
-
-	SpriteLineDesc::SpriteLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline)
-		:mStartChar(startChar), mEndChar(endChar), mLineHeight(lineHeight), mLineYStart(lineYStart), mIncludesNewline(includesNewline)
-	{
-
-	}
-
-	UINT32 SpriteLineDesc::getEndChar(bool includeNewline) const
-	{
-		if(mIncludesNewline)
-		{
-			if(includeNewline)
-				return mEndChar;
-			else
-			{
-				if(mEndChar > 0)
-					return mEndChar - 1;
-				else
-					return mStartChar;
-			}
-		}
-		else
-			return mEndChar;
-	}
-
-	bool SpriteLineDesc::isNewline(UINT32 charIdx) const
-	{
-		if(mIncludesNewline)
-		{
-			return (mEndChar - 1) == charIdx;
-		}
-		else
-			return false;
 	}
 }
