@@ -7,8 +7,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIInputCaret::GUIInputCaret(const TEXT_SPRITE_DESC& textDesc)
-		:mCaretPos(0), mTextDesc(textDesc)
+	GUIInputCaret::GUIInputCaret(const TEXT_SPRITE_DESC& textDesc, const Int2& offset, const Int2 clipOffset)
+		:mCaretPos(0), mTextDesc(textDesc), mTextOffset(offset), mClipOffset(clipOffset)
 	{
 		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -22,23 +22,33 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mTextSprite);
 	}
 
-	void GUIInputCaret::updateText(const TEXT_SPRITE_DESC& textDesc)
+	void GUIInputCaret::updateText(const TEXT_SPRITE_DESC& textDesc, const Int2& offset, const Int2 clipOffset)
 	{
 		mTextDesc = textDesc;
-		mTextDesc.clipRect = Rect(0, 0, 0, 0); // No clipping otherwise we don't know position of chars
-		// outside of the element, which is something we need when moving the cursor
+		mTextOffset = offset;
+		mClipOffset = clipOffset;
 
 		mTextSprite->update(mTextDesc);
+	}
+
+	Int2 GUIInputCaret::getSpriteOffset() const
+	{
+		return getCaretPosition(mTextOffset);
+	}
+
+	Rect GUIInputCaret::getSpriteClipRect() const
+	{
+		Int2 offset = getSpriteOffset();
+
+		return Rect(-offset.x + mTextOffset.x - mClipOffset.x, -offset.y + mTextOffset.y - mClipOffset.y, 
+			mTextDesc.width + 1, mTextDesc.height); // Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
 	}
 
 	void GUIInputCaret::updateSprite(const CM::Int2& offset)
 	{
 		IMAGE_SPRITE_DESC mCaretDesc;
-		mCaretDesc.offset = getCaretPosition(mTextDesc.offset);
 		mCaretDesc.width = 1;
 		mCaretDesc.height = getCaretHeight();
-		mCaretDesc.clipRect = Rect(-mCaretDesc.offset.x + mTextDesc.offset.x - offset.x, -mCaretDesc.offset.y + mTextDesc.offset.y - offset.y, 
-			mTextDesc.width + 1, mTextDesc.height); // Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
 		mCaretDesc.texture = GUIManager::instance().getCaretTexture();
 
 		mCaretSprite->update(mCaretDesc);
@@ -85,7 +95,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		Int2 caretCoords = getCaretPosition(mTextDesc.offset);
+		Int2 caretCoords = getCaretPosition(mTextOffset);
 		caretCoords.y -= getCaretHeight();
 
 		moveCaretToPos(caretCoords);
@@ -110,7 +120,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		Int2 caretCoords = getCaretPosition(mTextDesc.offset);
+		Int2 caretCoords = getCaretPosition(mTextOffset);
 		caretCoords.y += getCaretHeight();
 
 		moveCaretToPos(caretCoords);

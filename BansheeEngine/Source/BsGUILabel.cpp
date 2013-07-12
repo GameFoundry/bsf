@@ -45,13 +45,11 @@ namespace BansheeEngine
 
 	void GUILabel::updateRenderElementsInternal()
 	{		
-		mDesc.offset = mOffset;
 		mDesc.width = mWidth;
 		mDesc.height = mHeight;
-		mDesc.clipRect = mClipRect;
 
 		mTextSprite->update(mDesc);
-		mBounds = mTextSprite->getBounds();
+		mBounds = mTextSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUILabel::_getOptimalWidth() const
@@ -95,7 +93,7 @@ namespace BansheeEngine
 	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
+		mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
 	}
 
 	void GUILabel::setText(const CM::WString& text)

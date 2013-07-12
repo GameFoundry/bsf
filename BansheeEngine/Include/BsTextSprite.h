@@ -23,10 +23,8 @@ namespace BansheeEngine
 			horzAlign(THA_Left), vertAlign(TVA_Top), wordWrap(false)
 		{ }
 
-		CM::Int2 offset;
 		CM::UINT32 width;
 		CM::UINT32 height;
-		CM::Rect clipRect;
 		SpriteAnchor anchor;
 
 		CM::WString text;

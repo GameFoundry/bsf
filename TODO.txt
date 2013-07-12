@@ -31,6 +31,12 @@ TextBox needed elements:
   - Make them use their own text rendering methods instead of relying on TextSprite.
   - Make them a singleton so that any input element can use them, and not every element needs to have its own copy.
   - Since caret and selection are so connected make sure their classes share a common base class.
+ - All classes dealing with text (Button, Toggle, Label, InputBox) determine text field size based on mBounds which is calculated from 
+    clipped mImageSprite coordinates. Which is wrong because text word wrap will change depending how clipped the sprite is.
+ - Add GUIInputTextBase which is a parent to both caret and selection
+ - Don't forget to make the classes input/selection singletons
+ - Elements need TWO different dirty flags. Right now setting dirty causes both content update and fillBuffer update.
+   - But I'd like only fillBuffer update when element is moved, or clipped as content update may be expensive
 
 TextData::getVertexData(vertex, uv, bool splitByPages)
  - Called by both TextSprite, InputCaret and InputSelection

@@ -13,10 +13,8 @@ namespace BansheeEngine
 			borderTop(0), borderBottom(0), uvScale(1.0f, 1.0f), uvOffset(0.0f, 0.0f)
 		{ }
 
-		CM::Int2 offset;
 		CM::UINT32 width;
 		CM::UINT32 height;
-		CM::Rect clipRect;
 		SpriteAnchor anchor;
 		CM::Vector2 uvScale;
 		CM::Vector2 uvOffset;

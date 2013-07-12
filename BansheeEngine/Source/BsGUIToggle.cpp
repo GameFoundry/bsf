@@ -95,13 +95,11 @@ namespace BansheeEngine
 
 	void GUIToggle::updateRenderElementsInternal()
 	{		
-		mImageDesc.offset = mOffset;
 		mImageDesc.width = mWidth;
 		mImageDesc.height = mHeight;
-		mImageDesc.clipRect = mClipRect;
 
 		mImageSprite->update(mImageDesc);
-		mBounds = mImageSprite->getBounds();
+		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 		mNumImageRenderElements = mImageSprite->getNumRenderElements();
 
 		TEXT_SPRITE_DESC textDesc;
@@ -109,19 +107,10 @@ namespace BansheeEngine
 		textDesc.font = mStyle->font;
 		textDesc.fontSize = mStyle->fontSize;
 
-		Rect contentBounds = mBounds;
+		Rect textBounds = getTextBounds();
 
-		contentBounds.x += mStyle->margins.left + mStyle->contentOffset.left;
-		contentBounds.y += mStyle->margins.top + mStyle->contentOffset.top;
-		contentBounds.width = (UINT32)std::max(0, (INT32)contentBounds.width - 
-			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
-		contentBounds.height = (UINT32)std::max(0, (INT32)contentBounds.height - 
-			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
-
-		textDesc.offset = Int2(contentBounds.x, contentBounds.y);
-		textDesc.width = contentBounds.width;
-		textDesc.height = contentBounds.height;
-		textDesc.clipRect = Rect(0, 0, textDesc.width, textDesc.height);
+		textDesc.width = textBounds.width;
+		textDesc.height = textBounds.height;
 		textDesc.horzAlign = mStyle->textHorzAlign;
 		textDesc.vertAlign = mStyle->textVertAlign;
 
@@ -160,9 +149,19 @@ namespace BansheeEngine
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
-			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, mNumImageRenderElements - renderElementIdx);
+		{
+			Rect textBounds = getTextBounds();
+			Int2 offset(textBounds.x, textBounds.y);
+			Rect textClipRect = getTextClipRect();
+
+			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+				vertexStride, indexStride, mNumImageRenderElements - renderElementIdx, offset, textClipRect);
+		}
 		else
-			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
+		{
+			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+				vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+		}
 	}
 
 	bool GUIToggle::mouseEvent(const GUIMouseEvent& ev)
@@ -211,5 +210,26 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	CM::Rect GUIToggle::getTextBounds() const
+	{
+		Rect textBounds = mBounds;
+
+		textBounds.x += mStyle->margins.left + mStyle->contentOffset.left;
+		textBounds.y += mStyle->margins.top + mStyle->contentOffset.top;
+		textBounds.width = (UINT32)std::max(0, (INT32)textBounds.width - 
+			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
+		textBounds.height = (UINT32)std::max(0, (INT32)textBounds.height - 
+			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
+
+		return textBounds;
+	}
+
+	CM::Rect GUIToggle::getTextClipRect() const
+	{
+		Rect textBounds = getTextBounds();
+
+		return Rect(0, 0, textBounds.width, textBounds.height);
 	}
 }

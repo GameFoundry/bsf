@@ -63,6 +63,20 @@ namespace CamelotFramework
 			height = myBottom - y;
 	}
 
+	void Rect::clip(const Rect& clipRect)
+	{
+		int newLeft = std::max(x, clipRect.x);
+		int newTop = std::max(y, clipRect.y);
+
+		int newRight = std::min(x + width, clipRect.x + clipRect.width);
+		int newBottom = std::min(y + height, clipRect.x + clipRect.height);
+
+		x = newLeft;
+		y = newTop;
+		width = newRight - newLeft;
+		height = newBottom - newTop;
+	}
+
 	void Rect::transform(const Matrix4& matrix)
 	{
 		Vector4 verts[4];

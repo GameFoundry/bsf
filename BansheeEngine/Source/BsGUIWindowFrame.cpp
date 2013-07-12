@@ -160,13 +160,11 @@ namespace BansheeEngine
 
 	void GUIWindowFrame::updateRenderElementsInternal()
 	{		
-		mDesc.offset = mOffset;
 		mDesc.width = mWidth;
 		mDesc.height = mHeight;
-		mDesc.clipRect = mClipRect;
 
 		mImageSprite->update(mDesc);
-		mBounds = mImageSprite->getBounds();
+		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUIWindowFrame::_getOptimalWidth() const
@@ -206,7 +204,7 @@ namespace BansheeEngine
 	void GUIWindowFrame::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx);
+		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
 	}
 
 	void GUIWindowFrame::setFocused(bool focused)

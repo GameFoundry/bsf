@@ -26,8 +26,6 @@ namespace BansheeEngine
 	void GUIInputSelection::updateText(const TEXT_SPRITE_DESC& textDesc)
 	{
 		mTextDesc = textDesc;
-		mTextDesc.clipRect = Rect(0, 0, 0, 0); // No clipping otherwise we don't know position of chars
-		// outside of the element, which is something we need when moving the cursor
 
 		mTextSprite->update(mTextDesc);
 	}
@@ -58,11 +56,8 @@ namespace BansheeEngine
 		for(auto& sprite : mSprites)
 		{
 			IMAGE_SPRITE_DESC desc;
-			desc.offset = Int2(selectionRects[idx].x, selectionRects[idx].y);
 			desc.width = selectionRects[idx].width;
 			desc.height = selectionRects[idx].height;
-			desc.clipRect = Rect(mTextDesc.offset.x - selectionRects[idx].x, 
-				mTextDesc.offset.y - selectionRects[idx].y, mTextDesc.width, mTextDesc.height);
 			desc.texture = GUIManager::instance().getTextSelectionTexture();
 
 			sprite->update(desc);

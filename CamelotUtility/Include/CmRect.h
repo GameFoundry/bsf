@@ -13,6 +13,7 @@ namespace CamelotFramework
 		bool contains(const Int2& point) const;
 		bool overlaps(const Rect& other) const;
 		void encapsulate(const Rect& other);
+		void clip(const Rect& clipRect);
 
 		/**
 		 * @brief	Transforms the bounds by the given matrix.

@@ -16,6 +16,19 @@ namespace BansheeEngine
 		clearMesh();
 	}
 
+	CM::Rect Sprite::getBounds(const Int2& offset, const Rect& clipRect) const 
+	{
+		Rect bounds = mBounds;
+
+		if(clipRect.width > 0 && clipRect.height > 0)
+			bounds.clip(clipRect);
+
+		bounds.x += offset.x;
+		bounds.y += offset.y;
+
+		return bounds; 
+	}
+
 	UINT32 Sprite::getNumRenderElements() const
 	{
 		return (UINT32)mCachedRenderElements.size();
@@ -31,7 +44,8 @@ namespace BansheeEngine
 		return mCachedRenderElements.at(renderElementIdx).numQuads;
 	}
 
-	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
+	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Int2& offset, const Rect& clipRect) const
 	{
 		auto renderElem = mCachedRenderElements.at(renderElementIdx);
 
@@ -48,18 +62,108 @@ namespace BansheeEngine
 		assert((startIndex + mNumIndices) <= maxIndexIdx);
 
 		UINT8* vertDst = vertices + startVert * vertexStride;
-		for(UINT32 i = 0; i < mNumVertices; i++)
-		{
-			memcpy(vertDst, &renderElem.vertices[i], sizeof(Vector2));
-			vertDst += vertexStride;
-		}
+		UINT8* uvDst = uv + startVert * vertexStride;
 
-		if(uv != nullptr)
+		// TODO - I'm sure this can be done in a more cache friendly way. Profile it later.
+		Vector2 vecOffset((float)offset.x, (float)offset.y);
+		if(clipRect.width > 0 && clipRect.height > 0)
 		{
-			UINT8* uvDst = uv + startVert * vertexStride;
-			for(UINT32 i = 0; i < mNumVertices; i++)
+			for(UINT32 i = 0; i < renderElem.numQuads; i++)
 			{
-				memcpy(uvDst, &renderElem.uvs[i], sizeof(Vector2));
+				UINT8* vecStart = vertDst;
+				Vector2* uvStart = (Vector2*)uvDst;
+				UINT32 vertIdx = i * 4;
+
+				Vector2 vecPlusOffset = renderElem.vertices[vertIdx + 0] + vecOffset;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 0], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 0], sizeof(Vector2));
+
+				vertDst += vertexStride;
+				uvDst += vertexStride;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 1], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 1], sizeof(Vector2));
+
+				vertDst += vertexStride;
+				uvDst += vertexStride;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 2], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 2], sizeof(Vector2));
+
+				vertDst += vertexStride;
+				uvDst += vertexStride;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 3], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 3], sizeof(Vector2));
+
+				clipToRect((Vector2*)vecStart, uvStart, 1, clipRect);
+
+				vertDst = vecStart;
+				Vector2* curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
+				curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
+				curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
+				curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
+				uvDst += vertexStride;
+			}
+		}
+		else
+		{
+			for(UINT32 i = 0; i < renderElem.numQuads; i++)
+			{
+				UINT8* vecStart = vertDst;
+				UINT32 vertIdx = i * 4;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 0], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 0], sizeof(Vector2));
+
+				vertDst += vertexStride;
+				uvDst += vertexStride;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 1], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 1], sizeof(Vector2));
+
+				vertDst += vertexStride;
+				uvDst += vertexStride;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 2], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 2], sizeof(Vector2));
+
+				vertDst += vertexStride;
+				uvDst += vertexStride;
+
+				memcpy(vertDst, &renderElem.vertices[vertIdx + 3], sizeof(Vector2));
+				memcpy(uvDst, &renderElem.uvs[vertIdx + 3], sizeof(Vector2));
+
+				vertDst = vecStart;
+				Vector2* curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
+				curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
+				curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
+				curVec = (Vector2*)vertDst;
+				*curVec += vecOffset;
+
+				vertDst += vertexStride;
 				uvDst += vertexStride;
 			}
 		}
@@ -208,17 +312,14 @@ namespace BansheeEngine
 			vertices[vertIdx + 2].y = newBottom;
 			vertices[vertIdx + 3].y = newBottom;
 			
-			if(uv != nullptr)
-			{
-				uv[vertIdx + 0].x += uvLeftOffset;
-				uv[vertIdx + 2].x += uvLeftOffset;
-				uv[vertIdx + 1].x -= uvRightOffset;
-				uv[vertIdx + 3].x -= uvRightOffset;
-				uv[vertIdx + 0].y += uvTopOffset;
-				uv[vertIdx + 1].y += uvTopOffset;
-				uv[vertIdx + 2].y -= uvBottomOffset;
-				uv[vertIdx + 3].y -= uvBottomOffset;
-			}
+			uv[vertIdx + 0].x += uvLeftOffset;
+			uv[vertIdx + 2].x += uvLeftOffset;
+			uv[vertIdx + 1].x -= uvRightOffset;
+			uv[vertIdx + 3].x -= uvRightOffset;
+			uv[vertIdx + 0].y += uvTopOffset;
+			uv[vertIdx + 1].y += uvTopOffset;
+			uv[vertIdx + 2].y -= uvBottomOffset;
+			uv[vertIdx + 3].y -= uvBottomOffset;
 		}
 	}
 }

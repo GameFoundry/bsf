@@ -38,7 +38,7 @@ namespace BansheeEngine
 		Sprite();
 		virtual ~Sprite();
 
-		const CM::Rect& getBounds() const { return mBounds; }
+		CM::Rect getBounds(const CM::Int2& offset, const CM::Rect& clipRect) const;
 
 		/**
 		 * @brief	Returns the number of separate render elements in the sprite. Normally this is one, but some sprites
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
 		CM::UINT32 fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, CM::UINT32 maxNumQuads, 
-			CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
+			CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx, const CM::Int2& offset, const CM::Rect& clipRect) const;
 
 		static void clipToRect(CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32 numQuads, const CM::Rect& clipRect);
 		static CM::Int2 getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height);

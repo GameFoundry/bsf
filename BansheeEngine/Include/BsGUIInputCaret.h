@@ -14,11 +14,14 @@ namespace BansheeEngine
 	class BS_EXPORT GUIInputCaret
 	{
 	public:
-		GUIInputCaret(const TEXT_SPRITE_DESC& textDesc);
+		GUIInputCaret(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
 		~GUIInputCaret();
 
 		ImageSprite* getSprite() const { return mCaretSprite; }
-		void updateText(const TEXT_SPRITE_DESC& textDesc);
+		CM::Int2 getSpriteOffset() const;
+		CM::Rect getSpriteClipRect() const;
+
+		void updateText(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
 		void updateSprite(const CM::Int2& offset);
 
 		void moveCaretToStart();
@@ -44,5 +47,7 @@ namespace BansheeEngine
 		ImageSprite* mCaretSprite;
 
 		TEXT_SPRITE_DESC mTextDesc;
+		CM::Int2 mTextOffset;
+		CM::Int2 mClipOffset;
 	};
 }

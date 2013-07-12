@@ -95,23 +95,6 @@ namespace BansheeEngine
 				renderElem.vertices, renderElem.uvs, renderElem.indexes, renderElem.numQuads);
 		}
 
-		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
-		{
-			for(auto& renderElem : mCachedRenderElements)
-				clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, desc.clipRect);
-		}
-
-		// Apply offset
-		for(auto& renderElem : mCachedRenderElements)
-		{
-			UINT32 numVertices = renderElem.numQuads * 4;
-			for(size_t i = 0; i < numVertices; i++)
-			{
-				renderElem.vertices[i].x += (float)desc.offset.x;
-				renderElem.vertices[i].y += (float)desc.offset.y;
-			}
-		}
-
 		// Store cached line data
 		UINT32 curCharIdx = 0;
 		UINT32 cachedLineY = 0;
@@ -125,7 +108,7 @@ namespace BansheeEngine
 			UINT32 startChar = curCharIdx;
 			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
 			UINT32 lineHeight = line.getYOffset();
-			INT32 lineYStart = alignmentOffsets[curLineIdx].y + desc.offset.y;
+			INT32 lineYStart = alignmentOffsets[curLineIdx].y + 0; // TODO - Ignoring offset
 
 			SpriteLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
 			mLineDescs.push_back(lineDesc);

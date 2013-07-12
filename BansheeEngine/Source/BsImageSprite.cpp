@@ -229,19 +229,6 @@ namespace BansheeEngine
 			renderElem.uvs[3] = desc.texture->transformUV(Vector2(uvOffset.x + uvScale.x, uvOffset.y + uvScale.y));
 		}
 
-		if(desc.clipRect.width > 0 && desc.clipRect.height > 0)
-		{
-			clipToRect(renderElem.vertices, renderElem.uvs, renderElem.numQuads, desc.clipRect);
-		}
-
-		// Apply offset
-		UINT32 numVertices = renderElem.numQuads * 4;
-		for(size_t i = 0; i < numVertices; i++)
-		{
-			renderElem.vertices[i].x += (float)desc.offset.x;
-			renderElem.vertices[i].y += (float)desc.offset.y;
-		}
-
 		updateBounds();
 	}
 }

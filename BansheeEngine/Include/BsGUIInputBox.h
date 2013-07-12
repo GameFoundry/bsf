@@ -80,6 +80,8 @@ namespace BansheeEngine
 		virtual bool commandEvent(const GUICommandEvent& ev);
 
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
+		CM::Int2 renderElemToOffset(CM::UINT32 renderElemIdx) const;
+		CM::Rect renderElemToClipRect(CM::UINT32 renderElemIdx) const;
 
 		void showCaret();
 		void hideCaret();
@@ -107,6 +109,11 @@ namespace BansheeEngine
 		bool isNewlineChar(CM::UINT32 charIdx) const;
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
 
+		CM::Int2 getSelectionSpriteOffset(CM::UINT32 spriteIdx) const;
+		CM::Rect getSelectionSpriteClipRect(CM::UINT32 spriteIdx) const;
+
+		CM::Int2 getTextOffset() const;
+		CM::Rect getTextClipRect() const;
 		CM::Rect getTextBounds() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
 	};

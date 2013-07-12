@@ -31,7 +31,7 @@ namespace BansheeEngine
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
-		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>(getTextDesc());
+		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>(getTextDesc(), getTextOffset(), mTextOffset);
 
 		mImageDesc.texture = mStyle->normal.texture;
 
@@ -117,20 +117,18 @@ namespace BansheeEngine
 
 	void GUIInputBox::updateRenderElementsInternal()
 	{		
-		mImageDesc.offset = mOffset;
 		mImageDesc.width = mWidth;
 		mImageDesc.height = mHeight;
-		mImageDesc.clipRect = mClipRect;
 
 		mImageSprite->update(mImageDesc);
-		mBounds = mImageSprite->getBounds();
+		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		mTextSprite->update(textDesc);
 
 		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
 		{
-			mInputCaret->updateText(textDesc);
+			mInputCaret->updateText(textDesc, getTextOffset(), mTextOffset);
 			mInputCaret->updateSprite(mTextOffset);
 		}
 
@@ -160,11 +158,8 @@ namespace BansheeEngine
 			for(auto& sprite : mSelectionSprites)
 			{
 				IMAGE_SPRITE_DESC desc;
-				desc.offset = Int2(selectionRects[idx].x, selectionRects[idx].y);
 				desc.width = selectionRects[idx].width;
 				desc.height = selectionRects[idx].height;
-				desc.clipRect = Rect(getTextBounds().x - selectionRects[idx].x, 
-					getTextBounds().y - selectionRects[idx].y, textDesc.width, textDesc.height);
 				desc.texture = GUIManager::instance().getTextSelectionTexture();
 
 				sprite->update(desc);
@@ -223,6 +218,86 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	Int2 GUIInputBox::renderElemToOffset(UINT32 renderElemIdx) const
+	{
+		UINT32 oldNumElements = 0;
+		UINT32 newNumElements = oldNumElements + mTextSprite->getNumRenderElements();
+		if(renderElemIdx < newNumElements)
+			return getTextOffset();
+
+		oldNumElements = newNumElements;
+		newNumElements += mImageSprite->getNumRenderElements();
+
+		if(renderElemIdx < newNumElements)
+			return mOffset;
+
+		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		{
+			oldNumElements = newNumElements;
+			newNumElements += mInputCaret->getSprite()->getNumRenderElements();
+
+			if(renderElemIdx < newNumElements)
+				return mInputCaret->getSpriteOffset();
+		}
+
+		if(mSelectionShown)
+		{
+			UINT32 spriteIdx = 0;
+			for(auto& selectionSprite : mSelectionSprites)
+			{
+				oldNumElements = newNumElements;
+				newNumElements += selectionSprite->getNumRenderElements();
+
+				if(renderElemIdx < newNumElements)
+					return getSelectionSpriteOffset(spriteIdx);
+
+				spriteIdx++;
+			}
+		}
+
+		return Int2();
+	}
+
+	Rect GUIInputBox::renderElemToClipRect(UINT32 renderElemIdx) const
+	{
+		UINT32 oldNumElements = 0;
+		UINT32 newNumElements = oldNumElements + mTextSprite->getNumRenderElements();
+		if(renderElemIdx < newNumElements)
+			return getTextClipRect();
+
+		oldNumElements = newNumElements;
+		newNumElements += mImageSprite->getNumRenderElements();
+
+		if(renderElemIdx < newNumElements)
+			return mClipRect;
+
+		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		{
+			oldNumElements = newNumElements;
+			newNumElements += mInputCaret->getSprite()->getNumRenderElements();
+
+			if(renderElemIdx < newNumElements)
+				return mInputCaret->getSpriteClipRect();
+		}
+
+		if(mSelectionShown)
+		{
+			UINT32 spriteIdx = 0;
+			for(auto& selectionSprite : mSelectionSprites)
+			{
+				oldNumElements = newNumElements;
+				newNumElements += selectionSprite->getNumRenderElements();
+
+				if(renderElemIdx < newNumElements)
+					return getSelectionSpriteClipRect(spriteIdx);
+
+				spriteIdx++;
+			}
+		}
+
+		return Rect();
+	}
+
 	UINT32 GUIInputBox::_getOptimalWidth() const
 	{
 		if(mImageDesc.texture != nullptr)
@@ -263,8 +338,10 @@ namespace BansheeEngine
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
+		Int2 offset = renderElemToOffset(renderElementIdx);
+		Rect clipRect = renderElemToClipRect(renderElementIdx);
 
-		sprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, localRenderElementIdx);
+		sprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, localRenderElementIdx, offset, clipRect);
 	}
 
 	bool GUIInputBox::mouseEvent(const GUIMouseEvent& ev)
@@ -374,7 +451,7 @@ namespace BansheeEngine
 					{
 						UINT32 selStart = getSelectionStart();
 						mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
-						mInputCaret->updateText(getTextDesc());
+						mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 						if(selStart > 0)
 						{
@@ -396,7 +473,7 @@ namespace BansheeEngine
 						if(charIdx < (UINT32)mText.size())
 						{
 							mText.erase(charIdx, 1);
-							mInputCaret->updateText(getTextDesc());
+							mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 							if(charIdx > 0)
 								charIdx--;
@@ -421,7 +498,7 @@ namespace BansheeEngine
 					{
 						UINT32 selStart = getSelectionStart();
 						mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
-						mInputCaret->updateText(getTextDesc());
+						mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 						if(selStart > 0)
 						{
@@ -442,7 +519,7 @@ namespace BansheeEngine
 						if(charIdx < (UINT32)mText.size())
 						{
 							mText.erase(charIdx, 1);
-							mInputCaret->updateText(getTextDesc());
+							mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 							if(charIdx > 0)
 								charIdx--;
@@ -554,34 +631,6 @@ namespace BansheeEngine
 
 				markAsDirty();
 				return true;
-
-				//if(ev.isShiftDown())
-				//{
-				//	if(!mSelectionShown)
-				//	{
-				//		if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Right)))
-				//		{
-				//			mInputCaret->moveCaretLeft();
-				//		}
-
-				//		showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
-				//	}
-
-				//	moveSelectionUp();
-				//	scrollTextToCaret();
-
-				//	markAsDirty();
-				//	return true;
-				//}
-				//else
-				//{
-				//	clearSelection();
-				//	mInputCaret->moveCaretUp();
-				//	scrollTextToCaret();
-
-				//	markAsDirty();
-				//	return true;
-				//}
 			}
 
 			if(ev.getKey() == BC_DOWN)
@@ -613,34 +662,6 @@ namespace BansheeEngine
 
 				markAsDirty();
 				return true;
-
-				//if(ev.isShiftDown())
-				//{
-				//	if(!mSelectionShown)
-				//	{
-				//		if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left)))
-				//		{
-				//			mInputCaret->moveCaretRight();
-				//		}
-
-				//		showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
-				//	}
-
-				//	moveSelectionDown();
-				//	scrollTextToCaret();
-
-				//	markAsDirty();
-				//	return true;
-				//}
-				//else
-				//{
-				//	clearSelection();
-				//	mInputCaret->moveCaretDown();
-				//	scrollTextToCaret();
-
-				//	markAsDirty();
-				//	return true;
-				//}
 			}
 
 			if(ev.getKey() == BC_RETURN)
@@ -651,7 +672,7 @@ namespace BansheeEngine
 					{
 						UINT32 selStart = getSelectionStart();
 						mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
-						mInputCaret->updateText(getTextDesc());
+						mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 						mInputCaret->moveCaretToChar(selStart, CARET_BEFORE);
 						scrollTextToCaret();
@@ -659,7 +680,7 @@ namespace BansheeEngine
 					}
 
 					mText.insert(mText.begin() + mInputCaret->getCharIdxAtCaretPos(), '\n');
-					mInputCaret->updateText(getTextDesc());
+					mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 					mInputCaret->moveCaretRight();
 					scrollTextToCaret();
@@ -685,7 +706,7 @@ namespace BansheeEngine
 			{
 				UINT32 selStart = getSelectionStart();
 				mText.erase(mText.begin() + selStart, mText.begin() + getSelectionEnd());
-				mInputCaret->updateText(getTextDesc());
+				mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 				mInputCaret->moveCaretToChar(selStart, CARET_BEFORE);
 				clearSelection();
@@ -693,7 +714,7 @@ namespace BansheeEngine
 
 			UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
 			mText.insert(mText.begin() + charIdx, ev.getInputChar());
-			mInputCaret->updateText(getTextDesc());
+			mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 			mInputCaret->moveCaretToChar(charIdx, CARET_AFTER);
 
@@ -734,17 +755,18 @@ namespace BansheeEngine
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
-		Int2 caretPos = mInputCaret->getCaretPosition(textDesc.offset);
+		Int2 textOffset = getTextOffset();
+		Int2 caretPos = mInputCaret->getCaretPosition(textOffset);
 		UINT32 caretHeight = mInputCaret->getCaretHeight();
 		UINT32 caretWidth = 1;
 		INT32 caretRight = caretPos.x + (INT32)caretWidth;
 		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
 
-		INT32 left = textDesc.offset.x - mTextOffset.x;
+		INT32 left = textOffset.x - mTextOffset.x;
 		// Include caret width here because we don't want to scroll if just the caret is outside the bounds
 		// (Possible if the text width is exactly the maximum width)
 		INT32 right = left + (INT32)textDesc.width + caretWidth; 
-		INT32 top = textDesc.offset.y - mTextOffset.y;
+		INT32 top = textOffset.y - mTextOffset.y;
 		INT32 bottom = top + (INT32)textDesc.height;
 
 		Int2 offset;
@@ -767,7 +789,7 @@ namespace BansheeEngine
 		}
 
 		mTextOffset += offset;
-		mInputCaret->updateText(getTextDesc());
+		mInputCaret->updateText(getTextDesc(), getTextOffset(), mTextOffset);
 
 		markAsDirty();
 	}
@@ -1132,6 +1154,34 @@ namespace BansheeEngine
 		return selectionRects;
 	}
 
+	Int2 GUIInputBox::getSelectionSpriteOffset(UINT32 spriteIdx) const
+	{
+		Vector<Rect>::type selectionRects = getSelectionRects(); // TODO - Cache these?
+
+		return Int2(selectionRects[spriteIdx].x, selectionRects[spriteIdx].y);
+	}
+
+	Rect GUIInputBox::getSelectionSpriteClipRect(UINT32 spriteIdx) const
+	{
+		Vector<Rect>::type selectionRects = getSelectionRects(); // TODO - Cache these?
+
+		return Rect(getTextBounds().x - selectionRects[spriteIdx].x, 
+			getTextBounds().y - selectionRects[spriteIdx].y, 
+			selectionRects[spriteIdx].width, selectionRects[spriteIdx].height);
+	}
+
+	CM::Int2 GUIInputBox::getTextOffset() const
+	{
+		Rect textBounds = getTextBounds();
+		return Int2(textBounds.x, textBounds.y) + mTextOffset;
+	}
+
+	CM::Rect GUIInputBox::getTextClipRect() const
+	{
+		Rect textBounds = getTextBounds();
+		return Rect(-mTextOffset.x, -mTextOffset.y, textBounds.width, textBounds.height);
+	}
+
 	CM::Rect GUIInputBox::getTextBounds() const
 	{
 		Rect textBounds = mBounds;
@@ -1154,10 +1204,8 @@ namespace BansheeEngine
 		textDesc.fontSize = mStyle->fontSize;
 
 		Rect textBounds = getTextBounds();
-		textDesc.offset = Int2(textBounds.x, textBounds.y) + mTextOffset;
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
-		textDesc.clipRect = Rect(-mTextOffset.x, -mTextOffset.y, textDesc.width, textDesc.height);
 		textDesc.horzAlign = mStyle->textHorzAlign;
 		textDesc.vertAlign = mStyle->textVertAlign;
 		textDesc.wordWrap = mIsMultiline;
