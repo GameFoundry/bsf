@@ -178,6 +178,41 @@ namespace BansheeEngine
 		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
 	}
 
+	UINT32 GUIInputTool::getCharIdxAtInputIdx(UINT32 inputIdx) const
+	{
+		if(mTextDesc.text.size() == 0)
+			return 0;
+
+		UINT32 numLines = getNumLines();
+		UINT32 curPos = 0;
+		UINT32 curCharIdx = 0;
+		for(UINT32 i = 0; i < numLines; i++)
+		{
+			const GUIInputLineDesc& lineDesc = getLineDesc(i);
+
+			if(curPos == inputIdx)
+				return lineDesc.getStartChar();
+
+			curPos++; // Move past line start position
+
+			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
+			UINT32 numCaretPositions = lineDesc.getEndChar(false) - lineDesc.getStartChar();
+			if(inputIdx >= (curPos + numCaretPositions))
+			{
+				curCharIdx += numChars;
+				curPos += numCaretPositions;
+				continue;
+			}
+
+			UINT32 diff = inputIdx - curPos; 
+			curCharIdx += diff + 1; // Character after the caret
+
+			return curCharIdx;
+		}
+
+		return 0;
+	}
+
 	GUIInputLineDesc::GUIInputLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline)
 		:mStartChar(startChar), mEndChar(endChar), mLineHeight(lineHeight), mLineYStart(lineYStart), mIncludesNewline(includesNewline)
 	{

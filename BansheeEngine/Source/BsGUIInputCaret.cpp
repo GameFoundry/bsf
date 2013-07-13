@@ -33,7 +33,7 @@ namespace BansheeEngine
 			mTextDesc.width + 1, mTextDesc.height); // Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
 	}
 
-	void GUIInputCaret::updateSprite(const CM::Int2& offset)
+	void GUIInputCaret::updateSprite()
 	{
 		IMAGE_SPRITE_DESC mCaretDesc;
 		mCaretDesc.width = 1;
@@ -204,42 +204,7 @@ namespace BansheeEngine
 
 	UINT32 GUIInputCaret::getCharIdxAtCaretPos() const
 	{
-		return getCharIdxAtCaretPos(mCaretPos);
-	}
-
-	UINT32 GUIInputCaret::getCharIdxAtCaretPos(UINT32 caretPos) const
-	{
-		if(mTextDesc.text.size() == 0)
-			return 0;
-
-		UINT32 numLines = getNumLines();
-		UINT32 curPos = 0;
-		UINT32 curCharIdx = 0;
-		for(UINT32 i = 0; i < numLines; i++)
-		{
-			const GUIInputLineDesc& lineDesc = getLineDesc(i);
-
-			if(curPos == caretPos)
-				return lineDesc.getStartChar();
-
-			curPos++; // Move past line start position
-
-			UINT32 numChars = lineDesc.getEndChar() - lineDesc.getStartChar();
-			UINT32 numCaretPositions = lineDesc.getEndChar(false) - lineDesc.getStartChar();
-			if(caretPos >= (curPos + numCaretPositions))
-			{
-				curCharIdx += numChars;
-				curPos += numCaretPositions;
-				continue;
-			}
-
-			UINT32 diff = caretPos - curPos; 
-			curCharIdx += diff + 1; // Character after the caret
-
-			return curCharIdx;
-		}
-
-		return 0;
+		return getCharIdxAtInputIdx(mCaretPos);
 	}
 
 	Int2 GUIInputCaret::getCaretPosition(const CM::Int2& offset) const

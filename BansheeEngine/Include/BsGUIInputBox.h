@@ -54,23 +54,18 @@ namespace BansheeEngine
 		// Sprites
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;
-		CM::Vector<ImageSprite*>::type mSelectionSprites;
 		GUIInputCaret* mInputCaret;
-		bool mInputCursorSet;
-		bool mDragInProgress;
+		GUIInputSelection* mInputSelection;
 		bool mIsMultiline;
 		CM::Int2 mTextOffset;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
 
-		// Selection & input caret
-		CM::UINT32 mSelectionStart;
-		CM::UINT32 mSelectionEnd;
-		CM::UINT32 mSelectionAnchor;
-		CM::UINT32 mSelectionDragAnchor;
 		bool mCaretShown;
 		bool mSelectionShown;
+		bool mInputCursorSet;
+		bool mDragInProgress;
 
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
 
@@ -83,32 +78,13 @@ namespace BansheeEngine
 		CM::Int2 renderElemToOffset(CM::UINT32 renderElemIdx) const;
 		CM::Rect renderElemToClipRect(CM::UINT32 renderElemIdx) const;
 
+		void insertChar(CM::UINT32 charIdx, CM::UINT32 charCode);
+		void eraseChar(CM::UINT32 charIdx);
+		void deleteSelectedText();
+
 		void showCaret();
 		void hideCaret();
 		void scrollTextToCaret();
-
-		void showSelection(CM::UINT32 caretPos, SelectionDir dir);
-		void clearSelection();
-
-		void moveSelectionLeft(bool skipNewline);
-		void moveSelectionRight(bool skipnewLine);
-		void moveSelectionToCaret(CM::UINT32 caretPos);
-		bool isSelectionEmpty() const;
-		void selectAll();
-
-		void selectionDragStart(CM::UINT32 caretPos);
-		void selectionDragUpdate(CM::UINT32 caretPos);
-		void selectionDragEnd();
-
-		CM::UINT32 getSelectionStart() const { return mSelectionStart; }
-		CM::UINT32 getSelectionEnd() const { return mSelectionEnd; }
-
-		CM::UINT32 caretPosToSelectionChar(CM::UINT32 caretPos, SelectionDir dir) const;
-		bool isNewlineChar(CM::UINT32 charIdx) const;
-		CM::Vector<CM::Rect>::type getSelectionRects() const;
-
-		CM::Int2 getSelectionSpriteOffset(CM::UINT32 spriteIdx) const;
-		CM::Rect getSelectionSpriteClipRect(CM::UINT32 spriteIdx) const;
 
 		CM::Int2 getTextOffset() const;
 		CM::Rect getTextClipRect() const;

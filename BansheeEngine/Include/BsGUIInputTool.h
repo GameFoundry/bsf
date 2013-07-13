@@ -48,5 +48,14 @@ namespace BansheeEngine
 		CM::UINT32 getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine = false) const;
 		CM::Rect getCharRect(CM::UINT32 charIdx) const;
 		CM::INT32 getCharIdxAtPos(const CM::Int2& pos) const;
+
+		/**
+		 * @brief	Gets a character index AFTER the input index. 
+		 * 			"Input index" represents the empty areas between the characters. Newline counts as a character.
+		 * 			(e.g. 0 is before the first character, 1 is after the first character but before the second, etc.)
+		 * 			
+		 * @note	This can return an out of range character index, in case the input index is specified after the last character.
+		 */
+		CM::UINT32 getCharIdxAtInputIdx(CM::UINT32 inputIdx) const;
 	};
 }

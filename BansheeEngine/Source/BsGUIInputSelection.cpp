@@ -6,262 +6,254 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	//GUIInputSelection::GUIInputSelection(const TEXT_SPRITE_DESC& textDesc)
-	//	:mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mSelectionDragAnchor(0),
-	//	mTextSprite(nullptr)
-	//{
-	//	mTextSprite = cm_new<TextSprite, PoolAlloc>();
+	GUIInputSelection::GUIInputSelection(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset)
+		:GUIInputTool(textDesc, offset, clipOffset), mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mSelectionDragAnchor(0)
+	{ }
 
-	//	mTextSprite->update(mTextDesc);
-	//}
+	GUIInputSelection::~GUIInputSelection()
+	{
+		for(auto& sprite : mSprites)
+			cm_delete<PoolAlloc>(sprite);
+	}
 
-	//GUIInputSelection::~GUIInputSelection()
-	//{
-	//	for(auto& sprite : mSprites)
-	//		cm_delete<PoolAlloc>(sprite);
+	void GUIInputSelection::updateSprite()
+	{
+		mSelectionRects = getSelectionRects();
 
-	//	cm_delete<PoolAlloc>(mTextSprite);
-	//}
+		INT32 diff = (INT32)(mSprites.size() - mSelectionRects.size());
 
-	//void GUIInputSelection::updateText(const TEXT_SPRITE_DESC& textDesc)
-	//{
-	//	mTextDesc = textDesc;
+		if(diff > 0)
+		{
+			for(UINT32 i = (UINT32)mSelectionRects.size(); i < (UINT32)mSprites.size(); i++)
+				cm_delete(mSprites[i]);
 
-	//	mTextSprite->update(mTextDesc);
-	//}
+			mSprites.erase(mSprites.begin() + mSelectionRects.size(), mSprites.end());
+		}
+		else if(diff < 0)
+		{
+			for(INT32 i = diff; i < 0; i++)
+			{
+				ImageSprite* newSprite = cm_new<ImageSprite>();
+				mSprites.push_back(newSprite);
+			}
+		}
 
-	//void GUIInputSelection::updateSprite(const CM::Int2& offset)
-	//{
-	//	Vector<Rect>::type selectionRects = getSelectionRects();
+		UINT32 idx = 0;
+		for(auto& sprite : mSprites)
+		{
+			IMAGE_SPRITE_DESC desc;
+			desc.width = mSelectionRects[idx].width;
+			desc.height = mSelectionRects[idx].height;
+			desc.texture = GUIManager::instance().getTextSelectionTexture();
 
-	//	INT32 diff = (INT32)(mSprites.size() - selectionRects.size());
+			sprite->update(desc);
+			idx++;
+		}
+	}
 
-	//	if(diff > 0)
-	//	{
-	//		for(UINT32 i = (UINT32)selectionRects.size(); i < (UINT32)mSprites.size(); i++)
-	//			cm_delete(mSprites[i]);
+	Int2 GUIInputSelection::getSelectionSpriteOffset(UINT32 spriteIdx) const
+	{
+		return Int2(mTextOffset.x + mSelectionRects[spriteIdx].x, mTextOffset.y + mSelectionRects[spriteIdx].y);
+	}
 
-	//		mSprites.erase(mSprites.begin() + selectionRects.size(), mSprites.end());
-	//	}
-	//	else if(diff < 0)
-	//	{
-	//		for(INT32 i = diff; i < 0; i++)
-	//		{
-	//			ImageSprite* newSprite = cm_new<ImageSprite>();
-	//			mSprites.push_back(newSprite);
-	//		}
-	//	}
+	Rect GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx) const
+	{
+		return Rect(mClipOffset.x - mSelectionRects[spriteIdx].x, 
+			mClipOffset.y - mSelectionRects[spriteIdx].y, 
+			mSelectionRects[spriteIdx].width, mSelectionRects[spriteIdx].height);
+	}
 
-	//	UINT32 idx = 0;
-	//	for(auto& sprite : mSprites)
-	//	{
-	//		IMAGE_SPRITE_DESC desc;
-	//		desc.width = selectionRects[idx].width;
-	//		desc.height = selectionRects[idx].height;
-	//		desc.texture = GUIManager::instance().getTextSelectionTexture();
+	Vector<Rect>::type GUIInputSelection::getSelectionRects() const
+	{
+		Vector<Rect>::type selectionRects;
 
-	//		sprite->update(desc);
-	//		idx++;
-	//	}
-	//}
+		if(mSelectionStart == mSelectionEnd)
+			return selectionRects;
 
-	//Vector<Rect>::type GUIInputSelection::getSelectionRects() const
-	//{
-	//	Vector<Rect>::type selectionRects;
+		UINT32 startLine = getLineForChar(mSelectionStart);
 
-	//	if(mSelectionStart == mSelectionEnd)
-	//		return selectionRects;
+		UINT32 endLine = startLine;
+		if(mSelectionEnd > 0)
+			endLine = getLineForChar(mSelectionEnd - 1, true);
 
-	//	UINT32 startLine = mTextSprite->getLineForChar(mSelectionStart);
+		{
+			const GUIInputLineDesc& lineDesc = getLineDesc(startLine);
 
-	//	UINT32 endLine = startLine;
-	//	if(mSelectionEnd > 0)
-	//		endLine = mTextSprite->getLineForChar(mSelectionEnd - 1, true);
+			UINT32 startCharIdx = mSelectionStart;
 
-	//	{
-	//		const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(startLine);
+			UINT32 endCharIdx = mSelectionEnd - 1;
+			if(startLine != endLine)
+			{
+				endCharIdx = lineDesc.getEndChar(false);
+				if(endCharIdx > 0)
+					endCharIdx = endCharIdx - 1;
+			}
 
-	//		UINT32 startCharIdx = mSelectionStart;
+			if(!isNewlineChar(startCharIdx) && !isNewlineChar(endCharIdx))
+			{
+				Rect startChar = getCharRect(startCharIdx);
+				Rect endChar = getCharRect(endCharIdx);
 
-	//		UINT32 endCharIdx = mSelectionEnd - 1;
-	//		if(startLine != endLine)
-	//		{
-	//			endCharIdx = lineDesc.getEndChar(false);
-	//			if(endCharIdx > 0)
-	//				endCharIdx = endCharIdx - 1;
-	//		}
+				Rect selectionRect;
+				selectionRect.x = startChar.x;
+				selectionRect.y = lineDesc.getLineYStart();
+				selectionRect.height = lineDesc.getLineHeight();
+				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
-	//		if(!isNewlineChar(startCharIdx) && !isNewlineChar(endCharIdx))
-	//		{
-	//			Rect startChar = mTextSprite->getCharRect(startCharIdx);
-	//			Rect endChar = mTextSprite->getCharRect(endCharIdx);
+				selectionRects.push_back(selectionRect);
+			}
+		}
 
-	//			Rect selectionRect;
-	//			selectionRect.x = startChar.x;
-	//			selectionRect.y = lineDesc.getLineYStart();
-	//			selectionRect.height = lineDesc.getLineHeight();
-	//			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+		for(UINT32 i = startLine + 1; i < endLine; i++)
+		{
+			const GUIInputLineDesc& lineDesc = getLineDesc(i);
+			if(lineDesc.getStartChar() == lineDesc.getEndChar() || isNewlineChar(lineDesc.getStartChar()))
+				continue;
 
-	//			selectionRects.push_back(selectionRect);
-	//		}
-	//	}
+			UINT32 endCharIdx = lineDesc.getEndChar(false);
+			if(endCharIdx > 0)
+				endCharIdx = endCharIdx - 1;
 
-	//	for(UINT32 i = startLine + 1; i < endLine; i++)
-	//	{
-	//		const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(i);
-	//		if(lineDesc.getStartChar() == lineDesc.getEndChar() || isNewlineChar(lineDesc.getStartChar()))
-	//			continue;
+			Rect startChar = getCharRect(lineDesc.getStartChar());
+			Rect endChar = getCharRect(endCharIdx);
 
-	//		UINT32 endCharIdx = lineDesc.getEndChar(false);
-	//		if(endCharIdx > 0)
-	//			endCharIdx = endCharIdx - 1;
+			Rect selectionRect;
+			selectionRect.x = startChar.x;
+			selectionRect.y = lineDesc.getLineYStart();
+			selectionRect.height = lineDesc.getLineHeight();
+			selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
-	//		Rect startChar = mTextSprite->getCharRect(lineDesc.getStartChar());
-	//		Rect endChar = mTextSprite->getCharRect(endCharIdx);
+			selectionRects.push_back(selectionRect);
+		}
 
-	//		Rect selectionRect;
-	//		selectionRect.x = startChar.x;
-	//		selectionRect.y = lineDesc.getLineYStart();
-	//		selectionRect.height = lineDesc.getLineHeight();
-	//		selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+		if(startLine != endLine)
+		{
+			const GUIInputLineDesc& lineDesc = getLineDesc(endLine);
 
-	//		selectionRects.push_back(selectionRect);
-	//	}
+			if(lineDesc.getStartChar() != lineDesc.getEndChar() && !isNewlineChar(lineDesc.getStartChar()))
+			{
+				UINT32 endCharIdx = mSelectionEnd - 1;
 
-	//	if(startLine != endLine)
-	//	{
-	//		const SpriteLineDesc& lineDesc = mTextSprite->getLineDesc(endLine);
+				if(!isNewlineChar(endCharIdx))
+				{
+					Rect startChar = getCharRect(lineDesc.getStartChar());
+					Rect endChar = getCharRect(endCharIdx);
 
-	//		if(lineDesc.getStartChar() != lineDesc.getEndChar() && !isNewlineChar(lineDesc.getStartChar()))
-	//		{
-	//			UINT32 endCharIdx = mSelectionEnd - 1;
+					Rect selectionRect;
+					selectionRect.x = startChar.x;
+					selectionRect.y = lineDesc.getLineYStart();
+					selectionRect.height = lineDesc.getLineHeight();
+					selectionRect.width = (endChar.x + endChar.width) - startChar.x;
 
-	//			if(!isNewlineChar(endCharIdx))
-	//			{
-	//				Rect startChar = mTextSprite->getCharRect(lineDesc.getStartChar());
-	//				Rect endChar = mTextSprite->getCharRect(endCharIdx);
+					selectionRects.push_back(selectionRect);
+				}
+			}
+		}
 
-	//				Rect selectionRect;
-	//				selectionRect.x = startChar.x;
-	//				selectionRect.y = lineDesc.getLineYStart();
-	//				selectionRect.height = lineDesc.getLineHeight();
-	//				selectionRect.width = (endChar.x + endChar.width) - startChar.x;
+		return selectionRects;
+	}
 
-	//				selectionRects.push_back(selectionRect);
-	//			}
-	//		}
-	//	}
+	void GUIInputSelection::showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir)
+	{
+		UINT32 charIdx = caretPosToSelectionChar(anchorCaretPos, dir);
 
-	//	return selectionRects;
-	//}
+		mSelectionStart = charIdx;
+		mSelectionEnd = charIdx;
+		mSelectionAnchor = charIdx;
+	}
 
-	//void GUIInputSelection::showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir)
-	//{
-	//	UINT32 charIdx = caretPosToSelectionChar(anchorCaretPos, dir);
+	void GUIInputSelection::clearSelection()
+	{
+		for(auto& sprite : mSprites)
+			cm_delete(sprite);
 
-	//	mSelectionStart = charIdx;
-	//	mSelectionEnd = charIdx;
-	//	mSelectionAnchor = charIdx;
-	//}
+		mSprites.clear();
+	}
 
-	//void GUIInputSelection::clearSelection()
-	//{
-	//	for(auto& sprite : mSprites)
-	//		cm_delete(sprite);
+	UINT32 GUIInputSelection::caretPosToSelectionChar(UINT32 caretPos, SelectionDir dir) const
+	{
+		UINT32 charIdx = getCharIdxAtInputIdx(caretPos);
 
-	//	mSprites.clear();
-	//}
+		if(dir == SelectionDir::Right)
+			charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
 
-	//UINT32 GUIInputSelection::caretPosToSelectionChar(UINT32 caretPos, SelectionDir dir) const
-	//{
-	//	UINT32 charIdx = getCharIdxAtCaretPos(caretPos);
+		return charIdx;
+	}
 
-	//	if(dir == SelectionDir::Right)
-	//		charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
+	void GUIInputSelection::selectionDragStart(UINT32 caretPos)
+	{
+		clearSelection();
 
-	//	return charIdx;
-	//}
+		showSelection(caretPos, SelectionDir::Left); 
+		mSelectionDragAnchor = caretPos;
+	}
 
-	//void GUIInputSelection::selectionDragStart(UINT32 caretPos)
-	//{
-	//	clearSelection();
+	void GUIInputSelection::selectionDragUpdate(UINT32 caretPos)
+	{
+		if(caretPos < mSelectionDragAnchor)
+		{
+			mSelectionStart = getCharIdxAtInputIdx(caretPos);
+			mSelectionEnd = getCharIdxAtInputIdx(mSelectionDragAnchor);
 
-	//	showSelection(caretPos, SelectionDir::Left); 
-	//	mSelectionDragAnchor = caretPos;
-	//}
+			mSelectionAnchor = mSelectionStart;
+		}
 
-	//void GUIInputSelection::selectionDragUpdate(UINT32 caretPos)
-	//{
-	//	if(caretPos < mSelectionDragAnchor)
-	//	{
-	//		mSelectionStart = getCharIdxAtCaretPos(caretPos);
-	//		mSelectionEnd = getCharIdxAtCaretPos(mSelectionDragAnchor);
+		if(caretPos > mSelectionDragAnchor)
+		{
+			mSelectionStart = getCharIdxAtInputIdx(mSelectionDragAnchor);
+			mSelectionEnd = getCharIdxAtInputIdx(caretPos);
 
-	//		mSelectionAnchor = mSelectionStart;
-	//	}
+			mSelectionAnchor = mSelectionEnd;
+		}
 
-	//	if(caretPos > mSelectionDragAnchor)
-	//	{
-	//		mSelectionStart = getCharIdxAtCaretPos(mSelectionDragAnchor);
-	//		mSelectionEnd = getCharIdxAtCaretPos(caretPos);
+		if(caretPos == mSelectionDragAnchor)
+		{
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = mSelectionAnchor;
+		}
+	}
 
-	//		mSelectionAnchor = mSelectionEnd;
-	//	}
+	void GUIInputSelection::selectionDragEnd()
+	{
+		if(isSelectionEmpty())
+			clearSelection();
+	}
 
-	//	if(caretPos == mSelectionDragAnchor)
-	//	{
-	//		mSelectionStart = mSelectionAnchor;
-	//		mSelectionEnd = mSelectionAnchor;
-	//	}
-	//}
+	void GUIInputSelection::moveSelectionToCaret(UINT32 caretPos)
+	{
+		UINT32 charIdx = caretPosToSelectionChar(caretPos, SelectionDir::Left);
 
-	//void GUIInputSelection::selectionDragEnd()
-	//{
-	//	if(isSelectionEmpty())
-	//		clearSelection();
-	//}
+		if(charIdx > mSelectionAnchor)
+		{
+			mSelectionStart = mSelectionAnchor;
+			mSelectionEnd = charIdx;
+		}
+		else
+		{
+			mSelectionStart = charIdx;
+			mSelectionEnd = mSelectionAnchor;
+		}
 
-	//void GUIInputSelection::moveSelectionToCaret(UINT32 caretPos)
-	//{
-	//	UINT32 charIdx = caretPosToSelectionChar(caretPos, SelectionDir::Left);
+		if(mSelectionStart == mSelectionEnd)
+			clearSelection();
+	}
 
-	//	if(charIdx > mSelectionAnchor)
-	//	{
-	//		mSelectionStart = mSelectionAnchor;
-	//		mSelectionEnd = charIdx;
-	//	}
-	//	else
-	//	{
-	//		mSelectionStart = charIdx;
-	//		mSelectionEnd = mSelectionAnchor;
-	//	}
+	void GUIInputSelection::selectAll()
+	{
+		mSelectionStart = 0;
+		mSelectionEnd = (UINT32)mTextDesc.text.size();
+	}
 
-	//	if(mSelectionStart == mSelectionEnd)
-	//		clearSelection();
-	//}
+	bool GUIInputSelection::isSelectionEmpty() const
+	{
+		return mSelectionStart == mSelectionEnd;
+	}
 
-	//void GUIInputSelection::selectAll()
-	//{
-	//	mSelectionStart = 0;
-	//	mSelectionEnd = (UINT32)mTextDesc.text.size();
-	//}
+	bool GUIInputSelection::isNewlineChar(CM::UINT32 charIdx) const
+	{
+		if(mTextDesc.text[charIdx] == '\n')
+			return true;
 
-	//bool GUIInputSelection::isSelectionEmpty() const
-	//{
-	//	return mSelectionStart == mSelectionEnd;
-	//}
-
-	//bool GUIInputSelection::isNewlineChar(CM::UINT32 charIdx) const
-	//{
-	//	if(mTextDesc.text[charIdx] == '\n')
-	//		return true;
-
-	//	return false;
-	//}
-
-	//CM::UINT32 GUIInputSelection::getCharIdxAtCaretPos(CM::UINT32 caretPos) const
-	//{
-	//	// TODO - Needs to be implemented in the base class
-	//	return 0;
-	//}
+		return false;
+	}
 }
