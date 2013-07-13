@@ -71,7 +71,7 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < renderElem.numQuads; i++)
 			{
 				UINT8* vecStart = vertDst;
-				Vector2* uvStart = (Vector2*)uvDst;
+				UINT8* uvStart = uvDst;
 				UINT32 vertIdx = i * 4;
 
 				Vector2 vecPlusOffset = renderElem.vertices[vertIdx + 0] + vecOffset;
@@ -97,7 +97,7 @@ namespace BansheeEngine
 				memcpy(vertDst, &renderElem.vertices[vertIdx + 3], sizeof(Vector2));
 				memcpy(uvDst, &renderElem.uvs[vertIdx + 3], sizeof(Vector2));
 
-				clipToRect((Vector2*)vecStart, uvStart, 1, clipRect);
+				clipToRect(vecStart, uvStart, 1, vertexStride, clipRect);
 
 				vertDst = vecStart;
 				Vector2* curVec = (Vector2*)vertDst;
@@ -261,10 +261,10 @@ namespace BansheeEngine
 		updateBounds();
 	}
 
-	// This will only properly clip an array of rectangular quads
+	// This will only properly clip an array of quads
 	// Vertices in the quad must be in a specific order: top left, top right, bottom left, bottom right
 	// (0, 0) represents top left of the screen
-	void Sprite::clipToRect(Vector2* vertices, Vector2* uv, UINT32 numQuads, const Rect& clipRect)
+	void Sprite::clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const Rect& clipRect)
 	{
 		float left = (float)clipRect.x;
 		float right = (float)clipRect.x + clipRect.width;
@@ -275,51 +275,64 @@ namespace BansheeEngine
 		{
 			UINT32 vertIdx = i * 4;
 
+			Vector2* vecA = (Vector2*)(vertices);
+			Vector2* vecB = (Vector2*)(vertices + vertStride);
+			Vector2* vecC = (Vector2*)(vertices + vertStride * 2);
+			Vector2* vecD = (Vector2*)(vertices + vertStride * 3);
+
+			Vector2* uvA = (Vector2*)(uv);
+			Vector2* uvB = (Vector2*)(uv + vertStride);
+			Vector2* uvC = (Vector2*)(uv + vertStride * 2);
+			Vector2* uvD = (Vector2*)(uv + vertStride * 3);
+
 			// Attempt to skip those that are definitely not clipped
-			if(vertices[vertIdx + 0].x >= left && vertices[vertIdx + 1].x <= right &&
-				vertices[vertIdx + 0].y >= top && vertices[vertIdx + 2].y <= bottom)
+			if(vecA->x >= left && vecB->x <= right &&
+				vecA->y >= top && vecC->y <= bottom)
 			{
 				continue;
 			}
 
 			// TODO - Skip those that are 100% clipped as well
 
-			float du = (uv[vertIdx + 1].x - uv[vertIdx + 0].x) / (vertices[vertIdx + 1].x - vertices[vertIdx + 0].x);
-			float dv = (uv[vertIdx + 0].y - uv[vertIdx + 2].y) / (vertices[vertIdx + 0].y - vertices[vertIdx + 2].y);
+			float du = (uvB->x - uvA->x) / (vecB->x - vecA->x);
+			float dv = (uvA->y - uvC->y) / (vecA->y - vecD->y);
 
 			// Clip left
-			float newLeft = Math::Clamp(vertices[vertIdx + 0].x, left, right);
-			float uvLeftOffset = (newLeft - vertices[vertIdx + 0].x) * du;
+			float newLeft = Math::Clamp(vecA->x, left, right);
+			float uvLeftOffset = (newLeft - vecA->x) * du;
 
 			// Clip right
-			float newRight = Math::Clamp(vertices[vertIdx + 1].x, left, right);
-			float uvRightOffset = (vertices[vertIdx + 1].x - newRight) * du;
+			float newRight = Math::Clamp(vecB->x, left, right);
+			float uvRightOffset = (vecB->x - newRight) * du;
 
 			// Clip top
-			float newTop = Math::Clamp(vertices[vertIdx + 0].y, top, bottom);
-			float uvTopOffset = (newTop - vertices[vertIdx + 0].y) * dv;
+			float newTop = Math::Clamp(vecA->y, top, bottom);
+			float uvTopOffset = (newTop - vecA->y) * dv;
 
 			// Clip bottom
-			float newBottom = Math::Clamp(vertices[vertIdx + 2].y, top, bottom);
-			float uvBottomOffset = (vertices[vertIdx + 2].y - newBottom) * dv;
+			float newBottom = Math::Clamp(vecC->y, top, bottom);
+			float uvBottomOffset = (vecC->y - newBottom) * dv;
 
-			vertices[vertIdx + 0].x = newLeft;
-			vertices[vertIdx + 2].x = newLeft;
-			vertices[vertIdx + 1].x = newRight;
-			vertices[vertIdx + 3].x = newRight;
-			vertices[vertIdx + 0].y = newTop;
-			vertices[vertIdx + 1].y = newTop;
-			vertices[vertIdx + 2].y = newBottom;
-			vertices[vertIdx + 3].y = newBottom;
+			vecA->x = newLeft;
+			vecC->x = newLeft;
+			vecB->x = newRight;
+			vecD->x = newRight;
+			vecA->y = newTop;
+			vecB->y = newTop;
+			vecC->y = newBottom;
+			vecD->y = newBottom;
 			
-			uv[vertIdx + 0].x += uvLeftOffset;
-			uv[vertIdx + 2].x += uvLeftOffset;
-			uv[vertIdx + 1].x -= uvRightOffset;
-			uv[vertIdx + 3].x -= uvRightOffset;
-			uv[vertIdx + 0].y += uvTopOffset;
-			uv[vertIdx + 1].y += uvTopOffset;
-			uv[vertIdx + 2].y -= uvBottomOffset;
-			uv[vertIdx + 3].y -= uvBottomOffset;
+			uvA->x += uvLeftOffset;
+			uvC->x += uvLeftOffset;
+			uvB->x -= uvRightOffset;
+			uvD->x -= uvRightOffset;
+			uvA->y += uvTopOffset;
+			uvB->y += uvTopOffset;
+			uvC->y -= uvBottomOffset;
+			uvD->y -= uvBottomOffset;
+
+			vertices += vertStride * 4;
+			uv += vertStride * 4;
 		}
 	}
 }

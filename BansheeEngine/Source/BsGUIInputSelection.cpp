@@ -53,14 +53,14 @@ namespace BansheeEngine
 
 	Int2 GUIInputSelection::getSelectionSpriteOffset(UINT32 spriteIdx) const
 	{
-		return Int2(mTextOffset.x + mSelectionRects[spriteIdx].x, mTextOffset.y + mSelectionRects[spriteIdx].y);
+		return Int2(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y);
 	}
 
 	Rect GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx) const
 	{
-		return Rect(mClipOffset.x - mSelectionRects[spriteIdx].x, 
-			mClipOffset.y - mSelectionRects[spriteIdx].y, 
-			mSelectionRects[spriteIdx].width, mSelectionRects[spriteIdx].height);
+		return Rect(-mSelectionRects[spriteIdx].x + mTextOffset.x - mClipOffset.x, 
+			 -mSelectionRects[spriteIdx].y + mTextOffset.y - mClipOffset.y, 
+			mTextDesc.width, mTextDesc.height);
 	}
 
 	Vector<Rect>::type GUIInputSelection::getSelectionRects() const

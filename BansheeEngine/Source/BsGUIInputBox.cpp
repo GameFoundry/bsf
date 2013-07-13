@@ -134,7 +134,7 @@ namespace BansheeEngine
 		if(mSelectionShown)
 		{
 			mInputSelection->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
-			mInputCaret->updateSprite();
+			mInputSelection->updateSprite();
 		}
 	}
 
@@ -358,7 +358,7 @@ namespace BansheeEngine
 
 			scrollTextToCaret();
 
-			mInputSelection->clearSelection();
+			clearSelection();
 			markAsDirty();
 
 			return true;
@@ -375,7 +375,9 @@ namespace BansheeEngine
 		{
 			mDragInProgress = true;
 
-			mInputSelection->selectionDragStart(mInputCaret->getCaretPos());
+			UINT32 caretPos = mInputCaret->getCaretPos();
+			showSelection(caretPos, SelectionDir::Left);
+			mInputSelection->selectionDragStart(caretPos);
 
 			return true;
 		}
@@ -501,7 +503,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					mInputSelection->clearSelection();
+					clearSelection();
 					mInputCaret->moveCaretLeft();
 					scrollTextToCaret();
 
@@ -534,7 +536,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					mInputSelection->clearSelection();
+					clearSelection();
 					mInputCaret->moveCaretRight();
 					scrollTextToCaret();
 
@@ -559,7 +561,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					mInputSelection->clearSelection();
+					clearSelection();
 				}
 
 				mInputCaret->moveCaretUp();
@@ -590,7 +592,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					mInputSelection->clearSelection();
+					clearSelection();
 				}
 
 				mInputCaret->moveCaretDown();
@@ -625,7 +627,7 @@ namespace BansheeEngine
 
 			if(ev.getKey() == BC_A && ev.isCtrlDown())
 			{
-				mInputSelection->showSelection(0, SelectionDir::Left);
+				showSelection(0, SelectionDir::Left);
 				mInputSelection->selectAll();
 
 				markAsDirty();
@@ -672,6 +674,20 @@ namespace BansheeEngine
 	void GUIInputBox::hideCaret()
 	{
 		mCaretShown = false;
+		markAsDirty();
+	}
+
+	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir)
+	{
+		mInputSelection->showSelection(anchorCaretPos, dir);
+		mSelectionShown = true;
+		markAsDirty();
+	}
+
+	void GUIInputBox::clearSelection()
+	{
+		mInputSelection->clearSelection();
+		mSelectionShown = false;
 		markAsDirty();
 	}
 
@@ -764,7 +780,7 @@ namespace BansheeEngine
 		}
 
 		scrollTextToCaret();
-		mInputSelection->clearSelection();
+		clearSelection();
 	}
 
 	//void GUIInputBox::moveSelectionLeft(bool skipNewline) 
@@ -910,7 +926,7 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->normal.texture;
 			hideCaret();
-			mInputSelection->clearSelection();
+			clearSelection();
 			markAsDirty();
 		}
 	}
