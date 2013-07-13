@@ -33,6 +33,15 @@ namespace BansheeEngine
 
 		void updateText(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
 
+		/**
+		 * @note	"Input index" represents the empty areas between the characters.
+		 */
+		bool isNewlineBefore(CM::UINT32 inputIdx);
+
+		/**
+		 * @note	"Input index" represents the empty areas between the characters.
+		 */
+		bool isNewlineAfter(CM::UINT32 inputIdx);
 	protected:
 		CM::Vector2* mQuads;
 		CM::UINT32 mNumQuads;
@@ -57,5 +66,7 @@ namespace BansheeEngine
 		 * @note	This can return an out of range character index, in case the input index is specified after the last character.
 		 */
 		CM::UINT32 getCharIdxAtInputIdx(CM::UINT32 inputIdx) const;
+
+		bool isNewlineChar(CM::UINT32 charIdx) const;
 	};
 }

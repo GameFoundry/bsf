@@ -376,7 +376,7 @@ namespace BansheeEngine
 			mDragInProgress = true;
 
 			UINT32 caretPos = mInputCaret->getCaretPos();
-			showSelection(caretPos, SelectionDir::Left);
+			showSelection(caretPos);
 			mInputSelection->selectionDragStart(caretPos);
 
 			return true;
@@ -549,15 +549,13 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
-					//if(!mSelectionShown)
-					//{
-					//	if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Right)))
-					//	{
-					//		mInputCaret->moveCaretLeft();
-					//	}
+					if(!mSelectionShown)
+					{
+						if(mInputCaret->isNewlineBefore(mInputCaret->getCaretPos()))
+							mInputCaret->moveCaretLeft();
 
-					//	showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
-					//}
+						showSelection(mInputCaret->getCaretPos());
+					}
 				}
 				else
 				{
@@ -580,15 +578,13 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
-					//if(!mSelectionShown)
-					//{
-					//	if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left)))
-					//	{
-					//		mInputCaret->moveCaretRight();
-					//	}
+					if(!mSelectionShown)
+					{
+						if(mInputCaret->isNewlineAfter(mInputCaret->getCaretPos()))
+							mInputCaret->moveCaretRight();
 
-					//	showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
-					//}
+						showSelection(mInputCaret->getCaretPos());
+					}
 				}
 				else
 				{
@@ -627,7 +623,7 @@ namespace BansheeEngine
 
 			if(ev.getKey() == BC_A && ev.isCtrlDown())
 			{
-				showSelection(0, SelectionDir::Left);
+				showSelection(0);
 				mInputSelection->selectAll();
 
 				markAsDirty();
@@ -677,9 +673,9 @@ namespace BansheeEngine
 		markAsDirty();
 	}
 
-	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir)
+	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos)
 	{
-		mInputSelection->showSelection(anchorCaretPos, dir);
+		mInputSelection->showSelection(anchorCaretPos);
 		mSelectionShown = true;
 		markAsDirty();
 	}

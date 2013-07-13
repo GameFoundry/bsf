@@ -23,7 +23,7 @@ namespace BansheeEngine
 		CM::Rect GUIInputSelection::getSelectionSpriteClipRect(CM::UINT32 spriteIdx) const;
 		void updateSprite();
 
-		void showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir);
+		void showSelection(CM::UINT32 anchorCaretPos);
 		void clearSelection();
 
 		void moveSelectionToCaret(CM::UINT32 caretPos);
@@ -48,6 +48,5 @@ namespace BansheeEngine
 
 		CM::UINT32 caretPosToSelectionChar(CM::UINT32 caretPos, SelectionDir dir) const;
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
-		bool isNewlineChar(CM::UINT32 charIdx) const;
 	};
 }

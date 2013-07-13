@@ -213,6 +213,28 @@ namespace BansheeEngine
 		return 0;
 	}
 
+	bool GUIInputTool::isNewlineBefore(CM::UINT32 inputIdx)
+	{
+		UINT32 charIdx = getCharIdxAtInputIdx(inputIdx);
+		charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
+
+		return isNewlineChar(charIdx);
+	}
+
+	bool GUIInputTool::isNewlineAfter(CM::UINT32 inputIdx)
+	{
+		UINT32 charIdx = getCharIdxAtInputIdx(inputIdx);
+		return isNewlineChar(charIdx);
+	}
+
+	bool GUIInputTool::isNewlineChar(CM::UINT32 charIdx) const
+	{
+		if(mTextDesc.text[charIdx] == '\n')
+			return true;
+
+		return false;
+	}
+
 	GUIInputLineDesc::GUIInputLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline)
 		:mStartChar(startChar), mEndChar(endChar), mLineHeight(lineHeight), mLineYStart(lineYStart), mIncludesNewline(includesNewline)
 	{

@@ -153,9 +153,9 @@ namespace BansheeEngine
 		return selectionRects;
 	}
 
-	void GUIInputSelection::showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir)
+	void GUIInputSelection::showSelection(CM::UINT32 anchorCaretPos)
 	{
-		UINT32 charIdx = caretPosToSelectionChar(anchorCaretPos, dir);
+		UINT32 charIdx = caretPosToSelectionChar(anchorCaretPos, SelectionDir::Left);
 
 		mSelectionStart = charIdx;
 		mSelectionEnd = charIdx;
@@ -184,7 +184,7 @@ namespace BansheeEngine
 	{
 		clearSelection();
 
-		showSelection(caretPos, SelectionDir::Left); 
+		showSelection(caretPos); 
 		mSelectionDragAnchor = caretPos;
 	}
 
@@ -247,13 +247,5 @@ namespace BansheeEngine
 	bool GUIInputSelection::isSelectionEmpty() const
 	{
 		return mSelectionStart == mSelectionEnd;
-	}
-
-	bool GUIInputSelection::isNewlineChar(CM::UINT32 charIdx) const
-	{
-		if(mTextDesc.text[charIdx] == '\n')
-			return true;
-
-		return false;
 	}
 }

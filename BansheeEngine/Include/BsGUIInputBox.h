@@ -85,7 +85,7 @@ namespace BansheeEngine
 		void showCaret();
 		void hideCaret();
 
-		void showSelection(CM::UINT32 anchorCaretPos, SelectionDir dir);
+		void showSelection(CM::UINT32 anchorCaretPos);
 		void clearSelection();
 
 		void scrollTextToCaret();
