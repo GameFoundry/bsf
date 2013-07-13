@@ -6,12 +6,6 @@
 
 namespace BansheeEngine
 {
-	enum class SelectionDir
-	{
-		Left,
-		Right
-	};
-
 	class BS_EXPORT GUIInputSelection : public GUIInputTool
 	{
 	public:
@@ -36,7 +30,6 @@ namespace BansheeEngine
 
 		CM::UINT32 getSelectionStart() const { return mSelectionStart; }
 		CM::UINT32 getSelectionEnd() const { return mSelectionEnd; }
-		bool isAnchorAtStart() const { return mSelectionStart == mSelectionAnchor; }
 
 	private:
 		CM::UINT32 mSelectionStart;
@@ -47,7 +40,6 @@ namespace BansheeEngine
 		CM::Vector<CM::Rect>::type mSelectionRects;
 		CM::Vector<ImageSprite*>::type mSprites;
 
-		CM::UINT32 caretPosToSelectionChar(CM::UINT32 caretPos, SelectionDir dir) const;
 		CM::Vector<CM::Rect>::type getSelectionRects() const;
 	};
 }

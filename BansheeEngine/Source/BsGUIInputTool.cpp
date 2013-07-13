@@ -212,20 +212,6 @@ namespace BansheeEngine
 
 		return 0;
 	}
-	 
-	bool GUIInputTool::isNewlineBefore(CM::UINT32 inputIdx) const
-	{
-		UINT32 charIdx = getCharIdxAtInputIdx(inputIdx);
-		charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
-
-		return isNewlineChar(charIdx);
-	}
-
-	bool GUIInputTool::isNewlineAfter(CM::UINT32 inputIdx) const
-	{
-		UINT32 charIdx = getCharIdxAtInputIdx(inputIdx);
-		return isNewlineChar(charIdx);
-	}
 
 	bool GUIInputTool::isNewline(CM::UINT32 inputIdx) const
 	{

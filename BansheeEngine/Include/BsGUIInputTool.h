@@ -32,18 +32,6 @@ namespace BansheeEngine
 		~GUIInputTool();
 
 		void updateText(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
-
-		/**
-		 * @note	"Input index" represents the empty areas between the characters.
-		 */
-		bool isNewlineBefore(CM::UINT32 inputIdx) const;
-
-		/**
-		 * @note	"Input index" represents the empty areas between the characters.
-		 */
-		bool isNewlineAfter(CM::UINT32 inputIdx) const;
-
-		bool isNewline(CM::UINT32 inputIdx) const;
 	protected:
 		CM::Vector2* mQuads;
 		CM::UINT32 mNumQuads;
@@ -70,5 +58,6 @@ namespace BansheeEngine
 		CM::UINT32 getCharIdxAtInputIdx(CM::UINT32 inputIdx) const;
 
 		bool isNewlineChar(CM::UINT32 charIdx) const;
+		bool isNewline(CM::UINT32 inputIdx) const;
 	};
 }

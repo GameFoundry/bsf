@@ -155,7 +155,7 @@ namespace BansheeEngine
 
 	void GUIInputSelection::showSelection(CM::UINT32 anchorCaretPos)
 	{
-		UINT32 charIdx = caretPosToSelectionChar(anchorCaretPos, SelectionDir::Left);
+		UINT32 charIdx = getCharIdxAtInputIdx(anchorCaretPos);
 
 		mSelectionStart = charIdx;
 		mSelectionEnd = charIdx;
@@ -168,16 +168,6 @@ namespace BansheeEngine
 			cm_delete(sprite);
 
 		mSprites.clear();
-	}
-
-	UINT32 GUIInputSelection::caretPosToSelectionChar(UINT32 caretPos, SelectionDir dir) const
-	{
-		UINT32 charIdx = getCharIdxAtInputIdx(caretPos);
-
-		if(dir == SelectionDir::Right)
-			charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
-
-		return charIdx;
 	}
 
 	void GUIInputSelection::selectionDragStart(UINT32 caretPos)
@@ -221,7 +211,7 @@ namespace BansheeEngine
 
 	void GUIInputSelection::moveSelectionToCaret(UINT32 caretPos)
 	{
-		UINT32 charIdx = caretPosToSelectionChar(caretPos, SelectionDir::Left);
+		UINT32 charIdx = getCharIdxAtInputIdx(caretPos);
 
 		if(charIdx > mSelectionAnchor)
 		{
