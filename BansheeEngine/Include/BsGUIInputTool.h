@@ -36,12 +36,14 @@ namespace BansheeEngine
 		/**
 		 * @note	"Input index" represents the empty areas between the characters.
 		 */
-		bool isNewlineBefore(CM::UINT32 inputIdx);
+		bool isNewlineBefore(CM::UINT32 inputIdx) const;
 
 		/**
 		 * @note	"Input index" represents the empty areas between the characters.
 		 */
-		bool isNewlineAfter(CM::UINT32 inputIdx);
+		bool isNewlineAfter(CM::UINT32 inputIdx) const;
+
+		bool isNewline(CM::UINT32 inputIdx) const;
 	protected:
 		CM::Vector2* mQuads;
 		CM::UINT32 mNumQuads;

@@ -483,23 +483,23 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
-					//bool caretMovedDueToNewline = false;
-					//if(!mSelectionShown)
-					//{
-					//	if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Right)))
-					//	{
-					//		mInputCaret->moveCaretLeft();
-					//		caretMovedDueToNewline = true;
-					//	}
+					bool caretMovedDueToNewline = false;
+					if(!mSelectionShown)
+					{
+						if(mInputCaret->isNewlineBefore(mInputCaret->getCaretPos()))
+						{
+							mInputCaret->moveCaretLeft();
+							caretMovedDueToNewline = true;
+						}
 
-					//	showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
-					//}
+						showSelection(mInputCaret->getCaretPos());
+					}
 
-					//moveSelectionLeft(caretMovedDueToNewline);
-					//scrollTextToCaret();
+					moveSelectionLeft(caretMovedDueToNewline);
+					scrollTextToCaret();
 
-					//markAsDirty();
-					//return true;
+					markAsDirty();
+					return true;
 				}
 				else
 				{
@@ -516,23 +516,23 @@ namespace BansheeEngine
 			{
 				if(ev.isShiftDown())
 				{
-					//bool caretMovedDueToNewline = false;
-					//if(!mSelectionShown)
-					//{
-					//	if(isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left)))
-					//	{
-					//		mInputCaret->moveCaretRight();
-					//		caretMovedDueToNewline = true;
-					//	}
+					bool caretMovedDueToNewline = false;
+					if(!mSelectionShown)
+					{
+						if(mInputCaret->isNewlineAfter(mInputCaret->getCaretPos()))
+						{
+							mInputCaret->moveCaretRight();
+							caretMovedDueToNewline = true;
+						}
 
-					//	showSelection(mInputCaret->getCaretPos(), SelectionDir::Left);
-					//}
-					//	
-					//moveSelectionRight(caretMovedDueToNewline);
-					//scrollTextToCaret();
+						showSelection(mInputCaret->getCaretPos());
+					}
+						
+					moveSelectionRight(caretMovedDueToNewline);
+					scrollTextToCaret();
 
-					//markAsDirty();
-					//return true;
+					markAsDirty();
+					return true;
 				}
 				else
 				{
@@ -779,94 +779,68 @@ namespace BansheeEngine
 		clearSelection();
 	}
 
-	//void GUIInputBox::moveSelectionLeft(bool skipNewline) 
-	//{
-	//	SelectionDir newlineTestSelectionDir;
-	//	if(mSelectionAnchor == mSelectionEnd)
-	//		newlineTestSelectionDir = SelectionDir::Left;
-	//	else
-	//		newlineTestSelectionDir = SelectionDir::Right;
+	void GUIInputBox::moveSelectionLeft(bool skipNewline) 
+	{
+		if(mInputCaret->getCaretPos() > 0)
+		{
+			mInputCaret->moveCaretLeft();
 
-	//	if(mInputCaret->getCaretPos() > 0)
-	//	{
-	//		mInputCaret->moveCaretLeft();
+			// Skip newline character if this is one
+			if(!skipNewline) // Move one more if we moved to a new line (we can't select newline char so we skip it)
+			{
+				if (mInputCaret->isCaretAtNewline() && mInputCaret->getCaretPos() > 0)
+				{
+					mInputCaret->moveCaretLeft();
 
-	//		if(!skipNewline) // Move one more if we moved to a new line (we can't select newline char so we skip it)
-	//		{
-	//			if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir)) && mInputCaret->getCaretPos() > 0)
-	//			{
-	//				mInputCaret->moveCaretLeft();
+					// Reverse caret movement if previous char was a newline, and this one is as well.
+					// Otherwise we skip an entire line which is not what we want.
+					if (mInputCaret->isCaretAtNewline()) 
+						mInputCaret->moveCaretRight();
+				} 
+			}
+			else
+			{
+				// Reverse caret movement if previous char was a newline, and this one is as well
+				// so we don't skip a line
+				if (mInputCaret->isCaretAtNewline()) 
+					mInputCaret->moveCaretRight();
+			}
+		}
 
-	//				// Reverse caret movement if previous char was a newline, and this one is as well.
-	//				// Otherwise we skip an entire line which is not what we want.
-	//				if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
-	//					mInputCaret->moveCaretRight();
-	//			} 
-	//		}
-	//		else
-	//		{
-	//			// Reverse caret movement if previous char was a newline, and this one is as well
-	//			// so we don't skip a line
-	//			if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
-	//				mInputCaret->moveCaretRight();
-	//		}
-	//	}
+		mInputSelection->moveSelectionToCaret(mInputCaret->getCaretPos());
+	}
 
-	//	UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
-	//	
-	//	if(mSelectionAnchor == mSelectionEnd)
-	//		mSelectionStart = std::min(mSelectionEnd, charIdx); 
-	//	else
-	//		mSelectionEnd = std::max(mSelectionStart, charIdx);
+	void GUIInputBox::moveSelectionRight(bool skipNewline) 
+	{
+		UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
+		if(mInputCaret->getCaretPos() < maxCaretPos)
+		{
+			mInputCaret->moveCaretRight();
 
-	//	if(mSelectionStart == mSelectionEnd)
-	//		clearSelection();
-	//}
+			// Skip newline character if this is one
+			if(!skipNewline) // Move one more if we moved to a new line (we can't select newline char so we skip it)
+			{
+				if (mInputCaret->isCaretAtNewline() && mInputCaret->getCaretPos() < maxCaretPos)
+				{
+					mInputCaret->moveCaretRight();
 
-	//void GUIInputBox::moveSelectionRight(bool skipNewline) 
-	//{
-	//	SelectionDir newlineTestSelectionDir;
-	//	if(mSelectionAnchor == mSelectionStart)
-	//		newlineTestSelectionDir = SelectionDir::Right;
-	//	else
-	//		newlineTestSelectionDir = SelectionDir::Left;
+					// Reverse caret movement if previous char was a newline, and this one is as well.
+					// Otherwise we skip an entire line which is not what we want.
+					if (mInputCaret->isCaretAtNewline()) 
+						mInputCaret->moveCaretLeft();
+				} 
+			}
+			else
+			{
+				// Reverse caret movement if previous char was a newline, and this one is as well
+				// so we don't skip a line
+				if (mInputCaret->isCaretAtNewline()) 
+					mInputCaret->moveCaretLeft();
+			}
+		}
 
-	//	UINT32 maxCaretPos = mInputCaret->getMaxCaretPos();
-	//	if(mInputCaret->getCaretPos() < maxCaretPos)
-	//	{
-	//		mInputCaret->moveCaretRight();
-
-	//		if(!skipNewline) // Move one more if we moved to a new line (we can't select newline char so we skip it)
-	//		{
-	//			if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir)) && mInputCaret->getCaretPos() < maxCaretPos)
-	//			{
-	//				mInputCaret->moveCaretRight();
-
-	//				// Reverse caret movement if previous char was a newline, and this one is as well.
-	//				// Otherwise we skip an entire line which is not what we want.
-	//				if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
-	//					mInputCaret->moveCaretLeft();
-	//			} 
-	//		}
-	//		else
-	//		{
-	//			// Reverse caret movement if previous char was a newline, and this one is as well.
-	//			// Otherwise we skip an entire line which is not what we want.
-	//			if (isNewlineChar(caretPosToSelectionChar(mInputCaret->getCaretPos(), newlineTestSelectionDir))) 
-	//				mInputCaret->moveCaretLeft();
-	//		}
-	//	}
-
-	//	UINT32 charIdx = caretPosToSelectionChar(mInputCaret->getCaretPos(), SelectionDir::Left);
-
-	//	if(mSelectionAnchor == mSelectionStart)
-	//		mSelectionEnd = std::max(mSelectionStart, charIdx);
-	//	else
-	//		mSelectionStart = std::min(mSelectionEnd, charIdx);
-
-	//	if(mSelectionStart == mSelectionEnd)
-	//		clearSelection();
-	//}
+		mInputSelection->moveSelectionToCaret(mInputCaret->getCaretPos());
+	}
 
 	CM::Int2 GUIInputBox::getTextOffset() const
 	{

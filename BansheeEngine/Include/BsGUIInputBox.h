@@ -88,6 +88,9 @@ namespace BansheeEngine
 		void showSelection(CM::UINT32 anchorCaretPos);
 		void clearSelection();
 
+		void moveSelectionLeft(bool skipNewline);
+		void moveSelectionRight(bool skipNewline);
+
 		void scrollTextToCaret();
 
 		CM::Int2 getTextOffset() const;

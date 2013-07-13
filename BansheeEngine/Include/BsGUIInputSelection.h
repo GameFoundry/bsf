@@ -36,6 +36,7 @@ namespace BansheeEngine
 
 		CM::UINT32 getSelectionStart() const { return mSelectionStart; }
 		CM::UINT32 getSelectionEnd() const { return mSelectionEnd; }
+		bool isAnchorAtStart() const { return mSelectionStart == mSelectionAnchor; }
 
 	private:
 		CM::UINT32 mSelectionStart;

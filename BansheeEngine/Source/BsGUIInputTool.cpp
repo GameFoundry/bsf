@@ -212,8 +212,8 @@ namespace BansheeEngine
 
 		return 0;
 	}
-
-	bool GUIInputTool::isNewlineBefore(CM::UINT32 inputIdx)
+	 
+	bool GUIInputTool::isNewlineBefore(CM::UINT32 inputIdx) const
 	{
 		UINT32 charIdx = getCharIdxAtInputIdx(inputIdx);
 		charIdx = (UINT32)std::max(0, (INT32)(charIdx - 1));
@@ -221,10 +221,31 @@ namespace BansheeEngine
 		return isNewlineChar(charIdx);
 	}
 
-	bool GUIInputTool::isNewlineAfter(CM::UINT32 inputIdx)
+	bool GUIInputTool::isNewlineAfter(CM::UINT32 inputIdx) const
 	{
 		UINT32 charIdx = getCharIdxAtInputIdx(inputIdx);
 		return isNewlineChar(charIdx);
+	}
+
+	bool GUIInputTool::isNewline(CM::UINT32 inputIdx) const
+	{
+		if(mTextDesc.text.size() == 0)
+			return true;
+
+		UINT32 numLines = getNumLines();
+		UINT32 curPos = 0;
+		for(UINT32 i = 0; i < numLines; i++)
+		{
+			const GUIInputLineDesc& lineDesc = getLineDesc(i);
+
+			if(curPos == inputIdx)
+				return true;
+
+			UINT32 numChars = lineDesc.getEndChar(false) - lineDesc.getStartChar();
+			curPos += numChars;
+		}
+
+		return false;
 	}
 
 	bool GUIInputTool::isNewlineChar(CM::UINT32 charIdx) const

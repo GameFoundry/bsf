@@ -272,23 +272,7 @@ namespace BansheeEngine
 
 	bool GUIInputCaret::isCaretAtNewline() const
 	{
-		if(mTextDesc.text.size() == 0)
-			return true;
-
-		UINT32 numLines = getNumLines();
-		UINT32 curPos = 0;
-		for(UINT32 i = 0; i < numLines; i++)
-		{
-			const GUIInputLineDesc& lineDesc = getLineDesc(i);
-
-			if(curPos == mCaretPos)
-				return true;
-
-			UINT32 numChars = lineDesc.getEndChar(false) - lineDesc.getStartChar();
-			curPos += numChars;
-		}
-
-		return false;
+		return isNewline(mCaretPos);
 	}
 
 	UINT32 GUIInputCaret::getMaxCaretPos() const
