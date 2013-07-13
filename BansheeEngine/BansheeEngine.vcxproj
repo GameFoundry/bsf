@@ -152,6 +152,7 @@
     <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUICommandEvent.h" />
+    <ClInclude Include="Include\BsGUIInputTool.h" />
     <ClInclude Include="Include\BsGUIInputBox.h" />
     <ClInclude Include="Include\BsGUIButtonEvent.h" />
     <ClInclude Include="Include\BsGUIInputCaret.h" />
@@ -202,6 +203,7 @@
     <ClCompile Include="Source\BsGUIButtonEvent.cpp" />
     <ClCompile Include="Source\BsGUIInputCaret.cpp" />
     <ClCompile Include="Source\BsGUIInputSelection.cpp" />
+    <ClCompile Include="Source\BsGUIInputTool.cpp" />
     <ClCompile Include="Source\BsGUILabel.cpp" />
     <ClCompile Include="Source\BsGUILayout.cpp" />
     <ClCompile Include="Source\BsGUILayoutY.cpp" />
