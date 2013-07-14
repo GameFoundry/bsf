@@ -15,7 +15,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIInputCaret : public GUIInputTool
 	{
 	public:
-		GUIInputCaret(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
+		GUIInputCaret();
 		~GUIInputCaret();
 
 		ImageSprite* getSprite() const { return mCaretSprite; }

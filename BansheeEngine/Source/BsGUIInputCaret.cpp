@@ -7,12 +7,10 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIInputCaret::GUIInputCaret(const TEXT_SPRITE_DESC& textDesc, const Int2& offset, const Int2 clipOffset)
-		:GUIInputTool(textDesc, offset, clipOffset), mCaretPos(0)
+	GUIInputCaret::GUIInputCaret()
+		:mCaretPos(0)
 	{
 		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
-
-		updateText(textDesc, offset, clipOffset);
 	}
 
 	GUIInputCaret::~GUIInputCaret()

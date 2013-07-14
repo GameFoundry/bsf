@@ -45,6 +45,9 @@ namespace BansheeEngine
 		const SpriteTexturePtr& getTextSelectionTexture() const { return mTextSelectionTexture; }
 		bool getCaretBlinkState() const { return mIsCaretOn; }
 
+		GUIInputCaret* getInputCaretTool() const { return mInputCaret; }
+		GUIInputSelection* getInputSelectionTool() const { return mInputSelection; }
+
 	private:
 		CM::Vector<GUIWidget*>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
@@ -61,6 +64,9 @@ namespace BansheeEngine
 		// Element and widget that currently have the keyboard focus
 		GUIWidget* mKeyboardFocusWidget;
 		GUIElement* mKeyboardFocusElement;
+
+		GUIInputCaret* mInputCaret;
+		GUIInputSelection* mInputSelection;
 
 		bool mSeparateMeshesByWidget;
 		CM::Int2 mLastCursorLocalPos;
@@ -106,4 +112,6 @@ namespace BansheeEngine
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
 	};
+
+	BS_EXPORT GUIManager& gGUIManager();
 }

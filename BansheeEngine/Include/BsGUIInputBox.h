@@ -4,8 +4,6 @@
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
-#include "BsGUIInputCaret.h"
-#include "BsGUIInputSelection.h"
 
 namespace BansheeEngine
 {
@@ -54,8 +52,6 @@ namespace BansheeEngine
 		// Sprites
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;
-		GUIInputCaret* mInputCaret;
-		GUIInputSelection* mInputSelection;
 		bool mIsMultiline;
 		CM::Int2 mTextOffset;
 

@@ -31,8 +31,6 @@ TextBox needed elements:
  - Cut/Copy/Paste
  - All classes dealing with text (Button, Toggle, Label, InputBox) determine text field size based on mBounds which is calculated from 
     clipped mImageSprite coordinates. Which is wrong because text word wrap will change depending how clipped the sprite is.
- - Re-enable selection
- - Add GUIInputTextBase which is a parent to both caret and selection
  - Don't forget to make the classes input/selection singletons
  - Elements need TWO different dirty flags. Right now setting dirty causes both content update and fillBuffer update.
    - But I'd like only fillBuffer update when element is moved, or clipped as content update may be expensive
@@ -41,10 +39,8 @@ TextBox needed elements:
  - LATER
   - TAB between input elements
   - Context menu with copy/cut/paste
-  - Sprites. Perform clipping when fillbuffer is called? (Also deal with offset?)
-    This way I can change clip rect without recreating the entire sprite. 
-	Which is important for text, especially when I'll be scrolling it. 
-	Plus its important for all other elements that will be inside scroll areas.
+  - Remove updateText calls from updateRenderElementsInternal and instead call it whenever offsets change
+  - I might consider not rendering caret from within input sprite to avoid redrawing it while, and draw it directly from GUIManager
 
 GUIDragManager
  - GUI system sends startdrag/enddrag/drag events to all elements

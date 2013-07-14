@@ -13,6 +13,8 @@
 #include "CmTextUtility.h"
 #include "CmTexture.h"
 #include "CmCursor.h"
+#include "BsGUIInputCaret.h"
+#include "BsGUIInputSelection.h"
 
 using namespace CamelotFramework;
 
@@ -26,12 +28,10 @@ namespace BansheeEngine
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
 		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
-		mInputCaret(nullptr), mInputSelection(nullptr), mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline)
+		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
-		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>(getTextDesc(), getTextOffset(), mTextOffset);
-		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>(getTextDesc(), getTextOffset(), mTextOffset);
 
 		mImageDesc.texture = mStyle->normal.texture;
 
@@ -51,9 +51,6 @@ namespace BansheeEngine
 	{
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
-
-		cm_delete<PoolAlloc>(mInputCaret);
-		cm_delete<PoolAlloc>(mInputSelection);
 	}
 
 	GUIInputBox* GUIInputBox::create(GUIWidget& parent, bool multiline, const GUIElementStyle* style)
@@ -83,12 +80,12 @@ namespace BansheeEngine
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
-			numElements += mInputCaret->getSprite()->getNumRenderElements();
+		if(mCaretShown && gGUIManager().getCaretBlinkState())
+			numElements += gGUIManager().getInputCaretTool()->getSprite()->getNumRenderElements();
 
 		if(mSelectionShown)
 		{
-			const Vector<ImageSprite*>::type& sprites = mInputSelection->getSprites();
+			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				numElements += selectionSprite->getNumRenderElements();
@@ -125,16 +122,16 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		mTextSprite->update(textDesc);
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
-			mInputCaret->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
-			mInputCaret->updateSprite();
+			gGUIManager().getInputCaretTool()->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
+			gGUIManager().getInputCaretTool()->updateSprite();
 		}
 
 		if(mSelectionShown)
 		{
-			mInputSelection->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
-			mInputSelection->updateSprite();
+			gGUIManager().getInputSelectionTool()->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
+			gGUIManager().getInputSelectionTool()->updateSprite();
 		}
 	}
 
@@ -157,21 +154,21 @@ namespace BansheeEngine
 			return mImageSprite;
 		}
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
 			oldNumElements = newNumElements;
-			newNumElements += mInputCaret->getSprite()->getNumRenderElements();
+			newNumElements += gGUIManager().getInputCaretTool()->getSprite()->getNumRenderElements();
 
 			if(renderElemIdx < newNumElements)
 			{
 				localRenderElemIdx = renderElemIdx - oldNumElements;
-				return mInputCaret->getSprite();
+				return gGUIManager().getInputCaretTool()->getSprite();
 			}
 		}
 
 		if(mSelectionShown)
 		{
-			const Vector<ImageSprite*>::type& sprites = mInputSelection->getSprites();
+			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				oldNumElements = newNumElements;
@@ -202,26 +199,26 @@ namespace BansheeEngine
 		if(renderElemIdx < newNumElements)
 			return mOffset;
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
 			oldNumElements = newNumElements;
-			newNumElements += mInputCaret->getSprite()->getNumRenderElements();
+			newNumElements += gGUIManager().getInputCaretTool()->getSprite()->getNumRenderElements();
 
 			if(renderElemIdx < newNumElements)
-				return mInputCaret->getSpriteOffset();
+				return gGUIManager().getInputCaretTool()->getSpriteOffset();
 		}
 
 		if(mSelectionShown)
 		{
 			UINT32 spriteIdx = 0;
-			const Vector<ImageSprite*>::type& sprites = mInputSelection->getSprites();
+			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				oldNumElements = newNumElements;
 				newNumElements += selectionSprite->getNumRenderElements();
 
 				if(renderElemIdx < newNumElements)
-					return mInputSelection->getSelectionSpriteOffset(spriteIdx);
+					return gGUIManager().getInputSelectionTool()->getSelectionSpriteOffset(spriteIdx);
 
 				spriteIdx++;
 			}
@@ -243,26 +240,26 @@ namespace BansheeEngine
 		if(renderElemIdx < newNumElements)
 			return mClipRect;
 
-		if(mCaretShown && GUIManager::instance().getCaretBlinkState())
+		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
 			oldNumElements = newNumElements;
-			newNumElements += mInputCaret->getSprite()->getNumRenderElements();
+			newNumElements += gGUIManager().getInputCaretTool()->getSprite()->getNumRenderElements();
 
 			if(renderElemIdx < newNumElements)
-				return mInputCaret->getSpriteClipRect();
+				return gGUIManager().getInputCaretTool()->getSpriteClipRect();
 		}
 
 		if(mSelectionShown)
 		{
 			UINT32 spriteIdx = 0;
-			const Vector<ImageSprite*>::type& sprites = mInputSelection->getSprites();
+			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				oldNumElements = newNumElements;
 				newNumElements += selectionSprite->getNumRenderElements();
 
 				if(renderElemIdx < newNumElements)
-					return mInputSelection->getSelectionSpriteClipRect(spriteIdx);
+					return gGUIManager().getInputSelectionTool()->getSelectionSpriteClipRect(spriteIdx);
 
 				spriteIdx++;
 			}
@@ -300,7 +297,7 @@ namespace BansheeEngine
 			return _getDepth();
 		else if(sprite == mTextSprite)
 			return _getDepth() - 2;
-		else if(sprite == mInputCaret->getSprite())
+		else if(sprite == gGUIManager().getInputCaretTool()->getSprite())
 			return _getDepth() - 3;
 		else // Selection sprites
 			return _getDepth() - 1;
@@ -352,9 +349,9 @@ namespace BansheeEngine
 			showCaret();
 
 			if(mText.size() > 0)
-				mInputCaret->moveCaretToPos(ev.getPosition());
+				gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
 			else
-				mInputCaret->moveCaretToStart();
+				gGUIManager().getInputCaretTool()->moveCaretToStart();
 
 			scrollTextToCaret();
 
@@ -375,9 +372,9 @@ namespace BansheeEngine
 		{
 			mDragInProgress = true;
 
-			UINT32 caretPos = mInputCaret->getCaretPos();
+			UINT32 caretPos = gGUIManager().getInputCaretTool()->getCaretPos();
 			showSelection(caretPos);
-			mInputSelection->selectionDragStart(caretPos);
+			gGUIManager().getInputSelectionTool()->selectionDragStart(caretPos);
 
 			return true;
 		}
@@ -391,7 +388,7 @@ namespace BansheeEngine
 				mInputCursorSet = false;
 			}
 
-			mInputSelection->selectionDragEnd();
+			gGUIManager().getInputSelectionTool()->selectionDragEnd();
 
 			return true;
 		}
@@ -399,11 +396,11 @@ namespace BansheeEngine
 		{
 			Rect bounds = getTextBounds();
 			if(mText.size() > 0)
-				mInputCaret->moveCaretToPos(ev.getPosition());
+				gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
 			else
-				mInputCaret->moveCaretToStart();
+				gGUIManager().getInputCaretTool()->moveCaretToStart();
 
-			mInputSelection->selectionDragUpdate(mInputCaret->getCaretPos());
+			gGUIManager().getInputSelectionTool()->selectionDragUpdate(gGUIManager().getInputCaretTool()->getCaretPos());
 
 			scrollTextToCaret();
 
@@ -428,7 +425,7 @@ namespace BansheeEngine
 					}
 					else
 					{
-						UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos() - 1;
+						UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos() - 1;
 
 						if(charIdx < (UINT32)mText.size())
 						{
@@ -437,7 +434,7 @@ namespace BansheeEngine
 							if(charIdx > 0)
 								charIdx--;
 
-							mInputCaret->moveCaretToChar(charIdx, CARET_AFTER);
+							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
 
 							scrollTextToCaret();
 						}
@@ -459,7 +456,7 @@ namespace BansheeEngine
 					}
 					else
 					{
-						UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
+						UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 						if(charIdx < (UINT32)mText.size())
 						{
 							eraseChar(charIdx);
@@ -467,7 +464,7 @@ namespace BansheeEngine
 							if(charIdx > 0)
 								charIdx--;
 
-							mInputCaret->moveCaretToChar(charIdx, CARET_AFTER);
+							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
 
 							scrollTextToCaret();
 						}
@@ -484,15 +481,15 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(mInputCaret->getCaretPos());
+						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
 					clearSelection();
 
-				mInputCaret->moveCaretLeft();
+				gGUIManager().getInputCaretTool()->moveCaretLeft();
 
 				if(ev.isShiftDown())
-					mInputSelection->moveSelectionToCaret(mInputCaret->getCaretPos());
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
 				markAsDirty();
@@ -504,15 +501,15 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(mInputCaret->getCaretPos());
+						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
 					clearSelection();
 
-				mInputCaret->moveCaretRight();
+				gGUIManager().getInputCaretTool()->moveCaretRight();
 
 				if(ev.isShiftDown())
-					mInputSelection->moveSelectionToCaret(mInputCaret->getCaretPos());
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
 				markAsDirty();
@@ -524,15 +521,15 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(mInputCaret->getCaretPos());
+						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
 					clearSelection();
 
-				mInputCaret->moveCaretUp();
+				gGUIManager().getInputCaretTool()->moveCaretUp();
 				
 				if(ev.isShiftDown())
-					mInputSelection->moveSelectionToCaret(mInputCaret->getCaretPos());
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
 				markAsDirty();
@@ -544,15 +541,15 @@ namespace BansheeEngine
 				if(ev.isShiftDown())
 				{
 					if(!mSelectionShown)
-						showSelection(mInputCaret->getCaretPos());
+						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
 					clearSelection();
 
-				mInputCaret->moveCaretDown();
+				gGUIManager().getInputCaretTool()->moveCaretDown();
 				
 				if(ev.isShiftDown())
-					mInputSelection->moveSelectionToCaret(mInputCaret->getCaretPos());
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
 				markAsDirty();
@@ -566,9 +563,9 @@ namespace BansheeEngine
 					if(mSelectionShown)
 						deleteSelectedText();
 
-					insertChar(mInputCaret->getCharIdxAtCaretPos(), '\n');
+					insertChar(gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos(), '\n');
 
-					mInputCaret->moveCaretRight();
+					gGUIManager().getInputCaretTool()->moveCaretRight();
 					scrollTextToCaret();
 
 					markAsDirty();
@@ -580,7 +577,7 @@ namespace BansheeEngine
 			if(ev.getKey() == BC_A && ev.isCtrlDown())
 			{
 				showSelection(0);
-				mInputSelection->selectAll();
+				gGUIManager().getInputSelectionTool()->selectAll();
 
 				markAsDirty();
 				return true;
@@ -591,10 +588,10 @@ namespace BansheeEngine
 			if(mSelectionShown)
 				deleteSelectedText();
 
-			UINT32 charIdx = mInputCaret->getCharIdxAtCaretPos();
+			UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 			insertChar(charIdx, ev.getInputChar());
 
-			mInputCaret->moveCaretToChar(charIdx, CARET_AFTER);
+			gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
 
 			scrollTextToCaret();
 
@@ -631,14 +628,14 @@ namespace BansheeEngine
 
 	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos)
 	{
-		mInputSelection->showSelection(anchorCaretPos);
+		gGUIManager().getInputSelectionTool()->showSelection(anchorCaretPos);
 		mSelectionShown = true;
 		markAsDirty();
 	}
 
 	void GUIInputBox::clearSelection()
 	{
-		mInputSelection->clearSelection();
+		gGUIManager().getInputSelectionTool()->clearSelection();
 		mSelectionShown = false;
 		markAsDirty();
 	}
@@ -648,8 +645,8 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
 		Int2 textOffset = getTextOffset();
-		Int2 caretPos = mInputCaret->getCaretPosition(textOffset);
-		UINT32 caretHeight = mInputCaret->getCaretHeight();
+		Int2 caretPos = gGUIManager().getInputCaretTool()->getCaretPosition(textOffset);
+		UINT32 caretHeight = gGUIManager().getInputCaretTool()->getCaretHeight();
 		UINT32 caretWidth = 1;
 		INT32 caretRight = caretPos.x + (INT32)caretWidth;
 		INT32 caretBottom = caretPos.y + (INT32)caretHeight;
@@ -683,8 +680,8 @@ namespace BansheeEngine
 		mTextOffset += offset;
 
 		Int2 newOffset = getTextOffset();
-		mInputCaret->updateText(textDesc, newOffset, mTextOffset);
-		mInputSelection->updateText(textDesc, newOffset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(textDesc, newOffset, mTextOffset);
+		gGUIManager().getInputSelectionTool()->updateText(textDesc, newOffset, mTextOffset);
 
 		markAsDirty();
 	}
@@ -696,8 +693,8 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
 
-		mInputCaret->updateText(textDesc, offset, mTextOffset);
-		mInputSelection->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
 	}
 
 	void GUIInputBox::eraseChar(CM::UINT32 charIdx)
@@ -707,28 +704,28 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
 
-		mInputCaret->updateText(textDesc, offset, mTextOffset);
-		mInputSelection->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
 	}
 
 	void GUIInputBox::deleteSelectedText()
 	{
-		UINT32 selStart = mInputSelection->getSelectionStart();
-		mText.erase(mText.begin() + selStart, mText.begin() + mInputSelection->getSelectionEnd());
+		UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
+		mText.erase(mText.begin() + selStart, mText.begin() + gGUIManager().getInputSelectionTool()->getSelectionEnd());
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
-		mInputCaret->updateText(textDesc, offset, mTextOffset);
-		mInputSelection->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
 
 		if(selStart > 0)
 		{
 			UINT32 newCaretPos = selStart - 1;
-			mInputCaret->moveCaretToChar(newCaretPos, CARET_AFTER);
+			gGUIManager().getInputCaretTool()->moveCaretToChar(newCaretPos, CARET_AFTER);
 		}
 		else
 		{
-			mInputCaret->moveCaretToChar(0, CARET_BEFORE);
+			gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
 		}
 
 		scrollTextToCaret();

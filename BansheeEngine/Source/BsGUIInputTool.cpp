@@ -7,11 +7,9 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIInputTool::GUIInputTool(const TEXT_SPRITE_DESC& textDesc, const Int2& offset, const Int2 clipOffset)
-		:mTextDesc(textDesc), mTextOffset(offset), mClipOffset(clipOffset), mQuads(nullptr), mNumQuads(0)
-	{
-		updateText(textDesc, offset, clipOffset);
-	}
+	GUIInputTool::GUIInputTool()
+		:mQuads(nullptr), mNumQuads(0)
+	{ }
 
 	GUIInputTool::~GUIInputTool()
 	{ }

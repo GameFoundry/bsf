@@ -28,7 +28,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIInputTool
 	{
 	public:
-		GUIInputTool(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
+		GUIInputTool();
 		~GUIInputTool();
 
 		void updateText(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);

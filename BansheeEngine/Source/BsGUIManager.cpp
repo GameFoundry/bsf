@@ -17,6 +17,8 @@
 #include "CmInput.h"
 #include "CmPass.h"
 #include "CmDebug.h"
+#include "BsGUIInputCaret.h"
+#include "BsGUIInputSelection.h"
 
 using namespace CamelotFramework;
 namespace BansheeEngine
@@ -47,7 +49,7 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -57,6 +59,9 @@ namespace BansheeEngine
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
 		mWindowMovedOrResizedConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&GUIManager::onWindowMovedOrResized, this, _1));
+
+		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>();
+		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
@@ -79,6 +84,9 @@ namespace BansheeEngine
 		mWindowGainedFocusConn.disconnect();
 		mWindowLostFocusConn.disconnect();
 		mWindowMovedOrResizedConn.disconnect();
+
+		cm_delete<PoolAlloc>(mInputCaret);
+		cm_delete<PoolAlloc>(mInputSelection);
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -839,5 +847,10 @@ namespace BansheeEngine
 		Int2 curLocalPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 
 		return curLocalPos;
+	}
+
+	GUIManager& gGUIManager()
+	{
+		return GUIManager::instance();
 	}
 }

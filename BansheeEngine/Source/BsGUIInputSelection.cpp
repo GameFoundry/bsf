@@ -6,8 +6,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIInputSelection::GUIInputSelection(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset)
-		:GUIInputTool(textDesc, offset, clipOffset), mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mSelectionDragAnchor(0)
+	GUIInputSelection::GUIInputSelection()
+		:mSelectionStart(0), mSelectionEnd(0), mSelectionAnchor(0), mSelectionDragAnchor(0)
 	{ }
 
 	GUIInputSelection::~GUIInputSelection()

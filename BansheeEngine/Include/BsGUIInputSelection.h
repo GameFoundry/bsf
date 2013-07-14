@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIInputSelection : public GUIInputTool
 	{
 	public:
-		GUIInputSelection(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
+		GUIInputSelection();
 		~GUIInputSelection();
 
 		const CM::Vector<ImageSprite*>::type& getSprites() const { return mSprites; }
