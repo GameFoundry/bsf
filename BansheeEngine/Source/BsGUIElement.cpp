@@ -24,7 +24,7 @@ namespace BansheeEngine
 	void GUIElement::updateRenderElements()
 	{
 		updateRenderElementsInternal();
-		markAsClean();
+		_markAsClean();
 	}
 
 	void GUIElement::setLayoutOptions(const GUILayoutOptions& layoutOptions) 
@@ -63,37 +63,45 @@ namespace BansheeEngine
 	void GUIElement::_setWidgetDepth(UINT8 depth) 
 	{ 
 		mDepth |= depth << 24; 
-		markAsDirty();
+		markMeshAsDirty();
 	}
 
 	void GUIElement::_setAreaDepth(UINT16 depth) 
 	{ 
 		mDepth |= depth << 8; 
-		markAsDirty();
+		markMeshAsDirty();
 	}
 
 	void GUIElement::_setOffset(const CM::Int2& offset) 
 	{ 
-		mOffset = offset; 
-		markAsDirty();
+		if(mOffset != offset)
+			markMeshAsDirty();
+
+		mOffset = offset;
 	}
 
 	void GUIElement::_setWidth(UINT32 width) 
 	{ 
+		if(mWidth != width)
+			markContentAsDirty();
+
 		mWidth = width; 
-		markAsDirty();
 	}
 
 	void GUIElement::_setHeight(UINT32 height) 
 	{ 
-		mHeight = height; 
-		markAsDirty();
+		if(mHeight != height)
+			markContentAsDirty();
+
+		mHeight = height;
 	}
 
 	void GUIElement::_setClipRect(const CM::Rect& clipRect) 
 	{ 
+		if(mClipRect != clipRect)
+			markMeshAsDirty();
+
 		mClipRect = clipRect; 
-		markAsDirty();
 	}
 
 	Rect GUIElement::getContentBounds() const
@@ -115,15 +123,30 @@ namespace BansheeEngine
 		return contentBounds.contains(position);
 	}
 
-	void GUIElement::markAsDirty() 
+	bool GUIElement::_isContentDirty() const
+	{
+		return (mIsDirty & 0x01) != 0;
+	}
+
+	bool GUIElement::_isMeshDirty() const
+	{
+		return (mIsDirty & 0x02) != 0;
+	}
+
+	void GUIElement::markContentAsDirty() 
 	{ 
-		if(!mIsDirty)
+		if(!_isContentDirty())
 		{
 			if(mParentLayout != nullptr)
 				mParentLayout->_markAsDirty();
 
-			mIsDirty = true; 
+			mIsDirty |= 0x01; 
 		}
+	}
+
+	void GUIElement::markMeshAsDirty()
+	{
+		mIsDirty |= 0x02;
 	}
 
 	GUILayoutOptions GUIElement::getDefaultLayoutOptions(const GUIElementStyle* style)

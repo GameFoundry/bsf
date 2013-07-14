@@ -92,6 +92,7 @@ namespace BansheeEngine
 		void _setWidth(CM::UINT32 width);
 		void _setHeight(CM::UINT32 height);
 		void _setClipRect(const CM::Rect& clipRect);
+		void _markAsClean() { mIsDirty = 0; }
 		virtual void _setFocus(bool focus) {}
 
 		CM::UINT32 _getWidth() const { return mWidth; }
@@ -104,7 +105,8 @@ namespace BansheeEngine
 		const CM::Rect& _getBounds() const { return mBounds; }
 		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return mParent; }
-		bool _isDirty() const { return mIsDirty; }
+		bool _isContentDirty() const;
+		bool _isMeshDirty() const; 
 		virtual bool _isInBounds(const CM::Int2 position) const;
 		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
@@ -117,8 +119,16 @@ namespace BansheeEngine
 
 		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
 		
-		void markAsClean() { mIsDirty = false; }
-		void markAsDirty();
+		/**
+		 * @brief	Marks the elements contents as dirty, which causes the sprite meshes to be recreated from scratch.
+		 */
+		void markContentAsDirty();
+
+		/**
+		 * @brief	Mark only the elements that operate directly on the sprite mesh without requiring the mesh
+		 * 			to be recreated as dirty. This includes position, depth and clip rectangle.
+		 */
+		void markMeshAsDirty();
 
 		CM::Rect getContentBounds() const;
 
@@ -129,7 +139,7 @@ namespace BansheeEngine
 		GUILayoutOptions mLayoutOptions;
 		CM::Rect mBounds;
 
-		bool mIsDirty;
+		CM::UINT8 mIsDirty;
 		bool mAcceptsKeyboardFocus;
 		CM::UINT32 mDepth;
 		CM::Int2 mOffset;

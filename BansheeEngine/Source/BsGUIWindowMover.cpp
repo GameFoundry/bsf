@@ -120,7 +120,7 @@ namespace BansheeEngine
 		else
 			mDesc.texture = mStyle->normal.texture;
 
-		markAsDirty();
+		markContentAsDirty();
 	}
 
 	bool GUIWindowMover::mouseEvent(const GUIMouseEvent& ev)

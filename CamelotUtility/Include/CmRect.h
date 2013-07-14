@@ -10,6 +10,8 @@ namespace CamelotFramework
 		Rect();
 		Rect(int _x, int _y, int _width, int _height);
 
+		int x, y, width, height;
+
 		bool contains(const Int2& point) const;
 		bool overlaps(const Rect& other) const;
 		void encapsulate(const Rect& other);
@@ -24,6 +26,14 @@ namespace CamelotFramework
 		 */
 		void transform(const Matrix4& matrix);
 
-		int x, y, width, height;
+		inline bool operator== (const Rect& rhs) const
+		{
+			return x == rhs.x && y == rhs.y && width == rhs.width && height == rhs.height;
+		}
+
+		inline bool operator!= (const Rect& rhs) const
+		{
+			return !(*this == rhs);
+		}
 	};
 }

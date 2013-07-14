@@ -187,14 +187,22 @@ namespace BansheeEngine
 
 			for(auto& elem : mElements)
 			{
-				if(elem->_isDirty())
+				if(elem->_isContentDirty())
 				{
 					dirty = true;
 					elem->updateRenderElements();
 				}
+
+				if(elem->_isMeshDirty())
+				{
+					dirty = true;
+					elem->_markAsClean();
+				}
 			}
 
-			updateBounds();
+			if(dirty)
+				updateBounds();
+
 			return dirty;
 		}
 		else
@@ -204,7 +212,7 @@ namespace BansheeEngine
 
 			for(auto& elem : mElements)
 			{
-				if(elem->_isDirty())
+				if(elem->_isContentDirty() || elem->_isMeshDirty())
 				{
 					return true;
 				}

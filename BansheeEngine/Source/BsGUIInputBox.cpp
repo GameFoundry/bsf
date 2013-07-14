@@ -319,7 +319,7 @@ namespace BansheeEngine
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
 			mImageDesc.texture = mStyle->hover.texture;
-			markAsDirty();
+			markContentAsDirty();
 
 			if(!mInputCursorSet)
 			{
@@ -332,7 +332,7 @@ namespace BansheeEngine
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
 			mImageDesc.texture = mStyle->normal.texture;
-			markAsDirty();
+			markContentAsDirty();
 
 			if(!mDragInProgress && mInputCursorSet)
 			{
@@ -356,7 +356,7 @@ namespace BansheeEngine
 			scrollTextToCaret();
 
 			clearSelection();
-			markAsDirty();
+			markContentAsDirty();
 
 			return true;
 		}
@@ -364,7 +364,7 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->hover.texture;
 
-			markAsDirty();
+			markContentAsDirty();
 
 			return true;
 		}
@@ -404,7 +404,7 @@ namespace BansheeEngine
 
 			scrollTextToCaret();
 
-			markAsDirty();
+			markContentAsDirty();
 			return true;
 		}
 
@@ -440,7 +440,7 @@ namespace BansheeEngine
 						}
 					}
 
-					markAsDirty();
+					markContentAsDirty();
 				}
 
 				return true;
@@ -470,7 +470,7 @@ namespace BansheeEngine
 						}
 					}
 
-					markAsDirty();
+					markContentAsDirty();
 				}
 
 				return true;
@@ -492,7 +492,7 @@ namespace BansheeEngine
 					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
-				markAsDirty();
+				markContentAsDirty();
 				return true;
 			}
 
@@ -512,7 +512,7 @@ namespace BansheeEngine
 					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
-				markAsDirty();
+				markContentAsDirty();
 				return true;
 			}
 
@@ -532,7 +532,7 @@ namespace BansheeEngine
 					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
-				markAsDirty();
+				markContentAsDirty();
 				return true;
 			}
 
@@ -552,7 +552,7 @@ namespace BansheeEngine
 					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 
 				scrollTextToCaret();
-				markAsDirty();
+				markContentAsDirty();
 				return true;
 			}
 
@@ -568,7 +568,7 @@ namespace BansheeEngine
 					gGUIManager().getInputCaretTool()->moveCaretRight();
 					scrollTextToCaret();
 
-					markAsDirty();
+					markContentAsDirty();
 					return true;
 				}
 				
@@ -579,7 +579,7 @@ namespace BansheeEngine
 				showSelection(0);
 				gGUIManager().getInputSelectionTool()->selectAll();
 
-				markAsDirty();
+				markContentAsDirty();
 				return true;
 			}
 		}
@@ -595,7 +595,7 @@ namespace BansheeEngine
 
 			scrollTextToCaret();
 
-			markAsDirty();
+			markContentAsDirty();
 			return true;
 		}
 
@@ -606,7 +606,7 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUICommandEventType::Redraw)
 		{
-			markAsDirty();
+			markMeshAsDirty();
 			return true;
 		}
 
@@ -616,28 +616,28 @@ namespace BansheeEngine
 	void GUIInputBox::showCaret()
 	{
 		mCaretShown = true;
-		markAsDirty();
+		markContentAsDirty();
 	}
 
 
 	void GUIInputBox::hideCaret()
 	{
 		mCaretShown = false;
-		markAsDirty();
+		markContentAsDirty();
 	}
 
 	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos)
 	{
 		gGUIManager().getInputSelectionTool()->showSelection(anchorCaretPos);
 		mSelectionShown = true;
-		markAsDirty();
+		markContentAsDirty();
 	}
 
 	void GUIInputBox::clearSelection()
 	{
 		gGUIManager().getInputSelectionTool()->clearSelection();
 		mSelectionShown = false;
-		markAsDirty();
+		markContentAsDirty();
 	}
 
 	void GUIInputBox::scrollTextToCaret()
@@ -683,7 +683,7 @@ namespace BansheeEngine
 		gGUIManager().getInputCaretTool()->updateText(textDesc, newOffset, mTextOffset);
 		gGUIManager().getInputSelectionTool()->updateText(textDesc, newOffset, mTextOffset);
 
-		markAsDirty();
+		markContentAsDirty();
 	}
 
 	void GUIInputBox::insertChar(CM::UINT32 charIdx, CM::UINT32 charCode)
@@ -746,13 +746,13 @@ namespace BansheeEngine
 
 	CM::Rect GUIInputBox::getTextBounds() const
 	{
-		Rect textBounds = mBounds;
+		Rect textBounds;
 
-		textBounds.x += mStyle->margins.left + mStyle->contentOffset.left;
-		textBounds.y += mStyle->margins.top + mStyle->contentOffset.top;
-		textBounds.width = (UINT32)std::max(0, (INT32)textBounds.width - 
+		textBounds.x = mOffset.x + mStyle->margins.left + mStyle->contentOffset.left;
+		textBounds.y = mOffset.y + mStyle->margins.top + mStyle->contentOffset.top;
+		textBounds.width = (UINT32)std::max(0, (INT32)mWidth - 
 			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
-		textBounds.height = (UINT32)std::max(0, (INT32)textBounds.height - 
+		textBounds.height = (UINT32)std::max(0, (INT32)mHeight - 
 			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
 
 		return textBounds;
@@ -780,14 +780,14 @@ namespace BansheeEngine
 		if(focus)
 		{
 			mImageDesc.texture = mStyle->focused.texture;
-			markAsDirty();
+			markContentAsDirty();
 		}
 		else
 		{
 			mImageDesc.texture = mStyle->normal.texture;
 			hideCaret();
 			clearSelection();
-			markAsDirty();
+			markContentAsDirty();
 		}
 	}
 }

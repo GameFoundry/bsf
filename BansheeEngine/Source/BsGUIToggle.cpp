@@ -173,7 +173,7 @@ namespace BansheeEngine
 			else
 				mImageDesc.texture = mStyle->hover.texture;
 
-			markAsDirty();
+			markContentAsDirty();
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
@@ -183,7 +183,7 @@ namespace BansheeEngine
 			else
 				mImageDesc.texture = mStyle->normal.texture;
 
-			markAsDirty();
+			markContentAsDirty();
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
@@ -193,7 +193,7 @@ namespace BansheeEngine
 			else
 				mImageDesc.texture = mStyle->active.texture;
 
-			markAsDirty();
+			markContentAsDirty();
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
@@ -205,7 +205,7 @@ namespace BansheeEngine
 			else
 				mImageDesc.texture = mStyle->normal.texture;
 
-			markAsDirty();
+			markContentAsDirty();
 			return true;
 		}
 

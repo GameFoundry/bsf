@@ -100,7 +100,7 @@ namespace BansheeEngine
 	{
 		mDesc.text = text;
 
-		markAsDirty();
+		markContentAsDirty();
 	}
 
 	GUILabel* GUILabel::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)

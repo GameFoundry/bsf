@@ -169,28 +169,28 @@ namespace BansheeEngine
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
 			mImageDesc.texture = mStyle->hover.texture;
-			markAsDirty();
+			markContentAsDirty();
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
 			mImageDesc.texture = mStyle->normal.texture;
-			markAsDirty();
+			markContentAsDirty();
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
 			mImageDesc.texture = mStyle->active.texture;
-			markAsDirty();
+			markContentAsDirty();
 
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
 			mImageDesc.texture = mStyle->hover.texture;
-			markAsDirty();
+			markContentAsDirty();
 
 			return true;
 		}
