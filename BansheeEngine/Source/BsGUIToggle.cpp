@@ -107,7 +107,7 @@ namespace BansheeEngine
 		textDesc.font = mStyle->font;
 		textDesc.fontSize = mStyle->fontSize;
 
-		Rect textBounds = getTextBounds();
+		Rect textBounds = getContentBounds();
 
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
@@ -150,7 +150,7 @@ namespace BansheeEngine
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 		{
-			Rect textBounds = getTextBounds();
+			Rect textBounds = getContentBounds();
 			Int2 offset(textBounds.x, textBounds.y);
 			Rect textClipRect = getTextClipRect();
 
@@ -212,23 +212,9 @@ namespace BansheeEngine
 		return false;
 	}
 
-	CM::Rect GUIToggle::getTextBounds() const
-	{
-		Rect textBounds = mBounds;
-
-		textBounds.x += mStyle->margins.left + mStyle->contentOffset.left;
-		textBounds.y += mStyle->margins.top + mStyle->contentOffset.top;
-		textBounds.width = (UINT32)std::max(0, (INT32)textBounds.width - 
-			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
-		textBounds.height = (UINT32)std::max(0, (INT32)textBounds.height - 
-			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
-
-		return textBounds;
-	}
-
 	CM::Rect GUIToggle::getTextClipRect() const
 	{
-		Rect textBounds = getTextBounds();
+		Rect textBounds = getContentBounds();
 
 		return Rect(0, 0, textBounds.width, textBounds.height);
 	}

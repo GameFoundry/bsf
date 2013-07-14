@@ -31,10 +31,7 @@ TextBox needed elements:
  - Cut/Copy/Paste
  - All classes dealing with text (Button, Toggle, Label, InputBox) determine text field size based on mBounds which is calculated from 
     clipped mImageSprite coordinates. Which is wrong because text word wrap will change depending how clipped the sprite is.
- - Don't forget to make the classes input/selection singletons
- - Elements need TWO different dirty flags. Right now setting dirty causes both content update and fillBuffer update.
-   - But I'd like only fillBuffer update when element is moved, or clipped as content update may be expensive
-   - I added separate clip/offset params to sprites but haven't added these dirty flags yet!
+
 
  - LATER
   - TAB between input elements

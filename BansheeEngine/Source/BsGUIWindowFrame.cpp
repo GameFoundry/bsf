@@ -189,7 +189,7 @@ namespace BansheeEngine
 
 	bool GUIWindowFrame::_isInBounds(const CM::Int2 position) const
 	{
-		Rect contentBounds = getContentBounds();
+		Rect contentBounds = getVisibleBounds();
 
 		if(!contentBounds.contains(position))
 			return false;
@@ -221,7 +221,7 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseMove || ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			Rect contentBounds = getContentBounds();
+			Rect contentBounds = getVisibleBounds();
 
 			FrameSubArea subArea = getFrameSubArea(ev.getPosition(), contentBounds);
 			if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)
@@ -262,7 +262,7 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			Rect contentBounds = getContentBounds();
+			Rect contentBounds = getVisibleBounds();
 
 			FrameSubArea subArea = getFrameSubArea(ev.getPosition(), contentBounds);
 			if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)

@@ -130,6 +130,7 @@ namespace BansheeEngine
 		 */
 		void markMeshAsDirty();
 
+		CM::Rect getVisibleBounds() const;
 		CM::Rect getContentBounds() const;
 
 		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);

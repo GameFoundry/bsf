@@ -58,7 +58,6 @@ namespace BansheeEngine
 		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		CM::Rect getTextBounds() const;
 		CM::Rect getTextClipRect() const;
 	};
 }

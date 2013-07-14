@@ -394,7 +394,6 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			Rect bounds = getTextBounds();
 			if(mText.size() > 0)
 				gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
 			else
@@ -734,28 +733,14 @@ namespace BansheeEngine
 
 	CM::Int2 GUIInputBox::getTextOffset() const
 	{
-		Rect textBounds = getTextBounds();
+		Rect textBounds = getContentBounds();
 		return Int2(textBounds.x, textBounds.y) + mTextOffset;
 	}
 
 	CM::Rect GUIInputBox::getTextClipRect() const
 	{
-		Rect textBounds = getTextBounds();
+		Rect textBounds = getContentBounds();
 		return Rect(-mTextOffset.x, -mTextOffset.y, textBounds.width, textBounds.height);
-	}
-
-	CM::Rect GUIInputBox::getTextBounds() const
-	{
-		Rect textBounds;
-
-		textBounds.x = mOffset.x + mStyle->margins.left + mStyle->contentOffset.left;
-		textBounds.y = mOffset.y + mStyle->margins.top + mStyle->contentOffset.top;
-		textBounds.width = (UINT32)std::max(0, (INT32)mWidth - 
-			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
-		textBounds.height = (UINT32)std::max(0, (INT32)mHeight - 
-			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
-
-		return textBounds;
 	}
 
 	TEXT_SPRITE_DESC GUIInputBox::getTextDesc() const
@@ -765,7 +750,7 @@ namespace BansheeEngine
 		textDesc.font = mStyle->font;
 		textDesc.fontSize = mStyle->fontSize;
 
-		Rect textBounds = getTextBounds();
+		Rect textBounds = getContentBounds();
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
 		textDesc.horzAlign = mStyle->textHorzAlign;

@@ -104,7 +104,7 @@ namespace BansheeEngine
 		mClipRect = clipRect; 
 	}
 
-	Rect GUIElement::getContentBounds() const
+	Rect GUIElement::getVisibleBounds() const
 	{
 		Rect bounds = _getBounds();
 		
@@ -116,9 +116,23 @@ namespace BansheeEngine
 		return bounds;
 	}
 
+	Rect GUIElement::getContentBounds() const
+	{
+		Rect bounds;
+
+		bounds.x = mOffset.x + mStyle->margins.left + mStyle->contentOffset.left;
+		bounds.y = mOffset.y + mStyle->margins.top + mStyle->contentOffset.top;
+		bounds.width = (UINT32)std::max(0, (INT32)mWidth - 
+			(INT32)(mStyle->margins.left + mStyle->margins.right + mStyle->contentOffset.left + mStyle->contentOffset.right));
+		bounds.height = (UINT32)std::max(0, (INT32)mHeight - 
+			(INT32)(mStyle->margins.top + mStyle->margins.bottom + mStyle->contentOffset.top + mStyle->contentOffset.bottom));
+
+		return bounds;
+	}
+
 	bool GUIElement::_isInBounds(const CM::Int2 position) const
 	{
-		Rect contentBounds = getContentBounds();
+		Rect contentBounds = getVisibleBounds();
 
 		return contentBounds.contains(position);
 	}

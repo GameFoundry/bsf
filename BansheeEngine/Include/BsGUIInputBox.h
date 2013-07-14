@@ -91,7 +91,6 @@ namespace BansheeEngine
 
 		CM::Int2 getTextOffset() const;
 		CM::Rect getTextClipRect() const;
-		CM::Rect getTextBounds() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
 	};
 }
