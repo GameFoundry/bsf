@@ -9,7 +9,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus)
-		:mParent(parent), mIsDirty(true), mParentLayout(nullptr), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
+		:mParent(parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
 		mAcceptsKeyboardFocus(acceptsKeyboardFocus)
 	{
 		mParent.registerElement(this);
@@ -135,32 +135,6 @@ namespace BansheeEngine
 		Rect contentBounds = getVisibleBounds();
 
 		return contentBounds.contains(position);
-	}
-
-	bool GUIElement::_isContentDirty() const
-	{
-		return (mIsDirty & 0x01) != 0;
-	}
-
-	bool GUIElement::_isMeshDirty() const
-	{
-		return (mIsDirty & 0x02) != 0;
-	}
-
-	void GUIElement::markContentAsDirty() 
-	{ 
-		if(!_isContentDirty())
-		{
-			if(mParentLayout != nullptr)
-				mParentLayout->_markAsDirty();
-
-			mIsDirty |= 0x01; 
-		}
-	}
-
-	void GUIElement::markMeshAsDirty()
-	{
-		mIsDirty |= 0x02;
 	}
 
 	GUILayoutOptions GUIElement::getDefaultLayoutOptions(const GUIElementStyle* style)

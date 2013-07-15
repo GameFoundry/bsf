@@ -8,13 +8,13 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	void GUILayoutY::_updateOptimalSizes()
+	void GUILayoutY::_updateOptimalLayoutSizes()
 	{
 		// Update all children first, otherwise we can't determine out own optimal size
 		for(auto& child : mChildren)
 		{
 			if(child.isLayout())
-				child.layout->_updateOptimalSizes();
+				child.layout->_updateOptimalLayoutSizes();
 		}
 
 		if(mChildren.size() != mOptimalSizes.size())
@@ -80,7 +80,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutY::updateInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUILayoutY::_updateLayoutInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 totalOptimalSize = _getOptimalHeight();
 		UINT32 totalNonClampedSize = 0;
@@ -361,7 +361,7 @@ namespace BansheeEngine
 			}
 			else if(child.isLayout())
 			{
-				child.layout->_update(x, y + yOffset, width, elementHeight, widgetDepth, areaDepth);
+				child.layout->_updateLayout(x, y + yOffset, width, elementHeight, widgetDepth, areaDepth);
 			}
 
 			yOffset += elementHeight;

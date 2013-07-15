@@ -54,7 +54,7 @@ namespace BansheeEngine
 	{
 		if(isDirty())
 		{
-			mLayout->_update(mX, mY, mWidth, mHeight, mWidget.getDepth(), mDepth);
+			mLayout->_updateLayout(mX, mY, mWidth, mHeight, mWidget.getDepth(), mDepth);
 			mIsDirty = false;
 		}
 	}
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		if(mIsDirty)
 			return true;
 
-		return mLayout->_isDirty();
+		return mLayout->_isContentDirty();
 	}
 
 	void GUIArea::notifyWindowResized(UINT32 newWidth, UINT32 newHeight)

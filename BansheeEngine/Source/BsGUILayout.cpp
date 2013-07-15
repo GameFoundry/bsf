@@ -10,7 +10,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUILayout::GUILayout()
-		:mIsDirty(false), mOptimalWidth(0), mOptimalHeight(0)
+		:mOptimalWidth(0), mOptimalHeight(0)
 	{
 
 	}
@@ -49,7 +49,8 @@ namespace BansheeEngine
 
 		element->_setParentLayout(this);
 		mChildren.push_back(entry);
-		mIsDirty = true;
+
+		markContentAsDirty();
 	}
 
 	void GUILayout::removeElement(GUIElement* element)
@@ -63,7 +64,8 @@ namespace BansheeEngine
 			{
 				mChildren.erase(iter);
 				foundElem = true;
-				mIsDirty = true;
+				
+				markContentAsDirty();
 				break;
 			}
 		}
@@ -85,7 +87,8 @@ namespace BansheeEngine
 
 		element->_setParentLayout(this);
 		mChildren.insert(mChildren.begin() + idx, entry);
-		mIsDirty = true;
+		
+		markContentAsDirty();
 	}
 
 	GUILayout& GUILayout::addLayoutX()
@@ -94,7 +97,7 @@ namespace BansheeEngine
 		entry.setLayout(cm_new<GUILayoutX, PoolAlloc>());
 
 		mChildren.push_back(entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.layout;
 	}
@@ -105,7 +108,7 @@ namespace BansheeEngine
 		entry.setLayout(cm_new<GUILayoutY, PoolAlloc>());
 
 		mChildren.push_back(entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.layout;
 	}
@@ -123,7 +126,7 @@ namespace BansheeEngine
 
 				mChildren.erase(iter);
 				foundElem = true;
-				mIsDirty = true;
+				markContentAsDirty();
 				break;
 			}
 		}
@@ -141,7 +144,7 @@ namespace BansheeEngine
 		entry.setLayout(cm_new<GUILayoutX, PoolAlloc>());
 
 		mChildren.insert(mChildren.begin() + idx, entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.layout;
 	}
@@ -155,7 +158,7 @@ namespace BansheeEngine
 		entry.setLayout(cm_new<GUILayoutY, PoolAlloc>());;
 
 		mChildren.insert(mChildren.begin() + idx, entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.layout;
 	}
@@ -166,7 +169,7 @@ namespace BansheeEngine
 		entry.setSpace(cm_new<GUIFixedSpace, PoolAlloc>(size));
 
 		mChildren.push_back(entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.space;
 	}
@@ -184,7 +187,7 @@ namespace BansheeEngine
 
 				mChildren.erase(iter);
 				foundElem = true;
-				mIsDirty = true;
+				markContentAsDirty();
 				break;
 			}
 		}
@@ -202,7 +205,7 @@ namespace BansheeEngine
 		entry.setSpace(cm_new<GUIFixedSpace, PoolAlloc>(size));
 
 		mChildren.insert(mChildren.begin() + idx, entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.space;
 	}
@@ -213,7 +216,7 @@ namespace BansheeEngine
 		entry.setFlexibleSpace(cm_new<GUIFlexibleSpace, PoolAlloc>());
 
 		mChildren.push_back(entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.flexibleSpace;
 	}
@@ -231,7 +234,7 @@ namespace BansheeEngine
 
 				mChildren.erase(iter);
 				foundElem = true;
-				mIsDirty = true;
+				markContentAsDirty();
 				break;
 			}
 		}
@@ -249,7 +252,7 @@ namespace BansheeEngine
 		entry.setFlexibleSpace(cm_new<GUIFlexibleSpace, PoolAlloc>());
 
 		mChildren.insert(mChildren.begin() + idx, entry);
-		mIsDirty = true;
+		markContentAsDirty();
 
 		return *entry.flexibleSpace;
 	}
@@ -257,29 +260,5 @@ namespace BansheeEngine
 	UINT32 GUILayout::getNumChildren() const
 	{
 		return (UINT32)mChildren.size();
-	}
-
-	void GUILayout::_update(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth)
-	{
-		_updateOptimalSizes(); // We calculate optimal sizes of all layouts as a pre-processing step, as they are requested often during update
-		updateInternal(x, y, width, height, widgetDepth, areaDepth);
-		mIsDirty = false;
-	}
-
-	bool GUILayout::_isDirty()
-	{
-		if(mIsDirty)
-			return true;
-
-		for(auto& child : mChildren)
-		{
-			if(child.isLayout())
-			{
-				if(child.layout->_isDirty())
-					return true;
-			}
-		}
-
-		return false;
 	}
 }

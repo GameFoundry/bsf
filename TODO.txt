@@ -12,6 +12,7 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
  - Resizing from the top doesn't work
  - Resizing from the left actually resizes the right side
+ - Clipping areas outside of a widget (or GUIArea for that matter) are not set up at all
 
 IMMEDIATE:
  - Clicking on a window to focus and immediately trying to drag/resize it, doesn't work. I first need to click, then click again to drag/resize.
@@ -29,9 +30,6 @@ TextBox needed elements:
   - Add special text input commands, which will get repeatedly sent as long as their corresponding key is set in GUIManager
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
- - All classes dealing with text (Button, Toggle, Label, InputBox) determine text field size based on mBounds which is calculated from 
-    clipped mImageSprite coordinates. Which is wrong because text word wrap will change depending how clipped the sprite is.
-
 
  - LATER
   - TAB between input elements
@@ -49,10 +47,6 @@ GUIDragManager
 Later add InputMap class in which you can bind certain actions (like move left, fire, etc.) to Keyboard, Joystick or Mouse buttons.
 
 -----------
-
-I need to be able to provide smaller bounds used for UI input 
- - Add padding - reduces the size of the element and that is used for input
- - Add margins - spacing that is added when laying out multiple controls after each other
 
  - My test model is rendering back faces. I need to flip them.
   - Although more than likely I am loading the model incorrectly since it works in Unity?
