@@ -37,6 +37,7 @@ namespace BansheeEngine
 
 		CM::UINT32 _getOptimalWidth() const { return mOptimalWidth; }
 		CM::UINT32 _getOptimalHeight() const { return mOptimalHeight; }
+		Type _getType() const { return GUIElementBase::Type::Layout; }
 
 	protected:
 		CM::Vector<CM::Int2>::type mOptimalSizes;

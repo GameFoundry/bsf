@@ -13,8 +13,8 @@ namespace BansheeEngine
 		// Update all children first, otherwise we can't determine out own optimal size
 		for(auto& child : mChildren)
 		{
-			if(child.isLayout())
-				child.layout->_updateOptimalLayoutSizes();
+			if(child->_getType() == GUIElementBase::Type::Layout)
+				child->_updateOptimalLayoutSizes();
 		}
 
 		if(mChildren.size() != mOptimalSizes.size())
@@ -29,13 +29,15 @@ namespace BansheeEngine
 			UINT32 optimalWidth = 0;
 			UINT32 optimalHeight = 0;
 
-			if(child.isFixedSpace())
+			if(child->_getType() == GUIElementBase::Type::FixedSpace)
 			{
-				optimalWidth = child.space->getSize();
+				GUIFixedSpace* space = static_cast<GUIFixedSpace*>(child);
+				optimalWidth = space->getSize();
 			}
-			else if(child.isElement())
+			else if(child->_getType() == GUIElementBase::Type::Element)
 			{
-				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+				GUIElement* element = static_cast<GUIElement*>(child);
+				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 
 				if(layoutOptions.fixedWidth)
 				{
@@ -43,7 +45,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					optimalWidth = child.element->_getOptimalWidth();
+					optimalWidth = child->_getOptimalWidth();
 
 					if(layoutOptions.minWidth > 0)
 						optimalWidth = std::max(layoutOptions.minWidth, optimalWidth);
@@ -56,7 +58,7 @@ namespace BansheeEngine
 					optimalHeight = layoutOptions.height;
 				else
 				{
-					optimalHeight = child.element->_getOptimalHeight();
+					optimalHeight = child->_getOptimalHeight();
 
 					if(layoutOptions.minHeight > 0)
 						optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
@@ -65,9 +67,9 @@ namespace BansheeEngine
 						optimalHeight = std::min(layoutOptions.maxHeight, optimalHeight);
 				}
 			}
-			else if(child.isLayout())
+			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
-				optimalWidth = child.layout->_getOptimalWidth();
+				optimalWidth = child->_getOptimalWidth();
 			}
 
 			mOptimalSizes[childIdx].x = optimalWidth;
@@ -102,13 +104,14 @@ namespace BansheeEngine
 		{
 			elementSizes[childIdx] = mOptimalSizes[childIdx].x;
 
-			if(child.isFixedSpace())
+			if(child->_getType() == GUIElementBase::Type::FixedSpace)
 			{
 				processedElements[childIdx] = true;
 			}
-			else if(child.isElement())
+			else if(child->_getType() == GUIElementBase::Type::Element)
 			{
-				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+				GUIElement* element = static_cast<GUIElement*>(child);
+				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 
 				if(layoutOptions.fixedWidth)
 					processedElements[childIdx] = true;
@@ -118,12 +121,12 @@ namespace BansheeEngine
 					totalNonClampedSize += elementSizes[childIdx];
 				}
 			}
-			else if(child.isLayout())
+			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
 				numNonClampedElements++;
 				totalNonClampedSize += elementSizes[childIdx];
 			}
-			else if(child.isFlexibleSpace())
+			else if(child->_getType() == GUIElementBase::Type::FlexibleSpace)
 			{
 				numFlexibleSpaces++;
 				numNonClampedElements++;
@@ -156,7 +159,7 @@ namespace BansheeEngine
 					UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
 
 					// Clamp if needed
-					if(child.isFlexibleSpace())
+					if(child->_getType() == GUIElementBase::Type::FlexibleSpace)
 					{
 						processedElements[childIdx] = true;
 						numNonClampedElements--;
@@ -216,9 +219,10 @@ namespace BansheeEngine
 					UINT32 elementWidth = (UINT32)std::max(0, (INT32)elementSizes[childIdx] - (INT32)extraWidth);
 
 					// Clamp if needed
-					if(child.isElement())
+					if(child->_getType() == GUIElementBase::Type::Element)
 					{
-						const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+						GUIElement* element = static_cast<GUIElement*>(child);
+						const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 
 						if(elementWidth == 0)
 						{
@@ -237,7 +241,7 @@ namespace BansheeEngine
 						elementSizes[childIdx] = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
-					else if(child.isLayout())
+					else if(child->_getType() == GUIElementBase::Type::Layout)
 					{
 						if(elementWidth == 0)
 						{
@@ -249,7 +253,7 @@ namespace BansheeEngine
 						elementSizes[childIdx] = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
-					else if(child.isFlexibleSpace())
+					else if(child->_getType() == GUIElementBase::Type::FlexibleSpace)
 					{
 						elementSizes[childIdx] = 0;
 						processedElements[childIdx] = true;
@@ -285,9 +289,10 @@ namespace BansheeEngine
 					UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
 
 					// Clamp if needed
-					if(child.isElement())
+					if(child->_getType() == GUIElementBase::Type::Element)
 					{
-						const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+						GUIElement* element = static_cast<GUIElement*>(child);
+						const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 
 						if(elementWidth == 0)
 						{
@@ -306,12 +311,12 @@ namespace BansheeEngine
 						elementSizes[childIdx] = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
-					else if(child.isLayout())
+					else if(child->_getType() == GUIElementBase::Type::Layout)
 					{
 						elementSizes[childIdx] = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
-					else if(child.isFlexibleSpace())
+					else if(child->_getType() == GUIElementBase::Type::FlexibleSpace)
 					{
 						processedElements[childIdx] = true;
 						numNonClampedElements--;
@@ -330,12 +335,13 @@ namespace BansheeEngine
 		{
 			UINT32 elementWidth = elementSizes[childIdx];
 
-			if(child.isElement())
+			if(child->_getType() == GUIElementBase::Type::Element)
 			{
-				child.element->_setWidth(elementWidth);
+				GUIElement* element = static_cast<GUIElement*>(child);
+				element->_setWidth(elementWidth);
 
 				UINT32 elemHeight = mOptimalSizes[childIdx].y;
-				const GUILayoutOptions& layoutOptions = child.element->_getLayoutOptions();
+				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 				if(!layoutOptions.fixedHeight)
 				{
 					elemHeight = height;
@@ -346,23 +352,24 @@ namespace BansheeEngine
 						elemHeight = layoutOptions.maxHeight;
 				}
 
-				child.element->_setHeight(elemHeight);
+				element->_setHeight(elemHeight);
 
-				UINT32 yOffset = (UINT32)Math::CeilToInt((height - child.element->_getHeight()) * 0.5f);
+				UINT32 yOffset = (UINT32)Math::CeilToInt((height - element->_getHeight()) * 0.5f);
 
 				Int2 offset(x + xOffset, y + yOffset);
-				child.element->_setOffset(offset);
-				child.element->_setWidgetDepth(widgetDepth);
-				child.element->_setAreaDepth(areaDepth);
+				element->_setOffset(offset);
+				element->_setWidgetDepth(widgetDepth);
+				element->_setAreaDepth(areaDepth);
 
-				UINT32 clippedWidth = (UINT32)std::min((INT32)child.element->_getWidth(), (INT32)width - (INT32)xOffset);
-				UINT32 clippedHeight = (UINT32)std::min((INT32)child.element->_getHeight(), (INT32)height - (INT32)yOffset);
+				UINT32 clippedWidth = (UINT32)std::min((INT32)element->_getWidth(), (INT32)width - (INT32)xOffset);
+				UINT32 clippedHeight = (UINT32)std::min((INT32)element->_getHeight(), (INT32)height - (INT32)yOffset);
 
-				child.element->_setClipRect(Rect(0, 0, clippedWidth, clippedHeight));
+				element->_setClipRect(Rect(0, 0, clippedWidth, clippedHeight));
 			}
-			else if(child.isLayout())
+			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
-				child.layout->_updateLayout(x + xOffset, y, elementWidth, height, widgetDepth, areaDepth);
+				GUILayout* layout = static_cast<GUILayout*>(child);
+				layout->_updateLayout(x + xOffset, y, elementWidth, height, widgetDepth, areaDepth);
 			}
 
 			xOffset += elementWidth;

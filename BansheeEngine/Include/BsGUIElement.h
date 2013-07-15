@@ -96,6 +96,7 @@ namespace BansheeEngine
 		CM::UINT32 _getHeight() const { return mHeight; }
 		CM::Int2 _getOffset() const { return mOffset; }
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
+		Type _getType() const { return GUIElementBase::Type::Element; }
 
 		const CM::Rect& _getBounds() const { return mBounds; }
 		CM::UINT32 _getDepth() const { return mDepth; }

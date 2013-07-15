@@ -9,55 +9,13 @@ namespace BansheeEngine
 {
 	class BS_EXPORT GUIElementBase
 	{
-	protected:
+	public:
 		enum class Type
 		{
 			Layout,
 			Element,
 			FixedSpace,
 			FlexibleSpace
-		};
-
-		struct GUILayoutEntry
-		{
-			union
-			{
-				GUIElement* element;
-				GUILayout* layout;
-				GUIFixedSpace* space;
-				GUIFlexibleSpace* flexibleSpace;
-			};
-
-			bool isElement() const { return mType == Type::Element; }
-			bool isLayout() const { return mType == Type::Layout; }
-			bool isFixedSpace() const { return mType == Type::FixedSpace; }
-			bool isFlexibleSpace() const { return mType == Type::FlexibleSpace; }
-
-			void setElement(GUIElement* _element)
-			{
-				element = _element;
-				mType = Type::Element;
-			}
-
-			void setLayout(GUILayout* _layout)
-			{
-				layout = _layout;
-				mType = Type::Layout;
-			}
-
-			void setSpace(GUIFixedSpace* _space)
-			{
-				space = _space;
-				mType = Type::FixedSpace;
-			}
-
-			void setFlexibleSpace(GUIFlexibleSpace* _space)
-			{
-				flexibleSpace = _space;
-				mType = Type::FlexibleSpace;
-			}
-
-			Type mType;
 		};
 
 	public:
@@ -77,6 +35,7 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getOptimalWidth() const = 0;
 		virtual CM::UINT32 _getOptimalHeight() const = 0;
+		virtual Type _getType() const = 0;
 
 		GUILayout* _getParentLayout() const { return mParentLayout; }
 		void _setParentLayout(GUILayout* layout) { mParentLayout = layout; }
@@ -100,7 +59,7 @@ namespace BansheeEngine
 		void markMeshAsDirty();
 
 		GUILayout* mParentLayout;
-		CM::Vector<GUILayoutEntry>::type mChildren;	
+		CM::Vector<GUIElementBase*>::type mChildren;	
 		CM::UINT8 mIsDirty;
 	};
 }

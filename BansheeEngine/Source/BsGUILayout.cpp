@@ -19,23 +19,11 @@ namespace BansheeEngine
 	{
 		for(auto& child : mChildren)
 		{
-			if(child.isLayout())
-			{
-				// Child layouts are directly owned by us
-				cm_delete<PoolAlloc>(child.layout);
-			}
-			else if(child.isFixedSpace())
-			{
-				cm_delete<PoolAlloc>(child.space);
-			}
-			else if(child.isFlexibleSpace())
-			{
-				cm_delete<PoolAlloc>(child.flexibleSpace);
-			}
+			// Non-GUIElement are owned by us
+			if(child->_getType() != GUIElementBase::Type::Element)
+				cm_delete<PoolAlloc>(child);
 			else
-			{
-				child.element->_setParentLayout(nullptr);
-			}
+				child->_setParentLayout(nullptr);
 		}
 	}
 
@@ -44,11 +32,8 @@ namespace BansheeEngine
 		if(element->_getParentLayout() != nullptr)
 			element->_getParentLayout()->removeElement(element);
 
-		GUILayoutEntry entry;
-		entry.setElement(element);
-
 		element->_setParentLayout(this);
-		mChildren.push_back(entry);
+		mChildren.push_back(element);
 
 		markContentAsDirty();
 	}
@@ -58,9 +43,9 @@ namespace BansheeEngine
 		bool foundElem = false;
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{
-			GUILayoutEntry& child = *iter;
+			GUIElementBase* child = *iter;
 
-			if(child.isElement() && child.element == element)
+			if(child->_getType() == GUIElementBase::Type::Element && child == element)
 			{
 				mChildren.erase(iter);
 				foundElem = true;
@@ -82,35 +67,30 @@ namespace BansheeEngine
 		if(element->_getParentLayout() != nullptr)
 			element->_getParentLayout()->removeElement(element);
 
-		GUILayoutEntry entry;
-		entry.setElement(element);
-
 		element->_setParentLayout(this);
-		mChildren.insert(mChildren.begin() + idx, entry);
+		mChildren.insert(mChildren.begin() + idx, element);
 		
 		markContentAsDirty();
 	}
 
 	GUILayout& GUILayout::addLayoutX()
 	{
-		GUILayoutEntry entry;
-		entry.setLayout(cm_new<GUILayoutX, PoolAlloc>());
+		GUILayoutX* entry = cm_new<GUILayoutX, PoolAlloc>();
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
 
-		return *entry.layout;
+		return *entry;
 	}
 
 	GUILayout& GUILayout::addLayoutY()
 	{
-		GUILayoutEntry entry;
-		entry.setLayout(cm_new<GUILayoutY, PoolAlloc>());
+		GUILayoutY* entry = cm_new<GUILayoutY, PoolAlloc>();
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
 
-		return *entry.layout;
+		return *entry;
 	}
 
 	void GUILayout::removeLayout(GUILayout& layout)
@@ -118,11 +98,11 @@ namespace BansheeEngine
 		bool foundElem = false;
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{
-			GUILayoutEntry& child = *iter;
+			GUIElementBase* child = *iter;
 
-			if(child.isLayout() && child.layout == &layout)
+			if(child->_getType() == GUIElementBase::Type::Layout && child == &layout)
 			{
-				cm_delete<PoolAlloc>(child.layout);
+				cm_delete<PoolAlloc>(child);
 
 				mChildren.erase(iter);
 				foundElem = true;
@@ -140,13 +120,12 @@ namespace BansheeEngine
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUILayoutEntry entry;
-		entry.setLayout(cm_new<GUILayoutX, PoolAlloc>());
+		GUILayoutX* entry = cm_new<GUILayoutX, PoolAlloc>();
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();
 
-		return *entry.layout;
+		return *entry;
 	}
 
 	GUILayout& GUILayout::insertLayoutY(UINT32 idx)
@@ -154,24 +133,22 @@ namespace BansheeEngine
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUILayoutEntry entry;
-		entry.setLayout(cm_new<GUILayoutY, PoolAlloc>());;
+		GUILayoutY* entry = cm_new<GUILayoutY, PoolAlloc>();
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();
 
-		return *entry.layout;
+		return *entry;
 	}
 
 	GUIFixedSpace& GUILayout::addSpace(UINT32 size)
 	{
-		GUILayoutEntry entry;
-		entry.setSpace(cm_new<GUIFixedSpace, PoolAlloc>(size));
+		GUIFixedSpace* entry = cm_new<GUIFixedSpace, PoolAlloc>(size);
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
 
-		return *entry.space;
+		return *entry;
 	}
 
 	void GUILayout::removeSpace(GUIFixedSpace& space)
@@ -179,11 +156,11 @@ namespace BansheeEngine
 		bool foundElem = false;
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{
-			GUILayoutEntry& child = *iter;
+			GUIElementBase* child = *iter;
 
-			if(child.isFixedSpace() && child.space == &space)
+			if(child->_getType() == GUIElementBase::Type::FixedSpace && child == &space)
 			{
-				cm_delete<PoolAlloc>(child.space);
+				cm_delete<PoolAlloc>(child);
 
 				mChildren.erase(iter);
 				foundElem = true;
@@ -201,24 +178,22 @@ namespace BansheeEngine
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUILayoutEntry entry;
-		entry.setSpace(cm_new<GUIFixedSpace, PoolAlloc>(size));
+		GUIFixedSpace* entry = cm_new<GUIFixedSpace, PoolAlloc>(size);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();
 
-		return *entry.space;
+		return *entry;
 	}
 
 	GUIFlexibleSpace& GUILayout::addFlexibleSpace()
 	{
-		GUILayoutEntry entry;
-		entry.setFlexibleSpace(cm_new<GUIFlexibleSpace, PoolAlloc>());
+		GUIFlexibleSpace* entry = cm_new<GUIFlexibleSpace, PoolAlloc>();
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
 
-		return *entry.flexibleSpace;
+		return *entry;
 	}
 
 	void GUILayout::removeFlexibleSpace(GUIFlexibleSpace& space)
@@ -226,11 +201,11 @@ namespace BansheeEngine
 		bool foundElem = false;
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{
-			GUILayoutEntry& child = *iter;
+			GUIElementBase* child = *iter;
 
-			if(child.isFlexibleSpace() && child.flexibleSpace == &space)
+			if(child->_getType() == GUIElementBase::Type::FlexibleSpace && child == &space)
 			{
-				cm_delete<PoolAlloc>(child.flexibleSpace);
+				cm_delete<PoolAlloc>(child);
 
 				mChildren.erase(iter);
 				foundElem = true;
@@ -248,13 +223,12 @@ namespace BansheeEngine
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUILayoutEntry entry;
-		entry.setFlexibleSpace(cm_new<GUIFlexibleSpace, PoolAlloc>());
+		GUIFlexibleSpace* entry = cm_new<GUIFlexibleSpace, PoolAlloc>();
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();
 
-		return *entry.flexibleSpace;
+		return *entry;
 	}
 
 	UINT32 GUILayout::getNumChildren() const

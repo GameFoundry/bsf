@@ -18,9 +18,9 @@ namespace BansheeEngine
 
 		for(auto& child : mChildren)
 		{
-			if(child.isLayout())
+			if(child->_getType() == Type::Layout)
 			{
-				if(child.layout->_isContentDirty())
+				if(child->_isContentDirty())
 					return true;
 			}
 		}
@@ -59,8 +59,8 @@ namespace BansheeEngine
 	{
 		for(auto& child : mChildren)
 		{
-			if(child.isLayout())
-				child.layout->_updateOptimalLayoutSizes();
+			if(child->_getType() == Type::Layout)
+				child->_updateOptimalLayoutSizes();
 		}
 	}
 
@@ -68,8 +68,8 @@ namespace BansheeEngine
 	{
 		for(auto& child : mChildren)
 		{
-			if(child.isLayout())
-				child.layout->_updateLayout(x, y, width, height, widgetDepth, areaDepth);
+			if(child->_getType() == Type::Layout)
+				child->_updateLayout(x, y, width, height, widgetDepth, areaDepth);
 		}
 	}
 }
