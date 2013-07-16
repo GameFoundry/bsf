@@ -42,6 +42,30 @@ namespace BansheeEngine
 	const String EngineGUI::InputBoxHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxHover.psd";
 	const String EngineGUI::InputBoxFocusedTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxFocused.psd";
 
+	const String EngineGUI::ScrollBarUpNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarUpNormal.psd";
+	const String EngineGUI::ScrollBarUpHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarUpHover.psd";
+	const String EngineGUI::ScrollBarUpActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarUpActive.psd";
+
+	const String EngineGUI::ScrollBarDownNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarDownNormal.psd";
+	const String EngineGUI::ScrollBarDownHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarDownHover.psd";
+	const String EngineGUI::ScrollBarDownActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarDownActive.psd";
+
+	const String EngineGUI::ScrollBarLeftNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarLeftNormal.psd";
+	const String EngineGUI::ScrollBarLeftHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarLeftHover.psd";
+	const String EngineGUI::ScrollBarLeftActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarLeftActive.psd";
+
+	const String EngineGUI::ScrollBarRightNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarRightNormal.psd";
+	const String EngineGUI::ScrollBarRightHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarRightHover.psd";
+	const String EngineGUI::ScrollBarRightActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarRightActive.psd";
+
+	const String EngineGUI::ScrollBarHandleHorzNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarHorzHandleNormal.psd";
+	const String EngineGUI::ScrollBarHandleHorzHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarHorzHandleHover.psd";
+	const String EngineGUI::ScrollBarHandleHorzActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarHorzHandleActive.psd";
+
+	const String EngineGUI::ScrollBarHandleVertNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleNormal.psd";
+	const String EngineGUI::ScrollBarHandleVertHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleHover.psd";
+	const String EngineGUI::ScrollBarHandleVertActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleActive.psd";
+
 	EngineGUI::EngineGUI()
 	{
 		// TODO - Normally I want to load this from some file

@@ -162,6 +162,8 @@
     <ClInclude Include="Include\BsGUILayoutX.h" />
     <ClInclude Include="Include\BsGUILayout.h" />
     <ClInclude Include="Include\BsGUILayoutY.h" />
+    <ClInclude Include="Include\BsGUIScrollBarHorz.h" />
+    <ClInclude Include="Include\BsGUIScrollBarVert.h" />
     <ClInclude Include="Include\BsGUISpace.h" />
     <ClInclude Include="Include\BsGUITexture.h" />
     <ClInclude Include="Include\BsGUIToggle.h" />
@@ -212,6 +214,8 @@
     <ClCompile Include="Source\BsGUIManager.cpp" />
     <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
     <ClCompile Include="Source\BsGUIMouseEvent.cpp" />
+    <ClCompile Include="Source\BsGUIScrollBarHorz.cpp" />
+    <ClCompile Include="Source\BsGUIScrollBarVert.cpp" />
     <ClCompile Include="Source\BsGUISkin.cpp" />
     <ClCompile Include="Source\BsGUITexture.cpp" />
     <ClCompile Include="Source\BsGUIToggle.cpp" />

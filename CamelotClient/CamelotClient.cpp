@@ -273,7 +273,6 @@ int CALLBACK WinMain(
 
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );
-	Cursor::hide();
 
 	HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import("C:\\CursorDbg.psd"));
 	PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
