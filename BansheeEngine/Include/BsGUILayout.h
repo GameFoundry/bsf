@@ -16,11 +16,11 @@ namespace BansheeEngine
 		void removeElement(GUIElement* element);
 		void insertElement(CM::UINT32 idx, GUIElement* element);
 
-		GUILayout& addLayoutX();
-		GUILayout& addLayoutY();
-		void removeLayout(GUILayout& layout);
-		GUILayout& insertLayoutX(CM::UINT32 idx);
-		GUILayout& insertLayoutY(CM::UINT32 idx);
+		GUILayout& addLayoutX() { return addLayoutXInternal(); }
+		GUILayout& addLayoutY() { return addLayoutYInternal(); }
+		void removeLayout(GUILayout& layout) { removeLayoutInternal(layout); }
+		GUILayout& insertLayoutX(CM::UINT32 idx) { return insertLayoutXInternal(idx); }
+		GUILayout& insertLayoutY(CM::UINT32 idx) { return insertLayoutYInternal(idx); }
 
 		GUIFixedSpace& addSpace(CM::UINT32 size);
 		void removeSpace(GUIFixedSpace& space);

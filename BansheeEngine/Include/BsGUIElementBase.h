@@ -58,6 +58,12 @@ namespace BansheeEngine
 		 */
 		void markMeshAsDirty();
 
+		GUILayout& addLayoutXInternal();
+		GUILayout& addLayoutYInternal();
+		void removeLayoutInternal(GUILayout& layout);
+		GUILayout& insertLayoutXInternal(CM::UINT32 idx);
+		GUILayout& insertLayoutYInternal(CM::UINT32 idx);
+
 		GUILayout* mParentLayout;
 		CM::Vector<GUIElementBase*>::type mChildren;	
 		CM::UINT8 mIsDirty;
