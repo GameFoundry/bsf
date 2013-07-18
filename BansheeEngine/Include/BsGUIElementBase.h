@@ -37,9 +37,6 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalHeight() const = 0;
 		virtual Type _getType() const = 0;
 
-		GUILayout* _getParentLayout() const { return mParentLayout; }
-		void _setParentLayout(GUILayout* layout) { mParentLayout = layout; }
-
 		void _markAsClean() { mIsDirty = 0; }
 		virtual void _setFocus(bool focus) {}
 
@@ -64,7 +61,6 @@ namespace BansheeEngine
 		GUILayout& insertLayoutXInternal(CM::UINT32 idx);
 		GUILayout& insertLayoutYInternal(CM::UINT32 idx);
 
-		GUILayout* mParentLayout;
 		CM::Vector<GUIElementBase*>::type mChildren;	
 		CM::UINT8 mIsDirty;
 	};

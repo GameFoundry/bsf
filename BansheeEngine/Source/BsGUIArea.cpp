@@ -15,13 +15,13 @@ namespace BansheeEngine
 
 		if(width <= 0)
 		{
-			mWidth = mWidget.getTarget()->getWidth();
+			mWidth = mWidget.getTarget()->getWidth() - mX;
 			mResizeWidthWithWindow = true;
 		}
 
 		if(height <= 0)
 		{
-			mHeight = mWidget.getTarget()->getHeight();
+			mHeight = mWidget.getTarget()->getHeight() - mY;
 			mResizeHeightWithWindow = true;
 		}
 
@@ -70,10 +70,10 @@ namespace BansheeEngine
 	void GUIArea::notifyWindowResized(UINT32 newWidth, UINT32 newHeight)
 	{
 		if(mResizeWidthWithWindow)
-			mWidth = newWidth;
+			mWidth = newWidth - mX;
 
 		if(mResizeHeightWithWindow)
-			mHeight = newHeight;
+			mHeight = newHeight - mY;
 
 		if(mResizeWidthWithWindow || mResizeHeightWithWindow)
 		{

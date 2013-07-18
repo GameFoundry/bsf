@@ -6,6 +6,7 @@
 #include "BsGUILayout.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
+#include "BsGUISpace.h"
 #include "CmException.h"
 
 using namespace CamelotFramework;
@@ -19,10 +20,12 @@ namespace BansheeEngine
 
 		GUIButton* upBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollUpBtn"));
 		GUIButton* downBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollDownBtn"));
-		GUIButton* handleBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollBarVertBtn"));
+		GUIButton* handleBtn = GUIButton::create(parent, L"", GUILayoutOptions::expandableY(6), parent.getSkin()->getStyle("ScrollBarVertBtn"));
 
 		mLayout->addElement(upBtn);
+		mLayout->addSpace(2);
 		mLayout->addElement(handleBtn); // We might want a special element for this?
+		mLayout->addSpace(2);
 		mLayout->addElement(downBtn);
 	}
 

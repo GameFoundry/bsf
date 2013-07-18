@@ -23,7 +23,10 @@ namespace BansheeEngine
 			if(child->_getType() != GUIElementBase::Type::Element)
 				cm_delete<PoolAlloc>(child);
 			else
-				child->_setParentLayout(nullptr);
+			{
+				GUIElement* element = static_cast<GUIElement*>(child);
+				element->_setParentLayout(nullptr);
+			}
 		}
 	}
 

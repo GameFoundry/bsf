@@ -10,7 +10,7 @@ namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus)
 		:mParent(parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
-		mAcceptsKeyboardFocus(acceptsKeyboardFocus)
+		mAcceptsKeyboardFocus(acceptsKeyboardFocus), mParentLayout(nullptr)
 	{
 		mParent.registerElement(this);
 	}

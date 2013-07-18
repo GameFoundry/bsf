@@ -66,7 +66,7 @@ namespace BansheeEditor
 
 		//// DEBUG
 		
-		GUIArea* dbgArea = GUIArea::create(*mGUI, 5, 13, 190, 0, 475);
+		GUIArea* dbgArea = GUIArea::create(*mGUI, 5, 14, 190, 0, 475);
 		GUILayout& layout = dbgArea->getLayout();
 		//
 		//mDbgLabel = GUILabel::create(*mGUI, "Testing test");

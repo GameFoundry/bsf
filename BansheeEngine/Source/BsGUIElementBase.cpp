@@ -9,7 +9,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mIsDirty(true), mParentLayout(nullptr)
+		:mIsDirty(true)
 	{
 
 	}
@@ -21,11 +21,8 @@ namespace BansheeEngine
 
 		for(auto& child : mChildren)
 		{
-			if(child->_getType() == Type::Layout)
-			{
-				if(child->_isContentDirty())
-					return true;
-			}
+			if(child->_isContentDirty())
+				return true;
 		}
 
 		return false;
@@ -38,13 +35,7 @@ namespace BansheeEngine
 
 	void GUIElementBase::markContentAsDirty() 
 	{ 
-		if(!_isContentDirty())
-		{
-			if(mParentLayout != nullptr)
-				mParentLayout->markContentAsDirty();
-
-			mIsDirty |= 0x01; 
-		}
+		mIsDirty |= 0x01; 
 	}
 
 	void GUIElementBase::markMeshAsDirty()

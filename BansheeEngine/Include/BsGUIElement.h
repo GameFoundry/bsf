@@ -90,13 +90,15 @@ namespace BansheeEngine
 		void _setWidth(CM::UINT32 width);
 		void _setHeight(CM::UINT32 height);
 		void _setClipRect(const CM::Rect& clipRect);
+		void _setParentLayout(GUILayout* layout) { mParentLayout = layout; }
 		virtual void _setFocus(bool focus) {}
-
+		
 		CM::UINT32 _getWidth() const { return mWidth; }
 		CM::UINT32 _getHeight() const { return mHeight; }
 		CM::Int2 _getOffset() const { return mOffset; }
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
 		Type _getType() const { return GUIElementBase::Type::Element; }
+		GUILayout* _getParentLayout() const { return mParentLayout; }
 
 		const CM::Rect& _getBounds() const { return mBounds; }
 		CM::UINT32 _getDepth() const { return mDepth; }
@@ -119,6 +121,7 @@ namespace BansheeEngine
 		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);
 
 		GUIWidget& mParent;
+		GUILayout* mParentLayout;
 		GUILayoutOptions mLayoutOptions;
 		CM::Rect mBounds;
 

@@ -4,6 +4,7 @@
 #include "BsGUITexture.h"
 #include "BsGUIButton.h"
 #include "BsGUIToggle.h"
+#include "BsGUISpace.h"
 #include "BsGUIWindowMover.h"
 #include "BsEngineGUI.h"
 #include "CmMath.h"
@@ -63,9 +64,9 @@ namespace BansheeEditor
 
 		GUIArea* backgroundArea = GUIArea::create(*this, 0, 1, 0, 13, 500);
 		GUIWindowMover* titleBarBg = GUIWindowMover::create(*this, getSkin()->getStyle("TitleBarBackground"));
-		GUIFixedSpace& space1 = backgroundArea->getLayout().addSpace(1);
+		backgroundArea->getLayout().addSpace(1);
 		backgroundArea->getLayout().addElement(titleBarBg);
-		GUIFixedSpace& space2 = backgroundArea->getLayout().addSpace(1);
+		backgroundArea->getLayout().addSpace(1);
 
 		mMainArea = GUIArea::create(*this, 0, 1, 0, 13, 499);
 
@@ -75,13 +76,13 @@ namespace BansheeEditor
 		mMinBtn = GUIButton::create(*this, L"", getSkin()->getStyle("WinMinimizeBtn"));
 		mCloseBtn = GUIButton::create(*this, L"", getSkin()->getStyle("WinCloseBtn"));
 
-		GUIFixedSpace& space3 = mMainArea->getLayout().addSpace(1);
+		mMainArea->getLayout().addSpace(1);
 		mMainLayout = &mMainArea->getLayout().addLayoutX();
 		mMainLayout->addElement(dragDropElement);
 		mMainLayout->addElement(mMinBtn);
-		GUIFixedSpace& space4 = mMainLayout->addSpace(3);
+		mMainLayout->addSpace(3);
 		mMainLayout->addElement(mCloseBtn);
-		GUIFixedSpace& space5 = mMainArea->getLayout().addSpace(3);
+		mMainArea->getLayout().addSpace(3);
 
 		addTab("TEST!");
 	}
