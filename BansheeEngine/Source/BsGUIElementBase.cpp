@@ -62,8 +62,7 @@ namespace BansheeEngine
 	{
 		for(auto& child : mChildren)
 		{
-			if(child->_getType() == Type::Layout)
-				child->_updateOptimalLayoutSizes();
+			child->_updateOptimalLayoutSizes();
 		}
 	}
 
@@ -71,8 +70,7 @@ namespace BansheeEngine
 	{
 		for(auto& child : mChildren)
 		{
-			if(child->_getType() == Type::Layout)
-				child->_updateLayout(x, y, width, height, widgetDepth, areaDepth);
+			child->_updateLayoutInternal(x, y, width, height, widgetDepth, areaDepth);
 		}
 	}
 

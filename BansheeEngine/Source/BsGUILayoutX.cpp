@@ -11,11 +11,7 @@ namespace BansheeEngine
 	void GUILayoutX::_updateOptimalLayoutSizes()
 	{
 		// Update all children first, otherwise we can't determine out own optimal size
-		for(auto& child : mChildren)
-		{
-			if(child->_getType() == GUIElementBase::Type::Layout)
-				child->_updateOptimalLayoutSizes();
-		}
+		GUIElementBase::_updateOptimalLayoutSizes();
 
 		if(mChildren.size() != mOptimalSizes.size())
 			mOptimalSizes.resize(mChildren.size());
@@ -333,12 +329,12 @@ namespace BansheeEngine
 		childIdx = 0;
 		for(auto& child : mChildren)
 		{
-			UINT32 elementWidth = elementSizes[childIdx];
+			UINT32 elemWidth = elementSizes[childIdx];
 
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
-				element->_setWidth(elementWidth);
+				element->_setWidth(elemWidth);
 
 				UINT32 elemHeight = mOptimalSizes[childIdx].y;
 				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
@@ -365,19 +361,22 @@ namespace BansheeEngine
 				UINT32 clippedHeight = (UINT32)std::min((INT32)element->_getHeight(), (INT32)height - (INT32)yOffset);
 
 				element->_setClipRect(Rect(0, 0, clippedWidth, clippedHeight));
+				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, widgetDepth, areaDepth);
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
-				layout->_updateLayout(x + xOffset, y, elementWidth, height, widgetDepth, areaDepth);
+				layout->_updateLayoutInternal(x + xOffset, y, elemWidth, height, widgetDepth, areaDepth);
 			}
 
-			xOffset += elementWidth;
+			xOffset += elemWidth;
 			childIdx++;
 		}
 
 		stackDeallocLast(elementScaleWeights, HID_Main);
 		stackDeallocLast(elementSizes, HID_Main);
 		stackDeallocLast(processedElements, HID_Main);
+
+		_markAsClean();
 	}
 }

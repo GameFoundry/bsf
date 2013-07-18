@@ -4,6 +4,8 @@
 #include "BsGUIWidget.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUILayout.h"
+#include "BsGUISkin.h"
+#include "BsGUIButton.h"
 #include "CmException.h"
 
 using namespace CamelotFramework;
@@ -13,7 +15,15 @@ namespace BansheeEngine
 	GUIScrollBarVert::GUIScrollBarVert(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mLayout(nullptr)
 	{
-		// TODO - Init mLayout
+		mLayout = &addLayoutYInternal();
+
+		GUIButton* upBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollUpBtn"));
+		GUIButton* downBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollDownBtn"));
+		GUIButton* handleBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollBarVertBtn"));
+
+		mLayout->addElement(upBtn);
+		mLayout->addElement(handleBtn); // We might want a special element for this?
+		mLayout->addElement(downBtn);
 	}
 
 	GUIScrollBarVert::~GUIScrollBarVert()

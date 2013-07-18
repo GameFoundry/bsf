@@ -18,6 +18,7 @@
 #include "BsEngineGUI.h"
 #include "BsGUIArea.h"
 #include "BsGUITabbedTitleBar.h"
+#include "BsGUIScrollBarVert.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -65,7 +66,7 @@ namespace BansheeEditor
 
 		//// DEBUG
 		
-		GUIArea* dbgArea = GUIArea::create(*mGUI, 0, 13, 0, 0, 475);
+		GUIArea* dbgArea = GUIArea::create(*mGUI, 5, 13, 190, 0, 475);
 		GUILayout& layout = dbgArea->getLayout();
 		//
 		//mDbgLabel = GUILabel::create(*mGUI, "Testing test");
@@ -73,6 +74,7 @@ namespace BansheeEditor
 
 		layout.addElement(GUIInputBox::create(*mGUI));
 		layout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
+		layout.addElement(GUIScrollBarVert::create(*mGUI));
 		
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);

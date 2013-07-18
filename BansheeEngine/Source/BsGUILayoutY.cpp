@@ -11,11 +11,7 @@ namespace BansheeEngine
 	void GUILayoutY::_updateOptimalLayoutSizes()
 	{
 		// Update all children first, otherwise we can't determine out own optimal size
-		for(auto& child : mChildren)
-		{
-			if(child->_getType() == GUIElementBase::Type::Layout)
-				child->_updateOptimalLayoutSizes();
-		}
+		GUIElementBase::_updateOptimalLayoutSizes();
 
 		if(mChildren.size() != mOptimalSizes.size())
 			mOptimalSizes.resize(mChildren.size());
@@ -334,7 +330,7 @@ namespace BansheeEngine
 		childIdx = 0;
 		for(auto& child : mChildren)
 		{
-			UINT32 elementHeight = elementSizes[childIdx];
+			UINT32 elemHeight = elementSizes[childIdx];
 
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
@@ -352,9 +348,9 @@ namespace BansheeEngine
 				}
 
 				element->_setWidth(elemWidth);
-				element->_setHeight(elementHeight);
+				element->_setHeight(elemHeight);
 
-				UINT32 xOffset = (UINT32)Math::CeilToInt((width - element->_getHeight()) * 0.5f);
+				UINT32 xOffset = (UINT32)Math::CeilToInt((width - element->_getWidth()) * 0.5f);
 
 				Int2 offset(x + xOffset, y + yOffset);
 				element->_setOffset(offset);
@@ -365,19 +361,22 @@ namespace BansheeEngine
 				UINT32 clippedHeight = (UINT32)std::min((INT32)element->_getHeight(), (INT32)height - (INT32)yOffset);
 
 				element->_setClipRect(Rect(0, 0, clippedWidth, clippedHeight));
+				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, widgetDepth, areaDepth);
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
-				layout->_updateLayout(x, y + yOffset, width, elementHeight, widgetDepth, areaDepth);
+				layout->_updateLayoutInternal(x, y + yOffset, width, elemHeight, widgetDepth, areaDepth);
 			}
 
-			yOffset += elementHeight;
+			yOffset += elemHeight;
 			childIdx++;
 		}
 
 		stackDeallocLast(elementScaleWeights, HID_Main);
 		stackDeallocLast(elementSizes, HID_Main);
 		stackDeallocLast(processedElements, HID_Main);
+
+		_markAsClean();
 	}
 }

@@ -248,6 +248,124 @@ namespace BansheeEngine
 		inputBoxStyle.textVertAlign = TVA_Top;
 
 		mSkin.setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
+
+		/************************************************************************/
+		/* 								SCROLL BAR                      		*/
+		/************************************************************************/
+
+		// Up button
+		HTexture scrollUpBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarUpNormalTex));
+		HTexture scrollUpBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarUpHoverTex));
+		HTexture scrollUpBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarUpActiveTex));
+
+		GUIElementStyle scrollUpBtnStyle;
+		scrollUpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollUpBtnNormal));
+		scrollUpBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollUpBtnHover));
+		scrollUpBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollUpBtnActive));
+		scrollUpBtnStyle.fixedHeight = true;
+		scrollUpBtnStyle.fixedWidth = true;
+		scrollUpBtnStyle.height = 4;
+		scrollUpBtnStyle.width = 8;
+
+		mSkin.setStyle("ScrollUpBtn", scrollUpBtnStyle);
+
+		// Down button
+		HTexture scrollDownBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarDownNormalTex));
+		HTexture scrollDownBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarDownHoverTex));
+		HTexture scrollDownBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarDownActiveTex));
+
+		GUIElementStyle scrollDownBtnStyle;
+		scrollDownBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollDownBtnNormal));
+		scrollDownBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollDownBtnHover));
+		scrollDownBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollDownBtnActive));
+		scrollDownBtnStyle.fixedHeight = true;
+		scrollDownBtnStyle.fixedWidth = true;
+		scrollDownBtnStyle.height = 4;
+		scrollDownBtnStyle.width = 8;
+
+		mSkin.setStyle("ScrollDownBtn", scrollDownBtnStyle);
+
+		// Left button
+		HTexture scrollLeftBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarLeftNormalTex));
+		HTexture scrollLeftBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarLeftHoverTex));
+		HTexture scrollLeftBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarLeftActiveTex));
+
+		GUIElementStyle scrollLeftBtnStyle;
+		scrollLeftBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollLeftBtnNormal));
+		scrollLeftBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollLeftBtnHover));
+		scrollLeftBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollLeftBtnActive));
+		scrollLeftBtnStyle.fixedHeight = true;
+		scrollLeftBtnStyle.fixedWidth = true;
+		scrollLeftBtnStyle.height = 8;
+		scrollLeftBtnStyle.width = 4;
+
+		mSkin.setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
+
+		// Right button
+		HTexture scrollRightBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarRightNormalTex));
+		HTexture scrollRightBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarRightHoverTex));
+		HTexture scrollRightBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarRightActiveTex));
+
+		GUIElementStyle scrollRightBtnStyle;
+		scrollRightBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollRightBtnNormal));
+		scrollRightBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollRightBtnHover));
+		scrollRightBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollRightBtnActive));
+		scrollRightBtnStyle.fixedHeight = true;
+		scrollRightBtnStyle.fixedWidth = true;
+		scrollRightBtnStyle.height = 8;
+		scrollRightBtnStyle.width = 4;
+
+		mSkin.setStyle("ScrollRightBtn", scrollRightBtnStyle);
+
+		// Horizontal handle
+		HTexture scrollBarHorzBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleHorzNormalTex));
+		HTexture scrollBarHorzBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleHorzHoverTex));
+		HTexture scrollBarHorzBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleHorzActiveTex));
+
+		GUIElementStyle scrollBarHorzBtnStyle;
+		scrollBarHorzBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarHorzBtnNormal));
+		scrollBarHorzBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarHorzBtnHover));
+		scrollBarHorzBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarHorzBtnActive));
+		scrollBarHorzBtnStyle.fixedHeight = true;
+		scrollBarHorzBtnStyle.fixedWidth = true;
+		scrollBarHorzBtnStyle.height = 6;
+		scrollBarHorzBtnStyle.width = 4;
+
+		mSkin.setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
+
+		// Vertical handle
+		HTexture scrollBarVertBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleVertNormalTex));
+		HTexture scrollBarVertBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleVertHoverTex));
+		HTexture scrollBarVertBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleVertActiveTex));
+
+		GUIElementStyle scrollBarVertBtnStyle;
+		scrollBarVertBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarVertBtnNormal));
+		scrollBarVertBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarVertBtnHover));
+		scrollBarVertBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarVertBtnActive));
+		scrollBarVertBtnStyle.fixedHeight = true;
+		scrollBarVertBtnStyle.fixedWidth = true;
+		scrollBarVertBtnStyle.height = 4;
+		scrollBarVertBtnStyle.width = 6;
+
+		mSkin.setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
+
+		// Vertical scroll bar
+		GUIElementStyle vertScrollBarStyle;
+		vertScrollBarStyle.fixedHeight = false;
+		vertScrollBarStyle.fixedWidth = true;
+		vertScrollBarStyle.minHeight = 16;
+		vertScrollBarStyle.width = 8;
+
+		mSkin.setStyle("ScrollBarVert", vertScrollBarStyle);
+
+		// Horizontal scroll bar
+		GUIElementStyle horzScrollBarStyle;
+		horzScrollBarStyle.fixedHeight = true;
+		horzScrollBarStyle.fixedWidth = false;
+		horzScrollBarStyle.minWidth = 16;
+		horzScrollBarStyle.height = 8;
+
+		mSkin.setStyle("ScrollBarHorz", horzScrollBarStyle);
 	}
 
 }
