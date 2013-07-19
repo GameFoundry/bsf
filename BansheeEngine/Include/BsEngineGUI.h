@@ -66,5 +66,7 @@ namespace BansheeEngine
 		static const CM::String ScrollBarHandleVertNormalTex;
 		static const CM::String ScrollBarHandleVertHoverTex;
 		static const CM::String ScrollBarHandleVertActiveTex;
+
+		static const CM::String ScrollBarBgTex;
 	};
 }

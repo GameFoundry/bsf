@@ -66,6 +66,8 @@ namespace BansheeEngine
 	const String EngineGUI::ScrollBarHandleVertHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleHover.psd";
 	const String EngineGUI::ScrollBarHandleVertActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleActive.psd";
 
+	const String EngineGUI::ScrollBarBgTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarBg.psd";
+
 	EngineGUI::EngineGUI()
 	{
 		// TODO - Normally I want to load this from some file
@@ -349,8 +351,14 @@ namespace BansheeEngine
 
 		mSkin.setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
+		HTexture scrollBarBg = static_resource_cast<Texture>(Importer::instance().import(ScrollBarBgTex));
+		SpriteTexturePtr scrollBarBgPtr = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarBg));
+
 		// Vertical scroll bar
 		GUIElementStyle vertScrollBarStyle;
+		vertScrollBarStyle.normal.texture = scrollBarBgPtr;
+		vertScrollBarStyle.hover.texture = scrollBarBgPtr;
+		vertScrollBarStyle.active.texture = scrollBarBgPtr;
 		vertScrollBarStyle.fixedHeight = false;
 		vertScrollBarStyle.fixedWidth = true;
 		vertScrollBarStyle.minHeight = 16;
@@ -360,6 +368,9 @@ namespace BansheeEngine
 
 		// Horizontal scroll bar
 		GUIElementStyle horzScrollBarStyle;
+		horzScrollBarStyle.normal.texture = scrollBarBgPtr;
+		horzScrollBarStyle.hover.texture = scrollBarBgPtr;
+		horzScrollBarStyle.active.texture = scrollBarBgPtr;
 		horzScrollBarStyle.fixedHeight = true;
 		horzScrollBarStyle.fixedWidth = false;
 		horzScrollBarStyle.minWidth = 16;

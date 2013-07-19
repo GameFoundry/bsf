@@ -13,8 +13,6 @@ namespace BansheeEngine
 		static GUIScrollBarVert* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
 		static GUIScrollBarVert* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
-		void setText(const CM::WString& text);
-
 	protected:
 		~GUIScrollBarVert();
 
@@ -46,9 +44,12 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
+
+		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 	private:
 		GUIScrollBarVert(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		GUILayout* mLayout;
+		ImageSprite* mImageSprite;
 	};
 }

@@ -26,7 +26,6 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 - Hover colors of the scroll bar are wrong
-- GUIArea needs a margin, so it can still be resized with window but always with an offset
 - Scroll bar background
 - Add horizontal scrollbar
 - Resizable scroll handle (Special element)
