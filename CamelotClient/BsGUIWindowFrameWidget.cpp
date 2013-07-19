@@ -28,10 +28,10 @@ namespace BansheeEditor
 	{
 		GUIWidget::initialize(target, ownerWindow);
 
-		GUIArea* backgroundArea = GUIArea::create(*this, 0, 0, 0, 0, 500);
+		GUIArea* backgroundArea = GUIArea::createStretchedXY(*this, 0, 0, 0, 0, 500);
 		backgroundArea->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::expandableXY(), GUIImageScaleMode::RepeatToFit, getSkin()->getStyle("WindowBackground")));
 
-		mWindowFrameArea = GUIArea::create(*this, 0, 0, 0, 0, 499);
+		mWindowFrameArea = GUIArea::createStretchedXY(*this, 0, 0, 0, 0, 499);
 
 		mWindowFrame = GUIWindowFrame::create(*this, getSkin()->getStyle("WindowFrame"));
 		mWindowFrameArea->getLayout().addElement(mWindowFrame);

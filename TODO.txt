@@ -25,6 +25,13 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
+- Hover colors of the scroll bar are wrong
+- GUIArea needs a margin, so it can still be resized with window but always with an offset
+- Scroll bar background
+- Add horizontal scrollbar
+- Resizable scroll handle (Special element)
+  - Maybe a slider element I can re-use?
+
 TextBox needed elements:
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
   - Add special text input commands, which will get repeatedly sent as long as their corresponding key is set in GUIManager

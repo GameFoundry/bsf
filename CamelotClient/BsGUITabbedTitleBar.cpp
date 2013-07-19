@@ -62,13 +62,13 @@ namespace BansheeEditor
 	{
 		GUIWidget::initialize(target, ownerWindow);
 
-		GUIArea* backgroundArea = GUIArea::create(*this, 0, 1, 0, 13, 500);
+		GUIArea* backgroundArea = GUIArea::createStretchedX(*this, 0, 0, 1, 13, 500);
 		GUIWindowMover* titleBarBg = GUIWindowMover::create(*this, getSkin()->getStyle("TitleBarBackground"));
 		backgroundArea->getLayout().addSpace(1);
 		backgroundArea->getLayout().addElement(titleBarBg);
 		backgroundArea->getLayout().addSpace(1);
 
-		mMainArea = GUIArea::create(*this, 0, 1, 0, 13, 499);
+		mMainArea = GUIArea::createStretchedX(*this, 0, 0, 1, 13, 499);
 
 		GUIWindowMover* dragDropElement = GUIWindowMover::create(*this, GUILayoutOptions::expandableX(13, 20), getSkin()->getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
