@@ -18,8 +18,9 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIScrollBarHandle::GUIScrollBarHandle(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mHorizontal(false), mHandleSize(2)
+	GUIScrollBarHandle::GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, style, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
+		mHandleDragged(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mCurTexture = style->normal.texture;
@@ -30,7 +31,7 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, bool horizontal, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -38,10 +39,10 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, style, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, getDefaultLayoutOptions(style));
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, bool horizontal, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -49,7 +50,21 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, style, layoutOptions);
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, layoutOptions);
+	}
+
+	void GUIScrollBarHandle::setHandleSize(CM::UINT32 size)
+	{
+		mHandleSize = std::min(getMaxSize(), size);
+		markContentAsDirty();
+	}
+
+	void GUIScrollBarHandle::setHandlePos(float pct)
+	{
+		UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
+		mHandlePos = Math::FloorToInt(pct * maxScrollAmount);
+
+		markContentAsDirty();
 	}
 
 	UINT32 GUIScrollBarHandle::getNumRenderElements() const
@@ -85,7 +100,9 @@ namespace BansheeEngine
 
 		mImageSprite->update(desc);
 		mBounds = Rect(mOffset.x, mOffset.y, mWidth, mHeight);
-		mBounds.clip(mClipRect);
+
+		Rect localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		mBounds.clip(localClipRect);
 	}
 
 	UINT32 GUIScrollBarHandle::_getOptimalWidth() const
@@ -111,41 +128,153 @@ namespace BansheeEngine
 	void GUIScrollBarHandle::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
+		Int2 offset = mOffset;
+		if(mHorizontal)
+			offset.x += mHandlePos;
+		else
+			offset.y += mHandlePos;
+
+		Rect clipRect = mClipRect;
+		if(mHorizontal)
+			clipRect.x -= mHandlePos;
+		else
+			clipRect.y -= mHandlePos;
+
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-			vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+			vertexStride, indexStride, renderElementIdx, offset, clipRect);
 	}
 
 	bool GUIScrollBarHandle::mouseEvent(const GUIMouseEvent& ev)
 	{
-		if(ev.getType() == GUIMouseEventType::MouseOver)
+		if(ev.getType() == GUIMouseEventType::MouseMove)
 		{
-			mCurTexture = mStyle->hover.texture;
+			if(mMouseOverHandle)
+			{
+				if(!isOnHandle(ev.getPosition()))
+				{
+					mMouseOverHandle = false;
+
+					mCurTexture = mStyle->normal.texture;
+					markContentAsDirty();
+
+					return true;
+				}
+			}
+			else
+			{
+				if(isOnHandle(ev.getPosition()))
+				{
+					mMouseOverHandle = true;
+
+					mCurTexture = mStyle->hover.texture;
+					markContentAsDirty();
+
+					return true;
+				}
+			}
+		}
+
+		if(ev.getType() == GUIMouseEventType::MouseDown && mMouseOverHandle)
+		{
+			mCurTexture = mStyle->active.texture;
 			markContentAsDirty();
 
+			if(mHorizontal)
+			{
+				INT32 left = (INT32)mOffset.x + mHandlePos;
+				mDragStartPos = ev.getPosition().x - left;
+			}
+			else
+			{
+				INT32 top = (INT32)mOffset.y + mHandlePos;
+				mDragStartPos = ev.getPosition().y - top;
+			}
+
+			mHandleDragged = true;
 			return true;
 		}
-		else if(ev.getType() == GUIMouseEventType::MouseOut)
+
+		if(ev.getType() == GUIMouseEventType::MouseDrag && mHandleDragged)
+		{
+			if(mHorizontal)
+			{
+				mHandlePos = ev.getPosition().x - mDragStartPos - mOffset.x;
+			}
+			else
+			{
+				mHandlePos = ev.getPosition().y - mDragStartPos - mOffset.y;
+			}
+
+			UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
+			mHandlePos = Math::Clamp(mHandlePos, 0, (INT32)maxScrollAmount);
+
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUIMouseEventType::MouseOut && !mHandleDragged)
 		{
 			mCurTexture = mStyle->normal.texture;
 			markContentAsDirty();
 
 			return true;
 		}
-		else if(ev.getType() == GUIMouseEventType::MouseDown)
-		{
-			mCurTexture = mStyle->active.texture;
-			markContentAsDirty();
 
+		if(ev.getType() == GUIMouseEventType::MouseUp)
+		{
+			if(mMouseOverHandle)
+				mCurTexture = mStyle->hover.texture;
+			else
+				mCurTexture = mStyle->normal.texture;
+
+			markContentAsDirty();
 			return true;
 		}
-		else if(ev.getType() == GUIMouseEventType::MouseUp)
-		{
-			mCurTexture = mStyle->hover.texture;
-			markContentAsDirty();
 
+		if(ev.getType() == GUIMouseEventType::MouseDragEnd)
+		{
+			mHandleDragged = false;
+
+			if(mMouseOverHandle)
+				mCurTexture = mStyle->hover.texture;
+			else
+				mCurTexture = mStyle->normal.texture;
+
+			markContentAsDirty();
 			return true;
 		}
 		
 		return false;
+	}
+
+	bool GUIScrollBarHandle::isOnHandle(const CM::Int2& pos) const
+	{
+		if(mHorizontal)
+		{
+			INT32 left = (INT32)mOffset.x + mHandlePos;
+			INT32 right = left + mHandleSize;
+
+			if(pos.x >= left && pos.x < right)
+				return true;
+		}
+		else
+		{
+			INT32 top = (INT32)mOffset.y + mHandlePos;
+			INT32 bottom = top + mHandleSize;
+
+			if(pos.y >= top && pos.y < bottom)
+				return true;
+		}
+		
+		return false;
+	}
+
+	UINT32 GUIScrollBarHandle::getMaxSize() const
+	{
+		UINT32 maxSize = mHeight;
+		if(mHorizontal)
+			maxSize = mWidth;
+
+		return maxSize;
 	}
 }

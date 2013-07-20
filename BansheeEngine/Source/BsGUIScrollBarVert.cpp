@@ -6,6 +6,7 @@
 #include "BsGUILayout.h"
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
+#include "BsGUIScrollBarHandle.h"
 #include "BsGUISpace.h"
 #include "CmException.h"
 
@@ -22,7 +23,7 @@ namespace BansheeEngine
 
 		GUIButton* upBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollUpBtn"));
 		GUIButton* downBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollDownBtn"));
-		GUIButton* handleBtn = GUIButton::create(parent, L"", GUILayoutOptions::expandableY(6), parent.getSkin()->getStyle("ScrollBarVertBtn"));
+		GUIScrollBarHandle* handleBtn = GUIScrollBarHandle::create(parent, false, GUILayoutOptions::expandableY(6), parent.getSkin()->getStyle("ScrollBarVertBtn"));
 
 		mLayout->addSpace(2);
 		mLayout->addElement(upBtn);

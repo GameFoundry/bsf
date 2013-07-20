@@ -11,8 +11,12 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIScrollBarHandle* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
-		static GUIScrollBarHandle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIScrollBarHandle* create(GUIWidget& parent, bool horizontal, const GUIElementStyle* style = nullptr);
+		static GUIScrollBarHandle* create(GUIWidget& parent, bool horizontal, const GUILayoutOptions& layoutOptions, 
+			const GUIElementStyle* style = nullptr);
+
+		void setHandleSize(CM::UINT32 size);
+		void setHandlePos(float pct);
 	protected:
 		~GUIScrollBarHandle();
 
@@ -49,9 +53,15 @@ namespace BansheeEngine
 		CM::UINT32 mHandleSize;
 		SpriteTexturePtr mCurTexture;
 		bool mHorizontal; // Otherwise its vertical
+		CM::INT32 mHandlePos;
+		CM::INT32 mDragStartPos;
+		bool mMouseOverHandle;
+		bool mHandleDragged;
 
-		GUIScrollBarHandle(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		bool isOnHandle(const CM::Int2& pos) const;
+		CM::UINT32 getMaxSize() const;
 	};
 }
