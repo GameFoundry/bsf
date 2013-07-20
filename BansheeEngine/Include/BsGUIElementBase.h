@@ -29,9 +29,11 @@ namespace BansheeEngine
 		/**
 		 * @brief	Re-arranges the elements to fit the layout. (Internal use only)
 		 */
-		virtual void _updateLayout(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+		virtual void _updateLayout(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, 
+			CM::Rect clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 		virtual void _updateOptimalLayoutSizes();
-		virtual void _updateLayoutInternal(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+		virtual void _updateLayoutInternal(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height,
+			CM::Rect clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 
 		virtual CM::UINT32 _getOptimalWidth() const = 0;
 		virtual CM::UINT32 _getOptimalHeight() const = 0;

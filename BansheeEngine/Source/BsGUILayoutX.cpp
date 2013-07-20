@@ -78,7 +78,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutX::_updateLayoutInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUILayoutX::_updateLayoutInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 totalOptimalSize = _getOptimalWidth();
 		UINT32 totalNonClampedSize = 0;
@@ -357,16 +357,18 @@ namespace BansheeEngine
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
 
-				UINT32 clippedWidth = (UINT32)std::min((INT32)element->_getWidth(), (INT32)width - (INT32)xOffset);
-				UINT32 clippedHeight = (UINT32)std::min((INT32)element->_getHeight(), (INT32)height - (INT32)yOffset);
+				Rect elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+				element->_setClipRect(elemClipRect);
 
-				element->_setClipRect(Rect(0, 0, clippedWidth, clippedHeight));
-				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, widgetDepth, areaDepth);
+				Rect newClipRect(offset.x, offset.y, elemWidth, elemHeight);
+				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, newClipRect, widgetDepth, areaDepth);
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
-				layout->_updateLayoutInternal(x + xOffset, y, elemWidth, height, widgetDepth, areaDepth);
+
+				Rect newClipRect(x + xOffset, y, elemWidth, height);
+				layout->_updateLayoutInternal(x + xOffset, y, elemWidth, height, newClipRect, widgetDepth, areaDepth);
 			}
 
 			xOffset += elemWidth;
