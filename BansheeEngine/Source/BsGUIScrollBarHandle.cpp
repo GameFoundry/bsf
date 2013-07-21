@@ -208,6 +208,12 @@ namespace BansheeEngine
 			UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
 			mHandlePos = Math::Clamp(mHandlePos, 0, (INT32)maxScrollAmount);
 
+			if(!handleMoved.empty())
+			{
+				float pct = maxScrollAmount / (float)mHandlePos;
+				handleMoved(pct);
+			}
+
 			markContentAsDirty();
 			return true;
 		}

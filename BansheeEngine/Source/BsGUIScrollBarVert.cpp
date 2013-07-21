@@ -15,28 +15,34 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIScrollBarVert::GUIScrollBarVert(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mLayout(nullptr)
+		:GUIElement(parent, style, layoutOptions)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
 		mLayout = &addLayoutYInternal();
 
-		GUIButton* upBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollUpBtn"));
-		GUIButton* downBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollDownBtn"));
-		GUIScrollBarHandle* handleBtn = GUIScrollBarHandle::create(parent, false, GUILayoutOptions::expandableY(6), parent.getSkin()->getStyle("ScrollBarVertBtn"));
+		mUpBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollUpBtn"));
+		mDownBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollDownBtn"));
+		mHandleBtn = GUIScrollBarHandle::create(parent, false, GUILayoutOptions::expandableY(6), parent.getSkin()->getStyle("ScrollBarVertBtn"));
 
 		mLayout->addSpace(2);
-		mLayout->addElement(upBtn);
+		mLayout->addElement(mUpBtn);
 		mLayout->addSpace(2);
-		mLayout->addElement(handleBtn); // We might want a special element for this?
+		mLayout->addElement(mHandleBtn);
 		mLayout->addSpace(2);
-		mLayout->addElement(downBtn);
+		mLayout->addElement(mDownBtn);
 		mLayout->addSpace(2);
+
+		mHandleBtn->handleMoved.connect(boost::bind(&GUIScrollBarVert::handleMoved, this, _1));
 	}
 
 	GUIScrollBarVert::~GUIScrollBarVert()
 	{
 		cm_delete<PoolAlloc>(mImageSprite);
+
+		GUIElement::destroy(mUpBtn);
+		GUIElement::destroy(mDownBtn);
+		GUIElement::destroy(mHandleBtn);
 	}
 
 	UINT32 GUIScrollBarVert::getNumRenderElements() const
@@ -83,6 +89,22 @@ namespace BansheeEngine
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+	}
+
+	void GUIScrollBarVert::handleMoved(float handlePct)
+	{
+		if(!scrollPositionChanged.empty())
+			scrollPositionChanged(handlePct);
+	}
+
+	void GUIScrollBarVert::setHandleSize(UINT32 size)
+	{
+		mHandleBtn->setHandleSize(size);
+	}
+
+	void GUIScrollBarVert::setScrollPos(float pct)
+	{
+		mHandleBtn->setHandlePos(pct);
 	}
 
 	GUIScrollBarVert* GUIScrollBarVert::create(GUIWidget& parent, const GUIElementStyle* style)

@@ -2,6 +2,7 @@
 #include "BsGUILayout.h"
 #include "BsGUILayoutX.h"
 #include "BsGUILayoutY.h"
+#include "BsGUIElement.h"
 #include "CmException.h"
 
 using namespace CamelotFramework;
@@ -12,6 +13,21 @@ namespace BansheeEngine
 		:mIsDirty(true)
 	{
 
+	}
+
+	GUIElementBase::~GUIElementBase()
+	{
+		for(auto& child : mChildren)
+		{
+			// Non-GUIElement are owned by us
+			if(child->_getType() != GUIElementBase::Type::Element)
+				cm_delete<PoolAlloc>(child);
+			else
+			{
+				GUIElement* element = static_cast<GUIElement*>(child);
+				element->_setParentLayout(nullptr);
+			}
+		}
 	}
 
 	bool GUIElementBase::_isContentDirty() const

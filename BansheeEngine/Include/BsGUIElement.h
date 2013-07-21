@@ -107,9 +107,6 @@ namespace BansheeEngine
 		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
-
-		static void _destroyInternal(GUIElement* element);
-
 	protected:
 		virtual void updateRenderElementsInternal() = 0;
 

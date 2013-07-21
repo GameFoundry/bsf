@@ -2,26 +2,21 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
-#include "BsImageSprite.h"
-#include "boost/signal.hpp"
 
 namespace BansheeEngine
 {
-	class BS_EXPORT GUIScrollBarHandle : public GUIElement
+	class BS_EXPORT GUIScrollArea : public GUIElement
 	{
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIScrollBarHandle* create(GUIWidget& parent, bool horizontal, const GUIElementStyle* style = nullptr);
-		static GUIScrollBarHandle* create(GUIWidget& parent, bool horizontal, const GUILayoutOptions& layoutOptions, 
-			const GUIElementStyle* style = nullptr);
+		static GUIScrollArea* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
+		static GUIScrollArea* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
-		void setHandleSize(CM::UINT32 size);
-		void setHandlePos(float pct);
+		GUILayout& getLayout() const { return *mContentLayout; }
 
-		boost::signal<void(float newPosition)> handleMoved;
 	protected:
-		~GUIScrollBarHandle();
+		~GUIScrollArea();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
@@ -52,19 +47,22 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
 	private:
-		ImageSprite* mImageSprite;
-		CM::UINT32 mHandleSize;
-		SpriteTexturePtr mCurTexture;
-		bool mHorizontal; // Otherwise its vertical
-		CM::INT32 mHandlePos;
-		CM::INT32 mDragStartPos;
-		bool mMouseOverHandle;
-		bool mHandleDragged;
+		GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
-		GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUILayout* mContentLayout;
+		GUIScrollBarVert* mVertScroll;
+		GUIScrollBarHorz* mHorzScroll;
 
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		bool isOnHandle(const CM::Int2& pos) const;
-		CM::UINT32 getMaxSize() const;
+		CM::INT32 mVertOffset;
+		CM::INT32 mHorzOffset;
+
+		CM::UINT32 mContentWidth, mContentHeight;
+
+		static const CM::UINT32 ScrollBarWidth;
+
+		void vertScrollUpdate(float pct);
+		void horzScrollUpdate(float pct);
+		void _updateLayoutInternal(CM::UINT32 x, CM::UINT32 y, CM::UINT32 width, CM::UINT32 height,
+			CM::Rect clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 	};
 }

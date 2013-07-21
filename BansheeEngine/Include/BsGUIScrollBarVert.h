@@ -3,6 +3,8 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 
+#include "boost/signal.hpp"
+
 namespace BansheeEngine
 {
 	class BS_EXPORT GUIScrollBarVert : public GUIElement
@@ -13,6 +15,10 @@ namespace BansheeEngine
 		static GUIScrollBarVert* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
 		static GUIScrollBarVert* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
+		boost::signal<void(float newPosition)> scrollPositionChanged;
+
+		void setHandleSize(CM::UINT32 size);
+		void setScrollPos(float pct);
 	protected:
 		~GUIScrollBarVert();
 
@@ -51,5 +57,11 @@ namespace BansheeEngine
 
 		GUILayout* mLayout;
 		ImageSprite* mImageSprite;
+
+		GUIButton* mUpBtn;
+		GUIButton* mDownBtn;
+		GUIScrollBarHandle* mHandleBtn;
+
+		void handleMoved(float handlePct);
 	};
 }

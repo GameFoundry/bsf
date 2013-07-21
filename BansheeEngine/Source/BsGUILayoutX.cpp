@@ -327,9 +327,13 @@ namespace BansheeEngine
 		// Also assign offsets, clip rectangles and depth
 		UINT32 xOffset = 0;
 		childIdx = 0;
+
+		mActualWidth = 0;
+		mActualHeight = 0;
 		for(auto& child : mChildren)
 		{
 			UINT32 elemWidth = elementSizes[childIdx];
+			mActualWidth += elemWidth;
 
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
@@ -362,6 +366,8 @@ namespace BansheeEngine
 
 				Rect newClipRect(offset.x, offset.y, elemWidth, elemHeight);
 				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, newClipRect, widgetDepth, areaDepth);
+
+				mActualHeight = std::max(mActualHeight, elemHeight);
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
@@ -369,6 +375,9 @@ namespace BansheeEngine
 
 				Rect newClipRect(x + xOffset, y, elemWidth, height);
 				layout->_updateLayoutInternal(x + xOffset, y, elemWidth, height, newClipRect, widgetDepth, areaDepth);
+
+				UINT32 childHeight = layout->_getActualHeight();
+				mActualHeight = std::max(mActualHeight, childHeight);
 			}
 
 			xOffset += elemWidth;

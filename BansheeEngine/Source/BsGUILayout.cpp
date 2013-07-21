@@ -10,24 +10,14 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUILayout::GUILayout()
-		:mOptimalWidth(0), mOptimalHeight(0)
+		:mOptimalWidth(0), mOptimalHeight(0), mActualWidth(0), mActualHeight(0)
 	{
 
 	}
 
 	GUILayout::~GUILayout() 
 	{
-		for(auto& child : mChildren)
-		{
-			// Non-GUIElement are owned by us
-			if(child->_getType() != GUIElementBase::Type::Element)
-				cm_delete<PoolAlloc>(child);
-			else
-			{
-				GUIElement* element = static_cast<GUIElement*>(child);
-				element->_setParentLayout(nullptr);
-			}
-		}
+
 	}
 
 	void GUILayout::addElement(GUIElement* element)
@@ -164,10 +154,5 @@ namespace BansheeEngine
 		markContentAsDirty();
 
 		return *entry;
-	}
-
-	UINT32 GUILayout::getNumChildren() const
-	{
-		return (UINT32)mChildren.size();
 	}
 }

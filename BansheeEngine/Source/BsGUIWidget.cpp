@@ -35,9 +35,12 @@ namespace BansheeEngine
 		if(mTarget != nullptr)
 			GUIManager::instance().unregisterWidget(this);
 
-		for(auto& elem : mElements)
+		// Iterate over all elements in this way because each
+		// GUIElement::destroy call internally unregisters the element
+		// from the widget, and modifies the mElements array
+		for(UINT32 i = 0; i < (UINT32)mElements.size(); i++)
 		{
-			GUIElement::_destroyInternal(elem);
+			GUIElement::destroy(mElements[0]);
 		}
 
 		for(auto& area : mAreas)

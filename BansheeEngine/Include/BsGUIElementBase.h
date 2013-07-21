@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	public:
 		GUIElementBase();
-		virtual ~GUIElementBase() {}
+		virtual ~GUIElementBase();
 
 		/************************************************************************/
 		/* 							INTERNAL METHODS                      		*/

@@ -153,11 +153,6 @@ namespace BansheeEngine
 		return layoutOptions;
 	}
 
-	void GUIElement::_destroyInternal(GUIElement* element)
-	{
-		cm_delete<PoolAlloc>(element);
-	}
-
 	void GUIElement::destroy(GUIElement* element)
 	{
 		element->mParent.unregisterElement(element);

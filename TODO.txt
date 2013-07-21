@@ -26,10 +26,14 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 - Hover colors of the scroll bar are wrong
-- Scroll bar background
 - Add horizontal scrollbar
-- Resizable scroll handle (Special element)
-  - Maybe a slider element I can re-use?
+
+For tomorrow:
+Add another "content" layout to GUIScrollBarVert
+OVerride updateLayoutElements
+ - apply scroll offset(s) (both horz and vertical)
+ - remember last update layout width/height and adjust scroll handle size/position if it changed
+Ensure clip rects work as intended.
 
 TextBox needed elements:
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
