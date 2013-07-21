@@ -38,7 +38,7 @@ namespace BansheeEngine
 		// Iterate over all elements in this way because each
 		// GUIElement::destroy call internally unregisters the element
 		// from the widget, and modifies the mElements array
-		for(UINT32 i = 0; i < (UINT32)mElements.size(); i++)
+		while(mElements.size() > 0)
 		{
 			GUIElement::destroy(mElements[0]);
 		}
