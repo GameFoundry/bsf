@@ -51,6 +51,8 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
+
+		CM::UINT32 getMaxSize() const;
 	private:
 		ImageSprite* mImageSprite;
 		CM::UINT32 mHandleSize;
@@ -65,6 +67,5 @@ namespace BansheeEngine
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		bool isOnHandle(const CM::Int2& pos) const;
-		CM::UINT32 getMaxSize() const;
 	};
 }

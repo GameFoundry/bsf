@@ -18,7 +18,7 @@
 #include "BsEngineGUI.h"
 #include "BsGUIArea.h"
 #include "BsGUITabbedTitleBar.h"
-#include "BsGUIScrollBarVert.h"
+#include "BsGUIScrollArea.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -74,8 +74,24 @@ namespace BansheeEditor
 
 		layout.addElement(GUIInputBox::create(*mGUI));
 		layout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
-		layout.addElement(GUIScrollBarVert::create(*mGUI));
-		
+
+		GUIScrollArea* scrollArea = GUIScrollArea::create(*mGUI);
+		layout.addElement(scrollArea);
+
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test A"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test B"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test C"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test D"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test E"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test F"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test G"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test H"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test I"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test J"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test K"));
+		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test L"));
+
+
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);
 

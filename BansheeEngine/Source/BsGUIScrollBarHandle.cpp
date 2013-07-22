@@ -210,7 +210,7 @@ namespace BansheeEngine
 
 			if(!handleMoved.empty())
 			{
-				float pct = maxScrollAmount / (float)mHandlePos;
+				float pct = (float)mHandlePos / maxScrollAmount;
 				handleMoved(pct);
 			}
 

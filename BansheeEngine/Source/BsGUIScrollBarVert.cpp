@@ -107,6 +107,11 @@ namespace BansheeEngine
 		mHandleBtn->setHandlePos(pct);
 	}
 
+	CM::UINT32 GUIScrollBarVert::getMaxHandleSize() const
+	{
+		return mHandleBtn->getMaxSize();
+	}
+
 	GUIScrollBarVert* GUIScrollBarVert::create(GUIWidget& parent, const GUIElementStyle* style)
 	{
 		if(style == nullptr)

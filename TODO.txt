@@ -14,6 +14,11 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
  - Resizing from the left actually resizes the right side
  - Clipping areas outside of a widget (or GUIArea for that matter) are not set up at all
 
+Over the holidays:
+ - Get release mode working
+ - Profile code to see why it runs to slow in debug (AQTime probably)
+ - Window docking/undocking
+
 IMMEDIATE:
  - Clicking on a window to focus and immediately trying to drag/resize it, doesn't work. I first need to click, then click again to drag/resize.
  - OpenGL rendering slows to extremely with time (seems to be related to rendering, possibly GUI, possibly in general Pass/Material/Shader/PassParams)
@@ -25,15 +30,13 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
+- Seems the mouse-over bounds aren't right on the Tab button (I can't select it if I mouse over the bottom part)
+- When clipping scrolled GUIButton the text doesn't seem to get clipped properly
+- Clicking on the scroll buttons does nothing
+- Clicking on the empty scroll area doesn't do anything
+- Handle size is not dynamic
 - Hover colors of the scroll bar are wrong
 - Add horizontal scrollbar
-
-For tomorrow:
-Add another "content" layout to GUIScrollBarVert
-OVerride updateLayoutElements
- - apply scroll offset(s) (both horz and vertical)
- - remember last update layout width/height and adjust scroll handle size/position if it changed
-Ensure clip rects work as intended.
 
 TextBox needed elements:
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)

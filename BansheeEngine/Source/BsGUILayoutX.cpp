@@ -354,7 +354,7 @@ namespace BansheeEngine
 
 				element->_setHeight(elemHeight);
 
-				UINT32 yOffset = (UINT32)Math::CeilToInt((height - element->_getHeight()) * 0.5f);
+				INT32 yOffset = Math::CeilToInt(((INT32)height - (INT32)element->_getHeight()) * 0.5f);
 
 				Int2 offset(x + xOffset, y + yOffset);
 				element->_setOffset(offset);

@@ -19,6 +19,8 @@ namespace BansheeEngine
 
 		void setHandleSize(CM::UINT32 size);
 		void setScrollPos(float pct);
+
+		CM::UINT32 getMaxHandleSize() const;
 	protected:
 		~GUIScrollBarVert();
 

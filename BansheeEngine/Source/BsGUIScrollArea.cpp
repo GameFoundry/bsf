@@ -20,12 +20,6 @@ namespace BansheeEngine
 		mContentWidth(0), mContentHeight(0)
 	{
 		mContentLayout = &addLayoutYInternal();
-		mVertScroll = GUIScrollBarVert::create(parent);
-		
-		mVertScroll->scrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
-
-		mHorzScroll = GUIScrollBarHorz::create(parent);
-		// mHorzScroll->scrollPositionChanged.connect(boost::bind(&GUIScrollArea::horzScrollUpdate, this, _1)); // TODO - Enable
 	}
 
 	GUIScrollArea::~GUIScrollArea()
@@ -82,8 +76,11 @@ namespace BansheeEngine
 			contentWidth = mContentLayout->_getActualWidth();
 			contentHeight = mContentLayout->_getActualHeight();
 
-			mVertScroll = GUIScrollBarVert::create(_getParentWidget());
-			mVertScroll->scrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
+			if(mVertScroll == nullptr)
+			{
+				mVertScroll = GUIScrollBarVert::create(_getParentWidget());
+				mVertScroll->scrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
+			}
 
 			Int2 offset(x + contentWidth, y);
 			mVertScroll->_setOffset(offset);
@@ -92,8 +89,13 @@ namespace BansheeEngine
 			mVertScroll->_setAreaDepth(areaDepth);
 			mVertScroll->_setWidgetDepth(widgetDepth);
 
-			Rect elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			UINT32 clippedScrollbarWidth = std::min(width, ScrollBarWidth);
+			Rect elemClipRect(0, 0, clippedScrollbarWidth, clipRect.height);
 			mVertScroll->_setClipRect(elemClipRect);
+
+			// This element is not a child of any layout so we treat it as a root element
+			Rect scrollBarLayoutClipRect(clipRect.x + contentWidth, clipRect.y, clippedScrollbarWidth, clipRect.height);
+			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, height, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// TODO - Update scroll handle size and update position to match
 		}
@@ -114,12 +116,18 @@ namespace BansheeEngine
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)
 	{
-		mVertOffset = Math::FloorToInt(mContentHeight * scrollPos);
+		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentHeight) - INT32(mHeight));
+		mVertOffset = Math::FloorToInt(scrollableHeight * scrollPos);
+
+		markContentAsDirty();
 	}
 
 	void GUIScrollArea::horzScrollUpdate(float scrollPos)
 	{
-		mHorzOffset = Math::FloorToInt(mContentWidth * scrollPos);
+		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentWidth) - INT32(mWidth));
+		mHorzOffset = Math::FloorToInt(scrollableWidth * scrollPos);
+
+		markContentAsDirty();
 	}
 
 	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIElementStyle* style)
