@@ -19,6 +19,8 @@ namespace BansheeEngine
 		void setHandleSize(CM::UINT32 size);
 		void setHandlePos(float pct);
 
+		CM::UINT32 getMaxSize() const;
+
 		boost::signal<void(float newPosition)> handleMoved;
 	protected:
 		~GUIScrollBarHandle();
@@ -51,8 +53,6 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
-
-		CM::UINT32 getMaxSize() const;
 	private:
 		ImageSprite* mImageSprite;
 		CM::UINT32 mHandleSize;

@@ -13,7 +13,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const UINT32 GUIScrollArea::ScrollBarWidth = 6;
+	const UINT32 GUIScrollArea::ScrollBarWidth = 8;
+	const UINT32 GUIScrollArea::MinHandleSize = 4;
 
 	GUIScrollArea::GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
@@ -97,7 +98,15 @@ namespace BansheeEngine
 			Rect scrollBarLayoutClipRect(clipRect.x + contentWidth, clipRect.y, clippedScrollbarWidth, clipRect.height);
 			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, height, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
-			// TODO - Update scroll handle size and update position to match
+			// Set new handle size and update position to match the new size
+			UINT32 newHandleSize = (UINT32)Math::FloorToInt(mVertScroll->getMaxHandleSize() * (mHeight / (float)contentHeight));
+			newHandleSize = std::max(newHandleSize, MinHandleSize);
+
+			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(contentHeight) - INT32(mHeight));
+			float newScrollPct = mVertOffset / (float)scrollableHeight;
+
+			mVertScroll->setHandleSize(newHandleSize);
+			mVertScroll->setScrollPos(newScrollPct);
 		}
 		else
 		{

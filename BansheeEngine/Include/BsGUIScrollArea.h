@@ -59,6 +59,7 @@ namespace BansheeEngine
 		CM::UINT32 mContentWidth, mContentHeight;
 
 		static const CM::UINT32 ScrollBarWidth;
+		static const CM::UINT32 MinHandleSize;
 
 		void vertScrollUpdate(float pct);
 		void horzScrollUpdate(float pct);
