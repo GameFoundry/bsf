@@ -78,7 +78,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutX::_updateLayoutInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height, Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUILayoutX::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 totalOptimalSize = _getOptimalWidth();
 		UINT32 totalNonClampedSize = 0;
@@ -374,6 +374,7 @@ namespace BansheeEngine
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
 				Rect newClipRect(x + xOffset, y, elemWidth, height);
+				newClipRect.clip(clipRect);
 				layout->_updateLayoutInternal(x + xOffset, y, elemWidth, height, newClipRect, widgetDepth, areaDepth);
 
 				UINT32 childHeight = layout->_getActualHeight();

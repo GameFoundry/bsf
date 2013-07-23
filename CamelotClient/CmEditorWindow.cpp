@@ -72,24 +72,26 @@ namespace BansheeEditor
 		//mDbgLabel = GUILabel::create(*mGUI, "Testing test");
 		//layout.addElement(mDbgLabel);
 
-		layout.addElement(GUIInputBox::create(*mGUI));
-		layout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
+		//layout.addElement(GUIInputBox::create(*mGUI));
+		//layout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
 
 		GUIScrollArea* scrollArea = GUIScrollArea::create(*mGUI);
 		layout.addElement(scrollArea);
 
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test A"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test B"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test C"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test D"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test E"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test F"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test G"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test H"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test I"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test J"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test K"));
-		scrollArea->getLayout().addElement(GUIButton::create(*mGUI, L"Test L"));
+		GUILayout& scrollLayout = scrollArea->getLayout().addLayoutX();
+
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test A"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test B"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test C"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test D"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test E"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test F"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test G"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test H"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test I"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test J"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test K"));
+		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test L"));
 
 
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();

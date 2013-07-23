@@ -12,8 +12,6 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const UINT32 GUIScrollBarHandle::DefaultPageScrollAmount = 100;
-
 	const String& GUIScrollBarHandle::getGUITypeName()
 	{
 		static String name = "ScrollBarHandle";
@@ -22,7 +20,7 @@ namespace BansheeEngine
 
 	GUIScrollBarHandle::GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
-		mHandleDragged(false), mPageSize(DefaultPageScrollAmount)
+		mHandleDragged(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mCurTexture = style->normal.texture;
@@ -67,11 +65,6 @@ namespace BansheeEngine
 		mHandlePos = Math::FloorToInt(pct * maxScrollAmount);
 
 		markContentAsDirty();
-	}
-
-	void GUIScrollBarHandle::setPageSize(UINT32 size)
-	{
-		mPageSize = size;
 	}
 
 	float GUIScrollBarHandle::getHandlePos() const
@@ -259,9 +252,9 @@ namespace BansheeEngine
 				INT32 handleRight = handleLeft + mHandleSize;
 
 				if(ev.getPosition().x < handleLeft)
-					handleOffset -= mPageSize;
+					handleOffset -= mHandleSize;
 				else if(ev.getPosition().x > handleRight)
-					handleOffset += mPageSize;
+					handleOffset += mHandleSize;
 			}
 			else
 			{
@@ -269,9 +262,9 @@ namespace BansheeEngine
 				INT32 handleBottom = handleTop + mHandleSize;
 
 				if(ev.getPosition().y < handleTop)
-					handleOffset -= mPageSize;
+					handleOffset -= mHandleSize;
 				else if(ev.getPosition().y > handleBottom)
-					handleOffset += mPageSize;
+					handleOffset += mHandleSize;
 			}
 
 			mHandlePos += handleOffset;

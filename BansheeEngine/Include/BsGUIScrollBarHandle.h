@@ -18,7 +18,6 @@ namespace BansheeEngine
 
 		void setHandleSize(CM::UINT32 size);
 		void setHandlePos(float pct);
-		void setPageSize(CM::UINT32 size);
 
 		CM::UINT32 getScrollableSize() const;
 		float getHandlePos() const;
@@ -66,9 +65,6 @@ namespace BansheeEngine
 		CM::INT32 mDragStartPos;
 		bool mMouseOverHandle;
 		bool mHandleDragged;
-		CM::UINT32 mPageSize;
-
-		static const CM::UINT32 DefaultPageScrollAmount;
 
 		GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 

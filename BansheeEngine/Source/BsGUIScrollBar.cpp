@@ -28,7 +28,7 @@ namespace BansheeEngine
 			mUpBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollLeftBtn"));
 			mDownBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollRightBtn"));
 
-			mHandleBtn = GUIScrollBarHandle::create(parent, mHorizontal, GUILayoutOptions::expandableY(6), parent.getSkin()->getStyle("ScrollBarHorzBtn"));
+			mHandleBtn = GUIScrollBarHandle::create(parent, mHorizontal, GUILayoutOptions::expandableX(6), parent.getSkin()->getStyle("ScrollBarHorzBtn"));
 		}
 		else
 		{
@@ -155,10 +155,5 @@ namespace BansheeEngine
 	UINT32 GUIScrollBar::getScrollableSize() const
 	{
 		return mHandleBtn->getScrollableSize();
-	}
-
-	void GUIScrollBar::setPageSize(UINT32 size)
-	{
-		mHandleBtn->setPageSize(size);
 	}
 }

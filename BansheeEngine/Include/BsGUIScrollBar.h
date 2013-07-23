@@ -15,12 +15,6 @@ namespace BansheeEngine
 		void setHandleSize(CM::UINT32 size);
 		void setScrollPos(float pct);
 
-		/**
-		 * @brief	Sets a page size that is used for determining how far to jump
-		 * 			when clicking on the scrollbar empty space.
-		 */
-		void setPageSize(CM::UINT32 size);
-
 		CM::UINT32 getMaxHandleSize() const;
 		CM::UINT32 getScrollableSize() const;
 	protected:

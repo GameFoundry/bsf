@@ -134,7 +134,7 @@ namespace BansheeEngine
 		buttonStyle.contentOffset.right = 2;
 		buttonStyle.fixedHeight = true;
 		buttonStyle.height = 21;
-		buttonStyle.minWidth = 10;
+		buttonStyle.minWidth = 50;
 		buttonStyle.font = font;
 		buttonStyle.fontSize = DefaultFontSize;
 		buttonStyle.textHorzAlign = THA_Center;

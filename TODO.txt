@@ -32,8 +32,6 @@ IMMEDIATE:
 
 - Seems the mouse-over bounds aren't right on the Tab button (I can't select it if I mouse over the bottom part)
 - When clipping scrolled GUIButton the text doesn't seem to get clipped properly
-- Clicking on the scroll buttons does nothing
-- Clicking on the empty scroll area doesn't do anything
 - Hover colors of the scroll bar are wrong
 
 TextBox needed elements:

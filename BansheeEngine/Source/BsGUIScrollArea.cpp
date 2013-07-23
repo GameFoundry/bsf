@@ -60,20 +60,21 @@ namespace BansheeEngine
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{ }
 
-	void GUIScrollArea::_updateLayoutInternal(UINT32 x, UINT32 y, UINT32 width, UINT32 height,
+	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		mContentLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, areaDepth);
 		UINT32 contentWidth = mContentLayout->_getActualWidth();
 		UINT32 contentHeight = mContentLayout->_getActualHeight();
 
+		// Add/remove/update vertical scrollbar as needed
 		if(contentHeight > mHeight)
 		{
 			// Make room for scrollbar
 			UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
 
 			Rect layoutClipRect(clipRect.x, clipRect.y, contentWidth, clipRect.height);
-			mContentLayout->_updateLayoutInternal(x, y - mVertOffset, contentWidth, height, layoutClipRect, widgetDepth, areaDepth);
+			mContentLayout->_updateLayoutInternal(x, y - mVertOffset, contentWidth, height + mVertOffset, layoutClipRect, widgetDepth, areaDepth);
 			contentWidth = mContentLayout->_getActualWidth();
 			contentHeight = mContentLayout->_getActualHeight();
 
@@ -107,7 +108,6 @@ namespace BansheeEngine
 
 			mVertScroll->setHandleSize(newHandleSize);
 			mVertScroll->setScrollPos(newScrollPct);
-			mVertScroll->setPageSize(mHeight);
 		}
 		else
 		{
@@ -118,7 +118,56 @@ namespace BansheeEngine
 			}
 		}
 
-		// TODO - Add horizontal scroll bar
+		// Add/remove/update horizontal scrollbar as needed
+		if(contentWidth > mWidth)
+		{
+			// Make room for scrollbar
+			UINT32 contentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+
+			Rect layoutClipRect(clipRect.x, clipRect.y, clipRect.width, contentHeight);
+			mContentLayout->_updateLayoutInternal(x - mHorzOffset, y, width + mHorzOffset, contentHeight, layoutClipRect, widgetDepth, areaDepth);
+			contentWidth = mContentLayout->_getActualWidth();
+			contentHeight = mContentLayout->_getActualHeight();
+
+			if(mHorzScroll == nullptr)
+			{
+				mHorzScroll = GUIScrollBarHorz::create(_getParentWidget());
+				mHorzScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::horzScrollUpdate, this, _1));
+			}
+
+			Int2 offset(x, y + contentHeight);
+			mHorzScroll->_setOffset(offset);
+			mHorzScroll->_setWidth(width);
+			mHorzScroll->_setHeight(ScrollBarWidth);
+			mHorzScroll->_setAreaDepth(areaDepth);
+			mHorzScroll->_setWidgetDepth(widgetDepth);
+
+			UINT32 clippedScrollbarHeight = std::min(height, ScrollBarWidth);
+			Rect elemClipRect(0, 0, clipRect.width, clippedScrollbarHeight);
+			mHorzScroll->_setClipRect(elemClipRect);
+
+			// This element is not a child of any layout so we treat it as a root element
+			Rect scrollBarLayoutClipRect(clipRect.x, clipRect.y + contentHeight, clipRect.width, clippedScrollbarHeight);
+			mHorzScroll->_updateLayout(offset.x, offset.y, width, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
+
+			// Set new handle size and update position to match the new size
+			UINT32 newHandleSize = (UINT32)Math::FloorToInt(mHorzScroll->getMaxHandleSize() * (mWidth / (float)contentWidth));
+			newHandleSize = std::max(newHandleSize, MinHandleSize);
+
+			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(contentWidth) - INT32(mWidth));
+			float newScrollPct = mHorzOffset / (float)scrollableWidth;
+
+			mHorzScroll->setHandleSize(newHandleSize);
+			mHorzScroll->setScrollPos(newScrollPct);
+		}
+		else
+		{
+			if(mHorzScroll != nullptr)
+			{
+				GUIElement::destroy(mHorzScroll);
+				mHorzScroll = nullptr;
+			}
+		}
 		
 		mContentWidth = contentWidth;
 		mContentHeight = contentHeight;

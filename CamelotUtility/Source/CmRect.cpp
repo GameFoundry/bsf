@@ -69,7 +69,7 @@ namespace CamelotFramework
 		int newTop = std::max(y, clipRect.y);
 
 		int newRight = std::min(x + width, clipRect.x + clipRect.width);
-		int newBottom = std::min(y + height, clipRect.x + clipRect.height);
+		int newBottom = std::min(y + height, clipRect.y + clipRect.height);
 
 		x = newLeft;
 		y = newTop;
