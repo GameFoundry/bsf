@@ -12,6 +12,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	const UINT32 GUIScrollBarHandle::DefaultPageScrollAmount = 100;
+
 	const String& GUIScrollBarHandle::getGUITypeName()
 	{
 		static String name = "ScrollBarHandle";
@@ -20,7 +22,7 @@ namespace BansheeEngine
 
 	GUIScrollBarHandle::GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
-		mHandleDragged(false)
+		mHandleDragged(false), mPageSize(DefaultPageScrollAmount)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mCurTexture = style->normal.texture;
@@ -65,6 +67,22 @@ namespace BansheeEngine
 		mHandlePos = Math::FloorToInt(pct * maxScrollAmount);
 
 		markContentAsDirty();
+	}
+
+	void GUIScrollBarHandle::setPageSize(UINT32 size)
+	{
+		mPageSize = size;
+	}
+
+	float GUIScrollBarHandle::getHandlePos() const
+	{
+		UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
+		return (float)mHandlePos / maxScrollAmount;
+	}
+
+	UINT32 GUIScrollBarHandle::getScrollableSize() const
+	{
+		return getMaxSize() - mHandleSize;
 	}
 
 	UINT32 GUIScrollBarHandle::getNumRenderElements() const
@@ -208,10 +226,10 @@ namespace BansheeEngine
 			UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
 			mHandlePos = Math::Clamp(mHandlePos, 0, (INT32)maxScrollAmount);
 
-			if(!handleMoved.empty())
+			if(!onHandleMoved.empty())
 			{
 				float pct = (float)mHandlePos / maxScrollAmount;
-				handleMoved(pct);
+				onHandleMoved(pct);
 			}
 
 			markContentAsDirty();
@@ -232,6 +250,39 @@ namespace BansheeEngine
 				mCurTexture = mStyle->hover.texture;
 			else
 				mCurTexture = mStyle->normal.texture;
+
+			// If we clicked above or below the scroll handle, scroll by one page
+			INT32 handleOffset = 0;
+			if(mHorizontal)
+			{
+				INT32 handleLeft = (INT32)mOffset.x + mHandlePos;
+				INT32 handleRight = handleLeft + mHandleSize;
+
+				if(ev.getPosition().x < handleLeft)
+					handleOffset -= mPageSize;
+				else if(ev.getPosition().x > handleRight)
+					handleOffset += mPageSize;
+			}
+			else
+			{
+				INT32 handleTop = (INT32)mOffset.y + mHandlePos;
+				INT32 handleBottom = handleTop + mHandleSize;
+
+				if(ev.getPosition().y < handleTop)
+					handleOffset -= mPageSize;
+				else if(ev.getPosition().y > handleBottom)
+					handleOffset += mPageSize;
+			}
+
+			mHandlePos += handleOffset;
+			UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
+			mHandlePos = Math::Clamp(mHandlePos, 0, (INT32)maxScrollAmount);
+
+			if(!onHandleMoved.empty())
+			{
+				float pct = (float)mHandlePos / maxScrollAmount;
+				onHandleMoved(pct);
+			}
 
 			markContentAsDirty();
 			return true;

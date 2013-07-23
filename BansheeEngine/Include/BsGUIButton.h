@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
+#include "boost/signal.hpp"
 
 namespace BansheeEngine
 {
@@ -13,6 +14,8 @@ namespace BansheeEngine
 
 		static GUIButton* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
 		static GUIButton* create(GUIWidget& parent, const CM::WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+	
+		boost::signal<void()> onClick;
 	protected:
 		~GUIButton();
 

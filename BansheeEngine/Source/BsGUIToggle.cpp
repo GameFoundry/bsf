@@ -206,6 +206,10 @@ namespace BansheeEngine
 				mImageDesc.texture = mStyle->normal.texture;
 
 			markContentAsDirty();
+
+			if(!onToggled.empty())
+				onToggled(mIsToggled);
+
 			return true;
 		}
 

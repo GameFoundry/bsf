@@ -579,6 +579,13 @@ namespace CamelotFramework
 			return std::max(std::min(val, maxval), minval);
 		}
 
+		/** Clamp a value within an inclusive range. */
+		template <typename T>
+		static T Clamp01(T val)
+		{
+			return std::max(std::min(val, (T)1), (T)0);
+		}
+
 		static Matrix4 makeViewMatrix(const Vector3& position, const Quaternion& orientation, 
 			const Matrix4* reflectMatrix = 0);
 

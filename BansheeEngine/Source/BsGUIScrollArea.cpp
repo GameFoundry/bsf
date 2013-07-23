@@ -80,7 +80,7 @@ namespace BansheeEngine
 			if(mVertScroll == nullptr)
 			{
 				mVertScroll = GUIScrollBarVert::create(_getParentWidget());
-				mVertScroll->scrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
+				mVertScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
 			}
 
 			Int2 offset(x + contentWidth, y);
@@ -107,6 +107,7 @@ namespace BansheeEngine
 
 			mVertScroll->setHandleSize(newHandleSize);
 			mVertScroll->setScrollPos(newScrollPct);
+			mVertScroll->setPageSize(mHeight);
 		}
 		else
 		{

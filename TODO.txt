@@ -35,7 +35,6 @@ IMMEDIATE:
 - Clicking on the scroll buttons does nothing
 - Clicking on the empty scroll area doesn't do anything
 - Hover colors of the scroll bar are wrong
-- Add horizontal scrollbar
 
 TextBox needed elements:
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)

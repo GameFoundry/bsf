@@ -192,6 +192,9 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->hover.texture;
 			markContentAsDirty();
 
+			if(!onClick.empty())
+				onClick();
+
 			return true;
 		}
 		

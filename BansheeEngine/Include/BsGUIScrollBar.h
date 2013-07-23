@@ -10,12 +10,19 @@ namespace BansheeEngine
 	class BS_EXPORT GUIScrollBar : public GUIElement
 	{
 	public:
-		boost::signal<void(float newPosition)> scrollPositionChanged;
+		boost::signal<void(float newPosition)> onScrollPositionChanged;
 
 		void setHandleSize(CM::UINT32 size);
 		void setScrollPos(float pct);
 
+		/**
+		 * @brief	Sets a page size that is used for determining how far to jump
+		 * 			when clicking on the scrollbar empty space.
+		 */
+		void setPageSize(CM::UINT32 size);
+
 		CM::UINT32 getMaxHandleSize() const;
+		CM::UINT32 getScrollableSize() const;
 	protected:
 		GUIScrollBar(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIScrollBar();
@@ -59,6 +66,10 @@ namespace BansheeEngine
 		GUIScrollBarHandle* mHandleBtn;
 		bool mHorizontal;
 
+		static const CM::UINT32 ButtonScrollAmount;
+
 		void handleMoved(float handlePct);
+		void upButtonClicked();
+		void downButtonClicked();
 	};
 }

@@ -14,6 +14,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	const UINT32 GUIScrollBar::ButtonScrollAmount = 10;
+
 	GUIScrollBar::GUIScrollBar(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mHorizontal(horizontal)
 	{
@@ -46,7 +48,10 @@ namespace BansheeEngine
 		mLayout->addElement(mDownBtn);
 		mLayout->addSpace(2);
 
-		mHandleBtn->handleMoved.connect(boost::bind(&GUIScrollBar::handleMoved, this, _1));
+		mHandleBtn->onHandleMoved.connect(boost::bind(&GUIScrollBar::handleMoved, this, _1));
+
+		mUpBtn->onClick.connect(boost::bind(&GUIScrollBar::upButtonClicked, this));
+		mDownBtn->onClick.connect(boost::bind(&GUIScrollBar::downButtonClicked, this));
 	}
 
 	GUIScrollBar::~GUIScrollBar()
@@ -106,8 +111,30 @@ namespace BansheeEngine
 
 	void GUIScrollBar::handleMoved(float handlePct)
 	{
-		if(!scrollPositionChanged.empty())
-			scrollPositionChanged(handlePct);
+		if(!onScrollPositionChanged.empty())
+			onScrollPositionChanged(handlePct);
+	}
+
+	void GUIScrollBar::upButtonClicked()
+	{
+		float handleOffset = ButtonScrollAmount / (float)mHandleBtn->getScrollableSize();
+		float newHandlePos = std::max(0.0f, mHandleBtn->getHandlePos() - handleOffset);
+
+		mHandleBtn->setHandlePos(newHandlePos);
+
+		if(!onScrollPositionChanged.empty())
+			onScrollPositionChanged(newHandlePos);
+	}
+
+	void GUIScrollBar::downButtonClicked()
+	{
+		float handleOffset = ButtonScrollAmount / (float)mHandleBtn->getScrollableSize();
+		float newHandlePos = std::min(1.0f, mHandleBtn->getHandlePos() + handleOffset);
+
+		mHandleBtn->setHandlePos(newHandlePos);
+
+		if(!onScrollPositionChanged.empty())
+			onScrollPositionChanged(newHandlePos);
 	}
 
 	void GUIScrollBar::setHandleSize(UINT32 size)
@@ -120,8 +147,18 @@ namespace BansheeEngine
 		mHandleBtn->setHandlePos(pct);
 	}
 
-	CM::UINT32 GUIScrollBar::getMaxHandleSize() const
+	UINT32 GUIScrollBar::getMaxHandleSize() const
 	{
 		return mHandleBtn->getMaxSize();
+	}
+
+	UINT32 GUIScrollBar::getScrollableSize() const
+	{
+		return mHandleBtn->getScrollableSize();
+	}
+
+	void GUIScrollBar::setPageSize(UINT32 size)
+	{
+		mHandleBtn->setPageSize(size);
 	}
 }
