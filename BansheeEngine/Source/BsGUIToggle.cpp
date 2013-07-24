@@ -152,7 +152,7 @@ namespace BansheeEngine
 		{
 			Rect textBounds = getContentBounds();
 			Int2 offset(textBounds.x, textBounds.y);
-			Rect textClipRect = getTextClipRect();
+			Rect textClipRect = getContentClipRect();
 
 			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
 				vertexStride, indexStride, mNumImageRenderElements - renderElementIdx, offset, textClipRect);
@@ -214,12 +214,5 @@ namespace BansheeEngine
 		}
 
 		return false;
-	}
-
-	CM::Rect GUIToggle::getTextClipRect() const
-	{
-		Rect textBounds = getContentBounds();
-
-		return Rect(0, 0, textBounds.width, textBounds.height);
 	}
 }

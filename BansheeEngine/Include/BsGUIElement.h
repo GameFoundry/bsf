@@ -114,6 +114,7 @@ namespace BansheeEngine
 		
 		CM::Rect getVisibleBounds() const;
 		CM::Rect getContentBounds() const;
+		CM::Rect getContentClipRect() const;
 
 		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);
 

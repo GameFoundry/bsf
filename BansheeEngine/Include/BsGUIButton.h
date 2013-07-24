@@ -60,6 +60,5 @@ namespace BansheeEngine
 		GUIButton(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		CM::Rect getTextClipRect() const;
 	};
 }

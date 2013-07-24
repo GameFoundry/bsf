@@ -130,6 +130,22 @@ namespace BansheeEngine
 		return bounds;
 	}
 
+	Rect GUIElement::getContentClipRect() const
+	{
+		Rect contentBounds = getContentBounds();
+		
+		// Transform into element space so we can clip it using the element clip rectangle
+		Int2 offsetDiff = Int2(contentBounds.x - mOffset.x, contentBounds.y - mOffset.y);
+		Rect contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
+		contentClipRect.clip(mClipRect);
+
+		// Transform into text sprite space
+		contentClipRect.x -= offsetDiff.x;
+		contentClipRect.y -= offsetDiff.y;
+
+		return contentClipRect;
+	}
+
 	bool GUIElement::_isInBounds(const CM::Int2 position) const
 	{
 		Rect contentBounds = getVisibleBounds();
