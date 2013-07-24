@@ -207,14 +207,22 @@ namespace BansheeEngine
 		Vector2 max;
 
 		// Find starting point
+		bool foundStartingPoint = false;
 		for(auto& renderElem : mCachedRenderElements)
 		{
 			if(renderElem.vertices != nullptr && renderElem.numQuads > 0)
 			{
 				min = renderElem.vertices[0];
 				max = renderElem.vertices[0];
+				foundStartingPoint = true;
 				break;
 			}
+		}
+
+		if(!foundStartingPoint)
+		{
+			mBounds = Rect(0, 0, 0, 0);
+			return;
 		}
 
 		// Calculate bounds

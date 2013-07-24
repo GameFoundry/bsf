@@ -27,6 +27,11 @@ namespace BansheeEngine
 		_markAsClean();
 	}
 
+	void GUIElement::updateRenderElementsInternal()
+	{
+		updateBounds();
+	}
+
 	void GUIElement::setLayoutOptions(const GUILayoutOptions& layoutOptions) 
 	{
 		if(layoutOptions.maxWidth < layoutOptions.minWidth)
@@ -75,9 +80,12 @@ namespace BansheeEngine
 	void GUIElement::_setOffset(const CM::Int2& offset) 
 	{ 
 		if(mOffset != offset)
+		{
 			markMeshAsDirty();
 
-		mOffset = offset;
+			mOffset = offset;
+			updateBounds();
+		}
 	}
 
 	void GUIElement::_setWidth(UINT32 width) 
@@ -99,9 +107,12 @@ namespace BansheeEngine
 	void GUIElement::_setClipRect(const CM::Rect& clipRect) 
 	{ 
 		if(mClipRect != clipRect)
+		{
 			markMeshAsDirty();
 
-		mClipRect = clipRect; 
+			mClipRect = clipRect; 
+			updateBounds();
+		}
 	}
 
 	Rect GUIElement::getVisibleBounds() const

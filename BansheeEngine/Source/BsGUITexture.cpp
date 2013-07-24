@@ -158,6 +158,12 @@ namespace BansheeEngine
 		}
 
 		mImageSprite->update(mDesc);
+		
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUITexture::updateBounds()
+	{
 		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 

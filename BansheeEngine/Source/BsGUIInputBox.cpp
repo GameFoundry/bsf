@@ -117,7 +117,6 @@ namespace BansheeEngine
 		mImageDesc.height = mHeight;
 
 		mImageSprite->update(mImageDesc);
-		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		mTextSprite->update(textDesc);
@@ -133,6 +132,13 @@ namespace BansheeEngine
 			gGUIManager().getInputSelectionTool()->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
 			gGUIManager().getInputSelectionTool()->updateSprite();
 		}
+
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUIInputBox::updateBounds()
+	{
+		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	Sprite* GUIInputBox::renderElemToSprite(UINT32 renderElemIdx, UINT32& localRenderElemIdx) const

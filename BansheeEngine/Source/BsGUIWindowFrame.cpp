@@ -164,6 +164,11 @@ namespace BansheeEngine
 		mDesc.height = mHeight;
 
 		mImageSprite->update(mDesc);
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUIWindowFrame::updateBounds()
+	{
 		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 

@@ -30,8 +30,6 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
-- Seems the mouse-over bounds aren't right on the Tab button (I can't select it if I mouse over the bottom part)
-- When clipping scrolled GUIButton the text doesn't seem to get clipped properly
 - Test if horizontal + vert scroll works together
 - After resize scroll bar buttons don't work
 - Scroll bar doesn't update its hover state properly (or its perpetually in hover state).

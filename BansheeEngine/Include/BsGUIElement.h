@@ -108,7 +108,8 @@ namespace BansheeEngine
 
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 	protected:
-		virtual void updateRenderElementsInternal() = 0;
+		virtual void updateRenderElementsInternal();
+		virtual void updateBounds() = 0;
 
 		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
 		

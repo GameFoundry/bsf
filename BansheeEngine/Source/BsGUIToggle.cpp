@@ -99,7 +99,6 @@ namespace BansheeEngine
 		mImageDesc.height = mHeight;
 
 		mImageSprite->update(mImageDesc);
-		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 		mNumImageRenderElements = mImageSprite->getNumRenderElements();
 
 		TEXT_SPRITE_DESC textDesc;
@@ -115,6 +114,13 @@ namespace BansheeEngine
 		textDesc.vertAlign = mStyle->textVertAlign;
 
 		mTextSprite->update(textDesc);
+
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUIToggle::updateBounds()
+	{
+		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUIToggle::_getOptimalWidth() const

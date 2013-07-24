@@ -49,6 +49,12 @@ namespace BansheeEngine
 		mDesc.height = mHeight;
 
 		mTextSprite->update(mDesc);
+
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUILabel::updateBounds()
+	{
 		mBounds = mTextSprite->getBounds(mOffset, mClipRect);
 	}
 

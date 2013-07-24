@@ -86,6 +86,13 @@ namespace BansheeEngine
 		desc.height = mHeight;
 
 		mImageSprite->update(desc);
+
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUIScrollBar::updateBounds()
+	{
+		mBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
 	}
 
 	UINT32 GUIScrollBar::_getOptimalWidth() const

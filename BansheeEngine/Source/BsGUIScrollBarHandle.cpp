@@ -110,6 +110,12 @@ namespace BansheeEngine
 		}
 
 		mImageSprite->update(desc);
+		
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUIScrollBarHandle::updateBounds()
+	{
 		mBounds = Rect(mOffset.x, mOffset.y, mWidth, mHeight);
 
 		Rect localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);

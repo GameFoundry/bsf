@@ -44,7 +44,14 @@ namespace BansheeEngine
 	}
 
 	void GUIScrollArea::updateRenderElementsInternal()
-	{ }
+	{
+		GUIElement::updateRenderElementsInternal();
+	}
+
+	void GUIScrollArea::updateBounds()
+	{
+		mBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
+	}
 
 	UINT32 GUIScrollArea::_getOptimalWidth() const
 	{
