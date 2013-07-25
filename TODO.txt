@@ -39,6 +39,7 @@ IMMEDIATE:
 - InputBox text clip rect is probably wrong as it doesn't account parent element clip rect
  (possibly selection and caret clip rects too)
 - Hover colors of the scroll bar are wrong
+- Ability to scroll by just mousing over and moving the scroll wheel
 
 TextBox needed elements:
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
