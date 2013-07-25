@@ -80,19 +80,22 @@ namespace BansheeEditor
 
 		GUILayout& scrollLayout = scrollArea->getLayout().addLayoutX();
 
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test A"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test B"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test C"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test D"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test E"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test F"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test G"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test H"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test I"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test J"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test K"));
-		scrollLayout.addElement(GUIButton::create(*mGUI, L"Test L"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test A"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test B"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test C"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test D"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test E"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test F"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test G"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test H"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test I"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test J"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test K"));
+		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test L"));
 
+		scrollLayout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
+		scrollLayout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
+		scrollLayout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
 
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);

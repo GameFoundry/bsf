@@ -246,7 +246,7 @@ namespace BansheeEngine
 							numNonClampedElements--;
 						}
 
-						extraHeight = elementHeight - elementSizes[childIdx];
+						extraHeight = elementSizes[childIdx] - elementHeight;
 						elementSizes[childIdx] = elementHeight;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraHeight);
 					}
@@ -334,8 +334,7 @@ namespace BansheeEngine
 		for(auto& child : mChildren)
 		{
 			UINT32 elemHeight = elementSizes[childIdx];
-			mActualHeight += elemHeight;
-
+			
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
@@ -377,10 +376,15 @@ namespace BansheeEngine
 				newClipRect.clip(clipRect);
 				layout->_updateLayoutInternal(x, y + yOffset, width, elemHeight, newClipRect, widgetDepth, areaDepth);
 
-				UINT32 childWidth = layout->_getActualWidth();
-				mActualWidth = std::max(mActualWidth, childWidth);
+				mActualWidth = std::max(mActualWidth, layout->_getActualWidth());
+
+				// It's possible all elements didn't fit in the child layout size we provided, in which case expand our measurements
+				CM::UINT32 childLayoutHeight = layout->_getActualHeight();
+				if(childLayoutHeight > elemHeight)
+					elemHeight = childLayoutHeight;
 			}
 
+			mActualHeight += elemHeight;
 			yOffset += elemHeight;
 			childIdx++;
 		}

@@ -78,13 +78,11 @@ namespace BansheeEngine
 		if(contentHeight > mHeight)
 		{
 			// Make room for scrollbar
-			UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
+			UINT32 clippedContentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
 
-			Rect layoutClipRect(clipRect.x, clipRect.y, contentWidth, clipRect.height);
-			mContentLayout->_updateLayoutInternal(x, y - Math::FloorToInt(mVertOffset), contentWidth, height + Math::FloorToInt(mVertOffset), 
+			Rect layoutClipRect(clipRect.x, clipRect.y, clippedContentWidth, clipRect.height);
+			mContentLayout->_updateLayoutInternal(x, y - Math::FloorToInt(mVertOffset), clippedContentWidth, height + Math::FloorToInt(mVertOffset), 
 				layoutClipRect, widgetDepth, areaDepth);
-			contentWidth = mContentLayout->_getActualWidth();
-			contentHeight = mContentLayout->_getActualHeight();
 
 			if(mVertScroll == nullptr)
 			{
@@ -92,7 +90,7 @@ namespace BansheeEngine
 				mVertScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
 			}
 
-			Int2 offset(x + contentWidth, y);
+			Int2 offset(x + clippedContentWidth, y);
 			mVertScroll->_setOffset(offset);
 			mVertScroll->_setWidth(ScrollBarWidth);
 			mVertScroll->_setHeight(height);
@@ -104,7 +102,7 @@ namespace BansheeEngine
 			mVertScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			Rect scrollBarLayoutClipRect(clipRect.x + contentWidth, clipRect.y, clippedScrollbarWidth, clipRect.height);
+			Rect scrollBarLayoutClipRect(clipRect.x + clippedContentWidth, clipRect.y, clippedScrollbarWidth, clipRect.height);
 			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, height, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
@@ -130,13 +128,11 @@ namespace BansheeEngine
 		if(contentWidth > mWidth)
 		{ 
 			// Make room for scrollbar
-			UINT32 contentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+			UINT32 clippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
 
-			Rect layoutClipRect(clipRect.x, clipRect.y, clipRect.width, contentHeight);
+			Rect layoutClipRect(clipRect.x, clipRect.y, clipRect.width, clippedContentHeight);
 			mContentLayout->_updateLayoutInternal(x - Math::FloorToInt(mHorzOffset), y, width + Math::FloorToInt(mHorzOffset), 
-				contentHeight, layoutClipRect, widgetDepth, areaDepth);
-			contentWidth = mContentLayout->_getActualWidth();
-			contentHeight = mContentLayout->_getActualHeight();
+				clippedContentHeight, layoutClipRect, widgetDepth, areaDepth);
 
 			if(mHorzScroll == nullptr)
 			{
@@ -144,7 +140,7 @@ namespace BansheeEngine
 				mHorzScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::horzScrollUpdate, this, _1));
 			}
 
-			Int2 offset(x, y + contentHeight);
+			Int2 offset(x, y + clippedContentHeight);
 			mHorzScroll->_setOffset(offset);
 			mHorzScroll->_setWidth(width);
 			mHorzScroll->_setHeight(ScrollBarWidth);
@@ -156,7 +152,7 @@ namespace BansheeEngine
 			mHorzScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			Rect scrollBarLayoutClipRect(clipRect.x, clipRect.y + contentHeight, clipRect.width, clippedScrollbarHeight);
+			Rect scrollBarLayoutClipRect(clipRect.x, clipRect.y + clippedContentHeight, clipRect.width, clippedScrollbarHeight);
 			mHorzScroll->_updateLayout(offset.x, offset.y, width, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size

@@ -245,7 +245,7 @@ namespace BansheeEngine
 							numNonClampedElements--;
 						}
 
-						extraWidth = elementWidth - elementSizes[childIdx];
+						extraWidth = elementSizes[childIdx] - elementWidth;
 						elementSizes[childIdx] = elementWidth;
 						remainingSize = (UINT32)std::max(0, (INT32)remainingSize - (INT32)extraWidth);
 					}
@@ -333,7 +333,6 @@ namespace BansheeEngine
 		for(auto& child : mChildren)
 		{
 			UINT32 elemWidth = elementSizes[childIdx];
-			mActualWidth += elemWidth;
 
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
@@ -379,8 +378,14 @@ namespace BansheeEngine
 
 				UINT32 childHeight = layout->_getActualHeight();
 				mActualHeight = std::max(mActualHeight, childHeight);
+
+				// It's possible all elements didn't fit in the child layout size we provided, in which case expand our measurements
+				CM::UINT32 childLayoutWidth = layout->_getActualWidth();
+				if(childLayoutWidth > elemWidth)
+					elemWidth = childLayoutWidth;
 			}
 
+			mActualWidth += elemWidth;
 			xOffset += elemWidth;
 			childIdx++;
 		}

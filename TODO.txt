@@ -17,7 +17,10 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 Over the holidays:
  - Get release mode working
  - Profile code to see why it runs to slow in debug (AQTime probably)
+ - Get DebugRelease mode working
+ - Edit solution so that 32 bit binaries end up it x86 folder
  - Window docking/undocking
+ - (More platform specific files to /PlatformSpecific subfolder)
 
 IMMEDIATE:
  - Clicking on a window to focus and immediately trying to drag/resize it, doesn't work. I first need to click, then click again to drag/resize.
@@ -30,7 +33,9 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
-- Test if horizontal + vert scroll works together
+- Vertical and horizontal scrollbars overlap when they're both used
+- Right scrollbar overlaps the contents (they're not clipped right?)
+- Contents start too high so that their top is not visible
 - InputBox text clip rect is probably wrong as it doesn't account parent element clip rect
  (possibly selection and caret clip rects too)
 - Hover colors of the scroll bar are wrong
