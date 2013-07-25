@@ -74,16 +74,29 @@ namespace BansheeEngine
 		UINT32 contentWidth = mContentLayout->_getActualWidth();
 		UINT32 contentHeight = mContentLayout->_getActualHeight();
 
-		// Add/remove/update vertical scrollbar as needed
+		UINT32 clippedContentWidth = width;
+		UINT32 clippedContentHeight = height;
+
+		bool hasScrollbars = false;
+		Rect layoutClipRect = clipRect;
+
+		if(contentWidth > mWidth)
+		{ 
+			// Make room for scrollbar
+			clippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+			layoutClipRect.height = clippedContentHeight;
+		}
+
 		if(contentHeight > mHeight)
 		{
 			// Make room for scrollbar
-			UINT32 clippedContentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
+			clippedContentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
+			layoutClipRect.width = clippedContentWidth;
+		}
 
-			Rect layoutClipRect(clipRect.x, clipRect.y, clippedContentWidth, clipRect.height);
-			mContentLayout->_updateLayoutInternal(x, y - Math::FloorToInt(mVertOffset), clippedContentWidth, height + Math::FloorToInt(mVertOffset), 
-				layoutClipRect, widgetDepth, areaDepth);
-
+		// Add/remove/update vertical scrollbar as needed
+		if(contentHeight > mHeight)
+		{
 			if(mVertScroll == nullptr)
 			{
 				mVertScroll = GUIScrollBarVert::create(_getParentWidget());
@@ -114,6 +127,8 @@ namespace BansheeEngine
 
 			mVertScroll->setHandleSize(newHandleSize);
 			mVertScroll->setScrollPos(newScrollPct);
+
+			hasScrollbars = true;
 		}
 		else
 		{
@@ -122,18 +137,13 @@ namespace BansheeEngine
 				GUIElement::destroy(mVertScroll);
 				mVertScroll = nullptr;
 			}
+
+			mVertOffset = 0.0f;
 		}
 
 		// Add/remove/update horizontal scrollbar as needed
 		if(contentWidth > mWidth)
 		{ 
-			// Make room for scrollbar
-			UINT32 clippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
-
-			Rect layoutClipRect(clipRect.x, clipRect.y, clipRect.width, clippedContentHeight);
-			mContentLayout->_updateLayoutInternal(x - Math::FloorToInt(mHorzOffset), y, width + Math::FloorToInt(mHorzOffset), 
-				clippedContentHeight, layoutClipRect, widgetDepth, areaDepth);
-
 			if(mHorzScroll == nullptr)
 			{
 				mHorzScroll = GUIScrollBarHorz::create(_getParentWidget());
@@ -164,6 +174,8 @@ namespace BansheeEngine
 
 			mHorzScroll->setHandleSize(newHandleSize);
 			mHorzScroll->setScrollPos(newScrollPct);
+
+			hasScrollbars = true;
 		}
 		else
 		{
@@ -172,6 +184,15 @@ namespace BansheeEngine
 				GUIElement::destroy(mHorzScroll);
 				mHorzScroll = nullptr;
 			}
+
+			mHorzOffset = 0.0f;
+		}
+
+		if(hasScrollbars)
+		{
+			mContentLayout->_updateLayoutInternal(x - Math::FloorToInt(mHorzOffset), y - Math::FloorToInt(mVertOffset), 
+				clippedContentWidth + Math::FloorToInt(mHorzOffset), clippedContentHeight + Math::FloorToInt(mVertOffset), 
+				layoutClipRect, widgetDepth, areaDepth);
 		}
 		
 		mContentWidth = contentWidth;
