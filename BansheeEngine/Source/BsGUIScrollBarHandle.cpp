@@ -241,6 +241,7 @@ namespace BansheeEngine
 		if(ev.getType() == GUIMouseEventType::MouseOut && !mHandleDragged)
 		{
 			mCurTexture = mStyle->normal.texture;
+			mMouseOverHandle = false;
 			markContentAsDirty();
 
 			return true;
