@@ -31,7 +31,9 @@ IMMEDIATE:
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
 - Test if horizontal + vert scroll works together
-- After resize scroll bar buttons don't work
+- InputBox text clip rect is probably wrong as it doesn't account parent element clip rect
+ (possibly selection and caret clip rects too)
+- Dragging a scrollbar and then releasing it offsets it a tiny bit
 - Scroll bar doesn't update its hover state properly (or its perpetually in hover state).
 - Hover colors of the scroll bar are wrong
 

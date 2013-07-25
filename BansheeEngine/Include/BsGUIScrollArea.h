@@ -58,8 +58,8 @@ namespace BansheeEngine
 		GUIScrollBarVert* mVertScroll;
 		GUIScrollBarHorz* mHorzScroll;
 
-		CM::INT32 mVertOffset;
-		CM::INT32 mHorzOffset;
+		float mVertOffset;
+		float mHorzOffset;
 
 		CM::UINT32 mContentWidth, mContentHeight;
 

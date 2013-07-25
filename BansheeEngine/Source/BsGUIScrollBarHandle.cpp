@@ -6,6 +6,7 @@
 #include "BsTextSprite.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
+#include "CmDebug.h"
 #include "CmTexture.h"
 
 using namespace CamelotFramework;
@@ -61,8 +62,10 @@ namespace BansheeEngine
 
 	void GUIScrollBarHandle::setHandlePos(float pct)
 	{
+		pct = Math::Clamp01(pct);
+
 		UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
-		mHandlePos = Math::FloorToInt(pct * maxScrollAmount);
+		mHandlePos = pct * maxScrollAmount;
 
 		markContentAsDirty();
 	}
@@ -70,7 +73,7 @@ namespace BansheeEngine
 	float GUIScrollBarHandle::getHandlePos() const
 	{
 		UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
-		return (float)mHandlePos / maxScrollAmount;
+		return mHandlePos / maxScrollAmount;
 	}
 
 	UINT32 GUIScrollBarHandle::getScrollableSize() const
@@ -147,15 +150,15 @@ namespace BansheeEngine
 	{
 		Int2 offset = mOffset;
 		if(mHorizontal)
-			offset.x += mHandlePos;
+			offset.x += Math::FloorToInt(mHandlePos);
 		else
-			offset.y += mHandlePos;
+			offset.y += Math::FloorToInt(mHandlePos);
 
 		Rect clipRect = mClipRect;
 		if(mHorizontal)
-			clipRect.x -= mHandlePos;
+			clipRect.x -= Math::FloorToInt(mHandlePos);
 		else
-			clipRect.y -= mHandlePos;
+			clipRect.y -= Math::FloorToInt(mHandlePos);
 
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
 			vertexStride, indexStride, renderElementIdx, offset, clipRect);
@@ -198,12 +201,12 @@ namespace BansheeEngine
 
 			if(mHorizontal)
 			{
-				INT32 left = (INT32)mOffset.x + mHandlePos;
+				INT32 left = (INT32)mOffset.x + Math::FloorToInt(mHandlePos);
 				mDragStartPos = ev.getPosition().x - left;
 			}
 			else
 			{
-				INT32 top = (INT32)mOffset.y + mHandlePos;
+				INT32 top = (INT32)mOffset.y + Math::FloorToInt(mHandlePos);
 				mDragStartPos = ev.getPosition().y - top;
 			}
 
@@ -215,19 +218,19 @@ namespace BansheeEngine
 		{
 			if(mHorizontal)
 			{
-				mHandlePos = ev.getPosition().x - mDragStartPos - mOffset.x;
+				mHandlePos = (float)(ev.getPosition().x - mDragStartPos - mOffset.x);
 			}
 			else
 			{
-				mHandlePos = ev.getPosition().y - mDragStartPos - mOffset.y;
+				mHandlePos = float(ev.getPosition().y - mDragStartPos - mOffset.y);
 			}
 
-			UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
-			mHandlePos = Math::Clamp(mHandlePos, 0, (INT32)maxScrollAmount);
+			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
+			mHandlePos = Math::Clamp(mHandlePos, 0.0f, maxScrollAmount);
 
 			if(!onHandleMoved.empty())
 			{
-				float pct = (float)mHandlePos / maxScrollAmount;
+				float pct = mHandlePos / maxScrollAmount;
 				onHandleMoved(pct);
 			}
 
@@ -254,7 +257,7 @@ namespace BansheeEngine
 			INT32 handleOffset = 0;
 			if(mHorizontal)
 			{
-				INT32 handleLeft = (INT32)mOffset.x + mHandlePos;
+				INT32 handleLeft = (INT32)mOffset.x + Math::FloorToInt(mHandlePos);
 				INT32 handleRight = handleLeft + mHandleSize;
 
 				if(ev.getPosition().x < handleLeft)
@@ -264,7 +267,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				INT32 handleTop = (INT32)mOffset.y + mHandlePos;
+				INT32 handleTop = (INT32)mOffset.y + Math::FloorToInt(mHandlePos);
 				INT32 handleBottom = handleTop + mHandleSize;
 
 				if(ev.getPosition().y < handleTop)
@@ -274,8 +277,8 @@ namespace BansheeEngine
 			}
 
 			mHandlePos += handleOffset;
-			UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
-			mHandlePos = Math::Clamp(mHandlePos, 0, (INT32)maxScrollAmount);
+			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
+			mHandlePos = Math::Clamp(mHandlePos, 0.0f, maxScrollAmount);
 
 			if(!onHandleMoved.empty())
 			{
@@ -307,7 +310,7 @@ namespace BansheeEngine
 	{
 		if(mHorizontal)
 		{
-			INT32 left = (INT32)mOffset.x + mHandlePos;
+			INT32 left = (INT32)mOffset.x + Math::FloorToInt(mHandlePos);
 			INT32 right = left + mHandleSize;
 
 			if(pos.x >= left && pos.x < right)
@@ -315,7 +318,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			INT32 top = (INT32)mOffset.y + mHandlePos;
+			INT32 top = (INT32)mOffset.y + Math::FloorToInt(mHandlePos);
 			INT32 bottom = top + mHandleSize;
 
 			if(pos.y >= top && pos.y < bottom)

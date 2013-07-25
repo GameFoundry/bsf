@@ -66,7 +66,7 @@ namespace BansheeEngine
 		CM::UINT32 mHandleSize;
 		SpriteTexturePtr mCurTexture;
 		bool mHorizontal; // Otherwise its vertical
-		CM::INT32 mHandlePos;
+		float mHandlePos;
 		CM::INT32 mDragStartPos;
 		bool mMouseOverHandle;
 		bool mHandleDragged;

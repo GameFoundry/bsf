@@ -52,10 +52,6 @@ namespace CamelotFramework
 			return;
 
 		// TODO - Write to disk and throw exception if it can't
-		
-		//OGRE_EXCEPT(::Ogre::Exception::ERR_INTERNAL_ERROR, 
-		//	"Cannot create log file at " + mSaveFilePath,
-		//	"Log::save()");
 	}
 
 	void Log::doOnEntryAdded(const LogEntry& entry)
