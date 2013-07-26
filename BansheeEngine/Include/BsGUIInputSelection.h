@@ -14,7 +14,7 @@ namespace BansheeEngine
 
 		const CM::Vector<ImageSprite*>::type& getSprites() const { return mSprites; }
 		CM::Int2 GUIInputSelection::getSelectionSpriteOffset(CM::UINT32 spriteIdx) const;
-		CM::Rect GUIInputSelection::getSelectionSpriteClipRect(CM::UINT32 spriteIdx) const;
+		CM::Rect GUIInputSelection::getSelectionSpriteClipRect(CM::UINT32 spriteIdx, const CM::Rect& parentClipRect) const;
 		void updateSprite();
 
 		void showSelection(CM::UINT32 anchorCaretPos);

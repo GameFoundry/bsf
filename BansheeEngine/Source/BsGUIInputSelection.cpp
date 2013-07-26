@@ -56,11 +56,25 @@ namespace BansheeEngine
 		return Int2(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y);
 	}
 
-	Rect GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx) const
+	Rect GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const CM::Rect& parentClipRect) const
 	{
-		return Rect(-mSelectionRects[spriteIdx].x + mTextOffset.x - mClipOffset.x, 
-			 -mSelectionRects[spriteIdx].y + mTextOffset.y - mClipOffset.y, 
+		Rect clipRect(-mSelectionRects[spriteIdx].x + mTextOffset.x - mClipOffset.x, 
+			-mSelectionRects[spriteIdx].y + mTextOffset.y - mClipOffset.y, 
 			mTextDesc.width, mTextDesc.height);
+
+		Rect localParentCliprect = parentClipRect;
+
+		// Move parent rect to our space
+		localParentCliprect.x += clipRect.x;
+		localParentCliprect.y += clipRect.y;
+
+		// Clip our rectangle so its not larger then the parent
+		clipRect.clip(localParentCliprect);
+
+		// Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
+		clipRect.width += 1;
+
+		return clipRect;
 	}
 
 	Vector<Rect>::type GUIInputSelection::getSelectionRects() const

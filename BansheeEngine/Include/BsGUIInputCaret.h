@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 		ImageSprite* getSprite() const { return mCaretSprite; }
 		CM::Int2 getSpriteOffset() const;
-		CM::Rect getSpriteClipRect() const;
+		CM::Rect getSpriteClipRect(const CM::Rect& parentClipRect) const;
 
 		void updateSprite();
 

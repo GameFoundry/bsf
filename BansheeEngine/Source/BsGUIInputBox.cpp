@@ -252,7 +252,9 @@ namespace BansheeEngine
 			newNumElements += gGUIManager().getInputCaretTool()->getSprite()->getNumRenderElements();
 
 			if(renderElemIdx < newNumElements)
-				return gGUIManager().getInputCaretTool()->getSpriteClipRect();
+			{
+				return gGUIManager().getInputCaretTool()->getSpriteClipRect(getTextClipRect());
+			}
 		}
 
 		if(mSelectionShown)
@@ -265,7 +267,7 @@ namespace BansheeEngine
 				newNumElements += selectionSprite->getNumRenderElements();
 
 				if(renderElemIdx < newNumElements)
-					return gGUIManager().getInputSelectionTool()->getSelectionSpriteClipRect(spriteIdx);
+					return gGUIManager().getInputSelectionTool()->getSelectionSpriteClipRect(spriteIdx, getTextClipRect());
 
 				spriteIdx++;
 			}

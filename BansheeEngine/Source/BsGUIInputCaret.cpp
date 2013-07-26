@@ -23,12 +23,26 @@ namespace BansheeEngine
 		return getCaretPosition(mTextOffset);
 	}
 
-	Rect GUIInputCaret::getSpriteClipRect() const
+	Rect GUIInputCaret::getSpriteClipRect(const CM::Rect& parentClipRect) const
 	{
 		Int2 offset = getSpriteOffset();
 
-		return Rect(-offset.x + mTextOffset.x - mClipOffset.x, -offset.y + mTextOffset.y - mClipOffset.y, 
-			mTextDesc.width + 1, mTextDesc.height); // Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
+		Rect clipRect(-offset.x + mTextOffset.x - mClipOffset.x, -offset.y + mTextOffset.y - mClipOffset.y, 
+			mTextDesc.width, mTextDesc.height);
+
+		Rect localParentCliprect = parentClipRect;
+
+		// Move parent rect to our space
+		localParentCliprect.x += clipRect.x;
+		localParentCliprect.y += clipRect.y;
+
+		// Clip our rectangle so its not larger then the parent
+		clipRect.clip(localParentCliprect);
+
+		// Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
+		clipRect.width += 1;
+
+		return clipRect;
 	}
 
 	void GUIInputCaret::updateSprite()
