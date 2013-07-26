@@ -379,10 +379,8 @@ namespace BansheeEngine
 
 				mActualWidth = std::max(mActualWidth, layout->_getActualWidth());
 
-				// It's possible all elements didn't fit in the child layout size we provided, in which case expand our measurements
-				CM::UINT32 childLayoutHeight = layout->_getActualHeight();
-				if(childLayoutHeight > elemHeight)
-					elemHeight = childLayoutHeight;
+				// It's possible all elements didn't fit in the child layout size we provided, in which case adjust our measurements
+				elemHeight = layout->_getActualHeight();
 			}
 
 			mActualHeight += elemHeight;
