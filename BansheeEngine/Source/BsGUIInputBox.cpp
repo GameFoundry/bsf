@@ -745,8 +745,8 @@ namespace BansheeEngine
 
 	CM::Rect GUIInputBox::getTextClipRect() const
 	{
-		Rect textBounds = getContentBounds();
-		return Rect(-mTextOffset.x, -mTextOffset.y, textBounds.width, textBounds.height);
+		Rect contentClipRect = getContentClipRect();
+		return Rect(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
 	}
 
 	TEXT_SPRITE_DESC GUIInputBox::getTextDesc() const
