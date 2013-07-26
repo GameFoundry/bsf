@@ -61,6 +61,7 @@ namespace BansheeEngine
 		float mVertOffset;
 		float mHorzOffset;
 
+		CM::UINT32 mClippedContentWidth, mClippedContentHeight;
 		CM::UINT32 mContentWidth, mContentHeight;
 
 		static const CM::UINT32 ScrollBarWidth;

@@ -33,9 +33,6 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
-- Vertical and horizontal scrollbars overlap when they're both used
-- Right scrollbar overlaps the contents (they're not clipped right?)
-- Contents start too high so that their top is not visible
 - InputBox text clip rect is probably wrong as it doesn't account parent element clip rect
  (possibly selection and caret clip rects too)
 - Hover colors of the scroll bar are wrong
