@@ -623,6 +623,10 @@ namespace BansheeEngine
 	void GUIInputBox::showCaret()
 	{
 		mCaretShown = true;
+
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
+		Int2 offset = getTextOffset();
+		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
 		markContentAsDirty();
 	}
 

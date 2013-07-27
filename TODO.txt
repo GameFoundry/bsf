@@ -33,8 +33,10 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
-- InputBox text clip rect is probably wrong as it doesn't account parent element clip rect
- (possibly selection and caret clip rects too)
+- Shift+click should select text
+- Writing text in the large text boxes centers the text after I resize the window a bit.
+- Scrolling the window shouldn't remove text selection
+- Clicking an input box when its not focused doesn't move the cursor properly (it stays at the start)
 - Hover colors of the scroll bar are wrong
 - Ability to scroll by just mousing over and moving the scroll wheel
 
