@@ -230,7 +230,7 @@ namespace BansheeEngine
 		inputBoxStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxNormalTex));
 		inputBoxStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxHoverTex));
 		inputBoxStyle.focused.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxFocusedTex));
-		inputBoxStyle.active.texture = inputBoxStyle.focused.texture;
+		inputBoxStyle.active.texture = inputBoxStyle.normal.texture;
 		inputBoxStyle.border.left = 5;
 		inputBoxStyle.border.right = 5;
 		inputBoxStyle.border.top = 5;

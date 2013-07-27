@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
 		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
-		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline)
+		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -354,9 +354,7 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->active.texture;
 
-			bool isElemInFocus = mCaretShown; // HACK - I need a proper way of determining if element is in focus, or is it just now getting focus
-
-			if(isElemInFocus)
+			if(mHasFocus)
 			{
 				if(ev.isShiftDown())
 				{
@@ -822,5 +820,7 @@ namespace BansheeEngine
 			clearSelection();
 			markContentAsDirty();
 		}
+
+		mHasFocus = focus;
 	}
 }

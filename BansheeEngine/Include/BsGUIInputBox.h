@@ -59,6 +59,7 @@ namespace BansheeEngine
 		TextSprite* mTextSprite;
 		bool mIsMultiline;
 		CM::Int2 mTextOffset;
+		bool mHasFocus;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
