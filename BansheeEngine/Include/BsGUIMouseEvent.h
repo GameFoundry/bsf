@@ -26,7 +26,7 @@ namespace BansheeEngine
 	{
 	public:
 		GUIMouseEvent();
-		GUIMouseEvent(bool buttonStates[GUIMouseButton::Count]);
+		GUIMouseEvent(bool buttonStates[GUIMouseButton::Count], bool shift, bool ctrl, bool alt);
 
 		const CM::Int2& getPosition() const { return mPosition; }
 		GUIMouseEventType getType() const { return mType; }
@@ -34,6 +34,10 @@ namespace BansheeEngine
 		CM::Int2 getDragAmount() const { return mDragAmount; }
 		bool isButtonDown(GUIMouseButton button) const { return mButtonStates[(int)button]; }
 		GUIElement* getMouseOverElement() const { return mMouseOverElement; }
+
+		bool isShiftDown() const { return mShift; }
+		bool isCtrlDown() const { return mCtrl; }
+		bool isAltDown() const { return mAlt; }
 	private:
 		friend class GUIManager;
 
@@ -43,6 +47,10 @@ namespace BansheeEngine
 		GUIMouseEventType mType;
 		GUIMouseButton mButton;
 		GUIElement* mMouseOverElement;
+
+		bool mShift;
+		bool mCtrl;
+		bool mAlt;
 
 		void setMouseOverData(GUIElement* mouseOverElement, const CM::Int2& position);
 		void setMouseOutData(GUIElement* mouseOverElement, const CM::Int2& position);

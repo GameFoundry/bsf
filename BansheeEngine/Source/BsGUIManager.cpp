@@ -497,14 +497,14 @@ namespace BansheeEngine
 		if(event.isUsed())
 			return;
 
+		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
+		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
+		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+
 		if(event.isKeyboard())
 		{
 			if(mKeyboardFocusElement != nullptr)
 			{
-				bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
-				bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
-				bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
-
 				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyDownData(event.buttonCode);
@@ -519,7 +519,7 @@ namespace BansheeEngine
 			buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
 			buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
 
-			mMouseEvent = GUIMouseEvent(buttonStates);
+			mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
 
 			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
 
@@ -572,14 +572,14 @@ namespace BansheeEngine
 		if(event.isUsed())
 			return;
 
+		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
+		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
+		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+
 		if(event.isKeyboard())
 		{
 			if(mKeyboardFocusElement != nullptr)
 			{
-				bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
-				bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
-				bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
-
 				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyUpData(event.buttonCode);
@@ -594,7 +594,7 @@ namespace BansheeEngine
 			buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
 			buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
 
-			mMouseEvent = GUIMouseEvent(buttonStates);
+			mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
 
 			Int2 localPos;
 			if(mMouseOverWidget != nullptr)
@@ -649,13 +649,17 @@ namespace BansheeEngine
 		}
 #endif
 
+		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
+		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
+		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+
 		// TODO - Maybe avoid querying these for every event separately?
 		bool buttonStates[(int)GUIMouseButton::Count];
 		buttonStates[0] = gInput().isButtonDown(BC_MOUSE_LEFT);
 		buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
 		buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
 
-		mMouseEvent = GUIMouseEvent(buttonStates);
+		mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
 
 		GUIWidget* widgetInFocus = nullptr;
 		GUIElement* topMostElement = nullptr;

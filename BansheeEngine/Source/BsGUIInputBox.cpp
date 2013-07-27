@@ -354,16 +354,39 @@ namespace BansheeEngine
 		{
 			mImageDesc.texture = mStyle->active.texture;
 
-			showCaret();
+			bool isElemInFocus = mCaretShown; // HACK - I need a proper way of determining if element is in focus, or is it just now getting focus
 
-			if(mText.size() > 0)
-				gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+			if(isElemInFocus)
+			{
+				if(ev.isShiftDown())
+				{
+					if(!mSelectionShown)
+						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+				}
+				else
+					clearSelection();
+
+				if(mText.size() > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToStart();
+
+				if(ev.isShiftDown())
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+			}
 			else
-				gGUIManager().getInputCaretTool()->moveCaretToStart();
+			{
+				clearSelection();
+				showCaret();
+
+				if(mText.size() > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToStart();
+			}
 
 			scrollTextToCaret();
 
-			clearSelection();
 			markContentAsDirty();
 
 			return true;
@@ -378,41 +401,50 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			mDragInProgress = true;
+			if(!ev.isShiftDown())
+			{
+				mDragInProgress = true;
 
-			UINT32 caretPos = gGUIManager().getInputCaretTool()->getCaretPos();
-			showSelection(caretPos);
-			gGUIManager().getInputSelectionTool()->selectionDragStart(caretPos);
+				UINT32 caretPos = gGUIManager().getInputCaretTool()->getCaretPos();
+				showSelection(caretPos);
+				gGUIManager().getInputSelectionTool()->selectionDragStart(caretPos);
 
-			return true;
+				return true;
+			}
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
-			mDragInProgress = false;
-
-			if(ev.getMouseOverElement() != this && mInputCursorSet)
+			if(!ev.isShiftDown())
 			{
-				Cursor::setCursor(CursorType::Arrow);
-				mInputCursorSet = false;
+				mDragInProgress = false;
+
+				if(ev.getMouseOverElement() != this && mInputCursorSet)
+				{
+					Cursor::setCursor(CursorType::Arrow);
+					mInputCursorSet = false;
+				}
+
+				gGUIManager().getInputSelectionTool()->selectionDragEnd();
+
+				return true;
 			}
-
-			gGUIManager().getInputSelectionTool()->selectionDragEnd();
-
-			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDrag)
 		{
-			if(mText.size() > 0)
-				gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
-			else
-				gGUIManager().getInputCaretTool()->moveCaretToStart();
+			if(!ev.isShiftDown())
+			{
+				if(mText.size() > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToPos(ev.getPosition());
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToStart();
 
-			gGUIManager().getInputSelectionTool()->selectionDragUpdate(gGUIManager().getInputCaretTool()->getCaretPos());
+				gGUIManager().getInputSelectionTool()->selectionDragUpdate(gGUIManager().getInputCaretTool()->getCaretPos());
 
-			scrollTextToCaret();
+				scrollTextToCaret();
 
-			markContentAsDirty();
-			return true;
+				markContentAsDirty();
+				return true;
+			}
 		}
 
 		return false;
@@ -639,6 +671,10 @@ namespace BansheeEngine
 
 	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos)
 	{
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
+		Int2 offset = getTextOffset();
+		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
+
 		gGUIManager().getInputSelectionTool()->showSelection(anchorCaretPos);
 		mSelectionShown = true;
 		markContentAsDirty();
