@@ -326,8 +326,11 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
-			mImageDesc.texture = mStyle->hover.texture;
-			markContentAsDirty();
+			if(!mHasFocus)
+			{
+				mImageDesc.texture = mStyle->hover.texture;
+				markContentAsDirty();
+			}
 
 			if(!mInputCursorSet)
 			{
@@ -339,8 +342,11 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
-			mImageDesc.texture = mStyle->normal.texture;
-			markContentAsDirty();
+			if(!mHasFocus)
+			{
+				mImageDesc.texture = mStyle->normal.texture;
+				markContentAsDirty();
+			}
 
 			if(!mDragInProgress && mInputCursorSet)
 			{
@@ -352,8 +358,6 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown)
 		{
-			mImageDesc.texture = mStyle->active.texture;
-
 			if(mHasFocus)
 			{
 				if(ev.isShiftDown())
@@ -384,14 +388,6 @@ namespace BansheeEngine
 			}
 
 			scrollTextToCaret();
-
-			markContentAsDirty();
-
-			return true;
-		}
-		else if(ev.getType() == GUIMouseEventType::MouseUp)
-		{
-			mImageDesc.texture = mStyle->hover.texture;
 
 			markContentAsDirty();
 

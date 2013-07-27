@@ -33,7 +33,6 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
-- Writing text in the large text boxes centers the text after I resize the window a bit.
 - Scrolling the window shouldn't remove text selection
 - Hover colors of the scroll bar are wrong
 - Ability to scroll by just mousing over and moving the scroll wheel
