@@ -766,12 +766,16 @@ namespace BansheeEngine
 				// Send MouseMove event
 				if(mLastCursorLocalPos != localPos)
 				{
-					LOGWRN(toString(event.screenPos.x) + " - " + toString(event.screenPos.y) + " - " + toString((UINT32)widgetInFocus));
-
 					mMouseEvent.setMouseMoveData(topMostElement, localPos);
 					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 
 					mLastCursorLocalPos = localPos;
+				}
+
+				if(Math::Abs(event.mouseWheelScrollAmount) > 0.00001f)
+				{
+					mMouseEvent.setMouseWheelScrollData(topMostElement, event.mouseWheelScrollAmount);
+					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
 				}
 			}
 		}

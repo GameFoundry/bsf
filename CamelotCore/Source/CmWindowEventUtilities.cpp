@@ -41,6 +41,7 @@ using namespace CamelotFramework;
 
 WindowEventUtilities::Windows WindowEventUtilities::_msWindows;
 boost::signal<void(const Int2&)> WindowEventUtilities::onMouseMoved;
+boost::signal<void(float)> WindowEventUtilities::onMouseWheelScrolled;
 boost::signal<void(CamelotFramework::UINT32)> WindowEventUtilities::onCharInput;
 
 //--------------------------------------------------------------------------------//
@@ -228,6 +229,16 @@ LRESULT CALLBACK WindowEventUtilities::_WndProc(HWND hWnd, UINT uMsg, WPARAM wPa
 
 			if(!onMouseMoved.empty())
 				onMouseMoved(Int2(mousePos.x, mousePos.y));
+
+			return true;
+		}
+	case WM_MOUSEWHEEL:
+		{
+			INT16 wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+			float wheelDeltaFlt = wheelDelta / (float)WHEEL_DELTA;
+			if(!onMouseWheelScrolled.empty())
+				onMouseWheelScrolled(wheelDeltaFlt);
 
 			return true;
 		}

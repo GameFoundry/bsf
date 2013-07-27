@@ -91,6 +91,7 @@ namespace CamelotFramework
 		static Windows _msWindows;
 
 		static boost::signal<void(const Int2&)> onMouseMoved;
+		static boost::signal<void(float)> onMouseWheelScrolled;
 		static boost::signal<void(UINT32)> onCharInput;
 	};
 	/** @} */

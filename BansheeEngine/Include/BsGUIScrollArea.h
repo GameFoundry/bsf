@@ -67,6 +67,8 @@ namespace BansheeEngine
 		static const CM::UINT32 ScrollBarWidth;
 		static const CM::UINT32 MinHandleSize;
 
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+
 		void vertScrollUpdate(float pct);
 		void horzScrollUpdate(float pct);
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,

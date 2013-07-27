@@ -20,7 +20,7 @@ namespace CamelotFramework
 		virtual ~OSInputHandler();
 
 		boost::signal<void(UINT32)> onCharInput;
-		boost::signal<void(const Int2&)> onMouseMoved;
+		boost::signal<void(const Int2&, float)> onMouseMoved;
 
 		/**
 			* @brief	Called every frame by InputManager. Capture input here if needed.
@@ -36,10 +36,12 @@ namespace CamelotFramework
 		CM_MUTEX(mOSInputMutex);
 		Int2 mLastMousePos;
 		Int2 mMousePosition;
+		float mMouseScroll;
 		WString mInputString;
 
 		boost::signals::connection mCharInputConn;
 		boost::signals::connection mMouseMovedConn;
+		boost::signals::connection mMouseWheelScrolledConn;
 
 		/**
 		 * @brief	Called from the message loop.
@@ -50,5 +52,10 @@ namespace CamelotFramework
 		 * @brief	Called from the message loop.
 		 */
 		void mouseMoved(const Int2& mousePos);
+
+		/**
+		 * @brief	Called from the message loop.
+		 */
+		void mouseWheelScrolled(float scrollPos);
 	};
 }

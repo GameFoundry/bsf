@@ -32,7 +32,7 @@ namespace CamelotFramework
 		mOSInputHandler = cm_shared_ptr<OSInputHandler>();
 
 		mOSInputHandler->onCharInput.connect(boost::bind(&Input::charInput, this, _1));
-		mOSInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1));
+		mOSInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1, _2));
 
 		RenderWindowManager::instance().onFocusGained.connect(boost::bind(&Input::inputWindowChanged, this, _1));
 	}
@@ -143,7 +143,7 @@ namespace CamelotFramework
 		mAxes[(int)axis] = state;
 	}
 
-	void Input::mouseMoved(const Int2& screenPos)
+	void Input::mouseMoved(const Int2& screenPos, float mouseWheelScrollAmount)
 	{
 		mMouseAbsPos = screenPos;
 
@@ -151,6 +151,7 @@ namespace CamelotFramework
 		{
 			MouseEvent mouseEvent;
 			mouseEvent.screenPos = screenPos;
+			mouseEvent.mouseWheelScrollAmount = mouseWheelScrollAmount;
 
 			onMouseMoved(mouseEvent);
 		}

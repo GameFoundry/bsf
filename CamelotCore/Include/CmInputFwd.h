@@ -252,10 +252,11 @@ namespace CamelotFramework
 	{
 	public:
 		MouseEvent()
-			:mIsUsed(false)
+			:mIsUsed(false), mouseWheelScrollAmount(0.0f)
 		{ }
 
 		Int2 screenPos;
+		float mouseWheelScrollAmount;
 
 		bool isUsed() const { return mIsUsed; }
 		void markAsUsed() const { mIsUsed = true; }

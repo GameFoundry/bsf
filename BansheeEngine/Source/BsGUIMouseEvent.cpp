@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	GUIMouseEvent::GUIMouseEvent()
 		:mType(GUIMouseEventType::MouseMove), mButton(GUIMouseButton::Left), mMouseOverElement(nullptr),
-		mShift(false), mCtrl(false), mAlt(false)
+		mShift(false), mCtrl(false), mAlt(false), mWheelScrollAmount(0.0f)
 	{
 
 	}
@@ -25,6 +25,7 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
 	}
 
 	void GUIMouseEvent::setMouseOutData(GUIElement* mouseOverElement, const Int2& position)
@@ -34,6 +35,7 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
 	}
 
 	void GUIMouseEvent::setMouseMoveData(GUIElement* mouseOverElement, const Int2& position)
@@ -43,6 +45,17 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
+	}
+
+	void GUIMouseEvent::setMouseWheelScrollData(GUIElement* mouseOverElement, float scrollAmount)
+	{
+		mType = GUIMouseEventType::MouseWheelScroll;
+		mPosition = Int2();
+		mMouseOverElement = mouseOverElement;
+		mButton = GUIMouseButton::Left;
+		mDragAmount = Int2();
+		mWheelScrollAmount = scrollAmount;
 	}
 
 	void GUIMouseEvent::setMouseUpData(GUIElement* mouseOverElement, const Int2& position, GUIMouseButton button)
@@ -52,6 +65,7 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = button;
 		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
 	}
 
 	void GUIMouseEvent::setMouseDownData(GUIElement* mouseOverElement, const Int2& position, GUIMouseButton button)
@@ -61,6 +75,7 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = button;
 		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
 	}
 
 	void GUIMouseEvent::setMouseDragData(GUIElement* mouseOverElement, const Int2& position, const Int2& dragAmount)
@@ -70,6 +85,7 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = dragAmount;
+		mWheelScrollAmount = 0.0f;
 	}
 
 	void GUIMouseEvent::setMouseDragStartData(GUIElement* mouseOverElement, const Int2& position)
@@ -79,6 +95,7 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
 	}
 
 	void GUIMouseEvent::setMouseDragEndData(GUIElement* mouseOverElement, const Int2& position)
@@ -88,5 +105,6 @@ namespace BansheeEngine
 		mMouseOverElement = mouseOverElement;
 		mButton = GUIMouseButton::Left;
 		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
 	}
 }

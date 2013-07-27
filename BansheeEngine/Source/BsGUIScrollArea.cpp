@@ -7,6 +7,7 @@
 #include "BsGUISkin.h"
 #include "BsGUIScrollBarVert.h"
 #include "BsGUIScrollBarHorz.h"
+#include "BsGUIMouseEvent.h"
 #include "CmException.h"
 
 using namespace CamelotFramework;
@@ -213,6 +214,17 @@ namespace BansheeEngine
 		mHorzOffset = scrollableWidth * scrollPos;
 
 		markContentAsDirty();
+	}
+
+	bool GUIScrollArea::mouseEvent(const GUIMouseEvent& ev)
+	{
+		if(ev.getType() == GUIMouseEventType::MouseWheelScroll)
+		{
+			// TODO
+			int a = 5;
+		}
+
+		return false;
 	}
 
 	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIElementStyle* style)

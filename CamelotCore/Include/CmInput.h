@@ -87,7 +87,7 @@ namespace CamelotFramework
 		/**
 		 * @brief	Mouse movement as OS reports it. Used for screen cursor position.
 		 */
-		void mouseMoved(const Int2& screenPos);
+		void mouseMoved(const Int2& screenPos, float mouseWheelScrollAmount);
 		
 		/**
 		 * @brief	Updates the axis input values that need smoothing.
