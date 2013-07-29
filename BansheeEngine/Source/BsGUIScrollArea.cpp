@@ -129,7 +129,7 @@ namespace BansheeEngine
 			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, mClippedContentHeight, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
-			UINT32 newHandleSize = (UINT32)Math::FloorToInt(mVertScroll->getMaxHandleSize() * (height / (float)contentHeight));
+			UINT32 newHandleSize = (UINT32)Math::FloorToInt(mVertScroll->getMaxHandleSize() * (mClippedContentHeight / (float)contentHeight));
 			newHandleSize = std::max(newHandleSize, MinHandleSize);
 
 			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(contentHeight) - INT32(mClippedContentHeight));
@@ -176,7 +176,7 @@ namespace BansheeEngine
 			mHorzScroll->_updateLayout(offset.x, offset.y, mClippedContentWidth, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
-			UINT32 newHandleSize = (UINT32)Math::FloorToInt(mHorzScroll->getMaxHandleSize() * (width / (float)contentWidth));
+			UINT32 newHandleSize = (UINT32)Math::FloorToInt(mHorzScroll->getMaxHandleSize() * (mClippedContentWidth / (float)contentWidth));
 			newHandleSize = std::max(newHandleSize, MinHandleSize);
 
 			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(contentWidth) - INT32(mClippedContentWidth));

@@ -73,7 +73,11 @@ namespace BansheeEngine
 	float GUIScrollBarHandle::getHandlePos() const
 	{
 		UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
-		return mHandlePos / maxScrollAmount;
+
+		if(maxScrollAmount > 0.0f)
+			return mHandlePos / maxScrollAmount;
+		else
+			return 0.0f;
 	}
 
 	UINT32 GUIScrollBarHandle::getScrollableSize() const
@@ -230,7 +234,10 @@ namespace BansheeEngine
 
 			if(!onHandleMoved.empty())
 			{
-				float pct = mHandlePos / maxScrollAmount;
+				float pct = 0.0f;
+				if(maxScrollAmount > 0.0f)
+					pct = mHandlePos / maxScrollAmount;
+				
 				onHandleMoved(pct);
 			}
 
@@ -283,7 +290,11 @@ namespace BansheeEngine
 
 			if(!onHandleMoved.empty())
 			{
-				float pct = (float)mHandlePos / maxScrollAmount;
+				float pct = 0.0f;
+				
+				if(maxScrollAmount > 0.0f)
+					pct = (float)mHandlePos / maxScrollAmount;
+
 				onHandleMoved(pct);
 			}
 

@@ -124,7 +124,12 @@ namespace BansheeEngine
 
 	void GUIScrollBar::upButtonClicked()
 	{
-		float handleOffset = ButtonScrollAmount / (float)mHandleBtn->getScrollableSize();
+		float handleOffset = 0.0f;
+		float scrollableSize = (float)mHandleBtn->getScrollableSize();
+		
+		if(scrollableSize > 0.0f)
+			handleOffset = ButtonScrollAmount / scrollableSize;
+
 		float newHandlePos = std::max(0.0f, mHandleBtn->getHandlePos() - handleOffset);
 
 		mHandleBtn->setHandlePos(newHandlePos);
@@ -135,7 +140,12 @@ namespace BansheeEngine
 
 	void GUIScrollBar::downButtonClicked()
 	{
-		float handleOffset = ButtonScrollAmount / (float)mHandleBtn->getScrollableSize();
+		float handleOffset = 0.0f;
+		float scrollableSize = (float)mHandleBtn->getScrollableSize();
+
+		if(scrollableSize > 0.0f)
+			handleOffset = ButtonScrollAmount / scrollableSize;
+
 		float newHandlePos = std::min(1.0f, mHandleBtn->getHandlePos() + handleOffset);
 
 		mHandleBtn->setHandlePos(newHandlePos);
