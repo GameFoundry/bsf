@@ -81,18 +81,27 @@ namespace BansheeEngine
 		bool hasScrollbars = false;
 		Rect layoutClipRect = clipRect;
 
+		bool hasHorzScrollbar = false;
 		if(contentWidth > mWidth)
 		{ 
 			// Make room for scrollbar
 			mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
 			layoutClipRect.height = mClippedContentHeight;
+			hasHorzScrollbar = true;
 		}
 
-		if(contentHeight > mHeight)
+		if(contentHeight > mClippedContentHeight)
 		{
 			// Make room for scrollbar
 			mClippedContentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
 			layoutClipRect.width = mClippedContentWidth;
+
+			if(!hasHorzScrollbar && contentWidth > mClippedContentWidth) // Since width has been reduced, we need to check if we require the horizontal scrollbar
+			{
+				// Make room for scrollbar
+				mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+				layoutClipRect.height = mClippedContentHeight;
+			}
 		}
 
 		// Add/remove/update vertical scrollbar as needed
