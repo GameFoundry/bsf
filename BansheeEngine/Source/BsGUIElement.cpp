@@ -10,15 +10,18 @@ namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus)
 		:mParent(parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
-		mAcceptsKeyboardFocus(acceptsKeyboardFocus), mParentLayout(nullptr)
+		mAcceptsKeyboardFocus(acceptsKeyboardFocus)
 	{
 		mParent.registerElement(this);
 	}
 
 	GUIElement::~GUIElement()
 	{
-		if(mParentLayout != nullptr)
-			mParentLayout->removeElement(this);
+		if(mParentElement != nullptr && mParentElement->_getType() == GUIElementBase::Type::Layout)
+		{
+			GUILayout* layoutParent = static_cast<GUILayout*>(mParentElement);
+			layoutParent->removeElement(this);
+		}
 	}
 
 	void GUIElement::updateRenderElements()

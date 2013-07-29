@@ -15,6 +15,12 @@ namespace BansheeEngine
 		void setHandleSize(CM::UINT32 size);
 		void setScrollPos(float pct);
 
+		/**
+		 * @brief	Scrolls the contents by some amount. Amount is specified in the percentage
+		 * 			of the entire scrollable area. Values out of range will be clamped.
+		 */
+		void scroll(float amount);
+
 		CM::UINT32 getMaxHandleSize() const;
 		CM::UINT32 getScrollableSize() const;
 	protected:

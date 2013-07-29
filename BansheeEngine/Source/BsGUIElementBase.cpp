@@ -10,7 +10,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mIsDirty(true)
+		:mIsDirty(true), mParentElement(nullptr)
 	{
 
 	}
@@ -25,7 +25,7 @@ namespace BansheeEngine
 			else
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
-				element->_setParentLayout(nullptr);
+				element->_setParent(nullptr);
 			}
 		}
 	}
@@ -81,9 +81,10 @@ namespace BansheeEngine
 		}
 	}
 
-	GUILayout& GUIElementBase::addLayoutXInternal()
+	GUILayout& GUIElementBase::addLayoutXInternal(GUIElementBase* parent)
 	{
 		GUILayoutX* entry = cm_new<GUILayoutX, PoolAlloc>();
+		entry->_setParent(parent);
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
@@ -91,9 +92,10 @@ namespace BansheeEngine
 		return *entry;
 	}
 
-	GUILayout& GUIElementBase::addLayoutYInternal()
+	GUILayout& GUIElementBase::addLayoutYInternal(GUIElementBase* parent)
 	{
 		GUILayoutY* entry = cm_new<GUILayoutY, PoolAlloc>();
+		entry->_setParent(parent);
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
@@ -123,12 +125,13 @@ namespace BansheeEngine
 			CM_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
 	}
 
-	GUILayout& GUIElementBase::insertLayoutXInternal(UINT32 idx)
+	GUILayout& GUIElementBase::insertLayoutXInternal(GUIElementBase* parent, UINT32 idx)
 	{
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUILayoutX* entry = cm_new<GUILayoutX, PoolAlloc>();
+		entry->_setParent(parent);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();
@@ -136,12 +139,13 @@ namespace BansheeEngine
 		return *entry;
 	}
 
-	GUILayout& GUIElementBase::insertLayoutYInternal(UINT32 idx)
+	GUILayout& GUIElementBase::insertLayoutYInternal(GUIElementBase* parent, UINT32 idx)
 	{
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUILayoutY* entry = cm_new<GUILayoutY, PoolAlloc>();
+		entry->_setParent(parent);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();

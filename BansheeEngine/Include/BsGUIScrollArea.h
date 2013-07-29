@@ -66,6 +66,7 @@ namespace BansheeEngine
 
 		static const CM::UINT32 ScrollBarWidth;
 		static const CM::UINT32 MinHandleSize;
+		static const CM::UINT32 WheelScrollAmount;
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 

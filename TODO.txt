@@ -33,11 +33,11 @@ IMMEDIATE:
     - Make sure GUI system uses a dummy texture if one isn't available
 	- SpriteTexture keeps a static reference to DUmmyTexture which I need to release before shutdown
 
-- When the scroll contents dont fit vertically because of the horz scrollbar, the right side of the window frame gets cut off
-  - ScrollArea has no way of receiving mouse events
 - Scrolling the window shouldn't remove text selection
+ - In general focus shouldn't be lost at all
 - Hover colors of the scroll bar are wrong
 - Ability to scroll by just mousing over and moving the scroll wheel
+ - ScrollArea has no way of receiving mouse events
 
 TextBox needed elements:
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)

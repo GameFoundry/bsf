@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 		if(mHorizontal)
 		{
-			mLayout = &addLayoutXInternal();
+			mLayout = &addLayoutXInternal(this);
 
 			mUpBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollLeftBtn"));
 			mDownBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollRightBtn"));
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mLayout = &addLayoutYInternal();
+			mLayout = &addLayoutYInternal(this);
 
 			mUpBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollUpBtn"));
 			mDownBtn = GUIButton::create(parent, L"", parent.getSkin()->getStyle("ScrollDownBtn"));
@@ -130,12 +130,7 @@ namespace BansheeEngine
 		if(scrollableSize > 0.0f)
 			handleOffset = ButtonScrollAmount / scrollableSize;
 
-		float newHandlePos = std::max(0.0f, mHandleBtn->getHandlePos() - handleOffset);
-
-		mHandleBtn->setHandlePos(newHandlePos);
-
-		if(!onScrollPositionChanged.empty())
-			onScrollPositionChanged(newHandlePos);
+		scroll(handleOffset);
 	}
 
 	void GUIScrollBar::downButtonClicked()
@@ -146,7 +141,12 @@ namespace BansheeEngine
 		if(scrollableSize > 0.0f)
 			handleOffset = ButtonScrollAmount / scrollableSize;
 
-		float newHandlePos = std::min(1.0f, mHandleBtn->getHandlePos() + handleOffset);
+		scroll(-handleOffset);
+	}
+
+	void GUIScrollBar::scroll(float amount)
+	{
+		float newHandlePos = Math::Clamp01(mHandleBtn->getHandlePos() - amount);
 
 		mHandleBtn->setHandlePos(newHandlePos);
 

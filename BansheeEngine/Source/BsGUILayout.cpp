@@ -22,10 +22,14 @@ namespace BansheeEngine
 
 	void GUILayout::addElement(GUIElement* element)
 	{
-		if(element->_getParentLayout() != nullptr)
-			element->_getParentLayout()->removeElement(element);
+		GUIElementBase* parentElement = element->_getParent();
+		if(parentElement != nullptr && parentElement->_getType() == GUIElementBase::Type::Layout)
+		{
+			GUILayout* layoutParent = static_cast<GUILayout*>(parentElement);
+			layoutParent->removeElement(element);
+		}
 
-		element->_setParentLayout(this);
+		element->_setParent(this);
 		mChildren.push_back(element);
 
 		markContentAsDirty();
@@ -57,10 +61,14 @@ namespace BansheeEngine
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		if(element->_getParentLayout() != nullptr)
-			element->_getParentLayout()->removeElement(element);
+		GUIElementBase* parentElement = element->_getParent();
+		if(parentElement != nullptr && parentElement->_getType() == GUIElementBase::Type::Layout)
+		{
+			GUILayout* layoutParent = static_cast<GUILayout*>(parentElement);
+			layoutParent->removeElement(element);
+		}
 
-		element->_setParentLayout(this);
+		element->_setParent(this);
 		mChildren.insert(mChildren.begin() + idx, element);
 		
 		markContentAsDirty();

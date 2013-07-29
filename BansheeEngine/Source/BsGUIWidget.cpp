@@ -116,12 +116,60 @@ namespace BansheeEngine
 
 	bool GUIWidget::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
 	{
-		return element->mouseEvent(ev);
+		// If an element has any parents we send the events to all parents first and only then to the children unless
+		// the parents process them
+		Stack<GUIElement*>::type todo;
+		GUIElementBase* curElement = element;
+		do
+		{
+			if(curElement->_getType() == GUIElementBase::Type::Element)
+				todo.push(static_cast<GUIElement*>(curElement));
+
+			curElement = curElement->_getParent();
+		} while(curElement != nullptr);
+		
+		while(true)
+		{
+			GUIElement* elem = todo.top();
+			todo.pop();
+
+			if(elem->mouseEvent(ev))
+				return true;
+
+			if(todo.size() == 0)
+				return false;
+		}
+
+		return false;
 	}
 
 	bool GUIWidget::_keyEvent(GUIElement* element, const GUIKeyEvent& ev)
 	{
-		return element->keyEvent(ev);
+		// If an element has any parents we send the events to all parents first and only then to the children unless
+		// the parents process them
+		Stack<GUIElement*>::type todo;
+		GUIElementBase* curElement = element;
+		do
+		{
+			if(curElement->_getType() == GUIElementBase::Type::Element)
+				todo.push(static_cast<GUIElement*>(curElement));
+
+			curElement = curElement->_getParent();
+		} while(curElement != nullptr);
+
+		while(true)
+		{
+			GUIElement* elem = todo.top();
+			todo.pop();
+
+			if(elem->keyEvent(ev))
+				return true;
+
+			if(todo.size() == 0)
+				return false;
+		}
+
+		return false;
 	}
 
 	void GUIWidget::registerElement(GUIElement* elem)

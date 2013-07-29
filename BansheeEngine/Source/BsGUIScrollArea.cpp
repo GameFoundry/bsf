@@ -16,12 +16,13 @@ namespace BansheeEngine
 {
 	const UINT32 GUIScrollArea::ScrollBarWidth = 8;
 	const UINT32 GUIScrollArea::MinHandleSize = 4;
+	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
 	GUIScrollArea::GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0)
 	{
-		mContentLayout = &addLayoutYInternal();
+		mContentLayout = &addLayoutYInternal(this);
 	}
 
 	GUIScrollArea::~GUIScrollArea()
@@ -229,8 +230,15 @@ namespace BansheeEngine
 	{
 		if(ev.getType() == GUIMouseEventType::MouseWheelScroll)
 		{
-			// TODO
-			int a = 5;
+			// Mouse wheel only scrolls on the Y axis
+			if(mVertScroll != nullptr)
+			{
+				UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentWidth) - INT32(mClippedContentHeight));
+				float additionalScroll = (float)WheelScrollAmount / scrollableHeight;
+
+				mVertScroll->scroll(additionalScroll * ev.getWheelScrollAmount());
+				return true;
+			}
 		}
 
 		return false;

@@ -35,9 +35,12 @@ namespace BansheeEngine
 		virtual void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::Rect clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 
+		void _setParent(GUIElementBase* parent) { mParentElement = parent; }
+
 		virtual CM::UINT32 _getOptimalWidth() const = 0;
 		virtual CM::UINT32 _getOptimalHeight() const = 0;
 		virtual Type _getType() const = 0;
+		GUIElementBase* _getParent() const { return mParentElement; }
 
 		void _markAsClean() { mIsDirty = 0; }
 		virtual void _setFocus(bool focus) {}
@@ -57,12 +60,13 @@ namespace BansheeEngine
 		 */
 		void markMeshAsDirty();
 
-		GUILayout& addLayoutXInternal();
-		GUILayout& addLayoutYInternal();
+		GUILayout& addLayoutXInternal(GUIElementBase* parent);
+		GUILayout& addLayoutYInternal(GUIElementBase* parent);
 		void removeLayoutInternal(GUILayout& layout);
-		GUILayout& insertLayoutXInternal(CM::UINT32 idx);
-		GUILayout& insertLayoutYInternal(CM::UINT32 idx);
+		GUILayout& insertLayoutXInternal(GUIElementBase* parent, CM::UINT32 idx);
+		GUILayout& insertLayoutYInternal(GUIElementBase* parent, CM::UINT32 idx);
 
+		GUIElementBase* mParentElement;
 		CM::Vector<GUIElementBase*>::type mChildren;	
 		CM::UINT8 mIsDirty;
 	};
