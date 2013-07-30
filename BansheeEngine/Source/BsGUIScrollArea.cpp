@@ -19,7 +19,7 @@ namespace BansheeEngine
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
 	GUIScrollArea::GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
+		:GUIElement(parent, style, layoutOptions, false), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0)
 	{
 		mContentLayout = &addLayoutYInternal(this);
@@ -112,6 +112,7 @@ namespace BansheeEngine
 			{
 				mVertScroll = GUIScrollBarVert::create(_getParentWidget());
 				mVertScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
+				mVertScroll->_setAcceptsKeyboardFocus(false);
 			}
 
 			Int2 offset(x + mClippedContentWidth, y);
@@ -159,6 +160,7 @@ namespace BansheeEngine
 			{
 				mHorzScroll = GUIScrollBarHorz::create(_getParentWidget());
 				mHorzScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::horzScrollUpdate, this, _1));
+				mHorzScroll->_setAcceptsKeyboardFocus(false);
 			}
 
 			Int2 offset(x, y + mClippedContentHeight);

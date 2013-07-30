@@ -552,7 +552,7 @@ namespace BansheeEngine
 				mActiveMouseButton = guiButton;
 			}
 
-			if(mMouseOverElement != nullptr)
+			if(mMouseOverElement != nullptr && mMouseOverElement->_acceptsKeyboardFocus())
 			{
 				if(mKeyboardFocusElement != nullptr && mMouseOverElement != mKeyboardFocusElement)
 					mKeyboardFocusElement->_setFocus(false);

@@ -52,6 +52,10 @@ namespace BansheeEngine
 
 		mUpBtn->onClick.connect(boost::bind(&GUIScrollBar::upButtonClicked, this));
 		mDownBtn->onClick.connect(boost::bind(&GUIScrollBar::downButtonClicked, this));
+
+		mHandleBtn->_setAcceptsKeyboardFocus(false);
+		mUpBtn->_setAcceptsKeyboardFocus(false);
+		mDownBtn->_setAcceptsKeyboardFocus(false);
 	}
 
 	GUIScrollBar::~GUIScrollBar()
