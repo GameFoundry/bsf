@@ -1,5 +1,6 @@
 #include "BsGUIInputSelection.h"
 #include "BsImageSprite.h"
+#include "BsGUIElement.h"
 #include "BsGUIManager.h"
 
 using namespace CamelotFramework;
@@ -53,28 +54,29 @@ namespace BansheeEngine
 
 	Int2 GUIInputSelection::getSelectionSpriteOffset(UINT32 spriteIdx) const
 	{
-		return Int2(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y);
+		return Int2(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y) + getTextOffset();
 	}
 
 	Rect GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const CM::Rect& parentClipRect) const
 	{
-		Rect clipRect(-mSelectionRects[spriteIdx].x + mTextOffset.x - mClipOffset.x, 
-			-mSelectionRects[spriteIdx].y + mTextOffset.y - mClipOffset.y, 
-			mTextDesc.width, mTextDesc.height);
+		return parentClipRect;
+		//Rect clipRect(-(mElement->_getTextInputOffset().x + mSelectionRects[spriteIdx].x) + mElement->_getTextInputRect().x, 
+		//	-mSelectionRects[spriteIdx].y - mElement->_getTextInputOffset().y - mElement->_getTextInputRect().y, 
+		//	mTextDesc.width, mTextDesc.height);
 
-		Rect localParentCliprect = parentClipRect;
+		//Rect localParentCliprect = parentClipRect;
 
-		// Move parent rect to our space
-		localParentCliprect.x += clipRect.x;
-		localParentCliprect.y += clipRect.y;
+		//// Move parent rect to our space
+		//localParentCliprect.x += clipRect.x;
+		//localParentCliprect.y += clipRect.y;
 
-		// Clip our rectangle so its not larger then the parent
-		clipRect.clip(localParentCliprect);
+		//// Clip our rectangle so its not larger then the parent
+		//clipRect.clip(localParentCliprect);
 
-		// Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
-		clipRect.width += 1;
+		//// Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
+		//clipRect.width += 1;
 
-		return clipRect;
+		//return clipRect;
 	}
 
 	Vector<Rect>::type GUIInputSelection::getSelectionRects() const

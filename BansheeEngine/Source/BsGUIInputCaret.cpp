@@ -1,6 +1,7 @@
 #include "BsGUIInputCaret.h"
 #include "BsGUIManager.h"
 #include "BsImageSprite.h"
+#include "BsGUIElement.h"
 #include "CmFont.h"
 
 using namespace CamelotFramework;
@@ -20,21 +21,21 @@ namespace BansheeEngine
 
 	Int2 GUIInputCaret::getSpriteOffset() const
 	{
-		return getCaretPosition(mTextOffset);
+		return getCaretPosition(getTextOffset());
 	}
 
 	Rect GUIInputCaret::getSpriteClipRect(const CM::Rect& parentClipRect) const
 	{
-		Int2 offset = getSpriteOffset();
+		Int2 clipOffset = getSpriteOffset() - mElement->_getOffset() - 
+			Int2(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 
-		Rect clipRect(-offset.x + mTextOffset.x - mClipOffset.x, -offset.y + mTextOffset.y - mClipOffset.y, 
-			mTextDesc.width, mTextDesc.height);
+		Rect clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
 
 		Rect localParentCliprect = parentClipRect;
 
 		// Move parent rect to our space
-		localParentCliprect.x += clipRect.x;
-		localParentCliprect.y += clipRect.y;
+		localParentCliprect.x += mElement->_getTextInputOffset().x + clipRect.x;
+		localParentCliprect.y += mElement->_getTextInputOffset().y + clipRect.y;
 
 		// Clip our rectangle so its not larger then the parent
 		clipRect.clip(localParentCliprect);
@@ -96,7 +97,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		Int2 caretCoords = getCaretPosition(mTextOffset);
+		Int2 caretCoords = getCaretPosition(mElement->_getTextInputOffset());
 		caretCoords.y -= getCaretHeight();
 
 		moveCaretToPos(caretCoords);
@@ -121,7 +122,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		Int2 caretCoords = getCaretPosition(mTextOffset);
+		Int2 caretCoords = getCaretPosition(mElement->_getTextInputOffset());
 		caretCoords.y += getCaretHeight();
 
 		moveCaretToPos(caretCoords);
@@ -156,7 +157,8 @@ namespace BansheeEngine
 			{
 				const GUIInputLineDesc& line = getLineDesc(i);
 
-				if(pos.y >= line.getLineYStart() && pos.y < (line.getLineYStart() + (INT32)line.getLineHeight()))
+				INT32 lineStart = line.getLineYStart() + getTextOffset().y;
+				if(pos.y >= lineStart && pos.y < (lineStart + (INT32)line.getLineHeight()))
 				{
 					mCaretPos = curPos;
 					return;
@@ -166,12 +168,15 @@ namespace BansheeEngine
 				curPos += numChars;
 			}
 
-			const GUIInputLineDesc& firstLine = getLineDesc(0);
+			{
+				const GUIInputLineDesc& firstLine = getLineDesc(0);
+				INT32 lineStart = firstLine.getLineYStart() + getTextOffset().y;
 
-			if(pos.y < firstLine.getLineYStart()) // Before first line
-				mCaretPos = 0;
-			else // After last line
-				mCaretPos = curPos - 1;
+				if(pos.y < lineStart) // Before first line
+					mCaretPos = 0;
+				else // After last line
+					mCaretPos = curPos - 1;
+			}
 		}
 	}
 
@@ -232,7 +237,7 @@ namespace BansheeEngine
 				if(mCaretPos == curPos)
 				{
 					// Caret is on line start
-					return Int2(offset.x, lineDesc.getLineYStart());
+					return Int2(offset.x, lineDesc.getLineYStart() + getTextOffset().y);
 				}
 
 				curPos += lineDesc.getEndChar(false) - lineDesc.getStartChar() + 1; // + 1 for special line start position
@@ -246,7 +251,7 @@ namespace BansheeEngine
 
 			Rect charRect = getCharRect(charIdx);
 			UINT32 lineIdx = getLineForChar(charIdx);
-			UINT32 yOffset = getLineDesc(lineIdx).getLineYStart();
+			UINT32 yOffset = getLineDesc(lineIdx).getLineYStart() + getTextOffset().y;
 
 			return Int2(charRect.x + charRect.width, yOffset);
 		}

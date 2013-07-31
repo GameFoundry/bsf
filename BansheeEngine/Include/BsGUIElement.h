@@ -105,6 +105,18 @@ namespace BansheeEngine
 		virtual bool _isInBounds(const CM::Int2 position) const;
 		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
+		/**
+		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
+		 * 			the input text.
+		 */
+		virtual CM::Int2 _getTextInputOffset() const { return CM::Int2(); }
+
+		/**
+		 * @brief	Returns a clip rectangle relative to the element, used for clipping
+		 * 			the input text.
+		 */
+		virtual CM::Rect _getTextInputRect() const { return CM::Rect(); }
+
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 	protected:
 		virtual void updateRenderElementsInternal();

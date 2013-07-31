@@ -123,13 +123,13 @@ namespace BansheeEngine
 
 		if(mCaretShown && gGUIManager().getCaretBlinkState())
 		{
-			gGUIManager().getInputCaretTool()->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
+			gGUIManager().getInputCaretTool()->updateText(this, textDesc); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
 			gGUIManager().getInputCaretTool()->updateSprite();
 		}
 
 		if(mSelectionShown)
 		{
-			gGUIManager().getInputSelectionTool()->updateText(textDesc, getTextOffset(), mTextOffset); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
+			gGUIManager().getInputSelectionTool()->updateText(this, textDesc); // TODO - These shouldn't be here. Only call this when one of these parameters changes.
 			gGUIManager().getInputSelectionTool()->updateSprite();
 		}
 
@@ -294,6 +294,20 @@ namespace BansheeEngine
 		}
 
 		return 0;
+	}
+
+	CM::Int2 GUIInputBox::_getTextInputOffset() const
+	{
+		return mTextOffset;	
+	}
+
+	CM::Rect GUIInputBox::_getTextInputRect() const
+	{
+		Rect textBounds = getContentBounds();
+		textBounds.x -= mOffset.x;
+		textBounds.y -= mOffset.y;
+
+		return textBounds;
 	}
 
 	UINT32 GUIInputBox::_getRenderElementDepth(UINT32 renderElementIdx) const
@@ -652,7 +666,7 @@ namespace BansheeEngine
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
-		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		markContentAsDirty();
 	}
 
@@ -667,7 +681,7 @@ namespace BansheeEngine
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
-		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
 		gGUIManager().getInputSelectionTool()->showSelection(anchorCaretPos);
 		mSelectionShown = true;
@@ -721,8 +735,8 @@ namespace BansheeEngine
 		mTextOffset += offset;
 
 		Int2 newOffset = getTextOffset();
-		gGUIManager().getInputCaretTool()->updateText(textDesc, newOffset, mTextOffset);
-		gGUIManager().getInputSelectionTool()->updateText(textDesc, newOffset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
 		markContentAsDirty();
 	}
@@ -734,8 +748,8 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
 
-		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
-		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 	}
 
 	void GUIInputBox::eraseChar(CM::UINT32 charIdx)
@@ -745,8 +759,8 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
 
-		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
-		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 	}
 
 	void GUIInputBox::deleteSelectedText()
@@ -756,8 +770,8 @@ namespace BansheeEngine
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Int2 offset = getTextOffset();
-		gGUIManager().getInputCaretTool()->updateText(textDesc, offset, mTextOffset);
-		gGUIManager().getInputSelectionTool()->updateText(textDesc, offset, mTextOffset);
+		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
 		if(selStart > 0)
 		{

@@ -1,4 +1,5 @@
 #include "BsGUIInputTool.h"
+#include "BsGUIElement.h"
 #include "CmMath.h"
 #include "CmVector2.h"
 #include "CmFont.h"
@@ -8,17 +9,16 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIInputTool::GUIInputTool()
-		:mQuads(nullptr), mNumQuads(0)
+		:mQuads(nullptr), mNumQuads(0), mElement(nullptr)
 	{ }
 
 	GUIInputTool::~GUIInputTool()
 	{ }
 
-	void GUIInputTool::updateText(const TEXT_SPRITE_DESC& textDesc, const Int2& offset, const Int2 clipOffset)
+	void GUIInputTool::updateText(const GUIElement* element, const TEXT_SPRITE_DESC& textDesc)
 	{
+		mElement = element;
 		mTextDesc = textDesc;
-		mTextOffset = offset;
-		mClipOffset = clipOffset;
 
 		mLineDescs.clear();
 
@@ -44,13 +44,9 @@ namespace BansheeEngine
 			mQuads, nullptr, nullptr, mNumQuads);
 
 		UINT32 numVerts = mNumQuads * 4;
-		Vector2 vecOffset((float)mTextOffset.x, (float)mTextOffset.y);
-		for(UINT32 i = 0; i < numVerts; i++)
-			mQuads[i] = mQuads[i] + vecOffset;
 
 		// Store cached line data
 		UINT32 curCharIdx = 0;
-		UINT32 cachedLineY = 0;
 		UINT32 curLineIdx = 0;
 		Vector<Int2>::type alignmentOffsets = TextSprite::getAlignmentOffsets(lines, mTextDesc.width, 
 			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
@@ -63,15 +59,19 @@ namespace BansheeEngine
 			UINT32 startChar = curCharIdx;
 			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
 			UINT32 lineHeight = line.getYOffset();
-			INT32 lineYStart = alignmentOffsets[curLineIdx].y + mTextOffset.y;
+			INT32 lineYStart = alignmentOffsets[curLineIdx].y;
 
 			GUIInputLineDesc lineDesc(startChar, endChar, lineHeight, lineYStart, hasNewline);
 			mLineDescs.push_back(lineDesc);
 
 			curCharIdx = lineDesc.getEndChar();
-			cachedLineY += lineDesc.getLineHeight();
 			curLineIdx++;
 		}
+	}
+
+	Int2 GUIInputTool::getTextOffset() const
+	{
+		return mElement->_getOffset() + mElement->_getTextInputOffset() + Int2(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 	}
 
 	CM::Rect GUIInputTool::getCharRect(UINT32 charIdx) const
@@ -87,16 +87,18 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < lineIdx; i++)
 			numNewlineChars += (getLineDesc(i).hasNewlineChar() ? 1 : 0);
 
+		Int2 textOffset = getTextOffset();
+
 		UINT32 quadIdx = charIdx - numNewlineChars;
 		if(quadIdx >= 0 && quadIdx < mNumQuads)
 		{
 			UINT32 vertIdx = quadIdx * 4;
 
 			Rect charRect;
-			charRect.x = Math::RoundToInt(mQuads[vertIdx + 0].x);
-			charRect.y = Math::RoundToInt(mQuads[vertIdx + 0].y);
-			charRect.width = Math::RoundToInt(mQuads[vertIdx + 3].x - charRect.x);
-			charRect.height = Math::RoundToInt(mQuads[vertIdx + 3].y - charRect.y);
+			charRect.x = Math::RoundToInt(mQuads[vertIdx + 0].x) + textOffset.x;
+			charRect.y = Math::RoundToInt(mQuads[vertIdx + 0].y) + textOffset.y;
+			charRect.width = Math::RoundToInt((mQuads[vertIdx + 3].x + textOffset.x) - charRect.x);
+			charRect.height = Math::RoundToInt((mQuads[vertIdx + 3].y + textOffset.y) - charRect.y);
 
 			return charRect;
 		}
@@ -114,7 +116,8 @@ namespace BansheeEngine
 		UINT32 lineIdx = 0;
 		for(auto& line : mLineDescs)
 		{
-			if(pos.y >= line.getLineYStart() && pos.y < (line.getLineYStart() + (INT32)line.getLineHeight()))
+			INT32 lineStart = line.getLineYStart() + getTextOffset().y;
+			if(pos.y >= lineStart && pos.y < (lineStart + (INT32)line.getLineHeight()))
 			{
 				lineStartChar = line.getStartChar();
 				lineEndChar = line.getEndChar(false);
@@ -135,12 +138,14 @@ namespace BansheeEngine
 		UINT32 nearestChar = 0;
 		bool foundChar = false;
 
+		Int2 textOffset = getTextOffset();
 		for(UINT32 i = lineStartQuad; i < lineEndQuad; i++)
 		{
 			UINT32 curVert = i * 4;
 
 			float centerX = mQuads[curVert + 0].x + mQuads[curVert + 1].x;
 			centerX *= 0.5f;
+			centerX += textOffset.x;
 
 			float dist = Math::Abs(centerX - vecPos.x);
 			if(dist < nearestDist)

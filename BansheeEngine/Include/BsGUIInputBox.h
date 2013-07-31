@@ -51,6 +51,9 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
 
+		virtual CM::Int2 _getTextInputOffset() const;
+		virtual CM::Rect _getTextInputRect() const;
+
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 		virtual void _setFocus(bool focus);
 	private:

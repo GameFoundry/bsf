@@ -31,16 +31,18 @@ namespace BansheeEngine
 		GUIInputTool();
 		~GUIInputTool();
 
-		void updateText(const TEXT_SPRITE_DESC& textDesc, const CM::Int2& offset, const CM::Int2 clipOffset);
+		void updateText(const GUIElement* element, const TEXT_SPRITE_DESC& textDesc);
 	protected:
+		const GUIElement* mElement;
+
 		CM::Vector2* mQuads;
 		CM::UINT32 mNumQuads;
 
 		TEXT_SPRITE_DESC mTextDesc;
-		CM::Int2 mTextOffset;
-		CM::Int2 mClipOffset;
 
 		CM::Vector<GUIInputLineDesc>::type mLineDescs;
+
+		CM::Int2 getTextOffset() const;
 
 		CM::UINT32 getNumLines() const { return (CM::UINT32)mLineDescs.size(); }
 		const GUIInputLineDesc& getLineDesc(CM::UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
