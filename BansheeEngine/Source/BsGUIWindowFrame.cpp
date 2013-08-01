@@ -98,7 +98,7 @@ namespace BansheeEngine
 	}
 
 	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mResizeCursorSet(false)
+		:GUIElement(parent, style, layoutOptions, false), mResizeCursorSet(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
