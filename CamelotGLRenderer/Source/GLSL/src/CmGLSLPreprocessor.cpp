@@ -246,7 +246,9 @@ CPreprocessor::ErrorHandlerFunc CPreprocessor::ErrorHandler = DefaultError;
 CPreprocessor::Macro::~Macro()
 { 
 	cm_deleteN<ScratchAlloc>(Args, NumArgs);
-	cm_delete<ScratchAlloc>(Next); 
+
+	if(Next != nullptr)
+		cm_delete<ScratchAlloc>(Next); 
 }
 
 CPreprocessor::CPreprocessor (const Token &iToken, int iLine) : MacroList (NULL)

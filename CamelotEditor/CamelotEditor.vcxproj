@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DebugRelease|Win32">
+      <Configuration>DebugRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DebugRelease|x64">
+      <Configuration>DebugRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -35,7 +43,15 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v110</PlatformToolset>
   </PropertyGroup>
@@ -51,7 +67,13 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -70,7 +92,15 @@
     <OutDir>..\bin\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+    <OutDir>..\bin\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
     <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -133,7 +163,47 @@
       <Command>xcopy "$(SolutionDir)\..\Data\Editor" "$(ProjectDir)$(OutDir)" /i /y /e</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_NO_KEYWORDS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.\Include;.\Dependencies\Include;.\GeneratedFiles\$(ConfigurationName);..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>.\Dependencies\lib\Release;..\lib\$(Configuration);..\Dependencies\lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>xcopy "$(SolutionDir)\..\Data\Editor" "$(ProjectDir)$(OutDir)" /i /y /e</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>UNICODE;WIN32;QT_NO_KEYWORDS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles;.\Include;.\Dependencies\Include;.\GeneratedFiles\$(ConfigurationName);..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <TreatWChar_tAsBuiltInType>false</TreatWChar_tAsBuiltInType>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)\$(ProjectName).exe</OutputFile>
+      <AdditionalLibraryDirectories>.\Dependencies\lib\x64\Release;..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <AdditionalDependencies>Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PreBuildEvent>
+      <Command>xcopy "$(SolutionDir)\..\Data\Editor" "$(ProjectDir)$(OutDir)" /i /y /e</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
     <ClCompile>
       <PreprocessorDefinitions>UNICODE;WIN32;QT_NO_KEYWORDS;QT_LARGEFILE_SUPPORT;QT_DLL;QT_NO_DEBUG;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.\GeneratedFiles;.\Include;.\Dependencies\Include;.\GeneratedFiles\$(ConfigurationName);..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -171,7 +241,11 @@
       </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+      </PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Include\3rdParty\pugixml\pugixml.cpp" />
@@ -206,13 +280,21 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -226,13 +308,21 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(FullPath);%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">%(FullPath);%(AdditionalInputs)</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Rcc%27ing %(Identity)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Rcc%27ing %(Identity)...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Rcc%27ing %(Identity)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Rcc%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -252,17 +342,25 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="Include\CmQtEditorWindow.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
@@ -274,13 +372,21 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="Include\CmQtHierarchyWidget.h">
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
@@ -288,13 +394,21 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -306,17 +420,25 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="Include\CmQtEditorWidget.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Moc%27ing %(Filename)...</Message>
@@ -324,13 +446,21 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -342,13 +472,21 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -360,13 +498,21 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -380,13 +526,21 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
@@ -398,13 +552,21 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Moc%27ing %(Filename)...</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\moc_%(Filename).cpp"  -DQT_NO_KEYWORDS -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_DLL  "-I.\GeneratedFiles" "-I.\Include" "-I.\Dependencies\Include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I.\..\CamelotCore\Include" "-I.\..\CamelotUtility\Include" "-I.\..\Dependencies\Include"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Moc%27ing %(Filename)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\moc_%(Filename).cpp</Outputs>
