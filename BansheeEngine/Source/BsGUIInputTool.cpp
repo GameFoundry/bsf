@@ -74,7 +74,18 @@ namespace BansheeEngine
 		return mElement->_getOffset() + mElement->_getTextInputOffset() + Int2(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 	}
 
-	CM::Rect GUIInputTool::getCharRect(UINT32 charIdx) const
+	Rect GUIInputTool::getCharRect(UINT32 charIdx) const
+	{
+		Rect charRect = getLocalCharRect(charIdx);
+		Int2 textOffset = getTextOffset();
+
+		charRect.x += textOffset.x;
+		charRect.y += textOffset.y;
+
+		return charRect;
+	}
+
+	Rect GUIInputTool::getLocalCharRect(UINT32 charIdx) const
 	{
 		UINT32 lineIdx = getLineForChar(charIdx);
 
@@ -87,18 +98,16 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < lineIdx; i++)
 			numNewlineChars += (getLineDesc(i).hasNewlineChar() ? 1 : 0);
 
-		Int2 textOffset = getTextOffset();
-
 		UINT32 quadIdx = charIdx - numNewlineChars;
 		if(quadIdx >= 0 && quadIdx < mNumQuads)
 		{
 			UINT32 vertIdx = quadIdx * 4;
 
 			Rect charRect;
-			charRect.x = Math::RoundToInt(mQuads[vertIdx + 0].x) + textOffset.x;
-			charRect.y = Math::RoundToInt(mQuads[vertIdx + 0].y) + textOffset.y;
-			charRect.width = Math::RoundToInt((mQuads[vertIdx + 3].x + textOffset.x) - charRect.x);
-			charRect.height = Math::RoundToInt((mQuads[vertIdx + 3].y + textOffset.y) - charRect.y);
+			charRect.x = Math::RoundToInt(mQuads[vertIdx + 0].x);
+			charRect.y = Math::RoundToInt(mQuads[vertIdx + 0].y);
+			charRect.width = Math::RoundToInt(mQuads[vertIdx + 3].x - charRect.x);
+			charRect.height = Math::RoundToInt(mQuads[vertIdx + 3].y - charRect.y);
 
 			return charRect;
 		}

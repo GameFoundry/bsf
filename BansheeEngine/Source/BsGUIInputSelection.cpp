@@ -59,24 +59,24 @@ namespace BansheeEngine
 
 	Rect GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const CM::Rect& parentClipRect) const
 	{
-		return parentClipRect;
-		//Rect clipRect(-(mElement->_getTextInputOffset().x + mSelectionRects[spriteIdx].x) + mElement->_getTextInputRect().x, 
-		//	-mSelectionRects[spriteIdx].y - mElement->_getTextInputOffset().y - mElement->_getTextInputRect().y, 
-		//	mTextDesc.width, mTextDesc.height);
+		Int2 selectionOffset(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y);
+		Int2 clipOffset = selectionOffset + mElement->_getTextInputOffset();
 
-		//Rect localParentCliprect = parentClipRect;
+		Rect clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
 
-		//// Move parent rect to our space
-		//localParentCliprect.x += clipRect.x;
-		//localParentCliprect.y += clipRect.y;
+		Rect localParentCliprect = parentClipRect;
 
-		//// Clip our rectangle so its not larger then the parent
-		//clipRect.clip(localParentCliprect);
+		// Move parent rect to our space
+		localParentCliprect.x += mElement->_getTextInputOffset().x + clipRect.x;
+		localParentCliprect.y += mElement->_getTextInputOffset().y + clipRect.y;
 
-		//// Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
-		//clipRect.width += 1;
+		// Clip our rectangle so its not larger then the parent
+		clipRect.clip(localParentCliprect);
 
-		//return clipRect;
+		// Increase clip size by 1, so we can fit the caret in case it is fully at the end of the text
+		clipRect.width += 1;
+
+		return clipRect;
 	}
 
 	Vector<Rect>::type GUIInputSelection::getSelectionRects() const
@@ -107,8 +107,8 @@ namespace BansheeEngine
 
 			if(!isNewlineChar(startCharIdx) && !isNewlineChar(endCharIdx))
 			{
-				Rect startChar = getCharRect(startCharIdx);
-				Rect endChar = getCharRect(endCharIdx);
+				Rect startChar = getLocalCharRect(startCharIdx);
+				Rect endChar = getLocalCharRect(endCharIdx);
 
 				Rect selectionRect;
 				selectionRect.x = startChar.x;
@@ -130,8 +130,8 @@ namespace BansheeEngine
 			if(endCharIdx > 0)
 				endCharIdx = endCharIdx - 1;
 
-			Rect startChar = getCharRect(lineDesc.getStartChar());
-			Rect endChar = getCharRect(endCharIdx);
+			Rect startChar = getLocalCharRect(lineDesc.getStartChar());
+			Rect endChar = getLocalCharRect(endCharIdx);
 
 			Rect selectionRect;
 			selectionRect.x = startChar.x;
@@ -152,8 +152,8 @@ namespace BansheeEngine
 
 				if(!isNewlineChar(endCharIdx))
 				{
-					Rect startChar = getCharRect(lineDesc.getStartChar());
-					Rect endChar = getCharRect(endCharIdx);
+					Rect startChar = getLocalCharRect(lineDesc.getStartChar());
+					Rect endChar = getLocalCharRect(endCharIdx);
 
 					Rect selectionRect;
 					selectionRect.x = startChar.x;

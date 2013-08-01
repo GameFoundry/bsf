@@ -48,6 +48,7 @@ namespace BansheeEngine
 		const GUIInputLineDesc& getLineDesc(CM::UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
 		CM::UINT32 getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine = false) const;
 		CM::Rect getCharRect(CM::UINT32 charIdx) const;
+		CM::Rect getLocalCharRect(CM::UINT32 charIdx) const;
 		CM::INT32 getCharIdxAtPos(const CM::Int2& pos) const;
 
 		/**

@@ -36,6 +36,7 @@ IMMEDIATE:
 - Scrolling the window shouldn't remove text selection
  - In general focus shouldn't be lost at all
 - Hover colors of the scroll bar are wrong
+- Input caret gets removed when I resize the window
 
 TextBox needed elements:
  - Key-repeat? Pressing left/right/up/down arrows doesn't repeat the keys (also delete/backspace)
