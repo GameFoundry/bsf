@@ -59,7 +59,7 @@ namespace CamelotFramework
 
 	struct QueuedCommand
 	{
-#ifdef CM_DEBUG_MODE
+#if CM_DEBUG_MODE
 		QueuedCommand(boost::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
 		{ }
