@@ -26,7 +26,7 @@
 
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
-#include "CmEditorWindow.h"
+#include "DbgEditorWidget1.h"
 #include "CmRTTIType.h"
 #include "CmCursor.h"
 
@@ -284,13 +284,9 @@ int CALLBACK WinMain(
 
 	dbgCursor.reset();
 
-	EditorWindow* newWindow = new EditorWindow("Test window");
+	DbgEditorWidget1::open();
 
 	gBansheeApp().runMainLoop();
-
-	// Release everything before shutdown
-	
-	delete newWindow;
 
 	//testMaterial->destroy();
 #ifdef DX11

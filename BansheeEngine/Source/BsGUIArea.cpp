@@ -103,6 +103,22 @@ namespace BansheeEngine
 		return mLayout->_isContentDirty();
 	}
 
+	void GUIArea::setPosition(INT32 x, INT32 y)
+	{
+		mLeft = x;
+		mTop = y;
+
+		mIsDirty = true;
+	}
+
+	void GUIArea::setSize(UINT32 width, UINT32 height)
+	{
+		mWidth = width;
+		mHeight = height;
+
+		mIsDirty = true;
+	}
+
 	void GUIArea::notifyWindowResized(UINT32 newWidth, UINT32 newHeight)
 	{
 		if(mResizeXWithWidget)

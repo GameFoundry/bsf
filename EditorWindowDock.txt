@@ -1,0 +1,73 @@
+EditorWindow
+ - Actual render window containing a window frame
+ - Has a content area that is automatically managed as the window resizes
+ - Optionally it has a title bar (SEPARATE from the docked title bar)
+ - (Later) Optionally also a context menu
+ - Used for both main and editor windows
+
+EditorWidgetContainer
+ - Contains a tabbed title bar
+ - Used for dealing with multiple editor widgets
+ - More specific:
+   - Has add/remove/move methods that allow you to manipulate which EditorWidgets it contains.
+
+EditorWidget
+ - What we have so far called EditorWindow
+ - Contains a GUIArea that is managed by its parent EditorWindow or DockManager
+ - This is the only user-friendly part of the Editor window system. User should never need to touch the other bits.
+ - More specific
+   - Contains the window name
+   - Has open/close method (Open automatically creates an EditorWindow)
+
+DragAndDropManager
+ - Very simple interface
+ - dragObject(icon, type, data, dropCallback) - starts item drag (data is just a void user an cast based on type)
+ - while something is being dragged GUIManager sends ObjectDragged events to all GUI elements under the mouse
+   - (normally GUIManager only sends MouseDrag to the element that initiated the drag)
+ - when mouse button is released GUIManager sends ObjectDropped to the GUIElement under the cursor
+ - manager is reponsible for drawing the provided icon while the object is being dragged
+ - "dropCallback" is called when the object is dropped. Most useful to determine if the object is dropped in an unsupported area in which case we need to do some special action.
+
+DockManager
+ - DOCKING: When user drags a window, EditorWidgetContainer detects that and reacts accordingly
+   - For title bar it draws the drop locations, and does the same for content
+   - After the drop is done it just notifies the DockManager (if the drop was on contents) with addWidgetRelativeToMe(this, location, draggedWidget)
+      - (If the drop was done on the title bar, then the EditorWidgetContainer can handle that internally)
+	  - Drop manager creates two new DockedWindowContainers
+	   - Existing a new widgets are moved into each. Existing container (for the existing widget) now becomes the parent of the two new containers.
+	   - Size of the new containers are adjusted (and containers internally adjust the size of their widgets, and/or their child containers)
+	  - A spacer widget is added between them, that may be used for resizing. DockedWindowContainers on both sides of the spacer and kept as a reference
+   - Also, make sure to detect a case when there are no widgets in the dock manager
+   - Resizing a DockedWindowContainer recursivelly resizes all child containers
+ - UNDOCKING: If the last EditorWidget is removed from EditorWidgetContainer, DockManager is notified and it takes care of removing the relevant
+   DockedWindowContainer and the spacer.
+
+TODO - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
+TODO - A way to persist window states
+
+------------------------
+
+Implementation plan:
+ - Split EditorWindow, EditorWidget and EditorWidgetContainer
+ - Implement a couple of debug EditorWidgets and set them up in a single container and a window
+  - Hook up the buttons so clicking them switches the active widget
+ - Implement basic DragAndDropManager (without special icon yet)
+  - Attemp to drag and drop a single item from and to the title bar
+   - Will require implementing most of the DragAndDropManager and improve GUIManager
+ - Continue with DockManager (flesh it out later)
+
+ TODO - I don't release EditorWindow or EditorWidget anywhere!!!
+
+------------------------
+
+Some use cases:
+ 1. User drags one of the tabs on EditorWindow and then drops it
+  - If user drags for N pixels the draged tab (and its EditorWidget) is removed from the EditorWindow and added to DragAndDropManager
+  - If user drops the window onto empty/unsupported element drag and drop manager "dropCallback" is executed and EditorWidget is restored in its own EditorWindow.
+  - If user drags the window over a title bar, drop positions get highlighted on the title bar
+    - If the user releases over the title bar, the window is added at the specified drop position
+  - If the user drags over an EditorWidget content area, semi-transparent drop areas are shown, and current area is highlighted
+    - Dropping the window in that area will split the available space between existng and new window contents
+
+ 2. User organizes his windows and the quits and restarts the program
+  - TODO

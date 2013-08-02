@@ -131,7 +131,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -148,7 +148,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -168,7 +168,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -191,7 +191,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -214,7 +214,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -237,7 +237,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotD3D9Renderer\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <MinimalRebuild>true</MinimalRebuild>
@@ -255,21 +255,32 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BsGUITabbedTitleBar.h" />
-    <ClInclude Include="BsGUIWindowFrameWidget.h" />
     <ClInclude Include="CmDebugCamera.h" />
-    <ClInclude Include="CmEditorWindow.h" />
     <ClInclude Include="CmTestTextSprite.h" />
+    <ClInclude Include="Include\BsEditorPrerequisites.h" />
+    <ClInclude Include="Include\BsEditorWidget.h" />
+    <ClInclude Include="Include\BsEditorWidgetContainer.h" />
+    <ClInclude Include="Include\BsEditorWindow.h" />
+    <ClInclude Include="Include\BsEditorWindowBase.h" />
+    <ClInclude Include="Include\BsGUITabbedTitleBar.h" />
+    <ClInclude Include="Include\BsGUIWindowFrameWidget.h" />
+    <ClInclude Include="Include\DbgEditorWidget1.h" />
+    <ClInclude Include="Include\DbgEditorWidget2.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BsGUITabbedTitleBar.cpp" />
-    <ClCompile Include="BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="CmDebugCamera.cpp" />
-    <ClCompile Include="CmEditorWindow.cpp" />
     <ClCompile Include="CmTestTextSprite.cpp" />
+    <ClCompile Include="Source\BsEditorWidget.cpp" />
+    <ClCompile Include="Source\BsEditorWidgetContainer.cpp" />
+    <ClCompile Include="Source\BsEditorWindow.cpp" />
+    <ClCompile Include="Source\BsEditorWindowBase.cpp" />
+    <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
+    <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
+    <ClCompile Include="Source\DbgEditorWidget1.cpp" />
+    <ClCompile Include="Source\DbgEditorWidget2.cpp" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

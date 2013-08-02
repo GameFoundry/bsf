@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Editor">
+      <UniqueIdentifier>{b51df1f7-00a9-49af-a616-e0dbf141c3d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Editor">
+      <UniqueIdentifier>{ccd6be96-5773-46cc-a751-18a7007716c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -30,14 +36,32 @@
     <ClInclude Include="CmTestTextSprite.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CmEditorWindow.h">
+    <ClInclude Include="Include\BsEditorWidgetContainer.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\DbgEditorWidget1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BsGUITabbedTitleBar.h">
+    <ClInclude Include="Include\DbgEditorWidget2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BsGUIWindowFrameWidget.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Include\BsEditorWindowBase.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWindow.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUITabbedTitleBar.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIWindowFrameWidget.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorWidget.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEditorPrerequisites.h">
+      <Filter>Header Files\Editor</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -53,14 +77,29 @@
     <ClCompile Include="CmTestTextSprite.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CmEditorWindow.cpp">
+    <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\DbgEditorWidget1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BsGUITabbedTitleBar.cpp">
+    <ClCompile Include="Source\DbgEditorWidget2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BsGUIWindowFrameWidget.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Source\BsEditorWindowBase.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWindow.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITabbedTitleBar.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorWidget.cpp">
+      <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

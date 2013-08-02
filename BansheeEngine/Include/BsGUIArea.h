@@ -52,6 +52,9 @@ namespace BansheeEngine
 		CM::UINT16 getDepth() const { return mDepth; }
 		void setDepth(CM::UINT16 depth) { mDepth = depth; }
 
+		void setPosition(CM::INT32 x, CM::INT32 y);
+		void setSize(CM::UINT32 width, CM::UINT32 height);
+
 		CM::UINT32 x() const { return mLeft; }
 		CM::UINT32 y() const { return mTop; }
 		CM::UINT32 width() const { return mWidth; }
