@@ -239,7 +239,7 @@ namespace CamelotFramework
 
 		void moveWindow(RenderWindowPtr& renderWindow, INT32 left, INT32 top)
 		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::reposition, renderWindow.get(), left, top));
+			mCommandQueue->queue(boost::bind(&RenderWindow::move, renderWindow.get(), left, top));
 		}
 
 		void startResize(RenderWindowPtr& renderWindow, WindowResizeDirection direction)

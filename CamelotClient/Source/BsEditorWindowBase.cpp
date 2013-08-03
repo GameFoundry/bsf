@@ -2,6 +2,7 @@
 #include "CmApplication.h"
 #include "CmSceneObject.h"
 #include "CmRenderWindow.h"
+#include "CmRenderWindowManager.h"
 
 #include "BsCamera.h"
 #include "BsGUIWindowFrameWidget.h"
@@ -42,6 +43,8 @@ namespace BansheeEditor
 		frame->setSkin(&EngineGUI::instance().getSkin());
 		frame->initialize(camera->getViewport().get(), mRenderWindow.get());
 		frame->setDepth(129);
+
+		RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&EditorWindowBase::movedOrResized, this, _1));
 	}
 
 	EditorWindowBase::~EditorWindowBase()
@@ -49,13 +52,45 @@ namespace BansheeEditor
 		mRenderWindow->destroy();
 	}
 
+	void EditorWindowBase::initialize()
+	{
+		setPosition(0, 0);
+		setSize(200, 200);
+	}
+
+	void EditorWindowBase::movedOrResized(RenderWindow& renderWindow)
+	{
+		if(&renderWindow == mRenderWindow.get())
+			movedOrResized();
+	}
+
 	void EditorWindowBase::setPosition(CM::INT32 x, CM::INT32 y)
 	{
-		// TODO
+		gMainCA().moveWindow(mRenderWindow, x, y);
 	}
 
 	void EditorWindowBase::setSize(CM::UINT32 width, CM::UINT32 height)
 	{
-		// TODO
+		gMainCA().resizeWindow(mRenderWindow, width, height);
+	}
+
+	INT32 EditorWindowBase::getLeft() const
+	{
+		return mRenderWindow->getLeft();
+	}
+
+	INT32 EditorWindowBase::getTop() const
+	{
+		return mRenderWindow->getTop();
+	}
+
+	UINT32 EditorWindowBase::getWidth() const
+	{
+		return (UINT32) mRenderWindow->getWidth();
+	}
+
+	UINT32 EditorWindowBase::getHeight() const
+	{
+		return (UINT32) mRenderWindow->getHeight();
 	}
 }

@@ -305,7 +305,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D11RenderWindow::reposition(INT32 top, INT32 left)
+	void D3D11RenderWindow::move(INT32 top, INT32 left)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

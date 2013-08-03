@@ -8,10 +8,16 @@ namespace BansheeEditor
 	class EditorWindow : public EditorWindowBase
 	{
 	public:
-		EditorWindow();
 		virtual ~EditorWindow();
 
 		EditorWidgetContainer& getWidgets() const { return *mWidgets; }
+
+		static EditorWindow& create();
+
+	protected:
+		EditorWindow();
+
+		virtual void movedOrResized();
 	private:
 		EditorWidgetContainer* mWidgets;
 	};

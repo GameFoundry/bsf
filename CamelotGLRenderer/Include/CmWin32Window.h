@@ -61,7 +61,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::reposition
 		 */
-		void reposition(INT32 left, INT32 top);
+		void move(INT32 left, INT32 top);
 
 		/**
 		 * @copydoc RenderWindow::resize

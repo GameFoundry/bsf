@@ -11,9 +11,12 @@ namespace BansheeEditor
 
 		const CM::WString& getName() const { return mName; }
 
-		virtual void _initialize(BS::GUIWidget& widget, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
-		void _setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void _setSize(CM::UINT32 width, CM::UINT32 height);
+		void _setPosition(CM::INT32 x, CM::INT32 y);
 		void _changeParent(BS::GUIWidget& widget);
+
+		void _disable();
+		void _enable();
 
 	protected:
 		EditorWidget(const CM::WString& name);

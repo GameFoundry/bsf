@@ -557,7 +557,7 @@ namespace CamelotFramework
 		return mClosed;
 	}
 
-	void Win32Window::reposition(INT32 left, INT32 top)
+	void Win32Window::move(INT32 left, INT32 top)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

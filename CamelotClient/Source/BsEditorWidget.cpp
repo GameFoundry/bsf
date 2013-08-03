@@ -13,7 +13,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	EditorWidget::EditorWidget(const WString& name)
-		:mName(name), mParentWidget(nullptr)
+		:mName(name), mParentWidget(nullptr), mContent(nullptr)
 	{
 		
 	}
@@ -23,18 +23,19 @@ namespace BansheeEditor
 
 	}
 
-	void EditorWidget::_initialize(GUIWidget& widget, INT32 x, INT32 y, UINT32 width, UINT32 height)
+	void EditorWidget::_setPosition(INT32 x, INT32 y)
 	{
-		_changeParent(widget);
-		_setArea(x, y, width, height);
-	}
-
-	void EditorWidget::_setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
-	{
-		if(mContent != nullptr)
+		if(mContent == nullptr)
 			return;
 
 		mContent->setPosition(x, y);
+	}
+
+	void EditorWidget::_setSize(UINT32 width, UINT32 height)
+	{
+		if(mContent == nullptr)
+			return;
+
 		mContent->setSize(width, height);
 	}
 
@@ -43,9 +44,20 @@ namespace BansheeEditor
 		if(mParentWidget != &widget) 
 		{
 			// TODO - GUIArea mContent should be recreated (or moved) to the new widget
+			// TODO - Not only GUIArea needs to be moved, but all GUIElements
 		}
 
 		mParentWidget = &widget;
 		mContent = GUIArea::create(widget, 0, 0, 0, 0, 10000);
+	}
+
+	void EditorWidget::_disable()
+	{
+		// TODO - Hide all child GUIElements
+	}
+
+	void EditorWidget::_enable()
+	{
+		// TODO - Show all child GUIElements
 	}
 }

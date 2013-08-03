@@ -7,6 +7,7 @@
 #include "BsGUISpace.h"
 #include "BsGUIWindowMover.h"
 #include "BsEngineGUI.h"
+#include "BsGUIWidget.h"
 #include "CmMath.h"
 
 using namespace CamelotFramework;
@@ -14,26 +15,47 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	TabbedTitleBar::TabbedTitleBar(const HSceneObject& parent)
-		:GUIWidget(parent), mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), mMainArea(nullptr), mMainLayout(nullptr)
+	GUITabbedTitleBar::GUITabbedTitleBar(BS::GUIWidget* parent)
+		:mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), 
+		mMainArea(nullptr), mMainLayout(nullptr), mParentWidget(parent), mBackgroundArea(nullptr)
 	{
+		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
+		GUIWindowMover* titleBarBg = GUIWindowMover::create(*parent, parent->getSkin()->getStyle("TitleBarBackground"));
+		mBackgroundArea->getLayout().addSpace(1);
+		mBackgroundArea->getLayout().addElement(titleBarBg);
+		mBackgroundArea->getLayout().addSpace(1);
 
+		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
+
+		GUIWindowMover* dragDropElement = GUIWindowMover::create(*parent, GUILayoutOptions::expandableX(13, 20), parent->getSkin()->getStyle("TabbedBarDropArea"));
+		mLastDropElement = dragDropElement;
+
+		mMinBtn = GUIButton::create(*parent, L"", parent->getSkin()->getStyle("WinMinimizeBtn"));
+		mCloseBtn = GUIButton::create(*parent, L"", parent->getSkin()->getStyle("WinCloseBtn"));
+
+		mMainArea->getLayout().addSpace(1);
+		mMainLayout = &mMainArea->getLayout().addLayoutX();
+		mMainLayout->addElement(dragDropElement);
+		mMainLayout->addElement(mMinBtn);
+		mMainLayout->addSpace(3);
+		mMainLayout->addElement(mCloseBtn);
+		mMainArea->getLayout().addSpace(3);
 	}
 
-	TabbedTitleBar::~TabbedTitleBar()
+	GUITabbedTitleBar::~GUITabbedTitleBar()
 	{
-
+		// TODO - Clean up buttons, layouts, areas
 	}
 
-	void TabbedTitleBar::addTab(const CM::String& name)
+	void GUITabbedTitleBar::addTab(const CM::WString& name)
 	{
 		insertTab((UINT32)mTabButtons.size(), name);
 	}
 
-	void TabbedTitleBar::insertTab(UINT32 idx, const CM::String& name)
+	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::WString& name)
 	{
-		GUIToggle* newTabToggle = GUIToggle::create(*this, toWString(name), EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
-		GUIWindowMover* newDragDropElement = GUIWindowMover::create(*this, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
+		GUIToggle* newTabToggle = GUIToggle::create(*mParentWidget, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
+		GUIWindowMover* newDragDropElement = GUIWindowMover::create(*mParentWidget, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size());
 
@@ -44,7 +66,7 @@ namespace BansheeEditor
 		mMainLayout->insertElement(idx * 2, newDragDropElement);
 	}
 
-	void TabbedTitleBar::removeTab(UINT32 idx)
+	void GUITabbedTitleBar::removeTab(UINT32 idx)
 	{
 		if(mTabButtons.size() == 0)
 			return;
@@ -58,42 +80,15 @@ namespace BansheeEditor
 		mDragDropElements.erase(mDragDropElements.begin() + idx);
 	}
 
-	void TabbedTitleBar::initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow)
+	void GUITabbedTitleBar::setPosition(INT32 x, INT32 y)
 	{
-		GUIWidget::initialize(target, ownerWindow);
-
-		GUIArea* backgroundArea = GUIArea::createStretchedX(*this, 0, 0, 1, 13, 500);
-		GUIWindowMover* titleBarBg = GUIWindowMover::create(*this, getSkin()->getStyle("TitleBarBackground"));
-		backgroundArea->getLayout().addSpace(1);
-		backgroundArea->getLayout().addElement(titleBarBg);
-		backgroundArea->getLayout().addSpace(1);
-
-		mMainArea = GUIArea::createStretchedX(*this, 0, 0, 1, 13, 499);
-
-		GUIWindowMover* dragDropElement = GUIWindowMover::create(*this, GUILayoutOptions::expandableX(13, 20), getSkin()->getStyle("TabbedBarDropArea"));
-		mLastDropElement = dragDropElement;
-
-		mMinBtn = GUIButton::create(*this, L"", getSkin()->getStyle("WinMinimizeBtn"));
-		mCloseBtn = GUIButton::create(*this, L"", getSkin()->getStyle("WinCloseBtn"));
-
-		mMainArea->getLayout().addSpace(1);
-		mMainLayout = &mMainArea->getLayout().addLayoutX();
-		mMainLayout->addElement(dragDropElement);
-		mMainLayout->addElement(mMinBtn);
-		mMainLayout->addSpace(3);
-		mMainLayout->addElement(mCloseBtn);
-		mMainArea->getLayout().addSpace(3);
-
-		addTab("TEST!");
+		mMainArea->setPosition(x, y);
+		mBackgroundArea->setPosition(x, y);
 	}
 
-	void TabbedTitleBar::update()
+	void GUITabbedTitleBar::setSize(UINT32 width, UINT32 height)
 	{
-
-	}
-
-	bool TabbedTitleBar::_mouseEvent(GUIElement* element, const GUIMouseEvent& ev)
-	{
-		return GUIWidget::_mouseEvent(element, ev);
+		mMainArea->setSize(width, height);
+		mBackgroundArea->setSize(width, height);
 	}
 }

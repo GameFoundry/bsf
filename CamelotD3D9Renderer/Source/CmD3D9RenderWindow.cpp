@@ -375,7 +375,7 @@ namespace CamelotFramework
 		return (mHWnd && !IsIconic(mHWnd));
 	}
 
-	void D3D9RenderWindow::reposition(INT32 top, INT32 left)
+	void D3D9RenderWindow::move(INT32 top, INT32 left)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

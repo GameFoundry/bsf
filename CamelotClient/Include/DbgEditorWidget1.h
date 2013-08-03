@@ -17,7 +17,7 @@ namespace BansheeEditor
 	protected:
 		DbgEditorWidget1();
 
-		virtual void _initialize(BS::GUIWidget& widget, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void initialize();
 	private:
 		static std::shared_ptr<DbgEditorWidget1> Instance;
 	};

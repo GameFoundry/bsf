@@ -9,4 +9,5 @@ namespace BansheeEditor
 	class EditorWindow;
 	class EditorWidget;
 	class EditorWidgetContainer;
+	class GUITabbedTitleBar;
 }

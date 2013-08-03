@@ -27,10 +27,8 @@ namespace BansheeEditor
 
 	}
 
-	void DbgEditorWidget1::_initialize(BS::GUIWidget& widget, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height)
+	void DbgEditorWidget1::initialize()
 	{
-		EditorWidget::_initialize(widget, x, y, width, height);
-
 		GUILayout& layout = mContent->getLayout();
 		//
 		//mDbgLabel = GUILabel::create(*mGUI, "Testing test");
@@ -96,9 +94,12 @@ namespace BansheeEditor
 		if(Instance != nullptr)
 			return Instance;
 
-		EditorWindow* newWindow = cm_new<EditorWindow>();
+		EditorWindow& newWindow = EditorWindow::create();
+
 		std::shared_ptr<DbgEditorWidget1> newWidget = std::shared_ptr<DbgEditorWidget1>(new (cm_alloc<DbgEditorWidget1>()) DbgEditorWidget1());
-		newWindow->getWidgets().add(*newWidget);
+		newWindow.getWidgets().add(*newWidget);
+		newWidget->initialize();
+		Instance = newWidget;
 
 		return newWidget;
 	}

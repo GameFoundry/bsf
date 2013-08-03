@@ -132,7 +132,7 @@ namespace CamelotFramework
         /**
          * @brief	Core method. Reposition the window.
          */
-        virtual void reposition(INT32 left, INT32 top) = 0;
+        virtual void move(INT32 left, INT32 top) = 0;
 
 		/**
 		 * @copydoc RenderTarget::isWindow.
