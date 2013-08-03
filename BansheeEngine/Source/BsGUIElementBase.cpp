@@ -10,7 +10,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mIsDirty(true), mParentElement(nullptr)
+		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false)
 	{
 
 	}
@@ -51,12 +51,41 @@ namespace BansheeEngine
 
 	void GUIElementBase::markContentAsDirty() 
 	{ 
+		if(_isDisabled())
+			return;
+
 		mIsDirty |= 0x01; 
 	}
 
 	void GUIElementBase::markMeshAsDirty()
 	{
+		if(_isDisabled())
+			return;
+
 		mIsDirty |= 0x02;
+	}
+
+	void GUIElementBase::enableRecursively()
+	{
+		// Make sure to mark everything as dirty, as we didn't track any dirty flags while the element was disabled
+		markContentAsDirty();
+		mIsDisabled = false;
+
+		for(auto& elem : mChildren)
+		{
+			elem->enableRecursively();
+		}
+	}
+
+	void GUIElementBase::disableRecursively()
+	{
+		markMeshAsDirty(); // Just need to hide the mesh
+		mIsDisabled = true;
+
+		for(auto& elem : mChildren)
+		{
+			elem->disableRecursively();
+		}
 	}
 
 	void GUIElementBase::_updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)

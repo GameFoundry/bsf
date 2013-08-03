@@ -58,6 +58,20 @@ Implementation plan:
 
  TODO - I don't release EditorWindow or EditorWidget anywhere!!!
 
+ Things that need cleanup:
+  All elements contained in GUITabbedTitleBar
+  EditorWidget when its closed
+  EditorWidgetContainer when last widget is removed
+  EditorWindow when last widget is removed
+
+Shutdown of the game should destroy all EditorWindows (and all their children)
+
+A way to disable/enable EditorWidgets so I can switch tabs in EditorWidgetContainer
+ - Also hook up the toggle buttons
+A way to move EditorWidget child GUIArea and GUIElements to another widget
+Notify parent EditorWindow or Dockmanager when last element is removed from EditorWidgetContainer (probably just a callback)
+ - Also hook up the X button on the tabbed title bar so it closes the widget
+
 ------------------------
 
 Some use cases:

@@ -22,6 +22,16 @@ namespace BansheeEngine
 		GUIElementBase();
 		virtual ~GUIElementBase();
 
+		/**
+		 * @brief	Enables (default) this element and all its children.
+		 */
+		void enableRecursively();
+
+		/**
+		 * @brief	Disables this element and all its children.
+		 */
+		void disableRecursively();
+
 		/************************************************************************/
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
@@ -47,6 +57,7 @@ namespace BansheeEngine
 
 		bool _isContentDirty() const;
 		bool _isMeshDirty() const; 
+		bool _isDisabled() const { return mIsDisabled; }
 
 	protected:
 		/**
@@ -69,5 +80,6 @@ namespace BansheeEngine
 		GUIElementBase* mParentElement;
 		CM::Vector<GUIElementBase*>::type mChildren;	
 		CM::UINT8 mIsDirty;
+		bool mIsDisabled;
 	};
 }

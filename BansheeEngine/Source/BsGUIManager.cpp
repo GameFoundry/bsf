@@ -265,6 +265,9 @@ namespace BansheeEngine
 
 				for(auto& element : elements)
 				{
+					if(element->_isDisabled())
+						continue;
+
 					UINT32 numRenderElems = element->getNumRenderElements();
 					for(UINT32 i = 0; i < numRenderElems; i++)
 					{
@@ -706,7 +709,7 @@ namespace BansheeEngine
 					{
 						GUIElement* element = *iter;
 
-						if(element->_isInBounds(localPos) && element->_getDepth() < topMostDepth)
+						if(!element->_isDisabled() && element->_isInBounds(localPos) && element->_getDepth() < topMostDepth)
 						{
 							topMostElement = element;
 							topMostDepth = element->_getDepth();

@@ -35,6 +35,8 @@ namespace BansheeEditor
 		{
 			setActiveWidget((UINT32)mWidgets.size() - 1);
 		}
+		else
+			widget._disable();
 	}
 
 	void EditorWidgetContainer::remove(EditorWidget& widget)

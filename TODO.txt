@@ -12,7 +12,6 @@ I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
  - Resizing from the top doesn't work
  - Resizing from the left actually resizes the right side
- - Clipping areas outside of a widget (or GUIArea for that matter) are not set up at all
 
 Over the holidays:
  - Get release mode working

@@ -55,6 +55,9 @@ namespace BansheeEngine
 		void setPosition(CM::INT32 x, CM::INT32 y);
 		void setSize(CM::UINT32 width, CM::UINT32 height);
 
+		void disable();
+		void enable();
+
 		CM::UINT32 x() const { return mLeft; }
 		CM::UINT32 y() const { return mTop; }
 		CM::UINT32 width() const { return mWidth; }
@@ -71,6 +74,7 @@ namespace BansheeEngine
 		bool mResizeXWithWidget;
 		bool mResizeYWithWidget;
 		bool mIsDirty;
+		bool mIsDisabled;
 
 		GUILayout* mLayout;
 

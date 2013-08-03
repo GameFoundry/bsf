@@ -53,11 +53,11 @@ namespace BansheeEditor
 
 	void EditorWidget::_disable()
 	{
-		// TODO - Hide all child GUIElements
+		mContent->disable();
 	}
 
 	void EditorWidget::_enable()
 	{
-		// TODO - Show all child GUIElements
+		mContent->enable();
 	}
 }

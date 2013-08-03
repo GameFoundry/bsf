@@ -8,7 +8,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIArea::GUIArea(GUIWidget& widget, UINT32 x, UINT32 y, UINT16 depth)
-		:mWidget(widget), mLeft(x), mTop(y), mDepth(depth), mIsDirty(true), 
+		:mWidget(widget), mLeft(x), mTop(y), mDepth(depth), mIsDirty(true), mIsDisabled(false),
 		mResizeXWithWidget(false), mResizeYWithWidget(false), mWidth(0), mHeight(0), mRight(0), mBottom(0)
 	{
 		mLayout = cm_new<GUILayoutX, PoolAlloc>();
@@ -85,9 +85,23 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(area);
 	}
 
+	void GUIArea::disable()
+	{
+		mIsDisabled = true;
+
+		mLayout->disableRecursively();
+	}
+
+	void GUIArea::enable()
+	{
+		mIsDisabled = false;
+
+		mLayout->enableRecursively();
+	}
+
 	void GUIArea::_update()
 	{
-		if(isDirty())
+		if(!mIsDisabled && isDirty())
 		{
 			Rect clipRect(mLeft, mTop, mWidth, mHeight);
 			mLayout->_updateLayout(mLeft, mTop, mWidth, mHeight, clipRect, mWidget.getDepth(), mDepth);
