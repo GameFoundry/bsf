@@ -24,6 +24,7 @@
 #include "CmCommandQueue.h"
 #include "CmBlendState.h"
 
+#include "BsEditorWindowManager.h"
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
 #include "DbgEditorWidget1.h"
@@ -284,9 +285,29 @@ int CALLBACK WinMain(
 
 	dbgCursor.reset();
 
+	/************************************************************************/
+	/* 								EDITOR INIT                      		*/
+	/************************************************************************/
+
+	EditorWindowManager::startUp(cm_new<EditorWindowManager>());
+
+	/************************************************************************/
+	/* 							  EDITOR INIT END                    		*/
+	/************************************************************************/
+
 	DbgEditorWidget1::open();
 
 	gBansheeApp().runMainLoop();
+
+	/************************************************************************/
+	/* 							EDITOR SHUTDOWN                      		*/
+	/************************************************************************/
+
+	EditorWindowManager::shutDown();
+
+	/************************************************************************/
+	/* 							EDITOR SHUTDOWN END                    		*/
+	/************************************************************************/
 
 	//testMaterial->destroy();
 #ifdef DX11

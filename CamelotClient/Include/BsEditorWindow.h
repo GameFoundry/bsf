@@ -12,13 +12,16 @@ namespace BansheeEditor
 
 		EditorWidgetContainer& getWidgets() const { return *mWidgets; }
 
-		static EditorWindow& create();
+		static EditorWindow* create();
 
 	protected:
+		friend class EditorWindowManager;
 		EditorWindow();
 
 		virtual void movedOrResized();
 	private:
 		EditorWidgetContainer* mWidgets;
+
+		void widgetRemoved();
 	};
 }

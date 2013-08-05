@@ -13,11 +13,18 @@ namespace BansheeEditor
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1)
 	{
 		mTitleBar = cm_new<GUITabbedTitleBar>(parent);
+		mTitleBar->onTabActivated.connect(boost::bind(&EditorWidgetContainer::tabActivated, this, _1));
+		mTitleBar->onTabClosed.connect(boost::bind(&EditorWidgetContainer::tabClosed, this, _1));
 	}
 
 	EditorWidgetContainer::~EditorWidgetContainer()
 	{
 		cm_delete(mTitleBar);
+
+		for(auto& widget : mWidgets)
+		{
+			EditorWidget::destroy(widget);
+		}
 	}
 
 	void EditorWidgetContainer::add(EditorWidget& widget)
@@ -65,10 +72,6 @@ namespace BansheeEditor
 			if(mWidgets.size() > 0)
 			{
 				setActiveWidget(0);
-			}
-			else
-			{
-				// TODO - Container is empty, send a signal to the parent EditorWindow and/or DockManager
 			}
 		}
 	}
@@ -130,5 +133,20 @@ namespace BansheeEditor
 
 		setPosition(mX, mY);
 		setSize(mWidth, mHeight);
+	}
+
+	void EditorWidgetContainer::tabActivated(UINT32 idx)
+	{
+		setActiveWidget(idx);
+	}
+
+	void EditorWidgetContainer::tabClosed(UINT32 idx)
+	{
+		EditorWidget* widget = mWidgets[idx];
+		remove(*widget);
+		EditorWidget::destroy(widget);
+
+		if(!onWidgetClosed.empty())
+			onWidgetClosed();
 	}
 }

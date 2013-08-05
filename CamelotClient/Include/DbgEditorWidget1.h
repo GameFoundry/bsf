@@ -10,8 +10,8 @@ namespace BansheeEditor
 	public:
 		virtual ~DbgEditorWidget1();
 
-		static std::shared_ptr<DbgEditorWidget1> instance();
-		static std::shared_ptr<DbgEditorWidget1> open();
+		static DbgEditorWidget1* instance();
+		static DbgEditorWidget1* open();
 		static void close();
 
 	protected:
@@ -19,6 +19,6 @@ namespace BansheeEditor
 
 		void initialize();
 	private:
-		static std::shared_ptr<DbgEditorWidget1> Instance;
+		static DbgEditorWidget1* Instance;
 	};
 }

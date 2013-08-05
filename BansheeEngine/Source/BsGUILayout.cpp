@@ -45,6 +45,7 @@ namespace BansheeEngine
 			if(child->_getType() == GUIElementBase::Type::Element && child == element)
 			{
 				mChildren.erase(iter);
+				element->_setParent(nullptr);
 				foundElem = true;
 				
 				markContentAsDirty();

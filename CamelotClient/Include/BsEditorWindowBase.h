@@ -17,6 +17,8 @@ namespace BansheeEditor
 
 		CM::UINT32 getWidth() const;
 		CM::UINT32 getHeight() const;
+
+		virtual void close();
 	protected:
 		EditorWindowBase();
 		BS::HGUIWidget mGUI;

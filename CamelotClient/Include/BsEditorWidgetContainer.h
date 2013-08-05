@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include <boost/signal.hpp>
 
 namespace BansheeEditor
 {
@@ -16,6 +17,10 @@ namespace BansheeEditor
 
 		void setSize(CM::UINT32 width, CM::UINT32 height);
 		void setPosition(CM::INT32 x, CM::INT32 y);
+
+		CM::UINT32 getNumWidgets() const { return (CM::UINT32)mWidgets.size(); }
+
+		boost::signal<void()> onWidgetClosed;
 	private:
 		GUITabbedTitleBar* mTitleBar;
 		BS::GUIWidget* mParent;
@@ -27,5 +32,7 @@ namespace BansheeEditor
 		static const CM::UINT32 TitleBarHeight;
 
 		void setActiveWidget(CM::UINT32 idx);
+		void tabActivated(CM::UINT32 idx);
+		void tabClosed(CM::UINT32 idx);
 	};
 }

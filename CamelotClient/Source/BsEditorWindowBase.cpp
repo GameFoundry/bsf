@@ -4,6 +4,8 @@
 #include "CmRenderWindow.h"
 #include "CmRenderWindowManager.h"
 
+
+#include "BsEditorWindowManager.h"
 #include "BsCamera.h"
 #include "BsGUIWindowFrameWidget.h"
 #include "BsEngineGUI.h"
@@ -50,12 +52,18 @@ namespace BansheeEditor
 	EditorWindowBase::~EditorWindowBase()
 	{
 		mRenderWindow->destroy();
+		mSceneObject->destroy();
 	}
 
 	void EditorWindowBase::initialize()
 	{
 		setPosition(0, 0);
 		setSize(200, 200);
+	}
+
+	void EditorWindowBase::close()
+	{
+		EditorWindowManager::instance().destroy(this);
 	}
 
 	void EditorWindowBase::movedOrResized(RenderWindow& renderWindow)

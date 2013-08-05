@@ -17,7 +17,7 @@ namespace BansheeEditor
 {
 	GUITabbedTitleBar::GUITabbedTitleBar(BS::GUIWidget* parent)
 		:mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), 
-		mMainArea(nullptr), mMainLayout(nullptr), mParentWidget(parent), mBackgroundArea(nullptr)
+		mMainArea(nullptr), mMainLayout(nullptr), mParentWidget(parent), mBackgroundArea(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		GUIWindowMover* titleBarBg = GUIWindowMover::create(*parent, parent->getSkin()->getStyle("TitleBarBackground"));
@@ -33,6 +33,8 @@ namespace BansheeEditor
 		mMinBtn = GUIButton::create(*parent, L"", parent->getSkin()->getStyle("WinMinimizeBtn"));
 		mCloseBtn = GUIButton::create(*parent, L"", parent->getSkin()->getStyle("WinCloseBtn"));
 
+		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
+
 		mMainArea->getLayout().addSpace(1);
 		mMainLayout = &mMainArea->getLayout().addLayoutX();
 		mMainLayout->addElement(dragDropElement);
@@ -44,7 +46,22 @@ namespace BansheeEditor
 
 	GUITabbedTitleBar::~GUITabbedTitleBar()
 	{
-		// TODO - Clean up buttons, layouts, areas
+		GUIArea::destroy(mMainArea);
+		GUIArea::destroy(mBackgroundArea);
+
+		GUIElement::destroy(mLastDropElement);
+		GUIElement::destroy(mMinBtn);
+		GUIElement::destroy(mCloseBtn);
+
+		for(auto& tabButton : mTabButtons)
+		{
+			GUIElement::destroy(tabButton.toggle);
+		}
+
+		for(auto& dragDropButton : mDragDropElements)
+		{
+			GUIElement::destroy(dragDropButton);
+		}
 	}
 
 	void GUITabbedTitleBar::addTab(const CM::WString& name)
@@ -59,11 +76,15 @@ namespace BansheeEditor
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size());
 
-		mTabButtons.insert(mTabButtons.begin() + idx, newTabToggle);
+		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, mUniqueTabIdx));
+
+		mTabButtons.insert(mTabButtons.begin() + idx, Tab(newTabToggle, mUniqueTabIdx));
 		mDragDropElements.insert(mDragDropElements.begin() + idx, newDragDropElement);
 
 		mMainLayout->insertElement(idx * 2, newTabToggle);
 		mMainLayout->insertElement(idx * 2, newDragDropElement);
+
+		mUniqueTabIdx++;
 	}
 
 	void GUITabbedTitleBar::removeTab(UINT32 idx)
@@ -73,8 +94,8 @@ namespace BansheeEditor
 
 		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size() - 1);
 
-		mMainLayout->removeElement(mTabButtons[idx]);
-		mMainLayout->removeElement(mDragDropElements[idx]);
+		GUIElement::destroy(mTabButtons[idx].toggle);
+		GUIElement::destroy(mDragDropElements[idx]);
 
 		mTabButtons.erase(mTabButtons.begin() + idx);
 		mDragDropElements.erase(mDragDropElements.begin() + idx);
@@ -90,5 +111,46 @@ namespace BansheeEditor
 	{
 		mMainArea->setSize(width, height);
 		mBackgroundArea->setSize(width, height);
+	}
+
+	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx)
+	{
+		INT32 idx = uniqueIdxToIdx(tabIdx);
+		if(idx != -1)
+		{
+			if(!onTabActivated.empty())
+				onTabActivated(idx);
+		}
+
+		mActiveTabIdx = tabIdx;
+	}
+
+	void GUITabbedTitleBar::tabClosed()
+	{
+		INT32 idx = uniqueIdxToIdx(mActiveTabIdx);
+		if(idx != -1)
+		{
+			removeTab(idx);
+
+			if(mTabButtons.size() > 0)
+				mActiveTabIdx = mTabButtons[0].index;
+
+			if(!onTabClosed.empty())
+				onTabClosed(idx);
+		}
+	}
+
+	CM::INT32 GUITabbedTitleBar::uniqueIdxToIdx(CM::UINT32 uniqueIdx) const
+	{
+		UINT32 idx = 0;
+		for(auto& tab : mTabButtons)
+		{
+			if(tab.index == uniqueIdx)
+				return idx;
+
+			idx++;
+		}
+
+		return -1;
 	}
 }

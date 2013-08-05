@@ -7,6 +7,16 @@ namespace BansheeEditor
 {
 	class GUITabbedTitleBar
 	{
+		struct Tab
+		{
+			Tab(BS::GUIToggle* _toggle, CM::UINT32 _index)
+				:toggle(_toggle), index(_index)
+			{ }
+
+			BS::GUIToggle* toggle;
+			CM::UINT32 index;
+		};
+
 	public:
 		GUITabbedTitleBar(BS::GUIWidget* parent);
 		virtual ~GUITabbedTitleBar();
@@ -19,12 +29,13 @@ namespace BansheeEditor
 		void removeTab(CM::UINT32 idx);
 
 		boost::signal<void(CM::UINT32)> onTabActivated;
-		boost::signal<void(CM::UINT32)> onTabAdded;
-		boost::signal<void(CM::UINT32)> onTabRemoved;
+		boost::signal<void(CM::UINT32)> onTabClosed;
 	protected:
 		CM::Vector<BS::GUIWindowMover*>::type mDragDropElements;
-		CM::Vector<BS::GUIToggle*>::type mTabButtons;
+		CM::Vector<Tab>::type mTabButtons;
 
+		CM::UINT32 mUniqueTabIdx;
+		CM::UINT32 mActiveTabIdx;
 		BS::GUIWidget* mParentWidget;
 		BS::GUIArea* mMainArea;
 		BS::GUIArea* mBackgroundArea;
@@ -32,5 +43,10 @@ namespace BansheeEditor
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
 		BS::GUIWindowMover* mLastDropElement;
+
+		void tabToggled(CM::UINT32 tabIdx);
+		void tabClosed();
+
+		CM::INT32 uniqueIdxToIdx(CM::UINT32 uniqueIdx) const;
 	};
 }

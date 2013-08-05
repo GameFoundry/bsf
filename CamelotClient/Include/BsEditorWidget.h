@@ -18,6 +18,8 @@ namespace BansheeEditor
 		void _disable();
 		void _enable();
 
+		static void destroy(EditorWidget* widget);
+
 	protected:
 		EditorWidget(const CM::WString& name);
 

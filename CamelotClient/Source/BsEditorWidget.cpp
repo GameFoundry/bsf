@@ -23,6 +23,11 @@ namespace BansheeEditor
 
 	}
 
+	void EditorWidget::destroy(EditorWidget* widget)
+	{
+		cm_delete(widget);
+	}
+
 	void EditorWidget::_setPosition(INT32 x, INT32 y)
 	{
 		if(mContent == nullptr)

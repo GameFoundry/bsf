@@ -14,7 +14,7 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	std::shared_ptr<DbgEditorWidget1> DbgEditorWidget1::Instance;
+	DbgEditorWidget1* DbgEditorWidget1::Instance = nullptr;
 
 	DbgEditorWidget1::DbgEditorWidget1()
 		:EditorWidget(L"DbgEditorWidget1")
@@ -84,20 +84,20 @@ namespace BansheeEditor
 		//mRenderWindow->setVisible(false);
 	}
 
-	std::shared_ptr<DbgEditorWidget1> DbgEditorWidget1::instance()
+	DbgEditorWidget1* DbgEditorWidget1::instance()
 	{
 		return Instance;
 	}
 
-	std::shared_ptr<DbgEditorWidget1> DbgEditorWidget1::open()
+	DbgEditorWidget1* DbgEditorWidget1::open()
 	{
 		if(Instance != nullptr)
 			return Instance;
 
-		EditorWindow& newWindow = EditorWindow::create();
+		EditorWindow* newWindow = EditorWindow::create();
 
-		std::shared_ptr<DbgEditorWidget1> newWidget = std::shared_ptr<DbgEditorWidget1>(new (cm_alloc<DbgEditorWidget1>()) DbgEditorWidget1());
-		newWindow.getWidgets().add(*newWidget);
+		DbgEditorWidget1* newWidget = new (cm_alloc<DbgEditorWidget1>()) DbgEditorWidget1();
+		newWindow->getWidgets().add(*newWidget);
 		newWidget->initialize();
 		Instance = newWidget;
 

@@ -1,5 +1,6 @@
 #include "BsEditorWindow.h"
 #include "BsEditorWidgetContainer.h"
+#include "BsEditorWindowManager.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -9,7 +10,7 @@ namespace BansheeEditor
 	EditorWindow::EditorWindow()
 		:mWidgets(cm_new<EditorWidgetContainer>(mGUI.get()))
 	{
-		
+		mWidgets->onWidgetClosed.connect(boost::bind(&EditorWindow::widgetRemoved, this));
 	}
 
 	EditorWindow::~EditorWindow()
@@ -29,11 +30,14 @@ namespace BansheeEditor
 		mWidgets->setSize(widgetWidth, widgetHeight);
 	}
 
-	EditorWindow& EditorWindow::create()
+	void EditorWindow::widgetRemoved()
 	{
-		EditorWindow* newWindow = new (cm_alloc<EditorWindow>()) EditorWindow();
-		newWindow->initialize();
+		if(mWidgets->getNumWidgets() == 0)
+			close();
+	}
 
-		return *newWindow;
+	EditorWindow* EditorWindow::create()
+	{
+		return EditorWindowManager::instance().create();
 	}
 }
