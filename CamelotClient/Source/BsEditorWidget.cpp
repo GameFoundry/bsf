@@ -43,12 +43,13 @@ namespace BansheeEditor
 	{
 		if(mParentWidget != &widget) 
 		{
-			// TODO - GUIArea mContent should be recreated (or moved) to the new widget
-			// TODO - Not only GUIArea needs to be moved, but all GUIElements
-		}
+			if(mParentWidget == nullptr)
+				mContent = GUIArea::create(widget, 0, 0, 0, 0, 10000);
+			else
+				mContent->changeParentWidget(widget);
 
-		mParentWidget = &widget;
-		mContent = GUIArea::create(widget, 0, 0, 0, 0, 10000);
+			mParentWidget = &widget;
+		}
 	}
 
 	void EditorWidget::_disable()

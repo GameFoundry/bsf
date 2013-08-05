@@ -58,6 +58,8 @@ namespace BansheeEngine
 		void disable();
 		void enable();
 
+		void changeParentWidget(GUIWidget& widget);
+
 		CM::UINT32 x() const { return mLeft; }
 		CM::UINT32 y() const { return mTop; }
 		CM::UINT32 width() const { return mWidth; }

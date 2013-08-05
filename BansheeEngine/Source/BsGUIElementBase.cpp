@@ -181,4 +181,12 @@ namespace BansheeEngine
 
 		return *entry;
 	}
+
+	void GUIElementBase::_changeParentWidget(GUIWidget& widget)
+	{
+		for(auto& child : mChildren)
+		{
+			child->_changeParentWidget(widget);
+		}
+	}
 }

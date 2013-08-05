@@ -99,6 +99,19 @@ namespace BansheeEngine
 		mLayout->enableRecursively();
 	}
 
+	void GUIArea::changeParentWidget(GUIWidget& widget)
+	{
+		if(&mWidget == &widget)
+			return;
+
+		mWidget.unregisterArea(this);
+		widget.registerArea(this);
+
+		mWidget = widget;
+
+		mLayout->_changeParentWidget(widget);
+	}
+
 	void GUIArea::_update()
 	{
 		if(!mIsDisabled && isDirty())

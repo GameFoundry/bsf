@@ -59,6 +59,8 @@ namespace BansheeEngine
 		bool _isMeshDirty() const; 
 		bool _isDisabled() const { return mIsDisabled; }
 
+		virtual void _changeParentWidget(GUIWidget& widget);
+
 	protected:
 		/**
 		 * @brief	Marks the elements contents as dirty, which causes the sprite meshes to be recreated from scratch.

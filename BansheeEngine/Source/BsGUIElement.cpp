@@ -118,6 +118,19 @@ namespace BansheeEngine
 		}
 	}
 
+	void GUIElement::_changeParentWidget(GUIWidget& widget)
+	{
+		if(&mParent != &widget)
+		{
+			mParent.unregisterElement(this);
+			widget.registerElement(this);
+
+			mParent = widget;
+		}
+
+		GUIElementBase::_changeParentWidget(widget);
+	}
+
 	Rect GUIElement::getVisibleBounds() const
 	{
 		Rect bounds = _getBounds();

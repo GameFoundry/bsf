@@ -92,7 +92,8 @@ namespace BansheeEngine
 		void _setClipRect(const CM::Rect& clipRect);
 		void _setAcceptsKeyboardFocus(bool acceptsKeyboardFocus) { mAcceptsKeyboardFocus = acceptsKeyboardFocus; }
 		virtual void _setFocus(bool focus) {}
-		
+		virtual void _changeParentWidget(GUIWidget& widget);
+
 		CM::UINT32 _getWidth() const { return mWidth; }
 		CM::UINT32 _getHeight() const { return mHeight; }
 		CM::Int2 _getOffset() const { return mOffset; }
