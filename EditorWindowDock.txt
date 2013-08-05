@@ -57,7 +57,6 @@ Implementation plan:
  - Continue with DockManager (flesh it out later)
 
  GUIManager holds a ptr to GUIElements, and when elements are destroyed, GUIManager holds an invalid ptr
-Shutdown of the game should destroy all EditorWindows (and all their children)
 Tabs need toggle groups
 Hook up DbgEditorWidget1::close()
 Test tab switch/tab close/window close

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "boost/signal.hpp"
 
 namespace BansheeEditor
 {
@@ -20,6 +21,7 @@ namespace BansheeEditor
 
 		static void destroy(EditorWidget* widget);
 
+		boost::signal<void(EditorWidget*)> onClosed;
 	protected:
 		EditorWidget(const CM::WString& name);
 

@@ -106,10 +106,14 @@ namespace BansheeEditor
 
 	void DbgEditorWidget1::close()
 	{
-		// TODO - Unregister widget from EditorWidgetContainer
-		// TODO - Unregister widget from DockManager
-		// TODO - Release widget resources
+		if(Instance != nullptr)
+		{
+			if(!Instance->onClosed.empty()) // TODO - This is very hackish
+				Instance->onClosed(Instance);
+
+			EditorWidget::destroy(Instance);
+		}
 		
-		Instance = nullptr; // TODO - What happens when something ends up keeping the reference to the widget?
+		Instance = nullptr; 
 	}
 }
