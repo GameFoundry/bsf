@@ -72,9 +72,9 @@ namespace BansheeEngine
 	{
 		// Make a copy of widgets, since destroying them will remove them from mWidgets and
 		// we can't iterate over an array thats getting modified
-		Vector<GUIWidget*>::type widgetCopy = mWidgets;
+		Vector<WidgetInfo>::type widgetCopy = mWidgets;
 		for(auto& widget : widgetCopy)
-			widget->destroy();
+			widget.widget->destroy();
 
 		mOnButtonDownConn.disconnect();
 		mOnButtonUpConn.disconnect();
@@ -91,7 +91,10 @@ namespace BansheeEngine
 
 	void GUIManager::registerWidget(GUIWidget* widget)
 	{
-		mWidgets.push_back(widget);
+		boost::signals::connection onElementAddedConn = widget->onElementAdded->connect(boost::bind(&GUIManager::onGUIElementAddedToWidget, this, widget, _1));
+		boost::signals::connection onElementRemovedConn = widget->onElementRemoved->connect(boost::bind(&GUIManager::onGUIElementRemovedFromWidget, this, widget, _1));
+
+		mWidgets.push_back(WidgetInfo(widget, onElementAddedConn, onElementRemovedConn));
 
 		const Viewport* renderTarget = widget->getTarget();
 
@@ -107,10 +110,14 @@ namespace BansheeEngine
 
 	void GUIManager::unregisterWidget(GUIWidget* widget)
 	{
-		auto findIter = std::find(begin(mWidgets), end(mWidgets), widget);
+		auto findIter = std::find_if(begin(mWidgets), end(mWidgets), [=] (const WidgetInfo& x) { return x.widget == widget; } );
 
 		if(findIter != end(mWidgets))
+		{
+			findIter->onAddedConn.disconnect();
+			findIter->onRemovedConn.disconnect();
 			mWidgets.erase(findIter);
+		}
 
 		if(mMouseOverWidget == widget)
 		{
@@ -118,12 +125,24 @@ namespace BansheeEngine
 			mMouseOverElement = nullptr;
 		}
 
+		if(mKeyboardFocusWidget == widget)
+		{
+			mKeyboardFocusWidget = nullptr;
+			mKeyboardFocusElement = nullptr;
+		}
+
+		if(mActiveWidget == widget)
+		{
+			mActiveWidget = nullptr;
+			mActiveElement = nullptr;
+		}
+
 		const Viewport* renderTarget = widget->getTarget();
 		GUIRenderData& renderData = mCachedGUIData[renderTarget];
 
-		findIter = std::find(begin(renderData.widgets), end(renderData.widgets), widget);
-		if(findIter != end(renderData.widgets))
-			renderData.widgets.erase(findIter);
+		auto findIter2 = std::find(begin(renderData.widgets), end(renderData.widgets), widget);
+		if(findIter2 != end(renderData.widgets))
+			renderData.widgets.erase(findIter2);
 
 		if(renderData.widgets.size() == 0)
 			mCachedGUIData.erase(renderTarget);
@@ -134,9 +153,9 @@ namespace BansheeEngine
 	void GUIManager::update()
 	{
 		// Update layouts
-		for(auto& widget : mWidgets)
+		for(auto& widgetInfo : mWidgets)
 		{
-			widget->_updateLayout();
+			widgetInfo.widget->_updateLayout();
 		}
 
 		// Blink caret
@@ -640,9 +659,9 @@ namespace BansheeEngine
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
 		Vector<RenderWindow*>::type activeWindows = RenderWindowManager::instance().getRenderWindows();
-		for(auto& widget : mWidgets)
+		for(auto& widgetInfo : mWidgets)
 		{
-			auto iterFind = std::find(begin(activeWindows), end(activeWindows), widget->getOwnerWindow());
+			auto iterFind = std::find(begin(activeWindows), end(activeWindows), widgetInfo.widget->getOwnerWindow());
 
 			if(iterFind == activeWindows.end())
 			{
@@ -669,13 +688,13 @@ namespace BansheeEngine
 		Int2 screenPos;
 		Int2 localPos;
 
-		for(auto& widget : mWidgets)
+		for(auto& widgetInfo : mWidgets)
 		{
-			const RenderWindow* window = widget->getOwnerWindow();
+			const RenderWindow* window = widgetInfo.widget->getOwnerWindow();
 
 			if(window->hasFocus())
 			{
-				widgetInFocus = widget;
+				widgetInFocus = widgetInfo.widget;
 				break;
 			}
 		}
@@ -688,8 +707,9 @@ namespace BansheeEngine
 			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
 
 			UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
-			for(auto& widget : mWidgets)
+			for(auto& widgetInfo : mWidgets)
 			{
+				GUIWidget* widget = widgetInfo.widget;
 				if(widget->getOwnerWindow() == window && widget->inBounds(screenPos))
 				{
 					const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
@@ -810,8 +830,9 @@ namespace BansheeEngine
 
 	void GUIManager::onWindowFocusGained(RenderWindow& win)
 	{
-		for(auto& widget : mWidgets)
+		for(auto& widgetInfo : mWidgets)
 		{
+			GUIWidget* widget = widgetInfo.widget;
 			if(widget->getOwnerWindow() == &win)
 				widget->ownerWindowFocusChanged();
 		}
@@ -819,8 +840,9 @@ namespace BansheeEngine
 
 	void GUIManager::onWindowFocusLost(RenderWindow& win)
 	{
-		for(auto& widget : mWidgets)
+		for(auto& widgetInfo : mWidgets)
 		{
+			GUIWidget* widget = widgetInfo.widget;
 			if(widget->getOwnerWindow() == &win)
 				widget->ownerWindowFocusChanged();
 		}
@@ -828,11 +850,38 @@ namespace BansheeEngine
 
 	void GUIManager::onWindowMovedOrResized(RenderWindow& win)
 	{
-		for(auto& widget : mWidgets)
+		for(auto& widgetInfo : mWidgets)
 		{
+			GUIWidget* widget = widgetInfo.widget;
 			if(widget->getOwnerWindow() == &win)
 				widget->ownerWindowResized();
 		}
+	}
+
+	void GUIManager::onGUIElementRemovedFromWidget(GUIWidget* widget, GUIElement* element)
+	{
+		if(mMouseOverElement == element)
+		{
+			mMouseOverElement = nullptr;
+			mMouseOverWidget = nullptr;
+		}
+
+		if(mActiveElement == element)
+		{
+			mActiveElement = nullptr;
+			mActiveWidget = nullptr;
+		}
+
+		if(mKeyboardFocusElement == element)
+		{
+			mKeyboardFocusElement = nullptr;
+			mKeyboardFocusWidget = nullptr;
+		}
+	}
+
+	void GUIManager::onGUIElementAddedToWidget(GUIWidget* widget, GUIElement* element)
+	{
+
 	}
 
 	GUIMouseButton GUIManager::buttonToMouseButton(ButtonCode code) const

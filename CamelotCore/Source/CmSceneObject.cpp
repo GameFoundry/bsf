@@ -65,6 +65,7 @@ namespace CamelotFramework
 
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
+			gSceneManager().notifyComponentRemoved((*iter));
 			(*iter).destroy();
 		}
 

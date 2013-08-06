@@ -37,6 +37,8 @@ namespace CamelotFramework
 		virtual ~Component();
 
 		HSceneObject mParent;
+	private:
+		Component(const Component& other) { }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

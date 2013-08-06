@@ -29,6 +29,17 @@ namespace BansheeEngine
 			bool isDirty;
 		};
 
+		struct WidgetInfo
+		{
+			WidgetInfo(GUIWidget* _widget, const boost::signals::connection& _onAddedConn, const boost::signals::connection& _onRemovedConn)
+				:widget(_widget), onAddedConn(_onAddedConn), onRemovedConn(_onRemovedConn)
+			{ }
+
+			GUIWidget* widget;
+			boost::signals::connection onAddedConn;
+			boost::signals::connection onRemovedConn;
+		};
+
 	public:
 		GUIManager();
 		~GUIManager();
@@ -49,7 +60,7 @@ namespace BansheeEngine
 		GUIInputSelection* getInputSelectionTool() const { return mInputSelection; }
 
 	private:
-		CM::Vector<GUIWidget*>::type mWidgets;
+		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
 
 		// Element and widget mouse is currently over
@@ -108,6 +119,9 @@ namespace BansheeEngine
 		void onWindowFocusGained(CM::RenderWindow& win);
 		void onWindowFocusLost(CM::RenderWindow& win);
 		void onWindowMovedOrResized(CM::RenderWindow& win);
+
+		void onGUIElementAddedToWidget(GUIWidget* widget, GUIElement* element);
+		void onGUIElementRemovedFromWidget(GUIWidget* widget, GUIElement* element);
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;

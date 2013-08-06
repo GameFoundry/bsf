@@ -5,6 +5,7 @@
 #include "CmRect.h"
 #include "CmVector3.h"
 #include "CmQuaternion.h"
+#include <boost/signal.hpp>
 
 namespace BansheeEngine
 {
@@ -56,6 +57,13 @@ namespace BansheeEngine
 		 * 			must be a child of this widget.
 		 */
 		virtual bool _keyEvent(GUIElement* element, const GUIKeyEvent& ev);
+
+		// Note: These are shared_ptrs because of boosts non_copyable limitation on signals
+		// (which triggers a compile error although the copy constructor is private and I don't make any copies.
+		// Presumably containers like vector or map trigger it). So instead of keeping signals by value
+		// I use a shared_ptr.
+		std::shared_ptr<boost::signal<void(GUIElement*)>> onElementAdded;
+		std::shared_ptr<boost::signal<void(GUIElement*)>> onElementRemoved;
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;
@@ -70,6 +78,8 @@ namespace BansheeEngine
 		void registerArea(GUIArea* area);
 		void unregisterArea(GUIArea* area);
 	private:
+		GUIWidget(const GUIWidget& other) { }
+
 		void updateBounds() const;
 
 		virtual void ownerWindowResized();

@@ -28,6 +28,9 @@ namespace BansheeEngine
 		mLastFramePosition = SO()->getWorldPosition();
 		mLastFrameRotation = SO()->getWorldRotation();
 		mLastFrameScale = SO()->getWorldScale();
+
+		onElementAdded = std::shared_ptr<boost::signal<void(GUIElement*)>>(cm_new<boost::signal<void(GUIElement*)>>());
+		onElementRemoved = std::shared_ptr<boost::signal<void(GUIElement*)>>(cm_new<boost::signal<void(GUIElement*)>>());
 	}
 
 	GUIWidget::~GUIWidget()
@@ -179,6 +182,9 @@ namespace BansheeEngine
 		mElements.push_back(elem);
 
 		mWidgetIsDirty = true;
+
+		if(!onElementAdded->empty())
+			(*onElementAdded)(elem);
 	}
 
 	void GUIWidget::unregisterElement(GUIElement* elem)
@@ -192,6 +198,9 @@ namespace BansheeEngine
 
 		mElements.erase(iterFind);
 		mWidgetIsDirty = true;
+
+		if(!onElementRemoved->empty())
+			(*onElementRemoved)(elem);
 	}
 
 	void GUIWidget::registerArea(GUIArea* area)
