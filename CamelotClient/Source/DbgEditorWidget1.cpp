@@ -37,7 +37,7 @@ namespace BansheeEditor
 		//layout.addElement(GUIInputBox::create(*mGUI));
 		//layout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
 
-		GUIScrollArea* scrollArea = GUIScrollArea::create(*mParentWidget);
+		GUIScrollArea* scrollArea = GUIScrollArea::create(getParentWidget());
 		layout.addElement(scrollArea);
 
 		GUILayout& scrollLayout = scrollArea->getLayout().addLayoutX();
@@ -55,9 +55,9 @@ namespace BansheeEditor
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test K"));
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test L"));
 
-		scrollLayout.addElement(GUIInputBox::create(*mParentWidget, GUILayoutOptions::fixed(100, 100), true));
-		scrollLayout.addElement(GUIInputBox::create(*mParentWidget, GUILayoutOptions::fixed(100, 100), true));
-		scrollLayout.addElement(GUIInputBox::create(*mParentWidget, GUILayoutOptions::fixed(100, 100), true));
+		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUILayoutOptions::fixed(100, 100), true));
+		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUILayoutOptions::fixed(100, 100), true));
+		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUILayoutOptions::fixed(100, 100), true));
 
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);
@@ -108,8 +108,7 @@ namespace BansheeEditor
 	{
 		if(Instance != nullptr)
 		{
-			if(!Instance->onClosed.empty()) // TODO - This is very hackish
-				Instance->onClosed(Instance);
+			Instance->mParent->_notifyWidgetDestroyed(Instance);
 
 			EditorWidget::destroy(Instance);
 		}

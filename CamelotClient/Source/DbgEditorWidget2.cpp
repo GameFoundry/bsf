@@ -30,18 +30,18 @@ namespace BansheeEditor
 	{
 		GUILayout& layout = mContent->getLayout();
 
-		GUIScrollArea* scrollArea = GUIScrollArea::create(*mParentWidget);
+		GUIScrollArea* scrollArea = GUIScrollArea::create(getParentWidget());
 		layout.addElement(scrollArea);
 
 		GUILayout& scrollLayout = scrollArea->getLayout().addLayoutY();
 
 		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup();
 
-		scrollLayout.addElement(GUIToggle::create(*mParentWidget, L"Test A", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(*mParentWidget, L"Test B", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(*mParentWidget, L"Test C", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(*mParentWidget, L"Test D", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(*mParentWidget, L"Test E", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test A", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test B", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test C", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test D", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test E", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
 	}
 
 	DbgEditorWidget2* DbgEditorWidget2::instance()
@@ -68,8 +68,7 @@ namespace BansheeEditor
 	{
 		if(Instance != nullptr)
 		{
-			if(!Instance->onClosed.empty()) // TODO - This is very hackish
-				Instance->onClosed(Instance);
+			Instance->mParent->_notifyWidgetDestroyed(Instance);
 
 			EditorWidget::destroy(Instance);
 		}

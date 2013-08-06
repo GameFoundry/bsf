@@ -6,6 +6,7 @@
 #include "BsGUILayout.h"
 #include "BsEngineGUI.h"
 #include "BsGUIArea.h"
+#include "BsEditorWidgetContainer.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -13,7 +14,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	EditorWidget::EditorWidget(const WString& name)
-		:mName(name), mParentWidget(nullptr), mContent(nullptr)
+		:mName(name), mParent(nullptr), mContent(nullptr)
 	{
 		
 	}
@@ -44,16 +45,16 @@ namespace BansheeEditor
 		mContent->setSize(width, height);
 	}
 
-	void EditorWidget::_changeParent(BS::GUIWidget& widget)
+	void EditorWidget::_changeParent(EditorWidgetContainer* parent)
 	{
-		if(mParentWidget != &widget) 
+		if(mParent != parent) 
 		{
-			if(mParentWidget == nullptr)
-				mContent = GUIArea::create(widget, 0, 0, 0, 0, 10000);
+			if(mParent == nullptr)
+				mContent = GUIArea::create(parent->getParentWidget(), 0, 0, 0, 0, 10000);
 			else
-				mContent->changeParentWidget(widget);
+				mContent->changeParentWidget(parent->getParentWidget());
 
-			mParentWidget = &widget;
+			mParent = parent;
 		}
 	}
 
@@ -65,5 +66,10 @@ namespace BansheeEditor
 	void EditorWidget::_enable()
 	{
 		mContent->enable();
+	}
+
+	GUIWidget& EditorWidget::getParentWidget() const
+	{
+		return mParent->getParentWidget();
 	}
 }

@@ -56,10 +56,6 @@ Implementation plan:
    - Will require implementing most of the DragAndDropManager and improve GUIManager
  - Continue with DockManager (flesh it out later)
 
- GUIManager holds a ptr to GUIElements, and when elements are destroyed, GUIManager holds an invalid ptr
-Hook up DbgEditorWidget1::close()
- - In EditorWidget instead of having a onClose callback, instead keep EditorWidgetContainer parent and then notify it before it is closed. And if the widget is closed by parent container, 
-   then the container can remove parent and then close it so it doesn't receive the callback.
 Test tab switch/tab close/window close
 
 ------------------------

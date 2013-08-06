@@ -23,7 +23,7 @@ namespace BansheeEditor
 
 		for(auto& widget : mWidgets)
 		{
-			EditorWidget::destroy(widget.widget);
+			EditorWidget::destroy(widget);
 		}
 	}
 
@@ -31,15 +31,13 @@ namespace BansheeEditor
 	{
 		for(auto& curWidget : mWidgets)
 		{
-			if(curWidget.widget == &widget)
+			if(curWidget == &widget)
 				return;
 		}
 
-		auto conn = widget.onClosed.connect(boost::bind(&EditorWidgetContainer::widgetDestroyed, this, _1));
-
 		mTitleBar->addTab(widget.getName());
-		mWidgets.push_back(WidgetInfo(&widget, conn));
-		widget._changeParent(*mParent);
+		mWidgets.push_back(&widget);
+		widget._changeParent(this);
 
 		if(mActiveWidget == -1)
 		{
@@ -55,7 +53,7 @@ namespace BansheeEditor
 		UINT32 curIdx = 0;
 		for(auto& curWidget : mWidgets)
 		{
-			if(curWidget.widget == &widget)
+			if(curWidget == &widget)
 			{
 				widgetIdx = curIdx;
 				break;
@@ -67,7 +65,6 @@ namespace BansheeEditor
 		if(widgetIdx == -1)
 			return;
 
-		mWidgets[widgetIdx].conn.disconnect();
 		mWidgets.erase(mWidgets.begin() + widgetIdx);
 		mTitleBar->removeTab((UINT32)widgetIdx);
 
@@ -92,7 +89,7 @@ namespace BansheeEditor
 
 		if(mActiveWidget >= 0)
 		{
-			EditorWidget* activeWidgetPtr = mWidgets[mActiveWidget].widget;
+			EditorWidget* activeWidgetPtr = mWidgets[mActiveWidget];
 			UINT32 contentHeight = (UINT32)std::max(0, (INT32)height - (INT32)TitleBarHeight);
 
 			activeWidgetPtr->_setSize(width, contentHeight);
@@ -108,7 +105,7 @@ namespace BansheeEditor
 
 		if(mActiveWidget >= 0)
 		{
-			EditorWidget* activeWidgetPtr = mWidgets[mActiveWidget].widget;
+			EditorWidget* activeWidgetPtr = mWidgets[mActiveWidget];
 
 			activeWidgetPtr->_setPosition(x, y + TitleBarHeight);
 		}
@@ -128,9 +125,9 @@ namespace BansheeEditor
 		for(auto& curWidget : mWidgets)
 		{
 			if(curIdx != (UINT32)mActiveWidget)
-				curWidget.widget->_disable();
+				curWidget->_disable();
 			else
-				curWidget.widget->_enable();
+				curWidget->_enable();
 
 			curIdx++;
 		}
@@ -146,7 +143,7 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::tabClosed(UINT32 idx)
 	{
-		EditorWidget* widget = mWidgets[idx].widget;
+		EditorWidget* widget = mWidgets[idx];
 		remove(*widget);
 		EditorWidget::destroy(widget);
 
@@ -154,11 +151,11 @@ namespace BansheeEditor
 			onWidgetClosed();
 	}
 
-	void EditorWidgetContainer::widgetDestroyed(EditorWidget* widget)
+	void EditorWidgetContainer::_notifyWidgetDestroyed(EditorWidget* widget)
 	{
 		for(auto& curWidget : mWidgets)
 		{
-			if(curWidget.widget == widget)
+			if(curWidget == widget)
 			{
 				remove(*widget);
 

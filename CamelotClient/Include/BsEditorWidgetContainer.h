@@ -7,16 +7,6 @@ namespace BansheeEditor
 {
 	class EditorWidgetContainer
 	{
-		struct WidgetInfo
-		{
-			WidgetInfo(EditorWidget* _widget, const boost::signals::connection& _conn)
-				:widget(_widget), conn(_conn)
-			{ }
-
-			EditorWidget* widget;
-			boost::signals::connection conn;
-		};
-
 	public:
 		EditorWidgetContainer(BS::GUIWidget* parent);
 		virtual ~EditorWidgetContainer();
@@ -29,6 +19,9 @@ namespace BansheeEditor
 		void setPosition(CM::INT32 x, CM::INT32 y);
 
 		CM::UINT32 getNumWidgets() const { return (CM::UINT32)mWidgets.size(); }
+		BS::GUIWidget& getParentWidget() const { return *mParent; }
+
+		void _notifyWidgetDestroyed(EditorWidget* widget);
 
 		boost::signal<void()> onWidgetClosed;
 	private:
@@ -36,7 +29,7 @@ namespace BansheeEditor
 		BS::GUIWidget* mParent;
 		CM::INT32 mX, mY;
 		CM::UINT32 mWidth, mHeight;
-		CM::Vector<WidgetInfo>::type mWidgets;
+		CM::Vector<EditorWidget*>::type mWidgets;
 		CM::INT32 mActiveWidget;
 
 		static const CM::UINT32 TitleBarHeight;
@@ -44,6 +37,5 @@ namespace BansheeEditor
 		void setActiveWidget(CM::UINT32 idx);
 		void tabActivated(CM::UINT32 idx);
 		void tabClosed(CM::UINT32 idx);
-		void widgetDestroyed(EditorWidget* widget);
 	};
 }
