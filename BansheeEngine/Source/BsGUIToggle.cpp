@@ -6,6 +6,7 @@
 #include "BsTextSprite.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
+#include "BsGUIToggleGroup.h"
 #include "CmTexture.h"
 
 using namespace CamelotFramework;
@@ -18,8 +19,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIToggle::GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const WString& text, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0), mIsToggled(false)
+	GUIToggle::GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0), mIsToggled(false), mToggleGroup(nullptr)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -36,10 +37,18 @@ namespace BansheeEngine
 		mImageDesc.borderRight = mStyle->border.right;
 		mImageDesc.borderTop = mStyle->border.top;
 		mImageDesc.borderBottom = mStyle->border.bottom;
+
+		if(toggleGroup != nullptr)
+			toggleGroup->add(this);
 	}
 
 	GUIToggle::~GUIToggle()
 	{
+		if(mToggleGroup != nullptr)
+		{
+			mToggleGroup->remove(this);
+		}
+
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
@@ -52,7 +61,7 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, nullptr, getDefaultLayoutOptions(style));
 	}
 
 	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const WString& text, const GUIElementStyle* style)
@@ -63,7 +72,123 @@ namespace BansheeEngine
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, layoutOptions);
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, nullptr, layoutOptions);
+	}
+
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getSkin();
+			style = skin->getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, toggleGroup, getDefaultLayoutOptions(style));
+	}
+
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getSkin();
+			style = skin->getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, text, toggleGroup, layoutOptions);
+	}
+
+	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup()
+	{
+		std::shared_ptr<GUIToggleGroup> toggleGroup = std::shared_ptr<GUIToggleGroup>(new GUIToggleGroup());
+		toggleGroup->initialize(toggleGroup);
+
+		return toggleGroup;
+	}
+
+	void GUIToggle::_setToggleGroup(std::shared_ptr<GUIToggleGroup> toggleGroup)
+	{
+		mToggleGroup = toggleGroup;
+
+		bool isToggled = false;
+		if(mToggleGroup != nullptr) // If in group ensure at least one element is toggled on
+		{
+			for(auto& toggleElem : mToggleGroup->mButtons)
+			{
+				if(isToggled)
+				{
+					if(toggleElem->mIsToggled)
+						toggleElem->toggleOff();
+				}
+				else
+				{
+					if(toggleElem->mIsToggled)
+						isToggled = true;
+				}
+
+			}
+
+			if(!isToggled)
+				toggleOn();
+		}
+	}
+
+	void GUIToggle::toggleOn()
+	{
+		if(mIsToggled)
+			return;
+
+		mIsToggled = true;
+
+		if(!onToggled.empty())
+			onToggled(mIsToggled);
+
+		if(mToggleGroup != nullptr)
+		{
+			for(auto& toggleElem : mToggleGroup->mButtons)
+			{
+				if(toggleElem != this)
+					toggleElem->toggleOff();
+			}
+		}
+
+		mImageDesc.texture = mStyle->normalOn.texture;
+		markContentAsDirty();
+	}
+
+	void GUIToggle::toggleOff()
+	{
+		if(!mIsToggled)
+			return;
+
+		bool canBeToggledOff = false;
+		if(mToggleGroup != nullptr) // If in group ensure at least one element is toggled on
+		{
+			for(auto& toggleElem : mToggleGroup->mButtons)
+			{
+				if(toggleElem != this)
+				{
+					if(toggleElem->mIsToggled)
+					{
+						canBeToggledOff = true;
+						break;
+					}
+				}
+
+			}
+		}
+		else
+			canBeToggledOff = true;
+
+		if(canBeToggledOff)
+		{
+			mIsToggled = false;
+
+			if(!onToggled.empty())
+				onToggled(mIsToggled);
+
+			mImageDesc.texture = mStyle->normal.texture;
+			markContentAsDirty();
+		}
 	}
 
 	UINT32 GUIToggle::getNumRenderElements() const
@@ -204,17 +329,10 @@ namespace BansheeEngine
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
-			mIsToggled = !mIsToggled;
-
 			if(mIsToggled)
-				mImageDesc.texture = mStyle->normalOn.texture;
+				toggleOff();
 			else
-				mImageDesc.texture = mStyle->normal.texture;
-
-			markContentAsDirty();
-
-			if(!onToggled.empty())
-				onToggled(mIsToggled);
+				toggleOn();
 
 			return true;
 		}

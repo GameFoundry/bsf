@@ -54,6 +54,7 @@ namespace BansheeEngine
 	class GUIInputCaret;
 	class GUIInputSelection;
 	struct GUILayoutOptions;
+	class GUIToggleGroup;
 
 	// 2D
 	class TextSprite;

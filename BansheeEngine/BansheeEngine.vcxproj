@@ -249,6 +249,7 @@
     <ClInclude Include="Include\BsGUISpace.h" />
     <ClInclude Include="Include\BsGUITexture.h" />
     <ClInclude Include="Include\BsGUIToggle.h" />
+    <ClInclude Include="Include\BsGUIToggleGroup.h" />
     <ClInclude Include="Include\BsGUIWindowFrame.h" />
     <ClInclude Include="Include\BsGUIWindowMover.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
@@ -304,6 +305,7 @@
     <ClCompile Include="Source\BsGUISkin.cpp" />
     <ClCompile Include="Source\BsGUITexture.cpp" />
     <ClCompile Include="Source\BsGUIToggle.cpp" />
+    <ClCompile Include="Source\BsGUIToggleGroup.cpp" />
     <ClCompile Include="Source\BsGUIWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowMover.cpp" />

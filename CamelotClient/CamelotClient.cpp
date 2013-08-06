@@ -28,6 +28,7 @@
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
 #include "DbgEditorWidget1.h"
+#include "DbgEditorWidget2.h"
 #include "CmRTTIType.h"
 #include "CmCursor.h"
 
@@ -296,6 +297,7 @@ int CALLBACK WinMain(
 	/************************************************************************/
 
 	DbgEditorWidget1::open();
+	DbgEditorWidget2::open();
 
 	gBansheeApp().runMainLoop();
 
