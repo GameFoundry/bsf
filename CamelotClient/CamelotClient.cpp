@@ -24,7 +24,11 @@
 #include "CmCommandQueue.h"
 #include "CmBlendState.h"
 
+// Editor includes
 #include "BsEditorWindowManager.h"
+// End editor includes
+
+
 #include "CmDebugCamera.h"
 #include "CmTestTextSprite.h"
 #include "DbgEditorWidget1.h"

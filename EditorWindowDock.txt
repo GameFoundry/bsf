@@ -1,12 +1,3 @@
-DragAndDropManager
- - Very simple interface
- - dragObject(icon, type, data, dropCallback) - starts item drag (data is just a void user an cast based on type)
- - while something is being dragged GUIManager sends ObjectDragged events to all GUI elements under the mouse
-   - (normally GUIManager only sends MouseDrag to the element that initiated the drag)
- - when mouse button is released GUIManager sends ObjectDropped to the GUIElement under the cursor
- - manager is reponsible for drawing the provided icon while the object is being dragged
- - "dropCallback" is called when the object is dropped. Most useful to determine if the object is dropped in an unsupported area in which case we need to do some special action.
-
 DockManager
  - DOCKING: When user drags a window, EditorWidgetContainer detects that and reacts accordingly
    - For title bar it draws the drop locations, and does the same for content
@@ -23,19 +14,35 @@ DockManager
 
 TODO - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
 TODO - A way to persist window states
+  - Also a way to reset all widgets to original locations
 
 ------------------------
 
-Implementation plan:
- - Split EditorWindow, EditorWidget and EditorWidgetContainer
- - Implement a couple of debug EditorWidgets and set them up in a single container and a window
-  - Hook up the buttons so clicking them switches the active widget
- - Implement basic DragAndDropManager (without special icon yet)
-  - Attemp to drag and drop a single item from and to the title bar
-   - Will require implementing most of the DragAndDropManager and improve GUIManager
- - Continue with DockManager (flesh it out later)
+DockManager implementation plan:
+ - DockManager main class
+   - When empty make sure it has a GUIElement that covers its entire space so it can catch and drop events. Will likely need a special transparent GUIElement?
+   - Has a reference to one DockContainer, which is initially empty
+      - DockContainer can have two DockContainer children, or one EditorWidgetContainer child (maybe make a container base class? - optional)
+	  - DockContainer should probably contain a GUIElement which can receieve events
+	     - This would mean extending GUIManager so it can send events to top level elements, and if they don't process them, send them one level lower?
+	  - Resizing a DockContainer resizes all child DockContainers recursively (and EditorWidgetContainers)
+	  - If DockContainer has DockContainer children then it also contains a  GUIElement resizer (just an empty space, in the direction of the split)
+	    - Moving the element allows you to resize the two child DockContainers
+ - When last element is removed from EditorWidgetContainer make sure to notify the parent
+ - Make main render window frameless
+   - Implement MainEditorWindow from EditorWindowBase
+   - Make sure MainEditorWindow holds a DockManager reference and resizes it with the window
 
-Test tab switch/tab close/window close
+DockContainer biggest issues:
+ - How do I draw the drag and drop overlay??
+ - How do I detect mouse input yet still let it through to child widget
+
+FIRST CREATE DOCK CONTAINER WITHOUT DRAG AND DROP SUPPORT
+
+Make sure to test everything thoroughly - right now I have tested very little
+Drag and drop manager currently ignores the provided icon, but it should use it as a cursor
+
+TODO - Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
 
 ------------------------
 

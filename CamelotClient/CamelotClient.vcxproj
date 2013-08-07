@@ -257,6 +257,7 @@
   <ItemGroup>
     <ClInclude Include="CmDebugCamera.h" />
     <ClInclude Include="CmTestTextSprite.h" />
+    <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
     <ClInclude Include="Include\BsEditorWidget.h" />
     <ClInclude Include="Include\BsEditorWidgetContainer.h" />
@@ -274,6 +275,7 @@
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="CmDebugCamera.cpp" />
     <ClCompile Include="CmTestTextSprite.cpp" />
+    <ClCompile Include="Source\BsDockManager.cpp" />
     <ClCompile Include="Source\BsEditorWidget.cpp" />
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp" />
     <ClCompile Include="Source\BsEditorWindow.cpp" />
