@@ -26,6 +26,7 @@
 
 // Editor includes
 #include "BsEditorWindowManager.h"
+#include "BsMainEditorWindow.h"
 // End editor includes
 
 
@@ -56,6 +57,7 @@ int CALLBACK WinMain(
 	renderWindowDesc.height = 720;
 	renderWindowDesc.title = "Banshee";
 	renderWindowDesc.fullscreen = false;
+	renderWindowDesc.border = WindowBorder::None;
 
 #ifdef DX11
 	gBansheeApp().startUp(renderWindowDesc, "CamelotD3D11RenderSystem", "BansheeForwardRenderer", "D:\\CamelotResourceMetas");
@@ -294,6 +296,7 @@ int CALLBACK WinMain(
 	/* 								EDITOR INIT                      		*/
 	/************************************************************************/
 
+	MainEditorWindow mainWindow(gApplication().getPrimaryWindow());
 	EditorWindowManager::startUp(cm_new<EditorWindowManager>());
 
 	/************************************************************************/

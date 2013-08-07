@@ -192,8 +192,8 @@ namespace BansheeEditor
 		}
 	}
 
-	void DockManager::setSize(CM::UINT32 width, CM::UINT32 height)
+	void DockManager::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
-		mRootContainer.setArea(0, 0, width, height);
+		mRootContainer.setArea(x, y, width, height);
 	}
 }

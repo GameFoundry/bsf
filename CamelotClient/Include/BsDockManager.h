@@ -45,7 +45,7 @@ namespace BansheeEditor
 
 		void insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location);
 
-		void setSize(CM::UINT32 width, CM::UINT32 height);
+		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
 	private:
 		BS::GUIWidget* mParent;

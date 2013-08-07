@@ -21,8 +21,11 @@ namespace BansheeEditor
 		virtual void close();
 	protected:
 		EditorWindowBase();
+		EditorWindowBase(CM::RenderWindowPtr renderWindow);
 		BS::HGUIWidget mGUI;
+		bool mOwnsRenderWindow;
 
+		void construct(CM::RenderWindowPtr renderWindow);
 		virtual void initialize();
 		virtual void movedOrResized() { }
 	private:
