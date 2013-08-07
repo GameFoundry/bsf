@@ -15,6 +15,7 @@
 #include "CmCursor.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
+#include "BsDragAndDropManager.h"
 
 using namespace CamelotFramework;
 
@@ -338,6 +339,8 @@ namespace BansheeEngine
 
 	bool GUIInputBox::mouseEvent(const GUIMouseEvent& ev)
 	{
+		static UINT32 dbg = 0;
+
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
 			if(!mHasFocus)

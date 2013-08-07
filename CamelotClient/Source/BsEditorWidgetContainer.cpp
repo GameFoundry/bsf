@@ -40,9 +40,7 @@ namespace BansheeEditor
 		widget._changeParent(this);
 
 		if(mActiveWidget == -1)
-		{
 			setActiveWidget((UINT32)mWidgets.size() - 1);
-		}
 		else
 			widget._disable();
 	}

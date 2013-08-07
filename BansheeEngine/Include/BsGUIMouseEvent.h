@@ -15,7 +15,9 @@ namespace BansheeEngine
 		MouseWheelScroll,
 		MouseDrag,
 		MouseDragStart,
-		MouseDragEnd
+		MouseDragEnd,
+		MouseDragAndDropDragged,
+		MouseDragAndDropDropped,
 	};
 
 	enum class GUIMouseButton
@@ -36,6 +38,8 @@ namespace BansheeEngine
 		float getWheelScrollAmount() const { return mWheelScrollAmount; }
 		bool isButtonDown(GUIMouseButton button) const { return mButtonStates[(int)button]; }
 		GUIElement* getMouseOverElement() const { return mMouseOverElement; }
+		CM::UINT32 getDragAndDropTypeId() const { return mDragTypeId; }
+		void* getDragAndDropData() const { return mDragData; }
 
 		bool isShiftDown() const { return mShift; }
 		bool isCtrlDown() const { return mCtrl; }
@@ -50,6 +54,8 @@ namespace BansheeEngine
 		GUIMouseEventType mType;
 		GUIMouseButton mButton;
 		GUIElement* mMouseOverElement;
+		CM::UINT32 mDragTypeId;
+		void* mDragData;
 
 		bool mShift;
 		bool mCtrl;
@@ -65,5 +71,8 @@ namespace BansheeEngine
 		void setMouseDragData(GUIElement* mouseOverElement, const CM::Int2& position, const CM::Int2& dragAmount);
 		void setMouseDragStartData(GUIElement* mouseOverElement, const CM::Int2& position);
 		void setMouseDragEndData(GUIElement* mouseOverElement, const CM::Int2& position);
+
+		void setDragAndDropDroppedData(GUIElement* mouseOverElement, const CM::Int2& position, CM::UINT32 dragTypeId, void* dragData);
+		void setDragAndDropDraggedData(GUIElement* mouseOverElement, const CM::Int2& position, CM::UINT32 dragTypeId, void* dragData);
 	};
 }

@@ -19,6 +19,7 @@
 #include "CmDebug.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
+#include "BsDragAndDropManager.h"
 
 using namespace CamelotFramework;
 namespace BansheeEngine
@@ -63,6 +64,8 @@ namespace BansheeEngine
 		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>();
 		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
+		DragAndDropManager::startUp(cm_new<DragAndDropManager>());
+
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
 		deferredCall(std::bind(&GUIManager::updateTextSelectionTexture, this));
@@ -70,6 +73,8 @@ namespace BansheeEngine
 
 	GUIManager::~GUIManager()
 	{
+		DragAndDropManager::shutDown();
+
 		// Make a copy of widgets, since destroying them will remove them from mWidgets and
 		// we can't iterate over an array thats getting modified
 		Vector<WidgetInfo>::type widgetCopy = mWidgets;
@@ -530,7 +535,8 @@ namespace BansheeEngine
 				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyDownData(event.buttonCode);
-				mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+				if(mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent))
+					event.markAsUsed();
 			}
 		}
 
@@ -562,12 +568,14 @@ namespace BansheeEngine
 				Int2 localPos = getWidgetRelativePos(*mMouseOverWidget, gInput().getMousePosition());
 
 				mMouseEvent.setMouseDownData(mMouseOverElement, localPos, guiButton);
-				mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+				if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+					event.markAsUsed();
 
 				// DragStart is for all intents and purposes same as mouse down but since I need a DragEnd event, I feel a separate DragStart
 				// event was also needed to make things clearer.
 				mMouseEvent.setMouseDragStartData(mMouseOverElement, localPos);
-				mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+				if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+					event.markAsUsed();
 
 				mActiveElement = mMouseOverElement;
 				mActiveWidget = mMouseOverWidget;
@@ -583,10 +591,10 @@ namespace BansheeEngine
 
 				mKeyboardFocusElement = mMouseOverElement;
 				mKeyboardFocusWidget = mMouseOverWidget;
+
+				event.markAsUsed();
 			}
 		}
-		
-		event.markAsUsed();
 	}
 
 	void GUIManager::onButtonUp(const ButtonEvent& event)
@@ -605,7 +613,8 @@ namespace BansheeEngine
 				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyUpData(event.buttonCode);
-				mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
+				if(mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent))
+					event.markAsUsed();
 			}
 		}
 
@@ -626,13 +635,29 @@ namespace BansheeEngine
 
 			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
 
+			if(DragAndDropManager::instance().isDragInProgress() && guiButton == GUIMouseButton::Left)
+			{
+				if(mMouseOverElement != nullptr)
+				{
+					mMouseEvent.setDragAndDropDroppedData(mMouseOverElement, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					bool processed = mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+
+					DragAndDropManager::instance()._endDrag(processed);
+
+					if(processed)
+						event.markAsUsed();
+				}
+			}
+
 			// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
 			// And only activate when a button that originally caused the active state is released, otherwise ignore it.
 			bool acceptMouseUp = mActiveMouseButton == guiButton && (mMouseOverElement != nullptr && mActiveElement == mMouseOverElement);
 			if(acceptMouseUp)
 			{
 				mMouseEvent.setMouseUpData(mMouseOverElement, localPos, guiButton);
-				mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+				
+				if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+					event.markAsUsed();
 			}
 
 			// Send DragEnd event to whichever element is active
@@ -640,15 +665,14 @@ namespace BansheeEngine
 			if(acceptEndDrag)
 			{
 				mMouseEvent.setMouseDragEndData(mMouseOverElement, localPos);
-				mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent);
+				if(mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent))
+					event.markAsUsed();
 
 				mActiveElement = nullptr;
 				mActiveWidget = nullptr;
 				mActiveMouseButton = GUIMouseButton::Left;
-			}	
+			}
 		}
-
-		event.markAsUsed();
 	}
 
 	void GUIManager::onMouseMoved(const MouseEvent& event)
@@ -754,7 +778,8 @@ namespace BansheeEngine
 					Int2 curLocalPos = getWidgetRelativePos(*mMouseOverWidget, event.screenPos);
 
 					mMouseEvent.setMouseOutData(topMostElement, curLocalPos);
-					mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+					if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+						event.markAsUsed();
 				}
 			}
 
@@ -764,7 +789,8 @@ namespace BansheeEngine
 				if(mActiveElement == nullptr || topMostElement == mActiveElement)
 				{
 					mMouseEvent.setMouseOverData(topMostElement, localPos);
-					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
+					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+						event.markAsUsed();
 				}
 			}
 		}
@@ -777,9 +803,21 @@ namespace BansheeEngine
 			if(mLastCursorLocalPos != curLocalPos)
 			{
 				mMouseEvent.setMouseDragData(topMostElement, curLocalPos, curLocalPos - mLastCursorLocalPos);
-				mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent);
+				if(mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent))
+					event.markAsUsed();
 
 				mLastCursorLocalPos = curLocalPos;
+			}
+
+			// Also if drag is in progress send DragAndDrop events
+			if(DragAndDropManager::instance().isDragInProgress())
+			{
+				if(topMostElement != nullptr)
+				{
+					mMouseEvent.setDragAndDropDraggedData(topMostElement, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+						event.markAsUsed();
+				}
 			}
 		}
 		else // Otherwise, send MouseMove events if we are hovering over any element
@@ -790,7 +828,8 @@ namespace BansheeEngine
 				if(mLastCursorLocalPos != localPos)
 				{
 					mMouseEvent.setMouseMoveData(topMostElement, localPos);
-					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
+					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+						event.markAsUsed();
 
 					mLastCursorLocalPos = localPos;
 				}
@@ -798,15 +837,14 @@ namespace BansheeEngine
 				if(Math::Abs(event.mouseWheelScrollAmount) > 0.00001f)
 				{
 					mMouseEvent.setMouseWheelScrollData(topMostElement, event.mouseWheelScrollAmount);
-					widgetInFocus->_mouseEvent(topMostElement, mMouseEvent);
+					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+						event.markAsUsed();
 				}
 			}
 		}
 
 		mMouseOverElement = topMostElement;
 		mMouseOverWidget = widgetInFocus;
-
-		event.markAsUsed();
 	}
 
 	void GUIManager::onTextInput(const CM::TextInputEvent& event)
@@ -823,8 +861,8 @@ namespace BansheeEngine
 			mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 			mKeyEvent.setTextInputData(event.textChar);
-			mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent);
-
+			if(mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent))
+				event.markAsUsed();
 		}
 	}
 

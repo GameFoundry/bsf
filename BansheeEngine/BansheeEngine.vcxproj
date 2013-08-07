@@ -228,6 +228,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsDebugDraw.h" />
+    <ClInclude Include="Include\BsDragAndDropManager.h" />
     <ClInclude Include="Include\BsEngineGUI.h" />
     <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
@@ -282,6 +283,7 @@
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
     <ClCompile Include="Source\BsDebugDraw.cpp" />
+    <ClCompile Include="Source\BsDragAndDropManager.cpp" />
     <ClCompile Include="Source\BsEngineGUI.cpp" />
     <ClCompile Include="Source\BsGUIArea.cpp" />
     <ClCompile Include="Source\BsGUIButton.cpp" />
