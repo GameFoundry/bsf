@@ -61,21 +61,21 @@ namespace BansheeEditor
 		mRenderWindow = renderWindow;
 		mSceneObject = SceneObject::create("EditorWindow");
 
-		HCamera camera = mSceneObject->addComponent<Camera>();
-		camera->initialize(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
-		camera->setNearClipDistance(5);
-		camera->setAspectRatio(1.0f);
-		camera->setIgnoreSceneRenderables(true);
+		mCamera = mSceneObject->addComponent<Camera>();
+		mCamera->initialize(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		mCamera->setNearClipDistance(5);
+		mCamera->setAspectRatio(1.0f);
+		mCamera->setIgnoreSceneRenderables(true);
 
 		mGUI = mSceneObject->addComponent<GUIWidget>();
-		mGUI->initialize(camera->getViewport().get(), renderWindow.get());
+		mGUI->initialize(mCamera->getViewport().get(), renderWindow.get());
 		mGUI->setDepth(128);
 
 		mGUI->setSkin(&EngineGUI::instance().getSkin());
 
 		GameObjectHandle<WindowFrameWidget> frame = mSceneObject->addComponent<WindowFrameWidget>();
 		frame->setSkin(&EngineGUI::instance().getSkin());
-		frame->initialize(camera->getViewport().get(), renderWindow.get());
+		frame->initialize(mCamera->getViewport().get(), renderWindow.get());
 		frame->setDepth(129);
 
 		RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&EditorWindowBase::movedOrResized, this, _1));

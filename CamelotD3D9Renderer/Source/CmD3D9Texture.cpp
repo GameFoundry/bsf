@@ -940,17 +940,7 @@ namespace CamelotFramework
 		IDirect3DVolume9 *volume;				
 		UINT32 mip, face;
 
-		
 		assert(textureResources != NULL);
-		assert(textureResources->pBaseTex);
-		// Make sure number of mips is right
-		UINT32 numCreatedMips = textureResources->pBaseTex->GetLevelCount() - 1;
-
-		if(numCreatedMips != mNumMipmaps)
-		{
-			CM_EXCEPT(InternalErrorException, "Number of created and wanted mip map levels doesn't match: " + 
-				toString(numCreatedMips) + "/" + toString(mNumMipmaps));
-		}
 
 		// Need to know static / dynamic
 		unsigned int bufusage;
@@ -998,7 +988,7 @@ namespace CamelotFramework
 		}
 		else if((mUsage & TU_DEPTHSTENCIL) != 0)
 		{
-			assert(textureResources->pFSAASurface);
+			assert(textureResources->pDepthStencilSurface);
 			assert(getTextureType() == TEX_TYPE_2D);
 
 			D3D9PixelBuffer* currPixelBuffer = GETLEVEL(0, 0);
@@ -1008,6 +998,16 @@ namespace CamelotFramework
 		}
 		else
 		{
+			assert(textureResources->pBaseTex);
+			// Make sure number of mips is right
+			UINT32 numCreatedMips = textureResources->pBaseTex->GetLevelCount() - 1;
+
+			if(numCreatedMips != mNumMipmaps)
+			{
+				CM_EXCEPT(InternalErrorException, "Number of created and wanted mip map levels doesn't match: " + 
+					toString(numCreatedMips) + "/" + toString(mNumMipmaps));
+			}
+
 			switch(getTextureType()) 
 			{
 			case TEX_TYPE_2D:

@@ -255,8 +255,6 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CmDebugCamera.h" />
-    <ClInclude Include="CmTestTextSprite.h" />
     <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
     <ClInclude Include="Include\BsEditorWidget.h" />
@@ -267,6 +265,8 @@
     <ClInclude Include="Include\BsGUITabbedTitleBar.h" />
     <ClInclude Include="Include\BsGUIWindowFrameWidget.h" />
     <ClInclude Include="Include\BsMainEditorWindow.h" />
+    <ClInclude Include="Include\CmDebugCamera.h" />
+    <ClInclude Include="Include\CmTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
     <ClInclude Include="Include\DbgEditorWidget2.h" />
     <ClInclude Include="stdafx.h" />
@@ -274,8 +274,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamelotClient.cpp" />
-    <ClCompile Include="CmDebugCamera.cpp" />
-    <ClCompile Include="CmTestTextSprite.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />
     <ClCompile Include="Source\BsEditorWidget.cpp" />
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp" />
@@ -285,6 +283,8 @@
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
+    <ClCompile Include="Source\CmDebugCamera.cpp" />
+    <ClCompile Include="Source\CmTestTextSprite.cpp" />
     <ClCompile Include="Source\DbgEditorWidget1.cpp" />
     <ClCompile Include="Source\DbgEditorWidget2.cpp" />
     <ClCompile Include="stdafx.cpp" />

@@ -170,7 +170,7 @@ namespace CamelotFramework {
 		 * 			and (optionally) a depth/stencil surface
 		 */
 		virtual RenderTexturePtr createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
-			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 fsaa = 0, const String& fsaaHint = "", 
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**

@@ -19,11 +19,6 @@ namespace CamelotFramework
 	{
 	}
 
-	void D3D11RenderTexture::initialize_internal()
-	{
-		// Do nothing
-	}
-
 	void D3D11RenderTexture::getCustomAttribute(const String& name, void* pData) const
 	{
 		if(name == "RTV")

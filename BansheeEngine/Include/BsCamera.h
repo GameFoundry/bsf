@@ -494,18 +494,6 @@ namespace BansheeEngine {
 		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; }
 		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
 
-        /** Project a sphere onto the near plane and get the bounding rectangle. 
-        @param sphere The world-space sphere to project
-        @param radius Radius of the sphere
-        @param left, top, right, bottom Pointers to destination values, these
-            will be completed with the normalised device coordinates (in the 
-            range {-1,1})
-        @returns true if the sphere was projected to a subset of the near plane,
-            false if the entire near plane was contained
-        */
-        virtual bool projectSphere(const CM::Sphere& sphere, 
-            float* left, float* top, float* right, float* bottom) const;
-
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
     protected:

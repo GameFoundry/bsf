@@ -103,20 +103,28 @@ namespace CamelotFramework
 		if(mColorSurface->getTexture()->getTextureType() != TEX_TYPE_2D)
 			CM_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
-		if((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) >= mColorSurface->getTexture()->getNumFaces())
+		if((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > mColorSurface->getTexture()->getNumFaces())
 		{
 			CM_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
 				toString(mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) + 
 				". Max num faces: " + toString(mColorSurface->getTexture()->getNumFaces()));
 		}
 
-		if(mColorSurface->getMostDetailedMip() >= mColorSurface->getTexture()->getNumMipmaps())
+		if(mColorSurface->getMostDetailedMip() > mColorSurface->getTexture()->getNumMipmaps())
 		{
 			CM_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
 				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(mColorSurface->getTexture()->getNumMipmaps()));
 		}
 
 		RenderTarget::initialize();
+
+		// Create non-persistent resource handles for the used textures (we only need them because a lot of the code accepts only handles,
+		// since they're non persistent they don't really have any benefit over shared pointers)
+		if(mColorSurface != nullptr)
+			mBindableColorTex = Resource::_createResourceHandle(mColorSurface->getTexture());
+
+		if(mDepthStencilSurface != nullptr)
+			mBindableDepthStencilTex = Resource::_createResourceHandle(mDepthStencilSurface->getTexture());
 	}
 
 	void RenderTexture::throwIfBuffersDontMatch() const

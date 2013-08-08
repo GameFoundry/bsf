@@ -174,7 +174,6 @@ namespace CamelotFramework {
 		return face * (getNumMipmaps() + 1) + mip;
 	}
 
-	//----------------------------------------------------------------------------
 	PixelData Texture::lock(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -187,14 +186,14 @@ namespace CamelotFramework {
 
 		return lockImpl(options, mipLevel, face);
 	}
-	//-----------------------------------------------------------------------------
+
 	void Texture::unlock()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		unlockImpl();
 	}
-	//-----------------------------------------------------------------------------
+
 	void Texture::copy(TexturePtr& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;

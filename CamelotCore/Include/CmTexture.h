@@ -92,8 +92,9 @@ namespace CamelotFramework {
         */
         virtual TextureType getTextureType(void) const { return mTextureType; }
 
-        /** Gets the number of mipmaps to be used for this texture.
-        */
+        /** Gets the number of mipmaps to be used for this texture. This number excludes the top level  
+         * map (which is always assumed to be present). 
+         */
         virtual UINT32 getNumMipmaps(void) const {return mNumMipmaps;}
 
 		/** Gets whether this texture will be set up so that on sampling it, 
@@ -112,15 +113,15 @@ namespace CamelotFramework {
 
 		/** Returns the height of the texture.
         */
-        virtual UINT32 getHeight(void) const { return mHeight; }
+        virtual UINT32 getHeight() const { return mHeight; }
 
         /** Returns the width of the texture.
         */
-        virtual UINT32 getWidth(void) const { return mWidth; }
+        virtual UINT32 getWidth() const { return mWidth; }
 
         /** Returns the depth of the texture (only applicable for 3D textures).
         */
-        virtual UINT32 getDepth(void) const { return mDepth; }
+        virtual UINT32 getDepth() const { return mDepth; }
 
         /** Returns the TextureUsage indentifier for this Texture
         */
@@ -130,7 +131,7 @@ namespace CamelotFramework {
 		virtual PixelFormat getFormat() const { return mFormat; }
 
         /** Returns true if the texture has an alpha layer. */
-        virtual bool hasAlpha(void) const;
+        virtual bool hasAlpha() const;
 
         /** Return the number of faces this texture has. This will be 6 for a cubemap
         	texture and 1 for a 1D, 2D or 3D one.

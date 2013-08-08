@@ -145,7 +145,8 @@ namespace CamelotFramework
             }
         }
 
-		mDepthStencilBuffer->bindToFramebuffer(GL_DEPTH_STENCIL_ATTACHMENT, 0);
+		if(mDepthStencilBuffer != nullptr)
+			mDepthStencilBuffer->bindToFramebuffer(GL_DEPTH_STENCIL_ATTACHMENT, 0);
 
 		/// Do glDrawBuffer calls
 		GLenum bufs[CM_MAX_MULTIPLE_RENDER_TARGETS];

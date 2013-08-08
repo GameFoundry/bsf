@@ -79,16 +79,12 @@ namespace CamelotFramework {
 
 		if((mUsage & TU_RENDERTARGET) != 0)
 		{
-			mNumMipmaps = 1;
-
 			if(mTextureType != TEX_TYPE_2D)
 				CM_EXCEPT(NotImplementedException, "Only 2D render targets are supported at the moment");
 		}
 
 		if((mUsage & TU_DEPTHSTENCIL) != 0)
 		{
-			mNumMipmaps = 1;
-
 			if(mTextureType != TEX_TYPE_2D)
 				CM_EXCEPT(NotImplementedException, "Only 2D depth stencil targets are supported at the moment");
 

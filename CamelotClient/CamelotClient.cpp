@@ -31,7 +31,6 @@
 
 
 #include "CmDebugCamera.h"
-#include "CmTestTextSprite.h"
 #include "DbgEditorWidget1.h"
 #include "DbgEditorWidget2.h"
 #include "CmRTTIType.h"
@@ -74,25 +73,8 @@ int CALLBACK WinMain(
 	RenderSystem* renderSystem = RenderSystem::instancePtr();
 	RenderWindowPtr renderWindow = gApplication().getPrimaryWindow();
 
-	HSceneObject cameraGO = SceneObject::create("MainCamera");
-	HCamera camera = cameraGO->addComponent<Camera>();
-
-	camera->initialize(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
-	cameraGO->setPosition(Vector3(0,50,1240));
-	cameraGO->lookAt(Vector3(0,50,-300));
-	camera->setNearClipDistance(5);
-	camera->setAspectRatio(800.0f / 600.0f);
-
-	GameObjectHandle<DebugCamera> debugCamera = cameraGO->addComponent<DebugCamera>();
-
 	HSceneObject testModelGO = SceneObject::create("TestMesh");
 	HRenderable testRenderable = testModelGO->addComponent<Renderable>();
-
-	HSceneObject testTextGO = SceneObject::create("TestText");
-	GameObjectHandle<TestTextSprite> textSprite = testTextGO->addComponent<TestTextSprite>();
-	textSprite->initialize(camera->getViewport().get(), renderWindow.get());
-
-	textSprite->init(camera, "Testing in a new row, does this work?");
 
 #if defined DX9
 	///////////////// HLSL 9 SHADERS //////////////////////////
@@ -336,7 +318,6 @@ int CALLBACK WinMain(
 	vertProgRef.reset();
 
 	testModelGO->destroy();
-	cameraGO->destroy();
 
 	newPassGL = nullptr;
 	newTechniqueGL = nullptr;

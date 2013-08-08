@@ -424,6 +424,9 @@ namespace CamelotFramework
 		default:
 			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(prg->getType()));
 		}
+
+		if (mDevice->hasError())
+			CM_EXCEPT(RenderingAPIException, "Failed to bindGpuProgram : " + mDevice->getErrorDescription());
 	}
 
 	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
@@ -523,6 +526,9 @@ namespace CamelotFramework
 				break;
 			};
 		}
+
+		if (mDevice->hasError())
+			CM_EXCEPT(RenderingAPIException, "Failed to bindGpuParams : " + mDevice->getErrorDescription());
 	}
 
 	void D3D11RenderSystem::draw(UINT32 vertexCount)

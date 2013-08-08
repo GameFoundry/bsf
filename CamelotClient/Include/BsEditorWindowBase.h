@@ -22,7 +22,10 @@ namespace BansheeEditor
 	protected:
 		EditorWindowBase();
 		EditorWindowBase(CM::RenderWindowPtr renderWindow);
+
+		CM::HSceneObject mSceneObject;
 		BS::HGUIWidget mGUI;
+		BS::HCamera mCamera;
 		bool mOwnsRenderWindow;
 
 		void construct(CM::RenderWindowPtr renderWindow);
@@ -30,8 +33,7 @@ namespace BansheeEditor
 		virtual void movedOrResized() { }
 	private:
 		CM::RenderWindowPtr mRenderWindow;
-		CM::HSceneObject mSceneObject;
-
+		
 		void movedOrResized(CM::RenderWindow& renderWindow);
 	};
 }
