@@ -1,23 +1,3 @@
-DockManager
- - DOCKING: When user drags a window, EditorWidgetContainer detects that and reacts accordingly
-   - For title bar it draws the drop locations, and does the same for content
-   - After the drop is done it just notifies the DockManager (if the drop was on contents) with addWidgetRelativeToMe(this, location, draggedWidget)
-      - (If the drop was done on the title bar, then the EditorWidgetContainer can handle that internally)
-	  - Drop manager creates two new DockedWindowContainers
-	   - Existing a new widgets are moved into each. Existing container (for the existing widget) now becomes the parent of the two new containers.
-	   - Size of the new containers are adjusted (and containers internally adjust the size of their widgets, and/or their child containers)
-	  - A spacer widget is added between them, that may be used for resizing. DockedWindowContainers on both sides of the spacer and kept as a reference
-   - Also, make sure to detect a case when there are no widgets in the dock manager
-   - Resizing a DockedWindowContainer recursivelly resizes all child containers
- - UNDOCKING: If the last EditorWidget is removed from EditorWidgetContainer, DockManager is notified and it takes care of removing the relevant
-   DockedWindowContainer and the spacer.
-
-TODO - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
-TODO - A way to persist window states
-  - Also a way to reset all widgets to original locations
-
-------------------------
-
 DockManager implementation plan:
  - DockManager main class
    - When empty make sure it has a GUIElement that covers its entire space so it can catch and drop events. Will likely need a special transparent GUIElement?
@@ -39,16 +19,27 @@ DockContainer biggest issues:
 
 FIRST CREATE DOCK CONTAINER WITHOUT DRAG AND DROP SUPPORT
 
-Add RenderTexture::create
- - Attempt creating one and attaching it to the primary camera
- - Test DX9/DX11/OpenGL
- - Figure out how to use it for display, and then create a GUIRenderTexture element.
-    - Rendering from it should technically just involve setting it as a sprite texture and using ImageSprite
+RenderTexture issues:
+ Fix up GUI render texture so it isn't transparent
+ Rename waitUntilInitialized to synchronize()
+ Set up a GUIViewport element which sets up a camera so it renders to that part of the window
+
+ DirectX 9 currently DOES NOT support bindable render textures:
+  - Bindable render textures should be created using CreateTexture and D3DUSAGE_RENDERTARGET/D3DUSAGE_DEPTHSTENCIL
+   - UNLESS render target is using antialiasing, in which case it cannot be bound and should be created as it
+    - However if it cannot be bound I should warn the user (in RenderTexture::getBindable* methods)
 
 Make sure to test everything thoroughly - right now I have tested very little
 Drag and drop manager currently ignores the provided icon, but it should use it as a cursor
 
-TODO - Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
+Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
+
+------------------------
+
+Other things to remember:
+ - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
+ - A way to persist window states
+ - Also a way to reset all widgets to original locations
 
 ------------------------
 
