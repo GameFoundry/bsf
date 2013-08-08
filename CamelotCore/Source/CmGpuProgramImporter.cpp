@@ -38,7 +38,7 @@ namespace CamelotFramework
 		Vector<HGpuProgInclude>::type includes = gpuProgImportOptions->getIncludes();
 
 		HHighLevelGpuProgram gpuProgram = HighLevelGpuProgram::create(shaderSource, entryPoint, language, gptype, profile, &includes);
-		gpuProgram.waitUntilLoaded();
+		gpuProgram.synchronize();
 
 		return gpuProgram;
 	}

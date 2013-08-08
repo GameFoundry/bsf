@@ -189,7 +189,7 @@ namespace CamelotFramework
 			else
 			{
 				// Previously being loaded as async but now we want it synced, so we wait
-				existingResource.waitUntilLoaded();
+				existingResource.synchronize();
 
 				return existingResource;
 			}
@@ -240,7 +240,7 @@ namespace CamelotFramework
 	void Resources::unload(HResource resource)
 	{
 		if(!resource.isLoaded()) // If it's still loading wait until that finishes
-			resource.waitUntilLoaded();
+			resource.synchronize();
 
 		resource->destroy();
 
@@ -274,7 +274,7 @@ namespace CamelotFramework
 		if(resource == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Trying to save an uninitialized resource.");
 
-		resource.waitUntilLoaded();
+		resource.synchronize();
 
 		if(metaExists_UUID(resource->getUUID()))
 			CM_EXCEPT(InvalidParametersException, "Specified resource already exists.");
@@ -308,7 +308,7 @@ namespace CamelotFramework
 	void Resources::save(HResource resource)
 	{
 		if(!resource.isLoaded())
-			resource.waitUntilLoaded();
+			resource.synchronize();
 
 		if(!metaExists_UUID(resource->getUUID()))
 			CM_EXCEPT(InvalidParametersException, "Cannot find resource meta-data. Please call Resources::create before trying to save the resource.");

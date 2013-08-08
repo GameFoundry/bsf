@@ -269,7 +269,7 @@ namespace CamelotFramework
 				}
 
 				HTexture newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
-				newTex.waitUntilLoaded();
+				newTex.synchronize();
 
 				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
 				gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);

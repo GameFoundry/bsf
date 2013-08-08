@@ -20,7 +20,6 @@ DockContainer biggest issues:
 FIRST CREATE DOCK CONTAINER WITHOUT DRAG AND DROP SUPPORT
 
 RenderTexture issues:
- Fix up GUI render texture so it isn't transparent
  Rename waitUntilInitialized to synchronize()
  Set up a GUIViewport element which sets up a camera so it renders to that part of the window
 

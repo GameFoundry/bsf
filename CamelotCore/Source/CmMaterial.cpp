@@ -68,42 +68,42 @@ namespace CamelotFramework
 				HGpuProgram vertProgram = curPass->getVertexProgram();
 				if(vertProgram)
 				{
-					vertProgram.waitUntilLoaded();
+					vertProgram.synchronize();
 					allParamDescs.push_back(&vertProgram->getParamDesc());
 				}
 
 				HGpuProgram fragProgram = curPass->getFragmentProgram();
 				if(fragProgram)
 				{
-					fragProgram.waitUntilLoaded();
+					fragProgram.synchronize();
 					allParamDescs.push_back(&fragProgram->getParamDesc());
 				}
 
 				HGpuProgram geomProgram = curPass->getGeometryProgram();
 				if(geomProgram)
 				{
-					geomProgram.waitUntilLoaded();
+					geomProgram.synchronize();
 					allParamDescs.push_back(&geomProgram->getParamDesc());
 				}
 
 				HGpuProgram hullProgram = curPass->getHullProgram();
 				if(hullProgram)
 				{
-					hullProgram.waitUntilLoaded();
+					hullProgram.synchronize();
 					allParamDescs.push_back(&hullProgram->getParamDesc());
 				}
 
 				HGpuProgram domainProgram = curPass->getDomainProgram();
 				if(domainProgram)
 				{
-					domainProgram.waitUntilLoaded();
+					domainProgram.synchronize();
 					allParamDescs.push_back(&domainProgram->getParamDesc());
 				}
 
 				HGpuProgram computeProgram = curPass->getComputeProgram();
 				if(computeProgram)
 				{
-					computeProgram.waitUntilLoaded();
+					computeProgram.synchronize();
 					allParamDescs.push_back(&computeProgram->getParamDesc());
 				}
 			}

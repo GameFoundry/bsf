@@ -128,7 +128,7 @@ namespace CamelotFramework
 		HTexture newTexture = Texture::create(TEX_TYPE_2D, 
 			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat());
 
-		newTexture.waitUntilLoaded();
+		newTexture.synchronize();
 
 		for(UINT32 mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
 		{

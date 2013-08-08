@@ -31,7 +31,7 @@ namespace CamelotFramework
 		 * 			
 		 * @note	Careful not to call this on the thread that does the loading.
 		 */
-		void waitUntilLoaded() const;
+		void synchronize() const;
 
 		/**
 		 * @brief	Returns the UUID of the resource the handle is referring to.

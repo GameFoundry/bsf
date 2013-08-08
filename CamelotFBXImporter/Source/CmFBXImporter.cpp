@@ -50,7 +50,7 @@ namespace CamelotFramework
 
 		HMesh mesh = Mesh::create();
 
-		mesh.waitUntilLoaded();
+		mesh.synchronize();
 		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
 		gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 

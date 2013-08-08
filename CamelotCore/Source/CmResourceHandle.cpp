@@ -19,7 +19,7 @@ namespace CamelotFramework
 		return (mData->mIsCreated && mData->mPtr != nullptr); 
 	}
 
-	void ResourceHandleBase::waitUntilLoaded() const
+	void ResourceHandleBase::synchronize() const
 	{
 		if(!mData->mIsCreated)
 		{
@@ -30,7 +30,7 @@ namespace CamelotFramework
 			}
 		}
 
-		mData->mPtr->waitUntilInitialized();
+		mData->mPtr->synchonize();
 	}
 
 	void ResourceHandleBase::resolve(std::shared_ptr<Resource> ptr) 

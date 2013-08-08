@@ -246,8 +246,8 @@ int CALLBACK WinMain(
 	testTexRef = static_resource_cast<Texture>(gResources().loadAsync("C:\\ExportTest.tex"));
 	dbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync("C:\\ExportMesh.mesh"));
 	
-	dbgMeshRef.waitUntilLoaded();
-	testTexRef.waitUntilLoaded();
+	dbgMeshRef.synchronize();
+	testTexRef.synchronize();
 
 	testMaterial->setTexture("tex", testTexRef);
 	gResources().create(testMaterial, "C:\\ExportMaterial.mat", true);

@@ -98,8 +98,8 @@ namespace BansheeEngine
 		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
 		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
-		vsProgram.waitUntilLoaded();
-		psProgram.waitUntilLoaded();
+		vsProgram.synchronize();
+		psProgram.synchronize();
 
 		mSpriteTextShader = Shader::create("TextSpriteShader");
 
@@ -169,8 +169,8 @@ namespace BansheeEngine
 		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
 		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
-		vsProgram.waitUntilLoaded();
-		psProgram.waitUntilLoaded();
+		vsProgram.synchronize();
+		psProgram.synchronize();
 
 		mSpriteImageShader = Shader::create("ImageSpriteShader");
 
