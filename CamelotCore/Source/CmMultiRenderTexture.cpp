@@ -40,7 +40,6 @@ namespace CamelotFramework
 
 				if(!colorSurfacePropertiesSet)
 				{
-					mPriority = CM_REND_TO_TEX_RT_GROUP;
 					mWidth = texture->getWidth();
 					mHeight = texture->getWidth();
 					mColorDepth = CamelotFramework::PixelUtil::getNumElemBits(texture->getFormat());
@@ -147,7 +146,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void MultiRenderTexture::copyContentsToMemory( const PixelData &dst, FrameBuffer buffer /*= FB_AUTO */ )
+	void MultiRenderTexture::copyToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}

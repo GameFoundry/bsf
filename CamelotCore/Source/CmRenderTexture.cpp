@@ -45,6 +45,13 @@ namespace CamelotFramework
 
 	}
 
+	RenderTexturePtr RenderTexture::create(TextureType textureType, UINT32 width, UINT32 height, 
+		PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+		bool createDepth, PixelFormat depthStencilFormat)
+	{
+		return TextureManager::instance().createRenderTexture(textureType, width, height, format, hwGamma, fsaa, fsaaHint, createDepth, depthStencilFormat);
+	}
+
 	void RenderTexture::destroy_internal()
 	{
 		if(mColorSurface != nullptr)
@@ -68,7 +75,6 @@ namespace CamelotFramework
 			mColorSurface = Texture::requestView(texture, desc.colorSurface.mipLevel, 1, 
 				desc.colorSurface.face, desc.colorSurface.numFaces, GVU_RENDERTARGET);
 
-			mPriority = CM_REND_TO_TEX_RT_GROUP;
 			mWidth = texture->getWidth();
 			mHeight = texture->getWidth();
 			mColorDepth = CamelotFramework::PixelUtil::getNumElemBits(texture->getFormat());
@@ -132,7 +138,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void RenderTexture::copyContentsToMemory( const PixelData &dst, FrameBuffer buffer /*= FB_AUTO */ )
+	void RenderTexture::copyToMemory( const PixelData &dst, FrameBuffer buffer /*= FB_AUTO */ )
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}

@@ -39,6 +39,12 @@ DockContainer biggest issues:
 
 FIRST CREATE DOCK CONTAINER WITHOUT DRAG AND DROP SUPPORT
 
+Add RenderTexture::create
+ - Attempt creating one and attaching it to the primary camera
+ - Test DX9/DX11/OpenGL
+ - Figure out how to use it for display, and then create a GUIRenderTexture element.
+    - Rendering from it should technically just involve setting it as a sprite texture and using ImageSprite
+
 Make sure to test everything thoroughly - right now I have tested very little
 Drag and drop manager currently ignores the provided icon, but it should use it as a cursor
 

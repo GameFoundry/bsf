@@ -598,7 +598,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Win32Window::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
+	void Win32Window::copyToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

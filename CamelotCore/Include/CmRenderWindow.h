@@ -23,8 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE
 -------------------------------------------------------------------------*/
-#ifndef __RenderWindow_H__
-#define __RenderWindow_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 
@@ -81,41 +80,14 @@ namespace CamelotFramework
 		NameValuePairList platformSpecific;
 	};
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/** Manages the target rendering window.
-        @remarks
-            This class handles a window into which the contents
-            of a scene are rendered. There is a many-to-1 relationship
-            between instances of this class an instance of RenderSystem
-            which controls the rendering of the scene. There may be
-            more than one window in the case of level editor tools etc.
-            This class is abstract since there may be
-            different implementations for different windowing systems.
-        @remarks
-            Instances are created and communicated with by the render system
-            although client programs can get a reference to it from
-            the render system if required for resizing or moving.
-            Note that you can have multiple viewpoints
-            in the window for effects like rear-view mirrors and
-            picture-in-picture views (see Viewport and Camera).
-        @author
-            Steven Streeting
-        @version
-            1.0
-    */
     class CM_EXPORT RenderWindow : public RenderTarget
     {
     public:
 		virtual ~RenderWindow();
 
 		/** 
-			@brief Core method. Alter fullscreen mode options.
-		*/
+		 *	@brief Core method. Alter fullscreen mode options.
+		 */
 		virtual void setFullscreen(bool fullScreen, UINT32 width, UINT32 height)
                 { (void)fullScreen; (void)width; (void)height; }
 
@@ -167,13 +139,6 @@ namespace CamelotFramework
 		 */
 		bool hasFocus() const { return mHasFocus; }
 
-        /**   
-        * @brief	Overloaded version of getMetrics from RenderTarget, including extra details
-		*			specific to windowing systems.
-        */
-        virtual void getMetrics(UINT32& width, UINT32& height, UINT32& colourDepth, 
-			INT32& left, INT32& top);
-
 		/**
          * @brief	Internal method. Core method. Called when window is moved or resized.
          */
@@ -205,8 +170,6 @@ namespace CamelotFramework
     protected:
 		friend class RenderWindowManager;
 
-        /** Default constructor.
-        */
         RenderWindow(const RENDER_WINDOW_DESC& desc);
         
 	protected:
@@ -217,8 +180,4 @@ namespace CamelotFramework
 
 		RENDER_WINDOW_DESC mDesc;
     };
-	/** @} */
-	/** @} */
-
-} // Namespace
-#endif
+}

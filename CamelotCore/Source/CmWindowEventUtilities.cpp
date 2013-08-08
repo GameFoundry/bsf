@@ -324,14 +324,7 @@ void GLXProc( RenderWindow *win, const XEvent &event )
 	case ConfigureNotify:
 	{    
         // This could be slightly more efficient if windowMovedOrResized took arguments:
-		unsigned int oldWidth, oldHeight, oldDepth;
-		int oldLeft, oldTop;
-		win->getMetrics(oldWidth, oldHeight, oldDepth, oldLeft, oldTop);
 		win->_windowMovedOrResized();
-
-		unsigned int newWidth, newHeight, newDepth;
-		int newLeft, newTop;
-		win->getMetrics(newWidth, newHeight, newDepth, newLeft, newTop);
 
 		break;
 	}

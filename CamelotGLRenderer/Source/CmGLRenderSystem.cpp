@@ -617,7 +617,7 @@ namespace CamelotFramework
 		if (GLEW_EXT_framebuffer_sRGB)
 		{
 			// Enable / disable sRGB states
-			if (target->isHardwareGammaEnabled())
+			if (target->isHwGammaEnabled())
 			{
 				glEnable(GL_FRAMEBUFFER_SRGB_EXT);
 

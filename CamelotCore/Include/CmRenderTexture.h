@@ -25,8 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __RenderTexture_H__
-#define __RenderTexture_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 #include "CmTexture.h"
@@ -40,50 +39,40 @@ namespace CamelotFramework
 		RENDER_SURFACE_DESC depthStencilSurface;
 	};
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/** This class represents a RenderTarget that renders to a Texture. There is no 1 on 1
-        relation between Textures and RenderTextures, as there can be multiple 
-        RenderTargets rendering to different mipmaps, faces (for cubemaps) or slices (for 3D textures)
-        of the same Texture.
-    */
     class CM_EXPORT RenderTexture : public RenderTarget
     {
 	public:
 		virtual ~RenderTexture();
 
-		bool requiresTextureFlipping() const { return false; }
+		static RenderTexturePtr create(TextureType textureType, UINT32 width, UINT32 height, 
+			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
+
+		void initialize(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @copydoc RenderTarget::isWindow.
 		 */
 		bool isWindow() const { return false; }
 
-		void initialize(const RENDER_TEXTURE_DESC& desc);
+		/**
+		 * @copydoc RenderTarget::requiresTextureFlipping.
+		 */
+		bool requiresTextureFlipping() const { return false; }
 
 	protected:
+		TextureViewPtr mColorSurface;
+		TextureViewPtr mDepthStencilSurface;
+
 		RenderTexture();
 
 		/**
 		 * @copydoc RenderTarget::destroy_internal()
 		 */
 		virtual void destroy_internal();
-
-	protected:
-		TextureViewPtr mColorSurface;
-		TextureViewPtr mDepthStencilSurface;
-
 	private:
 		void throwIfBuffersDontMatch() const;
 
-		virtual void copyContentsToMemory( const PixelData &dst, FrameBuffer buffer = FB_AUTO );
+		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO);
 	};
-	/** @} */
-	/** @} */
 }
-
-#endif

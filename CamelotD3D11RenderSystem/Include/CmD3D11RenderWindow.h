@@ -38,7 +38,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::copyContentsToMemory
 		 */
-		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
+		void copyToMemory(const PixelData &dst, FrameBuffer buffer);
 
 		/**
 		 * @copydoc RenderWindow::swapBuffers
@@ -81,9 +81,6 @@ namespace CamelotFramework
 		void startMove();
 		void endMove();
 
-		/**
-		 * @copydoc RenderWindow::reposition
-		 */
 		void _windowMovedOrResized();
 
 		DXGI_SWAP_CHAIN_DESC* _getPresentationParameters(void) { return &mSwapChainDesc; }

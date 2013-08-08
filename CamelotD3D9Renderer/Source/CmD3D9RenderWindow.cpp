@@ -479,7 +479,7 @@ namespace CamelotFramework
 		return Int2(pos.x, pos.y);
 	}
 
-	void D3D9RenderWindow::copyContentsToMemory(const PixelData &dst, FrameBuffer buffer)
+	void D3D9RenderWindow::copyToMemory(const PixelData &dst, FrameBuffer buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

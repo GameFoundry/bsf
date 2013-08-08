@@ -33,10 +33,7 @@ THE SOFTWARE.
 namespace CamelotFramework 
 {
     RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
-        : RenderTarget()
-		, mIsFullScreen(false)
-		, mDesc(desc)
-		, mHasFocus(false)
+        : RenderTarget(), mIsFullScreen(false), mDesc(desc), mHasFocus(false), mLeft(0), mTop(0)
     {
 
     }
@@ -45,16 +42,6 @@ namespace CamelotFramework
 	{
 		
 	}
-
-    void RenderWindow::getMetrics(UINT32& width, UINT32& height, UINT32& colourDepth,
-		INT32& left, INT32& top)
-    {
-        width = mWidth;
-        height = mHeight;
-        colourDepth = mColorDepth;
-        left = mLeft;
-        top = mTop;
-    }
 
 	void RenderWindow::setVisible(bool visible)
 	{

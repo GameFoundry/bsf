@@ -40,6 +40,7 @@ TextBox needed elements:
   - Add special text input commands, which will get repeatedly sent as long as their corresponding key is set in GUIManager
  - Get DebugCamera to ignore input if GUI has already processed it
  - Cut/Copy/Paste
+ - Clicking on the InputBox doesn't display the cursor. I need to click another time and then it shows up.
 
  - LATER
   - TAB between input elements

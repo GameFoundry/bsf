@@ -23,6 +23,9 @@ namespace CamelotFramework
 		 */
 		bool isWindow() const { return true; }
 
+		/**
+		 * @copydoc RenderTarget::requiresTextureFlipping.
+		 */
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
@@ -39,6 +42,6 @@ namespace CamelotFramework
 	private:
 		void throwIfBuffersDontMatch() const;
 
-		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO);
+		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO);
 	};
 }

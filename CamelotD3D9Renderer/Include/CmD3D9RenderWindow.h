@@ -81,7 +81,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::copyContentsToMemory
 		 */
-		void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer);
+		void copyToMemory(const PixelData &dst, FrameBuffer buffer);
 
 		/**
 		 * @copydoc RenderWindow::requiresTextureFlipping

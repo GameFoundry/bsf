@@ -34,11 +34,8 @@ THE SOFTWARE.
 namespace CamelotFramework {
 
     RenderTarget::RenderTarget()
-		:mPriority(CM_DEFAULT_RT_GROUP),
-		mActive(true),
-		mHwGamma(false), 
-		mVSync(false),
-		mFSAA(0)
+		:mActive(true), mHwGamma(false), mVSync(false), mFSAA(0),
+		mWidth(0), mHeight(0), mColorDepth(0)
     {
     }
 
@@ -46,43 +43,8 @@ namespace CamelotFramework {
     {
     }
 
-    const String& RenderTarget::getName(void) const
-    {
-        return mName;
-    }
-
-    void RenderTarget::getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth)
-    {
-        width = mWidth;
-        height = mHeight;
-        colourDepth = mColorDepth;
-    }
-
-    unsigned int RenderTarget::getWidth(void) const
-    {
-        return mWidth;
-    }
-    unsigned int RenderTarget::getHeight(void) const
-    {
-        return mHeight;
-    }
-    unsigned int RenderTarget::getColourDepth(void) const
-    {
-        return mColorDepth;
-    }
-
 	void RenderTarget::getCustomAttribute(const String& name, void* pData) const
     {
         CM_EXCEPT(InvalidParametersException, "Attribute not found.");
-    }
-
-    bool RenderTarget::isActive() const
-    {
-        return mActive;
-    }
-
-    void RenderTarget::setActive( bool state )
-    {
-        mActive = state;
     }
 }        

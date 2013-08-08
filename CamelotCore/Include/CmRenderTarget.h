@@ -25,8 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __RenderTarget_H__
-#define __RenderTarget_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 
@@ -35,13 +34,6 @@ THE SOFTWARE.
 #include "CmViewport.h"
 #include "CmCoreObject.h"
 #include "boost/signal.hpp"
-
-/* Define the number of priority groups for the render system's render targets. */
-#ifndef CM_NUM_RENDERTARGET_GROUPS
-	#define CM_NUM_RENDERTARGET_GROUPS 10
-	#define CM_DEFAULT_RT_GROUP 4
-	#define CM_REND_TO_TEX_RT_GROUP 2
-#endif
 
 namespace CamelotFramework 
 {
@@ -53,23 +45,6 @@ namespace CamelotFramework
 		UINT32 mipLevel;
 	};
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/** A 'canvas' which can receive the results of a rendering
-        operation.
-        @remarks
-            This abstract class defines a common root to all targets of rendering operations. A
-            render target could be a window on a screen, or another
-            offscreen surface like a texture or bump map etc.
-        @author
-            Steven Streeting
-        @version
-            1.0
-     */
     class CM_EXPORT RenderTarget : public CoreObject
     {
     public:
@@ -82,15 +57,28 @@ namespace CamelotFramework
 
         virtual ~RenderTarget();
 
-        /// Retrieve target's name.
-        virtual const String& getName(void) const;
+        const String& getName() const { return mName; }
+        UINT32 getWidth() const { return mWidth; }
+        UINT32 getHeight() const { return mHeight; }
+		UINT32 getColorDepth() const { return mColorDepth; }
+		UINT32 getFSAA() const { return mFSAA; }
+		const String& getFSAAHint() const { return mFSAAHint; }
 
-        /// Retrieve information about the render target.
-        virtual void getMetrics(unsigned int& width, unsigned int& height, unsigned int& colourDepth);
+		/**
+		 * @brief	Returns true if the render target will wait for vertical sync before swapping buffers.
+		 */
+		bool getVSync() const { return mVSync; }
 
-        virtual unsigned int getWidth(void) const;
-        virtual unsigned int getHeight(void) const;
-        virtual unsigned int getColourDepth(void) const;
+		virtual void getCustomAttribute(const String& name, void* pData) const;
+
+		/**
+		 * @brief	Returns true if the render target is a render window.
+		 */
+		virtual bool isWindow() const = 0;
+		bool isActive() const { return mActive; }
+		bool isHwGammaEnabled() const { return mHwGamma; }
+
+		virtual void setActive(bool state) { mActive = state; }
 
         /**
          * @brief	Swaps the frame buffers to display the next frame.
@@ -98,108 +86,23 @@ namespace CamelotFramework
 		 * @note	Core thread only.
          */
 		virtual void swapBuffers() {};
-
-		/**
-		 * @brief	Returns true if the render target is a render window.
-		 */
-		virtual bool isWindow() const = 0;
-
-        /** Gets a custom (maybe platform-specific) attribute.
-            @remarks
-                This is a nasty way of satisfying any API's need to see platform-specific details.
-                It horrid, but D3D needs this kind of info. At least it's abstracted.
-            @param
-                name The name of the attribute.
-            @param
-                pData Pointer to memory of the right kind of structure to receive the info.
-        */
-        virtual void getCustomAttribute(const String& name, void* pData) const;
-
-		/** Sets the priority of this render target in relation to the others. 
-        @remarks
-            This can be used in order to schedule render target updates. Lower
-            priorities will be rendered first. Note that the priority must be set
-            at the time the render target is attached to the render system, changes
-            afterwards will not affect the ordering.
-        */
-        virtual void setPriority( UINT8 priority ) { mPriority = priority; }
-        /** Gets the priority of a render target. */
-		virtual UINT8 getPriority() const { return mPriority; }
-
-        /** Used to retrieve or set the active state of the render target.
-        */
-        virtual bool isActive() const;
-
-        /** Used to set the active state of the render target.
-        */
-        virtual void setActive( bool state );
-
-		/** Copies the current contents of the render target to a pixelbox. 
-		@remarks See suggestPixelFormat for a tip as to the best pixel format to
-			extract into, although you can use whatever format you like and the 
-			results will be converted.
-		*/
-		virtual void copyContentsToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
-
-		/** Suggests a pixel format to use for extracting the data in this target, 
-			when calling copyContentsToMemory.
-		*/
-		virtual PixelFormat suggestPixelFormat() const { return PF_BYTE_RGBA; }
-
+		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
 		virtual bool requiresTextureFlipping() const = 0;
-
-		/** Indicates whether on rendering, linear colour space is converted to 
-			sRGB gamma colour space. This is the exact opposite conversion of
-			what is indicated by Texture::isHardwareGammaEnabled, and can only
-			be enabled on creation of the render target. For render windows, it's
-			enabled through the 'gamma' creation misc parameter. For textures, 
-			it is enabled through the hwGamma parameter to the create call.
-		*/
-		virtual bool isHardwareGammaEnabled() const { return mHwGamma; }
-
-		/** Indicates whether multisampling is performed on rendering and at what level.
-		*/
-		virtual UINT32 getFSAA() const { return mFSAA; }
-
-		/** Gets the FSAA hint (@see Root::createRenderWindow)
-		*/
-		virtual const String& getFSAAHint() const { return mFSAAHint; }
-
-		/**
-		 * @brief	Returns true if the render target will wait for vertical sync before swapping buffers.
-		 */
-		bool getVSync() const { return mVSync; }
-
-		/**
-		 * @brief	Set whether the render target will wait for vertical sync before swapping buffers.
-		 */
-		void setVSync(bool vsync)  { mVSync = vsync; }
 
 		mutable boost::signal<void(RenderTarget*)> onMovedOrResized;
     protected:
 		RenderTarget();
 
-        /// The name of this target.
         String mName;
-		/// The priority of the render target.
-		UINT8 mPriority;
 
-        unsigned int mWidth;
-        unsigned int mHeight;
-        unsigned int mColorDepth;
+        UINT32 mWidth;
+        UINT32 mHeight;
+        UINT32 mColorDepth;
 
         bool mActive;
-		// Hardware sRGB gamma conversion done on write?
 		bool mHwGamma;
-		// Wait for vsync?
 		bool mVSync;
-		// FSAA performed?
 		UINT32 mFSAA;
 		String mFSAAHint;
     };
-	/** @} */
-	/** @} */
-
-} // Namespace
-
-#endif
+}

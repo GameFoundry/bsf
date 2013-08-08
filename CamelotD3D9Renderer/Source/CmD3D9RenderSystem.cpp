@@ -1164,7 +1164,7 @@ namespace CamelotFramework
 			CM_EXCEPT(RenderingAPIException, "Failed to set viewport.");
 
 		// Set sRGB write mode
-		__SetRenderState(D3DRS_SRGBWRITEENABLE, target->isHardwareGammaEnabled());
+		__SetRenderState(D3DRS_SRGBWRITEENABLE, target->isHwGammaEnabled());
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::beginFrame()
