@@ -500,6 +500,9 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		if(!tex->isBindableAsShaderResource())
+			CM_EXCEPT(InvalidParametersException, "Texture you have specified cannot be bound to a shader.");
+
 		if(gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_VERTEX_PROGRAM)
 		{
 			LOGWRN("D3D9 cannot assign textures to this gpu program type: " + toString(gptype));

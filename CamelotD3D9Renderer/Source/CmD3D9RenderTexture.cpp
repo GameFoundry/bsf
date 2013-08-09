@@ -7,7 +7,7 @@
 namespace CamelotFramework
 {
 	D3D9RenderTexture::D3D9RenderTexture()
-		:mDX9ColorSurface(nullptr), mDX9DepthStencilSurface(nullptr)
+		:mDX9ColorSurface(nullptr), mDX9DepthStencilSurface(nullptr), mIsBindableToShader(false)
 	{
 
 	}

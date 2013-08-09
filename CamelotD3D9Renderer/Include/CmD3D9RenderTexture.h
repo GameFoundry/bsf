@@ -26,5 +26,6 @@ namespace CamelotFramework
 
 		IDirect3DSurface9* mDX9ColorSurface;
 		IDirect3DSurface9* mDX9DepthStencilSurface;
+		bool mIsBindableToShader;
 	};
 }

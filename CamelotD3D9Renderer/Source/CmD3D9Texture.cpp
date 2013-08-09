@@ -39,7 +39,7 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
-	/****************************************************************************************/
+	
     D3D9Texture::D3D9Texture()
         :Texture(),              
         mD3DPool(D3DPOOL_MANAGED),
@@ -47,15 +47,16 @@ namespace CamelotFramework
 		mHwGammaReadSupported(false),
 		mHwGammaWriteSupported(false),	
 		mFSAAType(D3DMULTISAMPLE_NONE),
-		mFSAAQuality(0)
+		mFSAAQuality(0),
+		mIsBindableAsShaderResource(true)
 	{
        
 	}
-	/****************************************************************************************/
+	
 	D3D9Texture::~D3D9Texture()
 	{	
 	}
-	/****************************************************************************************/
+
 	PixelData D3D9Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		if(mLockedBuffer != nullptr)
@@ -75,7 +76,7 @@ namespace CamelotFramework
 
 		return lockedArea;
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::unlockImpl()
 	{
 		if(mLockedBuffer == nullptr)
@@ -84,7 +85,7 @@ namespace CamelotFramework
 		mLockedBuffer->unlock();
 		mLockedBuffer = nullptr;
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::copyImpl(TexturePtr& target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -193,7 +194,7 @@ namespace CamelotFramework
 			++it;
 		}		
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::initialize_internal()
 	{ 
 		THROW_IF_NOT_CORE_THREAD;
@@ -207,7 +208,7 @@ namespace CamelotFramework
 			createInternalResources(d3d9Device);
 		}
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::destroy_internal()
 	{ 
 		THROW_IF_NOT_CORE_THREAD;
@@ -239,7 +240,7 @@ namespace CamelotFramework
 
 		Texture::destroy_internal();
 	}
-	/****************************************************************************************/
+	
 	D3D9Texture::TextureResources* D3D9Texture::getTextureResources(IDirect3DDevice9* d3d9Device)
 	{		
 		DeviceToTextureResourcesIterator it = mMapDeviceToTextureResources.find(d3d9Device);
@@ -250,7 +251,7 @@ namespace CamelotFramework
 		return it->second;
 	}
 
-	/****************************************************************************************/
+	
 	D3D9Texture::TextureResources* D3D9Texture::allocateTextureResources(IDirect3DDevice9* d3d9Device)
 	{
 		assert(mMapDeviceToTextureResources.find(d3d9Device) == mMapDeviceToTextureResources.end());
@@ -269,7 +270,7 @@ namespace CamelotFramework
 		return textureResources;
 	}
 
-	/****************************************************************************************/
+	
 	void D3D9Texture::createTextureResources(IDirect3DDevice9* d3d9Device)
 	{				
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -281,7 +282,7 @@ namespace CamelotFramework
 			postLoadImpl();	*/			
 	}
 
-	/****************************************************************************************/
+	
 	void D3D9Texture::freeTextureResources(IDirect3DDevice9* d3d9Device, D3D9Texture::TextureResources* textureResources)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -302,14 +303,14 @@ namespace CamelotFramework
 		SAFE_RELEASE(textureResources->pFSAASurface);
 		SAFE_RELEASE(textureResources->pDepthStencilSurface);
 	}
-	/****************************************************************************************/
+	
 	UINT32 D3D9Texture::calculateSize(void) const
 	{
 		UINT32 instanceSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
 		return instanceSize * (UINT32)mMapDeviceToTextureResources.size();
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::determinePool()
 	{
 		if (useDefaultPool())
@@ -322,7 +323,7 @@ namespace CamelotFramework
 		}
 
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::createInternalResources(IDirect3DDevice9* d3d9Device)
 	{		
 		TextureResources* textureResources;			
@@ -351,7 +352,7 @@ namespace CamelotFramework
 		}
 	}
 
-	/****************************************************************************************/
+	
 	void D3D9Texture::_createNormTex(IDirect3DDevice9* d3d9Device)
 	{
 		// we must have those defined here
@@ -366,14 +367,14 @@ namespace CamelotFramework
 		mFormat = D3D9Mappings::_getPF(d3dPF);
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
+		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? D3DX_DEFAULT : mNumMipmaps + 1;
+
 		DWORD usage = 0;
 		if((mUsage & TU_RENDERTARGET) != 0)
 			usage = D3DUSAGE_RENDERTARGET;
 		else if((mUsage & TU_DEPTHSTENCIL) != 0)
 			usage = D3DUSAGE_DEPTHSTENCIL;
 
-		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? 
-				D3DX_DEFAULT : mNumMipmaps + 1;
 		// Check dynamic textures
 		if (mUsage & TU_DYNAMIC)
 		{
@@ -396,7 +397,7 @@ namespace CamelotFramework
 		}
 
 		// Check FSAA level
-		if (mUsage & TU_RENDERTARGET)
+		if ((mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0)
 		{
 			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
 			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
@@ -412,7 +413,7 @@ namespace CamelotFramework
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 
 		// check if mip maps are supported on hardware
-		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP))
+		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) || (mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0)
 		{
 			// no mip map support for this kind of textures :(
 			mNumMipmaps = 0;
@@ -431,9 +432,9 @@ namespace CamelotFramework
 		else
 			textureResources = allocateTextureResources(d3d9Device);
 
-		if ((mUsage & TU_RENDERTARGET) != 0)
+		if ((mUsage & TU_RENDERTARGET) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
 		{
-			// create AA surface
+			// Create AA surface
 			HRESULT hr = d3d9Device->CreateRenderTarget(mWidth, mHeight, d3dPF, 
 				mFSAAType, 
 				mFSAAQuality,
@@ -455,10 +456,12 @@ namespace CamelotFramework
 
 			_setFinalAttributes(d3d9Device, textureResources, 
 				desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+
+			mIsBindableAsShaderResource = true; // Cannot bind AA surfaces
 		}
-		else if ((mUsage & TU_DEPTHSTENCIL) != 0)
+		else if ((mUsage & TU_DEPTHSTENCIL) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
 		{
-			// create depth stencil surface
+			// Create AA depth stencil surface
 			HRESULT hr = d3d9Device->CreateDepthStencilSurface(mWidth, mHeight, d3dPF, 
 				mFSAAType, 
 				mFSAAQuality,
@@ -466,7 +469,7 @@ namespace CamelotFramework
 				&textureResources->pDepthStencilSurface, NULL);
 
 			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Unable to create depth stencil render target: " + String(DXGetErrorDescription(hr)));
+				CM_EXCEPT(RenderingAPIException, "Unable to create AA depth stencil render target: " + String(DXGetErrorDescription(hr)));
 
 			D3DSURFACE_DESC desc;
 			hr = textureResources->pDepthStencilSurface->GetDesc(&desc);
@@ -477,6 +480,8 @@ namespace CamelotFramework
 			}
 
 			_setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
+
+			mIsBindableAsShaderResource = true; // Cannot bind AA depth buffer
 		}
 		else
 		{
@@ -520,7 +525,7 @@ namespace CamelotFramework
 				desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
 		}
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::_createCubeTex(IDirect3DDevice9* d3d9Device)
 	{
 		// we must have those defined here
@@ -627,7 +632,7 @@ namespace CamelotFramework
 		_setFinalAttributes(d3d9Device, textureResources, 
 			desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));		
 	}
-	/****************************************************************************************/
+	
 	void D3D9Texture::_createVolumeTex(IDirect3DDevice9* d3d9Device)
 	{
 		// we must have those defined here
@@ -637,7 +642,7 @@ namespace CamelotFramework
 			CM_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as render target !!");
 
 		if (mUsage & TU_DEPTHSTENCIL)
-			CM_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as a depth stencil target !!");
+			CM_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as a depth stencil target !!");
 
 		// determine which D3D9 pixel format we'll use
 		HRESULT hr;
@@ -734,7 +739,7 @@ namespace CamelotFramework
 			desc.Width, desc.Height, desc.Depth, D3D9Mappings::_getPF(desc.Format));
 	}
 
-	/****************************************************************************************/
+	
 	void D3D9Texture::_setFinalAttributes(IDirect3DDevice9* d3d9Device, 
 		TextureResources* textureResources,
 		unsigned long width, unsigned long height, 
@@ -751,7 +756,7 @@ namespace CamelotFramework
 		// Create list of subsurfaces for getBuffer()
 		_createSurfaceList(d3d9Device, textureResources);
 	}
-	/****************************************************************************************/
+	
 	D3DTEXTUREFILTERTYPE D3D9Texture::_getBestFilterMethod(IDirect3DDevice9* d3d9Device)
 	{
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
@@ -785,7 +790,7 @@ namespace CamelotFramework
 		
 		return D3DTEXF_POINT;
 	}
-	/****************************************************************************************/
+	
 	bool D3D9Texture::_canUseDynamicTextures(IDirect3DDevice9* d3d9Device, 
 		DWORD srcUsage, 
 		D3DRESOURCETYPE srcType, 
@@ -823,7 +828,7 @@ namespace CamelotFramework
 		else
 			return false;
 	}
-	/****************************************************************************************/
+	
 	bool D3D9Texture::_canUseHardwareGammaCorrection(IDirect3DDevice9* d3d9Device,
 		DWORD srcUsage, 
 		D3DRESOURCETYPE srcType, D3DFORMAT srcFormat, bool forwriting)
@@ -866,7 +871,7 @@ namespace CamelotFramework
 			return false;
 
 	}
-	/****************************************************************************************/
+	
 	bool D3D9Texture::_canAutoGenMipmaps(IDirect3DDevice9* d3d9Device, 
 		DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat)
 	{
@@ -913,7 +918,7 @@ namespace CamelotFramework
 		else
 			return false;
 	}
-	/****************************************************************************************/
+	
 	D3DFORMAT D3D9Texture::_chooseD3DFormat(IDirect3DDevice9* d3d9Device)
 	{		
 		// Choose frame buffer pixel format in case PF_UNKNOWN was requested
@@ -930,7 +935,7 @@ namespace CamelotFramework
 		// Choose closest supported D3D format as a D3D format
 		return D3D9Mappings::_getPF(D3D9Mappings::_getClosestSupportedPF(mFormat));
 	}
-	/****************************************************************************************/
+	
 	// Macro to hide ugly cast
 	#define GETLEVEL(face,mip) \
 	 	static_cast<D3D9PixelBuffer*>(mSurfaceList[face*(mNumMipmaps+1)+mip].get())
@@ -976,7 +981,7 @@ namespace CamelotFramework
 			}
 		}
 
-		if((mUsage & TU_RENDERTARGET) != 0)
+		if((mUsage & TU_RENDERTARGET) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
 		{
 			assert(textureResources->pFSAASurface);
 			assert(getTextureType() == TEX_TYPE_2D);
@@ -986,7 +991,7 @@ namespace CamelotFramework
 			currPixelBuffer->bind(d3d9Device, textureResources->pFSAASurface,
 				mHwGammaWriteSupported, mFSAA, "PortNoName", textureResources->pBaseTex);
 		}
-		else if((mUsage & TU_DEPTHSTENCIL) != 0)
+		else if((mUsage & TU_DEPTHSTENCIL) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
 		{
 			assert(textureResources->pDepthStencilSurface);
 			assert(getTextureType() == TEX_TYPE_2D);
@@ -1073,7 +1078,7 @@ namespace CamelotFramework
 					
 	}
 	#undef GETLEVEL
-	/****************************************************************************************/
+	
 	PixelBufferPtr D3D9Texture::getBuffer(UINT32 face, UINT32 mipmap) 
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1103,7 +1108,7 @@ namespace CamelotFramework
 		// Use managed unless we're a render target or user has asked for 
 		// a dynamic texture, and device supports D3DUSAGE_DYNAMIC (because default pool
 		// resources without the dynamic flag are not lockable)
-		return (mUsage & TU_RENDERTARGET) || ((mUsage & TU_DYNAMIC) && mDynamicTextures);
+		return (mUsage & TU_RENDERTARGET) || (mUsage & TU_DEPTHSTENCIL) || ((mUsage & TU_DYNAMIC) && mDynamicTextures);
 	}
 	
 	//---------------------------------------------------------------------

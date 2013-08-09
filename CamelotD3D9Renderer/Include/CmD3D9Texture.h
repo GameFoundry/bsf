@@ -38,9 +38,13 @@ THE SOFTWARE.
 namespace CamelotFramework {
 	class CM_D3D9_EXPORT D3D9Texture : public Texture, public D3D9Resource
 	{
-		public:
-		/// destructor
+	public:
 		~D3D9Texture();
+
+		/**
+		 * @copydoc Texture::isBindableAsShaderResource
+		 */
+		bool isBindableAsShaderResource() const { return mIsBindableAsShaderResource; }
 
 		/// retrieves a pointer to the actual texture
 		IDirect3DBaseTexture9 *getTexture_internal();		
@@ -116,14 +120,13 @@ namespace CamelotFramework {
 		/// Vector of pointers to subsurfaces
 		typedef Vector<PixelBufferPtr>::type SurfaceList;
 		SurfaceList	mSurfaceList;
-		/// cube texture individual face names
-		String							mCubeFaceNames[6];	
 		/// The memory pool being used
-		D3DPOOL							mD3DPool;
+		D3DPOOL	mD3DPool;
 		// Dynamic textures?
-		bool                            mDynamicTextures;
-		
-		PixelBufferPtr			mLockedBuffer;
+		bool mDynamicTextures;
+		bool mIsBindableAsShaderResource;
+
+		PixelBufferPtr	mLockedBuffer;
 
 		/// Is hardware gamma supported (read)?
 		bool mHwGammaReadSupported;

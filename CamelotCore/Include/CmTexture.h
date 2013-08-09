@@ -139,6 +139,13 @@ namespace CamelotFramework {
         virtual UINT32 getNumFaces() const;
 
 		/**
+		 * @brief	Returns true if the texture can be bound to a shader.
+		 * 			
+		 * @note	This is only false for some rare special cases. (e.g. AA render texture in DX9)
+		 */
+		virtual bool isBindableAsShaderResource() const { return true; }
+
+		/**
 		 * @copydoc GpuResource::writeSubresource
 		 */
 		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data);
