@@ -50,7 +50,7 @@ namespace BansheeEngine
 	Camera::Camera(const HSceneObject& parent)
         : Component(parent),
 		mProjType(PT_PERSPECTIVE), 
-		mFOVy(Radian(Math::PI/4.0f)), 
+		mHorzFOV(Radian(Math::PI/4.0f)), 
 		mFarDist(100000.0f), 
 		mNearDist(100.0f), 
 		mAspect(1.33333333333333f), 
@@ -72,7 +72,7 @@ namespace BansheeEngine
 		updateFrustum();
 
         // Reasonable defaults to camera params
-        mFOVy = Radian(Math::PI/4.0f);
+        mHorzFOV = Radian(Math::PI/4.0f);
         mNearDist = 100.0f;
         mFarDist = 100000.0f;
         mAspect = 1.33333333333333f;
@@ -96,16 +96,16 @@ namespace BansheeEngine
 		mViewport = cm_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height, ZOrder);
 	}
 	//-----------------------------------------------------------------------
-	void Camera::setFOVy(const Radian& fov)
+	void Camera::setHorzFOV(const Radian& fov)
 	{
-		mFOVy = fov;
+		mHorzFOV = fov;
 		invalidateFrustum();
 	}
 
 	//-----------------------------------------------------------------------
-	const Radian& Camera::getFOVy(void) const
+	const Radian& Camera::getHorzFOV(void) const
 	{
-		return mFOVy;
+		return mHorzFOV;
 	}
 
 
@@ -345,7 +345,7 @@ namespace BansheeEngine
 			// Calculate general projection parameters
 			else if (mProjType == PT_PERSPECTIVE)
 			{
-				Radian thetaY (mFOVy * 0.5f);
+				Radian thetaY (mHorzFOV * 0.5f);
 				float tanThetaY = Math::Tan(thetaY);
 				float tanThetaX = tanThetaY * mAspect;
 

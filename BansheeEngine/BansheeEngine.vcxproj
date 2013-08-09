@@ -251,6 +251,7 @@
     <ClInclude Include="Include\BsGUITexture.h" />
     <ClInclude Include="Include\BsGUIToggle.h" />
     <ClInclude Include="Include\BsGUIToggleGroup.h" />
+    <ClInclude Include="Include\BsGUIViewport.h" />
     <ClInclude Include="Include\BsGUIWindowFrame.h" />
     <ClInclude Include="Include\BsGUIWindowMover.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
@@ -327,6 +328,7 @@
     <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp" />
     <ClCompile Include="Source\BsUpdateCallback.cpp" />
     <ClCompile Include="Source\BsGUILayoutX.cpp" />
+    <ClCompile Include="Source\BsGUIViewport.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

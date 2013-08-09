@@ -110,7 +110,7 @@ namespace BansheeEngine {
         ProjectionType mProjType;
 
         /// y-direction field-of-view (default 45)
-        CM::Radian mFOVy;
+        CM::Radian mHorzFOV;
         /// Far clip distance - default 10000
         float mFarDist;
         /// Near clip distance - default 100
@@ -191,11 +191,11 @@ namespace BansheeEngine {
             @note
                 Setting the FOV overrides the value supplied for frustum::setNearClipPlane.
          */
-        virtual void setFOVy(const CM::Radian& fovy);
+        virtual void setHorzFOV(const CM::Radian& fovy);
 
         /** Retrieves the frustums Y-dimension Field Of View (FOV).
         */
-        virtual const CM::Radian& getFOVy(void) const;
+        virtual const CM::Radian& getHorzFOV(void) const;
 
         /** Sets the position of the near clipping plane.
             @remarks

@@ -20,13 +20,7 @@ DockContainer biggest issues:
 FIRST CREATE DOCK CONTAINER WITHOUT DRAG AND DROP SUPPORT
 
 RenderTexture issues:
- Rename waitUntilInitialized to synchronize()
  Set up a GUIViewport element which sets up a camera so it renders to that part of the window
-
- DirectX 9 currently DOES NOT support bindable render textures:
-  - Bindable render textures should be created using CreateTexture and D3DUSAGE_RENDERTARGET/D3DUSAGE_DEPTHSTENCIL
-   - UNLESS render target is using antialiasing, in which case it cannot be bound and should be created as it
-    - However if it cannot be bound I should warn the user (in RenderTexture::getBindable* methods)
 
 Make sure to test everything thoroughly - right now I have tested very little
 Drag and drop manager currently ignores the provided icon, but it should use it as a cursor

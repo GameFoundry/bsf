@@ -195,6 +195,9 @@
     <ClInclude Include="Include\BsDragAndDropManager.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIViewport.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -333,6 +336,9 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsDragAndDropManager.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIViewport.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
