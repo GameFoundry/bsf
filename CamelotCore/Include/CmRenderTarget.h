@@ -80,6 +80,9 @@ namespace CamelotFramework
 
 		virtual void setActive(bool state) { mActive = state; }
 
+		INT32 getPriority() const { return mPriority; }
+		void setPriority(INT32 priority) { mPriority = priority; }
+
         /**
          * @brief	Swaps the frame buffers to display the next frame.
          * 			
@@ -98,6 +101,8 @@ namespace CamelotFramework
         UINT32 mWidth;
         UINT32 mHeight;
         UINT32 mColorDepth;
+		
+		INT32 mPriority;
 
         bool mActive;
 		bool mHwGamma;

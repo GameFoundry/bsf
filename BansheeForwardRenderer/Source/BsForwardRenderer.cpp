@@ -36,44 +36,68 @@ namespace BansheeEngine
 		CoreAccessor& coreAccessor = gMainCA();
 		const Vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 
+		struct RenderTargetRenderInfo
+		{
+			RenderTargetPtr target;
+			Vector<HCamera>::type cameras;
+		};
+
 		// Find all unique render targets
-		UnorderedSet<RenderTargetPtr>::type renderTargets;
+		Vector<RenderTargetRenderInfo>::type camerasPerRenderTarget;
 		for(auto& camera : allCameras)
 		{
 			RenderTargetPtr target = camera->getViewport()->getTarget();
-			auto findIter = renderTargets.find(target);
+			auto findIter = std::find_if(begin(camerasPerRenderTarget), end(camerasPerRenderTarget), [&target] (const RenderTargetRenderInfo& x) { return x.target == target; });
 
-			if(findIter == renderTargets.end())
+			if(findIter == camerasPerRenderTarget.end())
 			{
-				renderTargets.insert(target);
+				camerasPerRenderTarget.push_back(RenderTargetRenderInfo());
+				camerasPerRenderTarget[camerasPerRenderTarget.size() - 1].target = target;
+				camerasPerRenderTarget[camerasPerRenderTarget.size() - 1].cameras.push_back(camera);
 			}
+			else
+				findIter->cameras.push_back(camera);
+		}
+
+		// Sort everything based on priority
+		auto cameraComparer = [&] (const HCamera& a, const HCamera& b) { return a->getPriority() > b->getPriority(); };
+		auto renderTargetInfoComparer = [&] (const RenderTargetRenderInfo& a, const RenderTargetRenderInfo& b) { return a.target->getPriority() > b.target->getPriority(); };
+		std::sort(begin(camerasPerRenderTarget), end(camerasPerRenderTarget), renderTargetInfoComparer);
+
+		for(auto& camerasPerTarget : camerasPerRenderTarget)
+		{
+			Vector<HCamera>::type& cameras = camerasPerTarget.cameras;
+
+			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
 
 		// Clear all targets
-		for(auto& target : renderTargets)
+		for(auto& camerasPerTarget : camerasPerRenderTarget)
+		{
+			RenderTargetPtr target = camerasPerTarget.target;
+			const Vector<HCamera>::type& cameras = camerasPerTarget.cameras;
+
 			coreAccessor.clear(target, FBT_COLOR | FBT_DEPTH, Color::Blue);
+			coreAccessor.beginFrame();
 
-		coreAccessor.beginFrame();
+			for(auto& camera : cameras)
+			{
+				// Render all cameras
+				for(auto& camera : cameras)
+					render(camera);
 
-		// TODO - Attempt to render all different elements in such a way that there is only 1 render target switch per render target
+				// Render overlays for all targets
+				for(auto& camera : cameras)
+					OverlayManager::instance().render(camera->getViewport(), coreAccessor);
 
-		// Render all cameras
-		for(auto& camera : allCameras)
-			render(camera);
+				// Render all GUI elements
+				for(auto& camera : cameras)
+					GUIManager::instance().render(camera->getViewport(), coreAccessor);
+			}
 
-		// Render overlays for all targets
-		for(auto& camera : allCameras)
-			OverlayManager::instance().render(camera->getViewport(), coreAccessor);
-
-		// Render all GUI elements
-		for(auto& camera : allCameras)
-			GUIManager::instance().render(camera->getViewport(), coreAccessor);
-
-		coreAccessor.endFrame();
-
-		// Swap all targets
-		for(auto& target : renderTargets)
+			coreAccessor.endFrame();
 			coreAccessor.swapBuffers(target);
+		}
 	}
 
 	void ForwardRenderer::render(const HCamera& camera) 

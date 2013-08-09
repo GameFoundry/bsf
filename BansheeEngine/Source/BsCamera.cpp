@@ -66,7 +66,8 @@ namespace BansheeEngine
 		mCustomViewMatrix(false),
 		mCustomProjMatrix(false),
 		mFrustumExtentsManuallySet(false),
-		mIgnoreSceneRenderables(false)
+		mIgnoreSceneRenderables(false),
+		mPriority(0)
     {
 		updateView();
 		updateFrustum();

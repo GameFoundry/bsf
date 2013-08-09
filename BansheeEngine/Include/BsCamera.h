@@ -105,79 +105,6 @@ namespace BansheeEngine {
     */
     class BS_EXPORT Camera : public CM::Component
     {
-	protected:
-        /// Orthographic or perspective?
-        ProjectionType mProjType;
-
-        /// y-direction field-of-view (default 45)
-        CM::Radian mHorzFOV;
-        /// Far clip distance - default 10000
-        float mFarDist;
-        /// Near clip distance - default 100
-        float mNearDist;
-        /// x/y viewport ratio - default 1.3333
-        float mAspect;
-		/// Ortho height size (world units)
-		float mOrthoHeight;
-        /// Off-axis frustum center offset - default (0.0, 0.0)
-        CM::Vector2 mFrustumOffset;
-        /// Focal length of frustum (for stereo rendering, defaults to 1.0)
-        float mFocalLength;
-
-        /// The 6 main clipping planes
-        mutable CM::Plane mFrustumPlanes[6];
-
-        /// Stored versions of parent orientation / position
-        mutable CM::Quaternion mLastParentOrientation;
-        mutable CM::Vector3 mLastParentPosition;
-
-        /// Pre-calced projection matrix for the specific render system
-        mutable CM::Matrix4 mProjMatrixRS;
-        /// Pre-calced standard projection matrix but with render system depth range
-        mutable CM::Matrix4 mProjMatrixRSDepth;
-        /// Pre-calced standard projection matrix
-        mutable CM::Matrix4 mProjMatrix;
-        /// Pre-calced view matrix
-        mutable CM::Matrix4 mViewMatrix;
-        /// Something's changed in the frustum shape?
-        mutable bool mRecalcFrustum;
-        /// Something re the frustum planes has changed
-        mutable bool mRecalcFrustumPlanes;
-        /// Something re the world space corners has changed
-        mutable bool mRecalcWorldSpaceCorners;
-        /// Something re the vertex data has changed
-        mutable bool mRecalcVertexData;
-		/// Are we using a custom view matrix?
-		bool mCustomViewMatrix;
-		/// Are we using a custom projection matrix?
-		bool mCustomProjMatrix;
-		/// Have the frustum extents been manually set?
-		bool mFrustumExtentsManuallySet;
-		bool mIgnoreSceneRenderables;
-		/// Frustum extents
-		mutable float mLeft, mRight, mTop, mBottom;
-		
-        // Internal functions for calcs
-        virtual void calcProjectionParameters(float& left, float& right, float& bottom, float& top) const;
-		/// Update frustum if out of date
-        virtual void updateFrustum(void) const;
-		/// Implementation of updateFrustum (called if out of date)
-		virtual void updateFrustumImpl(void) const;
-        virtual void updateFrustumPlanes(void) const;
-		/// Implementation of updateFrustumPlanes (called if out of date)
-		virtual void updateFrustumPlanesImpl(void) const;
-        virtual void updateWorldSpaceCorners(void) const;
-		/// Implementation of updateWorldSpaceCorners (called if out of date)
-		virtual void updateWorldSpaceCornersImpl(void) const;
-		virtual void updateView(void) const;
-        virtual bool isFrustumOutOfDate(void) const;
-        /// Signal to update frustum information.
-        virtual void invalidateFrustum(void) const;
-
-        mutable CM::AxisAlignedBox mBoundingBox;
-
-        mutable CM::Vector3 mWorldSpaceCorners[8];
-
     public:
         /** Sets the Y-dimension Field Of View (FOV) of the frustum.
             @remarks
@@ -494,10 +421,86 @@ namespace BansheeEngine {
 		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; }
 		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
 
+		CM::INT32 getPriority() const { return mPriority; }
+		void setPriority(CM::INT32 priority) { mPriority = priority; }
+
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
     protected:
 		CM::ViewportPtr mViewport;
+
+		/// Orthographic or perspective?
+		ProjectionType mProjType;
+
+		/// y-direction field-of-view (default 45)
+		CM::Radian mHorzFOV;
+		/// Far clip distance - default 10000
+		float mFarDist;
+		/// Near clip distance - default 100
+		float mNearDist;
+		/// x/y viewport ratio - default 1.3333
+		float mAspect;
+		/// Ortho height size (world units)
+		float mOrthoHeight;
+		/// Off-axis frustum center offset - default (0.0, 0.0)
+		CM::Vector2 mFrustumOffset;
+		/// Focal length of frustum (for stereo rendering, defaults to 1.0)
+		float mFocalLength;
+		CM::INT32 mPriority;
+
+		/// The 6 main clipping planes
+		mutable CM::Plane mFrustumPlanes[6];
+
+		/// Stored versions of parent orientation / position
+		mutable CM::Quaternion mLastParentOrientation;
+		mutable CM::Vector3 mLastParentPosition;
+
+		/// Pre-calced projection matrix for the specific render system
+		mutable CM::Matrix4 mProjMatrixRS;
+		/// Pre-calced standard projection matrix but with render system depth range
+		mutable CM::Matrix4 mProjMatrixRSDepth;
+		/// Pre-calced standard projection matrix
+		mutable CM::Matrix4 mProjMatrix;
+		/// Pre-calced view matrix
+		mutable CM::Matrix4 mViewMatrix;
+		/// Something's changed in the frustum shape?
+		mutable bool mRecalcFrustum;
+		/// Something re the frustum planes has changed
+		mutable bool mRecalcFrustumPlanes;
+		/// Something re the world space corners has changed
+		mutable bool mRecalcWorldSpaceCorners;
+		/// Something re the vertex data has changed
+		mutable bool mRecalcVertexData;
+		/// Are we using a custom view matrix?
+		bool mCustomViewMatrix;
+		/// Are we using a custom projection matrix?
+		bool mCustomProjMatrix;
+		/// Have the frustum extents been manually set?
+		bool mFrustumExtentsManuallySet;
+		bool mIgnoreSceneRenderables;
+		/// Frustum extents
+		mutable float mLeft, mRight, mTop, mBottom;
+
+		// Internal functions for calcs
+		virtual void calcProjectionParameters(float& left, float& right, float& bottom, float& top) const;
+		/// Update frustum if out of date
+		virtual void updateFrustum(void) const;
+		/// Implementation of updateFrustum (called if out of date)
+		virtual void updateFrustumImpl(void) const;
+		virtual void updateFrustumPlanes(void) const;
+		/// Implementation of updateFrustumPlanes (called if out of date)
+		virtual void updateFrustumPlanesImpl(void) const;
+		virtual void updateWorldSpaceCorners(void) const;
+		/// Implementation of updateWorldSpaceCorners (called if out of date)
+		virtual void updateWorldSpaceCornersImpl(void) const;
+		virtual void updateView(void) const;
+		virtual bool isFrustumOutOfDate(void) const;
+		/// Signal to update frustum information.
+		virtual void invalidateFrustum(void) const;
+
+		mutable CM::AxisAlignedBox mBoundingBox;
+
+		mutable CM::Vector3 mWorldSpaceCorners[8];
 
     public:
         /** Standard destructor.
