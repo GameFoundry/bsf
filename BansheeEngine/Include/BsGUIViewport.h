@@ -53,6 +53,11 @@ namespace BansheeEngine
 		 */
 		virtual void updateBounds();
 
+		/**
+		 * @copydoc GUIElement::updateRenderElementsInternal()
+		 */
+		virtual void updateRenderElementsInternal();
+
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
 

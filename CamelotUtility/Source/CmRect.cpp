@@ -5,6 +5,8 @@
 
 namespace CamelotFramework
 {
+	const Rect Rect::EMPTY = Rect();
+
 	Rect::Rect()
 		:x(0), y(0), width(0), height(0)
 	{ }

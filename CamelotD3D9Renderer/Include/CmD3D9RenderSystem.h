@@ -148,10 +148,9 @@ namespace CamelotFramework
 		 */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
-        void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
-        void clear(RenderTargetPtr target, unsigned int buffers, 
-            const Color& colour = Color::Black, 
-            float depth = 1.0f, unsigned short stencil = 0);
+        void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
+        void clear(RenderTargetPtr target, UINT32 buffers, const Color& colour = Color::Black, 
+            float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
 
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 

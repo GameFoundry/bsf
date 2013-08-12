@@ -34,14 +34,20 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
+	const Color Viewport::DefaultClearColor = Color(143.0f / 255.0f, 111.0f / 255.0f, 0);
+
 	Viewport::Viewport()
 		:mTarget(nullptr)
 		, mRelLeft(0)
 		, mRelTop(0)
 		, mRelWidth(0)
 		, mRelHeight(0)
-		// Actual dimensions will update later
-		, mZOrder(0)
+		, mClearColor(DefaultClearColor)
+		, mRequiresColorClear(true)
+		, mRequiresDepthClear(true)
+		, mRequiresStencilClear(false)
+		, mStencilClearValue(0)
+		, mDepthClearValue(1.0f)
 	{
 		// Calculate actual dimensions
 		updateDimensions();
@@ -53,8 +59,12 @@ namespace CamelotFramework
         , mRelTop(top)
         , mRelWidth(width)
         , mRelHeight(height)
-        // Actual dimensions will update later
-        , mZOrder(ZOrder)
+		, mClearColor(DefaultClearColor)
+		, mRequiresColorClear(true)
+		, mRequiresDepthClear(true)
+		, mRequiresStencilClear(false)
+		, mStencilClearValue(0)
+		, mDepthClearValue(1.0f)
     {
 		if(target != nullptr)
 		{
@@ -88,11 +98,6 @@ namespace CamelotFramework
 			mDimensions.height = (int) (mRelHeight * height);
 		}
     }
-
-	int Viewport::getZOrder(void) const
-	{
-		return mZOrder;
-	}
 
     RenderTargetPtr Viewport::getTarget(void) const
     {

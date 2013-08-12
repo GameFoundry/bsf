@@ -71,28 +71,39 @@ namespace BansheeEngine
 			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
 
-		// Clear all targets
+		// Render everything, target by target
 		for(auto& camerasPerTarget : camerasPerRenderTarget)
 		{
 			RenderTargetPtr target = camerasPerTarget.target;
 			const Vector<HCamera>::type& cameras = camerasPerTarget.cameras;
 
-			coreAccessor.clear(target, FBT_COLOR | FBT_DEPTH, Color::Blue);
 			coreAccessor.beginFrame();
 
 			for(auto& camera : cameras)
 			{
-				// Render all cameras
-				for(auto& camera : cameras)
-					render(camera);
+				ViewportPtr viewport = camera->getViewport();
 
-				// Render overlays for all targets
-				for(auto& camera : cameras)
-					OverlayManager::instance().render(camera->getViewport(), coreAccessor);
+				UINT32 clearBuffers = 0;
+				if(viewport->getRequiresColorClear())
+					clearBuffers |= FBT_COLOR;
 
-				// Render all GUI elements
-				for(auto& camera : cameras)
-					GUIManager::instance().render(camera->getViewport(), coreAccessor);
+				if(viewport->getRequiresDepthClear())
+					clearBuffers |= FBT_DEPTH;
+
+				if(viewport->getRequiresStencilClear())
+					clearBuffers |= FBT_STENCIL;
+
+				if(clearBuffers != 0)
+					coreAccessor.clear(target, clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue(), viewport->getDimensions());
+
+				// Render scene
+				render(camera);
+
+				// Render overlays
+				OverlayManager::instance().render(camera->getViewport(), coreAccessor);
+
+				// Render GUI elements
+				GUIManager::instance().render(camera->getViewport(), coreAccessor);
 			}
 
 			coreAccessor.endFrame();

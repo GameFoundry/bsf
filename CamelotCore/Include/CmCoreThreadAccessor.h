@@ -174,9 +174,9 @@ namespace CamelotFramework
 		}
 
 		/** @copydoc RenderSystem::clear() */
-		void clear(RenderTargetPtr target, unsigned int buffers, const Color& color = Color::Black, float depth = 1.0f, unsigned short stencil = 0)
+		void clear(RenderTargetPtr target, UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::clear, RenderSystem::instancePtr(), target, buffers, color, depth, stencil));
+			mCommandQueue->queue(boost::bind(&RenderSystem::clear, RenderSystem::instancePtr(), target, buffers, color, depth, stencil, boost::cref(clearArea)));
 		}
 
 		/** @copydoc RenderSystem::swapBuffers() */

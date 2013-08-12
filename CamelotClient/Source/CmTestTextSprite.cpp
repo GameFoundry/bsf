@@ -14,6 +14,8 @@
 #include "BsGUITexture.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsGUIViewport.h"
+#include "BsCamera.h"
 
 using namespace BansheeEngine;
 
@@ -34,8 +36,8 @@ namespace CamelotFramework
 
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
 
-		SpriteTexturePtr spriteTex = std::make_shared<SpriteTexture>(sceneView->getBindableColorTexture());
-		area->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::fixed(800, 600), spriteTex));
+		//SpriteTexturePtr spriteTex = std::make_shared<SpriteTexture>(sceneView->getBindableColorTexture());
+		area->getLayout().addElement(GUIViewport::create(*this, GUILayoutOptions::fixed(800, 600), camera, camera->getAspectRatio(), camera->getHorzFOV()));
 	}
 
 	void TestTextSprite::update()

@@ -96,6 +96,12 @@ namespace BansheeEngine
 	void GUIViewport::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
+
+	}
+
+	void GUIViewport::updateRenderElementsInternal()
+	{
+		// TODO - This doesn't get called if element mesh is dirty!!! and I need to update the viewport when offset changes (in which case mesh is marked as dirty)
 		float currentAspect = mWidth / (float)mHeight;
 		Radian currentFOV = 2.0f * Math::ATan(Math::Tan(mVerticalFOV * 0.5f) * currentAspect);
 

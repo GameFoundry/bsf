@@ -35,5 +35,7 @@ namespace CamelotFramework
 		{
 			return !(*this == rhs);
 		}
+
+		static const Rect EMPTY;
 	};
 }

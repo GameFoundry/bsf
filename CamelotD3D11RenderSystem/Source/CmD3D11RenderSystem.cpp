@@ -571,7 +571,7 @@ namespace CamelotFramework
 		mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
 	}
 
-	void D3D11RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, const Color& color, float depth, unsigned short stencil)
+	void D3D11RenderSystem::clear(RenderTargetPtr target, UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect& clearArea)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

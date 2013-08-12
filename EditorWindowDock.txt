@@ -27,6 +27,11 @@ Drag and drop manager currently ignores the provided icon, but it should use it 
 
 Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
 
+GUIViewport:
+ - MAJOR TODO - Don't forget to update GUIViewport is to also gets updated when only mesh is dirty!
+ - Test DX11 and GL
+ - Clear the viewport before rendering. (Add Viewport.requiresClear)
+
 ------------------------
 
 Other things to remember:

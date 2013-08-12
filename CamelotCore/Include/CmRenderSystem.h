@@ -258,7 +258,7 @@ namespace CamelotFramework
 		@param left, top, right, bottom The location of the corners of the rectangle, expressed in
 		<i>pixels</i>.
 		*/
-		virtual void setScissorRect(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600) = 0;
+		virtual void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) = 0;
 
 		/** Clears the provided render target to the specified values
 		@param renderTarget Render target to clear. Entire surface will be cleared
@@ -269,9 +269,9 @@ namespace CamelotFramework
 		@param depth The value to initialise the depth buffer with, if enabled
 		@param stencil The value to initialise the stencil buffer with, if enabled.
 		*/
-		virtual void clear(RenderTargetPtr renderTarget, unsigned int buffers, 
+		virtual void clear(RenderTargetPtr renderTarget, UINT32 buffers, 
 			const Color& color = Color::Black, 
-			float depth = 1.0f, unsigned short stencil = 0) = 0;
+			float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY) = 0;
 
 		/**
          * Set current render target to target, enabling its device context if needed

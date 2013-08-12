@@ -94,8 +94,6 @@ namespace CamelotFramework {
         */
         RenderTargetPtr getTarget(void) const;
 
-        /** Gets the Z-Order of this viewport. */
-		int getZOrder(void) const;
 		/** Gets one of the relative dimensions of the viewport,
             a value between 0.0 and 1.0.
         */
@@ -154,17 +152,38 @@ namespace CamelotFramework {
         */
 		const Rect& getDimensions() const { return mDimensions; }
 
+		const Color& getClearColor() const { return mClearColor; }
+		void setClearColor(const Color& clearColor) { mClearColor = clearColor; }
+
+		float getClearDepthValue() const { return mDepthClearValue; }
+		void getClearDepthValue(float value) { mDepthClearValue = value; }
+
+		UINT16 getClearStencilValue() const { return mStencilClearValue; }
+		void setStencilClearValue(UINT16 value) { mStencilClearValue = value; }
+
+		bool getRequiresColorClear() const { return mRequiresColorClear; }
+		void setRequiresColorClear(bool requiresClear) { mRequiresColorClear = requiresClear; }
+
+		bool getRequiresDepthClear() const { return mRequiresDepthClear; }
+		void setRequiresDepthClear(bool requiresClear) { mRequiresDepthClear = requiresClear; }
+
+		bool getRequiresStencilClear() const { return mRequiresStencilClear; }
+		void setRequiresStencilClear(bool requiresClear) { mRequiresStencilClear = requiresClear; }
+
     protected:
         RenderTargetPtr mTarget;
         // Relative dimensions, irrespective of target dimensions (0..1)
         float mRelLeft, mRelTop, mRelWidth, mRelHeight;
         // Actual dimensions, based on target dimensions
 		Rect mDimensions;
+		bool mRequiresColorClear, mRequiresDepthClear, mRequiresStencilClear;
+		Color mClearColor;
+		float mDepthClearValue;
+		UINT16 mStencilClearValue;
 
 		boost::signals::connection mTargetConn;
 
-        /// ZOrder
-        int mZOrder;
+		static const Color DefaultClearColor;
 
 		/** Notifies the viewport of a possible change in dimensions.
             @remarks

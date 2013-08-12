@@ -21,9 +21,10 @@ namespace BansheeEditor
 		HSceneObject sceneCameraGO = SceneObject::create("SceneCamera");
 		HCamera sceneCamera = sceneCameraGO->addComponent<Camera>();
 
-		RenderTexturePtr sceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, 800, 600);
+		//RenderTexturePtr sceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, 800, 600);
 
-		sceneCamera->initialize(sceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		sceneCamera->initialize(mCamera->getViewport()->getTarget(), 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		sceneCamera->setPriority(-1);
 		sceneCameraGO->setPosition(Vector3(0,50,1240));
 		sceneCameraGO->lookAt(Vector3(0,50,-300));
 		sceneCamera->setNearClipDistance(5);
@@ -34,7 +35,7 @@ namespace BansheeEditor
 		GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>();
 		textSprite->initialize(mCamera->getViewport().get(), renderWindow.get());
 
-		textSprite->init(mCamera, "Testing in a new row, does this work?", sceneRenderTarget);
+		textSprite->init(sceneCamera, "Testing in a new row, does this work?", nullptr);
 	}
 
 	MainEditorWindow::~MainEditorWindow()

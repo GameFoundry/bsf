@@ -1367,8 +1367,8 @@ namespace CamelotFramework
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::clear(RenderTargetPtr target, unsigned int buffers, 
-		const Color& colour, float depth, unsigned short stencil)
+	void D3D9RenderSystem::clear(RenderTargetPtr target, UINT32 buffers, 
+		const Color& colour, float depth, UINT16 stencil, const Rect& clearArea)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
