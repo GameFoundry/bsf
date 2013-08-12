@@ -38,12 +38,10 @@ Place plug-in specific dependency files in:
 
  Legend:
   (BansheeRootDir) - Path to BansheeEngine folder
-  (Platform) - Platform you're compiling for, e.g. Win32, x64, etc.
+  (Platform) - Platform you're compiling for, e.g. x86, x64, etc.
   (Configuration) - Debug, Release, DebugRelease
 
 Other notes:
- - If possible all dependencies should be compiled without unicode or multi-character support, in case you experience any issues when passing strings between
-	module boundaries.
  - Some dependencies might not come with DebugRelease binaries, in which case use Release binaries (copy them to DebugRelease folder)
 
 Listed dependencies have not been provided with the engine source code. 

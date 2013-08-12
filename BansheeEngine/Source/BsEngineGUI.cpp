@@ -11,6 +11,7 @@
 #include "CmFontImportOptions.h"
 #include "CmImporter.h"
 #include "CmRTTIType.h"
+#include "CmFileSystem.h"
 
 using namespace CamelotFramework;
 
@@ -19,54 +20,54 @@ namespace BansheeEngine
 	const String EngineGUI::DefaultFontPath = "C:\\arial.ttf";
 	const UINT32 EngineGUI::DefaultFontSize = 10;
 
-	const String EngineGUI::WindowBackgroundTexture = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowBgTile.psd";
+	const String EngineGUI::WindowBackgroundTexture = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowBgTile.psd";
 
-	const String EngineGUI::ButtonNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonNormal.psd";
-	const String EngineGUI::ButtonHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ButtonHover.psd";
+	const String EngineGUI::ButtonNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ButtonNormal.psd";
+	const String EngineGUI::ButtonHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ButtonHover.psd";
 
-	const String EngineGUI::WindowFrameNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowFrameNormal.psd";
-	const String EngineGUI::WindowFrameFocused = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowFrameFocused.psd";
+	const String EngineGUI::WindowFrameNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowFrameNormal.psd";
+	const String EngineGUI::WindowFrameFocused = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowFrameFocused.psd";
 
-	const String EngineGUI::WindowTitleBarBg = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowTitleBarBg.psd";
+	const String EngineGUI::WindowTitleBarBg = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowTitleBarBg.psd";
 
-	const String EngineGUI::WindowCloseButtonNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowCloseBtnNormal.psd";
-	const String EngineGUI::WindowCloseButtonHover = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowCloseBtnHover.psd";
+	const String EngineGUI::WindowCloseButtonNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowCloseBtnNormal.psd";
+	const String EngineGUI::WindowCloseButtonHover = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowCloseBtnHover.psd";
 
-	const String EngineGUI::WindowMinButtonNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowMinBtnNormal.psd";
-	const String EngineGUI::WindowMinButtonHover = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\WindowMinBtnHover.psd";
+	const String EngineGUI::WindowMinButtonNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMinBtnNormal.psd";
+	const String EngineGUI::WindowMinButtonHover = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMinBtnHover.psd";
 
-	const String EngineGUI::TabbedBarBtnNormal = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\TabbedButtonNormal.psd";
-	const String EngineGUI::TabbedBarBtnActive = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\TabbedButtonActive.psd";
+	const String EngineGUI::TabbedBarBtnNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\TabbedButtonNormal.psd";
+	const String EngineGUI::TabbedBarBtnActive = "..\\..\\..\\..\\Data\\Editor\\Skin\\TabbedButtonActive.psd";
 
-	const String EngineGUI::InputBoxNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxNormal.psd";
-	const String EngineGUI::InputBoxHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxHover.psd";
-	const String EngineGUI::InputBoxFocusedTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\InputBoxFocused.psd";
+	const String EngineGUI::InputBoxNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\InputBoxNormal.psd";
+	const String EngineGUI::InputBoxHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\InputBoxHover.psd";
+	const String EngineGUI::InputBoxFocusedTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\InputBoxFocused.psd";
 
-	const String EngineGUI::ScrollBarUpNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarUpNormal.psd";
-	const String EngineGUI::ScrollBarUpHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarUpHover.psd";
-	const String EngineGUI::ScrollBarUpActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarUpActive.psd";
+	const String EngineGUI::ScrollBarUpNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarUpNormal.psd";
+	const String EngineGUI::ScrollBarUpHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarUpHover.psd";
+	const String EngineGUI::ScrollBarUpActiveTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarUpActive.psd";
 
-	const String EngineGUI::ScrollBarDownNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarDownNormal.psd";
-	const String EngineGUI::ScrollBarDownHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarDownHover.psd";
-	const String EngineGUI::ScrollBarDownActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarDownActive.psd";
+	const String EngineGUI::ScrollBarDownNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarDownNormal.psd";
+	const String EngineGUI::ScrollBarDownHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarDownHover.psd";
+	const String EngineGUI::ScrollBarDownActiveTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarDownActive.psd";
 
-	const String EngineGUI::ScrollBarLeftNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarLeftNormal.psd";
-	const String EngineGUI::ScrollBarLeftHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarLeftHover.psd";
-	const String EngineGUI::ScrollBarLeftActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarLeftActive.psd";
+	const String EngineGUI::ScrollBarLeftNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarLeftNormal.psd";
+	const String EngineGUI::ScrollBarLeftHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarLeftHover.psd";
+	const String EngineGUI::ScrollBarLeftActiveTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarLeftActive.psd";
 
-	const String EngineGUI::ScrollBarRightNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarRightNormal.psd";
-	const String EngineGUI::ScrollBarRightHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarRightHover.psd";
-	const String EngineGUI::ScrollBarRightActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarRightActive.psd";
+	const String EngineGUI::ScrollBarRightNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarRightNormal.psd";
+	const String EngineGUI::ScrollBarRightHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarRightHover.psd";
+	const String EngineGUI::ScrollBarRightActiveTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarRightActive.psd";
 
-	const String EngineGUI::ScrollBarHandleHorzNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarHorzHandleNormal.psd";
-	const String EngineGUI::ScrollBarHandleHorzHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarHorzHandleHover.psd";
-	const String EngineGUI::ScrollBarHandleHorzActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarHorzHandleActive.psd";
+	const String EngineGUI::ScrollBarHandleHorzNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarHorzHandleNormal.psd";
+	const String EngineGUI::ScrollBarHandleHorzHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarHorzHandleHover.psd";
+	const String EngineGUI::ScrollBarHandleHorzActiveTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarHorzHandleActive.psd";
 
-	const String EngineGUI::ScrollBarHandleVertNormalTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleNormal.psd";
-	const String EngineGUI::ScrollBarHandleVertHoverTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleHover.psd";
-	const String EngineGUI::ScrollBarHandleVertActiveTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarVertHandleActive.psd";
+	const String EngineGUI::ScrollBarHandleVertNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarVertHandleNormal.psd";
+	const String EngineGUI::ScrollBarHandleVertHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarVertHandleHover.psd";
+	const String EngineGUI::ScrollBarHandleVertActiveTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarVertHandleActive.psd";
 
-	const String EngineGUI::ScrollBarBgTex = "C:\\Projects\\BansheeEngine\\Data\\Editor\\Skin\\ScrollBarBg.psd";
+	const String EngineGUI::ScrollBarBgTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarBg.psd";
 
 	EngineGUI::EngineGUI()
 	{
@@ -102,8 +103,8 @@ namespace BansheeEngine
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		// Window frame
-		HTexture windowFrameNormalTex = static_resource_cast<Texture>(Importer::instance().import(WindowFrameNormal));
-		HTexture windowFrameFocusedTex = static_resource_cast<Texture>(Importer::instance().import(WindowFrameFocused));
+		HTexture windowFrameNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowFrameNormal));
+		HTexture windowFrameFocusedTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowFrameFocused));
 
 		GUIElementStyle windowFrameStyle;
 		windowFrameStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowFrameNormalTex));
@@ -116,8 +117,8 @@ namespace BansheeEngine
 		mSkin.setStyle("WindowFrame", windowFrameStyle);
 
 		// Button
-		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(ButtonNormalTex));
-		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(ButtonHoverTex));
+		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonNormalTex));
+		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonHoverTex));
 
 		GUIElementStyle buttonStyle;
 		buttonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonNormalTex));
@@ -143,7 +144,7 @@ namespace BansheeEngine
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
 
 		// Window background texture
-		HTexture windowBgTexture = static_resource_cast<Texture>(Importer::instance().import(WindowBackgroundTexture));
+		HTexture windowBgTexture = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowBackgroundTexture));
 
 		GUIElementStyle windowBgStyle;
 		windowBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowBgTexture));
@@ -151,7 +152,7 @@ namespace BansheeEngine
 		mSkin.setStyle("WindowBackground", windowBgStyle);
 
 		// Window title bar background
-		HTexture windowTitleBarBg = static_resource_cast<Texture>(Importer::instance().import(WindowTitleBarBg));
+		HTexture windowTitleBarBg = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowTitleBarBg));
 
 		GUIElementStyle titleBarBgStyle;
 		titleBarBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowTitleBarBg));
@@ -161,8 +162,8 @@ namespace BansheeEngine
 		mSkin.setStyle("TitleBarBackground", titleBarBgStyle);
 
 		// Tabbed title bar tab button
-		HTexture tabbedBarBtnNormal = static_resource_cast<Texture>(Importer::instance().import(TabbedBarBtnNormal));
-		HTexture tabbedBarBtnActive = static_resource_cast<Texture>(Importer::instance().import(TabbedBarBtnActive));
+		HTexture tabbedBarBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + TabbedBarBtnNormal));
+		HTexture tabbedBarBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + TabbedBarBtnActive));
 
 		GUIElementStyle tabbedBarButton;
 		tabbedBarButton.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(tabbedBarBtnNormal));
@@ -192,8 +193,8 @@ namespace BansheeEngine
 		mSkin.setStyle("TabbedBarDropArea", tabbedBarDropButton);
 
 		// Window minimize button
-		HTexture winMinBtnNormal = static_resource_cast<Texture>(Importer::instance().import(WindowMinButtonNormal));
-		HTexture winMinBtnHover = static_resource_cast<Texture>(Importer::instance().import(WindowMinButtonHover));
+		HTexture winMinBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowMinButtonNormal));
+		HTexture winMinBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowMinButtonHover));
 
 		GUIElementStyle winMinButtonStyle;
 		winMinButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMinBtnNormal));
@@ -207,8 +208,8 @@ namespace BansheeEngine
 		mSkin.setStyle("WinMinimizeBtn", winMinButtonStyle);
 
 		// Window close button
-		HTexture winCloseBtnNormal = static_resource_cast<Texture>(Importer::instance().import(WindowCloseButtonNormal));
-		HTexture winCloseBtnHover = static_resource_cast<Texture>(Importer::instance().import(WindowCloseButtonHover));
+		HTexture winCloseBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowCloseButtonNormal));
+		HTexture winCloseBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowCloseButtonHover));
 
 		GUIElementStyle winCloseButtonStyle;
 		winCloseButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnNormal));
@@ -222,9 +223,9 @@ namespace BansheeEngine
 		mSkin.setStyle("WinCloseBtn", winCloseButtonStyle);
 
 		// Input box
-		HTexture inputBoxNormalTex = static_resource_cast<Texture>(Importer::instance().import(InputBoxNormalTex));
-		HTexture inputBoxHoverTex = static_resource_cast<Texture>(Importer::instance().import(InputBoxHoverTex));
-		HTexture inputBoxFocusedTex = static_resource_cast<Texture>(Importer::instance().import(InputBoxFocusedTex));
+		HTexture inputBoxNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + InputBoxNormalTex));
+		HTexture inputBoxHoverTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + InputBoxHoverTex));
+		HTexture inputBoxFocusedTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + InputBoxFocusedTex));
 
 		GUIElementStyle inputBoxStyle;
 		inputBoxStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxNormalTex));
@@ -256,9 +257,9 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		// Up button
-		HTexture scrollUpBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarUpNormalTex));
-		HTexture scrollUpBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarUpHoverTex));
-		HTexture scrollUpBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarUpActiveTex));
+		HTexture scrollUpBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarUpNormalTex));
+		HTexture scrollUpBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarUpHoverTex));
+		HTexture scrollUpBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarUpActiveTex));
 
 		GUIElementStyle scrollUpBtnStyle;
 		scrollUpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollUpBtnNormal));
@@ -272,9 +273,9 @@ namespace BansheeEngine
 		mSkin.setStyle("ScrollUpBtn", scrollUpBtnStyle);
 
 		// Down button
-		HTexture scrollDownBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarDownNormalTex));
-		HTexture scrollDownBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarDownHoverTex));
-		HTexture scrollDownBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarDownActiveTex));
+		HTexture scrollDownBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarDownNormalTex));
+		HTexture scrollDownBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarDownHoverTex));
+		HTexture scrollDownBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarDownActiveTex));
 
 		GUIElementStyle scrollDownBtnStyle;
 		scrollDownBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollDownBtnNormal));
@@ -288,9 +289,9 @@ namespace BansheeEngine
 		mSkin.setStyle("ScrollDownBtn", scrollDownBtnStyle);
 
 		// Left button
-		HTexture scrollLeftBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarLeftNormalTex));
-		HTexture scrollLeftBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarLeftHoverTex));
-		HTexture scrollLeftBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarLeftActiveTex));
+		HTexture scrollLeftBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarLeftNormalTex));
+		HTexture scrollLeftBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarLeftHoverTex));
+		HTexture scrollLeftBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarLeftActiveTex));
 
 		GUIElementStyle scrollLeftBtnStyle;
 		scrollLeftBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollLeftBtnNormal));
@@ -304,9 +305,9 @@ namespace BansheeEngine
 		mSkin.setStyle("ScrollLeftBtn", scrollLeftBtnStyle);
 
 		// Right button
-		HTexture scrollRightBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarRightNormalTex));
-		HTexture scrollRightBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarRightHoverTex));
-		HTexture scrollRightBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarRightActiveTex));
+		HTexture scrollRightBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarRightNormalTex));
+		HTexture scrollRightBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarRightHoverTex));
+		HTexture scrollRightBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarRightActiveTex));
 
 		GUIElementStyle scrollRightBtnStyle;
 		scrollRightBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollRightBtnNormal));
@@ -320,9 +321,9 @@ namespace BansheeEngine
 		mSkin.setStyle("ScrollRightBtn", scrollRightBtnStyle);
 
 		// Horizontal handle
-		HTexture scrollBarHorzBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleHorzNormalTex));
-		HTexture scrollBarHorzBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleHorzHoverTex));
-		HTexture scrollBarHorzBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleHorzActiveTex));
+		HTexture scrollBarHorzBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleHorzNormalTex));
+		HTexture scrollBarHorzBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleHorzHoverTex));
+		HTexture scrollBarHorzBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleHorzActiveTex));
 
 		GUIElementStyle scrollBarHorzBtnStyle;
 		scrollBarHorzBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarHorzBtnNormal));
@@ -336,9 +337,9 @@ namespace BansheeEngine
 		mSkin.setStyle("ScrollBarHorzBtn", scrollBarHorzBtnStyle);
 
 		// Vertical handle
-		HTexture scrollBarVertBtnNormal = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleVertNormalTex));
-		HTexture scrollBarVertBtnHover = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleVertHoverTex));
-		HTexture scrollBarVertBtnActive = static_resource_cast<Texture>(Importer::instance().import(ScrollBarHandleVertActiveTex));
+		HTexture scrollBarVertBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleVertNormalTex));
+		HTexture scrollBarVertBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleVertHoverTex));
+		HTexture scrollBarVertBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleVertActiveTex));
 
 		GUIElementStyle scrollBarVertBtnStyle;
 		scrollBarVertBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarVertBtnNormal));
@@ -351,7 +352,7 @@ namespace BansheeEngine
 
 		mSkin.setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
-		HTexture scrollBarBg = static_resource_cast<Texture>(Importer::instance().import(ScrollBarBgTex));
+		HTexture scrollBarBg = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarBgTex));
 		SpriteTexturePtr scrollBarBgPtr = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarBg));
 
 		// Vertical scroll bar
