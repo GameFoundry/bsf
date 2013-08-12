@@ -252,6 +252,7 @@
     <ClInclude Include="Include\CmD3D11MultiRenderTexture.h" />
     <ClInclude Include="Include\CmD3D11GpuParamBlockBuffer.h" />
     <ClInclude Include="Include\CmD3D11Prerequisites.h" />
+    <ClInclude Include="Include\CmD3D11RenderUtility.h" />
     <ClInclude Include="Include\CmD3D11TextureView.h" />
     <ClInclude Include="Include\CmD3D11VertexBuffer.h" />
     <ClInclude Include="Include\CmD3D11RasterizerState.h" />
@@ -288,6 +289,7 @@
     <ClCompile Include="Source\CmD3D11InputLayoutManager.cpp" />
     <ClCompile Include="Source\CmD3D11Mappings.cpp" />
     <ClCompile Include="Source\CmD3D11Plugin.cpp" />
+    <ClCompile Include="Source\CmD3D11RenderUtility.cpp" />
     <ClCompile Include="Source\CmD3D11TextureView.cpp" />
     <ClCompile Include="Source\CmD3D11VertexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11MultiRenderTexture.cpp" />

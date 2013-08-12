@@ -19,9 +19,6 @@ DockContainer biggest issues:
 
 FIRST CREATE DOCK CONTAINER WITHOUT DRAG AND DROP SUPPORT
 
-RenderTexture issues:
- Set up a GUIViewport element which sets up a camera so it renders to that part of the window
-
 Make sure to test everything thoroughly - right now I have tested very little
 Drag and drop manager currently ignores the provided icon, but it should use it as a cursor
 
@@ -29,8 +26,7 @@ Prevent docking if available size is less than 20 pixels, otherwise there might 
 
 GUIViewport:
  - MAJOR TODO - Don't forget to update GUIViewport is to also gets updated when only mesh is dirty!
- - Test DX11 and GL
- - Clear the viewport before rendering. (Add Viewport.requiresClear)
+ - In DX11 it is not possible to clear just a sub-region of a render target
 
 ------------------------
 
@@ -38,17 +34,3 @@ Other things to remember:
  - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
  - A way to persist window states
  - Also a way to reset all widgets to original locations
-
-------------------------
-
-Some use cases:
- 1. User drags one of the tabs on EditorWindow and then drops it
-  - If user drags for N pixels the draged tab (and its EditorWidget) is removed from the EditorWindow and added to DragAndDropManager
-  - If user drops the window onto empty/unsupported element drag and drop manager "dropCallback" is executed and EditorWidget is restored in its own EditorWindow.
-  - If user drags the window over a title bar, drop positions get highlighted on the title bar
-    - If the user releases over the title bar, the window is added at the specified drop position
-  - If the user drags over an EditorWidget content area, semi-transparent drop areas are shown, and current area is highlighted
-    - Dropping the window in that area will split the available space between existng and new window contents
-
- 2. User organizes his windows and the quits and restarts the program
-  - TODO
