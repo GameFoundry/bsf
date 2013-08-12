@@ -774,18 +774,39 @@ namespace CamelotFramework
 
 		// Disable scissor test as we want to clear the entire render surface
 		GLboolean scissorTestEnabled = glIsEnabled(GL_SCISSOR_TEST);
+		UINT32 oldScissorTop = mScissorTop;
+		UINT32 oldScissorBottom = mScissorBottom;
+		UINT32 oldScissorLeft = mScissorLeft;
+		UINT32 oldScissorRight = mScissorRight;
+
 		if (scissorTestEnabled)
 		{
 			glDisable(GL_SCISSOR_TEST);
 		}
 
+		if(clearArea.width > 0 && clearArea.height > 0)
+		{
+			setScissorRect(clearArea.x, clearArea.y, clearArea.width, clearArea.height);
+			setScissorTestEnable(true);			
+		}
+
 		// Clear buffers
 		glClear(flags);
+
+		if(clearArea.width > 0 && clearArea.height > 0)
+		{
+			setScissorTestEnable(false);	
+		}
 
 		// Restore scissor test
 		if (scissorTestEnabled)
 		{
 			glEnable(GL_SCISSOR_TEST);
+
+			mScissorTop = oldScissorTop;
+			mScissorBottom = oldScissorBottom;
+			mScissorLeft = oldScissorLeft;
+			mScissorRight = oldScissorRight;
 		}
 
 		// Reset buffer write state

@@ -1368,7 +1368,7 @@ namespace CamelotFramework
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::clear(RenderTargetPtr target, UINT32 buffers, 
-		const Color& colour, float depth, UINT16 stencil, const Rect& clearArea)
+		const Color& color, float depth, UINT16 stencil, const Rect& clearArea)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1395,17 +1395,30 @@ namespace CamelotFramework
 			flags |= D3DCLEAR_STENCIL;
 		}
 
-		HRESULT hr;
-		if( FAILED( hr = getActiveD3D9Device()->Clear( 
-			0, 
-			NULL, 
-			flags,
-			colour.getAsBGRA(), 
-			depth, 
-			stencil ) ) )
+		if(clearArea.width > 0 && clearArea.height > 0)
 		{
-			String msg = DXGetErrorDescription(hr);
-			CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
+			D3DRECT clearD3DRect;
+			clearD3DRect.x1 = clearArea.x;
+			clearD3DRect.x2 = clearD3DRect.x1 + clearArea.width;
+
+			clearD3DRect.y1 = clearArea.y;
+			clearD3DRect.y2 = clearD3DRect.y1 + clearArea.height;
+
+			HRESULT hr;
+			if(FAILED( hr = getActiveD3D9Device()->Clear(1, &clearD3DRect, flags, color.getAsBGRA(), depth, stencil)))
+			{
+				String msg = DXGetErrorDescription(hr);
+				CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
+			}
+		}
+		else
+		{
+			HRESULT hr;
+			if(FAILED( hr = getActiveD3D9Device()->Clear(0, nullptr, flags, color.getAsBGRA(), depth, stencil)))
+			{
+				String msg = DXGetErrorDescription(hr);
+				CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
+			}
 		}
 
 		if(previousRenderTarget != nullptr && target != previousRenderTarget)
