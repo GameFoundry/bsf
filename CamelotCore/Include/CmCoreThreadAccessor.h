@@ -75,7 +75,7 @@ namespace CamelotFramework
 		}
 
 		/** @copydoc RenderSystem::setViewport() */
-		void setViewport(ViewportPtr& vp)
+		void setViewport(const ViewportPtr& vp)
 		{
 			mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, RenderSystem::instancePtr(), vp));
 		}
@@ -173,10 +173,20 @@ namespace CamelotFramework
 			mCommandQueue->queue(boost::bind(&RenderSystem::endFrame, RenderSystem::instancePtr()));
 		}
 
-		/** @copydoc RenderSystem::clear() */
-		void clear(RenderTargetPtr target, UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY)
+		/**
+		 * @copydoc RenderSystem::clearRenderTarget()
+		 */
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::clear, RenderSystem::instancePtr(), target, buffers, color, depth, stencil, boost::cref(clearArea)));
+			mCommandQueue->queue(boost::bind(&RenderSystem::clearRenderTarget, RenderSystem::instancePtr(), buffers, color, depth, stencil));
+		}
+
+		/**
+		 * @copydoc RenderSystem::clearViewport()
+		 */
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0)
+		{
+			mCommandQueue->queue(boost::bind(&RenderSystem::clearViewport, RenderSystem::instancePtr(), buffers, color, depth, stencil));
 		}
 
 		/** @copydoc RenderSystem::swapBuffers() */

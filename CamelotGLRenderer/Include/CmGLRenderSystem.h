@@ -114,7 +114,7 @@ namespace CamelotFramework {
 		/**
 		 * @copydoc RenderSystem::setViewport()
 		 */
-        void setViewport(ViewportPtr& vp);
+        void setViewport(const ViewportPtr& vp);
 
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()
@@ -152,11 +152,14 @@ namespace CamelotFramework {
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
 		/**
-		 * @copydoc RenderSystem::clear()
+		 * @copydoc RenderSystem::clearRenderTarget()
 		 */
-        void clear(RenderTargetPtr target, UINT32 buffers, 
-            const Color& colour = Color::Black, 
-            float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+
+		/**
+		 * @copydoc RenderSystem::clearViewport()
+		 */
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
         /**
 		 * @copydoc RenderSystem::getColorVertexElementType()
@@ -241,7 +244,7 @@ namespace CamelotFramework {
         /// Store last depth write state
         bool mDepthWrite;
 		/// Store last colour write state
-		bool mColourWrite[4];
+		bool mColorWrite[4];
 
         GLint convertCompareFunction(CompareFunction func) const;
         GLint convertStencilOp(StencilOperation op, bool invert = false) const;
@@ -577,6 +580,8 @@ namespace CamelotFramework {
 		 * @brief	Needs to accompany every beginDraw after you are done with a single draw operation.
 		 */
 		void endDraw();
+
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
 
 		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
 		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;

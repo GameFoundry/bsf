@@ -30,10 +30,19 @@ namespace CamelotFramework
 
 		void beginFrame();
 		void endFrame();
-		void clear(RenderTargetPtr target, UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
+
+		/**
+		 * @copydoc RenderSystem::clearRenderTarget()
+		 */
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+
+		/**
+		 * @copydoc RenderSystem::clearViewport()
+		 */
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		void setRenderTarget(RenderTargetPtr target);
-		void setViewport(ViewportPtr& vp);
+		void setViewport(const ViewportPtr& vp);
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
 
 		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);

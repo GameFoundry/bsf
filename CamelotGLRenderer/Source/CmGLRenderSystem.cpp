@@ -100,7 +100,7 @@ namespace CamelotFramework
 
 		mViewMatrix = Matrix4::IDENTITY;
 
-		mColourWrite[0] = mColourWrite[1] = mColourWrite[2] = mColourWrite[3] = true;
+		mColorWrite[0] = mColorWrite[1] = mColorWrite[2] = mColorWrite[3] = true;
 
 		mCurrentContext = 0;
 		mMainContext = 0;
@@ -565,7 +565,7 @@ namespace CamelotFramework
 		setStencilRefValue(stencilRefValue);
 	}
 	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setViewport(ViewportPtr& vp)
+	void GLRenderSystem::setViewport(const ViewportPtr& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -716,7 +716,7 @@ namespace CamelotFramework
 
 		endDraw();
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -726,32 +726,44 @@ namespace CamelotFramework
 		mScissorLeft = left;
 		mScissorRight = right;
 	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::clear(RenderTargetPtr target, UINT32 buffers, 
-		const Color& colour, float depth, UINT16 stencil, const Rect& clearArea)
+
+	void GLRenderSystem::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	{
+		if(mActiveRenderTarget == nullptr)
+			return;
+
+		Rect clearRect(0, 0, mActiveRenderTarget->getWidth(), mActiveRenderTarget->getHeight());
+
+		clearArea(buffers, color, depth, stencil, clearRect);
+	}
+
+	void GLRenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	{
+		Rect clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+
+		clearArea(buffers, color, depth, stencil, clearRect);
+	}
+
+	void GLRenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect& clearRect)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderTargetPtr previousRenderTarget = mActiveRenderTarget;
-		if(target != mActiveRenderTarget)
-		{
-			previousRenderTarget = mActiveRenderTarget;
-			setRenderTarget(target);
-		}
+		if(mActiveRenderTarget == nullptr)
+			return;
 
-		bool colourMask = !mColourWrite[0] || !mColourWrite[1] 
-		|| !mColourWrite[2] || !mColourWrite[3]; 
+		bool colorMask = !mColorWrite[0] || !mColorWrite[1] 
+		|| !mColorWrite[2] || !mColorWrite[3]; 
 
 		GLbitfield flags = 0;
 		if (buffers & FBT_COLOR)
 		{
 			flags |= GL_COLOR_BUFFER_BIT;
 			// Enable buffer for writing if it isn't
-			if (colourMask)
+			if (colorMask)
 			{
 				glColorMask(true, true, true, true);
 			}
-			glClearColor(colour.r, colour.g, colour.b, colour.a);
+			glClearColor(color.r, color.g, color.b, color.a);
 		}
 		if (buffers & FBT_DEPTH)
 		{
@@ -784,16 +796,19 @@ namespace CamelotFramework
 			glDisable(GL_SCISSOR_TEST);
 		}
 
-		if(clearArea.width > 0 && clearArea.height > 0)
+		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
+		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == mActiveRenderTarget->getWidth() && clearRect.height == mActiveRenderTarget->getHeight());
+
+		if(!clearEntireTarget)
 		{
-			setScissorRect(clearArea.x, clearArea.y, clearArea.width, clearArea.height);
+			setScissorRect(clearRect.x, clearRect.y, clearRect.x + clearRect.width, clearRect.y + clearRect.height);
 			setScissorTestEnable(true);			
 		}
 
 		// Clear buffers
 		glClear(flags);
 
-		if(clearArea.width > 0 && clearArea.height > 0)
+		if(!clearEntireTarget)
 		{
 			setScissorTestEnable(false);	
 		}
@@ -814,18 +829,13 @@ namespace CamelotFramework
 		{
 			glDepthMask( GL_FALSE );
 		}
-		if (colourMask && (buffers & FBT_COLOR))
+		if (colorMask && (buffers & FBT_COLOR))
 		{
-			glColorMask(mColourWrite[0], mColourWrite[1], mColourWrite[2], mColourWrite[3]);
+			glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
 		}
 		if (buffers & FBT_STENCIL)
 		{
 			glStencilMask(mStencilWriteMask);
-		}
-
-		if(previousRenderTarget != nullptr && target != previousRenderTarget)
-		{
-			setRenderTarget(previousRenderTarget);
 		}
 	}
 
@@ -1144,10 +1154,10 @@ namespace CamelotFramework
 	{
 		glColorMask(red, green, blue, alpha);
 		// record this
-		mColourWrite[0] = red;
-		mColourWrite[1] = blue;
-		mColourWrite[2] = green;
-		mColourWrite[3] = alpha;
+		mColorWrite[0] = red;
+		mColorWrite[1] = blue;
+		mColorWrite[2] = green;
+		mColorWrite[3] = alpha;
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setPolygonMode(PolygonMode level)
@@ -1379,7 +1389,7 @@ namespace CamelotFramework
 		// clearFrameBuffer would be wrong because the value we are recorded may be
 		// difference with the really state stored in GL context.
 		glDepthMask(mDepthWrite);
-		glColorMask(mColourWrite[0], mColourWrite[1], mColourWrite[2], mColourWrite[3]);
+		glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
 		glStencilMask(mStencilWriteMask);
 
 	}

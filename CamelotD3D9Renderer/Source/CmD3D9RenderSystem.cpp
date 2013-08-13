@@ -85,6 +85,7 @@ namespace CamelotFramework
 		: mTexStageDesc(nullptr)
 		, mNumTexStages(0)
 		, mCurrentDrawOperation(DOT_TRIANGLE_LIST)
+		, mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0)
 	{
 		// update singleton access pointer.
 		msD3D9RenderSystem = this;
@@ -1132,7 +1133,7 @@ namespace CamelotFramework
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setViewport(ViewportPtr& vp)
+	void D3D9RenderSystem::setViewport(const ViewportPtr& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1149,6 +1150,11 @@ namespace CamelotFramework
 		setCullingMode( mCullingMode );
 
 		// set viewport dimensions
+		mViewportWidth = vp->getWidth();
+		mViewportHeight = vp->getHeight();
+		mViewportLeft = vp->getLeft();
+		mViewportTop = vp->getTop();
+
 		d3dvp.X = vp->getLeft();
 		d3dvp.Y = vp->getTop();
 		d3dvp.Width = vp->getWidth();
@@ -1366,18 +1372,30 @@ namespace CamelotFramework
 			}
 		}
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::clear(RenderTargetPtr target, UINT32 buffers, 
-		const Color& color, float depth, UINT16 stencil, const Rect& clearArea)
+
+	void D3D9RenderSystem::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	{
+		if(mActiveRenderTarget == nullptr)
+			return;
+
+		Rect clearRect(0, 0, mActiveRenderTarget->getWidth(), mActiveRenderTarget->getHeight());
+
+		clearArea(buffers, color, depth, stencil, clearRect);
+	}
+
+	void D3D9RenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	{
+		Rect clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+
+		clearArea(buffers, color, depth, stencil, clearRect);
+	}
+
+	void D3D9RenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect& clearRect)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderTargetPtr previousRenderTarget = mActiveRenderTarget;
-		if(target != mActiveRenderTarget)
-		{
-			previousRenderTarget = mActiveRenderTarget;
-			setRenderTarget(target);
-		}
+		if(mActiveRenderTarget == nullptr)
+			return;
 
 		DWORD flags = 0;
 		if (buffers & FBT_COLOR)
@@ -1395,14 +1413,17 @@ namespace CamelotFramework
 			flags |= D3DCLEAR_STENCIL;
 		}
 
-		if(clearArea.width > 0 && clearArea.height > 0)
+		bool clearEntireTarget = clearRect.width == 0 || clearRect.height == 0;
+		clearEntireTarget |= (clearRect.x == 0 && clearRect.y == 0 && clearRect.width == mActiveRenderTarget->getWidth() && clearRect.height == mActiveRenderTarget->getHeight());
+
+		if(!clearEntireTarget)
 		{
 			D3DRECT clearD3DRect;
-			clearD3DRect.x1 = clearArea.x;
-			clearD3DRect.x2 = clearD3DRect.x1 + clearArea.width;
+			clearD3DRect.x1 = clearRect.x;
+			clearD3DRect.x2 = clearD3DRect.x1 + clearRect.width;
 
-			clearD3DRect.y1 = clearArea.y;
-			clearD3DRect.y2 = clearD3DRect.y1 + clearArea.height;
+			clearD3DRect.y1 = clearRect.y;
+			clearD3DRect.y2 = clearD3DRect.y1 + clearRect.height;
 
 			HRESULT hr;
 			if(FAILED( hr = getActiveD3D9Device()->Clear(1, &clearD3DRect, flags, color.getAsBGRA(), depth, stencil)))
@@ -1419,11 +1440,6 @@ namespace CamelotFramework
 				String msg = DXGetErrorDescription(hr);
 				CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
 			}
-		}
-
-		if(previousRenderTarget != nullptr && target != previousRenderTarget)
-		{
-			setRenderTarget(previousRenderTarget);
 		}
 	}
 	//---------------------------------------------------------------------

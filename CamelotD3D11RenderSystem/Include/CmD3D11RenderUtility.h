@@ -11,7 +11,7 @@ namespace CamelotFramework
 		D3D11RenderUtility(D3D11Device* device);
 		~D3D11RenderUtility();
 
-		void drawClearQuad(const Rect& screenArea, UINT32 clearBuffers, const Color& color, float depth, UINT16 stencil);
+		void drawClearQuad(UINT32 clearBuffers, const Color& color, float depth, UINT16 stencil);
 
 	protected:
 		D3D11Device* mDevice;

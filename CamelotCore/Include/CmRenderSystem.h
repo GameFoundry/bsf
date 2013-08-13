@@ -154,7 +154,7 @@ namespace CamelotFramework
 
 		@param target Viewport to render to.
 		*/
-		virtual void setViewport(ViewportPtr& vp) = 0;
+		virtual void setViewport(const ViewportPtr& vp) = 0;
 
 		/** Sets the current vertex buffer for the specified source index.   
 		/** @note Set buffer to nullptr to clear the buffer at the specified index.*/
@@ -260,18 +260,28 @@ namespace CamelotFramework
 		*/
 		virtual void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) = 0;
 
-		/** Clears the provided render target to the specified values
-		@param renderTarget Render target to clear. Entire surface will be cleared
-				regardless of viewport or scissor rect.
-		@param buffers Combination of one or more elements of FrameBufferType
-		denoting which buffers are to be cleared
-		@param colour The colour to clear the colour buffer with, if enabled
-		@param depth The value to initialise the depth buffer with, if enabled
-		@param stencil The value to initialise the stencil buffer with, if enabled.
-		*/
-		virtual void clear(RenderTargetPtr renderTarget, UINT32 buffers, 
-			const Color& color = Color::Black, 
-			float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY) = 0;
+		/**
+		 * @brief	Clears the currently active render target.
+		 *
+		 * @param	buffers			Combination of one or more elements of FrameBufferType
+		 *							denoting which buffers are to be cleared.
+		 * @param	color			(optional) The color to clear the color buffer with, if enabled.
+		 * @param	depth			(optional) The value to initialise the depth buffer with, if enabled.
+		 * @param	stencil			(optional) The value to initialise the stencil buffer with, if enabled.
+		 */
+		virtual void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) = 0;
+
+		/**
+		 * @brief	Clears the currently active viewport (i.e. it clears just a sub-area of a render-target that is covered by the viewport,
+		 * 			as opposed to clearRenderTarget which always clears the entire render target).
+		 *
+		 * @param	buffers			Combination of one or more elements of FrameBufferType
+		 *							denoting which buffers are to be cleared.
+		 * @param	color			(optional) The color to clear the color buffer with, if enabled.
+		 * @param	depth			(optional) The value to initialise the depth buffer with, if enabled.
+		 * @param	stencil			(optional) The value to initialise the stencil buffer with, if enabled.
+		 */
+		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) = 0;
 
 		/**
          * Set current render target to target, enabling its device context if needed

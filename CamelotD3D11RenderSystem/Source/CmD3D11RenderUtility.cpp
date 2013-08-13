@@ -31,26 +31,8 @@ namespace CamelotFramework
 		SAFE_RELEASE(mClearQuadVB);
 	}
 
-	void D3D11RenderUtility::drawClearQuad(const Rect& screenArea, 
-		UINT32 clearBuffers, const Color& color, float depth, UINT16 stencil)
+	void D3D11RenderUtility::drawClearQuad(UINT32 clearBuffers, const Color& color, float depth, UINT16 stencil)
 	{
-		// Set viewport
-		UINT32 oldNumViewports = 0;
-		mDevice->getImmediateContext()->RSGetViewports(&oldNumViewports, nullptr);
-
-		D3D11_VIEWPORT* oldViewports = cm_newN<D3D11_VIEWPORT>(oldNumViewports);
-		mDevice->getImmediateContext()->RSGetViewports(&oldNumViewports, oldViewports);
-
-		D3D11_VIEWPORT newViewport;
-		newViewport.TopLeftX = (float)screenArea.x;
-		newViewport.TopLeftY = (float)screenArea.y;
-		newViewport.Width = (float)screenArea.width;
-		newViewport.Height = (float)screenArea.height;
-		newViewport.MinDepth = 0.0f;
-		newViewport.MaxDepth = 1.0f;
-
-		mDevice->getImmediateContext()->RSSetViewports(1, &newViewport);
-
 		// Set states
 		if((clearBuffers & FBT_COLOR) != 0)
 		{
@@ -122,10 +104,6 @@ namespace CamelotFramework
 		mDevice->getImmediateContext()->IASetInputLayout(mClearQuadIL);
 
 		mDevice->getImmediateContext()->DrawIndexed(6, 0, 0);
-
-		// Restore viewports
-		mDevice->getImmediateContext()->RSSetViewports(oldNumViewports, oldViewports);
-		cm_deleteN(oldViewports, oldNumViewports);
 	}
 
 	void D3D11RenderUtility::initClearQuadResources()

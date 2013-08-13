@@ -302,7 +302,7 @@ namespace CamelotFramework
 		// Not used
 	}
 
-	void D3D11RenderSystem::setViewport(ViewportPtr& vp)
+	void D3D11RenderSystem::setViewport(const ViewportPtr& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -576,74 +576,78 @@ namespace CamelotFramework
 		mDevice->getImmediateContext()->RSSetScissorRects(1, &mScissorRect);
 	}
 
-	void D3D11RenderSystem::clear(RenderTargetPtr target, UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect& clearArea)
+	void D3D11RenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		if(mActiveRenderTarget == nullptr)
+			return;
+
+		Rect clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
+
 		bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
-		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == target->getWidth() && clearArea.height == target->getHeight());
+		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == mActiveRenderTarget->getWidth() && clearArea.height == mActiveRenderTarget->getHeight());
 
 		if(!clearEntireTarget)
-		{
-			RenderTargetPtr oldRenderTarget = mActiveRenderTarget;
-			if(target != mActiveRenderTarget)
-				setRenderTarget(target);
-
-			D3D11RenderUtility::instance().drawClearQuad(clearArea, buffers, color, depth, stencil);
-
-			if(oldRenderTarget != mActiveRenderTarget && oldRenderTarget != nullptr)
-				setRenderTarget(oldRenderTarget);
-		}
+			D3D11RenderUtility::instance().drawClearQuad(buffers, color, depth, stencil);
 		else
+			clearRenderTarget(buffers, color, depth, stencil);
+	}
+
+	void D3D11RenderSystem::clearRenderTarget(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if(mActiveRenderTarget == nullptr)
+			return;
+
+		// Clear render surfaces
+		if (buffers & FBT_COLOR)
 		{
-			// Clear render surfaces
-			if (buffers & FBT_COLOR)
+			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
+
+			ID3D11RenderTargetView** views = cm_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
+			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
+
+			mActiveRenderTarget->getCustomAttribute("RTV", views);
+			if (!views[0])
 			{
-				UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-
-				ID3D11RenderTargetView** views = cm_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
-				memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
-
-				target->getCustomAttribute("RTV", views);
-				if (!views[0])
-				{
-					cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
-					return;
-				}
-
-				float clearColor[4];
-				clearColor[0] = color.r;
-				clearColor[1] = color.g;
-				clearColor[2] = color.b;
-				clearColor[3] = color.a;
-
-				for(UINT32 i = 0; i < maxRenderTargets; i++)
-				{
-					if(views[i] != nullptr)
-						mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
-				}
-
 				cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
+				return;
 			}
 
-			// Clear depth stencil
-			if((buffers & FBT_DEPTH) != 0 || (buffers & FBT_STENCIL) != 0)
+			float clearColor[4];
+			clearColor[0] = color.r;
+			clearColor[1] = color.g;
+			clearColor[2] = color.b;
+			clearColor[3] = color.a;
+
+			for(UINT32 i = 0; i < maxRenderTargets; i++)
 			{
-				ID3D11DepthStencilView* depthStencilView = nullptr;
-				target->getCustomAttribute("DSV", &depthStencilView);
-
-				D3D11_CLEAR_FLAG clearFlag;
-
-				if((buffers & FBT_DEPTH) != 0 && (buffers & FBT_STENCIL) != 0)
-					clearFlag = (D3D11_CLEAR_FLAG)(D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL);
-				else if((buffers & FBT_STENCIL) != 0)
-					clearFlag = D3D11_CLEAR_STENCIL;
-				else
-					clearFlag = D3D11_CLEAR_DEPTH;
-
-				if(depthStencilView != nullptr)
-					mDevice->getImmediateContext()->ClearDepthStencilView(depthStencilView, clearFlag, depth, (UINT8)stencil);
+				if(views[i] != nullptr)
+					mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
 			}
+
+			cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
+		}
+
+		// Clear depth stencil
+		if((buffers & FBT_DEPTH) != 0 || (buffers & FBT_STENCIL) != 0)
+		{
+			ID3D11DepthStencilView* depthStencilView = nullptr;
+			mActiveRenderTarget->getCustomAttribute("DSV", &depthStencilView);
+
+			D3D11_CLEAR_FLAG clearFlag;
+
+			if((buffers & FBT_DEPTH) != 0 && (buffers & FBT_STENCIL) != 0)
+				clearFlag = (D3D11_CLEAR_FLAG)(D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL);
+			else if((buffers & FBT_STENCIL) != 0)
+				clearFlag = D3D11_CLEAR_STENCIL;
+			else
+				clearFlag = D3D11_CLEAR_DEPTH;
+
+			if(depthStencilView != nullptr)
+				mDevice->getImmediateContext()->ClearDepthStencilView(depthStencilView, clearFlag, depth, (UINT8)stencil);
 		}
 	}
 

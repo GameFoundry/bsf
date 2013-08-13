@@ -126,7 +126,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderSystem::setViewport()
 		 */
-		void setViewport(ViewportPtr& vp);	
+		void setViewport(const ViewportPtr& vp);	
 
 		/**
 		 * @copydoc RenderSystem::beginFrame()
@@ -149,8 +149,16 @@ namespace CamelotFramework
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
 
         void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
-        void clear(RenderTargetPtr target, UINT32 buffers, const Color& colour = Color::Black, 
-            float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
+
+		/**
+		 * @copydoc RenderSystem::clearRenderTarget()
+		 */
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
+
+		/**
+		 * @copydoc RenderSystem::clearViewport()
+		 */
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 
@@ -184,6 +192,7 @@ namespace CamelotFramework
 		/// instance
 		HINSTANCE mhInstance;
 
+		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
 		// Scissor test rectangle
 		RECT mScissorRect;
 		/// List of D3D drivers installed (video cards)
@@ -516,6 +525,8 @@ namespace CamelotFramework
 		 * 			Actual comparison function and stencil operations are set by setting the DepthStencilState.
 		 */
 		void setStencilRefValue(UINT32 refValue);
+
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
 
 		/// Notify when a device has been lost.
 		void notifyOnDeviceLost(D3D9Device* device);

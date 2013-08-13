@@ -77,12 +77,12 @@ namespace BansheeEngine
 			RenderTargetPtr target = camerasPerTarget.target;
 			const Vector<HCamera>::type& cameras = camerasPerTarget.cameras;
 
-			coreAccessor.setRenderTarget(target);
 			coreAccessor.beginFrame();
 
 			for(auto& camera : cameras)
 			{
 				ViewportPtr viewport = camera->getViewport();
+				coreAccessor.setViewport(viewport);
 
 				UINT32 clearBuffers = 0;
 				if(viewport->getRequiresColorClear())
@@ -95,7 +95,7 @@ namespace BansheeEngine
 					clearBuffers |= FBT_STENCIL;
 
 				if(clearBuffers != 0)
-					coreAccessor.clear(target, clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue(), viewport->getDimensions());
+					coreAccessor.clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
 
 				// Render scene
 				render(camera);
