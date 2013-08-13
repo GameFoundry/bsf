@@ -580,24 +580,18 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if(clearArea.width > 0 && clearArea.height > 0)
+		bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
+		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == target->getWidth() && clearArea.height == target->getHeight());
+
+		if(!clearEntireTarget)
 		{
 			RenderTargetPtr oldRenderTarget = mActiveRenderTarget;
 			if(target != mActiveRenderTarget)
 				setRenderTarget(target);
 
-			float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
-			float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
+			D3D11RenderUtility::instance().drawClearQuad(clearArea, buffers, color, depth, stencil);
 
-			float clipLeft = -1.0f + (clearArea.x * invViewportWidth);
-			float clipRight = -1.0f + ((clearArea.x + clearArea.width) * invViewportWidth);
-
-			float clipTop = 1.0f - (clearArea.y * invViewportHeight);
-			float clipBottom = 1.0f - ((clearArea.y + clearArea.height) * invViewportHeight);
-
-			D3D11RenderUtility::instance().drawClearQuad(clipLeft, clipRight - clipLeft, clipTop, clipBottom - clipTop, buffers, color, depth, stencil);
-
-			if(oldRenderTarget != mActiveRenderTarget)
+			if(oldRenderTarget != mActiveRenderTarget && oldRenderTarget != nullptr)
 				setRenderTarget(oldRenderTarget);
 		}
 		else

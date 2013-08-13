@@ -26,6 +26,8 @@ namespace CamelotFramework
 
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Unable to query D3D11InfoQueue");
+
+			setExceptionsErrorLevel(D3D11ERR_ERROR);
 #endif
 
 			// If feature level is 11, create class linkage
@@ -128,23 +130,23 @@ namespace CamelotFramework
 
 		switch(exceptionsErrorLevel)
 		{
-		case D3D11ERR_NO_EXCEPTION:
-			severityList.push_back(D3D11_MESSAGE_SEVERITY_CORRUPTION);
-		case D3D11ERR_CORRUPTION:
-			severityList.push_back(D3D11_MESSAGE_SEVERITY_ERROR);
-		case D3D11ERR_ERROR:
-			severityList.push_back(D3D11_MESSAGE_SEVERITY_WARNING);
-		case D3D11ERR_WARNING:
 		case D3D11ERR_INFO:
 			severityList.push_back(D3D11_MESSAGE_SEVERITY_INFO);
+		case D3D11ERR_WARNING:
+			severityList.push_back(D3D11_MESSAGE_SEVERITY_WARNING);
+		case D3D11ERR_ERROR:
+			severityList.push_back(D3D11_MESSAGE_SEVERITY_ERROR);
+		case D3D11ERR_CORRUPTION:
+			severityList.push_back(D3D11_MESSAGE_SEVERITY_CORRUPTION);
+		case D3D11ERR_NO_EXCEPTION:
 		default: 
 			break;
 		}
 
 		if (severityList.size() > 0)
 		{
-			filter.DenyList.NumSeverities = (UINT)severityList.size();
-			filter.DenyList.pSeverityList = &severityList[0];
+			filter.AllowList.NumSeverities = (UINT)severityList.size();
+			filter.AllowList.pSeverityList = &severityList[0];
 		}
 
 		mInfoQueue->AddStorageFilterEntries(&filter);

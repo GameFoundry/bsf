@@ -77,6 +77,7 @@ namespace BansheeEngine
 			RenderTargetPtr target = camerasPerTarget.target;
 			const Vector<HCamera>::type& cameras = camerasPerTarget.cameras;
 
+			coreAccessor.setRenderTarget(target);
 			coreAccessor.beginFrame();
 
 			for(auto& camera : cameras)

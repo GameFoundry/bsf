@@ -36,8 +36,8 @@
 #include "CmRTTIType.h"
 #include "CmCursor.h"
 
-//#define DX11
-#define DX9
+#define DX11
+//#define DX9
 //#define GL
 
 using namespace CamelotFramework;
@@ -274,7 +274,7 @@ int CALLBACK WinMain(
 	/* 								EDITOR INIT                      		*/
 	/************************************************************************/
 
-	MainEditorWindow mainWindow(gApplication().getPrimaryWindow());
+	MainEditorWindow* mainWindow = cm_new<MainEditorWindow>(gApplication().getPrimaryWindow());
 	EditorWindowManager::startUp(cm_new<EditorWindowManager>());
 
 	/************************************************************************/
@@ -291,6 +291,7 @@ int CALLBACK WinMain(
 	/************************************************************************/
 
 	EditorWindowManager::shutDown();
+	cm_delete(mainWindow);
 
 	/************************************************************************/
 	/* 							EDITOR SHUTDOWN END                    		*/

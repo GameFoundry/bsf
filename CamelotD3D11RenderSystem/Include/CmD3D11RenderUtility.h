@@ -11,7 +11,7 @@ namespace CamelotFramework
 		D3D11RenderUtility(D3D11Device* device);
 		~D3D11RenderUtility();
 
-		void drawClearQuad(float clipLeft, float clipWidth, float clipTop, float clipHeight, UINT32 clearBuffers, const Color& color, float depth, UINT16 stencil);
+		void drawClearQuad(const Rect& screenArea, UINT32 clearBuffers, const Color& color, float depth, UINT16 stencil);
 
 	protected:
 		D3D11Device* mDevice;
@@ -24,11 +24,12 @@ namespace CamelotFramework
 		ID3D11VertexShader* mClearQuadVS;
 		ID3D11PixelShader* mClearQuadPS;
 
-		BlendStatePtr mClearQuadBlendState;
-		RasterizerStatePtr mClearQuadRasterizerState;
-		DepthStencilStatePtr mClearQuadDSState_NoD_NoS;
-		DepthStencilStatePtr mClearQuadDSState_YesD_NoS;
-		DepthStencilStatePtr mClearQuadDSState_YesD_YesS;
-		DepthStencilStatePtr mClearQuadDSState_NoD_YesS;
+		HBlendState mClearQuadBlendStateYesC;
+		HBlendState mClearQuadBlendStateNoC;
+		HRasterizerState mClearQuadRasterizerState;
+		HDepthStencilState mClearQuadDSStateNoD_NoS;
+		HDepthStencilState mClearQuadDSStateYesD_NoS;
+		HDepthStencilState mClearQuadDSStateYesD_YesS;
+		HDepthStencilState mClearQuadDSStateNoD_YesS;
 	};
 }

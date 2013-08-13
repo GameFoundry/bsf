@@ -3,6 +3,9 @@
 #include "CmVector3.h"
 #include "CmColor.h"
 #include "CmRect.h"
+#include "CmD3D11BlendState.h"
+#include "CmD3D11RasterizerState.h"
+#include "CmD3D11DepthStencilState.h"
 
 namespace CamelotFramework
 {
@@ -16,7 +19,7 @@ namespace CamelotFramework
 		:mDevice(device), mClearQuadIB(nullptr), mClearQuadVB(nullptr), 
 		mClearQuadIL(nullptr), mClearQuadVS(nullptr), mClearQuadPS(nullptr)
 	{
-
+		initClearQuadResources();
 	}
 
 	D3D11RenderUtility::~D3D11RenderUtility()
@@ -26,29 +29,83 @@ namespace CamelotFramework
 		SAFE_RELEASE(mClearQuadIL);
 		SAFE_RELEASE(mClearQuadIB);
 		SAFE_RELEASE(mClearQuadVB);
-
-		// TODO - Clear up all resources
 	}
 
-	void D3D11RenderUtility::drawClearQuad(float clipLeft, float clipWidth, float clipTop, float clipHeight, 
+	void D3D11RenderUtility::drawClearQuad(const Rect& screenArea, 
 		UINT32 clearBuffers, const Color& color, float depth, UINT16 stencil)
 	{
-		// TODO - Set up states
-		// TODO - Make sure to apply proper states depending on "clearBuffers" flags. Don't forget about stencil
+		// Set viewport
+		UINT32 oldNumViewports = 0;
+		mDevice->getImmediateContext()->RSGetViewports(&oldNumViewports, nullptr);
+
+		D3D11_VIEWPORT* oldViewports = cm_newN<D3D11_VIEWPORT>(oldNumViewports);
+		mDevice->getImmediateContext()->RSGetViewports(&oldNumViewports, oldViewports);
+
+		D3D11_VIEWPORT newViewport;
+		newViewport.TopLeftX = (float)screenArea.x;
+		newViewport.TopLeftY = (float)screenArea.y;
+		newViewport.Width = (float)screenArea.width;
+		newViewport.Height = (float)screenArea.height;
+		newViewport.MinDepth = 0.0f;
+		newViewport.MaxDepth = 1.0f;
+
+		mDevice->getImmediateContext()->RSSetViewports(1, &newViewport);
+
+		// Set states
+		if((clearBuffers & FBT_COLOR) != 0)
+		{
+			D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(mClearQuadBlendStateYesC.get()));
+			mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
+		}
+		else
+		{
+			D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(mClearQuadBlendStateNoC.get()));
+			mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
+		}
+
+		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(mClearQuadRasterizerState.get()));
+		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
+
+		if((clearBuffers & FBT_DEPTH) != 0)
+		{
+			if((clearBuffers & FBT_STENCIL) != 0)
+			{
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_YesS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+			}
+			else
+			{
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateYesD_NoS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+			}
+		}
+		else
+		{
+			if((clearBuffers & FBT_STENCIL) != 0)
+			{
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_YesS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+			}
+			else
+			{
+				D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(mClearQuadDSStateNoD_NoS.get()));
+				mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencil);
+			}
+		}
 
 		// TODO - How smart it is to update buffer right before drawing it!? (cache the clip area)
 		ClearVertex vertexData[4];
-		vertexData[0].pos = Vector3(clipLeft, clipTop, depth);
-		vertexData[1].pos = Vector3(clipLeft + clipWidth, clipTop, depth);
-		vertexData[2].pos = Vector3(clipLeft, clipTop + clipHeight, depth);
-		vertexData[3].pos = Vector3(clipLeft + clipWidth, clipTop + clipHeight, depth);
+		vertexData[0].pos = Vector3(-1.0f, 1.0f, depth);
+		vertexData[1].pos = Vector3(1.0f, 1.0f, depth);
+		vertexData[2].pos = Vector3(-1.0f, -1.0f, depth);
+		vertexData[3].pos = Vector3(1.0f, -1.0f, depth);
 
-		vertexData[0].col = color.getAsBGRA();
-		vertexData[1].col = color.getAsBGRA();
-		vertexData[2].col = color.getAsBGRA();
-		vertexData[3].col = color.getAsBGRA();
+		vertexData[0].col = color.getAsRGBA();
+		vertexData[1].col = color.getAsRGBA();
+		vertexData[2].col = color.getAsRGBA();
+		vertexData[3].col = color.getAsRGBA();
 
-		mDevice->getImmediateContext()->UpdateSubresource(mClearQuadVB, 0, nullptr, vertexData, 0, sizeof(vertexData));
+		mDevice->getImmediateContext()->UpdateSubresource(mClearQuadVB, 0, nullptr, vertexData, 0, sizeof(ClearVertex) * 4);
 
 		mDevice->getImmediateContext()->VSSetShader(mClearQuadVS, nullptr, 0);
 		mDevice->getImmediateContext()->PSSetShader(mClearQuadPS, nullptr, 0);
@@ -64,12 +121,56 @@ namespace CamelotFramework
 		mDevice->getImmediateContext()->IASetVertexBuffers(0, 1, buffers, strides, offsets);
 		mDevice->getImmediateContext()->IASetInputLayout(mClearQuadIL);
 
-		mDevice->getImmediateContext()->DrawIndexed(4, 0, 0);
+		mDevice->getImmediateContext()->DrawIndexed(6, 0, 0);
 
+		// Restore viewports
+		mDevice->getImmediateContext()->RSSetViewports(oldNumViewports, oldViewports);
+		cm_deleteN(oldViewports, oldNumViewports);
 	}
 
 	void D3D11RenderUtility::initClearQuadResources()
 	{
+		BLEND_STATE_DESC blendStateDescYesC;
+		mClearQuadBlendStateYesC = BlendState::create(blendStateDescYesC);
+
+		BLEND_STATE_DESC blendStateDescNoC;
+		for(int i = 0; i < CM_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			blendStateDescNoC.renderTargetDesc[i].renderTargetWriteMask = 0;
+
+		mClearQuadBlendStateNoC = BlendState::create(blendStateDescNoC);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDescNoD_NoS;
+		depthStateDescNoD_NoS.depthReadEnable = false;
+		depthStateDescNoD_NoS.depthWriteEnable = false;
+		depthStateDescNoD_NoS.depthComparisonFunc = CMPF_ALWAYS_PASS;
+		mClearQuadDSStateNoD_NoS = DepthStencilState::create(depthStateDescNoD_NoS);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDescYesD_NoS;
+		depthStateDescYesD_NoS.depthReadEnable = false;
+		depthStateDescYesD_NoS.depthWriteEnable = false; // TODO - Set to true
+		//depthStateDescYesD_NoS.depthComparisonFunc = CMPF_ALWAYS_PASS;
+		mClearQuadDSStateYesD_NoS = DepthStencilState::create(depthStateDescYesD_NoS);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDescYesD_YesS;
+		depthStateDescYesD_YesS.depthReadEnable = false;
+		depthStateDescYesD_YesS.depthWriteEnable = true;
+		depthStateDescYesD_YesS.depthComparisonFunc = CMPF_ALWAYS_PASS;
+		depthStateDescYesD_YesS.stencilEnable = true;
+		depthStateDescYesD_YesS.frontStencilComparisonFunc = CMPF_ALWAYS_PASS;
+		depthStateDescYesD_YesS.frontStencilPassOp = SOP_REPLACE;
+		mClearQuadDSStateYesD_YesS = DepthStencilState::create(depthStateDescYesD_YesS);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDescNoD_YesS;
+		depthStateDescNoD_YesS.depthReadEnable = false;
+		depthStateDescNoD_YesS.depthWriteEnable = false;
+		depthStateDescNoD_YesS.depthComparisonFunc = CMPF_ALWAYS_PASS;
+		depthStateDescNoD_YesS.stencilEnable = true;
+		depthStateDescNoD_YesS.frontStencilComparisonFunc = CMPF_ALWAYS_PASS;
+		mClearQuadDSStateNoD_YesS = DepthStencilState::create(depthStateDescNoD_YesS);
+
+		RASTERIZER_STATE_DESC rasterizerStateDesc;
+		mClearQuadRasterizerState = RasterizerState::create(rasterizerStateDesc);
+
 		String vsShaderCode = "										\
 						void main(									\
 						in float3 inPos : POSITION,					\
@@ -82,7 +183,7 @@ namespace CamelotFramework
 						}											\
 						";
 
-		String psShaderCode = "float4 ps_main(in float4 inPos : SV_Position, float4 color : COLOR) : SV_Target	\
+		String psShaderCode = "float4 main(in float4 inPos : SV_Position, float4 color : COLOR0) : SV_Target	\
 								{ return color; }";
 
 		HRESULT hr;
@@ -170,12 +271,12 @@ namespace CamelotFramework
 		// Create vertex buffer
 		D3D11_BUFFER_DESC mVBDesc;
 
-		mVBDesc.ByteWidth = sizeof(float) * 3 + sizeof(UINT32);
+		mVBDesc.ByteWidth = sizeof(ClearVertex) * 4;
 		mVBDesc.MiscFlags = 0;
 		mVBDesc.StructureByteStride = 0;
 
 		mVBDesc.Usage = D3D11_USAGE_DEFAULT;
-		mVBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; 
+		mVBDesc.CPUAccessFlags = 0; 
 		mVBDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 
 		ClearVertex vertexData[4];
@@ -202,12 +303,12 @@ namespace CamelotFramework
 		// Create index buffer
 		D3D11_BUFFER_DESC mIBDesc;
 
-		mIBDesc.ByteWidth = sizeof(UINT16) * 4;
+		mIBDesc.ByteWidth = sizeof(UINT16) * 6;
 		mIBDesc.MiscFlags = 0;
 		mIBDesc.StructureByteStride = 0;
 
 		mIBDesc.Usage = D3D11_USAGE_DEFAULT;
-		mIBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE; 
+		mIBDesc.CPUAccessFlags = 0; 
 		mIBDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 
 		UINT16 indexData[6];
