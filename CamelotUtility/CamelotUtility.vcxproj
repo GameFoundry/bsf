@@ -292,7 +292,7 @@
     <ClInclude Include="Include\CmTimer.h" />
     <ClInclude Include="Include\CmTypes.h" />
     <ClInclude Include="Include\CmFwdDeclUtil.h" />
-    <ClInclude Include="Include\CmAxisAlignedBox.h" />
+    <ClInclude Include="Include\CmAABox.h" />
     <ClInclude Include="Include\CmMath.h" />
     <ClInclude Include="Include\CmMatrix3.h" />
     <ClInclude Include="Include\CmMatrix4.h" />
@@ -320,7 +320,7 @@
     <ClInclude Include="Include\CmTexAtlasGenerator.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Include\CmAxisAlignedBox.cpp" />
+    <ClCompile Include="Include\CmAABox.cpp" />
     <ClCompile Include="Source\CmColor.cpp" />
     <ClCompile Include="Source\CmDebug.cpp" />
     <ClCompile Include="Source\CmDynLibManager.cpp" />

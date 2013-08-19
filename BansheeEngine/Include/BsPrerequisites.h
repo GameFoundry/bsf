@@ -68,6 +68,9 @@ namespace BansheeEngine
 	class Renderable;
 	class Camera;
 
+	struct RenderOperation;
+	class RendererSort;
+
 	typedef std::shared_ptr<TextSprite> TextSpritePtr;
 	typedef std::shared_ptr<SpriteTexture> SpriteTexturePtr;
 	typedef std::shared_ptr<Overlay> OverlayPtr;
@@ -82,6 +85,14 @@ namespace BansheeEngine
 	{
 		TID_Camera = 30000,
 		TID_Renderable = 30001
+	};
+
+	enum class RenderQueue
+	{
+		Skybox = 10000,
+		Opaque = 11000,
+		Transparent = 12000,
+		Overlay = 13000
 	};
 }
 

@@ -98,7 +98,7 @@ namespace CamelotFramework {
 			indicate the distance along the ray at which it intersects. 
 			This can be converted to a point in space by calling getPoint().
 		*/
-		std::pair<bool, float> intersects(const AxisAlignedBox& box) const
+		std::pair<bool, float> intersects(const AABox& box) const
 		{
 			return Math::intersects(*this, box);
 		}

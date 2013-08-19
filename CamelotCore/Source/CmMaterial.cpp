@@ -16,7 +16,7 @@
 namespace CamelotFramework
 {
 	Material::Material()
-		:Resource(false)
+		:Resource(false), mRenderQueue(0)
 	{
 
 	}

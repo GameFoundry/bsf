@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "CmCommonEnums.h"
 
 #include "CmCommandQueue.h"
-#include "CmRenderOperation.h"
+#include "CmRenderOpMesh.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmRenderTarget.h"
 #include "CmRenderTexture.h"
@@ -184,7 +184,7 @@ namespace CamelotFramework
 		 * 			It will automatically set up vertex declaration, draw operation, 
 		 * 			vertex and index buffers and draw them.
 		 */
-		virtual void render(const RenderOperation& op);
+		virtual void render(const RenderOpMesh& op);
 
 		/**
 		 * @brief	Draw an object based on currently set

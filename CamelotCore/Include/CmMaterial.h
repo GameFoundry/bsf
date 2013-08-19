@@ -77,6 +77,7 @@ namespace CamelotFramework
 		void setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx = 0);
 		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0);
 		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0);
+		void setRenderQueue(INT16 renderQueue) { mRenderQueue = renderQueue; }
 
 		//void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
 
@@ -89,6 +90,7 @@ namespace CamelotFramework
 		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const;
 		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const;
 		const StructData& getStructData(const String& name, UINT32 arrayIdx = 0) const;
+		INT16 getRenderQueue() const { return mRenderQueue; }
 
 		UINT32 getNumPasses() const;
 
@@ -106,6 +108,7 @@ namespace CamelotFramework
 
 		ShaderPtr mShader;
 		TechniquePtr mBestTechnique;
+		INT16 mRenderQueue;
 
 		Set<String>::type mValidShareableParamBlocks;
 		Map<String, String>::type mValidParams; // Also maps Shader param name -> gpu variable name

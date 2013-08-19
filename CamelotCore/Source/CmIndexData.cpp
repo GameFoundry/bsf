@@ -3,7 +3,7 @@
 #include "CmVertexBuffer.h"
 #include "CmIndexBuffer.h"
 #include "CmVector3.h"
-#include "CmAxisAlignedBox.h"
+#include "CmAABox.h"
 #include "CmException.h"
 #include "CmRenderSystem.h"
 

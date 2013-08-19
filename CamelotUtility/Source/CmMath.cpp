@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmVector4.h"
 #include "CmRay.h"
 #include "CmSphere.h"
-#include "CmAxisAlignedBox.h"
+#include "CmAABox.h"
 #include "CmPlane.h"
 
 
@@ -484,17 +484,14 @@ namespace CamelotFramework
 
     }
     //-----------------------------------------------------------------------
-	std::pair<bool, float> Math::intersects(const Ray& ray, const AxisAlignedBox& box)
+	std::pair<bool, float> Math::intersects(const Ray& ray, const AABox& box)
 	{
-		if (box.isNull()) return std::pair<bool, float>(false, 0.0f);
-		if (box.isInfinite()) return std::pair<bool, float>(true, 0.0f);
-
 		float lowt = 0.0f;
 		float t;
 		bool hit = false;
 		Vector3 hitpoint;
-		const Vector3& min = box.getMinimum();
-		const Vector3& max = box.getMaximum();
+		const Vector3& min = box.getMin();
+		const Vector3& max = box.getMax();
 		const Vector3& rayorig = ray.getOrigin();
 		const Vector3& raydir = ray.getDirection();
 
@@ -612,21 +609,11 @@ namespace CamelotFramework
 
 	} 
     //-----------------------------------------------------------------------
-    bool Math::intersects(const Ray& ray, const AxisAlignedBox& box,
+    bool Math::intersects(const Ray& ray, const AABox& box,
         float* d1, float* d2)
     {
-        if (box.isNull())
-            return false;
-
-        if (box.isInfinite())
-        {
-            if (d1) *d1 = 0;
-            if (d2) *d2 = Math::POS_INFINITY;
-            return true;
-        }
-
-        const Vector3& min = box.getMinimum();
-        const Vector3& max = box.getMaximum();
+        const Vector3& min = box.getMin();
+        const Vector3& max = box.getMax();
         const Vector3& rayorig = ray.getOrigin();
         const Vector3& raydir = ray.getDirection();
 
@@ -801,16 +788,13 @@ namespace CamelotFramework
         return intersects(ray, a, b, c, normal, positiveSide, negativeSide);
     }
     //-----------------------------------------------------------------------
-    bool Math::intersects(const Sphere& sphere, const AxisAlignedBox& box)
+    bool Math::intersects(const Sphere& sphere, const AABox& box)
     {
-        if (box.isNull()) return false;
-        if (box.isInfinite()) return true;
-
         // Use splitting planes
         const Vector3& center = sphere.getCenter();
         float radius = sphere.getRadius();
-        const Vector3& min = box.getMinimum();
-        const Vector3& max = box.getMaximum();
+        const Vector3& min = box.getMin();
+        const Vector3& max = box.getMax();
 
 		// Arvo's algorithm
 		float s, d = 0;
@@ -831,7 +815,7 @@ namespace CamelotFramework
 
     }
     //-----------------------------------------------------------------------
-    bool Math::intersects(const Plane& plane, const AxisAlignedBox& box)
+    bool Math::intersects(const Plane& plane, const AABox& box)
     {
         return (plane.getSide(box) == Plane::BOTH_SIDE);
     }
@@ -966,10 +950,10 @@ namespace CamelotFramework
 
 	}
 	//---------------------------------------------------------------------
-	float Math::boundingRadiusFromAABB(const AxisAlignedBox& aabb)
+	float Math::boundingRadiusFromAABB(const AABox& aabb)
 	{
-		Vector3 max = aabb.getMaximum();
-		Vector3 min = aabb.getMinimum();
+		Vector3 max = aabb.getMax();
+		Vector3 min = aabb.getMin();
 
 		Vector3 magnitude = max;
 		magnitude.makeCeil(-max);

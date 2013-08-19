@@ -354,7 +354,7 @@
     <ClInclude Include="Include\CmRenderer.h" />
     <ClInclude Include="Include\CmRendererFactory.h" />
     <ClInclude Include="Include\CmRendererManager.h" />
-    <ClInclude Include="Include\CmRenderOperation.h" />
+    <ClInclude Include="Include\CmRenderOpMesh.h" />
     <ClInclude Include="Include\CmRenderStateManager.h" />
     <ClInclude Include="Include\CmRenderSystem.h" />
     <ClInclude Include="Include\CmRenderSystemCapabilities.h" />

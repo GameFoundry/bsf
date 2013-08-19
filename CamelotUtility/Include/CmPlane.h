@@ -91,7 +91,7 @@ namespace CamelotFramework {
         Returns the side where the alignedBox is. The flag BOTH_SIDE indicates an intersecting box.
         One corner ON the plane is sufficient to consider the box and the plane intersecting.
         */
-        Side getSide (const AxisAlignedBox& rkBox) const;
+        Side getSide (const AABox& rkBox) const;
 
         /** Returns which side of the plane that the given box lies on.
             The box is defined as centre/half-size pairs for effectively.

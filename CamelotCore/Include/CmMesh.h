@@ -5,7 +5,7 @@
 #include "CmMeshData.h"
 #include "CmVertexData.h"
 #include "CmIndexData.h"
-#include "CmRenderOperation.h"
+#include "CmRenderOpMesh.h"
 
 namespace CamelotFramework
 {
@@ -58,7 +58,11 @@ namespace CamelotFramework
 		 */
 		UINT32 mapToSubresourceIdx() const { return 0; }
 
-		RenderOperation getRenderOperation(UINT32 subMeshIdx = 0) const;
+		RenderOpMesh getSubMeshData(UINT32 subMeshIdx = 0) const;
+		UINT32 getNumSubMeshes() const { return (UINT32)mSubMeshes.size(); }
+
+		const AABox& getBounds() const;
+		const AABox& getBounds(UINT32 submeshIdx) const;
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.

@@ -255,9 +255,6 @@
     <ClInclude Include="Include\CmSamplerState.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmRenderOperation.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmResourceHandle.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
@@ -458,6 +455,9 @@
     </ClInclude>
     <ClInclude Include="Include\CmDeferredCallManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRenderOpMesh.h">
+      <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

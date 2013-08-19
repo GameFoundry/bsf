@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmMath.h"
 #include "CmMatrix3.h"
 #include "CmVector2.h"
-#include "CmAxisAlignedBox.h"
+#include "CmAABox.h"
 #include "CmSphere.h"
 #include "CmHardwareBufferManager.h"
 #include "CmVertexBuffer.h"
@@ -67,7 +67,8 @@ namespace BansheeEngine
 		mCustomProjMatrix(false),
 		mFrustumExtentsManuallySet(false),
 		mIgnoreSceneRenderables(false),
-		mPriority(0)
+		mPriority(0),
+		mLayers(0xFFFFFFFFFFFFFFFF)
     {
 		updateView();
 		updateFrustum();
@@ -223,14 +224,8 @@ namespace BansheeEngine
 	}
 
 	//-----------------------------------------------------------------------
-	bool Camera::isVisible(const AxisAlignedBox& bound, FrustumPlane* culledBy) const
+	bool Camera::isVisible(const AABox& bound, FrustumPlane* culledBy) const
 	{
-		// Null boxes always invisible
-		if (bound.isNull()) return false;
-
-		// Infinite boxes always visible
-		if (bound.isInfinite()) return true;
-
 		// Make any pending updates to the calculated frustum planes
 		updateFrustumPlanes();
 
@@ -676,7 +671,7 @@ namespace BansheeEngine
 		invalidateFrustum();
 	}
 	//-----------------------------------------------------------------------
-	const AxisAlignedBox& Camera::getBoundingBox(void) const
+	const AABox& Camera::getBoundingBox(void) const
 	{
 		return mBoundingBox;
 	}

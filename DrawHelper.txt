@@ -1,0 +1,21 @@
+Add class DrawHelper:
+ - Line2D_AA - Creates an emulated AA line using triangles. See Recast/imguiRenderGL::drawPolygon for implementation. Line vertices and colors
+      are appended in the specified buffer. No actual drawing is done.
+ - Line2D_Pixel - Creates a simple line using LINE primitive topology. Line vertices and colors are appended in the specified buffer.
+ - Quad2D
+ - QuadBorder2D_AA
+ - QuadBorder2D_Pixel
+ - Polygon2D
+ - PolygonBorder2D_AA
+ - PolygonBorder2D_Pixel
+ - LineList2D_AA
+ - LineList2D_Pixel
+ - RoundedRect2D - Also copy from Recast/imguiRenderGL::drawRoundedRect
+ - Also 3D equivalents
+  - Line, Quad, QuadBorder, Box, BoxBorder
+
+ - Then I also need draw* equivalents of those methods. draw equivalents will also create the buffer and submit the draw call.
+   - draw equivalents accept a time for how long to display the element, if 0 it will only be displayed for one frame
+   - all elements should be grouped into a common vertex/index buffer (as much as possible)
+   - draw methods should combine methods above to make drawing easier. e.g. a transparent box with AA line borders should be easily drawable
+

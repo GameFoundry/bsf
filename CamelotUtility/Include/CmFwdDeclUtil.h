@@ -5,7 +5,7 @@ namespace CamelotFramework {
 	// Allows use of pointers in header files without including individual .h
 	// so decreases dependencies between files
 	class Angle;
-	class AxisAlignedBox;
+	class AABox;
 	class Degree;
 	class Math;
 	class Matrix3;

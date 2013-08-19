@@ -1,7 +1,9 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsRenderOperation.h"
 #include "CmComponent.h"
+#include "CmAABox.h"
 
 namespace BansheeEngine
 {
@@ -9,13 +11,25 @@ namespace BansheeEngine
 	{
 	public:
 		void setMesh(CM::HMesh mesh) { mMesh = mesh; }
-		void setMaterial(CM::HMaterial material) { mMaterial = material; }
+		void setNumMaterials(CM::UINT32 numMaterials);
+		void setMaterial(CM::UINT32 idx, CM::HMaterial material);
+		void setLayer(CM::UINT64 layer);
 
-		CM::HMesh getMesh() const { return mMesh; }
-		CM::HMaterial getMaterial() const { return mMaterial; }
+		CM::UINT32 getNumRenderOperations() const;
+
+		/**
+		* @note  This method relies on getNumRenderOperations() being called and ensuring that idx doesn't exceed
+		* the number returned by that method
+		*/
+		RenderOperation getRenderOperation(CM::UINT32 idx) const;
+		CM::UINT64 getLayer() const { return mLayer; }
+
+		void updateWorldBounds();
 	private:
 		CM::HMesh mMesh;
-		CM::HMaterial mMaterial;
+		CM::Vector<CM::HMaterial>::type mMaterials;
+		CM::UINT64 mLayer;
+		CM::Vector<CM::AABox>::type mWorldBounds;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/

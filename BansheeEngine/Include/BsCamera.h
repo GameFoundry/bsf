@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include "CmMatrix4.h"
 #include "CmVector3.h"
 #include "CmVector2.h"
-#include "CmAxisAlignedBox.h"
+#include "CmAABox.h"
 #include "CmVertexData.h"
 #include "CmIndexData.h"
 #include "CmPlane.h"
@@ -342,7 +342,7 @@ namespace BansheeEngine {
             @par
                 Otherwise, false is returned.
         */
-        virtual bool isVisible(const CM::AxisAlignedBox& bound, FrustumPlane* culledBy = 0) const;
+        virtual bool isVisible(const CM::AABox& bound, FrustumPlane* culledBy = 0) const;
 
         /** Tests whether the given container is visible in the Frustum.
             @param
@@ -371,7 +371,7 @@ namespace BansheeEngine {
         virtual bool isVisible(const CM::Vector3& vert, FrustumPlane* culledBy = 0) const;
 
         /** Overridden from MovableObject */
-        const CM::AxisAlignedBox& getBoundingBox(void) const;
+        const CM::AABox& getBoundingBox(void) const;
 
         /** Overridden from MovableObject */
 		float getBoundingRadius(void) const;
@@ -424,10 +424,14 @@ namespace BansheeEngine {
 		CM::INT32 getPriority() const { return mPriority; }
 		void setPriority(CM::INT32 priority) { mPriority = priority; }
 
+		CM::UINT64 getLayers() const { return mLayers; }
+		void setLayers(CM::UINT64 layers) { mLayers = layers; }
+
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
     protected:
 		CM::ViewportPtr mViewport;
+		CM::UINT64 mLayers;
 
 		/// Orthographic or perspective?
 		ProjectionType mProjType;
@@ -498,7 +502,7 @@ namespace BansheeEngine {
 		/// Signal to update frustum information.
 		virtual void invalidateFrustum(void) const;
 
-		mutable CM::AxisAlignedBox mBoundingBox;
+		mutable CM::AABox mBoundingBox;
 
 		mutable CM::Vector3 mWorldSpaceCorners[8];
 

@@ -175,7 +175,7 @@ namespace BansheeEngine
 			PassParametersPtr paramsPtr = mLineMaterial->getPassParameters(i);
 			pass->bindParameters(coreAccessor, paramsPtr);
 
-			coreAccessor.render(mLineMesh->getRenderOperation());
+			coreAccessor.render(mLineMesh->getSubMeshData());
 		}
 
 		for(UINT32 i = 0; i < mTriangleMaterial->getNumPasses(); i++)
@@ -186,7 +186,7 @@ namespace BansheeEngine
 			PassParametersPtr paramsPtr = mTriangleMaterial->getPassParameters(i);
 			pass->bindParameters(coreAccessor, paramsPtr);
 
-			coreAccessor.render(mTriangleMesh->getRenderOperation());
+			coreAccessor.render(mTriangleMesh->getSubMeshData());
 		}
 	}
 

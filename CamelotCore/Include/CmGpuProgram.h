@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 // Precompiler options
 #include "CmPrerequisites.h"
-#include "CmRenderOperation.h"
+#include "CmRenderOpMesh.h"
 #include "CmGpuProgramParams.h"
 #include "CmResource.h"
 #include "CmGpuParamDesc.h"

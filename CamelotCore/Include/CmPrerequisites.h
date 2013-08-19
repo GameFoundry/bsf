@@ -119,7 +119,7 @@ namespace CamelotFramework {
     class RenderTexture;
 	class MultiRenderTexture;
     class RenderWindow;
-    class RenderOperation;
+    struct RenderOpMesh;
     class StringInterface;
     class SamplerState;
     class TextureManager;

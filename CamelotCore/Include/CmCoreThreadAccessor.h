@@ -197,7 +197,7 @@ namespace CamelotFramework
 
 
 		/** @copydoc RenderSystem::render() */
-		void render(const RenderOperation& op)
+		void render(const RenderOpMesh& op)
 		{
 			mCommandQueue->queue(boost::bind(&RenderSystem::render, RenderSystem::instancePtr(), op));
 		}

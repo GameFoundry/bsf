@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmPlane.h"
 #include "CmMatrix3.h"
-#include "CmAxisAlignedBox.h" 
+#include "CmAABox.h" 
 
 namespace CamelotFramework {
 	//-----------------------------------------------------------------------
@@ -86,13 +86,8 @@ namespace CamelotFramework {
 
 
 	//-----------------------------------------------------------------------
-	Plane::Side Plane::getSide (const AxisAlignedBox& box) const
+	Plane::Side Plane::getSide (const AABox& box) const
 	{
-		if (box.isNull()) 
-			return NO_SIDE;
-		if (box.isInfinite())
-			return BOTH_SIDE;
-
         return getSide(box.getCenter(), box.getHalfSize());
 	}
     //-----------------------------------------------------------------------

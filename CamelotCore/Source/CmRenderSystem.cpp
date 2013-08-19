@@ -210,7 +210,7 @@ namespace CamelotFramework {
         return false;
 	}
 
-	void RenderSystem::render(const RenderOperation& op)
+	void RenderSystem::render(const RenderOpMesh& op)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

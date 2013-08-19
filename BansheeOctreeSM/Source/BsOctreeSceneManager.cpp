@@ -25,13 +25,24 @@ namespace BansheeEngine
 
 			HRenderable curRenderable = currentGO->getComponent<Renderable>();
 			if(curRenderable != nullptr)
-				renderables.push_back(curRenderable);
+			{
+				if((curRenderable->getLayer() & camera->getLayers()) != 0)
+					renderables.push_back(curRenderable);
+			}
 
 			for(UINT32 i = 0; i < currentGO->getNumChildren(); i++)
 				todo.push(currentGO->getChild(i));
 		}
 
 		return renderables;
+	}
+
+	void OctreeSceneManager::updateRenderableBounds()
+	{
+		for(auto& iter : mRenderables)
+		{
+			iter->updateWorldBounds();
+		}
 	}
 
 	void OctreeSceneManager::notifyComponentAdded(const HComponent& component)
@@ -48,6 +59,11 @@ namespace BansheeEngine
 
 			mCachedCameras.push_back(camera);
 		}
+		else if(component->getTypeId() == TID_Renderable)
+		{
+			HRenderable renderable = static_object_cast<Renderable>(component);
+			mRenderables.push_back(renderable);
+		}
 	}
 
 	void OctreeSceneManager::notifyComponentRemoved(const HComponent& component)
@@ -63,6 +79,15 @@ namespace BansheeEngine
 			}
 
 			mCachedCameras.erase(findIter);
+		}
+		else if(component->getTypeId() == TID_Renderable)
+		{
+			HRenderable renderable = static_object_cast<Renderable>(component);
+
+			// TODO - I should probably use some for of a hash set because searching through possibly thousands of renderables will be slow
+			auto findIter = std::find(mRenderables.begin(), mRenderables.end(), renderable);
+			if(findIter != mRenderables.end())
+				mRenderables.erase(findIter);
 		}
 	}
 }

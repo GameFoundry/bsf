@@ -13,6 +13,7 @@
 #include "CmRenderTarget.h"
 #include "BsOverlayManager.h"
 #include "BsGUIManager.h"
+#include "BsDefaultRendererSort.h"
 
 using namespace CamelotFramework;
 
@@ -20,10 +21,13 @@ namespace BansheeEngine
 {
 	ForwardRenderer::ForwardRenderer()
 	{
+		mRenderOpSorter = cm_new<DefaultRendererSort>();
 	}
 
 	ForwardRenderer::~ForwardRenderer()
-	{ }
+	{
+		cm_delete(mRenderOpSorter);
+	}
 
 	const String& ForwardRenderer::getName() const
 	{
@@ -33,6 +37,8 @@ namespace BansheeEngine
 
 	void ForwardRenderer::renderAll() 
 	{
+		gSceneManager().updateRenderableBounds();
+
 		CoreAccessor& coreAccessor = gMainCA();
 		const Vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 
@@ -97,14 +103,7 @@ namespace BansheeEngine
 				if(clearBuffers != 0)
 					coreAccessor.clearViewport(clearBuffers, viewport->getClearColor(), viewport->getClearDepthValue(), viewport->getClearStencilValue());
 
-				// Render scene
 				render(camera);
-
-				// Render overlays
-				OverlayManager::instance().render(camera->getViewport(), coreAccessor);
-
-				// Render GUI elements
-				GUIManager::instance().render(camera->getViewport(), coreAccessor);
 			}
 
 			coreAccessor.endFrame();
@@ -127,37 +126,45 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		// TODO - sort renderables by material/pass/parameters to minimize state changes
+		Vector<RenderOperation>::type renderOperations;
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
 		{
-			HMaterial material = (*iter)->getMaterial();
+			UINT32 numOps = (*iter)->getNumRenderOperations();
 
-			if(material == nullptr || !material.isLoaded())
-				continue;
+			for(UINT32 i = 0; i < numOps; i++)
+				renderOperations.push_back((*iter)->getRenderOperation(i));
+		}
 
-			HMesh mesh = (*iter)->getMesh();
-
-			if(mesh == nullptr || !mesh.isLoaded())
-				continue;
-
+		// TODO - Do different things depending on render op settings
+		for(auto& renderOp : renderOperations)
+		{
 			// TODO - Renderer should ensure shader is compatible with it, and it contains all the needed parameters
 			// (probably at an earlier stage). e.g. I want the user to be warned if the shader doesn't contain matViewProjection param
 			// (or should we just ignore such missing parameters?)
-			material->setMat4("matViewProjection", viewProjMatrix);
-
-			for(UINT32 i = 0; i < material->getNumPasses(); i++)
-			{
-				PassPtr pass = material->getPass(i);
-				pass->activate(coreAccessor);
-
-				PassParametersPtr paramsPtr = material->getPassParameters(i);
-				pass->bindParameters(coreAccessor, paramsPtr);
-
-				coreAccessor.render(mesh->getRenderOperation());
-			}
+			renderOp.material->setMat4("matViewProjection", viewProjMatrix);
 		}
 
-		// TODO - Sort renderables
-		// Render them
+		// TODO - Material queue is completely ignored
+		Vector<SortedRenderOp>::type sortedROps =  mRenderOpSorter->sort(camera, renderOperations, DepthSortOrder::FrontToBack, true);
+
+		for(auto iter = sortedROps.begin(); iter != sortedROps.end(); ++iter)
+		{
+			const RenderOperation& renderOp = iter->baseOperation;
+			HMaterial material = renderOp.material;
+
+			PassPtr pass = material->getPass(iter->passIdx);
+			pass->activate(coreAccessor);
+
+			PassParametersPtr paramsPtr = material->getPassParameters(iter->passIdx);
+			pass->bindParameters(coreAccessor, paramsPtr);
+
+			coreAccessor.render(renderOp.meshData);
+		}
+
+		// Render overlays
+		OverlayManager::instance().render(camera->getViewport(), coreAccessor);
+
+		// Render GUI elements
+		GUIManager::instance().render(camera->getViewport(), coreAccessor);
 	}
 }

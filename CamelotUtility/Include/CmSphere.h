@@ -82,7 +82,7 @@ namespace CamelotFramework {
                 Math::Sqr(s.mRadius + mRadius);
 		}
 		/** Returns whether or not this sphere intersects a box. */
-		bool intersects(const AxisAlignedBox& box) const
+		bool intersects(const AABox& box) const
 		{
 			return Math::intersects(*this, box);
 		}

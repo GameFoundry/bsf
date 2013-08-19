@@ -14,10 +14,13 @@ namespace BansheeEngine
 		const CM::Vector<HCamera>::type& getAllCameras() const { return mCachedCameras; }
 
 		CM::Vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const;
+
+		void updateRenderableBounds();
 	private:
 		void notifyComponentAdded(const CM::HComponent& component);
 		void notifyComponentRemoved(const CM::HComponent& component);
 
 		CM::Vector<HCamera>::type mCachedCameras;
+		CM::Vector<HRenderable>::type mRenderables;
 	};
 }

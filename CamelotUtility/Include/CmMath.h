@@ -438,7 +438,7 @@ namespace CamelotFramework
             bool discardInside = true);
         
         /** Ray / box intersection, returns boolean result and distance. */
-        static std::pair<bool, float> intersects(const Ray& ray, const AxisAlignedBox& box);
+        static std::pair<bool, float> intersects(const Ray& ray, const AABox& box);
 
         /** Ray / box intersection, returns boolean result and two intersection distance.
         @param
@@ -462,7 +462,7 @@ namespace CamelotFramework
             If the ray isn't intersects the box, <b>false</b> is returned, and
             <i>d1</i> and <i>d2</i> is unmodified.
         */
-        static bool intersects(const Ray& ray, const AxisAlignedBox& box,
+        static bool intersects(const Ray& ray, const AABox& box,
             float* d1, float* d2);
 
         /** Ray / triangle intersection, returns boolean result and distance.
@@ -518,10 +518,10 @@ namespace CamelotFramework
             bool positiveSide = true, bool negativeSide = true);
 
         /** Sphere / box intersection test. */
-        static bool intersects(const Sphere& sphere, const AxisAlignedBox& box);
+        static bool intersects(const Sphere& sphere, const AABox& box);
 
         /** Plane / box intersection test. */
-        static bool intersects(const Plane& plane, const AxisAlignedBox& box);
+        static bool intersects(const Plane& plane, const AABox& box);
 
         /** Ray / convex plane list intersection test. 
         @param ray The ray to test with
@@ -590,7 +590,7 @@ namespace CamelotFramework
 			const Matrix4* reflectMatrix = 0);
 
 		/** Get a bounding radius value from a bounding box. */
-		static float boundingRadiusFromAABB(const AxisAlignedBox& aabb);
+		static float boundingRadiusFromAABB(const AABox& aabb);
 
 
 

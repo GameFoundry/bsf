@@ -20,6 +20,8 @@ namespace BansheeEngine
 		 * @brief	Returns all renderables visible to the specified camera.
 		 */
 		virtual CM::Vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const = 0;
+
+		virtual void updateRenderableBounds() = 0;
 	};
 
 	BS_EXPORT SceneManager& gSceneManager();

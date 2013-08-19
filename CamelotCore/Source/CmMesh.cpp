@@ -8,6 +8,7 @@
 #include "CmMeshManager.h"
 #include "CmCoreThread.h"
 #include "CmAsyncOp.h"
+#include "CmAABox.h"
 
 namespace CamelotFramework
 {
@@ -199,7 +200,7 @@ namespace CamelotFramework
 		return meshData;
 	}
 
-	RenderOperation Mesh::getRenderOperation(UINT32 subMeshIdx) const
+	RenderOpMesh Mesh::getSubMeshData(UINT32 subMeshIdx) const
 	{
 		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
 		{
@@ -208,13 +209,26 @@ namespace CamelotFramework
 		}
 
 		// TODO - BIG TODO - Completely ignores subMeshIdx and always renders the entire thing
-		RenderOperation ro;
+		// TODO - Creating a RenderOpMesh each call might be excessive considering this will be called a few thousand times a frame
+		RenderOpMesh ro;
 		ro.indexData = mIndexData;
 		ro.vertexData = mVertexData;
 		ro.useIndexes = true;
 		ro.operationType = DOT_TRIANGLE_LIST;
 
 		return ro;
+	}
+
+	const AABox& Mesh::getBounds() const
+	{
+		// TODO - Retrieve bounds for entire mesh (need to calculate them during creation)
+		return AABox::BOX_EMPTY;
+	}
+
+	const AABox& Mesh::getBounds(UINT32 submeshIdx) const
+	{
+		// TODO - Retrieve bounds a specific sub-mesh (need to calculate them during creation)
+		return AABox::BOX_EMPTY;
 	}
 
 	void Mesh::initialize_internal()

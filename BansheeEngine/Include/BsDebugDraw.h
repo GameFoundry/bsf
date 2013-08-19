@@ -3,7 +3,7 @@
 #include "BsPrerequisites.h"
 #include "CmModule.h"
 #include "CmColor.h"
-#include "CmAxisAlignedBox.h"
+#include "CmAABox.h"
 
 namespace BansheeEngine
 {

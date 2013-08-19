@@ -15,5 +15,8 @@ namespace BansheeEngine
 
 		virtual void renderAll();
 		virtual void render(const HCamera& camera);
+
+	private:
+		RendererSort* mRenderOpSorter;
 	};
 }

@@ -255,7 +255,7 @@ int CALLBACK WinMain(
 	//_ASSERT(_CrtCheckMemory());
 
 	testRenderable->setMesh(dbgMeshRef);
-	testRenderable->setMaterial(testMaterial);
+	testRenderable->setMaterial(0, testMaterial);
 
 	//// Set the new state for the flag
 	//_CrtSetDbgFlag( tmpFlag );

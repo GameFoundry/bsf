@@ -243,7 +243,7 @@ namespace BansheeEngine
 			PassParametersPtr paramsPtr = material->getPassParameters(i);
 			pass->bindParameters(coreAccessor, paramsPtr);
 
-			coreAccessor.render(mesh->getRenderOperation());
+			coreAccessor.render(mesh->getSubMeshData());
 		}
 	}
 
