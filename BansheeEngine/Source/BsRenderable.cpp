@@ -2,6 +2,7 @@
 #include "BsRenderableRTTI.h"
 #include "CmSceneObject.h"
 #include "CmMesh.h"
+#include "CmRenderQueue.h"
 
 using namespace CamelotFramework;
 
@@ -23,10 +24,10 @@ namespace BansheeEngine
 		mMaterials[idx] = material;
 	}
 
-	UINT32 Renderable::getNumRenderOperations() const
+	void Renderable::render(CM::RenderQueue& renderQueue)
 	{
 		if(mMesh == nullptr || !mMesh.isLoaded())
-			return 0;
+			return;
 
 		bool hasAtLeastOneMaterial = false;
 		for(auto& material : mMaterials)
@@ -36,14 +37,37 @@ namespace BansheeEngine
 				hasAtLeastOneMaterial = true;
 
 				if(!material.isLoaded()) // We wait until all materials are loaded
-					return 0;
+					return;
 			}
 		}
 
 		if(hasAtLeastOneMaterial)
-			return mMesh->getNumSubMeshes();
+		{
+			for(UINT32 i = 0; i < mMesh->getNumSubMeshes(); i++)
+			{
+				HMaterial mat;
+				if(i < mMaterials.size() && mMaterials[i] != nullptr)
+				{
+					mat = mMaterials[i];
+				}
+				else
+				{
+					for(auto& iter = mMaterials.rbegin(); iter != mMaterials.rend(); ++iter)
+					{
+						if((*iter) != nullptr)
+						{
+							mat = *iter;
+							break;
+						}
+					}
+				}
+
+				renderQueue.add(mat, mMesh->getSubMeshData(i), mWorldBounds[i].getCenter());
+			}
+
+		}
 		else
-			return 0;
+			return;
 	}
 
 	void Renderable::updateWorldBounds()
@@ -59,33 +83,6 @@ namespace BansheeEngine
 			mWorldBounds[i] = mMesh->getBounds(i);
 			mWorldBounds[i].transformAffine(SO()->getWorldTfrm());
 		}
-	}
-
-	RenderOperation Renderable::getRenderOperation(CM::UINT32 idx) const
-	{
-		// TODO - Creating a RenderOperation each call might be excessive considering this will be called a few thousand times a frame
-		RenderOperation ro;
-		
-		if(idx < mMaterials.size() && mMaterials[idx] != nullptr)
-		{
-			ro.material = mMaterials[idx];
-		}
-		else
-		{
-			for(auto& iter = mMaterials.rbegin(); iter != mMaterials.rend(); ++iter)
-			{
-				if((*iter) != nullptr)
-				{
-					ro.material = *iter;
-					break;
-				}
-			}
-		}
-
-		ro.meshData = mMesh->getSubMeshData(idx);
-		ro.worldPosition = mWorldBounds[idx].getCenter();
-
-		return ro;
 	}
 
 	void Renderable::setLayer(UINT64 layer)

@@ -155,6 +155,8 @@ namespace CamelotFramework {
 	class GpuResource;
 	class GpuResourceData;
 	class BindableGpuParams;
+	struct RenderOperation;
+	class RenderQueue;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

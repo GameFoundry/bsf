@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsRenderOperation.h"
 #include "CmComponent.h"
 #include "CmAABox.h"
 
@@ -15,15 +14,11 @@ namespace BansheeEngine
 		void setMaterial(CM::UINT32 idx, CM::HMaterial material);
 		void setLayer(CM::UINT64 layer);
 
-		CM::UINT32 getNumRenderOperations() const;
-
-		/**
-		* @note  This method relies on getNumRenderOperations() being called and ensuring that idx doesn't exceed
-		* the number returned by that method
-		*/
-		RenderOperation getRenderOperation(CM::UINT32 idx) const;
 		CM::UINT64 getLayer() const { return mLayer; }
+		CM::UINT32 getNumMaterials() const { return (CM::UINT32)mMaterials.size(); }
+		CM::HMaterial& getMaterial(CM::UINT32 idx) { return mMaterials[idx]; }
 
+		void render(CM::RenderQueue& renderQueue);
 		void updateWorldBounds();
 	private:
 		CM::HMesh mMesh;

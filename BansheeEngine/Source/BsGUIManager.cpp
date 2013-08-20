@@ -17,6 +17,7 @@
 #include "CmInput.h"
 #include "CmPass.h"
 #include "CmDebug.h"
+#include "CmRenderQueue.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
 #include "BsDragAndDropManager.h"
@@ -182,27 +183,40 @@ namespace BansheeEngine
 		updateMeshes();
 	}
 
-	void GUIManager::render(ViewportPtr& target, CoreAccessor& coreAccessor)
+	void GUIManager::render(ViewportPtr& target, CM::RenderQueue& renderQueue) const
 	{
 		auto findIter = mCachedGUIData.find(target.get());
 
 		if(findIter == mCachedGUIData.end())
 			return;
 
-		coreAccessor.setViewport(target);
-
-		GUIRenderData& renderData = findIter->second;
+		const GUIRenderData& renderData = findIter->second;
 
 		// Render the meshes
 		if(mSeparateMeshesByWidget)
 		{
+			// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
+			// might be more optimal to just scale the mesh as the resolution changes?
+			float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
+			float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
+
 			UINT32 meshIdx = 0;
 			for(auto& mesh : renderData.cachedMeshes)
 			{
 				HMaterial material = renderData.cachedMaterials[meshIdx];
 				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
-				renderMesh(mesh, material, widget->SO()->getWorldTfrm(), target, coreAccessor);
+				if(material == nullptr || !material.isLoaded())
+					continue;
+
+				if(mesh == nullptr || !mesh.isLoaded())
+					continue;
+
+				material->setFloat("invViewportWidth", invViewportWidth);
+				material->setFloat("invViewportHeight", invViewportHeight);
+				material->setMat4("worldTransform", widget->SO()->getWorldTfrm());
+
+				renderQueue.add(material, mesh->getSubMeshData(), Vector3::ZERO);
 
 				meshIdx++;
 			}
@@ -215,35 +229,6 @@ namespace BansheeEngine
 			// Separating meshes can then be used as a compatibility mode for DX9
 
 			CM_EXCEPT(NotImplementedException, "Not implemented");
-		}
-	}
-
-	void GUIManager::renderMesh(const CM::HMesh& mesh, const CM::HMaterial& material, const CM::Matrix4& tfrm, CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor)
-	{
-		// TODO - Possible optimization. I currently divide by width/height inside the shader, while it
-		// might be more optimal to just scale the mesh as the resolution changes?
-		float invViewportWidth = 1.0f / (target->getWidth() * 0.5f);
-		float invViewportHeight = 1.0f / (target->getHeight() * 0.5f);
-
-		material->setFloat("invViewportWidth", invViewportWidth);
-		material->setFloat("invViewportHeight", invViewportHeight);
-		material->setMat4("worldTransform", tfrm);
-
-		if(material == nullptr || !material.isLoaded())
-			return;
-
-		if(mesh == nullptr || !mesh.isLoaded())
-			return;
-
-		for(UINT32 i = 0; i < material->getNumPasses(); i++)
-		{
-			PassPtr pass = material->getPass(i);
-			pass->activate(coreAccessor);
-
-			PassParametersPtr paramsPtr = material->getPassParameters(i);
-			pass->bindParameters(coreAccessor, paramsPtr);
-
-			coreAccessor.render(mesh->getSubMeshData());
 		}
 	}
 

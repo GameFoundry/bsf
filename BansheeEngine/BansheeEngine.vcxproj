@@ -228,7 +228,6 @@
   <ItemGroup>
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsDebugDraw.h" />
-    <ClInclude Include="Include\BsDefaultRendererSort.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
     <ClInclude Include="Include\BsEngineGUI.h" />
     <ClInclude Include="Include\BsGUIArea.h" />
@@ -266,7 +265,6 @@
     <ClInclude Include="Include\BsGUIWidget.h" />
     <ClInclude Include="Include\BsImageSprite.h" />
     <ClInclude Include="Include\BsRendererSort.h" />
-    <ClInclude Include="Include\BsRenderOperation.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />
     <ClInclude Include="Include\BsSprite.h" />
@@ -316,7 +314,6 @@
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowMover.cpp" />
     <ClCompile Include="Source\BsImageSprite.cpp" />
-    <ClCompile Include="Source\BsDefaultRendererSort.cpp" />
     <ClCompile Include="Source\BsSceneManager.cpp" />
     <ClCompile Include="Source\BsGUIScrollArea.cpp" />
     <ClCompile Include="Source\BsSprite.cpp" />

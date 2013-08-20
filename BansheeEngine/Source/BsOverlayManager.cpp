@@ -11,19 +11,17 @@ namespace BansheeEngine
 		return a->getDepth() > b->getDepth();
 	}
 
-	void OverlayManager::render(CM::ViewportPtr& target, CoreAccessor& coreAccessor) const
+	void OverlayManager::render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const
 	{
 		auto overlays = mOverlaysPerTarget.find(target.get());
 
 		if(overlays == mOverlaysPerTarget.end())
 			return;
 
-		coreAccessor.setViewport(target);
-		
 		// Render all overlays. They should already be sorted by depth, front most rendering last
 		for(auto& overlay : overlays->second)
 		{
-			overlay->render(coreAccessor);
+			overlay->render(renderQueue);
 		}
 	}
 

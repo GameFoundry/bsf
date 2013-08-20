@@ -273,6 +273,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmCoreThread.h" />
+    <ClInclude Include="Include\CmDefaultRenderQueue.h" />
     <ClInclude Include="Include\CmDeferredCallManager.h" />
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
@@ -287,6 +288,8 @@
     <ClInclude Include="Include\CmPixelData.h" />
     <ClInclude Include="Include\CmPixelDataRTTI.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
+    <ClInclude Include="Include\CmRenderOperation.h" />
+    <ClInclude Include="Include\CmRenderQueue.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmApplication.h" />
@@ -398,6 +401,7 @@
   <ItemGroup>
     <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CmCoreThread.cpp" />
+    <ClCompile Include="Source\CmDefaultRenderQueue.cpp" />
     <ClCompile Include="Source\CmDeferredCallManager.cpp" />
     <ClCompile Include="Source\CmGameObjectHandle.cpp" />
     <ClCompile Include="Source\CmGameObject.cpp" />
@@ -437,6 +441,7 @@
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmPixelUtil.cpp" />
+    <ClCompile Include="Source\CmRenderQueue.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmTextUtility.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />

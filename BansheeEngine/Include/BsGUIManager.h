@@ -48,7 +48,7 @@ namespace BansheeEngine
 		void unregisterWidget(GUIWidget* widget);
 
 		void update();
-		void render(CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor);
+		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
 
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
 		void setTextSelectionColor(const CM::Color& color) { mTextSelectionColor = color; updateTextSelectionTexture(); }
@@ -103,8 +103,6 @@ namespace BansheeEngine
 		boost::signals::connection mWindowGainedFocusConn;
 		boost::signals::connection mWindowLostFocusConn;
 		boost::signals::connection mWindowMovedOrResizedConn;
-
-		void renderMesh(const CM::HMesh& mesh, const CM::HMaterial& material, const CM::Matrix4& tfrm, CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor);
 
 		void updateMeshes();
 		void updateCaretTexture();

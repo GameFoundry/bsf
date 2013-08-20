@@ -22,7 +22,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		void render(CM::ViewportPtr& target, CM::CoreAccessor& coreAccessor) const;
+		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
 
 	private:
 		friend class Overlay;

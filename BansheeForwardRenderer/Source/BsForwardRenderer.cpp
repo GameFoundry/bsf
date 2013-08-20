@@ -11,9 +11,10 @@
 #include "CmApplication.h"
 #include "CmViewport.h"
 #include "CmRenderTarget.h"
+#include "CmRenderOperation.h"
+#include "CmDefaultRenderQueue.h"
 #include "BsOverlayManager.h"
 #include "BsGUIManager.h"
-#include "BsDefaultRendererSort.h"
 
 using namespace CamelotFramework;
 
@@ -21,12 +22,12 @@ namespace BansheeEngine
 {
 	ForwardRenderer::ForwardRenderer()
 	{
-		mRenderOpSorter = cm_new<DefaultRendererSort>();
+		mRenderQueue = cm_new<DefaultRenderQueue>();
 	}
 
 	ForwardRenderer::~ForwardRenderer()
 	{
-		cm_delete(mRenderOpSorter);
+		cm_delete(mRenderQueue);
 	}
 
 	const String& ForwardRenderer::getName() const
@@ -126,30 +127,40 @@ namespace BansheeEngine
 
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
-		Vector<RenderOperation>::type renderOperations;
+		mRenderQueue->clear();
+
+		// Get scene render operations
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
 		{
-			UINT32 numOps = (*iter)->getNumRenderOperations();
+			UINT32 numMaterials = (*iter)->getNumMaterials();
 
-			for(UINT32 i = 0; i < numOps; i++)
-				renderOperations.push_back((*iter)->getRenderOperation(i));
+			for(UINT32 i = 0; i < numMaterials; i++)
+			{
+				// TODO - Do different things depending on material and renderable settings
+				
+				// TODO - Renderer should ensure shader is compatible with it, and it contains all the needed parameters
+				// (probably at an earlier stage). e.g. I want the user to be warned if the shader doesn't contain matViewProjection param
+				// (or should we just ignore such missing parameters?)
+				HMaterial& material = (*iter)->getMaterial(i);
+				material->setMat4("matViewProjection", viewProjMatrix);
+			}
+
+			(*iter)->render(*mRenderQueue);
 		}
 
-		// TODO - Do different things depending on render op settings
-		for(auto& renderOp : renderOperations)
-		{
-			// TODO - Renderer should ensure shader is compatible with it, and it contains all the needed parameters
-			// (probably at an earlier stage). e.g. I want the user to be warned if the shader doesn't contain matViewProjection param
-			// (or should we just ignore such missing parameters?)
-			renderOp.material->setMat4("matViewProjection", viewProjMatrix);
-		}
+		// Get GUI render operations
+		GUIManager::instance().render(camera->getViewport(), *mRenderQueue);
+
+		// Get overlay render operations
+		OverlayManager::instance().render(camera->getViewport(), *mRenderQueue);
 
 		// TODO - Material queue is completely ignored
-		Vector<SortedRenderOp>::type sortedROps =  mRenderOpSorter->sort(camera, renderOperations, DepthSortOrder::FrontToBack, true);
+		mRenderQueue->sort();
+		const Vector<SortedRenderOp>::type& sortedROps =  mRenderQueue->getSortedRenderOps();
 
 		for(auto iter = sortedROps.begin(); iter != sortedROps.end(); ++iter)
 		{
-			const RenderOperation& renderOp = iter->baseOperation;
+			const RenderOperation& renderOp = *iter->baseOperation;
 			HMaterial material = renderOp.material;
 
 			PassPtr pass = material->getPass(iter->passIdx);
@@ -160,11 +171,5 @@ namespace BansheeEngine
 
 			coreAccessor.render(renderOp.meshData);
 		}
-
-		// Render overlays
-		OverlayManager::instance().render(camera->getViewport(), coreAccessor);
-
-		// Render GUI elements
-		GUIManager::instance().render(camera->getViewport(), coreAccessor);
 	}
 }
