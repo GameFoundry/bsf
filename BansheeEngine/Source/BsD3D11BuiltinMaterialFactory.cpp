@@ -201,20 +201,18 @@ namespace BansheeEngine
 	void D3D11BuiltinMaterialFactory::initDebugDrawShader()
 	{
 		String vsCode = "						\
-		float4x4 matViewProjection;				\
-												\
 		void vs_main(							\
-			in float4 inPos : POSITION,			\
-			in float4 color : COLOR,			\
+			in float3 inPos : POSITION,			\
+			in float4 color : COLOR0,			\
 			out float4 oPosition : SV_Position, \
-			out float4 oColor : COLOR)			\
+			out float4 oColor : COLOR0)			\
 		{										\
-			oPosition = mul(matViewProjection, inPos); \
+			oPosition = float4(inPos.xy, 0, 1); \
 			oColor = color;						\
 		}";
 
 		String psCode = "																		\
-		float4 ps_main(in float4 inPos : SV_Position, in float4 color : COLOR) : SV_Target		\
+		float4 ps_main(in float4 inPos : SV_Position, in float4 color : COLOR0) : SV_Target		\
 		{																						\
 			return color;																		\
 		}																						\
@@ -228,11 +226,16 @@ namespace BansheeEngine
 
 		mDebugDrawShader = Shader::create("DebugDrawShader");
 
-		mDebugDrawShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
-
 		TechniquePtr newTechnique = mDebugDrawShader->addTechnique("D3D11RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();
 		newPass->setVertexProgram(vsProgram);
 		newPass->setFragmentProgram(psProgram);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
 	}
 }

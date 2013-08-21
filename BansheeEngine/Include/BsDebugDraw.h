@@ -7,49 +7,22 @@
 
 namespace BansheeEngine
 {
-	/**
-	 * @brief	Methods you can use for debugging. Quite inefficient way of rendering though,
-	 * 			so use them sparingly.
-	 * 			
-	 *			TODO - NOT THREAD SAFE
-	 */
 	class BS_EXPORT DebugDraw : public CM::Module<DebugDraw>
 	{
-		enum class DebugDrawType
-		{
-			Line, Triangle
-		};
-
-		struct DebugDrawCommand
-		{
-			DebugDrawType type;
-			float timeEnds;
-
-			CM::UINT32* indices;
-			CM::UINT8* vertices;
-			CM::UINT32 numElements;
-		};
-
 	public:
 		DebugDraw();
 
-		void draw2DLine(const CM::Vector2&a, const CM::Vector2& b, const CM::Color& color = CM::Color::Green, float timeout = 0.0f);
-		//void drawAABB(const AxisAlignedBox& aab, const Color& color = Color::Green, float timeout = 0.0f);
-		//void drawSphere(const Vector3& center, float radius, const Color& color = Color::Green, float timeout = 0.0f);
+		// TODO - Add a version that accepts 4 points
+		void quad2D(const CM::Vector2& pos, const CM::Vector2& size, CM::UINT8* outVertices, CM::UINT8* outColors, 
+			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset, const CM::Color& color = CM::Color::White);
 
-		void render(const Camera* camera, CM::CoreAccessor& coreAccessor);
+		// TODO - Need a version that accepts a camera otherwise they will draw on all cameras
+		void drawQuad2D(const CM::Vector2& pos, const CM::Vector2& size, const CM::Color& color = CM::Color::White, float timeout = 0.0f);
+
+		void render(CM::RenderQueue& renderQueue);
 
 	private:
-		CM::HMesh mTriangleMesh;
-		CM::HMesh mLineMesh;
-
-		CM::HMaterial mTriangleMaterial;
-		CM::HMaterial mLineMaterial;
-
-		CM::Vector<DebugDrawCommand>::type mCommands;
-
-		static const int VertexSize = 16;
-
-		void updateMeshes();
+		CM::HMaterial mMaterial;
+		CM::Vector<CM::HMesh>::type mMeshes;
 	};
 }

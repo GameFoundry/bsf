@@ -2,6 +2,7 @@
 #include "BsGUIMaterialManager.h"
 #include "BsGUIManager.h"
 #include "BsOverlayManager.h"
+#include "BsDebugDraw.h"
 #include "BsBuiltinMaterialManager.h"
 #include "BsD3D9BuiltinMaterialFactory.h"
 #include "BsD3D11BuiltinMaterialFactory.h"
@@ -44,6 +45,8 @@ namespace BansheeEngine
 		BuiltinMaterialManager::instance().addFactory(cm_new<GLBuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
 
+		DebugDraw::startUp(cm_new<DebugDraw>());
+
 		EngineGUI::startUp(new EngineGUI());
 
 		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
@@ -59,6 +62,8 @@ namespace BansheeEngine
 		CM::gApplication().mainLoopCallback.disconnect(updateCallbackConn);
 
 		EngineGUI::shutDown();
+
+		DebugDraw::shutDown();
 
 		GUIMaterialManager::instance().forceReleaseAllMaterials();
 

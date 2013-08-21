@@ -23,6 +23,7 @@
 #include "CmFontImportOptions.h"
 #include "CmCommandQueue.h"
 #include "CmBlendState.h"
+#include "BsDebugDraw.h"
 
 // Editor includes
 #include "BsEditorWindowManager.h"
@@ -36,9 +37,9 @@
 #include "CmRTTIType.h"
 #include "CmCursor.h"
 
-//#define DX11
+#define DX11
 //#define DX9
-#define GL
+//#define GL
 
 using namespace CamelotFramework;
 using namespace BansheeEditor;
@@ -269,6 +270,8 @@ int CALLBACK WinMain(
 	//Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
 
 	dbgCursor.reset();
+
+	DebugDraw::instance().drawQuad2D(Vector2(-1.0f, 0.0f), Vector2(100, 50), Color::White);
 
 	/************************************************************************/
 	/* 								EDITOR INIT                      		*/

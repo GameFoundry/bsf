@@ -5,6 +5,8 @@
 #include "CmMaterial.h"
 #include "CmPass.h"
 #include "CmApplication.h"
+#include "CmRenderQueue.h"
+#include "BsBuiltinMaterialManager.h"
 
 using namespace CamelotFramework;
 
@@ -12,191 +14,88 @@ namespace BansheeEngine
 {
 	DebugDraw::DebugDraw()
 	{
-		// TODO - Create a fixed sized mesh and prevent updating the mesh completely every frame
-		mTriangleMesh = Mesh::create();
-		mLineMesh = Mesh::create();
-
-		// TODO - Init materials
-		//HMaterial mTriangleMaterial;
-		//HMaterial mLineMaterial;
+		mMaterial = BuiltinMaterialManager::instance().createDebugDrawMaterial();
 	}
 
-	void DebugDraw::draw2DLine(const Vector2&a, const Vector2& b, const Color& color, float timeout)
+	void DebugDraw::quad2D(const Vector2& pos, const Vector2& size, UINT8* outVertices, UINT8* outColors, 
+		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset, const Color& color)
 	{
-		UINT32* indices = cm_newN<UINT32, ScratchAlloc>(2);
-		UINT8* vertices = (UINT8*)cm_alloc<ScratchAlloc>(2 * VertexSize);
+		outVertices += vertexOffset;
+		outColors += vertexOffset;
 
-		DebugDrawCommand command;
-		command.indices = cm_newN<UINT32, ScratchAlloc>(2);
-		command.vertices = (UINT8*)cm_alloc<ScratchAlloc>(2 * VertexSize);
-		command.numElements = 1;
-		command.type = DebugDrawType::Line;
-		command.timeEnds = gTime().getTime() + timeout;
+		Vector3* vertices = (Vector3*)outVertices;
+		(*vertices) = Vector3(pos.x, pos.y, 0.0f);
 
-		command.indices[0] = 0;
-		command.indices[1] = 1;
+		vertices = (Vector3*)(outVertices + vertexStride);
+		(*vertices) = Vector3(pos.x + size.x, pos.y, 0.0f);
 
-		UINT8* vertDst = command.vertices;
-		RGBA color32 = color.getAsRGBA();
+		vertices = (Vector3*)(outVertices + vertexStride * 2);
+		(*vertices) = Vector3(pos.x, pos.y + size.y, 0.0f);
 
-		Vector3 pointA(a.x, a.y, 0.0f);
-		memcpy(vertDst, &pointA, sizeof(pointA));
-		vertDst += sizeof(pointA);
+		vertices = (Vector3*)(outVertices + vertexStride * 3);
+		(*vertices) = Vector3(pos.x + size.x, pos.y + size.y, 0.0f);
 
-		memcpy(vertDst, &color32, sizeof(color32));
-		vertDst += sizeof(color32);
+		UINT32* colors = (UINT32*)outColors;
+		(*colors) = color.getAsRGBA();
 
-		Vector3 pointB(b.x, b.y, 0.0f);
-		memcpy(vertDst, &pointB, sizeof(pointB));
-		vertDst += sizeof(pointB);
+		colors = (UINT32*)(outColors + vertexStride);
+		(*colors) = color.getAsRGBA();
+		
+		colors = (UINT32*)(outColors + vertexStride * 2);
+		(*colors) = color.getAsRGBA();
 
-		memcpy(vertDst, &color32, sizeof(color32));
-		vertDst += sizeof(color32);
+		colors = (UINT32*)(outColors + vertexStride * 3);
+		(*colors) = color.getAsRGBA();
 
-		mCommands.push_back(command);
+		outIndices += indexOffset;
+		outIndices[0] = vertexOffset + 0;
+		outIndices[1] = vertexOffset + 2;
+		outIndices[2] = vertexOffset + 1;
+		outIndices[3] = vertexOffset + 1;
+		outIndices[4] = vertexOffset + 2;
+		outIndices[5] = vertexOffset + 3;
 	}
 
-	void DebugDraw::updateMeshes()
+	void DebugDraw::drawQuad2D(const Vector2& pos, const Vector2& size, const CM::Color& color, float timeout)
 	{
-		if(mCommands.size() == 0)
-			return;
+		// TODO - DONT USE ONE MESH PER DRAW - Instead merge multiple elements into a single mesh
 
-		UINT32 totalNumLineIndices = 0;
-		UINT32 totalNumLineVertices = 0;
-		UINT32 totalNumTriangleIndices = 0;
-		UINT32 totalNumTriangleVertices = 0;
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(4);
 
-		for(auto& command : mCommands)
-		{
-			if(command.type == DebugDrawType::Line)
-			{
-				totalNumLineIndices += command.numElements * 2;
-				totalNumLineVertices += command.numElements * 2;
-			}
-			else if(command.type == DebugDrawType::Triangle)
-			{
-				totalNumTriangleIndices += command.numElements * 3;
-				totalNumTriangleVertices += command.numElements * 3;
-			}
-		}
+		meshData->beginDesc();
 
-		// TODO - Somehow avoid creating these every frame?
-		MeshDataPtr lineMeshData = cm_shared_ptr<MeshData, ScratchAlloc>(totalNumLineVertices);
-		MeshDataPtr triangleMeshData = cm_shared_ptr<MeshData, ScratchAlloc>(totalNumTriangleVertices);
+		meshData->addSubMesh(6);
+		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
+		meshData->addVertElem(VET_COLOR, VES_COLOR);
 
-		lineMeshData->beginDesc();
+		meshData->endDesc();
 
-		lineMeshData->addSubMesh(totalNumLineIndices);
-		lineMeshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		lineMeshData->addVertElem(VET_COLOR, VES_COLOR);
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+		UINT8* colorData = meshData->getElementData(VES_COLOR);
 
-		lineMeshData->endDesc();
+		quad2D(pos, size, positionData, colorData, 0, meshData->getVertexStride(), indexData, 0, color);
 
-		triangleMeshData->beginDesc();
-
-		triangleMeshData->addSubMesh(totalNumTriangleIndices);
-		triangleMeshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		triangleMeshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		triangleMeshData->endDesc();
-
-		UINT32 lineIndexOffset = 0;
-		UINT32 lineVertexOffset = 0;
-		UINT32 triangleIndexOffset = 0;
-		UINT32 triangleVertexOffset = 0;
-		Vector<DebugDrawCommand>::type newCommands;
-		for(auto& command : mCommands)
-		{
-			if(command.type == DebugDrawType::Line)
-			{
-				UINT32 numIndices = command.numElements * 2;
-				UINT32 numVertices = command.numElements * 2;
-
-				UINT32* indexData = lineMeshData->getIndices32() + lineIndexOffset;
-				memcpy(indexData, command.indices, numIndices * sizeof(UINT32));
-
-				UINT8* vertexData = lineMeshData->getElementData(VES_POSITION) + lineVertexOffset * VertexSize;
-				memcpy(vertexData, command.vertices, numVertices * VertexSize);
-
-				lineIndexOffset += numIndices;
-				lineVertexOffset += numVertices;
-			}
-			else if(command.type == DebugDrawType::Triangle)
-			{
-				UINT32 numIndices = command.numElements * 3;
-				UINT32 numVertices = command.numElements * 3;
-
-				UINT32* indexData = triangleMeshData->getIndices32() + triangleIndexOffset;
-				memcpy(indexData, command.indices, numIndices * sizeof(UINT32));
-
-				UINT8* vertexData = triangleMeshData->getElementData(VES_POSITION) + triangleVertexOffset * VertexSize;
-				memcpy(vertexData, command.vertices, numVertices * VertexSize);
-
-				triangleIndexOffset += numIndices;
-				triangleVertexOffset += numVertices;
-			}
-
-			if(command.timeEnds < gTime().getTime())
-				newCommands.push_back(command);
-			else
-			{
-				UINT32 numIndices = 0;
-				if(command.type == DebugDrawType::Line)
-				{
-					numIndices = command.numElements * 2;
-				}
-				else if(command.type == DebugDrawType::Triangle)
-				{
-					numIndices = command.numElements * 3;
-				}
-
-				cm_deleteN<ScratchAlloc>(command.indices, numIndices);
-				cm_free<ScratchAlloc>(command.vertices);
-			}
-		}
-
-		gMainSyncedCA().writeSubresource(mLineMesh.getInternalPtr(), 0, *lineMeshData);
-		gMainSyncedCA().writeSubresource(mTriangleMesh.getInternalPtr(), 0, *triangleMeshData);
+		HMesh mesh = Mesh::create();
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
 		gMainSyncedCA().submitToCoreThread(true);
+
+		// TODO - Timeout is ignored!
+		mMeshes.push_back(mesh);
 	}
 
-	void DebugDraw::render(const Camera* camera, CoreAccessor& coreAccessor)
+	void DebugDraw::render(CM::RenderQueue& renderQueue)
 	{
-		if(mCommands.size() == 0)
+		if(mMaterial == nullptr || !mMaterial.isLoaded())
 			return;
 
-		updateMeshes();
-
-		for(UINT32 i = 0; i < mLineMaterial->getNumPasses(); i++)
+		for(auto& mesh : mMeshes)
 		{
-			PassPtr pass = mLineMaterial->getPass(i);
-			pass->activate(coreAccessor);
+			if(mesh == nullptr || !mesh.isLoaded())
+				continue;
 
-			PassParametersPtr paramsPtr = mLineMaterial->getPassParameters(i);
-			pass->bindParameters(coreAccessor, paramsPtr);
-
-			coreAccessor.render(mLineMesh->getSubMeshData());
-		}
-
-		for(UINT32 i = 0; i < mTriangleMaterial->getNumPasses(); i++)
-		{
-			PassPtr pass = mTriangleMaterial->getPass(i);
-			pass->activate(coreAccessor);
-
-			PassParametersPtr paramsPtr = mTriangleMaterial->getPassParameters(i);
-			pass->bindParameters(coreAccessor, paramsPtr);
-
-			coreAccessor.render(mTriangleMesh->getSubMeshData());
+			// TODO - I'm not setting a world position
+			renderQueue.add(mMaterial, mesh->getSubMeshData(), Vector3::ZERO);
 		}
 	}
-
-	//void DebugDraw::drawAABB(const AxisAlignedBox& aab, const Color& color, float timeout)
-	//{
-
-	//}
-
-	//void DebugDraw::drawSphere(const Vector3& center, float radius, const Color& color, float timeout)
-	//{
-
-	//}
 }

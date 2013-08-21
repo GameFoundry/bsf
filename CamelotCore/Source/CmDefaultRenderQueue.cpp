@@ -20,7 +20,7 @@ namespace CamelotFramework
 			}
 		}
 
-		// TODO - Actually do some sorting
+		// TODO - Actually do some sorting. Use material options to sort (isTransparent, isOverlay(need to add this), etc.)
 		// Note: When sorting make sure not to change order of unsorted elements. Some outside managers (like overlay and GUI) will provide render ops which are already sorted
 	}
 }
