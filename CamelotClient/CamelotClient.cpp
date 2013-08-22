@@ -23,7 +23,6 @@
 #include "CmFontImportOptions.h"
 #include "CmCommandQueue.h"
 #include "CmBlendState.h"
-#include "BsDebugDraw.h"
 
 // Editor includes
 #include "BsEditorWindowManager.h"
@@ -270,8 +269,6 @@ int CALLBACK WinMain(
 	//Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
 
 	dbgCursor.reset();
-
-	DebugDraw::instance().drawQuad2D(Vector2(-1.0f, 0.0f), Vector2(100, 50), Color::White);
 
 	/************************************************************************/
 	/* 								EDITOR INIT                      		*/

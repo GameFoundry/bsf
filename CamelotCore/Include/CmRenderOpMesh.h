@@ -23,8 +23,8 @@ namespace CamelotFramework
 			indexData(nullptr) 
 		{ }
 
-		VertexData *vertexData;
-		IndexData *indexData;
+		std::shared_ptr<VertexData> vertexData;
+		std::shared_ptr<IndexData> indexData;
 
 		DrawOperationType operationType;
 		bool useIndexes;

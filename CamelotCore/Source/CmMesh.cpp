@@ -33,12 +33,6 @@ namespace CamelotFramework
 
 		mSubMeshes.clear();
 
-		if(mVertexData != nullptr)
-			cm_delete<PoolAlloc>(mVertexData);
-
-		if(mIndexData != nullptr)
-			cm_delete<PoolAlloc>(mIndexData);
-
 		// Submeshes
 		for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
 		{
@@ -51,7 +45,7 @@ namespace CamelotFramework
 		}
 
 		// Indices
-		mIndexData = cm_new<IndexData, PoolAlloc>();
+		mIndexData = std::shared_ptr<IndexData>(cm_new<IndexData, PoolAlloc>());
 
 		mIndexData->indexCount = meshData.getNumIndices();
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
@@ -70,7 +64,7 @@ namespace CamelotFramework
 		mIndexData->indexBuffer->unlock();
 
 		// Vertices
-		mVertexData = cm_new<VertexData, PoolAlloc>();
+		mVertexData = std::shared_ptr<VertexData>(cm_new<VertexData, PoolAlloc>());
 
 		mVertexData->vertexCount = meshData.getNumVertices();
 		mVertexData->vertexDeclaration = meshData.createDeclaration();
@@ -246,12 +240,6 @@ namespace CamelotFramework
 	void Mesh::destroy_internal()
 	{
 		THROW_IF_NOT_CORE_THREAD;
-
-		if(mVertexData != nullptr)
-			cm_delete<PoolAlloc>(mVertexData);
-
-		if(mIndexData != nullptr)
-			cm_delete<PoolAlloc>(mIndexData);
 
 		Resource::destroy_internal();
 	}

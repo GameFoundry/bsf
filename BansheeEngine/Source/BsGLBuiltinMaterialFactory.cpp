@@ -259,7 +259,7 @@ namespace BansheeEngine
 	{
 		String vsCode = "#version 400\n								\
 																	\
-						uniform mat4 viewTfrm;						\
+						uniform mat4 matViewProj;						\
 																	\
 						in vec3 cm_position;						\
 						in vec4 cm_color0;							\
@@ -267,7 +267,7 @@ namespace BansheeEngine
 																	\
 						void main()									\
 						{											\
-						gl_Position = viewTfrm * vec4(cm_position.xyz, 1);		\
+						gl_Position = matViewProj * vec4(cm_position.xyz, 1);		\
 						color0 = cm_color0;							\
 						}";
 
@@ -289,7 +289,7 @@ namespace BansheeEngine
 
 		mDebugDraw3DShader = Shader::create("DebugDraw3DShader");
 
-		mDebugDraw3DShader->addParameter("viewTfrm", "viewTfrm", GPDT_MATRIX_4X4);
+		mDebugDraw3DShader->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
 
 		TechniquePtr newTechnique = mDebugDraw3DShader->addTechnique("GLRenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();

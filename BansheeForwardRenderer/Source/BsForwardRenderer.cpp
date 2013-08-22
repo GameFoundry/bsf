@@ -156,7 +156,7 @@ namespace BansheeEngine
 		OverlayManager::instance().render(camera->getViewport(), *mRenderQueue);
 
 		// Get debug render operations
-		DebugDraw::instance().render(*mRenderQueue);
+		DebugDraw::instance().render(camera, *mRenderQueue);
 
 		// TODO - Material queue is completely ignored
 		mRenderQueue->sort();

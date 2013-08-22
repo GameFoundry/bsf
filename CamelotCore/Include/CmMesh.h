@@ -74,8 +74,8 @@ namespace CamelotFramework
 
 		Mesh();
 
-		VertexData* mVertexData;
-		IndexData* mIndexData;
+		std::shared_ptr<VertexData> mVertexData;
+		std::shared_ptr<IndexData> mIndexData;
 
 		Vector<SubMesh>::type mSubMeshes;
 

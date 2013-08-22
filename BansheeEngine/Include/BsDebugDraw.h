@@ -9,6 +9,21 @@ namespace BansheeEngine
 {
 	class BS_EXPORT DebugDraw : public CM::Module<DebugDraw>
 	{
+		enum class DebugDrawType
+		{
+			ScreenSpace,
+			WorldSpace
+		};
+
+		struct DebugDrawCommand
+		{
+			CM::HMesh mesh;
+			CM::HMaterial material;
+			DebugDrawType type;
+			CM::Vector3 worldCenter;
+			float endTime;
+		};
+
 	public:
 		DebugDraw();
 
@@ -16,13 +31,13 @@ namespace BansheeEngine
 		void quad2D(const CM::Vector2& pos, const CM::Vector2& size, CM::UINT8* outVertices, CM::UINT8* outColors, 
 			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset, const CM::Color& color = CM::Color::White);
 
-		// TODO - Need a version that accepts a camera otherwise they will draw on all cameras
-		void drawQuad2D(const CM::Vector2& pos, const CM::Vector2& size, const CM::Color& color = CM::Color::White, float timeout = 0.0f);
+		void drawQuad2D(const HCamera& camera, const CM::Vector2& pos, const CM::Vector2& size, const CM::Color& color = CM::Color::White, float timeout = 0.0f);
 
-		void render(CM::RenderQueue& renderQueue);
+		void render(const HCamera& camera, CM::RenderQueue& renderQueue);
 
 	private:
-		CM::HMaterial mMaterial;
-		CM::Vector<CM::HMesh>::type mMeshes;
+		CM::HMaterial mMaterial2D;
+
+		CM::UnorderedMap<const CM::Viewport*, CM::Vector<DebugDrawCommand>::type>::type mCommandsPerViewport;
 	};
 }

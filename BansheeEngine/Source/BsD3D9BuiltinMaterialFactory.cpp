@@ -247,7 +247,7 @@ namespace BansheeEngine
 
 	void D3D9BuiltinMaterialFactory::initDebugDraw3DShader()
 	{
-		String vsCode = "float4x4 viewTfrm;						\
+		String vsCode = "float4x4 matViewProj;						\
 																\
 						void vs_main(							\
 						in float3 inPos : POSITION,				\
@@ -255,7 +255,7 @@ namespace BansheeEngine
 						out float4 oPosition : POSITION,		\
 						out float4 oColor : COLOR0)				\
 						{										\
-						oPosition = mul(viewTfrm, float4(inPos.xyz, 1));		\
+						oPosition = mul(matViewProj, float4(inPos.xyz, 1));		\
 						oColor = inColor;						\
 						}										\
 						";
@@ -274,7 +274,7 @@ namespace BansheeEngine
 
 		mDebugDraw3DShader = Shader::create("DebugDraw3DShader");
 
-		mDebugDraw3DShader->addParameter("viewTfrm", "viewTfrm", GPDT_MATRIX_4X4);
+		mDebugDraw3DShader->addParameter("matViewProj", "matViewProj", GPDT_MATRIX_4X4);
 
 		TechniquePtr newTechnique = mDebugDraw3DShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();

@@ -7,6 +7,7 @@
 // DEBUG ONLY
 #include "CmTestTextSprite.h"
 #include "CmDebugCamera.h"
+#include "BsDebugDraw.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -36,6 +37,8 @@ namespace BansheeEditor
 		textSprite->initialize(mCamera->getViewport().get(), renderWindow.get());
 
 		textSprite->init(sceneCamera, "Testing in a new row, does this work?", nullptr);
+
+		DebugDraw::instance().drawQuad2D(sceneCamera, Vector2(-1.0f, 0.0f), Vector2(100, 50), Color::White, 50.0f);
 	}
 
 	MainEditorWindow::~MainEditorWindow()

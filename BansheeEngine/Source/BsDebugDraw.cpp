@@ -6,6 +6,7 @@
 #include "CmPass.h"
 #include "CmApplication.h"
 #include "CmRenderQueue.h"
+#include "BsCamera.h"
 #include "BsBuiltinMaterialManager.h"
 
 using namespace CamelotFramework;
@@ -14,7 +15,7 @@ namespace BansheeEngine
 {
 	DebugDraw::DebugDraw()
 	{
-		mMaterial = BuiltinMaterialManager::instance().createDebugDraw2DMaterial();
+		mMaterial2D = BuiltinMaterialManager::instance().createDebugDraw2DMaterial();
 	}
 
 	void DebugDraw::quad2D(const Vector2& pos, const Vector2& size, UINT8* outVertices, UINT8* outColors, 
@@ -56,9 +57,16 @@ namespace BansheeEngine
 		outIndices[5] = vertexOffset + 3;
 	}
 
-	void DebugDraw::drawQuad2D(const Vector2& pos, const Vector2& size, const CM::Color& color, float timeout)
+	void DebugDraw::drawQuad2D(const HCamera& camera, const Vector2& pos, const Vector2& size, const CM::Color& color, float timeout)
 	{
-		// TODO - DONT USE ONE MESH PER DRAW - Instead merge multiple elements into a single mesh
+		const Viewport* viewport = camera->getViewport().get();
+
+		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+
+		commands.push_back(DebugDrawCommand());
+		DebugDrawCommand& dbgCmd = commands.back();
+		dbgCmd.type = DebugDrawType::ScreenSpace;
+		dbgCmd.endTime = gTime().getTime() + timeout;
 
 		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(4);
 
@@ -80,22 +88,48 @@ namespace BansheeEngine
 		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
 		gMainSyncedCA().submitToCoreThread(true);
 
-		// TODO - Timeout is ignored!
-		mMeshes.push_back(mesh);
+		dbgCmd.mesh = mesh;
+		dbgCmd.material = mMaterial2D;
+		dbgCmd.worldCenter = Vector3::ZERO;
 	}
 
-	void DebugDraw::render(CM::RenderQueue& renderQueue)
+	void DebugDraw::render(const HCamera& camera, CM::RenderQueue& renderQueue)
 	{
-		if(mMaterial == nullptr || !mMaterial.isLoaded())
-			return;
+		const Viewport* viewport = camera->getViewport().get();
+		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
 
-		for(auto& mesh : mMeshes)
+		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
+		Matrix4 viewMatrixCstm = camera->getViewMatrix();
+		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
+
+		for(auto& cmd : commands)
 		{
-			if(mesh == nullptr || !mesh.isLoaded())
+			if(cmd.mesh == nullptr || !cmd.mesh.isLoaded())
 				continue;
 
-			// TODO - I'm not setting a world position
-			renderQueue.add(mMaterial, mesh->getSubMeshData(), Vector3::ZERO);
+			if(cmd.material == nullptr || !cmd.material.isLoaded())
+				continue;
+
+			if(cmd.type == DebugDrawType::ScreenSpace)
+			{
+				renderQueue.add(cmd.material, cmd.mesh->getSubMeshData(), cmd.worldCenter);
+			}
+			else if(cmd.type == DebugDrawType::WorldSpace)
+			{
+				cmd.material->setMat4("matViewProj", viewProjMatrix);
+
+				renderQueue.add(cmd.material, cmd.mesh->getSubMeshData(), cmd.worldCenter);
+			}
 		}
+
+		float curTime = gTime().getTime();
+		Vector<DebugDrawCommand>::type newCommands;
+		for(auto& cmd : commands)
+		{
+			if(cmd.endTime > curTime)
+				newCommands.push_back(cmd);
+		}
+
+		commands.swap(newCommands);
 	}
 }
