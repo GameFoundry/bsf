@@ -19,3 +19,6 @@ Add class DrawHelper:
    - all elements should be grouped into a common vertex/index buffer (as much as possible)
    - draw methods should combine methods above to make drawing easier. e.g. a transparent box with AA line borders should be easily drawable
 
+   IMMEDIATE:
+    Add debug draw materials for DX9 and GL
+    I need to apply view transform on non-2D elements (probably will need another shader and material)

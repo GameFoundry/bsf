@@ -16,7 +16,8 @@ namespace BansheeEngine
 	{
 		initSpriteTextShader();
 		initSpriteImageShader();
-		initDebugDrawShader();
+		initDebugDraw2DShader();
+		initDebugDraw3DShader();
 
 		SAMPLER_STATE_DESC ssDesc;
 		ssDesc.magFilter = FO_POINT;
@@ -30,6 +31,8 @@ namespace BansheeEngine
 	{
 		mSpriteTextShader = nullptr;
 		mSpriteImageShader = nullptr;
+		mDebugDraw2DShader = nullptr;
+		mDebugDraw3DShader = nullptr;
 	}
 
 	const CM::String& D3D9BuiltinMaterialFactory::getSupportedRenderSystem() const
@@ -55,9 +58,14 @@ namespace BansheeEngine
 		return newMaterial;
 	}
 
-	HMaterial D3D9BuiltinMaterialFactory::createDebugDrawMaterial() const
+	HMaterial D3D9BuiltinMaterialFactory::createDebugDraw2DMaterial() const
 	{
-		return Material::create(mDebugDrawShader);
+		return Material::create(mDebugDraw2DShader);
+	}
+
+	HMaterial D3D9BuiltinMaterialFactory::createDebugDraw3DMaterial() const
+	{
+		return Material::create(mDebugDraw3DShader);
 	}
 
 	void D3D9BuiltinMaterialFactory::initSpriteTextShader()
@@ -196,8 +204,88 @@ namespace BansheeEngine
 		newPass->setDepthStencilState(depthState);
 	}
 
-	void D3D9BuiltinMaterialFactory::initDebugDrawShader()
+	void D3D9BuiltinMaterialFactory::initDebugDraw2DShader()
 	{
-		// TODO - Not implemented
+		String vsCode = "										\
+						void vs_main(							\
+						in float2 inPos : POSITION,				\
+						in float4 inColor : COLOR0,				\
+						out float4 oPosition : POSITION,		\
+						out float4 oColor : COLOR0)				\
+						{										\
+						oPosition = float4(inPos.xy, 0, 1);		\
+						oColor = inColor;						\
+						}										\
+						";
+
+		String psCode = "												\
+						float4 ps_main(float4 color : COLOR0) : COLOR0	\
+						{												\
+						return color;									\
+						}";
+
+		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+
+		vsProgram.synchronize();
+		psProgram.synchronize();
+
+		mDebugDraw2DShader = Shader::create("DebugDraw2DShader");
+
+		TechniquePtr newTechnique = mDebugDraw2DShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
+	}
+
+	void D3D9BuiltinMaterialFactory::initDebugDraw3DShader()
+	{
+		String vsCode = "float4x4 viewTfrm;						\
+																\
+						void vs_main(							\
+						in float3 inPos : POSITION,				\
+						in float4 inColor : COLOR0,				\
+						out float4 oPosition : POSITION,		\
+						out float4 oColor : COLOR0)				\
+						{										\
+						oPosition = mul(viewTfrm, float4(inPos.xyz, 1));		\
+						oColor = inColor;						\
+						}										\
+						";
+
+		String psCode = "												\
+						float4 ps_main(float4 color : COLOR0) : COLOR0	\
+						{												\
+						return color;									\
+						}";
+
+		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+
+		vsProgram.synchronize();
+		psProgram.synchronize();
+
+		mDebugDraw3DShader = Shader::create("DebugDraw3DShader");
+
+		mDebugDraw3DShader->addParameter("viewTfrm", "viewTfrm", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mDebugDraw3DShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
 	}
 }

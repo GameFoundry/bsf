@@ -14,7 +14,7 @@ namespace BansheeEngine
 {
 	DebugDraw::DebugDraw()
 	{
-		mMaterial = BuiltinMaterialManager::instance().createDebugDrawMaterial();
+		mMaterial = BuiltinMaterialManager::instance().createDebugDraw2DMaterial();
 	}
 
 	void DebugDraw::quad2D(const Vector2& pos, const Vector2& size, UINT8* outVertices, UINT8* outColors, 

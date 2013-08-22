@@ -17,7 +17,8 @@ namespace BansheeEngine
 
 		virtual CM::HMaterial createSpriteTextMaterial() const = 0;
 		virtual CM::HMaterial createSpriteImageMaterial() const = 0;
-		virtual CM::HMaterial createDebugDrawMaterial() const = 0;
+		virtual CM::HMaterial createDebugDraw2DMaterial() const = 0;
+		virtual CM::HMaterial createDebugDraw3DMaterial() const = 0;
 	};
 
 	/**
@@ -33,7 +34,8 @@ namespace BansheeEngine
 
 		CM::HMaterial createSpriteTextMaterial() const;
 		CM::HMaterial createSpriteImageMaterial() const;
-		CM::HMaterial createDebugDrawMaterial() const;
+		CM::HMaterial createDebugDraw2DMaterial() const;
+		CM::HMaterial createDebugDraw3DMaterial() const;
 
 		void addFactory(BuiltinMaterialFactory* factory);
 		void setActive(const CM::String& renderSystemName);
