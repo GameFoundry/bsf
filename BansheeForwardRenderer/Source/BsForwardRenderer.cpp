@@ -14,7 +14,7 @@
 #include "CmRenderOperation.h"
 #include "CmDefaultRenderQueue.h"
 #include "BsOverlayManager.h"
-#include "BsDebugDraw.h"
+#include "BsDrawHelper.h"
 #include "BsGUIManager.h"
 
 using namespace CamelotFramework;
@@ -156,7 +156,7 @@ namespace BansheeEngine
 		OverlayManager::instance().render(camera->getViewport(), *mRenderQueue);
 
 		// Get debug render operations
-		DebugDraw::instance().render(camera, *mRenderQueue);
+		DrawHelper::instance().render(camera, *mRenderQueue);
 
 		// TODO - Material queue is completely ignored
 		mRenderQueue->sort();

@@ -2,12 +2,10 @@ Add class DrawHelper:
  - Line2D_AA - Creates an emulated AA line using triangles. See Recast/imguiRenderGL::drawPolygon for implementation. Line vertices and colors
       are appended in the specified buffer. No actual drawing is done.
  - Line2D_Pixel - Creates a simple line using LINE primitive topology. Line vertices and colors are appended in the specified buffer.
- - Quad2D
+ - ScreenQuad - accepts normalized viewport coordinates
+ - Quad2D - accepts pixel coordinates
  - QuadBorder2D_AA
  - QuadBorder2D_Pixel
- - Polygon2D
- - PolygonBorder2D_AA
- - PolygonBorder2D_Pixel
  - LineList2D_AA
  - LineList2D_Pixel
  - RoundedRect2D - Also copy from Recast/imguiRenderGL::drawRoundedRect
@@ -15,10 +13,8 @@ Add class DrawHelper:
   - Line, Quad, QuadBorder, Box, BoxBorder
 
  - Then I also need draw* equivalents of those methods. draw equivalents will also create the buffer and submit the draw call.
-   - draw equivalents accept a time for how long to display the element, if 0 it will only be displayed for one frame
-   - all elements should be grouped into a common vertex/index buffer (as much as possible)
-   - draw methods should combine methods above to make drawing easier. e.g. a transparent box with AA line borders should be easily drawable
 
-   IMMEDIATE:
-    Add debug draw materials for DX9 and GL
-    I need to apply view transform on non-2D elements (probably will need another shader and material)
+--------------------------
+
+ Port the 2D shader so it accepts viewport size. Because we want things to be defined in pixels (except for fullscreen quad)
+ Only one material per viewport needs to exist, no need for separate material for each element

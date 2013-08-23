@@ -1,9 +1,5 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
-DebugDraw
- - DebugDraw support for AA lines
- - Add DX9 and GL debug draw shaders
-
 I still re-create GUIWidget mesh every frame instead of just updating it.
 
 MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
@@ -16,11 +12,8 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
 Over the holidays:
- - Get release mode working
  - Profile code to see why it runs to slow in debug (AQTime probably)
- - Edit solution so that 32 bit binaries end up it x86 folder
  - Window docking/undocking
- - (More platform specific files to /PlatformSpecific subfolder)
 
 IMMEDIATE:
  - Clicking on a window to focus and immediately trying to drag/resize it, doesn't work. I first need to click, then click again to drag/resize.
@@ -64,8 +57,6 @@ Later add InputMap class in which you can bind certain actions (like move left, 
   - I probably want to determine front faces based on normals
 
 Immediate TODO:
- - A way to handle onMouseOver, onMouseOut, onMouseDown, onMouseUp events
- - (optional) Implement DirectDraw for drawing the bounds so I know they're correct
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
 
 ------------------------------------------------------------------------------------------------

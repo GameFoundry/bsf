@@ -117,9 +117,6 @@
     <ClInclude Include="Include\BsUpdateCallback.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDebugDraw.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIArea.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -201,6 +198,9 @@
     <ClInclude Include="Include\BsRendererSort.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsDrawHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -268,9 +268,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsUpdateCallback.cpp">
       <Filter>Source Files\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsDebugDraw.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIArea.cpp">
       <Filter>Source Files\GUI</Filter>
@@ -343,6 +340,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUIViewport.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDrawHelper.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
