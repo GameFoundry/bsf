@@ -66,7 +66,7 @@ namespace CamelotFramework
 		mVertexElements.insert(mVertexElements.begin() + insertToIndex, newElement);
 	}
 
-	void MeshData::addSubMesh(UINT32 numIndices, UINT32 subMesh)
+	void MeshData::addSubMesh(UINT32 numIndices, UINT32 subMesh, DrawOperationType drawOp)
 	{
 		if(!mDescBuilding)
 			CM_EXCEPT(InternalErrorException, "Cannot add indices when not building description. Call beginDesc() first.");
@@ -79,6 +79,7 @@ namespace CamelotFramework
 		indexData.numIndices = numIndices;
 		indexData.elementSize = getIndexElementSize();
 		indexData.subMesh = subMesh;
+		indexData.drawOp = drawOp;
 
 		mSubMeshes[subMesh] = indexData;
 	}
@@ -109,6 +110,11 @@ namespace CamelotFramework
 	UINT32 MeshData::getNumIndices(UINT32 subMesh) const
 	{
 		return mSubMeshes.at(subMesh).numIndices;
+	}
+
+	DrawOperationType MeshData::getDrawOp(UINT32 subMesh) const
+	{
+		return mSubMeshes.at(subMesh).drawOp;
 	}
 
 	UINT32 MeshData::getNumIndices() const

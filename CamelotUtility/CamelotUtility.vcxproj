@@ -247,10 +247,10 @@
     <ClCompile Include="Source\CmAsyncOp.cpp" />
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
     <ClCompile Include="Source\CmBox.cpp" />
+    <ClCompile Include="Source\CmFRect.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmMemStack.cpp" />
-    <ClCompile Include="Source\CmORect.cpp" />
     <ClCompile Include="Source\CmRect.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
@@ -267,6 +267,7 @@
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmFileSerializer.h" />
     <ClInclude Include="Include\CmFileSystem.h" />
+    <ClInclude Include="Include\CmFRect.h" />
     <ClInclude Include="Include\CmInt2.h" />
     <ClInclude Include="Include\CmIReflectable.h" />
     <ClInclude Include="Include\CmKeyValuePair.h" />
@@ -275,7 +276,6 @@
     <ClInclude Include="Include\CmMathAsm.h" />
     <ClInclude Include="Include\CmMemoryAllocator.h" />
     <ClInclude Include="Include\CmModule.h" />
-    <ClInclude Include="Include\CmORect.h" />
     <ClInclude Include="Include\CmPath.h" />
     <ClInclude Include="Include\CmRect.h" />
     <ClInclude Include="Include\CmRTTIField.h" />

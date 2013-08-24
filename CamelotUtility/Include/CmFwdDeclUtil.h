@@ -20,6 +20,7 @@ namespace CamelotFramework {
 	class Vector4;
 	struct Int2;
 	class Rect;
+	class FRect;
 	class Color;
 	class DynLib;
 	class DynLibManager;

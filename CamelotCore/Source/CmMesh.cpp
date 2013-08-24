@@ -40,7 +40,7 @@ namespace CamelotFramework
 
 			if(numIndices > 0)
 			{
-				mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices));
+				mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices, meshData.getDrawOp(i)));
 			}
 		}
 
@@ -208,7 +208,7 @@ namespace CamelotFramework
 		ro.indexData = mIndexData;
 		ro.vertexData = mVertexData;
 		ro.useIndexes = true;
-		ro.operationType = DOT_TRIANGLE_LIST;
+		ro.operationType = mSubMeshes[subMeshIdx].drawOp;
 
 		return ro;
 	}

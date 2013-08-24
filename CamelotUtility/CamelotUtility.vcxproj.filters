@@ -210,13 +210,13 @@
     <ClInclude Include="Include\CmMemoryAllocator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmORect.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMemStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmAABox.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmFRect.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
@@ -311,9 +311,6 @@
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmORect.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmBox.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -327,6 +324,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Include\CmAABox.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmFRect.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>

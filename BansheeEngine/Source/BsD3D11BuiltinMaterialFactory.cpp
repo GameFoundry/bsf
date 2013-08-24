@@ -297,6 +297,9 @@ namespace BansheeEngine
 
 		mDebugDraw2DScreenSpaceShader = Shader::create("DebugDraw2DScreenSpaceShader");
 
+		mDebugDraw2DScreenSpaceShader->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mDebugDraw2DScreenSpaceShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
 		TechniquePtr newTechnique = mDebugDraw2DScreenSpaceShader->addTechnique("D3D11RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();
 		newPass->setVertexProgram(vsProgram);

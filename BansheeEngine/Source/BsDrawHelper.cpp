@@ -1,4 +1,5 @@
 #include "BsDrawHelper.h"
+#include "CmFRect.h"
 #include "CmMesh.h"
 #include "CmTime.h"
 #include "CmVector2.h"
@@ -18,41 +19,41 @@ namespace BansheeEngine
 		mMaterial2DClipSpace = BuiltinMaterialManager::instance().createDebugDraw2DClipSpaceMaterial();
 	}
 
-	void DrawHelper::quad2D(const Vector2& pos, const Vector2& size, UINT8* outVertices, 
+	void DrawHelper::quad2D(const CM::FRect& area, UINT8* outVertices, 
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		outVertices += (vertexOffset * vertexStride);
 
 		Vector2* vertices = (Vector2*)outVertices;
-		(*vertices) = Vector2(pos.x, pos.y);
+		(*vertices) = Vector2(area.x, area.y);
 
 		vertices = (Vector2*)(outVertices + vertexStride);
-		(*vertices) = Vector2(pos.x + size.x, pos.y);
+		(*vertices) = Vector2(area.x + area.width, area.y);
 
 		vertices = (Vector2*)(outVertices + vertexStride * 2);
-		(*vertices) = Vector2(pos.x, pos.y + size.y);
+		(*vertices) = Vector2(area.x, area.y + area.height);
 
 		vertices = (Vector2*)(outVertices + vertexStride * 3);
-		(*vertices) = Vector2(pos.x + size.x, pos.y + size.y);
+		(*vertices) = Vector2(area.x + area.width, area.y + area.height);
 
 		outIndices += indexOffset;
 		outIndices[0] = vertexOffset + 0;
-		outIndices[1] = vertexOffset + 2;
-		outIndices[2] = vertexOffset + 1;
+		outIndices[1] = vertexOffset + 1;
+		outIndices[2] = vertexOffset + 2;
 		outIndices[3] = vertexOffset + 1;
-		outIndices[4] = vertexOffset + 2;
-		outIndices[5] = vertexOffset + 3;
+		outIndices[4] = vertexOffset + 3;
+		outIndices[5] = vertexOffset + 2;
 	}
 
-	void DrawHelper::quad2D(const CM::Vector2& pos, const CM::Vector2& size, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper::quad2D(const CM::FRect& area, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 
-		assert((vertexOffset + 4) < meshData->getNumVertices());
-		assert((indexOffset + 6) < meshData->getNumIndices());
+		assert((vertexOffset + 4) <= meshData->getNumVertices());
+		assert((indexOffset + 6) <= meshData->getNumIndices());
 
-		quad2D(pos, size, positionData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+		quad2D(area, positionData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
 	}
 
 	void DrawHelper::line2D_Pixel(const CM::Vector2& a, const CM::Vector2& b, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
@@ -84,8 +85,8 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* colorData = meshData->getElementData(VES_COLOR);
 
-		assert((vertexOffset + 2) < meshData->getNumVertices());
-		assert((indexOffset + 2) < meshData->getNumIndices());
+		assert((vertexOffset + 2) <= meshData->getNumVertices());
+		assert((indexOffset + 2) <= meshData->getNumIndices());
 
 		line2D_Pixel(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
 	}
@@ -127,8 +128,8 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		UINT8* colorData = meshData->getElementData(VES_COLOR);
 
-		assert((vertexOffset + 2) < meshData->getNumVertices());
-		assert((indexOffset + 2) < meshData->getNumIndices());
+		assert((vertexOffset + 8) <= meshData->getNumVertices());
+		assert((indexOffset + 30) <= meshData->getNumIndices());
 
 		line2D_AA(a, b, width, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
 	}
@@ -222,7 +223,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper::drawQuad2D(const HCamera& camera, const Vector2& pos, const Vector2& size, const Color& color, CoordType coordType, float timeout)
+	void DrawHelper::drawQuad2D(const HCamera& camera, const CM::FRect& area, const Color& color, CoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -230,7 +231,6 @@ namespace BansheeEngine
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
-		dbgCmd.type = DebugDrawType::ScreenSpace;
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
 		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(4);
@@ -238,19 +238,21 @@ namespace BansheeEngine
 		meshData->beginDesc();
 
 		meshData->addSubMesh(6);
-		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
+		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
 		meshData->addVertElem(VET_COLOR, VES_COLOR);
 
 		meshData->endDesc();
 
-		UINT32* indexData = meshData->getIndices32();
-		UINT8* positionData = meshData->getElementData(VES_POSITION);
-		UINT8* colorData = meshData->getElementData(VES_COLOR);
+		FRect actualArea = area;
+		if(coordType == CoordType::Normalized)
+			actualArea = normalizedCoordToClipSpace(area);
 
-		quad2D(pos, size, positionData, 0, meshData->getVertexStride(), indexData, 0);
+		quad2D(actualArea, meshData, 0, 0);
 
 		UINT32 vertexStride = meshData->getVertexStride();
-		UINT32* colors = (UINT32*)meshData->getElementData(VES_COLOR);
+		UINT8* colorData = meshData->getElementData(VES_COLOR);
+
+		UINT32* colors = (UINT32*)colorData;
 		(*colors) = color.getAsRGBA();
 
 		colors = (UINT32*)(colorData + vertexStride);
@@ -269,12 +271,98 @@ namespace BansheeEngine
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
 
-		if(coordType == CoordType::ClipSpace)
+		if(coordType == CoordType::Normalized)
 		{
+			dbgCmd.type = DebugDrawType::ClipSpace;
 			dbgCmd.material = mMaterial2DClipSpace;
 		}
 		else
 		{
+			dbgCmd.type = DebugDrawType::ScreenSpace;
+			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+		}
+	}
+
+	void DrawHelper::drawLine2D_Pixel(const HCamera& camera, const Vector2& a, const Vector2& b, const Color& color, CoordType coordType, float timeout)
+	{
+		const Viewport* viewport = camera->getViewport().get();
+
+		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+
+		commands.push_back(DebugDrawCommand());
+		DebugDrawCommand& dbgCmd = commands.back();
+		dbgCmd.endTime = gTime().getTime() + timeout;
+
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2);
+
+		meshData->beginDesc();
+
+		meshData->addSubMesh(2, 0, DOT_LINE_LIST);
+		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_COLOR, VES_COLOR);
+
+		meshData->endDesc();
+
+		line2D_Pixel(a, b, color, meshData, 0, 0);
+
+		HMesh mesh = Mesh::create();
+
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToCoreThread(true);
+
+		dbgCmd.mesh = mesh;
+		dbgCmd.worldCenter = Vector3::ZERO;
+
+		if(coordType == CoordType::Normalized)
+		{
+			dbgCmd.type = DebugDrawType::ClipSpace;
+			dbgCmd.material = mMaterial2DClipSpace;
+		}
+		else
+		{
+			dbgCmd.type = DebugDrawType::ScreenSpace;
+			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+		}
+	}
+
+	void DrawHelper::drawLine2D_AA(const HCamera& camera, const Vector2& a, const Vector2& b, float width, const Color& color, CoordType coordType, float timeout)
+	{
+		const Viewport* viewport = camera->getViewport().get();
+
+		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+
+		commands.push_back(DebugDrawCommand());
+		DebugDrawCommand& dbgCmd = commands.back();
+		dbgCmd.endTime = gTime().getTime() + timeout;
+
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8);
+
+		meshData->beginDesc();
+
+		meshData->addSubMesh(30, 0, DOT_TRIANGLE_LIST);
+		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_COLOR, VES_COLOR);
+
+		meshData->endDesc();
+
+		line2D_AA(a, b, width, color, meshData, 0, 0);
+
+		HMesh mesh = Mesh::create();
+
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToCoreThread(true);
+
+		dbgCmd.mesh = mesh;
+		dbgCmd.worldCenter = Vector3::ZERO;
+
+		if(coordType == CoordType::Normalized)
+		{
+			dbgCmd.type = DebugDrawType::ClipSpace;
+			dbgCmd.material = mMaterial2DClipSpace;
+		}
+		else
+		{
+			dbgCmd.type = DebugDrawType::ScreenSpace;
 			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
@@ -293,10 +381,10 @@ namespace BansheeEngine
 
 		for(auto& cmd : commands)
 		{
-			if(cmd.mesh == nullptr || !cmd.mesh.isLoaded())
+			if(cmd.mesh == nullptr || !cmd.mesh.isLoaded() || !cmd.mesh->isInitialized())
 				continue;
 
-			if(cmd.material == nullptr || !cmd.material.isLoaded())
+			if(cmd.material == nullptr || !cmd.material.isLoaded() || !cmd.material->isInitialized())
 				continue;
 
 			if(cmd.type == DebugDrawType::ClipSpace)
@@ -327,5 +415,21 @@ namespace BansheeEngine
 		}
 
 		commands.swap(newCommands);
+	}
+
+	FRect DrawHelper::normalizedCoordToClipSpace(const FRect& area) const
+	{
+		FRect clipSpaceRect;
+		clipSpaceRect.x = area.x * 2.0f - 1.0f;
+		clipSpaceRect.width = area.width * 2.0f;
+		clipSpaceRect.y = -area.y * 2.0f + 1.0f;
+		clipSpaceRect.height = area.height * -2.0f;
+
+		return clipSpaceRect;
+	}
+
+	Vector2 DrawHelper::normalizedCoordToClipSpace(const Vector2& pos) const
+	{
+		return Vector2(pos.x * 2.0f - 1.0f, -pos.y * 2.0f + 1.0f);
 	}
 }

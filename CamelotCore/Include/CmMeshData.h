@@ -5,6 +5,7 @@
 #include "CmVertexBuffer.h"
 #include "CmIndexBuffer.h"
 #include "CmVertexDeclaration.h"
+#include "CmRenderOpMesh.h"
 
 namespace CamelotFramework
 {
@@ -67,12 +68,13 @@ namespace CamelotFramework
 		struct IndexElementData
 		{
 			IndexElementData()
-				:numIndices(0), subMesh(0), elementSize(0)
+				:numIndices(0), subMesh(0), elementSize(0), drawOp(DOT_TRIANGLE_LIST)
 			{ }
 
 			UINT32 numIndices;
 			UINT32 elementSize;
 			UINT32 subMesh;
+			DrawOperationType drawOp;
 		};
 
 		MeshData(UINT32 numVertices, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
@@ -103,13 +105,15 @@ namespace CamelotFramework
 		void addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
 		/**
-		* @brief	Informs the internal buffer that it needs to make room for an index buffer of the specified size. If specified submesh
-		* 			already exists it will just be updated. This must be called between beginDesc and endDesc.
+		 * @brief	Informs the internal buffer that it needs to make room for an index buffer of the
+		 * 			specified size. If specified submesh already exists it will just be updated. This
+		 * 			must be called between beginDesc and endDesc.
 		 *
-		 * @param	numIndices	   	Number of indices.
-		 * @param	subMesh		   	(optional) the sub mesh.
+		 * @param	numIndices	Number of indices.
+		 * @param	subMesh   	(optional) Index of the sub-mesh to add/update.
+		 * @param	drawOp	  	(optional) Specifies the primitive type contained by the mesh.
 		 */
-		void addSubMesh(UINT32 numIndices, UINT32 subMesh = 0);
+		void addSubMesh(UINT32 numIndices, UINT32 subMesh = 0, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * @brief	Query if we have vertex data for the specified semantic.
@@ -176,6 +180,7 @@ namespace CamelotFramework
 		UINT32 getNumVertices() const { return mNumVertices; }
 		UINT32 getNumIndices(UINT32 subMesh) const;
 		UINT32 getNumIndices() const;
+		DrawOperationType getDrawOp(UINT32 subMesh) const;
 
 		UINT16* getIndices16(UINT32 subMesh = 0) const;
 		UINT32* getIndices32(UINT32 subMesh = 0) const;

@@ -15,8 +15,4 @@ Add class DrawHelper:
 
 --------------------------
 
-Add extra parameter to each of the 2D draw methods: ScreenSpace or ClipSpace
-(They may use 3D versions for world space)
- - I need two separate 2D materials
-
  Only one material per viewport needs to exist, no need for separate material for each element

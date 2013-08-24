@@ -8,6 +8,7 @@
 #include "CmTestTextSprite.h"
 #include "CmDebugCamera.h"
 #include "BsDrawHelper.h"
+#include "CmFRect.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -38,7 +39,8 @@ namespace BansheeEditor
 
 		textSprite->init(sceneCamera, "Testing in a new row, does this work?", nullptr);
 
-		DrawHelper::instance().drawQuad2D(sceneCamera, Vector2(-1.0f, 0.0f), Vector2(100, 50), Color::White, CoordType::ClipSpace, 50.0f);
+		DrawHelper::instance().drawQuad2D(sceneCamera, FRect(0.0f, 0.2f, 0.75f, 0.5f), Color::White, CoordType::Normalized, 50.0f);
+		DrawHelper::instance().drawQuad2D(sceneCamera, FRect(50.0f, 50.0f, 100.0f, 50.0f), Color::Blue, CoordType::Pixel, 50.0f);
 	}
 
 	MainEditorWindow::~MainEditorWindow()
