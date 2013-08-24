@@ -17,20 +17,23 @@ namespace BansheeEngine
 
 		CM::HMaterial createSpriteTextMaterial() const;
 		CM::HMaterial createSpriteImageMaterial() const;
-		CM::HMaterial createDebugDraw2DMaterial() const;
+		CM::HMaterial createDebugDraw2DClipSpaceMaterial() const;
+		CM::HMaterial createDebugDraw2DScreenSpaceMaterial() const;
 		CM::HMaterial createDebugDraw3DMaterial() const;
 
 	protected:
 		CM::ShaderPtr mSpriteTextShader;
 		CM::ShaderPtr mSpriteImageShader;
-		CM::ShaderPtr mDebugDraw2DShader;
+		CM::ShaderPtr mDebugDraw2DClipSpaceShader;
+		CM::ShaderPtr mDebugDraw2DScreenSpaceShader;
 		CM::ShaderPtr mDebugDraw3DShader;
 
 		CM::HSamplerState mGUISamplerState;
 
 		void initSpriteTextShader();
 		void initSpriteImageShader();
-		void initDebugDraw2DShader();
+		void initDebugDraw2DClipSpaceShader();
+		void initDebugDraw2DScreenSpaceShader();
 		void initDebugDraw3DShader();
 	};
 }

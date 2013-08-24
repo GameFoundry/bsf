@@ -2,8 +2,7 @@ Add class DrawHelper:
  - Line2D_AA - Creates an emulated AA line using triangles. See Recast/imguiRenderGL::drawPolygon for implementation. Line vertices and colors
       are appended in the specified buffer. No actual drawing is done.
  - Line2D_Pixel - Creates a simple line using LINE primitive topology. Line vertices and colors are appended in the specified buffer.
- - ScreenQuad - accepts normalized viewport coordinates
- - Quad2D - accepts pixel coordinates
+ - Quad2D 
  - QuadBorder2D_AA
  - QuadBorder2D_Pixel
  - LineList2D_AA
@@ -16,5 +15,8 @@ Add class DrawHelper:
 
 --------------------------
 
- Port the 2D shader so it accepts viewport size. Because we want things to be defined in pixels (except for fullscreen quad)
+Add extra parameter to each of the 2D draw methods: ScreenSpace or ClipSpace
+(They may use 3D versions for world space)
+ - I need two separate 2D materials
+
  Only one material per viewport needs to exist, no need for separate material for each element

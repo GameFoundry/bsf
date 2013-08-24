@@ -7,10 +7,17 @@
 
 namespace BansheeEngine
 {
+	enum class CoordType
+	{
+		ScreenSpace,
+		ClipSpace
+	};
+
 	class BS_EXPORT DrawHelper : public CM::Module<DrawHelper>
 	{
 		enum class DebugDrawType
 		{
+			ClipSpace,
 			ScreenSpace,
 			WorldSpace
 		};
@@ -74,12 +81,12 @@ namespace BansheeEngine
 		 */
 		void line2D_AA(const CM::Vector2& a, const CM::Vector2& b, float width, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
 
-		void drawQuad2D(const HCamera& camera, const CM::Vector2& pos, const CM::Vector2& size, const CM::Color& color = CM::Color::White, float timeout = 0.0f);
+		void drawQuad2D(const HCamera& camera, const CM::Vector2& pos, const CM::Vector2& size, const CM::Color& color = CM::Color::White, CoordType coordType = CoordType::ScreenSpace, float timeout = 0.0f);
 
 		void render(const HCamera& camera, CM::RenderQueue& renderQueue);
 
 	private:
-		CM::HMaterial mMaterial2D;
+		CM::HMaterial mMaterial2DClipSpace;
 
 		CM::UnorderedMap<const CM::Viewport*, CM::Vector<DebugDrawCommand>::type>::type mCommandsPerViewport;
 

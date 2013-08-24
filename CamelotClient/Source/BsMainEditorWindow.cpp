@@ -38,7 +38,7 @@ namespace BansheeEditor
 
 		textSprite->init(sceneCamera, "Testing in a new row, does this work?", nullptr);
 
-		DrawHelper::instance().drawQuad2D(sceneCamera, Vector2(-1.0f, 0.0f), Vector2(100, 50), Color::White, 50.0f);
+		DrawHelper::instance().drawQuad2D(sceneCamera, Vector2(-1.0f, 0.0f), Vector2(100, 50), Color::White, CoordType::ClipSpace, 50.0f);
 	}
 
 	MainEditorWindow::~MainEditorWindow()

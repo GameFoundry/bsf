@@ -15,7 +15,7 @@ namespace BansheeEngine
 {
 	DrawHelper::DrawHelper()
 	{
-		mMaterial2D = BuiltinMaterialManager::instance().createDebugDraw2DMaterial();
+		mMaterial2DClipSpace = BuiltinMaterialManager::instance().createDebugDraw2DClipSpaceMaterial();
 	}
 
 	void DrawHelper::quad2D(const Vector2& pos, const Vector2& size, UINT8* outVertices, 
@@ -222,7 +222,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper::drawQuad2D(const HCamera& camera, const Vector2& pos, const Vector2& size, const Color& color, float timeout)
+	void DrawHelper::drawQuad2D(const HCamera& camera, const Vector2& pos, const Vector2& size, const Color& color, CoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -267,8 +267,16 @@ namespace BansheeEngine
 		gMainSyncedCA().submitToCoreThread(true);
 
 		dbgCmd.mesh = mesh;
-		dbgCmd.material = mMaterial2D;
 		dbgCmd.worldCenter = Vector3::ZERO;
+
+		if(coordType == CoordType::ClipSpace)
+		{
+			dbgCmd.material = mMaterial2DClipSpace;
+		}
+		else
+		{
+			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+		}
 	}
 
 	void DrawHelper::render(const HCamera& camera, CM::RenderQueue& renderQueue)
@@ -280,6 +288,9 @@ namespace BansheeEngine
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
+		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
+
 		for(auto& cmd : commands)
 		{
 			if(cmd.mesh == nullptr || !cmd.mesh.isLoaded())
@@ -288,8 +299,15 @@ namespace BansheeEngine
 			if(cmd.material == nullptr || !cmd.material.isLoaded())
 				continue;
 
-			if(cmd.type == DebugDrawType::ScreenSpace)
+			if(cmd.type == DebugDrawType::ClipSpace)
 			{
+				renderQueue.add(cmd.material, cmd.mesh->getSubMeshData(), cmd.worldCenter);
+			}
+			else if(cmd.type == DebugDrawType::ScreenSpace)
+			{
+				cmd.material->setFloat("invViewportWidth", invViewportWidth);
+				cmd.material->setFloat("invViewportHeight", invViewportHeight);
+
 				renderQueue.add(cmd.material, cmd.mesh->getSubMeshData(), cmd.worldCenter);
 			}
 			else if(cmd.type == DebugDrawType::WorldSpace)

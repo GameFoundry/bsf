@@ -16,7 +16,8 @@ namespace BansheeEngine
 	{
 		initSpriteTextShader();
 		initSpriteImageShader();
-		initDebugDraw2DShader();
+		initDebugDraw2DClipSpaceShader();
+		initDebugDraw2DScreenSpaceShader();
 		initDebugDraw3DShader();
 
 		SAMPLER_STATE_DESC ssDesc;
@@ -31,7 +32,8 @@ namespace BansheeEngine
 	{
 		mSpriteTextShader = nullptr;
 		mSpriteImageShader = nullptr;
-		mDebugDraw2DShader = nullptr;
+		mDebugDraw2DClipSpaceShader = nullptr;
+		mDebugDraw2DScreenSpaceShader = nullptr;
 		mDebugDraw3DShader = nullptr;
 	}
 
@@ -58,9 +60,14 @@ namespace BansheeEngine
 		return newMaterial;
 	}
 
-	HMaterial D3D9BuiltinMaterialFactory::createDebugDraw2DMaterial() const
+	HMaterial D3D9BuiltinMaterialFactory::createDebugDraw2DClipSpaceMaterial() const
 	{
-		return Material::create(mDebugDraw2DShader);
+		return Material::create(mDebugDraw2DClipSpaceShader);
+	}
+
+	HMaterial D3D9BuiltinMaterialFactory::createDebugDraw2DScreenSpaceMaterial() const
+	{
+		return Material::create(mDebugDraw2DScreenSpaceShader);
 	}
 
 	HMaterial D3D9BuiltinMaterialFactory::createDebugDraw3DMaterial() const
@@ -204,7 +211,7 @@ namespace BansheeEngine
 		newPass->setDepthStencilState(depthState);
 	}
 
-	void D3D9BuiltinMaterialFactory::initDebugDraw2DShader()
+	void D3D9BuiltinMaterialFactory::initDebugDraw2DClipSpaceShader()
 	{
 		String vsCode = "										\
 						void vs_main(							\
@@ -230,12 +237,77 @@ namespace BansheeEngine
 		vsProgram.synchronize();
 		psProgram.synchronize();
 
-		mDebugDraw2DShader = Shader::create("DebugDraw2DShader");
+		mDebugDraw2DClipSpaceShader = Shader::create("DebugDraw2DClipSpaceShader");
 
-		TechniquePtr newTechnique = mDebugDraw2DShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
+		TechniquePtr newTechnique = mDebugDraw2DClipSpaceShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();
 		newPass->setVertexProgram(vsProgram);
 		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
+	}
+
+	void D3D9BuiltinMaterialFactory::initDebugDraw2DScreenSpaceShader()
+	{
+		String vsCode = "										\
+						float invViewportWidth;					\
+						float invViewportHeight;				\
+																\
+						void vs_main(							\
+						in float2 inPos : POSITION,				\
+						in float4 inColor : COLOR0,				\
+						out float4 oPosition : POSITION,		\
+						out float4 oColor : COLOR0)				\
+						{										\
+						float tfrmdX = -1.0f + ((inPos.x - 0.5f) * invViewportWidth);			\
+						float tfrmdY = 1.0f - ((inPos.y - 0.5f) * invViewportHeight);			\
+																\
+						oPosition = float4(tfrmdX, tfrmdY, 0, 1);		\
+						oColor = inColor;						\
+						}										\
+						";
+
+		String psCode = "												\
+						float4 ps_main(float4 color : COLOR0) : COLOR0	\
+						{												\
+						return color;									\
+						}";
+
+		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+
+		vsProgram.synchronize();
+		psProgram.synchronize();
+
+		mDebugDraw2DScreenSpaceShader = Shader::create("DebugDraw2DScreenSpaceShader");
+
+		TechniquePtr newTechnique = mDebugDraw2DScreenSpaceShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDesc;
 		depthStateDesc.depthReadEnable = false;
@@ -280,6 +352,15 @@ namespace BansheeEngine
 		PassPtr newPass = newTechnique->addPass();
 		newPass->setVertexProgram(vsProgram);
 		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
 
 		DEPTH_STENCIL_STATE_DESC depthStateDesc;
 		depthStateDesc.depthReadEnable = false;
