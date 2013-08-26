@@ -890,11 +890,6 @@ namespace CamelotFramework
 
 	void Material::freeParamBuffers()
 	{
-		for(auto& buffer : mParamBuffers)
-		{
-			buffer->destroy();
-		}
-
 		mParamBuffers.clear();
 	}
 

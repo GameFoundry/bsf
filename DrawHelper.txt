@@ -16,3 +16,22 @@ Add class DrawHelper:
 --------------------------
 
  Only one material per viewport needs to exist, no need for separate material for each element
+
+-------------------------
+
+ There's an issue with GPuParamBlockBuffer::writeData. Data is trying to be written but buffer is uninitialized! Happens with DX11
+ DX9 reports a memory heap corruption
+ - Both of these seems to be related to DrawHelper::render and don't seem to happen if I comment it out
+ - My best guess is that Material::setFloat for ScreenSpace shader is not working properly
+   - ISsue possibly being that minimum amount of space allocated by the shader is 16 bytes, but ScreenSpace shader needs only 2
+   - This doubt is further confirmed by the crash not happening when I comment out the screen space rendering
+
+AA lines render but look a bit off.
+
+Vertex colors dont match between DX11/GL and DX9. DX9 seems to expect BGRA
+
+---------
+
+Num verts/indices for polygon2d_AA method:
+(n * 2) vertices
+(n * 6) + max(0, n - 2) * 3

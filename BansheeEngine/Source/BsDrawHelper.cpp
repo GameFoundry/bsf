@@ -76,7 +76,7 @@ namespace BansheeEngine
 
 		outIndices += indexOffset;
 		outIndices[0] = vertexOffset + 0;
-		outIndices[1] = vertexOffset + 2;
+		outIndices[1] = vertexOffset + 1;
 	}
 
 	void DrawHelper::line2D_Pixel(const CM::Vector2& a, const CM::Vector2& b, const CM::Color& color, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
@@ -114,10 +114,10 @@ namespace BansheeEngine
 		Vector2 v2 = b + dir + nrm;
 		Vector2 v3 = b + dir - nrm;
 
-		points.push_back(v0);
-		points.push_back(v1);
-		points.push_back(v2);
-		points.push_back(v3);
+		points[0] = v0;
+		points[1] = v1;
+		points[2] = v2;
+		points[3] = v3;
 
 		polygon2D_AA(points, width, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
 	}
@@ -303,7 +303,15 @@ namespace BansheeEngine
 
 		meshData->endDesc();
 
-		line2D_Pixel(a, b, color, meshData, 0, 0);
+		Vector2 actualA = a;
+		Vector2 actualB = b;
+		if(coordType == CoordType::Normalized)
+		{
+			actualA = normalizedCoordToClipSpace(a);
+			actualB = normalizedCoordToClipSpace(b);
+		}
+
+		line2D_Pixel(actualA, actualB, color, meshData, 0, 0);
 
 		HMesh mesh = Mesh::create();
 
@@ -345,7 +353,15 @@ namespace BansheeEngine
 
 		meshData->endDesc();
 
-		line2D_AA(a, b, width, color, meshData, 0, 0);
+		Vector2 actualA = a;
+		Vector2 actualB = b;
+		if(coordType == CoordType::Normalized)
+		{
+			actualA = normalizedCoordToClipSpace(a);
+			actualB = normalizedCoordToClipSpace(b);
+		}
+
+		line2D_AA(actualA, actualB, width, color, meshData, 0, 0);
 
 		HMesh mesh = Mesh::create();
 

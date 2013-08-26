@@ -29,7 +29,6 @@
 #include "BsMainEditorWindow.h"
 // End editor includes
 
-
 #include "CmDebugCamera.h"
 #include "DbgEditorWidget1.h"
 #include "DbgEditorWidget2.h"
