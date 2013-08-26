@@ -90,6 +90,26 @@ namespace CamelotFramework
 
 			memcpy(vertBufferData, srcVertBufferData, bufferSize);
 
+			if(vertexBuffer->vertexColorReqRGBFlip())
+			{
+				UINT32 vertexStride = meshData.getVertexStride(i);
+				for(INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
+				{
+					if(!meshData.hasElement(VES_COLOR, semanticIdx, i))
+						continue;
+
+					UINT8* colorData = vertBufferData + meshData.getElementOffset(VES_COLOR, semanticIdx, i);
+					for(UINT32 j = 0; j < mVertexData->vertexCount; j++)
+					{
+						UINT32* curColor = (UINT32*)colorData;
+
+						(*curColor) = ((*curColor) & 0xFF00FF00) | ((*curColor >> 16) & 0x000000FF) | ((*curColor << 16) & 0x00FF0000);
+
+						colorData += vertexStride;
+					}
+				}
+			}
+
 			vertexBuffer->unlock();
 		}
 	}

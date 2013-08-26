@@ -54,6 +54,14 @@ namespace CamelotFramework
         UINT32 getVertexSize(void) const { return mVertexSize; }
         /// Get the number of vertices in this buffer
         UINT32 getNumVertices(void) const { return mNumVertices; }
+
+		/**
+		 * @brief	Some render systems expect vertex color bits in an order different than
+		 * 			RGBA, in which case override this to flip the RGB order.
+		 */
+		virtual bool vertexColorReqRGBFlip() { return false; }
+
+		static const int MAX_SEMANTIC_IDX = 8;
 	protected:
 		HardwareBufferManager* mMgr;
 		UINT32 mNumVertices;

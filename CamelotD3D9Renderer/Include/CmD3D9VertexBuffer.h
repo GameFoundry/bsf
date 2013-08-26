@@ -64,6 +64,7 @@ namespace CamelotFramework {
         /// Get D3D9-specific vertex buffer
         IDirect3DVertexBuffer9* getD3D9VertexBuffer(void);
 
+		virtual bool vertexColorReqRGBFlip() { return true; }
 	protected:	
 		struct BufferResources
 		{
