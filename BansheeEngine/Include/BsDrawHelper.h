@@ -94,10 +94,50 @@ namespace BansheeEngine
 		 */
 		void line2D_AA(const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
 
+		/**
+		 * @brief	Fills the mesh data with vertices representing per-pixel lines.
+		 *
+		 * @param	linePoints		A list of start and end points for the lines. Must be a multiple of 2.
+		 * @param	color			Color of the line.
+		 * @param	meshData		Mesh data that will be populated.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * 							
+		 * @note	Provided MeshData must have some specific elements at least:
+		 * 			  Vector2 VES_POSITION
+		 * 			  UINT32  VES_COLOR
+		 * 			  32bit index buffer
+		 * 			  Enough space for (numLines * 2) vertices and (numLines * 2) indices
+		 */
+		void lineList2D_Pixel(const CM::Vector<CM::Vector2>::type& linePoints, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+
+		/**
+		 * @brief	Fills the mesh data with vertices representing anti-aliased lines of specific width. Antialiasing is done using alpha blending.
+		 *
+		 * @param	linePoints		A list of start and end points for the lines. Must be a multiple of 2.
+		 * @param	width			Width of the line.
+		 * @param	borderWidth		Width of the anti-aliased border.
+		 * @param	color			Color of the line.
+		 * @param	meshData		Mesh data that will be populated by this method.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * 							
+		 * @note	Provided MeshData must have some specific elements at least:
+		 * 			  Vector2 VES_POSITION
+		 * 			  UINT32  VES_COLOR
+		 * 			  32bit index buffer
+		 *			  Enough space for (numLines * 8) vertices and (numLines * 30) indices
+		 */
+		void lineList2D_AA(const CM::Vector<CM::Vector2>::type& linePoints, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+
 		void drawQuad2D(const HCamera& camera, const CM::FRect& area, const CM::Color& color = CM::Color::White, CoordType coordType = CoordType::Pixel, float timeout = 0.0f);
 		void drawLine2D_Pixel(const HCamera& camera, const CM::Vector2& a, const CM::Vector2& b, const CM::Color& color = CM::Color::White, 
 			CoordType coordType = CoordType::Pixel, float timeout = 0.0f);
 		void drawLine2D_AA(const HCamera& camera, const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, 
+			const CM::Color& color = CM::Color::White, CoordType coordType = CoordType::Pixel, float timeout = 0.0f);
+		void drawLineList2D_Pixel(const HCamera& camera, const CM::Vector<CM::Vector2>::type& linePoints, const CM::Color& color = CM::Color::White, 
+			CoordType coordType = CoordType::Pixel, float timeout = 0.0f);
+		void drawLineList2D_AA(const HCamera& camera, const CM::Vector<CM::Vector2>::type& linePoints, float width, float borderWidth, 
 			const CM::Color& color = CM::Color::White, CoordType coordType = CoordType::Pixel, float timeout = 0.0f);
 
 		void render(const HCamera& camera, CM::RenderQueue& renderQueue);

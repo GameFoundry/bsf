@@ -114,6 +114,54 @@ namespace BansheeEngine
 		line2D_AA(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
 	}
 
+	void DrawHelper::lineList2D_Pixel(const Vector<CM::Vector2>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	{
+		assert(linePoints.size() % 2 == 0);
+
+		assert((vertexOffset + linePoints.size() * 2) <= meshData->getNumVertices());
+		assert((indexOffset + linePoints.size() * 2) <= meshData->getNumIndices());
+
+		UINT32 curVertOffset = vertexOffset;
+		UINT32 curIdxOffset = indexOffset;
+
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+		UINT8* colorData = meshData->getElementData(VES_COLOR);
+
+		UINT32 numPoints = (UINT32)linePoints.size();
+		for(UINT32 i = 0; i < numPoints; i += 2)
+		{
+			line2D_Pixel(linePoints[i], linePoints[i + 1], color, positionData, colorData, curVertOffset, meshData->getVertexStride(), indexData, curIdxOffset);
+
+			curVertOffset += 2;
+			curIdxOffset += 2;
+		}
+	}
+
+	void DrawHelper::lineList2D_AA(const Vector<Vector2>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	{
+		assert(linePoints.size() % 2 == 0);
+
+		assert((vertexOffset + linePoints.size() * 4) <= meshData->getNumVertices());
+		assert((indexOffset + linePoints.size() * 15) <= meshData->getNumIndices());
+
+		UINT32 curVertOffset = vertexOffset;
+		UINT32 curIdxOffset = indexOffset;
+
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+		UINT8* colorData = meshData->getElementData(VES_COLOR);
+
+		UINT32 numPoints = (UINT32)linePoints.size();
+		for(UINT32 i = 0; i < numPoints; i += 2)
+		{
+			line2D_AA(linePoints[i], linePoints[i + 1], width, borderWidth, color, positionData, colorData, curVertOffset, meshData->getVertexStride(), indexData, curIdxOffset);
+
+			curVertOffset += 8;
+			curIdxOffset += 30;
+		}
+	}
+
 	void DrawHelper::polygon2D_AA(const Vector<Vector2>::type& points, float borderWidth, const CM::Color& color, 
 		UINT8* outVertices, CM::UINT8* outColors, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
@@ -381,6 +429,116 @@ namespace BansheeEngine
 		}
 
 		line2D_AA(actualA, actualB, width, borderWidth, color, meshData, 0, 0);
+
+		HMesh mesh = Mesh::create();
+
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToCoreThread(true);
+
+		dbgCmd.mesh = mesh;
+		dbgCmd.worldCenter = Vector3::ZERO;
+
+		if(coordType == CoordType::Normalized)
+		{
+			dbgCmd.type = DebugDrawType::ClipSpace;
+			dbgCmd.material = mMaterial2DClipSpace;
+		}
+		else
+		{
+			dbgCmd.type = DebugDrawType::ScreenSpace;
+			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+		}
+	}
+
+	void DrawHelper::drawLineList2D_Pixel(const HCamera& camera, const Vector<Vector2>::type& linePoints, const Color& color, 
+		CoordType coordType, float timeout)
+	{
+		const Viewport* viewport = camera->getViewport().get();
+
+		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+
+		commands.push_back(DebugDrawCommand());
+		DebugDrawCommand& dbgCmd = commands.back();
+		dbgCmd.endTime = gTime().getTime() + timeout;
+
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 2));
+
+		meshData->beginDesc();
+
+		meshData->addSubMesh((UINT32)(linePoints.size() * 2), 0, DOT_LINE_LIST);
+		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_COLOR, VES_COLOR);
+
+		meshData->endDesc();
+
+		if(coordType == CoordType::Normalized)
+		{
+			Vector<Vector2>::type points;
+			UINT32 numPoints = (UINT32)linePoints.size();
+			for(UINT32 i = 0; i < numPoints; i++)
+				points.push_back(normalizedCoordToClipSpace(linePoints[i]));
+
+			lineList2D_Pixel(points, color, meshData, 0, 0);
+		}
+		else
+		{
+			lineList2D_Pixel(linePoints, color, meshData, 0, 0);
+		}		
+
+		HMesh mesh = Mesh::create();
+
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToCoreThread(true);
+
+		dbgCmd.mesh = mesh;
+		dbgCmd.worldCenter = Vector3::ZERO;
+
+		if(coordType == CoordType::Normalized)
+		{
+			dbgCmd.type = DebugDrawType::ClipSpace;
+			dbgCmd.material = mMaterial2DClipSpace;
+		}
+		else
+		{
+			dbgCmd.type = DebugDrawType::ScreenSpace;
+			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+		}
+	}
+
+	void DrawHelper::drawLineList2D_AA(const HCamera& camera, const CM::Vector<CM::Vector2>::type& linePoints, float width, float borderWidth, 
+		const CM::Color& color, CoordType coordType, float timeout)
+	{
+		const Viewport* viewport = camera->getViewport().get();
+
+		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+
+		commands.push_back(DebugDrawCommand());
+		DebugDrawCommand& dbgCmd = commands.back();
+		dbgCmd.endTime = gTime().getTime() + timeout;
+
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4));
+
+		meshData->beginDesc();
+
+		meshData->addSubMesh((UINT32)(linePoints.size() * 15), 0, DOT_TRIANGLE_LIST);
+		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_COLOR, VES_COLOR);
+
+		meshData->endDesc();
+
+		if(coordType == CoordType::Normalized)
+		{
+			Vector<Vector2>::type points;
+			UINT32 numPoints = (UINT32)linePoints.size();
+			for(UINT32 i = 0; i < numPoints; i++)
+				points.push_back(normalizedCoordToClipSpace(linePoints[i]));
+
+			lineList2D_AA(points, width, borderWidth, color, meshData, 0, 0);
+		}
+		else
+		{
+			lineList2D_AA(linePoints, width, borderWidth, color, meshData, 0, 0);
+		}		
 
 		HMesh mesh = Mesh::create();
 
