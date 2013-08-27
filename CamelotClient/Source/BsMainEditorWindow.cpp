@@ -44,7 +44,7 @@ namespace BansheeEditor
 
 		DrawHelper::instance().drawLine2D_Pixel(sceneCamera, Vector2(0, 0), Vector2(20, 20), Color::Blue, CoordType::Pixel, 250.0f);
 
-		DrawHelper::instance().drawLine2D_AA(sceneCamera, Vector2(100, 0), Vector2(120, 20), 5.0f, Color::Blue, CoordType::Pixel, 250.0f);
+		DrawHelper::instance().drawLine2D_AA(sceneCamera, Vector2(100, 10), Vector2(120, 40), 1.0f, 1.0f, Color::Blue, CoordType::Pixel, 250.0f);
 	}
 
 	MainEditorWindow::~MainEditorWindow()

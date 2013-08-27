@@ -19,32 +19,6 @@ namespace BansheeEngine
 		mMaterial2DClipSpace = BuiltinMaterialManager::instance().createDebugDraw2DClipSpaceMaterial();
 	}
 
-	void DrawHelper::quad2D(const CM::FRect& area, UINT8* outVertices, 
-		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
-	{
-		outVertices += (vertexOffset * vertexStride);
-
-		Vector2* vertices = (Vector2*)outVertices;
-		(*vertices) = Vector2(area.x, area.y);
-
-		vertices = (Vector2*)(outVertices + vertexStride);
-		(*vertices) = Vector2(area.x + area.width, area.y);
-
-		vertices = (Vector2*)(outVertices + vertexStride * 2);
-		(*vertices) = Vector2(area.x, area.y + area.height);
-
-		vertices = (Vector2*)(outVertices + vertexStride * 3);
-		(*vertices) = Vector2(area.x + area.width, area.y + area.height);
-
-		outIndices += indexOffset;
-		outIndices[0] = vertexOffset + 0;
-		outIndices[1] = vertexOffset + 1;
-		outIndices[2] = vertexOffset + 2;
-		outIndices[3] = vertexOffset + 1;
-		outIndices[4] = vertexOffset + 3;
-		outIndices[5] = vertexOffset + 2;
-	}
-
 	void DrawHelper::quad2D(const CM::FRect& area, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
@@ -53,7 +27,13 @@ namespace BansheeEngine
 		assert((vertexOffset + 4) <= meshData->getNumVertices());
 		assert((indexOffset + 6) <= meshData->getNumIndices());
 
-		quad2D(area, positionData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+		Vector<Vector2>::type points;
+		points.push_back(Vector2(area.x, area.y));
+		points.push_back(Vector2(area.x + area.width, area.y));
+		points.push_back(Vector2(area.x + area.width, area.y + area.height));
+		points.push_back(Vector2(area.x, area.y + area.height));	
+		
+		polygonFill2D_Pixel(points, positionData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
 	}
 
 	void DrawHelper::line2D_Pixel(const CM::Vector2& a, const CM::Vector2& b, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
@@ -91,7 +71,7 @@ namespace BansheeEngine
 		line2D_Pixel(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
 	}
 
-	void DrawHelper::line2D_AA(const CM::Vector2& a, const CM::Vector2& b, float width, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
+	void DrawHelper::line2D_AA(const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
 		CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
 	{
 		Vector2 dir = b - a;
@@ -101,13 +81,13 @@ namespace BansheeEngine
 
 		Vector<Vector2>::type points(4);
 
-		width -= 1.0f;
-		width *= 0.5f;
-		if (width < 0.01f) 
-			width = 0.01f;
+		float r = width - 1.0f;
+		r *= 0.5f;
+		if (r < 0.01f) 
+			r = 0.01f;
 
-		dir = dir * width;
-		nrm = nrm * width;
+		dir = dir * r;
+		nrm = nrm * r;
 
 		Vector2 v0 = a - dir - nrm;
 		Vector2 v1 = a - dir + nrm;
@@ -119,10 +99,10 @@ namespace BansheeEngine
 		points[2] = v2;
 		points[3] = v3;
 
-		polygon2D_AA(points, width, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
+		polygon2D_AA(points, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
 	}
 
-	void DrawHelper::line2D_AA(const CM::Vector2& a, const CM::Vector2& b, float width, const CM::Color& color, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper::line2D_AA(const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, const CM::Color& color, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -131,16 +111,17 @@ namespace BansheeEngine
 		assert((vertexOffset + 8) <= meshData->getNumVertices());
 		assert((indexOffset + 30) <= meshData->getNumIndices());
 
-		line2D_AA(a, b, width, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+		line2D_AA(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
 	}
 
-	void DrawHelper::polygon2D_AA(const Vector<Vector2>::type& points, float width, const CM::Color& color, 
+	void DrawHelper::polygon2D_AA(const Vector<Vector2>::type& points, float borderWidth, const CM::Color& color, 
 		UINT8* outVertices, CM::UINT8* outColors, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
-		outVertices += vertexOffset * vertexStride;
-		Vector<Vector2>::type tempNormals;
-
 		UINT32 numCoords = (UINT32)points.size();
+
+		outVertices += vertexOffset * vertexStride;
+		Vector<Vector2>::type tempNormals(numCoords);
+
 		for(UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
 		{
 			const Vector2& v0 = points[j];
@@ -153,7 +134,7 @@ namespace BansheeEngine
 			std::swap(d.x, d.y);
 			d.y = -d.y;
 
-			tempNormals.push_back(d);
+			tempNormals[j] = d;
 
 			// Also start populating the vertex array
 			Vector2* vertices = (Vector2*)outVertices;
@@ -187,7 +168,7 @@ namespace BansheeEngine
 				avgNrm.y *= scale;
 			}
 
-			Vector2 tempCoord = points[i] + avgNrm * width;
+			Vector2 tempCoord = points[i] + avgNrm * borderWidth;
 
 			// Move it to the vertex array
 			Vector2* vertices = (Vector2*)outVertices;
@@ -220,6 +201,44 @@ namespace BansheeEngine
 			outIndices[idxCnt++] = 0;
 			outIndices[idxCnt++] = i - 1;
 			outIndices[idxCnt++] = i;
+		}
+	}
+
+	void DrawHelper::polygonFill2D_Pixel(const CM::Vector<CM::Vector2>::type& points, CM::UINT8* outVertices, 
+		CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
+	{
+		outVertices += (vertexOffset * vertexStride);
+
+		for(auto& point : points)
+		{
+			Vector2* vertices = (Vector2*)outVertices;
+			(*vertices) = Vector2(point.x, point.y);
+
+			outVertices += vertexStride;
+		}
+
+		outIndices += indexOffset;
+		INT32 numPoints = (INT32)points.size();
+		UINT32 idxCnt = 0;
+		for(int i = 2; i < numPoints; i++)
+		{
+			outIndices[idxCnt++] = vertexOffset;
+			outIndices[idxCnt++] = vertexOffset + i - 1;
+			outIndices[idxCnt++] = vertexOffset + i;
+		}
+	}
+
+	void DrawHelper::polygonBorder2D_Pixel(const CM::Vector<CM::Vector2>::type& points, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
+		CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
+	{
+		INT32 numPoints = (INT32)points.size();
+		UINT32 curVertOffset = vertexOffset;
+		UINT32 curIdxOffset = indexOffset;
+		for(INT32 i = 0, j = numPoints - 1; i < numPoints; j = i++)
+		{
+			line2D_Pixel(points[j], points[i], color, outVertices, outColors, curVertOffset, vertexStride, outIndices, curIdxOffset);
+			curVertOffset += 2;
+			curIdxOffset += 2;
 		}
 	}
 
@@ -333,7 +352,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper::drawLine2D_AA(const HCamera& camera, const Vector2& a, const Vector2& b, float width, const Color& color, CoordType coordType, float timeout)
+	void DrawHelper::drawLine2D_AA(const HCamera& camera, const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, CoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -361,7 +380,7 @@ namespace BansheeEngine
 			actualB = normalizedCoordToClipSpace(b);
 		}
 
-		line2D_AA(actualA, actualB, width, color, meshData, 0, 0);
+		line2D_AA(actualA, actualB, width, borderWidth, color, meshData, 0, 0);
 
 		HMesh mesh = Mesh::create();
 
