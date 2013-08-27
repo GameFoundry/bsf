@@ -198,7 +198,10 @@
     <ClInclude Include="Include\BsRendererSort.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsDrawHelper.h">
+    <ClInclude Include="Include\BsDrawHelper2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDrawHelperTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -341,7 +344,10 @@
     <ClCompile Include="Source\BsGUIViewport.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsDrawHelper.cpp">
+    <ClCompile Include="Source\BsDrawHelperTemplate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDrawHelper2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -7,7 +7,7 @@
 // DEBUG ONLY
 #include "CmTestTextSprite.h"
 #include "CmDebugCamera.h"
-#include "BsDrawHelper.h"
+#include "BsDrawHelper2D.h"
 #include "CmFRect.h"
 
 using namespace CamelotFramework;
@@ -39,12 +39,12 @@ namespace BansheeEditor
 
 		textSprite->init(sceneCamera, "Testing in a new row, does this work?", nullptr);
 
-		DrawHelper::instance().drawQuad2D(sceneCamera, FRect(0.0f, 0.2f, 0.75f, 0.5f), Color::White, CoordType::Normalized, 250.0f);
-		DrawHelper::instance().drawQuad2D(sceneCamera, FRect(50.0f, 50.0f, 100.0f, 50.0f), Color::Blue, CoordType::Pixel, 250.0f);
+		DrawHelper2D::instance().drawQuad(sceneCamera, FRect(0.0f, 0.2f, 0.75f, 0.5f), Color::White, DebugDrawCoordType::Normalized, 250.0f);
+		DrawHelper2D::instance().drawQuad(sceneCamera, FRect(50.0f, 50.0f, 100.0f, 50.0f), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
 
-		DrawHelper::instance().drawLine2D_Pixel(sceneCamera, Vector2(0, 0), Vector2(20, 20), Color::Blue, CoordType::Pixel, 250.0f);
+		DrawHelper2D::instance().drawLine_Pixel(sceneCamera, Vector2(0, 0), Vector2(20, 20), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
 
-		DrawHelper::instance().drawLine2D_AA(sceneCamera, Vector2(100, 10), Vector2(120, 40), 1.0f, 1.0f, Color::Blue, CoordType::Pixel, 250.0f);
+		DrawHelper2D::instance().drawLine_AA(sceneCamera, Vector2(100, 10), Vector2(120, 40), 1.0f, 1.0f, Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
 	}
 
 	MainEditorWindow::~MainEditorWindow()
