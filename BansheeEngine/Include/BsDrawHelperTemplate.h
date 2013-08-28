@@ -143,125 +143,11 @@ namespace BansheeEngine
 			outIndices[1] = vertexOffset + 1;
 		}
 
-		void line_AA(const T& a, const T& b, float width, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
-		{
-			T dir = b - a;
-			dir.normalize();
+		virtual void line_AA(const T& a, const T& b, float width, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
+			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset) = 0;
 
-			T nrm(dir.y, -dir.x); // TODO - Not properly ported
-
-			Vector<T>::type points(4);
-
-			float r = width - 1.0f;
-			r *= 0.5f;
-			if (r < 0.01f) 
-				r = 0.01f;
-
-			dir = dir * r;
-			nrm = nrm * r;
-
-			T v0 = a - dir - nrm;
-			T v1 = a - dir + nrm;
-			T v2 = b + dir + nrm;
-			T v3 = b + dir - nrm;
-
-			points[0] = v0;
-			points[1] = v1;
-			points[2] = v2;
-			points[3] = v3;
-
-			polygon_AA(points, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
-		}
-
-		void polygon_AA(const typename CM::Vector<T>::type& points, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
-		{
-			UINT32 numCoords = (UINT32)points.size();
-
-			outVertices += vertexOffset * vertexStride;
-			Vector<T>::type tempNormals(numCoords);
-
-			for(UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
-			{
-				const T& v0 = points[j];
-				const T& v1 = points[i];
-
-				T d = v1 - v0;
-				d.normalize();
-
-				// Rotate by 90 degrees
-				std::swap(d.x, d.y); // TODO - Not properly ported
-				d.y = -d.y;
-
-				tempNormals[j] = d;
-
-				// Also start populating the vertex array
-				T* vertices = (T*)outVertices;
-				*vertices = v1;
-
-				UINT32* colors = (UINT32*)outColors;
-				*colors = color.getAsRGBA();
-
-				outVertices += vertexStride;
-				outColors += vertexStride;
-			}
-
-			Color transparentColor = color;
-			transparentColor.a = 0.0f;
-
-			for(UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
-			{
-				const T& n0 = tempNormals[j];
-				const T& n1 = tempNormals[i];
-
-				T avgNrm = (n0 + n1) * 0.5f;
-				float magSqrd = avgNrm.squaredLength();
-
-				if (magSqrd > 0.000001f)
-				{
-					float scale = 1.0f / magSqrd;
-					if (scale > 10.0f) 
-						scale = 10.0f;
-
-					avgNrm = avgNrm * scale;
-				}
-
-				T tempCoord = points[i] + avgNrm * borderWidth;
-
-				// Move it to the vertex array
-				T* vertices = (T*)outVertices;
-				*vertices = tempCoord;
-
-				UINT32* colors = (UINT32*)outColors;
-				*colors = transparentColor.getAsRGBA();
-
-				outVertices += vertexStride;
-				outColors += vertexStride;
-			}
-
-			// Populate index buffer
-			outIndices += indexOffset;
-
-			UINT32 idxCnt = 0;
-			for(UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
-			{
-				outIndices[idxCnt++] = i;
-				outIndices[idxCnt++] = j;
-				outIndices[idxCnt++] = numCoords + j;
-
-				outIndices[idxCnt++] = numCoords + j;
-				outIndices[idxCnt++] = numCoords + i;
-				outIndices[idxCnt++] = i;
-			}
-
-			for(UINT32 i = 2; i < numCoords; ++i)
-			{
-				outIndices[idxCnt++] = 0;
-				outIndices[idxCnt++] = i - 1;
-				outIndices[idxCnt++] = i;
-			}
-		}
+		virtual void polygon_AA(const typename CM::Vector<T>::type& points, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
+			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset) = 0;
 
 		void polygonFill_Pixel(const typename CM::Vector<T>::type& points, CM::UINT8* outVertices, 
 			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
@@ -271,7 +157,7 @@ namespace BansheeEngine
 			for(auto& point : points)
 			{
 				T* vertices = (T*)outVertices;
-				(*vertices) = Vector2(point.x, point.y); // TODO - Not properly ported
+				(*vertices) = point;
 
 				outVertices += vertexStride;
 			}

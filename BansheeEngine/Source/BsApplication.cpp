@@ -3,6 +3,7 @@
 #include "BsGUIManager.h"
 #include "BsOverlayManager.h"
 #include "BsDrawHelper2D.h"
+#include "BsDrawHelper3D.h"
 #include "BsBuiltinMaterialManager.h"
 #include "BsD3D9BuiltinMaterialFactory.h"
 #include "BsD3D11BuiltinMaterialFactory.h"
@@ -46,6 +47,7 @@ namespace BansheeEngine
 		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
 
 		DrawHelper2D::startUp(cm_new<DrawHelper2D>());
+		DrawHelper3D::startUp(cm_new<DrawHelper3D>());
 
 		EngineGUI::startUp(new EngineGUI());
 
@@ -63,6 +65,7 @@ namespace BansheeEngine
 
 		EngineGUI::shutDown();
 
+		DrawHelper3D::shutDown();
 		DrawHelper2D::shutDown();
 
 		GUIMaterialManager::instance().forceReleaseAllMaterials();

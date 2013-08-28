@@ -227,6 +227,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsApplication.h" />
+    <ClInclude Include="Include\BsDrawHelper3D.h" />
     <ClInclude Include="Include\BsDrawHelperTemplate.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
     <ClInclude Include="Include\BsDrawHelper2D.h" />
@@ -286,6 +287,7 @@
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
     <ClCompile Include="Source\BsDrawHelper2D.cpp" />
+    <ClCompile Include="Source\BsDrawHelper3D.cpp" />
     <ClCompile Include="Source\BsDrawHelperTemplate.cpp" />
     <ClCompile Include="Source\BsDragAndDropManager.cpp" />
     <ClCompile Include="Source\BsEngineGUI.cpp" />

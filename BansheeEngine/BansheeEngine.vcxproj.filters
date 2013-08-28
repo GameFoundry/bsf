@@ -204,6 +204,9 @@
     <ClInclude Include="Include\BsDrawHelperTemplate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsDrawHelper3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -348,6 +351,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsDrawHelper2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDrawHelper3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
