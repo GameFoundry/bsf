@@ -8,6 +8,7 @@
 #include "CmTestTextSprite.h"
 #include "CmDebugCamera.h"
 #include "BsDrawHelper2D.h"
+#include "BsDrawHelper3D.h"
 #include "CmFRect.h"
 
 using namespace CamelotFramework;
@@ -39,12 +40,15 @@ namespace BansheeEditor
 
 		textSprite->init(sceneCamera, "Testing in a new row, does this work?", nullptr);
 
-		DrawHelper2D::instance().drawQuad(sceneCamera, FRect(0.0f, 0.2f, 0.75f, 0.5f), Color::White, DebugDrawCoordType::Normalized, 250.0f);
-		DrawHelper2D::instance().drawQuad(sceneCamera, FRect(50.0f, 50.0f, 100.0f, 50.0f), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
+		//DrawHelper2D::instance().drawQuad(sceneCamera, FRect(0.0f, 0.2f, 0.75f, 0.5f), Color::White, DebugDrawCoordType::Normalized, 250.0f);
+		//DrawHelper2D::instance().drawQuad(sceneCamera, FRect(50.0f, 50.0f, 100.0f, 50.0f), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
 
-		DrawHelper2D::instance().drawLine_Pixel(sceneCamera, Vector2(0, 0), Vector2(20, 20), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
+		//DrawHelper2D::instance().drawLine_Pixel(sceneCamera, Vector2(0, 0), Vector2(20, 20), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
 
-		DrawHelper2D::instance().drawLine_AA(sceneCamera, Vector2(100, 10), Vector2(120, 40), 1.0f, 1.0f, Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
+		//DrawHelper2D::instance().drawLine_AA(sceneCamera, Vector2(100, 10), Vector2(120, 40), 1.0f, 1.0f, Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
+
+		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
+		DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 	}
 
 	MainEditorWindow::~MainEditorWindow()

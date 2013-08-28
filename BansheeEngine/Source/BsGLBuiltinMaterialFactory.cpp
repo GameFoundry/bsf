@@ -383,12 +383,5 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
-
-		DEPTH_STENCIL_STATE_DESC depthStateDesc;
-		depthStateDesc.depthReadEnable = false;
-		depthStateDesc.depthWriteEnable = false;
-
-		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
-		newPass->setDepthStencilState(depthState);
 	}
 }

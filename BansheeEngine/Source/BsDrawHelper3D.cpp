@@ -15,6 +15,17 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	void DrawHelper3D::aabox(const CM::AABox& box, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	{
+		UINT32* indexData = meshData->getIndices32();
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+
+		assert((vertexOffset + 8) <= meshData->getNumVertices());
+		assert((indexOffset + 36) <= meshData->getNumIndices());	
+
+		aabox(box, positionData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+	}
+
 	void DrawHelper3D::line_Pixel(const Vector3& a, const Vector3& b, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::line_Pixel(a, b, color, meshData, vertexOffset, indexOffset);
@@ -54,7 +65,7 @@ namespace BansheeEngine
 		meshData->beginDesc();
 
 		meshData->addSubMesh(2, 0, DOT_LINE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
 		meshData->addVertElem(VET_COLOR, VES_COLOR);
 
 		meshData->endDesc();
@@ -89,7 +100,7 @@ namespace BansheeEngine
 		meshData->beginDesc();
 
 		meshData->addSubMesh(30, 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
 		meshData->addVertElem(VET_COLOR, VES_COLOR);
 
 		meshData->endDesc();
@@ -124,7 +135,7 @@ namespace BansheeEngine
 		meshData->beginDesc();
 
 		meshData->addSubMesh((UINT32)(linePoints.size() * 2), 0, DOT_LINE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
 		meshData->addVertElem(VET_COLOR, VES_COLOR);
 
 		meshData->endDesc();
@@ -160,7 +171,7 @@ namespace BansheeEngine
 		meshData->beginDesc();
 
 		meshData->addSubMesh((UINT32)(linePoints.size() * 15), 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
 		meshData->addVertElem(VET_COLOR, VES_COLOR);
 
 		meshData->endDesc();
@@ -178,6 +189,147 @@ namespace BansheeEngine
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
 		dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+	}
+
+	void DrawHelper3D::drawAABox(const HCamera& camera, const CM::AABox& box, const CM::Color& color, float timeout)
+	{
+		const Viewport* viewport = camera->getViewport().get();
+
+		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+
+		commands.push_back(DebugDrawCommand());
+		DebugDrawCommand& dbgCmd = commands.back();
+		dbgCmd.endTime = gTime().getTime() + timeout;
+
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8);
+
+		meshData->beginDesc();
+
+		meshData->addSubMesh(36, 0, DOT_TRIANGLE_LIST);
+		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
+		meshData->addVertElem(VET_COLOR, VES_COLOR);
+
+		meshData->endDesc();
+
+		aabox(box, meshData, 0, 0);	
+
+		UINT32 vertexStride = meshData->getVertexStride();
+		UINT8* colorData = meshData->getElementData(VES_COLOR);
+
+		for(UINT32 i = 0; i < meshData->getNumVertices(); i++)
+		{
+			UINT32* colors = (UINT32*)colorData;
+			(*colors) = color.getAsRGBA();
+
+			colorData += vertexStride;
+		}
+
+		UINT8* positionData = meshData->getElementData(VES_POSITION);
+		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), meshData->getVertexStride());
+
+		HMesh mesh = Mesh::create();
+
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToCoreThread(true);
+
+		dbgCmd.mesh = mesh;
+		dbgCmd.type = DebugDrawType::WorldSpace;
+		dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+	}
+
+	void DrawHelper3D::aabox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
+	{
+		outVertices += (vertexOffset * vertexStride);
+
+		Vector3 pt;
+
+		pt = box.getCorner(AABox::FAR_LEFT_BOTTOM);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		pt = box.getCorner(AABox::FAR_RIGHT_BOTTOM);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		pt = box.getCorner(AABox::FAR_LEFT_TOP);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		pt = box.getCorner(AABox::FAR_RIGHT_TOP);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		pt = box.getCorner(AABox::NEAR_LEFT_BOTTOM);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		pt = box.getCorner(AABox::NEAR_RIGHT_BOTTOM);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		pt = box.getCorner(AABox::NEAR_LEFT_TOP);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		pt = box.getCorner(AABox::NEAR_RIGHT_TOP);
+		memcpy(outVertices, &pt, sizeof(pt));
+		outVertices += vertexStride;
+
+		outIndices += indexOffset;
+
+		// Front
+		outIndices[0] = vertexOffset + 6;
+		outIndices[1] = vertexOffset + 7;
+		outIndices[2] = vertexOffset + 5;
+
+		outIndices[3] = vertexOffset + 6;
+		outIndices[4] = vertexOffset + 5;
+		outIndices[5] = vertexOffset + 4;
+
+		// Back
+		outIndices[6] = vertexOffset + 2;
+		outIndices[7] = vertexOffset + 1;
+		outIndices[8] = vertexOffset + 3;
+
+		outIndices[9] = vertexOffset + 2;
+		outIndices[10] = vertexOffset + 0;
+		outIndices[11] = vertexOffset + 1;
+
+		// Left
+		outIndices[12] = vertexOffset + 2;
+		outIndices[13] = vertexOffset + 6;
+		outIndices[14] = vertexOffset + 4;
+
+		outIndices[15] = vertexOffset + 2;
+		outIndices[16] = vertexOffset + 4;
+		outIndices[17] = vertexOffset + 0;
+
+		// Right
+		outIndices[18] = vertexOffset + 7;
+		outIndices[19] = vertexOffset + 3;
+		outIndices[20] = vertexOffset + 1;
+
+		outIndices[21] = vertexOffset + 7;
+		outIndices[22] = vertexOffset + 1;
+		outIndices[23] = vertexOffset + 5;
+
+		// Top
+		outIndices[24] = vertexOffset + 6;
+		outIndices[25] = vertexOffset + 2;
+		outIndices[26] = vertexOffset + 3;
+
+		outIndices[27] = vertexOffset + 6;
+		outIndices[28] = vertexOffset + 3;
+		outIndices[29] = vertexOffset + 7;
+
+		// Bottom
+		outIndices[30] = vertexOffset + 5;
+		outIndices[31] = vertexOffset + 1;
+		outIndices[32] = vertexOffset + 0;
+
+		outIndices[33] = vertexOffset + 5;
+		outIndices[34] = vertexOffset + 0;
+		outIndices[35] = vertexOffset + 4;
 	}
 
 	CM::Vector3 DrawHelper3D::calcCenter(UINT8* vertices, UINT32 numVertices, UINT32 vertexStride)

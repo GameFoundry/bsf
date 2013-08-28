@@ -53,7 +53,7 @@ namespace CamelotFramework
 			mIndexData->indexCount, 
 			GBU_STATIC);
 
-		UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
+		UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY));
 		UINT32 idxElementSize = meshData.getIndexElementSize();
 
 		UINT32 indicesSize = meshData.getIndexBufferSize();
@@ -84,7 +84,7 @@ namespace CamelotFramework
 			mVertexData->setBuffer(i, vertexBuffer);
 
 			UINT8* srcVertBufferData = meshData.getStreamData(i);
-			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY_DISCARD));
+			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY));
 
 			UINT32 bufferSize = meshData.getStreamSize(i);
 

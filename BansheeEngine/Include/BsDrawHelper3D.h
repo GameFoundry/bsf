@@ -12,6 +12,22 @@ namespace BansheeEngine
 	{
 	public:
 		/**
+		 * @brief	Fills the mesh data with vertices representing an axis aligned box.
+		 *
+		 * @param	aabox			Axis aligned box to get the mesh data for
+		 * @param	color			Color of the line.
+		 * @param	meshData		Mesh data that will be populated.
+		 * @param	vertexOffset	Offset in number of vertices from the start of the buffer to start writing at.
+		 * @param	indexOffset 	Offset in number of indices from the start of the buffer to start writing at.
+		 * 							
+		 * @note	Provided MeshData must have some specific elements at least:
+		 * 			  Vector3 VES_POSITION
+		 * 			  32bit index buffer
+		 * 			  Enough space for 8 vertices and 36 indices
+		 */
+		void aabox(const CM::AABox& box, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+
+		/**
 		 * @brief	Fills the mesh data with vertices representing a per-pixel line.
 		 *
 		 * @param	a				Start point of the line.
@@ -92,6 +108,8 @@ namespace BansheeEngine
 		void drawLineList_AA(const HCamera& camera, const CM::Vector<CM::Vector3>::type& linePoints, float width, float borderWidth, 
 			const CM::Color& color = CM::Color::White, float timeout = 0.0f);
 
+		void drawAABox(const HCamera& camera, const CM::AABox& box, const CM::Color& color = CM::Color::White, float timeout = 0.0f);
+
 	private:
 		CM::Vector3 calcCenter(CM::UINT8* vertices, CM::UINT32 numVertices, CM::UINT32 vertexStride);
 
@@ -101,5 +119,8 @@ namespace BansheeEngine
 
 		void polygon_AA(const CM::Vector<CM::Vector3>::type& points, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
 			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset);
+
+		void aabox(const CM::AABox& box, CM::UINT8* outVertices, CM::UINT32 vertexOffset, CM::UINT32 vertexStride, 
+			CM::UINT32* outIndices, CM::UINT32 indexOffset);
 	};
 }
