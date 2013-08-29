@@ -19,6 +19,7 @@ namespace BansheeEngine
 		initDebugDraw2DClipSpaceShader();
 		initDebugDraw2DScreenSpaceShader();
 		initDebugDraw3DShader();
+		initDockDropOverlayShader();
 
 		SAMPLER_STATE_DESC ssDesc;
 		ssDesc.magFilter = FO_POINT;
@@ -35,6 +36,7 @@ namespace BansheeEngine
 		mDebugDraw2DClipSpaceShader = nullptr;
 		mDebugDraw2DScreenSpaceShader = nullptr;
 		mDebugDraw3DShader = nullptr;
+		mDockDropOverlayShader = nullptr;
 	}
 
 	const CM::String& D3D11BuiltinMaterialFactory::getSupportedRenderSystem() const
@@ -73,6 +75,11 @@ namespace BansheeEngine
 	HMaterial D3D11BuiltinMaterialFactory::createDebugDraw3DMaterial() const
 	{
 		return Material::create(mDebugDraw3DShader);
+	}
+
+	HMaterial D3D11BuiltinMaterialFactory::createDockDropOverlayMaterial() const
+	{
+		return Material::create(mDockDropOverlayShader);
 	}
 
 	void D3D11BuiltinMaterialFactory::initSpriteTextShader()
@@ -366,5 +373,78 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
+	}
+
+	void D3D11BuiltinMaterialFactory::initDockDropOverlayShader()
+	{
+		String vsCode = "									\
+						float invViewportWidth;				\
+						float invViewportHeight;			\
+						\
+						float4 tintColor;					\
+						float4 highlightColor;				\
+						float4 highlightActive;				\
+						\
+						void vs_main(						\
+						in float2 inPos : POSITION,			\
+						in float4 color : COLOR0,			\
+						out float4 oPosition : SV_Position, \
+						out float4 oColor : COLOR0)			\
+						{														\
+						float tfrmdX = -1.0f + (inPos.x * invViewportWidth);	\
+						float tfrmdY = 1.0f - (inPos.y * invViewportHeight);	\
+						\
+						oPosition = float4(tfrmdX, tfrmdY, 0, 1);				\
+																				\
+						float4 highlight = highlightActive * color;				\
+						float highlightSum = highlight.x + highlight.y +		\
+							highlight.y + highlight.z;							\
+																				\
+						oColor = (1.0f - highlightSum) * tintColor +			\
+							highlightSum * highlightColor;						\
+						}";
+
+		String psCode = "																		\
+						float4 ps_main(in float4 inPos : SV_Position, in float4 color : COLOR0) : SV_Target		\
+						{																						\
+						return color;																		\
+						}																						\
+						";	
+
+		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+
+		vsProgram.synchronize();
+		psProgram.synchronize();
+
+		mDockDropOverlayShader = Shader::create("DockDropOverlayShader");
+
+		mDockDropOverlayShader->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mDockDropOverlayShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		mDockDropOverlayShader->addParameter("tintColor", "tintColor", GPDT_FLOAT4);
+		mDockDropOverlayShader->addParameter("highlightColor", "highlightColor", GPDT_FLOAT4);
+		mDockDropOverlayShader->addParameter("highlightActive", "highlightActive", GPDT_FLOAT4);
+
+		TechniquePtr newTechnique = mDockDropOverlayShader->addTechnique("D3D11RenderSystem", RendererManager::getCoreRendererName()); 
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
 	}
 }

@@ -20,6 +20,7 @@ namespace BansheeEngine
 		virtual CM::HMaterial createDebugDraw2DClipSpaceMaterial() const = 0;
 		virtual CM::HMaterial createDebugDraw2DScreenSpaceMaterial() const = 0;
 		virtual CM::HMaterial createDebugDraw3DMaterial() const = 0;
+		virtual CM::HMaterial createDockDropOverlayMaterial() const = 0;
 	};
 
 	/**
@@ -38,6 +39,7 @@ namespace BansheeEngine
 		CM::HMaterial createDebugDraw2DClipSpaceMaterial() const;
 		CM::HMaterial createDebugDraw2DScreenSpaceMaterial() const;
 		CM::HMaterial createDebugDraw3DMaterial() const;
+		CM::HMaterial createDockDropOverlayMaterial() const;
 
 		void addFactory(BuiltinMaterialFactory* factory);
 		void setActive(const CM::String& renderSystemName);

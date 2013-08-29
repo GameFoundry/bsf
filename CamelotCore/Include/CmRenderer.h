@@ -2,10 +2,11 @@
 
 #include "CmPrerequisites.h"
 #include "CmGameObject.h"
+#include <boost/signals.hpp>
 
 namespace CamelotFramework
 {
-	class Renderer
+	class CM_EXPORT Renderer
 	{
 	public:
 		virtual const String& getName() const = 0;
@@ -14,5 +15,10 @@ namespace CamelotFramework
 		 * @brief	Renders all cameras.
 		 */
 		virtual void renderAll() = 0;
+
+		void addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, RenderQueue&)> callback);
+
+	protected:
+		UnorderedMap<const Viewport*, Vector<std::function<void(const Viewport*, RenderQueue&)>>::type>::type mRenderCallbacks;
 	};
 }

@@ -43,6 +43,7 @@ namespace BansheeEditor
 		DockManager(BS::GUIWidget* parent);
 		~DockManager();
 
+		void render(const CM::Viewport* viewport, CM::RenderQueue& renderQueue);
 		void insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location);
 
 		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
@@ -50,5 +51,9 @@ namespace BansheeEditor
 	private:
 		BS::GUIWidget* mParent;
 		DockContainer mRootContainer;
+
+		CM::HMesh mDropOverlayMesh;
+		CM::HMaterial mDropOverlayMat;
+		void createDropOverlayMesh(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 	};
 }

@@ -441,6 +441,7 @@
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmPixelUtil.cpp" />
+    <ClCompile Include="Source\CmRenderer.cpp" />
     <ClCompile Include="Source\CmRenderQueue.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmTextUtility.cpp" />

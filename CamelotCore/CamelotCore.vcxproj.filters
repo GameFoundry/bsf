@@ -722,5 +722,8 @@
     <ClCompile Include="Source\CmRenderQueue.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmRenderer.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -54,6 +54,13 @@ namespace BansheeEngine
 		return mActiveFactory->createDebugDraw3DMaterial();
 	}
 
+	CM::HMaterial BuiltinMaterialManager::createDockDropOverlayMaterial() const
+	{
+		assert(mActiveFactory != nullptr);
+
+		return mActiveFactory->createDockDropOverlayMaterial();
+	}
+
 	void BuiltinMaterialManager::addFactory(BuiltinMaterialFactory* factory)
 	{
 		assert(factory != nullptr);

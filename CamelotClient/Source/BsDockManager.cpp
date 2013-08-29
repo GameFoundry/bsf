@@ -2,6 +2,16 @@
 #include "BsEditorWidgetContainer.h"
 #include "CmMath.h"
 #include "CmException.h"
+#include "CmMesh.h"
+#include "CmMaterial.h"
+#include "CmVector2.h"
+#include "CmRenderQueue.h"
+#include "CmApplication.h"
+#include "CmRendererManager.h"
+#include "CmRenderer.h"
+#include "BsBuiltinMaterialManager.h"
+#include "BsGUIWidget.h"
+#include "BsCamera.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -151,12 +161,35 @@ namespace BansheeEditor
 	DockManager::DockManager(BS::GUIWidget* parent)
 		:mParent(parent)
 	{
+		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
 
+		RendererManager::instance().getActive()->addRenderCallback(parent->getTarget(), boost::bind(&DockManager::render, this, _1, _2));
 	}
 
 	DockManager::~DockManager()
 	{
 
+	}
+
+	void DockManager::render(const Viewport* viewport, CM::RenderQueue& renderQueue)
+	{
+		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
+		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
+
+		if(mDropOverlayMesh == nullptr || !mDropOverlayMesh.isLoaded() || !mDropOverlayMesh->isInitialized())
+			return;
+
+		if(mDropOverlayMat == nullptr || !mDropOverlayMat.isLoaded() || !mDropOverlayMat->isInitialized())
+			return;
+
+		mDropOverlayMat->setFloat("invViewportWidth", invViewportWidth);
+		mDropOverlayMat->setFloat("invViewportHeight", invViewportHeight);
+
+		mDropOverlayMat->setColor("tintColor", Color::White);
+		mDropOverlayMat->setColor("highlightColor", Color::Green);
+		mDropOverlayMat->setColor("highlightActive", Color(0.0f, 0.0f, 0.0f, 0.0f));
+
+		renderQueue.add(mDropOverlayMat, mDropOverlayMesh->getSubMeshData(), Vector3::ZERO);
 	}
 
 	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location)
@@ -195,5 +228,144 @@ namespace BansheeEditor
 	void DockManager::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		mRootContainer.setArea(x, y, width, height);
+
+		createDropOverlayMesh(x, y, width, height);
+	}
+
+	void DockManager::createDropOverlayMesh(INT32 x, INT32 y, UINT32 width, UINT32 height)
+	{
+		const static int spacing = 10;
+		const static float innerScale = 0.75f;
+
+		UINT32 outWidth = std::max(0, (INT32)width - spacing * 2);
+		UINT32 outHeight = std::max(0, (INT32)height - spacing * 2);
+		UINT32 inWidth = (UINT32)Math::FloorToInt(innerScale * outWidth);
+		UINT32 inHeight = (UINT32)Math::FloorToInt(innerScale * outHeight);
+		INT32 inXOffset = Math::FloorToInt((outWidth - inWidth) * 0.5f);
+		INT32 inYOffset = Math::FloorToInt((outHeight - inHeight) * 0.5f);
+
+		Vector2 outTopLeft((float)x, (float)y);
+		Vector2 outTopRight((float)(x + outWidth), (float)y);
+		Vector2 outBotLeft((float)x, (float)(y + outHeight));
+		Vector2 outBotRight((float)(x + outWidth), (float)(y + outHeight));
+
+		Vector2 inTopLeft((float)(x + inXOffset), (float)(y + inYOffset));
+		Vector2 inTopRight((float)(x + inXOffset + inWidth), (float)(y + inYOffset));
+		Vector2 inBotLeft((float)(x + inXOffset), (float)(y + inYOffset + inHeight));
+		Vector2 inBotRight((float)(x + inXOffset + inWidth), (float)(y + inYOffset + inHeight));
+
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(16);
+
+		meshData->beginDesc();
+
+		meshData->addSubMesh(24, 0, DOT_TRIANGLE_LIST);
+		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
+		meshData->addVertElem(VET_COLOR, VES_COLOR);
+
+		meshData->endDesc();
+
+		auto vertIter = meshData->getVec2DataIter(VES_POSITION);
+		auto colIter = meshData->getDWORDDataIter(VES_COLOR);
+
+		// Top
+		Vector2 topOffset((float)spacing, 0.0f);
+
+		Vector2 dbg = outTopLeft + topOffset;
+		vertIter.addValue(outTopLeft + topOffset);
+		vertIter.addValue(outTopRight + topOffset);
+		vertIter.addValue(inTopRight + topOffset);
+		vertIter.addValue(inTopLeft + topOffset);
+
+		Color color(1.0f, 0.0f, 0.0f, 0.0f);
+		UINT32 color32 = color.getAsRGBA();
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+
+		// Bottom
+		Vector2 botOffset((float)spacing, (float)spacing * 2.0f);
+		vertIter.addValue(inBotLeft + botOffset);
+		vertIter.addValue(inBotRight + botOffset);
+		vertIter.addValue(outBotRight + botOffset);
+		vertIter.addValue(outBotLeft + botOffset);
+
+		color = Color(0.0f, 1.0f, 0.0f, 0.0f);
+		color32 = color.getAsRGBA();
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+
+		// Left
+		Vector2 leftOffset(0.0f, (float)spacing);
+		vertIter.addValue(outTopLeft + leftOffset);
+		vertIter.addValue(inTopLeft + leftOffset);
+		vertIter.addValue(inBotLeft + leftOffset);
+		vertIter.addValue(outBotLeft + leftOffset);
+
+		color = Color(0.0f, 0.0f, 1.0f, 0.0f);
+		color32 = color.getAsRGBA();
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+
+		// Right
+		Vector2 rightOffset((float)spacing * 2.0f, (float)spacing);
+		vertIter.addValue(inTopRight + rightOffset);
+		vertIter.addValue(outTopRight + rightOffset);
+		vertIter.addValue(outBotRight + rightOffset);
+		vertIter.addValue(inBotRight + rightOffset);
+
+		color = Color(0.0f, 0.0f, 0.0f, 1.0f);
+		color32 = color.getAsRGBA();
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+		colIter.addValue(color32);
+
+		UINT32* indexData = meshData->getIndices32();
+
+		// Top
+		indexData[0] = 0;
+		indexData[1] = 1;
+		indexData[2] = 2;
+
+		indexData[3] = 0;
+		indexData[4] = 2;
+		indexData[5] = 3;
+
+		// Bottom
+		indexData[6] = 4;
+		indexData[7] = 5;
+		indexData[8] = 6;
+
+		indexData[9] = 4;
+		indexData[10] = 6;
+		indexData[11] = 7;
+
+		// Left
+		indexData[12] = 8;
+		indexData[13] = 9;
+		indexData[14] = 10;
+
+		indexData[15] = 8;
+		indexData[16] = 10;
+		indexData[17] = 11;
+
+		// Right
+		indexData[18] = 12;
+		indexData[19] = 13;
+		indexData[20] = 14;
+
+		indexData[21] = 12;
+		indexData[22] = 14;
+		indexData[23] = 15;
+
+		mDropOverlayMesh = Mesh::create();
+
+		gMainSyncedCA().writeSubresource(mDropOverlayMesh.getInternalPtr(), 0, *meshData);
+		gMainSyncedCA().submitToCoreThread(true);
 	}
 }

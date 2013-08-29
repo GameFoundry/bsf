@@ -370,9 +370,9 @@ namespace CamelotFramework
 		// Allocate the array memory, by control point or by polygon vertex.
 		VertexElemIter<Vector3> positions = meshData->getVec3DataIter(VES_POSITION);
 
-		VertexElemIter<Color> colors;
+		VertexElemIter<UINT32> colors;
 		if(hasColor)
-			colors = meshData->getColorDataIter(VES_COLOR);
+			colors = meshData->getDWORDDataIter(VES_COLOR);
 
 		VertexElemIter<Vector3> normals;
 		if (hasNormal)
@@ -459,7 +459,8 @@ namespace CamelotFramework
 					curColorValue[2] = static_cast<float>(lCurrentColor[2]);
 					curColorValue[3] = static_cast<float>(lCurrentColor[3]);
 
-					colors.addValue(curColorValue);
+					UINT32 color32 = curColorValue.getAsRGBA();
+					colors.addValue(color32);
 				}
 
 				// Save the normal.
@@ -605,7 +606,8 @@ namespace CamelotFramework
 						curColorValue[2] = static_cast<float>(lCurrentColor[2]);
 						curColorValue[3] = static_cast<float>(lCurrentColor[3]);
 
-						colors.addValue(curColorValue);
+						UINT32 color32 = curColorValue.getAsRGBA();
+						colors.addValue(color32);
 					}
 
 					if (hasNormal)

@@ -378,15 +378,6 @@ namespace CamelotFramework
 		return VertexElemIter<Vector4>(data, vertexStride, mNumVertices);
 	}
 
-	VertexElemIter<Color> MeshData::getColorDataIter(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
-	{
-		UINT8* data;
-		UINT32 vertexStride;
-		getDataForIterator(semantic, semanticIdx, streamIdx, data, vertexStride);
-
-		return VertexElemIter<Color>(data, vertexStride, mNumVertices);
-	}
-
 	VertexElemIter<UINT32> MeshData::getDWORDDataIter(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
 	{
 		UINT8* data;

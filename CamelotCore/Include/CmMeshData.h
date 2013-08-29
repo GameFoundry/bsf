@@ -156,14 +156,6 @@ namespace CamelotFramework
 		VertexElemIter<Vector4> getVec4DataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
 		/**
-		 * @brief	Returns an iterator you can use for easily retrieving or setting Color vertex elements. This is the preferred
-		 * 			method of assigning or reading vertex data. 
-		 * 			
-		 * @note	If vertex data of this type/semantic/index/stream doesn't exist and exception will be thrown.
-		 */
-		VertexElemIter<Color> getColorDataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
-
-		/**
 		 * @brief	Returns an iterator you can use for easily retrieving or setting DWORD vertex elements. This is the preferred
 		 * 			method of assigning or reading vertex data. 
 		 * 			

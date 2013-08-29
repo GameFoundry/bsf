@@ -160,6 +160,13 @@ namespace BansheeEngine
 		DrawHelper3D::instance().render(camera, *mRenderQueue);
 		DrawHelper2D::instance().render(camera, *mRenderQueue);
 
+		// Get any operations from hooked up callbacks
+		const Viewport* viewportRawPtr = camera->getViewport().get();
+		auto callbacksForViewport = mRenderCallbacks[viewportRawPtr];
+
+		for(auto& callback : callbacksForViewport)
+			callback(viewportRawPtr, *mRenderQueue);
+
 		// TODO - Material queue is completely ignored
 		mRenderQueue->sort();
 		const Vector<SortedRenderOp>::type& sortedROps =  mRenderQueue->getSortedRenderOps();

@@ -195,9 +195,6 @@
     <ClInclude Include="Include\BsGUIViewport.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRendererSort.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsDrawHelper2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>

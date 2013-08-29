@@ -266,7 +266,6 @@
     <ClInclude Include="Include\BsGUISkin.h" />
     <ClInclude Include="Include\BsGUIWidget.h" />
     <ClInclude Include="Include\BsImageSprite.h" />
-    <ClInclude Include="Include\BsRendererSort.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />
     <ClInclude Include="Include\BsSprite.h" />

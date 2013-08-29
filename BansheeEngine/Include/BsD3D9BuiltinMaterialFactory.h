@@ -20,6 +20,7 @@ namespace BansheeEngine
 		CM::HMaterial createDebugDraw2DClipSpaceMaterial() const;
 		CM::HMaterial createDebugDraw2DScreenSpaceMaterial() const;
 		CM::HMaterial createDebugDraw3DMaterial() const;
+		CM::HMaterial createDockDropOverlayMaterial() const;
 
 	protected:
 		CM::ShaderPtr mSpriteTextShader;
@@ -27,6 +28,7 @@ namespace BansheeEngine
 		CM::ShaderPtr mDebugDraw2DClipSpaceShader;
 		CM::ShaderPtr mDebugDraw2DScreenSpaceShader;
 		CM::ShaderPtr mDebugDraw3DShader;
+		CM::ShaderPtr mDockDropOverlayShader;
 
 		CM::HSamplerState mGUISamplerState;
 
@@ -35,5 +37,6 @@ namespace BansheeEngine
 		void initDebugDraw2DClipSpaceShader();
 		void initDebugDraw2DScreenSpaceShader();
 		void initDebugDraw3DShader();
+		void initDockDropOverlayShader();
 	};
 }

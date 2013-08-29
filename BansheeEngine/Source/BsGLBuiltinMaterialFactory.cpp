@@ -35,6 +35,7 @@ namespace BansheeEngine
 		mDebugDraw2DClipSpaceShader = nullptr;
 		mDebugDraw2DScreenSpaceShader = nullptr;
 		mDebugDraw3DShader = nullptr;
+		mDockDropOverlayShader = nullptr;
 	}
 
 	const CM::String& GLBuiltinMaterialFactory::getSupportedRenderSystem() const
@@ -73,6 +74,11 @@ namespace BansheeEngine
 	HMaterial GLBuiltinMaterialFactory::createDebugDraw3DMaterial() const
 	{
 		return Material::create(mDebugDraw3DShader);
+	}
+
+	HMaterial GLBuiltinMaterialFactory::createDockDropOverlayMaterial() const
+	{
+		return Material::create(mDockDropOverlayShader);
 	}
 
 	void GLBuiltinMaterialFactory::initSpriteTextShader()
@@ -383,5 +389,82 @@ namespace BansheeEngine
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
+	}
+
+	void GLBuiltinMaterialFactory::initDockDropOverlayShader()
+	{
+		String vsCode = "#version 400\n								\
+						\
+						uniform float invViewportWidth;				\
+						uniform float invViewportHeight;			\
+						\
+						uniform vec4 tintColor;						\
+						uniform vec4 highlightColor;				\
+						uniform vec4 highlightActive;				\
+						\
+						in vec2 cm_position;						\
+						in vec4 cm_color0;							\
+						out vec4 color0;							\
+						\
+						void main()									\
+						{											\
+						float tfrmdX = -1.0f + (cm_position.x * invViewportWidth);				\
+						float tfrmdY = 1.0f - (cm_position.y * invViewportHeight);				\
+						\
+						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);	\
+						\
+						float4 highlight = highlightActive * cm_color0;			\
+						float highlightSum = highlight.x + highlight.y +		\
+						highlight.y + highlight.z;								\
+						\
+						color0 = (1.0f - highlightSum) * tintColor +			\
+						highlightSum * highlightColor;							\
+						}";
+
+		String psCode = "#version 400\n						\
+						\
+						in vec4 color0;						\
+						out vec4 fragColor;					\
+						\
+						void main()							\
+						{									\
+						fragColor = color0;					\
+						}";
+
+		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+
+		vsProgram.synchronize();
+		psProgram.synchronize();
+
+		mDockDropOverlayShader = Shader::create("DockDropOverlayShader");
+
+		mDockDropOverlayShader->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
+		mDockDropOverlayShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+
+		mDockDropOverlayShader->addParameter("tintColor", "tintColor", GPDT_FLOAT4);
+		mDockDropOverlayShader->addParameter("highlightColor", "highlightColor", GPDT_FLOAT4);
+		mDockDropOverlayShader->addParameter("highlightActive", "highlightActive", GPDT_FLOAT4);
+
+		TechniquePtr newTechnique = mDockDropOverlayShader->addTechnique("GLRenderSystem", RendererManager::getCoreRendererName()); 
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		BLEND_STATE_DESC desc;
+		desc.renderTargetDesc[0].blendEnable = true;
+		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
+		desc.renderTargetDesc[0].blendOp = BO_ADD;
+
+		HBlendState blendState = BlendState::create(desc);
+		newPass->setBlendState(blendState);
+
+		DEPTH_STENCIL_STATE_DESC depthStateDesc;
+		depthStateDesc.depthReadEnable = false;
+		depthStateDesc.depthWriteEnable = false;
+
+		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
+		newPass->setDepthStencilState(depthState);
 	}
 }
