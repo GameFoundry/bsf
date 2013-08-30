@@ -26,6 +26,15 @@ namespace BansheeEditor
 
 			DockContainer* find(EditorWidgetContainer* widgetContainer);
 
+			/**
+			 * @brief	Searches for a DockContainer at the specified position.
+			 *
+			 * @param	pos	Position in the same space as DockContainer. 
+			 *
+			 * @return	null if it fails, else the found DockContainer at position.
+			 */
+			DockContainer* findAtPos(const CM::Int2& pos);
+
 			bool mIsLeaf;
 			DockContainer* mChildren[2];
 			EditorWidgetContainer* mWidgets;
@@ -38,6 +47,15 @@ namespace BansheeEditor
 
 		private:
 			void splitContainer(BS::GUIWidget* widgetParent, EditorWidget* widget, bool horizontal, bool newChildIsFirst);
+		};
+
+		enum class DockLocation
+		{
+			Top,
+			Bottom,
+			Left,
+			Right,
+			None
 		};
 	public:
 		DockManager(BS::GUIWidget* parent);
@@ -57,6 +75,17 @@ namespace BansheeEditor
 
 		CM::HMesh mDropOverlayMesh;
 		CM::HMaterial mDropOverlayMat;
-		void createDropOverlayMesh(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+
+		DockContainer* mMouseOverContainer;
+		DockLocation mHighlightedDropLoc;
+		CM::Vector2* mTopDropPolygon;
+		CM::Vector2* mBotDropPolygon;
+		CM::Vector2* mLeftDropPolygon;
+		CM::Vector2* mRightDropPolygon;
+
+		void updateDropOverlay(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+
+		void onGUIMouseEvent(BS::GUIWidget* widget, BS::GUIElement* element, const BS::GUIMouseEvent& event);
+		bool insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const;
 	};
 }

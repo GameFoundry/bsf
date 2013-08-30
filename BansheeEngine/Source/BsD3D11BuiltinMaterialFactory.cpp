@@ -398,7 +398,7 @@ namespace BansheeEngine
 																				\
 						float4 highlight = highlightActive * color;				\
 						float highlightSum = highlight.x + highlight.y +		\
-							highlight.y + highlight.z;							\
+							highlight.z + highlight.a;							\
 																				\
 						oColor = (1.0f - highlightSum) * tintColor +			\
 							highlightSum * highlightColor;						\

@@ -394,9 +394,9 @@ namespace BansheeEngine
 						\
 						oPosition = float4(tfrmdX, tfrmdY, 0, 1);				\
 																				\
-						float4 highlight = highlightActive * color;				\
+						float4 highlight = highlightActive * inColor;			\
 						float highlightSum = highlight.x + highlight.y +		\
-						highlight.y + highlight.z;								\
+						highlight.z + highlight.a;								\
 																				\
 						oColor = (1.0f - highlightSum) * tintColor +			\
 						highlightSum * highlightColor;							\

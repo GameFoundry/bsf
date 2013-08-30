@@ -9,6 +9,8 @@
 #include "CmApplication.h"
 #include "CmRendererManager.h"
 #include "CmRenderer.h"
+#include "CmSceneObject.h"
+#include "BsGUIManager.h"
 #include "BsBuiltinMaterialManager.h"
 #include "BsGUIWidget.h"
 #include "BsCamera.h"
@@ -160,17 +162,49 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	DockManager::DockManager(BS::GUIWidget* parent)
-		:mParent(parent)
+	DockManager::DockContainer* DockManager::DockContainer::findAtPos(const CM::Int2& pos)
 	{
+		if(mIsLeaf)
+		{
+			if(pos.x >= (float)mX && pos.x < (float)(mX + mWidth) &&
+				pos.y >= (float)mY && pos.y < (float)(mY + mHeight))
+			{
+				return this;
+			}
+		}
+		else
+		{
+			if(mChildren[0] != nullptr && mChildren[0]->findAtPos(pos) != nullptr)
+				return mChildren[0];
+
+			if(mChildren[1] != nullptr && mChildren[1]->findAtPos(pos) != nullptr)
+				return mChildren[1];
+		}
+
+		return nullptr;
+	}
+
+	DockManager::DockManager(BS::GUIWidget* parent)
+		:mParent(parent), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None)
+	{
+		mTopDropPolygon = cm_newN<Vector2>(4);
+		mBotDropPolygon = cm_newN<Vector2>(4);
+		mLeftDropPolygon = cm_newN<Vector2>(4);
+		mRightDropPolygon = cm_newN<Vector2>(4);
+
 		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
 
 		RendererManager::instance().getActive()->addRenderCallback(parent->getTarget(), boost::bind(&DockManager::render, this, _1, _2));
+
+		GUIManager::instance().mouseEventFilter.connect(boost::bind(&DockManager::onGUIMouseEvent, this, _1, _2, _3));
 	}
 
 	DockManager::~DockManager()
 	{
-
+		cm_deleteN(mTopDropPolygon, 4);
+		cm_deleteN(mBotDropPolygon, 4);
+		cm_deleteN(mLeftDropPolygon, 4);
+		cm_deleteN(mRightDropPolygon, 4);
 	}
 
 	void DockManager::render(const Viewport* viewport, CM::RenderQueue& renderQueue)
@@ -189,7 +223,28 @@ namespace BansheeEditor
 
 		mDropOverlayMat->setColor("tintColor", TINT_COLOR);
 		mDropOverlayMat->setColor("highlightColor", HIGHLIGHT_COLOR);
-		mDropOverlayMat->setColor("highlightActive", Color(0.0f, 0.0f, 0.0f, 0.0f));
+
+		Color highlightColor;
+		switch(mHighlightedDropLoc)
+		{
+		case DockLocation::Top:
+			highlightColor = Color(1.0f, 0.0f, 0.0f, 0.0f);
+			break;
+		case DockLocation::Bottom:
+			highlightColor = Color(0.0f, 1.0f, 0.0f, 0.0f);
+			break;
+		case DockLocation::Left:
+			highlightColor = Color(0.0f, 0.0f, 1.0f, 0.0f);
+			break;
+		case DockLocation::Right:
+			highlightColor = Color(0.0f, 0.0f, 0.0f, 1.0f);
+			break;
+		case DockLocation::None:
+			highlightColor = Color(0.0f, 0.0f, 0.0f, 0.0f);
+			break;
+		}
+
+		mDropOverlayMat->setColor("highlightActive", highlightColor);
 
 		renderQueue.add(mDropOverlayMat, mDropOverlayMesh->getSubMeshData(), Vector3::ZERO);
 	}
@@ -231,10 +286,10 @@ namespace BansheeEditor
 	{
 		mRootContainer.setArea(x, y, width, height);
 
-		createDropOverlayMesh(x, y, width, height);
+		updateDropOverlay(x, y, width, height);
 	}
 
-	void DockManager::createDropOverlayMesh(INT32 x, INT32 y, UINT32 width, UINT32 height)
+	void DockManager::updateDropOverlay(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		const static int spacing = 10;
 		const static float innerScale = 0.75f;
@@ -272,11 +327,15 @@ namespace BansheeEditor
 		// Top
 		Vector2 topOffset((float)spacing, 0.0f);
 
-		Vector2 dbg = outTopLeft + topOffset;
-		vertIter.addValue(outTopLeft + topOffset);
-		vertIter.addValue(outTopRight + topOffset);
-		vertIter.addValue(inTopRight + topOffset);
-		vertIter.addValue(inTopLeft + topOffset);
+		mTopDropPolygon[0] = outTopLeft + topOffset;
+		mTopDropPolygon[1] = outTopRight + topOffset;
+		mTopDropPolygon[2] = inTopRight + topOffset;
+		mTopDropPolygon[3] = inTopLeft + topOffset;
+
+		vertIter.addValue(mTopDropPolygon[0]);
+		vertIter.addValue(mTopDropPolygon[1]);
+		vertIter.addValue(mTopDropPolygon[2]);
+		vertIter.addValue(mTopDropPolygon[3]);
 
 		Color color(1.0f, 0.0f, 0.0f, 0.0f);
 		UINT32 color32 = color.getAsRGBA();
@@ -287,10 +346,16 @@ namespace BansheeEditor
 
 		// Bottom
 		Vector2 botOffset((float)spacing, (float)spacing * 2.0f);
-		vertIter.addValue(inBotLeft + botOffset);
-		vertIter.addValue(inBotRight + botOffset);
-		vertIter.addValue(outBotRight + botOffset);
-		vertIter.addValue(outBotLeft + botOffset);
+
+		mBotDropPolygon[0] = inBotLeft + botOffset;
+		mBotDropPolygon[1] = inBotRight + botOffset;
+		mBotDropPolygon[2] = outBotRight + botOffset;
+		mBotDropPolygon[3] = outBotLeft + botOffset;
+
+		vertIter.addValue(mBotDropPolygon[0]);
+		vertIter.addValue(mBotDropPolygon[1]);
+		vertIter.addValue(mBotDropPolygon[2]);
+		vertIter.addValue(mBotDropPolygon[3]);
 
 		color = Color(0.0f, 1.0f, 0.0f, 0.0f);
 		color32 = color.getAsRGBA();
@@ -301,10 +366,16 @@ namespace BansheeEditor
 
 		// Left
 		Vector2 leftOffset(0.0f, (float)spacing);
-		vertIter.addValue(outTopLeft + leftOffset);
-		vertIter.addValue(inTopLeft + leftOffset);
-		vertIter.addValue(inBotLeft + leftOffset);
-		vertIter.addValue(outBotLeft + leftOffset);
+
+		mLeftDropPolygon[0] = outTopLeft + leftOffset;
+		mLeftDropPolygon[1] = inTopLeft + leftOffset;
+		mLeftDropPolygon[2] = inBotLeft + leftOffset;
+		mLeftDropPolygon[3] = outBotLeft + leftOffset;
+
+		vertIter.addValue(mLeftDropPolygon[0]);
+		vertIter.addValue(mLeftDropPolygon[1]);
+		vertIter.addValue(mLeftDropPolygon[2]);
+		vertIter.addValue(mLeftDropPolygon[3]);
 
 		color = Color(0.0f, 0.0f, 1.0f, 0.0f);
 		color32 = color.getAsRGBA();
@@ -315,10 +386,16 @@ namespace BansheeEditor
 
 		// Right
 		Vector2 rightOffset((float)spacing * 2.0f, (float)spacing);
-		vertIter.addValue(inTopRight + rightOffset);
-		vertIter.addValue(outTopRight + rightOffset);
-		vertIter.addValue(outBotRight + rightOffset);
-		vertIter.addValue(inBotRight + rightOffset);
+
+		mRightDropPolygon[0] = inTopRight + rightOffset;
+		mRightDropPolygon[1] = outTopRight + rightOffset;
+		mRightDropPolygon[2] = outBotRight + rightOffset;
+		mRightDropPolygon[3] = inBotRight + rightOffset;
+
+		vertIter.addValue(mRightDropPolygon[0]);
+		vertIter.addValue(mRightDropPolygon[1]);
+		vertIter.addValue(mRightDropPolygon[2]);
+		vertIter.addValue(mRightDropPolygon[3]);
 
 		color = Color(0.0f, 0.0f, 0.0f, 1.0f);
 		color32 = color.getAsRGBA();
@@ -369,5 +446,82 @@ namespace BansheeEditor
 
 		gMainSyncedCA().writeSubresource(mDropOverlayMesh.getInternalPtr(), 0, *meshData);
 		gMainSyncedCA().submitToCoreThread(true);
+	}
+
+	void DockManager::onGUIMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
+	{
+		if(event.getType() != GUIMouseEventType::MouseMove) // TODO - Replace with DragAndDrop event
+			return;
+
+		if(widget->getOwnerWindow() != mParent->getOwnerWindow())
+			return;
+
+		const Int2& widgetRelPos = event.getPosition();
+
+		const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
+
+		Vector4 tfrmdPos = worldTfrm * Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f);
+		Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
+		Int2 windowPos(Math::RoundToInt(windowPosVec.x), Math::RoundToInt(windowPosVec.y));
+
+		DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
+
+
+
+
+
+		// DEBUG ONLY
+		mouseOverContainer = &mRootContainer;
+		// END DEBUG ONLY
+
+
+
+
+
+
+		// Check if we need to highlight any drop locations
+		if(mouseOverContainer)
+		{
+			if(insidePolygon(mTopDropPolygon, 4, windowPosVec))
+				mHighlightedDropLoc = DockLocation::Top;
+			else if(insidePolygon(mBotDropPolygon, 4, windowPosVec))
+				mHighlightedDropLoc = DockLocation::Bottom;
+			else if(insidePolygon(mLeftDropPolygon, 4, windowPosVec))
+				mHighlightedDropLoc = DockLocation::Left;
+			else if(insidePolygon(mRightDropPolygon, 4, windowPosVec))
+				mHighlightedDropLoc = DockLocation::Right;
+			else
+				mHighlightedDropLoc = DockLocation::None;
+		}
+
+		// Update mesh if needed
+		if(mouseOverContainer == mMouseOverContainer)
+			return;
+
+		mMouseOverContainer = mouseOverContainer;
+
+		if(mMouseOverContainer == nullptr)
+		{
+			mDropOverlayMesh = HMesh();
+		}
+		else
+		{
+			updateDropOverlay(mMouseOverContainer->mX, mMouseOverContainer->mY, mMouseOverContainer->mWidth, mMouseOverContainer->mHeight);
+		}
+	}
+
+	// TODO - Move to a separate Polygon class?
+	bool DockManager::insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const
+	{
+		bool isInside = false;
+		for (UINT32 i = 0, j = numPoints - 1; i < numPoints; j = i++) 
+		{
+			float lineVal = (polyPoints[j].x - polyPoints[i].x) * (point.y - polyPoints[i].y) / (polyPoints[j].y - polyPoints[i].y) + polyPoints[i].x;
+
+			if (((polyPoints[i].y > point.y) != (polyPoints[j].y > point.y)) && (point.x < lineVal))
+				isInside = !isInside;
+		}
+
+		return isInside;
 	}
 }

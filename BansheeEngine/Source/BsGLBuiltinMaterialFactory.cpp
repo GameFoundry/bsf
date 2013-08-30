@@ -19,6 +19,7 @@ namespace BansheeEngine
 		initDebugDraw2DClipSpaceShader();
 		initDebugDraw2DScreenSpaceShader();
 		initDebugDraw3DShader();
+		initDockDropOverlayShader();
 
 		SAMPLER_STATE_DESC ssDesc;
 		ssDesc.magFilter = FO_POINT;
@@ -363,7 +364,7 @@ namespace BansheeEngine
 															\
 						void main()							\
 						{									\
-						fragColor = color;					\
+						fragColor = color0;					\
 						}";
 
 		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -413,9 +414,9 @@ namespace BansheeEngine
 						\
 						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);	\
 						\
-						float4 highlight = highlightActive * cm_color0;			\
+						vec4 highlight = highlightActive * cm_color0;			\
 						float highlightSum = highlight.x + highlight.y +		\
-						highlight.y + highlight.z;								\
+						highlight.z + highlight.w;								\
 						\
 						color0 = (1.0f - highlightSum) * tintColor +			\
 						highlightSum * highlightColor;							\
