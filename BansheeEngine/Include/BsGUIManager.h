@@ -59,6 +59,8 @@ namespace BansheeEngine
 		GUIInputCaret* getInputCaretTool() const { return mInputCaret; }
 		GUIInputSelection* getInputSelectionTool() const { return mInputSelection; }
 
+		boost::signal<void(GUIWidget*, GUIElement*, const GUIMouseEvent&)> mouseEventFilter;
+		boost::signal<void(GUIWidget*, GUIElement*, const GUIKeyEvent&)> keyEventFilter;
 	private:
 		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
@@ -123,6 +125,9 @@ namespace BansheeEngine
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
+
+		bool sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);
+		bool sendKeyEvent(GUIWidget* widget, GUIElement* element, const GUIKeyEvent& event);
 	};
 
 	BS_EXPORT GUIManager& gGUIManager();

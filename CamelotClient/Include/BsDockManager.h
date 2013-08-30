@@ -49,6 +49,9 @@ namespace BansheeEditor
 		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
 	private:
+		static const CM::Color TINT_COLOR;
+		static const CM::Color HIGHLIGHT_COLOR;
+
 		BS::GUIWidget* mParent;
 		DockContainer mRootContainer;
 

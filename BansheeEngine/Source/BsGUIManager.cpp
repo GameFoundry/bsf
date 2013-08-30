@@ -520,7 +520,7 @@ namespace BansheeEngine
 				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyDownData(event.buttonCode);
-				if(mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent))
+				if(sendKeyEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mKeyEvent))
 					event.markAsUsed();
 			}
 		}
@@ -553,13 +553,13 @@ namespace BansheeEngine
 				Int2 localPos = getWidgetRelativePos(*mMouseOverWidget, gInput().getMousePosition());
 
 				mMouseEvent.setMouseDownData(mMouseOverElement, localPos, guiButton);
-				if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+				if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
 					event.markAsUsed();
 
 				// DragStart is for all intents and purposes same as mouse down but since I need a DragEnd event, I feel a separate DragStart
 				// event was also needed to make things clearer.
 				mMouseEvent.setMouseDragStartData(mMouseOverElement, localPos);
-				if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+				if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
 					event.markAsUsed();
 
 				mActiveElement = mMouseOverElement;
@@ -598,7 +598,7 @@ namespace BansheeEngine
 				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 				mKeyEvent.setKeyUpData(event.buttonCode);
-				if(mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent))
+				if(sendKeyEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mKeyEvent))
 					event.markAsUsed();
 			}
 		}
@@ -625,7 +625,7 @@ namespace BansheeEngine
 				if(mMouseOverElement != nullptr)
 				{
 					mMouseEvent.setDragAndDropDroppedData(mMouseOverElement, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					bool processed = mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent);
+					bool processed = sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent);
 
 					DragAndDropManager::instance()._endDrag(processed);
 
@@ -641,7 +641,7 @@ namespace BansheeEngine
 			{
 				mMouseEvent.setMouseUpData(mMouseOverElement, localPos, guiButton);
 				
-				if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+				if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
 					event.markAsUsed();
 			}
 
@@ -650,7 +650,7 @@ namespace BansheeEngine
 			if(acceptEndDrag)
 			{
 				mMouseEvent.setMouseDragEndData(mMouseOverElement, localPos);
-				if(mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent))
+				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
 					event.markAsUsed();
 
 				mActiveElement = nullptr;
@@ -763,7 +763,7 @@ namespace BansheeEngine
 					Int2 curLocalPos = getWidgetRelativePos(*mMouseOverWidget, event.screenPos);
 
 					mMouseEvent.setMouseOutData(topMostElement, curLocalPos);
-					if(mMouseOverWidget->_mouseEvent(mMouseOverElement, mMouseEvent))
+					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
@@ -774,7 +774,7 @@ namespace BansheeEngine
 				if(mActiveElement == nullptr || topMostElement == mActiveElement)
 				{
 					mMouseEvent.setMouseOverData(topMostElement, localPos);
-					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
@@ -788,7 +788,7 @@ namespace BansheeEngine
 			if(mLastCursorLocalPos != curLocalPos)
 			{
 				mMouseEvent.setMouseDragData(topMostElement, curLocalPos, curLocalPos - mLastCursorLocalPos);
-				if(mActiveWidget->_mouseEvent(mActiveElement, mMouseEvent))
+				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
 					event.markAsUsed();
 
 				mLastCursorLocalPos = curLocalPos;
@@ -800,7 +800,7 @@ namespace BansheeEngine
 				if(topMostElement != nullptr)
 				{
 					mMouseEvent.setDragAndDropDraggedData(topMostElement, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
@@ -813,7 +813,7 @@ namespace BansheeEngine
 				if(mLastCursorLocalPos != localPos)
 				{
 					mMouseEvent.setMouseMoveData(topMostElement, localPos);
-					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
 						event.markAsUsed();
 
 					mLastCursorLocalPos = localPos;
@@ -822,7 +822,7 @@ namespace BansheeEngine
 				if(Math::Abs(event.mouseWheelScrollAmount) > 0.00001f)
 				{
 					mMouseEvent.setMouseWheelScrollData(topMostElement, event.mouseWheelScrollAmount);
-					if(widgetInFocus->_mouseEvent(topMostElement, mMouseEvent))
+					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
@@ -846,7 +846,7 @@ namespace BansheeEngine
 			mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
 
 			mKeyEvent.setTextInputData(event.textChar);
-			if(mKeyboardFocusWidget->_keyEvent(mKeyboardFocusElement, mKeyEvent))
+			if(sendKeyEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mKeyEvent))
 				event.markAsUsed();
 		}
 	}
@@ -930,6 +930,22 @@ namespace BansheeEngine
 		Int2 curLocalPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 
 		return curLocalPos;
+	}
+
+	bool GUIManager::sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
+	{
+		if(!mouseEventFilter.empty())
+			mouseEventFilter(widget, element, event);
+
+		return widget->_mouseEvent(element, event);
+	}
+
+	bool GUIManager::sendKeyEvent(GUIWidget* widget, GUIElement* element, const GUIKeyEvent& event)
+	{
+		if(!keyEventFilter.empty())
+			keyEventFilter(widget, element, event);
+
+		return widget->_keyEvent(element, event);
 	}
 
 	GUIManager& gGUIManager()

@@ -19,6 +19,8 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	const CM::UINT32 DockManager::DockContainer::SliderSize = 4;
+	const CM::Color DockManager::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
+	const CM::Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockManager::DockContainer::DockContainer()
 		:mIsLeaf(false), mWidgets(nullptr), mX(0), mY(0), mWidth(0), mHeight(0), mSplitPosition(0.5f),
@@ -185,8 +187,8 @@ namespace BansheeEditor
 		mDropOverlayMat->setFloat("invViewportWidth", invViewportWidth);
 		mDropOverlayMat->setFloat("invViewportHeight", invViewportHeight);
 
-		mDropOverlayMat->setColor("tintColor", Color::White);
-		mDropOverlayMat->setColor("highlightColor", Color::Green);
+		mDropOverlayMat->setColor("tintColor", TINT_COLOR);
+		mDropOverlayMat->setColor("highlightColor", HIGHLIGHT_COLOR);
 		mDropOverlayMat->setColor("highlightActive", Color(0.0f, 0.0f, 0.0f, 0.0f));
 
 		renderQueue.add(mDropOverlayMat, mDropOverlayMesh->getSubMeshData(), Vector3::ZERO);
