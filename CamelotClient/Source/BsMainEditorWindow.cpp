@@ -29,9 +29,9 @@ namespace BansheeEditor
 		HSceneObject sceneCameraGO = SceneObject::create("SceneCamera");
 		HCamera sceneCamera = sceneCameraGO->addComponent<Camera>();
 
-		//RenderTexturePtr sceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, 800, 600);
+		RenderTexturePtr sceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, 800, 600);
 
-		sceneCamera->initialize(mCamera->getViewport()->getTarget(), 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		sceneCamera->initialize(sceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f, 0);
 		sceneCamera->setPriority(-1);
 		sceneCameraGO->setPosition(Vector3(0,50,1240));
 		sceneCameraGO->lookAt(Vector3(0,50,-300));
@@ -43,7 +43,7 @@ namespace BansheeEditor
 		GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>();
 		textSprite->initialize(mCamera->getViewport().get(), renderWindow.get());
 
-		textSprite->init(sceneCamera, "Testing in a new row, does this work?", nullptr);
+		textSprite->init(sceneCamera, "Testing in a new row, does this work?", sceneRenderTarget);
 
 		//DrawHelper2D::instance().drawQuad(sceneCamera, FRect(0.0f, 0.2f, 0.75f, 0.5f), Color::White, DebugDrawCoordType::Normalized, 250.0f);
 		//DrawHelper2D::instance().drawQuad(sceneCamera, FRect(50.0f, 50.0f, 100.0f, 50.0f), Color::Blue, DebugDrawCoordType::Pixel, 250.0f);

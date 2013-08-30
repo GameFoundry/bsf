@@ -25,8 +25,21 @@ Drag and drop manager currently ignores the provided icon, but it should use it 
 Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
 
 GUIViewport:
- - MAJOR TODO - Don't forget to update GUIViewport is to also gets updated when only mesh is dirty!
- - In DX11 it is not possible to clear just a sub-region of a render target
+ - MAJOR TODO - GUIViewport updateRenderElementsInternal only gets called when contents change, but viewport should update even if 
+    only its offset changes (normally that just marks the mesh as modified, which doesn't result in a call to updateRenderElementsInternal)
+
+ Make the drop overlays a transparent gray
+ - Their opacity increases when highlighted
+ - Make their borders use polygon AA (or line AA with a different color)
+
+Figure out how to render the overlay on top of all viewports, even when main window viewport gets rendered first.
+ - I'm guessing the DockManager will require its own Camera (doesn't make sense it would require camera, but it's fairly lightweight so it would be an okay solution)
+ - Then the camera viewport and target change as the dock overlay moves
+ - OR
+ - Have the inner camera viewport render first onto a render target, and then draw the main GUI
+   - This MIGHT be the proper way to do it. Otherwise my game viewport is always limited to whatever format is the main window render target set to.
+ - OR
+ - Render inner camera viewport first, and use stencil to mark the area as non-renderable?
 
 ------------------------
 
