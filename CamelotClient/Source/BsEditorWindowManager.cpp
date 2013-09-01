@@ -28,7 +28,24 @@ namespace BansheeEditor
 		if(iterFind == end(mEditorWindows))
 			CM_EXCEPT(InternalErrorException, "Trying to destroy an editor window that's not registered in the window manager.");
 
+		auto iterFind2 = std::find(begin(mScheduledForDestruction), end(mScheduledForDestruction), window);
+		
+		if(iterFind2 == end(mScheduledForDestruction))
+			mScheduledForDestruction.push_back(window);
+
 		mEditorWindows.erase(iterFind);
-		cm_delete(window);
+	}
+
+	void EditorWindowManager::update()
+	{
+		// Editor window destroy is deferred to this point, otherwise we risk
+		// destroying a window while it's still being used (situation that was happening with GUIManager)
+		
+		for(auto& windowToDestroy : mScheduledForDestruction)
+		{
+			cm_delete(windowToDestroy);
+		}
+
+		mScheduledForDestruction.clear();
 	}
 }

@@ -200,6 +200,8 @@ namespace BansheeEngine
 	{
 		element->mParent.unregisterElement(element);
 
-		cm_delete<PoolAlloc>(element);
+		// Destroy at beginning of next frame, because we can't be sure that something isn't currently referencing
+		// this element (e..g GUIManager)
+		deferredCall(std::bind(&cm_delete<PoolAlloc, GUIElement>, element));
 	}
 }

@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 		boost::signal<void(bool)> onToggled;
 	protected:
-		~GUIToggle();
+		virtual ~GUIToggle();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
@@ -65,6 +65,11 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalHeight() const;
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
+	protected:
+		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
+
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+
 	private:
 		std::shared_ptr<GUIToggleGroup> mToggleGroup;
 		ImageSprite* mImageSprite;
@@ -74,9 +79,5 @@ namespace BansheeEngine
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
-
-		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
-
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};
 }

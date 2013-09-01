@@ -97,7 +97,7 @@ namespace BansheeEditor
 		EditorWindow* newWindow = EditorWindow::create();
 
 		DbgEditorWidget1* newWidget = new (cm_alloc<DbgEditorWidget1>()) DbgEditorWidget1();
-		newWindow->getWidgets().add(*newWidget);
+		newWindow->widgets().add(*newWidget);
 		newWidget->initialize();
 		Instance = newWidget;
 

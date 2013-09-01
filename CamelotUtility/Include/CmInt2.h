@@ -43,6 +43,11 @@ namespace CamelotFramework
 			std::swap(y, other.y);
 		}
 
+		inline unsigned int manhattanDist(const Int2& other)
+		{
+			return (unsigned int)fabs(float(other.x - x)) + (unsigned int)fabs(float(other.y - y));
+		}
+
 		inline int operator [] ( const size_t i ) const
         {
             assert( i < 2 );

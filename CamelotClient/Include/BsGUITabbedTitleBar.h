@@ -1,22 +1,12 @@
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsEditorPrerequisites.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEditor
 {
 	class GUITabbedTitleBar
 	{
-		struct Tab
-		{
-			Tab(BS::GUIToggle* _toggle, CM::UINT32 _index)
-				:toggle(_toggle), index(_index)
-			{ }
-
-			BS::GUIToggle* toggle;
-			CM::UINT32 index;
-		};
-
 	public:
 		GUITabbedTitleBar(BS::GUIWidget* parent);
 		virtual ~GUITabbedTitleBar();
@@ -30,9 +20,11 @@ namespace BansheeEditor
 
 		boost::signal<void(CM::UINT32)> onTabActivated;
 		boost::signal<void(CM::UINT32)> onTabClosed;
+		boost::signal<void(CM::UINT32)> onTabDraggedOff;
+		boost::signal<void(CM::UINT32)> onTabDraggedOn;
 	protected:
-		CM::Vector<BS::GUIWindowMover*>::type mDragDropElements;
-		CM::Vector<Tab>::type mTabButtons;
+		CM::Vector<GUIWindowMover*>::type mDragDropElements;
+		CM::Vector<GUITabButton*>::type mTabButtons;
 
 		CM::UINT32 mUniqueTabIdx;
 		CM::UINT32 mActiveTabIdx;
@@ -42,11 +34,13 @@ namespace BansheeEditor
 		BS::GUILayout* mMainLayout;
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
-		BS::GUIWindowMover* mLastDropElement;
+		GUIWindowMover* mLastDropElement;
 
 		void tabToggled(CM::UINT32 tabIdx);
 		void tabClosed();
+		void tabDraggedOff(CM::UINT32 tabIdx);
+		void tabDraggedOn(CM::UINT32 tabIdx);
 
-		CM::INT32 uniqueIdxToIdx(CM::UINT32 uniqueIdx) const;
+		CM::INT32 uniqueIdxToSeqIdx(CM::UINT32 uniqueIdx) const;
 	};
 }

@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	class DragAndDropManager : public CM::Module<DragAndDropManager>
+	class BS_EXPORT DragAndDropManager : public CM::Module<DragAndDropManager>
 	{
 	public:
 		DragAndDropManager();

@@ -13,7 +13,7 @@ namespace BansheeEditor
 
 		void add(EditorWidget& widget);
 		void remove(EditorWidget& widget);
-		void move(EditorWidget& widget, CM::UINT32 newPosition);
+		void insert(CM::UINT32 idx, EditorWidget& widget);
 
 		void setSize(CM::UINT32 width, CM::UINT32 height);
 		void setPosition(CM::INT32 x, CM::INT32 y);
@@ -37,5 +37,9 @@ namespace BansheeEditor
 		void setActiveWidget(CM::UINT32 idx);
 		void tabActivated(CM::UINT32 idx);
 		void tabClosed(CM::UINT32 idx);
+		void tabDraggedOff(CM::UINT32 idx);
+		void tabDraggedOn(CM::UINT32 idx);
+
+		void tabDroppedCallback(bool wasDragProcessed);
 	};
 }

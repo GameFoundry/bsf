@@ -14,7 +14,9 @@ namespace BansheeEditor
 		EditorWindow* create();
 		void destroy(EditorWindowBase* window);
 
+		void update();
 	protected:
 		CM::Vector<EditorWindowBase*>::type mEditorWindows;
+		CM::Vector<EditorWindowBase*>::type mScheduledForDestruction;
 	};
 }

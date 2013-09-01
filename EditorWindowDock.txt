@@ -1,25 +1,12 @@
-DockManager implementation plan:
- - DockManager main class
-   - When empty make sure it has a GUIElement that covers its entire space so it can catch and drop events. Will likely need a special transparent GUIElement?
-   - Has a reference to one DockContainer, which is initially empty
-      - DockContainer can have two DockContainer children, or one EditorWidgetContainer child (maybe make a container base class? - optional)
-	  - DockContainer should probably contain a GUIElement which can receieve events
-	     - This would mean extending GUIManager so it can send events to top level elements, and if they don't process them, send them one level lower?
-	  - Resizing a DockContainer resizes all child DockContainers recursively (and EditorWidgetContainers)
-	  - If DockContainer has DockContainer children then it also contains a  GUIElement resizer (just an empty space, in the direction of the split)
-	    - Moving the element allows you to resize the two child DockContainers
- - When last element is removed from EditorWidgetContainer make sure to notify the parent
- - Make main render window frameless
-   - Implement MainEditorWindow from EditorWindowBase
-   - Make sure MainEditorWindow holds a DockManager reference and resizes it with the window
+Add icons to drag and drop
+Move WindowMover to BansheeEditor
 
-DockContainer biggest issues:
- - How do I draw the drag and drop overlay??
- - How do I detect mouse input yet still let it through to child widget
+end drag doesn't get called unless mouse is released over a window
+When I do drop it over a window an exception with layout happens
 
-FIRST CREATE DOCK CONTAINER WITHOUT DRAG AND DROP SUPPORT
+Add highlight to WindowMover so I can know when I'm mousing over it with a dragged window in hand
 
-Make sure to test everything thoroughly - right now I have tested very little
+
 Drag and drop manager currently ignores the provided icon, but it should use it as a cursor
 
 Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
@@ -27,19 +14,7 @@ Prevent docking if available size is less than 20 pixels, otherwise there might 
 GUIViewport:
  - MAJOR TODO - GUIViewport updateRenderElementsInternal only gets called when contents change, but viewport should update even if 
     only its offset changes (normally that just marks the mesh as modified, which doesn't result in a call to updateRenderElementsInternal)
-
- Make the drop overlays a transparent gray
- - Their opacity increases when highlighted
- - Make their borders use polygon AA (or line AA with a different color)
-
-Figure out how to render the overlay on top of all viewports, even when main window viewport gets rendered first.
- - I'm guessing the DockManager will require its own Camera (doesn't make sense it would require camera, but it's fairly lightweight so it would be an okay solution)
- - Then the camera viewport and target change as the dock overlay moves
- - OR
- - Have the inner camera viewport render first onto a render target, and then draw the main GUI
-   - This MIGHT be the proper way to do it. Otherwise my game viewport is always limited to whatever format is the main window render target set to.
- - OR
- - Render inner camera viewport first, and use stencil to mark the area as non-renderable?
+	- UPDATE: I don't use GUIViewport anymore
 
 ------------------------
 

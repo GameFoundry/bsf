@@ -10,7 +10,7 @@ namespace BansheeEditor
 	public:
 		virtual ~EditorWindow();
 
-		EditorWidgetContainer& getWidgets() const { return *mWidgets; }
+		EditorWidgetContainer& widgets() const { return *mWidgets; }
 
 		static EditorWindow* create();
 

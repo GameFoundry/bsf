@@ -10,7 +10,14 @@ namespace BansheeEditor
 	class EditorWidget;
 	class EditorWidgetContainer;
 	class GUITabbedTitleBar;
+	class GUITabButton;
+	class GUIWindowMover;
 	class EditorWindowManager;
 	class DockManager;
 	class MainEditorWindow;
+
+	enum class DragAndDropType
+	{
+		EditorWidget = 10000
+	};
 }

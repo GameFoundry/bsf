@@ -43,6 +43,11 @@ using namespace CamelotFramework;
 using namespace BansheeEditor;
 using namespace BansheeEngine;
 
+void editorUpdate()
+{
+	EditorWindowManager::instance().update();
+}
+
 int CALLBACK WinMain(
 	_In_  HINSTANCE hInstance,
 	_In_  HINSTANCE hPrevInstance,
@@ -276,6 +281,8 @@ int CALLBACK WinMain(
 	MainEditorWindow* mainWindow = cm_new<MainEditorWindow>(gApplication().getPrimaryWindow());
 	EditorWindowManager::startUp(cm_new<EditorWindowManager>());
 
+	CM::gApplication().mainLoopCallback.connect(&editorUpdate);
+
 	/************************************************************************/
 	/* 							  EDITOR INIT END                    		*/
 	/************************************************************************/
@@ -332,4 +339,3 @@ int CALLBACK WinMain(
 
 	return 0;
 }
-
