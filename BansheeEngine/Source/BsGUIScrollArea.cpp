@@ -246,6 +246,19 @@ namespace BansheeEngine
 		return false;
 	}
 
+	void GUIScrollArea::_changeParentWidget(GUIWidget* widget)
+	{
+		GUIElement::_changeParentWidget(widget);
+
+		// These two elements are not part of a layout so I need to make sure to
+		// update them manually
+		if(mVertScroll != nullptr)
+			mVertScroll->_changeParentWidget(widget);
+
+		if(mHorzScroll != nullptr)
+			mHorzScroll->_changeParentWidget(widget);
+	}
+
 	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIElementStyle* style)
 	{
 		if(style == nullptr)

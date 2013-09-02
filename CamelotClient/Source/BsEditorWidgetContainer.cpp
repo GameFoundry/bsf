@@ -187,7 +187,7 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::tabDroppedCallback(bool wasDragProcessed)
 	{
-		if(!wasDragProcessed)
+		if(!wasDragProcessed && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::EditorWidget)
 		{
 			EditorWindow* newWindow = EditorWindow::create();
 

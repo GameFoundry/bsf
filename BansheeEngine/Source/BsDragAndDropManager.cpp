@@ -23,5 +23,10 @@ namespace BansheeEngine
 	{
 		if(mDropCallback != nullptr)
 			mDropCallback(processed);
+
+		mDragTypeId = 0;
+		mData = nullptr;
+		mDropCallback = nullptr;
+		mIsDragInProgress = false;
 	}
 }
