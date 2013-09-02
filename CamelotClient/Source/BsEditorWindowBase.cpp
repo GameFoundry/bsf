@@ -39,6 +39,8 @@ namespace BansheeEditor
 
 	EditorWindowBase::~EditorWindowBase()
 	{
+		mMoveOrResizeConn.disconnect();
+
 		if(mOwnsRenderWindow)
 			mRenderWindow->destroy();
 
@@ -78,7 +80,7 @@ namespace BansheeEditor
 		frame->initialize(mCamera->getViewport().get(), renderWindow.get());
 		frame->setDepth(129);
 
-		RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&EditorWindowBase::movedOrResized, this, _1));
+		mMoveOrResizeConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&EditorWindowBase::movedOrResized, this, _1));
 	}
 
 	void EditorWindowBase::movedOrResized(RenderWindow& renderWindow)

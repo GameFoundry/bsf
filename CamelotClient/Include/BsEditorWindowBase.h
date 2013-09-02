@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include <boost/signals/connection.hpp>
 
 namespace BansheeEditor
 {
@@ -32,6 +33,7 @@ namespace BansheeEditor
 		virtual void initialize();
 		virtual void movedOrResized() { }
 	private:
+		boost::signals::connection mMoveOrResizeConn;
 		CM::RenderWindowPtr mRenderWindow;
 		
 		void movedOrResized(CM::RenderWindow& renderWindow);
