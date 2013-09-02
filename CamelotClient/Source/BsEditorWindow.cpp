@@ -10,6 +10,8 @@ namespace BansheeEditor
 	EditorWindow::EditorWindow()
 		:EditorWindowBase(), mWidgets(cm_new<EditorWidgetContainer>(mGUI.get()))
 	{
+		updateSize();
+
 		mWidgets->onWidgetClosed.connect(boost::bind(&EditorWindow::widgetRemoved, this));
 	}
 
@@ -22,6 +24,11 @@ namespace BansheeEditor
 	{
 		EditorWindowBase::movedOrResized();
 
+		updateSize();
+	}
+
+	void EditorWindow::updateSize()
+	{
 		mWidgets->setPosition(1, 1);
 
 		UINT32 widgetWidth = (UINT32)std::max(0, (INT32)getWidth() - 2);

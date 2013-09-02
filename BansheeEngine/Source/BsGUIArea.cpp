@@ -1,6 +1,8 @@
 #include "BsGUIArea.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutX.h"
+#include "BsGUIWidget.h"
+#include "CmRenderWindow.h"
 #include "CmViewport.h"
 
 using namespace CamelotFramework;
@@ -114,6 +116,15 @@ namespace BansheeEngine
 		mWidget = widget;
 
 		mLayout->_changeParentWidget(widget);
+
+		if(mWidget != nullptr)
+		{
+			// TODO - It might be more appropriate to use Viewport size instead of window size
+			// Ensure the size is valid, otherwise next GUI layout update will calculate wrong element coordinates
+			updateSizeBasedOnParent(mWidget->getOwnerWindow()->getWidth(), mWidget->getOwnerWindow()->getHeight());
+		}
+
+		mIsDirty = true;
 	}
 
 	void GUIArea::_update()
@@ -150,13 +161,13 @@ namespace BansheeEngine
 		mIsDirty = true;
 	}
 
-	void GUIArea::notifyWindowResized(UINT32 newWidth, UINT32 newHeight)
+	void GUIArea::updateSizeBasedOnParent(CM::UINT32 parentWidth, CM::UINT32 parentHeight)
 	{
 		if(mResizeXWithWidget)
-			mWidth = (UINT32)std::max(0, (INT32)newWidth - (INT32)mLeft - (INT32)mRight);
+			mWidth = (UINT32)std::max(0, (INT32)parentWidth - (INT32)mLeft - (INT32)mRight);
 
 		if(mResizeYWithWidget)
-			mHeight = (UINT32)std::max(0, (INT32)newHeight - (INT32)mTop - (INT32)mBottom);
+			mHeight = (UINT32)std::max(0, (INT32)parentHeight - (INT32)mTop - (INT32)mBottom);
 
 		if(mResizeXWithWidget || mResizeYWithWidget)
 			mIsDirty = true;

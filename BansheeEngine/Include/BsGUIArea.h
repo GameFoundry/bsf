@@ -84,7 +84,7 @@ namespace BansheeEngine
 
 		bool isDirty() const;
 
-		void notifyWindowResized(CM::UINT32 newWidth, CM::UINT32 newHeight);
+		void updateSizeBasedOnParent(CM::UINT32 parentWidth, CM::UINT32 parentHeight);
 
 		static void destroyInternal(GUIArea* area);
 	};

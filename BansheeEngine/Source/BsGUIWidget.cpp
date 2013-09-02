@@ -312,7 +312,8 @@ namespace BansheeEngine
 	{
 		for(auto& area : mAreas)
 		{
-			area->notifyWindowResized(getOwnerWindow()->getWidth(), getOwnerWindow()->getHeight());
+			// TODO - It might be more appropriate to use Viewport size instead of window size
+			area->updateSizeBasedOnParent(getOwnerWindow()->getWidth(), getOwnerWindow()->getHeight());
 		}
 	}
 

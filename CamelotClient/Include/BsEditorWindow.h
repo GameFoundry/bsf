@@ -22,6 +22,7 @@ namespace BansheeEditor
 	private:
 		EditorWidgetContainer* mWidgets;
 
+		void updateSize();
 		void widgetRemoved();
 	};
 }

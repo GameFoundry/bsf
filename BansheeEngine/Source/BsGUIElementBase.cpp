@@ -188,5 +188,7 @@ namespace BansheeEngine
 		{
 			child->_changeParentWidget(widget);
 		}
+
+		markContentAsDirty();
 	}
 }
