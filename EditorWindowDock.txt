@@ -2,6 +2,9 @@ Add icons to drag and drop
 Move WindowMover to BansheeEditor
 
 end drag doesn't get called unless mouse is released over a window
+ - Capture mouse on start drag (SetCapture, and release with ReleaseCapture)
+ - End drag should be handled by GUIManager, but if it doesn't process it DragAndDrop manager should check if mouse was released, and
+   release capture and activate end drag callback
 When I do drop it over a window an exception with layout happens
 
 Add highlight to WindowMover so I can know when I'm mousing over it with a dragged window in hand

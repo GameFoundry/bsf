@@ -51,13 +51,16 @@ namespace BansheeEditor
 		{
 			if(parent != nullptr)
 			{
-				if(mParent == nullptr)
+				if(mContent == nullptr)
 					mContent = GUIArea::create(parent->getParentWidget(), 0, 0, 0, 0, 10000);
 				else
-					mContent->changeParentWidget(parent->getParentWidget());
+					mContent->changeParentWidget(&parent->getParentWidget());
 			}
 			else
-				mContent = nullptr;
+			{
+				if(mContent != nullptr)
+					mContent->changeParentWidget(nullptr);
+			}
 
 			mParent = parent;
 		}

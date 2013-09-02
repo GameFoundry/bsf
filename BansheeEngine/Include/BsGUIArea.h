@@ -58,7 +58,7 @@ namespace BansheeEngine
 		void disable();
 		void enable();
 
-		void changeParentWidget(GUIWidget& widget);
+		void changeParentWidget(GUIWidget* widget);
 
 		CM::UINT32 x() const { return mLeft; }
 		CM::UINT32 y() const { return mTop; }
@@ -69,7 +69,7 @@ namespace BansheeEngine
 	private:
 		friend class GUIWidget;
 
-		GUIWidget& mWidget;
+		GUIWidget* mWidget;
 		CM::INT32 mLeft, mRight, mTop, mBottom;
 		CM::UINT32 mWidth, mHeight;
 		CM::UINT16 mDepth;
@@ -80,7 +80,7 @@ namespace BansheeEngine
 
 		GUILayout* mLayout;
 
-		GUIArea(GUIWidget& widget, CM::UINT32 x, CM::UINT32 y, CM::UINT16 depth);
+		GUIArea(GUIWidget* widget, CM::UINT32 x, CM::UINT32 y, CM::UINT16 depth);
 
 		bool isDirty() const;
 

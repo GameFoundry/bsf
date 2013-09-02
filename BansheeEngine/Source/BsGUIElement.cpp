@@ -9,10 +9,10 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus)
-		:mParent(parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
+		:mParent(&parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
 		mAcceptsKeyboardFocus(acceptsKeyboardFocus)
 	{
-		mParent.registerElement(this);
+		mParent->registerElement(this);
 	}
 
 	GUIElement::~GUIElement()
@@ -118,12 +118,15 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIElement::_changeParentWidget(GUIWidget& widget)
+	void GUIElement::_changeParentWidget(GUIWidget* widget)
 	{
-		if(&mParent != &widget)
+		if(mParent != widget)
 		{
-			mParent.unregisterElement(this);
-			widget.registerElement(this);
+			if(mParent != nullptr)
+				mParent->unregisterElement(this);
+
+			if(widget != nullptr)
+				widget->registerElement(this);
 
 			mParent = widget;
 		}
@@ -198,7 +201,8 @@ namespace BansheeEngine
 
 	void GUIElement::destroy(GUIElement* element)
 	{
-		element->mParent.unregisterElement(element);
+		if(element->mParent != nullptr)
+			element->mParent->unregisterElement(element);
 
 		// Destroy at beginning of next frame, because we can't be sure that something isn't currently referencing
 		// this element (e..g GUIManager)

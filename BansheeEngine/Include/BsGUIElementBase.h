@@ -59,7 +59,7 @@ namespace BansheeEngine
 		bool _isMeshDirty() const; 
 		bool _isDisabled() const { return mIsDisabled; }
 
-		virtual void _changeParentWidget(GUIWidget& widget);
+		virtual void _changeParentWidget(GUIWidget* widget);
 
 	protected:
 		/**

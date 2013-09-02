@@ -92,7 +92,7 @@ namespace BansheeEngine
 		void _setClipRect(const CM::Rect& clipRect);
 		void _setAcceptsKeyboardFocus(bool acceptsKeyboardFocus) { mAcceptsKeyboardFocus = acceptsKeyboardFocus; }
 		virtual void _setFocus(bool focus) {}
-		virtual void _changeParentWidget(GUIWidget& widget);
+		virtual void _changeParentWidget(GUIWidget* widget);
 
 		CM::UINT32 _getWidth() const { return mWidth; }
 		CM::UINT32 _getHeight() const { return mHeight; }
@@ -102,7 +102,7 @@ namespace BansheeEngine
 
 		const CM::Rect& _getBounds() const { return mBounds; }
 		CM::UINT32 _getDepth() const { return mDepth; }
-		GUIWidget& _getParentWidget() const { return mParent; }
+		GUIWidget& _getParentWidget() const { return *mParent; }
 		virtual bool _isInBounds(const CM::Int2 position) const;
 		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
@@ -131,7 +131,7 @@ namespace BansheeEngine
 
 		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);
 
-		GUIWidget& mParent;
+		GUIWidget* mParent;
 		GUILayoutOptions mLayoutOptions;
 		CM::Rect mBounds;
 

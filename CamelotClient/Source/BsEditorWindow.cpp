@@ -8,7 +8,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	EditorWindow::EditorWindow()
-		:mWidgets(cm_new<EditorWidgetContainer>(mGUI.get()))
+		:EditorWindowBase(), mWidgets(cm_new<EditorWidgetContainer>(mGUI.get()))
 	{
 		mWidgets->onWidgetClosed.connect(boost::bind(&EditorWindow::widgetRemoved, this));
 	}
