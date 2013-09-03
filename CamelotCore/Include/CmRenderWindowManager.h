@@ -41,6 +41,7 @@ namespace CamelotFramework
 
 		void windowDestroyed(RenderWindow* window);
 		void windowFocusReceived(RenderWindow* window);
+		void windowFocusLost(RenderWindow* window);
 		void windowMovedOrResized(RenderWindow* window);
 	};
 }

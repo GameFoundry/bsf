@@ -58,6 +58,9 @@ namespace CamelotFramework
 		static boost::signal<void(const Int2&)> onMouseMoved;
 		static boost::signal<void(float)> onMouseWheelScrolled;
 		static boost::signal<void(UINT32)> onCharInput;
+		static boost::signal<void(RenderWindow*)> onWindowFocusReceived;
+		static boost::signal<void(RenderWindow*)> onWindowFocusLost;
+		static boost::signal<void(RenderWindow*)> onWindowMovedOrResized;
 	protected:
 		static bool mIsCursorHidden;
 		static NativeCursorData mCursor;
@@ -65,5 +68,9 @@ namespace CamelotFramework
 
 		static void win32ShowCursor();
 		static void win32HideCursor();
+
+		static void windowFocusReceived(RenderWindow* window);
+		static void windowFocusLost(RenderWindow* window);
+		static void windowMovedOrResized(RenderWindow* window);
 	};
 }

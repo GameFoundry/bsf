@@ -16,6 +16,10 @@ namespace CamelotFramework
 	boost::signal<void(float)> Platform::onMouseWheelScrolled;
 	boost::signal<void(UINT32)> Platform::onCharInput;
 
+	boost::signal<void(RenderWindow*)> Platform::onWindowFocusReceived;
+	boost::signal<void(RenderWindow*)> Platform::onWindowFocusLost;
+	boost::signal<void(RenderWindow*)> Platform::onWindowMovedOrResized;
+
 	struct NativeCursorData::Pimpl
 	{
 		HCURSOR cursor;
@@ -245,6 +249,24 @@ namespace CamelotFramework
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+	}
+
+	void Platform::windowFocusReceived(RenderWindow* window)
+	{
+		if(!onWindowFocusReceived.empty())
+			onWindowFocusReceived(window);
+	}
+
+	void Platform::windowFocusLost(RenderWindow* window)
+	{
+		if(!onWindowFocusLost.empty())
+			onWindowFocusLost(window);
+	}
+	
+	void Platform::windowMovedOrResized(RenderWindow* window)
+	{
+		if(!onWindowMovedOrResized.empty())
+			onWindowMovedOrResized(window);
 	}
 
 	void Platform::win32ShowCursor()

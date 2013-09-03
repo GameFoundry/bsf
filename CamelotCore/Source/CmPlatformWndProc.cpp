@@ -28,12 +28,12 @@ namespace CamelotFramework
 					win->setActive(true);
 
 					if(!win->hasFocus())
-						win->_windowFocusReceived();
+						windowFocusReceived(win);
 				}
 				else
 				{
 					if(win->hasFocus())
-						win->_windowFocusLost();
+						windowFocusLost(win);
 				}
 
 				break;
@@ -69,13 +69,13 @@ namespace CamelotFramework
 		case WM_EXITSIZEMOVE:
 			break;
 		case WM_MOVE:
-			win->_windowMovedOrResized();
+			windowMovedOrResized(win);
 			break;
 		case WM_DISPLAYCHANGE:
-			win->_windowMovedOrResized();
+			windowMovedOrResized(win);
 			break;
 		case WM_SIZE:
-			win->_windowMovedOrResized();
+			windowMovedOrResized(win);
 			break;
 		case WM_SETCURSOR:
 			if(isCursorHidden())
