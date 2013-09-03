@@ -1,6 +1,6 @@
 #include "CmD3D11RenderWindow.h"
 #include "CmCoreThread.h"
-#include "CmWindowEventUtilities.h"
+#include "CmPlatformWndProc.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 #include "CmD3D11RenderTexture.h"
@@ -228,7 +228,7 @@ namespace CamelotFramework
 
 			// Register the window class
 			// Allow 4 bytes of window data for D3D11RenderWindow pointer
-			WNDCLASS wc = { classStyle, WindowEventUtilities::_WndProc, 0, 0, hInst,
+			WNDCLASS wc = { classStyle, PlatformWndProc::_win32WndProc, 0, 0, hInst,
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D11Wnd" };	
 
@@ -239,8 +239,6 @@ namespace CamelotFramework
 			mIsExternal = false;
 			mHWnd = CreateWindowEx(dwStyleEx, "D3D11Wnd", mDesc.title.c_str(), dwStyle,
 				mLeft, mTop, mWidth, mHeight, parentHWnd, 0, hInst, this);
-
-			WindowEventUtilities::_addRenderWindow(this);
 		}
 		else
 		{
@@ -275,7 +273,6 @@ namespace CamelotFramework
 
 		if (mHWnd && !mIsExternal)
 		{
-			WindowEventUtilities::_removeRenderWindow(this);
 			DestroyWindow(mHWnd);
 		}
 

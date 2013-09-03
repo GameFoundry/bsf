@@ -33,7 +33,7 @@
 #include "DbgEditorWidget1.h"
 #include "DbgEditorWidget2.h"
 #include "CmRTTIType.h"
-#include "CmCursor.h"
+#include "CmPlatform.h"
 
 #define DX11
 //#define DX9

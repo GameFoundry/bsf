@@ -33,7 +33,7 @@ THE SOFTWARE
 #define CM_THREAD_SUPPORT 2
 
 // Platform-specific stuff
-#include "CmPlatform.h"
+#include "CmPlatformDefines.h"
 
 #if CM_COMPILER == CM_COMPILER_MSVC
 

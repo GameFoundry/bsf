@@ -3,7 +3,7 @@
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
 
-#include "CmWindowEventUtilities.h"
+#include "CmPlatform.h"
 #include "CmHardwareBufferManager.h"
 #include "CmRenderWindow.h"
 #include "CmViewport.h"
@@ -33,7 +33,6 @@
 #include "CmShader.h"
 #include "CmTechnique.h"
 #include "CmPass.h"
-#include "CmCursor.h"
 
 #include "CmRendererManager.h"
 
@@ -83,7 +82,7 @@ namespace CamelotFramework
 
 		loadPlugin(desc.input);
 
-		Cursor::setCursor(CursorType::Arrow);
+		Platform::setCursor(CursorType::Arrow);
 	}
 
 	void Application::runMainLoop()
@@ -131,7 +130,7 @@ namespace CamelotFramework
 
 	void Application::updateMessagePump()
 	{
-		WindowEventUtilities::messagePump();
+		Platform::messagePump();
 	}
 
 	void Application::frameRenderingFinishedCallback()

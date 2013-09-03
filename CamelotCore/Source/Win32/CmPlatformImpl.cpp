@@ -1,12 +1,21 @@
-#include "CmCursor.h"
+#include "CmPlatform.h"
 #include "CmRenderWindow.h"
-#include "CmWindowEventUtilities.h"
 #include "CmPixelUtil.h"
 #include "CmApplication.h"
+
+#define WIN32_LEAN_AND_MEAN
+#if !defined(NOMINMAX) && defined(_MSC_VER)
+#	define NOMINMAX // Required to stop windows.h messing up std::min
+#endif
 #include <windows.h>
+#include <windowsx.h>
 
 namespace CamelotFramework
 {
+	boost::signal<void(const Int2&)> Platform::onMouseMoved;
+	boost::signal<void(float)> Platform::onMouseWheelScrolled;
+	boost::signal<void(UINT32)> Platform::onCharInput;
+
 	struct NativeCursorData::Pimpl
 	{
 		HCURSOR cursor;
@@ -22,18 +31,29 @@ namespace CamelotFramework
 		cm_delete(data);
 	}
 
-	bool Cursor::mIsHidden = false;
-	NativeCursorData Cursor::mCursor;
-	bool Cursor::mUsingCustom = false;
+	bool Platform::mIsCursorHidden = false;
+	NativeCursorData Platform::mCursor;
+	bool Platform::mUsingCustomCursor = false;
 
-	void Cursor::setPosition(const Int2& screenPos)
+	void Platform::setCursorPosition(const Int2& screenPos)
 	{
 		SetCursorPos(screenPos.x, screenPos.y);
 	}
 
-	void Cursor::hide()
+	void Platform::captureMouse(const RenderWindow& window)
 	{
-		mIsHidden = true;
+		// POST A MESSAGE
+		//SetCapture()
+	}
+
+	void Platform::releaseMouseCapture()
+	{
+
+	}
+
+	void Platform::hideCursor()
+	{
+		mIsCursorHidden = true;
 
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
@@ -45,9 +65,9 @@ namespace CamelotFramework
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Cursor::show()
+	void Platform::showCursor()
 	{
-		mIsHidden = false;
+		mIsCursorHidden = false;
 
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
@@ -59,7 +79,7 @@ namespace CamelotFramework
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Cursor::clipToWindow(const RenderWindow& window)
+	void Platform::clipCursorToWindow(const RenderWindow& window)
 	{
 		HWND hwnd;
 		window.getCustomAttribute("WINDOW", &hwnd);
@@ -72,7 +92,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Cursor::clipToRect(const Rect& screenRect)
+	void Platform::clipCursorToRect(const Rect& screenRect)
 	{
 		RECT clipWindowRect;
 		clipWindowRect.left = screenRect.x;
@@ -83,18 +103,18 @@ namespace CamelotFramework
 		ClipCursor(&clipWindowRect);
 	}
 
-	void Cursor::clipDisable()
+	void Platform::clipCursorDisable()
 	{
 		ClipCursor(NULL);
 	}
 
-	void Cursor::setCursor(CursorType type)
+	void Platform::setCursor(CursorType type)
 	{
-		if(mUsingCustom)
+		if(mUsingCustomCursor)
 		{
 			SetCursor(0);
 			DestroyIcon(mCursor.data->cursor);
-			mUsingCustom = false;
+			mUsingCustomCursor = false;
 		}
 
 		switch(type)
@@ -140,15 +160,15 @@ namespace CamelotFramework
 	}
 
 	// TODO - Add support for animated custom cursor
-	void Cursor::setCustomCursor(PixelData& pixelData, const Int2& hotSpot)
+	void Platform::setCustomCursor(PixelData& pixelData, const Int2& hotSpot)
 	{
-		if(mUsingCustom)
+		if(mUsingCustomCursor)
 		{
 			SetCursor(0);
 			DestroyIcon(mCursor.data->cursor);
 		}
 
-		mUsingCustom = true;
+		mUsingCustomCursor = true;
 
 		BITMAPV5HEADER bi;
 
@@ -217,12 +237,22 @@ namespace CamelotFramework
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Cursor::_win32ShowCursor()
+	void Platform::messagePump()
+	{
+		MSG  msg;
+		while(PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+	}
+
+	void Platform::win32ShowCursor()
 	{
 		SetCursor(mCursor.data->cursor);
 	}
 
-	void Cursor::_win32HideCursor()
+	void Platform::win32HideCursor()
 	{
 		SetCursor(nullptr);
 	}

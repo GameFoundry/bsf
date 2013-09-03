@@ -10,7 +10,7 @@
 #include "CmMesh.h"
 #include "CmUtil.h"
 #include "CmRenderWindowManager.h"
-#include "CmCursor.h"
+#include "CmPlatform.h"
 #include "CmRect.h"
 #include "CmApplication.h"
 #include "CmException.h"

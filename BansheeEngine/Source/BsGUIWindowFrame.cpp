@@ -6,7 +6,7 @@
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
 #include "CmApplication.h"
-#include "CmCursor.h"
+#include "CmPlatform.h"
 #include "CmTexture.h"
 #include "CmRenderWindow.h"
 
@@ -234,28 +234,28 @@ namespace BansheeEngine
 				switch (subArea)
 				{
 				case BansheeEngine::FrameSubArea::TopLeft:
-					Cursor::setCursor(CursorType::SizeNWSE);
+					Platform::setCursor(CursorType::SizeNWSE);
 					break;
 				case BansheeEngine::FrameSubArea::TopCenter:
-					Cursor::setCursor(CursorType::SizeNS);
+					Platform::setCursor(CursorType::SizeNS);
 					break;
 				case BansheeEngine::FrameSubArea::TopRight:
-					Cursor::setCursor(CursorType::SizeNESW);
+					Platform::setCursor(CursorType::SizeNESW);
 					break;
 				case BansheeEngine::FrameSubArea::MiddleLeft:
-					Cursor::setCursor(CursorType::SizeWE);
+					Platform::setCursor(CursorType::SizeWE);
 					break;
 				case BansheeEngine::FrameSubArea::MiddleRight:
-					Cursor::setCursor(CursorType::SizeWE);
+					Platform::setCursor(CursorType::SizeWE);
 					break;
 				case BansheeEngine::FrameSubArea::BottomLeft:
-					Cursor::setCursor(CursorType::SizeNESW);
+					Platform::setCursor(CursorType::SizeNESW);
 					break;
 				case BansheeEngine::FrameSubArea::BottomCenter:
-					Cursor::setCursor(CursorType::SizeNS);
+					Platform::setCursor(CursorType::SizeNS);
 					break;
 				case BansheeEngine::FrameSubArea::BottomRight:
-					Cursor::setCursor(CursorType::SizeNWSE);
+					Platform::setCursor(CursorType::SizeNWSE);
 					break;
 				}
 
@@ -311,7 +311,7 @@ namespace BansheeEngine
 		{
 			if(mResizeCursorSet)
 			{
-				Cursor::setCursor(CursorType::Arrow);
+				Platform::setCursor(CursorType::Arrow);
 				mResizeCursorSet = false;
 
 				return true;

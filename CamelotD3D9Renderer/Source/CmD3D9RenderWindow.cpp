@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmD3D9RenderSystem.h"
 #include "CmRenderSystem.h"
 #include "CmBitwise.h"
-#include "CmWindowEventUtilities.h"
+#include "CmPlatformWndProc.h"
 #include "CmD3D9DeviceManager.h"
 
 namespace CamelotFramework
@@ -225,7 +225,7 @@ namespace CamelotFramework
 
 			// Register the window class
 			// NB allow 4 bytes of window data for D3D9RenderWindow pointer
-			WNDCLASS wc = { 0, WindowEventUtilities::_WndProc, 0, 0, hInst,
+			WNDCLASS wc = { 0, PlatformWndProc::_win32WndProc, 0, 0, hInst,
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D9Wnd" };
 			RegisterClass(&wc);
@@ -236,8 +236,6 @@ namespace CamelotFramework
 			mHWnd = CreateWindowEx(dwStyleEx, "D3D9Wnd", mDesc.title.c_str(), dwStyle,
 				mLeft, mTop, winWidth, winHeight, parentHWnd, 0, hInst, this);
 			mStyle = dwStyle;
-
-			WindowEventUtilities::_addRenderWindow(this);
 		}
 		else
 		{
@@ -279,7 +277,6 @@ namespace CamelotFramework
 
 		if (mHWnd && !mIsExternal)
 		{
-			WindowEventUtilities::_removeRenderWindow(this);
 			DestroyWindow(mHWnd);
 		}
 

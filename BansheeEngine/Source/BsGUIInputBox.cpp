@@ -12,7 +12,7 @@
 #include "CmFont.h"
 #include "CmTextUtility.h"
 #include "CmTexture.h"
-#include "CmCursor.h"
+#include "CmPlatform.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
 #include "BsDragAndDropManager.h"
@@ -351,7 +351,7 @@ namespace BansheeEngine
 
 			if(!mInputCursorSet)
 			{
-				Cursor::setCursor(CursorType::IBeam);
+				Platform::setCursor(CursorType::IBeam);
 				mInputCursorSet = true;
 			}
 
@@ -367,7 +367,7 @@ namespace BansheeEngine
 
 			if(!mDragInProgress && mInputCursorSet)
 			{
-				Cursor::setCursor(CursorType::Arrow);
+				Platform::setCursor(CursorType::Arrow);
 				mInputCursorSet = false;
 			}
 
@@ -431,7 +431,7 @@ namespace BansheeEngine
 
 				if(ev.getMouseOverElement() != this && mInputCursorSet)
 				{
-					Cursor::setCursor(CursorType::Arrow);
+					Platform::setCursor(CursorType::Arrow);
 					mInputCursorSet = false;
 				}
 

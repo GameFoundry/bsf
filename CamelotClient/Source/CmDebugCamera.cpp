@@ -5,7 +5,7 @@
 #include "CmMath.h"
 #include "CmSceneObject.h"
 #include "BsCamera.h"
-#include "CmCursor.h"
+#include "CmPlatform.h"
 
 using namespace BansheeEngine;
 
@@ -42,9 +42,9 @@ namespace CamelotFramework
 		if(camRotating != mLastButtonState)
 		{
 			if(camRotating)
-				Cursor::hide();
+				Platform::hideCursor();
 			else
-				Cursor::show();
+				Platform::showCursor();
 
 			mLastButtonState = camRotating;
 		}

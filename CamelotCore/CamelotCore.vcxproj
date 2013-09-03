@@ -288,6 +288,7 @@
     <ClInclude Include="Include\CmPixelData.h" />
     <ClInclude Include="Include\CmPixelDataRTTI.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
+    <ClInclude Include="Include\CmPlatformWndProc.h" />
     <ClInclude Include="Include\CmRenderOperation.h" />
     <ClInclude Include="Include\CmRenderQueue.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
@@ -348,7 +349,7 @@
     <ClInclude Include="Include\CmMeshData.h" />
     <ClInclude Include="Include\CmMeshDataRTTI.h" />
     <ClInclude Include="Include\CmMultiRenderTexture.h" />
-    <ClInclude Include="Include\CmCursor.h" />
+    <ClInclude Include="Include\CmPlatform.h" />
     <ClInclude Include="Include\CmPass.h" />
     <ClInclude Include="Include\CmPassRTTI.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
@@ -385,7 +386,6 @@
     <ClInclude Include="Include\CmVertexDeclaration.h" />
     <ClInclude Include="Include\CmVertexData.h" />
     <ClInclude Include="Include\CmViewport.h" />
-    <ClInclude Include="Include\CmWindowEventUtilities.h" />
     <ClInclude Include="Include\CmResourceRTTI.h" />
     <ClInclude Include="Include\CmSceneObject.h" />
     <ClInclude Include="Include\CmComponent.h" />
@@ -395,7 +395,7 @@
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\CmTechnique.h" />
-    <ClInclude Include="Include\Win32\CmCursorImpl.h" />
+    <ClInclude Include="Include\Win32\CmPlatformImpl.h" />
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
@@ -441,6 +441,7 @@
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmPixelUtil.cpp" />
+    <ClCompile Include="Source\CmPlatformWndProc.cpp" />
     <ClCompile Include="Source\CmRenderer.cpp" />
     <ClCompile Include="Source\CmRenderQueue.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
@@ -479,11 +480,10 @@
     <ClCompile Include="Source\CmVertexDeclaration.cpp" />
     <ClCompile Include="Source\CmVertexData.cpp" />
     <ClCompile Include="Source\CmViewport.cpp" />
-    <ClCompile Include="Source\CmWindowEventUtilities.cpp" />
     <ClCompile Include="Source\CmSceneObject.cpp" />
     <ClCompile Include="Source\CmComponent.cpp" />
     <ClCompile Include="Source\stdafx.cpp" />
-    <ClCompile Include="Source\Win32\CmCursorImpl.cpp" />
+    <ClCompile Include="Source\Win32\CmPlatformImpl.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

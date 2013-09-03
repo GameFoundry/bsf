@@ -54,9 +54,6 @@
     <ClInclude Include="Include\CmTypes.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmPlatform.h">
-      <Filter>Header Files\Prerequisites</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmStdHeaders.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
@@ -218,6 +215,9 @@
     </ClInclude>
     <ClInclude Include="Include\CmFRect.h">
       <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPlatformDefines.h">
+      <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

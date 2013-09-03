@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmPlatform.h"
+#include "CmPlatformDefines.h"
 
 namespace CamelotFramework
 {

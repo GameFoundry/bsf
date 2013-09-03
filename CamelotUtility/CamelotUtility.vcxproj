@@ -297,7 +297,7 @@
     <ClInclude Include="Include\CmMatrix3.h" />
     <ClInclude Include="Include\CmMatrix4.h" />
     <ClInclude Include="Include\CmPlane.h" />
-    <ClInclude Include="Include\CmPlatform.h" />
+    <ClInclude Include="Include\CmPlatformDefines.h" />
     <ClInclude Include="Include\CmPrerequisitesUtil.h" />
     <ClInclude Include="Include\CmQuaternion.h" />
     <ClInclude Include="Include\CmRay.h" />

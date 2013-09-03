@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmWin32GLSupport.h"
 #include "CmWin32Context.h"
-#include "CmWindowEventUtilities.h"
+#include "CmPlatformWndProc.h"
 #include "CmGLPixelFormat.h"
 
 namespace CamelotFramework 
@@ -259,7 +259,7 @@ namespace CamelotFramework
 			}
 
 			// register class and create window
-			WNDCLASS wc = { CS_OWNDC, WindowEventUtilities::_WndProc, 0, 0, hInst,
+			WNDCLASS wc = { CS_OWNDC, PlatformWndProc::_win32WndProc, 0, 0, hInst,
 				LoadIcon(NULL, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), NULL, "GLWindow" };
 			RegisterClass(&wc);
@@ -295,9 +295,7 @@ namespace CamelotFramework
 
 			// Pass pointer to self as WM_CREATE parameter
 			mHWnd = CreateWindowEx(dwStyleEx, "GLWindow", mDesc.title.c_str(),
-				dwStyle, mLeft, mTop, mWidth, mHeight, parent, 0, hInst, this);
-
-			WindowEventUtilities::_addRenderWindow(this);			
+				dwStyle, mLeft, mTop, mWidth, mHeight, parent, 0, hInst, this);		
 		}
 
 		RECT rc;
@@ -397,8 +395,6 @@ namespace CamelotFramework
 		}
 		if (!mIsExternal)
 		{
-			WindowEventUtilities::_removeRenderWindow(this);
-
 			if (mIsFullScreen)
 				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
 			DestroyWindow(mHWnd);
