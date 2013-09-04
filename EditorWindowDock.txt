@@ -20,6 +20,27 @@ GUIViewport:
 
 ------------------------
 
+Get rid of resize hacks:
+ - 	In CmWin32Window (and probably same for DX9 and DX11)
+	// HACK: During the move/resize modal loop no mouse messages will be posted, which means we will
+	// never receive a "mouse up" event, even though user had to release the mouse to stop the loop. But our GUI system
+	// relies on mouse down being followed by mouse up otherwise things end start to break a bit. So here we simulate 
+	// the mouse release. 
+	// Note: This is possible because SendMessage won't return until user releases the mouse and modal loop is done.
+	void HACK_SendLMBUpEvent()
+	{
+		gInput().simulateButtonUp(BC_MOUSE_LEFT);
+	}
+ - Hack from GUIManager (related to resize and mouse up event)
+
+Also try to get rid of start/end move/resize
+
+Calling Set/Release capture on sim thread probably wont work. Create custom, and send messages instead
+Add Platform::onMouseCaptureLost
+
+
+------------------------
+
 Other things to remember:
  - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
  - A way to persist window states

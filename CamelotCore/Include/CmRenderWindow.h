@@ -139,21 +139,6 @@ namespace CamelotFramework
 		 */
 		bool hasFocus() const { return mHasFocus; }
 
-		/**
-         * @brief	Internal method. Core method. Called when window is moved or resized.
-         */
-        virtual void _windowMovedOrResized();
-
-		/**
-         * @brief	Internal method. Core method. Called when window has received focus.
-         */
-		virtual void _windowFocusReceived();
-
-		/**
-         * @brief	Internal method. Core method. Called when window has lost focus.
-         */
-		virtual void _windowFocusLost();
-
 		virtual Int2 screenToWindowPos(const Int2& screenPos) const = 0;
 		virtual Int2 windowToScreenPos(const Int2& windowPos) const = 0;
 
@@ -171,6 +156,21 @@ namespace CamelotFramework
 		friend class RenderWindowManager;
 
         RenderWindow(const RENDER_WINDOW_DESC& desc);
+
+		/**
+         * @brief	Internal method. Core method. Called when window is moved or resized.
+         */
+        virtual void _windowMovedOrResized();
+
+		/**
+         * @brief	Internal method. Core method. Called when window has received focus.
+         */
+		virtual void _windowFocusReceived();
+
+		/**
+         * @brief	Internal method. Core method. Called when window has lost focus.
+         */
+		virtual void _windowFocusLost();
         
 	protected:
 		bool mIsFullScreen;

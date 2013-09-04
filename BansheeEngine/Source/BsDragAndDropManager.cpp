@@ -1,13 +1,16 @@
 #include "BsDragAndDropManager.h"
+#include "CmPlatform.h"
+#include "CmApplication.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
 	DragAndDropManager::DragAndDropManager()
-		:mIsDragInProgress(false), mDragTypeId(0), mData(nullptr)
+		:mIsDragInProgress(false), mDragTypeId(0), mData(nullptr), mCaptureChanged(false), mCaptureActive(0)
 	{
-
+		Platform::onMouseCaptureChanged.connect(boost::bind(&DragAndDropManager::mouseCaptureChanged, this));
+		Input::instance().onButtonUp.connect(boost::bind(&DragAndDropManager::mouseUp, this, _1));
 	}
 
 	void DragAndDropManager::startDrag(CM::HTexture icon, CM::UINT32 typeId, void* data, std::function<void(bool)> dropCallback)
@@ -17,9 +20,27 @@ namespace BansheeEngine
 		mData = data;
 		mDropCallback = dropCallback;
 		mIsDragInProgress = true;
+
+		mCaptureActive.store(false);
+		mCaptureChanged.store(false);
+
+		Platform::captureMouse(*gApplication().getPrimaryWindow());
 	}
 
-	void DragAndDropManager::_endDrag(bool processed)
+	void DragAndDropManager::update()
+	{
+		if(!mIsDragInProgress)
+			return;
+
+		// This generally happens when window loses focus and capture is lost (e.g. alt+tab)
+		int captureActive = mCaptureActive.load();
+		if(!captureActive && mCaptureChanged.load())
+		{
+			endDrag(false);
+		}
+	}
+
+	void DragAndDropManager::endDrag(bool processed)
 	{
 		if(mDropCallback != nullptr)
 			mDropCallback(processed);
@@ -28,5 +49,29 @@ namespace BansheeEngine
 		mData = nullptr;
 		mDropCallback = nullptr;
 		mIsDragInProgress = false;
+	}
+
+	void DragAndDropManager::mouseCaptureChanged()
+	{
+		mCaptureActive.fetch_xor(1); // mCaptureActive = !mCaptureActive;
+		mCaptureChanged.store(true);
+	}
+
+	void DragAndDropManager::mouseUp(const ButtonEvent& event)
+	{
+		if(!mIsDragInProgress)
+			return;
+
+		if(event.isMouse())
+		{
+			Platform::releaseMouseCapture();
+
+			if(!onDragEnded.empty())
+			{
+				bool processed = onDragEnded(event);
+
+				endDrag(processed);
+			}
+		}
 	}
 }

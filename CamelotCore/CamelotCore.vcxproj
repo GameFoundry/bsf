@@ -391,6 +391,7 @@
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\CmShader.h" />
     <ClInclude Include="Include\CmBlendState.h" />
+    <ClInclude Include="Include\CmWin32Defs.h" />
     <ClInclude Include="Include\stdafx.h" />
     <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />

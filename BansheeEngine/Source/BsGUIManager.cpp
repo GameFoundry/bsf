@@ -66,6 +66,7 @@ namespace BansheeEngine
 		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
 		DragAndDropManager::startUp(cm_new<DragAndDropManager>());
+		mMouseDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(boost::bind(&GUIManager::onMouseDragEnded, this, _1));
 
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
@@ -86,6 +87,8 @@ namespace BansheeEngine
 		mOnButtonUpConn.disconnect();
 		mOnMouseMovedConn.disconnect();
 		mOnTextInputConn.disconnect();
+
+		mMouseDragEndedConn.disconnect();
 
 		mWindowGainedFocusConn.disconnect();
 		mWindowLostFocusConn.disconnect();
@@ -158,6 +161,8 @@ namespace BansheeEngine
 
 	void GUIManager::update()
 	{
+		DragAndDropManager::instance().update();
+
 		// Update layouts
 		for(auto& widgetInfo : mWidgets)
 		{
@@ -620,20 +625,6 @@ namespace BansheeEngine
 
 			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
 
-			if(DragAndDropManager::instance().isDragInProgress() && guiButton == GUIMouseButton::Left)
-			{
-				if(mMouseOverElement != nullptr)
-				{
-					mMouseEvent.setDragAndDropDroppedData(mMouseOverElement, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					bool processed = sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent);
-
-					DragAndDropManager::instance()._endDrag(processed);
-
-					if(processed)
-						event.markAsUsed();
-				}
-			}
-
 			// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
 			// And only activate when a button that originally caused the active state is released, otherwise ignore it.
 			bool acceptMouseUp = mActiveMouseButton == guiButton && (mMouseOverElement != nullptr && mActiveElement == mMouseOverElement);
@@ -658,6 +649,24 @@ namespace BansheeEngine
 				mActiveMouseButton = GUIMouseButton::Left;
 			}
 		}
+	}
+
+	bool GUIManager::onMouseDragEnded(const CM::ButtonEvent& event)
+	{
+		GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
+
+		if(DragAndDropManager::instance().isDragInProgress() && guiButton == GUIMouseButton::Left)
+		{
+			if(mMouseOverElement != nullptr)
+			{
+				mMouseEvent.setDragAndDropDroppedData(mMouseOverElement, Int2(), DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+				bool processed = sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent);
+
+				return processed;
+			}
+		}
+
+		return false;
 	}
 
 	void GUIManager::onMouseMoved(const MouseEvent& event)

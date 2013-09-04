@@ -2,13 +2,7 @@
 #include "CmRenderWindow.h"
 #include "CmPixelUtil.h"
 #include "CmApplication.h"
-
-#define WIN32_LEAN_AND_MEAN
-#if !defined(NOMINMAX) && defined(_MSC_VER)
-#	define NOMINMAX // Required to stop windows.h messing up std::min
-#endif
-#include <windows.h>
-#include <windowsx.h>
+#include "CmWin32Defs.h"
 
 namespace CamelotFramework
 {
@@ -19,6 +13,7 @@ namespace CamelotFramework
 	boost::signal<void(RenderWindow*)> Platform::onWindowFocusReceived;
 	boost::signal<void(RenderWindow*)> Platform::onWindowFocusLost;
 	boost::signal<void(RenderWindow*)> Platform::onWindowMovedOrResized;
+	boost::signal<void()> Platform::onMouseCaptureChanged;
 
 	struct NativeCursorData::Pimpl
 	{
@@ -46,13 +41,20 @@ namespace CamelotFramework
 
 	void Platform::captureMouse(const RenderWindow& window)
 	{
-		// POST A MESSAGE
-		//SetCapture()
+		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		HWND hwnd;
+		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
+		
+		PostMessage(hwnd, WM_CM_SETCAPTURE, WPARAM(hwnd), 0);
 	}
 
 	void Platform::releaseMouseCapture()
 	{
+		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		HWND hwnd;
+		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
+		PostMessage(hwnd, WM_CM_RELEASECAPTURE, WPARAM(hwnd), 0);
 	}
 
 	void Platform::hideCursor()

@@ -178,6 +178,16 @@ namespace CamelotFramework
 
 				break;
 			}
+		case WM_CM_SETCAPTURE:
+			SetCapture(hWnd);
+			break;
+		case WM_CM_RELEASECAPTURE:
+			ReleaseCapture();
+			break;
+		case WM_CAPTURECHANGED:
+			if(!onMouseCaptureChanged.empty())
+				onMouseCaptureChanged();
+			break;
 		}
 
 		return DefWindowProc( hWnd, uMsg, wParam, lParam );

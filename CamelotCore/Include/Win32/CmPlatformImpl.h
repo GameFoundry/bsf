@@ -55,12 +55,15 @@ namespace CamelotFramework
 		 */
 		static void messagePump();
 
+		// Callbacks triggered on the core thread. Be careful so that none
+		// of the connected methods call methods intended for sim thread.
 		static boost::signal<void(const Int2&)> onMouseMoved;
 		static boost::signal<void(float)> onMouseWheelScrolled;
 		static boost::signal<void(UINT32)> onCharInput;
 		static boost::signal<void(RenderWindow*)> onWindowFocusReceived;
 		static boost::signal<void(RenderWindow*)> onWindowFocusLost;
 		static boost::signal<void(RenderWindow*)> onWindowMovedOrResized;
+		static boost::signal<void()> onMouseCaptureChanged;
 	protected:
 		static bool mIsCursorHidden;
 		static NativeCursorData mCursor;

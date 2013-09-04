@@ -102,6 +102,8 @@ namespace BansheeEngine
 		boost::signals::connection mOnMouseMovedConn;
 		boost::signals::connection mOnTextInputConn;
 
+		boost::signals::connection mMouseDragEndedConn;
+
 		boost::signals::connection mWindowGainedFocusConn;
 		boost::signals::connection mWindowLostFocusConn;
 		boost::signals::connection mWindowMovedOrResizedConn;
@@ -115,6 +117,8 @@ namespace BansheeEngine
 
 		void onMouseMoved(const CM::MouseEvent& event);
 		void onTextInput(const CM::TextInputEvent& event);
+
+		bool onMouseDragEnded(const CM::ButtonEvent& event);
 
 		void onWindowFocusGained(CM::RenderWindow& win);
 		void onWindowFocusLost(CM::RenderWindow& win);
