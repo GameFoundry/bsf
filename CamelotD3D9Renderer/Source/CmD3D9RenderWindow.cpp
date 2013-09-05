@@ -359,6 +359,20 @@ namespace CamelotFramework
 		}
 	} 
 
+	void D3D9RenderWindow::setHidden(bool hidden)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		mHidden = hidden;
+		if (!mIsExternal)
+		{
+			if (hidden)
+				ShowWindow(mHWnd, SW_HIDE);
+			else
+				ShowWindow(mHWnd, SW_SHOWNORMAL);
+		}
+	}
+
 	bool D3D9RenderWindow::isActive() const
 	{
 		if (isFullScreen())
@@ -485,6 +499,8 @@ namespace CamelotFramework
 
 	void D3D9RenderWindow::startResize(WindowResizeDirection direction)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		WPARAM dir = HTLEFT;
 		switch(direction)
 		{
@@ -525,6 +541,8 @@ namespace CamelotFramework
 
 	void D3D9RenderWindow::startMove()
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 		HACK_SendLMBUpEvent();
 	}

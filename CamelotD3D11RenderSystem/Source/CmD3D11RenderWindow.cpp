@@ -25,7 +25,6 @@ namespace CamelotFramework
 		, mIsExternal(false)
 		, mSizing(false)
 		, mClosed(false)
-		, mHidden(false)
 		, mSwitchingFullscreen(false)
 		, mDisplayFrequency(0)
 		, mRenderTargetView(nullptr)
@@ -555,6 +554,8 @@ namespace CamelotFramework
 
 	void D3D11RenderWindow::startResize(WindowResizeDirection direction)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		WPARAM dir = HTLEFT;
 		switch(direction)
 		{
@@ -598,6 +599,8 @@ namespace CamelotFramework
 
 	void D3D11RenderWindow::startMove()
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 		HACK_SendLMBUpEvent();
 	}

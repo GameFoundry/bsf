@@ -731,8 +731,24 @@ namespace CamelotFramework
 		}
 	}
 
+	void Win32Window::setHidden(bool hidden)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		mHidden = hidden;
+		if (!mIsExternal)
+		{
+			if (hidden)
+				ShowWindow(mHWnd, SW_HIDE);
+			else
+				ShowWindow(mHWnd, SW_SHOWNORMAL);
+		}
+	}
+
 	void Win32Window::startResize(WindowResizeDirection direction)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		WPARAM dir = HTLEFT;
 		switch(direction)
 		{
@@ -773,6 +789,8 @@ namespace CamelotFramework
 
 	void Win32Window::startMove()
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
 		HACK_SendLMBUpEvent();
 	}

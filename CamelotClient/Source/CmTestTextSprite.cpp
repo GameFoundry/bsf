@@ -16,6 +16,8 @@
 #include "BsGUILayout.h"
 #include "BsGUIViewport.h"
 #include "BsCamera.h"
+#include "CmInput.h"
+#include "CmPlatform.h"
 
 using namespace BansheeEngine;
 
@@ -38,10 +40,14 @@ namespace CamelotFramework
 
 		SpriteTexturePtr spriteTex = std::make_shared<SpriteTexture>(sceneView->getBindableColorTexture());
 		area->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::fixed(800, 600), spriteTex));
+		mLabel = GUILabel::create(*this, L"");
+		area->getLayout().addElement(mLabel);
 	}
 
 	void TestTextSprite::update()
 	{
+		WString value = toWString(toString(Input::instance().getMousePosition().x) + " - " + toString(Input::instance().getMousePosition().y));
 
+		mLabel->setText(value);
 	}
 }

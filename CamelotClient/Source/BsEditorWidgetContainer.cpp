@@ -89,6 +89,37 @@ namespace BansheeEditor
 			widget._disable();
 	}
 
+	// Note: Hiding is used for a special purpose right now and there is no way to unhide a widget
+	// (But such functionally may be easily added)
+	void EditorWidgetContainer::hide(EditorWidget& widget)
+	{
+		INT32 widgetIdx = -1;
+		UINT32 curIdx = 0;
+		for(auto& curWidget : mWidgets)
+		{
+			if(curWidget == &widget)
+			{
+				widgetIdx = curIdx;
+				break;
+			}
+
+			curIdx++;
+		}
+
+		if(widgetIdx == -1)
+			return;
+
+		mTitleBar->removeTab(widgetIdx);
+
+		if(widgetIdx == mActiveWidget)
+		{
+			if(mWidgets.size() > 0)
+			{
+				setActiveWidget(0);
+			}
+		}
+	}
+
 	void EditorWidgetContainer::setSize(UINT32 width, UINT32 height)
 	{
 		// TODO - Title bar is always TitleBarHeight size, so what happens when the container area is smaller than that?
@@ -161,13 +192,18 @@ namespace BansheeEditor
 	void EditorWidgetContainer::tabDraggedOff(CM::UINT32 idx)
 	{
 		EditorWidget* widget = mWidgets[idx];
-		remove(*widget);
-		
+		hide(*widget);
+
 		// TODO - Hook up drag and drop texture
 		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::EditorWidget, (void*)widget, boost::bind(&EditorWidgetContainer::tabDroppedCallback, this, _1));
 
-		if(!onWidgetClosed.empty())
-			onWidgetClosed();
+		// We don't want to remove the widget just yet. For now mark it as hidden in case
+		// user just drops it somewhere else.
+		// Note: This is primarily implemented because Windows doesn't like me destroying a window
+		// while I'm capturing mouse input (required for drag and drop outside of window borders). 
+		// So instead I just hide it and do the destroying after drag and drop is done.
+		if(!onWidgetHidden.empty())
+			onWidgetHidden();
 	}
 
 	void EditorWidgetContainer::tabDraggedOn(CM::UINT32 idx)
@@ -187,11 +223,20 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::tabDroppedCallback(bool wasDragProcessed)
 	{
-		if(!wasDragProcessed && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::EditorWidget)
+		if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
+			return;
+
+		EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
+		draggedWidget->_changeParent(nullptr); // To ensure it doesn't get destroyed with the parent window
+		remove(*draggedWidget);
+
+		if(!onWidgetClosed.empty())
+			onWidgetClosed();
+
+		if(!wasDragProcessed)
 		{
 			EditorWindow* newWindow = EditorWindow::create();
 
-			EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
 			newWindow->widgets().add(*draggedWidget);
 
 			Int2 mousePos = Input::instance().getMousePosition();

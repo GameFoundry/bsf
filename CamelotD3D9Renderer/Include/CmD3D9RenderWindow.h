@@ -44,6 +44,11 @@ namespace CamelotFramework
 		void setFullscreen(bool fullScreen, UINT32 width, UINT32 height);
 
 		/**
+		 * @copydoc RenderWindow::setHidden
+		 */
+		void setHidden(bool hidden);
+
+		/**
 		 * @copydoc RenderWindow::isActive
 		 */
 		bool isActive() const;

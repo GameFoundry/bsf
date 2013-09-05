@@ -94,7 +94,7 @@ namespace CamelotFramework
         /**
          * @brief	Core method. Set the visibility state.
          */
-        virtual void setVisible(bool visible);
+        virtual void setHidden(bool hidden);
 
         /**
          * @brief	Core method. Alter the size of the window.
@@ -177,6 +177,7 @@ namespace CamelotFramework
 		INT32 mLeft;
 		INT32 mTop;
 		bool mHasFocus;
+		bool mHidden;
 
 		RENDER_WINDOW_DESC mDesc;
     };

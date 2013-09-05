@@ -272,6 +272,16 @@ namespace CamelotFramework
 			mCommandQueue->queue(boost::bind(&RenderWindow::endMove, renderWindow.get()));
 		}
 
+		void hideWindow(RenderWindowPtr& renderWindow)
+		{
+			mCommandQueue->queue(boost::bind(&RenderWindow::setHidden, renderWindow.get(), true));
+		}
+
+		void showWindow(RenderWindowPtr& renderWindow)
+		{
+			mCommandQueue->queue(boost::bind(&RenderWindow::setHidden, renderWindow.get(), false));
+		}
+
 		/**
 		 * @brief	Makes all the currently queued commands available to the core thread. They will be executed
 		 * 			as soon as the core thread is ready.

@@ -20,6 +20,7 @@ namespace BansheeEditor
 		CM::UINT32 getHeight() const;
 
 		virtual void close();
+		void hide();
 	protected:
 		EditorWindowBase();
 		EditorWindowBase(CM::RenderWindowPtr renderWindow);

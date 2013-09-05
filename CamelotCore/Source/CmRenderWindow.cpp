@@ -33,7 +33,7 @@ THE SOFTWARE.
 namespace CamelotFramework 
 {
     RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
-        : RenderTarget(), mIsFullScreen(false), mDesc(desc), mHasFocus(false), mLeft(0), mTop(0)
+        : RenderTarget(), mIsFullScreen(false), mDesc(desc), mHasFocus(false), mLeft(0), mTop(0), mHidden(false)
     {
 
     }
@@ -43,7 +43,7 @@ namespace CamelotFramework
 		
 	}
 
-	void RenderWindow::setVisible(bool visible)
+	void RenderWindow::setHidden(bool hidden)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 	}

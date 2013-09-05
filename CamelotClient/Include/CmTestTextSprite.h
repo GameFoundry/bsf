@@ -15,5 +15,8 @@ namespace CamelotFramework
 		virtual void update();
 
 		void init(const BS::HCamera& camera, const String& text, CM::RenderTexturePtr sceneView);
+
+	private:
+		BS::GUILabel* mLabel;
 	};
 }

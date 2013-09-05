@@ -13,6 +13,7 @@ namespace BansheeEditor
 		updateSize();
 
 		mWidgets->onWidgetClosed.connect(boost::bind(&EditorWindow::widgetRemoved, this));
+		mWidgets->onWidgetHidden.connect(boost::bind(&EditorWindow::widgetHidden, this));
 	}
 
 	EditorWindow::~EditorWindow()
@@ -41,6 +42,12 @@ namespace BansheeEditor
 	{
 		if(mWidgets->getNumWidgets() == 0)
 			close();
+	}
+
+	void EditorWindow::widgetHidden()
+	{
+		if(mWidgets->getNumWidgets() == 1)
+			hide();
 	}
 
 	EditorWindow* EditorWindow::create()

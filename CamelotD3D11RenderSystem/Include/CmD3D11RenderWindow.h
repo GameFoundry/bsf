@@ -118,7 +118,6 @@ namespace CamelotFramework
 		bool	mIsExternal;
 		bool	mSizing;
 		bool	mClosed;
-		bool	mHidden;
 
 		// -------------------------------------------------------
 		// DirectX-specific

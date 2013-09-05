@@ -4,7 +4,6 @@
 #include "CmRenderWindow.h"
 #include "CmRenderWindowManager.h"
 
-
 #include "BsEditorWindowManager.h"
 #include "BsCamera.h"
 #include "BsGUIWindowFrameWidget.h"
@@ -56,6 +55,11 @@ namespace BansheeEditor
 	void EditorWindowBase::close()
 	{
 		EditorWindowManager::instance().destroy(this);
+	}
+
+	void EditorWindowBase::hide()
+	{
+		gMainSyncedCA().hideWindow(mRenderWindow);
 	}
 
 	void EditorWindowBase::construct(CM::RenderWindowPtr renderWindow)
