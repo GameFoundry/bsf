@@ -42,5 +42,7 @@ namespace BansheeEditor
 		void tabDraggedOn(CM::UINT32 tabIdx);
 
 		CM::INT32 uniqueIdxToSeqIdx(CM::UINT32 uniqueIdx) const;
+
+		void refreshNonClientAreas();
 	};
 }

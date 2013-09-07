@@ -299,11 +299,11 @@ namespace BansheeEngine
 	void GUIWidget::updateBounds() const
 	{
 		if(mElements.size() > 0)
-			mBounds = mElements[0]->_getBounds();
+			mBounds = mElements[0]->_getClippedBounds();
 
 		for(auto& elem : mElements)
 		{
-			Rect elemBounds = elem->_getBounds();
+			Rect elemBounds = elem->_getClippedBounds();
 			mBounds.encapsulate(elemBounds);
 		}
 	}

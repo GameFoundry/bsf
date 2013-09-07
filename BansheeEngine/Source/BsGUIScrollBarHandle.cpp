@@ -121,12 +121,12 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIScrollBarHandle::updateBounds()
+	void GUIScrollBarHandle::updateClippedBounds()
 	{
-		mBounds = Rect(mOffset.x, mOffset.y, mWidth, mHeight);
+		mClippedBounds = Rect(mOffset.x, mOffset.y, mWidth, mHeight);
 
 		Rect localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
-		mBounds.clip(localClipRect);
+		mClippedBounds.clip(localClipRect);
 	}
 
 	UINT32 GUIScrollBarHandle::_getOptimalWidth() const

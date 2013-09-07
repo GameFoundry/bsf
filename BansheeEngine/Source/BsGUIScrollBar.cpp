@@ -94,9 +94,9 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIScrollBar::updateBounds()
+	void GUIScrollBar::updateClippedBounds()
 	{
-		mBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
+		mClippedBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
 	}
 
 	UINT32 GUIScrollBar::_getOptimalWidth() const

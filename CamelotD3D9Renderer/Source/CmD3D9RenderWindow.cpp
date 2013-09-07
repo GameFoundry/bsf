@@ -38,16 +38,6 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
-	// HACK: During the move/resize modal loop no mouse messages will be posted, which means we will
-	// never receive a "mouse up" event, even though user had to release the mouse to stop the loop. But our GUI system
-	// relies on mouse down being followed by mouse up otherwise things end start to break a bit. So here we simulate 
-	// the mouse release. 
-	// Note: This is possible because SendMessage won't return until user releases the mouse and modal loop is done.
-	void HACK_SendLMBUpEvent()
-	{
-		gInput().simulateButtonUp(BC_MOUSE_LEFT);
-	}
-
 	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
         : RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true)  
 	{
@@ -495,61 +485,6 @@ namespace CamelotFramework
 		THROW_IF_NOT_CORE_THREAD;
 
 		mDevice->copyContentsToMemory(this, dst, buffer);
-	}
-
-	void D3D9RenderWindow::startResize(WindowResizeDirection direction)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		WPARAM dir = HTLEFT;
-		switch(direction)
-		{
-		case WindowResizeDirection::Left:
-			dir = HTLEFT;
-			break;
-		case WindowResizeDirection::TopLeft:
-			dir = HTTOPLEFT;
-			break;
-		case WindowResizeDirection::Top:
-			dir = HTTOP;
-			break;
-		case WindowResizeDirection::TopRight:
-			dir = HTTOPRIGHT;
-			break;
-		case WindowResizeDirection::Right:
-			dir = HTRIGHT;
-			break;
-		case WindowResizeDirection::BottomRight:
-			dir = HTBOTTOMRIGHT;
-			break;
-		case WindowResizeDirection::Bottom:
-			dir = HTBOTTOM;
-			break;
-		case WindowResizeDirection::BottomLeft:
-			dir = HTBOTTOMLEFT;
-			break;
-		}
-
-		SendMessage(mHWnd, WM_NCLBUTTONDOWN, dir, 0);
-		HACK_SendLMBUpEvent();
-	}
-
-	void D3D9RenderWindow::endResize()
-	{
-
-	}
-
-	void D3D9RenderWindow::startMove()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
-		HACK_SendLMBUpEvent();
-	}
-
-	void D3D9RenderWindow::endMove()
-	{
-
 	}
 
 	void D3D9RenderWindow::_windowMovedOrResized()

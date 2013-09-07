@@ -47,7 +47,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::updateBounds()
 		 */
-		virtual void updateBounds();
+		virtual void updateClippedBounds();
 
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
@@ -56,10 +56,7 @@ namespace BansheeEngine
 	private:
 		ImageSprite* mImageSprite;
 		IMAGE_SPRITE_DESC mDesc;
-		bool mResizeCursorSet;
 
 		GUIWindowFrame(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
-
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};
 }

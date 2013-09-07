@@ -9,6 +9,7 @@
 #include "BsEngineGUI.h"
 #include "BsGUIWidget.h"
 #include "CmMath.h"
+#include "CmPlatform.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -42,6 +43,8 @@ namespace BansheeEditor
 		mMainLayout->addSpace(3);
 		mMainLayout->addElement(mCloseBtn);
 		mMainArea->getLayout().addSpace(3);
+
+		refreshNonClientAreas();
 	}
 
 	GUITabbedTitleBar::~GUITabbedTitleBar()
@@ -88,6 +91,8 @@ namespace BansheeEditor
 		mMainLayout->insertElement(idx * 2, newDragDropElement);
 
 		mUniqueTabIdx++;
+
+		refreshNonClientAreas();
 	}
 
 	void GUITabbedTitleBar::removeTab(UINT32 idx)
@@ -102,18 +107,24 @@ namespace BansheeEditor
 
 		mTabButtons.erase(mTabButtons.begin() + idx);
 		mDragDropElements.erase(mDragDropElements.begin() + idx);
+
+		refreshNonClientAreas();
 	}
 
 	void GUITabbedTitleBar::setPosition(INT32 x, INT32 y)
 	{
 		mMainArea->setPosition(x, y);
 		mBackgroundArea->setPosition(x, y);
+
+		refreshNonClientAreas();
 	}
 
 	void GUITabbedTitleBar::setSize(UINT32 width, UINT32 height)
 	{
 		mMainArea->setSize(width, height);
 		mBackgroundArea->setSize(width, height);
+
+		refreshNonClientAreas();
 	}
 
 	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx)
@@ -175,5 +186,22 @@ namespace BansheeEditor
 		}
 
 		return -1;
+	}
+
+	void GUITabbedTitleBar::refreshNonClientAreas()
+	{
+		// If the size or contents of the area changed this frame the layout won't be updated yet,
+		// so force the update right away so we get correct element bounds
+		mMainArea->_update();
+
+		CM::Vector<CM::Rect>::type nonClientAreas;
+		for(auto& elem : mDragDropElements)
+		{
+			nonClientAreas.push_back(elem->getBounds());
+		}
+
+		nonClientAreas.push_back(mLastDropElement->getBounds());
+
+		Platform::setCaptionNonClientAreas(*mParentWidget->getOwnerWindow(), nonClientAreas);
 	}
 }

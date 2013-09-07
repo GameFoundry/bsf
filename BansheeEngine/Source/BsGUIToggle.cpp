@@ -243,9 +243,9 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIToggle::updateBounds()
+	void GUIToggle::updateClippedBounds()
 	{
-		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUIToggle::_getOptimalWidth() const

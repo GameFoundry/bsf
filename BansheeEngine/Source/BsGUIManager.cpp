@@ -299,7 +299,7 @@ namespace BansheeEngine
 				UINT32 renderElemIdx = elem.renderElement;
 				UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
-				Rect tfrmedBounds = guiElem->_getBounds();
+				Rect tfrmedBounds = guiElem->_getClippedBounds();
 				tfrmedBounds.transform(guiElem->_getParentWidget().SO()->getWorldTfrm());
 
 				const HMaterial& mat = guiElem->getMaterial(renderElemIdx);

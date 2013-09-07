@@ -15,6 +15,8 @@ namespace BansheeEditor
 		virtual void initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow);
 
 	protected:
+		static const CM::UINT32 RESIZE_BORDER_WIDTH;
+
 		BS::GUIArea* mWindowFrameArea;
 		BS::GUIWindowFrame* mWindowFrame;
 
@@ -22,5 +24,8 @@ namespace BansheeEditor
 
 		virtual bool _mouseEvent(BS::GUIElement* element, const BS::GUIMouseEvent& ev);
 		virtual void ownerWindowFocusChanged();
+		virtual void ownerWindowResized();
+
+		void refreshNonClientAreas() const;
 	};
 }

@@ -60,12 +60,12 @@ namespace BansheeEngine
 
 		void changeParentWidget(GUIWidget* widget);
 
-		CM::UINT32 x() const { return mLeft; }
-		CM::UINT32 y() const { return mTop; }
+		CM::INT32 x() const { return mLeft; }
+		CM::INT32 y() const { return mTop; }
 		CM::UINT32 width() const { return mWidth; }
 		CM::UINT32 height() const { return mHeight; }
 
-		void _update();
+		void _update();		
 	private:
 		friend class GUIWidget;
 
@@ -83,7 +83,6 @@ namespace BansheeEngine
 		GUIArea(GUIWidget* widget, CM::UINT32 x, CM::UINT32 y, CM::UINT16 depth);
 
 		bool isDirty() const;
-
 		void updateSizeBasedOnParent(CM::UINT32 parentWidth, CM::UINT32 parentHeight);
 
 		static void destroyInternal(GUIArea* area);

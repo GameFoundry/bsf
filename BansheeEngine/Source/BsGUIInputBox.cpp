@@ -137,9 +137,9 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIInputBox::updateBounds()
+	void GUIInputBox::updateClippedBounds()
 	{
-		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	Sprite* GUIInputBox::renderElemToSprite(UINT32 renderElemIdx, UINT32& localRenderElemIdx) const

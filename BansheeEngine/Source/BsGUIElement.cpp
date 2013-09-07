@@ -32,7 +32,7 @@ namespace BansheeEngine
 
 	void GUIElement::updateRenderElementsInternal()
 	{
-		updateBounds();
+		updateClippedBounds();
 	}
 
 	void GUIElement::setLayoutOptions(const GUILayoutOptions& layoutOptions) 
@@ -87,7 +87,7 @@ namespace BansheeEngine
 			markMeshAsDirty();
 
 			mOffset = offset;
-			updateBounds();
+			updateClippedBounds();
 		}
 	}
 
@@ -114,7 +114,7 @@ namespace BansheeEngine
 			markMeshAsDirty();
 
 			mClipRect = clipRect; 
-			updateBounds();
+			updateClippedBounds();
 		}
 	}
 
@@ -134,9 +134,14 @@ namespace BansheeEngine
 		GUIElementBase::_changeParentWidget(widget);
 	}
 
+	Rect GUIElement::getBounds() const
+	{
+		return Rect(mOffset.x, mOffset.y, mWidth, mHeight);
+	}
+
 	Rect GUIElement::getVisibleBounds() const
 	{
-		Rect bounds = _getBounds();
+		Rect bounds = _getClippedBounds();
 		
 		bounds.x += mStyle->margins.left;
 		bounds.y += mStyle->margins.top;

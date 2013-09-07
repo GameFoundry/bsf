@@ -25,9 +25,11 @@ namespace BansheeEditor
 		EditorWindowBase();
 		EditorWindowBase(CM::RenderWindowPtr renderWindow);
 
+		CM::RenderWindowPtr mRenderWindow;
 		CM::HSceneObject mSceneObject;
 		BS::HGUIWidget mGUI;
 		BS::HCamera mCamera;
+		CM::GameObjectHandle<WindowFrameWidget> mWindowFrame;
 		bool mOwnsRenderWindow;
 
 		void construct(CM::RenderWindowPtr renderWindow);
@@ -35,7 +37,6 @@ namespace BansheeEditor
 		virtual void movedOrResized() { }
 	private:
 		boost::signals::connection mMoveOrResizeConn;
-		CM::RenderWindowPtr mRenderWindow;
 		
 		void movedOrResized(CM::RenderWindow& renderWindow);
 	};

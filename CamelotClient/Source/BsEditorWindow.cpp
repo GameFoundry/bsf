@@ -11,7 +11,7 @@ namespace BansheeEditor
 		:EditorWindowBase(), mWidgets(cm_new<EditorWidgetContainer>(mGUI.get()))
 	{
 		updateSize();
-
+		
 		mWidgets->onWidgetClosed.connect(boost::bind(&EditorWindow::widgetRemoved, this));
 		mWidgets->onWidgetHidden.connect(boost::bind(&EditorWindow::widgetHidden, this));
 	}

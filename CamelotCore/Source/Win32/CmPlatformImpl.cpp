@@ -15,6 +15,10 @@ namespace CamelotFramework
 	boost::signal<void(RenderWindow*)> Platform::onWindowMovedOrResized;
 	boost::signal<void()> Platform::onMouseCaptureChanged;
 
+	Map<const RenderWindow*, WindowNonClientAreaData>::type Platform::mNonClientAreas;
+
+	CM_STATIC_MUTEX_CLASS_INSTANCE(mSync, Platform);
+
 	struct NativeCursorData::Pimpl
 	{
 		HCURSOR cursor;
@@ -241,6 +245,30 @@ namespace CamelotFramework
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
+	}
+
+	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect>::type& nonClientAreas)
+	{
+		CM_LOCK_MUTEX(mSync);
+
+		mNonClientAreas[&window].moveAreas = nonClientAreas;
+	}
+
+	void Platform::setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>::type& nonClientAreas)
+	{
+		CM_LOCK_MUTEX(mSync);
+
+		mNonClientAreas[&window].resizeAreas = nonClientAreas;
+	}
+
+	void Platform::resetNonClientAreas(const RenderWindow& window)
+	{
+		CM_LOCK_MUTEX(mSync);
+
+		auto iterFind = mNonClientAreas.find(&window);
+
+		if(iterFind != end(mNonClientAreas))
+			mNonClientAreas.erase(iterFind);
 	}
 
 	void Platform::messagePump()

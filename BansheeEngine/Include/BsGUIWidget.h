@@ -77,15 +77,15 @@ namespace BansheeEngine
 
 		void registerArea(GUIArea* area);
 		void unregisterArea(GUIArea* area);
-	private:
-		GUIWidget(const GUIWidget& other) { }
-
-		void updateBounds() const;
 
 		virtual void ownerWindowResized();
 		virtual void ownerWindowFocusChanged();
 
 		virtual void update();
+	private:
+		GUIWidget(const GUIWidget& other) { }
+
+		void updateBounds() const;
 
 		CM::RenderWindow* mOwnerWindow;
 		CM::Viewport* mTarget;

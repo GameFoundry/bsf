@@ -9,5 +9,8 @@ namespace CamelotFramework
 	{
 	public:
 		static LRESULT CALLBACK _win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+	private:
+		static LRESULT translateNonClientAreaType(NonClientAreaBorderType type);
 	};
 }

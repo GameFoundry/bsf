@@ -14,83 +14,6 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	enum class FrameSubArea
-	{
-		TopLeft, TopCenter, TopRight,
-		MiddleLeft, Middle, MiddleRight,
-		BottomLeft, BottomCenter, BottomRight,
-		None
-	};
-
-	FrameSubArea getFrameSubArea(const Int2& position, const Rect& bounds)
-	{
-		INT32 x0 = bounds.x;
-		INT32 x1 = bounds.x + 3;
-		INT32 x2 = bounds.x + bounds.width - 3;
-		INT32 x3 = bounds.x + bounds.width;
-
-		INT32 y0 = bounds.y;
-		INT32 y1 = bounds.y + 3;
-		INT32 y2 = bounds.y + bounds.height - 3;
-		INT32 y3 = bounds.y + bounds.height;
-
-		if(position.x >= x0 && position.x < x1 &&
-			position.y >= y0 && position.y < y1)
-		{
-			return FrameSubArea::TopLeft;
-		}
-
-		if(position.x >= x1 && position.x < x2 &&
-			position.y >= y0 && position.y < y1)
-		{
-			return FrameSubArea::TopCenter;
-		}
-
-		if(position.x >= x2 && position.x < x3 &&
-			position.y >= y0 && position.y < y1)
-		{
-			return FrameSubArea::TopRight;
-		}
-
-		if(position.x >= x0 && position.x < x1 &&
-			position.y >= y1 && position.y < y2)
-		{
-			return FrameSubArea::MiddleLeft;
-		}
-
-		if(position.x >= x1 && position.x < x2 &&
-			position.y >= y1 && position.y < y2)
-		{
-			return FrameSubArea::Middle;
-		}
-
-		if(position.x >= x2 && position.x < x3 &&
-			position.y >= y1 && position.y < y2)
-		{
-			return FrameSubArea::MiddleRight;
-		}
-
-		if(position.x >= x0 && position.x < x1 &&
-			position.y >= y2 && position.y < y3)
-		{
-			return FrameSubArea::BottomLeft;
-		}
-
-		if(position.x >= x1 && position.x < x2 &&
-			position.y >= y2 && position.y < y3)
-		{
-			return FrameSubArea::BottomCenter;
-		}
-
-		if(position.x >= x2 && position.x < x3 &&
-			position.y >= y2 && position.y < y3)
-		{
-			return FrameSubArea::BottomRight;
-		}
-
-		return FrameSubArea::None;
-	}
-
 	const String& GUIWindowFrame::getGUITypeName()
 	{
 		static String name = "WindowFrame";
@@ -98,7 +21,7 @@ namespace BansheeEngine
 	}
 
 	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions, false), mResizeCursorSet(false)
+		:GUIElement(parent, style, layoutOptions, false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
@@ -167,9 +90,9 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIWindowFrame::updateBounds()
+	void GUIWindowFrame::updateClippedBounds()
 	{
-		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUIWindowFrame::_getOptimalWidth() const
@@ -194,15 +117,6 @@ namespace BansheeEngine
 
 	bool GUIWindowFrame::_isInBounds(const CM::Int2 position) const
 	{
-		Rect contentBounds = getVisibleBounds();
-
-		if(!contentBounds.contains(position))
-			return false;
-
-		FrameSubArea subArea = getFrameSubArea(position, contentBounds);
-		if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)
-			return true;
-
 		return false;
 	}
 
@@ -220,104 +134,5 @@ namespace BansheeEngine
 			mDesc.texture = mStyle->normal.texture;
 
 		markContentAsDirty();
-	}
-
-	bool GUIWindowFrame::mouseEvent(const GUIMouseEvent& ev)
-	{
-		if(ev.getType() == GUIMouseEventType::MouseMove || ev.getType() == GUIMouseEventType::MouseDrag)
-		{
-			Rect contentBounds = getVisibleBounds();
-
-			FrameSubArea subArea = getFrameSubArea(ev.getPosition(), contentBounds);
-			if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)
-			{
-				switch (subArea)
-				{
-				case BansheeEngine::FrameSubArea::TopLeft:
-					Platform::setCursor(CursorType::SizeNWSE);
-					break;
-				case BansheeEngine::FrameSubArea::TopCenter:
-					Platform::setCursor(CursorType::SizeNS);
-					break;
-				case BansheeEngine::FrameSubArea::TopRight:
-					Platform::setCursor(CursorType::SizeNESW);
-					break;
-				case BansheeEngine::FrameSubArea::MiddleLeft:
-					Platform::setCursor(CursorType::SizeWE);
-					break;
-				case BansheeEngine::FrameSubArea::MiddleRight:
-					Platform::setCursor(CursorType::SizeWE);
-					break;
-				case BansheeEngine::FrameSubArea::BottomLeft:
-					Platform::setCursor(CursorType::SizeNESW);
-					break;
-				case BansheeEngine::FrameSubArea::BottomCenter:
-					Platform::setCursor(CursorType::SizeNS);
-					break;
-				case BansheeEngine::FrameSubArea::BottomRight:
-					Platform::setCursor(CursorType::SizeNWSE);
-					break;
-				}
-
-				mResizeCursorSet = true;
-
-				return true;
-			}
-		}
-
-		if(ev.getType() == GUIMouseEventType::MouseDown)
-		{
-			Rect contentBounds = getVisibleBounds();
-
-			FrameSubArea subArea = getFrameSubArea(ev.getPosition(), contentBounds);
-			if(subArea != FrameSubArea::None && subArea != FrameSubArea::Middle)
-			{
-				RenderWindow* window = _getParentWidget().getOwnerWindow();
-				RenderWindowPtr windowPtr = std::static_pointer_cast<RenderWindow>(window->getThisPtr());
-
-				switch (subArea)
-				{
-				case BansheeEngine::FrameSubArea::TopLeft:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::TopLeft);
-					break;
-				case BansheeEngine::FrameSubArea::TopCenter:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::Top);
-					break;
-				case BansheeEngine::FrameSubArea::TopRight:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::TopRight);
-					break;
-				case BansheeEngine::FrameSubArea::MiddleLeft:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::Left);
-					break;
-				case BansheeEngine::FrameSubArea::MiddleRight:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::Right);
-					break;
-				case BansheeEngine::FrameSubArea::BottomLeft:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::BottomLeft);
-					break;
-				case BansheeEngine::FrameSubArea::BottomCenter:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::Bottom);
-					break;
-				case BansheeEngine::FrameSubArea::BottomRight:
-					gMainCA().startResize(windowPtr, WindowResizeDirection::BottomRight);
-					break;
-				}
-
-				return true;
-			}
-		}
-
-		if(ev.getType() == GUIMouseEventType::MouseOut || ev.getType() == GUIMouseEventType::MouseDragEnd)
-		{
-			if(mResizeCursorSet)
-			{
-				Platform::setCursor(CursorType::Arrow);
-				mResizeCursorSet = false;
-
-				return true;
-			}
-		}
-
-		return false;
 	}
 }

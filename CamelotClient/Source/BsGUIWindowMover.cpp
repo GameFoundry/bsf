@@ -89,9 +89,9 @@ namespace BansheeEditor
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIWindowMover::updateBounds()
+	void GUIWindowMover::updateClippedBounds()
 	{
-		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUIWindowMover::_getOptimalWidth() const
@@ -132,16 +132,7 @@ namespace BansheeEditor
 
 	bool GUIWindowMover::mouseEvent(const GUIMouseEvent& ev)
 	{
-		if(ev.getType() == GUIMouseEventType::MouseDown)
-		{
-			RenderWindow* window = _getParentWidget().getOwnerWindow();
-			RenderWindowPtr windowPtr = std::static_pointer_cast<RenderWindow>(window->getThisPtr());
-
-			gMainCA().startMove(windowPtr);
-
-			return true;
-		}
-		else if(ev.getType() == GUIMouseEventType::MouseDragAndDropDropped)
+		if(ev.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{
 			if(!onDraggedItemDropped.empty())
 				onDraggedItemDropped();

@@ -162,9 +162,9 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUITexture::updateBounds()
+	void GUITexture::updateClippedBounds()
 	{
-		mBounds = mImageSprite->getBounds(mOffset, mClipRect);
+		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUITexture::_getOptimalWidth() const

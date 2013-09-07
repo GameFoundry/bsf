@@ -17,6 +17,30 @@ namespace CamelotFramework
 
 		Pimpl* data;
 	};
+	
+	enum class NonClientAreaBorderType
+	{
+		TopLeft,
+		Top,
+		TopRight,
+		Left,
+		Right,
+		BottomLeft,
+		Bottom,
+		BottomRight	
+	};
+
+	struct CM_EXPORT NonClientResizeArea
+	{
+		NonClientAreaBorderType type;
+		Rect area;
+	};
+
+	struct CM_EXPORT WindowNonClientAreaData
+	{
+		Vector<NonClientResizeArea>::type resizeAreas;
+		Vector<Rect>::type moveAreas;
+	};
 
 	/**
 	 * @brief	Provides access for version Windows operating system functions, including
@@ -30,23 +54,108 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Moves the cursor to the specified screen position.
+		 * 			
+		 * @note	Thread safe. 
 		 */
 		static void setCursorPosition(const Int2& screenPos);
 
+		/**
+		 * @brief	Capture mouse to this window so that we get mouse input even if the mouse leaves the window area.
+		 *
+		 * @note	Thread safe.
+		 */
 		static void captureMouse(const RenderWindow& window);
+		/**
+		 * @brief	Releases the mouse capture set by "captureMouse"
+		 * 			
+		 * @note	Thread safe.
+		 */
 		static void releaseMouseCapture();
 
+		/**
+		 * @brief	Limit cursor movement to the specified window.
+		 *
+		 * @note	Thread safe.
+		 */
 		static void clipCursorToWindow(const RenderWindow& window);
+		/**
+		 * @brief	Clip cursor to specific area on the screen.
+		 *
+		 * @note	Thread safe.
+		 */
 		static void clipCursorToRect(const Rect& screenRect);
+		/**
+		 * @brief	Disables cursor clipping.
+		 * 			
+		 * @note	Thread safe.
+		 */
 		static void clipCursorDisable();
 
+		/**
+		 * @brief	Hides the cursor.
+		 * 			
+		 * @note	Thread safe.
+		 */
 		static void hideCursor();
+		/**
+		 * @brief	Shows the cursor.
+		 * 			
+		 * @note	Thread safe.
+		 */
 		static void showCursor();
 
+		/**
+		 * @brief	Query if the cursor is hidden.
+		 *
+		 * @note	Thread safe.
+		 */
 		static bool isCursorHidden() { return mIsCursorHidden; }
 		
+		/**
+		 * @brief	Sets a cursor icon. Uses built-in platform cursor types.
+		 *
+		 * @note	Thread safe.
+		 */
 		static void setCursor(CursorType type);
+		/**
+		 * @brief	Sets a cursor using a custom image.
+		 *
+		 * @param 	pixelData	Cursor image data.
+		 * @param	hotSpot		Offset on the cursor image to where the actual input happens (e.g. tip of the Arrow cursor).
+		 * 						
+		 * @note	Thread safe.
+		 */
 		static void setCustomCursor(PixelData& pixelData, const Int2& hotSpot);
+
+		/**
+		 * @brief	Sets custom caption non client areas for the specified window. Using custom client
+		 * 			areas will override window move/drag operation and trigger when user interacts
+		 * 			with the custom area.
+		 * 			
+		 * @note	Thread safe.
+		 * 			All provided areas are relative to the specified window.
+		 * 			Mostly useful for frameless windows that don't have typical caption bar.
+		 */
+		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect>::type& nonClientAreas);
+
+		/**
+		 * @brief	Sets custom non client areas for the specified window. Using custom client
+		 * 			areas will override window resize operation and trigger when user interacts
+		 * 			with the custom area.
+		 * 			
+		 * @note	Thread safe.
+		 * 			All provided areas are relative to the specified window.
+		 * 			Mostly useful for frameless windows that don't have typical border.
+		 */
+		static void setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>::type& nonClientAreas);
+
+		/**
+		 * @brief	Resets the non client areas for the specified windows and allows 
+		 * 			the platform to use the default values.
+		 * 			
+		 * @note	Thread safe.
+		 */
+		static void resetNonClientAreas(const RenderWindow& window);
 
 		/**
 		 * @brief	Message pump. Processes OS messages and returns when it's free.
@@ -68,6 +177,9 @@ namespace CamelotFramework
 		static bool mIsCursorHidden;
 		static NativeCursorData mCursor;
 		static bool mUsingCustomCursor;
+		static Map<const RenderWindow*, WindowNonClientAreaData>::type mNonClientAreas;
+
+		CM_STATIC_MUTEX(mSync);
 
 		static void win32ShowCursor();
 		static void win32HideCursor();

@@ -13,11 +13,6 @@
 
 namespace CamelotFramework
 {
-	void HACK_SendLMBUpEvent()
-	{
-		gInput().simulateButtonUp(BC_MOUSE_LEFT);
-	}
-
 	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc,D3D11Device& device, IDXGIFactory* DXGIFactory)
 		: RenderWindow(desc)
 		, mDevice(device)
@@ -549,65 +544,6 @@ namespace CamelotFramework
 
 		ClientToScreen(mHWnd, &pos);
 		return Int2(pos.x, pos.y);
-	}
-
-
-	void D3D11RenderWindow::startResize(WindowResizeDirection direction)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		WPARAM dir = HTLEFT;
-		switch(direction)
-		{
-		case WindowResizeDirection::Left:
-			dir = HTLEFT;
-			break;
-		case WindowResizeDirection::TopLeft:
-			dir = HTTOPLEFT;
-			break;
-		case WindowResizeDirection::Top:
-			dir = HTTOP;
-			break;
-		case WindowResizeDirection::TopRight:
-			dir = HTTOPRIGHT;
-			break;
-		case WindowResizeDirection::Right:
-			dir = HTRIGHT;
-			break;
-		case WindowResizeDirection::BottomRight:
-			dir = HTBOTTOMRIGHT;
-			break;
-		case WindowResizeDirection::Bottom:
-			dir = HTBOTTOM;
-			break;
-		case WindowResizeDirection::BottomLeft:
-			dir = HTBOTTOMLEFT;
-			break;
-		}
-
-		SendMessage(mHWnd, WM_SYSCOMMAND, SC_SIZE + 8, 0 );
-		//SetCapture(mHWnd);
-		//SendMessage(mHWnd, WM_NCLBUTTONDOWN, dir, 0);
-		HACK_SendLMBUpEvent();
-		//ReleaseCapture();
-	}
-
-	void D3D11RenderWindow::endResize()
-	{
-
-	}
-
-	void D3D11RenderWindow::startMove()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		SendMessage(mHWnd, WM_NCLBUTTONDOWN, HTCAPTION, 0);
-		HACK_SendLMBUpEvent();
-	}
-
-	void D3D11RenderWindow::endMove()
-	{
-
 	}
 
 	void D3D11RenderWindow::_windowMovedOrResized()

@@ -81,7 +81,37 @@ namespace CamelotFramework
 			if(isCursorHidden())
 				win32HideCursor();
 			else
+			{
+				switch (LOWORD(lParam))
+				{
+				case HTTOPLEFT:
+					SetCursor(LoadCursor(0, IDC_SIZENWSE));
+					return 0;
+				case HTTOP:
+					SetCursor(LoadCursor(0, IDC_SIZENS));
+					return 0;
+				case HTTOPRIGHT:
+					SetCursor(LoadCursor(0, IDC_SIZENESW));
+					return 0;
+				case HTLEFT:
+					SetCursor(LoadCursor(0, IDC_SIZEWE));
+					return 0;
+				case HTRIGHT:
+					SetCursor(LoadCursor(0, IDC_SIZEWE));
+					return 0;
+				case HTBOTTOMLEFT:
+					SetCursor(LoadCursor(0, IDC_SIZENESW));
+					return 0;
+				case HTBOTTOM:
+					SetCursor(LoadCursor(0, IDC_SIZENS));
+					return 0;
+				case HTBOTTOMRIGHT:
+					SetCursor(LoadCursor(0, IDC_SIZENWSE));
+					return 0;
+				}
+
 				win32ShowCursor();
+			}
 			return true;
 		case WM_GETMINMAXINFO:
 			// Prevent the window from going smaller than some minimu size
@@ -95,13 +125,37 @@ namespace CamelotFramework
 
 				return 0;
 			}
-		case WM_NCLBUTTONUP:
+		case WM_NCHITTEST:
 			{
-				break;
-			}
-		case WM_LBUTTONUP:
-			{
-				break;
+				auto iterFind = mNonClientAreas.find(win);
+				if(iterFind == mNonClientAreas.end())
+					break;
+
+				POINT mousePos;
+				mousePos.x = GET_X_LPARAM(lParam);
+				mousePos.y = GET_Y_LPARAM(lParam); 
+
+				ScreenToClient(hWnd, &mousePos);
+
+				Int2 mousePosInt;
+				mousePosInt.x = mousePos.x;
+				mousePosInt.y = mousePos.y;
+
+				Vector<NonClientResizeArea>::type& resizeAreasPerWindow = iterFind->second.resizeAreas;
+				for(auto area : resizeAreasPerWindow)
+				{
+					if(area.area.contains(mousePosInt))
+						return translateNonClientAreaType(area.type);
+				}
+
+				Vector<Rect>::type& moveAreasPerWindow = iterFind->second.moveAreas;
+				for(auto area : moveAreasPerWindow)
+				{
+					if(area.contains(mousePosInt))
+						return HTCAPTION;
+				}
+
+				return HTCLIENT;
 			}
 		case WM_MOUSEMOVE:
 			{
@@ -191,5 +245,39 @@ namespace CamelotFramework
 		}
 
 		return DefWindowProc( hWnd, uMsg, wParam, lParam );
+	}
+
+	LRESULT PlatformWndProc::translateNonClientAreaType(NonClientAreaBorderType type)
+	{
+		LRESULT dir = HTCLIENT;
+		switch(type)
+		{
+		case NonClientAreaBorderType::Left:
+			dir = HTLEFT;
+			break;
+		case NonClientAreaBorderType::TopLeft:
+			dir = HTTOPLEFT;
+			break;
+		case NonClientAreaBorderType::Top:
+			dir = HTTOP;
+			break;
+		case NonClientAreaBorderType::TopRight:
+			dir = HTTOPRIGHT;
+			break;
+		case NonClientAreaBorderType::Right:
+			dir = HTRIGHT;
+			break;
+		case NonClientAreaBorderType::BottomRight:
+			dir = HTBOTTOMRIGHT;
+			break;
+		case NonClientAreaBorderType::Bottom:
+			dir = HTBOTTOM;
+			break;
+		case NonClientAreaBorderType::BottomLeft:
+			dir = HTBOTTOMLEFT;
+			break;
+		}
+
+		return dir;
 	}
 }

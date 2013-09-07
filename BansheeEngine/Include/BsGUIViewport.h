@@ -51,7 +51,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::updateBounds()
 		 */
-		virtual void updateBounds();
+		virtual void updateClippedBounds();
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()

@@ -252,26 +252,6 @@ namespace CamelotFramework
 			mCommandQueue->queue(boost::bind(&RenderWindow::move, renderWindow.get(), left, top));
 		}
 
-		void startResize(RenderWindowPtr& renderWindow, WindowResizeDirection direction)
-		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::startResize, renderWindow.get(), direction));
-		}
-
-		void endResize(RenderWindowPtr& renderWindow)
-		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::endResize, renderWindow.get()));
-		}
-
-		void startMove(RenderWindowPtr& renderWindow)
-		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::startMove, renderWindow.get()));
-		}
-
-		void endMove(RenderWindowPtr& renderWindow)
-		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::endMove, renderWindow.get()));
-		}
-
 		void hideWindow(RenderWindowPtr& renderWindow)
 		{
 			mCommandQueue->queue(boost::bind(&RenderWindow::setHidden, renderWindow.get(), true));

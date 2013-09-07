@@ -53,9 +53,9 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUILabel::updateBounds()
+	void GUILabel::updateClippedBounds()
 	{
-		mBounds = mTextSprite->getBounds(mOffset, mClipRect);
+		mClippedBounds = mTextSprite->getBounds(mOffset, mClipRect);
 	}
 
 	UINT32 GUILabel::_getOptimalWidth() const

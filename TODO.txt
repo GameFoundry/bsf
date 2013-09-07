@@ -6,8 +6,6 @@ MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to Gpu
   - When fixed, make sure I remove blocking calls after writeSubresource where they're not needed (GUIManager for example)
 I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will be extremely slow.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
- - Resizing from the top doesn't work
- - Resizing from the left actually resizes the right side
  - BansheeApplication should probably derive from Camlelot application. Right now user needs to know the difference between 
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 

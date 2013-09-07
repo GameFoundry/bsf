@@ -75,12 +75,6 @@ namespace CamelotFramework
 		 */
 		bool requiresTextureFlipping() const { return false; }
 
-		void startResize(WindowResizeDirection direction);
-		void endResize();
-
-		void startMove();
-		void endMove();
-
 		void _windowMovedOrResized();
 
 		DXGI_SWAP_CHAIN_DESC* _getPresentationParameters(void) { return &mSwapChainDesc; }

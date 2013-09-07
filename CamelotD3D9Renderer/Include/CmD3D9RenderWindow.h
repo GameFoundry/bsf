@@ -108,12 +108,6 @@ namespace CamelotFramework
 		 */
 		Int2 windowToScreenPos(const Int2& windowPos) const;
 
-		void startResize(WindowResizeDirection direction);
-		void endResize();
-
-		void startMove();
-		void endMove();
-
 		/**
 		 * @copydoc RenderWindow::_windowMovedOrResized
 		 */

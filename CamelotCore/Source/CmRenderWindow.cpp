@@ -29,6 +29,7 @@ THE SOFTWARE.
 #include "CmCoreThread.h"
 #include "CmRenderWindowManager.h"
 #include "CmViewport.h"
+#include "CmPlatform.h"
 
 namespace CamelotFramework 
 {
@@ -77,6 +78,8 @@ namespace CamelotFramework
 
 	void RenderWindow::destroy()
 	{
+		Platform::resetNonClientAreas(*this);
+
 		RenderWindowManager::instance().windowDestroyed(this);
 
 		RenderTarget::destroy();

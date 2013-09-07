@@ -74,6 +74,11 @@ namespace BansheeEngine
 		 */
 		void updateRenderElements();
 
+		/**
+		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
+		 */
+		CM::Rect getBounds() const;
+
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool keyEvent(const GUIKeyEvent& ev);
 		virtual bool commandEvent(const GUICommandEvent& ev);
@@ -100,7 +105,7 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
 		Type _getType() const { return GUIElementBase::Type::Element; }
 
-		const CM::Rect& _getBounds() const { return mBounds; }
+		const CM::Rect& _getClippedBounds() const { return mClippedBounds; }
 		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return *mParent; }
 		virtual bool _isInBounds(const CM::Int2 position) const;
@@ -121,7 +126,7 @@ namespace BansheeEngine
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 	protected:
 		virtual void updateRenderElementsInternal();
-		virtual void updateBounds() = 0;
+		virtual void updateClippedBounds() = 0;
 
 		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
 		
@@ -133,7 +138,7 @@ namespace BansheeEngine
 
 		GUIWidget* mParent;
 		GUILayoutOptions mLayoutOptions;
-		CM::Rect mBounds;
+		CM::Rect mClippedBounds;
 
 		bool mAcceptsKeyboardFocus;
 		CM::UINT32 mDepth;
