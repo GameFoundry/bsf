@@ -33,7 +33,6 @@ namespace BansheeEngine
 	class GUIButton;
 	class GUITexture;
 	class GUIToggle;
-	class GUIWindowFrame;
 	class GUIInputBox;
 	class GUIScrollBarHandle;
 	class GUIScrollBarVert;

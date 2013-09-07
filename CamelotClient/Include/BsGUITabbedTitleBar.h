@@ -23,7 +23,7 @@ namespace BansheeEditor
 		boost::signal<void(CM::UINT32)> onTabDraggedOff;
 		boost::signal<void(CM::UINT32)> onTabDraggedOn;
 	protected:
-		CM::Vector<GUIWindowMover*>::type mDragDropElements;
+		CM::Vector<GUIWindowDropArea*>::type mDragDropElements;
 		CM::Vector<GUITabButton*>::type mTabButtons;
 
 		CM::UINT32 mUniqueTabIdx;
@@ -34,7 +34,7 @@ namespace BansheeEditor
 		BS::GUILayout* mMainLayout;
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
-		GUIWindowMover* mLastDropElement;
+		GUIWindowDropArea* mLastDropElement;
 
 		void tabToggled(CM::UINT32 tabIdx);
 		void tabClosed();

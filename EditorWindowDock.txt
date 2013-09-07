@@ -6,11 +6,9 @@ Fix an issue where drag and dropping a window for the second times causes an exc
 Add highlight to WindowMover so I can know when I'm mousing over it with a dragged window in hand
 Ensure that dropping a window onto a mover will actually dock it properly
 
-Change WindowMover to GUIToggle since move functionality has been removed from it.
-
-Actually set up client areas for resize and move
- - Figure out how to deal with Cursor change in WindowFrame and non-client areas (which will likely be done in a parent class)
-   - Possibly add two different types of client areas, for move and resize. Then I can keep resize in WindowFrame and keep move in TitleBar.
+Moving a cursor to a non-client area doesn't seem to refresh the GUIElements properly. They are handled as if I was mousing over them.
+I still have the issue where GUIManager hack code got triggered
+Get rid of WIndowMover and WindowFrame!! (Change them to GUIToggle and GUITexture)
 
 Get rid of the GUIManager mouseUp hack when I ensure resize/move using non client areas work
 

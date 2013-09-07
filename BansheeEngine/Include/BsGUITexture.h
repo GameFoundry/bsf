@@ -26,7 +26,12 @@ namespace BansheeEngine
 		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
 		static GUITexture* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
 	protected:
-		~GUITexture();
+		ImageSprite* mImageSprite;
+		IMAGE_SPRITE_DESC mDesc;
+		GUIImageScaleMode mScaleMode;
+
+		GUITexture(GUIWidget& parent, const GUIElementStyle* style, const SpriteTexturePtr& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
+		virtual ~GUITexture();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
@@ -61,12 +66,5 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getOptimalWidth() const;
 		virtual CM::UINT32 _getOptimalHeight() const;
-
-	private:
-		ImageSprite* mImageSprite;
-		IMAGE_SPRITE_DESC mDesc;
-		GUIImageScaleMode mScaleMode;
-
-		GUITexture(GUIWidget& parent, const GUIElementStyle* style, const SpriteTexturePtr& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
 	};
 }

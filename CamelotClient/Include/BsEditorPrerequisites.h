@@ -11,7 +11,8 @@ namespace BansheeEditor
 	class EditorWidgetContainer;
 	class GUITabbedTitleBar;
 	class GUITabButton;
-	class GUIWindowMover;
+	class GUIWindowDropArea;
+	class GUIWindowFrame;
 	class EditorWindowManager;
 	class DockManager;
 	class MainEditorWindow;

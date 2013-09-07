@@ -75,7 +75,10 @@
     <ClInclude Include="Include\BsGUITabButton.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIWindowMover.h">
+    <ClInclude Include="Include\BsGUIWindowDropArea.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIWindowFrame.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
   </ItemGroup>
@@ -128,7 +131,10 @@
     <ClCompile Include="Source\BsGUITabButton.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIWindowMover.cpp">
+    <ClCompile Include="Source\BsGUIWindowDropArea.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIWindowFrame.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

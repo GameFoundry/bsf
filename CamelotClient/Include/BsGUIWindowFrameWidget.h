@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsEditorPrerequisites.h"
 #include "BsGUIWidget.h"
 #include <boost/signal.hpp>
 
@@ -18,7 +18,7 @@ namespace BansheeEditor
 		static const CM::UINT32 RESIZE_BORDER_WIDTH;
 
 		BS::GUIArea* mWindowFrameArea;
-		BS::GUIWindowFrame* mWindowFrame;
+		GUIWindowFrame* mWindowFrame;
 
 		virtual void update();
 

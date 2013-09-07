@@ -264,8 +264,9 @@
     <ClInclude Include="Include\BsEditorWindowManager.h" />
     <ClInclude Include="Include\BsGUITabbedTitleBar.h" />
     <ClInclude Include="Include\BsGUITabButton.h" />
+    <ClInclude Include="Include\BsGUIWindowFrame.h" />
     <ClInclude Include="Include\BsGUIWindowFrameWidget.h" />
-    <ClInclude Include="Include\BsGUIWindowMover.h" />
+    <ClInclude Include="Include\BsGUIWindowDropArea.h" />
     <ClInclude Include="Include\BsMainEditorWindow.h" />
     <ClInclude Include="Include\CmDebugCamera.h" />
     <ClInclude Include="Include\CmTestTextSprite.h" />
@@ -284,8 +285,9 @@
     <ClCompile Include="Source\BsEditorWindowManager.cpp" />
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUITabButton.cpp" />
+    <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
-    <ClCompile Include="Source\BsGUIWindowMover.cpp" />
+    <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
     <ClCompile Include="Source\CmDebugCamera.cpp" />
     <ClCompile Include="Source\CmTestTextSprite.cpp" />
