@@ -31,13 +31,11 @@ namespace BansheeEngine
 
 		struct WidgetInfo
 		{
-			WidgetInfo(GUIWidget* _widget, const boost::signals::connection& _onAddedConn, const boost::signals::connection& _onRemovedConn)
-				:widget(_widget), onAddedConn(_onAddedConn), onRemovedConn(_onRemovedConn)
+			WidgetInfo(GUIWidget* _widget)
+				:widget(_widget)
 			{ }
 
 			GUIWidget* widget;
-			boost::signals::connection onAddedConn;
-			boost::signals::connection onRemovedConn;
 		};
 
 	public:
@@ -49,6 +47,8 @@ namespace BansheeEngine
 
 		void update();
 		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
+
+		void queueForDestroy(GUIElement* element);
 
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
 		void setTextSelectionColor(const CM::Color& color) { mTextSelectionColor = color; updateTextSelectionTexture(); }
@@ -64,6 +64,8 @@ namespace BansheeEngine
 	private:
 		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
+
+		CM::Stack<GUIElement*>::type mScheduledForDestruction;
 
 		// Element and widget mouse is currently over
 		GUIWidget* mMouseOverWidget;
@@ -111,6 +113,7 @@ namespace BansheeEngine
 		void updateMeshes();
 		void updateCaretTexture();
 		void updateTextSelectionTexture();
+		void processDestroyQueue();
 
 		void onButtonDown(const CM::ButtonEvent& event);
 		void onButtonUp(const CM::ButtonEvent& event);
@@ -123,9 +126,6 @@ namespace BansheeEngine
 		void onWindowFocusGained(CM::RenderWindow& win);
 		void onWindowFocusLost(CM::RenderWindow& win);
 		void onWindowMovedOrResized(CM::RenderWindow& win);
-
-		void onGUIElementAddedToWidget(GUIWidget* widget, GUIElement* element);
-		void onGUIElementRemovedFromWidget(GUIWidget* widget, GUIElement* element);
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;

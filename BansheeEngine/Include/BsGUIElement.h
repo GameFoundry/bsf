@@ -104,6 +104,7 @@ namespace BansheeEngine
 		CM::Int2 _getOffset() const { return mOffset; }
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
 		Type _getType() const { return GUIElementBase::Type::Element; }
+		bool _isDestroyed() const { return mIsDestroyed; }
 
 		const CM::Rect& _getClippedBounds() const { return mClippedBounds; }
 		CM::UINT32 _getDepth() const { return mDepth; }
@@ -137,6 +138,7 @@ namespace BansheeEngine
 		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);
 
 		GUIWidget* mParent;
+		bool mIsDestroyed;
 		GUILayoutOptions mLayoutOptions;
 		CM::Rect mClippedBounds;
 

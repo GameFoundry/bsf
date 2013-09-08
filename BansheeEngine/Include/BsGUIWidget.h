@@ -57,13 +57,6 @@ namespace BansheeEngine
 		 * 			must be a child of this widget.
 		 */
 		virtual bool _keyEvent(GUIElement* element, const GUIKeyEvent& ev);
-
-		// Note: These are shared_ptrs because of boosts non_copyable limitation on signals
-		// (which triggers a compile error although the copy constructor is private and I don't make any copies.
-		// Presumably containers like vector or map trigger it). So instead of keeping signals by value
-		// I use a shared_ptr.
-		std::shared_ptr<boost::signal<void(GUIElement*)>> onElementAdded;
-		std::shared_ptr<boost::signal<void(GUIElement*)>> onElementRemoved;
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;

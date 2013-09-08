@@ -100,10 +100,7 @@ namespace BansheeEngine
 
 	void GUIManager::registerWidget(GUIWidget* widget)
 	{
-		boost::signals::connection onElementAddedConn = widget->onElementAdded->connect(boost::bind(&GUIManager::onGUIElementAddedToWidget, this, widget, _1));
-		boost::signals::connection onElementRemovedConn = widget->onElementRemoved->connect(boost::bind(&GUIManager::onGUIElementRemovedFromWidget, this, widget, _1));
-
-		mWidgets.push_back(WidgetInfo(widget, onElementAddedConn, onElementRemovedConn));
+		mWidgets.push_back(WidgetInfo(widget));
 
 		const Viewport* renderTarget = widget->getTarget();
 
@@ -123,8 +120,6 @@ namespace BansheeEngine
 
 		if(findIter != end(mWidgets))
 		{
-			findIter->onAddedConn.disconnect();
-			findIter->onRemovedConn.disconnect();
 			mWidgets.erase(findIter);
 		}
 
@@ -186,6 +181,26 @@ namespace BansheeEngine
 		}
 
 		updateMeshes();
+
+		if(mMouseOverElement != nullptr && mMouseOverElement->_isDestroyed())
+		{
+			mMouseOverElement = nullptr;
+			mMouseOverWidget = nullptr;
+		}
+
+		if(mActiveElement != nullptr && mActiveElement->_isDestroyed())
+		{
+			mActiveElement = nullptr;
+			mActiveWidget = nullptr;
+		}
+
+		if(mKeyboardFocusElement != nullptr && mKeyboardFocusElement->_isDestroyed())
+		{
+			mKeyboardFocusElement = nullptr;
+			mKeyboardFocusWidget = nullptr;
+		}
+
+		processDestroyQueue();
 	}
 
 	void GUIManager::render(ViewportPtr& target, CM::RenderQueue& renderQueue) const
@@ -890,30 +905,18 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::onGUIElementRemovedFromWidget(GUIWidget* widget, GUIElement* element)
+	void GUIManager::queueForDestroy(GUIElement* element)
 	{
-		if(mMouseOverElement == element)
-		{
-			mMouseOverElement = nullptr;
-			mMouseOverWidget = nullptr;
-		}
-
-		if(mActiveElement == element)
-		{
-			mActiveElement = nullptr;
-			mActiveWidget = nullptr;
-		}
-
-		if(mKeyboardFocusElement == element)
-		{
-			mKeyboardFocusElement = nullptr;
-			mKeyboardFocusWidget = nullptr;
-		}
+		mScheduledForDestruction.push(element);
 	}
 
-	void GUIManager::onGUIElementAddedToWidget(GUIWidget* widget, GUIElement* element)
+	void GUIManager::processDestroyQueue()
 	{
-
+		while(!mScheduledForDestruction.empty())
+		{
+			cm_delete<PoolAlloc>(mScheduledForDestruction.top());
+			mScheduledForDestruction.pop();
+		}
 	}
 
 	GUIMouseButton GUIManager::buttonToMouseButton(ButtonCode code) const

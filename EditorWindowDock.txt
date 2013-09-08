@@ -8,7 +8,6 @@ Ensure that dropping a window onto a mover will actually dock it properly
 
 Moving a cursor to a non-client area doesn't seem to refresh the GUIElements properly. They are handled as if I was mousing over them.
 I still have the issue where GUIManager hack code got triggered
-Get rid of WIndowMover and WindowFrame!! (Change them to GUIToggle and GUITexture)
 
 Get rid of the GUIManager mouseUp hack when I ensure resize/move using non client areas work
 

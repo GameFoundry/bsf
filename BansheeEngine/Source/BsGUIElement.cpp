@@ -2,6 +2,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
+#include "BsGUIManager.h"
 #include "CmException.h"
 
 using namespace CamelotFramework;
@@ -10,7 +11,7 @@ namespace BansheeEngine
 {
 	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus)
 		:mParent(&parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
-		mAcceptsKeyboardFocus(acceptsKeyboardFocus)
+		mAcceptsKeyboardFocus(acceptsKeyboardFocus), mIsDestroyed(false)
 	{
 		mParent->registerElement(this);
 	}
@@ -209,8 +210,8 @@ namespace BansheeEngine
 		if(element->mParent != nullptr)
 			element->mParent->unregisterElement(element);
 
-		// Destroy at beginning of next frame, because we can't be sure that something isn't currently referencing
-		// this element (e..g GUIManager)
-		deferredCall(std::bind(&cm_delete<PoolAlloc, GUIElement>, element));
+		element->mIsDestroyed = true;
+
+		GUIManager::instance().queueForDestroy(element);
 	}
 }
