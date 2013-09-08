@@ -1,22 +1,14 @@
 Add icons to drag and drop - There's a built-in windows icon for this. I think. Although solution that accepts custom cursors is probably better longterm. (Special class BuiltinCursors?)
  - Drag and drop manager currently ignores the provided icon, but it should use it as a cursor
 
-Fix an issue where drag and dropping a window for the second times causes an exception
-
 Add highlight to WindowMover so I can know when I'm mousing over it with a dragged window in hand
-Ensure that dropping a window onto a mover will actually dock it properly
+Ensure that dropping a window onto a mover will actually docks it properly
 
 Moving a cursor to a non-client area doesn't seem to refresh the GUIElements properly. They are handled as if I was mousing over them.
 I still have the issue where GUIManager hack code got triggered
-
 Get rid of the GUIManager mouseUp hack when I ensure resize/move using non client areas work
 
 Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
-
-GUIViewport:
- - TODO - GUIViewport updateRenderElementsInternal only gets called when contents change, but viewport should update even if 
-    only its offset changes (normally that just marks the mesh as modified, which doesn't result in a call to updateRenderElementsInternal)
-	- UPDATE: I don't use GUIViewport anymore
 
 ------------------------
 
@@ -24,3 +16,11 @@ Other things to remember:
  - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
  - A way to persist window states
  - Also a way to reset all widgets to original locations
+
+Will destroying a GUIWidget properly schedule destruction? (i.e. so it won't be destroyed mid-frame)
+ - I will probably need to add deferred destroy to Components and SceneObjects as well
+
+GUIViewport:
+ - TODO - GUIViewport updateRenderElementsInternal only gets called when contents change, but viewport should update even if 
+    only its offset changes (normally that just marks the mesh as modified, which doesn't result in a call to updateRenderElementsInternal)
+	- UPDATE: I don't use GUIViewport anymore

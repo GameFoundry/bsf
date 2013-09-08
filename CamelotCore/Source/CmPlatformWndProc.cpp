@@ -157,6 +157,7 @@ namespace CamelotFramework
 
 				return HTCLIENT;
 			}
+		case WM_NCMOUSEMOVE:
 		case WM_MOUSEMOVE:
 			{
 				POINT mousePos;
