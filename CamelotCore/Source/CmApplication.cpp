@@ -91,6 +91,7 @@ namespace CamelotFramework
 
 		while(mRunMainLoop)
 		{
+			Platform::update();
 			DeferredCallManager::instance().update();
 			RenderWindowManager::instance().update();
 			gInput().update();

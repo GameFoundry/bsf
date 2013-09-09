@@ -6,6 +6,8 @@
 
 namespace CamelotFramework
 {
+	boost::signal<void(RenderWindow*)> Platform::onMouseLeftWindow;
+
 	boost::signal<void(const Int2&)> Platform::onMouseMoved;
 	boost::signal<void(float)> Platform::onMouseWheelScrolled;
 	boost::signal<void(UINT32)> Platform::onCharInput;
@@ -16,6 +18,8 @@ namespace CamelotFramework
 	boost::signal<void()> Platform::onMouseCaptureChanged;
 
 	Map<const RenderWindow*, WindowNonClientAreaData>::type Platform::mNonClientAreas;
+	bool Platform::mIsTrackingMouse = false;
+	Vector<RenderWindow*>::type Platform::mMouseLeftWindows;
 
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mSync, Platform);
 
@@ -278,6 +282,23 @@ namespace CamelotFramework
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+		}
+	}
+
+	void Platform::update()
+	{
+		Vector<RenderWindow*>::type windowsCopy;
+		{
+			CM_LOCK_MUTEX(mSync);
+
+			windowsCopy = mMouseLeftWindows;
+			mMouseLeftWindows.clear();
+		}
+		
+		for(auto& window : windowsCopy)
+		{
+			if(!onMouseLeftWindow.empty())
+				onMouseLeftWindow(window);
 		}
 	}
 

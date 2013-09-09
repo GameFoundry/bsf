@@ -157,9 +157,28 @@ namespace CamelotFramework
 
 				return HTCLIENT;
 			}
+		case WM_MOUSELEAVE:
+			{
+				CM_LOCK_MUTEX(mSync);
+
+				mMouseLeftWindows.push_back(win);
+				mIsTrackingMouse = false; // TrackMouseEvent ends when this message is received and needs to be re-applied
+			}
+			break;
 		case WM_NCMOUSEMOVE:
 		case WM_MOUSEMOVE:
 			{
+				// Set up tracking so we get notified when mouse leaves the window
+				if(!mIsTrackingMouse)
+				{
+					TRACKMOUSEEVENT tme = { sizeof(tme) };
+					tme.dwFlags = TME_LEAVE;
+					tme.hwndTrack = hWnd;
+					TrackMouseEvent(&tme);
+
+					mIsTrackingMouse = true;
+				}
+
 				POINT mousePos;
 
 				mousePos.x = GET_X_LPARAM(lParam);

@@ -62,6 +62,8 @@ namespace BansheeEngine
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
 		mWindowMovedOrResizedConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&GUIManager::onWindowMovedOrResized, this, _1));
 
+		mMouseLeftWindowConn = Platform::onMouseLeftWindow.connect(boost::bind(&GUIManager::onMouseLeftWindow, this, _1));
+
 		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>();
 		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
@@ -93,6 +95,8 @@ namespace BansheeEngine
 		mWindowGainedFocusConn.disconnect();
 		mWindowLostFocusConn.disconnect();
 		mWindowMovedOrResizedConn.disconnect();
+
+		mMouseLeftWindowConn.disconnect();
 
 		cm_delete<PoolAlloc>(mInputCaret);
 		cm_delete<PoolAlloc>(mInputSelection);
@@ -704,18 +708,6 @@ namespace BansheeEngine
 		}
 #endif
 
-		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
-		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
-		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
-
-		// TODO - Maybe avoid querying these for every event separately?
-		bool buttonStates[(int)GUIMouseButton::Count];
-		buttonStates[0] = gInput().isButtonDown(BC_MOUSE_LEFT);
-		buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
-		buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
-
-		mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
-
 		GUIWidget* widgetInFocus = nullptr;
 		GUIElement* topMostElement = nullptr;
 		Int2 screenPos;
@@ -775,85 +767,8 @@ namespace BansheeEngine
 			}
 		}
 
-		// Send MouseOver/MouseOut events to any elements the mouse passes over, except when
-		// mouse is being held down, in which we only send them to the active element
-		if(topMostElement != mMouseOverElement)
-		{
-			if(mMouseOverElement != nullptr)
-			{
-				// Send MouseOut event
-				if(mActiveElement == nullptr || mMouseOverElement == mActiveElement)
-				{
-					Int2 curLocalPos = getWidgetRelativePos(*mMouseOverWidget, event.screenPos);
-
-					mMouseEvent.setMouseOutData(topMostElement, curLocalPos);
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
-						event.markAsUsed();
-				}
-			}
-
-			if(topMostElement != nullptr)
-			{
-				// Send MouseOver event
-				if(mActiveElement == nullptr || topMostElement == mActiveElement)
-				{
-					mMouseEvent.setMouseOverData(topMostElement, localPos);
-					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
-						event.markAsUsed();
-				}
-			}
-		}
-
-		// If mouse is being held down send MouseDrag events
-		if(mActiveElement != nullptr)
-		{
-			Int2 curLocalPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
-
-			if(mLastCursorLocalPos != curLocalPos)
-			{
-				mMouseEvent.setMouseDragData(topMostElement, curLocalPos, curLocalPos - mLastCursorLocalPos);
-				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
-					event.markAsUsed();
-
-				mLastCursorLocalPos = curLocalPos;
-			}
-
-			// Also if drag is in progress send DragAndDrop events
-			if(DragAndDropManager::instance().isDragInProgress())
-			{
-				if(topMostElement != nullptr)
-				{
-					mMouseEvent.setDragAndDropDraggedData(topMostElement, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
-						event.markAsUsed();
-				}
-			}
-		}
-		else // Otherwise, send MouseMove events if we are hovering over any element
-		{
-			if(topMostElement != nullptr)
-			{
-				// Send MouseMove event
-				if(mLastCursorLocalPos != localPos)
-				{
-					mMouseEvent.setMouseMoveData(topMostElement, localPos);
-					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
-						event.markAsUsed();
-
-					mLastCursorLocalPos = localPos;
-				}
-
-				if(Math::Abs(event.mouseWheelScrollAmount) > 0.00001f)
-				{
-					mMouseEvent.setMouseWheelScrollData(topMostElement, event.mouseWheelScrollAmount);
-					if(sendMouseEvent(widgetInFocus, topMostElement, mMouseEvent))
-						event.markAsUsed();
-				}
-			}
-		}
-
-		mMouseOverElement = topMostElement;
-		mMouseOverWidget = widgetInFocus;
+		if(handleMouseOver(widgetInFocus, topMostElement, event.screenPos, event.mouseWheelScrollAmount))
+			event.markAsUsed();
 	}
 
 	void GUIManager::onTextInput(const CM::TextInputEvent& event)
@@ -873,6 +788,119 @@ namespace BansheeEngine
 			if(sendKeyEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mKeyEvent))
 				event.markAsUsed();
 		}
+	}
+
+	bool GUIManager::handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount)
+	{
+		bool eventProcessed = false;
+
+		Int2 localPos;
+		if(widget != nullptr)
+		{
+			const RenderWindow* window = widget->getOwnerWindow();
+
+			Int2 screenPos = window->screenToWindowPos(screenMousePos);
+			Vector4 vecScreenPos((float)screenPos.x, (float)screenPos.y, 0.0f, 1.0f);
+
+			const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
+
+			Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
+			localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+		}
+
+		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
+		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
+		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+
+		// TODO - Maybe avoid querying these for every event separately?
+		bool buttonStates[(int)GUIMouseButton::Count];
+		buttonStates[0] = gInput().isButtonDown(BC_MOUSE_LEFT);
+		buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
+		buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
+
+		mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
+
+		// Send MouseOver/MouseOut events to any elements the mouse passes over, except when
+		// mouse is being held down, in which we only send them to the active element
+		if(element != mMouseOverElement)
+		{
+			if(mMouseOverElement != nullptr)
+			{
+				// Send MouseOut event
+				if(mActiveElement == nullptr || mMouseOverElement == mActiveElement)
+				{
+					Int2 curLocalPos = getWidgetRelativePos(*mMouseOverWidget, screenMousePos);
+
+					mMouseEvent.setMouseOutData(element, curLocalPos);
+					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+						eventProcessed = true;
+				}
+			}
+
+			if(element != nullptr)
+			{
+				// Send MouseOver event
+				if(mActiveElement == nullptr || element == mActiveElement)
+				{
+					mMouseEvent.setMouseOverData(element, localPos);
+					if(sendMouseEvent(widget, element, mMouseEvent))
+						eventProcessed = true;
+				}
+			}
+		}
+
+		// If mouse is being held down send MouseDrag events
+		if(mActiveElement != nullptr)
+		{
+			Int2 curLocalPos = getWidgetRelativePos(*mActiveWidget, screenMousePos);
+
+			if(mLastCursorLocalPos != curLocalPos)
+			{
+				mMouseEvent.setMouseDragData(element, curLocalPos, curLocalPos - mLastCursorLocalPos);
+				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
+					eventProcessed = true;
+
+				mLastCursorLocalPos = curLocalPos;
+			}
+
+			// Also if drag is in progress send DragAndDrop events
+			if(DragAndDropManager::instance().isDragInProgress())
+			{
+				if(element != nullptr)
+				{
+					mMouseEvent.setDragAndDropDraggedData(element, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					if(sendMouseEvent(widget, element, mMouseEvent))
+						eventProcessed = true;
+				}
+			}
+		}
+		else // Otherwise, send MouseMove events if we are hovering over any element
+		{
+			if(element != nullptr)
+			{
+				// Send MouseMove event
+				if(mLastCursorLocalPos != localPos)
+				{
+					mMouseEvent.setMouseMoveData(element, localPos);
+					if(sendMouseEvent(widget, element, mMouseEvent))
+						eventProcessed = true;
+
+					mLastCursorLocalPos = localPos;
+				}
+
+				if(Math::Abs(wheelScrollAmount) > 0.00001f)
+				{
+					mMouseEvent.setMouseWheelScrollData(element, wheelScrollAmount);
+					if(sendMouseEvent(widget, element, mMouseEvent))
+						eventProcessed = true;
+				}
+			}
+		}
+
+		mMouseOverElement = element;
+		mMouseOverWidget = widget;
+
+		return false;
 	}
 
 	void GUIManager::onWindowFocusGained(RenderWindow& win)
@@ -903,6 +931,13 @@ namespace BansheeEngine
 			if(widget->getOwnerWindow() == &win)
 				widget->ownerWindowResized();
 		}
+	}
+
+	// We stop getting mouse move events once it leaves the window, so make sure
+	// nothing stays in hover state
+	void GUIManager::onMouseLeftWindow(CM::RenderWindow* win)
+	{
+		handleMouseOver(nullptr, nullptr, Int2());
 	}
 
 	void GUIManager::queueForDestroy(GUIElement* element)

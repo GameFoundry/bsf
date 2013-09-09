@@ -161,8 +161,19 @@ namespace CamelotFramework
 		 * @brief	Message pump. Processes OS messages and returns when it's free.
 		 * 			
 		 * @note	This method must be called from the core thread.
+		 * 			Internal method.
 		 */
 		static void messagePump();
+
+		/**
+		 * @brief	Called once per frame from the sim thread.
+		 * 			
+		 * @note	Internal method.
+		 */
+		static void update();
+
+		// Callbacks triggered on the sim thread
+		static boost::signal<void(RenderWindow*)> onMouseLeftWindow;
 
 		// Callbacks triggered on the core thread. Be careful so that none
 		// of the connected methods call methods intended for sim thread.
@@ -178,6 +189,9 @@ namespace CamelotFramework
 		static NativeCursorData mCursor;
 		static bool mUsingCustomCursor;
 		static Map<const RenderWindow*, WindowNonClientAreaData>::type mNonClientAreas;
+
+		static bool mIsTrackingMouse;
+		static Vector<RenderWindow*>::type mMouseLeftWindows;
 
 		CM_STATIC_MUTEX(mSync);
 

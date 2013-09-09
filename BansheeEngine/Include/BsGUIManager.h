@@ -110,6 +110,8 @@ namespace BansheeEngine
 		boost::signals::connection mWindowLostFocusConn;
 		boost::signals::connection mWindowMovedOrResizedConn;
 
+		boost::signals::connection mMouseLeftWindowConn;
+
 		void updateMeshes();
 		void updateCaretTexture();
 		void updateTextSelectionTexture();
@@ -126,6 +128,10 @@ namespace BansheeEngine
 		void onWindowFocusGained(CM::RenderWindow& win);
 		void onWindowFocusLost(CM::RenderWindow& win);
 		void onWindowMovedOrResized(CM::RenderWindow& win);
+
+		void onMouseLeftWindow(CM::RenderWindow* win);
+
+		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;

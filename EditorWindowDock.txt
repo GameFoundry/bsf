@@ -4,11 +4,19 @@ Add icons to drag and drop - There's a built-in windows icon for this. I think. 
 Add highlight to WindowMover so I can know when I'm mousing over it with a dragged window in hand
 Ensure that dropping a window onto a mover will actually docks it properly
 
-Moving a cursor to a non-client area doesn't seem to refresh the GUIElements properly. They are handled as if I was mousing over them.
+GUIManager only changes mouse over events in MouseMove method, but that method doesn't get called when mouse leaves the window!
+
 I still have the issue where GUIManager hack code got triggered
 Get rid of the GUIManager mouseUp hack when I ensure resize/move using non client areas work
 
 Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
+
+Possible solution to MouseUp problem:
+  on WM_ENTERSIZEMOVE call OIS and SetCooperativeLevel(BACKGROUND)
+  and on WM_EXITSIZEMOVE revert back to FOREGROUND coop level
+
+And for MouseMove problem:
+  Track mouse leave events, add a handler to Platform and hook up GUIManager to it
 
 ------------------------
 
