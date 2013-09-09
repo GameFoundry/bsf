@@ -11,6 +11,8 @@ namespace CamelotFramework
 		static LRESULT CALLBACK _win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	private:
+		static UINT32 mMoveResizeMouseUpState; // 0 - Didn't receive and not waiting for mouse up, 1 - Awaiting mouse up, 2 - Received mouse up
+
 		static LRESULT translateNonClientAreaType(NonClientAreaBorderType type);
 	};
 }

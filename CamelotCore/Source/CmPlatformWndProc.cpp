@@ -1,9 +1,12 @@
 #include "CmPlatformWndProc.h"
 #include "CmRenderWindow.h"
 #include "CmApplication.h"
+#include "CmInput.h"
 
 namespace CamelotFramework
 {
+	UINT32 PlatformWndProc::mMoveResizeMouseUpState = 0;
+
 	LRESULT CALLBACK PlatformWndProc::_win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		if (uMsg == WM_CREATE)
@@ -65,8 +68,14 @@ namespace CamelotFramework
 				return 0;
 			break;
 		case WM_ENTERSIZEMOVE:
+			mMoveResizeMouseUpState = 1;
 			break;
 		case WM_EXITSIZEMOVE:
+			// HACK - Windows doesn't send mouseUp event after move/resize if the cursor moved out of the original window bounds
+			if(mMoveResizeMouseUpState != 2)
+				gInput().instance().simulateButtonUp(BC_MOUSE_LEFT);
+
+			mMoveResizeMouseUpState = 0;
 			break;
 		case WM_MOVE:
 			windowMovedOrResized(win);
@@ -189,6 +198,13 @@ namespace CamelotFramework
 					mIsTrackingMouse = true;
 				}
 			}
+			break;
+		case WM_NCLBUTTONUP:
+		case WM_LBUTTONUP:
+			// Part of a hack that's done in WM_EXITSIZEMOVE (see there)
+			if(mMoveResizeMouseUpState = 1)
+				mMoveResizeMouseUpState = 2;
+
 			break;
 		case WM_NCMOUSEMOVE:
 		case WM_MOUSEMOVE:

@@ -15,9 +15,6 @@ Possible solution to MouseUp problem:
   on WM_ENTERSIZEMOVE call OIS and SetCooperativeLevel(BACKGROUND)
   and on WM_EXITSIZEMOVE revert back to FOREGROUND coop level
 
-And for MouseMove problem:
-  Track mouse leave events, add a handler to Platform and hook up GUIManager to it
-
 ------------------------
 
 Other things to remember:
