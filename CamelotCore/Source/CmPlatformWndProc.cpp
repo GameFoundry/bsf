@@ -166,37 +166,15 @@ namespace CamelotFramework
 
 				return HTCLIENT;
 			}
-		case WM_NCMOUSELEAVE:
 		case WM_MOUSELEAVE:
 			{
+				// Note: Right now I track only mouse leaving client area. So it's possible for the "mouse left window" callback
+				// to trigger, while the mouse is still in the non-client area of the window.
 				mIsTrackingMouse = false; // TrackMouseEvent ends when this message is received and needs to be re-applied
 
-				POINT mousePos;
-				GetCursorPos(&mousePos);
+				CM_LOCK_MUTEX(mSync);
 
-				// Ensure we have actually left the window - it's possible we just moved from client to non-client area but
-				// that's not what we're interested in
-				if(mousePos.x < win->getLeft() || mousePos.x > (INT32)(win->getLeft() + win->getWidth()) ||
-					mousePos.y < win->getTop() || mousePos.y > (INT32)(win->getTop() + win->getHeight()))
-				{
-					CM_LOCK_MUTEX(mSync);
-
-					mMouseLeftWindows.push_back(win);
-				}
-				else
-				{
-					TRACKMOUSEEVENT tme = { sizeof(tme) };
-					
-					if(uMsg == WM_MOUSELEAVE)
-						tme.dwFlags = TME_LEAVE | TME_NONCLIENT;
-					else
-						tme.dwFlags = TME_LEAVE;
-
-					tme.hwndTrack = hWnd;
-					TrackMouseEvent(&tme);
-
-					mIsTrackingMouse = true;
-				}
+				mMouseLeftWindows.push_back(win);
 			}
 			break;
 		case WM_NCLBUTTONUP:
@@ -214,9 +192,6 @@ namespace CamelotFramework
 				{
 					TRACKMOUSEEVENT tme = { sizeof(tme) };
 					tme.dwFlags = TME_LEAVE;
-
-					if(uMsg == WM_NCMOUSEMOVE)
-						tme.dwFlags |= TME_NONCLIENT;
 
 					tme.hwndTrack = hWnd;
 					TrackMouseEvent(&tme);
