@@ -68,5 +68,21 @@ namespace BansheeEngine
 		static const CM::String ScrollBarHandleVertActiveTex;
 
 		static const CM::String ScrollBarBgTex;
+
+		static const CM::String DropDownBtnNormalTex;
+		static const CM::String DropDownBtnHoverTex;
+
+		static const CM::String DropDownBoxBgTex;
+		static const CM::String DropDownBoxEntryNormalTex;
+		static const CM::String DropDownBoxEntryHoverTex;
+
+		static const CM::String DropDownBoxBtnUpNormalTex;
+		static const CM::String DropDownBoxBtnUpHoverTex;
+
+		static const CM::String DropDownBoxBtnDownNormalTex;
+		static const CM::String DropDownBoxBtnDownHoverTex;
+
+		static const CM::String DropDownBoxBtnUpBgTex;
+		static const CM::String DropDownBoxBtnDownBgTex;
 	};
 }

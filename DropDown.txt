@@ -1,0 +1,12 @@
+DropDownList
+ - 2 states
+   - Closed - Pretty much a normal button with a drop down arrow
+   - Open - Creates a new GUIArea in the current widget
+        - The area is always sized so it doesn't go outside the widget
+        - Area is full of GUIButtons with callbacks set up so that the GUIArea gets destroyed when selection is made
+        - If GUIButtons don't fully fit in the area then top and bottom display arrow buttons you may press to scroll through them
+             - Arrows change pages, not element-by-element
+
+
+IMMEDIATE:
+ - Add up/down drop down arrows (need Textures)

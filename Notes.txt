@@ -20,6 +20,9 @@ Reminders:
 	   until I get the result. But I'd rather apply the result once render thread is finished.
   - GUI currently doesn't batch elements belonging to different GUIWidgets because each of them has its own transform. Implement some form of instancing for DX11 and GL
     so this isn't required. GUIManager already has the ability to properly group meshes, all that is needed is a shader.
+  - When specifying GUIElement layout using (for example) GUILayoutOptions::expandableX then it would be useful if I didn't have to provide the Y height, and instead make it use 
+    the default value for that GUIElement type. For most elements I will only be changing width, and height will remain default (labels, buttons, toggles, drop down lists, etc.) 
+	so this would be helpful in a way I wouldn't need to look up actual element height in EngineGUI.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

@@ -198,6 +198,9 @@
     <ClInclude Include="Include\BsDrawHelper3D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIDropDownList.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -340,6 +343,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsDrawHelper3D.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIDropDownList.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

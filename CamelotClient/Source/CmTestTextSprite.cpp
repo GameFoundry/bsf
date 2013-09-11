@@ -7,6 +7,7 @@
 #include "CmFont.h"
 #include "CmMaterial.h"
 #include "BsGUILabel.h"
+#include "BsGUIDropDownList.h"
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsSpriteTexture.h"
@@ -14,6 +15,7 @@
 #include "BsGUITexture.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsGUISpace.h"
 #include "BsGUIViewport.h"
 #include "BsCamera.h"
 #include "CmInput.h"
@@ -42,6 +44,13 @@ namespace CamelotFramework
 		area->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::fixed(800, 600), spriteTex));
 		mLabel = GUILabel::create(*this, L"");
 		area->getLayout().addElement(mLabel);
+
+		Vector<WString>::type dropDownElements;
+		dropDownElements.push_back(L"Element #1");
+		dropDownElements.push_back(L"Element #2");
+		dropDownElements.push_back(L"Element #3");
+		area->getLayout().addElement(GUIDropDownList::create(*this, dropDownElements, GUILayoutOptions::fixed(50, 13)));
+		area->getLayout().addFlexibleSpace();
 	}
 
 	void TestTextSprite::update()
