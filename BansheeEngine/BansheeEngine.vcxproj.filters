@@ -201,6 +201,9 @@
     <ClInclude Include="Include\BsGUIDropDownList.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIDropDownBox.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -345,6 +348,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIDropDownList.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIDropDownBox.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>

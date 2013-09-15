@@ -46,7 +46,7 @@ namespace CamelotFramework
 		area->getLayout().addElement(mLabel);
 
 		Vector<WString>::type dropDownElements;
-		dropDownElements.push_back(L"Element #1");
+		dropDownElements.push_back(L"Ejlement #1");
 		dropDownElements.push_back(L"Element #2");
 		dropDownElements.push_back(L"Element #3");
 		area->getLayout().addElement(GUIDropDownList::create(*this, dropDownElements, GUILayoutOptions::fixed(50, 13)));

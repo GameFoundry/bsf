@@ -15,6 +15,8 @@ namespace BansheeEngine
 		static GUIButton* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
 		static GUIButton* create(GUIWidget& parent, const CM::WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 	
+		void setText(const CM::WString& text);
+
 		boost::signal<void()> onClick;
 	protected:
 		~GUIButton();

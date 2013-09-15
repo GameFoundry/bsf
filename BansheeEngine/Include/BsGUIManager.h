@@ -48,6 +48,9 @@ namespace BansheeEngine
 		void update();
 		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
 
+		void openDropDownBox(GUIDropDownList* parentList, const CM::Vector<CM::WString>::type& elements, 
+			std::function<void(CM::UINT32)> selectedCallback);
+
 		void queueForDestroy(GUIElement* element);
 
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
@@ -98,6 +101,10 @@ namespace BansheeEngine
 
 		SpriteTexturePtr mTextSelectionTexture;
 		CM::Color mTextSelectionColor;
+
+		// Drop down box
+		CM::HSceneObject mDropDownSO;
+		CM::GameObjectHandle<GUIDropDownBox> mDropDownBox;
 
 		boost::signals::connection mOnButtonDownConn;
 		boost::signals::connection mOnButtonUpConn;

@@ -411,6 +411,10 @@ namespace BansheeEngine
 		dropDownListStyle.fixedWidth = false;
 		dropDownListStyle.height = 13;
 		dropDownListStyle.width = 30;
+		dropDownListStyle.contentOffset.left = 3;
+		dropDownListStyle.contentOffset.right = 11;
+		dropDownListStyle.contentOffset.top = 1;
+		dropDownListStyle.contentOffset.bottom = 1;
 		dropDownListStyle.border.left = 1;
 		dropDownListStyle.border.right = 10;
 		dropDownListStyle.border.top = 1;

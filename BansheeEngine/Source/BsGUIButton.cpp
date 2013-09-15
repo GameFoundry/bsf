@@ -66,6 +66,13 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, layoutOptions);
 	}
 
+	void GUIButton::setText(const CM::WString& text)
+	{
+		mText = text;
+
+		markContentAsDirty();
+	}
+
 	UINT32 GUIButton::getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();

@@ -20,6 +20,8 @@
 #include "CmRenderQueue.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
+#include "BsGUIDropDownList.h"
+#include "BsGUIDropDownBox.h"
 #include "BsDragAndDropManager.h"
 
 using namespace CamelotFramework;
@@ -490,6 +492,16 @@ namespace BansheeEngine
 				groupIdx++;
 			}
 		}
+	}
+
+	void GUIManager::openDropDownBox(GUIDropDownList* parentList, const CM::Vector<WString>::type& elements, 
+		std::function<void(CM::UINT32)> selectedCallback)
+	{
+		mDropDownSO = SceneObject::create("DropDownBox");
+		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
+
+		GUIWidget& widget = parentList->_getParentWidget();
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, elements, selectedCallback);
 	}
 
 	void GUIManager::updateCaretTexture()
