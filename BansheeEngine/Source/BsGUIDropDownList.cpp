@@ -6,6 +6,7 @@
 #include "BsTextSprite.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
+#include "BsGUIManager.h"
 #include "CmTexture.h"
 
 using namespace CamelotFramework;
@@ -191,6 +192,8 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->active.texture;
 			markContentAsDirty();
 
+			GUIManager::instance().openDropDownBox(this, mElements, boost::bind(&GUIDropDownList::elementSelected, this, _1));
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseUp)
@@ -202,5 +205,11 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	void GUIDropDownList::elementSelected(CM::UINT32 idx)
+	{
+		if(!onSelectionChanged.empty())
+			onSelectionChanged(idx);
 	}
 }

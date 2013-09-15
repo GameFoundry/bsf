@@ -1,16 +1,2 @@
-DropDownBox
- - Like ScrollArea, has 0 width and contains just buttons
-   - Set up three button types, plus bg for top/bottom buttons
- - Sets up callbacks to all of the buttons
-   - Clicking on entry buttons closes it and notifies parent DropDownList
-   - Clicking on scroll buttons updates the data
-
-GUIManager::createDropDownBox(GUIWidget parent, Int2 position, vector<String> data, function selectedCallback)
- - Creates a GUIArea in the specified widget
-   - Positions it under the wanted position, with height determined by widget window parent
-   - Width is some fixed value predefined in GUIManager
- - Automatically closes the area when the user changes focus to non-drop down box element
-
-Same approach can be used for Menus
- GUIManager::createDropDownMenu
-   - Except they can cascade so multiple menus may be open at the same time
+Add support for images on buttons. Replace dropdownbox scroll buttons with that.
+Drop down box gets closed the same frame it was opened on! Need to delay the close one frame.

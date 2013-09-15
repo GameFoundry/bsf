@@ -38,9 +38,21 @@ namespace BansheeEngine
 
 		Rect dropDownListBounds = parentList->getBounds();
 
-		// Determine x position
 		Int2 position;
-		position.x = dropDownListBounds.x;
+		// Determine x position and whether to align to left or right side of the drop down list
+		UINT32 availableRightwardWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - dropDownListBounds.x);
+		UINT32 availableLeftwardWidth = (UINT32)std::max(0, (dropDownListBounds.x + dropDownListBounds.width) - target->getLeft());
+
+		//// Prefer right if possible
+		if(DROP_DOWN_BOX_WIDTH <= availableRightwardWidth)
+			position.x = dropDownListBounds.x;
+		else
+		{
+			if(availableRightwardWidth >= availableLeftwardWidth)
+				position.x = dropDownListBounds.x;
+			else
+				position.x = dropDownListBounds.x - std::min(DROP_DOWN_BOX_WIDTH, availableLeftwardWidth);
+		}
 
 		// Determine maximum width
 		UINT32 maxPossibleWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - position.x);
@@ -48,10 +60,10 @@ namespace BansheeEngine
 		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)dropDownBoxStyle->margins.left - (INT32)dropDownBoxStyle->margins.right);
 
 		// Determine y position and whether to open upward or downward
-		UINT32 scrollButtonUpHeight = EngineGUI::instance().getSkin().getStyle("DropDownScrollUpBtnBg")->fixedHeight;
-		UINT32 scrollButtonDownHeight = EngineGUI::instance().getSkin().getStyle("DropDownScrollDownBtnBg")->fixedHeight;
+		UINT32 scrollButtonUpHeight = EngineGUI::instance().getSkin().getStyle("DropDownScrollUpBtnBg")->height;
+		UINT32 scrollButtonDownHeight = EngineGUI::instance().getSkin().getStyle("DropDownScrollDownBtnBg")->height;
 		UINT32 helperElementHeight = scrollButtonUpHeight + scrollButtonDownHeight + dropDownBoxStyle->margins.top + dropDownBoxStyle->margins.bottom;
-		UINT32 elementButtonHeight = EngineGUI::instance().getSkin().getStyle("DropDownEntryBtn")->fixedHeight;
+		UINT32 elementButtonHeight = EngineGUI::instance().getSkin().getStyle("DropDownEntryBtn")->height;
 
 		UINT32 maxNeededHeight = elementButtonHeight * (UINT32)mDropDownElements.size() + helperElementHeight;
 		UINT32 availableDownwardHeight = (UINT32)std::max(0, (target->getTop() + target->getHeight()) - (dropDownListBounds.y + dropDownListBounds.height));
@@ -63,7 +75,7 @@ namespace BansheeEngine
 			position.y = dropDownListBounds.y + dropDownListBounds.height;
 		else
 		{
-			if(availableDownwardHeight > availableUpwardHeight)
+			if(availableDownwardHeight >= availableUpwardHeight)
 				position.y = dropDownListBounds.y + dropDownListBounds.height;
 			else
 				position.y = dropDownListBounds.y - std::min(maxNeededHeight, availableUpwardHeight);

@@ -53,7 +53,7 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDropDownBoxActive(false)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -501,7 +501,21 @@ namespace BansheeEngine
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
 
 		GUIWidget& widget = parentList->_getParentWidget();
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, elements, selectedCallback);
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, elements, 
+			boost::bind(&GUIManager::closeDropDownBox, this, _1));
+
+		mDropDownBoxActive = true;
+		mDropDownSelectionMade = selectedCallback;
+	}
+
+	void GUIManager::closeDropDownBox(INT32 selectedIdx)
+	{
+		if(selectedIdx != -1)
+			mDropDownSelectionMade(selectedIdx);
+
+		mDropDownBoxActive = false;
+
+		mDropDownSO->destroy();
 	}
 
 	void GUIManager::updateCaretTexture()
@@ -572,16 +586,6 @@ namespace BansheeEngine
 
 			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
 
-			// HACK: This should never happen, as MouseUp was meant to happen before another MouseDown,
-			// and MouseUp will clear the active element. HOWEVER Windows doesn't send a MouseUp message when resizing
-			// a window really fast. My guess is that the cursor gets out of bounds and message is sent to another window.
-			if(mActiveMouseButton == guiButton && mActiveElement != nullptr) 
-			{
-				mActiveElement = nullptr;
-				mActiveWidget = nullptr;
-				mActiveMouseButton = GUIMouseButton::Left;
-			}
-
 			// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
 			bool acceptMouseDown = mActiveElement == nullptr && mMouseOverElement != nullptr;
 			if(acceptMouseDown)
@@ -614,6 +618,15 @@ namespace BansheeEngine
 				mKeyboardFocusWidget = mMouseOverWidget;
 
 				event.markAsUsed();
+			}
+
+			// Close drop down box if user clicks outside the drop down box
+			if(mDropDownBoxActive)
+			{
+				if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
+				{
+					closeDropDownBox(-1);
+				}
 			}
 		}
 	}

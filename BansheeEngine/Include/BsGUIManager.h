@@ -103,8 +103,10 @@ namespace BansheeEngine
 		CM::Color mTextSelectionColor;
 
 		// Drop down box
+		bool mDropDownBoxActive;
 		CM::HSceneObject mDropDownSO;
 		CM::GameObjectHandle<GUIDropDownBox> mDropDownBox;
+		std::function<void(CM::UINT32)> mDropDownSelectionMade;
 
 		boost::signals::connection mOnButtonDownConn;
 		boost::signals::connection mOnButtonUpConn;
@@ -139,6 +141,8 @@ namespace BansheeEngine
 		void onMouseLeftWindow(CM::RenderWindow* win);
 
 		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);
+
+		void closeDropDownBox(CM::INT32 selectedIdx);
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
