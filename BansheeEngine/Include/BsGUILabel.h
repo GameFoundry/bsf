@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 #include "BsTextSprite.h"
+#include "BsGUIContent.h"
 
 namespace BansheeEngine
 {
@@ -14,7 +15,10 @@ namespace BansheeEngine
 		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
 		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
-		void setText(const CM::WString& text);
+		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+
+		void setContent(const GUIContent& content);
 
 	protected:
 		~GUILabel();
@@ -54,10 +58,10 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getOptimalHeight() const;
 	private:
 		TextSprite* mTextSprite;
-		CM::WString mText;
+		GUIContent mContent;
 
 		TEXT_SPRITE_DESC mDesc;
 		
-		GUILabel(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, const GUILayoutOptions& layoutOptions);
+		GUILabel(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 	};
 }

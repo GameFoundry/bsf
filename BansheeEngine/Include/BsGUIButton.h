@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
+#include "BsGUIContent.h"
 #include "boost/signal.hpp"
 
 namespace BansheeEngine
@@ -14,8 +15,11 @@ namespace BansheeEngine
 
 		static GUIButton* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
 		static GUIButton* create(GUIWidget& parent, const CM::WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+
+		static GUIButton* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
+		static GUIButton* create(GUIWidget& parent, const GUIContent& content, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 	
-		void setText(const CM::WString& text);
+		void setContent(const GUIContent& content);
 
 		boost::signal<void()> onClick;
 	protected:
@@ -62,9 +66,9 @@ namespace BansheeEngine
 		CM::UINT32 mNumImageRenderElements;
 
 		IMAGE_SPRITE_DESC mImageDesc;
-		CM::WString mText;
+		GUIContent mContent;
 
-		GUIButton(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, const GUILayoutOptions& layoutOptions);
+		GUIButton(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};

@@ -20,6 +20,7 @@
 #include "BsCamera.h"
 #include "CmInput.h"
 #include "CmPlatform.h"
+#include "BsGUIContent.h"
 
 using namespace BansheeEngine;
 
@@ -57,6 +58,6 @@ namespace CamelotFramework
 	{
 		WString value = toWString(toString(Input::instance().getMousePosition().x) + " - " + toString(Input::instance().getMousePosition().y));
 
-		mLabel->setText(value);
+		mLabel->setContent(GUIContent(value));
 	}
 }

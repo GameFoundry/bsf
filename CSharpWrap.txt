@@ -45,3 +45,17 @@ Systems:
  - Debug
  - Input
  - Time
+
+
+ -----------------
+
+ Notes:
+  - I will need RequireComponent[] attribute. This attribute should automatically add the specified class to the wanted
+    GameObject. This is useful if you suddenly decide your class is now dependant on another, but you would otherwise have to manually
+	go through all instances of that GameObject in scene and add the required component.
+	  - HOWEVER, a more generic way of doing this (maybe using prefabs) would be useful. Because what happens when a class suddenly becomes
+	    dependant on a resource, or a specific instance of a class? In that case we cannot use RequireComponent.
+  - Use FrameUpdate[QueueIdx], OnCreate[QueueIdx], OnDestroy[QueueIdx] attributes to signify to the scripting system when to execute
+    certain methods. QueueIdx allows you to specify the order in which these methods will be called. In Unity you have Awake and Start methods
+	for initialization, but here you may just specify OnCreate[0] and OnCreate[1].
+	  - I will likely need C++ equivalents of these queues because C++ components will also require such ordering. 

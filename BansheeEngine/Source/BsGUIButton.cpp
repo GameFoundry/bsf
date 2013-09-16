@@ -18,8 +18,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const WString& text, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mText(text), mNumImageRenderElements(0)
+	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, style, layoutOptions), mContent(content), mNumImageRenderElements(0)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -46,29 +46,39 @@ namespace BansheeEngine
 
 	GUIButton* GUIButton::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, getDefaultLayoutOptions(style));
+		return create(parent, GUIContent(text), style);
 	}
 
 	GUIButton* GUIButton::create(GUIWidget& parent, const WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
+		return create(parent, GUIContent(text), layoutOptions, style);
+	}
+
+	GUIButton* GUIButton::create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style)
+	{
 		if(style == nullptr)
 		{
 			const GUISkin* skin = parent.getSkin();
 			style = skin->getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, text, layoutOptions);
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, content, getDefaultLayoutOptions(style));
 	}
 
-	void GUIButton::setText(const CM::WString& text)
+	GUIButton* GUIButton::create(GUIWidget& parent, const GUIContent& content, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		mText = text;
+		if(style == nullptr)
+		{
+			const GUISkin* skin = parent.getSkin();
+			style = skin->getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, content, layoutOptions);
+	}
+
+	void GUIButton::setContent(const GUIContent& content)
+	{
+		mContent = content;
 
 		markContentAsDirty();
 	}
@@ -109,7 +119,7 @@ namespace BansheeEngine
 		mNumImageRenderElements = mImageSprite->getNumRenderElements();
 
 		TEXT_SPRITE_DESC textDesc;
-		textDesc.text = mText;
+		textDesc.text = mContent.getText();
 		textDesc.font = mStyle->font;
 		textDesc.fontSize = mStyle->fontSize;
 

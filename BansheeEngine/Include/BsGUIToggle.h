@@ -4,6 +4,7 @@
 #include "BsGUIElement.h"
 #include "BsGUIToggleGroup.h"
 #include "BsImageSprite.h"
+#include "BsGUIContent.h"
 #include "boost/signal.hpp"
 
 namespace BansheeEngine
@@ -18,6 +19,12 @@ namespace BansheeEngine
 	
 		static GUIToggle* create(GUIWidget& parent, const CM::WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
 		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
+
+		static GUIToggle* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIContent& content, const GUIElementStyle* style = nullptr);
+
+		static GUIToggle* create(GUIWidget& parent, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
 
 		static std::shared_ptr<GUIToggleGroup> createToggleGroup();
 
@@ -66,7 +73,7 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 	protected:
-		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const CM::WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
+		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
@@ -78,6 +85,6 @@ namespace BansheeEngine
 		bool mIsToggled;
 
 		IMAGE_SPRITE_DESC mImageDesc;
-		CM::WString mText;
+		GUIContent mContent;
 	};
 }

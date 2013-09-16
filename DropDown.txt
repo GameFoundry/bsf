@@ -1,2 +1,22 @@
 Add support for images on buttons. Replace dropdownbox scroll buttons with that.
 Drop down box gets closed the same frame it was opened on! Need to delay the close one frame.
+
+Immediate TODO:
+ - Add support for images in GUIButton
+   - With placement options (left/right of the text)
+ - Update DropDown ScrollUp and ScrollDown buttons so they don't use two GUIAreas each and instead use a GUIButton with an image
+   - This will require slightly updated hover graphic (Arrow icon no longer should change color)
+ - Upon scroll up/down remove ScrollUp or ScrollDown buttons if that direction isn't usable anymore
+  - Delete its GUIArea and offset the content area, and possibly ScrollDown area
+
+----------------------------
+ - Elements can call addContextAction("Name", "Callback")
+   - This will be automatically rendered by GUIManager as a drop down menu when user clicks on it
+     - This kind of drop down menu will require separator buttons
+     - Also buttons with sub-menus
+     - It is probably useful to just add this functionality to DropDownBox
+   - Mousing over a sub-menu should upen another DropDownBox at that location
+     - I might need to modify DropDownBox input parameters so they accept GUElement as a parent, and not just GUIDropDownList
+     - Also another parameter to specify on which side of the GUIElement to open the box
+   - GUIManager drop down system could be extended so it handles multiple drop down boxes from various sources
+    - DropDownLists, context menus and toolbar menus

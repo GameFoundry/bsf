@@ -4,6 +4,7 @@
 #include "BsGUITexture.h"
 #include "BsGUIButton.h"
 #include "BsEngineGUI.h"
+#include "BsGUIContent.h"
 #include "CmViewport.h"
 #include "BsGUIDropDownList.h"
 
@@ -161,7 +162,7 @@ namespace BansheeEngine
 		UINT32 i = mDropDownStartIdx;
 		for(auto& button : mDropDownElementButtons)
 		{
-			button->setText(mDropDownElements[i]);
+			button->setContent(GUIContent(mDropDownElements[i]));
 			i++;
 		}
 	}
@@ -177,7 +178,7 @@ namespace BansheeEngine
 		UINT32 i = mDropDownStartIdx;
 		for(auto& button : mDropDownElementButtons)
 		{
-			button->setText(mDropDownElements[i]);
+			button->setContent(GUIContent(mDropDownElements[i]));
 			i++;
 		}
 	}
