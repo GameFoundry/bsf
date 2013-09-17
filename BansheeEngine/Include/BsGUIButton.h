@@ -62,8 +62,8 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 	private:
 		ImageSprite* mImageSprite;
+		ImageSprite* mContentImageSprite;
 		TextSprite* mTextSprite;
-		CM::UINT32 mNumImageRenderElements;
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;

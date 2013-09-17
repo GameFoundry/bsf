@@ -19,10 +19,14 @@ namespace BansheeEngine
 	}
 
 	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mContent(content), mNumImageRenderElements(0)
+		:GUIElement(parent, style, layoutOptions), mContent(content), mContentImageSprite(nullptr)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
+
+		SpriteTexturePtr contentTex = content.getImage();
+		if(contentTex != nullptr)
+			mContentImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
 		mImageDesc.texture = mStyle->normal.texture;
 
@@ -42,6 +46,9 @@ namespace BansheeEngine
 	{
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
+
+		if(mContentImageSprite != nullptr)
+			cm_delete<PoolAlloc>(mContentImageSprite);
 	}
 
 	GUIButton* GUIButton::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
@@ -88,22 +95,35 @@ namespace BansheeEngine
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
 
+		if(mContentImageSprite != nullptr)
+			numElements += mContentImageSprite->getNumRenderElements();
+
 		return numElements;
 	}
 
 	const HMaterial& GUIButton::getMaterial(UINT32 renderElementIdx) const
 	{
-		if(renderElementIdx >= mNumImageRenderElements)
-			return mTextSprite->getMaterial(mNumImageRenderElements - renderElementIdx);
+		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
+		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
+
+		if(renderElementIdx >= contentImgSpriteIdx)
+			return mContentImageSprite->getMaterial(contentImgSpriteIdx - renderElementIdx);
+		else if(renderElementIdx >= textSpriteIdx)
+			return mTextSprite->getMaterial(textSpriteIdx - renderElementIdx);
 		else
 			return mImageSprite->getMaterial(renderElementIdx);
 	}
 
 	UINT32 GUIButton::getNumQuads(UINT32 renderElementIdx) const
 	{
+		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
+		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
+
 		UINT32 numQuads = 0;
-		if(renderElementIdx >= mNumImageRenderElements)
-			numQuads = mTextSprite->getNumQuads(mNumImageRenderElements - renderElementIdx);
+		if(renderElementIdx >= contentImgSpriteIdx)
+			numQuads = mContentImageSprite->getNumQuads(contentImgSpriteIdx - renderElementIdx);
+		else if(renderElementIdx >= textSpriteIdx)
+			numQuads = mTextSprite->getNumQuads(textSpriteIdx - renderElementIdx);
 		else
 			numQuads = mImageSprite->getNumQuads(renderElementIdx);
 
@@ -116,7 +136,6 @@ namespace BansheeEngine
 		mImageDesc.height = mHeight;
 
 		mImageSprite->update(mImageDesc);
-		mNumImageRenderElements = mImageSprite->getNumRenderElements();
 
 		TEXT_SPRITE_DESC textDesc;
 		textDesc.text = mContent.getText();
@@ -131,6 +150,16 @@ namespace BansheeEngine
 		textDesc.vertAlign = mStyle->textVertAlign;
 
 		mTextSprite->update(textDesc);
+
+		if(mContentImageSprite != nullptr)
+		{
+			IMAGE_SPRITE_DESC contentImgDesc;
+			contentImgDesc.texture = mContent.getImage();
+			contentImgDesc.width = mContent.getImage()->getTexture()->getWidth();
+			contentImgDesc.height = mContent.getImage()->getTexture()->getHeight();
+
+			mContentImageSprite->update(contentImgDesc);
+		}
 
 		GUIElement::updateRenderElementsInternal();
 	}
@@ -162,7 +191,12 @@ namespace BansheeEngine
 
 	UINT32 GUIButton::_getRenderElementDepth(UINT32 renderElementIdx) const
 	{
-		if(renderElementIdx >= mNumImageRenderElements)
+		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
+		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
+
+		if(renderElementIdx >= contentImgSpriteIdx)
+			return _getDepth();
+		else if(renderElementIdx >= textSpriteIdx)
 			return _getDepth();
 		else
 			return _getDepth() + 1;
@@ -171,19 +205,77 @@ namespace BansheeEngine
 	void GUIButton::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		if(renderElementIdx >= mNumImageRenderElements)
-		{
-			Rect textBounds = getContentBounds();
-			Int2 offset(textBounds.x, textBounds.y);
-			Rect textClipRect = getContentClipRect();
+		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
+		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();
 
-			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-			vertexStride, indexStride, mNumImageRenderElements - renderElementIdx, offset, textClipRect);
+		if(renderElementIdx < textSpriteIdx)
+		{
+			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+				vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+
+			return;
+		}
+
+		Rect contentBounds = getContentBounds();
+		Rect contentClipRect = getContentClipRect();
+		Rect textBounds = mTextSprite->getBounds(Int2(), Rect());
+
+		Int2 textOffset;
+		Rect textClipRect;
+
+		Int2 imageOffset;
+		Rect imageClipRect;
+		if(mContentImageSprite != nullptr)
+		{
+			Rect imageBounds = mContentImageSprite->getBounds(Int2(), Rect());
+			UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
+			INT32 imageXOffset = (INT32)(freeWidth / 2);
+
+			if(mStyle->imagePosition == GUIImagePosition::Right)
+			{
+				INT32 imageReservedWidth = std::max(0, contentBounds.width - textBounds.width);
+
+				textOffset = Int2(contentBounds.x, contentBounds.y);
+				textClipRect = contentClipRect;
+				textClipRect.width = std::min(contentBounds.width - imageReservedWidth, textClipRect.width);
+
+				imageOffset = Int2(contentBounds.x + textBounds.width + imageXOffset, contentBounds.y);
+				imageClipRect = contentClipRect;
+				imageClipRect.x -= textBounds.width + imageXOffset;
+			}
+			else
+			{
+				INT32 imageReservedWidth = imageBounds.width + imageXOffset;
+
+				imageOffset = Int2(contentBounds.x + imageXOffset, contentBounds.y);
+				imageClipRect = contentClipRect;
+				imageClipRect.x -= imageXOffset;
+				imageClipRect.width = std::min(imageReservedWidth, imageClipRect.width);
+
+				textOffset = Int2(contentBounds.x + imageReservedWidth, contentBounds.y);
+				textClipRect = contentClipRect;
+				textClipRect.x -= imageReservedWidth;
+			}
+
+			INT32 imageYOffset = (contentBounds.height - imageBounds.height) / 2;
+			imageClipRect.y -= imageYOffset;
+			imageOffset.y += imageYOffset;
 		}
 		else
 		{
-			mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
-			vertexStride, indexStride, renderElementIdx, mOffset, mClipRect);
+			textOffset = Int2(contentBounds.x, contentBounds.y);
+			textClipRect = contentClipRect;
+		}
+
+		if(renderElementIdx >= contentImgSpriteIdx)
+		{
+			mContentImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+				vertexStride, indexStride, contentImgSpriteIdx - renderElementIdx, imageOffset, imageClipRect);
+		}
+		else
+		{
+			mTextSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
+			vertexStride, indexStride, textSpriteIdx - renderElementIdx, textOffset, textClipRect);
 		}
 	}
 

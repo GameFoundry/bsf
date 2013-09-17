@@ -623,10 +623,10 @@ namespace BansheeEngine
 			// Close drop down box if user clicks outside the drop down box
 			if(mDropDownBoxActive)
 			{
-				if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
-				{
-					closeDropDownBox(-1);
-				}
+				//if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
+				//{
+				//	closeDropDownBox(-1);
+				//}
 			}
 		}
 	}

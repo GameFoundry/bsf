@@ -1,6 +1,11 @@
 Add support for images on buttons. Replace dropdownbox scroll buttons with that.
 Drop down box gets closed the same frame it was opened on! Need to delay the close one frame.
 
+GUI ignores image in GUIContent for most elements.
+ - Also I don't have a way of specifiying drop down box skin. It always uses whichever skin is active but this might be a problem when
+   the user wants his own skin for the game and I want my own skin for the editor. I might want to cache the active skin on DropDownList initialization
+   and then provide it to GUIManager::openDropDownBox.
+
 Immediate TODO:
  - Add support for images in GUIButton
    - With placement options (left/right of the text)

@@ -23,6 +23,8 @@ Reminders:
   - When specifying GUIElement layout using (for example) GUILayoutOptions::expandableX then it would be useful if I didn't have to provide the Y height, and instead make it use 
     the default value for that GUIElement type. For most elements I will only be changing width, and height will remain default (labels, buttons, toggles, drop down lists, etc.) 
 	so this would be helpful in a way I wouldn't need to look up actual element height in EngineGUI.
+  - GUI currently ignores tooltips in GUIContent. 
+  - A way to initialize BansheeEngine without RenderSystem or any kind of UI. So that it may be used for server building as well.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

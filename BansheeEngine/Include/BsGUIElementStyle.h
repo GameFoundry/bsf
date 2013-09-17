@@ -16,6 +16,11 @@ namespace BansheeEngine
 		CM::INT32 left, right, top, bottom;
 	};
 
+	enum class GUIImagePosition
+	{
+		Left, Right
+	};
+
 	struct BS_EXPORT GUIElementStyle
 	{
 		struct BS_EXPORT GUIElementStateStyle
@@ -27,7 +32,8 @@ namespace BansheeEngine
 		GUIElementStyle()
 			:fontSize(8), width(0), height(0),
 			fixedWidth(false), fixedHeight(false), minWidth(0), maxWidth(0),
-			minHeight(0), maxHeight(0), textHorzAlign(THA_Left), textVertAlign(TVA_Top), wordWrap(false)
+			minHeight(0), maxHeight(0), textHorzAlign(THA_Left), textVertAlign(TVA_Top), 
+			wordWrap(false), imagePosition(GUIImagePosition::Left)
 		{
 
 		}
@@ -36,6 +42,7 @@ namespace BansheeEngine
 		CM::UINT32 fontSize;
 		TextHorzAlign textHorzAlign;
 		TextVertAlign textVertAlign;
+		GUIImagePosition imagePosition;
 		bool wordWrap;
 
 		GUIElementStateStyle normal;

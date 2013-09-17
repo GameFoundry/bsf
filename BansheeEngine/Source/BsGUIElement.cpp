@@ -175,7 +175,7 @@ namespace BansheeEngine
 		Rect contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
 		contentClipRect.clip(mClipRect);
 
-		// Transform into text sprite space
+		// Transform into content sprite space
 		contentClipRect.x -= offsetDiff.x;
 		contentClipRect.y -= offsetDiff.y;
 
