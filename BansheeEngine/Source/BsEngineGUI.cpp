@@ -511,6 +511,10 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.border.right = 1;
 		dropDownEntryBtnStyle.border.top = 1;
 		dropDownEntryBtnStyle.border.bottom = 1;
+		dropDownEntryBtnStyle.font = font;
+		dropDownEntryBtnStyle.fontSize = DefaultFontSize;
+		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
+		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
 
 		mSkin.setStyle("DropDownEntryBtn", dropDownEntryBtnStyle);
 
