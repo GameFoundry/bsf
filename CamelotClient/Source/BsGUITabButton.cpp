@@ -28,8 +28,8 @@ namespace BansheeEditor
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, text, getDefaultLayoutOptions(style));
@@ -39,8 +39,8 @@ namespace BansheeEditor
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, text, layoutOptions);

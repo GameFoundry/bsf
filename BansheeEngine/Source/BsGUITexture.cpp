@@ -43,8 +43,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, getDefaultLayoutOptions(style));
@@ -55,8 +55,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, layoutOptions);
@@ -66,8 +66,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, getDefaultLayoutOptions(style));
@@ -77,8 +77,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, layoutOptions);

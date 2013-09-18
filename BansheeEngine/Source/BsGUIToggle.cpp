@@ -77,8 +77,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, nullptr, getDefaultLayoutOptions(style));
@@ -88,8 +88,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, nullptr, layoutOptions);
@@ -99,8 +99,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, toggleGroup, getDefaultLayoutOptions(style));
@@ -110,8 +110,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, toggleGroup, layoutOptions);

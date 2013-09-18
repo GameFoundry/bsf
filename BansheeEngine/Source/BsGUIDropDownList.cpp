@@ -49,8 +49,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIDropDownList, PoolAlloc>()) GUIDropDownList(parent, style, elements, getDefaultLayoutOptions(style));
@@ -60,8 +60,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIDropDownList, PoolAlloc>()) GUIDropDownList(parent, style, elements, layoutOptions);
@@ -192,7 +192,7 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->active.texture;
 			markContentAsDirty();
 
-			GUIManager::instance().openDropDownBox(this, mElements, boost::bind(&GUIDropDownList::elementSelected, this, _1), *_getParentWidget().getSkin());
+			GUIManager::instance().openDropDownBox(this, mElements, boost::bind(&GUIDropDownList::elementSelected, this, _1), _getParentWidget().getSkin());
 
 			return true;
 		}

@@ -23,8 +23,8 @@ namespace BansheeEngine
 		 */
 		virtual void initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow);
 
-		void setSkin(const GUISkin* skin);
-		const GUISkin* getSkin() const;
+		void setSkin(const GUISkin& skin);
+		const GUISkin& getSkin() const;
 
 		CM::UINT8 getDepth() const { return mDepth; }
 		void setDepth(CM::UINT8 depth) { mDepth = depth; mWidgetIsDirty = true; }
@@ -57,6 +57,8 @@ namespace BansheeEngine
 		 * 			must be a child of this widget.
 		 */
 		virtual bool _keyEvent(GUIElement* element, const GUIKeyEvent& ev);
+
+		static GUISkin DefaultSkin;
 	protected:
 		friend class CM::SceneObject;
 		friend class GUIElement;
@@ -96,6 +98,5 @@ namespace BansheeEngine
 		mutable CM::Vector<CM::HMaterial>::type mCachedMaterials;
 
 		const GUISkin* mSkin;
-		static GUISkin DefaultSkin;
 	};
 }

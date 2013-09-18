@@ -41,8 +41,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, getDefaultLayoutOptions(style));
@@ -53,8 +53,8 @@ namespace BansheeEngine
 	{
 		if(style == nullptr)
 		{
-			const GUISkin* skin = parent.getSkin();
-			style = skin->getStyle(getGUITypeName());
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
 		}
 
 		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, layoutOptions);

@@ -216,17 +216,17 @@ namespace BansheeEngine
 		mWidgetIsDirty = true;
 	}
 
-	void GUIWidget::setSkin(const GUISkin* skin)
+	void GUIWidget::setSkin(const GUISkin& skin)
 	{
-		mSkin = skin;
+		mSkin = &skin;
 	}
 
-	const GUISkin* GUIWidget::getSkin() const
+	const GUISkin& GUIWidget::getSkin() const
 	{
 		if(mSkin != nullptr)
-			return mSkin;
+			return *mSkin;
 		else
-			return &DefaultSkin;
+			return DefaultSkin;
 	}
 
 	bool GUIWidget::isDirty(bool cleanIfDirty)

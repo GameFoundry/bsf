@@ -77,10 +77,10 @@ namespace BansheeEditor
 		mGUI->initialize(mCamera->getViewport().get(), renderWindow.get());
 		mGUI->setDepth(128);
 
-		mGUI->setSkin(&EngineGUI::instance().getSkin());
+		mGUI->setSkin(EngineGUI::instance().getSkin());
 
 		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>();
-		mWindowFrame->setSkin(&EngineGUI::instance().getSkin());
+		mWindowFrame->setSkin(EngineGUI::instance().getSkin());
 		mWindowFrame->initialize(mCamera->getViewport().get(), renderWindow.get());
 		mWindowFrame->setDepth(129);
 

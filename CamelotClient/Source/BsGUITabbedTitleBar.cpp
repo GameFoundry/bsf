@@ -21,18 +21,18 @@ namespace BansheeEditor
 		mMainArea(nullptr), mMainLayout(nullptr), mParentWidget(parent), mBackgroundArea(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
-		GUIWindowDropArea* titleBarBg = GUIWindowDropArea::create(*parent, parent->getSkin()->getStyle("TitleBarBackground"));
+		GUIWindowDropArea* titleBarBg = GUIWindowDropArea::create(*parent, parent->getSkin().getStyle("TitleBarBackground"));
 		mBackgroundArea->getLayout().addSpace(1);
 		mBackgroundArea->getLayout().addElement(titleBarBg);
 		mBackgroundArea->getLayout().addSpace(1);
 
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
 
-		GUIWindowDropArea* dragDropElement = GUIWindowDropArea::create(*parent, GUILayoutOptions::expandableX(13, 20), parent->getSkin()->getStyle("TabbedBarDropArea"));
+		GUIWindowDropArea* dragDropElement = GUIWindowDropArea::create(*parent, GUILayoutOptions::expandableX(13, 20), parent->getSkin().getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
 
-		mMinBtn = GUIButton::create(*parent, L"", parent->getSkin()->getStyle("WinMinimizeBtn"));
-		mCloseBtn = GUIButton::create(*parent, L"", parent->getSkin()->getStyle("WinCloseBtn"));
+		mMinBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinMinimizeBtn"));
+		mCloseBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinCloseBtn"));
 
 		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
 
