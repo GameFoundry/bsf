@@ -3,8 +3,8 @@
 #include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIButton.h"
-#include "BsEngineGUI.h"
 #include "BsGUIContent.h"
+#include "BsGUISkin.h"
 #include "CmViewport.h"
 #include "BsGUIDropDownList.h"
 
@@ -26,7 +26,7 @@ namespace BansheeEngine
 	}
 
 	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, GUIDropDownList* parentList, 
-		const CM::Vector<WString>::type& elements, std::function<void(CM::UINT32)> selectedCallback)
+		const CM::Vector<WString>::type& elements, std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin)
 	{
 		GUIWidget::initialize(target, window);
 
@@ -35,7 +35,7 @@ namespace BansheeEngine
 
 		setDepth(0); // Needs to be in front of everything
 
-		const GUIElementStyle* dropDownBoxStyle = EngineGUI::instance().getSkin().getStyle("DropDownBox");
+		const GUIElementStyle* dropDownBoxStyle = skin.getStyle("DropDownBox");
 
 		Rect dropDownListBounds = parentList->getBounds();
 
@@ -61,10 +61,10 @@ namespace BansheeEngine
 		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)dropDownBoxStyle->margins.left - (INT32)dropDownBoxStyle->margins.right);
 
 		// Determine y position and whether to open upward or downward
-		UINT32 scrollButtonUpHeight = EngineGUI::instance().getSkin().getStyle("DropDownScrollUpBtn")->height;
-		UINT32 scrollButtonDownHeight = EngineGUI::instance().getSkin().getStyle("DropDownScrollDownBtn")->height;
+		UINT32 scrollButtonUpHeight = skin.getStyle("DropDownScrollUpBtn")->height;
+		UINT32 scrollButtonDownHeight = skin.getStyle("DropDownScrollDownBtn")->height;
 		UINT32 helperElementHeight = scrollButtonUpHeight + scrollButtonDownHeight + dropDownBoxStyle->margins.top + dropDownBoxStyle->margins.bottom;
-		UINT32 elementButtonHeight = EngineGUI::instance().getSkin().getStyle("DropDownEntryBtn")->height;
+		UINT32 elementButtonHeight = skin.getStyle("DropDownEntryBtn")->height;
 
 		UINT32 maxNeededHeight = elementButtonHeight * (UINT32)mDropDownElements.size() + helperElementHeight;
 		UINT32 availableDownwardHeight = (UINT32)std::max(0, (target->getTop() + target->getHeight()) - (dropDownListBounds.y + dropDownListBounds.height));
@@ -102,8 +102,8 @@ namespace BansheeEngine
 		// Scroll up buttons
 		GUIArea* scrollUpBtnArea = GUIArea::create(*this, position.x + dropDownBoxStyle->margins.left, position.y, contentWidth, scrollButtonUpHeight);
 		scrollUpBtnArea->setDepth(100);
-		const GUIElementStyle* scrollUpBtnArrow = EngineGUI::instance().getSkin().getStyle("DropDownScrollUpBtnArrow");
-		GUIButton* scrollUpBtn = GUIButton::create(*this, GUIContent(L"", scrollUpBtnArrow->normal.texture), EngineGUI::instance().getSkin().getStyle("DropDownScrollUpBtn"));
+		const GUIElementStyle* scrollUpBtnArrow = skin.getStyle("DropDownScrollUpBtnArrow");
+		GUIButton* scrollUpBtn = GUIButton::create(*this, GUIContent(L"", scrollUpBtnArrow->normal.texture), skin.getStyle("DropDownScrollUpBtn"));
 		scrollUpBtnArea->getLayout().addElement(scrollUpBtn);
 
 		// Entry buttons
@@ -118,7 +118,7 @@ namespace BansheeEngine
 
 		for(UINT32 i = 0; i < numVisElements; i++)
 		{
-			GUIButton* button = GUIButton::create(*this, mDropDownElements[i], EngineGUI::instance().getSkin().getStyle("DropDownEntryBtn"));
+			GUIButton* button = GUIButton::create(*this, mDropDownElements[i], skin.getStyle("DropDownEntryBtn"));
 			button->onClick.connect(boost::bind(&GUIDropDownBox::entrySelected, this, i));
 
 			dropDownEntriesLayout->addElement(button);
@@ -131,15 +131,14 @@ namespace BansheeEngine
 		GUIArea* scrollDownBtnArea = GUIArea::create(*this, position.x + dropDownBoxStyle->margins.left, 
 			scrollBtnDownOffset, contentWidth, scrollButtonDownHeight);
 		scrollDownBtnArea->setDepth(100);
-		const GUIElementStyle* scrollDownBtnArrow = EngineGUI::instance().getSkin().getStyle("DropDownScrollDownBtnArrow");
-		GUIButton* scrollDownBtn = GUIButton::create(*this, GUIContent(L"", scrollDownBtnArrow->normal.texture), EngineGUI::instance().getSkin().getStyle("DropDownScrollDownBtn"));
+		const GUIElementStyle* scrollDownBtnArrow = skin.getStyle("DropDownScrollDownBtnArrow");
+		GUIButton* scrollDownBtn = GUIButton::create(*this, GUIContent(L"", scrollDownBtnArrow->normal.texture), skin.getStyle("DropDownScrollDownBtn"));
 		scrollDownBtnArea->getLayout().addElement(scrollDownBtn);
 		
 		// Background frame
 		GUIArea* dropDownBoxArea = GUIArea::create(*this, position.x, position.y, width, totalHeight);
 		dropDownBoxArea->setDepth(102);
-		dropDownBoxArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::ScaleToFit, 
-			EngineGUI::instance().getSkin().getStyle("DropDownBox")));
+		dropDownBoxArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::ScaleToFit, skin.getStyle("DropDownBox")));
 	}
 
 	void GUIDropDownBox::scrollDown()

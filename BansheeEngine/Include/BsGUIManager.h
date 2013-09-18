@@ -49,7 +49,7 @@ namespace BansheeEngine
 		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
 
 		void openDropDownBox(GUIDropDownList* parentList, const CM::Vector<CM::WString>::type& elements, 
-			std::function<void(CM::UINT32)> selectedCallback);
+			std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin);
 
 		void queueForDestroy(GUIElement* element);
 

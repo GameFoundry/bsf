@@ -503,7 +503,7 @@ namespace BansheeEngine
 	}
 
 	void GUIManager::openDropDownBox(GUIDropDownList* parentList, const CM::Vector<WString>::type& elements, 
-		std::function<void(CM::UINT32)> selectedCallback)
+		std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin)
 	{
 		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
 			closeDropDownBox(-1);
@@ -513,7 +513,7 @@ namespace BansheeEngine
 
 		GUIWidget& widget = parentList->_getParentWidget();
 		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, elements, 
-			boost::bind(&GUIManager::closeDropDownBox, this, _1));
+			boost::bind(&GUIManager::closeDropDownBox, this, _1), skin);
 
 		mDropDownBoxOpenScheduled = true;
 		mDropDownSelectionMade = selectedCallback;

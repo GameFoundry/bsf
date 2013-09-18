@@ -192,7 +192,7 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->active.texture;
 			markContentAsDirty();
 
-			GUIManager::instance().openDropDownBox(this, mElements, boost::bind(&GUIDropDownList::elementSelected, this, _1));
+			GUIManager::instance().openDropDownBox(this, mElements, boost::bind(&GUIDropDownList::elementSelected, this, _1), *_getParentWidget().getSkin());
 
 			return true;
 		}
