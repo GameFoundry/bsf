@@ -177,7 +177,7 @@ namespace BansheeEngine
 
 	void GUIDropDownBox::entrySelected(UINT32 idx)
 	{
-		if(!onEntrySelected.empty())
-			onEntrySelected(mDropDownStartIdx + idx);
+		if(mSelectedDropDownEntryCallback != nullptr)
+			mSelectedDropDownEntryCallback(mDropDownStartIdx + idx);
 	}
 }

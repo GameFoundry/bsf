@@ -12,8 +12,6 @@ namespace BansheeEngine
 
 		void initialize(CM::Viewport* target, CM::RenderWindow* window, GUIDropDownList* parentList,
 			const CM::Vector<CM::WString>::type& elements, std::function<void(CM::UINT32)> selectedCallback);
-
-		boost::signal<void(CM::UINT32)> onEntrySelected;
 	private:
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
 
