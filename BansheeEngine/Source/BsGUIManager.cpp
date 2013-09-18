@@ -53,7 +53,7 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDropDownBoxActive(false)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDropDownBoxActive(false), mDropDownBoxOpenScheduled(false)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -163,6 +163,14 @@ namespace BansheeEngine
 	void GUIManager::update()
 	{
 		DragAndDropManager::instance().update();
+
+		// We only activate the drop down box the next frame so it isn't
+		// accidentally destroyed the same frame it was created
+		if(mDropDownBoxOpenScheduled)
+		{
+			mDropDownBoxActive = true;
+			mDropDownBoxOpenScheduled = false;
+		}
 
 		// Update layouts
 		for(auto& widgetInfo : mWidgets)
@@ -497,6 +505,9 @@ namespace BansheeEngine
 	void GUIManager::openDropDownBox(GUIDropDownList* parentList, const CM::Vector<WString>::type& elements, 
 		std::function<void(CM::UINT32)> selectedCallback)
 	{
+		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
+			closeDropDownBox(-1);
+
 		mDropDownSO = SceneObject::create("DropDownBox");
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
 
@@ -504,7 +515,7 @@ namespace BansheeEngine
 		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, elements, 
 			boost::bind(&GUIManager::closeDropDownBox, this, _1));
 
-		mDropDownBoxActive = true;
+		mDropDownBoxOpenScheduled = true;
 		mDropDownSelectionMade = selectedCallback;
 	}
 
@@ -623,10 +634,10 @@ namespace BansheeEngine
 			// Close drop down box if user clicks outside the drop down box
 			if(mDropDownBoxActive)
 			{
-				//if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
-				//{
-				//	closeDropDownBox(-1);
-				//}
+				if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
+				{
+					closeDropDownBox(-1);
+				}
 			}
 		}
 	}

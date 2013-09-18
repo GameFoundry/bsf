@@ -103,6 +103,7 @@ namespace BansheeEngine
 		CM::Color mTextSelectionColor;
 
 		// Drop down box
+		bool mDropDownBoxOpenScheduled;
 		bool mDropDownBoxActive;
 		CM::HSceneObject mDropDownSO;
 		CM::GameObjectHandle<GUIDropDownBox> mDropDownBox;
