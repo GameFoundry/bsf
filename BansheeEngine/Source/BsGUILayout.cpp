@@ -75,6 +75,22 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
+	void GUILayout::removeChildAt(CM::UINT32 idx)
+	{
+		if(idx < 0 || idx >= (UINT32)mChildren.size())
+			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+
+		GUIElementBase* child = mChildren[idx];
+		mChildren.erase(mChildren.begin() + idx);
+
+		if(child->_getType() == GUIElementBase::Type::Element)
+			child->_setParent(nullptr);
+		else
+			cm_delete<PoolAlloc>(child);
+
+		markContentAsDirty();
+	}
+
 	GUIFixedSpace& GUILayout::addSpace(UINT32 size)
 	{
 		GUIFixedSpace* entry = cm_new<GUIFixedSpace, PoolAlloc>(size);

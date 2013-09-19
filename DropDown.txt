@@ -1,16 +1,18 @@
-Add support for images on buttons. Replace dropdownbox scroll buttons with that.
-Drop down box gets closed the same frame it was opened on! Need to delay the close one frame.
-
 GUI ignores image in GUIContent for most elements.
- - Also I don't have a way of specifiying drop down box skin. It always uses whichever skin is active but this might be a problem when
-   the user wants his own skin for the game and I want my own skin for the editor. I might want to cache the active skin on DropDownList initialization
-   and then provide it to GUIManager::openDropDownBox.
 
 Immediate TODO:
- - Add support for images in GUIButton
-   - With placement options (left/right of the text)
- - Update DropDown ScrollUp and ScrollDown buttons so they don't use two GUIAreas each and instead use a GUIButton with an image
-   - This will require slightly updated hover graphic (Arrow icon no longer should change color)
+ - Add separator images
+   - Make it in PS, just a single image
+   - Add support for it in DropDownBox
+      - Elements with "-" as contents automatically become separators
+	  - PROBLEM: With scrolling. Right now I assume all elements are the same size but when separators
+	    are used I can no longer scroll that way. TODO
+		 - Add a better way of updating GUIButtons (a way that actuall adds/removes them)
+		 - Can also be used for handling of add/remove scrollup/scrolldown buttons
+ - Add expand right arrow
+   - Add scale9grid where the right side has the arrow
+   - Callback hooked up just opens another context window
+     - Managing this is taken care of on a higher level (GUIManager or similar)
  - Upon scroll up/down remove ScrollUp or ScrollDown buttons if that direction isn't usable anymore
   - Delete its GUIArea and offset the content area, and possibly ScrollDown area
 

@@ -512,8 +512,16 @@ namespace BansheeEngine
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
 
 		GUIWidget& widget = parentList->_getParentWidget();
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, elements, 
-			boost::bind(&GUIManager::closeDropDownBox, this, _1), skin);
+
+		Vector<GUIDropDownData>::type dropDownData;
+		UINT32 i = 0;
+		for(auto& elem : elements)
+		{
+			dropDownData.push_back(GUIDropDownData::button(elem, boost::bind(&GUIManager::closeDropDownBox, this, i)));
+			i++;
+		}
+
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin);
 
 		mDropDownBoxOpenScheduled = true;
 		mDropDownSelectionMade = selectedCallback;

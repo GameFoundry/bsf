@@ -14,8 +14,30 @@ namespace BansheeEngine
 {
 	const UINT32 GUIDropDownBox::DROP_DOWN_BOX_WIDTH = 150;
 
+	GUIDropDownData GUIDropDownData::separator()
+	{
+		GUIDropDownData data;
+		data.mType = Type::Separator;
+		data.mCallback = nullptr;
+
+		return data;
+	}
+
+	GUIDropDownData GUIDropDownData::button(const CM::WString& label, std::function<void()> callback, bool isExpandable)
+	{
+		GUIDropDownData data;
+		data.mLabel = label;
+		data.mType = isExpandable ? Type::EntryExpandable : Type::Entry;
+		data.mCallback = callback;
+
+		return data;
+	}
+
 	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent)
-		:GUIWidget(parent), mDropDownStartIdx(0)
+		:GUIWidget(parent), mDropDownStartIdx(0), mBackgroundFrame(nullptr), mScrollUpStyle(nullptr),
+		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
+		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr), 
+		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr)
 	{
 
 	}
@@ -25,19 +47,26 @@ namespace BansheeEngine
 
 	}
 
-	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, GUIDropDownList* parentList, 
-		const CM::Vector<WString>::type& elements, std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin)
+	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, GUIElement* parentElem, 
+		const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin)
 	{
 		GUIWidget::initialize(target, window);
 
-		mDropDownElements = elements;
-		mSelectedDropDownEntryCallback = selectedCallback;
+		mElements = elements;
+
+		mScrollUpStyle = skin.getStyle("DropDownScrollUpBtn");
+		mScrollDownStyle = skin.getStyle("DropDownScrollDownBtn");
+		mEntryBtnStyle = skin.getStyle("DropDownEntryBtn");
+		mEntryExpBtnStyle = skin.getStyle("DropDownEntryExpBtn");
+		mSeparatorStyle = skin.getStyle("DropDownSeparator");
+		mBackgroundStyle = skin.getStyle("DropDownBox");
+
+		mScrollUpBtnArrow = skin.getStyle("DropDownScrollUpBtnArrow")->normal.texture;
+		mScrollDownBtnArrow = skin.getStyle("DropDownScrollDownBtnArrow")->normal.texture;
 
 		setDepth(0); // Needs to be in front of everything
 
-		const GUIElementStyle* dropDownBoxStyle = skin.getStyle("DropDownBox");
-
-		Rect dropDownListBounds = parentList->getBounds();
+		Rect dropDownListBounds = parentElem->getBounds();
 
 		Int2 position;
 		// Determine x position and whether to align to left or right side of the drop down list
@@ -58,125 +87,254 @@ namespace BansheeEngine
 		// Determine maximum width
 		UINT32 maxPossibleWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - position.x);
 		UINT32 width = std::min(DROP_DOWN_BOX_WIDTH, maxPossibleWidth);
-		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)dropDownBoxStyle->margins.left - (INT32)dropDownBoxStyle->margins.right);
 
 		// Determine y position and whether to open upward or downward
-		UINT32 scrollButtonUpHeight = skin.getStyle("DropDownScrollUpBtn")->height;
-		UINT32 scrollButtonDownHeight = skin.getStyle("DropDownScrollDownBtn")->height;
-		UINT32 helperElementHeight = scrollButtonUpHeight + scrollButtonDownHeight + dropDownBoxStyle->margins.top + dropDownBoxStyle->margins.bottom;
-		UINT32 elementButtonHeight = skin.getStyle("DropDownEntryBtn")->height;
+		UINT32 helperElementHeight = mScrollUpStyle->height + mScrollDownStyle->height + mBackgroundStyle->margins.top + mBackgroundStyle->margins.bottom;
 
-		UINT32 maxNeededHeight = elementButtonHeight * (UINT32)mDropDownElements.size() + helperElementHeight;
+		UINT32 maxNeededHeight = helperElementHeight;
+		UINT32 numElements = (UINT32)mElements.size();
+		for(UINT32 i = 0; i < numElements; i++)
+			maxNeededHeight += getElementHeight(i);
+
 		UINT32 availableDownwardHeight = (UINT32)std::max(0, (target->getTop() + target->getHeight()) - (dropDownListBounds.y + dropDownListBounds.height));
-
 		UINT32 availableUpwardHeight = (UINT32)std::max(0, dropDownListBounds.y - target->getTop());
 
 		//// Prefer down if possible
+		UINT32 height = 0;
 		if(maxNeededHeight <= availableDownwardHeight)
+		{
 			position.y = dropDownListBounds.y + dropDownListBounds.height;
+			height = availableDownwardHeight;
+		}
 		else
 		{
 			if(availableDownwardHeight >= availableUpwardHeight)
+			{
 				position.y = dropDownListBounds.y + dropDownListBounds.height;
+				height = availableDownwardHeight;
+			}
 			else
+			{
 				position.y = dropDownListBounds.y - std::min(maxNeededHeight, availableUpwardHeight);
+				height = availableUpwardHeight;
+			}
 		}
 
-		// Determine height of the box, and how many visible elements we can fit in it
-		UINT32 maxPossibleHeight = (UINT32)std::max(0, (target->getTop() + target->getHeight()) - position.y);
-		UINT32 heightAvailableForContent = (UINT32)std::max(0, (INT32)maxPossibleHeight - (INT32)helperElementHeight);
-		UINT32 numVisElements = 0;
-		
-		UINT32 contentAreaHeight = 0;
-		for(UINT32 i = 0; i < (UINT32)mDropDownElements.size(); i++)
-		{
-			if(contentAreaHeight >= heightAvailableForContent)
-				break;
+		// Content area
+		mContentArea = GUIArea::create(*this, position.x, position.y, width, height);
+		mContentLayout = &mContentArea->getLayout().addLayoutY();
 
-			contentAreaHeight += elementButtonHeight;
-			numVisElements++;
-		}
-
-		UINT32 totalHeight = contentAreaHeight + helperElementHeight; 
-		
-		// Scroll up buttons
-		GUIArea* scrollUpBtnArea = GUIArea::create(*this, position.x + dropDownBoxStyle->margins.left, position.y, contentWidth, scrollButtonUpHeight);
-		scrollUpBtnArea->setDepth(100);
-		const GUIElementStyle* scrollUpBtnArrow = skin.getStyle("DropDownScrollUpBtnArrow");
-		GUIButton* scrollUpBtn = GUIButton::create(*this, GUIContent(L"", scrollUpBtnArrow->normal.texture), skin.getStyle("DropDownScrollUpBtn"));
-		scrollUpBtnArea->getLayout().addElement(scrollUpBtn);
-
-		// Entry buttons
-		// TODO - It may happen there is not enough place for even a single element, in which case we just don't render any.
-		//  Some smart solution to deal with that case might be employed, but I think it's a fairly rare case and can be deal with in other ways.
-
-		UINT32 contentAreaYOffset = scrollButtonUpHeight + dropDownBoxStyle->margins.top;
-
-		GUIArea* dropDownEntriesArea = GUIArea::create(*this, position.x + dropDownBoxStyle->margins.left, 
-			position.y + contentAreaYOffset, contentWidth, contentAreaHeight);
-		GUILayout* dropDownEntriesLayout = &dropDownEntriesArea->getLayout().addLayoutY();
-
-		for(UINT32 i = 0; i < numVisElements; i++)
-		{
-			GUIButton* button = GUIButton::create(*this, mDropDownElements[i], skin.getStyle("DropDownEntryBtn"));
-			button->onClick.connect(boost::bind(&GUIDropDownBox::entrySelected, this, i));
-
-			dropDownEntriesLayout->addElement(button);
-			mDropDownElementButtons.push_back(button);
-		}
-
-		// Scroll down buttons
-		UINT32 scrollBtnDownOffset = position.y + contentAreaYOffset + contentAreaHeight;
-
-		GUIArea* scrollDownBtnArea = GUIArea::create(*this, position.x + dropDownBoxStyle->margins.left, 
-			scrollBtnDownOffset, contentWidth, scrollButtonDownHeight);
-		scrollDownBtnArea->setDepth(100);
-		const GUIElementStyle* scrollDownBtnArrow = skin.getStyle("DropDownScrollDownBtnArrow");
-		GUIButton* scrollDownBtn = GUIButton::create(*this, GUIContent(L"", scrollDownBtnArrow->normal.texture), skin.getStyle("DropDownScrollDownBtn"));
-		scrollDownBtnArea->getLayout().addElement(scrollDownBtn);
-		
 		// Background frame
-		GUIArea* dropDownBoxArea = GUIArea::create(*this, position.x, position.y, width, totalHeight);
-		dropDownBoxArea->setDepth(102);
-		dropDownBoxArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::ScaleToFit, skin.getStyle("DropDownBox")));
+		mBackgroundArea = GUIArea::create(*this, position.x, position.y, width, height);
+		mBackgroundArea->setDepth(102);
+		mBackgroundArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::ScaleToFit, skin.getStyle("DropDownBox")));
+
+		updateGUIElements(position.x, position.y, width, height);
+	}
+
+	void GUIDropDownBox::updateGUIElements(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height)
+	{
+		// Remove all elements from content layout
+		while(mContentLayout->getNumChildren() > 0)
+			mContentLayout->removeChildAt(mContentLayout->getNumChildren() - 1);
+
+		// Determine if we need scroll up and/or down buttons, number of visible elements and actual height
+		bool needsScrollUp = mDropDownStartIdx > 0;
+		UINT32 numElements = (UINT32)mElements.size();
+
+		UINT32 usedHeight = mBackgroundStyle->margins.top + mBackgroundStyle->margins.bottom;
+		if(needsScrollUp)
+			usedHeight += mScrollUpStyle->height;
+
+		UINT32 numVisibleElements = 0;
+		bool needsScrollDown = false;
+		for(UINT32 i = 0; i < numElements; i++)
+		{
+			usedHeight += getElementHeight(i);
+			numVisibleElements++;
+
+			if(usedHeight > height)
+			{
+				usedHeight += mScrollDownStyle->height;
+				needsScrollDown = true;
+
+				// Remove last few elements until we fit again
+				UINT32 j = i;
+				while(usedHeight > height && j >= 0)
+				{
+					usedHeight -= getElementHeight(j);
+					numVisibleElements--;
+
+					j--;
+				}
+
+				break;
+			}
+		}
+
+		// Add scroll up button
+		if(needsScrollUp)
+		{
+			if(mScrollUpBtn == nullptr)
+			{
+				mScrollUpBtn = GUIButton::create(*this, GUIContent(L"", mScrollUpBtnArrow), mScrollUpStyle);
+				mScrollUpBtn->onClick.connect(boost::bind(&GUIDropDownBox::scrollUp, this));
+			}
+
+			mContentLayout->addElement(mScrollUpBtn);			
+		}
+		else
+		{
+			if(mScrollUpBtn != nullptr)
+			{
+				GUIElement::destroy(mScrollUpBtn);
+				mScrollUpBtn = nullptr;
+			}
+		}
+
+		CM::Vector<GUITexture*>::type newSeparators;
+		CM::Vector<GUIButton*>::type newEntryBtns;
+		CM::Vector<GUIButton*>::type newExpEntryBtns;
+		for(UINT32 i = 0; i < numVisibleElements; i++)
+		{
+			GUIDropDownData& element = mElements[i];
+
+			if(element.isSeparator())
+			{
+				GUITexture* separator = nullptr;
+				if(!mCachedSeparators.empty())
+				{
+					separator = mCachedSeparators.back();
+					mCachedSeparators.erase(mCachedSeparators.end() - 1);
+				}
+				else
+				{
+					separator = GUITexture::create(*this, GUIImageScaleMode::StretchToFit, mSeparatorStyle);
+				}
+
+				mContentLayout->addElement(separator);
+				newSeparators.push_back(separator);
+			}
+			else if(element.isExpandable())
+			{
+				GUIButton* expEntryBtn = nullptr;
+				if(!mCachedExpEntryBtns.empty())
+				{
+					expEntryBtn = mCachedExpEntryBtns.back();
+					mCachedExpEntryBtns.erase(mCachedExpEntryBtns.end() - 1);
+				}
+				else
+				{
+					expEntryBtn = GUIButton::create(*this, mElements[i].getLabel(), mEntryExpBtnStyle);
+					expEntryBtn->onClick.connect(mElements[i].getCallback());
+				}
+
+				mContentLayout->addElement(expEntryBtn);
+				newExpEntryBtns.push_back(expEntryBtn);
+			}
+			else
+			{
+				GUIButton* entryBtn = nullptr;
+				if(!mCachedEntryBtns.empty())
+				{
+					entryBtn = mCachedEntryBtns.back();
+					mCachedEntryBtns.erase(mCachedEntryBtns.end() - 1);
+				}
+				else
+				{
+					entryBtn = GUIButton::create(*this, mElements[i].getLabel(), mEntryBtnStyle);
+					entryBtn->onClick.connect(mElements[i].getCallback());
+				}
+
+				mContentLayout->addElement(entryBtn);
+				newEntryBtns.push_back(entryBtn);
+			}
+		}
+
+		// Destroy all unused cached elements
+		for(auto& elem : mCachedSeparators)
+			GUIElement::destroy(elem);
+
+		for(auto& elem : mCachedEntryBtns)
+			GUIElement::destroy(elem);
+
+		for(auto& elem : mCachedExpEntryBtns)
+			GUIElement::destroy(elem);
+
+		mCachedSeparators = newSeparators;
+		mCachedEntryBtns = newEntryBtns;
+		mCachedExpEntryBtns = newExpEntryBtns;
+
+		// Add scroll down button
+		if(needsScrollDown)
+		{
+			if(mScrollDownBtn == nullptr)
+			{
+				mScrollDownBtn = GUIButton::create(*this, GUIContent(L"", mScrollDownBtnArrow), mScrollDownStyle);
+				mScrollDownBtn->onClick.connect(boost::bind(&GUIDropDownBox::scrollDown, this));
+			}
+
+			mContentLayout->addElement(mScrollDownBtn);			
+		}
+		else
+		{
+			if(mScrollDownBtn != nullptr)
+			{
+				GUIElement::destroy(mScrollDownBtn);
+				mScrollDownBtn = nullptr;
+			}
+		}
+		
+		// Resize and reposition areas
+		mBackgroundArea->setSize(width, usedHeight);
+		mBackgroundArea->setPosition(x, y);
+
+		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)mBackgroundStyle->margins.left - (INT32)mBackgroundStyle->margins.right);
+		UINT32 contentHeight = (UINT32)std::max(0, (INT32)usedHeight - (INT32)mBackgroundStyle->margins.top - (INT32)mBackgroundStyle->margins.bottom);
+		mContentArea->setSize(contentWidth, contentHeight);
+		mContentArea->setPosition(x + mBackgroundStyle->margins.left, y + mBackgroundStyle->margins.top);
+	}
+
+	UINT32 GUIDropDownBox::getElementHeight(CM::UINT32 idx) const
+	{
+		if(mElements[idx].isSeparator())
+			return mSeparatorStyle->height;
+		else if(mElements[idx].isExpandable())
+			return mEntryExpBtnStyle->height;
+		else
+			return mEntryBtnStyle->height;
 	}
 
 	void GUIDropDownBox::scrollDown()
 	{
-		INT32 maxNumElements = (INT32)mDropDownElements.size();
-		INT32 numVisibleElements = (INT32)mDropDownElementButtons.size();
+		//INT32 maxNumElements = (INT32)mDropDownElements.size();
+		//INT32 numVisibleElements = (INT32)mDropDownElementButtons.size();
 
-		INT32 newIdx = mDropDownStartIdx + numVisibleElements;
-		INT32 clampedNewIdx = std::min(newIdx, maxNumElements - numVisibleElements);
-		mDropDownStartIdx = (UINT32)std::min(newIdx, clampedNewIdx);
+		//INT32 newIdx = mDropDownStartIdx + numVisibleElements;
+		//INT32 clampedNewIdx = std::min(newIdx, maxNumElements - numVisibleElements);
+		//mDropDownStartIdx = (UINT32)std::min(newIdx, clampedNewIdx);
 
-		UINT32 i = mDropDownStartIdx;
-		for(auto& button : mDropDownElementButtons)
-		{
-			button->setContent(GUIContent(mDropDownElements[i]));
-			i++;
-		}
+		//UINT32 i = mDropDownStartIdx;
+		//for(auto& button : mDropDownElementButtons)
+		//{
+		//	button->setContent(GUIContent(mDropDownElements[i]));
+		//	i++;
+		//}
 	}
 
 	void GUIDropDownBox::scrollUp()
 	{
-		INT32 numVisibleElements = (INT32)mDropDownElementButtons.size();
+		//INT32 numVisibleElements = (INT32)mDropDownElementButtons.size();
 
-		INT32 newIdx = mDropDownStartIdx - numVisibleElements;
-		INT32 clampedNewIdx = std::max(newIdx, 0);
-		mDropDownStartIdx = (UINT32)std::min(newIdx, clampedNewIdx);
+		//INT32 newIdx = mDropDownStartIdx - numVisibleElements;
+		//INT32 clampedNewIdx = std::max(newIdx, 0);
+		//mDropDownStartIdx = (UINT32)std::min(newIdx, clampedNewIdx);
 
-		UINT32 i = mDropDownStartIdx;
-		for(auto& button : mDropDownElementButtons)
-		{
-			button->setContent(GUIContent(mDropDownElements[i]));
-			i++;
-		}
-	}
-
-	void GUIDropDownBox::entrySelected(UINT32 idx)
-	{
-		if(mSelectedDropDownEntryCallback != nullptr)
-			mSelectedDropDownEntryCallback(mDropDownStartIdx + idx);
+		//UINT32 i = mDropDownStartIdx;
+		//for(auto& button : mDropDownElementButtons)
+		//{
+		//	button->setContent(GUIContent(mDropDownElements[i]));
+		//	i++;
+		//}
 	}
 }

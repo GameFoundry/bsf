@@ -77,6 +77,11 @@ namespace BansheeEngine
 	const String EngineGUI::DropDownBoxBtnUpNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnUpNormal.psd";
 	const String EngineGUI::DropDownBoxBtnDownNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnDownNormal.psd";
 
+	const String EngineGUI::DropDownBoxEntryExpNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownExpNormal.psd";
+	const String EngineGUI::DropDownBoxEntryExpHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownExpHover.psd";
+
+	const String EngineGUI::DropDownSeparatorTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownSeparator.psd";
+
 	const String EngineGUI::DropDownBoxBtnUpArrowTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnUpArrow.psd";
 	const String EngineGUI::DropDownBoxBtnDownArrowTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnDownArrow.psd";
 
@@ -518,6 +523,29 @@ namespace BansheeEngine
 
 		mSkin.setStyle("DropDownEntryBtn", dropDownEntryBtnStyle);
 
+		// DropDown entry button with expand
+		HTexture dropDownExpEntryBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryExpNormalTex));
+		HTexture dropDownExpEntryBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryExpNormalTex));
+
+		GUIElementStyle dropDownEntryExpBtnStyle;
+		dropDownEntryExpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownExpEntryBtnNormal));
+		dropDownEntryExpBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownExpEntryBtnHover));
+		dropDownEntryExpBtnStyle.active.texture = dropDownEntryExpBtnStyle.hover.texture;
+		dropDownEntryExpBtnStyle.fixedHeight = true;
+		dropDownEntryExpBtnStyle.fixedWidth = false;
+		dropDownEntryExpBtnStyle.height = 14;
+		dropDownEntryExpBtnStyle.width = 30;
+		dropDownEntryExpBtnStyle.border.left = 1;
+		dropDownEntryExpBtnStyle.border.right = 6;
+		dropDownEntryExpBtnStyle.border.top = 1;
+		dropDownEntryExpBtnStyle.border.bottom = 1;
+		dropDownEntryExpBtnStyle.font = font;
+		dropDownEntryExpBtnStyle.fontSize = DefaultFontSize;
+		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
+		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
+
+		mSkin.setStyle("DropDownEntryExpBtn", dropDownEntryExpBtnStyle);
+
 		// DropDown box frame
 		HTexture dropDownBoxBgTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBgTex));
 
@@ -535,5 +563,23 @@ namespace BansheeEngine
 		dropDownBoxStyle.border.bottom = 1;
 
 		mSkin.setStyle("DropDownBox", dropDownBoxStyle);
+
+		// Drop down separator
+		HTexture dropDownSeparatorTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownSeparatorTex));
+
+		GUIElementStyle dropDownSeparatorStyle;
+		dropDownSeparatorStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownSeparatorTex));
+		dropDownSeparatorStyle.hover.texture = dropDownSeparatorStyle.normal.texture;
+		dropDownSeparatorStyle.active.texture = dropDownSeparatorStyle.hover.texture;
+		dropDownSeparatorStyle.fixedHeight = true;
+		dropDownSeparatorStyle.fixedWidth = false;
+		dropDownSeparatorStyle.height = 3;
+		dropDownSeparatorStyle.width = 30;
+		dropDownSeparatorStyle.border.left = 1;
+		dropDownSeparatorStyle.border.right = 1;
+		dropDownSeparatorStyle.border.top = 1;
+		dropDownSeparatorStyle.border.bottom = 1;
+
+		mSkin.setStyle("DropDownSeparator", dropDownSeparatorStyle);
 	}
 }

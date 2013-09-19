@@ -79,6 +79,11 @@ namespace BansheeEngine
 		static const CM::String DropDownBoxBtnUpNormalTex;
 		static const CM::String DropDownBoxBtnDownNormalTex;
 
+		static const CM::String DropDownBoxEntryExpNormalTex;
+		static const CM::String DropDownBoxEntryExpHoverTex;
+
+		static const CM::String DropDownSeparatorTex;
+
 		static const CM::String DropDownBoxBtnUpArrowTex;
 		static const CM::String DropDownBoxBtnDownArrowTex;
 	};

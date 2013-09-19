@@ -4,24 +4,71 @@
 
 namespace BansheeEngine
 {
+	class BS_EXPORT GUIDropDownData
+	{
+		enum class Type
+		{
+			Separator,
+			Entry,
+			EntryExpandable
+		};
+
+	public:
+		static GUIDropDownData separator();
+		static GUIDropDownData button(const CM::WString& label, std::function<void()> callback, bool isExpandable = false);
+
+		bool isSeparator() const { return mType == Type::Separator; }
+		bool isExpandable() const { return mType == Type::EntryExpandable; }
+
+		const CM::WString& getLabel() const { return mLabel; }
+		std::function<void()> getCallback() const { return mCallback; }
+	private:
+		GUIDropDownData() { }
+
+		std::function<void()> mCallback;
+		CM::WString mLabel;
+		Type mType; 
+	};
+
 	class BS_EXPORT GUIDropDownBox : public GUIWidget
 	{
 	public:
 		GUIDropDownBox(const CM::HSceneObject& parent);
 		~GUIDropDownBox();
 
-		void initialize(CM::Viewport* target, CM::RenderWindow* window, GUIDropDownList* parentList,
-			const CM::Vector<CM::WString>::type& elements, std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin);
+		void initialize(CM::Viewport* target, CM::RenderWindow* window, GUIElement* parentElem,
+			const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin);
 	private:
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
 
-		std::function<void(CM::UINT32)> mSelectedDropDownEntryCallback;
-		CM::Vector<CM::WString>::type mDropDownElements;
-		CM::Vector<GUIButton*>::type mDropDownElementButtons;
+		CM::Vector<GUIDropDownData>::type mElements;
 		CM::UINT32 mDropDownStartIdx;
+
+		CM::Vector<GUITexture*>::type mCachedSeparators;
+		CM::Vector<GUIButton*>::type mCachedEntryBtns;
+		CM::Vector<GUIButton*>::type mCachedExpEntryBtns;
+		GUIButton* mScrollUpBtn;
+		GUIButton* mScrollDownBtn;
+		GUITexture* mBackgroundFrame;
+
+		const GUIElementStyle* mScrollUpStyle;
+		const GUIElementStyle* mScrollDownStyle;
+		const GUIElementStyle* mEntryBtnStyle;
+		const GUIElementStyle* mEntryExpBtnStyle;
+		const GUIElementStyle* mSeparatorStyle;
+		const GUIElementStyle* mBackgroundStyle;
+		SpriteTexturePtr mScrollUpBtnArrow;
+		SpriteTexturePtr mScrollDownBtnArrow;
+
+		GUIArea* mBackgroundArea;
+		GUIArea* mContentArea;
+		GUILayout* mContentLayout;
+
+		void updateGUIElements(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
 		void scrollDown();
 		void scrollUp();
-		void entrySelected(CM::UINT32 idx);
+
+		CM::UINT32 getElementHeight(CM::UINT32 idx) const;
 	};
 }
