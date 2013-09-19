@@ -211,5 +211,9 @@ namespace BansheeEngine
 	{
 		if(!onSelectionChanged.empty())
 			onSelectionChanged(idx);
+
+		mSelectedIdx = idx;
+
+		markContentAsDirty();
 	}
 }
