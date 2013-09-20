@@ -401,7 +401,7 @@ namespace BansheeEngine
 		/* 								DROP DOWN BOX                      		*/
 		/************************************************************************/
 
-		// DropDown button
+		// ListBox button
 		HTexture dropDownListNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBtnNormalTex));
 		HTexture dropDownListHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBtnHoverTex));
 
@@ -426,7 +426,7 @@ namespace BansheeEngine
 		dropDownListStyle.textHorzAlign = THA_Left;
 		dropDownListStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle("DropDownList", dropDownListStyle);
+		mSkin.setStyle("ListBox", dropDownListStyle);
 
 		// DropDown scroll up button arrow
 		HTexture dropDownBtnScrollUpArrow = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpArrowTex));
@@ -444,7 +444,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnArrowStyle.border.top = 1;
 		dropDownScrollUpBtnArrowStyle.border.bottom = 1;
 
-		mSkin.setStyle("DropDownScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		mSkin.setStyle("ListBoxScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		mSkin.setStyle("MenuBarScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
+		mSkin.setStyle("ContextMenuScrollUpBtnArrow", dropDownScrollUpBtnArrowStyle);
 
 		// DropDown scroll up button
 		HTexture dropDownBtnScrollUpNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpNormalTex));
@@ -462,7 +464,9 @@ namespace BansheeEngine
 		dropDownScrollUpBtnStyle.border.top = 1;
 		dropDownScrollUpBtnStyle.border.bottom = 1;
 
-		mSkin.setStyle("DropDownScrollUpBtn", dropDownScrollUpBtnStyle);
+		mSkin.setStyle("ListBoxScrollUpBtn", dropDownScrollUpBtnStyle);
+		mSkin.setStyle("MenuBarScrollUpBtn", dropDownScrollUpBtnStyle);
+		mSkin.setStyle("ContextMenuScrollUpBtn", dropDownScrollUpBtnStyle);
 
 		// DropDown scroll down button arrow
 		HTexture dropDownBtnScrollDownArrow = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnDownArrowTex));
@@ -480,7 +484,9 @@ namespace BansheeEngine
 		dropDownScrollDownBtnArrowStyle.border.top = 1;
 		dropDownScrollDownBtnArrowStyle.border.bottom = 1;
 		
-		mSkin.setStyle("DropDownScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		mSkin.setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		mSkin.setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
+		mSkin.setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 
 		// DropDown scroll down button
 		HTexture dropDownBtnScrollDownNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnDownNormalTex));
@@ -498,8 +504,10 @@ namespace BansheeEngine
 		dropDownScrollDownBtnStyle.border.top = 1;
 		dropDownScrollDownBtnStyle.border.bottom = 1;
 
-		mSkin.setStyle("DropDownScrollDownBtn", dropDownScrollDownBtnStyle);
-		
+		mSkin.setStyle("ListBoxScrollDownBtn", dropDownScrollDownBtnStyle);
+		mSkin.setStyle("MenuBarScrollDownBtn", dropDownScrollDownBtnStyle);
+		mSkin.setStyle("ContextMenuScrollDownBtn", dropDownScrollDownBtnStyle);
+
 		// DropDown entry button
 		HTexture dropDownEntryBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryNormalTex));
 		HTexture dropDownEntryBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryHoverTex));
@@ -521,7 +529,9 @@ namespace BansheeEngine
 		dropDownEntryBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle("DropDownEntryBtn", dropDownEntryBtnStyle);
+		mSkin.setStyle("ListBoxEntryBtn", dropDownEntryBtnStyle);
+		mSkin.setStyle("MenuBarEntryBtn", dropDownEntryBtnStyle);
+		mSkin.setStyle("ContextMenuEntryBtn", dropDownEntryBtnStyle);
 
 		// DropDown entry button with expand
 		HTexture dropDownExpEntryBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryExpNormalTex));
@@ -544,7 +554,9 @@ namespace BansheeEngine
 		dropDownEntryExpBtnStyle.textHorzAlign = THA_Left;
 		dropDownEntryExpBtnStyle.textVertAlign = TVA_Top;
 
-		mSkin.setStyle("DropDownEntryExpBtn", dropDownEntryExpBtnStyle);
+		mSkin.setStyle("ListBoxEntryExpBtn", dropDownEntryExpBtnStyle);
+		mSkin.setStyle("MenuBarEntryExpBtn", dropDownEntryExpBtnStyle);
+		mSkin.setStyle("ContextMenuEntryExpBtn", dropDownEntryExpBtnStyle);
 
 		// DropDown box frame
 		HTexture dropDownBoxBgTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBgTex));
@@ -562,7 +574,9 @@ namespace BansheeEngine
 		dropDownBoxStyle.border.top = 1;
 		dropDownBoxStyle.border.bottom = 1;
 
-		mSkin.setStyle("DropDownBox", dropDownBoxStyle);
+		mSkin.setStyle("ListBoxFrame", dropDownBoxStyle);
+		mSkin.setStyle("MenuBarFrame", dropDownBoxStyle);
+		mSkin.setStyle("ContextMenuFrame", dropDownBoxStyle);
 
 		// Drop down separator
 		HTexture dropDownSeparatorTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownSeparatorTex));
@@ -580,6 +594,8 @@ namespace BansheeEngine
 		dropDownSeparatorStyle.border.top = 1;
 		dropDownSeparatorStyle.border.bottom = 1;
 
-		mSkin.setStyle("DropDownSeparator", dropDownSeparatorStyle);
+		mSkin.setStyle("ListBoxSeparator", dropDownSeparatorStyle);
+		mSkin.setStyle("MenuBarSeparator", dropDownSeparatorStyle);
+		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
 	}
 }

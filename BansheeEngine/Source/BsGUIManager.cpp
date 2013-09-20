@@ -20,7 +20,7 @@
 #include "CmRenderQueue.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
-#include "BsGUIDropDownList.h"
+#include "BsGUIListBox.h"
 #include "BsGUIDropDownBox.h"
 #include "BsDragAndDropManager.h"
 
@@ -502,11 +502,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::openDropDownBox(GUIDropDownList* parentList, const CM::Vector<WString>::type& elements, 
+	void GUIManager::openDropDownListBox(GUIListBox* parentList, const CM::Vector<WString>::type& elements, 
 		std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin)
 	{
 		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
-			closeDropDownBox(-1);
+			closeDropDownListBox(-1);
 
 		mDropDownSO = SceneObject::create("DropDownBox");
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
@@ -517,17 +517,17 @@ namespace BansheeEngine
 		UINT32 i = 0;
 		for(auto& elem : elements)
 		{
-			dropDownData.push_back(GUIDropDownData::button(elem, boost::bind(&GUIManager::closeDropDownBox, this, i)));
+			dropDownData.push_back(GUIDropDownData::button(elem, boost::bind(&GUIManager::closeDropDownListBox, this, i)));
 			i++;
 		}
 
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin);
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin, GUIDropDownType::ListBox);
 
 		mDropDownBoxOpenScheduled = true;
 		mDropDownSelectionMade = selectedCallback;
 	}
 
-	void GUIManager::closeDropDownBox(INT32 selectedIdx)
+	void GUIManager::closeDropDownListBox(INT32 selectedIdx)
 	{
 		if(selectedIdx != -1)
 			mDropDownSelectionMade(selectedIdx);
@@ -644,7 +644,7 @@ namespace BansheeEngine
 			{
 				if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
 				{
-					closeDropDownBox(-1);
+					closeDropDownListBox(-1);
 				}
 			}
 		}

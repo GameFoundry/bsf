@@ -30,6 +30,17 @@ namespace BansheeEngine
 		Type mType; 
 	};
 
+	enum class GUIDropDownType
+	{
+		ListBox,
+		ContextMenu,
+		MenuBar
+	};
+
+	/**
+	 * @brief	This is a generic GUI drop down box class that can be used for:
+	 * 			list boxes, menu bars or context menus.
+	 */
 	class BS_EXPORT GUIDropDownBox : public GUIWidget
 	{
 	public:
@@ -37,7 +48,7 @@ namespace BansheeEngine
 		~GUIDropDownBox();
 
 		void initialize(CM::Viewport* target, CM::RenderWindow* window, GUIElement* parentElem,
-			const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin);
+			const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type);
 	private:
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
 

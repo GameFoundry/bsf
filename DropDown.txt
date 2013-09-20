@@ -1,20 +1,12 @@
 GUI ignores image in GUIContent for most elements.
 
 Immediate TODO:
- - Add separator images
-   - Make it in PS, just a single image
-   - Add support for it in DropDownBox
-      - Elements with "-" as contents automatically become separators
-	  - PROBLEM: With scrolling. Right now I assume all elements are the same size but when separators
-	    are used I can no longer scroll that way. TODO
-		 - Add a better way of updating GUIButtons (a way that actuall adds/removes them)
-		 - Can also be used for handling of add/remove scrollup/scrolldown buttons
- - Add expand right arrow
-   - Add scale9grid where the right side has the arrow
-   - Callback hooked up just opens another context window
-     - Managing this is taken care of on a higher level (GUIManager or similar)
- - Upon scroll up/down remove ScrollUp or ScrollDown buttons if that direction isn't usable anymore
-  - Delete its GUIArea and offset the content area, and possibly ScrollDown area
+ - Hook up ScrollUp and ScrollDown events in GUIDropDownBox
+ - Add support for different skins for context menu, drop down list and drop down menu
+    - Just add a prefix to GUIDropDownBox constructor
+ - Add support to GUIManager to deal with multiple different GUIDropDownBoxes
+
+Figure out how to deal with sub-menus
 
 ----------------------------
  - Elements can call addContextAction("Name", "Callback")

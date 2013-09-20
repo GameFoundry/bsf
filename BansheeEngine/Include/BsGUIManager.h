@@ -48,7 +48,7 @@ namespace BansheeEngine
 		void update();
 		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
 
-		void openDropDownBox(GUIDropDownList* parentList, const CM::Vector<CM::WString>::type& elements, 
+		void openDropDownListBox(GUIListBox* parentList, const CM::Vector<CM::WString>::type& elements, 
 			std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin);
 
 		void queueForDestroy(GUIElement* element);
@@ -143,7 +143,7 @@ namespace BansheeEngine
 
 		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);
 
-		void closeDropDownBox(CM::INT32 selectedIdx);
+		void closeDropDownListBox(CM::INT32 selectedIdx);
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;

@@ -1,4 +1,4 @@
-#include "BsGUIDropDownList.h"
+#include "BsGUIListBox.h"
 #include "BsImageSprite.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
@@ -13,13 +13,13 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const String& GUIDropDownList::getGUITypeName()
+	const String& GUIListBox::getGUITypeName()
 	{
-		static String name = "DropDownList";
+		static String name = "ListBox";
 		return name;
 	}
 
-	GUIDropDownList::GUIDropDownList(GUIWidget& parent, const GUIElementStyle* style, const Vector<WString>::type& elements, const GUILayoutOptions& layoutOptions)
+	GUIListBox::GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const Vector<WString>::type& elements, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mElements(elements), mNumImageRenderElements(0), mSelectedIdx(0)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -39,13 +39,13 @@ namespace BansheeEngine
 		mImageDesc.borderBottom = mStyle->border.bottom;
 	}
 
-	GUIDropDownList::~GUIDropDownList()
+	GUIListBox::~GUIListBox()
 	{
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIDropDownList* GUIDropDownList::create(GUIWidget& parent, const Vector<WString>::type& elements, const GUIElementStyle* style)
+	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<WString>::type& elements, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -53,10 +53,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIDropDownList, PoolAlloc>()) GUIDropDownList(parent, style, elements, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, getDefaultLayoutOptions(style));
 	}
 
-	GUIDropDownList* GUIDropDownList::create(GUIWidget& parent, const Vector<WString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<WString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -64,10 +64,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIDropDownList, PoolAlloc>()) GUIDropDownList(parent, style, elements, layoutOptions);
+		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, layoutOptions);
 	}
 
-	UINT32 GUIDropDownList::getNumRenderElements() const
+	UINT32 GUIListBox::getNumRenderElements() const
 	{
 		UINT32 numElements = mImageSprite->getNumRenderElements();
 		numElements += mTextSprite->getNumRenderElements();
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const HMaterial& GUIDropDownList::getMaterial(UINT32 renderElementIdx) const
+	const HMaterial& GUIListBox::getMaterial(UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 			return mTextSprite->getMaterial(mNumImageRenderElements - renderElementIdx);
@@ -83,7 +83,7 @@ namespace BansheeEngine
 			return mImageSprite->getMaterial(renderElementIdx);
 	}
 
-	UINT32 GUIDropDownList::getNumQuads(UINT32 renderElementIdx) const
+	UINT32 GUIListBox::getNumQuads(UINT32 renderElementIdx) const
 	{
 		UINT32 numQuads = 0;
 		if(renderElementIdx >= mNumImageRenderElements)
@@ -94,7 +94,7 @@ namespace BansheeEngine
 		return numQuads;
 	}
 
-	void GUIDropDownList::updateRenderElementsInternal()
+	void GUIListBox::updateRenderElementsInternal()
 	{		
 		mImageDesc.width = mWidth;
 		mImageDesc.height = mHeight;
@@ -119,12 +119,12 @@ namespace BansheeEngine
 		GUIElement::updateRenderElementsInternal();
 	}
 
-	void GUIDropDownList::updateClippedBounds()
+	void GUIListBox::updateClippedBounds()
 	{
 		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
-	UINT32 GUIDropDownList::_getOptimalWidth() const
+	UINT32 GUIListBox::_getOptimalWidth() const
 	{
 		if(mImageDesc.texture != nullptr)
 		{
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	UINT32 GUIDropDownList::_getOptimalHeight() const
+	UINT32 GUIListBox::_getOptimalHeight() const
 	{
 		if(mImageDesc.texture != nullptr)
 		{
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	UINT32 GUIDropDownList::_getRenderElementDepth(UINT32 renderElementIdx) const
+	UINT32 GUIListBox::_getRenderElementDepth(UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
 			return _getDepth();
@@ -152,7 +152,7 @@ namespace BansheeEngine
 			return _getDepth() + 1;
 	}
 
-	void GUIDropDownList::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+	void GUIListBox::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
 		if(renderElementIdx >= mNumImageRenderElements)
@@ -171,7 +171,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIDropDownList::mouseEvent(const GUIMouseEvent& ev)
+	bool GUIListBox::mouseEvent(const GUIMouseEvent& ev)
 	{
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
@@ -192,7 +192,7 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->active.texture;
 			markContentAsDirty();
 
-			GUIManager::instance().openDropDownBox(this, mElements, boost::bind(&GUIDropDownList::elementSelected, this, _1), _getParentWidget().getSkin());
+			GUIManager::instance().openDropDownListBox(this, mElements, boost::bind(&GUIListBox::elementSelected, this, _1), _getParentWidget().getSkin());
 
 			return true;
 		}
@@ -207,7 +207,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIDropDownList::elementSelected(CM::UINT32 idx)
+	void GUIListBox::elementSelected(CM::UINT32 idx)
 	{
 		if(!onSelectionChanged.empty())
 			onSelectionChanged(idx);

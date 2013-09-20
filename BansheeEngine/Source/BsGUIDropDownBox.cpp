@@ -6,7 +6,7 @@
 #include "BsGUIContent.h"
 #include "BsGUISkin.h"
 #include "CmViewport.h"
-#include "BsGUIDropDownList.h"
+#include "BsGUIListBox.h"
 
 using namespace CamelotFramework;
 
@@ -48,21 +48,35 @@ namespace BansheeEngine
 	}
 
 	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, GUIElement* parentElem, 
-		const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin)
+		const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type)
 	{
 		GUIWidget::initialize(target, window);
 
+		String stylePrefix = "";
+		switch(type)
+		{
+		case GUIDropDownType::ContextMenu:
+			stylePrefix = "ContextMenu";
+			break;
+		case GUIDropDownType::ListBox:
+			stylePrefix = "ListBox";
+			break;
+		case GUIDropDownType::MenuBar:
+			stylePrefix = "MenuBar";
+			break;
+		}
+
 		mElements = elements;
 
-		mScrollUpStyle = skin.getStyle("DropDownScrollUpBtn");
-		mScrollDownStyle = skin.getStyle("DropDownScrollDownBtn");
-		mEntryBtnStyle = skin.getStyle("DropDownEntryBtn");
-		mEntryExpBtnStyle = skin.getStyle("DropDownEntryExpBtn");
-		mSeparatorStyle = skin.getStyle("DropDownSeparator");
-		mBackgroundStyle = skin.getStyle("DropDownBox");
+		mScrollUpStyle = skin.getStyle(stylePrefix + "ScrollUpBtn");
+		mScrollDownStyle = skin.getStyle(stylePrefix + "ScrollDownBtn");
+		mEntryBtnStyle = skin.getStyle(stylePrefix + "EntryBtn");
+		mEntryExpBtnStyle = skin.getStyle(stylePrefix + "EntryExpBtn");
+		mSeparatorStyle = skin.getStyle(stylePrefix + "Separator");
+		mBackgroundStyle = skin.getStyle(stylePrefix + "Frame");
 
-		mScrollUpBtnArrow = skin.getStyle("DropDownScrollUpBtnArrow")->normal.texture;
-		mScrollDownBtnArrow = skin.getStyle("DropDownScrollDownBtnArrow")->normal.texture;
+		mScrollUpBtnArrow = skin.getStyle("ScrollUpBtnArrow")->normal.texture;
+		mScrollDownBtnArrow = skin.getStyle("ScrollDownBtnArrow")->normal.texture;
 
 		setDepth(0); // Needs to be in front of everything
 
@@ -127,7 +141,7 @@ namespace BansheeEngine
 		// Background frame
 		mBackgroundArea = GUIArea::create(*this, position.x, position.y, width, height);
 		mBackgroundArea->setDepth(102);
-		mBackgroundArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::ScaleToFit, skin.getStyle("DropDownBox")));
+		mBackgroundArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::ScaleToFit, mBackgroundStyle));
 
 		updateGUIElements(position.x, position.y, width, height);
 	}

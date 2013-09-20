@@ -237,7 +237,7 @@
     <ClInclude Include="Include\BsGUICommandEvent.h" />
     <ClInclude Include="Include\BsGUIContent.h" />
     <ClInclude Include="Include\BsGUIDropDownBox.h" />
-    <ClInclude Include="Include\BsGUIDropDownList.h" />
+    <ClInclude Include="Include\BsGUIListBox.h" />
     <ClInclude Include="Include\BsGUIElementBase.h" />
     <ClInclude Include="Include\BsGUIInputTool.h" />
     <ClInclude Include="Include\BsGUIInputBox.h" />
@@ -295,7 +295,7 @@
     <ClCompile Include="Source\BsGUIButton.cpp" />
     <ClCompile Include="Source\BsGUIContent.cpp" />
     <ClCompile Include="Source\BsGUIDropDownBox.cpp" />
-    <ClCompile Include="Source\BsGUIDropDownList.cpp" />
+    <ClCompile Include="Source\BsGUIListBox.cpp" />
     <ClCompile Include="Source\BsGUIElement.cpp" />
     <ClCompile Include="Source\BsGUIElementBase.cpp" />
     <ClCompile Include="Source\BsGUIInputBox.cpp" />

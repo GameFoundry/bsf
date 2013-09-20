@@ -7,17 +7,17 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT GUIDropDownList : public GUIElement
+	class BS_EXPORT GUIListBox : public GUIElement
 	{
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIDropDownList* create(GUIWidget& parent, const CM::Vector<CM::WString>::type& elements, const GUIElementStyle* style = nullptr);
-		static GUIDropDownList* create(GUIWidget& parent, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::WString>::type& elements, const GUIElementStyle* style = nullptr);
+		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 	
 		boost::signal<void(CM::UINT32)> onSelectionChanged;
 	protected:
-		~GUIDropDownList();
+		~GUIListBox();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::Vector<CM::WString>::type mElements;
 
-		GUIDropDownList(GUIWidget& parent, const GUIElementStyle* style, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions);
+		GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 

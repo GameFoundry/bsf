@@ -53,7 +53,7 @@ namespace BansheeEngine
 	class GUIInputSelection;
 	struct GUILayoutOptions;
 	class GUIToggleGroup;
-	class GUIDropDownList;
+	class GUIListBox;
 	class GUIDropDownBox;
 	class DragAndDropManager;
 	class GUIContent;

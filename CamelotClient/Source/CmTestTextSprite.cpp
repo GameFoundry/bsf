@@ -7,7 +7,7 @@
 #include "CmFont.h"
 #include "CmMaterial.h"
 #include "BsGUILabel.h"
-#include "BsGUIDropDownList.h"
+#include "BsGUIListBox.h"
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsSpriteTexture.h"
@@ -50,7 +50,7 @@ namespace CamelotFramework
 		dropDownElements.push_back(L"Ejlement #1");
 		dropDownElements.push_back(L"Element #2");
 		dropDownElements.push_back(L"Element #3");
-		area->getLayout().addElement(GUIDropDownList::create(*this, dropDownElements, GUILayoutOptions::fixed(50, 13)));
+		area->getLayout().addElement(GUIListBox::create(*this, dropDownElements, GUILayoutOptions::fixed(50, 13)));
 		area->getLayout().addFlexibleSpace();
 	}
 
