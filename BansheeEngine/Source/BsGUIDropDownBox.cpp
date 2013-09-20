@@ -34,10 +34,10 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent)
-		:GUIWidget(parent), mDropDownStartIdx(0), mBackgroundFrame(nullptr), mScrollUpStyle(nullptr),
+		:GUIWidget(parent), mPage(0), mBackgroundFrame(nullptr), mScrollUpStyle(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
 		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr), 
-		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr)
+		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0)
 	{
 
 	}
@@ -82,25 +82,24 @@ namespace BansheeEngine
 
 		Rect dropDownListBounds = parentElem->getBounds();
 
-		Int2 position;
 		// Determine x position and whether to align to left or right side of the drop down list
 		UINT32 availableRightwardWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - dropDownListBounds.x);
 		UINT32 availableLeftwardWidth = (UINT32)std::max(0, (dropDownListBounds.x + dropDownListBounds.width) - target->getLeft());
 
 		//// Prefer right if possible
 		if(DROP_DOWN_BOX_WIDTH <= availableRightwardWidth)
-			position.x = dropDownListBounds.x;
+			x = dropDownListBounds.x;
 		else
 		{
 			if(availableRightwardWidth >= availableLeftwardWidth)
-				position.x = dropDownListBounds.x;
+				x = dropDownListBounds.x;
 			else
-				position.x = dropDownListBounds.x - std::min(DROP_DOWN_BOX_WIDTH, availableLeftwardWidth);
+				x = dropDownListBounds.x - std::min(DROP_DOWN_BOX_WIDTH, availableLeftwardWidth);
 		}
 
 		// Determine maximum width
-		UINT32 maxPossibleWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - position.x);
-		UINT32 width = std::min(DROP_DOWN_BOX_WIDTH, maxPossibleWidth);
+		UINT32 maxPossibleWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - x);
+		width = std::min(DROP_DOWN_BOX_WIDTH, maxPossibleWidth);
 
 		// Determine y position and whether to open upward or downward
 		UINT32 helperElementHeight = mScrollUpStyle->height + mScrollDownStyle->height + mBackgroundStyle->margins.top + mBackgroundStyle->margins.bottom;
@@ -114,58 +113,57 @@ namespace BansheeEngine
 		UINT32 availableUpwardHeight = (UINT32)std::max(0, dropDownListBounds.y - target->getTop());
 
 		//// Prefer down if possible
-		UINT32 height = 0;
+		height = 0;
 		if(maxNeededHeight <= availableDownwardHeight)
 		{
-			position.y = dropDownListBounds.y + dropDownListBounds.height;
+			y = dropDownListBounds.y + dropDownListBounds.height;
 			height = availableDownwardHeight;
 		}
 		else
 		{
 			if(availableDownwardHeight >= availableUpwardHeight)
 			{
-				position.y = dropDownListBounds.y + dropDownListBounds.height;
+				y = dropDownListBounds.y + dropDownListBounds.height;
 				height = availableDownwardHeight;
 			}
 			else
 			{
-				position.y = dropDownListBounds.y - std::min(maxNeededHeight, availableUpwardHeight);
+				y = dropDownListBounds.y - std::min(maxNeededHeight, availableUpwardHeight);
 				height = availableUpwardHeight;
 			}
 		}
 
 		// Content area
-		mContentArea = GUIArea::create(*this, position.x, position.y, width, height);
+		mContentArea = GUIArea::create(*this, x, y, width, height);
 		mContentLayout = &mContentArea->getLayout().addLayoutY();
 
 		// Background frame
-		mBackgroundArea = GUIArea::create(*this, position.x, position.y, width, height);
+		mBackgroundArea = GUIArea::create(*this, x, y, width, height);
 		mBackgroundArea->setDepth(102);
 		mBackgroundArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::ScaleToFit, mBackgroundStyle));
 
-		updateGUIElements(position.x, position.y, width, height);
+		updateGUIElements();
 	}
 
-	void GUIDropDownBox::updateGUIElements(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height)
+	void GUIDropDownBox::updateGUIElements()
 	{
 		// Remove all elements from content layout
 		while(mContentLayout->getNumChildren() > 0)
 			mContentLayout->removeChildAt(mContentLayout->getNumChildren() - 1);
 
 		// Determine if we need scroll up and/or down buttons, number of visible elements and actual height
-		bool needsScrollUp = mDropDownStartIdx > 0;
+		bool needsScrollUp = mPage > 0;
 		UINT32 numElements = (UINT32)mElements.size();
 
 		UINT32 usedHeight = mBackgroundStyle->margins.top + mBackgroundStyle->margins.bottom;
-		if(needsScrollUp)
-			usedHeight += mScrollUpStyle->height;
 
-		UINT32 numVisibleElements = 0;
+		UINT32 pageStart = 0, pageEnd = 0;
+		UINT32 curPage = 0;
 		bool needsScrollDown = false;
 		for(UINT32 i = 0; i < numElements; i++)
 		{
 			usedHeight += getElementHeight(i);
-			numVisibleElements++;
+			pageEnd++;
 
 			if(usedHeight > height)
 			{
@@ -173,16 +171,27 @@ namespace BansheeEngine
 				needsScrollDown = true;
 
 				// Remove last few elements until we fit again
-				UINT32 j = i;
-				while(usedHeight > height && j >= 0)
+				while(usedHeight > height && i >= 0)
 				{
-					usedHeight -= getElementHeight(j);
-					numVisibleElements--;
+					usedHeight -= getElementHeight(i);
+					pageEnd--;
 
-					j--;
+					i--;
 				}
 
-				break;
+				// We found our page and are done
+				if(curPage == mPage)
+					break;
+
+				// Nothing fits, break out of infinite loop
+				if(pageStart == pageEnd)
+					break;
+
+				pageStart = pageEnd;
+				usedHeight = mBackgroundStyle->margins.top + mBackgroundStyle->margins.bottom;
+				usedHeight += mScrollUpStyle->height;
+
+				curPage++;
 			}
 		}
 
@@ -209,7 +218,7 @@ namespace BansheeEngine
 		CM::Vector<GUITexture*>::type newSeparators;
 		CM::Vector<GUIButton*>::type newEntryBtns;
 		CM::Vector<GUIButton*>::type newExpEntryBtns;
-		for(UINT32 i = 0; i < numVisibleElements; i++)
+		for(UINT32 i = pageStart; i < pageEnd; i++)
 		{
 			GUIDropDownData& element = mElements[i];
 
@@ -321,34 +330,16 @@ namespace BansheeEngine
 
 	void GUIDropDownBox::scrollDown()
 	{
-		//INT32 maxNumElements = (INT32)mDropDownElements.size();
-		//INT32 numVisibleElements = (INT32)mDropDownElementButtons.size();
-
-		//INT32 newIdx = mDropDownStartIdx + numVisibleElements;
-		//INT32 clampedNewIdx = std::min(newIdx, maxNumElements - numVisibleElements);
-		//mDropDownStartIdx = (UINT32)std::min(newIdx, clampedNewIdx);
-
-		//UINT32 i = mDropDownStartIdx;
-		//for(auto& button : mDropDownElementButtons)
-		//{
-		//	button->setContent(GUIContent(mDropDownElements[i]));
-		//	i++;
-		//}
+		mPage++;
+		updateGUIElements();
 	}
 
 	void GUIDropDownBox::scrollUp()
 	{
-		//INT32 numVisibleElements = (INT32)mDropDownElementButtons.size();
-
-		//INT32 newIdx = mDropDownStartIdx - numVisibleElements;
-		//INT32 clampedNewIdx = std::max(newIdx, 0);
-		//mDropDownStartIdx = (UINT32)std::min(newIdx, clampedNewIdx);
-
-		//UINT32 i = mDropDownStartIdx;
-		//for(auto& button : mDropDownElementButtons)
-		//{
-		//	button->setContent(GUIContent(mDropDownElements[i]));
-		//	i++;
-		//}
+		if(mPage > 0)
+		{
+			mPage--;
+			updateGUIElements();
+		}
 	}
 }

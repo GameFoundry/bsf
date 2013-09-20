@@ -2,9 +2,15 @@ GUI ignores image in GUIContent for most elements.
 
 Immediate TODO:
  - Hook up ScrollUp and ScrollDown events in GUIDropDownBox
- - Add support to GUIManager to deal with multiple different GUIDropDownBoxes
 
-Figure out how to deal with sub-menus
+ GUIMenuBar
+ - Create top level buttons in PS
+ - Derives from GUIWidget and can be easily added to a window
+ - AddMenuItem("Scene/Components/Camera", addCameraCallback)
+  - Automatically creates entire menu hierarchy (or just adds it to an existing submenu)
+ - GetMenuItem("Scene/Components")
+  - Returns a MenuItem which may have multiple MenuItem children
+ - RemoveMenuItem(MenuItem* item)
 
 ----------------------------
  - Elements can call addContextAction("Name", "Callback")

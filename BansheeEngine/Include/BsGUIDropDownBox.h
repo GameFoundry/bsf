@@ -53,7 +53,9 @@ namespace BansheeEngine
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
 
 		CM::Vector<GUIDropDownData>::type mElements;
-		CM::UINT32 mDropDownStartIdx;
+		CM::UINT32 mPage;
+		CM::INT32 x, y;
+		CM::UINT32 width, height;
 
 		CM::Vector<GUITexture*>::type mCachedSeparators;
 		CM::Vector<GUIButton*>::type mCachedEntryBtns;
@@ -75,7 +77,7 @@ namespace BansheeEngine
 		GUIArea* mContentArea;
 		GUILayout* mContentLayout;
 
-		void updateGUIElements(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void updateGUIElements();
 
 		void scrollDown();
 		void scrollUp();
