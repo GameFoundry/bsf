@@ -2,8 +2,6 @@ GUI ignores image in GUIContent for most elements.
 
 Immediate TODO:
  - Hook up ScrollUp and ScrollDown events in GUIDropDownBox
- - Add support for different skins for context menu, drop down list and drop down menu
-    - Just add a prefix to GUIDropDownBox constructor
  - Add support to GUIManager to deal with multiple different GUIDropDownBoxes
 
 Figure out how to deal with sub-menus

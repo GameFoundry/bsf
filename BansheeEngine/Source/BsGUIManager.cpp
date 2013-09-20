@@ -508,8 +508,9 @@ namespace BansheeEngine
 		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
 			closeDropDownListBox(-1);
 
-		mDropDownSO = SceneObject::create("DropDownBox");
-		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
+		CM::HSceneObject so = SceneObject::create("DropDownBox");
+		mDropDownSOs.push_back(so);
+		mDropDownBoxes.push_back(so->addComponent<GUIDropDownBox>());
 
 		GUIWidget& widget = parentList->_getParentWidget();
 
@@ -521,20 +522,29 @@ namespace BansheeEngine
 			i++;
 		}
 
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin, GUIDropDownType::ListBox);
+		mDropDownBoxes.back()->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin, GUIDropDownType::ListBox);
 
 		mDropDownBoxOpenScheduled = true;
-		mDropDownSelectionMade = selectedCallback;
+		mListBoxSelectionMade = selectedCallback;
 	}
 
 	void GUIManager::closeDropDownListBox(INT32 selectedIdx)
 	{
 		if(selectedIdx != -1)
-			mDropDownSelectionMade(selectedIdx);
+			mListBoxSelectionMade(selectedIdx);
+
+		closeAllDropDownBoxes();
+	}
+
+	void GUIManager::closeAllDropDownBoxes()
+	{
+		for(auto& dropDownSO : mDropDownSOs)
+			dropDownSO->destroy();
 
 		mDropDownBoxActive = false;
 
-		mDropDownSO->destroy();
+		mDropDownSOs.clear();
+		mDropDownBoxes.clear();
 	}
 
 	void GUIManager::updateCaretTexture()
@@ -639,13 +649,25 @@ namespace BansheeEngine
 				event.markAsUsed();
 			}
 
-			// Close drop down box if user clicks outside the drop down box
+			// Close drop down box(es) if user clicks outside of one
 			if(mDropDownBoxActive)
 			{
-				if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
+				bool clickedOnDropDownBox = false;
+
+				if(mMouseOverElement != nullptr)
 				{
-					closeDropDownListBox(-1);
+					for(auto& dropDownBox : mDropDownBoxes)
+					{
+						if(&mMouseOverElement->_getParentWidget() == dropDownBox.get())
+						{
+							clickedOnDropDownBox = true;
+							break;
+						}
+					}
 				}
+
+				if(!clickedOnDropDownBox)
+					closeAllDropDownBoxes();
 			}
 		}
 	}
