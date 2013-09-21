@@ -1,25 +1,24 @@
 GUI ignores image in GUIContent for most elements.
 
-Immediate TODO:
- - Hook up ScrollUp and ScrollDown events in GUIDropDownBox
+Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
 
- GUIMenuBar
- - Create top level buttons in PS
- - Derives from GUIWidget and can be easily added to a window
- - AddMenuItem("Scene/Components/Camera", addCameraCallback)
-  - Automatically creates entire menu hierarchy (or just adds it to an existing submenu)
- - GetMenuItem("Scene/Components")
-  - Returns a MenuItem which may have multiple MenuItem children
- - RemoveMenuItem(MenuItem* item)
+GUIDropDownBox::openSubMenu
+ - I need to provide a parent element, also I probably need a way to distinguish between original drop down box, and sub-menu one
 
-----------------------------
- - Elements can call addContextAction("Name", "Callback")
-   - This will be automatically rendered by GUIManager as a drop down menu when user clicks on it
-     - This kind of drop down menu will require separator buttons
-     - Also buttons with sub-menus
-     - It is probably useful to just add this functionality to DropDownBox
-   - Mousing over a sub-menu should upen another DropDownBox at that location
-     - I might need to modify DropDownBox input parameters so they accept GUElement as a parent, and not just GUIDropDownList
-     - Also another parameter to specify on which side of the GUIElement to open the box
-   - GUIManager drop down system could be extended so it handles multiple drop down boxes from various sources
-    - DropDownLists, context menus and toolbar menus
+GUIContextMenu
+ - GUIElements may specify a context menu, which is retrieved by GUIManager using GUIElement::getContextMenu
+ - Menu is opened at the current mouse position (determined by GUIManager)
+ - GUIContextMenu::open(x, y)
+   - GUIDropDownBox is created with the root elements data
+
+GUIMenuBar
+ - It has a specific position, width and height
+ - It was a GUIArea and its root elements are represented as buttons
+   - CLicking on a button will open up the menu, similar to context menu
+   - GUIManager::openMenu(Vector<GUIDropDownData>, GUIElement* parent)
+
+Test separators
+Test expandable buttons
+ - And hook up on mouse over
+ - ALSO I need to close other menu at the same level upon mouse over on another element
+Test scrollUp/scrollDown

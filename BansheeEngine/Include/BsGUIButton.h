@@ -22,6 +22,8 @@ namespace BansheeEngine
 		void setContent(const GUIContent& content);
 
 		boost::signal<void()> onClick;
+		boost::signal<void()> onHover;
+		boost::signal<void()> onOut;
 	protected:
 		~GUIButton();
 

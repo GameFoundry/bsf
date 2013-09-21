@@ -286,12 +286,18 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->hover.texture;
 			markContentAsDirty();
 
+			if(!onHover.empty())
+				onHover();
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
 		{
 			mImageDesc.texture = mStyle->normal.texture;
 			markContentAsDirty();
+
+			if(!onOut.empty())
+				onOut();
 
 			return true;
 		}

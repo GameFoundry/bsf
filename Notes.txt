@@ -25,6 +25,12 @@ Reminders:
 	so this would be helpful in a way I wouldn't need to look up actual element height in EngineGUI.
   - GUI currently ignores tooltips in GUIContent. 
   - A way to initialize BansheeEngine without RenderSystem or any kind of UI. So that it may be used for server building as well.
+  - Calls to "initialize()" should be protected. For example GUIWidget and all its derived classes require the user to separately call initialize() after construction.
+    However a much better option would be to wrap construction and initialization in a create() method and make initialize protected.
+	  - GUIWidget needs to be added using addComponent which makes "create()" method not practical. However I have trouble seeing the need for initialize(),
+	    it could be replaced with a variable parameter version of addComponent.
+  - Profiling: Create an easy to browse list of all loaded Resources (similar to Hierarchy in Unity, just for loaded resources)
+    - Possibly also for all core objects
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

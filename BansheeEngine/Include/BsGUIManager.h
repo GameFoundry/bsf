@@ -105,8 +105,8 @@ namespace BansheeEngine
 		// Drop down box
 		bool mDropDownBoxOpenScheduled;
 		bool mDropDownBoxActive;
-		CM::Vector<CM::HSceneObject>::type mDropDownSOs;
-		CM::Vector<CM::GameObjectHandle<GUIDropDownBox>>::type mDropDownBoxes;
+		CM::HSceneObject mDropDownSO;
+		CM::GameObjectHandle<GUIDropDownBox> mDropDownBox;
 		std::function<void(CM::UINT32)> mListBoxSelectionMade;
 
 		boost::signals::connection mOnButtonDownConn;
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);
 
 		void closeDropDownListBox(CM::INT32 selectedIdx);
-		void closeAllDropDownBoxes();
+		void closeDropDownBox();
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;

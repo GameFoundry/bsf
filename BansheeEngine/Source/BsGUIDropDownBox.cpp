@@ -7,6 +7,7 @@
 #include "BsGUISkin.h"
 #include "CmViewport.h"
 #include "BsGUIListBox.h"
+#include "CmSceneObject.h"
 
 using namespace CamelotFramework;
 
@@ -23,12 +24,22 @@ namespace BansheeEngine
 		return data;
 	}
 
-	GUIDropDownData GUIDropDownData::button(const CM::WString& label, std::function<void()> callback, bool isExpandable)
+	GUIDropDownData GUIDropDownData::button(const WString& label, std::function<void()> callback)
 	{
 		GUIDropDownData data;
 		data.mLabel = label;
-		data.mType = isExpandable ? Type::EntryExpandable : Type::Entry;
+		data.mType = Type::Entry;
 		data.mCallback = callback;
+
+		return data;
+	}
+
+	GUIDropDownData GUIDropDownData::subMenu(const WString& label, const Vector<GUIDropDownData>::type& entries)
+	{
+		GUIDropDownData data;
+		data.mLabel = label;
+		data.mType = Type::SubMenu;
+		data.mChildEntries = entries;
 
 		return data;
 	}
@@ -37,14 +48,15 @@ namespace BansheeEngine
 		:GUIWidget(parent), mPage(0), mBackgroundFrame(nullptr), mScrollUpStyle(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
 		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr), 
-		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0)
+		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0), 
+		mType(GUIDropDownType::ListBox)
 	{
 
 	}
 
 	GUIDropDownBox::~GUIDropDownBox()
 	{
-
+		closeSubMenu();
 	}
 
 	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, GUIElement* parentElem, 
@@ -66,6 +78,7 @@ namespace BansheeEngine
 			break;
 		}
 
+		mType = type;
 		mElements = elements;
 
 		mScrollUpStyle = skin.getStyle(stylePrefix + "ScrollUpBtn");
@@ -79,6 +92,7 @@ namespace BansheeEngine
 		mScrollDownBtnArrow = skin.getStyle("ScrollDownBtnArrow")->normal.texture;
 
 		setDepth(0); // Needs to be in front of everything
+		setSkin(skin);
 
 		Rect dropDownListBounds = parentElem->getBounds();
 
@@ -238,7 +252,7 @@ namespace BansheeEngine
 				mContentLayout->addElement(separator);
 				newSeparators.push_back(separator);
 			}
-			else if(element.isExpandable())
+			else if(element.isSubMenu())
 			{
 				GUIButton* expEntryBtn = nullptr;
 				if(!mCachedExpEntryBtns.empty())
@@ -249,7 +263,7 @@ namespace BansheeEngine
 				else
 				{
 					expEntryBtn = GUIButton::create(*this, mElements[i].getLabel(), mEntryExpBtnStyle);
-					expEntryBtn->onClick.connect(mElements[i].getCallback());
+					expEntryBtn->onHover.connect(boost::bind(&GUIDropDownBox::openSubMenu, this, i));
 				}
 
 				mContentLayout->addElement(expEntryBtn);
@@ -266,7 +280,7 @@ namespace BansheeEngine
 				else
 				{
 					entryBtn = GUIButton::create(*this, mElements[i].getLabel(), mEntryBtnStyle);
-					entryBtn->onClick.connect(mElements[i].getCallback());
+					entryBtn->onClick.connect(boost::bind(&GUIDropDownBox::elementClicked, this,  i));
 				}
 
 				mContentLayout->addElement(entryBtn);
@@ -322,7 +336,7 @@ namespace BansheeEngine
 	{
 		if(mElements[idx].isSeparator())
 			return mSeparatorStyle->height;
-		else if(mElements[idx].isExpandable())
+		else if(mElements[idx].isSubMenu())
 			return mEntryExpBtnStyle->height;
 		else
 			return mEntryBtnStyle->height;
@@ -332,6 +346,8 @@ namespace BansheeEngine
 	{
 		mPage++;
 		updateGUIElements();
+
+		closeSubMenu();
 	}
 
 	void GUIDropDownBox::scrollUp()
@@ -341,5 +357,35 @@ namespace BansheeEngine
 			mPage--;
 			updateGUIElements();
 		}
+
+		closeSubMenu();
+	}
+
+	void GUIDropDownBox::closeSubMenu()
+	{
+		if(mSubMenuSO != nullptr)
+		{
+			mSubMenuSO->destroy();
+			mSubMenuSO = HSceneObject();
+			mSubMenuDropDownBox = GameObjectHandle<GUIDropDownBox>();
+		}
+	}
+
+	void GUIDropDownBox::elementClicked(UINT32 idx)
+	{
+		closeSubMenu();
+
+		mElements[idx].getCallback()();
+	}
+
+	void GUIDropDownBox::openSubMenu(UINT32 idx)
+	{
+		closeSubMenu();
+
+		mSubMenuSO = SceneObject::create("DropDownBox");
+		mSubMenuDropDownBox = mSubMenuSO->addComponent<GUIDropDownBox>();
+
+		// TODO - Need to provide a parent element
+		mSubMenuDropDownBox->initialize(getTarget(), getOwnerWindow(), nullptr, mElements[idx].getSubMenuEntries(), getSkin(), mType);
 	}
 }

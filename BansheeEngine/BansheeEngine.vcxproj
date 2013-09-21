@@ -248,6 +248,7 @@
     <ClInclude Include="Include\BsGUILayoutX.h" />
     <ClInclude Include="Include\BsGUILayout.h" />
     <ClInclude Include="Include\BsGUILayoutY.h" />
+    <ClInclude Include="Include\BsGUIMenu.h" />
     <ClInclude Include="Include\BsGUIScrollBar.h" />
     <ClInclude Include="Include\BsGUIScrollBarHandle.h" />
     <ClInclude Include="Include\BsGUIScrollBarHorz.h" />
@@ -335,6 +336,7 @@
     <ClCompile Include="Source\BsUpdateCallback.cpp" />
     <ClCompile Include="Source\BsGUILayoutX.cpp" />
     <ClCompile Include="Source\BsGUIViewport.cpp" />
+    <ClCompile Include="Source\BsGUIMenu.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

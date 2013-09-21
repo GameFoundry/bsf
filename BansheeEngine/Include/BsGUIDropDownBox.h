@@ -10,22 +10,25 @@ namespace BansheeEngine
 		{
 			Separator,
 			Entry,
-			EntryExpandable
+			SubMenu
 		};
 
 	public:
 		static GUIDropDownData separator();
-		static GUIDropDownData button(const CM::WString& label, std::function<void()> callback, bool isExpandable = false);
+		static GUIDropDownData button(const CM::WString& label, std::function<void()> callback);
+		static GUIDropDownData subMenu(const CM::WString& label, const CM::Vector<GUIDropDownData>::type& entries);
 
 		bool isSeparator() const { return mType == Type::Separator; }
-		bool isExpandable() const { return mType == Type::EntryExpandable; }
+		bool isSubMenu() const { return mType == Type::SubMenu; }
 
 		const CM::WString& getLabel() const { return mLabel; }
 		std::function<void()> getCallback() const { return mCallback; }
+		const CM::Vector<GUIDropDownData>::type& getSubMenuEntries() const { return mChildEntries; }
 	private:
 		GUIDropDownData() { }
 
 		std::function<void()> mCallback;
+		CM::Vector<GUIDropDownData>::type mChildEntries;
 		CM::WString mLabel;
 		Type mType; 
 	};
@@ -52,6 +55,7 @@ namespace BansheeEngine
 	private:
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
 
+		GUIDropDownType mType;
 		CM::Vector<GUIDropDownData>::type mElements;
 		CM::UINT32 mPage;
 		CM::INT32 x, y;
@@ -77,11 +81,18 @@ namespace BansheeEngine
 		GUIArea* mContentArea;
 		GUILayout* mContentLayout;
 
+		CM::HSceneObject mSubMenuSO;
+		CM::GameObjectHandle<GUIDropDownBox> mSubMenuDropDownBox;
+
 		void updateGUIElements();
 
 		void scrollDown();
 		void scrollUp();
 
 		CM::UINT32 getElementHeight(CM::UINT32 idx) const;
+
+		void elementClicked(CM::UINT32 idx);
+		void openSubMenu(CM::UINT32 elementIdx);
+		void closeSubMenu();
 	};
 }

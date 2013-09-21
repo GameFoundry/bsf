@@ -508,9 +508,8 @@ namespace BansheeEngine
 		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
 			closeDropDownListBox(-1);
 
-		CM::HSceneObject so = SceneObject::create("DropDownBox");
-		mDropDownSOs.push_back(so);
-		mDropDownBoxes.push_back(so->addComponent<GUIDropDownBox>());
+		mDropDownSO = SceneObject::create("DropDownBox");
+		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
 
 		GUIWidget& widget = parentList->_getParentWidget();
 
@@ -522,7 +521,7 @@ namespace BansheeEngine
 			i++;
 		}
 
-		mDropDownBoxes.back()->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin, GUIDropDownType::ListBox);
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin, GUIDropDownType::ListBox);
 
 		mDropDownBoxOpenScheduled = true;
 		mListBoxSelectionMade = selectedCallback;
@@ -533,18 +532,14 @@ namespace BansheeEngine
 		if(selectedIdx != -1)
 			mListBoxSelectionMade(selectedIdx);
 
-		closeAllDropDownBoxes();
+		closeDropDownBox();
 	}
 
-	void GUIManager::closeAllDropDownBoxes()
+	void GUIManager::closeDropDownBox()
 	{
-		for(auto& dropDownSO : mDropDownSOs)
-			dropDownSO->destroy();
+		mDropDownSO->destroy();
 
 		mDropDownBoxActive = false;
-
-		mDropDownSOs.clear();
-		mDropDownBoxes.clear();
 	}
 
 	void GUIManager::updateCaretTexture()
@@ -654,20 +649,11 @@ namespace BansheeEngine
 			{
 				bool clickedOnDropDownBox = false;
 
-				if(mMouseOverElement != nullptr)
-				{
-					for(auto& dropDownBox : mDropDownBoxes)
-					{
-						if(&mMouseOverElement->_getParentWidget() == dropDownBox.get())
-						{
-							clickedOnDropDownBox = true;
-							break;
-						}
-					}
-				}
+				if(mMouseOverElement != nullptr && (&mMouseOverElement->_getParentWidget() == mDropDownBox.get()))
+					clickedOnDropDownBox = true;
 
 				if(!clickedOnDropDownBox)
-					closeAllDropDownBoxes();
+					closeDropDownBox();
 			}
 		}
 	}
