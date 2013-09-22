@@ -5,7 +5,13 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const CM::WString& name, std::function<void()> callback)
-		:mParent(parent), mName(name), mCallback(callback)
+		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false)
+	{
+
+	}
+
+	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent)
+		:mParent(parent), mCallback(nullptr), mIsSeparator(true)
 	{
 
 	}
@@ -37,14 +43,18 @@ namespace BansheeEngine
 		}
 	}
 
-	CM::Set<GUIMenuItem*, GUIMenuItem::Comparer>::type::iterator GUIMenuItem::findChildInternal(const CM::WString& name) const
+	CM::Vector<GUIMenuItem*>::type::const_iterator GUIMenuItem::findChildInternal(const CM::WString& name) const
 	{
-		GUIMenuItem tempItem(nullptr, name, nullptr);
-		return mChildren.find(&tempItem);
+		return std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
 	}
 
-	GUIMenu::GUIMenu(const CM::HSceneObject& parent)
-		:GUIWidget(parent), mRootElement(nullptr, L"", nullptr)
+	CM::Vector<GUIMenuItem*>::type::iterator GUIMenuItem::findChildInternal(const CM::WString& name)
+	{
+		return std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
+	}
+
+	GUIMenu::GUIMenu()
+		:mRootElement(nullptr, L"", nullptr)
 	{
 
 	}
@@ -54,7 +64,17 @@ namespace BansheeEngine
 
 	}
 
-	void GUIMenu::addMenuItem(const CM::WString& path, std::function<void()> callback)
+	const GUIMenuItem* GUIMenu::addMenuItem(const CM::WString& path, std::function<void()> callback)
+	{
+		return addMenuItemInternal(path, callback, false);
+	}
+
+	const GUIMenuItem* GUIMenu::addSeparator(const CM::WString& path)
+	{
+		return addMenuItemInternal(path, nullptr, true);
+	}
+
+	const GUIMenuItem* GUIMenu::addMenuItemInternal(const CM::WString& path, std::function<void()> callback, bool isSeparator)
 	{
 		Vector<WString>::type pathElements = StringUtil::split(path, L"/");
 
@@ -76,7 +96,7 @@ namespace BansheeEngine
 					const WString& nextPathElem = *(pathElements.begin() + i);
 
 					existingItem = cm_alloc<GUIMenuItem, PoolAlloc>();
-					existingItem = new (existingItem) GUIMenuItem(curSubMenu, pathElem, boost::bind(&GUIMenu::openMenu, this, existingItem, nextPathElem));
+					existingItem = new (existingItem) GUIMenuItem(curSubMenu, pathElem, nullptr);
 				}
 
 				curSubMenu->addChild(existingItem);
@@ -84,6 +104,16 @@ namespace BansheeEngine
 
 			curSubMenu = existingItem;
 		}
+
+		if(isSeparator)
+		{
+			GUIMenuItem* separatorItem = cm_new<GUIMenuItem, PoolAlloc>(curSubMenu);
+			curSubMenu->addChild(separatorItem);
+
+			return separatorItem;
+		}
+
+		return curSubMenu;
 	}
 
 	const GUIMenuItem* GUIMenu::getMenuItem(const CM::WString& path) const
@@ -97,7 +127,7 @@ namespace BansheeEngine
 			auto foundChild = curSubMenu->findChildInternal(pathElem);
 			GUIMenuItem* existingItem = *foundChild;
 
-			if(existingItem == nullptr)
+			if(existingItem == nullptr || existingItem->isSeparator())
 				return nullptr;
 
 			curSubMenu = existingItem;
@@ -112,15 +142,5 @@ namespace BansheeEngine
 		assert(parent != nullptr);
 
 		parent->removeChild(item->getName());
-	}
-
-	void GUIMenu::openMenu(const GUIMenuItem* menuItem, const WString& subMenuName)
-	{
-		assert(menuItem != nullptr);
-
-		const GUIMenuItem* subMenu = menuItem->findChild(subMenuName);
-		assert(subMenu != nullptr);
-
-		// TODO
 	}
 }

@@ -57,6 +57,7 @@ namespace BansheeEngine
 	class GUIDropDownBox;
 	class DragAndDropManager;
 	class GUIContent;
+	class GUIContextMenu;
 
 	// 2D
 	class TextSprite;

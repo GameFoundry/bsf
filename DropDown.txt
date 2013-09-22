@@ -5,11 +5,8 @@ Doesn't belong here but as an additional reminder: Remove Component::initialize 
 GUIDropDownBox::openSubMenu
  - I need to provide a parent element, also I probably need a way to distinguish between original drop down box, and sub-menu one
 
-GUIContextMenu
- - GUIElements may specify a context menu, which is retrieved by GUIManager using GUIElement::getContextMenu
- - Menu is opened at the current mouse position (determined by GUIManager)
- - GUIContextMenu::open(x, y)
-   - GUIDropDownBox is created with the root elements data
+GUIContextMenu::getDropDownData needs to be implemented
+GUIDropDownBox only accepts a GUIElement, while GUIContextMenu only specifies a position
 
 GUIMenuBar
  - It has a specific position, width and height

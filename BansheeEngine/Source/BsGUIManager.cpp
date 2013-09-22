@@ -542,6 +542,26 @@ namespace BansheeEngine
 		mDropDownBoxActive = false;
 	}
 
+	void GUIManager::openContextMenu(const GUIContextMenu* menu, const Int2& position, GUIWidget& widget)
+	{
+		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
+			closeContextMenu();
+
+		mDropDownSO = SceneObject::create("DropDownBox");
+		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
+
+		//Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
+
+		//mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, widget.getSkin(), GUIDropDownType::ContextMenu);
+
+		mDropDownBoxOpenScheduled = true;
+	}
+
+	void GUIManager::closeContextMenu()
+	{
+		closeDropDownBox();
+	}
+
 	void GUIManager::updateCaretTexture()
 	{
 		if(mCaretTexture == nullptr)
@@ -642,6 +662,15 @@ namespace BansheeEngine
 				mKeyboardFocusWidget = mMouseOverWidget;
 
 				event.markAsUsed();
+			}
+
+			// If right click try to open context menu
+			if(mMouseOverElement != nullptr && buttonStates[2] == true) 
+			{
+				const GUIContextMenu* menu = mMouseOverElement->getContextMenu();
+
+				if(menu != nullptr)
+					openContextMenu(menu, gInput().getMousePosition(), *mMouseOverWidget);
 			}
 
 			// Close drop down box(es) if user clicks outside of one

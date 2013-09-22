@@ -236,6 +236,7 @@
     <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUICommandEvent.h" />
     <ClInclude Include="Include\BsGUIContent.h" />
+    <ClInclude Include="Include\BsGUIContextMenu.h" />
     <ClInclude Include="Include\BsGUIDropDownBox.h" />
     <ClInclude Include="Include\BsGUIListBox.h" />
     <ClInclude Include="Include\BsGUIElementBase.h" />
@@ -284,6 +285,7 @@
     <ClInclude Include="Include\BsD3D9BuiltinMaterialFactory.h" />
     <ClInclude Include="Include\BsGLBuiltinMaterialFactory.h" />
     <ClInclude Include="Include\BsUpdateCallback.h" />
+    <ClInclude Include="Source\BsGUIContextMenu.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />

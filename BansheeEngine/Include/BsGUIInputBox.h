@@ -56,6 +56,8 @@ namespace BansheeEngine
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 		virtual void _setFocus(bool focus);
+
+		virtual const GUIContextMenu* getContextMenu() const;
 	private:
 		// Sprites
 		ImageSprite* mImageSprite;
@@ -101,5 +103,9 @@ namespace BansheeEngine
 		CM::Int2 getTextOffset() const;
 		CM::Rect getTextClipRect() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
+		
+		void cutText();
+		void copyText();
+		void pasteText();
 	};
 }

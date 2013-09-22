@@ -16,6 +16,7 @@
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
 #include "BsDragAndDropManager.h"
+#include "BsGUIContextMenu.h"
 
 using namespace CamelotFramework;
 
@@ -835,5 +836,44 @@ namespace BansheeEngine
 		}
 
 		mHasFocus = focus;
+	}
+
+	const GUIContextMenu* GUIInputBox::getContextMenu() const
+	{
+		static bool initialized = false;
+		static GUIContextMenu mContextMenu;
+
+		if(!initialized)
+		{
+			mContextMenu.addMenuItem(L"Cut", boost::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)));
+			mContextMenu.addMenuItem(L"Copy", boost::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)));
+			mContextMenu.addMenuItem(L"Paste", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
+
+			// DEBUG ONLY
+			
+			mContextMenu.addSeparator(L"");
+			mContextMenu.addMenuItem(L"DebugBox/Test1", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
+			mContextMenu.addMenuItem(L"DebugBox/Test2", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
+			mContextMenu.addMenuItem(L"Zzzz/Test1", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
+
+			initialized = true;
+		}
+
+		return &mContextMenu;
+	}
+
+	void GUIInputBox::cutText()
+	{
+		// TODO
+	}
+
+	void GUIInputBox::copyText()
+	{
+		// TODO
+	}
+
+	void GUIInputBox::pasteText()
+	{
+		// TODO
 	}
 }

@@ -143,6 +143,9 @@ namespace BansheeEngine
 
 		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);
 
+		void openContextMenu(const GUIContextMenu* menu, const CM::Int2& position, GUIWidget& widget);
+		void closeContextMenu();
+
 		void closeDropDownListBox(CM::INT32 selectedIdx);
 		void closeDropDownBox();
 
