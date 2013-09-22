@@ -44,6 +44,33 @@ namespace BansheeEngine
 		return data;
 	}
 
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundPosition(const CM::Int2& position)
+	{
+		GUIDropDownAreaPlacement instance;
+		instance.mType = Type::Position;
+		instance.mPosition = position;
+
+		return instance;
+	}
+
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsVert(const CM::Rect& bounds)
+	{
+		GUIDropDownAreaPlacement instance;
+		instance.mType = Type::BoundsVert;
+		instance.mBounds = bounds;
+
+		return instance;
+	}
+		
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsHorz(const CM::Rect& bounds)
+	{
+		GUIDropDownAreaPlacement instance;
+		instance.mType = Type::BoundsHorz;
+		instance.mBounds = bounds;
+
+		return instance;
+	}
+
 	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent)
 		:GUIWidget(parent), mPage(0), mBackgroundFrame(nullptr), mScrollUpStyle(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
@@ -59,7 +86,7 @@ namespace BansheeEngine
 		closeSubMenu();
 	}
 
-	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, GUIElement* parentElem, 
+	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, const GUIDropDownAreaPlacement& placement, 
 		const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type)
 	{
 		GUIWidget::initialize(target, window);
@@ -94,7 +121,7 @@ namespace BansheeEngine
 		setDepth(0); // Needs to be in front of everything
 		setSkin(skin);
 
-		Rect dropDownListBounds = parentElem->getBounds();
+		Rect dropDownListBounds = placement.getBounds();
 
 		// Determine x position and whether to align to left or right side of the drop down list
 		UINT32 availableRightwardWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - dropDownListBounds.x);
@@ -263,7 +290,7 @@ namespace BansheeEngine
 				else
 				{
 					expEntryBtn = GUIButton::create(*this, mElements[i].getLabel(), mEntryExpBtnStyle);
-					expEntryBtn->onHover.connect(boost::bind(&GUIDropDownBox::openSubMenu, this, i));
+					expEntryBtn->onHover.connect(boost::bind(&GUIDropDownBox::openSubMenu, this, expEntryBtn, i));
 				}
 
 				mContentLayout->addElement(expEntryBtn);
@@ -378,14 +405,14 @@ namespace BansheeEngine
 		mElements[idx].getCallback()();
 	}
 
-	void GUIDropDownBox::openSubMenu(UINT32 idx)
+	void GUIDropDownBox::openSubMenu(GUIButton* source, UINT32 idx)
 	{
 		closeSubMenu();
 
 		mSubMenuSO = SceneObject::create("DropDownBox");
 		mSubMenuDropDownBox = mSubMenuSO->addComponent<GUIDropDownBox>();
 
-		// TODO - Need to provide a parent element
-		mSubMenuDropDownBox->initialize(getTarget(), getOwnerWindow(), nullptr, mElements[idx].getSubMenuEntries(), getSkin(), mType);
+		mSubMenuDropDownBox->initialize(getTarget(), getOwnerWindow(), 
+			GUIDropDownAreaPlacement::aroundBoundsVert(source->getBounds()), mElements[idx].getSubMenuEntries(), getSkin(), mType);
 	}
 }

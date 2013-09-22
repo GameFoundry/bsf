@@ -2,11 +2,10 @@ GUI ignores image in GUIContent for most elements.
 
 Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
 
-GUIDropDownBox::openSubMenu
- - I need to provide a parent element, also I probably need a way to distinguish between original drop down box, and sub-menu one
-
+GUIDropDownBox needs to properly handle different GUIDropDownPlacement types! Currently it just assumes BoundsHorz
 GUIContextMenu::getDropDownData needs to be implemented
-GUIDropDownBox only accepts a GUIElement, while GUIContextMenu only specifies a position
+
+ListBox: Clicking on ListBox once the DropDownBox is open should close the drop down box (I assume it does, it just re-opens it immediately again?)
 
 GUIMenuBar
  - It has a specific position, width and height

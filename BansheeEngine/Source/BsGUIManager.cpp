@@ -521,7 +521,8 @@ namespace BansheeEngine
 			i++;
 		}
 
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, skin, GUIDropDownType::ListBox);
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
+			GUIDropDownAreaPlacement::aroundBoundsHorz(parentList->getBounds()), dropDownData, skin, GUIDropDownType::ListBox);
 
 		mDropDownBoxOpenScheduled = true;
 		mListBoxSelectionMade = selectedCallback;
@@ -552,7 +553,8 @@ namespace BansheeEngine
 
 		//Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
 
-		//mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), parentList, dropDownData, widget.getSkin(), GUIDropDownType::ContextMenu);
+		//mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
+		//	GUIDropDownAreaPlacement::aroundPosition(position), dropDownData, widget.getSkin(), GUIDropDownType::ContextMenu);
 
 		mDropDownBoxOpenScheduled = true;
 	}
