@@ -7,6 +7,6 @@ namespace BansheeEngine
 {
 	class BS_EXPORT GUIContextMenu : public GUIMenu
 	{
-
+		
 	};
 }

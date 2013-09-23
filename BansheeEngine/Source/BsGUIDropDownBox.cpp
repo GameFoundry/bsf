@@ -122,20 +122,44 @@ namespace BansheeEngine
 		setSkin(skin);
 
 		Rect dropDownListBounds = placement.getBounds();
+		int potentialLeftStart = 0;
+		int potentialRightStart = 0;
+		int potentialTopStart = 0;
+		int potentialBottomStart = 0;
+
+		switch(placement.getType())
+		{
+		case GUIDropDownAreaPlacement::Type::Position: 
+			potentialLeftStart = potentialRightStart = placement.getPosition().x;
+			potentialTopStart = potentialBottomStart = placement.getPosition().y;
+			break;
+		case GUIDropDownAreaPlacement::Type::BoundsHorz:
+			potentialRightStart = placement.getBounds().x;
+			potentialLeftStart = placement.getBounds().x + placement.getBounds().width;
+			potentialBottomStart = placement.getBounds().y + placement.getBounds().height;
+			potentialTopStart = placement.getBounds().y;
+			break;
+		case GUIDropDownAreaPlacement::Type::BoundsVert:
+			potentialRightStart = placement.getBounds().x + placement.getBounds().width;
+			potentialLeftStart = placement.getBounds().x;
+			potentialBottomStart = placement.getBounds().y;
+			potentialTopStart = placement.getBounds().y + placement.getBounds().height;
+			break;
+		}
 
 		// Determine x position and whether to align to left or right side of the drop down list
-		UINT32 availableRightwardWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - dropDownListBounds.x);
-		UINT32 availableLeftwardWidth = (UINT32)std::max(0, (dropDownListBounds.x + dropDownListBounds.width) - target->getLeft());
+		UINT32 availableRightwardWidth = (UINT32)std::max(0, (target->getLeft() + target->getWidth()) - potentialRightStart);
+		UINT32 availableLeftwardWidth = (UINT32)std::max(0, potentialLeftStart - target->getLeft());
 
 		//// Prefer right if possible
 		if(DROP_DOWN_BOX_WIDTH <= availableRightwardWidth)
-			x = dropDownListBounds.x;
+			x = potentialRightStart;
 		else
 		{
 			if(availableRightwardWidth >= availableLeftwardWidth)
-				x = dropDownListBounds.x;
+				x = potentialRightStart;
 			else
-				x = dropDownListBounds.x - std::min(DROP_DOWN_BOX_WIDTH, availableLeftwardWidth);
+				x = potentialLeftStart - std::min(DROP_DOWN_BOX_WIDTH, availableLeftwardWidth);
 		}
 
 		// Determine maximum width
@@ -143,6 +167,10 @@ namespace BansheeEngine
 		width = std::min(DROP_DOWN_BOX_WIDTH, maxPossibleWidth);
 
 		// Determine y position and whether to open upward or downward
+		UINT32 availableDownwardHeight = (UINT32)std::max(0, (target->getTop() + target->getHeight()) - potentialBottomStart);
+		UINT32 availableUpwardHeight = (UINT32)std::max(0, potentialTopStart - target->getTop());
+
+		//// Prefer down if possible
 		UINT32 helperElementHeight = mScrollUpStyle->height + mScrollDownStyle->height + mBackgroundStyle->margins.top + mBackgroundStyle->margins.bottom;
 
 		UINT32 maxNeededHeight = helperElementHeight;
@@ -150,26 +178,22 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < numElements; i++)
 			maxNeededHeight += getElementHeight(i);
 
-		UINT32 availableDownwardHeight = (UINT32)std::max(0, (target->getTop() + target->getHeight()) - (dropDownListBounds.y + dropDownListBounds.height));
-		UINT32 availableUpwardHeight = (UINT32)std::max(0, dropDownListBounds.y - target->getTop());
-
-		//// Prefer down if possible
 		height = 0;
 		if(maxNeededHeight <= availableDownwardHeight)
 		{
-			y = dropDownListBounds.y + dropDownListBounds.height;
+			y = potentialBottomStart;
 			height = availableDownwardHeight;
 		}
 		else
 		{
 			if(availableDownwardHeight >= availableUpwardHeight)
 			{
-				y = dropDownListBounds.y + dropDownListBounds.height;
+				y = potentialBottomStart;
 				height = availableDownwardHeight;
 			}
 			else
 			{
-				y = dropDownListBounds.y - std::min(maxNeededHeight, availableUpwardHeight);
+				y = potentialTopStart - std::min(maxNeededHeight, availableUpwardHeight);
 				height = availableUpwardHeight;
 			}
 		}

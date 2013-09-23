@@ -18,6 +18,8 @@
    some out, even if they contain no data. This would create incomplete RTTI class hierarchy which can cause various issues.
  - If you are manually constructing a class and it has an "initialize()" method, then you need to call it before using the class. Most object creation is wrapped
    in methods which do this automatically though. ("create()" methods)
+ - Unlike most other objects you don't have to worry about cleaning up GUI elements. You can destroy them manually if you want to get rid of a 
+   specific element, but normally destruction will be handled by the owning GUIWidget.
  - Notation rules:
     - Method prefixed with _ (i.e. _getDevice()) are internal methods used by the engine systems and normal user should not need to call them unless 
 	  he really knows what is he doing. Those methods might also be marked with "Internal method" notation in their documentation (without the _ prefix).

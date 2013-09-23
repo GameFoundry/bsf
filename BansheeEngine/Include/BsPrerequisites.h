@@ -56,6 +56,8 @@ namespace BansheeEngine
 	class GUIListBox;
 	class GUIDropDownBox;
 	class DragAndDropManager;
+	class GUIMenu;
+	class GUIMenuItem;
 	class GUIContent;
 	class GUIContextMenu;
 

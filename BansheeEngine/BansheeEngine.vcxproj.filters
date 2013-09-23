@@ -216,6 +216,9 @@
     <ClInclude Include="Source\BsGUIContextMenu.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIMenuBar.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -369,6 +372,9 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIMenu.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIMenuBar.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
