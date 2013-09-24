@@ -29,14 +29,11 @@ namespace BansheeEngine
 		GUIArea::destroy(mBackgroundArea);
 	}
 
-	void GUIMenuBar::setPosition(CM::INT32 x, CM::INT32 y)
+	void GUIMenuBar::setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height)
 	{
 		mMainArea->setPosition(x, y);
 		mBackgroundArea->setPosition(x, y);
-	}
 
-	void GUIMenuBar::setSize(CM::UINT32 width, CM::UINT32 height)
-	{
 		mMainArea->setSize(width, height);
 		mBackgroundArea->setSize(width, height);
 	}

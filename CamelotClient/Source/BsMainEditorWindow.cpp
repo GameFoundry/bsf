@@ -1,5 +1,6 @@
 #include "BsMainEditorWindow.h"
 #include "BsDockManager.h"
+#include "BsGUIMenuBar.h"
 #include "BsCamera.h"
 #include "CmSceneObject.h"
 #include "CmRenderTexture.h"
@@ -17,12 +18,16 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	MainEditorWindow::MainEditorWindow(CM::RenderWindowPtr renderWindow)
-		:EditorWindowBase(renderWindow), mDockManager(cm_new<DockManager>(mGUI.get()))
+		:EditorWindowBase(renderWindow), mDockManager(cm_new<DockManager>(mGUI.get())), mMenuBar(cm_new<GUIMenuBar>(mGUI.get()))
 	{
 		UINT32 widgetWidth = (UINT32)std::max(0, (INT32)getWidth() - 2);
 		UINT32 widgetHeight = (UINT32)std::max(0, (INT32)getHeight() - 2);
 
-		mDockManager->setArea(1, 1, widgetWidth, widgetHeight);
+		UINT32 menuBarHeight = 20;
+		mMenuBar->setArea(1, 1, widgetWidth, menuBarHeight);
+
+		UINT32 dockHeight = (UINT32)std::max(0, (INT32)widgetHeight - (INT32)menuBarHeight);
+		mDockManager->setArea(1, menuBarHeight + 1, widgetWidth, dockHeight);
 
 		// DEBUG ONLY
 
@@ -59,6 +64,7 @@ namespace BansheeEditor
 	MainEditorWindow::~MainEditorWindow()
 	{
 		cm_delete(mDockManager);
+		cm_delete(mMenuBar);
 	}
 
 	void MainEditorWindow::movedOrResized()

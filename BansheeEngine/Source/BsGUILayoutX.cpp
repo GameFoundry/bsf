@@ -85,14 +85,21 @@ namespace BansheeEngine
 		UINT32 numNonClampedElements = 0;
 		UINT32 numFlexibleSpaces = 0;
 
-		bool* processedElements = stackAllocN<bool>((UINT32)mChildren.size(), HID_Main);
-		memset(processedElements, 0, mChildren.size() * sizeof(bool));
+		bool* processedElements = nullptr;
+		UINT32* elementSizes = nullptr;
+		float* elementScaleWeights = nullptr;
 
-		UINT32* elementSizes = stackAllocN<UINT32>((UINT32)mChildren.size(), HID_Main);
-		memset(elementSizes, 0, mChildren.size() * sizeof(UINT32));
+		if(mChildren.size() > 0)
+		{
+			processedElements = stackAllocN<bool>((UINT32)mChildren.size(), HID_Main);
+			memset(processedElements, 0, mChildren.size() * sizeof(bool));
 
-		float* elementScaleWeights = stackAllocN<float>((UINT32)mChildren.size(), HID_Main);
-		memset(elementScaleWeights, 0, mChildren.size() * sizeof(float));
+			elementSizes = stackAllocN<UINT32>((UINT32)mChildren.size(), HID_Main);
+			memset(elementSizes, 0, mChildren.size() * sizeof(UINT32));
+
+			elementScaleWeights = stackAllocN<float>((UINT32)mChildren.size(), HID_Main);
+			memset(elementScaleWeights, 0, mChildren.size() * sizeof(float));
+		}
 
 		// Set initial sizes, count number of children per type and mark fixed elements as already processed
 		UINT32 childIdx = 0;
@@ -389,9 +396,14 @@ namespace BansheeEngine
 			childIdx++;
 		}
 
-		stackDeallocLast(elementScaleWeights, HID_Main);
-		stackDeallocLast(elementSizes, HID_Main);
-		stackDeallocLast(processedElements, HID_Main);
+		if(elementScaleWeights != nullptr)
+			stackDeallocLast(elementScaleWeights, HID_Main);
+
+		if(elementSizes != nullptr)
+			stackDeallocLast(elementSizes, HID_Main);
+
+		if(processedElements != nullptr)
+			stackDeallocLast(processedElements, HID_Main);
 
 		_markAsClean();
 	}

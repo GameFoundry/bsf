@@ -17,8 +17,7 @@ namespace BansheeEngine
 		GUIMenuBar(BS::GUIWidget* parent);
 		virtual ~GUIMenuBar();
 
-		void setSize(CM::UINT32 width, CM::UINT32 height);
-		void setPosition(CM::INT32 x, CM::INT32 y);
+		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
 		const GUIMenuItem* addMenuItem(const CM::WString& path, std::function<void()> callback);
 		const GUIMenuItem* addSeparator(const CM::WString& path);
