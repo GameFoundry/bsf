@@ -21,6 +21,7 @@
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
 #include "BsGUIListBox.h"
+#include "BsGUIButton.h"
 #include "BsGUIDropDownBox.h"
 #include "BsGUIContextMenu.h"
 #include "BsDragAndDropManager.h"
@@ -503,7 +504,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::openDropDownListBox(GUIListBox* parentList, const CM::Vector<WString>::type& elements, 
+	void GUIManager::openDropDownListBox(const GUIListBox* parentList, const CM::Vector<WString>::type& elements, 
 		std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin)
 	{
 		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
@@ -544,10 +545,27 @@ namespace BansheeEngine
 		mDropDownBoxActive = false;
 	}
 
+	void GUIManager::openMenuBarMenu(GUIButton* parentButton, const GUIMenu* menu)
+	{
+		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
+			closeDropDownBox();
+
+		mDropDownSO = SceneObject::create("DropDownBox");
+		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
+
+		Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
+		GUIWidget& widget = parentButton->_getParentWidget();
+
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
+			GUIDropDownAreaPlacement::aroundBoundsVert(parentButton->getBounds()), dropDownData, widget.getSkin(), GUIDropDownType::MenuBar);
+
+		mDropDownBoxOpenScheduled = true;
+	}
+
 	void GUIManager::openContextMenu(const GUIContextMenu* menu, const Int2& position, GUIWidget& widget)
 	{
 		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
-			closeContextMenu();
+			closeDropDownBox();
 
 		mDropDownSO = SceneObject::create("DropDownBox");
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
@@ -558,11 +576,6 @@ namespace BansheeEngine
 			GUIDropDownAreaPlacement::aroundPosition(position), dropDownData, widget.getSkin(), GUIDropDownType::ContextMenu);
 
 		mDropDownBoxOpenScheduled = true;
-	}
-
-	void GUIManager::closeContextMenu()
-	{
-		closeDropDownBox();
 	}
 
 	void GUIManager::updateCaretTexture()

@@ -41,5 +41,7 @@ namespace BansheeEngine
 		 * @return	False if first element doesn't exist, true otherwise.
 		 */
 		bool stripPath(CM::WString& path, CM::WString& pathRoot) const;
+
+		void openSubMenu(const CM::WString& name);
 	};
 }

@@ -4,6 +4,7 @@
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
 #include "BsGUIMenu.h"
+#include "BsGUIManager.h"
 
 using namespace CamelotFramework;
 
@@ -86,6 +87,7 @@ namespace BansheeEngine
 			newSubMenu.menu = cm_new<GUIMenu>();
 
 			GUIButton* newButton = GUIButton::create(*mParentWidget, rootName);
+			newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, rootName));
 			mMainArea->getLayout().addElement(newButton);
 
 			newSubMenu.button = newButton;
@@ -154,5 +156,14 @@ namespace BansheeEngine
 			path.erase(0, 1); // Forward slash
 
 		return true;
+	}
+
+	void GUIMenuBar::openSubMenu(const CM::WString& name)
+	{
+		const GUIMenuBarData* subMenu = getSubMenu(name);
+		if(subMenu == nullptr)
+			return;
+
+		GUIManager::instance().openMenuBarMenu(subMenu->button, subMenu->menu);
 	}
 }

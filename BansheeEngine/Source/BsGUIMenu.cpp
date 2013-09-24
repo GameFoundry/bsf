@@ -168,7 +168,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					dropDownData.push_back(GUIDropDownData::subMenu(menuItem->getName(), getDropDownData(*menuItem)));
+					dropDownData.push_back(GUIDropDownData::subMenu(menuItem->getName(), getDropDownDataInternal(*menuItem)));
 				}
 			}
 		}
