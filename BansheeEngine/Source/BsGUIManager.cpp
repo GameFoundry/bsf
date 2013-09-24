@@ -22,6 +22,7 @@
 #include "BsGUIInputSelection.h"
 #include "BsGUIListBox.h"
 #include "BsGUIDropDownBox.h"
+#include "BsGUIContextMenu.h"
 #include "BsDragAndDropManager.h"
 
 using namespace CamelotFramework;
@@ -551,10 +552,10 @@ namespace BansheeEngine
 		mDropDownSO = SceneObject::create("DropDownBox");
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
 
-		//Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
+		Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
 
-		//mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
-		//	GUIDropDownAreaPlacement::aroundPosition(position), dropDownData, widget.getSkin(), GUIDropDownType::ContextMenu);
+		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
+			GUIDropDownAreaPlacement::aroundPosition(position), dropDownData, widget.getSkin(), GUIDropDownType::ContextMenu);
 
 		mDropDownBoxOpenScheduled = true;
 	}

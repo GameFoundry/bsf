@@ -16,6 +16,7 @@ namespace BansheeEngine
 		CM::UINT32 getNumChildren() const { return (CM::UINT32)mChildren.size(); }
 		const GUIMenuItem* getParent() const { return mParent; }
 		const CM::WString& getName() const { return mName; }
+		std::function<void()> getCallback() const { return mCallback; }
 		bool isSeparator() const { return mIsSeparator; }
 		const GUIMenuItem* findChild(const CM::WString& name) const;
 
@@ -44,9 +45,12 @@ namespace BansheeEngine
 		const GUIMenuItem* addSeparator(const CM::WString& path);
 		const GUIMenuItem* getMenuItem(const CM::WString& path) const;
 		void removeMenuItem(const GUIMenuItem* item);
+
+		CM::Vector<GUIDropDownData>::type getDropDownData() const;
 	protected:
 		GUIMenuItem mRootElement;
 
 		const GUIMenuItem* addMenuItemInternal(const CM::WString& path, std::function<void()> callback, bool isSeparator);
+		CM::Vector<GUIDropDownData>::type getDropDownDataInternal(const GUIMenuItem& menu) const;
 	};
 }

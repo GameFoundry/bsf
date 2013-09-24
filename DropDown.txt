@@ -2,7 +2,6 @@ GUI ignores image in GUIContent for most elements.
 
 Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
 
-GUIDropDownBox needs to properly handle different GUIDropDownPlacement types! Currently it just assumes BoundsHorz
 GUIContextMenu::getDropDownData needs to be implemented
 
 ListBox: Clicking on ListBox once the DropDownBox is open should close the drop down box (I assume it does, it just re-opens it immediately again?)

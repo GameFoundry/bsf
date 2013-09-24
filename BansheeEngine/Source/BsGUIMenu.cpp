@@ -1,4 +1,5 @@
 #include "BsGUIMenu.h"
+#include "BsGUIDropDownBox.h"
 
 using namespace CamelotFramework;
 
@@ -142,5 +143,36 @@ namespace BansheeEngine
 		assert(parent != nullptr);
 
 		parent->removeChild(item->getName());
+	}
+
+	Vector<GUIDropDownData>::type GUIMenu::getDropDownData() const
+	{
+		return getDropDownDataInternal(mRootElement);
+	}
+
+	Vector<GUIDropDownData>::type GUIMenu::getDropDownDataInternal(const GUIMenuItem& menu) const
+	{
+		Vector<GUIDropDownData>::type dropDownData;
+
+		for(auto& menuItem : menu.mChildren)
+		{
+			if(menuItem->isSeparator())
+			{
+				dropDownData.push_back(GUIDropDownData::separator());
+			}
+			else
+			{
+				if(menuItem->getNumChildren() == 0)
+				{
+					dropDownData.push_back(GUIDropDownData::button(menuItem->getName(), menuItem->getCallback()));
+				}
+				else
+				{
+					dropDownData.push_back(GUIDropDownData::subMenu(menuItem->getName(), getDropDownData(*menuItem)));
+				}
+			}
+		}
+
+		return dropDownData;
 	}
 }
