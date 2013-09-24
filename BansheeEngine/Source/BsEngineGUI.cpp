@@ -33,8 +33,11 @@ namespace BansheeEngine
 	const String EngineGUI::WindowCloseButtonNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowCloseBtnNormal.psd";
 	const String EngineGUI::WindowCloseButtonHover = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowCloseBtnHover.psd";
 
-	const String EngineGUI::WindowMinButtonNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMinBtnNormal.psd";
-	const String EngineGUI::WindowMinButtonHover = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMinBtnHover.psd";
+	const String EngineGUI::WindowMinButtonNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMaxBtnNormal.psd";
+	const String EngineGUI::WindowMinButtonHover = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMaxBtnHover.psd";
+
+	const String EngineGUI::WindowMaxButtonNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMinBtnNormal.psd";
+	const String EngineGUI::WindowMaxButtonHover = "..\\..\\..\\..\\Data\\Editor\\Skin\\WindowMinBtnHover.psd";
 
 	const String EngineGUI::TabbedBarBtnNormal = "..\\..\\..\\..\\Data\\Editor\\Skin\\TabbedButtonNormal.psd";
 	const String EngineGUI::TabbedBarBtnActive = "..\\..\\..\\..\\Data\\Editor\\Skin\\TabbedButtonActive.psd";
@@ -86,6 +89,13 @@ namespace BansheeEngine
 	const String EngineGUI::DropDownBoxBtnDownArrowTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnDownArrow.psd";
 
 	const String EngineGUI::ScrollBarBgTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\ScrollBarBg.psd";
+
+	const String EngineGUI::MenuBarBgTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\MenuBarBg.psd";
+
+	const String EngineGUI::MenuBarBtnNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\MenuBarButtonNormal.psd";
+	const String EngineGUI::MenuBarBtnHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\MenuBarButtonHover.psd";
+
+	const String EngineGUI::MenuBarBansheeLogoTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\MenuBarBansheeLogo.psd";
 
 	EngineGUI::EngineGUI()
 	{
@@ -224,6 +234,21 @@ namespace BansheeEngine
 		winMinButtonStyle.width = 8;
 
 		mSkin.setStyle("WinMinimizeBtn", winMinButtonStyle);
+
+		// Window maximize button
+		HTexture winMaxBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowMaxButtonNormal));
+		HTexture winMaxBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowMaxButtonHover));
+
+		GUIElementStyle winMaxButtonStyle;
+		winMaxButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMaxBtnNormal));
+		winMaxButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMaxBtnHover));
+		winMaxButtonStyle.active.texture = winMaxButtonStyle.hover.texture;
+		winMaxButtonStyle.fixedHeight = true;
+		winMaxButtonStyle.fixedWidth = true;
+		winMaxButtonStyle.height = 8;
+		winMaxButtonStyle.width = 8;
+
+		mSkin.setStyle("WinMaximizeBtn", winMaxButtonStyle);
 
 		// Window close button
 		HTexture winCloseBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowCloseButtonNormal));
@@ -583,8 +608,6 @@ namespace BansheeEngine
 
 		GUIElementStyle dropDownSeparatorStyle;
 		dropDownSeparatorStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownSeparatorTex));
-		dropDownSeparatorStyle.hover.texture = dropDownSeparatorStyle.normal.texture;
-		dropDownSeparatorStyle.active.texture = dropDownSeparatorStyle.hover.texture;
 		dropDownSeparatorStyle.fixedHeight = true;
 		dropDownSeparatorStyle.fixedWidth = false;
 		dropDownSeparatorStyle.height = 3;
@@ -597,5 +620,52 @@ namespace BansheeEngine
 		mSkin.setStyle("ListBoxSeparator", dropDownSeparatorStyle);
 		mSkin.setStyle("MenuBarSeparator", dropDownSeparatorStyle);
 		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
+
+		/************************************************************************/
+		/* 								MENU BAR	                     		*/
+		/************************************************************************/
+
+		// MenuBar background
+		HTexture menuBarBgTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + MenuBarBgTex));
+
+		GUIElementStyle menuBarBgStyle;
+		menuBarBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBgTex));
+		menuBarBgStyle.fixedHeight = false;
+		menuBarBgStyle.fixedWidth = false;
+		menuBarBgStyle.height = 4;
+		menuBarBgStyle.width = 4;
+
+		mSkin.setStyle("MenuBarBg", menuBarBgStyle);
+
+		// MenuBar Banshee logo
+		HTexture menuBarBansheeLogoTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + MenuBarBansheeLogoTex));
+
+		GUIElementStyle menuBarBansheeLogoStyle;
+		menuBarBansheeLogoStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBansheeLogoTex));
+		menuBarBansheeLogoStyle.fixedHeight = true;
+		menuBarBansheeLogoStyle.fixedWidth = true;
+		menuBarBansheeLogoStyle.height = 7;
+		menuBarBansheeLogoStyle.width = 51;
+
+		mSkin.setStyle("MenuBarBansheeLogo", menuBarBansheeLogoStyle);
+
+		// MenuBar button
+		HTexture menuBarBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + MenuBarBtnNormalTex));
+		HTexture menuBarBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + MenuBarBtnHoverTex));
+
+		GUIElementStyle menuBarBtnStyle;
+		menuBarBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnNormal));
+		menuBarBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnHover));
+		menuBarBtnStyle.active.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.fixedHeight = false;
+		menuBarBtnStyle.fixedWidth = false;
+		menuBarBtnStyle.height = 4;
+		menuBarBtnStyle.width = 4;
+		menuBarBtnStyle.font = font;
+		menuBarBtnStyle.fontSize = DefaultFontSize;
+		menuBarBtnStyle.textHorzAlign = THA_Left;
+		menuBarBtnStyle.textVertAlign = TVA_Top;
+
+		mSkin.setStyle("MenuBarBtn", menuBarBtnStyle);
 	}
 }

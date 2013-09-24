@@ -33,6 +33,9 @@ namespace BansheeEngine
 		static const CM::String WindowMinButtonNormal;
 		static const CM::String WindowMinButtonHover;
 
+		static const CM::String WindowMaxButtonNormal;
+		static const CM::String WindowMaxButtonHover;
+
 		static const CM::String TabbedBarBtnNormal;
 		static const CM::String TabbedBarBtnActive;
 
@@ -86,5 +89,12 @@ namespace BansheeEngine
 
 		static const CM::String DropDownBoxBtnUpArrowTex;
 		static const CM::String DropDownBoxBtnDownArrowTex;
+
+		static const CM::String MenuBarBgTex;
+
+		static const CM::String MenuBarBtnNormalTex;
+		static const CM::String MenuBarBtnHoverTex;
+
+		static const CM::String MenuBarBansheeLogoTex;
 	};
 }

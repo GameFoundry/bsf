@@ -12,9 +12,11 @@ namespace BansheeEditor
 		~MainEditorWindow();
 
 	protected:
-		BS::GUIMenuBar* mMenuBar;
+		GUIMenuBar* mMenuBar;
 		DockManager* mDockManager;
 
 		virtual void movedOrResized();
+
+		void updateAreas();
 	};
 }

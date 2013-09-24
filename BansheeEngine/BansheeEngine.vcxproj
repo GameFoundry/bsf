@@ -250,7 +250,6 @@
     <ClInclude Include="Include\BsGUILayout.h" />
     <ClInclude Include="Include\BsGUILayoutY.h" />
     <ClInclude Include="Include\BsGUIMenu.h" />
-    <ClInclude Include="Include\BsGUIMenuBar.h" />
     <ClInclude Include="Include\BsGUIScrollBar.h" />
     <ClInclude Include="Include\BsGUIScrollBarHandle.h" />
     <ClInclude Include="Include\BsGUIScrollBarHorz.h" />
@@ -312,7 +311,6 @@
     <ClCompile Include="Source\BsGUILayoutY.cpp" />
     <ClCompile Include="Source\BsGUIManager.cpp" />
     <ClCompile Include="Source\BsGUIMaterialManager.cpp" />
-    <ClCompile Include="Source\BsGUIMenuBar.cpp" />
     <ClCompile Include="Source\BsGUIMouseEvent.cpp" />
     <ClCompile Include="Source\BsGUIScrollBar.cpp" />
     <ClCompile Include="Source\BsGUIScrollBarHandle.cpp" />
