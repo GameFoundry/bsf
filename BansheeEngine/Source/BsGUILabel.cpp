@@ -4,6 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayoutOptions.h"
+#include "BsGUIHelper.h"
 #include "CmTextUtility.h"
 
 using namespace CamelotFramework;
@@ -60,40 +61,12 @@ namespace BansheeEngine
 
 	UINT32 GUILabel::_getOptimalWidth() const
 	{
-		UINT32 wordWrapWidth = 0;
-
-		if(mDesc.wordWrap)
-		{
-			if(_getLayoutOptions().fixedWidth)
-				wordWrapWidth = _getLayoutOptions().width;
-			else
-				wordWrapWidth = _getLayoutOptions().maxWidth;
-		}
-
-		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(mDesc.text, mDesc.font, mDesc.fontSize, wordWrapWidth, 0, mDesc.wordWrap);
-		if(textData == nullptr)
-			return 0;
-
-		return textData->getWidth();
+		return GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).x;
 	}
 
 	UINT32 GUILabel::_getOptimalHeight() const
 	{
-		UINT32 wordWrapWidth = 0;
-
-		if(mDesc.wordWrap)
-		{
-			if(_getLayoutOptions().fixedWidth)
-				wordWrapWidth = _getLayoutOptions().width;
-			else
-				wordWrapWidth = _getLayoutOptions().maxWidth;
-		}
-
-		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(mDesc.text, mDesc.font, mDesc.fontSize, wordWrapWidth, 0, mDesc.wordWrap);
-		if(textData == nullptr)
-			return 0;
-
-		return textData->getHeight();
+		return GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).y;
 	}
 
 	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

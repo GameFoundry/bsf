@@ -7,6 +7,7 @@
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIToggleGroup.h"
+#include "BsGUIHelper.h"
 #include "CmTexture.h"
 
 using namespace CamelotFramework;
@@ -246,19 +247,7 @@ namespace BansheeEngine
 		mImageSprite->update(mImageDesc);
 		mNumImageRenderElements = mImageSprite->getNumRenderElements();
 
-		TEXT_SPRITE_DESC textDesc;
-		textDesc.text = mContent.getText();
-		textDesc.font = mStyle->font;
-		textDesc.fontSize = mStyle->fontSize;
-
-		Rect textBounds = getContentBounds();
-
-		textDesc.width = textBounds.width;
-		textDesc.height = textBounds.height;
-		textDesc.horzAlign = mStyle->textHorzAlign;
-		textDesc.vertAlign = mStyle->textVertAlign;
-
-		mTextSprite->update(textDesc);
+		mTextSprite->update(getTextDesc());
 
 		GUIElement::updateRenderElementsInternal();
 	}
@@ -270,22 +259,20 @@ namespace BansheeEngine
 
 	UINT32 GUIToggle::_getOptimalWidth() const
 	{
+		UINT32 imageWidth = 0;
 		if(mImageDesc.texture != nullptr)
-		{
-			return mImageDesc.texture->getTexture()->getWidth();
-		}
+			imageWidth = mImageDesc.texture->getTexture()->getWidth();
 
-		return 0;
+		return std::max(imageWidth, (UINT32)GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).x);
 	}
 
 	UINT32 GUIToggle::_getOptimalHeight() const
 	{
+		UINT32 imageHeight = 0;
 		if(mImageDesc.texture != nullptr)
-		{
-			return mImageDesc.texture->getTexture()->getHeight();
-		}
+			imageHeight = mImageDesc.texture->getTexture()->getHeight();
 
-		return 0;
+		return std::max(imageHeight, (UINT32)GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).y);
 	}
 
 	UINT32 GUIToggle::_getRenderElementDepth(UINT32 renderElementIdx) const
@@ -358,5 +345,22 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	TEXT_SPRITE_DESC GUIToggle::getTextDesc() const
+	{
+		TEXT_SPRITE_DESC textDesc;
+		textDesc.text = mContent.getText();
+		textDesc.font = mStyle->font;
+		textDesc.fontSize = mStyle->fontSize;
+
+		Rect textBounds = getContentBounds();
+
+		textDesc.width = textBounds.width;
+		textDesc.height = textBounds.height;
+		textDesc.horzAlign = mStyle->textHorzAlign;
+		textDesc.vertAlign = mStyle->textVertAlign;
+
+		return textDesc;
 	}
 }

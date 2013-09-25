@@ -31,8 +31,7 @@ namespace BansheeEngine
 		std::function<void()> mCallback;
 		CM::Vector<GUIMenuItem*>::type mChildren;
 
-		CM::Vector<GUIMenuItem*>::type::const_iterator findChildInternal(const CM::WString& name) const;
-		CM::Vector<GUIMenuItem*>::type::iterator findChildInternal(const CM::WString& name);
+		GUIMenuItem* findChild(const CM::WString& name);
 	};
 
 	class BS_EXPORT GUIMenu

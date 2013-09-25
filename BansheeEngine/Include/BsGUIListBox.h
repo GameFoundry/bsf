@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
+#include "BsTextSprite.h"
 #include "boost/signal.hpp"
 
 namespace BansheeEngine
@@ -66,6 +67,7 @@ namespace BansheeEngine
 		GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		TEXT_SPRITE_DESC getTextDesc() const;
 
 		void elementSelected(CM::UINT32 idx);
 	};

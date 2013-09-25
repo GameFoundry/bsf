@@ -25,7 +25,17 @@ namespace BansheeEngine
 
 	const GUIMenuItem* GUIMenuItem::findChild(const CM::WString& name) const
 	{
-		auto iterFind = findChildInternal(name);
+		auto iterFind = std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
+
+		if(iterFind != mChildren.end())
+			return *iterFind;
+
+		return nullptr;
+	}
+
+	GUIMenuItem* GUIMenuItem::findChild(const CM::WString& name)
+	{
+		auto iterFind = std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
 
 		if(iterFind != mChildren.end())
 			return *iterFind;
@@ -35,23 +45,13 @@ namespace BansheeEngine
 
 	void GUIMenuItem::removeChild(const CM::WString& name)
 	{
-		auto iterFind = findChildInternal(name);
+		auto iterFind = std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
 
 		if(iterFind != mChildren.end())
 		{
 			cm_delete<PoolAlloc>(*iterFind);
 			mChildren.erase(iterFind);
 		}
-	}
-
-	CM::Vector<GUIMenuItem*>::type::const_iterator GUIMenuItem::findChildInternal(const CM::WString& name) const
-	{
-		return std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
-	}
-
-	CM::Vector<GUIMenuItem*>::type::iterator GUIMenuItem::findChildInternal(const CM::WString& name)
-	{
-		return std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
 	}
 
 	GUIMenu::GUIMenu()
@@ -83,8 +83,7 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < (UINT32)pathElements.size(); i++)
 		{
 			const WString& pathElem = *(pathElements.begin() + i);
-			auto foundChild = curSubMenu->findChildInternal(pathElem);
-			GUIMenuItem* existingItem = *foundChild;
+			GUIMenuItem* existingItem = curSubMenu->findChild(pathElem);
 
 			if(existingItem == nullptr)
 			{
@@ -125,8 +124,7 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < (UINT32)pathElements.size(); i++)
 		{
 			const WString& pathElem = *(pathElements.begin() + i);
-			auto foundChild = curSubMenu->findChildInternal(pathElem);
-			GUIMenuItem* existingItem = *foundChild;
+			const GUIMenuItem* existingItem = curSubMenu->findChild(pathElem);
 
 			if(existingItem == nullptr || existingItem->isSeparator())
 				return nullptr;

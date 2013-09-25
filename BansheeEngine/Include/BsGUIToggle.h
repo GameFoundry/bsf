@@ -4,6 +4,7 @@
 #include "BsGUIElement.h"
 #include "BsGUIToggleGroup.h"
 #include "BsImageSprite.h"
+#include "BsTextSprite.h"
 #include "BsGUIContent.h"
 #include "boost/signal.hpp"
 
@@ -76,6 +77,8 @@ namespace BansheeEngine
 		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
+
+		TEXT_SPRITE_DESC getTextDesc() const;
 
 	private:
 		std::shared_ptr<GUIToggleGroup> mToggleGroup;

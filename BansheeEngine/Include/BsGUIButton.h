@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
+#include "BsTextSprite.h"
 #include "BsGUIContent.h"
 #include "boost/signal.hpp"
 
@@ -73,5 +74,7 @@ namespace BansheeEngine
 		GUIButton(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
+
+		TEXT_SPRITE_DESC getTextDesc() const;
 	};
 }

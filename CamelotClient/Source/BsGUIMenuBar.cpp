@@ -4,6 +4,7 @@
 #include "BsGUIButton.h"
 #include "BsGUITexture.h"
 #include "BsGUILayout.h"
+#include "BsGUISpace.h"
 #include "BsGUIMenu.h"
 #include "BsGUIManager.h"
 #include "BsEngineGUI.h"
@@ -24,6 +25,7 @@ namespace BansheeEditor
 
 		mLogoTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("MenuBarBansheeLogo"));
 		mMainArea->getLayout().addElement(mLogoTexture);
+		mMainArea->getLayout().addFlexibleSpace();
 	}
 
 	GUIMenuBar::~GUIMenuBar()
@@ -68,7 +70,7 @@ namespace BansheeEditor
 			newSubMenu.menu = cm_new<GUIMenu>();
 
 			GUIButton* newButton = GUIButton::create(*mParentWidget, rootName, EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
-			mMainArea->getLayout().addElement(newButton);
+			mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - 1, newButton);
 
 			newSubMenu.button = newButton;
 

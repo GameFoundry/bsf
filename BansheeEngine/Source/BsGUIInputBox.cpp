@@ -17,6 +17,7 @@
 #include "BsGUIInputSelection.h"
 #include "BsDragAndDropManager.h"
 #include "BsGUIContextMenu.h"
+#include "BsGUIHelper.h"
 
 using namespace CamelotFramework;
 
@@ -280,22 +281,20 @@ namespace BansheeEngine
 
 	UINT32 GUIInputBox::_getOptimalWidth() const
 	{
+		UINT32 imageWidth = 0;
 		if(mImageDesc.texture != nullptr)
-		{
-			return mImageDesc.texture->getTexture()->getWidth();
-		}
+			imageWidth = mImageDesc.texture->getTexture()->getWidth();
 
-		return 0;
+		return std::max(imageWidth, (UINT32)GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions()).x);
 	}
 
 	UINT32 GUIInputBox::_getOptimalHeight() const
 	{
+		UINT32 imageHeight = 0;
 		if(mImageDesc.texture != nullptr)
-		{
-			return mImageDesc.texture->getTexture()->getHeight();
-		}
+			imageHeight = mImageDesc.texture->getTexture()->getHeight();
 
-		return 0;
+		return std::max(imageHeight, (UINT32)GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions()).y);
 	}
 
 	CM::Int2 GUIInputBox::_getTextInputOffset() const

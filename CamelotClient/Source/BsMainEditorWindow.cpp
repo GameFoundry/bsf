@@ -22,6 +22,11 @@ namespace BansheeEditor
 	{
 		updateAreas();
 
+		mMenuBar->addMenuItem(L"File/New project", nullptr);
+		mMenuBar->addMenuItem(L"File/Open project", nullptr);
+		mMenuBar->addSeparator(L"File");
+		mMenuBar->addMenuItem(L"File/Exit", nullptr);
+
 		// DEBUG ONLY
 
 		HSceneObject sceneCameraGO = SceneObject::create("SceneCamera");
@@ -72,7 +77,7 @@ namespace BansheeEditor
 		UINT32 widgetWidth = (UINT32)std::max(0, (INT32)getWidth() - 2);
 		UINT32 widgetHeight = (UINT32)std::max(0, (INT32)getHeight() - 2);
 
-		UINT32 menuBarHeight = 20;
+		UINT32 menuBarHeight = 15;
 		mMenuBar->setArea(1, 1, widgetWidth, menuBarHeight);
 
 		UINT32 dockHeight = (UINT32)std::max(0, (INT32)widgetHeight - (INT32)menuBarHeight);

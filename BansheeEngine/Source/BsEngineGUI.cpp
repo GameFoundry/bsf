@@ -657,9 +657,9 @@ namespace BansheeEngine
 		menuBarBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnNormal));
 		menuBarBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnHover));
 		menuBarBtnStyle.active.texture = menuBarBtnStyle.hover.texture;
-		menuBarBtnStyle.fixedHeight = false;
+		menuBarBtnStyle.fixedHeight = true;
 		menuBarBtnStyle.fixedWidth = false;
-		menuBarBtnStyle.height = 4;
+		menuBarBtnStyle.height = 15;
 		menuBarBtnStyle.width = 4;
 		menuBarBtnStyle.font = font;
 		menuBarBtnStyle.fontSize = DefaultFontSize;
