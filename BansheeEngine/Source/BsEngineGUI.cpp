@@ -661,6 +661,10 @@ namespace BansheeEngine
 		menuBarBtnStyle.fixedWidth = false;
 		menuBarBtnStyle.height = 15;
 		menuBarBtnStyle.width = 4;
+		menuBarBtnStyle.margins.left = 2;
+		menuBarBtnStyle.margins.right = 2;
+		menuBarBtnStyle.margins.top = 2;
+		menuBarBtnStyle.margins.bottom = 2;
 		menuBarBtnStyle.font = font;
 		menuBarBtnStyle.fontSize = DefaultFontSize;
 		menuBarBtnStyle.textHorzAlign = THA_Left;

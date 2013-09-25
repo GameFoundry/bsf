@@ -82,6 +82,9 @@ namespace BansheeEngine
 		GUIMenuItem* curSubMenu = &mRootElement;
 		for(UINT32 i = 0; i < (UINT32)pathElements.size(); i++)
 		{
+			if(pathElements[i] == L"")
+				continue;
+
 			const WString& pathElem = *(pathElements.begin() + i);
 			GUIMenuItem* existingItem = curSubMenu->findChild(pathElem);
 

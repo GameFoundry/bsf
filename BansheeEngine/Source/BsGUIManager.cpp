@@ -557,7 +557,7 @@ namespace BansheeEngine
 		GUIWidget& widget = parentButton->_getParentWidget();
 
 		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
-			GUIDropDownAreaPlacement::aroundBoundsVert(parentButton->getBounds()), dropDownData, widget.getSkin(), GUIDropDownType::MenuBar);
+			GUIDropDownAreaPlacement::aroundBoundsHorz(parentButton->getBounds()), dropDownData, widget.getSkin(), GUIDropDownType::MenuBar);
 
 		mDropDownBoxOpenScheduled = true;
 	}

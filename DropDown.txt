@@ -2,19 +2,12 @@ GUI ignores image in GUIContent for most elements.
 
 Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
 
+There seems to be a depth issue between menu items and GUIRenderTexture
+When I have a sub-menu open, mousing over any other entry button should close the sub-menu
+
 Add min/max/close buttons to GUIMenuBar
 Setup move areas in GUIMenuBar
 
 ListBox: Clicking on ListBox once the DropDownBox is open should close the drop down box (I assume it does, it just re-opens it immediately again?)
 
-GUIMenuBar
- - It has a specific position, width and height
- - It was a GUIArea and its root elements are represented as buttons
-   - CLicking on a button will open up the menu, similar to context menu
-   - GUIManager::openMenu(Vector<GUIDropDownData>, GUIElement* parent)
-
-Test separators
-Test expandable buttons
- - And hook up on mouse over
- - ALSO I need to close other menu at the same level upon mouse over on another element
 Test scrollUp/scrollDown
