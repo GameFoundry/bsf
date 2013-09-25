@@ -15,8 +15,7 @@ namespace BansheeEngine
 		CM::UINT32 getSize() const { return mSize; }
 		Type _getType() const { return GUIElementBase::Type::FixedSpace; }
 
-		virtual CM::UINT32 _getOptimalWidth() const { return getSize(); }
-		virtual CM::UINT32 _getOptimalHeight() const { return getSize(); }
+		virtual CM::Int2 _getOptimalSize() const { return CM::Int2(getSize(), getSize()); }
 
 	protected:
 		CM::UINT32 mSize;
@@ -29,7 +28,6 @@ namespace BansheeEngine
 
 		Type _getType() const { return GUIElementBase::Type::FlexibleSpace; }
 
-		virtual CM::UINT32 _getOptimalWidth() const { return 0; }
-		virtual CM::UINT32 _getOptimalHeight() const { return 0; }
+		virtual CM::Int2 _getOptimalSize() const { return CM::Int2(0, 0); }
 	};
 }

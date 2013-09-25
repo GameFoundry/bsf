@@ -257,22 +257,21 @@ namespace BansheeEngine
 		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
-	UINT32 GUIToggle::_getOptimalWidth() const
+	Int2 GUIToggle::_getOptimalSize() const
 	{
 		UINT32 imageWidth = 0;
-		if(mImageDesc.texture != nullptr)
-			imageWidth = mImageDesc.texture->getTexture()->getWidth();
-
-		return std::max(imageWidth, (UINT32)GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).x);
-	}
-
-	UINT32 GUIToggle::_getOptimalHeight() const
-	{
 		UINT32 imageHeight = 0;
 		if(mImageDesc.texture != nullptr)
+		{
+			imageWidth = mImageDesc.texture->getTexture()->getWidth();
 			imageHeight = mImageDesc.texture->getTexture()->getHeight();
+		}
 
-		return std::max(imageHeight, (UINT32)GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).y);
+		Int2 contentSize = GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions());
+		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
+		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
+
+		return Int2(contentWidth, contentHeight);
 	}
 
 	UINT32 GUIToggle::_getRenderElementDepth(UINT32 renderElementIdx) const

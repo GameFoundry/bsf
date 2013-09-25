@@ -279,22 +279,21 @@ namespace BansheeEngine
 		return Rect();
 	}
 
-	UINT32 GUIInputBox::_getOptimalWidth() const
+	Int2 GUIInputBox::_getOptimalSize() const
 	{
 		UINT32 imageWidth = 0;
-		if(mImageDesc.texture != nullptr)
-			imageWidth = mImageDesc.texture->getTexture()->getWidth();
-
-		return std::max(imageWidth, (UINT32)GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions()).x);
-	}
-
-	UINT32 GUIInputBox::_getOptimalHeight() const
-	{
 		UINT32 imageHeight = 0;
 		if(mImageDesc.texture != nullptr)
+		{
+			imageWidth = mImageDesc.texture->getTexture()->getWidth();
 			imageHeight = mImageDesc.texture->getTexture()->getHeight();
+		}
 
-		return std::max(imageHeight, (UINT32)GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions()).y);
+		Int2 contentSize = GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions());
+		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
+		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
+
+		return Int2(contentWidth, contentHeight);
 	}
 
 	CM::Int2 GUIInputBox::_getTextInputOffset() const

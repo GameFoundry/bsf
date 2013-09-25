@@ -83,14 +83,9 @@ namespace BansheeEngine
 		mBounds.y += mOffset.y;
 	}
 
-	UINT32 GUIViewport::_getOptimalWidth() const
+	Int2 GUIViewport::_getOptimalSize() const
 	{
-		return 0;
-	}
-
-	UINT32 GUIViewport::_getOptimalHeight() const
-	{
-		return 0;
+		return Int2(0, 0);
 	}
 
 	void GUIViewport::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

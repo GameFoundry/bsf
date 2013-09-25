@@ -129,24 +129,14 @@ namespace BansheeEngine
 		mClippedBounds.clip(localClipRect);
 	}
 
-	UINT32 GUIScrollBarHandle::_getOptimalWidth() const
+	Int2 GUIScrollBarHandle::_getOptimalSize() const
 	{
 		if(mCurTexture != nullptr)
 		{
-			return mCurTexture->getTexture()->getWidth();
+			return Int2(mCurTexture->getTexture()->getWidth(), mCurTexture->getTexture()->getHeight());
 		}
 
-		return 0;
-	}
-
-	UINT32 GUIScrollBarHandle::_getOptimalHeight() const
-	{
-		if(mCurTexture != nullptr)
-		{
-			return mCurTexture->getTexture()->getHeight();
-		}
-
-		return 0;
+		return Int2();
 	}
 
 	void GUIScrollBarHandle::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

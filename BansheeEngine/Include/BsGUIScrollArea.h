@@ -49,8 +49,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
-		virtual CM::UINT32 _getOptimalWidth() const;
-		virtual CM::UINT32 _getOptimalHeight() const;
+		virtual CM::Int2 _getOptimalSize() const;
 	private:
 		GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 

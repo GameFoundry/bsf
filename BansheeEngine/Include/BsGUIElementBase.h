@@ -47,8 +47,7 @@ namespace BansheeEngine
 
 		void _setParent(GUIElementBase* parent) { mParentElement = parent; }
 
-		virtual CM::UINT32 _getOptimalWidth() const = 0;
-		virtual CM::UINT32 _getOptimalHeight() const = 0;
+		virtual CM::Int2 _getOptimalSize() const = 0;
 		virtual Type _getType() const = 0;
 		GUIElementBase* _getParent() const { return mParentElement; }
 

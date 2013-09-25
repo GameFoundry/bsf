@@ -55,14 +55,9 @@ namespace BansheeEngine
 		mClippedBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
 	}
 
-	UINT32 GUIScrollArea::_getOptimalWidth() const
+	Int2 GUIScrollArea::_getOptimalSize() const
 	{
-		return mContentLayout->_getOptimalWidth();
-	}
-
-	UINT32 GUIScrollArea::_getOptimalHeight() const
-	{
-		return mContentLayout->_getOptimalHeight();
+		return mContentLayout->_getOptimalSize();
 	}
 
 	void GUIScrollArea::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

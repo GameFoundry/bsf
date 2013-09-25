@@ -59,14 +59,9 @@ namespace BansheeEngine
 		mClippedBounds = mTextSprite->getBounds(mOffset, mClipRect);
 	}
 
-	UINT32 GUILabel::_getOptimalWidth() const
+	Int2 GUILabel::_getOptimalSize() const
 	{
-		return GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).x;
-	}
-
-	UINT32 GUILabel::_getOptimalHeight() const
-	{
-		return GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions()).y;
+		return GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions());
 	}
 
 	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

@@ -35,13 +35,17 @@ namespace BansheeEngine
 				GUIElement* element = static_cast<GUIElement*>(child);
 				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 
+				Int2 optimalSize;
+				if(!layoutOptions.fixedWidth || !layoutOptions.fixedHeight)
+					optimalSize = child->_getOptimalSize();
+
 				if(layoutOptions.fixedWidth)
 				{
 					optimalWidth = layoutOptions.width;
 				}
 				else
 				{
-					optimalWidth = child->_getOptimalWidth();
+					optimalWidth = optimalSize.x;
 
 					if(layoutOptions.minWidth > 0)
 						optimalWidth = std::max(layoutOptions.minWidth, optimalWidth);
@@ -54,7 +58,7 @@ namespace BansheeEngine
 					optimalHeight = layoutOptions.height;
 				else
 				{
-					optimalHeight = child->_getOptimalHeight();
+					optimalHeight = optimalSize.y;
 
 					if(layoutOptions.minHeight > 0)
 						optimalHeight = std::max(layoutOptions.minHeight, optimalHeight);
@@ -65,7 +69,7 @@ namespace BansheeEngine
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
-				optimalWidth = child->_getOptimalWidth();
+				optimalWidth = child->_getOptimalSize().x;
 			}
 
 			mOptimalSizes[childIdx].x = optimalWidth;
@@ -80,7 +84,7 @@ namespace BansheeEngine
 
 	void GUILayoutX::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
-		UINT32 totalOptimalSize = _getOptimalWidth();
+		UINT32 totalOptimalSize = _getOptimalSize().x;
 		UINT32 totalNonClampedSize = 0;
 		UINT32 numNonClampedElements = 0;
 		UINT32 numFlexibleSpaces = 0;

@@ -33,8 +33,7 @@ namespace BansheeEngine
 		CM::UINT32 getNumChildren() const { return (CM::UINT32)mChildren.size(); }
 		void removeChildAt(CM::UINT32 idx);
 
-		CM::UINT32 _getOptimalWidth() const { return mOptimalWidth; }
-		CM::UINT32 _getOptimalHeight() const { return mOptimalHeight; }
+		CM::Int2 _getOptimalSize() const { return CM::Int2(mOptimalWidth, mOptimalHeight); }
 		Type _getType() const { return GUIElementBase::Type::Layout; }
 
 		/**

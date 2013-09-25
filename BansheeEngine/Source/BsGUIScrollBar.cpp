@@ -99,14 +99,9 @@ namespace BansheeEngine
 		mClippedBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
 	}
 
-	UINT32 GUIScrollBar::_getOptimalWidth() const
+	Int2 GUIScrollBar::_getOptimalSize() const
 	{
-		return mLayout->_getOptimalWidth();
-	}
-
-	UINT32 GUIScrollBar::_getOptimalHeight() const
-	{
-		return mLayout->_getOptimalHeight();
+		return mLayout->_getOptimalSize();
 	}
 
 	UINT32 GUIScrollBar::_getRenderElementDepth(UINT32 renderElementIdx) const
