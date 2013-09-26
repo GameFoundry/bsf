@@ -105,20 +105,47 @@ namespace BansheeEngine
 		void initialize(CM::Viewport* target, CM::RenderWindow* window, const GUIDropDownAreaPlacement& placement,
 			const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type);
 	private:
+		struct DropDownSubMenu
+		{
+			GUIDropDownBox* mOwner;
+
+			GUIDropDownType mType;
+			CM::Vector<GUIDropDownData>::type mElements;
+			CM::UINT32 mPage;
+			CM::INT32 x, y;
+			CM::UINT32 width, height;
+			CM::Rect mAvailableBounds;
+
+			CM::Vector<GUITexture*>::type mCachedSeparators;
+			CM::Vector<GUIButton*>::type mCachedEntryBtns;
+			CM::Vector<GUIButton*>::type mCachedExpEntryBtns;
+			GUIButton* mScrollUpBtn;
+			GUIButton* mScrollDownBtn;
+			GUITexture* mBackgroundFrame;
+
+			GUIArea* mBackgroundArea;
+			GUIArea* mContentArea;
+			GUILayout* mContentLayout;
+
+			DropDownSubMenu* mSubMenu;
+
+			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
+				const CM::Rect& availableBounds, const CM::Vector<GUIDropDownData>::type& elements, GUIDropDownType type);
+			~DropDownSubMenu();
+
+			void updateGUIElements();
+
+			void scrollDown();
+			void scrollUp();
+
+			CM::UINT32 getElementHeight(CM::UINT32 idx) const;
+
+			void elementClicked(CM::UINT32 idx);
+			void openSubMenu(GUIButton* source, CM::UINT32 elementIdx);
+			void closeSubMenu();
+		};
+
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
-
-		GUIDropDownType mType;
-		CM::Vector<GUIDropDownData>::type mElements;
-		CM::UINT32 mPage;
-		CM::INT32 x, y;
-		CM::UINT32 width, height;
-
-		CM::Vector<GUITexture*>::type mCachedSeparators;
-		CM::Vector<GUIButton*>::type mCachedEntryBtns;
-		CM::Vector<GUIButton*>::type mCachedExpEntryBtns;
-		GUIButton* mScrollUpBtn;
-		GUIButton* mScrollDownBtn;
-		GUITexture* mBackgroundFrame;
 
 		const GUIElementStyle* mScrollUpStyle;
 		const GUIElementStyle* mScrollDownStyle;
@@ -129,22 +156,6 @@ namespace BansheeEngine
 		SpriteTexturePtr mScrollUpBtnArrow;
 		SpriteTexturePtr mScrollDownBtnArrow;
 
-		GUIArea* mBackgroundArea;
-		GUIArea* mContentArea;
-		GUILayout* mContentLayout;
-
-		CM::HSceneObject mSubMenuSO;
-		CM::GameObjectHandle<GUIDropDownBox> mSubMenuDropDownBox;
-
-		void updateGUIElements();
-
-		void scrollDown();
-		void scrollUp();
-
-		CM::UINT32 getElementHeight(CM::UINT32 idx) const;
-
-		void elementClicked(CM::UINT32 idx);
-		void openSubMenu(GUIButton* source, CM::UINT32 elementIdx);
-		void closeSubMenu();
+		DropDownSubMenu* mRootMenu;
 	};
 }
