@@ -38,6 +38,7 @@ namespace CamelotFramework
 	void TestTextSprite::init(const HCamera& camera, const String& text, CM::RenderTexturePtr sceneView)
 	{
 		setSkin(EngineGUI::instance().getSkin());
+		setDepth(128);
 
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
 

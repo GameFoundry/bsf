@@ -560,7 +560,7 @@ namespace BansheeEngine
 
 		// DropDown entry button with expand
 		HTexture dropDownExpEntryBtnNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryExpNormalTex));
-		HTexture dropDownExpEntryBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryExpNormalTex));
+		HTexture dropDownExpEntryBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryExpHoverTex));
 
 		GUIElementStyle dropDownEntryExpBtnStyle;
 		dropDownEntryExpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownExpEntryBtnNormal));

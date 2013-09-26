@@ -107,6 +107,7 @@ namespace BansheeEngine
 		// Drop down box
 		bool mDropDownBoxOpenScheduled;
 		bool mDropDownBoxActive;
+		bool mDropDownBoxCloseScheduled;
 		CM::HSceneObject mDropDownSO;
 		CM::GameObjectHandle<GUIDropDownBox> mDropDownBox;
 		std::function<void(CM::UINT32)> mListBoxSelectionMade;

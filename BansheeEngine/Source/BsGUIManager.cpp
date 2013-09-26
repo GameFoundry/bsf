@@ -55,7 +55,8 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDropDownBoxActive(false), mDropDownBoxOpenScheduled(false)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDropDownBoxActive(false), mDropDownBoxOpenScheduled(false),
+		mDropDownBoxCloseScheduled(false)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -172,6 +173,12 @@ namespace BansheeEngine
 		{
 			mDropDownBoxActive = true;
 			mDropDownBoxOpenScheduled = false;
+		}
+
+		if(mDropDownBoxCloseScheduled)
+		{
+			closeDropDownBox();
+			mDropDownBoxCloseScheduled = false;
 		}
 
 		// Update layouts
@@ -646,6 +653,21 @@ namespace BansheeEngine
 
 			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
 
+			// Close drop down box(es) if user clicks outside of one
+			if(mDropDownBoxActive)
+			{
+				bool clickedOnDropDownBox = false;
+
+				if(mMouseOverElement != nullptr && (&mMouseOverElement->_getParentWidget() == mDropDownBox.get()))
+					clickedOnDropDownBox = true;
+
+				if(!clickedOnDropDownBox)
+				{
+					mDropDownBoxCloseScheduled = true;
+					return;
+				}
+			}
+
 			// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
 			bool acceptMouseDown = mActiveElement == nullptr && mMouseOverElement != nullptr;
 			if(acceptMouseDown)
@@ -686,19 +708,10 @@ namespace BansheeEngine
 				const GUIContextMenu* menu = mMouseOverElement->getContextMenu();
 
 				if(menu != nullptr)
+				{
 					openContextMenu(menu, gInput().getMousePosition(), *mMouseOverWidget);
-			}
-
-			// Close drop down box(es) if user clicks outside of one
-			if(mDropDownBoxActive)
-			{
-				bool clickedOnDropDownBox = false;
-
-				if(mMouseOverElement != nullptr && (&mMouseOverElement->_getParentWidget() == mDropDownBox.get()))
-					clickedOnDropDownBox = true;
-
-				if(!clickedOnDropDownBox)
-					closeDropDownBox();
+					event.markAsUsed();
+				}
 			}
 		}
 	}
@@ -732,6 +745,13 @@ namespace BansheeEngine
 			buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
 
 			mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
+
+			// Ignore input if drop box is active and we're not interacting with its elements
+			if(mDropDownBoxActive)
+			{
+				if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
+					return;	
+			}
 
 			Int2 localPos;
 			if(mMouseOverWidget != nullptr)
@@ -890,6 +910,13 @@ namespace BansheeEngine
 	bool GUIManager::handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount)
 	{
 		bool eventProcessed = false;
+
+		// Ignore input if drop box is active and we're not interacting with its elements
+		if(mDropDownBoxActive)
+		{
+			if(element == nullptr || (&element->_getParentWidget() != mDropDownBox.get()))
+				return false;	
+		}
 
 		Int2 localPos;
 		if(widget != nullptr)

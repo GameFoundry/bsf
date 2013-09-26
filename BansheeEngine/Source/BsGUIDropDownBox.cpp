@@ -331,6 +331,7 @@ namespace BansheeEngine
 				else
 				{
 					entryBtn = GUIButton::create(*this, mElements[i].getLabel(), mEntryBtnStyle);
+					entryBtn->onHover.connect(boost::bind(&GUIDropDownBox::closeSubMenu, this));
 					entryBtn->onClick.connect(boost::bind(&GUIDropDownBox::elementClicked, this,  i));
 				}
 
