@@ -64,9 +64,34 @@ namespace BansheeEngine
 		GUIInputCaret* getInputCaretTool() const { return mInputCaret; }
 		GUIInputSelection* getInputSelectionTool() const { return mInputSelection; }
 
+		/**
+		 * @brief	Selective input allows you to limit input only to certain GUI elements.
+		 * 			After enabling selective input use addSelectiveInput* methods to add specific
+		 * 			elements that will be allowed to receive input.
+		 */
+		void enableSelectiveInput();
+
+		/**
+		 * @brief	Disables selective input and clears any selective input elements.
+		 */
+		void disableSelectiveInput();
+
+		void addSelectiveInputWidget(const GUIWidget* widget);
+		void addSelectiveInputElement(const GUIElement* element);
+
 		boost::signal<void(GUIWidget*, GUIElement*, const GUIMouseEvent&)> mouseEventFilter;
 		boost::signal<void(GUIWidget*, GUIElement*, const GUIKeyEvent&)> keyEventFilter;
 	private:
+		struct SelectiveInputData
+		{
+			SelectiveInputData()
+				:acceptAllElements(false)
+			{ }
+
+			CM::Set<const GUIElement*>::type elements;
+			bool acceptAllElements;
+		};
+
 		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
 
@@ -107,10 +132,13 @@ namespace BansheeEngine
 		// Drop down box
 		bool mDropDownBoxOpenScheduled;
 		bool mDropDownBoxActive;
-		bool mDropDownBoxCloseScheduled;
 		CM::HSceneObject mDropDownSO;
 		CM::GameObjectHandle<GUIDropDownBox> mDropDownBox;
 		std::function<void(CM::UINT32)> mListBoxSelectionMade;
+
+		// Selective input
+		bool mSelectiveInputActive;
+		CM::Map<const GUIWidget*, SelectiveInputData>::type mSelectiveInputData;
 
 		boost::signals::connection mOnButtonDownConn;
 		boost::signals::connection mOnButtonUpConn;

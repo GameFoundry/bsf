@@ -2,8 +2,11 @@ GUI ignores image in GUIContent for most elements.
 
 Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
 
-There seems to be a depth issue between menu items and GUIRenderTexture
-When I have a sub-menu open, mousing over any other entry button should close the sub-menu
+Once drop down menu is open the initial button (for listbox and menubar) should remain in active state
+Mousing over other buttons in menu bar should open their menus
+ - GUIManager currently blocks input to anything but currently open drop down box. Maybe also allow input
+    on the drop down box owner (Might be tricky since MenuBar consists of multiple different elements).
+MouseOver over sub-menu buttons doesn't trigger hover style
 
 Add min/max/close buttons to GUIMenuBar
 Setup move areas in GUIMenuBar

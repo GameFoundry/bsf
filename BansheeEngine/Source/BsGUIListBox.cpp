@@ -179,6 +179,7 @@ namespace BansheeEngine
 			markContentAsDirty();
 
 			GUIManager::instance().openDropDownListBox(this, mElements, boost::bind(&GUIListBox::elementSelected, this, _1), _getParentWidget().getSkin());
+			GUIManager::instance().addSelectiveInputElement(this);
 
 			return true;
 		}

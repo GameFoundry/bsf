@@ -56,7 +56,7 @@ namespace BansheeEngine
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDropDownBoxActive(false), mDropDownBoxOpenScheduled(false),
-		mDropDownBoxCloseScheduled(false)
+		mSelectiveInputActive(false)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -173,12 +173,6 @@ namespace BansheeEngine
 		{
 			mDropDownBoxActive = true;
 			mDropDownBoxOpenScheduled = false;
-		}
-
-		if(mDropDownBoxCloseScheduled)
-		{
-			closeDropDownBox();
-			mDropDownBoxCloseScheduled = false;
 		}
 
 		// Update layouts
@@ -520,6 +514,9 @@ namespace BansheeEngine
 		mDropDownSO = SceneObject::create("DropDownBox");
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
 
+		enableSelectiveInput();
+		addSelectiveInputWidget(mDropDownBox.get());
+
 		GUIWidget& widget = parentList->_getParentWidget();
 
 		Vector<GUIDropDownData>::type dropDownData;
@@ -547,6 +544,7 @@ namespace BansheeEngine
 
 	void GUIManager::closeDropDownBox()
 	{
+		disableSelectiveInput();
 		mDropDownSO->destroy();
 
 		mDropDownBoxActive = false;
@@ -559,6 +557,9 @@ namespace BansheeEngine
 
 		mDropDownSO = SceneObject::create("DropDownBox");
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
+
+		enableSelectiveInput();
+		addSelectiveInputWidget(mDropDownBox.get());
 
 		Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
 		GUIWidget& widget = parentButton->_getParentWidget();
@@ -576,6 +577,9 @@ namespace BansheeEngine
 
 		mDropDownSO = SceneObject::create("DropDownBox");
 		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
+
+		enableSelectiveInput();
+		addSelectiveInputWidget(mDropDownBox.get());
 
 		Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
 
@@ -663,8 +667,7 @@ namespace BansheeEngine
 
 				if(!clickedOnDropDownBox)
 				{
-					mDropDownBoxCloseScheduled = true;
-					return;
+					closeDropDownBox();
 				}
 			}
 
@@ -745,13 +748,6 @@ namespace BansheeEngine
 			buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
 
 			mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
-
-			// Ignore input if drop box is active and we're not interacting with its elements
-			if(mDropDownBoxActive)
-			{
-				if(mMouseOverElement == nullptr || (&mMouseOverElement->_getParentWidget() != mDropDownBox.get()))
-					return;	
-			}
 
 			Int2 localPos;
 			if(mMouseOverWidget != nullptr)
@@ -854,6 +850,17 @@ namespace BansheeEngine
 				GUIWidget* widget = widgetInfo.widget;
 				if(widget->getOwnerWindow() == window && widget->inBounds(screenPos))
 				{
+					SelectiveInputData* selectiveInputData = nullptr;
+					if(mSelectiveInputActive)
+					{
+						auto selectionIterFind = mSelectiveInputData.find(widget);
+
+						if(selectionIterFind == mSelectiveInputData.end())
+							continue;
+						else
+							selectiveInputData = &selectionIterFind->second;
+					}
+
 					const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
 
 					Vector4 vecLocalPos = worldTfrm.inverse() * vecScreenPos;
@@ -873,6 +880,12 @@ namespace BansheeEngine
 
 						if(!element->_isDisabled() && element->_isInBounds(localPos) && element->_getDepth() < topMostDepth)
 						{
+							if(mSelectiveInputActive && !selectiveInputData->acceptAllElements)
+							{
+								if(selectiveInputData->elements.find(element) == selectiveInputData->elements.end())
+									continue;
+							}
+
 							topMostElement = element;
 							topMostDepth = element->_getDepth();
 							widgetInFocus = widget;
@@ -910,13 +923,6 @@ namespace BansheeEngine
 	bool GUIManager::handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount)
 	{
 		bool eventProcessed = false;
-
-		// Ignore input if drop box is active and we're not interacting with its elements
-		if(mDropDownBoxActive)
-		{
-			if(element == nullptr || (&element->_getParentWidget() != mDropDownBox.get()))
-				return false;	
-		}
 
 		Int2 localPos;
 		if(widget != nullptr)
@@ -1076,6 +1082,37 @@ namespace BansheeEngine
 			cm_delete<PoolAlloc>(mScheduledForDestruction.top());
 			mScheduledForDestruction.pop();
 		}
+	}
+
+	void GUIManager::enableSelectiveInput()
+	{
+		mSelectiveInputActive = true;
+	}
+
+	void GUIManager::disableSelectiveInput()
+	{
+		mSelectiveInputData.clear();
+		mSelectiveInputActive = false;
+	}
+
+	void GUIManager::addSelectiveInputWidget(const GUIWidget* widget)
+	{
+		auto findIter = mSelectiveInputData.find(widget);
+
+		if(findIter == mSelectiveInputData.end())
+		{
+			SelectiveInputData& data = mSelectiveInputData[widget];
+			data.acceptAllElements = true;
+		}
+		else
+		{
+			mSelectiveInputData[widget].acceptAllElements = true;
+		}
+	}
+
+	void GUIManager::addSelectiveInputElement(const GUIElement* element)
+	{
+		mSelectiveInputData[&element->_getParentWidget()].elements.insert(element);
 	}
 
 	GUIMouseButton GUIManager::buttonToMouseButton(ButtonCode code) const

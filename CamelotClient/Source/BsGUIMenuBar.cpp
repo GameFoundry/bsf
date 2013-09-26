@@ -205,5 +205,10 @@ namespace BansheeEditor
 			return;
 
 		GUIManager::instance().openMenuBarMenu(subMenu->button, subMenu->menu);
+
+		for(auto& childMenu : mChildMenus)
+		{
+			GUIManager::instance().addSelectiveInputElement(childMenu.button);
+		}
 	}
 }
