@@ -32,6 +32,8 @@ namespace BansheeEditor
 
 		CM::Vector<GUIMenuBarData>::type mChildMenus;
 
+		bool mSubMenuOpen;
+
 		const GUIMenuBarData* getSubMenu(const CM::WString& name) const;
 
 		/**
@@ -44,5 +46,8 @@ namespace BansheeEditor
 		bool stripPath(CM::WString& path, CM::WString& pathRoot) const;
 
 		void openSubMenu(const CM::WString& name);
+		void closeSubMenu();
+
+		void onSubMenuClosed();
 	};
 }

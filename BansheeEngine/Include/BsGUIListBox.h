@@ -62,6 +62,7 @@ namespace BansheeEngine
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::Vector<CM::WString>::type mElements;
+		bool mIsListBoxOpen;
 
 		GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions);
 
@@ -69,5 +70,10 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC getTextDesc() const;
 
 		void elementSelected(CM::UINT32 idx);
+
+		void openListBox();
+		void closeListBox();
+
+		void onListBoxClosed();
 	};
 }

@@ -56,7 +56,7 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 		virtual void _setFocus(bool focus);
 
-		virtual const GUIContextMenu* getContextMenu() const;
+		virtual GUIContextMenu* getContextMenu() const;
 	private:
 		// Sprites
 		ImageSprite* mImageSprite;

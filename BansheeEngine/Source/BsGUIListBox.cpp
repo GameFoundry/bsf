@@ -8,6 +8,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIManager.h"
 #include "BsGUIHelper.h"
+#include "BsGUIDropDownBoxManager.h"
 #include "CmTexture.h"
 
 using namespace CamelotFramework;
@@ -21,7 +22,7 @@ namespace BansheeEngine
 	}
 
 	GUIListBox::GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const Vector<WString>::type& elements, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mElements(elements), mNumImageRenderElements(0), mSelectedIdx(0)
+		:GUIElement(parent, style, layoutOptions), mElements(elements), mNumImageRenderElements(0), mSelectedIdx(0), mIsListBoxOpen(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -44,6 +45,8 @@ namespace BansheeEngine
 	{
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
+
+		closeListBox();
 	}
 
 	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<WString>::type& elements, const GUIElementStyle* style)
@@ -178,8 +181,7 @@ namespace BansheeEngine
 			mImageDesc.texture = mStyle->active.texture;
 			markContentAsDirty();
 
-			GUIManager::instance().openDropDownListBox(this, mElements, boost::bind(&GUIListBox::elementSelected, this, _1), _getParentWidget().getSkin());
-			GUIManager::instance().addSelectiveInputElement(this);
+			openListBox();
 
 			return true;
 		}
@@ -201,7 +203,50 @@ namespace BansheeEngine
 
 		mSelectedIdx = idx;
 
+		closeListBox();
+
 		markContentAsDirty();
+	}
+
+	void GUIListBox::openListBox()
+	{
+		closeListBox();
+
+		Vector<GUIDropDownData>::type dropDownData;
+		UINT32 i = 0;
+		for(auto& elem : mElements)
+		{
+			dropDownData.push_back(GUIDropDownData::button(elem, boost::bind(&GUIListBox::elementSelected, this, i)));
+			i++;
+		}
+
+		GUIWidget& widget = _getParentWidget();
+		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(getBounds());
+
+		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), widget.getOwnerWindow(), 
+			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, boost::bind(&GUIListBox::onListBoxClosed, this));
+
+		GUIManager::instance().enableSelectiveInput(boost::bind(&GUIListBox::closeListBox, this));
+		GUIManager::instance().addSelectiveInputWidget(dropDownBox.get());
+		GUIManager::instance().addSelectiveInputElement(this);
+
+		mIsListBoxOpen = true;
+	}
+
+	void GUIListBox::closeListBox()
+	{
+		if(mIsListBoxOpen)
+		{
+			GUIDropDownBoxManager::instance().closeDropDownBox();
+			GUIManager::instance().disableSelectiveInput();
+			mIsListBoxOpen = false;
+		}
+	}
+
+	void GUIListBox::onListBoxClosed()
+	{
+		GUIManager::instance().disableSelectiveInput();
+		mIsListBoxOpen = false;
 	}
 
 	TEXT_SPRITE_DESC GUIListBox::getTextDesc() const

@@ -112,7 +112,7 @@ namespace BansheeEngine
 		virtual bool _isInBounds(const CM::Int2 position) const;
 		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
-		virtual const GUIContextMenu* getContextMenu() const { return nullptr; }
+		virtual GUIContextMenu* getContextMenu() const { return nullptr; }
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting

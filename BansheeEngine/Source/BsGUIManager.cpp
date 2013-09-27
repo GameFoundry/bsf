@@ -25,6 +25,8 @@
 #include "BsGUIDropDownBox.h"
 #include "BsGUIContextMenu.h"
 #include "BsDragAndDropManager.h"
+#include "BsGUIDropDownBoxManager.h"
+#include "BsGUIContextMenu.h"
 
 using namespace CamelotFramework;
 namespace BansheeEngine
@@ -55,8 +57,7 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDropDownBoxActive(false), mDropDownBoxOpenScheduled(false),
-		mSelectiveInputActive(false)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -75,6 +76,8 @@ namespace BansheeEngine
 		DragAndDropManager::startUp(cm_new<DragAndDropManager>());
 		mMouseDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(boost::bind(&GUIManager::onMouseDragEnded, this, _1));
 
+		GUIDropDownBoxManager::startUp(cm_new<GUIDropDownBoxManager>());
+
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
 		deferredCall(std::bind(&GUIManager::updateTextSelectionTexture, this));
@@ -82,6 +85,7 @@ namespace BansheeEngine
 
 	GUIManager::~GUIManager()
 	{
+		GUIDropDownBoxManager::shutDown();
 		DragAndDropManager::shutDown();
 
 		// Make a copy of widgets, since destroying them will remove them from mWidgets and
@@ -166,14 +170,6 @@ namespace BansheeEngine
 	void GUIManager::update()
 	{
 		DragAndDropManager::instance().update();
-
-		// We only activate the drop down box the next frame so it isn't
-		// accidentally destroyed the same frame it was created
-		if(mDropDownBoxOpenScheduled)
-		{
-			mDropDownBoxActive = true;
-			mDropDownBoxOpenScheduled = false;
-		}
 
 		// Update layouts
 		for(auto& widgetInfo : mWidgets)
@@ -505,90 +501,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::openDropDownListBox(const GUIListBox* parentList, const CM::Vector<WString>::type& elements, 
-		std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin)
-	{
-		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
-			closeDropDownListBox(-1);
-
-		mDropDownSO = SceneObject::create("DropDownBox");
-		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
-
-		enableSelectiveInput();
-		addSelectiveInputWidget(mDropDownBox.get());
-
-		GUIWidget& widget = parentList->_getParentWidget();
-
-		Vector<GUIDropDownData>::type dropDownData;
-		UINT32 i = 0;
-		for(auto& elem : elements)
-		{
-			dropDownData.push_back(GUIDropDownData::button(elem, boost::bind(&GUIManager::closeDropDownListBox, this, i)));
-			i++;
-		}
-
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
-			GUIDropDownAreaPlacement::aroundBoundsHorz(parentList->getBounds()), dropDownData, skin, GUIDropDownType::ListBox);
-
-		mDropDownBoxOpenScheduled = true;
-		mListBoxSelectionMade = selectedCallback;
-	}
-
-	void GUIManager::closeDropDownListBox(INT32 selectedIdx)
-	{
-		if(selectedIdx != -1)
-			mListBoxSelectionMade(selectedIdx);
-
-		closeDropDownBox();
-	}
-
-	void GUIManager::closeDropDownBox()
-	{
-		disableSelectiveInput();
-		mDropDownSO->destroy();
-
-		mDropDownBoxActive = false;
-	}
-
-	void GUIManager::openMenuBarMenu(GUIButton* parentButton, const GUIMenu* menu)
-	{
-		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
-			closeDropDownBox();
-
-		mDropDownSO = SceneObject::create("DropDownBox");
-		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
-
-		enableSelectiveInput();
-		addSelectiveInputWidget(mDropDownBox.get());
-
-		Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
-		GUIWidget& widget = parentButton->_getParentWidget();
-
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
-			GUIDropDownAreaPlacement::aroundBoundsHorz(parentButton->getBounds()), dropDownData, widget.getSkin(), GUIDropDownType::MenuBar);
-
-		mDropDownBoxOpenScheduled = true;
-	}
-
-	void GUIManager::openContextMenu(const GUIContextMenu* menu, const Int2& position, GUIWidget& widget)
-	{
-		if(mDropDownBoxOpenScheduled || mDropDownBoxActive)
-			closeDropDownBox();
-
-		mDropDownSO = SceneObject::create("DropDownBox");
-		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>();
-
-		enableSelectiveInput();
-		addSelectiveInputWidget(mDropDownBox.get());
-
-		Vector<GUIDropDownData>::type dropDownData = menu->getDropDownData();
-
-		mDropDownBox->initialize(widget.getTarget(), widget.getOwnerWindow(), 
-			GUIDropDownAreaPlacement::aroundPosition(position), dropDownData, widget.getSkin(), GUIDropDownType::ContextMenu);
-
-		mDropDownBoxOpenScheduled = true;
-	}
-
 	void GUIManager::updateCaretTexture()
 	{
 		if(mCaretTexture == nullptr)
@@ -657,18 +569,11 @@ namespace BansheeEngine
 
 			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
 
-			// Close drop down box(es) if user clicks outside of one
-			if(mDropDownBoxActive)
+			// Send out selective input callback when user clicks on non-selectable element
+			if(mSelectiveInputActive && mMouseOverElement == nullptr)
 			{
-				bool clickedOnDropDownBox = false;
-
-				if(mMouseOverElement != nullptr && (&mMouseOverElement->_getParentWidget() == mDropDownBox.get()))
-					clickedOnDropDownBox = true;
-
-				if(!clickedOnDropDownBox)
-				{
-					closeDropDownBox();
-				}
+				if(mOnOutsideClickCallback != nullptr)
+					mOnOutsideClickCallback();
 			}
 
 			// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
@@ -708,11 +613,11 @@ namespace BansheeEngine
 			// If right click try to open context menu
 			if(mMouseOverElement != nullptr && buttonStates[2] == true) 
 			{
-				const GUIContextMenu* menu = mMouseOverElement->getContextMenu();
+				GUIContextMenu* menu = mMouseOverElement->getContextMenu();
 
 				if(menu != nullptr)
 				{
-					openContextMenu(menu, gInput().getMousePosition(), *mMouseOverWidget);
+					menu->open(gInput().getMousePosition(), *mMouseOverWidget);
 					event.markAsUsed();
 				}
 			}
@@ -1084,15 +989,19 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::enableSelectiveInput()
+	// HACK - This callback is very hackish and very specific. Attempt to replace it with a more
+	// general purpose solution
+	void GUIManager::enableSelectiveInput(std::function<void()> onOutsideClickCallback)
 	{
 		mSelectiveInputActive = true;
+		mOnOutsideClickCallback = onOutsideClickCallback;
 	}
 
 	void GUIManager::disableSelectiveInput()
 	{
 		mSelectiveInputData.clear();
 		mSelectiveInputActive = false;
+		mOnOutsideClickCallback = nullptr;
 	}
 
 	void GUIManager::addSelectiveInputWidget(const GUIWidget* widget)

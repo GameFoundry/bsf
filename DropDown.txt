@@ -2,15 +2,19 @@ GUI ignores image in GUIContent for most elements.
 
 Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
 
+Attempt to get rid of selective input click callback. It's too specific.
+ - Instead of using selective input I might be able to block all input using event filter (by adding return values to them)
+   - Some kind of GUISelectiveInput class? I think it makes sense to move it out of GUIManager
+
+I will need a GUIDropDownBoxManager because otherwise I have no way of ensuring only one drop down box is active at a time
+ Principle remains the same, I call GUIDropDownBox::open and internally it calls the manager
+
 Once drop down menu is open the initial button (for listbox and menubar) should remain in active state
 Mousing over other buttons in menu bar should open their menus
- - GUIManager currently blocks input to anything but currently open drop down box. Maybe also allow input
-    on the drop down box owner (Might be tricky since MenuBar consists of multiple different elements).
-MouseOver over sub-menu buttons doesn't trigger hover style
+
+ListBox: Clicking on ListBox once the DropDownBox is open should close the drop down box (I assume it does, it just re-opens it immediately again?)
 
 Add min/max/close buttons to GUIMenuBar
 Setup move areas in GUIMenuBar
-
-ListBox: Clicking on ListBox once the DropDownBox is open should close the drop down box (I assume it does, it just re-opens it immediately again?)
 
 Test scrollUp/scrollDown

@@ -85,6 +85,14 @@ namespace CamelotFramework
 			mData = ptr.getHandleData();
 		}
 
+		inline GameObjectHandle<T>& operator=(std::nullptr_t ptr)
+		{ 	
+			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>();
+			mData->mPtr = nullptr;
+
+			return *this;
+		}
+
 		T* get() const 
 		{ 
 			throwIfDestroyed();

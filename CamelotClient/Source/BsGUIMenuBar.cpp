@@ -8,6 +8,8 @@
 #include "BsGUIMenu.h"
 #include "BsGUIManager.h"
 #include "BsEngineGUI.h"
+#include "BsGUIDropDownBoxManager.h"
+#include "CmSceneObject.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -15,7 +17,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	GUIMenuBar::GUIMenuBar(BS::GUIWidget* parent)
-		:mParentWidget(parent), mMainArea(nullptr), mBackgroundArea(nullptr), mBgTexture(nullptr), mLogoTexture(nullptr)
+		:mParentWidget(parent), mMainArea(nullptr), mBackgroundArea(nullptr), mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
@@ -31,6 +33,8 @@ namespace BansheeEditor
 
 	GUIMenuBar::~GUIMenuBar()
 	{
+		closeSubMenu();
+
 		for(auto& menu : mChildMenus)
 		{
 			cm_delete<PoolAlloc>(menu.menu);
@@ -204,11 +208,42 @@ namespace BansheeEditor
 		if(subMenu == nullptr)
 			return;
 
-		GUIManager::instance().openMenuBarMenu(subMenu->button, subMenu->menu);
+		closeSubMenu();
+
+		Vector<GUIDropDownData>::type dropDownData = subMenu->menu->getDropDownData();
+		GUIWidget& widget = subMenu->button->_getParentWidget();
+
+		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(subMenu->button->getBounds());
+
+		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), widget.getOwnerWindow(), 
+			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, boost::bind(&GUIMenuBar::onSubMenuClosed, this));
+
+		GUIManager::instance().enableSelectiveInput(boost::bind(&GUIMenuBar::closeSubMenu, this));
+		GUIManager::instance().addSelectiveInputWidget(dropDownBox.get());
 
 		for(auto& childMenu : mChildMenus)
 		{
 			GUIManager::instance().addSelectiveInputElement(childMenu.button);
 		}
+
+		mSubMenuOpen = true;
+	}
+
+	void GUIMenuBar::closeSubMenu()
+	{
+		if(mSubMenuOpen)
+		{
+			GUIDropDownBoxManager::instance().closeDropDownBox();
+			GUIManager::instance().disableSelectiveInput();
+			
+			mSubMenuOpen = false;
+		}		
+	}
+
+	void GUIMenuBar::onSubMenuClosed()
+	{
+		GUIManager::instance().disableSelectiveInput();
+
+		mSubMenuOpen = false;
 	}
 }

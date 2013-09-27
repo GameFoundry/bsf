@@ -1,3 +1,5 @@
+#pragma once
+
 #include "BsPrerequisites.h"
 #include "BsGUIWidget.h"
 #include "CmInt2.h"

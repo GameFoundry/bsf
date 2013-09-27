@@ -48,11 +48,6 @@ namespace BansheeEngine
 		void update();
 		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
 
-		void openDropDownListBox(const GUIListBox* parentList, const CM::Vector<CM::WString>::type& elements, 
-			std::function<void(CM::UINT32)> selectedCallback, const GUISkin& skin);
-
-		void openMenuBarMenu(GUIButton* parentButton, const GUIMenu* menu);
-
 		void queueForDestroy(GUIElement* element);
 
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
@@ -65,11 +60,14 @@ namespace BansheeEngine
 		GUIInputSelection* getInputSelectionTool() const { return mInputSelection; }
 
 		/**
-		 * @brief	Selective input allows you to limit input only to certain GUI elements.
-		 * 			After enabling selective input use addSelectiveInput* methods to add specific
-		 * 			elements that will be allowed to receive input.
+		 * @brief	Selective input allows you to limit input only to certain GUI elements. After
+		 * 			enabling selective input use addSelectiveInput* methods to add specific elements that
+		 * 			will be allowed to receive input.
+		 *
+		 * @param	onOutsideClickCallback	Callback that gets triggered when the user
+		 * 									presses a mouse button outside of the selective input area.
 		 */
-		void enableSelectiveInput();
+		void enableSelectiveInput(std::function<void()> onOutsideClickCallback);
 
 		/**
 		 * @brief	Disables selective input and clears any selective input elements.
@@ -106,6 +104,7 @@ namespace BansheeEngine
 		GUIElement* mActiveElement;
 		GUIMouseButton mActiveMouseButton;
 
+
 		// Element and widget that currently have the keyboard focus
 		GUIWidget* mKeyboardFocusWidget;
 		GUIElement* mKeyboardFocusElement;
@@ -129,16 +128,10 @@ namespace BansheeEngine
 		SpriteTexturePtr mTextSelectionTexture;
 		CM::Color mTextSelectionColor;
 
-		// Drop down box
-		bool mDropDownBoxOpenScheduled;
-		bool mDropDownBoxActive;
-		CM::HSceneObject mDropDownSO;
-		CM::GameObjectHandle<GUIDropDownBox> mDropDownBox;
-		std::function<void(CM::UINT32)> mListBoxSelectionMade;
-
 		// Selective input
 		bool mSelectiveInputActive;
 		CM::Map<const GUIWidget*, SelectiveInputData>::type mSelectiveInputData;
+		std::function<void()> mOnOutsideClickCallback;
 
 		boost::signals::connection mOnButtonDownConn;
 		boost::signals::connection mOnButtonUpConn;
@@ -172,12 +165,7 @@ namespace BansheeEngine
 
 		void onMouseLeftWindow(CM::RenderWindow* win);
 
-		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);
-
-		void openContextMenu(const GUIContextMenu* menu, const CM::Int2& position, GUIWidget& widget);
-
-		void closeDropDownListBox(CM::INT32 selectedIdx);
-		void closeDropDownBox();
+		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);;
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;

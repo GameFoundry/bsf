@@ -836,7 +836,7 @@ namespace BansheeEngine
 		mHasFocus = focus;
 	}
 
-	const GUIContextMenu* GUIInputBox::getContextMenu() const
+	GUIContextMenu* GUIInputBox::getContextMenu() const
 	{
 		static bool initialized = false;
 		static GUIContextMenu mContextMenu;
