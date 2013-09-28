@@ -2,14 +2,10 @@ GUI ignores image in GUIContent for most elements.
 
 Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
 
-Once drop down menu is open the initial button (for listbox and menubar) should remain in active state
-Mousing over other buttons in menu bar should open their menus
-
-ListBox: Clicking on ListBox once the DropDownBox is open should close the drop down box (I assume it does, it just re-opens it immediately again?)
-
 Add min/max/close buttons to GUIMenuBar
 Setup move areas in GUIMenuBar
 
+Test context
 Test scrollUp/scrollDown
 
 

@@ -24,11 +24,17 @@ namespace BansheeEditor
 		const BS::GUIMenuItem* getMenuItem(const CM::WString& path) const;
 		void removeMenuItem(const CM::WString& path);
 	private:
+		static const CM::UINT32 NUM_ELEMENTS_AFTER_CONTENT;
+
 		BS::GUIWidget* mParentWidget;
 		BS::GUIArea* mMainArea;
 		BS::GUIArea* mBackgroundArea;
 		BS::GUITexture* mBgTexture;
 		BS::GUITexture* mLogoTexture;
+
+		BS::GUIButton* mMinBtn;
+		BS::GUIButton* mMaxBtn;
+		BS::GUIButton* mCloseBtn;
 
 		CM::Vector<GUIMenuBarData>::type mChildMenus;
 
@@ -36,6 +42,8 @@ namespace BansheeEditor
 		bool mSubMenuOpen;
 
 		const GUIMenuBarData* getSubMenu(const CM::WString& name) const;
+
+		GUIMenuBarData* addNewButton(const CM::WString& name);
 
 		/**
 		 * @brief	Attempts to remove the first element from the specified path. First element
@@ -51,5 +59,11 @@ namespace BansheeEditor
 
 		void onSubMenuHover(const CM::WString& name);
 		void onSubMenuClosed();
+
+		void onMinimizeClicked();
+		void onMaximizeClicked();
+		void onCloseClicked();
+
+		void refreshNonClientAreas();
 	};
 }

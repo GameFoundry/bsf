@@ -257,7 +257,7 @@ namespace BansheeEngine
 		GUIElementStyle winCloseButtonStyle;
 		winCloseButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnNormal));
 		winCloseButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnHover));
-		winCloseButtonStyle.active.texture = winCloseButtonStyle.active.texture;
+		winCloseButtonStyle.active.texture = winCloseButtonStyle.hover.texture;
 		winCloseButtonStyle.fixedHeight = true;
 		winCloseButtonStyle.fixedWidth = true;
 		winCloseButtonStyle.height = 7;

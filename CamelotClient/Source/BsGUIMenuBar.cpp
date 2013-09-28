@@ -10,12 +10,15 @@
 #include "BsEngineGUI.h"
 #include "BsGUIDropDownBoxManager.h"
 #include "CmSceneObject.h"
+#include "CmPlatform.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
+	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
+
 	GUIMenuBar::GUIMenuBar(BS::GUIWidget* parent)
 		:mParentWidget(parent), mMainArea(nullptr), mBackgroundArea(nullptr), mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
 	{
@@ -26,9 +29,29 @@ namespace BansheeEditor
 		mBackgroundArea->getLayout().addElement(mBgTexture);
 
 		mLogoTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("MenuBarBansheeLogo"));
-		mMainArea->getLayout().addElement(mLogoTexture);
-		mMainArea->getLayout().addSpace(5);
-		mMainArea->getLayout().addFlexibleSpace();
+		GUILayout& mainLayout = mMainArea->getLayout();
+
+		mainLayout.addElement(mLogoTexture);
+		mainLayout.addSpace(5);
+		mainLayout.addFlexibleSpace();
+
+		mMinBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinMinimizeBtn"));
+		mMaxBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinMaximizeBtn"));
+		mCloseBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinCloseBtn"));
+
+		mainLayout.addSpace(3);
+		mainLayout.addElement(mMinBtn);
+		mainLayout.addSpace(3);
+		mainLayout.addElement(mMaxBtn);
+		mainLayout.addSpace(3);
+		mainLayout.addElement(mCloseBtn);
+		mainLayout.addSpace(3);
+
+		mMinBtn->onClick.connect(boost::bind(&GUIMenuBar::onMinimizeClicked, this));
+		mMaxBtn->onClick.connect(boost::bind(&GUIMenuBar::onMaximizeClicked, this));
+		mCloseBtn->onClick.connect(boost::bind(&GUIMenuBar::onCloseClicked, this));
+
+		refreshNonClientAreas();
 	}
 
 	GUIMenuBar::~GUIMenuBar()
@@ -40,6 +63,10 @@ namespace BansheeEditor
 			cm_delete<PoolAlloc>(menu.menu);
 			GUIElement::destroy(menu.button);
 		}
+
+		GUIElement::destroy(mMinBtn);
+		GUIElement::destroy(mMaxBtn);
+		GUIElement::destroy(mCloseBtn);
 
 		GUIElement::destroy(mBgTexture);
 		GUIElement::destroy(mLogoTexture);
@@ -55,6 +82,8 @@ namespace BansheeEditor
 
 		mMainArea->setSize(width, height);
 		mBackgroundArea->setSize(width, height);
+
+		refreshNonClientAreas();
 	}
 
 	const GUIMenuItem* GUIMenuBar::addMenuItem(const CM::WString& path, std::function<void()> callback)
@@ -68,20 +97,9 @@ namespace BansheeEditor
 		const GUIMenuBarData* subMenu = getSubMenu(rootName);
 		if(subMenu == nullptr)
 		{
-			mChildMenus.push_back(GUIMenuBarData());
+			subMenu = addNewButton(rootName);
 
-			GUIMenuBarData& newSubMenu = mChildMenus.back();
-			newSubMenu.name = rootName;
-			newSubMenu.menu = cm_new<GUIMenu>();
-
-			GUIButton* newButton = GUIButton::create(*mParentWidget, rootName, EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
-			newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, rootName));
-			newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, rootName));
-			mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - 1, newButton);
-
-			newSubMenu.button = newButton;
-
-			subMenu = &newSubMenu;
+			refreshNonClientAreas();
 		}
 
 		return subMenu->menu->addMenuItem(strippedPath, callback);
@@ -98,23 +116,30 @@ namespace BansheeEditor
 		const GUIMenuBarData* subMenu = getSubMenu(rootName);
 		if(subMenu == nullptr)
 		{
-			mChildMenus.push_back(GUIMenuBarData());
+			subMenu = addNewButton(rootName);
 
-			GUIMenuBarData& newSubMenu = mChildMenus.back();
-			newSubMenu.name = rootName;
-			newSubMenu.menu = cm_new<GUIMenu>();
-
-			GUIButton* newButton = GUIButton::create(*mParentWidget, rootName, EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
-			newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, rootName));
-			newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, rootName));
-			mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - 1, newButton);
-
-			newSubMenu.button = newButton;
-
-			subMenu = &newSubMenu;
+			refreshNonClientAreas();
 		}
 
 		return subMenu->menu->addSeparator(strippedPath);
+	}
+
+	GUIMenuBar::GUIMenuBarData* GUIMenuBar::addNewButton(const CM::WString& name)
+	{
+		mChildMenus.push_back(GUIMenuBarData());
+
+		GUIMenuBarData& newSubMenu = mChildMenus.back();
+		newSubMenu.name = name;
+		newSubMenu.menu = cm_new<GUIMenu>();
+
+		GUIButton* newButton = GUIButton::create(*mParentWidget, name, EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
+		newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, name));
+		newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, name));
+		mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
+
+		newSubMenu.button = newButton;
+
+		return &newSubMenu;
 	}
 
 	const GUIMenuItem* GUIMenuBar::getMenuItem(const CM::WString& path) const
@@ -164,6 +189,7 @@ namespace BansheeEditor
 
 			mChildMenus.erase(mChildMenus.begin() + curIdx);
 
+			refreshNonClientAreas();
 			return;
 		}
 
@@ -268,5 +294,43 @@ namespace BansheeEditor
 
 		mSubMenuButton->_setOn(false);
 		mSubMenuOpen = false;
+	}
+
+	void GUIMenuBar::onMinimizeClicked()
+	{
+		// TODO
+	}
+
+	void GUIMenuBar::onMaximizeClicked()
+	{
+		// TODO
+	}
+
+	void GUIMenuBar::onCloseClicked()
+	{
+		// TODO
+	}
+
+	void GUIMenuBar::refreshNonClientAreas()
+	{
+		// If the size or contents of the area changed this frame the layout won't be updated yet,
+		// so force the update right away so we get correct element bounds
+		mMainArea->_update();
+
+		CM::Vector<CM::Rect>::type nonClientAreas;
+		nonClientAreas.push_back(mLogoTexture->getBounds());
+
+		if(mChildMenus.size() > 0)
+		{
+			Rect lastButtonBounds = mChildMenus.back().button->getBounds();
+			Rect minButtonBounds = mMinBtn->getBounds();
+
+			Rect emptyArea(lastButtonBounds.x + lastButtonBounds.width, mMainArea->y(), 
+				minButtonBounds.x - (lastButtonBounds.x + lastButtonBounds.width), mMainArea->height());
+
+			nonClientAreas.push_back(emptyArea);
+		}
+
+		Platform::setCaptionNonClientAreas(*mParentWidget->getOwnerWindow(), nonClientAreas);
 	}
 }
