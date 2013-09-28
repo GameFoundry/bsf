@@ -32,6 +32,7 @@ namespace BansheeEditor
 
 		CM::Vector<GUIMenuBarData>::type mChildMenus;
 
+		BS::GUIButton* mSubMenuButton;
 		bool mSubMenuOpen;
 
 		const GUIMenuBarData* getSubMenu(const CM::WString& name) const;
@@ -48,6 +49,7 @@ namespace BansheeEditor
 		void openSubMenu(const CM::WString& name);
 		void closeSubMenu();
 
+		void onSubMenuHover(const CM::WString& name);
 		void onSubMenuClosed();
 	};
 }

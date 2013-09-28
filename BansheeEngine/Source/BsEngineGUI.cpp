@@ -434,6 +434,9 @@ namespace BansheeEngine
 		dropDownListStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownListNormal));
 		dropDownListStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownListHover));
 		dropDownListStyle.active.texture = dropDownListStyle.hover.texture;
+		dropDownListStyle.normalOn.texture = dropDownListStyle.hover.texture;
+		dropDownListStyle.hoverOn.texture = dropDownListStyle.hover.texture;
+		dropDownListStyle.activeOn.texture = dropDownListStyle.hover.texture;
 		dropDownListStyle.fixedHeight = true;
 		dropDownListStyle.fixedWidth = false;
 		dropDownListStyle.height = 13;
@@ -657,6 +660,9 @@ namespace BansheeEngine
 		menuBarBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnNormal));
 		menuBarBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnHover));
 		menuBarBtnStyle.active.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.normalOn.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.hoverOn.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.activeOn.texture = menuBarBtnStyle.hover.texture;
 		menuBarBtnStyle.fixedHeight = true;
 		menuBarBtnStyle.fixedWidth = false;
 		menuBarBtnStyle.height = 15;

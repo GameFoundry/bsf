@@ -30,6 +30,7 @@ namespace BansheeEditor
 		mMenuBar->addMenuItem(L"File/Recent projects/Project C", nullptr);
 		mMenuBar->addSeparator(L"File");
 		mMenuBar->addMenuItem(L"File/Exit", nullptr);
+		mMenuBar->addMenuItem(L"Window/Scene", nullptr);
 
 		// DEBUG ONLY
 

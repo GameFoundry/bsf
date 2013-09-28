@@ -17,7 +17,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	GUIMenuBar::GUIMenuBar(BS::GUIWidget* parent)
-		:mParentWidget(parent), mMainArea(nullptr), mBackgroundArea(nullptr), mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false)
+		:mParentWidget(parent), mMainArea(nullptr), mBackgroundArea(nullptr), mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
@@ -76,6 +76,7 @@ namespace BansheeEditor
 
 			GUIButton* newButton = GUIButton::create(*mParentWidget, rootName, EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
 			newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, rootName));
+			newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, rootName));
 			mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - 1, newButton);
 
 			newSubMenu.button = newButton;
@@ -105,6 +106,7 @@ namespace BansheeEditor
 
 			GUIButton* newButton = GUIButton::create(*mParentWidget, rootName, EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
 			newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, rootName));
+			newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, rootName));
 			mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - 1, newButton);
 
 			newSubMenu.button = newButton;
@@ -208,7 +210,15 @@ namespace BansheeEditor
 		if(subMenu == nullptr)
 			return;
 
-		closeSubMenu();
+		if(mSubMenuOpen)
+		{
+			bool closingExisting = subMenu->button == mSubMenuButton;
+
+			closeSubMenu();
+
+			if(closingExisting)
+				return;
+		}
 
 		Vector<GUIDropDownData>::type dropDownData = subMenu->menu->getDropDownData();
 		GUIWidget& widget = subMenu->button->_getParentWidget();
@@ -226,6 +236,9 @@ namespace BansheeEditor
 			GUIManager::instance().addSelectiveInputElement(childMenu.button);
 		}
 
+		subMenu->button->_setOn(true);
+
+		mSubMenuButton = subMenu->button;
 		mSubMenuOpen = true;
 	}
 
@@ -236,14 +249,24 @@ namespace BansheeEditor
 			GUIDropDownBoxManager::instance().closeDropDownBox();
 			GUIManager::instance().disableSelectiveInput();
 			
+			mSubMenuButton->_setOn(false);
 			mSubMenuOpen = false;
 		}		
+	}
+
+	void GUIMenuBar::onSubMenuHover(const CM::WString& name)
+	{
+		if(mSubMenuOpen)
+		{
+			openSubMenu(name);
+		}
 	}
 
 	void GUIMenuBar::onSubMenuClosed()
 	{
 		GUIManager::instance().disableSelectiveInput();
 
+		mSubMenuButton->_setOn(false);
 		mSubMenuOpen = false;
 	}
 }

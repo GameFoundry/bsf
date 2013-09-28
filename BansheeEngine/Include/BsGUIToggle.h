@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGUIElement.h"
+#include "BsGUIButtonBase.h"
 #include "BsGUIToggleGroup.h"
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
@@ -10,7 +10,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT GUIToggle : public GUIElement
+	class BS_EXPORT GUIToggle : public GUIButtonBase
 	{
 	public:
 		static const CM::String& getGUITypeName();
@@ -38,55 +38,13 @@ namespace BansheeEngine
 	protected:
 		virtual ~GUIToggle();
 
-		/**
-		 * @copydoc GUIElement::getNumRenderElements()
-		 */
-		virtual CM::UINT32 getNumRenderElements() const;
-
-		/**
-		 * @copydoc GUIElement::getMaterial()
-		 */
-		virtual const CM::HMaterial& getMaterial(CM::UINT32 renderElementIdx) const;
-
-		/**
-		 * @copydoc GUIElement::getNumQuads()
-		 */
-		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
-
-		/**
-		 * @copydoc GUIElement::fillBuffer()
-		 */
-		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
-			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
-
-		/**
-		 * @copydoc GUIElement::updateRenderElementsInternal()
-		 */
-		virtual void updateRenderElementsInternal();
-
-		/**
-		 * @copydoc GUIElement::updateBounds()
-		 */
-		virtual void updateClippedBounds();
-
-		virtual CM::Int2 _getOptimalSize() const;
-
-		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 	protected:
 		GUIToggle(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-		TEXT_SPRITE_DESC getTextDesc() const;
-
 	private:
 		std::shared_ptr<GUIToggleGroup> mToggleGroup;
-		ImageSprite* mImageSprite;
-		TextSprite* mTextSprite;
-		CM::UINT32 mNumImageRenderElements;
 		bool mIsToggled;
-
-		IMAGE_SPRITE_DESC mImageDesc;
-		GUIContent mContent;
 	};
 }
