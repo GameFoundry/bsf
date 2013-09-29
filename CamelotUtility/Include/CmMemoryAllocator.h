@@ -94,7 +94,7 @@ namespace CamelotFramework
  */
 #define MAKE_CM_NEW(z, n, unused)                                     \
 	template<class Type, class Alloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) ) { \
 		return new (cm_alloc<Alloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
 	}
 
@@ -180,7 +180,7 @@ namespace CamelotFramework
 	// Create a new object with the general allocator and the specified parameters.
 #define MAKE_CM_NEW(z, n, unused)                                     \
 	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
+	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) ) { \
 	return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
 	}
 
