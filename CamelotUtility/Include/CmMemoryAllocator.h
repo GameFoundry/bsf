@@ -95,11 +95,15 @@ namespace CamelotFramework
 #define MAKE_CM_NEW(z, n, unused)                                     \
 	template<class Type, class Alloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
 	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) ) { \
-		return new (cm_alloc<Alloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
+		return new (cm_alloc<Alloc>(sizeof(Type))) Type(std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~));     \
 	}
+
+#define FORWARD_T(z, i, unused) \
+	, std::forward<BOOST_PP_CAT(T, i)>(BOOST_PP_CAT(t, i))
 
 	BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_CM_NEW, ~)
 
+#undef FORWARD_T
 #undef MAKE_CM_NEW
 
 	// Create a new object with the specified allocator without any parameters
@@ -181,11 +185,15 @@ namespace CamelotFramework
 #define MAKE_CM_NEW(z, n, unused)                                     \
 	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
 	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) ) { \
-	return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(BOOST_PP_ENUM_PARAMS (n, t));     \
+	return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~));     \
 	}
+
+#define FORWARD_T(z, i, unused) \
+	, std::forward<BOOST_PP_CAT(T, i)>(BOOST_PP_CAT(t, i))
 
 	BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_CM_NEW, ~)
 
+#undef FORWARD_T
 #undef MAKE_CM_NEW
 
 	// Create a new object with the general allocator without any parameters

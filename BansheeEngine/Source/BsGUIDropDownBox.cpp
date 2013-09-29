@@ -206,7 +206,9 @@ namespace BansheeEngine
 		// Background frame
 		mBackgroundArea = GUIArea::create(*mOwner, x, y, width, height);
 		mBackgroundArea->setDepth(102);
-		mBackgroundArea->getLayout().addElement(GUITexture::create(*mOwner, GUIImageScaleMode::ScaleToFit, mOwner->mBackgroundStyle));
+
+		mBackgroundFrame = GUITexture::create(*mOwner, GUIImageScaleMode::ScaleToFit, mOwner->mBackgroundStyle);
+		mBackgroundArea->getLayout().addElement(mBackgroundFrame);
 
 		updateGUIElements();
 	}
@@ -214,6 +216,26 @@ namespace BansheeEngine
 	GUIDropDownBox::DropDownSubMenu::~DropDownSubMenu()
 	{
 		closeSubMenu();
+
+		for(auto& elem : mCachedSeparators)
+			GUIElement::destroy(elem);
+
+		for(auto& elem : mCachedEntryBtns)
+			GUIElement::destroy(elem);
+
+		for(auto& elem : mCachedExpEntryBtns)
+			GUIElement::destroy(elem);
+
+		if(mScrollUpBtn != nullptr)
+			GUIElement::destroy(mScrollUpBtn);
+
+		if(mScrollDownBtn != nullptr)
+			GUIElement::destroy(mScrollDownBtn);
+
+		GUIElement::destroy(mBackgroundFrame);
+
+		GUIArea::destroy(mBackgroundArea);
+		GUIArea::destroy(mContentArea);
 	}
 
 	void GUIDropDownBox::DropDownSubMenu::updateGUIElements()

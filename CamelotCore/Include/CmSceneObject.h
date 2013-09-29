@@ -233,7 +233,7 @@ namespace CamelotFramework
 				"Specified type is not a valid Component.");										\
 																									\
 			GameObjectHandle<Type> newComponent = GameObjectHandle<Type>(							\
-				new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle, BOOST_PP_ENUM_PARAMS (n, t)),	\
+				new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle, std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~)),	\
 				&cm_delete<PoolAlloc, GameObject>);													\
 																									\
 			mComponents.push_back(newComponent);													\
@@ -243,8 +243,12 @@ namespace CamelotFramework
 			return newComponent;																	\
 		}
 
+#define FORWARD_T(z, i, unused) \
+		, std::forward<BOOST_PP_CAT(T, i)>(BOOST_PP_CAT(t, i))
+
 		BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_ADD_COMPONENT, ~)
 
+#undef FORWARD_T
 #undef MAKE_ADD_COMPONENT
 
 		/**

@@ -1,11 +1,7 @@
 GUI ignores image in GUIContent for most elements.
 
-Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
- - There's an exception that happens where mStyle of a GUIButtonBase is not initialized
- - Track down other uses of initialize() and remove them (GUIWidget has one, probably Camera and similar as well)
-
-Test context
- - There are issues when dealing with the context menu. Hover doesn't seem to close menus, and hovering for a few seconds seems to cause an exception.
+Context menu appears at the wrong coordinates
+Menus lack proper frame
 
 Test scrollUp/scrollDown
 
