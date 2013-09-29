@@ -284,7 +284,13 @@ namespace BansheeEditor
 	{
 		if(mSubMenuOpen)
 		{
-			openSubMenu(name);
+			const GUIMenuBarData* subMenu = getSubMenu(name);
+
+			if(subMenu == nullptr)
+				return;
+
+			if(mSubMenuButton != subMenu->button)
+				openSubMenu(name);
 		}
 	}
 

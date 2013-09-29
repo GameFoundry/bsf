@@ -595,12 +595,14 @@ namespace BansheeEngine
 		dropDownBoxStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownBoxStyle.fixedHeight = false;
 		dropDownBoxStyle.fixedWidth = false;
-		dropDownBoxStyle.height = 14;
-		dropDownBoxStyle.width = 30;
 		dropDownBoxStyle.border.left = 1;
 		dropDownBoxStyle.border.right = 1;
 		dropDownBoxStyle.border.top = 1;
 		dropDownBoxStyle.border.bottom = 1;
+		dropDownBoxStyle.margins.left = 1;
+		dropDownBoxStyle.margins.right = 1;
+		dropDownBoxStyle.margins.top = 1;
+		dropDownBoxStyle.margins.bottom = 1;
 
 		mSkin.setStyle("ListBoxFrame", dropDownBoxStyle);
 		mSkin.setStyle("MenuBarFrame", dropDownBoxStyle);

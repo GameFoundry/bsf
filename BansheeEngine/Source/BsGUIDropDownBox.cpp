@@ -207,7 +207,7 @@ namespace BansheeEngine
 		mBackgroundArea = GUIArea::create(*mOwner, x, y, width, height);
 		mBackgroundArea->setDepth(102);
 
-		mBackgroundFrame = GUITexture::create(*mOwner, GUIImageScaleMode::ScaleToFit, mOwner->mBackgroundStyle);
+		mBackgroundFrame = GUITexture::create(*mOwner, GUIImageScaleMode::StretchToFit, mOwner->mBackgroundStyle);
 		mBackgroundArea->getLayout().addElement(mBackgroundFrame);
 
 		updateGUIElements();

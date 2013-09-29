@@ -175,7 +175,7 @@ Low priority TODO
    - Material::setParamBlock is commented out
  - Add support for diacritical marks to the input system (in WindowEventUtilities)
  - onMovedOrResized is still used by Viewport while that same callback is offered by RenderWindowManager. There is no need to have them in both places.
- - Replace list of windows in WIndowEventUtilities with RenderWindowManager list. No need to keep two lists I think
+ - Texture "ScaleToFit" will cause the texture to repeat instead of clipping the image. e.g. a 50x20 texture placed on an 50x100 area will repeat 5x
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic
