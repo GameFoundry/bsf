@@ -71,24 +71,12 @@ namespace BansheeEngine
 		return instance;
 	}
 
-	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent)
-		:GUIWidget(parent), mScrollUpStyle(nullptr),
+	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* window, const GUIDropDownAreaPlacement& placement,
+		const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type)
+		:GUIWidget(parent, target, window), mScrollUpStyle(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
 		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr)
 	{
-
-	}
-
-	GUIDropDownBox::~GUIDropDownBox()
-	{
-		cm_delete(mRootMenu);
-	}
-
-	void GUIDropDownBox::initialize(Viewport* target, RenderWindow* window, const GUIDropDownAreaPlacement& placement, 
-		const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type)
-	{
-		GUIWidget::initialize(target, window);
-
 		String stylePrefix = "";
 		switch(type)
 		{
@@ -118,6 +106,11 @@ namespace BansheeEngine
 
 		Rect availableBounds(target->getLeft(), target->getTop(), target->getWidth(), target->getHeight());
 		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, elements, type);
+	}
+
+	GUIDropDownBox::~GUIDropDownBox()
+	{
+		cm_delete(mRootMenu);
 	}
 
 	GUIDropDownBox::DropDownSubMenu::DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 

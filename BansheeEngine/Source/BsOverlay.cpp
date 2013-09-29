@@ -5,18 +5,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	Overlay::Overlay(const HSceneObject& parent)
+	Overlay::Overlay(const HSceneObject& parent, CM::Viewport* target)
 		:Component(parent), mRenderTarget(nullptr), mDepth(0)
-	{
-
-	}
-
-	Overlay::~Overlay()
-	{
-		OverlayManager::instance().detachOverlayFromAll(this);
-	}
-
-	void Overlay::initialize(CM::Viewport* target)
 	{
 		if(mRenderTarget != nullptr)
 			OverlayManager::instance().detachOverlay(mRenderTarget, this);
@@ -24,5 +14,10 @@ namespace BansheeEngine
 		mRenderTarget = target;
 
 		OverlayManager::instance().attachOverlay(mRenderTarget, this);	
+	}
+
+	Overlay::~Overlay()
+	{
+		OverlayManager::instance().detachOverlayFromAll(this);
 	}
 }

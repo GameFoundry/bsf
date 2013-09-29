@@ -101,11 +101,10 @@ namespace BansheeEngine
 	class BS_EXPORT GUIDropDownBox : public GUIWidget
 	{
 	public:
-		GUIDropDownBox(const CM::HSceneObject& parent);
+		GUIDropDownBox(const CM::HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* window, const GUIDropDownAreaPlacement& placement,
+			const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type);
 		~GUIDropDownBox();
 
-		void initialize(CM::Viewport* target, CM::RenderWindow* window, const GUIDropDownAreaPlacement& placement,
-			const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type);
 	private:
 		struct DropDownSubMenu
 		{

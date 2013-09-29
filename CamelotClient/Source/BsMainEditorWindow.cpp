@@ -48,8 +48,7 @@ namespace BansheeEditor
 
 		GameObjectHandle<DebugCamera> debugCamera = sceneCameraGO->addComponent<DebugCamera>();
 
-		GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>();
-		textSprite->initialize(mCamera->getViewport().get(), renderWindow.get());
+		GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>(mCamera->getViewport().get(), renderWindow.get());
 
 		textSprite->init(sceneCamera, "Testing in a new row, does this work?", sceneRenderTarget);
 

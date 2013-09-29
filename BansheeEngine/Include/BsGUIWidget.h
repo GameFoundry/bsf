@@ -14,15 +14,6 @@ namespace BansheeEngine
 	public:
 		virtual ~GUIWidget();
 
-		/**
-		 * @brief	Initializes the GUIWidget. Must be called in order for GUIWidget to start rendering.
-		 *
-		 * @param 	target			Target onto which we want to render the widget.
-		 * @param	ownerWindow   	Window that contains the widget. This will be the source of all input
-		 * 							for the widget. "target" and "ownerWindow" may be the same object.
-		 */
-		virtual void initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow);
-
 		void setSkin(const GUISkin& skin);
 		const GUISkin& getSkin() const;
 
@@ -65,7 +56,7 @@ namespace BansheeEngine
 		friend class GUIArea;
 		friend class GUIManager;
 
-		GUIWidget(const CM::HSceneObject& parent);
+		GUIWidget(const CM::HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow);
 
 		void registerElement(GUIElement* elem);
 		void unregisterElement(GUIElement* elem);

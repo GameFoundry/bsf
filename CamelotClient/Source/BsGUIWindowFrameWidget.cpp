@@ -16,20 +16,10 @@ namespace BansheeEditor
 {
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
-	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent)
-		:GUIWidget(parent), mWindowFrameArea(nullptr)
+	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow, const GUISkin& skin)
+		:GUIWidget(parent, target, ownerWindow), mWindowFrameArea(nullptr)
 	{
-
-	}
-
-	WindowFrameWidget::~WindowFrameWidget()
-	{
-
-	}
-
-	void WindowFrameWidget::initialize(CM::Viewport* target, CM::RenderWindow* ownerWindow)
-	{
-		GUIWidget::initialize(target, ownerWindow);
+		setSkin(skin);
 
 		GUIArea* backgroundArea = GUIArea::createStretchedXY(*this, 0, 0, 0, 0, 500);
 		backgroundArea->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::expandableXY(), GUIImageScaleMode::RepeatToFit, getSkin().getStyle("WindowBackground")));
@@ -40,6 +30,11 @@ namespace BansheeEditor
 		mWindowFrameArea->getLayout().addElement(mWindowFrame);
 
 		refreshNonClientAreas();
+	}
+
+	WindowFrameWidget::~WindowFrameWidget()
+	{
+
 	}
 
 	void WindowFrameWidget::update()

@@ -213,8 +213,7 @@ namespace CamelotFramework
 		template <typename T>
 		GameObjectHandle<T> addComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), 
-				"Specified type is not a valid Component.");
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
 
 			GameObjectHandle<T> newComponent = GameObjectHandle<T>(
 				new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, GameObject>);
@@ -224,6 +223,29 @@ namespace CamelotFramework
 
 			return newComponent;
 		}
+
+		// addComponent that accepts an arbitrary number of parameters > 0
+#define MAKE_ADD_COMPONENT(z, n, unused)											\
+		template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>				\
+		GameObjectHandle<Type> addComponent(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) )  \
+		{																			\
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, Type>::value),  \
+				"Specified type is not a valid Component.");										\
+																									\
+			GameObjectHandle<Type> newComponent = GameObjectHandle<Type>(							\
+				new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle, BOOST_PP_ENUM_PARAMS (n, t)),	\
+				&cm_delete<PoolAlloc, GameObject>);													\
+																									\
+			mComponents.push_back(newComponent);													\
+																									\
+			gSceneManager().notifyComponentAdded(newComponent);										\
+																									\
+			return newComponent;																	\
+		}
+
+		BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_ADD_COMPONENT, ~)
+
+#undef MAKE_ADD_COMPONENT
 
 		/**
 		 * @brief	Searches for a component with the specific type and returns the first one

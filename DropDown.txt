@@ -1,13 +1,13 @@
 GUI ignores image in GUIContent for most elements.
 
 Doesn't belong here but as an additional reminder: Remove Component::initialize and instead make multi paramter addComponent
-
-Add min/max/close buttons to GUIMenuBar
-Setup move areas in GUIMenuBar
+ - There's an exception that happens where mStyle of a GUIButtonBase is not initialized
+ - Track down other uses of initialize() and remove them (GUIWidget has one, probably Camera and similar as well)
 
 Test context
-Test scrollUp/scrollDown
+ - There are issues when dealing with the context menu. Hover doesn't seem to close menus, and hovering for a few seconds seems to cause an exception.
 
+Test scrollUp/scrollDown
 
 Design improvements:
 Attempt to get rid of selective input click callback in GUIManager. It's too specific.

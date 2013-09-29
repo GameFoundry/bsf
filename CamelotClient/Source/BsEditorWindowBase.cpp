@@ -73,15 +73,12 @@ namespace BansheeEditor
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setIgnoreSceneRenderables(true);
 
-		mGUI = mSceneObject->addComponent<GUIWidget>();
-		mGUI->initialize(mCamera->getViewport().get(), renderWindow.get());
+		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get(), renderWindow.get());
 		mGUI->setDepth(128);
 
 		mGUI->setSkin(EngineGUI::instance().getSkin());
 
-		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>();
-		mWindowFrame->setSkin(EngineGUI::instance().getSkin());
-		mWindowFrame->initialize(mCamera->getViewport().get(), renderWindow.get());
+		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), EngineGUI::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
 		mMoveOrResizeConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&EditorWindowBase::movedOrResized, this, _1));

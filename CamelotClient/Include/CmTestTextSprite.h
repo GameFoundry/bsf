@@ -8,7 +8,7 @@ namespace CamelotFramework
 	protected:
 		friend class CM::SceneObject;
 
-		TestTextSprite(const HSceneObject& parent);
+		TestTextSprite(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow);
 	public:
 		~TestTextSprite();
 
