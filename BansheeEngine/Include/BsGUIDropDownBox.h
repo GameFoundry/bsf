@@ -116,6 +116,7 @@ namespace BansheeEngine
 			CM::INT32 x, y;
 			CM::UINT32 width, height;
 			CM::Rect mAvailableBounds;
+			bool mOpenedUpward;
 
 			CM::Vector<GUITexture*>::type mCachedSeparators;
 			CM::Vector<GUIButton*>::type mCachedEntryBtns;

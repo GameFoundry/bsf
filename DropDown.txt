@@ -1,9 +1,9 @@
 GUI ignores image in GUIContent for most elements.
 
 Context menu appears at the wrong coordinates
-Menus lack proper frame
 
 Test scrollUp/scrollDown
+ - Scroll up/down button arrows seem to be missing
 
 Design improvements:
 Attempt to get rid of selective input click callback in GUIManager. It's too specific.

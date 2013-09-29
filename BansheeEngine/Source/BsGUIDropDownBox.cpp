@@ -117,7 +117,7 @@ namespace BansheeEngine
 		const Rect& availableBounds, const CM::Vector<GUIDropDownData>::type& elements, GUIDropDownType type)
 		:mOwner(owner), mPage(0), mBackgroundFrame(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr), 
 		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0), 
-		mType(type), mSubMenu(nullptr), mElements(elements)
+		mType(type), mSubMenu(nullptr), mElements(elements), mOpenedUpward(false)
 	{
 		mAvailableBounds = availableBounds;
 
@@ -184,6 +184,7 @@ namespace BansheeEngine
 		{
 			y = potentialBottomStart;
 			height = availableDownwardHeight;
+			mOpenedUpward = false;
 		}
 		else
 		{
@@ -191,20 +192,27 @@ namespace BansheeEngine
 			{
 				y = potentialBottomStart;
 				height = availableDownwardHeight;
+				mOpenedUpward = false;
 			}
 			else
 			{
-				y = potentialTopStart - std::min(maxNeededHeight, availableUpwardHeight);
+				y = potentialTopStart;
 				height = availableUpwardHeight;
+				mOpenedUpward = true;
 			}
 		}
 
+		INT32 actualY = y;
+			
+		if(mOpenedUpward)	
+			actualY -= (INT32)std::min(maxNeededHeight, availableUpwardHeight);
+
 		// Content area
-		mContentArea = GUIArea::create(*mOwner, x, y, width, height);
+		mContentArea = GUIArea::create(*mOwner, x, actualY, width, height);
 		mContentLayout = &mContentArea->getLayout().addLayoutY();
 
 		// Background frame
-		mBackgroundArea = GUIArea::create(*mOwner, x, y, width, height);
+		mBackgroundArea = GUIArea::create(*mOwner, x, actualY, width, height);
 		mBackgroundArea->setDepth(102);
 
 		mBackgroundFrame = GUITexture::create(*mOwner, GUIImageScaleMode::StretchToFit, mOwner->mBackgroundStyle);
@@ -403,13 +411,18 @@ namespace BansheeEngine
 		}
 		
 		// Resize and reposition areas
+		INT32 actualY = y;
+
+		if(mOpenedUpward)	
+			actualY -= (INT32)usedHeight;
+
 		mBackgroundArea->setSize(width, usedHeight);
-		mBackgroundArea->setPosition(x, y);
+		mBackgroundArea->setPosition(x, actualY);
 
 		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)mOwner->mBackgroundStyle->margins.left - (INT32)mOwner->mBackgroundStyle->margins.right);
 		UINT32 contentHeight = (UINT32)std::max(0, (INT32)usedHeight - (INT32)mOwner->mBackgroundStyle->margins.top - (INT32)mOwner->mBackgroundStyle->margins.bottom);
 		mContentArea->setSize(contentWidth, contentHeight);
-		mContentArea->setPosition(x + mOwner->mBackgroundStyle->margins.left, y + mOwner->mBackgroundStyle->margins.top);
+		mContentArea->setPosition(x + mOwner->mBackgroundStyle->margins.left, actualY + mOwner->mBackgroundStyle->margins.top);
 	}
 
 	UINT32 GUIDropDownBox::DropDownSubMenu::getElementHeight(CM::UINT32 idx) const

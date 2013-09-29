@@ -617,7 +617,10 @@ namespace BansheeEngine
 
 				if(menu != nullptr)
 				{
-					menu->open(gInput().getMousePosition(), *mMouseOverWidget);
+					const RenderWindow* window = mMouseOverWidget->getOwnerWindow();
+					Int2 windowPos = window->screenToWindowPos(gInput().getMousePosition());
+
+					menu->open(windowPos, *mMouseOverWidget);
 					event.markAsUsed();
 				}
 			}
