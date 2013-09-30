@@ -78,7 +78,10 @@ namespace BansheeEngine
 	const String EngineGUI::DropDownBoxEntryHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownButtonHover.psd";
 
 	const String EngineGUI::DropDownBoxBtnUpNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnUpNormal.psd";
+	const String EngineGUI::DropDownBoxBtnUpHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnUpHover.psd";
+
 	const String EngineGUI::DropDownBoxBtnDownNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnDownNormal.psd";
+	const String EngineGUI::DropDownBoxBtnDownHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownBoxBtnDownHover.psd";
 
 	const String EngineGUI::DropDownBoxEntryExpNormalTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownExpNormal.psd";
 	const String EngineGUI::DropDownBoxEntryExpHoverTex = "..\\..\\..\\..\\Data\\Editor\\Skin\\DropDownExpHover.psd";
@@ -478,10 +481,11 @@ namespace BansheeEngine
 
 		// DropDown scroll up button
 		HTexture dropDownBtnScrollUpNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpNormalTex));
+		HTexture dropDownBtnScrollUpHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpHoverTex));
 
 		GUIElementStyle dropDownScrollUpBtnStyle;
 		dropDownScrollUpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollUpNormal));
-		dropDownScrollUpBtnStyle.hover.texture = dropDownScrollUpBtnStyle.normal.texture;
+		dropDownScrollUpBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollUpHover));
 		dropDownScrollUpBtnStyle.active.texture = dropDownScrollUpBtnStyle.hover.texture;
 		dropDownScrollUpBtnStyle.fixedHeight = true;
 		dropDownScrollUpBtnStyle.fixedWidth = false;
@@ -518,10 +522,11 @@ namespace BansheeEngine
 
 		// DropDown scroll down button
 		HTexture dropDownBtnScrollDownNormal = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnDownNormalTex));
+		HTexture dropDownBtnScrollDownHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnDownHoverTex));
 
 		GUIElementStyle dropDownScrollDownBtnStyle;
 		dropDownScrollDownBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollDownNormal));
-		dropDownScrollDownBtnStyle.hover.texture = dropDownScrollDownBtnStyle.normal.texture;
+		dropDownScrollDownBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollDownHover));
 		dropDownScrollDownBtnStyle.active.texture = dropDownScrollDownBtnStyle.hover.texture;
 		dropDownScrollDownBtnStyle.fixedHeight = true;
 		dropDownScrollDownBtnStyle.fixedWidth = false;

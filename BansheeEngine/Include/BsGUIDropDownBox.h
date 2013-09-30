@@ -116,6 +116,7 @@ namespace BansheeEngine
 			CM::INT32 x, y;
 			CM::UINT32 width, height;
 			CM::Rect mAvailableBounds;
+			CM::UINT32 mDepthOffset;
 			bool mOpenedUpward;
 
 			CM::Vector<GUITexture*>::type mCachedSeparators;
@@ -132,7 +133,7 @@ namespace BansheeEngine
 			DropDownSubMenu* mSubMenu;
 
 			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-				const CM::Rect& availableBounds, const CM::Vector<GUIDropDownData>::type& elements, GUIDropDownType type);
+				const CM::Rect& availableBounds, const CM::Vector<GUIDropDownData>::type& elements, GUIDropDownType type, CM::UINT32 depthOffset);
 			~DropDownSubMenu();
 
 			void updateGUIElements();

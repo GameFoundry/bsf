@@ -1,6 +1,8 @@
 GUI ignores image in GUIContent for most elements.
 
-Context menu appears at the wrong coordinates
+When opening a sub-menu it might overlap its parent menu. e.g. opening a sub-menu to the left of the parent menu. 
+ - Sub-menu bounds should be limited so that they can't overlap.
+   - Nested overlap should be allowed to happen as long as the last menu is visible. This is why menus will also need proper depth.
 
 Test scrollUp/scrollDown
  - Scroll up/down button arrows seem to be missing

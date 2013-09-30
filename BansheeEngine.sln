@@ -46,7 +46,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Notes.txt = Notes.txt
 		RenderOperation.txt = RenderOperation.txt
 		TODO.txt = TODO.txt
-		TODO_2D_GUI.txt = TODO_2D_GUI.txt
 		TODODoc.txt = TODODoc.txt
 		TODOEditor.txt = TODOEditor.txt
 	EndProjectSection

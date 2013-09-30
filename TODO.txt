@@ -9,6 +9,15 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
  - BansheeApplication should probably derive from Camlelot application. Right now user needs to know the difference between 
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
+GUI SYSTEM WRAP UP:
+ Key repeat
+ Double click (Input box select all)
+ Copy/Cut/Paste shortcut keys
+ Copy/Cut/Past context menu
+ Clipboard
+ Windows drag and drop detect
+ Click when unfocused actually effects the elements in that window/widget
+
 IMMEDIATE:
  - Clicking on a window to focus and immediately trying to drag/resize it, doesn't work. I first need to click, then click again to drag/resize.
  - OpenGL rendering slows to extremely with time (seems to be related to rendering, possibly GUI, possibly in general Pass/Material/Shader/PassParams)
