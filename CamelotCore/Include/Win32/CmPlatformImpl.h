@@ -158,6 +158,20 @@ namespace CamelotFramework
 		static void resetNonClientAreas(const RenderWindow& window);
 
 		/**
+		 * @brief	Adds a string to the clipboard.
+		 */
+		static void copyToClipboard(const WString& string);
+
+		/**
+		 * @brief	Reads a string from the clipboard and returns it. If there is no
+		 * 			string in the clipboard it returns an empty string.
+		 * 			
+		 * @note	Both wide and normal strings will be read, but normal strings will be converted to
+		 * 			a wide string before returning.
+		 */
+		static WString copyFromClipboard();
+
+		/**
 		 * @brief	Message pump. Processes OS messages and returns when it's free.
 		 * 			
 		 * @note	This method must be called from the core thread.

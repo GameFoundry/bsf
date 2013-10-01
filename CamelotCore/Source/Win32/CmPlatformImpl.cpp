@@ -275,6 +275,53 @@ namespace CamelotFramework
 			mNonClientAreas.erase(iterFind);
 	}
 
+	void Platform::copyToClipboard(const WString& string)
+	{
+		HANDLE hData = GlobalAlloc(GMEM_MOVEABLE | GMEM_DDESHARE, (string.size() + 1) * sizeof(WString::value_type));
+		WString::value_type* buffer = (WString::value_type*)GlobalLock(hData);
+
+		string.copy(buffer, string.size());
+		buffer[string.size()] = '\0';
+
+		GlobalUnlock(hData);
+
+		if(OpenClipboard(NULL))
+		{
+			EmptyClipboard();
+			SetClipboardData(CF_UNICODETEXT, hData);
+			CloseClipboard();
+		}
+		else
+		{
+			GlobalFree(hData);
+		}
+	}
+
+	WString Platform::copyFromClipboard()
+	{
+		if(OpenClipboard(NULL))
+		{
+			HANDLE hData = GetClipboardData(CF_UNICODETEXT);
+
+			if(hData != NULL)
+			{
+				WString::value_type* buffer = (WString::value_type*)GlobalLock(hData);
+				WString string(buffer);
+				GlobalUnlock(hData);
+
+				CloseClipboard();
+				return string;
+			}
+			else
+			{
+				CloseClipboard();
+				return L"";
+			}			
+		}
+
+		return L"";
+	}
+
 	void Platform::messagePump()
 	{
 		MSG  msg;
