@@ -80,6 +80,8 @@ namespace BansheeEngine
 		boost::signal<void(GUIWidget*, GUIElement*, const GUIMouseEvent&)> mouseEventFilter;
 		boost::signal<void(GUIWidget*, GUIElement*, const GUIKeyEvent&)> keyEventFilter;
 	private:
+		static float DOUBLE_CLICK_INTERVAL;
+
 		struct SelectiveInputData
 		{
 			SelectiveInputData()
@@ -104,13 +106,14 @@ namespace BansheeEngine
 		GUIElement* mActiveElement;
 		GUIMouseButton mActiveMouseButton;
 
-
 		// Element and widget that currently have the keyboard focus
 		GUIWidget* mKeyboardFocusWidget;
 		GUIElement* mKeyboardFocusElement;
 
 		GUIInputCaret* mInputCaret;
 		GUIInputSelection* mInputSelection;
+
+		float mLastClickTime;
 
 		bool mSeparateMeshesByWidget;
 		CM::Int2 mLastCursorLocalPos;

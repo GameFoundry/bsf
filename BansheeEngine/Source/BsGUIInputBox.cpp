@@ -370,6 +370,14 @@ namespace BansheeEngine
 
 			return true;
 		}
+		else if(ev.getType() == GUIMouseEventType::MouseDoubleClick && ev.getButton() == GUIMouseButton::Left)
+		{
+			showSelection(0);
+			gGUIManager().getInputSelectionTool()->selectAll();
+
+			markContentAsDirty();
+			return true;
+		}
 		else if(ev.getType() == GUIMouseEventType::MouseDown && ev.getButton() == GUIMouseButton::Left)
 		{
 			if(mHasFocus)
@@ -529,14 +537,25 @@ namespace BansheeEngine
 				{
 					if(!mSelectionShown)
 						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+
+					gGUIManager().getInputCaretTool()->moveCaretLeft();
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
-					clearSelection();
+				{
+					if(mSelectionShown)
+					{
+						UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
+						clearSelection();
 
-				gGUIManager().getInputCaretTool()->moveCaretLeft();
-
-				if(ev.isShiftDown())
-					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+						if(selStart > 0)
+							gGUIManager().getInputCaretTool()->moveCaretToChar(selStart - 1, CARET_AFTER);
+						else
+							gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+					}
+					else
+						gGUIManager().getInputCaretTool()->moveCaretLeft();
+				}
 
 				scrollTextToCaret();
 				markContentAsDirty();
@@ -549,14 +568,25 @@ namespace BansheeEngine
 				{
 					if(!mSelectionShown)
 						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+
+					gGUIManager().getInputCaretTool()->moveCaretRight();
+					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
 				}
 				else
-					clearSelection();
+				{
+					if(mSelectionShown)
+					{
+						UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
+						clearSelection();
 
-				gGUIManager().getInputCaretTool()->moveCaretRight();
-
-				if(ev.isShiftDown())
-					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+						if(selEnd > 0)
+							gGUIManager().getInputCaretTool()->moveCaretToChar(selEnd - 1, CARET_AFTER);
+						else
+							gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+					}
+					else
+						gGUIManager().getInputCaretTool()->moveCaretRight();
+				}
 
 				scrollTextToCaret();
 				markContentAsDirty();

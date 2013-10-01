@@ -12,10 +12,10 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
 GUI SYSTEM WRAP UP:
  Key repeat
  Double click (Input box select all)
- Copy/Cut/Paste shortcut keys
- Copy/Cut/Past context menu
- Clipboard
  Windows drag and drop detect
+  - http://www.codeguru.com/cpp/misc/misc/draganddrop/article.php/c349/Drag-And-Drop-between-Window-Controls.htm
+  - http://www.catch22.net/tuts/drop-target
+  - http://msdn.microsoft.com/en-us/library/windows/desktop/bb776902(v=vs.85).aspx
  Click when unfocused actually effects the elements in that window/widget
 
 IMMEDIATE:

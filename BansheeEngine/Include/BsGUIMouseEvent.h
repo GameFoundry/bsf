@@ -11,6 +11,7 @@ namespace BansheeEngine
 		MouseOut,
 		MouseDown,
 		MouseUp,
+		MouseDoubleClick,
 		MouseMove,
 		MouseWheelScroll,
 		MouseDrag,
@@ -67,6 +68,7 @@ namespace BansheeEngine
 		void setMouseWheelScrollData(GUIElement* mouseOverElement, float scrollAmount);
 		void setMouseUpData(GUIElement* mouseOverElement, const CM::Int2& position, GUIMouseButton button);
 		void setMouseDownData(GUIElement* mouseOverElement, const CM::Int2& position, GUIMouseButton button);
+		void setMouseDoubleClickData(GUIElement* mouseOverElement, const CM::Int2& position, GUIMouseButton button);
 
 		void setMouseDragData(GUIElement* mouseOverElement, const CM::Int2& position, const CM::Int2& dragAmount);
 		void setMouseDragStartData(GUIElement* mouseOverElement, const CM::Int2& position);

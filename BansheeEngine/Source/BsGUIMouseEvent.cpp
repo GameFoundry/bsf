@@ -78,6 +78,16 @@ namespace BansheeEngine
 		mWheelScrollAmount = 0.0f;
 	}
 
+	void GUIMouseEvent::setMouseDoubleClickData(GUIElement* mouseOverElement, const Int2& position, GUIMouseButton button)
+	{
+		mType = GUIMouseEventType::MouseDoubleClick;
+		mPosition = position;
+		mMouseOverElement = mouseOverElement;
+		mButton = button;
+		mDragAmount = Int2();
+		mWheelScrollAmount = 0.0f;
+	}
+
 	void GUIMouseEvent::setMouseDragData(GUIElement* mouseOverElement, const Int2& position, const Int2& dragAmount)
 	{
 		mType = GUIMouseEventType::MouseDrag;

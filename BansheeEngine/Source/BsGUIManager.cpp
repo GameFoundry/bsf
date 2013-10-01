@@ -31,6 +31,8 @@
 using namespace CamelotFramework;
 namespace BansheeEngine
 {
+	float GUIManager::DOUBLE_CLICK_INTERVAL = 0.5f;
+
 	struct GUIGroupElement
 	{
 		GUIGroupElement()
@@ -57,7 +59,7 @@ namespace BansheeEngine
 		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mLastClickTime(0.0f)
 	{
 		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
 		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
@@ -582,9 +584,20 @@ namespace BansheeEngine
 			{
 				Int2 localPos = getWidgetRelativePos(*mMouseOverWidget, gInput().getMousePosition());
 
-				mMouseEvent.setMouseDownData(mMouseOverElement, localPos, guiButton);
-				if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
-					event.markAsUsed();
+				if((mLastClickTime + DOUBLE_CLICK_INTERVAL) > gTime().getTime())
+				{
+					mMouseEvent.setMouseDoubleClickData(mMouseOverElement, localPos, guiButton);
+					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+						event.markAsUsed();
+				}
+				else
+				{
+					mMouseEvent.setMouseDownData(mMouseOverElement, localPos, guiButton);
+					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+						event.markAsUsed();
+
+					mLastClickTime = gTime().getTime();
+				}
 
 				if(guiButton == GUIMouseButton::Left)
 				{
