@@ -7,6 +7,7 @@
 #include "BsGUISkin.h"
 #include "CmViewport.h"
 #include "BsGUIListBox.h"
+#include "BsGUIDropDownBoxManager.h"
 #include "CmSceneObject.h"
 
 using namespace CamelotFramework;
@@ -479,6 +480,8 @@ namespace BansheeEngine
 		closeSubMenu();
 
 		mElements[idx].getCallback()();
+
+		GUIDropDownBoxManager::instance().closeDropDownBox();
 	}
 
 	void GUIDropDownBox::DropDownSubMenu::openSubMenu(GUIButton* source, UINT32 idx)

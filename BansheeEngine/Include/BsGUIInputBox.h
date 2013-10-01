@@ -84,9 +84,11 @@ namespace BansheeEngine
 		CM::Int2 renderElemToOffset(CM::UINT32 renderElemIdx) const;
 		CM::Rect renderElemToClipRect(CM::UINT32 renderElemIdx) const;
 
+		void insertString(CM::UINT32 charIdx, const CM::WString& string);
 		void insertChar(CM::UINT32 charIdx, CM::UINT32 charCode);
 		void eraseChar(CM::UINT32 charIdx);
 		void deleteSelectedText();
+		CM::WString getSelectedText();
 
 		void showCaret();
 		void hideCaret();

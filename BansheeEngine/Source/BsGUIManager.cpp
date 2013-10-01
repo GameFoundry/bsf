@@ -586,11 +586,12 @@ namespace BansheeEngine
 				if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
 					event.markAsUsed();
 
-				// DragStart is for all intents and purposes same as mouse down but since I need a DragEnd event, I feel a separate DragStart
-				// event was also needed to make things clearer.
-				mMouseEvent.setMouseDragStartData(mMouseOverElement, localPos);
-				if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
-					event.markAsUsed();
+				if(guiButton == GUIMouseButton::Left)
+				{
+					mMouseEvent.setMouseDragStartData(mMouseOverElement, localPos);
+					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+						event.markAsUsed();
+				}
 
 				mActiveElement = mMouseOverElement;
 				mActiveWidget = mMouseOverWidget;
@@ -680,9 +681,12 @@ namespace BansheeEngine
 			bool acceptEndDrag = mActiveMouseButton == guiButton && mActiveElement != nullptr;
 			if(acceptEndDrag)
 			{
-				mMouseEvent.setMouseDragEndData(mMouseOverElement, localPos);
-				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
-					event.markAsUsed();
+				if(guiButton == GUIMouseButton::Left)
+				{
+					mMouseEvent.setMouseDragEndData(mMouseOverElement, localPos);
+					if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
+						event.markAsUsed();
+				}
 
 				mActiveElement = nullptr;
 				mActiveWidget = nullptr;
@@ -888,7 +892,7 @@ namespace BansheeEngine
 		}
 
 		// If mouse is being held down send MouseDrag events
-		if(mActiveElement != nullptr)
+		if(mActiveElement != nullptr && mActiveMouseButton == GUIMouseButton::Left)
 		{
 			Int2 curLocalPos = getWidgetRelativePos(*mActiveWidget, screenMousePos);
 

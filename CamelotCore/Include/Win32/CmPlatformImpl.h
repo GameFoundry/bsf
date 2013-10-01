@@ -43,7 +43,7 @@ namespace CamelotFramework
 	};
 
 	/**
-	 * @brief	Provides access for version Windows operating system functions, including
+	 * @brief	Provides access to various Windows operating system functions, including
 	 * 			the main message pump.
 	 */
 	class CM_EXPORT Platform

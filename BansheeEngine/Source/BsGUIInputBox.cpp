@@ -338,8 +338,6 @@ namespace BansheeEngine
 
 	bool GUIInputBox::mouseEvent(const GUIMouseEvent& ev)
 	{
-		static UINT32 dbg = 0;
-
 		if(ev.getType() == GUIMouseEventType::MouseOver)
 		{
 			if(!mHasFocus)
@@ -372,7 +370,7 @@ namespace BansheeEngine
 
 			return true;
 		}
-		else if(ev.getType() == GUIMouseEventType::MouseDown)
+		else if(ev.getType() == GUIMouseEventType::MouseDown && ev.getButton() == GUIMouseButton::Left)
 		{
 			if(mHasFocus)
 			{
@@ -631,6 +629,29 @@ namespace BansheeEngine
 				markContentAsDirty();
 				return true;
 			}
+
+			if(ev.getKey() == BC_X && ev.isCtrlDown())
+			{
+				cutText();
+
+				markContentAsDirty();
+				return true;
+			}
+
+			if(ev.getKey() == BC_C && ev.isCtrlDown())
+			{
+				copyText();
+
+				return true;
+			}
+
+			if(ev.getKey() == BC_V && ev.isCtrlDown())
+			{
+				pasteText();
+
+				markContentAsDirty();
+				return true;
+			}
 		}
 		else if(ev.getType() == GUIKeyEventType::TextInput)
 		{
@@ -743,6 +764,17 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
+	void GUIInputBox::insertString(CM::UINT32 charIdx, const WString& string)
+	{
+		mText.insert(mText.begin() + charIdx, string.begin(), string.end());
+
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
+		Int2 offset = getTextOffset();
+
+		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+	}
+
 	void GUIInputBox::insertChar(CM::UINT32 charIdx, CM::UINT32 charCode)
 	{
 		mText.insert(mText.begin() + charIdx, charCode);
@@ -787,6 +819,16 @@ namespace BansheeEngine
 
 		scrollTextToCaret();
 		clearSelection();
+	}
+
+	WString GUIInputBox::getSelectedText()
+	{
+		UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
+		UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
+
+		return mText.substr(selStart, selEnd - selStart);
+
+		mText.erase(mText.begin() + selStart, mText.begin() + gGUIManager().getInputSelectionTool()->getSelectionEnd());
 	}
 
 	CM::Int2 GUIInputBox::getTextOffset() const
@@ -847,13 +889,6 @@ namespace BansheeEngine
 			mContextMenu.addMenuItem(L"Copy", boost::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)));
 			mContextMenu.addMenuItem(L"Paste", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
 
-			// DEBUG ONLY
-			
-			mContextMenu.addSeparator(L"");
-			mContextMenu.addMenuItem(L"DebugBox/Test1", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
-			mContextMenu.addMenuItem(L"DebugBox/Test2", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
-			mContextMenu.addMenuItem(L"Zzzz/Test1", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
-
 			initialized = true;
 		}
 
@@ -862,16 +897,27 @@ namespace BansheeEngine
 
 	void GUIInputBox::cutText()
 	{
-		// TODO
+		copyText();
+		deleteSelectedText();
 	}
 
 	void GUIInputBox::copyText()
 	{
-		// TODO
+		Platform::copyToClipboard(getSelectedText());
 	}
 
 	void GUIInputBox::pasteText()
 	{
-		// TODO
+		WString textInClipboard = Platform::copyFromClipboard();
+
+		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
+		insertString(charIdx, textInClipboard);
+
+		if(textInClipboard.size() > 0)
+			gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx + ((UINT32)textInClipboard.size() - 1), CARET_AFTER);
+
+		scrollTextToCaret();
+
+		markContentAsDirty();
 	}
 }
