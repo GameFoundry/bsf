@@ -10,6 +10,11 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
 GUI SYSTEM WRAP UP:
+ GUIManager drag events should only trigger after a mouse moves a few pixels
+  - Right now it is breaking double click as start/end drag events get sent out twice
+
+ Writing a long word so that text scrolls, then deleting it will not scroll back unless the cursor is out of view
+
  Key repeat
  Double click (Input box select all)
  Windows drag and drop detect

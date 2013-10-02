@@ -100,6 +100,7 @@ namespace BansheeEngine
 		void moveSelectionRight(bool skipNewline);
 
 		void scrollTextToCaret();
+		void clampScrollToBounds(CM::Rect unclippedTextBounds);
 
 		CM::Int2 getTextOffset() const;
 		CM::Rect getTextClipRect() const;

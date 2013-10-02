@@ -136,6 +136,10 @@ namespace BansheeEngine
 			gGUIManager().getInputSelectionTool()->updateSprite();
 		}
 
+		// When text bounds are reduced the scroll needs to be adjusted so that
+		// input box isn't filled with mostly empty space.
+		clampScrollToBounds(mTextSprite->getBounds(mOffset, Rect()));
+
 		GUIElement::updateRenderElementsInternal();
 	}
 
@@ -787,11 +791,31 @@ namespace BansheeEngine
 
 		mTextOffset += offset;
 
-		Int2 newOffset = getTextOffset();
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
 		markContentAsDirty();
+	}
+
+	void GUIInputBox::clampScrollToBounds(Rect unclippedTextBounds)
+	{
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
+
+		Int2 newTextOffset;
+		INT32 maxScrollableWidth = std::max(0, (INT32)unclippedTextBounds.width - (INT32)textDesc.width);
+		INT32 maxScrollableHeight = std::max(0, (INT32)unclippedTextBounds.height - (INT32)textDesc.height);
+		newTextOffset.x = Math::Clamp(mTextOffset.x, -maxScrollableWidth, 0);
+		newTextOffset.y = Math::Clamp(mTextOffset.y, -maxScrollableHeight, 0);
+
+		if(newTextOffset != mTextOffset)
+		{
+			mTextOffset = newTextOffset;
+
+			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+			gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+
+			markContentAsDirty();
+		}
 	}
 
 	void GUIInputBox::insertString(CM::UINT32 charIdx, const WString& string)
