@@ -73,6 +73,11 @@ namespace CamelotFramework
 		static void releaseMouseCapture();
 
 		/**
+		 * @brief	Checks if provided over screen position is over the specified window.
+		 */
+		static bool isPointOverWindow(const RenderWindow& window, const Int2& screenPos);
+
+		/**
 		 * @brief	Limit cursor movement to the specified window.
 		 *
 		 * @note	Thread safe.

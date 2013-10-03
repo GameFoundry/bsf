@@ -97,6 +97,8 @@ namespace BansheeEngine
 
 		CM::Stack<GUIElement*>::type mScheduledForDestruction;
 
+		CM::Int2 mMouseScreenPos;
+
 		// Element and widget mouse is currently over
 		GUIWidget* mMouseOverWidget;
 		GUIElement* mMouseOverElement;
@@ -154,6 +156,9 @@ namespace BansheeEngine
 		void updateTextSelectionTexture();
 		void processDestroyQueue();
 
+		bool findMouseOverElement(const CM::Int2& screenMousePos);
+		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos);
+
 		void onButtonDown(const CM::ButtonEvent& event);
 		void onButtonUp(const CM::ButtonEvent& event);
 
@@ -167,8 +172,6 @@ namespace BansheeEngine
 		void onWindowMovedOrResized(CM::RenderWindow& win);
 
 		void onMouseLeftWindow(CM::RenderWindow* win);
-
-		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, float wheelScrollAmount = 0.0f);;
 
 		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;

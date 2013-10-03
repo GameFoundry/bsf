@@ -65,6 +65,21 @@ namespace CamelotFramework
 		PostMessage(hwnd, WM_CM_RELEASECAPTURE, WPARAM(hwnd), 0);
 	}
 
+	bool Platform::isPointOverWindow(const RenderWindow& window, const Int2& screenPos)
+	{
+		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+
+		POINT point;
+		point.x = screenPos.x;
+		point.y = screenPos.y;
+
+		HWND hwndToCheck;
+		window.getCustomAttribute("WINDOW", &hwndToCheck);
+
+		HWND hwndUnderPos = WindowFromPoint(point);
+		return hwndUnderPos == hwndToCheck;
+	}
+
 	void Platform::hideCursor()
 	{
 		mIsCursorHidden = true;
