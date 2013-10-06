@@ -80,25 +80,6 @@ namespace CamelotFramework
 		else
 			mOSInputHandler->update();
 
-		Vector<ButtonCode>::type simulatedUp;
-		Vector<ButtonCode>::type simulatedDown;
-
-		{
-			CM_LOCK_MUTEX(mSimulatedInputMutex);
-
-			simulatedUp = mSimulatedButtonUp;
-			simulatedDown = mSimulatedButtonDown;
-
-			mSimulatedButtonUp.clear();
-			mSimulatedButtonDown.clear();
-		}
-
-		for(auto& buttonCode : simulatedDown)
-			buttonDown(buttonCode);
-
-		for(auto& buttonCode : simulatedUp)
-			buttonUp(buttonCode);
-
 		updateSmoothInput();
 	}
 
@@ -193,20 +174,6 @@ namespace CamelotFramework
 	bool Input::isButtonDown(ButtonCode button) const
 	{
 		return mKeyState[button & 0x0000FFFF];
-	}
-
-	void Input::simulateButtonDown(ButtonCode code)
-	{
-		CM_LOCK_MUTEX(mSimulatedInputMutex);
-
-		mSimulatedButtonDown.push_back(code);
-	}
-
-	void Input::simulateButtonUp(ButtonCode code)
-	{
-		CM_LOCK_MUTEX(mSimulatedInputMutex);
-
-		mSimulatedButtonUp.push_back(code);
 	}
 
 	void Input::updateSmoothInput()

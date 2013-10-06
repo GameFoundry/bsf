@@ -67,16 +67,6 @@ namespace CamelotFramework
 			if (wParam != VK_SPACE)
 				return 0;
 			break;
-		case WM_ENTERSIZEMOVE:
-			mMoveResizeMouseUpState = 1;
-			break;
-		case WM_EXITSIZEMOVE:
-			// HACK - Windows doesn't send mouseUp event after move/resize if the cursor moved out of the original window bounds
-			if(mMoveResizeMouseUpState != 2)
-				gInput().instance().simulateButtonUp(BC_MOUSE_LEFT);
-
-			mMoveResizeMouseUpState = 0;
-			break;
 		case WM_MOVE:
 			windowMovedOrResized(win);
 			break;
@@ -177,15 +167,7 @@ namespace CamelotFramework
 				mMouseLeftWindows.push_back(win);
 			}
 			break;
-		case WM_NCLBUTTONUP:
 		case WM_LBUTTONUP:
-			// Part of a hack that's done in WM_EXITSIZEMOVE (see there)
-			if(mMoveResizeMouseUpState = 1)
-				mMoveResizeMouseUpState = 2;
-
-			if(uMsg == WM_NCLBUTTONUP)
-				break;
-
 			{
 				Int2 intMousePos;
 				OSPositionalInputButtonStates btnStates;

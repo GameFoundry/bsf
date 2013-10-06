@@ -47,20 +47,9 @@ namespace CamelotFramework
 		bool isButtonDown(ButtonCode keyCode) const;
 
 		Int2 getCursorPosition() const { return mMouseAbsPos; }
-
-		// Thread safe. Will only be processed on next "update".
-		void simulateButtonDown(ButtonCode code);
-
-		// Thread safe. Will only be processed on next "update".
-		void simulateButtonUp(ButtonCode code);
-
 	private:
 		std::shared_ptr<RawInputHandler> mRawInputHandler;
 		std::shared_ptr<OSInputHandler> mOSInputHandler;
-
-		CM_MUTEX(mSimulatedInputMutex);
-		Vector<ButtonCode>::type mSimulatedButtonUp;
-		Vector<ButtonCode>::type mSimulatedButtonDown;
 
 		float mSmoothHorizontalAxis;
 		float mSmoothVerticalAxis;
