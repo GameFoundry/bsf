@@ -239,7 +239,7 @@ namespace BansheeEditor
 
 			newWindow->widgets().add(*draggedWidget);
 
-			Int2 mousePos = Input::instance().getMousePosition();
+			Int2 mousePos = Input::instance().getCursorPosition();
 			newWindow->setPosition(mousePos.x, mousePos.y);
 		}
 	}

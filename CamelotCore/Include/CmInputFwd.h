@@ -248,14 +248,47 @@ namespace CamelotFramework
 		mutable bool mIsUsed;
 	};
 
-	struct MouseEvent
+	/**
+	 * @brief	Positional input buttons. Generally these correspond to mouse
+	 * 			buttons, but may be used in some form for touch input as well.
+	 */
+	enum class PositionalInputEventButton
+	{
+		Left, Middle, Right, Count
+	};
+
+	enum class PositionalInputEventType
+	{
+		CursorMoved,
+		ButtonPressed,
+		ButtonReleased
+	};
+
+	/**
+	 * @brief	Event that gets sent out when user interacts with the screen in some way,
+	 * 			usually by moving the mouse cursor or using touch input.
+	 */
+	struct PositionalInputEvent
 	{
 	public:
-		MouseEvent()
-			:mIsUsed(false), mouseWheelScrollAmount(0.0f)
-		{ }
+		PositionalInputEvent()
+			:mIsUsed(false), mouseWheelScrollAmount(0.0f), type(PositionalInputEventType::CursorMoved),
+			shift(false), control(false), alt(false), button(PositionalInputEventButton::Left)
+		{
+			buttonStates[0] = false;
+			buttonStates[1] = false;
+			buttonStates[2] = false;
+		}
 
 		Int2 screenPos;
+		bool buttonStates[PositionalInputEventButton::Count];
+		PositionalInputEventButton button;
+		PositionalInputEventType type;
+
+		bool shift;
+		bool control;
+		bool alt;
+
 		float mouseWheelScrollAmount;
 
 		bool isUsed() const { return mIsUsed; }
@@ -263,6 +296,11 @@ namespace CamelotFramework
 
 	private:
 		mutable bool mIsUsed;
+	};
+
+	struct InputCommandEvent
+	{
+		// TODO
 	};
 
 	struct TextInputEvent

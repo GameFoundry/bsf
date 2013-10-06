@@ -14,5 +14,7 @@ namespace CamelotFramework
 		static UINT32 mMoveResizeMouseUpState; // 0 - Didn't receive and not waiting for mouse up, 1 - Awaiting mouse up, 2 - Received mouse up
 
 		static LRESULT translateNonClientAreaType(NonClientAreaBorderType type);
+
+		static void getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Int2& mousePos, OSPositionalInputButtonStates& btnStates);
 	};
 }

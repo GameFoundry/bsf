@@ -56,14 +56,14 @@ namespace BansheeEngine
 	};
 
 	GUIManager::GUIManager()
-		:mMouseOverElement(nullptr), mMouseOverWidget(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
+		:mElementUnderCursor(nullptr), mWidgetUnderCursor(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mLastClickTime(0.0f)
 	{
-		mOnButtonDownConn = gInput().onButtonDown.connect(boost::bind(&GUIManager::onButtonDown, this, _1));
-		mOnButtonUpConn = gInput().onButtonUp.connect(boost::bind(&GUIManager::onButtonUp, this, _1));
-		mOnMouseMovedConn = gInput().onMouseMoved.connect(boost::bind(&GUIManager::onMouseMoved, this, _1));
+		mOnCursorMovedConn = gInput().onCursorMoved.connect(boost::bind(&GUIManager::onCursorMoved, this, _1));
+		mOnCursorPressedConn = gInput().onCursorPressed.connect(boost::bind(&GUIManager::onCursorPressed, this, _1));
+		mOnCursorReleasedConn = gInput().onCursorReleased.connect(boost::bind(&GUIManager::onCursorReleased, this, _1));
 		mOnTextInputConn = gInput().onCharInput.connect(boost::bind(&GUIManager::onTextInput, this, _1)); 
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
@@ -76,7 +76,7 @@ namespace BansheeEngine
 		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
 		DragAndDropManager::startUp(cm_new<DragAndDropManager>());
-		mMouseDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(boost::bind(&GUIManager::onMouseDragEnded, this, _1));
+		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(boost::bind(&GUIManager::onMouseDragEnded, this, _1));
 
 		GUIDropDownBoxManager::startUp(cm_new<GUIDropDownBoxManager>());
 
@@ -96,12 +96,12 @@ namespace BansheeEngine
 		for(auto& widget : widgetCopy)
 			widget.widget->destroy();
 
-		mOnButtonDownConn.disconnect();
-		mOnButtonUpConn.disconnect();
-		mOnMouseMovedConn.disconnect();
+		mOnCursorPressedConn.disconnect();
+		mOnCursorReleasedConn.disconnect();
+		mOnCursorMovedConn.disconnect();
 		mOnTextInputConn.disconnect();
 
-		mMouseDragEndedConn.disconnect();
+		mDragEndedConn.disconnect();
 
 		mWindowGainedFocusConn.disconnect();
 		mWindowLostFocusConn.disconnect();
@@ -138,10 +138,10 @@ namespace BansheeEngine
 			mWidgets.erase(findIter);
 		}
 
-		if(mMouseOverWidget == widget)
+		if(mWidgetUnderCursor == widget)
 		{
-			mMouseOverWidget = nullptr;
-			mMouseOverElement = nullptr;
+			mWidgetUnderCursor = nullptr;
+			mElementUnderCursor = nullptr;
 		}
 
 		if(mKeyboardFocusWidget == widget)
@@ -197,10 +197,10 @@ namespace BansheeEngine
 
 		updateMeshes();
 
-		if(mMouseOverElement != nullptr && mMouseOverElement->_isDestroyed())
+		if(mElementUnderCursor != nullptr && mElementUnderCursor->_isDestroyed())
 		{
-			mMouseOverElement = nullptr;
-			mMouseOverWidget = nullptr;
+			mElementUnderCursor = nullptr;
+			mWidgetUnderCursor = nullptr;
 		}
 
 		if(mActiveElement != nullptr && mActiveElement->_isDestroyed())
@@ -539,191 +539,16 @@ namespace BansheeEngine
 		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
 	}
 
-	void GUIManager::onButtonDown(const ButtonEvent& event)
+	bool GUIManager::onMouseDragEnded(const CM::PositionalInputEvent& event)
 	{
-		if(event.isUsed())
-			return;
-
-		if(findMouseOverElement(mMouseScreenPos))
-			event.markAsUsed();
-
-		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
-		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
-		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
-
-		if(event.isKeyboard())
-		{
-			if(mKeyboardFocusElement != nullptr)
-			{
-				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
-
-				mKeyEvent.setKeyDownData(event.buttonCode);
-				if(sendKeyEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mKeyEvent))
-					event.markAsUsed();
-			}
-		}
-
-		if(event.isMouse())
-		{
-			bool buttonStates[(int)GUIMouseButton::Count];
-			buttonStates[0] = gInput().isButtonDown(BC_MOUSE_LEFT);
-			buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
-			buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
-
-			mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
-
-			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
-
-			// Send out selective input callback when user clicks on non-selectable element
-			if(mSelectiveInputActive && mMouseOverElement == nullptr)
-			{
-				if(mOnOutsideClickCallback != nullptr)
-					mOnOutsideClickCallback();
-			}
-
-			// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
-			bool acceptMouseDown = mActiveElement == nullptr && mMouseOverElement != nullptr;
-			if(acceptMouseDown)
-			{
-				Int2 localPos = getWidgetRelativePos(*mMouseOverWidget, gInput().getMousePosition());
-
-				if((mLastClickTime + DOUBLE_CLICK_INTERVAL) > gTime().getTime())
-				{
-					mMouseEvent.setMouseDoubleClickData(mMouseOverElement, localPos, guiButton);
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
-						event.markAsUsed();
-				}
-				else
-				{
-					mMouseEvent.setMouseDownData(mMouseOverElement, localPos, guiButton);
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
-						event.markAsUsed();
-
-					mLastClickTime = gTime().getTime();
-				}
-
-				if(guiButton == GUIMouseButton::Left)
-				{
-					mMouseEvent.setMouseDragStartData(mMouseOverElement, localPos);
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
-						event.markAsUsed();
-				}
-
-				mActiveElement = mMouseOverElement;
-				mActiveWidget = mMouseOverWidget;
-				mActiveMouseButton = guiButton;
-			}
-
-			if(mMouseOverElement != nullptr && mMouseOverElement->_acceptsKeyboardFocus())
-			{
-				if(mKeyboardFocusElement != nullptr && mMouseOverElement != mKeyboardFocusElement)
-					mKeyboardFocusElement->_setFocus(false);
-
-				mMouseOverElement->_setFocus(true);
-
-				mKeyboardFocusElement = mMouseOverElement;
-				mKeyboardFocusWidget = mMouseOverWidget;
-
-				event.markAsUsed();
-			}
-
-			// If right click try to open context menu
-			if(mMouseOverElement != nullptr && buttonStates[2] == true) 
-			{
-				GUIContextMenu* menu = mMouseOverElement->getContextMenu();
-
-				if(menu != nullptr)
-				{
-					const RenderWindow* window = mMouseOverWidget->getOwnerWindow();
-					Int2 windowPos = window->screenToWindowPos(gInput().getMousePosition());
-
-					menu->open(windowPos, *mMouseOverWidget);
-					event.markAsUsed();
-				}
-			}
-		}
-	}
-
-	void GUIManager::onButtonUp(const ButtonEvent& event)
-	{
-		if(event.isUsed())
-			return;
-
-		if(findMouseOverElement(mMouseScreenPos))
-			event.markAsUsed();
-
-		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
-		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
-		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
-
-		if(event.isKeyboard())
-		{
-			if(mKeyboardFocusElement != nullptr)
-			{
-				mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
-
-				mKeyEvent.setKeyUpData(event.buttonCode);
-				if(sendKeyEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mKeyEvent))
-					event.markAsUsed();
-			}
-		}
-
-		if(event.isMouse())
-		{
-			bool buttonStates[(int)GUIMouseButton::Count];
-			buttonStates[0] = gInput().isButtonDown(BC_MOUSE_LEFT);
-			buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
-			buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
-
-			mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
-
-			Int2 localPos;
-			if(mMouseOverWidget != nullptr)
-			{
-				localPos = getWidgetRelativePos(*mMouseOverWidget, gInput().getMousePosition());
-			}
-
-			GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
-
-			// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
-			// And only activate when a button that originally caused the active state is released, otherwise ignore it.
-			bool acceptMouseUp = mActiveMouseButton == guiButton && (mMouseOverElement != nullptr && mActiveElement == mMouseOverElement);
-			if(acceptMouseUp)
-			{
-				mMouseEvent.setMouseUpData(mMouseOverElement, localPos, guiButton);
-				
-				if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
-					event.markAsUsed();
-			}
-
-			// Send DragEnd event to whichever element is active
-			bool acceptEndDrag = mActiveMouseButton == guiButton && mActiveElement != nullptr;
-			if(acceptEndDrag)
-			{
-				if(guiButton == GUIMouseButton::Left)
-				{
-					mMouseEvent.setMouseDragEndData(mMouseOverElement, localPos);
-					if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
-						event.markAsUsed();
-				}
-
-				mActiveElement = nullptr;
-				mActiveWidget = nullptr;
-				mActiveMouseButton = GUIMouseButton::Left;
-			}
-		}
-	}
-
-	bool GUIManager::onMouseDragEnded(const CM::ButtonEvent& event)
-	{
-		GUIMouseButton guiButton = buttonToMouseButton(event.buttonCode);
+		GUIMouseButton guiButton = buttonToGUIButton(event.button);
 
 		if(DragAndDropManager::instance().isDragInProgress() && guiButton == GUIMouseButton::Left)
 		{
-			if(mMouseOverElement != nullptr)
+			if(mElementUnderCursor != nullptr)
 			{
-				mMouseEvent.setDragAndDropDroppedData(mMouseOverElement, Int2(), DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-				bool processed = sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent);
+				mMouseEvent.setDragAndDropDroppedData(mElementUnderCursor, Int2(), DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+				bool processed = sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent);
 
 				return processed;
 			}
@@ -732,18 +557,23 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIManager::onMouseMoved(const MouseEvent& event)
+	void GUIManager::onCursorMoved(const PositionalInputEvent& event)
 	{
 		if(event.isUsed())
 			return;
 
-		if(findMouseOverElement(event.screenPos))
+		bool buttonStates[(int)GUIMouseButton::Count];
+		buttonStates[0] = event.buttonStates[0];
+		buttonStates[1] = event.buttonStates[1];
+		buttonStates[2] = event.buttonStates[2];
+
+		if(findElementUnderCursor(event.screenPos, buttonStates, event.shift, event.control, event.alt))
 			event.markAsUsed();
 
 		Int2 localPos;
 		
-		if(mMouseOverWidget != nullptr)
-			localPos = getWidgetRelativePos(*mMouseOverWidget, event.screenPos);
+		if(mWidgetUnderCursor != nullptr)
+			localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
 		// If mouse is being held down send MouseDrag events
 		if(mActiveElement != nullptr && mActiveMouseButton == GUIMouseButton::Left)
@@ -752,7 +582,7 @@ namespace BansheeEngine
 
 			if(mLastCursorLocalPos != curLocalPos)
 			{
-				mMouseEvent.setMouseDragData(mMouseOverElement, curLocalPos, curLocalPos - mLastCursorLocalPos);
+				mMouseEvent.setMouseDragData(mElementUnderCursor, curLocalPos, curLocalPos - mLastCursorLocalPos);
 				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
 					event.markAsUsed();
 
@@ -762,23 +592,23 @@ namespace BansheeEngine
 			// Also if drag is in progress send DragAndDrop events
 			if(DragAndDropManager::instance().isDragInProgress())
 			{
-				if(mMouseOverElement != nullptr)
+				if(mElementUnderCursor != nullptr)
 				{
-					mMouseEvent.setDragAndDropDraggedData(mMouseOverElement, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+					mMouseEvent.setDragAndDropDraggedData(mElementUnderCursor, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
 		}
 		else // Otherwise, send MouseMove events if we are hovering over any element
 		{
-			if(mMouseOverElement != nullptr)
+			if(mElementUnderCursor != nullptr)
 			{
 				// Send MouseMove event
 				if(mLastCursorLocalPos != localPos)
 				{
-					mMouseEvent.setMouseMoveData(mMouseOverElement, localPos);
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+					mMouseEvent.setMouseMoveData(mElementUnderCursor, localPos);
+					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						event.markAsUsed();
 
 					mLastCursorLocalPos = localPos;
@@ -786,17 +616,152 @@ namespace BansheeEngine
 
 				if(Math::Abs(event.mouseWheelScrollAmount) > 0.00001f)
 				{
-					mMouseEvent.setMouseWheelScrollData(mMouseOverElement, event.mouseWheelScrollAmount);
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+					mMouseEvent.setMouseWheelScrollData(mElementUnderCursor, event.mouseWheelScrollAmount);
+					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						event.markAsUsed();
 				}
 			}
 		}
-
-		mMouseScreenPos = event.screenPos;
 	}
 
-	bool GUIManager::findMouseOverElement(const CM::Int2& screenMousePos)
+	void GUIManager::onCursorReleased(const CM::PositionalInputEvent& event)
+	{
+		if(event.isUsed())
+			return;
+
+		bool buttonStates[(int)GUIMouseButton::Count];
+		buttonStates[0] = event.buttonStates[0];
+		buttonStates[1] = event.buttonStates[1];
+		buttonStates[2] = event.buttonStates[2];
+
+		if(findElementUnderCursor(event.screenPos, buttonStates, event.shift, event.control, event.alt))
+			event.markAsUsed();
+
+		mMouseEvent = GUIMouseEvent(buttonStates, event.shift, event.control, event.alt);
+
+		Int2 localPos;
+		if(mWidgetUnderCursor != nullptr)
+		{
+			localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
+		}
+
+		GUIMouseButton guiButton = buttonToGUIButton(event.button);
+
+		// Send MouseUp event only if we are over the active element (we don't want to accidentally trigger other elements).
+		// And only activate when a button that originally caused the active state is released, otherwise ignore it.
+		bool acceptMouseUp = mActiveMouseButton == guiButton && (mElementUnderCursor != nullptr && mActiveElement == mElementUnderCursor);
+		if(acceptMouseUp)
+		{
+			mMouseEvent.setMouseUpData(mElementUnderCursor, localPos, guiButton);
+
+			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
+				event.markAsUsed();
+		}
+
+		// Send DragEnd event to whichever element is active
+		bool acceptEndDrag = mActiveMouseButton == guiButton && mActiveElement != nullptr;
+		if(acceptEndDrag)
+		{
+			if(guiButton == GUIMouseButton::Left)
+			{
+				mMouseEvent.setMouseDragEndData(mElementUnderCursor, localPos);
+				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
+					event.markAsUsed();
+			}
+
+			mActiveElement = nullptr;
+			mActiveWidget = nullptr;
+			mActiveMouseButton = GUIMouseButton::Left;
+		}
+	}
+
+	void GUIManager::onCursorPressed(const CM::PositionalInputEvent& event)
+	{
+		if(event.isUsed())
+			return;
+
+		bool buttonStates[(int)GUIMouseButton::Count];
+		buttonStates[0] = event.buttonStates[0];
+		buttonStates[1] = event.buttonStates[1];
+		buttonStates[2] = event.buttonStates[2];
+
+		if(findElementUnderCursor(event.screenPos, buttonStates, event.shift, event.control, event.alt))
+			event.markAsUsed();
+
+		mMouseEvent = GUIMouseEvent(buttonStates, event.shift, event.control, event.alt);
+
+		GUIMouseButton guiButton = buttonToGUIButton(event.button);
+
+		// Send out selective input callback when user clicks on non-selectable element
+		if(mSelectiveInputActive && mElementUnderCursor == nullptr)
+		{
+			if(mOnOutsideClickCallback != nullptr)
+				mOnOutsideClickCallback();
+		}
+
+		// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
+		bool acceptMouseDown = mActiveElement == nullptr && mElementUnderCursor != nullptr;
+		if(acceptMouseDown)
+		{
+			Int2 localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
+
+			if((mLastClickTime + DOUBLE_CLICK_INTERVAL) > gTime().getTime())
+			{
+				mMouseEvent.setMouseDoubleClickData(mElementUnderCursor, localPos, guiButton);
+				if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
+					event.markAsUsed();
+			}
+			else
+			{
+				mMouseEvent.setMouseDownData(mElementUnderCursor, localPos, guiButton);
+				if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
+					event.markAsUsed();
+
+				mLastClickTime = gTime().getTime();
+			}
+
+			if(guiButton == GUIMouseButton::Left)
+			{
+				mMouseEvent.setMouseDragStartData(mElementUnderCursor, localPos);
+				if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
+					event.markAsUsed();
+			}
+
+			mActiveElement = mElementUnderCursor;
+			mActiveWidget = mWidgetUnderCursor;
+			mActiveMouseButton = guiButton;
+		}
+
+		if(mElementUnderCursor != nullptr && mElementUnderCursor->_acceptsKeyboardFocus())
+		{
+			if(mKeyboardFocusElement != nullptr && mElementUnderCursor != mKeyboardFocusElement)
+				mKeyboardFocusElement->_setFocus(false);
+
+			mElementUnderCursor->_setFocus(true);
+
+			mKeyboardFocusElement = mElementUnderCursor;
+			mKeyboardFocusWidget = mWidgetUnderCursor;
+
+			event.markAsUsed();
+		}
+
+		// If right click try to open context menu
+		if(mElementUnderCursor != nullptr && buttonStates[2] == true) 
+		{
+			GUIContextMenu* menu = mElementUnderCursor->getContextMenu();
+
+			if(menu != nullptr)
+			{
+				const RenderWindow* window = mWidgetUnderCursor->getOwnerWindow();
+				Int2 windowPos = window->screenToWindowPos(event.screenPos);
+
+				menu->open(windowPos, *mWidgetUnderCursor);
+				event.markAsUsed();
+			}
+		}
+	}
+
+	bool GUIManager::findElementUnderCursor(const CM::Int2& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
 	{
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
@@ -813,8 +778,8 @@ namespace BansheeEngine
 		}
 #endif
 
-		GUIWidget* mouseOverWidget = nullptr;
-		GUIElement* mouseOverElement = nullptr;
+		GUIWidget* cursorOverWidget = nullptr;
+		GUIElement* cursorOverElement = nullptr;
 
 		const RenderWindow* windowUnderCursor = nullptr;
 		UnorderedSet<const RenderWindow*>::type uniqueWindows;
@@ -827,7 +792,7 @@ namespace BansheeEngine
 
 		for(auto& window : uniqueWindows)
 		{
-			if(Platform::isPointOverWindow(*window, screenMousePos))
+			if(Platform::isPointOverWindow(*window, cursorScreenPos))
 			{
 				windowUnderCursor = window;
 				break;
@@ -836,7 +801,7 @@ namespace BansheeEngine
 
 		if(windowUnderCursor != nullptr)
 		{
-			Int2 windowPos = windowUnderCursor->screenToWindowPos(screenMousePos);
+			Int2 windowPos = windowUnderCursor->screenToWindowPos(cursorScreenPos);
 			Vector4 vecWindowPos((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f);
 
 			UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
@@ -881,9 +846,9 @@ namespace BansheeEngine
 									continue;
 							}
 
-							mouseOverElement = element;
+							cursorOverElement = element;
 							topMostDepth = element->_getDepth();
-							mouseOverWidget = widget;
+							cursorOverWidget = widget;
 
 							break;
 						}
@@ -892,42 +857,33 @@ namespace BansheeEngine
 			}
 		}
 
-		return handleMouseOver(mouseOverWidget, mouseOverElement, screenMousePos);
+		return handleCursorOver(cursorOverWidget, cursorOverElement, cursorScreenPos, buttonStates, shift, control, alt);
 	}
 
-	bool GUIManager::handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos)
+	bool GUIManager::handleCursorOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenPos,
+		bool buttonStates[3], bool shift, bool control, bool alt)
 	{
 		bool eventProcessed = false;
 
 		Int2 localPos;
 		if(widget != nullptr)
-			localPos = getWidgetRelativePos(*widget, screenMousePos);
+			localPos = getWidgetRelativePos(*widget, screenPos);
 
-		bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
-		bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
-		bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
-
-		// TODO - Maybe avoid querying these for every event separately?
-		bool buttonStates[(int)GUIMouseButton::Count];
-		buttonStates[0] = gInput().isButtonDown(BC_MOUSE_LEFT);
-		buttonStates[1] = gInput().isButtonDown(BC_MOUSE_MIDDLE);
-		buttonStates[2] = gInput().isButtonDown(BC_MOUSE_RIGHT);
-
-		mMouseEvent = GUIMouseEvent(buttonStates, shiftDown, ctrlDown, altDown);
+		mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
 
 		// Send MouseOver/MouseOut events to any elements the mouse passes over, except when
 		// mouse is being held down, in which we only send them to the active element
-		if(element != mMouseOverElement)
+		if(element != mElementUnderCursor)
 		{
-			if(mMouseOverElement != nullptr)
+			if(mElementUnderCursor != nullptr)
 			{
 				// Send MouseOut event
-				if(mActiveElement == nullptr || mMouseOverElement == mActiveElement)
+				if(mActiveElement == nullptr || mElementUnderCursor == mActiveElement)
 				{
-					Int2 curLocalPos = getWidgetRelativePos(*mMouseOverWidget, screenMousePos);
+					Int2 curLocalPos = getWidgetRelativePos(*mWidgetUnderCursor, screenPos);
 
 					mMouseEvent.setMouseOutData(element, curLocalPos);
-					if(sendMouseEvent(mMouseOverWidget, mMouseOverElement, mMouseEvent))
+					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						eventProcessed = true;
 				}
 			}
@@ -944,8 +900,8 @@ namespace BansheeEngine
 			}
 		}
 
-		mMouseOverElement = element;
-		mMouseOverWidget = widget;
+		mElementUnderCursor = element;
+		mWidgetUnderCursor = widget;
 
 		return eventProcessed;
 	}
@@ -1003,7 +959,12 @@ namespace BansheeEngine
 	// nothing stays in hover state
 	void GUIManager::onMouseLeftWindow(CM::RenderWindow* win)
 	{
-		handleMouseOver(nullptr, nullptr, Int2());
+		bool buttonStates[3];
+		buttonStates[0] = false;
+		buttonStates[1] = false;
+		buttonStates[2] = false;
+
+		handleCursorOver(nullptr, nullptr, Int2(), buttonStates, false, false, false);
 	}
 
 	void GUIManager::queueForDestroy(GUIElement* element)
@@ -1055,16 +1016,16 @@ namespace BansheeEngine
 		mSelectiveInputData[&element->_getParentWidget()].elements.insert(element);
 	}
 
-	GUIMouseButton GUIManager::buttonToMouseButton(ButtonCode code) const
+	GUIMouseButton GUIManager::buttonToGUIButton(PositionalInputEventButton cursorButton) const
 	{
-		if(code == BC_MOUSE_LEFT)
+		if(cursorButton == PositionalInputEventButton::Left)
 			return GUIMouseButton::Left;
-		else if(code == BC_MOUSE_MIDDLE)
+		else if(cursorButton == PositionalInputEventButton::Middle)
 			return GUIMouseButton::Middle;
-		else if(code == BC_MOUSE_RIGHT)
+		else if(cursorButton == PositionalInputEventButton::Right)
 			return GUIMouseButton::Right;
 
-		CM_EXCEPT(InvalidParametersException, "Provided button code is not a GUI supported mouse button.");
+		CM_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
 	}
 
 	Int2 GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Int2& screenPos) const

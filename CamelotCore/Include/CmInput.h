@@ -19,7 +19,9 @@ namespace CamelotFramework
 		boost::signal<void(const ButtonEvent&)> onButtonUp;
 		boost::signal<void(const TextInputEvent&)> onCharInput;
 
-		boost::signal<void(const MouseEvent&)> onMouseMoved;
+		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
+		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
+		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
 
 		void registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
 
@@ -44,7 +46,7 @@ namespace CamelotFramework
 
 		bool isButtonDown(ButtonCode keyCode) const;
 
-		Int2 getMousePosition() const { return mMouseAbsPos; }
+		Int2 getCursorPosition() const { return mMouseAbsPos; }
 
 		// Thread safe. Will only be processed on next "update".
 		void simulateButtonDown(ButtonCode code);
@@ -85,9 +87,19 @@ namespace CamelotFramework
 		void axisMoved(const RawAxisState& state, RawInputAxis axis);
 
 		/**
-		 * @brief	Mouse movement as OS reports it. Used for screen cursor position.
+		 * @brief	Cursor movement as OS reports it. Used for screen cursor position.
 		 */
-		void mouseMoved(const Int2& screenPos, float mouseWheelScrollAmount);
+		void cursorMoved(const PositionalInputEvent& event);
+
+		/**
+		 * @brief	Cursor button presses as OS reports it. 
+		 */
+		void cursorPressed(const PositionalInputEvent& event);
+
+		/**
+		 * @brief	Cursor button releases as OS reports it.
+		 */
+		void cursorReleased(const PositionalInputEvent& event);
 		
 		/**
 		 * @brief	Updates the axis input values that need smoothing.

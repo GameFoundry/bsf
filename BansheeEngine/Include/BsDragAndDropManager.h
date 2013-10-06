@@ -23,7 +23,7 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		boost::signal<bool(const CM::ButtonEvent&)> onDragEnded;
+		boost::signal<bool(const CM::PositionalInputEvent&)> onDragEnded;
 	private:
 		CM::HTexture mIcon;
 		CM::UINT32 mDragTypeId;
@@ -36,6 +36,6 @@ namespace BansheeEngine
 
 		void endDrag(bool processed);
 		void mouseCaptureChanged();
-		void mouseUp(const CM::ButtonEvent& event);
+		void cursorReleased(const CM::PositionalInputEvent& event);
 	};
 }

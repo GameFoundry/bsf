@@ -183,6 +183,73 @@ namespace CamelotFramework
 			if(mMoveResizeMouseUpState = 1)
 				mMoveResizeMouseUpState = 2;
 
+			if(uMsg == WM_NCLBUTTONUP)
+				break;
+
+			{
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if(!onCursorButtonReleased.empty())
+					onCursorButtonReleased(intMousePos, OSMouseButton::Left, btnStates);
+			}
+			break;
+		case WM_MBUTTONUP:
+			{
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if(!onCursorButtonReleased.empty())
+					onCursorButtonReleased(intMousePos, OSMouseButton::Middle, btnStates);
+			}
+			break;
+		case WM_RBUTTONUP:
+			{
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if(!onCursorButtonReleased.empty())
+					onCursorButtonReleased(intMousePos, OSMouseButton::Right, btnStates);
+			}
+			break;
+		case WM_LBUTTONDOWN:
+			{
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if(!onCursorButtonPressed.empty())
+					onCursorButtonPressed(intMousePos, OSMouseButton::Left, btnStates);
+			}
+			break;
+		case WM_MBUTTONDOWN:
+			{
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if(!onCursorButtonPressed.empty())
+					onCursorButtonPressed(intMousePos, OSMouseButton::Middle, btnStates);
+			}
+			break;
+		case WM_RBUTTONDOWN:
+			{
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if(!onCursorButtonPressed.empty())
+					onCursorButtonPressed(intMousePos, OSMouseButton::Right, btnStates);
+			}
 			break;
 		case WM_NCMOUSEMOVE:
 		case WM_MOUSEMOVE:
@@ -199,15 +266,16 @@ namespace CamelotFramework
 					mIsTrackingMouse = true;
 				}
 
-				POINT mousePos;
+				if(uMsg == WM_NCMOUSEMOVE)
+					return true;
 
-				mousePos.x = GET_X_LPARAM(lParam);
-				mousePos.y = GET_Y_LPARAM(lParam); 
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+				
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
-				ClientToScreen(hWnd, &mousePos);
-
-				if(!onMouseMoved.empty())
-					onMouseMoved(Int2(mousePos.x, mousePos.y));
+				if(!onCursorMoved.empty())
+					onCursorMoved(intMousePos, btnStates);
 
 				return true;
 			}
@@ -319,5 +387,24 @@ namespace CamelotFramework
 		}
 
 		return dir;
+	}
+
+	void PlatformWndProc::getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Int2& mousePos, OSPositionalInputButtonStates& btnStates)
+	{
+		POINT clientPoint;
+
+		clientPoint.x = GET_X_LPARAM(lParam);
+		clientPoint.y = GET_Y_LPARAM(lParam); 
+
+		ClientToScreen(hWnd, &clientPoint);
+
+		mousePos.x = clientPoint.x;
+		mousePos.y = clientPoint.y;
+
+		btnStates.mouseButtons[0] = (wParam & MK_LBUTTON) != 0;
+		btnStates.mouseButtons[1] = (wParam & MK_MBUTTON) != 0;
+		btnStates.mouseButtons[2] = (wParam & MK_RBUTTON) != 0;
+		btnStates.shift = (wParam & MK_SHIFT) != 0;
+		btnStates.ctrl = (wParam & MK_CONTROL) != 0;
 	}
 }

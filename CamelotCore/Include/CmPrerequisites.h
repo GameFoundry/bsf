@@ -127,6 +127,7 @@ namespace CamelotFramework {
     class VertexData;
     class VertexDeclaration;
 	class Input;
+	struct PositionalInputEvent;
 	class RawInputHandler;
 	class Renderer;
 	class RendererFactory;

@@ -42,6 +42,27 @@ namespace CamelotFramework
 		Vector<Rect>::type moveAreas;
 	};
 
+	enum class OSMouseButton
+	{
+		Left, Middle, Right, Count
+	};
+
+	struct CM_EXPORT OSPositionalInputButtonStates
+	{
+		OSPositionalInputButtonStates()
+		{
+			mouseButtons[0] = false;
+			mouseButtons[1] = false;
+			mouseButtons[2] = false;
+
+			shift = false;
+			ctrl = false;
+		}
+
+		bool mouseButtons[OSMouseButton::Count];
+		bool shift, ctrl;
+	};
+
 	/**
 	 * @brief	Provides access to various Windows operating system functions, including
 	 * 			the main message pump.
@@ -196,7 +217,9 @@ namespace CamelotFramework
 
 		// Callbacks triggered on the core thread. Be careful so that none
 		// of the connected methods call methods intended for sim thread.
-		static boost::signal<void(const Int2&)> onMouseMoved;
+		static boost::signal<void(const Int2&, OSPositionalInputButtonStates)> onCursorMoved;
+		static boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonPressed;
+		static boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonReleased;
 		static boost::signal<void(float)> onMouseWheelScrolled;
 		static boost::signal<void(UINT32)> onCharInput;
 		static boost::signal<void(RenderWindow*)> onWindowFocusReceived;

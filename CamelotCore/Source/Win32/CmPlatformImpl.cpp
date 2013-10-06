@@ -8,7 +8,9 @@ namespace CamelotFramework
 {
 	boost::signal<void(RenderWindow*)> Platform::onMouseLeftWindow;
 
-	boost::signal<void(const Int2&)> Platform::onMouseMoved;
+	boost::signal<void(const Int2&, OSPositionalInputButtonStates)> Platform::onCursorMoved;
+	boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonPressed;
+	boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonReleased;
 	boost::signal<void(float)> Platform::onMouseWheelScrolled;
 	boost::signal<void(UINT32)> Platform::onCharInput;
 

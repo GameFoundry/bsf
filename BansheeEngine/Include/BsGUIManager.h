@@ -97,11 +97,9 @@ namespace BansheeEngine
 
 		CM::Stack<GUIElement*>::type mScheduledForDestruction;
 
-		CM::Int2 mMouseScreenPos;
-
 		// Element and widget mouse is currently over
-		GUIWidget* mMouseOverWidget;
-		GUIElement* mMouseOverElement;
+		GUIWidget* mWidgetUnderCursor;
+		GUIElement* mElementUnderCursor;
 
 		// Element and widget that's being clicked on
 		GUIWidget* mActiveWidget;
@@ -138,12 +136,12 @@ namespace BansheeEngine
 		CM::Map<const GUIWidget*, SelectiveInputData>::type mSelectiveInputData;
 		std::function<void()> mOnOutsideClickCallback;
 
-		boost::signals::connection mOnButtonDownConn;
-		boost::signals::connection mOnButtonUpConn;
-		boost::signals::connection mOnMouseMovedConn;
+		boost::signals::connection mOnCursorMovedConn;
+		boost::signals::connection mOnCursorPressedConn;
+		boost::signals::connection mOnCursorReleasedConn;
 		boost::signals::connection mOnTextInputConn;
 
-		boost::signals::connection mMouseDragEndedConn;
+		boost::signals::connection mDragEndedConn;
 
 		boost::signals::connection mWindowGainedFocusConn;
 		boost::signals::connection mWindowLostFocusConn;
@@ -156,16 +154,16 @@ namespace BansheeEngine
 		void updateTextSelectionTexture();
 		void processDestroyQueue();
 
-		bool findMouseOverElement(const CM::Int2& screenMousePos);
-		bool handleMouseOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos);
+		bool findElementUnderCursor(const CM::Int2& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
+		bool handleCursorOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, 
+			bool buttonStates[3], bool shift, bool control, bool alt);
 
-		void onButtonDown(const CM::ButtonEvent& event);
-		void onButtonUp(const CM::ButtonEvent& event);
-
-		void onMouseMoved(const CM::MouseEvent& event);
+		void onCursorMoved(const CM::PositionalInputEvent& event);
+		void onCursorReleased(const CM::PositionalInputEvent& event);
+		void onCursorPressed(const CM::PositionalInputEvent& event);
 		void onTextInput(const CM::TextInputEvent& event);
 
-		bool onMouseDragEnded(const CM::ButtonEvent& event);
+		bool onMouseDragEnded(const CM::PositionalInputEvent& event);
 
 		void onWindowFocusGained(CM::RenderWindow& win);
 		void onWindowFocusLost(CM::RenderWindow& win);
@@ -173,7 +171,7 @@ namespace BansheeEngine
 
 		void onMouseLeftWindow(CM::RenderWindow* win);
 
-		GUIMouseButton buttonToMouseButton(CM::ButtonCode code) const;
+		GUIMouseButton buttonToGUIButton(CM::PositionalInputEventButton cursorButton) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
 
 		bool sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);

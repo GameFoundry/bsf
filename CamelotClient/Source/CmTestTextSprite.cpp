@@ -57,7 +57,7 @@ namespace CamelotFramework
 
 	void TestTextSprite::update()
 	{
-		WString value = toWString(toString(Input::instance().getMousePosition().x) + " - " + toString(Input::instance().getMousePosition().y));
+		WString value = toWString(toString(Input::instance().getCursorPosition().x) + " - " + toString(Input::instance().getCursorPosition().y));
 
 		mLabel->setContent(GUIContent(value));
 	}

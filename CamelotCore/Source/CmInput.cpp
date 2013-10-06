@@ -32,7 +32,9 @@ namespace CamelotFramework
 		mOSInputHandler = cm_shared_ptr<OSInputHandler>();
 
 		mOSInputHandler->onCharInput.connect(boost::bind(&Input::charInput, this, _1));
-		mOSInputHandler->onMouseMoved.connect(boost::bind(&Input::mouseMoved, this, _1, _2));
+		mOSInputHandler->onCursorMoved.connect(boost::bind(&Input::cursorMoved, this, _1));
+		mOSInputHandler->onCursorPressed.connect(boost::bind(&Input::cursorPressed, this, _1));
+		mOSInputHandler->onCursorReleased.connect(boost::bind(&Input::cursorReleased, this, _1));
 
 		RenderWindowManager::instance().onFocusGained.connect(boost::bind(&Input::inputWindowChanged, this, _1));
 	}
@@ -143,18 +145,28 @@ namespace CamelotFramework
 		mAxes[(int)axis] = state;
 	}
 
-	void Input::mouseMoved(const Int2& screenPos, float mouseWheelScrollAmount)
+	void Input::cursorMoved(const PositionalInputEvent& event)
 	{
-		mMouseAbsPos = screenPos;
+		mMouseAbsPos = event.screenPos;
 
-		if(!onMouseMoved.empty())
-		{
-			MouseEvent mouseEvent;
-			mouseEvent.screenPos = screenPos;
-			mouseEvent.mouseWheelScrollAmount = mouseWheelScrollAmount;
+		if(!onCursorMoved.empty())
+			onCursorMoved(event);
+	}
 
-			onMouseMoved(mouseEvent);
-		}
+	void Input::cursorPressed(const PositionalInputEvent& event)
+	{
+		mMouseAbsPos = event.screenPos;
+
+		if(!onCursorPressed.empty())
+			onCursorPressed(event);
+	}
+
+	void Input::cursorReleased(const PositionalInputEvent& event)
+	{
+		mMouseAbsPos = event.screenPos;
+
+		if(!onCursorReleased.empty())
+			onCursorReleased(event);
 	}
 
 	void Input::charInput(UINT32 chr)

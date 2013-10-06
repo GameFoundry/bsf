@@ -9,6 +9,13 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
  - BansheeApplication should probably derive from Camlelot application. Right now user needs to know the difference between 
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
+GUI INPUT REFACTOR:
+Add support for commands like cut/copy/paste/select-all/arrow movement
+  - Ensure that arrow movement, and backspace/delete commands properly handle repeat
+simulateButtonUp call in _win32WndProc might not be needed anymore?
+Possibly also forward doubleclick from OS?
+Rename/Get-rid-off mMouseEvent, mKeyEvent, mCommandEvent in GUIManager
+
 GUI SYSTEM WRAP UP:
  GUIManager drag events should only trigger after a mouse moves a few pixels
   - Right now it is breaking double click as start/end drag events get sent out twice
@@ -20,8 +27,6 @@ GUI SYSTEM WRAP UP:
   - http://www.codeguru.com/cpp/misc/misc/draganddrop/article.php/c349/Drag-And-Drop-between-Window-Controls.htm
   - http://www.catch22.net/tuts/drop-target
   - http://msdn.microsoft.com/en-us/library/windows/desktop/bb776902(v=vs.85).aspx
- Click when unfocused actually effects the elements in that window/widget
-  - This is bugged in many different ways, sometimes it works sometimes it doesn't.
 
 IMMEDIATE:
  - OpenGL rendering slows to extremely with time (seems to be related to rendering, possibly GUI, possibly in general Pass/Material/Shader/PassParams)
