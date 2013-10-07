@@ -140,7 +140,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIWidget::_keyEvent(GUIElement* element, const GUIKeyEvent& ev)
+	bool GUIWidget::_textInputEvent(GUIElement* element, const GUITextInputEvent& ev)
 	{
 		// If an element has any parents we send the events to all parents first and only then to the children unless
 		// the parents process them
@@ -159,7 +159,36 @@ namespace BansheeEngine
 			GUIElement* elem = todo.top();
 			todo.pop();
 
-			if(elem->keyEvent(ev))
+			if(elem->textInputEvent(ev))
+				return true;
+
+			if(todo.size() == 0)
+				return false;
+		}
+
+		return false;
+	}
+
+	bool GUIWidget::_commandEvent(GUIElement* element, const GUICommandEvent& ev)
+	{
+		// If an element has any parents we send the events to all parents first and only then to the children unless
+		// the parents process them
+		Stack<GUIElement*>::type todo;
+		GUIElementBase* curElement = element;
+		do
+		{
+			if(curElement->_getType() == GUIElementBase::Type::Element)
+				todo.push(static_cast<GUIElement*>(curElement));
+
+			curElement = curElement->_getParent();
+		} while(curElement != nullptr);
+
+		while(true)
+		{
+			GUIElement* elem = todo.top();
+			todo.pop();
+
+			if(elem->commandEvent(ev))
 				return true;
 
 			if(todo.size() == 0)

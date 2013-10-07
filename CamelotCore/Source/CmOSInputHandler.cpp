@@ -12,6 +12,7 @@ namespace CamelotFramework
 		mCursorMovedConn = Platform::onCursorMoved.connect(boost::bind(&OSInputHandler::cursorMoved, this, _1, _2));
 		mCursorPressedConn = Platform::onCursorButtonPressed.connect(boost::bind(&OSInputHandler::cursorPressed, this, _1, _2, _3));
 		mCursorReleasedConn = Platform::onCursorButtonReleased.connect(boost::bind(&OSInputHandler::cursorReleased, this, _1, _2, _3));
+		mInputCommandConn = Platform::onInputCommand.connect(boost::bind(&OSInputHandler::inputCommandEntered, this, _1));
 
 		mMouseWheelScrolledConn  = Platform::onMouseWheelScrolled.connect(boost::bind(&OSInputHandler::mouseWheelScrolled, this, _1));
 	}
@@ -22,6 +23,7 @@ namespace CamelotFramework
 		mCursorMovedConn.disconnect();
 		mCursorPressedConn.disconnect();
 		mCursorReleasedConn.disconnect();
+		mInputCommandConn.disconnect();
 		mMouseWheelScrolledConn.disconnect();
 	}
 
@@ -32,6 +34,7 @@ namespace CamelotFramework
 		float mouseScroll;
 		OSPositionalInputButtonStates mouseMoveBtnState;
 		Queue<ButtonStateChange>::type buttonStates;
+		Queue<InputCommandType>::type inputCommands;
 
 		{
 			CM_LOCK_MUTEX(mOSInputMutex);
@@ -46,6 +49,9 @@ namespace CamelotFramework
 
 			buttonStates = mButtonStates;
 			mButtonStates = Queue<ButtonStateChange>::type();
+
+			inputCommands = mInputCommands;
+			mInputCommands = Queue<InputCommandType>::type();
 		}
 
 		if(mousePosition != mLastCursorPos || (Math::Abs(mouseScroll) > 0.00001f))
@@ -115,6 +121,14 @@ namespace CamelotFramework
 			buttonStates.pop();
 		}
 
+		while(!inputCommands.empty())
+		{
+			if(!onInputCommand.empty())
+				onInputCommand(inputCommands.front());
+
+			inputCommands.pop();
+		}
+
 		if(!onCharInput.empty())
 		{
 			for(auto& curChar : inputString)
@@ -165,6 +179,13 @@ namespace CamelotFramework
 		btnState.button = button;
 		btnState.pressed = false;
 		btnState.btnStates = btnStates;
+	}
+
+	void OSInputHandler::inputCommandEntered(InputCommandType commandType)
+	{
+		CM_LOCK_MUTEX(mOSInputMutex);
+
+		mInputCommands.push(commandType);
 	}
 
 	void OSInputHandler::mouseWheelScrolled(float scrollPos)

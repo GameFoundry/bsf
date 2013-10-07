@@ -23,6 +23,8 @@ namespace CamelotFramework
 		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
 		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
 
+		boost::signal<void(InputCommandType)> onInputCommand;
+
 		void registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
 
 		/**
@@ -90,6 +92,11 @@ namespace CamelotFramework
 		 */
 		void cursorReleased(const PositionalInputEvent& event);
 		
+		/**
+		 * @brief	Input commands as OS reports them.
+		 */
+		void inputCommandEntered(InputCommandType commandType);
+
 		/**
 		 * @brief	Updates the axis input values that need smoothing.
 		 */

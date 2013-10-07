@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmInputFwd.h"
 #include "CmInt2.h"
 #include "CmRect.h"
 #include <boost/signals.hpp>
@@ -17,18 +18,6 @@ namespace CamelotFramework
 
 		Pimpl* data;
 	};
-	
-	enum class NonClientAreaBorderType
-	{
-		TopLeft,
-		Top,
-		TopRight,
-		Left,
-		Right,
-		BottomLeft,
-		Bottom,
-		BottomRight	
-	};
 
 	struct CM_EXPORT NonClientResizeArea
 	{
@@ -40,27 +29,6 @@ namespace CamelotFramework
 	{
 		Vector<NonClientResizeArea>::type resizeAreas;
 		Vector<Rect>::type moveAreas;
-	};
-
-	enum class OSMouseButton
-	{
-		Left, Middle, Right, Count
-	};
-
-	struct CM_EXPORT OSPositionalInputButtonStates
-	{
-		OSPositionalInputButtonStates()
-		{
-			mouseButtons[0] = false;
-			mouseButtons[1] = false;
-			mouseButtons[2] = false;
-
-			shift = false;
-			ctrl = false;
-		}
-
-		bool mouseButtons[OSMouseButton::Count];
-		bool shift, ctrl;
 	};
 
 	/**
@@ -220,6 +188,7 @@ namespace CamelotFramework
 		static boost::signal<void(const Int2&, OSPositionalInputButtonStates)> onCursorMoved;
 		static boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonPressed;
 		static boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonReleased;
+		static boost::signal<void(InputCommandType)> onInputCommand;
 		static boost::signal<void(float)> onMouseWheelScrolled;
 		static boost::signal<void(UINT32)> onCharInput;
 		static boost::signal<void(RenderWindow*)> onWindowFocusReceived;

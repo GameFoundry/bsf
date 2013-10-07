@@ -80,7 +80,7 @@ namespace BansheeEngine
 		CM::Rect getBounds() const;
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		virtual bool keyEvent(const GUIKeyEvent& ev);
+		virtual bool textInputEvent(const GUITextInputEvent& ev);
 		virtual bool commandEvent(const GUICommandEvent& ev);
 
 		static void destroy(GUIElement* element);

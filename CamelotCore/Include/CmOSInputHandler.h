@@ -33,6 +33,7 @@ namespace CamelotFramework
 		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
 		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
 		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
+		boost::signal<void(InputCommandType)> onInputCommand;
 
 		/**
 			* @brief	Called every frame by InputManager. Capture input here if needed.
@@ -51,12 +52,14 @@ namespace CamelotFramework
 		float mMouseScroll;
 		WString mInputString;
 		Queue<ButtonStateChange>::type mButtonStates;
+		Queue<InputCommandType>::type mInputCommands;
 		OSPositionalInputButtonStates mMouseMoveBtnState;
 
 		boost::signals::connection mCharInputConn;
 		boost::signals::connection mCursorMovedConn;
 		boost::signals::connection mCursorPressedConn;
 		boost::signals::connection mCursorReleasedConn;
+		boost::signals::connection mInputCommandConn;
 		boost::signals::connection mMouseWheelScrolledConn;
 
 		/**
@@ -78,6 +81,11 @@ namespace CamelotFramework
 		 * @brief	Called from the message loop.
 		 */
 		void cursorReleased(const Int2& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
+
+		/**
+		 * @brief	Called from the message loop.
+		 */
+		void inputCommandEntered(InputCommandType commandType);
 
 		/**
 		 * @brief	Called from the message loop.

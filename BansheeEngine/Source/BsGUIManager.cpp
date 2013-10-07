@@ -65,6 +65,7 @@ namespace BansheeEngine
 		mOnCursorPressedConn = gInput().onCursorPressed.connect(boost::bind(&GUIManager::onCursorPressed, this, _1));
 		mOnCursorReleasedConn = gInput().onCursorReleased.connect(boost::bind(&GUIManager::onCursorReleased, this, _1));
 		mOnTextInputConn = gInput().onCharInput.connect(boost::bind(&GUIManager::onTextInput, this, _1)); 
+		mOnInputCommandConn = gInput().onInputCommand.connect(boost::bind(&GUIManager::onInputCommandEntered, this, _1)); 
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
@@ -100,6 +101,7 @@ namespace BansheeEngine
 		mOnCursorReleasedConn.disconnect();
 		mOnCursorMovedConn.disconnect();
 		mOnTextInputConn.disconnect();
+		mOnInputCommandConn.disconnect();
 
 		mDragEndedConn.disconnect();
 
@@ -190,8 +192,9 @@ namespace BansheeEngine
 				mIsCaretOn = !mIsCaretOn;
 
 				mCommandEvent = GUICommandEvent();
-				mCommandEvent.setRedrawData();
-				mKeyboardFocusElement->commandEvent(mCommandEvent);
+				mCommandEvent.setType(GUICommandEventType::Redraw);
+
+				sendCommandEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mCommandEvent);
 			}
 		}
 
@@ -761,6 +764,77 @@ namespace BansheeEngine
 		}
 	}
 
+	void GUIManager::onInputCommandEntered(CM::InputCommandType commandType)
+	{
+		if(mKeyboardFocusElement == nullptr)
+			return;
+
+		mCommandEvent = GUICommandEvent();
+
+		switch(commandType)
+		{
+		case InputCommandType::Backspace:
+			mCommandEvent.setType(GUICommandEventType::Backspace);
+			break;
+		case InputCommandType::Delete:
+			mCommandEvent.setType(GUICommandEventType::Delete);
+			break;
+		case InputCommandType::Copy:
+			mCommandEvent.setType(GUICommandEventType::Copy);
+			break;
+		case InputCommandType::Cut:
+			mCommandEvent.setType(GUICommandEventType::Cut);
+			break;
+		case InputCommandType::Paste:
+			mCommandEvent.setType(GUICommandEventType::Paste);
+			break;
+		case InputCommandType::Undo:
+			mCommandEvent.setType(GUICommandEventType::Undo);
+			break;
+		case InputCommandType::Redo:
+			mCommandEvent.setType(GUICommandEventType::Redo);
+			break;
+		case InputCommandType::Return:
+			mCommandEvent.setType(GUICommandEventType::Return);
+			break;
+		case InputCommandType::Escape:
+			mCommandEvent.setType(GUICommandEventType::Escape);
+			break;
+		case InputCommandType::Tab:
+			mCommandEvent.setType(GUICommandEventType::Tab);
+			break;
+		case InputCommandType::SelectAll:
+			mCommandEvent.setType(GUICommandEventType::SelectAll);
+			break;
+		case InputCommandType::CursorMoveLeft:
+			mCommandEvent.setType(GUICommandEventType::CursorMoveLeft);
+			break;
+		case InputCommandType::CursorMoveRight:
+			mCommandEvent.setType(GUICommandEventType::CursorMoveRight);
+			break;
+		case InputCommandType::CursorMoveUp:
+			mCommandEvent.setType(GUICommandEventType::CursorMoveUp);
+			break;
+		case InputCommandType::CursorMoveDown:
+			mCommandEvent.setType(GUICommandEventType::CursorMoveDown);
+			break;
+		case InputCommandType::SelectLeft:
+			mCommandEvent.setType(GUICommandEventType::SelectLeft);
+			break;
+		case InputCommandType::SelectRight:
+			mCommandEvent.setType(GUICommandEventType::SelectRight);
+			break;
+		case InputCommandType::SelectUp:
+			mCommandEvent.setType(GUICommandEventType::SelectUp);
+			break;
+		case InputCommandType::SelectDown:
+			mCommandEvent.setType(GUICommandEventType::SelectDown);
+			break;
+		}
+
+		sendCommandEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mCommandEvent);
+	}
+
 	bool GUIManager::findElementUnderCursor(const CM::Int2& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
 	{
 #if CM_DEBUG_MODE
@@ -910,17 +984,10 @@ namespace BansheeEngine
 	{
 		if(mKeyboardFocusElement != nullptr)
 		{
-			bool shiftDown = gInput().isButtonDown(BC_LSHIFT) || gInput().isButtonDown(BC_RSHIFT);
-			bool ctrlDown = gInput().isButtonDown(BC_LCONTROL) || gInput().isButtonDown(BC_RCONTROL);
-			bool altDown = gInput().isButtonDown(BC_LMENU) || gInput().isButtonDown(BC_RMENU);
+			mTextInputEvent = GUITextInputEvent();
 
-			if(ctrlDown || altDown) // Ignore text input because key characters + alt/ctrl usually correspond to certain commands
-				return;
-
-			mKeyEvent = GUIKeyEvent(shiftDown, ctrlDown, altDown);
-
-			mKeyEvent.setTextInputData(event.textChar);
-			if(sendKeyEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mKeyEvent))
+			mTextInputEvent.setData(event.textChar);
+			if(sendTextInputEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mTextInputEvent))
 				event.markAsUsed();
 		}
 	}
@@ -1049,12 +1116,17 @@ namespace BansheeEngine
 		return widget->_mouseEvent(element, event);
 	}
 
-	bool GUIManager::sendKeyEvent(GUIWidget* widget, GUIElement* element, const GUIKeyEvent& event)
+	bool GUIManager::sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event)
 	{
-		if(!keyEventFilter.empty())
-			keyEventFilter(widget, element, event);
+		if(!textInputEventFilter.empty())
+			textInputEventFilter(widget, element, event);
 
-		return widget->_keyEvent(element, event);
+		return widget->_textInputEvent(element, event);
+	}
+
+	bool GUIManager::sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event)
+	{
+		return widget->_commandEvent(element, event);
 	}
 
 	GUIManager& gGUIManager()

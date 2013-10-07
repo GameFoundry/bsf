@@ -2,10 +2,12 @@
 #include "CmRenderWindow.h"
 #include "CmApplication.h"
 #include "CmInput.h"
+#include "CmDebug.h"
 
 namespace CamelotFramework
 {
-	UINT32 PlatformWndProc::mMoveResizeMouseUpState = 0;
+	bool PlatformWndProc::isShiftPressed = false;
+	bool PlatformWndProc::isCtrlPressed = false;
 
 	LRESULT CALLBACK PlatformWndProc::_win32WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
@@ -41,27 +43,6 @@ namespace CamelotFramework
 
 				break;
 			}
-		case WM_SYSKEYDOWN:
-			switch( wParam )
-			{
-			case VK_CONTROL:
-			case VK_SHIFT:
-			case VK_MENU: //ALT
-				//return zero to bypass defProc and signal we processed the message
-				return 0;
-			}
-			break;
-		case WM_SYSKEYUP:
-			switch( wParam )
-			{
-			case VK_CONTROL:
-			case VK_SHIFT:
-			case VK_MENU: //ALT
-			case VK_F10:
-				//return zero to bypass defProc and signal we processed the message
-				return 0;
-			}
-			break;
 		case WM_SYSCHAR:
 			// return zero to bypass defProc and signal we processed the message, unless it's an ALT-space
 			if (wParam != VK_SPACE)
@@ -271,9 +252,52 @@ namespace CamelotFramework
 
 				return true;
 			}
+		case WM_SYSKEYDOWN:
+		case WM_KEYDOWN:
+			{
+				if(wParam == VK_SHIFT)
+				{
+					isShiftPressed = true;
+					break;
+				}
+
+				if(wParam == VK_CONTROL)
+				{
+					isCtrlPressed = true;
+					break;
+				}
+
+				InputCommandType command = InputCommandType::Backspace;
+				if(getCommand((unsigned int)wParam, command))
+				{
+					if(!onInputCommand.empty())
+						onInputCommand(command);
+
+					return 0;
+				}
+
+				break;
+			}
+		case WM_SYSKEYUP:
+		case WM_KEYUP:
+			{
+				if(wParam == VK_SHIFT)
+				{
+					isShiftPressed = false;
+				}
+
+				if(wParam == VK_CONTROL)
+				{
+					isCtrlPressed = false;
+				}
+
+				break;
+			}
 		case WM_DEADCHAR:
 		case WM_CHAR:
 			{
+				// TODO - Not handling IME input
+
 				switch (wParam) 
 				{ 
 				case VK_BACK:
@@ -282,7 +306,6 @@ namespace CamelotFramework
 				case VK_ESCAPE:
 				case VK_TAB: 
 					break; 
-
 				default:    // displayable character 
 					{
 						UINT8 scanCode = (lParam >> 16) & 0xFF;
@@ -294,6 +317,10 @@ namespace CamelotFramework
 
 						unsigned int vk = MapVirtualKeyEx(scanCode, MAPVK_VSC_TO_VK_EX, layout);
 						if(vk == 0)
+							return 0;
+
+						InputCommandType command = InputCommandType::Backspace;
+						if(getCommand(vk, command)) // We ignore character combinations that are special commands
 							return 0;
 
 						bool isDeadKey = (MapVirtualKeyEx(vk, MAPVK_VK_TO_CHAR, layout) & (1 << 31)) != 0;
@@ -388,5 +415,77 @@ namespace CamelotFramework
 		btnStates.mouseButtons[2] = (wParam & MK_RBUTTON) != 0;
 		btnStates.shift = (wParam & MK_SHIFT) != 0;
 		btnStates.ctrl = (wParam & MK_CONTROL) != 0;
+	}
+
+	bool PlatformWndProc::getCommand(unsigned int virtualKeyCode, InputCommandType& command)
+	{
+		switch (virtualKeyCode) 
+		{ 
+		case VK_LEFT:
+			command = isShiftPressed ? InputCommandType::SelectLeft : InputCommandType::CursorMoveLeft;
+			return true;
+		case VK_RIGHT:
+			command = isShiftPressed ? InputCommandType::SelectRight : InputCommandType::CursorMoveRight;
+			return true;
+		case VK_UP:
+			command = isShiftPressed ? InputCommandType::SelectUp : InputCommandType::CursorMoveUp;
+			return true;
+		case VK_DOWN:
+			command = isShiftPressed ? InputCommandType::SelectDown : InputCommandType::CursorMoveDown;
+			return true;
+		case VK_ESCAPE:
+			command = InputCommandType::Escape;
+			return true;
+		case VK_RETURN:
+			command = InputCommandType::Return;
+			return true;
+		case VK_BACK:
+			command = InputCommandType::Backspace;
+			return true;
+		case VK_DELETE:
+			command = InputCommandType::Delete;
+			return true;
+		case VK_TAB:
+			command = InputCommandType::Tab;
+			return true;
+		case 0x41: // A
+			if(isCtrlPressed)
+			{
+				command = InputCommandType::SelectAll;
+				return true;
+			}
+		case 0x43: // C
+			if(isCtrlPressed)
+			{
+				command = InputCommandType::Copy;
+				return true;
+			}
+		case 0x56: // V
+			if(isCtrlPressed)
+			{
+				command = InputCommandType::Paste;
+				return true;
+			}
+		case 0x58: // X
+			if(isCtrlPressed)
+			{
+				command = InputCommandType::Cut;
+				return true;
+			}
+		case 0x5A: // Z
+			if(isCtrlPressed)
+			{
+				command = InputCommandType::Undo;
+				return true;
+			}
+		case 0x59: // Y
+			if(isCtrlPressed)
+			{
+				command = InputCommandType::Redo;
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

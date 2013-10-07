@@ -6,7 +6,9 @@ namespace BansheeEngine
 {
 	enum class GUICommandEventType
 	{
-		Redraw
+		Redraw, CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
+		SelectLeft, SelectRight, SelectUp, SelectDown, Undo, Redo,
+		Escape, Delete, Backspace, Return, SelectAll, Copy, Cut, Paste, Tab
 	};
 
 	class BS_EXPORT GUICommandEvent
@@ -22,6 +24,6 @@ namespace BansheeEngine
 
 		GUICommandEventType mType;
 
-		void setRedrawData() { mType = GUICommandEventType::Redraw; }
+		void setType(GUICommandEventType type) { mType = type; }
 	};
 }

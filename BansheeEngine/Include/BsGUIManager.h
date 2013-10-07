@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIMouseEvent.h"
-#include "BsGUIButtonEvent.h"
+#include "BsGUITextInputEvent.h"
 #include "BsGUICommandEvent.h"
 #include "CmModule.h"
 #include "CmColor.h"
@@ -78,7 +78,7 @@ namespace BansheeEngine
 		void addSelectiveInputElement(const GUIElement* element);
 
 		boost::signal<void(GUIWidget*, GUIElement*, const GUIMouseEvent&)> mouseEventFilter;
-		boost::signal<void(GUIWidget*, GUIElement*, const GUIKeyEvent&)> keyEventFilter;
+		boost::signal<void(GUIWidget*, GUIElement*, const GUITextInputEvent&)> textInputEventFilter;
 	private:
 		static float DOUBLE_CLICK_INTERVAL;
 
@@ -119,7 +119,7 @@ namespace BansheeEngine
 		CM::Int2 mLastCursorLocalPos;
 
 		GUIMouseEvent mMouseEvent;
-		GUIKeyEvent mKeyEvent;
+		GUITextInputEvent mTextInputEvent;
 		GUICommandEvent mCommandEvent;
 
 		SpriteTexturePtr mCaretTexture;
@@ -140,6 +140,7 @@ namespace BansheeEngine
 		boost::signals::connection mOnCursorPressedConn;
 		boost::signals::connection mOnCursorReleasedConn;
 		boost::signals::connection mOnTextInputConn;
+		boost::signals::connection mOnInputCommandConn;
 
 		boost::signals::connection mDragEndedConn;
 
@@ -162,6 +163,7 @@ namespace BansheeEngine
 		void onCursorReleased(const CM::PositionalInputEvent& event);
 		void onCursorPressed(const CM::PositionalInputEvent& event);
 		void onTextInput(const CM::TextInputEvent& event);
+		void onInputCommandEntered(CM::InputCommandType commandType);
 
 		bool onMouseDragEnded(const CM::PositionalInputEvent& event);
 
@@ -175,7 +177,8 @@ namespace BansheeEngine
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
 
 		bool sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);
-		bool sendKeyEvent(GUIWidget* widget, GUIElement* element, const GUIKeyEvent& event);
+		bool sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event);
+		bool sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event);
 	};
 
 	BS_EXPORT GUIManager& gGUIManager();

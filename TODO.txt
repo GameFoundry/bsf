@@ -10,18 +10,12 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
 GUI INPUT REFACTOR:
-Add support for commands like cut/copy/paste/select-all/arrow movement
-  - Ensure that arrow movement, and backspace/delete commands properly handle repeat
-simulateButtonUp call in _win32WndProc might not be needed anymore?
 Possibly also forward doubleclick from OS?
-Rename/Get-rid-off mMouseEvent, mKeyEvent, mCommandEvent in GUIManager
 
 GUI SYSTEM WRAP UP:
  GUIManager drag events should only trigger after a mouse moves a few pixels
   - Right now it is breaking double click as start/end drag events get sent out twice
 
- Key repeat
-  - Add special text input commands, which will get repeatedly sent as long as their corresponding key is set in GUIManager
  Double click (Input box select all)
  Windows drag and drop detect
   - http://www.codeguru.com/cpp/misc/misc/draganddrop/article.php/c349/Drag-And-Drop-between-Window-Controls.htm

@@ -298,9 +298,11 @@ namespace CamelotFramework
 		mutable bool mIsUsed;
 	};
 
-	struct InputCommandEvent
+	enum class InputCommandType
 	{
-		// TODO
+		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
+		SelectLeft, SelectRight, SelectUp, SelectDown, Undo, Redo,
+		Escape, Delete, Backspace, Return, SelectAll, Copy, Cut, Paste, Tab
 	};
 
 	struct TextInputEvent

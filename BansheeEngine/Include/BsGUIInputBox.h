@@ -76,7 +76,7 @@ namespace BansheeEngine
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		virtual bool keyEvent(const GUIKeyEvent& ev);
+		virtual bool textInputEvent(const GUITextInputEvent& ev);
 
 		virtual bool commandEvent(const GUICommandEvent& ev);
 

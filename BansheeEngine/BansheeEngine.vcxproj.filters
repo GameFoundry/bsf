@@ -54,9 +54,6 @@
     <ClInclude Include="Include\BsGUIMaterialManager.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIMouseEvent.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIWidget.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -150,9 +147,6 @@
     <ClInclude Include="Include\BsGUICommandEvent.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIButtonEvent.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUIInputCaret.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -220,6 +214,12 @@
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGUIButtonBase.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUITextInputEvent.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGUIMouseEvent.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -317,9 +317,6 @@
     <ClCompile Include="Source\BsGUIMouseEvent.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsGUIButtonEvent.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsGUIInputCaret.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -387,6 +384,9 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIButtonBase.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITextInputEvent.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>

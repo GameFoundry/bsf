@@ -11,6 +11,7 @@ namespace CamelotFramework
 	boost::signal<void(const Int2&, OSPositionalInputButtonStates)> Platform::onCursorMoved;
 	boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonPressed;
 	boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonReleased;
+	boost::signal<void(InputCommandType)> Platform::onInputCommand;
 	boost::signal<void(float)> Platform::onMouseWheelScrolled;
 	boost::signal<void(UINT32)> Platform::onCharInput;
 

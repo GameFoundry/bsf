@@ -6,7 +6,7 @@
 #include "BsSpriteTexture.h"
 #include "BsTextSprite.h"
 #include "BsGUILayoutOptions.h"
-#include "BsGUIButtonEvent.h"
+#include "BsGUITextInputEvent.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUICommandEvent.h"
 #include "CmFont.h"
@@ -470,240 +470,20 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIInputBox::keyEvent(const GUIKeyEvent& ev)
+	bool GUIInputBox::textInputEvent(const GUITextInputEvent& ev)
 	{
-		if(ev.getType() == GUIKeyEventType::KeyDown)
-		{
-			if(ev.getKey() == BC_BACK)
-			{
-				if(mText.size() > 0)
-				{
-					if(mSelectionShown)
-					{
-						deleteSelectedText();
-					}
-					else
-					{
-						UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos() - 1;
+		if(mSelectionShown)
+			deleteSelectedText();
 
-						if(charIdx < (UINT32)mText.size())
-						{
-							eraseChar(charIdx);
+		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
+		insertChar(charIdx, ev.getInputChar());
 
-							if(charIdx > 0)
-								charIdx--;
+		gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
 
-							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+		scrollTextToCaret();
 
-							scrollTextToCaret();
-						}
-					}
-
-					markContentAsDirty();
-				}
-
-				return true;
-			}
-
-			if(ev.getKey() == BC_DELETE)
-			{
-				if(mText.size() > 0)
-				{
-					if(mSelectionShown)
-					{
-						deleteSelectedText();
-					}
-					else
-					{
-						UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
-						if(charIdx < (UINT32)mText.size())
-						{
-							eraseChar(charIdx);
-
-							if(charIdx > 0)
-								charIdx--;
-
-							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
-
-							scrollTextToCaret();
-						}
-					}
-
-					markContentAsDirty();
-				}
-
-				return true;
-			}
-			
-			if(ev.getKey() == BC_LEFT)
-			{
-				if(ev.isShiftDown())
-				{
-					if(!mSelectionShown)
-						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
-
-					gGUIManager().getInputCaretTool()->moveCaretLeft();
-					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
-				}
-				else
-				{
-					if(mSelectionShown)
-					{
-						UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
-						clearSelection();
-
-						if(selStart > 0)
-							gGUIManager().getInputCaretTool()->moveCaretToChar(selStart - 1, CARET_AFTER);
-						else
-							gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
-					}
-					else
-						gGUIManager().getInputCaretTool()->moveCaretLeft();
-				}
-
-				scrollTextToCaret();
-				markContentAsDirty();
-				return true;
-			}
-
-			if(ev.getKey() == BC_RIGHT)
-			{
-				if(ev.isShiftDown())
-				{
-					if(!mSelectionShown)
-						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
-
-					gGUIManager().getInputCaretTool()->moveCaretRight();
-					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
-				}
-				else
-				{
-					if(mSelectionShown)
-					{
-						UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
-						clearSelection();
-
-						if(selEnd > 0)
-							gGUIManager().getInputCaretTool()->moveCaretToChar(selEnd - 1, CARET_AFTER);
-						else
-							gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
-					}
-					else
-						gGUIManager().getInputCaretTool()->moveCaretRight();
-				}
-
-				scrollTextToCaret();
-				markContentAsDirty();
-				return true;
-			}
-
-			if(ev.getKey() == BC_UP)
-			{
-				if(ev.isShiftDown())
-				{
-					if(!mSelectionShown)
-						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
-				}
-				else
-					clearSelection();
-
-				gGUIManager().getInputCaretTool()->moveCaretUp();
-				
-				if(ev.isShiftDown())
-					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
-
-				scrollTextToCaret();
-				markContentAsDirty();
-				return true;
-			}
-
-			if(ev.getKey() == BC_DOWN)
-			{
-				if(ev.isShiftDown())
-				{
-					if(!mSelectionShown)
-						showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
-				}
-				else
-					clearSelection();
-
-				gGUIManager().getInputCaretTool()->moveCaretDown();
-				
-				if(ev.isShiftDown())
-					gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
-
-				scrollTextToCaret();
-				markContentAsDirty();
-				return true;
-			}
-
-			if(ev.getKey() == BC_RETURN)
-			{
-				if(mIsMultiline)
-				{
-					if(mSelectionShown)
-						deleteSelectedText();
-
-					insertChar(gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos(), '\n');
-
-					gGUIManager().getInputCaretTool()->moveCaretRight();
-					scrollTextToCaret();
-
-					markContentAsDirty();
-					return true;
-				}
-				
-			}
-
-			if(ev.getKey() == BC_A && ev.isCtrlDown())
-			{
-				showSelection(0);
-				gGUIManager().getInputSelectionTool()->selectAll();
-
-				markContentAsDirty();
-				return true;
-			}
-
-			if(ev.getKey() == BC_X && ev.isCtrlDown())
-			{
-				cutText();
-
-				markContentAsDirty();
-				return true;
-			}
-
-			if(ev.getKey() == BC_C && ev.isCtrlDown())
-			{
-				copyText();
-
-				return true;
-			}
-
-			if(ev.getKey() == BC_V && ev.isCtrlDown())
-			{
-				pasteText();
-
-				markContentAsDirty();
-				return true;
-			}
-		}
-		else if(ev.getType() == GUIKeyEventType::TextInput)
-		{
-			if(mSelectionShown)
-				deleteSelectedText();
-
-			UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
-			insertChar(charIdx, ev.getInputChar());
-
-			gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
-
-			scrollTextToCaret();
-
-			markContentAsDirty();
-			return true;
-		}
-
-		return false;
+		markContentAsDirty();
+		return true;
 	}
 
 	bool GUIInputBox::commandEvent(const GUICommandEvent& ev)
@@ -711,6 +491,231 @@ namespace BansheeEngine
 		if(ev.getType() == GUICommandEventType::Redraw)
 		{
 			markMeshAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::Backspace)
+		{
+			if(mText.size() > 0)
+			{
+				if(mSelectionShown)
+				{
+					deleteSelectedText();
+				}
+				else
+				{
+					UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos() - 1;
+
+					if(charIdx < (UINT32)mText.size())
+					{
+						eraseChar(charIdx);
+
+						if(charIdx > 0)
+							charIdx--;
+
+						gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+
+						scrollTextToCaret();
+					}
+				}
+
+				markContentAsDirty();
+			}
+
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::Delete)
+		{
+			if(mText.size() > 0)
+			{
+				if(mSelectionShown)
+				{
+					deleteSelectedText();
+				}
+				else
+				{
+					UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
+					if(charIdx < (UINT32)mText.size())
+					{
+						eraseChar(charIdx);
+
+						if(charIdx > 0)
+							charIdx--;
+
+						gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+
+						scrollTextToCaret();
+					}
+				}
+
+				markContentAsDirty();
+			}
+
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::CursorMoveLeft)
+		{
+			if(mSelectionShown)
+			{
+				UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
+				clearSelection();
+
+				if(selStart > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToChar(selStart - 1, CARET_AFTER);
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+			}
+			else
+				gGUIManager().getInputCaretTool()->moveCaretLeft();
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::SelectLeft)
+		{
+			if(!mSelectionShown)
+				showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			gGUIManager().getInputCaretTool()->moveCaretLeft();
+			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::CursorMoveRight)
+		{
+			if(mSelectionShown)
+			{
+				UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
+				clearSelection();
+
+				if(selEnd > 0)
+					gGUIManager().getInputCaretTool()->moveCaretToChar(selEnd - 1, CARET_AFTER);
+				else
+					gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+			}
+			else
+				gGUIManager().getInputCaretTool()->moveCaretRight();
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::SelectRight)
+		{
+			if(!mSelectionShown)
+				showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			gGUIManager().getInputCaretTool()->moveCaretRight();
+			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::CursorMoveUp)
+		{
+			clearSelection();
+
+			gGUIManager().getInputCaretTool()->moveCaretUp();
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::SelectUp)
+		{
+			if(!mSelectionShown)
+				showSelection(gGUIManager().getInputCaretTool()->getCaretPos());;
+
+			gGUIManager().getInputCaretTool()->moveCaretUp();
+			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::CursorMoveDown)
+		{
+			clearSelection();
+
+			gGUIManager().getInputCaretTool()->moveCaretDown();
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::SelectDown)
+		{
+			if(!mSelectionShown)
+				showSelection(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			gGUIManager().getInputCaretTool()->moveCaretDown();
+			gGUIManager().getInputSelectionTool()->moveSelectionToCaret(gGUIManager().getInputCaretTool()->getCaretPos());
+
+			scrollTextToCaret();
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::Return)
+		{
+			if(mIsMultiline)
+			{
+				if(mSelectionShown)
+					deleteSelectedText();
+
+				insertChar(gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos(), '\n');
+
+				gGUIManager().getInputCaretTool()->moveCaretRight();
+				scrollTextToCaret();
+
+				markContentAsDirty();
+				return true;
+			}
+
+		}
+
+		if(ev.getType() == GUICommandEventType::SelectAll)
+		{
+			showSelection(0);
+			gGUIManager().getInputSelectionTool()->selectAll();
+
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::Cut)
+		{
+			cutText();
+
+			markContentAsDirty();
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::Copy)
+		{
+			copyText();
+
+			return true;
+		}
+
+		if(ev.getType() == GUICommandEventType::Paste)
+		{
+			pasteText();
+
+			markContentAsDirty();
 			return true;
 		}
 

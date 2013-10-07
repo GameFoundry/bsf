@@ -47,7 +47,13 @@ namespace BansheeEngine
 		 * @brief	Forwards the specified key event to the specified element. The element
 		 * 			must be a child of this widget.
 		 */
-		virtual bool _keyEvent(GUIElement* element, const GUIKeyEvent& ev);
+		virtual bool _textInputEvent(GUIElement* element, const GUITextInputEvent& ev);
+
+		/**
+		 * @brief	Forwards the specified key event to the specified element. The element
+		 * 			must be a child of this widget.
+		 */
+		virtual bool _commandEvent(GUIElement* element, const GUICommandEvent& ev);
 
 		static GUISkin DefaultSkin;
 	protected:
