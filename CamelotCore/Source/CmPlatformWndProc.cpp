@@ -293,7 +293,6 @@ namespace CamelotFramework
 
 				break;
 			}
-		case WM_DEADCHAR:
 		case WM_CHAR:
 			{
 				// TODO - Not handling IME input
@@ -323,22 +322,7 @@ namespace CamelotFramework
 						if(getCommand(vk, command)) // We ignore character combinations that are special commands
 							return 0;
 
-						bool isDeadKey = (MapVirtualKeyEx(vk, MAPVK_VK_TO_CHAR, layout) & (1 << 31)) != 0;
-						if(isDeadKey)
-							return 0;
-
-						wchar_t buff[3] = {0};
-						int numChars = ToUnicodeEx(vk, scanCode, keyState, buff, 3, 0, layout);
-
-						// TODO - I am ignoring dead keys here - primarily because I haven't found a good way of retrieving non-combined dead key
-						// value. ToUnicodeEx and MapVirtualKeyEx only return precombined (i.e. spacing) versions, which can't be combined using other characters.
-						// I need non-combined version so I can use it with FoldString to apply to a certain character.
-
-						UINT32 finalChar = 0;
-						if(numChars == 1)
-							finalChar = buff[0];
-						else
-							return 0;
+						UINT32 finalChar = (UINT32)wParam;
 
 						if(!onCharInput.empty())
 							onCharInput(finalChar);
