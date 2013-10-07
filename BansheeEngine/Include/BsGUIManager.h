@@ -16,6 +16,13 @@ namespace BansheeEngine
 	 */
 	class BS_EXPORT GUIManager : public CM::Module<GUIManager>
 	{
+		enum class DragState
+		{
+			NoDrag,
+			HeldWithoutDrag,
+			Dragging
+		};
+
 		struct GUIRenderData
 		{
 			GUIRenderData()
@@ -80,8 +87,6 @@ namespace BansheeEngine
 		boost::signal<void(GUIWidget*, GUIElement*, const GUIMouseEvent&)> mouseEventFilter;
 		boost::signal<void(GUIWidget*, GUIElement*, const GUITextInputEvent&)> textInputEventFilter;
 	private:
-		static float DOUBLE_CLICK_INTERVAL;
-
 		struct SelectiveInputData
 		{
 			SelectiveInputData()
@@ -91,6 +96,8 @@ namespace BansheeEngine
 			CM::Set<const GUIElement*>::type elements;
 			bool acceptAllElements;
 		};
+
+		static CM::UINT32 DRAG_DISTANCE;
 
 		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
@@ -113,10 +120,11 @@ namespace BansheeEngine
 		GUIInputCaret* mInputCaret;
 		GUIInputSelection* mInputSelection;
 
-		float mLastClickTime;
-
 		bool mSeparateMeshesByWidget;
 		CM::Int2 mLastCursorLocalPos;
+
+		DragState mDragState;
+		CM::Int2 mLastCursorClickPos;
 
 		GUIMouseEvent mMouseEvent;
 		GUITextInputEvent mTextInputEvent;
@@ -139,6 +147,7 @@ namespace BansheeEngine
 		boost::signals::connection mOnCursorMovedConn;
 		boost::signals::connection mOnCursorPressedConn;
 		boost::signals::connection mOnCursorReleasedConn;
+		boost::signals::connection mOnCursorDoubleClick;
 		boost::signals::connection mOnTextInputConn;
 		boost::signals::connection mOnInputCommandConn;
 
@@ -162,6 +171,7 @@ namespace BansheeEngine
 		void onCursorMoved(const CM::PositionalInputEvent& event);
 		void onCursorReleased(const CM::PositionalInputEvent& event);
 		void onCursorPressed(const CM::PositionalInputEvent& event);
+		void onCursorDoubleClick(const CM::PositionalInputEvent& event);
 		void onTextInput(const CM::TextInputEvent& event);
 		void onInputCommandEntered(CM::InputCommandType commandType);
 

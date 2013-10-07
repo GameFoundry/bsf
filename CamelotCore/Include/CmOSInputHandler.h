@@ -24,6 +24,12 @@ namespace CamelotFramework
 			bool pressed;
 		};
 
+		struct DoubleClick
+		{
+			Int2 cursorPos;
+			OSPositionalInputButtonStates btnStates;
+		};
+
 	public:
 		OSInputHandler();
 		virtual ~OSInputHandler();
@@ -33,6 +39,7 @@ namespace CamelotFramework
 		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
 		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
 		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
+		boost::signal<void(const PositionalInputEvent&)> onDoubleClick;
 		boost::signal<void(InputCommandType)> onInputCommand;
 
 		/**
@@ -52,6 +59,7 @@ namespace CamelotFramework
 		float mMouseScroll;
 		WString mInputString;
 		Queue<ButtonStateChange>::type mButtonStates;
+		Queue<DoubleClick>::type mDoubleClicks;
 		Queue<InputCommandType>::type mInputCommands;
 		OSPositionalInputButtonStates mMouseMoveBtnState;
 
@@ -59,6 +67,7 @@ namespace CamelotFramework
 		boost::signals::connection mCursorMovedConn;
 		boost::signals::connection mCursorPressedConn;
 		boost::signals::connection mCursorReleasedConn;
+		boost::signals::connection mCursorDoubleClickConn;
 		boost::signals::connection mInputCommandConn;
 		boost::signals::connection mMouseWheelScrolledConn;
 
@@ -81,6 +90,11 @@ namespace CamelotFramework
 		 * @brief	Called from the message loop.
 		 */
 		void cursorReleased(const Int2& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
+
+		/**
+		 * @brief	Called from the message loop.
+		 */
+		void cursorDoubleClick(const Int2& cursorPos, OSPositionalInputButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.

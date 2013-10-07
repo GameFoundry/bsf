@@ -22,6 +22,7 @@ namespace CamelotFramework
 		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
 		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
 		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
+		boost::signal<void(const PositionalInputEvent&)> onDoubleClick;
 
 		boost::signal<void(InputCommandType)> onInputCommand;
 
@@ -92,6 +93,11 @@ namespace CamelotFramework
 		 */
 		void cursorReleased(const PositionalInputEvent& event);
 		
+		/**
+		 * @brief	Cursor button releases as OS reports it.
+		 */
+		void cursorDoubleClick(const PositionalInputEvent& event);
+
 		/**
 		 * @brief	Input commands as OS reports them.
 		 */

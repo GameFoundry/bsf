@@ -214,6 +214,17 @@ namespace CamelotFramework
 					onCursorButtonPressed(intMousePos, OSMouseButton::Right, btnStates);
 			}
 			break;
+		case WM_LBUTTONDBLCLK:
+			{
+				Int2 intMousePos;
+				OSPositionalInputButtonStates btnStates;
+
+				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
+
+				if(!onCursorDoubleClick.empty())
+					onCursorDoubleClick(intMousePos, btnStates);
+			}
+			break;
 		case WM_NCMOUSEMOVE:
 		case WM_MOUSEMOVE:
 			{

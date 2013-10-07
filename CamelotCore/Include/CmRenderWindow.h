@@ -46,7 +46,7 @@ namespace CamelotFramework
 			, vsync(false), vsyncInterval(1), hidden(false)
 			, displayFrequency(60), colorDepth(32), depthBuffer(true)
 			, FSAA(0), FSAAHint(""), gamma(false), left(-1), top(-1)
-			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(false)
+			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
 			, monitorIndex(-1), toolWindow(false)
 		{ }
 

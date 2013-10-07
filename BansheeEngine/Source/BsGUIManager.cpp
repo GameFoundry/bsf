@@ -31,8 +31,6 @@
 using namespace CamelotFramework;
 namespace BansheeEngine
 {
-	float GUIManager::DOUBLE_CLICK_INTERVAL = 0.5f;
-
 	struct GUIGroupElement
 	{
 		GUIGroupElement()
@@ -55,15 +53,18 @@ namespace BansheeEngine
 		Vector<GUIGroupElement>::type elements;
 	};
 
+	UINT32 GUIManager::DRAG_DISTANCE = 3;
+
 	GUIManager::GUIManager()
 		:mElementUnderCursor(nullptr), mWidgetUnderCursor(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mLastClickTime(0.0f)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mDragState(DragState::NoDrag)
 	{
 		mOnCursorMovedConn = gInput().onCursorMoved.connect(boost::bind(&GUIManager::onCursorMoved, this, _1));
 		mOnCursorPressedConn = gInput().onCursorPressed.connect(boost::bind(&GUIManager::onCursorPressed, this, _1));
 		mOnCursorReleasedConn = gInput().onCursorReleased.connect(boost::bind(&GUIManager::onCursorReleased, this, _1));
+		mOnCursorDoubleClick = gInput().onDoubleClick.connect(boost::bind(&GUIManager::onCursorDoubleClick, this, _1));
 		mOnTextInputConn = gInput().onCharInput.connect(boost::bind(&GUIManager::onTextInput, this, _1)); 
 		mOnInputCommandConn = gInput().onInputCommand.connect(boost::bind(&GUIManager::onInputCommandEntered, this, _1)); 
 
@@ -100,6 +101,7 @@ namespace BansheeEngine
 		mOnCursorPressedConn.disconnect();
 		mOnCursorReleasedConn.disconnect();
 		mOnCursorMovedConn.disconnect();
+		mOnCursorDoubleClick.disconnect();
 		mOnTextInputConn.disconnect();
 		mOnInputCommandConn.disconnect();
 
@@ -578,8 +580,22 @@ namespace BansheeEngine
 		if(mWidgetUnderCursor != nullptr)
 			localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
+		if(mActiveElement != nullptr && mDragState == DragState::HeldWithoutDrag)
+		{
+			UINT32 dist = mLastCursorClickPos.manhattanDist(event.screenPos);
+
+			if(dist > DRAG_DISTANCE)
+			{
+				mMouseEvent.setMouseDragStartData(mElementUnderCursor, localPos);
+				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
+					event.markAsUsed();
+
+				mDragState = DragState::Dragging;
+			}
+		}
+
 		// If mouse is being held down send MouseDrag events
-		if(mActiveElement != nullptr && mActiveMouseButton == GUIMouseButton::Left)
+		if(mActiveElement != nullptr && mDragState == DragState::Dragging)
 		{
 			Int2 curLocalPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
 
@@ -662,16 +678,20 @@ namespace BansheeEngine
 		}
 
 		// Send DragEnd event to whichever element is active
-		bool acceptEndDrag = mActiveMouseButton == guiButton && mActiveElement != nullptr;
+		bool acceptEndDrag = mDragState == DragState::Dragging && mActiveMouseButton == guiButton && 
+			mActiveElement != nullptr && (guiButton == GUIMouseButton::Left);
+
 		if(acceptEndDrag)
 		{
-			if(guiButton == GUIMouseButton::Left)
-			{
-				mMouseEvent.setMouseDragEndData(mElementUnderCursor, localPos);
-				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
-					event.markAsUsed();
-			}
+			mMouseEvent.setMouseDragEndData(mElementUnderCursor, localPos);
+			if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
+				event.markAsUsed();
 
+			mDragState = DragState::NoDrag;
+		}
+
+		if(mActiveMouseButton == guiButton)
+		{
 			mActiveElement = nullptr;
 			mActiveWidget = nullptr;
 			mActiveMouseButton = GUIMouseButton::Left;
@@ -708,26 +728,14 @@ namespace BansheeEngine
 		{
 			Int2 localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
-			if((mLastClickTime + DOUBLE_CLICK_INTERVAL) > gTime().getTime())
-			{
-				mMouseEvent.setMouseDoubleClickData(mElementUnderCursor, localPos, guiButton);
-				if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
-					event.markAsUsed();
-			}
-			else
-			{
-				mMouseEvent.setMouseDownData(mElementUnderCursor, localPos, guiButton);
-				if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
-					event.markAsUsed();
-
-				mLastClickTime = gTime().getTime();
-			}
+			mMouseEvent.setMouseDownData(mElementUnderCursor, localPos, guiButton);
+			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
+				event.markAsUsed();
 
 			if(guiButton == GUIMouseButton::Left)
 			{
-				mMouseEvent.setMouseDragStartData(mElementUnderCursor, localPos);
-				if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
-					event.markAsUsed();
+				mDragState = DragState::HeldWithoutDrag;
+				mLastCursorClickPos = event.screenPos;
 			}
 
 			mActiveElement = mElementUnderCursor;
@@ -761,6 +769,35 @@ namespace BansheeEngine
 				menu->open(windowPos, *mWidgetUnderCursor);
 				event.markAsUsed();
 			}
+		}
+	}
+
+	void GUIManager::onCursorDoubleClick(const CM::PositionalInputEvent& event)
+	{
+		if(event.isUsed())
+			return;
+
+		bool buttonStates[(int)GUIMouseButton::Count];
+		buttonStates[0] = event.buttonStates[0];
+		buttonStates[1] = event.buttonStates[1];
+		buttonStates[2] = event.buttonStates[2];
+
+		if(findElementUnderCursor(event.screenPos, buttonStates, event.shift, event.control, event.alt))
+			event.markAsUsed();
+
+		mMouseEvent = GUIMouseEvent(buttonStates, event.shift, event.control, event.alt);
+
+		GUIMouseButton guiButton = buttonToGUIButton(event.button);
+
+		// We only check for mouse down if we are hovering over an element
+		bool acceptMouseDown = mElementUnderCursor != nullptr;
+		if(acceptMouseDown)
+		{
+			Int2 localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
+
+			mMouseEvent.setMouseDoubleClickData(mElementUnderCursor, localPos, guiButton);
+			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
+				event.markAsUsed();
 		}
 	}
 

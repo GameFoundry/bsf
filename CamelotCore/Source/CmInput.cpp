@@ -35,6 +35,7 @@ namespace CamelotFramework
 		mOSInputHandler->onCursorMoved.connect(boost::bind(&Input::cursorMoved, this, _1));
 		mOSInputHandler->onCursorPressed.connect(boost::bind(&Input::cursorPressed, this, _1));
 		mOSInputHandler->onCursorReleased.connect(boost::bind(&Input::cursorReleased, this, _1));
+		mOSInputHandler->onDoubleClick.connect(boost::bind(&Input::cursorDoubleClick, this, _1));
 		mOSInputHandler->onInputCommand.connect(boost::bind(&Input::inputCommandEntered, this, _1));
 
 		RenderWindowManager::instance().onFocusGained.connect(boost::bind(&Input::inputWindowChanged, this, _1));
@@ -149,6 +150,12 @@ namespace CamelotFramework
 
 		if(!onCursorReleased.empty())
 			onCursorReleased(event);
+	}
+
+	void Input::cursorDoubleClick(const PositionalInputEvent& event)
+	{
+		if(!onDoubleClick.empty())
+			onDoubleClick(event);
 	}
 
 	void Input::inputCommandEntered(InputCommandType commandType)

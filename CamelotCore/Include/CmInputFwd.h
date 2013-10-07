@@ -261,7 +261,8 @@ namespace CamelotFramework
 	{
 		CursorMoved,
 		ButtonPressed,
-		ButtonReleased
+		ButtonReleased,
+		DoubleClick
 	};
 
 	/**
