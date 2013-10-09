@@ -9,14 +9,6 @@ GUIWidget::updateMeshes leaks. If I leave the game running I can see memory cont
  - BansheeApplication should probably derive from Camlelot application. Right now user needs to know the difference between 
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
-GUI INPUT REFACTOR:
-Possibly also forward doubleclick from OS?
-
-GUI SYSTEM WRAP UP:
- GUIManager drag events should only trigger after a mouse moves a few pixels
-  - Right now it is breaking double click as start/end drag events get sent out twice
-
- Double click (Input box select all)
  Windows drag and drop detect
   - http://www.codeguru.com/cpp/misc/misc/draganddrop/article.php/c349/Drag-And-Drop-between-Window-Controls.htm
   - http://www.catch22.net/tuts/drop-target
@@ -49,8 +41,6 @@ GUIDragManager
  - SINCE currently non-active elements ignore drag events, add GUIElement::acceptsMouseDrop property
    - Such elements will receive mouse drag and mouse up events if other element is active, and they can filter if they want to accept it
 
-Later add InputMap class in which you can bind certain actions (like move left, fire, etc.) to Keyboard, Joystick or Mouse buttons.
-
 -----------
 
  - My test model is rendering back faces. I need to flip them.
@@ -59,34 +49,6 @@ Later add InputMap class in which you can bind certain actions (like move left, 
 
 Immediate TODO:
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
-
-------------------------------------------------------------------------------------------------
-Longterm plans:
-
-<<Multithreaded GUI rendering>>
- - Event handling and normal "update" will still be done on the main thread
- - At the beginning of each frame a GUI mesh update is queued on the GUI thread
- - Since we're queuing the update at the beggining of the frame we will be using last frames transform and gui element states.
-   - When queing we need to make sure to store GUIWidget transform, and specific element states (e.g. "text" in GUILabel)
- - At the end of simulation frame wait until GUI update is complete. After both simulation and GUI updates are complete, proceed with submitting it to render system.
-
-<<Figure out how to store texture references in a font>>
- - Currently I store a copy of the textures but how do I automatically update the font if they change?
- - Flesh out the dependencies system?
- - I can import texture as normal, and keep it as an actual TextureHandle, only keep it hidden
-   if it was created automatically (by FontImporter) for example?
-    - But then who deletes the texture?
-	- Set up an "internalResource" system where resources hold references to each other and also release them?
-	 - In inspector they can be expanded as children of the main resource, but cannot be directly modified?
-	 - Deleting the main resource deletes the children too
-
-<<MessageBox class>>
- - A good first test case for my GUI windows
-
-<<Other>>
- - There is an issue that custom-UIs won't have their mesh shared. For example most game UIs will be advanced and will 
-   likely use on GUIWidget per element. However currently I only perform batching within a single widget which 
-   doesn't help in the mentioned case.
 
 ----------------------------------------------------------------------------------------------
 Other:
@@ -100,7 +62,6 @@ High priority:
 
 ----------------------------------------------------------------------------------------------
 Medium priority:
- - Add a field that tracks % of resource deserialization in BinarySerializer
  - Mesh loading:
   - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
   - Imported FBX meshes are too big
@@ -150,7 +111,6 @@ Low priority TODO
     due to thread safety and atomics used by shared_ptr. However I still need some guarantee that objects queued in RenderSystem won't be destroyed
 	by the sim. thread.
   - A way to bind buffers to a Pass, while specifying buffer range
-  - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
   - Better creation of PrimaryWindow
     - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
     - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
@@ -168,43 +128,16 @@ Low priority TODO
    - Material::setParamBlock is commented out
  - onMovedOrResized is still used by Viewport while that same callback is offered by RenderWindowManager. There is no need to have them in both places.
  - Texture "ScaleToFit" will cause the texture to repeat instead of clipping the image. e.g. a 50x20 texture placed on an 50x100 area will repeat 5x
+
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic
     for Materials for things like text and sprites, which should run on all renderers, even if user adds a new one
  - Add precompiled headers to all projects
- - If possible, make sure GLSL uses EntryPoint and Profile fields I have added to GpuProgram
- - Move all x86 libs to x86 folders. Move all binaries to x86 folders as well
  - Serializable callbacks can't be null otherwise compiler complains
  - FBX importer can be greatly sped up by implementing a better allocator
  - Extend texture copy so it accepts different subregions & subresources (currently only entire resource can be copied)
  - Need a way to convert MSAA render texture into a normal render texture
  - Vertex buffer start offset is not supported when calling Draw methods
- - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
- - Renderer::render(CameraPtr) is currently commented out because I moved Camera out of Camelot and I didn't want to bother figuring how to port this
  - When rendering Scale9Grid GUI elements the stretched center will cause linear interpolation to kick in and blend the edges with the border parts of the texture.
   - I should use point filtering for scale9grid, but that doesn't work in general case for stretched textures as they would look bad
-
- ----------------------------------------------------------------------------------------------
-After polish and ideas:
- - Each view (i.e. camera) of the scene should be put into its own thread
- - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
-  - Asset postprocessor? Imports a regular mesh using normal importers and then postprocesses it into a specialized format?
- - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
- - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
-    - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
-	  further modifications.
- - Port boost threads to std threads (CmThreadDefines.h)
- - Remove HardwarePixelBuffer (DX11 doesn't use it, and DX9 and OpenGL textures can be rewritten so they have its methods internally)
- - Multihead device
- - 3D rendering (use low level hardware methods for it)
- - Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
- - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
- - Go to GEA book and read about resource managers before implementing them
-   - Actually I should re-read most of the chapers in the book, or all of it
- - OpenGL non-Win32 window files haven't been properly parsed or tested
-   - Since I probably can't compile them, try adding them to VS and see what intellisense says?
- - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.
- - Move all multiplatform files (window creation, cursor, etc.) into a separate PlatformSpecific folder. So anyone porting it to a new platform
-   knows that he only needs to change those files.
- - Make sure my Log system uses XML + HTML

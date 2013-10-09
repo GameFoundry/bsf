@@ -252,6 +252,7 @@
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmMemStack.cpp" />
     <ClCompile Include="Source\CmRect.cpp" />
+    <ClCompile Include="Source\CmStringTable.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\CmWorkQueue.cpp" />
@@ -268,6 +269,7 @@
     <ClInclude Include="Include\CmFileSerializer.h" />
     <ClInclude Include="Include\CmFileSystem.h" />
     <ClInclude Include="Include\CmFRect.h" />
+    <ClInclude Include="Include\CmHString.h" />
     <ClInclude Include="Include\CmInt2.h" />
     <ClInclude Include="Include\CmIReflectable.h" />
     <ClInclude Include="Include\CmKeyValuePair.h" />
@@ -287,6 +289,7 @@
     <ClInclude Include="Include\CmRTTIType.h" />
     <ClInclude Include="Include\CmMemStack.h" />
     <ClInclude Include="Include\CmString.h" />
+    <ClInclude Include="Include\CmStringTable.h" />
     <ClInclude Include="Include\CmThreadDefines.h" />
     <ClInclude Include="Include\CmTime.h" />
     <ClInclude Include="Include\CmTimer.h" />
@@ -318,6 +321,7 @@
     <ClCompile Include="Source\CmRTTIType.cpp" />
     <ClInclude Include="Include\CmWorkQueue.h" />
     <ClInclude Include="Include\CmTexAtlasGenerator.h" />
+    <ClCompile Include="Source\CmHString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmAABox.cpp" />

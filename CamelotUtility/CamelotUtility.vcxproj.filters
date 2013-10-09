@@ -49,6 +49,9 @@
     <Filter Include="Source Files\Threading">
       <UniqueIdentifier>{cb0d2667-8d73-4d4c-9b2b-bc18fbd7fd70}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Localization">
+      <UniqueIdentifier>{bbd99250-46cb-4299-bbfa-34addc87b878}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmTypes.h">
@@ -219,6 +222,12 @@
     <ClInclude Include="Include\CmPlatformDefines.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmHString.h">
+      <Filter>Header Files\Localization</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmStringTable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmMath.cpp">
@@ -328,6 +337,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmFRect.cpp">
       <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmHString.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmStringTable.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

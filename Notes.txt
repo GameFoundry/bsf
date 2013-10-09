@@ -1,10 +1,3 @@
-----------------------------------------------------------------------------------------------
-General longterm systems:   
-   - Camera controls + world grid
-   - Frustum culling and octree (or some other) acceleration structure
-   - Render queue and sorting
-
-----------------------------------------------------------------------------------------------
 Reminders:
   - Assets manifest
      - I need to be able to create a list of assets used in the game. Assets referenced from the editor
@@ -35,6 +28,32 @@ Reminders:
     - Instead of using selective input I might be able to block all input using event filter (by adding return values to them)
     - Some kind of GUISelectiveInput class? I think it makes sense to move it out of GUIManager
   - GUI ignores image in GUIContent for most elements
+  - Each view (i.e. camera) of the scene should be put into its own thread
+  - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
+    - Asset postprocessor? Imports a regular mesh using normal importers and then postprocesses it into a specialized format?
+  - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
+  - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
+    - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
+	  further modifications.
+  - Port boost threads to std threads (CmThreadDefines.h)
+  - Remove HardwarePixelBuffer (DX11 doesn't use it, and DX9 and OpenGL textures can be rewritten so they have its methods internally)
+  - Multihead device
+  - 3D rendering (use low level hardware methods for it)
+  - Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
+  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
+  - Go to GEA book and read about resource managers before implementing them
+    - Actually I should re-read most of the chapers in the book, or all of it
+  - OpenGL non-Win32 window files haven't been properly parsed or tested
+    - Since I probably can't compile them, try adding them to VS and see what intellisense says?
+  - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.
+  - Make sure my Log system uses XML + HTML
+  - There is an issue that custom-UIs won't have their mesh shared. For example most game UIs will be advanced and will 
+   likely use on GUIWidget per element. However currently I only perform batching within a single widget which 
+   doesn't help in the mentioned case.
+  - Later add InputMap class in which you can bind certain actions (like move left, fire, etc.) to Keyboard, Joystick or Mouse buttons.
+  - Add a field that tracks % of resource deserialization in BinarySerializer
+  - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
+  - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.
@@ -44,7 +63,10 @@ Potential optimizations:
   - Maybe get rid of CPU UI buffers completely.
  - UI shader resolution params for gui should be in a separate constant buffer
 
- Memory allocation critical areas:
+----------------------------------------------------------------------------------------------
+More detailed thought out system descriptions:
+
+ <<<<Memory allocation critical areas>>>>
  - TextUtility a lot of allocs
  - Binding gpu params. It gets copied in DeferredRenderContext
  - GameObjectHandle often allocates its internal data
@@ -54,8 +76,22 @@ Potential optimizations:
  - Creating SceneObjects and Components - I might want to pool them, as I suspect user might alloc many per frame
  - Log logMsg
 
-----------------------------------------------------------------------------------------------
-More detailed thought out system descriptions:
+<<Multithreaded GUI rendering>>
+ - Event handling and normal "update" will still be done on the main thread
+ - At the beginning of each frame a GUI mesh update is queued on the GUI thread
+ - Since we're queuing the update at the beggining of the frame we will be using last frames transform and gui element states.
+   - When queing we need to make sure to store GUIWidget transform, and specific element states (e.g. "text" in GUILabel)
+ - At the end of simulation frame wait until GUI update is complete. After both simulation and GUI updates are complete, proceed with submitting it to render system.
+
+<<Figure out how to store texture references in a font>>
+ - Currently I store a copy of the textures but how do I automatically update the font if they change?
+ - Flesh out the dependencies system?
+ - I can import texture as normal, and keep it as an actual TextureHandle, only keep it hidden
+   if it was created automatically (by FontImporter) for example?
+    - But then who deletes the texture?
+	- Set up an "internalResource" system where resources hold references to each other and also release them?
+	 - In inspector they can be expanded as children of the main resource, but cannot be directly modified?
+	 - Deleting the main resource deletes the children too
 
 <<<<SceneManager/SceneObject>>>>
 Two major parts:
@@ -135,7 +171,6 @@ Questions/Notes:
  - Example uses for it: 
     - Drawing GUI element bounds when debugging GUI
     - Drawing a wireframe selection effect when a mesh is selected in the scene
-
 
 <<<<Multithreaded memory allocator>>>>
  - Singlethreaded implementation from Game Engine Gems 2 book
@@ -232,3 +267,12 @@ Classes derive from ISharedMemoryBuffer
   - The way I handle rendering currently is to discard simulation results if gpu thread isn't finished.
      - This reduces input lag but at worst case scenario the effect of multithreading might be completely eliminated as
 	   GPU ends up waiting for GPU, just because it was few milliseconds late. Maybe better to wait for GPU?
+
+
+<<<Localization notes for MUCH LATER>>>
+ - It would be nice if HString identifier hash was being generated at compile time
+ - I still need an easy way to edit the string table (Editor, importer or similar)
+ - I might need font localization for non-standard character sets (e.g. russian, greek, asian, etc.)
+   - I probably don't want to use one huge set of textures containing both latin and asian characters but want to keep them separate
+   - Also asian sets might be too large for textures, in which case generating them at runtime might be necessary (or parsing string table and
+     generating textures from only used characters)

@@ -1,0 +1,14 @@
+Test HString:
+ - Test parameters
+ - Test changing language
+ - Test changing string
+ - Test removing string
+
+ HString needs to be introduced in:
+ - Label, Button, Toggle, Listbox
+   - Also needs a callback so those elements can be marked as dirty when it is changed
+ - Context menu & menu bar
+   - How do I change this when HString is modified or language is changed?
+   - Allow the user to set custom menu name (name used only for display)
+     - Normally the name provided in menu path is used but user can set a localized string if he wants
+ - Title bar & window names

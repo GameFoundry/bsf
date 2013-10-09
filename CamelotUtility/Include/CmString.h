@@ -604,6 +604,47 @@ namespace CamelotFramework
 
     /** Checks the String is a valid number value. */
     CM_UTILITY_EXPORT bool isNumber(const String& val);
+
+/** Converts a String to a float. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the float version of the String.
+    */
+    CM_UTILITY_EXPORT float parseFloat(const WString& val, float defaultValue = 0);
+
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_UTILITY_EXPORT int parseInt(const WString& val, int defaultValue = 0);
+
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_UTILITY_EXPORT unsigned int parseUnsignedInt(const WString& val, unsigned int defaultValue = 0);
+
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_UTILITY_EXPORT long parseLong(const WString& val, long defaultValue = 0);
+
+    /** Converts a String to a whole number. 
+    @returns
+        0.0 if the value could not be parsed, otherwise the numeric version of the String.
+    */
+    CM_UTILITY_EXPORT unsigned long parseUnsignedLong(const WString& val, unsigned long defaultValue = 0);
+
+    /** Converts a String to a boolean. 
+    @remarks
+        Returns true if case-insensitive match of the start of the string
+		matches "true", "yes" or "1", false otherwise.
+    */
+    CM_UTILITY_EXPORT bool parseBool(const WString& val, bool defaultValue = 0);
+
+    /** Checks the String is a valid number value. */
+    CM_UTILITY_EXPORT bool isNumber(const WString& val);
+
 	/** @} */
 
 	void CM_UTILITY_EXPORT __string_throwDataOverflowException();

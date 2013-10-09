@@ -407,6 +407,76 @@ namespace CamelotFramework
 		return !str.fail() && str.eof();
 	}
 
+	float parseFloat(const WString& val, float defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		WStringStream str(val);
+		float ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+
+	int parseInt(const WString& val, int defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		WStringStream str(val);
+		int ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+
+	unsigned int parseUnsignedInt(const WString& val, unsigned int defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		WStringStream str(val);
+		unsigned int ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+
+	long parseLong(const WString& val, long defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		WStringStream str(val);
+		long ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+
+	unsigned long parseUnsignedLong(const WString& val, unsigned long defaultValue)
+	{
+		// Use istringstream for direct correspondence with toString
+		WStringStream str(val);
+		unsigned long ret = defaultValue;
+		str >> ret;
+
+		return ret;
+	}
+
+	bool parseBool(const WString& val, bool defaultValue)
+	{
+		if ((StringUtil::startsWith(val, L"true") || StringUtil::startsWith(val, L"yes")
+			|| StringUtil::startsWith(val, L"1")))
+			return true;
+		else if ((StringUtil::startsWith(val, L"false") || StringUtil::startsWith(val, L"no")
+			|| StringUtil::startsWith(val, L"0")))
+			return false;
+		else
+			return defaultValue;
+	}
+
+	bool isNumber(const WString& val)
+	{
+		WStringStream str(val);
+		float tst;
+		str >> tst;
+		return !str.fail() && str.eof();
+	}
+
 	void __string_throwDataOverflowException()
 	{
 		CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");

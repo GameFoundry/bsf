@@ -31,6 +31,9 @@ namespace CamelotFramework {
 	class FileSystem;
 	class Timer;
 	class PixelData;
+	class HString;
+	class StringTable;
+	struct LocalizedStringData;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;
