@@ -203,7 +203,8 @@ namespace CamelotFramework
 	{
 		struct Common
 		{
-			boost::signal<void(const WString& identifier)> onStringDataModified;
+			WString identifier;
+			boost::signal<void()> onStringDataModified;
 		};
 
 		struct ParamOffset

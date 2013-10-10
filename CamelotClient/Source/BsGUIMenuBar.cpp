@@ -35,9 +35,9 @@ namespace BansheeEditor
 		mainLayout.addSpace(5);
 		mainLayout.addFlexibleSpace();
 
-		mMinBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinMinimizeBtn"));
-		mMaxBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinMaximizeBtn"));
-		mCloseBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinCloseBtn"));
+		mMinBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinMinimizeBtn"));
+		mMaxBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinMaximizeBtn"));
+		mCloseBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinCloseBtn"));
 
 		mainLayout.addSpace(3);
 		mainLayout.addElement(mMinBtn);
@@ -132,7 +132,7 @@ namespace BansheeEditor
 		newSubMenu.name = name;
 		newSubMenu.menu = cm_new<GUIMenu>();
 
-		GUIButton* newButton = GUIButton::create(*mParentWidget, name, EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
+		GUIButton* newButton = GUIButton::create(*mParentWidget, HString(name), EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
 		newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, name));
 		mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);

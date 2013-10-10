@@ -12,8 +12,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
-		static GUILabel* create(GUIWidget& parent, const CM::WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::HString& text, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::HString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
 		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
@@ -58,6 +58,7 @@ namespace BansheeEngine
 	private:
 		TextSprite* mTextSprite;
 		GUIContent mContent;
+		boost::signals::connection mLocStringUpdatedConn;
 
 		TEXT_SPRITE_DESC mDesc;
 		

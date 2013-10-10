@@ -83,5 +83,7 @@ namespace BansheeEngine
 
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;
+
+		boost::signals::connection mLocStringUpdatedConn;
 	};
 }

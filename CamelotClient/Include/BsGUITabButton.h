@@ -13,9 +13,12 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUITabButton* create(BS::GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::WString& text, const BS::GUIElementStyle* style = nullptr);
-		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::WString& text, const BS::GUIElementStyle* style = nullptr);
+		static GUITabButton* create(BS::GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::HString& text, const BS::GUIElementStyle* style = nullptr);
+		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::HString& text, const BS::GUIElementStyle* style = nullptr);
 	
+		static GUITabButton* create(BS::GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const BS::GUIContent& content, const BS::GUIElementStyle* style = nullptr);
+		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const BS::GUIContent& content, const BS::GUIElementStyle* style = nullptr);
+
 		CM::UINT32 getIndex() const { return mIndex; }
 
 		boost::signal<void(CM::UINT32)> onDragged;
@@ -29,6 +32,6 @@ namespace BansheeEditor
 
 		static const CM::UINT32 DRAG_MIN_DISTANCE;
 
-		GUITabButton(BS::GUIWidget& parent, const BS::GUIElementStyle* style, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::WString& text, const BS::GUILayoutOptions& layoutOptions);
+		GUITabButton(BS::GUIWidget& parent, const BS::GUIElementStyle* style, GUITabbedTitleBar* titleBar, CM::UINT32 index, const BS::GUIContent& content, const BS::GUILayoutOptions& layoutOptions);
 	};
 }

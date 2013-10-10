@@ -28,6 +28,7 @@
 #include "CmRenderer.h"
 #include "CmDeferredCallManager.h"
 #include "CmCoreThread.h"
+#include "CmStringTable.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -48,6 +49,7 @@ namespace CamelotFramework
 	{
 		MemStack::setupHeap(HID_Main);
 
+		StringTable::startUp(cm_new<StringTable>());
 		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
 		Time::startUp(cm_new<Time>());
 		DynLibManager::startUp(cm_new<DynLibManager>());
@@ -165,6 +167,7 @@ namespace CamelotFramework
 		DynLibManager::shutDown();
 		Time::shutDown();
 		DeferredCallManager::shutDown();
+		StringTable::shutDown();
 	}
 
 	void* Application::loadPlugin(const String& pluginName)

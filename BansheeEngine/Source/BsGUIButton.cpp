@@ -23,12 +23,12 @@ namespace BansheeEngine
 		:GUIButtonBase(parent, style, content, layoutOptions)
 	{ }
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(GUIWidget& parent, const HString& text, const GUIElementStyle* style)
 	{
 		return create(parent, GUIContent(text), style);
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(GUIWidget& parent, const HString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		return create(parent, GUIContent(text), layoutOptions, style);
 	}

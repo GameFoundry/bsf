@@ -175,6 +175,7 @@ namespace CamelotFramework
 			if(iterFindCommon == mCommonData.end())
 			{
 				common = cm_new<LocalizedStringData::Common>();
+				common->identifier = identifier;
 				mCommonData[identifier] = common;
 			}
 			else
@@ -194,7 +195,7 @@ namespace CamelotFramework
 		if(mActiveLanguage == language)
 		{
 			if(!stringData->commonData->onStringDataModified.empty())
-				stringData->commonData->onStringDataModified(identifier);
+				stringData->commonData->onStringDataModified();
 		}
 	}
 
@@ -228,7 +229,7 @@ namespace CamelotFramework
 			mCommonData.erase(findIterCommon);
 
 			if(!common->onStringDataModified.empty())
-				common->onStringDataModified(identifier);
+				common->onStringDataModified();
 		}
 
 		if(stringData != nullptr)
@@ -272,7 +273,7 @@ namespace CamelotFramework
 		for(auto& iter : mCommonData)
 		{
 			if(!iter.second->onStringDataModified.empty())
-				iter.second->onStringDataModified(iter.first);
+				iter.second->onStringDataModified();
 		}
 	}
 }

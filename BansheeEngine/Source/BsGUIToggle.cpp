@@ -35,22 +35,22 @@ namespace BansheeEngine
 		}
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const HString& text, const GUIElementStyle* style)
 	{
 		return create(parent, GUIContent(text), style);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const WString& text, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const HString& text, const GUIElementStyle* style)
 	{
 		return create(parent, layoutOptions, GUIContent(text), style);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
 	{
 		return create(parent, GUIContent(text), toggleGroup, style);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
 	{
 		return create(parent, layoutOptions, GUIContent(text), toggleGroup, style);
 	}

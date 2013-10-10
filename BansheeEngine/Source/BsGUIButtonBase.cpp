@@ -35,10 +35,14 @@ namespace BansheeEngine
 		mImageDesc.borderRight = mStyle->border.right;
 		mImageDesc.borderTop = mStyle->border.top;
 		mImageDesc.borderBottom = mStyle->border.bottom;
+
+		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(boost::bind(&GUIButtonBase::updateRenderElementsInternal, this));
 	}
 
 	GUIButtonBase::~GUIButtonBase()
 	{
+		mLocStringUpdatedConn.disconnect();
+
 		cm_delete<PoolAlloc>(mTextSprite);
 		cm_delete<PoolAlloc>(mImageSprite);
 
@@ -48,6 +52,9 @@ namespace BansheeEngine
 
 	void GUIButtonBase::setContent(const GUIContent& content)
 	{
+		mLocStringUpdatedConn.disconnect();
+		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(boost::bind(&GUIButtonBase::updateRenderElementsInternal, this));
+
 		mContent = content;
 
 		markContentAsDirty();

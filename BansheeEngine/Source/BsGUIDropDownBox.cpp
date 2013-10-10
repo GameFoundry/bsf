@@ -313,7 +313,7 @@ namespace BansheeEngine
 		{
 			if(mScrollUpBtn == nullptr)
 			{
-				mScrollUpBtn = GUIButton::create(*mOwner, GUIContent(L"", mOwner->mScrollUpBtnArrow), mOwner->mScrollUpStyle);
+				mScrollUpBtn = GUIButton::create(*mOwner, GUIContent(HString(L""), mOwner->mScrollUpBtnArrow), mOwner->mScrollUpStyle);
 				mScrollUpBtn->onClick.connect(boost::bind(&DropDownSubMenu::scrollUp, this));
 			}
 
@@ -361,7 +361,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					expEntryBtn = GUIButton::create(*mOwner, mElements[i].getLabel(), mOwner->mEntryExpBtnStyle);
+					expEntryBtn = GUIButton::create(*mOwner, HString(mElements[i].getLabel()), mOwner->mEntryExpBtnStyle);
 					expEntryBtn->onHover.connect(boost::bind(&DropDownSubMenu::openSubMenu, this, expEntryBtn, i));
 				}
 
@@ -378,7 +378,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					entryBtn = GUIButton::create(*mOwner, mElements[i].getLabel(), mOwner->mEntryBtnStyle);
+					entryBtn = GUIButton::create(*mOwner, HString(mElements[i].getLabel()), mOwner->mEntryBtnStyle);
 					entryBtn->onHover.connect(boost::bind(&DropDownSubMenu::closeSubMenu, this));
 					entryBtn->onClick.connect(boost::bind(&DropDownSubMenu::elementClicked, this,  i));
 				}
@@ -407,7 +407,7 @@ namespace BansheeEngine
 		{
 			if(mScrollDownBtn == nullptr)
 			{
-				mScrollDownBtn = GUIButton::create(*mOwner, GUIContent(L"", mOwner->mScrollDownBtnArrow), mOwner->mScrollDownStyle);
+				mScrollDownBtn = GUIButton::create(*mOwner, GUIContent(HString(L""), mOwner->mScrollDownBtnArrow), mOwner->mScrollDownStyle);
 				mScrollDownBtn->onClick.connect(boost::bind(&DropDownSubMenu::scrollDown, this));
 			}
 

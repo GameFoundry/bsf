@@ -13,7 +13,7 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	EditorWidget::EditorWidget(const WString& name)
+	EditorWidget::EditorWidget(const HString& name)
 		:mName(name), mParent(nullptr), mContent(nullptr)
 	{
 		

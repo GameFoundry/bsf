@@ -1,5 +1,11 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
+LONGTERM TODO:
+1. Finish localization
+2. Finish docking manager
+3. Window drag'n'drop detect
+4. Basic profiler
+
 I still re-create GUIWidget mesh every frame instead of just updating it.
 
 MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.

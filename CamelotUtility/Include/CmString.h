@@ -749,4 +749,6 @@ namespace CamelotFramework
 
 } // namespace CamelotFramework
 
+#include "CmHString.h"
+
 #endif // _String_H__

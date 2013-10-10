@@ -1,19 +1,14 @@
+#include "CmPrerequisitesUtil.h"
 #include "CmHString.h"
 #include "CmStringTable.h"
 
 namespace CamelotFramework
 {
-	HString::HString(const WString& identifierString)
-		:mParameters(nullptr)
-	{
-		mStringData = &StringTable::instance().getStringData(identifierString);
-		mParameters = cm_newN<WString>(mStringData->numParameters);
-		mUpdateConn = mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this, _1));
+	HString::StringData::StringData()
+		:mParameters(nullptr), mIsDirty(true)
+	{ }
 
-		updateString(identifierString);
-	}
-
-	HString::~HString()
+	HString::StringData::~StringData()
 	{
 		mUpdateConn.disconnect();
 
@@ -21,23 +16,72 @@ namespace CamelotFramework
 			cm_deleteN(mParameters, mStringData->numParameters);
 	}
 
-	void HString::setParameter(UINT32 idx, const WString& value)
+	HString::HString()
 	{
-		mParameters[idx] = value;
+		mData = cm_shared_ptr<StringData>();
+
+		mData->mStringData = &StringTable::instance().getStringData(L"");
+		mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this));
 	}
 
-	void HString::updateString(const WString& identifierString)
+	HString::HString(const WString& identifierString)
 	{
-		LocalizedStringData* stringData = &StringTable::instance().getStringData(identifierString);
+		mData = cm_shared_ptr<StringData>();
 
-		// If common data changed re-apply the connections
-		if(stringData->commonData != mStringData->commonData)
+		mData->mStringData = &StringTable::instance().getStringData(identifierString);
+		mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this));
+	}
+
+	HString::HString(const HString& copy)
+	{
+		mData = copy.mData;
+	}
+
+	HString::~HString()
+	{
+
+	}
+
+	HString::operator const WString& () const 
+	{ 
+		if(mData->mIsDirty)
 		{
-			mUpdateConn.disconnect();
-			mUpdateConn = stringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this, _1));
+			mData->mCachedString = mData->mStringData->concatenateString(mData->mParameters, mData->mStringData->numParameters);
+			mData->mIsDirty = false;
 		}
 
-		mStringData = stringData;
-		mCachedString = mStringData->concatenateString(mParameters, mStringData->numParameters);
+		return mData->mCachedString; 
+	}
+
+	void HString::setParameter(UINT32 idx, const WString& value)
+	{
+		mData->mParameters[idx] = value;
+
+		mData->mIsDirty = true;
+		mData->onStringModified();
+	}
+
+	boost::signals::connection HString::addOnStringModifiedCallback(boost::function<void()> callback) const
+	{
+		return mData->onStringModified.connect(callback);
+	}
+
+	void HString::updateString()
+	{
+		LocalizedStringData* stringData = &StringTable::instance().getStringData(mData->mStringData->commonData->identifier);
+
+		// If common data changed re-apply the connections
+		if(stringData->commonData != mData->mStringData->commonData)
+		{
+			mData->mUpdateConn.disconnect();
+			mData->mUpdateConn = stringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this));
+		}
+
+		mData->mStringData = stringData;
+		mData->mIsDirty = true;
+
+		mData->onStringModified();
 	}
 }

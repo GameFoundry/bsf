@@ -14,8 +14,8 @@ namespace BansheeEditor
 		void setSize(CM::UINT32 width, CM::UINT32 height);
 		void setPosition(CM::INT32 x, CM::INT32 y);
 
-		void addTab(const CM::WString& name);
-		void insertTab(CM::UINT32 idx, const CM::WString& name);
+		void addTab(const CM::HString& name);
+		void insertTab(CM::UINT32 idx, const CM::HString& name);
 		void removeTab(CM::UINT32 idx);
 
 		boost::signal<void(CM::UINT32)> onTabActivated;

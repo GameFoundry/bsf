@@ -28,7 +28,7 @@ THE SOFTWARE
 #include <assert.h>
 
 // 0 - No thread support
-// 1 - Render system is thread safe (NOT WORKING and will probably be removed)
+// 1 - Render system is thread safe (TODO: NOT WORKING and will probably be removed)
 // 2 - Thread support but render system can only be accessed from main thread
 #define CM_THREAD_SUPPORT 2
 

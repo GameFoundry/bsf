@@ -21,8 +21,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIListBox::GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const Vector<WString>::type& elements, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(parent, style, GUIContent(L""), layoutOptions), mElements(elements), mSelectedIdx(0), mIsListBoxOpen(false)
+	GUIListBox::GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions)
+		:GUIButtonBase(parent, style, GUIContent(HString(L"")), layoutOptions), mElements(elements), mSelectedIdx(0), mIsListBoxOpen(false)
 	{
 		if(elements.size() > 0)
 			setContent(GUIContent(mElements[mSelectedIdx]));
@@ -33,7 +33,7 @@ namespace BansheeEngine
 		closeListBox();
 	}
 
-	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<WString>::type& elements, const GUIElementStyle* style)
+	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<HString>::type& elements, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, getDefaultLayoutOptions(style));
 	}
 
-	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<WString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{

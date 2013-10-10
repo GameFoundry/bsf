@@ -16,16 +16,18 @@ namespace BansheeEngine
 	{
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
-		mDesc.text = content.getText();
 		mDesc.font = mStyle->font;
 		mDesc.fontSize = mStyle->fontSize;
 		mDesc.wordWrap = mStyle->wordWrap;
 		mDesc.horzAlign = mStyle->textHorzAlign;
 		mDesc.vertAlign = mStyle->textVertAlign;
+
+		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(boost::bind(&GUILabel::updateRenderElementsInternal, this));
 	}
 
 	GUILabel::~GUILabel()
 	{
+		mLocStringUpdatedConn.disconnect();
 		cm_delete<PoolAlloc>(mTextSprite);
 	}
 
@@ -48,6 +50,7 @@ namespace BansheeEngine
 	{		
 		mDesc.width = mWidth;
 		mDesc.height = mHeight;
+		mDesc.text = mContent.getText();
 
 		mTextSprite->update(mDesc);
 
@@ -72,18 +75,20 @@ namespace BansheeEngine
 
 	void GUILabel::setContent(const GUIContent& content)
 	{
-		mContent = content;
-		mDesc.text = content.getText();
+		mLocStringUpdatedConn.disconnect();
+		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(boost::bind(&GUILabel::updateRenderElementsInternal, this));
 
+		mContent = content;
+		
 		markContentAsDirty();
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const WString& text, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(GUIWidget& parent, const HString& text, const GUIElementStyle* style)
 	{
 		return create(parent, GUIContent(text), style);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const WString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(GUIWidget& parent, const HString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		return create(parent, GUIContent(text), layoutOptions, style);
 	}

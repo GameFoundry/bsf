@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CmPrerequisitesUtil.h"
 #include <boost/signals.hpp>
 
 namespace CamelotFramework
@@ -16,20 +15,37 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT HString
 	{
 	public:
-		HString(const WString& identifierString);
+		class CM_UTILITY_EXPORT StringData
+		{
+		public:
+			StringData();
+			~StringData();
+
+			mutable boost::signal<void()> onStringModified;
+
+		private:
+			friend class HString;
+
+			LocalizedStringData* mStringData;
+			WString* mParameters;
+			boost::signals::connection mUpdateConn;
+
+			mutable bool mIsDirty;
+			mutable WString mCachedString;
+		};
+
+		explicit HString(const WString& identifierString);
+		HString();
+		HString(const HString& copy);
 		~HString();
 
-		operator const WString& () const { return mCachedString; }
+		operator const WString& () const;
 		void setParameter(UINT32 idx, const WString& value);
 
-		boost::signal<void()> onStringModified;
+		boost::signals::connection addOnStringModifiedCallback(boost::function<void()> callback) const;
 	private:
-		LocalizedStringData* mStringData;
-		WString* mParameters;
-		boost::signals::connection mUpdateConn;
+		std::shared_ptr<StringData> mData;
 
-		WString mCachedString;
-
-		void updateString(const WString& identifierString);
+		void updateString();
 	};
 }

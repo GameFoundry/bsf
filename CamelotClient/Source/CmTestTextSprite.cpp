@@ -44,13 +44,13 @@ namespace CamelotFramework
 
 		SpriteTexturePtr spriteTex = std::make_shared<SpriteTexture>(sceneView->getBindableColorTexture());
 		area->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::fixed(800, 600), spriteTex));
-		mLabel = GUILabel::create(*this, L"");
+		mLabel = GUILabel::create(*this, HString(L""));
 		area->getLayout().addElement(mLabel);
 
-		Vector<WString>::type dropDownElements;
-		dropDownElements.push_back(L"Ejlement #1");
-		dropDownElements.push_back(L"Element #2");
-		dropDownElements.push_back(L"Element #3");
+		Vector<HString>::type dropDownElements;
+		dropDownElements.push_back(HString(L"Ejlement #1"));
+		dropDownElements.push_back(HString(L"Element #2"));
+		dropDownElements.push_back(HString(L"Element #3"));
 		area->getLayout().addElement(GUIListBox::create(*this, dropDownElements, GUILayoutOptions::fixed(50, 13)));
 		area->getLayout().addFlexibleSpace();
 	}
@@ -59,6 +59,6 @@ namespace CamelotFramework
 	{
 		WString value = toWString(toString(Input::instance().getCursorPosition().x) + " - " + toString(Input::instance().getCursorPosition().y));
 
-		mLabel->setContent(GUIContent(value));
+		mLabel->setContent(GUIContent(HString(L"")));
 	}
 }

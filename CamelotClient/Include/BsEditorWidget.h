@@ -10,7 +10,7 @@ namespace BansheeEditor
 	public:
 		virtual ~EditorWidget();
 
-		const CM::WString& getName() const { return mName; }
+		const CM::HString& getName() const { return mName; }
 
 		void _setSize(CM::UINT32 width, CM::UINT32 height);
 		void _setPosition(CM::INT32 x, CM::INT32 y);
@@ -21,9 +21,9 @@ namespace BansheeEditor
 
 		static void destroy(EditorWidget* widget);
 	protected:
-		EditorWidget(const CM::WString& name);
+		EditorWidget(const CM::HString& name);
 
-		CM::WString mName;
+		CM::HString mName;
 		EditorWidgetContainer* mParent;
 		BS::GUIArea* mContent;
 

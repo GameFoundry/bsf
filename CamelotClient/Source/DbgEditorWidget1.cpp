@@ -17,7 +17,7 @@ namespace BansheeEditor
 	DbgEditorWidget1* DbgEditorWidget1::Instance = nullptr;
 
 	DbgEditorWidget1::DbgEditorWidget1()
-		:EditorWidget(L"DbgEditorWidget1")
+		:EditorWidget(HString(L"DbgEditorWidget1"))
 	{
 		
 	}

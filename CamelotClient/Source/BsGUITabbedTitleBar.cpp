@@ -31,8 +31,8 @@ namespace BansheeEditor
 		GUIWindowDropArea* dragDropElement = GUIWindowDropArea::create(*parent, GUILayoutOptions::expandableX(13, 20), parent->getSkin().getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
 
-		mMinBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinMinimizeBtn"));
-		mCloseBtn = GUIButton::create(*parent, L"", parent->getSkin().getStyle("WinCloseBtn"));
+		mMinBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinMinimizeBtn"));
+		mCloseBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinCloseBtn"));
 
 		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
 
@@ -67,12 +67,12 @@ namespace BansheeEditor
 		}
 	}
 
-	void GUITabbedTitleBar::addTab(const CM::WString& name)
+	void GUITabbedTitleBar::addTab(const CM::HString& name)
 	{
 		insertTab((UINT32)mTabButtons.size(), name);
 	}
 
-	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::WString& name)
+	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::HString& name)
 	{
 		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, this, mUniqueTabIdx, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
 		GUIWindowDropArea* newDragDropElement = GUIWindowDropArea::create(*mParentWidget, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));

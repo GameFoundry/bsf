@@ -13,8 +13,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::WString>::type& elements, const GUIElementStyle* style = nullptr);
-		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::HString>::type& elements, const GUIElementStyle* style = nullptr);
+		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::HString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		boost::signal<void(CM::UINT32)> onSelectionChanged;
 	protected:
@@ -22,10 +22,10 @@ namespace BansheeEngine
 
 	private:
 		CM::UINT32 mSelectedIdx;
-		CM::Vector<CM::WString>::type mElements;
+		CM::Vector<CM::HString>::type mElements;
 		bool mIsListBoxOpen;
 
-		GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const CM::Vector<CM::WString>::type& elements, const GUILayoutOptions& layoutOptions);
+		GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const CM::Vector<CM::HString>::type& elements, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 

@@ -15,11 +15,11 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIToggle* create(GUIWidget& parent, const CM::WString& text, const GUIElementStyle* style = nullptr);
-		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::WString& text, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const CM::HString& text, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::HString& text, const GUIElementStyle* style = nullptr);
 	
-		static GUIToggle* create(GUIWidget& parent, const CM::WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
-		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::WString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const CM::HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const CM::HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
 
 		static GUIToggle* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
 		static GUIToggle* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIContent& content, const GUIElementStyle* style = nullptr);

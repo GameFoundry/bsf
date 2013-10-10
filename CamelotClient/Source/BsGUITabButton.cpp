@@ -18,13 +18,13 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUITabButton::GUITabButton(GUIWidget& parent, const GUIElementStyle* style, GUITabbedTitleBar* titleBar, CM::UINT32 index, const WString& text, const GUILayoutOptions& layoutOptions)
-		:GUIToggle(parent, style, text, nullptr, layoutOptions), mTitleBar(titleBar), mIndex(index)
+	GUITabButton::GUITabButton(GUIWidget& parent, const GUIElementStyle* style, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIToggle(parent, style, content, nullptr, layoutOptions), mTitleBar(titleBar), mIndex(index)
 	{
 
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const WString& text, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -32,10 +32,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, text, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), getDefaultLayoutOptions(style));
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const WString& text, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -43,7 +43,29 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, text, layoutOptions);
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), layoutOptions);
+	}
+
+	GUITabButton* GUITabButton::create(GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, getDefaultLayoutOptions(style));
+	}
+
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, layoutOptions);
 	}
 
 	bool GUITabButton::mouseEvent(const GUIMouseEvent& ev)

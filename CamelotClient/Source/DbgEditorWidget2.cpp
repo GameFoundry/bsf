@@ -16,7 +16,7 @@ namespace BansheeEditor
 	DbgEditorWidget2* DbgEditorWidget2::Instance = nullptr;
 
 	DbgEditorWidget2::DbgEditorWidget2()
-		:EditorWidget(L"DbgEditorWidget2")
+		:EditorWidget(HString(L"DbgEditorWidget2"))
 	{
 
 	}
@@ -37,11 +37,11 @@ namespace BansheeEditor
 
 		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup();
 
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test A", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test B", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test C", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test D", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), L"Test E", toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test A"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test B"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test C"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test D"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test E"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
 	}
 
 	DbgEditorWidget2* DbgEditorWidget2::instance()
