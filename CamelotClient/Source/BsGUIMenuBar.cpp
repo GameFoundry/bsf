@@ -246,7 +246,7 @@ namespace BansheeEditor
 				return;
 		}
 
-		Vector<GUIDropDownData>::type dropDownData = subMenu->menu->getDropDownData();
+		GUIDropDownData dropDownData = subMenu->menu->getDropDownData();
 		GUIWidget& widget = subMenu->button->_getParentWidget();
 
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(subMenu->button->getBounds());

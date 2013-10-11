@@ -87,11 +87,13 @@ namespace BansheeEngine
 	{
 		closeListBox();
 
-		Vector<GUIDropDownData>::type dropDownData;
+		GUIDropDownData dropDownData;
 		UINT32 i = 0;
 		for(auto& elem : mElements)
 		{
-			dropDownData.push_back(GUIDropDownData::button(elem, boost::bind(&GUIListBox::elementSelected, this, i)));
+			WString identifier = toWString(i);
+			dropDownData.entries.push_back(GUIDropDownDataEntry::button(identifier, boost::bind(&GUIListBox::elementSelected, this, i)));
+			dropDownData.localizedNames[identifier] = elem;
 			i++;
 		}
 

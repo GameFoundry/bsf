@@ -16,18 +16,18 @@ namespace BansheeEngine
 {
 	const UINT32 GUIDropDownBox::DROP_DOWN_BOX_WIDTH = 150;
 
-	GUIDropDownData GUIDropDownData::separator()
+	GUIDropDownDataEntry GUIDropDownDataEntry::separator()
 	{
-		GUIDropDownData data;
+		GUIDropDownDataEntry data;
 		data.mType = Type::Separator;
 		data.mCallback = nullptr;
 
 		return data;
 	}
 
-	GUIDropDownData GUIDropDownData::button(const WString& label, std::function<void()> callback)
+	GUIDropDownDataEntry GUIDropDownDataEntry::button(const WString& label, std::function<void()> callback)
 	{
-		GUIDropDownData data;
+		GUIDropDownDataEntry data;
 		data.mLabel = label;
 		data.mType = Type::Entry;
 		data.mCallback = callback;
@@ -35,14 +35,14 @@ namespace BansheeEngine
 		return data;
 	}
 
-	GUIDropDownData GUIDropDownData::subMenu(const WString& label, const Vector<GUIDropDownData>::type& entries)
+	GUIDropDownDataEntry GUIDropDownDataEntry::subMenu(const WString& label, const GUIDropDownData& data)
 	{
-		GUIDropDownData data;
-		data.mLabel = label;
-		data.mType = Type::SubMenu;
-		data.mChildEntries = entries;
+		GUIDropDownDataEntry dataEntry;
+		dataEntry.mLabel = label;
+		dataEntry.mType = Type::SubMenu;
+		dataEntry.mChildData = data;
 
-		return data;
+		return dataEntry;
 	}
 
 	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundPosition(const CM::Int2& position)
@@ -73,7 +73,7 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* window, const GUIDropDownAreaPlacement& placement,
-		const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type)
+		const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type)
 		:GUIWidget(parent, target, window), mScrollUpStyle(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
 		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr)
@@ -105,8 +105,10 @@ namespace BansheeEngine
 		setDepth(0); // Needs to be in front of everything
 		setSkin(skin);
 
+		mLocalizedEntryNames = dropDownData.localizedNames;
+
 		Rect availableBounds(target->getLeft(), target->getTop(), target->getWidth(), target->getHeight());
-		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, elements, type, 0);
+		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
 	}
 
 	GUIDropDownBox::~GUIDropDownBox()
@@ -115,10 +117,10 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownBox::DropDownSubMenu::DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-		const Rect& availableBounds, const CM::Vector<GUIDropDownData>::type& elements, GUIDropDownType type, UINT32 depthOffset)
+		const Rect& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
 		:mOwner(owner), mPage(0), mBackgroundFrame(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr), 
 		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0), 
-		mType(type), mSubMenu(nullptr), mElements(elements), mOpenedUpward(false), mDepthOffset(depthOffset)
+		mType(type), mSubMenu(nullptr), mData(dropDownData), mOpenedUpward(false), mDepthOffset(depthOffset)
 	{
 		mAvailableBounds = availableBounds;
 
@@ -181,7 +183,7 @@ namespace BansheeEngine
 			mOwner->mBackgroundStyle->margins.top + mOwner->mBackgroundStyle->margins.bottom;
 
 		UINT32 maxNeededHeight = helperElementHeight;
-		UINT32 numElements = (UINT32)mElements.size();
+		UINT32 numElements = (UINT32)dropDownData.entries.size();
 		for(UINT32 i = 0; i < numElements; i++)
 			maxNeededHeight += getElementHeight(i);
 
@@ -261,7 +263,7 @@ namespace BansheeEngine
 
 		// Determine if we need scroll up and/or down buttons, number of visible elements and actual height
 		bool needsScrollUp = mPage > 0;
-		UINT32 numElements = (UINT32)mElements.size();
+		UINT32 numElements = (UINT32)mData.entries.size();
 
 		UINT32 usedHeight = mOwner->mBackgroundStyle->margins.top + mOwner->mBackgroundStyle->margins.bottom;
 
@@ -333,7 +335,7 @@ namespace BansheeEngine
 		CM::Vector<GUIButton*>::type newExpEntryBtns;
 		for(UINT32 i = pageStart; i < pageEnd; i++)
 		{
-			GUIDropDownData& element = mElements[i];
+			GUIDropDownDataEntry& element = mData.entries[i];
 
 			if(element.isSeparator())
 			{
@@ -361,7 +363,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					expEntryBtn = GUIButton::create(*mOwner, HString(mElements[i].getLabel()), mOwner->mEntryExpBtnStyle);
+					expEntryBtn = GUIButton::create(*mOwner, getElementLocalizedName(i), mOwner->mEntryExpBtnStyle);
 					expEntryBtn->onHover.connect(boost::bind(&DropDownSubMenu::openSubMenu, this, expEntryBtn, i));
 				}
 
@@ -378,7 +380,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					entryBtn = GUIButton::create(*mOwner, HString(mElements[i].getLabel()), mOwner->mEntryBtnStyle);
+					entryBtn = GUIButton::create(*mOwner, getElementLocalizedName(i), mOwner->mEntryBtnStyle);
 					entryBtn->onHover.connect(boost::bind(&DropDownSubMenu::closeSubMenu, this));
 					entryBtn->onClick.connect(boost::bind(&DropDownSubMenu::elementClicked, this,  i));
 				}
@@ -439,12 +441,23 @@ namespace BansheeEngine
 
 	UINT32 GUIDropDownBox::DropDownSubMenu::getElementHeight(CM::UINT32 idx) const
 	{
-		if(mElements[idx].isSeparator())
+		if(mData.entries[idx].isSeparator())
 			return mOwner->mSeparatorStyle->height;
-		else if(mElements[idx].isSubMenu())
+		else if(mData.entries[idx].isSubMenu())
 			return mOwner->mEntryExpBtnStyle->height;
 		else
 			return mOwner->mEntryBtnStyle->height;
+	}
+
+	HString GUIDropDownBox::DropDownSubMenu::getElementLocalizedName(CM::UINT32 idx) const
+	{
+		const WString& label = mData.entries[idx].getLabel();
+
+		auto findLocalizedName = mOwner->mLocalizedEntryNames.find(label);
+		if(findLocalizedName != mOwner->mLocalizedEntryNames.end())
+			return findLocalizedName->second;
+		else
+			return HString(label);
 	}
 
 	void GUIDropDownBox::DropDownSubMenu::scrollDown()
@@ -479,7 +492,7 @@ namespace BansheeEngine
 	{
 		closeSubMenu();
 
-		mElements[idx].getCallback()();
+		mData.entries[idx].getCallback()();
 
 		GUIDropDownBoxManager::instance().closeDropDownBox();
 	}
@@ -489,6 +502,6 @@ namespace BansheeEngine
 		closeSubMenu();
 
 		mSubMenu = cm_new<DropDownSubMenu>(mOwner, GUIDropDownAreaPlacement::aroundBoundsVert(source->getBounds()), 
-			mAvailableBounds, mElements[idx].getSubMenuEntries(), mType, mDepthOffset + 1);
+			mAvailableBounds, mData.entries[idx].getSubMenuData(), mType, mDepthOffset + 1);
 	}
 }

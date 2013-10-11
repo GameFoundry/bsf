@@ -5,6 +5,7 @@ LONGTERM TODO:
 2. Finish docking manager
 3. Window drag'n'drop detect
 4. Basic profiler
+  - When building a profiler have main Profiler class which just does measurements, then ProfilerOverlay for data display on-screen, ProfilerEditor for Unity-like Profiler, etc.
 
 I still re-create GUIWidget mesh every frame instead of just updating it.
 

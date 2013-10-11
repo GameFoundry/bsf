@@ -7,7 +7,13 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT GUIDropDownData
+	struct BS_EXPORT GUIDropDownData
+	{
+		CM::Vector<GUIDropDownDataEntry>::type entries;
+		CM::UnorderedMap<CM::WString, CM::HString>::type localizedNames;
+	};
+
+	class BS_EXPORT GUIDropDownDataEntry
 	{
 		enum class Type
 		{
@@ -17,21 +23,21 @@ namespace BansheeEngine
 		};
 
 	public:
-		static GUIDropDownData separator();
-		static GUIDropDownData button(const CM::WString& label, std::function<void()> callback);
-		static GUIDropDownData subMenu(const CM::WString& label, const CM::Vector<GUIDropDownData>::type& entries);
+		static GUIDropDownDataEntry separator();
+		static GUIDropDownDataEntry button(const CM::WString& label, std::function<void()> callback);
+		static GUIDropDownDataEntry subMenu(const CM::WString& label, const GUIDropDownData& data);
 
 		bool isSeparator() const { return mType == Type::Separator; }
 		bool isSubMenu() const { return mType == Type::SubMenu; }
 
 		const CM::WString& getLabel() const { return mLabel; }
 		std::function<void()> getCallback() const { return mCallback; }
-		const CM::Vector<GUIDropDownData>::type& getSubMenuEntries() const { return mChildEntries; }
+		const GUIDropDownData& getSubMenuData() const { return mChildData; }
 	private:
-		GUIDropDownData() { }
+		GUIDropDownDataEntry() { }
 
 		std::function<void()> mCallback;
-		CM::Vector<GUIDropDownData>::type mChildEntries;
+		GUIDropDownData mChildData;
 		CM::WString mLabel;
 		Type mType; 
 	};
@@ -102,7 +108,7 @@ namespace BansheeEngine
 	{
 	public:
 		GUIDropDownBox(const CM::HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* window, const GUIDropDownAreaPlacement& placement,
-			const CM::Vector<GUIDropDownData>::type& elements, const GUISkin& skin, GUIDropDownType type);
+			const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type);
 		~GUIDropDownBox();
 
 	private:
@@ -111,7 +117,7 @@ namespace BansheeEngine
 			GUIDropDownBox* mOwner;
 
 			GUIDropDownType mType;
-			CM::Vector<GUIDropDownData>::type mElements;
+			GUIDropDownData mData;
 			CM::UINT32 mPage;
 			CM::INT32 x, y;
 			CM::UINT32 width, height;
@@ -133,7 +139,7 @@ namespace BansheeEngine
 			DropDownSubMenu* mSubMenu;
 
 			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-				const CM::Rect& availableBounds, const CM::Vector<GUIDropDownData>::type& elements, GUIDropDownType type, CM::UINT32 depthOffset);
+				const CM::Rect& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, CM::UINT32 depthOffset);
 			~DropDownSubMenu();
 
 			void updateGUIElements();
@@ -146,6 +152,8 @@ namespace BansheeEngine
 			void elementClicked(CM::UINT32 idx);
 			void openSubMenu(GUIButton* source, CM::UINT32 elementIdx);
 			void closeSubMenu();
+
+			CM::HString getElementLocalizedName(CM::UINT32 idx) const;
 		};
 
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
@@ -160,5 +168,7 @@ namespace BansheeEngine
 		SpriteTexturePtr mScrollDownBtnArrow;
 
 		DropDownSubMenu* mRootMenu;
+
+		CM::UnorderedMap<CM::WString, CM::HString>::type mLocalizedEntryNames;
 	};
 }

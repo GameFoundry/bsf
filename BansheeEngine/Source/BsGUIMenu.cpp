@@ -146,33 +146,40 @@ namespace BansheeEngine
 		parent->removeChild(item->getName());
 	}
 
-	Vector<GUIDropDownData>::type GUIMenu::getDropDownData() const
+	GUIDropDownData GUIMenu::getDropDownData() const
 	{
 		return getDropDownDataInternal(mRootElement);
 	}
 
-	Vector<GUIDropDownData>::type GUIMenu::getDropDownDataInternal(const GUIMenuItem& menu) const
+	void GUIMenu::setLocalizedName(const WString& menuItemLabel, const HString& localizedName)
 	{
-		Vector<GUIDropDownData>::type dropDownData;
+		mLocalizedEntryNames[menuItemLabel] = localizedName;
+	}
+
+	GUIDropDownData GUIMenu::getDropDownDataInternal(const GUIMenuItem& menu) const
+	{
+		GUIDropDownData dropDownData;
 
 		for(auto& menuItem : menu.mChildren)
 		{
 			if(menuItem->isSeparator())
 			{
-				dropDownData.push_back(GUIDropDownData::separator());
+				dropDownData.entries.push_back(GUIDropDownDataEntry::separator());
 			}
 			else
 			{
 				if(menuItem->getNumChildren() == 0)
 				{
-					dropDownData.push_back(GUIDropDownData::button(menuItem->getName(), menuItem->getCallback()));
+					dropDownData.entries.push_back(GUIDropDownDataEntry::button(menuItem->getName(), menuItem->getCallback()));
 				}
 				else
 				{
-					dropDownData.push_back(GUIDropDownData::subMenu(menuItem->getName(), getDropDownDataInternal(*menuItem)));
+					dropDownData.entries.push_back(GUIDropDownDataEntry::subMenu(menuItem->getName(), getDropDownDataInternal(*menuItem)));
 				}
 			}
 		}
+
+		dropDownData.localizedNames = mLocalizedEntryNames;
 
 		return dropDownData;
 	}
