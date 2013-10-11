@@ -51,13 +51,21 @@ namespace CamelotFramework
 		INT32 lastBracket = -1;
 		WStringStream bracketChars;
 		WStringStream cleanString;
+		bool escaped = false;
 		UINT32 numRemovedChars = 0;
 		for(UINT32 i = 0; i < (UINT32)_string.size(); i++)
 		{
+			if(_string[i] == '\\' && !escaped)
+			{
+				numRemovedChars++;
+				escaped = true;
+				continue;
+			}
+
 			if(lastBracket == -1)
 			{
 				// If current char is non-escaped opening bracket start parameter definition
-				if(_string[i] == '{' && (i == 0 || _string[i - 1] != '\\')) 
+				if(_string[i] == '{' && !escaped) 
 					lastBracket = i;
 				else
 					cleanString<<_string[i];
@@ -69,13 +77,13 @@ namespace CamelotFramework
 				else
 				{
 					// If current char is non-escaped closing bracket end parameter definition
-					UINT32 numParamChars = (UINT32)bracketChars.gcount();
-					if(_string[i] == '}' && numParamChars > 0 && (i == 0 || _string[i - 1] != '\\')) 
+					UINT32 numParamChars = (UINT32)bracketChars.tellp();
+					if(_string[i] == '}' && numParamChars > 0 && !escaped) 
 					{
-						UINT32 paramIdx = parseUnsignedInt(bracketChars.str());
-						paramOffsets.push_back(ParamOffset(i - numRemovedChars, paramIdx));
+						numRemovedChars += numParamChars + 2; // +2 for open and closed brackets
 
-						numRemovedChars += numParamChars;
+						UINT32 paramIdx = parseUnsignedInt(bracketChars.str());
+						paramOffsets.push_back(ParamOffset(paramIdx, i + 1 - numRemovedChars));
 					}
 					else
 					{
@@ -88,6 +96,8 @@ namespace CamelotFramework
 					bracketChars.clear();
 				}
 			}
+
+			escaped = false;
 		}
 
 		string = cleanString.str();

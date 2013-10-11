@@ -18,6 +18,7 @@ namespace CamelotFramework
 
 	private:
 		BS::GUILabel* mLabel;
+		HString labelString;
 
 		void dbgBtn();
 	};

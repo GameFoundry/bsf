@@ -470,10 +470,100 @@ namespace CamelotFramework
 	*/
 	CM_UTILITY_EXPORT WString toWString(const String& source);
 
+	/** Converts a float to a WString. */
+    CM_UTILITY_EXPORT WString toWString(float val, unsigned short precision = 6, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+    /** Converts a Radian to a WString. */
+    CM_UTILITY_EXPORT WString toWString(Radian val, unsigned short precision = 6, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+    /** Converts a Degree to a WString. */
+    CM_UTILITY_EXPORT WString toWString(Degree val, unsigned short precision = 6, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+    /** Converts an int to a WString. */
+    CM_UTILITY_EXPORT WString toWString(int val, unsigned short width = 0, 
+        char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+    /** Converts an unsigned int to a WString. */
+    CM_UTILITY_EXPORT WString toWString(unsigned int val, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+	/** Converts a long to a WString. */
+	CM_UTILITY_EXPORT WString toWString(long val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+    /** Converts an unsigned long to a WString. */
+    CM_UTILITY_EXPORT WString toWString(unsigned long val, 
+        unsigned short width = 0, char fill = ' ', 
+        std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+    /** Converts a boolean to a WString. 
+    @param yesNo If set to true, result is 'yes' or 'no' instead of 'true' or 'false'
+    */
+    CM_UTILITY_EXPORT WString toWString(bool val, bool yesNo = false);
+
+	/** Converts a Vector2 to a WString. 
+    @remarks
+        Format is "x y" (i.e. 2x float values, space delimited)
+    */
+    CM_UTILITY_EXPORT WString toWString(const Vector2& val);
+
+    /** Converts a Vector3 to a WString. 
+    @remarks
+        Format is "x y z" (i.e. 3x float values, space delimited)
+    */
+    CM_UTILITY_EXPORT WString toWString(const Vector3& val);
+
+	/** Converts a Vector4 to a WString. 
+    @remarks
+        Format is "x y z w" (i.e. 4x float values, space delimited)
+    */
+    CM_UTILITY_EXPORT WString toWString(const Vector4& val);
+
+    /** Converts a Matrix3 to a WString. 
+    @remarks
+        Format is "00 01 02 10 11 12 20 21 22" where '01' means row 0 column 1 etc.
+    */
+    CM_UTILITY_EXPORT WString toWString(const Matrix3& val);
+
+    /** Converts a Matrix4 to a WString. 
+    @remarks
+        Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33" where 
+        '01' means row 0 column 1 etc.
+    */
+    CM_UTILITY_EXPORT WString toWString(const Matrix4& val);
+
+    /** Converts a Quaternion to a WString. 
+    @remarks
+        Format is "w x y z" (i.e. 4x float values, space delimited)
+    */
+    CM_UTILITY_EXPORT WString toWString(const Quaternion& val);
+
+    /** Converts a ColourValue to a WString. 
+    @remarks
+        Format is "r g b a" (i.e. 4x float values, space delimited). 
+    */
+    CM_UTILITY_EXPORT WString toWString(const Color& val);
+
+    /** Converts a StringVector to a WString.
+    @remarks
+        Strings must not contain spaces since space is used as a delimiter in
+        the output.
+    */
+    CM_UTILITY_EXPORT WString toWString(const Vector<CamelotFramework::WString>::type& val);
+
 	/**
 	* @brief	Converts a wide string to a narrow string.
 	*/
-	CM_UTILITY_EXPORT WString toWString(const String& source);
+	CM_UTILITY_EXPORT String toString(const WString& source);
 
 	/** Converts a float to a String. */
     CM_UTILITY_EXPORT String toString(float val, unsigned short precision = 6, 

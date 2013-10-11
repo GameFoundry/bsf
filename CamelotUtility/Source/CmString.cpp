@@ -149,6 +149,189 @@ namespace CamelotFramework
 		return WString(source.begin(), source.end());
 	}
 
+	WString toWString(float val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.precision(precision);
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(Radian val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		return toWString(val.valueAngleUnits(), precision, width, fill, flags);
+	}
+
+	WString toWString(Degree val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		return toWString(val.valueAngleUnits(), precision, width, fill, flags);
+	}
+
+	WString toWString(int val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(unsigned int val, unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(long val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(const Vector2& val)
+	{
+		WStringStream stream;
+		stream << val.x << L" " << val.y;
+		return stream.str();
+	}
+
+	WString toWString(const Vector3& val)
+	{
+		WStringStream stream;
+		stream << val.x << L" " << val.y << L" " << val.z;
+		return stream.str();
+	}
+
+	WString toWString(const Vector4& val)
+	{
+		WStringStream stream;
+		stream << val.x << L" " << val.y << L" " << val.z << L" " << val.w;
+		return stream.str();
+	}
+
+	WString toWString(const Matrix3& val)
+	{
+		WStringStream stream;
+		stream << val[0][0] << L" " 
+			<< val[0][1] << L" "             
+			<< val[0][2] << L" "             
+			<< val[1][0] << L" "             
+			<< val[1][1] << L" "             
+			<< val[1][2] << L" "             
+			<< val[2][0] << L" "             
+			<< val[2][1] << L" "             
+			<< val[2][2];
+		return stream.str();
+	}
+
+	WString toWString(bool val, bool yesNo)
+	{
+		if (val)
+		{
+			if (yesNo)
+			{
+				return L"yes";
+			}
+			else
+			{
+				return L"true";
+			}
+		}
+		else
+			if (yesNo)
+			{
+				return L"no";
+			}
+			else
+			{
+				return L"false";
+			}
+	}
+
+	WString toWString(const Matrix4& val)
+	{
+		WStringStream stream;
+		stream << val[0][0] << L" " 
+			<< val[0][1] << L" "             
+			<< val[0][2] << L" "             
+			<< val[0][3] << L" "             
+			<< val[1][0] << L" "             
+			<< val[1][1] << L" "             
+			<< val[1][2] << L" "             
+			<< val[1][3] << L" "             
+			<< val[2][0] << L" "             
+			<< val[2][1] << L" "             
+			<< val[2][2] << L" "             
+			<< val[2][3] << L" "             
+			<< val[3][0] << L" "             
+			<< val[3][1] << L" "             
+			<< val[3][2] << L" "             
+			<< val[3][3];
+		return stream.str();
+	}
+
+	WString toWString(const Quaternion& val)
+	{
+		WStringStream stream;
+		stream  << val.w << L" " << val.x << L" " << val.y << L" " << val.z;
+		return stream.str();
+	}
+
+	WString toWString(const Color& val)
+	{
+		WStringStream stream;
+		stream << val.r << L" " << val.g << L" " << val.b << L" " << val.a;
+		return stream.str();
+	}
+
+	WString toWString(const Vector<CamelotFramework::WString>::type& val)
+	{
+		WStringStream stream;
+		Vector<CamelotFramework::WString>::type::const_iterator i, iend, ibegin;
+		ibegin = val.begin();
+		iend = val.end();
+		for (i = ibegin; i != iend; ++i)
+		{
+			if (i != ibegin)
+				stream << L" ";
+
+			stream << *i; 
+		}
+		return stream.str();
+	}
+
 	String toString(const WString& source)
 	{
 		return String(source.begin(), source.end());

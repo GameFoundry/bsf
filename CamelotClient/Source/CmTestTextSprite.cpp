@@ -60,18 +60,31 @@ namespace CamelotFramework
 		area->getLayout().addElement(button);
 
 		area->getLayout().addFlexibleSpace();
+
+		labelString = HString(L"\\{0}, {1}");
+		mLabel->setContent(GUIContent(labelString));
 	}
 
 	void TestTextSprite::update()
 	{
-		WString value = toWString(toString(Input::instance().getCursorPosition().x) + " - " + toString(Input::instance().getCursorPosition().y));
-
-		mLabel->setContent(GUIContent(HString(L"")));
+		labelString.setParameter(0, toWString(Input::instance().getCursorPosition().x));
+		//labelString.setParameter(1, toWString(Input::instance().getCursorPosition().y));
 	}
 
 	void TestTextSprite::dbgBtn()
 	{
-		StringTable::instance().setString(L"dbgBtn", Language::Abkhazian, L"ALOALO");
-		StringTable::instance().setActiveLanguage(Language::Abkhazian);
+		static int dbg = 0;
+
+		if(dbg == 0)
+		{
+			StringTable::instance().setString(L"dbgBtn", Language::Abkhazian, L"ALOALO");
+			StringTable::instance().setActiveLanguage(Language::Abkhazian);
+		}
+		else if(dbg == 1)
+		{
+			StringTable::instance().removeString(L"dbgBtn");
+		}
+
+		dbg++;
 	}
 }
