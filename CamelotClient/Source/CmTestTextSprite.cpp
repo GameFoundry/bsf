@@ -17,10 +17,12 @@
 #include "BsGUILayout.h"
 #include "BsGUISpace.h"
 #include "BsGUIViewport.h"
+#include "BsGUIButton.h"
 #include "BsCamera.h"
 #include "CmInput.h"
 #include "CmPlatform.h"
 #include "BsGUIContent.h"
+#include "CmStringTable.h"
 
 using namespace BansheeEngine;
 
@@ -52,6 +54,11 @@ namespace CamelotFramework
 		dropDownElements.push_back(HString(L"Element #2"));
 		dropDownElements.push_back(HString(L"Element #3"));
 		area->getLayout().addElement(GUIListBox::create(*this, dropDownElements, GUILayoutOptions::fixed(50, 13)));
+
+		GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
+		button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));
+		area->getLayout().addElement(button);
+
 		area->getLayout().addFlexibleSpace();
 	}
 
@@ -60,5 +67,11 @@ namespace CamelotFramework
 		WString value = toWString(toString(Input::instance().getCursorPosition().x) + " - " + toString(Input::instance().getCursorPosition().y));
 
 		mLabel->setContent(GUIContent(HString(L"")));
+	}
+
+	void TestTextSprite::dbgBtn()
+	{
+		StringTable::instance().setString(L"dbgBtn", Language::Abkhazian, L"ALOALO");
+		StringTable::instance().setActiveLanguage(Language::Abkhazian);
 	}
 }

@@ -16,13 +16,30 @@ namespace CamelotFramework
 			cm_deleteN(mParameters, mStringData->numParameters);
 	}
 
+	void HString::StringData::updateString()
+	{
+		LocalizedStringData* stringData = &StringTable::instance().getStringData(mStringData->commonData->identifier);
+
+		// If common data changed re-apply the connections
+		if(stringData->commonData != mStringData->commonData)
+		{
+			mUpdateConn.disconnect();
+			mUpdateConn = stringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, this));
+		}
+
+		mStringData = stringData;
+		mIsDirty = true;
+
+		onStringModified();
+	}
+
 	HString::HString()
 	{
 		mData = cm_shared_ptr<StringData>();
 
 		mData->mStringData = &StringTable::instance().getStringData(L"");
 		mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
-		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this));
+		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, mData.get()));
 	}
 
 	HString::HString(const WString& identifierString)
@@ -31,7 +48,7 @@ namespace CamelotFramework
 
 		mData->mStringData = &StringTable::instance().getStringData(identifierString);
 		mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
-		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this));
+		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, mData.get()));
 	}
 
 	HString::HString(const HString& copy)
@@ -66,22 +83,5 @@ namespace CamelotFramework
 	boost::signals::connection HString::addOnStringModifiedCallback(boost::function<void()> callback) const
 	{
 		return mData->onStringModified.connect(callback);
-	}
-
-	void HString::updateString()
-	{
-		LocalizedStringData* stringData = &StringTable::instance().getStringData(mData->mStringData->commonData->identifier);
-
-		// If common data changed re-apply the connections
-		if(stringData->commonData != mData->mStringData->commonData)
-		{
-			mData->mUpdateConn.disconnect();
-			mData->mUpdateConn = stringData->commonData->onStringDataModified.connect(boost::bind(&HString::updateString, this));
-		}
-
-		mData->mStringData = stringData;
-		mData->mIsDirty = true;
-
-		mData->onStringModified();
 	}
 }

@@ -154,6 +154,7 @@ namespace BansheeEngine
 		GUIElementStyle buttonStyle;
 		buttonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonNormalTex));
 		buttonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonHoverTex));
+		buttonStyle.active.texture = buttonStyle.hover.texture;
 		buttonStyle.border.left = 5;
 		buttonStyle.border.right = 5;
 		buttonStyle.border.top = 5;

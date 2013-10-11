@@ -32,6 +32,8 @@ namespace CamelotFramework
 
 			mutable bool mIsDirty;
 			mutable WString mCachedString;
+
+			void updateString();
 		};
 
 		explicit HString(const WString& identifierString);
@@ -45,7 +47,5 @@ namespace CamelotFramework
 		boost::signals::connection addOnStringModifiedCallback(boost::function<void()> callback) const;
 	private:
 		std::shared_ptr<StringData> mData;
-
-		void updateString();
 	};
 }
