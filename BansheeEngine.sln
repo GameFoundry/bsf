@@ -42,7 +42,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Dependencies.txt = Dependencies.txt
 		DrawHelper.txt = DrawHelper.txt
 		EditorWindowDock.txt = EditorWindowDock.txt
-		Localization.txt = Localization.txt
 		Notes.txt = Notes.txt
 		RenderOperation.txt = RenderOperation.txt
 		TODO.txt = TODO.txt
