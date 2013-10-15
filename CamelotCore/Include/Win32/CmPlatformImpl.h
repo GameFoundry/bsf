@@ -166,6 +166,18 @@ namespace CamelotFramework
 		static WString copyFromClipboard();
 
 		/**
+		 * @brief	Queries the internal system performance counter you can use for very precise time
+		 * 			measurements. Value is in "queryPerformanceFrequency" units.
+		 */
+		static UINT64 queryPerformanceCounter();
+
+		/**
+		 * @brief	Queries the internal system performance counter frequency. Used for interpreting
+		 * 			data returned by "queryPerformanceCounter".
+		 */
+		static UINT64 queryPerformanceFrequency();
+
+		/**
 		 * @brief	Message pump. Processes OS messages and returns when it's free.
 		 * 			
 		 * @note	This method must be called from the core thread.

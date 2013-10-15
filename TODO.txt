@@ -8,6 +8,11 @@ LONGTERM TODO:
   - When building a profiler have main Profiler class which just does measurements, then ProfilerOverlay for data display on-screen, ProfilerEditor for Unity-like Profiler, etc.
   - For now just create a profiler with basic measuring stats (FPS, core & sim thread time, plus times for most important systems), and ProfilerOverlay to display them
 
+PROFILER:
+ TODO: Profiler is right now including windows.h. I need to work around that but don't feel like bothering with it atm
+
+
+
 I still re-create GUIWidget mesh every frame instead of just updating it.
 
 MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
@@ -87,6 +92,8 @@ Medium priority:
    - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after that call.
    - In general I need to rethink how to handle modifying resources with multithreading
  - Closing down a window (any window) will shut down main rendering loop
+ - GUIManager draw call merging:
+    I merge two GUI elements if they don't overlap each other, however I don't consider if there is some world geometry between them. Another reason to move batching out of GUIManager.
 
 ----------------------------------------------------------------------------------------------
 Low priority TODO
