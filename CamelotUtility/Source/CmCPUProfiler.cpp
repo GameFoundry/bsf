@@ -119,7 +119,7 @@ namespace CamelotFramework
 
 	CPUProfiler::ThreadInfo::ThreadInfo()
 		:isActive(false), activeBlock(nullptr), rootBlock(nullptr), 
-		activePreciseBlock(nullptr), rootPreciseBlock(nullptr)
+		activePreciseBlock(nullptr)
 	{
 
 	}
@@ -135,28 +135,17 @@ namespace CamelotFramework
 		if(rootBlock == nullptr)
 			rootBlock = getBlock();
 
-		if(rootPreciseBlock == nullptr)
-			rootPreciseBlock = getPreciseBlock();
-
 		activeBlocks.push(rootBlock);
 		activeBlock = rootBlock;
 
-		activePreciseBlocks.push(rootPreciseBlock);
-		activePreciseBlock = rootPreciseBlock;
-
 		rootBlock->name = _name; 
-		rootBlock->data.beginSample();
-
-		rootPreciseBlock->name = _name;
-		rootPreciseBlock->data.beginSample();
+		rootBlock->basic.beginSample();
+		isActive = true;
 	}
 
 	void CPUProfiler::ThreadInfo::end()
 	{
-		activePreciseBlock->data.endSample();
-		activePreciseBlocks.pop();
-
-		activeBlock->data.endSample();
+		activeBlock->basic.endSample();
 		activeBlocks.pop();
 
 		if(!isActive)
@@ -169,7 +158,7 @@ namespace CamelotFramework
 			while(activeBlocks.size() > 0)
 			{
 				ProfiledBlock* block = activeBlocks.top();
-				block->data.endSample();
+				block->basic.endSample();
 
 				activeBlocks.pop();
 			}
@@ -181,8 +170,8 @@ namespace CamelotFramework
 
 			while(activePreciseBlocks.size() > 0)
 			{
-				PreciseProfiledBlock* block = activePreciseBlocks.top();
-				block->data.endSample();
+				ProfiledBlock* block = activePreciseBlocks.top();
+				block->precise.endSample();
 
 				activePreciseBlocks.pop();
 			}
@@ -191,7 +180,7 @@ namespace CamelotFramework
 		isActive = false;
 		activeBlocks = Stack<ProfiledBlock*>::type();
 		activeBlock = nullptr;
-		activePreciseBlocks = Stack<PreciseProfiledBlock*>::type();
+		activePreciseBlocks = Stack<ProfiledBlock*>::type();
 		activePreciseBlock = nullptr;
 	}
 
@@ -203,11 +192,7 @@ namespace CamelotFramework
 		if(rootBlock != nullptr)
 			releaseBlock(rootBlock);
 
-		if(rootPreciseBlock != nullptr)
-			releasePreciseBlock(rootPreciseBlock);
-
 		rootBlock = nullptr;
-		rootPreciseBlock = nullptr;
 	}
 
 	CPUProfiler::ProfiledBlock* CPUProfiler::ThreadInfo::getBlock()
@@ -222,22 +207,8 @@ namespace CamelotFramework
 		cm_delete(block);
 	}
 
-	CPUProfiler::PreciseProfiledBlock* CPUProfiler::ThreadInfo::getPreciseBlock()
-	{
-		// TODO - Pool this, if possible using the memory allocator stuff
-		// TODO - Also consider moving all samples in ThreadInfo, and also pool them (otherwise I can't pool ProfiledBlock since it will be variable size)
-		return cm_new<PreciseProfiledBlock>();
-	}
-
-	void CPUProfiler::ThreadInfo::releasePreciseBlock(CPUProfiler::PreciseProfiledBlock* block)
-	{
-		cm_delete(block);
-	}
-
 	CPUProfiler::ProfiledBlock::ProfiledBlock()
-	{
-
-	}
+	{ }
 
 	CPUProfiler::ProfiledBlock::~ProfiledBlock()
 	{
@@ -260,34 +231,9 @@ namespace CamelotFramework
 		return nullptr;
 	}
 
-	CPUProfiler::PreciseProfiledBlock::PreciseProfiledBlock()
-	{
-
-	}
-
-	CPUProfiler::PreciseProfiledBlock::~PreciseProfiledBlock()
-	{
-		ThreadInfo* thread = ThreadInfo::activeThread;
-
-		for(auto& child : children)
-			thread->releasePreciseBlock(child);
-
-		children.clear();
-	}
-
-	CPUProfiler::PreciseProfiledBlock* CPUProfiler::PreciseProfiledBlock::findChild(const String& name) const
-	{
-		for(auto& child : children)
-		{
-			if(child->name == name)
-				return child;
-		}
-
-		return nullptr;
-	}
-
 	CPUProfiler::CPUProfiler()
-		:mBasicTimerOverhead(0.0), mPreciseTimerOverhead(0), mBasicSamplingOverhead(0.0), mPreciseSamplingOverhead(0)
+		:mBasicTimerOverhead(0.0), mPreciseTimerOverhead(0), mBasicSamplingOverheadMs(0.0), mPreciseSamplingOverheadCycles(0),
+		mBasicSamplingOverheadCycles(0), mPreciseSamplingOverheadMs(0.0)
 	{
 		// TODO - We only estimate overhead on program start. It might be better to estimate it each time beginThread is called,
 		// and keep separate values per thread.
@@ -301,10 +247,7 @@ namespace CamelotFramework
 		CM_LOCK_MUTEX(mThreadSync);
 
 		for(auto& threadInfo : mActiveThreads)
-		{
-			threadInfo->releaseBlock(threadInfo->rootBlock);
 			cm_delete(threadInfo);
-		}
 	}
 
 	void CPUProfiler::beginThread(const String& name)
@@ -340,40 +283,53 @@ namespace CamelotFramework
 		ProfiledBlock* parent = thread->activeBlock;
 		ProfiledBlock* block = nullptr;
 		
-		parent->findChild(name);
+		if(parent != nullptr)
+			block = parent->findChild(name);
 
 		if(block == nullptr)
 		{
 			block = thread->getBlock();
 			block->name = name;
 
-			parent->children.push_back(block);
-			thread->activePreciseBlock->basicChildren.push_back(block);
-
-			thread->activeBlocks.push(block);
-			thread->activeBlock = block;
+			if(parent != nullptr)
+				parent->children.push_back(block);
+			else
+				thread->rootBlock->children.push_back(block);
 		}
 
-		block->data.beginSample();
+		thread->activeBlocks.push(block);
+		thread->activeBlock = block;
+
+		block->basic.beginSample();
 	}
 
 	void CPUProfiler::endSample(const String& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock;
-		block->data.endSample();
+		if(block == nullptr)
+		{
+			LOGWRN("Mismatched Profiler::endSample. No beginSample was called.");
+			return;
+		}
+
+		block->basic.endSample();
 
 		if(block->name != name)
 		{
 			LOGWRN("Mismatched Profiler::endSample. Was expecting \"" + block->name + "\" but got \"" + name + "\". Sampling data will not be valid.");
 
-			block->data.resumeLastSample();
+			block->basic.resumeLastSample();
 
 			return;
 		}
 
 		thread->activeBlocks.pop();
-		thread->activeBlock = thread->activeBlocks.top();
+
+		if(!thread->activeBlocks.empty())
+			thread->activeBlock = thread->activeBlocks.top();
+		else
+			thread->activeBlock = nullptr;
 	}
 
 	void CPUProfiler::beginSamplePrecise(const String& name)
@@ -385,43 +341,56 @@ namespace CamelotFramework
 		if(thread == nullptr || !thread->isActive)
 			beginThread("Unknown");
 
-		PreciseProfiledBlock* parent = thread->activePreciseBlock;
-		PreciseProfiledBlock* block = nullptr;
+		ProfiledBlock* parent = thread->activePreciseBlock;
+		ProfiledBlock* block = nullptr;
 		
-		parent->findChild(name);
+		if(parent != nullptr)
+			block = parent->findChild(name);
 
 		if(block == nullptr)
 		{
-			block = thread->getPreciseBlock();
+			block = thread->getBlock();
 			block->name = name;
 
-			parent->children.push_back(block);
-			thread->activeBlock->preciseChildren.push_back(block);
-
-			thread->activePreciseBlocks.push(block);
-			thread->activePreciseBlock = block;
+			if(parent != nullptr)
+				parent->children.push_back(block);
+			else
+				thread->rootBlock->children.push_back(block);
 		}
 
-		block->data.beginSample();
+		thread->activePreciseBlocks.push(block);
+		thread->activePreciseBlock = block;
+
+		block->precise.beginSample();
 	}
 
 	void CPUProfiler::endSamplePrecise(const String& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
-		PreciseProfiledBlock* block = thread->activePreciseBlock;
-		block->data.endSample();
+		ProfiledBlock* block = thread->activePreciseBlock;
+		if(block == nullptr)
+		{
+			LOGWRN("Mismatched Profiler::endSamplePrecise. No beginSamplePrecise was called.");
+			return;
+		}
+
+		block->precise.endSample();
 
 		if(block->name != name)
 		{
 			LOGWRN("Mismatched Profiler::endSamplePrecise. Was expecting \"" + block->name + "\" but got \"" + name + "\". Sampling data will not be valid.");
 
-			block->data.resumeLastSample();
+			block->precise.resumeLastSample();
 
 			return;
 		}
 
 		thread->activePreciseBlocks.pop();
-		thread->activePreciseBlock = thread->activePreciseBlocks.top();
+
+		if(!thread->activePreciseBlocks.empty())
+			thread->activePreciseBlock = thread->activePreciseBlocks.top();
+		else
+			thread->activePreciseBlock = nullptr;
 	}
 
 	void CPUProfiler::update()
@@ -448,141 +417,257 @@ namespace CamelotFramework
 		if(thread->isActive)
 			thread->end();
 
-		if(thread->rootBlock != nullptr)
+		// We need to separate out basic and precise data and form two separate hierarchies
+		if(thread->rootBlock == nullptr)
+			return report;
+
+		struct TempEntry
 		{
-			// Fill up flatHierarchy array in a way so we always process
-			// children before parents
-			Stack<ProfiledBlock*>::type todo;
-			Vector<ProfiledBlock*>::type flatHierarchy;
-			Vector<CPUProfilerBasicSamplingEntry*>::type flatResultHierarchy;
+			TempEntry(ProfiledBlock* _parentBlock, UINT32 _entryIdx)
+				:parentBlock(_parentBlock), entryIdx(_entryIdx)
+			{ }
 
-			todo.push(thread->rootBlock);
-			flatHierarchy.push_back(thread->rootBlock);
-			flatResultHierarchy.push_back(&report.mBasicSamplingRootEntry);
+			ProfiledBlock* parentBlock;
+			UINT32 entryIdx;
+			Vector<UINT32>::type childIndexes;
+		};
 
-			while(!todo.empty())
+		Vector<CPUProfilerBasicSamplingEntry>::type basicEntries;
+		Vector<CPUProfilerPreciseSamplingEntry>::type preciseEntries;	
+
+		// Fill up flatHierarchy array in a way so we always process children before parents
+		Stack<UINT32>::type todo;
+		Vector<TempEntry>::type flatHierarchy;
+
+		UINT32 entryIdx = 0;
+		todo.push(entryIdx);
+		flatHierarchy.push_back(TempEntry(thread->rootBlock, entryIdx));
+
+		entryIdx++;
+		while(!todo.empty())
+		{
+			UINT32 curDataIdx = todo.top();
+			ProfiledBlock* curBlock = flatHierarchy[curDataIdx].parentBlock;
+
+			todo.pop();
+
+			for(auto& child : curBlock->children)
 			{
-				ProfiledBlock* curBlock = todo.top();
-				todo.pop();
+				flatHierarchy[curDataIdx].childIndexes.push_back(entryIdx);
 
-				CPUProfilerBasicSamplingEntry* parentEntry = flatResultHierarchy.back();
-				for(auto& child : curBlock->children)
-				{
-					todo.push(child);
-					flatHierarchy.push_back(child);
+				todo.push(entryIdx);
+				flatHierarchy.push_back(TempEntry(child, entryIdx));
 
-					parentEntry->childEntries.push_back(CPUProfilerBasicSamplingEntry());
-					flatResultHierarchy.push_back(&parentEntry->childEntries.back());					
-				}
+				entryIdx++;
+			}
+		}
+		
+		// Calculate sampling data for all entries
+		basicEntries.resize(flatHierarchy.size());
+		preciseEntries.resize(flatHierarchy.size());
+
+		for(auto& iter = flatHierarchy.rbegin(); iter != flatHierarchy.rend(); ++iter)
+		{
+			TempEntry& curData = *iter;
+			ProfiledBlock* curBlock = curData.parentBlock;
+
+			CPUProfilerBasicSamplingEntry* entryBasic = &basicEntries[curData.entryIdx];
+			CPUProfilerPreciseSamplingEntry* entryPrecise = &preciseEntries[curData.entryIdx];
+
+			// Calculate basic data
+			entryBasic->data.name = curBlock->name;
+
+			entryBasic->data.totalTimeMs = 0.0;
+			entryBasic->data.maxTimeMs = 0.0;
+			for(auto& sample : curBlock->basic.samples)
+			{
+				entryBasic->data.totalTimeMs += sample.time;
+				entryBasic->data.maxTimeMs = std::max(entryBasic->data.maxTimeMs, sample.time);
 			}
 
-			auto& iter = flatHierarchy.rbegin();
-			auto& iterSample = flatResultHierarchy.rbegin();
+			entryBasic->data.numCalls = (UINT32)curBlock->basic.samples.size();
 
-			for(; iter != flatHierarchy.rend(); ++iter, ++iterSample)
+			if(entryBasic->data.numCalls > 0)
+				entryBasic->data.avgTimeMs = entryBasic->data.totalTimeMs / entryBasic->data.numCalls;
+
+			double totalChildTime = 0.0;
+			for(auto& childIdx : curData.childIndexes)
 			{
-				ProfiledBlock* curBlock = *iter;
-				CPUProfilerBasicSamplingEntry* entry = *iterSample;
+				CPUProfilerBasicSamplingEntry* childEntry = &basicEntries[childIdx];
+				totalChildTime += childEntry->data.totalTimeMs;
+				childEntry->data.pctOfParent = (float)(childEntry->data.totalTimeMs / entryBasic->data.totalTimeMs);
 
-				entry->data.name = curBlock->name;
+				entryBasic->data.estimatedOverheadMs += childEntry->data.estimatedOverheadMs;
+			}
 
-				entry->data.totalTimeMs = 0.0;
-				entry->data.maxTimeMs = 0.0;
-				for(auto& sample : curBlock->data.samples)
+			entryBasic->data.estimatedOverheadMs += curBlock->basic.samples.size() * mBasicSamplingOverheadMs;
+			entryBasic->data.estimatedOverheadMs += curBlock->precise.samples.size() * mPreciseSamplingOverheadMs;
+
+			entryBasic->data.totalSelfTimeMs = entryBasic->data.totalTimeMs - totalChildTime;
+
+			if(entryBasic->data.numCalls > 0)
+				entryBasic->data.avgSelfTimeMs = entryBasic->data.totalSelfTimeMs / entryBasic->data.numCalls;
+
+			entryBasic->data.estimatedSelfOverheadMs = mBasicTimerOverhead;
+
+			// Calculate precise data
+			entryPrecise->data.name = curBlock->name;
+
+			entryPrecise->data.totalCycles = 0;
+			entryPrecise->data.maxCycles = 0;
+			for(auto& sample : curBlock->precise.samples)
+			{
+				entryPrecise->data.totalCycles += sample.cycles;
+				entryPrecise->data.maxCycles = std::max(entryPrecise->data.maxCycles, sample.cycles);
+			}
+
+			entryPrecise->data.numCalls = (UINT32)curBlock->precise.samples.size();
+
+			if(entryPrecise->data.numCalls > 0)
+				entryPrecise->data.avgCycles = entryPrecise->data.totalCycles / entryPrecise->data.numCalls;
+
+			UINT64 totalChildCycles = 0;
+			for(auto& childIdx : curData.childIndexes)
+			{
+				CPUProfilerPreciseSamplingEntry* childEntry = &preciseEntries[childIdx];
+				totalChildCycles += childEntry->data.totalCycles;
+				childEntry->data.pctOfParent = childEntry->data.totalCycles / (float)entryPrecise->data.totalCycles;
+
+				entryPrecise->data.estimatedOverhead += childEntry->data.estimatedOverhead;
+			}
+
+			entryPrecise->data.estimatedOverhead += curBlock->precise.samples.size() * mPreciseSamplingOverheadCycles;
+			entryPrecise->data.estimatedOverhead += curBlock->basic.samples.size() * mBasicSamplingOverheadCycles;
+
+			entryPrecise->data.totalSelfCycles = entryPrecise->data.totalCycles - totalChildCycles;
+
+			if(entryPrecise->data.numCalls > 0)
+				entryPrecise->data.avgSelfCycles = entryPrecise->data.totalSelfCycles / entryPrecise->data.numCalls;
+
+			entryPrecise->data.estimatedSelfOverhead = mPreciseTimerOverhead;
+		}
+
+		// Prune empty basic entries
+		Stack<UINT32>::type finalBasicHierarchyTodo;
+		Stack<UINT32>::type parentBasicEntryIndexes;
+		Vector<TempEntry>::type newBasicEntries;
+
+		finalBasicHierarchyTodo.push(0);
+
+		entryIdx = 0;
+		parentBasicEntryIndexes.push(entryIdx);
+		newBasicEntries.push_back(TempEntry(nullptr, entryIdx));
+
+		entryIdx++;
+
+		while(!finalBasicHierarchyTodo.empty())
+		{
+			UINT32 parentEntryIdx = parentBasicEntryIndexes.top();
+			parentBasicEntryIndexes.pop();
+
+			UINT32 curEntryIdx = finalBasicHierarchyTodo.top();
+			TempEntry& curEntry = flatHierarchy[curEntryIdx];
+			CPUProfilerBasicSamplingEntry& basicEntry = basicEntries[curEntryIdx];
+			finalBasicHierarchyTodo.pop();
+
+			for(auto& childIdx : curEntry.childIndexes)
+			{
+				finalBasicHierarchyTodo.push(childIdx);
+
+				if(basicEntry.data.numCalls > 0)
 				{
-					entry->data.totalTimeMs += sample.time;
-					entry->data.maxTimeMs = std::max(entry->data.maxTimeMs, sample.time);
+					newBasicEntries.push_back(TempEntry(nullptr, childIdx));
+					newBasicEntries[parentEntryIdx].childIndexes.push_back(entryIdx);
+
+					parentBasicEntryIndexes.push(entryIdx);
+
+					entryIdx++;
 				}
-
-				entry->data.numCalls = (UINT32)curBlock->data.samples.size();
-				entry->data.avgTimeMs = entry->data.totalTimeMs / entry->data.numCalls;
-
-				UINT32 childIdx = 0;
-				double totalChildTime = 0.0;
-				for(auto& child : curBlock->children)
-				{
-					totalChildTime += entry->childEntries[childIdx].data.totalTimeMs;
-					entry->childEntries[childIdx].data.pctOfParent = entry->childEntries[childIdx].data.totalTimeMs / entry->data.totalTimeMs;
-
-					entry->data.estimatedOverheadMs += entry->childEntries[childIdx].data.estimatedOverheadMs + mBasicSamplingOverhead;
-
-					childIdx++;
-				}
-
-				entry->data.totalSelfTimeMs = entry->data.totalTimeMs - totalChildTime;
-				entry->data.avgSelfTimeMs = entry->data.totalSelfTimeMs / entry->data.numCalls;
-
-				entry->data.estimatedSelfOverheadMs = mBasicTimerOverhead;
+				else
+					parentBasicEntryIndexes.push(parentEntryIdx);
 			}
 		}
 
-		if(thread->rootPreciseBlock != nullptr)
+		Vector<CPUProfilerBasicSamplingEntry*>::type finalBasicEntries;
+		finalBasicEntries.push_back(&report.mBasicSamplingRootEntry);
+		
+		UINT32 curEntryIdx = 0;
+		for(auto& curEntry : newBasicEntries)
 		{
-			// Fill up flatHierarchy array in a way so we always process
-			// children before parents
-			Stack<PreciseProfiledBlock*>::type todo;
-			Vector<PreciseProfiledBlock*>::type flatHierarchy;
-			Vector<CPUProfilerPreciseSamplingEntry*>::type flatResultHierarchy;
+			CPUProfilerBasicSamplingEntry* basicEntry = finalBasicEntries[curEntryIdx];
 
-			todo.push(thread->rootPreciseBlock);
-			flatHierarchy.push_back(thread->rootPreciseBlock);
-			flatResultHierarchy.push_back(&report.mPreciseSamplingRootEntry);
-
-			while(!todo.empty())
+			for(auto& childIdx : curEntry.childIndexes)
 			{
-				PreciseProfiledBlock* curBlock = todo.top();
-				todo.pop();
+				TempEntry& childEntry = newBasicEntries[childIdx];
+				basicEntry->childEntries.push_back(basicEntries[childEntry.entryIdx]);
 
-				CPUProfilerPreciseSamplingEntry* parentEntry = flatResultHierarchy.back();
-				for(auto& child : curBlock->children)
-				{
-					todo.push(child);
-					flatHierarchy.push_back(child);
-
-					parentEntry->childEntries.push_back(CPUProfilerPreciseSamplingEntry());
-					flatResultHierarchy.push_back(&parentEntry->childEntries.back());					
-				}
+				finalBasicEntries.push_back(&basicEntry->childEntries.back());
 			}
 
-			auto& iter = flatHierarchy.rbegin();
-			auto& iterSample = flatResultHierarchy.rbegin();
+			curEntryIdx++;
+		}
 
-			for(; iter != flatHierarchy.rend(); ++iter, ++iterSample)
+		// Prune empty precise entries
+		Stack<UINT32>::type finalPreciseHierarchyTodo;
+		Stack<UINT32>::type parentPreciseEntryIndexes;
+		Vector<TempEntry>::type newPreciseEntries;
+
+		finalPreciseHierarchyTodo.push(0);
+
+		entryIdx = 0;
+		parentPreciseEntryIndexes.push(entryIdx);
+		newPreciseEntries.push_back(TempEntry(nullptr, entryIdx));
+
+		entryIdx++;
+
+		while(!finalPreciseHierarchyTodo.empty())
+		{
+			UINT32 parentEntryIdx = parentPreciseEntryIndexes.top();
+			parentPreciseEntryIndexes.pop();
+
+			UINT32 curEntryIdx = finalPreciseHierarchyTodo.top();
+			TempEntry& curEntry = flatHierarchy[curEntryIdx];
+			CPUProfilerPreciseSamplingEntry& preciseEntry = preciseEntries[curEntryIdx];
+			finalPreciseHierarchyTodo.pop();
+
+			for(auto& childIdx : curEntry.childIndexes)
 			{
-				PreciseProfiledBlock* curBlock = *iter;
-				CPUProfilerPreciseSamplingEntry* entry = *iterSample;
+				finalPreciseHierarchyTodo.push(childIdx);
 
-				entry->data.name = curBlock->name;
-
-				entry->data.totalCycles = 0;
-				entry->data.maxCycles = 0;
-				for(auto& sample : curBlock->data.samples)
+				if(preciseEntry.data.numCalls > 0)
 				{
-					entry->data.totalCycles += sample.cycles;
-					entry->data.maxCycles = std::max(entry->data.maxCycles, sample.cycles);
+					newPreciseEntries.push_back(TempEntry(nullptr, childIdx));
+					newPreciseEntries[parentEntryIdx].childIndexes.push_back(entryIdx);
+
+					parentPreciseEntryIndexes.push(entryIdx);
+
+					entryIdx++;
 				}
-
-				entry->data.numCalls = (UINT32)curBlock->data.samples.size();
-				entry->data.avgCycles = entry->data.avgCycles / entry->data.numCalls;
-
-				UINT32 childIdx = 0;
-				UINT64 totalChildCycles = 0;
-				for(auto& child : curBlock->children)
-				{
-					totalChildCycles += entry->childEntries[childIdx].data.totalCycles;
-					entry->childEntries[childIdx].data.pctOfParent = entry->childEntries[childIdx].data.totalCycles / (float)entry->data.totalCycles;
-
-					entry->data.estimatedOverhead += entry->childEntries[childIdx].data.estimatedOverhead + mPreciseSamplingOverhead;
-
-					childIdx++;
-				}
-
-				entry->data.totalSelfCycles = entry->data.totalCycles - totalChildCycles;
-				entry->data.avgSelfCycles = entry->data.totalSelfCycles / entry->data.numCalls;
-
-				entry->data.estimatedSelfOverhead = mPreciseTimerOverhead;
+				else
+					parentPreciseEntryIndexes.push(parentEntryIdx);
 			}
 		}
+
+		Vector<CPUProfilerPreciseSamplingEntry*>::type finalPreciseEntries;
+		finalPreciseEntries.push_back(&report.mPreciseSamplingRootEntry);
+
+		curEntryIdx = 0;
+		for(auto& curEntry : newPreciseEntries)
+		{
+			CPUProfilerPreciseSamplingEntry* preciseEntry = finalPreciseEntries[curEntryIdx];
+
+			for(auto& childIdx : curEntry.childIndexes)
+			{
+				TempEntry& childEntry = newPreciseEntries[childIdx];
+				preciseEntry->childEntries.push_back(preciseEntries[childEntry.entryIdx]);
+
+				finalPreciseEntries.push_back(&preciseEntry->childEntries.back());
+			}
+
+			curEntryIdx++;
+		}
+
+		return report;
 	}
 
 	void CPUProfiler::estimateTimerOverhead()
@@ -592,7 +677,7 @@ namespace CamelotFramework
 
 		mBasicTimerOverhead = 1000000.0;
 		mPreciseTimerOverhead = 1000000;
-		for (UINT32 tries = 0; tries < 20; tries++) 
+		for (UINT32 tries = 0; tries < 5; tries++) 
 		{
 			Timer timer;
 			for (UINT32 i = 0; i < reps; i++) 
@@ -617,10 +702,19 @@ namespace CamelotFramework
 				mPreciseTimerOverhead = avgCycles;
 		}
 
+		mBasicSamplingOverheadMs = 1000000.0;
+		mPreciseSamplingOverheadMs = 1000000.0;
+		mBasicSamplingOverheadCycles = 1000000;
+		mPreciseSamplingOverheadCycles = 1000000;
 		for (UINT32 tries = 0; tries < 20; tries++) 
 		{
-			Timer timer;
-			timer.start();
+			/************************************************************************/
+			/* 				AVERAGE TIME IN MS FOR BASIC SAMPLING                   */
+			/************************************************************************/
+
+			Timer timerA;
+			timerA.start();
+
 			beginThread("Main");
 
 			// Two different cases that can effect performance, one where
@@ -651,21 +745,76 @@ namespace CamelotFramework
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSample("Test#" + toString(i));
-				endSample("Test#" + toString(i));
+				beginSample("TestAvg#" + toString(i));
+				endSample("TestAvg#" + toString(i));
 			}
 
 			endThread();
-			timer.stop();
+
+			timerA.stop();
 
 			reset();
 
-			double avgTime = double(timer.time)/double(sampleReps * 10 + sampleReps * 5);
-			if (avgTime < mBasicSamplingOverhead)
-				mBasicSamplingOverhead = avgTime;
+			double avgTimeBasic = double(timerA.time)/double(sampleReps * 10 + sampleReps * 5) - mBasicTimerOverhead;
+			if (avgTimeBasic < mBasicSamplingOverheadMs)
+				mBasicSamplingOverheadMs = avgTimeBasic;
 
-			TimerPrecise timerPrecise;
-			timerPrecise.start();
+			/************************************************************************/
+			/* 					AVERAGE CYCLES FOR BASIC SAMPLING                   */
+			/************************************************************************/
+
+			TimerPrecise timerPreciseA;
+			timerPreciseA.start();
+
+			beginThread("Main");
+
+			// Two different cases that can effect performance, one where
+			// sample already exists and other where new one needs to be created
+			for (UINT32 i = 0; i < sampleReps; i++) 
+			{
+				beginSample("TestAvg1");
+				endSample("TestAvg1");
+				beginSample("TestAvg2");
+				endSample("TestAvg2");
+				beginSample("TestAvg3");
+				endSample("TestAvg3");
+				beginSample("TestAvg4");
+				endSample("TestAvg4");
+				beginSample("TestAvg5");
+				endSample("TestAvg5");
+				beginSample("TestAvg6");
+				endSample("TestAvg6");
+				beginSample("TestAvg7");
+				endSample("TestAvg7");
+				beginSample("TestAvg8");
+				endSample("TestAvg8");
+				beginSample("TestAvg9");
+				endSample("TestAvg9");
+				beginSample("TestAvg10");
+				endSample("TestAvg10");
+			}
+
+			for (UINT32 i = 0; i < sampleReps * 5; i++) 
+			{
+				beginSample("TestAvg#" + toString(i));
+				endSample("TestAvg#" + toString(i));
+			}
+
+			endThread();
+			timerPreciseA.stop();
+
+			reset();
+
+			UINT64 avgCyclesBasic = timerPreciseA.cycles/(sampleReps * 10 + sampleReps * 5) - mPreciseTimerOverhead;
+			if (avgCyclesBasic < mBasicSamplingOverheadCycles)
+				mBasicSamplingOverheadCycles = avgCyclesBasic;
+
+			/************************************************************************/
+			/* 				AVERAGE TIME IN MS FOR PRECISE SAMPLING                 */
+			/************************************************************************/
+
+			Timer timerB;
+			timerB.start();
 			beginThread("Main");
 
 			// Two different cases that can effect performance, one where
@@ -696,18 +845,67 @@ namespace CamelotFramework
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSamplePrecise("Test#" + toString(i));
-				endSamplePrecise("Test#" + toString(i));
+				beginSamplePrecise("TestAvg#" + toString(i));
+				endSamplePrecise("TestAvg#" + toString(i));
 			}
 
 			endThread();
-			timerPrecise.stop();
+			timerB.stop();
 
 			reset();
 
-			UINT64 avgCycles = timerPrecise.cycles/(sampleReps * 10 + sampleReps * 5);
-			if (avgCycles < mPreciseSamplingOverhead)
-				mPreciseSamplingOverhead = avgCycles;
+			double avgTimesPrecise = timerB.time/(sampleReps * 10 + sampleReps * 5);
+			if (avgTimesPrecise < mPreciseSamplingOverheadMs)
+				mPreciseSamplingOverheadMs = avgTimesPrecise;
+
+			/************************************************************************/
+			/* 				AVERAGE CYCLES FOR PRECISE SAMPLING                     */
+			/************************************************************************/
+
+			TimerPrecise timerPreciseB;
+			timerPreciseB.start();
+			beginThread("Main");
+
+			// Two different cases that can effect performance, one where
+			// sample already exists and other where new one needs to be created
+			for (UINT32 i = 0; i < sampleReps; i++) 
+			{
+				beginSamplePrecise("TestAvg1");
+				endSamplePrecise("TestAvg1");
+				beginSamplePrecise("TestAvg2");
+				endSamplePrecise("TestAvg2");
+				beginSamplePrecise("TestAvg3");
+				endSamplePrecise("TestAvg3");
+				beginSamplePrecise("TestAvg4");
+				endSamplePrecise("TestAvg4");
+				beginSamplePrecise("TestAvg5");
+				endSamplePrecise("TestAvg5");
+				beginSamplePrecise("TestAvg6");
+				endSamplePrecise("TestAvg6");
+				beginSamplePrecise("TestAvg7");
+				endSamplePrecise("TestAvg7");
+				beginSamplePrecise("TestAvg8");
+				endSamplePrecise("TestAvg8");
+				beginSamplePrecise("TestAvg9");
+				endSamplePrecise("TestAvg9");
+				beginSamplePrecise("TestAvg10");
+				endSamplePrecise("TestAvg10");
+			}
+
+			for (UINT32 i = 0; i < sampleReps * 5; i++) 
+			{
+				beginSamplePrecise("TestAvg#" + toString(i));
+				endSamplePrecise("TestAvg#" + toString(i));
+			}
+
+			endThread();
+			timerPreciseB.stop();
+
+			reset();
+
+			UINT64 avgCyclesPrecise = timerPreciseB.cycles/(sampleReps * 10 + sampleReps * 5);
+			if (avgCyclesPrecise < mPreciseSamplingOverheadCycles)
+				mPreciseSamplingOverheadCycles = avgCyclesPrecise;
 		}
 	}
 
@@ -722,4 +920,9 @@ namespace CamelotFramework
 		avgSelfCycles(0), totalSelfCycles(0), estimatedSelfOverhead(0),
 		estimatedOverhead(0), pctOfParent(1.0f)
 	{ }
+
+	CPUProfilerReport::CPUProfilerReport()
+	{
+
+	}
 }

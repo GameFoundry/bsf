@@ -4,6 +4,7 @@
 #include "BsCamera.h"
 #include "CmSceneObject.h"
 #include "CmRenderTexture.h"
+#include "CmCPUProfiler.h"
 
 // DEBUG ONLY
 #include "CmTestTextSprite.h"
@@ -61,6 +62,8 @@ namespace BansheeEditor
 
 		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
 		DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
+
+		CPUProfiler profiler;
 	}
 
 	MainEditorWindow::~MainEditorWindow()

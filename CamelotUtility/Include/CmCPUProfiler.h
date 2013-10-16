@@ -97,24 +97,13 @@ namespace CamelotFramework
 			~ProfiledBlock();
 
 			String name;
-			ProfileData data;
+			
+			ProfileData basic;
+			PreciseProfileData precise;
+
 			Vector<ProfiledBlock*>::type children;
-			Vector<PreciseProfiledBlock*>::type preciseChildren; // Needed only for estimating overhead
 
 			ProfiledBlock* findChild(const String& name) const;
-		};
-
-		struct PreciseProfiledBlock
-		{
-			PreciseProfiledBlock();
-			~PreciseProfiledBlock();
-
-			String name;
-			PreciseProfileData data;
-			Vector<PreciseProfiledBlock*>::type children;
-			Vector<ProfiledBlock*>::type basicChildren; // Needed only for estimating overhead
-
-			PreciseProfiledBlock* findChild(const String& name) const;
 		};
 
 		struct ThreadInfo
@@ -128,9 +117,8 @@ namespace CamelotFramework
 			Stack<ProfiledBlock*>::type activeBlocks;
 			ProfiledBlock* activeBlock;
 
-			PreciseProfiledBlock* rootPreciseBlock;
-			Stack<PreciseProfiledBlock*>::type activePreciseBlocks;
-			PreciseProfiledBlock* activePreciseBlock;
+			Stack<ProfiledBlock*>::type activePreciseBlocks;
+			ProfiledBlock* activePreciseBlock;
 
 			void begin(const String& _name);
 			void end();
@@ -138,9 +126,6 @@ namespace CamelotFramework
 
 			ProfiledBlock* getBlock();
 			void releaseBlock(ProfiledBlock* block);
-
-			PreciseProfiledBlock* getPreciseBlock();
-			void releasePreciseBlock(PreciseProfiledBlock* block);
 		};
 
 	public:
@@ -221,8 +206,10 @@ namespace CamelotFramework
 		double mBasicTimerOverhead;
 		UINT64 mPreciseTimerOverhead;
 
-		double mBasicSamplingOverhead;
-		UINT64 mPreciseSamplingOverhead;
+		double mBasicSamplingOverheadMs;
+		double mPreciseSamplingOverheadMs;
+		UINT64 mBasicSamplingOverheadCycles;
+		UINT64 mPreciseSamplingOverheadCycles;
 
 		Vector<ThreadInfo*>::type mActiveThreads;
 		CM_MUTEX(mThreadSync);
