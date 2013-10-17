@@ -78,7 +78,7 @@ namespace CamelotFramework
 
 		struct PreciseProfileData
 		{
-			// TODO - Add cache misses, branch mispredictions, retired instructions vs. optimal number of cycles
+			// TODO - Add cache misses, branch mispredictions, retired instructions vs. optimal number of cycles (RDPMC instruction on Intel)
 
 			Vector<PreciseProfileSample>::type samples;
 			TimerPrecise timer;
@@ -106,6 +106,26 @@ namespace CamelotFramework
 			ProfiledBlock* findChild(const String& name) const;
 		};
 
+		enum class ActiveSamplingType
+		{
+			Basic,
+			Precise
+		};
+
+		struct ActiveBlock
+		{
+			ActiveBlock()
+				:type(ActiveSamplingType::Basic), block(nullptr)
+			{ }
+
+			ActiveBlock(ActiveSamplingType _type, ProfiledBlock* _block)
+				:type(_type), block(_block)
+			{ }
+
+			ActiveSamplingType type;
+			ProfiledBlock* block;
+		};
+
 		struct ThreadInfo
 		{
 			ThreadInfo();
@@ -114,11 +134,9 @@ namespace CamelotFramework
 			bool isActive;
 
 			ProfiledBlock* rootBlock;
-			Stack<ProfiledBlock*>::type activeBlocks;
-			ProfiledBlock* activeBlock;
 
-			Stack<ProfiledBlock*>::type activePreciseBlocks;
-			ProfiledBlock* activePreciseBlock;
+			Stack<ActiveBlock>::type activeBlocks;
+			ActiveBlock activeBlock;
 
 			void begin(const String& _name);
 			void end();
@@ -183,11 +201,6 @@ namespace CamelotFramework
 		 * 			begin/end sample pairs. Otherwise the name in beginSamplePrecise would be enough.
 		 */
 		void endSamplePrecise(const String& name);
-
-		/**
-		 * @brief	Called every frame. Internal method.
-		 */
-		void update();
 
 		/**
 		 * @brief	Clears all sampling data, and ends any unfinished sampling blocks.

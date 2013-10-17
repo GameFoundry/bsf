@@ -10,8 +10,9 @@ LONGTERM TODO:
 
 PROFILER:
  TODO: Profiler is right now including windows.h. I need to work around that but don't feel like bothering with it atm
-
-
+  - Easy way would be to move CPUProfiler outside of Utility and into Core
+ BIG ISSUE: Current profiler has two different active stacks. Which means calling beginSample and beginSamplePrecise nested will not set proper parents...
+ TODO: Remove debug code from CPUProfiler.h
 
 I still re-create GUIWidget mesh every frame instead of just updating it.
 

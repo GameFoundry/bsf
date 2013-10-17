@@ -118,8 +118,7 @@ namespace CamelotFramework
 	CM_THREADLOCAL CPUProfiler::ThreadInfo* CPUProfiler::ThreadInfo::activeThread = nullptr;
 
 	CPUProfiler::ThreadInfo::ThreadInfo()
-		:isActive(false), activeBlock(nullptr), rootBlock(nullptr), 
-		activePreciseBlock(nullptr)
+		:isActive(false), rootBlock(nullptr)
 	{
 
 	}
@@ -135,9 +134,9 @@ namespace CamelotFramework
 		if(rootBlock == nullptr)
 			rootBlock = getBlock();
 
-		activeBlocks.push(rootBlock);
-		activeBlock = rootBlock;
-
+		activeBlock = ActiveBlock(ActiveSamplingType::Basic, rootBlock);
+		activeBlocks.push(activeBlock);
+		
 		rootBlock->name = _name; 
 		rootBlock->basic.beginSample();
 		isActive = true;
@@ -145,7 +144,11 @@ namespace CamelotFramework
 
 	void CPUProfiler::ThreadInfo::end()
 	{
-		activeBlock->basic.endSample();
+		if(activeBlock.type == ActiveSamplingType::Basic)
+			activeBlock.block->basic.endSample();
+		else
+			activeBlock.block->precise.endSample();
+
 		activeBlocks.pop();
 
 		if(!isActive)
@@ -157,31 +160,19 @@ namespace CamelotFramework
 
 			while(activeBlocks.size() > 0)
 			{
-				ProfiledBlock* block = activeBlocks.top();
-				block->basic.endSample();
+				ActiveBlock& curBlock = activeBlocks.top();
+				if(curBlock.type == ActiveSamplingType::Basic)
+					curBlock.block->basic.endSample();
+				else
+					curBlock.block->precise.endSample();
 
 				activeBlocks.pop();
 			}
 		}
 
-		if(activePreciseBlocks.size() > 0)
-		{
-			LOGWRN("Profiler::endThread called but not all sample pairs were closed. Sampling data will not be valid.");
-
-			while(activePreciseBlocks.size() > 0)
-			{
-				ProfiledBlock* block = activePreciseBlocks.top();
-				block->precise.endSample();
-
-				activePreciseBlocks.pop();
-			}
-		}
-
 		isActive = false;
-		activeBlocks = Stack<ProfiledBlock*>::type();
-		activeBlock = nullptr;
-		activePreciseBlocks = Stack<ProfiledBlock*>::type();
-		activePreciseBlock = nullptr;
+		activeBlocks = Stack<ActiveBlock>::type();
+		activeBlock = ActiveBlock();
 	}
 
 	void CPUProfiler::ThreadInfo::reset()
@@ -280,7 +271,7 @@ namespace CamelotFramework
 		if(thread == nullptr || !thread->isActive)
 			beginThread("Unknown");
 
-		ProfiledBlock* parent = thread->activeBlock;
+		ProfiledBlock* parent = thread->activeBlock.block;
 		ProfiledBlock* block = nullptr;
 		
 		if(parent != nullptr)
@@ -297,8 +288,8 @@ namespace CamelotFramework
 				thread->rootBlock->children.push_back(block);
 		}
 
-		thread->activeBlocks.push(block);
-		thread->activeBlock = block;
+		thread->activeBlock = ActiveBlock(ActiveSamplingType::Basic, block);
+		thread->activeBlocks.push(thread->activeBlock);
 
 		block->basic.beginSample();
 	}
@@ -306,30 +297,36 @@ namespace CamelotFramework
 	void CPUProfiler::endSample(const String& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
-		ProfiledBlock* block = thread->activeBlock;
+		ProfiledBlock* block = thread->activeBlock.block;
+
+#if CM_DEBUG_MODE
 		if(block == nullptr)
 		{
-			LOGWRN("Mismatched Profiler::endSample. No beginSample was called.");
+			LOGWRN("Mismatched CPUProfiler::endSample. No beginSample was called.");
 			return;
 		}
 
-		block->basic.endSample();
+		if(thread->activeBlock.type == ActiveSamplingType::Precise)
+		{
+			LOGWRN("Mismatched CPUProfiler::endSample. Was expecting Profiler::endSamplePrecise.");
+			return;
+		}
 
 		if(block->name != name)
 		{
-			LOGWRN("Mismatched Profiler::endSample. Was expecting \"" + block->name + "\" but got \"" + name + "\". Sampling data will not be valid.");
-
-			block->basic.resumeLastSample();
-
+			LOGWRN("Mismatched CPUProfiler::endSample. Was expecting \"" + block->name + "\" but got \"" + name + "\". Sampling data will not be valid.");
 			return;
 		}
+#endif
+
+		block->basic.endSample();
 
 		thread->activeBlocks.pop();
 
 		if(!thread->activeBlocks.empty())
 			thread->activeBlock = thread->activeBlocks.top();
 		else
-			thread->activeBlock = nullptr;
+			thread->activeBlock = ActiveBlock();
 	}
 
 	void CPUProfiler::beginSamplePrecise(const String& name)
@@ -341,7 +338,7 @@ namespace CamelotFramework
 		if(thread == nullptr || !thread->isActive)
 			beginThread("Unknown");
 
-		ProfiledBlock* parent = thread->activePreciseBlock;
+		ProfiledBlock* parent = thread->activeBlock.block;
 		ProfiledBlock* block = nullptr;
 		
 		if(parent != nullptr)
@@ -358,8 +355,8 @@ namespace CamelotFramework
 				thread->rootBlock->children.push_back(block);
 		}
 
-		thread->activePreciseBlocks.push(block);
-		thread->activePreciseBlock = block;
+		thread->activeBlock = ActiveBlock(ActiveSamplingType::Precise, block);
+		thread->activeBlocks.push(thread->activeBlock);
 
 		block->precise.beginSample();
 	}
@@ -367,35 +364,36 @@ namespace CamelotFramework
 	void CPUProfiler::endSamplePrecise(const String& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
-		ProfiledBlock* block = thread->activePreciseBlock;
+		ProfiledBlock* block = thread->activeBlock.block;
+
+#if CM_DEBUG_MODE
 		if(block == nullptr)
 		{
 			LOGWRN("Mismatched Profiler::endSamplePrecise. No beginSamplePrecise was called.");
 			return;
 		}
 
-		block->precise.endSample();
+		if(thread->activeBlock.type == ActiveSamplingType::Basic)
+		{
+			LOGWRN("Mismatched CPUProfiler::endSamplePrecise. Was expecting Profiler::endSample.");
+			return;
+		}
 
 		if(block->name != name)
 		{
 			LOGWRN("Mismatched Profiler::endSamplePrecise. Was expecting \"" + block->name + "\" but got \"" + name + "\". Sampling data will not be valid.");
-
-			block->precise.resumeLastSample();
-
 			return;
 		}
+#endif
 
-		thread->activePreciseBlocks.pop();
+		block->precise.endSample();
 
-		if(!thread->activePreciseBlocks.empty())
-			thread->activePreciseBlock = thread->activePreciseBlocks.top();
+		thread->activeBlocks.pop();
+
+		if(!thread->activeBlocks.empty())
+			thread->activeBlock = thread->activeBlocks.top();
 		else
-			thread->activePreciseBlock = nullptr;
-	}
-
-	void CPUProfiler::update()
-	{
-		// TODO: Keep track of FPS
+			thread->activeBlock = ActiveBlock();
 	}
 
 	void CPUProfiler::reset()
@@ -567,13 +565,13 @@ namespace CamelotFramework
 
 			UINT32 curEntryIdx = finalBasicHierarchyTodo.top();
 			TempEntry& curEntry = flatHierarchy[curEntryIdx];
-			CPUProfilerBasicSamplingEntry& basicEntry = basicEntries[curEntryIdx];
 			finalBasicHierarchyTodo.pop();
 
 			for(auto& childIdx : curEntry.childIndexes)
 			{
 				finalBasicHierarchyTodo.push(childIdx);
 
+				CPUProfilerBasicSamplingEntry& basicEntry = basicEntries[childIdx];
 				if(basicEntry.data.numCalls > 0)
 				{
 					newBasicEntries.push_back(TempEntry(nullptr, childIdx));
@@ -596,12 +594,15 @@ namespace CamelotFramework
 		{
 			CPUProfilerBasicSamplingEntry* basicEntry = finalBasicEntries[curEntryIdx];
 
+			basicEntry->childEntries.resize(curEntry.childIndexes.size());
+			UINT32 idx = 0;
 			for(auto& childIdx : curEntry.childIndexes)
 			{
 				TempEntry& childEntry = newBasicEntries[childIdx];
-				basicEntry->childEntries.push_back(basicEntries[childEntry.entryIdx]);
+				basicEntry->childEntries[idx] = basicEntries[childEntry.entryIdx];
 
-				finalBasicEntries.push_back(&basicEntry->childEntries.back());
+				finalBasicEntries.push_back(&(basicEntry->childEntries[idx]));
+				idx++;
 			}
 
 			curEntryIdx++;
@@ -627,13 +628,13 @@ namespace CamelotFramework
 
 			UINT32 curEntryIdx = finalPreciseHierarchyTodo.top();
 			TempEntry& curEntry = flatHierarchy[curEntryIdx];
-			CPUProfilerPreciseSamplingEntry& preciseEntry = preciseEntries[curEntryIdx];
 			finalPreciseHierarchyTodo.pop();
 
 			for(auto& childIdx : curEntry.childIndexes)
 			{
 				finalPreciseHierarchyTodo.push(childIdx);
 
+				CPUProfilerPreciseSamplingEntry& preciseEntry = preciseEntries[childIdx];
 				if(preciseEntry.data.numCalls > 0)
 				{
 					newPreciseEntries.push_back(TempEntry(nullptr, childIdx));
@@ -656,12 +657,15 @@ namespace CamelotFramework
 		{
 			CPUProfilerPreciseSamplingEntry* preciseEntry = finalPreciseEntries[curEntryIdx];
 
+			preciseEntry->childEntries.resize(curEntry.childIndexes.size());
+			UINT32 idx = 0;
 			for(auto& childIdx : curEntry.childIndexes)
 			{
 				TempEntry& childEntry = newPreciseEntries[childIdx];
-				preciseEntry->childEntries.push_back(preciseEntries[childEntry.entryIdx]);
+				preciseEntry->childEntries[idx] = preciseEntries[childEntry.entryIdx];
 
 				finalPreciseEntries.push_back(&preciseEntry->childEntries.back());
+				idx++;
 			}
 
 			curEntryIdx++;
@@ -677,7 +681,7 @@ namespace CamelotFramework
 
 		mBasicTimerOverhead = 1000000.0;
 		mPreciseTimerOverhead = 1000000;
-		for (UINT32 tries = 0; tries < 5; tries++) 
+		for (UINT32 tries = 0; tries < 20; tries++) 
 		{
 			Timer timer;
 			for (UINT32 i = 0; i < reps; i++) 
