@@ -272,6 +272,7 @@
     <ClInclude Include="Include\BsGUISkin.h" />
     <ClInclude Include="Include\BsGUIWidget.h" />
     <ClInclude Include="Include\BsImageSprite.h" />
+    <ClInclude Include="Include\BsProfilerOverlay.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />
     <ClInclude Include="Include\BsSprite.h" />
@@ -328,6 +329,7 @@
     <ClCompile Include="Source\BsGUIToggleGroup.cpp" />
     <ClCompile Include="Source\BsGUIWidget.cpp" />
     <ClCompile Include="Source\BsImageSprite.cpp" />
+    <ClCompile Include="Source\BsProfilerOverlay.cpp" />
     <ClCompile Include="Source\BsSceneManager.cpp" />
     <ClCompile Include="Source\BsGUIScrollArea.cpp" />
     <ClCompile Include="Source\BsSprite.cpp" />

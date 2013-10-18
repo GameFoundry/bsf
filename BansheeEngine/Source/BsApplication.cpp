@@ -10,6 +10,7 @@
 #include "BsGLBuiltinMaterialFactory.h"
 #include "BsEngineGUI.h"
 #include "CmApplication.h"
+#include "CmProfiler.h"
 
 using namespace CamelotFramework;
 
@@ -49,7 +50,8 @@ namespace BansheeEngine
 		DrawHelper2D::startUp(cm_new<DrawHelper2D>());
 		DrawHelper3D::startUp(cm_new<DrawHelper3D>());
 
-		EngineGUI::startUp(new EngineGUI());
+		EngineGUI::startUp(cm_new<EngineGUI>());
+		Profiler::startUp(cm_new<Profiler>());
 
 		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
 	}
@@ -63,6 +65,7 @@ namespace BansheeEngine
 	{
 		CM::gApplication().mainLoopCallback.disconnect(updateCallbackConn);
 
+		Profiler::shutDown();
 		EngineGUI::shutDown();
 
 		DrawHelper3D::shutDown();

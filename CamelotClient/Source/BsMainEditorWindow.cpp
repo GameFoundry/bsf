@@ -12,6 +12,7 @@
 #include "BsDrawHelper2D.h"
 #include "BsDrawHelper3D.h"
 #include "CmFRect.h"
+#include "BsProfilerOverlay.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -63,11 +64,14 @@ namespace BansheeEditor
 		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
 		DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 
-		CPUProfiler profiler;
+		ProfilerOverlay::startUp(cm_new<ProfilerOverlay>(mCamera->getViewport(), renderWindow));
+		ProfilerOverlay::instance().show();
 	}
 
 	MainEditorWindow::~MainEditorWindow()
 	{
+		ProfilerOverlay::shutDown();
+
 		cm_delete(mDockManager);
 		cm_delete(mMenuBar);
 	}

@@ -162,6 +162,19 @@ namespace CamelotFramework
 		return stream.str();
 	}
 
+	WString toWString(double val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.precision(precision);
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
 	WString toWString(Radian val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
@@ -210,6 +223,28 @@ namespace CamelotFramework
 	}
 
 	WString toWString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(INT64 val, unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(UINT64 val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		WStringStream stream;
 		stream.width(width);
@@ -350,6 +385,19 @@ namespace CamelotFramework
 		return stream.str();
 	}
 
+	String toString(double val, unsigned short precision, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		StringStream stream;
+		stream.precision(precision);
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
 	String toString(Radian val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
@@ -398,6 +446,29 @@ namespace CamelotFramework
 	}
 
 	String toString(unsigned long val, unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		StringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	String toString(INT64 val, 
+		unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		StringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	String toString(UINT64 val, unsigned short width, char fill, std::ios::fmtflags flags)
 	{
 		StringStream stream;
 		stream.width(width);

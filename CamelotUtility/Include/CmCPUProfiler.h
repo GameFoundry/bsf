@@ -283,13 +283,13 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT CPUProfilerReport
 	{
 	public:
+		CPUProfilerReport();
+
 		const CPUProfilerBasicSamplingEntry& getBasicSamplingData() const { return mBasicSamplingRootEntry; }
 		const CPUProfilerPreciseSamplingEntry& getPreciseSamplingData() const { return mPreciseSamplingRootEntry; }
 
 	private:
 		friend class CPUProfiler;
-
-		CPUProfilerReport();
 
 		CPUProfilerBasicSamplingEntry mBasicSamplingRootEntry;
 		CPUProfilerPreciseSamplingEntry mPreciseSamplingRootEntry;

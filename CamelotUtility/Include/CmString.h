@@ -475,6 +475,11 @@ namespace CamelotFramework
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
+	/** Converts a double to a WString. */
+	CM_UTILITY_EXPORT WString toWString(double val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
     /** Converts a Radian to a WString. */
     CM_UTILITY_EXPORT WString toWString(Radian val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
@@ -504,6 +509,16 @@ namespace CamelotFramework
     CM_UTILITY_EXPORT WString toWString(unsigned long val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+	/** Converts an INT64 to a WString. */
+	CM_UTILITY_EXPORT WString toWString(INT64 val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+	/** Converts an UINT64 to a WString. */
+	CM_UTILITY_EXPORT WString toWString(UINT64 val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
     /** Converts a boolean to a WString. 
     @param yesNo If set to true, result is 'yes' or 'no' instead of 'true' or 'false'
@@ -570,6 +585,11 @@ namespace CamelotFramework
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
+	/** Converts a double to a String. */
+	CM_UTILITY_EXPORT String toString(double val, unsigned short precision = 6, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
     /** Converts a Radian to a String. */
     CM_UTILITY_EXPORT String toString(Radian val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
@@ -599,6 +619,16 @@ namespace CamelotFramework
     CM_UTILITY_EXPORT String toString(unsigned long val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+	/** Converts an unsigned long to a String. */
+	CM_UTILITY_EXPORT String toString(INT64 val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
+
+	/** Converts an unsigned long to a String. */
+	CM_UTILITY_EXPORT String toString(UINT64 val, 
+		unsigned short width = 0, char fill = ' ', 
+		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
     /** Converts a boolean to a String. 
     @param yesNo If set to true, result is 'yes' or 'no' instead of 'true' or 'false'

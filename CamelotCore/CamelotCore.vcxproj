@@ -289,6 +289,7 @@
     <ClInclude Include="Include\CmPixelDataRTTI.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
     <ClInclude Include="Include\CmPlatformWndProc.h" />
+    <ClInclude Include="Include\CmProfiler.h" />
     <ClInclude Include="Include\CmRenderOperation.h" />
     <ClInclude Include="Include\CmRenderQueue.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
@@ -443,6 +444,7 @@
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmPixelUtil.cpp" />
     <ClCompile Include="Source\CmPlatformWndProc.cpp" />
+    <ClCompile Include="Source\CmProfiler.cpp" />
     <ClCompile Include="Source\CmRenderer.cpp" />
     <ClCompile Include="Source\CmRenderQueue.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />

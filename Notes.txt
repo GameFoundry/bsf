@@ -51,6 +51,7 @@ Reminders:
    likely use on GUIWidget per element. However currently I only perform batching within a single widget which 
    doesn't help in the mentioned case.
   - Later add InputMap class in which you can bind certain actions (like move left, fire, etc.) to Keyboard, Joystick or Mouse buttons.
+    - Also ensure button combinations are possible. e.g. on keyboard I might want to press F1 to open debug menu, but on joystick it might be A+B+X
   - Add a field that tracks % of resource deserialization in BinarySerializer
   - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
   - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
