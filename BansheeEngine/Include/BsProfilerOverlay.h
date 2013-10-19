@@ -92,11 +92,11 @@ namespace BansheeEngine
 		GUIElement* mTitlePreciseName;
 		GUIElement* mTitlePrecisePctOfParent;
 		GUIElement* mTitlePreciseNumCalls;
-		GUIElement* mTitlePreciseAvgTime;
-		GUIElement* mTitlePreciseTotalTime;
-		GUIElement* mTitlePreciseMaxTime;
-		GUIElement* mTitlePreciseAvgTitleSelf;
-		GUIElement* mTitlePreciseTotalTimeSelf;
+		GUIElement* mTitlePreciseAvgCycles;
+		GUIElement* mTitlePreciseTotalCycles;
+		GUIElement* mTitlePreciseMaxCycles;
+		GUIElement* mTitlePreciseAvgCyclesSelf;
+		GUIElement* mTitlePreciseTotalCyclesSelf;
 		GUIElement* mTitlePreciseEstOverhead;
 		GUIElement* mTitlePreciseEstOverheadSelf;
 

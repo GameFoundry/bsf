@@ -156,7 +156,7 @@ namespace BansheeEngine
 
 	GUILayout& GUIElementBase::insertLayoutXInternal(GUIElementBase* parent, UINT32 idx)
 	{
-		if(idx < 0 || idx >= (UINT32)mChildren.size())
+		if(idx < 0 || idx > (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUILayoutX* entry = cm_new<GUILayoutX, PoolAlloc>();
@@ -170,7 +170,7 @@ namespace BansheeEngine
 
 	GUILayout& GUIElementBase::insertLayoutYInternal(GUIElementBase* parent, UINT32 idx)
 	{
-		if(idx < 0 || idx >= (UINT32)mChildren.size())
+		if(idx < 0 || idx > (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUILayoutY* entry = cm_new<GUILayoutY, PoolAlloc>();

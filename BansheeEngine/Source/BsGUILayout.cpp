@@ -59,7 +59,7 @@ namespace BansheeEngine
 
 	void GUILayout::insertElement(UINT32 idx, GUIElement* element)
 	{
-		if(idx < 0 || idx >= (UINT32)mChildren.size())
+		if(idx < 0 || idx > (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUIElementBase* parentElement = element->_getParent();
@@ -125,7 +125,7 @@ namespace BansheeEngine
 
 	GUIFixedSpace& GUILayout::insertSpace(UINT32 idx, UINT32 size)
 	{
-		if(idx < 0 || idx >= (UINT32)mChildren.size())
+		if(idx < 0 || idx > (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUIFixedSpace* entry = cm_new<GUIFixedSpace, PoolAlloc>(size);
@@ -170,7 +170,7 @@ namespace BansheeEngine
 
 	GUIFlexibleSpace& GUILayout::insertFlexibleSpace(UINT32 idx)
 	{
-		if(idx < 0 || idx >= (UINT32)mChildren.size())
+		if(idx < 0 || idx > (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUIFlexibleSpace* entry = cm_new<GUIFlexibleSpace, PoolAlloc>();

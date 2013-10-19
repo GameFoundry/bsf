@@ -39,7 +39,10 @@ namespace CamelotFramework
 	{
 		idx = Math::Clamp(idx, 0U, (UINT32)(NUM_SAVED_FRAMES - 1));
 
-		return mSavedReports[idx];
+		UINT32 reportIdx = mNextReportIdx + (UINT32)((INT32)NUM_SAVED_FRAMES - ((INT32)idx + 1));
+		reportIdx = (reportIdx) % NUM_SAVED_FRAMES;
+
+		return mSavedReports[reportIdx];
 	}
 
 	Profiler& gProfiler()
