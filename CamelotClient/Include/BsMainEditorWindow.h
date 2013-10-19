@@ -8,8 +8,14 @@ namespace BansheeEditor
 	class MainEditorWindow : public EditorWindowBase
 	{
 	public:
-		MainEditorWindow(CM::RenderWindowPtr renderWindow);
 		~MainEditorWindow();
+
+		void update();
+
+		static MainEditorWindow* create(const CM::RenderWindowPtr& renderWindow);
+	protected:
+		friend class EditorWindowManager;
+		MainEditorWindow(const CM::RenderWindowPtr& renderWindow);
 
 	protected:
 		GUIMenuBar* mMenuBar;

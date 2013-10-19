@@ -278,9 +278,9 @@ int CALLBACK WinMain(
 	/* 								EDITOR INIT                      		*/
 	/************************************************************************/
 
-	MainEditorWindow* mainWindow = cm_new<MainEditorWindow>(gApplication().getPrimaryWindow());
 	EditorWindowManager::startUp(cm_new<EditorWindowManager>());
-
+	MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
+	
 	CM::gApplication().mainLoopCallback.connect(&editorUpdate);
 
 	/************************************************************************/
@@ -297,7 +297,6 @@ int CALLBACK WinMain(
 	/************************************************************************/
 
 	EditorWindowManager::shutDown();
-	cm_delete(mainWindow);
 
 	/************************************************************************/
 	/* 							EDITOR SHUTDOWN END                    		*/

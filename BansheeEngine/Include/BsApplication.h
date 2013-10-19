@@ -27,7 +27,6 @@ namespace BansheeEngine
 			 * @brief	Frees up all resources allocated during startUp, and while the application was running.
 			 */
 			void shutDown();
-
 	private:
 		boost::signals::connection updateCallbackConn;
 

@@ -1,15 +1,33 @@
 #include "BsEditorWindowManager.h"
 #include "BsEditorWindow.h"
+#include "BsMainEditorWindow.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
+	EditorWindowManager::EditorWindowManager()
+		:mMainWindow(nullptr)
+	{
+
+	}
+
 	EditorWindowManager::~EditorWindowManager()
 	{
 		while(mEditorWindows.size() > 0)
 			destroy(mEditorWindows[0]);
+
+		if(mMainWindow != nullptr)
+			cm_delete(mMainWindow);
+	}
+
+	MainEditorWindow* EditorWindowManager::createMain(const CM::RenderWindowPtr& parentRenderWindow)
+	{
+		if(mMainWindow == nullptr)
+			mMainWindow = new (cm_alloc<MainEditorWindow>()) MainEditorWindow(parentRenderWindow);
+
+		return mMainWindow;
 	}
 
 	EditorWindow* EditorWindowManager::create()
@@ -47,5 +65,12 @@ namespace BansheeEditor
 		}
 
 		mScheduledForDestruction.clear();
+
+		mMainWindow->update();
+
+		for(auto& window : mEditorWindows)
+		{
+			window->update();
+		}
 	}
 }

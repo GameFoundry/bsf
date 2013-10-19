@@ -30,7 +30,7 @@ namespace BansheeEditor
 		construct(mRenderWindow);
 	}
 
-	EditorWindowBase::EditorWindowBase(CM::RenderWindowPtr renderWindow)
+	EditorWindowBase::EditorWindowBase(const CM::RenderWindowPtr& renderWindow)
 		:mOwnsRenderWindow(false)
 	{
 		construct(renderWindow);
@@ -62,7 +62,7 @@ namespace BansheeEditor
 		gMainSyncedCA().hideWindow(mRenderWindow);
 	}
 
-	void EditorWindowBase::construct(CM::RenderWindowPtr renderWindow)
+	void EditorWindowBase::construct(const RenderWindowPtr& renderWindow)
 	{
 		mRenderWindow = renderWindow;
 		mSceneObject = SceneObject::create("EditorWindow");

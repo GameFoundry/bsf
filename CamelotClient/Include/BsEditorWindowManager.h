@@ -9,13 +9,17 @@ namespace BansheeEditor
 	class EditorWindowManager : public CM::Module<EditorWindowManager>
 	{
 	public:
+		EditorWindowManager();
 		~EditorWindowManager();
 
+		MainEditorWindow* createMain(const CM::RenderWindowPtr& parentRenderWindow);
 		EditorWindow* create();
 		void destroy(EditorWindowBase* window);
 
 		void update();
 	protected:
+		MainEditorWindow* mMainWindow;
+
 		CM::Vector<EditorWindowBase*>::type mEditorWindows;
 		CM::Vector<EditorWindowBase*>::type mScheduledForDestruction;
 	};

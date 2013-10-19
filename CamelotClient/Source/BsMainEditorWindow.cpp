@@ -1,10 +1,12 @@
 #include "BsMainEditorWindow.h"
+#include "BsEditorWindowManager.h"
 #include "BsDockManager.h"
 #include "BsGUIMenuBar.h"
 #include "BsCamera.h"
 #include "CmSceneObject.h"
 #include "CmRenderTexture.h"
 #include "CmCPUProfiler.h"
+#include "BsApplication.h"
 
 // DEBUG ONLY
 #include "CmTestTextSprite.h"
@@ -19,7 +21,12 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	MainEditorWindow::MainEditorWindow(CM::RenderWindowPtr renderWindow)
+	MainEditorWindow* MainEditorWindow::create(const CM::RenderWindowPtr& renderWindow)
+	{
+		return EditorWindowManager::instance().createMain(renderWindow);
+	}
+
+	MainEditorWindow::MainEditorWindow(const CM::RenderWindowPtr& renderWindow)
 		:EditorWindowBase(renderWindow), mDockManager(cm_new<DockManager>(mGUI.get())), mMenuBar(cm_new<GUIMenuBar>(mGUI.get()))
 	{
 		updateAreas();
@@ -93,5 +100,10 @@ namespace BansheeEditor
 
 		UINT32 dockHeight = (UINT32)std::max(0, (INT32)widgetHeight - (INT32)menuBarHeight);
 		mDockManager->setArea(1, menuBarHeight + 1, widgetWidth, dockHeight);
+	}
+
+	void MainEditorWindow::update()
+	{
+		ProfilerOverlay::instance().update();
 	}
 }

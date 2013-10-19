@@ -21,9 +21,14 @@ namespace BansheeEditor
 
 		virtual void close();
 		void hide();
+
+		/**
+		 * @brief	Called once every frame. Internal method.
+		 */
+		virtual void update() { }
 	protected:
 		EditorWindowBase();
-		EditorWindowBase(CM::RenderWindowPtr renderWindow);
+		EditorWindowBase(const CM::RenderWindowPtr& renderWindow);
 
 		CM::RenderWindowPtr mRenderWindow;
 		CM::HSceneObject mSceneObject;
@@ -32,7 +37,7 @@ namespace BansheeEditor
 		CM::GameObjectHandle<WindowFrameWidget> mWindowFrame;
 		bool mOwnsRenderWindow;
 
-		void construct(CM::RenderWindowPtr renderWindow);
+		void construct(const CM::RenderWindowPtr& renderWindow);
 		virtual void initialize();
 		virtual void movedOrResized() { }
 	private:
