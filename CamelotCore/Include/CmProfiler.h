@@ -101,4 +101,6 @@ namespace CamelotFramework
 
 		CPUProfiler* mCPUProfiler;
 	};
+
+	CM_EXPORT Profiler& gProfiler();
 }

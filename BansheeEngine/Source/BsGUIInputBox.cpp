@@ -64,10 +64,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, getDefaultLayoutOptions(style), multiline);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(style), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, bool multiline, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUIOptions& layoutOptions, bool multiline, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -75,7 +75,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, layoutOptions, multiline);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(layoutOptions, style), multiline);
 	}
 
 	UINT32 GUIInputBox::getNumRenderElements() const

@@ -28,7 +28,7 @@ namespace BansheeEditor
 
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
 
-		GUIWindowDropArea* dragDropElement = GUIWindowDropArea::create(*parent, GUILayoutOptions::expandableX(13, 20), parent->getSkin().getStyle("TabbedBarDropArea"));
+		GUIWindowDropArea* dragDropElement = GUIWindowDropArea::create(*parent, GUIOptions(GUIOption::flexibleWidth(20)), parent->getSkin().getStyle("TabbedBarDropArea"));
 		mLastDropElement = dragDropElement;
 
 		mMinBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinMinimizeBtn"));

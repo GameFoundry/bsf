@@ -15,10 +15,10 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUIButton* create(GUIWidget& parent, const CM::HString& text, const GUIElementStyle* style = nullptr);
-		static GUIButton* create(GUIWidget& parent, const CM::HString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIButton* create(GUIWidget& parent, const CM::HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		static GUIButton* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
-		static GUIButton* create(GUIWidget& parent, const GUIContent& content, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIButton* create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 	private:
 		GUIButton(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);

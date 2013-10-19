@@ -14,7 +14,7 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::HString>::type& elements, const GUIElementStyle* style = nullptr);
-		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::HString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIListBox* create(GUIWidget& parent, const CM::Vector<CM::HString>::type& elements, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		boost::signal<void(CM::UINT32)> onSelectionChanged;
 	protected:

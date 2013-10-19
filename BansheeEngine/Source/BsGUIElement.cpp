@@ -189,22 +189,6 @@ namespace BansheeEngine
 		return contentBounds.contains(position);
 	}
 
-	GUILayoutOptions GUIElement::getDefaultLayoutOptions(const GUIElementStyle* style)
-	{
-		GUILayoutOptions layoutOptions;
-
-		layoutOptions.fixedWidth = style->fixedWidth;
-		layoutOptions.fixedHeight = style->fixedHeight;
-		layoutOptions.width = style->width;
-		layoutOptions.height = style->height;
-		layoutOptions.minWidth = style->minWidth;
-		layoutOptions.maxWidth = style->maxWidth;
-		layoutOptions.minHeight = style->minHeight;
-		layoutOptions.maxHeight = style->maxHeight;
-
-		return layoutOptions;
-	}
-
 	void GUIElement::destroy(GUIElement* element)
 	{
 		if(element->mParent != nullptr)

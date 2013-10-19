@@ -29,6 +29,7 @@
 #include "CmDeferredCallManager.h"
 #include "CmCoreThread.h"
 #include "CmStringTable.h"
+#include "CmProfiler.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -93,6 +94,8 @@ namespace CamelotFramework
 
 		while(mRunMainLoop)
 		{
+			gProfiler().beginThread("Sim");
+
 			Platform::update();
 			DeferredCallManager::instance().update();
 			RenderWindowManager::instance().update();
@@ -122,6 +125,9 @@ namespace CamelotFramework
 			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 
 			gTime().update();
+
+			gProfiler().endThread();
+			gProfiler().update();
 		}
 	}
 

@@ -41,4 +41,9 @@ namespace CamelotFramework
 
 		return mSavedReports[idx];
 	}
+
+	Profiler& gProfiler()
+	{
+		return Profiler::instance();
+	}
 }

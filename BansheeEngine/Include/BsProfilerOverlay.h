@@ -78,6 +78,28 @@ namespace BansheeEngine
 		GUILayout* mBasicLayoutContents;
 		GUILayout* mPreciseLayoutContents;
 
+		GUIElement* mTitleBasicName;
+		GUIElement* mTitleBasicPctOfParent;
+		GUIElement* mTitleBasicNumCalls;
+		GUIElement* mTitleBasicAvgTime;
+		GUIElement* mTitleBasicTotalTime;
+		GUIElement* mTitleBasicMaxTime;
+		GUIElement* mTitleBasicAvgTitleSelf;
+		GUIElement* mTitleBasicTotalTimeSelf;
+		GUIElement* mTitleBasicEstOverhead;
+		GUIElement* mTitleBasicEstOverheadSelf;
+
+		GUIElement* mTitlePreciseName;
+		GUIElement* mTitlePrecisePctOfParent;
+		GUIElement* mTitlePreciseNumCalls;
+		GUIElement* mTitlePreciseAvgTime;
+		GUIElement* mTitlePreciseTotalTime;
+		GUIElement* mTitlePreciseMaxTime;
+		GUIElement* mTitlePreciseAvgTitleSelf;
+		GUIElement* mTitlePreciseTotalTimeSelf;
+		GUIElement* mTitlePreciseEstOverhead;
+		GUIElement* mTitlePreciseEstOverheadSelf;
+
 		CM::Vector<BasicRow>::type mBasicRows;
 		CM::Vector<PreciseRow>::type mPreciseRows;
 

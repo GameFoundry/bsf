@@ -14,10 +14,10 @@ namespace BansheeEditor
 		static const CM::String& getGUITypeName();
 
 		static GUITabButton* create(BS::GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::HString& text, const BS::GUIElementStyle* style = nullptr);
-		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::HString& text, const BS::GUIElementStyle* style = nullptr);
+		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUIOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const CM::HString& text, const BS::GUIElementStyle* style = nullptr);
 	
 		static GUITabButton* create(BS::GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const BS::GUIContent& content, const BS::GUIElementStyle* style = nullptr);
-		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const BS::GUIContent& content, const BS::GUIElementStyle* style = nullptr);
+		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUIOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const BS::GUIContent& content, const BS::GUIElementStyle* style = nullptr);
 
 		CM::UINT32 getIndex() const { return mIndex; }
 

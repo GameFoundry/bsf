@@ -45,10 +45,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(style));
 	}
 
-	GUIViewport* GUIViewport::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const HCamera& camera, 
+	GUIViewport* GUIViewport::create(GUIWidget& parent, const GUIOptions& layoutOptions, const HCamera& camera, 
 		float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
@@ -57,7 +57,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, layoutOptions);
+		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	UINT32 GUIViewport::getNumRenderElements() const

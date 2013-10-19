@@ -586,26 +586,31 @@ namespace CamelotFramework
 			}
 		}
 
-		Vector<CPUProfilerBasicSamplingEntry*>::type finalBasicEntries;
-		finalBasicEntries.push_back(&report.mBasicSamplingRootEntry);
-		
-		UINT32 curEntryIdx = 0;
-		for(auto& curEntry : newBasicEntries)
+		if(newBasicEntries.size() > 0)
 		{
-			CPUProfilerBasicSamplingEntry* basicEntry = finalBasicEntries[curEntryIdx];
+			Vector<CPUProfilerBasicSamplingEntry*>::type finalBasicEntries;
 
-			basicEntry->childEntries.resize(curEntry.childIndexes.size());
-			UINT32 idx = 0;
-			for(auto& childIdx : curEntry.childIndexes)
+			report.mBasicSamplingRootEntry = basicEntries[newBasicEntries[0].entryIdx];
+			finalBasicEntries.push_back(&report.mBasicSamplingRootEntry);
+
+			UINT32 curEntryIdx = 0;
+			for(auto& curEntry : newBasicEntries)
 			{
-				TempEntry& childEntry = newBasicEntries[childIdx];
-				basicEntry->childEntries[idx] = basicEntries[childEntry.entryIdx];
+				CPUProfilerBasicSamplingEntry* basicEntry = finalBasicEntries[curEntryIdx];
 
-				finalBasicEntries.push_back(&(basicEntry->childEntries[idx]));
-				idx++;
+				basicEntry->childEntries.resize(curEntry.childIndexes.size());
+				UINT32 idx = 0;
+				for(auto& childIdx : curEntry.childIndexes)
+				{
+					TempEntry& childEntry = newBasicEntries[childIdx];
+					basicEntry->childEntries[idx] = basicEntries[childEntry.entryIdx];
+
+					finalBasicEntries.push_back(&(basicEntry->childEntries[idx]));
+					idx++;
+				}
+
+				curEntryIdx++;
 			}
-
-			curEntryIdx++;
 		}
 
 		// Prune empty precise entries
@@ -649,26 +654,31 @@ namespace CamelotFramework
 			}
 		}
 
-		Vector<CPUProfilerPreciseSamplingEntry*>::type finalPreciseEntries;
-		finalPreciseEntries.push_back(&report.mPreciseSamplingRootEntry);
-
-		curEntryIdx = 0;
-		for(auto& curEntry : newPreciseEntries)
+		if(newPreciseEntries.size() > 0)
 		{
-			CPUProfilerPreciseSamplingEntry* preciseEntry = finalPreciseEntries[curEntryIdx];
+			Vector<CPUProfilerPreciseSamplingEntry*>::type finalPreciseEntries;
 
-			preciseEntry->childEntries.resize(curEntry.childIndexes.size());
-			UINT32 idx = 0;
-			for(auto& childIdx : curEntry.childIndexes)
+			report.mPreciseSamplingRootEntry = preciseEntries[newPreciseEntries[0].entryIdx];
+			finalPreciseEntries.push_back(&report.mPreciseSamplingRootEntry);
+
+			UINT32 curEntryIdx = 0;
+			for(auto& curEntry : newPreciseEntries)
 			{
-				TempEntry& childEntry = newPreciseEntries[childIdx];
-				preciseEntry->childEntries[idx] = preciseEntries[childEntry.entryIdx];
+				CPUProfilerPreciseSamplingEntry* preciseEntry = finalPreciseEntries[curEntryIdx];
 
-				finalPreciseEntries.push_back(&preciseEntry->childEntries.back());
-				idx++;
+				preciseEntry->childEntries.resize(curEntry.childIndexes.size());
+				UINT32 idx = 0;
+				for(auto& childIdx : curEntry.childIndexes)
+				{
+					TempEntry& childEntry = newPreciseEntries[childIdx];
+					preciseEntry->childEntries[idx] = preciseEntries[childEntry.entryIdx];
+
+					finalPreciseEntries.push_back(&preciseEntry->childEntries.back());
+					idx++;
+				}
+
+				curEntryIdx++;
 			}
-
-			curEntryIdx++;
 		}
 
 		return report;

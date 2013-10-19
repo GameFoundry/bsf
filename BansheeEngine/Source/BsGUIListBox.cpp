@@ -41,10 +41,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, GUILayoutOptions::create(style));
 	}
 
-	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<HString>::type& elements, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -52,7 +52,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, layoutOptions);
+		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	bool GUIListBox::mouseEvent(const GUIMouseEvent& ev)

@@ -47,10 +47,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const SpriteTexturePtr& texture, 
+	GUITexture* GUITexture::create(GUIWidget& parent, const GUIOptions& layoutOptions, const SpriteTexturePtr& texture, 
 		GUIImageScaleMode scale, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
@@ -59,7 +59,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, layoutOptions);
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	GUITexture* GUITexture::create(GUIWidget& parent, GUIImageScaleMode scale, const GUIElementStyle* style)
@@ -70,10 +70,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, GUILayoutOptions::create(style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUIImageScaleMode scale, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUIImageScaleMode scale, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -81,7 +81,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, layoutOptions);
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	UINT32 GUITexture::getNumRenderElements() const

@@ -45,7 +45,7 @@ namespace CamelotFramework
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
 
 		SpriteTexturePtr spriteTex = std::make_shared<SpriteTexture>(sceneView->getBindableColorTexture());
-		area->getLayout().addElement(GUITexture::create(*this, GUILayoutOptions::fixed(800, 600), spriteTex));
+		area->getLayout().addElement(GUITexture::create(*this, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600)), spriteTex));
 		mLabel = GUILabel::create(*this, HString(L""));
 		area->getLayout().addElement(mLabel);
 
@@ -53,7 +53,7 @@ namespace CamelotFramework
 		dropDownElements.push_back(HString(L"Ejlement #1"));
 		dropDownElements.push_back(HString(L"Element #2"));
 		dropDownElements.push_back(HString(L"Element #3"));
-		area->getLayout().addElement(GUIListBox::create(*this, dropDownElements, GUILayoutOptions::fixed(50, 13)));
+		area->getLayout().addElement(GUIListBox::create(*this, dropDownElements, GUIOptions(GUIOption::fixedWidth(50), GUIOption::fixedHeight(13))));
 
 		GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
 		button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));

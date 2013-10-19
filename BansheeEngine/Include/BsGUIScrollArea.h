@@ -11,7 +11,7 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUIScrollArea* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
-		static GUIScrollArea* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIScrollArea* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		GUILayout& getLayout() const { return *mContentLayout; }
 

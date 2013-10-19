@@ -262,10 +262,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, style, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, style, GUILayoutOptions::create(style));
 	}
 
-	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -273,7 +273,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, style, layoutOptions);
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	const String& GUIScrollArea::getGUITypeName()

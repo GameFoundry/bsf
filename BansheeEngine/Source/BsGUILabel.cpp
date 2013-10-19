@@ -88,7 +88,7 @@ namespace BansheeEngine
 		return create(parent, GUIContent(text), style);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const HString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(GUIWidget& parent, const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		return create(parent, GUIContent(text), layoutOptions, style);
 	}
@@ -101,10 +101,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, content, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, content, GUILayoutOptions::create(style));
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const GUIContent& content, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -112,7 +112,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, content, layoutOptions);
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, content, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	const String& GUILabel::getGUITypeName()

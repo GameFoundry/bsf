@@ -32,10 +32,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), GUILayoutOptions::create(style));
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -43,7 +43,7 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), layoutOptions);
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	GUITabButton* GUITabButton::create(GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
@@ -54,10 +54,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, GUILayoutOptions::create(style));
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -65,7 +65,7 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, layoutOptions);
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	bool GUITabButton::mouseEvent(const GUIMouseEvent& ev)

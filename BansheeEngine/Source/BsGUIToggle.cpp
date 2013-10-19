@@ -40,7 +40,7 @@ namespace BansheeEngine
 		return create(parent, GUIContent(text), style);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const HString& text, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const HString& text, const GUIElementStyle* style)
 	{
 		return create(parent, layoutOptions, GUIContent(text), style);
 	}
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		return create(parent, GUIContent(text), toggleGroup, style);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
 	{
 		return create(parent, layoutOptions, GUIContent(text), toggleGroup, style);
 	}
@@ -63,10 +63,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, nullptr, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, nullptr, GUILayoutOptions::create(style));
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIContent& content, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIContent& content, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -74,7 +74,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, nullptr, layoutOptions);
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, nullptr, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
@@ -85,10 +85,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, toggleGroup, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, toggleGroup, GUILayoutOptions::create(style));
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -96,7 +96,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, toggleGroup, layoutOptions);
+		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, toggleGroup, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	std::shared_ptr<GUIToggleGroup> GUIToggle::createToggleGroup()

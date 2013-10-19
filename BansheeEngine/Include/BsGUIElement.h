@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIElementBase.h"
-#include "BsGUILayoutOptions.h"
+#include "BsGUIOptions.h"
 #include "CmRect.h"
 #include "CmInt2.h"
 
@@ -136,8 +136,6 @@ namespace BansheeEngine
 		CM::Rect getVisibleBounds() const;
 		CM::Rect getContentBounds() const;
 		CM::Rect getContentClipRect() const;
-
-		static GUILayoutOptions getDefaultLayoutOptions(const GUIElementStyle* style);
 
 		GUIWidget* mParent;
 		bool mIsDestroyed;

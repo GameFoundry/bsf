@@ -33,10 +33,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(parent, style, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(parent, style, GUILayoutOptions::create(style));
 	}
 
-	GUIWindowDropArea* GUIWindowDropArea::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIWindowDropArea* GUIWindowDropArea::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -44,7 +44,7 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(parent, style, layoutOptions);
+		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(parent, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIWindowDropArea::setFocused(bool focused)

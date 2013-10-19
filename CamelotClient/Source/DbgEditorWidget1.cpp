@@ -55,9 +55,9 @@ namespace BansheeEditor
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test K"));
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test L"));
 
-		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUILayoutOptions::fixed(100, 100), true));
-		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUILayoutOptions::fixed(100, 100), true));
-		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUILayoutOptions::fixed(100, 100), true));
+		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100)), true));
+		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100)), true));
+		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100)), true));
 
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);

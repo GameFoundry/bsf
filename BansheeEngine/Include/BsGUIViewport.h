@@ -22,7 +22,7 @@ namespace BansheeEngine
 		/**
 		 * @note Render target used by the GUIWidget and Camera must be the same. 
 		 */
-		static GUIViewport* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const HCamera& camera, 
+		static GUIViewport* create(GUIWidget& parent, const GUIOptions& layoutOptions, const HCamera& camera, 
 			float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style = nullptr);
 	protected:
 		~GUIViewport();

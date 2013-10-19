@@ -13,10 +13,10 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUILabel* create(GUIWidget& parent, const CM::HString& text, const GUIElementStyle* style = nullptr);
-		static GUILabel* create(GUIWidget& parent, const CM::HString& text, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const CM::HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
-		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		void setContent(const GUIContent& content);
 

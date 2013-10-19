@@ -13,7 +13,7 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUIScrollBarHandle* create(GUIWidget& parent, bool horizontal, const GUIElementStyle* style = nullptr);
-		static GUIScrollBarHandle* create(GUIWidget& parent, bool horizontal, const GUILayoutOptions& layoutOptions, 
+		static GUIScrollBarHandle* create(GUIWidget& parent, bool horizontal, const GUIOptions& layoutOptions, 
 			const GUIElementStyle* style = nullptr);
 
 		void setHandleSize(CM::UINT32 size);

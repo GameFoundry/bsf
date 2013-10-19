@@ -21,10 +21,10 @@ namespace BansheeEngine
 
 		static GUITexture* create(GUIWidget& parent, const SpriteTexturePtr& texture, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, 
 			const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const SpriteTexturePtr& texture, 
+		static GUITexture* create(GUIWidget& parent, const GUIOptions& layoutOptions, const SpriteTexturePtr& texture, 
 			GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
 		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(GUIWidget& parent, const GUIOptions& layoutOptions, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
 	protected:
 		ImageSprite* mImageSprite;
 		IMAGE_SPRITE_DESC mDesc;

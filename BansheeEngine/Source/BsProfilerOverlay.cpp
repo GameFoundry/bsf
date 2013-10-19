@@ -7,6 +7,7 @@
 #include "BsGUIElement.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
+#include "BsEngineGUI.h"
 #include "CmProfiler.h"
 
 using namespace CamelotFramework;
@@ -233,7 +234,12 @@ namespace BansheeEngine
 
 	ProfilerOverlay::ProfilerOverlay(const CM::ViewportPtr& target, const CM::RenderWindowPtr& ownerWindow)
 		:mIsShown(false), mBasicAreaLabels(nullptr), mPreciseAreaLabels(nullptr), mBasicAreaContents(nullptr), mPreciseAreaContents(nullptr),
-		mBasicLayoutLabels(nullptr), mPreciseLayoutLabels(nullptr), mBasicLayoutContents(nullptr), mPreciseLayoutContents(nullptr)
+		mBasicLayoutLabels(nullptr), mPreciseLayoutLabels(nullptr), mBasicLayoutContents(nullptr), mPreciseLayoutContents(nullptr),
+		mTitleBasicName(nullptr), mTitleBasicPctOfParent(nullptr), mTitleBasicNumCalls(nullptr), mTitleBasicAvgTime(nullptr), 
+		mTitleBasicTotalTime(nullptr), mTitleBasicMaxTime(nullptr), mTitleBasicAvgTitleSelf(nullptr), mTitleBasicTotalTimeSelf(nullptr), 
+		mTitleBasicEstOverhead(nullptr), mTitleBasicEstOverheadSelf(nullptr), mTitlePreciseName(nullptr), mTitlePrecisePctOfParent(nullptr), 
+		mTitlePreciseNumCalls(nullptr), mTitlePreciseAvgTime(nullptr), mTitlePreciseTotalTime(nullptr), mTitlePreciseMaxTime(nullptr), 
+		mTitlePreciseAvgTitleSelf(nullptr), mTitlePreciseTotalTimeSelf(nullptr), mTitlePreciseEstOverhead(nullptr), mTitlePreciseEstOverheadSelf(nullptr)
 	{
 		setTarget(target, ownerWindow);
 
@@ -265,6 +271,8 @@ namespace BansheeEngine
 
 		mWidgetSO = SceneObject::create("ProfilerOverlay");
 		mWidget = mWidgetSO->addComponent<GUIWidget>(mTarget.get(), mOwnerWindow.get());
+		mWidget->setDepth(127);
+		mWidget->setSkin(EngineGUI::instance().getSkin());
 
 		mBasicAreaLabels = GUIArea::create(*mWidget, 0, 0);
 		mPreciseAreaLabels = GUIArea::create(*mWidget, 0, 0);
@@ -275,6 +283,29 @@ namespace BansheeEngine
 		mPreciseLayoutLabels = &mPreciseAreaLabels->getLayout().addLayoutY();
 		mBasicLayoutContents = &mBasicAreaContents->getLayout().addLayoutY();
 		mPreciseLayoutContents = &mPreciseAreaContents->getLayout().addLayoutY();
+
+		// Set up title bars
+		//mTitleBasicName = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::fixed(200, 20));
+		//mTitleBasicPctOfParent = GUILabel::create(*mWidget, HString(L"% parent"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicNumCalls = GUILabel::create(*mWidget, HString(L"Num. calls"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicAvgTime = GUILabel::create(*mWidget, HString(L"Avg. time"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicTotalTime = GUILabel::create(*mWidget, HString(L"Total time"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicMaxTime = GUILabel::create(*mWidget, HString(L"Max time"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicAvgTitleSelf = GUILabel::create(*mWidget, HString(L"Avg. self time"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicTotalTimeSelf = GUILabel::create(*mWidget, HString(L"Total self time"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicEstOverhead = GUILabel::create(*mWidget, HString(L"Est. overhead"), GUILayoutOptions::expandableY(100));
+		//mTitleBasicEstOverheadSelf = GUILabel::create(*mWidget, HString(L"Est. self overhead"), GUILayoutOptions::expandableY(100));
+
+		//mTitlePreciseName = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePrecisePctOfParent = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseNumCalls = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseAvgTime = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseTotalTime = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseMaxTime = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseAvgTitleSelf = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseTotalTimeSelf = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseEstOverhead = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
+		//mTitlePreciseEstOverheadSelf = GUILabel::create(*mWidget, HString(L"Name"), GUILayoutOptions::expandableY(200));
 
 		updateAreaSizes();
 	}

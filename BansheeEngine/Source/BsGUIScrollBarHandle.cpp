@@ -40,10 +40,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, GUILayoutOptions::create(style));
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, bool horizontal, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, bool horizontal, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -51,7 +51,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, layoutOptions);
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIScrollBarHandle::setHandleSize(CM::UINT32 size)

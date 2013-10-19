@@ -33,10 +33,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(parent, style, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(parent, style, GUILayoutOptions::create(style));
 	}
 
-	GUIScrollBarHorz* GUIScrollBarHorz::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollBarHorz* GUIScrollBarHorz::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -44,7 +44,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(parent, style, layoutOptions);
+		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(parent, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	const String& GUIScrollBarHorz::getGUITypeName()

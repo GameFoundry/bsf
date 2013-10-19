@@ -38,10 +38,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, getDefaultLayoutOptions(style));
+		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, GUILayoutOptions::create(style));
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, const GUIElementStyle* style)
+	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -49,7 +49,7 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, layoutOptions);
+		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIWindowFrame::setFocused(bool focused)
