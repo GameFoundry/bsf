@@ -1,156 +1,88 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __Viewport_H__
-#define __Viewport_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
 #include "CmColor.h"
 #include "CmRect.h"
+#include "CmFRect.h"
 #include <boost/signals/connection.hpp>
 
-namespace CamelotFramework {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/** An abstraction of a viewport, i.e. a rendering region on a render
-        target.
-        @remarks
-            A viewport is the meeting of a camera and a rendering surface -
-            the camera renders the scene from a viewpoint, and places its
-            results into some subset of a rendering target, which may be the
-            whole surface or just a part of the surface. Each viewport has a
-            single camera as source and a single target as destination. A
-            camera only has 1 viewport, but a render target may have several.
-            A viewport also has a Z-order, i.e. if there is more than one
-            viewport on a single render target and they overlap, one must
-            obscure the other in some predetermined way.
-    */
+namespace CamelotFramework 
+{
+	/**
+	 * @brief	Viewport provides you with a way to render to only a part of a 
+	 * 			RenderTarget. It also allows you to set up color/depth/stencil
+	 * 			clear values for that specific region.
+	 */
 	class CM_EXPORT Viewport
     {
     public:       
 		Viewport();
-        /** The usual constructor.
-            @param
-                cam Pointer to a camera to be the source for the image.
-            @param
-                target Pointer to the render target to be the destination
-                for the rendering.
-            @param
-                left
-            @param
-                top
-            @param
-                width
-            @param
-                height
-                Dimensions of the viewport, expressed as a value between
-                0 and 1. This allows the dimensions to apply irrespective of
-                changes in the target's size: e.g. to fill the whole area,
-                values of 0,0,1,1 are appropriate.
-            @param
-                ZOrder Relative Z-order on the target. Lower = further to
-                the front.
-        */
-        Viewport(
-            RenderTargetPtr target,
-            float left = 0.0f, float top = 0.0f,
-            float width = 1.0f, float height = 1.0f,
-            int ZOrder = 0);
-
-        /** Default destructor.
-        */
+        
+        /**
+         * @brief	Constructs a new viewport.
+         *
+         * @note	Viewport coordinates are normalized in [0, 1] range.
+         */
+        Viewport(const RenderTargetPtr& target, float x = 0.0f, float y = 0.0f, float width = 1.0f, float height = 1.0f);
         virtual ~Viewport();
 
-        /** Retrieves a pointer to the render target for this viewport.
-        */
-        RenderTargetPtr getTarget(void) const;
+        /**
+         * @brief	Returns the render target the viewport is associated with.
+         */
+        RenderTargetPtr getTarget() const { return mTarget; }
 
-		/** Gets one of the relative dimensions of the viewport,
-            a value between 0.0 and 1.0.
-        */
-        float getNormalizedLeft(void) const;
+        /**
+         * @brief	Gets the normalized x coordinate of the viewport, in [0, 1] range.
+         */
+        float getNormalizedX() const { return mNormArea.x; }
 
-        /** Gets one of the relative dimensions of the viewport, a value
-            between 0.0 and 1.0.
-        */
-        float getNormalizedTop(void) const;
+        /**
+         * @brief	Gets the normalized y coordinate of the viewport, in [0, 1] range.
+         */
+        float getNormalizedY() const { return mNormArea.y; }
 
-        /** Gets one of the relative dimensions of the viewport, a value
-            between 0.0 and 1.0.
-        */
+        /**
+         * @brief	Gets the normalized width of the viewport, in [0, 1] range.
+         */
+        float getNormalizedWidth() const { return mNormArea.width; }
 
-        float getNormalizedWidth(void) const;
-        /** Gets one of the relative dimensions of the viewport, a value
-            between 0.0 and 1.0.
-        */
+		/**
+         * @brief	Gets the normalized height of the viewport, in [0, 1] range.
+         */
+        float getNormalizedHeight() const { return mNormArea.height; }
 
-        float getNormalizedHeight(void) const;
-        /** Gets one of the actual dimensions of the viewport, a value in
-            pixels.
-        */
+        /**
+         * @brief	Gets the actual x coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
+         */
+        INT32 getX() const { return mArea.x; }
 
-        int getLeft(void) const;
-        /** Gets one of the actual dimensions of the viewport, a value in
-            pixels.
-        */
+        /**
+         * @brief	Gets the actual y coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
+         */
+        INT32 getY() const { return mArea.y; }
 
-        int getTop(void) const;
-        /** Gets one of the actual dimensions of the viewport, a value in
-            pixels.
-        */
-        int getWidth(void) const;
-        /** Gets one of the actual dimensions of the viewport, a value in
-            pixels.
-        */
+		/**
+         * @brief	Gets the actual width coordinate of the viewport in pixels, in [0, RenderTargetWidth] range.
+         */
+        INT32 getWidth() const { return mArea.width; }
 
-        int getHeight(void) const;
+		/**
+         * @brief	Gets the actual height coordinate of the viewport in pixels, in [0, RenderTargetHeight] range.
+         */
+        INT32 getHeight() const { return mArea.height; }
                
-        /** Sets the dimensions (after creation).
-            @param
-                left
-            @param
-                top
-            @param
-                width
-            @param
-                height Dimensions relative to the size of the target,
-                represented as real values between 0 and 1. i.e. the full
-                target area is 0, 0, 1, 1.
-        */
-        void setDimensions(float left, float top, float width, float height);
+        /**
+         * @brief	Changes the area that the viewport covers.
+         *
+         * @note	Viewport coordinates are normalized in [0, 1] range.
+         */
+        void setArea(float x, float y, float width, float height);
 
-		/** Access to actual dimensions (based on target size).
-        */
-		const Rect& getDimensions() const { return mDimensions; }
+		/**
+		 * @brief	Returns actual area of the viewport, in pixels.
+		 */
+		const Rect& getArea() const { return mArea; }
 
 		const Color& getClearColor() const { return mClearColor; }
 		void setClearColor(const Color& clearColor) { mClearColor = clearColor; }
@@ -170,35 +102,26 @@ namespace CamelotFramework {
 		bool getRequiresStencilClear() const { return mRequiresStencilClear; }
 		void setRequiresStencilClear(bool requiresClear) { mRequiresStencilClear = requiresClear; }
 
+		boost::signal<void()> onResized;
     protected:
         RenderTargetPtr mTarget;
-        // Relative dimensions, irrespective of target dimensions (0..1)
-        float mRelLeft, mRelTop, mRelWidth, mRelHeight;
-        // Actual dimensions, based on target dimensions
-		Rect mDimensions;
-		bool mRequiresColorClear, mRequiresDepthClear, mRequiresStencilClear;
+
+		FRect mNormArea;
+		Rect mArea;
+
+		bool mRequiresColorClear;
+		bool mRequiresDepthClear;
+		bool mRequiresStencilClear;
+
 		Color mClearColor;
 		float mDepthClearValue;
 		UINT16 mStencilClearValue;
 
-		boost::signals::connection mTargetConn;
+		boost::signals::connection mTargetResizedConn;
 
-		static const Color DefaultClearColor;
+		static const Color DEFAULT_CLEAR_COLOR;
 
-		/** Notifies the viewport of a possible change in dimensions.
-            @remarks
-                Used by the target to update the viewport's dimensions
-                (usually the result of a change in target size).
-            @note
-                Internal use by engine only.
-        */
-        void updateDimensions(void);
-
-		void targetResized(RenderTarget* target);
+        void updateArea();
+		void targetResized();
     };
-	/** @} */
-	/** @} */
-
 }
-
-#endif

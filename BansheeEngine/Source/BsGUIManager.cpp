@@ -70,7 +70,6 @@ namespace BansheeEngine
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
-		mWindowMovedOrResizedConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&GUIManager::onWindowMovedOrResized, this, _1));
 
 		mMouseLeftWindowConn = Platform::onMouseLeftWindow.connect(boost::bind(&GUIManager::onMouseLeftWindow, this, _1));
 
@@ -109,7 +108,6 @@ namespace BansheeEngine
 
 		mWindowGainedFocusConn.disconnect();
 		mWindowLostFocusConn.disconnect();
-		mWindowMovedOrResizedConn.disconnect();
 
 		mMouseLeftWindowConn.disconnect();
 
@@ -1046,16 +1044,6 @@ namespace BansheeEngine
 			GUIWidget* widget = widgetInfo.widget;
 			if(widget->getOwnerWindow() == &win)
 				widget->ownerWindowFocusChanged();
-		}
-	}
-
-	void GUIManager::onWindowMovedOrResized(RenderWindow& win)
-	{
-		for(auto& widgetInfo : mWidgets)
-		{
-			GUIWidget* widget = widgetInfo.widget;
-			if(widget->getOwnerWindow() == &win)
-				widget->ownerWindowResized();
 		}
 	}
 

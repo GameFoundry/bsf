@@ -1152,11 +1152,11 @@ namespace CamelotFramework
 		// set viewport dimensions
 		mViewportWidth = vp->getWidth();
 		mViewportHeight = vp->getHeight();
-		mViewportLeft = vp->getLeft();
-		mViewportTop = vp->getTop();
+		mViewportLeft = vp->getX();
+		mViewportTop = vp->getY();
 
-		d3dvp.X = vp->getLeft();
-		d3dvp.Y = vp->getTop();
+		d3dvp.X = vp->getX();
+		d3dvp.Y = vp->getY();
 		d3dvp.Width = vp->getWidth();
 		d3dvp.Height = vp->getHeight();
 		if (target->requiresTextureFlipping())

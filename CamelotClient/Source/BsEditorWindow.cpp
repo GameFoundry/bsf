@@ -21,9 +21,9 @@ namespace BansheeEditor
 		cm_delete(mWidgets);
 	}
 
-	void EditorWindow::movedOrResized()
+	void EditorWindow::resized()
 	{
-		EditorWindowBase::movedOrResized();
+		EditorWindowBase::resized();
 
 		updateSize();
 	}

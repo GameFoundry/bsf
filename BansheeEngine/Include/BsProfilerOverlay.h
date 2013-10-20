@@ -103,10 +103,10 @@ namespace BansheeEngine
 		CM::Vector<BasicRow>::type mBasicRows;
 		CM::Vector<PreciseRow>::type mPreciseRows;
 
-		boost::signals::connection mWindowMovedOrResized;
+		boost::signals::connection mTargetResizedConn;
 		bool mIsShown;
 
-		void windowMovedOrResized(CM::RenderWindow& window);
+		void targetResized();
 		void updateAreaSizes();
 		void updateContents(const CM::ProfilerReport& report);
 	};

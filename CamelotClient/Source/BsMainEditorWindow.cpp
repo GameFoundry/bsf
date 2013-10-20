@@ -48,7 +48,7 @@ namespace BansheeEditor
 
 		RenderTexturePtr sceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, 800, 600);
 
-		sceneCamera->initialize(sceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		sceneCamera->initialize(sceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f);
 		sceneCamera->setPriority(-1);
 		sceneCameraGO->setPosition(Vector3(0,50,1240));
 		sceneCameraGO->lookAt(Vector3(0,50,-300));
@@ -83,9 +83,9 @@ namespace BansheeEditor
 		cm_delete(mMenuBar);
 	}
 
-	void MainEditorWindow::movedOrResized()
+	void MainEditorWindow::resized()
 	{
-		EditorWindowBase::movedOrResized();
+		EditorWindowBase::resized();
 
 		updateAreas();
 	}

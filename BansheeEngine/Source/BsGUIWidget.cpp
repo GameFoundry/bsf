@@ -38,13 +38,19 @@ namespace BansheeEngine
 		mTarget = target;
 		mOwnerWindow = ownerWindow;
 
+		mOwnerTargetResizedConn = mTarget->onResized.connect(boost::bind(&GUIWidget::ownerTargetResized, this));
+
 		GUIManager::instance().registerWidget(this);
 	}
 
 	GUIWidget::~GUIWidget()
 	{
 		if(mTarget != nullptr)
+		{
 			GUIManager::instance().unregisterWidget(this);
+
+			mOwnerTargetResizedConn.disconnect();
+		}
 
 		// Iterate over all elements in this way because each
 		// GUIElement::destroy call internally unregisters the element
@@ -302,7 +308,7 @@ namespace BansheeEngine
 	bool GUIWidget::inBounds(const Int2& position) const
 	{
 		// Technically GUI widget bounds can be larger than the viewport, so make sure we clip to viewport first
-		if(!getTarget()->getDimensions().contains(position))
+		if(!getTarget()->getArea().contains(position))
 			return false;
 
 		const Matrix4& worldTfrm = SO()->getWorldTfrm();
@@ -325,12 +331,11 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIWidget::ownerWindowResized()
+	void GUIWidget::ownerTargetResized()
 	{
 		for(auto& area : mAreas)
 		{
-			// TODO - It might be more appropriate to use Viewport size instead of window size
-			area->updateSizeBasedOnParent(getOwnerWindow()->getWidth(), getOwnerWindow()->getHeight());
+			area->updateSizeBasedOnParent(getTarget()->getWidth(), getTarget()->getHeight());
 		}
 	}
 

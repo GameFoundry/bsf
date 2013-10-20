@@ -18,7 +18,7 @@ namespace BansheeEditor
 		friend class EditorWindowManager;
 		EditorWindow();
 
-		virtual void movedOrResized();
+		virtual void resized();
 	private:
 		EditorWidgetContainer* mWidgets;
 

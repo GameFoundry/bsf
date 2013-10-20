@@ -11,8 +11,22 @@ LONGTERM TODO:
 PROFILER:
  TODO: Profiler is right now including windows.h. I need to work around that but don't feel like bothering with it atm
   - Easy way would be to move CPUProfiler outside of Utility and into Core
-Fix GUIWidget so it can render to a regular render target, not just render window
+
+When rendering GUI in front of scene view it seems to be rendering before the actual scene!?
+
+Update GUIWidget input handling:
+ - Remove RenderWindow from GUIWidget constructor
+ - Remove getOwnerWindow from GUIWidget
+ - GUIWidget ownerWindowFocusChanged will also likely need to be replaced
+
+ - If GUIWidget target is a window, GUIManager can detect it and automatically use that as the input source
+   - GUIRenderTexture are special GUI elements that are registered with GUIManager (add a new type derived from GUITexture)
+   - If a GUIWidget target is a render texture GUIManager can detect that as well and figure out the real parent and offset the input
+
 Generating a report only generates it on the active thread. I need a way to generate profiler reports on the render thread as well. Maybe extend CoreThreadAccessor?
+
+
+
 
 I still re-create GUIWidget mesh every frame instead of just updating it.
 

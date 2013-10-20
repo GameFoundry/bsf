@@ -1,6 +1,5 @@
 #include "BsProfilerOverlay.h"
 #include "CmSceneObject.h"
-#include "CmRenderWindowManager.h"
 #include "BsGUIWidget.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
@@ -9,6 +8,7 @@
 #include "BsGUISpace.h"
 #include "BsEngineGUI.h"
 #include "CmProfiler.h"
+#include "CmViewport.h"
 
 using namespace CamelotFramework;
 
@@ -244,8 +244,6 @@ namespace BansheeEngine
 		mTitlePreciseAvgCyclesSelf(nullptr), mTitlePreciseTotalCyclesSelf(nullptr), mTitlePreciseEstOverhead(nullptr), mTitlePreciseEstOverheadSelf(nullptr)
 	{
 		setTarget(target, ownerWindow);
-
-		mWindowMovedOrResized = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&ProfilerOverlay::windowMovedOrResized, this, _1));
 	}
 
 	ProfilerOverlay::~ProfilerOverlay()
@@ -253,8 +251,8 @@ namespace BansheeEngine
 		if(mIsShown)
 			hide();
 
-		if(mOwnerWindow != nullptr)
-			mWindowMovedOrResized.disconnect();
+		if(mTarget != nullptr)
+			mTargetResizedConn.disconnect();
 
 		if(mWidgetSO)
 			mWidgetSO->destroy();
@@ -262,11 +260,13 @@ namespace BansheeEngine
 
 	void ProfilerOverlay::setTarget(const CM::ViewportPtr& target, const CM::RenderWindowPtr& ownerWindow)
 	{
-		if(mOwnerWindow != nullptr)
-			mWindowMovedOrResized.disconnect();
+		if(mTarget != nullptr)
+			mTargetResizedConn.disconnect();
 
 		mTarget = target;
 		mOwnerWindow = ownerWindow;
+
+		mTargetResizedConn = target->onResized.connect(boost::bind(&ProfilerOverlay::targetResized, this));
 
 		if(mWidgetSO)
 			mWidgetSO->destroy();
@@ -375,12 +375,9 @@ namespace BansheeEngine
 		updateContents(latestReport);
 	}
 
-	void ProfilerOverlay::windowMovedOrResized(RenderWindow& window)
+	void ProfilerOverlay::targetResized()
 	{
-		if(&window != mOwnerWindow.get())
-		{
-			updateAreaSizes();
-		}
+		updateAreaSizes();
 	}
 
 	void ProfilerOverlay::updateAreaSizes()
@@ -388,8 +385,8 @@ namespace BansheeEngine
 		static const INT32 PADDING = 10;
 		static const float LABELS_CONTENT_RATIO = 0.3f;
 
-		UINT32 width = (UINT32)std::max(0, (INT32)mOwnerWindow->getWidth() - PADDING * 2);
-		UINT32 height = (UINT32)std::max(0, (INT32)(mOwnerWindow->getHeight() - PADDING * 3)/2);
+		UINT32 width = (UINT32)std::max(0, (INT32)mTarget->getWidth() - PADDING * 2);
+		UINT32 height = (UINT32)std::max(0, (INT32)(mTarget->getHeight() - PADDING * 3)/2);
 
 		UINT32 labelsWidth = Math::CeilToInt(width * LABELS_CONTENT_RATIO);
 		UINT32 contentWidth = width - labelsWidth;

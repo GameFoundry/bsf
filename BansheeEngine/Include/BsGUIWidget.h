@@ -70,7 +70,7 @@ namespace BansheeEngine
 		void registerArea(GUIArea* area);
 		void unregisterArea(GUIArea* area);
 
-		virtual void ownerWindowResized();
+		virtual void ownerTargetResized();
 		virtual void ownerWindowFocusChanged();
 
 		virtual void update();
@@ -88,6 +88,8 @@ namespace BansheeEngine
 		CM::Vector3 mLastFramePosition;
 		CM::Quaternion mLastFrameRotation;
 		CM::Vector3 mLastFrameScale;
+
+		boost::signals::connection mOwnerTargetResizedConn;
 
 		mutable bool mWidgetIsDirty;
 		mutable CM::Rect mBounds;

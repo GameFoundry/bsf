@@ -39,10 +39,8 @@ namespace BansheeEditor
 
 		void construct(const CM::RenderWindowPtr& renderWindow);
 		virtual void initialize();
-		virtual void movedOrResized() { }
+		virtual void resized() { }
 	private:
-		boost::signals::connection mMoveOrResizeConn;
-		
-		void movedOrResized(CM::RenderWindow& renderWindow);
+		boost::signals::connection mResizedConn;
 	};
 }

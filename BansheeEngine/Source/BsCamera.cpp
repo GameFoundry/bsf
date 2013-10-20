@@ -91,11 +91,11 @@ namespace BansheeEngine
     Camera::~Camera()
     {
     }
-	void Camera::initialize(RenderTargetPtr target, float left, float top, float width, float height, int ZOrder)
+	void Camera::initialize(RenderTargetPtr target, float left, float top, float width, float height)
 	{
 		target->synchonize();
 
-		mViewport = cm_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height, ZOrder);
+		mViewport = cm_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height);
 	}
 	//-----------------------------------------------------------------------
 	void Camera::setHorzFOV(const Radian& fov)

@@ -21,7 +21,7 @@ namespace BansheeEditor
 		GUIMenuBar* mMenuBar;
 		DockManager* mDockManager;
 
-		virtual void movedOrResized();
+		virtual void resized();
 
 		void updateAreas();
 	};

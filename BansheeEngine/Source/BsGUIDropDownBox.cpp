@@ -107,7 +107,7 @@ namespace BansheeEngine
 
 		mLocalizedEntryNames = dropDownData.localizedNames;
 
-		Rect availableBounds(target->getLeft(), target->getTop(), target->getWidth(), target->getHeight());
+		Rect availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
 		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
 	}
 

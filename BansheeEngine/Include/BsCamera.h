@@ -513,8 +513,7 @@ namespace BansheeEngine {
 
 		void initialize(CM::RenderTargetPtr target = nullptr,
 			float left = 0.0f, float top = 0.0f,
-			float width = 1.0f, float height = 1.0f,
-			int ZOrder = 0);
+			float width = 1.0f, float height = 1.0f);
 
 		CM::ViewportPtr getViewport() const { return mViewport; }
 

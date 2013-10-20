@@ -57,9 +57,6 @@ namespace CamelotFramework
 	void RenderWindow::_windowMovedOrResized()
 	{
 		THROW_IF_NOT_CORE_THREAD;
-
-		if(!onMovedOrResized.empty())
-			onMovedOrResized(this);
 	}
 
 	void RenderWindow::_windowFocusReceived()

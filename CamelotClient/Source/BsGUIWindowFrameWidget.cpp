@@ -55,9 +55,9 @@ namespace BansheeEditor
 		GUIWidget::ownerWindowFocusChanged();
 	}
 
-	void WindowFrameWidget::ownerWindowResized()
+	void WindowFrameWidget::ownerTargetResized()
 	{
-		GUIWidget::ownerWindowResized();
+		GUIWidget::ownerTargetResized();
 
 		refreshNonClientAreas();
 	}

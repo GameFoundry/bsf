@@ -92,7 +92,7 @@ namespace CamelotFramework
 		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
 		virtual bool requiresTextureFlipping() const = 0;
 
-		mutable boost::signal<void(RenderTarget*)> onMovedOrResized;
+		mutable boost::signal<void()> onResized;
     protected:
 		RenderTarget();
 

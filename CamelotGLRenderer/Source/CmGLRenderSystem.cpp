@@ -578,8 +578,8 @@ namespace CamelotFramework
 		// Calculate the "lower-left" corner of the viewport
 		mViewportWidth = vp->getWidth();
 		mViewportHeight = vp->getHeight();
-		mViewportLeft = vp->getLeft();
-		mViewportTop = vp->getTop();
+		mViewportLeft = vp->getX();
+		mViewportTop = vp->getY();
 
 		if (!target->requiresTextureFlipping())
 		{

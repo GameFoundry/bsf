@@ -110,6 +110,6 @@ namespace BansheeEngine
 		float width = mWidth / (float)renderTarget->getWidth();
 		float height = mHeight / (float)renderTarget->getHeight();
 
-		viewport->setDimensions(x, y, width, height);
+		viewport->setArea(x, y, width, height);
 	}
 }

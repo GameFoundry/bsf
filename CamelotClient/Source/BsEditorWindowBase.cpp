@@ -2,7 +2,6 @@
 #include "CmApplication.h"
 #include "CmSceneObject.h"
 #include "CmRenderWindow.h"
-#include "CmRenderWindowManager.h"
 
 #include "BsEditorWindowManager.h"
 #include "BsCamera.h"
@@ -38,7 +37,7 @@ namespace BansheeEditor
 
 	EditorWindowBase::~EditorWindowBase()
 	{
-		mMoveOrResizeConn.disconnect();
+		mResizedConn.disconnect();
 
 		if(mOwnsRenderWindow)
 			mRenderWindow->destroy();
@@ -68,7 +67,7 @@ namespace BansheeEditor
 		mSceneObject = SceneObject::create("EditorWindow");
 
 		mCamera = mSceneObject->addComponent<Camera>();
-		mCamera->initialize(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f, 0);
+		mCamera->initialize(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setIgnoreSceneRenderables(true);
@@ -81,13 +80,7 @@ namespace BansheeEditor
 		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), EngineGUI::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
-		mMoveOrResizeConn = RenderWindowManager::instance().onMovedOrResized.connect(boost::bind(&EditorWindowBase::movedOrResized, this, _1));
-	}
-
-	void EditorWindowBase::movedOrResized(RenderWindow& renderWindow)
-	{
-		if(&renderWindow == mRenderWindow.get())
-			movedOrResized();
+		mResizedConn = mCamera->getViewport()->onResized.connect(boost::bind(&EditorWindowBase::resized, this));
 	}
 
 	void EditorWindowBase::setPosition(CM::INT32 x, CM::INT32 y)

@@ -22,7 +22,7 @@ namespace BansheeEditor
 
 		virtual bool _mouseEvent(BS::GUIElement* element, const BS::GUIMouseEvent& ev);
 		virtual void ownerWindowFocusChanged();
-		virtual void ownerWindowResized();
+		virtual void ownerTargetResized();
 
 		void refreshNonClientAreas() const;
 	};

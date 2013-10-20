@@ -26,7 +26,6 @@ namespace CamelotFramework
 
 		boost::signal<void(RenderWindow&)> onFocusGained;
 		boost::signal<void(RenderWindow&)> onFocusLost;
-		boost::signal<void(RenderWindow&)> onMovedOrResized;
 	protected:
 		friend class RenderWindow;
 

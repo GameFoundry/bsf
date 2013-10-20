@@ -95,12 +95,10 @@ namespace CamelotFramework
 			mWindowInFocus = newWinInFocus;
 		}
 
-		if(!onMovedOrResized.empty())
+		for(auto& window : movedOrResizedWindows)
 		{
-			for(auto& window : movedOrResizedWindows)
-			{
-				onMovedOrResized(*window);
-			}
+			if(!window->onResized.empty())
+				window->onResized();
 		}
 	}
 

@@ -119,9 +119,8 @@ namespace BansheeEngine
 
 		if(mWidget != nullptr)
 		{
-			// TODO - It might be more appropriate to use Viewport size instead of window size
 			// Ensure the size is valid, otherwise next GUI layout update will calculate wrong element coordinates
-			updateSizeBasedOnParent(mWidget->getOwnerWindow()->getWidth(), mWidget->getOwnerWindow()->getHeight());
+			updateSizeBasedOnParent(mWidget->getTarget()->getWidth(), mWidget->getTarget()->getHeight());
 		}
 
 		mIsDirty = true;

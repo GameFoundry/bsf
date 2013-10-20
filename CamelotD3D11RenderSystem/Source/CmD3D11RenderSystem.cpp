@@ -313,8 +313,8 @@ namespace CamelotFramework
 		setRenderTarget(target);
 
 		// set viewport dimensions
-		mViewport.TopLeftX = (FLOAT)vp->getLeft();
-		mViewport.TopLeftY = (FLOAT)vp->getTop();
+		mViewport.TopLeftX = (FLOAT)vp->getX();
+		mViewport.TopLeftY = (FLOAT)vp->getY();
 		mViewport.Width = (FLOAT)vp->getWidth();
 		mViewport.Height = (FLOAT)vp->getHeight();
 

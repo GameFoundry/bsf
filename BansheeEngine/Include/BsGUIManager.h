@@ -155,7 +155,6 @@ namespace BansheeEngine
 
 		boost::signals::connection mWindowGainedFocusConn;
 		boost::signals::connection mWindowLostFocusConn;
-		boost::signals::connection mWindowMovedOrResizedConn;
 
 		boost::signals::connection mMouseLeftWindowConn;
 
@@ -179,7 +178,6 @@ namespace BansheeEngine
 
 		void onWindowFocusGained(CM::RenderWindow& win);
 		void onWindowFocusLost(CM::RenderWindow& win);
-		void onWindowMovedOrResized(CM::RenderWindow& win);
 
 		void onMouseLeftWindow(CM::RenderWindow* win);
 
