@@ -76,7 +76,7 @@ namespace CamelotFramework
 				desc.colorSurface.face, desc.colorSurface.numFaces, GVU_RENDERTARGET);
 
 			mWidth = texture->getWidth();
-			mHeight = texture->getWidth();
+			mHeight = texture->getHeight();
 			mColorDepth = CamelotFramework::PixelUtil::getNumElemBits(texture->getFormat());
 			mActive = true;
 			mHwGamma = texture->isHardwareGammaEnabled();
