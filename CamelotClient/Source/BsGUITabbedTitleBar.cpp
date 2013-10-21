@@ -16,8 +16,8 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	GUITabbedTitleBar::GUITabbedTitleBar(BS::GUIWidget* parent)
-		:mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), 
+	GUITabbedTitleBar::GUITabbedTitleBar(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
+		:mParentWindow(parentWindow), mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), 
 		mMainArea(nullptr), mMainLayout(nullptr), mParentWidget(parent), mBackgroundArea(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
@@ -202,6 +202,6 @@ namespace BansheeEditor
 
 		nonClientAreas.push_back(mLastDropElement->getBounds());
 
-		Platform::setCaptionNonClientAreas(*mParentWidget->getOwnerWindow(), nonClientAreas);
+		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
 	}
 }

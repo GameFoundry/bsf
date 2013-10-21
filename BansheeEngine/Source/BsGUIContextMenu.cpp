@@ -21,7 +21,7 @@ namespace BansheeEngine
 	{
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundPosition(position);
 
-		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), widget.getOwnerWindow(), 
+		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
 			placement, getDropDownData(), widget.getSkin(), GUIDropDownType::ContextMenu, boost::bind(&GUIContextMenu::onMenuClosed, this));
 
 		GUIManager::instance().enableSelectiveInput(boost::bind(&GUIContextMenu::close, this));

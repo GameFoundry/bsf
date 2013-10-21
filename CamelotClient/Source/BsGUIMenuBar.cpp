@@ -19,8 +19,9 @@ namespace BansheeEditor
 {
 	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
 
-	GUIMenuBar::GUIMenuBar(BS::GUIWidget* parent)
-		:mParentWidget(parent), mMainArea(nullptr), mBackgroundArea(nullptr), mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
+	GUIMenuBar::GUIMenuBar(BS::GUIWidget* parent, RenderWindow* parentWindow)
+		:mParentWidget(parent), mParentWindow(parentWindow), mMainArea(nullptr), mBackgroundArea(nullptr), 
+		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
@@ -252,7 +253,7 @@ namespace BansheeEditor
 
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(subMenu->button->getBounds());
 
-		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), widget.getOwnerWindow(), 
+		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
 			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, boost::bind(&GUIMenuBar::onSubMenuClosed, this));
 
 		GUIManager::instance().enableSelectiveInput(boost::bind(&GUIMenuBar::closeSubMenu, this));
@@ -338,6 +339,6 @@ namespace BansheeEditor
 			nonClientAreas.push_back(emptyArea);
 		}
 
-		Platform::setCaptionNonClientAreas(*mParentWidget->getOwnerWindow(), nonClientAreas);
+		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
 	}
 }

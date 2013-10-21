@@ -16,8 +16,8 @@ namespace BansheeEditor
 {
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
-	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow, const GUISkin& skin)
-		:GUIWidget(parent, target, ownerWindow), mWindowFrameArea(nullptr)
+	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* parentWindow, const GUISkin& skin)
+		:GUIWidget(parent, target, parentWindow), mWindowFrameArea(nullptr), mParentWindow(parentWindow)
 	{
 		setSkin(skin);
 
@@ -50,7 +50,7 @@ namespace BansheeEditor
 
 	void WindowFrameWidget::ownerWindowFocusChanged()
 	{
-		mWindowFrame->setFocused(getOwnerWindow()->hasFocus());
+		mWindowFrame->setFocused(mParentWindow->hasFocus());
 
 		GUIWidget::ownerWindowFocusChanged();
 	}
@@ -104,6 +104,6 @@ namespace BansheeEditor
 		nonClientAreas[7].area = Rect(x + width - RESIZE_BORDER_WIDTH, y + height - RESIZE_BORDER_WIDTH, 
 			RESIZE_BORDER_WIDTH, RESIZE_BORDER_WIDTH);
 
-		Platform::setResizeNonClientAreas(*getOwnerWindow(), nonClientAreas);
+		Platform::setResizeNonClientAreas(*mParentWindow, nonClientAreas);
 	}
 }

@@ -26,7 +26,7 @@ Update GUIWidget input handling:
 Generating a report only generates it on the active thread. I need a way to generate profiler reports on the render thread as well. Maybe extend CoreThreadAccessor?
 
 
-
+TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
 
 I still re-create GUIWidget mesh every frame instead of just updating it.
 

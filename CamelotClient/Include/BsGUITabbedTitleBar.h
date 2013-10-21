@@ -8,7 +8,7 @@ namespace BansheeEditor
 	class GUITabbedTitleBar
 	{
 	public:
-		GUITabbedTitleBar(BS::GUIWidget* parent);
+		GUITabbedTitleBar(BS::GUIWidget* parent, CM::RenderWindow* parentWindow);
 		virtual ~GUITabbedTitleBar();
 
 		void setSize(CM::UINT32 width, CM::UINT32 height);
@@ -35,6 +35,7 @@ namespace BansheeEditor
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
 		GUIWindowDropArea* mLastDropElement;
+		CM::RenderWindow* mParentWindow;
 
 		void tabToggled(CM::UINT32 tabIdx);
 		void tabClosed();

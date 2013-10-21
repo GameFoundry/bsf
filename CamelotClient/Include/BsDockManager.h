@@ -18,11 +18,11 @@ namespace BansheeEditor
 			~DockContainer();
 
 			void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
-			void makeLeaf(BS::GUIWidget* widgetParent, EditorWidget* widget);
-			void addLeft(BS::GUIWidget* widgetParent, EditorWidget* widget);
-			void addRight(BS::GUIWidget* widgetParent, EditorWidget* widget);
-			void addTop(BS::GUIWidget* widgetParent, EditorWidget* widget);
-			void addBottom(BS::GUIWidget* widgetParent, EditorWidget* widget);
+			void makeLeaf(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
+			void addLeft(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
+			void addRight(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
+			void addTop(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
+			void addBottom(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
 
 			DockContainer* find(EditorWidgetContainer* widgetContainer);
 
@@ -46,7 +46,7 @@ namespace BansheeEditor
 			static const CM::UINT32 SliderSize;
 
 		private:
-			void splitContainer(BS::GUIWidget* widgetParent, EditorWidget* widget, bool horizontal, bool newChildIsFirst);
+			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget, bool horizontal, bool newChildIsFirst);
 		};
 
 		enum class DockLocation
@@ -58,7 +58,7 @@ namespace BansheeEditor
 			None
 		};
 	public:
-		DockManager(BS::GUIWidget* parent);
+		DockManager(BS::GUIWidget* parent, CM::RenderWindow* parentWindow);
 		~DockManager();
 
 		void render(const CM::Viewport* viewport, CM::RenderQueue& renderQueue);
@@ -71,6 +71,7 @@ namespace BansheeEditor
 		static const CM::Color HIGHLIGHT_COLOR;
 
 		BS::GUIWidget* mParent;
+		CM::RenderWindow* mParentWindow;
 		DockContainer mRootContainer;
 
 		CM::HMesh mDropOverlayMesh;

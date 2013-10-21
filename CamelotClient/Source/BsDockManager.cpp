@@ -91,37 +91,37 @@ namespace BansheeEditor
 		}
 	}
 
-	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, EditorWidget* widget)
+	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
 	{
 		mIsLeaf = true;
-		mWidgets = cm_new<EditorWidgetContainer>(widgetParent);
+		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow);
 
 		mWidgets->add(*widget);
 		mWidgets->setPosition(mX, mY);
 		mWidgets->setSize(mWidth, mHeight);
 	}
 
-	void DockManager::DockContainer::addLeft(BS::GUIWidget* widgetParent, EditorWidget* widget)
+	void DockManager::DockContainer::addLeft(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
 	{
-		splitContainer(widgetParent, widget, false, true);
+		splitContainer(widgetParent, parentWindow, widget, false, true);
 	}
 
-	void DockManager::DockContainer::addRight(BS::GUIWidget* widgetParent, EditorWidget* widget)
+	void DockManager::DockContainer::addRight(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
 	{
-		splitContainer(widgetParent, widget, false, false);
+		splitContainer(widgetParent, parentWindow, widget, false, false);
 	}
 
-	void DockManager::DockContainer::addTop(BS::GUIWidget* widgetParent, EditorWidget* widget)
+	void DockManager::DockContainer::addTop(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
 	{
-		splitContainer(widgetParent, widget, true, true);
+		splitContainer(widgetParent, parentWindow, widget, true, true);
 	}
 
-	void DockManager::DockContainer::addBottom(BS::GUIWidget* widgetParent, EditorWidget* widget)
+	void DockManager::DockContainer::addBottom(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
 	{
-		splitContainer(widgetParent, widget, true, false);
+		splitContainer(widgetParent, parentWindow, widget, true, false);
 	}
 
-	void DockManager::DockContainer::splitContainer(BS::GUIWidget* widgetParent, EditorWidget* widget, bool horizontal, bool newChildIsFirst)
+	void DockManager::DockContainer::splitContainer(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget, bool horizontal, bool newChildIsFirst)
 	{
 		UINT32 idxA = newChildIsFirst ? 0 : 1;
 		UINT32 idxB = (idxA + 1) % 2;
@@ -129,7 +129,7 @@ namespace BansheeEditor
 		mChildren[idxA] = cm_new<DockContainer>();
 		mChildren[idxB] = cm_new<DockContainer>(*this);
 
-		mChildren[idxA]->makeLeaf(widgetParent, widget);
+		mChildren[idxA]->makeLeaf(widgetParent, parentWindow, widget);
 
 		mIsLeaf = false;
 		mIsHorizontal = horizontal;
@@ -184,8 +184,8 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	DockManager::DockManager(BS::GUIWidget* parent)
-		:mParent(parent), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None)
+	DockManager::DockManager(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
+		:mParent(parent), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None)
 	{
 		mTopDropPolygon = cm_newN<Vector2>(4);
 		mBotDropPolygon = cm_newN<Vector2>(4);
@@ -260,16 +260,16 @@ namespace BansheeEditor
 			switch(location)
 			{
 			case DockLocation::Left:
-				container->addLeft(mParent, widgetToInsert);
+				container->addLeft(mParent, mParentWindow, widgetToInsert);
 				break;
 			case DockLocation::Right:
-				container->addRight(mParent, widgetToInsert);
+				container->addRight(mParent, mParentWindow, widgetToInsert);
 				break;
 			case DockLocation::Top:
-				container->addTop(mParent, widgetToInsert);
+				container->addTop(mParent, mParentWindow, widgetToInsert);
 				break;
 			case DockLocation::Bottom:
-				container->addBottom(mParent, widgetToInsert);
+				container->addBottom(mParent, mParentWindow, widgetToInsert);
 				break;
 			}
 		}
@@ -278,7 +278,7 @@ namespace BansheeEditor
 			if(mRootContainer.mWidgets != nullptr)
 				CM_EXCEPT(InternalErrorException, "Trying to insert a widget into dock manager root container but one already exists.");
 
-			mRootContainer.makeLeaf(mParent, widgetToInsert);
+			mRootContainer.makeLeaf(mParent, mParentWindow, widgetToInsert);
 		}
 	}
 
@@ -453,7 +453,7 @@ namespace BansheeEditor
 		if(event.getType() != GUIMouseEventType::MouseMove) // TODO - Replace with DragAndDrop event
 			return;
 
-		if(widget->getOwnerWindow() != mParent->getOwnerWindow())
+		if(widget->getTarget() != mParent->getTarget())
 			return;
 
 		const Int2& widgetRelPos = event.getPosition();

@@ -14,7 +14,7 @@ namespace BansheeEditor
 		};
 
 	public:
-		GUIMenuBar(BS::GUIWidget* parent);
+		GUIMenuBar(BS::GUIWidget* parent, CM::RenderWindow* parentWindow);
 		virtual ~GUIMenuBar();
 
 		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
@@ -26,6 +26,7 @@ namespace BansheeEditor
 	private:
 		static const CM::UINT32 NUM_ELEMENTS_AFTER_CONTENT;
 
+		CM::RenderWindow* mParentWindow;
 		BS::GUIWidget* mParentWidget;
 		BS::GUIArea* mMainArea;
 		BS::GUIArea* mBackgroundArea;

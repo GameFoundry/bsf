@@ -11,7 +11,7 @@ namespace BansheeEngine
 	public:
 		~GUIDropDownBoxManager();
 
-		CM::GameObjectHandle<GUIDropDownBox> openDropDownBox(CM::Viewport* target, CM::RenderWindow* window, const GUIDropDownAreaPlacement& placement,
+		CM::GameObjectHandle<GUIDropDownBox> openDropDownBox(CM::Viewport* target, const GUIDropDownAreaPlacement& placement,
 			const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type, std::function<void()> onClosedCallback);
 		void closeDropDownBox();
 

@@ -13,10 +13,10 @@ namespace BansheeEditor
 {
 	const CM::UINT32 EditorWidgetContainer::TitleBarHeight = 13;
 
-	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent)
+	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent, RenderWindow* renderWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1)
 	{
-		mTitleBar = cm_new<GUITabbedTitleBar>(parent);
+		mTitleBar = cm_new<GUITabbedTitleBar>(parent, renderWindow);
 		mTitleBar->onTabActivated.connect(boost::bind(&EditorWidgetContainer::tabActivated, this, _1));
 		mTitleBar->onTabClosed.connect(boost::bind(&EditorWidgetContainer::tabClosed, this, _1));
 		mTitleBar->onTabDraggedOff.connect(boost::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));

@@ -16,6 +16,7 @@ namespace BansheeEditor
 		static const CM::UINT32 RESIZE_BORDER_WIDTH;
 
 		BS::GUIArea* mWindowFrameArea;
+		CM::RenderWindow* mParentWindow;
 		GUIWindowFrame* mWindowFrame;
 
 		virtual void update();

@@ -8,7 +8,7 @@ namespace BansheeEditor
 	class EditorWidgetContainer
 	{
 	public:
-		EditorWidgetContainer(BS::GUIWidget* parent);
+		EditorWidgetContainer(BS::GUIWidget* parent, CM::RenderWindow* renderWindow);
 		virtual ~EditorWidgetContainer();
 
 		void add(EditorWidget& widget);

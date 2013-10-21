@@ -27,7 +27,8 @@ namespace BansheeEditor
 	}
 
 	MainEditorWindow::MainEditorWindow(const CM::RenderWindowPtr& renderWindow)
-		:EditorWindowBase(renderWindow), mDockManager(cm_new<DockManager>(mGUI.get())), mMenuBar(cm_new<GUIMenuBar>(mGUI.get()))
+		:EditorWindowBase(renderWindow), mDockManager(cm_new<DockManager>(mGUI.get(), mRenderWindow.get())), 
+		mMenuBar(cm_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{
 		updateAreas();
 
