@@ -13,6 +13,7 @@
 #include "BsSpriteTexture.h"
 #include "BsEngineGUI.h"
 #include "BsGUITexture.h"
+#include "BsGUIRenderTexture.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUISpace.h"
@@ -44,8 +45,7 @@ namespace CamelotFramework
 
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
 
-		SpriteTexturePtr spriteTex = std::make_shared<SpriteTexture>(sceneView->getBindableColorTexture());
-		area->getLayout().addElement(GUITexture::create(*this, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600)), spriteTex));
+		area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
 		mLabel = GUILabel::create(*this, HString(L""));
 		area->getLayout().addElement(mLabel);
 

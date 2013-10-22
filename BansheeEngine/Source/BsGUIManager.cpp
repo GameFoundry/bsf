@@ -1126,12 +1126,12 @@ namespace BansheeEngine
 		mSelectiveInputData[&element->_getParentWidget()].elements.insert(element);
 	}
 
-	void GUIManager::setInputBridge(const GUIWidget* widget, const GUIElement* element)
+	void GUIManager::setInputBridge(const CM::RenderTexture* renderTex, const GUIElement* element)
 	{
 		if(element == nullptr)
-			mInputBridge.erase(widget);
+			mInputBridge.erase(renderTex);
 		else
-			mInputBridge[widget] = element;
+			mInputBridge[renderTex] = element;
 	}
 
 	GUIMouseButton GUIManager::buttonToGUIButton(PositionalInputEventButton cursorButton) const
@@ -1162,7 +1162,12 @@ namespace BansheeEngine
 
 	Int2 GUIManager::windowToBridgedCoords(const GUIWidget& widget, const Int2& windowPos) const
 	{
-		auto iterFind = mInputBridge.find(&widget);
+		// This cast might not be valid (the render target could be a window), but we only really need to cast
+		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
+		// (in which case we know it is a RenderTexture)
+		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(widget.getTarget()->getTarget().get());
+
+		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end()) // Widget input is bridged, which means we need to transform the coordinates
 		{
 			const GUIElement* bridgeElement = iterFind->second;
@@ -1171,13 +1176,13 @@ namespace BansheeEngine
 
 			Vector4 vecLocalPos = worldTfrm.inverse() * Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f);
 			Rect bridgeBounds = bridgeElement->getBounds();
-			Rect actualBounds = widget.getBounds();
 
+			// Find coordinates relative to the bridge element
 			float x = vecLocalPos.x - (float)bridgeBounds.x;
 			float y = vecLocalPos.y - (float)bridgeBounds.y;
 
-			float scaleX = actualBounds.width / (float)bridgeBounds.width;
-			float scaleY = actualBounds.height / (float)bridgeBounds.height;
+			float scaleX = renderTexture->getWidth() / (float)bridgeBounds.width;
+			float scaleY = renderTexture->getHeight() / (float)bridgeBounds.height;
 
 			return Int2(Math::RoundToInt(x * scaleX), Math::RoundToInt(y * scaleY));
 		}
@@ -1187,8 +1192,12 @@ namespace BansheeEngine
 
 	const CM::RenderWindow* GUIManager::getWidgetWindow(const GUIWidget& widget) const
 	{
-		auto iterFind = mInputBridge.find(&widget);
+		// This cast might not be valid (the render target could be a window), but we only really need to cast
+		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
+		// (in which case we know it is a RenderTexture)
+		const RenderTexture* renderTexture = static_cast<const RenderTexture*>(widget.getTarget()->getTarget().get());
 
+		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end())
 		{
 			GUIWidget& parentWidget = iterFind->second->_getParentWidget();

@@ -84,6 +84,12 @@ namespace BansheeEngine
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, GUILayoutOptions::create(layoutOptions, style));
 	}
 
+	void GUITexture::setTexture(const SpriteTexturePtr& texture)
+	{
+		mDesc.texture = texture;
+		markContentAsDirty();
+	}
+
 	UINT32 GUITexture::getNumRenderElements() const
 	{
 		return mImageSprite->getNumRenderElements();
