@@ -21,6 +21,7 @@ namespace BansheeEngine
 		void setDepth(CM::UINT8 depth) { mDepth = depth; mWidgetIsDirty = true; }
 
 		bool inBounds(const CM::Int2& position) const;
+		const CM::Rect& getBounds() const { return mBounds; }
 
 		/**
 		 * @brief	Return true if widget or any of its elements are dirty.
@@ -31,7 +32,6 @@ namespace BansheeEngine
 		 */
 		bool isDirty(bool cleanIfDirty);
 
-		CM::RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
 		CM::Viewport* getTarget() const { return mTarget; }
 		const CM::Vector<GUIElement*>::type& getElements() const { return mElements; }
 
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		friend class GUIArea;
 		friend class GUIManager;
 
-		GUIWidget(const CM::HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow);
+		GUIWidget(const CM::HSceneObject& parent, CM::Viewport* target);
 
 		void registerElement(GUIElement* elem);
 		void unregisterElement(GUIElement* elem);
@@ -79,7 +79,6 @@ namespace BansheeEngine
 
 		void updateBounds() const;
 
-		CM::RenderWindow* mOwnerWindow;
 		CM::Viewport* mTarget;
 		CM::Vector<GUIElement*>::type mElements;
 		CM::Vector<GUIArea*>::type mAreas;

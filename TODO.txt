@@ -15,13 +15,9 @@ PROFILER:
 When rendering GUI in front of scene view it seems to be rendering before the actual scene!?
 
 Update GUIWidget input handling:
- - Remove RenderWindow from GUIWidget constructor
- - Remove getOwnerWindow from GUIWidget
+ - Recheck the bridging code, especially windowToBridgedCoords method.
+ - Add GUIRenderTexture method and ensure that bridging actually works
  - GUIWidget ownerWindowFocusChanged will also likely need to be replaced
-
- - If GUIWidget target is a window, GUIManager can detect it and automatically use that as the input source
-   - GUIRenderTexture are special GUI elements that are registered with GUIManager (add a new type derived from GUITexture)
-   - If a GUIWidget target is a render texture GUIManager can detect that as well and figure out the real parent and offset the input
 
 Generating a report only generates it on the active thread. I need a way to generate profiler reports on the render thread as well. Maybe extend CoreThreadAccessor?
 

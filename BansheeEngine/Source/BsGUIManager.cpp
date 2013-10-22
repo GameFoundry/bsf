@@ -761,7 +761,7 @@ namespace BansheeEngine
 
 			if(menu != nullptr)
 			{
-				const RenderWindow* window = mWidgetUnderCursor->getOwnerWindow();
+				const RenderWindow* window = getWidgetWindow(*mWidgetUnderCursor);
 				Int2 windowPos = window->screenToWindowPos(event.screenPos);
 
 				menu->open(windowPos, *mWidgetUnderCursor);
@@ -872,12 +872,19 @@ namespace BansheeEngine
 
 	bool GUIManager::findElementUnderCursor(const CM::Int2& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
 	{
+		Vector<const RenderWindow*>::type widgetWindows;
+		for(auto& widgetInfo : mWidgets)
+			widgetWindows.push_back(getWidgetWindow(*widgetInfo.widget));
+
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
 		Vector<RenderWindow*>::type activeWindows = RenderWindowManager::instance().getRenderWindows();
-		for(auto& widgetInfo : mWidgets)
+		for(auto& window : widgetWindows)
 		{
-			auto iterFind = std::find(begin(activeWindows), end(activeWindows), widgetInfo.widget->getOwnerWindow());
+			if(window == nullptr)
+				continue;
+
+			auto iterFind = std::find(begin(activeWindows), end(activeWindows), window);
 
 			if(iterFind == activeWindows.end())
 			{
@@ -893,9 +900,11 @@ namespace BansheeEngine
 		const RenderWindow* windowUnderCursor = nullptr;
 		UnorderedSet<const RenderWindow*>::type uniqueWindows;
 
-		for(auto& widgetInfo : mWidgets)
+		for(auto& window : widgetWindows)
 		{
-			const RenderWindow* window = widgetInfo.widget->getOwnerWindow();
+			if(window == nullptr)
+				continue;
+
 			uniqueWindows.insert(window);
 		}
 
@@ -914,10 +923,17 @@ namespace BansheeEngine
 			Vector4 vecWindowPos((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f);
 
 			UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
+			UINT32 widgetIdx = 0;
 			for(auto& widgetInfo : mWidgets)
 			{
+				if(widgetWindows[widgetIdx] == nullptr)
+				{
+					widgetIdx++;
+					continue;
+				}
+
 				GUIWidget* widget = widgetInfo.widget;
-				if(widget->getOwnerWindow() == windowUnderCursor && widget->inBounds(windowPos))
+				if(widgetWindows[widgetIdx] == windowUnderCursor && widget->inBounds(windowToBridgedCoords(*widget, windowPos)))
 				{
 					SelectiveInputData* selectiveInputData = nullptr;
 					if(mSelectiveInputActive)
@@ -925,15 +941,15 @@ namespace BansheeEngine
 						auto selectionIterFind = mSelectiveInputData.find(widget);
 
 						if(selectionIterFind == mSelectiveInputData.end())
+						{
+							widgetIdx++;
 							continue;
+						}
 						else
 							selectiveInputData = &selectionIterFind->second;
 					}
 
-					const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
-
-					Vector4 vecLocalPos = worldTfrm.inverse() * vecWindowPos;
-					Int2 localPos = Int2(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+					Int2 localPos = getWidgetRelativePos(*widget, cursorScreenPos);
 
 					Vector<GUIElement*>::type sortedElements = widget->getElements();
 					std::sort(sortedElements.begin(), sortedElements.end(), 
@@ -963,6 +979,8 @@ namespace BansheeEngine
 						}
 					}
 				}
+
+				widgetIdx++;
 			}
 		}
 
@@ -1032,7 +1050,7 @@ namespace BansheeEngine
 		for(auto& widgetInfo : mWidgets)
 		{
 			GUIWidget* widget = widgetInfo.widget;
-			if(widget->getOwnerWindow() == &win)
+			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
 	}
@@ -1042,7 +1060,7 @@ namespace BansheeEngine
 		for(auto& widgetInfo : mWidgets)
 		{
 			GUIWidget* widget = widgetInfo.widget;
-			if(widget->getOwnerWindow() == &win)
+			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
 	}
@@ -1108,6 +1126,14 @@ namespace BansheeEngine
 		mSelectiveInputData[&element->_getParentWidget()].elements.insert(element);
 	}
 
+	void GUIManager::setInputBridge(const GUIWidget* widget, const GUIElement* element)
+	{
+		if(element == nullptr)
+			mInputBridge.erase(widget);
+		else
+			mInputBridge[widget] = element;
+	}
+
 	GUIMouseButton GUIManager::buttonToGUIButton(PositionalInputEventButton cursorButton) const
 	{
 		if(cursorButton == PositionalInputEventButton::Left)
@@ -1122,8 +1148,9 @@ namespace BansheeEngine
 
 	Int2 GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Int2& screenPos) const
 	{
-		const RenderWindow* window = widget.getOwnerWindow();
+		const RenderWindow* window = getWidgetWindow(widget);
 		Int2 windowPos = window->screenToWindowPos(screenPos);
+		windowPos = windowToBridgedCoords(widget, windowPos);
 
 		const Matrix4& worldTfrm = widget.SO()->getWorldTfrm();
 
@@ -1131,6 +1158,54 @@ namespace BansheeEngine
 		Int2 curLocalPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
 
 		return curLocalPos;
+	}
+
+	Int2 GUIManager::windowToBridgedCoords(const GUIWidget& widget, const Int2& windowPos) const
+	{
+		auto iterFind = mInputBridge.find(&widget);
+		if(iterFind != mInputBridge.end()) // Widget input is bridged, which means we need to transform the coordinates
+		{
+			const GUIElement* bridgeElement = iterFind->second;
+
+			const Matrix4& worldTfrm = bridgeElement->_getParentWidget().SO()->getWorldTfrm();
+
+			Vector4 vecLocalPos = worldTfrm.inverse() * Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f);
+			Rect bridgeBounds = bridgeElement->getBounds();
+			Rect actualBounds = widget.getBounds();
+
+			float x = vecLocalPos.x - (float)bridgeBounds.x;
+			float y = vecLocalPos.y - (float)bridgeBounds.y;
+
+			float scaleX = actualBounds.width / (float)bridgeBounds.width;
+			float scaleY = actualBounds.height / (float)bridgeBounds.height;
+
+			return Int2(Math::RoundToInt(x * scaleX), Math::RoundToInt(y * scaleY));
+		}
+
+		return windowPos;
+	}
+
+	const CM::RenderWindow* GUIManager::getWidgetWindow(const GUIWidget& widget) const
+	{
+		auto iterFind = mInputBridge.find(&widget);
+
+		if(iterFind != mInputBridge.end())
+		{
+			GUIWidget& parentWidget = iterFind->second->_getParentWidget();
+			if(&parentWidget != &widget)
+			{
+				return getWidgetWindow(parentWidget);
+			}
+		}
+
+		RenderTargetPtr renderTarget = widget.getTarget()->getTarget();
+		Vector<RenderWindow*>::type renderWindows = RenderWindowManager::instance().getRenderWindows();
+
+		auto iterFindWin = std::find(renderWindows.begin(), renderWindows.end(), renderTarget.get());
+		if(iterFindWin != renderWindows.end())
+			return static_cast<RenderWindow*>(renderTarget.get());
+
+		return nullptr;
 	}
 
 	bool GUIManager::sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)

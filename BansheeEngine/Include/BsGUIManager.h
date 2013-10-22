@@ -84,6 +84,22 @@ namespace BansheeEngine
 		void addSelectiveInputWidget(const GUIWidget* widget);
 		void addSelectiveInputElement(const GUIElement* element);
 
+		/**
+		 * @brief	Allows you to bridge GUI input from a GUI element into a widget.
+		 *
+		 * @param	widget 	The widget for which to bridge input.
+		 * @param	element	The element from which to bridge input. Input will be transformed according to this
+		 * 					elements position and size. Provide nullptr if you want to remove a bridge for the specified widget.
+		 * 					
+		 * @note	This is useful if you use render textures, where your GUI is rendered off-
+		 * 			screen. In such case you need to display the render texture within another GUIElement
+		 * 			in a GUIWidget, but have no way of sending input to the render texture (normally
+		 * 			input is only sent to render windows). This allows you to change that.
+		 * 			
+		 *			Bridged element needs to remove itself as the bridge when it is destroyed.
+		 */
+		void setInputBridge(const GUIWidget* widget, const GUIElement* element);
+
 		boost::signal<void(GUIWidget*, GUIElement*, const GUIMouseEvent&)> mouseEventFilter;
 		boost::signal<void(GUIWidget*, GUIElement*, const GUITextInputEvent&)> textInputEventFilter;
 	private:
@@ -144,6 +160,8 @@ namespace BansheeEngine
 		CM::Map<const GUIWidget*, SelectiveInputData>::type mSelectiveInputData;
 		std::function<void()> mOnOutsideClickCallback;
 
+		CM::Map<const GUIWidget*, const GUIElement*>::type mInputBridge;
+
 		boost::signals::connection mOnCursorMovedConn;
 		boost::signals::connection mOnCursorPressedConn;
 		boost::signals::connection mOnCursorReleasedConn;
@@ -183,6 +201,8 @@ namespace BansheeEngine
 
 		GUIMouseButton buttonToGUIButton(CM::PositionalInputEventButton cursorButton) const;
 		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
+		CM::Int2 windowToBridgedCoords(const GUIWidget& widget, const CM::Int2& windowPos) const;
+		const CM::RenderWindow* getWidgetWindow(const GUIWidget& widget) const;
 
 		bool sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);
 		bool sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event);

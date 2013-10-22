@@ -16,7 +16,7 @@ namespace BansheeEngine
 		closeDropDownBox();
 
 		mDropDownSO = SceneObject::create("DropDownBox");
-		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>(target, nullptr, placement, dropDownData, skin, type);
+		mDropDownBox = mDropDownSO->addComponent<GUIDropDownBox>(target, placement, dropDownData, skin, type);
 		mOnClosedCallback = onClosedCallback;
 
 		return mDropDownBox;

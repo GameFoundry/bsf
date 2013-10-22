@@ -17,7 +17,7 @@ namespace BansheeEditor
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
 	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* parentWindow, const GUISkin& skin)
-		:GUIWidget(parent, target, parentWindow), mWindowFrameArea(nullptr), mParentWindow(parentWindow)
+		:GUIWidget(parent, target), mWindowFrameArea(nullptr), mParentWindow(parentWindow)
 	{
 		setSkin(skin);
 

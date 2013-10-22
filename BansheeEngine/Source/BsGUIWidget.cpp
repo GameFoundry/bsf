@@ -22,21 +22,16 @@ namespace BansheeEngine
 {
 	GUISkin GUIWidget::DefaultSkin;
 
-	GUIWidget::GUIWidget(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow)
-		:Component(parent), mSkin(nullptr), mOwnerWindow(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
+	GUIWidget::GUIWidget(const HSceneObject& parent, CM::Viewport* target)
+		:Component(parent), mSkin(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
 	{
 		mLastFramePosition = SO()->getWorldPosition();
 		mLastFrameRotation = SO()->getWorldRotation();
 		mLastFrameScale = SO()->getWorldScale();
 
 		assert(target != nullptr);
-		assert(ownerWindow != nullptr);
-
-		if(mOwnerWindow != nullptr)
-			CM_EXCEPT(InvalidStateException, "Widget has already been initialized.");
 
 		mTarget = target;
-		mOwnerWindow = ownerWindow;
 
 		mOwnerTargetResizedConn = mTarget->onResized.connect(boost::bind(&GUIWidget::ownerTargetResized, this));
 

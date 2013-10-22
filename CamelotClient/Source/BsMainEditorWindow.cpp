@@ -58,7 +58,7 @@ namespace BansheeEditor
 
 		GameObjectHandle<DebugCamera> debugCamera = sceneCameraGO->addComponent<DebugCamera>();
 
-		GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>(mCamera->getViewport().get(), renderWindow.get());
+		GameObjectHandle<TestTextSprite> textSprite = mSceneObject->addComponent<TestTextSprite>(mCamera->getViewport().get());
 
 		textSprite->init(sceneCamera, "Testing in a new row, does this work?", sceneRenderTarget);
 
@@ -72,7 +72,7 @@ namespace BansheeEditor
 		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
 		DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 
-		ProfilerOverlay::startUp(cm_new<ProfilerOverlay>(sceneCamera->getViewport(), renderWindow));
+		ProfilerOverlay::startUp(cm_new<ProfilerOverlay>(sceneCamera->getViewport()));
 		ProfilerOverlay::instance().show();
 	}
 

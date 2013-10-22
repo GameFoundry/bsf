@@ -28,8 +28,8 @@ using namespace BansheeEngine;
 
 namespace CamelotFramework
 {
-	TestTextSprite::TestTextSprite(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow)
-		:GUIWidget(parent, target, ownerWindow)
+	TestTextSprite::TestTextSprite(const HSceneObject& parent, CM::Viewport* target)
+		:GUIWidget(parent, target)
 	{
 	}
 

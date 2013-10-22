@@ -234,7 +234,7 @@ namespace BansheeEngine
 
 	const UINT32 ProfilerOverlay::MAX_DEPTH = 2;
 
-	ProfilerOverlay::ProfilerOverlay(const CM::ViewportPtr& target, const CM::RenderWindowPtr& ownerWindow)
+	ProfilerOverlay::ProfilerOverlay(const CM::ViewportPtr& target)
 		:mIsShown(false), mBasicAreaLabels(nullptr), mPreciseAreaLabels(nullptr), mBasicAreaContents(nullptr), mPreciseAreaContents(nullptr),
 		mBasicLayoutLabels(nullptr), mPreciseLayoutLabels(nullptr), mBasicLayoutContents(nullptr), mPreciseLayoutContents(nullptr),
 		mTitleBasicName(nullptr), mTitleBasicPctOfParent(nullptr), mTitleBasicNumCalls(nullptr), mTitleBasicAvgTime(nullptr), 
@@ -243,7 +243,7 @@ namespace BansheeEngine
 		mTitlePreciseNumCalls(nullptr), mTitlePreciseAvgCycles(nullptr), mTitlePreciseTotalCycles(nullptr), mTitlePreciseMaxCycles(nullptr), 
 		mTitlePreciseAvgCyclesSelf(nullptr), mTitlePreciseTotalCyclesSelf(nullptr), mTitlePreciseEstOverhead(nullptr), mTitlePreciseEstOverheadSelf(nullptr)
 	{
-		setTarget(target, ownerWindow);
+		setTarget(target);
 	}
 
 	ProfilerOverlay::~ProfilerOverlay()
@@ -258,13 +258,12 @@ namespace BansheeEngine
 			mWidgetSO->destroy();
 	}
 
-	void ProfilerOverlay::setTarget(const CM::ViewportPtr& target, const CM::RenderWindowPtr& ownerWindow)
+	void ProfilerOverlay::setTarget(const CM::ViewportPtr& target)
 	{
 		if(mTarget != nullptr)
 			mTargetResizedConn.disconnect();
 
 		mTarget = target;
-		mOwnerWindow = ownerWindow;
 
 		mTargetResizedConn = target->onResized.connect(boost::bind(&ProfilerOverlay::targetResized, this));
 
@@ -272,7 +271,7 @@ namespace BansheeEngine
 			mWidgetSO->destroy();
 
 		mWidgetSO = SceneObject::create("ProfilerOverlay");
-		mWidget = mWidgetSO->addComponent<GUIWidget>(mTarget.get(), mOwnerWindow.get());
+		mWidget = mWidgetSO->addComponent<GUIWidget>(mTarget.get());
 		mWidget->setDepth(127);
 		mWidget->setSkin(EngineGUI::instance().getSkin());
 

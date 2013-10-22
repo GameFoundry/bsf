@@ -48,10 +48,10 @@ namespace BansheeEngine
 		};
 
 	public:
-		ProfilerOverlay(const CM::ViewportPtr& target, const CM::RenderWindowPtr& ownerWindow);
+		ProfilerOverlay(const CM::ViewportPtr& target);
 		~ProfilerOverlay();
 
-		void setTarget(const CM::ViewportPtr& target, const CM::RenderWindowPtr& ownerWindow);
+		void setTarget(const CM::ViewportPtr& target);
 
 		void show();
 		void hide();
@@ -64,7 +64,6 @@ namespace BansheeEngine
 		static const CM::UINT32 MAX_DEPTH;
 
 		CM::ViewportPtr mTarget;
-		CM::RenderWindowPtr mOwnerWindow;
 
 		CM::HSceneObject mWidgetSO;
 		CM::GameObjectHandle<GUIWidget> mWidget;

@@ -72,7 +72,7 @@ namespace BansheeEditor
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setIgnoreSceneRenderables(true);
 
-		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get(), renderWindow.get());
+		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get());
 		mGUI->setDepth(128);
 
 		mGUI->setSkin(EngineGUI::instance().getSkin());
