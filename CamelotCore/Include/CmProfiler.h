@@ -11,6 +11,12 @@ namespace CamelotFramework
 		CPUProfilerReport cpuReport;
 	};
 
+	enum class ProfiledThread
+	{
+		Sim,
+		Core
+	};
+
 	class CM_EXPORT Profiler : public Module<Profiler>
 	{
 	public:
@@ -83,7 +89,14 @@ namespace CamelotFramework
 		void update();
 
 		/**
-		 * @brief	Returns a profiler report for the specified frame. 
+		 * @brief	Called every frame from the core thread. Internal method.
+		 * 			
+		 * @note	Only call from core thread.
+		 */
+		void updateCore();
+
+		/**
+		 * @brief	Returns a profiler report for the specified frame, for the specified thread.
 		 *
 		 * @param	Profiler report index, ranging [0, NUM_SAVED_FRAMES]. 0 always returns the latest
 		 * 					 report. Increasing indexes return reports for older and older frames. Out of range
@@ -92,14 +105,19 @@ namespace CamelotFramework
 		 * @note	Profiler reports get updated every frame. Oldest reports that no longer fit in the saved reports buffer
 		 * 			are discarded.
 		 */
-		const ProfilerReport& getReport(UINT32 idx = 0) const;
+		const ProfilerReport& getReport(ProfiledThread thread, UINT32 idx = 0) const;
 
 	private:
 		static const UINT32 NUM_SAVED_FRAMES;
-		ProfilerReport* mSavedReports;
-		UINT32 mNextReportIdx;
+		ProfilerReport* mSavedSimReports;
+		UINT32 mNextSimReportIdx;
+
+		ProfilerReport* mSavedCoreReports;
+		UINT32 mNextCoreReportIdx;
 
 		CPUProfiler* mCPUProfiler;
+
+		CM_MUTEX(mSync);
 	};
 
 	CM_EXPORT Profiler& gProfiler();

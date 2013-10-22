@@ -369,9 +369,10 @@ namespace BansheeEngine
 
 	void ProfilerOverlay::update()
 	{
-		const ProfilerReport& latestReport = Profiler::instance().getReport();
+		const ProfilerReport& latestSimReport = Profiler::instance().getReport(ProfiledThread::Sim);
+		const ProfilerReport& latestCoreReport = Profiler::instance().getReport(ProfiledThread::Core);
 
-		updateContents(latestReport);
+		updateContents(latestSimReport, latestCoreReport);
 	}
 
 	void ProfilerOverlay::targetResized()
@@ -403,10 +404,15 @@ namespace BansheeEngine
 		mPreciseAreaContents->setSize(contentWidth, height);
 	}
 
-	void ProfilerOverlay::updateContents(const ProfilerReport& report)
+	void ProfilerOverlay::updateContents(const CM::ProfilerReport& simReport, const CM::ProfilerReport& coreReport)
 	{
-		const CPUProfilerBasicSamplingEntry& basicRootEntry = report.cpuReport.getBasicSamplingData();
-		const CPUProfilerPreciseSamplingEntry& preciseRootEntry = report.cpuReport.getPreciseSamplingData();
+		static const UINT32 NUM_ROOT_ENTRIES = 2;
+
+		const CPUProfilerBasicSamplingEntry& simBasicRootEntry = simReport.cpuReport.getBasicSamplingData();
+		const CPUProfilerPreciseSamplingEntry& simPreciseRootEntry = simReport.cpuReport.getPreciseSamplingData();
+
+		const CPUProfilerBasicSamplingEntry& coreBasicRootEntry = coreReport.cpuReport.getBasicSamplingData();
+		const CPUProfilerPreciseSamplingEntry& corePreciseRootEntry = coreReport.cpuReport.getPreciseSamplingData();
 
 		struct TodoBasic
 		{
@@ -429,47 +435,61 @@ namespace BansheeEngine
 		};
 
 		BasicRowFiller basicRowFiller(mBasicRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget);
-
 		Stack<TodoBasic>::type todoBasic;
-		todoBasic.push(TodoBasic(basicRootEntry, 0));
 
-		while(!todoBasic.empty())
+		const CPUProfilerBasicSamplingEntry* basicRootEntries[NUM_ROOT_ENTRIES];
+		basicRootEntries[0] = &simBasicRootEntry;
+		basicRootEntries[1] = &coreBasicRootEntry;
+
+		for(UINT32 i = 0; i < NUM_ROOT_ENTRIES; i++)
 		{
-			TodoBasic curEntry = todoBasic.top();
-			todoBasic.pop();
+			todoBasic.push(TodoBasic(*basicRootEntries[i], 0));
 
-			const CPUProfilerBasicSamplingEntry::Data& data = curEntry.entry.data;
-			basicRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.avgTimeMs, data.totalTimeMs, 
-				data.maxTimeMs, data.avgSelfTimeMs, data.totalSelfTimeMs, data.estimatedOverheadMs, data.estimatedSelfOverheadMs);
-
-			if(curEntry.depth <= MAX_DEPTH)
+			while(!todoBasic.empty())
 			{
-				for(auto& child : curEntry.entry.childEntries)
+				TodoBasic curEntry = todoBasic.top();
+				todoBasic.pop();
+
+				const CPUProfilerBasicSamplingEntry::Data& data = curEntry.entry.data;
+				basicRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.avgTimeMs, data.totalTimeMs, 
+					data.maxTimeMs, data.avgSelfTimeMs, data.totalSelfTimeMs, data.estimatedOverheadMs, data.estimatedSelfOverheadMs);
+
+				if(curEntry.depth <= MAX_DEPTH)
 				{
-					todoBasic.push(TodoBasic(child, curEntry.depth + 1));
+					for(auto& child : curEntry.entry.childEntries)
+					{
+						todoBasic.push(TodoBasic(child, curEntry.depth + 1));
+					}
 				}
 			}
 		}
 
 		PreciseRowFiller preciseRowFiller(mPreciseRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget);
-
 		Stack<TodoPrecise>::type todoPrecise;
-		todoPrecise.push(TodoPrecise(preciseRootEntry, 0));
 
-		while(!todoBasic.empty())
+		const CPUProfilerPreciseSamplingEntry* preciseRootEntries[NUM_ROOT_ENTRIES];
+		preciseRootEntries[0] = &simPreciseRootEntry;
+		preciseRootEntries[1] = &corePreciseRootEntry;
+
+		for(UINT32 i = 0; i < NUM_ROOT_ENTRIES; i++)
 		{
-			TodoPrecise curEntry = todoPrecise.top();
-			todoPrecise.pop();
+			todoPrecise.push(TodoPrecise(*preciseRootEntries[i], 0));
 
-			const CPUProfilerPreciseSamplingEntry::Data& data = curEntry.entry.data;
-			preciseRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.avgCycles, data.totalCycles, 
-				data.maxCycles, data.avgSelfCycles, data.totalSelfCycles, data.estimatedOverhead, data.estimatedSelfOverhead);
-
-			if(curEntry.depth <= MAX_DEPTH)
+			while(!todoBasic.empty())
 			{
-				for(auto& child : curEntry.entry.childEntries)
+				TodoPrecise curEntry = todoPrecise.top();
+				todoPrecise.pop();
+
+				const CPUProfilerPreciseSamplingEntry::Data& data = curEntry.entry.data;
+				preciseRowFiller.addData(curEntry.depth, data.name, data.pctOfParent, data.numCalls, data.avgCycles, data.totalCycles, 
+					data.maxCycles, data.avgSelfCycles, data.totalSelfCycles, data.estimatedOverhead, data.estimatedSelfOverhead);
+
+				if(curEntry.depth <= MAX_DEPTH)
 				{
-					todoPrecise.push(TodoPrecise(child, curEntry.depth + 1));
+					for(auto& child : curEntry.entry.childEntries)
+					{
+						todoPrecise.push(TodoPrecise(child, curEntry.depth + 1));
+					}
 				}
 			}
 		}

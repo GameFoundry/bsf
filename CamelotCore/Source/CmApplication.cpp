@@ -105,6 +105,7 @@ namespace CamelotFramework
 			if(!mainLoopCallback.empty())
 				mainLoopCallback();
 
+			gCoreThread().queueCommand(boost::bind(&Application::beginCoreProfiling, this));
 			RendererManager::instance().getActive()->renderAll();
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
@@ -121,6 +122,7 @@ namespace CamelotFramework
 			}
 
 			gCoreThread().queueCommand(boost::bind(&Application::updateMessagePump, this));
+			gCoreThread().queueCommand(boost::bind(&Application::endCoreProfiling, this));
 			mPrimaryCoreAccessor->submitToCoreThread();
 			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 
@@ -148,6 +150,17 @@ namespace CamelotFramework
 
 		mIsFrameRenderingFinished = true;
 		CM_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
+	}
+
+	void Application::beginCoreProfiling()
+	{
+		gProfiler().beginThread("Core");
+	}
+
+	void Application::endCoreProfiling()
+	{
+		gProfiler().endThread();
+		gProfiler().updateCore();
 	}
 
 	void Application::shutDown()

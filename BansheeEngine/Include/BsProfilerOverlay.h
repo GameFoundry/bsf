@@ -107,6 +107,6 @@ namespace BansheeEngine
 
 		void targetResized();
 		void updateAreaSizes();
-		void updateContents(const CM::ProfilerReport& report);
+		void updateContents(const CM::ProfilerReport& simReport, const CM::ProfilerReport& coreReport);
 	};
 }

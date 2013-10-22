@@ -6,13 +6,15 @@ namespace CamelotFramework
 	const UINT32 Profiler::NUM_SAVED_FRAMES = 200;
 
 	Profiler::Profiler()
-		:mSavedReports(nullptr), mCPUProfiler(nullptr), mNextReportIdx(0)
+		:mSavedSimReports(nullptr), mCPUProfiler(nullptr), mNextSimReportIdx(0),
+		mSavedCoreReports(nullptr), mNextCoreReportIdx(0)
 	{
 #if CM_PROFILING_ENABLED
 		mCPUProfiler = cm_new<CPUProfiler>();
 #endif
 
-		mSavedReports = cm_newN<ProfilerReport>(NUM_SAVED_FRAMES);
+		mSavedSimReports = cm_newN<ProfilerReport>(NUM_SAVED_FRAMES);
+		mSavedCoreReports = cm_newN<ProfilerReport>(NUM_SAVED_FRAMES);
 	}
 
 	Profiler::~Profiler()
@@ -20,29 +22,56 @@ namespace CamelotFramework
 		if(mCPUProfiler != nullptr)
 			cm_delete(mCPUProfiler);
 
-		if(mSavedReports != nullptr)
-			cm_deleteN(mSavedReports, NUM_SAVED_FRAMES);
+		if(mSavedSimReports != nullptr)
+			cm_deleteN(mSavedSimReports, NUM_SAVED_FRAMES);
+
+		if(mSavedCoreReports != nullptr)
+			cm_deleteN(mSavedCoreReports, NUM_SAVED_FRAMES);
 	}
 
 	void Profiler::update()
 	{
 #if CM_PROFILING_ENABLED
-		mSavedReports[mNextReportIdx].cpuReport = mCPUProfiler->generateReport();
+		mSavedSimReports[mNextSimReportIdx].cpuReport = mCPUProfiler->generateReport();
 
 		mCPUProfiler->reset();
 
-		mNextReportIdx = (mNextReportIdx + 1) % NUM_SAVED_FRAMES;
+		mNextSimReportIdx = (mNextSimReportIdx + 1) % NUM_SAVED_FRAMES;
 #endif
 	}
 
-	const ProfilerReport& Profiler::getReport(UINT32 idx) const
+	void Profiler::updateCore()
+	{
+#if CM_PROFILING_ENABLED
+		CM_LOCK_MUTEX(mSync);
+		mSavedCoreReports[mNextCoreReportIdx].cpuReport = mCPUProfiler->generateReport();
+
+		mCPUProfiler->reset();
+
+		mNextCoreReportIdx = (mNextCoreReportIdx + 1) % NUM_SAVED_FRAMES;
+#endif
+	}
+
+	const ProfilerReport& Profiler::getReport(ProfiledThread thread, UINT32 idx) const
 	{
 		idx = Math::Clamp(idx, 0U, (UINT32)(NUM_SAVED_FRAMES - 1));
 
-		UINT32 reportIdx = mNextReportIdx + (UINT32)((INT32)NUM_SAVED_FRAMES - ((INT32)idx + 1));
-		reportIdx = (reportIdx) % NUM_SAVED_FRAMES;
+		if(thread == ProfiledThread::Core)
+		{
+			CM_LOCK_MUTEX(mSync);
 
-		return mSavedReports[reportIdx];
+			UINT32 reportIdx = mNextCoreReportIdx + (UINT32)((INT32)NUM_SAVED_FRAMES - ((INT32)idx + 1));
+			reportIdx = (reportIdx) % NUM_SAVED_FRAMES;
+
+			return mSavedCoreReports[reportIdx];
+		}
+		else
+		{
+			UINT32 reportIdx = mNextSimReportIdx + (UINT32)((INT32)NUM_SAVED_FRAMES - ((INT32)idx + 1));
+			reportIdx = (reportIdx) % NUM_SAVED_FRAMES;
+
+			return mSavedSimReports[reportIdx];
+		}
 	}
 
 	Profiler& gProfiler()

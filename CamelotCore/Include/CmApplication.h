@@ -100,6 +100,16 @@ namespace CamelotFramework
 		 * @brief	Called when the frame finishes rendering.
 		 */
 		void frameRenderingFinishedCallback();
+
+		/**
+		 * @brief	Called by the core thread to begin profiling.
+		 */
+		void beginCoreProfiling();
+
+		/**
+		 * @brief	Called by the core thread to end profiling.
+		 */
+		void endCoreProfiling();
 	};
 
 	CM_EXPORT Application& gApplication();
