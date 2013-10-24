@@ -369,8 +369,6 @@ namespace CamelotFramework
 
 		CullingMode mCullingMode;
 
-		bool mInvertVertexWinding;
-
 		/// Texture units from this upwards are disabled
 		UINT16 mDisabledTexUnitsFrom;
 

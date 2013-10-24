@@ -349,7 +349,24 @@ namespace CamelotFramework
 		{
 			if (!mIsExternalGLContext)
 			{
+#if CM_DEBUG_MODE
+				if (wglewIsSupported("WGL_ARB_create_context"))
+				{
+					int contextAttribs[] =
+					{
+						WGL_CONTEXT_FLAGS_ARB,
+						WGL_CONTEXT_DEBUG_BIT_ARB,
+						0
+					};
+
+					mGlrc = wglCreateContextAttribsARB(mHDC, 0, contextAttribs);
+				}
+				else
+					mGlrc = wglCreateContext(mHDC);
+#else
 				mGlrc = wglCreateContext(mHDC);
+#endif
+
 
 				if (!mGlrc)
 				{

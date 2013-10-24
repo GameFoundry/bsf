@@ -843,11 +843,9 @@ namespace CamelotFramework
 
 		mCullingMode = mode;
 		HRESULT hr;
-		bool flip = ((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
-			(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding));
 
 		if( FAILED (hr = __SetRenderState(D3DRS_CULLMODE, 
-			D3D9Mappings::get(mode, flip))) )
+			D3D9Mappings::get(mode, false))) )
 			CM_EXCEPT(RenderingAPIException, "Failed to set culling mode");
 	}
 	//---------------------------------------------------------------------
@@ -984,34 +982,34 @@ namespace CamelotFramework
 		if (ccw)
 		{
 			// fail op
-			hr = __SetRenderState(D3DRS_CCW_STENCILFAIL, D3D9Mappings::get(stencilFailOp, mInvertVertexWinding));
+			hr = __SetRenderState(D3DRS_CCW_STENCILFAIL, D3D9Mappings::get(stencilFailOp));
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation (ccw).");
 
 			// depth fail op
-			hr = __SetRenderState(D3DRS_CCW_STENCILZFAIL, D3D9Mappings::get(depthFailOp, mInvertVertexWinding));
+			hr = __SetRenderState(D3DRS_CCW_STENCILZFAIL, D3D9Mappings::get(depthFailOp));
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation (ccw).");
 
 			// pass op
-			hr = __SetRenderState(D3DRS_CCW_STENCILPASS, D3D9Mappings::get(passOp, mInvertVertexWinding));
+			hr = __SetRenderState(D3DRS_CCW_STENCILPASS, D3D9Mappings::get(passOp));
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation (ccw).");
 		}
 		else
 		{
 			// fail op
-			hr = __SetRenderState(D3DRS_STENCILFAIL, D3D9Mappings::get(stencilFailOp, !mInvertVertexWinding));
+			hr = __SetRenderState(D3DRS_STENCILFAIL, D3D9Mappings::get(stencilFailOp, true));
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting stencil fail operation (cw).");
 
 			// depth fail op
-			hr = __SetRenderState(D3DRS_STENCILZFAIL, D3D9Mappings::get(depthFailOp, !mInvertVertexWinding));
+			hr = __SetRenderState(D3DRS_STENCILZFAIL, D3D9Mappings::get(depthFailOp, true));
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting stencil depth fail operation (cw).");
 
 			// pass op
-			hr = __SetRenderState(D3DRS_STENCILPASS, D3D9Mappings::get(passOp, !mInvertVertexWinding));
+			hr = __SetRenderState(D3DRS_STENCILPASS, D3D9Mappings::get(passOp, true));
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation (cw).");
 		}

@@ -708,8 +708,6 @@ namespace CamelotFramework
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 
 			static_cast<GLIndexBuffer*>(mBoundIndexBuffer.get())->getGLBufferId());
 
-		void* pBufferData = VBO_BUFFER_OFFSET(startIndex * mBoundIndexBuffer->getIndexSize());
-
 		GLenum indexType = (mBoundIndexBuffer->getType() == IndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
 		glDrawElements(primType, indexCount, indexType, 0);
@@ -1071,28 +1069,10 @@ namespace CamelotFramework
 			return;
 		default:
 		case CULL_CLOCKWISE:
-			if (mActiveRenderTarget && 
-				((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
-				(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding)))
-			{
-				cullMode = GL_FRONT;
-			}
-			else
-			{
-				cullMode = GL_BACK;
-			}
+			cullMode = GL_BACK;
 			break;
 		case CULL_COUNTERCLOCKWISE:
-			if (mActiveRenderTarget && 
-				((mActiveRenderTarget->requiresTextureFlipping() && !mInvertVertexWinding) ||
-				(!mActiveRenderTarget->requiresTextureFlipping() && mInvertVertexWinding)))
-			{
-				cullMode = GL_BACK;
-			}
-			else
-			{
-				cullMode = GL_FRONT;
-			}
+			cullMode = GL_FRONT;
 			break;
 		}
 
@@ -1190,16 +1170,16 @@ namespace CamelotFramework
 		if (front)
 		{
 			glStencilOpSeparate(GL_FRONT, 
-				convertStencilOp(stencilFailOp, mInvertVertexWinding),
-				convertStencilOp(depthFailOp, mInvertVertexWinding), 
-				convertStencilOp(passOp, mInvertVertexWinding));
+				convertStencilOp(stencilFailOp),
+				convertStencilOp(depthFailOp), 
+				convertStencilOp(passOp));
 		}
 		else
 		{
 			glStencilOpSeparate(GL_BACK, 
-				convertStencilOp(stencilFailOp, !mInvertVertexWinding), 
-				convertStencilOp(depthFailOp, !mInvertVertexWinding), 
-				convertStencilOp(passOp, !mInvertVertexWinding));
+				convertStencilOp(stencilFailOp, true), 
+				convertStencilOp(depthFailOp, true), 
+				convertStencilOp(passOp, true));
 		}
 	}
 	//---------------------------------------------------------------------
@@ -1295,6 +1275,10 @@ namespace CamelotFramework
 		if (maxAnisotropy > largest_supported_anisotropy)
 			maxAnisotropy = largest_supported_anisotropy ? 
 			static_cast<UINT32>(largest_supported_anisotropy) : 1;
+
+		if(maxAnisotropy < 1)
+			maxAnisotropy = 1;
+
 		if (_getCurrentAnisotropy(unit) != maxAnisotropy)
 			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
 
@@ -1353,6 +1337,11 @@ namespace CamelotFramework
 		glPopMatrix();
 	}
 	//---------------------------------------------------------------------
+	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
+	{
+		// TODO - Actually hook this up to Log or something
+	}
+	//---------------------------------------------------------------------
 	void GLRenderSystem::oneTimeContextInitialization()
 	{
 		// Check for FSAA
@@ -1366,6 +1355,15 @@ namespace CamelotFramework
 				glEnable(GL_MULTISAMPLE_ARB);
 			}            
 		}
+
+		// TODO - Replace with OpenGL 4.3 built-in functionality (GL_DEBUG_OUTPUT_SYNCHRONOUS)
+#if CM_DEBUG_MODE
+		if (mGLSupport->checkExtension("GL_ARB_debug_output"))
+		{
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+			glDebugMessageCallbackARB(&openGlErrorCallback, 0);
+		}
+#endif
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::switchContext(GLContext *context)
@@ -1698,6 +1696,8 @@ namespace CamelotFramework
 		}
 
 		glColor4f(1,1,1,1);
+
+		mBoundAttributes.clear();
 	}
 	//-----------------------------------------------------------------------
 	bool GLRenderSystem::checkForErrors() const

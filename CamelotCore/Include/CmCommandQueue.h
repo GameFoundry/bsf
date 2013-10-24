@@ -237,7 +237,7 @@ namespace CamelotFramework
 	};
 
 	/**
-	 * @copydoc CommandQueue
+	 * @copydoc CommandQueueBase
 	 */
 	template<class SyncPolicy = CommandQueueNoSync>
 	class CM_EXPORT CommandQueue : public CommandQueueBase, public SyncPolicy
