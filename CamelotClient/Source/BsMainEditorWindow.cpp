@@ -48,9 +48,10 @@ namespace BansheeEditor
 		HCamera sceneCamera = sceneCameraGO->addComponent<Camera>();
 
 		RenderTexturePtr sceneRenderTarget = RenderTexture::create(TEX_TYPE_2D, 800, 600);
+		sceneRenderTarget->setPriority(1);
 
 		sceneCamera->initialize(sceneRenderTarget, 0.0f, 0.0f, 1.0f, 1.0f);
-		sceneCamera->setPriority(-1);
+		sceneCamera->setPriority(1);
 		sceneCameraGO->setPosition(Vector3(0,50,1240));
 		sceneCameraGO->lookAt(Vector3(0,50,-300));
 		sceneCamera->setNearClipDistance(5);

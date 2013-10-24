@@ -81,6 +81,12 @@ namespace CamelotFramework
 		virtual void setActive(bool state) { mActive = state; }
 
 		INT32 getPriority() const { return mPriority; }
+
+		/**
+		 * @brief	Sets a priority that determines in which orders the render targets the processed.
+		 * 			
+		 * @param	priority	The priority. Higher value means the target will be rendered to sooner.
+		 */
 		void setPriority(INT32 priority) { mPriority = priority; }
 
         /**

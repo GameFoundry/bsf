@@ -422,6 +422,13 @@ namespace BansheeEngine {
 		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
 
 		CM::INT32 getPriority() const { return mPriority; }
+
+		/**
+		 * @brief	Sets a priority that determines in which orders the cameras are rendered to.
+		 * 			This only applies to cameras rendering to the same render target. 
+		 *
+		 * @param	priority	The priority. Higher value means the camera will be rendered sooner.
+		 */
 		void setPriority(CM::INT32 priority) { mPriority = priority; }
 
 		CM::UINT64 getLayers() const { return mLayers; }

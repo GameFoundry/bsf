@@ -14,7 +14,6 @@ PROFILER:
   - Complex way would be to edit Timer and remove all the excess crap from it and just leave basic begin/end queries
  - When rendering GUI in front of scene view it seems to be rendering before the actual scene
   - This probably because the render texture alpha is less than 1, which makes it blend with the surface below it
- - In OpenGL rendering GUI to texture doesn't seem to work!?
  - Main window renders before the GUI render texture!
 
 TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
