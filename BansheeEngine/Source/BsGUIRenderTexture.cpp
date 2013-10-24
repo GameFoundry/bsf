@@ -18,6 +18,12 @@ namespace BansheeEngine
 	GUIRenderTexture::GUIRenderTexture(GUIWidget& parent, const GUIElementStyle* style, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
 		:GUITexture(parent, style, nullptr, GUIImageScaleMode::StretchToFit, layoutOptions), mSourceTexture(texture.get())
 	{
+		if(mSourceTexture->requiresTextureFlipping())
+		{
+			mDesc.uvOffset = Vector2(0.0f, 1.0f);
+			mDesc.uvScale = Vector2(1.0f, -1.0f);
+		}
+
 		setTexture(std::make_shared<SpriteTexture>(texture->getBindableColorTexture()));
 		GUIManager::instance().setInputBridge(mSourceTexture, this);
 	}
@@ -47,5 +53,15 @@ namespace BansheeEngine
 		}
 
 		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(parent, style, texture, GUILayoutOptions::create(layoutOptions, style));
+	}
+
+	void GUIRenderTexture::updateRenderElementsInternal()
+	{		
+		mDesc.width = mWidth;
+		mDesc.height = mHeight;
+
+		mImageSprite->update(mDesc);
+
+		GUIElement::updateRenderElementsInternal();
 	}
 }

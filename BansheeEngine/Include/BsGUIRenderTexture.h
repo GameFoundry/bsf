@@ -20,9 +20,14 @@ namespace BansheeEngine
 		static GUIRenderTexture* create(GUIWidget& parent, const CM::RenderTexturePtr& texture, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 	protected:
+		const CM::RenderTexture* mSourceTexture;
+
 		GUIRenderTexture(GUIWidget& parent, const GUIElementStyle* style, const CM::RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIRenderTexture();
 
-		const CM::RenderTexture* mSourceTexture;
+		/**
+		 * @copydoc GUIElement::updateRenderElementsInternal()
+		 */
+		virtual void updateRenderElementsInternal();
 	};
 }
