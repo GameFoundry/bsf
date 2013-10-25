@@ -84,7 +84,7 @@ namespace BansheeEngine
 
 	void Application::update()
 	{
-		GUIManager::instance().update();
+		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 
 	Application& gBansheeApp()

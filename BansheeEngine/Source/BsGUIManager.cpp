@@ -27,6 +27,7 @@
 #include "BsDragAndDropManager.h"
 #include "BsGUIDropDownBoxManager.h"
 #include "BsGUIContextMenu.h"
+#include "CmProfiler.h"
 
 using namespace CamelotFramework;
 namespace BansheeEngine
@@ -176,10 +177,12 @@ namespace BansheeEngine
 		DragAndDropManager::instance().update();
 
 		// Update layouts
+		gProfiler().beginSample("UpdateLayout");
 		for(auto& widgetInfo : mWidgets)
 		{
 			widgetInfo.widget->_updateLayout();
 		}
+		gProfiler().endSample("UpdateLayout");
 
 		// Blink caret
 		if(mKeyboardFocusElement != nullptr)
@@ -198,7 +201,7 @@ namespace BansheeEngine
 			}
 		}
 
-		updateMeshes();
+		PROFILE_CALL(updateMeshes(), "UpdateMeshes");
 
 		if(mElementUnderCursor != nullptr && mElementUnderCursor->_isDestroyed())
 		{

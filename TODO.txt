@@ -10,13 +10,6 @@ LONGTERM TODO:
 
 WEEKEND - Finish up docking? Or get windows dock manager working
 
-PROFILER:
- TODO: Profiler is right now including windows.h. I need to work around that but don't feel like bothering with it atm
-  - Easy way would be to move CPUProfiler outside of Utility and into Core (PROBABLY THE WAY TO DO IT - No point in wasting time on this)
-  - Complex way would be to edit Timer and remove all the excess crap from it and just leave basic begin/end queries
- - When rendering GUI in front of scene view it seems to be rendering before the actual scene
-  - This probably because the render texture alpha is less than 1, which makes it blend with the surface below it
-
 TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
 
 I still re-create GUIWidget mesh every frame instead of just updating it.

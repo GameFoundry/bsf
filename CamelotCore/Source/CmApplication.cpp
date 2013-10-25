@@ -100,13 +100,13 @@ namespace CamelotFramework
 			DeferredCallManager::instance().update();
 			RenderWindowManager::instance().update();
 			gInput().update();
-			gSceneManager().update();
+			PROFILE_CALL(gSceneManager().update(), "SceneManager");
 
 			if(!mainLoopCallback.empty())
 				mainLoopCallback();
 
 			gCoreThread().queueCommand(boost::bind(&Application::beginCoreProfiling, this));
-			RendererManager::instance().getActive()->renderAll();
+			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
 			// running just a single thread. Latency becomes worse if the core thread takes longer than sim 
@@ -123,7 +123,7 @@ namespace CamelotFramework
 
 			gCoreThread().queueCommand(boost::bind(&Application::updateMessagePump, this));
 			gCoreThread().queueCommand(boost::bind(&Application::endCoreProfiling, this));
-			mPrimaryCoreAccessor->submitToCoreThread();
+			PROFILE_CALL(mPrimaryCoreAccessor->submitToCoreThread(), "CommandSubmit");
 			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 
 			gTime().update();

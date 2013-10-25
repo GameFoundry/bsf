@@ -6,6 +6,11 @@
 
 namespace CamelotFramework
 {
+#define PROFILE_CALL(call, name) \
+	CamelotFramework::gProfiler().beginSample(##name##); \
+	call; \
+	CamelotFramework::gProfiler().endSample(##name##);
+
 	struct ProfilerReport
 	{
 		CPUProfilerReport cpuReport;

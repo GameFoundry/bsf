@@ -54,7 +54,7 @@ namespace BansheeEngine
 				ProfilerOverlay::BasicRow& newRow = rows.back();
 
 				newRow.name = HString(L"{0}");
-				newRow.pctOfParent = HString(L"{0}");
+				newRow.pctOfParent = HString(L"{0} %");
 				newRow.numCalls = HString(L"{0}");
 				newRow.avgTime = HString(L"{0}");
 				newRow.totalTime = HString(L"{0}");
@@ -68,11 +68,11 @@ namespace BansheeEngine
 				newRow.contentLayout = &contentLayout.insertLayoutX(contentLayout.getNumChildren() - 1); // Insert before flexible space
 
 				GUILabel* name = GUILabel::create(widget, newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
-				GUILabel* pctOfParent = GUILabel::create(widget, newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* numCalls = GUILabel::create(widget, newRow.numCalls, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* avgTime = GUILabel::create(widget, newRow.avgTime, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* totalTime = GUILabel::create(widget, newRow.totalTime, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* maxTime = GUILabel::create(widget, newRow.maxTime, GUIOptions(GUIOption::fixedWidth(100)));
+				GUILabel* pctOfParent = GUILabel::create(widget, newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
+				GUILabel* numCalls = GUILabel::create(widget, newRow.numCalls, GUIOptions(GUIOption::fixedWidth(50)));
+				GUILabel* avgTime = GUILabel::create(widget, newRow.avgTime, GUIOptions(GUIOption::fixedWidth(60)));
+				GUILabel* totalTime = GUILabel::create(widget, newRow.totalTime, GUIOptions(GUIOption::fixedWidth(60)));
+				GUILabel* maxTime = GUILabel::create(widget, newRow.maxTime, GUIOptions(GUIOption::fixedWidth(60)));
 				GUILabel* avgTimeSelf = GUILabel::create(widget, newRow.avgTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* totalTimeSelf = GUILabel::create(widget, newRow.totalTimeSelf, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* estOverhead = GUILabel::create(widget, newRow.estOverhead, GUIOptions(GUIOption::fixedWidth(100)));
@@ -109,15 +109,15 @@ namespace BansheeEngine
 			row.labelLayout->insertSpace(0, depth * 20);
 
 			row.name.setParameter(0, toWString(name));
-			row.pctOfParent.setParameter(0, toWString(pctOfParent));
+			row.pctOfParent.setParameter(0, toWString(pctOfParent * 100.0f, 2, 0, ' ', std::ios::fixed));
 			row.numCalls.setParameter(0, toWString(numCalls));
-			row.avgTime.setParameter(0, toWString(avgTime));
-			row.totalTime.setParameter(0, toWString(totalTime));
-			row.maxTime.setParameter(0, toWString(maxTime));
-			row.avgTimeSelf.setParameter(0, toWString(avgSelfTime));
-			row.totalTimeSelf.setParameter(0, toWString(totalSelfTime));
-			row.estOverhead.setParameter(0, toWString(estOverhead));
-			row.estOverheadSelf.setParameter(0, toWString(estOverheadSelf));
+			row.avgTime.setParameter(0, toWString(avgTime, 2, 0, ' ', std::ios::fixed));
+			row.totalTime.setParameter(0, toWString(totalTime, 2, 0, ' ', std::ios::fixed));
+			row.maxTime.setParameter(0, toWString(maxTime, 2, 0, ' ', std::ios::fixed));
+			row.avgTimeSelf.setParameter(0, toWString(avgSelfTime, 2, 0, ' ', std::ios::fixed));
+			row.totalTimeSelf.setParameter(0, toWString(totalSelfTime, 2, 0, ' ', std::ios::fixed));
+			row.estOverhead.setParameter(0, toWString(estOverhead, 2, 0, ' ', std::ios::fixed));
+			row.estOverheadSelf.setParameter(0, toWString(estOverheadSelf, 2, 0, ' ', std::ios::fixed));
 
 			curIdx++;
 		}
@@ -177,11 +177,11 @@ namespace BansheeEngine
 				newRow.contentLayout = &contentLayout.insertLayoutX(contentLayout.getNumChildren() - 1); // Insert before flexible space
 
 				GUILabel* name = GUILabel::create(widget, newRow.name, GUIOptions(GUIOption::fixedWidth(200)));
-				GUILabel* pctOfParent = GUILabel::create(widget, newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* numCalls = GUILabel::create(widget, newRow.numCalls, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* avgCycles = GUILabel::create(widget, newRow.avgCycles,GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* totalCycles = GUILabel::create(widget, newRow.totalCycles, GUIOptions(GUIOption::fixedWidth(100)));
-				GUILabel* maxCycles = GUILabel::create(widget, newRow.maxCycles, GUIOptions(GUIOption::fixedWidth(100)));
+				GUILabel* pctOfParent = GUILabel::create(widget, newRow.pctOfParent, GUIOptions(GUIOption::fixedWidth(50)));
+				GUILabel* numCalls = GUILabel::create(widget, newRow.numCalls, GUIOptions(GUIOption::fixedWidth(50)));
+				GUILabel* avgCycles = GUILabel::create(widget, newRow.avgCycles,GUIOptions(GUIOption::fixedWidth(60)));
+				GUILabel* totalCycles = GUILabel::create(widget, newRow.totalCycles, GUIOptions(GUIOption::fixedWidth(60)));
+				GUILabel* maxCycles = GUILabel::create(widget, newRow.maxCycles, GUIOptions(GUIOption::fixedWidth(60)));
 				GUILabel* avgCyclesSelf = GUILabel::create(widget, newRow.avgCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* totalCyclesSelf = GUILabel::create(widget, newRow.totalCyclesSelf, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* estOverhead = GUILabel::create(widget, newRow.estOverhead, GUIOptions(GUIOption::fixedWidth(100)));
@@ -218,7 +218,7 @@ namespace BansheeEngine
 			row.labelLayout->insertSpace(0, depth * 20);
 
 			row.name.setParameter(0, toWString(name));
-			row.pctOfParent.setParameter(0, toWString(pctOfParent));
+			row.pctOfParent.setParameter(0, toWString(pctOfParent * 100.0f, 2, 0, ' ', std::ios::fixed));
 			row.numCalls.setParameter(0, toWString(numCalls));
 			row.avgCycles.setParameter(0, toWString(avgCycles));
 			row.totalCycles.setParameter(0, toWString(totalCycles));
@@ -287,22 +287,22 @@ namespace BansheeEngine
 
 		// Set up title bars
 		mTitleBasicName = GUILabel::create(*mWidget, HString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
-		mTitleBasicPctOfParent = GUILabel::create(*mWidget, HString(L"% parent"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitleBasicNumCalls = GUILabel::create(*mWidget, HString(L"Num. calls"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitleBasicAvgTime = GUILabel::create(*mWidget, HString(L"Avg. time"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitleBasicTotalTime = GUILabel::create(*mWidget, HString(L"Total time"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitleBasicMaxTime = GUILabel::create(*mWidget, HString(L"Max time"), GUIOptions(GUIOption::fixedWidth(100)));
+		mTitleBasicPctOfParent = GUILabel::create(*mWidget, HString(L"% parent"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitleBasicNumCalls = GUILabel::create(*mWidget, HString(L"# calls"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitleBasicAvgTime = GUILabel::create(*mWidget, HString(L"Avg. time"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitleBasicTotalTime = GUILabel::create(*mWidget, HString(L"Total time"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitleBasicMaxTime = GUILabel::create(*mWidget, HString(L"Max time"), GUIOptions(GUIOption::fixedWidth(60)));
 		mTitleBasicAvgTitleSelf = GUILabel::create(*mWidget, HString(L"Avg. self time"), GUIOptions(GUIOption::fixedWidth(100)));
 		mTitleBasicTotalTimeSelf = GUILabel::create(*mWidget, HString(L"Total self time"), GUIOptions(GUIOption::fixedWidth(100)));
 		mTitleBasicEstOverhead = GUILabel::create(*mWidget, HString(L"Est. overhead"), GUIOptions(GUIOption::fixedWidth(100)));
 		mTitleBasicEstOverheadSelf = GUILabel::create(*mWidget, HString(L"Est. self overhead"), GUIOptions(GUIOption::fixedWidth(100)));
 
 		mTitlePreciseName = GUILabel::create(*mWidget, HString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
-		mTitlePrecisePctOfParent = GUILabel::create(*mWidget, HString(L"% parent"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitlePreciseNumCalls = GUILabel::create(*mWidget, HString(L"Num. calls"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitlePreciseAvgCycles = GUILabel::create(*mWidget, HString(L"Avg. cycles"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitlePreciseTotalCycles = GUILabel::create(*mWidget, HString(L"Total cycles"), GUIOptions(GUIOption::fixedWidth(100)));
-		mTitlePreciseMaxCycles = GUILabel::create(*mWidget, HString(L"Max cycles"), GUIOptions(GUIOption::fixedWidth(100)));
+		mTitlePrecisePctOfParent = GUILabel::create(*mWidget, HString(L"% parent"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitlePreciseNumCalls = GUILabel::create(*mWidget, HString(L"# calls"), GUIOptions(GUIOption::fixedWidth(50)));
+		mTitlePreciseAvgCycles = GUILabel::create(*mWidget, HString(L"Avg. cycles"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitlePreciseTotalCycles = GUILabel::create(*mWidget, HString(L"Total cycles"), GUIOptions(GUIOption::fixedWidth(60)));
+		mTitlePreciseMaxCycles = GUILabel::create(*mWidget, HString(L"Max cycles"), GUIOptions(GUIOption::fixedWidth(60)));
 		mTitlePreciseAvgCyclesSelf = GUILabel::create(*mWidget, HString(L"Avg. self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
 		mTitlePreciseTotalCyclesSelf = GUILabel::create(*mWidget, HString(L"Total self cycles"), GUIOptions(GUIOption::fixedWidth(100)));
 		mTitlePreciseEstOverhead = GUILabel::create(*mWidget, HString(L"Est. overhead"), GUIOptions(GUIOption::fixedWidth(100)));
