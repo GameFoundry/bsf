@@ -141,6 +141,7 @@ namespace BansheeEngine
 		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
 		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
 		desc.renderTargetDesc[0].blendOp = BO_ADD;
+		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
@@ -212,6 +213,7 @@ namespace BansheeEngine
 		desc.renderTargetDesc[0].srcBlend = BF_SOURCE_ALPHA;
 		desc.renderTargetDesc[0].dstBlend = BF_INV_SOURCE_ALPHA;
 		desc.renderTargetDesc[0].blendOp = BO_ADD;
+		desc.renderTargetDesc[0].renderTargetWriteMask = 0x7; // Don't write to alpha
 
 		HBlendState blendState = BlendState::create(desc);
 		newPass->setBlendState(blendState);
