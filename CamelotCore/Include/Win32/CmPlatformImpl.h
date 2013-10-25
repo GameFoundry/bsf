@@ -167,15 +167,9 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Queries the internal system performance counter you can use for very precise time
-		 * 			measurements. Value is in "queryPerformanceFrequency" units.
+		 * 			measurements. Value is in milliseconds.
 		 */
-		static UINT64 queryPerformanceCounter();
-
-		/**
-		 * @brief	Queries the internal system performance counter frequency. Used for interpreting
-		 * 			data returned by "queryPerformanceCounter".
-		 */
-		static UINT64 queryPerformanceFrequency();
+		static double queryPerformanceTimerMs();
 
 		/**
 		 * @brief	Message pump. Processes OS messages and returns when it's free.

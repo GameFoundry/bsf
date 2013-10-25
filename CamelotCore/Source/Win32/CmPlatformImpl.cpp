@@ -341,20 +341,15 @@ namespace CamelotFramework
 		return L"";
 	}
 
-	UINT64 Platform::queryPerformanceCounter()
+	double Platform::queryPerformanceTimerMs()
 	{
 		LARGE_INTEGER counterValue;
 		QueryPerformanceCounter(&counterValue);
 		
-		return (UINT64)counterValue.QuadPart;
-	}
-
-	UINT64 Platform::queryPerformanceFrequency()
-	{
 		LARGE_INTEGER counterFreq;
 		QueryPerformanceFrequency(&counterFreq);
 
-		return (UINT64)counterFreq.QuadPart;
+		return (double)counterValue.QuadPart / (counterFreq.QuadPart * 0.001);
 	}
 
 	void Platform::messagePump()

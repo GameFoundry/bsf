@@ -474,6 +474,9 @@
     <ClInclude Include="Include\CmProfiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmCPUProfiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -732,6 +735,9 @@
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmProfiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmCPUProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -251,7 +251,6 @@
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmMemStack.cpp" />
-    <ClCompile Include="Source\CmCPUProfiler.cpp" />
     <ClCompile Include="Source\CmRect.cpp" />
     <ClCompile Include="Source\CmStringTable.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
@@ -280,7 +279,6 @@
     <ClInclude Include="Include\CmMemoryAllocator.h" />
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmPath.h" />
-    <ClInclude Include="Include\CmCPUProfiler.h" />
     <ClInclude Include="Include\CmRect.h" />
     <ClInclude Include="Include\CmRTTIField.h" />
     <ClInclude Include="Include\CmRTTIManagedDataBlockField.h" />
