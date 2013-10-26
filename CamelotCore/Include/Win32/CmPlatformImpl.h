@@ -19,6 +19,17 @@ namespace CamelotFramework
 		Pimpl* data;
 	};
 
+	// Encapsulate native cursor type so we can avoid including windows.h as it pollutes the global namespace
+	struct CM_EXPORT NativeDropTargetData
+	{
+		struct Pimpl;
+
+		NativeDropTargetData();
+		~NativeDropTargetData();
+
+		Pimpl* data;
+	};
+
 	struct CM_EXPORT NonClientResizeArea
 	{
 		NonClientAreaBorderType type;
@@ -172,6 +183,26 @@ namespace CamelotFramework
 		static double queryPerformanceTimerMs();
 
 		/**
+		 * @brief	Creates a drop target that you can use for tracking OS drag and drop operations performed over
+		 * 			a certain area on the specified window.
+		 *
+		 * @param	window	The window on which to track drop operations.
+		 * @param	x	  	The x coordinate of the area to track, relative to window.
+		 * @param	y	  	The y coordinate of the area to track, relative to window.
+		 * @param	width 	The width of the area to track.
+		 * @param	height	The height of the area to track.
+		 *
+		 * @return	OSDropTarget that you will use to receive all drop data. When no longer needed make sure to destroy it with
+		 * 			destroyDropTarget().
+		 */
+		static OSDropTarget& createDropTarget(const RenderWindow* window, int x, int y, unsigned int width, unsigned int height);
+
+		/**
+		 * @brief	Destroys a drop target previously created with createDropTarget.
+		 */
+		static void destroyDropTarget(OSDropTarget& target);
+
+		/**
 		 * @brief	Message pump. Processes OS messages and returns when it's free.
 		 * 			
 		 * @note	This method must be called from the core thread.
@@ -180,11 +211,29 @@ namespace CamelotFramework
 		static void messagePump();
 
 		/**
+		 * @brief	Called during application start up from the sim thread.
+		 * 			Must be called before any other operations are done.
+		 */
+		static void startUp();
+
+		/**
 		 * @brief	Called once per frame from the sim thread.
 		 * 			
 		 * @note	Internal method.
 		 */
 		static void update();
+
+		/**
+		 * @brief	Called once per frame from the core thread.
+		 * 			
+		 * @note	Internal method.
+		 */
+		static void coreUpdate();
+
+		/**
+		 * @brief	Called during application shut down from the sim thread.
+		 */
+		static void shutDown();
 
 		// Callbacks triggered on the sim thread
 		static boost::signal<void(RenderWindow*)> onMouseLeftWindow;
@@ -210,6 +259,11 @@ namespace CamelotFramework
 
 		static bool mIsTrackingMouse;
 		static Vector<RenderWindow*>::type mMouseLeftWindows;
+
+		static NativeDropTargetData mDropTargets;
+
+		static bool mRequiresStartUp;
+		static bool mRequiresShutDown;
 
 		CM_STATIC_MUTEX(mSync);
 

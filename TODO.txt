@@ -9,6 +9,7 @@ LONGTERM TODO:
   - For now just create a profiler with basic measuring stats (FPS, core & sim thread time, plus times for most important systems), and ProfilerOverlay to display them
 
 WEEKEND - Finish up docking? Or get windows dock manager working
+ - FIX THE DAMN 200 WARNINGS!
 
 TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
 

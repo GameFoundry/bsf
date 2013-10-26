@@ -92,11 +92,6 @@ namespace CamelotFramework
 		volatile bool mRunMainLoop;
 
 		/**
-		 * @brief	Runs the OS specific message pump.
-		 */
-		void updateMessagePump();
-
-		/**
 		 * @brief	Called when the frame finishes rendering.
 		 */
 		void frameRenderingFinishedCallback();

@@ -5,6 +5,10 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @note	This is separated from the main Platform because we don't want to include various Windows
+	 * 			defines in a lot of our code that includes "Platform.h"
+	 */
 	class CM_EXPORT PlatformWndProc : public Platform
 	{
 	public:

@@ -3,6 +3,8 @@
 #include "CmPixelUtil.h"
 #include "CmApplication.h"
 #include "CmWin32Defs.h"
+#include "CmDebug.h"
+#include "Win32/CmWin32DropTarget.h"
 
 namespace CamelotFramework
 {
@@ -25,6 +27,11 @@ namespace CamelotFramework
 	bool Platform::mIsTrackingMouse = false;
 	Vector<RenderWindow*>::type Platform::mMouseLeftWindows;
 
+	NativeDropTargetData Platform::mDropTargets;
+
+	bool Platform::mRequiresStartUp = false;
+	bool Platform::mRequiresShutDown = false;
+
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mSync, Platform);
 
 	struct NativeCursorData::Pimpl
@@ -38,6 +45,23 @@ namespace CamelotFramework
 	}
 
 	NativeCursorData::~NativeCursorData()
+	{
+		cm_delete(data);
+	}
+
+	struct NativeDropTargetData::Pimpl
+	{
+		Map<const RenderWindow*, Win32DropTarget*>::type dropTargetsPerWindow;
+		Vector<Win32DropTarget*>::type dropTargetsToInitialize;
+		Vector<Win32DropTarget*>::type dropTargetsToDestroy;
+	};
+
+	NativeDropTargetData::NativeDropTargetData()
+	{
+		data = cm_new<Pimpl>();
+	}
+
+	NativeDropTargetData::~NativeDropTargetData()
 	{
 		cm_delete(data);
 	}
@@ -352,6 +376,54 @@ namespace CamelotFramework
 		return (double)counterValue.QuadPart / (counterFreq.QuadPart * 0.001);
 	}
 
+	OSDropTarget& Platform::createDropTarget(const RenderWindow* window, int x, int y, unsigned int width, unsigned int height)
+	{
+		Win32DropTarget* win32DropTarget = nullptr;
+		auto iterFind = mDropTargets.data->dropTargetsPerWindow.find(window);
+		if(iterFind == mDropTargets.data->dropTargetsPerWindow.end())
+		{
+			HWND hwnd;
+			window->getCustomAttribute("WINDOW", &hwnd);
+
+			win32DropTarget = cm_new<Win32DropTarget>(hwnd);
+			mDropTargets.data->dropTargetsPerWindow[window] = win32DropTarget;
+
+			{
+				CM_LOCK_MUTEX(mSync);
+				mDropTargets.data->dropTargetsToInitialize.push_back(win32DropTarget);
+			}
+		}
+		else
+			win32DropTarget = iterFind->second;
+
+		OSDropTarget* newDropTarget = new (cm_alloc<OSDropTarget>()) OSDropTarget(window, x, y, width, height);
+		win32DropTarget->registerDropTarget(newDropTarget);
+
+		return *newDropTarget;
+	}
+
+	void Platform::destroyDropTarget(OSDropTarget& target)
+	{
+		auto iterFind = mDropTargets.data->dropTargetsPerWindow.find(target.getOwnerWindow());
+		if(iterFind == mDropTargets.data->dropTargetsPerWindow.end())
+		{
+			LOGWRN("Attempting to destroy a drop target but cannot find its parent window.");
+		}
+		else
+		{
+			Win32DropTarget* win32DropTarget = iterFind->second;
+			win32DropTarget->unregisterDropTarget(&target);
+
+			if(win32DropTarget->getNumDropTargets() == 0)
+			{
+				CM_LOCK_MUTEX(mSync);
+				mDropTargets.data->dropTargetsToDestroy.push_back(win32DropTarget);
+			}
+		}
+		
+		CM_PVT_DELETE(OSDropTarget, &target);
+	}
+
 	void Platform::messagePump()
 	{
 		MSG  msg;
@@ -360,6 +432,13 @@ namespace CamelotFramework
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+	}
+
+	void Platform::startUp()
+	{
+		CM_LOCK_MUTEX(mSync);
+
+		mRequiresStartUp = true;
 	}
 
 	void Platform::update()
@@ -377,6 +456,62 @@ namespace CamelotFramework
 			if(!onMouseLeftWindow.empty())
 				onMouseLeftWindow(window);
 		}
+
+		for(auto& dropTarget : mDropTargets.data->dropTargetsPerWindow)
+		{
+			dropTarget.second->update();
+		}
+	}
+
+	void Platform::coreUpdate()
+	{
+		{
+			CM_LOCK_MUTEX(mSync);
+			if(mRequiresStartUp)
+			{
+				OleInitialize(nullptr);
+				mRequiresStartUp = false;
+			}
+		}
+
+		{
+			CM_LOCK_MUTEX(mSync);
+			for(auto& dropTargetToInit : mDropTargets.data->dropTargetsToInitialize)
+			{
+				dropTargetToInit->registerWithOS();
+			}
+
+			mDropTargets.data->dropTargetsToInitialize.clear();
+		}
+
+		{
+			CM_LOCK_MUTEX(mSync);
+			for(auto& dropTargetToDestroy : mDropTargets.data->dropTargetsToDestroy)
+			{
+				dropTargetToDestroy->unregisterWithOS();
+				dropTargetToDestroy->Release();
+			}
+
+			mDropTargets.data->dropTargetsToDestroy.clear();
+		}
+
+		messagePump();
+
+		{
+			CM_LOCK_MUTEX(mSync);
+			if(mRequiresShutDown)
+			{
+				OleUninitialize();
+				mRequiresShutDown = false;
+			}
+		}
+	}
+
+	void Platform::shutDown()
+	{
+		CM_LOCK_MUTEX(mSync);
+
+		mRequiresShutDown = true;
 	}
 
 	void Platform::windowFocusReceived(RenderWindow* window)

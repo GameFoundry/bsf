@@ -121,7 +121,7 @@ namespace CamelotFramework
 				mIsFrameRenderingFinished = false;
 			}
 
-			gCoreThread().queueCommand(boost::bind(&Application::updateMessagePump, this));
+			gCoreThread().queueCommand(&Platform::coreUpdate);
 			gCoreThread().queueCommand(boost::bind(&Application::endCoreProfiling, this));
 			PROFILE_CALL(mPrimaryCoreAccessor->submitToCoreThread(), "CommandSubmit");
 			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
@@ -137,11 +137,6 @@ namespace CamelotFramework
 	{
 		mRunMainLoop = false; // No sync primitives needed, in that rare case of 
 		// a race condition we might run the loop one extra iteration which is acceptable
-	}
-
-	void Application::updateMessagePump()
-	{
-		Platform::messagePump();
 	}
 
 	void Application::frameRenderingFinishedCallback()

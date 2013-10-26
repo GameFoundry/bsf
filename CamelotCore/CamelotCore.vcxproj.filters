@@ -91,6 +91,9 @@
     <Filter Include="Source Files\Core">
       <UniqueIdentifier>{402fe837-7d94-4343-a288-c8308fda8c18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Platform">
+      <UniqueIdentifier>{d53f502a-b966-4162-a828-af2654f0408f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h">
@@ -459,9 +462,6 @@
     <ClInclude Include="Include\CmRenderQueue.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmPlatform.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\Win32\CmPlatformImpl.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
@@ -476,6 +476,12 @@
     </ClInclude>
     <ClInclude Include="Include\CmCPUProfiler.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPlatform.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\CmWin32DropTarget.h">
+      <Filter>Header Files\Platform</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -738,6 +744,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmCPUProfiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmPlatform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

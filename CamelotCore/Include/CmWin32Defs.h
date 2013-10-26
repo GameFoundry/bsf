@@ -4,6 +4,7 @@
 #endif
 #include <windows.h>
 #include <windowsx.h>
+#include <oleidl.h>
 
 #define WM_CM_SETCAPTURE WM_USER + 101
 #define WM_CM_RELEASECAPTURE WM_USER + 102
