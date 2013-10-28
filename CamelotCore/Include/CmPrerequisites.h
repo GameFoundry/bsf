@@ -143,6 +143,7 @@ namespace CamelotFramework {
 	class Texture;
 	class Mesh;
 	class Font;
+	class OSDropTarget;
 	// Scene
 	class SceneObject;
 	class Component;

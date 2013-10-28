@@ -15,6 +15,7 @@
 #include "BsDrawHelper3D.h"
 #include "CmFRect.h"
 #include "BsProfilerOverlay.h"
+#include "CmPlatform.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -73,6 +74,11 @@ namespace BansheeEditor
 		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
 		DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 
+		OSDropTarget& dropTarget = Platform::createDropTarget(mRenderWindow.get(), 100, 100, 400, 400);
+		dropTarget.onDrop.connect(boost::bind(&MainEditorWindow::itemDropped, this, boost::ref(dropTarget), _1, _2));
+
+		Platform::destroyDropTarget(dropTarget);
+
 		ProfilerOverlay::startUp(cm_new<ProfilerOverlay>(sceneCamera->getViewport()));
 		ProfilerOverlay::instance().show();
 	}
@@ -83,6 +89,11 @@ namespace BansheeEditor
 
 		cm_delete(mDockManager);
 		cm_delete(mMenuBar);
+	}
+
+	void MainEditorWindow::itemDropped(OSDropTarget& dropTarget, INT32 x, INT32 y)
+	{
+		int a = 5;
 	}
 
 	void MainEditorWindow::resized()

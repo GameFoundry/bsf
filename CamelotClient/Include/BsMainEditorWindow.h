@@ -21,6 +21,7 @@ namespace BansheeEditor
 		GUIMenuBar* mMenuBar;
 		DockManager* mDockManager;
 
+		void itemDropped(CM::OSDropTarget& dropTarget, CM::INT32 x, CM::INT32 y);
 		virtual void resized();
 
 		void updateAreas();

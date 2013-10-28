@@ -416,8 +416,12 @@ namespace CamelotFramework
 
 			if(win32DropTarget->getNumDropTargets() == 0)
 			{
-				CM_LOCK_MUTEX(mSync);
-				mDropTargets.data->dropTargetsToDestroy.push_back(win32DropTarget);
+				mDropTargets.data->dropTargetsPerWindow.erase(iterFind);
+
+				{
+					CM_LOCK_MUTEX(mSync);
+					mDropTargets.data->dropTargetsToDestroy.push_back(win32DropTarget);
+				}
 			}
 		}
 		

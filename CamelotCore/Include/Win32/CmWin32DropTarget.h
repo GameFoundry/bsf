@@ -16,18 +16,57 @@ namespace CamelotFramework
 	*/
 	class Win32DropTarget : public IDropTarget
 	{
+		enum class DropOpType
+		{
+			DragOver,
+			Drop,
+			Leave
+		};
+
+		enum class DropOpDataType
+		{
+			FileList,
+			None
+		};
+
+		struct DropTargetOp
+		{
+			DropTargetOp(DropOpType _type, const Int2& _pos)
+				:type(_type), position(_pos), dataType(DropOpDataType::None)
+			{ }
+
+			DropOpType type;
+			Int2 position;
+
+			DropOpDataType dataType;
+			union 
+			{
+				Vector<WString>::type* mFileList;
+			};
+		};
+
 	public:
 		Win32DropTarget(HWND hWnd)
 			:mHWnd(hWnd), mRefCount(1), mAcceptDrag(false)
 		{ }
 
 		~Win32DropTarget()
-		{ }
+		{
+			CM_LOCK_MUTEX(mSync);
+
+			for(auto& fileList : mFileLists)
+			{
+				cm_delete(fileList);
+			}
+
+			mFileLists.clear();
+			mQueuedDropOps.clear();
+		}
 
 		void registerWithOS()
 		{
 			CoLockObjectExternal(this, TRUE, FALSE);
-			RegisterDragDrop(mHWnd, this);
+			HRESULT hr = RegisterDragDrop(mHWnd, this);
 		}
 
 		void unregisterWithOS()
@@ -73,46 +112,84 @@ namespace CamelotFramework
 
 		HRESULT __stdcall DragEnter(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
 		{
-			*pdwEffect = DROPEFFECT_NONE;
+			*pdwEffect = DROPEFFECT_LINK;
 
 			mAcceptDrag = isDataValid(pDataObj);
 			if(!mAcceptDrag)
 				return S_OK;
-			
-			// TODO - Queue (or set) move command to use later in update()
 
+			{
+				CM_LOCK_MUTEX(mSync);
+
+				mFileLists.push_back(getFileListFromData(pDataObj));
+
+				ScreenToClient(mHWnd, (POINT *)&pt);
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Int2((int)pt.x, (int)pt.y)));
+
+				DropTargetOp& op = mQueuedDropOps.back();
+				op.dataType = DropOpDataType::FileList;
+				op.mFileList = mFileLists.back();
+			}
+			
 			return S_OK;
 		}
 
 		HRESULT __stdcall DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
 		{
-			*pdwEffect = DROPEFFECT_NONE;
+			*pdwEffect = DROPEFFECT_LINK;
 
 			if(!mAcceptDrag)
 				return S_OK;
 
-			// TODO - Queue (or set) move command to use later in update()
+			{
+				CM_LOCK_MUTEX(mSync);
+
+				ScreenToClient(mHWnd, (POINT *)&pt);
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Int2((int)pt.x, (int)pt.y)));
+
+				DropTargetOp& op = mQueuedDropOps.back();
+				op.dataType = DropOpDataType::FileList;
+				op.mFileList = mFileLists.back();
+			}
 			
 			return S_OK;
 		} 
 
 		HRESULT __stdcall DragLeave()
 		{
-			// Do nothing
+			{
+				CM_LOCK_MUTEX(mSync);
+
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Leave, Int2()));
+
+				DropTargetOp& op = mQueuedDropOps.back();
+				op.dataType = DropOpDataType::FileList;
+				op.mFileList = mFileLists.back();
+			}
 
 			return S_OK;
 		}
 
 		HRESULT __stdcall Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect)
 		{
-			*pdwEffect = DROPEFFECT_NONE;
+			*pdwEffect = DROPEFFECT_LINK;
+			mAcceptDrag = false;
 
 			if(!isDataValid(pDataObj))
 				return S_OK;
 
-			Vector<WString>::type fileList = getFileListFromData(pDataObj);
+			{
+				CM_LOCK_MUTEX(mSync);
 
-			// TODO - Add drop operation to a queue, and process it in update()
+				mFileLists.push_back(getFileListFromData(pDataObj));
+
+				ScreenToClient(mHWnd, (POINT *)&pt);
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Drop, Int2((int)pt.x, (int)pt.y)));
+
+				DropTargetOp& op = mQueuedDropOps.back();
+				op.dataType = DropOpDataType::FileList;
+				op.mFileList = mFileLists.back();
+			}
 
 			return S_OK;
 		}
@@ -140,7 +217,59 @@ namespace CamelotFramework
 		 */
 		void update()
 		{
-			// TODO - Process received data and notify child OSDropTargets
+			CM_LOCK_MUTEX(mSync);
+
+			for(auto& op: mQueuedDropOps)
+			{
+				for(auto& target : mDropTargets)
+				{
+					if(op.type != DropOpType::Leave)
+					{
+						if(target->_isInside(op.position))
+						{
+							if(!target->_isActive())
+							{
+								target->_setFileList(*op.mFileList);
+								target->onEnter(op.position.x, op.position.y);
+							}
+
+							if(op.type == DropOpType::DragOver)
+								target->onDragOver(op.position.x, op.position.y);
+							else if(op.type == DropOpType::Drop)
+							{
+								target->_setFileList(*op.mFileList);
+								target->onDrop(op.position.x, op.position.y);
+							}
+						}
+						else
+						{
+							if(target->_isActive())
+							{
+								target->onLeave();
+								target->_clear();
+								target->_setActive(false);
+							}
+						}
+					}
+					else
+					{
+						if(target->_isActive())
+						{
+							target->onLeave();
+							target->_clear();
+							target->_setActive(false);
+						}
+					}
+				}
+
+				if(op.type == DropOpType::Leave || op.type == DropOpType::Drop)
+				{
+					cm_delete(op.mFileList);
+					mFileLists.erase(mFileLists.begin());
+				}
+			}
+
+			mQueuedDropOps.clear();
 		}
 	private:
 		bool isDataValid(IDataObject* data)
@@ -151,12 +280,12 @@ namespace CamelotFramework
 			return data->QueryGetData(&fmtetc) == S_OK ? true : false;
 		}
 
-		Vector<WString>::type getFileListFromData(IDataObject* data)
+		Vector<WString>::type* getFileListFromData(IDataObject* data)
 		{
 			FORMATETC fmtetc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 			STGMEDIUM stgmed;
 
-			Vector<WString>::type files;
+			Vector<WString>::type* files = cm_new<Vector<WString>::type>();
 			if(data->GetData(&fmtetc, &stgmed) == S_OK)
 			{
 				PVOID data = GlobalLock(stgmed.hGlobal);
@@ -164,7 +293,7 @@ namespace CamelotFramework
 				HDROP hDrop = (HDROP)data;
 				UINT numFiles = DragQueryFileW(hDrop, 0xFFFFFFFF, nullptr, 0);
 
-				files.resize(numFiles);
+				files->resize(numFiles);
 				for(UINT i = 0; i < numFiles; i++)
 				{
 					UINT numChars = DragQueryFileW(hDrop, i, nullptr, 0) + 1;
@@ -172,7 +301,9 @@ namespace CamelotFramework
 
 					DragQueryFileW(hDrop, i, buffer, numChars);
 
-					files[i] = WString(buffer);
+					(*files)[i] = WString(buffer);
+
+					cm_free(buffer);
 				}
 
 				GlobalUnlock(stgmed.hGlobal);
@@ -188,5 +319,10 @@ namespace CamelotFramework
 		LONG mRefCount;
 		HWND mHWnd;
 		bool mAcceptDrag;
+
+		Vector<DropTargetOp>::type mQueuedDropOps;
+		Vector<Vector<WString>::type*>::type mFileLists; 
+
+		CM_MUTEX(mSync);
 	};
 }

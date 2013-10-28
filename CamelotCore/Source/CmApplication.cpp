@@ -48,6 +48,7 @@ namespace CamelotFramework
 
 	void Application::startUp(START_UP_DESC& desc)
 	{
+		Platform::startUp();
 		MemStack::setupHeap(HID_Main);
 
 		StringTable::startUp(cm_new<StringTable>());
@@ -182,6 +183,8 @@ namespace CamelotFramework
 		Time::shutDown();
 		DeferredCallManager::shutDown();
 		StringTable::shutDown();
+
+		Platform::shutDown();
 	}
 
 	void* Application::loadPlugin(const String& pluginName)

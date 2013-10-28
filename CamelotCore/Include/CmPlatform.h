@@ -62,23 +62,31 @@ namespace CamelotFramework
 	public:
 		boost::signal<void(INT32 x, INT32 y)> onDragOver;
 		boost::signal<void(INT32 x, INT32 y)> onDrop;
+		boost::signal<void(INT32 x, INT32 y)> onEnter;
+		boost::signal<void()> onLeave;
 
 		void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
 		OSDropType getDropType() const { return mDropType; }
 
 		const Vector<WString>::type& getFileList() const { return *mFileList; }
+
+		void _clear();
+		void _setFileList(const Vector<WString>::type& fileList);
+		void _setActive(bool active) { mActive = active; }
+
+		bool _isInside(const Int2& pos) const;
+		bool _isActive() const { return mActive; }
 	private:
 		friend class Platform;
 
 		OSDropTarget(const RenderWindow* ownerWindow, INT32 x, INT32 y, UINT32 width, UINT32 height);
 		~OSDropTarget();
 
-		void clean();
-		void setFileList(const Vector<WString>::type& fileList);
 		const RenderWindow* getOwnerWindow() const { return mOwnerWindow; }
 	private:
 		INT32 mX, mY;
 		UINT32 mWidth, mHeight;
+		bool mActive;
 		const RenderWindow* mOwnerWindow;
 
 		OSDropType mDropType;
