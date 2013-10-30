@@ -5,7 +5,7 @@
 #include "CmVertexBuffer.h"
 #include "CmIndexBuffer.h"
 #include "CmVertexDeclaration.h"
-#include "CmRenderOpMesh.h"
+#include "CmDrawOps.h"
 
 namespace CamelotFramework
 {

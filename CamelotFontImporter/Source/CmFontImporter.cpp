@@ -137,10 +137,10 @@ namespace CamelotFramework
 				UINT32 bufferSize = pageIter->width * pageIter->height * 2;
 
 				// TODO - I don't actually need a 2 channel texture
-				PixelData pixelData(pageIter->width, pageIter->height, 1, PF_R8G8);
+				PixelDataPtr pixelData = cm_shared_ptr<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
 
-				pixelData.allocateInternalBuffer();
-				UINT8* pixelBuffer = pixelData.getData();
+				pixelData->allocateInternalBuffer();
+				UINT8* pixelBuffer = pixelData->getData();
 				memset(pixelBuffer, 0, bufferSize);
 
 				for(size_t elementIdx = 0; elementIdx < atlasElements.size(); elementIdx++)
@@ -273,7 +273,6 @@ namespace CamelotFramework
 
 				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
 				gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);
-				gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 				fontData.texturePages.push_back(newTex);
 

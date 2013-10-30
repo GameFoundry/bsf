@@ -132,11 +132,10 @@ namespace CamelotFramework
 
 		for(UINT32 mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
 		{
-			PixelData src = imgData->getPixels(mip);
+			PixelDataPtr src = imgData->getPixels(mip);
 
 			UINT32 subresourceIdx = newTexture->mapToSubresourceIdx(0, mip);
 			gMainSyncedCA().writeSubresource(newTexture.getInternalPtr(), subresourceIdx, src);
-			gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 		}
 
 		fileData->close();

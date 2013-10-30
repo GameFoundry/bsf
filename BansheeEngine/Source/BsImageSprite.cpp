@@ -54,7 +54,7 @@ namespace BansheeEngine
 
 			HMaterial newMaterial = GUIMaterialManager::instance().requestImageMaterial(desc.texture->getTexture());
 			if(renderElem.material != nullptr)
-				GUIMaterialManager::instance().releaseMaterial(newMaterial);
+				GUIMaterialManager::instance().releaseMaterial(renderElem.material);
 
 			renderElem.material = newMaterial;
 

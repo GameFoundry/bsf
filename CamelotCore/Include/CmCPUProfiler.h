@@ -6,8 +6,6 @@ namespace CamelotFramework
 {
 	class CPUProfilerReport;
 
-	// TODO: Add #defines for all profiler methods so we can easily remove them from final version
-
 	/**
 	 * @brief	Provides various performance measuring methods
 	 * 			
@@ -78,8 +76,6 @@ namespace CamelotFramework
 
 		struct PreciseProfileData
 		{
-			// TODO - Add cache misses, branch mispredictions, retired instructions vs. optimal number of cycles (RDPMC instruction on Intel)
-
 			Vector<PreciseProfileSample>::type samples;
 			TimerPrecise timer;
 

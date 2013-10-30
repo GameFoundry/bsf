@@ -248,16 +248,22 @@ namespace BansheeEngine
 				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
 				if(material == nullptr || !material.isLoaded())
+				{
+					meshIdx++;
 					continue;
+				}
 
 				if(mesh == nullptr || !mesh.isLoaded())
+				{
+					meshIdx++;
 					continue;
+				}
 
 				material->setFloat("invViewportWidth", invViewportWidth);
 				material->setFloat("invViewportHeight", invViewportHeight);
 				material->setMat4("worldTransform", widget->SO()->getWorldTfrm());
 
-				renderQueue.add(material, mesh->getSubMeshData(), Vector3::ZERO);
+				renderQueue.add(material, mesh, 0, Vector3::ZERO);
 
 				meshIdx++;
 			}
@@ -501,8 +507,7 @@ namespace BansheeEngine
 					renderData.cachedMeshes.push_back(Mesh::create());
 				}
 
-				gMainSyncedCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, *meshData);
-				gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
+				gMainSyncedCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData);
 
 				groupIdx++;
 			}
@@ -523,8 +528,7 @@ namespace BansheeEngine
 
 		data->setColorAt(mCaretColor, 0, 0);
 
-		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), *data);
-		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
+		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
 	void GUIManager::updateTextSelectionTexture()
@@ -541,8 +545,7 @@ namespace BansheeEngine
 
 		data->setColorAt(mTextSelectionColor, 0, 0);
 
-		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), *data);
-		gMainSyncedCA().submitToCoreThread(true); // TODO - Remove this once I make writeSubresource accept a shared_ptr for MeshData
+		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
 	bool GUIManager::onMouseDragEnded(const CM::PositionalInputEvent& event)

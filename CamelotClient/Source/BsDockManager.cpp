@@ -246,7 +246,7 @@ namespace BansheeEditor
 
 		mDropOverlayMat->setColor("highlightActive", highlightColor);
 
-		renderQueue.add(mDropOverlayMat, mDropOverlayMesh->getSubMeshData(), Vector3::ZERO);
+		renderQueue.add(mDropOverlayMat, mDropOverlayMesh, 0, Vector3::ZERO);
 	}
 
 	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location)
@@ -444,8 +444,7 @@ namespace BansheeEditor
 
 		mDropOverlayMesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mDropOverlayMesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mDropOverlayMesh.getInternalPtr(), 0, meshData);
 	}
 
 	void DockManager::onGUIMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)

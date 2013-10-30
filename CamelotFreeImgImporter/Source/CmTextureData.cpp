@@ -18,7 +18,7 @@ namespace CamelotFramework
 			cm_free<ScratchAlloc>(mData);
 	}
 
-	PixelData TextureData::getPixels(UINT32 mip)
+	PixelDataPtr TextureData::getPixels(UINT32 mip)
 	{
 		if(mip < 0 || mip > mNumMipmaps)
 		{
@@ -52,8 +52,11 @@ namespace CamelotFramework
 		}
 
 		// Return subface as pixelbox
-		PixelData src(finalWidth, finalHeight, finalDepth, getFormat());
-		src.setExternalBuffer(offset);
+		PixelDataPtr src = cm_shared_ptr<PixelData>(finalWidth, finalHeight, finalDepth, getFormat());
+		src->allocateInternalBuffer();
+
+		memcpy(src->getData(), offset, src->getConsecutiveSize());
+
 		return src;
 	}
 }

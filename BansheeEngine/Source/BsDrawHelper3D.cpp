@@ -77,8 +77,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -112,8 +111,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -147,8 +145,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -183,8 +180,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -229,8 +225,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;

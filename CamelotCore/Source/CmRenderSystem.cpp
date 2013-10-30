@@ -42,6 +42,7 @@ THE SOFTWARE.
 #include "CmOcclusionQuery.h"
 #include "CmGpuResource.h"
 #include "CmCoreThread.h"
+#include "CmMesh.h"
 #include "boost/bind.hpp"
 
 namespace CamelotFramework {
@@ -205,11 +206,11 @@ namespace CamelotFramework {
         case GPT_FRAGMENT_PROGRAM:
             return mFragmentProgramBound;
 	    }
-        // Make compiler happy
+
         return false;
 	}
 
-	void RenderSystem::render(const RenderOpMesh& op)
+	void RenderSystem::render(const MeshPtr& mesh, UINT32 submeshIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -221,21 +222,23 @@ namespace CamelotFramework {
 			mClipPlanesDirty = false;
 		}
 
-		setVertexDeclaration(op.vertexData->vertexDeclaration);
-		auto vertexBuffers = op.vertexData->getBuffers();
+		const SubMesh& subMesh = mesh->getSubMesh(submeshIdx);
+
+		setVertexDeclaration(subMesh.vertexData->vertexDeclaration);
+		auto vertexBuffers = subMesh.vertexData->getBuffers();
 
 		for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
 			setVertexBuffer(iter->first, iter->second);
 
-		setDrawOperation(op.operationType);
+		setDrawOperation(subMesh.drawOp);
 
-		if (op.useIndexes)
+		if (subMesh.useIndexes)
 		{
-			setIndexBuffer(op.indexData->indexBuffer);
-			drawIndexed(op.indexData->indexStart, op.indexData->indexCount, op.vertexData->vertexCount);
+			setIndexBuffer(subMesh.indexData->indexBuffer);
+			drawIndexed(subMesh.indexData->indexStart, subMesh.indexData->indexCount, subMesh.vertexData->vertexCount);
 		}
 		else
-			draw(op.vertexData->vertexCount);
+			draw(subMesh.vertexData->vertexCount);
 	}
 
 	void RenderSystem::swapBuffers(RenderTargetPtr target)
@@ -245,21 +248,21 @@ namespace CamelotFramework {
 		target->swapBuffers();
 	}
 
-	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data, AsyncOp& asyncOp)
+	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		resource->writeSubresource(subresourceIdx, data);
-		data.unlock();
+		resource->writeSubresource(subresourceIdx, *data);
+		data->unlock();
 		asyncOp.completeOperation();
 	}
 
-	void RenderSystem::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data, AsyncOp& asyncOp)
+	void RenderSystem::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		resource->readSubresource(subresourceIdx, data);
-		data.unlock();
+		resource->readSubresource(subresourceIdx, *data);
+		data->unlock();
 		asyncOp.completeOperation();
 	}
 }

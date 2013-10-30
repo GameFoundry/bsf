@@ -39,12 +39,13 @@ THE SOFTWARE.
 #include "CmCommonEnums.h"
 
 #include "CmCommandQueue.h"
-#include "CmRenderOpMesh.h"
+#include "CmDrawOps.h"
 #include "CmRenderSystemCapabilities.h"
 #include "CmRenderTarget.h"
 #include "CmRenderTexture.h"
 #include "CmRenderWindow.h"
 #include "CmGpuProgram.h"
+#include "CmVertexDeclaration.h"
 #include "CmPlane.h"
 #include "CmModule.h"
 
@@ -184,7 +185,7 @@ namespace CamelotFramework
 		 * 			It will automatically set up vertex declaration, draw operation, 
 		 * 			vertex and index buffers and draw them.
 		 */
-		virtual void render(const RenderOpMesh& op);
+		virtual void render(const MeshPtr& mesh, UINT32 submeshIdx);
 
 		/**
 		 * @brief	Draw an object based on currently set
@@ -291,12 +292,12 @@ namespace CamelotFramework
 		/**
 		 * @brief	Updates the resource with the specified data.
 		 */
-		void writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data, AsyncOp& asyncOp);
+		void writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, AsyncOp& asyncOp);
 
 		/**
 		 * @brief	Reads data from a resource into a pre-allocated GpuResourceData instance.
 		 */
-		void readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data, AsyncOp& asyncOp);
+		void readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp);
 
 		/************************************************************************/
 		/* 								UTILITY METHODS                    		*/

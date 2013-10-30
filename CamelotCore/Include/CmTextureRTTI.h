@@ -39,7 +39,7 @@ namespace CamelotFramework
 
 			GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
-			gMainSyncedCA().readSubresource(sharedTexPtr, subresourceIdx, *pixelData);
+			gMainSyncedCA().readSubresource(sharedTexPtr, subresourceIdx, pixelData);
 			gMainSyncedCA().submitToCoreThread(true); // We need the data right away, so execute the context and wait until we get it
 
 			return pixelData;
@@ -113,10 +113,8 @@ namespace CamelotFramework
 				UINT32 subresourceIdx = texture->mapToSubresourceIdx(face, mipmap);
 
 				GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(texture->getThisPtr());
-				gMainSyncedCA().writeSubresource(sharedTexPtr, subresourceIdx, *pixelData->at(i));
+				gMainSyncedCA().writeSubresource(sharedTexPtr, subresourceIdx, pixelData->at(i));
 			}
-
-			gMainSyncedCA().submitToCoreThread(true); // TODO - Possibly we can avoid this. I don't see a reason we need to wait for the update to complete.
 
 			cm_delete<PoolAlloc>(pixelData);
 			texture->mRTTIData = nullptr;	

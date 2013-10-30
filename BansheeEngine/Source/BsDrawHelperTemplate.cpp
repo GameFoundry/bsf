@@ -36,20 +36,20 @@ namespace BansheeEngine
 
 			if(cmd.type == DebugDrawType::ClipSpace)
 			{
-				renderQueue.add(cmd.material, cmd.mesh->getSubMeshData(), cmd.worldCenter);
+				renderQueue.add(cmd.material, cmd.mesh, 0, cmd.worldCenter);
 			}
 			else if(cmd.type == DebugDrawType::ScreenSpace)
 			{
 				cmd.material->setFloat("invViewportWidth", invViewportWidth);
 				cmd.material->setFloat("invViewportHeight", invViewportHeight);
 
-				renderQueue.add(cmd.material, cmd.mesh->getSubMeshData(), cmd.worldCenter);
+				renderQueue.add(cmd.material, cmd.mesh, 0, cmd.worldCenter);
 			}
 			else if(cmd.type == DebugDrawType::WorldSpace)
 			{
 				cmd.material->setMat4("matViewProj", viewProjMatrix);
 
-				renderQueue.add(cmd.material, cmd.mesh->getSubMeshData(), cmd.worldCenter);
+				renderQueue.add(cmd.material, cmd.mesh, 0, cmd.worldCenter);
 			}
 		}
 

@@ -1,34 +1,31 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
 LONGTERM TODO:
-1. Finish localization
-2. Finish docking manager
-3. Window drag'n'drop detect
-4. Basic profiler
-  - When building a profiler have main Profiler class which just does measurements, then ProfilerOverlay for data display on-screen, ProfilerEditor for Unity-like Profiler, etc.
-  - For now just create a profiler with basic measuring stats (FPS, core & sim thread time, plus times for most important systems), and ProfilerOverlay to display them
+1. Finish docking manager
+2. OPTIMIZE GUI
+ - This should be a fairly long-term task, about 2 months. I need to study GUI system in detail and identify bottlenecks.
+   Then develop a clear and tight plan how to reorganize everything so it runs at maximum efficiency. GUI system is pretty much the 
+   only large fully fledged system in the engine, so investing this much time into optimizing it is worth it.
 
-WEEKEND - Finish up docking? Or get windows dock manager working
- - FIX THE DAMN 200 WARNINGS!
+Optimization notes:
+ - submitToCoreThread calls are EXTREMELY slow. In 10-50ms range.
+ - GUIManager updateMeshes seems to be executing every frame
+
+WEIRDNESS:
+Using gMainCA instead of gSyncedMainCA in GUIManager causes linker errors
+Calling syncedCA->submit in Application::update instead of GUIManager causes the textures to constantly switch out every frame
+ - Calling it right after GUIManager::update also works, but if I call it after BsApp update it doesnt!? Even though nothing is done in BsApp update except for calling GUIManager::update...
 
 TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
 
 I still re-create GUIWidget mesh every frame instead of just updating it.
 
-MAJOR ISSUE: writeSubresource/readSubresoure doesn't require a shared ptr to GpuResourceData which means it could get destroyed while still in command queue. Right now it only works because I block right after I call those methods, which ensures nothing is destroyed.
-  - When fixed, make sure I remove blocking calls after writeSubresource where they're not needed (GUIManager for example)
 I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will be extremely slow.
 GUIWidget::updateMeshes leaks. If I leave the game running I can see memory continously going up
  - BansheeApplication should probably derive from Camlelot application. Right now user needs to know the difference between 
    gApplication and gBansheeApp, which is non-intuitive (e.g. retrieving a window can be done on gApplication, but running main loop can happen on both
 
- Windows drag and drop detect
-  - http://www.codeguru.com/cpp/misc/misc/draganddrop/article.php/c349/Drag-And-Drop-between-Window-Controls.htm
-  - http://www.catch22.net/tuts/drop-target
-  - http://msdn.microsoft.com/en-us/library/windows/desktop/bb776902(v=vs.85).aspx
-
 IMMEDIATE:
- - OpenGL rendering slows to extremely with time (seems to be related to rendering, possibly GUI, possibly in general Pass/Material/Shader/PassParams)
  - Update debug camera so it uses callbacks
  
  - I have disabled linear filtering because it doesn't look good on scale9grid textures. (Add another material so it works with stretched textures?)
@@ -156,3 +153,4 @@ Optional:
  - Vertex buffer start offset is not supported when calling Draw methods
  - When rendering Scale9Grid GUI elements the stretched center will cause linear interpolation to kick in and blend the edges with the border parts of the texture.
   - I should use point filtering for scale9grid, but that doesn't work in general case for stretched textures as they would look bad
+ - Win32DropTarget: I need to be able to set drop DROPEFFECT when various IDropTarget methods are called. Otherwise the drag cursor always remains the same, whether the drag will be accepted or not. 

@@ -8,6 +8,7 @@
 #include "CmApplication.h"
 #include "CmRenderQueue.h"
 #include "BsCamera.h"
+#include "CmCoreThreadAccessor.h"
 #include "BsBuiltinMaterialManager.h"
 
 using namespace CamelotFramework;
@@ -102,8 +103,7 @@ namespace BansheeEngine
 		(*colors) = color.getAsRGBA();
 
 		HMesh mesh = Mesh::create();
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -152,8 +152,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -202,8 +201,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -257,8 +255,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -312,8 +309,7 @@ namespace BansheeEngine
 
 		HMesh mesh = Mesh::create();
 
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, *meshData);
-		gMainSyncedCA().submitToCoreThread(true);
+		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;

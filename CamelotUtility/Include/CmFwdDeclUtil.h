@@ -30,6 +30,7 @@ namespace CamelotFramework {
 	class MeshData;
 	class FileSystem;
 	class Timer;
+	class GpuResourceData;
 	class PixelData;
 	class HString;
 	class StringTable;
@@ -46,4 +47,5 @@ namespace CamelotFramework {
 	typedef std::shared_ptr<FileDataStream> FileDataStreamPtr;
 	typedef std::shared_ptr<MeshData> MeshDataPtr;
 	typedef std::shared_ptr<PixelData> PixelDataPtr;
+	typedef std::shared_ptr<GpuResourceData> GpuResourceDataPtr;
 }

@@ -5,23 +5,31 @@
 #include "CmMeshData.h"
 #include "CmVertexData.h"
 #include "CmIndexData.h"
-#include "CmRenderOpMesh.h"
+#include "CmDrawOps.h"
 
 namespace CamelotFramework
 {
 	struct CM_EXPORT SubMesh
 	{
-		SubMesh():
-			indexOffset(0), indexCount(0), drawOp(DOT_TRIANGLE_LIST)
+		SubMesh()
+			: indexOffset(0), indexCount(0), drawOp(DOT_TRIANGLE_LIST), 
+			vertexData(nullptr), indexData(nullptr), useIndexes(true)
 		{ }
 
-		SubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp):
-			indexOffset(indexOffset), indexCount(indexCount), drawOp(drawOp)
+		SubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp, 
+			std::shared_ptr<VertexData> vertexData, std::shared_ptr<IndexData> indexData, bool useIndexes):
+			indexOffset(indexOffset), indexCount(indexCount), drawOp(drawOp),
+			vertexData(vertexData), indexData(indexData), useIndexes(useIndexes)
 		{ }
 
 		UINT32 indexOffset;
 		UINT32 indexCount;
 		DrawOperationType drawOp;
+
+		std::shared_ptr<VertexData> vertexData;
+		std::shared_ptr<IndexData> indexData;
+
+		bool useIndexes;
 	};
 
 	class CM_EXPORT Mesh : public GpuResource
@@ -59,7 +67,7 @@ namespace CamelotFramework
 		 */
 		UINT32 mapToSubresourceIdx() const { return 0; }
 
-		RenderOpMesh getSubMeshData(UINT32 subMeshIdx = 0) const;
+		const SubMesh& getSubMesh(UINT32 subMeshIdx = 0) const;
 		UINT32 getNumSubMeshes() const { return (UINT32)mSubMeshes.size(); }
 
 		const AABox& getBounds() const;

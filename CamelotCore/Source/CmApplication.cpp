@@ -123,8 +123,9 @@ namespace CamelotFramework
 			}
 
 			gCoreThread().queueCommand(&Platform::coreUpdate);
-			gCoreThread().queueCommand(boost::bind(&Application::endCoreProfiling, this));
 			PROFILE_CALL(mPrimaryCoreAccessor->submitToCoreThread(), "CommandSubmit");
+			PROFILE_CALL(mPrimarySyncedCoreAccessor->submitToCoreThread(), "SyncCommandSubmit");
+			gCoreThread().queueCommand(boost::bind(&Application::endCoreProfiling, this));
 			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 
 			gTime().update();

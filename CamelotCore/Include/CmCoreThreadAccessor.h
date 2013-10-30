@@ -197,9 +197,9 @@ namespace CamelotFramework
 
 
 		/** @copydoc RenderSystem::render() */
-		void render(const RenderOpMesh& op)
+		void render(const MeshPtr& mesh, UINT32 submeshIdx)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::render, RenderSystem::instancePtr(), op));
+			mCommandQueue->queue(boost::bind(&RenderSystem::render, RenderSystem::instancePtr(), mesh, submeshIdx));
 		}
 
 		/** @copydoc RenderSystem::draw() */
@@ -221,11 +221,11 @@ namespace CamelotFramework
 		 * 		 Until the async operation completes "data" is owned by the core thread and you won't
 		 * 		 be able to access it. 
 		 */
-		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceData& data)
+		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data)
 		{
-			data.lock();
+			data->lock();
 
-			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, boost::cref(data), _1));
+			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, data, _1));
 		}
 
 		/**
@@ -235,11 +235,11 @@ namespace CamelotFramework
 		 * 		 Until the async operation completes "data" is owned by the core thread and you won't
 		 * 		 be able to access it.
 		 */
-		AsyncOp readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceData& data)
+		AsyncOp readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data)
 		{
-			data.lock();
+			data->lock();
 
-			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, boost::ref(data), _1));
+			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, data, _1));
 		}
 
 		void resizeWindow(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)

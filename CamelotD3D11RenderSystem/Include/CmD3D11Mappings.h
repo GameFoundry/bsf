@@ -8,7 +8,7 @@
 #include "CmVertexData.h"
 #include "CmIndexData.h"
 #include "CmSamplerState.h"
-#include "CmRenderOpMesh.h"
+#include "CmDrawOps.h"
 
 namespace CamelotFramework
 {

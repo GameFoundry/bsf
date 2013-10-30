@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmRenderOpMesh.h"
+#include "CmDrawOps.h"
 #include "CmVector3.h"
 
 namespace CamelotFramework 
@@ -12,7 +12,8 @@ namespace CamelotFramework
 		{ }
 
 		HMaterial material;
-		RenderOpMesh meshData;
+		HMesh mesh;
+		UINT32 submeshIdx;
 		Vector3 worldPosition;
 	};
 }

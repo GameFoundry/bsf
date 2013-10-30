@@ -62,7 +62,7 @@ namespace BansheeEngine
 					}
 				}
 
-				renderQueue.add(mat, mMesh->getSubMeshData(i), mWorldBounds[i].getCenter());
+				renderQueue.add(mat, mMesh, i, mWorldBounds[i].getCenter());
 			}
 
 		}

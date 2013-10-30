@@ -45,7 +45,7 @@ using namespace BansheeEngine;
 
 void editorUpdate()
 {
-	EditorWindowManager::instance().update();
+	EditorWindowManager::instance().update();	
 }
 
 int CALLBACK WinMain(
@@ -267,7 +267,7 @@ int CALLBACK WinMain(
 	HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import("C:\\CursorDbg.psd"));
 	PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
 
-	gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, *cursorPixelData);
+	gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, cursorPixelData);
 	gMainSyncedCA().submitToCoreThread(true);
 
 	//Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));

@@ -31,19 +31,6 @@ namespace CamelotFramework
 
 		const MeshData& meshData = static_cast<const MeshData&>(data);
 
-		mSubMeshes.clear();
-
-		// Submeshes
-		for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
-		{
-			UINT32 numIndices = meshData.getNumIndices(i);
-
-			if(numIndices > 0)
-			{
-				mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices, meshData.getDrawOp(i)));
-			}
-		}
-
 		// Indices
 		mIndexData = std::shared_ptr<IndexData>(cm_new<IndexData, PoolAlloc>());
 
@@ -111,6 +98,19 @@ namespace CamelotFramework
 			}
 
 			vertexBuffer->unlock();
+		}
+
+		// Submeshes
+		mSubMeshes.clear();
+
+		for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
+		{
+			UINT32 numIndices = meshData.getNumIndices(i);
+
+			if(numIndices > 0)
+			{
+				mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices, meshData.getDrawOp(i), mVertexData, mIndexData, true));
+			}
 		}
 	}
 
@@ -214,23 +214,20 @@ namespace CamelotFramework
 		return meshData;
 	}
 
-	RenderOpMesh Mesh::getSubMeshData(UINT32 subMeshIdx) const
+	const SubMesh& Mesh::getSubMesh(UINT32 subMeshIdx) const
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid sub-mesh index (" 
 				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));
 		}
 
-		// TODO - BIG TODO - Completely ignores subMeshIdx and always renders the entire thing
-		// TODO - Creating a RenderOpMesh each call might be excessive considering this will be called a few thousand times a frame
-		RenderOpMesh ro;
-		ro.indexData = mIndexData;
-		ro.vertexData = mVertexData;
-		ro.useIndexes = true;
-		ro.operationType = mSubMeshes[subMeshIdx].drawOp;
+		// TODO - BIG TODO - Completely ignores subMeshIdx and always renders the entire thing because all submeshes
+		// will share the same buffers
 
-		return ro;
+		return mSubMeshes[subMeshIdx];
 	}
 
 	const AABox& Mesh::getBounds() const

@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 			HMaterial newMaterial = GUIMaterialManager::instance().requestTextMaterial(texturePages[texPage]);
 			if(cachedElem.material != nullptr)
-				GUIMaterialManager::instance().releaseMaterial(newMaterial);
+				GUIMaterialManager::instance().releaseMaterial(cachedElem.material);
 
 			cachedElem.material = newMaterial;
 

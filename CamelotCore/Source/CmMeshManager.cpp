@@ -53,7 +53,6 @@ namespace CamelotFramework
 		SyncedCoreAccessor& coreAccessor = gMainSyncedCA();
 
 		mDummyMesh = Mesh::create();
-		coreAccessor.writeSubresource(mDummyMesh.getInternalPtr(), 0, *mDummyMeshData);
-		coreAccessor.submitToCoreThread(true); // TODO - Only temporary until I fix write/read subresource
+		coreAccessor.writeSubresource(mDummyMesh.getInternalPtr(), 0, mDummyMeshData);
 	}
 }
