@@ -12,9 +12,29 @@ Optimization notes:
  - GUIManager updateMeshes seems to be executing every frame
 
 WEIRDNESS:
-Using gMainCA instead of gSyncedMainCA in GUIManager causes linker errors
-Calling syncedCA->submit in Application::update instead of GUIManager causes the textures to constantly switch out every frame
- - Calling it right after GUIManager::update also works, but if I call it after BsApp update it doesnt!? Even though nothing is done in BsApp update except for calling GUIManager::update...
+In GUIManager in 2 places I compare stuff by address. Make sure to use mesh or material address instead of material group address is isn't completely random
+A lot of stuff is still using GSyncedMainCA but it should be using gMainCA
+
+
+My idea of what is happening:
+ Update mesh commands for GUI elements get submitted on sync CA
+ Render commands for GUI elements gets submitted non-sync CA
+ Update mesh commands are executed before non-sync CA, old render commands now containing wrong mesh/material combinations
+
+
+ Temporarily disabled:
+ ProfilerOverlay
+ Helper windows
+ TestTextSprite
+ DebugAABoxDraw
+ Main menu items
+ Window frame
+
+Added a couple of debug logs in GUIManager::render
+
+
+
+
 
 TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
 

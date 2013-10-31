@@ -3,7 +3,6 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 #include "CmCommandQueue.h"
-#include "CmCoreThreadAccessor.h"
 
 namespace CamelotFramework
 {

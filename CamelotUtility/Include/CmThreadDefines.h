@@ -38,6 +38,8 @@ THE SOFTWARE
 #include <boost/thread/shared_mutex.hpp>
 #include <boost/thread/locks.hpp>
 
+#include <thread>
+
 #define CM_AUTO_MUTEX mutable boost::recursive_mutex CM_AUTO_MUTEX_NAME;
 #define CM_LOCK_AUTO_MUTEX boost::recursive_mutex::scoped_lock cmAutoMutexLock(CM_AUTO_MUTEX_NAME);
 #define CM_MUTEX(name) mutable boost::recursive_mutex name;
@@ -68,8 +70,8 @@ THE SOFTWARE
 #define CM_THREAD_CREATE(name, worker) boost::thread* name = new (CamelotFramework::MemoryAllocator<CamelotFramework::GenAlloc>::allocate(sizeof(boost::thread))) boost::thread(worker);
 #define CM_THREAD_DESTROY(name) CamelotFramework::cm_delete<CamelotFramework::GenAlloc, boost::thread>(name);
 #define CM_THREAD_HARDWARE_CONCURRENCY boost::thread::hardware_concurrency()
-#define CM_THREAD_CURRENT_ID boost::this_thread::get_id()
-#define CM_THREAD_ID_TYPE boost::thread::id
+#define CM_THREAD_CURRENT_ID std::this_thread::get_id()
+#define CM_THREAD_ID_TYPE std::thread::id
 #define CM_THREAD_WORKER_INHERIT
 // Utility
 #define CM_THREAD_SLEEP(ms) boost::this_thread::sleep(boost::posix_time::millisec(ms));

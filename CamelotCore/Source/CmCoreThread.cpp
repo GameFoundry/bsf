@@ -1,4 +1,5 @@
 #include "CmCoreThread.h"
+#include "CmCoreThreadAccessor.h"
 
 namespace CamelotFramework
 {
@@ -11,7 +12,7 @@ namespace CamelotFramework
 		, mSyncedCoreAccessor(nullptr)
 	{
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = cm_new<CommandQueue<CommandQueueSync>>(CM_THREAD_CURRENT_ID, true);
+		mCommandQueue = cm_new<CommandQueue<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
 
 		initCoreThread();
 	}

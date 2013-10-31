@@ -7,8 +7,8 @@
 namespace CamelotFramework
 {
 #if CM_DEBUG_MODE
-	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
-		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads), mMaxDebugIdx(0)
+	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
+		:mMyThreadId(threadId), mMaxDebugIdx(0)
 	{
 		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
 
@@ -19,8 +19,8 @@ namespace CamelotFramework
 		}
 	}
 #else
-	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads)
-		:mMyThreadId(threadId), mAllowAllThreads(allowAllThreads)
+	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
+		:mMyThreadId(threadId)
 	{
 		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
 	}

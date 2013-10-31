@@ -8,7 +8,7 @@
 
 namespace CamelotFramework
 {
-	class CM_EXPORT CommandQueueNoSync
+	class CommandQueueNoSync
 	{
 	public:
 		CommandQueueNoSync() {}
@@ -29,7 +29,7 @@ namespace CamelotFramework
 
 	};
 
-	class CM_EXPORT CommandQueueSync
+	class CommandQueueSync
 	{
 	public:
 		CommandQueueSync()
@@ -97,16 +97,9 @@ namespace CamelotFramework
 		/**
 		 * @brief	Constructor.
 		 *
-		 * @param	threadId	   	Identifier for the thread the command queue will be used on.
-		 * @param	allowAllThreads	Only matters for debug purposes. If false, then the queue
-		 * 							will throw an exception if accessed outside of the creation thread
-		 * 							(If in debug mode).
-		 * 							
-		 *							When you want to allow multiple threads to access it, set this to true,
-		 *							and also make sure you sync access to the queue properly.
-		 *							
+		 * @param	threadId	   	Identifier for the thread the command queue will be used on.						
 		 */
-		CommandQueueBase(CM_THREAD_ID_TYPE threadId, bool allowAllThreads = false);
+		CommandQueueBase(CM_THREAD_ID_TYPE threadId);
 		virtual ~CommandQueueBase();
 
 		CM_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
@@ -194,8 +187,6 @@ namespace CamelotFramework
 	private:
 		CamelotFramework::Queue<QueuedCommand>::type* mCommands;
 
-		bool mAllowAllThreads;
-		
 		CM_THREAD_ID_TYPE mMyThreadId;
 
 		// Various variables that allow for easier debugging by allowing us to trigger breakpoints
@@ -240,14 +231,14 @@ namespace CamelotFramework
 	 * @copydoc CommandQueueBase
 	 */
 	template<class SyncPolicy = CommandQueueNoSync>
-	class CM_EXPORT CommandQueue : public CommandQueueBase, public SyncPolicy
+	class CommandQueue : public CommandQueueBase, public SyncPolicy
 	{
 	public:
 		/**
 		 * @copydoc CommandQueueBase::CommandQueueBase
 		 */
-		CommandQueue(CM_THREAD_ID_TYPE threadId, bool allowAllThreads = false)
-			:CommandQueueBase(threadId, allowAllThreads)
+		CommandQueue(CM_THREAD_ID_TYPE threadId)
+			:CommandQueueBase(threadId)
 		{ }
 
 		~CommandQueue() 

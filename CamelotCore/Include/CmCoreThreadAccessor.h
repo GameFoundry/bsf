@@ -7,6 +7,7 @@
 #include "CmSamplerState.h"
 #include "CmGpuProgram.h"
 #include "CmCoreThread.h"
+#include "CmAsyncOp.h"
 #include "CmColor.h"
 
 namespace CamelotFramework

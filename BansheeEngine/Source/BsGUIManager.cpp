@@ -507,7 +507,7 @@ namespace BansheeEngine
 					renderData.cachedMeshes.push_back(Mesh::create());
 				}
 
-				gMainSyncedCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData);
+				gMainCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData);
 
 				groupIdx++;
 			}
@@ -528,7 +528,7 @@ namespace BansheeEngine
 
 		data->setColorAt(mCaretColor, 0, 0);
 
-		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		gMainCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
 	void GUIManager::updateTextSelectionTexture()
@@ -545,7 +545,7 @@ namespace BansheeEngine
 
 		data->setColorAt(mTextSelectionColor, 0, 0);
 
-		gMainSyncedCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		gMainCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
 	bool GUIManager::onMouseDragEnded(const CM::PositionalInputEvent& event)
