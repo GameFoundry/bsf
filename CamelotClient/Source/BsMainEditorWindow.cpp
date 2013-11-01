@@ -5,8 +5,8 @@
 #include "BsCamera.h"
 #include "CmSceneObject.h"
 #include "CmRenderTexture.h"
-#include "CmCPUProfiler.h"
 #include "BsApplication.h"
+#include "CmProfiler.h"
 
 // DEBUG ONLY
 #include "CmTestTextSprite.h"
@@ -117,6 +117,6 @@ namespace BansheeEditor
 
 	void MainEditorWindow::update()
 	{
-		ProfilerOverlay::instance().update();
+		PROFILE_CALL(ProfilerOverlay::instance().update(), "ProfilerOverlay");
 	}
 }

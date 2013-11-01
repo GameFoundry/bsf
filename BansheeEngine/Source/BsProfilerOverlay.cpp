@@ -456,9 +456,9 @@ namespace BansheeEngine
 
 				if(curEntry.depth <= MAX_DEPTH)
 				{
-					for(auto& child : curEntry.entry.childEntries)
+					for(auto iter = curEntry.entry.childEntries.rbegin(); iter != curEntry.entry.childEntries.rend(); ++iter)
 					{
-						todoBasic.push(TodoBasic(child, curEntry.depth + 1));
+						todoBasic.push(TodoBasic(*iter, curEntry.depth + 1));
 					}
 				}
 			}
@@ -486,9 +486,9 @@ namespace BansheeEngine
 
 				if(curEntry.depth <= MAX_DEPTH)
 				{
-					for(auto& child : curEntry.entry.childEntries)
+					for(auto iter = curEntry.entry.childEntries.rbegin(); iter != curEntry.entry.childEntries.rend(); ++iter)
 					{
-						todoPrecise.push(TodoPrecise(child, curEntry.depth + 1));
+						todoPrecise.push(TodoPrecise(*iter, curEntry.depth + 1));
 					}
 				}
 			}

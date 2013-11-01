@@ -22,7 +22,7 @@ namespace BansheeEngine
 		mDesc.horzAlign = mStyle->textHorzAlign;
 		mDesc.vertAlign = mStyle->textVertAlign;
 
-		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(boost::bind(&GUILabel::updateRenderElementsInternal, this));
+		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(boost::bind(&GUILabel::markContentAsDirty, this));
 	}
 
 	GUILabel::~GUILabel()
@@ -76,7 +76,7 @@ namespace BansheeEngine
 	void GUILabel::setContent(const GUIContent& content)
 	{
 		mLocStringUpdatedConn.disconnect();
-		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(boost::bind(&GUILabel::updateRenderElementsInternal, this));
+		mLocStringUpdatedConn = content.getText().addOnStringModifiedCallback(boost::bind(&GUILabel::markContentAsDirty, this));
 
 		mContent = content;
 		

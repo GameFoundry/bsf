@@ -96,11 +96,12 @@ namespace CamelotFramework
 		while(mRunMainLoop)
 		{
 			gProfiler().beginThread("Sim");
-
+			
 			Platform::update();
 			DeferredCallManager::instance().update();
 			RenderWindowManager::instance().update();
 			gInput().update();
+
 			PROFILE_CALL(gSceneManager().update(), "SceneManager");
 
 			if(!mainLoopCallback.empty())
