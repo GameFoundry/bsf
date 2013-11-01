@@ -578,23 +578,29 @@ namespace CamelotFramework
 			report.mBasicSamplingRootEntry = basicEntries[newBasicEntries[0].entryIdx];
 			finalBasicEntries.push_back(&report.mBasicSamplingRootEntry);
 
-			UINT32 curEntryIdx = 0;
-			for(auto& curEntry : newBasicEntries)
+			finalBasicHierarchyTodo.push(0);
+
+			while(!finalBasicHierarchyTodo.empty())
 			{
+				UINT32 curEntryIdx = finalBasicHierarchyTodo.top();
+				finalBasicHierarchyTodo.pop();
+
+				TempEntry& curEntry = newBasicEntries[curEntryIdx];
+
 				CPUProfilerBasicSamplingEntry* basicEntry = finalBasicEntries[curEntryIdx];
 
 				basicEntry->childEntries.resize(curEntry.childIndexes.size());
 				UINT32 idx = 0;
+
 				for(auto& childIdx : curEntry.childIndexes)
 				{
 					TempEntry& childEntry = newBasicEntries[childIdx];
 					basicEntry->childEntries[idx] = basicEntries[childEntry.entryIdx];
 
 					finalBasicEntries.push_back(&(basicEntry->childEntries[idx]));
+					finalBasicHierarchyTodo.push(childIdx);
 					idx++;
 				}
-
-				curEntryIdx++;
 			}
 		}
 
@@ -646,23 +652,29 @@ namespace CamelotFramework
 			report.mPreciseSamplingRootEntry = preciseEntries[newPreciseEntries[0].entryIdx];
 			finalPreciseEntries.push_back(&report.mPreciseSamplingRootEntry);
 
-			UINT32 curEntryIdx = 0;
-			for(auto& curEntry : newPreciseEntries)
+			finalPreciseHierarchyTodo.push(0);
+
+			while(!finalPreciseHierarchyTodo.empty())
 			{
+				UINT32 curEntryIdx = finalPreciseHierarchyTodo.top();
+				finalPreciseHierarchyTodo.pop();
+
+				TempEntry& curEntry = newPreciseEntries[curEntryIdx];
+
 				CPUProfilerPreciseSamplingEntry* preciseEntry = finalPreciseEntries[curEntryIdx];
 
 				preciseEntry->childEntries.resize(curEntry.childIndexes.size());
 				UINT32 idx = 0;
+
 				for(auto& childIdx : curEntry.childIndexes)
 				{
 					TempEntry& childEntry = newPreciseEntries[childIdx];
 					preciseEntry->childEntries[idx] = preciseEntries[childEntry.entryIdx];
 
 					finalPreciseEntries.push_back(&preciseEntry->childEntries.back());
+					finalPreciseHierarchyTodo.push(childIdx);
 					idx++;
 				}
-
-				curEntryIdx++;
 			}
 		}
 
