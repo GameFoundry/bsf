@@ -66,6 +66,9 @@ namespace CamelotFramework
 
 	void CPUProfiler::ProfileData::beginSample()
 	{
+		memAllocs = MemoryCounter::Allocs.load();
+		memFrees = MemoryCounter::Frees.load();
+
 		timer.reset();
 		timer.start();
 	}
@@ -73,7 +76,11 @@ namespace CamelotFramework
 	void CPUProfiler::ProfileData::endSample()
 	{
 		timer.stop();
-		samples.push_back(ProfileSample(timer.time));
+
+		UINT64 numAllocs = MemoryCounter::Allocs.load() - memAllocs;
+		UINT64 numFrees = MemoryCounter::Frees.load() - memFrees;
+
+		samples.push_back(ProfileSample(timer.time, numAllocs, numFrees));
 	}
 
 	void CPUProfiler::ProfileData::resumeLastSample()
@@ -84,6 +91,9 @@ namespace CamelotFramework
 
 	void CPUProfiler::PreciseProfileData::beginSample()
 	{
+		memAllocs = MemoryCounter::Allocs.load();
+		memFrees = MemoryCounter::Frees.load();
+
 		timer.reset();
 		timer.start();
 	}
@@ -91,7 +101,11 @@ namespace CamelotFramework
 	void CPUProfiler::PreciseProfileData::endSample()
 	{
 		timer.stop();
-		samples.push_back(PreciseProfileSample(timer.cycles));
+
+		UINT64 numAllocs = MemoryCounter::Allocs.load() - memAllocs;
+		UINT64 numFrees = MemoryCounter::Frees.load() - memFrees;
+
+		samples.push_back(PreciseProfileSample(timer.cycles, numAllocs, numFrees));
 	}
 
 	void CPUProfiler::PreciseProfileData::resumeLastSample()
@@ -460,12 +474,16 @@ namespace CamelotFramework
 			// Calculate basic data
 			entryBasic->data.name = curBlock->name;
 
+			entryBasic->data.memAllocs = 0;
+			entryBasic->data.memFrees = 0;
 			entryBasic->data.totalTimeMs = 0.0;
 			entryBasic->data.maxTimeMs = 0.0;
 			for(auto& sample : curBlock->basic.samples)
 			{
 				entryBasic->data.totalTimeMs += sample.time;
 				entryBasic->data.maxTimeMs = std::max(entryBasic->data.maxTimeMs, sample.time);
+				entryBasic->data.memAllocs += sample.numAllocs;
+				entryBasic->data.memFrees += sample.numFrees;
 			}
 
 			entryBasic->data.numCalls = (UINT32)curBlock->basic.samples.size();
@@ -496,12 +514,16 @@ namespace CamelotFramework
 			// Calculate precise data
 			entryPrecise->data.name = curBlock->name;
 
+			entryPrecise->data.memAllocs = 0;
+			entryPrecise->data.memFrees = 0;
 			entryPrecise->data.totalCycles = 0;
 			entryPrecise->data.maxCycles = 0;
 			for(auto& sample : curBlock->precise.samples)
 			{
 				entryPrecise->data.totalCycles += sample.cycles;
 				entryPrecise->data.maxCycles = std::max(entryPrecise->data.maxCycles, sample.cycles);
+				entryPrecise->data.memAllocs += sample.numAllocs;
+				entryPrecise->data.memFrees += sample.numFrees;
 			}
 
 			entryPrecise->data.numCalls = (UINT32)curBlock->precise.samples.size();

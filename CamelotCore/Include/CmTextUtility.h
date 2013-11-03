@@ -14,10 +14,8 @@ namespace CamelotFramework
 		public:
 			TextWord(bool spacer);
 
-			void addChar(const CHAR_DESC& desc);
+			UINT32 addChar(const CHAR_DESC& desc);
 			void addSpace(UINT32 spaceWidth);
-
-			void removeLastChar();
 
 			UINT32 getWidth() const { return mWidth; }
 			UINT32 getHeight() const { return mHeight; }
@@ -31,8 +29,6 @@ namespace CamelotFramework
 			UINT32 mHeight;
 			bool mSpacer;
 			UINT32 mSpaceWidth;
-
-			void calculateWidth();
 		};
 
 	public:

@@ -11,65 +11,38 @@ namespace CamelotFramework
 		:mWidth(0), mHeight(0), mSpacer(spacer), mSpaceWidth(0)
 	{ }
 
-	void TextUtility::TextWord::addChar(const CHAR_DESC& desc)
+	UINT32 TextUtility::TextWord::addChar(const CHAR_DESC& desc)
 	{
+		UINT32 charWidth = desc.xAdvance;
+		if(mChars.size() > 0)
+		{
+			UINT32 kerning = 0;
+			CHAR_DESC& prevChar = mChars.back();
+			for(size_t j = 0; j < prevChar.kerningPairs.size(); j++)
+			{
+				if(prevChar.kerningPairs[j].otherCharId == desc.charId)
+				{
+					kerning = prevChar.kerningPairs[j].amount;
+					break;
+				}
+			}
+
+			charWidth += kerning;
+		}
+
+		mWidth += charWidth;
+		mHeight = std::max(mHeight, desc.height);
+
 		mChars.push_back(desc);
 
-		calculateWidth();
+		return charWidth;
 	}
 
 	void TextUtility::TextWord::addSpace(UINT32 spaceWidth)
 	{
 		mSpaceWidth += spaceWidth;
-
-		calculateWidth();
-	}
-
-	void TextUtility::TextWord::removeLastChar()
-	{
-		if(mChars.size() > 0)
-		{
-			mChars.erase(mChars.end() - 1);
-			calculateWidth();
-		}
-	}
-
-	void TextUtility::TextWord::calculateWidth()
-	{
-		if(isSpacer())
-		{
-			mWidth = mSpaceWidth;
-			mHeight = 0;
-			return;
-		}
-
-		if(mChars.size() == 0)
-		{
-			mWidth = 0;
-			mHeight = 0;
-			return;
-		}
-
-		mWidth = 0;
+		mWidth = mSpaceWidth;
 		mHeight = 0;
-		UINT32 kerning = 0;
-		for(size_t i = 0; i < mChars.size() - 1; i++)
-		{
-			mWidth += mChars[i].xAdvance + kerning;
-			mHeight = std::max(mHeight, mChars[i].height);
-
-			kerning = 0;
-			for(size_t j = 0; j < mChars[i].kerningPairs.size(); j++)
-			{
-				if(mChars[i].kerningPairs[j].otherCharId == mChars[i + 1].charId)
-				{
-					kerning = mChars[i].kerningPairs[j].amount;
-					break;
-				}
-			}
-		}
-
-		mWidth += mChars[mChars.size() - 1].xAdvance + kerning;
 	}
 
 	TextUtility::TextLine::TextLine(UINT32 baselineOffset, UINT32 lineHeight, UINT32 spaceWidth)
@@ -90,12 +63,13 @@ namespace CamelotFramework
 
 	void TextUtility::TextLine::add(const CHAR_DESC& charDesc)
 	{
+		UINT32 charWidth = 0;
 		if(mLastWord == nullptr)
 		{
 			mWords.push_back(TextWord(false));
 			mLastWord = &mWords.back();
 
-			mLastWord->addChar(charDesc);
+			charWidth = mLastWord->addChar(charDesc);
 		}
 		else
 		{
@@ -105,10 +79,11 @@ namespace CamelotFramework
 				mLastWord = &mWords.back();
 			}
 
-			mLastWord->addChar(charDesc);
+			charWidth = mLastWord->addChar(charDesc);
 		}
 
-		calculateBounds();
+		mWidth += charWidth;
+		mHeight = std::max(mHeight, mLastWord->getHeight());
 	}
 
 	void TextUtility::TextLine::addSpace()
@@ -128,7 +103,7 @@ namespace CamelotFramework
 			mLastWord->addSpace(mSpaceWidth);
 		}
 
-		calculateBounds();
+		mWidth += mSpaceWidth;
 	}
 
 	void TextUtility::TextLine::addWord(const TextWord& word)
@@ -136,7 +111,8 @@ namespace CamelotFramework
 		mWords.push_back(word);
 		mLastWord = &mWords.back();
 
-		calculateBounds();
+		mWidth += word.getWidth();
+		mHeight = std::max(mHeight, word.getHeight());
 	}
 
 	TextUtility::TextWord TextUtility::TextLine::removeLastWord()
@@ -391,7 +367,7 @@ namespace CamelotFramework
 				{
 					TextWord lastWord = curLine->removeLastWord();
 
-					if(lastWord.getWidth() <= width) // If the world fits, attempt to add it to a new line
+					if(lastWord.getWidth() <= width) // If the word fits, attempt to add it to a new line
 					{
 						curLine->finalize(false);
 						textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));

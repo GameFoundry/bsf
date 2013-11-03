@@ -32,6 +32,8 @@ THE SOFTWARE
 // 2 - Thread support but render system can only be accessed from main thread
 #define CM_THREAD_SUPPORT 2
 
+#define CM_PROFILING_ENABLED 1
+
 // Platform-specific stuff
 #include "CmPlatformDefines.h"
 

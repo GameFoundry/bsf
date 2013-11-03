@@ -19,13 +19,12 @@ namespace BansheeEngine
 			CM::HString name;
 			CM::HString pctOfParent;
 			CM::HString numCalls;
+			CM::HString numAllocs;
+			CM::HString numFrees;
 			CM::HString avgTime;
 			CM::HString totalTime;
-			CM::HString maxTime;
 			CM::HString avgTimeSelf;
 			CM::HString totalTimeSelf;
-			CM::HString estOverhead;
-			CM::HString estOverheadSelf;
 		};
 
 		struct PreciseRow
@@ -38,13 +37,12 @@ namespace BansheeEngine
 			CM::HString name;
 			CM::HString pctOfParent;
 			CM::HString numCalls;
+			CM::HString numAllocs;
+			CM::HString numFrees;
 			CM::HString avgCycles;
 			CM::HString totalCycles;
-			CM::HString maxCycles;
 			CM::HString avgCyclesSelf;
 			CM::HString totalCyclesSelf;
-			CM::HString estOverhead;
-			CM::HString estOverheadSelf;
 		};
 
 	public:
@@ -80,24 +78,22 @@ namespace BansheeEngine
 		GUIElement* mTitleBasicName;
 		GUIElement* mTitleBasicPctOfParent;
 		GUIElement* mTitleBasicNumCalls;
+		GUIElement* mTitleBasicNumAllocs;
+		GUIElement* mTitleBasicNumFrees;
 		GUIElement* mTitleBasicAvgTime;
 		GUIElement* mTitleBasicTotalTime;
-		GUIElement* mTitleBasicMaxTime;
 		GUIElement* mTitleBasicAvgTitleSelf;
 		GUIElement* mTitleBasicTotalTimeSelf;
-		GUIElement* mTitleBasicEstOverhead;
-		GUIElement* mTitleBasicEstOverheadSelf;
 
 		GUIElement* mTitlePreciseName;
 		GUIElement* mTitlePrecisePctOfParent;
 		GUIElement* mTitlePreciseNumCalls;
+		GUIElement* mTitlePreciseNumAllocs;
+		GUIElement* mTitlePreciseNumFrees;
 		GUIElement* mTitlePreciseAvgCycles;
 		GUIElement* mTitlePreciseTotalCycles;
-		GUIElement* mTitlePreciseMaxCycles;
 		GUIElement* mTitlePreciseAvgCyclesSelf;
 		GUIElement* mTitlePreciseTotalCyclesSelf;
-		GUIElement* mTitlePreciseEstOverhead;
-		GUIElement* mTitlePreciseEstOverheadSelf;
 
 		CM::Vector<BasicRow>::type mBasicRows;
 		CM::Vector<PreciseRow>::type mPreciseRows;

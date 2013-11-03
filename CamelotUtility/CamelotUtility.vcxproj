@@ -250,6 +250,7 @@
     <ClCompile Include="Source\CmFRect.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
+    <ClCompile Include="Source\CmMemoryAllocator.cpp" />
     <ClCompile Include="Source\CmMemStack.cpp" />
     <ClCompile Include="Source\CmRect.cpp" />
     <ClCompile Include="Source\CmStringTable.cpp" />

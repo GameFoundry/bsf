@@ -4,9 +4,17 @@
 #undef max
 
 #include <boost/preprocessor.hpp>
+#include <atomic>
 
 namespace CamelotFramework
 {
+	class CM_UTILITY_EXPORT MemoryCounter
+	{
+	public:
+		static std::atomic_uint64_t Allocs;
+		static std::atomic_uint64_t Frees;
+	};
+
 	/**
 	 * @brief	Memory allocator providing a generic implementation. 
 	 * 			Specialize for specific categories as needed.
@@ -17,21 +25,37 @@ namespace CamelotFramework
 	public:
 		static inline void* allocate(UINT32 bytes)
 		{
+#if CM_PROFILING_ENABLED
+			MemoryCounter::Allocs++;
+#endif
+
 			return malloc(bytes);
 		}
 
 		static inline void* allocateArray(UINT32 bytes, UINT32 count)
 		{
+#if CM_PROFILING_ENABLED
+			MemoryCounter::Allocs++;
+#endif
+
 			return malloc(bytes * count);
 		}
 
 		static inline void free(void* ptr)
 		{
+#if CM_PROFILING_ENABLED
+			MemoryCounter::Frees++;
+#endif
+
 			::free(ptr);
 		}
 
 		static inline void freeArray(void* ptr, UINT32 count)
 		{
+#if CM_PROFILING_ENABLED
+			MemoryCounter::Frees++;
+#endif
+
 			::free(ptr);
 		}
 	};

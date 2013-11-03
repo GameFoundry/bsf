@@ -4,7 +4,6 @@
 
 #define CM_MAX_MULTIPLE_RENDER_TARGETS 8
 #define CM_FORCE_SINGLETHREADED_RENDERING 0
-#define CM_PROFILING_ENABLED 1
 
 //----------------------------------------------------------------------------
 // Windows Settings

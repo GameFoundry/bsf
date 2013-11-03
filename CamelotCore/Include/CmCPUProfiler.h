@@ -48,26 +48,33 @@ namespace CamelotFramework
 
 		struct ProfileSample
 		{
-			ProfileSample(double _time)
-				:time(_time)
+			ProfileSample(double _time, UINT64 _numAllocs, UINT64 _numFrees)
+				:time(_time), numAllocs(_numAllocs), numFrees(_numFrees)
 			{ }
 
 			double time;
+			UINT64 numAllocs;
+			UINT64 numFrees;
 		};
 
 		struct PreciseProfileSample
 		{
-			PreciseProfileSample(UINT64 _cycles)
-				:cycles(_cycles)
+			PreciseProfileSample(UINT64 _cycles, UINT64 _numAllocs, UINT64 _numFrees)
+				:cycles(_cycles), numAllocs(_numAllocs), numFrees(_numFrees)
 			{ }
 
 			UINT64 cycles;
+			UINT64 numAllocs;
+			UINT64 numFrees;
 		};
 
 		struct ProfileData
 		{
 			Vector<ProfileSample>::type samples;
 			Timer timer;
+
+			UINT64 memAllocs;
+			UINT64 memFrees;
 
 			void beginSample();
 			void endSample();
@@ -78,6 +85,9 @@ namespace CamelotFramework
 		{
 			Vector<PreciseProfileSample>::type samples;
 			TimerPrecise timer;
+
+			UINT64 memAllocs;
+			UINT64 memFrees;
 
 			void beginSample();
 			void endSample();
@@ -235,6 +245,9 @@ namespace CamelotFramework
 			String name;
 			UINT32 numCalls;
 
+			UINT64 memAllocs;
+			UINT64 memFrees;
+
 			double avgTimeMs;
 			double maxTimeMs;
 			double totalTimeMs;
@@ -259,6 +272,9 @@ namespace CamelotFramework
 
 			String name;
 			UINT32 numCalls;
+
+			UINT64 memAllocs;
+			UINT64 memFrees;
 
 			UINT64 avgCycles;
 			UINT64 maxCycles;
