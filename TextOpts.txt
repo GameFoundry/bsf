@@ -1,0 +1,35 @@
+TextUtility should just use a stack for all allocations. Once text has been generated, calculate actual memory required for non-transient data. Copy the persistent data into the newly allocated block and free the stack.
+
+Consider an option that wouldn't require copying?
+ - A pre-pass that only calculates line/word width/height, and char indexes
+    - Data gets allocated on the stack
+ - Using the information I allocate a block on the heap, and just iterate over the data and fill the actual line/word data
+
+
+All allocs that happens:
+ TextData shared_ptr - to get around it I'd have to Pool TextData - and that would still possible cause an internal shared_ptr alloc to happen. Consider leaving this for last.
+ Lines array - One array per text data
+ Words array - One array per line
+ Chard array - One array per word
+ Quads per page and texture pages array
+
+
+ STEP 2 - Consider optimizing TextSprite and ImageSprite mesh generation, it also seems to be doing a lot of allocs
+
+ TODO - Consider implementing a smarted Pooling solution
+  - Pool stores a ptr to first free element
+  - Allocating an object returns the first free element, and updates the free ptr to the element first free element was pointing
+  - Deallocating an object makes it the first free element, and its data is set to point to previous first free element
+  - Other
+    - Allocating a new block just creates a link with the previous block
+	- Allocating sequential arrays is not supported
+  - TODO - This won't actually work as imagined as I need to find proper block based on element address. MemPool in AllocatorTest does it really well.
+
+TODO - I really feel like allocations should be much faster. 100 000 allocations/frees using non-debug heap take about 30ms, while in my code thats the time it takes for execute 6000
+ - Same code (CRT allocations & frees) executes about 30 times slower in Camelot than in a test project
+ - And SetHeapInformation in Camelot fails, indicating that debug heap is active
+
+ BansheeEngine x64 Release is being compiled as console
+
+Consider using VirtualAlloc, VirtualFree and see if that speeds up allocations. (Potentially Heaps API if Virtual is too complex)
+ - Also see if threading effects heap performance

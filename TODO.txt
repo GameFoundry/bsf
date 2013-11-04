@@ -11,6 +11,9 @@ Optimization notes:
  - submitToCoreThread calls are EXTREMELY slow. In 10-50ms range.
  - GUIManager updateMeshes seems to be executing every frame
 
+ ProfilerOverlay causes a crash when too many elements are present
+  - For a test case, try adding 4-5 begin/endSamples to TextUtility::getTextData
+
 WEIRDNESS:
 In GUIManager in 2 places I compare stuff by address. Make sure to use mesh or material address instead of material group address is isn't completely random
 A lot of stuff is still using GSyncedMainCA but it should be using gMainCA
