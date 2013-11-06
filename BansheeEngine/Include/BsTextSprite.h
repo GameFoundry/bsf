@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 		void update(const TEXT_SPRITE_DESC& desc);
 
-		static CM::Vector<CM::Int2>::type getAlignmentOffsets(const CM::Vector<CM::TextUtility::TextLine>::type& lines, 
+		static CM::Vector<CM::Int2>::type getAlignmentOffsets(const CM::TextUtility::TextData& textData, 
 			CM::UINT32 width, CM::UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 
 		/**

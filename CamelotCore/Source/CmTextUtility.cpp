@@ -7,22 +7,28 @@ namespace CamelotFramework
 {
 	const int SPACE_CHAR = 32;
 
-	TextUtility::TextWord::TextWord(bool spacer)
-		:mWidth(0), mHeight(0), mSpacer(spacer), mSpaceWidth(0)
-	{ }
+	void TextUtility::TextWord::init(bool spacer)
+	{
+		mWidth = mHeight = 0;
+		mSpacer = spacer;
+		mSpaceWidth = 0;
+		mCharsStart = 0;
+		mCharsEnd = 0;
+		mLastChar = nullptr;
+	}
 
-	UINT32 TextUtility::TextWord::addChar(const CHAR_DESC& desc)
+	// Assumes charIdx is an index right after last char in the list (if any). All chars need to be sequential.
+	UINT32 TextUtility::TextWord::addChar(UINT32 charIdx, const CHAR_DESC& desc)
 	{
 		UINT32 charWidth = desc.xAdvance;
-		if(mChars.size() > 0)
+		if(mLastChar != nullptr)
 		{
 			UINT32 kerning = 0;
-			CHAR_DESC& prevChar = mChars.back();
-			for(size_t j = 0; j < prevChar.kerningPairs.size(); j++)
+			for(size_t j = 0; j < mLastChar->kerningPairs.size(); j++)
 			{
-				if(prevChar.kerningPairs[j].otherCharId == desc.charId)
+				if(mLastChar->kerningPairs[j].otherCharId == desc.charId)
 				{
-					kerning = prevChar.kerningPairs[j].amount;
+					kerning = mLastChar->kerningPairs[j].amount;
 					break;
 				}
 			}
@@ -33,7 +39,12 @@ namespace CamelotFramework
 		mWidth += charWidth;
 		mHeight = std::max(mHeight, desc.height);
 
-		mChars.push_back(desc);
+		if(mLastChar == nullptr) // First char
+			mCharsStart = mCharsEnd = charIdx;
+		else
+			mCharsEnd = charIdx;
+
+		mLastChar = &desc;
 
 		return charWidth;
 	}
@@ -45,15 +56,13 @@ namespace CamelotFramework
 		mHeight = 0;
 	}
 
-	TextUtility::TextLine::TextLine(UINT32 baselineOffset, UINT32 lineHeight, UINT32 spaceWidth)
-		:mWidth(0), mHeight(0), mLastWord(nullptr), mBaselineOffset(baselineOffset), 
-		mLineHeight(lineHeight), mSpaceWidth(spaceWidth)
+	void TextUtility::TextLine::init(TextData* textData)
 	{
-
-	}
-
-	TextUtility::TextLine::~TextLine()
-	{
+		mWidth = 0;
+		mHeight = 0;
+		mIsEmpty = true; 
+		mTextData = textData;
+		mWordsStart = mWordsEnd = 0;
 	}
 
 	void TextUtility::TextLine::finalize(bool hasNewlineChar)
@@ -61,100 +70,76 @@ namespace CamelotFramework
 		mHasNewline = hasNewlineChar;
 	}
 
-	void TextUtility::TextLine::add(const CHAR_DESC& charDesc)
+	void TextUtility::TextLine::add(UINT32 charIdx, const CHAR_DESC& charDesc)
 	{
 		UINT32 charWidth = 0;
-		if(mLastWord == nullptr)
+		if(mIsEmpty)
 		{
-			mWords.push_back(TextWord(false));
-			mLastWord = &mWords.back();
-
-			charWidth = mLastWord->addChar(charDesc);
+			mWordsStart = mWordsEnd = allocWord(false);
+			mIsEmpty = false;
 		}
 		else
 		{
-			if(mLastWord->isSpacer())
-			{
-				mWords.push_back(TextWord(false));
-				mLastWord = &mWords.back();
-			}
-
-			charWidth = mLastWord->addChar(charDesc);
+			if(TextUtility::WordBuffer[mWordsEnd].isSpacer())
+				mWordsEnd = allocWord(false);
 		}
 
+		TextWord& lastWord = TextUtility::WordBuffer[mWordsEnd];
+		charWidth = lastWord.addChar(charIdx, charDesc);
+
 		mWidth += charWidth;
-		mHeight = std::max(mHeight, mLastWord->getHeight());
+		mHeight = std::max(mHeight, lastWord.getHeight());
 	}
 
 	void TextUtility::TextLine::addSpace()
 	{
-		if(mLastWord == nullptr)
+		if(mIsEmpty)
 		{
-			mWords.push_back(TextWord(true));
-			mLastWord = &mWords.back();
-
-			mLastWord->addSpace(mSpaceWidth);
+			mWordsStart = mWordsEnd = allocWord(true);
+			mIsEmpty = false;
 		}
 		else
-		{
-			mWords.push_back(TextWord(true)); // Each space is counted as its own word, to make certain operations easier
-			mLastWord = &mWords.back();
+			mWordsEnd = allocWord(true); // Each space is counted as its own word, to make certain operations easier
 
-			mLastWord->addSpace(mSpaceWidth);
-		}
+		TextWord& lastWord = TextUtility::WordBuffer[mWordsEnd];
+		lastWord.addSpace(mTextData->getSpaceWidth());
 
-		mWidth += mSpaceWidth;
+		mWidth += mTextData->getSpaceWidth();
 	}
 
-	void TextUtility::TextLine::addWord(const TextWord& word)
+	// Assumes wordIdx is an index right after last word in the list (if any). All words need to be sequential.
+	void TextUtility::TextLine::addWord(UINT32 wordIdx, const TextWord& word)
 	{
-		mWords.push_back(word);
-		mLastWord = &mWords.back();
+		if(mIsEmpty)
+		{
+			mWordsStart = mWordsEnd = wordIdx;
+			mIsEmpty = false;
+		}
+		else
+			mWordsEnd = wordIdx;
 
 		mWidth += word.getWidth();
 		mHeight = std::max(mHeight, word.getHeight());
 	}
 
-	TextUtility::TextWord TextUtility::TextLine::removeLastWord()
+	UINT32 TextUtility::TextLine::removeLastWord()
 	{
-		if(mWords.size() == 0)
-			return nullptr;
+		if(mIsEmpty)
+		{
+			assert(false);
+			return 0;
+		}
 
-		TextWord word = mWords[mWords.size() - 1];
-		mWords.erase(mWords.end() - 1);
-
-		if(mWords.size() > 0)
-			mLastWord = &mWords[mWords.size() - 1];
-		else
-			mLastWord = nullptr;
+		UINT32 lastWord = mWordsEnd--;
+		if(mWordsStart == lastWord)
+		{
+			mIsEmpty = true;
+			mWordsStart = mWordsEnd = 0;
+		}
 
 		calculateBounds();
 
-		return word;
-	}
-
-	Vector<UINT32>::type TextUtility::TextLine::getNumQuadsPerPage() const
-	{
-		Vector<UINT32>::type quadsPerPage;
-		for(auto wordIter = mWords.begin(); wordIter != mWords.end(); ++wordIter)
-		{
-			if(!wordIter->isSpacer())
-			{
-				const Vector<CHAR_DESC>::type& chars = wordIter->getChars();
-				UINT32 kerning = 0;
-				for(auto charIter = chars.begin(); charIter != chars.end(); ++charIter)
-				{
-					if(charIter->page > (UINT32)quadsPerPage.size())
-						quadsPerPage.resize(charIter->page + 1);
-
-					quadsPerPage[charIter->page]++;
-				}
-			}
-			else
-				quadsPerPage[0]++;
-		}
-
-		return quadsPerPage;
+		return lastWord;
 	}
 
 	UINT32 TextUtility::TextLine::fillBuffer(UINT32 page, Vector2* vertices, Vector2* uvs, UINT32* indexes, UINT32 offset, UINT32 size) const
@@ -162,9 +147,11 @@ namespace CamelotFramework
 		UINT32 numQuads = 0;
 
 		UINT32 penX = 0;
-		for(auto wordIter = mWords.begin(); wordIter != mWords.end(); ++wordIter)
+		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
-			if(wordIter->isSpacer())
+			const TextWord& word = mTextData->getWord(i);
+
+			if(word.isSpacer())
 			{
 				// We store invisible space quads in the first page. Even though they aren't needed
 				// for rendering and we could just leave an empty space, they are needed for intersection tests
@@ -178,9 +165,9 @@ namespace CamelotFramework
 					UINT32 curIndex = offset * 6;
 
 					vertices[curVert + 0] = Vector2((float)curX, (float)curY);
-					vertices[curVert + 1] = Vector2((float)(curX + mSpaceWidth), (float)curY);
-					vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)mLineHeight);
-					vertices[curVert + 3] = Vector2((float)(curX + mSpaceWidth), (float)curY + (float)mLineHeight);
+					vertices[curVert + 1] = Vector2((float)(curX + mTextData->getSpaceWidth()), (float)curY);
+					vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)mTextData->getLineHeight());
+					vertices[curVert + 3] = Vector2((float)(curX + mTextData->getSpaceWidth()), (float)curY + (float)mTextData->getLineHeight());
 
 					if(uvs != nullptr)
 					{
@@ -208,49 +195,51 @@ namespace CamelotFramework
 						CM_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
 				}
 
-				penX += mSpaceWidth;
+				penX += mTextData->getSpaceWidth();
 			}
 			else
 			{
-				const Vector<CHAR_DESC>::type& chars = wordIter->getChars();
 				UINT32 kerning = 0;
-				for(auto charIter = chars.begin(); charIter != chars.end(); ++charIter)
+				for(UINT32 j = word.getCharsStart(); j <= word.getCharsEnd(); j++)
 				{
-					INT32 curX = penX + charIter->xOffset;
-					INT32 curY = ((INT32)mBaselineOffset - charIter->yOffset);
+					const CHAR_DESC& curChar = mTextData->getChar(j);
 
-					penX += charIter->xAdvance + kerning;
+					INT32 curX = penX + curChar.xOffset;
+					INT32 curY = ((INT32) mTextData->getBaselineOffset() - curChar.yOffset);
+
+					penX += curChar.xAdvance + kerning;
 					
 					kerning = 0;
-					if((charIter + 1) != chars.end())
+					if((j + 1) <= word.getCharsEnd())
 					{
-						for(size_t j = 0; j < charIter->kerningPairs.size(); j++)
+						const CHAR_DESC& nextChar = mTextData->getChar(j + 1);
+						for(size_t j = 0; j < curChar.kerningPairs.size(); j++)
 						{
-							if(charIter->kerningPairs[j].otherCharId == (charIter + 1)->charId)
+							if(curChar.kerningPairs[j].otherCharId == nextChar.charId)
 							{
-								kerning = charIter->kerningPairs[j].amount;
+								kerning = curChar.kerningPairs[j].amount;
 								break;
 							}
 						}
 					}
 
-					if(charIter->page != page)
+					if(curChar.page != page)
 						continue;
 
 					UINT32 curVert = offset * 4;
 					UINT32 curIndex = offset * 6;
 
 					vertices[curVert + 0] = Vector2((float)curX, (float)curY);
-					vertices[curVert + 1] = Vector2((float)(curX + charIter->width), (float)curY);
-					vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)charIter->height);
-					vertices[curVert + 3] = Vector2((float)(curX + charIter->width), (float)curY + (float)charIter->height);
+					vertices[curVert + 1] = Vector2((float)(curX + curChar.width), (float)curY);
+					vertices[curVert + 2] = Vector2((float)curX, (float)curY + (float)curChar.height);
+					vertices[curVert + 3] = Vector2((float)(curX + curChar.width), (float)curY + (float)curChar.height);
 
 					if(uvs != nullptr)
 					{
-						uvs[curVert + 0] = Vector2(charIter->uvX, charIter->uvY);
-						uvs[curVert + 1] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY);
-						uvs[curVert + 2] = Vector2(charIter->uvX, charIter->uvY + charIter->uvHeight);
-						uvs[curVert + 3] = Vector2(charIter->uvX + charIter->uvWidth, charIter->uvY + charIter->uvHeight);
+						uvs[curVert + 0] = Vector2(curChar.uvX, curChar.uvY);
+						uvs[curVert + 1] = Vector2(curChar.uvX + curChar.uvWidth, curChar.uvY);
+						uvs[curVert + 2] = Vector2(curChar.uvX, curChar.uvY + curChar.uvHeight);
+						uvs[curVert + 3] = Vector2(curChar.uvX + curChar.uvWidth, curChar.uvY + curChar.uvHeight);
 					}
 
 					if(indexes != nullptr)
@@ -278,12 +267,14 @@ namespace CamelotFramework
 	UINT32 TextUtility::TextLine::getNumChars() const
 	{
 		UINT32 numChars = 0;
-		for(auto& word : mWords)
+		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
+			TextWord& word = TextUtility::WordBuffer[i];
+
 			if(word.isSpacer())
 				numChars++;
 			else
-				numChars += (UINT32)word.getChars().size();
+				numChars += (UINT32)word.getNumChars();
 		}
 
 		return numChars;
@@ -293,19 +284,68 @@ namespace CamelotFramework
 	{
 		mWidth = 0;
 		mHeight = 0;
-		for(auto iter = mWords.begin(); iter != mWords.end(); ++iter)
+
+		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
-			mWidth += iter->getWidth();
-			mHeight = std::max(mHeight, iter->getHeight());
+			TextWord& word = TextUtility::WordBuffer[i];
+
+			mWidth += word.getWidth();
+			mHeight = std::max(mHeight, word.getHeight());
 		}
+	}
+
+	TextUtility::TextData::TextData(const HFont& font, INT32 baselineOffset, UINT32 lineHeight, UINT32 spaceWidth)
+		:mFont(font), mBaselineOffset(baselineOffset), mLineHeight(lineHeight), mSpaceWidth(spaceWidth), mChars(nullptr),
+		mNumChars(0), mWords(nullptr), mNumWords(0), mLines(nullptr), mNumLines(0), mPageInfos(nullptr), mNumPageInfos(0), mData(nullptr)
+	{
 	}
 
 	TextUtility::TextData::~TextData()
 	{
+		if(mData != nullptr)
+			cm_free(mData);
+	}
+
+	Vector<TextUtility::TextWord>::type TextUtility::WordBuffer = Vector<TextUtility::TextWord>::type(2000);
+	UINT32 TextUtility::NextFreeWord = 0;
+
+	Vector<TextUtility::TextLine>::type TextUtility::LineBuffer = Vector<TextUtility::TextLine>::type(500);
+	UINT32 TextUtility::NextFreeLine = 0;
+
+	Vector<TextUtility::PageInfo>::type TextUtility::PageBuffer = Vector<TextUtility::PageInfo>::type(20);
+	UINT32 TextUtility::NextFreePageInfo = 0;
+
+	UINT32 TextUtility::allocWord(bool spacer)
+	{
+		if(NextFreeWord >= WordBuffer.size())
+			WordBuffer.resize(WordBuffer.size() * 2);
+
+		WordBuffer[NextFreeWord].init(spacer);
+
+		return NextFreeWord++;
+	}
+
+	UINT32 TextUtility::allocLine(TextData* textData)
+	{
+		if(NextFreeLine >= LineBuffer.size())
+			LineBuffer.resize(LineBuffer.size() * 2);
+
+		LineBuffer[NextFreeLine].init(textData);
+
+		return NextFreeLine++;
+	}
+
+	void TextUtility::deallocAll()
+	{
+		NextFreeWord = 0;
+		NextFreeLine = 0;
+		NextFreePageInfo = 0;
 	}
 
 	std::shared_ptr<TextUtility::TextData> TextUtility::getTextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap)
 	{
+		// In order to reduce number of memory allocations algorithm first calculates data into temporary buffers and then copies the results
+		
 		const FontData* fontData = nullptr;
 		if(font != nullptr)
 		{
@@ -323,10 +363,9 @@ namespace CamelotFramework
 
 		bool widthIsLimited = width > 0;
 
-		std::shared_ptr<TextUtility::TextData> textData = cm_shared_ptr<TextData, PoolAlloc>();
-		textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
-		TextLine* curLine = &textData->mLines.back();
+		std::shared_ptr<TextUtility::TextData> textData = cm_shared_ptr<TextData, PoolAlloc>(font, fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth);
 
+		UINT32 curLineIdx = allocLine(textData.get());
 		UINT32 curHeight = fontData->fontDesc.lineHeight;
 		UINT32 charIdx = 0;
 
@@ -338,11 +377,14 @@ namespace CamelotFramework
 			UINT32 charId = text[charIdx];
 			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
 
+			TextLine& curLine = LineBuffer[curLineIdx];
+
 			if(text[charIdx] == '\n')
 			{
-				curLine->finalize(true);
-				textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
-				curLine = &textData->mLines.back();
+				curLine.finalize(true);
+
+				curLineIdx = allocLine(textData.get());
+				curLine = LineBuffer[curLineIdx];
 
 				curHeight += fontData->fontDesc.lineHeight;
 
@@ -352,62 +394,107 @@ namespace CamelotFramework
 
 			if(charId != SPACE_CHAR)
 			{
-				curLine->add(charDesc);
-				addCharToPage(*textData, charDesc.page, *fontData);
+				curLine.add(charIdx, charDesc);
+				addCharToPage(charDesc.page, *fontData);
 			}
 			else
 			{
-				curLine->addSpace();
-				addCharToPage(*textData, 0, *fontData);
+				curLine.addSpace();
+				addCharToPage(0, *fontData);
 			}
 
-			if(widthIsLimited && curLine->getWidth() > width)
+			if(widthIsLimited && curLine.getWidth() > width)
 			{
 				if(wordWrap)
 				{
-					TextWord lastWord = curLine->removeLastWord();
+					assert(!curLine.isEmpty());
+
+					UINT32 lastWordIdx = curLine.removeLastWord();
+					TextWord& lastWord = WordBuffer[lastWordIdx];
 
 					if(lastWord.getWidth() <= width) // If the word fits, attempt to add it to a new line
 					{
-						curLine->finalize(false);
-						textData->mLines.push_back(TextLine(fontData->fontDesc.baselineOffset, fontData->fontDesc.lineHeight, fontData->fontDesc.spaceWidth));
-						curLine = &textData->mLines.back();
+						curLine.finalize(false);
+
+						curLineIdx = allocLine(textData.get());
+						curLine = LineBuffer[curLineIdx];
 
 						curHeight += fontData->fontDesc.lineHeight;
 					}
 
-					curLine->addWord(lastWord);
+					curLine.addWord(lastWordIdx, lastWord);
 				}
 			}
 
 			charIdx++;
 		}
 
-		curLine->finalize(true);
+		LineBuffer[curLineIdx].finalize(true);
+
+		// Now that we have all the data we need, allocate the permanent buffers and copy the data
+		textData->mNumChars = (UINT32)text.size();
+		textData->mNumWords = NextFreeWord;
+		textData->mNumLines = NextFreeLine;
+		textData->mNumPageInfos = NextFreePageInfo;
+
+		UINT32 charArraySize = textData->mNumChars * sizeof(const CHAR_DESC*);
+		UINT32 wordArraySize = textData->mNumWords * sizeof(TextWord);
+		UINT32 lineArraySize = textData->mNumLines * sizeof(TextLine);
+		UINT32 pageInfoArraySize = textData->mNumPageInfos * sizeof(PageInfo);
+
+		UINT32 totalBufferSize = charArraySize + wordArraySize + lineArraySize + pageInfoArraySize;
+		textData->mData = cm_alloc(totalBufferSize);
+
+		UINT8* dataPtr = (UINT8*)textData->mData;
+		textData->mChars = (const CHAR_DESC**)dataPtr;
+
+		for(UINT32 i = 0; i < textData->mNumChars; i++)
+		{
+			UINT32 charId = text[i];
+			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
+
+			textData->mChars[i] = &charDesc;
+		}
+
+		dataPtr += charArraySize;
+		textData->mWords = (TextWord*)dataPtr;
+		memcpy(textData->mWords, &WordBuffer[0], wordArraySize);
+
+		dataPtr += wordArraySize;
+		textData->mLines = (TextLine*)dataPtr;
+		memcpy(textData->mLines, &LineBuffer[0], lineArraySize);
+
+		dataPtr += lineArraySize;
+		textData->mPageInfos = (PageInfo*)dataPtr;
+		memcpy(textData->mPageInfos, &PageBuffer[0], pageInfoArraySize);
+
+		TextUtility::deallocAll();
 
 		return textData;
 	}
 
-	void TextUtility::addCharToPage(TextUtility::TextData& data, UINT32 page, const FontData& fontData)
+	void TextUtility::addCharToPage(UINT32 page, const FontData& fontData)
 	{
-		if(page >= (UINT32)data.mQuadsPerPage.size())
+		while(page >= NextFreePageInfo)
 		{
-			data.mQuadsPerPage.resize(page + 1);
-			data.mTexturePages.resize(page + 1);
+			PageBuffer[NextFreePageInfo].numQuads = 0;
+			PageBuffer[NextFreePageInfo].texture = HTexture();
+
+			NextFreePageInfo++;
 		}
 
-		data.mQuadsPerPage[page]++;
+		PageBuffer[page].numQuads++;
 
-		if(data.mTexturePages[page] == nullptr)
-			data.mTexturePages[page] = fontData.texturePages[page];
+		if(PageBuffer[page].texture == nullptr)
+			PageBuffer[page].texture = fontData.texturePages[page];
 	}
 
 	UINT32 TextUtility::TextData::getWidth() const
 	{
 		UINT32 width = 0;
 
-		for(auto& line : mLines)
-			width = std::max(width, line.getWidth());
+		for(UINT32 i = 0; i < mNumLines; i++)
+			width = std::max(width, mLines[i].getWidth());
 
 		return width;
 	}
@@ -416,8 +503,8 @@ namespace CamelotFramework
 	{
 		UINT32 height = 0;
 
-		for(auto& line : mLines)
-			height += line.getHeight();
+		for(UINT32 i = 0; i < mNumLines; i++)
+			height += mLines[i].getHeight();
 
 		return height;
 	}

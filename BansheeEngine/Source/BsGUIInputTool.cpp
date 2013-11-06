@@ -28,12 +28,12 @@ namespace BansheeEngine
 		if(textData == nullptr)
 			return;
 
-		const CM::Vector<TextUtility::TextLine>::type& lines = textData->getLines();
-		const CM::Vector<UINT32>::type& quadsPerPage = textData->getNumQuadsPerPage();
+		UINT32 numLines = textData->getNumLines();
+		UINT32 numPages = textData->getNumPages();
 
 		mNumQuads = 0;
-		for(auto& numQuads : quadsPerPage)
-			mNumQuads += numQuads;
+		for(UINT32 i = 0; i < numPages; i++)
+			mNumQuads += textData->getNumQuadsForPage(i);
 
 		if(mQuads != nullptr)
 			cm_delete<ScratchAlloc>(mQuads);
@@ -48,13 +48,15 @@ namespace BansheeEngine
 		// Store cached line data
 		UINT32 curCharIdx = 0;
 		UINT32 curLineIdx = 0;
-		Vector<Int2>::type alignmentOffsets = TextSprite::getAlignmentOffsets(lines, mTextDesc.width, 
+		Vector<Int2>::type alignmentOffsets = TextSprite::getAlignmentOffsets(*textData, mTextDesc.width, 
 			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
 
-		for(auto& line : lines)
+		for(UINT32 i = 0; i < numLines; i++)
 		{
+			const TextUtility::TextLine& line = textData->getLine(i);
+
 			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
-			bool hasNewline = line.hasNewlineChar() && (curLineIdx != ((UINT32)lines.size() - 1));
+			bool hasNewline = line.hasNewlineChar() && (curLineIdx != (numLines - 1));
 
 			UINT32 startChar = curCharIdx;
 			UINT32 endChar = curCharIdx + line.getNumChars() + (hasNewline ? 1 : 0);
