@@ -1,7 +1,10 @@
 Make sure to also update TextSprite and ImageSprite and anything else in UpdateMesh, then don't forget to find the issue that causes elements to get marked as dirty every single frame
 
-MultiLine text doesn't work and possibly input/selection
+TODO: Fix allocation counter as it doesn't work properly between multiple threads
+TODO: Get rid of TextUtility and make all text generation happen in TextData constructor. Get rid of TextData shared_ptr as it just causes an unnecessary allocation.
+TODO: MultiLine text doesn't work and possibly input/selection
+TODO: Ensure that buffers in TextData actually handle multiple threads properly (THREADLOCAL?)
 
-		// TODO: Ensure that buffers in TextData actually handle multiple threads properly (THREADLOCAL?)
-		// TODO: Merge buffer allocations for shared_ptr and data into a single alloc?
-		// TODO: Pre-opt stats: 1500 allocs, 600 frees, 0.5ms
+Performance stats:
+ Pre-opt: 1500 allocs, 600 frees, 0.5ms
+ Post-first-stage-opt: 408 alloc, 136 frees, 0.15ms

@@ -146,6 +146,9 @@ namespace CamelotFramework
 	{
 		UINT32 numQuads = 0;
 
+		if(mIsEmpty)
+			return numQuads;
+
 		UINT32 penX = 0;
 		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
@@ -266,6 +269,9 @@ namespace CamelotFramework
 
 	UINT32 TextUtility::TextLine::getNumChars() const
 	{
+		if(mIsEmpty)
+			return 0;
+
 		UINT32 numChars = 0;
 		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
@@ -284,6 +290,9 @@ namespace CamelotFramework
 	{
 		mWidth = 0;
 		mHeight = 0;
+
+		if(mIsEmpty)
+			return;
 
 		for(UINT32 i = mWordsStart; i <= mWordsEnd; i++)
 		{
@@ -377,14 +386,14 @@ namespace CamelotFramework
 			UINT32 charId = text[charIdx];
 			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
 
-			TextLine& curLine = LineBuffer[curLineIdx];
+			TextLine* curLine = &LineBuffer[curLineIdx];
 
 			if(text[charIdx] == '\n')
 			{
-				curLine.finalize(true);
+				curLine->finalize(true);
 
 				curLineIdx = allocLine(textData.get());
-				curLine = LineBuffer[curLineIdx];
+				curLine = &LineBuffer[curLineIdx];
 
 				curHeight += fontData->fontDesc.lineHeight;
 
@@ -394,35 +403,35 @@ namespace CamelotFramework
 
 			if(charId != SPACE_CHAR)
 			{
-				curLine.add(charIdx, charDesc);
+				curLine->add(charIdx, charDesc);
 				addCharToPage(charDesc.page, *fontData);
 			}
 			else
 			{
-				curLine.addSpace();
+				curLine->addSpace();
 				addCharToPage(0, *fontData);
 			}
 
-			if(widthIsLimited && curLine.getWidth() > width)
+			if(widthIsLimited && curLine->getWidth() > width)
 			{
 				if(wordWrap)
 				{
-					assert(!curLine.isEmpty());
+					assert(!curLine->isEmpty());
 
-					UINT32 lastWordIdx = curLine.removeLastWord();
+					UINT32 lastWordIdx = curLine->removeLastWord();
 					TextWord& lastWord = WordBuffer[lastWordIdx];
 
 					if(lastWord.getWidth() <= width) // If the word fits, attempt to add it to a new line
 					{
-						curLine.finalize(false);
+						curLine->finalize(false);
 
 						curLineIdx = allocLine(textData.get());
-						curLine = LineBuffer[curLineIdx];
+						curLine = &LineBuffer[curLineIdx];
 
 						curHeight += fontData->fontDesc.lineHeight;
 					}
 
-					curLine.addWord(lastWordIdx, lastWord);
+					curLine->addWord(lastWordIdx, lastWord);
 				}
 			}
 
