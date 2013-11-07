@@ -5,7 +5,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIHelper.h"
-#include "CmTextUtility.h"
+#include "CmTextData.h"
 
 using namespace CamelotFramework;
 

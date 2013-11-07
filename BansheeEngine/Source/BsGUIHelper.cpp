@@ -38,13 +38,10 @@ namespace BansheeEngine
 		UINT32 contentWidth = style.margins.left + style.margins.right + style.contentOffset.left + style.contentOffset.right;
 		UINT32 contentHeight = style.margins.top + style.margins.bottom + style.contentOffset.top + style.contentOffset.bottom;
 
-		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(text, style.font, style.fontSize, wordWrapWidth, 0, style.wordWrap);
+		TextData textData(text, style.font, style.fontSize, wordWrapWidth, 0, style.wordWrap);
 
-		if(textData != nullptr)
-		{
-			contentWidth += textData->getWidth();
-			contentHeight += textData->getHeight();
-		}
+		contentWidth += textData.getWidth();
+		contentHeight += textData.getHeight();
 
 		return Int2(contentWidth, contentHeight);
 	}

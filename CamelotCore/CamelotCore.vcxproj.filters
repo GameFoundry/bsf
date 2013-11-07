@@ -420,9 +420,6 @@
     <ClInclude Include="Include\CmGpuResourceDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmTextUtility.h">
-      <Filter>Header Files\Text</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmOSInputHandler.h">
       <Filter>Header Files\Input</Filter>
     </ClInclude>
@@ -482,6 +479,9 @@
     </ClInclude>
     <ClInclude Include="Include\CmDrawOps.h">
       <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTextData.h">
+      <Filter>Header Files\Text</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -701,9 +701,6 @@
     <ClCompile Include="Source\CmPixelData.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmTextUtility.cpp">
-      <Filter>Source Files\Text</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmOSInputHandler.cpp">
       <Filter>Source Files\Input</Filter>
     </ClCompile>
@@ -748,6 +745,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmPlatform.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTextData.cpp">
+      <Filter>Source Files\Text</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

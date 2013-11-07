@@ -22,25 +22,22 @@ namespace BansheeEngine
 
 		mLineDescs.clear();
 
-		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize, 
+		TextData textData(mTextDesc.text, mTextDesc.font, mTextDesc.fontSize, 
 			mTextDesc.width, mTextDesc.height, mTextDesc.wordWrap);
 
-		if(textData == nullptr)
-			return;
-
-		UINT32 numLines = textData->getNumLines();
-		UINT32 numPages = textData->getNumPages();
+		UINT32 numLines = textData.getNumLines();
+		UINT32 numPages = textData.getNumPages();
 
 		mNumQuads = 0;
 		for(UINT32 i = 0; i < numPages; i++)
-			mNumQuads += textData->getNumQuadsForPage(i);
+			mNumQuads += textData.getNumQuadsForPage(i);
 
 		if(mQuads != nullptr)
 			cm_delete<ScratchAlloc>(mQuads);
 
 		mQuads = cm_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
 
-		TextSprite::genTextQuads(*textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor, 
+		TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor, 
 			mQuads, nullptr, nullptr, mNumQuads);
 
 		UINT32 numVerts = mNumQuads * 4;
@@ -48,12 +45,12 @@ namespace BansheeEngine
 		// Store cached line data
 		UINT32 curCharIdx = 0;
 		UINT32 curLineIdx = 0;
-		Vector<Int2>::type alignmentOffsets = TextSprite::getAlignmentOffsets(*textData, mTextDesc.width, 
+		Vector<Int2>::type alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width, 
 			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
 
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const TextUtility::TextLine& line = textData->getLine(i);
+			const TextData::TextLine& line = textData.getLine(i);
 
 			// Line has a newline char only if it wasn't created by word wrap and it isn't the last line
 			bool hasNewline = line.hasNewlineChar() && (curLineIdx != (numLines - 1));

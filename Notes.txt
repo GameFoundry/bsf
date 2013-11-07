@@ -68,7 +68,6 @@ Potential optimizations:
 More detailed thought out system descriptions:
 
  <<<<Memory allocation critical areas>>>>
- - TextUtility a lot of allocs
  - Binding gpu params. It gets copied in DeferredRenderContext
  - GameObjectHandle often allocates its internal data
  - ResourceHandle often allocates its internal data

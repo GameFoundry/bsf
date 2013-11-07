@@ -1,6 +1,6 @@
 #include "BsTextSprite.h"
 #include "BsGUIMaterialManager.h"
-#include "CmTextUtility.h"
+#include "CmTextData.h"
 #include "CmFont.h"
 #include "CmVector2.h"
 
@@ -18,16 +18,13 @@ namespace BansheeEngine
 	void TextSprite::update(const TEXT_SPRITE_DESC& desc)
 	{
 		gProfiler().beginSample("textUpdateA");
-		std::shared_ptr<TextUtility::TextData> textData = TextUtility::getTextData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
+		TextData textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
 		gProfiler().endSample("textUpdateA");
-
-		if(textData == nullptr)
-			return;
 
 		gProfiler().beginSample("textUpdateB");
 
-		UINT32 numLines = textData->getNumLines();
-		UINT32 numPages = textData->getNumPages();
+		UINT32 numLines = textData.getNumLines();
+		UINT32 numPages = textData.getNumPages();
 
 		// Resize cached mesh array to needed size
 		if(mCachedRenderElements.size() > numPages)
@@ -65,7 +62,7 @@ namespace BansheeEngine
 		UINT32 texPage = 0;
 		for(auto& cachedElem : mCachedRenderElements)
 		{
-			UINT32 newNumQuads = textData->getNumQuadsForPage(texPage);
+			UINT32 newNumQuads = textData.getNumQuadsForPage(texPage);
 			if(newNumQuads != cachedElem.numQuads)
 			{
 				UINT32 oldVertexCount = cachedElem.numQuads * 4;
@@ -81,7 +78,7 @@ namespace BansheeEngine
 				cachedElem.numQuads = newNumQuads;
 			}
 
-			HMaterial newMaterial = GUIMaterialManager::instance().requestTextMaterial(textData->getTextureForPage(texPage));
+			HMaterial newMaterial = GUIMaterialManager::instance().requestTextMaterial(textData.getTextureForPage(texPage));
 			if(cachedElem.material != nullptr)
 				GUIMaterialManager::instance().releaseMaterial(cachedElem.material);
 
@@ -98,7 +95,7 @@ namespace BansheeEngine
 		{
 			SpriteRenderElement& renderElem = mCachedRenderElements[j];
 
-			genTextQuads(j, *textData, desc.width, desc.height, desc.horzAlign, desc.vertAlign, desc.anchor, 
+			genTextQuads(j, textData, desc.width, desc.height, desc.horzAlign, desc.vertAlign, desc.anchor, 
 				renderElem.vertices, renderElem.uvs, renderElem.indexes, renderElem.numQuads);
 		}
 
@@ -110,7 +107,7 @@ namespace BansheeEngine
 		gProfiler().instance().endSample("textUpdateE");
 	}
 
-	UINT32 TextSprite::genTextQuads(UINT32 page, const TextUtility::TextData& textData, UINT32 width, UINT32 height, 
+	UINT32 TextSprite::genTextQuads(UINT32 page, const TextData& textData, UINT32 width, UINT32 height, 
 		TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 bufferSizeQuads)
 	{
 		UINT32 numLines = textData.getNumLines();
@@ -122,7 +119,7 @@ namespace BansheeEngine
 		UINT32 quadOffset = 0;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const TextUtility::TextLine& line = textData.getLine(i);
+			const TextData::TextLine& line = textData.getLine(i);
 			UINT32 writtenQuads = line.fillBuffer(page, vertices, uv, indices, quadOffset, bufferSizeQuads);
 
 			Int2 position = offset + alignmentOffsets[i];
@@ -140,7 +137,7 @@ namespace BansheeEngine
 	}
 
 
-	UINT32 TextSprite::genTextQuads(const TextUtility::TextData& textData, UINT32 width, UINT32 height, 
+	UINT32 TextSprite::genTextQuads(const TextData& textData, UINT32 width, UINT32 height, 
 		TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, UINT32 bufferSizeQuads)
 	{
 		UINT32 numLines = textData.getNumLines();
@@ -153,7 +150,7 @@ namespace BansheeEngine
 		
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const TextUtility::TextLine& line = textData.getLine(i);
+			const TextData::TextLine& line = textData.getLine(i);
 			for(UINT32 j = 0; j < numPages; j++)
 			{
 				UINT32 writtenQuads = line.fillBuffer(j, vertices, uv, indices, quadOffset, bufferSizeQuads);
@@ -174,14 +171,14 @@ namespace BansheeEngine
 		return quadOffset;
 	}
 
-	Vector<Int2>::type TextSprite::getAlignmentOffsets(const TextUtility::TextData& textData, 
+	Vector<Int2>::type TextSprite::getAlignmentOffsets(const TextData& textData, 
 		UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign)
 	{
 		UINT32 numLines = textData.getNumLines();
 		UINT32 curHeight = 0;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const TextUtility::TextLine& line = textData.getLine(i);
+			const TextData::TextLine& line = textData.getLine(i);
 			curHeight += line.getYOffset();
 		}
 
@@ -206,7 +203,7 @@ namespace BansheeEngine
 		Vector<Int2>::type lineOffsets;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
-			const TextUtility::TextLine& line = textData.getLine(i);
+			const TextData::TextLine& line = textData.getLine(i);
 
 			UINT32 horzOffset = 0;
 			switch(horzAlign)

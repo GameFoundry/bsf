@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsSprite.h"
-#include "CmTextUtility.h"
+#include "CmTextData.h"
 
 namespace BansheeEngine
 {
@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 		void update(const TEXT_SPRITE_DESC& desc);
 
-		static CM::Vector<CM::Int2>::type getAlignmentOffsets(const CM::TextUtility::TextData& textData, 
+		static CM::Vector<CM::Int2>::type getAlignmentOffsets(const CM::TextData& textData, 
 			CM::UINT32 width, CM::UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 
 		/**
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 *
 		 * @return	Number of generated quads.
 		 */
-		static CM::UINT32 genTextQuads(CM::UINT32 page, const CM::TextUtility::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
+		static CM::UINT32 genTextQuads(CM::UINT32 page, const CM::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
 			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32* indices, 
 			CM::UINT32 bufferSizeQuads);
 
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		 *
 		 * @return	Number of generated quads.
 		 */
-		static CM::UINT32 genTextQuads(const CM::TextUtility::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
+		static CM::UINT32 genTextQuads(const CM::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
 			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32* indices, 
 			CM::UINT32 bufferSizeQuads);
 	};

@@ -10,7 +10,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUICommandEvent.h"
 #include "CmFont.h"
-#include "CmTextUtility.h"
+#include "CmTextData.h"
 #include "CmTexture.h"
 #include "CmPlatform.h"
 #include "BsGUIInputCaret.h"

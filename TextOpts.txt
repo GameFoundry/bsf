@@ -1,8 +1,8 @@
 Make sure to also update TextSprite and ImageSprite and anything else in UpdateMesh, then don't forget to find the issue that causes elements to get marked as dirty every single frame
 
-TODO: Fix allocation counter as it doesn't work properly between multiple threads
-TODO: Get rid of TextUtility and make all text generation happen in TextData constructor. Get rid of TextData shared_ptr as it just causes an unnecessary allocation.
-TODO: Ensure that buffers in TextData actually handle multiple threads properly (THREADLOCAL?)
+Profiler does a lot of allocations of its own which can seriously skew the profiling results. Try to eliminate them all or add alloc/free overhead fields
+
+TODO: TextData does an extra mem alloc in this bit of code: PageBuffer[NextFreePageInfo].texture = HTexture();, try to avoid it
 
 Performance stats:
  Pre-opt: 1500 allocs, 600 frees, 0.5ms
