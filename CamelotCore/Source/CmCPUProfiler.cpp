@@ -66,8 +66,8 @@ namespace CamelotFramework
 
 	void CPUProfiler::ProfileData::beginSample()
 	{
-		memAllocs = MemoryCounter::Allocs.load();
-		memFrees = MemoryCounter::Frees.load();
+		memAllocs = MemoryCounter::getNumAllocs();
+		memFrees = MemoryCounter::getNumFrees();
 
 		timer.reset();
 		timer.start();
@@ -77,8 +77,8 @@ namespace CamelotFramework
 	{
 		timer.stop();
 
-		UINT64 numAllocs = MemoryCounter::Allocs.load() - memAllocs;
-		UINT64 numFrees = MemoryCounter::Frees.load() - memFrees;
+		UINT64 numAllocs = MemoryCounter::getNumAllocs() - memAllocs;
+		UINT64 numFrees = MemoryCounter::getNumFrees() - memFrees;
 
 		samples.push_back(ProfileSample(timer.time, numAllocs, numFrees));
 	}
@@ -91,8 +91,8 @@ namespace CamelotFramework
 
 	void CPUProfiler::PreciseProfileData::beginSample()
 	{
-		memAllocs = MemoryCounter::Allocs.load();
-		memFrees = MemoryCounter::Frees.load();
+		memAllocs = MemoryCounter::getNumAllocs();
+		memFrees = MemoryCounter::getNumFrees();
 
 		timer.reset();
 		timer.start();
@@ -102,8 +102,8 @@ namespace CamelotFramework
 	{
 		timer.stop();
 
-		UINT64 numAllocs = MemoryCounter::Allocs.load() - memAllocs;
-		UINT64 numFrees = MemoryCounter::Frees.load() - memFrees;
+		UINT64 numAllocs = MemoryCounter::getNumAllocs() - memAllocs;
+		UINT64 numFrees = MemoryCounter::getNumFrees() - memFrees;
 
 		samples.push_back(PreciseProfileSample(timer.cycles, numAllocs, numFrees));
 	}

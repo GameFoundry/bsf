@@ -2,7 +2,6 @@ Make sure to also update TextSprite and ImageSprite and anything else in UpdateM
 
 TODO: Fix allocation counter as it doesn't work properly between multiple threads
 TODO: Get rid of TextUtility and make all text generation happen in TextData constructor. Get rid of TextData shared_ptr as it just causes an unnecessary allocation.
-TODO: MultiLine text doesn't work and possibly input/selection
 TODO: Ensure that buffers in TextData actually handle multiple threads properly (THREADLOCAL?)
 
 Performance stats:

@@ -2,6 +2,6 @@
 
 namespace CamelotFramework
 {
-	std::atomic_uint64_t MemoryCounter::Allocs = 0;
-	std::atomic_uint64_t MemoryCounter::Frees = 0;
+	UINT64 MemoryCounter::Allocs = 0;
+	UINT64 MemoryCounter::Frees = 0;
 }

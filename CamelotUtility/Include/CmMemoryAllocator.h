@@ -8,11 +8,37 @@
 
 namespace CamelotFramework
 {
-	class CM_UTILITY_EXPORT MemoryCounter
+	class MemoryAllocatorBase;
+
+	class MemoryCounter
 	{
 	public:
-		static std::atomic_uint64_t Allocs;
-		static std::atomic_uint64_t Frees;
+		static CM_UTILITY_EXPORT UINT64 getNumAllocs()
+		{
+			return Allocs;
+		}
+
+		static CM_UTILITY_EXPORT UINT64 getNumFrees()
+		{
+			return Frees;
+		}
+		
+	private:
+		friend class MemoryAllocatorBase;
+
+		// Threadlocal data can't be exported, so some magic to make it accessible from MemoryAllocator
+		static CM_UTILITY_EXPORT void incAllocCount() { Allocs++; }
+		static CM_UTILITY_EXPORT void incFreeCount() { Frees++; }
+
+		static CM_THREADLOCAL UINT64 Allocs;
+		static CM_THREADLOCAL UINT64 Frees;
+	};
+
+	class MemoryAllocatorBase
+	{
+	protected:
+		static void incAllocCount() { MemoryCounter::incAllocCount(); }
+		static void incFreeCount() { MemoryCounter::incFreeCount(); }
 	};
 
 	/**
@@ -20,13 +46,13 @@ namespace CamelotFramework
 	 * 			Specialize for specific categories as needed.
 	 */
 	template<class T>
-	class MemoryAllocator
+	class MemoryAllocator : public MemoryAllocatorBase
 	{
 	public:
 		static inline void* allocate(UINT32 bytes)
 		{
 #if CM_PROFILING_ENABLED
-			MemoryCounter::Allocs++;
+			incAllocCount();
 #endif
 
 			return malloc(bytes);
@@ -35,7 +61,7 @@ namespace CamelotFramework
 		static inline void* allocateArray(UINT32 bytes, UINT32 count)
 		{
 #if CM_PROFILING_ENABLED
-			MemoryCounter::Allocs++;
+			incAllocCount();
 #endif
 
 			return malloc(bytes * count);
@@ -44,7 +70,7 @@ namespace CamelotFramework
 		static inline void free(void* ptr)
 		{
 #if CM_PROFILING_ENABLED
-			MemoryCounter::Frees++;
+			incFreeCount();
 #endif
 
 			::free(ptr);
@@ -53,7 +79,7 @@ namespace CamelotFramework
 		static inline void freeArray(void* ptr, UINT32 count)
 		{
 #if CM_PROFILING_ENABLED
-			MemoryCounter::Frees++;
+			incFreeCount();
 #endif
 
 			::free(ptr);
