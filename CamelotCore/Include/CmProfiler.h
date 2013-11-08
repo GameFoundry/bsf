@@ -31,7 +31,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CPUProfiler::beginThread
 		 */
-		void beginThread(const String& name) 
+		void beginThread(const ProfilerString& name) 
 		{ 
 #if CM_PROFILING_ENABLED
 			mCPUProfiler->beginThread(name); 
@@ -51,7 +51,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CPUProfiler::beginSample
 		 */
-		void beginSample(const String& name) 
+		void beginSample(const ProfilerString& name) 
 		{ 
 #if CM_PROFILING_ENABLED
 			mCPUProfiler->beginSample(name); 
@@ -61,7 +61,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CPUProfiler::endSample
 		 */
-		void endSample(const String& name) 
+		void endSample(const ProfilerString& name) 
 		{ 
 #if CM_PROFILING_ENABLED
 			mCPUProfiler->endSample(name); 
@@ -71,7 +71,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CPUProfiler::beginSamplePrecise
 		 */
-		void beginSamplePrecise(const String& name) 
+		void beginSamplePrecise(const ProfilerString& name) 
 		{ 
 #if CM_PROFILING_ENABLED
 			mCPUProfiler->beginSamplePrecise(name); 
@@ -81,7 +81,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CPUProfiler::endSamplePrecise
 		 */
-		void endSamplePrecise(const String& name) 
+		void endSamplePrecise(const ProfilerString& name) 
 		{ 
 #if CM_PROFILING_ENABLED
 			mCPUProfiler->endSamplePrecise(name); 

@@ -10,23 +10,23 @@ namespace CamelotFramework
 		mSavedCoreReports(nullptr), mNextCoreReportIdx(0)
 	{
 #if CM_PROFILING_ENABLED
-		mCPUProfiler = cm_new<CPUProfiler>();
+		mCPUProfiler = cm_new<CPUProfiler, ProfilerAlloc>();
 #endif
 
-		mSavedSimReports = cm_newN<ProfilerReport>(NUM_SAVED_FRAMES);
-		mSavedCoreReports = cm_newN<ProfilerReport>(NUM_SAVED_FRAMES);
+		mSavedSimReports = cm_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
+		mSavedCoreReports = cm_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
 	}
 
 	Profiler::~Profiler()
 	{
 		if(mCPUProfiler != nullptr)
-			cm_delete(mCPUProfiler);
+			cm_delete<ProfilerAlloc>(mCPUProfiler);
 
 		if(mSavedSimReports != nullptr)
-			cm_deleteN(mSavedSimReports, NUM_SAVED_FRAMES);
+			cm_deleteN<ProfilerAlloc>(mSavedSimReports, NUM_SAVED_FRAMES);
 
 		if(mSavedCoreReports != nullptr)
-			cm_deleteN(mSavedCoreReports, NUM_SAVED_FRAMES);
+			cm_deleteN<ProfilerAlloc>(mSavedCoreReports, NUM_SAVED_FRAMES);
 	}
 
 	void Profiler::update()

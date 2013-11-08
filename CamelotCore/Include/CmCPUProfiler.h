@@ -6,6 +6,8 @@ namespace CamelotFramework
 {
 	class CPUProfilerReport;
 
+	typedef std::basic_string<char, std::char_traits<char>, StdAlloc<char, ProfilerAlloc>> ProfilerString; 
+
 	/**
 	 * @brief	Provides various performance measuring methods
 	 * 			
@@ -102,14 +104,14 @@ namespace CamelotFramework
 			ProfiledBlock();
 			~ProfiledBlock();
 
-			String name;
+			ProfilerString name;
 			
 			ProfileData basic;
 			PreciseProfileData precise;
 
 			Vector<ProfiledBlock*>::type children;
 
-			ProfiledBlock* findChild(const String& name) const;
+			ProfiledBlock* findChild(const ProfilerString& name) const;
 		};
 
 		enum class ActiveSamplingType
@@ -144,7 +146,7 @@ namespace CamelotFramework
 			Stack<ActiveBlock>::type activeBlocks;
 			ActiveBlock activeBlock;
 
-			void begin(const String& _name);
+			void begin(const ProfilerString& _name);
 			void end();
 			void reset();
 
@@ -162,7 +164,7 @@ namespace CamelotFramework
 		 *
 		 * @param	name	Name that will allow you to more easily identify the thread.
 		 */
-		void beginThread(const String& name);
+		void beginThread(const ProfilerString& name);
 
 		/**
 		 * @brief	Ends sampling for the current thread. No beginSample*\endSample* calls after this point.
@@ -174,7 +176,7 @@ namespace CamelotFramework
 		 *
 		 * @param	name	Unique name for the sample you can later use to find the sampling data.
 		 */
-		void beginSample(const String& name);
+		void beginSample(const ProfilerString& name);
 
 		/**
 		 * @brief	Ends sample measurement and returns measured data.
@@ -184,7 +186,7 @@ namespace CamelotFramework
 		 * @note	Unique name is primarily needed to more easily identify mismatched
 		 * 			begin/end sample pairs. Otherwise the name in beginSample would be enough.
 		 */
-		void endSample(const String& name);
+		void endSample(const ProfilerString& name);
 
 		/**
 		 * @brief	Begins sample measurement. Must be followed by endSample. 
@@ -196,7 +198,7 @@ namespace CamelotFramework
 		 * 			not use this method for larger parts of code. It does not consider context switches so if the OS
 		 * 			decides to switch context between measurements you will get invalid data.
 		 */
-		void beginSamplePrecise(const String& name);
+		void beginSamplePrecise(const ProfilerString& name);
 
 		/**
 		 * @brief	Ends precise sample measurement and returns measured data.
@@ -206,7 +208,7 @@ namespace CamelotFramework
 		 * @note	Unique name is primarily needed to more easily identify mismatched
 		 * 			begin/end sample pairs. Otherwise the name in beginSamplePrecise would be enough.
 		 */
-		void endSamplePrecise(const String& name);
+		void endSamplePrecise(const ProfilerString& name);
 
 		/**
 		 * @brief	Clears all sampling data, and ends any unfinished sampling blocks.

@@ -107,6 +107,7 @@ namespace CamelotFramework
 	class PoolAlloc
 	{ };
 
+
 	/**
 	 * @brief	Allocates the specified number of bytes.
 	 */
@@ -399,3 +400,4 @@ namespace CamelotFramework
 }
 
 #include "CmMemStack.h"
+#include "CmMemAllocProfiler.h"

@@ -122,7 +122,7 @@ namespace CamelotFramework
 
 	}
 
-	void CPUProfiler::ThreadInfo::begin(const String& _name)
+	void CPUProfiler::ThreadInfo::begin(const ProfilerString& _name)
 	{
 		if(isActive)
 		{
@@ -189,12 +189,12 @@ namespace CamelotFramework
 	{
 		// TODO - Pool this, if possible using the memory allocator stuff
 		// TODO - Also consider moving all samples in ThreadInfo, and also pool them (otherwise I can't pool ProfiledBlock since it will be variable size)
-		return cm_new<ProfiledBlock>();
+		return cm_new<ProfiledBlock, ProfilerAlloc>();
 	}
 
 	void CPUProfiler::ThreadInfo::releaseBlock(CPUProfiler::ProfiledBlock* block)
 	{
-		cm_delete(block);
+		cm_delete<ProfilerAlloc>(block);
 	}
 
 	CPUProfiler::ProfiledBlock::ProfiledBlock()
@@ -210,7 +210,7 @@ namespace CamelotFramework
 		children.clear();
 	}
 
-	CPUProfiler::ProfiledBlock* CPUProfiler::ProfiledBlock::findChild(const String& name) const
+	CPUProfiler::ProfiledBlock* CPUProfiler::ProfiledBlock::findChild(const ProfilerString& name) const
 	{
 		for(auto& child : children)
 		{
@@ -237,15 +237,15 @@ namespace CamelotFramework
 		CM_LOCK_MUTEX(mThreadSync);
 
 		for(auto& threadInfo : mActiveThreads)
-			cm_delete(threadInfo);
+			cm_delete<ProfilerAlloc>(threadInfo);
 	}
 
-	void CPUProfiler::beginThread(const String& name)
+	void CPUProfiler::beginThread(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr)
 		{
-			ThreadInfo::activeThread = cm_new<ThreadInfo>();
+			ThreadInfo::activeThread = cm_new<ThreadInfo, ProfilerAlloc>();
 			thread = ThreadInfo::activeThread;
 
 			{
@@ -264,7 +264,7 @@ namespace CamelotFramework
 		ThreadInfo::activeThread->end();
 	}
 
-	void CPUProfiler::beginSample(const String& name)
+	void CPUProfiler::beginSample(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr || !thread->isActive)
@@ -293,7 +293,7 @@ namespace CamelotFramework
 		block->basic.beginSample();
 	}
 
-	void CPUProfiler::endSample(const String& name)
+	void CPUProfiler::endSample(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
@@ -313,7 +313,8 @@ namespace CamelotFramework
 
 		if(block->name != name)
 		{
-			LOGWRN("Mismatched CPUProfiler::endSample. Was expecting \"" + block->name + "\" but got \"" + name + "\". Sampling data will not be valid.");
+			LOGWRN("Mismatched CPUProfiler::endSample. Was expecting \"" + String(block->name.c_str()) + 
+				"\" but got \"" + String(name.c_str()) + "\". Sampling data will not be valid.");
 			return;
 		}
 #endif
@@ -328,7 +329,7 @@ namespace CamelotFramework
 			thread->activeBlock = ActiveBlock();
 	}
 
-	void CPUProfiler::beginSamplePrecise(const String& name)
+	void CPUProfiler::beginSamplePrecise(const ProfilerString& name)
 	{
 		// Note: There is a (small) possibility a context switch will happen during this measurement in which case result will be skewed. 
 		// Increasing thread priority might help. This is generally only a problem with code that executes a long time (10-15+ ms - depending on OS quant length)
@@ -360,7 +361,7 @@ namespace CamelotFramework
 		block->precise.beginSample();
 	}
 
-	void CPUProfiler::endSamplePrecise(const String& name)
+	void CPUProfiler::endSamplePrecise(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
@@ -380,7 +381,8 @@ namespace CamelotFramework
 
 		if(block->name != name)
 		{
-			LOGWRN("Mismatched Profiler::endSamplePrecise. Was expecting \"" + block->name + "\" but got \"" + name + "\". Sampling data will not be valid.");
+			LOGWRN("Mismatched Profiler::endSamplePrecise. Was expecting \"" + String(block->name.c_str()) + 
+				"\" but got \"" + String(name.c_str()) + "\". Sampling data will not be valid.");
 			return;
 		}
 #endif
@@ -472,7 +474,7 @@ namespace CamelotFramework
 			CPUProfilerPreciseSamplingEntry* entryPrecise = &preciseEntries[curData.entryIdx];
 
 			// Calculate basic data
-			entryBasic->data.name = curBlock->name;
+			entryBasic->data.name = String(curBlock->name.c_str());
 
 			entryBasic->data.memAllocs = 0;
 			entryBasic->data.memFrees = 0;
@@ -512,7 +514,7 @@ namespace CamelotFramework
 			entryBasic->data.estimatedSelfOverheadMs = mBasicTimerOverhead;
 
 			// Calculate precise data
-			entryPrecise->data.name = curBlock->name;
+			entryPrecise->data.name = String(curBlock->name.c_str());
 
 			entryPrecise->data.memAllocs = 0;
 			entryPrecise->data.memFrees = 0;
@@ -778,8 +780,8 @@ namespace CamelotFramework
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSample("TestAvg#" + toString(i));
-				endSample("TestAvg#" + toString(i));
+				beginSample("TestAvg#" + ProfilerString(toString(i).c_str()));
+				endSample("TestAvg#" + ProfilerString(toString(i).c_str()));
 			}
 
 			endThread();
@@ -829,8 +831,8 @@ namespace CamelotFramework
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSample("TestAvg#" + toString(i));
-				endSample("TestAvg#" + toString(i));
+				beginSample("TestAvg#" + ProfilerString(toString(i).c_str()));
+				endSample("TestAvg#" + ProfilerString(toString(i).c_str()));
 			}
 
 			endThread();
@@ -878,8 +880,8 @@ namespace CamelotFramework
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSamplePrecise("TestAvg#" + toString(i));
-				endSamplePrecise("TestAvg#" + toString(i));
+				beginSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
+				endSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
 			}
 
 			endThread();
@@ -927,8 +929,8 @@ namespace CamelotFramework
 
 			for (UINT32 i = 0; i < sampleReps * 5; i++) 
 			{
-				beginSamplePrecise("TestAvg#" + toString(i));
-				endSamplePrecise("TestAvg#" + toString(i));
+				beginSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
+				endSamplePrecise("TestAvg#" + ProfilerString(toString(i).c_str()));
 			}
 
 			endThread();
