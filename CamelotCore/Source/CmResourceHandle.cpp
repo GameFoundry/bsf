@@ -11,16 +11,19 @@ namespace CamelotFramework
 
 	ResourceHandleBase::ResourceHandleBase()
 	{
-		mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
+		mData = nullptr;
 	}
 
 	bool ResourceHandleBase::isLoaded() const 
 	{ 
-		return (mData->mIsCreated && mData->mPtr != nullptr); 
+		return (mData != nullptr && mData->mIsCreated && mData->mPtr != nullptr); 
 	}
 
 	void ResourceHandleBase::synchronize() const
 	{
+		if(mData == nullptr)
+			return;
+
 		if(!mData->mIsCreated)
 		{
 			CM_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
@@ -33,22 +36,7 @@ namespace CamelotFramework
 		mData->mPtr->synchonize();
 	}
 
-	void ResourceHandleBase::resolve(std::shared_ptr<Resource> ptr) 
-	{ 
-		init(ptr);
-	}
-
-	void ResourceHandleBase::setUUID(const String& uuid) 
-	{ 
-		mData->mUUID = uuid;
-	}
-
-	void ResourceHandleBase::init(Resource* ptr)
-	{
-		init(std::shared_ptr<Resource>(ptr));
-	}
-
-	void ResourceHandleBase::init(std::shared_ptr<Resource> ptr)
+	void ResourceHandleBase::setResourcePtr(std::shared_ptr<Resource> ptr)
 	{
 		mData->mPtr = ptr;
 

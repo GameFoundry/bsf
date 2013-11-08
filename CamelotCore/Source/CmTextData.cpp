@@ -304,35 +304,31 @@ namespace CamelotFramework
 	}
 
 	TextData::TextData(const WString& text, const HFont& font, UINT32 fontSize, UINT32 width, UINT32 height, bool wordWrap)
-		:mFont(font), mBaselineOffset(0), mLineHeight(0), mSpaceWidth(0), mChars(nullptr),
+		:mFont(font), mChars(nullptr), mFontData(nullptr),
 		mNumChars(0), mWords(nullptr), mNumWords(0), mLines(nullptr), mNumLines(0), mPageInfos(nullptr), mNumPageInfos(0), mData(nullptr)
 	{
 		// In order to reduce number of memory allocations algorithm first calculates data into temporary buffers and then copies the results
 		initAlloc();
 
-		const FontData* fontData = nullptr;
 		if(font != nullptr)
 		{
 			UINT32 nearestSize = font->getClosestAvailableSize(fontSize);
-			fontData = font->getFontDataForSize(nearestSize);
+			mFontData = font->getFontDataForSize(nearestSize);
 		}
 
-		if(fontData == nullptr || fontData->texturePages.size() == 0)
+		if(mFontData == nullptr || mFontData->texturePages.size() == 0)
 			return;
 
-		if(fontData->size != fontSize)
+		if(mFontData->size != fontSize)
 		{
-			LOGWRN("Unable to find font with specified size (" + toString(fontSize) + "). Using nearest available size: " + toString(fontData->size));
+			LOGWRN("Unable to find font with specified size (" + toString(fontSize) + "). Using nearest available size: " + toString(mFontData->size));
 		}
 
 		bool widthIsLimited = width > 0;
 		mFont = font;
-		mBaselineOffset = fontData->fontDesc.baselineOffset;
-		mLineHeight = fontData->fontDesc.lineHeight;
-		mSpaceWidth = fontData->fontDesc.spaceWidth;
 
 		UINT32 curLineIdx = allocLine(this);
-		UINT32 curHeight = fontData->fontDesc.lineHeight;
+		UINT32 curHeight = mFontData->fontDesc.lineHeight;
 		UINT32 charIdx = 0;
 
 		while(true)
@@ -341,7 +337,7 @@ namespace CamelotFramework
 				break;
 
 			UINT32 charId = text[charIdx];
-			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
+			const CHAR_DESC& charDesc = mFontData->getCharDesc(charId);
 
 			TextLine* curLine = &LineBuffer[curLineIdx];
 
@@ -352,7 +348,7 @@ namespace CamelotFramework
 				curLineIdx = allocLine(this);
 				curLine = &LineBuffer[curLineIdx];
 
-				curHeight += fontData->fontDesc.lineHeight;
+				curHeight += mFontData->fontDesc.lineHeight;
 
 				charIdx++;
 				continue;
@@ -361,12 +357,12 @@ namespace CamelotFramework
 			if(charId != SPACE_CHAR)
 			{
 				curLine->add(charIdx, charDesc);
-				addCharToPage(charDesc.page, *fontData);
+				addCharToPage(charDesc.page, *mFontData);
 			}
 			else
 			{
 				curLine->addSpace();
-				addCharToPage(0, *fontData);
+				addCharToPage(0, *mFontData);
 			}
 
 			if(widthIsLimited && curLine->getWidth() > width)
@@ -385,7 +381,7 @@ namespace CamelotFramework
 						curLineIdx = allocLine(this);
 						curLine = &LineBuffer[curLineIdx];
 
-						curHeight += fontData->fontDesc.lineHeight;
+						curHeight += mFontData->fontDesc.lineHeight;
 					}
 
 					curLine->addWord(lastWordIdx, lastWord);
@@ -417,7 +413,7 @@ namespace CamelotFramework
 		for(UINT32 i = 0; i < mNumChars; i++)
 		{
 			UINT32 charId = text[i];
-			const CHAR_DESC& charDesc = fontData->getCharDesc(charId);
+			const CHAR_DESC& charDesc = mFontData->getCharDesc(charId);
 
 			mChars[i] = &charDesc;
 		}
@@ -441,6 +437,26 @@ namespace CamelotFramework
 	{
 		if(mData != nullptr)
 			cm_free(mData);
+	}
+
+	const HTexture& TextData::getTextureForPage(UINT32 page) const 
+	{ 
+		return mFontData->texturePages[page]; 
+	}
+
+	INT32 TextData::getBaselineOffset() const 
+	{ 
+		return mFontData->fontDesc.baselineOffset; 
+	}
+
+	UINT32 TextData::getLineHeight() const 
+	{ 
+		return mFontData->fontDesc.lineHeight; 
+	}
+
+	UINT32 TextData::getSpaceWidth() const 
+	{ 
+		return mFontData->fontDesc.spaceWidth; 
 	}
 
 	bool TextData::BuffersInitialized = false;
@@ -532,15 +548,11 @@ namespace CamelotFramework
 		while(page >= NextFreePageInfo)
 		{
 			PageBuffer[NextFreePageInfo].numQuads = 0;
-			PageBuffer[NextFreePageInfo].texture = HTexture();
 
 			NextFreePageInfo++;
 		}
 
 		PageBuffer[page].numQuads++;
-
-		if(PageBuffer[page].texture == nullptr)
-			PageBuffer[page].texture = fontData.texturePages[page];
 	}
 
 	UINT32 TextData::getWidth() const

@@ -272,7 +272,7 @@ int CALLBACK WinMain(
 
 	//Cursor::setCustomCursor(*cursorPixelData, Int2(0, 0));
 
-	dbgCursor.reset();
+	dbgCursor = nullptr;
 
 	/************************************************************************/
 	/* 								EDITOR INIT                      		*/
@@ -304,7 +304,7 @@ int CALLBACK WinMain(
 
 	//testMaterial->destroy();
 #ifdef DX11
-	gpuProgInclude.reset();
+	gpuProgInclude = nullptr;
 #endif
 
 	gResources().unload(testTexRef);
@@ -313,11 +313,11 @@ int CALLBACK WinMain(
 	gResources().unload(vertProgRef);
 	gResources().unload(testMaterial);
 
-	testMaterial.reset();
-	testTexRef.reset();
-	dbgMeshRef.reset();
-	fragProgRef.reset();
-	vertProgRef.reset();
+	testMaterial = nullptr;
+	testTexRef = nullptr;
+	dbgMeshRef = nullptr;
+	fragProgRef = nullptr;
+	vertProgRef = nullptr;
 
 	testModelGO->destroy();
 

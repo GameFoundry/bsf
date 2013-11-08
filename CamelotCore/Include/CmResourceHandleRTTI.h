@@ -10,7 +10,13 @@ namespace CamelotFramework
 	class CM_EXPORT ResourceHandleRTTI : public RTTIType<ResourceHandleBase, IReflectable, ResourceHandleRTTI>
 	{
 	private:
-		String& getUUID(ResourceHandleBase* obj) { return obj->mData->mUUID; }
+		String& getUUID(ResourceHandleBase* obj) 
+		{ 
+			static String Blank = "";
+
+			return obj->mData != nullptr ? obj->mData->mUUID : Blank; 
+		}
+
 		void setUUID(ResourceHandleBase* obj, String& uuid) { obj->mData->mUUID = uuid; } 
 	public:
 		ResourceHandleRTTI()
@@ -29,7 +35,7 @@ namespace CamelotFramework
 				HResource loadedResource = gResources().loadFromUUID(resourceHandle->mData->mUUID);
 
 				if(loadedResource)
-					resourceHandle->resolve(loadedResource.getInternalPtr());
+					resourceHandle->setResourcePtr(loadedResource.getInternalPtr());
 			}
 		}
 
@@ -46,7 +52,10 @@ namespace CamelotFramework
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ResourceHandleBase, PoolAlloc>(new (cm_alloc<ResourceHandleBase, PoolAlloc>()) ResourceHandleBase());
+			std::shared_ptr<ResourceHandleBase> obj = cm_shared_ptr<ResourceHandleBase, PoolAlloc>(new (cm_alloc<ResourceHandleBase, PoolAlloc>()) ResourceHandleBase());
+			obj->mData = cm_shared_ptr<ResourceHandleData>();
+
+			return obj;
 		}
 	};
 }

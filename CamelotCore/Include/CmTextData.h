@@ -113,7 +113,7 @@ namespace CamelotFramework
 		CM_EXPORT UINT32 getNumPages() const { return mNumPageInfos; }
 
 		CM_EXPORT const TextLine& getLine(UINT32 idx) const { return mLines[idx]; }
-		CM_EXPORT const HTexture& getTextureForPage(UINT32 page) const { return mPageInfos[page].texture; }
+		CM_EXPORT const HTexture& getTextureForPage(UINT32 page) const;
 		CM_EXPORT UINT32 getNumQuadsForPage(UINT32 page) const { return mPageInfos[page].numQuads; }
 
 		CM_EXPORT UINT32 getWidth() const;
@@ -122,9 +122,9 @@ namespace CamelotFramework
 	private:
 		friend class TextLine;
 
-		INT32 getBaselineOffset() const { return mBaselineOffset; }
-		UINT32 getLineHeight() const { return mLineHeight; }
-		UINT32 getSpaceWidth() const { return mSpaceWidth; }
+		INT32 getBaselineOffset() const;
+		UINT32 getLineHeight() const;
+		UINT32 getSpaceWidth() const;
 
 		const CHAR_DESC& getChar(UINT32 idx) const { return *mChars[idx]; }
 		const TextWord& getWord(UINT32 idx) const { return mWords[idx]; }
@@ -145,9 +145,7 @@ namespace CamelotFramework
 		void* mData;
 
 		HFont mFont;
-		INT32 mBaselineOffset;
-		UINT32 mLineHeight;
-		UINT32 mSpaceWidth;
+		const FontData* mFontData;
 
 		// Static buffers
 	private:

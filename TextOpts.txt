@@ -2,6 +2,10 @@ Make sure to also update TextSprite and ImageSprite and anything else in UpdateM
 
 Profiler does a lot of allocations of its own which can seriously skew the profiling results. Try to eliminate them all or add alloc/free overhead fields
 
+When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
+ - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
+ - TODO - FIgure this out
+
 TODO: TextData does an extra mem alloc in this bit of code: PageBuffer[NextFreePageInfo].texture = HTexture();, try to avoid it
 
 Performance stats:

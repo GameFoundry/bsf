@@ -36,43 +36,32 @@ namespace CamelotFramework
 		/**
 		 * @brief	Returns the UUID of the resource the handle is referring to.
 		 */
-		const String& getUUID() const { return mData->mUUID; }
+		const String& getUUID() const { return mData != nullptr ? mData->mUUID : StringUtil::BLANK; }
 
 		/**
 		 * @brief	Gets the handle data. For internal use only.
 		 */
-		std::shared_ptr<ResourceHandleData> getHandleData() const { return mData; }
+		const std::shared_ptr<ResourceHandleData>& getHandleData() const { return mData; }
 
 	protected:
 		ResourceHandleBase();
 
 		std::shared_ptr<ResourceHandleData> mData;
 
-		void init(Resource* ptr);
-		void init(std::shared_ptr<Resource> ptr);
+		/**
+		 * @brief	Sets the created flag to true and assigns the resource pointer. Called
+		 * 			by the constructors, or if you constructed just using a UUID, then you need to
+		 * 			call this manually before you can access the resource from this handle.
+		 * 			
+		 * @note	Two set construction is sometimes required due to multithreaded nature of resource loading.
+		 */
+		void setResourcePtr(std::shared_ptr<Resource> ptr);
 
-		template <typename T1>
-		void init(const ResourceHandle<T1>& ptr)
-		{
-			mData = ptr.mData;
-		}
 	private:
 		friend class Resources;
 
 		CM_STATIC_THREAD_SYNCHRONISER(mResourceCreatedCondition)
 		CM_STATIC_MUTEX(mResourceCreatedMutex)
-
-		/**
-		 * @brief	Sets the created flag to true. Should only be called
-		 * 			by Resources class after loading of the resource is fully done.
-		 */
-		void resolve(std::shared_ptr<Resource> ptr);
-
-		/**
-		 * @brief	Sets an uuid of the ResourceHandle. Should only be called by
-		 * 			Resources class.
-		 */
-		void ResourceHandleBase::setUUID(const String& uuid);
 
 	protected:
 		inline void throwIfNotLoaded() const;
@@ -92,7 +81,16 @@ namespace CamelotFramework
 	public:
 		ResourceHandle()
 			:ResourceHandleBase()
-		{	}
+		{ }
+
+		// Note: This constructor requires you to call "resolve" with the actual resource pointer,
+		// before the resource is considered as loaded
+		ResourceHandle(const String& uuid)
+			:ResourceHandleBase()
+		{
+			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
+			mData->mUUID = uuid;
+		}
 
 		template <typename T1>
 		ResourceHandle(const ResourceHandle<T1>& ptr)
@@ -106,29 +104,13 @@ namespace CamelotFramework
 			return ResourceHandle<Resource>(*this); 
 		}
 
-		// TODO Low priority - User can currently try to access these even if resource ptr is not resolved
-		T* get() const 
-		{ 
-			throwIfNotLoaded();
-
-			return reinterpret_cast<T*>(mData->mPtr.get()); 
-		}
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
-		std::shared_ptr<T> getInternalPtr() const
-		{ 
-			throwIfNotLoaded();
-
-			return std::static_pointer_cast<T>(mData->mPtr); 
-		}
-
-		/**
-		 * @brief	Releases the reference held by this handle.
-		 */
-		void reset()
-		{
-			mData = cm_shared_ptr<ResourceHandleData, ScratchAlloc>();
+		ResourceHandle<T>& operator=(std::nullptr_t ptr)
+		{ 	
+			mData = nullptr;
+			return *this;
 		}
 
 		template<class _Ty>
@@ -141,7 +123,21 @@ namespace CamelotFramework
 		// (Why not just directly convert to bool? Because then we can assign pointer to bool and that's weird)
 		operator int CM_Bool_struct<T>::*() const
 		{
-			return (((mData->mPtr != nullptr)) ? &CM_Bool_struct<T>::_Member : 0);
+			return ((mData != nullptr && mData->mPtr != nullptr) ? &CM_Bool_struct<T>::_Member : 0);
+		}
+
+		T* get() const 
+		{ 
+			throwIfNotLoaded();
+
+			return reinterpret_cast<T*>(mData->mPtr.get()); 
+		}
+
+		std::shared_ptr<T> getInternalPtr() const
+		{ 
+			throwIfNotLoaded();
+
+			return std::static_pointer_cast<T>(mData->mPtr); 
 		}
 
 	private:
@@ -150,13 +146,15 @@ namespace CamelotFramework
 		explicit ResourceHandle(T* ptr)
 			:ResourceHandleBase()
 		{
-			init(ptr);
+			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
+			setResourcePtr(std::shared_ptr<Resource>(ptr));
 		}
 
 		ResourceHandle(std::shared_ptr<T> ptr)
 			:ResourceHandleBase()
 		{
-			init(ptr);
+			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
+			setResourcePtr(ptr);
 		}
 	};
 
@@ -169,7 +167,10 @@ namespace CamelotFramework
 	template<class _Ty1, class _Ty2>
 	bool operator==(const ResourceHandle<_Ty1>& _Left, const ResourceHandle<_Ty2>& _Right)
 	{	
-		return (_Left.get() == _Right.get());
+		if(_Left.getHandleData() != nullptr && _Right.getHandleData() != nullptr)
+			return _Left.getHandleData()->mPtr == _Right.getHandleData()->mPtr;
+
+		return _Left.getHandleData() == _Right.getHandleData();
 	}
 
 	template<class _Ty1, class _Ty2>

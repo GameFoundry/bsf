@@ -45,7 +45,7 @@ namespace CamelotFramework
 			
 			// This should be thread safe without any sync primitives, if other threads read a few cycles out of date value
 			// and think this resource isn't created when it really is, it hardly makes any difference
-			resRequest->resource.resolve(resResponse->rawResource);
+			resRequest->resource.setResourcePtr(resResponse->rawResource);
 
 			if(!gResources().metaExists_UUID(resResponse->rawResource->getUUID()))
 			{
@@ -201,8 +201,7 @@ namespace CamelotFramework
 			return HResource();
 		}
 
-		HResource newResource;
-		newResource.setUUID(uuid); // UUID needs to be set immediately if the resource gets loaded async
+		HResource newResource(uuid);
 
 		ResourceLoadRequestPtr resRequest = cm_shared_ptr<Resources::ResourceLoadRequest, ScratchAlloc>();
 		resRequest->filePath = filePath;
