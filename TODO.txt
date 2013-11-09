@@ -11,33 +11,7 @@ Optimization notes:
  - submitToCoreThread calls are EXTREMELY slow. In 10-50ms range.
  - GUIManager updateMeshes seems to be executing every frame
 
- ProfilerOverlay causes a crash when too many elements are present
-  - For a test case, try adding 4-5 begin/endSamples to TextUtility::getTextData
-
-WEIRDNESS:
-In GUIManager in 2 places I compare stuff by address. Make sure to use mesh or material address instead of material group address is isn't completely random
-A lot of stuff is still using GSyncedMainCA but it should be using gMainCA
-
-
-My idea of what is happening:
- Update mesh commands for GUI elements get submitted on sync CA
- Render commands for GUI elements gets submitted non-sync CA
- Update mesh commands are executed before non-sync CA, old render commands now containing wrong mesh/material combinations
-
-
- Temporarily disabled:
- ProfilerOverlay
- Helper windows
- TestTextSprite
- DebugAABoxDraw
- Main menu items
- Window frame
-
-Added a couple of debug logs in GUIManager::render
-
-
-
-
+A lot of stuff is still using GSyncedMainCA but it should be using gMainCA - Find and replace
 
 TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
 

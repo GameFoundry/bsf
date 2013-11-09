@@ -196,7 +196,7 @@ namespace CamelotFramework
 		Zhuang,
 		Chinese,
 		Zulu,
-		Count // Not a language, just a quick way to know total number of languages
+		Count // Number of entries
 	};
 
 	struct LocalizedStringData
@@ -230,7 +230,7 @@ namespace CamelotFramework
 
 		Common* commonData;
 
-		WString concatenateString(WString* parameters, UINT32 numParameterValues) const;
+		void concatenateString(WString& outputString, WString* parameters, UINT32 numParameterValues) const;
 		void updateString(const WString& string);
 	};
 

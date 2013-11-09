@@ -32,8 +32,8 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for(UINT32 i = 0; i < excessEntries; i++)
 			{
-				labelLayout.removeChildAt(labelLayout.getNumChildren() - i - 1); // -1 because last element is flexible space and we want to skip it
-				contentLayout.removeChildAt(contentLayout.getNumChildren() - i - 1); // -1 because last element is flexible space and we want to skip it
+				labelLayout.removeChildAt(labelLayout.getNumChildren() - 2); // -2 because last element is flexible space and we want to skip it
+				contentLayout.removeChildAt(contentLayout.getNumChildren() - 2); // -2 because last element is flexible space and we want to skip it
 
 				ProfilerOverlay::BasicRow& row = rows[curIdx + i];
 

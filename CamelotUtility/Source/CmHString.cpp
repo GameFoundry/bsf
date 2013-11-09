@@ -5,7 +5,7 @@
 namespace CamelotFramework
 {
 	HString::StringData::StringData()
-		:mParameters(nullptr), mIsDirty(true)
+		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)
 	{ }
 
 	HString::StringData::~StringData()
@@ -38,7 +38,10 @@ namespace CamelotFramework
 		mData = cm_shared_ptr<StringData>();
 
 		mData->mStringData = &StringTable::instance().getStringData(L"");
-		mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+
+		if(mData->mStringData->numParameters > 0)
+			mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+
 		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, mData.get()));
 	}
 
@@ -47,7 +50,10 @@ namespace CamelotFramework
 		mData = cm_shared_ptr<StringData>();
 
 		mData->mStringData = &StringTable::instance().getStringData(identifierString);
-		mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+
+		if(mData->mStringData->numParameters > 0)
+			mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+
 		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, mData.get()));
 	}
 
@@ -65,11 +71,20 @@ namespace CamelotFramework
 	{ 
 		if(mData->mIsDirty)
 		{
-			mData->mCachedString = mData->mStringData->concatenateString(mData->mParameters, mData->mStringData->numParameters);
+			if(mData->mParameters != nullptr)
+			{
+				mData->mStringData->concatenateString(mData->mCachedString, mData->mParameters, mData->mStringData->numParameters);
+				mData->mStringPtr = &mData->mCachedString;
+			}
+			else
+			{
+				mData->mStringPtr = &mData->mStringData->string;
+			}
+
 			mData->mIsDirty = false;
 		}
 
-		return mData->mCachedString; 
+		return *mData->mStringPtr; 
 	}
 
 	void HString::setParameter(UINT32 idx, const WString& value)

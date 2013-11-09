@@ -17,28 +17,50 @@ namespace CamelotFramework
 			cm_deleteN(parameterOffsets, numParameters);
 	}
 
-	WString LocalizedStringData::concatenateString(WString* parameters, UINT32 numParameterValues) const
+	void LocalizedStringData::concatenateString(WString& outputString, WString* parameters, UINT32 numParameterValues) const
 	{
-		WStringStream fullString;
-		UINT32 prevIdx = 0;
-
 		// A safeguard in case translated strings have different number of parameters
 		UINT32 actualNumParameters = std::min(numParameterValues, numParameters);
-
+		
 		if(parameters != nullptr)
 		{
+			UINT32 totalNumChars = 0;
+			UINT32 prevIdx = 0;
 			for(UINT32 i = 0; i < actualNumParameters; i++)
 			{
-				fullString<<string.substr(prevIdx, parameterOffsets[i].location - prevIdx);
-				fullString<<parameters[parameterOffsets[i].paramIdx];
+				totalNumChars += (parameterOffsets[i].location - prevIdx) + (UINT32)parameters[parameterOffsets[i].paramIdx].size();;
 
 				prevIdx = parameterOffsets[i].location;
 			}
+
+			totalNumChars += (UINT32)string.size() - prevIdx;
+
+			outputString.resize(totalNumChars);
+			wchar_t* strData = &outputString[0]; // String contiguity required by C++11, but this should work elsewhere as well
+
+			prevIdx = 0;
+			for(UINT32 i = 0; i < actualNumParameters; i++)
+			{
+				UINT32 strSize = parameterOffsets[i].location - prevIdx;
+				memcpy(strData, &string[prevIdx], strSize * sizeof(wchar_t));
+				strData += strSize;
+
+				WString& param = parameters[parameterOffsets[i].paramIdx];
+				memcpy(strData, &param[0], param.size() * sizeof(wchar_t));
+				strData += param.size();
+
+				prevIdx = parameterOffsets[i].location;
+			}
+
+			memcpy(strData, &string[prevIdx], (string.size() - prevIdx) * sizeof(wchar_t));
 		}
+		else
+		{
+			outputString.resize(string.size());
+			wchar_t* strData = &outputString[0]; // String contiguity required by C++11, but this should work elsewhere as well
 
-		fullString<<string.substr(prevIdx, string.size() - prevIdx);
-
-		return fullString.str();
+			memcpy(strData, &string[0], string.size() * sizeof(wchar_t));
+		}
 	}
 
 	void LocalizedStringData::updateString(const WString& _string)

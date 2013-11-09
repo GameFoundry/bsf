@@ -32,6 +32,7 @@ namespace CamelotFramework
 
 			mutable bool mIsDirty;
 			mutable WString mCachedString;
+			mutable WString* mStringPtr;
 
 			void updateString();
 		};
