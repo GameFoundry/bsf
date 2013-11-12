@@ -285,6 +285,8 @@ namespace BansheeEngine
 		{
 			GUIRenderData& renderData = cachedMeshData.second;
 
+			gProfiler().beginSample("UM_A");
+
 			// Check if anything is dirty. If nothing is we can skip the update
 			bool isDirty = renderData.isDirty;
 			renderData.isDirty = false;
@@ -296,6 +298,8 @@ namespace BansheeEngine
 					isDirty = true;
 				}
 			}
+
+			gProfiler().endSample("UM_A");
 
 			if(!isDirty)
 				continue;

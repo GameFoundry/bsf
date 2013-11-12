@@ -2,11 +2,6 @@ Make sure to also update TextSprite and ImageSprite and anything else in UpdateM
 
 Render:
 Each queued command has an AsyncOp which gets constructed whether it is used or not
-mCommands in CommandQueue gets resized a lot
-
-Pass::bindParameters calls multiple GPuParams::createBindableCopy which does dynamic mem alloc
- - Plus GpuParams contains 4 different std::vectors so those are four extra allocations
- - Plus after they're constructed resize() is called on them almost immediately
 
 Strings when setting material params cause an allocation
  - Consider using normal char arrays
@@ -20,15 +15,16 @@ When optimizing UpdateLayout make sure to mark elements that are fully culled as
  - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
  - TODO - FIgure this out
 
- // BindableGpuParams
- // TODO - Make this class non-copyable, only movable
-/*
+FrameAlloc
+   Keeps two internal stacks
+     - One core, one sim
+   coreThreadBegin()
+    - swaps the active stacks
+   coreThreadEnd() - Must be called after Core thread has finished
+    - frees the previously active stack
+   During frame we call alloc()
+  
 
-GpuParams optimization
-- Ensure GpuParams internal data is allocated with a single allocation
-- This means a maximum of two allocations for GpuParams
-When creating bindable copies ensure that both allocations happen on stack
-- Such stack is freed when frame rendering is finished
-- Two stacks will likely be needed, one for data that is currently rendering and another for scheduled data
+Make sure BindableGpuParams are not copyable
 
-*/
+CPUProfiler still uses normal allocator for containers

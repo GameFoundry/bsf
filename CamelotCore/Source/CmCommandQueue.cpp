@@ -30,6 +30,12 @@ namespace CamelotFramework
 	{
 		if(mCommands != nullptr)
 			cm_delete(mCommands);
+
+		while(!mEmptyCommandQueues.empty())
+		{
+			cm_delete(mEmptyCommandQueues.top());
+			mEmptyCommandQueues.pop();
+		}
 	}
 
 	AsyncOp CommandQueueBase::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
@@ -73,7 +79,16 @@ namespace CamelotFramework
 	CamelotFramework::Queue<QueuedCommand>::type* CommandQueueBase::flush()
 	{
 		CamelotFramework::Queue<QueuedCommand>::type* oldCommands = mCommands;
-		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
+
+		if(!mEmptyCommandQueues.empty())
+		{
+			mCommands = mEmptyCommandQueues.top();
+			mEmptyCommandQueues.pop();
+		}
+		else
+		{
+			mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
+		}
 
 		return oldCommands;
 	}
@@ -113,7 +128,7 @@ namespace CamelotFramework
 			commands->pop();
 		}
 
-		cm_delete<PoolAlloc>(commands);
+		mEmptyCommandQueues.push(commands);
 	}
 
 	void CommandQueueBase::playback(CamelotFramework::Queue<QueuedCommand>::type* commands)
@@ -124,7 +139,11 @@ namespace CamelotFramework
 	void CommandQueueBase::cancelAll()
 	{
 		CamelotFramework::Queue<QueuedCommand>::type* commands = flush();
-		cm_delete<PoolAlloc>(commands);
+
+		while(!commands->empty())
+			commands->pop();
+
+		mEmptyCommandQueues.push(commands);
 	}
 
 	bool CommandQueueBase::isEmpty()

@@ -186,6 +186,7 @@ namespace CamelotFramework
 
 	private:
 		CamelotFramework::Queue<QueuedCommand>::type* mCommands;
+		Stack<CamelotFramework::Queue<QueuedCommand>::type*>::type mEmptyCommandQueues; // List of empty queues for reuse
 
 		CM_THREAD_ID_TYPE mMyThreadId;
 

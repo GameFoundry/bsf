@@ -18,6 +18,8 @@
 #include "BsDrawHelper3D.h"
 #include "BsGUIManager.h"
 
+#include "CmProfiler.h"
+
 using namespace CamelotFramework;
 
 namespace BansheeEngine
@@ -40,6 +42,8 @@ namespace BansheeEngine
 
 	void ForwardRenderer::renderAll() 
 	{
+		gProfiler().beginSample("renderA");
+
 		gSceneManager().updateRenderableBounds();
 
 		CoreAccessor& coreAccessor = gMainCA();
@@ -80,6 +84,9 @@ namespace BansheeEngine
 			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
 
+		gProfiler().endSample("renderA");
+		gProfiler().beginSample("renderB");
+
 		// Render everything, target by target
 		for(auto& camerasPerTarget : camerasPerRenderTarget)
 		{
@@ -112,10 +119,14 @@ namespace BansheeEngine
 			coreAccessor.endFrame();
 			coreAccessor.swapBuffers(target);
 		}
+
+		gProfiler().endSample("renderB");
 	}
 
 	void ForwardRenderer::render(const HCamera& camera) 
 	{
+		gProfiler().beginSample("renderC");
+
 		Vector<HRenderable>::type allRenderables;
 		
 		if(!camera->getIgnoreSceneRenderables())
@@ -130,6 +141,9 @@ namespace BansheeEngine
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
 		mRenderQueue->clear();
+
+		gProfiler().endSample("renderC");
+		gProfiler().beginSample("renderD");
 
 		// Get scene render operations
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
@@ -150,6 +164,9 @@ namespace BansheeEngine
 			(*iter)->render(*mRenderQueue);
 		}
 
+		gProfiler().endSample("renderD");
+		gProfiler().beginSample("renderE");
+
 		// Get GUI render operations
 		GUIManager::instance().render(camera->getViewport(), *mRenderQueue);
 
@@ -159,6 +176,9 @@ namespace BansheeEngine
 		// Get debug render operations
 		DrawHelper3D::instance().render(camera, *mRenderQueue);
 		DrawHelper2D::instance().render(camera, *mRenderQueue);
+
+		gProfiler().endSample("renderE");
+		gProfiler().beginSample("renderF");
 
 		// Get any operations from hooked up callbacks
 		const Viewport* viewportRawPtr = camera->getViewport().get();
@@ -171,18 +191,30 @@ namespace BansheeEngine
 		mRenderQueue->sort();
 		const Vector<SortedRenderOp>::type& sortedROps =  mRenderQueue->getSortedRenderOps();
 
+		gProfiler().endSample("renderF");
+
 		for(auto iter = sortedROps.begin(); iter != sortedROps.end(); ++iter)
 		{
+			gProfiler().beginSample("renderG");
+
 			const RenderOperation& renderOp = *iter->baseOperation;
 			HMaterial material = renderOp.material;
 
 			PassPtr pass = material->getPass(iter->passIdx);
 			pass->activate(coreAccessor);
 
+			gProfiler().endSample("renderG");
+			gProfiler().beginSample("renderH");
+
 			PassParametersPtr paramsPtr = material->getPassParameters(iter->passIdx);
 			pass->bindParameters(coreAccessor, paramsPtr);
 
+			gProfiler().endSample("renderH");
+			gProfiler().beginSample("renderI");
+
 			coreAccessor.render(renderOp.mesh.getInternalPtr(), renderOp.submeshIdx);
+
+			gProfiler().endSample("renderI");
 		}
 	}
 }

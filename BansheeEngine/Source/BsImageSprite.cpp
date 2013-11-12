@@ -4,6 +4,8 @@
 #include "BsSpriteTexture.h"
 #include "CmTexture.h"
 
+#include "CmProfiler.h"
+
 using namespace CamelotFramework;
 
 namespace BansheeEngine
@@ -21,6 +23,8 @@ namespace BansheeEngine
 			clearMesh();
 			return;
 		}
+
+		gProfiler().beginSample("UpdateImageSprite");
 
 		// Actually generate a mesh
 		if(mCachedRenderElements.size() < 1)
@@ -230,5 +234,7 @@ namespace BansheeEngine
 		}
 
 		updateBounds();
+
+		gProfiler().endSample("UpdateImageSprite");
 	}
 }

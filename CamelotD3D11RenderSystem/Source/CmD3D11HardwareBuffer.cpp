@@ -4,6 +4,8 @@
 #include "CmException.h"
 #include "CmDebug.h"
 
+#include "CmProfiler.h"
+
 namespace CamelotFramework
 {
 	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize, 
@@ -171,12 +173,14 @@ namespace CamelotFramework
 			D3D11_MAPPED_SUBRESOURCE mappedSubResource;
 			mappedSubResource.pData = NULL;
 			mDevice.clearErrors();
+			gProfiler().beginSample("Map");
 			HRESULT hr = mDevice.getImmediateContext()->Map(mD3DBuffer, 0, mapType, 0, &mappedSubResource);
 			if (FAILED(hr) || mDevice.hasError())
 			{
 				String msg = mDevice.getErrorDescription();
 				CM_EXCEPT(RenderingAPIException, "Error calling Map: " + msg);
 			}
+			gProfiler().endSample("Map");
 
 			pRet = static_cast<void*>(static_cast<char*>(mappedSubResource.pData) + offset);
 

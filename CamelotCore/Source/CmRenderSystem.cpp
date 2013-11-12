@@ -45,6 +45,8 @@ THE SOFTWARE.
 #include "CmMesh.h"
 #include "boost/bind.hpp"
 
+#include "CmProfiler.h"
+
 namespace CamelotFramework {
 
     static const TexturePtr sNullTexPtr;
@@ -214,6 +216,8 @@ namespace CamelotFramework {
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		gProfiler().beginSample("render");
+
 		// sort out clip planes
 		// have to do it here in case of matrix issues
 		if (mClipPlanesDirty)
@@ -239,6 +243,8 @@ namespace CamelotFramework {
 		}
 		else
 			draw(subMesh.vertexData->vertexCount);
+
+		gProfiler().endSample("render");
 	}
 
 	void RenderSystem::swapBuffers(RenderTargetPtr target)
@@ -252,17 +258,30 @@ namespace CamelotFramework {
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		gProfiler().beginSample("writeSubresource");
+
 		resource->writeSubresource(subresourceIdx, *data);
+
+		gProfiler().endSample("writeSubresource");
+
+		gProfiler().beginSample("writeSubresourceB");
+
 		data->unlock();
 		asyncOp.completeOperation();
+
+		gProfiler().endSample("writeSubresourceB");
 	}
 
 	void RenderSystem::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		gProfiler().beginSample("readSubresource");
+
 		resource->readSubresource(subresourceIdx, *data);
 		data->unlock();
 		asyncOp.completeOperation();
+
+		gProfiler().endSample("readSubresource");
 	}
 }
