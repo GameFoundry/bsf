@@ -2,6 +2,7 @@
 #include "CmGpuParamDesc.h"
 #include "CmGpuParamBlock.h"
 #include "CmGpuParamBlockBuffer.h"
+#include "CmBindableGpuParamBlock.h"
 #include "CmVector2.h"
 #include "CmDebug.h"
 #include "CmException.h"
@@ -9,75 +10,97 @@
 namespace CamelotFramework
 {
 	GpuParams::GpuParams(GpuParamDesc& paramDesc)
-		:mParamDesc(paramDesc), mTransposeMatrices(false)
+		:mParamDesc(paramDesc), mTransposeMatrices(false), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0),
+		mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr)
 	{
-		UINT32 numParamBlockSlots = 0;
 		for(auto iter = mParamDesc.paramBlocks.begin(); iter != mParamDesc.paramBlocks.end(); ++iter)
 		{
-			if((iter->second.slot + 1) > numParamBlockSlots)
-				numParamBlockSlots = iter->second.slot + 1;
+			if((iter->second.slot + 1) > mNumParamBlocks)
+				mNumParamBlocks = iter->second.slot + 1;
 		}
 
-		mParamBlocks.resize(numParamBlockSlots, nullptr);
-		mParamBlockBuffers.resize(numParamBlockSlots);
-
-		UINT32 numTextureSlots = 0;
 		for(auto iter = mParamDesc.textures.begin(); iter != mParamDesc.textures.end(); ++iter)
 		{
-			if((iter->second.slot + 1) > numTextureSlots)
-				numTextureSlots = iter->second.slot + 1;
+			if((iter->second.slot + 1) > mNumTextures)
+				mNumTextures = iter->second.slot + 1;
 		}
 
-		mTextures.resize(numTextureSlots);
-
-		UINT32 numSamplerSlots = 0;
 		for(auto iter = mParamDesc.samplers.begin(); iter != mParamDesc.samplers.end(); ++iter)
 		{
-			if((iter->second.slot + 1) > numSamplerSlots)
-				numSamplerSlots = iter->second.slot + 1;
+			if((iter->second.slot + 1) > mNumSamplerStates)
+				mNumSamplerStates = iter->second.slot + 1;
 		}
 
-		mSamplerStates.resize(numSamplerSlots);
+		// Allocate everything in a single block of memory to get rid of extra memory allocations
+		UINT32 paramBlockBufferSize = mNumParamBlocks * sizeof(GpuParamBlock*);
+		UINT32 paramBlockBuffersBufferSize = mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
+		UINT32 textureBufferSize = mNumTextures * sizeof(HTexture);
+		UINT32 samplerStateBufferSize = mNumSamplerStates * sizeof(HSamplerState);
+
+		UINT32 bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
+
+		mData = (UINT8*)cm_alloc(bufferSize);
+		
+		UINT8* dataIter = mData;
+		mParamBlocks = (GpuParamBlock**)dataIter;
+		dataIter += paramBlockBufferSize;
+
+		mParamBlockBuffers = (GpuParamBlockBufferPtr*)dataIter;
+		dataIter += paramBlockBuffersBufferSize;
+
+		mTextures = (HTexture*)dataIter;
+		dataIter += textureBufferSize;
+
+		mSamplerStates = (HSamplerState*)dataIter;
+
+		// Ensure everything is constructed
+		for(UINT32 i = 0; i < mNumParamBlocks; i++)
+		{
+			mParamBlocks[i] = nullptr;
+
+			GpuParamBlockBufferPtr* ptrToIdx = (&mParamBlockBuffers[i]);
+			ptrToIdx = new (&mParamBlockBuffers[i]) GpuParamBlockBufferPtr(nullptr);
+		}
+
+		for(UINT32 i = 0; i < mNumTextures; i++)
+		{
+			HTexture* ptrToIdx = (&mTextures[i]);
+			ptrToIdx = new (&mTextures[i]) HTexture();
+		}
+
+		for(UINT32 i = 0; i < mNumSamplerStates; i++)
+		{
+			HSamplerState* ptrToIdx = (&mSamplerStates[i]);
+			ptrToIdx = new (&mSamplerStates[i]) HSamplerState();
+		}
 	}
 
 	GpuParams::~GpuParams()
 	{
-		for(auto& paramBlock : mParamBlocks)
+		// Ensure everything is destructed
+		for(UINT32 i = 0; i < mNumParamBlocks; i++)
 		{
-			cm_delete<PoolAlloc>(paramBlock);
-		}
-	}
+			if(mParamBlocks[i] != nullptr)
+				cm_delete<PoolAlloc>(mParamBlocks[i]);
 
-	GpuParamBlockBufferPtr GpuParams::getParamBlockBuffer(UINT32 slot) const
-	{
-		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
-		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString((int)mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
+			mParamBlockBuffers[i].~shared_ptr();
 		}
 
-		return mParamBlockBuffers[slot];
-	}
+		for(UINT32 i = 0; i < mNumTextures; i++)
+			mTextures[i].~ResourceHandle();
 
-	GpuParamBlockBufferPtr GpuParams::getParamBlockBuffer(const String& name) const
-	{
-		auto iterFind = mParamDesc.paramBlocks.find(name);
+		for(UINT32 i = 0; i < mNumSamplerStates; i++)
+			mSamplerStates[i].~ResourceHandle();
 
-		if(iterFind == mParamDesc.paramBlocks.end())
-		{
-			LOGWRN("Cannot find parameter block with the name: " + name);
-			return nullptr;
-		}
-
-		return mParamBlockBuffers[iterFind->second.slot];
+		cm_free(mData);
 	}
 
 	void GpuParams::setParamBlockBuffer(UINT32 slot, GpuParamBlockBufferPtr paramBlockBuffer)
 	{
-		if(slot < 0 || slot >= (UINT32)mParamBlocks.size())
+		if(slot < 0 || slot >= mNumParamBlocks)
 		{
 			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString((int)mParamBlocks.size() - 1) + ". Requested: " + toString(slot));
+				toString(mNumParamBlocks - 1) + ". Requested: " + toString(slot));
 		}
 
 		if(mParamBlocks[slot] != nullptr)
@@ -259,17 +282,6 @@ namespace CamelotFramework
 		mTextures[paramIter->second.slot] = val;
 	}
 
-	HTexture GpuParams::getTexture(UINT32 slot)
-	{
-		if(slot < 0 || slot >= (UINT32)mTextures.size())
-		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString((int)mTextures.size() - 1) + ". Requested: " + toString(slot));
-		}
-
-		return mTextures[slot];
-	}
-
 	void GpuParams::setSamplerState(const String& name, const HSamplerState& val)
 	{
 		auto paramIter = mParamDesc.samplers.find(name);
@@ -282,17 +294,6 @@ namespace CamelotFramework
 		mSamplerStates[paramIter->second.slot] = val;
 	}
 
-	HSamplerState GpuParams::getSamplerState(UINT32 slot)
-	{
-		if(slot < 0 || slot >= (UINT32)mSamplerStates.size())
-		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString((int)mSamplerStates.size() - 1) + ". Requested: " + toString(slot));
-		}
-
-		return mSamplerStates[slot];
-	}
-
 	GpuParamDataDesc* GpuParams::getParamDesc(const String& name) const
 	{
 		auto paramIter = mParamDesc.params.find(name);
@@ -302,60 +303,64 @@ namespace CamelotFramework
 		return nullptr;
 	}
 
-	BindableGpuParams GpuParams::createBindableCopy(GpuParamsPtr params)
+	BindableGpuParams GpuParams::createBindableCopy(const GpuParamsPtr& params)
 	{
-		GpuParams* copy = cm_new<GpuParams, ScratchAlloc>(std::ref(params->mParamDesc));
+		// Allocate everything in a single block of memory to get rid of extra memory allocations
+		UINT32 paramBlockBufferSize = params->mNumParamBlocks * sizeof(GpuParamBlock*);
+		UINT32 paramBlockBuffersBufferSize = params->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
+		UINT32 textureBufferSize = params->mNumTextures * sizeof(HTexture);
+		UINT32 samplerStateBufferSize = params->mNumSamplerStates * sizeof(HSamplerState);
 
-		copy->mTransposeMatrices = params->mTransposeMatrices;
-		copy->mSamplerStates = params->mSamplerStates;
-		copy->mTextures = params->mTextures;
-		copy->mParamBlockBuffers =params-> mParamBlockBuffers;
-
-		copy->mParamBlocks.clear();
-		for(auto& paramBlock : params->mParamBlocks)
+		UINT32 bufferSize = sizeof(BindableGpuParamBlock) + paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
+		for(UINT32 i = 0; i < params->mNumParamBlocks; i++)
 		{
-			GpuParamBlock* blockCopy = cm_new<GpuParamBlock, ScratchAlloc>(paramBlock);
-
-			copy->mParamBlocks.push_back(blockCopy);
+			if(params->mParamBlocks[i] != nullptr)
+				bufferSize += params->mParamBlocks[i]->getSize();
 		}
 
-		return BindableGpuParams(copy);
-	}
+		// TODO - Alloc using stack
+		BindableGpuParams bindableParams(params->mParamDesc);
+		bindableParams.mData = (UINT8*)cm_alloc(bufferSize);
+		bindableParams.mNumParamBlocks = params->mNumParamBlocks;
+		bindableParams.mNumTextures = params->mNumTextures;
+		bindableParams.mNumSamplerStates = params->mNumSamplerStates;
 
-	void GpuParams::updateHardwareBuffers()
-	{
-		for(size_t i = 0; i < mParamBlocks.size(); i++)
+		UINT8* dataIter = bindableParams.mData;
+		bindableParams.mParamBlocks = (BindableGpuParamBlock**)dataIter;
+		dataIter += paramBlockBufferSize;
+
+		bindableParams.mParamBlockBuffers = (GpuParamBlockBufferPtr*)dataIter;
+		dataIter += paramBlockBuffersBufferSize;
+
+		bindableParams.mTextures = (HTexture*)dataIter;
+		dataIter += textureBufferSize;
+
+		bindableParams.mSamplerStates = (HSamplerState*)dataIter;
+		dataIter += samplerStateBufferSize;
+
+		// Copy data
+		memcpy(bindableParams.mParamBlocks, params->mParamBlocks, paramBlockBufferSize);
+		memcpy(bindableParams.mParamBlockBuffers, params->mParamBlockBuffers, paramBlockBuffersBufferSize);
+		memcpy(bindableParams.mTextures, params->mTextures, textureBufferSize);
+		memcpy(bindableParams.mSamplerStates, params->mSamplerStates, samplerStateBufferSize);
+
+		for(UINT32 i = 0; i < params->mNumParamBlocks; i++)
 		{
-			if(mParamBlocks[i] != nullptr && mParamBlockBuffers[i] != nullptr)
+			if(params->mParamBlocks[i] != nullptr)
 			{
-				if(mParamBlocks[i]->isDirty())
-					mParamBlocks[i]->uploadToBuffer(mParamBlockBuffers[i]);
+				UINT32 bufferSize = params->mParamBlocks[i]->getSize();
+				bindableParams.mParamBlocks[i] = (BindableGpuParamBlock*)dataIter;
+				dataIter += sizeof(BindableGpuParamBlock);
+
+				bindableParams.mParamBlocks[i]->mData = dataIter;
+				dataIter += bufferSize;
+
+				memcpy(bindableParams.mParamBlocks[i]->mData, params->mParamBlocks[i]->getData(), bufferSize);
+				bindableParams.mParamBlocks[i]->mSize = bufferSize;
+				bindableParams.mParamBlocks[i]->mDirty = params->mParamBlocks[i]->isDirty();
 			}
 		}
-	}
 
-	void GpuParams::releaseBindableCopy(BindableGpuParams& bindableParams)
-	{
-		cm_delete<ScratchAlloc>(bindableParams.mParams);
-	}
-
-	BindableGpuParams::BindableGpuParams(GpuParams* params)
-		:mParams(params), mIsDataOwner(true)
-	{
-
-	}
-
-	BindableGpuParams::~BindableGpuParams()
-	{
-		if(mIsDataOwner)
-			GpuParams::releaseBindableCopy(*this);
-	}
-
-	BindableGpuParams::BindableGpuParams(const BindableGpuParams& source)
-	{
-		mParams = source.mParams;
-
-		mIsDataOwner = true;
-		source.mIsDataOwner = false;
+		return bindableParams;
 	}
 }

@@ -10,6 +10,8 @@
 #include "CmAsyncOp.h"
 #include "CmAABox.h"
 
+#include "CmProfiler.h"
+
 namespace CamelotFramework
 {
 	Mesh::Mesh()
@@ -67,6 +69,7 @@ namespace CamelotFramework
 				mVertexData->vertexDeclaration->getVertexSize(i),
 				mVertexData->vertexCount,
 				GBU_STATIC);
+
 
 			mVertexData->setBuffer(i, vertexBuffer);
 

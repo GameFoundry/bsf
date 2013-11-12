@@ -51,6 +51,7 @@ namespace CamelotFramework
 		Platform::startUp();
 		MemStack::setupHeap(HID_Main);
 
+		Profiler::startUp(cm_new<Profiler>());
 		StringTable::startUp(cm_new<StringTable>());
 		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
 		Time::startUp(cm_new<Time>());
@@ -186,6 +187,7 @@ namespace CamelotFramework
 		DeferredCallManager::shutDown();
 		StringTable::shutDown();
 
+		Profiler::shutDown();
 		Platform::shutDown();
 	}
 

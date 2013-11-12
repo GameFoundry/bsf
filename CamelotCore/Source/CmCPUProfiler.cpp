@@ -268,7 +268,10 @@ namespace CamelotFramework
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr || !thread->isActive)
+		{
 			beginThread("Unknown");
+			thread = ThreadInfo::activeThread;
+		}
 
 		ProfiledBlock* parent = thread->activeBlock.block;
 		ProfiledBlock* block = nullptr;

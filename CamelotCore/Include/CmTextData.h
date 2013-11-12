@@ -9,6 +9,9 @@ namespace CamelotFramework
 	class TextData
 	{
 	private:
+		/**
+		 * @note	Due to the way allocation is handled, this class is not allowed to have a destructor.
+		 */
 		class TextWord
 		{
 		public:
@@ -36,6 +39,9 @@ namespace CamelotFramework
 			UINT32 mSpaceWidth;
 		};
 
+		/**
+		 * @note	Due to the way allocation is handled, this class is not allowed to have a destructor.
+		 */
 		struct PageInfo
 		{
 			UINT32 numQuads;
@@ -43,6 +49,9 @@ namespace CamelotFramework
 		};
 
 	public:
+		/**
+		 * @note	Due to the way allocation is handled, this class is not allowed to have a destructor.
+		 */
 		class CM_EXPORT TextLine
 		{
 		public:

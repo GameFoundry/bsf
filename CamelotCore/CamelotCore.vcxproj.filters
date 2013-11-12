@@ -483,6 +483,12 @@
     <ClInclude Include="Include\CmTextData.h">
       <Filter>Header Files\Text</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmBindableGpuParams.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmBindableGpuParamBlock.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -748,6 +754,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmTextData.cpp">
       <Filter>Source Files\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmBindableGpuParams.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmBindableGpuParamBlock.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

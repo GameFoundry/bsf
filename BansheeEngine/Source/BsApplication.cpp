@@ -51,7 +51,6 @@ namespace BansheeEngine
 		DrawHelper3D::startUp(cm_new<DrawHelper3D>());
 
 		EngineGUI::startUp(cm_new<EngineGUI>());
-		Profiler::startUp(cm_new<Profiler>());
 
 		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
 	}
@@ -65,7 +64,6 @@ namespace BansheeEngine
 	{
 		CM::gApplication().mainLoopCallback.disconnect(updateCallbackConn);
 
-		Profiler::shutDown();
 		EngineGUI::shutDown();
 
 		DrawHelper3D::shutDown();

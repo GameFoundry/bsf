@@ -1,5 +1,0 @@
-Make sure to also update TextSprite and ImageSprite and anything else in UpdateMesh, then don't forget to find the issue that causes elements to get marked as dirty every single frame
-
-When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
- - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
- - TODO - FIgure this out

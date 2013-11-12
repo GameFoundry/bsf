@@ -130,6 +130,7 @@ namespace CamelotFramework {
 	class GpuResource;
 	class GpuResourceData;
 	class BindableGpuParams;
+	class BindableGpuParamBlock;
 	struct RenderOperation;
 	class RenderQueue;
 	struct ProfilerReport;

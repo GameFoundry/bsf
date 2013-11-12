@@ -272,6 +272,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\CmBindableGpuParamBlock.h" />
+    <ClInclude Include="Include\CmBindableGpuParams.h" />
     <ClInclude Include="Include\CmCoreThread.h" />
     <ClInclude Include="Include\CmCPUProfiler.h" />
     <ClInclude Include="Include\CmDefaultRenderQueue.h" />
@@ -404,6 +406,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmMaterialManager.cpp" />
+    <ClCompile Include="Source\CmBindableGpuParamBlock.cpp" />
+    <ClCompile Include="Source\CmBindableGpuParams.cpp" />
     <ClCompile Include="Source\CmCoreThread.cpp" />
     <ClCompile Include="Source\CmCPUProfiler.cpp" />
     <ClCompile Include="Source\CmDefaultRenderQueue.cpp" />

@@ -21,7 +21,7 @@
 #include "CmD3D11InputLayoutManager.h"
 #include "CmD3D11HLSLProgram.h"
 #include "CmD3D11RenderUtility.h"
-#include "CmGpuParams.h"
+#include "CmBindableGpuParams.h"
 #include "CmCoreThread.h"
 #include "CmDebug.h"
 #include "CmException.h"
@@ -468,14 +468,13 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		GpuParams& params = bindableParams.getParams();
-		params.updateHardwareBuffers();
+		bindableParams.updateHardwareBuffers();
 
-		const GpuParamDesc& paramDesc = params.getParamDesc();
+		const GpuParamDesc& paramDesc = bindableParams.getParamDesc();
 		
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = params.getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = bindableParams.getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -485,7 +484,7 @@ namespace CamelotFramework
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = params.getTexture(iter->second.slot);
+			HTexture texture = bindableParams.getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
@@ -499,7 +498,7 @@ namespace CamelotFramework
 
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockBufferPtr currentBlockBuffer = params.getParamBlockBuffer(iter->second.slot);
+			GpuParamBlockBufferPtr currentBlockBuffer = bindableParams.getParamBlockBuffer(iter->second.slot);
 
 			if(currentBlockBuffer != nullptr)
 			{

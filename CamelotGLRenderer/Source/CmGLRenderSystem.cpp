@@ -303,15 +303,14 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		GpuParams& params = bindableParams.getParams();
-		params.updateHardwareBuffers();
-		const GpuParamDesc& paramDesc = params.getParamDesc();
+		bindableParams.updateHardwareBuffers();
+		const GpuParamDesc& paramDesc = bindableParams.getParamDesc();
 		GLSLGpuProgramPtr activeProgram = getActiveProgram(gptype);
 		GLuint glProgram = activeProgram->getGLSLProgram()->getGLHandle();
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = params.getTexture(iter->second.slot);
+			HTexture texture = bindableParams.getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
@@ -322,7 +321,7 @@ namespace CamelotFramework
 		UINT32 texUnit = 0;
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = params.getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = bindableParams.getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -339,7 +338,7 @@ namespace CamelotFramework
 		UINT32 blockBinding = 0;
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockBufferPtr paramBlockBuffer = params.getParamBlockBuffer(iter->second.slot);
+			GpuParamBlockBufferPtr paramBlockBuffer = bindableParams.getParamBlockBuffer(iter->second.slot);
 			if(paramBlockBuffer == nullptr)
 				continue;
 

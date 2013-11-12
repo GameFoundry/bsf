@@ -58,10 +58,4 @@ namespace CamelotFramework
 
 		mDirty = true;
 	}
-
-	void GpuParamBlock::uploadToBuffer(GpuParamBlockBufferPtr buffer)
-	{
-		buffer->writeData(mData);
-		mDirty = false;
-	}
 }

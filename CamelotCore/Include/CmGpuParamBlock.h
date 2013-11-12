@@ -17,12 +17,6 @@ namespace CamelotFramework
 		void write(UINT32 offset, const void* data, UINT32 size);
 		void zeroOut(UINT32 offset, UINT32 size);
 
-		/**
-		 * @brief	Uploads the current data to the specified buffer, and marks the block a non-dirty.
-		 * 			Should only be called from the core thread.
-		 */
-		void uploadToBuffer(GpuParamBlockBufferPtr buffer);
-
 		UINT32 getSize() const { return mSize; }
 		UINT8* getData() const { return mData; }
 		bool isDirty() const { return mDirty; }

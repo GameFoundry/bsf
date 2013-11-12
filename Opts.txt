@@ -1,0 +1,34 @@
+Make sure to also update TextSprite and ImageSprite and anything else in UpdateMesh, then don't forget to find the issue that causes elements to get marked as dirty every single frame
+
+Render:
+Each queued command has an AsyncOp which gets constructed whether it is used or not
+mCommands in CommandQueue gets resized a lot
+
+Pass::bindParameters calls multiple GPuParams::createBindableCopy which does dynamic mem alloc
+ - Plus GpuParams contains 4 different std::vectors so those are four extra allocations
+ - Plus after they're constructed resize() is called on them almost immediately
+
+Strings when setting material params cause an allocation
+ - Consider using normal char arrays
+ - Or ensure materials are set using some smarter way, e.g. you get material param reference by name, you save it and then use that for setting the value
+
+HardwareBuffer::lock (more exactly ImmediateContext::Map) is very slow, with 35 calls taking up almost 3ms. 
+ - First, mesh creates both vertex and index buffer whenever writeSubresource is called!!! It should instead just update them.
+ - Second, mesh buffers are created with default buffer flags (static). Try changing it to dynamic
+
+When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
+ - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
+ - TODO - FIgure this out
+
+ // BindableGpuParams
+ // TODO - Make this class non-copyable, only movable
+/*
+
+GpuParams optimization
+- Ensure GpuParams internal data is allocated with a single allocation
+- This means a maximum of two allocations for GpuParams
+When creating bindable copies ensure that both allocations happen on stack
+- Such stack is freed when frame rendering is finished
+- Two stacks will likely be needed, one for data that is currently rendering and another for scheduled data
+
+*/
