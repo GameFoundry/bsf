@@ -49,7 +49,7 @@ namespace CamelotFramework
 	void Application::startUp(START_UP_DESC& desc)
 	{
 		Platform::startUp();
-		MemStack::setupHeap(HID_Main);
+		MemStack::beginThread();
 
 		Profiler::startUp(cm_new<Profiler>());
 		StringTable::startUp(cm_new<StringTable>());
@@ -188,6 +188,7 @@ namespace CamelotFramework
 		StringTable::shutDown();
 
 		Profiler::shutDown();
+		MemStack::endThread();
 		Platform::shutDown();
 	}
 

@@ -95,13 +95,13 @@ namespace BansheeEngine
 
 		if(mChildren.size() > 0)
 		{
-			processedElements = stackAllocN<bool>((UINT32)mChildren.size(), HID_Main);
+			processedElements = stackAllocN<bool>((UINT32)mChildren.size());
 			memset(processedElements, 0, mChildren.size() * sizeof(bool));
 
-			elementSizes = stackAllocN<UINT32>((UINT32)mChildren.size(), HID_Main);
+			elementSizes = stackAllocN<UINT32>((UINT32)mChildren.size());
 			memset(elementSizes, 0, mChildren.size() * sizeof(UINT32));
 
-			elementScaleWeights = stackAllocN<float>((UINT32)mChildren.size(), HID_Main);
+			elementScaleWeights = stackAllocN<float>((UINT32)mChildren.size());
 			memset(elementScaleWeights, 0, mChildren.size() * sizeof(float));
 		}
 
@@ -401,13 +401,13 @@ namespace BansheeEngine
 		}
 
 		if(elementScaleWeights != nullptr)
-			stackDeallocLast(elementScaleWeights, HID_Main);
+			stackDeallocLast(elementScaleWeights);
 
 		if(elementSizes != nullptr)
-			stackDeallocLast(elementSizes, HID_Main);
+			stackDeallocLast(elementSizes);
 
 		if(processedElements != nullptr)
-			stackDeallocLast(processedElements, HID_Main);
+			stackDeallocLast(processedElements);
 
 		_markAsClean();
 	}

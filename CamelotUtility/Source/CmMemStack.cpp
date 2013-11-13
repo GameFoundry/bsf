@@ -3,48 +3,46 @@
 
 namespace CamelotFramework
 {
-	MemStackInternal<1024 * 1024> MemStack::mStacks[256];
+	MemStackInternal<1024 * 1024>* MemStack::ThreadMemStack = nullptr;
 
-#if CM_DEBUG_MODE
-	CM_THREAD_ID_TYPE MemStack::mThreadIds[256];
-#endif
-
-	void MemStack::setupHeap(UINT8 heapId)
+	void MemStack::beginThread()
 	{
-		assert(heapId < 256);
+		if(ThreadMemStack != nullptr)
+			endThread();
 
-		mStacks[heapId] = MemStackInternal<1024 * 1024>();
-
-#if CM_DEBUG_MODE
-		mThreadIds[heapId] = CM_THREAD_CURRENT_ID;
-#endif
+		ThreadMemStack = cm_new<MemStackInternal<1024 * 1024>>();
 	}
 
-	UINT8* MemStack::alloc(UINT32 numBytes, UINT32 heapId)
+	void MemStack::endThread()
 	{
-#if CM_DEBUG_MODE
-		assert(mThreadIds[heapId] == CM_THREAD_CURRENT_ID && "Accessing a heap from an invalid thread.");
-#endif
-
-		return mStacks[heapId].alloc(numBytes);
+		if(ThreadMemStack != nullptr)
+		{
+			cm_delete(ThreadMemStack);
+			ThreadMemStack = nullptr;
+		}
 	}
 
-	void MemStack::deallocLast(UINT8* data, UINT32 heapId)
+	UINT8* MemStack::alloc(UINT32 numBytes)
 	{
-#if CM_DEBUG_MODE
-		assert(mThreadIds[heapId] == CM_THREAD_CURRENT_ID && "Accessing a heap from an invalid thread.");
-#endif
+		assert(ThreadMemStack != nullptr && "Stack allocation failed. Did you call beginThread?");
 
-		mStacks[heapId].dealloc(data);
+		return ThreadMemStack->alloc(numBytes);
 	}
 
-	UINT8* stackAlloc(UINT32 numBytes, UINT32 heapId)
+	void MemStack::deallocLast(UINT8* data)
 	{
-		return MemStack::alloc(numBytes, heapId);
+		assert(ThreadMemStack != nullptr && "Stack deallocation failed. Did you call beginThread?");
+
+		ThreadMemStack->dealloc(data);
 	}
 
-	void stackDeallocLast(void* data, UINT32 heapId)
+	UINT8* stackAlloc(UINT32 numBytes)
 	{
-		return MemStack::deallocLast((UINT8*)data, heapId);
+		return MemStack::alloc(numBytes);
+	}
+
+	void stackDeallocLast(void* data)
+	{
+		return MemStack::deallocLast((UINT8*)data);
 	}
 }

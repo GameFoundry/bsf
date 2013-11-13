@@ -52,6 +52,8 @@ namespace CamelotFramework
 	void CoreThread::runCoreThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
+		MemStack::beginThread();
+
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
 		mSyncedCoreAccessor = cm_new<CoreThreadAccessor<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
 
@@ -73,7 +75,10 @@ namespace CamelotFramework
 				while(mCommandQueue->isEmpty())
 				{
 					if(mCoreThreadShutdown)
+					{
+						MemStack::endThread();
 						return;
+					}
 
 					CM_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock);
 				}
@@ -86,6 +91,7 @@ namespace CamelotFramework
 		}
 
 		cm_delete(mSyncedCoreAccessor);
+		MemStack::endThread();
 #endif
 	}
 

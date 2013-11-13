@@ -7,14 +7,6 @@ Strings when setting material params cause an allocation
  - Consider using normal char arrays
  - Or ensure materials are set using some smarter way, e.g. you get material param reference by name, you save it and then use that for setting the value
 
-HardwareBuffer::lock (more exactly ImmediateContext::Map) is very slow, with 35 calls taking up almost 3ms. 
- - First, mesh creates both vertex and index buffer whenever writeSubresource is called!!! It should instead just update them.
- - Second, mesh buffers are created with default buffer flags (static). Try changing it to dynamic
-
-When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
- - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
- - TODO - FIgure this out
-
 FrameAlloc
    Keeps two internal stacks
      - One core, one sim
@@ -24,13 +16,20 @@ FrameAlloc
     - frees the previously active stack
    During frame we call alloc()
   
-
 Make sure BindableGpuParams are not copyable
-
-CPUProfiler still uses normal allocator for containers
 
 Refactor stack allocator so I don't need to manually initialize heaps
  - Use atomic variable counter?
 
  There is a shit-ton of allocations in CPUProfiler (especially report generation)
   - Maybe attempt to cut down on them?
+
+--------------------
+
+HardwareBuffer::lock (more exactly ImmediateContext::Map) is very slow, with 35 calls taking up almost 3ms. 
+ - First, mesh creates both vertex and index buffer whenever writeSubresource is called!!! It should instead just update them.
+ - Second, mesh buffers are created with default buffer flags (static). Try changing it to dynamic
+
+When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
+ - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
+ - TODO - FIgure this out

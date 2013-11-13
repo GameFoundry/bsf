@@ -6,6 +6,13 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	Memory stack.
+	 *
+	 *  @tparam	BlockCapacity Minimum size of a block. Larger blocks mean less memory allocations, but also potentially
+	 * 			more wasted memory. If an allocation requests more bytes than BlockCapacity, first largest multiple is
+	 * 			used instead.
+	 */
 	template <int BlockCapacity = 1024 * 1024>
 	class MemStackInternal
 	{
@@ -15,14 +22,10 @@ namespace CamelotFramework
 		public:
 			MemBlock(UINT32 size)
 				:mData(nullptr), mFreePtr(0), mSize(size)
-			{
-				mData = static_cast<UINT8*>(cm_alloc(mSize));
-			}
+			{ }
 
 			~MemBlock()
-			{
-				cm_free(mData);
-			}
+			{ }
 
 			UINT8* alloc(UINT8 amount)
 			{
@@ -56,64 +59,79 @@ namespace CamelotFramework
 				MemBlock* curPtr = mBlocks.top();
 				mBlocks.pop();
 
-				cm_delete(curPtr);
+				deallocBlock(curPtr);
 			}
 		}
 
 		UINT8* alloc(UINT32 amount)
 		{
+			amount += sizeof(UINT32);
+
 			MemBlock* topBlock;
 			if(mBlocks.size() == 0)
-				topBlock = allocNewBlock(amount);
+				topBlock = allocBlock(amount);
 			else
 				topBlock = mBlocks.top();
 
-			mAllocSizes.push(amount);
-
+			MemBlock* memBlock = nullptr;
 			UINT32 freeMem = topBlock->mSize - topBlock->mFreePtr;
 			if(amount <= freeMem)
-				return topBlock->alloc(amount);
+				memBlock = topBlock;
+			else
+				memBlock = allocBlock(amount);
 
-			MemBlock* newBlock = allocNewBlock(amount);
-			return newBlock->alloc(amount);
+			UINT8* data = memBlock->alloc(amount);
+
+			UINT32* storedSize = reinterpret_cast<UINT32*>(data);
+			*storedSize = amount;
+
+			return data + sizeof(UINT32);
 		}
 
 		void dealloc(UINT8* data)
 		{
-			assert(mAllocSizes.size() > 0 && "Out of order stack deallocation detected. Deallocations need to happen in order opposite of allocations.");
+			data -= sizeof(UINT32);
 
-			UINT32 amount = mAllocSizes.top();
-			mAllocSizes.pop();
+			UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 
 			MemBlock* topBlock = mBlocks.top();
-			topBlock->dealloc(data, amount);
+			topBlock->dealloc(data, *storedSize);
 
 			if(topBlock->mFreePtr == 0)
 			{
-				cm_delete(topBlock);
+				deallocBlock(topBlock);
 				mBlocks.pop();
 			}
 		}
 
 	private:
 		std::stack<MemBlock*> mBlocks;
-		std::stack<UINT32> mAllocSizes;
 
-		MemBlock* allocNewBlock(UINT32 wantedSize)
+		MemBlock* allocBlock(UINT32 wantedSize)
 		{
 			UINT32 blockSize = BlockCapacity;
 			if(wantedSize > blockSize)
 				blockSize = wantedSize;
 
-			MemBlock* newBlock = cm_new<MemBlock>(blockSize);
+			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(cm_alloc(blockSize + sizeof(MemBlock)));
+			MemBlock* newBlock = new (data) MemBlock(blockSize);
+			data += sizeof(MemBlock);
+			newBlock->mData = data;
+
 			mBlocks.push(newBlock);
 
 			return newBlock;
 		}
+
+		void deallocBlock(MemBlock* block)
+		{
+			block->~MemBlock();
+			cm_free(block);
+		}
 	};
 
 	/**
-	 * @brief	Fastest, but also most limiting type of allocator. All deallocations
+	 * @brief	One of the fastest, but also very limiting type of allocator. All deallocations
 	 * 			must happen in opposite order from allocations. 
 	 * 			
 	 * @note	It's mostly useful when you need to allocate something temporarily on the heap,
@@ -121,55 +139,49 @@ namespace CamelotFramework
 	 * 			
 	 *			Each allocation comes with a pretty hefty 4 byte memory overhead, so don't use it for small allocations. 
 	 *			
-	 *			Operations done on a single heap are thread safe. Multiple threads are not allowed to access a heap that wasn't
-	 *			created for them.
-	 *
-	 * @tparam	BlockCapacity Minimum size of a block. Larger blocks mean less memory allocations, but also potentially
-	 * 						  more wasted memory. If an allocation requests more bytes than BlockCapacity, first largest multiple is
-	 * 						  used instead.
-	 * @tparam	VectorAligned If true, all allocations will be aligned to 16bit boundaries.
+	 *			This class is thread safe but you cannot allocate on one thread and deallocate on another. Threads will keep
+	 *			separate stacks internally. Make sure to call beginThread/endThread for any thread this stack is used on.
 	 */
-	class CM_UTILITY_EXPORT MemStack
+	class MemStack
 	{
 	public:
 		/**
-		 * @brief	Sets up the heap you can later use with alloc/dealloc calls. It is most common to have one heap
-		 * 			per thread.
-		 *
-		 * @param	heapId	Unique heap ID. Each heap can only be used from one thread, it cannot be shared.
-		 * 					You cannot have more than 256 heaps.
+		 * @brief	Sets up the stack with the currently active thread. You need to call this
+		 * 			on any thread before doing any allocations or deallocations 
 		 */
-		static void setupHeap(UINT8 heapId);
+		static CM_UTILITY_EXPORT void beginThread();
 
-		static UINT8* alloc(UINT32 numBytes, UINT32 heapId);
-		static void deallocLast(UINT8* data, UINT32 heapId);
+		/**
+		 * @brief	Cleans up the stack for the current thread. You may not perform any allocations or deallocations
+		 * 			after this is called, unless you call beginThread again.
+		 */
+		static CM_UTILITY_EXPORT void endThread();
+
+		static CM_UTILITY_EXPORT UINT8* alloc(UINT32 numBytes);
+		static CM_UTILITY_EXPORT void deallocLast(UINT8* data);
 
 	private:
-		static MemStackInternal<1024 * 1024> mStacks[256];
-
-#if CM_DEBUG_MODE
-		static CM_THREAD_ID_TYPE mThreadIds[256];
-#endif
+		static CM_THREADLOCAL MemStackInternal<1024 * 1024>* ThreadMemStack;
 	};
 
-	CM_UTILITY_EXPORT inline UINT8* stackAlloc(UINT32 numBytes, UINT32 heapId);
+	CM_UTILITY_EXPORT inline UINT8* stackAlloc(UINT32 numBytes);
 
 	template<class T>
-	T* stackAlloc(UINT32 heapId)
+	T* stackAlloc()
 	{
-		return (T*)MemStack::alloc(sizeof(T), heapId);
+		return (T*)MemStack::alloc(sizeof(T));
 	}
 
 	template<class T>
-	T* stackAllocN(UINT32 count, UINT32 heapId)
+	T* stackAllocN(UINT32 count)
 	{
-		return (T*)MemStack::alloc(sizeof(T) * count, heapId);
+		return (T*)MemStack::alloc(sizeof(T) * count);
 	}
 
 	template<class T>
-	T* stackConstructN(UINT32 count, UINT32 heapId)
+	T* stackConstructN(UINT32 count)
 	{
-		T* data = stackAllocN<T>(count, heapId);
+		T* data = stackAllocN<T>(count);
 
 		for(unsigned int i = 0; i < count; i++)
 			new ((void*)&data[i]) T;
@@ -178,21 +190,21 @@ namespace CamelotFramework
 	}
 
 	template<class T>
-	void stackDestruct(T* data, UINT32 heapId)
+	void stackDestruct(T* data)
 	{
 		data->~T();
 
-		MemStack::deallocLast((UINT8*)data, heapId);
+		MemStack::deallocLast((UINT8*)data);
 	}
 
 	template<class T>
-	void stackDestructN(T* data, UINT32 count, UINT32 heapId)
+	void stackDestructN(T* data, UINT32 count)
 	{
 		for(unsigned int i = 0; i < count; i++)
 			data[i].~T();
 
-		MemStack::deallocLast((UINT8*)data, heapId);
+		MemStack::deallocLast((UINT8*)data);
 	}
 
-	CM_UTILITY_EXPORT inline void stackDeallocLast(void* data, UINT32 heapId);
+	CM_UTILITY_EXPORT inline void stackDeallocLast(void* data);
 }

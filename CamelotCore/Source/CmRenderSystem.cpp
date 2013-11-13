@@ -74,8 +74,6 @@ namespace CamelotFramework {
 	{
 		mPrimaryWindowDesc = primaryWindowDesc;
 
-		MemStack::setupHeap(HID_Render);
-
 		AsyncOp op = gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);
 		return op.getReturnValue<RenderWindowPtr>();
 	}

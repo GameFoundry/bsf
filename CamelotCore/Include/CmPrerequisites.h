@@ -60,14 +60,8 @@
 
 #include "CmMemAllocCategories.h"
 
-namespace CamelotFramework {
-
-	enum HeapID
-	{
-		HID_Main = 0,
-		HID_Render = 1
-	};
-
+namespace CamelotFramework 
+{
 // Pre-declare classes
 // Allows use of pointers in header files without including individual .h
 // so decreases dependencies between files
