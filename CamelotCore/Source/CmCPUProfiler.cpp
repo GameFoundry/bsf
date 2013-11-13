@@ -170,7 +170,7 @@ namespace CamelotFramework
 		}
 
 		isActive = false;
-		activeBlocks = Stack<ActiveBlock>::type();
+		activeBlocks = ProfilerStack<ActiveBlock>::type();
 		activeBlock = ActiveBlock();
 	}
 
@@ -431,15 +431,15 @@ namespace CamelotFramework
 
 			ProfiledBlock* parentBlock;
 			UINT32 entryIdx;
-			Vector<UINT32>::type childIndexes;
+			ProfilerVector<UINT32>::type childIndexes;
 		};
 
-		Vector<CPUProfilerBasicSamplingEntry>::type basicEntries;
-		Vector<CPUProfilerPreciseSamplingEntry>::type preciseEntries;	
+		ProfilerVector<CPUProfilerBasicSamplingEntry>::type basicEntries;
+		ProfilerVector<CPUProfilerPreciseSamplingEntry>::type preciseEntries;	
 
 		// Fill up flatHierarchy array in a way so we always process children before parents
-		Stack<UINT32>::type todo;
-		Vector<TempEntry>::type flatHierarchy;
+		ProfilerStack<UINT32>::type todo;
+		ProfilerVector<TempEntry>::type flatHierarchy;
 
 		UINT32 entryIdx = 0;
 		todo.push(entryIdx);
@@ -558,9 +558,9 @@ namespace CamelotFramework
 		}
 
 		// Prune empty basic entries
-		Stack<UINT32>::type finalBasicHierarchyTodo;
-		Stack<UINT32>::type parentBasicEntryIndexes;
-		Vector<TempEntry>::type newBasicEntries;
+		ProfilerStack<UINT32>::type finalBasicHierarchyTodo;
+		ProfilerStack<UINT32>::type parentBasicEntryIndexes;
+		ProfilerVector<TempEntry>::type newBasicEntries;
 
 		finalBasicHierarchyTodo.push(0);
 
@@ -600,7 +600,7 @@ namespace CamelotFramework
 
 		if(newBasicEntries.size() > 0)
 		{
-			Vector<CPUProfilerBasicSamplingEntry*>::type finalBasicEntries;
+			ProfilerVector<CPUProfilerBasicSamplingEntry*>::type finalBasicEntries;
 
 			report.mBasicSamplingRootEntry = basicEntries[newBasicEntries[0].entryIdx];
 			finalBasicEntries.push_back(&report.mBasicSamplingRootEntry);
@@ -632,9 +632,9 @@ namespace CamelotFramework
 		}
 
 		// Prune empty precise entries
-		Stack<UINT32>::type finalPreciseHierarchyTodo;
-		Stack<UINT32>::type parentPreciseEntryIndexes;
-		Vector<TempEntry>::type newPreciseEntries;
+		ProfilerStack<UINT32>::type finalPreciseHierarchyTodo;
+		ProfilerStack<UINT32>::type parentPreciseEntryIndexes;
+		ProfilerVector<TempEntry>::type newPreciseEntries;
 
 		finalPreciseHierarchyTodo.push(0);
 
@@ -674,7 +674,7 @@ namespace CamelotFramework
 
 		if(newPreciseEntries.size() > 0)
 		{
-			Vector<CPUProfilerPreciseSamplingEntry*>::type finalPreciseEntries;
+			ProfilerVector<CPUProfilerPreciseSamplingEntry*>::type finalPreciseEntries;
 
 			report.mPreciseSamplingRootEntry = preciseEntries[newPreciseEntries[0].entryIdx];
 			finalPreciseEntries.push_back(&report.mPreciseSamplingRootEntry);

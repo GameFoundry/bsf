@@ -28,3 +28,9 @@ FrameAlloc
 Make sure BindableGpuParams are not copyable
 
 CPUProfiler still uses normal allocator for containers
+
+Refactor stack allocator so I don't need to manually initialize heaps
+ - Use atomic variable counter?
+
+ There is a shit-ton of allocations in CPUProfiler (especially report generation)
+  - Maybe attempt to cut down on them?

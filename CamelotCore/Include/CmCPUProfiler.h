@@ -8,6 +8,18 @@ namespace CamelotFramework
 
 	typedef std::basic_string<char, std::char_traits<char>, StdAlloc<char, ProfilerAlloc>> ProfilerString; 
 
+	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>> 
+	struct ProfilerVector 
+	{ 
+		typedef typename std::vector<T, A> type;    
+	}; 
+
+	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>> 
+	struct ProfilerStack
+	{ 
+		typedef typename std::stack<T, std::deque<T, A>> type;    
+	}; 
+
 	/**
 	 * @brief	Provides various performance measuring methods
 	 * 			
@@ -72,7 +84,7 @@ namespace CamelotFramework
 
 		struct ProfileData
 		{
-			Vector<ProfileSample>::type samples;
+			ProfilerVector<ProfileSample>::type samples;
 			Timer timer;
 
 			UINT64 memAllocs;
@@ -85,7 +97,7 @@ namespace CamelotFramework
 
 		struct PreciseProfileData
 		{
-			Vector<PreciseProfileSample>::type samples;
+			ProfilerVector<PreciseProfileSample>::type samples;
 			TimerPrecise timer;
 
 			UINT64 memAllocs;
@@ -109,7 +121,7 @@ namespace CamelotFramework
 			ProfileData basic;
 			PreciseProfileData precise;
 
-			Vector<ProfiledBlock*>::type children;
+			ProfilerVector<ProfiledBlock*>::type children;
 
 			ProfiledBlock* findChild(const ProfilerString& name) const;
 		};
@@ -143,7 +155,7 @@ namespace CamelotFramework
 
 			ProfiledBlock* rootBlock;
 
-			Stack<ActiveBlock>::type activeBlocks;
+			ProfilerStack<ActiveBlock>::type activeBlocks;
 			ActiveBlock activeBlock;
 
 			void begin(const ProfilerString& _name);
@@ -232,7 +244,7 @@ namespace CamelotFramework
 		UINT64 mBasicSamplingOverheadCycles;
 		UINT64 mPreciseSamplingOverheadCycles;
 
-		Vector<ThreadInfo*>::type mActiveThreads;
+		ProfilerVector<ThreadInfo*>::type mActiveThreads;
 		CM_MUTEX(mThreadSync);
 
 		void estimateTimerOverhead();
@@ -263,7 +275,7 @@ namespace CamelotFramework
 			float pctOfParent;
 		} data;
 
-		Vector<CPUProfilerBasicSamplingEntry>::type childEntries;
+		ProfilerVector<CPUProfilerBasicSamplingEntry>::type childEntries;
 	};
 
 	struct CM_EXPORT CPUProfilerPreciseSamplingEntry
@@ -291,7 +303,7 @@ namespace CamelotFramework
 			float pctOfParent;
 		} data;
 
-		Vector<CPUProfilerPreciseSamplingEntry>::type childEntries;
+		ProfilerVector<CPUProfilerPreciseSamplingEntry>::type childEntries;
 	};
 
 	class CM_EXPORT CPUProfilerReport
