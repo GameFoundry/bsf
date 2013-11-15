@@ -86,7 +86,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	GpuParamsPtr GpuProgram::createParameters(void)
 	{
-		return cm_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc));
+		return cm_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), false);
 	}
     //-----------------------------------------------------------------------
     const String& GpuProgram::getLanguage(void) const

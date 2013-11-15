@@ -43,6 +43,20 @@ namespace CamelotFramework
 		mDirty = true;
 	}
 
+	void GpuParamBlock::read(UINT32 offset, void* data, UINT32 size)
+	{
+#if CM_DEBUG_MODE
+		if(offset < 0 || (offset + size) > mSize)
+		{
+			CM_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
+				"Available range: 0 .. " + toString(mSize) + ". " \
+				"Wanted range: " + toString(offset) + " .. " + toString(offset + size) + ".");
+		}
+#endif
+
+		memcpy(data, mData + offset, size);
+	}
+
 	void GpuParamBlock::zeroOut(UINT32 offset, UINT32 size)
 	{
 #if CM_DEBUG_MODE

@@ -287,6 +287,7 @@
     <ClInclude Include="Include\CmGpuResource.h" />
     <ClInclude Include="Include\CmGpuResourceDataRTTI.h" />
     <ClInclude Include="Include\CmGpuResourceRTTI.h" />
+    <ClInclude Include="Include\CmGpuParam.h" />
     <ClInclude Include="Include\CmInputFwd.h" />
     <ClInclude Include="Include\CmOSInputHandler.h" />
     <ClInclude Include="Include\CmPixelData.h" />
@@ -440,6 +441,7 @@
     <ClCompile Include="Source\CmGpuResource.cpp" />
     <ClCompile Include="Source\CmGpuResourceData.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />
+    <ClCompile Include="Source\CmGpuParam.cpp" />
     <ClCompile Include="Source\CmImportOptions.cpp" />
     <ClCompile Include="Source\CmIndexBuffer.cpp" />
     <ClCompile Include="Source\CmIndexData.cpp" />

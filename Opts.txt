@@ -1,11 +1,10 @@
 Make sure to also update TextSprite and ImageSprite and anything else in UpdateMesh, then don't forget to find the issue that causes elements to get marked as dirty every single frame
 
-Render:
-Each queued command has an AsyncOp which gets constructed whether it is used or not
+GpuParamBlock should be tied directly with GpuParamBlockBuffer
+  - Modify material so it always sets just the first GpuParams with a specific name. This will avoid updating same buffer multiple times.
+When GpuParams are destroyed (when another shader is set in Material for example), make sure to set all GpuParam internal data to null
+Add material parameter handles for texture, sampler state, and structs
 
-Strings when setting material params cause an allocation
- - Consider using normal char arrays
- - Or ensure materials are set using some smarter way, e.g. you get material param reference by name, you save it and then use that for setting the value
 
 FrameAlloc
    Keeps two internal stacks
@@ -16,20 +15,20 @@ FrameAlloc
     - frees the previously active stack
    During frame we call alloc()
   
-Make sure BindableGpuParams are not copyable
-
-Refactor stack allocator so I don't need to manually initialize heaps
- - Use atomic variable counter?
-
- There is a shit-ton of allocations in CPUProfiler (especially report generation)
-  - Maybe attempt to cut down on them?
+ There are many allocations in CPUProfiler (especially report generation), and they aren't counted anywhere since they use
+ a special allocator.
 
 --------------------
 
 HardwareBuffer::lock (more exactly ImmediateContext::Map) is very slow, with 35 calls taking up almost 3ms. 
  - First, mesh creates both vertex and index buffer whenever writeSubresource is called!!! It should instead just update them.
+   - Never shrink mesh buffers. Add shrinkInternalBuffers property to MeshData that will force the buffers to shrink.
  - Second, mesh buffers are created with default buffer flags (static). Try changing it to dynamic
+   - Allow user to specify mesh buffer type during mesh construction
 
 When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
  - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
  - TODO - FIgure this out
+
+ -------------
+

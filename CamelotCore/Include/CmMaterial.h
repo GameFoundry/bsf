@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmResource.h"
+#include "CmGpuParam.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
@@ -90,6 +91,7 @@ namespace CamelotFramework
 		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const;
 		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const;
 		const StructData& getStructData(const String& name, UINT32 arrayIdx = 0) const;
+
 		INT16 getRenderQueue() const { return mRenderQueue; }
 
 		UINT32 getNumPasses() const;
@@ -100,6 +102,48 @@ namespace CamelotFramework
 
 		static HMaterial create();
 		static HMaterial create(ShaderPtr shader);
+	public:
+		/**
+		 * @brief	Allows you to retrieve a handle to a parameter that you can then use for quickly
+		 * 			setting and retrieving parameter data. This allows you to set/get parameter data
+		 * 			without all the cost of extra lookups otherwise required.
+		 * 			
+		 * @note	All of these handles will be invalidated if material shader ever changes. It is up to the
+		 * 			caller to keep track of that.
+		 */
+		template <typename T>
+		void getParam(const String& name, GpuDataParamBase<T>& output) const
+		{
+			auto iterFind = mValidParams.find(name);
+			if(iterFind == mValidParams.end())
+			{
+				LOGWRN("Material doesn't have a parameter named " + name);
+				return;
+			}
+
+			const String& gpuVarName = iterFind->second;
+
+			for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+			{
+				PassParametersPtr params = *iter;
+
+				for(UINT32 i = 0; i < params->getNumParams(); i++)
+				{
+					GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+					if(paramPtr)
+					{
+						if(paramPtr->hasParam(gpuVarName))
+						{
+							paramPtr->getParam<T>(gpuVarName, output);
+							return;
+						}
+					}
+				}
+			}
+
+			CM_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + gpuVarName);
+		}
+
 	protected:
 		void destroy_internal();
 
@@ -118,12 +162,6 @@ namespace CamelotFramework
 
 		// These maps aren't necessary as we can read these values from the GpuParams directly
 		// but they make many things (especially serializing and getting values) so much easier
-		Map<String, Vector<float>::type>::type mFloatValues;
-		Map<String, Vector<Vector2>::type>::type mVec2Values;
-		Map<String, Vector<Vector3>::type>::type mVec3Values;
-		Map<String, Vector<Vector4>::type>::type mVec4Values;
-		Map<String, Vector<Matrix3>::type>::type mMat3Values;
-		Map<String, Vector<Matrix4>::type>::type mMat4Values;
 		Map<String, Vector<StructData>::type>::type mStructValues;
 		Map<String, HTexture>::type mTextureValues;
 		Map<String, HSamplerState>::type mSamplerValues;
@@ -131,25 +169,6 @@ namespace CamelotFramework
 		Material();
 
 		void throwIfNotInitialized() const;
-
-		template <typename T>
-		void setParam(const String& name, T& value, UINT32 arrayIdx)
-		{
-			for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-			{
-				PassParametersPtr params = *iter;
-
-				for(UINT32 i = 0; i < params->getNumParams(); i++)
-				{
-					GpuParamsPtr& paramPtr = params->getParamByIdx(i);
-					if(paramPtr)
-					{
-						if(paramPtr->hasParam(name))
-							paramPtr->setParam(name, value, arrayIdx);
-					}
-				}
-			}
-		}
 
 		const Map<String, String>::type& getValidParamNames() const { return mValidParams; }
 

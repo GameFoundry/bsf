@@ -37,12 +37,6 @@ namespace CamelotFramework
 	{
 		mBestTechnique = nullptr;
 		mParametersPerPass.clear();
-		mFloatValues.clear();
-		mVec2Values.clear();
-		mVec3Values.clear();
-		mVec4Values.clear();
-		mMat3Values.clear();
-		mMat4Values.clear();
 		mStructValues.clear();
 		mTextureValues.clear();
 		mSamplerValues.clear();
@@ -187,29 +181,9 @@ namespace CamelotFramework
 
 				switch(iter->second.type)
 				{
-				case GPDT_FLOAT1:
-					mFloatValues[iter->first].resize(iter->second.arraySize);
-					break;
-				case GPDT_FLOAT2:
-					mVec2Values[iter->first].resize(iter->second.arraySize);
-					break;
-				case GPDT_FLOAT3:
-					mVec3Values[iter->first].resize(iter->second.arraySize);
-					break;
-				case GPDT_FLOAT4:
-					mVec4Values[iter->first].resize(iter->second.arraySize);
-					break;
-				case GPDT_MATRIX_3X3:
-					mMat3Values[iter->first].resize(iter->second.arraySize);
-					break;
-				case GPDT_MATRIX_4X4:
-					mMat4Values[iter->first].resize(iter->second.arraySize);
-					break;
 				case GPDT_STRUCT:
 					mStructValues[iter->first].resize(iter->second.arraySize);
 					break;
-				default:
-					CM_EXCEPT(InternalErrorException, "Unsupported data type.");
 				}
 			}
 
@@ -581,126 +555,70 @@ namespace CamelotFramework
 	{
 		throwIfNotInitialized();
 
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
+		GpuDataParamBase<float> gpuParam;
+		getParam(name, gpuParam);
 
-		String& gpuVarName = iterFind->second;
-		setParam(gpuVarName, value, arrayIdx);
-
-		auto& savedValue = mFloatValues[name];
-		savedValue[arrayIdx] = value;
+		gpuParam.set(value, arrayIdx);
 	}
 
 	void Material::setColor(const String& name, const Color& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
+		GpuDataParamBase<Vector4> gpuParam;
+		getParam(name, gpuParam);
 
-		String& gpuVarName = iterFind->second;
-		setParam(gpuVarName, value, arrayIdx);
-
-		auto& savedValue = mVec4Values[name];
-		savedValue[arrayIdx] = Vector4(value.r, value.g, value.b, value.a);
+		gpuParam.set(Vector4(value.r, value.g, value.b, value.a), arrayIdx);
 	}
 
 	void Material::setVec2(const String& name, const Vector2& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
+		GpuDataParamBase<Vector2> gpuParam;
+		getParam(name, gpuParam);
 
-		String& gpuVarName = iterFind->second;
-		setParam(gpuVarName, value, arrayIdx);
-
-		auto& savedValue = mVec2Values[name];
-		savedValue[arrayIdx] = value;
+		gpuParam.set(value, arrayIdx);
 	}
 
 	void Material::setVec3(const String& name, const Vector3& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
+		GpuDataParamBase<Vector3> gpuParam;
+		getParam(name, gpuParam);
 
-		String& gpuVarName = iterFind->second;
-		setParam(gpuVarName, value, arrayIdx);
-
-		auto& savedValue = mVec3Values[name];
-		savedValue[arrayIdx] = value;
+		gpuParam.set(value, arrayIdx);
 	}
 
 	void Material::setVec4(const String& name, const Vector4& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
+		GpuDataParamBase<Vector4> gpuParam;
+		getParam(name, gpuParam);
 
-		String& gpuVarName = iterFind->second;
-		setParam(gpuVarName, value, arrayIdx);
-
-		auto& savedValue = mVec4Values[name];
-		savedValue[arrayIdx] = value;
+		gpuParam.set(value, arrayIdx);
 	}
 
 	void Material::setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
+		GpuDataParamBase<Matrix3> gpuParam;
+		getParam(name, gpuParam);
 
-		String& gpuVarName = iterFind->second;
-		setParam(gpuVarName, value, arrayIdx);
-
-		auto& savedValue = mMat3Values[name];
-		savedValue[arrayIdx] = value;
+		gpuParam.set(value, arrayIdx);
 	}
 
 	void Material::setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx)
 	{
 		throwIfNotInitialized();
 
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
+		GpuDataParamBase<Matrix4> gpuParam;
+		getParam(name, gpuParam);
 
-		String& gpuVarName = iterFind->second;
-		setParam(gpuVarName, value, arrayIdx);
-
-		auto& savedValue = mMat4Values[name];
-		savedValue[arrayIdx] = value;
+		gpuParam.set(value, arrayIdx);
 	}
 
 	void Material::setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx)
@@ -813,62 +731,50 @@ namespace CamelotFramework
 
 	float Material::getFloat(const String& name, UINT32 arrayIdx) const
 	{
-		auto iterFind = mFloatValues.find(name);
+		GpuDataParamBase<float> gpuParam;
+		getParam(name, gpuParam);
 
-		if(iterFind == mFloatValues.end())
-			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
-
-		return iterFind->second.at(arrayIdx);
+		return gpuParam.get(arrayIdx);
 	}
 
 	Vector2 Material::getVec2(const String& name, UINT32 arrayIdx) const
 	{
-		auto iterFind = mVec2Values.find(name);
+		GpuDataParamBase<Vector2> gpuParam;
+		getParam(name, gpuParam);
 
-		if(iterFind == mVec2Values.end())
-			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
-
-		return iterFind->second.at(arrayIdx);
+		return gpuParam.get(arrayIdx);
 	}
 
 	Vector3 Material::getVec3(const String& name, UINT32 arrayIdx) const
 	{
-		auto iterFind = mVec3Values.find(name);
+		GpuDataParamBase<Vector3> gpuParam;
+		getParam(name, gpuParam);
 
-		if(iterFind == mVec3Values.end())
-			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
-
-		return iterFind->second.at(arrayIdx);
+		return gpuParam.get(arrayIdx);
 	}
 
 	Vector4 Material::getVec4(const String& name, UINT32 arrayIdx) const
 	{
-		auto iterFind = mVec4Values.find(name);
+		GpuDataParamBase<Vector4> gpuParam;
+		getParam(name, gpuParam);
 
-		if(iterFind == mVec4Values.end())
-			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
-
-		return iterFind->second.at(arrayIdx);
+		return gpuParam.get(arrayIdx);
 	}
 
 	Matrix3 Material::getMat3(const String& name, UINT32 arrayIdx) const
 	{
-		auto iterFind = mMat3Values.find(name);
+		GpuDataParamBase<Matrix3> gpuParam;
+		getParam(name, gpuParam);
 
-		if(iterFind == mMat3Values.end())
-			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
-
-		return iterFind->second.at(arrayIdx);
+		return gpuParam.get(arrayIdx);
 	}
 
 	Matrix4 Material::getMat4(const String& name, UINT32 arrayIdx) const
 	{
-		auto iterFind = mMat4Values.find(name);
+		GpuDataParamBase<Matrix4> gpuParam;
+		getParam(name, gpuParam);
 
-		if(iterFind == mMat4Values.end())
-			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
-
-		return iterFind->second.at(arrayIdx);
+		return gpuParam.get(arrayIdx);
 	}
 
 	const Material::StructData& Material::getStructData(const String& name, UINT32 arrayIdx) const
@@ -876,7 +782,7 @@ namespace CamelotFramework
 		auto iterFind = mStructValues.find(name);
 
 		if(iterFind == mStructValues.end())
-			CM_EXCEPT(InternalErrorException, "No float parameter with the name: " + name);
+			CM_EXCEPT(InternalErrorException, "No struct parameter with the name: " + name);
 
 		return iterFind->second.at(arrayIdx);
 	}

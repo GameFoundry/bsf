@@ -61,30 +61,56 @@ namespace CamelotFramework
 	{
 #if CM_DEBUG_MODE
 		QueuedCommand(boost::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId),
-			asyncOp(cm_new<AsyncOp>())
+			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(cm_new<AsyncOp>()), ownsData(true)
 		{ }
 
 		QueuedCommand(boost::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr)
+			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr), ownsData(true)
 		{ }
 
 		UINT32 debugId;
 #else
 		QueuedCommand(boost::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId),
-			asyncOp(cm_new<AsyncOp>())
+			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(cm_new<AsyncOp>()), ownsData(true)
 		{ }
 
 		QueuedCommand(boost::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr)
+			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr), ownsData(true)
 		{ }
 #endif
 
 		~QueuedCommand()
 		{
-			if(asyncOp != nullptr)
+			if(ownsData && asyncOp != nullptr)
 				cm_delete(asyncOp);
+		}
+
+		QueuedCommand(const QueuedCommand& source)
+		{
+			ownsData = true;
+			source.ownsData = false;
+
+			callback = source.callback;
+			callbackWithReturnValue = source.callbackWithReturnValue;
+			asyncOp = source.asyncOp;
+			returnsValue = source.returnsValue;
+			callbackId = source.callbackId;
+			notifyWhenComplete = source.notifyWhenComplete;
+		}
+
+		QueuedCommand& operator=(const QueuedCommand& rhs)
+		{
+			ownsData = true;
+			rhs.ownsData = false;
+
+			callback = rhs.callback;
+			callbackWithReturnValue = rhs.callbackWithReturnValue;
+			asyncOp = rhs.asyncOp;
+			returnsValue = rhs.returnsValue;
+			callbackId = rhs.callbackId;
+			notifyWhenComplete = rhs.notifyWhenComplete;
+			
+			return *this;
 		}
 
 		boost::function<void()> callback;
@@ -93,6 +119,8 @@ namespace CamelotFramework
 		bool returnsValue;
 		UINT32 callbackId;
 		bool notifyWhenComplete;
+
+		mutable bool ownsData;
 	};
 
 	/**

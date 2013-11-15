@@ -9,26 +9,26 @@
 
 namespace CamelotFramework
 {
-	GpuParams::GpuParams(GpuParamDesc& paramDesc)
-		:mParamDesc(paramDesc), mTransposeMatrices(false), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0),
+	GpuParams::GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices)
+		:mParamDesc(paramDesc), mTransposeMatrices(transposeMatrices), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0),
 		mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr)
 	{
-		for(auto iter = mParamDesc.paramBlocks.begin(); iter != mParamDesc.paramBlocks.end(); ++iter)
+		for(auto& paramBlock : mParamDesc.paramBlocks)
 		{
-			if((iter->second.slot + 1) > mNumParamBlocks)
-				mNumParamBlocks = iter->second.slot + 1;
+			if((paramBlock.second.slot + 1) > mNumParamBlocks)
+				mNumParamBlocks = paramBlock.second.slot + 1;
 		}
 
-		for(auto iter = mParamDesc.textures.begin(); iter != mParamDesc.textures.end(); ++iter)
+		for(auto& texture : mParamDesc.textures)
 		{
-			if((iter->second.slot + 1) > mNumTextures)
-				mNumTextures = iter->second.slot + 1;
+			if((texture.second.slot + 1) > mNumTextures)
+				mNumTextures = texture.second.slot + 1;
 		}
 
-		for(auto iter = mParamDesc.samplers.begin(); iter != mParamDesc.samplers.end(); ++iter)
+		for(auto& samplers : mParamDesc.samplers)
 		{
-			if((iter->second.slot + 1) > mNumSamplerStates)
-				mNumSamplerStates = iter->second.slot + 1;
+			if((samplers.second.slot + 1) > mNumSamplerStates)
+				mNumSamplerStates = samplers.second.slot + 1;
 		}
 
 		// Allocate everything in a single block of memory to get rid of extra memory allocations
@@ -72,6 +72,32 @@ namespace CamelotFramework
 		{
 			HSamplerState* ptrToIdx = (&mSamplerStates[i]);
 			ptrToIdx = new (&mSamplerStates[i]) HSamplerState();
+		}
+
+		// Create parameter handles
+		for(auto& param : mParamDesc.params)
+		{
+			switch(param.second.type)
+			{
+			case GPDT_FLOAT1:
+				mFloatParams[param.second.name] = GpuParamFloat(&param.second, mParamBlocks, mTransposeMatrices);
+				break;
+			case GPDT_FLOAT2:
+				mVec2Params[param.second.name] = GpuParamVec2(&param.second, mParamBlocks, mTransposeMatrices);
+				break;
+			case GPDT_FLOAT3:
+				mVec3Params[param.second.name] = GpuParamVec3(&param.second, mParamBlocks, mTransposeMatrices);
+				break;
+			case GPDT_FLOAT4:
+				mVec4Params[param.second.name] = GpuParamVec4(&param.second, mParamBlocks, mTransposeMatrices);
+				break;
+			case GPDT_MATRIX_3X3:
+				mMat3Params[param.second.name] = GpuParamMat3(&param.second, mParamBlocks, mTransposeMatrices);
+				break;
+			case GPDT_MATRIX_4X4:
+				mMat4Params[param.second.name] = GpuParamMat4(&param.second, mParamBlocks, mTransposeMatrices);
+				break;
+			}
 		}
 	}
 
@@ -166,67 +192,6 @@ namespace CamelotFramework
 			return true;
 
 		return false;
-	}
-
-	void GpuParams::setParam(const String& name, float value, UINT32 arrayIndex)
-	{
-		setParam(name, (void*)&value, 1 * sizeof(float), arrayIndex);
-	}
-
-	void GpuParams::setParam(const String& name, int value, UINT32 arrayIndex)
-	{
-		setParam(name, (void*)&value, 1 * sizeof(int), arrayIndex);
-	}
-
-	void GpuParams::setParam(const String& name, bool value, UINT32 arrayIndex)
-	{
-		setParam(name, (void*)&value, 1 * sizeof(bool), arrayIndex);
-	}
-
-	void GpuParams::setParam(const String& name, const Vector4& vec, UINT32 arrayIndex)
-	{
-		setParam(name, (void*)&vec, 4 * sizeof(float), arrayIndex);
-	}
-
-	void GpuParams::setParam(const String& name, const Vector3& vec, UINT32 arrayIndex)
-	{
-		setParam(name, (void*)&vec, 3 * sizeof(float), arrayIndex);
-	}
-
-	void GpuParams::setParam(const String& name, const Vector2& vec, UINT32 arrayIndex)
-	{
-		setParam(name, (void*)&vec, 2 * sizeof(float), arrayIndex);
-	}
-
-	void GpuParams::setParam(const String& name, const Matrix4& mat, UINT32 arrayIndex)
-	{
-		if (mTransposeMatrices)
-		{
-			Matrix4 transMat = mat.transpose();
-			setParam(name, (void*)&transMat, 16 * sizeof(float), arrayIndex);
-		}
-		else
-		{
-			setParam(name, (void*)&mat, 16 * sizeof(float), arrayIndex);
-		}
-	}
-
-	void GpuParams::setParam(const String& name, const Matrix3& mat, UINT32 arrayIndex)
-	{
-		if (mTransposeMatrices)
-		{
-			Matrix3 transMat = mat.transpose();
-			setParam(name, (void*)&transMat, 9 * sizeof(float), arrayIndex);
-		}
-		else
-		{
-			setParam(name, (void*)&mat, 9 * sizeof(float), arrayIndex);
-		}
-	}
-
-	void GpuParams::setParam(const String& name, const Color& color, UINT32 arrayIndex)
-	{
-		setParam(name, (void*)&color, 4 * sizeof(float), arrayIndex);
 	}
 
 	void GpuParams::setParam(const String& name, const void* value, UINT32 sizeBytes, UINT32 arrayIndex)

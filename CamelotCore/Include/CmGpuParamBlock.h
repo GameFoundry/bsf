@@ -15,6 +15,7 @@ namespace CamelotFramework
 		virtual ~GpuParamBlock();
 
 		void write(UINT32 offset, const void* data, UINT32 size);
+		void read(UINT32 offset, void* data, UINT32 size);
 		void zeroOut(UINT32 offset, UINT32 size);
 
 		UINT32 getSize() const { return mSize; }
