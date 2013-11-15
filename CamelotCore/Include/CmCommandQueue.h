@@ -61,27 +61,35 @@ namespace CamelotFramework
 	{
 #if CM_DEBUG_MODE
 		QueuedCommand(boost::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId),
+			asyncOp(cm_new<AsyncOp>())
 		{ }
 
 		QueuedCommand(boost::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr)
 		{ }
 
 		UINT32 debugId;
 #else
 		QueuedCommand(boost::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId),
+			asyncOp(cm_new<AsyncOp>())
 		{ }
 
 		QueuedCommand(boost::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId)
+			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr)
 		{ }
 #endif
 
+		~QueuedCommand()
+		{
+			if(asyncOp != nullptr)
+				cm_delete(asyncOp);
+		}
+
 		boost::function<void()> callback;
 		boost::function<void(AsyncOp&)> callbackWithReturnValue;
-		AsyncOp asyncOp;
+		AsyncOp* asyncOp;
 		bool returnsValue;
 		UINT32 callbackId;
 		bool notifyWhenComplete;

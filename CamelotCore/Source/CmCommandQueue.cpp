@@ -55,7 +55,7 @@ namespace CamelotFramework
 		playback(commands);
 #endif
 
-		return newCommand.asyncOp;
+		return *newCommand.asyncOp;
 	}
 
 	void CommandQueueBase::queue(boost::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
@@ -106,13 +106,13 @@ namespace CamelotFramework
 
 			if(command.returnsValue)
 			{
-				command.callbackWithReturnValue(command.asyncOp);
+				command.callbackWithReturnValue(*command.asyncOp);
 
-				if(!command.asyncOp.hasCompleted())
+				if(!command.asyncOp->hasCompleted())
 				{
 					LOGDBG("Async operation return value wasn't resolved properly. Resolving automatically to nullptr. " \
 						"Make sure to complete the operation before returning from the command callback method.");
-					command.asyncOp.completeOperation(nullptr);
+					command.asyncOp->completeOperation(nullptr);
 				}
 			}
 			else
