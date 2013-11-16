@@ -238,6 +238,7 @@
     <ClInclude Include="Include\BsGUICommandEvent.h" />
     <ClInclude Include="Include\BsGUIContent.h" />
     <ClInclude Include="Include\BsGUIContextMenu.h" />
+    <ClInclude Include="Include\BsDebugDrawMaterialInfo.h" />
     <ClInclude Include="Include\BsGUIDropDownBox.h" />
     <ClInclude Include="Include\BsGUIDropDownBoxManager.h" />
     <ClInclude Include="Include\BsGUIHelper.h" />
@@ -245,6 +246,7 @@
     <ClInclude Include="Include\BsGUIElementBase.h" />
     <ClInclude Include="Include\BsGUIInputTool.h" />
     <ClInclude Include="Include\BsGUIInputBox.h" />
+    <ClInclude Include="Include\BsGUIMaterialInfo.h" />
     <ClInclude Include="Include\BsGUIOptions.h" />
     <ClInclude Include="Include\BsGUIRenderTexture.h" />
     <ClInclude Include="Include\BsGUITextInputEvent.h" />

@@ -34,9 +34,9 @@ namespace BansheeEngine
 		return (UINT32)mCachedRenderElements.size();
 	}
 
-	const HMaterial& Sprite::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& Sprite::getMaterial(UINT32 renderElementIdx) const
 	{
-		return mCachedRenderElements.at(renderElementIdx).material;
+		return mCachedRenderElements.at(renderElementIdx).matInfo;
 	}
 
 	UINT32 Sprite::getNumQuads(UINT32 renderElementIdx) const
@@ -259,9 +259,9 @@ namespace BansheeEngine
 			if(renderElem.indexes != nullptr)
 				cm_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
 
-			if(renderElem.material != nullptr)
+			if(renderElem.matInfo.material != nullptr)
 			{
-				GUIMaterialManager::instance().releaseMaterial(renderElem.material);
+				GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
 			}
 		}
 

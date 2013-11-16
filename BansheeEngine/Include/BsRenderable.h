@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "CmComponent.h"
 #include "CmAABox.h"
+#include "CmGpuParam.h"
 
 namespace BansheeEngine
 {
@@ -18,13 +19,15 @@ namespace BansheeEngine
 		CM::UINT32 getNumMaterials() const { return (CM::UINT32)mMaterials.size(); }
 		CM::HMaterial& getMaterial(CM::UINT32 idx) { return mMaterials[idx]; }
 
-		void render(CM::RenderQueue& renderQueue);
+		void render(CM::RenderQueue& renderQueue, const CM::Matrix4& viewProjMatrix);
 		void updateWorldBounds();
 	private:
 		CM::HMesh mMesh;
 		CM::Vector<CM::HMaterial>::type mMaterials;
 		CM::UINT64 mLayer;
 		CM::Vector<CM::AABox>::type mWorldBounds;
+
+		CM::Vector<CM::GpuParamMat4>::type mMatViewProjParam;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/

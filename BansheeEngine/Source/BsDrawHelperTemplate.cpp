@@ -31,25 +31,37 @@ namespace BansheeEngine
 			if(cmd.mesh == nullptr || !cmd.mesh.isLoaded() || !cmd.mesh->isInitialized())
 				continue;
 
-			if(cmd.material == nullptr || !cmd.material.isLoaded() || !cmd.material->isInitialized())
-				continue;
-
 			if(cmd.type == DebugDrawType::ClipSpace)
 			{
-				renderQueue.add(cmd.material, cmd.mesh, 0, cmd.worldCenter);
+				HMaterial mat = cmd.matInfo2DClipSpace.material;
+
+				if(mat == nullptr || !mat.isLoaded() || !mat->isInitialized())
+					continue;
+
+				renderQueue.add(mat, cmd.mesh, 0, cmd.worldCenter);
 			}
 			else if(cmd.type == DebugDrawType::ScreenSpace)
 			{
-				cmd.material->setFloat("invViewportWidth", invViewportWidth);
-				cmd.material->setFloat("invViewportHeight", invViewportHeight);
+				HMaterial mat = cmd.matInfo2DScreenSpace.material;
 
-				renderQueue.add(cmd.material, cmd.mesh, 0, cmd.worldCenter);
+				if(mat == nullptr || !mat.isLoaded() || !mat->isInitialized())
+					continue;
+
+				cmd.matInfo2DScreenSpace.invViewportWidth.set(invViewportWidth);
+				cmd.matInfo2DScreenSpace.invViewportHeight.set(invViewportHeight);
+
+				renderQueue.add(mat, cmd.mesh, 0, cmd.worldCenter);
 			}
 			else if(cmd.type == DebugDrawType::WorldSpace)
 			{
-				cmd.material->setMat4("matViewProj", viewProjMatrix);
+				HMaterial mat = cmd.matInfo3D.material;
 
-				renderQueue.add(cmd.material, cmd.mesh, 0, cmd.worldCenter);
+				if(mat == nullptr || !mat.isLoaded() || !mat->isInitialized())
+					continue;
+
+				cmd.matInfo3D.matViewProj.set(viewProjMatrix);
+
+				renderQueue.add(mat, cmd.mesh, 0, cmd.worldCenter);
 			}
 		}
 

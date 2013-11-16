@@ -148,20 +148,7 @@ namespace BansheeEngine
 		// Get scene render operations
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
 		{
-			UINT32 numMaterials = (*iter)->getNumMaterials();
-
-			for(UINT32 i = 0; i < numMaterials; i++)
-			{
-				// TODO - Do different things depending on material and renderable settings
-				
-				// TODO - Renderer should ensure shader is compatible with it, and it contains all the needed parameters
-				// (probably at an earlier stage). e.g. I want the user to be warned if the shader doesn't contain matViewProjection param
-				// (or should we just ignore such missing parameters?)
-				HMaterial& material = (*iter)->getMaterial(i);
-				material->setMat4("matViewProjection", viewProjMatrix);
-			}
-
-			(*iter)->render(*mRenderQueue);
+			(*iter)->render(*mRenderQueue, viewProjMatrix);
 		}
 
 		gProfiler().endSample("renderD");

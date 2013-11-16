@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	struct GUIMaterialGroup
 	{
-		HMaterial material;
+		GUIMaterialInfo matInfo;
 		UINT32 numQuads;
 		UINT32 depth;
 		Rect bounds;
@@ -244,10 +244,10 @@ namespace BansheeEngine
 			UINT32 meshIdx = 0;
 			for(auto& mesh : renderData.cachedMeshes)
 			{
-				HMaterial material = renderData.cachedMaterials[meshIdx];
+				GUIMaterialInfo materialInfo = renderData.cachedMaterials[meshIdx];
 				GUIWidget* widget = renderData.cachedWidgetsPerMesh[meshIdx];
 
-				if(material == nullptr || !material.isLoaded())
+				if(materialInfo.material == nullptr || !materialInfo.material.isLoaded())
 				{
 					meshIdx++;
 					continue;
@@ -259,11 +259,11 @@ namespace BansheeEngine
 					continue;
 				}
 
-				material->setFloat("invViewportWidth", invViewportWidth);
-				material->setFloat("invViewportHeight", invViewportHeight);
-				material->setMat4("worldTransform", widget->SO()->getWorldTfrm());
+				materialInfo.invViewportWidth.set(invViewportWidth);
+				materialInfo.invViewportHeight.set(invViewportHeight);
+				materialInfo.worldTransform.set(widget->SO()->getWorldTfrm());
 
-				renderQueue.add(material, mesh, 0, Vector3::ZERO);
+				renderQueue.add(materialInfo.material, mesh, 0, Vector3::ZERO);
 
 				meshIdx++;
 			}
@@ -348,9 +348,9 @@ namespace BansheeEngine
 				Rect tfrmedBounds = guiElem->_getClippedBounds();
 				tfrmedBounds.transform(guiElem->_getParentWidget().SO()->getWorldTfrm());
 
-				const HMaterial& mat = guiElem->getMaterial(renderElemIdx);
+				const GUIMaterialInfo& matInfo = guiElem->getMaterial(renderElemIdx);
 
-				UINT64 materialId = mat->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
+				UINT64 materialId = matInfo.material->getInternalID(); // TODO - I group based on material ID. So if two widgets used exact copies of the same material
 				// this system won't detect it. Find a better way of determining material similarity?
 
 				// If this is a new material, add a new list of groups
@@ -421,7 +421,7 @@ namespace BansheeEngine
 					foundGroup->depth = elemDepth;
 					foundGroup->bounds = tfrmedBounds;
 					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
-					foundGroup->material = mat;
+					foundGroup->matInfo = matInfo;
 					foundGroup->numQuads = guiElem->getNumQuads(renderElemIdx);
 				}
 				else
@@ -463,7 +463,7 @@ namespace BansheeEngine
 			UINT32 groupIdx = 0;
 			for(auto& group : sortedGroups)
 			{
-				renderData.cachedMaterials[groupIdx] = group->material;
+				renderData.cachedMaterials[groupIdx] = group->matInfo;
 
 				if(mSeparateMeshesByWidget)
 				{

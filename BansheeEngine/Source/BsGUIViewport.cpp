@@ -65,7 +65,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	const HMaterial& GUIViewport::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIViewport::getMaterial(UINT32 renderElementIdx) const
 	{
 		CM_EXCEPT(InternalErrorException, "This element has no render element so no material can be retrieved.");
 	}

@@ -56,11 +56,22 @@ namespace BansheeEngine
 				renderElem.numQuads = newNumQuads;
 			}
 
-			HMaterial newMaterial = GUIMaterialManager::instance().requestImageMaterial(desc.texture->getTexture());
-			if(renderElem.material != nullptr)
-				GUIMaterialManager::instance().releaseMaterial(renderElem.material);
+			const HTexture& tex = desc.texture->getTexture();
 
-			renderElem.material = newMaterial;
+			bool getNewMaterial = false;
+			if(renderElem.matInfo.material == nullptr)
+				getNewMaterial = true;
+			else
+			{
+				if(renderElem.matInfo.mainTexture.get() != tex)
+				{
+					GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
+					getNewMaterial = true;
+				}
+			}
+
+			if(getNewMaterial)
+				renderElem.matInfo = GUIMaterialManager::instance().requestImageMaterial(tex);
 
 			texPage++;
 		}

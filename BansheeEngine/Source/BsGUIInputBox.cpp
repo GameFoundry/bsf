@@ -98,7 +98,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const HMaterial& GUIInputBox::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIInputBox::getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);

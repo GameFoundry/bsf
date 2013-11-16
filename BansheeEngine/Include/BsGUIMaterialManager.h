@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsGUIMaterialInfo.h"
 #include "CmModule.h"
 
 namespace BansheeEngine
@@ -20,7 +21,7 @@ namespace BansheeEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const CM::HMaterial& requestTextMaterial(const CM::HTexture& texture) const;
+		const GUIMaterialInfo& requestTextMaterial(const CM::HTexture& texture) const;
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
@@ -30,13 +31,13 @@ namespace BansheeEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const CM::HMaterial& requestImageMaterial(const CM::HTexture& texture) const;
+		const GUIMaterialInfo& requestImageMaterial(const CM::HTexture& texture) const;
 
 		/**
 		 * @brief	Releases the held reference to the material. This allows us to fully unload a material
 		 * 			and their textures when they are no longer being used.
 		 */
-		void releaseMaterial(const CM::HMaterial& material) const;
+		void releaseMaterial(const GUIMaterialInfo& material) const;
 
 		void forceReleaseAllMaterials();
 	private:
@@ -46,7 +47,7 @@ namespace BansheeEngine
 				:refCount(0)
 			{ }
 
-			CM::HMaterial handle;
+			GUIMaterialInfo handle;
 			CM::UINT32 refCount;
 		};
 

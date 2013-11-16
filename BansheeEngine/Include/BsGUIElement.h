@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		virtual const CM::HMaterial& getMaterial(CM::UINT32 renderElementIdx) const = 0;
+		virtual const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this

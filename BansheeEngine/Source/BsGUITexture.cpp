@@ -95,7 +95,7 @@ namespace BansheeEngine
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const HMaterial& GUITexture::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUITexture::getMaterial(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getMaterial(renderElementIdx);
 	}

@@ -10,16 +10,20 @@ namespace CamelotFramework
 		:paramDesc(paramDesc), paramBlocks(paramBlocks), isDestroyed(false)
 	{ }
 
+	GpuParamStruct::InternalData::InternalData()
+		:paramDesc(nullptr), paramBlocks(nullptr), isDestroyed(true)
+	{ }
+
 	GpuParamStruct::InternalData::~InternalData()
 	{ }
 
 	GpuParamStruct::GpuParamStruct()
+		:mData(cm_shared_ptr<InternalData>())
 	{ }
 
 	GpuParamStruct::GpuParamStruct(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks)
-	{
-		mData = cm_shared_ptr<InternalData>(paramDesc, paramBlocks);
-	}
+		:mData(cm_shared_ptr<InternalData>(paramDesc, paramBlocks))
+	{ }
 
 	void GpuParamStruct::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
@@ -103,16 +107,20 @@ namespace CamelotFramework
 		:paramDesc(paramDesc), textures(textures), isDestroyed(false)
 	{ }
 
+	GpuParamTexture::InternalData::InternalData()
+		:paramDesc(nullptr), textures(nullptr), isDestroyed(true)
+	{ }
+
 	GpuParamTexture::InternalData::~InternalData()
 	{ }
 
 	GpuParamTexture::GpuParamTexture()
+		:mData(cm_shared_ptr<InternalData>())
 	{ }
 
 	GpuParamTexture::GpuParamTexture(GpuParamObjectDesc* paramDesc, HTexture* textures)
-	{
-		mData = cm_shared_ptr<InternalData>(paramDesc, textures);
-	}
+		:mData(cm_shared_ptr<InternalData>(paramDesc, textures))
+	{ }
 
 	void GpuParamTexture::set(const HTexture& texture)
 	{
@@ -143,16 +151,20 @@ namespace CamelotFramework
 		:paramDesc(paramDesc), samplerStates(samplerStates), isDestroyed(false)
 	{ }
 
+	GpuParamSampState::InternalData::InternalData()
+		:paramDesc(nullptr), samplerStates(nullptr), isDestroyed(true)
+	{ }
+
 	GpuParamSampState::InternalData::~InternalData()
 	{ }
 
 	GpuParamSampState::GpuParamSampState()
+		:mData(cm_shared_ptr<InternalData>())
 	{ }
 
 	GpuParamSampState::GpuParamSampState(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates)
-	{
-		mData = cm_shared_ptr<InternalData>(paramDesc, samplerStates);
-	}
+		:mData(cm_shared_ptr<InternalData>(paramDesc, samplerStates))
+	{ }
 
 	void GpuParamSampState::set(const HSamplerState& samplerState)
 	{

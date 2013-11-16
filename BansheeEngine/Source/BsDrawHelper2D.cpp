@@ -111,12 +111,12 @@ namespace BansheeEngine
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
 			dbgCmd.type = DebugDrawType::ClipSpace;
-			dbgCmd.material = mMaterial2DClipSpace;
+			dbgCmd.matInfo2DClipSpace = mMaterial2DClipSpace;
 		}
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -160,12 +160,12 @@ namespace BansheeEngine
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
 			dbgCmd.type = DebugDrawType::ClipSpace;
-			dbgCmd.material = mMaterial2DClipSpace;
+			dbgCmd.matInfo2DClipSpace = mMaterial2DClipSpace;
 		}
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -209,12 +209,12 @@ namespace BansheeEngine
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
 			dbgCmd.type = DebugDrawType::ClipSpace;
-			dbgCmd.material = mMaterial2DClipSpace;
+			dbgCmd.matInfo2DClipSpace = mMaterial2DClipSpace;
 		}
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -263,12 +263,12 @@ namespace BansheeEngine
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
 			dbgCmd.type = DebugDrawType::ClipSpace;
-			dbgCmd.material = mMaterial2DClipSpace;
+			dbgCmd.matInfo2DClipSpace = mMaterial2DClipSpace;
 		}
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 
@@ -317,12 +317,12 @@ namespace BansheeEngine
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
 			dbgCmd.type = DebugDrawType::ClipSpace;
-			dbgCmd.material = mMaterial2DClipSpace;
+			dbgCmd.matInfo2DClipSpace = mMaterial2DClipSpace;
 		}
 		else
 		{
 			dbgCmd.type = DebugDrawType::ScreenSpace;
-			dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
+			dbgCmd.matInfo2DScreenSpace = BuiltinMaterialManager::instance().createDebugDraw2DScreenSpaceMaterial();
 		}
 	}
 

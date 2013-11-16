@@ -2,6 +2,7 @@
 #include "BsRenderableRTTI.h"
 #include "CmSceneObject.h"
 #include "CmMesh.h"
+#include "CmMaterial.h"
 #include "CmRenderQueue.h"
 
 using namespace CamelotFramework;
@@ -12,24 +13,28 @@ namespace BansheeEngine
 		:Component(parent), mLayer(1)
 	{
 		mMaterials.resize(1);
+		mMatViewProjParam.resize(1);
 	}
 
 	void Renderable::setNumMaterials(CM::UINT32 numMaterials)
 	{
 		mMaterials.resize(numMaterials);
+		mMatViewProjParam.resize(numMaterials);
 	}
 
 	void Renderable::setMaterial(CM::UINT32 idx, CM::HMaterial material)
 	{
 		mMaterials[idx] = material;
+		mMatViewProjParam[idx] = material->getParamMat4("matViewProjection");
 	}
 
-	void Renderable::render(CM::RenderQueue& renderQueue)
+	void Renderable::render(CM::RenderQueue& renderQueue, const Matrix4& viewProjMatrix)
 	{
 		if(mMesh == nullptr || !mMesh.isLoaded())
 			return;
 
 		bool hasAtLeastOneMaterial = false;
+		UINT32 idx = 0;
 		for(auto& material : mMaterials)
 		{
 			if(material != nullptr)
@@ -39,6 +44,15 @@ namespace BansheeEngine
 				if(!material.isLoaded()) // We wait until all materials are loaded
 					return;
 			}
+
+			// TODO - Do different things depending on material and renderable settings
+
+			// TODO - Renderer should ensure shader is compatible with it, and it contains all the needed parameters
+			// (probably at an earlier stage). e.g. I want the user to be warned if the shader doesn't contain matViewProjection param
+			// (or should we just ignore such missing parameters?)
+
+			mMatViewProjParam[idx].set(viewProjMatrix);
+			idx++;
 		}
 
 		if(hasAtLeastOneMaterial)

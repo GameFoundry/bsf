@@ -1,6 +1,8 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsGUIMaterialInfo.h"
+#include "BsDebugDrawMaterialInfo.h"
 #include "CmModule.h"
 
 namespace BansheeEngine
@@ -34,11 +36,11 @@ namespace BansheeEngine
 		BuiltinMaterialManager();
 		~BuiltinMaterialManager();
 
-		CM::HMaterial createSpriteTextMaterial() const;
-		CM::HMaterial createSpriteImageMaterial() const;
-		CM::HMaterial createDebugDraw2DClipSpaceMaterial() const;
-		CM::HMaterial createDebugDraw2DScreenSpaceMaterial() const;
-		CM::HMaterial createDebugDraw3DMaterial() const;
+		GUIMaterialInfo createSpriteTextMaterial() const;
+		GUIMaterialInfo createSpriteImageMaterial() const;
+		DebugDraw2DClipSpaceMatInfo createDebugDraw2DClipSpaceMaterial() const;
+		DebugDraw2DScreenSpaceMatInfo createDebugDraw2DScreenSpaceMaterial() const;
+		DebugDraw3DMatInfo createDebugDraw3DMaterial() const;
 		CM::HMaterial createDockDropOverlayMaterial() const;
 
 		void addFactory(BuiltinMaterialFactory* factory);

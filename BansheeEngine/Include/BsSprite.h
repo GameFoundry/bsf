@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsGUIMaterialInfo.h"
 #include "CmInt2.h"
 #include "CmRect.h"
 
@@ -29,7 +30,7 @@ namespace BansheeEngine
 		CM::Vector2* uvs;
 		CM::UINT32* indexes;
 		CM::UINT32 numQuads;
-		CM::HMaterial material;
+		GUIMaterialInfo matInfo;
 	};
 
 	class BS_EXPORT Sprite
@@ -55,7 +56,7 @@ namespace BansheeEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		const CM::HMaterial& getMaterial(CM::UINT32 renderElementIdx) const;
+		const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this

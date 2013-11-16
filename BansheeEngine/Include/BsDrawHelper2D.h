@@ -113,7 +113,7 @@ namespace BansheeEngine
 			const CM::Color& color = CM::Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 	private:
-		CM::HMaterial mMaterial2DClipSpace;
+		DebugDraw2DClipSpaceMatInfo mMaterial2DClipSpace;
 
 		CM::FRect normalizedCoordToClipSpace(const CM::FRect& area) const;
 		CM::Vector2 normalizedCoordToClipSpace(const CM::Vector2& pos) const;

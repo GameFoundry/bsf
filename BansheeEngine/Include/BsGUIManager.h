@@ -4,6 +4,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUITextInputEvent.h"
 #include "BsGUICommandEvent.h"
+#include "BsGUIMaterialInfo.h"
 #include "CmModule.h"
 #include "CmColor.h"
 #include "CmInput.h"
@@ -30,7 +31,7 @@ namespace BansheeEngine
 			{ }
 
 			CM::Vector<CM::HMesh>::type cachedMeshes;
-			CM::Vector<CM::HMaterial>::type cachedMaterials;
+			CM::Vector<GUIMaterialInfo>::type cachedMaterials;
 			CM::Vector<GUIWidget*>::type cachedWidgetsPerMesh;
 			CM::Vector<GUIWidget*>::type widgets;
 			bool isDirty;

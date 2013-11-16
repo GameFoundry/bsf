@@ -30,6 +30,10 @@ namespace CamelotFramework
 				:paramDesc(paramDesc), paramBlocks(paramBlocks), transpose(transpose), isDestroyed(false)
 			{ }
 
+			InternalData()
+				:paramDesc(nullptr), paramBlocks(nullptr), transpose(false), isDestroyed(true)
+			{ }
+
 			~InternalData()
 			{ }
 
@@ -62,6 +66,7 @@ namespace CamelotFramework
 
 	public:
 		GpuDataParamBase()
+			:mData(cm_shared_ptr<InternalData>())
 		{ }
 
 		void set(const T& value, UINT32 arrayIdx = 0)
@@ -133,9 +138,8 @@ namespace CamelotFramework
 
 	private:
 		GpuDataParamBase(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
-		{
-			mData = cm_shared_ptr<InternalData>(paramDesc, paramBlocks, transpose);
-		}
+			:mData(cm_shared_ptr<InternalData>(paramDesc, paramBlocks, transpose))
+		{ }
 
 	private:
 		std::shared_ptr<InternalData> mData;
@@ -159,6 +163,7 @@ namespace CamelotFramework
 		struct InternalData
 		{
 			InternalData(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks);
+			InternalData();
 			~InternalData();
 
 			GpuParamDataDesc* paramDesc;
@@ -192,6 +197,7 @@ namespace CamelotFramework
 		struct InternalData
 		{
 			InternalData(GpuParamObjectDesc* paramDesc, HTexture* textures);
+			InternalData();
 			~InternalData();
 
 			GpuParamObjectDesc* paramDesc;
@@ -224,6 +230,7 @@ namespace CamelotFramework
 		struct InternalData
 		{
 			InternalData(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates);
+			InternalData();
 			~InternalData();
 
 			GpuParamObjectDesc* paramDesc;

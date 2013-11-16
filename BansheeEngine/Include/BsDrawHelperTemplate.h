@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsDebugDrawMaterialInfo.h"
 #include "CmColor.h"
 #include "CmAABox.h"
 
@@ -29,7 +30,11 @@ namespace BansheeEngine
 	struct DebugDrawCommand
 	{
 		CM::HMesh mesh;
-		CM::HMaterial material;
+
+		DebugDraw2DClipSpaceMatInfo matInfo2DClipSpace;
+		DebugDraw2DScreenSpaceMatInfo matInfo2DScreenSpace;
+		DebugDraw3DMatInfo matInfo3D;
+
 		DebugDrawType type;
 		CM::Vector3 worldCenter;
 		float endTime;

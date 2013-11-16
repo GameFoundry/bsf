@@ -44,7 +44,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const CM::HMaterial& getMaterial(CM::UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()

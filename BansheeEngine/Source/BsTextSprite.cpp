@@ -45,9 +45,9 @@ namespace BansheeEngine
 				if(renderElem.indexes != nullptr)
 					cm_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
 
-				if(renderElem.material != nullptr)
+				if(renderElem.matInfo.material != nullptr)
 				{
-					GUIMaterialManager::instance().releaseMaterial(renderElem.material);
+					GUIMaterialManager::instance().releaseMaterial(renderElem.matInfo);
 				}
 			}
 		}
@@ -78,11 +78,22 @@ namespace BansheeEngine
 				cachedElem.numQuads = newNumQuads;
 			}
 
-			HMaterial newMaterial = GUIMaterialManager::instance().requestTextMaterial(textData.getTextureForPage(texPage));
-			if(cachedElem.material != nullptr)
-				GUIMaterialManager::instance().releaseMaterial(cachedElem.material);
+			const HTexture& tex = textData.getTextureForPage(texPage);
 
-			cachedElem.material = newMaterial;
+			bool getNewMaterial = false;
+			if(cachedElem.matInfo.material == nullptr)
+				getNewMaterial = true;
+			else
+			{
+				if(cachedElem.matInfo.mainTexture.get() != tex)
+				{
+					GUIMaterialManager::instance().releaseMaterial(cachedElem.matInfo);
+					getNewMaterial = true;
+				}
+			}
+
+			if(getNewMaterial)
+				cachedElem.matInfo = GUIMaterialManager::instance().requestTextMaterial(tex);
 
 			texPage++;
 		}

@@ -74,7 +74,7 @@ namespace BansheeEngine
 		return mImageSprite->getNumRenderElements();
 	}
 
-	const HMaterial& GUIScrollBar::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIScrollBar::getMaterial(UINT32 renderElementIdx) const
 	{
 		return mImageSprite->getMaterial(renderElementIdx);
 	}

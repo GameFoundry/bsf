@@ -35,7 +35,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	const HMaterial& GUIScrollArea::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIScrollArea::getMaterial(UINT32 renderElementIdx) const
 	{
 		CM_EXCEPT(InternalErrorException, "Trying to retrieve a material from an element with no render elements.");
 	}

@@ -1,4 +1,5 @@
 #include "BsBuiltinMaterialManager.h"
+#include "CmMaterial.h"
 
 using namespace CamelotFramework;
 
@@ -19,39 +20,65 @@ namespace BansheeEngine
 		}
 	}
 
-	HMaterial BuiltinMaterialManager::createSpriteTextMaterial() const
+	GUIMaterialInfo BuiltinMaterialManager::createSpriteTextMaterial() const
 	{
 		assert(mActiveFactory != nullptr);
 
-		return mActiveFactory->createSpriteTextMaterial();
+		GUIMaterialInfo info;
+		info.material = mActiveFactory->createSpriteTextMaterial();
+		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
+		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
+		info.worldTransform = info.material->getParamMat4("worldTransform");
+		info.mainTexture = info.material->getParamTexture("mainTexture");
+
+		return info;
 	}
 
-	HMaterial BuiltinMaterialManager::createSpriteImageMaterial() const
+	GUIMaterialInfo BuiltinMaterialManager::createSpriteImageMaterial() const
 	{
 		assert(mActiveFactory != nullptr);
 
-		return mActiveFactory->createSpriteImageMaterial();
+		GUIMaterialInfo info;
+		info.material = mActiveFactory->createSpriteImageMaterial();
+		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
+		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
+		info.worldTransform = info.material->getParamMat4("worldTransform");
+		info.mainTexture = info.material->getParamTexture("mainTexture");
+
+		return info;
 	}
 
-	HMaterial BuiltinMaterialManager::createDebugDraw2DClipSpaceMaterial() const
+	DebugDraw2DClipSpaceMatInfo BuiltinMaterialManager::createDebugDraw2DClipSpaceMaterial() const
 	{
 		assert(mActiveFactory != nullptr);
 
-		return mActiveFactory->createDebugDraw2DClipSpaceMaterial();
+		DebugDraw2DClipSpaceMatInfo info;
+		info.material = mActiveFactory->createDebugDraw2DClipSpaceMaterial();
+
+		return info;
 	}
 
-	HMaterial BuiltinMaterialManager::createDebugDraw2DScreenSpaceMaterial() const
+	DebugDraw2DScreenSpaceMatInfo BuiltinMaterialManager::createDebugDraw2DScreenSpaceMaterial() const
 	{
 		assert(mActiveFactory != nullptr);
 
-		return mActiveFactory->createDebugDraw2DScreenSpaceMaterial();
+		DebugDraw2DScreenSpaceMatInfo info;
+		info.material = mActiveFactory->createDebugDraw2DScreenSpaceMaterial();
+		info.invViewportWidth = info.material->getParamFloat("invViewportWidth");
+		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
+
+		return info;
 	}
 
-	HMaterial BuiltinMaterialManager::createDebugDraw3DMaterial() const
+	DebugDraw3DMatInfo BuiltinMaterialManager::createDebugDraw3DMaterial() const
 	{
 		assert(mActiveFactory != nullptr);
 
-		return mActiveFactory->createDebugDraw3DMaterial();
+		DebugDraw3DMatInfo info;
+		info.material = mActiveFactory->createDebugDraw3DMaterial();
+		info.matViewProj = info.material->getParamMat4("matViewProj");
+
+		return info;
 	}
 
 	CM::HMaterial BuiltinMaterialManager::createDockDropOverlayMaterial() const

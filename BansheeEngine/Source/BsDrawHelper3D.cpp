@@ -81,7 +81,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::drawLine_AA(const HCamera& camera, const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, float timeout)
@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::drawLineList_Pixel(const HCamera& camera, const Vector<Vector3>::type& linePoints, const Color& color, float timeout)
@@ -149,7 +149,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::drawLineList_AA(const HCamera& camera, const CM::Vector<CM::Vector3>::type& linePoints, float width, float borderWidth, 
@@ -184,7 +184,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::drawAABox(const HCamera& camera, const CM::AABox& box, const CM::Color& color, float timeout)
@@ -229,7 +229,7 @@ namespace BansheeEngine
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
-		dbgCmd.material = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
+		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
 	void DrawHelper3D::aabox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)

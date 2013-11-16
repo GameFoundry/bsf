@@ -84,7 +84,7 @@ namespace BansheeEngine
 		return numElements;
 	}
 
-	const HMaterial& GUIButtonBase::getMaterial(UINT32 renderElementIdx) const
+	const GUIMaterialInfo& GUIButtonBase::getMaterial(UINT32 renderElementIdx) const
 	{
 		UINT32 textSpriteIdx = mImageSprite->getNumRenderElements();
 		UINT32 contentImgSpriteIdx = textSpriteIdx + mTextSprite->getNumRenderElements();

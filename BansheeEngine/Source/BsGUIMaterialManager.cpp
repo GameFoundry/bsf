@@ -7,58 +7,58 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const HMaterial& GUIMaterialManager::requestTextMaterial(const HTexture& texture) const
+	const GUIMaterialInfo& GUIMaterialManager::requestTextMaterial(const HTexture& texture) const
 	{
 		for(auto& matHandle : mTextMaterials)
 		{
-			const HMaterial& material = matHandle.handle;
-			if(material->getTexture("mainTexture") == texture)
+			if(matHandle.handle.mainTexture.get() == texture)
 			{
 				matHandle.refCount++;
-				return material;
+				return matHandle.handle;
 			}
 		}
 
 		mTextMaterials.push_back(GUIMaterial());
 
-		GUIMaterial& material = mTextMaterials[mTextMaterials.size() - 1];
-		material.handle = BuiltinMaterialManager::instance().createSpriteTextMaterial();
-		material.handle->setTexture("mainTexture", texture);
-		material.refCount = 1;		
+		GUIMaterial& guiMat = mTextMaterials[mTextMaterials.size() - 1];
+		guiMat.handle = BuiltinMaterialManager::instance().createSpriteTextMaterial();
 
-		return material.handle;
+		guiMat.handle.mainTexture.set(texture);
+		guiMat.refCount = 1;		
+
+		return guiMat.handle;
 	}
 
-	const HMaterial& GUIMaterialManager::requestImageMaterial(const HTexture& texture) const
+	const GUIMaterialInfo& GUIMaterialManager::requestImageMaterial(const HTexture& texture) const
 	{
 		for(auto& matHandle : mImageMaterials)
 		{
-			const HMaterial& material = matHandle.handle;
-			if(material->getTexture("mainTexture") == texture)
+			if(matHandle.handle.mainTexture.get() == texture)
 			{
 				matHandle.refCount++;
-				return material;
+				return matHandle.handle;
 			}
 		}
 
 		mImageMaterials.push_back(GUIMaterial());
 
-		GUIMaterial& material = mImageMaterials[mImageMaterials.size() - 1];
-		material.handle = BuiltinMaterialManager::instance().createSpriteImageMaterial();
-		material.handle->setTexture("mainTexture", texture);
-		material.refCount = 1;		
+		GUIMaterial& guiMat = mImageMaterials[mImageMaterials.size() - 1];
+		guiMat.handle = BuiltinMaterialManager::instance().createSpriteImageMaterial();
 
-		return material.handle;
+		guiMat.handle.mainTexture.set(texture);
+		guiMat.refCount = 1;		
+
+		return guiMat.handle;
 	}
 
-	void GUIMaterialManager::releaseMaterial(const HMaterial& material) const
+	void GUIMaterialManager::releaseMaterial(const GUIMaterialInfo& material) const
 	{
 		bool released = false;
 
 		UINT32 i = 0;
 		for(auto& matHandle : mTextMaterials)
 		{
-			if(matHandle.handle == material)
+			if(&matHandle.handle == &material)
 			{
 				if(--matHandle.refCount == 0)
 				{
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		i = 0;
 		for(auto& matHandle : mImageMaterials)
 		{
-			if(matHandle.handle == material)
+			if(&matHandle.handle == &material)
 			{
 				if(--matHandle.refCount == 0)
 				{
