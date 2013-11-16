@@ -25,10 +25,10 @@ namespace CamelotFramework
 				mNumTextures = texture.second.slot + 1;
 		}
 
-		for(auto& samplers : mParamDesc.samplers)
+		for(auto& sampler : mParamDesc.samplers)
 		{
-			if((samplers.second.slot + 1) > mNumSamplerStates)
-				mNumSamplerStates = samplers.second.slot + 1;
+			if((sampler.second.slot + 1) > mNumSamplerStates)
+				mNumSamplerStates = sampler.second.slot + 1;
 		}
 
 		// Allocate everything in a single block of memory to get rid of extra memory allocations
@@ -97,12 +97,49 @@ namespace CamelotFramework
 			case GPDT_MATRIX_4X4:
 				mMat4Params[param.second.name] = GpuParamMat4(&param.second, mParamBlocks, mTransposeMatrices);
 				break;
+			case GPDT_STRUCT:
+				mStructParams[param.second.name] = GpuParamStruct(&param.second, mParamBlocks);
+				break;
 			}
 		}
+
+		for(auto& texture : mParamDesc.textures)
+			mTextureParams[texture.second.name] = GpuParamTexture(&texture.second, mTextures);
+
+		for(auto& sampler : mParamDesc.samplers)
+			mSampStateParams[sampler.second.name] = GpuParamSampState(&sampler.second, mSamplerStates);
 	}
 
 	GpuParams::~GpuParams()
 	{
+		// Free params
+		for(auto& param : mFloatParams)
+			param.second.destroy();
+
+		for(auto& param : mVec2Params)
+			param.second.destroy();
+
+		for(auto& param : mVec3Params)
+			param.second.destroy();
+
+		for(auto& param : mVec4Params)
+			param.second.destroy();
+
+		for(auto& param : mMat3Params)
+			param.second.destroy();
+
+		for(auto& param : mMat4Params)
+			param.second.destroy();
+
+		for(auto& param : mStructParams)
+			param.second.destroy();
+
+		for(auto& param : mTextureParams)
+			param.second.destroy();
+
+		for(auto& param : mSampStateParams)
+			param.second.destroy();
+
 		// Ensure everything is destructed
 		for(UINT32 i = 0; i < mNumParamBlocks; i++)
 		{
@@ -194,69 +231,34 @@ namespace CamelotFramework
 		return false;
 	}
 
-	void GpuParams::setParam(const String& name, const void* value, UINT32 sizeBytes, UINT32 arrayIndex)
+	void GpuParams::getStructParam(const String& name, GpuParamStruct& output) const
 	{
-		GpuParamDataDesc* desc = getParamDesc(name);
+		auto iterFind = mStructParams.find(name);
 
-		if(desc == nullptr)
-		{
-			LOGWRN("Cannot find parameter with the name '" + name + "'");
-			return;
-		}
+		if(iterFind == mStructParams.end())
+			CM_EXCEPT(InvalidParametersException, "Cannot find struct parameter with the name '" + name + "'");
 
-		if(arrayIndex >= desc->arraySize)
-		{
-			CM_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
-				toString(desc->arraySize) + ". Requested size: " + toString(arrayIndex));
-		}
-
-		UINT32 elementSizeBytes = desc->elementSize * sizeof(UINT32);
-		if(sizeBytes > elementSizeBytes)
-		{
-			CM_EXCEPT(InvalidParametersException, "Provided element size larger than maximum element size. Maximum size: " + 
-				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
-		}
-
-		GpuParamBlock* paramBlock = mParamBlocks[desc->paramBlockSlot];
-
-		if(paramBlock == nullptr)
-		{
-			LOGWRN("Parameter exists but there is no ParamBlock set.");
-			return;
-		}
-
-		paramBlock->write((desc->cpuMemOffset + arrayIndex * desc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
-
-		// Set unused bytes to 0
-		if(sizeBytes < elementSizeBytes)
-		{
-			UINT32 diffSize = elementSizeBytes - sizeBytes;
-			paramBlock->zeroOut((desc->cpuMemOffset + arrayIndex * desc->arrayElementStride)  * sizeof(UINT32) + sizeBytes, diffSize);
-		}
+		output = iterFind->second;
 	}
 
-	void GpuParams::setTexture(const String& name, const HTexture& val)
+	void GpuParams::getTextureParam(const String& name, GpuParamTexture& output) const
 	{
-		auto paramIter = mParamDesc.textures.find(name);
-		if(paramIter == mParamDesc.textures.end())
-		{
-			LOGWRN("Texture with the name '" + name + "' doesn't exist.");
-			return;
-		}
+		auto iterFind = mTextureParams.find(name);
 
-		mTextures[paramIter->second.slot] = val;
+		if(iterFind == mTextureParams.end())
+			CM_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
+
+		output = iterFind->second;
 	}
 
-	void GpuParams::setSamplerState(const String& name, const HSamplerState& val)
+	void GpuParams::getSamplerStateParam(const String& name, GpuParamSampState& output) const
 	{
-		auto paramIter = mParamDesc.samplers.find(name);
-		if(paramIter == mParamDesc.samplers.end())
-		{
-			LOGWRN("Sampler with the name '" + name + "' doesn't exist.");
-			return;
-		}
+		auto iterFind = mSampStateParams.find(name);
 
-		mSamplerStates[paramIter->second.slot] = val;
+		if(iterFind == mSampStateParams.end())
+			CM_EXCEPT(InvalidParametersException, "Cannot find sampler state parameter with the name '" + name + "'");
+
+		output = iterFind->second;
 	}
 
 	GpuParamDataDesc* GpuParams::getParamDesc(const String& name) const

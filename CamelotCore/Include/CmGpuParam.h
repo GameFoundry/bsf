@@ -1,6 +1,8 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmGpuParamDesc.h"
+#include "CmGpuParamBlock.h"
 #include "CmDebug.h"
 #include "CmException.h"
 #include "CmMatrix3.h"
@@ -22,18 +24,19 @@ namespace CamelotFramework
 	private:
 		friend class GpuParams;
 
-		struct GpuDataParamData
+		struct InternalData
 		{
-			GpuDataParamData(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
-				:paramDesc(paramDesc), paramBlocks(paramBlocks), transpose(transpose)
+			InternalData(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
+				:paramDesc(paramDesc), paramBlocks(paramBlocks), transpose(transpose), isDestroyed(false)
 			{ }
 
-			~GpuDataParamData()
+			~InternalData()
 			{ }
 
 			GpuParamDataDesc* paramDesc;
 			GpuParamBlock** paramBlocks;
 			bool transpose;
+			bool isDestroyed;
 		};
 
 		template<class Type>
@@ -63,6 +66,9 @@ namespace CamelotFramework
 
 		void set(const T& value, UINT32 arrayIdx = 0)
 		{
+			if(mData->isDestroyed)
+				CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+
 			GpuParamDataDesc* paramDesc = mData->paramDesc;
 
 #if CM_DEBUG_MODE
@@ -95,6 +101,9 @@ namespace CamelotFramework
 
 		T get(UINT32 arrayIdx = 0)
 		{
+			if(mData->isDestroyed)
+				CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+
 			GpuParamDataDesc* paramDesc = mData->paramDesc;
 
 #if CM_DEBUG_MODE
@@ -117,14 +126,19 @@ namespace CamelotFramework
 				return value;
 		}
 
-	private:
-		GpuDataParamBase(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlock, bool transpose)
+		void destroy()
 		{
-			mData = cm_shared_ptr<GpuDataParamData>(paramDesc, paramBlock, transpose);
+			mData->isDestroyed = true;
 		}
 
 	private:
-		std::shared_ptr<GpuDataParamData> mData;
+		GpuDataParamBase(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
+		{
+			mData = cm_shared_ptr<InternalData>(paramDesc, paramBlocks, transpose);
+		}
+
+	private:
+		std::shared_ptr<InternalData> mData;
 	};
 
 	typedef GpuDataParamBase<float> GpuParamFloat;
@@ -133,4 +147,101 @@ namespace CamelotFramework
 	typedef GpuDataParamBase<Vector4> GpuParamVec4;
 	typedef GpuDataParamBase<Matrix3> GpuParamMat3;
 	typedef GpuDataParamBase<Matrix4> GpuParamMat4;
+
+	/**
+	 * @copydoc GpuDataParamBase
+	 */
+	class CM_EXPORT GpuParamStruct
+	{
+	private:
+		friend class GpuParams;
+
+		struct InternalData
+		{
+			InternalData(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks);
+			~InternalData();
+
+			GpuParamDataDesc* paramDesc;
+			GpuParamBlock** paramBlocks;
+			bool isDestroyed;
+		};
+
+	public:
+		GpuParamStruct();
+
+		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+		UINT32 getElementSize() const;
+
+		void destroy();
+	private:
+		GpuParamStruct(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks);
+
+	private:
+		std::shared_ptr<InternalData> mData;
+	};
+
+	/**
+	 * @copydoc GpuDataParamBase
+	 */
+	class CM_EXPORT GpuParamTexture
+	{
+	private:
+		friend class GpuParams;
+
+		struct InternalData
+		{
+			InternalData(GpuParamObjectDesc* paramDesc, HTexture* textures);
+			~InternalData();
+
+			GpuParamObjectDesc* paramDesc;
+			HTexture* textures;
+			bool isDestroyed;
+		};
+
+	public:
+		GpuParamTexture();
+
+		void set(const HTexture& texture);
+		HTexture get();
+
+		void destroy();
+	private:
+		GpuParamTexture(GpuParamObjectDesc* paramDesc, HTexture* textures);
+
+	private:
+		std::shared_ptr<InternalData> mData;
+	};
+
+	/**
+	 * @copydoc GpuDataParamBase
+	 */
+	class CM_EXPORT GpuParamSampState
+	{
+	private:
+		friend class GpuParams;
+
+		struct InternalData
+		{
+			InternalData(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates);
+			~InternalData();
+
+			GpuParamObjectDesc* paramDesc;
+			HSamplerState* samplerStates;
+			bool isDestroyed;
+		};
+
+	public:
+		GpuParamSampState();
+
+		void set(const HSamplerState& texture);
+		HSamplerState get();
+
+		void destroy();
+	private:
+		GpuParamSampState(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates);
+
+	private:
+		std::shared_ptr<InternalData> mData;
+	};
 }

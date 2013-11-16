@@ -360,7 +360,9 @@ namespace CamelotFramework
 
 		void setValue(MaterialStructParam* obj, ManagedDataBlock value) 
 		{ 
-			obj->value = Material::StructData(value.getData(), value.getSize()); 
+			obj->value = Material::StructData(value.getSize()); 
+			obj->value.write(value.getData());
+			
 		}
 
 		UINT32& getArrayIdx(MaterialStructParam* obj) { return obj->arrayIdx; }

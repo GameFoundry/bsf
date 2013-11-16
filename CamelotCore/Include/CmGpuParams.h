@@ -94,19 +94,9 @@ namespace CamelotFramework
 			output = iterFind->second;
 		}
 
-		/**
-		 * @brief	Sets a parameter.
-		 *
-		 * @param	name	  	Name of the parameter.
-		 * @param	value	  	Parameter data.
-		 * @param	size	  	Size of the provided data. It can be exact size or lower than the exact size of the wanted field.
-		 * 						If it's lower unused bytes will be set to 0. 
-		 * @param	arrayIndex	(optional) zero-based index of the array.
-		 */
-		void setParam(const String& name, const void* value, UINT32 sizeBytes, UINT32 arrayIndex = 0);
-
-		void setTexture(const String& name, const HTexture& val);
-		void setSamplerState(const String& name, const HSamplerState& val);
+		void getStructParam(const String& name, GpuParamStruct& output) const;
+		void getTextureParam(const String& name, GpuParamTexture& output) const;
+		void getSamplerStateParam(const String& name, GpuParamSampState& output) const;
 
 		/**
 		 * @brief	Creates the copy of this object in a special way. Should only be called
@@ -137,5 +127,8 @@ namespace CamelotFramework
 		mutable Map<String, GpuParamVec4>::type mVec4Params;
 		mutable Map<String, GpuParamMat3>::type mMat3Params;
 		mutable Map<String, GpuParamMat4>::type mMat4Params;
+		mutable Map<String, GpuParamStruct>::type mStructParams;
+		mutable Map<String, GpuParamTexture>::type mTextureParams;
+		mutable Map<String, GpuParamSampState>::type mSampStateParams;
 	};
 }

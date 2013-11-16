@@ -37,9 +37,6 @@ namespace CamelotFramework
 	{
 		mBestTechnique = nullptr;
 		mParametersPerPass.clear();
-		mStructValues.clear();
-		mTextureValues.clear();
-		mSamplerValues.clear();
 		freeParamBuffers();
 
 		if(mShader)
@@ -178,13 +175,6 @@ namespace CamelotFramework
 
 				String& paramBlockName = findBlockIter->second;
 				mValidParams[iter->first] = iter->second.gpuVariableName;
-
-				switch(iter->second.type)
-				{
-				case GPDT_STRUCT:
-					mStructValues[iter->first].resize(iter->second.arraySize);
-					break;
-				}
 			}
 
 			// Create object param mappings
@@ -198,23 +188,6 @@ namespace CamelotFramework
 					continue;
 
 				mValidParams[iter->first] = iter->second.gpuVariableName;
-
-				if(Shader::isSampler(iter->second.type))
-				{
-					mSamplerValues[iter->first] = HSamplerState();
-				}
-				else if(Shader::isTexture(iter->second.type))
-				{
-					mTextureValues[iter->first] = HTexture();
-				}
-				else if(Shader::isBuffer(iter->second.type))
-				{
-					// TODO
-
-					CM_EXCEPT(NotImplementedException, "Buffers not implemented.");
-				}
-				else
-					CM_EXCEPT(InternalErrorException, "Invalid object param type.");
 			}
 
 			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
@@ -491,172 +464,9 @@ namespace CamelotFramework
 		}
 	}
 
-	void Material::setTexture(const String& name, const HTexture& value)
-	{
-		throwIfNotInitialized();
-
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
-
-		String& gpuVarName = iterFind->second;
-		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			PassParametersPtr params = *iter;
-
-			for(UINT32 i = 0; i < params->getNumParams(); i++)
-			{
-				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
-				if(paramPtr)
-				{
-					if(paramPtr->hasTexture(gpuVarName))
-						paramPtr->setTexture(gpuVarName, value);
-				}
-			}
-		}
-
-		mTextureValues[name] = value;
-	}
-
-	void Material::setSamplerState(const String& name, const HSamplerState& samplerState)
-	{
-		throwIfNotInitialized();
-
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
-
-		String& gpuVarName = iterFind->second;
-		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			PassParametersPtr params = *iter;
-
-			for(UINT32 i = 0; i < params->getNumParams(); i++)
-			{
-				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
-				if(paramPtr)
-				{
-					if(paramPtr->hasSamplerState(gpuVarName))
-						paramPtr->setSamplerState(gpuVarName, samplerState);
-				}
-			}
-		}
-
-		mSamplerValues[name] = samplerState;
-	}
-
-	void Material::setFloat(const String& name, float value, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		GpuDataParamBase<float> gpuParam;
-		getParam(name, gpuParam);
-
-		gpuParam.set(value, arrayIdx);
-	}
-
-	void Material::setColor(const String& name, const Color& value, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		GpuDataParamBase<Vector4> gpuParam;
-		getParam(name, gpuParam);
-
-		gpuParam.set(Vector4(value.r, value.g, value.b, value.a), arrayIdx);
-	}
-
-	void Material::setVec2(const String& name, const Vector2& value, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		GpuDataParamBase<Vector2> gpuParam;
-		getParam(name, gpuParam);
-
-		gpuParam.set(value, arrayIdx);
-	}
-
-	void Material::setVec3(const String& name, const Vector3& value, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		GpuDataParamBase<Vector3> gpuParam;
-		getParam(name, gpuParam);
-
-		gpuParam.set(value, arrayIdx);
-	}
-
-	void Material::setVec4(const String& name, const Vector4& value, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		GpuDataParamBase<Vector4> gpuParam;
-		getParam(name, gpuParam);
-
-		gpuParam.set(value, arrayIdx);
-	}
-
-	void Material::setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		GpuDataParamBase<Matrix3> gpuParam;
-		getParam(name, gpuParam);
-
-		gpuParam.set(value, arrayIdx);
-	}
-
-	void Material::setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		GpuDataParamBase<Matrix4> gpuParam;
-		getParam(name, gpuParam);
-
-		gpuParam.set(value, arrayIdx);
-	}
-
-	void Material::setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx)
-	{
-		throwIfNotInitialized();
-
-		auto iterFind = mValidParams.find(name);
-		if(iterFind == mValidParams.end())
-		{
-			LOGWRN("Material doesn't have a parameter named " + name);
-			return;
-		}
-
-		const SHADER_DATA_PARAM_DESC& desc = mShader->getDataParamDesc(name);
-		if(desc.elementSize != size)
-		{
-			CM_EXCEPT(InvalidParametersException,
-				"Invalid size when writing a struct. Expected: " + toString(desc.elementSize) + ". Got: " + toString(size));
-		}
-
-		String& gpuVarName = iterFind->second;
-		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-		{
-			PassParametersPtr params = *iter;
-
-			for(UINT32 i = 0; i < params->getNumParams(); i++)
-			{
-				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
-				if(paramPtr)
-				{
-					if(paramPtr->hasParam(gpuVarName))
-						paramPtr->setParam(gpuVarName, value, size, arrayIdx);
-				}
-			}
-		}
-
-		auto& savedValue = mStructValues[name];
-		savedValue[arrayIdx] = StructData(value, size);
+	void Material::setColor(const String& name, const Color& value, UINT32 arrayIdx)				
+	{ 
+		return getParamVec4(name).set(Vector4(value.r, value.g, value.b, value.a), arrayIdx); 
 	}
 
 	//void Material::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
@@ -709,82 +519,182 @@ namespace CamelotFramework
 		return params;
 	}
 
-	HTexture Material::getTexture(const String& name) const
+	Material::StructData Material::getStructData(const String& name, UINT32 arrayIdx) const
 	{
-		auto iterFind = mTextureValues.find(name);
+		GpuParamStruct structParam = getParamStruct(name);
 
-		if(iterFind == mTextureValues.end())
-			CM_EXCEPT(InternalErrorException, "No texture parameter with the name: " + name);
+		StructData data(structParam.getElementSize());
+		structParam.get(data.data.get(), structParam.getElementSize(), arrayIdx);
 
-		return iterFind->second;
+		return data;
 	}
 
-	HSamplerState Material::getSamplerState(const String& name) const
-	{
-		auto iterFind = mSamplerValues.find(name);
-
-		if(iterFind == mSamplerValues.end())
-			CM_EXCEPT(InternalErrorException, "No sampler state parameter with the name: " + name);
-
-		return iterFind->second;
-	}
-
-	float Material::getFloat(const String& name, UINT32 arrayIdx) const
+	GpuParamFloat Material::getParamFloat(const String& name) const
 	{
 		GpuDataParamBase<float> gpuParam;
 		getParam(name, gpuParam);
 
-		return gpuParam.get(arrayIdx);
+		return gpuParam;
 	}
 
-	Vector2 Material::getVec2(const String& name, UINT32 arrayIdx) const
+	GpuParamVec2 Material::getParamVec2(const String& name) const
 	{
 		GpuDataParamBase<Vector2> gpuParam;
 		getParam(name, gpuParam);
 
-		return gpuParam.get(arrayIdx);
+		return gpuParam;
 	}
 
-	Vector3 Material::getVec3(const String& name, UINT32 arrayIdx) const
+	GpuParamVec3 Material::getParamVec3(const String& name) const
 	{
 		GpuDataParamBase<Vector3> gpuParam;
 		getParam(name, gpuParam);
 
-		return gpuParam.get(arrayIdx);
+		return gpuParam;
 	}
 
-	Vector4 Material::getVec4(const String& name, UINT32 arrayIdx) const
+	GpuParamVec4 Material::getParamVec4(const String& name) const
 	{
 		GpuDataParamBase<Vector4> gpuParam;
 		getParam(name, gpuParam);
 
-		return gpuParam.get(arrayIdx);
+		return gpuParam;
 	}
 
-	Matrix3 Material::getMat3(const String& name, UINT32 arrayIdx) const
+	GpuParamMat3 Material::getParamMat3(const String& name) const
 	{
 		GpuDataParamBase<Matrix3> gpuParam;
 		getParam(name, gpuParam);
 
-		return gpuParam.get(arrayIdx);
+		return gpuParam;
 	}
 
-	Matrix4 Material::getMat4(const String& name, UINT32 arrayIdx) const
+	GpuParamMat4 Material::getParamMat4(const String& name) const
 	{
 		GpuDataParamBase<Matrix4> gpuParam;
 		getParam(name, gpuParam);
 
-		return gpuParam.get(arrayIdx);
+		return gpuParam;
 	}
 
-	const Material::StructData& Material::getStructData(const String& name, UINT32 arrayIdx) const
+	GpuParamStruct Material::getParamStruct(const String& name) const
 	{
-		auto iterFind = mStructValues.find(name);
+		throwIfNotInitialized();
 
-		if(iterFind == mStructValues.end())
-			CM_EXCEPT(InternalErrorException, "No struct parameter with the name: " + name);
+		GpuParamStruct gpuParam;
 
-		return iterFind->second.at(arrayIdx);
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return gpuParam;
+		}
+
+		const String& gpuVarName = iterFind->second;
+		GpuParamsPtr params = findParamsWithName(gpuVarName);
+
+		params->getStructParam(gpuVarName, gpuParam);
+		return gpuParam;
+	}
+
+	GpuParamTexture Material::getParamTexture(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		GpuParamTexture gpuParam;
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return gpuParam;
+		}
+
+		const String& gpuVarName = iterFind->second;
+		GpuParamsPtr params = findTexWithName(gpuVarName);
+
+		params->getTextureParam(gpuVarName, gpuParam);
+		return gpuParam;
+	}
+
+	GpuParamSampState Material::getParamSamplerState(const String& name) const
+	{
+		throwIfNotInitialized();
+
+		GpuParamSampState gpuParam;
+
+		auto iterFind = mValidParams.find(name);
+		if(iterFind == mValidParams.end())
+		{
+			LOGWRN("Material doesn't have a parameter named " + name);
+			return gpuParam;
+		}
+
+		const String& gpuVarName = iterFind->second;
+		GpuParamsPtr params = findSamplerStateWithName(gpuVarName);
+
+		params->getSamplerStateParam(gpuVarName, gpuParam);
+		return gpuParam;
+	}
+
+	GpuParamsPtr Material::findParamsWithName(const String& name) const
+	{
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
+
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasParam(name))
+						return paramPtr;
+				}
+			}
+		}
+
+		CM_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
+	}
+
+	GpuParamsPtr Material::findTexWithName(const String& name) const
+	{
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
+
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasTexture(name))
+						return paramPtr;
+				}
+			}
+		}
+
+		CM_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
+	}
+
+	GpuParamsPtr Material::findSamplerStateWithName(const String& name) const
+	{
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
+
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasSamplerState(name))
+						return paramPtr;
+				}
+			}
+		}
+
+		CM_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
 	}
 
 	void Material::destroy_internal()
