@@ -186,9 +186,6 @@
     <ClInclude Include="Include\CmMesh.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmMeshData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMeshDataRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -492,6 +489,15 @@
     <ClInclude Include="Include\CmGpuParam.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmMeshData.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVertexDataDesc.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVertexDataDescRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -568,9 +574,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmMesh.cpp">
       <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmMeshData.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmInput.cpp">
       <Filter>Source Files\Input</Filter>
@@ -766,6 +769,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmGpuParam.cpp">
       <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMeshData.cpp">
+      <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmVertexDataDesc.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

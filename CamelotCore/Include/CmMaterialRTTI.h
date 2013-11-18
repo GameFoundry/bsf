@@ -547,7 +547,7 @@ namespace CamelotFramework
 			return obj->mShader;
 		}
 
-		void setShader(Material* obj,  ShaderPtr val)
+		void setShader(Material* obj, ShaderPtr val)
 		{
 			obj->mShader = val;
 		}

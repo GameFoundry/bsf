@@ -77,32 +77,11 @@ namespace CamelotFramework
 			DrawOperationType drawOp;
 		};
 
-		MeshData(UINT32 numVertices, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+		MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 		~MeshData();
 
-		/**
-		 * @brief	Begins the mesh data definition. After this call you may call various add* methods to inform
-		 * 			the internal buffer which data it will need to hold. Each beginDesc() call needs to be followed with
-		 * 			an endDesc().
-		 */
-		void beginDesc();
-
-		/**
-		 * @brief	Call after you are done defining data to actually allocate the internal buffer. Any previous buffer will be overwritten.
-		 * 			Must be called after beginDesc().
-		 */
-		void endDesc();
-
-		/**
-		* @brief	Informs the internal buffer that it needs to make room for the specified vertex element. If a vertex
-		* 			with same stream and semantics already exists it will just be updated. This must be called between beginDesc and endDesc.
-		 *
-		 * @param	type	   	Type of the vertex element. Determines size.
-		 * @param	semantic   	Semantic that allows the engine to connect the data to a shader input slot.
-		 * @param	semanticIdx	(optional) If there are multiple semantics with the same name, use different index to differentiate between them.
-		 * @param	streamIdx  	(optional) Zero-based index of the stream. Each stream will internally be represented as a single vertex buffer.
-		 */
-		void addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
+		void setVertexWriteOffset(UINT32 offset); // TODO
+		void setIndexWriteOffset(UINT32 offset); // TODO
 
 		/**
 		 * @brief	Informs the internal buffer that it needs to make room for an index buffer of the
@@ -114,11 +93,6 @@ namespace CamelotFramework
 		 * @param	drawOp	  	(optional) Specifies the primitive type contained by the mesh.
 		 */
 		void addSubMesh(UINT32 numIndices, UINT32 subMesh = 0, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
-
-		/**
-		 * @brief	Query if we have vertex data for the specified semantic.
-		 */
-		bool hasElement(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
 		/**
 		 * @brief	Copies data from "data" parameter into the internal buffer for the specified semantic.
@@ -163,16 +137,12 @@ namespace CamelotFramework
 		 */
 		VertexElemIter<UINT32> getDWORDDataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
-		/**
-		 * @brief	Creates a new vertex declaration based on set vertex elements.
-		 */
-		VertexDeclarationPtr createDeclaration() const;
-
 		UINT32 getNumSubmeshes() const { return (UINT32)mSubMeshes.size(); }
 		UINT32 getNumVertices() const { return mNumVertices; }
 		UINT32 getNumIndices(UINT32 subMesh) const;
 		UINT32 getNumIndices() const;
 		DrawOperationType getDrawOp(UINT32 subMesh) const;
+		DrawOperationType getDrawOp() const;
 
 		UINT16* getIndices16(UINT32 subMesh = 0) const;
 		UINT32* getIndices32(UINT32 subMesh = 0) const;
@@ -191,11 +161,10 @@ namespace CamelotFramework
 		 * @return	null if it fails, else the element data.
 		 */
 		UINT8* getElementData(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
-		UINT32 getElementSize(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 		UINT32 getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0) const;
 
-		UINT32 getVertexStride(UINT32 streamIdx = 0) const;
-		
+		const VertexDataDescPtr& getVertexDesc() const { return mVertexData; }
+
 		static MeshDataPtr combine(const Vector<MeshDataPtr>::type& elements);
 
 	protected:
@@ -209,13 +178,12 @@ namespace CamelotFramework
 		UINT8* mData;
 
 		UINT32 mNumVertices;
+		UINT32 mNumIndices;
+		DrawOperationType mDrawOp;
 		IndexBuffer::IndexType mIndexType;
 
 		Vector<IndexElementData>::type mSubMeshes;
-		Vector<VertexElement>::type mVertexElements;
-
-		UINT32 getMaxStreamIdx() const;
-		bool hasStream(UINT32 streamIdx) const;
+		VertexDataDescPtr mVertexData;
 
 		UINT8* getIndexData() const { return getData(); }
 		UINT8* getStreamData(UINT32 streamIdx) const;
@@ -223,12 +191,11 @@ namespace CamelotFramework
 		UINT32 getIndexBufferOffset(UINT32 subMesh) const;
 		UINT32 getStreamOffset(UINT32 streamIdx = 0) const;
 
-		UINT32 getIndexBufferSize() const { return getIndexBufferOffset(getNumSubmeshes()); }
+		UINT32 getIndexBufferSize() const;
 		UINT32 getStreamSize(UINT32 streamIdx) const;
 		UINT32 getStreamSize() const;
 
 		void getDataForIterator(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx, UINT8*& data, UINT32& stride) const;
-		void clearIfItExists(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx);
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

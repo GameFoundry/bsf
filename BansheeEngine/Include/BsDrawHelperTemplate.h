@@ -62,7 +62,7 @@ namespace BansheeEngine
 			assert((vertexOffset + 2) <= meshData->getNumVertices());
 			assert((indexOffset + 2) <= meshData->getNumIndices());
 
-			line_Pixel(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+			line_Pixel(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
 		void line_AA(const T& a, const T& b, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
@@ -74,7 +74,7 @@ namespace BansheeEngine
 			assert((vertexOffset + 8) <= meshData->getNumVertices());
 			assert((indexOffset + 30) <= meshData->getNumIndices());
 
-			line_AA(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+			line_AA(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
 		void lineList_Pixel(const typename CM::Vector<T>::type& linePoints, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
@@ -94,7 +94,7 @@ namespace BansheeEngine
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i += 2)
 			{
-				line_Pixel(linePoints[i], linePoints[i + 1], color, positionData, colorData, curVertOffset, meshData->getVertexStride(), indexData, curIdxOffset);
+				line_Pixel(linePoints[i], linePoints[i + 1], color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
 
 				curVertOffset += 2;
 				curIdxOffset += 2;
@@ -118,7 +118,7 @@ namespace BansheeEngine
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i += 2)
 			{
-				line_AA(linePoints[i], linePoints[i + 1], width, borderWidth, color, positionData, colorData, curVertOffset, meshData->getVertexStride(), indexData, curIdxOffset);
+				line_AA(linePoints[i], linePoints[i + 1], width, borderWidth, color, positionData, colorData, curVertOffset, meshData->getVertexDesc()->getVertexStride(), indexData, curIdxOffset);
 
 				curVertOffset += 8;
 				curIdxOffset += 30;

@@ -14,6 +14,7 @@
 #include "BsBuiltinMaterialManager.h"
 #include "BsGUIWidget.h"
 #include "BsCamera.h"
+#include "CmVertexDataDesc.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -311,15 +312,12 @@ namespace BansheeEditor
 		Vector2 inBotLeft((float)(x + inXOffset), (float)(y + inYOffset + inHeight));
 		Vector2 inBotRight((float)(x + inXOffset + inWidth), (float)(y + inYOffset + inHeight));
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(16);
+		VertexDataDescPtr vertexDesc = cm_shared_ptr<VertexDataDesc>();
+		
+		vertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
+		vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
-		meshData->beginDesc();
-
-		meshData->addSubMesh(24, 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(16, 24, vertexDesc);
 
 		auto vertIter = meshData->getVec2DataIter(VES_POSITION);
 		auto colIter = meshData->getDWORDDataIter(VES_COLOR);

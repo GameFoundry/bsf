@@ -3,6 +3,7 @@
 #include "CmApplication.h"
 #include "CmVector3.h"
 #include "CmMesh.h"
+#include "CmVertexDataDesc.h"
 
 namespace CamelotFramework
 {
@@ -35,12 +36,10 @@ namespace CamelotFramework
 
 	void MeshManager::onStartUp()
 	{
-		mDummyMeshData = cm_shared_ptr<MeshData>(1);
+		VertexDataDescPtr vertexDesc = cm_shared_ptr<VertexDataDesc>();
+		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
-		mDummyMeshData->beginDesc();
-		mDummyMeshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		mDummyMeshData->addSubMesh(3);
-		mDummyMeshData->endDesc();
+		mDummyMeshData = cm_shared_ptr<MeshData>(1, 3, vertexDesc);
 
 		auto vecIter = mDummyMeshData->getVec3DataIter(VES_POSITION);
 		vecIter.setValue(Vector3(0, 0, 0));

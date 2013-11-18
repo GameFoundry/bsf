@@ -388,6 +388,8 @@
     <ClInclude Include="Include\CmTextureRTTI.h" />
     <ClInclude Include="Include\CmSamplerState.h" />
     <ClInclude Include="Include\CmIndexData.h" />
+    <ClInclude Include="Include\CmVertexDataDesc.h" />
+    <ClInclude Include="Include\CmVertexDataDescRTTI.h" />
     <ClInclude Include="Include\CmVertexDeclaration.h" />
     <ClInclude Include="Include\CmVertexData.h" />
     <ClInclude Include="Include\CmViewport.h" />
@@ -490,6 +492,7 @@
     <ClCompile Include="Source\CmTexture.cpp" />
     <ClCompile Include="Source\CmTextureManager.cpp" />
     <ClCompile Include="Source\CmSamplerState.cpp" />
+    <ClCompile Include="Source\CmVertexDataDesc.cpp" />
     <ClCompile Include="Source\CmVertexDeclaration.cpp" />
     <ClCompile Include="Source\CmVertexData.cpp" />
     <ClCompile Include="Source\CmViewport.cpp" />

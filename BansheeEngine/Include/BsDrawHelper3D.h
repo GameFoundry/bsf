@@ -11,6 +11,8 @@ namespace BansheeEngine
 	class BS_EXPORT DrawHelper3D : public DrawHelperTemplate<CM::Vector3>, public CM::Module<DrawHelper3D>
 	{
 	public:
+		DrawHelper3D();
+
 		/**
 		 * @brief	Fills the mesh data with vertices representing an axis aligned box.
 		 *
@@ -111,6 +113,8 @@ namespace BansheeEngine
 		void drawAABox(const HCamera& camera, const CM::AABox& box, const CM::Color& color = CM::Color::White, float timeout = 0.0f);
 
 	private:
+		CM::VertexDataDescPtr mVertexDesc;
+		
 		CM::Vector3 calcCenter(CM::UINT8* vertices, CM::UINT32 numVertices, CM::UINT32 vertexStride);
 
 	protected:

@@ -10,11 +10,19 @@
 #include "CmException.h"
 #include "BsCamera.h"
 #include "BsBuiltinMaterialManager.h"
+#include "CmVertexDataDesc.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	DrawHelper3D::DrawHelper3D()
+	{
+		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
+		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
+		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
+	}
+
 	void DrawHelper3D::aabox(const CM::AABox& box, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
@@ -23,7 +31,7 @@ namespace BansheeEngine
 		assert((vertexOffset + 8) <= meshData->getNumVertices());
 		assert((indexOffset + 36) <= meshData->getNumIndices());	
 
-		aabox(box, positionData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+		aabox(box, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
 	void DrawHelper3D::line_Pixel(const Vector3& a, const Vector3& b, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
@@ -60,20 +68,12 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2);
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh(2, 0, DOT_LINE_LIST);
-		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc, DOT_LINE_LIST);
 
 		line_Pixel(a, b, color, meshData, 0, 0);
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
-		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), meshData->getVertexStride());
+		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
 		HMesh mesh = Mesh::create();
 
@@ -94,20 +94,12 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8);
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh(30, 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8, 30, mVertexDesc);
 
 		line_AA(a, b, width, borderWidth, color, meshData, 0, 0);
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
-		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), meshData->getVertexStride());
+		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
 		HMesh mesh = Mesh::create();
 
@@ -128,20 +120,12 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 2));
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh((UINT32)(linePoints.size() * 2), 0, DOT_LINE_LIST);
-		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc, DOT_LINE_LIST);
 
 		lineList_Pixel(linePoints, color, meshData, 0, 0);
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
-		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), meshData->getVertexStride());
+		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
 		HMesh mesh = Mesh::create();
 
@@ -163,20 +147,12 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4));
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh((UINT32)(linePoints.size() * 15), 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4), (UINT32)(linePoints.size() * 15), mVertexDesc);
 
 		lineList_AA(linePoints, width, borderWidth, color, meshData, 0, 0);	
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
-		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), meshData->getVertexStride());
+		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
 		HMesh mesh = Mesh::create();
 
@@ -197,19 +173,11 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8);
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh(36, 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8, 36, mVertexDesc);
 
 		aabox(box, meshData, 0, 0);	
 
-		UINT32 vertexStride = meshData->getVertexStride();
+		UINT32 vertexStride = mVertexDesc->getVertexStride();
 		UINT8* colorData = meshData->getElementData(VES_COLOR);
 
 		for(UINT32 i = 0; i < meshData->getNumVertices(); i++)
@@ -221,7 +189,7 @@ namespace BansheeEngine
 		}
 
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
-		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), meshData->getVertexStride());
+		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
 		HMesh mesh = Mesh::create();
 

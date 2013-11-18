@@ -128,6 +128,7 @@ namespace CamelotFramework
 	struct RenderOperation;
 	class RenderQueue;
 	struct ProfilerReport;
+	class VertexDataDesc;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -204,6 +205,7 @@ namespace CamelotFramework
 	typedef std::shared_ptr<const ImportOptions> ConstImportOptionsPtr;
 	typedef std::shared_ptr<Font> FontPtr;
 	typedef std::shared_ptr<GpuResource> GpuResourcePtr;
+	typedef std::shared_ptr<VertexDataDesc> VertexDataDescPtr;
 	typedef CoreThreadAccessor<CommandQueueNoSync> CoreAccessor;
 	typedef CoreThreadAccessor<CommandQueueSync> SyncedCoreAccessor;
 	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueNoSync>> CoreAccessorPtr;
@@ -266,7 +268,8 @@ namespace CamelotFramework
 		TID_GameObject = 1060,
 		TID_GpuResource = 1061,
 		TID_PixelData = 1062,
-		TID_GpuResourceData = 1063
+		TID_GpuResourceData = 1063,
+		TID_VertexDataDesc = 1064
 	};
 }
 

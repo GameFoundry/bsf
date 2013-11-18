@@ -9,6 +9,7 @@
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
+#include "CmVertexDataDesc.h"
 
 namespace CamelotFramework
 {
@@ -177,7 +178,10 @@ namespace CamelotFramework
 	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
 	{
 		if (!mesh->GetNode())
-			return cm_shared_ptr<MeshData, ScratchAlloc>(0);
+		{
+			VertexDataDescPtr tmpVertDesc = cm_shared_ptr<VertexDataDesc>();
+			return cm_shared_ptr<MeshData, ScratchAlloc>(0, 0, tmpVertDesc);
+		}
 
 		// Find out which vertex attributes exist
 		bool allByControlPoint = true;
@@ -283,36 +287,35 @@ namespace CamelotFramework
 
 		UINT32 vertexCount = lPolygonVertexCount;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(vertexCount);
-		
-		meshData->beginDesc();
-		meshData->addVertElem(VET_FLOAT3, VES_POSITION);
+		VertexDataDescPtr vertexDesc = cm_shared_ptr<VertexDataDesc>();
+
+		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
 		if(hasColor)
-			meshData->addVertElem(VET_COLOR, VES_COLOR);
+			vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
 		if(hasNormal)
-			meshData->addVertElem(VET_FLOAT3, VES_NORMAL);
+			vertexDesc->addVertElem(VET_FLOAT3, VES_NORMAL);
 
 		if(hasTangent)
-			meshData->addVertElem(VET_FLOAT3, VES_TANGENT);
+			vertexDesc->addVertElem(VET_FLOAT3, VES_TANGENT);
 
 		if(hasBitangent)
-			meshData->addVertElem(VET_FLOAT3, VES_BITANGENT);
+			vertexDesc->addVertElem(VET_FLOAT3, VES_BITANGENT);
 
 		FbxStringList lUVNames;
 		mesh->GetUVSetNames(lUVNames);
 		const char * lUVName0 = NULL;
 		if (hasUV0 && lUVNames.GetCount() > 0)
 		{
-			meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD, 0);
+			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 0);
 			lUVName0 = lUVNames[0];
 		}
 
 		const char * lUVName1 = NULL;
 		if (hasUV1 && lUVNames.GetCount() > 1)
 		{
-			meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD, 1);
+			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 1);
 			lUVName1 = lUVNames[1];
 		}
 
@@ -321,6 +324,7 @@ namespace CamelotFramework
 		FbxGeometryElement::EMappingMode lMaterialMappingMode = FbxGeometryElement::eNone;
 		Vector<SubMesh>::type subMeshes;
 
+		UINT32 numIndices = 0;
 		if (mesh->GetElementMaterial())
 		{
 			lMaterialIndice = &mesh->GetElementMaterial()->GetIndexArray();
@@ -349,7 +353,8 @@ namespace CamelotFramework
 					{
 						subMeshes[lIndex].indexOffset = lOffset;
 						lOffset += subMeshes[lIndex].indexCount;
-						meshData->addSubMesh(subMeshes[lIndex].indexCount, lIndex);
+
+						numIndices += subMeshes[lIndex].indexCount;
 					}
 					FBX_ASSERT(lOffset == lPolygonCount * 3);
 				}
@@ -359,12 +364,16 @@ namespace CamelotFramework
 		// All faces will use the same material.
 		if (subMeshes.size() == 0)
 		{
+			numIndices = lPolygonCount * 3;
+
 			subMeshes.resize(1);
 			subMeshes[0].indexCount = lPolygonCount * 3;
-			meshData->addSubMesh(subMeshes[0].indexCount);
 		}
 
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(vertexCount, numIndices, vertexDesc);
+
+		for(UINT32 i = 0; i < (UINT32)subMeshes.size(); i++)
+			meshData->addSubMesh(subMeshes[i].indexCount, i);
 
 		// Allocate the array memory, by control point or by polygon vertex.
 		VertexElemIter<Vector3> positions = meshData->getVec3DataIter(VES_POSITION);

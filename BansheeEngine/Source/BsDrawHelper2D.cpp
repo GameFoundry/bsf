@@ -10,6 +10,7 @@
 #include "BsCamera.h"
 #include "CmCoreThreadAccessor.h"
 #include "BsBuiltinMaterialManager.h"
+#include "CmVertexDataDesc.h"
 
 using namespace CamelotFramework;
 
@@ -18,6 +19,10 @@ namespace BansheeEngine
 	DrawHelper2D::DrawHelper2D()
 	{
 		mMaterial2DClipSpace = BuiltinMaterialManager::instance().createDebugDraw2DClipSpaceMaterial();
+
+		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
+		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
+		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 	}
 
 	void DrawHelper2D::quad(const CM::FRect& area, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
@@ -34,7 +39,7 @@ namespace BansheeEngine
 		points.push_back(Vector2(area.x + area.width, area.y + area.height));
 		points.push_back(Vector2(area.x, area.y + area.height));	
 
-		polygonFill_Pixel(points, positionData, vertexOffset, meshData->getVertexStride(), indexData, indexOffset);
+		polygonFill_Pixel(points, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
 	void DrawHelper2D::line_Pixel(const Vector2& a, const Vector2& b, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
@@ -71,15 +76,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(4);
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh(6);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(4, 6, mVertexDesc);
 
 		FRect actualArea = area;
 		if(coordType == DebugDrawCoordType::Normalized)
@@ -87,7 +84,7 @@ namespace BansheeEngine
 
 		quad(actualArea, meshData, 0, 0);
 
-		UINT32 vertexStride = meshData->getVertexStride();
+		UINT32 vertexStride = mVertexDesc->getVertexStride();
 		UINT8* colorData = meshData->getElementData(VES_COLOR);
 
 		UINT32* colors = (UINT32*)colorData;
@@ -130,15 +127,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2);
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh(2, 0, DOT_LINE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc, DOT_LINE_LIST);
 
 		Vector2 actualA = a;
 		Vector2 actualB = b;
@@ -179,15 +168,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8);
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh(30, 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8, 30, mVertexDesc);
 
 		Vector2 actualA = a;
 		Vector2 actualB = b;
@@ -229,15 +210,8 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 2));
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh((UINT32)(linePoints.size() * 2), 0, DOT_LINE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(
+			(UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc, DOT_LINE_LIST);
 
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
@@ -283,15 +257,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4));
-
-		meshData->beginDesc();
-
-		meshData->addSubMesh((UINT32)(linePoints.size() * 15), 0, DOT_TRIANGLE_LIST);
-		meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-		meshData->addVertElem(VET_COLOR, VES_COLOR);
-
-		meshData->endDesc();
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4), (UINT32)(linePoints.size() * 15), mVertexDesc);
 
 		if(coordType == DebugDrawCoordType::Normalized)
 		{

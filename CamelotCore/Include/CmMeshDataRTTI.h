@@ -14,25 +14,8 @@ namespace CamelotFramework
 	class CM_EXPORT MeshDataRTTI : public RTTIType<MeshData, GpuResourceData, MeshDataRTTI>
 	{
 	private:
-		VertexElement& getVertexElementData(MeshData* obj, UINT32 arrayIdx)
-		{
-			return obj->mVertexElements[arrayIdx];
-		}
-
-		void setVertexElementData(MeshData* obj, UINT32 arrayIdx, VertexElement& value)
-		{
-			obj->mVertexElements[arrayIdx] = value;
-		}
-
-		UINT32 getNumVertexElementData(MeshData* obj)
-		{
-			return (UINT32)obj->mVertexElements.size();
-		}
-
-		void setNumVertexElementData(MeshData* obj, UINT32 numElements)
-		{
-			obj->mVertexElements.resize(numElements);
-		}
+		VertexDataDescPtr getVertexData(MeshData* obj) { return obj->mVertexData; }
+		void setVertexData(MeshData* obj, VertexDataDescPtr value) { obj->mVertexData = value; }
 
 		MeshData::IndexElementData& getIndexElementData(MeshData* obj, UINT32 arrayIdx)
 		{
@@ -74,6 +57,26 @@ namespace CamelotFramework
 			obj->mNumVertices = value;
 		}
 
+		UINT32& getNumIndices(MeshData* obj)
+		{
+			return obj->mNumIndices;
+		}
+
+		void setNumIndices(MeshData* obj, UINT32& value)
+		{
+			obj->mNumIndices = value;
+		}
+
+		UINT32& getDrawOp(MeshData* obj)
+		{
+			return (UINT32&)obj->mDrawOp;
+		}
+
+		void setDrawOp(MeshData* obj, UINT32& value)
+		{
+			obj->mDrawOp = (DrawOperationType)value;
+		}
+
 		ManagedDataBlock getData(MeshData* obj) 
 		{ 
 			ManagedDataBlock dataBlock((UINT8*)obj->getData(), obj->getInternalBufferSize());
@@ -96,16 +99,17 @@ namespace CamelotFramework
 	public:
 		MeshDataRTTI()
 		{
-			addPlainArrayField("mVertexData", 0, &MeshDataRTTI::getVertexElementData, 
-				&MeshDataRTTI::getNumVertexElementData, &MeshDataRTTI::setVertexElementData, &MeshDataRTTI::setNumVertexElementData);
+			addReflectablePtrField("mVertexData", 0, &MeshDataRTTI::getVertexData, &MeshDataRTTI::setVertexData);
 
 			addPlainArrayField("mIndexBuffer", 1, &MeshDataRTTI::getIndexElementData, 
 				&MeshDataRTTI::getNumIndexElementData, &MeshDataRTTI::setIndexElementData, &MeshDataRTTI::setNumIndexElementData);
 
 			addPlainField("mIndexType", 2, &MeshDataRTTI::getIndexType, &MeshDataRTTI::setIndexType);
 			addPlainField("mNumVertices", 3, &MeshDataRTTI::getNumVertices, &MeshDataRTTI::setNumVertices);
+			addPlainField("mNumIndices", 4, &MeshDataRTTI::getNumIndices, &MeshDataRTTI::setNumIndices);
+			addPlainField("mDrawOp", 5, &MeshDataRTTI::getDrawOp, &MeshDataRTTI::setDrawOp);
 
-			addDataBlockField("data", 4, &MeshDataRTTI::getData, &MeshDataRTTI::setData, 0, &MeshDataRTTI::allocateData);
+			addDataBlockField("data", 6, &MeshDataRTTI::getData, &MeshDataRTTI::setData, 0, &MeshDataRTTI::allocateData);
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 

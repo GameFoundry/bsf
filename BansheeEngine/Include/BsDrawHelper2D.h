@@ -115,6 +115,8 @@ namespace BansheeEngine
 	private:
 		DebugDraw2DClipSpaceMatInfo mMaterial2DClipSpace;
 
+		CM::VertexDataDescPtr mVertexDesc;
+
 		CM::FRect normalizedCoordToClipSpace(const CM::FRect& area) const;
 		CM::Vector2 normalizedCoordToClipSpace(const CM::Vector2& pos) const;
 

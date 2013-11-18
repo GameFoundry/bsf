@@ -121,6 +121,8 @@ namespace BansheeEngine
 		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
 
+		CM::VertexDataDescPtr mVertexDesc;
+
 		CM::Stack<GUIElement*>::type mScheduledForDestruction;
 
 		// Element and widget mouse is currently over

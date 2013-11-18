@@ -7,6 +7,7 @@
 #include "CmSceneObject.h"
 #include "CmMaterial.h"
 #include "CmMeshData.h"
+#include "CmVertexDataDesc.h"
 #include "CmMesh.h"
 #include "CmUtil.h"
 #include "CmRenderWindowManager.h"
@@ -81,6 +82,10 @@ namespace BansheeEngine
 		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(boost::bind(&GUIManager::onMouseDragEnded, this, _1));
 
 		GUIDropDownBoxManager::startUp(cm_new<GUIDropDownBoxManager>());
+
+		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
+		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
+		mVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
@@ -476,18 +481,12 @@ namespace BansheeEngine
 					}
 				}
 
-				MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4);
-
-				meshData->beginDesc();
-				meshData->addVertElem(VET_FLOAT2, VES_POSITION);
-				meshData->addVertElem(VET_FLOAT2, VES_TEXCOORD);
-				meshData->addSubMesh(group->numQuads * 6);
-				meshData->endDesc();
+				MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
 
 				UINT8* vertices = meshData->getElementData(VES_POSITION);
 				UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
 				UINT32* indices = meshData->getIndices32();
-				UINT32 vertexStride = meshData->getVertexStride();
+				UINT32 vertexStride = meshData->getVertexDesc()->getVertexStride();
 				UINT32 indexStride = meshData->getIndexElementSize();
 
 				UINT32 quadOffset = 0;

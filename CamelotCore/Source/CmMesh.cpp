@@ -9,6 +9,7 @@
 #include "CmCoreThread.h"
 #include "CmAsyncOp.h"
 #include "CmAABox.h"
+#include "CmVertexDataDesc.h"
 
 #include "CmProfiler.h"
 
@@ -56,11 +57,11 @@ namespace CamelotFramework
 		mVertexData = std::shared_ptr<VertexData>(cm_new<VertexData, PoolAlloc>());
 
 		mVertexData->vertexCount = meshData.getNumVertices();
-		mVertexData->vertexDeclaration = meshData.createDeclaration();
+		mVertexData->vertexDeclaration = meshData.getVertexDesc()->createDeclaration();
 
-		for(UINT32 i = 0; i <= meshData.getMaxStreamIdx(); i++)
+		for(UINT32 i = 0; i <= meshData.getVertexDesc()->getMaxStreamIdx(); i++)
 		{
-			if(!meshData.hasStream(i))
+			if(!meshData.getVertexDesc()->hasStream(i))
 				continue;
 
 			UINT32 streamSize = meshData.getStreamSize(i);
@@ -82,10 +83,10 @@ namespace CamelotFramework
 
 			if(vertexBuffer->vertexColorReqRGBFlip())
 			{
-				UINT32 vertexStride = meshData.getVertexStride(i);
+				UINT32 vertexStride = meshData.getVertexDesc()->getVertexStride(i);
 				for(INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
 				{
-					if(!meshData.hasElement(VES_COLOR, semanticIdx, i))
+					if(!meshData.getVertexDesc()->hasElement(VES_COLOR, semanticIdx, i))
 						continue;
 
 					UINT8* colorData = vertBufferData + meshData.getElementOffset(VES_COLOR, semanticIdx, i);
@@ -106,13 +107,25 @@ namespace CamelotFramework
 		// Submeshes
 		mSubMeshes.clear();
 
-		for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
+		if(meshData.getNumSubmeshes() > 0)
 		{
-			UINT32 numIndices = meshData.getNumIndices(i);
+			for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
+			{
+				UINT32 numIndices = meshData.getNumIndices(i);
+
+				if(numIndices > 0)
+				{
+					mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices, meshData.getDrawOp(i), mVertexData, mIndexData, true));
+				}
+			}
+		}
+		else // Read it all as one mesh
+		{
+			UINT32 numIndices = meshData.getNumIndices();
 
 			if(numIndices > 0)
 			{
-				mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices, meshData.getDrawOp(i), mVertexData, mIndexData, true));
+				mSubMeshes.push_back(SubMesh(0, numIndices, meshData.getDrawOp(), mVertexData, mIndexData, true));
 			}
 		}
 	}
@@ -177,14 +190,14 @@ namespace CamelotFramework
 		if(mIndexData)
 			indexType = mIndexData->indexBuffer->getType();
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(mVertexData->vertexCount, indexType);
-
-		meshData->beginDesc();
+		UINT32 numIndices = 0;
 		if(mIndexData)
 		{
 			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
-				meshData->addSubMesh(mSubMeshes[i].indexCount, i);
+				numIndices += mSubMeshes[i].indexCount;
 		}
+
+		VertexDataDescPtr vertexDesc = cm_shared_ptr<VertexDataDesc>();
 
 		if(mVertexData)
 		{
@@ -206,13 +219,20 @@ namespace CamelotFramework
 					UINT32 offset = element->getOffset();
 					UINT32 elemSize = element->getSize();
 
-					meshData->addVertElem(type, semantic, semanticIdx, streamIdx);
+					vertexDesc->addVertElem(type, semantic, semanticIdx, streamIdx);
 				}
 
 				streamIdx++;
 			}
 		}
-		meshData->endDesc();
+
+		MeshDataPtr meshData = cm_shared_ptr<MeshData>(mVertexData->vertexCount, numIndices, vertexDesc, DOT_TRIANGLE_LIST, indexType);
+
+		if(mIndexData)
+		{
+			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
+				meshData->addSubMesh(mSubMeshes[i].indexCount, i);
+		}
 
 		return meshData;
 	}

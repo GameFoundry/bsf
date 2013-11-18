@@ -4,66 +4,20 @@
 #include "CmHardwareBufferManager.h"
 #include "CmMeshDataRTTI.h"
 #include "CmVertexDeclaration.h"
+#include "CmVertexDataDesc.h"
 #include "CmException.h"
 
 namespace CamelotFramework
 {
-	MeshData::MeshData(UINT32 numVertices, IndexBuffer::IndexType indexType)
-	   :mNumVertices(numVertices), mIndexType(indexType), mData(nullptr), mDescBuilding(false)
+	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
+	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mDrawOp(drawOp), mData(nullptr)
 	{
-
+		allocateInternalBuffer();
 	}
 
 	MeshData::~MeshData()
 	{
 
-	}
-
-	void MeshData::beginDesc()
-	{
-		if(mDescBuilding)
-			CM_EXCEPT(InternalErrorException, "beginDesc() but description building has already began.");
-
-		mVertexElements.clear();
-		mSubMeshes.clear();
-
-		mDescBuilding = true;
-	}
-
-	void MeshData::endDesc()
-	{
-		if(!mDescBuilding)
-			CM_EXCEPT(InternalErrorException, "endDesc() called without beginDesc().");
-
-		allocateInternalBuffer();
-
-		mDescBuilding = false;
-	}
-
-	void MeshData::addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
-	{
-		if(!mDescBuilding)
-			CM_EXCEPT(InternalErrorException, "Cannot add vertex element when not building description. Call beginDesc() first.");
-
-		clearIfItExists(type, semantic, semanticIdx, streamIdx);
-
-		VertexElement newElement(streamIdx, 0, type, semantic, semanticIdx);
-
-		// Insert it so it is sorted by stream
-		UINT32 insertToIndex = (UINT32)mVertexElements.size();
-		UINT32 idx = 0;
-		for(auto& elem : mVertexElements)
-		{
-			if(elem.getStreamIdx() > streamIdx)
-			{
-				insertToIndex = idx;
-				break;
-			}
-
-			idx++;
-		}
-
-		mVertexElements.insert(mVertexElements.begin() + insertToIndex, newElement);
 	}
 
 	void MeshData::addSubMesh(UINT32 numIndices, UINT32 subMesh, DrawOperationType drawOp)
@@ -84,41 +38,27 @@ namespace CamelotFramework
 		mSubMeshes[subMesh] = indexData;
 	}
 
-	VertexDeclarationPtr MeshData::createDeclaration() const
-	{
-		VertexDeclarationPtr declaration = HardwareBufferManager::instance().createVertexDeclaration();
-
-		UINT32 maxStreamIdx = getMaxStreamIdx();
-
-		UINT32 numStreams = maxStreamIdx + 1;
-		UINT32* streamOffsets = cm_newN<UINT32, ScratchAlloc>(numStreams);
-		for(UINT32 i = 0; i < numStreams; i++)
-			streamOffsets[i] = 0;
-
-		for(auto& vertElem : mVertexElements)
-		{
-			UINT32 streamIdx = vertElem.getStreamIdx();
-			declaration->addElement(streamIdx, streamOffsets[streamIdx], vertElem.getType(), vertElem.getSemantic(), vertElem.getSemanticIdx());
-			streamOffsets[streamIdx] += vertElem.getSize();
-		}
-
-		cm_deleteN<ScratchAlloc>(streamOffsets, numStreams);
-
-		return declaration;
-	}
-
 	UINT32 MeshData::getNumIndices(UINT32 subMesh) const
 	{
+		if(mSubMeshes.size() == 0)
+			return mNumIndices;
+
 		return mSubMeshes.at(subMesh).numIndices;
 	}
 
 	DrawOperationType MeshData::getDrawOp(UINT32 subMesh) const
 	{
+		if(mSubMeshes.size() == 0)
+			return mDrawOp;
+
 		return mSubMeshes.at(subMesh).drawOp;
 	}
 
 	UINT32 MeshData::getNumIndices() const
 	{
+		if(mSubMeshes.size() == 0)
+			return mNumIndices;
+
 		UINT32 count = 0;
 		for(UINT32 i = 0; i < getNumSubmeshes(); i++)
 		{
@@ -126,6 +66,11 @@ namespace CamelotFramework
 		}
 
 		return count;
+	}
+
+	DrawOperationType MeshData::getDrawOp() const
+	{
+		return mDrawOp;
 	}
 
 	UINT16* MeshData::getIndices16(UINT32 subMesh) const
@@ -148,32 +93,6 @@ namespace CamelotFramework
 		return (UINT32*)(getData() + indexBufferOffset);
 	}
 
-	UINT32 MeshData::getMaxStreamIdx() const
-	{
-		UINT32 maxStreamIdx = 0;
-		for(auto& vertElems : mVertexElements)
-		{
-			UINT32 offset = 0;
-			for(auto& vertElem : mVertexElements)
-			{
-				maxStreamIdx = std::max((UINT32)maxStreamIdx, (UINT32)vertElem.getStreamIdx());
-			}
-		}
-
-		return maxStreamIdx;
-	}
-
-	bool MeshData::hasStream(UINT32 streamIdx) const
-	{
-		for(auto& vertElem : mVertexElements)
-		{
-			if(vertElem.getStreamIdx() == streamIdx)
-				return true;
-		}
-
-		return false;
-	}
-
 	UINT32 MeshData::getInternalBufferSize()
 	{
 		return getIndexBufferSize() + getStreamSize();
@@ -184,15 +103,15 @@ namespace CamelotFramework
 	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>::type& meshes)
 	{
 		UINT32 totalVertexCount = 0;
+		UINT32 totalIndexCount = 0;
 		for(auto& meshData : meshes)
 		{
-			UINT32 numVertices = meshData->getNumVertices();
-			totalVertexCount += numVertices;
+			totalVertexCount += meshData->getNumVertices();
+			totalIndexCount += meshData->getNumIndices();
 		}
 
-		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount);
-
-		combinedMeshData->beginDesc();
+		VertexDataDescPtr combinedVertexData = cm_shared_ptr<VertexDataDesc, PoolAlloc>();
+		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, combinedVertexData);
 
 		UINT32 subMeshIndex = 0;
 		for(auto& meshData : meshes)
@@ -209,10 +128,13 @@ namespace CamelotFramework
 		Vector<VertexElement>::type combinedVertexElements;
 		for(auto& meshData : meshes)
 		{
-			for(auto& newElement : meshData->mVertexElements)
+			for(UINT32 i = 0; i < meshData->getVertexDesc()->getNumElements(); i++)
 			{
+				const VertexElement& newElement = meshData->getVertexDesc()->getElement(i);
+
 				INT32 alreadyExistsIdx = -1;
 				UINT32 idx = 0;
+
 				for(auto& existingElement : combinedVertexElements)
 				{
 					if(newElement.getSemantic() == existingElement.getSemantic() && newElement.getSemanticIdx() == existingElement.getSemanticIdx()
@@ -233,12 +155,12 @@ namespace CamelotFramework
 				if(alreadyExistsIdx == -1)
 				{
 					combinedVertexElements.push_back(newElement);
-					combinedMeshData->addVertElem(newElement.getType(), newElement.getSemantic(), newElement.getSemanticIdx(), newElement.getStreamIdx());
+					combinedVertexData->addVertElem(newElement.getType(), newElement.getSemantic(), newElement.getSemanticIdx(), newElement.getStreamIdx());
 				}
 			}
 		}
 
-		combinedMeshData->endDesc();
+		VertexDataDescPtr vertexData = combinedMeshData->getVertexDesc();
 
 		// Copy indices
 		subMeshIndex = 0;
@@ -265,18 +187,18 @@ namespace CamelotFramework
 		vertexOffset = 0;
 		for(auto& meshData : meshes)
 		{
-			for(auto& element : combinedMeshData->mVertexElements)
+			for(auto& element : combinedVertexElements)
 			{
-				UINT32 dstVertexStride = combinedMeshData->getVertexStride(element.getStreamIdx());
+				UINT32 dstVertexStride = vertexData->getVertexStride(element.getStreamIdx());
 				UINT8* dstData = combinedMeshData->getElementData(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx());
 				dstData += vertexOffset * dstVertexStride;
 
 				UINT32 numSrcVertices = meshData->getNumVertices();
-				UINT32 vertexSize = combinedMeshData->getElementSize(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx());
+				UINT32 vertexSize = vertexData->getElementSize(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx());
 
-				if(meshData->hasElement(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx()))
+				if(meshData->getVertexDesc()->hasElement(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx()))
 				{
-					UINT32 srcVertexStride = meshData->getVertexStride(element.getStreamIdx());
+					UINT32 srcVertexStride = vertexData->getVertexStride(element.getStreamIdx());
 					UINT8* srcData = meshData->getElementData(element.getSemantic(), element.getSemanticIdx(), element.getStreamIdx());
 
 					for(UINT32 i = 0; i < numSrcVertices; i++)
@@ -302,33 +224,17 @@ namespace CamelotFramework
 		return combinedMeshData;
 	}
 
-	bool MeshData::hasElement(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
-	{
-		auto findIter = std::find_if(mVertexElements.begin(), mVertexElements.end(), 
-			[semantic, semanticIdx, streamIdx] (const VertexElement& x) 
-		{ 
-			return x.getSemantic() == semantic && x.getSemanticIdx() == semanticIdx && x.getStreamIdx() == streamIdx; 
-		});
-
-		if(findIter != mVertexElements.end())
-		{
-			return true;
-		}
-
-		return false;
-	}
-
 	void MeshData::setVertexData(VertexElementSemantic semantic, UINT8* data, UINT32 size, UINT32 semanticIdx, UINT32 streamIdx)
 	{
 		assert(data != nullptr);
 
-		if(!hasElement(semantic, semanticIdx, streamIdx))
+		if(!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
 		{
 			CM_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
 				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
 		}
 
-		UINT32 elementSize = getElementSize(semantic, semanticIdx, streamIdx);
+		UINT32 elementSize = mVertexData->getElementSize(semantic, semanticIdx, streamIdx);
 		UINT32 totalSize = elementSize * mNumVertices;
 
 		if(totalSize != size)
@@ -339,7 +245,7 @@ namespace CamelotFramework
 		UINT32 indexBufferOffset = getIndexBufferSize();
 
 		UINT32 elementOffset = getElementOffset(semantic, semanticIdx, streamIdx);
-		UINT32 vertexStride = getVertexStride(streamIdx);
+		UINT32 vertexStride = mVertexData->getVertexStride(streamIdx);
 
 		UINT8* dst = getData() + indexBufferOffset + elementOffset;
 		UINT8* src = data;
@@ -389,7 +295,7 @@ namespace CamelotFramework
 
 	void MeshData::getDataForIterator(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx, UINT8*& data, UINT32& stride) const
 	{
-		if(!hasElement(semantic, semanticIdx, streamIdx))
+		if(!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
 		{
 			CM_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
 				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
@@ -400,11 +306,14 @@ namespace CamelotFramework
 		UINT32 elementOffset = getElementOffset(semantic, semanticIdx, streamIdx);
 
 		data = getData() + indexBufferOffset + elementOffset;
-		stride = getVertexStride(streamIdx);
+		stride = mVertexData->getVertexStride(streamIdx);
 	}
 
 	UINT32 MeshData::getIndexBufferOffset(UINT32 subMesh) const
 	{
+		if(mSubMeshes.size() == 0) // No submeshes, we assume all is one big mesh
+			return 0;
+
 		if(subMesh < 0 || (subMesh > (UINT32)mSubMeshes.size()))
 		{
 			CM_EXCEPT(InvalidParametersException, "Submesh out of range: " + toString(subMesh) + ". Allowed range: 0 .. " + toString((UINT32)mSubMeshes.size()));
@@ -421,34 +330,9 @@ namespace CamelotFramework
 
 	UINT32 MeshData::getStreamOffset(UINT32 streamIdx) const
 	{
-		UINT32 streamOffset = 0;
-		bool found = false;
-		for(auto& element : mVertexElements)
-		{
-			if(element.getStreamIdx() == streamIdx)
-			{
-				found = true;
-				break;
-			}
-
-			streamOffset += element.getSize();
-		}
-
-		if(!found)
-			CM_EXCEPT(InternalErrorException, "Cannot find the specified stream: " + toString(streamIdx));
+		UINT32 streamOffset = mVertexData->getStreamOffset(streamIdx);
 
 		return streamOffset * mNumVertices;
-	}
-
-	UINT32 MeshData::getElementSize(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
-	{
-		for(auto& element : mVertexElements)
-		{
-			if(element.getSemantic() == semantic && element.getSemanticIdx() == semanticIdx && element.getStreamIdx() == streamIdx)
-				return element.getSize();
-		}
-
-		return -1;
 	}
 
 	UINT8* MeshData::getElementData(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
@@ -468,70 +352,22 @@ namespace CamelotFramework
 
 	UINT32 MeshData::getElementOffset(VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx) const
 	{
-		UINT32 streamOffset = getStreamOffset(streamIdx);
+		return getStreamOffset(streamIdx) + mVertexData->getElementOffsetFromStream(semantic, semanticIdx, streamIdx);
+	}
 
-		UINT32 vertexOffset = 0;
-		for(auto& element : mVertexElements)
-		{
-			if(element.getStreamIdx() != streamIdx)
-				continue;
-
-			if(element.getSemantic() == semantic && element.getSemanticIdx() == semanticIdx)
-				break;
-
-			vertexOffset += element.getSize();
-		}
-
-		return streamOffset * mNumVertices + vertexOffset;
+	UINT32 MeshData::getIndexBufferSize() const
+	{ 
+		return mNumIndices * getIndexElementSize(); 
 	}
 
 	UINT32 MeshData::getStreamSize(UINT32 streamIdx) const
 	{
-		UINT32 vertexStride = 0;
-		for(auto& element : mVertexElements)
-		{
-			if(element.getStreamIdx() == streamIdx)
-				vertexStride += element.getSize();
-		}
-
-		return vertexStride * mNumVertices;
+		return mVertexData->getVertexStride(streamIdx) * mNumVertices;
 	}
 
 	UINT32 MeshData::getStreamSize() const
 	{
-		UINT32 vertexStride = 0;
-		for(auto& element : mVertexElements)
-		{
-			vertexStride += element.getSize();
-		}
-
-		return vertexStride * mNumVertices;
-	}
-
-	UINT32 MeshData::getVertexStride(UINT32 streamIdx) const
-	{
-		UINT32 vertexStride = 0;
-		for(auto& element : mVertexElements)
-		{
-			if(element.getStreamIdx() == streamIdx)
-				vertexStride += element.getSize();
-		}
-
-		return vertexStride;
-	}
-
-	void MeshData::clearIfItExists(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
-	{
-		auto findIter = std::find_if(mVertexElements.begin(), mVertexElements.end(), 
-			[semantic, semanticIdx, streamIdx] (const VertexElement& x) 
-		{ 
-			return x.getSemantic() == semantic && x.getSemanticIdx() == semanticIdx && x.getStreamIdx() == streamIdx; 
-		});
-
-		if(findIter != mVertexElements.end())
-		{
-			mVertexElements.erase(findIter);
-		}
+		return mVertexData->getVertexStride() * mNumVertices;
 	}
 
 	/************************************************************************/
