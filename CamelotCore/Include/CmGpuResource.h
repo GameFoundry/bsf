@@ -14,7 +14,7 @@ namespace CamelotFramework
 		 * 			
 		 * @note	Call only from core thread.
 		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data) = 0;
+		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer) = 0;
 
 		/**
 		 * @brief	Reads a part of the current resource into the provided "data" parameter.

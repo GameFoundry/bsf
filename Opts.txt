@@ -26,8 +26,6 @@ When optimizing UpdateLayout make sure to mark elements that are fully culled as
  Mesh
   - GUIManager needs to be refactored so it knows to enlarge the Mesh when it runs out
  - writeSubresource
-  - add size and offset fields in MeshData which tell the method where exactly to write data and how much data is used
-    - Ensure that writeSubresource compares buffer sizes/offsets and maybe even vertex desc?
   - add "discardEntireBuffer" flag
    - ensure buffer is compatible with the flag (I think it needs to be dynamic)
 

@@ -292,7 +292,7 @@ namespace CamelotFramework
 		/**
 		 * @brief	Updates the resource with the specified data.
 		 */
-		void writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, AsyncOp& asyncOp);
+		void writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp);
 
 		/**
 		 * @brief	Reads data from a resource into a pre-allocated GpuResourceData instance.

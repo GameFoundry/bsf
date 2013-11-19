@@ -86,12 +86,18 @@ namespace CamelotFramework {
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
 	}
 
-	void Texture::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data)
+	void Texture::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_PixelData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
+
+		if(!discardEntireBuffer) // TODO - Textures can currently only be dynamic
+		{
+			LOGWRN("Buffer discard was not set but buffer was created as dynamic.");
+			discardEntireBuffer = true;
+		}
 
 		const PixelData& pixelData = static_cast<const PixelData&>(data);
 
@@ -99,7 +105,7 @@ namespace CamelotFramework {
 		UINT32 mip = 0;
 		mapFromSubresourceIdx(subresourceIdx, face, mip);
 
-		PixelData myData = lock(GBL_WRITE_ONLY_DISCARD, mip, face);
+		PixelData myData = lock(discardEntireBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mip, face);
 		PixelUtil::bulkPixelConversion(pixelData, myData);
 		unlock();
 	}

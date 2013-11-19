@@ -252,13 +252,13 @@ namespace CamelotFramework {
 		target->swapBuffers();
 	}
 
-	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, AsyncOp& asyncOp)
+	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		gProfiler().beginSample("writeSubresource");
 
-		resource->writeSubresource(subresourceIdx, *data);
+		resource->writeSubresource(subresourceIdx, *data, discardEntireBuffer);
 
 		gProfiler().endSample("writeSubresource");
 

@@ -35,12 +35,29 @@ namespace CamelotFramework
 	{
 	}
 
-	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data)
+	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_MeshData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
+
+		if(discardEntireBuffer)
+		{
+			if(mBufferType == MeshBufferType::Static)
+			{
+				LOGWRN("Buffer discard was set but buffer was created as static.");
+				discardEntireBuffer = false;
+			}
+		}
+		else
+		{
+			if(mBufferType == MeshBufferType::Dynamic)
+			{
+				LOGWRN("Buffer discard was not set but buffer was created as dynamic.");
+				discardEntireBuffer = true;
+			}
+		}
 
 		const MeshData& meshData = static_cast<const MeshData&>(data);
 
@@ -52,7 +69,7 @@ namespace CamelotFramework
 		if((indexOffset + indicesSize) > mIndexData->indexBuffer->getSizeInBytes())
 			CM_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
 
-		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData);
+		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData, discardEntireBuffer);
 
 		// Vertices
 		for(UINT32 i = 0; i <= meshData.getVertexDesc()->getMaxStreamIdx(); i++)
@@ -94,13 +111,13 @@ namespace CamelotFramework
 					}
 				}
 
-				vertexBuffer->writeData(bufferOffset, bufferSize, bufferCopy);
+				vertexBuffer->writeData(bufferOffset, bufferSize, bufferCopy, discardEntireBuffer);
 
 				cm_free(bufferCopy);
 			}
 			else
 			{
-				vertexBuffer->writeData(bufferOffset, bufferSize, srcVertBufferData);
+				vertexBuffer->writeData(bufferOffset, bufferSize, srcVertBufferData, discardEntireBuffer);
 			}
 		}
 
@@ -288,7 +305,7 @@ namespace CamelotFramework
 		// buffer data upon buffer construction, instead of setting it in a second step like I do here
 		if(mTempInitialMeshData != nullptr)
 		{
-			writeSubresource(0, *mTempInitialMeshData);
+			writeSubresource(0, *mTempInitialMeshData, mBufferType == MeshBufferType::Dynamic);
 
 			mTempInitialMeshData = nullptr;
 		}

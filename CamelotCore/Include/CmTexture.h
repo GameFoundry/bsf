@@ -148,7 +148,7 @@ namespace CamelotFramework {
 		/**
 		 * @copydoc GpuResource::writeSubresource
 		 */
-		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data);
+		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
 
 		/**
 		 * @copydoc GpuResource::readSubresource

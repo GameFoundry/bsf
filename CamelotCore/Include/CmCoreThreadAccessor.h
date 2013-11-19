@@ -218,15 +218,21 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderSystem::writeSubresource()
 		 *
+		 * @param discardEntireBuffer When true the existing contents of the resource you are updating will be discarded. This can make the
+		 * 							  operation faster. Resources with certain buffer types might require this flag to be in a specific state
+		 * 							  otherwise the operation will fail. 
+		 *
 		 * @note Resource is updated with data from "data" parameter when the async operation completes. 
 		 * 		 Until the async operation completes "data" is owned by the core thread and you won't
 		 * 		 be able to access it. 
+		 * 		 
+		 *		Normally dynamic buffers will require you to enable "discardEntireBuffer" flag, while static buffers require it disabled.
 		 */
-		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data)
+		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer = false)
 		{
 			data->lock();
 
-			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, data, _1));
+			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, data, discardEntireBuffer, _1));
 		}
 
 		/**
