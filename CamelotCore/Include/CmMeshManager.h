@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
+#include "CmMesh.h"
 
 namespace CamelotFramework
 {
@@ -11,7 +12,9 @@ namespace CamelotFramework
 		MeshManager();
 		~MeshManager();
 
-		MeshPtr create();
+		MeshPtr create(UINT32 numVertices, UINT32 numIndices, 
+			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+		MeshPtr create(const MeshDataPtr& initialData, MeshBufferType bufferType = MeshBufferType::Static);
 		MeshPtr createEmpty();
 
 		/**

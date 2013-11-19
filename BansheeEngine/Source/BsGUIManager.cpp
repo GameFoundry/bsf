@@ -506,11 +506,9 @@ namespace BansheeEngine
 				}
 
 				if(groupIdx >= (UINT32)renderData.cachedMeshes.size())
-				{
-					renderData.cachedMeshes.push_back(Mesh::create());
-				}
-
-				gMainCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData);
+					renderData.cachedMeshes.push_back(Mesh::create(meshData, MeshBufferType::Static));
+				else
+					renderData.cachedMeshes[groupIdx] = Mesh::create(meshData, MeshBufferType::Static);
 
 				groupIdx++;
 			}

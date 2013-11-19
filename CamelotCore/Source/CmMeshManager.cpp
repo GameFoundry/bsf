@@ -17,9 +17,18 @@ namespace CamelotFramework
 
 	}
 
-	MeshPtr MeshManager::create()
+	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh());
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(numVertices, numIndices, vertexDesc, bufferType, indexType));
+		mesh->setThisPtr(mesh);
+		mesh->initialize();
+
+		return mesh;
+	}
+
+	MeshPtr MeshManager::create(const MeshDataPtr& initialData, MeshBufferType bufferType)
+	{
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(initialData, bufferType));
 		mesh->setThisPtr(mesh);
 		mesh->initialize();
 
@@ -51,7 +60,6 @@ namespace CamelotFramework
 
 		SyncedCoreAccessor& coreAccessor = gMainSyncedCA();
 
-		mDummyMesh = Mesh::create();
-		coreAccessor.writeSubresource(mDummyMesh.getInternalPtr(), 0, mDummyMeshData);
+		mDummyMesh = Mesh::create(mDummyMeshData);
 	}
 }

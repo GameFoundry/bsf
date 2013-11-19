@@ -49,10 +49,7 @@ namespace CamelotFramework
 
 		shutDownSdk(fbxManager);
 
-		HMesh mesh = Mesh::create();
-
-		mesh.synchronize();
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		return mesh;
 	}

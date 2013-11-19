@@ -37,45 +37,17 @@ namespace CamelotFramework
 			obj->mSubMeshes.resize(numElements);
 		}
 
-		IndexBuffer::IndexType& getIndexType(MeshData* obj)
-		{
-			return obj->mIndexType;
-		}
+		IndexBuffer::IndexType& getIndexType(MeshData* obj) { return obj->mIndexType; }
+		void setIndexType(MeshData* obj, IndexBuffer::IndexType& value) { obj->mIndexType = value; }
 
-		void setIndexType(MeshData* obj, IndexBuffer::IndexType& value)
-		{
-			obj->mIndexType = value;
-		}
+		UINT32& getNumVertices(MeshData* obj) { return obj->mNumVertices; }
+		void setNumVertices(MeshData* obj, UINT32& value) { obj->mNumVertices = value; }
 
-		UINT32& getNumVertices(MeshData* obj)
-		{
-			return obj->mNumVertices;
-		}
+		UINT32& getNumIndices(MeshData* obj) { return obj->mNumIndices; }
+		void setNumIndices(MeshData* obj, UINT32& value) { obj->mNumIndices = value; }
 
-		void setNumVertices(MeshData* obj, UINT32& value)
-		{
-			obj->mNumVertices = value;
-		}
-
-		UINT32& getNumIndices(MeshData* obj)
-		{
-			return obj->mNumIndices;
-		}
-
-		void setNumIndices(MeshData* obj, UINT32& value)
-		{
-			obj->mNumIndices = value;
-		}
-
-		UINT32& getDrawOp(MeshData* obj)
-		{
-			return (UINT32&)obj->mDrawOp;
-		}
-
-		void setDrawOp(MeshData* obj, UINT32& value)
-		{
-			obj->mDrawOp = (DrawOperationType)value;
-		}
+		UINT32& getDrawOp(MeshData* obj) { return (UINT32&)obj->mDrawOp; }
+		void setDrawOp(MeshData* obj, UINT32& value) { obj->mDrawOp = (DrawOperationType)value; }
 
 		ManagedDataBlock getData(MeshData* obj) 
 		{ 

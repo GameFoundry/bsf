@@ -113,10 +113,6 @@ namespace CamelotFramework
 			case GBL_WRITE_ONLY_DISCARD:
 				if (mUsage & GBU_DYNAMIC)
 				{
-					// Map cannot be called with MAP_WRITE access, 
-					// because the Resource was created as D3D11_USAGE_DYNAMIC. 
-					// D3D11_USAGE_DYNAMIC Resources must use either MAP_WRITE_DISCARD 
-					// or MAP_WRITE_NO_OVERWRITE with Map.
 					mapType = D3D11_MAP_WRITE_DISCARD;
 				}
 				else
@@ -196,7 +192,7 @@ namespace CamelotFramework
 			}
 
 			// schedule a copy to the staging
-			if (options != GBL_WRITE_ONLY_DISCARD)
+			if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
 				mpTempStagingBuffer->copyData(*this, 0, 0, mSizeInBytes, true);
 
 			// register whether we'll need to upload on unlock

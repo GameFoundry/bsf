@@ -30,21 +30,12 @@ When optimizing UpdateLayout make sure to mark elements that are fully culled as
  -------------
 
  Mesh
- - Change initialization so it requires number of vertices, indices and vertex description, also number of vertex streams
- - Move those required fields from MeshData into another MeshDesc structure that is used for initialization
- - During initialization also provide STATIC or DYNAMIC flags
+  - GUIManager needs to be refactored so it knows to enlarge the Mesh when it runs out
  - writeSubresource
   - add size and offset fields in MeshData which tell the method where exactly to write data and how much data is used
-    - also determines which part of the buffer is rendered
-    - throw exception if mesh data offset/size go over the limit of the buffer
+    - Ensure that writeSubresource compares buffer sizes/offsets and maybe even vertex desc?
   - add "discardEntireBuffer" flag
    - ensure buffer is compatible with the flag (I think it needs to be dynamic)
- - allocateSubresourceBuffer used for reading must not be broken by these changes
- - Don't forget to update mesh RTTI
- - Implement VertexDataDesc and use it during Mesh initialization, and also internally in MeshData
-
-Texture
- - Texture already works the way mesh should
 
 TransientMesh
  - Only used for writing, only dynamic, and only MAP_NO_OVERWRITE writing
@@ -54,23 +45,12 @@ TransientMesh
 
 ----------
 
-OT: When setting buffers I should modify RenderSystem::setVertexBuffer so it can accept multiple buffers. So when mesh is bound all its streams can be bound in one call.
-
 BIG TODO FINALLY: Reorganize GUI so it all uses one big vertex buffer (probably in the form of a TransientMesh). This means I need better support for drawing individual objects
 from a transient mesh by drawing only parts of its buffer. But only do this after I have optimized and tested the normal mesh (on all render systems)
 
 ---------
 
-Immediate implementation issues:
-MeshData with 0 submeshes should be assumed to have one sub-mesh that covers the entire buffer. I need to take that into consideration when writing to resource.
-
-Places that use MeshData:
-DrawHelper2D, DrawHelper3D - 5 methods each
-GUIManager::updateMeshes
-DockManager:updateDropOverlay
-FBXImporter::parseMesh
-
-Fix how I handle sub-meshes
- - right now they are read on sim thread, but set on core thread which is wrong
-
- Don't forget to add vert/index offsets to meshData
+Other possible improvements:
+ - When setting buffers I should modify RenderSystem::setVertexBuffer so it can accept multiple buffers. So when mesh is bound all its streams can be bound in one call.
+ - Fix how I handle sub-meshes: right now they are read on sim thread, but set on core thread which is wrong
+ - Update Mesh DX11 buffers so they get initialized with data immediately and see if OpenGL has something similar (ADD THIS TO LOW PRIORITY LIST BUT DON'T IMPLEMENT ATM)

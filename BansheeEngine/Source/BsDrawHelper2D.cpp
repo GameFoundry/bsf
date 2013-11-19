@@ -99,8 +99,7 @@ namespace BansheeEngine
 		colors = (UINT32*)(colorData + vertexStride * 3);
 		(*colors) = color.getAsRGBA();
 
-		HMesh mesh = Mesh::create();
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -139,9 +138,7 @@ namespace BansheeEngine
 
 		line_Pixel(actualA, actualB, color, meshData, 0, 0);
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -180,9 +177,7 @@ namespace BansheeEngine
 
 		line_AA(actualA, actualB, width, borderWidth, color, meshData, 0, 0);
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -227,9 +222,7 @@ namespace BansheeEngine
 			lineList_Pixel(linePoints, color, meshData, 0, 0);
 		}		
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -273,9 +266,7 @@ namespace BansheeEngine
 			lineList_AA(linePoints, width, borderWidth, color, meshData, 0, 0);
 		}		
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;

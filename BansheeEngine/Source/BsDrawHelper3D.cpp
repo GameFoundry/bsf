@@ -75,9 +75,7 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -101,9 +99,7 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -127,9 +123,7 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -154,9 +148,7 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;
@@ -191,9 +183,7 @@ namespace BansheeEngine
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
 		dbgCmd.worldCenter = calcCenter(positionData, meshData->getNumVertices(), mVertexDesc->getVertexStride());
 
-		HMesh mesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mesh.getInternalPtr(), 0, meshData);
+		HMesh mesh = Mesh::create(meshData);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.type = DebugDrawType::WorldSpace;

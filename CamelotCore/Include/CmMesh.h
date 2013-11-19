@@ -9,6 +9,12 @@
 
 namespace CamelotFramework
 {
+	enum class MeshBufferType
+	{
+		Static,
+		Dynamic
+	};
+
 	struct CM_EXPORT SubMesh
 	{
 		SubMesh()
@@ -81,12 +87,23 @@ namespace CamelotFramework
 	protected:
 		friend class MeshManager;
 
-		Mesh();
+		Mesh(UINT32 numVertices, UINT32 numIndices, 
+			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+
+		Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static);
 
 		std::shared_ptr<VertexData> mVertexData;
 		std::shared_ptr<IndexData> mIndexData;
 
 		Vector<SubMesh>::type mSubMeshes;
+
+		UINT32 mNumVertices;
+		UINT32 mNumIndices;
+		VertexDataDescPtr mVertexDesc;
+		MeshBufferType mBufferType;
+		IndexBuffer::IndexType mIndexType;
+
+		MeshDataPtr mTempInitialMeshData;
 
 		/**
 		 * @copydoc Resource::initialize_internal()
@@ -101,6 +118,9 @@ namespace CamelotFramework
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
+	private:
+		Mesh(); // Serialization only
+
 	public:
 		friend class MeshRTTI;
 		static RTTITypeBase* getRTTIStatic();
@@ -111,6 +131,9 @@ namespace CamelotFramework
 		/************************************************************************/
 		
 	public:
-		static HMesh create();
+		static HMesh create(UINT32 numVertices, UINT32 numIndices, 
+			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+
+		static HMesh create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static);
 	};
 }

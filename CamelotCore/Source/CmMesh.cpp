@@ -15,11 +15,21 @@
 
 namespace CamelotFramework
 {
-	Mesh::Mesh()
-		:mVertexData(nullptr), mIndexData(nullptr)
-	{
+	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
+	{ }
 
-	}
+	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType)
+		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(initialMeshData->getNumVertices()), 
+		mNumIndices(initialMeshData->getNumIndices()), mBufferType(bufferType), mIndexType(initialMeshData->getIndexType()),
+		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData)
+	{ }
+
+	Mesh::Mesh()
+		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(0), mNumIndices(0), mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT)
+	{ }
 
 	Mesh::~Mesh()
 	{
@@ -35,61 +45,34 @@ namespace CamelotFramework
 		const MeshData& meshData = static_cast<const MeshData&>(data);
 
 		// Indices
-		mIndexData = std::shared_ptr<IndexData>(cm_new<IndexData, PoolAlloc>());
-
-		mIndexData->indexCount = meshData.getNumIndices();
-		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			meshData.getIndexType(),
-			mIndexData->indexCount, 
-			GBU_STATIC);
-
-		UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_WRITE_ONLY));
-		UINT32 idxElementSize = meshData.getIndexElementSize();
-
 		UINT32 indicesSize = meshData.getIndexBufferSize();
 		UINT8* srcIdxData = meshData.getIndexData(); 
 
-		memcpy(idxData, srcIdxData, indicesSize);
-
-		mIndexData->indexBuffer->unlock();
+		mIndexData->indexBuffer->writeData(0, indicesSize, srcIdxData);
 
 		// Vertices
-		mVertexData = std::shared_ptr<VertexData>(cm_new<VertexData, PoolAlloc>());
-
-		mVertexData->vertexCount = meshData.getNumVertices();
-		mVertexData->vertexDeclaration = meshData.getVertexDesc()->createDeclaration();
-
 		for(UINT32 i = 0; i <= meshData.getVertexDesc()->getMaxStreamIdx(); i++)
 		{
 			if(!meshData.getVertexDesc()->hasStream(i))
 				continue;
 
-			UINT32 streamSize = meshData.getStreamSize(i);
-
-			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
-				mVertexData->vertexDeclaration->getVertexSize(i),
-				mVertexData->vertexCount,
-				GBU_STATIC);
-
-
-			mVertexData->setBuffer(i, vertexBuffer);
-
-			UINT8* srcVertBufferData = meshData.getStreamData(i);
-			UINT8* vertBufferData = static_cast<UINT8*>(vertexBuffer->lock(GBL_WRITE_ONLY));
+			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
 
 			UINT32 bufferSize = meshData.getStreamSize(i);
-
-			memcpy(vertBufferData, srcVertBufferData, bufferSize);
+			UINT8* srcVertBufferData = meshData.getStreamData(i);
 
 			if(vertexBuffer->vertexColorReqRGBFlip())
 			{
+				UINT8* bufferCopy = (UINT8*)cm_alloc(bufferSize);
+				memcpy(bufferCopy, srcVertBufferData, bufferSize); // TODO Low priority - Attempt to avoid this copy
+
 				UINT32 vertexStride = meshData.getVertexDesc()->getVertexStride(i);
 				for(INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
 				{
 					if(!meshData.getVertexDesc()->hasElement(VES_COLOR, semanticIdx, i))
 						continue;
 
-					UINT8* colorData = vertBufferData + meshData.getElementOffset(VES_COLOR, semanticIdx, i);
+					UINT8* colorData = bufferCopy + meshData.getElementOffset(VES_COLOR, semanticIdx, i);
 					for(UINT32 j = 0; j < mVertexData->vertexCount; j++)
 					{
 						UINT32* curColor = (UINT32*)colorData;
@@ -99,9 +82,15 @@ namespace CamelotFramework
 						colorData += vertexStride;
 					}
 				}
-			}
 
-			vertexBuffer->unlock();
+				vertexBuffer->writeData(0, bufferSize, bufferCopy);
+
+				cm_free(bufferCopy);
+			}
+			else
+			{
+				vertexBuffer->writeData(0, bufferSize, srcVertBufferData);
+			}
 		}
 
 		// Submeshes
@@ -268,11 +257,41 @@ namespace CamelotFramework
 	void Mesh::initialize_internal()
 	{
 		THROW_IF_NOT_CORE_THREAD;
+		
+		mIndexData = std::shared_ptr<IndexData>(cm_new<IndexData, PoolAlloc>());
 
-		// TODO Low priority - Initialize an empty mesh. A better way would be to only initialize the mesh
-		// once we set the proper mesh data (then we don't have to do it twice), but this makes the code less complex.
-		// Consider changing it if there are performance issues.
-		writeSubresource(0, *MeshManager::instance().getDummyMeshData());
+		mIndexData->indexCount = mNumIndices;
+		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
+			mIndexType,
+			mIndexData->indexCount, 
+			mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
+
+		mVertexData = std::shared_ptr<VertexData>(cm_new<VertexData, PoolAlloc>());
+
+		mVertexData->vertexCount = mNumVertices;
+		mVertexData->vertexDeclaration = mVertexDesc->createDeclaration();
+
+		for(UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
+		{
+			if(!mVertexDesc->hasStream(i))
+				continue;
+
+			VertexBufferPtr vertexBuffer = HardwareBufferManager::instance().createVertexBuffer(
+				mVertexData->vertexDeclaration->getVertexSize(i),
+				mVertexData->vertexCount,
+				mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
+
+			mVertexData->setBuffer(i, vertexBuffer);
+		}
+
+		// TODO Low priority - DX11 (and maybe OpenGL)? allow an optimization that allows you to set
+		// buffer data upon buffer construction, instead of setting it in a second step like I do here
+		if(mTempInitialMeshData != nullptr)
+		{
+			writeSubresource(0, *mTempInitialMeshData);
+
+			mTempInitialMeshData = nullptr;
+		}
 
 		Resource::initialize_internal();
 	}
@@ -307,9 +326,16 @@ namespace CamelotFramework
 	/* 								STATICS		                     		*/
 	/************************************************************************/
 
-	HMesh Mesh::create()
+	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr meshPtr = MeshManager::instance().create();
+		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, indexType);
+
+		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
+	}
+
+	HMesh Mesh::create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType)
+	{
+		MeshPtr meshPtr = MeshManager::instance().create(initialMeshData, bufferType);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}

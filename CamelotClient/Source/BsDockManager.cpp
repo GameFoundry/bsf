@@ -440,9 +440,7 @@ namespace BansheeEditor
 		indexData[22] = 14;
 		indexData[23] = 15;
 
-		mDropOverlayMesh = Mesh::create();
-
-		gMainSyncedCA().writeSubresource(mDropOverlayMesh.getInternalPtr(), 0, meshData);
+		mDropOverlayMesh = Mesh::create(meshData);
 	}
 
 	void DockManager::onGUIMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)

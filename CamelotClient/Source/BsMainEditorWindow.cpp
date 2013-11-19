@@ -72,7 +72,7 @@ namespace BansheeEditor
 		//DrawHelper2D::instance().drawLine_AA(sceneCamera, Vector2(100, 10), Vector2(120, 40), 1.0f, 1.0f, Color::Blue, DebugDrawCoordType::Pixel, 250.0f);
 
 		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
-		DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
+		//DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 
 		OSDropTarget& dropTarget = Platform::createDropTarget(mRenderWindow.get(), 100, 100, 400, 400);
 		dropTarget.onDrop.connect(boost::bind(&MainEditorWindow::itemDropped, this, boost::ref(dropTarget), _1, _2));
