@@ -17,12 +17,6 @@ FrameAlloc
 
 --------------------
 
-HardwareBuffer::lock (more exactly ImmediateContext::Map) is very slow, with 35 calls taking up almost 3ms. 
- - First, mesh creates both vertex and index buffer whenever writeSubresource is called!!! It should instead just update them.
-   - Never shrink mesh buffers. Add shrinkInternalBuffers property to MeshData that will force the buffers to shrink.
- - Second, mesh buffers are created with default buffer flags (static). Try changing it to dynamic
-   - Allow user to specify mesh buffer type during mesh construction
-
 When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
  - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
  - TODO - FIgure this out
@@ -53,4 +47,7 @@ from a transient mesh by drawing only parts of its buffer. But only do this afte
 Other possible improvements:
  - When setting buffers I should modify RenderSystem::setVertexBuffer so it can accept multiple buffers. So when mesh is bound all its streams can be bound in one call.
  - Fix how I handle sub-meshes: right now they are read on sim thread, but set on core thread which is wrong
+ - Textures do lock/unlock when writing data to them. This causes an unnecessary copy in DX11 (and possibly other APIs)
+   - add writeData/readData methods that do those things as efficiently as possible
+ - When writing to mesh vertex buffer that requires a color flip I need to create a temporary copy of the entire buffer. It would be better to handle this differently. 
  - Update Mesh DX11 buffers so they get initialized with data immediately and see if OpenGL has something similar (ADD THIS TO LOW PRIORITY LIST BUT DON'T IMPLEMENT ATM)

@@ -10,15 +10,19 @@
 namespace CamelotFramework
 {
 	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
-	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mDrawOp(drawOp), mData(nullptr)
+	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mDrawOp(drawOp), mData(nullptr), mResourceIndexOffset(0),
+	   mResourceVertexOffset(0)
 	{
 		allocateInternalBuffer();
 	}
 
-	MeshData::~MeshData()
-	{
+	MeshData::MeshData()
+		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT), mDrawOp(DOT_TRIANGLE_LIST), mData(nullptr), 
+		mResourceIndexOffset(0), mResourceVertexOffset(0)
+	{ }
 
-	}
+	MeshData::~MeshData()
+	{ }
 
 	void MeshData::addSubMesh(UINT32 numIndices, UINT32 subMesh, DrawOperationType drawOp)
 	{

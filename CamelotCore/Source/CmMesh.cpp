@@ -45,10 +45,14 @@ namespace CamelotFramework
 		const MeshData& meshData = static_cast<const MeshData&>(data);
 
 		// Indices
+		UINT32 indexOffset = meshData.getResourceIndexOffset() * meshData.getIndexElementSize();
 		UINT32 indicesSize = meshData.getIndexBufferSize();
 		UINT8* srcIdxData = meshData.getIndexData(); 
 
-		mIndexData->indexBuffer->writeData(0, indicesSize, srcIdxData);
+		if((indexOffset + indicesSize) > mIndexData->indexBuffer->getSizeInBytes())
+			CM_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
+
+		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData);
 
 		// Vertices
 		for(UINT32 i = 0; i <= meshData.getVertexDesc()->getMaxStreamIdx(); i++)
@@ -56,10 +60,17 @@ namespace CamelotFramework
 			if(!meshData.getVertexDesc()->hasStream(i))
 				continue;
 
+			if(i >= mVertexData->getBufferCount())
+				CM_EXCEPT(InvalidParametersException, "Attempting to write to a vertex stream that doesn't exist on this mesh.");
+
 			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
 
+			UINT32 bufferOffset = meshData.getResourceVertexOffset() * meshData.getVertexDesc()->getVertexStride(i);
 			UINT32 bufferSize = meshData.getStreamSize(i);
 			UINT8* srcVertBufferData = meshData.getStreamData(i);
+
+			if((bufferOffset + bufferSize) > vertexBuffer->getSizeInBytes())
+				CM_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
 
 			if(vertexBuffer->vertexColorReqRGBFlip())
 			{
@@ -83,13 +94,13 @@ namespace CamelotFramework
 					}
 				}
 
-				vertexBuffer->writeData(0, bufferSize, bufferCopy);
+				vertexBuffer->writeData(bufferOffset, bufferSize, bufferCopy);
 
 				cm_free(bufferCopy);
 			}
 			else
 			{
-				vertexBuffer->writeData(0, bufferSize, srcVertBufferData);
+				vertexBuffer->writeData(bufferOffset, bufferSize, srcVertBufferData);
 			}
 		}
 
@@ -136,6 +147,7 @@ namespace CamelotFramework
 		{
 			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
 			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
+			UINT32 indexResourceOffset = meshData.getResourceIndexOffset() * meshData.getIndexElementSize();
 
 			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
 			{
@@ -146,6 +158,13 @@ namespace CamelotFramework
 				else
 					indices = (UINT8*)meshData.getIndices32(i);
 
+				UINT32 indicesSize = mSubMeshes[i].indexCount * idxElemSize;
+				UINT32 indicesOffset = meshData.getIndexBufferOffset(i) + indexResourceOffset;
+				
+				if((indicesOffset + indicesSize) > meshData.getIndexBufferSize())
+					CM_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
+
+				indices += indexResourceOffset;
 				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
 			}
 
@@ -155,15 +174,25 @@ namespace CamelotFramework
 		if(mVertexData)
 		{
 			auto vertexBuffers = mVertexData->getBuffers();
-
+			
 			UINT32 streamIdx = 0;
 			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
 			{
+				if(streamIdx > meshData.getVertexDesc()->getMaxStreamIdx())
+					continue;
+
 				VertexBufferPtr vertexBuffer = iter->second;
 				UINT32 bufferSize = vertexBuffer->getVertexSize() * vertexBuffer->getNumVertices();
+				
+				UINT32 vertexResourceOffset = meshData.getResourceVertexOffset() * meshData.getVertexDesc()->getVertexStride(streamIdx);
+				UINT32 vertexOffset = meshData.getStreamOffset(streamIdx) + vertexResourceOffset;
+
 				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
 
-				UINT8* dest = meshData.getStreamData(streamIdx);
+				if((vertexOffset + bufferSize) > meshData.getStreamSize(streamIdx))
+					CM_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh vertices.");
+
+				UINT8* dest = meshData.getStreamData(streamIdx) + vertexResourceOffset;
 				memcpy(dest, vertDataPtr, bufferSize);
 
 				vertexBuffer->unlock();
@@ -186,36 +215,7 @@ namespace CamelotFramework
 				numIndices += mSubMeshes[i].indexCount;
 		}
 
-		VertexDataDescPtr vertexDesc = cm_shared_ptr<VertexDataDesc>();
-
-		if(mVertexData)
-		{
-			auto vertexBuffers = mVertexData->getBuffers();
-
-			UINT32 streamIdx = 0;
-			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
-			{
-				VertexBufferPtr vertexBuffer = iter->second;
-				UINT32 vertexSize = vertexBuffer->getVertexSize();
-
-				UINT32 numElements = mVertexData->vertexDeclaration->getElementCount();
-				for(UINT32 j = 0; j < numElements; j++)
-				{
-					const VertexElement* element = mVertexData->vertexDeclaration->getElement(j);
-					VertexElementType type = element->getType();
-					VertexElementSemantic semantic = element->getSemantic(); 
-					UINT32 semanticIdx = element->getSemanticIdx();
-					UINT32 offset = element->getOffset();
-					UINT32 elemSize = element->getSize();
-
-					vertexDesc->addVertElem(type, semantic, semanticIdx, streamIdx);
-				}
-
-				streamIdx++;
-			}
-		}
-
-		MeshDataPtr meshData = cm_shared_ptr<MeshData>(mVertexData->vertexCount, numIndices, vertexDesc, DOT_TRIANGLE_LIST, indexType);
+		MeshDataPtr meshData = cm_shared_ptr<MeshData>(mVertexData->vertexCount, numIndices, mVertexDesc, DOT_TRIANGLE_LIST, indexType);
 
 		if(mIndexData)
 		{
