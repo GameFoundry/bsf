@@ -653,11 +653,14 @@ namespace CamelotFramework
 		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
+	void GLRenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		mBoundVertexBuffers[index] = buffer;
+		for(UINT32 i = 0; i < numBuffers; i++)
+		{
+			mBoundVertexBuffers[index + i] = buffers[i];
+		}
 	}
 	//---------------------------------------------------------------------
 	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)

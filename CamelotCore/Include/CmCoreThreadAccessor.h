@@ -81,24 +81,6 @@ namespace CamelotFramework
 			mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, RenderSystem::instancePtr(), vp));
 		}
 
-		/** @copydoc RenderSystem::setVertexBuffer() */
-		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
-		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setVertexBuffer, RenderSystem::instancePtr(), index, buffer));
-		}
-
-		/** @copydoc RenderSystem::setIndexBuffer() */
-		void setIndexBuffer(const IndexBufferPtr& buffer)
-		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setIndexBuffer, RenderSystem::instancePtr(), buffer));
-		}
-
-		/** @copydoc RenderSystem::setVertexDeclaration() */
-		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
-		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setVertexDeclaration, RenderSystem::instancePtr(), vertexDeclaration));
-		}
-
 		/** @copydoc RenderSystem::setDrawOperation() */
 		void setDrawOperation(DrawOperationType op)
 		{

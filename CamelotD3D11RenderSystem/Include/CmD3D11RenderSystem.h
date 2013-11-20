@@ -45,7 +45,7 @@ namespace CamelotFramework
 		void setViewport(const ViewportPtr& vp);
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
 
-		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);
+		void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers);
 		void setIndexBuffer(const IndexBufferPtr& buffer);
 		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
 		void setDrawOperation(DrawOperationType op);

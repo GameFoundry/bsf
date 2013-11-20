@@ -157,9 +157,9 @@ namespace CamelotFramework
 		*/
 		virtual void setViewport(const ViewportPtr& vp) = 0;
 
-		/** Sets the current vertex buffer for the specified source index.   
+		/** Sets the provided vertex buffers starting at the specified source index.   
 		/** @note Set buffer to nullptr to clear the buffer at the specified index.*/
-		virtual void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer) = 0;
+		virtual void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers) = 0;
 
 		/**
 		 * @brief	Sets an index buffer to use when drawing. Indices in an index buffer

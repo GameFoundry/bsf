@@ -229,8 +229,28 @@ namespace CamelotFramework {
 		setVertexDeclaration(subMesh.vertexData->vertexDeclaration);
 		auto vertexBuffers = subMesh.vertexData->getBuffers();
 
-		for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
-			setVertexBuffer(iter->first, iter->second);
+		if(vertexBuffers.size() > 0)
+		{
+			VertexBufferPtr buffers[MAX_BOUND_VERTEX_BUFFERS];
+
+			UINT32 endSlot = 0;
+			UINT32 startSlot = MAX_BOUND_VERTEX_BUFFERS;
+			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
+			{
+				if(iter->first >= MAX_BOUND_VERTEX_BUFFERS)
+					CM_EXCEPT(InvalidParametersException, "Buffer index out of range");
+
+				startSlot = std::min(iter->first, startSlot);
+				endSlot = std::max(iter->first, endSlot);
+			}
+
+			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
+			{
+				buffers[iter->first - startSlot] = iter->second;
+			}
+
+			setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
+		}
 
 		setDrawOperation(subMesh.drawOp);
 

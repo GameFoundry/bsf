@@ -46,6 +46,8 @@ THE SOFTWARE.
 #define CAPS_CATEGORY_MASK (((1 << CAPS_CATEGORY_SIZE) - 1) << CM_CAPS_BITSHIFT)
 #define CM_CAPS_VALUE(cat, val) ((cat << CM_CAPS_BITSHIFT) | (1 << val))
 
+#define MAX_BOUND_VERTEX_BUFFERS 32
+
 namespace CamelotFramework 
 {
 	/** \addtogroup Core

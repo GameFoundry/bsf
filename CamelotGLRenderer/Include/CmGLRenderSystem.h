@@ -62,9 +62,9 @@ namespace CamelotFramework {
         void setRenderTarget(RenderTargetPtr target);
 
         /**
-		 * @copydoc RenderSystem::setVertexBuffer()
+		 * @copydoc RenderSystem::setVertexBuffers()
 		 */
-		void setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer);
+		void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers);
 
 		/**
 		 * @copydoc RenderSystem::setIndexBuffer()

@@ -1215,33 +1215,37 @@ namespace CamelotFramework
 
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
+	void D3D9RenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
-		if(index < 0 || index >= maxBoundVertexBuffers)
+		if(index < 0 || (index + numBuffers) > maxBoundVertexBuffers)
 			CM_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) + ". Valid range is 0 .. " + toString(maxBoundVertexBuffers - 1));
 
 		HRESULT hr;
-		if(buffer != nullptr)
-		{
-			D3D9VertexBuffer* d3d9buf = static_cast<D3D9VertexBuffer*>(buffer.get());
 
-			hr = getActiveD3D9Device()->SetStreamSource(
-				static_cast<UINT>(index),
-				d3d9buf->getD3D9VertexBuffer(),
-				0,
-				static_cast<UINT>(d3d9buf->getVertexSize()) // stride
-				);
-		}
-		else
+		for(UINT32 i = 0; i < numBuffers; i++)
 		{
-			hr = getActiveD3D9Device()->SetStreamSource(static_cast<UINT>(index), nullptr, 0, 0);
-		}
+			if(buffers[i] != nullptr)
+			{
+				D3D9VertexBuffer* d3d9buf = static_cast<D3D9VertexBuffer*>(buffers[i].get());
 
-		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 stream source for buffer binding");
+				hr = getActiveD3D9Device()->SetStreamSource(
+					static_cast<UINT>(index + i),
+					d3d9buf->getD3D9VertexBuffer(),
+					0,
+					static_cast<UINT>(d3d9buf->getVertexSize()) // stride
+					);
+			}
+			else
+			{
+				hr = getActiveD3D9Device()->SetStreamSource(static_cast<UINT>(index + i), nullptr, 0, 0);
+			}
+
+			if (FAILED(hr))
+				CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 stream source for buffer binding");
+		}
 	}
 	//---------------------------------------------------------------------
 	void D3D9RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)

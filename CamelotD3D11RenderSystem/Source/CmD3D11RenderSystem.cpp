@@ -331,22 +331,28 @@ namespace CamelotFramework
 		mDevice->getImmediateContext()->RSSetViewports(1, &mViewport);
 	}
 
-	void D3D11RenderSystem::setVertexBuffer(UINT32 index, const VertexBufferPtr& buffer)
+	void D3D11RenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
-		if(index < 0 || index >= maxBoundVertexBuffers)
+		if(index < 0 || (index + numBuffers) >= maxBoundVertexBuffers)
 			CM_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) + ". Valid range is 0 .. " + toString(maxBoundVertexBuffers - 1));
 
-		ID3D11Buffer* buffers[1];
-		D3D11VertexBuffer* vertexBuffer = static_cast<D3D11VertexBuffer*>(buffer.get());
-		buffers[0] = vertexBuffer->getD3DVertexBuffer();
+		ID3D11Buffer* dx11buffers[MAX_BOUND_VERTEX_BUFFERS];
+		UINT32 strides[MAX_BOUND_VERTEX_BUFFERS];
+		UINT32 offsets[MAX_BOUND_VERTEX_BUFFERS];
 
-		UINT32 strides[1] = { buffer->getVertexSize() };
-		UINT32 offsets[1] = { 0 };
+		for(UINT32 i = 0; i < numBuffers; i++)
+		{
+			D3D11VertexBuffer* vertexBuffer = static_cast<D3D11VertexBuffer*>(buffers[i].get());
+			dx11buffers[i] = vertexBuffer->getD3DVertexBuffer();
 
-		mDevice->getImmediateContext()->IASetVertexBuffers(index, 1, buffers, strides, offsets);
+			strides[i] = buffers[i]->getVertexSize();
+			offsets[i] = 0;
+		}
+
+		mDevice->getImmediateContext()->IASetVertexBuffers(index, numBuffers, dx11buffers, strides, offsets);
 	}
 
 	void D3D11RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
