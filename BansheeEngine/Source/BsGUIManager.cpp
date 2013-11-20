@@ -55,7 +55,8 @@ namespace BansheeEngine
 		Vector<GUIGroupElement>::type elements;
 	};
 
-	UINT32 GUIManager::DRAG_DISTANCE = 3;
+	const UINT32 GUIManager::DRAG_DISTANCE = 3;
+	const UINT32 GUIManager::MESH_BUFFER_SIZE_INCREMENT = 500;
 
 	GUIManager::GUIManager()
 		:mElementUnderCursor(nullptr), mWidgetUnderCursor(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
@@ -457,7 +458,10 @@ namespace BansheeEngine
 			UINT32 numMeshes = (UINT32)sortedGroups.size();
 			UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
 			if(numMeshes < oldNumMeshes)
+			{
 				renderData.cachedMeshes.resize(numMeshes);
+				renderData.meshBufferSizes.resize(numMeshes);
+			}
 
 			renderData.cachedMaterials.resize(numMeshes);
 
@@ -505,10 +509,27 @@ namespace BansheeEngine
 					quadOffset += numQuads;
 				}
 
+				// Create new mesh if needed
 				if(groupIdx >= (UINT32)renderData.cachedMeshes.size())
-					renderData.cachedMeshes.push_back(Mesh::create(meshData, MeshBufferType::Static));
+				{
+					UINT32 bufferNumQuads = group->numQuads + MESH_BUFFER_SIZE_INCREMENT;
+
+					renderData.cachedMeshes.push_back(Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, MeshBufferType::Dynamic));
+					renderData.meshBufferSizes.push_back(bufferNumQuads);
+				}
 				else
-					renderData.cachedMeshes[groupIdx] = Mesh::create(meshData, MeshBufferType::Static);
+				{
+					// Increase mesh size if it doesn't fit
+					if(renderData.meshBufferSizes[groupIdx] < group->numQuads)
+					{
+						UINT32 bufferNumQuads = group->numQuads + MESH_BUFFER_SIZE_INCREMENT;
+
+						renderData.cachedMeshes[groupIdx] = Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, MeshBufferType::Dynamic);
+						renderData.meshBufferSizes[groupIdx] = bufferNumQuads;
+					}
+				}
+
+				gMainCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData, true);
 
 				groupIdx++;
 			}

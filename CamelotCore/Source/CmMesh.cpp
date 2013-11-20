@@ -253,9 +253,6 @@ namespace CamelotFramework
 				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));
 		}
 
-		// TODO - BIG TODO - Completely ignores subMeshIdx and always renders the entire thing because all submeshes
-		// will share the same buffers
-
 		return mSubMeshes[subMeshIdx];
 	}
 

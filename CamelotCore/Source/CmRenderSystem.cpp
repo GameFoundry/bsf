@@ -237,7 +237,7 @@ namespace CamelotFramework {
 		if (subMesh.useIndexes)
 		{
 			setIndexBuffer(subMesh.indexData->indexBuffer);
-			drawIndexed(subMesh.indexData->indexStart, subMesh.indexData->indexCount, subMesh.vertexData->vertexCount);
+			drawIndexed(subMesh.indexOffset, subMesh.indexCount, subMesh.vertexData->vertexCount);
 		}
 		else
 			draw(subMesh.vertexData->vertexCount);

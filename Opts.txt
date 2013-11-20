@@ -24,10 +24,7 @@ When optimizing UpdateLayout make sure to mark elements that are fully culled as
  -------------
 
  Mesh
-  - GUIManager needs to be refactored so it knows to enlarge the Mesh when it runs out
- - writeSubresource
-  - add "discardEntireBuffer" flag
-   - ensure buffer is compatible with the flag (I think it needs to be dynamic)
+  - Make sure to check DX9 and OpenGL performance when new buffers are implemented
 
 TransientMesh
  - Only used for writing, only dynamic, and only MAP_NO_OVERWRITE writing
@@ -47,5 +44,6 @@ Other possible improvements:
  - Fix how I handle sub-meshes: right now they are read on sim thread, but set on core thread which is wrong
  - Textures do lock/unlock when writing data to them. This causes an unnecessary copy in DX11 (and possibly other APIs)
    - add writeData/readData methods that do those things as efficiently as possible
+ - Textures always create dynamic buffers
  - When writing to mesh vertex buffer that requires a color flip I need to create a temporary copy of the entire buffer. It would be better to handle this differently. 
  - Update Mesh DX11 buffers so they get initialized with data immediately and see if OpenGL has something similar (ADD THIS TO LOW PRIORITY LIST BUT DON'T IMPLEMENT ATM)

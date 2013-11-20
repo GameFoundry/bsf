@@ -31,6 +31,7 @@ namespace BansheeEngine
 			{ }
 
 			CM::Vector<CM::HMesh>::type cachedMeshes;
+			CM::Vector<CM::UINT32>::type meshBufferSizes;
 			CM::Vector<GUIMaterialInfo>::type cachedMaterials;
 			CM::Vector<GUIWidget*>::type cachedWidgetsPerMesh;
 			CM::Vector<GUIWidget*>::type widgets;
@@ -116,7 +117,8 @@ namespace BansheeEngine
 			bool acceptAllElements;
 		};
 
-		static CM::UINT32 DRAG_DISTANCE;
+		static const CM::UINT32 DRAG_DISTANCE;
+		static const CM::UINT32 MESH_BUFFER_SIZE_INCREMENT;
 
 		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
