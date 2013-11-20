@@ -514,7 +514,7 @@ namespace BansheeEngine
 				{
 					UINT32 bufferNumQuads = group->numQuads + MESH_BUFFER_SIZE_INCREMENT;
 
-					renderData.cachedMeshes.push_back(Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, MeshBufferType::Dynamic));
+					renderData.cachedMeshes.push_back(Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, meshData, MeshBufferType::Dynamic));
 					renderData.meshBufferSizes.push_back(bufferNumQuads);
 				}
 				else
@@ -527,9 +527,9 @@ namespace BansheeEngine
 						renderData.cachedMeshes[groupIdx] = Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, MeshBufferType::Dynamic);
 						renderData.meshBufferSizes[groupIdx] = bufferNumQuads;
 					}
-				}
 
-				gMainCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData, true);
+					gMainCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData, true);
+				}
 
 				groupIdx++;
 			}

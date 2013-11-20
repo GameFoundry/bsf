@@ -26,6 +26,16 @@ namespace CamelotFramework
 		return mesh;
 	}
 
+	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialData, 
+		MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+	{
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(numVertices, numIndices, vertexDesc, initialData, bufferType, indexType));
+		mesh->setThisPtr(mesh);
+		mesh->initialize();
+
+		return mesh;
+	}
+
 	MeshPtr MeshManager::create(const MeshDataPtr& initialData, MeshBufferType bufferType)
 	{
 		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(initialData, bufferType));

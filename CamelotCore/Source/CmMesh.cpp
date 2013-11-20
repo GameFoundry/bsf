@@ -21,6 +21,12 @@ namespace CamelotFramework
 		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
 	{ }
 
+	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mTempInitialMeshData(initialMeshData)
+	{ }
+
 	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType)
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(initialMeshData->getNumVertices()), 
 		mNumIndices(initialMeshData->getNumIndices()), mBufferType(bufferType), mIndexType(initialMeshData->getIndexType()),
@@ -343,6 +349,13 @@ namespace CamelotFramework
 	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 	{
 		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, indexType);
+
+		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
+	}
+
+	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialMeshData, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+	{
+		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, initialMeshData, bufferType, indexType);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}

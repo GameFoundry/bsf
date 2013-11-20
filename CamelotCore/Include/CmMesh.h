@@ -90,6 +90,9 @@ namespace CamelotFramework
 		Mesh(UINT32 numVertices, UINT32 numIndices, 
 			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 
+		Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialMeshData, 
+			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+
 		Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static);
 
 		std::shared_ptr<VertexData> mVertexData;
@@ -133,6 +136,9 @@ namespace CamelotFramework
 	public:
 		static HMesh create(UINT32 numVertices, UINT32 numIndices, 
 			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+
+		static HMesh create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialMeshData, 
+			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 
 		static HMesh create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static);
 	};

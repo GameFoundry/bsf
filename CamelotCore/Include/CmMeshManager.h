@@ -14,6 +14,8 @@ namespace CamelotFramework
 
 		MeshPtr create(UINT32 numVertices, UINT32 numIndices, 
 			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialData, 
+			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 		MeshPtr create(const MeshDataPtr& initialData, MeshBufferType bufferType = MeshBufferType::Static);
 		MeshPtr createEmpty();
 
