@@ -62,8 +62,6 @@ namespace CamelotFramework {
 
 	void GLTexture::initialize_internal()
 	{
-		Texture::initialize_internal();
-
 		// Convert to nearest power-of-two size if required
 		mWidth = GLPixelUtil::optionalPO2(mWidth);      
 		mHeight = GLPixelUtil::optionalPO2(mHeight);
@@ -190,6 +188,8 @@ namespace CamelotFramework {
 
 		if(buffer != nullptr)
 			mFormat = buffer->getFormat();
+
+		Texture::initialize_internal();
 	}
 
 	void GLTexture::destroy_internal()

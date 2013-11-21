@@ -230,14 +230,14 @@ namespace CamelotFramework
 	{ 
 		THROW_IF_NOT_CORE_THREAD;
 
-		Texture::initialize_internal();
-
 		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 		{
 			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
 
 			createInternalResources(d3d9Device);
 		}
+
+		Texture::initialize_internal();
 	}
 	
 	void D3D9Texture::destroy_internal()

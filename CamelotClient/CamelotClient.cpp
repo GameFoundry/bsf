@@ -35,8 +35,8 @@
 #include "CmRTTIType.h"
 #include "CmPlatform.h"
 
-#define DX11
-//#define DX9
+//#define DX11
+#define DX9
 //#define GL
 
 using namespace CamelotFramework;

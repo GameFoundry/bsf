@@ -269,10 +269,22 @@ namespace CamelotFramework
 				}
 
 				HTexture newTex = Texture::create(TEX_TYPE_2D, pageIter->width, pageIter->height, 0, PF_R8G8);
-				newTex.synchronize();
+				newTex.synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 
 				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
-				gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);
+
+				// It's possible the formats no longer match
+				if(newTex->getFormat() != pixelData->getFormat())
+				{
+					PixelDataPtr temp = newTex->allocateSubresourceBuffer(subresourceIdx);
+					PixelUtil::bulkPixelConversion(*pixelData, *temp);
+
+					gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, temp);
+				}
+				else
+				{
+					gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);
+				}
 
 				fontData.texturePages.push_back(newTex);
 

@@ -154,9 +154,7 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		Texture::initialize_internal();
-
-			// load based on tex.type
+		// load based on tex.type
 		switch (getTextureType())
 		{
 			case TEX_TYPE_1D:
@@ -173,6 +171,8 @@ namespace CamelotFramework
 				destroy_internal();
 				CM_EXCEPT(RenderingAPIException, "Unknown texture type");
 		}
+
+		Texture::initialize_internal();
 	}
 
 	void D3D11Texture::destroy_internal()
