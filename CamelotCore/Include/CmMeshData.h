@@ -111,12 +111,14 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Informs the internal buffer that it needs to make room for an index buffer of the
-		 * 			specified size. If specified submesh already exists it will just be updated. This
-		 * 			must be called between beginDesc and endDesc.
+		 * 			specified size. If specified submesh already exists it will just be updated. 
 		 *
 		 * @param	numIndices	Number of indices.
 		 * @param	subMesh   	(optional) Index of the sub-mesh to add/update.
 		 * @param	drawOp	  	(optional) Specifies the primitive type contained by the mesh.
+		 * 						
+		 * @note	When updating a Mesh with MeshData, even if just a portion of it,
+		 * 			all sub-mesh information will be replaced with the one from MeshData.
 		 */
 		void addSubMesh(UINT32 numIndices, UINT32 subMesh = 0, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 

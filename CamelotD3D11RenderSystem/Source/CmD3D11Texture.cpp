@@ -6,6 +6,7 @@
 #include "CmCoreThread.h"
 #include "CmException.h"
 #include "CmAsyncOp.h"
+#include "CmDebug.h"
 
 namespace CamelotFramework
 {
@@ -58,7 +59,7 @@ namespace CamelotFramework
 
 		if(flags == D3D11_MAP_READ || flags == D3D11_MAP_READ_WRITE)
 		{
-			UINT8* data = (UINT8*)_mapstagingbuffer(flags, face, mipLevel, rowPitch, slicePitch);
+			UINT8* data = (UINT8*)mapstagingbuffer(flags, face, mipLevel, rowPitch, slicePitch);
 			lockedArea.setExternalBuffer(data);
 			lockedArea.setRowPitch(rowPitch);
 			lockedArea.setSlicePitch(slicePitch);
@@ -68,13 +69,13 @@ namespace CamelotFramework
 		{
 			if(mUsage == TU_DYNAMIC)
 			{
-				UINT8* data = (UINT8*)_map(mTex, flags, face, mipLevel, rowPitch, slicePitch);
+				UINT8* data = (UINT8*)map(mTex, flags, face, mipLevel, rowPitch, slicePitch);
 				lockedArea.setExternalBuffer(data);
 				lockedArea.setRowPitch(rowPitch);
 				lockedArea.setSlicePitch(slicePitch);
 			}
 			else
-				lockedArea.setExternalBuffer((UINT8*)_mapstaticbuffer(lockedArea, mipLevel, face));
+				lockedArea.setExternalBuffer((UINT8*)mapstaticbuffer(lockedArea, mipLevel, face));
 
 			mLockedForReading = false;
 		}
@@ -85,13 +86,67 @@ namespace CamelotFramework
 	void D3D11Texture::unlockImpl()
 	{
 		if(mLockedForReading)
-			_unmapstagingbuffer();
+			unmapstagingbuffer();
 		else
 		{
 			if(mUsage == TU_DYNAMIC)
-				_unmap(mTex);
+				unmap(mTex);
 			else
-				_unmapstaticbuffer();
+				unmapstaticbuffer();
+		}
+	}
+
+	void D3D11Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	{
+		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
+
+#if CM_DEBUG_MODE
+		if(dest.getConsecutiveSize() != myData.getConsecutiveSize())
+		{
+			unlock();
+			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
+		}
+#endif
+
+		PixelUtil::bulkPixelConversion(myData, dest);
+
+		unlock();
+	}
+
+	void D3D11Texture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
+	{
+		if(mUsage == TU_DYNAMIC)
+		{
+			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face);
+			PixelUtil::bulkPixelConversion(src, myData);
+			unlock();
+		}
+		else if(mUsage == TU_STATIC)
+		{
+			mipLevel = Math::Clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
+			face = Math::Clamp(face, (UINT32)0, mDepth - 1);
+
+			if(getTextureType() == TEX_TYPE_3D)
+				face = 0;
+
+			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
+			D3D11Device& device = rs->getPrimaryDevice();
+
+			UINT subresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
+			UINT32 rowWidth = D3D11Mappings::_getSizeInBytes(mFormat, src.getWidth());
+			UINT32 sliceWidth = D3D11Mappings::_getSizeInBytes(mFormat, src.getWidth(), src.getHeight());
+
+			device.getImmediateContext()->UpdateSubresource(mTex, subresourceIdx, nullptr, src.getData(), rowWidth, sliceWidth);
+
+			if (device.hasError())
+			{
+				String errorDescription = device.getErrorDescription();
+				CM_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
+			}
+		}
+		else
+		{
+			CM_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
 		}
 	}
 
@@ -105,14 +160,14 @@ namespace CamelotFramework
 		switch (getTextureType())
 		{
 			case TEX_TYPE_1D:
-				_create1DTex();
+				create1DTex();
 				break;
 			case TEX_TYPE_2D:
 			case TEX_TYPE_CUBE_MAP:
-				_create2DTex();
+				create2DTex();
 				break;
 			case TEX_TYPE_3D:
-				_create3DTex();
+				create3DTex();
 				break;
 			default:
 				destroy_internal();
@@ -134,7 +189,7 @@ namespace CamelotFramework
 		Texture::destroy_internal();
 	}
 
-	void D3D11Texture::_create1DTex()
+	void D3D11Texture::create1DTex()
 	{
 		// We must have those defined here
 		assert(mWidth > 0);
@@ -218,7 +273,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D11Texture::_create2DTex()
+	void D3D11Texture::create2DTex()
 	{
 		// We must have those defined here
 		assert(mWidth > 0 || mHeight > 0);
@@ -375,7 +430,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void D3D11Texture::_create3DTex()
+	void D3D11Texture::create3DTex()
 	{
 		// We must have those defined here
 		assert(mWidth > 0 && mHeight > 0 && mDepth > 0);
@@ -462,7 +517,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void* D3D11Texture::_map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
+	void* D3D11Texture::map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		D3D11_MAPPED_SUBRESOURCE pMappedResource;
 		pMappedResource.pData = nullptr;
@@ -492,7 +547,7 @@ namespace CamelotFramework
 		return pMappedResource.pData;
 	}
 
-	void D3D11Texture::_unmap(ID3D11Resource* res)
+	void D3D11Texture::unmap(ID3D11Resource* res)
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -505,24 +560,24 @@ namespace CamelotFramework
 		}
 	}
 
-	void* D3D11Texture::_mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
+	void* D3D11Texture::mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch)
 	{
 		if(!mStagingBuffer)
-			_createStagingBuffer();
+			createStagingBuffer();
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 		device.getImmediateContext()->CopyResource(mStagingBuffer, mTex);
 
-		return _map(mStagingBuffer, flags, face, mipLevel, rowPitch, slicePitch);
+		return map(mStagingBuffer, flags, face, mipLevel, rowPitch, slicePitch);
 	}
 
-	void D3D11Texture::_unmapstagingbuffer()
+	void D3D11Texture::unmapstagingbuffer()
 	{
-		_unmap(mStagingBuffer);
+		unmap(mStagingBuffer);
 	}
 
-	void* D3D11Texture::_mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face)
+	void* D3D11Texture::mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 face)
 	{
 		UINT32 sizeOfImage = lock.getConsecutiveSize();
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
@@ -533,7 +588,7 @@ namespace CamelotFramework
 		return mStaticBuffer->getData();
 	}
 
-	void D3D11Texture::_unmapstaticbuffer()
+	void D3D11Texture::unmapstaticbuffer()
 	{
 		UINT32 rowWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
 		UINT32 sliceWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
@@ -552,7 +607,7 @@ namespace CamelotFramework
 			cm_delete<PoolAlloc>(mStaticBuffer);
 	}
 
-	void D3D11Texture::_createStagingBuffer()
+	void D3D11Texture::createStagingBuffer()
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();

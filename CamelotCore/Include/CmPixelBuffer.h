@@ -101,66 +101,7 @@ namespace CamelotFramework {
 		/// @copydoc HardwareBuffer::writeData
 		virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				bool discardWholeBuffer = false);
-        
-        /** Copies a box from another PixelBuffer to a region of the 
-        	this PixelBuffer. 
-			@param dst		Source pixel buffer
-        	@param srcBox	Image::Box describing the source region in src
-        	@param dstBox	Image::Box describing the destination region in this buffer
-			@remarks The source and destination regions dimensions don't have to match, in which
-		   	case scaling is done. This scaling is generally done using a bilinear filter in hardware,
-            but it is faster to pass the source image in the right dimensions.
-			@note Only call this function when both  buffers are unlocked. 
-         */        
-        virtual void blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
 
-		/** Convenience function that blits the entire source pixel buffer to this buffer. 
-			If source and destination dimensions don't match, scaling is done.
-			@param src		PixelBox containing the source pixels and format in memory
-			@note Only call this function when the buffer is unlocked. 
-		*/
-		void blit(const PixelBufferPtr &src); 
-		
-		/** Copies a region from normal memory to a region of this pixelbuffer. The source
-			image can be in any pixel format supported by OGRE, and in any size. 
-		   	@param src		PixelBox containing the source pixels and format in memory
-		   	@param dstBox	Image::Box describing the destination region in this buffer
-            @remarks The source and destination regions dimensions don't have to match, in which
-            case scaling is done. This scaling is generally done using a bilinear filter in hardware,
-            but it is faster to pass the source image in the right dimensions.
-			@note Only call this function when the buffer is unlocked. 
-		*/
-		virtual void blitFromMemory(const PixelData &src, const Box &dstBox) = 0;
-		
-		/** Convenience function that blits a pixelbox from memory to the entire 
-			buffer. The source image is scaled as needed.
-			@param src		PixelBox containing the source pixels and format in memory
-			@note Only call this function when the buffer is unlocked. 
-		*/
-		void blitFromMemory(const PixelData &src)
-		{
-			blitFromMemory(src, Box(0,0,0,mWidth,mHeight,mDepth));
-		}
-		
-		/** Copies a region of this pixelbuffer to normal memory.
-		   	@param srcBox	Image::Box describing the source region of this buffer
-		   	@param dst		PixelBox describing the destination pixels and format in memory
-		   	@remarks The source and destination regions don't have to match, in which
-		   	case scaling is done.
-			@note Only call this function when the buffer is unlocked. 
-		 */
-		virtual void blitToMemory(const Box &srcBox, const PixelData &dst) = 0;
-
-		/** Convience function that blits this entire buffer to a pixelbox.
-			The image is scaled as needed.
-			@param src		PixelBox containing the source pixels and format in memory
-			@note Only call this function when the buffer is unlocked. 
-		*/
-		void blitToMemory(const PixelData &dst)
-		{
-			blitToMemory(Box(0,0,0,mWidth,mHeight,mDepth), dst);
-		}
-        
         /// Gets the width of this buffer
         UINT32 getWidth() const { return mWidth; }
         /// Gets the height of this buffer

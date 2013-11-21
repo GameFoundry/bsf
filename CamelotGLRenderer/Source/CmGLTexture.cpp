@@ -229,7 +229,6 @@ namespace CamelotFramework {
 		return mTextureID;
 	}
 
-	//* Creation / loading methods ********************************************
 	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		if(mLockedBuffer != nullptr)
@@ -246,7 +245,7 @@ namespace CamelotFramework {
 
 		return lockedArea;
 	}
-	/****************************************************************************************/
+
 	void GLTexture::unlockImpl()
 	{
 		if(mLockedBuffer == nullptr)
@@ -255,7 +254,18 @@ namespace CamelotFramework {
 		mLockedBuffer->unlock();
 		mLockedBuffer = nullptr;
 	}
-	/****************************************************************************************/ 
+
+
+	void GLTexture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	{
+		getBuffer(face, mipLevel)->download(dest);
+	}
+
+	void GLTexture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
+	{
+		getBuffer(face, mipLevel)->upload(src, src.getExtents());
+	}
+
 	void GLTexture::copyImpl(TexturePtr& target)
 	{
 		size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
@@ -265,11 +275,13 @@ namespace CamelotFramework {
 		{
 			for(unsigned int mip=0; mip<=numMips; mip++)
 			{
-				glTexture->getBuffer(face, mip)->blit(getBuffer(face, mip));
+				GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(face, mip).get());
+
+				glTexture->getBuffer(face, mip)->blitFromTexture(src);
 			}
 		}
 	}
-	//---------------------------------------------------------------------------------------------
+
 	void GLTexture::createSurfaceList()
 	{
 		mSurfaceList.clear();
@@ -295,8 +307,7 @@ namespace CamelotFramework {
 		}
 	}
 	
-	//---------------------------------------------------------------------------------------------
-	PixelBufferPtr GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
+	std::shared_ptr<GLPixelBuffer> GLTexture::getBuffer(UINT32 face, UINT32 mipmap)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

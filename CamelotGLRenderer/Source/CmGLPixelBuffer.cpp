@@ -35,7 +35,6 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
-	//----------------------------------------------------------------------------- 
 	GLPixelBuffer::GLPixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,
 					PixelFormat inFormat,
 					GpuBufferUsage usage):
@@ -46,13 +45,12 @@ namespace CamelotFramework
 		mCurrentLockOptions = (GpuLockOptions)0;
 	}
 
-	//-----------------------------------------------------------------------------  
 	GLPixelBuffer::~GLPixelBuffer()
 	{
 		// Force free buffer
 		mBuffer.freeInternalBuffer();
 	}
-	//-----------------------------------------------------------------------------  
+
 	void GLPixelBuffer::allocateBuffer()
 	{
 		if(mBuffer.getData())
@@ -62,7 +60,7 @@ namespace CamelotFramework
 		mBuffer.allocateInternalBuffer();
 		// TODO: use PBO if we're HBU_DYNAMIC
 	}
-	//-----------------------------------------------------------------------------  
+
 	void GLPixelBuffer::freeBuffer()
 	{
 		// Free buffer if we're STATIC to save memory
@@ -71,7 +69,7 @@ namespace CamelotFramework
 			mBuffer.freeInternalBuffer();
 		}
 	}
-	//-----------------------------------------------------------------------------  
+
 	PixelData GLPixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
 	{
 		allocateBuffer();
@@ -84,7 +82,7 @@ namespace CamelotFramework
 		mLockedBox = lockBox;
 		return mBuffer.getSubVolume(lockBox);
 	}
-	//-----------------------------------------------------------------------------  
+
 	void GLPixelBuffer::unlockImpl(void)
 	{
 		if (mCurrentLockOptions != GBL_READ_ONLY)
@@ -96,97 +94,35 @@ namespace CamelotFramework
 		freeBuffer();
 	}
 
-	//-----------------------------------------------------------------------------  
-	void GLPixelBuffer::blitFromMemory(const PixelData &src, const Box &dstBox)
-	{
-		if(!mBuffer.getExtents().contains(dstBox))
-			CM_EXCEPT(InvalidParametersException, "destination box out of range");
-		PixelData scaled;
-	
-		if(src.getWidth() != dstBox.getWidth() ||
-			src.getHeight() != dstBox.getHeight() ||
-			src.getDepth() != dstBox.getDepth())
-		{
-			// Scale to destination size. Use DevIL and not iluScale because ILU screws up for 
-			// floating point textures and cannot cope with 3D images.
-			// This also does pixel format conversion if needed
-			allocateBuffer();
-			scaled = mBuffer.getSubVolume(dstBox);
-			PixelUtil::scale(src, scaled, PixelUtil::FILTER_BILINEAR);
-		}
-		else if(GLPixelUtil::getGLOriginFormat(src.getFormat()) == 0)
-		{
-			// Extents match, but format is not accepted as valid source format for GL
-			// do conversion in temporary buffer
-			allocateBuffer();
-			scaled = mBuffer.getSubVolume(dstBox);
-			PixelUtil::bulkPixelConversion(src, scaled);
-		}
-		else
-		{
-			allocateBuffer();
-			// No scaling or conversion needed
-			scaled = src;
-		}
-	
-		upload(scaled, dstBox);
-		freeBuffer();
-	}
-	//-----------------------------------------------------------------------------  
-	void GLPixelBuffer::blitToMemory(const Box &srcBox, const PixelData &dst)
-	{
-		if(!mBuffer.getExtents().contains(srcBox))
-			CM_EXCEPT(InvalidParametersException, "source box out of range");
-		if(srcBox.left == 0 && srcBox.right == getWidth() &&
-		   srcBox.top == 0 && srcBox.bottom == getHeight() &&
-		   srcBox.front == 0 && srcBox.back == getDepth() &&
-		   dst.getWidth() == getWidth() &&
-		   dst.getHeight() == getHeight() &&
-		   dst.getDepth() == getDepth() &&
-		   GLPixelUtil::getGLOriginFormat(dst.getFormat()) != 0)
-		{
-			// The direct case: the user wants the entire texture in a format supported by GL
-			// so we don't need an intermediate buffer
-			download(dst);
-		}
-		else
-		{
-			// Use buffer for intermediate copy
-			allocateBuffer();
-			// Download entire buffer
-			download(mBuffer);
-			if(srcBox.getWidth() != dst.getWidth() ||
-				srcBox.getHeight() != dst.getHeight() ||
-				srcBox.getDepth() != dst.getDepth())
-			{
-				// We need scaling
-				PixelUtil::scale(mBuffer.getSubVolume(srcBox), dst, PixelUtil::FILTER_BILINEAR);
-			}
-			else
-			{
-				// Just copy the bit that we need
-				PixelUtil::bulkPixelConversion(mBuffer.getSubVolume(srcBox), dst);
-			}
-			freeBuffer();
-		}
-	}
-	//-----------------------------------------------------------------------------
 	void GLPixelBuffer::upload(const PixelData &data, const Box &dest)
 	{
 		CM_EXCEPT(RenderingAPIException, 
 			"Upload not possible for this pixelbuffer type");
 	}
-	//-----------------------------------------------------------------------------  
+
 	void GLPixelBuffer::download(const PixelData &data)
 	{
 		CM_EXCEPT(RenderingAPIException, "Download not possible for this pixelbuffer type");
 	}
-	//-----------------------------------------------------------------------------  
+
+	void GLPixelBuffer::blitFromTexture(GLTextureBuffer *src)
+	{
+		blitFromTexture(src, 
+			Box(0,0,0,src->getWidth(),src->getHeight(),src->getDepth()), 
+			Box(0,0,0,mWidth,mHeight,mDepth)
+			);
+	}
+
+	void GLPixelBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox)
+	{
+		CM_EXCEPT(RenderingAPIException, "BlitFromTexture not possible for this pixelbuffer type");
+	}
+
 	void GLPixelBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 	{
 		CM_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixelbuffer type");
 	}
-	//********* GLTextureBuffer
+
 	GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint id, 
 									 GLint face, GLint level, GpuBufferUsage usage, bool crappyCard, 
 									 bool writeGamma, UINT32 fsaa):
@@ -239,9 +175,10 @@ namespace CamelotFramework
 			/// We are invalid, do not allocate a buffer
 			return;
 	}
+
 	GLTextureBuffer::~GLTextureBuffer()
 	{ }
-	//-----------------------------------------------------------------------------
+
 	void GLTextureBuffer::upload(const PixelData &data, const Box &dest)
 	{
 		if((mUsage & TU_RENDERTARGET) != 0)
@@ -372,7 +309,7 @@ namespace CamelotFramework
 		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 	}
-	//-----------------------------------------------------------------------------  
+
 	void GLTextureBuffer::download(const PixelData &data)
 	{
 		if((mUsage & TU_RENDERTARGET) != 0)
@@ -418,7 +355,7 @@ namespace CamelotFramework
 			glPixelStorei(GL_PACK_ALIGNMENT, 4);
 		}
 	}
-	//-----------------------------------------------------------------------------  
+
 	void GLTextureBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 	{
 		assert(zoffset < mDepth);
@@ -444,7 +381,7 @@ namespace CamelotFramework
 			break;
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLTextureBuffer::copyFromFramebuffer(UINT32 zoffset)
 	{
 		glBindTexture(mTarget, mTextureID);
@@ -462,28 +399,7 @@ namespace CamelotFramework
 			break;
 		}
 	}
-	//-----------------------------------------------------------------------------  
-	void GLTextureBuffer::blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
-	{
-		GLTextureBuffer *srct = static_cast<GLTextureBuffer *>(src.get());
-		/// Check for FBO support first
-		/// Destination texture must be 1D, 2D, 3D, or Cube
-		/// Source texture must be 1D, 2D or 3D
-	
-		// This does not sem to work for RTTs after the first update
-		// I have no idea why! For the moment, disable 
-		if(GLEW_EXT_framebuffer_object && (src->getUsage() & TU_RENDERTARGET) == 0 &&
-			(srct->mTarget==GL_TEXTURE_1D||srct->mTarget==GL_TEXTURE_2D||srct->mTarget==GL_TEXTURE_3D))
-		{
-			blitFromTexture(srct, srcBox, dstBox);
-		}
-		else
-		{
-			GLPixelBuffer::blit(src, srcBox, dstBox);
-		}
-	}
 
-	//-----------------------------------------------------------------------------  
 	/// Very fast texture-to-texture blitter and hardware bi/trilinear scaling implementation using FBO
 	/// Destination texture must be 1D, 2D, 3D, or Cube
 	/// Source texture must be 1D, 2D or 3D
@@ -497,7 +413,7 @@ namespace CamelotFramework
 		//mTextureID << ":" << dstBox.left << "," << dstBox.top << "," << dstBox.right << "," << dstBox.bottom << std::endl;
 		/// Store reference to FBO manager
 		GLRTTManager *fboMan = static_cast<GLRTTManager *>(GLRTTManager::instancePtr());
-    
+
 		/// Save and clear GL state for rendering
 		glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_DEPTH_BUFFER_BIT | GL_ENABLE_BIT | 
 			GL_FOG_BIT | GL_LIGHTING_BIT | GL_POLYGON_BIT | GL_SCISSOR_BIT | GL_STENCIL_BUFFER_BIT |
@@ -521,7 +437,7 @@ namespace CamelotFramework
 		glDisable(GL_LIGHTING);
 		glDisable(GL_FOG);
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    
+
 		/// Save and reset matrices
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
@@ -532,10 +448,10 @@ namespace CamelotFramework
 		glMatrixMode(GL_TEXTURE);
 		glPushMatrix();
 		glLoadIdentity();
-    
+
 		/// Set up source texture
 		glBindTexture(src->mTarget, src->mTextureID);
-    
+
 		/// Set filtering modes depending on the dimensions and source
 		if(srcBox.getWidth()==dstBox.getWidth() &&
 			srcBox.getHeight()==dstBox.getHeight() &&
@@ -556,18 +472,18 @@ namespace CamelotFramework
 		glTexParameteri(src->mTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(src->mTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(src->mTarget, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    
+
 		/// Set origin base level mipmap to make sure we source from the right mip
 		/// level.
 		glTexParameteri(src->mTarget, GL_TEXTURE_BASE_LEVEL, src->mLevel);
-    
+
 		/// Store old binding so it can be restored later
 		GLint oldfb;
 		glGetIntegerv(GL_FRAMEBUFFER_BINDING_EXT, &oldfb);
-    
+
 		/// Set up temporary FBO
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboMan->getTemporaryFBO());
-    
+
 		GLuint tempTex = 0;
 		if(!fboMan->checkFormat(mFormat))
 		{
@@ -590,7 +506,7 @@ namespace CamelotFramework
 			/// We are going to bind directly, so set viewport to size and position of destination slice
 			glViewport(dstBox.left, dstBox.top, dstBox.getWidth(), dstBox.getHeight());
 		}
-    
+
 		/// Process each destination slice
 		for(UINT32 slice=dstBox.front; slice<dstBox.back; ++slice)
 		{
@@ -610,7 +526,7 @@ namespace CamelotFramework
 			w = w * (float)(srcBox.getDepth() + srcBox.front);
 			/// Normalise to texture coordinate in 0.0 .. 1.0
 			w = (w+0.5f) / (float)src->mDepth;
-        
+
 			/// Finally we're ready to rumble	
 			glBindTexture(src->mTarget, src->mTextureID);
 			glEnable(src->mTarget);
@@ -625,7 +541,7 @@ namespace CamelotFramework
 			glVertex2f(-1.0f, 1.0f);
 			glEnd();
 			glDisable(src->mTarget);
-        
+
 			if(tempTex)
 			{
 				/// Copy temporary texture
@@ -655,10 +571,10 @@ namespace CamelotFramework
 		/// Reset source texture to sane state
 		glBindTexture(src->mTarget, src->mTextureID);
 		glTexParameteri(src->mTarget, GL_TEXTURE_BASE_LEVEL, 0);
-    
+
 		/// Detach texture from temporary framebuffer
 		glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
-						GL_RENDERBUFFER_EXT, 0);
+			GL_RENDERBUFFER_EXT, 0);
 		/// Restore old framebuffer
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, oldfb);
 		/// Restore matrix stacks and render state
@@ -671,80 +587,7 @@ namespace CamelotFramework
 		glPopAttrib();
 		glDeleteTextures(1, &tempTex);
 	}
-	//-----------------------------------------------------------------------------  
-	/// blitFromMemory doing hardware trilinear scaling
-	void GLTextureBuffer::blitFromMemory(const PixelData &src_orig, const Box &dstBox)
-	{
-		/// Fall back to normal GLHardwarePixelBuffer::blitFromMemory in case 
-		/// - FBO is not supported
-		/// - Either source or target is luminance due doesn't looks like supported by hardware
-		/// - the source dimensions match the destination ones, in which case no scaling is needed
-		if(!GLEW_EXT_framebuffer_object ||
-			(src_orig.getWidth() == dstBox.getWidth() &&
-			src_orig.getHeight() == dstBox.getHeight() &&
-			src_orig.getDepth() == dstBox.getDepth()))
-		{
-			GLPixelBuffer::blitFromMemory(src_orig, dstBox);
-			return;
-		}
-		if(!mBuffer.getExtents().contains(dstBox))
-			CM_EXCEPT(InvalidParametersException, "destination box out of range");
-		/// For scoped deletion of conversion buffer
-		PixelData src;
-    
-		/// First, convert the srcbox to a OpenGL compatible pixel format
-		if(GLPixelUtil::getGLOriginFormat(src_orig.getFormat()) == 0)
-		{
-			/// Convert to buffer internal format
-			src = PixelData(src_orig.getWidth(), src_orig.getHeight(), src_orig.getDepth(), mFormat);
-			src.allocateInternalBuffer();
-			PixelUtil::bulkPixelConversion(src_orig, src);
-		}
-		else
-		{
-			/// No conversion needed
-			src = src_orig;
-		}
-    
-		/// Create temporary texture to store source data
-		GLuint id;
-		GLenum target = (src.getDepth()!=1)?GL_TEXTURE_3D:GL_TEXTURE_2D;
-		GLsizei width = GLPixelUtil::optionalPO2(src.getWidth());
-		GLsizei height = GLPixelUtil::optionalPO2(src.getHeight());
-		GLsizei depth = GLPixelUtil::optionalPO2(src.getDepth());
-		GLenum format = GLPixelUtil::getClosestGLInternalFormat(src.getFormat());
-    
-		/// Generate texture name
-		glGenTextures(1, &id);
-    
-		/// Set texture type
-		glBindTexture(target, id);
-    
-		/// Set automatic mipmap generation; nice for minimisation
-		glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, 1000 );
-		glTexParameteri(target, GL_GENERATE_MIPMAP, GL_TRUE );
-    
-		/// Allocate texture memory
-		if(target == GL_TEXTURE_3D)
-			glTexImage3D(target, 0, format, width, height, depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-		else
-			glTexImage2D(target, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-
-		/// GL texture buffer
-		GLTextureBuffer tex(StringUtil::BLANK, target, id, 0, 0, (GpuBufferUsage)(GBU_STATIC), false, false, 0);
-    
-		/// Upload data to 0,0,0 in temporary texture
-		Box tempTarget(0, 0, 0, src.getWidth(), src.getHeight(), src.getDepth());
-		tex.upload(src, tempTarget);
-    
-		/// Blit
-		blitFromTexture(&tex, tempTarget, dstBox);
-    
-		/// Delete temp texture
-		glDeleteTextures(1, &id);
-	}
-	//********* GLRenderBuffer
-	//----------------------------------------------------------------------------- 
+	
 	GLRenderBuffer::GLRenderBuffer(GLenum format, UINT32 width, UINT32 height, GLsizei numSamples):
 		GLPixelBuffer(width, height, 1, GLPixelUtil::getClosestEngineFormat(format), GBU_DYNAMIC),
 		mRenderbufferID(0)
@@ -767,13 +610,13 @@ namespace CamelotFramework
 								width, height);
 		}
 	}
-	//----------------------------------------------------------------------------- 
+
 	GLRenderBuffer::~GLRenderBuffer()
 	{
 		/// Generate renderbuffer
 		glDeleteRenderbuffersEXT(1, &mRenderbufferID);
 	}
-	//-----------------------------------------------------------------------------  
+
 	void GLRenderBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 	{
 		assert(zoffset < mDepth);

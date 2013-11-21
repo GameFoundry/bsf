@@ -26,8 +26,9 @@ namespace CamelotFramework
 			if(mColorSurfaces[i] != nullptr)
 			{
 				GLTexture* glColorSurface = static_cast<GLTexture*>(mColorSurfaces[i]->getTexture().get());
-				GLPixelBufferPtr colorBuffer = std::static_pointer_cast<GLPixelBuffer>(
-					glColorSurface->getBuffer(mColorSurfaces[i]->getDesc().firstArraySlice, mColorSurfaces[i]->getDesc().mostDetailMip));
+				GLPixelBufferPtr colorBuffer = 
+					glColorSurface->getBuffer(mColorSurfaces[i]->getDesc().firstArraySlice, 
+					mColorSurfaces[i]->getDesc().mostDetailMip);
 
 				GLSurfaceDesc surfaceDesc;
 				surfaceDesc.numSamples = mFSAA;
@@ -45,8 +46,9 @@ namespace CamelotFramework
 		if(mDepthStencilSurface != nullptr)
 		{
 			GLTexture* glDepthStencilSurface = static_cast<GLTexture*>(mDepthStencilSurface->getTexture().get());
-			GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(
-				glDepthStencilSurface->getBuffer(mDepthStencilSurface->getDesc().firstArraySlice, mDepthStencilSurface->getDesc().mostDetailMip));
+			GLPixelBufferPtr depthStencilBuffer = 
+				glDepthStencilSurface->getBuffer(mDepthStencilSurface->getDesc().firstArraySlice, 
+				mDepthStencilSurface->getDesc().mostDetailMip);
 
 			mFB->bindDepthStencil(depthStencilBuffer);
 		}

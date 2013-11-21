@@ -132,9 +132,11 @@ namespace CamelotFramework
 
 		for(UINT32 mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
 		{
-			PixelDataPtr src = imgData->getPixels(mip);
-
 			UINT32 subresourceIdx = newTexture->mapToSubresourceIdx(0, mip);
+			PixelDataPtr src = newTexture->allocateSubresourceBuffer(subresourceIdx);
+
+			imgData->getPixels(mip, *src);
+
 			gMainSyncedCA().writeSubresource(newTexture.getInternalPtr(), subresourceIdx, src);
 		}
 

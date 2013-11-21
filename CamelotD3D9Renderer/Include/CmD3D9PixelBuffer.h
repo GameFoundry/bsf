@@ -47,16 +47,6 @@ namespace CamelotFramework {
 		void bind(IDirect3DDevice9 *dev, IDirect3DSurface9 *mSurface,
 			bool writeGamma, UINT32 fsaa, const String& srcName, IDirect3DBaseTexture9 *mipTex);
 		void bind(IDirect3DDevice9 *dev, IDirect3DVolume9 *mVolume, IDirect3DBaseTexture9 *mipTex);
-
-		/// @copydoc HardwarePixelBuffer::blit
-		void blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
-
-		/// @copydoc HardwarePixelBuffer::blitFromMemory
-		void blitFromMemory(const PixelData &src, const Box &dstBox);
-
-		/// @copydoc HardwarePixelBuffer::blitToMemory
-		void blitToMemory(const Box &srcBox, const PixelData &dst);
-
 		/// Internal function to update mipmaps on update of level 0
 		void _genMipmaps(IDirect3DBaseTexture9* mipTex);
 

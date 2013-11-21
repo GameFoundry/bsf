@@ -71,7 +71,7 @@ namespace CamelotFramework
         */
         bool getHasAlpha() const { return PixelUtil::getFlags(mFormat) & PFF_HASALPHA; }
 
-		PixelDataPtr getPixels(UINT32 mip);
+		void getPixels(UINT32 mip, PixelData& output);
 
 	private:
 		UINT32 mNumMipmaps;

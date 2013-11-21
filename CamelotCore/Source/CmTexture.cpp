@@ -93,21 +93,36 @@ namespace CamelotFramework {
 		if(data.getTypeId() != TID_PixelData)
 			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 
-		if(!discardEntireBuffer) // TODO - Textures can currently only be dynamic
+		if(discardEntireBuffer)
 		{
-			LOGWRN("Buffer discard was not set but buffer was created as dynamic.");
-			discardEntireBuffer = true;
+			if(mUsage != TU_DYNAMIC)
+			{
+				LOGWRN("Buffer discard is enabled but buffer was not created as dynamic. Disabling discard.");
+				discardEntireBuffer = false;
+			}
+		}
+		else
+		{
+			if(mUsage == TU_DYNAMIC)
+			{
+				LOGWRN("Buffer discard is not enabled but buffer was not created as dynamic. Enabling discard.");
+				discardEntireBuffer = true;
+			}
 		}
 
 		const PixelData& pixelData = static_cast<const PixelData&>(data);
+
+		if(pixelData.getWidth() != getWidth() ||pixelData.getHeight() != getHeight() || 
+			pixelData.getDepth() != getDepth() || pixelData.getFormat() != getFormat())
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to write to this texture.");
+		}
 
 		UINT32 face = 0;
 		UINT32 mip = 0;
 		mapFromSubresourceIdx(subresourceIdx, face, mip);
 
-		PixelData myData = lock(discardEntireBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mip, face);
-		PixelUtil::bulkPixelConversion(pixelData, myData);
-		unlock();
+		writeData(pixelData, mip, face, discardEntireBuffer);
 	}
 
 	void Texture::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
@@ -119,23 +134,17 @@ namespace CamelotFramework {
 
 		PixelData& pixelData = static_cast<PixelData&>(data);
 
+		if(pixelData.getWidth() != getWidth() ||pixelData.getHeight() != getHeight() || 
+			pixelData.getDepth() != getDepth() || pixelData.getFormat() != getFormat())
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to read from this texture.");
+		}
+
 		UINT32 face = 0;
 		UINT32 mip = 0;
 		mapFromSubresourceIdx(subresourceIdx, face, mip);
 
-		PixelData myData = lock(GBL_READ_ONLY, mip, face);
-
-#if CM_DEBUG_MODE
-		if(pixelData.getConsecutiveSize() != myData.getConsecutiveSize())
-		{
-			unlock();
-			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
-		}
-#endif
-
-		PixelUtil::bulkPixelConversion(myData, pixelData);
-
-		unlock();
+		readData(pixelData, mip, face);
 	}
 
 	PixelDataPtr Texture::allocateSubresourceBuffer(UINT32 subresourceIdx) const

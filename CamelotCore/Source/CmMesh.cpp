@@ -18,23 +18,24 @@ namespace CamelotFramework
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mNumSubMeshes(0)
 	{ }
 
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mTempInitialMeshData(initialMeshData)
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mTempInitialMeshData(initialMeshData), mNumSubMeshes(0)
 	{ }
 
 	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType)
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(initialMeshData->getNumVertices()), 
 		mNumIndices(initialMeshData->getNumIndices()), mBufferType(bufferType), mIndexType(initialMeshData->getIndexType()),
-		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData)
+		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData), mNumSubMeshes(0)
 	{ }
 
 	Mesh::Mesh()
-		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(0), mNumIndices(0), mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT)
+		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(0), mNumIndices(0), 
+		mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT), mNumSubMeshes(0)
 	{ }
 
 	Mesh::~Mesh()
@@ -52,7 +53,7 @@ namespace CamelotFramework
 		{
 			if(mBufferType == MeshBufferType::Static)
 			{
-				LOGWRN("Buffer discard was set but buffer was created as static.");
+				LOGWRN("Buffer discard is enabled but buffer was not created as dynamic. Disabling discard.");
 				discardEntireBuffer = false;
 			}
 		}
@@ -60,7 +61,7 @@ namespace CamelotFramework
 		{
 			if(mBufferType == MeshBufferType::Dynamic)
 			{
-				LOGWRN("Buffer discard was not set but buffer was created as dynamic.");
+				LOGWRN("Buffer discard is not enabled but buffer was created as dynamic. Enabling discard.");
 				discardEntireBuffer = true;
 			}
 		}
@@ -151,6 +152,8 @@ namespace CamelotFramework
 				mSubMeshes.push_back(SubMesh(0, numIndices, meshData.getDrawOp(), mVertexData, mIndexData, true));
 			}
 		}
+
+		mNumSubMeshes.store((UINT32)mSubMeshes.size());
 	}
 
 	void Mesh::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)

@@ -40,10 +40,9 @@ from a transient mesh by drawing only parts of its buffer. But only do this afte
 ---------
 
 Other possible improvements:
- - When setting buffers I should modify RenderSystem::setVertexBuffer so it can accept multiple buffers. So when mesh is bound all its streams can be bound in one call.
- - Fix how I handle sub-meshes: right now they are read on sim thread, but set on core thread which is wrong
+ - MeshData always completely overwrites destination mesh sub-meshes, plus it doesn't allow empty spaces or overlapping between the sub-meshes, they are always
+   sequential.
  - Textures do lock/unlock when writing data to them. This causes an unnecessary copy in DX11 (and possibly other APIs)
    - add writeData/readData methods that do those things as efficiently as possible
  - Textures always create dynamic buffers
  - When writing to mesh vertex buffer that requires a color flip I need to create a temporary copy of the entire buffer. It would be better to handle this differently. 
- - Update Mesh DX11 buffers so they get initialized with data immediately and see if OpenGL has something similar (ADD THIS TO LOW PRIORITY LIST BUT DON'T IMPLEMENT ATM)

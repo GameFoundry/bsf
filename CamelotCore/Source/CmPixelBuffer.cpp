@@ -30,8 +30,6 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
-  
-    //-----------------------------------------------------------------------------    
     PixelBuffer::PixelBuffer(UINT32 width, UINT32 height, UINT32 depth,
             PixelFormat format,
             GpuBufferUsage usage, bool useSystemMemory):
@@ -44,13 +42,11 @@ namespace CamelotFramework
         mSlicePitch = mHeight*mWidth;
 		mSizeInBytes = mHeight*mWidth*PixelUtil::getNumElemBytes(mFormat);
     }
-    
-    //-----------------------------------------------------------------------------    
+
     PixelBuffer::~PixelBuffer()
     {
     }
-    
-    //-----------------------------------------------------------------------------    
+
     void* PixelBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
         assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
@@ -60,8 +56,7 @@ namespace CamelotFramework
         const PixelData &rv = lock(myBox, options);
         return rv.getData();
     }
-    
-    //-----------------------------------------------------------------------------    
+
     const PixelData& PixelBuffer::lock(const Box& lockBox, GpuLockOptions options)
     {
         // Lock the real buffer if there is no shadow buffer 
@@ -71,77 +66,24 @@ namespace CamelotFramework
         return mCurrentLock;
     }
     
-    //-----------------------------------------------------------------------------    
     const PixelData& PixelBuffer::getCurrentLock() 
 	{ 
         assert(isLocked() && "Cannot get current lock: buffer not locked");
         
         return mCurrentLock; 
     }
-    
-    //-----------------------------------------------------------------------------    
-    /// Internal implementation of lock()
+
     void* PixelBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
 		CM_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
     }
 
-    //-----------------------------------------------------------------------------    
-
-    void PixelBuffer::blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox)
-	{
-		if(isLocked() || src->isLocked())
-		{
-			CM_EXCEPT(InternalErrorException,
-				"Source and destination buffer may not be locked!");
-		}
-		if(src.get() == this)
-		{
-			CM_EXCEPT(InternalErrorException,
-                "Source must not be the same object") ;
-		}
-		const PixelData &srclock = src->lock(srcBox, GBL_READ_ONLY);
-
-		GpuLockOptions method = GBL_READ_WRITE;
-		if(dstBox.left == 0 && dstBox.top == 0 && dstBox.front == 0 &&
-		   dstBox.right == mWidth && dstBox.bottom == mHeight &&
-		   dstBox.back == mDepth)
-			// Entire buffer -- we can discard the previous contents
-			method = GBL_WRITE_ONLY_DISCARD;
-			
-		const PixelData &dstlock = lock(dstBox, method);
-		if(dstlock.getWidth() != srclock.getWidth() ||
-        	dstlock.getHeight() != srclock.getHeight() ||
-        	dstlock.getDepth() != srclock.getDepth())
-		{
-			// Scaling desired
-			PixelUtil::scale(srclock, dstlock);
-		}
-		else
-		{
-			// No scaling needed
-			PixelUtil::bulkPixelConversion(srclock, dstlock);
-		}
-
-		unlock();
-		src->unlock();
-	}
-    //-----------------------------------------------------------------------------       
-    void PixelBuffer::blit(const PixelBufferPtr &src)
-    {
-        blit(src, 
-            Box(0,0,0,src->getWidth(),src->getHeight(),src->getDepth()), 
-            Box(0,0,0,mWidth,mHeight,mDepth)
-        );
-    }
-    //-----------------------------------------------------------------------------    
 	void PixelBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
 		// TODO
 		CM_EXCEPT(NotImplementedException,
 				"Reading a byte range is not implemented. Use blitToMemory.");
 	}
-	//-----------------------------------------------------------------------------    
 
 	void PixelBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
 			bool discardWholeBuffer)

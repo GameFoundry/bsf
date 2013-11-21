@@ -59,7 +59,7 @@ namespace CamelotFramework {
 			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
 						Do not use it after the lifetime of the containing texture.
 		*/
-		PixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
+		std::shared_ptr<GLPixelBuffer> getBuffer(UINT32 face, UINT32 mipmap);
 
     protected:
 		friend class GLTextureManager;
@@ -77,10 +77,30 @@ namespace CamelotFramework {
 		 */
 		void destroy_internal();
 
-		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face);
+		/**
+		 * @copydoc Texture::lock
+		 */
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @copydoc Texture::unlock
+		 */
 		void unlockImpl();
 
+		/**
+		 * @copydoc Texture::copy
+		 */
 		void copyImpl(TexturePtr& target);
+
+		/**
+		 * @copydoc Texture::readData
+		 */
+		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @copydoc Texture::writeData
+		 */
+		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
 
 		/** internal method, create GLHardwarePixelBuffers for every face and
 			 mipmap level. This method must be called after the GL texture object was created,
@@ -92,10 +112,10 @@ namespace CamelotFramework {
     private:
         GLuint mTextureID;
         GLSupport& mGLSupport;
-		PixelBufferPtr mLockedBuffer;
+		std::shared_ptr<GLPixelBuffer> mLockedBuffer;
 		
 		/// Vector of pointers to subsurfaces
-		typedef Vector<PixelBufferPtr>::type SurfaceList;
+		typedef Vector<std::shared_ptr<GLPixelBuffer>>::type SurfaceList;
 		SurfaceList	mSurfaceList;
     };
 

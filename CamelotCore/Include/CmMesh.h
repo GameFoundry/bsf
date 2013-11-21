@@ -74,7 +74,7 @@ namespace CamelotFramework
 		UINT32 mapToSubresourceIdx() const { return 0; }
 
 		const SubMesh& getSubMesh(UINT32 subMeshIdx = 0) const;
-		UINT32 getNumSubMeshes() const { return (UINT32)mSubMeshes.size(); }
+		UINT32 getNumSubMeshes() const { return mNumSubMeshes.load(); }
 
 		const AABox& getBounds() const;
 		const AABox& getBounds(UINT32 submeshIdx) const;
@@ -99,6 +99,7 @@ namespace CamelotFramework
 		std::shared_ptr<IndexData> mIndexData;
 
 		Vector<SubMesh>::type mSubMeshes;
+		std::atomic<UINT32> mNumSubMeshes;
 
 		UINT32 mNumVertices;
 		UINT32 mNumIndices;

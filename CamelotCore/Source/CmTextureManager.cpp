@@ -58,7 +58,7 @@ namespace CamelotFramework
 		data->setColorAt(Color::Red, 1, 1);
 
 		AsyncOp op;
-		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, true, op);
+		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, false, op);
 	}
 
     TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,

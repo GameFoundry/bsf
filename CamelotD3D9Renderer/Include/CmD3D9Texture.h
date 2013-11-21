@@ -147,11 +147,30 @@ namespace CamelotFramework {
 		 */
 		void destroy_internal();
 
-		/// overridden from Texture
+		/**
+		 * @copydoc Texture::lock
+		 */
+		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @copydoc Texture::unlock
+		 */
+		void unlockImpl();
+
+		/**
+		 * @copydoc Texture::copy
+		 */
 		void copyImpl(TexturePtr& target);
 
-		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
-		void unlockImpl();
+		/**
+		 * @copydoc Texture::readData
+		 */
+		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @copydoc Texture::writeData
+		 */
+		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
 
 		/// internal method, create a blank normal 1D/2D texture		
 		void _createNormTex(IDirect3DDevice9* d3d9Device);

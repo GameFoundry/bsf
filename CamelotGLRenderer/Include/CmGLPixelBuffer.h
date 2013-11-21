@@ -31,9 +31,21 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmPixelBuffer.h"
 
-namespace CamelotFramework {
+namespace CamelotFramework 
+{
+	class GLTextureBuffer;
+
 	class CM_RSGL_EXPORT GLPixelBuffer: public PixelBuffer
 	{
+	public:
+		// Upload a box of pixels to this buffer on the card
+		virtual void upload(const PixelData &data, const Box &dest);
+		// Download a box of pixels from the card
+		virtual void download(const PixelData &data);
+
+		virtual void blitFromTexture(GLTextureBuffer *src);
+		virtual void blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox);
+
 	protected:  
 		/// Lock a box
 		PixelData lockImpl(const Box lockBox,  GpuLockOptions options);
@@ -50,21 +62,11 @@ namespace CamelotFramework {
 		// Buffer allocation/freeage
 		void allocateBuffer();
 		void freeBuffer();
-		// Upload a box of pixels to this buffer on the card
-		virtual void upload(const PixelData &data, const Box &dest);
-		// Download a box of pixels from the card
-		virtual void download(const PixelData &data);
 	public:
         /// Should be called by HardwareBufferManager
         GLPixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
                 PixelFormat mFormat,
                 GpuBufferUsage usage);
-		
-		/// @copydoc HardwarePixelBuffer::blitFromMemory
-		void blitFromMemory(const PixelData &src, const Box &dstBox);
-		
-		/// @copydoc HardwarePixelBuffer::blitToMemory
-		void blitToMemory(const Box &srcBox, const PixelData &dst);
 		
 		~GLPixelBuffer();
         
@@ -91,15 +93,10 @@ namespace CamelotFramework {
 		// Download a box of pixels from the card
 		virtual void download(const PixelData &data);
   
-        /// Hardware implementation of blitFromMemory
-        virtual void blitFromMemory(const PixelData &src_orig, const Box &dstBox);
-        
         /// Copy from framebuffer
         void copyFromFramebuffer(UINT32 zoffset);
-        /// @copydoc HardwarePixelBuffer::blit
-        void blit(const PixelBufferPtr &src, const Box &srcBox, const Box &dstBox);
-        // Blitting implementation
-        void blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox);
+
+		void blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox);
     protected:
         // In case this is a texture level
 		GLenum mTarget;

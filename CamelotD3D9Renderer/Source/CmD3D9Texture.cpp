@@ -85,6 +85,37 @@ namespace CamelotFramework
 		mLockedBuffer->unlock();
 		mLockedBuffer = nullptr;
 	}
+
+	void D3D9Texture::readData(PixelData& dest, UINT32 mipLevel, UINT32 face)
+	{
+		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
+
+#if CM_DEBUG_MODE
+		if(dest.getConsecutiveSize() != myData.getConsecutiveSize())
+		{
+			unlock();
+			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
+		}
+#endif
+
+		PixelUtil::bulkPixelConversion(myData, dest);
+
+		unlock();
+	}
+
+	void D3D9Texture::writeData(const PixelData& src, UINT32 mipLevel, UINT32 face, bool discardWholeBuffer)
+	{
+		if(mUsage == TU_DYNAMIC || mUsage == TU_STATIC)
+		{
+			PixelData myData = lock(discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY, mipLevel, face);
+			PixelUtil::bulkPixelConversion(src, myData);
+			unlock();
+		}
+		else
+		{
+			CM_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
+		}
+	}
 	
 	void D3D9Texture::copyImpl(TexturePtr& target)
 	{

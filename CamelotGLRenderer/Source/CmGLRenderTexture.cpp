@@ -62,14 +62,13 @@ namespace CamelotFramework
 		surfaceDesc.zoffset = 0;
 
 		GLTexture* glTexture = static_cast<GLTexture*>(mColorSurface->getTexture().get());
-		surfaceDesc.buffer = std::static_pointer_cast<GLPixelBuffer>(
-			glTexture->getBuffer(mColorSurface->getFirstArraySlice(), mColorSurface->getMostDetailedMip()));
+		surfaceDesc.buffer = glTexture->getBuffer(mColorSurface->getFirstArraySlice(), mColorSurface->getMostDetailedMip());
 
 		mFB->bindSurface(0, surfaceDesc);
 
 		GLTexture* glDepthStencilTexture = static_cast<GLTexture*>(mDepthStencilSurface->getTexture().get());
-		GLPixelBufferPtr depthStencilBuffer = std::static_pointer_cast<GLPixelBuffer>(
-			glDepthStencilTexture->getBuffer(mDepthStencilSurface->getFirstArraySlice(), mDepthStencilSurface->getMostDetailedMip()));
+		GLPixelBufferPtr depthStencilBuffer = 
+			glDepthStencilTexture->getBuffer(mDepthStencilSurface->getFirstArraySlice(), mDepthStencilSurface->getMostDetailedMip());
 
 		mFB->bindDepthStencil(depthStencilBuffer);
 

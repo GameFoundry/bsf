@@ -182,12 +182,41 @@ namespace CamelotFramework {
 		 */
 		UINT32 mapToSubresourceIdx(UINT32 face, UINT32 mip) const;
 
+		/**
+		 * @brief	Locks the buffer for reading or writing.
+		 *
+		 * @param	options 	Options for controlling the operation.
+		 * @param	mipLevel	(optional) the mip level.
+		 * @param	face		(optional) the face.
+		 * 						
+		 * @return	Pointer to the buffer data. Only valid until you call unlock.
+		 * 			
+		 * @note If you are just reading or writing one block of data use
+		 * 		readData/writeData methods as they can be must faster in certain situations.
+		 */
 		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @brief	Unlocks a previously locked buffer. After the buffer is unlocked,
+		 * 			any data returned by lock becomes invalid.
+		 */
 		void unlock();
 
-		/** Copies the contents of this texture to
-			another texture. */
+		/**
+		* @brief	Copies the contents of this texture to another texture. Texture format
+		* 			and size must match.
+		 */
 		void copy(TexturePtr& target);
+
+		/**
+		 * @brief Reads data from the texture buffer into the provided buffer.
+		 */
+		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
+
+		/**
+		 * @brief Writes data from the provided buffer into the texture buffer.
+		 */
+		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) = 0;
 
 		/**
 		 * @brief	Returns a dummy 2x2 texture. Don't modify the returned texture.

@@ -36,37 +36,47 @@ namespace CamelotFramework
 		bool mLockedForReading;
 
 		/**
-		 * @copydoc Texture::lockImpl
+		 * @copydoc Texture::lock
 		 */
 		PixelData lockImpl(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
-		 * @copydoc Texture::unlockImpl
+		 * @copydoc Texture::unlock
 		 */
 		void unlockImpl();
 
 		/**
-		 * @copydoc Texture::copy_internal
+		 * @copydoc Texture::copy
 		 */
 		void copyImpl(TexturePtr& target);
 
+		/**
+		 * @copydoc Texture::readData
+		 */
+		void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0);
+
+		/**
+		 * @copydoc Texture::writeData
+		 */
+		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
+
 		/// internal method, create a blank normal 1D Dtexture
-		void _create1DTex();
+		void create1DTex();
 		/// internal method, create a blank normal 2D texture
-		void _create2DTex();
+		void create2DTex();
 		/// internal method, create a blank cube texture
-		void _create3DTex();
+		void create3DTex();
 
-		void _createStagingBuffer();
+		void createStagingBuffer();
 
-		void* _map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
-		void _unmap(ID3D11Resource* res);
+		void* map(ID3D11Resource* res, D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
+		void unmap(ID3D11Resource* res);
 
-		void* _mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
-		void _unmapstagingbuffer();
+		void* mapstagingbuffer(D3D11_MAP flags, UINT32 mipLevel, UINT32 face, UINT32& rowPitch, UINT32& slicePitch);
+		void unmapstagingbuffer();
 		
-		void* _mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 slice);
-		void _unmapstaticbuffer();
+		void* mapstaticbuffer(PixelData lock, UINT32 mipLevel, UINT32 slice);
+		void unmapstaticbuffer();
 
 		/**
 		 * @copydoc	Texture::initialize_internal()

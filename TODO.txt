@@ -63,9 +63,6 @@ Other:
 
 -----------------------BACKLOG TODO---------------------------------------------------------------
 
-----------------------------------------------------------------------------------------------
-High priority:
- - GetRenderOperation doesn't consider sub-meshes
 
 ----------------------------------------------------------------------------------------------
 Medium priority:
@@ -81,13 +78,11 @@ Medium priority:
  - Make sure that I am able to blit contents from render textures on all render systems
  - Command buffer:
    - Make CommandQueue not use mutexes and use atomics instead??
-   - Figure out how to handle accessing texture from a non-render thread?
    - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
-   - Doing setPixels_async in the texture doesn't make sure that the user doesn't actually modify the provided PixelData after that call.
-   - In general I need to rethink how to handle modifying resources with multithreading
  - Closing down a window (any window) will shut down main rendering loop
  - GUIManager draw call merging:
     I merge two GUI elements if they don't overlap each other, however I don't consider if there is some world geometry between them. Another reason to move batching out of GUIManager.
+ - Update Mesh DX11 buffers so they get initialized with data immediately upon construction as an optimization and see if OpenGL has something similar
 
 ----------------------------------------------------------------------------------------------
 Low priority TODO
@@ -126,7 +121,6 @@ Low priority TODO
   - OpenGL render window no longer looks for a monitor index
   - Material RTTI should also serialize shared buffers (they need to be made into a resource)
     - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
-  - Mesh::setMeshData is currently always synced
   - queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
     - test if everything is okay in release mode
   - Resources::unload will deadlock if the resource isn't being loaded!
