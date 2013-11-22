@@ -278,11 +278,11 @@ namespace CamelotFramework
 		UINT32 textureBufferSize = params->mNumTextures * sizeof(HTexture);
 		UINT32 samplerStateBufferSize = params->mNumSamplerStates * sizeof(HSamplerState);
 
-		UINT32 bufferSize = sizeof(BindableGpuParamBlock) + paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
+		UINT32 bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
 		for(UINT32 i = 0; i < params->mNumParamBlocks; i++)
 		{
 			if(params->mParamBlocks[i] != nullptr)
-				bufferSize += params->mParamBlocks[i]->getSize();
+				bufferSize += sizeof(BindableGpuParamBlock) + params->mParamBlocks[i]->getSize();
 		}
 
 		// TODO - Alloc using stack
@@ -317,12 +317,13 @@ namespace CamelotFramework
 			{
 				UINT32 bufferSize = params->mParamBlocks[i]->getSize();
 				bindableParams.mParamBlocks[i] = (BindableGpuParamBlock*)dataIter;
+
 				dataIter += sizeof(BindableGpuParamBlock);
-
 				bindableParams.mParamBlocks[i]->mData = dataIter;
-				dataIter += bufferSize;
 
+				dataIter += bufferSize;
 				memcpy(bindableParams.mParamBlocks[i]->mData, params->mParamBlocks[i]->getData(), bufferSize);
+
 				bindableParams.mParamBlocks[i]->mSize = bufferSize;
 				bindableParams.mParamBlocks[i]->mDirty = params->mParamBlocks[i]->isDirty();
 			}

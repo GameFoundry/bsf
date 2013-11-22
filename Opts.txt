@@ -23,8 +23,7 @@ When optimizing UpdateLayout make sure to mark elements that are fully culled as
 
  -------------
 
- Mesh
-  - Make sure to check DX9 and OpenGL performance when new buffers are implemented
+ Check OpenGL - There was a heap corruption the last time I tested it
 
 TransientMesh
  - Only used for writing, only dynamic, and only MAP_NO_OVERWRITE writing
