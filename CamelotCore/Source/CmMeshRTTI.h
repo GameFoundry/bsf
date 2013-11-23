@@ -8,8 +8,18 @@
 
 namespace CamelotFramework
 {
+	CM_ALLOW_MEMCPY_SERIALIZATION(SubMesh);
+
 	class MeshRTTI : public RTTIType<Mesh, GpuResource, MeshRTTI>
 	{
+		SubMesh& getSubMesh(Mesh* obj, UINT32 arrayIdx) { return obj->mSubMeshes[arrayIdx]; }
+		void setSubMesh(Mesh* obj, UINT32 arrayIdx, SubMesh& value) { obj->mSubMeshes[arrayIdx] = value; }
+		UINT32 getNumSubmeshes(Mesh* obj) { return (UINT32)obj->mSubMeshes.size(); }
+		void setNumSubmeshes(Mesh* obj, UINT32 numElements) { obj->mSubMeshes.resize(numElements); }
+
+		SubMesh& getDefaultSubMesh(Mesh* obj) { return obj->mDefaultSubMesh; }
+		void setDefaultSubMesh(Mesh* obj, SubMesh& value) { obj->mDefaultSubMesh = value; }
+
 		VertexDataDescPtr getVertexDesc(Mesh* obj) { return obj->mVertexDesc; }
 		void setVertexDesc(Mesh* obj, VertexDataDescPtr value) { obj->mVertexDesc = value; }
 
@@ -53,6 +63,11 @@ namespace CamelotFramework
 			addPlainField("mBufferType", 4, &MeshRTTI::getBufferType, &MeshRTTI::setBufferType);
 
 			addReflectablePtrField("mMeshData", 5, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
+
+			addPlainArrayField("mSubMeshes", 6, &MeshRTTI::getSubMesh, 
+				&MeshRTTI::getNumSubmeshes, &MeshRTTI::setSubMesh, &MeshRTTI::setNumSubmeshes);
+
+			addPlainField("mDefaultSubMesh", 7, &MeshRTTI::getDefaultSubMesh, &MeshRTTI::setDefaultSubMesh);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)

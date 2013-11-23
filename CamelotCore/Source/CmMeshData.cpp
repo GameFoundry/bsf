@@ -9,90 +9,42 @@
 
 namespace CamelotFramework
 {
-	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
-	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mDrawOp(drawOp), mData(nullptr), mResourceIndexOffset(0),
+	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType)
+	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mData(nullptr), mResourceIndexOffset(0),
 	   mResourceVertexOffset(0)
 	{
 		allocateInternalBuffer();
 	}
 
 	MeshData::MeshData()
-		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT), mDrawOp(DOT_TRIANGLE_LIST), mData(nullptr), 
+		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT), mData(nullptr), 
 		mResourceIndexOffset(0), mResourceVertexOffset(0)
 	{ }
 
 	MeshData::~MeshData()
 	{ }
 
-	void MeshData::addSubMesh(UINT32 numIndices, UINT32 subMesh, DrawOperationType drawOp)
-	{
-		if(!mDescBuilding)
-			CM_EXCEPT(InternalErrorException, "Cannot add indices when not building description. Call beginDesc() first.");
-
-		if(subMesh >= mSubMeshes.size())
-			mSubMeshes.resize(subMesh + 1);
-
-		IndexElementData indexData = mSubMeshes[subMesh];
-
-		indexData.numIndices = numIndices;
-		indexData.elementSize = getIndexElementSize();
-		indexData.subMesh = subMesh;
-		indexData.drawOp = drawOp;
-
-		mSubMeshes[subMesh] = indexData;
-	}
-
-	UINT32 MeshData::getNumIndices(UINT32 subMesh) const
-	{
-		if(mSubMeshes.size() == 0)
-			return mNumIndices;
-
-		return mSubMeshes.at(subMesh).numIndices;
-	}
-
-	DrawOperationType MeshData::getDrawOp(UINT32 subMesh) const
-	{
-		if(mSubMeshes.size() == 0)
-			return mDrawOp;
-
-		return mSubMeshes.at(subMesh).drawOp;
-	}
-
 	UINT32 MeshData::getNumIndices() const
 	{
-		if(mSubMeshes.size() == 0)
-			return mNumIndices;
-
-		UINT32 count = 0;
-		for(UINT32 i = 0; i < getNumSubmeshes(); i++)
-		{
-			count += mSubMeshes[i].numIndices;
-		}
-
-		return count;
+		return mNumIndices;
 	}
 
-	DrawOperationType MeshData::getDrawOp() const
-	{
-		return mDrawOp;
-	}
-
-	UINT16* MeshData::getIndices16(UINT32 subMesh) const
+	UINT16* MeshData::getIndices16() const
 	{
 		if(mIndexType != IndexBuffer::IT_16BIT)
 			CM_EXCEPT(InternalErrorException, "Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit.");
 
-		UINT32 indexBufferOffset = getIndexBufferOffset(subMesh);
+		UINT32 indexBufferOffset = getIndexBufferOffset();
 
 		return (UINT16*)(getData() + indexBufferOffset);
 	}
 
-	UINT32* MeshData::getIndices32(UINT32 subMesh) const
+	UINT32* MeshData::getIndices32() const
 	{
 		if(mIndexType != IndexBuffer::IT_32BIT)
 			CM_EXCEPT(InternalErrorException, "Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit.");
 
-		UINT32 indexBufferOffset = getIndexBufferOffset(subMesh);
+		UINT32 indexBufferOffset = getIndexBufferOffset();
 
 		return (UINT32*)(getData() + indexBufferOffset);
 	}
@@ -104,7 +56,8 @@ namespace CamelotFramework
 
 	// TODO - This doesn't handle the case where multiple elements in same slot have different data types
 	//  - actually it will likely corrupt memory in that case
-	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>::type& meshes)
+	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>::type& meshes, const Vector<Vector<SubMesh>::type>::type& allSubMeshes, 
+		Vector<SubMesh>::type& subMeshes)
 	{
 		UINT32 totalVertexCount = 0;
 		UINT32 totalIndexCount = 0;
@@ -116,18 +69,6 @@ namespace CamelotFramework
 
 		VertexDataDescPtr combinedVertexData = cm_shared_ptr<VertexDataDesc, PoolAlloc>();
 		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, combinedVertexData);
-
-		UINT32 subMeshIndex = 0;
-		for(auto& meshData : meshes)
-		{
-			for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
-			{
-				UINT32 numIndices = meshData->getNumIndices(i);
-				combinedMeshData->addSubMesh(numIndices, subMeshIndex);
-
-				subMeshIndex++;
-			}
-		}
 
 		Vector<VertexElement>::type combinedVertexElements;
 		for(auto& meshData : meshes)
@@ -167,24 +108,39 @@ namespace CamelotFramework
 		VertexDataDescPtr vertexData = combinedMeshData->getVertexDesc();
 
 		// Copy indices
-		subMeshIndex = 0;
 		UINT32 vertexOffset = 0;
+		UINT32 indexOffset = 0;
+		UINT32* idxPtr = combinedMeshData->getIndices32();
 		for(auto& meshData : meshes)
 		{
-			for(UINT32 i = 0; i < meshData->getNumSubmeshes(); i++)
+			UINT32 numIndices = meshData->getNumIndices();
+			UINT32* srcData = meshData->getIndices32();
+
+			for(UINT32 j = 0; j < numIndices; j++)
+				idxPtr[j] = srcData[j] + vertexOffset;
+
+			subMeshes.push_back(SubMesh(indexOffset, numIndices, DOT_TRIANGLE_LIST));
+
+			indexOffset += numIndices;
+			idxPtr += numIndices;
+			vertexOffset += meshData->getNumVertices();
+		}
+
+		// Copy sub-meshes
+		UINT32 meshIdx = 0;
+		indexOffset = 0;
+		for(auto& meshData : meshes)
+		{
+			UINT32 numIndices = meshData->getNumIndices();
+			const Vector<SubMesh>::type curSubMeshes = allSubMeshes[meshIdx];
+
+			for(auto& subMesh : curSubMeshes)
 			{
-				UINT32 numIndices = meshData->getNumIndices(i);
-				UINT32* srcData = meshData->getIndices32(i);
-
-				UINT32* dstData = combinedMeshData->getIndices32(subMeshIndex);
-
-				for(UINT32 j = 0; j < numIndices; j++)
-					dstData[j] = srcData[j] + vertexOffset;
-
-				subMeshIndex++;
+				subMeshes.push_back(SubMesh(subMesh.indexOffset + indexOffset, subMesh.indexCount, subMesh.drawOp));
 			}
 
-			vertexOffset += meshData->getNumVertices();
+			indexOffset += numIndices;
+			meshIdx++;
 		}
 
 		// Copy vertices
@@ -313,23 +269,9 @@ namespace CamelotFramework
 		stride = mVertexData->getVertexStride(streamIdx);
 	}
 
-	UINT32 MeshData::getIndexBufferOffset(UINT32 subMesh) const
+	UINT32 MeshData::getIndexBufferOffset() const
 	{
-		if(mSubMeshes.size() == 0) // No submeshes, we assume all is one big mesh
-			return 0;
-
-		if(subMesh < 0 || (subMesh > (UINT32)mSubMeshes.size()))
-		{
-			CM_EXCEPT(InvalidParametersException, "Submesh out of range: " + toString(subMesh) + ". Allowed range: 0 .. " + toString((UINT32)mSubMeshes.size()));
-		}
-
-		UINT32 offset = 0;
-		for(UINT32 i = 0; i < subMesh; i++)
-		{
-			offset += mSubMeshes[i].numIndices * getIndexElementSize();
-		}
-
-		return offset;
+		return 0;
 	}
 
 	UINT32 MeshData::getStreamOffset(UINT32 streamIdx) const

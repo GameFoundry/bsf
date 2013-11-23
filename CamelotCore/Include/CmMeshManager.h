@@ -13,10 +13,13 @@ namespace CamelotFramework
 		~MeshManager();
 
 		MeshPtr create(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, 
+			 DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 		MeshPtr create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialData, 
-			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
-		MeshPtr create(const MeshDataPtr& initialData, MeshBufferType bufferType = MeshBufferType::Static);
+			MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST, 
+			IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+		MeshPtr create(const MeshDataPtr& initialData, MeshBufferType bufferType = MeshBufferType::Static,
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 		MeshPtr createEmpty();
 
 		/**

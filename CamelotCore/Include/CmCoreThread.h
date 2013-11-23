@@ -133,9 +133,16 @@ private:
 		*/
 	CM_EXPORT void throwIfNotCoreThread();
 
+	/**
+		* @brief	Throws an exception if current thread is the core thread;
+		*/
+	CM_EXPORT void throwIfCoreThread();
+
 #if CM_DEBUG_MODE
 #define THROW_IF_NOT_CORE_THREAD throwIfNotCoreThread();
+#define THROW_IF_CORE_THREAD throwIfCoreThread();
 #else
 #define THROW_IF_NOT_CORE_THREAD 
+#define THROW_IF_CORE_THREAD
 #endif
 }

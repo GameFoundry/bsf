@@ -16,27 +16,39 @@
 namespace CamelotFramework
 {
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mNumSubMeshes(0)
-	{ }
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType),
+		mDefaultSubMesh(0, numIndices, drawOp)
+	{
+		mSubMeshes.reserve(10);
+	}
 
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), mTempInitialMeshData(initialMeshData), mNumSubMeshes(0)
-	{ }
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), 
+		mTempInitialMeshData(initialMeshData), mDefaultSubMesh(0, numIndices, drawOp)
+	{
+		mSubMeshes.reserve(10);
+	}
 
-	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType)
+	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(initialMeshData->getNumVertices()), 
 		mNumIndices(initialMeshData->getNumIndices()), mBufferType(bufferType), mIndexType(initialMeshData->getIndexType()),
-		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData), mNumSubMeshes(0)
-	{ }
+		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData),
+		mDefaultSubMesh(0, initialMeshData->getNumIndices(), drawOp)
+	{
+		mSubMeshes.reserve(10);
+	}
 
 	Mesh::Mesh()
 		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(0), mNumIndices(0), 
-		mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT), mNumSubMeshes(0)
-	{ }
+		mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT),
+		mDefaultSubMesh(0, 0, DOT_TRIANGLE_LIST)
+	{
+		mSubMeshes.reserve(10);
+	}
 
 	Mesh::~Mesh()
 	{
@@ -127,33 +139,6 @@ namespace CamelotFramework
 				vertexBuffer->writeData(bufferOffset, bufferSize, srcVertBufferData, discardEntireBuffer);
 			}
 		}
-
-		// Submeshes
-		mSubMeshes.clear();
-
-		if(meshData.getNumSubmeshes() > 0)
-		{
-			for(UINT32 i = 0; i < meshData.getNumSubmeshes(); i++)
-			{
-				UINT32 numIndices = meshData.getNumIndices(i);
-
-				if(numIndices > 0)
-				{
-					mSubMeshes.push_back(SubMesh(meshData.getIndexBufferOffset(i), numIndices, meshData.getDrawOp(i), mVertexData, mIndexData, true));
-				}
-			}
-		}
-		else // Read it all as one mesh
-		{
-			UINT32 numIndices = meshData.getNumIndices();
-
-			if(numIndices > 0)
-			{
-				mSubMeshes.push_back(SubMesh(0, numIndices, meshData.getDrawOp(), mVertexData, mIndexData, true));
-			}
-		}
-
-		mNumSubMeshes.store((UINT32)mSubMeshes.size());
 	}
 
 	void Mesh::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
@@ -173,26 +158,24 @@ namespace CamelotFramework
 		{
 			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
 			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
-			UINT32 indexResourceOffset = meshData.getResourceIndexOffset() * meshData.getIndexElementSize();
+			UINT32 indexResourceOffset = meshData.getResourceIndexOffset();
 
-			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
-			{
-				UINT8* indices = nullptr;
+			UINT8* indices = nullptr;
 
-				if(indexType == IndexBuffer::IT_16BIT)
-					indices = (UINT8*)meshData.getIndices16(i);
-				else
-					indices = (UINT8*)meshData.getIndices32(i);
+			if(indexType == IndexBuffer::IT_16BIT)
+				indices = (UINT8*)meshData.getIndices16();
+			else
+				indices = (UINT8*)meshData.getIndices32();
 
-				UINT32 indicesSize = mSubMeshes[i].indexCount * idxElemSize;
-				UINT32 indicesOffset = meshData.getIndexBufferOffset(i) + indexResourceOffset;
-				
-				if((indicesOffset + indicesSize) > meshData.getIndexBufferSize())
-					CM_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
+			UINT32 remainingNumIndices = (UINT32)std::max(0, (INT32)(mNumIndices - indexResourceOffset));
+			UINT32 numIndicesToCopy = std::min(remainingNumIndices, meshData.getNumIndices());
 
-				indices += indexResourceOffset;
-				memcpy(indices, &idxData[mSubMeshes[i].indexOffset * idxElemSize], mSubMeshes[i].indexCount * idxElemSize);
-			}
+			UINT32 indicesSize = numIndicesToCopy * idxElemSize;
+			if(indicesSize > meshData.getIndexBufferSize())
+				CM_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
+
+			idxData += indexResourceOffset * idxElemSize;
+			memcpy(indices, idxData, numIndicesToCopy * idxElemSize);
 
 			mIndexData->indexBuffer->unlock();
 		}
@@ -207,18 +190,20 @@ namespace CamelotFramework
 				if(streamIdx > meshData.getVertexDesc()->getMaxStreamIdx())
 					continue;
 
+				UINT32 vertexResourceOffset = meshData.getResourceVertexOffset();
+
+				UINT32 remainingNumVertices = (UINT32)std::max(0, (INT32)(mNumVertices - vertexResourceOffset));
+				UINT32 numVerticesToCopy = std::min(remainingNumVertices, meshData.getNumVertices());
+
 				VertexBufferPtr vertexBuffer = iter->second;
-				UINT32 bufferSize = vertexBuffer->getVertexSize() * vertexBuffer->getNumVertices();
+				UINT32 bufferSize = vertexBuffer->getVertexSize() * numVerticesToCopy;
 				
-				UINT32 vertexResourceOffset = meshData.getResourceVertexOffset() * meshData.getVertexDesc()->getVertexStride(streamIdx);
-				UINT32 vertexOffset = meshData.getStreamOffset(streamIdx) + vertexResourceOffset;
+				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY)) + vertexResourceOffset * meshData.getVertexDesc()->getVertexStride(streamIdx);
 
-				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
-
-				if((vertexOffset + bufferSize) > meshData.getStreamSize(streamIdx))
+				if(bufferSize > meshData.getStreamSize(streamIdx))
 					CM_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh vertices.");
 
-				UINT8* dest = meshData.getStreamData(streamIdx) + vertexResourceOffset;
+				UINT8* dest = meshData.getStreamData(streamIdx);
 				memcpy(dest, vertDataPtr, bufferSize);
 
 				vertexBuffer->unlock();
@@ -234,35 +219,9 @@ namespace CamelotFramework
 		if(mIndexData)
 			indexType = mIndexData->indexBuffer->getType();
 
-		UINT32 numIndices = 0;
-		if(mIndexData)
-		{
-			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
-				numIndices += mSubMeshes[i].indexCount;
-		}
-
-		MeshDataPtr meshData = cm_shared_ptr<MeshData>(mVertexData->vertexCount, numIndices, mVertexDesc, DOT_TRIANGLE_LIST, indexType);
-
-		if(mIndexData)
-		{
-			for(UINT32 i = 0; i < mSubMeshes.size(); i++)
-				meshData->addSubMesh(mSubMeshes[i].indexCount, i);
-		}
+		MeshDataPtr meshData = cm_shared_ptr<MeshData>(mVertexData->vertexCount, mNumIndices, mVertexDesc, indexType);
 
 		return meshData;
-	}
-
-	const SubMesh& Mesh::getSubMesh(UINT32 subMeshIdx) const
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
-		{
-			CM_EXCEPT(InvalidParametersException, "Invalid sub-mesh index (" 
-				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));
-		}
-
-		return mSubMeshes[subMeshIdx];
 	}
 
 	const AABox& Mesh::getBounds() const
@@ -275,6 +234,93 @@ namespace CamelotFramework
 	{
 		// TODO - Retrieve bounds a specific sub-mesh (need to calculate them during creation)
 		return AABox::BOX_EMPTY;
+	}
+
+	std::shared_ptr<VertexData> Mesh::getVertexData() const
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		return mVertexData;
+	}
+
+	std::shared_ptr<IndexData> Mesh::getIndexData() const
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		return mIndexData;
+	}
+
+	void Mesh::clearSubMeshes()
+	{
+		THROW_IF_CORE_THREAD;
+
+		mSubMeshes.clear();
+	}
+
+	void Mesh::addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp)
+	{
+		if((indexOffset + indexCount) >= mNumIndices)
+		{
+			LOGWRN("Provided sub-mesh references indexes out of range. Sub-mesh range: " 
+				+ toString(indexOffset) + " .. " + toString(indexOffset + indexCount) + "." \
+				"Valid range is: 0 .. " + toString(mNumIndices) + ". Ignoring command.");
+
+			return;
+		}
+
+		mSubMeshes.push_back(SubMesh(indexOffset, indexCount, drawOp));
+	}
+
+	void Mesh::setSubMeshes(const Vector<SubMesh>::type& subMeshes)
+	{
+		THROW_IF_CORE_THREAD;
+
+		for(auto& subMesh : subMeshes)
+		{
+			if((subMesh.indexOffset + subMesh.indexCount) >= mNumIndices)
+			{
+				LOGWRN("Provided sub-mesh references indexes out of range. Sub-mesh range: " 
+					+ toString(subMesh.indexOffset) + " .. " + toString(subMesh.indexOffset + subMesh.indexCount) + "." \
+					"Valid range is: 0 .. " + toString(mNumIndices) + ". Ignoring command.");
+
+				return;
+			}
+		}
+
+		mSubMeshes = subMeshes;
+	}
+
+	const SubMesh& Mesh::getSubMesh(UINT32 subMeshIdx) const
+	{
+		THROW_IF_CORE_THREAD;
+
+		if(mSubMeshes.size() == 0 && subMeshIdx == 0)
+		{
+			return mDefaultSubMesh;
+		}
+
+		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
+		{
+			CM_EXCEPT(InvalidParametersException, "Invalid sub-mesh index (" 
+				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));
+		}
+
+		return mSubMeshes[subMeshIdx];
+	}
+
+	UINT32 Mesh::getNumSubMeshes() const
+	{
+		THROW_IF_CORE_THREAD;
+
+		if(mSubMeshes.size() > 0)
+			return (UINT32)mSubMeshes.size();
+		else
+		{
+			if(mDefaultSubMesh.indexCount > 0)
+				return 1;
+			else
+				return 0;
+		}
 	}
 
 	void Mesh::initialize_internal()
@@ -349,23 +395,26 @@ namespace CamelotFramework
 	/* 								STATICS		                     		*/
 	/************************************************************************/
 
-	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, indexType);
+		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}
 
-	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialMeshData, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, initialMeshData, bufferType, indexType);
+		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, 
+			initialMeshData, bufferType, drawOp, indexType);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}
 
-	HMesh Mesh::create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType)
+	HMesh Mesh::create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
 	{
-		MeshPtr meshPtr = MeshManager::instance().create(initialMeshData, bufferType);
+		MeshPtr meshPtr = MeshManager::instance().create(initialMeshData, bufferType, drawOp);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}

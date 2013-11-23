@@ -126,7 +126,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc, DOT_LINE_LIST);
+		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc);
 
 		Vector2 actualA = a;
 		Vector2 actualB = b;
@@ -138,7 +138,7 @@ namespace BansheeEngine
 
 		line_Pixel(actualA, actualB, color, meshData, 0, 0);
 
-		HMesh mesh = Mesh::create(meshData);
+		HMesh mesh = Mesh::create(meshData, MeshBufferType::Static, DOT_LINE_LIST);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;
@@ -206,7 +206,7 @@ namespace BansheeEngine
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
 		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(
-			(UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc, DOT_LINE_LIST);
+			(UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc);
 
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
@@ -222,7 +222,7 @@ namespace BansheeEngine
 			lineList_Pixel(linePoints, color, meshData, 0, 0);
 		}		
 
-		HMesh mesh = Mesh::create(meshData);
+		HMesh mesh = Mesh::create(meshData, MeshBufferType::Static, DOT_LINE_LIST);
 
 		dbgCmd.mesh = mesh;
 		dbgCmd.worldCenter = Vector3::ZERO;

@@ -199,7 +199,8 @@ namespace BansheeEngine
 			gProfiler().endSample("renderH");
 			gProfiler().beginSample("renderI");
 
-			coreAccessor.render(renderOp.mesh.getInternalPtr(), renderOp.submeshIdx);
+			const SubMesh& subMesh = renderOp.mesh->getSubMesh(renderOp.submeshIdx);
+			coreAccessor.render(renderOp.mesh.getInternalPtr(), subMesh.indexOffset, subMesh.indexCount, true, subMesh.drawOp);
 
 			gProfiler().endSample("renderI");
 		}

@@ -516,6 +516,9 @@ namespace BansheeEngine
 
 					renderData.cachedMeshes.push_back(Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, meshData, MeshBufferType::Dynamic));
 					renderData.meshBufferSizes.push_back(bufferNumQuads);
+
+					renderData.cachedMeshes.back()->clearSubMeshes();
+					renderData.cachedMeshes.back()->addSubMesh(0, group->numQuads * 6);
 				}
 				else
 				{
@@ -529,6 +532,9 @@ namespace BansheeEngine
 					}
 
 					gMainCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData, true);
+
+					renderData.cachedMeshes[groupIdx]->clearSubMeshes();
+					renderData.cachedMeshes[groupIdx]->addSubMesh(0, group->numQuads * 6);
 				}
 
 				groupIdx++;

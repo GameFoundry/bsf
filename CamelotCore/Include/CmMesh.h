@@ -6,6 +6,7 @@
 #include "CmVertexData.h"
 #include "CmIndexData.h"
 #include "CmDrawOps.h"
+#include "CmSubMesh.h"
 
 namespace CamelotFramework
 {
@@ -13,29 +14,6 @@ namespace CamelotFramework
 	{
 		Static,
 		Dynamic
-	};
-
-	struct CM_EXPORT SubMesh
-	{
-		SubMesh()
-			: indexOffset(0), indexCount(0), drawOp(DOT_TRIANGLE_LIST), 
-			vertexData(nullptr), indexData(nullptr), useIndexes(true)
-		{ }
-
-		SubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp, 
-			std::shared_ptr<VertexData> vertexData, std::shared_ptr<IndexData> indexData, bool useIndexes):
-			indexOffset(indexOffset), indexCount(indexCount), drawOp(drawOp),
-			vertexData(vertexData), indexData(indexData), useIndexes(useIndexes)
-		{ }
-
-		UINT32 indexOffset;
-		UINT32 indexCount;
-		DrawOperationType drawOp;
-
-		std::shared_ptr<VertexData> vertexData;
-		std::shared_ptr<IndexData> indexData;
-
-		bool useIndexes;
 	};
 
 	class CM_EXPORT Mesh : public GpuResource
@@ -73,11 +51,49 @@ namespace CamelotFramework
 		 */
 		UINT32 mapToSubresourceIdx() const { return 0; }
 
+		void clearSubMeshes();
+
+		void addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+
+		/**
+		 * @brief	Sets a set of sub-meshes containing data used for rendering a 
+		 * 			certain portion of this mesh. Overwrites any previous sub-meshes.
+		 * 			
+		 * @note	Sim thread only.
+		 */
+		void setSubMeshes(const Vector<SubMesh>::type& subMeshes);
+
+		/**
+		 * @brief	Retrieves a sub-mesh containing data used for rendering a
+		 * 			certain portion of this mesh.
+		 * 			
+		 * @note	Sim thread only.
+		 */
 		const SubMesh& getSubMesh(UINT32 subMeshIdx = 0) const;
-		UINT32 getNumSubMeshes() const { return mNumSubMeshes.load(); }
+
+		/**
+		 * @brief	Retrieves a total number of sub-meshes in this mesh.
+		 * 			
+		 * @note	Sim thread only.
+		 */
+		UINT32 getNumSubMeshes() const;
 
 		const AABox& getBounds() const;
 		const AABox& getBounds(UINT32 submeshIdx) const;
+
+		/**
+		 * @brief	Get vertex data used for rendering.
+		 *  
+		 * @note	Core thread only.
+		 */
+		std::shared_ptr<VertexData> getVertexData() const;
+
+		/**
+		 * @brief	Get index data used for rendering.
+		 *  
+		 * @note	Core thread only.
+		 */
+		std::shared_ptr<IndexData> getIndexData() const;
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
@@ -88,26 +104,29 @@ namespace CamelotFramework
 		friend class MeshManager;
 
 		Mesh(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, 
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 
 		Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialMeshData, 
-			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST, 
+			IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 
-		Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static);
+		Mesh(const MeshDataPtr& initialMeshData, 
+			MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
-		std::shared_ptr<VertexData> mVertexData;
-		std::shared_ptr<IndexData> mIndexData;
+		std::shared_ptr<VertexData> mVertexData; // Core thread
+		std::shared_ptr<IndexData> mIndexData; // Core thread
 
-		Vector<SubMesh>::type mSubMeshes;
-		std::atomic<UINT32> mNumSubMeshes;
+		Vector<SubMesh>::type mSubMeshes; // Sim thread
+		SubMesh mDefaultSubMesh; // Immutable
 
-		UINT32 mNumVertices;
-		UINT32 mNumIndices;
-		VertexDataDescPtr mVertexDesc;
-		MeshBufferType mBufferType;
-		IndexBuffer::IndexType mIndexType;
+		UINT32 mNumVertices; // Immutable
+		UINT32 mNumIndices; // Immutable
+		VertexDataDescPtr mVertexDesc; // Immutable
+		MeshBufferType mBufferType; // Immutable
+		IndexBuffer::IndexType mIndexType; // Immutable
 
-		MeshDataPtr mTempInitialMeshData;
+		MeshDataPtr mTempInitialMeshData; // Immutable
 
 		/**
 		 * @copydoc Resource::initialize_internal()
@@ -136,11 +155,14 @@ namespace CamelotFramework
 		
 	public:
 		static HMesh create(UINT32 numVertices, UINT32 numIndices, 
-			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, 
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 
 		static HMesh create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialMeshData, 
-			MeshBufferType bufferType = MeshBufferType::Static, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+			MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST, 
+			IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 
-		static HMesh create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static);
+		static HMesh create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static, 
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 	};
 }

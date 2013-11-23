@@ -45,11 +45,13 @@ namespace CamelotFramework
 		startUpSdk(fbxManager, fbxScene);
 		loadScene(fbxManager, fbxScene, filePath);
 
-		MeshDataPtr meshData = parseScene(fbxManager, fbxScene);	
+		Vector<SubMesh>::type subMeshes;
+		MeshDataPtr meshData = parseScene(fbxManager, fbxScene, subMeshes);	
 
 		shutDownSdk(fbxManager);
 
 		HMesh mesh = Mesh::create(meshData);
+		mesh->setSubMeshes(subMeshes);
 
 		return mesh;
 	}
@@ -116,12 +118,13 @@ namespace CamelotFramework
 		importer->Destroy();
 	}
 
-	MeshDataPtr FBXImporter::parseScene(FbxManager* manager, FbxScene* scene)
+	MeshDataPtr FBXImporter::parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>::type& subMeshes)
 	{
 		Stack<FbxNode*>::type todo;
 		todo.push(scene->GetRootNode());
 
 		Vector<MeshDataPtr>::type allMeshes;
+		Vector<Vector<SubMesh>::type>::type allSubMeshes;
 
 		while(!todo.empty())
 		{
@@ -148,7 +151,9 @@ namespace CamelotFramework
 							mesh = static_cast<FbxMesh*>(attrib);
 						}
 
-						MeshDataPtr meshData = parseMesh(mesh); 
+						allSubMeshes.push_back(Vector<SubMesh>::type());
+
+						MeshDataPtr meshData = parseMesh(mesh, allSubMeshes.back()); 
 						allMeshes.push_back(meshData);
 
 						// TODO - Transform meshes based on node transform
@@ -167,12 +172,15 @@ namespace CamelotFramework
 		if(allMeshes.size() == 0)
 			return nullptr;
 		else if(allMeshes.size() == 1)
+		{
+			subMeshes = allSubMeshes[0];
 			return allMeshes[0];
+		}
 		else
-			return MeshData::combine(allMeshes);
+			return MeshData::combine(allMeshes, allSubMeshes, subMeshes);
 	}
 
-	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, bool createTangentsIfMissing)
+	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, Vector<SubMesh>::type& subMeshes, bool createTangentsIfMissing)
 	{
 		if (!mesh->GetNode())
 		{
@@ -319,7 +327,6 @@ namespace CamelotFramework
 		// Count the polygon count of each material
 		FbxLayerElementArrayTemplate<int>* lMaterialIndice = NULL;
 		FbxGeometryElement::EMappingMode lMaterialMappingMode = FbxGeometryElement::eNone;
-		Vector<SubMesh>::type subMeshes;
 
 		UINT32 numIndices = 0;
 		if (mesh->GetElementMaterial())
@@ -368,9 +375,6 @@ namespace CamelotFramework
 		}
 
 		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(vertexCount, numIndices, vertexDesc);
-
-		for(UINT32 i = 0; i < (UINT32)subMeshes.size(); i++)
-			meshData->addSubMesh(subMeshes[i].indexCount, i);
 
 		// Allocate the array memory, by control point or by polygon vertex.
 		VertexElemIter<Vector3> positions = meshData->getVec3DataIter(VES_POSITION);
@@ -560,7 +564,7 @@ namespace CamelotFramework
 
 		for(UINT32 i = 0; i < (UINT32)indices.size(); i++)
 		{
-			indices[i] = meshData->getIndices32(i);
+			indices[i] = meshData->getIndices32() + subMeshes[i].indexOffset;
 		}
 
 		UINT32 lVertexCount = 0;

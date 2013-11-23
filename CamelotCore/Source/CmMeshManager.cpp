@@ -17,28 +17,31 @@ namespace CamelotFramework
 
 	}
 
-	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(numVertices, numIndices, vertexDesc, bufferType, indexType));
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) 
+			Mesh(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType));
 		mesh->setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
 	}
 
-	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialData, 
-		MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		const MeshDataPtr& initialData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(numVertices, numIndices, vertexDesc, initialData, bufferType, indexType));
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) 
+			Mesh(numVertices, numIndices, vertexDesc, initialData, bufferType, drawOp, indexType));
 		mesh->setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
 	}
 
-	MeshPtr MeshManager::create(const MeshDataPtr& initialData, MeshBufferType bufferType)
+	MeshPtr MeshManager::create(const MeshDataPtr& initialData, MeshBufferType bufferType, DrawOperationType drawOp)
 	{
-		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(initialData, bufferType));
+		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(initialData, bufferType, drawOp));
 		mesh->setThisPtr(mesh);
 		mesh->initialize();
 
@@ -63,7 +66,7 @@ namespace CamelotFramework
 		auto vecIter = mDummyMeshData->getVec3DataIter(VES_POSITION);
 		vecIter.setValue(Vector3(0, 0, 0));
 
-		auto indices = mDummyMeshData->getIndices32(0);
+		auto indices = mDummyMeshData->getIndices32();
 		indices[0] = 0;
 		indices[1] = 0;
 		indices[2] = 0;

@@ -180,9 +180,9 @@ namespace CamelotFramework
 
 
 		/** @copydoc RenderSystem::render() */
-		void render(const MeshPtr& mesh, UINT32 submeshIdx)
+		void render(const MeshPtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::render, RenderSystem::instancePtr(), mesh, submeshIdx));
+			mCommandQueue->queue(boost::bind(&RenderSystem::render, RenderSystem::instancePtr(), mesh, indexOffset, indexCount, useIndices, drawOp));
 		}
 
 		/** @copydoc RenderSystem::draw() */

@@ -210,7 +210,7 @@ namespace CamelotFramework {
         return false;
 	}
 
-	void RenderSystem::render(const MeshPtr& mesh, UINT32 submeshIdx)
+	void RenderSystem::render(const MeshPtr& mesh, UINT32 indexOffset, UINT32 indexCount, bool useIndices, DrawOperationType drawOp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -224,10 +224,10 @@ namespace CamelotFramework {
 			mClipPlanesDirty = false;
 		}
 
-		const SubMesh& subMesh = mesh->getSubMesh(submeshIdx);
+		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
 
-		setVertexDeclaration(subMesh.vertexData->vertexDeclaration);
-		auto vertexBuffers = subMesh.vertexData->getBuffers();
+		setVertexDeclaration(vertexData->vertexDeclaration);
+		auto vertexBuffers = vertexData->getBuffers();
 
 		if(vertexBuffers.size() > 0)
 		{
@@ -252,15 +252,20 @@ namespace CamelotFramework {
 			setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
 		}
 
-		setDrawOperation(subMesh.drawOp);
+		setDrawOperation(drawOp);
 
-		if (subMesh.useIndexes)
+		if (useIndices)
 		{
-			setIndexBuffer(subMesh.indexData->indexBuffer);
-			drawIndexed(subMesh.indexOffset, subMesh.indexCount, subMesh.vertexData->vertexCount);
+			std::shared_ptr<IndexData> indexData = mesh->getIndexData();
+
+			if(indexCount == 0)
+				indexCount = indexData->indexCount;
+
+			setIndexBuffer(indexData->indexBuffer);
+			drawIndexed(indexOffset, indexCount, vertexData->vertexCount);
 		}
 		else
-			draw(subMesh.vertexData->vertexCount);
+			draw(vertexData->vertexCount);
 
 		gProfiler().endSample("render");
 	}

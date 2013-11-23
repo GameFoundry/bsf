@@ -6,6 +6,7 @@
 #include "CmIndexBuffer.h"
 #include "CmVertexDeclaration.h"
 #include "CmDrawOps.h"
+#include "CmSubMesh.h"
 
 namespace CamelotFramework
 {
@@ -65,19 +66,7 @@ namespace CamelotFramework
 	class CM_EXPORT MeshData : public GpuResourceData
 	{
 	public:
-		struct IndexElementData
-		{
-			IndexElementData()
-				:numIndices(0), subMesh(0), elementSize(0), drawOp(DOT_TRIANGLE_LIST)
-			{ }
-
-			UINT32 numIndices;
-			UINT32 elementSize;
-			UINT32 subMesh;
-			DrawOperationType drawOp;
-		};
-
-		MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+		MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 		~MeshData();
 
 		/**
@@ -108,19 +97,6 @@ namespace CamelotFramework
 		 * @return	Offset in number of indices.
 		 */
 		UINT32 getResourceIndexOffset() const { return mResourceIndexOffset; }
-
-		/**
-		 * @brief	Informs the internal buffer that it needs to make room for an index buffer of the
-		 * 			specified size. If specified submesh already exists it will just be updated. 
-		 *
-		 * @param	numIndices	Number of indices.
-		 * @param	subMesh   	(optional) Index of the sub-mesh to add/update.
-		 * @param	drawOp	  	(optional) Specifies the primitive type contained by the mesh.
-		 * 						
-		 * @note	When updating a Mesh with MeshData, even if just a portion of it,
-		 * 			all sub-mesh information will be replaced with the one from MeshData.
-		 */
-		void addSubMesh(UINT32 numIndices, UINT32 subMesh = 0, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * @brief	Copies data from "data" parameter into the internal buffer for the specified semantic.
@@ -165,15 +141,11 @@ namespace CamelotFramework
 		 */
 		VertexElemIter<UINT32> getDWORDDataIter(VertexElementSemantic semantic, UINT32 semanticIdx = 0, UINT32 streamIdx = 0);
 
-		UINT32 getNumSubmeshes() const { return (UINT32)mSubMeshes.size(); }
 		UINT32 getNumVertices() const { return mNumVertices; }
-		UINT32 getNumIndices(UINT32 subMesh) const;
 		UINT32 getNumIndices() const;
-		DrawOperationType getDrawOp(UINT32 subMesh) const;
-		DrawOperationType getDrawOp() const;
 
-		UINT16* getIndices16(UINT32 subMesh = 0) const;
-		UINT32* getIndices32(UINT32 subMesh = 0) const;
+		UINT16* getIndices16() const;
+		UINT32* getIndices32() const;
 		UINT32 getIndexElementSize() const;
 		IndexBuffer::IndexType getIndexType() const { return mIndexType; }
 
@@ -193,7 +165,8 @@ namespace CamelotFramework
 
 		const VertexDataDescPtr& getVertexDesc() const { return mVertexData; }
 
-		static MeshDataPtr combine(const Vector<MeshDataPtr>::type& elements);
+		static MeshDataPtr combine(const Vector<MeshDataPtr>::type& elements, const Vector<Vector<SubMesh>::type>::type& allSubMeshes,
+			Vector<SubMesh>::type& subMeshes);
 
 	protected:
 		UINT32 getInternalBufferSize();
@@ -210,16 +183,14 @@ namespace CamelotFramework
 
 		UINT32 mNumVertices;
 		UINT32 mNumIndices;
-		DrawOperationType mDrawOp;
 		IndexBuffer::IndexType mIndexType;
 
-		Vector<IndexElementData>::type mSubMeshes;
 		VertexDataDescPtr mVertexData;
 
 		UINT8* getIndexData() const { return getData(); }
 		UINT8* getStreamData(UINT32 streamIdx) const;
 
-		UINT32 getIndexBufferOffset(UINT32 subMesh) const;
+		UINT32 getIndexBufferOffset() const;
 		UINT32 getStreamOffset(UINT32 streamIdx = 0) const;
 
 		UINT32 getIndexBufferSize() const;

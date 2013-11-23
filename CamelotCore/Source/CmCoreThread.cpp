@@ -243,6 +243,14 @@ namespace CamelotFramework
 #endif
 	}
 
+	void throwIfCoreThread()
+	{
+#if !CM_FORCE_SINGLETHREADED_RENDERING
+		if(CM_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
+			CM_EXCEPT(InternalErrorException, "This method cannot be accessed from the core thread.");
+#endif
+	}
+
 	/************************************************************************/
 	/* 								THREAD WORKER                      		*/
 	/************************************************************************/

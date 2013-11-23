@@ -3,6 +3,7 @@
 #include "CmFBXPrerequisites.h"
 #include "CmSpecificImporter.h"
 #include "CmImporter.h"
+#include "CmSubMesh.h"
 
 #define FBXSDK_NEW_API
 #include <fbxsdk.h>
@@ -43,8 +44,8 @@ namespace CamelotFramework
 		void shutDownSdk(FbxManager* manager);
 
 		void loadScene(FbxManager* manager, FbxScene* scene, const String& filePath);
-		MeshDataPtr parseScene(FbxManager* manager, FbxScene* scene);
+		MeshDataPtr parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>::type& subMeshes);
 
-		MeshDataPtr parseMesh(FbxMesh* mesh, bool createTangentsIfMissing = true);
+		MeshDataPtr parseMesh(FbxMesh* mesh, Vector<SubMesh>::type& subMeshes, bool createTangentsIfMissing = true);
 	};
 }
