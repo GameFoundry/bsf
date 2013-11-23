@@ -25,8 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef _Texture_H__
-#define _Texture_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 #include "CmGpuResource.h"
@@ -34,14 +33,8 @@ THE SOFTWARE.
 #include "CmPixelUtil.h"
 #include "CmTextureView.h"
 
-namespace CamelotFramework {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
+namespace CamelotFramework 
+{
 	/** Enum identifying the texture usage
     */
     enum TextureUsage
@@ -250,18 +243,18 @@ namespace CamelotFramework {
     protected:
 		friend class TextureManager;
 
-        UINT32 mHeight;
-        UINT32 mWidth;
-        UINT32 mDepth;
+        UINT32 mHeight; // Immutable
+        UINT32 mWidth; // Immutable
+        UINT32 mDepth; // Immutable
 
-		UINT32 mNumMipmaps;
-		bool mHwGamma;
-		UINT32 mFSAA;
-		String mFSAAHint;
+		UINT32 mNumMipmaps; // Immutable
+		bool mHwGamma; // Immutable
+		UINT32 mFSAA; // Immutable
+		String mFSAAHint; // Immutable
 
-        TextureType mTextureType;
-		PixelFormat mFormat;
-        int mUsage; // Bit field, so this can't be TextureUsage
+        TextureType mTextureType; // Immutable
+		PixelFormat mFormat; // Immutable
+        int mUsage; // Immutable
 
 		Texture();
 
@@ -303,7 +296,4 @@ namespace CamelotFramework {
 			PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
     };
-	/** @} */
 }
-
-#endif

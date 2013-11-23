@@ -25,35 +25,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef _TextureManager_H__
-#define _TextureManager_H__
+#pragma once
 
 #include "CmPrerequisites.h"
 
 #include "CmTexture.h"
 #include "CmModule.h"
 
-
-namespace CamelotFramework {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
-	/** Class for loading & managing textures.
-        @remarks
-            Note that this class is abstract - the particular
-            RenderSystem that is in use at the time will create
-            a concrete subclass of this. Note that the concrete
-            class will be available via the abstract singleton
-            obtained from TextureManager::getSingleton(), but
-            you should not assume that it is available until you
-            have a) initialised Ogre (after selecting a RenderSystem
-            and calling initialise from the Root object), and b)
-            created at least one window - this may be done at the
-            same time as part a if you allow Ogre to autocreate one.
+namespace CamelotFramework 
+{
+    /**
+     * @brief	Class for loading and managing textures.
+     *
+     * @note	Must be initialized when RenderSystem is first started.
      */
     class CM_EXPORT TextureManager : public Module<TextureManager>
     {
@@ -202,14 +186,12 @@ namespace CamelotFramework {
 		*/
 		virtual bool isFormatSupported(TextureType ttype, PixelFormat format, int usage);
 
-		/** Returns whether this render system can support the texture format requested
-			with the given usage options, or another format with no quality reduction.
-		*/
-		virtual bool isEquivalentFormatSupported(TextureType ttype, PixelFormat format, int usage);
-
-		/** Gets the format which will be natively used for a requested format given the
-			constraints of the current device.
-		*/
+		/**
+		 * @brief	Gets the format which will be natively used for a requested format given the
+		 *			constraints of the current device.
+		 *
+		 * @note	Thread safe.
+		 */
 		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage) = 0;
 
 		HTexture getDummyTexture() const { return mDummyTexture; }
@@ -223,8 +205,4 @@ namespace CamelotFramework {
 
 		virtual void onStartUp();
     };
-	/** @} */
-	/** @} */
-}// Namespace
-
-#endif
+}

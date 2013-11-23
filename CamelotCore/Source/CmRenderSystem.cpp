@@ -94,8 +94,6 @@ namespace CamelotFramework {
 
 	const RenderSystemCapabilities* RenderSystem::getCapabilities(void) const 
 	{ 
-		THROW_IF_NOT_CORE_THREAD;
-
 		return mCurrentCapabilities; 
 	}
 

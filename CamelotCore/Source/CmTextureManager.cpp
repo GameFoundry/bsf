@@ -129,12 +129,4 @@ namespace CamelotFramework
 	{
 		return getNativeFormat(ttype, format, usage) == format;
 	}
-
-	bool TextureManager::isEquivalentFormatSupported(TextureType ttype, PixelFormat format, int usage)
-	{
-		PixelFormat supportedFormat = getNativeFormat(ttype, format, usage);
-
-		// Assume that same or greater number of bits means quality not degraded
-		return PixelUtil::getNumElemBits(supportedFormat) >= PixelUtil::getNumElemBits(format);
-	}
 }

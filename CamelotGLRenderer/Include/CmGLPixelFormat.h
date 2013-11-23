@@ -78,6 +78,10 @@ namespace CamelotFramework {
 		*/
 		static PixelFormat getClosestEngineFormat(GLenum fmt);
 
+		/**	Function to get the closest valid matching engine format to another engine format. 
+		*/
+		static PixelFormat getClosestValidFormat(PixelFormat fmt);
+
 		/**
 		 * @brief	Gets OpenGL format based on a compressed OpenGL internal format.
 		 * 			e.g. GL_COMPRESSED_RGBA_S3TC_DXT1_EXT will return GL_RGBA

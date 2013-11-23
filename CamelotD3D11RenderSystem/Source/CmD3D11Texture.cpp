@@ -197,7 +197,11 @@ namespace CamelotFramework
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
-		mFormat = D3D11Mappings::_getPF(d3dPF);
+
+		if(mFormat != D3D11Mappings::_getPF(d3dPF))
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+		}
 
 		D3D11_TEXTURE1D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
@@ -253,7 +257,13 @@ namespace CamelotFramework
 		}
 
 		m1DTex->GetDesc(&desc);
-		mNumMipmaps = desc.MipLevels - 1;
+
+		if(mNumMipmaps != (desc.MipLevels - 1))
+		{
+			CM_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
+				"Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
+		}
+
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 
 		// Create texture view
@@ -281,7 +291,11 @@ namespace CamelotFramework
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
-		mFormat = D3D11Mappings::_getPF(d3dPF);
+
+		if(mFormat != D3D11Mappings::_getPF(d3dPF))
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+		}
 
 		D3D11_TEXTURE2D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
@@ -369,7 +383,12 @@ namespace CamelotFramework
 		}
 
 		m2DTex->GetDesc(&desc);
-		mNumMipmaps = desc.MipLevels - 1;
+
+		if(mNumMipmaps != (desc.MipLevels - 1))
+		{
+			CM_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
+				"Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
+		}
 
 		mDXGIFormat = desc.Format;
 
@@ -438,7 +457,11 @@ namespace CamelotFramework
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat));
-		mFormat = D3D11Mappings::_getPF(d3dPF);
+		
+		if(mFormat != D3D11Mappings::_getPF(d3dPF))
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+		}
 
 		D3D11_TEXTURE3D_DESC desc;
 		desc.Width			= static_cast<UINT32>(mWidth);
@@ -496,7 +519,13 @@ namespace CamelotFramework
 
 		// Create texture view
 		m3DTex->GetDesc(&desc);
-		mNumMipmaps = desc.MipLevels - 1;
+
+		if(mNumMipmaps != (desc.MipLevels - 1))
+		{
+			CM_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
+               "Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
+		}
+
 		mDimension = D3D11_SRV_DIMENSION_TEXTURE3D;
 
 		if((mUsage & TU_DEPTHSTENCIL) == 0)

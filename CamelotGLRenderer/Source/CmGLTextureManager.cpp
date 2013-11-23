@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmGLRenderTexture.h"
 #include "CmGLMultiRenderTexture.h"
+#include "CmGLPixelFormat.h"
 
 namespace CamelotFramework
 {
@@ -68,18 +69,17 @@ namespace CamelotFramework
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
 	{
 		// Adjust requested parameters to capabilities
-        const RenderSystemCapabilities *caps = CamelotFramework::RenderSystem::instancePtr()->getCapabilities();
+        const RenderSystemCapabilities *caps = RenderSystem::instancePtr()->getCapabilities();
 
 		// Check compressed texture support
-		// if a compressed format not supported, revert to PF_A8R8G8B8
-		if(PixelUtil::isCompressed(format) &&
-            !caps->hasCapability( RSC_TEXTURE_COMPRESSION_DXT ))
+		// If a compressed format not supported, revert to PF_A8R8G8B8
+		if(PixelUtil::isCompressed(format) && !caps->hasCapability(RSC_TEXTURE_COMPRESSION_DXT))
 		{
 			return PF_A8R8G8B8;
 		}
-		// if floating point textures not supported, revert to PF_A8R8G8B8
-		if(PixelUtil::isFloatingPoint(format) &&
-            !caps->hasCapability( RSC_TEXTURE_FLOAT ))
+
+		// If floating point textures not supported, revert to PF_A8R8G8B8
+		if(PixelUtil::isFloatingPoint(format) && !caps->hasCapability(RSC_TEXTURE_FLOAT))
 		{
 			return PF_A8R8G8B8;
 		}
@@ -92,7 +92,6 @@ namespace CamelotFramework
             return GLRTTManager::instance().getSupportedAlternative(format);
         }
 
-		// Supported
-		return format;
+		return GLPixelUtil::getClosestValidFormat(format);
 	}
 }

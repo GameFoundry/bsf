@@ -279,9 +279,68 @@ namespace CamelotFramework  {
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 		case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
 			return PF_DXT5;
+		case GL_DEPTH_COMPONENT16:
+			return PF_D16;
+		case GL_DEPTH_COMPONENT32F:
+			return PF_D32;
+		case GL_DEPTH24_STENCIL8:
+			return PF_D24S8;
+		case GL_DEPTH32F_STENCIL8:
+			return PF_D32_S8X24;
 		default:
 			return PF_R8G8B8A8;
 		};
+	}
+	//----------------------------------------------------------------------------- 	
+	PixelFormat GLPixelUtil::getClosestValidFormat(PixelFormat fmt)
+	{
+		switch(fmt) 
+		{
+		case PF_R8:
+			return PF_R8;
+		case PF_R8G8:
+			return PF_R8G8;
+		case PF_R8G8B8:
+		case PF_B8G8R8:
+		case PF_B8G8R8X8:
+		case PF_R8G8B8X8:
+			return PF_R8G8B8X8;
+		case PF_B8G8R8A8:
+		case PF_R8G8B8A8:
+			return PF_R8G8B8A8;
+		case PF_FLOAT16_R:
+			return PF_FLOAT16_R;
+		case PF_FLOAT16_RGB:
+			return PF_FLOAT16_RGB;
+		case PF_FLOAT16_RG: 
+			return PF_FLOAT16_RG;
+		case PF_FLOAT16_RGBA:
+			return PF_FLOAT16_RGBA;
+		case PF_FLOAT32_R:
+			return PF_FLOAT32_R;
+		case PF_FLOAT32_RG:
+			return PF_FLOAT32_RG;
+		case PF_FLOAT32_RGB:
+			return PF_FLOAT32_RGB;
+		case PF_FLOAT32_RGBA:
+			return PF_FLOAT32_RGBA;
+		case PF_DXT1:
+			return PF_DXT1;
+		case PF_DXT3:
+			return PF_DXT3;
+		case PF_DXT5:
+			return PF_DXT5;
+		case PF_D16:
+			return PF_D16;
+		case PF_D32:
+			return PF_D32;
+		case PF_D24S8:
+			return PF_D24S8;
+		case PF_D32_S8X24:
+			return PF_D32_S8X24;
+		default:
+			return PF_UNKNOWN;
+		}
 	}
 	//----------------------------------------------------------------------------- 
 	UINT32 GLPixelUtil::getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)

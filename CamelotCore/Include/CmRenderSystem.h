@@ -214,12 +214,16 @@ namespace CamelotFramework
 		 */
 		virtual void swapBuffers(RenderTargetPtr target);
 
-		/** Gets the capabilities of the render system. */
-		const RenderSystemCapabilities* getCapabilities(void) const;
+		/**
+		 * @brief	Gets the capabilities of the render system.
+		 *
+		 * @note	Thread safe.
+		 */
+		const RenderSystemCapabilities* getCapabilities() const;
 
 		/** Returns the driver version.
 		*/
-		virtual const DriverVersion& getDriverVersion(void) const;
+		virtual const DriverVersion& getDriverVersion() const;
 
 		/** Binds a given GpuProgram (but not the parameters). 
 		@remarks Only one GpuProgram of each type can be bound at once, binding another

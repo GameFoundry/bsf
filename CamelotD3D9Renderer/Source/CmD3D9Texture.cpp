@@ -395,7 +395,11 @@ namespace CamelotFramework
 		
 		// let's D3DX check the corrected pixel format
 		hr = D3DXCheckTextureRequirements(d3d9Device, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
-		mFormat = D3D9Mappings::_getPF(d3dPF);
+		
+		if(mFormat != D3D9Mappings::_getPF(d3dPF))
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+		}
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
 		UINT numMips = (mNumMipmaps == MIP_UNLIMITED) ? D3DX_DEFAULT : mNumMipmaps + 1;
@@ -446,8 +450,7 @@ namespace CamelotFramework
 		// check if mip maps are supported on hardware
 		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) || (mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0)
 		{
-			// no mip map support for this kind of textures :(
-			mNumMipmaps = 0;
+			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 			numMips = 1;
 		}
 
@@ -574,7 +577,11 @@ namespace CamelotFramework
 
 		// let's D3DX check the corrected pixel format
 		hr = D3DXCheckCubeTextureRequirements(d3d9Device, NULL, NULL, 0, &d3dPF, mD3DPool);
-		mFormat = D3D9Mappings::_getPF(d3dPF);
+		
+		if(mFormat != D3D9Mappings::_getPF(d3dPF))
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+		}
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
 		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
@@ -610,8 +617,7 @@ namespace CamelotFramework
 		// check if mip map cube textures are supported
 		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
 		{
-			// no mip map support for this kind of textures :(
-			mNumMipmaps = 0;
+			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 			numMips = 1;
 		}
 
@@ -681,7 +687,11 @@ namespace CamelotFramework
 
 		// let's D3DX check the corrected pixel format
 		hr = D3DXCheckVolumeTextureRequirements(d3d9Device, NULL, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
-		mFormat = D3D9Mappings::_getPF(d3dPF);
+		
+		if(mFormat != D3D9Mappings::_getPF(d3dPF))
+		{
+			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+		}
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
 		DWORD usage = (mUsage & TU_RENDERTARGET) ? D3DUSAGE_RENDERTARGET : 0;
@@ -715,9 +725,7 @@ namespace CamelotFramework
 		// check if mip map volume textures are supported
 		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPVOLUMEMAP))
 		{
-			// no mip map support for this kind of textures :(
-			mNumMipmaps = 0;
-			numMips = 1;
+			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 		}
 
 		// derive the pool to use

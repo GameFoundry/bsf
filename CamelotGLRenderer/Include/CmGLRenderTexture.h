@@ -67,24 +67,33 @@ namespace CamelotFramework
 		GLFrameBufferObject* mFB;
     };
 
-    /** Manager/factory for RenderTextures.
-    */
+    /**
+     * @brief	Manager/factory for RenderTextures.
+     * 			
+	 * @note	Must be initialized when RenderSystem is first started.
+     */
     class CM_RSGL_EXPORT GLRTTManager : public Module<GLRTTManager>
     {
     public:
         GLRTTManager();
 		~GLRTTManager();
         
-        /** Check if a certain format is usable as FBO rendertarget format
-        */
+        /**
+         * @brief	Check if a certain format is usable as FBO rendertarget format.
+         *
+         * @note	Thread safe.
+         */
         bool checkFormat(PixelFormat format) { return mProps[format].valid; }
         
         /** Get a FBO without depth/stencil for temporary use, like blitting between textures.
         */
         GLuint getTemporaryFBO() { return mTempFBO; }
 
-		/** Get the closest supported alternative format. If format is supported, returns format.
-        */
+        /**
+         * @brief	Get the closest supported alternative format. If format is supported, returns format.
+         *
+         * @note	Thread safe
+         */
         virtual PixelFormat getSupportedAlternative(PixelFormat format);
     private:
         /** Frame Buffer Object properties for a certain texture format.

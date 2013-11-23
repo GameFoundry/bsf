@@ -34,13 +34,12 @@ THE SOFTWARE.
 #include "CmCoreThread.h"
 #include "CmAsyncOp.h"
 
-
-namespace CamelotFramework {
-	//--------------------------------------------------------------------------
+namespace CamelotFramework 
+{
     Texture::Texture()
         : 
-            mHeight(512),
-            mWidth(512),
+            mHeight(32),
+            mWidth(32),
             mDepth(1),
             mNumMipmaps(0),
 			mHwGamma(false),
@@ -51,7 +50,7 @@ namespace CamelotFramework {
     {
         
     }
-	//-------------------------------------------------------------------------
+
 	void Texture::initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
 		PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint)
 	{
@@ -60,27 +59,28 @@ namespace CamelotFramework {
 		mHeight = height;
 		mDepth = depth;
 		mNumMipmaps = numMipmaps;
-		mFormat = format;
 		mUsage = usage;
 		mHwGamma = hwGamma;
 		mFSAA = fsaa;
 		mFSAAHint = fsaaHint;
 
+		// Adjust format if required
+		mFormat = TextureManager::instance().getNativeFormat(mTextureType, format, mUsage);
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
 		Resource::initialize();
 	}
-    //--------------------------------------------------------------------------
+
     bool Texture::hasAlpha(void) const
     {
         return PixelUtil::hasAlpha(mFormat);
     }
-    //--------------------------------------------------------------------------
+
 	UINT32 Texture::calculateSize(void) const
 	{
         return getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 	}
-	//--------------------------------------------------------------------------
+
 	UINT32 Texture::getNumFaces(void) const
 	{
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;

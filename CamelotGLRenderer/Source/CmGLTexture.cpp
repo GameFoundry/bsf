@@ -62,18 +62,10 @@ namespace CamelotFramework {
 
 	void GLTexture::initialize_internal()
 	{
-		// Convert to nearest power-of-two size if required
-		mWidth = GLPixelUtil::optionalPO2(mWidth);      
-		mHeight = GLPixelUtil::optionalPO2(mHeight);
-		mDepth = GLPixelUtil::optionalPO2(mDepth);
-
-		// Adjust format if required
-		mFormat = TextureManager::instance().getNativeFormat(mTextureType, mFormat, mUsage);
-
 		// Check requested number of mipmaps
 		UINT32 maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
-		if(mNumMipmaps>maxMips)
-			mNumMipmaps = maxMips;
+		if(mNumMipmaps > maxMips)
+			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
 
 		if((mUsage & TU_RENDERTARGET) != 0)
 		{
@@ -186,8 +178,15 @@ namespace CamelotFramework {
 
 		PixelBufferPtr buffer = getBuffer(0, 0);
 
+#if CM_DEBUG_MODE
 		if(buffer != nullptr)
-			mFormat = buffer->getFormat();
+		{
+			if(mFormat != buffer->getFormat())
+			{
+				CM_EXCEPT(InternalErrorException, "Could not create a texture buffer with wanted format: " + toString(mFormat));
+			}
+		}
+#endif
 
 		Texture::initialize_internal();
 	}
