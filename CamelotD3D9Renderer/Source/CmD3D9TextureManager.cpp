@@ -65,45 +65,18 @@ namespace CamelotFramework
 
 	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
 	{
-		// Basic filtering
-		D3DFORMAT d3dPF = D3D9Mappings::_getPF(D3D9Mappings::_getClosestSupportedPF(format));
-
-		// Calculate usage
-		DWORD d3dusage = 0;
-		D3DPOOL pool = D3DPOOL_MANAGED;
-		if (usage & TU_RENDERTARGET) 
+		if((usage & TU_RENDERTARGET) != 0)
 		{
-			d3dusage |= D3DUSAGE_RENDERTARGET;
-			pool = D3DPOOL_DEFAULT; 
+			return D3D9Mappings::_getClosestSupportedRenderTargetPF(format);
 		}
-		if(usage & TU_DEPTHSTENCIL)
+		else if((usage & TU_DEPTHSTENCIL) != 0)
 		{
-			d3dusage |= D3DUSAGE_DEPTHSTENCIL;
-			pool = D3DPOOL_DEFAULT;
+			return D3D9Mappings::_getClosestSupportedDepthStencilPF(format);
 		}
-		if (usage & TU_DYNAMIC)
+		else
 		{
-			d3dusage |= D3DUSAGE_DYNAMIC;
-			pool = D3DPOOL_DEFAULT;
+			// Basic filtering
+			return D3D9Mappings::_getClosestSupportedPF(format);
 		}
-
-		IDirect3DDevice9* pCurDevice = D3D9RenderSystem::getActiveD3D9Device();
-
-		// Use D3DX to adjust pixel format
-		switch(ttype)
-		{
-		case TEX_TYPE_1D:
-		case TEX_TYPE_2D:
-			D3DXCheckTextureRequirements(pCurDevice, NULL, NULL, NULL, d3dusage, &d3dPF, pool);
-			break;
-		case TEX_TYPE_3D:
-			D3DXCheckVolumeTextureRequirements(pCurDevice, NULL, NULL, NULL, NULL, d3dusage, &d3dPF, pool);
-			break;
-		case TEX_TYPE_CUBE_MAP:
-			D3DXCheckCubeTextureRequirements(pCurDevice, NULL, NULL, d3dusage, &d3dPF, pool);
-			break;
-		};
-
-		return D3D9Mappings::_getPF(d3dPF);
 	}
 }

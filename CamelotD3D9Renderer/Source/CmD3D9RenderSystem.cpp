@@ -2251,35 +2251,6 @@ namespace CamelotFramework
 		}
 	}
 	//-----------------------------------------------------------------------
-	bool D3D9RenderSystem::checkVertexTextureFormats(D3D9RenderWindow* renderWindow) const
-	{
-		bool anySupported = false;
-
-		IDirect3DSurface9* bbSurf;
-		renderWindow->getCustomAttribute("DDBACKBUFFER", &bbSurf);
-		D3DSURFACE_DESC bbSurfDesc;
-		bbSurf->GetDesc(&bbSurfDesc);
-
-		for (UINT32 ipf = 1; ipf < static_cast<UINT32>(PF_COUNT); ++ipf)
-		{
-			PixelFormat pf = (PixelFormat)ipf;
-
-			D3DFORMAT fmt = 
-				D3D9Mappings::_getPF(D3D9Mappings::_getClosestSupportedPF(pf));
-
-			if (SUCCEEDED(mpD3D->CheckDeviceFormat(
-				mActiveD3DDriver->getAdapterNumber(), D3DDEVTYPE_HAL, bbSurfDesc.Format, 
-				D3DUSAGE_QUERY_VERTEXTEXTURE, D3DRTYPE_TEXTURE, fmt)))
-			{
-				// cool, at least one supported
-				anySupported = true;
-			}
-		}
-
-		return anySupported;
-
-	}
-	//-----------------------------------------------------------------------
 	void D3D9RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
 	{
 		if (caps->getRenderSystemName() != getName())

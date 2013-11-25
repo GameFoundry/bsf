@@ -517,12 +517,8 @@ namespace CamelotFramework
 		// (This is not the case for floating point formats, EXCEPT for green-red one)
 		switch(camelotPf)
 		{
-		case PF_B8G8R8:
-			return D3DFMT_R8G8B8;
 		case PF_B8G8R8A8:
 			return D3DFMT_A8R8G8B8;
-		case PF_R8G8B8A8:
-			return D3DFMT_A8B8G8R8;
 		case PF_R8G8B8X8:
 			return D3DFMT_X8B8G8R8;
 		case PF_B8G8R8X8:
@@ -571,9 +567,11 @@ namespace CamelotFramework
 		switch(enginePF)
 		{
 		case PF_R8:
-			return PF_B8G8R8;
+			return PF_B8G8R8X8;
 		case PF_R8G8:
-			return PF_B8G8R8;
+			return PF_B8G8R8X8;
+		case PF_B8G8R8:
+			return PF_B8G8R8X8;
 		case PF_A8R8G8B8:
 			return PF_B8G8R8A8;
 		case PF_A8B8G8R8:
@@ -592,4 +590,31 @@ namespace CamelotFramework
 		}
 	}
 
+	PixelFormat D3D9Mappings::_getClosestSupportedRenderTargetPF(PixelFormat enginePF)
+	{
+		switch(enginePF)
+		{
+		case PF_B8G8R8A8:
+			return PF_B8G8R8A8;
+		case PF_B8G8R8X8:
+			return PF_B8G8R8X8;
+		default:
+			return PF_B8G8R8A8;
+		}
+	}
+
+	PixelFormat D3D9Mappings::_getClosestSupportedDepthStencilPF(PixelFormat enginePF)
+	{
+		switch(enginePF)
+		{
+		case PF_D24S8:
+			return PF_D24S8;
+		case PF_D32:
+			return PF_D32;
+		case PF_D16:
+			return PF_D16;
+		default:
+			return PF_D24S8;
+		}
+	}
 }

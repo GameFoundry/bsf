@@ -393,9 +393,6 @@ namespace CamelotFramework
 		HRESULT hr;
 		D3DFORMAT d3dPF = _chooseD3DFormat(d3d9Device);
 		
-		// let's D3DX check the corrected pixel format
-		hr = D3DXCheckTextureRequirements(d3d9Device, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
-		
 		if(mFormat != D3D9Mappings::_getPF(d3dPF))
 		{
 			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
@@ -448,7 +445,7 @@ namespace CamelotFramework
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 
 		// check if mip maps are supported on hardware
-		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) || (mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0)
+		if (numMips > 1 && (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) || (mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0))
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 			numMips = 1;
@@ -575,9 +572,6 @@ namespace CamelotFramework
 		HRESULT hr;
 		D3DFORMAT d3dPF = _chooseD3DFormat(d3d9Device);
 
-		// let's D3DX check the corrected pixel format
-		hr = D3DXCheckCubeTextureRequirements(d3d9Device, NULL, NULL, 0, &d3dPF, mD3DPool);
-		
 		if(mFormat != D3D9Mappings::_getPF(d3dPF))
 		{
 			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
@@ -615,7 +609,7 @@ namespace CamelotFramework
 		const D3DCAPS9& rkCurCaps = device->getD3D9DeviceCaps();			
 		
 		// check if mip map cube textures are supported
-		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
+		if (numMips > 1 && !(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 			numMips = 1;
@@ -685,9 +679,6 @@ namespace CamelotFramework
 		HRESULT hr;
 		D3DFORMAT d3dPF = _chooseD3DFormat(d3d9Device);
 
-		// let's D3DX check the corrected pixel format
-		hr = D3DXCheckVolumeTextureRequirements(d3d9Device, NULL, NULL, NULL, NULL, 0, &d3dPF, mD3DPool);
-		
 		if(mFormat != D3D9Mappings::_getPF(d3dPF))
 		{
 			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
@@ -723,7 +714,7 @@ namespace CamelotFramework
 
 
 		// check if mip map volume textures are supported
-		if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPVOLUMEMAP))
+		if (numMips > 1 && !(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPVOLUMEMAP))
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 		}
@@ -790,6 +781,11 @@ namespace CamelotFramework
 				"Width: " + toString(width) + "/" + toString(mWidth) +
 				"Height: " + toString(height) + "/" + toString(mHeight) +
 				"Depth: " + toString(depth) + "/" + toString(mDepth));
+		}
+
+		if(format != mFormat)
+		{
+			CM_EXCEPT(InternalErrorException, "Wanted and created texture formats don't match! " + toString(format) + "/" + toString(mFormat));
 		}
 		
 		// Create list of subsurfaces for getBuffer()

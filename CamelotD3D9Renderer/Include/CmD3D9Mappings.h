@@ -98,12 +98,14 @@ namespace CamelotFramework
         // Convert matrix from D3D style
         static Matrix4 convertD3DXMatrix( const D3DXMATRIX& mat );
 
-		/// utility method, convert D3D9 pixel format to Ogre pixel format
+		/// utility method, convert D3D9 pixel format to engine pixel format
 		static PixelFormat _getPF(D3DFORMAT d3dPF);
-		/// utility method, convert Ogre pixel format to D3D9 pixel format
+		/// utility method, convert engine pixel format to D3D9 pixel format
 		static D3DFORMAT _getPF(PixelFormat ogrePF);
-		/// utility method, find closest Ogre pixel format that D3D9 can support
+
 		static PixelFormat _getClosestSupportedPF(PixelFormat ogrePF);
+		static PixelFormat _getClosestSupportedRenderTargetPF(PixelFormat enginePF);
+		static PixelFormat _getClosestSupportedDepthStencilPF(PixelFormat enginePF);
 	};
 }
 #endif

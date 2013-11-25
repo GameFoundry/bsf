@@ -36,16 +36,7 @@ from a transient mesh by drawing only parts of its buffer. But only do this afte
 
 ---------
 
-Other possible improvements:
- - MeshData always completely overwrites destination mesh sub-meshes, plus it doesn't allow empty spaces or overlapping between the sub-meshes, they are always
-   sequential.
- - When writing to mesh vertex buffer that requires a color flip I need to create a temporary copy of the entire buffer. It would be better to handle this differently. 
-
-SubMesh
- - Needs default submesh for when the user doesn't set any (just returns entire index range). Needs to be added to RTTI as well
- - Remove draw op from MeshData and add it to Mesh constructor
-
  Problem with Texture::allocateSubresourceBuffer
- - It relies on format being accurate, however it is only accurate after texture has been created on the core thread. Which means if I call that before texture is created I will get a buffer of incorrect size.
-   - I should probably ensure that parameters provided to Texture are accurate and don't change while on core thread. Probably deal with them inside TextureManager.
+  - Fix DX9 & DX11
+   - Implement properly TextureManager::getNativeFormat for DX9 and DX11
    - After that is done remove the synchronize() point from FreeImgImporter::import, FontImporter and two texture updates in GUIManager
