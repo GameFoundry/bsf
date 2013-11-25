@@ -469,30 +469,30 @@ namespace CamelotFramework
 		return getParamVec4(name).set(Vector4(value.r, value.g, value.b, value.a), arrayIdx); 
 	}
 
-	//void Material::setParamBlock(const String& name, GpuParamBlockPtr paramBlock)
-	//{
-	//	auto iterFind = mValidShareableParamBlocks.find(name);
-	//	if(iterFind == mValidShareableParamBlocks.end())
-	//	{
-	//		LOGWRN("Material doesn't have a parameter block named " + name);
-	//		return;
-	//	}
+	void Material::setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlockBuffer)
+	{
+		auto iterFind = mValidShareableParamBlocks.find(name);
+		if(iterFind == mValidShareableParamBlocks.end())
+		{
+			LOGWRN("Material doesn't have a parameter block named " + name);
+			return;
+		}
 
-	//	for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
-	//	{
-	//		PassParametersPtr params = *iter;
+		for(auto iter = mParametersPerPass.begin(); iter != mParametersPerPass.end(); ++iter)
+		{
+			PassParametersPtr params = *iter;
 
-	//		for(UINT32 i = 0; i < params->getNumParams(); i++)
-	//		{
-	//			GpuParamsPtr& paramPtr = params->getParamByIdx(i);
-	//			if(paramPtr)
-	//			{
-	//				if(paramPtr->hasParamBlock(name))
-	//					paramPtr->setParam(name, paramBlock);
-	//			}
-	//		}
-	//	}
-	//}
+			for(UINT32 i = 0; i < params->getNumParams(); i++)
+			{
+				GpuParamsPtr& paramPtr = params->getParamByIdx(i);
+				if(paramPtr)
+				{
+					if(paramPtr->hasParamBlock(name))
+						paramPtr->setParamBlockBuffer(name, paramBlockBuffer);
+				}
+			}
+		}
+	}
 
 	UINT32 Material::getNumPasses() const
 	{

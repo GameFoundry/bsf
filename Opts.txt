@@ -28,15 +28,10 @@ TransientMesh
  - Accepts starting buffer sizes, and will enlarge them as needed
   - When buffer is enlarged send a warning so user knows to use a bigger buffer next time
  - Keeps track of parts of the buffer used by GPU using GPU queries
+   - Need to implement a proper GPU query interface
+ - Keeps track of fragmentation and has an option to defragment, manually or auto after certain %
 
 ----------
 
 BIG TODO FINALLY: Reorganize GUI so it all uses one big vertex buffer (probably in the form of a TransientMesh). This means I need better support for drawing individual objects
 from a transient mesh by drawing only parts of its buffer. But only do this after I have optimized and tested the normal mesh (on all render systems)
-
----------
-
- Problem with Texture::allocateSubresourceBuffer
-  - Fix DX9 & DX11
-   - Implement properly TextureManager::getNativeFormat for DX9 and DX11
-   - After that is done remove the synchronize() point from FreeImgImporter::import, FontImporter and two texture updates in GUIManager

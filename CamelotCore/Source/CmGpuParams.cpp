@@ -143,9 +143,6 @@ namespace CamelotFramework
 		// Ensure everything is destructed
 		for(UINT32 i = 0; i < mNumParamBlocks; i++)
 		{
-			if(mParamBlocks[i] != nullptr)
-				cm_delete<PoolAlloc>(mParamBlocks[i]);
-
 			mParamBlockBuffers[i].~shared_ptr();
 		}
 
@@ -158,7 +155,7 @@ namespace CamelotFramework
 		cm_free(mData);
 	}
 
-	void GpuParams::setParamBlockBuffer(UINT32 slot, GpuParamBlockBufferPtr paramBlockBuffer)
+	void GpuParams::setParamBlockBuffer(UINT32 slot, const GpuParamBlockBufferPtr& paramBlockBuffer)
 	{
 		if(slot < 0 || slot >= mNumParamBlocks)
 		{
@@ -166,14 +163,11 @@ namespace CamelotFramework
 				toString(mNumParamBlocks - 1) + ". Requested: " + toString(slot));
 		}
 
-		if(mParamBlocks[slot] != nullptr)
-			cm_delete<PoolAlloc>(mParamBlocks[slot]);
-
-		mParamBlocks[slot] = cm_new<GpuParamBlock, PoolAlloc>(paramBlockBuffer->getSize());
 		mParamBlockBuffers[slot] = paramBlockBuffer;
+		mParamBlocks[slot] = paramBlockBuffer->getParamBlock();
 	}
 
-	void GpuParams::setParamBlockBuffer(const String& name, GpuParamBlockBufferPtr paramBlockBuffer)
+	void GpuParams::setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlockBuffer)
 	{
 		auto iterFind = mParamDesc.paramBlocks.find(name);
 
@@ -183,11 +177,8 @@ namespace CamelotFramework
 			return;
 		}
 
-		if(mParamBlocks[iterFind->second.slot] != nullptr)
-			cm_delete<PoolAlloc>(mParamBlocks[iterFind->second.slot]);
-
-		mParamBlocks[iterFind->second.slot] = cm_new<GpuParamBlock, PoolAlloc>(paramBlockBuffer->getSize());
 		mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
+		mParamBlocks[iterFind->second.slot] = paramBlockBuffer->getParamBlock();
 	}
 
 	UINT32 GpuParams::getDataParamSize(const String& name) const
@@ -273,7 +264,7 @@ namespace CamelotFramework
 	BindableGpuParams GpuParams::createBindableCopy(const GpuParamsPtr& params)
 	{
 		// Allocate everything in a single block of memory to get rid of extra memory allocations
-		UINT32 paramBlockBufferSize = params->mNumParamBlocks * sizeof(GpuParamBlock*);
+		UINT32 paramBlockBufferSize = params->mNumParamBlocks * sizeof(BindableGpuParamBlock*);
 		UINT32 paramBlockBuffersBufferSize = params->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
 		UINT32 textureBufferSize = params->mNumTextures * sizeof(HTexture);
 		UINT32 samplerStateBufferSize = params->mNumSamplerStates * sizeof(HSamplerState);
@@ -281,8 +272,8 @@ namespace CamelotFramework
 		UINT32 bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
 		for(UINT32 i = 0; i < params->mNumParamBlocks; i++)
 		{
-			if(params->mParamBlocks[i] != nullptr)
-				bufferSize += sizeof(BindableGpuParamBlock) + params->mParamBlocks[i]->getSize();
+			if(params->mParamBlockBuffers[i] != nullptr)
+				bufferSize += sizeof(BindableGpuParamBlock) + params->mParamBlockBuffers[i]->getSize();
 		}
 
 		// TODO - Alloc using stack
@@ -306,26 +297,27 @@ namespace CamelotFramework
 		dataIter += samplerStateBufferSize;
 
 		// Copy data
-		memcpy(bindableParams.mParamBlocks, params->mParamBlocks, paramBlockBufferSize);
 		memcpy(bindableParams.mParamBlockBuffers, params->mParamBlockBuffers, paramBlockBuffersBufferSize);
 		memcpy(bindableParams.mTextures, params->mTextures, textureBufferSize);
 		memcpy(bindableParams.mSamplerStates, params->mSamplerStates, samplerStateBufferSize);
 
 		for(UINT32 i = 0; i < params->mNumParamBlocks; i++)
 		{
-			if(params->mParamBlocks[i] != nullptr)
+			if(params->mParamBlockBuffers[i] != nullptr)
 			{
-				UINT32 bufferSize = params->mParamBlocks[i]->getSize();
+				GpuParamBlock* paramBlock = params->mParamBlockBuffers[i]->getParamBlock();
+
+				UINT32 bufferSize = paramBlock->getSize();
 				bindableParams.mParamBlocks[i] = (BindableGpuParamBlock*)dataIter;
 
 				dataIter += sizeof(BindableGpuParamBlock);
 				bindableParams.mParamBlocks[i]->mData = dataIter;
 
 				dataIter += bufferSize;
-				memcpy(bindableParams.mParamBlocks[i]->mData, params->mParamBlocks[i]->getData(), bufferSize);
+				memcpy(bindableParams.mParamBlocks[i]->mData, paramBlock->getData(), bufferSize);
 
 				bindableParams.mParamBlocks[i]->mSize = bufferSize;
-				bindableParams.mParamBlocks[i]->mDirty = params->mParamBlocks[i]->isDirty();
+				bindableParams.mParamBlocks[i]->mDirty = paramBlock->isDirty();
 			}
 		}
 

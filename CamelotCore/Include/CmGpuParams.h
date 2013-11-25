@@ -12,8 +12,8 @@ namespace CamelotFramework
 		GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices);
 		~GpuParams();
 
-		void setParamBlockBuffer(UINT32 slot, GpuParamBlockBufferPtr paramBlockBuffer);
-		void setParamBlockBuffer(const String& name, GpuParamBlockBufferPtr paramBlockBuffer);
+		void setParamBlockBuffer(UINT32 slot, const GpuParamBlockBufferPtr& paramBlockBuffer);
+		void setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlockBuffer);
 
 		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
 		UINT32 getDataParamSize(const String& name) const;

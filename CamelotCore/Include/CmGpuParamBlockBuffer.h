@@ -35,9 +35,13 @@ namespace CamelotFramework
 
 		UINT32 getSize() const { return mSize; }
 
+		GpuParamBlock* getParamBlock() const { return mParamBlock; }
+
 	protected:
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
+
+		GpuParamBlock* mParamBlock;
 	};
 
 	class CM_EXPORT GenericGpuParamBlockBuffer : public GpuParamBlockBuffer

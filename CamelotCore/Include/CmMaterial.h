@@ -84,7 +84,7 @@ namespace CamelotFramework
 		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0)	{ return getParamStruct(name).set(value, size, arrayIdx); }
 		void setRenderQueue(INT16 renderQueue) { mRenderQueue = renderQueue; }
 
-		//void setParamBlock(const String& name, GpuParamBlockPtr paramBlock);
+		void setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlock);
 
 		HTexture getTexture(const String& name) const										{ return getParamTexture(name).get(); }
 		HSamplerState getSamplerState(const String& name) const								{ return getParamSamplerState(name).get(); }

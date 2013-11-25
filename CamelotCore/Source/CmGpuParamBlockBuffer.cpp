@@ -1,22 +1,26 @@
 #include "CmGpuParamBlockBuffer.h"
+#include "CmGpuParamBlock.h"
 
 namespace CamelotFramework
 {
 	GpuParamBlockBuffer::GpuParamBlockBuffer()
-		:mSize(0), mUsage(GPBU_DYNAMIC)
+		:mSize(0), mUsage(GPBU_DYNAMIC), mParamBlock(nullptr)
 	{
 
 	}
 
 	GpuParamBlockBuffer::~GpuParamBlockBuffer()
 	{
-
+		if(mParamBlock != nullptr)
+			cm_delete(mParamBlock);
 	}
 
 	void GpuParamBlockBuffer::initialize(UINT32 size, GpuParamBlockUsage usage)
 	{
 		mSize = size;
 		mUsage = usage;
+
+		mParamBlock = cm_new<GpuParamBlock, PoolAlloc>(size);
 
 		CoreObject::initialize();
 	}

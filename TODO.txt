@@ -126,9 +126,6 @@ Low priority TODO
   - Resources::unload will deadlock if the resource isn't being loaded!
     - Maybe re-think how I handle ResourceHandle.isCreated?
   - Check D3D9/D3D11/GL resource usages. DX11 reports many unreleased objects. I'm guessing DX9 will as well. Not sure how to check OpenGL.
- - Shared GPU buffers
-   - wouldn't work atm due to the way I update the buffers (and the way I mark them dirty)
-   - Material::setParamBlock is commented out
  - onMovedOrResized is still used by Viewport while that same callback is offered by RenderWindowManager. There is no need to have them in both places.
  - Texture "ScaleToFit" will cause the texture to repeat instead of clipping the image. e.g. a 50x20 texture placed on an 50x100 area will repeat 5x
  - When writing to mesh vertex buffer in Mesh::writeSubresource that requires a color flip I need to create a temporary copy of the 
