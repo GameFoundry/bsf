@@ -234,6 +234,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmGLContext.h" />
+    <ClInclude Include="Include\CmGLEventQuery.h" />
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
     <ClInclude Include="Include\CmGLGpuBuffer.h" />
     <ClInclude Include="Include\CmGLGpuParamBlockBuffer.h" />
@@ -242,6 +243,8 @@
     <ClInclude Include="Include\CmGLIndexBuffer.h" />
     <ClInclude Include="Include\CmGLOcclusionQuery.h" />
     <ClInclude Include="Include\CmGLPixelBuffer.h" />
+    <ClInclude Include="Include\CmGLQueryManager.h" />
+    <ClInclude Include="Include\CmGLTimerQuery.h" />
     <ClInclude Include="Include\CmGLVertexBuffer.h" />
     <ClInclude Include="Include\CmGLMultiRenderTexture.h" />
     <ClInclude Include="Include\CmGLPixelFormat.h" />
@@ -270,6 +273,7 @@
   <ItemGroup>
     <ClCompile Include="CmGLPlugin.cpp" />
     <ClCompile Include="Source\CmGLContext.cpp" />
+    <ClCompile Include="Source\CmGLEventQuery.cpp" />
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
     <ClCompile Include="Source\CmGLGpuBuffer.cpp" />
     <ClCompile Include="Source\CmGLGpuParamBlockBuffer.cpp" />
@@ -278,6 +282,8 @@
     <ClCompile Include="Source\CmGLIndexBuffer.cpp" />
     <ClCompile Include="Source\CmGLOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmGLPixelBuffer.cpp" />
+    <ClCompile Include="Source\CmGLQueryManager.cpp" />
+    <ClCompile Include="Source\CmGLTimerQuery.cpp" />
     <ClCompile Include="Source\CmGLVertexBuffer.cpp" />
     <ClCompile Include="Source\CmGLMultiRenderTexture.cpp" />
     <ClCompile Include="Source\CmGLPixelFormat.cpp" />

@@ -123,6 +123,15 @@
     <ClInclude Include="Include\CmGLGpuParamBlockBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGLEventQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLQueryManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmGLTimerQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp">
@@ -213,6 +222,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLGpuParamBlockBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLEventQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLQueryManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGLTimerQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

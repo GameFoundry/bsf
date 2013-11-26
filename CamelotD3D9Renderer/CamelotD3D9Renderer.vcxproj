@@ -237,6 +237,7 @@
     <ClInclude Include="Include\CmD3D9DeviceManager.h" />
     <ClInclude Include="Include\CmD3D9Driver.h" />
     <ClInclude Include="Include\CmD3D9DriverList.h" />
+    <ClInclude Include="Include\CmD3D9EventQuery.h" />
     <ClInclude Include="Include\CmD3D9GpuBuffer.h" />
     <ClInclude Include="Include\CmD3D9GpuProgram.h" />
     <ClInclude Include="Include\CmD3D9GpuProgramManager.h" />
@@ -245,6 +246,8 @@
     <ClInclude Include="Include\CmD3D9IndexBuffer.h" />
     <ClInclude Include="Include\CmD3D9OcclusionQuery.h" />
     <ClInclude Include="Include\CmD3D9PixelBuffer.h" />
+    <ClInclude Include="Include\CmD3D9QueryManager.h" />
+    <ClInclude Include="Include\CmD3D9TimerQuery.h" />
     <ClInclude Include="Include\CmD3D9VertexBuffer.h" />
     <ClInclude Include="Include\CmD3D9HLSLProgram.h" />
     <ClInclude Include="Include\CmD3D9HLSLProgramFactory.h" />
@@ -271,6 +274,7 @@
     <ClCompile Include="Source\CmD3D9DeviceManager.cpp" />
     <ClCompile Include="Source\CmD3D9Driver.cpp" />
     <ClCompile Include="Source\CmD3D9DriverList.cpp" />
+    <ClCompile Include="Source\CmD3D9EventQuery.cpp" />
     <ClCompile Include="Source\CmD3D9GpuBuffer.cpp" />
     <ClCompile Include="Source\CmD3D9GpuProgram.cpp" />
     <ClCompile Include="Source\CmD3D9GpuProgramManager.cpp" />
@@ -278,6 +282,8 @@
     <ClCompile Include="Source\CmD3D9IndexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D9OcclusionQuery.cpp" />
     <ClCompile Include="Source\CmD3D9PixelBuffer.cpp" />
+    <ClCompile Include="Source\CmD3D9QueryManager.cpp" />
+    <ClCompile Include="Source\CmD3D9TimerQuery.cpp" />
     <ClCompile Include="Source\CmD3D9VertexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D9HLSLProgram.cpp" />
     <ClCompile Include="Source\CmD3D9HLSLProgramFactory.cpp" />

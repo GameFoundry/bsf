@@ -501,6 +501,15 @@
     <ClInclude Include="Include\CmSubMesh.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmEventQuery.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmQueryManager.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTimerQuery.h">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -778,6 +787,15 @@
     </ClCompile>
     <ClCompile Include="Source\CmVertexDataDesc.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmQueryManager.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmEventQuery.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmTimerQuery.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

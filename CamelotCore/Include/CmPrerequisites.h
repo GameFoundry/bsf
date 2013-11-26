@@ -129,6 +129,8 @@ namespace CamelotFramework
 	class RenderQueue;
 	struct ProfilerReport;
 	class VertexDataDesc;
+	class EventQuery;
+	class TimerQuery;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -210,6 +212,8 @@ namespace CamelotFramework
 	typedef CoreThreadAccessor<CommandQueueSync> SyncedCoreAccessor;
 	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueNoSync>> CoreAccessorPtr;
 	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueSync>> SyncedCoreAccessorPtr;
+	typedef std::shared_ptr<EventQuery> EventQueryPtr;
+	typedef std::shared_ptr<TimerQuery> TimerQueryPtr;
 }
 
 /************************************************************************/

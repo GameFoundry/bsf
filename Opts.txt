@@ -1,8 +1,5 @@
 Make sure to also update TextSprite and ImageSprite and anything else in UpdateMesh, then don't forget to find the issue that causes elements to get marked as dirty every single frame
 
-GpuParamBlock should be tied directly with GpuParamBlockBuffer
-  - Modify material so it always sets just the first GpuParams with a specific name. This will avoid updating same buffer multiple times.
-
 FrameAlloc
    Keeps two internal stacks
      - One core, one sim
@@ -30,6 +27,9 @@ TransientMesh
  - Keeps track of parts of the buffer used by GPU using GPU queries
    - Need to implement a proper GPU query interface
  - Keeps track of fragmentation and has an option to defragment, manually or auto after certain %
+
+Queries:
+ - Startup QueryManager, Implement Timer queries, Test all queries
 
 ----------
 

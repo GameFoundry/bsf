@@ -126,6 +126,15 @@
     <ClInclude Include="Include\CmD3D11RenderUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmD3D11EventQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D11QueryManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmD3D11TimerQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmD3D11GpuProgram.cpp">
@@ -231,6 +240,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmD3D11RenderUtility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D11EventQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D11QueryManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D11TimerQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

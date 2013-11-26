@@ -234,6 +234,7 @@
   <ItemGroup>
     <ClInclude Include="Include\CmD3D11BlendState.h" />
     <ClInclude Include="Include\CmD3D11DepthStencilState.h" />
+    <ClInclude Include="Include\CmD3D11EventQuery.h" />
     <ClInclude Include="Include\CmD3D11GpuBuffer.h" />
     <ClInclude Include="Include\CmD3D11GpuBufferView.h" />
     <ClInclude Include="Include\CmD3D11HardwareBufferManager.h" />
@@ -252,8 +253,10 @@
     <ClInclude Include="Include\CmD3D11MultiRenderTexture.h" />
     <ClInclude Include="Include\CmD3D11GpuParamBlockBuffer.h" />
     <ClInclude Include="Include\CmD3D11Prerequisites.h" />
+    <ClInclude Include="Include\CmD3D11QueryManager.h" />
     <ClInclude Include="Include\CmD3D11RenderUtility.h" />
     <ClInclude Include="Include\CmD3D11TextureView.h" />
+    <ClInclude Include="Include\CmD3D11TimerQuery.h" />
     <ClInclude Include="Include\CmD3D11VertexBuffer.h" />
     <ClInclude Include="Include\CmD3D11RasterizerState.h" />
     <ClInclude Include="Include\CmD3D11RenderStateManager.h" />
@@ -275,6 +278,7 @@
     <ClCompile Include="Source\CmD3D11Device.cpp" />
     <ClCompile Include="Source\CmD3D11Driver.cpp" />
     <ClCompile Include="Source\CmD3D11DriverList.cpp" />
+    <ClCompile Include="Source\CmD3D11EventQuery.cpp" />
     <ClCompile Include="Source\CmD3D11GpuBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11GpuBufferView.cpp" />
     <ClCompile Include="Source\CmD3D11GpuParamBlockBuffer.cpp" />
@@ -289,8 +293,10 @@
     <ClCompile Include="Source\CmD3D11InputLayoutManager.cpp" />
     <ClCompile Include="Source\CmD3D11Mappings.cpp" />
     <ClCompile Include="Source\CmD3D11Plugin.cpp" />
+    <ClCompile Include="Source\CmD3D11QueryManager.cpp" />
     <ClCompile Include="Source\CmD3D11RenderUtility.cpp" />
     <ClCompile Include="Source\CmD3D11TextureView.cpp" />
+    <ClCompile Include="Source\CmD3D11TimerQuery.cpp" />
     <ClCompile Include="Source\CmD3D11VertexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11MultiRenderTexture.cpp" />
     <ClCompile Include="Source\CmD3D11RasterizerState.cpp" />
