@@ -25,7 +25,6 @@ namespace CamelotFramework
 		virtual bool isReady() const;
 
 	private:
-		bool mInitialized;
 		IDirect3DQuery9* mQuery;
 	};
 }

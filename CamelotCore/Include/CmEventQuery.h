@@ -16,6 +16,8 @@ namespace CamelotFramework
 	class CM_EXPORT EventQuery
 	{
 	public:
+		EventQuery()
+			:mActive(false) {}
 		virtual ~EventQuery() {}
 
 		/**
@@ -34,5 +36,14 @@ namespace CamelotFramework
 		boost::signal<void()> onTriggered;
 
 		static EventQueryPtr create();
+
+	protected:
+		friend class QueryManager;
+
+		bool isActive() const { return mActive; }
+		void setActive(bool active) { mActive = active; }
+
+	protected:
+		bool mActive;
 	};
 }

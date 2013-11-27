@@ -7,7 +7,7 @@ namespace CamelotFramework
 	EventQueryPtr GLQueryManager::createEventQuery() const
 	{
 		EventQueryPtr query = std::shared_ptr<GLEventQuery>(cm_new<GLEventQuery>(), &QueryManager::deleteEventQuery, StdAlloc<GenAlloc>());  
-		mEventQueries[mBufferIdx].push_back(query.get());
+		mEventQueries.push_back(query.get());
 
 		return query;
 	}
@@ -15,7 +15,7 @@ namespace CamelotFramework
 	TimerQueryPtr GLQueryManager::createTimerQuery() const
 	{
 		TimerQueryPtr query = std::shared_ptr<GLTimerQuery>(cm_new<GLTimerQuery>(), &QueryManager::deleteTimerQuery, StdAlloc<GenAlloc>());  
-		mTimerQueries[mBufferIdx].push_back(query.get());
+		mTimerQueries.push_back(query.get());
 
 		return query;
 	}

@@ -32,10 +32,17 @@ namespace CamelotFramework
 		/**
 		 * @copydoc TimerQuery::getTimeMs
 		 */
-		virtual UINT64 getTimeMs() const;
+		virtual float getTimeMs();
 
 	private:
-		GLuint mQueryObj;
-		bool mInitialized;
+		friend class QueryManager;
+
+		GLuint mQueryStartObj;
+		GLuint mQueryEndObj;
+		bool mFinalized;
+
+		float mTimeDelta;
+
+		virtual void finalize();
 	};
 }

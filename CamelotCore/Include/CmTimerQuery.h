@@ -39,10 +39,21 @@ namespace CamelotFramework
 		 * 			
 		 * @note	Only valid after "isReady" returns true.
 		 */
-		virtual UINT64 getTimeMs() const = 0;
+		virtual float getTimeMs() = 0;
 
-		boost::signal<void(UINT64)> onTriggered;
+		boost::signal<void(float)> onTriggered;
 
 		static TimerQueryPtr create();
+
+	protected:
+		friend class QueryManager;
+
+		virtual void finalize() = 0;
+
+		bool isActive() const { return mActive; }
+		void setActive(bool active) { mActive = active; }
+
+	protected:
+		bool mActive;
 	};
 }

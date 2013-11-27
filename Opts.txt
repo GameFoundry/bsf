@@ -28,9 +28,6 @@ TransientMesh
    - Need to implement a proper GPU query interface
  - Keeps track of fragmentation and has an option to defragment, manually or auto after certain %
 
-Queries:
- - Startup QueryManager, Implement Timer queries, Test all queries
-
 ----------
 
 BIG TODO FINALLY: Reorganize GUI so it all uses one big vertex buffer (probably in the form of a TransientMesh). This means I need better support for drawing individual objects

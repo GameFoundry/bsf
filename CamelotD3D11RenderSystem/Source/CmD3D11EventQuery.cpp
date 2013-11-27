@@ -6,26 +6,14 @@
 namespace CamelotFramework
 {
 	D3D11EventQuery::D3D11EventQuery()
-		:mQuery(nullptr), mInitialized(false)
-	{
-
-	}
-
-	D3D11EventQuery::~D3D11EventQuery()
-	{
-		if(mInitialized)
-		{
-			mQuery->Release();
-		}
-	}
-
-	void D3D11EventQuery::begin()
+		:mQuery(nullptr)
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
 
 		D3D11_QUERY_DESC queryDesc;
 		queryDesc.Query = D3D11_QUERY_EVENT;
+		queryDesc.MiscFlags = 0;
 
 		HRESULT hr = device.getD3D11Device()->CreateQuery(&queryDesc, &mQuery);
 		if(hr != S_OK)
@@ -34,9 +22,20 @@ namespace CamelotFramework
 		}
 
 		mContext = device.getImmediateContext();
-		mContext->End(mQuery);
+	}
 
-		mInitialized = true;
+	D3D11EventQuery::~D3D11EventQuery()
+	{
+		if(mQuery != nullptr)
+		{
+			mQuery->Release();
+		}
+	}
+
+	void D3D11EventQuery::begin()
+	{
+		mContext->End(mQuery);
+		setActive(true);
 	}
 
 	bool D3D11EventQuery::isReady() const

@@ -56,6 +56,7 @@ THE SOFTWARE.
 #include "CmGpuParamDesc.h"
 #include "CmGpuParamBlockBuffer.h"
 #include "CmCoreThread.h"
+#include "CmD3D9QueryManager.h"
 #include "CmDebug.h"
 
 #define FLOAT2DWORD(f) *((DWORD*)&f)
@@ -181,6 +182,8 @@ namespace CamelotFramework
 		// Create the texture manager for use by others		
 		TextureManager::startUp(cm_new<D3D9TextureManager>());
 
+		QueryManager::startUp(cm_new<D3D9QueryManager>());
+
 		// call superclass method
 		RenderSystem::initialize_internal(asyncOp);
 
@@ -210,6 +213,7 @@ namespace CamelotFramework
 		}
 		mActiveD3DDriver = NULL;	
 
+		QueryManager::shutDown();
 		TextureManager::shutDown();
 		HardwareBufferManager::shutDown();
 		GpuProgramManager::shutDown();	

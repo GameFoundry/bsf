@@ -26,6 +26,5 @@ namespace CamelotFramework
 
 	private:
 		GLuint mQueryObj;
-		bool mInitialized;
 	};
 }

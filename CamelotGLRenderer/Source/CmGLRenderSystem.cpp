@@ -52,6 +52,7 @@ THE SOFTWARE.s
 #include "CmGpuParams.h"
 #include "CmGLGpuParamBlockBuffer.h"
 #include "CmCoreThread.h"
+#include "CmGLQueryManager.h"
 #include "CmDebug.h"
 
 // Convenience macro from ARB_vertex_buffer_object spec
@@ -141,6 +142,8 @@ namespace CamelotFramework
 
 		RenderStateManager::startUp(cm_new<RenderStateManager>());
 
+		QueryManager::startUp(cm_new<GLQueryManager>());
+
 		// Initialize a window so we have something to create a GL context with
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
 		             
@@ -221,6 +224,7 @@ namespace CamelotFramework
 		mGLSupport->stop();
 
 		TextureManager::shutDown();
+		QueryManager::shutDown();
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
 

@@ -25,9 +25,8 @@ namespace CamelotFramework
 		void update();
 
 	protected:
-		mutable Vector<EventQuery*>::type mEventQueries[2]; // Two buffers so we can ping-pong between them
-		mutable Vector<TimerQuery*>::type mTimerQueries[2];
-		UINT32 mBufferIdx;
+		mutable Vector<EventQuery*>::type mEventQueries;
+		mutable Vector<TimerQuery*>::type mTimerQueries;
 
 	protected:
 		friend class EventQuery;

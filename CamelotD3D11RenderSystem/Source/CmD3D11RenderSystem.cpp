@@ -23,6 +23,7 @@
 #include "CmD3D11RenderUtility.h"
 #include "CmBindableGpuParams.h"
 #include "CmCoreThread.h"
+#include "CmD3D11QueryManager.h"
 #include "CmDebug.h"
 #include "CmException.h"
 
@@ -132,6 +133,8 @@ namespace CamelotFramework
 
 		D3D11RenderUtility::startUp(cm_new<D3D11RenderUtility>(mDevice));
 
+		QueryManager::startUp(cm_new<D3D11QueryManager>());
+
 		RenderSystem::initialize_internal(asyncOp);
 
 		asyncOp.completeOperation(primaryWindow);
@@ -141,6 +144,7 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		QueryManager::shutDown();
 		D3D11RenderUtility::shutDown();
 
 		if(mIAManager != nullptr)

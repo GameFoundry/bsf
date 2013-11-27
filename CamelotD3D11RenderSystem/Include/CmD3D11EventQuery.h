@@ -27,6 +27,5 @@ namespace CamelotFramework
 	private:
 		ID3D11Query* mQuery;
 		ID3D11DeviceContext* mContext;
-		bool mInitialized;
 	};
 }

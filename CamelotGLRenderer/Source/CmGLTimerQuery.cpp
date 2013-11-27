@@ -1,42 +1,68 @@
 #include "CmGLTimerQuery.h"
+#include "CmMath.h"
 
 namespace CamelotFramework
 {
 	GLTimerQuery::GLTimerQuery()
-		:mQueryObj(0), mInitialized(false)
+		:mQueryStartObj(0), mQueryEndObj(0), 
+		mTimeDelta(0.0f), mFinalized(false)
 	{
+		GLuint queries[2];
+		queries[0] = mQueryStartObj;
+		queries[1] = mQueryEndObj;
 
+		glGenQueries(2, queries);
 	}
 
 	GLTimerQuery::~GLTimerQuery()
 	{
-		if(mInitialized)
-		{
-			// TODO
-		}
+		GLuint queries[2];
+		queries[0] = mQueryStartObj;
+		queries[1] = mQueryEndObj;
+
+		glDeleteQueries(2, queries);
 	}
 
 	void GLTimerQuery::begin()
 	{
-		// TODO
+		glQueryCounter(mQueryStartObj, GL_TIMESTAMP);
 
-		mInitialized = true;
+		setActive(true);
 	}
 
 	void GLTimerQuery::end()
 	{
-		// TODO
+		glQueryCounter(mQueryEndObj, GL_TIMESTAMP);
 	}
 
 	bool GLTimerQuery::isReady() const
 	{
-		// TODO
-		return false;
+		GLint done = 0;
+		glGetQueryObjectiv(mQueryEndObj, GL_QUERY_RESULT_AVAILABLE, &done);
+
+		return done == GL_TRUE;
 	}
 
-	UINT64 GLTimerQuery::getTimeMs() const
+	float GLTimerQuery::getTimeMs() 
 	{
-		// TODO
-		return 0;
+		if(!mFinalized && isReady())
+		{
+			finalize();
+		}
+
+		return mTimeDelta;
+	}
+
+	void GLTimerQuery::finalize()
+	{
+		mFinalized = true;
+
+		GLuint64 timeStart;
+		GLuint64 timeEnd;
+
+		glGetQueryObjectui64v(mQueryStartObj, GL_QUERY_RESULT, &timeStart);
+		glGetQueryObjectui64v(mQueryEndObj, GL_QUERY_RESULT, &timeEnd);
+
+		mTimeDelta = (timeEnd - timeStart) / 1000000.0f;
 	}
 }

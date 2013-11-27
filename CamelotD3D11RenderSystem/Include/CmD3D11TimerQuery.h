@@ -32,9 +32,17 @@ namespace CamelotFramework
 		/**
 		 * @copydoc TimerQuery::getTimeMs
 		 */
-		virtual UINT64 getTimeMs() const;
+		virtual float getTimeMs();
 
 	private:
-		bool mInitialized;
+		bool mFinalized;
+		float mTimeDelta;
+
+		ID3D11Query* mBeginQuery;
+		ID3D11Query* mEndQuery;
+		ID3D11Query* mDisjointQuery;
+		ID3D11DeviceContext* mContext;
+
+		virtual void finalize();
 	};
 }

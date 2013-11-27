@@ -3,31 +3,26 @@
 namespace CamelotFramework
 {
 	GLEventQuery::GLEventQuery()
-		:mQueryObj(0), mInitialized(false)
-	{
-
-	}
-
-	GLEventQuery::~GLEventQuery()
-	{
-		if(mInitialized)
-		{
-			GLuint queries[1];
-			queries[0] = mQueryObj;
-
-			glDeleteQueries(1, queries);
-		}
-	}
-
-	void GLEventQuery::begin()
+		:mQueryObj(0)
 	{
 		GLuint queries[1];
 		queries[0] = mQueryObj;
 
 		glGenQueries(1, queries);
-		glQueryCounter(mQueryObj, GL_TIMESTAMP);
+	}
 
-		mInitialized = true;
+	GLEventQuery::~GLEventQuery()
+	{
+		GLuint queries[1];
+		queries[0] = mQueryObj;
+
+		glDeleteQueries(1, queries);
+	}
+
+	void GLEventQuery::begin()
+	{
+		glQueryCounter(mQueryObj, GL_TIMESTAMP);
+		setActive(true);
 	}
 
 	bool GLEventQuery::isReady() const
