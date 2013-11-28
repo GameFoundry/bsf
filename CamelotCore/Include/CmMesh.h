@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmGpuResource.h"
+#include "CmMeshBase.h"
 #include "CmMeshData.h"
 #include "CmVertexData.h"
 #include "CmIndexData.h"
@@ -10,13 +10,7 @@
 
 namespace CamelotFramework
 {
-	enum class MeshBufferType
-	{
-		Static,
-		Dynamic
-	};
-
-	class CM_EXPORT Mesh : public GpuResource
+	class CM_EXPORT Mesh : public MeshBase
 	{
 	public:
 		virtual ~Mesh();
@@ -51,49 +45,18 @@ namespace CamelotFramework
 		 */
 		UINT32 mapToSubresourceIdx() const { return 0; }
 
-		void clearSubMeshes();
-
-		void addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
-
-		/**
-		 * @brief	Sets a set of sub-meshes containing data used for rendering a 
-		 * 			certain portion of this mesh. Overwrites any previous sub-meshes.
-		 * 			
-		 * @note	Sim thread only.
-		 */
-		void setSubMeshes(const Vector<SubMesh>::type& subMeshes);
-
-		/**
-		 * @brief	Retrieves a sub-mesh containing data used for rendering a
-		 * 			certain portion of this mesh.
-		 * 			
-		 * @note	Sim thread only.
-		 */
-		const SubMesh& getSubMesh(UINT32 subMeshIdx = 0) const;
-
-		/**
-		 * @brief	Retrieves a total number of sub-meshes in this mesh.
-		 * 			
-		 * @note	Sim thread only.
-		 */
-		UINT32 getNumSubMeshes() const;
-
 		const AABox& getBounds() const;
 		const AABox& getBounds(UINT32 submeshIdx) const;
 
 		/**
-		 * @brief	Get vertex data used for rendering.
-		 *  
-		 * @note	Core thread only.
+		 * @copydoc MeshBase::getVertexData
 		 */
-		std::shared_ptr<VertexData> getVertexData() const;
+		virtual std::shared_ptr<VertexData> getVertexData() const;
 
 		/**
-		 * @brief	Get index data used for rendering.
-		 *  
-		 * @note	Core thread only.
+		 * @copydoc MeshBase::getIndexData
 		 */
-		std::shared_ptr<IndexData> getIndexData() const;
+		virtual std::shared_ptr<IndexData> getIndexData() const;
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
@@ -117,11 +80,6 @@ namespace CamelotFramework
 		std::shared_ptr<VertexData> mVertexData; // Core thread
 		std::shared_ptr<IndexData> mIndexData; // Core thread
 
-		Vector<SubMesh>::type mSubMeshes; // Sim thread
-		SubMesh mDefaultSubMesh; // Immutable
-
-		UINT32 mNumVertices; // Immutable
-		UINT32 mNumIndices; // Immutable
 		VertexDataDescPtr mVertexDesc; // Immutable
 		MeshBufferType mBufferType; // Immutable
 		IndexBuffer::IndexType mIndexType; // Immutable

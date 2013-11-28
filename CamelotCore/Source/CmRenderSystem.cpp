@@ -208,7 +208,7 @@ namespace CamelotFramework {
         return false;
 	}
 
-	void RenderSystem::render(const MeshPtr& mesh, UINT32 indexOffset, UINT32 indexCount, bool useIndices, DrawOperationType drawOp)
+	void RenderSystem::render(const MeshBasePtr& mesh, UINT32 indexOffset, UINT32 indexCount, bool useIndices, DrawOperationType drawOp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

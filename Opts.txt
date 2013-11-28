@@ -32,3 +32,45 @@ TransientMesh
 
 BIG TODO FINALLY: Reorganize GUI so it all uses one big vertex buffer (probably in the form of a TransientMesh). This means I need better support for drawing individual objects
 from a transient mesh by drawing only parts of its buffer. But only do this after I have optimized and tested the normal mesh (on all render systems)
+
+
+----------
+
+Transient mesh brainstorming:
+How to release memory from transient mesh?
+ - Make it use non-CoreAccessor interface?
+
+
+TransientMesh
+ Upon construction we specify vertex and index format, including initial vertex/index buffer sizes
+   MeshChunk allocate(UINT32 numVertices, UINT32 numIndices)
+    - Thread safe method (custom mutex), returns a MeshChunk which contains an unique index
+    - Each allocation represents its own SubMesh - there can't be multiple sub-meshes per allocation
+   deallocate(MeshChunk chunk)
+    - I could make MeshChunk as GpuResource, so I can write to it directly
+   How do I set materials per sub-mesh?
+    - I keep a mapping MeshChunk->Material in GUIManager 
+   I will need to update Render method so it can accept MeshChunk?
+    - Or should TransientMesh derive from Mesh?
+   When calling Render I need to provide index offset/length, however since I will be
+   supporting defragmenting that can change internally at any time. It would be ideal to 
+   retrieve that data when on core thread.
+    - Maybe even rethink Mesh submeshes so that they have a unified interface?
+	- BUT: I can handle defragment on the CPU. I just need to find offsets and sizes, and actual
+	  memory copies can be done on the core thread later.
+
+Name it MeshHeap instead of TransientMesh
+ - It can derive from a common class MeshBase (which Mesh also derives from)
+ - Render can then accept MeshBase instead of Mesh
+
+
+-----------
+
+POTENTIALLY
+
+I could have normal Meshes use one big vertex/index buffer in the background.
+ - However that means Dynamic/Static tags don't mean anything
+ - writeSubresource discard is ignored
+ - It's not as clear to the user
+ - Need to implement reading as well
+ - Not sure if it would work well with a bunch of smaller allocations (Although I think we would avoid those in any case)

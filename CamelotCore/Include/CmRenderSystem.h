@@ -191,7 +191,7 @@ namespace CamelotFramework
 		 * @param	useIndices	(optional) If true, drawing is done using the index buffer on the mesh and the provided offset and size, otherwise all mesh vertices are drawn sequentially.
 		 * @param	drawOp	   	(optional) Draw operation to use when rendering.
 		 */
-		virtual void render(const MeshPtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+		virtual void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
 		 * @brief	Draw an object based on currently set

@@ -17,37 +17,34 @@ namespace CamelotFramework
 {
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
-		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType),
-		mDefaultSubMesh(0, numIndices, drawOp)
+		:MeshBase(numVertices, numIndices, drawOp), mVertexData(nullptr), mIndexData(nullptr),
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
 	{
-		mSubMeshes.reserve(10);
+
 	}
 
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
-		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(numVertices), mNumIndices(numIndices), 
+		:MeshBase(numVertices, numIndices, drawOp), mVertexData(nullptr), mIndexData(nullptr),
 		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), 
-		mTempInitialMeshData(initialMeshData), mDefaultSubMesh(0, numIndices, drawOp)
+		mTempInitialMeshData(initialMeshData)
 	{
-		mSubMeshes.reserve(10);
+
 	}
 
 	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
-		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(initialMeshData->getNumVertices()), 
-		mNumIndices(initialMeshData->getNumIndices()), mBufferType(bufferType), mIndexType(initialMeshData->getIndexType()),
-		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData),
-		mDefaultSubMesh(0, initialMeshData->getNumIndices(), drawOp)
+		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), drawOp), 
+		mVertexData(nullptr), mIndexData(nullptr), mIndexType(initialMeshData->getIndexType()),
+		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData)
 	{
-		mSubMeshes.reserve(10);
+
 	}
 
 	Mesh::Mesh()
-		:mVertexData(nullptr), mIndexData(nullptr), mNumVertices(0), mNumIndices(0), 
-		mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT),
-		mDefaultSubMesh(0, 0, DOT_TRIANGLE_LIST)
+		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mVertexData(nullptr), mIndexData(nullptr), 
+		mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT)
 	{
-		mSubMeshes.reserve(10);
+
 	}
 
 	Mesh::~Mesh()
@@ -248,79 +245,6 @@ namespace CamelotFramework
 		THROW_IF_NOT_CORE_THREAD;
 
 		return mIndexData;
-	}
-
-	void Mesh::clearSubMeshes()
-	{
-		THROW_IF_CORE_THREAD;
-
-		mSubMeshes.clear();
-	}
-
-	void Mesh::addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp)
-	{
-		if((indexOffset + indexCount) >= mNumIndices)
-		{
-			LOGWRN("Provided sub-mesh references indexes out of range. Sub-mesh range: " 
-				+ toString(indexOffset) + " .. " + toString(indexOffset + indexCount) + "." \
-				"Valid range is: 0 .. " + toString(mNumIndices) + ". Ignoring command.");
-
-			return;
-		}
-
-		mSubMeshes.push_back(SubMesh(indexOffset, indexCount, drawOp));
-	}
-
-	void Mesh::setSubMeshes(const Vector<SubMesh>::type& subMeshes)
-	{
-		THROW_IF_CORE_THREAD;
-
-		for(auto& subMesh : subMeshes)
-		{
-			if((subMesh.indexOffset + subMesh.indexCount) >= mNumIndices)
-			{
-				LOGWRN("Provided sub-mesh references indexes out of range. Sub-mesh range: " 
-					+ toString(subMesh.indexOffset) + " .. " + toString(subMesh.indexOffset + subMesh.indexCount) + "." \
-					"Valid range is: 0 .. " + toString(mNumIndices) + ". Ignoring command.");
-
-				return;
-			}
-		}
-
-		mSubMeshes = subMeshes;
-	}
-
-	const SubMesh& Mesh::getSubMesh(UINT32 subMeshIdx) const
-	{
-		THROW_IF_CORE_THREAD;
-
-		if(mSubMeshes.size() == 0 && subMeshIdx == 0)
-		{
-			return mDefaultSubMesh;
-		}
-
-		if(subMeshIdx < 0 || subMeshIdx >= mSubMeshes.size())
-		{
-			CM_EXCEPT(InvalidParametersException, "Invalid sub-mesh index (" 
-				+ toString(subMeshIdx) + "). Number of sub-meshes available: " + toString((int)mSubMeshes.size()));
-		}
-
-		return mSubMeshes[subMeshIdx];
-	}
-
-	UINT32 Mesh::getNumSubMeshes() const
-	{
-		THROW_IF_CORE_THREAD;
-
-		if(mSubMeshes.size() > 0)
-			return (UINT32)mSubMeshes.size();
-		else
-		{
-			if(mDefaultSubMesh.indexCount > 0)
-				return 1;
-			else
-				return 0;
-		}
 	}
 
 	void Mesh::initialize_internal()

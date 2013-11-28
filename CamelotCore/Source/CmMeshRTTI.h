@@ -8,29 +8,13 @@
 
 namespace CamelotFramework
 {
-	CM_ALLOW_MEMCPY_SERIALIZATION(SubMesh);
-
-	class MeshRTTI : public RTTIType<Mesh, GpuResource, MeshRTTI>
+	class MeshRTTI : public RTTIType<Mesh, MeshBase, MeshRTTI>
 	{
-		SubMesh& getSubMesh(Mesh* obj, UINT32 arrayIdx) { return obj->mSubMeshes[arrayIdx]; }
-		void setSubMesh(Mesh* obj, UINT32 arrayIdx, SubMesh& value) { obj->mSubMeshes[arrayIdx] = value; }
-		UINT32 getNumSubmeshes(Mesh* obj) { return (UINT32)obj->mSubMeshes.size(); }
-		void setNumSubmeshes(Mesh* obj, UINT32 numElements) { obj->mSubMeshes.resize(numElements); }
-
-		SubMesh& getDefaultSubMesh(Mesh* obj) { return obj->mDefaultSubMesh; }
-		void setDefaultSubMesh(Mesh* obj, SubMesh& value) { obj->mDefaultSubMesh = value; }
-
 		VertexDataDescPtr getVertexDesc(Mesh* obj) { return obj->mVertexDesc; }
 		void setVertexDesc(Mesh* obj, VertexDataDescPtr value) { obj->mVertexDesc = value; }
 
 		IndexBuffer::IndexType& getIndexType(Mesh* obj) { return obj->mIndexType; }
 		void setIndexType(Mesh* obj, IndexBuffer::IndexType& value) { obj->mIndexType = value; }
-
-		UINT32& getNumVertices(Mesh* obj) { return obj->mNumVertices; }
-		void setNumVertices(Mesh* obj, UINT32& value) { obj->mNumVertices = value; }
-
-		UINT32& getNumIndices(Mesh* obj) { return obj->mNumIndices; }
-		void setNumIndices(Mesh* obj, UINT32& value) { obj->mNumIndices = value; }
 
 		UINT32& getBufferType(Mesh* obj) { return (UINT32&)obj->mBufferType; }
 		void setBufferType(Mesh* obj, UINT32& value) { obj->mBufferType = (MeshBufferType)value; }
@@ -58,16 +42,9 @@ namespace CamelotFramework
 			addReflectablePtrField("mVertexDesc", 0, &MeshRTTI::getVertexDesc, &MeshRTTI::setVertexDesc);
 
 			addPlainField("mIndexType", 1, &MeshRTTI::getIndexType, &MeshRTTI::setIndexType);
-			addPlainField("mNumVertices", 2, &MeshRTTI::getNumVertices, &MeshRTTI::setNumVertices);
-			addPlainField("mNumIndices", 3, &MeshRTTI::getNumIndices, &MeshRTTI::setNumIndices);
-			addPlainField("mBufferType", 4, &MeshRTTI::getBufferType, &MeshRTTI::setBufferType);
+			addPlainField("mBufferType", 2, &MeshRTTI::getBufferType, &MeshRTTI::setBufferType);
 
-			addReflectablePtrField("mMeshData", 5, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
-
-			addPlainArrayField("mSubMeshes", 6, &MeshRTTI::getSubMesh, 
-				&MeshRTTI::getNumSubmeshes, &MeshRTTI::setSubMesh, &MeshRTTI::setNumSubmeshes);
-
-			addPlainField("mDefaultSubMesh", 7, &MeshRTTI::getDefaultSubMesh, &MeshRTTI::setDefaultSubMesh);
+			addReflectablePtrField("mMeshData", 3, &MeshRTTI::getMeshData, &MeshRTTI::setMeshData);
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)

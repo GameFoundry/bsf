@@ -290,6 +290,9 @@
     <ClInclude Include="Include\CmGpuResourceRTTI.h" />
     <ClInclude Include="Include\CmGpuParam.h" />
     <ClInclude Include="Include\CmInputFwd.h" />
+    <ClInclude Include="Include\CmMeshBase.h" />
+    <ClInclude Include="Include\CmMeshBaseRTTI.h" />
+    <ClInclude Include="Include\CmMeshHeap.h" />
     <ClInclude Include="Include\CmOSInputHandler.h" />
     <ClInclude Include="Include\CmPixelData.h" />
     <ClInclude Include="Include\CmPixelDataRTTI.h" />
@@ -347,6 +350,7 @@
     <ClInclude Include="Include\CmTextureView.h" />
     <ClInclude Include="Include\CmTextData.h" />
     <ClInclude Include="Include\CmTimerQuery.h" />
+    <ClInclude Include="Include\CmTransientMesh.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgramManager.h" />
@@ -452,6 +456,8 @@
     <ClCompile Include="Source\CmImportOptions.cpp" />
     <ClCompile Include="Source\CmIndexBuffer.cpp" />
     <ClCompile Include="Source\CmIndexData.cpp" />
+    <ClCompile Include="Source\CmMeshBase.cpp" />
+    <ClCompile Include="Source\CmMeshHeap.cpp" />
     <ClCompile Include="Source\CmMeshManager.cpp" />
     <ClCompile Include="Source\CmOcclusionQuery.cpp" />
     <ClCompile Include="Source\CmOSInputHandler.cpp" />
@@ -468,6 +474,7 @@
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmTextData.cpp" />
     <ClCompile Include="Source\CmTimerQuery.cpp" />
+    <ClCompile Include="Source\CmTransientMesh.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp" />

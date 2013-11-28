@@ -139,6 +139,9 @@ namespace CamelotFramework
 	class Resources;
 	class Texture;
 	class Mesh;
+	class MeshBase;
+	class TransientMesh;
+	class MeshHeap;
 	class Font;
 	class OSDropTarget;
 	// Scene
@@ -177,6 +180,9 @@ namespace CamelotFramework
 	typedef std::shared_ptr<GpuBuffer> GpuBufferPtr;
 	typedef std::shared_ptr<VertexDeclaration> VertexDeclarationPtr;
 	typedef std::shared_ptr<Mesh> MeshPtr;
+	typedef std::shared_ptr<MeshBase> MeshBasePtr;
+	typedef std::shared_ptr<MeshHeap> MeshHeapPtr;
+	typedef std::shared_ptr<TransientMesh> TransientMeshPtr;
 	typedef std::shared_ptr<Texture> TexturePtr;
 	typedef std::shared_ptr<Resource> ResourcePtr;
 	typedef std::shared_ptr<Technique> TechniquePtr;
@@ -273,7 +279,8 @@ namespace CamelotFramework
 		TID_GpuResource = 1061,
 		TID_PixelData = 1062,
 		TID_GpuResourceData = 1063,
-		TID_VertexDataDesc = 1064
+		TID_VertexDataDesc = 1064,
+		TID_MeshBase = 1065
 	};
 }
 
