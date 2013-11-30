@@ -186,15 +186,15 @@ namespace CamelotFramework
 		}
 
 		/** @copydoc RenderSystem::draw() */
-		void draw(UINT32 vertexCount)
+		void draw(UINT32 vertexOffset, UINT32 vertexCount)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::draw, RenderSystem::instancePtr(), vertexCount));
+			mCommandQueue->queue(boost::bind(&RenderSystem::draw, RenderSystem::instancePtr(), vertexOffset, vertexCount));
 		}
 
 		/** @copydoc RenderSystem::drawIndexed() */
-		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexCount));
+			mCommandQueue->queue(boost::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexOffset, vertexCount));
 		}
 
 		/**

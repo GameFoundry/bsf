@@ -545,13 +545,13 @@ namespace CamelotFramework
 			CM_EXCEPT(RenderingAPIException, "Failed to bindGpuParams : " + mDevice->getErrorDescription());
 	}
 
-	void D3D11RenderSystem::draw(UINT32 vertexCount)
+	void D3D11RenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		applyInputLayout();
 
-		mDevice->getImmediateContext()->Draw(vertexCount, 0);
+		mDevice->getImmediateContext()->Draw(vertexCount, vertexOffset);
 
 #if CM_DEBUG_MODE
 		if(mDevice->hasError())
@@ -559,13 +559,13 @@ namespace CamelotFramework
 #endif
 	}
 
-	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
+	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		applyInputLayout();
 
-		mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, 0);
+		mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, vertexOffset);
 
 #if CM_DEBUG_MODE
 		if(mDevice->hasError())

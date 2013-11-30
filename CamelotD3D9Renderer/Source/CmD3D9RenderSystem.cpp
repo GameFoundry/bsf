@@ -1270,11 +1270,11 @@ namespace CamelotFramework
 		mCurrentDrawOperation = op;
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::draw(UINT32 vertexCount)
+	void D3D9RenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		UINT32 primCount = pointCountToPrimCount(mCurrentDrawOperation, vertexCount);
 
-		HRESULT hr = getActiveD3D9Device()->DrawPrimitive(getD3D9PrimitiveType(), 0, static_cast<UINT>(primCount)); 
+		HRESULT hr = getActiveD3D9Device()->DrawPrimitive(getD3D9PrimitiveType(), static_cast<UINT>(vertexOffset), static_cast<UINT>(primCount)); 
 
 		if( FAILED( hr ) )
 		{
@@ -1283,14 +1283,14 @@ namespace CamelotFramework
 		}
 	}
 	//---------------------------------------------------------------------
-	void D3D9RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
+	void D3D9RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		UINT32 primCount = pointCountToPrimCount(mCurrentDrawOperation, indexCount);
 
 		// do indexed draw operation
 		HRESULT hr = getActiveD3D9Device()->DrawIndexedPrimitive(
 			getD3D9PrimitiveType(), 
-			0, 
+			static_cast<UINT>(vertexOffset), 
 			0, 
 			static_cast<UINT>(vertexCount), 
 			static_cast<UINT>(startIndex), 

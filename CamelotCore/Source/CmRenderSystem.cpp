@@ -260,10 +260,12 @@ namespace CamelotFramework {
 				indexCount = indexData->indexCount;
 
 			setIndexBuffer(indexData->indexBuffer);
-			drawIndexed(indexOffset, indexCount, vertexData->vertexCount);
+			drawIndexed(indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), vertexData->vertexCount);
 		}
 		else
-			draw(vertexData->vertexCount);
+			draw(mesh->getVertexOffset(), vertexData->vertexCount);
+
+		mesh->notifyUsedOnGPU();
 
 		gProfiler().endSample("render");
 	}

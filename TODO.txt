@@ -129,7 +129,7 @@ Low priority TODO
  - onMovedOrResized is still used by Viewport while that same callback is offered by RenderWindowManager. There is no need to have them in both places.
  - Texture "ScaleToFit" will cause the texture to repeat instead of clipping the image. e.g. a 50x20 texture placed on an 50x100 area will repeat 5x
  - When writing to mesh vertex buffer in Mesh::writeSubresource that requires a color flip I need to create a temporary copy of the 
-    entire buffer. It would be better to handle this differently. 
+    entire buffer. It would be better to handle this differently. Same thing happens in MeshHeap
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic

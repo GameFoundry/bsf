@@ -116,7 +116,7 @@ namespace CamelotFramework
 					if(!meshData.getVertexDesc()->hasElement(VES_COLOR, semanticIdx, i))
 						continue;
 
-					UINT8* colorData = bufferCopy + meshData.getElementOffset(VES_COLOR, semanticIdx, i);
+					UINT8* colorData = bufferCopy + mVertexDesc->getElementOffsetFromStream(VES_COLOR, semanticIdx, i);
 					for(UINT32 j = 0; j < mVertexData->vertexCount; j++)
 					{
 						UINT32* curColor = (UINT32*)colorData;

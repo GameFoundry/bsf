@@ -173,6 +173,7 @@ namespace CamelotFramework
 
 	private:
 		friend class Mesh; // To avoid polluting the public interface with a bunch of nearly useless methods for outside world
+		friend class MeshHeap;
 
 		UINT32 mDescBuilding;
 

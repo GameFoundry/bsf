@@ -141,12 +141,12 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderSystem::draw()
 		 */
-		void draw(UINT32 vertexCount);
+		void draw(UINT32 vertexOffset, UINT32 vertexCount);
 
 		/**
 		 * @copydoc RenderSystem::drawIndexed()
 		 */
-		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount);
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
 
         void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
 

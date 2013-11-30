@@ -688,18 +688,18 @@ namespace CamelotFramework
 		mBoundIndexBuffer = buffer;
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::draw(UINT32 vertexCount)
+	void GLRenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		// Find the correct type to render
 		GLint primType = getGLDrawMode();
 		beginDraw();
 
-		glDrawArrays(primType, 0, vertexCount);
+		glDrawArrays(primType, vertexOffset, vertexCount);
 
 		endDraw();
 	}
 	//---------------------------------------------------------------------
-	void GLRenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount)
+	void GLRenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		if(mBoundIndexBuffer == nullptr)
 		{
@@ -716,7 +716,7 @@ namespace CamelotFramework
 
 		GLenum indexType = (mBoundIndexBuffer->getType() == IndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
-		glDrawElements(primType, indexCount, indexType, 0);
+		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(mBoundIndexBuffer->getIndexSize() * startIndex), vertexOffset);
 
 		endDraw();
 	}

@@ -1,6 +1,7 @@
 #include "CmTransientMesh.h"
 #include "CmVertexData.h"
 #include "CmIndexData.h"
+#include "CmMeshHeap.h"
 
 namespace CamelotFramework
 {
@@ -27,30 +28,26 @@ namespace CamelotFramework
 
 	std::shared_ptr<VertexData> TransientMesh::getVertexData() const
 	{
-		// TODO - Get vertex data from parent MeshHeap
-		return nullptr;
+		return mParentHeap->getVertexData();
 	}
 
 	std::shared_ptr<IndexData> TransientMesh::getIndexData() const
 	{
-		// TODO - Get index data from parent MeshHeap
-		return nullptr;
+		return mParentHeap->getIndexData();
 	}
 
 	UINT32 TransientMesh::getVertexOffset() const
 	{
-		// TODO - Get vertex offset from parent MeshHeap
-		return 0;
+		return mParentHeap->getVertexOffset(mId);
 	}
 
 	UINT32 TransientMesh::getIndexOffset() const
 	{
-		// TODO - Get index offset from parent MeshHeap
-		return 0;
+		return mParentHeap->getIndexOffset(mId);
 	}
 
 	void TransientMesh::notifyUsedOnGPU()
 	{
-		// TODO - Refresh EventQuery
+		mParentHeap->notifyUsedOnGPU(mId);
 	}
 }

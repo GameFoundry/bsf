@@ -200,14 +200,14 @@ namespace CamelotFramework
 		 *			Draws directly from the vertex buffer without using
 		 *			indices.
 		 */
-		virtual void draw(UINT32 vertexCount) = 0;
+		virtual void draw(UINT32 vertexOffset, UINT32 vertexCount) = 0;
 
 		/**
 		 * @brief	Draw an object based on currently set
 		 * 			shaders, vertex declaration and vertex 
 		 * 			and index buffers.
 		 */
-		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexCount) = 0;
+		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) = 0;
 
 		/**
 		 * @brief	Swap the front and back buffer of the specified render target.
