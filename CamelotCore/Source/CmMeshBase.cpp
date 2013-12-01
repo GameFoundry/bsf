@@ -30,7 +30,7 @@ namespace CamelotFramework
 
 	void MeshBase::addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp)
 	{
-		if((indexOffset + indexCount) >= mNumIndices)
+		if((indexOffset + indexCount) > mNumIndices)
 		{
 			LOGWRN("Provided sub-mesh references indexes out of range. Sub-mesh range: " 
 				+ toString(indexOffset) + " .. " + toString(indexOffset + indexCount) + "." \
@@ -48,7 +48,7 @@ namespace CamelotFramework
 
 		for(auto& subMesh : subMeshes)
 		{
-			if((subMesh.indexOffset + subMesh.indexCount) >= mNumIndices)
+			if((subMesh.indexOffset + subMesh.indexCount) > mNumIndices)
 			{
 				LOGWRN("Provided sub-mesh references indexes out of range. Sub-mesh range: " 
 					+ toString(subMesh.indexOffset) + " .. " + toString(subMesh.indexOffset + subMesh.indexCount) + "." \

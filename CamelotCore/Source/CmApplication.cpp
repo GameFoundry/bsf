@@ -30,6 +30,7 @@
 #include "CmCoreThread.h"
 #include "CmStringTable.h"
 #include "CmProfiler.h"
+#include "CmQueryManager.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -105,10 +106,12 @@ namespace CamelotFramework
 
 			PROFILE_CALL(gSceneManager().update(), "SceneManager");
 
+			gCoreThread().queueCommand(boost::bind(&Application::beginCoreProfiling, this));
+			gCoreThread().queueCommand(boost::bind(&QueryManager::update, QueryManager::instancePtr()));
+
 			if(!mainLoopCallback.empty())
 				mainLoopCallback();
 
-			gCoreThread().queueCommand(boost::bind(&Application::beginCoreProfiling, this));
 			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
 
 			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 

@@ -178,8 +178,14 @@ namespace CamelotFramework
 		ChunkData& vertChunk = mVertChunks[freeVertChunkIdx];
 		ChunkData& idxChunk = mIdxChunks[freeIdxChunkIdx];
 
+		UINT32 vertChunkStart = vertChunk.start;
+		UINT32 idxChunkStart = idxChunk.start;
+
 		UINT32 remainingNumVerts = vertChunk.size - meshData->getNumVertices();
 		UINT32 remainingNumIdx = idxChunk.size - meshData->getNumIndices();
+
+		vertChunk.size = meshData->getNumVertices();
+		idxChunk.size = meshData->getNumIndices();
 
 		if(remainingNumVerts > 0)
 		{
@@ -189,14 +195,14 @@ namespace CamelotFramework
 				ChunkData& emptyChunk = mVertChunks[emptyChunkIdx];
 				mEmptyVertChunks.pop();
 
-				emptyChunk.start = vertChunk.start + meshData->getNumVertices();
+				emptyChunk.start = vertChunkStart + meshData->getNumVertices();
 				emptyChunk.size = remainingNumVerts;
 			}
 			else
 			{
 				ChunkData newChunk;
 				newChunk.size = remainingNumVerts;
-				newChunk.start = vertChunk.start + meshData->getNumVertices();
+				newChunk.start = vertChunkStart + meshData->getNumVertices();
 
 				mVertChunks.push_back(newChunk);
 				mFreeVertChunks.push_back((UINT32)(mVertChunks.size() - 1));
@@ -211,22 +217,19 @@ namespace CamelotFramework
 				ChunkData& emptyChunk = mIdxChunks[emptyChunkIdx];
 				mEmptyIdxChunks.pop();
 
-				emptyChunk.start = idxChunk.start + meshData->getNumIndices();
+				emptyChunk.start = idxChunkStart + meshData->getNumIndices();
 				emptyChunk.size = remainingNumIdx;
 			}
 			else
 			{
 				ChunkData newChunk;
 				newChunk.size = remainingNumIdx;
-				newChunk.start = idxChunk.start + meshData->getNumIndices();
+				newChunk.start = idxChunkStart + meshData->getNumIndices();
 
 				mIdxChunks.push_back(newChunk);
 				mFreeIdxChunks.push_back((UINT32)(mIdxChunks.size() - 1));
 			}
 		}
-
-		vertChunk.size = meshData->getNumVertices();
-		idxChunk.size = meshData->getNumIndices();
 
 		AllocatedData newAllocData;
 		newAllocData.vertChunkIdx = freeVertChunkIdx;
@@ -245,8 +248,8 @@ namespace CamelotFramework
 			UINT32 vertSize = mVertexData->vertexDeclaration->getVertexSize(i);
 			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
 
-			UINT8* vertDest = mCPUVertexData[i] + vertChunk.start * vertSize;
-			memcpy(vertDest, meshData->getStreamData(i), vertChunk.start * vertSize);
+			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
+			memcpy(vertDest, meshData->getStreamData(i), vertChunkStart * vertSize);
 
 			if(vertexBuffer->vertexColorReqRGBFlip())
 			{
@@ -268,15 +271,15 @@ namespace CamelotFramework
 				}
 			}
 
-			vertexBuffer->writeData(vertChunk.start * vertSize, vertChunk.size * vertSize, vertDest, BufferWriteType::NoOverwrite);
+			vertexBuffer->writeData(vertChunkStart * vertSize, meshData->getNumVertices() * vertSize, vertDest, BufferWriteType::NoOverwrite);
 		}
 
 		IndexBufferPtr indexBuffer = mIndexData->indexBuffer;
 		UINT32 idxSize = indexBuffer->getIndexSize();
 
-		UINT8* idxDest = mCPUIndexData + idxChunk.start * idxSize;
-		memcpy(idxDest, meshData->getIndexData(), idxChunk.start * idxSize);
-		indexBuffer->writeData(idxChunk.start * idxSize, idxChunk.size * idxSize, idxDest, BufferWriteType::NoOverwrite);
+		UINT8* idxDest = mCPUIndexData + idxChunkStart * idxSize;
+		memcpy(idxDest, meshData->getIndexData(), idxChunkStart * idxSize);
+		indexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
 	}
 
 	void MeshHeap::deallocInternal(UINT32 meshId)
@@ -341,7 +344,8 @@ namespace CamelotFramework
 				cm_free(oldBuffer);
 			}
 
-			vertexBuffer->writeData(0, destOffset * vertSize, buffer, BufferWriteType::NoOverwrite);
+			if(destOffset > 0)
+				vertexBuffer->writeData(0, destOffset * vertSize, buffer, BufferWriteType::NoOverwrite);
 
 			mCPUVertexData[i] = buffer;
 		}
@@ -414,7 +418,8 @@ namespace CamelotFramework
 			cm_free(oldBuffer);
 		}
 
-		mIndexData->indexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
+		if(destOffset > 0)
+			mIndexData->indexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
 
 		mCPUIndexData = buffer;
 

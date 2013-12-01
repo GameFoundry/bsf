@@ -5,18 +5,12 @@ namespace CamelotFramework
 	GLEventQuery::GLEventQuery()
 		:mQueryObj(0)
 	{
-		GLuint queries[1];
-		queries[0] = mQueryObj;
-
-		glGenQueries(1, queries);
+		glGenQueries(1, &mQueryObj);
 	}
 
 	GLEventQuery::~GLEventQuery()
 	{
-		GLuint queries[1];
-		queries[0] = mQueryObj;
-
-		glDeleteQueries(1, queries);
+		glDeleteQueries(1, &mQueryObj);
 	}
 
 	void GLEventQuery::begin()

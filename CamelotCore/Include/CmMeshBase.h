@@ -46,6 +46,9 @@ namespace CamelotFramework
 		 */
 		UINT32 getNumSubMeshes() const;
 
+		UINT32 getNumVertices() const { return mNumVertices; }
+		UINT32 getNumIndices() const { return mNumIndices; }
+
 		/**
 		 * @brief	Get vertex data used for rendering.
 		 *  

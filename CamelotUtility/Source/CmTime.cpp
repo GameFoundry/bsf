@@ -32,8 +32,6 @@ namespace CamelotFramework
 
 	UINT64 Time::getTimePrecise() const
 	{
-		// TODO Low priority - Timer internally calls high performance OS specific methods. We can go a step further and use CPU specific instructions, which would
-		// (likely) give even more precise measurements in cycles. (RDTSC instruction - although that might not be valid with todays variable CPU clocks)
 		return mTimer->getMicroseconds();
 	}
 

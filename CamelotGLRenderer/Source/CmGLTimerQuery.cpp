@@ -8,10 +8,10 @@ namespace CamelotFramework
 		mTimeDelta(0.0f), mFinalized(false)
 	{
 		GLuint queries[2];
-		queries[0] = mQueryStartObj;
-		queries[1] = mQueryEndObj;
-
 		glGenQueries(2, queries);
+
+		mQueryStartObj = queries[0];
+		mQueryEndObj = queries[1];
 	}
 
 	GLTimerQuery::~GLTimerQuery()
