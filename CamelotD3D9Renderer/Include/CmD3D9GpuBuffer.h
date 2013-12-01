@@ -29,7 +29,7 @@ namespace CamelotFramework
 		* @copydoc GenericBuffer::writeData
 		*/
         virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
-				bool discardWholeBuffer = false);
+				BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**
 		* @copydoc GenericBuffer::copyData

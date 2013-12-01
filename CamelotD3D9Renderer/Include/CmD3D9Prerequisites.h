@@ -88,11 +88,6 @@ namespace CamelotFramework
 		TID_D3D9_HLSLProgram = 10000
 	};
 
-// Should we ask D3D to manage vertex/index buffers automatically?
-// Doing so avoids lost devices, but also has a performance impact
-// which is unacceptably bad when using very large buffers
-#define CM_D3D_MANAGE_BUFFERS 1 // TODO - Keep this on or off? I'll probably want to turn it off at some point
-
     //-------------------------------------------
 	// Windows setttings
 	//-------------------------------------------

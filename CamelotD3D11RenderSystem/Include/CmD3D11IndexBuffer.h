@@ -19,8 +19,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc HardwareBuffer::writeData
 		 */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource,
-			bool discardWholeBuffer = false);
+		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**
 		 * @copydoc HardwareBuffer::copyData

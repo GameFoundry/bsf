@@ -43,8 +43,7 @@ namespace CamelotFramework {
         /** See HardwareBuffer. */
         void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
-        void writeData(UINT32 offset, UINT32 length, const void* pSource,
-				bool discardWholeBuffer = false);
+        void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 	
 		// Called immediately after the Direct3D device has been created.
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);

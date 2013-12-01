@@ -268,7 +268,7 @@ namespace CamelotFramework
 				}
 			}
 
-			vertexBuffer->writeData(vertChunk.start * vertSize, vertChunk.size * vertSize, vertDest, false);
+			vertexBuffer->writeData(vertChunk.start * vertSize, vertChunk.size * vertSize, vertDest, BufferWriteType::NoOverwrite);
 		}
 
 		IndexBufferPtr indexBuffer = mIndexData->indexBuffer;
@@ -276,7 +276,7 @@ namespace CamelotFramework
 
 		UINT8* idxDest = mCPUIndexData + idxChunk.start * idxSize;
 		memcpy(idxDest, meshData->getIndexData(), idxChunk.start * idxSize);
-		indexBuffer->writeData(idxChunk.start * idxSize, idxChunk.size * idxSize, idxDest, false);
+		indexBuffer->writeData(idxChunk.start * idxSize, idxChunk.size * idxSize, idxDest, BufferWriteType::NoOverwrite);
 	}
 
 	void MeshHeap::deallocInternal(UINT32 meshId)
@@ -341,7 +341,7 @@ namespace CamelotFramework
 				cm_free(oldBuffer);
 			}
 
-			vertexBuffer->writeData(0, destOffset * vertSize, buffer, false);
+			vertexBuffer->writeData(0, destOffset * vertSize, buffer, BufferWriteType::NoOverwrite);
 
 			mCPUVertexData[i] = buffer;
 		}
@@ -414,7 +414,7 @@ namespace CamelotFramework
 			cm_free(oldBuffer);
 		}
 
-		mIndexData->indexBuffer->writeData(0, destOffset * idxSize, buffer, false);
+		mIndexData->indexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
 
 		mCPUIndexData = buffer;
 

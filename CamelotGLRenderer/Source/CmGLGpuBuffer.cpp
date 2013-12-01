@@ -32,7 +32,7 @@ namespace CamelotFramework
 	{
 	}
 
-	void GLGpuBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, bool discardWholeBuffer)
+	void GLGpuBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags)
 	{
 	}
 

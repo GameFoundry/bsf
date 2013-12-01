@@ -119,13 +119,17 @@ namespace CamelotFramework {
     }
 	//---------------------------------------------------------------------
 	void D3D9VertexBuffer::writeData(UINT32 offset, UINT32 length, 
-		const void* pSource,
-		bool discardWholeBuffer)
+		const void* pSource, BufferWriteType writeFlags)
 	{
+		GpuLockOptions lockOption = GBL_WRITE_ONLY;
+		if(writeFlags == BufferWriteType::Discard)
+			lockOption = GBL_WRITE_ONLY_DISCARD;
+		else if(writeFlags == BufferWriteType::NoOverwrite)
+			lockOption = GBL_WRITE_ONLY_NO_OVERWRITE;
+
 		// There is no functional interface in D3D, just do via manual 
 		// lock, copy & unlock
-		void* pDst = this->lock(offset, length, 
-			discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_READ_WRITE);
+		void* pDst = this->lock(offset, length, lockOption);
 		memcpy(pDst, pSource, length);
 		this->unlock();
 	}
@@ -304,13 +308,7 @@ namespace CamelotFramework {
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		D3DPOOL eResourcePool;
-
-#if CM_D3D_MANAGE_BUFFERS
-		eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
-#else
-		eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
-#endif       		
+		D3DPOOL eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;    		
 
 		// Set the desired memory pool.
 		mBufferDesc.Pool = eResourcePool;

@@ -16,7 +16,7 @@ namespace CamelotFramework
 		virtual void unlock() = 0;
 
         virtual void readData(UINT32 offset, UINT32 length, void* pDest) = 0;
-        virtual void writeData(UINT32 offset, UINT32 length, const void* pSource, bool discardWholeBuffer = false) = 0;
+        virtual void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal) = 0;
 
 		virtual void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false) = 0;

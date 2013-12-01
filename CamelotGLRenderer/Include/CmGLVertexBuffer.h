@@ -25,8 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __GLHARDWAREVERTEXBUFFER_H__
-#define __GLHARDWAREVERTEXBUFFER_H__
+#pragma once
 
 #include "CmGLPrerequisites.h"
 #include "CmVertexBuffer.h"
@@ -42,7 +41,7 @@ namespace CamelotFramework {
         void readData(UINT32 offset, UINT32 length, void* pDest);
         /** See HardwareBuffer. */
         void writeData(UINT32 offset, UINT32 length, 
-            const void* pSource, bool discardWholeBuffer = false);
+            const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 
         GLuint getGLBufferId(void) const { return mBufferId; }
 
@@ -68,13 +67,5 @@ namespace CamelotFramework {
 
 	private:
 		GLuint mBufferId;
-		// Scratch buffer handling
-		bool mLockedToScratch;
-		UINT32 mScratchOffset;
-		UINT32 mScratchSize;
-		void* mScratchPtr;
-		bool mScratchUploadOnUnlock;
     };
-
 }
-#endif // __GLHARDWAREVERTEXBUFFER_H__

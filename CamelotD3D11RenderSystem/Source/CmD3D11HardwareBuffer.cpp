@@ -276,13 +276,17 @@ namespace CamelotFramework
 		this->unlock();
 	}
 
-	void D3D11HardwareBuffer::writeData(UINT32 offset, UINT32 length, 
-		const void* pSource, bool discardWholeBuffer)
+	void D3D11HardwareBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags)
 	{
 		if(mDesc.Usage == D3D11_USAGE_DYNAMIC || mDesc.Usage == D3D11_USAGE_STAGING)
 		{
-			void* pDst = this->lock(offset, length, 
-				discardWholeBuffer ? GBL_WRITE_ONLY_DISCARD : GBL_WRITE_ONLY);
+			GpuLockOptions lockOption = GBL_WRITE_ONLY;
+			if(writeFlags == BufferWriteType::Discard)
+				lockOption = GBL_WRITE_ONLY_DISCARD;
+			else if(writeFlags == BufferWriteType::NoOverwrite)
+				lockOption = GBL_WRITE_ONLY_NO_OVERWRITE;
+
+			void* pDst = this->lock(offset, length, lockOption);
 			memcpy(pDst, pSource, length);
 			this->unlock();
 		}

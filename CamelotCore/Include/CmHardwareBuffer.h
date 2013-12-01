@@ -150,10 +150,13 @@ namespace CamelotFramework
 		    @param length The size of the data to write to, in bytes
             @param pSource The source of the data to be written
 			@param discardWholeBuffer If true, this allows the driver to discard the entire buffer when writing,
-				such that DMA stalls can be avoided; use if you can.
+				such that stalls can be avoided. Always use when you can.
+			@param noOverwrite If true, you are guaranteeing to the driver that you will not write to any area of the
+				buffer the GPU is currently using. This will avoid stalls. Be aware that guaranteeing that
+				something isn't used on the GPU is problematic.
             */
             virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
-					bool discardWholeBuffer = false) = 0;
+					BufferWriteType writeFlags = BufferWriteType::Normal) = 0;
 
 			/** Copy data from another buffer into this one.
 			@remarks
@@ -170,7 +173,7 @@ namespace CamelotFramework
 			{
 				const void *srcData = srcBuffer.lock(
 					srcOffset, length, GBL_READ_ONLY);
-				this->writeData(dstOffset, length, srcData, discardWholeBuffer);
+				this->writeData(dstOffset, length, srcData, discardWholeBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 				srcBuffer.unlock();
 			}
 

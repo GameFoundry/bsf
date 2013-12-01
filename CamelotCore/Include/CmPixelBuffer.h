@@ -99,8 +99,7 @@ namespace CamelotFramework {
 		/// @copydoc HardwareBuffer::readData
 		virtual void readData(UINT32 offset, UINT32 length, void* pDest);
 		/// @copydoc HardwareBuffer::writeData
-		virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
-				bool discardWholeBuffer = false);
+		virtual void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 
         /// Gets the width of this buffer
         UINT32 getWidth() const { return mWidth; }

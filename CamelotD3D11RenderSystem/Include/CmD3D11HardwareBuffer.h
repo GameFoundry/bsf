@@ -27,8 +27,7 @@ namespace CamelotFramework
 		/** See HardwareBuffer. */
 		void readData(UINT32 offset, UINT32 length, void* pDest);
 		/** See HardwareBuffer. */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource,
-			bool discardWholeBuffer = false);
+		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 		/** See HardwareBuffer. We perform a hardware copy here. */
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);

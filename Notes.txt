@@ -55,6 +55,10 @@ Reminders:
   - Add a field that tracks % of resource deserialization in BinarySerializer
   - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
   - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
+  - I should consider creating two special Mesh types:
+     StreamMesh - constantly updated by CPU and read by GPU
+     ReadMesh - written by GPU and easily read by CPU
+	  - OpenGL especially has no good way of reading or streaming data. It has special STREAM and COPY buffer types which I never use.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

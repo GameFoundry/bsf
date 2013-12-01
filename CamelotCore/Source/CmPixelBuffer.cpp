@@ -85,8 +85,7 @@ namespace CamelotFramework
 				"Reading a byte range is not implemented. Use blitToMemory.");
 	}
 
-	void PixelBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource,
-			bool discardWholeBuffer)
+	void PixelBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags)
 	{
 		// TODO
 		CM_EXCEPT(NotImplementedException,

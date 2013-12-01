@@ -41,7 +41,7 @@ namespace CamelotFramework
 
 	void D3D11GpuParamBlockBuffer::writeData(const UINT8* data)
 	{
-		mBuffer->writeData(0, mSize, data, true);
+		mBuffer->writeData(0, mSize, data, BufferWriteType::Discard);
 	}
 
 	void D3D11GpuParamBlockBuffer::readData(UINT8* data) const

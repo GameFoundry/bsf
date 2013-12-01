@@ -85,7 +85,7 @@ namespace CamelotFramework
 		if((indexOffset + indicesSize) > mIndexData->indexBuffer->getSizeInBytes())
 			CM_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
 
-		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData, discardEntireBuffer);
+		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
 		// Vertices
 		for(UINT32 i = 0; i <= meshData.getVertexDesc()->getMaxStreamIdx(); i++)
@@ -127,13 +127,13 @@ namespace CamelotFramework
 					}
 				}
 
-				vertexBuffer->writeData(bufferOffset, bufferSize, bufferCopy, discardEntireBuffer);
+				vertexBuffer->writeData(bufferOffset, bufferSize, bufferCopy, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
 				cm_free(bufferCopy);
 			}
 			else
 			{
-				vertexBuffer->writeData(bufferOffset, bufferSize, srcVertBufferData, discardEntireBuffer);
+				vertexBuffer->writeData(bufferOffset, bufferSize, srcVertBufferData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 			}
 		}
 	}

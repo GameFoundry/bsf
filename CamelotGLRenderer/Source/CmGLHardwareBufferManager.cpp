@@ -110,11 +110,11 @@ namespace CamelotFramework {
         switch(usage)
         {
         case GBU_STATIC:
-            return GL_STATIC_DRAW_ARB;
+            return GL_STATIC_DRAW;
         case GBU_DYNAMIC:
-            return GL_DYNAMIC_DRAW_ARB;
+            return GL_DYNAMIC_DRAW;
         default:
-            return GL_DYNAMIC_DRAW_ARB;
+            return GL_DYNAMIC_DRAW;
         };
     }
     //---------------------------------------------------------------------
@@ -255,7 +255,7 @@ namespace CamelotFramework {
 		return mMapBufferThreshold;
 	}
 	//---------------------------------------------------------------------
-	void GLHardwareBufferManager::setGLMapBufferThreshold( const UINT32 value )
+	void GLHardwareBufferManager::setGLMapBufferThreshold(const UINT32 value)
 	{
 		mMapBufferThreshold = value;
 	}

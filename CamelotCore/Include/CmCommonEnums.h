@@ -315,6 +315,25 @@ namespace CamelotFramework {
 		GPOT_UNKNOWN = 0xffff
 	};
 
+	/**
+	 * @brief	These values represent a hint to the driver when writing
+	 * 			to a GPU buffer.
+	 * 			
+	 *			Normal - Default flag with least restrictions. Can cause a CPU-GPU sync point
+	 *			so avoid using it often (i.e. every frame) as that might limit your performance significantly.
+	 *			Discard - Tells the driver to completely discard the contents of the buffer you are writing
+	 *			to. The driver will (most likely) internally allocate another buffer with same specifications (which is fairly fast)
+	 *			and you will avoid CPU-GPU stalls. 
+	 *			NoOverwrite - Guarantees the driver that you will not be updating any part of the buffer that is currently used.
+	 *			This will also avoid CPU-GPU stalls, without requiring you to discard the entire buffer. However it is hard to
+	 *			guarantee when GPU has finished using a buffer.
+	 */
+	enum class BufferWriteType
+	{
+		Normal,
+		Discard,
+		NoOverwrite
+	};
 
 	/** Texture addressing mode for each texture coordinate. */
 	struct UVWAddressingMode

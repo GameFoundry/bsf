@@ -67,9 +67,9 @@ namespace CamelotFramework
 		mBuffer->readData(offset, length, pDest);
 	}
 
-	void D3D11GpuBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, bool discardWholeBuffer)
+	void D3D11GpuBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags)
 	{
-		mBuffer->writeData(offset, length, pSource, discardWholeBuffer);
+		mBuffer->writeData(offset, length, pSource, writeFlags);
 	}
 
 	void D3D11GpuBuffer::copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 

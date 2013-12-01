@@ -311,11 +311,7 @@ namespace CamelotFramework
         DWORD ret = 0;
         if (usage & GBU_DYNAMIC)
         {
-#if CM_D3D_MANAGE_BUFFERS
-            // Not allowed to used dynamic on managed pool
-#else
             ret |= D3DUSAGE_DYNAMIC;
-#endif
         }
 
         return ret;
@@ -326,14 +322,9 @@ namespace CamelotFramework
         DWORD ret = 0;
         if (options == GBL_WRITE_ONLY_DISCARD)
         {
-#if CM_D3D_MANAGE_BUFFERS
-			// Cannot use discard with a non-dynamic buffer, and we know buffer is not dynamic
-			// since we are using managed buffers (which don't support dynamic buffers)
-#else
             // D3D doesn't like discard or no_overwrite on non-dynamic buffers
             if (usage & GBU_DYNAMIC)
                 ret |= D3DLOCK_DISCARD;
-#endif
         }
         
 		if (options == GBL_READ_ONLY)
@@ -343,14 +334,9 @@ namespace CamelotFramework
 
         if (options == GBL_WRITE_ONLY_NO_OVERWRITE)
         {
-#if CM_D3D_MANAGE_BUFFERS
-			// Cannot use no overwrite with a non-dynamic buffer, and we know buffer is not dynamic
-			// since we are using managed buffers (which don't support dynamic buffers)
-#else
             // D3D doesn't like discard or no_overwrite on non-dynamic buffers
             if (usage & GBU_DYNAMIC)
                 ret |= D3DLOCK_NOOVERWRITE;
-#endif 
         }
 
         return ret;
