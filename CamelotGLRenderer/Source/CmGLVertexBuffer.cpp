@@ -75,7 +75,7 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Vertex Buffer: Out of memory");
 		}
 
-		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(pBuffer) + offset);
+		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(pBuffer));
 
 		mIsLocked = true;
 		return retPtr;

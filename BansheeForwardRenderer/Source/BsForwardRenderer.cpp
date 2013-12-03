@@ -185,7 +185,7 @@ namespace BansheeEngine
 			gProfiler().beginSample("renderG");
 
 			const RenderOperation& renderOp = *iter->baseOperation;
-			HMaterial material = renderOp.material;
+			MaterialPtr material = renderOp.material;
 
 			PassPtr pass = material->getPass(iter->passIdx);
 			pass->activate(coreAccessor);
@@ -200,7 +200,7 @@ namespace BansheeEngine
 			gProfiler().beginSample("renderI");
 
 			const SubMesh& subMesh = renderOp.mesh->getSubMesh(renderOp.submeshIdx);
-			coreAccessor.render(renderOp.mesh.getInternalPtr(), subMesh.indexOffset, subMesh.indexCount, true, subMesh.drawOp);
+			coreAccessor.render(renderOp.mesh, subMesh.indexOffset, subMesh.indexCount, true, subMesh.drawOp);
 
 			gProfiler().endSample("renderI");
 		}

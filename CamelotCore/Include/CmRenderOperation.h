@@ -11,8 +11,8 @@ namespace CamelotFramework
 		RenderOperation()
 		{ }
 
-		HMaterial material;
-		HMesh mesh;
+		MaterialPtr material;
+		MeshBasePtr mesh;
 		UINT32 submeshIdx;
 		Vector3 worldPosition;
 	};

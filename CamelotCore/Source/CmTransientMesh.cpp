@@ -5,15 +5,19 @@
 
 namespace CamelotFramework
 {
-	TransientMesh::TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numIndices, UINT32 numVertices, DrawOperationType drawOp)
-		:MeshBase(numVertices, numIndices, drawOp), mParentHeap(parentHeap), mId(id)
+	TransientMesh::TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
+		:MeshBase(numVertices, numIndices, drawOp), mParentHeap(parentHeap), mId(id), mIsDestroyed(false)
 	{
 
 	}
 
 	TransientMesh::~TransientMesh()
 	{
-
+		if(!mIsDestroyed)
+		{
+			TransientMeshPtr meshPtr = std::static_pointer_cast<TransientMesh>(getThisPtr());
+			mParentHeap->dealloc(meshPtr);
+		}
 	}
 
 	void TransientMesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)

@@ -715,7 +715,6 @@ namespace CamelotFramework
 			static_cast<GLIndexBuffer*>(mBoundIndexBuffer.get())->getGLBufferId());
 
 		GLenum indexType = (mBoundIndexBuffer->getType() == IndexBuffer::IT_16BIT) ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
-
 		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(mBoundIndexBuffer->getIndexSize() * startIndex), vertexOffset);
 
 		endDraw();

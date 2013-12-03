@@ -14,7 +14,7 @@ namespace CamelotFramework
 		mSortedRenderOps.clear();
 	}
 
-	void RenderQueue::add(const HMaterial& material, const HMesh& mesh, UINT32 submeshIdx, const Vector3& worldPosForSort)
+	void RenderQueue::add(const MaterialPtr& material, const MeshBasePtr& mesh, UINT32 submeshIdx, const Vector3& worldPosForSort)
 	{
 		// TODO - Make sure RenderOperations are cached so we dont allocate memory for them every frame
 		mRenderOperations.push_back(RenderOperation());

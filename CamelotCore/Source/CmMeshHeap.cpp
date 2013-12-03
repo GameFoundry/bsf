@@ -54,6 +54,12 @@ namespace CamelotFramework
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		for(auto& cpuVertBuffer : mCPUVertexData)
+			cm_free(cpuVertBuffer);
+
+		if(mCPUIndexData != nullptr)
+			cm_free(mCPUIndexData);
+
 		CoreObject::destroy_internal();
 	}
 
@@ -81,6 +87,7 @@ namespace CamelotFramework
 		if(iterFind == mMeshes.end())
 			return;
 
+		mesh->markAsDestroyed();
 		mMeshes.erase(iterFind);
 
 		queueGpuCommand(getThisPtr(), boost::bind(&MeshHeap::deallocInternal, this, mesh->mId));
@@ -249,7 +256,7 @@ namespace CamelotFramework
 			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
 
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
-			memcpy(vertDest, meshData->getStreamData(i), vertChunkStart * vertSize);
+			memcpy(vertDest, meshData->getStreamData(i), meshData->getNumVertices() * vertSize);
 
 			if(vertexBuffer->vertexColorReqRGBFlip())
 			{
@@ -278,7 +285,7 @@ namespace CamelotFramework
 		UINT32 idxSize = indexBuffer->getIndexSize();
 
 		UINT8* idxDest = mCPUIndexData + idxChunkStart * idxSize;
-		memcpy(idxDest, meshData->getIndexData(), idxChunkStart * idxSize);
+		memcpy(idxDest, meshData->getIndexData(), meshData->getNumIndices() * idxSize);
 		indexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
 	}
 
@@ -483,6 +490,7 @@ namespace CamelotFramework
 
 	void MeshHeap::freeEventQuery(UINT32 idx)
 	{
+		mEventQueries[idx].query->onTriggered.disconnect_all_slots();
 		mEventQueries[idx].queryId = 0;
 		mFreeEventQueries.push(idx);
 	}
@@ -573,16 +581,17 @@ namespace CamelotFramework
 				continue;
 
 			ChunkData& curChunk = mVertChunks[freeChunkIdx];
-			bool merged = false;
+			if(curChunk.size == 0) // Already merged
+				continue;
 
+			bool merged = false;
 			if(curChunk.start == (vertChunk.start + vertChunk.size))
 			{
 				vertChunk.size += curChunk.size;
 
 				merged = true;
 			}
-			
-			if((curChunk.start + curChunk.size) == vertChunk.start)
+			else if((curChunk.start + curChunk.size) == vertChunk.start)
 			{
 				vertChunk.start = curChunk.start;
 				vertChunk.size += curChunk.size;
@@ -608,16 +617,17 @@ namespace CamelotFramework
 				continue;
 
 			ChunkData& curChunk = mIdxChunks[freeChunkIdx];
-			bool merged = false;
+			if(curChunk.size == 0) // Already merged
+				continue;
 
+			bool merged = false;
 			if(curChunk.start == (idxChunk.start + idxChunk.size))
 			{
 				idxChunk.size += curChunk.size;
 
 				merged = true;
 			}
-
-			if((curChunk.start + curChunk.size) == idxChunk.start)
+			else if((curChunk.start + curChunk.size) == idxChunk.start)
 			{
 				idxChunk.start = curChunk.start;
 				idxChunk.size += curChunk.size;

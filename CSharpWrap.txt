@@ -46,6 +46,39 @@ Systems:
  - Input
  - Time
 
+ -----------------
+
+ But which ones will I need initially?
+  - [EditorApplication] - Entry point. Creates a MainEditorWindow
+  - [EditorWindow] (Scene, Project, Hierarchy, etc.)
+   - show()/hide()
+  - [MainEditorWindow]
+   - Slight variation of EditorWindow as there can be only one of them
+   - Contains [TitleBar], [DockManager]
+  - When adding GUI elements I need to make it easy to add game GUI elements,
+    but also make a distinction and make it possible to add editor GUI elements.
+	- Each EditorWindow contains a [GUIWidget] (created by default)
+	  - This GUIWIdget is created specially with EditorWindow as its target
+	- GUIWidget is also a Component which can be used for rendering to Game view
+	  - All game GUIWidgets are created with Game render target as their target
+  - [GameObject], [Component]
+    - Need something to add GUIWidget to
+  - I need to have [Application] running within EditorApplication
+    - So when I remove EditorApplication everything runs as normal
+	- How to make the distinction?
+	  - Application needs to render to RenderTarget when in editor, and have its own window when standalone
+	   - When in Editor, EditorApplication will call application and tell it to create a render target
+	   - When published I will have a Game class, which will also call Application and run it in a window
+	  - Certain components should only exists in editor (Like Scene camera, gizmos and etc.)
+	   - Add a flag to GameObjects like in Unity, that can hide the object in Hierarchy, or make it not save
+	   - Editor objects would be hidden and would not save with the level, which would make publishing work
+  - GUIWidget
+    - [GUILayoutX], [GUILayoutY], [GUIArea], [GUISpace], [GUIFlexibleSpace]
+	- [GUIElement]
+	  - [GUILabel], [GUIButton], etc.
+	- TODO: GUISkin? - Will I need to create interface for textures and resource loading/importing as well? Probably
+  
+
 
  -----------------
 

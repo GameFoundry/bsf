@@ -51,7 +51,10 @@ namespace CamelotFramework
 		TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numIndices, 
 			UINT32 numVertices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
+		void markAsDestroyed() { mIsDestroyed = true; }
+
 	protected:
+		bool mIsDestroyed;
 		MeshHeapPtr mParentHeap;
 		UINT32 mId;
 	};

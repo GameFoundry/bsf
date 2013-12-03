@@ -19,7 +19,7 @@ namespace CamelotFramework
 	public:
 		RenderQueue();
 
-		void add(const HMaterial& material, const HMesh& mesh, UINT32 submeshIdx, const Vector3& worldPosForSort);
+		void add(const MaterialPtr& material, const MeshBasePtr& mesh, UINT32 submeshIdx, const Vector3& worldPosForSort);
 		void clear();
 		
 		virtual void sort() = 0;

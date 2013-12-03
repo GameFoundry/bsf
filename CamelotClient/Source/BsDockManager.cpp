@@ -247,7 +247,7 @@ namespace BansheeEditor
 
 		mDropOverlayMat->setColor("highlightActive", highlightColor);
 
-		renderQueue.add(mDropOverlayMat, mDropOverlayMesh, 0, Vector3::ZERO);
+		renderQueue.add(mDropOverlayMat.getInternalPtr(), mDropOverlayMesh.getInternalPtr(), 0, Vector3::ZERO);
 	}
 
 	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location)

@@ -29,6 +29,8 @@
 #include "BsGUIDropDownBoxManager.h"
 #include "BsGUIContextMenu.h"
 #include "CmProfiler.h"
+#include "CmMeshHeap.h"
+#include "CmTransientMesh.h"
 
 using namespace CamelotFramework;
 namespace BansheeEngine
@@ -56,7 +58,8 @@ namespace BansheeEngine
 	};
 
 	const UINT32 GUIManager::DRAG_DISTANCE = 3;
-	const UINT32 GUIManager::MESH_BUFFER_SIZE_INCREMENT = 500;
+	const UINT32 GUIManager::MESH_HEAP_INITIAL_NUM_VERTS = 16384;
+	const UINT32 GUIManager::MESH_HEAP_INITIAL_NUM_INDICES = 49152;
 
 	GUIManager::GUIManager()
 		:mElementUnderCursor(nullptr), mWidgetUnderCursor(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
@@ -87,6 +90,8 @@ namespace BansheeEngine
 		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
+
+		mMeshHeap = MeshHeap::create(MESH_HEAP_INITIAL_NUM_VERTS, MESH_HEAP_INITIAL_NUM_INDICES, mVertexDesc);
 
 		// Need to defer this call because I want to make sure all managers are initialized first
 		deferredCall(std::bind(&GUIManager::updateCaretTexture, this));
@@ -173,7 +178,9 @@ namespace BansheeEngine
 			renderData.widgets.erase(findIter2);
 
 		if(renderData.widgets.size() == 0)
+		{
 			mCachedGUIData.erase(renderTarget);
+		}
 		else
 			renderData.isDirty = true;
 	}
@@ -259,7 +266,7 @@ namespace BansheeEngine
 					continue;
 				}
 
-				if(mesh == nullptr || !mesh.isLoaded())
+				if(mesh == nullptr)
 				{
 					meshIdx++;
 					continue;
@@ -269,7 +276,7 @@ namespace BansheeEngine
 				materialInfo.invViewportHeight.set(invViewportHeight);
 				materialInfo.worldTransform.set(widget->SO()->getWorldTfrm());
 
-				renderQueue.add(materialInfo.material, mesh, 0, Vector3::ZERO);
+				renderQueue.add(materialInfo.material.getInternalPtr(), mesh, 0, Vector3::ZERO);
 
 				meshIdx++;
 			}
@@ -457,10 +464,10 @@ namespace BansheeEngine
 
 			UINT32 numMeshes = (UINT32)sortedGroups.size();
 			UINT32 oldNumMeshes = (UINT32)renderData.cachedMeshes.size();
+
 			if(numMeshes < oldNumMeshes)
 			{
 				renderData.cachedMeshes.resize(numMeshes);
-				renderData.meshBufferSizes.resize(numMeshes);
 			}
 
 			renderData.cachedMaterials.resize(numMeshes);
@@ -509,32 +516,14 @@ namespace BansheeEngine
 					quadOffset += numQuads;
 				}
 
-				// Create new mesh if needed
-				if(groupIdx >= (UINT32)renderData.cachedMeshes.size())
+				if(groupIdx < (UINT32)renderData.cachedMeshes.size())
 				{
-					UINT32 bufferNumQuads = group->numQuads + MESH_BUFFER_SIZE_INCREMENT;
-
-					renderData.cachedMeshes.push_back(Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, meshData, MeshBufferType::Dynamic));
-					renderData.meshBufferSizes.push_back(bufferNumQuads);
-
-					renderData.cachedMeshes.back()->clearSubMeshes();
-					renderData.cachedMeshes.back()->addSubMesh(0, group->numQuads * 6);
+					mMeshHeap->dealloc(renderData.cachedMeshes[groupIdx]);
+					renderData.cachedMeshes[groupIdx] = mMeshHeap->alloc(meshData);
 				}
 				else
 				{
-					// Increase mesh size if it doesn't fit
-					if(renderData.meshBufferSizes[groupIdx] < group->numQuads)
-					{
-						UINT32 bufferNumQuads = group->numQuads + MESH_BUFFER_SIZE_INCREMENT;
-
-						renderData.cachedMeshes[groupIdx] = Mesh::create(bufferNumQuads * 4, bufferNumQuads * 6, mVertexDesc, MeshBufferType::Dynamic);
-						renderData.meshBufferSizes[groupIdx] = bufferNumQuads;
-					}
-
-					gMainCA().writeSubresource(renderData.cachedMeshes[groupIdx].getInternalPtr(), 0, meshData, true);
-
-					renderData.cachedMeshes[groupIdx]->clearSubMeshes();
-					renderData.cachedMeshes[groupIdx]->addSubMesh(0, group->numQuads * 6);
+					renderData.cachedMeshes.push_back(mMeshHeap->alloc(meshData));
 				}
 
 				groupIdx++;

@@ -30,8 +30,7 @@ namespace BansheeEngine
 				:isDirty(true)
 			{ }
 
-			CM::Vector<CM::HMesh>::type cachedMeshes;
-			CM::Vector<CM::UINT32>::type meshBufferSizes;
+			CM::Vector<CM::TransientMeshPtr>::type cachedMeshes;
 			CM::Vector<GUIMaterialInfo>::type cachedMaterials;
 			CM::Vector<GUIWidget*>::type cachedWidgetsPerMesh;
 			CM::Vector<GUIWidget*>::type widgets;
@@ -118,10 +117,13 @@ namespace BansheeEngine
 		};
 
 		static const CM::UINT32 DRAG_DISTANCE;
-		static const CM::UINT32 MESH_BUFFER_SIZE_INCREMENT;
+
+		static const CM::UINT32 MESH_HEAP_INITIAL_NUM_VERTS;
+		static const CM::UINT32 MESH_HEAP_INITIAL_NUM_INDICES;
 
 		CM::Vector<WidgetInfo>::type mWidgets;
 		CM::UnorderedMap<const CM::Viewport*, GUIRenderData>::type mCachedGUIData;
+		CM::MeshHeapPtr mMeshHeap;
 
 		CM::VertexDataDescPtr mVertexDesc;
 

@@ -69,7 +69,6 @@ namespace CamelotFramework
         UINT32 length, GpuLockOptions options)
     {
         GLenum access = 0;
-
         if(mIsLocked)
         {
             CM_EXCEPT(InternalErrorException, 
@@ -99,7 +98,7 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Index Buffer: Out of memory");
 		}
 
-		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(pBuffer) + offset);
+		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(pBuffer));
 
 		mIsLocked = true;
 		return retPtr;
@@ -107,9 +106,9 @@ namespace CamelotFramework
 
 	void GLIndexBuffer::unlockImpl(void)
     {
-		glBindBuffer(GL_ARRAY_BUFFER, mBufferId);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBufferId);
 
-		if(!glUnmapBuffer(GL_ARRAY_BUFFER))
+		if(!glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER))
 		{
 			CM_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
 		}
