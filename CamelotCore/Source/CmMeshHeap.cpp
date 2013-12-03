@@ -252,7 +252,18 @@ namespace CamelotFramework
 			if(!mVertexDesc->hasStream(i))
 				continue;
 
+			if(!meshData->getVertexDesc()->hasStream(i))
+				continue;
+
+			// Ensure vertex sizes match
 			UINT32 vertSize = mVertexData->vertexDeclaration->getVertexSize(i);
+			UINT32 otherVertSize = meshData->getVertexDesc()->getVertexStride(i);
+			if(otherVertSize != vertSize)
+			{
+				CM_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " + 
+					toString(vertSize) + ". Got: " + toString(otherVertSize));
+			}
+
 			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
 
 			UINT8* vertDest = mCPUVertexData[i] + vertChunkStart * vertSize;
@@ -283,6 +294,13 @@ namespace CamelotFramework
 
 		IndexBufferPtr indexBuffer = mIndexData->indexBuffer;
 		UINT32 idxSize = indexBuffer->getIndexSize();
+
+		// Ensure index sizes match
+		if(meshData->getIndexElementSize() != idxSize)
+		{
+			CM_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
+				toString(idxSize) + ". Got: " + toString(meshData->getIndexElementSize()));
+		}
 
 		UINT8* idxDest = mCPUIndexData + idxChunkStart * idxSize;
 		memcpy(idxDest, meshData->getIndexData(), meshData->getNumIndices() * idxSize);

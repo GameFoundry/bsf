@@ -82,19 +82,34 @@ namespace CamelotFramework
 		UINT32 indicesSize = meshData.getIndexBufferSize();
 		UINT8* srcIdxData = meshData.getIndexData(); 
 
+		if(meshData.getIndexElementSize() != mIndexData->indexBuffer->getIndexSize())
+		{
+			CM_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
+				toString(mIndexData->indexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+		}
+
 		if((indexOffset + indicesSize) > mIndexData->indexBuffer->getSizeInBytes())
 			CM_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
 
 		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
 		// Vertices
-		for(UINT32 i = 0; i <= meshData.getVertexDesc()->getMaxStreamIdx(); i++)
+		for(UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
 		{
+			if(!mVertexDesc->hasStream(i))
+				continue;
+
 			if(!meshData.getVertexDesc()->hasStream(i))
 				continue;
 
-			if(i >= mVertexData->getBufferCount())
-				CM_EXCEPT(InvalidParametersException, "Attempting to write to a vertex stream that doesn't exist on this mesh.");
+			// Ensure both have the same sized vertices
+			UINT32 myVertSize = mVertexDesc->getVertexStride(i);
+			UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(i);
+			if(myVertSize != otherVertSize)
+			{
+				CM_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " + 
+					toString(myVertSize) + ". Got: " + toString(otherVertSize));
+			}
 
 			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
 
@@ -153,6 +168,12 @@ namespace CamelotFramework
 
 		if(mIndexData)
 		{
+			if(meshData.getIndexElementSize() != mIndexData->indexBuffer->getIndexSize())
+			{
+				CM_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
+					toString(mIndexData->indexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+			}
+
 			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
 			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
 			UINT32 indexResourceOffset = meshData.getResourceIndexOffset();
@@ -184,21 +205,30 @@ namespace CamelotFramework
 			UINT32 streamIdx = 0;
 			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
 			{
-				if(streamIdx > meshData.getVertexDesc()->getMaxStreamIdx())
+				if(!meshData.getVertexDesc()->hasStream(streamIdx))
 					continue;
 
-				UINT32 vertexResourceOffset = meshData.getResourceVertexOffset();
+				// Ensure both have the same sized vertices
+				UINT32 myVertSize = mVertexDesc->getVertexStride(streamIdx);
+				UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(streamIdx);
+				if(myVertSize != otherVertSize)
+				{
+					CM_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " + 
+						toString(myVertSize) + ". Got: " + toString(otherVertSize));
+				}
 
-				UINT32 remainingNumVertices = (UINT32)std::max(0, (INT32)(mNumVertices - vertexResourceOffset));
-				UINT32 numVerticesToCopy = std::min(remainingNumVertices, meshData.getNumVertices());
+				UINT32 vertexResourceOffset = meshData.getResourceVertexOffset();
+				UINT32 bufferOffset = vertexResourceOffset * meshData.getVertexDesc()->getVertexStride(streamIdx);
+
+				UINT32 numVerticesToCopy = meshData.getNumVertices();
 
 				VertexBufferPtr vertexBuffer = iter->second;
 				UINT32 bufferSize = vertexBuffer->getVertexSize() * numVerticesToCopy;
 				
-				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY)) + vertexResourceOffset * meshData.getVertexDesc()->getVertexStride(streamIdx);
+				if((bufferOffset + bufferSize) > vertexBuffer->getSizeInBytes())
+					CM_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
 
-				if(bufferSize > meshData.getStreamSize(streamIdx))
-					CM_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh vertices.");
+				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY)) + vertexResourceOffset * meshData.getVertexDesc()->getVertexStride(streamIdx);
 
 				UINT8* dest = meshData.getStreamData(streamIdx);
 				memcpy(dest, vertDataPtr, bufferSize);
