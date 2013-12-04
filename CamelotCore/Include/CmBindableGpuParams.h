@@ -19,6 +19,7 @@ namespace CamelotFramework
 	class CM_EXPORT BindableGpuParams
 	{
 	public:
+		BindableGpuParams(const GpuParamsPtr& sourceParams, FrameAlloc* allocator);
 		BindableGpuParams(const BindableGpuParams& source);
 		~BindableGpuParams();
 
@@ -35,11 +36,6 @@ namespace CamelotFramework
 		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
 
 	private:
-		friend class GpuParams;
-
-		BindableGpuParams(const GpuParamDesc& sourceParamDesc);
-
-	private:
 		mutable bool mOwnsData;
 		const GpuParamDesc& mParamDesc;
 		UINT8* mData;
@@ -48,6 +44,7 @@ namespace CamelotFramework
 		UINT32 mNumTextures;
 		UINT32 mNumSamplerStates;
 
+		FrameAlloc* mAllocator;
 		BindableGpuParamBlock** mParamBlocks;
 		GpuParamBlockBufferPtr* mParamBlockBuffers;
 		HTexture* mTextures;

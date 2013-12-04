@@ -166,27 +166,27 @@ namespace CamelotFramework
 	{
 		HGpuProgram vertProgram = getVertexProgram();
 		if(vertProgram)
-			coreAccessor.bindGpuParams(GPT_VERTEX_PROGRAM, GpuParams::createBindableCopy(params->mVertParams));
+			coreAccessor.bindGpuParams(GPT_VERTEX_PROGRAM, params->mVertParams);
 
 		HGpuProgram fragProgram = getFragmentProgram();
 		if(fragProgram)
-			coreAccessor.bindGpuParams(GPT_FRAGMENT_PROGRAM, GpuParams::createBindableCopy(params->mFragParams));
+			coreAccessor.bindGpuParams(GPT_FRAGMENT_PROGRAM, params->mFragParams);
 
 		HGpuProgram geomProgram = getGeometryProgram();
 		if(geomProgram)
-			coreAccessor.bindGpuParams(GPT_GEOMETRY_PROGRAM, GpuParams::createBindableCopy(params->mGeomParams));
+			coreAccessor.bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
 
 		HGpuProgram hullProgram = getHullProgram();
 		if(hullProgram)
-			coreAccessor.bindGpuParams(GPT_HULL_PROGRAM, GpuParams::createBindableCopy(params->mHullParams));
+			coreAccessor.bindGpuParams(GPT_HULL_PROGRAM, params->mHullParams);
 
 		HGpuProgram domainProgram = getDomainProgram();
 		if(domainProgram)
-			coreAccessor.bindGpuParams(GPT_DOMAIN_PROGRAM, GpuParams::createBindableCopy(params->mDomainParams));
+			coreAccessor.bindGpuParams(GPT_DOMAIN_PROGRAM, params->mDomainParams);
 
 		HGpuProgram computeProgram = getComputeProgram();
 		if(computeProgram)
-			coreAccessor.bindGpuParams(GPT_COMPUTE_PROGRAM, GpuParams::createBindableCopy(params->mComputeParams));
+			coreAccessor.bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
 	}
 	//----------------------------------------------------------------------
 	RTTITypeBase* Pass::getRTTIStatic()

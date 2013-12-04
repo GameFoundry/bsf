@@ -98,13 +98,9 @@ namespace CamelotFramework
 		void getTextureParam(const String& name, GpuParamTexture& output) const;
 		void getSamplerStateParam(const String& name, GpuParamSampState& output) const;
 
-		/**
-		 * @brief	Creates the copy of this object in a special way. Should only be called
-		 * 			internally by core thread accessor when passing gpu params to the core thread.
-		 */
-		static BindableGpuParams createBindableCopy(const GpuParamsPtr& params);
-
 	private:
+		friend class BindableGpuParams;
+
 		GpuParamDesc& mParamDesc;
 		bool mTransposeMatrices;
 

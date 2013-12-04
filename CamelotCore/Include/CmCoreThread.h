@@ -60,6 +60,21 @@ public:
 		*/
 	void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false);
 
+	/**
+	 * @brief	Called once every frame.
+	 * 			
+	 * @note	Must be called before sim thread schedules any CoreThread operations that frame. 
+	 */
+	void update();
+
+	/**
+	 * @brief	Returns a frame allocator that should be used for allocating temporary data being passed to the
+	 * 			core thread. As the name implies the data only lasts one frame, so you need to be careful not
+	 * 			to use it for longer than that.
+	 * 			
+	 * @note	Sim thread only.
+	 */
+	FrameAlloc* getFrameAlloc() const;
 private:
 	class CoreThreadWorkerFunc CM_THREAD_WORKER_INHERIT
 	{
@@ -71,6 +86,11 @@ private:
 	private:
 		CoreThread* mOwner;
 	};
+
+	// Double buffered frame allocators - Means sim thread cannot be more than 1 frame ahead of core thread
+	// (If that changes you should be able to easily add more)
+	FrameAlloc* mFrameAllocs[2]; 
+	UINT32 mActiveFrameAlloc;
 
 	CoreThreadWorkerFunc* mCoreThreadFunc;
 	volatile bool mCoreThreadStarted;

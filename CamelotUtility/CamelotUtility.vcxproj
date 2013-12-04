@@ -247,6 +247,7 @@
     <ClCompile Include="Source\CmAsyncOp.cpp" />
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
     <ClCompile Include="Source\CmBox.cpp" />
+    <ClCompile Include="Source\CmFrameAlloc.cpp" />
     <ClCompile Include="Source\CmFRect.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
@@ -269,6 +270,7 @@
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmFileSerializer.h" />
     <ClInclude Include="Include\CmFileSystem.h" />
+    <ClInclude Include="Include\CmFrameAlloc.h" />
     <ClInclude Include="Include\CmFRect.h" />
     <ClInclude Include="Include\CmHString.h" />
     <ClInclude Include="Include\CmInt2.h" />

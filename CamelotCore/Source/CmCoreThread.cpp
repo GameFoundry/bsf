@@ -10,7 +10,11 @@ namespace CamelotFramework
 		, mCommandQueue(nullptr)
 		, mMaxCommandNotifyId(0)
 		, mSyncedCoreAccessor(nullptr)
+		, mActiveFrameAlloc(0)
 	{
+		mFrameAllocs[0] = cm_new<FrameAlloc>();
+		mFrameAllocs[1] = cm_new<FrameAlloc>();
+
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
 		mCommandQueue = cm_new<CommandQueue<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
 
@@ -27,6 +31,9 @@ namespace CamelotFramework
 			cm_delete(mCommandQueue);
 			mCommandQueue = nullptr;
 		}
+
+		cm_delete(mFrameAllocs[0]);
+		cm_delete(mFrameAllocs[1]);
 	}
 
 	void CoreThread::initCoreThread()
@@ -189,6 +196,17 @@ namespace CamelotFramework
 
 		if(blockUntilComplete)
 			blockUntilCommandCompleted(commandId);
+	}
+
+	void CoreThread::update()
+	{
+		mActiveFrameAlloc = (mActiveFrameAlloc + 1) % 2;
+		mFrameAllocs[mActiveFrameAlloc]->clear();
+	}
+
+	FrameAlloc* CoreThread::getFrameAlloc() const
+	{
+		return mFrameAllocs[mActiveFrameAlloc];
 	}
 
 	void CoreThread::blockUntilCommandCompleted(UINT32 commandId)

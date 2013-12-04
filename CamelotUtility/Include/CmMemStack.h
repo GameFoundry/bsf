@@ -2,6 +2,7 @@
 
 #include <stack>
 #include <assert.h>
+#include "CmStdHeaders.h"
 #include "CmThreadDefines.h"
 
 namespace CamelotFramework

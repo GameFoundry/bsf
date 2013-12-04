@@ -98,7 +98,8 @@ namespace CamelotFramework
 		while(mRunMainLoop)
 		{
 			gProfiler().beginThread("Sim");
-			
+
+			gCoreThread().update();
 			Platform::update();
 			DeferredCallManager::instance().update();
 			RenderWindowManager::instance().update();

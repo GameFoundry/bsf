@@ -9,6 +9,7 @@
 #include "CmCoreThread.h"
 #include "CmAsyncOp.h"
 #include "CmColor.h"
+#include "CmFrameAlloc.h"
 
 namespace CamelotFramework
 {
@@ -41,9 +42,6 @@ namespace CamelotFramework
 		{
 			mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnit, RenderSystem::instancePtr(), gptype, texUnit));
 		}
-
-		/** @copydoc RenderSystem::setPointParameters() */
-		void setPointParameters(float size, bool attenuationEnabled, float constant, float linear, float quadratic, float minSize, float maxSize);
 
 		/** @copydoc RenderSystem::setTexture() */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
@@ -87,7 +85,6 @@ namespace CamelotFramework
 			mCommandQueue->queue(boost::bind(&RenderSystem::setDrawOperation, RenderSystem::instancePtr(), op));
 		}
 
-
 		/** @copydoc RenderSystem::setClipPlanes() */
 		void setClipPlanes(const PlaneList& clipPlanes)
 		{
@@ -118,7 +115,6 @@ namespace CamelotFramework
 			mCommandQueue->queue(boost::bind(&RenderSystem::setScissorRect, RenderSystem::instancePtr(), left, top, right, bottom));
 		}
 
-
 		/** @copydoc RenderSystem::setRenderTarget() */
 		void setRenderTarget(RenderTargetPtr target)
 		{
@@ -138,20 +134,19 @@ namespace CamelotFramework
 		}
 
 		/** @copydoc RenderSystem::bindGpuParams() */
-		void bindGpuParams(GpuProgramType gptype, BindableGpuParams& params)
+		void bindGpuParams(GpuProgramType gptype, const GpuParamsPtr& params)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuParams, RenderSystem::instancePtr(), gptype, params));
+			mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuParams, RenderSystem::instancePtr(), gptype, BindableGpuParams(params, gCoreThread().getFrameAlloc())));
 		}
 
-
 		/** @copydoc RenderSystem::beginFrame() */
-		void beginFrame(void)
+		void beginRender(void)
 		{
 			mCommandQueue->queue(boost::bind(&RenderSystem::beginFrame, RenderSystem::instancePtr()));
 		}
 
 		/** @copydoc RenderSystem::endFrame() */
-		void endFrame(void)
+		void endRender(void)
 		{
 			mCommandQueue->queue(boost::bind(&RenderSystem::endFrame, RenderSystem::instancePtr()));
 		}
@@ -177,7 +172,6 @@ namespace CamelotFramework
 		{
 			mCommandQueue->queue(boost::bind(&RenderSystem::swapBuffers, RenderSystem::instancePtr(), target));
 		}
-
 
 		/** @copydoc RenderSystem::render() */
 		void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST)
@@ -267,6 +261,8 @@ namespace CamelotFramework
 		 */
 		void cancelAll()
 		{
+			// Note that this won't free any Frame data allocated for all the canceled commands since
+			// frame data will only get cleared at frame start
 			mCommandQueue->cancelAll();
 		}
 

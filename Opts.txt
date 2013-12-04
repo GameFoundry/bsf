@@ -1,24 +1,10 @@
 Make sure to also update TextSprite and ImageSprite and anything else in UpdateMesh, then don't forget to find the issue that causes elements to get marked as dirty every single frame
 
-FrameAlloc
-   Keeps two internal stacks
-     - One core, one sim
-   coreThreadBegin()
-    - swaps the active stacks
-   coreThreadEnd() - Must be called after Core thread has finished
-    - frees the previously active stack
-   During frame we call alloc()
-  
  There are many allocations in CPUProfiler (especially report generation), and they aren't counted anywhere since they use
- a special allocator.
+ a special allocator. - Add this as a Low priority task
 
 --------------------
 
 When optimizing UpdateLayout make sure to mark elements that are fully culled as Culled
  - But in order to determine that I first need to update the sprite to find out the elements bounds which defeats the point
  - TODO - FIgure this out
-
-----------
-
-Fix OpenGL MeshHeap. All the meshes are rendering corrupted
-When doing allocInternal I don't check that index/vertex desc in MeshData actually matches the ones in MeshHeap.

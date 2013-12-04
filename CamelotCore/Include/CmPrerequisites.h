@@ -131,6 +131,7 @@ namespace CamelotFramework
 	class VertexDataDesc;
 	class EventQuery;
 	class TimerQuery;
+	class FrameAlloc;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
