@@ -42,9 +42,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Dependencies.txt = Dependencies.txt
 		DrawHelper.txt = DrawHelper.txt
 		EditorWindowDock.txt = EditorWindowDock.txt
+		MonoIntegrationGuide.txt = MonoIntegrationGuide.txt
 		Notes.txt = Notes.txt
 		Opts.txt = Opts.txt
 		RenderOperation.txt = RenderOperation.txt
+		ResourceBundles.txt = ResourceBundles.txt
 		TODO.txt = TODO.txt
 		TODODoc.txt = TODODoc.txt
 		TODOEditor.txt = TODOEditor.txt
@@ -107,6 +109,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeOctreeSM", "BansheeO
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBansheeEngine", "MBansheeEngine\MBansheeEngine.csproj", "{876EB338-489E-4727-84DA-8CBBF0DA5B5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MBansheeEditor", "MBansheeEditor\MBansheeEditor.csproj", "{ABC62E37-342E-4345-A374-E37CA06C036E}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -422,6 +428,42 @@ Global
 		{41CC18CE-139E-45A5-A9AA-336CBA2E1521}.Release|Win32.Build.0 = Release|Win32
 		{41CC18CE-139E-45A5-A9AA-336CBA2E1521}.Release|x64.ActiveCfg = Release|x64
 		{41CC18CE-139E-45A5-A9AA-336CBA2E1521}.Release|x64.Build.0 = Release|x64
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.DebugRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.DebugRelease|Any CPU.Build.0 = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.DebugRelease|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.DebugRelease|Mixed Platforms.Build.0 = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.DebugRelease|Win32.ActiveCfg = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.DebugRelease|x64.ActiveCfg = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Release|Win32.ActiveCfg = Release|Any CPU
+		{876EB338-489E-4727-84DA-8CBBF0DA5B5E}.Release|x64.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.DebugRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.DebugRelease|Any CPU.Build.0 = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.DebugRelease|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.DebugRelease|Mixed Platforms.Build.0 = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.DebugRelease|Win32.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.DebugRelease|x64.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Release|Win32.ActiveCfg = Release|Any CPU
+		{ABC62E37-342E-4345-A374-E37CA06C036E}.Release|x64.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -3,6 +3,9 @@ Camelot relies on the following 3rd party libraries:
     - http://www.boost.org
  - Cg 3.1
     - http://developer.nvidia.com/cg-toolkit
+ - Mono 3.2.3
+    - http://www.mono-project.com
+	- See MonoIntegrationGuide.txt on how to compile & integrate Mono
 
 Place dependency files in:
  - Library include files in (BansheeRootDir)/Dependencies/Include

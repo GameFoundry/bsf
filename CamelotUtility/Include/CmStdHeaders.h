@@ -120,32 +120,6 @@ extern "C" {
 
 namespace CamelotFramework
 {
-#if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310
-#   if CM_COMP_VER >= 430
-#       define HashMap ::std::tr1::UnorderedMap
-#		define HashSet ::std::tr1::UnorderedSet
-#    else
-#       define HashMap ::__gnu_cxx::hash_map
-#       define HashSet ::__gnu_cxx::hash_set
-#    endif
-#else
-#   if CM_COMPILER == CM_COMPILER_MSVC
-#       if CM_COMP_VER >= 1600 // VC++ 10.0
-#			define HashMap ::std::tr1::UnorderedMap
-#           define HashSet ::std::tr1::UnorderedSet
-#		elif CM_COMP_VER > 1300 && !defined(_STLP_MSVC)
-#           define HashMap ::stdext::hash_map
-#           define HashSet ::stdext::hash_set
-#       else
-#           define HashMap ::std::hash_map
-#           define HashSet ::std::hash_set
-#       endif
-#   else
-#       define HashMap ::std::hash_map
-#       define HashSet ::std::hash_set
-#   endif
-#endif
-
 	// Standard containers, for easier access in my own namespace
 	template <typename T, typename A = StdAlloc<T>> 
 	struct Deque 

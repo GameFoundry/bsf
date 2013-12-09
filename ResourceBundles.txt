@@ -1,0 +1,18 @@
+Resource packing
+ - Add support for zlib compression/decompression
+    - There should be a generic comp/decomp class, and it can get assigned to ResourceManager
+    - When loading a file ResourceManager will check if it is compressed and uncompress if needed
+    - When saving user can specify if the file should be compressed
+    - Audio, image or video compression can be handled per file basis and their comp/decomp is done in their special managers and shouldn't be handled by resource manager
+       - But this means they will decompress on core thread? Not if I do it in "initialize()" method.
+ - Add support for ResourceBundle-s. They contain multiple resources and are natively supported by ResourceManager
+   - They have RTTI and can easily be serialized/deserialized
+   - ResourceManager must be able to load/unload individual files from the ResourcePack
+ - Resource bundle manager - Editor window
+   - Allows you to create resource bundles by dragging in resources
+     - Each dragged in resource also includes all of its dependencies
+       - Including a level will include all resources needed for that level (Think Unity Build manager but more customizable)
+     - Normally you only need one resource pack but if you want a streaming game where stuff gets downloaded from the web (for example) you can split it
+       into smaller packs.
+  - Displays detailed information for all included resources, including file sizes and dependencies
+  - Allows you to select compression settings per bundle

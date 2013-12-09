@@ -48,6 +48,52 @@ Systems:
 
  -----------------
 
+ ScriptManager
+ - loadAssembly
+ - compileAssembly
+
+ScriptAssembly
+ - GetClass(namespace, name)
+
+ScriptClass
+ - GetField(name)
+ - GetMethod(name)
+ - InvokeMethod(name, void** params)
+ - AddInternalCall
+ - CreateInstance()
+
+ScriptMethod
+ - Invoke(void** params)
+
+ retval = mono_jit_exec (domain, assembly, argc - 1, argv + 1);
+to call a Main function in the assembly
+
+ -----------------
+
+ VERY IMPORTANT:
+  - Attempt to compile mono runtime as 64bit
+
+Make sure to add /etc and /lib folders in CamelotDependencies. Plus all of the x64 files.
+ - lib/bin files only exist in x86 Debug. And projects are only set up for that single configuration as well
+
+ -----------------
+
+ add BansheeEditor class
+ Add C++ EditorApplication and have it start up Application and create a main window
+Then in C# class just call EditorApplication to create a main window
+
+Create another .exe class called BansheeEd, which loads up MBansheeEditor assembly and calls EditorApplication to start everything up.
+ - I might need to add Mono loading code to BansheeEngine first?
+ - ScriptManager
+  - InvokeMethod
+
+For EditorWindow, add a new class in BansheeEditor, which pretty much does the job of  EditorWidget::open
+ - Except it creates an empty widget. (It will also create a window, but in C++ code)
+ - All the window docking/undocking moving/resizing is done in C++
+ - EditorWindow only has a reference to EditorWidget
+
+ -----------------
+
  But which ones will I need initially?
   - [EditorApplication] - Entry point. Creates a MainEditorWindow
   - [EditorWindow] (Scene, Project, Hierarchy, etc.)
@@ -78,7 +124,11 @@ Systems:
 	  - [GUILabel], [GUIButton], etc.
 	- TODO: GUISkin? - Will I need to create interface for textures and resource loading/importing as well? Probably
   
+  ----------------
 
+  I want my .exe to be native. Internally it will call MBansheeEngine and MBansheeEditor.
+
+This will allow me to debug and start C++ as usual.
 
  -----------------
 

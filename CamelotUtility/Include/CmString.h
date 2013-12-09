@@ -25,42 +25,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef _String_H__
-#define _String_H__
+#pragma once
 
 #include "CmPrerequisitesUtil.h"
-
-// If we're using the GCC 3.1 C++ Std lib
-#if CM_COMPILER == CM_COMPILER_GNUC && CM_COMP_VER >= 310 && !defined(STLPORT)
-
-// For gcc 4.3 see http://gcc.gnu.org/gcc-4.3/changes.html
-#   if CM_COMP_VER >= 430
-#       include <tr1/unordered_map> 
-#   else
-#       include <ext/hash_map>
-namespace __gnu_cxx
-{
-    template <> struct hash< CamelotFramework::_StringBase >
-    {
-        size_t operator()( const CamelotFramework::_StringBase _stringBase ) const
-        {
-            /* This is the PRO-STL way, but it seems to cause problems with VC7.1
-               and in some other cases (although I can't recreate it)
-            hash<const char*> H;
-            return H(_stringBase.c_str());
-            */
-            /** This is our custom way */
-            register size_t ret = 0;
-            for( CamelotFramework::_StringBase::const_iterator it = _stringBase.begin(); it != _stringBase.end(); ++it )
-                ret = 5 * ret + *it;
-
-            return ret;
-        }
-    };
-}
-#   endif
-
-#endif
 
 namespace CamelotFramework 
 {
@@ -869,6 +836,29 @@ namespace CamelotFramework
 
 } // namespace CamelotFramework
 
-#include "CmHString.h"
+template<> 
+struct std::hash<CamelotFramework::String>
+{
+	size_t operator()(const CamelotFramework::String& string) const
+	{
+		size_t hash = 0;
+		for(size_t i = 0; i < string.size(); i++) 
+			hash = 65599 * hash + string[i];
+		return hash ^ (hash >> 16);
+	}
+};
 
-#endif // _String_H__
+template<> 
+struct std::hash<CamelotFramework::WString>
+{
+	size_t operator()(const CamelotFramework::WString& string) const
+	{
+		size_t hash = 0;
+		for(size_t i = 0; i < string.size(); i++) 
+			hash = 65599 * hash + string[i];
+		return hash ^ (hash >> 16);
+	}
+};
+
+
+#include "CmHString.h"
