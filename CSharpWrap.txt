@@ -70,14 +70,6 @@ to call a Main function in the assembly
 
  -----------------
 
- VERY IMPORTANT:
-  - Attempt to compile mono runtime as 64bit
-
-Make sure to add /etc and /lib folders in CamelotDependencies. Plus all of the x64 files.
- - lib/bin files only exist in x86 Debug. And projects are only set up for that single configuration as well
-
- -----------------
-
  add BansheeEditor class
  Add C++ EditorApplication and have it start up Application and create a main window
 Then in C# class just call EditorApplication to create a main window
@@ -91,6 +83,18 @@ For EditorWindow, add a new class in BansheeEditor, which pretty much does the j
  - Except it creates an empty widget. (It will also create a window, but in C++ code)
  - All the window docking/undocking moving/resizing is done in C++
  - EditorWindow only has a reference to EditorWidget
+
+ -----------------
+
+ Implementation steps:
+ - Get EditorApplication finished and make the main window open from C#
+   - (Will possibly need to make new CamelotClient.cpp? since that one is full of junk)
+ - Add support for Resources
+   - Importer - Likely invisible for outside world
+   - Resources.Save/Load - Will likely need some kind of an AssetManager for all imported assets
+   - Texture, Mesh, Font, Shader, Material
+     - Before this I will also probably require all the basic classes like Vector3, etc.
+ - Emulate current CamelotClient tests in C#
 
  -----------------
 
