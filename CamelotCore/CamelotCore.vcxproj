@@ -150,7 +150,7 @@
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotUtility.lib;mono-2.0.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -168,7 +168,7 @@
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotUtility.lib;mono-2.0.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -192,7 +192,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;mono-2.0.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -217,7 +217,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;mono-2.0.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -241,7 +241,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;mono-2.0.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -266,7 +266,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;mono-2.0.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;cg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -346,11 +346,6 @@
     <ClInclude Include="Include\CmOcclusionQuery.h" />
     <ClInclude Include="Include\CmPixelBuffer.h" />
     <ClInclude Include="Include\CmGpuProgIncludeImporter.h" />
-    <ClInclude Include="Include\CmScriptAssembly.h" />
-    <ClInclude Include="Include\CmScriptClass.h" />
-    <ClInclude Include="Include\CmScriptManager.h" />
-    <ClInclude Include="Include\CmScriptMethod.h" />
-    <ClInclude Include="Include\CmScriptObject.h" />
     <ClInclude Include="Include\CmSubMesh.h" />
     <ClInclude Include="Include\CmTextureView.h" />
     <ClInclude Include="Include\CmTextData.h" />
@@ -476,10 +471,6 @@
     <ClCompile Include="Source\CmQueryManager.cpp" />
     <ClCompile Include="Source\CmRenderer.cpp" />
     <ClCompile Include="Source\CmRenderQueue.cpp" />
-    <ClCompile Include="Source\CmScriptAssembly.cpp" />
-    <ClCompile Include="Source\CmScriptClass.cpp" />
-    <ClCompile Include="Source\CmScriptManager.cpp" />
-    <ClCompile Include="Source\CmScriptMethod.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmTextData.cpp" />
     <ClCompile Include="Source\CmTimerQuery.cpp" />

@@ -156,7 +156,7 @@ namespace CamelotFramework
 		WorkQueue* mWorkQueue;
 		UINT16 mWorkQueueChannel;
 
-		UnorderedMap<String, HResource>::type mLoadedResources; // TODO Low priority - I'm not sure how will UUID (a string) do as key do performance wise
+		UnorderedMap<String, HResource>::type mLoadedResources; 
 		UnorderedMap<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
 
 		HResource loadInternal(const String& filePath, bool synchronous); 

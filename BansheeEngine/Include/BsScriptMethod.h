@@ -1,14 +1,14 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include <mono/jit/jit.h>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
-	class CM_EXPORT ScriptMethod
+	class BS_EXPORT ScriptMethod
 	{
 	public:
-		MonoObject* invoke(ScriptObject* instance, void** params);
+		MonoObject* invoke(MonoObject* instance, void** params);
 
 		/**
 		 * @brief	Gets a thunk for this method. A thunk is a C++ like function

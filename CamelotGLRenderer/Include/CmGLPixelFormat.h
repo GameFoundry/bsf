@@ -88,25 +88,7 @@ namespace CamelotFramework {
 		 *
 		 */
 		static GLenum getBaseFormatFromCompressedInternalFormat(GLenum internalFormat);
-	
-		/** Returns the maximum number of Mipmaps that can be generated until we reach
-			the mininum format possible. This does not count the base level.
-			@param width
-				The width of the area
-			@param height
-				The height of the area
-			@param depth
-				The depth of the area
-			@param format
-				The format of the area
-			@remarks
-				In case that the format is non-compressed, this simply returns
-				how many times we can divide this texture in 2 until we reach 1x1.
-				For compressed formats, constraints apply on minimum size and alignment
-				so this might differ.
-		*/
-		static UINT32 getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
-        
+	        
         /** Returns next power-of-two size if required by render system, in case
             RSC_NON_POWER_OF_2_TEXTURES is supported it returns value as-is.
         */

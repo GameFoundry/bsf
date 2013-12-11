@@ -1,9 +1,12 @@
-#include "CmScriptClass.h"
-#include "CmScriptMethod.h"
+#include "BsScriptClass.h"
+#include "BsScriptMethod.h"
+#include "BsScriptField.h"
 #include "CmUtil.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+using namespace CamelotFramework;
+
+namespace BansheeEngine
 {
 	inline size_t ScriptClass::MethodId::Hash::operator()(const ScriptClass::MethodId& v) const
 	{
@@ -38,6 +41,13 @@ namespace CamelotFramework
 		}
 
 		mMethods.clear();
+
+		for(auto& mapEntry : mFields)
+		{
+			cm_delete(mapEntry.second);
+		}
+
+		mFields.clear();
 	}
 
 	ScriptMethod& ScriptClass::getMethod(const String& name, UINT32 numParams)
@@ -60,7 +70,26 @@ namespace CamelotFramework
 		return *newMethod;
 	}
 
-	MonoObject* ScriptClass::invokeMethod(const String& name, ScriptObject* instance, void** params, UINT32 numParams)
+	ScriptField& ScriptClass::getField(const String name)
+	{
+		auto iterFind = mFields.find(name);
+		if(iterFind != mFields.end())
+			return *iterFind->second;
+
+		MonoClassField* field = mono_class_get_field_from_name(mClass, name.c_str());
+		if(field == nullptr)
+		{
+			String fullFieldName = mFullName + "::" + name;
+			CM_EXCEPT(InvalidParametersException, "Cannot get Mono field: " + fullFieldName);
+		}
+
+		ScriptField* newField = new (cm_alloc<ScriptField>()) ScriptField(field);
+		mFields[name] = newField;
+
+		return *newField;
+	}
+
+	MonoObject* ScriptClass::invokeMethod(const String& name, MonoObject* instance, void** params, UINT32 numParams)
 	{
 		return getMethod(name, numParams).invoke(instance, params);
 	}

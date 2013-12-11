@@ -63,6 +63,13 @@ namespace BansheeEngine
 	class GUIContent;
 	class GUIContextMenu;
 
+	// Script
+	class ScriptManager;
+	class ScriptAssembly;
+	class ScriptClass;
+	class ScriptMethod;
+	class ScriptField;
+
 	// 2D
 	class TextSprite;
 	class ImageSprite;

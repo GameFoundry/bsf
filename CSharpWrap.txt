@@ -48,25 +48,14 @@ Systems:
 
  -----------------
 
- ScriptManager
- - loadAssembly
- - compileAssembly
-
-ScriptAssembly
- - GetClass(namespace, name)
-
-ScriptClass
- - GetField(name)
- - GetMethod(name)
- - InvokeMethod(name, void** params)
- - AddInternalCall
- - CreateInstance()
-
-ScriptMethod
- - Invoke(void** params)
-
+// TODO - I might need to call this
  retval = mono_jit_exec (domain, assembly, argc - 1, argv + 1);
 to call a Main function in the assembly
+
+ -----------------
+
+ Implement ScriptField, EngineAssembly classes
+Implement ScriptClass::getField method
 
  -----------------
 

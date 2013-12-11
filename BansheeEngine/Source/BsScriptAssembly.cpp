@@ -1,9 +1,11 @@
-#include "CmScriptAssembly.h"
-#include "CmScriptClass.h"
+#include "BsScriptAssembly.h"
+#include "BsScriptClass.h"
 #include "CmUtil.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+using namespace CamelotFramework;
+
+namespace BansheeEngine
 {
 	inline size_t ScriptAssembly::ClassId::Hash::operator()(const ScriptAssembly::ClassId& v) const
 	{
@@ -25,13 +27,8 @@ namespace CamelotFramework
 	}
 
 	ScriptAssembly::ScriptAssembly(MonoAssembly* assembly)
-		:mMonoAssembly(assembly)
 	{
-		mMonoImage = mono_assembly_get_image(mMonoAssembly);
-		if(mMonoImage == nullptr)
-		{
-			CM_EXCEPT(InvalidParametersException, "Cannot get script assembly image.");
-		}
+		load(assembly);
 	}
 
 	ScriptAssembly::~ScriptAssembly()
@@ -42,8 +39,35 @@ namespace CamelotFramework
 		mClasses.clear();
 	}
 
+	void ScriptAssembly::load(MonoAssembly* assembly)
+	{
+		mMonoAssembly = assembly;
+		mMonoImage = mono_assembly_get_image(mMonoAssembly);
+		if(mMonoImage == nullptr)
+		{
+			CM_EXCEPT(InvalidParametersException, "Cannot get script assembly image.");
+		}
+
+		mIsLoaded = true;
+	}
+
+	void ScriptAssembly::unload()
+	{
+		if(mMonoImage)
+		{
+			mono_image_close(mMonoImage);
+			mMonoImage = nullptr;
+		}
+
+		mIsLoaded = false;
+		mMonoAssembly = nullptr;
+	}
+
 	ScriptClass& ScriptAssembly::getClass(const String& namespaceName, const String& name)
 	{
+		if(!mIsLoaded)
+			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
+
 		ClassId classId(namespaceName, name);
 		auto iterFind = mClasses.find(classId);
 

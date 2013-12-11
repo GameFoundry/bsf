@@ -34,6 +34,12 @@
     <Filter Include="Header Files\RTTI">
       <UniqueIdentifier>{8d0002f5-5505-4292-9043-a8fbb489362e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Script">
+      <UniqueIdentifier>{316651aa-66a0-49dc-8f54-dcc0e037d6b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Script">
+      <UniqueIdentifier>{74630e1e-ef0d-4dbc-9e23-0ae6ea24fc02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsPrerequisites.h">
@@ -237,6 +243,33 @@
     <ClInclude Include="Include\BsDebugDrawMaterialInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptAssembly.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptClass.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptManager.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptMethod.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptObject.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptMeta.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsEngineAssembly.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptField.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptTexture2D.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -415,6 +448,30 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUIRenderTexture.cpp">
       <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptAssembly.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptClass.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptManager.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptMethod.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptMeta.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptTexture2D.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptField.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEngineAssembly.cpp">
+      <Filter>Source Files\Script</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

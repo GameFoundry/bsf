@@ -132,11 +132,6 @@ namespace CamelotFramework
 	class EventQuery;
 	class TimerQuery;
 	class FrameAlloc;
-	class ScriptManager;
-	class ScriptObject;
-	class ScriptAssembly;
-	class ScriptClass;
-	class ScriptMethod;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

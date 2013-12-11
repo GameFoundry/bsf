@@ -94,12 +94,6 @@
     <Filter Include="Header Files\Platform">
       <UniqueIdentifier>{d53f502a-b966-4162-a828-af2654f0408f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Script">
-      <UniqueIdentifier>{85a691b2-e208-4b3f-83e0-d6b7bedb8367}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Script">
-      <UniqueIdentifier>{8e102909-a27d-4961-a4a1-43cb89721afc}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h">
@@ -528,21 +522,6 @@
     <ClInclude Include="Include\CmMeshBaseRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmScriptManager.h">
-      <Filter>Header Files\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmScriptObject.h">
-      <Filter>Header Files\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmScriptAssembly.h">
-      <Filter>Header Files\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmScriptClass.h">
-      <Filter>Header Files\Script</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmScriptMethod.h">
-      <Filter>Header Files\Script</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -838,18 +817,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmMeshBase.cpp">
       <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmScriptMethod.cpp">
-      <Filter>Source Files\Script</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmScriptClass.cpp">
-      <Filter>Source Files\Script</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmScriptAssembly.cpp">
-      <Filter>Source Files\Script</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmScriptManager.cpp">
-      <Filter>Source Files\Script</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

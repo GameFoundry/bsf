@@ -63,7 +63,7 @@ namespace CamelotFramework {
 	void GLTexture::initialize_internal()
 	{
 		// Check requested number of mipmaps
-		UINT32 maxMips = GLPixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
+		UINT32 maxMips = PixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
 		if(mNumMipmaps > maxMips)
 			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
 

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsPrerequisites.h"
 #include <mono/jit/jit.h>
 #include <mono/metadata/assembly.h>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
-	class CM_EXPORT ScriptAssembly
+	class BS_EXPORT ScriptAssembly
 	{
 		struct ClassId
 		{
@@ -20,24 +20,28 @@ namespace CamelotFramework
 				inline bool operator()(const ClassId &a, const ClassId &b) const;
 			};
 
-			ClassId(const String& namespaceName, String name);
+			ClassId(const CM::String& namespaceName, CM::String name);
 
-			String namespaceName;
-			String name;
+			CM::String namespaceName;
+			CM::String name;
 		};
 
 	public:
 		~ScriptAssembly();
 
-		ScriptClass& getClass(const String& namespaceName, const String& name);
+		ScriptClass& getClass(const CM::String& namespaceName, const CM::String& name);
 
 	private:
 		friend class ScriptManager;
 
 		ScriptAssembly(MonoAssembly* assembly);
 
+		void load(MonoAssembly* assembly);
+		void unload();
+
 		MonoImage* mMonoImage;
 		MonoAssembly* mMonoAssembly;
-		UnorderedMap<ClassId, ScriptClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
+		bool mIsLoaded;
+		CM::UnorderedMap<ClassId, ScriptClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
 	};
 }

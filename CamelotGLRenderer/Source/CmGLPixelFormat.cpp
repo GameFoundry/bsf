@@ -342,29 +342,6 @@ namespace CamelotFramework  {
 			return PF_UNKNOWN;
 		}
 	}
-	//----------------------------------------------------------------------------- 
-	UINT32 GLPixelUtil::getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)
-	{
-		UINT32 count = 0;
-        if((width > 0) && (height > 0))
-        {
-            do {
-                if(width>1)		width = width/2;
-                if(height>1)	height = height/2;
-                if(depth>1)		depth = depth/2;
-                /*
-                NOT needed, compressed formats will have mipmaps up to 1x1
-                if(PixelUtil::isValidExtent(width, height, depth, format))
-                    count ++;
-                else
-                    break;
-                */
-                    
-                count ++;
-            } while(!(width == 1 && height == 1 && depth == 1));
-        }		
-		return count;
-	}
     //-----------------------------------------------------------------------------    
     UINT32 GLPixelUtil::optionalPO2(UINT32 value)
     {

@@ -4,6 +4,8 @@
 #include "BsApplication.h"
 #include "CmApplication.h"
 #include "CmRenderWindow.h"
+#include "BsScriptManager.h"
+#include "BsEngineAssembly.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -212,6 +214,8 @@ namespace BansheeEditor
 		/************************************************************************/
 
 		EditorWindowManager::startUp(cm_new<EditorWindowManager>());
+		ScriptManager::startUp(cm_new<ScriptManager>());
+		EngineAssembly::startUp(cm_new<EngineAssembly>());
 		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
 
 		gApplication().mainLoopCallback.connect(boost::bind(&EditorApplication::update, this));
@@ -221,7 +225,10 @@ namespace BansheeEditor
 
 		gBansheeApp().runMainLoop();
 
+		EngineAssembly::shutDown();
+		ScriptManager::shutDown();
 		EditorWindowManager::shutDown();
+
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/
