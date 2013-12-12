@@ -402,8 +402,8 @@ namespace CamelotFramework {
 		// nVidia SDK implementation
 		Vector3 uv, uuv;
 		Vector3 qvec(x, y, z);
-		uv = qvec.crossProduct(v);
-		uuv = qvec.crossProduct(uv);
+		uv = qvec.cross(v);
+		uuv = qvec.cross(uv);
 		uv *= (2.0f * w);
 		uuv *= 2.0f;
 

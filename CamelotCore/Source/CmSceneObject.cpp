@@ -8,8 +8,8 @@
 namespace CamelotFramework
 {
 	SceneObject::SceneObject(const String& name)
-		:mName(name), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::UNIT_SCALE),
-		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::UNIT_SCALE),
+		:mName(name), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
+		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
 		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
 		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false)
@@ -203,7 +203,7 @@ namespace CamelotFramework
 		if (forwardDir == Vector3::ZERO) 
 			return;
 
-		Vector3 nrmForwardDir = forwardDir.normalizedCopy();
+		Vector3 nrmForwardDir = Vector3::normalize(forwardDir);
 		Vector3 currentForwardDir = getForward();
 		
 		const Quaternion& currentRotation = getWorldRotation();

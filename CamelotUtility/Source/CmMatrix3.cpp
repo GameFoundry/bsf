@@ -1487,8 +1487,8 @@ namespace CamelotFramework
         }
 
         // make eigenvectors form a right--handed system
-        Vector3 kCross = akEigenvector[1].crossProduct(akEigenvector[2]);
-        float fDet = akEigenvector[0].dotProduct(kCross);
+        Vector3 kCross = akEigenvector[1].cross(akEigenvector[2]);
+        float fDet = akEigenvector[0].dot(kCross);
         if ( fDet < 0.0 )
         {
             akEigenvector[2][0] = - akEigenvector[2][0];

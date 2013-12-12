@@ -68,7 +68,7 @@ namespace CamelotFramework {
 	//-----------------------------------------------------------------------
 	float Plane::getDistance (const Vector3& rkPoint) const
 	{
-		return normal.dotProduct(rkPoint) + d;
+		return normal.dot(rkPoint) + d;
 	}
 	//-----------------------------------------------------------------------
 	Plane::Side Plane::getSide (const Vector3& rkPoint) const
@@ -98,7 +98,7 @@ namespace CamelotFramework {
 
         // Calculate the maximise allows absolute distance for
         // the distance between box centre and plane
-        float maxAbsDist = normal.absDotProduct(halfSize);
+        float maxAbsDist = Math::Abs(normal.x * halfSize.x) + Math::Abs(normal.y * halfSize.y) + Math::Abs(normal.z * halfSize.z);
 
         if (dist < -maxAbsDist)
             return Plane::NEGATIVE_SIDE;
@@ -114,15 +114,15 @@ namespace CamelotFramework {
 	{
 		Vector3 kEdge1 = rkPoint1 - rkPoint0;
 		Vector3 kEdge2 = rkPoint2 - rkPoint0;
-		normal = kEdge1.crossProduct(kEdge2);
+		normal = kEdge1.cross(kEdge2);
 		normal.normalize();
-		d = -normal.dotProduct(rkPoint0);
+		d = -normal.dot(rkPoint0);
 	}
 	//-----------------------------------------------------------------------
 	void Plane::redefine(const Vector3& rkNormal, const Vector3& rkPoint)
 	{
 		normal = rkNormal;
-		d = -rkNormal.dotProduct(rkPoint);
+		d = -rkNormal.dot(rkPoint);
 	}
 	//-----------------------------------------------------------------------
 	Vector3 Plane::projectVector(const Vector3& p) const
@@ -156,10 +156,4 @@ namespace CamelotFramework {
 
         return fLength;
     }
-	//-----------------------------------------------------------------------
-	std::ostream& operator<< (std::ostream& o, const Plane& p)
-	{
-		o << "Plane(normal=" << p.normal << ", d=" << p.d << ")";
-		return o;
-	}
-} // namespace CamelotFramework
+}

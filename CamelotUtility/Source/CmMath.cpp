@@ -238,14 +238,14 @@ namespace CamelotFramework
 
 		// Note we don't care about normalisation here since sign is all we need
 		// It means we don't have to worry about magnitude of cross products either
-		dot[0] = v1.crossProduct(v2);
+		dot[0] = v1.cross(v2);
 		zeroDot[0] = Math::RealEqual(dot[0], 0.0f, 1e-3f);
 
 
 		v1 = c - b;
 		v2 = p - b;
 
-		dot[1] = v1.crossProduct(v2);
+		dot[1] = v1.cross(v2);
 		zeroDot[1] = Math::RealEqual(dot[1], 0.0f, 1e-3f);
 
 		// Compare signs (ignore colinear / coincident points)
@@ -258,7 +258,7 @@ namespace CamelotFramework
 		v1 = a - c;
 		v2 = p - c;
 
-		dot[2] = v1.crossProduct(v2);
+		dot[2] = v1.cross(v2);
 		zeroDot[2] = Math::RealEqual(dot[2], 0.0f, 1e-3f);
 		// Compare signs (ignore colinear / coincident points)
 		if((!zeroDot[0] && !zeroDot[2] 
@@ -286,14 +286,14 @@ namespace CamelotFramework
 
 		// Note we don't care about normalisation here since sign is all we need
 		// It means we don't have to worry about magnitude of cross products either
-        dot[0] = v1.crossProduct(v2).dotProduct(normal);
+        dot[0] = v1.cross(v2).dot(normal);
 		zeroDot[0] = Math::RealEqual(dot[0], 0.0f, 1e-3f);
 
 
         v1 = c - b;
         v2 = p - b;
 
-		dot[1] = v1.crossProduct(v2).dotProduct(normal);
+		dot[1] = v1.cross(v2).dot(normal);
 		zeroDot[1] = Math::RealEqual(dot[1], 0.0f, 1e-3f);
 
 		// Compare signs (ignore colinear / coincident points)
@@ -306,7 +306,7 @@ namespace CamelotFramework
         v1 = a - c;
         v2 = p - c;
 
-		dot[2] = v1.crossProduct(v2).dotProduct(normal);
+		dot[2] = v1.cross(v2).dot(normal);
 		zeroDot[2] = Math::RealEqual(dot[2], 0.0f, 1e-3f);
 		// Compare signs (ignore colinear / coincident points)
 		if((!zeroDot[0] && !zeroDot[2] 
@@ -333,7 +333,7 @@ namespace CamelotFramework
     std::pair<bool, float> Math::intersects(const Ray& ray, const Plane& plane)
     {
 
-        float denom = plane.normal.dotProduct(ray.getDirection());
+        float denom = plane.normal.dot(ray.getDirection());
         if (Math::Abs(denom) < std::numeric_limits<float>::epsilon())
         {
             // Parallel
@@ -341,7 +341,7 @@ namespace CamelotFramework
         }
         else
         {
-            float nom = plane.normal.dotProduct(ray.getOrigin()) + plane.d;
+            float nom = plane.normal.dot(ray.getOrigin()) + plane.d;
             float t = -(nom/denom);
             return std::pair<bool, float>(t >= 0, t);
         }
@@ -459,9 +459,9 @@ namespace CamelotFramework
         // Mmm, quadratics
         // Build coeffs which can be used with std quadratic solver
         // ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
-        float a = raydir.dotProduct(raydir);
-        float b = 2 * rayorig.dotProduct(raydir);
-        float c = rayorig.dotProduct(rayorig) - radius*radius;
+        float a = raydir.dot(raydir);
+        float b = 2 * rayorig.dot(raydir);
+        float c = rayorig.dot(rayorig) - radius*radius;
 
         // Calc determinant
         float d = (b*b) - (4 * a * c);
@@ -496,7 +496,7 @@ namespace CamelotFramework
 		const Vector3& raydir = ray.getDirection();
 
 		// Check origin inside first
-		if ( rayorig > min && rayorig < max )
+		if ((rayorig.x > min.x && rayorig.y > min.y && rayorig.z > min.z) && (rayorig.x < max.x && rayorig.y < max.y && rayorig.z < max.z))
 		{
 			return std::pair<bool, float>(true, 0.0f);
 		}
@@ -696,7 +696,7 @@ namespace CamelotFramework
         //
         float t;
         {
-            float denom = normal.dotProduct(ray.getDirection());
+            float denom = normal.dot(ray.getDirection());
 
             // Check intersect side
             if (denom > + std::numeric_limits<float>::epsilon())
@@ -716,7 +716,7 @@ namespace CamelotFramework
                 return std::pair<bool, float>(false, 0.0f);
             }
 
-            t = normal.dotProduct(a - ray.getOrigin()) / denom;
+            t = normal.dot(a - ray.getOrigin()) / denom;
 
             if (t < 0)
             {
@@ -836,7 +836,7 @@ namespace CamelotFramework
 	    Vector3 side0 = position1 - position2;
 	    Vector3 side1 = position3 - position1;
 	    //Calculate face normal
-	    Vector3 normal = side1.crossProduct(side0);
+	    Vector3 normal = side1.cross(side0);
 	    normal.normalize();
 	    //Now we use a formula to calculate the tangent. 
 	    float deltaV0 = v1 - v2;
@@ -854,8 +854,8 @@ namespace CamelotFramework
 	    //then we need to reverse the s and t tangents. 
 	    //This is because the triangle has been mirrored when going from tangent space to object space.
 	    //reverse tangents if necessary
-	    Vector3 tangentCross = tangent.crossProduct(binormal);
-	    if (tangentCross.dotProduct(normal) < 0.0f)
+	    Vector3 tangentCross = tangent.cross(binormal);
+	    if (tangentCross.dot(normal) < 0.0f)
 	    {
 		    tangent = -tangent;
 		    binormal = -binormal;
@@ -878,12 +878,12 @@ namespace CamelotFramework
     {
         Vector3 normal = calculateBasicFaceNormal(v1, v2, v3);
         // Now set up the w (distance of tri from origin
-        return Vector4(normal.x, normal.y, normal.z, -(normal.dotProduct(v1)));
+        return Vector4(normal.x, normal.y, normal.z, -(normal.dot(v1)));
     }
     //-----------------------------------------------------------------------
     Vector3 Math::calculateBasicFaceNormal(const Vector3& v1, const Vector3& v2, const Vector3& v3)
     {
-        Vector3 normal = (v2 - v1).crossProduct(v3 - v1);
+        Vector3 normal = (v2 - v1).cross(v3 - v1);
         normal.normalize();
         return normal;
     }
@@ -892,12 +892,12 @@ namespace CamelotFramework
     {
         Vector3 normal = calculateBasicFaceNormalWithoutNormalize(v1, v2, v3);
         // Now set up the w (distance of tri from origin)
-        return Vector4(normal.x, normal.y, normal.z, -(normal.dotProduct(v1)));
+        return Vector4(normal.x, normal.y, normal.z, -(normal.dot(v1)));
     }
     //-----------------------------------------------------------------------
     Vector3 Math::calculateBasicFaceNormalWithoutNormalize(const Vector3& v1, const Vector3& v2, const Vector3& v3)
     {
-        Vector3 normal = (v2 - v1).crossProduct(v3 - v1);
+        Vector3 normal = (v2 - v1).cross(v3 - v1);
         return normal;
     }
 	//-----------------------------------------------------------------------
@@ -956,9 +956,9 @@ namespace CamelotFramework
 		Vector3 min = aabb.getMin();
 
 		Vector3 magnitude = max;
-		magnitude.makeCeil(-max);
-		magnitude.makeCeil(min);
-		magnitude.makeCeil(-min);
+		magnitude.ceil(-max);
+		magnitude.ceil(min);
+		magnitude.ceil(-min);
 
 		return magnitude.length();
 	}

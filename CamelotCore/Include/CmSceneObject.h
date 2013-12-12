@@ -62,7 +62,7 @@ namespace CamelotFramework
 		 *
 		 * @return	Forward axis of the object.
 		 */
-		Vector3 getForward() const { return getWorldRotation() * Vector3::NEGATIVE_UNIT_Z; }
+		Vector3 getForward() const { return getWorldRotation() * -Vector3::UNIT_Z; }
 
 		/**
 		 * @brief	Gets the Y (up) axis of the object, in world space.

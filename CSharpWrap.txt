@@ -54,20 +54,6 @@ to call a Main function in the assembly
 
  -----------------
 
- Implement ScriptField, EngineAssembly classes
-Implement ScriptClass::getField method
-
- -----------------
-
- add BansheeEditor class
- Add C++ EditorApplication and have it start up Application and create a main window
-Then in C# class just call EditorApplication to create a main window
-
-Create another .exe class called BansheeEd, which loads up MBansheeEditor assembly and calls EditorApplication to start everything up.
- - I might need to add Mono loading code to BansheeEngine first?
- - ScriptManager
-  - InvokeMethod
-
 For EditorWindow, add a new class in BansheeEditor, which pretty much does the job of  EditorWidget::open
  - Except it creates an empty widget. (It will also create a window, but in C++ code)
  - All the window docking/undocking moving/resizing is done in C++
@@ -77,7 +63,6 @@ For EditorWindow, add a new class in BansheeEditor, which pretty much does the j
 
  Implementation steps:
  - Get EditorApplication finished and make the main window open from C#
-   - (Will possibly need to make new CamelotClient.cpp? since that one is full of junk)
  - Add support for Resources
    - Importer - Likely invisible for outside world
    - Resources.Save/Load - Will likely need some kind of an AssetManager for all imported assets

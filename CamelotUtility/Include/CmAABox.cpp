@@ -5,7 +5,7 @@ namespace CamelotFramework
 	const AABox AABox::BOX_EMPTY;
 
 	AABox::AABox() 
-		:mMinimum(Vector3::ZERO), mMaximum(Vector3::UNIT_SCALE)
+		:mMinimum(Vector3::ZERO), mMaximum(Vector3::ONE)
 	{
 		// Default to a null box 
 		setMin(Vector3(-0.5f, -0.5f, -0.5f));
@@ -13,13 +13,13 @@ namespace CamelotFramework
 	}
 
 	AABox::AABox(const AABox & rkBox)
-		:mMinimum(Vector3::ZERO), mMaximum(Vector3::UNIT_SCALE)
+		:mMinimum(Vector3::ZERO), mMaximum(Vector3::ONE)
 	{
 		setExtents( rkBox.mMinimum, rkBox.mMaximum );
 	}
 
 	AABox::AABox(const Vector3& min, const Vector3& max)
-		:mMinimum(Vector3::ZERO), mMaximum(Vector3::UNIT_SCALE)
+		:mMinimum(Vector3::ZERO), mMaximum(Vector3::ONE)
 	{
 		setExtents( min, max );
 	}
@@ -69,16 +69,16 @@ namespace CamelotFramework
 	{
 		Vector3 min = mMinimum;
 		Vector3 max = mMaximum;
-		max.makeCeil(rhs.mMaximum);
-		min.makeFloor(rhs.mMinimum);
+		max.ceil(rhs.mMaximum);
+		min.floor(rhs.mMinimum);
 
 		setExtents(min, max);
 	}
 
 	void AABox::merge( const Vector3& point )
 	{
-		mMaximum.makeCeil(point);
-		mMinimum.makeFloor(point);
+		mMaximum.ceil(point);
+		mMinimum.floor(point);
 	}
 
 	void AABox::transform( const Matrix4& matrix )
@@ -172,8 +172,8 @@ namespace CamelotFramework
 		Vector3 intMin = mMinimum;
         Vector3 intMax = mMaximum;
 
-        intMin.makeCeil(b2.getMin());
-        intMax.makeFloor(b2.getMax());
+        intMin.ceil(b2.getMin());
+        intMax.floor(b2.getMax());
 
         // Check intersection isn't null
         if (intMin.x < intMax.x &&

@@ -33,22 +33,13 @@ THE SOFTWARE.
 // http://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 
 
-#ifndef __Quaternion_H__
-#define __Quaternion_H__
+#pragma once
 
 #include "CmPrerequisitesUtil.h"
 #include "CmMath.h"
 
-namespace CamelotFramework {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-	/** Implementation of a Quaternion, i.e. a rotation around an axis.
-    */
+namespace CamelotFramework 
+{
     class CM_UTILITY_EXPORT Quaternion
     {
     public:
@@ -248,24 +239,5 @@ namespace CamelotFramework {
 		{
 			return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z) || Math::isNaN(w);
 		}
-
-        /** Function for writing to a stream. Outputs "Quaternion(w, x, y, z)" with w,x,y,z
-            being the member values of the quaternion.
-        */
-        inline CM_UTILITY_EXPORT friend std::ostream& operator <<
-            ( std::ostream& o, const Quaternion& q )
-        {
-            o << "Quaternion(" << q.w << ", " << q.x << ", " << q.y << ", " << q.z << ")";
-            return o;
-        }
-
     };
-	/** @} */
-	/** @} */
-
 }
-
-
-
-
-#endif 

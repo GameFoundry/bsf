@@ -153,8 +153,6 @@ namespace CamelotFramework {
         {
             return (rhs.d != d || rhs.normal != normal);
         }
-
-        CM_UTILITY_EXPORT friend std::ostream& operator<< (std::ostream& o, const Plane& p);
     };
 
     typedef Vector<Plane>::type PlaneList;

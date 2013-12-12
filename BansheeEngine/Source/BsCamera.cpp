@@ -510,16 +510,16 @@ namespace BansheeEngine
 			// Some custom projection matrices can have unusual inverted settings
 			// So make sure the AABB is the right way around to start with
 			Vector3 tmp = min;
-			min.makeFloor(max);
-			max.makeCeil(tmp);
+			min.floor(max);
+			max.ceil(tmp);
 		}
 
 		if (mProjType == PT_PERSPECTIVE)
 		{
 			// Merge with far plane bounds
 			float radio = farDist / mNearDist;
-			min.makeFloor(Vector3(left * radio, bottom * radio, -farDist));
-			max.makeCeil(Vector3(right * radio, top * radio, 0));
+			min.floor(Vector3(left * radio, bottom * radio, -farDist));
+			max.ceil(Vector3(right * radio, top * radio, 0));
 		}
 		mBoundingBox.setExtents(min, max);
 

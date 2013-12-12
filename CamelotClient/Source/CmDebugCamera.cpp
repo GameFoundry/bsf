@@ -84,7 +84,7 @@ namespace CamelotFramework
 			mPitch += Degree(gInput().getVerticalAxis() * ROTATION_SPEED);
 
 			Quaternion yRot;
-			yRot.FromAngleAxis(Radian(mYaw), Vector3::UP);
+			yRot.FromAngleAxis(Radian(mYaw), Vector3::UNIT_Y);
 
 			Quaternion xRot;
 			xRot.FromAngleAxis(Radian(mPitch), yRot.xAxis());
