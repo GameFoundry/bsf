@@ -23,9 +23,6 @@ namespace CamelotFramework
 		mCamera = sceneObject()->getComponent<Camera>();
 		mCamera->setNearClipDistance(5);
 
-		//gameObject()->setPosition(Vector3(0,0,5050));
-		//gameObject()->lookAt(Vector3(0,0,-300));
-
 		sceneObject()->setPosition(Vector3(0,0,0));
 		sceneObject()->lookAt(Vector3(0,0,-1));
 	}
@@ -84,10 +81,10 @@ namespace CamelotFramework
 			mPitch += Degree(gInput().getVerticalAxis() * ROTATION_SPEED);
 
 			Quaternion yRot;
-			yRot.FromAngleAxis(Radian(mYaw), Vector3::UNIT_Y);
+			yRot.fromAngleAxis(Radian(mYaw), Vector3::UNIT_Y);
 
 			Quaternion xRot;
-			xRot.FromAngleAxis(Radian(mPitch), yRot.xAxis());
+			xRot.fromAngleAxis(Radian(mPitch), yRot.xAxis());
 
 			Quaternion camRot = xRot * yRot;
 

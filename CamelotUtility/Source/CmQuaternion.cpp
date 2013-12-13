@@ -39,56 +39,55 @@ THE SOFTWARE.
 #include "CmMatrix3.h"
 #include "CmVector3.h"
 
-namespace CamelotFramework {
+namespace CamelotFramework 
+{
+    const float Quaternion::EPSILON = 1e-03f;
+    const Quaternion Quaternion::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
+    const Quaternion Quaternion::IDENTITY(1.0f, 0.0f, 0.0f, 0.0f);
 
-    const float Quaternion::ms_fEpsilon = 1e-03f;
-    const Quaternion Quaternion::ZERO(0.0,0.0,0.0,0.0);
-    const Quaternion Quaternion::IDENTITY(1.0,0.0,0.0,0.0);
-
-    //-----------------------------------------------------------------------
-    void Quaternion::FromRotationMatrix (const Matrix3& kRot)
+    void Quaternion::fromRotationMatrix(const Matrix3& mat)
     {
         // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
         // article "Quaternion Calculus and Fast Animation".
 
-        float fTrace = kRot[0][0]+kRot[1][1]+kRot[2][2];
-        float fRoot;
+        float trace = mat[0][0]+mat[1][1]+mat[2][2];
+        float root;
 
-        if ( fTrace > 0.0 )
+        if ( trace > 0.0 )
         {
             // |w| > 1/2, may as well choose w > 1/2
-            fRoot = Math::Sqrt(fTrace + 1.0f);  // 2w
-            w = 0.5f*fRoot;
-            fRoot = 0.5f/fRoot;  // 1/(4w)
-            x = (kRot[2][1]-kRot[1][2])*fRoot;
-            y = (kRot[0][2]-kRot[2][0])*fRoot;
-            z = (kRot[1][0]-kRot[0][1])*fRoot;
+            root = Math::Sqrt(trace + 1.0f);  // 2w
+            w = 0.5f*root;
+            root = 0.5f/root;  // 1/(4w)
+            x = (mat[2][1]-mat[1][2])*root;
+            y = (mat[0][2]-mat[2][0])*root;
+            z = (mat[1][0]-mat[0][1])*root;
         }
         else
         {
             // |w| <= 1/2
-            static size_t s_iNext[3] = { 1, 2, 0 };
+            static size_t nextLookup[3] = { 1, 2, 0 };
             size_t i = 0;
-            if ( kRot[1][1] > kRot[0][0] )
+            if ( mat[1][1] > mat[0][0] )
                 i = 1;
-            if ( kRot[2][2] > kRot[i][i] )
+            if ( mat[2][2] > mat[i][i] )
                 i = 2;
-            size_t j = s_iNext[i];
-            size_t k = s_iNext[j];
+            size_t j = nextLookup[i];
+            size_t k = nextLookup[j];
 
-            fRoot = Math::Sqrt(kRot[i][i]-kRot[j][j]-kRot[k][k] + 1.0f);
-            float* apkQuat[3] = { &x, &y, &z };
-            *apkQuat[i] = 0.5f*fRoot;
-            fRoot = 0.5f/fRoot;
-            w = (kRot[k][j]-kRot[j][k])*fRoot;
-            *apkQuat[j] = (kRot[j][i]+kRot[i][j])*fRoot;
-            *apkQuat[k] = (kRot[k][i]+kRot[i][k])*fRoot;
+            root = Math::Sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
+            float* cmpntLookup[3] = { &x, &y, &z };
+            *cmpntLookup[i] = 0.5f*root;
+            root = 0.5f/root;
+            w = (mat[k][j]-mat[j][k])*root;
+            *cmpntLookup[j] = (mat[j][i]+mat[i][j])*root;
+            *cmpntLookup[k] = (mat[k][i]+mat[i][k])*root;
         }
 
 		normalize();
     }
-    //-----------------------------------------------------------------------
-    void Quaternion::ToRotationMatrix (Matrix3& kRot) const
+
+    void Quaternion::toRotationMatrix(Matrix3& mat) const
     {
         float fTx  = x+x;
         float fTy  = y+y;
@@ -103,72 +102,51 @@ namespace CamelotFramework {
         float fTyz = fTz*y;
         float fTzz = fTz*z;
 
-        kRot[0][0] = 1.0f-(fTyy+fTzz);
-        kRot[0][1] = fTxy-fTwz;
-        kRot[0][2] = fTxz+fTwy;
-        kRot[1][0] = fTxy+fTwz;
-        kRot[1][1] = 1.0f-(fTxx+fTzz);
-        kRot[1][2] = fTyz-fTwx;
-        kRot[2][0] = fTxz-fTwy;
-        kRot[2][1] = fTyz+fTwx;
-        kRot[2][2] = 1.0f-(fTxx+fTyy);
+        mat[0][0] = 1.0f-(fTyy+fTzz);
+        mat[0][1] = fTxy-fTwz;
+        mat[0][2] = fTxz+fTwy;
+        mat[1][0] = fTxy+fTwz;
+        mat[1][1] = 1.0f-(fTxx+fTzz);
+        mat[1][2] = fTyz-fTwx;
+        mat[2][0] = fTxz-fTwy;
+        mat[2][1] = fTyz+fTwx;
+        mat[2][2] = 1.0f-(fTxx+fTyy);
     }
-    //-----------------------------------------------------------------------
-    void Quaternion::FromAngleAxis (const Radian& rfAngle,
-        const Vector3& rkAxis)
-    {
-        // assert:  axis[] is unit length
-        //
-        // The quaternion representing the rotation is
-        //   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
-        Radian fHalfAngle ( 0.5*rfAngle );
+    void Quaternion::fromAngleAxis(const Radian& angle, const Vector3& axis)
+    {
+        // Assert:  axis[] is unit length
+
+        Radian fHalfAngle ( 0.5*angle );
         float fSin = Math::Sin(fHalfAngle);
         w = Math::Cos(fHalfAngle);
-        x = fSin*rkAxis.x;
-        y = fSin*rkAxis.y;
-        z = fSin*rkAxis.z;
+        x = fSin*axis.x;
+        y = fSin*axis.y;
+        z = fSin*axis.z;
     }
-    //-----------------------------------------------------------------------
-    void Quaternion::ToAngleAxis (Radian& rfAngle, Vector3& rkAxis) const
-    {
-        // The quaternion representing the rotation is
-        //   q = cos(A/2)+sin(A/2)*(x*i+y*j+z*k)
 
+    void Quaternion::toAngleAxis(Radian& angle, Vector3& axis) const
+    {
         float fSqrLength = x*x+y*y+z*z;
         if ( fSqrLength > 0.0 )
         {
-            rfAngle = 2.0*Math::ACos(w);
+            angle = 2.0*Math::ACos(w);
             float fInvLength = Math::InvSqrt(fSqrLength);
-            rkAxis.x = x*fInvLength;
-            rkAxis.y = y*fInvLength;
-            rkAxis.z = z*fInvLength;
+            axis.x = x*fInvLength;
+            axis.y = y*fInvLength;
+            axis.z = z*fInvLength;
         }
         else
         {
-            // angle is 0 (mod 2*pi), so any axis will do
-            rfAngle = Radian(0.0);
-            rkAxis.x = 1.0;
-            rkAxis.y = 0.0;
-            rkAxis.z = 0.0;
+            // Angle is 0 (mod 2*pi), so any axis will do
+            angle = Radian(0.0);
+            axis.x = 1.0;
+            axis.y = 0.0;
+            axis.z = 0.0;
         }
     }
-    //-----------------------------------------------------------------------
-    void Quaternion::FromAxes (const Vector3* akAxis)
-    {
-        Matrix3 kRot;
 
-        for (size_t iCol = 0; iCol < 3; iCol++)
-        {
-            kRot[0][iCol] = akAxis[iCol].x;
-            kRot[1][iCol] = akAxis[iCol].y;
-            kRot[2][iCol] = akAxis[iCol].z;
-        }
-
-        FromRotationMatrix(kRot);
-    }
-    //-----------------------------------------------------------------------
-    void Quaternion::FromAxes (const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
+    void Quaternion::fromAxes(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
     {
         Matrix3 kRot;
 
@@ -184,27 +162,11 @@ namespace CamelotFramework {
         kRot[1][2] = zaxis.y;
         kRot[2][2] = zaxis.z;
 
-        FromRotationMatrix(kRot);
-
+        fromRotationMatrix(kRot);
     }
-    //-----------------------------------------------------------------------
-    void Quaternion::ToAxes (Vector3* akAxis) const
-    {
-        Matrix3 kRot;
 
-        ToRotationMatrix(kRot);
-
-        for (size_t iCol = 0; iCol < 3; iCol++)
-        {
-            akAxis[iCol].x = kRot[0][iCol];
-            akAxis[iCol].y = kRot[1][iCol];
-            akAxis[iCol].z = kRot[2][iCol];
-        }
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Quaternion::xAxis(void) const
+    Vector3 Quaternion::xAxis() const
     {
-        //float fTx  = 2.0*x;
         float fTy  = 2.0f*y;
         float fTz  = 2.0f*z;
         float fTwy = fTy*w;
@@ -216,8 +178,8 @@ namespace CamelotFramework {
 
         return Vector3(1.0f-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
     }
-    //-----------------------------------------------------------------------
-    Vector3 Quaternion::yAxis(void) const
+
+    Vector3 Quaternion::yAxis() const
     {
         float fTx  = 2.0f*x;
         float fTy  = 2.0f*y;
@@ -231,8 +193,8 @@ namespace CamelotFramework {
 
         return Vector3(fTxy-fTwz, 1.0f-(fTxx+fTzz), fTyz+fTwx);
     }
-    //-----------------------------------------------------------------------
-    Vector3 Quaternion::zAxis(void) const
+
+    Vector3 Quaternion::zAxis() const
     {
         float fTx  = 2.0f*x;
         float fTy  = 2.0f*y;
@@ -246,12 +208,11 @@ namespace CamelotFramework {
 
         return Vector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
     }
-    //-----------------------------------------------------------------------
-    void Quaternion::ToAxes (Vector3& xaxis, Vector3& yaxis, Vector3& zaxis) const
+
+    void Quaternion::toAxes (Vector3& xaxis, Vector3& yaxis, Vector3& zaxis) const
     {
         Matrix3 kRot;
-
-        ToRotationMatrix(kRot);
+        toRotationMatrix(kRot);
 
         xaxis.x = kRot[0][0];
         xaxis.y = kRot[1][0];
@@ -266,345 +227,116 @@ namespace CamelotFramework {
         zaxis.z = kRot[2][2];
     }
 
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::operator+ (const Quaternion& rkQ) const
+    Quaternion Quaternion::operator+ (const Quaternion& rhs) const
     {
-        return Quaternion(w+rkQ.w,x+rkQ.x,y+rkQ.y,z+rkQ.z);
+        return Quaternion(w+rhs.w,x+rhs.x,y+rhs.y,z+rhs.z);
     }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::operator- (const Quaternion& rkQ) const
-    {
-        return Quaternion(w-rkQ.w,x-rkQ.x,y-rkQ.y,z-rkQ.z);
-    }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::operator* (const Quaternion& rkQ) const
-    {
-        // NOTE:  Multiplication is not generally commutative, so in most
-        // cases p*q != q*p.
 
+    Quaternion Quaternion::operator- (const Quaternion& rhs) const
+    {
+        return Quaternion(w-rhs.w,x-rhs.x,y-rhs.y,z-rhs.z);
+    }
+
+    Quaternion Quaternion::operator* (const Quaternion& rhs) const
+    {
         return Quaternion
         (
-            w * rkQ.w - x * rkQ.x - y * rkQ.y - z * rkQ.z,
-            w * rkQ.x + x * rkQ.w + y * rkQ.z - z * rkQ.y,
-            w * rkQ.y + y * rkQ.w + z * rkQ.x - x * rkQ.z,
-            w * rkQ.z + z * rkQ.w + x * rkQ.y - y * rkQ.x
+            w * rhs.w - x * rhs.x - y * rhs.y - z * rhs.z,
+            w * rhs.x + x * rhs.w + y * rhs.z - z * rhs.y,
+            w * rhs.y + y * rhs.w + z * rhs.x - x * rhs.z,
+            w * rhs.z + z * rhs.w + x * rhs.y - y * rhs.x
         );
     }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::operator* (float fScalar) const
+
+    Quaternion Quaternion::operator* (float rhs) const
     {
-        return Quaternion(fScalar*w,fScalar*x,fScalar*y,fScalar*z);
+        return Quaternion(rhs*w,rhs*x,rhs*y,rhs*z);
     }
-    //-----------------------------------------------------------------------
-    Quaternion operator* (float fScalar, const Quaternion& rkQ)
-    {
-        return Quaternion(fScalar*rkQ.w,fScalar*rkQ.x,fScalar*rkQ.y,
-            fScalar*rkQ.z);
-    }
-    //-----------------------------------------------------------------------
+
     Quaternion Quaternion::operator- () const
     {
         return Quaternion(-w,-x,-y,-z);
     }
-    //-----------------------------------------------------------------------
-    float Quaternion::Dot (const Quaternion& rkQ) const
+
+    float Quaternion::dot(const Quaternion& other) const
     {
-        return w*rkQ.w+x*rkQ.x+y*rkQ.y+z*rkQ.z;
+        return w*other.w+x*other.x+y*other.y+z*other.z;
     }
-    //-----------------------------------------------------------------------
-    float Quaternion::Norm () const
-    {
-        return w*w+x*x+y*y+z*z;
-    }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::Inverse () const
+
+    Quaternion Quaternion::inverse() const
     {
         float fNorm = w*w+x*x+y*y+z*z;
-        if ( fNorm > 0.0 )
+        if (fNorm > 0.0f)
         {
             float fInvNorm = 1.0f/fNorm;
             return Quaternion(w*fInvNorm,-x*fInvNorm,-y*fInvNorm,-z*fInvNorm);
         }
         else
         {
-            // return an invalid result to flag the error
+            // Return an invalid result to flag the error
             return ZERO;
         }
     }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::UnitInverse () const
+
+    Vector3 Quaternion::rotate(const Vector3& v) const
     {
-        // assert:  'this' is unit length
-        return Quaternion(w,-x,-y,-z);
+		Matrix3 rot;
+		toRotationMatrix(rot);
+		return rot*v;
     }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::Exp () const
+
+    Quaternion Quaternion::slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath)
     {
-        // If q = A*(x*i+y*j+z*k) where (x,y,z) is unit length, then
-        // exp(q) = cos(A)+sin(A)*(x*i+y*j+z*k).  If sin(A) is near zero,
-        // use exp(q) = cos(A)+A*(x*i+y*j+z*k) since A/sin(A) has limit 1.
+        float cos = p.dot(q);
+        Quaternion quat;
 
-        Radian fAngle ( Math::Sqrt(x*x+y*y+z*z) );
-        float fSin = Math::Sin(fAngle);
-
-        Quaternion kResult;
-        kResult.w = Math::Cos(fAngle);
-
-        if ( Math::Abs(fSin) >= ms_fEpsilon )
+        if (cos < 0.0f && shortestPath)
         {
-            float fCoeff = fSin/(fAngle.valueRadians());
-            kResult.x = fCoeff*x;
-            kResult.y = fCoeff*y;
-            kResult.z = fCoeff*z;
+            cos = -cos;
+            quat = -q;
         }
         else
         {
-            kResult.x = x;
-            kResult.y = y;
-            kResult.z = z;
+            quat = q;
         }
 
-        return kResult;
-    }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::Log () const
-    {
-        // If q = cos(A)+sin(A)*(x*i+y*j+z*k) where (x,y,z) is unit length, then
-        // log(q) = A*(x*i+y*j+z*k).  If sin(A) is near zero, use log(q) =
-        // sin(A)*(x*i+y*j+z*k) since sin(A)/A has limit 1.
-
-        Quaternion kResult;
-        kResult.w = 0.0;
-
-        if ( Math::Abs(w) < 1.0 )
-        {
-            Radian fAngle ( Math::ACos(w) );
-            float fSin = Math::Sin(fAngle);
-            if ( Math::Abs(fSin) >= ms_fEpsilon )
-            {
-                float fCoeff = fAngle.valueRadians()/fSin;
-                kResult.x = fCoeff*x;
-                kResult.y = fCoeff*y;
-                kResult.z = fCoeff*z;
-                return kResult;
-            }
-        }
-
-        kResult.x = x;
-        kResult.y = y;
-        kResult.z = z;
-
-        return kResult;
-    }
-    //-----------------------------------------------------------------------
-    Vector3 Quaternion::operator* (const Vector3& v) const
-    {
-		// nVidia SDK implementation
-		Vector3 uv, uuv;
-		Vector3 qvec(x, y, z);
-		uv = qvec.cross(v);
-		uuv = qvec.cross(uv);
-		uv *= (2.0f * w);
-		uuv *= 2.0f;
-
-		return v + uv + uuv;
-
-    }
-    //-----------------------------------------------------------------------
-	bool Quaternion::equals(const Quaternion& rhs, const Radian& tolerance) const
-	{
-        float fCos = Dot(rhs);
-        Radian angle = Math::ACos(fCos);
-
-		return (Math::Abs(angle.valueRadians()) <= tolerance.valueRadians())
-            || Math::RealEqual(angle.valueRadians(), Math::PI, tolerance.valueRadians());
-
-
-	}
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::Slerp (float fT, const Quaternion& rkP,
-        const Quaternion& rkQ, bool shortestPath)
-    {
-        float fCos = rkP.Dot(rkQ);
-        Quaternion rkT;
-
-        // Do we need to invert rotation?
-        if (fCos < 0.0f && shortestPath)
-        {
-            fCos = -fCos;
-            rkT = -rkQ;
-        }
-        else
-        {
-            rkT = rkQ;
-        }
-
-        if (Math::Abs(fCos) < 1 - ms_fEpsilon)
+        if (Math::Abs(cos) < 1 - EPSILON)
         {
             // Standard case (slerp)
-            float fSin = Math::Sqrt(1 - Math::Sqr(fCos));
-            Radian fAngle = Math::ATan2(fSin, fCos);
-            float fInvSin = 1.0f / fSin;
-            float fCoeff0 = Math::Sin((1.0f - fT) * fAngle) * fInvSin;
-            float fCoeff1 = Math::Sin(fT * fAngle) * fInvSin;
-            return fCoeff0 * rkP + fCoeff1 * rkT;
+            float sin = Math::Sqrt(1 - Math::Sqr(cos));
+            Radian angle = Math::ATan2(sin, cos);
+            float invSin = 1.0f / sin;
+            float coeff0 = Math::Sin((1.0f - t) * angle) * invSin;
+            float coeff1 = Math::Sin(t * angle) * invSin;
+            return coeff0 * p + coeff1 * quat;
         }
         else
         {
             // There are two situations:
-            // 1. "rkP" and "rkQ" are very close (fCos ~= +1), so we can do a linear
+            // 1. "p" and "q" are very close (fCos ~= +1), so we can do a linear
             //    interpolation safely.
-            // 2. "rkP" and "rkQ" are almost inverse of each other (fCos ~= -1), there
+            // 2. "p" and "q" are almost inverse of each other (fCos ~= -1), there
             //    are an infinite number of possibilities interpolation. but we haven't
             //    have method to fix this case, so just use linear interpolation here.
-            Quaternion t = (1.0f - fT) * rkP + fT * rkT;
-            // taking the complement requires renormalisation
-            t.normalize();
-            return t;
+            Quaternion ret = (1.0f - t) * p + t * quat;
+
+            // Taking the complement requires renormalization
+            ret.normalize();
+            return ret;
         }
     }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::SlerpExtraSpins (float fT,
-        const Quaternion& rkP, const Quaternion& rkQ, int iExtraSpins)
-    {
-        float fCos = rkP.Dot(rkQ);
-        Radian fAngle ( Math::ACos(fCos) );
 
-        if ( Math::Abs(fAngle.valueRadians()) < ms_fEpsilon )
-            return rkP;
-
-        float fSin = Math::Sin(fAngle);
-        Radian fPhase ( Math::PI*iExtraSpins*fT );
-        float fInvSin = 1.0f/fSin;
-        float fCoeff0 = Math::Sin((1.0f-fT)*fAngle - fPhase)*fInvSin;
-        float fCoeff1 = Math::Sin(fT*fAngle + fPhase)*fInvSin;
-        return fCoeff0*rkP + fCoeff1*rkQ;
-    }
-    //-----------------------------------------------------------------------
-    void Quaternion::Intermediate (const Quaternion& rkQ0,
-        const Quaternion& rkQ1, const Quaternion& rkQ2,
-        Quaternion& rkA, Quaternion& rkB)
+    float Quaternion::normalize()
     {
-        // assert:  q0, q1, q2 are unit quaternions
-
-        Quaternion kQ0inv = rkQ0.UnitInverse();
-        Quaternion kQ1inv = rkQ1.UnitInverse();
-        Quaternion rkP0 = kQ0inv*rkQ1;
-        Quaternion rkP1 = kQ1inv*rkQ2;
-        Quaternion kArg = 0.25*(rkP0.Log()-rkP1.Log());
-        Quaternion kMinusArg = -kArg;
-
-        rkA = rkQ1*kArg.Exp();
-        rkB = rkQ1*kMinusArg.Exp();
-    }
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::Squad (float fT,
-        const Quaternion& rkP, const Quaternion& rkA,
-        const Quaternion& rkB, const Quaternion& rkQ, bool shortestPath)
-    {
-        float fSlerpT = 2.0f*fT*(1.0f-fT);
-        Quaternion kSlerpP = Slerp(fT, rkP, rkQ, shortestPath);
-        Quaternion kSlerpQ = Slerp(fT, rkA, rkB);
-        return Slerp(fSlerpT, kSlerpP ,kSlerpQ);
-    }
-    //-----------------------------------------------------------------------
-    float Quaternion::normalize(void)
-    {
-        float len = Norm();
+        float len = w*w+x*x+y*y+z*z;
         float factor = 1.0f / Math::Sqrt(len);
         *this = *this * factor;
         return len;
     }
-    //-----------------------------------------------------------------------
-	Radian Quaternion::getRoll(bool reprojectAxis) const
+
+	Quaternion operator* (float lhs, const Quaternion& rhs)
 	{
-		if (reprojectAxis)
-		{
-			// roll = atan2(localx.y, localx.x)
-			// pick parts of xAxis() implementation that we need
-//			float fTx  = 2.0*x;
-			float fTy  = 2.0f*y;
-			float fTz  = 2.0f*z;
-			float fTwz = fTz*w;
-			float fTxy = fTy*x;
-			float fTyy = fTy*y;
-			float fTzz = fTz*z;
-
-			// Vector3(1.0-(fTyy+fTzz), fTxy+fTwz, fTxz-fTwy);
-
-			return Radian(Math::ATan2(fTxy+fTwz, 1.0f-(fTyy+fTzz)));
-
-		}
-		else
-		{
-			return Radian(Math::ATan2(2*(x*y + w*z), w*w + x*x - y*y - z*z));
-		}
+		return Quaternion(lhs*rhs.w,lhs*rhs.x,lhs*rhs.y,
+			lhs*rhs.z);
 	}
-    //-----------------------------------------------------------------------
-	Radian Quaternion::getPitch(bool reprojectAxis) const
-	{
-		if (reprojectAxis)
-		{
-			// pitch = atan2(localy.z, localy.y)
-			// pick parts of yAxis() implementation that we need
-			float fTx  = 2.0f*x;
-//			float fTy  = 2.0f*y;
-			float fTz  = 2.0f*z;
-			float fTwx = fTx*w;
-			float fTxx = fTx*x;
-			float fTyz = fTz*y;
-			float fTzz = fTz*z;
-
-			// Vector3(fTxy-fTwz, 1.0-(fTxx+fTzz), fTyz+fTwx);
-			return Radian(Math::ATan2(fTyz+fTwx, 1.0f-(fTxx+fTzz)));
-		}
-		else
-		{
-			// internal version
-			return Radian(Math::ATan2(2*(y*z + w*x), w*w - x*x - y*y + z*z));
-		}
-	}
-    //-----------------------------------------------------------------------
-	Radian Quaternion::getYaw(bool reprojectAxis) const
-	{
-		if (reprojectAxis)
-		{
-			// yaw = atan2(localz.x, localz.z)
-			// pick parts of zAxis() implementation that we need
-			float fTx  = 2.0f*x;
-			float fTy  = 2.0f*y;
-			float fTz  = 2.0f*z;
-			float fTwy = fTy*w;
-			float fTxx = fTx*x;
-			float fTxz = fTz*x;
-			float fTyy = fTy*y;
-
-			// Vector3(fTxz+fTwy, fTyz-fTwx, 1.0-(fTxx+fTyy));
-
-			return Radian(Math::ATan2(fTxz+fTwy, 1.0f-(fTxx+fTyy)));
-
-		}
-		else
-		{
-			// internal version
-			return Radian(Math::ASin(-2*(x*z - w*y)));
-		}
-	}
-    //-----------------------------------------------------------------------
-    Quaternion Quaternion::nlerp(float fT, const Quaternion& rkP,
-        const Quaternion& rkQ, bool shortestPath)
-    {
-		Quaternion result;
-        float fCos = rkP.Dot(rkQ);
-		if (fCos < 0.0f && shortestPath)
-		{
-			result = rkP + fT * ((-rkQ) - rkP);
-		}
-		else
-		{
-			result = rkP + fT * (rkQ - rkP);
-		}
-        result.normalize();
-        return result;
-    }
 }

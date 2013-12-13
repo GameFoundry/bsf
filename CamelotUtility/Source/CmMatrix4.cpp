@@ -206,7 +206,7 @@ namespace CamelotFramework
         //    3. Translate
 
         Matrix3 rot3x3;
-        orientation.ToRotationMatrix(rot3x3);
+        orientation.toRotationMatrix(rot3x3);
 
         // Set up final matrix with scale, rotation and translation
         m[0][0] = scale.x * rot3x3[0][0]; m[0][1] = scale.y * rot3x3[0][1]; m[0][2] = scale.z * rot3x3[0][2]; m[0][3] = position.x;
@@ -222,16 +222,16 @@ namespace CamelotFramework
         // Invert the parameters
         Vector3 invTranslate = -position;
         Vector3 invScale(1 / scale.x, 1 / scale.y, 1 / scale.z);
-        Quaternion invRot = orientation.Inverse();
+        Quaternion invRot = orientation.inverse();
 
         // Because we're inverting, order is translation, rotation, scale
         // So make translation relative to scale & rotation
-        invTranslate = invRot * invTranslate; // rotate
+        invTranslate = invRot.rotate(invTranslate); // rotate
         invTranslate *= invScale; // scale
 
         // Next, make a 3x3 rotation matrix
         Matrix3 rot3x3;
-        invRot.ToRotationMatrix(rot3x3);
+        invRot.toRotationMatrix(rot3x3);
 
         // Set up final matrix with scale, rotation and translation
         m[0][0] = invScale.x * rot3x3[0][0]; m[0][1] = invScale.x * rot3x3[0][1]; m[0][2] = invScale.x * rot3x3[0][2]; m[0][3] = invTranslate.x;

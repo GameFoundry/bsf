@@ -358,6 +358,18 @@ namespace CamelotFramework
             return Vector2(*this - (2 * this->dot(normal) * normal));
         }
 
+		/**
+		 * @brief	Performs Gram-Schmidt orthonormalization
+		 */
+		static void orthonormalize(Vector2& u, Vector2& v)
+		{
+			u.normalize();
+
+			float dot = u.dot(v); 
+			v -= u*dot;
+			v.normalize();
+		}
+
 		static Vector2 normalize(const Vector2& val)
 		{
 			float len = Math::Sqrt(val.x * val.x + val.y * val.y);

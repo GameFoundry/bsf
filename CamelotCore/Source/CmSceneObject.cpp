@@ -156,7 +156,7 @@ namespace CamelotFramework
 	void SceneObject::moveRelative(const Vector3& vec)
 	{
 		// Transform the axes of the relative vector by camera's local axes
-		Vector3 trans = mRotation * vec;
+		Vector3 trans = mRotation.rotate(vec);
 
 		setPosition(mPosition + trans);
 	}
@@ -164,7 +164,7 @@ namespace CamelotFramework
 	void SceneObject::rotate(const Vector3& axis, const Radian& angle)
 	{
 		Quaternion q;
-		q.FromAngleAxis(angle,axis);
+		q.fromAngleAxis(angle,axis);
 		rotate(q);
 	}
 
@@ -181,20 +181,20 @@ namespace CamelotFramework
 	void SceneObject::roll(const Radian& angle)
 	{
 		// Rotate around local Z axis
-		Vector3 zAxis = mRotation * Vector3::UNIT_Z;
+		Vector3 zAxis = mRotation.rotate(Vector3::UNIT_Z);
 		rotate(zAxis, angle);
 	}
 
 	void SceneObject::yaw(const Radian& angle)
 	{
-		Vector3 yAxis = mRotation * Vector3::UNIT_Y;
+		Vector3 yAxis = mRotation.rotate(Vector3::UNIT_Y);
 		rotate(yAxis, angle);
 	}
 
 	void SceneObject::pitch(const Radian& angle)
 	{
 		// Rotate around local X axis
-		Vector3 xAxis = mRotation * Vector3::UNIT_X;
+		Vector3 xAxis = mRotation.rotate(Vector3::UNIT_X);
 		rotate(xAxis, angle);
 	}
 
@@ -252,7 +252,7 @@ namespace CamelotFramework
 			mWorldScale = parentScale * mScale;
 
 			// Change position vector based on parent's orientation & scale
-			mWorldPosition = parentOrientation * (parentScale * mPosition);
+			mWorldPosition = parentOrientation.rotate(parentScale * mPosition);
 
 			// Add altered position vector to parents
 			mWorldPosition += mParent->getWorldPosition();

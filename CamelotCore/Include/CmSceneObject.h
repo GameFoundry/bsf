@@ -62,21 +62,21 @@ namespace CamelotFramework
 		 *
 		 * @return	Forward axis of the object.
 		 */
-		Vector3 getForward() const { return getWorldRotation() * -Vector3::UNIT_Z; }
+		Vector3 getForward() const { return getWorldRotation().rotate(-Vector3::UNIT_Z); }
 
 		/**
 		 * @brief	Gets the Y (up) axis of the object, in world space.
 		 *
 		 * @return	Up axis of the object.
 		 */
-		Vector3 getUp() const { return getWorldRotation() * Vector3::UNIT_Y; }
+		Vector3 getUp() const { return getWorldRotation().rotate(Vector3::UNIT_Y); }
 
 		/**
 		 * @brief	Gets the X (right) axis of the object, in world space.
 		 *
 		 * @return	Right axis of the object.
 		 */
-		Vector3 getRight() const { return getWorldRotation() * Vector3::UNIT_X; }
+		Vector3 getRight() const { return getWorldRotation().rotate(Vector3::UNIT_X); }
 
 		/**
 		 * @brief	Rotates the game object so it's forward axis faces the provided

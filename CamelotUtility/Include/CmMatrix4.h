@@ -132,7 +132,7 @@ namespace CamelotFramework
         inline Matrix4(const Quaternion& rot)
         {
           Matrix3 m3x3;
-          rot.ToRotationMatrix(m3x3);
+          rot.toRotationMatrix(m3x3);
           operator=(IDENTITY);
           operator=(m3x3);
         }

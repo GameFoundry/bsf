@@ -63,6 +63,11 @@ Other:
 
 -----------------------BACKLOG TODO---------------------------------------------------------------
 
+Port Quaternions
+ - Update native version with only needed methods and see if there are better ways of calculating some of that stuff
+ - Read an article about Quaternions and possibly check out other libraries (GeometricTools?)
+ - ALso analyze Vector3::getRotationTo
+   - Possibly move that method to Quaternion
 
 ----------------------------------------------------------------------------------------------
 Medium priority:

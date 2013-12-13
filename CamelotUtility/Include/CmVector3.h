@@ -409,7 +409,7 @@ namespace CamelotFramework
 				if (fallbackAxis != Vector3::ZERO)
 				{
 					// Rotate 180 degrees about the fallback axis
-					q.FromAngleAxis(Radian(Math::PI), fallbackAxis);
+					q.fromAngleAxis(Radian(Math::PI), fallbackAxis);
 				}
 				else
 				{
@@ -418,7 +418,7 @@ namespace CamelotFramework
 					if (axis.isZeroLength()) // Pick another if colinear
 						axis = Vector3::UNIT_Y.cross(*this);
 					axis.normalize();
-					q.FromAngleAxis(Radian(Math::PI), axis);
+					q.fromAngleAxis(Radian(Math::PI), axis);
 				}
 			}
 			else
@@ -454,6 +454,23 @@ namespace CamelotFramework
         {
             return Vector3(*this - (2 * this->dot(normal) * normal));
         }
+
+		/**
+		 * @brief	Performs Gram-Schmidt orthonormalization
+		 */
+		static void orthonormalize(Vector3& vec0, Vector3& vec1, Vector3& vec2)
+		{
+			vec0.normalize();
+
+			float dot0 = vec0.dot(vec1); 
+			vec1 -= dot0*vec0;
+			vec1.normalize();
+
+			float dot1 = vec1.dot(vec2);
+			dot0 = vec0.dot(vec2);
+			vec2 -= dot0*vec0 + dot1*vec1;
+			vec2.normalize();
+		}
 
 		static Vector3 normalize(const Vector3& val)
 		{

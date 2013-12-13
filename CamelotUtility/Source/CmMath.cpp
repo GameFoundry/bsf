@@ -927,7 +927,7 @@ namespace CamelotFramework
 
 		// This is most efficiently done using 3x3 Matrices
 		Matrix3 rot;
-		orientation.ToRotationMatrix(rot);
+		orientation.toRotationMatrix(rot);
 
 		// Make the translation relative to new axes
 		Matrix3 rotT = rot.transpose();
