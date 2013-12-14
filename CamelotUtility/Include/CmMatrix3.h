@@ -25,65 +25,33 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
-#ifndef __Matrix3_H__
-#define __Matrix3_H__
+#pragma once
 
 #include "CmPrerequisitesUtil.h"
-
 #include "CmVector3.h"
-
-// NB All code adapted from Wild Magic 0.2 Matrix math (free source code)
-// http://www.geometrictools.com/
-
-// NOTE.  The (x,y,z) coordinate system is assumed to be right-handed.
-// Coordinate axis rotation matrices are of the form
-//   RX =    1       0       0
-//           0     cos(t) -sin(t)
-//           0     sin(t)  cos(t)
-// where t > 0 indicates a counterclockwise rotation in the yz-plane
-//   RY =  cos(t)    0     sin(t)
-//           0       1       0
-//        -sin(t)    0     cos(t)
-// where t > 0 indicates a counterclockwise rotation in the zx-plane
-//   RZ =  cos(t) -sin(t)    0
-//         sin(t)  cos(t)    0
-//           0       0       1
-// where t > 0 indicates a counterclockwise rotation in the xy-plane.
 
 namespace CamelotFramework
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-	/** A 3x3 matrix which can represent rotations around axes.
-        @note
-            <b>All the code is adapted from the Wild Magic 0.2 Matrix
-            library (http://www.geometrictools.com/).</b>
-        @par
-            The coordinate system is assumed to be <b>right-handed</b>.
-    */
     class CM_UTILITY_EXPORT Matrix3
     {
+	private:
+		struct EulerAngleOrderData
+		{
+			int a, b, c;
+			float sign;
+		};
+
     public:
-        /** Default constructor.
-            @note
-                It does <b>NOT</b> initialize the matrix for efficiency.
-        */
-		inline Matrix3 () {}
-        inline explicit Matrix3 (const float arr[3][3])
+		Matrix3() {}
+
+        Matrix3(const Matrix3& mat)
 		{
-			memcpy(m,arr,9*sizeof(float));
+			memcpy(m, mat.m, 9*sizeof(float));
 		}
-        inline Matrix3 (const Matrix3& rkMatrix)
-		{
-			memcpy(m,rkMatrix.m,9*sizeof(float));
-		}
-        Matrix3 (float fEntry00, float fEntry01, float fEntry02,
-                    float fEntry10, float fEntry11, float fEntry12,
-                    float fEntry20, float fEntry21, float fEntry22)
+
+        Matrix3(float fEntry00, float fEntry01, float fEntry02,
+                float fEntry10, float fEntry11, float fEntry12,
+                float fEntry20, float fEntry21, float fEntry22)
 		{
 			m[0][0] = fEntry00;
 			m[0][1] = fEntry01;
@@ -96,9 +64,65 @@ namespace CamelotFramework
 			m[2][2] = fEntry22;
 		}
 
-		/** Exchange the contents of this matrix with another. 
-		*/
-		inline void swap(Matrix3& other)
+		/**
+         * @brief	Construct a matrix from a quaternion.
+         */
+        explicit Matrix3(const Quaternion& quad)
+        {
+            fromQuaternion(quad);
+        }
+
+		/**
+         * @brief	Construct a matrix that performs rotation and scale.
+         */
+        explicit Matrix3(const Quaternion& quad, const Vector3 scale)
+        {
+            fromQuaternion(quad);
+			
+			for (int row = 0; row < 3; row++)
+			{
+				for (int col = 0; col < 3; col++)
+					m[row][col] = scale[row]*m[row][col];
+			}
+        }
+
+		/**
+         * @brief	Construct a matrix from an angle/axis.
+         */
+        explicit Matrix3(const Vector3& axis, const Radian& angle)
+        {
+            fromAxisAngle(axis, angle);
+        }
+
+        /**
+         * @brief	Construct a matrix from 3 orthonormal local axes.
+         */
+        explicit Matrix3(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
+        {
+            fromAxes(xaxis, yaxis, zaxis);
+        }
+
+        /**
+         * @brief	Construct a matrix from euler angles, XYZ ordering.
+         * 			
+		 * @see		Matrix3::fromEulerAngles
+         */
+		explicit Matrix3(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
+		{
+			fromEulerAngles(xAngle, yAngle, zAngle);
+		}
+
+        /**
+         * @brief	Construct a matrix from euler angles, custom ordering.
+         * 			
+		 * @see		Matrix3::fromEulerAngles
+         */
+		explicit Matrix3(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
+		{
+			fromEulerAngles(xAngle, yAngle, zAngle, order);
+		}
+
+		void swap(Matrix3& other)
 		{
 			std::swap(m[0][0], other.m[0][0]);
 			std::swap(m[0][1], other.m[0][1]);
@@ -111,164 +135,157 @@ namespace CamelotFramework
 			std::swap(m[2][2], other.m[2][2]);
 		}
 
-        // member access, allows use of construct mat[r][c]
-        inline float* operator[] (size_t iRow) const
+        inline float* operator[] (size_t row) const
 		{
-			return (float*)m[iRow];
+			return (float*)m[row];
 		}
-        /*inline operator float* ()
-		{
-			return (float*)m[0];
-		}*/
-        Vector3 GetColumn (size_t iCol) const;
-        void SetColumn(size_t iCol, const Vector3& vec);
-        void FromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
 
-        // assignment and comparison
-        inline Matrix3& operator= (const Matrix3& rkMatrix)
+        Vector3 getColumn(size_t col) const;
+        void setColumn(size_t col, const Vector3& vec);
+
+        Matrix3& operator= (const Matrix3& rhs)
 		{
-			memcpy(m,rkMatrix.m,9*sizeof(float));
+			memcpy(m, rhs.m, 9*sizeof(float));
 			return *this;
 		}
-        bool operator== (const Matrix3& rkMatrix) const;
-        inline bool operator!= (const Matrix3& rkMatrix) const
-		{
-			return !operator==(rkMatrix);
-		}
+        bool operator== (const Matrix3& rhs) const;
+        bool operator!= (const Matrix3& rhs) const;
 
-        // arithmetic operations
-        Matrix3 operator+ (const Matrix3& rkMatrix) const;
-        Matrix3 operator- (const Matrix3& rkMatrix) const;
-        Matrix3 operator* (const Matrix3& rkMatrix) const;
+        Matrix3 operator+ (const Matrix3& rhs) const;
+        Matrix3 operator- (const Matrix3& rhs) const;
+        Matrix3 operator* (const Matrix3& rhs) const;
         Matrix3 operator- () const;
+		Matrix3 operator* (float rhs) const;
 
-        // matrix * vector [3x3 * 3x1 = 3x1]
-        Vector3 operator* (const Vector3& rkVector) const;
+		friend Matrix3 operator* (float lhs, const Matrix3& rhs);
 
-        // vector * matrix [1x3 * 3x3 = 1x3]
-        CM_UTILITY_EXPORT friend Vector3 operator* (const Vector3& rkVector,
-            const Matrix3& rkMatrix);
-
-        // matrix * scalar
-        Matrix3 operator* (float fScalar) const;
-
-        // scalar * matrix
-        CM_UTILITY_EXPORT friend Matrix3 operator* (float fScalar, const Matrix3& rkMatrix);
-
-        // utilities
+		Vector3 transform(const Vector3& vec) const;
         Matrix3 transpose () const;
-        bool Inverse (Matrix3& rkInverse, float fTolerance = 1e-06) const;
-        Matrix3 Inverse (float fTolerance = 1e-06) const;
-        float Determinant () const;
+        bool inverse(Matrix3& mat, float fTolerance = 1e-06f) const;
+        Matrix3 inverse(float fTolerance = 1e-06f) const;
+        float determinant() const;
 
-        // singular value decomposition
-        void SingularValueDecomposition (Matrix3& rkL, Vector3& rkS,
-            Matrix3& rkR) const;
-        void SingularValueComposition (const Matrix3& rkL,
-            const Vector3& rkS, const Matrix3& rkR);
+        void singularValueDecomposition (Matrix3& matL, Vector3& matS, Matrix3& matR) const;
+		void QDUDecomposition (Matrix3& matQ, Vector3& vecD, Vector3& vecU) const;
 
-        // Gram-Schmidt orthonormalization (applied to columns of rotation matrix)
-        void Orthonormalize ();
+        /**
+         * @brief	Gram-Schmidt orthonormalization (applied to columns of rotation matrix)
+         */
+        void orthonormalize();
 
-        // orthogonal Q, diagonal D, upper triangular U stored as (u01,u02,u12)
-        void QDUDecomposition (Matrix3& rkQ, Vector3& rkD,
-            Vector3& rkU) const;
+        /**
+         * @brief	Converts an orthonormal matrix to axis angle representation.
+         *
+         * @note	Matrix must be orthonormal.
+         */
+        void toAxisAngle(Vector3& axis, Radian& angle) const;
 
-        float SpectralNorm () const;
+        /**
+         * @brief	Creates a rotation matrix from an axis angle representation.
+         */
+        void fromAxisAngle(const Vector3& axis, const Radian& angle);
 
-        // matrix must be orthonormal
-        void ToAxisAngle (Vector3& rkAxis, Radian& rfAngle) const;
-		inline void ToAxisAngle (Vector3& rkAxis, Degree& rfAngle) const {
-			Radian r;
-			ToAxisAngle ( rkAxis, r );
-			rfAngle = r;
-		}
-        void FromAxisAngle (const Vector3& rkAxis, const Radian& fRadians);
+        /**
+         * @brief	Converts an orthonormal matrix to quaternion representation.
+         *
+         * @note	Matrix must be orthonormal.
+         */
+        void toQuaternion(Quaternion& quat) const;
 
-        // The matrix must be orthonormal.  The decomposition is yaw*pitch*roll
-        // where yaw is rotation about the Up vector, pitch is rotation about the
-        // Right axis, and roll is rotation about the Direction axis.
-        bool ToEulerAnglesXYZ (Radian& rfYAngle, Radian& rfPAngle,
-            Radian& rfRAngle) const;
-        bool ToEulerAnglesXZY (Radian& rfYAngle, Radian& rfPAngle,
-            Radian& rfRAngle) const;
-        bool ToEulerAnglesYXZ (Radian& rfYAngle, Radian& rfPAngle,
-            Radian& rfRAngle) const;
-        bool ToEulerAnglesYZX (Radian& rfYAngle, Radian& rfPAngle,
-            Radian& rfRAngle) const;
-        bool ToEulerAnglesZXY (Radian& rfYAngle, Radian& rfPAngle,
-            Radian& rfRAngle) const;
-        bool ToEulerAnglesZYX (Radian& rfYAngle, Radian& rfPAngle,
-            Radian& rfRAngle) const;
-        void FromEulerAnglesXYZ (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
-        void FromEulerAnglesXZY (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
-        void FromEulerAnglesYXZ (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
-        void FromEulerAnglesYZX (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
-        void FromEulerAnglesZXY (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
-        void FromEulerAnglesZYX (const Radian& fYAngle, const Radian& fPAngle, const Radian& fRAngle);
-        // eigensolver, matrix must be symmetric
-        void EigenSolveSymmetric (float afEigenvalue[3],
-            Vector3 akEigenvector[3]) const;
+        /**
+         * @brief	Creates a rotation matrix from a quaternion representation.
+         */
+        void fromQuaternion(const Quaternion& quat);
 
-        static void TensorProduct (const Vector3& rkU, const Vector3& rkV,
-            Matrix3& rkProduct);
+        /**
+         * @brief	Creates a matrix from a three axes.
+         */
+		void fromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
 
-		/** Determines if this matrix involves a scaling. */
-		inline bool hasScale() const
-		{
-			// check magnitude of column vectors (==local axes)
-			float t = m[0][0] * m[0][0] + m[1][0] * m[1][0] + m[2][0] * m[2][0];
-			if (!Math::RealEqual(t, 1.0, (float)1e-04))
-				return true;
-			t = m[0][1] * m[0][1] + m[1][1] * m[1][1] + m[2][1] * m[2][1];
-			if (!Math::RealEqual(t, 1.0, (float)1e-04))
-				return true;
-			t = m[0][2] * m[0][2] + m[1][2] * m[1][2] + m[2][2] * m[2][2];
-			if (!Math::RealEqual(t, 1.0, (float)1e-04))
-				return true;
+        /**
+         * @brief	Extracts Pitch/Yaw/Roll rotations from this matrix.
+         *
+         * @param [in,out]	xAngle	Rotation about x axis. (AKA Pitch)
+         * @param [in,out]	yAngle  Rotation about y axis. (AKA Yaw)
+         * @param [in,out]	zAngle 	Rotation about z axis. (AKA Roll)
+         *
+         * @return	True if unique solution was found, false otherwise.
+         * 			
+		 * @note	Matrix must be orthonormal.
+		 * 			
+		 * 			Since different values will be returned depending in which order are the rotations applied, this method assumes
+		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "toEulerAngles" method instead.
+         */
+        bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const;
 
-			return false;
-		}
+		/**
+		 * @brief	Extracts Pitch/Yaw/Roll rotations from this matrix.
+		 *
+		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
+		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
+		 * @param	zAngle	Rotation about z axis. (AKA Roll)
+		 * @param	order 	The order in which rotations will be extracted. 
+		 * 					Different values can be retrieved depending on the order.
+		 *
+		 * @return	True if unique solution was found, false otherwise.
+		 * 			
+		 * @note	Matrix must be orthonormal.
+		 */
+		bool toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const;
 
-		/** Function for writing to a stream.
-		*/
-		inline CM_UTILITY_EXPORT friend std::ostream& operator <<
-			( std::ostream& o, const Matrix3& mat )
-		{
-			o << "Matrix3(" << mat[0][0] << ", " << mat[0][1] << ", " << mat[0][2] << ", " 
-                            << mat[1][0] << ", " << mat[1][1] << ", " << mat[1][2] << ", " 
-                            << mat[2][0] << ", " << mat[2][1] << ", " << mat[2][2] << ")";
-			return o;
-		}
+        /**
+         * @brief	Creates a rotation matrix from the provided Pitch/Yaw/Roll angles.
+         *
+		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
+		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
+		 * @param	zAngle	Rotation about z axis. (AKA Roll)
+         *
+         * @note	Matrix must be orthonormal.
+		 * 			Since different values will be produced depending in which order are the rotations applied, this method assumes
+		 * 			they are applied in XYZ order. If you need a specific order, use the overloaded "fromEulerAngles" method instead.
+         */
+        void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle);
+
+        /**
+         * @brief	Creates a rotation matrix from the provided Pitch/Yaw/Roll angles.
+         *
+		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
+		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
+		 * @param	zAngle	Rotation about z axis. (AKA Roll)
+		 * @param	order 	The order in which rotations will be extracted.
+		 * 					Different values can be retrieved depending on the order.
+         *
+         * @note	Matrix must be orthonormal.
+         */
+        void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order);
+
+        /**
+         * @brief	Eigensolver, matrix must be symmetric.
+         */
+        void eigenSolveSymmetric(float eigenValues[3], Vector3 eigenVectors[3]) const;
 
         static const float EPSILON;
         static const Matrix3 ZERO;
         static const Matrix3 IDENTITY;
 
     protected:
-        // support for eigensolver
-        void Tridiagonal (float afDiag[3], float afSubDiag[3]);
-        bool QLAlgorithm (float afDiag[3], float afSubDiag[3]);
+		friend class Matrix4;
 
-        // support for singular value decomposition
-        static const float ms_fSvdEpsilon;
-        static const unsigned int ms_iSvdMaxIterations;
-        static void Bidiagonalize (Matrix3& kA, Matrix3& kL,
-            Matrix3& kR);
-        static void GolubKahanStep (Matrix3& kA, Matrix3& kL,
-            Matrix3& kR);
+        // Support for eigensolver
+        void tridiagonal (float diag[3], float subDiag[3]);
+        bool QLAlgorithm (float diag[3], float subDiag[3]);
 
-        // support for spectral norm
-        static float MaxCubicRoot (float afCoeff[3]);
+        // Support for singular value decomposition
+        static const float SVD_EPSILON;
+        static const unsigned int SVD_MAX_ITERS;
+        static void bidiagonalize (Matrix3& matA, Matrix3& matL, Matrix3& matR);
+        static void golubKahanStep (Matrix3& matA, Matrix3& matL, Matrix3& matR);
+
+		// Euler angle conversions
+		static const EulerAngleOrderData EA_LOOKUP[6];
 
         float m[3][3];
-
-        // for faster access
-        friend class Matrix4;
     };
-	/** @} */
-	/** @} */
 
 	CM_ALLOW_MEMCPY_SERIALIZATION(Matrix3);
 }
-#endif

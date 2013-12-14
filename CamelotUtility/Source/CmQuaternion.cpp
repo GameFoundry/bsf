@@ -44,6 +44,9 @@ namespace CamelotFramework
     const float Quaternion::EPSILON = 1e-03f;
     const Quaternion Quaternion::ZERO(0.0f, 0.0f, 0.0f, 0.0f);
     const Quaternion Quaternion::IDENTITY(1.0f, 0.0f, 0.0f, 0.0f);
+	const Quaternion::EulerAngleOrderData Quaternion::EA_LOOKUP[6] = 
+		{ { 0, 1, 2}, { 0, 2, 1}, { 1, 0, 2},
+		{ 1, 2, 0}, { 2, 0, 1}, { 2, 1, 0} };;
 
     void Quaternion::fromRotationMatrix(const Matrix3& mat)
     {
@@ -87,33 +90,7 @@ namespace CamelotFramework
 		normalize();
     }
 
-    void Quaternion::toRotationMatrix(Matrix3& mat) const
-    {
-        float fTx  = x+x;
-        float fTy  = y+y;
-        float fTz  = z+z;
-        float fTwx = fTx*w;
-        float fTwy = fTy*w;
-        float fTwz = fTz*w;
-        float fTxx = fTx*x;
-        float fTxy = fTy*x;
-        float fTxz = fTz*x;
-        float fTyy = fTy*y;
-        float fTyz = fTz*y;
-        float fTzz = fTz*z;
-
-        mat[0][0] = 1.0f-(fTyy+fTzz);
-        mat[0][1] = fTxy-fTwz;
-        mat[0][2] = fTxz+fTwy;
-        mat[1][0] = fTxy+fTwz;
-        mat[1][1] = 1.0f-(fTxx+fTzz);
-        mat[1][2] = fTyz-fTwx;
-        mat[2][0] = fTxz-fTwy;
-        mat[2][1] = fTyz+fTwx;
-        mat[2][2] = 1.0f-(fTxx+fTyy);
-    }
-
-    void Quaternion::fromAngleAxis(const Radian& angle, const Vector3& axis)
+    void Quaternion::fromAxisAngle(const Vector3& axis, const Radian& angle)
     {
         // Assert:  axis[] is unit length
 
@@ -123,27 +100,6 @@ namespace CamelotFramework
         x = fSin*axis.x;
         y = fSin*axis.y;
         z = fSin*axis.z;
-    }
-
-    void Quaternion::toAngleAxis(Radian& angle, Vector3& axis) const
-    {
-        float fSqrLength = x*x+y*y+z*z;
-        if ( fSqrLength > 0.0 )
-        {
-            angle = 2.0*Math::ACos(w);
-            float fInvLength = Math::InvSqrt(fSqrLength);
-            axis.x = x*fInvLength;
-            axis.y = y*fInvLength;
-            axis.z = z*fInvLength;
-        }
-        else
-        {
-            // Angle is 0 (mod 2*pi), so any axis will do
-            angle = Radian(0.0);
-            axis.x = 1.0;
-            axis.y = 0.0;
-            axis.z = 0.0;
-        }
     }
 
     void Quaternion::fromAxes(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
@@ -164,6 +120,107 @@ namespace CamelotFramework
 
         fromRotationMatrix(kRot);
     }
+
+	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle)
+	{
+		Quaternion quats[3];
+		quats[0].fromAxisAngle(Vector3::UNIT_X, xAngle);
+		quats[1].fromAxisAngle(Vector3::UNIT_Y, yAngle);
+		quats[2].fromAxisAngle(Vector3::UNIT_Z, zAngle);
+
+		*this = quats[2]*(quats[0] * quats[1]);
+	}
+
+	void Quaternion::fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order)
+	{
+		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
+
+		Quaternion quats[3];
+		quats[0].fromAxisAngle(Vector3::UNIT_X, xAngle);
+		quats[1].fromAxisAngle(Vector3::UNIT_Y, yAngle);
+		quats[2].fromAxisAngle(Vector3::UNIT_Z, zAngle);
+
+		*this = quats[l.c]*(quats[l.a] * quats[l.b]);
+	}
+
+	void Quaternion::toRotationMatrix(Matrix3& mat) const
+	{
+		float fTx  = x+x;
+		float fTy  = y+y;
+		float fTz  = z+z;
+		float fTwx = fTx*w;
+		float fTwy = fTy*w;
+		float fTwz = fTz*w;
+		float fTxx = fTx*x;
+		float fTxy = fTy*x;
+		float fTxz = fTz*x;
+		float fTyy = fTy*y;
+		float fTyz = fTz*y;
+		float fTzz = fTz*z;
+
+		mat[0][0] = 1.0f-(fTyy+fTzz);
+		mat[0][1] = fTxy-fTwz;
+		mat[0][2] = fTxz+fTwy;
+		mat[1][0] = fTxy+fTwz;
+		mat[1][1] = 1.0f-(fTxx+fTzz);
+		mat[1][2] = fTyz-fTwx;
+		mat[2][0] = fTxz-fTwy;
+		mat[2][1] = fTyz+fTwx;
+		mat[2][2] = 1.0f-(fTxx+fTyy);
+	}
+
+	void Quaternion::toAxisAngle(Vector3& axis, Radian& angle) const
+	{
+		float fSqrLength = x*x+y*y+z*z;
+		if ( fSqrLength > 0.0 )
+		{
+			angle = 2.0*Math::ACos(w);
+			float fInvLength = Math::InvSqrt(fSqrLength);
+			axis.x = x*fInvLength;
+			axis.y = y*fInvLength;
+			axis.z = z*fInvLength;
+		}
+		else
+		{
+			// Angle is 0 (mod 2*pi), so any axis will do
+			angle = Radian(0.0);
+			axis.x = 1.0;
+			axis.y = 0.0;
+			axis.z = 0.0;
+		}
+	}
+
+	void Quaternion::toAxes(Vector3& xaxis, Vector3& yaxis, Vector3& zaxis) const
+	{
+		Matrix3 matRot;
+		toRotationMatrix(matRot);
+
+		xaxis.x = matRot[0][0];
+		xaxis.y = matRot[1][0];
+		xaxis.z = matRot[2][0];
+
+		yaxis.x = matRot[0][1];
+		yaxis.y = matRot[1][1];
+		yaxis.z = matRot[2][1];
+
+		zaxis.x = matRot[0][2];
+		zaxis.y = matRot[1][2];
+		zaxis.z = matRot[2][2];
+	}
+
+	bool Quaternion::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const
+	{
+		Matrix3 matRot;
+		toRotationMatrix(matRot);
+		return matRot.toEulerAngles(xAngle, yAngle, zAngle);
+	}
+
+	bool Quaternion::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle, EulerAngleOrder order) const
+	{
+		Matrix3 matRot;
+		toRotationMatrix(matRot);
+		return matRot.toEulerAngles(xAngle, yAngle, zAngle, order);
+	}
 
     Vector3 Quaternion::xAxis() const
     {
@@ -207,24 +264,6 @@ namespace CamelotFramework
         float fTyz = fTz*y;
 
         return Vector3(fTxz+fTwy, fTyz-fTwx, 1.0f-(fTxx+fTyy));
-    }
-
-    void Quaternion::toAxes (Vector3& xaxis, Vector3& yaxis, Vector3& zaxis) const
-    {
-        Matrix3 kRot;
-        toRotationMatrix(kRot);
-
-        xaxis.x = kRot[0][0];
-        xaxis.y = kRot[1][0];
-        xaxis.z = kRot[2][0];
-
-        yaxis.x = kRot[0][1];
-        yaxis.y = kRot[1][1];
-        yaxis.z = kRot[2][1];
-
-        zaxis.x = kRot[0][2];
-        zaxis.y = kRot[1][2];
-        zaxis.z = kRot[2][2];
     }
 
     Quaternion Quaternion::operator+ (const Quaternion& rhs) const
@@ -282,7 +321,7 @@ namespace CamelotFramework
     {
 		Matrix3 rot;
 		toRotationMatrix(rot);
-		return rot*v;
+		return rot.transform(v);
     }
 
     Quaternion Quaternion::slerp(float t, const Quaternion& p, const Quaternion& q, bool shortestPath)

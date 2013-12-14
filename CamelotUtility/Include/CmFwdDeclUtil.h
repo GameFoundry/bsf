@@ -1,9 +1,21 @@
 #pragma once
 
-namespace CamelotFramework {
-	// Pre-declare classes
-	// Allows use of pointers in header files without including individual .h
-	// so decreases dependencies between files
+namespace CamelotFramework 
+{
+	/**
+	 * @brief	Values that represent in which order are euler
+	 * 			angles applied when used in transformations
+	 */
+	enum class EulerAngleOrder
+	{
+		XYZ,
+		XZY,
+		YXZ,
+		YZX,
+		ZXY,
+		ZYX
+	};
+
 	class Angle;
 	class AABox;
 	class Degree;

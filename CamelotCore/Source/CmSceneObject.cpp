@@ -164,7 +164,7 @@ namespace CamelotFramework
 	void SceneObject::rotate(const Vector3& axis, const Radian& angle)
 	{
 		Quaternion q;
-		q.fromAngleAxis(angle,axis);
+		q.fromAxisAngle(axis, angle);
 		rotate(q);
 	}
 

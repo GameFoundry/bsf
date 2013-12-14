@@ -49,11 +49,6 @@ THE SOFTWARE
 // Happens on STL member variables which are not public therefore is ok
 #   pragma warning (disable: 4251)
 
-// disable: "no suitable definition provided for explicit template
-// instantiation request" Occurs in VC7 for no justifiable reason on all
-// #includes of Singleton
-#   pragma warning( disable: 4661)
-
 // disable: 'X' Function call with parameters that may be unsafe
 // Gets triggered when I include boost UUID header, for no valid reason
 #	pragma warning(disable: 4996) 

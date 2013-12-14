@@ -931,7 +931,7 @@ namespace CamelotFramework
 
 		// Make the translation relative to new axes
 		Matrix3 rotT = rot.transpose();
-		Vector3 trans = -rotT * position;
+		Vector3 trans = (-rotT).transform(position);
 
 		// Make final matrix
 		viewMatrix = Matrix4::IDENTITY;

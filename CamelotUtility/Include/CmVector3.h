@@ -409,7 +409,7 @@ namespace CamelotFramework
 				if (fallbackAxis != Vector3::ZERO)
 				{
 					// Rotate 180 degrees about the fallback axis
-					q.fromAngleAxis(Radian(Math::PI), fallbackAxis);
+					q.fromAxisAngle(fallbackAxis, Radian(Math::PI));
 				}
 				else
 				{
@@ -418,7 +418,7 @@ namespace CamelotFramework
 					if (axis.isZeroLength()) // Pick another if colinear
 						axis = Vector3::UNIT_Y.cross(*this);
 					axis.normalize();
-					q.fromAngleAxis(Radian(Math::PI), axis);
+					q.fromAxisAngle(axis, Radian(Math::PI));
 				}
 			}
 			else

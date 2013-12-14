@@ -81,10 +81,10 @@ namespace CamelotFramework
 			mPitch += Degree(gInput().getVerticalAxis() * ROTATION_SPEED);
 
 			Quaternion yRot;
-			yRot.fromAngleAxis(Radian(mYaw), Vector3::UNIT_Y);
+			yRot.fromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
 
 			Quaternion xRot;
-			xRot.fromAngleAxis(Radian(mPitch), yRot.xAxis());
+			xRot.fromAxisAngle(yRot.xAxis(), Radian(mPitch));
 
 			Quaternion camRot = xRot * yRot;
 
