@@ -56,7 +56,7 @@ namespace CamelotFramework
         float trace = mat[0][0]+mat[1][1]+mat[2][2];
         float root;
 
-        if ( trace > 0.0 )
+        if (trace > 0.0f)
         {
             // |w| > 1/2, may as well choose w > 1/2
             root = Math::Sqrt(trace + 1.0f);  // 2w
@@ -71,17 +71,22 @@ namespace CamelotFramework
             // |w| <= 1/2
             static size_t nextLookup[3] = { 1, 2, 0 };
             size_t i = 0;
-            if ( mat[1][1] > mat[0][0] )
+
+            if (mat[1][1] > mat[0][0])
                 i = 1;
-            if ( mat[2][2] > mat[i][i] )
+
+            if (mat[2][2] > mat[i][i])
                 i = 2;
+
             size_t j = nextLookup[i];
             size_t k = nextLookup[j];
 
             root = Math::Sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
+
             float* cmpntLookup[3] = { &x, &y, &z };
             *cmpntLookup[i] = 0.5f*root;
             root = 0.5f/root;
+
             w = (mat[k][j]-mat[j][k])*root;
             *cmpntLookup[j] = (mat[j][i]+mat[i][j])*root;
             *cmpntLookup[k] = (mat[k][i]+mat[i][k])*root;

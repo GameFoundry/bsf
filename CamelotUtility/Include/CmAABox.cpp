@@ -99,35 +99,35 @@ namespace CamelotFramework
 		// First corner 
 		// min min min
 		currentCorner = oldMin;
-		merge( matrix * currentCorner );
+		merge(matrix.transform3x4(currentCorner));
 
 		// min,min,max
 		currentCorner.z = oldMax.z;
-		merge( matrix * currentCorner );
+		merge(matrix.transform3x4(currentCorner));
 
 		// min max max
 		currentCorner.y = oldMax.y;
-		merge( matrix * currentCorner );
+		merge(matrix.transform3x4(currentCorner));
 
 		// min max min
 		currentCorner.z = oldMin.z;
-		merge( matrix * currentCorner );
+		merge(matrix.transform3x4(currentCorner));
 
 		// max max min
 		currentCorner.x = oldMax.x;
-		merge( matrix * currentCorner );
+		merge(matrix.transform3x4(currentCorner));
 
 		// max max max
 		currentCorner.z = oldMax.z;
-		merge( matrix * currentCorner );
+		merge(matrix.transform3x4(currentCorner));
 
 		// max min max
 		currentCorner.y = oldMin.y;
-		merge( matrix * currentCorner );
+		merge(matrix.transform3x4(currentCorner));
 
 		// max min min
 		currentCorner.z = oldMin.z;
-		merge( matrix * currentCorner ); 
+		merge(matrix.transform3x4(currentCorner)); 
 	}
 
 	void AABox::transformAffine(const Matrix4& m)
@@ -137,7 +137,7 @@ namespace CamelotFramework
 		Vector3 centre = getCenter();
 		Vector3 halfSize = getHalfSize();
 
-		Vector3 newCentre = m.transformAffine(centre);
+		Vector3 newCentre = m.transform3x4(centre);
 		Vector3 newHalfSize(
 			Math::Abs(m[0][0]) * halfSize.x + Math::Abs(m[0][1]) * halfSize.y + Math::Abs(m[0][2]) * halfSize.z, 
 			Math::Abs(m[1][0]) * halfSize.x + Math::Abs(m[1][1]) * halfSize.y + Math::Abs(m[1][2]) * halfSize.z,

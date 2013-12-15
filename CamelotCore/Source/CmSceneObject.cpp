@@ -271,7 +271,7 @@ namespace CamelotFramework
 
 	void SceneObject::updateLocalTfrm() const
 	{
-		mCachedLocalTfrm.makeTransform(mPosition, mScale, mRotation);
+		mCachedLocalTfrm.setTRS(mPosition, mRotation, mScale);
 
 		mIsCachedLocalTfrmUpToDate = true;
 	}

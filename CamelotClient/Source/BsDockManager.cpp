@@ -455,7 +455,7 @@ namespace BansheeEditor
 
 		const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
 
-		Vector4 tfrmdPos = worldTfrm * Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f);
+		Vector4 tfrmdPos = worldTfrm.transform3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 		Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
 		Int2 windowPos(Math::RoundToInt(windowPosVec.x), Math::RoundToInt(windowPosVec.y));
 

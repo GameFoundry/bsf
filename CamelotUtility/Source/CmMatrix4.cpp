@@ -32,35 +32,26 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
-
     const Matrix4 Matrix4::ZERO(
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0,
-        0, 0, 0, 0 );
+        0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 0.0f);
 
     const Matrix4 Matrix4::IDENTITY(
-        1, 0, 0, 0,
-        0, 1, 0, 0,
-        0, 0, 1, 0,
-        0, 0, 0, 1 );
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f);
 
-    const Matrix4 Matrix4::CLIPSPACE2DTOIMAGESPACE(
-        0.5,    0,  0, 0.5, 
-          0, -0.5,  0, 0.5, 
-          0,    0,  1,   0,
-          0,    0,  0,   1);
-
-    //-----------------------------------------------------------------------
-    inline static float
-        MINOR(const Matrix4& m, const size_t r0, const size_t r1, const size_t r2, 
+    static float MINOR(const Matrix4& m, const size_t r0, const size_t r1, const size_t r2, 
 								const size_t c0, const size_t c1, const size_t c2)
     {
         return m[r0][c0] * (m[r1][c1] * m[r2][c2] - m[r2][c1] * m[r1][c2]) -
             m[r0][c1] * (m[r1][c0] * m[r2][c2] - m[r2][c0] * m[r1][c2]) +
             m[r0][c2] * (m[r1][c0] * m[r2][c1] - m[r2][c0] * m[r1][c1]);
     }
-    //-----------------------------------------------------------------------
+
     Matrix4 Matrix4::adjoint() const
     {
         return Matrix4( MINOR(*this, 1, 2, 3, 1, 2, 3),
@@ -83,7 +74,7 @@ namespace CamelotFramework
             -MINOR(*this, 0, 1, 3, 0, 1, 2),
             MINOR(*this, 0, 1, 2, 0, 1, 2));
     }
-    //-----------------------------------------------------------------------
+
     float Matrix4::determinant() const
     {
         return m[0][0] * MINOR(*this, 1, 2, 3, 1, 2, 3) -
@@ -91,7 +82,7 @@ namespace CamelotFramework
             m[0][2] * MINOR(*this, 1, 2, 3, 0, 1, 3) -
             m[0][3] * MINOR(*this, 1, 2, 3, 0, 1, 2);
     }
-    //-----------------------------------------------------------------------
+
     Matrix4 Matrix4::inverse() const
     {
         float m00 = m[0][0], m01 = m[0][1], m02 = m[0][2], m03 = m[0][3];
@@ -153,8 +144,8 @@ namespace CamelotFramework
             d20, d21, d22, d23,
             d30, d31, d32, d33);
     }
-    //-----------------------------------------------------------------------
-    Matrix4 Matrix4::inverseAffine(void) const
+
+    Matrix4 Matrix4::inverseAffine() const
     {
         assert(isAffine());
 
@@ -197,37 +188,31 @@ namespace CamelotFramework
             r20, r21, r22, r23,
               0,   0,   0,   1);
     }
-    //-----------------------------------------------------------------------
-    void Matrix4::makeTransform(const Vector3& position, const Vector3& scale, const Quaternion& orientation)
+
+    void Matrix4::setTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
     {
-        // Ordering:
-        //    1. Scale
-        //    2. Rotate
-        //    3. Translate
-
         Matrix3 rot3x3;
-        orientation.toRotationMatrix(rot3x3);
+        rotation.toRotationMatrix(rot3x3);
 
-        // Set up final matrix with scale, rotation and translation
-        m[0][0] = scale.x * rot3x3[0][0]; m[0][1] = scale.y * rot3x3[0][1]; m[0][2] = scale.z * rot3x3[0][2]; m[0][3] = position.x;
-        m[1][0] = scale.x * rot3x3[1][0]; m[1][1] = scale.y * rot3x3[1][1]; m[1][2] = scale.z * rot3x3[1][2]; m[1][3] = position.y;
-        m[2][0] = scale.x * rot3x3[2][0]; m[2][1] = scale.y * rot3x3[2][1]; m[2][2] = scale.z * rot3x3[2][2]; m[2][3] = position.z;
+        m[0][0] = scale.x * rot3x3[0][0]; m[0][1] = scale.y * rot3x3[0][1]; m[0][2] = scale.z * rot3x3[0][2]; m[0][3] = translation.x;
+        m[1][0] = scale.x * rot3x3[1][0]; m[1][1] = scale.y * rot3x3[1][1]; m[1][2] = scale.z * rot3x3[1][2]; m[1][3] = translation.y;
+        m[2][0] = scale.x * rot3x3[2][0]; m[2][1] = scale.y * rot3x3[2][1]; m[2][2] = scale.z * rot3x3[2][2]; m[2][3] = translation.z;
 
         // No projection term
         m[3][0] = 0; m[3][1] = 0; m[3][2] = 0; m[3][3] = 1;
     }
-    //-----------------------------------------------------------------------
-    void Matrix4::makeInverseTransform(const Vector3& position, const Vector3& scale, const Quaternion& orientation)
+
+    void Matrix4::setInverseTRS(const Vector3& translation, const Quaternion& rotation, const Vector3& scale)
     {
         // Invert the parameters
-        Vector3 invTranslate = -position;
+        Vector3 invTranslate = -translation;
         Vector3 invScale(1 / scale.x, 1 / scale.y, 1 / scale.z);
-        Quaternion invRot = orientation.inverse();
+        Quaternion invRot = rotation.inverse();
 
         // Because we're inverting, order is translation, rotation, scale
         // So make translation relative to scale & rotation
-        invTranslate = invRot.rotate(invTranslate); // rotate
-        invTranslate *= invScale; // scale
+        invTranslate = invRot.rotate(invTranslate);
+        invTranslate *= invScale;
 
         // Next, make a 3x3 rotation matrix
         Matrix3 rot3x3;
@@ -241,20 +226,17 @@ namespace CamelotFramework
         // No projection term
         m[3][0] = 0; m[3][1] = 0; m[3][2] = 0; m[3][3] = 1;
     }
-    //-----------------------------------------------------------------------
-	void Matrix4::decomposition(Vector3& position, Vector3& scale, Quaternion& orientation) const
-	{
-		assert(isAffine());
 
+	void Matrix4::decomposition(Vector3& position, Quaternion& rotation, Vector3& scale) const
+	{
 		Matrix3 m3x3;
 		extract3x3Matrix(m3x3);
 
 		Matrix3 matQ;
 		Vector3 vecU;
-		m3x3.QDUDecomposition( matQ, scale, vecU ); 
+		m3x3.QDUDecomposition(matQ, scale, vecU); 
 
-		orientation = Quaternion( matQ );
-		position = Vector3( m[0][3], m[1][3], m[2][3] );
+		rotation = Quaternion(matQ);
+		position = Vector3(m[0][3], m[1][3], m[2][3]);
 	}
-
 }
