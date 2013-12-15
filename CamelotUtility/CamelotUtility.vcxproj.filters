@@ -66,9 +66,6 @@
     <ClInclude Include="Include\CmFwdDeclUtil.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmMathAsm.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMath.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>

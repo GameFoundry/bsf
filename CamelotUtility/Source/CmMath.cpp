@@ -26,7 +26,6 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmMath.h"
-#include "CmMathAsm.h"
 #include "CmVector2.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
@@ -35,10 +34,8 @@ THE SOFTWARE.
 #include "CmAABox.h"
 #include "CmPlane.h"
 
-
 namespace CamelotFramework
 {
-
     const float Math::POS_INFINITY = std::numeric_limits<float>::infinity();
     const float Math::NEG_INFINITY = -std::numeric_limits<float>::infinity();
     const float Math::PI = float( 4.0 * atan( 1.0 ) );
@@ -158,26 +155,8 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------
 	float Math::InvSqrt(float fValue)
 	{
-		return float(asm_rsq(fValue));
+		return 1.0f/sqrt(fValue);
 	}
-    //-----------------------------------------------------------------------
-    float Math::UnitRandom ()
-    {
-        return asm_rand() / asm_rand_max();
-    }
-    
-    //-----------------------------------------------------------------------
-    float Math::RangeRandom (float fLow, float fHigh)
-    {
-        return (fHigh-fLow)*UnitRandom() + fLow;
-    }
-
-    //-----------------------------------------------------------------------
-    float Math::SymmetricRandom ()
-    {
-		return 2.0f * UnitRandom() - 1.0f;
-    }
-
    //-----------------------------------------------------------------------
     void Math::setAngleUnit(Math::AngleUnit unit)
    {

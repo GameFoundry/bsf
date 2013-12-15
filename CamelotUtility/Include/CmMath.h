@@ -331,12 +331,6 @@ namespace CamelotFramework
         */
 		static float InvSqrt(float fValue);
 
-        static float UnitRandom ();  // in [0,1]
-
-        static float RangeRandom (float fLow, float fHigh);  // in [fLow,fHigh]
-
-        static float SymmetricRandom ();  // in [-1,1]
-
         /** Tangent function.
             @param
                 fValue Angle in radians
