@@ -178,13 +178,13 @@ namespace CamelotFramework
 	WString toWString(Radian val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		return toWString(val.valueAngleUnits(), precision, width, fill, flags);
+		return toWString(val.valueRadians(), precision, width, fill, flags);
 	}
 
 	WString toWString(Degree val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		return toWString(val.valueAngleUnits(), precision, width, fill, flags);
+		return toWString(val.valueDegrees(), precision, width, fill, flags);
 	}
 
 	WString toWString(int val, 
@@ -401,13 +401,13 @@ namespace CamelotFramework
 	String toString(Radian val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		return toString(val.valueAngleUnits(), precision, width, fill, flags);
+		return toString(val.valueRadians(), precision, width, fill, flags);
 	}
 
 	String toString(Degree val, unsigned short precision, 
 		unsigned short width, char fill, std::ios::fmtflags flags)
 	{
-		return toString(val.valueAngleUnits(), precision, width, fill, flags);
+		return toString(val.valueDegrees(), precision, width, fill, flags);
 	}
 
 	String toString(int val, 

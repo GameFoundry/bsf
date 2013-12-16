@@ -60,7 +60,7 @@ namespace CamelotFramework
 			if(fastMove)
 				multiplier = FAST_MODE_MULTIPLIER;
 
-			mCurrentSpeed = Math::Clamp(mCurrentSpeed + ACCELERATION * gTime().getFrameDelta(), START_SPEED, TOP_SPEED);
+			mCurrentSpeed = Math::clamp(mCurrentSpeed + ACCELERATION * gTime().getFrameDelta(), START_SPEED, TOP_SPEED);
 			mCurrentSpeed *= multiplier;
 		}
 		else

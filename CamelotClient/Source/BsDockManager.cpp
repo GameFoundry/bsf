@@ -70,7 +70,7 @@ namespace BansheeEditor
 			if(mIsHorizontal)
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mHeight - (INT32)SliderSize);
-				UINT32 sizeTop = Math::FloorToInt(remainingSize * mSplitPosition);
+				UINT32 sizeTop = Math::floorToInt(remainingSize * mSplitPosition);
 				UINT32 sizeBottom = remainingSize - sizeTop;
 
 				mChildren[0]->setArea(mX, mY, mWidth, sizeTop);
@@ -81,7 +81,7 @@ namespace BansheeEditor
 			else
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mWidth - (INT32)SliderSize);
-				UINT32 sizeLeft = Math::FloorToInt(remainingSize * mSplitPosition);
+				UINT32 sizeLeft = Math::floorToInt(remainingSize * mSplitPosition);
 				UINT32 sizeRight = remainingSize - sizeLeft;
 
 				mChildren[0]->setArea(mX, mY, sizeLeft, mHeight);
@@ -297,10 +297,10 @@ namespace BansheeEditor
 
 		UINT32 outWidth = std::max(0, (INT32)width - spacing * 2);
 		UINT32 outHeight = std::max(0, (INT32)height - spacing * 2);
-		UINT32 inWidth = (UINT32)Math::FloorToInt(innerScale * outWidth);
-		UINT32 inHeight = (UINT32)Math::FloorToInt(innerScale * outHeight);
-		INT32 inXOffset = Math::FloorToInt((outWidth - inWidth) * 0.5f);
-		INT32 inYOffset = Math::FloorToInt((outHeight - inHeight) * 0.5f);
+		UINT32 inWidth = (UINT32)Math::floorToInt(innerScale * outWidth);
+		UINT32 inHeight = (UINT32)Math::floorToInt(innerScale * outHeight);
+		INT32 inXOffset = Math::floorToInt((outWidth - inWidth) * 0.5f);
+		INT32 inYOffset = Math::floorToInt((outHeight - inHeight) * 0.5f);
 
 		Vector2 outTopLeft((float)x, (float)y);
 		Vector2 outTopRight((float)(x + outWidth), (float)y);
@@ -457,7 +457,7 @@ namespace BansheeEditor
 
 		Vector4 tfrmdPos = worldTfrm.transform3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 		Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
-		Int2 windowPos(Math::RoundToInt(windowPosVec.x), Math::RoundToInt(windowPosVec.y));
+		Int2 windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
 		DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
 

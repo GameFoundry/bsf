@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 	void GUIScrollBarHandle::setHandlePos(float pct)
 	{
-		pct = Math::Clamp01(pct);
+		pct = Math::clamp01(pct);
 
 		UINT32 maxScrollAmount = getMaxSize() - mHandleSize;
 		mHandlePos = pct * maxScrollAmount;
@@ -144,15 +144,15 @@ namespace BansheeEngine
 	{
 		Int2 offset = mOffset;
 		if(mHorizontal)
-			offset.x += Math::FloorToInt(mHandlePos);
+			offset.x += Math::floorToInt(mHandlePos);
 		else
-			offset.y += Math::FloorToInt(mHandlePos);
+			offset.y += Math::floorToInt(mHandlePos);
 
 		Rect clipRect = mClipRect;
 		if(mHorizontal)
-			clipRect.x -= Math::FloorToInt(mHandlePos);
+			clipRect.x -= Math::floorToInt(mHandlePos);
 		else
-			clipRect.y -= Math::FloorToInt(mHandlePos);
+			clipRect.y -= Math::floorToInt(mHandlePos);
 
 		mImageSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
 			vertexStride, indexStride, renderElementIdx, offset, clipRect);
@@ -195,12 +195,12 @@ namespace BansheeEngine
 
 			if(mHorizontal)
 			{
-				INT32 left = (INT32)mOffset.x + Math::FloorToInt(mHandlePos);
+				INT32 left = (INT32)mOffset.x + Math::floorToInt(mHandlePos);
 				mDragStartPos = ev.getPosition().x - left;
 			}
 			else
 			{
-				INT32 top = (INT32)mOffset.y + Math::FloorToInt(mHandlePos);
+				INT32 top = (INT32)mOffset.y + Math::floorToInt(mHandlePos);
 				mDragStartPos = ev.getPosition().y - top;
 			}
 
@@ -220,7 +220,7 @@ namespace BansheeEngine
 			}
 
 			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
-			mHandlePos = Math::Clamp(mHandlePos, 0.0f, maxScrollAmount);
+			mHandlePos = Math::clamp(mHandlePos, 0.0f, maxScrollAmount);
 
 			if(!onHandleMoved.empty())
 			{
@@ -255,7 +255,7 @@ namespace BansheeEngine
 			INT32 handleOffset = 0;
 			if(mHorizontal)
 			{
-				INT32 handleLeft = (INT32)mOffset.x + Math::FloorToInt(mHandlePos);
+				INT32 handleLeft = (INT32)mOffset.x + Math::floorToInt(mHandlePos);
 				INT32 handleRight = handleLeft + mHandleSize;
 
 				if(ev.getPosition().x < handleLeft)
@@ -265,7 +265,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				INT32 handleTop = (INT32)mOffset.y + Math::FloorToInt(mHandlePos);
+				INT32 handleTop = (INT32)mOffset.y + Math::floorToInt(mHandlePos);
 				INT32 handleBottom = handleTop + mHandleSize;
 
 				if(ev.getPosition().y < handleTop)
@@ -276,7 +276,7 @@ namespace BansheeEngine
 
 			mHandlePos += handleOffset;
 			float maxScrollAmount = (float)getMaxSize() - mHandleSize;
-			mHandlePos = Math::Clamp(mHandlePos, 0.0f, maxScrollAmount);
+			mHandlePos = Math::clamp(mHandlePos, 0.0f, maxScrollAmount);
 
 			if(!onHandleMoved.empty())
 			{
@@ -312,7 +312,7 @@ namespace BansheeEngine
 	{
 		if(mHorizontal)
 		{
-			INT32 left = (INT32)mOffset.x + Math::FloorToInt(mHandlePos);
+			INT32 left = (INT32)mOffset.x + Math::floorToInt(mHandlePos);
 			INT32 right = left + mHandleSize;
 
 			if(pos.x >= left && pos.x < right)
@@ -320,7 +320,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			INT32 top = (INT32)mOffset.y + Math::FloorToInt(mHandlePos);
+			INT32 top = (INT32)mOffset.y + Math::floorToInt(mHandlePos);
 			INT32 bottom = top + mHandleSize;
 
 			if(pos.y >= top && pos.y < bottom)

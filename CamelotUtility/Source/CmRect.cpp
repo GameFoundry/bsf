@@ -110,9 +110,9 @@ namespace CamelotFramework
 				maxY = verts[i].y;
 		}
 
-		x = Math::FloorToInt(minX);
-		y = Math::FloorToInt(minY);
-		width = Math::CeilToInt(maxX) - x;
-		height = Math::CeilToInt(maxY) - y;
+		x = Math::floorToInt(minX);
+		y = Math::floorToInt(minY);
+		width = Math::ceilToInt(maxX) - x;
+		height = Math::ceilToInt(maxY) - y;
 	}
 }

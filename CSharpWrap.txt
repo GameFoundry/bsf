@@ -108,24 +108,19 @@ For EditorWindow, add a new class in BansheeEditor, which pretty much does the j
 
   Math updates
 
-  Matrix
- - Transpose
- - Inverse
- - Determinant
- - Adjoint
- - ToAngle (2D), ToAxisAngle(3D) - extracts angle from a rotation matrix
- - Orthonormalize - normalizes a rotation matrix
- - EigenDecomposition
- - FromEulerAngles
- - Slerp
- - From/ToEulerAngles are probably useless for me. Just set up a FromTRS method that accepts a quaternion
-  - ToTRUS() - Decomposes a TRS matrix, with uniform scale. Make sure to warn the user it won' work without uniform scale
+Plane needs intersection methods for:
+ Ray, AABox, Sphere
 
-Math
- - Fast* methods
- - Refactor entire C++ math library since it's still from Ogre
+AABox.cpp is in Include folder
 
- Also visit Ray, Plane and other math classes
+Add "fast*" methods to Math
+
+Rename:
+Int2 -> Vector2I
+FRect -> Rect
+Rect -> RectI
+
+Add OOBB and intersection methods.
 
 Eventually make all math classes templates that work on both doubles and floats. (Very low priority)
 

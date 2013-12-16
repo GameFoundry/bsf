@@ -76,22 +76,22 @@ namespace BansheeEngine
 		if(!mWidgetIsDirty)
 		{
 			Vector3 posDiff = mLastFramePosition - position;
-			if(Math::Abs(posDiff.x) > diffEpsilon || Math::Abs(posDiff.y) > diffEpsilon || Math::Abs(posDiff.z) > diffEpsilon)
+			if(Math::abs(posDiff.x) > diffEpsilon || Math::abs(posDiff.y) > diffEpsilon || Math::abs(posDiff.z) > diffEpsilon)
 			{
 				mWidgetIsDirty = true;
 			}
 			else
 			{
 				Quaternion rotDiff = mLastFrameRotation - rotation;
-				if(Math::Abs(rotDiff.x) > diffEpsilon || Math::Abs(rotDiff.y) > diffEpsilon || 
-					Math::Abs(rotDiff.z) > diffEpsilon || Math::Abs(rotDiff.w) > diffEpsilon)
+				if(Math::abs(rotDiff.x) > diffEpsilon || Math::abs(rotDiff.y) > diffEpsilon || 
+					Math::abs(rotDiff.z) > diffEpsilon || Math::abs(rotDiff.w) > diffEpsilon)
 				{
 					mWidgetIsDirty = true;
 				}
 				else
 				{
 					Vector3 scaleDiff = mLastFrameScale - scale;
-					if(Math::Abs(scaleDiff.x) > diffEpsilon || Math::Abs(scaleDiff.y) > diffEpsilon || Math::Abs(scaleDiff.z) > diffEpsilon)
+					if(Math::abs(scaleDiff.x) > diffEpsilon || Math::abs(scaleDiff.y) > diffEpsilon || Math::abs(scaleDiff.z) > diffEpsilon)
 					{
 						mWidgetIsDirty = true;
 					}
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		Vector3 vecPos((float)position.x, (float)position.y, 0.0f);
 		vecPos = worldTfrm.inverse().transform3x4(vecPos);
 
-		Int2 localPos(Math::RoundToInt(vecPos.x), Math::RoundToInt(vecPos.y));
+		Int2 localPos(Math::roundToInt(vecPos.x), Math::roundToInt(vecPos.y));
 		return mBounds.contains(localPos);
 	}
 

@@ -28,7 +28,8 @@ THE SOFTWARE.
 
 #include "CmPlane.h"
 #include "CmMatrix3.h"
-#include "CmAABox.h" 
+#include "CmAABox.h"
+#include "CmRay.h"
 
 namespace CamelotFramework {
 	//-----------------------------------------------------------------------
@@ -98,7 +99,7 @@ namespace CamelotFramework {
 
         // Calculate the maximise allows absolute distance for
         // the distance between box centre and plane
-        float maxAbsDist = Math::Abs(normal.x * halfSize.x) + Math::Abs(normal.y * halfSize.y) + Math::Abs(normal.z * halfSize.z);
+        float maxAbsDist = Math::abs(normal.x * halfSize.x) + Math::abs(normal.y * halfSize.y) + Math::abs(normal.z * halfSize.z);
 
         if (dist < -maxAbsDist)
             return Plane::NEGATIVE_SIDE;
@@ -156,4 +157,20 @@ namespace CamelotFramework {
 
         return fLength;
     }
+
+	std::pair<bool, float> Plane::intersects(const Ray& ray) const
+	{
+		float denom = normal.dot(ray.getDirection());
+		if (Math::abs(denom) < std::numeric_limits<float>::epsilon())
+		{
+			// Parallel
+			return std::pair<bool, float>(false, 0.0f);
+		}
+		else
+		{
+			float nom = normal.dot(ray.getOrigin()) + d;
+			float t = -(nom/denom);
+			return std::pair<bool, float>(t >= 0, t);
+		}
+	}
 }

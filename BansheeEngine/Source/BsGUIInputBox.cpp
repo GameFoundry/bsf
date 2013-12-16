@@ -809,8 +809,8 @@ namespace BansheeEngine
 		Int2 newTextOffset;
 		INT32 maxScrollableWidth = std::max(0, (INT32)unclippedTextBounds.width - (INT32)textDesc.width);
 		INT32 maxScrollableHeight = std::max(0, (INT32)unclippedTextBounds.height - (INT32)textDesc.height);
-		newTextOffset.x = Math::Clamp(mTextOffset.x, -maxScrollableWidth, 0);
-		newTextOffset.y = Math::Clamp(mTextOffset.y, -maxScrollableHeight, 0);
+		newTextOffset.x = Math::clamp(mTextOffset.x, -maxScrollableWidth, 0);
+		newTextOffset.y = Math::clamp(mTextOffset.y, -maxScrollableHeight, 0);
 
 		if(newTextOffset != mTextOffset)
 		{

@@ -339,7 +339,7 @@ namespace CamelotFramework {
 
 		*brightness = vMax;
 
-		if (Math::RealEqual(delta, 0.0f, 1e-6f))
+		if (Math::approxEquals(delta, 0.0f, 1e-6f))
 		{
 			// grey
 			*hue = 0;
@@ -354,11 +354,11 @@ namespace CamelotFramework {
 			float deltaG = (((vMax - g) / 6.0f) + (delta / 2.0f)) / delta;
 			float deltaB = (((vMax - b) / 6.0f) + (delta / 2.0f)) / delta;
 
-			if (Math::RealEqual(r, vMax))
+			if (Math::approxEquals(r, vMax))
 				*hue = deltaB - deltaG;
-			else if (Math::RealEqual(g, vMax))
+			else if (Math::approxEquals(g, vMax))
 				*hue = 0.3333333f + deltaR - deltaB;
-			else if (Math::RealEqual(b, vMax)) 
+			else if (Math::approxEquals(b, vMax)) 
 				*hue = 0.6666667f + deltaG - deltaR;
 
 			if (*hue < 0.0f) 

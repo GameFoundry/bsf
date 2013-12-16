@@ -180,7 +180,7 @@ namespace CamelotFramework
 	{
 		UINT32 numMipmaps = getNumMipmaps() + 1;
 
-		face = Math::FloorToInt((subresourceIdx) / (float)numMipmaps);
+		face = Math::floorToInt((subresourceIdx) / (float)numMipmaps);
 		mip = subresourceIdx % numMipmaps;
 	}
 

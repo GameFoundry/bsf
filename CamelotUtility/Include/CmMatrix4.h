@@ -81,7 +81,7 @@ namespace CamelotFramework
         /**
          * @brief	Creates a 4x4 transformation matrix with a zero translation part from a rotation/scaling 3x3 matrix.
          */
-        Matrix4(const Matrix3& mat3)
+        explicit Matrix4(const Matrix3& mat3)
         {
 			m[0][0] = mat3.m[0][0]; m[0][1] = mat3.m[0][1]; m[0][2] = mat3.m[0][2]; m[0][3] = 0.0f;
 			m[1][0] = mat3.m[1][0]; m[1][1] = mat3.m[1][1]; m[1][2] = mat3.m[1][2]; m[1][3] = 0.0f;
@@ -397,6 +397,11 @@ namespace CamelotFramework
                 m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3] * v.w
                 );
         }
+
+		/**
+		 * @brief	Creates a view matrix and applies optional reflection.
+		 */
+		void makeView(const Vector3& position, const Quaternion& orientation, const Matrix4* reflectMatrix = nullptr);
 
 		static const Matrix4 ZERO;
 		static const Matrix4 IDENTITY;

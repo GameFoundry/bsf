@@ -77,7 +77,7 @@ namespace BansheeEditor
 		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, this, mUniqueTabIdx, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
 		GUIWindowDropArea* newDragDropElement = GUIWindowDropArea::create(*mParentWidget, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 
-		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size());
+		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 
 		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, mUniqueTabIdx));
 		newTabToggle->onDragged.connect(boost::bind(&GUITabbedTitleBar::tabDraggedOff, this, _1));
@@ -100,7 +100,7 @@ namespace BansheeEditor
 		if(mTabButtons.size() == 0)
 			return;
 
-		idx = Math::Clamp(idx, 0U, (UINT32)mTabButtons.size() - 1);
+		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size() - 1);
 
 		GUIElement::destroy(mTabButtons[idx]);
 		GUIElement::destroy(mDragDropElements[idx]);

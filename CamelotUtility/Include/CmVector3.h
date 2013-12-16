@@ -262,7 +262,7 @@ namespace CamelotFramework
          */
         float length() const
         {
-            return Math::Sqrt(x * x + y * y + z * z);
+            return Math::sqrt(x * x + y * y + z * z);
         }
 
         /**
@@ -302,7 +302,7 @@ namespace CamelotFramework
          */
         float normalize()
         {
-            float len = Math::Sqrt(x * x + y * y + z * z);
+            float len = Math::sqrt(x * x + y * y + z * z);
 
             // Will also work for zero-sized vectors, but will change nothing
             if (len > 1e-08)
@@ -379,8 +379,8 @@ namespace CamelotFramework
 
 			float f = dot(dest) / lenProduct;
 
-			f = Math::Clamp(f, -1.0f, 1.0f);
-			return Math::ACos(f);
+			f = Math::clamp(f, -1.0f, 1.0f);
+			return Math::acos(f);
 
 		}
 
@@ -423,7 +423,7 @@ namespace CamelotFramework
 			}
 			else
 			{
-                float s = Math::Sqrt( (1+d)*2 );
+                float s = Math::sqrt( (1+d)*2 );
 	            float invs = 1 / s;
 
 				Vector3 c = v0.cross(v1);
@@ -474,7 +474,7 @@ namespace CamelotFramework
 
 		static Vector3 normalize(const Vector3& val)
 		{
-			float len = Math::Sqrt(val.x * val.x + val.y * val.y + val.z * val.z);
+			float len = Math::sqrt(val.x * val.x + val.y * val.y + val.z * val.z);
 
 			// Will also work for zero-sized vectors, but will change nothing
 			if (len > 1e-08)

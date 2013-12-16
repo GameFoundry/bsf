@@ -59,7 +59,7 @@ namespace CamelotFramework
         if (trace > 0.0f)
         {
             // |w| > 1/2, may as well choose w > 1/2
-            root = Math::Sqrt(trace + 1.0f);  // 2w
+            root = Math::sqrt(trace + 1.0f);  // 2w
             w = 0.5f*root;
             root = 0.5f/root;  // 1/(4w)
             x = (mat[2][1]-mat[1][2])*root;
@@ -81,7 +81,7 @@ namespace CamelotFramework
             size_t j = nextLookup[i];
             size_t k = nextLookup[j];
 
-            root = Math::Sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
+            root = Math::sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
 
             float* cmpntLookup[3] = { &x, &y, &z };
             *cmpntLookup[i] = 0.5f*root;
@@ -99,9 +99,9 @@ namespace CamelotFramework
     {
         // Assert:  axis[] is unit length
 
-        Radian fHalfAngle ( 0.5*angle );
-        float fSin = Math::Sin(fHalfAngle);
-        w = Math::Cos(fHalfAngle);
+        Radian fHalfAngle (0.5f*angle);
+        float fSin = Math::sin(fHalfAngle);
+        w = Math::cos(fHalfAngle);
         x = fSin*axis.x;
         y = fSin*axis.y;
         z = fSin*axis.z;
@@ -179,8 +179,8 @@ namespace CamelotFramework
 		float fSqrLength = x*x+y*y+z*z;
 		if ( fSqrLength > 0.0 )
 		{
-			angle = 2.0*Math::ACos(w);
-			float fInvLength = Math::InvSqrt(fSqrLength);
+			angle = 2.0*Math::acos(w);
+			float fInvLength = Math::invSqrt(fSqrLength);
 			axis.x = x*fInvLength;
 			axis.y = y*fInvLength;
 			axis.z = z*fInvLength;
@@ -344,14 +344,14 @@ namespace CamelotFramework
             quat = q;
         }
 
-        if (Math::Abs(cos) < 1 - EPSILON)
+        if (Math::abs(cos) < 1 - EPSILON)
         {
             // Standard case (slerp)
-            float sin = Math::Sqrt(1 - Math::Sqr(cos));
-            Radian angle = Math::ATan2(sin, cos);
+            float sin = Math::sqrt(1 - Math::sqr(cos));
+            Radian angle = Math::tan2(sin, cos);
             float invSin = 1.0f / sin;
-            float coeff0 = Math::Sin((1.0f - t) * angle) * invSin;
-            float coeff1 = Math::Sin(t * angle) * invSin;
+            float coeff0 = Math::sin((1.0f - t) * angle) * invSin;
+            float coeff1 = Math::sin(t * angle) * invSin;
             return coeff0 * p + coeff1 * quat;
         }
         else
@@ -373,7 +373,7 @@ namespace CamelotFramework
     float Quaternion::normalize()
     {
         float len = w*w+x*x+y*y+z*z;
-        float factor = 1.0f / Math::Sqrt(len);
+        float factor = 1.0f / Math::sqrt(len);
         *this = *this * factor;
         return len;
     }

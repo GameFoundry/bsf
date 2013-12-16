@@ -342,7 +342,7 @@ namespace BansheeEngine
 			else if (mProjType == PT_PERSPECTIVE)
 			{
 				Radian thetaY (mHorzFOV * 0.5f);
-				float tanThetaY = Math::Tan(thetaY);
+				float tanThetaY = Math::tan(thetaY);
 				float tanThetaX = tanThetaY * mAspect;
 
 				float nearFocal = mNearDist / mFocalLength;
@@ -550,7 +550,7 @@ namespace BansheeEngine
 			const Quaternion& orientation = sceneObject()->getWorldRotation();
 			const Vector3& position = sceneObject()->getWorldPosition();
 
-			mViewMatrix = Math::makeViewMatrix(position, orientation, 0);
+			mViewMatrix.makeView(position, orientation);
 		}
 	}
 	//-----------------------------------------------------------------------

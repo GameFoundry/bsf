@@ -219,8 +219,8 @@ namespace CamelotFramework
 
 		mCurrentBufferIdx = (mCurrentBufferIdx + 1) % HISTORY_BUFFER_SIZE;
 
-		mSmoothHorizontalAxis = Math::Clamp(horizontalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
-		mSmoothVerticalAxis = Math::Clamp(verticalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
+		mSmoothHorizontalAxis = Math::clamp(horizontalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
+		mSmoothVerticalAxis = Math::clamp(verticalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
 
 		mMouseLastRel = Int2(0, 0);
 	}

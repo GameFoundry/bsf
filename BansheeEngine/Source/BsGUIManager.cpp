@@ -656,7 +656,7 @@ namespace BansheeEngine
 					mLastCursorLocalPos = localPos;
 				}
 
-				if(Math::Abs(event.mouseWheelScrollAmount) > 0.00001f)
+				if(Math::abs(event.mouseWheelScrollAmount) > 0.00001f)
 				{
 					mMouseEvent.setMouseWheelScrollData(mElementUnderCursor, event.mouseWheelScrollAmount);
 					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
@@ -1180,7 +1180,7 @@ namespace BansheeEngine
 		const Matrix4& worldTfrm = widget.SO()->getWorldTfrm();
 
 		Vector4 vecLocalPos = worldTfrm.inverse().transform3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
-		Int2 curLocalPos(Math::RoundToInt(vecLocalPos.x), Math::RoundToInt(vecLocalPos.y));
+		Int2 curLocalPos(Math::roundToInt(vecLocalPos.x), Math::roundToInt(vecLocalPos.y));
 
 		return curLocalPos;
 	}
@@ -1209,7 +1209,7 @@ namespace BansheeEngine
 			float scaleX = renderTexture->getWidth() / (float)bridgeBounds.width;
 			float scaleY = renderTexture->getHeight() / (float)bridgeBounds.height;
 
-			return Int2(Math::RoundToInt(x * scaleX), Math::RoundToInt(y * scaleY));
+			return Int2(Math::roundToInt(x * scaleX), Math::roundToInt(y * scaleY));
 		}
 
 		return windowPos;

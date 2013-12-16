@@ -78,30 +78,51 @@ namespace CamelotFramework {
 			indicate the distance along the ray at which it intersects. 
 			This can be converted to a point in space by calling getPoint().
 		*/
-		std::pair<bool, float> intersects(const Plane& p) const
-		{
-			return Math::intersects(*this, p);
-		}
+		std::pair<bool, float> intersects(const Plane& p) const;
+
 		/** Tests whether this ray intersects the given sphere. 
 		@returns A pair structure where the first element indicates whether
 			an intersection occurs, and if true, the second element will
 			indicate the distance along the ray at which it intersects. 
 			This can be converted to a point in space by calling getPoint().
 		*/
-		std::pair<bool, float> intersects(const Sphere& s) const
-		{
-			return Math::intersects(*this, s);
-		}
+		std::pair<bool, float> intersects(const Sphere& s) const;
+
 		/** Tests whether this ray intersects the given box. 
 		@returns A pair structure where the first element indicates whether
 			an intersection occurs, and if true, the second element will
 			indicate the distance along the ray at which it intersects. 
 			This can be converted to a point in space by calling getPoint().
 		*/
-		std::pair<bool, float> intersects(const AABox& box) const
-		{
-			return Math::intersects(*this, box);
-		}
+		std::pair<bool, float> intersects(const AABox& box) const;
+
+        /** Ray / triangle intersection, returns boolean result and distance.
+        @param
+            ray The ray.
+        @param
+            a The triangle's first vertex.
+        @param
+            b The triangle's second vertex.
+        @param
+            c The triangle's third vertex.
+		@param 
+			normal The triangle plane's normal (passed in rather than calculated
+				on demand since the caller may already have it), doesn't need
+                normalised since we don't care.
+        @param
+            positiveSide Intersect with "positive side" of the triangle
+        @param
+            negativeSide Intersect with "negative side" of the triangle
+        @returns
+            If the ray is intersects the triangle, a pair of <b>true</b> and the
+            distance between intersection point and ray origin returned.
+        @par
+            If the ray isn't intersects the triangle, a pair of <b>false</b> and
+            <b>0</b> returned.
+        */
+        std::pair<bool, float> intersects(const Vector3& a,
+            const Vector3& b, const Vector3& c, const Vector3& normal,
+            bool positiveSide = true, bool negativeSide = true) const;
 
     };
 	/** @} */

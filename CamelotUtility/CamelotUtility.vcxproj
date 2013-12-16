@@ -247,13 +247,17 @@
     <ClCompile Include="Source\CmAsyncOp.cpp" />
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
     <ClCompile Include="Source\CmBox.cpp" />
+    <ClCompile Include="Source\CmDegree.cpp" />
     <ClCompile Include="Source\CmFrameAlloc.cpp" />
     <ClCompile Include="Source\CmFRect.cpp" />
     <ClCompile Include="Source\CmInt2.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
     <ClCompile Include="Source\CmMemoryAllocator.cpp" />
     <ClCompile Include="Source\CmMemStack.cpp" />
+    <ClCompile Include="Source\CmRadian.cpp" />
+    <ClCompile Include="Source\CmRay.cpp" />
     <ClCompile Include="Source\CmRect.cpp" />
+    <ClCompile Include="Source\CmSphere.cpp" />
     <ClCompile Include="Source\CmStringTable.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
@@ -266,6 +270,7 @@
     <ClInclude Include="Include\CmBox.h" />
     <ClInclude Include="Include\CmColor.h" />
     <ClInclude Include="Include\CmDebug.h" />
+    <ClInclude Include="Include\CmDegree.h" />
     <ClInclude Include="Include\CmDynLibManager.h" />
     <ClInclude Include="Include\CmException.h" />
     <ClInclude Include="Include\CmFileSerializer.h" />
@@ -282,6 +287,7 @@
     <ClInclude Include="Include\CmMemAllocProfiler.h" />
     <ClInclude Include="Include\CmModule.h" />
     <ClInclude Include="Include\CmPath.h" />
+    <ClInclude Include="Include\CmRadian.h" />
     <ClInclude Include="Include\CmRect.h" />
     <ClInclude Include="Include\CmRTTIField.h" />
     <ClInclude Include="Include\CmRTTIManagedDataBlockField.h" />

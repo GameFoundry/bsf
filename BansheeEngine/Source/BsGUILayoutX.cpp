@@ -162,7 +162,7 @@ namespace BansheeEngine
 						continue;
 					}
 
-					UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
+					UINT32 extraWidth = std::min((UINT32)Math::ceilToInt(avgSize), remainingSize);
 					UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
 
 					// Clamp if needed
@@ -222,7 +222,7 @@ namespace BansheeEngine
 
 					float avgSize = totalRemainingSize * elementScaleWeights[childIdx];
 					
-					UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
+					UINT32 extraWidth = std::min((UINT32)Math::ceilToInt(avgSize), remainingSize);
 					UINT32 elementWidth = (UINT32)std::max(0, (INT32)elementSizes[childIdx] - (INT32)extraWidth);
 
 					// Clamp if needed
@@ -292,7 +292,7 @@ namespace BansheeEngine
 					}
 
 					float avgSize = totalRemainingSize * elementScaleWeights[childIdx];
-					UINT32 extraWidth = std::min((UINT32)Math::CeilToInt(avgSize), remainingSize);
+					UINT32 extraWidth = std::min((UINT32)Math::ceilToInt(avgSize), remainingSize);
 					UINT32 elementWidth = elementSizes[childIdx] + extraWidth;
 
 					// Clamp if needed
@@ -364,7 +364,7 @@ namespace BansheeEngine
 
 				element->_setHeight(elemHeight);
 
-				INT32 yOffset = Math::CeilToInt(((INT32)height - (INT32)element->_getHeight()) * 0.5f);
+				INT32 yOffset = Math::ceilToInt(((INT32)height - (INT32)element->_getHeight()) * 0.5f);
 				yOffset = std::max(0, yOffset);
 
 				Int2 offset(x + xOffset, y + yOffset);

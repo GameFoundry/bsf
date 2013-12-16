@@ -32,20 +32,21 @@ namespace CamelotFramework
 		};
 
 		AABox();
-		AABox(const AABox & rkBox);
+		AABox(const AABox& copy);
 		AABox(const Vector3& min, const Vector3& max);
 
 		AABox& operator=(const AABox& rhs);
 
 		~AABox() { }
 
-		const Vector3& getMin(void) const { return mMinimum; }
-		const Vector3& getMax(void) const { return mMaximum; }
+		const Vector3& getMin() const { return mMinimum; }
+		const Vector3& getMax() const { return mMaximum; }
 
 		void setMin(const Vector3& vec) { mMinimum = vec; }
 		void setMax(const Vector3& vec) { mMaximum = vec; }
 
 		void setExtents(const Vector3& min, const Vector3& max);
+		void scale(const Vector3& s);
 
 		Vector3 getCorner(CornerEnum cornerToGet) const;
 
@@ -55,21 +56,28 @@ namespace CamelotFramework
 		void transform(const Matrix4& matrix);
 		void transformAffine(const Matrix4& matrix);
 
-		bool intersects(const AABox& b2) const;
-
 		AABox intersection(const AABox& b2) const;
 
-		float volume() const;
-
-		inline void scale(const Vector3& s);
-
+		bool intersects(const AABox& b2) const;
 		bool intersects(const Sphere& s) const;
 		bool intersects(const Plane& p) const;
 		bool intersects(const Vector3& v) const;
 
+        /**
+         * @brief	Ray / box intersection, returns boolean result and distance.
+         */
+        std::pair<bool, float> intersects(const Ray& ray) const;
+
+        /**
+         * @brief	Ray / box intersection, returns boolean result and near and far intersection distance.
+         */
+        bool intersects(const Ray& ray, float& d1, float& d2) const;
+
 		Vector3 getCenter() const;
 		Vector3 getSize() const;
 		Vector3 getHalfSize() const;
+		float getRadius() const;
+		float getVolume() const;
 
         bool contains(const Vector3& v) const;
         bool contains(const AABox& other) const;

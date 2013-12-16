@@ -121,7 +121,7 @@ namespace CamelotFramework
 			UINT32 newNumVertices = mNumVertices;
 			while(newNumVertices < (mNumVertices + meshData->getNumVertices()))
 			{
-				newNumVertices = Math::RoundToInt(newNumVertices * GrowPercent);
+				newNumVertices = Math::roundToInt(newNumVertices * GrowPercent);
 			}
 
 			growVertexBuffer(newNumVertices);
@@ -153,7 +153,7 @@ namespace CamelotFramework
 			UINT32 newNumIndices = mNumIndices;
 			while(newNumIndices < (mNumIndices + meshData->getNumIndices()))
 			{
-				newNumIndices = Math::RoundToInt(newNumIndices * GrowPercent);
+				newNumIndices = Math::roundToInt(newNumIndices * GrowPercent);
 			}
 
 			growIndexBuffer(newNumIndices);

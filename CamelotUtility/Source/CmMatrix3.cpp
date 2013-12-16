@@ -205,7 +205,7 @@ namespace CamelotFramework
 
         float det = m[0][0]*matInv[0][0] + m[0][1]*matInv[1][0] + m[0][2]*matInv[2][0];
 
-        if (Math::Abs(det) <= tolerance)
+        if (Math::abs(det) <= tolerance)
             return false;
 
         float invDet = 1.0f/det;
@@ -243,7 +243,7 @@ namespace CamelotFramework
         bool bIdentity;
 
         // Map first column to (*,0,0)
-        length = Math::Sqrt(matA[0][0]*matA[0][0] + matA[1][0]*matA[1][0] + matA[2][0]*matA[2][0]);
+        length = Math::sqrt(matA[0][0]*matA[0][0] + matA[1][0]*matA[1][0] + matA[2][0]*matA[2][0]);
         if (length > 0.0f)
         {
             sign = (matA[0][0] > 0.0f ? 1.0f : -1.0f);
@@ -279,7 +279,7 @@ namespace CamelotFramework
         }
 
         // Map first row to (*,*,0)
-        length = Math::Sqrt(matA[0][1]*matA[0][1]+matA[0][2]*matA[0][2]);
+        length = Math::sqrt(matA[0][1]*matA[0][1]+matA[0][2]*matA[0][2]);
         if ( length > 0.0 )
         {
             sign = (matA[0][1] > 0.0f ? 1.0f : -1.0f);
@@ -309,7 +309,7 @@ namespace CamelotFramework
         }
 
         // Map second column to (*,*,0)
-        length = Math::Sqrt(matA[1][1]*matA[1][1]+matA[2][1]*matA[2][1]);
+        length = Math::sqrt(matA[1][1]*matA[1][1]+matA[2][1]*matA[2][1]);
         if ( length > 0.0 )
         {
             sign = (matA[1][1] > 0.0f ? 1.0f : -1.0f);
@@ -356,14 +356,14 @@ namespace CamelotFramework
         float t12 = matA[1][1]*matA[1][2];
         float trace = f11+t22;
         float diff = f11-t22;
-        float discr = Math::Sqrt(diff*diff+4.0f*t12*t12);
+        float discr = Math::sqrt(diff*diff+4.0f*t12*t12);
         float root1 = 0.5f*(trace+discr);
         float root2 = 0.5f*(trace-discr);
 
         // Adjust right
-        float y = matA[0][0] - (Math::Abs(root1-t22) <= Math::Abs(root2-t22) ? root1 : root2);
+        float y = matA[0][0] - (Math::abs(root1-t22) <= Math::abs(root2-t22) ? root1 : root2);
         float z = matA[0][1];
-		float invLength = Math::InvSqrt(y*y+z*z);
+		float invLength = Math::invSqrt(y*y+z*z);
         float sin = z*invLength;
         float cos = -y*invLength;
 
@@ -386,7 +386,7 @@ namespace CamelotFramework
         // Adjust left
         y = matA[0][0];
         z = matA[1][0];
-        invLength = Math::InvSqrt(y*y+z*z);
+        invLength = Math::invSqrt(y*y+z*z);
         sin = z*invLength;
         cos = -y*invLength;
 
@@ -410,7 +410,7 @@ namespace CamelotFramework
         // Adjust right
         y = matA[0][1];
         z = matA[0][2];
-        invLength = Math::InvSqrt(y*y+z*z);
+        invLength = Math::invSqrt(y*y+z*z);
         sin = z*invLength;
         cos = -y*invLength;
 
@@ -433,7 +433,7 @@ namespace CamelotFramework
         // Adjust left
         y = matA[1][1];
         z = matA[2][1];
-        invLength = Math::InvSqrt(y*y+z*z);
+        invLength = Math::invSqrt(y*y+z*z);
         sin = z*invLength;
         cos = -y*invLength;
 
@@ -465,8 +465,8 @@ namespace CamelotFramework
             float sin0, cos0, tan0;
             float sin1, cos1, tan1;
 
-            bool test1 = (Math::Abs(mat[0][1]) <= SVD_EPSILON*(Math::Abs(mat[0][0])+Math::Abs(mat[1][1])));
-            bool test2 = (Math::Abs(mat[1][2]) <= SVD_EPSILON*(Math::Abs(mat[1][1])+Math::Abs(mat[2][2])));
+            bool test1 = (Math::abs(mat[0][1]) <= SVD_EPSILON*(Math::abs(mat[0][0])+Math::abs(mat[1][1])));
+            bool test2 = (Math::abs(mat[1][2]) <= SVD_EPSILON*(Math::abs(mat[1][1])+Math::abs(mat[2][2])));
 
             if (test1)
             {
@@ -481,8 +481,8 @@ namespace CamelotFramework
                 {
                     // 2x2 closed form factorization
                     tmp = (mat[1][1]*mat[1][1] - mat[2][2]*mat[2][2] + mat[1][2]*mat[1][2])/(mat[1][2]*mat[2][2]);
-                    tan0 = 0.5f*(tmp+Math::Sqrt(tmp*tmp + 4.0f));
-                    cos0 = Math::InvSqrt(1.0f+tan0*tan0);
+                    tan0 = 0.5f*(tmp+Math::sqrt(tmp*tmp + 4.0f));
+                    cos0 = Math::invSqrt(1.0f+tan0*tan0);
                     sin0 = tan0*cos0;
 
                     for (col = 0; col < 3; col++)
@@ -494,7 +494,7 @@ namespace CamelotFramework
                     }
 
                     tan1 = (mat[1][2]-mat[2][2]*tan0)/mat[1][1];
-                    cos1 = Math::InvSqrt(1.0f+tan1*tan1);
+                    cos1 = Math::invSqrt(1.0f+tan1*tan1);
                     sin1 = -tan1*cos1;
 
                     for (row = 0; row < 3; row++)
@@ -517,8 +517,8 @@ namespace CamelotFramework
                 {
                     // 2x2 closed form factorization
                     tmp = (mat[0][0]*mat[0][0] + mat[1][1]*mat[1][1] - mat[0][1]*mat[0][1])/(mat[0][1]*mat[1][1]);
-                    tan0 = 0.5f*(-tmp+Math::Sqrt(tmp*tmp + 4.0f));
-                    cos0 = Math::InvSqrt(1.0f+tan0*tan0);
+                    tan0 = 0.5f*(-tmp+Math::sqrt(tmp*tmp + 4.0f));
+                    cos0 = Math::invSqrt(1.0f+tan0*tan0);
                     sin0 = tan0*cos0;
 
                     for (col = 0; col < 3; col++)
@@ -530,7 +530,7 @@ namespace CamelotFramework
                     }
 
                     tan1 = (mat[0][1]-mat[1][1]*tan0)/mat[0][0];
-                    cos1 = Math::InvSqrt(1.0f+tan1*tan1);
+                    cos1 = Math::invSqrt(1.0f+tan1*tan1);
                     sin1 = -tan1*cos1;
 
                     for (row = 0; row < 3; row++)
@@ -568,7 +568,7 @@ namespace CamelotFramework
     void Matrix3::orthonormalize()
     {
         // Compute q0
-        float invLength = Math::InvSqrt(m[0][0]*m[0][0]+ m[1][0]*m[1][0] + m[2][0]*m[2][0]);
+        float invLength = Math::invSqrt(m[0][0]*m[0][0]+ m[1][0]*m[1][0] + m[2][0]*m[2][0]);
 
         m[0][0] *= invLength;
         m[1][0] *= invLength;
@@ -581,7 +581,7 @@ namespace CamelotFramework
         m[1][1] -= dot0*m[1][0];
         m[2][1] -= dot0*m[2][0];
 
-        invLength = Math::InvSqrt(m[0][1]*m[0][1] + m[1][1]*m[1][1] + m[2][1]*m[2][1]);
+        invLength = Math::invSqrt(m[0][1]*m[0][1] + m[1][1]*m[1][1] + m[2][1]*m[2][1]);
 
         m[0][1] *= invLength;
         m[1][1] *= invLength;
@@ -595,7 +595,7 @@ namespace CamelotFramework
         m[1][2] -= dot0*m[1][0] + dot1*m[1][1];
         m[2][2] -= dot0*m[2][0] + dot1*m[2][1];
 
-        invLength = Math::InvSqrt(m[0][2]*m[0][2] + m[1][2]*m[1][2] + m[2][2]*m[2][2]);
+        invLength = Math::invSqrt(m[0][2]*m[0][2] + m[1][2]*m[1][2] + m[2][2]*m[2][2]);
 
         m[0][2] *= invLength;
         m[1][2] *= invLength;
@@ -605,7 +605,7 @@ namespace CamelotFramework
     void Matrix3::QDUDecomposition(Matrix3& matQ, Vector3& vecD, Vector3& vecU) const
     {
         // Build orthogonal matrix Q
-        float invLength = Math::InvSqrt(m[0][0]*m[0][0] + m[1][0]*m[1][0] + m[2][0]*m[2][0]);
+        float invLength = Math::invSqrt(m[0][0]*m[0][0] + m[1][0]*m[1][0] + m[2][0]*m[2][0]);
         matQ[0][0] = m[0][0]*invLength;
         matQ[1][0] = m[1][0]*invLength;
         matQ[2][0] = m[2][0]*invLength;
@@ -615,7 +615,7 @@ namespace CamelotFramework
         matQ[1][1] = m[1][1]-dot*matQ[1][0];
         matQ[2][1] = m[2][1]-dot*matQ[2][0];
 
-        invLength = Math::InvSqrt(matQ[0][1]*matQ[0][1] + matQ[1][1]*matQ[1][1] + matQ[2][1]*matQ[2][1]);
+        invLength = Math::invSqrt(matQ[0][1]*matQ[0][1] + matQ[1][1]*matQ[1][1] + matQ[2][1]*matQ[2][1]);
         matQ[0][1] *= invLength;
         matQ[1][1] *= invLength;
         matQ[2][1] *= invLength;
@@ -630,7 +630,7 @@ namespace CamelotFramework
         matQ[1][2] -= dot*matQ[1][1];
         matQ[2][2] -= dot*matQ[2][1];
 
-        invLength = Math::InvSqrt(matQ[0][2]*matQ[0][2] + matQ[1][2]*matQ[1][2] + matQ[2][2]*matQ[2][2]);
+        invLength = Math::invSqrt(matQ[0][2]*matQ[0][2] + matQ[1][2]*matQ[1][2] + matQ[2][2]*matQ[2][2]);
         matQ[0][2] *= invLength;
         matQ[1][2] *= invLength;
         matQ[2][2] *= invLength;
@@ -678,7 +678,7 @@ namespace CamelotFramework
     {
         float trace = m[0][0] + m[1][1] + m[2][2];
         float cos = 0.5f*(trace-1.0f);
-        radians = Math::ACos(cos);  // In [0, PI]
+        radians = Math::acos(cos);  // In [0, PI]
 
         if (radians > Radian(0.0f))
         {
@@ -699,7 +699,7 @@ namespace CamelotFramework
                     if (m[0][0] >= m[2][2])
                     {
                         // r00 is maximum diagonal term
-                        axis.x = 0.5f*Math::Sqrt(m[0][0] - m[1][1] - m[2][2] + 1.0f);
+                        axis.x = 0.5f*Math::sqrt(m[0][0] - m[1][1] - m[2][2] + 1.0f);
                         fHalfInverse = 0.5f/axis.x;
                         axis.y = fHalfInverse*m[0][1];
                         axis.z = fHalfInverse*m[0][2];
@@ -707,7 +707,7 @@ namespace CamelotFramework
                     else
                     {
                         // r22 is maximum diagonal term
-                        axis.z = 0.5f*Math::Sqrt(m[2][2] - m[0][0] - m[1][1] + 1.0f);
+                        axis.z = 0.5f*Math::sqrt(m[2][2] - m[0][0] - m[1][1] + 1.0f);
                         fHalfInverse = 0.5f/axis.z;
                         axis.x = fHalfInverse*m[0][2];
                         axis.y = fHalfInverse*m[1][2];
@@ -719,7 +719,7 @@ namespace CamelotFramework
                     if ( m[1][1] >= m[2][2] )
                     {
                         // r11 is maximum diagonal term
-                        axis.y = 0.5f*Math::Sqrt(m[1][1] - m[0][0] - m[2][2] + 1.0f);
+                        axis.y = 0.5f*Math::sqrt(m[1][1] - m[0][0] - m[2][2] + 1.0f);
                         fHalfInverse  = 0.5f/axis.y;
                         axis.x = fHalfInverse*m[0][1];
                         axis.z = fHalfInverse*m[1][2];
@@ -727,7 +727,7 @@ namespace CamelotFramework
                     else
                     {
                         // r22 is maximum diagonal term
-                        axis.z = 0.5f*Math::Sqrt(m[2][2] - m[0][0] - m[1][1] + 1.0f);
+                        axis.z = 0.5f*Math::sqrt(m[2][2] - m[0][0] - m[1][1] + 1.0f);
                         fHalfInverse = 0.5f/axis.z;
                         axis.x = fHalfInverse*m[0][2];
                         axis.y = fHalfInverse*m[1][2];
@@ -747,8 +747,8 @@ namespace CamelotFramework
 
     void Matrix3::fromAxisAngle(const Vector3& axis, const Radian& angle)
     {
-        float cos = Math::Cos(angle);
-        float sin = Math::Sin(angle);
+        float cos = Math::cos(angle);
+        float sin = Math::sin(angle);
         float oneMinusCos = 1.0f-cos;
         float x2 = axis.x*axis.x;
         float y2 = axis.y*axis.y;
@@ -783,20 +783,20 @@ namespace CamelotFramework
 
     bool Matrix3::toEulerAngles(Radian& xAngle, Radian& yAngle, Radian& zAngle) const
     {
-        xAngle = Radian(Math::ASin(m[0][2]));
+        xAngle = Radian(Math::asin(m[0][2]));
         if (xAngle < Radian(Math::HALF_PI))
         {
             if (xAngle > Radian(-Math::HALF_PI))
             {
-                yAngle = Math::ATan2(-m[1][2], m[2][2]);
-                zAngle = Math::ATan2(-m[0][1], m[0][0]);
+                yAngle = Math::tan2(-m[1][2], m[2][2]);
+                zAngle = Math::tan2(-m[0][1], m[0][0]);
 
                 return true;
             }
             else
             {
                 // WARNING.  Not a unique solution.
-                Radian angle = Math::ATan2(m[1][0],m[1][1]);
+                Radian angle = Math::tan2(m[1][0],m[1][1]);
                 zAngle = Radian(0.0f);  // Any angle works
                 yAngle = zAngle - angle;
 
@@ -806,7 +806,7 @@ namespace CamelotFramework
         else
         {
             // WARNING.  Not a unique solution.
-            Radian angle = Math::ATan2(m[1][0],m[1][1]);
+            Radian angle = Math::tan2(m[1][0],m[1][1]);
             zAngle = Radian(0.0f);  // Any angle works
             yAngle = angle - zAngle;
 
@@ -818,20 +818,20 @@ namespace CamelotFramework
 	{
 		const EulerAngleOrderData& l = EA_LOOKUP[(int)order];
 
-		xAngle = Radian(Math::ASin(l.sign * m[l.a][l.c]));
+		xAngle = Radian(Math::asin(l.sign * m[l.a][l.c]));
 		if (xAngle < Radian(Math::HALF_PI))
 		{
 			if (xAngle > Radian(-Math::HALF_PI))
 			{
-				yAngle = Math::ATan2(-l.sign * m[l.b][l.c], m[l.c][l.c]);
-				zAngle = Math::ATan2(-l.sign * m[l.a][l.b], m[l.a][l.a]);
+				yAngle = Math::tan2(-l.sign * m[l.b][l.c], m[l.c][l.c]);
+				zAngle = Math::tan2(-l.sign * m[l.a][l.b], m[l.a][l.a]);
 
 				return true;
 			}
 			else
 			{
 				// WARNING.  Not a unique solution.
-				Radian angle = Math::ATan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
+				Radian angle = Math::tan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
 				zAngle = Radian(0.0f);  // Any angle works
 				yAngle = zAngle - angle;
 
@@ -841,7 +841,7 @@ namespace CamelotFramework
 		else
 		{
 			// WARNING.  Not a unique solution.
-			Radian angle = Math::ATan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
+			Radian angle = Math::tan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
 			zAngle = Radian(0.0f);  // Any angle works
 			yAngle = angle - zAngle;
 
@@ -853,16 +853,16 @@ namespace CamelotFramework
     {
         float cos, sin;
 
-        cos = Math::Cos(yAngle);
-        sin = Math::Sin(yAngle);
+        cos = Math::cos(yAngle);
+        sin = Math::sin(yAngle);
         Matrix3 xMat(1.0f, 0.0f, 0.0f, 0.0f, cos, -sin, 0.0f, sin, cos);
 
-        cos = Math::Cos(xAngle);
-        sin = Math::Sin(xAngle);
+        cos = Math::cos(xAngle);
+        sin = Math::sin(xAngle);
         Matrix3 yMat(cos, 0.0f, sin, 0.0f, 1.0f, 0.0f, -sin, 0.0f, cos);
 
-        cos = Math::Cos(zAngle);
-        sin = Math::Sin(zAngle);
+        cos = Math::cos(zAngle);
+        sin = Math::sin(zAngle);
         Matrix3 zMat(cos,-sin, 0.0f, sin, cos, 0.0f, 0.0f, 0.0f, 1.0f);
 
         *this = xMat*(yMat*zMat);
@@ -875,16 +875,16 @@ namespace CamelotFramework
 		Matrix3 mats[3];
 		float cos, sin;
 
-		cos = Math::Cos(yAngle);
-		sin = Math::Sin(yAngle);
+		cos = Math::cos(yAngle);
+		sin = Math::sin(yAngle);
 		mats[0] = Matrix3(1.0f, 0.0f, 0.0f, 0.0f, cos, -sin, 0.0f, sin, cos);
 
-		cos = Math::Cos(xAngle);
-		sin = Math::Sin(xAngle);
+		cos = Math::cos(xAngle);
+		sin = Math::sin(xAngle);
 		mats[1] = Matrix3(cos, 0.0f, sin, 0.0f, 1.0f, 0.0f, -sin, 0.0f, cos);
 
-		cos = Math::Cos(zAngle);
-		sin = Math::Sin(zAngle);
+		cos = Math::cos(zAngle);
+		sin = Math::sin(zAngle);
 		mats[2] = Matrix3(cos,-sin, 0.0f, sin, cos, 0.0f, 0.0f, 0.0f, 1.0f);
 	
 		*this = mats[l.a]*(mats[l.b]*mats[l.c]);
@@ -909,9 +909,9 @@ namespace CamelotFramework
 
         diag[0] = fA;
         subDiag[2] = 0.0;
-        if (Math::Abs(fC) >= EPSILON)
+        if (Math::abs(fC) >= EPSILON)
         {
-            float fLength = Math::Sqrt(fB*fB+fC*fC);
+            float fLength = Math::sqrt(fB*fB+fC*fC);
             float fInvLength = 1.0f/fLength;
             fB *= fInvLength;
             fC *= fInvLength;
@@ -961,9 +961,9 @@ namespace CamelotFramework
                 int j;
                 for (j = i; j <= 1; j++)
                 {
-                    float sum = Math::Abs(diag[j]) + Math::Abs(diag[j+1]);
+                    float sum = Math::abs(diag[j]) + Math::abs(diag[j+1]);
 
-                    if (Math::Abs(subDiag[j]) + sum == sum)
+                    if (Math::abs(subDiag[j]) + sum == sum)
                         break;
                 }
 
@@ -971,7 +971,7 @@ namespace CamelotFramework
                     break;
 
                 float tmp0 = (diag[i+1]-diag[i])/(2.0f*subDiag[i]);
-                float tmp1 = Math::Sqrt(tmp0*tmp0+1.0f);
+                float tmp1 = Math::sqrt(tmp0*tmp0+1.0f);
 
                 if (tmp0 < 0.0f)
                     tmp0 = diag[j]-diag[i]+subDiag[i]/(tmp0-tmp1);
@@ -986,10 +986,10 @@ namespace CamelotFramework
                     float tmp3 = sin*subDiag[k];
                     float tmp4 = cos*subDiag[k];
 
-                    if (Math::Abs(tmp3) >= Math::Abs(tmp0))
+                    if (Math::abs(tmp3) >= Math::abs(tmp0))
                     {
                         cos = tmp0/tmp3;
-                        tmp1 = Math::Sqrt(cos*cos+1.0f);
+                        tmp1 = Math::sqrt(cos*cos+1.0f);
                         subDiag[k+1] = tmp3*tmp1;
                         sin = 1.0f/tmp1;
                         cos *= sin;
@@ -997,7 +997,7 @@ namespace CamelotFramework
                     else
                     {
                         sin = tmp3/tmp0;
-                        tmp1 = Math::Sqrt(sin*sin+1.0f);
+                        tmp1 = Math::sqrt(sin*sin+1.0f);
                         subDiag[k+1] = tmp0*tmp1;
                         cos = 1.0f/tmp1;
                         sin *= cos;

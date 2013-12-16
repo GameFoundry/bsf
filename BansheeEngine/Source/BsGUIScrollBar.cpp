@@ -147,7 +147,7 @@ namespace BansheeEngine
 
 	void GUIScrollBar::scroll(float amount)
 	{
-		float newHandlePos = Math::Clamp01(mHandleBtn->getHandlePos() - amount);
+		float newHandlePos = Math::clamp01(mHandleBtn->getHandlePos() - amount);
 
 		mHandleBtn->setHandlePos(newHandlePos);
 

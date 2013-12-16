@@ -54,7 +54,7 @@ namespace CamelotFramework
 
 	const ProfilerReport& Profiler::getReport(ProfiledThread thread, UINT32 idx) const
 	{
-		idx = Math::Clamp(idx, 0U, (UINT32)(NUM_SAVED_FRAMES - 1));
+		idx = Math::clamp(idx, 0U, (UINT32)(NUM_SAVED_FRAMES - 1));
 
 		if(thread == ProfiledThread::Core)
 		{

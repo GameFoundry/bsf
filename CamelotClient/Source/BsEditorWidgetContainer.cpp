@@ -77,7 +77,7 @@ namespace BansheeEditor
 				return;
 		}
 
-		idx = Math::Clamp(idx, 0U, (UINT32)mWidgets.size());
+		idx = Math::clamp(idx, 0U, (UINT32)mWidgets.size());
 
 		mTitleBar->insertTab(idx, widget.getName());
 		mWidgets.insert(mWidgets.begin() + idx, &widget);

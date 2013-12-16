@@ -239,4 +239,36 @@ namespace CamelotFramework
 		rotation = Quaternion(matQ);
 		position = Vector3(m[0][3], m[1][3], m[2][3]);
 	}
+
+	void Matrix4::makeView(const Vector3& position, const Quaternion& orientation, const Matrix4* reflectMatrix)
+	{
+		// View matrix is:
+		//
+		//  [ Lx  Uy  Dz  Tx  ]
+		//  [ Lx  Uy  Dz  Ty  ]
+		//  [ Lx  Uy  Dz  Tz  ]
+		//  [ 0   0   0   1   ]
+		//
+		// Where T = -(Transposed(Rot) * Pos)
+
+		// This is most efficiently done using 3x3 Matrices
+		Matrix3 rot;
+		orientation.toRotationMatrix(rot);
+
+		// Make the translation relative to new axes
+		Matrix3 rotT = rot.transpose();
+		Vector3 trans = (-rotT).transform(position);
+
+		// Make final matrix
+		*this = Matrix4(rotT);
+		m[0][3] = trans.x;
+		m[1][3] = trans.y;
+		m[2][3] = trans.z;
+
+		// Deal with reflections
+		if (reflectMatrix)
+		{
+			*this = (*this) * (*reflectMatrix);
+		}
+	}
 }

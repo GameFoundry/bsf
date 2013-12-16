@@ -141,6 +141,9 @@ namespace CamelotFramework {
         */
         float normalize(void);
 
+		/** Ray / plane intersection, returns boolean result and distance. */
+		std::pair<bool, float> intersects(const Ray& ray) const;
+
 		Vector3 normal;
         float d;
 

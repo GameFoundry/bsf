@@ -306,19 +306,19 @@ namespace BansheeEngine
 			float dv = (uvA->y - uvC->y) / (vecA->y - vecD->y);
 
 			// Clip left
-			float newLeft = Math::Clamp(vecA->x, left, right);
+			float newLeft = Math::clamp(vecA->x, left, right);
 			float uvLeftOffset = (newLeft - vecA->x) * du;
 
 			// Clip right
-			float newRight = Math::Clamp(vecB->x, left, right);
+			float newRight = Math::clamp(vecB->x, left, right);
 			float uvRightOffset = (vecB->x - newRight) * du;
 
 			// Clip top
-			float newTop = Math::Clamp(vecA->y, top, bottom);
+			float newTop = Math::clamp(vecA->y, top, bottom);
 			float uvTopOffset = (newTop - vecA->y) * dv;
 
 			// Clip bottom
-			float newBottom = Math::Clamp(vecC->y, top, bottom);
+			float newBottom = Math::clamp(vecC->y, top, bottom);
 			float uvBottomOffset = (vecC->y - newBottom) * dv;
 
 			vecA->x = newLeft;

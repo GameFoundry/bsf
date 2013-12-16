@@ -123,8 +123,8 @@ namespace CamelotFramework
 		}
 		else if(mUsage == TU_STATIC)
 		{
-			mipLevel = Math::Clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
-			face = Math::Clamp(face, (UINT32)0, mDepth - 1);
+			mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
+			face = Math::clamp(face, (UINT32)0, mDepth - 1);
 
 			if(getTextureType() == TEX_TYPE_3D)
 				face = 0;
@@ -551,8 +551,8 @@ namespace CamelotFramework
 		D3D11_MAPPED_SUBRESOURCE pMappedResource;
 		pMappedResource.pData = nullptr;
 
-		mipLevel = Math::Clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
-		face = Math::Clamp(face, (UINT32)0, mDepth - 1);
+		mipLevel = Math::clamp(mipLevel, (UINT32)mipLevel, getNumMipmaps());
+		face = Math::clamp(face, (UINT32)0, mDepth - 1);
 
 		if(getTextureType() == TEX_TYPE_3D)
 			face = 0;

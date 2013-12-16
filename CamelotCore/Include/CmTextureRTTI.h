@@ -31,7 +31,7 @@ namespace CamelotFramework
 
 		PixelDataPtr getPixelData(Texture* obj, UINT32 idx)
 		{
-			UINT32 face = (size_t)Math::Floor(idx / (float)(obj->getNumMipmaps() + 1));
+			UINT32 face = (size_t)Math::floor(idx / (float)(obj->getNumMipmaps() + 1));
 			UINT32 mipmap = idx % (obj->getNumMipmaps() + 1);
 
 			UINT32 subresourceIdx = obj->mapToSubresourceIdx(face, mipmap);
@@ -107,7 +107,7 @@ namespace CamelotFramework
 			Vector<PixelDataPtr>::type* pixelData = boost::any_cast<Vector<PixelDataPtr>::type*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)
 			{
-				UINT32 face = (size_t)Math::Floor(i / (float)(texture->getNumMipmaps() + 1));
+				UINT32 face = (size_t)Math::floor(i / (float)(texture->getNumMipmaps() + 1));
 				UINT32 mipmap = i % (texture->getNumMipmaps() + 1);
 
 				UINT32 subresourceIdx = texture->mapToSubresourceIdx(face, mipmap);

@@ -79,25 +79,22 @@ namespace CamelotFramework {
 		bool intersects(const Sphere& s) const
 		{
             return (s.mCenter - mCenter).squaredLength() <=
-                Math::Sqr(s.mRadius + mRadius);
+                Math::sqr(s.mRadius + mRadius);
 		}
 		/** Returns whether or not this sphere intersects a box. */
-		bool intersects(const AABox& box) const
-		{
-			return Math::intersects(*this, box);
-		}
+		bool intersects(const AABox& box) const;
+
 		/** Returns whether or not this sphere intersects a plane. */
-		bool intersects(const Plane& plane) const
-		{
-			return Math::intersects(*this, plane);
-		}
+		bool intersects(const Plane& plane) const;
+
 		/** Returns whether or not this sphere intersects a point. */
 		bool intersects(const Vector3& v) const
 		{
-            return ((v - mCenter).squaredLength() <= Math::Sqr(mRadius));
+            return ((v - mCenter).squaredLength() <= Math::sqr(mRadius));
 		}
-        
 
+		/** Ray / sphere intersection, returns boolean result and distance. */
+		std::pair<bool, float> intersects(const Ray& ray, bool discardInside = true) const;
     };
 	/** @} */
 	/** @} */

@@ -60,7 +60,7 @@ namespace CamelotFramework
 			mDoubleClicks = Queue<DoubleClick>::type();
 		}
 
-		if(mousePosition != mLastCursorPos || (Math::Abs(mouseScroll) > 0.00001f))
+		if(mousePosition != mLastCursorPos || (Math::abs(mouseScroll) > 0.00001f))
 		{
 			if(!onCursorMoved.empty())
 			{

@@ -251,7 +251,7 @@ namespace CamelotFramework
          */
         float length() const
         {
-            return Math::Sqrt(x * x + y * y);
+            return Math::sqrt(x * x + y * y);
         }
 
         /**
@@ -291,7 +291,7 @@ namespace CamelotFramework
          */
         float normalize()
         {
-            float len = Math::Sqrt(x * x + y * y);
+            float len = Math::sqrt(x * x + y * y);
 
             // Will also work for zero-sized vectors, but will change nothing
             if (len > 1e-08)
@@ -372,7 +372,7 @@ namespace CamelotFramework
 
 		static Vector2 normalize(const Vector2& val)
 		{
-			float len = Math::Sqrt(val.x * val.x + val.y * val.y);
+			float len = Math::sqrt(val.x * val.x + val.y * val.y);
 
 			// Will also work for zero-sized vectors, but will change nothing
 			Vector2 normalizedVec;
