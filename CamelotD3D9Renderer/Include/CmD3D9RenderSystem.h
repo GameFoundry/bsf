@@ -525,7 +525,7 @@ namespace CamelotFramework
 		 */
 		void setStencilRefValue(UINT32 refValue);
 
-		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const RectI& clearArea = RectI::EMPTY);
 
 		/// Notify when a device has been lost.
 		void notifyOnDeviceLost(D3D9Device* device);

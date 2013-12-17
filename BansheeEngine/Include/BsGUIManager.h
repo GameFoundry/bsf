@@ -146,10 +146,10 @@ namespace BansheeEngine
 		GUIInputSelection* mInputSelection;
 
 		bool mSeparateMeshesByWidget;
-		CM::Int2 mLastCursorLocalPos;
+		CM::Vector2I mLastCursorLocalPos;
 
 		DragState mDragState;
-		CM::Int2 mLastCursorClickPos;
+		CM::Vector2I mLastCursorClickPos;
 
 		GUIMouseEvent mMouseEvent;
 		GUITextInputEvent mTextInputEvent;
@@ -190,8 +190,8 @@ namespace BansheeEngine
 		void updateTextSelectionTexture();
 		void processDestroyQueue();
 
-		bool findElementUnderCursor(const CM::Int2& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
-		bool handleCursorOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenMousePos, 
+		bool findElementUnderCursor(const CM::Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
+		bool handleCursorOver(GUIWidget* widget, GUIElement* element, const CM::Vector2I& screenMousePos, 
 			bool buttonStates[3], bool shift, bool control, bool alt);
 
 		void onCursorMoved(const CM::PositionalInputEvent& event);
@@ -209,8 +209,8 @@ namespace BansheeEngine
 		void onMouseLeftWindow(CM::RenderWindow* win);
 
 		GUIMouseButton buttonToGUIButton(CM::PositionalInputEventButton cursorButton) const;
-		CM::Int2 getWidgetRelativePos(const GUIWidget& widget, const CM::Int2& screenPos) const;
-		CM::Int2 windowToBridgedCoords(const GUIWidget& widget, const CM::Int2& windowPos) const;
+		CM::Vector2I getWidgetRelativePos(const GUIWidget& widget, const CM::Vector2I& screenPos) const;
+		CM::Vector2I windowToBridgedCoords(const GUIWidget& widget, const CM::Vector2I& windowPos) const;
 		const CM::RenderWindow* getWidgetWindow(const GUIWidget& widget) const;
 
 		bool sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);

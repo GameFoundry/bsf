@@ -59,10 +59,10 @@ namespace CamelotFramework {
         // Currently locked region (local coords)
         PixelData mCurrentLock;
 		// The current locked box of this surface (entire surface coords)
-		Box mLockedBox;
+		PixelVolume mLockedBox;
         
         /// Internal implementation of lock(), must be overridden in subclasses
-        virtual PixelData lockImpl(const Box lockBox,  GpuLockOptions options) = 0;
+        virtual PixelData lockImpl(const PixelVolume lockBox,  GpuLockOptions options) = 0;
 
         /// Internal implementation of lock(), do not OVERRIDE or CALL this
         /// for HardwarePixelBuffer implementations, but override the previous method
@@ -86,7 +86,7 @@ namespace CamelotFramework {
 		    @returns PixelBox containing the locked region, the pitches and
 		    	the pixel format
 		*/
-		virtual const PixelData& lock(const Box& lockBox, GpuLockOptions options);
+		virtual const PixelData& lock(const PixelVolume& lockBox, GpuLockOptions options);
 		/// @copydoc HardwareBuffer::lock
         virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
 

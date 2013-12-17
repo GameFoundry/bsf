@@ -62,7 +62,7 @@ namespace BansheeEngine
 		mClippedBounds = mTextSprite->getBounds(mOffset, mClipRect);
 	}
 
-	Int2 GUILabel::_getOptimalSize() const
+	Vector2I GUILabel::_getOptimalSize() const
 	{
 		return GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions());
 	}

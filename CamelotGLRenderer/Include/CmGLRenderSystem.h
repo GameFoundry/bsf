@@ -581,7 +581,7 @@ namespace CamelotFramework {
 		 */
 		void endDraw();
 
-		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const Rect& clearArea = Rect::EMPTY);
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const RectI& clearArea = RectI::EMPTY);
 
 		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
 		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;

@@ -1,5 +1,5 @@
 #include "CmInputHandlerOIS.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 #include "OIS/OISException.h"
 #include "CmRenderWindow.h"
 
@@ -86,14 +86,14 @@ namespace CamelotFramework
 	bool InputHandlerOIS::mouseMoved(const OIS::MouseEvent& arg)
 	{
 		RawAxisState xyState;
-		xyState.abs = Int2(arg.state.X.abs, arg.state.Y.abs);
-		xyState.rel = Int2(arg.state.X.rel, arg.state.Y.rel);
+		xyState.abs = Vector2I(arg.state.X.abs, arg.state.Y.abs);
+		xyState.rel = Vector2I(arg.state.X.rel, arg.state.Y.rel);
 
 		onAxisMoved(xyState, RawInputAxis::Mouse_XY);
 
 		RawAxisState zState;
-		zState.abs = Int2(arg.state.Z.abs, 0);
-		zState.rel = Int2(arg.state.Z.rel, 0);
+		zState.abs = Vector2I(arg.state.Z.abs, 0);
+		zState.rel = Vector2I(arg.state.Z.rel, 0);
 
 		onAxisMoved(zState, RawInputAxis::Mouse_Z);
 

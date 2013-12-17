@@ -325,15 +325,15 @@ namespace BansheeEditor
 		// so force the update right away so we get correct element bounds
 		mMainArea->_update();
 
-		CM::Vector<CM::Rect>::type nonClientAreas;
+		CM::Vector<CM::RectI>::type nonClientAreas;
 		nonClientAreas.push_back(mLogoTexture->getBounds());
 
 		if(mChildMenus.size() > 0)
 		{
-			Rect lastButtonBounds = mChildMenus.back().button->getBounds();
-			Rect minButtonBounds = mMinBtn->getBounds();
+			RectI lastButtonBounds = mChildMenus.back().button->getBounds();
+			RectI minButtonBounds = mMinBtn->getBounds();
 
-			Rect emptyArea(lastButtonBounds.x + lastButtonBounds.width, mMainArea->y(), 
+			RectI emptyArea(lastButtonBounds.x + lastButtonBounds.width, mMainArea->y(), 
 				minButtonBounds.x - (lastButtonBounds.x + lastButtonBounds.width), mMainArea->height());
 
 			nonClientAreas.push_back(emptyArea);

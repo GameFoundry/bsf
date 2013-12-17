@@ -19,8 +19,8 @@ namespace BansheeEngine
 		~GUIInputCaret();
 
 		ImageSprite* getSprite() const { return mCaretSprite; }
-		CM::Int2 getSpriteOffset() const;
-		CM::Rect getSpriteClipRect(const CM::Rect& parentClipRect) const;
+		CM::Vector2I getSpriteOffset() const;
+		CM::RectI getSpriteClipRect(const CM::RectI& parentClipRect) const;
 
 		void updateSprite();
 
@@ -30,11 +30,11 @@ namespace BansheeEngine
 		void moveCaretRight();
 		void moveCaretUp();
 		void moveCaretDown();
-		void moveCaretToPos(const CM::Int2& pos);
+		void moveCaretToPos(const CM::Vector2I& pos);
 		void moveCaretToChar(CM::UINT32 charIdx, CaretPos caretPos);
 
 		CM::UINT32 getCharIdxAtCaretPos() const;
-		CM::Int2 getCaretPosition(const CM::Int2& offset) const;
+		CM::Vector2I getCaretPosition(const CM::Vector2I& offset) const;
 		CM::UINT32 getCaretHeight() const;
 
 		bool isCaretAtNewline() const;

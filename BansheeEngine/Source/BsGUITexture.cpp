@@ -173,14 +173,14 @@ namespace BansheeEngine
 		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
-	Int2 GUITexture::_getOptimalSize() const
+	Vector2I GUITexture::_getOptimalSize() const
 	{
 		if(mDesc.texture != nullptr)
 		{
-			return Int2(mDesc.texture->getTexture()->getWidth(), mDesc.texture->getTexture()->getHeight());
+			return Vector2I(mDesc.texture->getTexture()->getWidth(), mDesc.texture->getTexture()->getHeight());
 		}
 
-		return Int2(0, 0);
+		return Vector2I(0, 0);
 	}
 
 	void GUITexture::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

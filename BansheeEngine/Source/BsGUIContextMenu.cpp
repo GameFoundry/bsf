@@ -17,7 +17,7 @@ namespace BansheeEngine
 		close();
 	}
 
-	void GUIContextMenu::open(const Int2& position, GUIWidget& widget)
+	void GUIContextMenu::open(const Vector2I& position, GUIWidget& widget)
 	{
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundPosition(position);
 

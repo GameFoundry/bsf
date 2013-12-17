@@ -33,7 +33,7 @@ namespace BansheeEditor
 			 *
 			 * @return	null if it fails, else the found DockContainer at position.
 			 */
-			DockContainer* findAtPos(const CM::Int2& pos);
+			DockContainer* findAtPos(const CM::Vector2I& pos);
 
 			bool mIsLeaf;
 			DockContainer* mChildren[2];

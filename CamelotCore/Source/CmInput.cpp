@@ -1,7 +1,7 @@
 #include "CmInput.h"
 #include "CmTime.h"
 #include "CmMath.h"
-#include "CmRect.h"
+#include "CmRectI.h"
 #include "CmDebug.h"
 #include "CmRenderWindowManager.h"
 
@@ -123,7 +123,7 @@ namespace CamelotFramework
 	void Input::axisMoved(const RawAxisState& state, RawInputAxis axis)
 	{
 		if(axis == RawInputAxis::Mouse_XY)
-			mMouseLastRel = Int2(-state.rel.x, -state.rel.y);
+			mMouseLastRel = Vector2I(-state.rel.x, -state.rel.y);
 
 		mAxes[(int)axis] = state;
 	}
@@ -222,7 +222,7 @@ namespace CamelotFramework
 		mSmoothHorizontalAxis = Math::clamp(horizontalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
 		mSmoothVerticalAxis = Math::clamp(verticalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
 
-		mMouseLastRel = Int2(0, 0);
+		mMouseLastRel = Vector2I(0, 0);
 	}
 
 	Input& gInput()

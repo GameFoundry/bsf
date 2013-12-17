@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmFontDesc.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 namespace CamelotFramework
 {

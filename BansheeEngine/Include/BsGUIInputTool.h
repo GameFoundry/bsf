@@ -42,14 +42,14 @@ namespace BansheeEngine
 
 		CM::Vector<GUIInputLineDesc>::type mLineDescs;
 
-		CM::Int2 getTextOffset() const;
+		CM::Vector2I getTextOffset() const;
 
 		CM::UINT32 getNumLines() const { return (CM::UINT32)mLineDescs.size(); }
 		const GUIInputLineDesc& getLineDesc(CM::UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
 		CM::UINT32 getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine = false) const;
-		CM::Rect getCharRect(CM::UINT32 charIdx) const;
-		CM::Rect getLocalCharRect(CM::UINT32 charIdx) const;
-		CM::INT32 getCharIdxAtPos(const CM::Int2& pos) const;
+		CM::RectI getCharRect(CM::UINT32 charIdx) const;
+		CM::RectI getLocalCharRect(CM::UINT32 charIdx) const;
+		CM::INT32 getCharIdxAtPos(const CM::Vector2I& pos) const;
 
 		/**
 		 * @brief	Gets a character index AFTER the input index. 

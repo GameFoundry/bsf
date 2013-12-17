@@ -45,7 +45,7 @@ namespace BansheeEngine
 		return dataEntry;
 	}
 
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundPosition(const CM::Int2& position)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundPosition(const CM::Vector2I& position)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::Position;
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		return instance;
 	}
 
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsVert(const CM::Rect& bounds)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsVert(const CM::RectI& bounds)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::BoundsVert;
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		return instance;
 	}
 		
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsHorz(const CM::Rect& bounds)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsHorz(const CM::RectI& bounds)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::BoundsHorz;
@@ -107,7 +107,7 @@ namespace BansheeEngine
 
 		mLocalizedEntryNames = dropDownData.localizedNames;
 
-		Rect availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
+		RectI availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
 		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
 	}
 
@@ -117,14 +117,14 @@ namespace BansheeEngine
 	}
 
 	GUIDropDownBox::DropDownSubMenu::DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-		const Rect& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
+		const RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset)
 		:mOwner(owner), mPage(0), mBackgroundFrame(nullptr), mBackgroundArea(nullptr), mContentArea(nullptr), 
 		mContentLayout(nullptr), mScrollUpBtn(nullptr), mScrollDownBtn(nullptr), x(0), y(0), width(0), height(0), 
 		mType(type), mSubMenu(nullptr), mData(dropDownData), mOpenedUpward(false), mDepthOffset(depthOffset)
 	{
 		mAvailableBounds = availableBounds;
 
-		Rect dropDownListBounds = placement.getBounds();
+		RectI dropDownListBounds = placement.getBounds();
 		int potentialLeftStart = 0;
 		int potentialRightStart = 0;
 		int potentialTopStart = 0;

@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIWidget.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEngine
@@ -65,32 +65,32 @@ namespace BansheeEngine
 		 * 			prefers the top left corner of the box to correspond to the position, but if
 		 * 			other corners offer more space for the contents, those will be used instead.
 		 */
-		static GUIDropDownAreaPlacement aroundPosition(const CM::Int2& position);
+		static GUIDropDownAreaPlacement aroundPosition(const CM::Vector2I& position);
 
 		/**
 		 * @brief	Drop down box will be placed at the specified bounds. Box will be horizontally aligned to the left
 		 * 			of the provided bounds. Vertically system prefers placing the box at the bottom of the bounds, but may choose
 		 * 			to align it with the top of the bounds if it offers more space for the contents.
 		 */
-		static GUIDropDownAreaPlacement aroundBoundsVert(const CM::Rect& bounds);
+		static GUIDropDownAreaPlacement aroundBoundsVert(const CM::RectI& bounds);
 		
 		/**
 		 * @brief	Drop down box will be placed at the specified bounds. Box will be vertically aligned to the top
 		 * 			of the provided bounds. Horizontally system prefers placing the box at the right of the bounds, but may choose
 		 * 			to align it with the left of the bounds if it offers more space for the contents.
 		 */
-		static GUIDropDownAreaPlacement aroundBoundsHorz(const CM::Rect& bounds);
+		static GUIDropDownAreaPlacement aroundBoundsHorz(const CM::RectI& bounds);
 
 		Type getType() const { return mType; }
-		const CM::Rect& getBounds() const { return mBounds; }
-		const CM::Int2& getPosition() const { return mPosition; }
+		const CM::RectI& getBounds() const { return mBounds; }
+		const CM::Vector2I& getPosition() const { return mPosition; }
 
 	private:
 		GUIDropDownAreaPlacement() { }
 
 		Type mType;
-		CM::Rect mBounds;
-		CM::Int2 mPosition;
+		CM::RectI mBounds;
+		CM::Vector2I mPosition;
 	};
 
 	enum class GUIDropDownType
@@ -121,7 +121,7 @@ namespace BansheeEngine
 			CM::UINT32 mPage;
 			CM::INT32 x, y;
 			CM::UINT32 width, height;
-			CM::Rect mAvailableBounds;
+			CM::RectI mAvailableBounds;
 			CM::UINT32 mDepthOffset;
 			bool mOpenedUpward;
 
@@ -139,7 +139,7 @@ namespace BansheeEngine
 			DropDownSubMenu* mSubMenu;
 
 			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-				const CM::Rect& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, CM::UINT32 depthOffset);
+				const CM::RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, CM::UINT32 depthOffset);
 			~DropDownSubMenu();
 
 			void updateGUIElements();

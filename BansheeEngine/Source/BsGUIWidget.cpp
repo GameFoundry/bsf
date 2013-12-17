@@ -9,7 +9,7 @@
 #include "CmMaterial.h"
 #include "CmPass.h"
 #include "CmMesh.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 #include "BsOverlayManager.h"
 #include "BsCamera.h"
 #include "CmViewport.h"
@@ -300,7 +300,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIWidget::inBounds(const Int2& position) const
+	bool GUIWidget::inBounds(const Vector2I& position) const
 	{
 		// Technically GUI widget bounds can be larger than the viewport, so make sure we clip to viewport first
 		if(!getTarget()->getArea().contains(position))
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		Vector3 vecPos((float)position.x, (float)position.y, 0.0f);
 		vecPos = worldTfrm.inverse().transform3x4(vecPos);
 
-		Int2 localPos(Math::roundToInt(vecPos.x), Math::roundToInt(vecPos.y));
+		Vector2I localPos(Math::roundToInt(vecPos.x), Math::roundToInt(vecPos.y));
 		return mBounds.contains(localPos);
 	}
 
@@ -321,7 +321,7 @@ namespace BansheeEngine
 
 		for(auto& elem : mElements)
 		{
-			Rect elemBounds = elem->_getClippedBounds();
+			RectI elemBounds = elem->_getClippedBounds();
 			mBounds.encapsulate(elemBounds);
 		}
 	}

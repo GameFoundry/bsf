@@ -31,7 +31,7 @@ namespace CamelotFramework
 		}
 	}
 
-	bool OSDropTarget::_isInside(const Int2& pos) const
+	bool OSDropTarget::_isInside(const Vector2I& pos) const
 	{
 		INT32 right = mX + mWidth;
 		INT32 bottom = mY + mHeight;

@@ -415,7 +415,7 @@ namespace CamelotFramework
 		outColour[3] = inColour.a;	
 	}
 
-	D3D11_BOX D3D11Mappings::toDx11Box(const Box &inBox)
+	D3D11_BOX D3D11Mappings::toDx11Box(const PixelVolume &inBox)
 	{
 		D3D11_BOX res;
 		res.left	= static_cast<UINT>(inBox.left);

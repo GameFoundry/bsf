@@ -13,7 +13,7 @@
 #include "CmDebugCamera.h"
 #include "BsDrawHelper2D.h"
 #include "BsDrawHelper3D.h"
-#include "CmFRect.h"
+#include "CmRectF.h"
 #include "BsProfilerOverlay.h"
 #include "CmPlatform.h"
 

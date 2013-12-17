@@ -194,7 +194,7 @@ namespace BansheeEditor
 		// so force the update right away so we get correct element bounds
 		mMainArea->_update();
 
-		CM::Vector<CM::Rect>::type nonClientAreas;
+		CM::Vector<CM::RectI>::type nonClientAreas;
 		for(auto& elem : mDragDropElements)
 		{
 			nonClientAreas.push_back(elem->getBounds());

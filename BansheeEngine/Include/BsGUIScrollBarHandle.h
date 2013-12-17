@@ -59,7 +59,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
-		virtual CM::Int2 _getOptimalSize() const;
+		virtual CM::Vector2I _getOptimalSize() const;
 	private:
 		ImageSprite* mImageSprite;
 		CM::UINT32 mHandleSize;
@@ -73,6 +73,6 @@ namespace BansheeEngine
 		GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		bool isOnHandle(const CM::Int2& pos) const;
+		bool isOnHandle(const CM::Vector2I& pos) const;
 	};
 }

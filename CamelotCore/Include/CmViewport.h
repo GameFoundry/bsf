@@ -3,8 +3,8 @@
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
 #include "CmColor.h"
-#include "CmRect.h"
-#include "CmFRect.h"
+#include "CmRectI.h"
+#include "CmRectF.h"
 #include <boost/signals/connection.hpp>
 
 namespace CamelotFramework 
@@ -82,7 +82,7 @@ namespace CamelotFramework
 		/**
 		 * @brief	Returns actual area of the viewport, in pixels.
 		 */
-		const Rect& getArea() const { return mArea; }
+		const RectI& getArea() const { return mArea; }
 
 		const Color& getClearColor() const { return mClearColor; }
 		void setClearColor(const Color& clearColor) { mClearColor = clearColor; }
@@ -106,8 +106,8 @@ namespace CamelotFramework
     protected:
         RenderTargetPtr mTarget;
 
-		FRect mNormArea;
-		Rect mArea;
+		RectF mNormArea;
+		RectI mArea;
 
 		bool mRequiresColorClear;
 		bool mRequiresDepthClear;

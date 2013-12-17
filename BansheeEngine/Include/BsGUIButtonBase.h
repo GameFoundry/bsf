@@ -69,7 +69,7 @@ namespace BansheeEngine
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-		virtual CM::Int2 _getOptimalSize() const;
+		virtual CM::Vector2I _getOptimalSize() const;
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 
 		TEXT_SPRITE_DESC getTextDesc() const;

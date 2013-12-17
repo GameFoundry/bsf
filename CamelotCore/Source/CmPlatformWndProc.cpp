@@ -117,7 +117,7 @@ namespace CamelotFramework
 
 				ScreenToClient(hWnd, &mousePos);
 
-				Int2 mousePosInt;
+				Vector2I mousePosInt;
 				mousePosInt.x = mousePos.x;
 				mousePosInt.y = mousePos.y;
 
@@ -128,7 +128,7 @@ namespace CamelotFramework
 						return translateNonClientAreaType(area.type);
 				}
 
-				Vector<Rect>::type& moveAreasPerWindow = iterFind->second.moveAreas;
+				Vector<RectI>::type& moveAreasPerWindow = iterFind->second.moveAreas;
 				for(auto area : moveAreasPerWindow)
 				{
 					if(area.contains(mousePosInt))
@@ -150,7 +150,7 @@ namespace CamelotFramework
 			break;
 		case WM_LBUTTONUP:
 			{
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -161,7 +161,7 @@ namespace CamelotFramework
 			break;
 		case WM_MBUTTONUP:
 			{
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -172,7 +172,7 @@ namespace CamelotFramework
 			break;
 		case WM_RBUTTONUP:
 			{
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -183,7 +183,7 @@ namespace CamelotFramework
 			break;
 		case WM_LBUTTONDOWN:
 			{
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -194,7 +194,7 @@ namespace CamelotFramework
 			break;
 		case WM_MBUTTONDOWN:
 			{
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -205,7 +205,7 @@ namespace CamelotFramework
 			break;
 		case WM_RBUTTONDOWN:
 			{
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -216,7 +216,7 @@ namespace CamelotFramework
 			break;
 		case WM_LBUTTONDBLCLK:
 			{
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -243,7 +243,7 @@ namespace CamelotFramework
 				if(uMsg == WM_NCMOUSEMOVE)
 					return true;
 
-				Int2 intMousePos;
+				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 				
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
@@ -393,7 +393,7 @@ namespace CamelotFramework
 		return dir;
 	}
 
-	void PlatformWndProc::getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Int2& mousePos, OSPositionalInputButtonStates& btnStates)
+	void PlatformWndProc::getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Vector2I& mousePos, OSPositionalInputButtonStates& btnStates)
 	{
 		POINT clientPoint;
 

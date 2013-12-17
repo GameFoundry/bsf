@@ -592,7 +592,7 @@ namespace CamelotFramework
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		Rect clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
+		RectI clearArea((int)mViewport.TopLeftX, (int)mViewport.TopLeftY, (int)mViewport.Width, (int)mViewport.Height);
 
 		bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
 		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == mActiveRenderTarget->getWidth() && clearArea.height == mActiveRenderTarget->getHeight());

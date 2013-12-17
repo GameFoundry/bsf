@@ -49,7 +49,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
-		virtual CM::Int2 _getOptimalSize() const;
+		virtual CM::Vector2I _getOptimalSize() const;
 	private:
 		GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
@@ -72,7 +72,7 @@ namespace BansheeEngine
 		void vertScrollUpdate(float pct);
 		void horzScrollUpdate(float pct);
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
-			CM::Rect clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 
 		virtual void _changeParentWidget(GUIWidget* widget);
 	};

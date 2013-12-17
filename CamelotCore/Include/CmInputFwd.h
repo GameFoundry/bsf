@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 namespace CamelotFramework
 {
@@ -281,7 +281,7 @@ namespace CamelotFramework
 			buttonStates[2] = false;
 		}
 
-		Int2 screenPos;
+		Vector2I screenPos;
 		bool buttonStates[PositionalInputEventButton::Count];
 		PositionalInputEventButton button;
 		PositionalInputEventType type;

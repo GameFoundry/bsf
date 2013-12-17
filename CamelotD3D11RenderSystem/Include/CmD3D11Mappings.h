@@ -60,7 +60,7 @@ namespace CamelotFramework
 		static void get(const Color& inColour, float * outColour );
 		static bool isMappingWrite(D3D11_MAP map);
 		static bool isMappingRead(D3D11_MAP map);
-		static D3D11_BOX toDx11Box(const Box &inBox);
+		static D3D11_BOX toDx11Box(const PixelVolume &inBox);
 
 		/// utility method, convert D3D11 pixel format to engine pixel format
 		static PixelFormat _getPF(DXGI_FORMAT d3dPF);

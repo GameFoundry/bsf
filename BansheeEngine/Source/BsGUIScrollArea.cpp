@@ -52,10 +52,10 @@ namespace BansheeEngine
 
 	void GUIScrollArea::updateClippedBounds()
 	{
-		mClippedBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
+		mClippedBounds = RectI(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
 	}
 
-	Int2 GUIScrollArea::_getOptimalSize() const
+	Vector2I GUIScrollArea::_getOptimalSize() const
 	{
 		return mContentLayout->_getOptimalSize();
 	}
@@ -65,7 +65,7 @@ namespace BansheeEngine
 	{ }
 
 	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		mContentLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, areaDepth);
 		UINT32 contentWidth = mContentLayout->_getActualWidth();
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		mClippedContentHeight = height;
 
 		bool hasScrollbars = false;
-		Rect layoutClipRect = clipRect;
+		RectI layoutClipRect = clipRect;
 
 		bool hasHorzScrollbar = false;
 		if(contentWidth > mWidth)
@@ -110,7 +110,7 @@ namespace BansheeEngine
 				mVertScroll->_setAcceptsKeyboardFocus(false);
 			}
 
-			Int2 offset(x + mClippedContentWidth, y);
+			Vector2I offset(x + mClippedContentWidth, y);
 			mVertScroll->_setOffset(offset);
 			mVertScroll->_setWidth(ScrollBarWidth);
 			mVertScroll->_setHeight(mClippedContentHeight);
@@ -118,11 +118,11 @@ namespace BansheeEngine
 			mVertScroll->_setWidgetDepth(widgetDepth);
 
 			UINT32 clippedScrollbarWidth = std::min(width, ScrollBarWidth);
-			Rect elemClipRect(0, 0, clippedScrollbarWidth, clipRect.height);
+			RectI elemClipRect(0, 0, clippedScrollbarWidth, clipRect.height);
 			mVertScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			Rect scrollBarLayoutClipRect(clipRect.x + mClippedContentWidth, clipRect.y, clippedScrollbarWidth, clipRect.height);
+			RectI scrollBarLayoutClipRect(clipRect.x + mClippedContentWidth, clipRect.y, clippedScrollbarWidth, clipRect.height);
 			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, mClippedContentHeight, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
@@ -158,7 +158,7 @@ namespace BansheeEngine
 				mHorzScroll->_setAcceptsKeyboardFocus(false);
 			}
 
-			Int2 offset(x, y + mClippedContentHeight);
+			Vector2I offset(x, y + mClippedContentHeight);
 			mHorzScroll->_setOffset(offset);
 			mHorzScroll->_setWidth(mClippedContentWidth);
 			mHorzScroll->_setHeight(ScrollBarWidth);
@@ -166,11 +166,11 @@ namespace BansheeEngine
 			mHorzScroll->_setWidgetDepth(widgetDepth);
 
 			UINT32 clippedScrollbarHeight = std::min(height, ScrollBarWidth);
-			Rect elemClipRect(0, 0, clipRect.width, clippedScrollbarHeight);
+			RectI elemClipRect(0, 0, clipRect.width, clippedScrollbarHeight);
 			mHorzScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			Rect scrollBarLayoutClipRect(clipRect.x, clipRect.y + mClippedContentHeight, clipRect.width, clippedScrollbarHeight);
+			RectI scrollBarLayoutClipRect(clipRect.x, clipRect.y + mClippedContentHeight, clipRect.width, clippedScrollbarHeight);
 			mHorzScroll->_updateLayout(offset.x, offset.y, mClippedContentWidth, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size

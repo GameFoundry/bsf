@@ -81,7 +81,7 @@ namespace BansheeEngine
 		markMeshAsDirty();
 	}
 
-	void GUIElement::_setOffset(const CM::Int2& offset) 
+	void GUIElement::_setOffset(const CM::Vector2I& offset) 
 	{ 
 		if(mOffset != offset)
 		{
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		mHeight = height;
 	}
 
-	void GUIElement::_setClipRect(const CM::Rect& clipRect) 
+	void GUIElement::_setClipRect(const CM::RectI& clipRect) 
 	{ 
 		if(mClipRect != clipRect)
 		{
@@ -135,14 +135,14 @@ namespace BansheeEngine
 		GUIElementBase::_changeParentWidget(widget);
 	}
 
-	Rect GUIElement::getBounds() const
+	RectI GUIElement::getBounds() const
 	{
-		return Rect(mOffset.x, mOffset.y, mWidth, mHeight);
+		return RectI(mOffset.x, mOffset.y, mWidth, mHeight);
 	}
 
-	Rect GUIElement::getVisibleBounds() const
+	RectI GUIElement::getVisibleBounds() const
 	{
-		Rect bounds = _getClippedBounds();
+		RectI bounds = _getClippedBounds();
 		
 		bounds.x += mStyle->margins.left;
 		bounds.y += mStyle->margins.top;
@@ -152,9 +152,9 @@ namespace BansheeEngine
 		return bounds;
 	}
 
-	Rect GUIElement::getContentBounds() const
+	RectI GUIElement::getContentBounds() const
 	{
-		Rect bounds;
+		RectI bounds;
 
 		bounds.x = mOffset.x + mStyle->margins.left + mStyle->contentOffset.left;
 		bounds.y = mOffset.y + mStyle->margins.top + mStyle->contentOffset.top;
@@ -166,13 +166,13 @@ namespace BansheeEngine
 		return bounds;
 	}
 
-	Rect GUIElement::getContentClipRect() const
+	RectI GUIElement::getContentClipRect() const
 	{
-		Rect contentBounds = getContentBounds();
+		RectI contentBounds = getContentBounds();
 		
 		// Transform into element space so we can clip it using the element clip rectangle
-		Int2 offsetDiff = Int2(contentBounds.x - mOffset.x, contentBounds.y - mOffset.y);
-		Rect contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
+		Vector2I offsetDiff = Vector2I(contentBounds.x - mOffset.x, contentBounds.y - mOffset.y);
+		RectI contentClipRect(offsetDiff.x, offsetDiff.y, contentBounds.width, contentBounds.height);
 		contentClipRect.clip(mClipRect);
 
 		// Transform into content sprite space
@@ -182,9 +182,9 @@ namespace BansheeEngine
 		return contentClipRect;
 	}
 
-	bool GUIElement::_isInBounds(const CM::Int2 position) const
+	bool GUIElement::_isInBounds(const CM::Vector2I position) const
 	{
-		Rect contentBounds = getVisibleBounds();
+		RectI contentBounds = getVisibleBounds();
 
 		return contentBounds.contains(position);
 	}

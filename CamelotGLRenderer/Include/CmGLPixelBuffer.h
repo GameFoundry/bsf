@@ -39,16 +39,16 @@ namespace CamelotFramework
 	{
 	public:
 		// Upload a box of pixels to this buffer on the card
-		virtual void upload(const PixelData &data, const Box &dest);
+		virtual void upload(const PixelData &data, const PixelVolume &dest);
 		// Download a box of pixels from the card
 		virtual void download(const PixelData &data);
 
 		virtual void blitFromTexture(GLTextureBuffer *src);
-		virtual void blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox);
+		virtual void blitFromTexture(GLTextureBuffer *src, const PixelVolume &srcBox, const PixelVolume &dstBox);
 
 	protected:  
 		/// Lock a box
-		PixelData lockImpl(const Box lockBox,  GpuLockOptions options);
+		PixelData lockImpl(const PixelVolume lockBox,  GpuLockOptions options);
 
 		/// Unlock a box
 		void unlockImpl(void);
@@ -89,14 +89,14 @@ namespace CamelotFramework
         /// @copydoc HardwarePixelBuffer::bindToFramebuffer
         virtual void bindToFramebuffer(GLenum attachment, UINT32 zoffset);
         /// Upload a box of pixels to this buffer on the card
-		virtual void upload(const PixelData &data, const Box &dest);
+		virtual void upload(const PixelData &data, const PixelVolume &dest);
 		// Download a box of pixels from the card
 		virtual void download(const PixelData &data);
   
         /// Copy from framebuffer
         void copyFromFramebuffer(UINT32 zoffset);
 
-		void blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox);
+		void blitFromTexture(GLTextureBuffer *src, const PixelVolume &srcBox, const PixelVolume &dstBox);
     protected:
         // In case this is a texture level
 		GLenum mTarget;

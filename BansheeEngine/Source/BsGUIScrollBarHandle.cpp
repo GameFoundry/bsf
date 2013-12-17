@@ -123,32 +123,32 @@ namespace BansheeEngine
 
 	void GUIScrollBarHandle::updateClippedBounds()
 	{
-		mClippedBounds = Rect(mOffset.x, mOffset.y, mWidth, mHeight);
+		mClippedBounds = RectI(mOffset.x, mOffset.y, mWidth, mHeight);
 
-		Rect localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		RectI localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
 		mClippedBounds.clip(localClipRect);
 	}
 
-	Int2 GUIScrollBarHandle::_getOptimalSize() const
+	Vector2I GUIScrollBarHandle::_getOptimalSize() const
 	{
 		if(mCurTexture != nullptr)
 		{
-			return Int2(mCurTexture->getTexture()->getWidth(), mCurTexture->getTexture()->getHeight());
+			return Vector2I(mCurTexture->getTexture()->getWidth(), mCurTexture->getTexture()->getHeight());
 		}
 
-		return Int2();
+		return Vector2I();
 	}
 
 	void GUIScrollBarHandle::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
-		Int2 offset = mOffset;
+		Vector2I offset = mOffset;
 		if(mHorizontal)
 			offset.x += Math::floorToInt(mHandlePos);
 		else
 			offset.y += Math::floorToInt(mHandlePos);
 
-		Rect clipRect = mClipRect;
+		RectI clipRect = mClipRect;
 		if(mHorizontal)
 			clipRect.x -= Math::floorToInt(mHandlePos);
 		else
@@ -308,7 +308,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIScrollBarHandle::isOnHandle(const CM::Int2& pos) const
+	bool GUIScrollBarHandle::isOnHandle(const CM::Vector2I& pos) const
 	{
 		if(mHorizontal)
 		{

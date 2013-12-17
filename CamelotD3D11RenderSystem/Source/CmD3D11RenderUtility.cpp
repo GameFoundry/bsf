@@ -2,7 +2,7 @@
 #include "CmD3D11Device.h"
 #include "CmVector3.h"
 #include "CmColor.h"
-#include "CmRect.h"
+#include "CmRectI.h"
 #include "CmD3D11BlendState.h"
 #include "CmD3D11RasterizerState.h"
 #include "CmD3D11DepthStencilState.h"

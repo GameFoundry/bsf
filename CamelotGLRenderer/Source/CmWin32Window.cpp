@@ -655,24 +655,24 @@ namespace CamelotFramework
 		}
 	}
 
-	Int2 Win32Window::screenToWindowPos(const Int2& screenPos) const
+	Vector2I Win32Window::screenToWindowPos(const Vector2I& screenPos) const
 	{
 		POINT pos;
 		pos.x = screenPos.x;
 		pos.y = screenPos.y;
 
 		ScreenToClient(mHWnd, &pos);
-		return Int2(pos.x, pos.y);
+		return Vector2I(pos.x, pos.y);
 	}
 
-	Int2 Win32Window::windowToScreenPos(const Int2& windowPos) const
+	Vector2I Win32Window::windowToScreenPos(const Vector2I& windowPos) const
 	{
 		POINT pos;
 		pos.x = windowPos.x;
 		pos.y = windowPos.y;
 
 		ClientToScreen(mHWnd, &pos);
-		return Int2(pos.x, pos.y);
+		return Vector2I(pos.x, pos.y);
 	}	
 
 	void Win32Window::getCustomAttribute( const String& name, void* pData ) const

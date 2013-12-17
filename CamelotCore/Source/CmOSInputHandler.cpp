@@ -32,7 +32,7 @@ namespace CamelotFramework
 	void OSInputHandler::update()
 	{
 		WString inputString;
-		Int2 mousePosition;
+		Vector2I mousePosition;
 		float mouseScroll;
 		OSPositionalInputButtonStates mouseMoveBtnState;
 		Queue<ButtonStateChange>::type buttonStates;
@@ -174,7 +174,7 @@ namespace CamelotFramework
 		mInputString += character;
 	}
 
-	void OSInputHandler::cursorMoved(const Int2& cursorPos, OSPositionalInputButtonStates& btnStates)
+	void OSInputHandler::cursorMoved(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
 
@@ -182,7 +182,7 @@ namespace CamelotFramework
 		mMouseMoveBtnState = btnStates;
 	}
 
-	void OSInputHandler::cursorPressed(const Int2& cursorPos, 
+	void OSInputHandler::cursorPressed(const Vector2I& cursorPos, 
 		OSMouseButton button, OSPositionalInputButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
@@ -196,7 +196,7 @@ namespace CamelotFramework
 		btnState.btnStates = btnStates;
 	}
 
-	void OSInputHandler::cursorReleased(const Int2& cursorPos, 
+	void OSInputHandler::cursorReleased(const Vector2I& cursorPos, 
 		OSMouseButton button, OSPositionalInputButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
@@ -210,7 +210,7 @@ namespace CamelotFramework
 		btnState.btnStates = btnStates;
 	}
 
-	void OSInputHandler::cursorDoubleClick(const Int2& cursorPos, OSPositionalInputButtonStates& btnStates)
+	void OSInputHandler::cursorDoubleClick(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
 

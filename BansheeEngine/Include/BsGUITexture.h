@@ -66,6 +66,6 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
-		virtual CM::Int2 _getOptimalSize() const;
+		virtual CM::Vector2I _getOptimalSize() const;
 	};
 }

@@ -2,7 +2,7 @@
 #include "BsGUIElement.h"
 #include "BsGUISpace.h"
 #include "CmMath.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 using namespace CamelotFramework;
 
@@ -35,7 +35,7 @@ namespace BansheeEngine
 				GUIElement* element = static_cast<GUIElement*>(child);
 				const GUILayoutOptions& layoutOptions = element->_getLayoutOptions();
 
-				Int2 optimalSize;
+				Vector2I optimalSize;
 				if(!layoutOptions.fixedWidth || !layoutOptions.fixedHeight)
 					optimalSize = child->_getOptimalSize();
 
@@ -83,7 +83,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUILayoutY::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, Rect clipRect, UINT8 widgetDepth, UINT16 areaDepth)
+	void GUILayoutY::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 totalOptimalSize = _getOptimalSize().y;
 		UINT32 totalNonClampedSize = 0;
@@ -360,15 +360,15 @@ namespace BansheeEngine
 				INT32 xOffset = Math::ceilToInt((INT32)(width - (INT32)element->_getWidth()) * 0.5f);
 				xOffset = std::max(0, xOffset);
 
-				Int2 offset(x + xOffset, y + yOffset);
+				Vector2I offset(x + xOffset, y + yOffset);
 				element->_setOffset(offset);
 				element->_setWidgetDepth(widgetDepth);
 				element->_setAreaDepth(areaDepth);
 
-				Rect elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+				RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 				element->_setClipRect(elemClipRect);
 
-				Rect newClipRect(offset.x, offset.y, elemWidth, elemHeight);
+				RectI newClipRect(offset.x, offset.y, elemWidth, elemHeight);
 				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, newClipRect, widgetDepth, areaDepth);
 
 				mActualWidth = std::max(mActualWidth, elemWidth);
@@ -377,7 +377,7 @@ namespace BansheeEngine
 			{
 				GUILayout* layout = static_cast<GUILayout*>(child);
 
-				Rect newClipRect(x, y + yOffset, width, elemHeight);
+				RectI newClipRect(x, y + yOffset, width, elemHeight);
 				newClipRect.clip(clipRect);
 				layout->_updateLayoutInternal(x, y + yOffset, width, elemHeight, newClipRect, widgetDepth, areaDepth);
 

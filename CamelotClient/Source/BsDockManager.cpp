@@ -163,7 +163,7 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	DockManager::DockContainer* DockManager::DockContainer::findAtPos(const CM::Int2& pos)
+	DockManager::DockContainer* DockManager::DockContainer::findAtPos(const CM::Vector2I& pos)
 	{
 		if(mIsLeaf)
 		{
@@ -451,13 +451,13 @@ namespace BansheeEditor
 		if(widget->getTarget() != mParent->getTarget())
 			return;
 
-		const Int2& widgetRelPos = event.getPosition();
+		const Vector2I& widgetRelPos = event.getPosition();
 
 		const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
 
 		Vector4 tfrmdPos = worldTfrm.transform3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 		Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
-		Int2 windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
+		Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
 		DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
 

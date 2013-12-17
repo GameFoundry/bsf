@@ -58,7 +58,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateRenderElementsInternal();
 
-		virtual CM::Int2 _getOptimalSize() const;
+		virtual CM::Vector2I _getOptimalSize() const;
 
 	private:
 		HCamera mCamera;

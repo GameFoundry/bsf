@@ -10,10 +10,10 @@ namespace CamelotFramework
 {
 	boost::signal<void(RenderWindow*)> Platform::onMouseLeftWindow;
 
-	boost::signal<void(const Int2&, OSPositionalInputButtonStates)> Platform::onCursorMoved;
-	boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonPressed;
-	boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonReleased;
-	boost::signal<void(const Int2&, OSPositionalInputButtonStates)> Platform::onCursorDoubleClick;
+	boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> Platform::onCursorMoved;
+	boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonPressed;
+	boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonReleased;
+	boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> Platform::onCursorDoubleClick;
 	boost::signal<void(InputCommandType)> Platform::onInputCommand;
 	boost::signal<void(float)> Platform::onMouseWheelScrolled;
 	boost::signal<void(UINT32)> Platform::onCharInput;
@@ -70,7 +70,7 @@ namespace CamelotFramework
 	NativeCursorData Platform::mCursor;
 	bool Platform::mUsingCustomCursor = false;
 
-	void Platform::setCursorPosition(const Int2& screenPos)
+	void Platform::setCursorPosition(const Vector2I& screenPos)
 	{
 		SetCursorPos(screenPos.x, screenPos.y);
 	}
@@ -93,7 +93,7 @@ namespace CamelotFramework
 		PostMessage(hwnd, WM_CM_RELEASECAPTURE, WPARAM(hwnd), 0);
 	}
 
-	bool Platform::isPointOverWindow(const RenderWindow& window, const Int2& screenPos)
+	bool Platform::isPointOverWindow(const RenderWindow& window, const Vector2I& screenPos)
 	{
 		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
 
@@ -149,7 +149,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Platform::clipCursorToRect(const Rect& screenRect)
+	void Platform::clipCursorToRect(const RectI& screenRect)
 	{
 		RECT clipWindowRect;
 		clipWindowRect.left = screenRect.x;
@@ -217,7 +217,7 @@ namespace CamelotFramework
 	}
 
 	// TODO - Add support for animated custom cursor
-	void Platform::setCustomCursor(PixelData& pixelData, const Int2& hotSpot)
+	void Platform::setCustomCursor(PixelData& pixelData, const Vector2I& hotSpot)
 	{
 		if(mUsingCustomCursor)
 		{
@@ -294,7 +294,7 @@ namespace CamelotFramework
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect>::type& nonClientAreas)
+	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>::type& nonClientAreas)
 	{
 		CM_LOCK_MUTEX(mSync);
 

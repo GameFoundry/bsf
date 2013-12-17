@@ -124,8 +124,8 @@ namespace BansheeEngine
 		UINT32 numLines = textData.getNumLines();
 		UINT32 newNumQuads = textData.getNumQuadsForPage(page);
 
-		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(textData, width, height, horzAlign, vertAlign);
-		Int2 offset = getAnchorOffset(anchor, width, height);
+		Vector<Vector2I>::type alignmentOffsets = getAlignmentOffsets(textData, width, height, horzAlign, vertAlign);
+		Vector2I offset = getAnchorOffset(anchor, width, height);
 
 		UINT32 quadOffset = 0;
 		for(UINT32 i = 0; i < numLines; i++)
@@ -133,7 +133,7 @@ namespace BansheeEngine
 			const TextData::TextLine& line = textData.getLine(i);
 			UINT32 writtenQuads = line.fillBuffer(page, vertices, uv, indices, quadOffset, bufferSizeQuads);
 
-			Int2 position = offset + alignmentOffsets[i];
+			Vector2I position = offset + alignmentOffsets[i];
 			UINT32 numVertices = writtenQuads * 4;
 			for(UINT32 i = 0; i < numVertices; i++)
 			{
@@ -154,8 +154,8 @@ namespace BansheeEngine
 		UINT32 numLines = textData.getNumLines();
 		UINT32 numPages = textData.getNumPages();
 
-		Vector<Int2>::type alignmentOffsets = getAlignmentOffsets(textData, width, height, horzAlign, vertAlign);
-		Int2 offset = getAnchorOffset(anchor, width, height);
+		Vector<Vector2I>::type alignmentOffsets = getAlignmentOffsets(textData, width, height, horzAlign, vertAlign);
+		Vector2I offset = getAnchorOffset(anchor, width, height);
 
 		UINT32 quadOffset = 0;
 		
@@ -166,7 +166,7 @@ namespace BansheeEngine
 			{
 				UINT32 writtenQuads = line.fillBuffer(j, vertices, uv, indices, quadOffset, bufferSizeQuads);
 
-				Int2 position = offset + alignmentOffsets[i];
+				Vector2I position = offset + alignmentOffsets[i];
 
 				UINT32 numVertices = writtenQuads * 4;
 				for(UINT32 i = 0; i < numVertices; i++)
@@ -182,7 +182,7 @@ namespace BansheeEngine
 		return quadOffset;
 	}
 
-	Vector<Int2>::type TextSprite::getAlignmentOffsets(const TextData& textData, 
+	Vector<Vector2I>::type TextSprite::getAlignmentOffsets(const TextData& textData, 
 		UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign)
 	{
 		UINT32 numLines = textData.getNumLines();
@@ -211,7 +211,7 @@ namespace BansheeEngine
 
 		// Calc horizontal alignment offset
 		UINT32 curY = 0;
-		Vector<Int2>::type lineOffsets;
+		Vector<Vector2I>::type lineOffsets;
 		for(UINT32 i = 0; i < numLines; i++)
 		{
 			const TextData::TextLine& line = textData.getLine(i);
@@ -230,7 +230,7 @@ namespace BansheeEngine
 				break;
 			}
 
-			lineOffsets.push_back(Int2(horzOffset, vertOffset + curY));
+			lineOffsets.push_back(Vector2I(horzOffset, vertOffset + curY));
 			curY += line.getYOffset();
 		}
 

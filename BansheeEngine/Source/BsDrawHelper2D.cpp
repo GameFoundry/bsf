@@ -1,5 +1,5 @@
 #include "BsDrawHelper2D.h"
-#include "CmFRect.h"
+#include "CmRectF.h"
 #include "CmMesh.h"
 #include "CmTime.h"
 #include "CmVector2.h"
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 	}
 
-	void DrawHelper2D::quad(const CM::FRect& area, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper2D::quad(const CM::RectF& area, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -66,7 +66,7 @@ namespace BansheeEngine
 	/* 								2D - DRAW	                     		*/
 	/************************************************************************/
 
-	void DrawHelper2D::drawQuad(const HCamera& camera, const CM::FRect& area, const Color& color, DebugDrawCoordType coordType, float timeout)
+	void DrawHelper2D::drawQuad(const HCamera& camera, const CM::RectF& area, const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(4, 6, mVertexDesc);
 
-		FRect actualArea = area;
+		RectF actualArea = area;
 		if(coordType == DebugDrawCoordType::Normalized)
 			actualArea = normalizedCoordToClipSpace(area);
 
@@ -403,9 +403,9 @@ namespace BansheeEngine
 		}
 	}
 
-	FRect DrawHelper2D::normalizedCoordToClipSpace(const FRect& area) const
+	RectF DrawHelper2D::normalizedCoordToClipSpace(const RectF& area) const
 	{
-		FRect clipSpaceRect;
+		RectF clipSpaceRect;
 		clipSpaceRect.x = area.x * 2.0f - 1.0f;
 		clipSpaceRect.width = area.width * 2.0f;
 		clipSpaceRect.y = -area.y * 2.0f + 1.0f;

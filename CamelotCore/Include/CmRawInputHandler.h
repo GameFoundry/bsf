@@ -3,14 +3,14 @@
 #include "CmPrerequisites.h"
 #include "CmInputFwd.h"
 #include <boost/signal.hpp>
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 namespace CamelotFramework
 {
 	struct RawAxisState
 	{
-		Int2 rel;
-		Int2 abs;
+		Vector2I rel;
+		Vector2I abs;
 	};
 
 	enum class RawInputAxis

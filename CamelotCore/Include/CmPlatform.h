@@ -74,7 +74,7 @@ namespace CamelotFramework
 		void _setFileList(const Vector<WString>::type& fileList);
 		void _setActive(bool active) { mActive = active; }
 
-		bool _isInside(const Int2& pos) const;
+		bool _isInside(const Vector2I& pos) const;
 		bool _isActive() const { return mActive; }
 	private:
 		friend class Platform;

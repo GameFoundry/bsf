@@ -779,7 +779,7 @@ namespace CamelotFramework {
 	{
 		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), mFormat);
 	}
-	PixelData PixelData::getSubVolume(const Box &def) const
+	PixelData PixelData::getSubVolume(const PixelVolume &def) const
 	{
 		if(PixelUtil::isCompressed(mFormat))
 		{

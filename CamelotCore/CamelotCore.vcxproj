@@ -297,6 +297,7 @@
     <ClInclude Include="Include\CmPixelData.h" />
     <ClInclude Include="Include\CmPixelDataRTTI.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
+    <ClInclude Include="Include\CmPixelVolume.h" />
     <ClInclude Include="Include\CmPlatformWndProc.h" />
     <ClInclude Include="Include\CmProfiler.h" />
     <ClInclude Include="Include\CmQueryManager.h" />
@@ -465,6 +466,7 @@
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp" />
     <ClCompile Include="Source\CmPixelData.cpp" />
     <ClCompile Include="Source\CmPixelUtil.cpp" />
+    <ClCompile Include="Source\CmPixelVolume.cpp" />
     <ClCompile Include="Source\CmPlatform.cpp" />
     <ClCompile Include="Source\CmPlatformWndProc.cpp" />
     <ClCompile Include="Source\CmProfiler.cpp" />

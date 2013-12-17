@@ -98,10 +98,10 @@ namespace BansheeEngine
 
 	void GUIScrollBar::updateClippedBounds()
 	{
-		mClippedBounds = Rect(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
+		mClippedBounds = RectI(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
 	}
 
-	Int2 GUIScrollBar::_getOptimalSize() const
+	Vector2I GUIScrollBar::_getOptimalSize() const
 	{
 		return mLayout->_getOptimalSize();
 	}

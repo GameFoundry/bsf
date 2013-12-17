@@ -13,8 +13,8 @@ namespace BansheeEngine
 		~GUIInputSelection();
 
 		const CM::Vector<ImageSprite*>::type& getSprites() const { return mSprites; }
-		CM::Int2 GUIInputSelection::getSelectionSpriteOffset(CM::UINT32 spriteIdx) const;
-		CM::Rect GUIInputSelection::getSelectionSpriteClipRect(CM::UINT32 spriteIdx, const CM::Rect& parentClipRect) const;
+		CM::Vector2I GUIInputSelection::getSelectionSpriteOffset(CM::UINT32 spriteIdx) const;
+		CM::RectI GUIInputSelection::getSelectionSpriteClipRect(CM::UINT32 spriteIdx, const CM::RectI& parentClipRect) const;
 		void updateSprite();
 
 		void showSelection(CM::UINT32 anchorCaretPos);
@@ -37,9 +37,9 @@ namespace BansheeEngine
 		CM::UINT32 mSelectionAnchor;
 		CM::UINT32 mSelectionDragAnchor;
 
-		CM::Vector<CM::Rect>::type mSelectionRects;
+		CM::Vector<CM::RectI>::type mSelectionRects;
 		CM::Vector<ImageSprite*>::type mSprites;
 
-		CM::Vector<CM::Rect>::type getSelectionRects() const;
+		CM::Vector<CM::RectI>::type getSelectionRects() const;
 	};
 }

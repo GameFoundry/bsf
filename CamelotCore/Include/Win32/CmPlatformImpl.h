@@ -2,8 +2,8 @@
 
 #include "CmPrerequisites.h"
 #include "CmInputFwd.h"
-#include "CmInt2.h"
-#include "CmRect.h"
+#include "CmVector2I.h"
+#include "CmRectI.h"
 #include <boost/signals.hpp>
 
 namespace CamelotFramework
@@ -33,13 +33,13 @@ namespace CamelotFramework
 	struct CM_EXPORT NonClientResizeArea
 	{
 		NonClientAreaBorderType type;
-		Rect area;
+		RectI area;
 	};
 
 	struct CM_EXPORT WindowNonClientAreaData
 	{
 		Vector<NonClientResizeArea>::type resizeAreas;
-		Vector<Rect>::type moveAreas;
+		Vector<RectI>::type moveAreas;
 	};
 
 	/**
@@ -57,7 +57,7 @@ namespace CamelotFramework
 		 * 			
 		 * @note	Thread safe. 
 		 */
-		static void setCursorPosition(const Int2& screenPos);
+		static void setCursorPosition(const Vector2I& screenPos);
 
 		/**
 		 * @brief	Capture mouse to this window so that we get mouse input even if the mouse leaves the window area.
@@ -75,7 +75,7 @@ namespace CamelotFramework
 		/**
 		 * @brief	Checks if provided over screen position is over the specified window.
 		 */
-		static bool isPointOverWindow(const RenderWindow& window, const Int2& screenPos);
+		static bool isPointOverWindow(const RenderWindow& window, const Vector2I& screenPos);
 
 		/**
 		 * @brief	Limit cursor movement to the specified window.
@@ -88,7 +88,7 @@ namespace CamelotFramework
 		 *
 		 * @note	Thread safe.
 		 */
-		static void clipCursorToRect(const Rect& screenRect);
+		static void clipCursorToRect(const RectI& screenRect);
 		/**
 		 * @brief	Disables cursor clipping.
 		 * 			
@@ -130,7 +130,7 @@ namespace CamelotFramework
 		 * 						
 		 * @note	Thread safe.
 		 */
-		static void setCustomCursor(PixelData& pixelData, const Int2& hotSpot);
+		static void setCustomCursor(PixelData& pixelData, const Vector2I& hotSpot);
 
 		/**
 		 * @brief	Sets custom caption non client areas for the specified window. Using custom client
@@ -141,7 +141,7 @@ namespace CamelotFramework
 		 * 			All provided areas are relative to the specified window.
 		 * 			Mostly useful for frameless windows that don't have typical caption bar.
 		 */
-		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<Rect>::type& nonClientAreas);
+		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>::type& nonClientAreas);
 
 		/**
 		 * @brief	Sets custom non client areas for the specified window. Using custom client
@@ -240,10 +240,10 @@ namespace CamelotFramework
 
 		// Callbacks triggered on the core thread. Be careful so that none
 		// of the connected methods call methods intended for sim thread.
-		static boost::signal<void(const Int2&, OSPositionalInputButtonStates)> onCursorMoved;
-		static boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonPressed;
-		static boost::signal<void(const Int2&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonReleased;
-		static boost::signal<void(const Int2&, OSPositionalInputButtonStates)> onCursorDoubleClick;
+		static boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> onCursorMoved;
+		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonPressed;
+		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonReleased;
+		static boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> onCursorDoubleClick;
 		static boost::signal<void(InputCommandType)> onInputCommand;
 		static boost::signal<void(float)> onMouseWheelScrolled;
 		static boost::signal<void(UINT32)> onCharInput;

@@ -77,15 +77,15 @@ namespace BansheeEngine
 
 	void GUIViewport::updateClippedBounds()
 	{
-		Rect mBounds = Rect(0, 0, mWidth, mHeight);
+		RectI mBounds = RectI(0, 0, mWidth, mHeight);
 		mBounds.clip(mClipRect);
 		mBounds.x += mOffset.x;
 		mBounds.y += mOffset.y;
 	}
 
-	Int2 GUIViewport::_getOptimalSize() const
+	Vector2I GUIViewport::_getOptimalSize() const
 	{
-		return Int2(0, 0);
+		return Vector2I(0, 0);
 	}
 
 	void GUIViewport::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

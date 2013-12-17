@@ -31,12 +31,12 @@ namespace CamelotFramework
 
 		struct DropTargetOp
 		{
-			DropTargetOp(DropOpType _type, const Int2& _pos)
+			DropTargetOp(DropOpType _type, const Vector2I& _pos)
 				:type(_type), position(_pos), dataType(DropOpDataType::None)
 			{ }
 
 			DropOpType type;
-			Int2 position;
+			Vector2I position;
 
 			DropOpDataType dataType;
 			union 
@@ -124,7 +124,7 @@ namespace CamelotFramework
 				mFileLists.push_back(getFileListFromData(pDataObj));
 
 				ScreenToClient(mHWnd, (POINT *)&pt);
-				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Int2((int)pt.x, (int)pt.y)));
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Vector2I((int)pt.x, (int)pt.y)));
 
 				DropTargetOp& op = mQueuedDropOps.back();
 				op.dataType = DropOpDataType::FileList;
@@ -145,7 +145,7 @@ namespace CamelotFramework
 				CM_LOCK_MUTEX(mSync);
 
 				ScreenToClient(mHWnd, (POINT *)&pt);
-				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Int2((int)pt.x, (int)pt.y)));
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Vector2I((int)pt.x, (int)pt.y)));
 
 				DropTargetOp& op = mQueuedDropOps.back();
 				op.dataType = DropOpDataType::FileList;
@@ -160,7 +160,7 @@ namespace CamelotFramework
 			{
 				CM_LOCK_MUTEX(mSync);
 
-				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Leave, Int2()));
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Leave, Vector2I()));
 
 				DropTargetOp& op = mQueuedDropOps.back();
 				op.dataType = DropOpDataType::FileList;
@@ -184,7 +184,7 @@ namespace CamelotFramework
 				mFileLists.push_back(getFileListFromData(pDataObj));
 
 				ScreenToClient(mHWnd, (POINT *)&pt);
-				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Drop, Int2((int)pt.x, (int)pt.y)));
+				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Drop, Vector2I((int)pt.x, (int)pt.y)));
 
 				DropTargetOp& op = mQueuedDropOps.back();
 				op.dataType = DropOpDataType::FileList;

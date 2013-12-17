@@ -52,12 +52,12 @@ namespace CamelotFramework
         assert(!isLocked() && "Cannot lock this buffer, it is already locked!");
         assert(offset == 0 && length == mSizeInBytes && "Cannot lock memory region, most lock box or entire buffer");
         
-        Box myBox(0, 0, 0, mWidth, mHeight, mDepth);
+        PixelVolume myBox(0, 0, 0, mWidth, mHeight, mDepth);
         const PixelData &rv = lock(myBox, options);
         return rv.getData();
     }
 
-    const PixelData& PixelBuffer::lock(const Box& lockBox, GpuLockOptions options)
+    const PixelData& PixelBuffer::lock(const PixelVolume& lockBox, GpuLockOptions options)
     {
         // Lock the real buffer if there is no shadow buffer 
         mCurrentLock = lockImpl(lockBox, options);

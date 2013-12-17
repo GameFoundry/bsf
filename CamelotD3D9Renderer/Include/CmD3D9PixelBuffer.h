@@ -104,8 +104,8 @@ namespace CamelotFramework {
 		CM_STATIC_MUTEX(msDeviceAccessMutex)		
 	protected:
 		/// Lock a box
-		PixelData lockImpl(const Box lockBox,  GpuLockOptions options);
-		PixelData lockBuffer(BufferResources* bufferResources, const Box &lockBox, DWORD flags);
+		PixelData lockImpl(const PixelVolume lockBox,  GpuLockOptions options);
+		PixelData lockBuffer(BufferResources* bufferResources, const PixelVolume &lockBox, DWORD flags);
 
 		/// Unlock a box
 		void unlockImpl(void);
@@ -115,12 +115,12 @@ namespace CamelotFramework {
 		BufferResources* createBufferResources();
 
 		void blit(IDirect3DDevice9* d3d9Device, const PixelBufferPtr &src,
-				const Box &srcBox, const Box &dstBox, 
+				const PixelVolume &srcBox, const PixelVolume &dstBox, 
 				BufferResources* srcBufferResources, 
 				BufferResources* dstBufferResources);
-		void blitFromMemory(const PixelData &src, const Box &dstBox, BufferResources* dstBufferResources);
+		void blitFromMemory(const PixelData &src, const PixelVolume &dstBox, BufferResources* dstBufferResources);
 
-		void blitToMemory(const Box &srcBox, const PixelData &dst, BufferResources* srcBufferResources, IDirect3DDevice9* d3d9Device);
+		void blitToMemory(const PixelVolume &srcBox, const PixelData &dst, BufferResources* srcBufferResources, IDirect3DDevice9* d3d9Device);
 	};
 };
 #endif

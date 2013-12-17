@@ -12,7 +12,7 @@
 #include "CmUtil.h"
 #include "CmRenderWindowManager.h"
 #include "CmPlatform.h"
-#include "CmRect.h"
+#include "CmRectI.h"
 #include "CmApplication.h"
 #include "CmException.h"
 #include "CmInput.h"
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		GUIMaterialInfo matInfo;
 		UINT32 numQuads;
 		UINT32 depth;
-		Rect bounds;
+		RectI bounds;
 		Vector<GUIGroupElement>::type elements;
 	};
 
@@ -358,7 +358,7 @@ namespace BansheeEngine
 				UINT32 renderElemIdx = elem.renderElement;
 				UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
-				Rect tfrmedBounds = guiElem->_getClippedBounds();
+				RectI tfrmedBounds = guiElem->_getClippedBounds();
 				tfrmedBounds.transform(guiElem->_getParentWidget().SO()->getWorldTfrm());
 
 				const GUIMaterialInfo& matInfo = guiElem->getMaterial(renderElemIdx);
@@ -575,7 +575,7 @@ namespace BansheeEngine
 		{
 			if(mElementUnderCursor != nullptr)
 			{
-				mMouseEvent.setDragAndDropDroppedData(mElementUnderCursor, Int2(), DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+				mMouseEvent.setDragAndDropDroppedData(mElementUnderCursor, Vector2I(), DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
 				bool processed = sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent);
 
 				return processed;
@@ -598,7 +598,7 @@ namespace BansheeEngine
 		if(findElementUnderCursor(event.screenPos, buttonStates, event.shift, event.control, event.alt))
 			event.markAsUsed();
 
-		Int2 localPos;
+		Vector2I localPos;
 		
 		if(mWidgetUnderCursor != nullptr)
 			localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
@@ -620,7 +620,7 @@ namespace BansheeEngine
 		// If mouse is being held down send MouseDrag events
 		if(mActiveElement != nullptr && mDragState == DragState::Dragging)
 		{
-			Int2 curLocalPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
+			Vector2I curLocalPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
 
 			if(mLastCursorLocalPos != curLocalPos)
 			{
@@ -681,7 +681,7 @@ namespace BansheeEngine
 
 		mMouseEvent = GUIMouseEvent(buttonStates, event.shift, event.control, event.alt);
 
-		Int2 localPos;
+		Vector2I localPos;
 		if(mWidgetUnderCursor != nullptr)
 		{
 			localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
@@ -749,7 +749,7 @@ namespace BansheeEngine
 		bool acceptMouseDown = mActiveElement == nullptr && mElementUnderCursor != nullptr;
 		if(acceptMouseDown)
 		{
-			Int2 localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
+			Vector2I localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
 			mMouseEvent.setMouseDownData(mElementUnderCursor, localPos, guiButton);
 			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
@@ -787,7 +787,7 @@ namespace BansheeEngine
 			if(menu != nullptr)
 			{
 				const RenderWindow* window = getWidgetWindow(*mWidgetUnderCursor);
-				Int2 windowPos = window->screenToWindowPos(event.screenPos);
+				Vector2I windowPos = window->screenToWindowPos(event.screenPos);
 
 				menu->open(windowPos, *mWidgetUnderCursor);
 				event.markAsUsed();
@@ -816,7 +816,7 @@ namespace BansheeEngine
 		bool acceptMouseDown = mElementUnderCursor != nullptr;
 		if(acceptMouseDown)
 		{
-			Int2 localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
+			Vector2I localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
 			mMouseEvent.setMouseDoubleClickData(mElementUnderCursor, localPos, guiButton);
 			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
@@ -895,7 +895,7 @@ namespace BansheeEngine
 		sendCommandEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mCommandEvent);
 	}
 
-	bool GUIManager::findElementUnderCursor(const CM::Int2& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
+	bool GUIManager::findElementUnderCursor(const CM::Vector2I& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
 	{
 		Vector<const RenderWindow*>::type widgetWindows;
 		for(auto& widgetInfo : mWidgets)
@@ -944,7 +944,7 @@ namespace BansheeEngine
 
 		if(windowUnderCursor != nullptr)
 		{
-			Int2 windowPos = windowUnderCursor->screenToWindowPos(cursorScreenPos);
+			Vector2I windowPos = windowUnderCursor->screenToWindowPos(cursorScreenPos);
 			Vector4 vecWindowPos((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f);
 
 			UINT32 topMostDepth = std::numeric_limits<UINT32>::max();
@@ -974,7 +974,7 @@ namespace BansheeEngine
 							selectiveInputData = &selectionIterFind->second;
 					}
 
-					Int2 localPos = getWidgetRelativePos(*widget, cursorScreenPos);
+					Vector2I localPos = getWidgetRelativePos(*widget, cursorScreenPos);
 
 					Vector<GUIElement*>::type sortedElements = widget->getElements();
 					std::sort(sortedElements.begin(), sortedElements.end(), 
@@ -1012,12 +1012,12 @@ namespace BansheeEngine
 		return handleCursorOver(cursorOverWidget, cursorOverElement, cursorScreenPos, buttonStates, shift, control, alt);
 	}
 
-	bool GUIManager::handleCursorOver(GUIWidget* widget, GUIElement* element, const CM::Int2& screenPos,
+	bool GUIManager::handleCursorOver(GUIWidget* widget, GUIElement* element, const CM::Vector2I& screenPos,
 		bool buttonStates[3], bool shift, bool control, bool alt)
 	{
 		bool eventProcessed = false;
 
-		Int2 localPos;
+		Vector2I localPos;
 		if(widget != nullptr)
 			localPos = getWidgetRelativePos(*widget, screenPos);
 
@@ -1032,7 +1032,7 @@ namespace BansheeEngine
 				// Send MouseOut event
 				if(mActiveElement == nullptr || mElementUnderCursor == mActiveElement)
 				{
-					Int2 curLocalPos = getWidgetRelativePos(*mWidgetUnderCursor, screenPos);
+					Vector2I curLocalPos = getWidgetRelativePos(*mWidgetUnderCursor, screenPos);
 
 					mMouseEvent.setMouseOutData(element, curLocalPos);
 					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
@@ -1099,7 +1099,7 @@ namespace BansheeEngine
 		buttonStates[1] = false;
 		buttonStates[2] = false;
 
-		handleCursorOver(nullptr, nullptr, Int2(), buttonStates, false, false, false);
+		handleCursorOver(nullptr, nullptr, Vector2I(), buttonStates, false, false, false);
 	}
 
 	void GUIManager::queueForDestroy(GUIElement* element)
@@ -1171,21 +1171,21 @@ namespace BansheeEngine
 		CM_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
 	}
 
-	Int2 GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Int2& screenPos) const
+	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Vector2I& screenPos) const
 	{
 		const RenderWindow* window = getWidgetWindow(widget);
-		Int2 windowPos = window->screenToWindowPos(screenPos);
+		Vector2I windowPos = window->screenToWindowPos(screenPos);
 		windowPos = windowToBridgedCoords(widget, windowPos);
 
 		const Matrix4& worldTfrm = widget.SO()->getWorldTfrm();
 
 		Vector4 vecLocalPos = worldTfrm.inverse().transform3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
-		Int2 curLocalPos(Math::roundToInt(vecLocalPos.x), Math::roundToInt(vecLocalPos.y));
+		Vector2I curLocalPos(Math::roundToInt(vecLocalPos.x), Math::roundToInt(vecLocalPos.y));
 
 		return curLocalPos;
 	}
 
-	Int2 GUIManager::windowToBridgedCoords(const GUIWidget& widget, const Int2& windowPos) const
+	Vector2I GUIManager::windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged
@@ -1200,7 +1200,7 @@ namespace BansheeEngine
 			const Matrix4& worldTfrm = bridgeElement->_getParentWidget().SO()->getWorldTfrm();
 
 			Vector4 vecLocalPos = worldTfrm.inverse().transform3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
-			Rect bridgeBounds = bridgeElement->getBounds();
+			RectI bridgeBounds = bridgeElement->getBounds();
 
 			// Find coordinates relative to the bridge element
 			float x = vecLocalPos.x - (float)bridgeBounds.x;
@@ -1209,7 +1209,7 @@ namespace BansheeEngine
 			float scaleX = renderTexture->getWidth() / (float)bridgeBounds.width;
 			float scaleY = renderTexture->getHeight() / (float)bridgeBounds.height;
 
-			return Int2(Math::roundToInt(x * scaleX), Math::roundToInt(y * scaleY));
+			return Vector2I(Math::roundToInt(x * scaleX), Math::roundToInt(y * scaleY));
 		}
 
 		return windowPos;

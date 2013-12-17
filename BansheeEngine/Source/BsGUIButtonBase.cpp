@@ -140,7 +140,7 @@ namespace BansheeEngine
 		mClippedBounds = mImageSprite->getBounds(mOffset, mClipRect);
 	}
 
-	Int2 GUIButtonBase::_getOptimalSize() const
+	Vector2I GUIButtonBase::_getOptimalSize() const
 	{
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
@@ -150,11 +150,11 @@ namespace BansheeEngine
 			imageHeight = mImageDesc.texture->getTexture()->getHeight();
 		}
 
-		Int2 contentSize = GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions());
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 
-		return Int2(contentWidth, contentHeight);
+		return Vector2I(contentWidth, contentHeight);
 	}
 
 	UINT32 GUIButtonBase::_getRenderElementDepth(UINT32 renderElementIdx) const
@@ -184,18 +184,18 @@ namespace BansheeEngine
 			return;
 		}
 
-		Rect contentBounds = getContentBounds();
-		Rect contentClipRect = getContentClipRect();
-		Rect textBounds = mTextSprite->getBounds(Int2(), Rect());
+		RectI contentBounds = getContentBounds();
+		RectI contentClipRect = getContentClipRect();
+		RectI textBounds = mTextSprite->getBounds(Vector2I(), RectI());
 
-		Int2 textOffset;
-		Rect textClipRect;
+		Vector2I textOffset;
+		RectI textClipRect;
 
-		Int2 imageOffset;
-		Rect imageClipRect;
+		Vector2I imageOffset;
+		RectI imageClipRect;
 		if(mContentImageSprite != nullptr)
 		{
-			Rect imageBounds = mContentImageSprite->getBounds(Int2(), Rect());
+			RectI imageBounds = mContentImageSprite->getBounds(Vector2I(), RectI());
 			UINT32 freeWidth = (UINT32)std::max(0, contentBounds.width - textBounds.width - imageBounds.width);
 			INT32 imageXOffset = (INT32)(freeWidth / 2);
 
@@ -203,11 +203,11 @@ namespace BansheeEngine
 			{
 				INT32 imageReservedWidth = std::max(0, contentBounds.width - textBounds.width);
 
-				textOffset = Int2(contentBounds.x, contentBounds.y);
+				textOffset = Vector2I(contentBounds.x, contentBounds.y);
 				textClipRect = contentClipRect;
 				textClipRect.width = std::min(contentBounds.width - imageReservedWidth, textClipRect.width);
 
-				imageOffset = Int2(contentBounds.x + textBounds.width + imageXOffset, contentBounds.y);
+				imageOffset = Vector2I(contentBounds.x + textBounds.width + imageXOffset, contentBounds.y);
 				imageClipRect = contentClipRect;
 				imageClipRect.x -= textBounds.width + imageXOffset;
 			}
@@ -215,12 +215,12 @@ namespace BansheeEngine
 			{
 				INT32 imageReservedWidth = imageBounds.width + imageXOffset;
 
-				imageOffset = Int2(contentBounds.x + imageXOffset, contentBounds.y);
+				imageOffset = Vector2I(contentBounds.x + imageXOffset, contentBounds.y);
 				imageClipRect = contentClipRect;
 				imageClipRect.x -= imageXOffset;
 				imageClipRect.width = std::min(imageReservedWidth, imageClipRect.width);
 
-				textOffset = Int2(contentBounds.x + imageReservedWidth, contentBounds.y);
+				textOffset = Vector2I(contentBounds.x + imageReservedWidth, contentBounds.y);
 				textClipRect = contentClipRect;
 				textClipRect.x -= imageReservedWidth;
 			}
@@ -231,7 +231,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			textOffset = Int2(contentBounds.x, contentBounds.y);
+			textOffset = Vector2I(contentBounds.x, contentBounds.y);
 			textClipRect = contentClipRect;
 		}
 
@@ -293,7 +293,7 @@ namespace BansheeEngine
 		textDesc.font = mStyle->font;
 		textDesc.fontSize = mStyle->fontSize;
 
-		Rect textBounds = getContentBounds();
+		RectI textBounds = getContentBounds();
 
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;

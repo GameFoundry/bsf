@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
-#include "CmRect.h"
+#include "CmRectI.h"
 #include "CmOSInputHandler.h"
 #include "CmRawInputHandler.h"
 #include "CmInputFwd.h"
@@ -49,7 +49,7 @@ namespace CamelotFramework
 
 		bool isButtonDown(ButtonCode keyCode) const;
 
-		Int2 getCursorPosition() const { return mMouseAbsPos; }
+		Vector2I getCursorPosition() const { return mMouseAbsPos; }
 	private:
 		std::shared_ptr<RawInputHandler> mRawInputHandler;
 		std::shared_ptr<OSInputHandler> mOSInputHandler;
@@ -62,8 +62,8 @@ namespace CamelotFramework
 		float* mTimesHistoryBuffer;
 		int	mCurrentBufferIdx;
 
-		Int2 mMouseLastRel;
-		Int2 mMouseAbsPos;
+		Vector2I mMouseLastRel;
+		Vector2I mMouseAbsPos;
 
 		RawAxisState mAxes[RawInputAxis::Count];
 		bool mKeyState[BC_Count];

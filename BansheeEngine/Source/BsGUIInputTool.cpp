@@ -45,7 +45,7 @@ namespace BansheeEngine
 		// Store cached line data
 		UINT32 curCharIdx = 0;
 		UINT32 curLineIdx = 0;
-		Vector<Int2>::type alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width, 
+		Vector<Vector2I>::type alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width, 
 			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
 
 		for(UINT32 i = 0; i < numLines; i++)
@@ -68,15 +68,15 @@ namespace BansheeEngine
 		}
 	}
 
-	Int2 GUIInputTool::getTextOffset() const
+	Vector2I GUIInputTool::getTextOffset() const
 	{
-		return mElement->_getOffset() + mElement->_getTextInputOffset() + Int2(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
+		return mElement->_getOffset() + mElement->_getTextInputOffset() + Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 	}
 
-	Rect GUIInputTool::getCharRect(UINT32 charIdx) const
+	RectI GUIInputTool::getCharRect(UINT32 charIdx) const
 	{
-		Rect charRect = getLocalCharRect(charIdx);
-		Int2 textOffset = getTextOffset();
+		RectI charRect = getLocalCharRect(charIdx);
+		Vector2I textOffset = getTextOffset();
 
 		charRect.x += textOffset.x;
 		charRect.y += textOffset.y;
@@ -84,14 +84,14 @@ namespace BansheeEngine
 		return charRect;
 	}
 
-	Rect GUIInputTool::getLocalCharRect(UINT32 charIdx) const
+	RectI GUIInputTool::getLocalCharRect(UINT32 charIdx) const
 	{
 		UINT32 lineIdx = getLineForChar(charIdx);
 
 		// If char is newline we don't have any geometry to return
 		const GUIInputLineDesc& lineDesc = getLineDesc(lineIdx);
 		if(lineDesc.isNewline(charIdx))
-			return Rect();
+			return RectI();
 
 		UINT32 numNewlineChars = 0;
 		for(UINT32 i = 0; i < lineIdx; i++)
@@ -102,7 +102,7 @@ namespace BansheeEngine
 		{
 			UINT32 vertIdx = quadIdx * 4;
 
-			Rect charRect;
+			RectI charRect;
 			charRect.x = Math::roundToInt(mQuads[vertIdx + 0].x);
 			charRect.y = Math::roundToInt(mQuads[vertIdx + 0].y);
 			charRect.width = Math::roundToInt(mQuads[vertIdx + 3].x - charRect.x);
@@ -114,7 +114,7 @@ namespace BansheeEngine
 		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
 	}
 
-	INT32 GUIInputTool::getCharIdxAtPos(const Int2& pos) const
+	INT32 GUIInputTool::getCharIdxAtPos(const Vector2I& pos) const
 	{
 		Vector2 vecPos((float)pos.x, (float)pos.y);
 
@@ -146,7 +146,7 @@ namespace BansheeEngine
 		UINT32 nearestChar = 0;
 		bool foundChar = false;
 
-		Int2 textOffset = getTextOffset();
+		Vector2I textOffset = getTextOffset();
 		for(UINT32 i = lineStartQuad; i < lineEndQuad; i++)
 		{
 			UINT32 curVert = i * 4;

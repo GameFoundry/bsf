@@ -28,7 +28,7 @@ namespace BansheeEditor
 	private:
 		GUITabbedTitleBar* mTitleBar;
 		CM::UINT32 mIndex;
-		CM::Int2 mDragStartPosition;
+		CM::Vector2I mDragStartPosition;
 
 		static const CM::UINT32 DRAG_MIN_DISTANCE;
 

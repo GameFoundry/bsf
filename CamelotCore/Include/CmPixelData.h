@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmBox.h"
+#include "CmPixelVolume.h"
 #include "CmGpuResourceData.h"
 #include "CmIReflectable.h"
 
@@ -134,7 +134,7 @@ namespace CamelotFramework
     		@param pixelFormat	Format of this buffer
     		@param pixelData	Pointer to the actual data
     	*/
-		PixelData(const Box &extents, PixelFormat pixelFormat)
+		PixelData(const PixelVolume &extents, PixelFormat pixelFormat)
 			:mExtents(extents), mFormat(pixelFormat)
 		{
 			setConsecutive();
@@ -187,7 +187,7 @@ namespace CamelotFramework
 		UINT32 getFront() const { return mExtents.front; }
 		UINT32 getBack() const { return mExtents.back; }
 
-		Box getExtents() const { return mExtents; }
+		PixelVolume getExtents() const { return mExtents; }
 
         /** Return whether this buffer is laid out consecutive in memory (ie the pitches
          	are equal to the dimensions)
@@ -208,7 +208,7 @@ namespace CamelotFramework
       			the data of object.
       		@throws	Exception(ERR_INVALIDPARAMS) if def is not fully contained
       	*/
-      	PixelData getSubVolume(const Box &def) const;
+      	PixelData getSubVolume(const PixelVolume &def) const;
         
         /**
          * Get colour value from a certain location in the PixelBox. The z coordinate
@@ -225,7 +225,7 @@ namespace CamelotFramework
         void setColorAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z = 0);
 
 	private:
-		Box mExtents;
+		PixelVolume mExtents;
 
         /// The pixel format 
         PixelFormat mFormat;

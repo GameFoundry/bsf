@@ -130,7 +130,7 @@ namespace BansheeEngine
 	{
 		if(!mIsDisabled && isDirty() && (mWidget != nullptr))
 		{
-			Rect clipRect(mLeft, mTop, mWidth, mHeight);
+			RectI clipRect(mLeft, mTop, mWidth, mHeight);
 			mLayout->_updateLayout(mLeft, mTop, mWidth, mHeight, clipRect, mWidget->getDepth(), mDepth);
 			mIsDirty = false;
 		}

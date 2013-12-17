@@ -19,19 +19,19 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mCaretSprite);
 	}
 
-	Int2 GUIInputCaret::getSpriteOffset() const
+	Vector2I GUIInputCaret::getSpriteOffset() const
 	{
 		return getCaretPosition(getTextOffset());
 	}
 
-	Rect GUIInputCaret::getSpriteClipRect(const CM::Rect& parentClipRect) const
+	RectI GUIInputCaret::getSpriteClipRect(const CM::RectI& parentClipRect) const
 	{
-		Int2 clipOffset = getSpriteOffset() - mElement->_getOffset() - 
-			Int2(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
+		Vector2I clipOffset = getSpriteOffset() - mElement->_getOffset() - 
+			Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
 
-		Rect clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
+		RectI clipRect(-clipOffset.x, -clipOffset.y, mTextDesc.width, mTextDesc.height);
 
-		Rect localParentCliprect = parentClipRect;
+		RectI localParentCliprect = parentClipRect;
 
 		// Move parent rect to our space
 		localParentCliprect.x += mElement->_getTextInputOffset().x + clipRect.x;
@@ -97,7 +97,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		Int2 caretCoords = getCaretPosition(mElement->_getTextInputOffset());
+		Vector2I caretCoords = getCaretPosition(mElement->_getTextInputOffset());
 		caretCoords.y -= getCaretHeight();
 
 		moveCaretToPos(caretCoords);
@@ -122,19 +122,19 @@ namespace BansheeEngine
 			return;
 		}
 
-		Int2 caretCoords = getCaretPosition(mElement->_getTextInputOffset());
+		Vector2I caretCoords = getCaretPosition(mElement->_getTextInputOffset());
 		caretCoords.y += getCaretHeight();
 
 		moveCaretToPos(caretCoords);
 	}
 
-	void GUIInputCaret::moveCaretToPos(const CM::Int2& pos)
+	void GUIInputCaret::moveCaretToPos(const CM::Vector2I& pos)
 	{
 		INT32 charIdx = getCharIdxAtPos(pos);
 
 		if(charIdx != -1)
 		{
-			Rect charRect = getCharRect(charIdx);
+			RectI charRect = getCharRect(charIdx);
 
 			float xCenter = charRect.x + charRect.width * 0.5f;
 			if(pos.x <= xCenter)
@@ -224,7 +224,7 @@ namespace BansheeEngine
 		return getCharIdxAtInputIdx(mCaretPos);
 	}
 
-	Int2 GUIInputCaret::getCaretPosition(const CM::Int2& offset) const
+	Vector2I GUIInputCaret::getCaretPosition(const CM::Vector2I& offset) const
 	{
 		if(mTextDesc.text.size() > 0)
 		{
@@ -237,7 +237,7 @@ namespace BansheeEngine
 				if(mCaretPos == curPos)
 				{
 					// Caret is on line start
-					return Int2(offset.x, lineDesc.getLineYStart() + getTextOffset().y);
+					return Vector2I(offset.x, lineDesc.getLineYStart() + getTextOffset().y);
 				}
 
 				curPos += lineDesc.getEndChar(false) - lineDesc.getStartChar() + 1; // + 1 for special line start position
@@ -249,11 +249,11 @@ namespace BansheeEngine
 
 			charIdx = std::min((UINT32)(mTextDesc.text.size() - 1), charIdx);
 
-			Rect charRect = getCharRect(charIdx);
+			RectI charRect = getCharRect(charIdx);
 			UINT32 lineIdx = getLineForChar(charIdx);
 			UINT32 yOffset = getLineDesc(lineIdx).getLineYStart() + getTextOffset().y;
 
-			return Int2(charRect.x + charRect.width, yOffset);
+			return Vector2I(charRect.x + charRect.width, yOffset);
 		}
 		else
 		{

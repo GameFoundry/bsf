@@ -224,7 +224,7 @@ namespace CamelotFramework
 		rval.setExternalBuffer((UINT8*)lbox.pBits);
 	}
 	// Convert Ogre integer Box to D3D rectangle
-	RECT toD3DRECT(const Box &lockBox)
+	RECT toD3DRECT(const PixelVolume &lockBox)
 	{
 		RECT prect;
 		assert(lockBox.getDepth() == 1);
@@ -235,7 +235,7 @@ namespace CamelotFramework
 		return prect;
 	}
 	// Convert Ogre integer Box to D3D box
-	D3DBOX toD3DBOX(const Box &lockBox)
+	D3DBOX toD3DBOX(const PixelVolume &lockBox)
 	{
 		D3DBOX pbox;
 	
@@ -271,7 +271,7 @@ namespace CamelotFramework
 		return pbox;
 	}
 	//-----------------------------------------------------------------------------  
-	PixelData D3D9PixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
+	PixelData D3D9PixelBuffer::lockImpl(const PixelVolume lockBox,  GpuLockOptions options)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -308,7 +308,7 @@ namespace CamelotFramework
 
 	//-----------------------------------------------------------------------------  
 	CamelotFramework::PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
-													   const Box &lockBox, 
+													   const PixelVolume &lockBox, 
 													   DWORD flags)
 	{
 		// Set extents and format

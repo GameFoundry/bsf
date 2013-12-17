@@ -138,7 +138,7 @@ namespace BansheeEngine
 
 		// When text bounds are reduced the scroll needs to be adjusted so that
 		// input box isn't filled with mostly empty space.
-		clampScrollToBounds(mTextSprite->getBounds(mOffset, Rect()));
+		clampScrollToBounds(mTextSprite->getBounds(mOffset, RectI()));
 
 		GUIElement::updateRenderElementsInternal();
 	}
@@ -199,7 +199,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	Int2 GUIInputBox::renderElemToOffset(UINT32 renderElemIdx) const
+	Vector2I GUIInputBox::renderElemToOffset(UINT32 renderElemIdx) const
 	{
 		UINT32 oldNumElements = 0;
 		UINT32 newNumElements = oldNumElements + mTextSprite->getNumRenderElements();
@@ -237,10 +237,10 @@ namespace BansheeEngine
 			}
 		}
 
-		return Int2();
+		return Vector2I();
 	}
 
-	Rect GUIInputBox::renderElemToClipRect(UINT32 renderElemIdx) const
+	RectI GUIInputBox::renderElemToClipRect(UINT32 renderElemIdx) const
 	{
 		UINT32 oldNumElements = 0;
 		UINT32 newNumElements = oldNumElements + mTextSprite->getNumRenderElements();
@@ -280,10 +280,10 @@ namespace BansheeEngine
 			}
 		}
 
-		return Rect();
+		return RectI();
 	}
 
-	Int2 GUIInputBox::_getOptimalSize() const
+	Vector2I GUIInputBox::_getOptimalSize() const
 	{
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
@@ -293,21 +293,21 @@ namespace BansheeEngine
 			imageHeight = mImageDesc.texture->getTexture()->getHeight();
 		}
 
-		Int2 contentSize = GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions());
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 
-		return Int2(contentWidth, contentHeight);
+		return Vector2I(contentWidth, contentHeight);
 	}
 
-	CM::Int2 GUIInputBox::_getTextInputOffset() const
+	CM::Vector2I GUIInputBox::_getTextInputOffset() const
 	{
 		return mTextOffset;	
 	}
 
-	CM::Rect GUIInputBox::_getTextInputRect() const
+	CM::RectI GUIInputBox::_getTextInputRect() const
 	{
-		Rect textBounds = getContentBounds();
+		RectI textBounds = getContentBounds();
 		textBounds.x -= mOffset.x;
 		textBounds.y -= mOffset.y;
 
@@ -334,8 +334,8 @@ namespace BansheeEngine
 	{
 		UINT32 localRenderElementIdx;
 		Sprite* sprite = renderElemToSprite(renderElementIdx, localRenderElementIdx);
-		Int2 offset = renderElemToOffset(renderElementIdx);
-		Rect clipRect = renderElemToClipRect(renderElementIdx);
+		Vector2I offset = renderElemToOffset(renderElementIdx);
+		RectI clipRect = renderElemToClipRect(renderElementIdx);
 
 		sprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, vertexStride, indexStride, localRenderElementIdx, offset, clipRect);
 	}
@@ -727,7 +727,7 @@ namespace BansheeEngine
 		mCaretShown = true;
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Int2 offset = getTextOffset();
+		Vector2I offset = getTextOffset();
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		markContentAsDirty();
 	}
@@ -742,7 +742,7 @@ namespace BansheeEngine
 	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos)
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Int2 offset = getTextOffset();
+		Vector2I offset = getTextOffset();
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
 		gGUIManager().getInputSelectionTool()->showSelection(anchorCaretPos);
@@ -761,8 +761,8 @@ namespace BansheeEngine
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
-		Int2 textOffset = getTextOffset();
-		Int2 caretPos = gGUIManager().getInputCaretTool()->getCaretPosition(textOffset);
+		Vector2I textOffset = getTextOffset();
+		Vector2I caretPos = gGUIManager().getInputCaretTool()->getCaretPosition(textOffset);
 		UINT32 caretHeight = gGUIManager().getInputCaretTool()->getCaretHeight();
 		UINT32 caretWidth = 1;
 		INT32 caretRight = caretPos.x + (INT32)caretWidth;
@@ -775,7 +775,7 @@ namespace BansheeEngine
 		INT32 top = textOffset.y - mTextOffset.y;
 		INT32 bottom = top + (INT32)textDesc.height;
 
-		Int2 offset;
+		Vector2I offset;
 		if(caretPos.x < left)
 		{
 			offset.x = left - caretPos.x;
@@ -802,11 +802,11 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	void GUIInputBox::clampScrollToBounds(Rect unclippedTextBounds)
+	void GUIInputBox::clampScrollToBounds(RectI unclippedTextBounds)
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 
-		Int2 newTextOffset;
+		Vector2I newTextOffset;
 		INT32 maxScrollableWidth = std::max(0, (INT32)unclippedTextBounds.width - (INT32)textDesc.width);
 		INT32 maxScrollableHeight = std::max(0, (INT32)unclippedTextBounds.height - (INT32)textDesc.height);
 		newTextOffset.x = Math::clamp(mTextOffset.x, -maxScrollableWidth, 0);
@@ -828,7 +828,7 @@ namespace BansheeEngine
 		mText.insert(mText.begin() + charIdx, string.begin(), string.end());
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Int2 offset = getTextOffset();
+		Vector2I offset = getTextOffset();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
@@ -839,7 +839,7 @@ namespace BansheeEngine
 		mText.insert(mText.begin() + charIdx, charCode);
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Int2 offset = getTextOffset();
+		Vector2I offset = getTextOffset();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
@@ -850,7 +850,7 @@ namespace BansheeEngine
 		mText.erase(charIdx, 1);
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Int2 offset = getTextOffset();
+		Vector2I offset = getTextOffset();
 
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
@@ -862,7 +862,7 @@ namespace BansheeEngine
 		mText.erase(mText.begin() + selStart, mText.begin() + gGUIManager().getInputSelectionTool()->getSelectionEnd());
 
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Int2 offset = getTextOffset();
+		Vector2I offset = getTextOffset();
 		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
@@ -890,16 +890,16 @@ namespace BansheeEngine
 		mText.erase(mText.begin() + selStart, mText.begin() + gGUIManager().getInputSelectionTool()->getSelectionEnd());
 	}
 
-	CM::Int2 GUIInputBox::getTextOffset() const
+	CM::Vector2I GUIInputBox::getTextOffset() const
 	{
-		Rect textBounds = getContentBounds();
-		return Int2(textBounds.x, textBounds.y) + mTextOffset;
+		RectI textBounds = getContentBounds();
+		return Vector2I(textBounds.x, textBounds.y) + mTextOffset;
 	}
 
-	CM::Rect GUIInputBox::getTextClipRect() const
+	CM::RectI GUIInputBox::getTextClipRect() const
 	{
-		Rect contentClipRect = getContentClipRect();
-		return Rect(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
+		RectI contentClipRect = getContentClipRect();
+		return RectI(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);
 	}
 
 	TEXT_SPRITE_DESC GUIInputBox::getTextDesc() const
@@ -909,7 +909,7 @@ namespace BansheeEngine
 		textDesc.font = mStyle->font;
 		textDesc.fontSize = mStyle->fontSize;
 
-		Rect textBounds = getContentBounds();
+		RectI textBounds = getContentBounds();
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
 		textDesc.horzAlign = mStyle->textHorzAlign;

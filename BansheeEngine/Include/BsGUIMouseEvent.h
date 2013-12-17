@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 namespace BansheeEngine
 {
@@ -32,10 +32,10 @@ namespace BansheeEngine
 		GUIMouseEvent();
 		GUIMouseEvent(bool buttonStates[GUIMouseButton::Count], bool shift, bool ctrl, bool alt);
 
-		const CM::Int2& getPosition() const { return mPosition; }
+		const CM::Vector2I& getPosition() const { return mPosition; }
 		GUIMouseEventType getType() const { return mType; }
 		GUIMouseButton getButton() const { return mButton; }
-		CM::Int2 getDragAmount() const { return mDragAmount; }
+		CM::Vector2I getDragAmount() const { return mDragAmount; }
 		float getWheelScrollAmount() const { return mWheelScrollAmount; }
 		bool isButtonDown(GUIMouseButton button) const { return mButtonStates[(int)button]; }
 		GUIElement* getMouseOverElement() const { return mMouseOverElement; }
@@ -49,8 +49,8 @@ namespace BansheeEngine
 		friend class GUIManager;
 
 		bool mButtonStates[GUIMouseButton::Count];
-		CM::Int2 mPosition;
-		CM::Int2 mDragAmount;
+		CM::Vector2I mPosition;
+		CM::Vector2I mDragAmount;
 		float mWheelScrollAmount;
 		GUIMouseEventType mType;
 		GUIMouseButton mButton;
@@ -62,19 +62,19 @@ namespace BansheeEngine
 		bool mCtrl;
 		bool mAlt;
 
-		void setMouseOverData(GUIElement* mouseOverElement, const CM::Int2& position);
-		void setMouseOutData(GUIElement* mouseOverElement, const CM::Int2& position);
-		void setMouseMoveData(GUIElement* mouseOverElement, const CM::Int2& position);
+		void setMouseOverData(GUIElement* mouseOverElement, const CM::Vector2I& position);
+		void setMouseOutData(GUIElement* mouseOverElement, const CM::Vector2I& position);
+		void setMouseMoveData(GUIElement* mouseOverElement, const CM::Vector2I& position);
 		void setMouseWheelScrollData(GUIElement* mouseOverElement, float scrollAmount);
-		void setMouseUpData(GUIElement* mouseOverElement, const CM::Int2& position, GUIMouseButton button);
-		void setMouseDownData(GUIElement* mouseOverElement, const CM::Int2& position, GUIMouseButton button);
-		void setMouseDoubleClickData(GUIElement* mouseOverElement, const CM::Int2& position, GUIMouseButton button);
+		void setMouseUpData(GUIElement* mouseOverElement, const CM::Vector2I& position, GUIMouseButton button);
+		void setMouseDownData(GUIElement* mouseOverElement, const CM::Vector2I& position, GUIMouseButton button);
+		void setMouseDoubleClickData(GUIElement* mouseOverElement, const CM::Vector2I& position, GUIMouseButton button);
 
-		void setMouseDragData(GUIElement* mouseOverElement, const CM::Int2& position, const CM::Int2& dragAmount);
-		void setMouseDragStartData(GUIElement* mouseOverElement, const CM::Int2& position);
-		void setMouseDragEndData(GUIElement* mouseOverElement, const CM::Int2& position);
+		void setMouseDragData(GUIElement* mouseOverElement, const CM::Vector2I& position, const CM::Vector2I& dragAmount);
+		void setMouseDragStartData(GUIElement* mouseOverElement, const CM::Vector2I& position);
+		void setMouseDragEndData(GUIElement* mouseOverElement, const CM::Vector2I& position);
 
-		void setDragAndDropDroppedData(GUIElement* mouseOverElement, const CM::Int2& position, CM::UINT32 dragTypeId, void* dragData);
-		void setDragAndDropDraggedData(GUIElement* mouseOverElement, const CM::Int2& position, CM::UINT32 dragTypeId, void* dragData);
+		void setDragAndDropDroppedData(GUIElement* mouseOverElement, const CM::Vector2I& position, CM::UINT32 dragTypeId, void* dragData);
+		void setDragAndDropDraggedData(GUIElement* mouseOverElement, const CM::Vector2I& position, CM::UINT32 dragTypeId, void* dragData);
 	};
 }

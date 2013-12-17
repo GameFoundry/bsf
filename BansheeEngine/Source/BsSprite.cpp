@@ -16,9 +16,9 @@ namespace BansheeEngine
 		clearMesh();
 	}
 
-	CM::Rect Sprite::getBounds(const Int2& offset, const Rect& clipRect) const 
+	CM::RectI Sprite::getBounds(const Vector2I& offset, const RectI& clipRect) const 
 	{
-		Rect bounds = mBounds;
+		RectI bounds = mBounds;
 
 		if(clipRect.width > 0 && clipRect.height > 0)
 			bounds.clip(clipRect);
@@ -45,7 +45,7 @@ namespace BansheeEngine
 	}
 
 	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Int2& offset, const Rect& clipRect) const
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const RectI& clipRect) const
 	{
 		auto renderElem = mCachedRenderElements.at(renderElementIdx);
 
@@ -174,31 +174,31 @@ namespace BansheeEngine
 		return renderElem.numQuads;
 	}
 
-	Int2 Sprite::getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height)
+	Vector2I Sprite::getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height)
 	{
 		switch(anchor)
 		{
 		case SA_TopLeft:
-			return -Int2(0, 0);
+			return -Vector2I(0, 0);
 		case SA_TopCenter:
-			return -Int2(width / 2, 0);
+			return -Vector2I(width / 2, 0);
 		case SA_TopRight:
-			return -Int2(width, 0);
+			return -Vector2I(width, 0);
 		case SA_MiddleLeft:
-			return -Int2(0, height / 2);
+			return -Vector2I(0, height / 2);
 		case SA_MiddleCenter:
-			return -Int2(width / 2, height / 2);
+			return -Vector2I(width / 2, height / 2);
 		case SA_MiddleRight:
-			return -Int2(width, height / 2);
+			return -Vector2I(width, height / 2);
 		case SA_BottomLeft:
-			return -Int2(0, height);
+			return -Vector2I(0, height);
 		case SA_BottomCenter:
-			return -Int2(width / 2, height);
+			return -Vector2I(width / 2, height);
 		case SA_BottomRight:
-			return -Int2(width, height);
+			return -Vector2I(width, height);
 		}
 
-		return Int2();
+		return Vector2I();
 	}
 
 	void Sprite::updateBounds() const
@@ -221,7 +221,7 @@ namespace BansheeEngine
 
 		if(!foundStartingPoint)
 		{
-			mBounds = Rect(0, 0, 0, 0);
+			mBounds = RectI(0, 0, 0, 0);
 			return;
 		}
 
@@ -240,7 +240,7 @@ namespace BansheeEngine
 			}
 		}
 
-		mBounds = Rect((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
+		mBounds = RectI((int)min.x, (int)min.y, (int)(max.x - min.x), (int)(max.y - min.y));
 	}
 
 	void Sprite::clearMesh() const
@@ -272,7 +272,7 @@ namespace BansheeEngine
 	// This will only properly clip an array of quads
 	// Vertices in the quad must be in a specific order: top left, top right, bottom left, bottom right
 	// (0, 0) represents top left of the screen
-	void Sprite::clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const Rect& clipRect)
+	void Sprite::clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const RectI& clipRect)
 	{
 		float left = (float)clipRect.x;
 		float right = (float)clipRect.x + clipRect.width;

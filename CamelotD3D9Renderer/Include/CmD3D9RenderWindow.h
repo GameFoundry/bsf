@@ -101,12 +101,12 @@ namespace CamelotFramework
 		/**
 		 * @copydoc RenderWindow::screenToWindowPos
 		 */
-		Int2 screenToWindowPos(const Int2& screenPos) const;
+		Vector2I screenToWindowPos(const Vector2I& screenPos) const;
 
 		/**
 		 * @copydoc RenderWindow::windowToScreenPos
 		 */
-		Int2 windowToScreenPos(const Int2& windowPos) const;
+		Vector2I windowToScreenPos(const Vector2I& windowPos) const;
 
 		/**
 		 * @copydoc RenderWindow::_windowMovedOrResized

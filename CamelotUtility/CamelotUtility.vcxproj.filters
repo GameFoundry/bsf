@@ -114,9 +114,6 @@
     <ClInclude Include="Include\CmBitwise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmBox.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmDynLibManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -171,9 +168,6 @@
     <ClInclude Include="Include\CmFileSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmRect.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmTimer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -185,9 +179,6 @@
     </ClInclude>
     <ClInclude Include="Include\CmKeyValuePair.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmInt2.h">
-      <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmAsyncOp.h">
       <Filter>Header Files\Threading</Filter>
@@ -213,9 +204,6 @@
     <ClInclude Include="Include\CmAABox.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmFRect.h">
-      <Filter>Header Files\Math</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmPlatformDefines.h">
       <Filter>Header Files\Prerequisites</Filter>
     </ClInclude>
@@ -235,6 +223,15 @@
       <Filter>Header Files\Math</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmDegree.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmVector2I.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRectI.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmRectF.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
   </ItemGroup>
@@ -317,9 +314,6 @@
     <ClCompile Include="Source\CmWorkQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmInt2.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmManagedDataBlock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -329,20 +323,11 @@
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmBox.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmAsyncOp.cpp">
       <Filter>Source Files\Threading</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmRect.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmMemStack.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmFRect.cpp">
-      <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmHString.cpp">
       <Filter>Source Files</Filter>
@@ -369,6 +354,15 @@
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmAABox.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmVector2I.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRectI.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmRectF.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>

@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "CmComponent.h"
-#include "CmRect.h"
+#include "CmRectI.h"
 #include "CmVector3.h"
 #include "CmQuaternion.h"
 #include <boost/signal.hpp>
@@ -20,8 +20,8 @@ namespace BansheeEngine
 		CM::UINT8 getDepth() const { return mDepth; }
 		void setDepth(CM::UINT8 depth) { mDepth = depth; mWidgetIsDirty = true; }
 
-		bool inBounds(const CM::Int2& position) const;
-		const CM::Rect& getBounds() const { return mBounds; }
+		bool inBounds(const CM::Vector2I& position) const;
+		const CM::RectI& getBounds() const { return mBounds; }
 
 		/**
 		 * @brief	Return true if widget or any of its elements are dirty.
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		boost::signals::connection mOwnerTargetResizedConn;
 
 		mutable bool mWidgetIsDirty;
-		mutable CM::Rect mBounds;
+		mutable CM::RectI mBounds;
 		mutable CM::Vector<CM::HMesh>::type mCachedMeshes;
 		mutable CM::Vector<CM::HMaterial>::type mCachedMaterials;
 

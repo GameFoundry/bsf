@@ -28,7 +28,7 @@ THE SOFTWARE
 #include "CmPrerequisites.h"
 
 #include "CmRenderTarget.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 namespace CamelotFramework
 {
@@ -133,8 +133,8 @@ namespace CamelotFramework
 		 */
 		bool hasFocus() const { return mHasFocus; }
 
-		virtual Int2 screenToWindowPos(const Int2& screenPos) const = 0;
-		virtual Int2 windowToScreenPos(const Int2& windowPos) const = 0;
+		virtual Vector2I screenToWindowPos(const Vector2I& screenPos) const = 0;
+		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
 
 		virtual void destroy();
 

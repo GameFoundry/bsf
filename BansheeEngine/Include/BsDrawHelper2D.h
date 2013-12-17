@@ -26,7 +26,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 * 			  Enough space for 4 vertices and 6 indices
 		 */
-		void quad(const CM::FRect& area, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+		void quad(const CM::RectF& area, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
 
 		/**
 		 * @brief	Fills the mesh data with vertices representing a per-pixel line.
@@ -102,7 +102,7 @@ namespace BansheeEngine
 		 */
 		void lineList_AA(const CM::Vector<CM::Vector2>::type& linePoints, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
 
-		void drawQuad(const HCamera& camera, const CM::FRect& area, const CM::Color& color = CM::Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
+		void drawQuad(const HCamera& camera, const CM::RectF& area, const CM::Color& color = CM::Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 		void drawLine_Pixel(const HCamera& camera, const CM::Vector2& a, const CM::Vector2& b, const CM::Color& color = CM::Color::White, 
 			DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 		void drawLine_AA(const HCamera& camera, const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, 
@@ -117,7 +117,7 @@ namespace BansheeEngine
 
 		CM::VertexDataDescPtr mVertexDesc;
 
-		CM::FRect normalizedCoordToClipSpace(const CM::FRect& area) const;
+		CM::RectF normalizedCoordToClipSpace(const CM::RectF& area) const;
 		CM::Vector2 normalizedCoordToClipSpace(const CM::Vector2& pos) const;
 
 	protected:

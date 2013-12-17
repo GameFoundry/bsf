@@ -3,8 +3,8 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElementBase.h"
 #include "BsGUIOptions.h"
-#include "CmRect.h"
-#include "CmInt2.h"
+#include "CmRectI.h"
+#include "CmVector2I.h"
 
 namespace BansheeEngine
 {
@@ -77,7 +77,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
 		 */
-		CM::Rect getBounds() const;
+		CM::RectI getBounds() const;
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool textInputEvent(const GUITextInputEvent& ev);
@@ -91,25 +91,25 @@ namespace BansheeEngine
 
 		void _setWidgetDepth(CM::UINT8 depth);
 		void _setAreaDepth(CM::UINT16 depth);
-		void _setOffset(const CM::Int2& offset);
+		void _setOffset(const CM::Vector2I& offset);
 		void _setWidth(CM::UINT32 width);
 		void _setHeight(CM::UINT32 height);
-		void _setClipRect(const CM::Rect& clipRect);
+		void _setClipRect(const CM::RectI& clipRect);
 		void _setAcceptsKeyboardFocus(bool acceptsKeyboardFocus) { mAcceptsKeyboardFocus = acceptsKeyboardFocus; }
 		virtual void _setFocus(bool focus) {}
 		virtual void _changeParentWidget(GUIWidget* widget);
 
 		CM::UINT32 _getWidth() const { return mWidth; }
 		CM::UINT32 _getHeight() const { return mHeight; }
-		CM::Int2 _getOffset() const { return mOffset; }
+		CM::Vector2I _getOffset() const { return mOffset; }
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
 		Type _getType() const { return GUIElementBase::Type::Element; }
 		bool _isDestroyed() const { return mIsDestroyed; }
 
-		const CM::Rect& _getClippedBounds() const { return mClippedBounds; }
+		const CM::RectI& _getClippedBounds() const { return mClippedBounds; }
 		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return *mParent; }
-		virtual bool _isInBounds(const CM::Int2 position) const;
+		virtual bool _isInBounds(const CM::Vector2I position) const;
 		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
 		virtual GUIContextMenu* getContextMenu() const { return nullptr; }
@@ -118,13 +118,13 @@ namespace BansheeEngine
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
 		 * 			the input text.
 		 */
-		virtual CM::Int2 _getTextInputOffset() const { return CM::Int2(); }
+		virtual CM::Vector2I _getTextInputOffset() const { return CM::Vector2I(); }
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for clipping
 		 * 			the input text.
 		 */
-		virtual CM::Rect _getTextInputRect() const { return CM::Rect(); }
+		virtual CM::RectI _getTextInputRect() const { return CM::RectI(); }
 
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 	protected:
@@ -133,20 +133,20 @@ namespace BansheeEngine
 
 		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
 		
-		CM::Rect getVisibleBounds() const;
-		CM::Rect getContentBounds() const;
-		CM::Rect getContentClipRect() const;
+		CM::RectI getVisibleBounds() const;
+		CM::RectI getContentBounds() const;
+		CM::RectI getContentClipRect() const;
 
 		GUIWidget* mParent;
 		bool mIsDestroyed;
 		GUILayoutOptions mLayoutOptions;
-		CM::Rect mClippedBounds;
+		CM::RectI mClippedBounds;
 
 		bool mAcceptsKeyboardFocus;
 		CM::UINT32 mDepth;
-		CM::Int2 mOffset;
+		CM::Vector2I mOffset;
 		CM::UINT32 mWidth, mHeight;
-		CM::Rect mClipRect;
+		CM::RectI mClipRect;
 		const GUIElementStyle* mStyle;
 	};
 }

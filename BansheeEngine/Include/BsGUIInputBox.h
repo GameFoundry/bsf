@@ -48,10 +48,10 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
-		virtual CM::Int2 _getOptimalSize() const;
+		virtual CM::Vector2I _getOptimalSize() const;
 
-		virtual CM::Int2 _getTextInputOffset() const;
-		virtual CM::Rect _getTextInputRect() const;
+		virtual CM::Vector2I _getTextInputOffset() const;
+		virtual CM::RectI _getTextInputRect() const;
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 		virtual void _setFocus(bool focus);
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;
 		bool mIsMultiline;
-		CM::Int2 mTextOffset;
+		CM::Vector2I mTextOffset;
 		bool mHasFocus;
 
 		IMAGE_SPRITE_DESC mImageDesc;
@@ -81,8 +81,8 @@ namespace BansheeEngine
 		virtual bool commandEvent(const GUICommandEvent& ev);
 
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
-		CM::Int2 renderElemToOffset(CM::UINT32 renderElemIdx) const;
-		CM::Rect renderElemToClipRect(CM::UINT32 renderElemIdx) const;
+		CM::Vector2I renderElemToOffset(CM::UINT32 renderElemIdx) const;
+		CM::RectI renderElemToClipRect(CM::UINT32 renderElemIdx) const;
 
 		void insertString(CM::UINT32 charIdx, const CM::WString& string);
 		void insertChar(CM::UINT32 charIdx, CM::UINT32 charCode);
@@ -100,10 +100,10 @@ namespace BansheeEngine
 		void moveSelectionRight(bool skipNewline);
 
 		void scrollTextToCaret();
-		void clampScrollToBounds(CM::Rect unclippedTextBounds);
+		void clampScrollToBounds(CM::RectI unclippedTextBounds);
 
-		CM::Int2 getTextOffset() const;
-		CM::Rect getTextClipRect() const;
+		CM::Vector2I getTextOffset() const;
+		CM::RectI getTextClipRect() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
 		
 		void cutText();

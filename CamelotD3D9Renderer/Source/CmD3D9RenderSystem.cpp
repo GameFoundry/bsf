@@ -1383,19 +1383,19 @@ namespace CamelotFramework
 		if(mActiveRenderTarget == nullptr)
 			return;
 
-		Rect clearRect(0, 0, mActiveRenderTarget->getWidth(), mActiveRenderTarget->getHeight());
+		RectI clearRect(0, 0, mActiveRenderTarget->getWidth(), mActiveRenderTarget->getHeight());
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
 	void D3D9RenderSystem::clearViewport(UINT32 buffers, const Color& color, float depth, UINT16 stencil)
 	{
-		Rect clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
+		RectI clearRect(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
 		clearArea(buffers, color, depth, stencil, clearRect);
 	}
 
-	void D3D9RenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const Rect& clearRect)
+	void D3D9RenderSystem::clearArea(UINT32 buffers, const Color& color, float depth, UINT16 stencil, const RectI& clearRect)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

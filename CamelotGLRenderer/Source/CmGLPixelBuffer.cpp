@@ -70,7 +70,7 @@ namespace CamelotFramework
 		}
 	}
 
-	PixelData GLPixelBuffer::lockImpl(const Box lockBox,  GpuLockOptions options)
+	PixelData GLPixelBuffer::lockImpl(const PixelVolume lockBox,  GpuLockOptions options)
 	{
 		allocateBuffer();
 		if(options != GBL_WRITE_ONLY_DISCARD) 
@@ -94,7 +94,7 @@ namespace CamelotFramework
 		freeBuffer();
 	}
 
-	void GLPixelBuffer::upload(const PixelData &data, const Box &dest)
+	void GLPixelBuffer::upload(const PixelData &data, const PixelVolume &dest)
 	{
 		CM_EXCEPT(RenderingAPIException, 
 			"Upload not possible for this pixelbuffer type");
@@ -108,12 +108,12 @@ namespace CamelotFramework
 	void GLPixelBuffer::blitFromTexture(GLTextureBuffer *src)
 	{
 		blitFromTexture(src, 
-			Box(0,0,0,src->getWidth(),src->getHeight(),src->getDepth()), 
-			Box(0,0,0,mWidth,mHeight,mDepth)
+			PixelVolume(0,0,0,src->getWidth(),src->getHeight(),src->getDepth()), 
+			PixelVolume(0,0,0,mWidth,mHeight,mDepth)
 			);
 	}
 
-	void GLPixelBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox)
+	void GLPixelBuffer::blitFromTexture(GLTextureBuffer *src, const PixelVolume &srcBox, const PixelVolume &dstBox)
 	{
 		CM_EXCEPT(RenderingAPIException, "BlitFromTexture not possible for this pixelbuffer type");
 	}
@@ -179,7 +179,7 @@ namespace CamelotFramework
 	GLTextureBuffer::~GLTextureBuffer()
 	{ }
 
-	void GLTextureBuffer::upload(const PixelData &data, const Box &dest)
+	void GLTextureBuffer::upload(const PixelData &data, const PixelVolume &dest)
 	{
 		if((mUsage & TU_RENDERTARGET) != 0)
 			CM_EXCEPT(NotImplementedException, "Writing to render texture from CPU not supported.");
@@ -406,7 +406,7 @@ namespace CamelotFramework
 	/// Supports compressed formats as both source and destination format, it will use the hardware DXT compressor
 	/// if available.
 	/// @author W.J. van der Laan
-	void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const Box &srcBox, const Box &dstBox)
+	void GLTextureBuffer::blitFromTexture(GLTextureBuffer *src, const PixelVolume &srcBox, const PixelVolume &dstBox)
 	{
 		//std::cerr << "GLTextureBuffer::blitFromTexture " <<
 		//src->mTextureID << ":" << srcBox.left << "," << srcBox.top << "," << srcBox.right << "," << srcBox.bottom << " " << 

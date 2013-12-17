@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIElementBase.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 namespace BansheeEngine
 {
@@ -33,7 +33,7 @@ namespace BansheeEngine
 		CM::UINT32 getNumChildren() const { return (CM::UINT32)mChildren.size(); }
 		void removeChildAt(CM::UINT32 idx);
 
-		CM::Int2 _getOptimalSize() const { return CM::Int2(mOptimalWidth, mOptimalHeight); }
+		CM::Vector2I _getOptimalSize() const { return CM::Vector2I(mOptimalWidth, mOptimalHeight); }
 		Type _getType() const { return GUIElementBase::Type::Layout; }
 
 		/**
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 */
 		CM::UINT32 _getActualHeight() const { return mActualHeight; }
 	protected:
-		CM::Vector<CM::Int2>::type mOptimalSizes;
+		CM::Vector<CM::Vector2I>::type mOptimalSizes;
 		CM::UINT32 mOptimalWidth;
 		CM::UINT32 mOptimalHeight;
 

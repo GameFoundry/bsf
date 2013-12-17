@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmPlatform.h"
 #include <boost/signal.hpp>
-#include "CmInt2.h"	
+#include "CmVector2I.h"
 
 namespace CamelotFramework
 {
@@ -18,7 +18,7 @@ namespace CamelotFramework
 	{
 		struct ButtonStateChange
 		{
-			Int2 cursorPos;
+			Vector2I cursorPos;
 			OSPositionalInputButtonStates btnStates;
 			OSMouseButton button;
 			bool pressed;
@@ -26,7 +26,7 @@ namespace CamelotFramework
 
 		struct DoubleClick
 		{
-			Int2 cursorPos;
+			Vector2I cursorPos;
 			OSPositionalInputButtonStates btnStates;
 		};
 
@@ -35,7 +35,7 @@ namespace CamelotFramework
 		virtual ~OSInputHandler();
 
 		boost::signal<void(UINT32)> onCharInput;
-		boost::signal<void(const Int2&, float)> onMouseWheelScrolled;
+		boost::signal<void(const Vector2I&, float)> onMouseWheelScrolled;
 		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
 		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
 		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
@@ -54,8 +54,8 @@ namespace CamelotFramework
 
 	private:
 		CM_MUTEX(mOSInputMutex);
-		Int2 mLastCursorPos;
-		Int2 mCursorPosition;
+		Vector2I mLastCursorPos;
+		Vector2I mCursorPosition;
 		float mMouseScroll;
 		WString mInputString;
 		Queue<ButtonStateChange>::type mButtonStates;
@@ -79,22 +79,22 @@ namespace CamelotFramework
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorMoved(const Int2& cursorPos, OSPositionalInputButtonStates& btnStates);
+		void cursorMoved(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorPressed(const Int2& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
+		void cursorPressed(const Vector2I& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorReleased(const Int2& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
+		void cursorReleased(const Vector2I& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorDoubleClick(const Int2& cursorPos, OSPositionalInputButtonStates& btnStates);
+		void cursorDoubleClick(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.

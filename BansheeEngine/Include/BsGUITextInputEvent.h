@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "CmInputFwd.h"
-#include "CmInt2.h"
+#include "CmVector2I.h"
 
 namespace BansheeEngine
 {
