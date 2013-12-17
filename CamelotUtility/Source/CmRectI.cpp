@@ -1,21 +1,21 @@
-#include "CmRect.h"
-#include "CmInt2.h"
+#include "CmRectI.h"
+#include "CmVector2I.h"
 #include "CmMatrix4.h"
 #include "CmMath.h"
 
 namespace CamelotFramework
 {
-	const Rect Rect::EMPTY = Rect();
+	const RectI RectI::EMPTY = RectI();
 
-	Rect::Rect()
+	RectI::RectI()
 		:x(0), y(0), width(0), height(0)
 	{ }
 
-	Rect::Rect(int _x, int _y, int _width, int _height)
+	RectI::RectI(int _x, int _y, int _width, int _height)
 		:x(_x), y(_y), width(_width), height(_height)
 	{ }
 
-	bool Rect::contains(const Int2& point) const
+	bool RectI::contains(const Vector2I& point) const
 	{
 		if(point.x >= x && point.x <= (x + width))
 		{
@@ -26,7 +26,7 @@ namespace CamelotFramework
 		return false;
 	}
 
-	bool Rect::overlaps(const Rect& other) const
+	bool RectI::overlaps(const RectI& other) const
 	{
 		INT32 otherRight = other.x + other.width;
 		INT32 myRight = x + width;
@@ -41,7 +41,7 @@ namespace CamelotFramework
 		return false;
 	}
 
-	void Rect::encapsulate(const Rect& other)
+	void RectI::encapsulate(const RectI& other)
 	{
 		int myRight = x + width;
 		int myBottom = y + height;
@@ -65,7 +65,7 @@ namespace CamelotFramework
 			height = myBottom - y;
 	}
 
-	void Rect::clip(const Rect& clipRect)
+	void RectI::clip(const RectI& clipRect)
 	{
 		int newLeft = std::max(x, clipRect.x);
 		int newTop = std::max(y, clipRect.y);
@@ -79,7 +79,7 @@ namespace CamelotFramework
 		height = newBottom - newTop;
 	}
 
-	void Rect::transform(const Matrix4& matrix)
+	void RectI::transform(const Matrix4& matrix)
 	{
 		Vector4 verts[4];
 		verts[0] = Vector4((float)x, (float)y, 0.0f, 1.0f);

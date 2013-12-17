@@ -4,18 +4,18 @@
 
 namespace CamelotFramework
 {
-	class CM_UTILITY_EXPORT Rect
+	class CM_UTILITY_EXPORT RectI
 	{
 	public:
-		Rect();
-		Rect(int _x, int _y, int _width, int _height);
+		RectI();
+		RectI(int _x, int _y, int _width, int _height);
 
 		int x, y, width, height;
 
-		bool contains(const Int2& point) const;
-		bool overlaps(const Rect& other) const;
-		void encapsulate(const Rect& other);
-		void clip(const Rect& clipRect);
+		bool contains(const Vector2I& point) const;
+		bool overlaps(const RectI& other) const;
+		void encapsulate(const RectI& other);
+		void clip(const RectI& clipRect);
 
 		/**
 		 * @brief	Transforms the bounds by the given matrix.
@@ -26,16 +26,16 @@ namespace CamelotFramework
 		 */
 		void transform(const Matrix4& matrix);
 
-		inline bool operator== (const Rect& rhs) const
+		inline bool operator== (const RectI& rhs) const
 		{
 			return x == rhs.x && y == rhs.y && width == rhs.width && height == rhs.height;
 		}
 
-		inline bool operator!= (const Rect& rhs) const
+		inline bool operator!= (const RectI& rhs) const
 		{
 			return !(*this == rhs);
 		}
 
-		static const Rect EMPTY;
+		static const RectI EMPTY;
 	};
 }

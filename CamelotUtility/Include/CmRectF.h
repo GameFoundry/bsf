@@ -4,18 +4,18 @@
 
 namespace CamelotFramework
 {
-	class CM_UTILITY_EXPORT FRect
+	class CM_UTILITY_EXPORT RectF
 	{
 	public:
-		FRect();
-		FRect(float _x, float _y, float _width, float _height);
+		RectF();
+		RectF(float _x, float _y, float _width, float _height);
 
 		float x, y, width, height;
 
 		bool contains(const Vector2& point) const;
-		bool overlaps(const FRect& other) const;
-		void encapsulate(const FRect& other);
-		void clip(const FRect& clipRect);
+		bool overlaps(const RectF& other) const;
+		void encapsulate(const RectF& other);
+		void clip(const RectF& clipRect);
 
 		/**
 		 * @brief	Transforms the bounds by the given matrix.
@@ -26,16 +26,16 @@ namespace CamelotFramework
 		 */
 		void transform(const Matrix4& matrix);
 
-		inline bool operator== (const FRect& rhs) const
+		inline bool operator== (const RectF& rhs) const
 		{
 			return x == rhs.x && y == rhs.y && width == rhs.width && height == rhs.height;
 		}
 
-		inline bool operator!= (const FRect& rhs) const
+		inline bool operator!= (const RectF& rhs) const
 		{
 			return !(*this == rhs);
 		}
 
-		static const FRect EMPTY;
+		static const RectF EMPTY;
 	};
 }
