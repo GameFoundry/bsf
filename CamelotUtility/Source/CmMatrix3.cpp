@@ -788,15 +788,15 @@ namespace CamelotFramework
         {
             if (xAngle > Radian(-Math::HALF_PI))
             {
-                yAngle = Math::tan2(-m[1][2], m[2][2]);
-                zAngle = Math::tan2(-m[0][1], m[0][0]);
+                yAngle = Math::atan2(-m[1][2], m[2][2]);
+                zAngle = Math::atan2(-m[0][1], m[0][0]);
 
                 return true;
             }
             else
             {
                 // WARNING.  Not a unique solution.
-                Radian angle = Math::tan2(m[1][0],m[1][1]);
+                Radian angle = Math::atan2(m[1][0],m[1][1]);
                 zAngle = Radian(0.0f);  // Any angle works
                 yAngle = zAngle - angle;
 
@@ -806,7 +806,7 @@ namespace CamelotFramework
         else
         {
             // WARNING.  Not a unique solution.
-            Radian angle = Math::tan2(m[1][0],m[1][1]);
+            Radian angle = Math::atan2(m[1][0],m[1][1]);
             zAngle = Radian(0.0f);  // Any angle works
             yAngle = angle - zAngle;
 
@@ -823,15 +823,15 @@ namespace CamelotFramework
 		{
 			if (xAngle > Radian(-Math::HALF_PI))
 			{
-				yAngle = Math::tan2(-l.sign * m[l.b][l.c], m[l.c][l.c]);
-				zAngle = Math::tan2(-l.sign * m[l.a][l.b], m[l.a][l.a]);
+				yAngle = Math::atan2(-l.sign * m[l.b][l.c], m[l.c][l.c]);
+				zAngle = Math::atan2(-l.sign * m[l.a][l.b], m[l.a][l.a]);
 
 				return true;
 			}
 			else
 			{
 				// WARNING.  Not a unique solution.
-				Radian angle = Math::tan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
+				Radian angle = Math::atan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
 				zAngle = Radian(0.0f);  // Any angle works
 				yAngle = zAngle - angle;
 
@@ -841,7 +841,7 @@ namespace CamelotFramework
 		else
 		{
 			// WARNING.  Not a unique solution.
-			Radian angle = Math::tan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
+			Radian angle = Math::atan2(l.sign * m[l.b][l.a], m[l.b][l.b]);
 			zAngle = Radian(0.0f);  // Any angle works
 			yAngle = angle - zAngle;
 

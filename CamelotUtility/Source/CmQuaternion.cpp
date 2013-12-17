@@ -348,7 +348,7 @@ namespace CamelotFramework
         {
             // Standard case (slerp)
             float sin = Math::sqrt(1 - Math::sqr(cos));
-            Radian angle = Math::tan2(sin, cos);
+            Radian angle = Math::atan2(sin, cos);
             float invSin = 1.0f / sin;
             float coeff0 = Math::sin((1.0f - t) * angle) * invSin;
             float coeff1 = Math::sin(t * angle) * invSin;

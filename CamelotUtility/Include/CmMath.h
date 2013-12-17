@@ -39,7 +39,7 @@ namespace CamelotFramework
 		static Radian acos(float val);
 		static Radian asin(float val);
 		static Radian atan(float val) { return Radian(std::atan(val)); }
-		static Radian tan2(float y, float x) { return Radian(std::atan2(y,x)); }
+		static Radian atan2(float y, float x) { return Radian(std::atan2(y,x)); }
 
         static float cos(const Radian& val) { return (float)std::cos(val.valueRadians()); }
         static float cos(float val) { return (float)std::cos(val); }
@@ -115,6 +115,238 @@ namespace CamelotFramework
          */
         static Vector3 calculateTriTangent(const Vector3& position1, const Vector3& position2, 
 			const Vector3& position3, float u1, float v1, float u2, float v2, float u3, float v3);
+
+		/************************************************************************/
+		/* 							TRIG APPROXIMATIONS                      	*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastSin0(const Radian& val) { return (float)fastASin0(val.valueRadians()); }
+
+		/**
+		 * @brief	Sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastSin0(float val);
+
+		/**
+		 * @brief	Sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastSin0".
+		 */
+		static float fastSin1(const Radian& val) { return (float)fastASin1(val.valueRadians()); }
+
+		/**
+		 * @brief	Sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastSin0".
+		 */
+		static float fastSin1(float val);
+
+		/**
+		 * @brief	Cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastCos0(const Radian& val) { return (float)fastACos0(val.valueRadians()); }
+
+		/**
+		 * @brief	Cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastCos0(float val);
+
+		/**
+		 * @brief	Cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastCos0".
+		 */
+		static float fastCos1(const Radian& val) { return (float)fastACos1(val.valueRadians()); }
+
+		/**
+		 * @brief	Cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/2].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastCos0".
+		 */
+		static float fastCos1(float val);
+
+		/**
+		 * @brief	Tangent function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/4].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastTan0(const Radian& val) { return (float)fastATan0(val.valueRadians()); }
+
+		/**
+		 * @brief	Tangent function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/4].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastTan0(float val);
+
+		/**
+		 * @brief	Tangent function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/4].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastTan0".
+		 */
+		static float fastTan1(const Radian& val) { return (float)fastATan1(val.valueRadians()); }
+
+		/**
+		 * @brief	Tangent function approximation.
+		 *
+		 * @param	val	Angle in range [0, pi/4].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastTan0".
+		 */
+		static float fastTan1(float val);
+
+		/**
+		 * @brief	Inverse sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastASin0(const Radian& val) { return (float)fastASin0(val.valueRadians()); }
+
+		/**
+		 * @brief	Inverse sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastASin0(float val);
+
+		/**
+		 * @brief	Inverse sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastASin0".
+		 */
+		static float fastASin1(const Radian& val) { return (float)fastASin1(val.valueRadians()); }
+
+		/**
+		 * @brief	Inverse sine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastASin0".
+		 */
+		static float fastASin1(float val);
+
+		/**
+		 * @brief	Inverse cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastACos0(const Radian& val) { return (float)fastACos0(val.valueRadians()); }
+
+		/**
+		 * @brief	Inverse cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastACos0(float val);
+
+		/**
+		 * @brief	Inverse cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastACos0".
+		 */
+		static float fastACos1(const Radian& val) { return (float)fastACos1(val.valueRadians()); }
+
+		/**
+		 * @brief	Inverse cosine function approximation.
+		 *
+		 * @param	val	Angle in range [0, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastACos0".
+		 */
+		static float fastACos1(float val);
+
+		/**
+		 * @brief	Inverse tangent function approximation.
+		 *
+		 * @param	val	Angle in range [-1, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastATan0(const Radian& val) { return (float)fastATan0(val.valueRadians()); }
+
+		/**
+		 * @brief	Inverse tangent function approximation.
+		 *
+		 * @param	val	Angle in range [-1, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 */
+		static float fastATan0(float val);
+
+		/**
+		 * @brief	Inverse tangent function approximation.
+		 *
+		 * @param	val	Angle in range [-1, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastATan0".
+		 */
+		static float fastATan1(const Radian& val) { return (float)fastATan1(val.valueRadians()); }
+
+		/**
+		 * @brief	Inverse tangent function approximation.
+		 *
+		 * @param	val	Angle in range [-1, 1].
+		 *
+		 * @note	Evaluates trigonometric functions using polynomial approximations.
+		 * 			Slightly better (and slower) than "fastATan0".
+		 */
+		static float fastATan1(float val);
 
         static const float POS_INFINITY;
         static const float NEG_INFINITY;
