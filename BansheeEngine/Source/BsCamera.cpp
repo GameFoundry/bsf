@@ -229,11 +229,6 @@ namespace BansheeEngine
 		// Make any pending updates to the calculated frustum planes
 		updateFrustumPlanes();
 
-		// Get centre of the box
-		Vector3 centre = bound.getCenter();
-		// Get the half-size of the box
-		Vector3 halfSize = bound.getHalfSize();
-
 		// For each plane, see if all points are on the negative side
 		// If so, object is not visible
 		for (int plane = 0; plane < 6; ++plane)
@@ -242,7 +237,7 @@ namespace BansheeEngine
 			if (plane == FRUSTUM_PLANE_FAR && mFarDist == 0)
 				continue;
 
-			Plane::Side side = mFrustumPlanes[plane].getSide(centre, halfSize);
+			Plane::Side side = mFrustumPlanes[plane].getSide(bound);
 			if (side == Plane::NEGATIVE_SIDE)
 			{
 				// ALL corners on negative side therefore out of view

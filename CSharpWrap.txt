@@ -108,13 +108,6 @@ For EditorWindow, add a new class in BansheeEditor, which pretty much does the j
 
   Math updates
 
-Plane needs intersection methods for:
- Ray, AABox, Sphere
-
-AABox.cpp is in Include folder
-
-Add "fast*" methods to Math
-
 Rename:
 Int2 -> Vector2I
 FRect -> Rect

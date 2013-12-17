@@ -32,51 +32,21 @@ THE SOFTWARE.
 // http://www.boost.org/LICENSE_1_0.txt
 // http://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
 
-
-#ifndef __Plane_H__
-#define __Plane_H__
+#pragma once
 
 #include "CmPrerequisitesUtil.h"
-
 #include "CmVector3.h"
 
-namespace CamelotFramework {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-	/** Defines a plane in 3D space.
-        @remarks
-            A plane is defined in 3D space by the equation
-            Ax + By + Cz + D = 0
-        @par
-            This equates to a vector (the normal of the plane, whose x, y
-            and z components equate to the coefficients A, B and C
-            respectively), and a constant (D) which is the distance along
-            the normal you have to go to move the plane back to the origin.
-     */
+namespace CamelotFramework 
+{
     class CM_UTILITY_EXPORT Plane
     {
-    public:
-        /** Default constructor - sets everything to 0.
-        */
-        Plane ();
-        Plane (const Plane& rhs);
-        /** Construct a plane through a normal, and a distance to move the plane along the normal.*/
-        Plane (const Vector3& rkNormal, float fConstant);
-		/** Construct a plane using the 4 constants directly **/
-		Plane (float a, float b, float c, float d);
-        Plane (const Vector3& rkNormal, const Vector3& rkPoint);
-        Plane (const Vector3& rkPoint0, const Vector3& rkPoint1,
-            const Vector3& rkPoint2);
-
-        /** The "positive side" of the plane is the half space to which the
-            plane normal points. The "negative side" is the other half
-            space. The flag "no side" indicates the plane itself.
-        */
+	public:
+		/**
+		 * @brief	The "positive side" of the plane is the half space to which the
+		 *			plane normal points. The "negative side" is the other half
+		 *			space. The flag "no side" indicates the plane itself.
+         */
         enum Side
         {
             NO_SIDE,
@@ -85,69 +55,62 @@ namespace CamelotFramework {
             BOTH_SIDE
         };
 
-        Side getSide (const Vector3& rkPoint) const;
+    public:
+        Plane();
+        Plane(const Plane& copy);
+        Plane(const Vector3& normal, float d);
+		Plane(float a, float b, float c, float d);
+        Plane(const Vector3& normal, const Vector3& point);
+        Plane(const Vector3& point0, const Vector3& point1, const Vector3& point2);
 
         /**
-        Returns the side where the alignedBox is. The flag BOTH_SIDE indicates an intersecting box.
-        One corner ON the plane is sufficient to consider the box and the plane intersecting.
-        */
-        Side getSide (const AABox& rkBox) const;
+         * @brief	Returns the side of the plane where the point is located on.
+         * 			
+		 * @note	NO_SIDE signifies the point is on the plane.
+         */
+        Side getSide(const Vector3& point) const;
 
-        /** Returns which side of the plane that the given box lies on.
-            The box is defined as centre/half-size pairs for effectively.
-        @param centre The centre of the box.
-        @param halfSize The half-size of the box.
-        @returns
-            POSITIVE_SIDE if the box complete lies on the "positive side" of the plane,
-            NEGATIVE_SIDE if the box complete lies on the "negative side" of the plane,
-            and BOTH_SIDE if the box intersects the plane.
-        */
-        Side getSide (const Vector3& centre, const Vector3& halfSize) const;
+        /**
+		 * @brief	Returns the side where the alignedBox is. The flag BOTH_SIDE indicates an intersecting box.
+		 *			One corner ON the plane is sufficient to consider the box and the plane intersecting.
+         */
+        Side getSide(const AABox& box) const;
 
-        /** This is a pseudodistance. The sign of the return value is
-            positive if the point is on the positive side of the plane,
-            negative if the point is on the negative side, and zero if the
-            point is on the plane.
-            @par
-            The absolute value of the return value is the true distance only
-            when the plane normal is a unit length vector.
-        */
-        float getDistance (const Vector3& rkPoint) const;
+        /**
+         * @brief	Returns a distance from point to plane.
+         *
+		 * @note	The sign of the return value is positive if the point is on the 
+		 * 			positive side of the plane, negative if the point is on the negative 
+		 * 			side, and zero if the point is on the plane.
+         */
+        float getDistance(const Vector3& point) const;
 
-        /** Redefine this plane based on 3 points. */
-        void redefine(const Vector3& rkPoint0, const Vector3& rkPoint1,
-            const Vector3& rkPoint2);
-
-		/** Redefine this plane based on a normal and a point. */
-		void redefine(const Vector3& rkNormal, const Vector3& rkPoint);
-
-		/** Project a vector onto the plane. 
-		@remarks This gives you the element of the input vector that is perpendicular 
-			to the normal of the plane. You can get the element which is parallel
-			to the normal of the plane by subtracting the result of this method
-			from the original vector, since parallel + perpendicular = original.
-		@param v The input vector
-		*/
+		/**
+		 * @brief	Project a vector onto the plane.
+		 */
 		Vector3 projectVector(const Vector3& v) const;
 
-        /** Normalises the plane.
-            @remarks
-                This method normalises the plane's normal and the length scale of d
-                is as well.
-            @note
-                This function will not crash for zero-sized vectors, but there
-                will be no changes made to their components.
-            @returns The previous length of the plane's normal.
-        */
-        float normalize(void);
+        /**
+		 * @brief	Normalizes the plane's normal and the length scale of d
+		 *			is as well.
+         */
+        float normalize();
 
-		/** Ray / plane intersection, returns boolean result and distance. */
+		/**
+		 * @brief	Box/plane intersection.
+		 */
+		bool intersects(const AABox& box) const;
+
+		/**
+		 * @brief	Sphere/plane intersection.
+		 */
+		bool intersects(const Sphere& sphere) const;
+
+		/**
+		 * @brief	Ray/plane intersection, returns boolean result and distance.
+		 */
 		std::pair<bool, float> intersects(const Ray& ray) const;
 
-		Vector3 normal;
-        float d;
-
-        /// Comparison operator
         bool operator==(const Plane& rhs) const
         {
             return (rhs.d == d && rhs.normal == normal);
@@ -156,12 +119,11 @@ namespace CamelotFramework {
         {
             return (rhs.d != d || rhs.normal != normal);
         }
+
+	public:
+		Vector3 normal;
+		float d;
     };
 
     typedef Vector<Plane>::type PlaneList;
-	/** @} */
-	/** @} */
-
-} // namespace CamelotFramework
-
-#endif
+}

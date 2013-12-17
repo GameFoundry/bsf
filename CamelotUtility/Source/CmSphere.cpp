@@ -8,7 +8,6 @@ namespace CamelotFramework
 	std::pair<bool, float> Sphere::intersects(const Ray& ray, bool discardInside) const
 	{
 		const Vector3& raydir = ray.getDirection();
-		// Adjust ray origin relative to sphere center
 		const Vector3& rayorig = ray.getOrigin() - getCenter();
 		float radius = getRadius();
 
@@ -18,14 +17,12 @@ namespace CamelotFramework
 			return std::pair<bool, float>(true, 0.0f);
 		}
 
-		// Mmm, quadratics
-		// Build coeffs which can be used with std quadratic solver
-		// ie t = (-b +/- sqrt(b*b + 4ac)) / 2a
+		// t = (-b +/- sqrt(b*b + 4ac)) / 2a
 		float a = raydir.dot(raydir);
 		float b = 2 * rayorig.dot(raydir);
 		float c = rayorig.dot(rayorig) - radius*radius;
 
-		// Calc determinant
+		// Determinant
 		float d = (b*b) - (4 * a * c);
 		if (d < 0)
 		{
@@ -34,12 +31,13 @@ namespace CamelotFramework
 		}
 		else
 		{
-			// BTW, if d=0 there is one intersection, if d > 0 there are 2
-			// But we only want the closest one, so that's ok, just use the 
-			// '-' version of the solver
+			// If d == 0 there is one intersection, if d > 0 there are 2.
+			// We only return the first one.
+			
 			float t = ( -b - Math::sqrt(d) ) / (2 * a);
 			if (t < 0)
 				t = ( -b + Math::sqrt(d) ) / (2 * a);
+
 			return std::pair<bool, float>(true, t);
 		}
 	}

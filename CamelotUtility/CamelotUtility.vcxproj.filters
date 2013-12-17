@@ -341,9 +341,6 @@
     <ClCompile Include="Source\CmMemStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Include\CmAABox.cpp">
-      <Filter>Source Files\Math</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmFRect.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -369,6 +366,9 @@
       <Filter>Source Files\Math</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmRay.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmAABox.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>
