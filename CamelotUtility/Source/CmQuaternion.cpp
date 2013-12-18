@@ -99,12 +99,12 @@ namespace CamelotFramework
     {
         // Assert:  axis[] is unit length
 
-        Radian fHalfAngle (0.5f*angle);
-        float fSin = Math::sin(fHalfAngle);
-        w = Math::cos(fHalfAngle);
-        x = fSin*axis.x;
-        y = fSin*axis.y;
-        z = fSin*axis.z;
+        Radian halfAngle (0.5f*angle);
+        float sin = Math::sin(halfAngle);
+        w = Math::cos(halfAngle);
+        x = sin*axis.x;
+        y = sin*axis.y;
+        z = sin*axis.z;
     }
 
     void Quaternion::fromAxes(const Vector3& xaxis, const Vector3& yaxis, const Vector3& zaxis)
@@ -150,40 +150,40 @@ namespace CamelotFramework
 
 	void Quaternion::toRotationMatrix(Matrix3& mat) const
 	{
-		float fTx  = x+x;
-		float fTy  = y+y;
+		float tx  = x+x;
+		float ty  = y+y;
 		float fTz  = z+z;
-		float fTwx = fTx*w;
-		float fTwy = fTy*w;
-		float fTwz = fTz*w;
-		float fTxx = fTx*x;
-		float fTxy = fTy*x;
-		float fTxz = fTz*x;
-		float fTyy = fTy*y;
-		float fTyz = fTz*y;
-		float fTzz = fTz*z;
+		float twx = tx*w;
+		float twy = ty*w;
+		float twz = fTz*w;
+		float txx = tx*x;
+		float txy = ty*x;
+		float txz = fTz*x;
+		float tyy = ty*y;
+		float tyz = fTz*y;
+		float tzz = fTz*z;
 
-		mat[0][0] = 1.0f-(fTyy+fTzz);
-		mat[0][1] = fTxy-fTwz;
-		mat[0][2] = fTxz+fTwy;
-		mat[1][0] = fTxy+fTwz;
-		mat[1][1] = 1.0f-(fTxx+fTzz);
-		mat[1][2] = fTyz-fTwx;
-		mat[2][0] = fTxz-fTwy;
-		mat[2][1] = fTyz+fTwx;
-		mat[2][2] = 1.0f-(fTxx+fTyy);
+		mat[0][0] = 1.0f-(tyy+tzz);
+		mat[0][1] = txy-twz;
+		mat[0][2] = txz+twy;
+		mat[1][0] = txy+twz;
+		mat[1][1] = 1.0f-(txx+tzz);
+		mat[1][2] = tyz-twx;
+		mat[2][0] = txz-twy;
+		mat[2][1] = tyz+twx;
+		mat[2][2] = 1.0f-(txx+tyy);
 	}
 
 	void Quaternion::toAxisAngle(Vector3& axis, Radian& angle) const
 	{
-		float fSqrLength = x*x+y*y+z*z;
-		if ( fSqrLength > 0.0 )
+		float sqrLength = x*x+y*y+z*z;
+		if ( sqrLength > 0.0 )
 		{
 			angle = 2.0*Math::acos(w);
-			float fInvLength = Math::invSqrt(fSqrLength);
-			axis.x = x*fInvLength;
-			axis.y = y*fInvLength;
-			axis.z = z*fInvLength;
+			float invLength = Math::invSqrt(sqrLength);
+			axis.x = x*invLength;
+			axis.y = y*invLength;
+			axis.z = z*invLength;
 		}
 		else
 		{
@@ -377,6 +377,56 @@ namespace CamelotFramework
         *this = *this * factor;
         return len;
     }
+
+	Quaternion Quaternion::getRotationFromTo(const Vector3& from, const Vector3& dest, const Vector3& fallbackAxis)
+	{
+		// Based on Stan Melax's article in Game Programming Gems
+		Quaternion q;
+
+		Vector3 v0 = from;
+		Vector3 v1 = dest;
+		v0.normalize();
+		v1.normalize();
+
+		float d = v0.dot(v1);
+
+		// If dot == 1, vectors are the same
+		if (d >= 1.0f)
+			return Quaternion::IDENTITY;
+
+		if (d < (1e-6f - 1.0f))
+		{
+			if (fallbackAxis != Vector3::ZERO)
+			{
+				// Rotate 180 degrees about the fallback axis
+				q.fromAxisAngle(fallbackAxis, Radian(Math::PI));
+			}
+			else
+			{
+				// Generate an axis
+				Vector3 axis = Vector3::UNIT_X.cross(from);
+				if (axis.isZeroLength()) // Pick another if colinear
+					axis = Vector3::UNIT_Y.cross(from);
+				axis.normalize();
+				q.fromAxisAngle(axis, Radian(Math::PI));
+			}
+		}
+		else
+		{
+			float s = Math::sqrt( (1+d)*2 );
+			float invs = 1 / s;
+
+			Vector3 c = v0.cross(v1);
+
+			q.x = c.x * invs;
+			q.y = c.y * invs;
+			q.z = c.z * invs;
+			q.w = s * 0.5f;
+			q.normalize();
+		}
+
+		return q;
+	}
 
 	Quaternion operator* (float lhs, const Quaternion& rhs)
 	{

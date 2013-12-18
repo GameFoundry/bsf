@@ -29,6 +29,7 @@ THE SOFTWARE.
 
 #include "CmVector3.h"
 #include "CmMatrix3.h"
+#include "CmQuaternion.h"
 
 namespace CamelotFramework
 {

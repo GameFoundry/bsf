@@ -6,26 +6,16 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector4
     {
+        public static readonly Vector4 zero = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+        public static readonly Vector4 one = new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+        public static readonly Vector4 xAxis = new Vector4(1.0f, 0.0f, 0.0f, 0.0f);
+        public static readonly Vector4 yAxis = new Vector4(0.0f, 1.0f, 0.0f, 0.0f);
+        public static readonly Vector4 zAxis = new Vector4(0.0f, 0.0f, 1.0f, 0.0f);
+
         public float x;
         public float y;
         public float z;
         public float w;
-
-        public static Vector4 zero
-        {
-            get
-            {
-                return new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
-            }
-        }
-
-        public static Vector4 one
-        {
-            get
-            {
-                return new Vector4(1.0f, 1.0f, 1.0f, 1.0f);
-            }
-        }
 
         public float this[int index]
         {
@@ -130,6 +120,16 @@ namespace BansheeEngine
             return new Vector4(v.x / d, v.y / d, v.z / d, v.w / d);
         }
 
+        public static bool operator== (Vector4 lhs, Vector4 rhs)
+        {
+            return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
+        }
+
+        public static bool operator!= (Vector4 lhs, Vector4 rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public static Vector4 Scale(Vector4 a, Vector4 b)
         {
             return new Vector4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
@@ -176,10 +176,27 @@ namespace BansheeEngine
         public void Normalize()
         {
             float num = Magnitude(this);
-            if (num > 9.999999E-06)
+            if (num > 9.999999e-06f)
                 this /= num;
             else
                 this = zero;
+        }
+
+        public override int GetHashCode()
+        {
+            return x.GetHashCode() ^ y.GetHashCode() << 2 ^ z.GetHashCode() >> 2 ^ w.GetHashCode() >> 1;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (!(other is Vector4))
+                return false;
+
+            Vector4 vec = (Vector4)other;
+            if (x.Equals(vec.x) && y.Equals(vec.y) && z.Equals(vec.z) && w.Equals(vec.w))
+                return true;
+
+            return false;
         }
     }
 }

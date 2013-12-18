@@ -2,8 +2,24 @@
 
 namespace BansheeEngine
 {
+    public enum EulerAngleOrder
+	{
+		XYZ,
+		XZY,
+		YXZ,
+		YZX,
+		ZXY,
+		ZYX
+	};
+
     class MathEx
     {
+        public const float Pi = 3.141593f;
+        public const float TwoPi = (2.0f * Pi);
+        public const float HalfPi = (0.5f * Pi);
+        public const float Deg2Rad = Pi / 180.0f;
+        public const float Rad2Deg = 180.0f / Pi;
+
         public static float Min(float a, float b)
         {
             if (a < b)
@@ -208,6 +224,11 @@ namespace BansheeEngine
         public static float Sqrt(float f)
         {
             return (float)Math.Sqrt(f);
+        }
+
+        public static float InvSqrt(float f)
+        {
+            return 1.0f/(float) Math.Sqrt(f);
         }
 
         public static float Clamp(float value, float min, float max)

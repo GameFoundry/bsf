@@ -29,7 +29,6 @@ THE SOFTWARE.
 
 #include "CmPrerequisitesUtil.h"
 #include "CmMath.h"
-#include "CmQuaternion.h"
 
 namespace CamelotFramework
 {
@@ -383,60 +382,6 @@ namespace CamelotFramework
 			return Math::acos(f);
 
 		}
-
-        /**
-		 * @brief	Gets the shortest arc quaternion to rotate this vector to the destination
-		 *		vector.
-         */
-        Quaternion getRotationTo(const Vector3& dest, const Vector3& fallbackAxis = Vector3::ZERO) const
-        {
-            // Based on Stan Melax's article in Game Programming Gems
-            Quaternion q;
-
-            Vector3 v0 = *this;
-            Vector3 v1 = dest;
-            v0.normalize();
-            v1.normalize();
-
-            float d = v0.dot(v1);
-
-            // If dot == 1, vectors are the same
-            if (d >= 1.0f)
-                return Quaternion::IDENTITY;
-
-			if (d < (1e-6f - 1.0f))
-			{
-				if (fallbackAxis != Vector3::ZERO)
-				{
-					// Rotate 180 degrees about the fallback axis
-					q.fromAxisAngle(fallbackAxis, Radian(Math::PI));
-				}
-				else
-				{
-					// Generate an axis
-					Vector3 axis = Vector3::UNIT_X.cross(*this);
-					if (axis.isZeroLength()) // Pick another if colinear
-						axis = Vector3::UNIT_Y.cross(*this);
-					axis.normalize();
-					q.fromAxisAngle(axis, Radian(Math::PI));
-				}
-			}
-			else
-			{
-                float s = Math::sqrt( (1+d)*2 );
-	            float invs = 1 / s;
-
-				Vector3 c = v0.cross(v1);
-
-    	        q.x = c.x * invs;
-        	    q.y = c.y * invs;
-            	q.z = c.z * invs;
-            	q.w = s * 0.5f;
-				q.normalize();
-			}
-
-            return q;
-        }
 
         /**
          * @brief	Returns true if this vector is zero length.

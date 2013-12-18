@@ -6,25 +6,15 @@ namespace BansheeEngine
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector3
     {
+        public static readonly Vector3 zero = new Vector3(0.0f, 0.0f, 0.0f);
+        public static readonly Vector3 one = new Vector3(1.0f, 1.0f, 1.0f);
+        public static readonly Vector3 xAxis = new Vector3(1.0f, 0.0f, 0.0f);
+        public static readonly Vector3 yAxis = new Vector3(0.0f, 1.0f, 0.0f);
+        public static readonly Vector3 zAxis = new Vector3(0.0f, 0.0f, 1.0f);
+
         public float x;
         public float y;
         public float z;
-
-        public static Vector3 zero
-        {
-            get
-            {
-                return new Vector3(0.0f, 0.0f, 0.0f);
-            }
-        }
-
-        public static Vector3 one
-        {
-            get
-            {
-                return new Vector3(1.0f, 1.0f, 1.0f);
-            }
-        }
 
         public float this[int index]
         {
@@ -133,6 +123,16 @@ namespace BansheeEngine
             return new Vector3(lhs.y * rhs.z - lhs.z * rhs.y, lhs.z * rhs.x - lhs.x * rhs.z, lhs.x * rhs.y - lhs.y * rhs.x);
         }
 
+        public static bool operator ==(Vector3 lhs, Vector3 rhs)
+        {
+            return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+        }
+
+        public static bool operator !=(Vector3 lhs, Vector3 rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public static Vector3 Normalize(Vector3 value)
         {
             float num = Magnitude(value);
@@ -177,6 +177,23 @@ namespace BansheeEngine
                 this /= num;
             else
                 this = zero;
+        }
+
+        public override int GetHashCode()
+        {
+            return x.GetHashCode() ^ y.GetHashCode() << 2 ^ z.GetHashCode() >> 2;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (!(other is Vector3))
+                return false;
+
+            Vector3 vec = (Vector3)other;
+            if (x.Equals(vec.x) && y.Equals(vec.y) && z.Equals(vec.z))
+                return true;
+
+            return false;
         }
     }
 }

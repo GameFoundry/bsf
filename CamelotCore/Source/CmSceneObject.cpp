@@ -128,7 +128,7 @@ namespace CamelotFramework
 		// TODO - I'm ignoring "up" direction
 		setForward(forward);
 
-		Quaternion upRot = getUp().getRotationTo(up);
+		Quaternion upRot = Quaternion::getRotationFromTo(getUp(), up);
 		setRotation(getRotation() * upRot);
 	}
 
@@ -217,7 +217,7 @@ namespace CamelotFramework
 		else
 		{
 			// Derive shortest arc to new direction
-			Quaternion rotQuat = currentForwardDir.getRotationTo(nrmForwardDir);
+			Quaternion rotQuat = Quaternion::getRotationFromTo(currentForwardDir, nrmForwardDir);
 			targetRotation = rotQuat * currentRotation;
 		}
 

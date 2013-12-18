@@ -26,7 +26,7 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 #include "CmMatrix3.h"
-
+#include "CmQuaternion.h"
 #include "CmMath.h"
 
 // Adapted from Matrix math by Wild Magic http://www.geometrictools.com/

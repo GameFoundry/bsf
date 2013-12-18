@@ -9,21 +9,10 @@ namespace BansheeEngine
         public float x;
         public float y;
 
-        public static Vector2 zero
-        {
-            get
-            {
-                return new Vector2(0.0f, 0.0f);
-            }
-        }
-
-        public static Vector2 one
-        {
-            get
-            {
-                return new Vector2(1.0f, 1.0f);
-            }
-        }
+        public static readonly Vector2 zero = new Vector2(0.0f, 0.0f);
+        public static readonly Vector2 one = new Vector2(1.0f, 1.0f);
+        public static readonly Vector2 xAxis = new Vector2(1.0f, 0.0f);
+        public static readonly Vector2 yAxis = new Vector2(0.0f, 1.0f);
 
         public float this[int index]
         {
@@ -116,6 +105,16 @@ namespace BansheeEngine
             return new Vector2(v.x / d, v.y / d);
         }
 
+        public static bool operator== (Vector2 lhs, Vector2 rhs)
+        {
+            return lhs.x == rhs.x && lhs.y == rhs.y;
+        }
+
+        public static bool operator!= (Vector2 lhs, Vector2 rhs)
+        {
+            return !(lhs == rhs);
+        }
+
         public static Vector2 Scale(Vector2 a, Vector2 b)
         {
             return new Vector2(a.x * b.x, a.y * b.y);
@@ -164,6 +163,23 @@ namespace BansheeEngine
                 this /= num;
             else
                 this = zero;
+        }
+
+        public override int GetHashCode()
+        {
+            return x.GetHashCode() ^ y.GetHashCode() << 2;
+        }
+
+        public override bool Equals(object other)
+        {
+            if (!(other is Vector2))
+                return false;
+
+            Vector2 vec = (Vector2)other;
+            if (x.Equals(vec.x) && y.Equals(vec.y))
+                return true;
+            
+            return false;
         }
     }
 }

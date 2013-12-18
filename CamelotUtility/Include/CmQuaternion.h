@@ -37,6 +37,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisitesUtil.h"
 #include "CmMath.h"
+#include "CmVector3.h"
 
 namespace CamelotFramework 
 {
@@ -120,16 +121,6 @@ namespace CamelotFramework
 			assert(i < 4);
 
 			return *(&w+i);
-		}
-
-		inline float* ptr()
-		{
-			return &w;
-		}
-
-		inline const float* ptr() const
-		{
-			return &w;
 		}
 
 		void fromRotationMatrix(const Matrix3& mat);
@@ -263,12 +254,18 @@ namespace CamelotFramework
         static Quaternion slerp(float t, const Quaternion& p,
             const Quaternion& q, bool shortestPath = false);
 
+        /**
+		 * @brief	Gets the shortest arc quaternion to rotate this vector to the destination
+		 *		vector.
+         */
+        static Quaternion getRotationFromTo(const Vector3& from, const Vector3& dest, const Vector3& fallbackAxis = Vector3::ZERO);
+
         static const float EPSILON;
 
         static const Quaternion ZERO;
         static const Quaternion IDENTITY;
 
-		float w, x, y, z;
+		float x, y, z, w;
 
 		private:
 			static const EulerAngleOrderData EA_LOOKUP[6];
