@@ -152,7 +152,7 @@ namespace BansheeEngine
 			    if (fallbackAxis != Vector3.zero)
 			    {
 				    // Rotate 180 degrees about the fallback axis
-				    this = AxisAngle(fallbackAxis, MathEx.Pi * MathEx.Rad2Deg);
+				    this = FromAxisAngle(fallbackAxis, MathEx.Pi * MathEx.Rad2Deg);
 			    }
 			    else
 			    {
@@ -161,7 +161,7 @@ namespace BansheeEngine
                     if (axis.sqrdMagnitude < ((1e-06f * 1e-06f))) // Pick another if collinear
 					    axis = Vector3.Cross(Vector3.yAxis, fromDirection);
 				    axis.Normalize();
-                    this = AxisAngle(axis, MathEx.Pi * MathEx.Rad2Deg);
+                    this = FromAxisAngle(axis, MathEx.Pi * MathEx.Rad2Deg);
 			    }
 		    }
 		    else
@@ -386,13 +386,13 @@ namespace BansheeEngine
             rotation.ToAxisAngle(out axis, out angleDeg);
         }
 
-        public static Quaternion RotationMatrix(Matrix3 rotMatrix)
+        public static Quaternion FromRotationMatrix(Matrix3 rotMatrix)
         {
             // Algorithm in Ken Shoemake's article in 1987 SIGGRAPH course notes
             // article "Quaternion Calculus and Fast Animation".
 
             Quaternion quat = new Quaternion();
-            float trace = rotMatrix.m[0, 0] + rotMatrix.m[1, 1] + rotMatrix.m[2, 2];
+            float trace = rotMatrix.m00 + rotMatrix.m11 + rotMatrix.m22;
             float root;
 
             if (trace > 0.0f)
@@ -401,9 +401,9 @@ namespace BansheeEngine
                 root = MathEx.Sqrt(trace + 1.0f);  // 2w
                 quat.w = 0.5f*root;
                 root = 0.5f/root;  // 1/(4w)
-                quat.x = (rotMatrix.m[2, 1] - rotMatrix.m[1, 2]) * root;
-                quat.y = (rotMatrix.m[0, 2] - rotMatrix.m[2, 0]) * root;
-                quat.z = (rotMatrix.m[1, 0] - rotMatrix.m[0, 1]) * root;
+                quat.x = (rotMatrix.m21 - rotMatrix.m12) * root;
+                quat.y = (rotMatrix.m02 - rotMatrix.m20) * root;
+                quat.z = (rotMatrix.m10 - rotMatrix.m01) * root;
             }
             else
             {
@@ -411,23 +411,23 @@ namespace BansheeEngine
                 int[] nextLookup = { 1, 2, 0 };
                 int i = 0;
 
-                if (rotMatrix.m[1, 1] > rotMatrix.m[0, 0])
+                if (rotMatrix.m11 > rotMatrix.m00)
                     i = 1;
 
-                if (rotMatrix.m[2, 2] > rotMatrix.m[i, i])
+                if (rotMatrix.m22 > rotMatrix[i, i])
                     i = 2;
 
                 int j = nextLookup[i];
                 int k = nextLookup[j];
 
-                root = MathEx.Sqrt(rotMatrix.m[i,i] - rotMatrix.m[j, j] - rotMatrix.m[k, k] + 1.0f);
+                root = MathEx.Sqrt(rotMatrix[i,i] - rotMatrix[j, j] - rotMatrix[k, k] + 1.0f);
 
                 quat[i] = 0.5f*root;
                 root = 0.5f/root;
 
-                quat.w = (rotMatrix.m[k, j] - rotMatrix.m[j, k]) * root;
-                quat[j] = (rotMatrix.m[j, i] + rotMatrix.m[i, j]) * root;
-                quat[k] = (rotMatrix.m[k, i] + rotMatrix.m[i, k]) * root;
+                quat.w = (rotMatrix[k, j] - rotMatrix[j, k]) * root;
+                quat[j] = (rotMatrix[j, i] + rotMatrix[i, j]) * root;
+                quat[k] = (rotMatrix[k, i] + rotMatrix[i, k]) * root;
             }
 
 		    quat.Normalize();
@@ -435,7 +435,7 @@ namespace BansheeEngine
             return quat;
         }
 
-        public static Quaternion AxisAngle(Vector3 axis, float angleDeg)
+        public static Quaternion FromAxisAngle(Vector3 axis, float angleDeg)
         {
             Quaternion quat;
 
@@ -449,14 +449,14 @@ namespace BansheeEngine
             return quat;
         }
 
-        public static Quaternion Euler(float xDeg, float yDeg, float zDeg, EulerAngleOrder order = EulerAngleOrder.XYZ)
+        public static Quaternion FromEuler(float xDeg, float yDeg, float zDeg, EulerAngleOrder order = EulerAngleOrder.XYZ)
         {
             EulerAngleOrderData l = EA_LOOKUP[(int)order];
 
             Quaternion[] quats = new Quaternion[3];
-		    quats[0] = AxisAngle(Vector3.xAxis, xDeg);
-		    quats[1] = AxisAngle(Vector3.yAxis, yDeg);
-		    quats[2] = AxisAngle(Vector3.zAxis, zDeg);
+		    quats[0] = FromAxisAngle(Vector3.xAxis, xDeg);
+		    quats[1] = FromAxisAngle(Vector3.yAxis, yDeg);
+		    quats[2] = FromAxisAngle(Vector3.zAxis, zDeg);
 
             return quats[l.c]*(quats[l.a] * quats[l.b]);
         }
@@ -464,9 +464,9 @@ namespace BansheeEngine
         /**
          * @note Angles in degrees.
          */
-        public static Quaternion Euler(Vector3 euler, EulerAngleOrder order = EulerAngleOrder.XYZ)
+        public static Quaternion FromEuler(Vector3 euler, EulerAngleOrder order = EulerAngleOrder.XYZ)
         {
-            return Euler(euler.x, euler.y, euler.z, order);
+            return FromEuler(euler.x, euler.y, euler.z, order);
         }
 
         public override int GetHashCode()

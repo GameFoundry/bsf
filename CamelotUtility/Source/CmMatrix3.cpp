@@ -911,14 +911,14 @@ namespace CamelotFramework
         subDiag[2] = 0.0;
         if (Math::abs(fC) >= EPSILON)
         {
-            float fLength = Math::sqrt(fB*fB+fC*fC);
-            float fInvLength = 1.0f/fLength;
-            fB *= fInvLength;
-            fC *= fInvLength;
+            float length = Math::sqrt(fB*fB+fC*fC);
+            float invLength = 1.0f/length;
+            fB *= invLength;
+            fC *= invLength;
             float fQ = 2.0f*fB*fE+fC*(fF-fD);
             diag[1] = fD+fC*fQ;
             diag[2] = fF-fC*fQ;
-            subDiag[0] = fLength;
+            subDiag[0] = length;
             subDiag[1] = fE-fB*fQ;
             m[0][0] = 1.0;
             m[0][1] = 0.0;
