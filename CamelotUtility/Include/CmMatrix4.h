@@ -336,9 +336,9 @@ namespace CamelotFramework
         /**
          * @brief	Transform a 3D vector by this matrix.
          * 			
-         * @note	Matrix must be affine, if it is not use "transform" method.
+         * @note	Matrix must be affine, if it is not use "multiply" method.
          */
-        Vector3 transform3x4(const Vector3& v) const
+        Vector3 multiply3x4(const Vector3& v) const
         {
             return Vector3(
                     m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3], 
@@ -349,9 +349,9 @@ namespace CamelotFramework
         /**
          * @brief	Transform a 4D vector by this matrix.
          * 			
-         * @note	Matrix must be affine, if it is not use "transform" method.
+         * @note	Matrix must be affine, if it is not use "multiply" method.
          */
-        Vector4 transform3x4(const Vector4& v) const
+        Vector4 multiply3x4(const Vector4& v) const
         {
             return Vector4(
                 m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w, 
@@ -366,17 +366,17 @@ namespace CamelotFramework
          * @note	w component of the vector is assumed to be 1. After transformation all components
          * 			are projected back so that w remains 1.
          * 			
-		 *			If your matrix doesn't contain projection components use "transform3x4" method as it is faster.
+		 *			If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
          */
-        Vector3 transform(const Vector3 &v) const
+        Vector3 multiply(const Vector3 &v) const
         {
             Vector3 r;
 
             float fInvW = 1.0f / (m[3][0] * v.x + m[3][1] * v.y + m[3][2] * v.z + m[3][3]);
 
-            r.x = ( m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] ) * fInvW;
-            r.y = ( m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3] ) * fInvW;
-            r.z = ( m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3] ) * fInvW;
+            r.x = (m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3]) * fInvW;
+            r.y = (m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z + m[1][3]) * fInvW;
+            r.z = (m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z + m[2][3]) * fInvW;
 
             return r;
         }
@@ -386,9 +386,9 @@ namespace CamelotFramework
          *
          * @note	After transformation all components are projected back so that w remains 1.
          * 			
-		 *			If your matrix doesn't contain projection components use "transform3x4" method as it is faster.
+		 *			If your matrix doesn't contain projection components use "multiply3x4" method as it is faster.
          */
-        Vector4 transform(const Vector4& v) const
+        Vector4 multiply(const Vector4& v) const
         {
             return Vector4(
                 m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z + m[0][3] * v.w, 

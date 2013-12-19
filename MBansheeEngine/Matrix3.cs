@@ -162,7 +162,7 @@ namespace BansheeEngine
         public override int GetHashCode()
         {
             float hash1 = m00.GetHashCode() ^ m10.GetHashCode() << 2 ^ m20.GetHashCode() >> 2;
-            float hash2 = m01.GetHashCode() ^ m11.GetHashCode() << 2 ^ m22.GetHashCode() >> 2;
+            float hash2 = m01.GetHashCode() ^ m11.GetHashCode() << 2 ^ m21.GetHashCode() >> 2;
             float hash3 = m02.GetHashCode() ^ m12.GetHashCode() << 2 ^ m22.GetHashCode() >> 2;
 
             return hash1.GetHashCode() ^ hash2.GetHashCode() << 2 ^ hash3.GetHashCode() >> 2;

@@ -315,8 +315,8 @@ namespace BansheeEngine
 			Vector3 topLeft(-0.5f, 0.5f, 0.0f);
 			Vector3 bottomRight(0.5f, -0.5f, 0.0f);
 
-			topLeft = invProj.transform(topLeft);
-			bottomRight = invProj.transform(bottomRight);
+			topLeft = invProj.multiply(topLeft);
+			bottomRight = invProj.multiply(bottomRight);
 
 			left = topLeft.x;
 			top = topLeft.y;
@@ -630,15 +630,15 @@ namespace BansheeEngine
 		float farTop = nearTop * radio;
 
 		// near
-		mWorldSpaceCorners[0] = eyeToWorld.transform3x4(Vector3(nearRight, nearTop,    -mNearDist));
-		mWorldSpaceCorners[1] = eyeToWorld.transform3x4(Vector3(nearLeft,  nearTop,    -mNearDist));
-		mWorldSpaceCorners[2] = eyeToWorld.transform3x4(Vector3(nearLeft,  nearBottom, -mNearDist));
-		mWorldSpaceCorners[3] = eyeToWorld.transform3x4(Vector3(nearRight, nearBottom, -mNearDist));
+		mWorldSpaceCorners[0] = eyeToWorld.multiply3x4(Vector3(nearRight, nearTop,    -mNearDist));
+		mWorldSpaceCorners[1] = eyeToWorld.multiply3x4(Vector3(nearLeft,  nearTop,    -mNearDist));
+		mWorldSpaceCorners[2] = eyeToWorld.multiply3x4(Vector3(nearLeft,  nearBottom, -mNearDist));
+		mWorldSpaceCorners[3] = eyeToWorld.multiply3x4(Vector3(nearRight, nearBottom, -mNearDist));
 		// far
-		mWorldSpaceCorners[4] = eyeToWorld.transform3x4(Vector3(farRight,  farTop,     -farDist));
-		mWorldSpaceCorners[5] = eyeToWorld.transform3x4(Vector3(farLeft,   farTop,     -farDist));
-		mWorldSpaceCorners[6] = eyeToWorld.transform3x4(Vector3(farLeft,   farBottom,  -farDist));
-		mWorldSpaceCorners[7] = eyeToWorld.transform3x4(Vector3(farRight,  farBottom,  -farDist));
+		mWorldSpaceCorners[4] = eyeToWorld.multiply3x4(Vector3(farRight,  farTop,     -farDist));
+		mWorldSpaceCorners[5] = eyeToWorld.multiply3x4(Vector3(farLeft,   farTop,     -farDist));
+		mWorldSpaceCorners[6] = eyeToWorld.multiply3x4(Vector3(farLeft,   farBottom,  -farDist));
+		mWorldSpaceCorners[7] = eyeToWorld.multiply3x4(Vector3(farRight,  farBottom,  -farDist));
 
 
 		mRecalcWorldSpaceCorners = false;
