@@ -227,6 +227,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsApplication.h" />
+    <ClInclude Include="Include\BsScriptComponent.h" />
+    <ClInclude Include="Include\BsScriptGUIWidget.h" />
     <ClInclude Include="Include\BsDrawHelper3D.h" />
     <ClInclude Include="Include\BsDrawHelperTemplate.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
@@ -351,7 +353,9 @@
     <ClCompile Include="Source\BsGUIScrollArea.cpp" />
     <ClCompile Include="Source\BsScriptAssembly.cpp" />
     <ClCompile Include="Source\BsScriptClass.cpp" />
+    <ClCompile Include="Source\BsScriptComponent.cpp" />
     <ClCompile Include="Source\BsScriptField.cpp" />
+    <ClCompile Include="Source\BsScriptGUIWidget.cpp" />
     <ClCompile Include="Source\BsScriptManager.cpp" />
     <ClCompile Include="Source\BsScriptMethod.cpp" />
     <ClCompile Include="Source\BsScriptMeta.cpp" />

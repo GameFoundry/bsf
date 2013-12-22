@@ -27,6 +27,8 @@ namespace BansheeEngine
 			 * @brief	Frees up all resources allocated during startUp, and while the application was running.
 			 */
 			void shutDown();
+
+			const CM::ViewportPtr& getPrimaryViewport() const;
 	private:
 		boost::signals::connection updateCallbackConn;
 

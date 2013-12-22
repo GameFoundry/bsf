@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Editor">
       <UniqueIdentifier>{ccd6be96-5773-46cc-a751-18a7007716c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Editor\Script">
+      <UniqueIdentifier>{ed35c594-9f99-46b1-aef3-a14f123a21e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Editor\Script">
+      <UniqueIdentifier>{6bda4443-8e9f-44f1-8173-d12d0d6311ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -87,6 +93,9 @@
     <ClInclude Include="Include\BsEditorApplication.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptModalWindow.h">
+      <Filter>Header Files\Editor\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -148,6 +157,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsEditorApplication.cpp">
       <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptModalWindow.cpp">
+      <Filter>Source Files\Editor\Script</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

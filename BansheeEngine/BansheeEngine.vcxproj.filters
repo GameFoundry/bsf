@@ -270,6 +270,12 @@
     <ClInclude Include="Include\BsScriptTexture2D.h">
       <Filter>Header Files\Script</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIWidget.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptComponent.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -471,6 +477,12 @@
       <Filter>Source Files\Script</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEngineAssembly.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIWidget.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptComponent.cpp">
       <Filter>Source Files\Script</Filter>
     </ClCompile>
   </ItemGroup>

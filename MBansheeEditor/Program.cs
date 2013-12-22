@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace MBansheeEditor
+namespace BansheeEditor
 {
     class Program
     {

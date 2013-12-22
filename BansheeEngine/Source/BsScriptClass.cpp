@@ -1,6 +1,7 @@
 #include "BsScriptClass.h"
 #include "BsScriptMethod.h"
 #include "BsScriptField.h"
+#include "BsScriptManager.h"
 #include "CmUtil.h"
 #include "CmException.h"
 
@@ -98,5 +99,12 @@ namespace BansheeEngine
 	{
 		String fullMethodName = mFullName + "::" + name;
 		mono_add_internal_call(fullMethodName.c_str(), method);
+	}
+
+	MonoObject* ScriptClass::createInstance() const
+	{
+		MonoObject* obj = mono_object_new(ScriptManager::instance().getDomain(), mClass);
+
+		return obj;
 	}
 }

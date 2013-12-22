@@ -40,14 +40,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BuiltinResources.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="Font.cs" />
+    <Compile Include="GUIWidget.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Matrix3.cs" />
     <Compile Include="Matrix4.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quaternion.cs" />
+    <Compile Include="Resource.cs" />
     <Compile Include="ScriptObject.cs" />
+    <Compile Include="SpriteTexture.cs" />
     <Compile Include="Texture2D.cs" />
     <Compile Include="TextureFormat.cs" />
     <Compile Include="Vector2.cs" />

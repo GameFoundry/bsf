@@ -15,8 +15,6 @@ namespace BansheeEngine
 	const String ScriptManager::MONO_LIB_DIR = "..\\..\\Mono\\lib";
 	const String ScriptManager::MONO_ETC_DIR = "..\\..\\Mono\\etc";
 
-	UnorderedMap<String, Vector<ScriptMeta*>::type>::type ScriptManager::mTypesToInitialize;
-
 	ScriptManager::ScriptManager()
 	{
 		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str()); 
@@ -73,7 +71,7 @@ namespace BansheeEngine
 		mAssemblies[name] = assembly;
 
 		// Fully initialize all types that use this assembly
-		Vector<ScriptMeta*>::type& mTypeMetas = mTypesToInitialize[name];
+		Vector<ScriptMeta*>::type& mTypeMetas = getTypesToInitialize()[name];
 		for(auto& meta : mTypeMetas)
 		{
 			meta->scriptClass = &assembly->getClass(meta->ns, meta->name);
@@ -95,7 +93,7 @@ namespace BansheeEngine
 
 	void ScriptManager::registerScriptType(ScriptMeta* metaData)
 	{
-		Vector<ScriptMeta*>::type& mMetas = mTypesToInitialize[metaData->assembly];
+		Vector<ScriptMeta*>::type& mMetas = getTypesToInitialize()[metaData->assembly];
 		mMetas.push_back(metaData);
 	}
 }

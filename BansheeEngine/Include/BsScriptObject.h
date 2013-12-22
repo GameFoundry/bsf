@@ -23,7 +23,7 @@ namespace BansheeEngine
 	 * @brief	 Base class for objects that can be extended using Mono scripting
 	 */
 	template <class Type>
-	class BS_EXPORT ScriptObject
+	class ScriptObject
 	{
 	public:
 		ScriptObject()

@@ -104,18 +104,42 @@ For EditorWindow, add a new class in BansheeEditor, which pretty much does the j
   
   ----------------
 
-  -----------------
-
-  Math updates
-
-Rename:
-Int2 -> Vector2I
-FRect -> Rect
-Rect -> RectI
-
-Add OOBB and intersection methods.
-
 Eventually make all math classes templates that work on both doubles and floats. (Very low priority)
+
+----------------------------
+
+EditorGUI - NOT a component
+ - Internally just a GUIWidget
+ - has AddArea method
+ - has main field that points to main Layout
+ - shares interface with "GUI", which is used for main game window
+ - has a reference to GUISkin. Default is GUISkin.main
+
+GUIArea
+ - has layout field
+ - has AddLayoutX, AddLayoutY
+
+GUILayout
+ - has AddButton, AddLabel, AddLayoutX, AddLayoutY
+
+GUIButton, GUILabel
+ - Require GUILayoutOptions, GUIElementStyle upon construction
+ - Have Destroy() methods
+
+GUIElementStyle
+ - Requires font
+ - Requires SpriteTexture
+ - Create DUMMY font and texture classes for now
+
+GUISkin 
+ - Has pointers to GUIElementStyles for button, label, etc. plus support for custom styles using GetStyle(name), SetStyle(name)
+
+When loading resources I need to be able to load both project resources and engine ones. 
+ - BuiltinResources can be used for accessing default resources like GUI skin textures and similar
+ - They're all loaded from a special folder that is set in EditorApplication
+
+
+ BsApplication::getPrimaryViewport is not implemented
 
 ----------------------------
 

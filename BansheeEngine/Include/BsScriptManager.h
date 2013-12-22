@@ -27,7 +27,11 @@ namespace BansheeEngine
 		static const CM::String MONO_LIB_DIR;
 		static const CM::String MONO_ETC_DIR;
 
-		static CM::UnorderedMap<CM::String, CM::Vector<ScriptMeta*>::type>::type mTypesToInitialize;
+		static CM::UnorderedMap<CM::String, CM::Vector<ScriptMeta*>::type>::type& getTypesToInitialize()
+		{
+			static CM::UnorderedMap<CM::String, CM::Vector<ScriptMeta*>::type>::type mTypesToInitialize;
+			return mTypesToInitialize;
+		}
 
 		MonoDomain* mDomain;
 		CM::UnorderedMap<CM::String, ScriptAssembly*>::type mAssemblies;

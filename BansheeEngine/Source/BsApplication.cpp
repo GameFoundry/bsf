@@ -85,6 +85,12 @@ namespace BansheeEngine
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 
+	const CM::ViewportPtr& Application::getPrimaryViewport() const
+	{
+		// TODO - Need a way to determine primary viewport!
+		return nullptr;
+	}
+
 	Application& gBansheeApp()
 	{
 		static Application application;

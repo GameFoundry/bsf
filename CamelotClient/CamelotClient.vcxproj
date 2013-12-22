@@ -270,6 +270,7 @@
     <ClInclude Include="Include\BsGUIWindowFrameWidget.h" />
     <ClInclude Include="Include\BsGUIWindowDropArea.h" />
     <ClInclude Include="Include\BsMainEditorWindow.h" />
+    <ClInclude Include="Include\BsScriptModalWindow.h" />
     <ClInclude Include="Include\CmDebugCamera.h" />
     <ClInclude Include="Include\CmTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
@@ -292,6 +293,7 @@
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
+    <ClCompile Include="Source\BsScriptModalWindow.cpp" />
     <ClCompile Include="Source\CmDebugCamera.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />
     <ClCompile Include="Source\CmTestTextSprite.cpp" />
