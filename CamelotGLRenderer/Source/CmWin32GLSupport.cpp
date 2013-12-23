@@ -5,12 +5,11 @@
 #include "CmWin32GLSupport.h"
 #include "CmGLTexture.h"
 #include "CmWin32Window.h"
-#include <GL/wglext.h>
 
 using namespace CamelotFramework;
 
 #if CM_THREAD_SUPPORT != 1
-GLenum wglewContextInit (CamelotFramework::GLSupport *glSupport);
+GLenum __stdcall wglewContextInit (CamelotFramework::GLSupport *glSupport);
 #endif
 
 namespace CamelotFramework 

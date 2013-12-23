@@ -59,7 +59,7 @@ THE SOFTWARE.s
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #if CM_THREAD_SUPPORT != 1
-GLenum glewContextInit (CamelotFramework::GLSupport *glSupport);
+GLenum __stdcall glewContextInit (CamelotFramework::GLSupport *glSupport);
 #endif
 
 namespace CamelotFramework 
