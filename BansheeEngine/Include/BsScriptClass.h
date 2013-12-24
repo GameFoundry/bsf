@@ -29,8 +29,9 @@ namespace BansheeEngine
 		~ScriptClass();
 
 		ScriptMethod& getMethod(const CM::String& name, CM::UINT32 numParams = 0);
-		ScriptField& getField(const CM::String name);
-		
+		ScriptField& getField(const CM::String& name);
+		ScriptProperty& getProperty(const CM::String& name);
+
 		MonoObject* invokeMethod(const CM::String& name, MonoObject* instance = nullptr, void** params = nullptr, CM::UINT32 numParams = 0);
 		void addInternalCall(const CM::String& name, const void* method);
 
@@ -45,5 +46,6 @@ namespace BansheeEngine
 
 		CM::UnorderedMap<MethodId, ScriptMethod*, MethodId::Hash, MethodId::Equals>::type mMethods; 
 		CM::UnorderedMap<CM::String, ScriptField*>::type mFields; 
+		CM::UnorderedMap<CM::String, ScriptProperty*>::type mProperties;
 	};
 }

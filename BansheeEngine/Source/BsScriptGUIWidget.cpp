@@ -37,7 +37,7 @@ namespace BansheeEngine
 		sceneObject->addComponent<ScriptComponent>(instance);
 
 		ScriptGUIWidget* nativeInstance = new (cm_alloc<ScriptGUIWidget>()) ScriptGUIWidget(widget);
-		nativeInstance->createInstance();
+		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
 	}

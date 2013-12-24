@@ -16,10 +16,13 @@ namespace BansheeEngine
 		 *
 		 * @note	This is the fastest way of calling managed code.
 		 */
-		void* getThunk();
+		void* getThunk() const;
+
+		CM::String getName() const;
 
 	private:
 		friend class ScriptClass;
+		friend class ScriptProperty;
 
 		ScriptMethod(MonoMethod* method);
 

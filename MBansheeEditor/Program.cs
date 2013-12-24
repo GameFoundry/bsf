@@ -13,6 +13,7 @@ namespace BansheeEditor
 
             // TODO - A class to manipulate menu items
 
+            ModalWindow mw = new ModalWindow(0, 0, 0, 0);
         }
     }
 

@@ -12,7 +12,7 @@ namespace BansheeEngine
 
 	void* ScriptField::getValue(MonoObject* instance)
 	{
-		void* value;
+		void* value = nullptr;
 		mono_field_get_value(instance, mField, value);
 		return value;
 	}

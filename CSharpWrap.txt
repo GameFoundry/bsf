@@ -139,6 +139,14 @@ When loading resources I need to be able to load both project resources and engi
  - They're all loaded from a special folder that is set in EditorApplication
 
 
+IMMEDIATE TODO:
+ - Finish up ScriptGUIElementstyle.cpp
+ - Add ScriptGUIElementStateStyle
+
+Should I make sprite texture a resource?
+ - Quite probably, and will need to replace any Ptr references with handle references. I want the user
+   to be able to reference the resource in multiple locations and then he can easily edit the SpriteTexture as needed.
+
  BsApplication::getPrimaryViewport is not implemented
 
 ----------------------------

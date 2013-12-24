@@ -11,26 +11,26 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptTexture::ScriptTexture(const CM::HTexture& texture)
+	ScriptTexture2D::ScriptTexture2D(const CM::HTexture& texture)
 		:mTexture(texture)
 	{
 
 	}
 
-	void ScriptTexture::initMetaData()
+	void ScriptTexture2D::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "Texture2D", &ScriptTexture::initRuntimeData);
+		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "Texture2D", &ScriptTexture2D::initRuntimeData);
 
 		ScriptManager::registerScriptType(&metaData);
 	}
 
-	void ScriptTexture::initRuntimeData()
+	void ScriptTexture2D::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptTexture::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptTexture::internal_destroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptTexture2D::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptTexture2D::internal_destroyInstance);
 	}
 
-	void ScriptTexture::internal_createInstance(MonoObject* instance, CM::UINT32 format, CM::UINT32 width, CM::UINT32 height, bool hasMipmaps, bool gammaCorrection)
+	void ScriptTexture2D::internal_createInstance(MonoObject* instance, CM::UINT32 format, CM::UINT32 width, CM::UINT32 height, bool hasMipmaps, bool gammaCorrection)
 	{
 		PixelFormat texFormat = PF_R8G8B8;
 		switch(format)
@@ -51,13 +51,13 @@ namespace BansheeEngine
 
 		HTexture texture = Texture::create(TEX_TYPE_2D, width, height, numMips, texFormat, TU_STATIC, gammaCorrection);
 
-		ScriptTexture* nativeInstance = new (cm_alloc<ScriptTexture>()) ScriptTexture(texture);
-		nativeInstance->createInstance();
+		ScriptTexture2D* nativeInstance = new (cm_alloc<ScriptTexture2D>()) ScriptTexture2D(texture);
+		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
 	}
 
-	void ScriptTexture::internal_destroyInstance(ScriptTexture* nativeInstance)
+	void ScriptTexture2D::internal_destroyInstance(ScriptTexture2D* nativeInstance)
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);

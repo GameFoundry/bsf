@@ -5,5 +5,6 @@ namespace BansheeEditor
 {
     public class EditorApplication
     {
+        
     }
 }

@@ -1,6 +1,15 @@
-﻿namespace BansheeEngine
+﻿using System.Runtime.InteropServices;
+
+namespace BansheeEngine
 {
-    public class SpriteTexture : Resource // TODO - Dummy class
+    public sealed class SpriteTexture : Resource // TODO - Dummy class
     {
+        public SpriteTexture()
+        {
+            Internal_CreateInstance(this);
+        }
+
+        [DllImport("__Internal")]
+        private static extern void Internal_CreateInstance(SpriteTexture instance);
     }
 }

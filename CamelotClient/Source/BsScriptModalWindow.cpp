@@ -56,7 +56,7 @@ namespace BansheeEditor
 	void ScriptModalWindow::internal_createInstance(MonoObject* instance, INT32 left, INT32 top, UINT32 width, UINT32 height)
 	{
 		ScriptModalWindow* nativeInstance = new (cm_alloc<ScriptModalWindow>()) ScriptModalWindow(left, top, width, height);
-		nativeInstance->createInstance();
+		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
 	}

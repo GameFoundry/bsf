@@ -16,8 +16,13 @@ namespace BansheeEngine
 		return mono_runtime_invoke(mMethod, instance, params, nullptr);
 	}		
 
-	void* ScriptMethod::getThunk()
+	void* ScriptMethod::getThunk() const
 	{
 		return mThunk;
+	}
+
+	String ScriptMethod::getName() const
+	{
+		return String(mono_method_get_name(mMethod));
 	}
 }

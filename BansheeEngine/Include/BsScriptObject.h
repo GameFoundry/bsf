@@ -27,7 +27,7 @@ namespace BansheeEngine
 	{
 	public:
 		ScriptObject()
-			:mInstanceCreated(false)
+			:mManagedInstance(nullptr)
 		{	
 			// Compiler will only generate code for stuff that is directly used, including static data members,
 			// so we fool it here like we're using the class directly. Otherwise compiler won't generate the code for the member
@@ -37,29 +37,44 @@ namespace BansheeEngine
 
 		virtual ~ScriptObject() 
 		{
-			if(mInstanceCreated)
+			if(mManagedInstance != nullptr)
 				CM_EXCEPT(InvalidStateException, "Script object is being destroyed without its instance previously being released.");
 		}
+
+		MonoObject* getManagedInstance() const { return mManagedInstance; }
+		virtual void* getNative() const { return nullptr; }
 
 	protected:
 		static ScriptMeta metaData;
 
-		bool mInstanceCreated;
+		MonoObject* mManagedInstance;
 
-		void createInstance()
+		void createInstance(MonoObject* instance)
 		{
-			if(mInstanceCreated)
+			if(mManagedInstance != nullptr)
 				CM_EXCEPT(InvalidStateException, "Trying to instantiate an already instantiated script object.");
 
-			mInstanceCreated = true;
+			mManagedInstance = instance;
 		}
 
 		void destroyInstance()
 		{
-			if(!mInstanceCreated)
+			if(mManagedInstance == nullptr)
 				return;
 
-			mInstanceCreated = false;
+			mManagedInstance = nullptr;
+		}
+
+		template <class Type2>
+		static void throwIfInstancesDontMatch(ScriptObject<Type2>* lhs, void* rhs)
+		{
+#if CM_DEBUG_MODE
+			if((lhs == nullptr && rhs != nullptr) || (rhs == nullptr && lhs != nullptr) || lhs->getNative() != rhs)
+			{
+				CM_EXCEPT(InvalidStateException, "Native and script instance do not match. This usually happens when you modify a native object " \
+					" that is also being referenced from script code. You should only modify such objects directly from script code.");
+			}
+#endif
 		}
 
 	private:

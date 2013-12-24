@@ -276,6 +276,21 @@
     <ClInclude Include="Include\BsScriptComponent.h">
       <Filter>Header Files\Script</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptProperty.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIElementStyle.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSpriteTexture.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptFont.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIElementStateStyle.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -483,6 +498,21 @@
       <Filter>Source Files\Script</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptComponent.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptProperty.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIElementStyle.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptFont.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptSpriteTexture.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIElementStateStyle.cpp">
       <Filter>Source Files\Script</Filter>
     </ClCompile>
   </ItemGroup>

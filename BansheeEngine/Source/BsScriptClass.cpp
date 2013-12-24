@@ -1,6 +1,7 @@
 #include "BsScriptClass.h"
 #include "BsScriptMethod.h"
 #include "BsScriptField.h"
+#include "BsScriptProperty.h"
 #include "BsScriptManager.h"
 #include "CmUtil.h"
 #include "CmException.h"
@@ -71,7 +72,7 @@ namespace BansheeEngine
 		return *newMethod;
 	}
 
-	ScriptField& ScriptClass::getField(const String name)
+	ScriptField& ScriptClass::getField(const String& name)
 	{
 		auto iterFind = mFields.find(name);
 		if(iterFind != mFields.end())
@@ -88,6 +89,25 @@ namespace BansheeEngine
 		mFields[name] = newField;
 
 		return *newField;
+	}
+
+	ScriptProperty& ScriptClass::getProperty(const String& name)
+	{
+		auto iterFind = mProperties.find(name);
+		if(iterFind != mProperties.end())
+			return *iterFind->second;
+
+		MonoProperty* property = mono_class_get_property_from_name(mClass, name.c_str());
+		if(property == nullptr)
+		{
+			String fullPropertyName = mFullName + "::" + name;
+			CM_EXCEPT(InvalidParametersException, "Cannot get Mono property: " + fullPropertyName);
+		}
+
+		ScriptProperty* newProperty = new (cm_alloc<ScriptProperty>()) ScriptProperty(property);
+		mProperties[name] = newProperty;
+
+		return *newProperty;
 	}
 
 	MonoObject* ScriptClass::invokeMethod(const String& name, MonoObject* instance, void** params, UINT32 numParams)
