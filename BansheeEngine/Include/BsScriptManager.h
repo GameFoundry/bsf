@@ -16,14 +16,11 @@ namespace BansheeEngine
 		ScriptManager();
 		~ScriptManager();
 
-		ScriptAssembly& loadAssembly(const CM::String& path, const CM::String& name);
+		ScriptAssembly& loadAssembly(const CM::String& path, const CM::String& name, const CM::String& entryPoint = CM::StringUtil::BLANK);
 		void unloadAssembly(ScriptAssembly& assembly);
-
-		MonoDomain* getDomain() const { return mDomain; }
 
 		static void registerScriptType(ScriptMeta* metaData);
 	private:
-		static const CM::String DOMAIN_NAME;
 		static const CM::String MONO_LIB_DIR;
 		static const CM::String MONO_ETC_DIR;
 
@@ -33,7 +30,6 @@ namespace BansheeEngine
 			return mTypesToInitialize;
 		}
 
-		MonoDomain* mDomain;
 		CM::UnorderedMap<CM::String, ScriptAssembly*>::type mAssemblies;
 	};
 }

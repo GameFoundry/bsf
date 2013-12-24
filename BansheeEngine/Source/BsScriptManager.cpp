@@ -11,7 +11,6 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const String ScriptManager::DOMAIN_NAME = "BansheeEngine";
 	const String ScriptManager::MONO_LIB_DIR = "..\\..\\Mono\\lib";
 	const String ScriptManager::MONO_ETC_DIR = "..\\..\\Mono\\etc";
 
@@ -19,12 +18,6 @@ namespace BansheeEngine
 	{
 		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str()); 
 		mono_config_parse(nullptr);
-
-		mDomain = mono_jit_init (DOMAIN_NAME.c_str());
-		if(mDomain == nullptr)
-		{
-			CM_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
-		}
 	}
 
 	ScriptManager::~ScriptManager()
@@ -36,47 +29,37 @@ namespace BansheeEngine
 		}
 
 		mAssemblies.clear();
-
-		if(mDomain != nullptr)
-			mono_jit_cleanup(mDomain);
 	}
 
-	ScriptAssembly& ScriptManager::loadAssembly(const String& path, const String& name)
+	ScriptAssembly& ScriptManager::loadAssembly(const String& path, const String& name, const String& entryPoint)
 	{
+		ScriptAssembly* assembly = nullptr;
+
 		auto iterFind = mAssemblies.find(name);
 		if(iterFind != mAssemblies.end())
 		{
-			ScriptAssembly* assembly = iterFind->second;
-			if(!assembly->mIsLoaded)
-			{
-				MonoAssembly* monoAssembly = mono_domain_assembly_open (mDomain, path.c_str());
-				if(monoAssembly == nullptr)
-				{
-					CM_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);
-				}
+			assembly = iterFind->second;
+		}
+		else
+		{
+			assembly = new (cm_alloc<ScriptAssembly>()) ScriptAssembly();
+			mAssemblies[name] = assembly;
+		}
 
-				assembly->load(monoAssembly);
+		if(!assembly->mIsLoaded)
+		{
+			assembly->load(path, name);
+
+			// Fully initialize all types that use this assembly
+			Vector<ScriptMeta*>::type& mTypeMetas = getTypesToInitialize()[name];
+			for(auto& meta : mTypeMetas)
+			{
+				meta->scriptClass = &assembly->getClass(meta->ns, meta->name);
+				meta->thisPtrField = &meta->scriptClass->getField("mCachedPtr");
+				meta->initCallback();
 			}
 
-			return *iterFind->second;
-		}
-
-		MonoAssembly* monoAssembly = mono_domain_assembly_open (mDomain, path.c_str());
-		if(monoAssembly == nullptr)
-		{
-			CM_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);
-		}
-
-		ScriptAssembly* assembly = new (cm_alloc<ScriptAssembly>()) ScriptAssembly(monoAssembly);
-		mAssemblies[name] = assembly;
-
-		// Fully initialize all types that use this assembly
-		Vector<ScriptMeta*>::type& mTypeMetas = getTypesToInitialize()[name];
-		for(auto& meta : mTypeMetas)
-		{
-			meta->scriptClass = &assembly->getClass(meta->ns, meta->name);
-			meta->thisPtrField = &meta->scriptClass->getField("mCachedPtr");
-			meta->initCallback();
+			assembly->initialize(entryPoint); // Perform any initialization after everything is loaded
 		}
 
 		return *assembly;

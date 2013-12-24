@@ -17,6 +17,7 @@ namespace BansheeEngine
 	private:
 		static const CM::String ENGINE_ASSEMBLY_PATH;
 		static const CM::String ENGINE_ASSEMBLY_NAME;
+		static const CM::String ASSEMBLY_ENTRY_POINT;
 
 		ScriptAssembly* mAssembly;
 	};

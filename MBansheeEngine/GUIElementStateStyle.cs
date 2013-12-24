@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
@@ -22,17 +22,17 @@ namespace BansheeEngine
             set { Internal_SetTextColor(mCachedPtr, ref value); }
         }
 
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIElementStateStyle instance);
 
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetTexture(IntPtr nativeInstance, out SpriteTexture value);
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTexture(IntPtr nativeInstance, SpriteTexture value);
 
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_GetTextColor(IntPtr nativeInstance, out Color value);
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetTextColor(IntPtr nativeInstance, ref Color value);
     };
 }

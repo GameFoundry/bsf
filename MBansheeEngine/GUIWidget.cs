@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
@@ -10,7 +10,7 @@ namespace BansheeEngine
             Internal_CreateInstance(this);
         }
 
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIWidget instance);
     }
 }

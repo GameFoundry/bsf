@@ -81,7 +81,6 @@ namespace BansheeEngine
 		}
 
 		value = nullptr;
-		return;
 	}
 
 	void ScriptGUIElementStateStyle::internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, ScriptSpriteTexture* value)

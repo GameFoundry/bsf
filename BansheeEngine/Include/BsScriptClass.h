@@ -39,8 +39,9 @@ namespace BansheeEngine
 	private:
 		friend class ScriptAssembly;
 
-		ScriptClass(const CM::String& fullName, MonoClass* monoClass);
+		ScriptClass(const CM::String& fullName, MonoClass* monoClass, ScriptAssembly* parentAssembly);
 
+		ScriptAssembly* mParentAssembly;
 		MonoClass* mClass;
 		CM::String mFullName;
 

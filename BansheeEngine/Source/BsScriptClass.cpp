@@ -2,6 +2,7 @@
 #include "BsScriptMethod.h"
 #include "BsScriptField.h"
 #include "BsScriptProperty.h"
+#include "BsScriptAssembly.h"
 #include "BsScriptManager.h"
 #include "CmUtil.h"
 #include "CmException.h"
@@ -29,8 +30,8 @@ namespace BansheeEngine
 
 	}
 
-	ScriptClass::ScriptClass(const String& fullName, MonoClass* monoClass)
-		:mFullName(fullName), mClass(monoClass)
+	ScriptClass::ScriptClass(const String& fullName, MonoClass* monoClass, ScriptAssembly* parentAssembly)
+		:mFullName(fullName), mClass(monoClass), mParentAssembly(parentAssembly)
 	{
 
 	}
@@ -50,6 +51,13 @@ namespace BansheeEngine
 		}
 
 		mFields.clear();
+
+		for(auto& mapEntry : mProperties)
+		{
+			cm_delete(mapEntry.second);
+		}
+
+		mProperties.clear();
 	}
 
 	ScriptMethod& ScriptClass::getMethod(const String& name, UINT32 numParams)
@@ -123,7 +131,7 @@ namespace BansheeEngine
 
 	MonoObject* ScriptClass::createInstance() const
 	{
-		MonoObject* obj = mono_object_new(ScriptManager::instance().getDomain(), mClass);
+		MonoObject* obj = mono_object_new(mParentAssembly->getDomain(), mClass);
 
 		return obj;
 	}

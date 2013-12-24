@@ -30,15 +30,20 @@ namespace BansheeEngine
 		~ScriptAssembly();
 
 		ScriptClass& getClass(const CM::String& namespaceName, const CM::String& name);
+		MonoDomain* getDomain() const { return mDomain; }
 
 	private:
 		friend class ScriptManager;
 
-		ScriptAssembly(MonoAssembly* assembly);
+		ScriptAssembly();
 
-		void load(MonoAssembly* assembly);
+		void load(const CM::String& path, const CM::String& name);
 		void unload();
 
+		void initialize(const CM::String& entryPoint);
+
+		CM::String mName;
+		MonoDomain* mDomain;
 		MonoImage* mMonoImage;
 		MonoAssembly* mMonoAssembly;
 		bool mIsLoaded;

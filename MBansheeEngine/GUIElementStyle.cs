@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace BansheeEngine
 {
@@ -190,86 +186,136 @@ namespace BansheeEngine
             set { Internal_SetFixedHeight(mCachedPtr, value); }
         }
 
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIElementStyle instance);
 
-        [DllImport("__Internal")] private static extern Font Internal_GetFont(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetFont(IntPtr nativeInstance, Font value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern Font Internal_GetFont(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetFont(IntPtr nativeInstance, Font value);
 
-        [DllImport("__Internal")] private static extern int Internal_GetFontSize(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetFontSize(IntPtr nativeInstance, int value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern int Internal_GetFontSize(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetFontSize(IntPtr nativeInstance, int value);
 
-        [DllImport("__Internal")] private static extern TextHorzAlign Internal_GetTextHorzAlign(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetTextHorzAlign(IntPtr nativeInstance, TextHorzAlign value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern TextHorzAlign Internal_GetTextHorzAlign(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetTextHorzAlign(IntPtr nativeInstance, TextHorzAlign value);
 
-        [DllImport("__Internal")] private static extern TextVertAlign Internal_GetTextVertAlign(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetTextVertAlign(IntPtr nativeInstance, TextVertAlign value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern TextVertAlign Internal_GetTextVertAlign(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetTextVertAlign(IntPtr nativeInstance, TextVertAlign value);
 
-        [DllImport("__Internal")] private static extern GUIImagePosition Internal_GetImagePosition(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetImagePosition(IntPtr nativeInstance, GUIImagePosition value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIImagePosition Internal_GetImagePosition(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetImagePosition(IntPtr nativeInstance, GUIImagePosition value);
 
-        [DllImport("__Internal")] private static extern bool Internal_GetWordWrap(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetWordWrap(IntPtr nativeInstance, bool value);
-
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetNormal(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetNormal(IntPtr nativeInstance, GUIElementStateStyle value);
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetHover(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetHover(IntPtr nativeInstance, GUIElementStateStyle value);
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetActive(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetActive(IntPtr nativeInstance, GUIElementStateStyle value);
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetFocused(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetFocused(IntPtr nativeInstance, GUIElementStateStyle value);
-
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetNormalOn(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetNormalOn(IntPtr nativeInstance, GUIElementStateStyle value);
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetHoverOn(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetHoverOn(IntPtr nativeInstance, GUIElementStateStyle value);
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetActiveOn(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetActiveOn(IntPtr nativeInstance, GUIElementStateStyle value);
-
-        [DllImport("__Internal")] private static extern GUIElementStateStyle Internal_GetFocusedOn(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetFocusedOn(IntPtr nativeInstance, GUIElementStateStyle value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern bool Internal_GetWordWrap(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetWordWrap(IntPtr nativeInstance, bool value);
 
 
-        [DllImport("__Internal")] private static extern RectOffset Internal_GetBorder(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetBorder(IntPtr nativeInstance, RectOffset value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetNormal(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetNormal(IntPtr nativeInstance, GUIElementStateStyle value);
 
-        [DllImport("__Internal")] private static extern RectOffset Internal_GetMargins(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetMargins(IntPtr nativeInstance, RectOffset value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetHover(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetHover(IntPtr nativeInstance, GUIElementStateStyle value);
 
-        [DllImport("__Internal")] private static extern RectOffset Internal_GetContentOffset(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetContentOffset(IntPtr nativeInstance, RectOffset value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetActive(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetActive(IntPtr nativeInstance, GUIElementStateStyle value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetFocused(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetFocused(IntPtr nativeInstance, GUIElementStateStyle value);
 
 
-        [DllImport("__Internal")] private static extern int Internal_GetWidth(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetWidth(IntPtr nativeInstance, int value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetNormalOn(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetNormalOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
-        [DllImport("__Internal")] private static extern int Internal_GetHeight(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetHeight(IntPtr nativeInstance, int value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetHoverOn(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetHoverOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
-        [DllImport("__Internal")] private static extern int Internal_GetMinWidth(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetMinWidth(IntPtr nativeInstance, int value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetActiveOn(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetActiveOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
-        [DllImport("__Internal")] private static extern int Internal_GetMaxWidth(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetMaxWidth(IntPtr nativeInstance, int value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern GUIElementStateStyle Internal_GetFocusedOn(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetFocusedOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
-        [DllImport("__Internal")] private static extern int Internal_GetMinHeight(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetMinHeight(IntPtr nativeInstance, int value);
 
-        [DllImport("__Internal")] private static extern int Internal_GetMaxHeight(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetMaxHeight(IntPtr nativeInstance, int value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern RectOffset Internal_GetBorder(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetBorder(IntPtr nativeInstance, RectOffset value);
 
-        [DllImport("__Internal")] private static extern bool Internal_GetFixedWidth(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetFixedWidth(IntPtr nativeInstance, bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern RectOffset Internal_GetMargins(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetMargins(IntPtr nativeInstance, RectOffset value);
 
-        [DllImport("__Internal")] private static extern bool Internal_GetFixedHeight(IntPtr nativeInstance);
-        [DllImport("__Internal")] private static extern void Internal_SetFixedHeight(IntPtr nativeInstance, bool value);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern RectOffset Internal_GetContentOffset(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetContentOffset(IntPtr nativeInstance, RectOffset value);
+
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern int Internal_GetWidth(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetWidth(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern int Internal_GetHeight(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetHeight(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern int Internal_GetMinWidth(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetMinWidth(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern int Internal_GetMaxWidth(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetMaxWidth(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern int Internal_GetMinHeight(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetMinHeight(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern int Internal_GetMaxHeight(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetMaxHeight(IntPtr nativeInstance, int value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern bool Internal_GetFixedWidth(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetFixedWidth(IntPtr nativeInstance, bool value);
+
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern bool Internal_GetFixedHeight(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)] 
+        private static extern void Internal_SetFixedHeight(IntPtr nativeInstance, bool value);
     }
 }

@@ -1,7 +1,10 @@
 #include "BsScriptAssembly.h"
 #include "BsScriptClass.h"
+#include "BsScriptManager.h"
 #include "CmUtil.h"
 #include "CmException.h"
+
+#include <mono/metadata/debug-helpers.h>
 
 using namespace CamelotFramework;
 
@@ -15,7 +18,7 @@ namespace BansheeEngine
 		return seed;
 	}
 
-	inline bool ScriptAssembly::ClassId::Equals::operator()(const ScriptAssembly::ClassId &a, const ScriptAssembly::ClassId &b) const
+	inline bool ScriptAssembly::ClassId::Equals::operator()(const ScriptAssembly::ClassId& a, const ScriptAssembly::ClassId& b) const
 	{
 		return a.name == b.name && a.namespaceName == b.namespaceName;
 	}
@@ -26,22 +29,42 @@ namespace BansheeEngine
 
 	}
 
-	ScriptAssembly::ScriptAssembly(MonoAssembly* assembly)
+	ScriptAssembly::ScriptAssembly()
+		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mDomain(nullptr)
 	{
-		load(assembly);
+
 	}
 
 	ScriptAssembly::~ScriptAssembly()
 	{
-		for(auto& entry : mClasses)
-			cm_delete(entry.second);
+		unload();
 
-		mClasses.clear();
+		if(mDomain != nullptr)
+		{
+			mono_jit_cleanup(mDomain);
+			mDomain = nullptr;
+		}
 	}
 
-	void ScriptAssembly::load(MonoAssembly* assembly)
+	void ScriptAssembly::load(const CM::String& path, const CM::String& name)
 	{
-		mMonoAssembly = assembly;
+		if(mDomain == nullptr)
+		{
+			mDomain = mono_jit_init (path.c_str());
+			if(mDomain == nullptr)
+			{
+				CM_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
+			}
+		}
+
+		MonoAssembly* monoAssembly = mono_domain_assembly_open (mDomain, path.c_str());
+		if(monoAssembly == nullptr)
+		{
+			CM_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);
+		}
+
+		mName = name;
+		mMonoAssembly = monoAssembly;
 		mMonoImage = mono_assembly_get_image(mMonoAssembly);
 		if(mMonoImage == nullptr)
 		{
@@ -53,7 +76,15 @@ namespace BansheeEngine
 
 	void ScriptAssembly::unload()
 	{
-		if(mMonoImage)
+		if(!mIsLoaded)
+			return;
+
+		for(auto& entry : mClasses)
+			cm_delete(entry.second);
+
+		mClasses.clear();
+
+		if(mMonoImage != nullptr)
 		{
 			mono_image_close(mMonoImage);
 			mMonoImage = nullptr;
@@ -61,6 +92,15 @@ namespace BansheeEngine
 
 		mIsLoaded = false;
 		mMonoAssembly = nullptr;
+	}
+
+	void ScriptAssembly::initialize(const CM::String& entryPoint)
+	{
+		MonoMethodDesc* methodDesc = mono_method_desc_new(entryPoint.c_str(), false);
+		MonoMethod* entry = mono_method_desc_search_in_image(methodDesc, mMonoImage);
+
+		if(entry != nullptr)
+			mono_runtime_invoke(entry, nullptr, nullptr, nullptr);
 	}
 
 	ScriptClass& ScriptAssembly::getClass(const String& namespaceName, const String& name)
@@ -80,8 +120,8 @@ namespace BansheeEngine
 			CM_EXCEPT(InvalidParametersException, "Cannot get Mono class: " + namespaceName + "." + name);
 		}
 
-		String fullClassName = namespaceName + "::" + name;
-		ScriptClass* newClass = new (cm_alloc<ScriptClass>()) ScriptClass(fullClassName, monoClass);
+		String fullClassName = namespaceName + "." + name;
+		ScriptClass* newClass = new (cm_alloc<ScriptClass>()) ScriptClass(fullClassName, monoClass, this);
 		mClasses[classId] = newClass;
 
 		return *newClass;
