@@ -45,8 +45,14 @@
     <Compile Include="BuiltinResources.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Font.cs" />
+    <Compile Include="GUI.cs" />
+    <Compile Include="GUIArea.cs" />
+    <Compile Include="GUIBase.cs" />
     <Compile Include="GUIElementStateStyle.cs" />
     <Compile Include="GUIElementStyle.cs" />
+    <Compile Include="GUILayout.cs" />
+    <Compile Include="GUILayoutX.cs" />
+    <Compile Include="GUILayoutY.cs" />
     <Compile Include="GUIWidget.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Matrix3.cs" />

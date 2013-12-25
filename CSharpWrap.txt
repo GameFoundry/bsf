@@ -146,10 +146,6 @@ Should I make sprite texture a resource?
 
  Consider moving all script stuff in a separate static lib?
 
-IMMEDIATE: 
- - Fix the macros.
- - Move them to a separate file.
-
 IGNORE RESOURCES FOR NOW. When building the GUI make sure that they all temporarily use the native skin
 
 
