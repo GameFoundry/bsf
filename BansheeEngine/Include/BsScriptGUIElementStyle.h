@@ -3,6 +3,10 @@
 #include "BsPrerequisites.h"
 #include "BsScriptObject.h"
 #include "BsGUIElementStyle.h"
+#include "BsScriptMacros.h"
+#include "BsScriptClass.h"
+#include "BsScriptGUIElementStateStyle.h"
+#include "BsScriptFont.h"
 
 namespace BansheeEngine
 {
@@ -26,86 +30,73 @@ namespace BansheeEngine
 		static void internal_createInstanceExternal(MonoObject* instance, MonoString* name, GUIElementStyle* externalStyle);
 		static void internal_destroyInstance(ScriptGUIElementStyle* nativeInstance);
 
-		static void initRuntimeData();
+		static void initRuntimeData()
+		{
+			metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStyle::internal_createInstance);
+			metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIElementStyle::internal_destroyInstance);
 
-		static void internal_GetFont(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetFont(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Font);
 
-		static void internal_GetFontSize(ScriptGUIElementStyle* nativeInstance, CM::UINT32* value);
-		static void internal_SetFontSize(ScriptGUIElementStyle* nativeInstance, CM::UINT32 value);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FontSize);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, TextHorzAlign);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, TextVertAlign);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, ImagePosition);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, WordWrap);
 
-		static void internal_GetTextHorzAlign(ScriptGUIElementStyle* nativeInstance, TextHorzAlign* value);
-		static void internal_SetTextHorzAlign(ScriptGUIElementStyle* nativeInstance, TextHorzAlign value);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Normal);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Hover);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Active);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Focused);
 
-		static void internal_GetTextVertAlign(ScriptGUIElementStyle* nativeInstance, TextVertAlign* value);
-		static void internal_SetTextVertAlign(ScriptGUIElementStyle* nativeInstance, TextVertAlign value);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, NormalOn);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, HoverOn);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, ActiveOn);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FocusedOn);
 
-		static void internal_GetImagePosition(ScriptGUIElementStyle* nativeInstance, GUIImagePosition* value);
-		static void internal_SetImagePosition(ScriptGUIElementStyle* nativeInstance, GUIImagePosition value);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Border);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Margins);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, ContentOffset);
 
-		static void internal_GetWordWrap(ScriptGUIElementStyle* nativeInstance, bool* value);
-		static void internal_SetWordWrap(ScriptGUIElementStyle* nativeInstance, bool value);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Width);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Height);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MinWidth);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MaxWidth);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MinHeight);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MaxHeight);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FixedWidth);
+			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FixedHeight);
+		}
 
+		CM_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStyle, ScriptFont, Font, mElementStyle->font, mFont);
 
-		static void internal_GetNormal(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetNormal(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, FontSize, mElementStyle->fontSize);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, TextHorzAlign, TextHorzAlign, mElementStyle->textHorzAlign);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, TextVertAlign, TextVertAlign, mElementStyle->textVertAlign);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, GUIImagePosition, ImagePosition, mElementStyle->imagePosition);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, bool, WordWrap, mElementStyle->wordWrap);
 
-		static void internal_GetHover(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetHover(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, Normal, mElementStyle->normal, mNormal);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, Hover, mElementStyle->hover, mHover);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, Active, mElementStyle->active, mActive);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, Focused, mElementStyle->focused, mFocused);
 
-		static void internal_GetActive(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetActive(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, NormalOn, mElementStyle->normalOn, mNormalOn);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, HoverOn, mElementStyle->hoverOn, mHoverOn);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, ActiveOn, mElementStyle->activeOn, mActiveOn);
+		CM_SCRIPT_GETSET_OBJECT(ScriptGUIElementStyle, ScriptGUIElementStateStyle, FocusedOn, mElementStyle->focusedOn, mFocusedOn);
 
-		static void internal_GetFocused(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetFocused(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
+		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStyle, RectOffset, Border, mElementStyle->border);
+		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStyle, RectOffset, Margins, mElementStyle->margins);
+		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStyle, RectOffset, ContentOffset, mElementStyle->contentOffset);
 
-
-		static void internal_GetNormalOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetNormalOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
-
-		static void internal_GetHoverOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetHoverOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
-
-		static void internal_GetActiveOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetActiveOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
-
-		static void internal_GetFocusedOn(ScriptGUIElementStyle* nativeInstance, MonoObject** value);
-		static void internal_SetFocusedOn(ScriptGUIElementStyle* nativeInstance, MonoObject* value);
-
-
-		static void internal_GetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-		static void internal_SetBorder(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-
-		static void internal_GetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-		static void internal_SetMargins(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-
-		static void internal_GetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-		static void internal_SetContentOffset(ScriptGUIElementStyle* nativeInstance, RectOffset* value);
-
-
-		static void internal_GetWidth(ScriptGUIElementStyle* nativeInstance, CM::UINT32* value);
-		static void internal_SetWidth(ScriptGUIElementStyle* nativeInstance, CM::UINT32 value);
-
-		static void internal_GetHeight(ScriptGUIElementStyle* nativeInstance, CM::UINT32* value);
-		static void internal_SetHeight(ScriptGUIElementStyle* nativeInstance, CM::UINT32 value);
-
-		static void internal_GetMinWidth(ScriptGUIElementStyle* nativeInstance, CM::UINT32* value);
-		static void internal_SetMinWidth(ScriptGUIElementStyle* nativeInstance, CM::UINT32 value);
-
-		static void internal_GetMaxWidth(ScriptGUIElementStyle* nativeInstance, CM::UINT32* value);
-		static void internal_SetMaxWidth(ScriptGUIElementStyle* nativeInstance, CM::UINT32 value);
-
-		static void internal_GetMinHeight(ScriptGUIElementStyle* nativeInstance, CM::UINT32* value);
-		static void internal_SetMinHeight(ScriptGUIElementStyle* nativeInstance, CM::UINT32 value);
-
-		static void internal_GetMaxHeight(ScriptGUIElementStyle* nativeInstance, CM::UINT32* value);
-		static void internal_SetMaxHeight(ScriptGUIElementStyle* nativeInstance, CM::UINT32 value);
-
-		static void internal_GetFixedWidth(ScriptGUIElementStyle* nativeInstance, bool* value);
-		static void internal_SetFixedWidth(ScriptGUIElementStyle* nativeInstance, bool value);
-
-		static void internal_GetFixedHeight(ScriptGUIElementStyle* nativeInstance, bool* value);
-		static void internal_SetFixedHeight(ScriptGUIElementStyle* nativeInstance, bool value);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, Width, mElementStyle->width);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, Height, mElementStyle->height);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MinWidth, mElementStyle->minWidth);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MaxWidth, mElementStyle->maxWidth);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MinHeight, mElementStyle->minHeight);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MaxHeight, mElementStyle->maxHeight);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, bool, FixedWidth, mElementStyle->fixedWidth);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, bool, FixedHeight, mElementStyle->fixedHeight);
 
 		ScriptGUIElementStyle(const CM::String& name);
 		ScriptGUIElementStyle(const CM::String& name, GUIElementStyle* externalStyle);
@@ -115,13 +106,13 @@ namespace BansheeEngine
 		bool mOwnsStyle;
 
 		ScriptFont* mFont;
-		ScriptGUIElementStyle* mNormal;
-		ScriptGUIElementStyle* mHover;
-		ScriptGUIElementStyle* mActive;
-		ScriptGUIElementStyle* mFocused;
-		ScriptGUIElementStyle* mNormalOn;
-		ScriptGUIElementStyle* mHoverOn;
-		ScriptGUIElementStyle* mActiveOn;
-		ScriptGUIElementStyle* mFocusedOn;
+		ScriptGUIElementStateStyle* mNormal;
+		ScriptGUIElementStateStyle* mHover;
+		ScriptGUIElementStateStyle* mActive;
+		ScriptGUIElementStateStyle* mFocused;
+		ScriptGUIElementStateStyle* mNormalOn;
+		ScriptGUIElementStateStyle* mHoverOn;
+		ScriptGUIElementStateStyle* mActiveOn;
+		ScriptGUIElementStateStyle* mFocusedOn;
 	};
 }

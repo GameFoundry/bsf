@@ -36,18 +36,6 @@ namespace BansheeEngine
 		ScriptManager::registerScriptType(&metaData);
 	}
 
-	void ScriptGUIElementStateStyle::initRuntimeData()
-	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStateStyle::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIElementStateStyle::internal_destroyInstance);
-
-		metaData.scriptClass->addInternalCall("Internal_GetTexture", &ScriptGUIElementStateStyle::internal_GetTexture);
-		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptGUIElementStateStyle::internal_SetTexture);
-
-		metaData.scriptClass->addInternalCall("Internal_GetTextColor", &ScriptGUIElementStateStyle::internal_GetTextColor);
-		metaData.scriptClass->addInternalCall("Internal_SetTextColor", &ScriptGUIElementStateStyle::internal_SetTextColor);
-	}
-
 	void ScriptGUIElementStateStyle::internal_createInstance(MonoObject* instance)
 	{
 		ScriptGUIElementStateStyle* nativeInstance = new (cm_alloc<ScriptGUIElementStateStyle>()) ScriptGUIElementStateStyle();
@@ -68,34 +56,5 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
-	}
-
-	void ScriptGUIElementStateStyle::internal_GetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject** value)
-	{
-		throwIfInstancesDontMatch(nativeInstance->mSpriteTexture, nativeInstance->mElementStateStyle->texture.get());
-
-		if(nativeInstance->mSpriteTexture != nullptr)
-		{
-			*value = nativeInstance->mSpriteTexture->getManagedInstance();
-			return;
-		}
-
-		*value = nullptr;
-	}
-
-	void ScriptGUIElementStateStyle::internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject* value)
-	{
-		ScriptSpriteTexture* nativeValue = ScriptSpriteTexture::toNative(value);
-		nativeInstance->mElementStateStyle->texture = nativeValue->getInternalTexture();
-	}
-
-	void ScriptGUIElementStateStyle::internal_GetTextColor(ScriptGUIElementStateStyle* nativeInstance, Color* value)
-	{
-		*value = nativeInstance->mElementStateStyle->textColor;
-	}
-
-	void ScriptGUIElementStateStyle::internal_SetTextColor(ScriptGUIElementStateStyle* nativeInstance, Color* value)
-	{
-		nativeInstance->mElementStateStyle->textColor = *value;
 	}
 }

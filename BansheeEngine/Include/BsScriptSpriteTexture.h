@@ -10,7 +10,7 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
-		const SpriteTexturePtr& getInternalTexture() const { return mTexture; }
+		const SpriteTexturePtr& getInternalValue() const { return mTexture; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance);

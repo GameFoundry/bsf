@@ -11,8 +11,8 @@ namespace BansheeEngine
             Color newColor = Color.red;
 
             dbgStyle.textColor = newColor;
-            Color myColor = dbgStyle.textColor;
-            dbgStyle.textColor = myColor;
+            //Color myColor = dbgStyle.textColor;
+            //dbgStyle.textColor = myColor;
         }
     }
 }
