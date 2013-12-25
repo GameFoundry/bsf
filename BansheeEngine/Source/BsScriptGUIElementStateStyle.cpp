@@ -70,28 +70,28 @@ namespace BansheeEngine
 		cm_delete(nativeInstance);
 	}
 
-	void ScriptGUIElementStateStyle::internal_GetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject* value)
+	void ScriptGUIElementStateStyle::internal_GetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject** value)
 	{
 		throwIfInstancesDontMatch(nativeInstance->mSpriteTexture, nativeInstance->mElementStateStyle->texture.get());
 
 		if(nativeInstance->mSpriteTexture != nullptr)
 		{
-			value = nativeInstance->mSpriteTexture->getManagedInstance();
+			*value = nativeInstance->mSpriteTexture->getManagedInstance();
 			return;
 		}
 
-		value = nullptr;
+		*value = nullptr;
 	}
 
-	void ScriptGUIElementStateStyle::internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, ScriptSpriteTexture* value)
+	void ScriptGUIElementStateStyle::internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject* value)
 	{
-		nativeInstance->mElementStateStyle->texture = value->getInternalTexture();
+		ScriptSpriteTexture* nativeValue = ScriptSpriteTexture::toNative(value);
+		nativeInstance->mElementStateStyle->texture = nativeValue->getInternalTexture();
 	}
-
 
 	void ScriptGUIElementStateStyle::internal_GetTextColor(ScriptGUIElementStateStyle* nativeInstance, Color* value)
 	{
-		value = &nativeInstance->mElementStateStyle->textColor;
+		*value = nativeInstance->mElementStateStyle->textColor;
 	}
 
 	void ScriptGUIElementStateStyle::internal_SetTextColor(ScriptGUIElementStateStyle* nativeInstance, Color* value)

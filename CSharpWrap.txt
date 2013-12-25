@@ -138,16 +138,20 @@ When loading resources I need to be able to load both project resources and engi
  - BuiltinResources can be used for accessing default resources like GUI skin textures and similar
  - They're all loaded from a special folder that is set in EditorApplication
 
-
-IMMEDIATE TODO:
- - Finish up ScriptGUIElementstyle.cpp
- - Add ScriptGUIElementStateStyle
-
 Should I make sprite texture a resource?
  - Quite probably, and will need to replace any Ptr references with handle references. I want the user
    to be able to reference the resource in multiple locations and then he can easily edit the SpriteTexture as needed.
 
  BsApplication::getPrimaryViewport is not implemented
+
+ Consider moving all script stuff in a separate static lib?
+
+IMMEDIATE: 
+ - Fix the macros.
+ - Move them to a separate file.
+
+IGNORE RESOURCES FOR NOW. When building the GUI make sure that they all temporarily use the native skin
+
 
 ----------------------------
 

@@ -12,7 +12,7 @@ namespace BansheeEngine
 		static void initMetaData();
 
 		virtual void* getNative() const;
-		const CM::HFont& getInternalFont() const { return mFont; }
+		const CM::HFont& getInternalValue() const { return mFont; }
 
 	private:
 		static void internal_createInstanceExternal(MonoObject* instance, const CM::HFont& font);

@@ -73,6 +73,8 @@ namespace BansheeEngine
 	class ScriptFont;
 	class ScriptSpriteTexture;
 	class ScriptTexture2D;
+	class ScriptGUIElementStyle;
+	class ScriptGUIElementStateStyle;
 
 	// 2D
 	class TextSprite;

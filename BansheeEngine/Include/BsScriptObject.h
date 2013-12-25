@@ -2,6 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsScriptMeta.h"
+#include "BsScriptField.h"
 #include "CmException.h"
 #include <mono/jit/jit.h>
 
@@ -43,6 +44,11 @@ namespace BansheeEngine
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 		virtual void* getNative() const { return nullptr; }
+
+		static Type* toNative(MonoObject* managedInstance)
+		{
+			return reinterpret_cast<Type*>(metaData.thisPtrField->getValue(managedInstance));
+		}
 
 	protected:
 		static ScriptMeta metaData;

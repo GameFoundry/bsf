@@ -291,6 +291,9 @@
     <ClInclude Include="Include\BsScriptGUIElementStateStyle.h">
       <Filter>Header Files\Script</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptMacros.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">

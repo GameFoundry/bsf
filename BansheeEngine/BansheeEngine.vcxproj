@@ -288,6 +288,7 @@
     <ClInclude Include="Include\BsScriptAssembly.h" />
     <ClInclude Include="Include\BsScriptClass.h" />
     <ClInclude Include="Include\BsScriptField.h" />
+    <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptManager.h" />
     <ClInclude Include="Include\BsScriptMethod.h" />
     <ClInclude Include="Include\BsScriptObject.h" />

@@ -32,63 +32,63 @@ namespace BansheeEngine
 
         public Font font
         {
-            get { return Internal_GetFont(mCachedPtr); }
+            get { Font value; Internal_GetFont(mCachedPtr, out value); return value; }
             set { Internal_SetFont(mCachedPtr, value); }
         }
 
         public int fontSize
         {
-            get { return Internal_GetFontSize(mCachedPtr); }
+            get { int value; Internal_GetFontSize(mCachedPtr, out value); return value; }
             set { Internal_SetFontSize(mCachedPtr, value); }
         }
 
 
         public TextHorzAlign textHorzAlign
         {
-            get { return Internal_GetTextHorzAlign(mCachedPtr); }
+            get { TextHorzAlign value; Internal_GetTextHorzAlign(mCachedPtr, out value); return value; }
             set { Internal_SetTextHorzAlign(mCachedPtr, value); }
         }
 
         public TextVertAlign textVertAlign
         {
-            get { return Internal_GetTextVertAlign(mCachedPtr); }
+            get { TextVertAlign value; Internal_GetTextVertAlign(mCachedPtr, out value); return value; }
             set { Internal_SetTextVertAlign(mCachedPtr, value); }
         }
 
         public GUIImagePosition imagePosition
         {
-            get { return Internal_GetImagePosition(mCachedPtr); }
+            get { GUIImagePosition value; Internal_GetImagePosition(mCachedPtr, out value); return value; }
             set { Internal_SetImagePosition(mCachedPtr, value); }
         }
 
         public bool wordWrap
         {
-            get { return Internal_GetWordWrap(mCachedPtr); }
+            get { bool value; Internal_GetWordWrap(mCachedPtr, out value); return value; }
             set { Internal_SetWordWrap(mCachedPtr, value); }
         }
 
 
         public GUIElementStateStyle normal
         {
-            get { return Internal_GetNormal(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetNormal(mCachedPtr, out value); return value; }
             set { Internal_SetNormal(mCachedPtr, value); }
         }
 
         public GUIElementStateStyle hover
         {
-            get { return Internal_GetHover(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetHover(mCachedPtr, out value); return value; }
             set { Internal_SetHover(mCachedPtr, value); }
         }
 
         public GUIElementStateStyle active
         {
-            get { return Internal_GetActive(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetActive(mCachedPtr, out value); return value; }
             set { Internal_SetActive(mCachedPtr, value); }
         }
 
         public GUIElementStateStyle focused
         {
-            get { return Internal_GetFocused(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetFocused(mCachedPtr, out value); return value; }
             set { Internal_SetFocused(mCachedPtr, value); }
         }
 
@@ -96,93 +96,93 @@ namespace BansheeEngine
 		// For controls that can be turned on-off
         public GUIElementStateStyle normalOn
         {
-            get { return Internal_GetNormalOn(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetNormalOn(mCachedPtr, out value); return value; }
             set { Internal_SetNormalOn(mCachedPtr, value); }
         }
 
         public GUIElementStateStyle hoverOn
         {
-            get { return Internal_GetHoverOn(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetHoverOn(mCachedPtr, out value); return value; }
             set { Internal_SetHoverOn(mCachedPtr, value); }
         }
 
         public GUIElementStateStyle activeOn
         {
-            get { return Internal_GetActiveOn(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetActiveOn(mCachedPtr, out value); return value; }
             set { Internal_SetActiveOn(mCachedPtr, value); }
         }
 
         public GUIElementStateStyle focusedOn
         {
-            get { return Internal_GetFocusedOn(mCachedPtr); }
+            get { GUIElementStateStyle value; Internal_GetFocusedOn(mCachedPtr, out value); return value; }
             set { Internal_SetFocusedOn(mCachedPtr, value); }
         }
 
 
         public RectOffset border // Determines how the element is scaled (using the typical Scale9Grid approach)
         {
-            get { return Internal_GetBorder(mCachedPtr); }
-            set { Internal_SetBorder(mCachedPtr, value); }
+            get { RectOffset value; Internal_GetBorder(mCachedPtr, out value); return value; }
+            set { Internal_SetBorder(mCachedPtr, ref value); }
         }
 
         public RectOffset margins // Determines offset from the background graphics to the content. Input uses bounds offset by this value.
         {
-            get { return Internal_GetMargins(mCachedPtr); }
-            set { Internal_SetMargins(mCachedPtr, value); }
+            get { RectOffset value; Internal_GetMargins(mCachedPtr, out value); return value; }
+            set { Internal_SetMargins(mCachedPtr, ref value); }
         }
 
         public RectOffset contentOffset // Additional offset to the content, that doesn't effect the bounds. Applied on top of the margins offsets.
         {
-            get { return Internal_GetContentOffset(mCachedPtr); }
-            set { Internal_SetContentOffset(mCachedPtr, value); }
+            get { RectOffset value; Internal_GetContentOffset(mCachedPtr, out value); return value; }
+            set { Internal_SetContentOffset(mCachedPtr, ref value); }
         }
 
 
         public int width
         {
-            get { return Internal_GetWidth(mCachedPtr); }
+            get { int value; Internal_GetWidth(mCachedPtr, out value); return value; }
             set { Internal_SetWidth(mCachedPtr, value); }
         }
 
         public int height
         {
-            get { return Internal_GetHeight(mCachedPtr); }
+            get { int value; Internal_GetHeight(mCachedPtr, out value); return value; }
             set { Internal_SetHeight(mCachedPtr, value); }
         }
 
         public int minWidth
         {
-            get { return Internal_GetMinWidth(mCachedPtr); }
+            get { int value; Internal_GetMinWidth(mCachedPtr, out value); return value; }
             set { Internal_SetMinWidth(mCachedPtr, value); }
         }
         
         public int maxWidth
         {
-            get { return Internal_GetMaxWidth(mCachedPtr); }
+            get { int value; Internal_GetMaxWidth(mCachedPtr, out value); return value; }
             set { Internal_SetMaxWidth(mCachedPtr, value); }
         }
 
         public int minHeight
         {
-            get { return Internal_GetMinHeight(mCachedPtr); }
+            get { int value; Internal_GetMinHeight(mCachedPtr, out value); return value; }
             set { Internal_SetMinHeight(mCachedPtr, value); }
         }
 
         public int maxHeight
         {
-            get { return Internal_GetMaxHeight(mCachedPtr); }
+            get { int value; Internal_GetMaxHeight(mCachedPtr, out value); return value; }
             set { Internal_SetMaxHeight(mCachedPtr, value); }
         }
 
         public bool fixedWidth
         {
-            get { return Internal_GetFixedWidth(mCachedPtr); }
+            get { bool value; Internal_GetFixedWidth(mCachedPtr, out value); return value; }
             set { Internal_SetFixedWidth(mCachedPtr, value); }
         }
 
         public bool fixedHeight
         {
-            get { return Internal_GetFixedHeight(mCachedPtr); }
+            get { bool value; Internal_GetFixedHeight(mCachedPtr, out value); return value; }
             set { Internal_SetFixedHeight(mCachedPtr, value); }
         }
 
@@ -190,131 +190,131 @@ namespace BansheeEngine
         private static extern void Internal_CreateInstance(GUIElementStyle instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern Font Internal_GetFont(IntPtr nativeInstance);
+        private static extern void Internal_GetFont(IntPtr nativeInstance, out Font value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFont(IntPtr nativeInstance, Font value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern int Internal_GetFontSize(IntPtr nativeInstance);
+        private static extern void Internal_GetFontSize(IntPtr nativeInstance, out int value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFontSize(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern TextHorzAlign Internal_GetTextHorzAlign(IntPtr nativeInstance);
+        private static extern void Internal_GetTextHorzAlign(IntPtr nativeInstance, out TextHorzAlign value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetTextHorzAlign(IntPtr nativeInstance, TextHorzAlign value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern TextVertAlign Internal_GetTextVertAlign(IntPtr nativeInstance);
+        private static extern void Internal_GetTextVertAlign(IntPtr nativeInstance, out TextVertAlign value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetTextVertAlign(IntPtr nativeInstance, TextVertAlign value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIImagePosition Internal_GetImagePosition(IntPtr nativeInstance);
+        private static extern void Internal_GetImagePosition(IntPtr nativeInstance, out GUIImagePosition value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetImagePosition(IntPtr nativeInstance, GUIImagePosition value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern bool Internal_GetWordWrap(IntPtr nativeInstance);
+        private static extern void Internal_GetWordWrap(IntPtr nativeInstance, out bool value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetWordWrap(IntPtr nativeInstance, bool value);
 
 
-        [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetNormal(IntPtr nativeInstance);
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_GetNormal(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetNormal(IntPtr nativeInstance, GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetHover(IntPtr nativeInstance);
+        private static extern void Internal_GetHover(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetHover(IntPtr nativeInstance, GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetActive(IntPtr nativeInstance);
+        private static extern void Internal_GetActive(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetActive(IntPtr nativeInstance, GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetFocused(IntPtr nativeInstance);
+        private static extern void Internal_GetFocused(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFocused(IntPtr nativeInstance, GUIElementStateStyle value);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetNormalOn(IntPtr nativeInstance);
+        private static extern void Internal_GetNormalOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetNormalOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetHoverOn(IntPtr nativeInstance);
+        private static extern void Internal_GetHoverOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetHoverOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetActiveOn(IntPtr nativeInstance);
+        private static extern void Internal_GetActiveOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetActiveOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern GUIElementStateStyle Internal_GetFocusedOn(IntPtr nativeInstance);
+        private static extern void Internal_GetFocusedOn(IntPtr nativeInstance, out GUIElementStateStyle value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFocusedOn(IntPtr nativeInstance, GUIElementStateStyle value);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern RectOffset Internal_GetBorder(IntPtr nativeInstance);
+        private static extern void Internal_GetBorder(IntPtr nativeInstance, out RectOffset value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetBorder(IntPtr nativeInstance, RectOffset value);
+        private static extern void Internal_SetBorder(IntPtr nativeInstance, ref RectOffset value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern RectOffset Internal_GetMargins(IntPtr nativeInstance);
+        private static extern void Internal_GetMargins(IntPtr nativeInstance, out RectOffset value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetMargins(IntPtr nativeInstance, RectOffset value);
+        private static extern void Internal_SetMargins(IntPtr nativeInstance, ref RectOffset value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern RectOffset Internal_GetContentOffset(IntPtr nativeInstance);
+        private static extern void Internal_GetContentOffset(IntPtr nativeInstance, out RectOffset value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern void Internal_SetContentOffset(IntPtr nativeInstance, RectOffset value);
+        private static extern void Internal_SetContentOffset(IntPtr nativeInstance, ref RectOffset value);
 
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern int Internal_GetWidth(IntPtr nativeInstance);
+        private static extern void Internal_GetWidth(IntPtr nativeInstance, out int value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetWidth(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern int Internal_GetHeight(IntPtr nativeInstance);
+        private static extern void Internal_GetHeight(IntPtr nativeInstance, out int value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetHeight(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern int Internal_GetMinWidth(IntPtr nativeInstance);
+        private static extern void Internal_GetMinWidth(IntPtr nativeInstance, out int value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetMinWidth(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern int Internal_GetMaxWidth(IntPtr nativeInstance);
+        private static extern void Internal_GetMaxWidth(IntPtr nativeInstance, out int value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetMaxWidth(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern int Internal_GetMinHeight(IntPtr nativeInstance);
+        private static extern void Internal_GetMinHeight(IntPtr nativeInstance, out int value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetMinHeight(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern int Internal_GetMaxHeight(IntPtr nativeInstance);
+        private static extern void Internal_GetMaxHeight(IntPtr nativeInstance, out int value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetMaxHeight(IntPtr nativeInstance, int value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern bool Internal_GetFixedWidth(IntPtr nativeInstance);
+        private static extern void Internal_GetFixedWidth(IntPtr nativeInstance, out bool value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFixedWidth(IntPtr nativeInstance, bool value);
 
         [MethodImpl(MethodImplOptions.InternalCall)] 
-        private static extern bool Internal_GetFixedHeight(IntPtr nativeInstance);
+        private static extern void Internal_GetFixedHeight(IntPtr nativeInstance, out bool value);
         [MethodImpl(MethodImplOptions.InternalCall)] 
         private static extern void Internal_SetFixedHeight(IntPtr nativeInstance, bool value);
     }

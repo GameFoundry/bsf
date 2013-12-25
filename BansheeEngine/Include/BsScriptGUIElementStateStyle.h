@@ -12,6 +12,7 @@ namespace BansheeEngine
 		~ScriptGUIElementStateStyle();
 
 		static void initMetaData();
+		GUIElementStyle::GUIElementStateStyle* getInternalValue() const { return mElementStateStyle; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance);
@@ -20,8 +21,8 @@ namespace BansheeEngine
 
 		static void initRuntimeData();
 
-		static void internal_GetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject* value);
-		static void internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, ScriptSpriteTexture* value);
+		static void internal_GetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject** value);
+		static void internal_SetTexture(ScriptGUIElementStateStyle* nativeInstance, MonoObject* value);
 
 		static void internal_GetTextColor(ScriptGUIElementStateStyle* nativeInstance, CM::Color* value);
 		static void internal_SetTextColor(ScriptGUIElementStateStyle* nativeInstance, CM::Color* value);

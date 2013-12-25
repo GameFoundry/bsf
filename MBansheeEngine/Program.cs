@@ -8,9 +8,11 @@ namespace BansheeEngine
         static void Main()
         {
             GUIElementStateStyle dbgStyle = new GUIElementStateStyle();
-            //Color newColor = Color.red;
+            Color newColor = Color.red;
 
-            //dbgStyle.textColor = newColor;
+            dbgStyle.textColor = newColor;
+            Color myColor = dbgStyle.textColor;
+            dbgStyle.textColor = myColor;
         }
     }
 }
