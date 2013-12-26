@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
+
     public class GUIBase : ScriptObject
     {
         private GUIArea mainArea;
@@ -13,22 +14,34 @@ namespace BansheeEngine
             get { return _mainLayout; }
         }
 
+        public GUISkin skin; // TODO
+
         internal GUIBase()
         {
             Internal_CreateInstance(this);
 
-            mainArea = AddResizableArea(0, 0, 0, 0, GUIArea.ResizeAxis.XY);
+            mainArea = AddResizableAreaXY(0, 0, 0, 0);
             _mainLayout = mainArea.layout;
         }
 
         public GUIArea AddArea(int x, int y, int width = 0, int height = 0, short depth = 0)
         {
-            return new GUIArea(this, x, y, width, height, depth);
+            return GUIArea.Create(this, x, y, width, height, depth);
         }
 
-        public GUIArea AddResizableArea(int offsetLeft, int offsetRight, int offsetTop, int offsetBottom, GUIArea.ResizeAxis resizeAxis, short depth = 0)
+        public GUIArea AddResizableAreaX(int offsetLeft, int offsetRight, int offsetTop, int height, short depth = 0)
         {
-            return new GUIArea(this, offsetLeft, offsetRight, offsetTop, offsetBottom, resizeAxis, depth);
+            return GUIArea.CreateResizableX(this, offsetLeft, offsetRight, offsetTop, height, depth);
+        }
+
+        public GUIArea AddResizableAreaY(int offsetTop, int offsetBottom, int offsetLeft, int width, short depth = 0)
+        {
+            return GUIArea.CreateResizableY(this, offsetTop, offsetBottom, offsetLeft, width, depth);
+        }
+
+        public GUIArea AddResizableAreaXY(int offsetLeft, int offsetRight, int offsetTop, int offsetBottom, short depth = 0)
+        {
+            return GUIArea.CreateResizableXY(this, offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -13,7 +13,7 @@ namespace BansheeEngine
 		 * @brief	Sets up a new GUI area. All the layouts used in the area will be placed
 		 * 			within the specified bounds.
 		 */
-		static GUIArea* create(GUIWidget& widget, CM::UINT32 x, CM::UINT32 y, CM::UINT32 width = 0, CM::UINT32 height = 0, CM::UINT16 depth = 0);
+		static GUIArea* create(GUIWidget& widget, CM::INT32 x, CM::INT32 y, CM::UINT32 width = 0, CM::UINT32 height = 0, CM::UINT16 depth = 0);
 
 		/**
 		 * @brief	Sets up a new GUI area. All the layouts used in the area will be placed
@@ -80,7 +80,7 @@ namespace BansheeEngine
 
 		GUILayout* mLayout;
 
-		GUIArea(GUIWidget* widget, CM::UINT32 x, CM::UINT32 y, CM::UINT16 depth);
+		GUIArea(GUIWidget* widget, CM::INT32 x, CM::INT32 y, CM::UINT16 depth);
 
 		bool isDirty() const;
 		void updateSizeBasedOnParent(CM::UINT32 parentWidth, CM::UINT32 parentHeight);

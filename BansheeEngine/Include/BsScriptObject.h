@@ -43,7 +43,7 @@ namespace BansheeEngine
 		}
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
-		virtual void* getNative() const { return nullptr; }
+		virtual void* getNativeRaw() const { return nullptr; }
 
 		static Type* toNative(MonoObject* managedInstance)
 		{
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		static void throwIfInstancesDontMatch(ScriptObject<Type2>* lhs, void* rhs)
 		{
 #if CM_DEBUG_MODE
-			if((lhs == nullptr && rhs != nullptr) || (rhs == nullptr && lhs != nullptr) || lhs->getNative() != rhs)
+			if((lhs == nullptr && rhs != nullptr) || (rhs == nullptr && lhs != nullptr) || lhs->getNativeRaw() != rhs)
 			{
 				CM_EXCEPT(InvalidStateException, "Native and script instance do not match. This usually happens when you modify a native object " \
 					" that is also being referenced from script code. You should only modify such objects directly from script code.");

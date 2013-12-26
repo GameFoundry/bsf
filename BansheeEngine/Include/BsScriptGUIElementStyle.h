@@ -24,6 +24,7 @@ namespace BansheeEngine
 		~ScriptGUIElementStyle();
 
 		static void initMetaData();
+		GUIElementStyle* getInternalValue() const { return mElementStyle; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* name);

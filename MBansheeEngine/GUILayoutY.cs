@@ -5,12 +5,11 @@ namespace BansheeEngine
 {
     public sealed class GUILayoutY : GUILayout
     {
-        internal GUILayoutY()
-        {
-            Internal_CreateInstance(this);
-        }
+        internal GUILayoutY() { }
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUILayoutY instance);
+        internal GUILayoutY(GUILayout parentLayout)
+        {
+            Internal_CreateInstanceYFromLayout(this, parentLayout);
+        }
     }
 }

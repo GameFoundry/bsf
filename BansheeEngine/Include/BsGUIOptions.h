@@ -34,6 +34,8 @@ namespace BansheeEngine
 	class BS_EXPORT GUIOptions
 	{
 	public:
+		GUIOptions() { }
+
 		// Constructor that accepts an arbitrary number of parameters > 0
 #define MAKE_GUIOPTION_CONSTRUCTOR(z, n, unused)											\
 	GUIOptions(BOOST_PP_ENUM_PARAMS(n, const GUIOption& e) )	\
@@ -49,6 +51,11 @@ namespace BansheeEngine
 
 #undef ADD_OPTION
 #undef MAKE_GUIOPTION_CONSTRUCTOR
+
+		void addOption(const GUIOption& option)
+		{
+			mOptions.push_back(option);
+		}
 
 	private:
 		friend struct GUILayoutOptions;

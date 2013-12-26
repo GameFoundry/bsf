@@ -22,7 +22,7 @@ namespace BansheeEngine
 		ScriptManager::registerScriptType(&metaData);
 	}
 
-	void* ScriptFont::getNative() const
+	void* ScriptFont::getNativeRaw() const
 	{
 		return (void*)mFont.get();
 	}

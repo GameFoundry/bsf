@@ -9,7 +9,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIArea::GUIArea(GUIWidget* widget, UINT32 x, UINT32 y, UINT16 depth)
+	GUIArea::GUIArea(GUIWidget* widget, INT32 x, INT32 y, UINT16 depth)
 		:mWidget(widget), mLeft(x), mTop(y), mDepth(depth), mIsDirty(true), mIsDisabled(false),
 		mResizeXWithWidget(false), mResizeYWithWidget(false), mWidth(0), mHeight(0), mRight(0), mBottom(0)
 	{
@@ -23,7 +23,7 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mLayout);
 	}
 
-	GUIArea* GUIArea::create(GUIWidget& widget, UINT32 x, UINT32 y, UINT32 width, UINT32 height, UINT16 depth)
+	GUIArea* GUIArea::create(GUIWidget& widget, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
 	{
 		GUIArea* area = new (cm_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, x, y, depth);
 		area->mWidth = width;

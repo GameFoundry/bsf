@@ -294,6 +294,21 @@
     <ClInclude Include="Include\BsScriptMacros.h">
       <Filter>Header Files\Script</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptGUILabel.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptUtil.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGUILayout.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIArea.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIBase.h">
+      <Filter>Header Files\Script</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -516,6 +531,18 @@
       <Filter>Source Files\Script</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIElementStateStyle.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUILabel.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUILayout.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIArea.cpp">
+      <Filter>Source Files\Script</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIBase.cpp">
       <Filter>Source Files\Script</Filter>
     </ClCompile>
   </ItemGroup>

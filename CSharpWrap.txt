@@ -134,6 +134,10 @@ GUIElementStyle
 GUISkin 
  - Has pointers to GUIElementStyles for button, label, etc. plus support for custom styles using GetStyle(name), SetStyle(name)
 
+Immediate:
+ - Implement ScriptGUIBase
+ - Delete: GUIWidget and ScriptGUIWidget
+
 When loading resources I need to be able to load both project resources and engine ones. 
  - BuiltinResources can be used for accessing default resources like GUI skin textures and similar
  - They're all loaded from a special folder that is set in EditorApplication
@@ -142,11 +146,18 @@ Should I make sprite texture a resource?
  - Quite probably, and will need to replace any Ptr references with handle references. I want the user
    to be able to reference the resource in multiple locations and then he can easily edit the SpriteTexture as needed.
 
+ScriptGUILabel currently accepts a WString, while it should be accepting a HString. Check BsScriptGUILabel
+
  BsApplication::getPrimaryViewport is not implemented
 
- Consider moving all script stuff in a separate static lib?
+Reconsider making scripts a static library
+ - The scripts would only have one external header that allows you to start the script engine and load assemblies
+ - So BansheeEngine script library would be dependant on BansheeEngine
+ - BansheeEditor script library would be dependant on BansheeEditor, BansheEngine and BansheeEngineScript
+ - Maybe even make them .dlls? Then BansheeEngine and bansheeeditor doesn't need to know about their includes
 
 IGNORE RESOURCES FOR NOW. When building the GUI make sure that they all temporarily use the native skin
+ - Later implement GUIBase.skin (and actually implement GUISkin because it's just a dummy for now)
 
 
 ----------------------------

@@ -11,7 +11,7 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
-		virtual void* getNative() const;
+		void* getNativeRaw() const;
 		const CM::HFont& getInternalValue() const { return mFont; }
 
 	private:

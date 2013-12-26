@@ -50,9 +50,12 @@
     <Compile Include="GUIBase.cs" />
     <Compile Include="GUIElementStateStyle.cs" />
     <Compile Include="GUIElementStyle.cs" />
+    <Compile Include="GUILabel.cs" />
     <Compile Include="GUILayout.cs" />
     <Compile Include="GUILayoutX.cs" />
     <Compile Include="GUILayoutY.cs" />
+    <Compile Include="GUIOption.cs" />
+    <Compile Include="GUISkin.cs" />
     <Compile Include="GUIWidget.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Matrix3.cs" />

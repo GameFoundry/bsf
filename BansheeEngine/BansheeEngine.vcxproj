@@ -229,8 +229,12 @@
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
     <ClInclude Include="Include\BsScriptFont.h" />
+    <ClInclude Include="Include\BsScriptGUIArea.h" />
+    <ClInclude Include="Include\BsScriptGUIBase.h" />
     <ClInclude Include="Include\BsScriptGUIElementStateStyle.h" />
     <ClInclude Include="Include\BsScriptGUIElementStyle.h" />
+    <ClInclude Include="Include\BsScriptGUILabel.h" />
+    <ClInclude Include="Include\BsScriptGUILayout.h" />
     <ClInclude Include="Include\BsScriptGUIWidget.h" />
     <ClInclude Include="Include\BsDrawHelper3D.h" />
     <ClInclude Include="Include\BsDrawHelperTemplate.h" />
@@ -295,6 +299,7 @@
     <ClInclude Include="Include\BsScriptProperty.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
+    <ClInclude Include="Include\BsScriptUtil.h" />
     <ClInclude Include="Include\BsSprite.h" />
     <ClInclude Include="Include\BsSpriteTexture.h" />
     <ClInclude Include="Include\BsTextSprite.h" />
@@ -362,8 +367,12 @@
     <ClCompile Include="Source\BsScriptComponent.cpp" />
     <ClCompile Include="Source\BsScriptField.cpp" />
     <ClCompile Include="Source\BsScriptFont.cpp" />
+    <ClCompile Include="Source\BsScriptGUIArea.cpp" />
+    <ClCompile Include="Source\BsScriptGUIBase.cpp" />
     <ClCompile Include="Source\BsScriptGUIElementStateStyle.cpp" />
     <ClCompile Include="Source\BsScriptGUIElementStyle.cpp" />
+    <ClCompile Include="Source\BsScriptGUILabel.cpp" />
+    <ClCompile Include="Source\BsScriptGUILayout.cpp" />
     <ClCompile Include="Source\BsScriptGUIWidget.cpp" />
     <ClCompile Include="Source\BsScriptManager.cpp" />
     <ClCompile Include="Source\BsScriptMethod.cpp" />

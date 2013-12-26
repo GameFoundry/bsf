@@ -3,14 +3,18 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public class GUILayoutX : GUILayout
+    public sealed class GUILayoutX : GUILayout
     {
-        internal GUILayoutX()
+        internal GUILayoutX() { }
+
+        internal GUILayoutX(GUIArea parentArea)
         {
-            Internal_CreateInstance(this);
+            Internal_CreateInstanceXFromArea(this, parentArea);
         }
 
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUILayoutX instance);
+        internal GUILayoutX(GUILayout parentLayout)
+        {
+            Internal_CreateInstanceXFromLayout(this, parentLayout);
+        }
     }
 }
