@@ -129,6 +129,8 @@ Low priority TODO
  - Texture "ScaleToFit" will cause the texture to repeat instead of clipping the image. e.g. a 50x20 texture placed on an 50x100 area will repeat 5x
  - When writing to mesh vertex buffer in Mesh::writeSubresource that requires a color flip I need to create a temporary copy of the 
     entire buffer. It would be better to handle this differently. Same thing happens in MeshHeap
+ - OpenGL also supports texture views using glTextureView but so far I only use them in DX11
+ - I don't have a way to set Texture filtering or wrap modes, default ones are always set on initialization
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic

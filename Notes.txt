@@ -59,6 +59,12 @@ Reminders:
      StreamMesh - constantly updated by CPU and read by GPU
      ReadMesh - written by GPU and easily read by CPU
 	  - OpenGL especially has no good way of reading or streaming data. It has special STREAM and COPY buffer types which I never use.
+  - (EXTREMELY LOW PRIORITY) Scripting: It might be good to make Mono classes more generic and move them to BansheeEngine. 
+      e.g. MonoClass -> ScriptClass, where ScriptClass is just an abstract interface. Then I don't expose any Mono stuff to actually script libraries like 
+	  SBansheeEngine. User could then fairly easily port the system to another scripting language just by implementing another ScriptSystem. 
+    - This would probably come with an overhead of at least one extra function call for each script call, which is currently unacceptable 
+	  considering that most people will definitely won't be writing new script systems.
+
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

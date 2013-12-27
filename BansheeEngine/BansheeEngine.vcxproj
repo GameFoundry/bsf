@@ -127,7 +127,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -141,7 +141,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -161,7 +161,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -181,7 +181,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\DebugRelease</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -201,7 +201,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -221,26 +221,16 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\lib\$(Platform)\$(Configuration);..\Dependencies\lib\x64\DebugRelease</AdditionalLibraryDirectories>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsApplication.h" />
-    <ClInclude Include="Include\BsScriptComponent.h" />
-    <ClInclude Include="Include\BsScriptFont.h" />
-    <ClInclude Include="Include\BsScriptGUIArea.h" />
-    <ClInclude Include="Include\BsScriptGUIBase.h" />
-    <ClInclude Include="Include\BsScriptGUIElementStateStyle.h" />
-    <ClInclude Include="Include\BsScriptGUIElementStyle.h" />
-    <ClInclude Include="Include\BsScriptGUILabel.h" />
-    <ClInclude Include="Include\BsScriptGUILayout.h" />
-    <ClInclude Include="Include\BsScriptGUIWidget.h" />
     <ClInclude Include="Include\BsDrawHelper3D.h" />
     <ClInclude Include="Include\BsDrawHelperTemplate.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
     <ClInclude Include="Include\BsDrawHelper2D.h" />
-    <ClInclude Include="Include\BsEngineAssembly.h" />
     <ClInclude Include="Include\BsEngineGUI.h" />
     <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
@@ -289,17 +279,7 @@
     <ClInclude Include="Include\BsProfilerOverlay.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />
-    <ClInclude Include="Include\BsScriptAssembly.h" />
-    <ClInclude Include="Include\BsScriptClass.h" />
-    <ClInclude Include="Include\BsScriptField.h" />
-    <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptManager.h" />
-    <ClInclude Include="Include\BsScriptMethod.h" />
-    <ClInclude Include="Include\BsScriptObject.h" />
-    <ClInclude Include="Include\BsScriptProperty.h" />
-    <ClInclude Include="Include\BsScriptSpriteTexture.h" />
-    <ClInclude Include="Include\BsScriptTexture2D.h" />
-    <ClInclude Include="Include\BsScriptUtil.h" />
     <ClInclude Include="Include\BsSprite.h" />
     <ClInclude Include="Include\BsSpriteTexture.h" />
     <ClInclude Include="Include\BsTextSprite.h" />
@@ -314,10 +294,8 @@
     <ClInclude Include="Include\BsD3D9BuiltinMaterialFactory.h" />
     <ClInclude Include="Include\BsGLBuiltinMaterialFactory.h" />
     <ClInclude Include="Include\BsUpdateCallback.h" />
-    <ClCompile Include="Source\BsEngineAssembly.cpp" />
     <ClCompile Include="Source\BsGUIButtonBase.cpp" />
     <ClCompile Include="Source\BsGUIContextMenu.cpp" />
-    <ClInclude Include="Include\BsScriptMeta.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />
@@ -362,24 +340,7 @@
     <ClCompile Include="Source\BsProfilerOverlay.cpp" />
     <ClCompile Include="Source\BsSceneManager.cpp" />
     <ClCompile Include="Source\BsGUIScrollArea.cpp" />
-    <ClCompile Include="Source\BsScriptAssembly.cpp" />
-    <ClCompile Include="Source\BsScriptClass.cpp" />
-    <ClCompile Include="Source\BsScriptComponent.cpp" />
-    <ClCompile Include="Source\BsScriptField.cpp" />
-    <ClCompile Include="Source\BsScriptFont.cpp" />
-    <ClCompile Include="Source\BsScriptGUIArea.cpp" />
-    <ClCompile Include="Source\BsScriptGUIBase.cpp" />
-    <ClCompile Include="Source\BsScriptGUIElementStateStyle.cpp" />
-    <ClCompile Include="Source\BsScriptGUIElementStyle.cpp" />
-    <ClCompile Include="Source\BsScriptGUILabel.cpp" />
-    <ClCompile Include="Source\BsScriptGUILayout.cpp" />
-    <ClCompile Include="Source\BsScriptGUIWidget.cpp" />
     <ClCompile Include="Source\BsScriptManager.cpp" />
-    <ClCompile Include="Source\BsScriptMethod.cpp" />
-    <ClCompile Include="Source\BsScriptMeta.cpp" />
-    <ClCompile Include="Source\BsScriptProperty.cpp" />
-    <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
-    <ClCompile Include="Source\BsScriptTexture2D.cpp" />
     <ClCompile Include="Source\BsSprite.cpp" />
     <ClCompile Include="Source\BsSpriteTexture.cpp" />
     <ClCompile Include="Source\BsTextSprite.cpp" />
