@@ -9,6 +9,7 @@
 #include "BsD3D11BuiltinMaterialFactory.h"
 #include "BsGLBuiltinMaterialFactory.h"
 #include "BsEngineGUI.h"
+#include "BsScriptManager.h"
 #include "CmApplication.h"
 #include "CmProfiler.h"
 
@@ -37,6 +38,7 @@ namespace BansheeEngine
 
 		CM::gApplication().startUp(desc);
 
+		ScriptManager::startUp(cm_new<ScriptManager>());
 		GUIManager::startUp(cm_new<GUIManager>());
 		GUIMaterialManager::startUp(cm_new<GUIMaterialManager>());
 		OverlayManager::startUp(cm_new<OverlayManager>());
@@ -51,6 +53,9 @@ namespace BansheeEngine
 		DrawHelper3D::startUp(cm_new<DrawHelper3D>());
 
 		EngineGUI::startUp(cm_new<EngineGUI>());
+
+		CM::gApplication().loadPlugin("BansheeMono");
+		CM::gApplication().loadPlugin("SBansheeEngine"); // Scripting interface
 
 		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
 	}
@@ -76,6 +81,7 @@ namespace BansheeEngine
 		OverlayManager::shutDown();
 		GUIManager::shutDown();
 		GUIMaterialManager::shutDown();
+		ScriptManager::shutDown();
 		
 		CM::gApplication().shutDown();
 	}
