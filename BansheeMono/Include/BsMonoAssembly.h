@@ -30,7 +30,6 @@ namespace BansheeEngine
 		~MonoAssembly();
 
 		MonoClass& getClass(const CM::String& namespaceName, const CM::String& name);
-		MonoDomain* getDomain() const { return mDomain; }
 
 	private:
 		friend class MonoManager;
@@ -43,7 +42,6 @@ namespace BansheeEngine
 		void initialize(const CM::String& entryPoint);
 
 		CM::String mName;
-		MonoDomain* mDomain;
 		MonoImage* mMonoImage;
 		::MonoAssembly* mMonoAssembly;
 		bool mIsLoaded;

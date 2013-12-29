@@ -5,7 +5,7 @@ namespace BansheeEditor
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
             // Starts main editor window with the specified width/height and render system
             // (Window position and sizes are stored internally. Restored upon StartUp and saved upon ShutDown)
@@ -13,7 +13,7 @@ namespace BansheeEditor
 
             // TODO - A class to manipulate menu items
 
-            ModalWindow mw = new ModalWindow(0, 0, 0, 0);
+           // ModalWindow mw = new ModalWindow(0, 0, 0, 0);
         }
     }
 

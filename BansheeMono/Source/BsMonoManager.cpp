@@ -15,6 +15,7 @@ namespace BansheeEngine
 	const String MonoManager::MONO_ETC_DIR = "..\\..\\Mono\\etc";
 
 	MonoManager::MonoManager()
+		:mDomain(nullptr)
 	{
 		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str()); 
 		mono_config_parse(nullptr);
@@ -29,11 +30,26 @@ namespace BansheeEngine
 		}
 
 		mAssemblies.clear();
+
+		if(mDomain != nullptr)
+		{
+			mono_jit_cleanup(mDomain);
+			mDomain = nullptr;
+		}
 	}
 
 	MonoAssembly& MonoManager::loadAssembly(const String& path, const String& name, const String& entryPoint)
 	{
 		MonoAssembly* assembly = nullptr;
+
+		if(mDomain == nullptr)
+		{
+			mDomain = mono_jit_init (path.c_str());
+			if(mDomain == nullptr)
+			{
+				CM_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
+			}
+		}
 
 		auto iterFind = mAssemblies.find(name);
 		if(iterFind != mAssemblies.end())

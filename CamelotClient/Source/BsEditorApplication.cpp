@@ -37,6 +37,7 @@ namespace BansheeEditor
 
 		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
 		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer", "D:\\CamelotResourceMetas"); // TODO - Make renderer and resource cache dir customizable
+		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/

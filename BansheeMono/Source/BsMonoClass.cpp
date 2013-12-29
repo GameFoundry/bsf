@@ -131,7 +131,7 @@ namespace BansheeEngine
 
 	MonoObject* MonoClass::createInstance() const
 	{
-		MonoObject* obj = mono_object_new(mParentAssembly->getDomain(), mClass);
+		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
 
 		return obj;
 	}

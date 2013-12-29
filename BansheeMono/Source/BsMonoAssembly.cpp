@@ -30,7 +30,7 @@ namespace BansheeEngine
 	}
 
 	MonoAssembly::MonoAssembly()
-		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mDomain(nullptr)
+		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr)
 	{
 
 	}
@@ -38,26 +38,11 @@ namespace BansheeEngine
 	MonoAssembly::~MonoAssembly()
 	{
 		unload();
-
-		if(mDomain != nullptr)
-		{
-			mono_jit_cleanup(mDomain);
-			mDomain = nullptr;
-		}
 	}
 
 	void MonoAssembly::load(const CM::String& path, const CM::String& name)
 	{
-		if(mDomain == nullptr)
-		{
-			mDomain = mono_jit_init (path.c_str());
-			if(mDomain == nullptr)
-			{
-				CM_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
-			}
-		}
-
-		::MonoAssembly* monoAssembly = mono_domain_assembly_open (mDomain, path.c_str());
+		::MonoAssembly* monoAssembly = mono_domain_assembly_open (MonoManager::instance().getDomain(), path.c_str());
 		if(monoAssembly == nullptr)
 		{
 			CM_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);

@@ -19,6 +19,8 @@ namespace BansheeEngine
 		MonoAssembly& loadAssembly(const CM::String& path, const CM::String& name, const CM::String& entryPoint = CM::StringUtil::BLANK);
 		void unloadAssembly(MonoAssembly& assembly);
 
+		MonoDomain* getDomain() const { return mDomain; }
+
 		static void registerScriptType(ScriptMeta* metaData);
 	private:
 		static const CM::String MONO_LIB_DIR;
@@ -31,5 +33,6 @@ namespace BansheeEngine
 		}
 
 		CM::UnorderedMap<CM::String, MonoAssembly*>::type mAssemblies;
+		MonoDomain* mDomain;
 	};
 }
