@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace BansheeEngine
 {
 
-    public class GUIBase : ScriptObject
+    public abstract class GUIBase : ScriptObject
     {
         private GUIArea mainArea;
         private GUILayout _mainLayout;
@@ -17,9 +17,10 @@ namespace BansheeEngine
         public GUISkin skin; // TODO
 
         internal GUIBase()
-        {
-            Internal_CreateInstance(this);
+        { }
 
+        internal void Initialize()
+        {
             mainArea = AddResizableAreaXY(0, 0, 0, 0);
             _mainLayout = mainArea.layout;
         }
@@ -43,8 +44,5 @@ namespace BansheeEngine
         {
             return GUIArea.CreateResizableXY(this, offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIBase instance);
     }
 }

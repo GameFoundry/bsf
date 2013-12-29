@@ -35,7 +35,7 @@ namespace BansheeEngine
 		desc.importers.push_back("CamelotFreeImgImporter");
 		desc.importers.push_back("CamelotFBXImporter");
 		desc.importers.push_back("CamelotFontImporter");
-
+		
 		CM::gApplication().startUp(desc);
 
 		ScriptManager::startUp(cm_new<ScriptManager>());
@@ -56,7 +56,7 @@ namespace BansheeEngine
 
 		CM::gApplication().loadPlugin("BansheeMono");
 		CM::gApplication().loadPlugin("SBansheeEngine"); // Scripting interface
-
+		
 		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
 	}
 

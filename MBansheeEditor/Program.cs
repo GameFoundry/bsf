@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using BansheeEngine;
 
 namespace BansheeEditor
 {
-    class Program
+    class ProgramEd
     {
         static void Main()
         {
@@ -13,7 +14,12 @@ namespace BansheeEditor
 
             // TODO - A class to manipulate menu items
 
-           // ModalWindow mw = new ModalWindow(0, 0, 0, 0);
+            ProjectSelectWindow window = new ProjectSelectWindow();
+
+            //GUIElementStateStyle dbgStyle = new GUIElementStateStyle();
+            //Color newColor = Color.red;
+
+            //dbgStyle.textColor = newColor;
         }
     }
 

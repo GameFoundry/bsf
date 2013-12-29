@@ -37,7 +37,7 @@ namespace BansheeEngine
 	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoString* label, MonoObject* style, MonoArray* guiOptions)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		HString nativeLabel(ScriptUtil::monoToWString(label));
+		HString nativeLabel(MonoUtil::monoToWString(label));
 		GUIOptions options;
 
 		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);

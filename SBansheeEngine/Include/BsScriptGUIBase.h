@@ -5,19 +5,27 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptGUIBase : public ScriptObject<ScriptGUIBase>
+	class BS_SCR_BE_EXPORT ScriptGUIBaseMeta : public ScriptObject<ScriptGUIBaseMeta>
 	{
 	public:
-		static void initMetaData();
+		friend class ScriptGUIBase;
 
+		static void initMetaData();
+	};
+
+	class BS_SCR_BE_EXPORT ScriptGUIBase
+	{
+	public:
 		GUIWidget& getWidget() const { return mWidget; }
 
-	private:
-		static void internal_createInstance(MonoObject* instance);
-		static void internal_destroyInstance(ScriptGUIBase* nativeInstance);
+		static void initRuntimeData() { }
 
-		static void initRuntimeData();
+		static ScriptGUIBase* toNative(MonoObject* managedInstance)
+		{
+			return reinterpret_cast<ScriptGUIBase*>(ScriptGUIBaseMeta::metaData.thisPtrField->getValue(managedInstance));
+		}
 
+	protected:
 		ScriptGUIBase(GUIWidget& widget);
 
 		GUIWidget& mWidget;

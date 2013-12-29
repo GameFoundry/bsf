@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 using BansheeEngine;
 
 namespace BansheeEditor
@@ -14,7 +14,7 @@ namespace BansheeEditor
             GUI = new EditorGUI(this);
         }
 
-        [DllImport("__Internal")]
+        [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(ModalWindow instance, int top, int left, int width, int height);
     }
 }

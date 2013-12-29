@@ -64,6 +64,7 @@ Reminders:
 	  SBansheeEngine. User could then fairly easily port the system to another scripting language just by implementing another ScriptSystem. 
     - This would probably come with an overhead of at least one extra function call for each script call, which is currently unacceptable 
 	  considering that most people will definitely won't be writing new script systems.
+  - Perhaps add code generation functionality to the engine through Mono? I know Mono has support for it though its Embed interface
 
 
 Potential optimizations:

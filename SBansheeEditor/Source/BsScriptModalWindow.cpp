@@ -35,9 +35,6 @@ namespace BansheeEditor
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setIgnoreSceneRenderables(true);
-
-		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get());
-		mGUI->setDepth(128);
 	}
 
 	void ScriptModalWindow::initMetaData()

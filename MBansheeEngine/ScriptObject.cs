@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+
 namespace BansheeEngine
 {
     public class ScriptObject

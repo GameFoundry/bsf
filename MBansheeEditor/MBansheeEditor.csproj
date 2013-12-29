@@ -43,6 +43,7 @@
     <Compile Include="EditorGUI.cs" />
     <Compile Include="ModalWindow.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="ProjectSelectWindow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

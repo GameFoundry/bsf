@@ -10,6 +10,9 @@ namespace BansheeEditor
 	public:
 		static void initMetaData();
 
+		const BS::HCamera& getCamera() const { return mCamera; }
+		const CM::HSceneObject& getSceneObject() const { return mSceneObject; }
+
 	private:
 		ScriptModalWindow(CM::INT32 left, CM::INT32 top, CM::UINT32 width, CM::UINT32 height);
 
@@ -20,7 +23,6 @@ namespace BansheeEditor
 
 		CM::RenderWindowPtr mRenderWindow;
 		CM::HSceneObject mSceneObject;
-		BS::HGUIWidget mGUI;
 		BS::HCamera mCamera;
 	};
 }

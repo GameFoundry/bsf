@@ -8,6 +8,7 @@ namespace BansheeEditor
         internal EditorGUI(ModalWindow parentWindow)
         {
             Internal_CreateInstance(this, parentWindow);
+            Initialize();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

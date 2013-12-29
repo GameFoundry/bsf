@@ -17,7 +17,7 @@ namespace BansheeEditor
 	{
 		const CM::String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
 		const CM::String ENGINE_ASSEMBLY_NAME = "MBansheeEditor";
-		const CM::String ASSEMBLY_ENTRY_POINT = "Program::Main";
+		const CM::String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
 
 		MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME, ASSEMBLY_ENTRY_POINT);
 

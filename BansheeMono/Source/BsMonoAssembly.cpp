@@ -2,6 +2,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "CmUtil.h"
+#include "BsMonoUtil.h"
 #include "CmException.h"
 
 #include <mono/metadata/debug-helpers.h>
@@ -85,7 +86,12 @@ namespace BansheeEngine
 		::MonoMethod* entry = mono_method_desc_search_in_image(methodDesc, mMonoImage);
 
 		if(entry != nullptr)
-			mono_runtime_invoke(entry, nullptr, nullptr, nullptr);
+		{
+			MonoObject* exception = nullptr;
+			mono_runtime_invoke(entry, nullptr, nullptr, &exception);
+
+			MonoUtil::throwIfException(exception);
+		}
 	}
 
 	MonoClass& MonoAssembly::getClass(const String& namespaceName, const String& name)

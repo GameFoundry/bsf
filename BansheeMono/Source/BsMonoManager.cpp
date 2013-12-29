@@ -61,7 +61,7 @@ namespace BansheeEngine
 			assembly = new (cm_alloc<MonoAssembly>()) MonoAssembly();
 			mAssemblies[name] = assembly;
 		}
-
+		
 		if(!assembly->mIsLoaded)
 		{
 			assembly->load(path, name);
