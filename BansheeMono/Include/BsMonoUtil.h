@@ -12,6 +12,9 @@ namespace BansheeEngine
 	public:
 		static CM::WString monoToWString(MonoString* str)
 		{
+			if(str == nullptr)
+				return CM::StringUtil::WBLANK;
+
 			int len = mono_string_length(str);
 			mono_unichar2* monoChars = mono_string_chars(str);
 
@@ -20,6 +23,20 @@ namespace BansheeEngine
 				ret[i] = monoChars[i];
 
 			return ret;
+		}
+
+		static MonoString* wstringToMono(MonoDomain* domain, const CM::WString& str)
+		{
+			CM::UINT32 len = (CM::UINT32)str.length();
+			mono_unichar2* monoChars = (mono_unichar2*)CM::cm_alloc<mono_unichar2>(len);
+
+			for(CM::UINT32 i = 0; i < len; i++)
+				monoChars[i] = str[i];
+
+			MonoString* monoString = mono_string_new_utf16(domain, monoChars, len);
+
+			CM::cm_free(monoChars);
+			return monoString;
 		}
 
 		static void throwIfException(MonoObject* exception)

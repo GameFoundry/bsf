@@ -57,6 +57,7 @@
     <Compile Include="GUIOption.cs" />
     <Compile Include="GUISkin.cs" />
     <Compile Include="GUIWidget.cs" />
+    <Compile Include="HString.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Matrix3.cs" />
     <Compile Include="Matrix4.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Resource.cs" />
     <Compile Include="ScriptObject.cs" />
     <Compile Include="SpriteTexture.cs" />
+    <Compile Include="StringTable.cs" />
     <Compile Include="Texture2D.cs" />
     <Compile Include="TextureFormat.cs" />
     <Compile Include="Vector2.cs" />

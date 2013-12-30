@@ -17,17 +17,17 @@ namespace BansheeEngine
             return ((GUIBase)instance).AddArea(x, y, width, height, depth);
         }
 
-        public GUIArea AddResizableAreaX(int offsetLeft, int offsetRight, int offsetTop, int height, short depth = 0)
+        public new static GUIArea AddResizableAreaX(int offsetLeft, int offsetRight, int offsetTop, int height, short depth = 0)
         {
             return ((GUIBase)instance).AddResizableAreaX(offsetLeft, offsetRight, offsetTop, height, depth);
         }
 
-        public GUIArea AddResizableAreaY(int offsetTop, int offsetBottom, int offsetLeft, int width, short depth = 0)
+        public new static GUIArea AddResizableAreaY(int offsetTop, int offsetBottom, int offsetLeft, int width, short depth = 0)
         {
             return ((GUIBase)instance).AddResizableAreaY(offsetTop, offsetBottom, offsetLeft, width, depth);
         }
 
-        public GUIArea AddResizableAreaXY(int offsetLeft, int offsetRight, int offsetTop, int offsetBottom, short depth = 0)
+        public new static GUIArea AddResizableAreaXY(int offsetLeft, int offsetRight, int offsetTop, int offsetBottom, short depth = 0)
         {
             return ((GUIBase)instance).AddResizableAreaXY(offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
         }

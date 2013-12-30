@@ -234,9 +234,11 @@
     <ClInclude Include="Include\BsScriptGUIElementStyle.h" />
     <ClInclude Include="Include\BsScriptGUILabel.h" />
     <ClInclude Include="Include\BsScriptGUILayout.h" />
+    <ClInclude Include="Include\BsScriptHString.h" />
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
+    <ClInclude Include="Include\BsScriptStringTable.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
   </ItemGroup>
   <ItemGroup>
@@ -248,7 +250,9 @@
     <ClCompile Include="Source\BsScriptGUIElementStyle.cpp" />
     <ClCompile Include="Source\BsScriptGUILabel.cpp" />
     <ClCompile Include="Source\BsScriptGUILayout.cpp" />
+    <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
+    <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
