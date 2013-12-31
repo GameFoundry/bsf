@@ -22,7 +22,7 @@ namespace BansheeEditor
 	}
 
 	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUITexture(parent, style, nullptr, GUIImageScaleMode::StretchToFit, layoutOptions)
+		:GUITexture(parent, style, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions)
 	{
 
 	}
@@ -55,9 +55,9 @@ namespace BansheeEditor
 	void GUIWindowFrame::setFocused(bool focused)
 	{
 		if(focused)
-			mDesc.texture = mStyle->focused.texture;
+			mActiveTexture = mStyle->focused.texture;
 		else
-			mDesc.texture = mStyle->normal.texture;
+			mActiveTexture = mStyle->normal.texture;
 
 		markContentAsDirty();
 	}

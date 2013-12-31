@@ -10,7 +10,7 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
-		const SpriteTexturePtr& getInternalValue() const { return mTexture; }
+		const HSpriteTexture& getInternalValue() const { return mTexture; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance);
@@ -18,8 +18,8 @@ namespace BansheeEngine
 
 		static void initRuntimeData();
 
-		ScriptSpriteTexture(const SpriteTexturePtr& texture);
+		ScriptSpriteTexture(const HSpriteTexture& texture);
 
-		SpriteTexturePtr mTexture;
+		HSpriteTexture mTexture;
 	};
 }

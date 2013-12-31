@@ -103,7 +103,9 @@ namespace BansheeEngine
 	void GUIScrollBarHandle::updateRenderElementsInternal()
 	{		
 		IMAGE_SPRITE_DESC desc;
-		desc.texture = mCurTexture;
+
+		if(mCurTexture != nullptr && mCurTexture.isLoaded())
+			desc.texture = mCurTexture.getInternalPtr();
 
 		if(mHorizontal)
 		{

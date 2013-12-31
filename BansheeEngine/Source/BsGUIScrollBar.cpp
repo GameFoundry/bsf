@@ -1,4 +1,5 @@
 #include "BsGUIScrollBar.h"
+#include "BsSpriteTexture.h"
 #include "BsGUIElementStyle.h"
 #include "BsGUISkin.h"
 #include "BsGUIWidget.h"
@@ -87,7 +88,10 @@ namespace BansheeEngine
 	void GUIScrollBar::updateRenderElementsInternal()
 	{
 		IMAGE_SPRITE_DESC desc;
-		desc.texture = mStyle->normal.texture;
+
+		if(mStyle->normal.texture != nullptr && mStyle->normal.texture.isLoaded())
+			desc.texture = mStyle->normal.texture.getInternalPtr();
+
 		desc.width = mWidth;
 		desc.height = mHeight;
 

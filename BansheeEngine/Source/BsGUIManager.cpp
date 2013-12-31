@@ -64,7 +64,7 @@ namespace BansheeEngine
 	GUIManager::GUIManager()
 		:mElementUnderCursor(nullptr), mWidgetUnderCursor(nullptr), mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
 		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
-		mCaretTexture(nullptr), mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
+		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mDragState(DragState::NoDrag)
 	{
 		mOnCursorMovedConn = gInput().onCursorMoved.connect(boost::bind(&GUIManager::onCursorMoved, this, _1));
@@ -537,7 +537,7 @@ namespace BansheeEngine
 		{
 			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
 			newTex->synchonize(); // TODO - Required due to a bug in allocateSubresourceBuffer
-			mCaretTexture = cm_shared_ptr<SpriteTexture>(newTex);
+			mCaretTexture = SpriteTexture::create(newTex);
 		}
 
 		const HTexture& tex = mCaretTexture->getTexture();
@@ -555,7 +555,7 @@ namespace BansheeEngine
 		{
 			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
 			newTex->synchonize(); // TODO - Required due to a bug in allocateSubresourceBuffer
-			mTextSelectionTexture = cm_shared_ptr<SpriteTexture>(newTex);
+			mTextSelectionTexture = SpriteTexture::create(newTex);
 		}
 
 		const HTexture& tex = mTextSelectionTexture->getTexture();

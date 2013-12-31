@@ -60,8 +60,8 @@ namespace BansheeEngine
 
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
 		void setTextSelectionColor(const CM::Color& color) { mTextSelectionColor = color; updateTextSelectionTexture(); }
-		const SpriteTexturePtr& getCaretTexture() const { return mCaretTexture; }
-		const SpriteTexturePtr& getTextSelectionTexture() const { return mTextSelectionTexture; }
+		const HSpriteTexture& getCaretTexture() const { return mCaretTexture; }
+		const HSpriteTexture& getTextSelectionTexture() const { return mTextSelectionTexture; }
 		bool getCaretBlinkState() const { return mIsCaretOn; }
 
 		GUIInputCaret* getInputCaretTool() const { return mInputCaret; }
@@ -155,13 +155,13 @@ namespace BansheeEngine
 		GUITextInputEvent mTextInputEvent;
 		GUICommandEvent mCommandEvent;
 
-		SpriteTexturePtr mCaretTexture;
+		HSpriteTexture mCaretTexture;
 		CM::Color mCaretColor;
 		float mCaretBlinkInterval;
 		float mCaretLastBlinkTime;
 		bool mIsCaretOn;
 
-		SpriteTexturePtr mTextSelectionTexture;
+		HSpriteTexture mTextSelectionTexture;
 		CM::Color mTextSelectionColor;
 
 		// Selective input

@@ -84,10 +84,13 @@ namespace BansheeEngine
 	typedef CM::GameObjectHandle<Camera> HCamera;
 	typedef CM::GameObjectHandle<Renderable> HRenderable;
 
+	typedef CM::ResourceHandle<SpriteTexture> HSpriteTexture;
+
 	enum TypeID_Banshee
 	{
 		TID_Camera = 30000,
-		TID_Renderable = 30001
+		TID_Renderable = 30001,
+		TID_SpriteTexture = 30002
 	};
 }
 

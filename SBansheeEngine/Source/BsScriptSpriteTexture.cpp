@@ -9,7 +9,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptSpriteTexture::ScriptSpriteTexture(const SpriteTexturePtr& texture)
+	ScriptSpriteTexture::ScriptSpriteTexture(const HSpriteTexture& texture)
 		:mTexture(texture)
 	{
 
@@ -30,7 +30,7 @@ namespace BansheeEngine
 
 	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance)
 	{
-		ScriptSpriteTexture* nativeInstance = new (cm_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(nullptr); // TODO - DUMMY CODE!
+		ScriptSpriteTexture* nativeInstance = new (cm_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(SpriteTexture::dummy()); // TODO - DUMMY CODE!
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);

@@ -63,7 +63,7 @@ namespace BansheeEngine
 	private:
 		ImageSprite* mImageSprite;
 		CM::UINT32 mHandleSize;
-		SpriteTexturePtr mCurTexture;
+		HSpriteTexture mCurTexture;
 		bool mHorizontal; // Otherwise its vertical
 		float mHandlePos;
 		CM::INT32 mDragStartPos;

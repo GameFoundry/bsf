@@ -1,4 +1,5 @@
 #include "BsGUIInputSelection.h"
+#include "BsSpriteTexture.h"
 #include "BsImageSprite.h"
 #include "BsGUIElement.h"
 #include "BsGUIManager.h"
@@ -45,7 +46,7 @@ namespace BansheeEngine
 			IMAGE_SPRITE_DESC desc;
 			desc.width = mSelectionRects[idx].width;
 			desc.height = mSelectionRects[idx].height;
-			desc.texture = GUIManager::instance().getTextSelectionTexture();
+			desc.texture = GUIManager::instance().getTextSelectionTexture().getInternalPtr();
 
 			sprite->update(desc);
 			idx++;

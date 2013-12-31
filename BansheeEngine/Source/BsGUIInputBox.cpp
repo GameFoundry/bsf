@@ -36,12 +36,12 @@ namespace BansheeEngine
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
-		mImageDesc.texture = mStyle->normal.texture;
+		mActiveTexture = mStyle->normal.texture;
 
-		if(mImageDesc.texture != nullptr)
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
 		{
-			mImageDesc.width = mImageDesc.texture->getTexture()->getWidth();
-			mImageDesc.height = mImageDesc.texture->getTexture()->getHeight();
+			mImageDesc.width = mActiveTexture->getTexture()->getWidth();
+			mImageDesc.height = mActiveTexture->getTexture()->getHeight();
 		}
 
 		mImageDesc.borderLeft = mStyle->border.left;
@@ -116,6 +116,9 @@ namespace BansheeEngine
 
 	void GUIInputBox::updateRenderElementsInternal()
 	{		
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+			mImageDesc.texture = mActiveTexture.getInternalPtr();
+
 		mImageDesc.width = mWidth;
 		mImageDesc.height = mHeight;
 
@@ -287,10 +290,10 @@ namespace BansheeEngine
 	{
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
-		if(mImageDesc.texture != nullptr)
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
 		{
-			imageWidth = mImageDesc.texture->getTexture()->getWidth();
-			imageHeight = mImageDesc.texture->getTexture()->getHeight();
+			imageWidth = mActiveTexture->getTexture()->getWidth();
+			imageHeight = mActiveTexture->getTexture()->getHeight();
 		}
 
 		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions());
@@ -346,7 +349,7 @@ namespace BansheeEngine
 		{
 			if(!mHasFocus)
 			{
-				mImageDesc.texture = mStyle->hover.texture;
+				mActiveTexture = mStyle->hover.texture;
 				markContentAsDirty();
 			}
 
@@ -362,7 +365,7 @@ namespace BansheeEngine
 		{
 			if(!mHasFocus)
 			{
-				mImageDesc.texture = mStyle->normal.texture;
+				mActiveTexture = mStyle->normal.texture;
 				markContentAsDirty();
 			}
 
@@ -923,12 +926,12 @@ namespace BansheeEngine
 	{
 		if(focus)
 		{
-			mImageDesc.texture = mStyle->focused.texture;
+			mActiveTexture = mStyle->focused.texture;
 			markContentAsDirty();
 		}
 		else
 		{
-			mImageDesc.texture = mStyle->normal.texture;
+			mActiveTexture = mStyle->normal.texture;
 			hideCaret();
 			clearSelection();
 			markContentAsDirty();

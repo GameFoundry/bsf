@@ -81,6 +81,7 @@ namespace BansheeEngine
 		TextSprite* mTextSprite;
 		GUIButtonState mActiveState;
 
+		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;
 

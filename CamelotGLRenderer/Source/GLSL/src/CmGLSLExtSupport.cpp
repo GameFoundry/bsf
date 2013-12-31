@@ -83,8 +83,6 @@ namespace CamelotFramework
 
 	bool logShaderInfo(String& msg, const GLuint obj)
 	{
-		String logMessage = msg;
-
 		if (obj > 0)
 		{
 			GLint infologLength = 0;
@@ -98,7 +96,7 @@ namespace CamelotFramework
 				GLchar* infoLog = (GLchar*)cm_alloc<ScratchAlloc>(sizeof(GLchar) * infologLength);
 
 				glGetShaderInfoLog(obj, infologLength, &charsWritten, infoLog);
-				logMessage += String(infoLog);
+				msg += String(infoLog);
 
 				cm_free<ScratchAlloc>(infoLog);
 

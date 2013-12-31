@@ -19,20 +19,21 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUITexture* create(GUIWidget& parent, const SpriteTexturePtr& texture, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, 
+		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, 
 			const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const GUIOptions& layoutOptions, const SpriteTexturePtr& texture, 
+		static GUITexture* create(GUIWidget& parent, const GUIOptions& layoutOptions, const HSpriteTexture& texture, 
 			GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
 		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
 		static GUITexture* create(GUIWidget& parent, const GUIOptions& layoutOptions, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
 
-		void setTexture(const SpriteTexturePtr& texture);
+		void setTexture(const HSpriteTexture& texture);
 	protected:
 		ImageSprite* mImageSprite;
+		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mDesc;
 		GUIImageScaleMode mScaleMode;
 
-		GUITexture(GUIWidget& parent, const GUIElementStyle* style, const SpriteTexturePtr& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
+		GUITexture(GUIWidget& parent, const GUIElementStyle* style, const HSpriteTexture& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
 		virtual ~GUITexture();
 
 		/**

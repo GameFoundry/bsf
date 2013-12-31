@@ -1,4 +1,5 @@
 #include "BsGUIInputCaret.h"
+#include "BsSpriteTexture.h"
 #include "BsGUIManager.h"
 #include "BsImageSprite.h"
 #include "BsGUIElement.h"
@@ -51,7 +52,7 @@ namespace BansheeEngine
 		IMAGE_SPRITE_DESC mCaretDesc;
 		mCaretDesc.width = 1;
 		mCaretDesc.height = getCaretHeight();
-		mCaretDesc.texture = GUIManager::instance().getCaretTexture();
+		mCaretDesc.texture = GUIManager::instance().getCaretTexture().getInternalPtr();
 
 		mCaretSprite->update(mCaretDesc);
 	}

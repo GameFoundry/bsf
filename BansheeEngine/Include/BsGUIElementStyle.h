@@ -25,7 +25,7 @@ namespace BansheeEngine
 	{
 		struct BS_EXPORT GUIElementStateStyle
 		{
-			SpriteTexturePtr texture;
+			HSpriteTexture texture;
 			CM::Color textColor;
 		};
 

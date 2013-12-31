@@ -12,19 +12,19 @@ namespace BansheeEngine
 		:mText(text), mTooltipText(tooltip)
 	{ }
 
-	GUIContent::GUIContent(const SpriteTexturePtr& image)
+	GUIContent::GUIContent(const HSpriteTexture& image)
 		:mImage(image)
 	{ }
 
-	GUIContent::GUIContent(const SpriteTexturePtr& image, const CM::HString& tooltip)
+	GUIContent::GUIContent(const HSpriteTexture& image, const CM::HString& tooltip)
 		:mImage(image), mTooltipText(tooltip)
 	{ }
 
-	GUIContent::GUIContent(const CM::HString& text, const SpriteTexturePtr& image)
+	GUIContent::GUIContent(const CM::HString& text, const HSpriteTexture& image)
 		:mText(text), mImage(image)
 	{ }
 
-	GUIContent::GUIContent(const CM::HString& text, const SpriteTexturePtr& image, const CM::HString& tooltip)
+	GUIContent::GUIContent(const CM::HString& text, const HSpriteTexture& image, const CM::HString& tooltip)
 		:mText(text), mImage(image), mTooltipText(tooltip)
 	{ }
 }

@@ -19,16 +19,15 @@ namespace BansheeEngine
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
-		SpriteTexturePtr contentTex = content.getImage();
-		if(contentTex != nullptr)
+		HSpriteTexture contentTex = content.getImage();
+		if(contentTex != nullptr && contentTex.isLoaded())
 			mContentImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
-		mImageDesc.texture = mStyle->normal.texture;
-
-		if(mImageDesc.texture != nullptr)
+		mActiveTexture = mStyle->normal.texture;
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
 		{
-			mImageDesc.width = mImageDesc.texture->getTexture()->getWidth();
-			mImageDesc.height = mImageDesc.texture->getTexture()->getHeight();
+			mImageDesc.width = mActiveTexture->getTexture()->getWidth();
+			mImageDesc.height = mActiveTexture->getTexture()->getHeight();
 		}
 
 		mImageDesc.borderLeft = mStyle->border.left;
@@ -118,6 +117,9 @@ namespace BansheeEngine
 		mImageDesc.width = mWidth;
 		mImageDesc.height = mHeight;
 
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+			mImageDesc.texture = mActiveTexture.getInternalPtr();
+
 		mImageSprite->update(mImageDesc);
 
 		mTextSprite->update(getTextDesc());
@@ -125,7 +127,7 @@ namespace BansheeEngine
 		if(mContentImageSprite != nullptr)
 		{
 			IMAGE_SPRITE_DESC contentImgDesc;
-			contentImgDesc.texture = mContent.getImage();
+			contentImgDesc.texture = mContent.getImage().getInternalPtr();
 			contentImgDesc.width = mContent.getImage()->getTexture()->getWidth();
 			contentImgDesc.height = mContent.getImage()->getTexture()->getHeight();
 
@@ -144,10 +146,10 @@ namespace BansheeEngine
 	{
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
-		if(mImageDesc.texture != nullptr)
+		if(mActiveTexture != nullptr)
 		{
-			imageWidth = mImageDesc.texture->getTexture()->getWidth();
-			imageHeight = mImageDesc.texture->getTexture()->getHeight();
+			imageWidth = mActiveTexture->getTexture()->getWidth();
+			imageHeight = mActiveTexture->getTexture()->getHeight();
 		}
 
 		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions());
@@ -308,28 +310,28 @@ namespace BansheeEngine
 		switch(state)
 		{
 		case GUIButtonState::Normal:
-			mImageDesc.texture = mStyle->normal.texture;
+			mActiveTexture = mStyle->normal.texture;
 			break;
 		case GUIButtonState::Hover:
-			mImageDesc.texture = mStyle->hover.texture;
+			mActiveTexture = mStyle->hover.texture;
 			break;
 		case GUIButtonState::Active:
-			mImageDesc.texture = mStyle->active.texture;
+			mActiveTexture = mStyle->active.texture;
 			break;
 		case GUIButtonState::Focused:
-			mImageDesc.texture = mStyle->focused.texture;
+			mActiveTexture = mStyle->focused.texture;
 			break;
 		case GUIButtonState::NormalOn:
-			mImageDesc.texture = mStyle->normalOn.texture;
+			mActiveTexture = mStyle->normalOn.texture;
 			break;
 		case GUIButtonState::HoverOn:
-			mImageDesc.texture = mStyle->hoverOn.texture;
+			mActiveTexture = mStyle->hoverOn.texture;
 			break;
 		case GUIButtonState::ActiveOn:
-			mImageDesc.texture = mStyle->activeOn.texture;
+			mActiveTexture = mStyle->activeOn.texture;
 			break;
 		case GUIButtonState::FocusedOn:
-			mImageDesc.texture = mStyle->focusedOn.texture;
+			mActiveTexture = mStyle->focusedOn.texture;
 			break;
 		}
 

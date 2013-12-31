@@ -138,8 +138,8 @@ namespace BansheeEngine
 		HTexture windowFrameFocusedTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowFrameFocused));
 
 		GUIElementStyle windowFrameStyle;
-		windowFrameStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowFrameNormalTex));
-		windowFrameStyle.focused.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowFrameFocusedTex));
+		windowFrameStyle.normal.texture = SpriteTexture::create(windowFrameNormalTex);
+		windowFrameStyle.focused.texture = SpriteTexture::create(windowFrameFocusedTex);
 		windowFrameStyle.border.left = 1;
 		windowFrameStyle.border.right = 1;
 		windowFrameStyle.border.top = 1;
@@ -152,8 +152,8 @@ namespace BansheeEngine
 		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonHoverTex));
 
 		GUIElementStyle buttonStyle;
-		buttonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonNormalTex));
-		buttonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(buttonHoverTex));
+		buttonStyle.normal.texture = SpriteTexture::create(buttonNormalTex);
+		buttonStyle.hover.texture = SpriteTexture::create(buttonHoverTex);
 		buttonStyle.active.texture = buttonStyle.hover.texture;
 		buttonStyle.border.left = 5;
 		buttonStyle.border.right = 5;
@@ -179,7 +179,7 @@ namespace BansheeEngine
 		HTexture windowBgTexture = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowBackgroundTexture));
 
 		GUIElementStyle windowBgStyle;
-		windowBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowBgTexture));
+		windowBgStyle.normal.texture = SpriteTexture::create(windowBgTexture);
 
 		mSkin.setStyle("WindowBackground", windowBgStyle);
 
@@ -187,7 +187,7 @@ namespace BansheeEngine
 		HTexture windowTitleBarBg = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowTitleBarBg));
 
 		GUIElementStyle titleBarBgStyle;
-		titleBarBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(windowTitleBarBg));
+		titleBarBgStyle.normal.texture = SpriteTexture::create(windowTitleBarBg);
 		titleBarBgStyle.fixedHeight = true;
 		titleBarBgStyle.height = 13;
 
@@ -198,8 +198,8 @@ namespace BansheeEngine
 		HTexture tabbedBarBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + TabbedBarBtnActive));
 
 		GUIElementStyle tabbedBarButton;
-		tabbedBarButton.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(tabbedBarBtnNormal));
-		tabbedBarButton.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(tabbedBarBtnActive));
+		tabbedBarButton.normal.texture = SpriteTexture::create(tabbedBarBtnNormal);
+		tabbedBarButton.hover.texture = SpriteTexture::create(tabbedBarBtnActive);
 		tabbedBarButton.active.texture = tabbedBarButton.hover.texture;
 		tabbedBarButton.normalOn.texture = tabbedBarButton.hover.texture;
 		tabbedBarButton.hoverOn.texture = tabbedBarButton.hover.texture;
@@ -229,8 +229,8 @@ namespace BansheeEngine
 		HTexture winMinBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowMinButtonHover));
 
 		GUIElementStyle winMinButtonStyle;
-		winMinButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMinBtnNormal));
-		winMinButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMinBtnHover));
+		winMinButtonStyle.normal.texture = SpriteTexture::create(winMinBtnNormal);
+		winMinButtonStyle.hover.texture = SpriteTexture::create(winMinBtnHover);
 		winMinButtonStyle.active.texture = winMinButtonStyle.hover.texture;
 		winMinButtonStyle.fixedHeight = true;
 		winMinButtonStyle.fixedWidth = true;
@@ -244,8 +244,8 @@ namespace BansheeEngine
 		HTexture winMaxBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowMaxButtonHover));
 
 		GUIElementStyle winMaxButtonStyle;
-		winMaxButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMaxBtnNormal));
-		winMaxButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winMaxBtnHover));
+		winMaxButtonStyle.normal.texture = SpriteTexture::create(winMaxBtnNormal);
+		winMaxButtonStyle.hover.texture = SpriteTexture::create(winMaxBtnHover);
 		winMaxButtonStyle.active.texture = winMaxButtonStyle.hover.texture;
 		winMaxButtonStyle.fixedHeight = true;
 		winMaxButtonStyle.fixedWidth = true;
@@ -259,8 +259,8 @@ namespace BansheeEngine
 		HTexture winCloseBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowCloseButtonHover));
 
 		GUIElementStyle winCloseButtonStyle;
-		winCloseButtonStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnNormal));
-		winCloseButtonStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(winCloseBtnHover));
+		winCloseButtonStyle.normal.texture = SpriteTexture::create(winCloseBtnNormal);
+		winCloseButtonStyle.hover.texture = SpriteTexture::create(winCloseBtnHover);
 		winCloseButtonStyle.active.texture = winCloseButtonStyle.hover.texture;
 		winCloseButtonStyle.fixedHeight = true;
 		winCloseButtonStyle.fixedWidth = true;
@@ -275,9 +275,9 @@ namespace BansheeEngine
 		HTexture inputBoxFocusedTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + InputBoxFocusedTex));
 
 		GUIElementStyle inputBoxStyle;
-		inputBoxStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxNormalTex));
-		inputBoxStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxHoverTex));
-		inputBoxStyle.focused.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(inputBoxFocusedTex));
+		inputBoxStyle.normal.texture = SpriteTexture::create(inputBoxNormalTex);
+		inputBoxStyle.hover.texture = SpriteTexture::create(inputBoxHoverTex);
+		inputBoxStyle.focused.texture = SpriteTexture::create(inputBoxFocusedTex);
 		inputBoxStyle.active.texture = inputBoxStyle.normal.texture;
 		inputBoxStyle.border.left = 5;
 		inputBoxStyle.border.right = 5;
@@ -309,9 +309,9 @@ namespace BansheeEngine
 		HTexture scrollUpBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarUpActiveTex));
 
 		GUIElementStyle scrollUpBtnStyle;
-		scrollUpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollUpBtnNormal));
-		scrollUpBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollUpBtnHover));
-		scrollUpBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollUpBtnActive));
+		scrollUpBtnStyle.normal.texture = SpriteTexture::create(scrollUpBtnNormal);
+		scrollUpBtnStyle.hover.texture = SpriteTexture::create(scrollUpBtnHover);
+		scrollUpBtnStyle.active.texture = SpriteTexture::create(scrollUpBtnActive);
 		scrollUpBtnStyle.fixedHeight = true;
 		scrollUpBtnStyle.fixedWidth = true;
 		scrollUpBtnStyle.height = 4;
@@ -325,9 +325,9 @@ namespace BansheeEngine
 		HTexture scrollDownBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarDownActiveTex));
 
 		GUIElementStyle scrollDownBtnStyle;
-		scrollDownBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollDownBtnNormal));
-		scrollDownBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollDownBtnHover));
-		scrollDownBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollDownBtnActive));
+		scrollDownBtnStyle.normal.texture = SpriteTexture::create(scrollDownBtnNormal);
+		scrollDownBtnStyle.hover.texture = SpriteTexture::create(scrollDownBtnHover);
+		scrollDownBtnStyle.active.texture = SpriteTexture::create(scrollDownBtnActive);
 		scrollDownBtnStyle.fixedHeight = true;
 		scrollDownBtnStyle.fixedWidth = true;
 		scrollDownBtnStyle.height = 4;
@@ -341,9 +341,9 @@ namespace BansheeEngine
 		HTexture scrollLeftBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarLeftActiveTex));
 
 		GUIElementStyle scrollLeftBtnStyle;
-		scrollLeftBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollLeftBtnNormal));
-		scrollLeftBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollLeftBtnHover));
-		scrollLeftBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollLeftBtnActive));
+		scrollLeftBtnStyle.normal.texture = SpriteTexture::create(scrollLeftBtnNormal);
+		scrollLeftBtnStyle.hover.texture = SpriteTexture::create(scrollLeftBtnHover);
+		scrollLeftBtnStyle.active.texture = SpriteTexture::create(scrollLeftBtnActive);
 		scrollLeftBtnStyle.fixedHeight = true;
 		scrollLeftBtnStyle.fixedWidth = true;
 		scrollLeftBtnStyle.height = 8;
@@ -357,9 +357,9 @@ namespace BansheeEngine
 		HTexture scrollRightBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarRightActiveTex));
 
 		GUIElementStyle scrollRightBtnStyle;
-		scrollRightBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollRightBtnNormal));
-		scrollRightBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollRightBtnHover));
-		scrollRightBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollRightBtnActive));
+		scrollRightBtnStyle.normal.texture = SpriteTexture::create(scrollRightBtnNormal);
+		scrollRightBtnStyle.hover.texture = SpriteTexture::create(scrollRightBtnHover);
+		scrollRightBtnStyle.active.texture = SpriteTexture::create(scrollRightBtnActive);
 		scrollRightBtnStyle.fixedHeight = true;
 		scrollRightBtnStyle.fixedWidth = true;
 		scrollRightBtnStyle.height = 8;
@@ -373,9 +373,9 @@ namespace BansheeEngine
 		HTexture scrollBarHorzBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleHorzActiveTex));
 
 		GUIElementStyle scrollBarHorzBtnStyle;
-		scrollBarHorzBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarHorzBtnNormal));
-		scrollBarHorzBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarHorzBtnHover));
-		scrollBarHorzBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarHorzBtnActive));
+		scrollBarHorzBtnStyle.normal.texture = SpriteTexture::create(scrollBarHorzBtnNormal);
+		scrollBarHorzBtnStyle.hover.texture = SpriteTexture::create(scrollBarHorzBtnHover);
+		scrollBarHorzBtnStyle.active.texture = SpriteTexture::create(scrollBarHorzBtnActive);
 		scrollBarHorzBtnStyle.fixedHeight = true;
 		scrollBarHorzBtnStyle.fixedWidth = true;
 		scrollBarHorzBtnStyle.height = 6;
@@ -389,9 +389,9 @@ namespace BansheeEngine
 		HTexture scrollBarVertBtnActive = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarHandleVertActiveTex));
 
 		GUIElementStyle scrollBarVertBtnStyle;
-		scrollBarVertBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarVertBtnNormal));
-		scrollBarVertBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarVertBtnHover));
-		scrollBarVertBtnStyle.active.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarVertBtnActive));
+		scrollBarVertBtnStyle.normal.texture = SpriteTexture::create(scrollBarVertBtnNormal);
+		scrollBarVertBtnStyle.hover.texture = SpriteTexture::create(scrollBarVertBtnHover);
+		scrollBarVertBtnStyle.active.texture = SpriteTexture::create(scrollBarVertBtnActive);
 		scrollBarVertBtnStyle.fixedHeight = true;
 		scrollBarVertBtnStyle.fixedWidth = true;
 		scrollBarVertBtnStyle.height = 4;
@@ -400,7 +400,7 @@ namespace BansheeEngine
 		mSkin.setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
 		HTexture scrollBarBg = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ScrollBarBgTex));
-		SpriteTexturePtr scrollBarBgPtr = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(scrollBarBg));
+		HSpriteTexture scrollBarBgPtr = SpriteTexture::create(scrollBarBg);
 
 		// Vertical scroll bar
 		GUIElementStyle vertScrollBarStyle;
@@ -435,8 +435,8 @@ namespace BansheeEngine
 		HTexture dropDownListHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBtnHoverTex));
 
 		GUIElementStyle dropDownListStyle;
-		dropDownListStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownListNormal));
-		dropDownListStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownListHover));
+		dropDownListStyle.normal.texture = SpriteTexture::create(dropDownListNormal);
+		dropDownListStyle.hover.texture = SpriteTexture::create(dropDownListHover);
 		dropDownListStyle.active.texture = dropDownListStyle.hover.texture;
 		dropDownListStyle.normalOn.texture = dropDownListStyle.hover.texture;
 		dropDownListStyle.hoverOn.texture = dropDownListStyle.hover.texture;
@@ -464,7 +464,7 @@ namespace BansheeEngine
 		HTexture dropDownBtnScrollUpArrow = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpArrowTex));
 
 		GUIElementStyle dropDownScrollUpBtnArrowStyle;
-		dropDownScrollUpBtnArrowStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollUpArrow));
+		dropDownScrollUpBtnArrowStyle.normal.texture = SpriteTexture::create(dropDownBtnScrollUpArrow);
 		dropDownScrollUpBtnArrowStyle.hover.texture = dropDownScrollUpBtnArrowStyle.normal.texture;
 		dropDownScrollUpBtnArrowStyle.active.texture = dropDownScrollUpBtnArrowStyle.hover.texture;
 		dropDownScrollUpBtnArrowStyle.fixedHeight = true;
@@ -485,8 +485,8 @@ namespace BansheeEngine
 		HTexture dropDownBtnScrollUpHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpHoverTex));
 
 		GUIElementStyle dropDownScrollUpBtnStyle;
-		dropDownScrollUpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollUpNormal));
-		dropDownScrollUpBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollUpHover));
+		dropDownScrollUpBtnStyle.normal.texture = SpriteTexture::create(dropDownBtnScrollUpNormal);
+		dropDownScrollUpBtnStyle.hover.texture = SpriteTexture::create(dropDownBtnScrollUpHover);
 		dropDownScrollUpBtnStyle.active.texture = dropDownScrollUpBtnStyle.hover.texture;
 		dropDownScrollUpBtnStyle.fixedHeight = true;
 		dropDownScrollUpBtnStyle.fixedWidth = false;
@@ -505,7 +505,7 @@ namespace BansheeEngine
 		HTexture dropDownBtnScrollDownArrow = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnDownArrowTex));
 
 		GUIElementStyle dropDownScrollDownBtnArrowStyle;
-		dropDownScrollDownBtnArrowStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollDownArrow));
+		dropDownScrollDownBtnArrowStyle.normal.texture = SpriteTexture::create(dropDownBtnScrollDownArrow);
 		dropDownScrollDownBtnArrowStyle.hover.texture = dropDownScrollDownBtnArrowStyle.normal.texture;
 		dropDownScrollDownBtnArrowStyle.active.texture = dropDownScrollDownBtnArrowStyle.hover.texture;
 		dropDownScrollDownBtnArrowStyle.fixedHeight = true;
@@ -526,8 +526,8 @@ namespace BansheeEngine
 		HTexture dropDownBtnScrollDownHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnDownHoverTex));
 
 		GUIElementStyle dropDownScrollDownBtnStyle;
-		dropDownScrollDownBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollDownNormal));
-		dropDownScrollDownBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBtnScrollDownHover));
+		dropDownScrollDownBtnStyle.normal.texture = SpriteTexture::create(dropDownBtnScrollDownNormal);
+		dropDownScrollDownBtnStyle.hover.texture = SpriteTexture::create(dropDownBtnScrollDownHover);
 		dropDownScrollDownBtnStyle.active.texture = dropDownScrollDownBtnStyle.hover.texture;
 		dropDownScrollDownBtnStyle.fixedHeight = true;
 		dropDownScrollDownBtnStyle.fixedWidth = false;
@@ -547,8 +547,8 @@ namespace BansheeEngine
 		HTexture dropDownEntryBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryHoverTex));
 
 		GUIElementStyle dropDownEntryBtnStyle;
-		dropDownEntryBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownEntryBtnNormal));
-		dropDownEntryBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownEntryBtnHover));
+		dropDownEntryBtnStyle.normal.texture = SpriteTexture::create(dropDownEntryBtnNormal);
+		dropDownEntryBtnStyle.hover.texture = SpriteTexture::create(dropDownEntryBtnHover);
 		dropDownEntryBtnStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
@@ -572,8 +572,8 @@ namespace BansheeEngine
 		HTexture dropDownExpEntryBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxEntryExpHoverTex));
 
 		GUIElementStyle dropDownEntryExpBtnStyle;
-		dropDownEntryExpBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownExpEntryBtnNormal));
-		dropDownEntryExpBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownExpEntryBtnHover));
+		dropDownEntryExpBtnStyle.normal.texture = SpriteTexture::create(dropDownExpEntryBtnNormal);
+		dropDownEntryExpBtnStyle.hover.texture = SpriteTexture::create(dropDownExpEntryBtnHover);
 		dropDownEntryExpBtnStyle.active.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
@@ -596,7 +596,7 @@ namespace BansheeEngine
 		HTexture dropDownBoxBgTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBgTex));
 
 		GUIElementStyle dropDownBoxStyle;
-		dropDownBoxStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownBoxBgTex));
+		dropDownBoxStyle.normal.texture = SpriteTexture::create(dropDownBoxBgTex);
 		dropDownBoxStyle.hover.texture = dropDownEntryBtnStyle.normal.texture;
 		dropDownBoxStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownBoxStyle.fixedHeight = false;
@@ -618,7 +618,7 @@ namespace BansheeEngine
 		HTexture dropDownSeparatorTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownSeparatorTex));
 
 		GUIElementStyle dropDownSeparatorStyle;
-		dropDownSeparatorStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(dropDownSeparatorTex));
+		dropDownSeparatorStyle.normal.texture = SpriteTexture::create(dropDownSeparatorTex);
 		dropDownSeparatorStyle.fixedHeight = true;
 		dropDownSeparatorStyle.fixedWidth = false;
 		dropDownSeparatorStyle.height = 3;
@@ -640,7 +640,7 @@ namespace BansheeEngine
 		HTexture menuBarBgTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + MenuBarBgTex));
 
 		GUIElementStyle menuBarBgStyle;
-		menuBarBgStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBgTex));
+		menuBarBgStyle.normal.texture = SpriteTexture::create(menuBarBgTex);
 		menuBarBgStyle.fixedHeight = false;
 		menuBarBgStyle.fixedWidth = false;
 		menuBarBgStyle.height = 4;
@@ -652,7 +652,7 @@ namespace BansheeEngine
 		HTexture menuBarBansheeLogoTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + MenuBarBansheeLogoTex));
 
 		GUIElementStyle menuBarBansheeLogoStyle;
-		menuBarBansheeLogoStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBansheeLogoTex));
+		menuBarBansheeLogoStyle.normal.texture = SpriteTexture::create(menuBarBansheeLogoTex);
 		menuBarBansheeLogoStyle.fixedHeight = true;
 		menuBarBansheeLogoStyle.fixedWidth = true;
 		menuBarBansheeLogoStyle.height = 7;
@@ -665,8 +665,8 @@ namespace BansheeEngine
 		HTexture menuBarBtnHover = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + MenuBarBtnHoverTex));
 
 		GUIElementStyle menuBarBtnStyle;
-		menuBarBtnStyle.normal.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnNormal));
-		menuBarBtnStyle.hover.texture = cm_shared_ptr<SpriteTexture, PoolAlloc>(std::cref(menuBarBtnHover));
+		menuBarBtnStyle.normal.texture = SpriteTexture::create(menuBarBtnNormal);
+		menuBarBtnStyle.hover.texture = SpriteTexture::create(menuBarBtnHover);
 		menuBarBtnStyle.active.texture = menuBarBtnStyle.hover.texture;
 		menuBarBtnStyle.normalOn.texture = menuBarBtnStyle.hover.texture;
 		menuBarBtnStyle.hoverOn.texture = menuBarBtnStyle.hover.texture;

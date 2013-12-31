@@ -164,8 +164,8 @@ namespace BansheeEngine
 		const GUIElementStyle* mEntryExpBtnStyle;
 		const GUIElementStyle* mSeparatorStyle;
 		const GUIElementStyle* mBackgroundStyle;
-		SpriteTexturePtr mScrollUpBtnArrow;
-		SpriteTexturePtr mScrollDownBtnArrow;
+		HSpriteTexture mScrollUpBtnArrow;
+		HSpriteTexture mScrollDownBtnArrow;
 
 		DropDownSubMenu* mRootMenu;
 

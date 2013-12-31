@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "CmResource.h"
 #include "CmVector2.h"
 
 namespace BansheeEngine
@@ -10,21 +11,32 @@ namespace BansheeEngine
 	 * 			to create a sprite texture atlas, without requiring any of the sprite classes to directly
 	 * 			know about it.
 	 */
-	class BS_EXPORT SpriteTexture
+	class BS_EXPORT SpriteTexture : public CM::Resource
 	{
 	public:
-		SpriteTexture(const CM::HTexture& baseTexture);
-
 		const CM::HTexture& getTexture() const;
 		CM::Vector2 transformUV(const CM::Vector2& uv) const;
 
-		static SpriteTexturePtr dummy();
+		static HSpriteTexture dummy();
+		static HSpriteTexture create(const CM::HTexture& texture);
+		static HSpriteTexture create(const CM::Vector2& uvOffset, const CM::Vector2& uvScale, const CM::HTexture& texture);
 	private:
-		CM::HTexture mBaseTexture;
+		friend class SpriteTextureRTTI;
 
-		bool mUsingAtlas;
+		SpriteTexture(const CM::Vector2& uvOffset, const CM::Vector2& uvScale, const CM::HTexture& texture);
+
 		CM::HTexture mAtlasTexture;
 		CM::Vector2 mUVOffset;
 		CM::Vector2 mUVScale;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+		static SpriteTexturePtr createEmpty();
+	public:
+		friend class SpriteTextureRTTI;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;	
 	};
 }

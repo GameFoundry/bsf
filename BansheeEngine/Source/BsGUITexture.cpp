@@ -16,16 +16,16 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUITexture::GUITexture(GUIWidget& parent, const GUIElementStyle* style, const SpriteTexturePtr& texture, 
+	GUITexture::GUITexture(GUIWidget& parent, const GUIElementStyle* style, const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions)
 		:GUIElement(parent, style, layoutOptions), mScaleMode(scale)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
 		if(texture != nullptr)
-			mDesc.texture = texture;
+			mActiveTexture = texture;
 		else
-			mDesc.texture = style->normal.texture;
+			mActiveTexture = style->normal.texture;
 	
 		mDesc.borderLeft = mStyle->border.left;
 		mDesc.borderRight = mStyle->border.right;
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const SpriteTexturePtr& texture, 
+	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const GUIOptions& layoutOptions, const SpriteTexturePtr& texture, 
+	GUITexture* GUITexture::create(GUIWidget& parent, const GUIOptions& layoutOptions, const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
@@ -70,7 +70,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HSpriteTexture(), scale, GUILayoutOptions::create(style));
 	}
 
 	GUITexture* GUITexture::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUIImageScaleMode scale, const GUIElementStyle* style)
@@ -81,12 +81,12 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, nullptr, scale, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HTexture(), scale, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	void GUITexture::setTexture(const SpriteTexturePtr& texture)
+	void GUITexture::setTexture(const HSpriteTexture& texture)
 	{
-		mDesc.texture = texture;
+		mActiveTexture = texture;
 		markContentAsDirty();
 	}
 
@@ -112,8 +112,9 @@ namespace BansheeEngine
 
 		float optimalWidth = 0.0f;
 		float optimalHeight = 0.0f;
-		if(mDesc.texture != nullptr)
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
 		{
+			mDesc.texture = mActiveTexture.getInternalPtr();
 			optimalWidth = (float)mDesc.texture->getTexture()->getWidth();
 			optimalHeight = (float)mDesc.texture->getTexture()->getHeight();
 		}
@@ -175,9 +176,9 @@ namespace BansheeEngine
 
 	Vector2I GUITexture::_getOptimalSize() const
 	{
-		if(mDesc.texture != nullptr)
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
 		{
-			return Vector2I(mDesc.texture->getTexture()->getWidth(), mDesc.texture->getTexture()->getHeight());
+			return Vector2I(mActiveTexture->getTexture()->getWidth(), mActiveTexture->getTexture()->getHeight());
 		}
 
 		return Vector2I(0, 0);

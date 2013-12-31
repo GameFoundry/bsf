@@ -246,6 +246,9 @@
     <ClInclude Include="Include\BsScriptManager.h">
       <Filter>Header Files\Script</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsSpriteTextureRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">

@@ -19,7 +19,7 @@ namespace BansheeEditor
 	}
 
 	GUIWindowDropArea::GUIWindowDropArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUITexture(parent, style, nullptr, GUIImageScaleMode::ScaleToFit, layoutOptions)
+		:GUITexture(parent, style, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, layoutOptions)
 	{ }
 
 	GUIWindowDropArea::~GUIWindowDropArea()
@@ -50,9 +50,9 @@ namespace BansheeEditor
 	void GUIWindowDropArea::setFocused(bool focused)
 	{
 		if(focused)
-			mDesc.texture = mStyle->focused.texture;
+			mActiveTexture = mStyle->focused.texture;
 		else
-			mDesc.texture = mStyle->normal.texture;
+			mActiveTexture = mStyle->normal.texture;
 
 		markContentAsDirty();
 	}

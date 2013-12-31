@@ -65,6 +65,7 @@ namespace BansheeEngine
 		CM::Vector2I mTextOffset;
 		bool mHasFocus;
 
+		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
 
