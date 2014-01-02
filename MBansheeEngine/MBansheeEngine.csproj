@@ -57,6 +57,7 @@
     <Compile Include="GUILayoutY.cs" />
     <Compile Include="GUIOption.cs" />
     <Compile Include="GUISkin.cs" />
+    <Compile Include="GUISpace.cs" />
     <Compile Include="GUIWidget.cs" />
     <Compile Include="HString.cs" />
     <Compile Include="MathEx.cs" />

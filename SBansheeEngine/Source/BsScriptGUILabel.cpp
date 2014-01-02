@@ -52,7 +52,7 @@ namespace BansheeEngine
 			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
 
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		GUILabel* guiLabel = GUILabel::create(scriptLayout->getParentArea()->getParentWidget(), nativeContent, options, elemStyle); // TODO - Use proper HString
+		GUILabel* guiLabel = GUILabel::create(scriptLayout->getParentArea()->getParentWidget(), nativeContent, options, elemStyle);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		nativeLayout->addElement(guiLabel);
 
