@@ -69,6 +69,11 @@ namespace CamelotFramework
 
 	HString::operator const WString& () const 
 	{ 
+		return getValue(); 
+	}
+
+	const WString& HString::getValue() const
+	{
 		if(mData->mIsDirty)
 		{
 			if(mData->mParameters != nullptr)
@@ -98,5 +103,12 @@ namespace CamelotFramework
 	boost::signals::connection HString::addOnStringModifiedCallback(boost::function<void()> callback) const
 	{
 		return mData->onStringModified.connect(callback);
+	}
+
+	const HString& HString::dummy()
+	{
+		static HString dummyVal;
+
+		return dummyVal;
 	}
 }

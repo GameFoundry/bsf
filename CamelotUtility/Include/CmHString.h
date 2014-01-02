@@ -43,9 +43,13 @@ namespace CamelotFramework
 		~HString();
 
 		operator const WString& () const;
-		void setParameter(UINT32 idx, const WString& value);
+		const WString& getValue() const;
 
+		void setParameter(UINT32 idx, const WString& value);
+		
 		boost::signals::connection addOnStringModifiedCallback(boost::function<void()> callback) const;
+
+		static const HString& dummy();
 	private:
 		std::shared_ptr<StringData> mData;
 	};

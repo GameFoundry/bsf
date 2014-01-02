@@ -194,7 +194,7 @@ namespace CamelotFramework
 		 */
 		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage) = 0;
 
-		HTexture getDummyTexture() const { return mDummyTexture; }
+		const HTexture& getDummyTexture() const { return mDummyTexture; }
 
 	protected:
 		HTexture mDummyTexture;

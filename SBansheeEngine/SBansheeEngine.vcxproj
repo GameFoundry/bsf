@@ -240,6 +240,7 @@
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
+    <ClInclude Include="Include\BsScriptGUIContent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
@@ -254,6 +255,7 @@
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />
+    <ClCompile Include="Source\BsScriptGUIContent.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -5,19 +5,19 @@ namespace BansheeEngine
 {
     public abstract class GUILayout : ScriptObject
     {
-        public GUILabel AddLabel(HString name, GUIElementStyle style, params GUIOption[] options)
+        public GUILabel AddLabel(GUIContent content, GUIElementStyle style, params GUIOption[] options)
         {
-            return new GUILabel(this, name, style, options);
+            return new GUILabel(this, content, style, options);
         }
 
-        public GUILabel AddLabel(HString name, GUIElementStyle style)
+        public GUILabel AddLabel(GUIContent content, GUIElementStyle style)
         {
-            return new GUILabel(this, name, style, new GUIOption[0]);
+            return new GUILabel(this, content, style, new GUIOption[0]);
         }
 
-        public GUILabel AddLabel(HString name, params GUIOption[] options)
+        public GUILabel AddLabel(GUIContent content, params GUIOption[] options)
         {
-            return new GUILabel(this, name, null, options);
+            return new GUILabel(this, content, null, options);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

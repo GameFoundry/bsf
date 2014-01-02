@@ -25,12 +25,13 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHString::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptHString::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetParameter", &ScriptHString::internal_setParameter);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptHString::internal_getValue);
 	}
 
 	void ScriptHString::internal_createInstance(MonoObject* instance, MonoString* identifier)
 	{
 		HString string(MonoUtil::monoToWString(identifier));
-
+		
 		ScriptHString* nativeInstance = new (cm_alloc<ScriptHString>()) ScriptHString(string);
 		nativeInstance->createInstance(instance);
 
@@ -46,5 +47,10 @@ namespace BansheeEngine
 	void ScriptHString::internal_setParameter(HString* nativeInstance, UINT32 idx, MonoString* value)
 	{
 		nativeInstance->setParameter(idx, MonoUtil::monoToWString(value));
+	}
+
+	void ScriptHString::internal_getValue(CM::HString* nativeInstance, MonoString** value)
+	{
+		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->getValue());
 	}
 }

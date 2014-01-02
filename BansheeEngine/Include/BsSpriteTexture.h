@@ -17,7 +17,7 @@ namespace BansheeEngine
 		const CM::HTexture& getTexture() const;
 		CM::Vector2 transformUV(const CM::Vector2& uv) const;
 
-		static HSpriteTexture dummy();
+		static const HSpriteTexture& dummy();
 		static HSpriteTexture create(const CM::HTexture& texture);
 		static HSpriteTexture create(const CM::Vector2& uvOffset, const CM::Vector2& uvScale, const CM::HTexture& texture);
 	private:

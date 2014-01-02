@@ -12,7 +12,7 @@ namespace BansheeEditor
         public ProjectSelectWindow()
             :base(0, 0, 200, 200)
         {
-            GUI.main.AddLabel(new HString("Test test"));
+            GUI.main.AddLabel("Test test");
         }
     }
 }

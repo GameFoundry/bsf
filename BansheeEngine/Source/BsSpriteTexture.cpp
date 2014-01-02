@@ -22,15 +22,9 @@ namespace BansheeEngine
 		return mUVOffset + uv * mUVScale;
 	}
 
-	HSpriteTexture SpriteTexture::dummy()
+	const HSpriteTexture& SpriteTexture::dummy()
 	{
-		static bool initialized = false;
-		static HSpriteTexture dummyTex;
-
-		if(!initialized)
-		{
-			dummyTex = create(Texture::dummy());
-		}
+		static HSpriteTexture dummyTex = create(Texture::dummy());
 
 		return dummyTex;
 	}

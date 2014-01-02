@@ -93,7 +93,6 @@ Eventually make all math classes templates that work on both doubles and floats.
 
 Implement:
  - GUIContent
- - HString
 
  - Button
  - Texture
@@ -114,19 +113,12 @@ Implement:
    - GUISkin.main <- default skin
  - GUI (Non EditorGUI version)
 
- - Implement Font
- - SpriteTexture needs to be a handle
+ - Implement C# Font
  - Implement C# SpriteTexture
 
 When loading resources I need to be able to load both project resources and engine ones. 
  - BuiltinResources can be used for accessing default resources like GUI skin textures and similar
  - They're all loaded from a special folder that is set in EditorApplication
-
-Should I make sprite texture a resource?
- - Quite probably, and will need to replace any Ptr references with handle references. I want the user
-   to be able to reference the resource in multiple locations and then he can easily edit the SpriteTexture as needed.
-
-ScriptGUILabel currently accepts a WString, while it should be accepting a HString. Check BsScriptGUILabel
 
  BsApplication::getPrimaryViewport is not implemented
 

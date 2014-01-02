@@ -12,6 +12,7 @@
 #include "BsScriptGUILayout.h"
 #include "BsScriptGUIArea.h"
 #include "BsScriptHString.h"
+#include "BsScriptGUIContent.h"
 
 using namespace CamelotFramework;
 
@@ -35,10 +36,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUILabel::internal_destroyInstance);
 	}
 
-	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* label, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* content, MonoObject* style, MonoArray* guiOptions)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-		ScriptHString* nativeLabel = ScriptHString::toNative(label);
 		GUIOptions options;
 
 		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
@@ -50,7 +50,8 @@ namespace BansheeEngine
 		if(style != nullptr)
 			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
 
-		GUILabel* guiLabel = GUILabel::create(scriptLayout->getParentArea()->getParentWidget(), nativeLabel->getInternalValue(), options, elemStyle); // TODO - Use proper HString
+		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
+		GUILabel* guiLabel = GUILabel::create(scriptLayout->getParentArea()->getParentWidget(), nativeContent, options, elemStyle); // TODO - Use proper HString
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		nativeLayout->addElement(guiLabel);
 

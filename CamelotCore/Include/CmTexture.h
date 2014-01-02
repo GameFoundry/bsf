@@ -214,7 +214,7 @@ namespace CamelotFramework
 		/**
 		 * @brief	Returns a dummy 2x2 texture. Don't modify the returned texture.
 		 */
-		static HTexture dummy();
+		static const HTexture& dummy();
 
 		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/

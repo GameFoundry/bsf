@@ -18,6 +18,7 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoString* identifier);
 		static void internal_destroyInstance(ScriptHString* nativeInstance);
 		static void internal_setParameter(CM::HString* nativeInstance, CM::UINT32 idx, MonoString* value);
+		static void internal_getValue(CM::HString* nativeInstance, MonoString** value);
 
 		static void initRuntimeData();
 

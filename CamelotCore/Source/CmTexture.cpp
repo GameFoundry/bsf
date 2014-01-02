@@ -343,7 +343,7 @@ namespace CamelotFramework
 		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
 	}
 
-	HTexture Texture::dummy()
+	const HTexture& Texture::dummy()
 	{
 		return TextureManager::instance().getDummyTexture();
 	}
