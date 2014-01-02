@@ -12,7 +12,8 @@ namespace BansheeEditor
         public ProjectSelectWindow()
             :base(0, 0, 200, 200)
         {
-            GUI.main.AddLabel("Test test");
+            GUILabel label = GUI.main.AddLabel("Test test");
+            label.SetContent("Test2");
         }
     }
 }

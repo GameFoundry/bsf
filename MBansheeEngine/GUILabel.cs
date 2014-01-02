@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
@@ -9,7 +10,15 @@ namespace BansheeEngine
             Internal_CreateInstance(this, parentLayout, content, style, options);
         }
 
+        public void SetContent(GUIContent content)
+        {
+            Internal_SetContent(mCachedPtr, content);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUILabel instance, GUILayout layout, GUIContent content, GUIElementStyle style, GUIOption[] options);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);
     }
 }
