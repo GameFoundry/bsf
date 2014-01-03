@@ -12,7 +12,7 @@ namespace BansheeEngine
 
 		static const CM::HString& getText(MonoObject* instance);
 		static const CM::HString& getTooltip(MonoObject* instance);
-		static const HSpriteTexture& getImage(MonoObject* instance);
+		static HSpriteTexture getImage(MonoObject* instance);
 
 	private:
 		static void initRuntimeData();

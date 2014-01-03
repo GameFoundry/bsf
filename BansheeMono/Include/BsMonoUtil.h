@@ -39,6 +39,11 @@ namespace BansheeEngine
 			return monoString;
 		}
 
+		static void throwIfException(MonoException* exception)
+		{
+			throwIfException(reinterpret_cast<MonoObject*>(exception));
+		}
+
 		static void throwIfException(MonoObject* exception)
 		{
 			if(exception != nullptr)

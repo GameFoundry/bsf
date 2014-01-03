@@ -22,8 +22,8 @@ namespace BansheeEditor
 		setSkin(skin);
 
 		GUIArea* backgroundArea = GUIArea::createStretchedXY(*this, 0, 0, 0, 0, 500);
-		backgroundArea->getLayout().addElement(GUITexture::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), 
-			GUIImageScaleMode::RepeatToFit, getSkin().getStyle("WindowBackground")));
+		backgroundArea->getLayout().addElement(GUITexture::create(*this, GUIImageScaleMode::RepeatToFit, 
+			GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), getSkin().getStyle("WindowBackground")));
 
 		mWindowFrameArea = GUIArea::createStretchedXY(*this, 0, 0, 0, 0, 499);
 

@@ -14,6 +14,14 @@ namespace BansheeEditor
         {
             GUILabel label = GUI.main.AddLabel("Test test");
             label.SetContent("Test2");
+
+            GUIButton button = GUI.main.AddButton("CLICK ME");
+            button.OnClick += button_OnClick;
+        }
+
+        void button_OnClick()
+        {
+            throw new NotImplementedException();
         }
     }
 }

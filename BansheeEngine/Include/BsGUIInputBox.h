@@ -14,6 +14,8 @@ namespace BansheeEngine
 
 		static GUIInputBox* create(GUIWidget& parent, bool multiline = false, const GUIElementStyle* style = nullptr);
 		static GUIInputBox* create(GUIWidget& parent, const GUIOptions& layoutOptions, bool multiline = false, const GUIElementStyle* style = nullptr);
+
+		const CM::WString& getText() const { return mText; }
 	protected:
 		~GUIInputBox();
 

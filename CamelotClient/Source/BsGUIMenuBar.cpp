@@ -26,8 +26,8 @@ namespace BansheeEditor
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
 
-		mBgTexture = GUITexture::create(*parent, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()), 
-			GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("MenuBarBg"));
+		mBgTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()),
+			EngineGUI::instance().getSkin().getStyle("MenuBarBg"));
 		mBackgroundArea->getLayout().addElement(mBgTexture);
 
 		mLogoTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("MenuBarBansheeLogo"));

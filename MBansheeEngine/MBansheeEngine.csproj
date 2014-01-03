@@ -48,6 +48,7 @@
     <Compile Include="GUI.cs" />
     <Compile Include="GUIArea.cs" />
     <Compile Include="GUIBase.cs" />
+    <Compile Include="GUIButton.cs" />
     <Compile Include="GUIContent.cs" />
     <Compile Include="GUIElementStateStyle.cs" />
     <Compile Include="GUIElementStyle.cs" />
@@ -58,6 +59,7 @@
     <Compile Include="GUIOption.cs" />
     <Compile Include="GUISkin.cs" />
     <Compile Include="GUISpace.cs" />
+    <Compile Include="GUITexture.cs" />
     <Compile Include="GUIWidget.cs" />
     <Compile Include="HString.cs" />
     <Compile Include="MathEx.cs" />

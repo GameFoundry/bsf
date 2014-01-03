@@ -53,12 +53,12 @@ namespace BansheeEngine
 		return tooltipScript->getInternalValue();
 	}
 
-	const HSpriteTexture& ScriptGUIContent::getImage(MonoObject* instance)
+	HSpriteTexture ScriptGUIContent::getImage(MonoObject* instance)
 	{
 		MonoObject* imageManaged = (MonoObject*)mImageField->getValue(instance);
 
 		if(imageManaged == nullptr)
-			return SpriteTexture::dummy();
+			return HSpriteTexture();
 
 		ScriptSpriteTexture* imageScript = ScriptSpriteTexture::toNative(imageManaged);
 		return imageScript->getInternalValue();

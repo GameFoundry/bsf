@@ -92,17 +92,20 @@ Eventually make all math classes templates that work on both doubles and floats.
 ----------------------------
 
 Implement:
- - Button
- - Texture
- - RenderTexture
- - Toggle
- - TextField
- - ListBox
- - DropDownBox
- - ScrollArea
+ - GUIInputBox
+  - getText
 
- - Space
- - FlexibleSpace
+ - GUIListBox
+  - onSelectionChanged
+
+ - GUIScrollArea
+
+ - GUIRenderTexture
+  - RenderTexture (?)
+
+ - GUIToggle
+  - onToggled
+  - ToggleGroup (?)
 
  - Destroy()
  - GUISkin
@@ -113,6 +116,8 @@ Implement:
 
  - Implement C# Font
  - Implement C# SpriteTexture
+
+ - Need a way to update Listbox after it has been created (C++ and C#)
 
 When loading resources I need to be able to load both project resources and engine ones. 
  - BuiltinResources can be used for accessing default resources like GUI skin textures and similar
