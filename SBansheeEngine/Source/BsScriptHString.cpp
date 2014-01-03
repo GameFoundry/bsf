@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	void ScriptHString::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "HString", &ScriptHString::initRuntimeData);
+		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "LocString", &ScriptHString::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

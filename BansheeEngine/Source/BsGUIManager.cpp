@@ -441,6 +441,7 @@ namespace BansheeEngine
 				{
 					foundGroup->bounds.encapsulate(tfrmedBounds);
 					foundGroup->elements.push_back(GUIGroupElement(guiElem, renderElemIdx));
+					foundGroup->depth = std::min(foundGroup->depth, elemDepth);
 					foundGroup->numQuads += guiElem->getNumQuads(renderElemIdx);
 				}
 			}

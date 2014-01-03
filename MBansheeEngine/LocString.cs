@@ -3,19 +3,19 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public sealed class HString : ScriptObject
+    public sealed class LocString : ScriptObject
     {
-        public HString(string identifier)
+        public LocString(string identifier)
         {
             Internal_CreateInstance(this, identifier);
         }
 
-        public static implicit operator HString(string identifier)
+        public static implicit operator LocString(string identifier)
         {
-            return new HString(identifier);
+            return new LocString(identifier);
         }
 
-        public static implicit operator string(HString text)
+        public static implicit operator string(LocString text)
         {
             string value;
             Internal_GetValue(text.mCachedPtr, out value);
@@ -28,7 +28,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(HString instance, string identifier);
+        private static extern void Internal_CreateInstance(LocString instance, string identifier);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetParameter(IntPtr nativeInstance, int idx, string identifier);

@@ -235,6 +235,7 @@
     <ClInclude Include="Include\BsScriptGUIBase.h" />
     <ClInclude Include="Include\BsScriptGUIElementStateStyle.h" />
     <ClInclude Include="Include\BsScriptGUIElementStyle.h" />
+    <ClInclude Include="Include\BsScriptGUIInputBox.h" />
     <ClInclude Include="Include\BsScriptGUILabel.h" />
     <ClInclude Include="Include\BsScriptGUILayout.h" />
     <ClInclude Include="Include\BsScriptGUITexture.h" />
@@ -260,6 +261,7 @@
     <ClCompile Include="Source\BsScriptGUILayout.cpp" />
     <ClCompile Include="Source\BsScriptGUITexture.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
+    <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />

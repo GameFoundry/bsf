@@ -67,7 +67,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(style), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUIOptions& layoutOptions, bool multiline, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(GUIWidget& parent, bool multiline, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -76,6 +76,37 @@ namespace BansheeEngine
 		}
 
 		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(layoutOptions, style), multiline);
+	}
+
+	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(layoutOptions, style), false);
+	}
+
+	void GUIInputBox::setText(const CM::WString& text)
+	{
+		mText = text;
+
+		TEXT_SPRITE_DESC textDesc = getTextDesc();
+		Vector2I offset = getTextOffset();
+
+		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+
+		if(mText.size() > 0)
+			gGUIManager().getInputCaretTool()->moveCaretToChar((UINT32)mText.size() - 1, CARET_AFTER);
+		else
+			gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+
+		scrollTextToCaret();
+
+		markContentAsDirty();
 	}
 
 	UINT32 GUIInputBox::getNumRenderElements() const

@@ -4,12 +4,12 @@ namespace BansheeEngine
 {
     public sealed class GUIContent
     {
-		public GUIContent(HString text)
+		public GUIContent(LocString text)
 		{
 		    _text = text;
 		}
 
-        public GUIContent(HString text, HString tooltip)
+        public GUIContent(LocString text, LocString tooltip)
         {
             _text = text;
             _tooltip = tooltip;
@@ -20,36 +20,36 @@ namespace BansheeEngine
             _image = image;
         }
 
-        public GUIContent(SpriteTexture image, HString tooltip)
+        public GUIContent(SpriteTexture image, LocString tooltip)
         {
             _image = image;
             _tooltip = tooltip;
         }
 
-        public GUIContent(HString text, SpriteTexture image)
+        public GUIContent(LocString text, SpriteTexture image)
         {
             _text = text;
             _image = image;
         }
 
-        public GUIContent(HString text, SpriteTexture image, HString tooltip)
+        public GUIContent(LocString text, SpriteTexture image, LocString tooltip)
         {
             _text = text;
             _image = image;
             _tooltip = tooltip;
         }
 
-        public static implicit operator GUIContent(HString text)
+        public static implicit operator GUIContent(LocString text)
         {
             return new GUIContent(text);
         }
 
         public static implicit operator GUIContent(string text)
         {
-            return new GUIContent(new HString(text));
+            return new GUIContent(new LocString(text));
         }
 
-        public HString text
+        public LocString text
         {
             get { return _text; }
         }
@@ -59,13 +59,13 @@ namespace BansheeEngine
             get { return _image; }
         }
 
-        public HString getTooltip
+        public LocString getTooltip
         {
             get { return _tooltip; }
         }
 
-        private HString _text;
-        private HString _tooltip;
+        private LocString _text;
+        private LocString _tooltip;
         private SpriteTexture _image;
     }
 }

@@ -50,6 +50,26 @@ namespace BansheeEngine
             return new GUITexture(this, texture, GUIImageScaleMode.StretchToFit, null, options);
         }
 
+        public GUITextBox AddTextBox(bool multiline, GUIElementStyle style, params GUIOption[] options)
+        {
+            return new GUITextBox(this, multiline, style, options);
+        }
+
+        public GUITextBox AddTextBox(bool multiline, params GUIOption[] options)
+        {
+            return new GUITextBox(this, multiline, null, options);
+        }
+
+        public GUITextBox AddTextBox(GUIElementStyle style, params GUIOption[] options)
+        {
+            return new GUITextBox(this, false, style, options);
+        }
+
+        public GUITextBox AddTextBox(params GUIOption[] options)
+        {
+            return new GUITextBox(this, false, null, options);
+        }
+
         public GUIFixedSpace AddSpace(int size)
         {
             return new GUIFixedSpace(this, size);

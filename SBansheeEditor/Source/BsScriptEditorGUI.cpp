@@ -39,6 +39,7 @@ namespace BansheeEditor
 		HSceneObject sceneObj = nativeParentWindow->getSceneObject();
 		HGUIWidget widget = sceneObj->addComponent<GUIWidget>(nativeParentWindow->getCamera()->getViewport().get());
 		widget->setSkin(EngineGUI::instance().getSkin());
+		widget->setDepth(128);
 
 		ScriptEditorGUI* nativeInstance = new (cm_alloc<ScriptEditorGUI>()) ScriptEditorGUI(*widget.get(), nativeParentWindow);
 		nativeInstance->createInstance(instance);
