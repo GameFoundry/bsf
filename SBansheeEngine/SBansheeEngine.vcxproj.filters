@@ -75,6 +75,9 @@
     <ClInclude Include="Include\BsScriptGUIInputBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIScrollArea.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -129,6 +132,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIScrollArea.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -62,7 +62,7 @@ namespace BansheeEngine
 			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
 
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		GUIButton* guiButton = GUIButton::create(scriptLayout->getParentArea()->getParentWidget(), nativeContent, options, elemStyle);
+		GUIButton* guiButton = GUIButton::create(scriptLayout->getParentWidget(), nativeContent, options, elemStyle);
 
 		guiButton->onClick.connect(std::bind(&ScriptGUIButton::onClick, instance));
 		guiButton->onHover.connect(std::bind(&ScriptGUIButton::onHover, instance));

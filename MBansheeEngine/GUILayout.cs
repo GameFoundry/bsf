@@ -70,6 +70,16 @@ namespace BansheeEngine
             return new GUITextBox(this, false, null, options);
         }
 
+        public GUIScrollArea AddScrollArea(GUIElementStyle style, params GUIOption[] options)
+        {
+            return new GUIScrollArea(this, style, options);
+        }
+
+        public GUIScrollArea AddScrollArea(params GUIOption[] options)
+        {
+            return new GUIScrollArea(this, null, options);
+        }
+
         public GUIFixedSpace AddSpace(int size)
         {
             return new GUIFixedSpace(this, size);
@@ -85,6 +95,9 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_CreateInstanceXFromLayout(GUILayout instance, GUILayout parentLayout);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        protected static extern void Internal_CreateInstanceYFromScrollArea(GUILayout instance, GUIScrollArea parentArea);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         protected static extern void Internal_CreateInstanceYFromLayout(GUILayout instance, GUILayout parentLayout);

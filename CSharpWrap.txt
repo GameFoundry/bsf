@@ -92,9 +92,6 @@ Eventually make all math classes templates that work on both doubles and floats.
 ----------------------------
 
 Implement:
- - GUIInputBox
-  - getText
-
  - GUIListBox
   - onSelectionChanged
 

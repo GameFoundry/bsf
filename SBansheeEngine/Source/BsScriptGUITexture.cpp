@@ -58,7 +58,7 @@ namespace BansheeEngine
 		if(texture != nullptr)
 			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
 
-		GUITexture* guiTexture = GUITexture::create(scriptLayout->getParentArea()->getParentWidget(), nativeTexture, scale, options, elemStyle);
+		GUITexture* guiTexture = GUITexture::create(scriptLayout->getParentWidget(), nativeTexture, scale, options, elemStyle);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		nativeLayout->addElement(guiTexture);
 

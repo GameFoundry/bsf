@@ -4,15 +4,17 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsScriptGUIArea.h"
+#include "BsScriptGUIScrollArea.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
+#include "BsGUIScrollArea.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUILayout::ScriptGUILayout(GUILayout* layout, ScriptGUIArea* parentArea)
-		:mLayout(layout), mParentArea(parentArea)
+	ScriptGUILayout::ScriptGUILayout(GUILayout* layout, GUIWidget& parentWidget)
+		:mLayout(layout), mParentWidget(parentWidget)
 	{
 
 	}
@@ -23,11 +25,13 @@ namespace BansheeEngine
 
 		MonoManager::registerScriptType(&metaData);
 	}
+
 	void ScriptGUILayout::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromArea", &ScriptGUILayout::internal_createInstanceXFromArea);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceXFromLayout", &ScriptGUILayout::internal_createInstanceXFromLayout);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayout", &ScriptGUILayout::internal_createInstanceYFromLayout);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUILayout::internal_destroyInstance);
 	}
 
@@ -36,7 +40,7 @@ namespace BansheeEngine
 		ScriptGUIArea* scriptArea = ScriptGUIArea::toNative(parentArea);
 		GUIArea* nativeArea = scriptArea->getInternalValue();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&nativeArea->getLayout(), scriptArea);
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&nativeArea->getLayout(), scriptArea->getParentWidget());
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -48,7 +52,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->addLayoutX();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&layout, scriptLayout->getParentArea());
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&layout, scriptLayout->getParentWidget());
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -60,7 +64,18 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->addLayoutY();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&layout, scriptLayout->getParentArea());
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&layout, scriptLayout->getParentWidget());
+		nativeInstance->createInstance(instance);
+
+		metaData.thisPtrField->setValue(instance, nativeInstance);
+	}
+
+	void ScriptGUILayout::internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea)
+	{
+		ScriptGUIScrollArea* scriptScrollArea = ScriptGUIScrollArea::toNative(parentScrollArea);
+		GUILayout* nativeLayout = &scriptScrollArea->getInternalValue()->getLayout();
+
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(nativeLayout, scriptScrollArea->getParentWidget());
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);

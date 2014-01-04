@@ -13,19 +13,20 @@ namespace BansheeEngine
 		GUILayout* getInternalValue() const { return mLayout; }
 		void* getNativeRaw() const { return mLayout; }
 
-		ScriptGUIArea* getParentArea() const { return mParentArea; }
+		GUIWidget& getParentWidget() const { return mParentWidget; }
 
 	private:
 		static void internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea);
 		static void internal_createInstanceXFromLayout(MonoObject* instance, MonoObject* parentLayout);
 		static void internal_createInstanceYFromLayout(MonoObject* instance, MonoObject* parentLayout);
+		static void internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea);
 		static void internal_destroyInstance(ScriptGUILayout* nativeInstance);
 
 		static void initRuntimeData();
 
-		ScriptGUILayout(GUILayout* layout, ScriptGUIArea* parentArea);
+		ScriptGUILayout(GUILayout* layout, GUIWidget& parentWidget);
 
 		GUILayout* mLayout;
-		ScriptGUIArea* mParentArea;
+		GUIWidget& mParentWidget;
 	};
 }

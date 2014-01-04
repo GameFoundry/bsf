@@ -54,7 +54,7 @@ namespace BansheeEngine
 		if(style != nullptr)
 			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
 
-		GUIInputBox* guiInputBox = GUIInputBox::create(scriptLayout->getParentArea()->getParentWidget(), multiline, options, elemStyle);
+		GUIInputBox* guiInputBox = GUIInputBox::create(scriptLayout->getParentWidget(), multiline, options, elemStyle);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		nativeLayout->addElement(guiInputBox);
 
