@@ -5,6 +5,10 @@ namespace BansheeEngine
 {
     public sealed class GUIListBox : ScriptObject
     {
+        public delegate void OnSelectionChangedDelegate(int index);
+
+        public event OnSelectionChangedDelegate OnSelectionChanged;
+
         internal GUIListBox(GUILayout parentLayout, LocString[] elements, GUIElementStyle style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, parentLayout, elements, style, options);
@@ -13,6 +17,12 @@ namespace BansheeEngine
         public void SetElements(LocString[] elements)
         {
             Internal_SetElements(mCachedPtr, elements);
+        }
+
+        private void DoOnSelectionChanged(int index)
+        {
+            if (OnSelectionChanged != null)
+                OnSelectionChanged(index);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

@@ -115,8 +115,6 @@ ScrollArea will likely need:
  - Implement C# Font
  - Implement C# SpriteTexture
 
- - Need a way to update Listbox after it has been created (C++ and C#)
-
 When loading resources I need to be able to load both project resources and engine ones. 
  - BuiltinResources can be used for accessing default resources like GUI skin textures and similar
  - They're all loaded from a special folder that is set in EditorApplication

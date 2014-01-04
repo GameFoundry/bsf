@@ -17,13 +17,17 @@ namespace BansheeEngine
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoArray* elements, MonoObject* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIListBox* nativeInstance);
-
 		static void internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements);
 
 		static void initRuntimeData();
 
+		static void onSelectionChanged(MonoObject* instance, CM::UINT32 index);
+
 		ScriptGUIListBox(GUIListBox* listBox);
 
 		GUIListBox* mListBox;
+
+		typedef void (__stdcall *OnSelectionChangedThunkDef) (MonoObject*, CM::UINT32, MonoException**);
+		static OnSelectionChangedThunkDef onSelectionChangedThunk;
 	};
 }

@@ -2,6 +2,7 @@
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
+#include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 #include "BsSpriteTexture.h"
 #include "BsMonoUtil.h"
@@ -17,6 +18,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	ScriptGUIListBox::OnSelectionChangedThunkDef ScriptGUIListBox::onSelectionChangedThunk;
+
 	ScriptGUIListBox::ScriptGUIListBox(GUIListBox* listBox)
 		:mListBox(listBox)
 	{
@@ -35,6 +38,8 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIListBox::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIListBox::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetElements", &ScriptGUIListBox::internal_setElements);
+
+		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1).getThunk();
 	}
 
 	void ScriptGUIListBox::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoArray* elements, MonoObject* style, MonoArray* guiOptions)
@@ -67,6 +72,8 @@ namespace BansheeEngine
 		}
 
 		GUIListBox* guiListBox = GUIListBox::create(scriptLayout->getParentWidget(), nativeElements, options, elemStyle);
+		guiListBox->onSelectionChanged.connect(std::bind(&ScriptGUIListBox::onSelectionChanged, instance, std::placeholders::_1));
+
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		nativeLayout->addElement(guiListBox);
 
@@ -100,5 +107,13 @@ namespace BansheeEngine
 		}
 
 		nativeInstance->getInternalValue()->setElements(nativeElements);
+	}
+
+	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, CM::UINT32 index)
+	{
+		MonoException* exception = nullptr;
+		onSelectionChangedThunk(instance, index, &exception);
+
+		MonoUtil::throwIfException(exception);
 	}
 }
