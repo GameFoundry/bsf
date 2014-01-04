@@ -30,7 +30,7 @@ using namespace BansheeEngine;
 namespace CamelotFramework
 {
 	TestTextSprite::TestTextSprite(const HSceneObject& parent, CM::Viewport* target)
-		:GUIWidget(parent, target)
+		:GUIWidget(parent, target), mListBox(nullptr)
 	{
 	}
 
@@ -53,7 +53,8 @@ namespace CamelotFramework
 		dropDownElements.push_back(HString(L"Ejlement #1"));
 		dropDownElements.push_back(HString(L"Element #2"));
 		dropDownElements.push_back(HString(L"Element #3"));
-		area->getLayout().addElement(GUIListBox::create(*this, dropDownElements, GUIOptions(GUIOption::fixedWidth(50), GUIOption::fixedHeight(13))));
+		mListBox = GUIListBox::create(*this, dropDownElements, GUIOptions(GUIOption::fixedWidth(50), GUIOption::fixedHeight(13)));
+		area->getLayout().addElement(mListBox);
 
 		GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
 		button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));
@@ -77,12 +78,19 @@ namespace CamelotFramework
 
 		if(dbg == 0)
 		{
-			StringTable::instance().setString(L"dbgBtn", Language::Abkhazian, L"ALOALO");
-			StringTable::instance().setActiveLanguage(Language::Abkhazian);
+			Vector<HString>::type dropDownElements;
+			dropDownElements.push_back(HString(L"Element #4"));
+			dropDownElements.push_back(HString(L"Element #5"));
+			dropDownElements.push_back(HString(L"Element #6"));
+
+			mListBox->setElements(dropDownElements);
+
+			//StringTable::instance().setString(L"dbgBtn", Language::Abkhazian, L"ALOALO");
+			//StringTable::instance().setActiveLanguage(Language::Abkhazian);
 		}
 		else if(dbg == 1)
 		{
-			StringTable::instance().removeString(L"dbgBtn");
+			//StringTable::instance().removeString(L"dbgBtn");
 		}
 
 		dbg++;

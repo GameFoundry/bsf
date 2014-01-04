@@ -4,7 +4,7 @@ namespace BansheeEngine
 {
     public sealed class Font : Resource // TODO - Dummy class
     {
-        public Font()
+        internal Font()
         {
             Internal_CreateInstance(this);
         }

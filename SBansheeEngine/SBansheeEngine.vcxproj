@@ -238,6 +238,7 @@
     <ClInclude Include="Include\BsScriptGUIInputBox.h" />
     <ClInclude Include="Include\BsScriptGUILabel.h" />
     <ClInclude Include="Include\BsScriptGUILayout.h" />
+    <ClInclude Include="Include\BsScriptGUIListBox.h" />
     <ClInclude Include="Include\BsScriptGUIScrollArea.h" />
     <ClInclude Include="Include\BsScriptGUITexture.h" />
     <ClInclude Include="Include\BsScriptHString.h" />
@@ -260,6 +261,7 @@
     <ClCompile Include="Source\BsScriptGUIElementStyle.cpp" />
     <ClCompile Include="Source\BsScriptGUILabel.cpp" />
     <ClCompile Include="Source\BsScriptGUILayout.cpp" />
+    <ClCompile Include="Source\BsScriptGUIListBox.cpp" />
     <ClCompile Include="Source\BsScriptGUIScrollArea.cpp" />
     <ClCompile Include="Source\BsScriptGUITexture.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />

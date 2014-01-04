@@ -95,14 +95,15 @@ Implement:
  - GUIListBox
   - onSelectionChanged
 
- - GUIScrollArea
-
- - GUIRenderTexture
-  - RenderTexture (?)
-
  - GUIToggle
   - onToggled
   - ToggleGroup (?)
+
+ScrollArea will likely need:
+ C#: test it
+ C++/C#: always/never show horz/vert scroll bar
+ C++/C#: optional styles for scroll bars
+ C++/C#: scrollTo(pct)
 
  - Destroy()
  - GUISkin

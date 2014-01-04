@@ -55,6 +55,23 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, GUILayoutOptions::create(layoutOptions, style));
 	}
 
+	void GUIListBox::setElements(const CM::Vector<CM::HString>::type& elements)
+	{
+		bool wasOpen = mIsListBoxOpen;
+
+		if(mIsListBoxOpen)
+			closeListBox();
+
+		mElements = elements;
+		mSelectedIdx = 0;
+
+		if(elements.size() > 0)
+			setContent(GUIContent(mElements[mSelectedIdx]));
+
+		if(wasOpen)
+			openListBox();
+	}
+
 	bool GUIListBox::mouseEvent(const GUIMouseEvent& ev)
 	{
 		bool processed = GUIButtonBase::mouseEvent(ev);

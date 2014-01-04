@@ -80,6 +80,16 @@ namespace BansheeEngine
             return new GUIScrollArea(this, null, options);
         }
 
+        public GUIListBox AddListBox(LocString[] elements, GUIElementStyle style, params GUIOption[] options)
+        {
+            return new GUIListBox(this, elements, style, options);
+        }
+
+        public GUIListBox AddListBox(LocString[] elements, params GUIOption[] options)
+        {
+            return new GUIListBox(this, elements, null, options);
+        }
+
         public GUIFixedSpace AddSpace(int size)
         {
             return new GUIFixedSpace(this, size);
