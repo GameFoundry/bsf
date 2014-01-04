@@ -9,7 +9,7 @@ namespace BansheeEngine
         private GUIArea mainArea;
         private GUILayout _mainLayout;
 
-        public GUILayout main
+        public GUILayout layout
         {
             get { return _mainLayout; }
         }

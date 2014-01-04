@@ -18,14 +18,16 @@ namespace BansheeEditor
             //GUILabel label = GUI.main.AddLabel("Test test");
             //label.SetContent("Test2");
 
-            GUIButton button = GUI.main.AddButton("CLICK ME");
+            GUIScrollArea scrollArea = GUI.layout.AddScrollArea();
+
+            GUIButton button = scrollArea.layout.AddButton("CLICK ME");
             button.OnClick += button_OnClick;
 
-            textBox = GUI.main.AddTextBox(true, GUIOption.FixedHeight(100), GUIOption.FixedWidth(100));
+            textBox = scrollArea.layout.AddTextBox(true, GUIOption.FixedHeight(500), GUIOption.FixedWidth(100));
             textBox.text = "Supsup?";
 
             LocString[] listElems = new LocString[] { "ListElem1", "ListElem2", "ListElem3" };
-            listBox = GUI.main.AddListBox(listElems);
+            listBox = scrollArea.layout.AddListBox(listElems);
         }
 
         void button_OnClick()
