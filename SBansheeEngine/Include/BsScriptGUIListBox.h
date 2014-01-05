@@ -19,6 +19,10 @@ namespace BansheeEngine
 		static void internal_destroyInstance(ScriptGUIListBox* nativeInstance);
 		static void internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements);
 
+		static void internal_destroy(ScriptGUIListBox* nativeInstance);
+		static void internal_disable(ScriptGUIListBox* nativeInstance);
+		static void internal_enable(ScriptGUIListBox* nativeInstance);
+
 		static void initRuntimeData();
 
 		static void onSelectionChanged(MonoObject* instance, CM::UINT32 index);

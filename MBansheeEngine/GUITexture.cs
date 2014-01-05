@@ -12,7 +12,7 @@ namespace BansheeEngine
 	};
 
 
-    public sealed class GUITexture : ScriptObject
+    public sealed class GUITexture : GUIElement
     {
         internal GUITexture(GUILayout parentLayout, SpriteTexture texture, GUIImageScaleMode scale, GUIElementStyle style, params GUIOption[] options)
         {

@@ -18,6 +18,10 @@ namespace BansheeEngine
 		static void internal_destroyInstance(ScriptGUILabel* nativeInstance);
 		static void internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content);
 
+		static void internal_destroy(ScriptGUILabel* nativeInstance);
+		static void internal_disable(ScriptGUILabel* nativeInstance);
+		static void internal_enable(ScriptGUILabel* nativeInstance);
+
 		static void initRuntimeData();
 
 		ScriptGUILabel(GUILabel* label);

@@ -13,8 +13,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(GUIFlexibleSpace& flexibleSpace)
-		:mFlexibleSpace(flexibleSpace)
+	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout)
+		:mFlexibleSpace(flexibleSpace), mParentLayout(parentLayout)
 	{
 
 	}
@@ -30,6 +30,10 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFlexibleSpace::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIFlexibleSpace::internal_destroyInstance);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFlexibleSpace::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIFlexibleSpace::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIFlexibleSpace::internal_disable);
 	}
 
 	void ScriptGUIFlexibleSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout)
@@ -38,7 +42,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUIFlexibleSpace& space = nativeLayout->addFlexibleSpace();
 
-		ScriptGUIFlexibleSpace* nativeInstance = new (cm_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(space);
+		ScriptGUIFlexibleSpace* nativeInstance = new (cm_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(space, nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -48,5 +52,20 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptGUIFlexibleSpace::internal_destroy(ScriptGUIFlexibleSpace* nativeInstance)
+	{
+		nativeInstance->mParentLayout->removeFlexibleSpace(nativeInstance->mFlexibleSpace);
+	}
+
+	void ScriptGUIFlexibleSpace::internal_disable(ScriptGUIFlexibleSpace* nativeInstance)
+	{
+		nativeInstance->mFlexibleSpace.disableRecursively();
+	}
+
+	void ScriptGUIFlexibleSpace::internal_enable(ScriptGUIFlexibleSpace* nativeInstance)
+	{
+		nativeInstance->mFlexibleSpace.enableRecursively();
 	}
 }

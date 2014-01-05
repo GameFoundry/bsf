@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public sealed class GUIListBox : ScriptObject
+    public sealed class GUIListBox : GUIElement
     {
         public delegate void OnSelectionChangedDelegate(int index);
 

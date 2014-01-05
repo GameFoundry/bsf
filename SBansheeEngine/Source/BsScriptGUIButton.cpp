@@ -42,6 +42,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIButton::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIButton::internal_setContent);
 
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIButton::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIButton::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIButton::internal_disable);
+
 		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick").getThunk();
 		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover").getThunk();
 		onOutThunk = (OnOutThunkDef)metaData.scriptClass->getMethod("DoOnOut").getThunk();
@@ -87,6 +91,21 @@ namespace BansheeEngine
 	{
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
 		nativeInstance->getInternalValue()->setContent(nativeContent);
+	}
+
+	void ScriptGUIButton::internal_destroy(ScriptGUIButton* nativeInstance)
+	{
+		GUIElement::destroy(nativeInstance->getInternalValue());
+	}
+
+	void ScriptGUIButton::internal_disable(ScriptGUIButton* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUIButton::internal_enable(ScriptGUIButton* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enableRecursively();
 	}
 
 	void ScriptGUIButton::onClick(MonoObject* instance)

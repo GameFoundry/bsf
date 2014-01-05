@@ -51,6 +51,21 @@ namespace BansheeEngine
             return newArea;
         }
 
+        public void Destroy()
+        {
+            Internal_Destroy(mCachedPtr);
+        }
+
+        public void Enable()
+        {
+            Internal_Enable(mCachedPtr);
+        }
+
+        public void Disable()
+        {
+            Internal_Disable(mCachedPtr);
+        }
+
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIArea instance, GUIBase parent, int x, int y, int width, int height, short depth);
 
@@ -65,5 +80,14 @@ namespace BansheeEngine
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstanceResizableXY(GUIArea instance, GUIBase parent, int offsetLeft, int offsetRight, int offsetTop,
             int offsetBottom, short depth);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Destroy(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Enable(IntPtr nativeInstance);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_Disable(IntPtr nativeInstance);
     }
 }

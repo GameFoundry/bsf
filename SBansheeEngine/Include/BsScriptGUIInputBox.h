@@ -21,6 +21,10 @@ namespace BansheeEngine
 		static void internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text);
 		static void internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text);
 
+		static void internal_destroy(ScriptGUIInputBox* nativeInstance);
+		static void internal_disable(ScriptGUIInputBox* nativeInstance);
+		static void internal_enable(ScriptGUIInputBox* nativeInstance);
+
 		static void initRuntimeData();
 
 		ScriptGUIInputBox(GUIInputBox* inputBox);

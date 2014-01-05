@@ -2,7 +2,7 @@
 
 namespace BansheeEngine
 {
-    public sealed class GUIScrollArea : ScriptObject
+    public sealed class GUIScrollArea : GUIElement
     {
         private GUILayout _mainLayout;
 

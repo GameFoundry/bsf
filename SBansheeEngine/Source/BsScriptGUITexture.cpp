@@ -37,6 +37,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUITexture::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUITexture::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptGUITexture::internal_setTexture);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUITexture::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUITexture::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUITexture::internal_disable);
 	}
 
 	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* texture, 
@@ -81,5 +85,20 @@ namespace BansheeEngine
 			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
 
 		nativeInstance->getInternalValue()->setTexture(nativeTexture);
+	}
+
+	void ScriptGUITexture::internal_destroy(ScriptGUITexture* nativeInstance)
+	{
+		GUIElement::destroy(nativeInstance->getInternalValue());
+	}
+
+	void ScriptGUITexture::internal_disable(ScriptGUITexture* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUITexture::internal_enable(ScriptGUITexture* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enableRecursively();
 	}
 }

@@ -39,6 +39,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIListBox::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetElements", &ScriptGUIListBox::internal_setElements);
 
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIListBox::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIListBox::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIListBox::internal_disable);
+
 		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1).getThunk();
 	}
 
@@ -107,6 +111,21 @@ namespace BansheeEngine
 		}
 
 		nativeInstance->getInternalValue()->setElements(nativeElements);
+	}
+
+	void ScriptGUIListBox::internal_destroy(ScriptGUIListBox* nativeInstance)
+	{
+		GUIElement::destroy(nativeInstance->getInternalValue());
+	}
+
+	void ScriptGUIListBox::internal_disable(ScriptGUIListBox* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUIListBox::internal_enable(ScriptGUIListBox* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enableRecursively();
 	}
 
 	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, CM::UINT32 index)

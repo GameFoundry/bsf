@@ -13,8 +13,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUILayout::ScriptGUILayout(GUILayout* layout, GUIWidget& parentWidget)
-		:mLayout(layout), mParentWidget(parentWidget)
+	ScriptGUILayout::ScriptGUILayout(GUILayout* layout, GUIWidget& parentWidget, GUILayout* parentLayout)
+		:mLayout(layout), mParentWidget(parentWidget), mParentLayout(parentLayout)
 	{
 
 	}
@@ -33,6 +33,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromLayout", &ScriptGUILayout::internal_createInstanceYFromLayout);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceYFromScrollArea", &ScriptGUILayout::internal_createInstanceYFromScrollArea);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUILayout::internal_destroyInstance);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUILayout::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUILayout::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUILayout::internal_disable);
 	}
 
 	void ScriptGUILayout::internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea)
@@ -40,7 +44,8 @@ namespace BansheeEngine
 		ScriptGUIArea* scriptArea = ScriptGUIArea::toNative(parentArea);
 		GUIArea* nativeArea = scriptArea->getInternalValue();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&nativeArea->getLayout(), scriptArea->getParentWidget());
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+			ScriptGUILayout(&nativeArea->getLayout(), scriptArea->getParentWidget(), nullptr);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -52,7 +57,8 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->addLayoutX();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&layout, scriptLayout->getParentWidget());
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+			ScriptGUILayout(&layout, scriptLayout->getParentWidget(), nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -64,7 +70,8 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->addLayoutY();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(&layout, scriptLayout->getParentWidget());
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+			ScriptGUILayout(&layout, scriptLayout->getParentWidget(), nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -75,7 +82,8 @@ namespace BansheeEngine
 		ScriptGUIScrollArea* scriptScrollArea = ScriptGUIScrollArea::toNative(parentScrollArea);
 		GUILayout* nativeLayout = &scriptScrollArea->getInternalValue()->getLayout();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) ScriptGUILayout(nativeLayout, scriptScrollArea->getParentWidget());
+		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+			ScriptGUILayout(nativeLayout, scriptScrollArea->getParentWidget(), nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -85,5 +93,21 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptGUILayout::internal_destroy(ScriptGUILayout* nativeInstance)
+	{
+		if(nativeInstance->mParentLayout != nullptr)
+			nativeInstance->mParentLayout->removeLayout(*nativeInstance->mLayout);
+	}
+
+	void ScriptGUILayout::internal_disable(ScriptGUILayout* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUILayout::internal_enable(ScriptGUILayout* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enableRecursively();
 	}
 }

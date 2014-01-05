@@ -18,6 +18,10 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIScrollArea* nativeInstance);
 
+		static void internal_destroy(ScriptGUIScrollArea* nativeInstance);
+		static void internal_disable(ScriptGUIScrollArea* nativeInstance);
+		static void internal_enable(ScriptGUIScrollArea* nativeInstance);
+
 		static void initRuntimeData();
 
 		ScriptGUIScrollArea(GUIScrollArea* button, GUIWidget& parentWidget);

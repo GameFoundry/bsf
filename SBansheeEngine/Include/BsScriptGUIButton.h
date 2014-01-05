@@ -18,6 +18,10 @@ namespace BansheeEngine
 		static void internal_destroyInstance(ScriptGUIButton* nativeInstance);
 		static void internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content);
 
+		static void internal_destroy(ScriptGUIButton* nativeInstance);
+		static void internal_disable(ScriptGUIButton* nativeInstance);
+		static void internal_enable(ScriptGUIButton* nativeInstance);
+
 		static void initRuntimeData();
 
 		static void onClick(MonoObject* instance);

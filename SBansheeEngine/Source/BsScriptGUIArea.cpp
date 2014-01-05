@@ -32,6 +32,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceResizableY", &ScriptGUIArea::internal_createInstanceResizeableY);
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceResizableXY", &ScriptGUIArea::internal_createInstanceResizeableXY);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIArea::internal_destroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIArea::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIArea::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIArea::internal_disable);
 	}
 
 	GUIWidget& ScriptGUIArea::getParentWidget() const 
@@ -90,5 +93,20 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptGUIArea::internal_destroy(ScriptGUIArea* nativeInstance)
+	{
+		GUIArea::destroy(nativeInstance->getInternalValue());
+	}
+
+	void ScriptGUIArea::internal_disable(ScriptGUIArea* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disable();
+	}
+
+	void ScriptGUIArea::internal_enable(ScriptGUIArea* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enable();
 	}
 }

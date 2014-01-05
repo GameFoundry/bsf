@@ -36,6 +36,10 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIScrollArea::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIScrollArea::internal_destroyInstance);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIScrollArea::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIScrollArea::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIScrollArea::internal_disable);
 	}
 
 	GUIWidget& ScriptGUIScrollArea::getParentWidget() const
@@ -71,5 +75,20 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptGUIScrollArea::internal_destroy(ScriptGUIScrollArea* nativeInstance)
+	{
+		GUIElement::destroy(nativeInstance->getInternalValue());
+	}
+
+	void ScriptGUIScrollArea::internal_disable(ScriptGUIScrollArea* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUIScrollArea::internal_enable(ScriptGUIScrollArea* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enableRecursively();
 	}
 }

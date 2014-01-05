@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public sealed class GUILabel : ScriptObject
+    public sealed class GUILabel : GUIElement
     {
         internal GUILabel(GUILayout parentLayout, GUIContent content, GUIElementStyle style, params GUIOption[] options)
         {

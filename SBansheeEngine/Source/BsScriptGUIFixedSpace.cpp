@@ -13,8 +13,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUIFixedSpace::ScriptGUIFixedSpace(GUIFixedSpace& fixedSpace)
-		:mFixedSpace(fixedSpace)
+	ScriptGUIFixedSpace::ScriptGUIFixedSpace(GUIFixedSpace& fixedSpace, GUILayout* parentLayout)
+		:mFixedSpace(fixedSpace), mParentLayout(parentLayout)
 	{
 
 	}
@@ -30,6 +30,10 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFixedSpace::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIFixedSpace::internal_destroyInstance);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFixedSpace::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIFixedSpace::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIFixedSpace::internal_disable);
 	}
 
 	void ScriptGUIFixedSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, UINT32 size)
@@ -38,7 +42,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUIFixedSpace& space = nativeLayout->addSpace(size);
 
-		ScriptGUIFixedSpace* nativeInstance = new (cm_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(space);
+		ScriptGUIFixedSpace* nativeInstance = new (cm_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(space, nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -48,5 +52,20 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptGUIFixedSpace::internal_destroy(ScriptGUIFixedSpace* nativeInstance)
+	{
+		nativeInstance->mParentLayout->removeSpace(nativeInstance->mFixedSpace);
+	}
+
+	void ScriptGUIFixedSpace::internal_disable(ScriptGUIFixedSpace* nativeInstance)
+	{
+		nativeInstance->mFixedSpace.disableRecursively();
+	}
+
+	void ScriptGUIFixedSpace::internal_enable(ScriptGUIFixedSpace* nativeInstance)
+	{
+		nativeInstance->mFixedSpace.enableRecursively();
 	}
 }

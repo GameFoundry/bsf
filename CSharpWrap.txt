@@ -92,20 +92,21 @@ Eventually make all math classes templates that work on both doubles and floats.
 ----------------------------
 
 Implement:
- - GUIListBox
-  - onSelectionChanged
-
  - GUIToggle
   - onToggled
   - ToggleGroup (?)
 
+  - ScrollArea is broken. Vertical scrollbar is not positioned properly.
+  - Clicking a holding a scroll bar then dragging the mouse out of window leaves the bar selected (sometimes)
+
 ScrollArea will likely need:
- C#: test it
  C++/C#: always/never show horz/vert scroll bar
  C++/C#: optional styles for scroll bars
  C++/C#: scrollTo(pct)
 
  - Destroy()
+ - Disable()
+ - Enable()
  - GUISkin
    - List of properties with all common styles, like .button, .label
    - Get/SetStyle methods for custom styles

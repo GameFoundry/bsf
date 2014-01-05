@@ -2,7 +2,7 @@
 
 namespace BansheeEngine
 {
-    public sealed class GUIFixedSpace : ScriptObject
+    public sealed class GUIFixedSpace : GUIElement
     {
         internal GUIFixedSpace(GUILayout parentLayout, int size)
         {
@@ -13,7 +13,7 @@ namespace BansheeEngine
         private static extern void Internal_CreateInstance(GUIFixedSpace instance, GUILayout parentLayout, int size);
     }
 
-    public sealed class GUIFlexibleSpace : ScriptObject
+    public sealed class GUIFlexibleSpace : GUIElement
     {
         internal GUIFlexibleSpace(GUILayout parentLayout)
         {

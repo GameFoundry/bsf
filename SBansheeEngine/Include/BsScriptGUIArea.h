@@ -28,6 +28,10 @@ namespace BansheeEngine
 
 		static void internal_destroyInstance(ScriptGUIArea* nativeInstance);
 
+		static void internal_destroy(ScriptGUIArea* nativeInstance);
+		static void internal_disable(ScriptGUIArea* nativeInstance);
+		static void internal_enable(ScriptGUIArea* nativeInstance);
+
 		static void initRuntimeData();
 
 		ScriptGUIArea(GUIArea* area, ScriptGUIBase* parentGUI);

@@ -50,6 +50,7 @@
     <Compile Include="GUIBase.cs" />
     <Compile Include="GUIButton.cs" />
     <Compile Include="GUIContent.cs" />
+    <Compile Include="GUIElement.cs" />
     <Compile Include="GUIElementStateStyle.cs" />
     <Compile Include="GUIElementStyle.cs" />
     <Compile Include="GUIListBox.cs" />
@@ -63,7 +64,6 @@
     <Compile Include="GUISkin.cs" />
     <Compile Include="GUISpace.cs" />
     <Compile Include="GUITexture.cs" />
-    <Compile Include="GUIWidget.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Matrix3.cs" />

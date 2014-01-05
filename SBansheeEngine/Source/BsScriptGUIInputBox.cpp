@@ -38,6 +38,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIInputBox::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptGUIInputBox::internal_getText);
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIInputBox::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIInputBox::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIInputBox::internal_disable);
 	}
 
 	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, bool multiline, MonoObject* style, MonoArray* guiOptions)
@@ -78,5 +82,20 @@ namespace BansheeEngine
 	void ScriptGUIInputBox::internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text)
 	{
 		nativeInstance->getInternalValue()->setText(MonoUtil::monoToWString(text));
+	}
+
+	void ScriptGUIInputBox::internal_destroy(ScriptGUIInputBox* nativeInstance)
+	{
+		GUIElement::destroy(nativeInstance->getInternalValue());
+	}
+
+	void ScriptGUIInputBox::internal_disable(ScriptGUIInputBox* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUIInputBox::internal_enable(ScriptGUIInputBox* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enableRecursively();
 	}
 }

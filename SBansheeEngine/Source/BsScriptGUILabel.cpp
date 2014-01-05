@@ -35,6 +35,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUILabel::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUILabel::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUILabel::internal_setContent);
+
+		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUILabel::internal_destroy);
+		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUILabel::internal_enable);
+		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUILabel::internal_disable);
 	}
 
 	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* content, MonoObject* style, MonoArray* guiOptions)
@@ -72,5 +76,20 @@ namespace BansheeEngine
 	{
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
 		nativeInstance->getInternalValue()->setContent(nativeContent);
+	}
+
+	void ScriptGUILabel::internal_destroy(ScriptGUILabel* nativeInstance)
+	{
+		GUIElement::destroy(nativeInstance->getInternalValue());
+	}
+
+	void ScriptGUILabel::internal_disable(ScriptGUILabel* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUILabel::internal_enable(ScriptGUILabel* nativeInstance)
+	{
+		nativeInstance->getInternalValue()->enableRecursively();
 	}
 }

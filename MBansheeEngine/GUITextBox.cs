@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public sealed class GUITextBox : ScriptObject
+    public sealed class GUITextBox : GUIElement
     {
         internal GUITextBox(GUILayout parentLayout, bool multiline, GUIElementStyle style, params GUIOption[] options)
         {
