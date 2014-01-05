@@ -74,7 +74,6 @@ namespace BansheeEngine
 		mClippedContentWidth = width;
 		mClippedContentHeight = height;
 
-		bool hasScrollbars = false;
 		RectI layoutClipRect = clipRect;
 
 		bool hasHorzScrollbar = false;
@@ -84,6 +83,12 @@ namespace BansheeEngine
 			mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
 			layoutClipRect.height = mClippedContentHeight;
 			hasHorzScrollbar = true;
+
+			mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y, 
+				mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight, layoutClipRect, widgetDepth, areaDepth);
+
+			contentWidth = mContentLayout->_getActualWidth();
+			contentHeight = mContentLayout->_getActualHeight();
 		}
 
 		if(contentHeight > mClippedContentHeight)
@@ -92,11 +97,31 @@ namespace BansheeEngine
 			mClippedContentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
 			layoutClipRect.width = mClippedContentWidth;
 
+			if(hasHorzScrollbar)
+			{
+				mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
+					mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight + Math::floorToInt(mVertOffset), 
+					layoutClipRect, widgetDepth, areaDepth);
+			}
+			else
+			{
+				mContentLayout->_updateLayoutInternal(x, y - Math::floorToInt(mVertOffset), 
+					mClippedContentWidth, mClippedContentHeight + Math::floorToInt(mVertOffset), 
+					layoutClipRect, widgetDepth, areaDepth);
+			}
+
+			contentWidth = mContentLayout->_getActualWidth();
+			contentHeight = mContentLayout->_getActualHeight();
+
 			if(!hasHorzScrollbar && contentWidth > mClippedContentWidth) // Since width has been reduced, we need to check if we require the horizontal scrollbar
 			{
 				// Make room for scrollbar
 				mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
 				layoutClipRect.height = mClippedContentHeight;
+
+				mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
+					mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight + Math::floorToInt(mVertOffset), 
+					layoutClipRect, widgetDepth, areaDepth);
 			}
 		}
 
@@ -134,8 +159,6 @@ namespace BansheeEngine
 
 			mVertScroll->setHandleSize(newHandleSize);
 			mVertScroll->setScrollPos(newScrollPct);
-
-			hasScrollbars = true;
 		}
 		else
 		{
@@ -182,8 +205,6 @@ namespace BansheeEngine
 
 			mHorzScroll->setHandleSize(newHandleSize);
 			mHorzScroll->setScrollPos(newScrollPct);
-
-			hasScrollbars = true;
 		}
 		else
 		{
@@ -196,13 +217,6 @@ namespace BansheeEngine
 			mHorzOffset = 0.0f;
 		}
 
-		if(hasScrollbars)
-		{
-			mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
-				mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight + Math::floorToInt(mVertOffset), 
-				layoutClipRect, widgetDepth, areaDepth);
-		}
-		
 		mContentWidth = contentWidth;
 		mContentHeight = contentHeight;
 	}
