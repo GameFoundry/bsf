@@ -64,6 +64,8 @@
     <Compile Include="GUISkin.cs" />
     <Compile Include="GUISpace.cs" />
     <Compile Include="GUITexture.cs" />
+    <Compile Include="GUIToggle.cs" />
+    <Compile Include="GUIToggleGroup.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Matrix3.cs" />

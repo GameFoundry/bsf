@@ -92,13 +92,6 @@ Eventually make all math classes templates that work on both doubles and floats.
 ----------------------------
 
 Implement:
- - GUIToggle
-  - onToggled
-  - ToggleGroup (?)
-
-  - ScrollArea is broken. Vertical scrollbar is not positioned properly.
-  - Clicking a holding a scroll bar then dragging the mouse out of window leaves the bar selected (sometimes)
-
 ScrollArea will likely need:
  C++/C#: always/never show horz/vert scroll bar
  C++/C#: optional styles for scroll bars
@@ -106,12 +99,11 @@ ScrollArea will likely need:
 
  Are GUI element instances kept anywhere? After GUI.Add* is called I think they're lost and destructed?
  I should create a handle in C++ code and only release it once Destroy is called?
-   - Then when GUIBase is destroyed all its child elements will remain.
-     - Not if in destructor I call Destroy
-   - Instead, register each GUI element with parent GUIBase? Then in managed Destroy also unregister it
-      - This means I need to iterate recursively over all elements and their children
-      - Means I probably also need "GetNumChildren", and "GetChild" methods.
- - TODO - Think about this
+   - Creating a child hierarchy of GUIElements (where each GUIElement holds references to all its children) can work
+    - Destroy() is then called recursively from parent element
+    - Each element will then also have "GetNumChildren", and "GetChild" methods
+    - Also consider adding GUIElement.Move(GUILayout), GUIElement.Move(GUILayout, int position),
+      GUIElement.Move(int offset)
 
  - GUISkin
    - List of properties with all common styles, like .button, .label

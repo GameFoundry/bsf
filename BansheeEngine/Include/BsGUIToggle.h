@@ -16,16 +16,16 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUIToggle* create(GUIWidget& parent, const CM::HString& text, const GUIElementStyle* style = nullptr);
-		static GUIToggle* create(GUIWidget& parent, const GUIOptions& layoutOptions, const CM::HString& text, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const CM::HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 	
 		static GUIToggle* create(GUIWidget& parent, const CM::HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
-		static GUIToggle* create(GUIWidget& parent, const GUIOptions& layoutOptions, const CM::HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const CM::HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		static GUIToggle* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
-		static GUIToggle* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIContent& content, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		static GUIToggle* create(GUIWidget& parent, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
-		static GUIToggle* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style = nullptr);
+		static GUIToggle* create(GUIWidget& parent, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		static std::shared_ptr<GUIToggleGroup> createToggleGroup();
 

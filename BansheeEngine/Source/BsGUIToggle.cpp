@@ -40,9 +40,9 @@ namespace BansheeEngine
 		return create(parent, GUIContent(text), style);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const HString& text, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		return create(parent, layoutOptions, GUIContent(text), style);
+		return create(parent, GUIContent(text), layoutOptions, style);
 	}
 
 	GUIToggle* GUIToggle::create(GUIWidget& parent, const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
@@ -50,9 +50,9 @@ namespace BansheeEngine
 		return create(parent, GUIContent(text), toggleGroup, style);
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		return create(parent, layoutOptions, GUIContent(text), toggleGroup, style);
+		return create(parent, GUIContent(text), toggleGroup, layoutOptions, style);
 	}
 
 	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style)
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, nullptr, GUILayoutOptions::create(style));
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIContent& content, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUIToggle, PoolAlloc>()) GUIToggle(parent, style, content, toggleGroup, GUILayoutOptions::create(style));
 	}
 
-	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIElementStyle* style)
+	GUIToggle* GUIToggle::create(GUIWidget& parent, const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{

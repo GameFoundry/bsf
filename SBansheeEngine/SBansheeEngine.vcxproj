@@ -241,6 +241,8 @@
     <ClInclude Include="Include\BsScriptGUIListBox.h" />
     <ClInclude Include="Include\BsScriptGUIScrollArea.h" />
     <ClInclude Include="Include\BsScriptGUITexture.h" />
+    <ClInclude Include="Include\BsScriptGUIToggle.h" />
+    <ClInclude Include="Include\BsScriptGUIToggleGroup.h" />
     <ClInclude Include="Include\BsScriptHString.h" />
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
@@ -264,6 +266,8 @@
     <ClCompile Include="Source\BsScriptGUIListBox.cpp" />
     <ClCompile Include="Source\BsScriptGUIScrollArea.cpp" />
     <ClCompile Include="Source\BsScriptGUITexture.cpp" />
+    <ClCompile Include="Source\BsScriptGUIToggle.cpp" />
+    <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />

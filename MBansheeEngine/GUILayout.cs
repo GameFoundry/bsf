@@ -30,6 +30,36 @@ namespace BansheeEngine
             return new GUIButton(this, content, null, options);
         }
 
+        public GUIToggle AddToggle(GUIContent content, GUIElementStyle style, params GUIOption[] options)
+        {
+            return new GUIToggle(this, content, null, style, options);
+        }
+
+        public GUIToggle AddToggle(GUIContent content, GUIElementStyle style)
+        {
+            return new GUIToggle(this, content, null, style, new GUIOption[0]);
+        }
+
+        public GUIToggle AddToggle(GUIContent content, params GUIOption[] options)
+        {
+            return new GUIToggle(this, content, null, null, options);
+        }
+
+        public GUIToggle AddToggle(GUIContent content, GUIToggleGroup toggleGroup, GUIElementStyle style, params GUIOption[] options)
+        {
+            return new GUIToggle(this, content, toggleGroup, style, options);
+        }
+
+        public GUIToggle AddToggle(GUIContent content, GUIToggleGroup toggleGroup, GUIElementStyle style)
+        {
+            return new GUIToggle(this, content, toggleGroup, style, new GUIOption[0]);
+        }
+
+        public GUIToggle AddToggle(GUIContent content, GUIToggleGroup toggleGroup, params GUIOption[] options)
+        {
+            return new GUIToggle(this, content, toggleGroup, null, options);
+        }
+
         public GUITexture AddTexture(SpriteTexture texture, GUIImageScaleMode scale, GUIElementStyle style, params GUIOption[] options)
         {
             return new GUITexture(this, texture, scale, style, options);
