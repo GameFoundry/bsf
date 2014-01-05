@@ -150,6 +150,8 @@ namespace CamelotFramework
 			break;
 		case WM_LBUTTONUP:
 			{
+				ReleaseCapture();
+
 				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
@@ -161,6 +163,8 @@ namespace CamelotFramework
 			break;
 		case WM_MBUTTONUP:
 			{
+				ReleaseCapture();
+
 				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
@@ -172,6 +176,8 @@ namespace CamelotFramework
 			break;
 		case WM_RBUTTONUP:
 			{
+				ReleaseCapture();
+
 				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
@@ -183,6 +189,8 @@ namespace CamelotFramework
 			break;
 		case WM_LBUTTONDOWN:
 			{
+				SetCapture(hWnd);
+
 				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
@@ -194,6 +202,8 @@ namespace CamelotFramework
 			break;
 		case WM_MBUTTONDOWN:
 			{
+				SetCapture(hWnd);
+
 				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
@@ -205,6 +215,8 @@ namespace CamelotFramework
 			break;
 		case WM_RBUTTONDOWN:
 			{
+				SetCapture(hWnd);
+
 				Vector2I intMousePos;
 				OSPositionalInputButtonStates btnStates;
 
