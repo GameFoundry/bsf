@@ -30,7 +30,7 @@ namespace BansheeEngine
 			mDownBtn = GUIButton::create(parent, HString(L""), parent.getSkin().getStyle("ScrollRightBtn"));
 
 			mHandleBtn = GUIScrollBarHandle::create(parent, mHorizontal, 
-				GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleWidth(6)), parent.getSkin().getStyle("ScrollBarHorzBtn"));
+				GUIOptions(GUIOption::flexibleWidth(), GUIOption::fixedHeight(6)), parent.getSkin().getStyle("ScrollBarHorzBtn"));
 		}
 		else
 		{
@@ -40,7 +40,7 @@ namespace BansheeEngine
 			mDownBtn = GUIButton::create(parent, HString(L""), parent.getSkin().getStyle("ScrollDownBtn"));
 
 			mHandleBtn = GUIScrollBarHandle::create(parent, mHorizontal, 
-				GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleWidth(6)), parent.getSkin().getStyle("ScrollBarVertBtn"));
+				GUIOptions(GUIOption::fixedWidth(6), GUIOption::flexibleHeight()), parent.getSkin().getStyle("ScrollBarVertBtn"));
 		}
 
 		mLayout->addSpace(2);

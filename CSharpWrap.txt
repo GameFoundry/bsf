@@ -104,9 +104,15 @@ ScrollArea will likely need:
  C++/C#: optional styles for scroll bars
  C++/C#: scrollTo(pct)
 
- - Destroy()
- - Disable()
- - Enable()
+ Are GUI element instances kept anywhere? After GUI.Add* is called I think they're lost and destructed?
+ I should create a handle in C++ code and only release it once Destroy is called?
+   - Then when GUIBase is destroyed all its child elements will remain.
+     - Not if in destructor I call Destroy
+   - Instead, register each GUI element with parent GUIBase? Then in managed Destroy also unregister it
+      - This means I need to iterate recursively over all elements and their children
+      - Means I probably also need "GetNumChildren", and "GetChild" methods.
+ - TODO - Think about this
+
  - GUISkin
    - List of properties with all common styles, like .button, .label
    - Get/SetStyle methods for custom styles
