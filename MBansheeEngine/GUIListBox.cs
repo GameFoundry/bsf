@@ -10,6 +10,7 @@ namespace BansheeEngine
         public event OnSelectionChangedDelegate OnSelectionChanged;
 
         internal GUIListBox(GUILayout parentLayout, LocString[] elements, GUIElementStyle style, params GUIOption[] options)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, elements, style, options);
         }

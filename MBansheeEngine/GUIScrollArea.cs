@@ -12,6 +12,7 @@ namespace BansheeEngine
         }
 
         internal GUIScrollArea(GUILayout parentLayout, GUIElementStyle style, params GUIOption[] options)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, style, options);
             _mainLayout = new GUILayoutY(this);

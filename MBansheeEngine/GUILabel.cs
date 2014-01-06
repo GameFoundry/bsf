@@ -6,6 +6,7 @@ namespace BansheeEngine
     public sealed class GUILabel : GUIElement
     {
         internal GUILabel(GUILayout parentLayout, GUIContent content, GUIElementStyle style, params GUIOption[] options)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, content, style, options);
         }

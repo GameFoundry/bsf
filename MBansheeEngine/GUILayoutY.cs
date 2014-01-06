@@ -5,14 +5,14 @@ namespace BansheeEngine
 {
     public sealed class GUILayoutY : GUILayout
     {
-        internal GUILayoutY() { }
-
         internal GUILayoutY(GUILayout parentLayout)
+            :base(parentLayout)
         {
             Internal_CreateInstanceYFromLayout(this, parentLayout);
         }
 
         internal GUILayoutY(GUIScrollArea parentArea)
+            :base(parentArea)
         {
             Internal_CreateInstanceYFromScrollArea(this, parentArea);
         }

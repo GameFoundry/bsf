@@ -6,6 +6,7 @@ namespace BansheeEngine
     public sealed class GUIArea : ScriptObject
     {
         private GUILayout _layout;
+        private GUIBase parent;
 
         public GUILayout layout
         {
@@ -19,6 +20,7 @@ namespace BansheeEngine
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstance(newArea, parent, x, y, width, height, depth);
+            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -28,6 +30,7 @@ namespace BansheeEngine
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstanceResizableX(newArea, parent, offsetLeft, offsetRight, offsetTop, height, depth);
+            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -37,6 +40,7 @@ namespace BansheeEngine
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstanceResizableY(newArea, parent, offsetTop, offsetBottom, offsetLeft, width, depth);
+            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -46,6 +50,7 @@ namespace BansheeEngine
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstanceResizableXY(newArea, parent, offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
+            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -53,6 +58,9 @@ namespace BansheeEngine
 
         public void Destroy()
         {
+            _layout.Destroy();
+            parent.childAreas.Remove(this);
+
             Internal_Destroy(mCachedPtr);
         }
 

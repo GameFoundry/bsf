@@ -6,6 +6,7 @@ namespace BansheeEngine
     public sealed class GUITextBox : GUIElement
     {
         internal GUITextBox(GUILayout parentLayout, bool multiline, GUIElementStyle style, params GUIOption[] options)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, multiline, style, options);
         }

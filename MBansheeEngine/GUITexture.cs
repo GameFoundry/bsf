@@ -15,6 +15,7 @@ namespace BansheeEngine
     public sealed class GUITexture : GUIElement
     {
         internal GUITexture(GUILayout parentLayout, SpriteTexture texture, GUIImageScaleMode scale, GUIElementStyle style, params GUIOption[] options)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, texture, scale, style, options);
         }

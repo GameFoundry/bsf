@@ -16,6 +16,7 @@ namespace BansheeEngine
         public event OnToggleDelegate OnToggled;
 
         internal GUIToggle(GUILayout parentLayout, GUIContent content, GUIToggleGroup toggleGroup, GUIElementStyle style, params GUIOption[] options)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, content, toggleGroup, style, options);
         }

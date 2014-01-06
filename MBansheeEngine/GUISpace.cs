@@ -5,6 +5,7 @@ namespace BansheeEngine
     public sealed class GUIFixedSpace : GUIElement
     {
         internal GUIFixedSpace(GUILayout parentLayout, int size)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, size);
         }
@@ -16,6 +17,7 @@ namespace BansheeEngine
     public sealed class GUIFlexibleSpace : GUIElement
     {
         internal GUIFlexibleSpace(GUILayout parentLayout)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout);
         }

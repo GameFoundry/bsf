@@ -5,6 +5,10 @@ namespace BansheeEngine
 {
     public abstract class GUILayout : GUIElement
     {
+        internal GUILayout(GUIElement parent)
+            :base(parent)
+        { }
+
         public GUILabel AddLabel(GUIContent content, GUIElementStyle style, params GUIOption[] options)
         {
             return new GUILabel(this, content, style, options);

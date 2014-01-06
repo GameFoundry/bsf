@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public sealed class GUIButton : ScriptObject
+    public sealed class GUIButton : GUIElement
     {
         public delegate void OnClickDelegate();
         public delegate void OnHoverDelegate();
@@ -14,6 +14,7 @@ namespace BansheeEngine
         public event OnOutDelegate OnOut;
 
         internal GUIButton(GUILayout parentLayout, GUIContent content, GUIElementStyle style, params GUIOption[] options)
+            :base(parentLayout)
         {
             Internal_CreateInstance(this, parentLayout, content, style, options);
         }
