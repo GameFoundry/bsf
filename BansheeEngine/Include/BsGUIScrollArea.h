@@ -5,13 +5,29 @@
 
 namespace BansheeEngine
 {
+	enum class ScrollBarType
+	{
+		ShowIfDoesntFit,
+		AlwaysShow,
+		NeverShow
+	};
+
 	class BS_EXPORT GUIScrollArea : public GUIElement
 	{
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIScrollArea* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
-		static GUIScrollArea* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIScrollArea* create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+			const GUIElementStyle* scrollBarStyle = nullptr, const GUIElementStyle* scrollAreaStyle = nullptr);
+
+		static GUIScrollArea* create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+			const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
+			const GUIElementStyle* scrollAreaStyle = nullptr);
+
+		static GUIScrollArea* create(GUIWidget& parent, const GUIElementStyle* scrollBarStyle = nullptr, const GUIElementStyle* scrollAreaStyle = nullptr);
+
+		static GUIScrollArea* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
+			const GUIElementStyle* scrollAreaStyle = nullptr);
 
 		GUILayout& getLayout() const { return *mContentLayout; }
 
@@ -51,7 +67,12 @@ namespace BansheeEngine
 
 		virtual CM::Vector2I _getOptimalSize() const;
 	private:
-		GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+			const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions);
+
+		ScrollBarType mVertBarType;
+		ScrollBarType mHorzBarType;
+		const GUIElementStyle* mScrollBarStyle;
 
 		GUILayout* mContentLayout;
 		GUIScrollBarVert* mVertScroll;

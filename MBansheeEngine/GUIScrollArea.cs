@@ -2,6 +2,13 @@
 
 namespace BansheeEngine
 {
+    public enum ScrollBarType
+	{
+		ShowIfDoesntFit,
+		AlwaysShow,
+		NeverShow
+	};
+
     public sealed class GUIScrollArea : GUIElement
     {
         private GUILayout _mainLayout;
@@ -11,14 +18,16 @@ namespace BansheeEngine
             get { return _mainLayout; }
         }
 
-        internal GUIScrollArea(GUILayout parentLayout, GUIElementStyle style, params GUIOption[] options)
+        internal GUIScrollArea(GUILayout parentLayout, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+            GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options)
             :base(parentLayout)
         {
-            Internal_CreateInstance(this, parentLayout, style, options);
+            Internal_CreateInstance(this, parentLayout, vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, options);
             _mainLayout = new GUILayoutY(this);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIScrollArea instance, GUILayout parentLayout, GUIElementStyle style, params GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUIScrollArea instance, GUILayout parentLayout, ScrollBarType vertBarType, ScrollBarType horzBarType,
+            GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options);
     }
 }

@@ -18,9 +18,11 @@ namespace BansheeEngine
 	const UINT32 GUIScrollArea::MinHandleSize = 4;
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
-	GUIScrollArea::GUIScrollArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions, false), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
-		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0)
+	GUIScrollArea::GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, scrollAreaStyle, layoutOptions, false), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
+		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0), mVertBarType(vertBarType), mHorzBarType(horzBarType),
+		mScrollBarStyle(scrollBarStyle)
 	{
 		mContentLayout = &addLayoutYInternal(this);
 	}
@@ -75,9 +77,12 @@ namespace BansheeEngine
 		mClippedContentHeight = height;
 
 		RectI layoutClipRect = clipRect;
+		bool addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentWidth > mWidth) || 
+			mHorzBarType == ScrollBarType::AlwaysShow && mHorzBarType != ScrollBarType::NeverShow;
 
 		bool hasHorzScrollbar = false;
-		if(contentWidth > mWidth)
+		bool hasVertScrollbar = false;
+		if(addHorzScrollbar)
 		{ 
 			// Make room for scrollbar
 			mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
@@ -91,11 +96,15 @@ namespace BansheeEngine
 			contentHeight = mContentLayout->_getActualHeight();
 		}
 
-		if(contentHeight > mClippedContentHeight)
+		bool addVertScrollbar = (mVertBarType == ScrollBarType::ShowIfDoesntFit && contentHeight > mClippedContentHeight) || 
+			mVertBarType == ScrollBarType::AlwaysShow && mVertBarType != ScrollBarType::NeverShow;
+
+		if(addVertScrollbar)
 		{
 			// Make room for scrollbar
 			mClippedContentWidth = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
 			layoutClipRect.width = mClippedContentWidth;
+			hasVertScrollbar = true;
 
 			if(hasHorzScrollbar)
 			{
@@ -113,32 +122,47 @@ namespace BansheeEngine
 			contentWidth = mContentLayout->_getActualWidth();
 			contentHeight = mContentLayout->_getActualHeight();
 
-			if(!hasHorzScrollbar && contentWidth > mClippedContentWidth) // Since width has been reduced, we need to check if we require the horizontal scrollbar
+			if(!hasHorzScrollbar) // Since width has been reduced, we need to check if we require the horizontal scrollbar
 			{
-				// Make room for scrollbar
-				mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
-				layoutClipRect.height = mClippedContentHeight;
+				addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentWidth > mClippedContentWidth) && mHorzBarType != ScrollBarType::NeverShow;
 
-				mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
-					mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight + Math::floorToInt(mVertOffset), 
-					layoutClipRect, widgetDepth, areaDepth);
+				if(addHorzScrollbar)
+				{
+					// Make room for scrollbar
+					mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+					layoutClipRect.height = mClippedContentHeight;
+
+					mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
+						mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight + Math::floorToInt(mVertOffset), 
+						layoutClipRect, widgetDepth, areaDepth);
+				}
 			}
 		}
 
 		// Add/remove/update vertical scrollbar as needed
-		if(contentHeight > mClippedContentHeight)
+		if((mVertBarType == ScrollBarType::ShowIfDoesntFit && contentHeight > mClippedContentHeight) || mVertBarType == ScrollBarType::AlwaysShow &&
+			mVertBarType != ScrollBarType::NeverShow)
 		{
 			if(mVertScroll == nullptr)
 			{
-				mVertScroll = GUIScrollBarVert::create(_getParentWidget());
+				if(mScrollBarStyle != nullptr)
+					mVertScroll = GUIScrollBarVert::create(_getParentWidget(), mScrollBarStyle);
+				else
+					mVertScroll = GUIScrollBarVert::create(_getParentWidget());
+
 				mVertScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
 				mVertScroll->_setAcceptsKeyboardFocus(false);
 			}
 
-			Vector2I offset(x + mClippedContentWidth, y);
+			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
+			UINT32 scrollBarHeight = height;
+			if(hasHorzScrollbar)
+				scrollBarHeight = (UINT32)std::max(0, (INT32)scrollBarHeight - (INT32)ScrollBarWidth);
+
+			Vector2I offset(x + scrollBarOffset, y);
 			mVertScroll->_setOffset(offset);
 			mVertScroll->_setWidth(ScrollBarWidth);
-			mVertScroll->_setHeight(mClippedContentHeight);
+			mVertScroll->_setHeight(scrollBarHeight);
 			mVertScroll->_setAreaDepth(areaDepth);
 			mVertScroll->_setWidgetDepth(widgetDepth);
 
@@ -147,15 +171,18 @@ namespace BansheeEngine
 			mVertScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			RectI scrollBarLayoutClipRect(clipRect.x + mClippedContentWidth, clipRect.y, clippedScrollbarWidth, clipRect.height);
-			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, mClippedContentHeight, scrollBarLayoutClipRect, widgetDepth, areaDepth);
+			RectI scrollBarLayoutClipRect(clipRect.x + scrollBarOffset, clipRect.y, clippedScrollbarWidth, clipRect.height);
+			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, scrollBarHeight, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
-			UINT32 newHandleSize = (UINT32)Math::floorToInt(mVertScroll->getMaxHandleSize() * (mClippedContentHeight / (float)contentHeight));
+			UINT32 newHandleSize = (UINT32)Math::floorToInt(mVertScroll->getMaxHandleSize() * (scrollBarHeight / (float)contentHeight));
 			newHandleSize = std::max(newHandleSize, MinHandleSize);
 
-			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(contentHeight) - INT32(mClippedContentHeight));
-			float newScrollPct = mVertOffset / scrollableHeight;
+			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(contentHeight) - INT32(scrollBarHeight));
+			float newScrollPct = 0.0f;
+
+			if(scrollableHeight > 0)
+				newScrollPct = mVertOffset / scrollableHeight;
 
 			mVertScroll->setHandleSize(newHandleSize);
 			mVertScroll->setScrollPos(newScrollPct);
@@ -172,18 +199,28 @@ namespace BansheeEngine
 		}
 
 		// Add/remove/update horizontal scrollbar as needed
-		if(contentWidth > mClippedContentWidth)
+		if((mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentWidth > mClippedContentWidth) || mHorzBarType == ScrollBarType::AlwaysShow &&
+			mHorzBarType != ScrollBarType::NeverShow)
 		{ 
 			if(mHorzScroll == nullptr)
 			{
-				mHorzScroll = GUIScrollBarHorz::create(_getParentWidget());
+				if(mScrollBarStyle != nullptr)
+					mHorzScroll = GUIScrollBarHorz::create(_getParentWidget(), mScrollBarStyle);
+				else
+					mHorzScroll = GUIScrollBarHorz::create(_getParentWidget());
+
 				mHorzScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::horzScrollUpdate, this, _1));
 				mHorzScroll->_setAcceptsKeyboardFocus(false);
 			}
 
-			Vector2I offset(x, y + mClippedContentHeight);
+			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
+			UINT32 scrollBarWidth = width;
+			if(hasVertScrollbar)
+				scrollBarWidth = (UINT32)std::max(0, (INT32)scrollBarWidth - (INT32)ScrollBarWidth);
+
+			Vector2I offset(x, y + scrollBarOffset);
 			mHorzScroll->_setOffset(offset);
-			mHorzScroll->_setWidth(mClippedContentWidth);
+			mHorzScroll->_setWidth(scrollBarWidth);
 			mHorzScroll->_setHeight(ScrollBarWidth);
 			mHorzScroll->_setAreaDepth(areaDepth);
 			mHorzScroll->_setWidgetDepth(widgetDepth);
@@ -193,15 +230,18 @@ namespace BansheeEngine
 			mHorzScroll->_setClipRect(elemClipRect);
 
 			// This element is not a child of any layout so we treat it as a root element
-			RectI scrollBarLayoutClipRect(clipRect.x, clipRect.y + mClippedContentHeight, clipRect.width, clippedScrollbarHeight);
-			mHorzScroll->_updateLayout(offset.x, offset.y, mClippedContentWidth, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
+			RectI scrollBarLayoutClipRect(clipRect.x, clipRect.y + scrollBarOffset, clipRect.width, clippedScrollbarHeight);
+			mHorzScroll->_updateLayout(offset.x, offset.y, scrollBarWidth, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
-			UINT32 newHandleSize = (UINT32)Math::floorToInt(mHorzScroll->getMaxHandleSize() * (mClippedContentWidth / (float)contentWidth));
+			UINT32 newHandleSize = (UINT32)Math::floorToInt(mHorzScroll->getMaxHandleSize() * (scrollBarWidth / (float)contentWidth));
 			newHandleSize = std::max(newHandleSize, MinHandleSize);
 
-			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(contentWidth) - INT32(mClippedContentWidth));
-			float newScrollPct = mHorzOffset / scrollableWidth;
+			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(contentWidth) - INT32(scrollBarWidth));
+			float newScrollPct = 0.0f;
+			
+			if(scrollableWidth > 0)
+				newScrollPct = mHorzOffset / scrollableWidth;
 
 			mHorzScroll->setHandleSize(newHandleSize);
 			mHorzScroll->setScrollPos(newScrollPct);
@@ -268,26 +308,55 @@ namespace BansheeEngine
 			mHorzScroll->_changeParentWidget(widget);
 	}
 
-	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle)
 	{
-		if(style == nullptr)
+		if(scrollAreaStyle == nullptr)
 		{
 			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
+			scrollAreaStyle = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, vertBarType, horzBarType, scrollBarStyle, 
+			scrollAreaStyle, GUILayoutOptions::create(scrollAreaStyle));
 	}
 
-	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle, 
+		const GUIElementStyle* scrollAreaStyle)
 	{
-		if(style == nullptr)
+		if(scrollAreaStyle == nullptr)
 		{
 			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
+			scrollAreaStyle = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, ScrollBarType::ShowIfDoesntFit, 
+			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, scrollAreaStyle, GUILayoutOptions::create(layoutOptions, scrollAreaStyle));
+	}
+
+	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle)
+	{
+		if(scrollAreaStyle == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			scrollAreaStyle = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, ScrollBarType::ShowIfDoesntFit, ScrollBarType::ShowIfDoesntFit, scrollBarStyle, 
+			scrollAreaStyle, GUILayoutOptions::create(scrollAreaStyle));
+	}
+
+	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, ScrollBarType vertBarType, 
+		ScrollBarType horzBarType, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle, 
+		const GUIElementStyle* scrollAreaStyle)
+	{
+		if(scrollAreaStyle == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			scrollAreaStyle = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, GUILayoutOptions::create(layoutOptions, scrollAreaStyle));
 	}
 
 	const String& GUIScrollArea::getGUITypeName()

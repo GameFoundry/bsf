@@ -10,10 +10,6 @@ Resources:
   - DepthStencil/Blend/Rasterizer/Sampler state
 
 Core objects:
- - RenderTarget
-  - RenderWindow
-  - RenderTexture
-  - MultiRenderTexture
  - SceneObject
  - Component
   - plus specific components Camera, Renderable, maybe others
@@ -37,73 +33,25 @@ Systems:
 
  -----------------
 
-For EditorWindow, add a new class in BansheeEditor, which pretty much does the job of  EditorWidget::open
- - Except it creates an empty widget. (It will also create a window, but in C++ code)
- - All the window docking/undocking moving/resizing is done in C++
- - EditorWindow only has a reference to EditorWidget
-
- -----------------
-
  Implementation steps:
- - Get EditorApplication finished and make the main window open from C#
- - Add support for Resources
-   - Importer - Likely invisible for outside world
-   - Resources.Save/Load - Will likely need some kind of an AssetManager for all imported assets
-   - Texture, Mesh, Font, Shader, Material
-     - Before this I will also probably require all the basic classes like Vector3, etc.
- - Emulate current CamelotClient tests in C#
-
- -----------------
-
- But which ones will I need initially?
-  - [EditorApplication] - Entry point. Creates a MainEditorWindow
-  - [EditorWindow] (Scene, Project, Hierarchy, etc.)
-   - show()/hide()
-  - [MainEditorWindow]
-   - Slight variation of EditorWindow as there can be only one of them
-   - Contains [TitleBar], [DockManager]
-  - When adding GUI elements I need to make it easy to add game GUI elements,
-    but also make a distinction and make it possible to add editor GUI elements.
-	- Each EditorWindow contains a [GUIWidget] (created by default)
-	  - This GUIWIdget is created specially with EditorWindow as its target
-	- GUIWidget is also a Component which can be used for rendering to Game view
-	  - All game GUIWidgets are created with Game render target as their target
-  - [GameObject], [Component]
-    - Need something to add GUIWidget to
-  - I need to have [Application] running within EditorApplication
-    - So when I remove EditorApplication everything runs as normal
-	- How to make the distinction?
-	  - Application needs to render to RenderTarget when in editor, and have its own window when standalone
-	   - When in Editor, EditorApplication will call application and tell it to create a render target
-	   - When published I will have a Game class, which will also call Application and run it in a window
-	  - Certain components should only exists in editor (Like Scene camera, gizmos and etc.)
-	   - Add a flag to GameObjects like in Unity, that can hide the object in Hierarchy, or make it not save
-	   - Editor objects would be hidden and would not save with the level, which would make publishing work
-  - GUIWidget
-    - [GUILayoutX], [GUILayoutY], [GUIArea], [GUISpace], [GUIFlexibleSpace]
-	- [GUIElement]
-	  - [GUILabel], [GUIButton], etc.
-	- TODO: GUISkin? - Will I need to create interface for textures and resource loading/importing as well? Probably
-  
-  ----------------
-
-Eventually make all math classes templates that work on both doubles and floats. (Very low priority)
+  - Finish up minor scroll area issues
+  - Implement flexible TreeView GUI component
+  - Finish up Window Docking
+  - EditorApplication
+   - a way to return currently open project
+  - Rethink how Resource .metas are handled
+  - Implement Resource window
+    - C# Importer (Internal class)
+     - Imports resources and stores it within Library of the current Project folder
+    - C# Resources, Save, Create
+    - (Drag and drop import)
+    - (File edit tracking)
 
 ----------------------------
 
-Implement:
-ScrollArea will likely need:
- C++/C#: always/never show horz/vert scroll bar
- C++/C#: optional styles for scroll bars
- C++/C#: scrollTo(pct)
-
- Are GUI element instances kept anywhere? After GUI.Add* is called I think they're lost and destructed?
- I should create a handle in C++ code and only release it once Destroy is called?
-   - Creating a child hierarchy of GUIElements (where each GUIElement holds references to all its children) can work
-    - Destroy() is then called recursively from parent element
-    - Each element will then also have "GetNumChildren", and "GetChild" methods
-    - Also consider adding GUIElement.Move(GUILayout), GUIElement.Move(GUILayout, int position),
-      GUIElement.Move(int offset)
+ScrollBar update:
+  Ensure that scroll bar type is actually used somewhere in GUIScrollBar.cpp
+  Test it properly
 
  - GUISkin
    - List of properties with all common styles, like .button, .label
@@ -120,11 +68,7 @@ When loading resources I need to be able to load both project resources and engi
 
  BsApplication::getPrimaryViewport is not implemented
 
-----------------------------
-
-  I want my .exe to be native. Internally it will call MBansheeEngine and MBansheeEditor.
-
-This will allow me to debug and start C++ as usual.
+ Ensure I can easily ensure that engine and run separate from editor for when game publishing will be implemented.
 
  -----------------
 

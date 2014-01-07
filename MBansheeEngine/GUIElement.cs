@@ -17,6 +17,19 @@ namespace BansheeEngine
                 parent.children.Add(this);
         }
 
+        public int GetNumChildren()
+        {
+            return children.Count;
+        }
+
+        public GUIElement GetChild(int index)
+        {
+            if (index < 0 || index >= children.Count)
+                return null;
+
+            return children[index];
+        }
+
         public void Destroy()
         {
             for (int i = 0; i < children.Count; i++)

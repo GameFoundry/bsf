@@ -47,7 +47,8 @@ namespace BansheeEngine
 		return mParentWidget;
 	}
 
-	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		MonoObject* scrollBarStyle, MonoObject* scrollAreaStyle, MonoArray* guiOptions)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUIOptions options;
@@ -56,12 +57,17 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		GUIElementStyle* elemStyle = nullptr;
+		GUIElementStyle* scrollAreaNativeStyle = nullptr;
 
-		if(style != nullptr)
-			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
+		if(scrollAreaStyle != nullptr)
+			scrollAreaNativeStyle = ScriptGUIElementStyle::toNative(scrollAreaStyle)->getInternalValue();
 
-		GUIScrollArea* guiScrollArea = GUIScrollArea::create(scriptLayout->getParentWidget(), options, elemStyle);
+		GUIElementStyle* scrollBarNativeStyle = nullptr;
+
+		if(scrollBarNativeStyle != nullptr)
+			scrollBarNativeStyle = ScriptGUIElementStyle::toNative(scrollBarStyle)->getInternalValue();
+
+		GUIScrollArea* guiScrollArea = GUIScrollArea::create(scriptLayout->getParentWidget(), vertBarType, horzBarType, options, scrollBarNativeStyle, scrollAreaNativeStyle);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		nativeLayout->addElement(guiScrollArea);
 

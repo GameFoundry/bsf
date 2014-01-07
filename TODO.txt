@@ -144,3 +144,4 @@ Optional:
  - When rendering Scale9Grid GUI elements the stretched center will cause linear interpolation to kick in and blend the edges with the border parts of the texture.
   - I should use point filtering for scale9grid, but that doesn't work in general case for stretched textures as they would look bad
  - Win32DropTarget: I need to be able to set drop DROPEFFECT when various IDropTarget methods are called. Otherwise the drag cursor always remains the same, whether the drag will be accepted or not. 
+ - Eventually make all math classes templates that work on both doubles and floats. (Very low priority)

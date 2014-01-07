@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "BsGUIScrollArea.h"
 
 namespace BansheeEngine
 {
@@ -15,7 +16,8 @@ namespace BansheeEngine
 
 		GUIWidget& getParentWidget() const;
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+			MonoObject* scrollBarStyle, MonoObject* scrollAreaStyle, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIScrollArea* nativeInstance);
 
 		static void internal_destroy(ScriptGUIScrollArea* nativeInstance);
@@ -24,7 +26,7 @@ namespace BansheeEngine
 
 		static void initRuntimeData();
 
-		ScriptGUIScrollArea(GUIScrollArea* button, GUIWidget& parentWidget);
+		ScriptGUIScrollArea(GUIScrollArea* scrollArea, GUIWidget& parentWidget);
 
 		GUIScrollArea* mScrollArea;
 		GUIWidget& mParentWidget;

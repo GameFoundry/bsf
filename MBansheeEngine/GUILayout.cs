@@ -104,14 +104,34 @@ namespace BansheeEngine
             return new GUITextBox(this, false, null, options);
         }
 
+        public GUIScrollArea AddScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, GUIElementStyle style, params GUIOption[] options)
+        {
+            return new GUIScrollArea(this, vertBarType, horzBarType, null, style, options);
+        }
+
+        public GUIScrollArea AddScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, params GUIOption[] options)
+        {
+            return new GUIScrollArea(this, vertBarType, horzBarType, null, null, options);
+        }
+
         public GUIScrollArea AddScrollArea(GUIElementStyle style, params GUIOption[] options)
         {
-            return new GUIScrollArea(this, style, options);
+            return new GUIScrollArea(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, null, style, options);
         }
 
         public GUIScrollArea AddScrollArea(params GUIOption[] options)
         {
-            return new GUIScrollArea(this, null, options);
+            return new GUIScrollArea(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, null, null, options);
+        }
+
+        public GUIScrollArea AddScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options)
+        {
+            return new GUIScrollArea(this, vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, options);
+        }
+
+        public GUIScrollArea AddScrollArea(GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options)
+        {
+            return new GUIScrollArea(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, scrollBarStyle, scrollAreaStyle, options);
         }
 
         public GUIListBox AddListBox(LocString[] elements, GUIElementStyle style, params GUIOption[] options)
