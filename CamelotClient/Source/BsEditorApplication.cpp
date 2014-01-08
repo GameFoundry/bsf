@@ -217,8 +217,8 @@ namespace BansheeEditor
 
 		gApplication().mainLoopCallback.connect(boost::bind(&EditorApplication::update, this));
 
-		//DbgEditorWidget1::open(); // DEBUG ONLY
-		//DbgEditorWidget2::open(); // DEBUG ONLY
+		DbgEditorWidget1::open(); // DEBUG ONLY
+		DbgEditorWidget2::open(); // DEBUG ONLY
 
 		gBansheeApp().runMainLoop();
 

@@ -23,6 +23,8 @@ namespace BansheeEngine
 
 		CM::UINT32 getMaxHandleSize() const;
 		CM::UINT32 getScrollableSize() const;
+
+		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
 		GUIScrollBar(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIScrollBar();
@@ -57,8 +59,6 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();
-
-		virtual CM::Vector2I _getOptimalSize() const;
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 	private:

@@ -34,7 +34,6 @@ Systems:
  -----------------
 
  Implementation steps:
-  - Finish up minor scroll area issues
   - Implement flexible TreeView GUI component
   - Finish up Window Docking
   - EditorApplication
@@ -48,10 +47,6 @@ Systems:
     - (File edit tracking)
 
 ----------------------------
-
-ScrollBar update:
-  Ensure that scroll bar type is actually used somewhere in GUIScrollBar.cpp
-  Test it properly
 
  - GUISkin
    - List of properties with all common styles, like .button, .label

@@ -31,6 +31,8 @@ namespace BansheeEngine
 
 		GUILayout& getLayout() const { return *mContentLayout; }
 
+		virtual CM::Vector2I _getOptimalSize() const;
+
 	protected:
 		~GUIScrollArea();
 
@@ -64,8 +66,6 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();
-
-		virtual CM::Vector2I _getOptimalSize() const;
 	private:
 		GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions);

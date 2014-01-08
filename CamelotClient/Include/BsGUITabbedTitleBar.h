@@ -23,19 +23,26 @@ namespace BansheeEditor
 		boost::signal<void(CM::UINT32)> onTabDraggedOff;
 		boost::signal<void(CM::UINT32)> onTabDraggedOn;
 	protected:
-		CM::Vector<GUIWindowDropArea*>::type mDragDropElements;
+		static const CM::UINT32 TAB_SPACING;
+		static const CM::UINT32 OPTION_BTN_SPACING;
+
 		CM::Vector<GUITabButton*>::type mTabButtons;
 
 		CM::UINT32 mUniqueTabIdx;
 		CM::UINT32 mActiveTabIdx;
 		BS::GUIWidget* mParentWidget;
-		BS::GUIArea* mMainArea;
 		BS::GUIArea* mBackgroundArea;
-		BS::GUILayout* mMainLayout;
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
-		GUIWindowDropArea* mLastDropElement;
 		CM::RenderWindow* mParentWindow;
+		CM::INT32 mX, mY;
+		CM::UINT32 mWidth, mHeight;
+
+		const BS::GUIElementStyle* mCloseBtnStyle;
+		const BS::GUIElementStyle* mMinimizeBtnStyle;
+
+		void updateLayout(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
+			CM::RectI clipRect, CM::UINT8 widgetDepth);
 
 		void tabToggled(CM::UINT32 tabIdx);
 		void tabClosed();
@@ -43,7 +50,5 @@ namespace BansheeEditor
 		void tabDraggedOn(CM::UINT32 tabIdx);
 
 		CM::INT32 uniqueIdxToSeqIdx(CM::UINT32 uniqueIdx) const;
-
-		void refreshNonClientAreas();
 	};
 }

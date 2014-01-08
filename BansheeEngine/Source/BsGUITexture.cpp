@@ -39,18 +39,6 @@ namespace BansheeEngine
 	}
 
 	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
-		GUIImageScaleMode scale, const GUIElementStyle* style)
-	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(style));
-	}
-
-	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
@@ -60,6 +48,18 @@ namespace BansheeEngine
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(layoutOptions, style));
+	}
+
+	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
+		GUIImageScaleMode scale, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(style));
 	}
 
 	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, GUIImageScaleMode scale, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -82,7 +82,7 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HSpriteTexture(), scale, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(style));
 	}
 
 	GUITexture* GUITexture::create(GUIWidget& parent, GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style)
@@ -96,6 +96,17 @@ namespace BansheeEngine
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HTexture(), scale, GUILayoutOptions::create(layoutOptions, style));
 	}
 
+	GUITexture* GUITexture::create(GUIWidget& parent, GUIImageScaleMode scale, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HSpriteTexture(), scale, GUILayoutOptions::create(style));
+	}
+
 	GUITexture* GUITexture::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
@@ -105,6 +116,17 @@ namespace BansheeEngine
 		}
 
 		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions, style));
+	}
+
+	GUITexture* GUITexture::create(GUIWidget& parent, const GUIElementStyle* style)
+	{
+		if(style == nullptr)
+		{
+			const GUISkin& skin = parent.getSkin();
+			style = skin.getStyle(getGUITypeName());
+		}
+
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(style));
 	}
 
 	void GUITexture::setTexture(const HSpriteTexture& texture)

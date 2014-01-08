@@ -24,6 +24,8 @@ namespace BansheeEngine
 
 		CM::UINT32 getMaxSize() const;
 
+		virtual CM::Vector2I _getOptimalSize() const;
+
 		boost::signal<void(float newPosition)> onHandleMoved;
 	protected:
 		~GUIScrollBarHandle();
@@ -58,8 +60,6 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();
-
-		virtual CM::Vector2I _getOptimalSize() const;
 	private:
 		ImageSprite* mImageSprite;
 		CM::UINT32 mHandleSize;

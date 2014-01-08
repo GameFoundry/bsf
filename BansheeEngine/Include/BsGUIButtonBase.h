@@ -29,6 +29,8 @@ namespace BansheeEngine
 		void _setOn(bool on);
 		bool _isOn() const;
 
+		virtual CM::Vector2I _getOptimalSize() const;
+
 		boost::signal<void()> onClick;
 		boost::signal<void()> onHover;
 		boost::signal<void()> onOut;
@@ -69,7 +71,6 @@ namespace BansheeEngine
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-		virtual CM::Vector2I _getOptimalSize() const;
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
 
 		TEXT_SPRITE_DESC getTextDesc() const;

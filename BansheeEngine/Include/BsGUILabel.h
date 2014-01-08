@@ -20,6 +20,7 @@ namespace BansheeEngine
 
 		void setContent(const GUIContent& content);
 
+		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
 		~GUILabel();
 
@@ -53,8 +54,6 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();
-
-		virtual CM::Vector2I _getOptimalSize() const;
 	private:
 		TextSprite* mTextSprite;
 		GUIContent mContent;

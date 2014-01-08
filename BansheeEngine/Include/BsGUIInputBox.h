@@ -18,6 +18,8 @@ namespace BansheeEngine
 
 		const CM::WString& getText() const { return mText; }
 		void setText(const CM::WString& text);
+
+		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
 		~GUIInputBox();
 
@@ -51,8 +53,6 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();
-
-		virtual CM::Vector2I _getOptimalSize() const;
 
 		virtual CM::Vector2I _getTextInputOffset() const;
 		virtual CM::RectI _getTextInputRect() const;

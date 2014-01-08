@@ -16,54 +16,39 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
+	const UINT32 GUITabbedTitleBar::TAB_SPACING = 20;
+	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
+
 	GUITabbedTitleBar::GUITabbedTitleBar(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
-		:mParentWindow(parentWindow), mLastDropElement(nullptr), mMinBtn(nullptr), mCloseBtn(nullptr), 
-		mMainArea(nullptr), mMainLayout(nullptr), mParentWidget(parent), mBackgroundArea(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0)
+		:mParentWindow(parentWindow), mMinBtn(nullptr), mCloseBtn(nullptr), mCloseBtnStyle(nullptr),
+		mMinimizeBtnStyle(nullptr), mParentWidget(parent), mBackgroundArea(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
+		mX(0), mY(0), mWidth(0), mHeight(0)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
-		GUIWindowDropArea* titleBarBg = GUIWindowDropArea::create(*parent, parent->getSkin().getStyle("TitleBarBackground"));
+		GUITexture* titleBarBg = GUITexture::create(*parent, parent->getSkin().getStyle("TitleBarBackground"));
 		mBackgroundArea->getLayout().addSpace(1);
 		mBackgroundArea->getLayout().addElement(titleBarBg);
 		mBackgroundArea->getLayout().addSpace(1);
 
-		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
+		mMinimizeBtnStyle = parent->getSkin().getStyle("WinMinimizeBtn");
+		mCloseBtnStyle = parent->getSkin().getStyle("WinCloseBtn");
 
-		GUIWindowDropArea* dragDropElement = GUIWindowDropArea::create(*parent, GUIOptions(GUIOption::flexibleWidth(20)), parent->getSkin().getStyle("TabbedBarDropArea"));
-		mLastDropElement = dragDropElement;
-
-		mMinBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinMinimizeBtn"));
-		mCloseBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinCloseBtn"));
+		mMinBtn = GUIButton::create(*parent, HString(L""), mMinimizeBtnStyle);
+		mCloseBtn = GUIButton::create(*parent, HString(L""), mCloseBtnStyle);
 
 		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
-
-		mMainArea->getLayout().addSpace(1);
-		mMainLayout = &mMainArea->getLayout().addLayoutX();
-		mMainLayout->addElement(dragDropElement);
-		mMainLayout->addElement(mMinBtn);
-		mMainLayout->addSpace(3);
-		mMainLayout->addElement(mCloseBtn);
-		mMainArea->getLayout().addSpace(3);
-
-		refreshNonClientAreas();
 	}
 
 	GUITabbedTitleBar::~GUITabbedTitleBar()
 	{
-		GUIArea::destroy(mMainArea);
 		GUIArea::destroy(mBackgroundArea);
 
-		GUIElement::destroy(mLastDropElement);
 		GUIElement::destroy(mMinBtn);
 		GUIElement::destroy(mCloseBtn);
 
 		for(auto& tabButton : mTabButtons)
 		{
 			GUIElement::destroy(tabButton);
-		}
-
-		for(auto& dragDropButton : mDragDropElements)
-		{
-			GUIElement::destroy(dragDropButton);
 		}
 	}
 
@@ -75,24 +60,15 @@ namespace BansheeEditor
 	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::HString& name)
 	{
 		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, this, mUniqueTabIdx, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
-		GUIWindowDropArea* newDragDropElement = GUIWindowDropArea::create(*mParentWidget, EngineGUI::instance().getSkin().getStyle("TabbedBarDropArea"));
 
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 
 		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, mUniqueTabIdx));
 		newTabToggle->onDragged.connect(boost::bind(&GUITabbedTitleBar::tabDraggedOff, this, _1));
 
-		newDragDropElement->onDraggedItemDropped.connect(boost::bind(&GUITabbedTitleBar::tabDraggedOn, this, mUniqueTabIdx));
-
 		mTabButtons.insert(mTabButtons.begin() + idx, newTabToggle);
-		mDragDropElements.insert(mDragDropElements.begin() + idx, newDragDropElement);
-
-		mMainLayout->insertElement(idx * 2, newTabToggle);
-		mMainLayout->insertElement(idx * 2, newDragDropElement);
 
 		mUniqueTabIdx++;
-
-		refreshNonClientAreas();
 	}
 
 	void GUITabbedTitleBar::removeTab(UINT32 idx)
@@ -103,28 +79,98 @@ namespace BansheeEditor
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size() - 1);
 
 		GUIElement::destroy(mTabButtons[idx]);
-		GUIElement::destroy(mDragDropElements[idx]);
 
 		mTabButtons.erase(mTabButtons.begin() + idx);
-		mDragDropElements.erase(mDragDropElements.begin() + idx);
+	}
 
-		refreshNonClientAreas();
+	void GUITabbedTitleBar::updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height,
+		RectI clipRect, UINT8 widgetDepth)
+	{
+		CM::Vector<CM::RectI>::type nonClientAreas;
+
+		UINT32 curX = x + 1;
+		UINT32 curY = y;
+		UINT32 tabBtnHeight = 0;
+		for(UINT32 i = 0; i < (UINT32)mTabButtons.size(); i++)
+		{
+			GUITabButton* btn = mTabButtons[i];
+			Vector2I optimalSize = btn->_getOptimalSize();
+
+			tabBtnHeight = optimalSize.y;
+			nonClientAreas.push_back(RectI(curX, curY, TAB_SPACING, tabBtnHeight));
+			curX += TAB_SPACING;
+
+			Vector2I offset(curX, curY);
+			btn->_setOffset(offset);
+			btn->_setWidth(optimalSize.x);
+			btn->_setHeight(optimalSize.y);
+			btn->_setAreaDepth(9899);
+			btn->_setWidgetDepth(widgetDepth);
+
+			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			btn->_setClipRect(elemClipRect);
+
+			curX += optimalSize.x;
+		}
+
+		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
+		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
+
+		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
+		UINT32 remainingWidth = (UINT32)std::max(0, (INT32)(width - curX - endButtonWidth - 1));
+		nonClientAreas.push_back(RectI(curX, curY, remainingWidth, tabBtnHeight));
+
+		INT32 optionBtnXPos = x + width - endButtonWidth - 1;
+		{
+			INT32 optionBtnYPos = curY + Math::floorToInt((tabBtnHeight - minBtnOptimalSize.y) * 0.5f);
+
+			Vector2I offset(optionBtnXPos, optionBtnYPos);
+			mMinBtn->_setOffset(offset);
+			mMinBtn->_setWidth(minBtnOptimalSize.x);
+			mMinBtn->_setHeight(minBtnOptimalSize.y);
+			mMinBtn->_setAreaDepth(9899);
+			mMinBtn->_setWidgetDepth(widgetDepth);
+
+			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			mMinBtn->_setClipRect(elemClipRect);
+		}
+
+		optionBtnXPos += minBtnOptimalSize.x + OPTION_BTN_SPACING;
+		{
+			INT32 optionBtnYPos = curY + Math::floorToInt((tabBtnHeight - closeBtnOptimalSize.y) * 0.5f);
+
+			Vector2I offset(optionBtnXPos, optionBtnYPos);
+			mCloseBtn->_setOffset(offset);
+			mCloseBtn->_setWidth(closeBtnOptimalSize.x);
+			mCloseBtn->_setHeight(closeBtnOptimalSize.y);
+			mCloseBtn->_setAreaDepth(9899);
+			mCloseBtn->_setWidgetDepth(widgetDepth);
+
+			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			mCloseBtn->_setClipRect(elemClipRect);
+		}
+
+		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
 	}
 
 	void GUITabbedTitleBar::setPosition(INT32 x, INT32 y)
 	{
-		mMainArea->setPosition(x, y);
+		mX = x;
+		mY = y;
+
 		mBackgroundArea->setPosition(x, y);
 
-		refreshNonClientAreas();
+		updateLayout(mX, mY, mWidth, mHeight, RectI(mX, mY, mWidth, mHeight), mParentWidget->getDepth());
 	}
 
 	void GUITabbedTitleBar::setSize(UINT32 width, UINT32 height)
 	{
-		mMainArea->setSize(width, height);
+		mWidth = width;
+		mHeight = height;
+
 		mBackgroundArea->setSize(width, height);
 
-		refreshNonClientAreas();
+		updateLayout(mX, mY, mWidth, mHeight, RectI(mX, mY, mWidth, mHeight), mParentWidget->getDepth());
 	}
 
 	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx)
@@ -186,22 +232,5 @@ namespace BansheeEditor
 		}
 
 		return -1;
-	}
-
-	void GUITabbedTitleBar::refreshNonClientAreas()
-	{
-		// If the size or contents of the area changed this frame the layout won't be updated yet,
-		// so force the update right away so we get correct element bounds
-		mMainArea->_update();
-
-		CM::Vector<CM::RectI>::type nonClientAreas;
-		for(auto& elem : mDragDropElements)
-		{
-			nonClientAreas.push_back(elem->getBounds());
-		}
-
-		nonClientAreas.push_back(mLastDropElement->getBounds());
-
-		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
 	}
 }

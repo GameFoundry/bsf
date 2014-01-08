@@ -24,6 +24,9 @@ namespace BansheeEngine
 		 */
 		static GUIViewport* create(GUIWidget& parent, const GUIOptions& layoutOptions, const HCamera& camera, 
 			float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style = nullptr);
+
+		virtual CM::Vector2I _getOptimalSize() const;
+
 	protected:
 		~GUIViewport();
 
@@ -57,8 +60,6 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::updateRenderElementsInternal()
 		 */
 		virtual void updateRenderElementsInternal();
-
-		virtual CM::Vector2I _getOptimalSize() const;
 
 	private:
 		HCamera mCamera;

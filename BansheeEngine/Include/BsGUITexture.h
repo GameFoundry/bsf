@@ -19,18 +19,25 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, 
-			const GUIElementStyle* style = nullptr);
 		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, GUIImageScaleMode scale, 
 			const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, GUIImageScaleMode scale, 
+			const GUIElementStyle* style = nullptr);
+
 		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, 
 			const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, const GUIElementStyle* style = nullptr);
 
-		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale = GUIImageScaleMode::StretchToFit, const GUIElementStyle* style = nullptr);
+		
 		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale, const GUIElementStyle* style = nullptr);
+
 		static GUITexture* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
 
 		void setTexture(const HSpriteTexture& texture);
+
+		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
 		ImageSprite* mImageSprite;
 		HSpriteTexture mActiveTexture;
@@ -70,7 +77,5 @@ namespace BansheeEngine
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();
-
-		virtual CM::Vector2I _getOptimalSize() const;
 	};
 }
