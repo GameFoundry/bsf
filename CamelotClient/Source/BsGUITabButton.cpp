@@ -85,7 +85,17 @@ namespace BansheeEditor
 			if(dist > DRAG_MIN_DISTANCE)
 			{
 				if(!onDragged.empty())
-					onDragged(mIndex);
+					onDragged(mIndex, ev.getPosition());
+			}
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
+		{
+			UINT32 dist = mDragStartPosition.manhattanDist(ev.getPosition());
+
+			if(dist > DRAG_MIN_DISTANCE)
+			{
+				if(!onDragEnd.empty())
+					onDragEnd(mIndex, ev.getPosition());
 			}
 		}
 

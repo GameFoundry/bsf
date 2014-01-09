@@ -22,7 +22,7 @@ namespace BansheeEditor
 	GUITabbedTitleBar::GUITabbedTitleBar(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
 		:mParentWindow(parentWindow), mMinBtn(nullptr), mCloseBtn(nullptr), mCloseBtnStyle(nullptr),
 		mMinimizeBtnStyle(nullptr), mParentWidget(parent), mBackgroundArea(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
-		mX(0), mY(0), mWidth(0), mHeight(0)
+		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0)
 	{
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		GUITexture* titleBarBg = GUITexture::create(*parent, parent->getSkin().getStyle("TitleBarBackground"));
@@ -64,7 +64,8 @@ namespace BansheeEditor
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 
 		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, mUniqueTabIdx));
-		newTabToggle->onDragged.connect(boost::bind(&GUITabbedTitleBar::tabDraggedOff, this, _1));
+		newTabToggle->onDragged.connect(boost::bind(&GUITabbedTitleBar::tabDragged, this, _1, _2));
+		newTabToggle->onDragEnd.connect(boost::bind(&GUITabbedTitleBar::tabDragEnd, this, _1, _2));
 
 		mTabButtons.insert(mTabButtons.begin() + idx, newTabToggle);
 
@@ -101,6 +102,9 @@ namespace BansheeEditor
 			curX += TAB_SPACING;
 
 			Vector2I offset(curX, curY);
+			if(mDragInProgress && btn == mDraggedBtn)
+				offset.x = mDragBtnOffset;
+			
 			btn->_setOffset(offset);
 			btn->_setWidth(optimalSize.x);
 			btn->_setHeight(optimalSize.y);
@@ -155,22 +159,22 @@ namespace BansheeEditor
 
 	void GUITabbedTitleBar::setPosition(INT32 x, INT32 y)
 	{
-		mX = x;
-		mY = y;
+		mArea.x = x;
+		mArea.y = y;
 
 		mBackgroundArea->setPosition(x, y);
 
-		updateLayout(mX, mY, mWidth, mHeight, RectI(mX, mY, mWidth, mHeight), mParentWidget->getDepth());
+		updateLayout(mArea.x, mArea.y, mArea.width, mArea.height, RectI(mArea.x, mArea.y, mArea.width, mArea.height), mParentWidget->getDepth());
 	}
 
 	void GUITabbedTitleBar::setSize(UINT32 width, UINT32 height)
 	{
-		mWidth = width;
-		mHeight = height;
+		mArea.width = width;
+		mArea.height = height;
 
 		mBackgroundArea->setSize(width, height);
 
-		updateLayout(mX, mY, mWidth, mHeight, RectI(mX, mY, mWidth, mHeight), mParentWidget->getDepth());
+		updateLayout(mArea.x, mArea.y, mArea.width, mArea.height, RectI(mArea.x, mArea.y, mArea.width, mArea.height), mParentWidget->getDepth());
 	}
 
 	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx)
@@ -200,14 +204,55 @@ namespace BansheeEditor
 		}
 	}
 
-	void GUITabbedTitleBar::tabDraggedOff(CM::UINT32 tabIdx)
+	void GUITabbedTitleBar::tabDragged(CM::UINT32 tabIdx, const Vector2I& dragPos)
 	{
 		INT32 idx = uniqueIdxToSeqIdx(tabIdx);
 		if(idx != -1)
 		{
-			if(!onTabDraggedOff.empty())
-				onTabDraggedOff(idx);
+			if(mArea.contains(dragPos))
+			{
+				mDraggedBtn = mTabButtons[idx];
+
+				if(!mDragInProgress)
+				{
+					Vector2I offset = mDraggedBtn->_getOffset();
+					mInitialDragOffset = (dragPos.x - offset.x);
+
+					mDragInProgress = true;
+				}
+
+				mDragBtnOffset = dragPos.x - mArea.x - mInitialDragOffset;
+				
+				Vector2I offset = mDraggedBtn->_getOffset();
+				INT32 diff = mDragBtnOffset - offset.x;
+				offset.x += diff;
+				mDraggedBtn->_setOffset(offset);
+
+				RectI clipRect = mDraggedBtn->_getClipRect();
+				clipRect.x -= diff;
+				mDraggedBtn->_setClipRect(clipRect);
+
+				mDragInProgress = true;
+
+				// TODO - If position overlaps another button permanently move the tab
+			}
+			else
+			{
+				mDragInProgress = false;
+				mDraggedBtn = nullptr;
+
+				if(!onTabDraggedOff.empty())
+					onTabDraggedOff(idx);
+			}
 		}
+	}
+
+	void GUITabbedTitleBar::tabDragEnd(CM::UINT32 tabIdx, const Vector2I& dragPos)
+	{
+		mDragInProgress = false;
+		mDraggedBtn = nullptr;
+
+		updateLayout(mArea.x, mArea.y, mArea.width, mArea.height, RectI(mArea.x, mArea.y, mArea.width, mArea.height), mParentWidget->getDepth());
 	}
 
 	void GUITabbedTitleBar::tabDraggedOn(CM::UINT32 tabIdx)

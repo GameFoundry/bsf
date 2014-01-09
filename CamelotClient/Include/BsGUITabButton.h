@@ -21,7 +21,8 @@ namespace BansheeEditor
 
 		CM::UINT32 getIndex() const { return mIndex; }
 
-		boost::signal<void(CM::UINT32)> onDragged;
+		boost::signal<void(CM::UINT32, const CM::Vector2I&)> onDragged;
+		boost::signal<void(CM::UINT32, const CM::Vector2I&)> onDragEnd;
 	protected:
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 

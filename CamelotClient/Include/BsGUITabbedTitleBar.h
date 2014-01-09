@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "CmRectI.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEditor
@@ -35,8 +36,12 @@ namespace BansheeEditor
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
 		CM::RenderWindow* mParentWindow;
-		CM::INT32 mX, mY;
-		CM::UINT32 mWidth, mHeight;
+		CM::RectI mArea;
+
+		bool mDragInProgress;
+		GUITabButton* mDraggedBtn;
+		CM::INT32 mDragBtnOffset;
+		CM::INT32 mInitialDragOffset;
 
 		const BS::GUIElementStyle* mCloseBtnStyle;
 		const BS::GUIElementStyle* mMinimizeBtnStyle;
@@ -46,7 +51,8 @@ namespace BansheeEditor
 
 		void tabToggled(CM::UINT32 tabIdx);
 		void tabClosed();
-		void tabDraggedOff(CM::UINT32 tabIdx);
+		void tabDragged(CM::UINT32 tabIdx, const CM::Vector2I& dragPos);
+		void tabDragEnd(CM::UINT32 tabIdx, const CM::Vector2I& dragPos);
 		void tabDraggedOn(CM::UINT32 tabIdx);
 
 		CM::INT32 uniqueIdxToSeqIdx(CM::UINT32 uniqueIdx) const;

@@ -107,6 +107,7 @@ namespace BansheeEngine
 		bool _isDestroyed() const { return mIsDestroyed; }
 
 		const CM::RectI& _getClippedBounds() const { return mClippedBounds; }
+		const CM::RectI& _getClipRect() const { return mClipRect; }
 		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return *mParent; }
 		virtual bool _isInBounds(const CM::Vector2I position) const;
