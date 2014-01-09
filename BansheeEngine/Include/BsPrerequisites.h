@@ -79,6 +79,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Overlay> OverlayPtr;
 	typedef std::shared_ptr<Camera> CameraPtr;
 	typedef std::shared_ptr<Renderable> RenderablePtr;
+	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
 
 	typedef CM::GameObjectHandle<GUIWidget> HGUIWidget;
 	typedef CM::GameObjectHandle<Camera> HCamera;

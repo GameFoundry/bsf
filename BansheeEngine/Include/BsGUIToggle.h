@@ -43,7 +43,7 @@ namespace BansheeEngine
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-	private:
+	protected:
 		std::shared_ptr<GUIToggleGroup> mToggleGroup;
 		bool mIsToggled;
 	};

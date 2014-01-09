@@ -35,6 +35,7 @@ namespace BansheeEditor
 		BS::GUIArea* mBackgroundArea;
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;
+		BS::GUIToggleGroupPtr mTabToggleGroup;
 		CM::RenderWindow* mParentWindow;
 		CM::RectI mArea;
 

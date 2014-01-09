@@ -37,6 +37,8 @@ namespace BansheeEditor
 		mCloseBtn = GUIButton::create(*parent, HString(L""), mCloseBtnStyle);
 
 		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
+
+		mTabToggleGroup = GUIToggle::createToggleGroup();
 	}
 
 	GUITabbedTitleBar::~GUITabbedTitleBar()
@@ -59,7 +61,7 @@ namespace BansheeEditor
 
 	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::HString& name)
 	{
-		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, this, mUniqueTabIdx, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
+		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, mTabToggleGroup, mUniqueTabIdx, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
 
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 

@@ -18,13 +18,13 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUITabButton::GUITabButton(GUIWidget& parent, const GUIElementStyle* style, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIToggle(parent, style, content, nullptr, layoutOptions), mTitleBar(titleBar), mIndex(index)
+	GUITabButton::GUITabButton(GUIWidget& parent, const GUIElementStyle* style, const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIToggle(parent, style, content, toggleGroup, layoutOptions), mIndex(index)
 	{
 
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -32,10 +32,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, toggleGroup, index, GUIContent(text), GUILayoutOptions::create(style));
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -43,10 +43,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, GUIContent(text), GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, toggleGroup, index, GUIContent(text), GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -54,10 +54,10 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, toggleGroup, index, content, GUILayoutOptions::create(style));
 	}
 
-	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUITabbedTitleBar* titleBar, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(GUIWidget& parent, const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -65,14 +65,21 @@ namespace BansheeEditor
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, titleBar, index, content, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, toggleGroup, index, content, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	bool GUITabButton::mouseEvent(const GUIMouseEvent& ev)
 	{
-		bool eventProcessed = GUIToggle::mouseEvent(ev);
+		bool eventProcessed = GUIButtonBase::mouseEvent(ev);
 
-		if(ev.getType() == GUIMouseEventType::MouseDragStart)
+		if(ev.getType() == GUIMouseEventType::MouseUp)
+		{
+			if(!mIsToggled)
+				toggleOn();
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
 			mDragStartPosition = ev.getPosition();
 
@@ -87,6 +94,8 @@ namespace BansheeEditor
 				if(!onDragged.empty())
 					onDragged(mIndex, ev.getPosition());
 			}
+
+			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
@@ -97,6 +106,8 @@ namespace BansheeEditor
 				if(!onDragEnd.empty())
 					onDragEnd(mIndex, ev.getPosition());
 			}
+
+			return true;
 		}
 
 		return eventProcessed;
