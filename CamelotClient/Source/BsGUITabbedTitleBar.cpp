@@ -236,7 +236,35 @@ namespace BansheeEditor
 
 				mDragInProgress = true;
 
-				// TODO - If position overlaps another button permanently move the tab
+				for(UINT32 i = 0; i < idx; i++)
+				{
+					UINT32 width = mTabButtons[i]->_getWidth();
+					INT32 centerX = mTabButtons[i]->_getOffset().x + width / 2;
+
+					if(dragPos.x < centerX)
+					{
+						GUITabButton* temp = mTabButtons[i];
+						mTabButtons[i] = mTabButtons[idx];
+						mTabButtons[idx] = temp;
+
+						break;
+					}
+				}
+
+				for(UINT32 i = idx + 1; i < (UINT32)mTabButtons.size(); i++)
+				{
+					UINT32 width = mTabButtons[i]->_getWidth();
+					INT32 centerX = mTabButtons[i]->_getOffset().x + width / 2;
+
+					if(dragPos.x > centerX)
+					{
+						GUITabButton* temp = mTabButtons[i];
+						mTabButtons[i] = mTabButtons[idx];
+						mTabButtons[idx] = temp;
+
+						break;
+					}
+				}
 			}
 			else
 			{
