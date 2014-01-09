@@ -631,17 +631,6 @@ namespace BansheeEngine
 
 				mLastCursorLocalPos = curLocalPos;
 			}
-
-			// Also if drag is in progress send DragAndDrop events
-			if(DragAndDropManager::instance().isDragInProgress())
-			{
-				if(mElementUnderCursor != nullptr)
-				{
-					mMouseEvent.setDragAndDropDraggedData(mElementUnderCursor, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
-						event.markAsUsed();
-				}
-			}
 		}
 		else // Otherwise, send MouseMove events if we are hovering over any element
 		{
@@ -655,6 +644,14 @@ namespace BansheeEngine
 						event.markAsUsed();
 
 					mLastCursorLocalPos = localPos;
+				}
+
+				// Also if drag is in progress send DragAndDrop events
+				if(DragAndDropManager::instance().isDragInProgress())
+				{
+					mMouseEvent.setDragAndDropDraggedData(mElementUnderCursor, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
+						event.markAsUsed();
 				}
 
 				if(Math::abs(event.mouseWheelScrollAmount) > 0.00001f)

@@ -6,20 +6,11 @@ Initial:
  - Dragging another editor window over the window shows the drop overlay and you can dock that window onto any side
    - Currently the overlay is always shown and will trigger on mouse move and not only mouse drag
 
-Undock:
- - Dragging on a title of a docked window undocks it
-
 Resize sliders
  - Add a button between docked windows
  - Allow the button to be dragged, and it will automatically resize separating widgets
 
-TitleBar dock/undock move
- - Dragging a title bar will move the title bar button while the cursor is within the widget area
-   - If there are other title bars this will allow you to reposition the title bar
-   - If cursor leaves the title bar (or widget area?) close the window and start actual drag and drop operation
-
 TitleBar dock/undock 
- - Releasing the dragged window anywhere not on editor will re-open the window at that location
  - Releasing the dragged window over the drop overlay will dock the window
  - Moving the dragged window over a title bar will temporarily dock the title bar and allow you to move it (as in first step)
    - If you release the mouse the window will then be permanently docked at that location

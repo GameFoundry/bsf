@@ -14,6 +14,7 @@
 #include "BsBuiltinMaterialManager.h"
 #include "BsGUIWidget.h"
 #include "BsCamera.h"
+#include "BsDragAndDropManager.h"
 #include "CmVertexDataDesc.h"
 
 using namespace CamelotFramework;
@@ -206,6 +207,12 @@ namespace BansheeEditor
 		cm_deleteN(mBotDropPolygon, 4);
 		cm_deleteN(mLeftDropPolygon, 4);
 		cm_deleteN(mRightDropPolygon, 4);
+	}
+
+	void DockManager::update()
+	{
+		if(!DragAndDropManager::instance().isDragInProgress())
+			mHighlightedDropLoc = DockLocation::None;
 	}
 
 	void DockManager::render(const Viewport* viewport, CM::RenderQueue& renderQueue)
@@ -445,63 +452,65 @@ namespace BansheeEditor
 
 	void DockManager::onGUIMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
 	{
-		if(event.getType() != GUIMouseEventType::MouseMove) // TODO - Replace with DragAndDrop event
-			return;
-
 		if(widget->getTarget() != mParent->getTarget())
 			return;
 
-		const Vector2I& widgetRelPos = event.getPosition();
-
-		const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
-
-		Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
-		Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
-		Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
-
-		DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
-
-
-
-
-
-		// DEBUG ONLY
-		mouseOverContainer = &mRootContainer;
-		// END DEBUG ONLY
-
-
-
-
-
-
-		// Check if we need to highlight any drop locations
-		if(mouseOverContainer)
+		if(event.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{
-			if(insidePolygon(mTopDropPolygon, 4, windowPosVec))
-				mHighlightedDropLoc = DockLocation::Top;
-			else if(insidePolygon(mBotDropPolygon, 4, windowPosVec))
-				mHighlightedDropLoc = DockLocation::Bottom;
-			else if(insidePolygon(mLeftDropPolygon, 4, windowPosVec))
-				mHighlightedDropLoc = DockLocation::Left;
-			else if(insidePolygon(mRightDropPolygon, 4, windowPosVec))
-				mHighlightedDropLoc = DockLocation::Right;
+			const Vector2I& widgetRelPos = event.getPosition();
+
+			const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
+
+			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
+			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
+			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
+
+			DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
+
+
+
+			// DEBUG ONLY
+			mouseOverContainer = &mRootContainer;
+			// END DEBUG ONLY
+
+
+
+
+
+
+			// Check if we need to highlight any drop locations
+			if(mouseOverContainer)
+			{
+				if(insidePolygon(mTopDropPolygon, 4, windowPosVec))
+					mHighlightedDropLoc = DockLocation::Top;
+				else if(insidePolygon(mBotDropPolygon, 4, windowPosVec))
+					mHighlightedDropLoc = DockLocation::Bottom;
+				else if(insidePolygon(mLeftDropPolygon, 4, windowPosVec))
+					mHighlightedDropLoc = DockLocation::Left;
+				else if(insidePolygon(mRightDropPolygon, 4, windowPosVec))
+					mHighlightedDropLoc = DockLocation::Right;
+				else
+					mHighlightedDropLoc = DockLocation::None;
+			}
+
+			// Update mesh if needed
+			if(mouseOverContainer == mMouseOverContainer)
+				return;
+
+			mMouseOverContainer = mouseOverContainer;
+
+			if(mMouseOverContainer == nullptr)
+			{
+				mDropOverlayMesh = HMesh();
+			}
 			else
-				mHighlightedDropLoc = DockLocation::None;
+			{
+				updateDropOverlay(mMouseOverContainer->mX, mMouseOverContainer->mY, mMouseOverContainer->mWidth, mMouseOverContainer->mHeight);
+			}
 		}
-
-		// Update mesh if needed
-		if(mouseOverContainer == mMouseOverContainer)
-			return;
-
-		mMouseOverContainer = mouseOverContainer;
-
-		if(mMouseOverContainer == nullptr)
+		else if(event.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{
-			mDropOverlayMesh = HMesh();
-		}
-		else
-		{
-			updateDropOverlay(mMouseOverContainer->mX, mMouseOverContainer->mY, mMouseOverContainer->mWidth, mMouseOverContainer->mHeight);
+			int a = 5; // TODO
 		}
 	}
 

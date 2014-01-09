@@ -61,6 +61,11 @@ namespace BansheeEditor
 		DockManager(BS::GUIWidget* parent, CM::RenderWindow* parentWindow);
 		~DockManager();
 
+		/**
+		 * @brief	Internal method. Called once every frame.
+		 */
+		void update();
+
 		void render(const CM::Viewport* viewport, CM::RenderQueue& renderQueue);
 		void insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location);
 

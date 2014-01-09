@@ -117,6 +117,7 @@ namespace BansheeEditor
 
 	void MainEditorWindow::update()
 	{
+		mDockManager->update();
 		PROFILE_CALL(ProfilerOverlay::instance().update(), "ProfilerOverlay");
 	}
 }
