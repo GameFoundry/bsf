@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "CmRectI.h"
 
 namespace BansheeEditor
 {
@@ -15,10 +16,12 @@ namespace BansheeEditor
 		{
 		public:
 			DockContainer();
+			DockContainer(DockContainer* parent);
 			~DockContainer();
 
 			void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 			void makeLeaf(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
+			void makeLeaf(EditorWidgetContainer* existingContainer);
 			void addLeft(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
 			void addRight(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
 			void addTop(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
@@ -37,9 +40,9 @@ namespace BansheeEditor
 
 			bool mIsLeaf;
 			DockContainer* mChildren[2];
+			DockContainer* mParent;
 			EditorWidgetContainer* mWidgets;
-			CM::INT32 mX, mY;
-			CM::UINT32 mWidth, mHeight;
+			CM::RectI mArea;
 			float mSplitPosition;
 			bool mIsHorizontal;
 
@@ -47,6 +50,7 @@ namespace BansheeEditor
 
 		private:
 			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget, bool horizontal, bool newChildIsFirst);
+			void widgetRemoved();
 		};
 
 		enum class DockLocation
@@ -84,6 +88,7 @@ namespace BansheeEditor
 
 		DockContainer* mMouseOverContainer;
 		DockLocation mHighlightedDropLoc;
+		bool mShowOverlay;
 		CM::Vector2* mTopDropPolygon;
 		CM::Vector2* mBotDropPolygon;
 		CM::Vector2* mLeftDropPolygon;
@@ -91,7 +96,7 @@ namespace BansheeEditor
 
 		void updateDropOverlay(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
-		void onGUIMouseEvent(BS::GUIWidget* widget, BS::GUIElement* element, const BS::GUIMouseEvent& event);
+		bool onGUIMouseEvent(BS::GUIWidget* widget, BS::GUIElement* element, const BS::GUIMouseEvent& event);
 		bool insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const;
 	};
 }

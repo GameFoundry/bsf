@@ -576,7 +576,12 @@ namespace BansheeEngine
 		{
 			if(mElementUnderCursor != nullptr)
 			{
-				mMouseEvent.setDragAndDropDroppedData(mElementUnderCursor, Vector2I(), DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+				Vector2I localPos;
+
+				if(mWidgetUnderCursor != nullptr)
+					localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
+
+				mMouseEvent.setDragAndDropDroppedData(mElementUnderCursor, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
 				bool processed = sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent);
 
 				return processed;
@@ -1243,7 +1248,10 @@ namespace BansheeEngine
 	bool GUIManager::sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
 	{
 		if(!mouseEventFilter.empty())
-			mouseEventFilter(widget, element, event);
+		{
+			if(mouseEventFilter(widget, element, event)) // TODO - If multiple filters and processed at once I should only call the first one
+				return true;
+		}
 
 		return widget->_mouseEvent(element, event);
 	}

@@ -27,8 +27,16 @@ namespace BansheeEditor
 	const CM::Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockManager::DockContainer::DockContainer()
-		:mIsLeaf(false), mWidgets(nullptr), mX(0), mY(0), mWidth(0), mHeight(0), mSplitPosition(0.5f),
-		mIsHorizontal(false)
+		:mIsLeaf(false), mWidgets(nullptr), mSplitPosition(0.5f),
+		mIsHorizontal(false), mParent(nullptr)
+	{
+		mChildren[0] = nullptr;
+		mChildren[1] = nullptr;
+	}
+
+	DockManager::DockContainer::DockContainer(DockContainer* parent)
+		:mIsLeaf(false), mWidgets(nullptr), mSplitPosition(0.5f),
+		mIsHorizontal(false), mParent(parent)
 	{
 		mChildren[0] = nullptr;
 		mChildren[1] = nullptr;
@@ -53,10 +61,10 @@ namespace BansheeEditor
 
 	void DockManager::DockContainer::setArea(CM::INT32 x, CM::INT32 y, UINT32 width, UINT32 height)
 	{
-		mX = x;
-		mY = y;
-		mWidth = width;
-		mHeight = height;
+		mArea.x = x;
+		mArea.y = y;
+		mArea.width = width;
+		mArea.height = height;
 
 		if(mIsLeaf)
 		{
@@ -70,23 +78,23 @@ namespace BansheeEditor
 		{
 			if(mIsHorizontal)
 			{
-				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mHeight - (INT32)SliderSize);
+				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SliderSize);
 				UINT32 sizeTop = Math::floorToInt(remainingSize * mSplitPosition);
 				UINT32 sizeBottom = remainingSize - sizeTop;
 
-				mChildren[0]->setArea(mX, mY, mWidth, sizeTop);
-				mChildren[1]->setArea(mX, mY + sizeTop + SliderSize, mWidth, sizeBottom);
+				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, sizeTop);
+				mChildren[1]->setArea(mArea.x, mArea.y + sizeTop + SliderSize, mArea.width, sizeBottom);
 
 				// TODO - Set slider position
 			}
 			else
 			{
-				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mWidth - (INT32)SliderSize);
+				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SliderSize);
 				UINT32 sizeLeft = Math::floorToInt(remainingSize * mSplitPosition);
 				UINT32 sizeRight = remainingSize - sizeLeft;
 
-				mChildren[0]->setArea(mX, mY, sizeLeft, mHeight);
-				mChildren[1]->setArea(mX + sizeLeft + SliderSize, mY, sizeRight, mHeight);
+				mChildren[0]->setArea(mArea.x, mArea.y, sizeLeft, mArea.height);
+				mChildren[1]->setArea(mArea.x + sizeLeft + SliderSize, mArea.y, sizeRight, mArea.height);
 
 				// TODO - Set slider position
 			}
@@ -98,9 +106,22 @@ namespace BansheeEditor
 		mIsLeaf = true;
 		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow);
 
+		mWidgets->onWidgetClosed.connect(boost::bind(&DockManager::DockContainer::widgetRemoved, this));
+
 		mWidgets->add(*widget);
-		mWidgets->setPosition(mX, mY);
-		mWidgets->setSize(mWidth, mHeight);
+		mWidgets->setPosition(mArea.x, mArea.y);
+		mWidgets->setSize(mArea.width, mArea.height);
+	}
+
+	void DockManager::DockContainer::makeLeaf(EditorWidgetContainer* existingContainer)
+	{
+		mIsLeaf = true;
+		mWidgets = existingContainer;
+
+		mWidgets->onWidgetClosed.connect(boost::bind(&DockManager::DockContainer::widgetRemoved, this));
+
+		mWidgets->setPosition(mArea.x, mArea.y);
+		mWidgets->setSize(mArea.width, mArea.height);
 	}
 
 	void DockManager::DockContainer::addLeft(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
@@ -128,19 +149,59 @@ namespace BansheeEditor
 		UINT32 idxA = newChildIsFirst ? 0 : 1;
 		UINT32 idxB = (idxA + 1) % 2;
 
-		mChildren[idxA] = cm_new<DockContainer>();
-		mChildren[idxB] = cm_new<DockContainer>(*this);
+		mChildren[idxA] = cm_new<DockContainer>(this);
+		mChildren[idxB] = cm_new<DockContainer>(this);
 
 		mChildren[idxA]->makeLeaf(widgetParent, parentWindow, widget);
 
 		mIsLeaf = false;
 		mIsHorizontal = horizontal;
-		mWidgets = nullptr;
 		mSplitPosition = 0.5f;
+
+		if(mWidgets != nullptr)
+			cm_delete(mWidgets);
+
+		mWidgets = nullptr;
 
 		// TODO - Add slider
 
-		setArea(mX, mY, mWidth, mHeight);
+		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
+	}
+
+	void DockManager::DockContainer::widgetRemoved()
+	{
+		assert(mIsLeaf);
+
+		if(mWidgets->getNumWidgets() == 0)
+		{
+			if(mParent == nullptr) // We're root so we just reset ourselves, can't delete root
+			{
+				cm_delete(mWidgets);
+				mWidgets = nullptr;
+
+				mIsLeaf = false;
+				mSplitPosition = 0.5f;
+				mIsHorizontal = false;
+			}
+			else
+			{
+				// Replace our parent with our sibling
+				DockContainer* sibling = nullptr;
+				if(mParent->mChildren[0] == this)
+					sibling = mParent->mChildren[1];
+				else
+					sibling = mParent->mChildren[0];
+
+				sibling->mWidgets->onWidgetClosed.disconnect_all_slots();
+				sibling->mWidgets->onWidgetHidden.disconnect_all_slots();
+				sibling->mWidgets = nullptr;
+
+				mParent->makeLeaf(sibling->mWidgets);
+
+				cm_delete(sibling);
+				cm_delete(this);
+			}
+		}
 	}
 
 	DockManager::DockContainer* DockManager::DockContainer::find(EditorWidgetContainer* widgetContainer)
@@ -168,8 +229,7 @@ namespace BansheeEditor
 	{
 		if(mIsLeaf)
 		{
-			if(pos.x >= (float)mX && pos.x < (float)(mX + mWidth) &&
-				pos.y >= (float)mY && pos.y < (float)(mY + mHeight))
+			if(mArea.contains(pos))
 			{
 				return this;
 			}
@@ -187,7 +247,8 @@ namespace BansheeEditor
 	}
 
 	DockManager::DockManager(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
-		:mParent(parent), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None)
+		:mParent(parent), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
+		mShowOverlay(false)
 	{
 		mTopDropPolygon = cm_newN<Vector2>(4);
 		mBotDropPolygon = cm_newN<Vector2>(4);
@@ -212,11 +273,17 @@ namespace BansheeEditor
 	void DockManager::update()
 	{
 		if(!DragAndDropManager::instance().isDragInProgress())
+		{
 			mHighlightedDropLoc = DockLocation::None;
+			mShowOverlay = false;
+		}
 	}
 
 	void DockManager::render(const Viewport* viewport, CM::RenderQueue& renderQueue)
 	{
+		if(!mShowOverlay)
+			return;
+
 		float invViewportWidth = 1.0f / (viewport->getWidth() * 0.5f);
 		float invViewportHeight = 1.0f / (viewport->getHeight() * 0.5f);
 
@@ -450,13 +517,16 @@ namespace BansheeEditor
 		mDropOverlayMesh = Mesh::create(meshData);
 	}
 
-	void DockManager::onGUIMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
+	bool DockManager::onGUIMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
 	{
 		if(widget->getTarget() != mParent->getTarget())
-			return;
+			return false;
 
 		if(event.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{
+			if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
+				return false;
+
 			const Vector2I& widgetRelPos = event.getPosition();
 
 			const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
@@ -466,17 +536,23 @@ namespace BansheeEditor
 			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
 			DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
+			if(mouseOverContainer == nullptr)
+				mouseOverContainer = &mRootContainer;
 
+			// Update mesh if needed
+			if(mouseOverContainer != mMouseOverContainer)
+			{
+				mMouseOverContainer = mouseOverContainer;
 
-
-			// DEBUG ONLY
-			mouseOverContainer = &mRootContainer;
-			// END DEBUG ONLY
-
-
-
-
-
+				if(mMouseOverContainer == nullptr)
+				{
+					mDropOverlayMesh = HMesh();
+				}
+				else
+				{
+					updateDropOverlay(mMouseOverContainer->mArea.x, mMouseOverContainer->mArea.y, mMouseOverContainer->mArea.width, mMouseOverContainer->mArea.height);
+				}
+			}
 
 			// Check if we need to highlight any drop locations
 			if(mouseOverContainer)
@@ -491,27 +567,55 @@ namespace BansheeEditor
 					mHighlightedDropLoc = DockLocation::Right;
 				else
 					mHighlightedDropLoc = DockLocation::None;
-			}
 
-			// Update mesh if needed
-			if(mouseOverContainer == mMouseOverContainer)
-				return;
-
-			mMouseOverContainer = mouseOverContainer;
-
-			if(mMouseOverContainer == nullptr)
-			{
-				mDropOverlayMesh = HMesh();
+				if(mouseOverContainer->mArea.contains(windowPos))
+					mShowOverlay = true;
+				else
+					mShowOverlay = false;
 			}
 			else
-			{
-				updateDropOverlay(mMouseOverContainer->mX, mMouseOverContainer->mY, mMouseOverContainer->mWidth, mMouseOverContainer->mHeight);
-			}
+				mShowOverlay = false;
+
+			return true;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDragAndDropDropped)
 		{
-			int a = 5; // TODO
+			if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
+				return false;
+
+			EditorWidget* draggedWidget = reinterpret_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
+
+			const Vector2I& widgetRelPos = event.getPosition();
+			const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
+
+			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
+			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
+			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
+
+			DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
+			if(mouseOverContainer == nullptr)
+			{
+				if(mRootContainer.mArea.contains(windowPos))
+				{
+					insert(nullptr, draggedWidget, DockLocation::None);
+				}
+			}
+			else
+			{
+				if(insidePolygon(mTopDropPolygon, 4, windowPosVec))
+					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Top);
+				else if(insidePolygon(mBotDropPolygon, 4, windowPosVec))
+					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Bottom);
+				else if(insidePolygon(mLeftDropPolygon, 4, windowPosVec))
+					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Left);
+				else if(insidePolygon(mRightDropPolygon, 4, windowPosVec))
+					insert(mouseOverContainer->mWidgets, draggedWidget, DockLocation::Right);
+			}
+
+			return true;
 		}
+
+		return false;
 	}
 
 	// TODO - Move to a separate Polygon class?
