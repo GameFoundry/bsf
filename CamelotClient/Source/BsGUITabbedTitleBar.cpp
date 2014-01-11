@@ -193,9 +193,6 @@ namespace BansheeEditor
 			curX += TAB_SPACING;
 
 			Vector2I offset(curX, curY);
-			if(mDragInProgress && btn == mDraggedBtn)
-				offset.x = mDragBtnOffset;
-			
 			btn->_setOffset(offset);
 			btn->_setWidth(optimalSize.x);
 			btn->_setHeight(optimalSize.y);
@@ -293,7 +290,7 @@ namespace BansheeEditor
 					mDragInProgress = true;
 				}
 
-				mDragBtnOffset = dragPos.x - bounds.x - mInitialDragOffset;
+				mDragBtnOffset = dragPos.x - mInitialDragOffset;
 				
 				Vector2I offset = mDraggedBtn->_getOffset();
 				INT32 diff = mDragBtnOffset - offset.x;

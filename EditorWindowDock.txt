@@ -1,5 +1,6 @@
 TODO:
- - Dock manager doesn't work as intended when I drag two windows onto it
+ - Docking/Undocking elements will cause an exception. Happened after TabbedTitleBar refactor
+ - When I dock two windows (maybe even just one?) and drag the title bar, layout seems to get messed up
  - Ensure that dragging items onto the title bar works
 
 Resize sliders

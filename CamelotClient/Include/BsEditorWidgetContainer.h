@@ -21,6 +21,8 @@ namespace BansheeEditor
 		CM::UINT32 getNumWidgets() const { return (CM::UINT32)mWidgets.size(); }
 		BS::GUIWidget& getParentWidget() const { return *mParent; }
 
+		CM::RectI getContentBounds() const;
+
 		void _notifyWidgetDestroyed(EditorWidget* widget);
 		bool _isHandlingWidgetDragAndDrop() const { return mIsHandlingWidgetDragAndDrop; }
 		void _addCallbackOnDraggedWidgetDropped(std::function<void()> callback);

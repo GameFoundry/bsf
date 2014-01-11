@@ -240,6 +240,11 @@ namespace BansheeEditor
 		}
 	}
 
+	RectI EditorWidgetContainer::getContentBounds() const
+	{
+		return RectI(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
+	}
+
 	void EditorWidgetContainer::_notifyWidgetDestroyed(EditorWidget* widget)
 	{
 		for(auto& curWidget : mWidgets)

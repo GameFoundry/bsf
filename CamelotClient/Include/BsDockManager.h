@@ -38,6 +38,8 @@ namespace BansheeEditor
 			 */
 			DockContainer* findAtPos(const CM::Vector2I& pos);
 
+			CM::RectI getContentBounds() const;
+
 			bool mIsLeaf;
 			DockContainer* mChildren[2];
 			DockContainer* mParent;
@@ -85,6 +87,7 @@ namespace BansheeEditor
 
 		CM::HMesh mDropOverlayMesh;
 		CM::HMaterial mDropOverlayMat;
+		CM::RectI mLastOverlayBounds;
 
 		DockContainer* mMouseOverContainer;
 		DockLocation mHighlightedDropLoc;

@@ -244,6 +244,14 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
+	RectI DockManager::DockContainer::getContentBounds() const
+	{
+		if(!mIsLeaf)
+			return mArea;
+
+		return mWidgets->getContentBounds();
+	}
+
 	DockManager::DockManager(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
 		:mParent(parent), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
 		mShowOverlay(false)
@@ -533,27 +541,28 @@ namespace BansheeEditor
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
 			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
-			DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
-			if(mouseOverContainer == nullptr)
-				mouseOverContainer = &mRootContainer;
+			mMouseOverContainer = mRootContainer.findAtPos(windowPos);
+			if(mMouseOverContainer == nullptr)
+				mMouseOverContainer = &mRootContainer;
+
+			RectI overlayBounds;
+			
+			if(mMouseOverContainer != nullptr)
+				overlayBounds = mMouseOverContainer->getContentBounds();
 
 			// Update mesh if needed
-			if(mouseOverContainer != mMouseOverContainer)
+			if(mLastOverlayBounds != overlayBounds)
 			{
-				mMouseOverContainer = mouseOverContainer;
-
-				if(mMouseOverContainer == nullptr)
-				{
+				if(overlayBounds.width <= 0 || overlayBounds.height <= 0)
 					mDropOverlayMesh = HMesh();
-				}
 				else
-				{
-					updateDropOverlay(mMouseOverContainer->mArea.x, mMouseOverContainer->mArea.y, mMouseOverContainer->mArea.width, mMouseOverContainer->mArea.height);
-				}
+					updateDropOverlay(overlayBounds.x, overlayBounds.y, overlayBounds.width, overlayBounds.height);
+
+				mLastOverlayBounds = overlayBounds;
 			}
 
 			// Check if we need to highlight any drop locations
-			if(mouseOverContainer)
+			if(mMouseOverContainer != nullptr)
 			{
 				if(insidePolygon(mTopDropPolygon, 4, windowPosVec))
 					mHighlightedDropLoc = DockLocation::Top;
@@ -566,7 +575,7 @@ namespace BansheeEditor
 				else
 					mHighlightedDropLoc = DockLocation::None;
 
-				if(mouseOverContainer->mArea.contains(windowPos))
+				if(overlayBounds.contains(windowPos))
 					mShowOverlay = true;
 				else
 					mShowOverlay = false;
@@ -591,9 +600,11 @@ namespace BansheeEditor
 			Vector2I windowPos(Math::roundToInt(windowPosVec.x), Math::roundToInt(windowPosVec.y));
 
 			DockContainer* mouseOverContainer = mRootContainer.findAtPos(windowPos);
+
 			if(mouseOverContainer == nullptr)
 			{
-				if(mRootContainer.mArea.contains(windowPos))
+				RectI overlayBounds = mRootContainer.getContentBounds();
+				if(overlayBounds.contains(windowPos))
 				{
 					insert(nullptr, draggedWidget, DockLocation::None);
 				}
