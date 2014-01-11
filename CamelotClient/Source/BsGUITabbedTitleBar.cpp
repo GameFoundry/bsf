@@ -19,22 +19,28 @@ namespace BansheeEditor
 	const UINT32 GUITabbedTitleBar::TAB_SPACING = 20;
 	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
 
-	GUITabbedTitleBar::GUITabbedTitleBar(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
-		:mParentWindow(parentWindow), mMinBtn(nullptr), mCloseBtn(nullptr), mCloseBtnStyle(nullptr),
-		mMinimizeBtnStyle(nullptr), mParentWidget(parent), mBackgroundArea(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
-		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0)
+	GUITabbedTitleBar::GUITabbedTitleBar(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, 
+		GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle, const GUILayoutOptions& layoutOptions)
+		:GUIElement(parent, &GUISkin::DefaultStyle, layoutOptions, false), mParentWindow(parentWindow), mMinBtn(nullptr), 
+		mCloseBtn(nullptr), mParentWidget(&parent), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
+		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
+		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle)
 	{
-		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
-		GUITexture* titleBarBg = GUITexture::create(*parent, parent->getSkin().getStyle("TitleBarBackground"));
-		mBackgroundArea->getLayout().addSpace(1);
-		mBackgroundArea->getLayout().addElement(titleBarBg);
-		mBackgroundArea->getLayout().addSpace(1);
+		if(mBackgroundStyle == nullptr)
+			mBackgroundStyle = parent.getSkin().getStyle("TitleBarBackground");
 
-		mMinimizeBtnStyle = parent->getSkin().getStyle("WinMinimizeBtn");
-		mCloseBtnStyle = parent->getSkin().getStyle("WinCloseBtn");
+		if(mMinimizeBtnStyle == nullptr)
+			mMinimizeBtnStyle = parent.getSkin().getStyle("WinMinimizeBtn");
 
-		mMinBtn = GUIButton::create(*parent, HString(L""), mMinimizeBtnStyle);
-		mCloseBtn = GUIButton::create(*parent, HString(L""), mCloseBtnStyle);
+		if(mCloseBtnStyle == nullptr)
+			mCloseBtnStyle = parent.getSkin().getStyle("WinCloseBtn");
+
+		if(mTabBtnStyle == nullptr)
+			mTabBtnStyle = parent.getSkin().getStyle("TabbedBarBtn");
+
+		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
+		mMinBtn = GUIButton::create(parent, HString(L""), mMinimizeBtnStyle);
+		mCloseBtn = GUIButton::create(parent, HString(L""), mCloseBtnStyle);
 
 		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
 
@@ -43,7 +49,7 @@ namespace BansheeEditor
 
 	GUITabbedTitleBar::~GUITabbedTitleBar()
 	{
-		GUIArea::destroy(mBackgroundArea);
+		GUIElement::destroy(mBackgroundImage);
 
 		GUIElement::destroy(mMinBtn);
 		GUIElement::destroy(mCloseBtn);
@@ -54,6 +60,26 @@ namespace BansheeEditor
 		}
 	}
 
+	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, 
+		GUIElementStyle* tabBtnStyle, GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle)
+	{
+		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parent, parentWindow, backgroundStyle, tabBtnStyle, 
+			minBtnStyle, closeBtnStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+	}
+
+	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
+	{
+		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parent, parentWindow, nullptr, nullptr, 
+			nullptr, nullptr, layoutOptions);
+	}
+
+	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
+		GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle)
+	{
+		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parent, parentWindow, backgroundStyle, tabBtnStyle, 
+			minBtnStyle, closeBtnStyle, layoutOptions);
+	}
+
 	void GUITabbedTitleBar::addTab(const CM::HString& name)
 	{
 		insertTab((UINT32)mTabButtons.size(), name);
@@ -61,7 +87,7 @@ namespace BansheeEditor
 
 	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::HString& name)
 	{
-		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, mTabToggleGroup, mUniqueTabIdx, name, EngineGUI::instance().getSkin().getStyle("TabbedBarBtn"));
+		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
 
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 
@@ -86,10 +112,73 @@ namespace BansheeEditor
 		mTabButtons.erase(mTabButtons.begin() + idx);
 	}
 
-	void GUITabbedTitleBar::updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height,
-		RectI clipRect, UINT8 widgetDepth)
+	UINT32 GUITabbedTitleBar::getNumRenderElements() const
+	{
+		return 0;
+	}
+
+	const GUIMaterialInfo& GUITabbedTitleBar::getMaterial(UINT32 renderElementIdx) const
+	{
+		CM_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
+	}
+
+	UINT32 GUITabbedTitleBar::getNumQuads(UINT32 renderElementIdx) const
+	{
+		return 0;
+	}
+
+	void GUITabbedTitleBar::updateClippedBounds()
+	{
+		mClippedBounds = RectI(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
+	}
+
+	void GUITabbedTitleBar::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
+	{ }
+
+	bool GUITabbedTitleBar::mouseEvent(const GUIMouseEvent& ev)
+	{
+		// TODO
+
+		return false;
+	}
+
+	Vector2I GUITabbedTitleBar::_getOptimalSize() const
+	{
+		return Vector2I();
+	}
+
+	void GUITabbedTitleBar::_changeParentWidget(GUIWidget* widget)
+	{
+		GUIElement::_changeParentWidget(widget);
+
+		mBackgroundImage->_changeParentWidget(widget);
+		mMinBtn->_changeParentWidget(widget);
+		mCloseBtn->_changeParentWidget(widget);
+
+		for(auto& tabButton : mTabButtons)
+		{
+			tabButton->_changeParentWidget(widget);
+		}
+	}
+
+	void GUITabbedTitleBar::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
+		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		CM::Vector<CM::RectI>::type nonClientAreas;
+
+		{
+			Vector2I optimalSize = mBackgroundImage->_getOptimalSize();
+			Vector2I offset(x + 1, y + 1);
+			mBackgroundImage->_setOffset(offset);
+			mBackgroundImage->_setWidth(width - 2);
+			mBackgroundImage->_setHeight(optimalSize.y);
+			mBackgroundImage->_setAreaDepth(areaDepth + 1);
+			mBackgroundImage->_setWidgetDepth(widgetDepth);
+
+			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			mBackgroundImage->_setClipRect(elemClipRect);
+		}
 
 		UINT32 curX = x + 1;
 		UINT32 curY = y;
@@ -110,7 +199,7 @@ namespace BansheeEditor
 			btn->_setOffset(offset);
 			btn->_setWidth(optimalSize.x);
 			btn->_setHeight(optimalSize.y);
-			btn->_setAreaDepth(9899);
+			btn->_setAreaDepth(areaDepth);
 			btn->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -134,7 +223,7 @@ namespace BansheeEditor
 			mMinBtn->_setOffset(offset);
 			mMinBtn->_setWidth(minBtnOptimalSize.x);
 			mMinBtn->_setHeight(minBtnOptimalSize.y);
-			mMinBtn->_setAreaDepth(9899);
+			mMinBtn->_setAreaDepth(areaDepth);
 			mMinBtn->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -149,7 +238,7 @@ namespace BansheeEditor
 			mCloseBtn->_setOffset(offset);
 			mCloseBtn->_setWidth(closeBtnOptimalSize.x);
 			mCloseBtn->_setHeight(closeBtnOptimalSize.y);
-			mCloseBtn->_setAreaDepth(9899);
+			mCloseBtn->_setAreaDepth(areaDepth);
 			mCloseBtn->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -157,26 +246,6 @@ namespace BansheeEditor
 		}
 
 		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
-	}
-
-	void GUITabbedTitleBar::setPosition(INT32 x, INT32 y)
-	{
-		mArea.x = x;
-		mArea.y = y;
-
-		mBackgroundArea->setPosition(x, y);
-
-		updateLayout(mArea.x, mArea.y, mArea.width, mArea.height, RectI(mArea.x, mArea.y, mArea.width, mArea.height), mParentWidget->getDepth());
-	}
-
-	void GUITabbedTitleBar::setSize(UINT32 width, UINT32 height)
-	{
-		mArea.width = width;
-		mArea.height = height;
-
-		mBackgroundArea->setSize(width, height);
-
-		updateLayout(mArea.x, mArea.y, mArea.width, mArea.height, RectI(mArea.x, mArea.y, mArea.width, mArea.height), mParentWidget->getDepth());
 	}
 
 	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx)
@@ -211,7 +280,8 @@ namespace BansheeEditor
 		INT32 idx = uniqueIdxToSeqIdx(tabIdx);
 		if(idx != -1)
 		{
-			if(mArea.contains(dragPos))
+			RectI bounds = getBounds();
+			if(bounds.contains(dragPos))
 			{
 				mDraggedBtn = mTabButtons[idx];
 
@@ -223,7 +293,7 @@ namespace BansheeEditor
 					mDragInProgress = true;
 				}
 
-				mDragBtnOffset = dragPos.x - mArea.x - mInitialDragOffset;
+				mDragBtnOffset = dragPos.x - bounds.x - mInitialDragOffset;
 				
 				Vector2I offset = mDraggedBtn->_getOffset();
 				INT32 diff = mDragBtnOffset - offset.x;
@@ -236,7 +306,7 @@ namespace BansheeEditor
 
 				mDragInProgress = true;
 
-				for(UINT32 i = 0; i < idx; i++)
+				for(INT32 i = 0; i < idx; i++)
 				{
 					UINT32 width = mTabButtons[i]->_getWidth();
 					INT32 centerX = mTabButtons[i]->_getOffset().x + width / 2;
@@ -282,7 +352,12 @@ namespace BansheeEditor
 		mDragInProgress = false;
 		mDraggedBtn = nullptr;
 
-		updateLayout(mArea.x, mArea.y, mArea.width, mArea.height, RectI(mArea.x, mArea.y, mArea.width, mArea.height), mParentWidget->getDepth());
+		markContentAsDirty();
+
+		// HACK - Remove once EditorWidgetContainer is a proper GUI object
+		RectI bounds = getBounds();
+		_updateLayoutInternal(bounds.x, bounds.y, bounds.width, bounds.height,
+			_getClipRect(), mParent->getDepth(), 9900);
 	}
 
 	void GUITabbedTitleBar::tabDraggedOn(CM::UINT32 tabIdx)
@@ -307,5 +382,11 @@ namespace BansheeEditor
 		}
 
 		return -1;
+	}
+
+	const String& GUITabbedTitleBar::getGUITypeName()
+	{
+		static String typeName = "TabbedTitleBar";
+		return typeName;
 	}
 }

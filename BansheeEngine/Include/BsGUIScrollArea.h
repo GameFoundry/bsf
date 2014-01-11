@@ -58,11 +58,6 @@ namespace BansheeEngine
 			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
 
 		/**
-		 * @copydoc GUIElement::updateRenderElementsInternal()
-		 */
-		virtual void updateRenderElementsInternal();
-
-		/**
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();

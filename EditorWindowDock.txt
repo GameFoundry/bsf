@@ -13,6 +13,8 @@ TitleBar dock/undock
 
 CONSIDER getting rid of mouse event filters for DockManager
  - I can probably convert DockManager into a GUIElement?
+   - EditorWidgetContainer as well!
+      - Make sure to update GUITabbedTitleBar::tabDragEnd when I do convert it to GUIElement
 
 Polish TOOD:
  - Change cursor icon when window is dragged

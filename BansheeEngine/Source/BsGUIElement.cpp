@@ -191,6 +191,9 @@ namespace BansheeEngine
 
 	void GUIElement::destroy(GUIElement* element)
 	{
+		if(element->mIsDestroyed)
+			return;
+
 		if(element->mParent != nullptr)
 			element->mParent->unregisterElement(element);
 

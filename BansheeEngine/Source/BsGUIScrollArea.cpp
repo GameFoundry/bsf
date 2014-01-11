@@ -39,17 +39,12 @@ namespace BansheeEngine
 
 	const GUIMaterialInfo& GUIScrollArea::getMaterial(UINT32 renderElementIdx) const
 	{
-		CM_EXCEPT(InternalErrorException, "Trying to retrieve a material from an element with no render elements.");
+		CM_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
 	}
 
 	UINT32 GUIScrollArea::getNumQuads(UINT32 renderElementIdx) const
 	{
 		return 0;
-	}
-
-	void GUIScrollArea::updateRenderElementsInternal()
-	{
-		GUIElement::updateRenderElementsInternal();
 	}
 
 	void GUIScrollArea::updateClippedBounds()
