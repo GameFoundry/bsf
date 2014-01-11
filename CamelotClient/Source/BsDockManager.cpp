@@ -152,15 +152,14 @@ namespace BansheeEditor
 		mChildren[idxA] = cm_new<DockContainer>(this);
 		mChildren[idxB] = cm_new<DockContainer>(this);
 
+		mWidgets->onWidgetClosed.disconnect_all_slots();
+
 		mChildren[idxA]->makeLeaf(widgetParent, parentWindow, widget);
+		mChildren[idxB]->makeLeaf(mWidgets);
 
 		mIsLeaf = false;
 		mIsHorizontal = horizontal;
 		mSplitPosition = 0.5f;
-
-		if(mWidgets != nullptr)
-			cm_delete(mWidgets);
-
 		mWidgets = nullptr;
 
 		// TODO - Add slider
@@ -193,10 +192,9 @@ namespace BansheeEditor
 					sibling = mParent->mChildren[0];
 
 				sibling->mWidgets->onWidgetClosed.disconnect_all_slots();
-				sibling->mWidgets->onWidgetHidden.disconnect_all_slots();
-				sibling->mWidgets = nullptr;
 
 				mParent->makeLeaf(sibling->mWidgets);
+				sibling->mWidgets = nullptr;
 
 				cm_delete(sibling);
 				cm_delete(this);

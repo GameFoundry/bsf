@@ -1,10 +1,6 @@
-DockManager implementation steps:
-Initial:
- - Open up two editor windows on app start
- - Initially DockManager has empty background
- - Dragging one editor window anywhere on the empty background docks the window
- - Dragging another editor window over the window shows the drop overlay and you can dock that window onto any side
-   - Currently the overlay is always shown and will trigger on mouse move and not only mouse drag
+TODO:
+ - Dock manager doesn't work as intended when I drag two windows onto it
+ - Ensure that dragging items onto the title bar works
 
 Resize sliders
  - Add a button between docked windows
@@ -14,6 +10,9 @@ TitleBar dock/undock
  - Releasing the dragged window over the drop overlay will dock the window
  - Moving the dragged window over a title bar will temporarily dock the title bar and allow you to move it (as in first step)
    - If you release the mouse the window will then be permanently docked at that location
+
+CONSIDER getting rid of mouse event filters for DockManager
+ - I can probably convert DockManager into a GUIElement?
 
 Polish TOOD:
  - Change cursor icon when window is dragged

@@ -13,7 +13,6 @@ namespace BansheeEditor
 		updateSize();
 		
 		mWidgets->onWidgetClosed.connect(boost::bind(&EditorWindow::widgetRemoved, this));
-		mWidgets->onWidgetHidden.connect(boost::bind(&EditorWindow::widgetHidden, this));
 	}
 
 	EditorWindow::~EditorWindow()
@@ -41,13 +40,26 @@ namespace BansheeEditor
 	void EditorWindow::widgetRemoved()
 	{
 		if(mWidgets->getNumWidgets() == 0)
-			close();
+		{
+			// HACK - If widget is being handled by drag and drop we don't want to
+			// destroy its parent window just yet because Windows doesn't approve of
+			// windows being destroyed while mouse is being held down (some events won't get
+			// fired). I should probably handle this at a lower level, in RenderWindowManager.
+			if(mWidgets->_isHandlingWidgetDragAndDrop())
+			{
+				hide();
+
+				// Get notified when drag and drop is done
+				mWidgets->_addCallbackOnDraggedWidgetDropped(std::bind(&EditorWindow::closeWindowDelayed, this));
+			}
+			else
+				close();
+		}
 	}
 
-	void EditorWindow::widgetHidden()
+	void EditorWindow::closeWindowDelayed()
 	{
-		if(mWidgets->getNumWidgets() == 1)
-			hide();
+		close();
 	}
 
 	EditorWindow* EditorWindow::create()

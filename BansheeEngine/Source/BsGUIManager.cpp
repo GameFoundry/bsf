@@ -1112,10 +1112,18 @@ namespace BansheeEngine
 
 	void GUIManager::processDestroyQueue()
 	{
+		// Need two loops and a temporary since element destructors may themselves
+		// queue other elements for destruction
 		while(!mScheduledForDestruction.empty())
 		{
-			cm_delete<PoolAlloc>(mScheduledForDestruction.top());
-			mScheduledForDestruction.pop();
+			CM::Stack<GUIElement*>::type toDestroy = mScheduledForDestruction;
+			mScheduledForDestruction = CM::Stack<GUIElement*>::type();
+
+			while(!toDestroy.empty())
+			{
+				cm_delete<PoolAlloc>(toDestroy.top());
+				toDestroy.pop();
+			}
 		}
 	}
 

@@ -24,6 +24,6 @@ namespace BansheeEditor
 
 		void updateSize();
 		void widgetRemoved();
-		void widgetHidden();
+		void closeWindowDelayed();
 	};
 }

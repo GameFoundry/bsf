@@ -15,8 +15,6 @@ namespace BansheeEditor
 		void remove(EditorWidget& widget);
 		void insert(CM::UINT32 idx, EditorWidget& widget);
 
-		void hide(EditorWidget& widget);
-
 		void setSize(CM::UINT32 width, CM::UINT32 height);
 		void setPosition(CM::INT32 x, CM::INT32 y);
 
@@ -24,9 +22,10 @@ namespace BansheeEditor
 		BS::GUIWidget& getParentWidget() const { return *mParent; }
 
 		void _notifyWidgetDestroyed(EditorWidget* widget);
+		bool _isHandlingWidgetDragAndDrop() const { return mIsHandlingWidgetDragAndDrop; }
+		void _addCallbackOnDraggedWidgetDropped(std::function<void()> callback);
 
 		boost::signal<void()> onWidgetClosed;
-		boost::signal<void()> onWidgetHidden;
 	private:
 		GUITabbedTitleBar* mTitleBar;
 		BS::GUIWidget* mParent;
@@ -34,6 +33,9 @@ namespace BansheeEditor
 		CM::UINT32 mWidth, mHeight;
 		CM::Vector<EditorWidget*>::type mWidgets;
 		CM::INT32 mActiveWidget;
+
+		std::function<void()> mWidgetDroppedCallback;
+		bool mIsHandlingWidgetDragAndDrop;
 
 		static const CM::UINT32 TitleBarHeight;
 

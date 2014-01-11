@@ -14,7 +14,8 @@ namespace BansheeEditor
 	const CM::UINT32 EditorWidgetContainer::TitleBarHeight = 13;
 
 	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent, RenderWindow* renderWindow)
-		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1)
+		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
+		mIsHandlingWidgetDragAndDrop(false)
 	{
 		mTitleBar = cm_new<GUITabbedTitleBar>(parent, renderWindow);
 		mTitleBar->onTabActivated.connect(boost::bind(&EditorWidgetContainer::tabActivated, this, _1));
@@ -89,37 +90,6 @@ namespace BansheeEditor
 			widget._disable();
 	}
 
-	// Note: Hiding is used for a special purpose right now and there is no way to unhide a widget
-	// (But such functionally may be easily added)
-	void EditorWidgetContainer::hide(EditorWidget& widget)
-	{
-		INT32 widgetIdx = -1;
-		UINT32 curIdx = 0;
-		for(auto& curWidget : mWidgets)
-		{
-			if(curWidget == &widget)
-			{
-				widgetIdx = curIdx;
-				break;
-			}
-
-			curIdx++;
-		}
-
-		if(widgetIdx == -1)
-			return;
-
-		mTitleBar->removeTab(widgetIdx);
-
-		if(widgetIdx == mActiveWidget)
-		{
-			if(mWidgets.size() > 0)
-			{
-				setActiveWidget(0);
-			}
-		}
-	}
-
 	void EditorWidgetContainer::setSize(UINT32 width, UINT32 height)
 	{
 		// TODO - Title bar is always TitleBarHeight size, so what happens when the container area is smaller than that?
@@ -192,18 +162,15 @@ namespace BansheeEditor
 	void EditorWidgetContainer::tabDraggedOff(CM::UINT32 idx)
 	{
 		EditorWidget* widget = mWidgets[idx];
-		hide(*widget);
+		remove(*widget);
+
+		mIsHandlingWidgetDragAndDrop = true;
 
 		// TODO - Hook up drag and drop texture
 		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::EditorWidget, (void*)widget, boost::bind(&EditorWidgetContainer::tabDroppedCallback, this, _1));
 
-		// We don't want to remove the widget just yet. For now mark it as hidden in case
-		// user just drops it somewhere else.
-		// Note: This is primarily implemented because Windows doesn't like me destroying a window
-		// while I'm capturing mouse input (required for drag and drop outside of window borders). 
-		// So instead I just hide it and do the destroying after drag and drop is done.
-		if(!onWidgetHidden.empty())
-			onWidgetHidden();
+		if(!onWidgetClosed.empty())
+			onWidgetClosed();
 	}
 
 	void EditorWidgetContainer::tabDraggedOn(CM::UINT32 idx)
@@ -226,15 +193,9 @@ namespace BansheeEditor
 		if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
 			return;
 
-		EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
-		draggedWidget->_changeParent(nullptr); // To ensure it doesn't get destroyed with the parent window
-		remove(*draggedWidget);
-
-		if(!onWidgetClosed.empty())
-			onWidgetClosed();
-
 		if(!wasDragProcessed)
 		{
+			EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
 			EditorWindow* newWindow = EditorWindow::create();
 
 			newWindow->widgets().add(*draggedWidget);
@@ -242,6 +203,11 @@ namespace BansheeEditor
 			Vector2I mousePos = Input::instance().getCursorPosition();
 			newWindow->setPosition(mousePos.x, mousePos.y);
 		}
+
+		mIsHandlingWidgetDragAndDrop = false;
+
+		if(mWidgetDroppedCallback != nullptr)
+			mWidgetDroppedCallback();
 	}
 
 	void EditorWidgetContainer::_notifyWidgetDestroyed(EditorWidget* widget)
@@ -258,5 +224,11 @@ namespace BansheeEditor
 				return;
 			}
 		}		
+	}
+
+	void EditorWidgetContainer::_addCallbackOnDraggedWidgetDropped(std::function<void()> callback)
+	{
+		if(mIsHandlingWidgetDragAndDrop)
+			mWidgetDroppedCallback = callback;
 	}
 }
