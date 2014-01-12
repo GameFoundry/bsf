@@ -13,12 +13,17 @@ namespace BansheeEngine
 		Input::instance().onCursorReleased.connect(boost::bind(&DragAndDropManager::cursorReleased, this, _1));
 	}
 
+	void DragAndDropManager::addDropCallback(std::function<void(bool)> dropCallback)
+	{
+		mDropCallbacks.push_back(dropCallback);
+	}
+
 	void DragAndDropManager::startDrag(CM::HTexture icon, CM::UINT32 typeId, void* data, std::function<void(bool)> dropCallback)
 	{
 		mIcon = icon;
 		mDragTypeId = typeId;
 		mData = data;
-		mDropCallback = dropCallback;
+		addDropCallback(dropCallback);
 		mIsDragInProgress = true;
 
 		mCaptureActive.store(false);
@@ -42,12 +47,12 @@ namespace BansheeEngine
 
 	void DragAndDropManager::endDrag(bool processed)
 	{
-		if(mDropCallback != nullptr)
-			mDropCallback(processed);
+		for(auto& callback : mDropCallbacks)
+			callback(processed);
 
 		mDragTypeId = 0;
 		mData = nullptr;
-		mDropCallback = nullptr;
+		mDropCallbacks.clear();
 		mIsDragInProgress = false;
 	}
 

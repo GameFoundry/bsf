@@ -17,6 +17,7 @@ namespace BansheeEngine
 		bool isDragInProgress() const { return mIsDragInProgress; }
 		CM::UINT32 getDragTypeId() const { return mDragTypeId; }
 		void* getDragData() const { return mData; }
+		void addDropCallback(std::function<void(bool)> dropCallback);
 
 		/**
 		 * @brief	Called once per frame. Internal method.
@@ -28,7 +29,7 @@ namespace BansheeEngine
 		CM::HTexture mIcon;
 		CM::UINT32 mDragTypeId;
 		void* mData;
-		std::function<void(bool)> mDropCallback;
+		CM::Vector<std::function<void(bool)>>::type mDropCallbacks;
 		bool mIsDragInProgress;
 
 		std::atomic<bool> mCaptureChanged;

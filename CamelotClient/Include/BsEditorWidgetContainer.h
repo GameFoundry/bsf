@@ -24,8 +24,6 @@ namespace BansheeEditor
 		CM::RectI getContentBounds() const;
 
 		void _notifyWidgetDestroyed(EditorWidget* widget);
-		bool _isHandlingWidgetDragAndDrop() const { return mIsHandlingWidgetDragAndDrop; }
-		void _addCallbackOnDraggedWidgetDropped(std::function<void()> callback);
 
 		boost::signal<void()> onWidgetClosed;
 	private:
@@ -36,9 +34,6 @@ namespace BansheeEditor
 		CM::Vector<EditorWidget*>::type mWidgets;
 		CM::INT32 mActiveWidget;
 
-		std::function<void()> mWidgetDroppedCallback;
-		bool mIsHandlingWidgetDragAndDrop;
-
 		static const CM::UINT32 TitleBarHeight;
 
 		void setActiveWidget(CM::UINT32 idx);
@@ -47,6 +42,6 @@ namespace BansheeEditor
 		void tabDraggedOff(CM::UINT32 idx);
 		void tabDraggedOn(CM::UINT32 idx);
 
-		void tabDroppedCallback(bool wasDragProcessed);
+		static void tabDroppedCallback(bool wasDragProcessed);
 	};
 }

@@ -15,8 +15,7 @@ namespace BansheeEditor
 	const CM::UINT32 EditorWidgetContainer::TitleBarHeight = 13;
 
 	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent, RenderWindow* renderWindow)
-		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
-		mIsHandlingWidgetDragAndDrop(false)
+		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1)
 	{
 		mTitleBar = GUITabbedTitleBar::create(*parent, renderWindow);
 		mTitleBar->onTabActivated.connect(boost::bind(&EditorWidgetContainer::tabActivated, this, _1));
@@ -191,10 +190,9 @@ namespace BansheeEditor
 		EditorWidget* widget = mWidgets[idx];
 		remove(*widget);
 
-		mIsHandlingWidgetDragAndDrop = true;
-
 		// TODO - Hook up drag and drop texture
-		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::EditorWidget, (void*)widget, boost::bind(&EditorWidgetContainer::tabDroppedCallback, this, _1));
+		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::EditorWidget, (void*)widget, 
+			boost::bind(&EditorWidgetContainer::tabDroppedCallback, _1));
 
 		if(!onWidgetClosed.empty())
 			onWidgetClosed();
@@ -230,14 +228,6 @@ namespace BansheeEditor
 			Vector2I mousePos = Input::instance().getCursorPosition();
 			newWindow->setPosition(mousePos.x, mousePos.y);
 		}
-
-		mIsHandlingWidgetDragAndDrop = false;
-
-		if(mWidgetDroppedCallback != nullptr)
-		{
-			mWidgetDroppedCallback();
-			mWidgetDroppedCallback = nullptr;
-		}
 	}
 
 	RectI EditorWidgetContainer::getContentBounds() const
@@ -259,11 +249,5 @@ namespace BansheeEditor
 				return;
 			}
 		}		
-	}
-
-	void EditorWidgetContainer::_addCallbackOnDraggedWidgetDropped(std::function<void()> callback)
-	{
-		if(mIsHandlingWidgetDragAndDrop)
-			mWidgetDroppedCallback = callback;
 	}
 }

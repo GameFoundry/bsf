@@ -1,6 +1,7 @@
 #include "BsEditorWindow.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWindowManager.h"
+#include "BsDragAndDropManager.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -45,12 +46,12 @@ namespace BansheeEditor
 			// destroy its parent window just yet because Windows doesn't approve of
 			// windows being destroyed while mouse is being held down (some events won't get
 			// fired). I should probably handle this at a lower level, in RenderWindowManager.
-			if(mWidgets->_isHandlingWidgetDragAndDrop())
+			if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::EditorWidget)
 			{
 				hide();
 
 				// Get notified when drag and drop is done
-				mWidgets->_addCallbackOnDraggedWidgetDropped(std::bind(&EditorWindow::closeWindowDelayed, this));
+				DragAndDropManager::instance().addDropCallback(std::bind(&EditorWindow::closeWindowDelayed, this));
 			}
 			else
 				close();
