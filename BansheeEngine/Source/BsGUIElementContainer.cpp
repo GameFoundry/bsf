@@ -47,6 +47,11 @@ namespace BansheeEngine
 		GUIElement::_changeParentWidget(widget);
 
 		for(UINT32 i = 0; i < getNumChildElements(); i++)
-			getChildElement(i)->_changeParentWidget(widget);
+		{
+			GUIElement* child = getChildElement(i);
+
+			if(child != nullptr)
+				child->_changeParentWidget(widget);
+		}
 	}
 }

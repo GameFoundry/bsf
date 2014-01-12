@@ -16,6 +16,7 @@
 #include "BsCamera.h"
 #include "BsDragAndDropManager.h"
 #include "CmVertexDataDesc.h"
+#include "BsGUISkin.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -252,8 +253,8 @@ namespace BansheeEditor
 		return mWidgets->getContentBounds();
 	}
 
-	DockManager::DockManager(BS::GUIWidget* parent, CM::RenderWindow* parentWindow)
-		:mParent(parent), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
+	DockManager::DockManager(BS::GUIWidget& parent, CM::RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(parent, layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
 		mShowOverlay(false)
 	{
 		mTopDropPolygon = cm_newN<Vector2>(4);
@@ -263,9 +264,7 @@ namespace BansheeEditor
 
 		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
 
-		RendererManager::instance().getActive()->addRenderCallback(parent->getTarget(), boost::bind(&DockManager::render, this, _1, _2));
-
-		GUIManager::instance().mouseEventFilter.connect(boost::bind(&DockManager::onGUIMouseEvent, this, _1, _2, _3));
+		RendererManager::instance().getActive()->addRenderCallback(mParent->getTarget(), boost::bind(&DockManager::render, this, _1, _2));
 	}
 
 	DockManager::~DockManager()
@@ -274,6 +273,11 @@ namespace BansheeEditor
 		cm_deleteN(mBotDropPolygon, 4);
 		cm_deleteN(mLeftDropPolygon, 4);
 		cm_deleteN(mRightDropPolygon, 4);
+	}
+
+	DockManager* DockManager::create(GUIWidget& parent, RenderWindow* parentWindow)
+	{
+		return new (cm_alloc<DockManager, PoolAlloc>()) DockManager(parent, parentWindow, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
 	void DockManager::update()
@@ -368,6 +372,12 @@ namespace BansheeEditor
 		mRootContainer.setArea(x, y, width, height);
 
 		updateDropOverlay(x, y, width, height);
+	}
+
+	void DockManager::updateClippedBounds()
+	{
+		// TODO - Clipping not actually accounted for
+		mClippedBounds = mRootContainer.mArea;
 	}
 
 	void DockManager::updateDropOverlay(INT32 x, INT32 y, UINT32 width, UINT32 height)
@@ -523,11 +533,8 @@ namespace BansheeEditor
 		mDropOverlayMesh = Mesh::create(meshData);
 	}
 
-	bool DockManager::onGUIMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
+	bool DockManager::mouseEvent(const GUIMouseEvent& event)
 	{
-		if(widget->getTarget() != mParent->getTarget())
-			return false;
-
 		if(event.getType() == GUIMouseEventType::MouseDragAndDropDragged)
 		{
 			if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
@@ -535,7 +542,7 @@ namespace BansheeEditor
 
 			const Vector2I& widgetRelPos = event.getPosition();
 
-			const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = mParent->SO()->getWorldTfrm();
 
 			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
@@ -593,7 +600,7 @@ namespace BansheeEditor
 			EditorWidget* draggedWidget = reinterpret_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
 
 			const Vector2I& widgetRelPos = event.getPosition();
-			const Matrix4& worldTfrm = widget->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = mParent->SO()->getWorldTfrm();
 
 			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
@@ -625,6 +632,16 @@ namespace BansheeEditor
 		}
 
 		return false;
+	}
+
+	UINT32 DockManager::getNumChildElements() const
+	{
+		return 0;
+	}
+
+	GUIElement* DockManager::getChildElement(UINT32 idx) const
+	{
+		return nullptr;
 	}
 
 	// TODO - Move to a separate Polygon class?

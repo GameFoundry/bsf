@@ -43,7 +43,6 @@ namespace BansheeEditor
 
 		CM::UINT32 mUniqueTabIdx;
 		CM::UINT32 mActiveTabIdx;
-		BS::GUIWidget* mParentWidget;
 		BS::GUITexture* mBackgroundImage;
 		BS::GUIButton* mMinBtn;
 		BS::GUIButton* mCloseBtn;

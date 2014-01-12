@@ -103,8 +103,6 @@ namespace BansheeEngine
 		 */
 		void setInputBridge(const CM::RenderTexture* renderTex, const GUIElement* element);
 
-		boost::signal<bool(GUIWidget*, GUIElement*, const GUIMouseEvent&)> mouseEventFilter;
-		boost::signal<void(GUIWidget*, GUIElement*, const GUITextInputEvent&)> textInputEventFilter;
 	private:
 		struct SelectiveInputData
 		{

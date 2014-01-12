@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "BsGUIElement.h"
+#include "BsGUIElementContainer.h"
 
 namespace BansheeEngine
 {
@@ -12,7 +12,7 @@ namespace BansheeEngine
 		NeverShow
 	};
 
-	class BS_EXPORT GUIScrollArea : public GUIElement
+	class BS_EXPORT GUIScrollArea : public GUIElementContainer
 	{
 	public:
 		static const CM::String& getGUITypeName();
@@ -30,37 +30,9 @@ namespace BansheeEngine
 			const GUIElementStyle* scrollAreaStyle = nullptr);
 
 		GUILayout& getLayout() const { return *mContentLayout; }
-
-		virtual CM::Vector2I _getOptimalSize() const;
-
 	protected:
 		~GUIScrollArea();
 
-		/**
-		 * @copydoc GUIElement::getNumRenderElements()
-		 */
-		virtual CM::UINT32 getNumRenderElements() const;
-
-		/**
-		 * @copydoc GUIElement::getMaterial()
-		 */
-		virtual const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const;
-
-		/**
-		 * @copydoc GUIElement::getNumQuads()
-		 */
-		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
-
-		/**
-		 * @copydoc GUIElement::fillBuffer()
-		 */
-		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
-			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
-
-		/**
-		 * @copydoc GUIElement::updateBounds()
-		 */
-		virtual void updateClippedBounds();
 	private:
 		GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions);
@@ -90,6 +62,7 @@ namespace BansheeEngine
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 
-		virtual void _changeParentWidget(GUIWidget* widget);
+		CM::UINT32 getNumChildElements() const;
+		GUIElement* getChildElement(CM::UINT32 idx) const;
 	};
 }

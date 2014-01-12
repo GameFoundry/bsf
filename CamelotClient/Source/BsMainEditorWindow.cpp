@@ -28,9 +28,11 @@ namespace BansheeEditor
 	}
 
 	MainEditorWindow::MainEditorWindow(const CM::RenderWindowPtr& renderWindow)
-		:EditorWindowBase(renderWindow), mDockManager(cm_new<DockManager>(mGUI.get(), mRenderWindow.get())), 
+		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
 		mMenuBar(cm_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{
+		mDockManager = DockManager::create(*mGUI.get(), mRenderWindow.get());
+
 		updateAreas();
 
 		mMenuBar->addMenuItem(L"File/New project", nullptr);
@@ -87,7 +89,7 @@ namespace BansheeEditor
 	{
 		ProfilerOverlay::shutDown();
 
-		cm_delete(mDockManager);
+		GUIElement::destroy(mDockManager);
 		cm_delete(mMenuBar);
 	}
 

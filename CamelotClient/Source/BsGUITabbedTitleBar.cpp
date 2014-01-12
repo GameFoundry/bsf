@@ -22,7 +22,7 @@ namespace BansheeEditor
 	GUITabbedTitleBar::GUITabbedTitleBar(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, 
 		GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mParentWindow(parentWindow), mMinBtn(nullptr), 
-		mCloseBtn(nullptr), mParentWidget(&parent), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
+		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle)
 	{
@@ -80,7 +80,7 @@ namespace BansheeEditor
 
 	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::HString& name)
 	{
-		GUITabButton* newTabToggle = GUITabButton::create(*mParentWidget, mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
+		GUITabButton* newTabToggle = GUITabButton::create(*mParent, mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
 
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 

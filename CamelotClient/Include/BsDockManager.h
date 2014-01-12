@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsGUIElementContainer.h"
 #include "CmRectI.h"
 
 namespace BansheeEditor
@@ -10,7 +11,7 @@ namespace BansheeEditor
 		Left, Right, Top, Bottom, Center
 	};
 
-	class DockManager
+	class DockManager : public BS::GUIElementContainer
 	{
 		class DockContainer
 		{
@@ -64,8 +65,7 @@ namespace BansheeEditor
 			None
 		};
 	public:
-		DockManager(BS::GUIWidget* parent, CM::RenderWindow* parentWindow);
-		~DockManager();
+		static DockManager* create(BS::GUIWidget& parent, CM::RenderWindow* parentWindow);
 
 		/**
 		 * @brief	Internal method. Called once every frame.
@@ -77,11 +77,17 @@ namespace BansheeEditor
 
 		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
+	protected:
+		~DockManager();
+
+		void updateClippedBounds();
+
 	private:
+		DockManager(BS::GUIWidget& parent, CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions);
+
 		static const CM::Color TINT_COLOR;
 		static const CM::Color HIGHLIGHT_COLOR;
 
-		BS::GUIWidget* mParent;
 		CM::RenderWindow* mParentWindow;
 		DockContainer mRootContainer;
 
@@ -99,7 +105,10 @@ namespace BansheeEditor
 
 		void updateDropOverlay(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
-		bool onGUIMouseEvent(BS::GUIWidget* widget, BS::GUIElement* element, const BS::GUIMouseEvent& event);
+		bool mouseEvent(const BS::GUIMouseEvent& event);
 		bool insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const;
+
+		virtual CM::UINT32 getNumChildElements() const;
+		virtual BS::GUIElement* getChildElement(CM::UINT32 idx) const;
 	};
 }

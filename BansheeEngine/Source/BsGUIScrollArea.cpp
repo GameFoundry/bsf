@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 	GUIScrollArea::GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 		const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, scrollAreaStyle, layoutOptions, false), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
+		:GUIElementContainer(parent, layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0), mVertBarType(vertBarType), mHorzBarType(horzBarType),
 		mScrollBarStyle(scrollBarStyle)
 	{
@@ -31,35 +31,6 @@ namespace BansheeEngine
 	{
 
 	}
-
-	UINT32 GUIScrollArea::getNumRenderElements() const
-	{
-		return 0;
-	}
-
-	const GUIMaterialInfo& GUIScrollArea::getMaterial(UINT32 renderElementIdx) const
-	{
-		CM_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
-	}
-
-	UINT32 GUIScrollArea::getNumQuads(UINT32 renderElementIdx) const
-	{
-		return 0;
-	}
-
-	void GUIScrollArea::updateClippedBounds()
-	{
-		mClippedBounds = RectI(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
-	}
-
-	Vector2I GUIScrollArea::_getOptimalSize() const
-	{
-		return mContentLayout->_getOptimalSize();
-	}
-
-	void GUIScrollArea::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
-	{ }
 
 	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
@@ -290,17 +261,22 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void GUIScrollArea::_changeParentWidget(GUIWidget* widget)
+	UINT32 GUIScrollArea::getNumChildElements() const
 	{
-		GUIElement::_changeParentWidget(widget);
+		return 2;
+	}
 
-		// These two elements are not part of a layout so I need to make sure to
-		// update them manually
-		if(mVertScroll != nullptr)
-			mVertScroll->_changeParentWidget(widget);
+	GUIElement* GUIScrollArea::getChildElement(UINT32 idx) const
+	{
+		switch(idx)
+		{
+		case 0:
+			return mVertScroll;
+		case 1:
+			return mHorzScroll;
+		}
 
-		if(mHorzScroll != nullptr)
-			mHorzScroll->_changeParentWidget(widget);
+		return nullptr;
 	}
 
 	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 

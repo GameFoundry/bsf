@@ -38,7 +38,7 @@ namespace BansheeEngine
 		virtual void updateClippedBounds();
 
 		virtual CM::Vector2I _getOptimalSize() const;
-		void _changeParentWidget(BS::GUIWidget* widget);
+		virtual void _changeParentWidget(BS::GUIWidget* widget);
 
 		virtual CM::UINT32 getNumChildElements() const = 0;
 		virtual GUIElement* getChildElement(CM::UINT32 idx) const = 0;

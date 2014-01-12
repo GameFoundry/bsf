@@ -1255,20 +1255,11 @@ namespace BansheeEngine
 
 	bool GUIManager::sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event)
 	{
-		if(!mouseEventFilter.empty())
-		{
-			if(mouseEventFilter(widget, element, event)) // TODO - If multiple filters and processed at once I should only call the first one
-				return true;
-		}
-
 		return widget->_mouseEvent(element, event);
 	}
 
 	bool GUIManager::sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event)
 	{
-		if(!textInputEventFilter.empty())
-			textInputEventFilter(widget, element, event);
-
 		return widget->_textInputEvent(element, event);
 	}
 
