@@ -21,7 +21,7 @@ namespace BansheeEditor
 
 	GUITabbedTitleBar::GUITabbedTitleBar(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, 
 		GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, &GUISkin::DefaultStyle, layoutOptions, false), mParentWindow(parentWindow), mMinBtn(nullptr), 
+		:GUIElementContainer(parent, layoutOptions), mParentWindow(parentWindow), mMinBtn(nullptr), 
 		mCloseBtn(nullptr), mParentWidget(&parent), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle)
@@ -49,15 +49,8 @@ namespace BansheeEditor
 
 	GUITabbedTitleBar::~GUITabbedTitleBar()
 	{
-		GUIElement::destroy(mBackgroundImage);
-
-		GUIElement::destroy(mMinBtn);
-		GUIElement::destroy(mCloseBtn);
-
-		for(auto& tabButton : mTabButtons)
-		{
-			GUIElement::destroy(tabButton);
-		}
+		for(UINT32 i = 0; i < getNumChildElements(); i++)
+			GUIElement::destroy(getChildElement(i));
 	}
 
 	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, 
@@ -112,30 +105,6 @@ namespace BansheeEditor
 		mTabButtons.erase(mTabButtons.begin() + idx);
 	}
 
-	UINT32 GUITabbedTitleBar::getNumRenderElements() const
-	{
-		return 0;
-	}
-
-	const GUIMaterialInfo& GUITabbedTitleBar::getMaterial(UINT32 renderElementIdx) const
-	{
-		CM_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
-	}
-
-	UINT32 GUITabbedTitleBar::getNumQuads(UINT32 renderElementIdx) const
-	{
-		return 0;
-	}
-
-	void GUITabbedTitleBar::updateClippedBounds()
-	{
-		mClippedBounds = RectI(0, 0, 0, 0); // We don't want any mouse input for this element. This is just a container.
-	}
-
-	void GUITabbedTitleBar::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
-	{ }
-
 	bool GUITabbedTitleBar::mouseEvent(const GUIMouseEvent& ev)
 	{
 		// TODO
@@ -143,23 +112,24 @@ namespace BansheeEditor
 		return false;
 	}
 
-	Vector2I GUITabbedTitleBar::_getOptimalSize() const
+	UINT32 GUITabbedTitleBar::getNumChildElements() const
 	{
-		return Vector2I();
+		return 3 + (UINT32)mTabButtons.size();
 	}
 
-	void GUITabbedTitleBar::_changeParentWidget(GUIWidget* widget)
+	GUIElement* GUITabbedTitleBar::getChildElement(CM::UINT32 idx) const
 	{
-		GUIElement::_changeParentWidget(widget);
-
-		mBackgroundImage->_changeParentWidget(widget);
-		mMinBtn->_changeParentWidget(widget);
-		mCloseBtn->_changeParentWidget(widget);
-
-		for(auto& tabButton : mTabButtons)
+		switch (idx)
 		{
-			tabButton->_changeParentWidget(widget);
+		case 0:
+			return mBackgroundImage;
+		case 1:
+			return mMinBtn;
+		case 2:
+			return mCloseBtn;
 		}
+
+		return mTabButtons[idx - 3];
 	}
 
 	void GUITabbedTitleBar::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,

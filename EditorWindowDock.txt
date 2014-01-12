@@ -1,23 +1,14 @@
 TODO:
  - Add GUIElementContainer, a class that does no rendering but contains other GUIElements. Use it for GUIScrolArea, GUITabbedTitleBar and GUIDockManager
- - DO NOT make EditorWidgetContainer a GUIElement. Instead refactor _updateLayoutInternal in GUITabbedTitleBar into "updateLayout" and make it do all the work EditorWidgetContainer does now
- - Docking/Undocking elements will cause an exception. Happened after TabbedTitleBar refactor
- - When I dock two windows (maybe even just one?) and drag the title bar, layout seems to get messed up
- - Ensure that dragging items onto the title bar works
+ - Change DockManager into a GUIElement
 
 Resize sliders
  - Add a button between docked windows
  - Allow the button to be dragged, and it will automatically resize separating widgets
 
 TitleBar dock/undock 
- - Releasing the dragged window over the drop overlay will dock the window
  - Moving the dragged window over a title bar will temporarily dock the title bar and allow you to move it (as in first step)
    - If you release the mouse the window will then be permanently docked at that location
-
-CONSIDER getting rid of mouse event filters for DockManager
- - I can probably convert DockManager into a GUIElement?
-   - EditorWidgetContainer as well!
-      - Make sure to update GUITabbedTitleBar::tabDragEnd when I do convert it to GUIElement
 
 Polish TOOD:
  - Change cursor icon when window is dragged
