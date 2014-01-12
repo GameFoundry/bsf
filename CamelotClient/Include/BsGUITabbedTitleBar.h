@@ -25,9 +25,6 @@ namespace BansheeEditor
 		void insertTab(CM::UINT32 idx, const CM::HString& name);
 		void removeTab(CM::UINT32 idx);
 
-		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
-			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
-
 		boost::signal<void(CM::UINT32)> onTabActivated;
 		boost::signal<void(CM::UINT32)> onTabClosed;
 		boost::signal<void(CM::UINT32)> onTabDraggedOff;
@@ -61,6 +58,9 @@ namespace BansheeEditor
 		 * @copydoc GUIElement::updateBounds()
 		 */
 		virtual void updateClippedBounds();
+
+		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
+			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 	protected:
 		static const CM::UINT32 TAB_SPACING;
 		static const CM::UINT32 OPTION_BTN_SPACING;

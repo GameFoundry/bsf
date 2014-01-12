@@ -3,9 +3,11 @@
 #include "BsEditorWidget.h"
 #include "BsDragAndDropManager.h"
 #include "BsEditorWindow.h"
+#include "BsGUIArea.h"
 #include "CmMath.h"
 #include "CmInput.h"
 #include "BsGUIWidget.h"
+#include "BsGUILayout.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -15,17 +17,23 @@ namespace BansheeEditor
 	const CM::UINT32 EditorWidgetContainer::TitleBarHeight = 13;
 
 	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent, RenderWindow* renderWindow)
-		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1)
+		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
+		mTitleBarArea(nullptr)
 	{
+		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 9900);
+
 		mTitleBar = GUITabbedTitleBar::create(*parent, renderWindow);
 		mTitleBar->onTabActivated.connect(boost::bind(&EditorWidgetContainer::tabActivated, this, _1));
 		mTitleBar->onTabClosed.connect(boost::bind(&EditorWidgetContainer::tabClosed, this, _1));
 		mTitleBar->onTabDraggedOff.connect(boost::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));
 		mTitleBar->onTabDraggedOn.connect(boost::bind(&EditorWidgetContainer::tabDraggedOn, this, _1));
+
+		mTitleBarArea->getLayout().addElement(mTitleBar);
 	}
 
 	EditorWidgetContainer::~EditorWidgetContainer()
 	{
+		GUIArea::destroy(mTitleBarArea);
 		GUIElement::destroy(mTitleBar);
 
 		for(auto& widget : mWidgets)
@@ -93,20 +101,7 @@ namespace BansheeEditor
 	void EditorWidgetContainer::setSize(UINT32 width, UINT32 height)
 	{
 		// TODO - Title bar is always TitleBarHeight size, so what happens when the container area is smaller than that?
-		RectI clipRect(mX, mY, width, TitleBarHeight);
-
-		// TODO - Consider making EditorWidgetContainer a GUIElement so this gets called automatically
-		Vector2I offset(mX, mY);
-		mTitleBar->_setOffset(offset);
-		mTitleBar->_setWidth(width);
-		mTitleBar->_setHeight(TitleBarHeight);
-		mTitleBar->_setAreaDepth(9900);
-		mTitleBar->_setWidgetDepth(mParent->getDepth());
-
-		RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-		mTitleBar->_setClipRect(elemClipRect);
-
-		mTitleBar->_updateLayoutInternal(mX, mY, width, TitleBarHeight, clipRect, mParent->getDepth(), 9900);
+		mTitleBarArea->setSize(width, TitleBarHeight);
 
 		if(mActiveWidget >= 0)
 		{
@@ -122,20 +117,7 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::setPosition(INT32 x, INT32 y)
 	{
-		RectI clipRect(x, y, mWidth, mHeight);
-
-		// TODO - Consider making EditorWidgetContainer a GUIElement so this gets called automatically
-		Vector2I offset(x, y);
-		mTitleBar->_setOffset(offset);
-		mTitleBar->_setWidth(mWidth);
-		mTitleBar->_setHeight(mHeight);
-		mTitleBar->_setAreaDepth(9900);
-		mTitleBar->_setWidgetDepth(mParent->getDepth());
-
-		RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-		mTitleBar->_setClipRect(elemClipRect);
-
-		mTitleBar->_updateLayoutInternal(x, y, mWidth, mHeight, clipRect, mParent->getDepth(), 9900);
+		mTitleBarArea->setPosition(x, y);
 
 		if(mActiveWidget >= 0)
 		{

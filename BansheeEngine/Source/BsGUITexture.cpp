@@ -221,12 +221,29 @@ namespace BansheeEngine
 
 	Vector2I GUITexture::_getOptimalSize() const
 	{
-		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+		Vector2I optimalSize;
+
+		if(_getLayoutOptions().fixedWidth)
+			optimalSize.x = _getLayoutOptions().width;
+		else
 		{
-			return Vector2I(mActiveTexture->getTexture()->getWidth(), mActiveTexture->getTexture()->getHeight());
+			if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+				optimalSize.x = mActiveTexture->getTexture()->getWidth();
+			else
+				optimalSize.x = _getLayoutOptions().maxWidth;
 		}
 
-		return Vector2I(0, 0);
+		if(_getLayoutOptions().fixedHeight)
+			optimalSize.y = _getLayoutOptions().height;
+		else
+		{
+			if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+				optimalSize.y = mActiveTexture->getTexture()->getHeight();
+			else
+				optimalSize.y = _getLayoutOptions().maxHeight;
+		}
+
+		return optimalSize;
 	}
 
 	void GUITexture::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

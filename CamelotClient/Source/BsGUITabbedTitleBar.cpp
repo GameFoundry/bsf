@@ -350,11 +350,6 @@ namespace BansheeEditor
 		mDraggedBtn = nullptr;
 
 		markContentAsDirty();
-
-		// HACK - Remove once EditorWidgetContainer is a proper GUI object
-		RectI bounds = getBounds();
-		_updateLayoutInternal(bounds.x, bounds.y, bounds.width, bounds.height,
-			_getClipRect(), mParent->getDepth(), 9900);
 	}
 
 	void GUITabbedTitleBar::tabDraggedOn(CM::UINT32 tabIdx)

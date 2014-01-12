@@ -28,6 +28,7 @@ namespace BansheeEditor
 		boost::signal<void()> onWidgetClosed;
 	private:
 		GUITabbedTitleBar* mTitleBar;
+		BS::GUIArea* mTitleBarArea;
 		BS::GUIWidget* mParent;
 		CM::INT32 mX, mY;
 		CM::UINT32 mWidth, mHeight;
