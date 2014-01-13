@@ -41,17 +41,4 @@ namespace BansheeEngine
 	{
 		return Vector2I();
 	}
-
-	void GUIElementContainer::_changeParentWidget(GUIWidget* widget)
-	{
-		GUIElement::_changeParentWidget(widget);
-
-		for(UINT32 i = 0; i < getNumChildElements(); i++)
-		{
-			GUIElement* child = getChildElement(i);
-
-			if(child != nullptr)
-				child->_changeParentWidget(widget);
-		}
-	}
 }

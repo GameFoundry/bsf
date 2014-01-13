@@ -116,6 +116,8 @@ namespace BansheeEngine
 				else
 					mVertScroll = GUIScrollBarVert::create(_getParentWidget());
 
+				_registerChildElement(mVertScroll);
+
 				mVertScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
 				mVertScroll->_setAcceptsKeyboardFocus(false);
 			}
@@ -174,6 +176,8 @@ namespace BansheeEngine
 					mHorzScroll = GUIScrollBarHorz::create(_getParentWidget(), mScrollBarStyle);
 				else
 					mHorzScroll = GUIScrollBarHorz::create(_getParentWidget());
+
+				_registerChildElement(mHorzScroll);
 
 				mHorzScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::horzScrollUpdate, this, _1));
 				mHorzScroll->_setAcceptsKeyboardFocus(false);
@@ -259,24 +263,6 @@ namespace BansheeEngine
 		}
 
 		return false;
-	}
-
-	UINT32 GUIScrollArea::getNumChildElements() const
-	{
-		return 2;
-	}
-
-	GUIElement* GUIScrollArea::getChildElement(UINT32 idx) const
-	{
-		switch(idx)
-		{
-		case 0:
-			return mVertScroll;
-		case 1:
-			return mHorzScroll;
-		}
-
-		return nullptr;
 	}
 
 	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 

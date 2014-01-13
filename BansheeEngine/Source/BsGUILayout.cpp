@@ -22,39 +22,12 @@ namespace BansheeEngine
 
 	void GUILayout::addElement(GUIElement* element)
 	{
-		GUIElementBase* parentElement = element->_getParent();
-		if(parentElement != nullptr && parentElement->_getType() == GUIElementBase::Type::Layout)
-		{
-			GUILayout* layoutParent = static_cast<GUILayout*>(parentElement);
-			layoutParent->removeElement(element);
-		}
-
-		element->_setParent(this);
-		mChildren.push_back(element);
-
-		markContentAsDirty();
+		_registerChildElement(element);
 	}
 
 	void GUILayout::removeElement(GUIElement* element)
 	{
-		bool foundElem = false;
-		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
-		{
-			GUIElementBase* child = *iter;
-
-			if(child->_getType() == GUIElementBase::Type::Element && child == element)
-			{
-				mChildren.erase(iter);
-				element->_setParent(nullptr);
-				foundElem = true;
-				
-				markContentAsDirty();
-				break;
-			}
-		}
-
-		if(!foundElem)
-			CM_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
+		_unregisterChildElement(element);
 	}
 
 	void GUILayout::insertElement(UINT32 idx, GUIElement* element)
@@ -63,10 +36,9 @@ namespace BansheeEngine
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUIElementBase* parentElement = element->_getParent();
-		if(parentElement != nullptr && parentElement->_getType() == GUIElementBase::Type::Layout)
+		if(parentElement != nullptr)
 		{
-			GUILayout* layoutParent = static_cast<GUILayout*>(parentElement);
-			layoutParent->removeElement(element);
+			parentElement->_unregisterChildElement(element);
 		}
 
 		element->_setParent(this);

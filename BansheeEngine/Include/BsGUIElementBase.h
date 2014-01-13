@@ -61,6 +61,9 @@ namespace BansheeEngine
 
 		virtual void _changeParentWidget(GUIWidget* widget);
 
+		void _registerChildElement(GUIElement* element);
+		void _unregisterChildElement(GUIElement* element);
+
 	protected:
 		/**
 		 * @brief	Marks the elements contents as dirty, which causes the sprite meshes to be recreated from scratch.

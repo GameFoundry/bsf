@@ -18,11 +18,8 @@ namespace BansheeEngine
 
 	GUIElement::~GUIElement()
 	{
-		if(mParentElement != nullptr && mParentElement->_getType() == GUIElementBase::Type::Layout)
-		{
-			GUILayout* layoutParent = static_cast<GUILayout*>(mParentElement);
-			layoutParent->removeElement(this);
-		}
+		if(mParentElement != nullptr)
+			mParentElement->_unregisterChildElement(this);
 	}
 
 	void GUIElement::updateRenderElements()

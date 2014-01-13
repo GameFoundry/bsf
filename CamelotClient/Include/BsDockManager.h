@@ -107,8 +107,5 @@ namespace BansheeEditor
 
 		bool mouseEvent(const BS::GUIMouseEvent& event);
 		bool insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const;
-
-		virtual CM::UINT32 getNumChildElements() const;
-		virtual BS::GUIElement* getChildElement(CM::UINT32 idx) const;
 	};
 }

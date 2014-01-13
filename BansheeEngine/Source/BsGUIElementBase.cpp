@@ -182,6 +182,42 @@ namespace BansheeEngine
 		return *entry;
 	}
 
+	void GUIElementBase::_registerChildElement(GUIElement* element)
+	{
+		GUIElementBase* parentElement = element->_getParent();
+		if(parentElement != nullptr)
+		{
+			parentElement->_unregisterChildElement(element);
+		}
+
+		element->_setParent(this);
+		mChildren.push_back(element);
+
+		markContentAsDirty();
+	}
+
+	void GUIElementBase::_unregisterChildElement(GUIElement* element)
+	{
+		bool foundElem = false;
+		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
+		{
+			GUIElementBase* child = *iter;
+
+			if(child->_getType() == GUIElementBase::Type::Element && child == element)
+			{
+				mChildren.erase(iter);
+				element->_setParent(nullptr);
+				foundElem = true;
+
+				markContentAsDirty();
+				break;
+			}
+		}
+
+		if(!foundElem)
+			CM_EXCEPT(InvalidParametersException, "Provided element is not a part of this element.");
+	}
+
 	void GUIElementBase::_changeParentWidget(GUIWidget* widget)
 	{
 		for(auto& child : mChildren)

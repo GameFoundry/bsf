@@ -634,16 +634,6 @@ namespace BansheeEditor
 		return false;
 	}
 
-	UINT32 DockManager::getNumChildElements() const
-	{
-		return 0;
-	}
-
-	GUIElement* DockManager::getChildElement(UINT32 idx) const
-	{
-		return nullptr;
-	}
-
 	// TODO - Move to a separate Polygon class?
 	bool DockManager::insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const
 	{

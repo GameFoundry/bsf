@@ -43,8 +43,13 @@ namespace BansheeEditor
 			mTabBtnStyle = parent.getSkin().getStyle("TabbedBarBtn");
 
 		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
+		_registerChildElement(mBackgroundImage);
+
 		mMinBtn = GUIButton::create(parent, HString(L""), mMinimizeBtnStyle);
+		_registerChildElement(mMinBtn);
+
 		mCloseBtn = GUIButton::create(parent, HString(L""), mCloseBtnStyle);
+		_registerChildElement(mCloseBtn);
 
 		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
 
@@ -53,8 +58,7 @@ namespace BansheeEditor
 
 	GUITabbedTitleBar::~GUITabbedTitleBar()
 	{
-		for(UINT32 i = 0; i < getNumChildElements(); i++)
-			GUIElement::destroy(getChildElement(i));
+
 	}
 
 	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, 
@@ -85,6 +89,7 @@ namespace BansheeEditor
 	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::HString& name)
 	{
 		GUITabButton* newTabToggle = GUITabButton::create(*mParent, mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
+		_registerChildElement(newTabToggle);
 
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 
@@ -95,8 +100,6 @@ namespace BansheeEditor
 		mTabButtons.insert(mTabButtons.begin() + idx, newTabToggle);
 
 		mUniqueTabIdx++;
-
-		markContentAsDirty();
 	}
 
 	void GUITabbedTitleBar::removeTab(UINT32 idx)
@@ -109,8 +112,6 @@ namespace BansheeEditor
 		GUIElement::destroy(mTabButtons[idx]);
 
 		mTabButtons.erase(mTabButtons.begin() + idx);
-
-		markContentAsDirty();
 	}
 
 	bool GUITabbedTitleBar::mouseEvent(const GUIMouseEvent& event)
@@ -209,26 +210,6 @@ namespace BansheeEditor
 		}
 
 		return false;
-	}
-
-	UINT32 GUITabbedTitleBar::getNumChildElements() const
-	{
-		return 3 + (UINT32)mTabButtons.size();
-	}
-
-	GUIElement* GUITabbedTitleBar::getChildElement(CM::UINT32 idx) const
-	{
-		switch (idx)
-		{
-		case 0:
-			return mBackgroundImage;
-		case 1:
-			return mMinBtn;
-		case 2:
-			return mCloseBtn;
-		}
-
-		return mTabButtons[idx - 3];
 	}
 
 	void GUITabbedTitleBar::updateClippedBounds()

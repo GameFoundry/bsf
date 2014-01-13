@@ -68,8 +68,6 @@ namespace BansheeEditor
 			BS::GUIElementStyle* minBtnStyle, BS::GUIElementStyle* closeBtnStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
-		virtual CM::UINT32 getNumChildElements() const;
-		virtual GUIElement* getChildElement(CM::UINT32 idx) const;
 
 		void tabToggled(CM::UINT32 tabIdx);
 		void tabClosed();

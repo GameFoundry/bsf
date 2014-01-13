@@ -61,8 +61,5 @@ namespace BansheeEngine
 		void horzScrollUpdate(float pct);
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
-
-		CM::UINT32 getNumChildElements() const;
-		GUIElement* getChildElement(CM::UINT32 idx) const;
 	};
 }
