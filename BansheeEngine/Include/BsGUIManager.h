@@ -199,7 +199,6 @@ namespace BansheeEngine
 		void processDestroyQueue();
 
 		bool findElementUnderCursor(const CM::Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
-		bool handleCursorOver(const CM::Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
 
 		void onCursorMoved(const CM::PositionalInputEvent& event);
 		void onCursorReleased(const CM::PositionalInputEvent& event);

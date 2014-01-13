@@ -33,6 +33,8 @@ namespace BansheeEditor
 	protected:
 		virtual ~GUITabbedTitleBar();
 
+		void updateClippedBounds();
+
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 	protected:
@@ -48,6 +50,9 @@ namespace BansheeEditor
 		BS::GUIButton* mCloseBtn;
 		BS::GUIToggleGroupPtr mTabToggleGroup;
 		CM::RenderWindow* mParentWindow;
+
+		EditorWidget* mTempDraggedWidget;
+		CM::UINT32 mTempDraggedTabIdx;
 
 		bool mDragInProgress;
 		GUITabButton* mDraggedBtn;
@@ -70,7 +75,6 @@ namespace BansheeEditor
 		void tabClosed();
 		void tabDragged(CM::UINT32 tabIdx, const CM::Vector2I& dragPos);
 		void tabDragEnd(CM::UINT32 tabIdx, const CM::Vector2I& dragPos);
-		void tabDraggedOn(CM::UINT32 tabIdx);
 
 		CM::INT32 uniqueIdxToSeqIdx(CM::UINT32 uniqueIdx) const;
 	};

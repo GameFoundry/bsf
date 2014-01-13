@@ -1049,13 +1049,8 @@ namespace BansheeEngine
 			return a.element->_getDepth() < b.element->_getDepth();
 		});
 
-		return handleCursorOver(cursorScreenPos, buttonStates, shift, control, alt);
-	}
-
-	bool GUIManager::handleCursorOver(const CM::Vector2I& screenPos, bool buttonStates[3], bool shift, bool control, bool alt)
-	{
+		// Send MouseOut and MouseOver events
 		bool eventProcessed = false;
-
 		for(auto& elementInfo : mNewElementsUnderCursor)
 		{
 			GUIElement* element = elementInfo.element;
@@ -1071,7 +1066,7 @@ namespace BansheeEngine
 				{
 					Vector2I localPos;
 					if(widget != nullptr)
-						localPos = getWidgetRelativePos(*widget, screenPos);
+						localPos = getWidgetRelativePos(*widget, cursorScreenPos);
 
 					mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
 
@@ -1095,7 +1090,7 @@ namespace BansheeEngine
 				// Send MouseOut event
 				if(mActiveElement == nullptr || element == mActiveElement)
 				{
-					Vector2I curLocalPos = getWidgetRelativePos(*widget, screenPos);
+					Vector2I curLocalPos = getWidgetRelativePos(*widget, cursorScreenPos);
 
 					mMouseEvent.setMouseOutData(curLocalPos);
 					if(sendMouseEvent(widget, element, mMouseEvent))
@@ -1151,7 +1146,29 @@ namespace BansheeEngine
 		buttonStates[2] = false;
 
 		mNewElementsUnderCursor.clear();
-		handleCursorOver(Vector2I(), buttonStates, false, false, false);
+
+		for(auto& elementInfo : mElementsUnderCursor)
+		{
+			GUIElement* element = elementInfo.element;
+			GUIWidget* widget = elementInfo.widget;
+
+			if(widget->getTarget()->getTarget().get() != win)
+			{
+				mNewElementsUnderCursor.push_back(elementInfo);
+				continue;
+			}
+
+			// Send MouseOut event
+			if(mActiveElement == nullptr || element == mActiveElement)
+			{
+				Vector2I curLocalPos = getWidgetRelativePos(*widget, Vector2I());
+
+				mMouseEvent.setMouseOutData(curLocalPos);
+				sendMouseEvent(widget, element, mMouseEvent);
+			}
+		}
+
+		mElementsUnderCursor.swap(mNewElementsUnderCursor);
 	}
 
 	void GUIManager::queueForDestroy(GUIElement* element)
