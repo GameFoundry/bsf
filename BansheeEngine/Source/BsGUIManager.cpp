@@ -613,11 +613,7 @@ namespace BansheeEngine
 
 			if(dist > DRAG_DISTANCE)
 			{
-				// NOTE: I am always using the first widget to calculate the position,
-				// which technically could be wrong if there are multiple widgets overlapping
-				Vector2I localPos;
-				if(mElementsUnderCursor.size() > 0)
-					localPos = getWidgetRelativePos(*mElementsUnderCursor[0].widget, event.screenPos);
+				Vector2I localPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
 
 				mMouseEvent.setMouseDragStartData(localPos);
 				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
@@ -630,15 +626,15 @@ namespace BansheeEngine
 		// If mouse is being held down send MouseDrag events
 		if(mActiveElement != nullptr && mDragState == DragState::Dragging)
 		{
-			Vector2I curLocalPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
+			Vector2I localPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
 
-			if(mLastCursorLocalPos != curLocalPos)
+			if(mLastCursorLocalPos != localPos)
 			{
-				mMouseEvent.setMouseDragData(curLocalPos, curLocalPos - mLastCursorLocalPos);
+				mMouseEvent.setMouseDragData(localPos, localPos - mLastCursorLocalPos);
 				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
 					event.markAsUsed();
 
-				mLastCursorLocalPos = curLocalPos;
+				mLastCursorLocalPos = localPos;
 			}
 		}
 		else // Otherwise, send MouseMove events if we are hovering over any element
@@ -736,11 +732,7 @@ namespace BansheeEngine
 
 		if(acceptEndDrag)
 		{
-			// NOTE: I am always using the first widget to calculate the position,
-			// which technically could be wrong if there are multiple widgets overlapping
-			Vector2I localPos;
-			if(mElementsUnderCursor.size() > 0)
-				localPos = getWidgetRelativePos(*mElementsUnderCursor[0].widget, event.screenPos);
+			Vector2I localPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
 
 			mMouseEvent.setMouseDragEndData(localPos);
 			if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
