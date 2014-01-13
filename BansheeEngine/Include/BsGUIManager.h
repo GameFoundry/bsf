@@ -46,6 +46,16 @@ namespace BansheeEngine
 			GUIWidget* widget;
 		};
 
+		struct ElementInfo
+		{
+			ElementInfo(GUIElement* element, GUIWidget* widget)
+				:element(element), widget(widget)
+			{ }
+
+			GUIElement* element;
+			GUIWidget* widget;
+		};
+
 	public:
 		GUIManager();
 		~GUIManager();

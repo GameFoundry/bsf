@@ -68,6 +68,7 @@ namespace BansheeEngine
 		bool mIsMultiline;
 		CM::Vector2I mTextOffset;
 		bool mHasFocus;
+		bool mIsMouseOver;
 
 		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mImageDesc;

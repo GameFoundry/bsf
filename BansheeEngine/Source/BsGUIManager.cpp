@@ -581,7 +581,7 @@ namespace BansheeEngine
 				if(mWidgetUnderCursor != nullptr)
 					localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
-				mMouseEvent.setDragAndDropDroppedData(mElementUnderCursor, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+				mMouseEvent.setDragAndDropDroppedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
 				bool processed = sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent);
 
 				return processed;
@@ -615,7 +615,7 @@ namespace BansheeEngine
 
 			if(dist > DRAG_DISTANCE)
 			{
-				mMouseEvent.setMouseDragStartData(mElementUnderCursor, localPos);
+				mMouseEvent.setMouseDragStartData(localPos);
 				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
 					event.markAsUsed();
 
@@ -630,7 +630,7 @@ namespace BansheeEngine
 
 			if(mLastCursorLocalPos != curLocalPos)
 			{
-				mMouseEvent.setMouseDragData(mElementUnderCursor, curLocalPos, curLocalPos - mLastCursorLocalPos);
+				mMouseEvent.setMouseDragData(curLocalPos, curLocalPos - mLastCursorLocalPos);
 				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
 					event.markAsUsed();
 
@@ -644,7 +644,7 @@ namespace BansheeEngine
 				// Send MouseMove event
 				if(mLastCursorLocalPos != localPos)
 				{
-					mMouseEvent.setMouseMoveData(mElementUnderCursor, localPos);
+					mMouseEvent.setMouseMoveData(localPos);
 					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						event.markAsUsed();
 
@@ -654,14 +654,14 @@ namespace BansheeEngine
 				// Also if drag is in progress send DragAndDrop events
 				if(DragAndDropManager::instance().isDragInProgress())
 				{
-					mMouseEvent.setDragAndDropDraggedData(mElementUnderCursor, localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					mMouseEvent.setDragAndDropDraggedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
 					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						event.markAsUsed();
 				}
 
 				if(Math::abs(event.mouseWheelScrollAmount) > 0.00001f)
 				{
-					mMouseEvent.setMouseWheelScrollData(mElementUnderCursor, event.mouseWheelScrollAmount);
+					mMouseEvent.setMouseWheelScrollData(event.mouseWheelScrollAmount);
 					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						event.markAsUsed();
 				}
@@ -697,7 +697,7 @@ namespace BansheeEngine
 		bool acceptMouseUp = mActiveMouseButton == guiButton && (mElementUnderCursor != nullptr && mActiveElement == mElementUnderCursor);
 		if(acceptMouseUp)
 		{
-			mMouseEvent.setMouseUpData(mElementUnderCursor, localPos, guiButton);
+			mMouseEvent.setMouseUpData(localPos, guiButton);
 
 			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 				event.markAsUsed();
@@ -709,7 +709,7 @@ namespace BansheeEngine
 
 		if(acceptEndDrag)
 		{
-			mMouseEvent.setMouseDragEndData(mElementUnderCursor, localPos);
+			mMouseEvent.setMouseDragEndData(localPos);
 			if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
 				event.markAsUsed();
 
@@ -754,7 +754,7 @@ namespace BansheeEngine
 		{
 			Vector2I localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
-			mMouseEvent.setMouseDownData(mElementUnderCursor, localPos, guiButton);
+			mMouseEvent.setMouseDownData(localPos, guiButton);
 			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 				event.markAsUsed();
 
@@ -821,7 +821,7 @@ namespace BansheeEngine
 		{
 			Vector2I localPos = getWidgetRelativePos(*mWidgetUnderCursor, event.screenPos);
 
-			mMouseEvent.setMouseDoubleClickData(mElementUnderCursor, localPos, guiButton);
+			mMouseEvent.setMouseDoubleClickData(localPos, guiButton);
 			if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 				event.markAsUsed();
 		}
@@ -1026,8 +1026,7 @@ namespace BansheeEngine
 
 		mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
 
-		// Send MouseOver/MouseOut events to any elements the mouse passes over, except when
-		// mouse is being held down, in which we only send them to the active element
+		// Send MouseOver/MouseOut events to any elements the mouse passes over
 		if(element != mElementUnderCursor)
 		{
 			if(mElementUnderCursor != nullptr)
@@ -1037,7 +1036,7 @@ namespace BansheeEngine
 				{
 					Vector2I curLocalPos = getWidgetRelativePos(*mWidgetUnderCursor, screenPos);
 
-					mMouseEvent.setMouseOutData(element, curLocalPos);
+					mMouseEvent.setMouseOutData(curLocalPos);
 					if(sendMouseEvent(mWidgetUnderCursor, mElementUnderCursor, mMouseEvent))
 						eventProcessed = true;
 				}
@@ -1048,7 +1047,7 @@ namespace BansheeEngine
 				// Send MouseOver event
 				if(mActiveElement == nullptr || element == mActiveElement)
 				{
-					mMouseEvent.setMouseOverData(element, localPos);
+					mMouseEvent.setMouseOverData(localPos);
 					if(sendMouseEvent(widget, element, mMouseEvent))
 						eventProcessed = true;
 				}

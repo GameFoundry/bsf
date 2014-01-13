@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
 		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
-		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false)
+		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -390,6 +390,8 @@ namespace BansheeEngine
 				mInputCursorSet = true;
 			}
 
+			mIsMouseOver = true;
+
 			return true;
 		}
 		else if(ev.getType() == GUIMouseEventType::MouseOut)
@@ -405,6 +407,8 @@ namespace BansheeEngine
 				Platform::setCursor(CursorType::Arrow);
 				mInputCursorSet = false;
 			}
+
+			mIsMouseOver = false;
 
 			return true;
 		}
@@ -472,7 +476,7 @@ namespace BansheeEngine
 			{
 				mDragInProgress = false;
 
-				if(ev.getMouseOverElement() != this && mInputCursorSet)
+				if(!mIsMouseOver && mInputCursorSet)
 				{
 					Platform::setCursor(CursorType::Arrow);
 					mInputCursorSet = false;
