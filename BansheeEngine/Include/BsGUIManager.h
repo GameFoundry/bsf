@@ -138,8 +138,8 @@ namespace BansheeEngine
 		CM::Stack<GUIElement*>::type mScheduledForDestruction;
 
 		// Element and widget mouse is currently over
-		GUIWidget* mWidgetUnderCursor;
-		GUIElement* mElementUnderCursor;
+		CM::Vector<ElementInfo>::type mElementsUnderCursor;
+		CM::Vector<ElementInfo>::type mNewElementsUnderCursor;
 
 		// Element and widget that's being clicked on
 		GUIWidget* mActiveWidget;
@@ -199,8 +199,7 @@ namespace BansheeEngine
 		void processDestroyQueue();
 
 		bool findElementUnderCursor(const CM::Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
-		bool handleCursorOver(GUIWidget* widget, GUIElement* element, const CM::Vector2I& screenMousePos, 
-			bool buttonStates[3], bool shift, bool control, bool alt);
+		bool handleCursorOver(const CM::Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
 
 		void onCursorMoved(const CM::PositionalInputEvent& event);
 		void onCursorReleased(const CM::PositionalInputEvent& event);
