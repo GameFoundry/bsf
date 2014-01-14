@@ -1,5 +1,6 @@
 TODO:
- - Dock manager currently eats all mouse input. Modify GUIManager so it will recursively try to send input to all elements under the cursor until one processes it
+ - Fix various issues with dragging windows onto tabbed title bar and test it properly
+ - Also test for any new issues with the element container parenting system
 
 Resize sliders
  - Add a button between docked windows

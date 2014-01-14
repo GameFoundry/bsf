@@ -32,6 +32,16 @@ namespace BansheeEngine
 
 	}
 
+	void GUIScrollArea::updateClippedBounds()
+	{
+		RectI bounds(0, 0, mWidth, mHeight);
+		bounds.clip(mClipRect);
+		bounds.x += mOffset.x;
+		bounds.y += mOffset.y;
+
+		mClippedBounds = bounds;
+	}
+
 	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{

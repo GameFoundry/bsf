@@ -33,6 +33,10 @@ namespace BansheeEngine
 	protected:
 		~GUIScrollArea();
 
+		/**
+		 * @copydoc GUIElement::updateBounds()
+		 */
+		virtual void updateClippedBounds();
 	private:
 		GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions);
@@ -61,5 +65,6 @@ namespace BansheeEngine
 		void horzScrollUpdate(float pct);
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+
 	};
 }
