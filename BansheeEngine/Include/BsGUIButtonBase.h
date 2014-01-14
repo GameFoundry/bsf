@@ -76,6 +76,7 @@ namespace BansheeEngine
 		TEXT_SPRITE_DESC getTextDesc() const;
 
 		void setState(GUIButtonState state);
+		GUIButtonState getState() const { return mActiveState; }
 	private:
 		ImageSprite* mImageSprite;
 		ImageSprite* mContentImageSprite;

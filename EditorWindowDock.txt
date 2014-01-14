@@ -1,6 +1,9 @@
 TODO:
- - Fix various issues with dragging windows onto tabbed title bar and test it properly
- - Also test for any new issues with the element container parenting system
+ - When dragging a tab and then releasing the drag over another tab, that tab becomes active
+ - When dragging a temp tab I drag it from its left side while it would be better to drag it from center
+ - Vector subscript out of range issue I'm not sure how to reproduce
+ - Clip tabs so that they don't overlap min/close buttons
+ - (Unrelated) Can't click and drag a scroll handle
 
 Resize sliders
  - Add a button between docked windows

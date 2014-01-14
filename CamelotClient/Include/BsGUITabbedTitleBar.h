@@ -24,6 +24,7 @@ namespace BansheeEditor
 		void addTab(const CM::HString& name);
 		void insertTab(CM::UINT32 idx, const CM::HString& name);
 		void removeTab(CM::UINT32 idx);
+		void setActive(CM::UINT32 idx);
 
 		boost::signal<void(CM::UINT32)> onTabActivated;
 		boost::signal<void(CM::UINT32)> onTabClosed;
@@ -69,7 +70,7 @@ namespace BansheeEditor
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 
-		void tabToggled(CM::UINT32 tabIdx);
+		void tabToggled(CM::UINT32 tabIdx, bool toggledOn);
 		void tabClosed();
 		void tabDragged(CM::UINT32 tabIdx, const CM::Vector2I& dragPos);
 		void tabDragEnd(CM::UINT32 tabIdx, const CM::Vector2I& dragPos);

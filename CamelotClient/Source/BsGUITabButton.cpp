@@ -19,7 +19,7 @@ namespace BansheeEditor
 	}
 
 	GUITabButton::GUITabButton(GUIWidget& parent, const GUIElementStyle* style, const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIToggle(parent, style, content, toggleGroup, layoutOptions), mIndex(index)
+		:GUIToggle(parent, style, content, toggleGroup, layoutOptions), mIndex(index), mDraggedState(false)
 	{
 
 	}
@@ -68,14 +68,80 @@ namespace BansheeEditor
 		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(parent, style, toggleGroup, index, content, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	bool GUITabButton::mouseEvent(const GUIMouseEvent& ev)
+	void GUITabButton::_setDraggedState(bool active) 
 	{
-		bool eventProcessed = GUIButtonBase::mouseEvent(ev);
+		if(mDraggedState == active)
+			return;
 
-		if(ev.getType() == GUIMouseEventType::MouseUp)
+		mDraggedState = active; 
+
+		if(mDraggedState)
 		{
-			if(!mIsToggled)
-				toggleOn();
+			mInactiveState = getState();
+
+			if(mInactiveState != GUIButtonState::Normal)
+				setState(GUIButtonState::Normal);
+		}
+		else
+		{
+			if(getState() != mInactiveState)
+				setState(mInactiveState);
+		}
+	}
+
+	bool GUITabButton::mouseEvent(const GUIMouseEvent& ev)
+	{	
+		if(ev.getType() == GUIMouseEventType::MouseOver)
+		{
+			GUIButtonState state = _isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover;
+
+			if(!mDraggedState)
+			{
+				setState(state);
+
+				if(!onHover.empty())
+					onHover();
+			}
+			else
+				mInactiveState = state;
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseOut)
+		{
+			GUIButtonState state = _isOn() ? GUIButtonState::NormalOn : GUIButtonState::Normal;
+
+			if(!mDraggedState)
+			{
+				setState(state);
+
+				if(!onOut.empty())
+					onOut();
+			}
+			else
+				mInactiveState = state;
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseDown)
+		{
+			if(!mDraggedState)
+				setState(_isOn() ? GUIButtonState::ActiveOn : GUIButtonState::Active);
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseUp)
+		{
+			if(!mDraggedState)
+			{
+				setState(_isOn() ? GUIButtonState::HoverOn : GUIButtonState::Hover);
+
+				if(!onClick.empty())
+					onClick();
+
+				if(!mIsToggled)
+					toggleOn();
+			}
 
 			return true;
 		}
@@ -110,6 +176,6 @@ namespace BansheeEditor
 			return true;
 		}
 
-		return eventProcessed;
+		return false;
 	}
 }

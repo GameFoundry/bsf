@@ -73,7 +73,9 @@ namespace BansheeEditor
 		{
 			if(mWidgets.size() > 0)
 			{
+				mActiveWidget = -1;
 				setActiveWidget(0);
+				mTitleBar->setActive(0);
 			}
 		}
 	}
@@ -193,6 +195,8 @@ namespace BansheeEditor
 		EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
 
 		insert(idx, *draggedWidget);
+		setActiveWidget(idx);
+		mTitleBar->setActive(idx);
 	}
 
 	void EditorWidgetContainer::tabDroppedCallback(bool wasDragProcessed)

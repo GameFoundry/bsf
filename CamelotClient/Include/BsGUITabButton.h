@@ -20,6 +20,7 @@ namespace BansheeEditor
 		static GUITabButton* create(BS::GUIWidget& parent, const BS::GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const BS::GUIContent& content, const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style = nullptr);
 
 		CM::UINT32 getIndex() const { return mIndex; }
+		void _setDraggedState(bool active);
 
 		boost::signal<void(CM::UINT32, const CM::Vector2I&)> onDragged;
 		boost::signal<void(CM::UINT32, const CM::Vector2I&)> onDragEnd;
@@ -29,6 +30,8 @@ namespace BansheeEditor
 	private:
 		CM::UINT32 mIndex;
 		CM::Vector2I mDragStartPosition;
+		bool mDraggedState;
+		BS::GUIButtonState mInactiveState;
 
 		static const CM::UINT32 DRAG_MIN_DISTANCE;
 

@@ -93,7 +93,7 @@ namespace BansheeEditor
 
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
 
-		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, mUniqueTabIdx));
+		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, mUniqueTabIdx, _1));
 		newTabToggle->onDragged.connect(boost::bind(&GUITabbedTitleBar::tabDragged, this, _1, _2));
 		newTabToggle->onDragEnd.connect(boost::bind(&GUITabbedTitleBar::tabDragEnd, this, _1, _2));
 
@@ -112,6 +112,11 @@ namespace BansheeEditor
 		GUIElement::destroy(mTabButtons[idx]);
 
 		mTabButtons.erase(mTabButtons.begin() + idx);
+	}
+
+	void GUITabbedTitleBar::setActive(UINT32 idx)
+	{
+		mTabButtons[idx]->toggleOn();
 	}
 
 	bool GUITabbedTitleBar::mouseEvent(const GUIMouseEvent& event)
@@ -169,7 +174,10 @@ namespace BansheeEditor
 
 				mTempDraggedWidget = draggedWidget;
 
-				mInitialDragOffset = Math::roundToInt(mTabButtons[uniqueIdxToSeqIdx(mTempDraggedTabIdx)]->_getWidth() * 0.5f);
+				mDraggedBtn = mTabButtons[uniqueIdxToSeqIdx(mTempDraggedTabIdx)];
+				mDraggedBtn->_setDraggedState(true);
+
+				mInitialDragOffset = Math::roundToInt(mDraggedBtn->_getWidth() * 0.5f);
 				mDragInProgress = true;
 			}
 
@@ -192,6 +200,8 @@ namespace BansheeEditor
 				removeTab(tabSeqIdx);
 
 				mTempDraggedWidget = nullptr;
+				mDragInProgress = false;
+				mDraggedBtn = nullptr;
 
 				if(!onTabDraggedOn.empty())
 					onTabDraggedOn(tabSeqIdx);
@@ -206,6 +216,8 @@ namespace BansheeEditor
 				removeTab(uniqueIdxToSeqIdx(mTempDraggedTabIdx));
 
 				mTempDraggedWidget = nullptr;
+				mDragInProgress = false;
+				mDraggedBtn = nullptr;
 			}
 		}
 
@@ -229,7 +241,7 @@ namespace BansheeEditor
 			mBackgroundImage->_setOffset(offset);
 			mBackgroundImage->_setWidth(width - 2);
 			mBackgroundImage->_setHeight(optimalSize.y);
-			mBackgroundImage->_setAreaDepth(areaDepth + 1);
+			mBackgroundImage->_setAreaDepth(areaDepth + 2);
 			mBackgroundImage->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -248,11 +260,21 @@ namespace BansheeEditor
 			nonClientAreas.push_back(RectI(curX, curY, TAB_SPACING, tabBtnHeight));
 			curX += TAB_SPACING;
 
-			Vector2I offset(curX, curY);
+			Vector2I offset;
+			if(!mDragInProgress || mDraggedBtn != btn)
+			{
+				offset = Vector2I(curX, curY);
+			}
+			else if(mDragInProgress && mDraggedBtn == btn)
+			{
+				offset = btn->_getOffset();
+				offset.x = mDragBtnOffset;
+			}
+
 			btn->_setOffset(offset);
 			btn->_setWidth(optimalSize.x);
 			btn->_setHeight(optimalSize.y);
-			btn->_setAreaDepth(areaDepth);
+			btn->_setAreaDepth(areaDepth + 1);
 			btn->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -276,7 +298,7 @@ namespace BansheeEditor
 			mMinBtn->_setOffset(offset);
 			mMinBtn->_setWidth(minBtnOptimalSize.x);
 			mMinBtn->_setHeight(minBtnOptimalSize.y);
-			mMinBtn->_setAreaDepth(areaDepth);
+			mMinBtn->_setAreaDepth(areaDepth + 1);
 			mMinBtn->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -291,7 +313,7 @@ namespace BansheeEditor
 			mCloseBtn->_setOffset(offset);
 			mCloseBtn->_setWidth(closeBtnOptimalSize.x);
 			mCloseBtn->_setHeight(closeBtnOptimalSize.y);
-			mCloseBtn->_setAreaDepth(areaDepth);
+			mCloseBtn->_setAreaDepth(areaDepth + 1);
 			mCloseBtn->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
@@ -301,8 +323,11 @@ namespace BansheeEditor
 		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
 	}
 
-	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx)
+	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx, bool toggledOn)
 	{
+		if(!toggledOn)
+			return;
+
 		INT32 idx = uniqueIdxToSeqIdx(tabIdx);
 		if(idx != -1)
 		{
@@ -336,10 +361,11 @@ namespace BansheeEditor
 			RectI bounds = getBounds();
 			if(bounds.contains(dragPos))
 			{
-				mDraggedBtn = mTabButtons[idx];
-
 				if(!mDragInProgress)
 				{
+					mDraggedBtn = mTabButtons[idx];
+					mDraggedBtn->_setDraggedState(false);
+
 					Vector2I offset = mDraggedBtn->_getOffset();
 					mInitialDragOffset = (dragPos.x - offset.x);
 
@@ -347,15 +373,6 @@ namespace BansheeEditor
 				}
 
 				mDragBtnOffset = dragPos.x - mInitialDragOffset;
-				
-				Vector2I offset = mDraggedBtn->_getOffset();
-				INT32 diff = mDragBtnOffset - offset.x;
-				offset.x += diff;
-				mDraggedBtn->_setOffset(offset);
-
-				RectI clipRect = mDraggedBtn->_getClipRect();
-				clipRect.x -= diff;
-				mDraggedBtn->_setClipRect(clipRect);
 
 				for(INT32 i = 0; i < idx; i++)
 				{
@@ -367,8 +384,6 @@ namespace BansheeEditor
 						GUITabButton* temp = mTabButtons[i];
 						mTabButtons[i] = mTabButtons[idx];
 						mTabButtons[idx] = temp;
-
-						markContentAsDirty();
 
 						break;
 					}
@@ -385,16 +400,21 @@ namespace BansheeEditor
 						mTabButtons[i] = mTabButtons[idx];
 						mTabButtons[idx] = temp;
 
-						markContentAsDirty();
-
 						break;
 					}
 				}
+
+				markContentAsDirty();
 			}
 			else
 			{
 				mDragInProgress = false;
+
+				if(mDraggedBtn != nullptr)
+					mDraggedBtn->_setDraggedState(false);
 				mDraggedBtn = nullptr;
+
+				markContentAsDirty();
 
 				if(!onTabDraggedOff.empty())
 					onTabDraggedOff(idx);
@@ -405,7 +425,13 @@ namespace BansheeEditor
 	void GUITabbedTitleBar::tabDragEnd(CM::UINT32 tabIdx, const Vector2I& dragPos)
 	{
 		mDragInProgress = false;
+
+		if(mDraggedBtn != nullptr)
+			mDraggedBtn->_setDraggedState(false);
 		mDraggedBtn = nullptr;
+
+		if(mActiveTabIdx != tabIdx)
+			tabToggled(tabIdx, true);
 
 		markContentAsDirty();
 	}
