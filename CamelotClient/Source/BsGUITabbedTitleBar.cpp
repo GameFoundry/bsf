@@ -139,7 +139,14 @@ namespace BansheeEditor
 
 					if((i + 1) == numTabButtons)
 					{
-						if(widgetRelPos.x >= centerX)
+						if(i == 0 && widgetRelPos.x <= centerX)
+						{
+							insertTab(0, draggedWidget->getName());
+							mTempDraggedTabIdx = mTabButtons[0]->getIndex();
+
+							break;
+						}
+						else if(widgetRelPos.x > centerX)
 						{
 							addTab(draggedWidget->getName());
 							mTempDraggedTabIdx = mTabButtons[i + 1]->getIndex();
