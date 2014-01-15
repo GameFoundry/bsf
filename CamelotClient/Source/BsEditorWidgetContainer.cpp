@@ -38,7 +38,7 @@ namespace BansheeEditor
 
 		for(auto& widget : mWidgets)
 		{
-			EditorWidget::destroy(widget);
+			EditorWidget::destroy(widget.second);
 		}
 	}
 
@@ -49,33 +49,29 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::remove(EditorWidget& widget)
 	{
-		INT32 widgetIdx = -1;
-		UINT32 curIdx = 0;
+		INT32 tabIdx = 0;
 		for(auto& curWidget : mWidgets)
 		{
-			if(curWidget == &widget)
+			if(curWidget.second == &widget)
 			{
-				widgetIdx = curIdx;
+				tabIdx = curWidget.first;
 				break;
 			}
-
-			curIdx++;
 		}
 
-		if(widgetIdx == -1)
+		if(tabIdx == -1)
 			return;
 
-		mWidgets.erase(mWidgets.begin() + widgetIdx);
-		mTitleBar->removeTab((UINT32)widgetIdx);
+		mWidgets.erase((UINT32)tabIdx);
+		mTitleBar->removeTab((UINT32)tabIdx);
 		widget._changeParent(nullptr);
 
-		if(widgetIdx == mActiveWidget)
+		if(tabIdx == mActiveWidget)
 		{
-			if(mWidgets.size() > 0)
+			if(mTitleBar->getNumTabs() > 0)
 			{
 				mActiveWidget = -1;
-				setActiveWidget(0);
-				mTitleBar->setActive(0);
+				setActiveWidget(mTitleBar->getTabIdx(0));
 			}
 		}
 	}
@@ -84,18 +80,18 @@ namespace BansheeEditor
 	{
 		for(auto& curWidget : mWidgets)
 		{
-			if(curWidget == &widget)
+			if(curWidget.second == &widget)
 				return;
 		}
 
 		idx = Math::clamp(idx, 0U, (UINT32)mWidgets.size());
 
-		mTitleBar->insertTab(idx, widget.getName());
-		mWidgets.insert(mWidgets.begin() + idx, &widget);
+		UINT32 tabIdx = mTitleBar->insertTab(idx, widget.getName());
+		mWidgets[tabIdx] = &widget;
 		widget._changeParent(this);
 
 		if(mActiveWidget == -1)
-			setActiveWidget((UINT32)mWidgets.size() - 1);
+			setActiveWidget(mTitleBar->getTabIdx(mTitleBar->getNumTabs() - 1));
 		else
 			widget._disable();
 	}
@@ -139,29 +135,28 @@ namespace BansheeEditor
 
 		mActiveWidget = idx;
 
-		UINT32 curIdx = 0;
 		for(auto& curWidget : mWidgets)
 		{
-			if(curIdx != (UINT32)mActiveWidget)
-				curWidget->_disable();
+			if(curWidget.first != (UINT32)mActiveWidget)
+				curWidget.second->_disable();
 			else
-				curWidget->_enable();
-
-			curIdx++;
+				curWidget.second->_enable();
 		}
+
+		mTitleBar->setActive(idx);
 
 		setPosition(mX, mY);
 		setSize(mWidth, mHeight);
 	}
 
-	void EditorWidgetContainer::tabActivated(UINT32 idx)
+	void EditorWidgetContainer::tabActivated(UINT32 uniqueIdx)
 	{
-		setActiveWidget(idx);
+		setActiveWidget(uniqueIdx);
 	}
 
-	void EditorWidgetContainer::tabClosed(UINT32 idx)
+	void EditorWidgetContainer::tabClosed(UINT32 uniqueIdx)
 	{
-		EditorWidget* widget = mWidgets[idx];
+		EditorWidget* widget = mWidgets[uniqueIdx];
 		remove(*widget);
 		EditorWidget::destroy(widget);
 
@@ -169,9 +164,9 @@ namespace BansheeEditor
 			onWidgetClosed();
 	}
 
-	void EditorWidgetContainer::tabDraggedOff(CM::UINT32 idx)
+	void EditorWidgetContainer::tabDraggedOff(CM::UINT32 uniqueIdx)
 	{
-		EditorWidget* widget = mWidgets[idx];
+		EditorWidget* widget = mWidgets[uniqueIdx];
 		remove(*widget);
 
 		// TODO - Hook up drag and drop texture
@@ -182,7 +177,7 @@ namespace BansheeEditor
 			onWidgetClosed();
 	}
 
-	void EditorWidgetContainer::tabDraggedOn(CM::UINT32 idx)
+	void EditorWidgetContainer::tabDraggedOn(CM::UINT32 seqIdx)
 	{
 #if CM_DEBUG_MODE
 		if(!DragAndDropManager::instance().isDragInProgress())
@@ -194,9 +189,8 @@ namespace BansheeEditor
 
 		EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
 
-		insert(idx, *draggedWidget);
-		setActiveWidget(idx);
-		mTitleBar->setActive(idx);
+		insert(seqIdx, *draggedWidget);
+		setActiveWidget(mTitleBar->getTabIdx(seqIdx));
 	}
 
 	void EditorWidgetContainer::tabDroppedCallback(bool wasDragProcessed)
@@ -225,7 +219,7 @@ namespace BansheeEditor
 	{
 		for(auto& curWidget : mWidgets)
 		{
-			if(curWidget == widget)
+			if(curWidget.second == widget)
 			{
 				remove(*widget);
 

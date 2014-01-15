@@ -32,7 +32,7 @@ namespace BansheeEditor
 		BS::GUIWidget* mParent;
 		CM::INT32 mX, mY;
 		CM::UINT32 mWidth, mHeight;
-		CM::Vector<EditorWidget*>::type mWidgets;
+		CM::UnorderedMap<CM::UINT32, EditorWidget*>::type mWidgets;
 		CM::INT32 mActiveWidget;
 
 		static const CM::UINT32 TitleBarHeight;

@@ -22,9 +22,11 @@ namespace BansheeEditor
 			BS::GUIElementStyle* minBtnStyle = nullptr, BS::GUIElementStyle* closeBtnStyle = nullptr);
 
 		void addTab(const CM::HString& name);
-		void insertTab(CM::UINT32 idx, const CM::HString& name);
-		void removeTab(CM::UINT32 idx);
-		void setActive(CM::UINT32 idx);
+		CM::UINT32 insertTab(CM::UINT32 position, const CM::HString& name);
+		void removeTab(CM::UINT32 uniqueIdx);
+		void setActive(CM::UINT32 uniqueIdx);
+		CM::UINT32 getTabIdx(CM::UINT32 position) const;
+		CM::UINT32 getNumTabs() const { return (CM::UINT32)mTabButtons.size(); }
 
 		boost::signal<void(CM::UINT32)> onTabActivated;
 		boost::signal<void(CM::UINT32)> onTabClosed;

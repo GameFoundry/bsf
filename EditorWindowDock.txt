@@ -1,5 +1,5 @@
 TODO:
- - Dragging on new tabs doesn't seem to properly activate them
+ - Closing a widget causes problems
  - (Unrelated) Can't click and drag a scroll handle
 
 Resize sliders

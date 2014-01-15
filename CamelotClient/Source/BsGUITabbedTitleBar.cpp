@@ -86,27 +86,30 @@ namespace BansheeEditor
 		insertTab((UINT32)mTabButtons.size(), name);
 	}
 
-	void GUITabbedTitleBar::insertTab(UINT32 idx, const CM::HString& name)
+	UINT32 GUITabbedTitleBar::insertTab(UINT32 position, const CM::HString& name)
 	{
 		GUITabButton* newTabToggle = GUITabButton::create(*mParent, mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
 		_registerChildElement(newTabToggle);
 
-		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size());
+		position = Math::clamp(position, 0U, (UINT32)mTabButtons.size());
 
-		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, mUniqueTabIdx, _1));
+		UINT32 uniqueIdx = mUniqueTabIdx++;
+
+		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, uniqueIdx, _1));
 		newTabToggle->onDragged.connect(boost::bind(&GUITabbedTitleBar::tabDragged, this, _1, _2));
 		newTabToggle->onDragEnd.connect(boost::bind(&GUITabbedTitleBar::tabDragEnd, this, _1, _2));
 
-		mTabButtons.insert(mTabButtons.begin() + idx, newTabToggle);
+		mTabButtons.insert(mTabButtons.begin() + position, newTabToggle);
 
-		mUniqueTabIdx++;
+		return uniqueIdx;
 	}
 
-	void GUITabbedTitleBar::removeTab(UINT32 idx)
+	void GUITabbedTitleBar::removeTab(UINT32 uniqueIdx)
 	{
 		if(mTabButtons.size() == 0)
 			return;
 
+		UINT32 idx = uniqueIdxToSeqIdx(uniqueIdx);
 		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size() - 1);
 
 		GUIElement::destroy(mTabButtons[idx]);
@@ -114,9 +117,14 @@ namespace BansheeEditor
 		mTabButtons.erase(mTabButtons.begin() + idx);
 	}
 
-	void GUITabbedTitleBar::setActive(UINT32 idx)
+	void GUITabbedTitleBar::setActive(UINT32 uniqueIdx)
 	{
-		mTabButtons[idx]->toggleOn();
+		mTabButtons[uniqueIdxToSeqIdx(uniqueIdx)]->toggleOn();
+	}
+
+	CM::UINT32 GUITabbedTitleBar::getTabIdx(CM::UINT32 position) const
+	{
+		return mTabButtons[position]->getIndex();
 	}
 
 	bool GUITabbedTitleBar::mouseEvent(const GUIMouseEvent& event)
@@ -199,13 +207,13 @@ namespace BansheeEditor
 
 			if(mTempDraggedWidget != nullptr)
 			{
-				UINT32 tabSeqIdx = uniqueIdxToSeqIdx(mTempDraggedTabIdx);
-				removeTab(tabSeqIdx);
+				UINT32 seqIdx = uniqueIdxToSeqIdx(mTempDraggedTabIdx);
+				removeTab(mTempDraggedTabIdx);
 
 				endDrag();
 
 				if(!onTabDraggedOn.empty())
-					onTabDraggedOn(tabSeqIdx);
+					onTabDraggedOn(seqIdx);
 			}
 
 			return true;
@@ -214,7 +222,7 @@ namespace BansheeEditor
 		{
 			if(mTempDraggedWidget != nullptr)
 			{
-				removeTab(uniqueIdxToSeqIdx(mTempDraggedTabIdx));
+				removeTab(mTempDraggedTabIdx);
 
 				endDrag();
 			}
@@ -330,29 +338,21 @@ namespace BansheeEditor
 		if(!toggledOn)
 			return;
 
-		INT32 idx = uniqueIdxToSeqIdx(tabIdx);
-		if(idx != -1)
-		{
-			if(!onTabActivated.empty())
-				onTabActivated(idx);
-		}
+		if(!onTabActivated.empty())
+			onTabActivated(tabIdx);
 
 		mActiveTabIdx = tabIdx;
 	}
 
 	void GUITabbedTitleBar::tabClosed()
 	{
-		INT32 idx = uniqueIdxToSeqIdx(mActiveTabIdx);
-		if(idx != -1)
-		{
-			removeTab(idx);
+		removeTab(mActiveTabIdx);
 
-			if(mTabButtons.size() > 0)
-				mActiveTabIdx = mTabButtons[0]->getIndex();
+		if(!onTabClosed.empty())
+			onTabClosed(mActiveTabIdx);
 
-			if(!onTabClosed.empty())
-				onTabClosed(idx);
-		}
+		if(mTabButtons.size() > 0)
+			mActiveTabIdx = mTabButtons[0]->getIndex();
 	}
 
 	void GUITabbedTitleBar::startDrag(CM::UINT32 seqIdx, const Vector2I& startDragPos)
@@ -432,7 +432,7 @@ namespace BansheeEditor
 				markContentAsDirty();
 
 				if(!onTabDraggedOff.empty())
-					onTabDraggedOff(idx);
+					onTabDraggedOff(tabIdx);
 			}
 		}
 	}
