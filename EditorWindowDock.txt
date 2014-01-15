@@ -1,6 +1,5 @@
 TODO:
- - When dragging a tab and then releasing the drag over another tab, that tab becomes active
- - Clip tabs so that they don't overlap min/close buttons
+ - Dragging on new tabs doesn't seem to properly activate them
  - (Unrelated) Can't click and drag a scroll handle
 
 Resize sliders

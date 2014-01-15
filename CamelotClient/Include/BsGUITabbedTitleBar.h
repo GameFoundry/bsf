@@ -70,6 +70,9 @@ namespace BansheeEditor
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 
+		void startDrag(CM::UINT32 seqIdx, const CM::Vector2I& startDragPos);
+		void endDrag();
+
 		void tabToggled(CM::UINT32 tabIdx, bool toggledOn);
 		void tabClosed();
 		void tabDragged(CM::UINT32 tabIdx, const CM::Vector2I& dragPos);
