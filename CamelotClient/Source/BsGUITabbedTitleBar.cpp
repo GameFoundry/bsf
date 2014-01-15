@@ -240,8 +240,15 @@ namespace BansheeEditor
 	void GUITabbedTitleBar::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
-		CM::Vector<CM::RectI>::type nonClientAreas;
+		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
+		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
 
+		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
+
+		RectI tabClipRect = clipRect;
+		tabClipRect.width -= endButtonWidth;
+
+		CM::Vector<CM::RectI>::type nonClientAreas;
 		{
 			Vector2I optimalSize = mBackgroundImage->_getOptimalSize();
 			Vector2I offset(x + 1, y + 1);
@@ -251,7 +258,7 @@ namespace BansheeEditor
 			mBackgroundImage->_setAreaDepth(areaDepth + 2);
 			mBackgroundImage->_setWidgetDepth(widgetDepth);
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			RectI elemClipRect(tabClipRect.x - offset.x, tabClipRect.y - offset.y, tabClipRect.width, tabClipRect.height);
 			mBackgroundImage->_setClipRect(elemClipRect);
 		}
 
@@ -284,16 +291,12 @@ namespace BansheeEditor
 			btn->_setAreaDepth(areaDepth + 1);
 			btn->_setWidgetDepth(widgetDepth);
 
-			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			RectI elemClipRect(tabClipRect.x - offset.x, tabClipRect.y - offset.y, tabClipRect.width, tabClipRect.height);
 			btn->_setClipRect(elemClipRect);
 
 			curX += optimalSize.x;
 		}
 
-		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
-		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
-
-		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
 		UINT32 remainingWidth = (UINT32)std::max(0, (INT32)(width - curX - endButtonWidth - 1));
 		nonClientAreas.push_back(RectI(curX, curY, remainingWidth, tabBtnHeight));
 
