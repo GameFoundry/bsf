@@ -184,7 +184,7 @@ namespace BansheeEditor
 				mDraggedBtn = mTabButtons[uniqueIdxToSeqIdx(mTempDraggedTabIdx)];
 				mDraggedBtn->_setDraggedState(true);
 
-				mInitialDragOffset = Math::roundToInt(mDraggedBtn->_getWidth() * 0.5f);
+				mInitialDragOffset = Math::roundToInt(mDraggedBtn->_getOptimalSize().x * 0.5f);
 				mDragInProgress = true;
 			}
 

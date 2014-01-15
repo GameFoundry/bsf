@@ -1,7 +1,6 @@
 TODO:
  - When dragging a tab and then releasing the drag over another tab, that tab becomes active
  - When dragging a temp tab I drag it from its left side while it would be better to drag it from center
- - Vector subscript out of range issue I'm not sure how to reproduce
  - Clip tabs so that they don't overlap min/close buttons
  - (Unrelated) Can't click and drag a scroll handle
 
