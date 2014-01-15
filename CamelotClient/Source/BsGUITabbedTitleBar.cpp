@@ -106,11 +106,11 @@ namespace BansheeEditor
 
 	void GUITabbedTitleBar::removeTab(UINT32 uniqueIdx)
 	{
-		if(mTabButtons.size() == 0)
+		INT32 idx = uniqueIdxToSeqIdx(uniqueIdx);
+		if(idx == -1)
 			return;
 
-		UINT32 idx = uniqueIdxToSeqIdx(uniqueIdx);
-		idx = Math::clamp(idx, 0U, (UINT32)mTabButtons.size() - 1);
+		idx = (INT32)Math::clamp((UINT32)idx, 0U, (UINT32)mTabButtons.size() - 1);
 
 		GUIElement::destroy(mTabButtons[idx]);
 
