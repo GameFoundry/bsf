@@ -1,14 +1,8 @@
 TODO:
- - Closing a widget causes problems
+ - Add proper slider style and possibly set a different one depending if its vertical or horizontal
+   - I might need to add EditorGUI (similar to EngineGUI)
+ - Test out minimum dock container size and maybe increase it a bit
  - (Unrelated) Can't click and drag a scroll handle
-
-Resize sliders
- - Add a button between docked windows
- - Allow the button to be dragged, and it will automatically resize separating widgets
-
-TitleBar dock/undock 
- - Moving the dragged window over a title bar will temporarily dock the title bar and allow you to move it (as in first step)
-   - If you release the mouse the window will then be permanently docked at that location
 
 Polish TOOD:
  - Change cursor icon when window is dragged

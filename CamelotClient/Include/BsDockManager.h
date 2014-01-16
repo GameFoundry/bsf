@@ -13,6 +13,7 @@ namespace BansheeEditor
 
 	class DockManager : public BS::GUIElementContainer
 	{
+	public:
 		class DockContainer
 		{
 		public:
@@ -45,14 +46,19 @@ namespace BansheeEditor
 			DockContainer* mChildren[2];
 			DockContainer* mParent;
 			EditorWidgetContainer* mWidgets;
+			GUIDockSlider* mSlider;
 			CM::RectI mArea;
-			float mSplitPosition;
+			CM::UINT32 mFirstChildSize;
 			bool mIsHorizontal;
 
-			static const CM::UINT32 SliderSize;
+			static const CM::UINT32 SLIDER_SIZE;
+			static const CM::UINT32 MIN_CHILD_SIZE;
 
 		private:
 			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget, bool horizontal, bool newChildIsFirst);
+			void updateChildAreas();
+
+			void sliderDragged(const CM::Vector2I& delta);
 			void widgetRemoved();
 		};
 

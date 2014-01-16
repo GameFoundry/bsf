@@ -15,29 +15,37 @@
 #include "BsGUIWidget.h"
 #include "BsCamera.h"
 #include "BsDragAndDropManager.h"
+#include "BsGUIDockSlider.h"
 #include "CmVertexDataDesc.h"
 #include "BsGUISkin.h"
+#include "BsEngineGUI.h"
+
+#include "BsGUISkin.h"
+#include "BsEngineGUI.h"
+#include "BsGUIButton.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	const CM::UINT32 DockManager::DockContainer::SliderSize = 4;
+	const CM::UINT32 DockManager::DockContainer::SLIDER_SIZE = 4;
+	const CM::UINT32 DockManager::DockContainer::MIN_CHILD_SIZE = 20;
+
 	const CM::Color DockManager::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
 	const CM::Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockManager::DockContainer::DockContainer()
-		:mIsLeaf(false), mWidgets(nullptr), mSplitPosition(0.5f),
-		mIsHorizontal(false), mParent(nullptr)
+		:mIsLeaf(false), mWidgets(nullptr), mFirstChildSize(0),
+		mIsHorizontal(false), mParent(nullptr), mSlider(nullptr)
 	{
 		mChildren[0] = nullptr;
 		mChildren[1] = nullptr;
 	}
 
 	DockManager::DockContainer::DockContainer(DockContainer* parent)
-		:mIsLeaf(false), mWidgets(nullptr), mSplitPosition(0.5f),
-		mIsHorizontal(false), mParent(parent)
+		:mIsLeaf(false), mWidgets(nullptr), mFirstChildSize(0),
+		mIsHorizontal(false), mParent(parent), mSlider(nullptr)
 	{
 		mChildren[0] = nullptr;
 		mChildren[1] = nullptr;
@@ -57,16 +65,15 @@ namespace BansheeEditor
 				cm_delete(mChildren[1]);
 		}
 
-		// TODO - Clean up slider
+		if(mSlider != nullptr)
+		{
+			GUIElement::destroy(mSlider);
+			mSlider = nullptr;
+		}
 	}
 
 	void DockManager::DockContainer::setArea(CM::INT32 x, CM::INT32 y, UINT32 width, UINT32 height)
 	{
-		mArea.x = x;
-		mArea.y = y;
-		mArea.width = width;
-		mArea.height = height;
-
 		if(mIsLeaf)
 		{
 			if(mWidgets != nullptr)
@@ -79,25 +86,57 @@ namespace BansheeEditor
 		{
 			if(mIsHorizontal)
 			{
-				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SliderSize);
-				UINT32 sizeTop = Math::floorToInt(remainingSize * mSplitPosition);
-				UINT32 sizeBottom = remainingSize - sizeTop;
+				UINT32 currentRemainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
+				float splitPosition = (float)mFirstChildSize / (float)currentRemainingSize;
 
-				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, sizeTop);
-				mChildren[1]->setArea(mArea.x, mArea.y + sizeTop + SliderSize, mArea.width, sizeBottom);
-
-				// TODO - Set slider position
+				UINT32 remainingSize = (UINT32)std::max(0, (INT32)height - (INT32)SLIDER_SIZE);
+				mFirstChildSize = Math::floorToInt(remainingSize * splitPosition);
 			}
 			else
 			{
-				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SliderSize);
-				UINT32 sizeLeft = Math::floorToInt(remainingSize * mSplitPosition);
-				UINT32 sizeRight = remainingSize - sizeLeft;
+				UINT32 currentRemainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);
+				float splitPosition = mFirstChildSize / (float)currentRemainingSize;
 
-				mChildren[0]->setArea(mArea.x, mArea.y, sizeLeft, mArea.height);
-				mChildren[1]->setArea(mArea.x + sizeLeft + SliderSize, mArea.y, sizeRight, mArea.height);
+				UINT32 remainingSize = (UINT32)std::max(0, (INT32)width - (INT32)SLIDER_SIZE);
+				mFirstChildSize = Math::floorToInt(remainingSize * splitPosition);
+			}
+		}
 
-				// TODO - Set slider position
+		mArea.x = x;
+		mArea.y = y;
+		mArea.width = width;
+		mArea.height = height;
+
+		updateChildAreas();
+	}
+
+	void DockManager::DockContainer::updateChildAreas()
+	{
+		if(!mIsLeaf && mChildren[0] != nullptr && mChildren[1] != nullptr)
+		{
+			if(mIsHorizontal)
+			{
+				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
+				UINT32 sizeBottom = remainingSize - mFirstChildSize;
+
+				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, mFirstChildSize);
+				mChildren[1]->setArea(mArea.x, mArea.y + mFirstChildSize + SLIDER_SIZE, mArea.width, sizeBottom);
+
+				mSlider->_setOffset(Vector2I(mArea.x, mArea.y + mFirstChildSize));
+				mSlider->_setWidth(mArea.width);
+				mSlider->_setHeight(SLIDER_SIZE);
+			}
+			else
+			{
+				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);
+				UINT32 sizeRight = remainingSize - mFirstChildSize;
+
+				mChildren[0]->setArea(mArea.x, mArea.y, mFirstChildSize, mArea.height);
+				mChildren[1]->setArea(mArea.x + mFirstChildSize + SLIDER_SIZE, mArea.y, sizeRight, mArea.height);
+
+				mSlider->_setOffset(Vector2I(mArea.x + mFirstChildSize, mArea.y));
+				mSlider->_setWidth(SLIDER_SIZE);
+				mSlider->_setHeight(mArea.height);
 			}
 		}
 	}
@@ -108,6 +147,12 @@ namespace BansheeEditor
 		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow);
 
 		mWidgets->onWidgetClosed.connect(boost::bind(&DockManager::DockContainer::widgetRemoved, this));
+
+		if(mSlider != nullptr)
+		{
+			GUIElement::destroy(mSlider);
+			mSlider = nullptr;
+		}
 
 		mWidgets->add(*widget);
 		mWidgets->setPosition(mArea.x, mArea.y);
@@ -120,6 +165,12 @@ namespace BansheeEditor
 		mWidgets = existingContainer;
 
 		mWidgets->onWidgetClosed.connect(boost::bind(&DockManager::DockContainer::widgetRemoved, this));
+
+		if(mSlider != nullptr)
+		{
+			GUIElement::destroy(mSlider);
+			mSlider = nullptr;
+		}
 
 		mWidgets->setPosition(mArea.x, mArea.y);
 		mWidgets->setSize(mArea.width, mArea.height);
@@ -160,12 +211,46 @@ namespace BansheeEditor
 
 		mIsLeaf = false;
 		mIsHorizontal = horizontal;
-		mSplitPosition = 0.5f;
 		mWidgets = nullptr;
 
-		// TODO - Add slider
+		if(horizontal)
+		{
+			mSlider = GUIDockSlider::create(*widgetParent, true, EngineGUI::instance().getSkin().getStyle(GUIButton::getGUITypeName()));
+			mSlider->_setWidgetDepth(widgetParent->getDepth());
+
+			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
+			mFirstChildSize = Math::floorToInt(remainingSize * 0.5f);
+		}
+		else
+		{
+			mSlider = GUIDockSlider::create(*widgetParent, false, EngineGUI::instance().getSkin().getStyle(GUIButton::getGUITypeName()));
+			mSlider->_setWidgetDepth(widgetParent->getDepth());
+
+			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);
+			mFirstChildSize = Math::floorToInt(remainingSize * 0.5f);
+		}
+
+		mSlider->onDragged.connect(boost::bind(&DockManager::DockContainer::sliderDragged, this, _1));
 
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
+	}
+
+	void DockManager::DockContainer::sliderDragged(const CM::Vector2I& delta)
+	{
+		if(mIsHorizontal && delta.y != 0)
+		{
+			UINT32 maxSize = (UINT32)std::max(MIN_CHILD_SIZE, (INT32)mArea.height - (INT32)SLIDER_SIZE - MIN_CHILD_SIZE);
+			mFirstChildSize = Math::clamp(mFirstChildSize + delta.y, MIN_CHILD_SIZE, maxSize);
+
+			updateChildAreas();
+		}
+		else if(!mIsHorizontal && delta.x != 0)
+		{
+			UINT32 maxSize = (UINT32)std::max(MIN_CHILD_SIZE, (INT32)mArea.width - (INT32)SLIDER_SIZE - MIN_CHILD_SIZE);
+			mFirstChildSize = Math::clamp(mFirstChildSize + delta.x, MIN_CHILD_SIZE, maxSize);
+
+			updateChildAreas();
+		}
 	}
 
 	void DockManager::DockContainer::widgetRemoved()
@@ -180,7 +265,7 @@ namespace BansheeEditor
 				mWidgets = nullptr;
 
 				mIsLeaf = false;
-				mSplitPosition = 0.5f;
+				mFirstChildSize = 0;
 				mIsHorizontal = false;
 			}
 			else

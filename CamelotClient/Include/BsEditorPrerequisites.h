@@ -18,6 +18,7 @@ namespace BansheeEditor
 	class MainEditorWindow;
 	class WindowFrameWidget;
 	class GUIMenuBar;
+	class GUIDockSlider;
 
 	enum class DragAndDropType
 	{

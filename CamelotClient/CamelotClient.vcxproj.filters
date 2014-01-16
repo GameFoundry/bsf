@@ -87,6 +87,9 @@
     <ClInclude Include="Include\BsEditorApplication.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUIDockSlider.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -147,6 +150,9 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsEditorApplication.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUIDockSlider.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>
