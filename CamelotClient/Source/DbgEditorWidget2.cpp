@@ -6,7 +6,8 @@
 #include "BsGUILayout.h"
 #include "BsEditorWindow.h"
 #include "BsEditorWidgetContainer.h"
-#include "BsEngineGUI.h"
+#include "BsGUIWidget.h"
+#include "BsGUISkin.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -37,11 +38,11 @@ namespace BansheeEditor
 
 		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup();
 
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test A"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test B"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test C"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test D"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test E"), toggleGroup, EngineGUI::instance().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test A"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test B"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test C"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test D"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
+		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test E"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
 	}
 
 	DbgEditorWidget2* DbgEditorWidget2::instance()

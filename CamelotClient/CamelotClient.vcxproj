@@ -257,6 +257,7 @@
   <ItemGroup>
     <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsEditorApplication.h" />
+    <ClInclude Include="Include\BsEditorGUI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
     <ClInclude Include="Include\BsEditorWidget.h" />
     <ClInclude Include="Include\BsEditorWidgetContainer.h" />
@@ -281,6 +282,7 @@
   <ItemGroup>
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />
+    <ClCompile Include="Source\BsEditorGUI.cpp" />
     <ClCompile Include="Source\BsEditorWidget.cpp" />
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp" />
     <ClCompile Include="Source\BsEditorWindow.cpp" />

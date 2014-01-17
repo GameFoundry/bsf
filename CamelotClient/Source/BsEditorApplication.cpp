@@ -4,6 +4,7 @@
 #include "BsApplication.h"
 #include "CmApplication.h"
 #include "CmRenderWindow.h"
+#include "BsEditorGUI.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -37,6 +38,7 @@ namespace BansheeEditor
 
 		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
 		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer", "D:\\CamelotResourceMetas"); // TODO - Make renderer and resource cache dir customizable
+		EditorGUI::startUp(cm_new<EditorGUI>());
 		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
 		/************************************************************************/
@@ -260,6 +262,7 @@ namespace BansheeEditor
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
 
+		EditorGUI::shutDown();
 		gBansheeApp().shutDown();
 
 	}

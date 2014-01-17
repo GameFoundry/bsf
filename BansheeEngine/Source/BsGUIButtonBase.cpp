@@ -24,7 +24,8 @@ namespace BansheeEngine
 			mContentImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
 		mActiveTexture = mStyle->normal.texture;
-		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded() &&
+			mActiveTexture->getTexture() != nullptr && mActiveTexture->getTexture().isLoaded())
 		{
 			mImageDesc.width = mActiveTexture->getTexture()->getWidth();
 			mImageDesc.height = mActiveTexture->getTexture()->getHeight();

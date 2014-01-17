@@ -6,7 +6,7 @@
 #include "BsEditorWindowManager.h"
 #include "BsCamera.h"
 #include "BsGUIWindowFrameWidget.h"
-#include "BsEngineGUI.h"
+#include "BsEditorGUI.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -75,9 +75,9 @@ namespace BansheeEditor
 		mGUI = mSceneObject->addComponent<GUIWidget>(mCamera->getViewport().get());
 		mGUI->setDepth(128);
 
-		mGUI->setSkin(EngineGUI::instance().getSkin());
+		mGUI->setSkin(EditorGUI::instance().getSkin());
 
-		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), EngineGUI::instance().getSkin());
+		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), EditorGUI::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
 		mResizedConn = mCamera->getViewport()->onResized.connect(boost::bind(&EditorWindowBase::resized, this));

@@ -1,25 +1,44 @@
 #pragma once
 
-#include "BsPrerequisites.h"
+#include "BsEditorPrerequisites.h"
 #include "BsGUISkin.h"
 #include "CmModule.h"
 
-namespace BansheeEngine
+namespace BansheeEditor
 {
-	class BS_EXPORT EngineGUI : public CamelotFramework::Module<EngineGUI>
+	class EditorGUI : public CamelotFramework::Module<EditorGUI>
 	{
 	public:
-		EngineGUI();
+		EditorGUI();
 
-		const GUISkin& getSkin() const { return mSkin; }
+		const BS::GUISkin& getSkin() const { return mSkin; }
 
 	private:
-		GUISkin mSkin;
+		BS::GUISkin mSkin;
 
 		static const CM::String DefaultFolder;
 
 		static const CM::String DefaultFontPath;
 		static const CM::UINT32 DefaultFontSize;
+
+		static const CM::String WindowBackgroundTexture;
+
+		static const CM::String WindowFrameNormal;
+		static const CM::String WindowFrameFocused;
+
+		static const CM::String WindowTitleBarBg;
+
+		static const CM::String WindowCloseButtonNormal;
+		static const CM::String WindowCloseButtonHover;
+
+		static const CM::String WindowMinButtonNormal;
+		static const CM::String WindowMinButtonHover;
+
+		static const CM::String WindowMaxButtonNormal;
+		static const CM::String WindowMaxButtonHover;
+
+		static const CM::String TabbedBarBtnNormal;
+		static const CM::String TabbedBarBtnActive;
 
 		static const CM::String ButtonNormalTex;
 		static const CM::String ButtonHoverTex;
@@ -75,6 +94,15 @@ namespace BansheeEngine
 		static const CM::String DropDownBoxBtnUpArrowTex;
 		static const CM::String DropDownBoxBtnDownArrowTex;
 
-		static HSpriteTexture getTexture(const CM::String& name);
+		static const CM::String MenuBarBgTex;
+
+		static const CM::String MenuBarBtnNormalTex;
+		static const CM::String MenuBarBtnHoverTex;
+
+		static const CM::String MenuBarBansheeLogoTex;
+
+		static const CM::String DockSliderNormalTex;
+
+		static BS::HSpriteTexture getTexture(const CM::String& name);
 	};
 }

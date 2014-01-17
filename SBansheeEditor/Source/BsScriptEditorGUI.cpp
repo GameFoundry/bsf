@@ -6,7 +6,7 @@
 #include "BsGUIWidget.h"
 #include "BsCamera.h"
 #include "CmSceneObject.h"
-#include "BsEngineGUI.h"
+#include "BsEditorGUI.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -38,7 +38,7 @@ namespace BansheeEditor
 
 		HSceneObject sceneObj = nativeParentWindow->getSceneObject();
 		HGUIWidget widget = sceneObj->addComponent<GUIWidget>(nativeParentWindow->getCamera()->getViewport().get());
-		widget->setSkin(EngineGUI::instance().getSkin());
+		widget->setSkin(EditorGUI::instance().getSkin());
 		widget->setDepth(128);
 
 		ScriptEditorGUI* nativeInstance = new (cm_alloc<ScriptEditorGUI>()) ScriptEditorGUI(*widget.get(), nativeParentWindow);

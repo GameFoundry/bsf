@@ -1,4 +1,4 @@
-#include "BsEngineGUI.h"
+#include "BsEditorGUI.h"
 #include "BsGUIElementStyle.h"
 
 #include "BsGUILabel.h"
@@ -14,72 +14,101 @@
 #include "CmFileSystem.h"
 
 using namespace CamelotFramework;
+using namespace BansheeEngine;
 
-namespace BansheeEngine
+namespace BansheeEditor
 {
-	const String EngineGUI::DefaultFontPath = "arial.ttf";
-	const UINT32 EngineGUI::DefaultFontSize = 10;
+	const String EditorGUI::DefaultFontPath = "arial.ttf";
+	const UINT32 EditorGUI::DefaultFontSize = 10;
 
-	const String EngineGUI::DefaultFolder = "..\\..\\..\\..\\Data\\Engine\\Skin\\";
+	const String EditorGUI::DefaultFolder = "..\\..\\..\\..\\Data\\Editor\\Skin\\";
 
-	const String EngineGUI::ButtonNormalTex = "ButtonNormal.psd";
-	const String EngineGUI::ButtonHoverTex = "ButtonHover.psd";
+	const String EditorGUI::WindowBackgroundTexture = "WindowBgTile.psd";
 
-	const String EngineGUI::InputBoxNormalTex = "InputBoxNormal.psd";
-	const String EngineGUI::InputBoxHoverTex = "InputBoxHover.psd";
-	const String EngineGUI::InputBoxFocusedTex = "InputBoxFocused.psd";
+	const String EditorGUI::ButtonNormalTex = "ButtonNormal.psd";
+	const String EditorGUI::ButtonHoverTex = "ButtonHover.psd";
 
-	const String EngineGUI::ScrollBarUpNormalTex = "ScrollBarUpNormal.psd";
-	const String EngineGUI::ScrollBarUpHoverTex = "ScrollBarUpHover.psd";
-	const String EngineGUI::ScrollBarUpActiveTex = "ScrollBarUpActive.psd";
+	const String EditorGUI::WindowFrameNormal = "WindowFrameNormal.psd";
+	const String EditorGUI::WindowFrameFocused = "WindowFrameFocused.psd";
 
-	const String EngineGUI::ScrollBarDownNormalTex = "ScrollBarDownNormal.psd";
-	const String EngineGUI::ScrollBarDownHoverTex = "ScrollBarDownHover.psd";
-	const String EngineGUI::ScrollBarDownActiveTex = "ScrollBarDownActive.psd";
+	const String EditorGUI::WindowTitleBarBg = "WindowTitleBarBg.psd";
 
-	const String EngineGUI::ScrollBarLeftNormalTex = "ScrollBarLeftNormal.psd";
-	const String EngineGUI::ScrollBarLeftHoverTex = "ScrollBarLeftHover.psd";
-	const String EngineGUI::ScrollBarLeftActiveTex = "ScrollBarLeftActive.psd";
+	const String EditorGUI::WindowCloseButtonNormal = "WindowCloseBtnNormal.psd";
+	const String EditorGUI::WindowCloseButtonHover = "WindowCloseBtnHover.psd";
 
-	const String EngineGUI::ScrollBarRightNormalTex = "ScrollBarRightNormal.psd";
-	const String EngineGUI::ScrollBarRightHoverTex = "ScrollBarRightHover.psd";
-	const String EngineGUI::ScrollBarRightActiveTex = "ScrollBarRightActive.psd";
+	const String EditorGUI::WindowMinButtonNormal = "WindowMaxBtnNormal.psd";
+	const String EditorGUI::WindowMinButtonHover = "WindowMaxBtnHover.psd";
 
-	const String EngineGUI::ScrollBarHandleHorzNormalTex = "ScrollBarHorzHandleNormal.psd";
-	const String EngineGUI::ScrollBarHandleHorzHoverTex = "ScrollBarHorzHandleHover.psd";
-	const String EngineGUI::ScrollBarHandleHorzActiveTex = "ScrollBarHorzHandleActive.psd";
+	const String EditorGUI::WindowMaxButtonNormal = "WindowMinBtnNormal.psd";
+	const String EditorGUI::WindowMaxButtonHover = "WindowMinBtnHover.psd";
 
-	const String EngineGUI::ScrollBarHandleVertNormalTex = "ScrollBarVertHandleNormal.psd";
-	const String EngineGUI::ScrollBarHandleVertHoverTex = "ScrollBarVertHandleHover.psd";
-	const String EngineGUI::ScrollBarHandleVertActiveTex = "ScrollBarVertHandleActive.psd";
+	const String EditorGUI::TabbedBarBtnNormal = "TabbedButtonNormal.psd";
+	const String EditorGUI::TabbedBarBtnActive = "TabbedButtonActive.psd";
 
-	const String EngineGUI::DropDownBtnNormalTex = "DropDownNormal.psd";
-	const String EngineGUI::DropDownBtnHoverTex = "DropDownHover.psd";
+	const String EditorGUI::InputBoxNormalTex = "InputBoxNormal.psd";
+	const String EditorGUI::InputBoxHoverTex = "InputBoxHover.psd";
+	const String EditorGUI::InputBoxFocusedTex = "InputBoxFocused.psd";
 
-	const String EngineGUI::DropDownBoxBgTex = "DropDownBoxBg.psd";
-	const String EngineGUI::DropDownBoxEntryNormalTex = "DropDownButtonNormal.psd";
-	const String EngineGUI::DropDownBoxEntryHoverTex = "DropDownButtonHover.psd";
+	const String EditorGUI::ScrollBarUpNormalTex = "ScrollBarUpNormal.psd";
+	const String EditorGUI::ScrollBarUpHoverTex = "ScrollBarUpHover.psd";
+	const String EditorGUI::ScrollBarUpActiveTex = "ScrollBarUpActive.psd";
 
-	const String EngineGUI::DropDownBoxBtnUpNormalTex = "DropDownBoxBtnUpNormal.psd";
-	const String EngineGUI::DropDownBoxBtnUpHoverTex = "DropDownBoxBtnUpHover.psd";
+	const String EditorGUI::ScrollBarDownNormalTex = "ScrollBarDownNormal.psd";
+	const String EditorGUI::ScrollBarDownHoverTex = "ScrollBarDownHover.psd";
+	const String EditorGUI::ScrollBarDownActiveTex = "ScrollBarDownActive.psd";
 
-	const String EngineGUI::DropDownBoxBtnDownNormalTex = "DropDownBoxBtnDownNormal.psd";
-	const String EngineGUI::DropDownBoxBtnDownHoverTex = "DropDownBoxBtnDownHover.psd";
+	const String EditorGUI::ScrollBarLeftNormalTex = "ScrollBarLeftNormal.psd";
+	const String EditorGUI::ScrollBarLeftHoverTex = "ScrollBarLeftHover.psd";
+	const String EditorGUI::ScrollBarLeftActiveTex = "ScrollBarLeftActive.psd";
 
-	const String EngineGUI::DropDownBoxEntryExpNormalTex = "DropDownExpNormal.psd";
-	const String EngineGUI::DropDownBoxEntryExpHoverTex = "DropDownExpHover.psd";
+	const String EditorGUI::ScrollBarRightNormalTex = "ScrollBarRightNormal.psd";
+	const String EditorGUI::ScrollBarRightHoverTex = "ScrollBarRightHover.psd";
+	const String EditorGUI::ScrollBarRightActiveTex = "ScrollBarRightActive.psd";
 
-	const String EngineGUI::DropDownSeparatorTex = "DropDownSeparator.psd";
+	const String EditorGUI::ScrollBarHandleHorzNormalTex = "ScrollBarHorzHandleNormal.psd";
+	const String EditorGUI::ScrollBarHandleHorzHoverTex = "ScrollBarHorzHandleHover.psd";
+	const String EditorGUI::ScrollBarHandleHorzActiveTex = "ScrollBarHorzHandleActive.psd";
 
-	const String EngineGUI::DropDownBoxBtnUpArrowTex = "DropDownBoxBtnUpArrow.psd";
-	const String EngineGUI::DropDownBoxBtnDownArrowTex = "DropDownBoxBtnDownArrow.psd";
+	const String EditorGUI::ScrollBarHandleVertNormalTex = "ScrollBarVertHandleNormal.psd";
+	const String EditorGUI::ScrollBarHandleVertHoverTex = "ScrollBarVertHandleHover.psd";
+	const String EditorGUI::ScrollBarHandleVertActiveTex = "ScrollBarVertHandleActive.psd";
 
-	const String EngineGUI::ScrollBarBgTex = "ScrollBarBg.psd";
+	const String EditorGUI::DropDownBtnNormalTex = "DropDownNormal.psd";
+	const String EditorGUI::DropDownBtnHoverTex = "DropDownHover.psd";
 
-	EngineGUI::EngineGUI()
+	const String EditorGUI::DropDownBoxBgTex = "DropDownBoxBg.psd";
+	const String EditorGUI::DropDownBoxEntryNormalTex = "DropDownButtonNormal.psd";
+	const String EditorGUI::DropDownBoxEntryHoverTex = "DropDownButtonHover.psd";
+
+	const String EditorGUI::DropDownBoxBtnUpNormalTex = "DropDownBoxBtnUpNormal.psd";
+	const String EditorGUI::DropDownBoxBtnUpHoverTex = "DropDownBoxBtnUpHover.psd";
+
+	const String EditorGUI::DropDownBoxBtnDownNormalTex = "DropDownBoxBtnDownNormal.psd";
+	const String EditorGUI::DropDownBoxBtnDownHoverTex = "DropDownBoxBtnDownHover.psd";
+
+	const String EditorGUI::DropDownBoxEntryExpNormalTex = "DropDownExpNormal.psd";
+	const String EditorGUI::DropDownBoxEntryExpHoverTex = "DropDownExpHover.psd";
+
+	const String EditorGUI::DropDownSeparatorTex = "DropDownSeparator.psd";
+
+	const String EditorGUI::DropDownBoxBtnUpArrowTex = "DropDownBoxBtnUpArrow.psd";
+	const String EditorGUI::DropDownBoxBtnDownArrowTex = "DropDownBoxBtnDownArrow.psd";
+
+	const String EditorGUI::ScrollBarBgTex = "ScrollBarBg.psd";
+
+	const String EditorGUI::MenuBarBgTex = "MenuBarBg.psd";
+
+	const String EditorGUI::MenuBarBtnNormalTex = "MenuBarButtonNormal.psd";
+	const String EditorGUI::MenuBarBtnHoverTex = "MenuBarButtonHover.psd";
+
+	const String EditorGUI::MenuBarBansheeLogoTex = "MenuBarBansheeLogo.psd";
+
+	const String EditorGUI::DockSliderNormalTex = "DockSliderBtn.psd";
+
+	EditorGUI::EditorGUI()
 	{
 		// TODO - Normally I want to load this from some file
-		
+
 		// Label
 		// TODO - Instead of importing font every time, try to save a resource and then just load it?
 		HFont font;
@@ -110,6 +139,20 @@ namespace BansheeEngine
 
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
 
+		// Window frame
+		HTexture windowFrameNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowFrameNormal));
+		HTexture windowFrameFocusedTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowFrameFocused));
+
+		GUIElementStyle windowFrameStyle;
+		windowFrameStyle.normal.texture = getTexture(WindowFrameNormal);
+		windowFrameStyle.focused.texture = getTexture(WindowFrameFocused);
+		windowFrameStyle.border.left = 1;
+		windowFrameStyle.border.right = 1;
+		windowFrameStyle.border.top = 1;
+		windowFrameStyle.border.bottom = 1;
+
+		mSkin.setStyle("WindowFrame", windowFrameStyle);
+
 		// Button
 		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonNormalTex));
 		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonHoverTex));
@@ -137,6 +180,84 @@ namespace BansheeEngine
 		buttonStyle.textVertAlign = TVA_Center;
 
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
+
+		// Window background texture
+		GUIElementStyle windowBgStyle;
+		windowBgStyle.normal.texture = getTexture(WindowBackgroundTexture);
+
+		mSkin.setStyle("WindowBackground", windowBgStyle);
+
+		// Window title bar background
+		GUIElementStyle titleBarBgStyle;
+		titleBarBgStyle.normal.texture = getTexture(WindowTitleBarBg);
+		titleBarBgStyle.fixedHeight = true;
+		titleBarBgStyle.height = 13;
+
+		mSkin.setStyle("TitleBarBackground", titleBarBgStyle);
+
+		// Tabbed title bar tab button
+		GUIElementStyle tabbedBarButton;
+		tabbedBarButton.normal.texture = getTexture(TabbedBarBtnNormal);
+		tabbedBarButton.hover.texture = getTexture(TabbedBarBtnActive);
+		tabbedBarButton.active.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.normalOn.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.hoverOn.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.activeOn.texture = tabbedBarButton.hover.texture;
+		tabbedBarButton.fixedHeight = true;
+		tabbedBarButton.height = 13;
+		tabbedBarButton.minWidth = 10;
+		tabbedBarButton.maxWidth = 110;
+		tabbedBarButton.font = font;
+		tabbedBarButton.fontSize = DefaultFontSize;
+		tabbedBarButton.textHorzAlign = THA_Center;
+		tabbedBarButton.textVertAlign = TVA_Center;
+
+		mSkin.setStyle("TabbedBarBtn", tabbedBarButton);
+
+		// Tabbed title bar drag/drop button
+		GUIElementStyle tabbedBarDropButton;
+		tabbedBarDropButton.fixedHeight = true;
+		tabbedBarDropButton.fixedWidth = true;
+		tabbedBarDropButton.height = 13;
+		tabbedBarDropButton.width = 6;
+
+		mSkin.setStyle("TabbedBarDropArea", tabbedBarDropButton);
+
+		// Window minimize button
+		GUIElementStyle winMinButtonStyle;
+		winMinButtonStyle.normal.texture = getTexture(WindowMinButtonNormal);
+		winMinButtonStyle.hover.texture = getTexture(WindowMinButtonHover);
+		winMinButtonStyle.active.texture = winMinButtonStyle.hover.texture;
+		winMinButtonStyle.fixedHeight = true;
+		winMinButtonStyle.fixedWidth = true;
+		winMinButtonStyle.height = 7;
+		winMinButtonStyle.width = 8;
+
+		mSkin.setStyle("WinMinimizeBtn", winMinButtonStyle);
+
+		// Window maximize button
+		GUIElementStyle winMaxButtonStyle;
+		winMaxButtonStyle.normal.texture = getTexture(WindowMaxButtonNormal);
+		winMaxButtonStyle.hover.texture = getTexture(WindowMaxButtonHover);
+		winMaxButtonStyle.active.texture = winMaxButtonStyle.hover.texture;
+		winMaxButtonStyle.fixedHeight = true;
+		winMaxButtonStyle.fixedWidth = true;
+		winMaxButtonStyle.height = 8;
+		winMaxButtonStyle.width = 8;
+
+		mSkin.setStyle("WinMaximizeBtn", winMaxButtonStyle);
+
+		// Window close button
+		GUIElementStyle winCloseButtonStyle;
+		winCloseButtonStyle.normal.texture = getTexture(WindowCloseButtonNormal);
+		winCloseButtonStyle.hover.texture = getTexture(WindowCloseButtonHover);
+		winCloseButtonStyle.active.texture = winCloseButtonStyle.hover.texture;
+		winCloseButtonStyle.fixedHeight = true;
+		winCloseButtonStyle.fixedWidth = true;
+		winCloseButtonStyle.height = 7;
+		winCloseButtonStyle.width = 8;
+
+		mSkin.setStyle("WinCloseBtn", winCloseButtonStyle);
 
 		// Input box
 		GUIElementStyle inputBoxStyle;
@@ -348,7 +469,7 @@ namespace BansheeEngine
 		dropDownScrollDownBtnArrowStyle.border.right = 1;
 		dropDownScrollDownBtnArrowStyle.border.top = 1;
 		dropDownScrollDownBtnArrowStyle.border.bottom = 1;
-		
+
 		mSkin.setStyle("ListBoxScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 		mSkin.setStyle("MenuBarScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
 		mSkin.setStyle("ContextMenuScrollDownBtnArrow", dropDownScrollDownBtnArrowStyle);
@@ -450,9 +571,69 @@ namespace BansheeEngine
 		mSkin.setStyle("ListBoxSeparator", dropDownSeparatorStyle);
 		mSkin.setStyle("MenuBarSeparator", dropDownSeparatorStyle);
 		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
+
+		/************************************************************************/
+		/* 								MENU BAR	                     		*/
+		/************************************************************************/
+
+		// MenuBar background
+		GUIElementStyle menuBarBgStyle;
+		menuBarBgStyle.normal.texture = getTexture(MenuBarBgTex);
+		menuBarBgStyle.fixedHeight = false;
+		menuBarBgStyle.fixedWidth = false;
+		menuBarBgStyle.height = 4;
+		menuBarBgStyle.width = 4;
+
+		mSkin.setStyle("MenuBarBg", menuBarBgStyle);
+
+		// MenuBar Banshee logo
+		GUIElementStyle menuBarBansheeLogoStyle;
+		menuBarBansheeLogoStyle.normal.texture = getTexture(MenuBarBansheeLogoTex);
+		menuBarBansheeLogoStyle.fixedHeight = true;
+		menuBarBansheeLogoStyle.fixedWidth = true;
+		menuBarBansheeLogoStyle.height = 7;
+		menuBarBansheeLogoStyle.width = 51;
+
+		mSkin.setStyle("MenuBarBansheeLogo", menuBarBansheeLogoStyle);
+
+		// MenuBar button
+		GUIElementStyle menuBarBtnStyle;
+		menuBarBtnStyle.normal.texture = getTexture(MenuBarBtnNormalTex);
+		menuBarBtnStyle.hover.texture = getTexture(MenuBarBtnHoverTex);
+		menuBarBtnStyle.active.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.normalOn.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.hoverOn.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.activeOn.texture = menuBarBtnStyle.hover.texture;
+		menuBarBtnStyle.fixedHeight = true;
+		menuBarBtnStyle.fixedWidth = false;
+		menuBarBtnStyle.height = 15;
+		menuBarBtnStyle.width = 4;
+		menuBarBtnStyle.margins.left = 2;
+		menuBarBtnStyle.margins.right = 2;
+		menuBarBtnStyle.margins.top = 2;
+		menuBarBtnStyle.margins.bottom = 2;
+		menuBarBtnStyle.font = font;
+		menuBarBtnStyle.fontSize = DefaultFontSize;
+		menuBarBtnStyle.textHorzAlign = THA_Left;
+		menuBarBtnStyle.textVertAlign = TVA_Top;
+
+		mSkin.setStyle("MenuBarBtn", menuBarBtnStyle);
+
+		/************************************************************************/
+		/* 								DOCK SLIDER	                     		*/
+		/************************************************************************/
+
+		GUIElementStyle dockSliderBtnStyle;
+		dockSliderBtnStyle.normal.texture = getTexture(DockSliderNormalTex);
+		dockSliderBtnStyle.fixedHeight = false;
+		dockSliderBtnStyle.fixedWidth = false;
+		dockSliderBtnStyle.height = 2;
+		dockSliderBtnStyle.width = 2;
+
+		mSkin.setStyle("DockSliderBtn", dockSliderBtnStyle);
 	}
 
-	HSpriteTexture EngineGUI::getTexture(const CM::String& name)
+	HSpriteTexture EditorGUI::getTexture(const CM::String& name)
 	{
 		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DefaultFolder + name)));
 	}

@@ -215,7 +215,7 @@ namespace BansheeEditor
 
 		if(horizontal)
 		{
-			mSlider = GUIDockSlider::create(*widgetParent, true, EngineGUI::instance().getSkin().getStyle(GUIButton::getGUITypeName()));
+			mSlider = GUIDockSlider::create(*widgetParent, true, widgetParent->getSkin().getStyle("DockSliderBtn"));
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 
 			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
@@ -223,7 +223,7 @@ namespace BansheeEditor
 		}
 		else
 		{
-			mSlider = GUIDockSlider::create(*widgetParent, false, EngineGUI::instance().getSkin().getStyle(GUIButton::getGUITypeName()));
+			mSlider = GUIDockSlider::create(*widgetParent, false, widgetParent->getSkin().getStyle("DockSliderBtn"));
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 
 			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);

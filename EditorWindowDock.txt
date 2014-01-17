@@ -1,6 +1,5 @@
 TODO:
- - Add proper slider style and possibly set a different one depending if its vertical or horizontal
-   - I might need to add EditorGUI (similar to EngineGUI)
+ - Closing all docked widgets causes an exception
  - Test out minimum dock container size and maybe increase it a bit
  - (Unrelated) Can't click and drag a scroll handle
 

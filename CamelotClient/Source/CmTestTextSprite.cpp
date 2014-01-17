@@ -11,7 +11,7 @@
 #include "BsGUISkin.h"
 #include "BsOverlayManager.h"
 #include "BsSpriteTexture.h"
-#include "BsEngineGUI.h"
+#include "BsEditorGUI.h"
 #include "BsGUITexture.h"
 #include "BsGUIRenderTexture.h"
 #include "BsGUIArea.h"
@@ -40,7 +40,7 @@ namespace CamelotFramework
 
 	void TestTextSprite::init(const HCamera& camera, const String& text, CM::RenderTexturePtr sceneView)
 	{
-		setSkin(EngineGUI::instance().getSkin());
+		setSkin(BansheeEditor::EditorGUI::instance().getSkin());
 		setDepth(128);
 
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);

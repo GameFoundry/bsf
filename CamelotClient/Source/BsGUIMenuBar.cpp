@@ -27,10 +27,10 @@ namespace BansheeEditor
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
 
 		mBgTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()),
-			EngineGUI::instance().getSkin().getStyle("MenuBarBg"));
+			parent->getSkin().getStyle("MenuBarBg"));
 		mBackgroundArea->getLayout().addElement(mBgTexture);
 
-		mLogoTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, EngineGUI::instance().getSkin().getStyle("MenuBarBansheeLogo"));
+		mLogoTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, parent->getSkin().getStyle("MenuBarBansheeLogo"));
 		GUILayout& mainLayout = mMainArea->getLayout();
 
 		mainLayout.addElement(mLogoTexture);
@@ -134,7 +134,7 @@ namespace BansheeEditor
 		newSubMenu.name = name;
 		newSubMenu.menu = cm_new<GUIMenu>();
 
-		GUIButton* newButton = GUIButton::create(*mParentWidget, HString(name), EngineGUI::instance().getSkin().getStyle("MenuBarBtn"));
+		GUIButton* newButton = GUIButton::create(*mParentWidget, HString(name), mParentWidget->getSkin().getStyle("MenuBarBtn"));
 		newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, name));
 		mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
