@@ -1,11 +1,8 @@
 ----------------------- CAMELOT 2D / GUI -----------------------------------------------------------
 
-LONGTERM TODO:
-1. Finish docking manager
-2. OPTIMIZE GUI
- - This should be a fairly long-term task, about 2 months. I need to study GUI system in detail and identify bottlenecks.
-   Then develop a clear and tight plan how to reorganize everything so it runs at maximum efficiency. GUI system is pretty much the 
-   only large fully fledged system in the engine, so investing this much time into optimizing it is worth it.
+Editor localization should be different from in-game one.
+ - Because what happens when user decides to set "File" localized string to something else? It will also modify the editor string.
+ - HString probably needs to accept an optional parameter of which StringTable to use
 
 Optimization notes:
  - submitToCoreThread calls are EXTREMELY slow. In 10-50ms range.
@@ -40,13 +37,6 @@ TextBox needed elements:
   - TAB between input elements
   - Remove updateText calls from updateRenderElementsInternal and instead call it whenever offsets change
   - I might consider not rendering caret from within input sprite to avoid redrawing it while, and draw it directly from GUIManager
-
-GUIDragManager
- - GUI system sends startdrag/enddrag/drag events to all elements
- - startDrag(void* userPtr) changes cursor
- - releasing the cursor sends enddrag event and then the control can retrieve the user ptr
- - SINCE currently non-active elements ignore drag events, add GUIElement::acceptsMouseDrop property
-   - Such elements will receive mouse drag and mouse up events if other element is active, and they can filter if they want to accept it
 
 -----------
 

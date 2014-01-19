@@ -266,6 +266,7 @@
     <ClInclude Include="Include\BsEditorWindowManager.h" />
     <ClInclude Include="Include\BsGUIDockSlider.h" />
     <ClInclude Include="Include\BsGUIMenuBar.h" />
+    <ClInclude Include="Include\BsGUISceneTreeView.h" />
     <ClInclude Include="Include\BsGUITabbedTitleBar.h" />
     <ClInclude Include="Include\BsGUITabButton.h" />
     <ClInclude Include="Include\BsGUIWindowFrame.h" />
@@ -290,6 +291,7 @@
     <ClCompile Include="Source\BsEditorWindowManager.cpp" />
     <ClCompile Include="Source\BsGUIDockSlider.cpp" />
     <ClCompile Include="Source\BsGUIMenuBar.cpp" />
+    <ClCompile Include="Source\BsGUISceneTreeView.cpp" />
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUITabButton.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />

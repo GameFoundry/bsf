@@ -7,8 +7,10 @@
 
 namespace CamelotFramework
 {
-	SceneObject::SceneObject(const String& name)
-		:mName(name), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
+	UINT32 SceneObject::NextFreeId = 0;
+
+	SceneObject::SceneObject(const String& name, UINT32 id)
+		:mName(name), mId(id), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
 		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
@@ -36,7 +38,7 @@ namespace CamelotFramework
 	HSceneObject SceneObject::createInternal(const String& name)
 	{
 		HSceneObject sceneObject = GameObjectHandle<SceneObject>(
-			new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name),
+			new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name, NextFreeId++),
 			&cm_delete<PoolAlloc, GameObject>);
 		sceneObject->mThisHandle = sceneObject;
 

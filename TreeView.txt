@@ -1,0 +1,46 @@
+TreeView
+ - internally I store TreeElements in a hierarchy. Each has a:
+    - isExpanded
+      - modifying this value will update GUIElements of all the child values (add or remove them)
+	  - adding/removing a child to/from an element should add or remove the foldout button
+      - call markContentAsDirty
+  - updateLayoutInternal
+    - goes through all TreeElements and updates their positions
+  - Name editing
+     - Detect mouse input in TreeView and if I double click over a GUILabel start rename
+     - Or if I select it and hit F2 also start rename
+     - Has callbacks with which it notifies TreeView of actual changes
+  - Selecting
+     - Clicking on a row of TreeView sets a flag that item is selected, and a GUIElement is created. 
+     - Element is positioned in updateLayoutInternal and it shows a different colored background
+  - Deleting
+      - Simply track currently selected element and Delete event
+
+Implementation steps:
+ - Get just labels with indenting rendering
+   - Test if SceneObject add/remove/rename works and updates data properly
+ - Add expand buttons
+   - Test if expanding/closing works properly
+ - Selection
+   - Clicking on element selects it, delete removes it, F2 renames is. Slow double click renames it.
+   - Rename implementation to follow, just set up an empty method for now
+   - Callback on selection
+ - Rename implementation
+   - When rename is initiated hide the objects label and replace it with an input-box with the same text as a label
+   - Rename ends when user hits enter or click anywhere else but the rename box
+ - Drag and drop
+   - If a mouse drag is detected DragAndDropManager is activated
+   - Element is not removed from its original position until drag is complete
+   - Dragging over an element will make a highlight box appear around it
+   - Dragging between elements will make a thick line appear between them
+   - Releasing the drag changes the element parents
+ - Auto scroll
+    - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
+
+Detecting external clicks:
+ - LostFocus event?
+   - Triggered when I click on another control within my own windows, or when controls parent window loses the focus himself
+   - Each GUIElement can implement acceptsMouseFocus event. If it does, then mouse click will cause a ReceivedFocus event.
+     - Mouse click on any other element, or window losing focus will trigger LostFocus events
+ - I can replace clumsy Selective Input with this approach
+ - DropDownBox can also use the same approach although I will likely need to convert DropDownBox to a GUIElement - DO THIS AFTER TreeView implementation is working
