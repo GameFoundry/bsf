@@ -24,10 +24,12 @@
 #include "CmPlatform.h"
 #include "BsGUIContent.h"
 #include "CmStringTable.h"
+#include "BsGUISceneTreeView.h"
 
+using namespace CamelotFramework;
 using namespace BansheeEngine;
 
-namespace CamelotFramework
+namespace BansheeEditor
 {
 	TestTextSprite::TestTextSprite(const HSceneObject& parent, CM::Viewport* target)
 		:GUIWidget(parent, target), mListBox(nullptr)
@@ -45,16 +47,19 @@ namespace CamelotFramework
 
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
 
-		area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
-		mLabel = GUILabel::create(*this, HString(L""));
-		area->getLayout().addElement(mLabel);
+		mSceneTreeView = GUISceneTreeView::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
+		area->getLayout().addElement(mSceneTreeView);
 
-		Vector<HString>::type dropDownElements;
-		dropDownElements.push_back(HString(L"Ejlement #1"));
-		dropDownElements.push_back(HString(L"Element #2"));
-		dropDownElements.push_back(HString(L"Element #3"));
-		mListBox = GUIListBox::create(*this, dropDownElements, GUIOptions(GUIOption::fixedWidth(50), GUIOption::fixedHeight(13)));
-		area->getLayout().addElement(mListBox);
+		//area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
+		//mLabel = GUILabel::create(*this, HString(L""));
+		//area->getLayout().addElement(mLabel);
+
+		//Vector<HString>::type dropDownElements;
+		//dropDownElements.push_back(HString(L"Ejlement #1"));
+		//dropDownElements.push_back(HString(L"Element #2"));
+		//dropDownElements.push_back(HString(L"Element #3"));
+		//mListBox = GUIListBox::create(*this, dropDownElements, GUIOptions(GUIOption::fixedWidth(50), GUIOption::fixedHeight(13)));
+		//area->getLayout().addElement(mListBox);
 
 		GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
 		button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));
@@ -63,12 +68,13 @@ namespace CamelotFramework
 		area->getLayout().addFlexibleSpace();
 
 		labelString = HString(L"\\{0}, {1}");
-		mLabel->setContent(GUIContent(labelString));
+		//mLabel->setContent(GUIContent(labelString));
 	}
 
 	void TestTextSprite::update()
 	{
 		labelString.setParameter(0, toWString(Input::instance().getCursorPosition().x));
+		mSceneTreeView->update();
 		//labelString.setParameter(1, toWString(Input::instance().getCursorPosition().y));
 	}
 
@@ -78,12 +84,12 @@ namespace CamelotFramework
 
 		if(dbg == 0)
 		{
-			Vector<HString>::type dropDownElements;
-			dropDownElements.push_back(HString(L"Element #4"));
-			dropDownElements.push_back(HString(L"Element #5"));
-			dropDownElements.push_back(HString(L"Element #6"));
+			//Vector<HString>::type dropDownElements;
+			//dropDownElements.push_back(HString(L"Element #4"));
+			//dropDownElements.push_back(HString(L"Element #5"));
+			//dropDownElements.push_back(HString(L"Element #6"));
 
-			mListBox->setElements(dropDownElements);
+			//mListBox->setElements(dropDownElements);
 
 			//StringTable::instance().setString(L"dbgBtn", Language::Abkhazian, L"ALOALO");
 			//StringTable::instance().setActiveLanguage(Language::Abkhazian);

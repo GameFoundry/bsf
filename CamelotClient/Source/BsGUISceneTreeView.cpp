@@ -18,6 +18,7 @@ namespace BansheeEditor
 {
 	const UINT32 GUISceneTreeView::ELEMENT_EXTRA_SPACING = 3;
 	const UINT32 GUISceneTreeView::INDENT_SIZE = 10;
+	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 10;
 
 	GUISceneTreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr),
@@ -68,16 +69,11 @@ namespace BansheeEditor
 			GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
-	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions)
-	{
-		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, nullptr, nullptr, nullptr, layoutOptions);
-	}
-
-	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, const GUILayoutOptions& layoutOptions, GUIElementStyle* backgroundStyle,
+	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, const GUIOptions& options, GUIElementStyle* backgroundStyle,
 		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, layoutOptions);
+			foldoutBtnStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
 	}
 
 	void GUISceneTreeView::update()
@@ -140,11 +136,12 @@ namespace BansheeEditor
 					mTempToDelete.resize(current->mChildren.size(), true);
 					for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 					{
-						UINT32 curId = currentSO->getChild(i)->getId();
+						HSceneObject currentSOChild = currentSO->getChild(i);
+						UINT32 curId = currentSOChild->getId();
 						bool found = false;
 						for(UINT32 j = 0; j < current->mChildren.size(); j++)
 						{
-							TreeElement* currentChild = current->mChildren[i];
+							TreeElement* currentChild = current->mChildren[j];
 
 							if(curId == currentChild->mId)
 							{
@@ -162,9 +159,9 @@ namespace BansheeEditor
 						{
 							TreeElement* newChild = cm_new<TreeElement>();
 							newChild->mParent = current;
-							newChild->mSceneObject = currentSO;
-							newChild->mId = currentSO->getId();
-							newChild->mName = currentSO->getName();
+							newChild->mSceneObject = currentSOChild;
+							newChild->mId = currentSOChild->getId();
+							newChild->mName = currentSOChild->getName();
 							newChild->mSortedIdx = (UINT32)newChildren.size();
 							newChild->mIsDirty = true;
 
@@ -222,6 +219,12 @@ namespace BansheeEditor
 			{
 				if(updateElement.visible)
 				{
+					if(current->mElement == nullptr)
+					{
+						HString name(toWString(current->mName));
+						current->mElement = GUILabel::create(_getParentWidget(), name);
+					}
+
 					// TODO - If no label exists create it
 					// TODO - If has children and no expand button exists create it
 					// TODO - If it has no children but an expand button exists remove it
@@ -229,6 +232,11 @@ namespace BansheeEditor
 				else
 				{
 					// TODO - If either label or expand button exist remove them
+					if(current->mElement != nullptr)
+					{
+						GUIElement::destroy(current->mElement);
+						current->mElement = nullptr;
+					}
 				}
 
 				markContentAsDirty();
@@ -240,7 +248,7 @@ namespace BansheeEditor
 			{
 				for(UINT32 i = 0; i < (UINT32)current->mChildren.size(); i++)
 				{
-					todo.push(UpdateTreeElement(current->mChildren[i], i, current->mIsVisible && current->mIsExpanded));
+					todo.push(UpdateTreeElement(current->mChildren[i], i, current->mIsVisible /*&& current->mIsExpanded*/)); // TODO - Not checking for mIsExpanded atm
 				}
 			}
 		}
@@ -251,6 +259,76 @@ namespace BansheeEditor
 		
 
 		return false;
+	}
+
+	Vector2I GUISceneTreeView::_getOptimalSize() const
+	{
+		struct UpdateTreeElement
+		{
+			UpdateTreeElement(const TreeElement* element, UINT32 indent)
+				:element(element), indent(indent)
+			{ }
+
+			const TreeElement* element;
+			UINT32 indent;
+		};
+
+		Vector2I optimalSize;
+
+		if(_getLayoutOptions().fixedWidth && _getLayoutOptions().fixedHeight)
+		{
+			optimalSize.x = _getLayoutOptions().width;
+			optimalSize.y = _getLayoutOptions().height;
+		}
+		else
+		{
+			Stack<UpdateTreeElement>::type todo;
+			todo.push(UpdateTreeElement(&mRootElement, 0));
+
+			while(!todo.empty())
+			{
+				UpdateTreeElement currentUpdateElement = todo.top();
+				const TreeElement* current = currentUpdateElement.element;
+				todo.pop();
+
+				if(current->mElement != nullptr)
+				{
+					Vector2I curOptimalSize = current->mElement->_getOptimalSize();
+					optimalSize.x = std::max(optimalSize.x, 
+						(INT32)(INITIAL_INDENT_OFFSET + curOptimalSize.x + currentUpdateElement.indent * INDENT_SIZE));
+					optimalSize.y += optimalSize.y + ELEMENT_EXTRA_SPACING;
+				}
+
+				for(auto& child : current->mChildren)
+				{
+					todo.push(UpdateTreeElement(child, currentUpdateElement.indent + 1));
+				}
+			}
+
+			if(_getLayoutOptions().fixedWidth)
+				optimalSize.x = _getLayoutOptions().width;
+			else
+			{
+				if(_getLayoutOptions().minWidth > 0)
+					optimalSize.x = std::max((INT32)_getLayoutOptions().minWidth, optimalSize.y);
+
+				if(_getLayoutOptions().maxWidth > 0)
+					optimalSize.x = std::min((INT32)_getLayoutOptions().maxWidth, optimalSize.y);
+			}
+
+			if(_getLayoutOptions().fixedHeight)
+				optimalSize.y = _getLayoutOptions().height;
+			else
+			{
+				if(_getLayoutOptions().minHeight > 0)
+					optimalSize.y = std::max((INT32)_getLayoutOptions().minHeight, optimalSize.y);
+
+				if(_getLayoutOptions().maxHeight > 0)
+					optimalSize.y = std::min((INT32)_getLayoutOptions().maxHeight, optimalSize.y);
+			}
+		}
+
+		return optimalSize;
 	}
 
 	void GUISceneTreeView::updateClippedBounds()
@@ -295,7 +373,7 @@ namespace BansheeEditor
 				{
 					Vector2I elementSize = child->mElement->_getOptimalSize();
 
-					offset.x = indent * INDENT_SIZE;
+					offset.x = INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
 
 					child->mElement->_setOffset(offset);
 					child->mElement->_setWidth(elementSize.x);

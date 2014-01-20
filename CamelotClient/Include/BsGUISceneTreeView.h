@@ -36,8 +36,7 @@ namespace BansheeEditor
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
 			BS::GUIElementStyle* foldoutBtnStyle = nullptr);
 
-		static GUISceneTreeView* create(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions);
-		static GUISceneTreeView* create(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions, 
+		static GUISceneTreeView* create(BS::GUIWidget& parent, const BS::GUIOptions& options, 
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
 			BS::GUIElementStyle* foldoutBtnStyle = nullptr);
 
@@ -46,6 +45,7 @@ namespace BansheeEditor
 	protected:
 		virtual ~GUISceneTreeView();
 
+		CM::Vector2I _getOptimalSize() const;
 		void updateClippedBounds();
 
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
@@ -53,6 +53,7 @@ namespace BansheeEditor
 	protected:
 		static const CM::UINT32 ELEMENT_EXTRA_SPACING;
 		static const CM::UINT32 INDENT_SIZE;
+		static const CM::UINT32 INITIAL_INDENT_OFFSET;
 
 		const BS::GUIElementStyle* mBackgroundStyle;
 		const BS::GUIElementStyle* mElementBtnStyle;

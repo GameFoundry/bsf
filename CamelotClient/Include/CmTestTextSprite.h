@@ -1,25 +1,26 @@
-#include "BsPrerequisites.h"
+#include "BsEditorPrerequisites.h"
 #include "BsGUIWidget.h"
 
-namespace CamelotFramework
+namespace BansheeEditor
 {
-	class TestTextSprite : public BansheeEngine::GUIWidget
+	class TestTextSprite : public BS::GUIWidget
 	{
 	protected:
 		friend class CM::SceneObject;
 
-		TestTextSprite(const HSceneObject& parent, CM::Viewport* target);
+		TestTextSprite(const CM::HSceneObject& parent, CM::Viewport* target);
 	public:
 		~TestTextSprite();
 
 		virtual void update();
 
-		void init(const BS::HCamera& camera, const String& text, CM::RenderTexturePtr sceneView);
+		void init(const BS::HCamera& camera, const CM::String& text, CM::RenderTexturePtr sceneView);
 
 	private:
 		BS::GUILabel* mLabel;
 		BS::GUIListBox* mListBox;
-		HString labelString;
+		GUISceneTreeView* mSceneTreeView;
+		CM::HString labelString;
 
 		void dbgBtn();
 	};
