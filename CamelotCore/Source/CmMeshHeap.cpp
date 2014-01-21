@@ -554,6 +554,7 @@ namespace CamelotFramework
 
 		QueryData& queryData = mEventQueries[allocData.eventQueryIdx];
 		queryData.queryId = mNextQueryId++;
+		queryData.query->onTriggered.disconnect_all_slots();
 		queryData.query->onTriggered.connect(boost::bind(&MeshHeap::queryTriggered, this, meshId, queryData.queryId));
 		queryData.query->begin();
 	}
