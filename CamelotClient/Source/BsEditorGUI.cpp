@@ -643,6 +643,10 @@ namespace BansheeEditor
 		treeViewExpandButtonStyle.normalOn.texture = getTexture(TreeViewExpandButtonOnNormal);
 		treeViewExpandButtonStyle.hoverOn.texture = getTexture(TreeViewExpandButtonOnHover);
 		treeViewExpandButtonStyle.activeOn.texture = treeViewExpandButtonStyle.hoverOn.texture;
+		treeViewExpandButtonStyle.margins.left = 4;
+		treeViewExpandButtonStyle.margins.right = 4;
+		treeViewExpandButtonStyle.margins.top = 5;
+		treeViewExpandButtonStyle.margins.bottom = 4;
 		treeViewExpandButtonStyle.fixedHeight = true;
 		treeViewExpandButtonStyle.fixedWidth = true;
 		treeViewExpandButtonStyle.height = 16;

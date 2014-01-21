@@ -54,7 +54,7 @@ namespace BansheeEditor
 		sceneTreeViewLayout.addElement(mSceneTreeView);
 		sceneTreeViewLayout.addFlexibleSpace();
 
-		//area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
+		area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
 		//mLabel = GUILabel::create(*this, HString(L""));
 		//area->getLayout().addElement(mLabel);
 
@@ -67,6 +67,22 @@ namespace BansheeEditor
 
 		GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
 		button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));
+		area->getLayout().addElement(button);
+
+		button = GUIButton::create(*this, HString(L"Add GameObjects"));
+		button->onClick.connect(boost::bind(&TestTextSprite::dbgAdd, this));
+		area->getLayout().addElement(button);
+
+		button = GUIButton::create(*this, HString(L"Rename GameObject"));
+		button->onClick.connect(boost::bind(&TestTextSprite::dbgRename, this));
+		area->getLayout().addElement(button);
+
+		button = GUIButton::create(*this, HString(L"Remove child GameObjects"));
+		button->onClick.connect(boost::bind(&TestTextSprite::dbgRemoveChildren, this));
+		area->getLayout().addElement(button);
+
+		button = GUIButton::create(*this, HString(L"Remove parent GameObjects"));
+		button->onClick.connect(boost::bind(&TestTextSprite::dbgRemoveParents, this));
 		area->getLayout().addElement(button);
 
 		area->getLayout().addFlexibleSpace();
@@ -104,5 +120,37 @@ namespace BansheeEditor
 		}
 
 		dbg++;
+	}
+
+	void TestTextSprite::dbgAdd()
+	{
+		mDbgMainA = SceneObject::create("DEBUG_A");
+		mDbgChildA = SceneObject::create("DEBUG_CHILD_0");
+		mDbgChildA->setParent(mDbgMainA);
+
+		mDbgChildB = SceneObject::create("DEBUG_CHILD_1");
+		mDbgChildB->setParent(mDbgMainA);
+
+		mDbgChildC = SceneObject::create("DEBUG_CHILD_2");
+		mDbgChildC->setParent(mDbgMainA);
+
+		mDbgMainB = SceneObject::create("DEBUG_B");
+	}
+
+	void TestTextSprite::dbgRename()
+	{
+		mDbgMainA->setName("Z_DEBUG_RENAMED_A");
+	}
+
+	void TestTextSprite::dbgRemoveChildren()
+	{
+		mDbgChildA->destroy();
+		mDbgChildB->destroy();
+	}
+
+	void TestTextSprite::dbgRemoveParents()
+	{
+		mDbgMainA->destroy();
+		mDbgMainB->destroy();
 	}
 }

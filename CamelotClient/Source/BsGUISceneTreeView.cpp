@@ -224,9 +224,9 @@ namespace BansheeEditor
 			{
 				if(updateElement.visible)
 				{
+					HString name(toWString(current->mName));
 					if(current->mElement == nullptr)
 					{
-						HString name(toWString(current->mName));
 						current->mElement = GUILabel::create(_getParentWidget(), name, mElementBtnStyle);
 					}
 
@@ -246,6 +246,8 @@ namespace BansheeEditor
 							current->mFoldoutBtn = nullptr;
 						}
 					}
+
+					current->mElement->setContent(GUIContent(name));
 				}
 				else
 				{
@@ -319,16 +321,22 @@ namespace BansheeEditor
 				const TreeElement* current = currentUpdateElement.element;
 				todo.pop();
 
+				INT32 yOffset = 0;
 				if(current->mElement != nullptr)
 				{
 					Vector2I curOptimalSize = current->mElement->_getOptimalSize();
 					optimalSize.x = std::max(optimalSize.x, 
 						(INT32)(INITIAL_INDENT_OFFSET + curOptimalSize.x + currentUpdateElement.indent * INDENT_SIZE));
-					optimalSize.y += curOptimalSize.y + ELEMENT_EXTRA_SPACING;
+					yOffset = curOptimalSize.y + ELEMENT_EXTRA_SPACING;
 				}
+
+				optimalSize.y += yOffset;
 
 				for(auto& child : current->mChildren)
 				{
+					if(!child->mIsVisible)
+						continue;
+
 					todo.push(UpdateTreeElement(child, currentUpdateElement.indent + 1));
 				}
 			}
@@ -394,53 +402,65 @@ namespace BansheeEditor
 			UINT32 indent = currentUpdateElement.indent;
 			todo.pop();
 
+			INT32 btnHeight = 0;
+			INT32 yOffset = 0;
+			if(current->mElement != nullptr)
+			{
+				Vector2I elementSize = current->mElement->_getOptimalSize();
+				btnHeight = elementSize.y;
+
+				offset.x = INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
+
+				current->mElement->_setOffset(offset);
+				current->mElement->_setWidth(elementSize.x);
+				current->mElement->_setHeight(elementSize.y);
+				current->mElement->_setAreaDepth(areaDepth);
+				current->mElement->_setWidgetDepth(widgetDepth);
+
+				RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+				current->mElement->_setClipRect(elemClipRect);
+
+				yOffset = btnHeight + ELEMENT_EXTRA_SPACING;
+			}
+
+			if(current->mFoldoutBtn != nullptr)
+			{
+				Vector2I elementSize = current->mFoldoutBtn->_getOptimalSize();
+
+				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.y);
+
+				Vector2I myOffset = offset;
+				if(elementSize.y > btnHeight)
+				{
+					UINT32 diff = elementSize.y - btnHeight;
+					float half = diff * 0.5f;
+					myOffset.y -= Math::floorToInt(half);
+				}
+
+				current->mFoldoutBtn->_setOffset(myOffset);
+				current->mFoldoutBtn->_setWidth(elementSize.x);
+				current->mFoldoutBtn->_setHeight(elementSize.y);
+				current->mFoldoutBtn->_setAreaDepth(areaDepth);
+				current->mFoldoutBtn->_setWidgetDepth(widgetDepth);
+
+				RectI elemClipRect(clipRect.x - myOffset.x, clipRect.y - myOffset.y, clipRect.width, clipRect.height);
+				current->mFoldoutBtn->_setClipRect(elemClipRect);
+			}
+
+			offset.y += yOffset;
+
 			tempOrderedElements.resize(current->mChildren.size(), nullptr);
 			for(auto& child : current->mChildren)
 			{
 				tempOrderedElements[child->mSortedIdx] = child;
 			}
 
-			for(auto& child : tempOrderedElements)
+			for(auto iter = tempOrderedElements.rbegin(); iter != tempOrderedElements.rend(); ++iter)
 			{
+				TreeElement* child = *iter;
+
 				if(!child->mIsVisible)
 					continue;
-
-				INT32 yOffset = 0;
-				if(child->mElement != nullptr)
-				{
-					Vector2I elementSize = child->mElement->_getOptimalSize();
-
-					offset.x = INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
-
-					child->mElement->_setOffset(offset);
-					child->mElement->_setWidth(elementSize.x);
-					child->mElement->_setHeight(elementSize.y);
-					child->mElement->_setAreaDepth(areaDepth);
-					child->mElement->_setWidgetDepth(widgetDepth);
-
-					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-					child->mElement->_setClipRect(elemClipRect);
-
-					yOffset = elementSize.y + ELEMENT_EXTRA_SPACING;
-				}
-
-				if(child->mFoldoutBtn != nullptr)
-				{
-					Vector2I elementSize = child->mFoldoutBtn->_getOptimalSize();
-
-					offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.y);
-
-					child->mFoldoutBtn->_setOffset(offset);
-					child->mFoldoutBtn->_setWidth(elementSize.x);
-					child->mFoldoutBtn->_setHeight(elementSize.y);
-					child->mFoldoutBtn->_setAreaDepth(areaDepth);
-					child->mFoldoutBtn->_setWidgetDepth(widgetDepth);
-
-					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-					child->mFoldoutBtn->_setClipRect(elemClipRect);
-				}
-
-				offset.y += yOffset;
 
 				todo.push(UpdateTreeElement(child, indent + 1));
 			}

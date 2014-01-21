@@ -22,6 +22,18 @@ namespace BansheeEditor
 		GUISceneTreeView* mSceneTreeView;
 		CM::HString labelString;
 
+		CM::HSceneObject mDbgMainA;
+		CM::HSceneObject mDbgMainB;
+
+		CM::HSceneObject mDbgChildA;
+		CM::HSceneObject mDbgChildB;
+		CM::HSceneObject mDbgChildC;
+
 		void dbgBtn();
+
+		void dbgAdd();
+		void dbgRename();
+		void dbgRemoveChildren();
+		void dbgRemoveParents();
 	};
 }

@@ -22,6 +22,8 @@ namespace CamelotFramework
 		UINT32 getId() const { return mId; }
 		const String& getName() const { return mName; }
 
+		void setName(const String& name) { mName = name; }
+
 	private:
 		HSceneObject mThisHandle;
 
