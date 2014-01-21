@@ -105,6 +105,11 @@ namespace BansheeEditor
 
 	const String EditorGUI::DockSliderNormalTex = "DockSliderBtn.psd";
 
+	const String EditorGUI::TreeViewExpandButtonOffNormal = "TreeViewExpandButtonOffNormal.psd";
+	const String EditorGUI::TreeViewExpandButtonOffHover = "TreeViewExpandButtonOffHover.psd";
+	const String EditorGUI::TreeViewExpandButtonOnNormal = "TreeViewExpandButtonOnNormal.psd";
+	const String EditorGUI::TreeViewExpandButtonOnHover = "TreeViewExpandButtonOnHover.psd";
+
 	EditorGUI::EditorGUI()
 	{
 		// TODO - Normally I want to load this from some file
@@ -140,9 +145,6 @@ namespace BansheeEditor
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		// Window frame
-		HTexture windowFrameNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowFrameNormal));
-		HTexture windowFrameFocusedTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + WindowFrameFocused));
-
 		GUIElementStyle windowFrameStyle;
 		windowFrameStyle.normal.texture = getTexture(WindowFrameNormal);
 		windowFrameStyle.focused.texture = getTexture(WindowFrameFocused);
@@ -154,9 +156,6 @@ namespace BansheeEditor
 		mSkin.setStyle("WindowFrame", windowFrameStyle);
 
 		// Button
-		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonNormalTex));
-		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonHoverTex));
-
 		GUIElementStyle buttonStyle;
 		buttonStyle.normal.texture = getTexture(ButtonNormalTex);
 		buttonStyle.hover.texture = getTexture(ButtonHoverTex);
@@ -631,6 +630,36 @@ namespace BansheeEditor
 		dockSliderBtnStyle.width = 2;
 
 		mSkin.setStyle("DockSliderBtn", dockSliderBtnStyle);
+
+		/************************************************************************/
+		/* 								TREE VIEW	                     		*/
+		/************************************************************************/
+
+		// Expand button
+		GUIElementStyle treeViewExpandButtonStyle;
+		treeViewExpandButtonStyle.normal.texture = getTexture(TreeViewExpandButtonOffNormal);
+		treeViewExpandButtonStyle.hover.texture = getTexture(TreeViewExpandButtonOffHover);
+		treeViewExpandButtonStyle.active.texture = treeViewExpandButtonStyle.hover.texture;
+		treeViewExpandButtonStyle.normalOn.texture = getTexture(TreeViewExpandButtonOnNormal);
+		treeViewExpandButtonStyle.hoverOn.texture = getTexture(TreeViewExpandButtonOnHover);
+		treeViewExpandButtonStyle.activeOn.texture = treeViewExpandButtonStyle.hoverOn.texture;
+		treeViewExpandButtonStyle.fixedHeight = true;
+		treeViewExpandButtonStyle.fixedWidth = true;
+		treeViewExpandButtonStyle.height = 16;
+		treeViewExpandButtonStyle.width = 16;
+
+		mSkin.setStyle("TreeViewFoldoutBtn", treeViewExpandButtonStyle);
+
+		// Entry
+		GUIElementStyle treeViewEntryStyle;
+		treeViewEntryStyle.font = font;
+		treeViewEntryStyle.fontSize = DefaultFontSize;
+		treeViewEntryStyle.fixedWidth = false;
+		treeViewEntryStyle.fixedHeight = true;
+		treeViewEntryStyle.height = 16;
+		treeViewEntryStyle.minWidth = 10;
+
+		mSkin.setStyle("TreeViewElementBtn", treeViewEntryStyle);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const CM::String& name)

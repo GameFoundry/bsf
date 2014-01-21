@@ -103,6 +103,11 @@ namespace BansheeEditor
 
 		static const CM::String DockSliderNormalTex;
 
+		static const CM::String TreeViewExpandButtonOffNormal;
+		static const CM::String TreeViewExpandButtonOffHover;
+		static const CM::String TreeViewExpandButtonOnNormal;
+		static const CM::String TreeViewExpandButtonOnHover;
+
 		static BS::HSpriteTexture getTexture(const CM::String& name);
 	};
 }

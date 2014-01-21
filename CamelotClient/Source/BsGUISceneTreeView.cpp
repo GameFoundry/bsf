@@ -6,6 +6,7 @@
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
 #include "BsGUIWidget.h"
+#include "BsGUIToggle.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUISkin.h"
 #include "CmSceneObject.h"
@@ -18,7 +19,7 @@ namespace BansheeEditor
 {
 	const UINT32 GUISceneTreeView::ELEMENT_EXTRA_SPACING = 3;
 	const UINT32 GUISceneTreeView::INDENT_SIZE = 10;
-	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 10;
+	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 16;
 
 	GUISceneTreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr),
@@ -97,6 +98,7 @@ namespace BansheeEditor
 		mRootElement.mSceneObject = root;
 		mRootElement.mId = root->getId();
 		mRootElement.mSortedIdx = 0;
+		mRootElement.mIsExpanded = true;
 
 		Stack<UpdateTreeElement>::type todo;
 		todo.push(UpdateTreeElement(&mRootElement, 0, true));
@@ -195,13 +197,16 @@ namespace BansheeEditor
 				{
 					for(UINT32 i = 0; i < (UINT32)parent->mChildren.size(); i++)
 					{
-						if(current->mSortedIdx <= parent->mChildren[i]->mSortedIdx)
-							continue;
-
-						UINT32 stringCompare = current->mName.compare(parent->mChildren[i]->mName);
+						INT32 stringCompare = current->mName.compare(parent->mChildren[i]->mName);
 						if(stringCompare > 0)
 						{
-							std::swap(current->mSortedIdx, parent->mChildren[i]->mSortedIdx);
+							if(current->mSortedIdx < parent->mChildren[i]->mSortedIdx)
+								std::swap(current->mSortedIdx, parent->mChildren[i]->mSortedIdx);
+						}
+						else if(stringCompare < 0)
+						{
+							if(current->mSortedIdx > parent->mChildren[i]->mSortedIdx)
+								std::swap(current->mSortedIdx, parent->mChildren[i]->mSortedIdx);
 						}
 					}
 				}
@@ -215,27 +220,45 @@ namespace BansheeEditor
 				current->mIsDirty = true;
 			}
 			
-			if(current->mIsDirty)
+			if(current->mIsDirty && current != &mRootElement)
 			{
 				if(updateElement.visible)
 				{
 					if(current->mElement == nullptr)
 					{
 						HString name(toWString(current->mName));
-						current->mElement = GUILabel::create(_getParentWidget(), name);
+						current->mElement = GUILabel::create(_getParentWidget(), name, mElementBtnStyle);
 					}
 
-					// TODO - If no label exists create it
-					// TODO - If has children and no expand button exists create it
-					// TODO - If it has no children but an expand button exists remove it
+					if(current->mChildren.size() > 0)
+					{
+						if(current->mFoldoutBtn == nullptr)
+						{
+							current->mFoldoutBtn = GUIToggle::create(_getParentWidget(), GUIContent(HString(L"")), mFoldoutBtnStyle);
+							current->mFoldoutBtn->onToggled.connect(boost::bind(&GUISceneTreeView::elementToggled, this, current, _1));
+						}
+					}
+					else
+					{
+						if(current->mFoldoutBtn != nullptr)
+						{
+							GUIElement::destroy(current->mFoldoutBtn);
+							current->mFoldoutBtn = nullptr;
+						}
+					}
 				}
 				else
 				{
-					// TODO - If either label or expand button exist remove them
 					if(current->mElement != nullptr)
 					{
 						GUIElement::destroy(current->mElement);
 						current->mElement = nullptr;
+					}
+
+					if(current->mFoldoutBtn != nullptr)
+					{
+						GUIElement::destroy(current->mFoldoutBtn);
+						current->mFoldoutBtn = nullptr;
 					}
 				}
 
@@ -248,7 +271,7 @@ namespace BansheeEditor
 			{
 				for(UINT32 i = 0; i < (UINT32)current->mChildren.size(); i++)
 				{
-					todo.push(UpdateTreeElement(current->mChildren[i], i, current->mIsVisible /*&& current->mIsExpanded*/)); // TODO - Not checking for mIsExpanded atm
+					todo.push(UpdateTreeElement(current->mChildren[i], i, current->mIsVisible && current->mIsExpanded));
 				}
 			}
 		}
@@ -259,6 +282,11 @@ namespace BansheeEditor
 		
 
 		return false;
+	}
+
+	void GUISceneTreeView::elementToggled(TreeElement* element, bool toggled)
+	{
+		element->mIsExpanded = toggled;
 	}
 
 	Vector2I GUISceneTreeView::_getOptimalSize() const
@@ -296,7 +324,7 @@ namespace BansheeEditor
 					Vector2I curOptimalSize = current->mElement->_getOptimalSize();
 					optimalSize.x = std::max(optimalSize.x, 
 						(INT32)(INITIAL_INDENT_OFFSET + curOptimalSize.x + currentUpdateElement.indent * INDENT_SIZE));
-					optimalSize.y += optimalSize.y + ELEMENT_EXTRA_SPACING;
+					optimalSize.y += curOptimalSize.y + ELEMENT_EXTRA_SPACING;
 				}
 
 				for(auto& child : current->mChildren)
@@ -310,10 +338,10 @@ namespace BansheeEditor
 			else
 			{
 				if(_getLayoutOptions().minWidth > 0)
-					optimalSize.x = std::max((INT32)_getLayoutOptions().minWidth, optimalSize.y);
+					optimalSize.x = std::max((INT32)_getLayoutOptions().minWidth, optimalSize.x);
 
 				if(_getLayoutOptions().maxWidth > 0)
-					optimalSize.x = std::min((INT32)_getLayoutOptions().maxWidth, optimalSize.y);
+					optimalSize.x = std::min((INT32)_getLayoutOptions().maxWidth, optimalSize.x);
 			}
 
 			if(_getLayoutOptions().fixedHeight)
@@ -356,6 +384,8 @@ namespace BansheeEditor
 		// NOTE - Instead of iterating through all elements, try to find those within the clip rect
 		// and only iterate through those. Others should somehow be marked in-active (similar to GUIElement::isDisabled()?)
 
+		Vector<TreeElement*>::type tempOrderedElements;
+
 		Vector2I offset(x, y);
 		while(!todo.empty())
 		{
@@ -364,11 +394,18 @@ namespace BansheeEditor
 			UINT32 indent = currentUpdateElement.indent;
 			todo.pop();
 
+			tempOrderedElements.resize(current->mChildren.size(), nullptr);
 			for(auto& child : current->mChildren)
+			{
+				tempOrderedElements[child->mSortedIdx] = child;
+			}
+
+			for(auto& child : tempOrderedElements)
 			{
 				if(!child->mIsVisible)
 					continue;
 
+				INT32 yOffset = 0;
 				if(child->mElement != nullptr)
 				{
 					Vector2I elementSize = child->mElement->_getOptimalSize();
@@ -384,11 +421,27 @@ namespace BansheeEditor
 					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 					child->mElement->_setClipRect(elemClipRect);
 
-					offset.y += elementSize.y + ELEMENT_EXTRA_SPACING;
+					yOffset = elementSize.y + ELEMENT_EXTRA_SPACING;
 				}
 
-				// TODO - Position expand buttons
-				
+				if(child->mFoldoutBtn != nullptr)
+				{
+					Vector2I elementSize = child->mFoldoutBtn->_getOptimalSize();
+
+					offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.y);
+
+					child->mFoldoutBtn->_setOffset(offset);
+					child->mFoldoutBtn->_setWidth(elementSize.x);
+					child->mFoldoutBtn->_setHeight(elementSize.y);
+					child->mFoldoutBtn->_setAreaDepth(areaDepth);
+					child->mFoldoutBtn->_setWidgetDepth(widgetDepth);
+
+					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+					child->mFoldoutBtn->_setClipRect(elemClipRect);
+				}
+
+				offset.y += yOffset;
+
 				todo.push(UpdateTreeElement(child, indent + 1));
 			}
 		}

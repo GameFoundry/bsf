@@ -16,7 +16,7 @@ namespace BansheeEditor
 			TreeElement* mParent;
 			CM::Vector<TreeElement*>::type mChildren;
 
-			BS::GUIButton* mFoldoutBtn;
+			BS::GUIToggle* mFoldoutBtn;
 			BS::GUILabel* mElement;
 
 			CM::HSceneObject mSceneObject;
@@ -68,5 +68,6 @@ namespace BansheeEditor
 			BS::GUIElementStyle* foldoutBtnStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		void elementToggled(TreeElement* element, bool toggled);
 	};
 }

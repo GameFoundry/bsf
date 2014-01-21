@@ -111,9 +111,6 @@ namespace BansheeEngine
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);
 
 		// Button
-		HTexture buttonNormalTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonNormalTex));
-		HTexture buttonHoverTex = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + ButtonHoverTex));
-
 		GUIElementStyle buttonStyle;
 		buttonStyle.normal.texture = getTexture(ButtonNormalTex);
 		buttonStyle.hover.texture = getTexture(ButtonHoverTex);
@@ -298,8 +295,6 @@ namespace BansheeEngine
 		mSkin.setStyle("ListBox", dropDownListStyle);
 
 		// DropDown scroll up button arrow
-		HTexture dropDownBtnScrollUpArrow = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpArrowTex));
-
 		GUIElementStyle dropDownScrollUpBtnArrowStyle;
 		dropDownScrollUpBtnArrowStyle.normal.texture = getTexture(DropDownBoxBtnUpArrowTex);
 		dropDownScrollUpBtnArrowStyle.hover.texture = dropDownScrollUpBtnArrowStyle.normal.texture;

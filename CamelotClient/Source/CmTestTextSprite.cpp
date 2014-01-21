@@ -48,7 +48,11 @@ namespace BansheeEditor
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
 
 		mSceneTreeView = GUISceneTreeView::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
-		area->getLayout().addElement(mSceneTreeView);
+
+		GUILayout& sceneTreeViewLayout = area->getLayout().addLayoutY();
+		sceneTreeViewLayout.addFlexibleSpace();
+		sceneTreeViewLayout.addElement(mSceneTreeView);
+		sceneTreeViewLayout.addFlexibleSpace();
 
 		//area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
 		//mLabel = GUILabel::create(*this, HString(L""));
