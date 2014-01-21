@@ -10,7 +10,9 @@ namespace BansheeEngine
 	public:
 		GUIFixedSpace(CM::UINT32 size)
 			:mSize(size)
-		{ }
+		{
+			_markAsClean();
+		}
 
 		CM::UINT32 getSize() const { return mSize; }
 		Type _getType() const { return GUIElementBase::Type::FixedSpace; }
@@ -24,7 +26,10 @@ namespace BansheeEngine
 	class BS_EXPORT GUIFlexibleSpace : public GUIElementBase
 	{
 	public:
-		GUIFlexibleSpace() {}
+		GUIFlexibleSpace() 
+		{
+			_markAsClean();
+		}
 
 		Type _getType() const { return GUIElementBase::Type::FlexibleSpace; }
 

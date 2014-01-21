@@ -1,11 +1,4 @@
 TreeView
- - internally I store TreeElements in a hierarchy. Each has a:
-    - isExpanded
-      - modifying this value will update GUIElements of all the child values (add or remove them)
-	  - adding/removing a child to/from an element should add or remove the foldout button
-      - call markContentAsDirty
-  - updateLayoutInternal
-    - goes through all TreeElements and updates their positions
   - Name editing
      - Detect mouse input in TreeView and if I double click over a GUILabel start rename
      - Or if I select it and hit F2 also start rename
@@ -17,10 +10,6 @@ TreeView
       - Simply track currently selected element and Delete event
 
 Implementation steps:
- - Get just labels with indenting rendering
-   - Test if SceneObject add/remove/rename works and updates data properly
- - Add expand buttons
-   - Test if expanding/closing works properly
  - Selection
    - Clicking on element selects it, delete removes it, F2 renames is. Slow double click renames it.
    - Rename implementation to follow, just set up an empty method for now
