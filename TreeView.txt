@@ -9,6 +9,9 @@ TreeView
   - Deleting
       - Simply track currently selected element and Delete event
 
+IMMEDIATE:
+ - Selection sprite seems to be one pixel too high even if its on the same level as the text sprite. I think this is a discrepancy on sprite level.
+
 Implementation steps:
  - Selection
    - Clicking on element selects it, delete removes it, F2 renames is. Slow double click renames it.
@@ -33,3 +36,8 @@ Detecting external clicks:
      - Mouse click on any other element, or window losing focus will trigger LostFocus events
  - I can replace clumsy Selective Input with this approach
  - DropDownBox can also use the same approach although I will likely need to convert DropDownBox to a GUIElement - DO THIS AFTER TreeView implementation is working
+
+ Other:
+ - When dragging in tree view automatically expand mouse over elements
+ - Ability to select and drag multiple elements
+ - "Ping" effect

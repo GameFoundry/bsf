@@ -38,10 +38,13 @@ namespace BansheeEngine
 		UINT32 contentWidth = style.margins.left + style.margins.right + style.contentOffset.left + style.contentOffset.right;
 		UINT32 contentHeight = style.margins.top + style.margins.bottom + style.contentOffset.top + style.contentOffset.bottom;
 
-		TextData textData(text, style.font, style.fontSize, wordWrapWidth, 0, style.wordWrap);
+		if(style.font != nullptr)
+		{
+			TextData textData(text, style.font, style.fontSize, wordWrapWidth, 0, style.wordWrap);
 
-		contentWidth += textData.getWidth();
-		contentHeight += textData.getHeight();
+			contentWidth += textData.getWidth();
+			contentHeight += textData.getNumLines() * textData.getLineHeight(); 
+		}
 
 		return Vector2I(contentWidth, contentHeight);
 	}

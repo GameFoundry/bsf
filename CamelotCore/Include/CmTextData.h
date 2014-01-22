@@ -120,6 +120,7 @@ namespace CamelotFramework
 
 		CM_EXPORT UINT32 getNumLines() const { return mNumLines; }
 		CM_EXPORT UINT32 getNumPages() const { return mNumPageInfos; }
+		CM_EXPORT UINT32 getLineHeight() const;
 
 		CM_EXPORT const TextLine& getLine(UINT32 idx) const { return mLines[idx]; }
 		CM_EXPORT const HTexture& getTextureForPage(UINT32 page) const;
@@ -132,7 +133,6 @@ namespace CamelotFramework
 		friend class TextLine;
 
 		INT32 getBaselineOffset() const;
-		UINT32 getLineHeight() const;
 		UINT32 getSpaceWidth() const;
 
 		const CHAR_DESC& getChar(UINT32 idx) const { return *mChars[idx]; }
