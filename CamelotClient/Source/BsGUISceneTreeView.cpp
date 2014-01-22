@@ -41,9 +41,10 @@ namespace BansheeEditor
 	}
 
 	GUISceneTreeView::GUISceneTreeView(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, const BS::GUILayoutOptions& layoutOptions)
+		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, const BS::GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mBackgroundStyle(backgroundStyle),
-		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle)
+		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle),
+		mSelectedElement(nullptr), mSelectionBackground(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle)
 	{
 		if(mBackgroundStyle == nullptr)
 			mBackgroundStyle = parent.getSkin().getStyle("TreeViewBackground");
@@ -54,8 +55,15 @@ namespace BansheeEditor
 		if(mFoldoutBtnStyle == nullptr)
 			mFoldoutBtnStyle = parent.getSkin().getStyle("TreeViewFoldoutBtn");
 
+		if(mSelectionBackgroundStyle == nullptr)
+			mSelectionBackgroundStyle = parent.getSkin().getStyle("TreeViewSelectionBackground");
+
 		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
+		mSelectionBackground = GUITexture::create(parent, mSelectionBackgroundStyle);
+		mSelectionBackground->disableRecursively();
+
 		_registerChildElement(mBackgroundImage);
+		_registerChildElement(mSelectionBackground);
 	}
 
 	GUISceneTreeView::~GUISceneTreeView()
@@ -64,17 +72,17 @@ namespace BansheeEditor
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle)
+		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
-			GUILayoutOptions::create(&GUISkin::DefaultStyle));
+			selectionBackgroundStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, const GUIOptions& options, GUIElementStyle* backgroundStyle,
-		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle)
+		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
+			foldoutBtnStyle, selectionBackgroundStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
 	}
 
 	void GUISceneTreeView::update()
@@ -228,6 +236,7 @@ namespace BansheeEditor
 					if(current->mElement == nullptr)
 					{
 						current->mElement = GUILabel::create(_getParentWidget(), name, mElementBtnStyle);
+						_registerChildElement(current->mElement);
 					}
 
 					if(current->mChildren.size() > 0)
@@ -235,6 +244,8 @@ namespace BansheeEditor
 						if(current->mFoldoutBtn == nullptr)
 						{
 							current->mFoldoutBtn = GUIToggle::create(_getParentWidget(), GUIContent(HString(L"")), mFoldoutBtnStyle);
+							_registerChildElement(current->mFoldoutBtn);
+
 							current->mFoldoutBtn->onToggled.connect(boost::bind(&GUISceneTreeView::elementToggled, this, current, _1));
 						}
 					}
@@ -277,11 +288,32 @@ namespace BansheeEditor
 				}
 			}
 		}
+
+		if(mSelectedElement != nullptr)
+		{
+			if(mSelectionBackground->_isDisabled())
+				mSelectionBackground->enableRecursively();
+		}
+		else
+		{
+			if(!mSelectionBackground->_isDisabled())
+				mSelectionBackground->disableRecursively();
+		}
 	}
 
 	bool GUISceneTreeView::mouseEvent(const GUIMouseEvent& event)
 	{
-		
+		if(event.getType() == GUIMouseEventType::MouseUp)
+		{
+			const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(event.getPosition());
+
+			if(element != nullptr && element->isTreeElement())
+				mSelectedElement = interactableToRealElement(*element);
+
+			markContentAsDirty();
+
+			return true;
+		}
 
 		return false;
 	}
@@ -314,6 +346,8 @@ namespace BansheeEditor
 		{
 			Stack<UpdateTreeElement>::type todo;
 			todo.push(UpdateTreeElement(&mRootElement, 0));
+
+			optimalSize.y += ELEMENT_EXTRA_SPACING;
 
 			while(!todo.empty())
 			{
@@ -386,6 +420,8 @@ namespace BansheeEditor
 			UINT32 indent;
 		};
 
+		mVisibleElements.clear();
+
 		Stack<UpdateTreeElement>::type todo;
 		todo.push(UpdateTreeElement(&mRootElement, 0));
 
@@ -395,12 +431,18 @@ namespace BansheeEditor
 		Vector<TreeElement*>::type tempOrderedElements;
 
 		Vector2I offset(x, y);
+
 		while(!todo.empty())
 		{
 			UpdateTreeElement currentUpdateElement = todo.top();
 			TreeElement* current = currentUpdateElement.element;
 			UINT32 indent = currentUpdateElement.indent;
 			todo.pop();
+
+			if(current->mParent != nullptr && current->mSortedIdx == 0)
+			{
+				mVisibleElements.push_back(InteractableElement(current->mParent, 0, RectI(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
+			}
 
 			INT32 btnHeight = 0;
 			INT32 yOffset = 0;
@@ -419,6 +461,9 @@ namespace BansheeEditor
 
 				RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 				current->mElement->_setClipRect(elemClipRect);
+
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, RectI(x, offset.y, width, btnHeight)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 2, RectI(x, offset.y + btnHeight, width, ELEMENT_EXTRA_SPACING)));
 
 				yOffset = btnHeight + ELEMENT_EXTRA_SPACING;
 			}
@@ -465,6 +510,52 @@ namespace BansheeEditor
 				todo.push(UpdateTreeElement(child, indent + 1));
 			}
 		}
+
+		if(mSelectedElement != nullptr)
+		{
+			GUILabel* targetElement = mSelectedElement->mElement;
+
+			Vector2I offset = targetElement->_getOffset();
+			offset.x = x;
+
+			mSelectionBackground->_setOffset(offset);
+			mSelectionBackground->_setWidth(width);
+			mSelectionBackground->_setHeight(targetElement->_getHeight());
+			mSelectionBackground->_setAreaDepth(areaDepth + 1);
+			mSelectionBackground->_setWidgetDepth(widgetDepth);
+
+			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			mSelectionBackground->_setClipRect(elemClipRect);
+		}
+	}
+
+	const GUISceneTreeView::InteractableElement* GUISceneTreeView::findElementUnderCoord(const CM::Vector2I& coord) const
+	{
+		for(auto& element : mVisibleElements)
+		{
+			if(element.bounds.contains(coord))
+			{
+				return &element;
+			}
+		}
+
+		return nullptr;
+	}
+
+	GUISceneTreeView::TreeElement* GUISceneTreeView::interactableToRealElement(const GUISceneTreeView::InteractableElement& element)
+	{
+		if(!element.isTreeElement())
+			return nullptr;
+
+		UINT32 sortedIdx = (element.index - 1) / 2;
+
+		auto findIter = std::find_if(element.parent->mChildren.begin(), element.parent->mChildren.end(),
+			[&](const TreeElement* x) { return x->mSortedIdx == sortedIdx; });
+
+		if(findIter != element.parent->mChildren.end())
+			return *findIter;
+
+		return nullptr;
 	}
 
 	const String& GUISceneTreeView::getGUITypeName()

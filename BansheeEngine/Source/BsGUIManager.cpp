@@ -62,8 +62,7 @@ namespace BansheeEngine
 	const UINT32 GUIManager::MESH_HEAP_INITIAL_NUM_INDICES = 49152;
 
 	GUIManager::GUIManager()
-		:mSeparateMeshesByWidget(true), mActiveElement(nullptr), 
-		mActiveWidget(nullptr), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
+		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mDragState(DragState::NoDrag)
 	{
@@ -163,11 +162,10 @@ namespace BansheeEngine
 			mKeyboardFocusElement = nullptr;
 		}
 
-		if(mActiveWidget == widget)
-		{
-			mActiveWidget = nullptr;
-			mActiveElement = nullptr;
-		}
+		auto findIter4 = std::find_if(begin(mActiveElements), end(mActiveElements), [=] (const ElementInfo& x) { return x.widget == widget; } );
+
+		if(findIter4 != mActiveElements.end())
+			mActiveElements.erase(findIter4);
 
 		const Viewport* renderTarget = widget->getTarget();
 		GUIRenderData& renderData = mCachedGUIData[renderTarget];
@@ -224,11 +222,14 @@ namespace BansheeEngine
 
 		mElementsUnderCursor.swap(mNewElementsUnderCursor);
 
-		if(mActiveElement != nullptr && mActiveElement->_isDestroyed())
+		mNewActiveElements.clear();
+		for(auto& elementInfo : mActiveElements)
 		{
-			mActiveElement = nullptr;
-			mActiveWidget = nullptr;
+			if(!elementInfo.element->_isDestroyed())
+				mNewActiveElements.push_back(elementInfo);
 		}
+
+		mActiveElements.swap(mNewActiveElements);
 
 		if(mKeyboardFocusElement != nullptr && mKeyboardFocusElement->_isDestroyed())
 		{
@@ -607,34 +608,40 @@ namespace BansheeEngine
 		if(findElementUnderCursor(event.screenPos, buttonStates, event.shift, event.control, event.alt))
 			event.markAsUsed();
 
-		if(mActiveElement != nullptr && mDragState == DragState::HeldWithoutDrag)
+		if(mDragState == DragState::HeldWithoutDrag)
 		{
 			UINT32 dist = mLastCursorClickPos.manhattanDist(event.screenPos);
 
 			if(dist > DRAG_DISTANCE)
 			{
-				Vector2I localPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
+				for(auto& activeElement : mActiveElements)
+				{
+					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
 
-				mMouseEvent.setMouseDragStartData(localPos);
-				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
-					event.markAsUsed();
+					mMouseEvent.setMouseDragStartData(localPos);
+					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
+						event.markAsUsed();
+				}
 
 				mDragState = DragState::Dragging;
 			}
 		}
 
 		// If mouse is being held down send MouseDrag events
-		if(mActiveElement != nullptr && mDragState == DragState::Dragging)
+		if(mDragState == DragState::Dragging)
 		{
-			Vector2I localPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
-
-			if(mLastCursorLocalPos != localPos)
+			for(auto& activeElement : mActiveElements)
 			{
-				mMouseEvent.setMouseDragData(localPos, localPos - mLastCursorLocalPos);
-				if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
-					event.markAsUsed();
+				Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
 
-				mLastCursorLocalPos = localPos;
+				if(mLastCursorLocalPos != localPos)
+				{
+					mMouseEvent.setMouseDragData(localPos, localPos - mLastCursorLocalPos);
+					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
+						event.markAsUsed();
+
+					mLastCursorLocalPos = localPos;
+				}
 			}
 		}
 		else // Otherwise, send MouseMove events if we are hovering over any element
@@ -713,38 +720,44 @@ namespace BansheeEngine
 		{
 			for(auto& elementInfo : mElementsUnderCursor)
 			{
-				if(mActiveElement == elementInfo.element)
+				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+					[&](const ElementInfo& x) { return x.element == elementInfo.element; });
+
+				if(iterFind2 != mActiveElements.end())
 				{
 					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
 					mMouseEvent.setMouseUpData(localPos, guiButton);
 
 					if(sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+					{
 						event.markAsUsed();
-
-					break;
+						break;
+					}
 				}
 			}
 		}
 
 		// Send DragEnd event to whichever element is active
 		bool acceptEndDrag = mDragState == DragState::Dragging && mActiveMouseButton == guiButton && 
-			mActiveElement != nullptr && (guiButton == GUIMouseButton::Left);
+			(guiButton == GUIMouseButton::Left);
 
 		if(acceptEndDrag)
 		{
-			Vector2I localPos = getWidgetRelativePos(*mActiveWidget, event.screenPos);
+			for(auto& activeElement : mActiveElements)
+			{
+				Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
 
-			mMouseEvent.setMouseDragEndData(localPos);
-			if(sendMouseEvent(mActiveWidget, mActiveElement, mMouseEvent))
-				event.markAsUsed();
+				mMouseEvent.setMouseDragEndData(localPos);
+				if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
+					event.markAsUsed();
+			}
 
 			mDragState = DragState::NoDrag;
 		}
 
 		if(mActiveMouseButton == guiButton)
 		{
-			mActiveElement = nullptr;
-			mActiveWidget = nullptr;
+			mActiveElements.clear();
 			mActiveMouseButton = GUIMouseButton::Left;
 		}
 	}
@@ -774,8 +787,9 @@ namespace BansheeEngine
 		}
 
 		// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
-		if(mActiveElement == nullptr)
+		if(mActiveElements.size() == 0)
 		{
+			mNewActiveElements.clear();
 			for(auto& elementInfo : mElementsUnderCursor)
 			{
 				Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
@@ -790,8 +804,7 @@ namespace BansheeEngine
 					mLastCursorClickPos = event.screenPos;
 				}
 
-				mActiveElement = elementInfo.element;
-				mActiveWidget = elementInfo.widget;
+				mNewActiveElements.push_back(ElementInfo(elementInfo.element, elementInfo.widget));
 				mActiveMouseButton = guiButton;
 
 				if(processed)
@@ -800,6 +813,8 @@ namespace BansheeEngine
 					break;
 				}
 			}
+
+			mActiveElements.swap(mNewActiveElements);
 		}
 
 		for(auto& elementInfo : mElementsUnderCursor)
@@ -1056,13 +1071,16 @@ namespace BansheeEngine
 			GUIElement* element = elementInfo.element;
 			GUIWidget* widget = elementInfo.widget;
 
-			auto findIter = std::find_if(begin(mElementsUnderCursor), end(mElementsUnderCursor), 
+			auto iterFind = std::find_if(begin(mElementsUnderCursor), end(mElementsUnderCursor), 
 				[=] (const ElementInfo& x) { return x.element == element; });
 
-			if(findIter == mElementsUnderCursor.end())
+			if(iterFind == mElementsUnderCursor.end())
 			{
+				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+					[&](const ElementInfo& x) { return x.element == element; });
+
 				// Send MouseOver event
-				if(mActiveElement == nullptr || element == mActiveElement)
+				if(mActiveElements.size() == 0 || iterFind2 != mActiveElements.end())
 				{
 					Vector2I localPos;
 					if(widget != nullptr)
@@ -1082,13 +1100,16 @@ namespace BansheeEngine
 			GUIElement* element = elementInfo.element;
 			GUIWidget* widget = elementInfo.widget;
 
-			auto findIter = std::find_if(mNewElementsUnderCursor.begin(), mNewElementsUnderCursor.end(), 
+			auto iterFind = std::find_if(mNewElementsUnderCursor.begin(), mNewElementsUnderCursor.end(), 
 				[=] (const ElementInfo& x) { return x.element == element; });
 
-			if(findIter == mNewElementsUnderCursor.end())
+			if(iterFind == mNewElementsUnderCursor.end())
 			{
+				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+					[=](const ElementInfo& x) { return x.element == element; });
+
 				// Send MouseOut event
-				if(mActiveElement == nullptr || element == mActiveElement)
+				if(mActiveElements.size() == 0 || iterFind2 != mActiveElements.end())
 				{
 					Vector2I curLocalPos = getWidgetRelativePos(*widget, cursorScreenPos);
 
@@ -1158,8 +1179,11 @@ namespace BansheeEngine
 				continue;
 			}
 
+			auto iterFind = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+				[&](const ElementInfo& x) { return x.element == element; });
+
 			// Send MouseOut event
-			if(mActiveElement == nullptr || element == mActiveElement)
+			if(mActiveElements.size() == 0 || iterFind != mActiveElements.end())
 			{
 				Vector2I curLocalPos = getWidgetRelativePos(*widget, Vector2I());
 

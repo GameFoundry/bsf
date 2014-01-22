@@ -110,6 +110,8 @@ namespace BansheeEditor
 	const String EditorGUI::TreeViewExpandButtonOnNormal = "TreeViewExpandButtonOnNormal.psd";
 	const String EditorGUI::TreeViewExpandButtonOnHover = "TreeViewExpandButtonOnHover.psd";
 
+	const String EditorGUI::TreeViewSelectionBackground = "TreeViewSelectionBackground.psd";
+
 	EditorGUI::EditorGUI()
 	{
 		// TODO - Normally I want to load this from some file
@@ -664,6 +666,16 @@ namespace BansheeEditor
 		treeViewEntryStyle.minWidth = 10;
 
 		mSkin.setStyle("TreeViewElementBtn", treeViewEntryStyle);
+
+		// Selection background
+		GUIElementStyle treeViewSelBackgroundStyle;
+		treeViewSelBackgroundStyle.normal.texture = getTexture(TreeViewSelectionBackground);
+		treeViewSelBackgroundStyle.fixedHeight = false;
+		treeViewSelBackgroundStyle.fixedWidth = false;
+		treeViewSelBackgroundStyle.height = 2;
+		treeViewSelBackgroundStyle.width = 2;
+
+		mSkin.setStyle("TreeViewSelectionBackground", treeViewSelBackgroundStyle);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const CM::String& name)

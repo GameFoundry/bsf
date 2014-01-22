@@ -17,9 +17,9 @@ namespace CamelotFramework
 
 	bool RectI::contains(const Vector2I& point) const
 	{
-		if(point.x >= x && point.x <= (x + width))
+		if(point.x >= x && point.x < (x + width))
 		{
-			if(point.y >= y && point.y <= (y + height))
+			if(point.y >= y && point.y < (y + height))
 				return true;
 		}
 

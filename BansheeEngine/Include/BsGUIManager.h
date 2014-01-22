@@ -142,9 +142,9 @@ namespace BansheeEngine
 		CM::Vector<ElementInfo>::type mNewElementsUnderCursor;
 
 		// Element and widget that's being clicked on
-		GUIWidget* mActiveWidget;
-		GUIElement* mActiveElement;
 		GUIMouseButton mActiveMouseButton;
+		CM::Vector<ElementInfo>::type mActiveElements;
+		CM::Vector<ElementInfo>::type mNewActiveElements;
 
 		// Element and widget that currently have the keyboard focus
 		GUIWidget* mKeyboardFocusWidget;

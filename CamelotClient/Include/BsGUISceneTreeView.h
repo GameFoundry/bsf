@@ -29,16 +29,29 @@ namespace BansheeEditor
 			bool mIsVisible;
 		};
 
+		struct InteractableElement
+		{
+			InteractableElement(TreeElement* parent, CM::UINT32 index, const CM::RectI& bounds)
+				:parent(parent), index(index), bounds(bounds)
+			{ }
+
+			bool isTreeElement() const { return index % 2 == 1; }
+
+			TreeElement* parent;
+			CM::UINT32 index;
+			CM::RectI bounds;
+		};
+
 	public:
 		static const CM::String& getGUITypeName();
 
 		static GUISceneTreeView* create(BS::GUIWidget& parent,
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
-			BS::GUIElementStyle* foldoutBtnStyle = nullptr);
+			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr);
 
 		static GUISceneTreeView* create(BS::GUIWidget& parent, const BS::GUIOptions& options, 
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
-			BS::GUIElementStyle* foldoutBtnStyle = nullptr);
+			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr);
 
 		void update();
 
@@ -58,14 +71,22 @@ namespace BansheeEditor
 		const BS::GUIElementStyle* mBackgroundStyle;
 		const BS::GUIElementStyle* mElementBtnStyle;
 		const BS::GUIElementStyle* mFoldoutBtnStyle;
+		const BS::GUIElementStyle* mSelectionBackgroundStyle;
 
 		BS::GUITexture* mBackgroundImage;
 		TreeElement mRootElement;
 
+		CM::Vector<InteractableElement>::type mVisibleElements;
 		CM::Vector<bool>::type mTempToDelete;
 
+		TreeElement* mSelectedElement;
+		BS::GUITexture* mSelectionBackground;
+
 		GUISceneTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
-			BS::GUIElementStyle* foldoutBtnStyle, const BS::GUILayoutOptions& layoutOptions);
+			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, const BS::GUILayoutOptions& layoutOptions);
+
+		const GUISceneTreeView::InteractableElement* findElementUnderCoord(const CM::Vector2I& coord) const;
+		GUISceneTreeView::TreeElement* GUISceneTreeView::interactableToRealElement(const GUISceneTreeView::InteractableElement& element);
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 		void elementToggled(TreeElement* element, bool toggled);
