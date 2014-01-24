@@ -129,7 +129,6 @@ namespace BansheeEngine
 				_registerChildElement(mVertScroll);
 
 				mVertScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::vertScrollUpdate, this, _1));
-				mVertScroll->_setAcceptsKeyboardFocus(false);
 			}
 
 			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)width - (INT32)ScrollBarWidth);
@@ -190,7 +189,6 @@ namespace BansheeEngine
 				_registerChildElement(mHorzScroll);
 
 				mHorzScroll->onScrollPositionChanged.connect(boost::bind(&GUIScrollArea::horzScrollUpdate, this, _1));
-				mHorzScroll->_setAcceptsKeyboardFocus(false);
 			}
 
 			INT32 scrollBarOffset = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);

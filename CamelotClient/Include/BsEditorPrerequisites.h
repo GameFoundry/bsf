@@ -20,6 +20,7 @@ namespace BansheeEditor
 	class GUIMenuBar;
 	class GUIDockSlider;
 	class GUISceneTreeView;
+	class GUITreeViewEditBox;
 
 	enum class DragAndDropType
 	{

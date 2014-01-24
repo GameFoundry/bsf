@@ -96,6 +96,9 @@
     <ClInclude Include="Include\BsGUISceneTreeView.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGUITreeViewEditBox.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -166,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUISceneTreeView.cpp">
       <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGUITreeViewEditBox.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

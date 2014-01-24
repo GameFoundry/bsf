@@ -302,7 +302,7 @@ namespace CamelotFramework
 	enum class InputCommandType
 	{
 		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
-		SelectLeft, SelectRight, SelectUp, SelectDown, Undo, Redo,
+		SelectLeft, SelectRight, SelectUp, SelectDown, Undo, Redo, Rename,
 		Escape, Delete, Backspace, Return, SelectAll, Copy, Cut, Paste, Tab
 	};
 

@@ -9,9 +9,9 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus)
+	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
 		:mParent(&parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
-		mAcceptsKeyboardFocus(acceptsKeyboardFocus), mIsDestroyed(false)
+		mIsDestroyed(false)
 	{
 		mParent->registerElement(this);
 	}

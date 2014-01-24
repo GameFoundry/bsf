@@ -21,7 +21,8 @@ namespace BansheeEngine
 
 		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
-		~GUIInputBox();
+		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
+		virtual ~GUIInputBox();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
@@ -54,6 +55,10 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool textInputEvent(const GUITextInputEvent& ev);
+		virtual bool commandEvent(const GUICommandEvent& ev);
+
 		virtual CM::Vector2I _getTextInputOffset() const;
 		virtual CM::RectI _getTextInputRect() const;
 
@@ -78,13 +83,6 @@ namespace BansheeEngine
 		bool mSelectionShown;
 		bool mInputCursorSet;
 		bool mDragInProgress;
-
-		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
-
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
-		virtual bool textInputEvent(const GUITextInputEvent& ev);
-
-		virtual bool commandEvent(const GUICommandEvent& ev);
 
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
 		CM::Vector2I renderElemToOffset(CM::UINT32 renderElemIdx) const;

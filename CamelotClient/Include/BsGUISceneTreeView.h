@@ -47,11 +47,13 @@ namespace BansheeEditor
 
 		static GUISceneTreeView* create(BS::GUIWidget& parent,
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
-			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr);
+			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
+			BS::GUIElementStyle* editBoxStyle = nullptr);
 
 		static GUISceneTreeView* create(BS::GUIWidget& parent, const BS::GUIOptions& options, 
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
-			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr);
+			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
+			BS::GUIElementStyle* editBoxStyle = nullptr);
 
 		void update();
 
@@ -72,6 +74,7 @@ namespace BansheeEditor
 		const BS::GUIElementStyle* mElementBtnStyle;
 		const BS::GUIElementStyle* mFoldoutBtnStyle;
 		const BS::GUIElementStyle* mSelectionBackgroundStyle;
+		const BS::GUIElementStyle* mEditBoxStyle;
 
 		BS::GUITexture* mBackgroundImage;
 		TreeElement mRootElement;
@@ -81,14 +84,25 @@ namespace BansheeEditor
 
 		TreeElement* mSelectedElement;
 		BS::GUITexture* mSelectionBackground;
+		
+		TreeElement* mEditElement;
+		GUITreeViewEditBox* mNameEditBox;
 
 		GUISceneTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
-			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, const BS::GUILayoutOptions& layoutOptions);
+			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
+			const BS::GUILayoutOptions& layoutOptions);
 
 		const GUISceneTreeView::InteractableElement* findElementUnderCoord(const CM::Vector2I& coord) const;
 		GUISceneTreeView::TreeElement* GUISceneTreeView::interactableToRealElement(const GUISceneTreeView::InteractableElement& element);
 
+		void enableEdit(TreeElement* element);
+		void disableEdit(bool acceptChanges);
+
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		virtual bool commandEvent(const BS::GUICommandEvent& ev);
 		void elementToggled(TreeElement* element, bool toggled);
+
+		void onEditAccepted();
+		void onEditCanceled();
 	};
 }

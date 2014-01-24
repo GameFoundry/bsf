@@ -6,6 +6,7 @@
 #include "BsGUIInputBox.h"
 #include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
+#include "BsGUITreeViewEditBox.h"
 
 #include "CmFont.h"
 #include "CmFontImportOptions.h"
@@ -676,6 +677,9 @@ namespace BansheeEditor
 		treeViewSelBackgroundStyle.width = 2;
 
 		mSkin.setStyle("TreeViewSelectionBackground", treeViewSelBackgroundStyle);
+
+		// Edit box
+		mSkin.setStyle(GUITreeViewEditBox::getGUITypeName(), inputBoxStyle);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const CM::String& name)

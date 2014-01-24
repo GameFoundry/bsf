@@ -7,8 +7,10 @@
 #include "BsGUISpace.h"
 #include "BsGUIWidget.h"
 #include "BsGUIToggle.h"
+#include "BsGUITreeViewEditBox.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUISkin.h"
+#include "BsGUICommandEvent.h"
 #include "CmSceneObject.h"
 #include "CmSceneManager.h"
 
@@ -22,7 +24,7 @@ namespace BansheeEditor
 	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 16;
 
 	GUISceneTreeView::TreeElement::TreeElement()
-		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr),
+		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), 
 		mId(0), mIsExpanded(false), mSortedIdx(0), mIsDirty(false), mIsVisible(true)
 	{ }
 
@@ -41,10 +43,11 @@ namespace BansheeEditor
 	}
 
 	GUISceneTreeView::GUISceneTreeView(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, const BS::GUILayoutOptions& layoutOptions)
+		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
+		const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mBackgroundStyle(backgroundStyle),
-		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle),
-		mSelectedElement(nullptr), mSelectionBackground(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle)
+		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr),
+		mSelectedElement(nullptr), mSelectionBackground(nullptr), mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle)
 	{
 		if(mBackgroundStyle == nullptr)
 			mBackgroundStyle = parent.getSkin().getStyle("TreeViewBackground");
@@ -58,12 +61,21 @@ namespace BansheeEditor
 		if(mSelectionBackgroundStyle == nullptr)
 			mSelectionBackgroundStyle = parent.getSkin().getStyle("TreeViewSelectionBackground");
 
+		if(mEditBoxStyle == nullptr)
+			mEditBoxStyle = parent.getSkin().getStyle("TreeViewEditBox");
+
 		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
 		mSelectionBackground = GUITexture::create(parent, mSelectionBackgroundStyle);
 		mSelectionBackground->disableRecursively();
+		mNameEditBox = GUITreeViewEditBox::create(parent, mEditBoxStyle);
+		mNameEditBox->disableRecursively();
+
+		mNameEditBox->onInputConfirmed.connect(boost::bind(&GUISceneTreeView::onEditAccepted, this));
+		mNameEditBox->onInputCanceled.connect(boost::bind(&GUISceneTreeView::onEditCanceled, this));
 
 		_registerChildElement(mBackgroundImage);
 		_registerChildElement(mSelectionBackground);
+		_registerChildElement(mNameEditBox);
 	}
 
 	GUISceneTreeView::~GUISceneTreeView()
@@ -72,17 +84,17 @@ namespace BansheeEditor
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle)
+		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
-			selectionBackgroundStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+			selectionBackgroundStyle, editBoxStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, const GUIOptions& options, GUIElementStyle* backgroundStyle,
-		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle)
+		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, selectionBackgroundStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
+			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
 	}
 
 	void GUISceneTreeView::update()
@@ -318,9 +330,59 @@ namespace BansheeEditor
 		return false;
 	}
 
+	bool GUISceneTreeView::commandEvent(const GUICommandEvent& ev)
+	{
+		if(ev.getType() == GUICommandEventType::Rename)
+		{
+			if(mSelectedElement != nullptr && mEditElement == nullptr)
+				enableEdit(mSelectedElement);
+
+			return true;
+		}
+
+		return false;
+	}
+
 	void GUISceneTreeView::elementToggled(TreeElement* element, bool toggled)
 	{
 		element->mIsExpanded = toggled;
+	}
+
+	void GUISceneTreeView::onEditAccepted()
+	{
+		disableEdit(true);
+	}
+
+	void GUISceneTreeView::onEditCanceled()
+	{
+		disableEdit(false);
+	}
+
+	void GUISceneTreeView::enableEdit(TreeElement* element)
+	{
+		assert(mEditElement == nullptr);
+
+		mEditElement = element;
+		mNameEditBox->enableRecursively();
+
+		if(element->mElement != nullptr)
+			element->mElement->disableRecursively();
+	}
+
+	void GUISceneTreeView::disableEdit(bool applyChanges)
+	{
+		assert(mEditElement != nullptr);
+		
+		if(mEditElement->mElement != nullptr)
+			mEditElement->mElement->enableRecursively();
+
+		if(applyChanges)
+		{
+			// TODO - Actually rename GameObject. Don't forget Undo/Redo
+		}
+
+		mNameEditBox->disableRecursively();
+		mEditElement = nullptr;
 	}
 
 	Vector2I GUISceneTreeView::_getOptimalSize() const
@@ -526,6 +588,24 @@ namespace BansheeEditor
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mSelectionBackground->_setClipRect(elemClipRect);
+		}
+
+		if(mEditElement != nullptr)
+		{
+			GUILabel* targetElement = mEditElement->mElement;
+
+			Vector2I offset = targetElement->_getOffset();
+			UINT32 remainingWidth = (UINT32)std::max(0, (((INT32)width) - (offset.x - x)));
+
+			mNameEditBox->_setOffset(offset);
+			mNameEditBox->_setWidth(remainingWidth);
+			mNameEditBox->_setHeight(targetElement->_getHeight());
+			mNameEditBox->_setAreaDepth(areaDepth);
+			mNameEditBox->_setWidgetDepth(widgetDepth);
+
+			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+			mNameEditBox->_setClipRect(elemClipRect);
+
 		}
 	}
 

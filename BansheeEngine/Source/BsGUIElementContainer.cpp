@@ -7,7 +7,7 @@ using namespace BansheeEngine;
 namespace BansheeEngine
 {
 	GUIElementContainer::GUIElementContainer(GUIWidget& parent, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, &GUISkin::DefaultStyle, layoutOptions, false)
+		:GUIElement(parent, &GUISkin::DefaultStyle, layoutOptions)
 	{ }
 
 	GUIElementContainer::~GUIElementContainer()

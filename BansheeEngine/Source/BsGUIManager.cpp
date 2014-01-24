@@ -62,7 +62,7 @@ namespace BansheeEngine
 	const UINT32 GUIManager::MESH_HEAP_INITIAL_NUM_INDICES = 49152;
 
 	GUIManager::GUIManager()
-		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left), mKeyboardFocusElement(nullptr), mKeyboardFocusWidget(nullptr),
+		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mDragState(DragState::NoDrag)
 	{
@@ -144,35 +144,43 @@ namespace BansheeEngine
 
 	void GUIManager::unregisterWidget(GUIWidget* widget)
 	{
-		auto findIter = std::find_if(begin(mWidgets), end(mWidgets), [=] (const WidgetInfo& x) { return x.widget == widget; } );
-
-		if(findIter != end(mWidgets))
 		{
-			mWidgets.erase(findIter);
+			auto findIter = std::find_if(begin(mWidgets), end(mWidgets), [=] (const WidgetInfo& x) { return x.widget == widget; } );
+
+			if(findIter != mWidgets.end())
+				mWidgets.erase(findIter);
 		}
 
-		auto findIter2 = std::find_if(begin(mElementsUnderCursor), end(mElementsUnderCursor), [=] (const ElementInfo& x) { return x.widget == widget; } );
-
-		if(findIter2 != mElementsUnderCursor.end())
-			mElementsUnderCursor.erase(findIter2);
-
-		if(mKeyboardFocusWidget == widget)
 		{
-			mKeyboardFocusWidget = nullptr;
-			mKeyboardFocusElement = nullptr;
+			auto findIter = std::find_if(begin(mElementsUnderCursor), end(mElementsUnderCursor), [=] (const ElementInfo& x) { return x.widget == widget; } );
+
+			if(findIter != mElementsUnderCursor.end())
+				mElementsUnderCursor.erase(findIter);
 		}
 
-		auto findIter4 = std::find_if(begin(mActiveElements), end(mActiveElements), [=] (const ElementInfo& x) { return x.widget == widget; } );
+		{
+			auto findIter = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), [=] (const ElementInfo& x) { return x.widget == widget; } );
 
-		if(findIter4 != mActiveElements.end())
-			mActiveElements.erase(findIter4);
+			if(findIter != mElementsInFocus.end())
+				mElementsInFocus.erase(findIter);
+		}
+
+		{
+			auto findIter = std::find_if(begin(mActiveElements), end(mActiveElements), [=] (const ElementInfo& x) { return x.widget == widget; } );
+
+			if(findIter != mActiveElements.end())
+				mActiveElements.erase(findIter);
+		}
 
 		const Viewport* renderTarget = widget->getTarget();
 		GUIRenderData& renderData = mCachedGUIData[renderTarget];
 
-		auto findIter3 = std::find(begin(renderData.widgets), end(renderData.widgets), widget);
-		if(findIter3 != end(renderData.widgets))
-			renderData.widgets.erase(findIter3);
+		{
+			auto findIter = std::find(begin(renderData.widgets), end(renderData.widgets), widget);
+			
+			if(findIter != end(renderData.widgets))
+				renderData.widgets.erase(findIter);
+		}
 
 		if(renderData.widgets.size() == 0)
 		{
@@ -195,19 +203,19 @@ namespace BansheeEngine
 		gProfiler().endSample("UpdateLayout");
 
 		// Blink caret
-		if(mKeyboardFocusElement != nullptr)
+		float curTime = gTime().getTime();
+
+		if((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
 		{
-			float curTime = gTime().getTime();
+			mCaretLastBlinkTime = curTime;
+			mIsCaretOn = !mIsCaretOn;
 
-			if((curTime - mCaretLastBlinkTime) >= mCaretBlinkInterval)
+			mCommandEvent = GUICommandEvent();
+			mCommandEvent.setType(GUICommandEventType::Redraw);
+
+			for(auto& elementInfo : mElementsInFocus)
 			{
-				mCaretLastBlinkTime = curTime;
-				mIsCaretOn = !mIsCaretOn;
-
-				mCommandEvent = GUICommandEvent();
-				mCommandEvent.setType(GUICommandEventType::Redraw);
-
-				sendCommandEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mCommandEvent);
+				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
 			}
 		}
 
@@ -231,11 +239,14 @@ namespace BansheeEngine
 
 		mActiveElements.swap(mNewActiveElements);
 
-		if(mKeyboardFocusElement != nullptr && mKeyboardFocusElement->_isDestroyed())
+		mNewElementsInFocus.clear();
+		for(auto& elementInfo : mElementsInFocus)
 		{
-			mKeyboardFocusElement = nullptr;
-			mKeyboardFocusWidget = nullptr;
+			if(!elementInfo.element->_isDestroyed())
+				mNewElementsInFocus.push_back(elementInfo);
 		}
+
+		mElementsInFocus.swap(mNewElementsInFocus);
 
 		processDestroyQueue();
 	}
@@ -817,22 +828,40 @@ namespace BansheeEngine
 			mActiveElements.swap(mNewActiveElements);
 		}
 
+		mNewElementsInFocus.clear();
+
+		// Determine elements that gained focus
 		for(auto& elementInfo : mElementsUnderCursor)
 		{
-			if(elementInfo.element->_acceptsKeyboardFocus())
+			mNewElementsInFocus.push_back(elementInfo);
+
+			auto iterFind = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), 
+				[=] (const ElementInfo& x) { return x.element == elementInfo.element; });
+
+			if(iterFind == mElementsInFocus.end())
 			{
-				if(mKeyboardFocusElement != nullptr && elementInfo.element != mKeyboardFocusElement)
-					mKeyboardFocusElement->_setFocus(false);
-
+				// TODO - Send FocusGained event
 				elementInfo.element->_setFocus(true);
-
-				mKeyboardFocusElement = elementInfo.element;
-				mKeyboardFocusWidget = elementInfo.widget;
-
-				event.markAsUsed();
-				break;
 			}
 		}
+
+		// Determine elements that lost focus
+		for(auto& elementInfo : mElementsInFocus)
+		{
+			auto iterFind = std::find_if(begin(mNewElementsInFocus), end(mNewElementsInFocus), 
+				[=] (const ElementInfo& x) { return x.element == elementInfo.element; });
+
+			if(iterFind == mNewElementsInFocus.end())
+			{
+				// TODO - Send FocusLost event
+				elementInfo.element->_setFocus(false);
+			}
+		}
+
+		if(mElementsUnderCursor.size() > 0)
+			event.markAsUsed();
+
+		mElementsInFocus.swap(mNewElementsInFocus);
 
 		// If right click try to open context menu
 		if(buttonStates[2] == true) 
@@ -887,7 +916,7 @@ namespace BansheeEngine
 
 	void GUIManager::onInputCommandEntered(CM::InputCommandType commandType)
 	{
-		if(mKeyboardFocusElement == nullptr)
+		if(mElementsInFocus.size() == 0)
 			return;
 
 		mCommandEvent = GUICommandEvent();
@@ -924,6 +953,9 @@ namespace BansheeEngine
 		case InputCommandType::Tab:
 			mCommandEvent.setType(GUICommandEventType::Tab);
 			break;
+		case InputCommandType::Rename:
+			mCommandEvent.setType(GUICommandEventType::Rename);
+			break;
 		case InputCommandType::SelectAll:
 			mCommandEvent.setType(GUICommandEventType::SelectAll);
 			break;
@@ -953,7 +985,10 @@ namespace BansheeEngine
 			break;
 		}
 
-		sendCommandEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mCommandEvent);
+		for(auto& elementInfo : mElementsInFocus)
+		{
+			sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+		}		
 	}
 
 	bool GUIManager::findElementUnderCursor(const CM::Vector2I& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
@@ -1127,12 +1162,12 @@ namespace BansheeEngine
 
 	void GUIManager::onTextInput(const CM::TextInputEvent& event)
 	{
-		if(mKeyboardFocusElement != nullptr)
-		{
-			mTextInputEvent = GUITextInputEvent();
+		mTextInputEvent = GUITextInputEvent();
+		mTextInputEvent.setData(event.textChar);
 
-			mTextInputEvent.setData(event.textChar);
-			if(sendTextInputEvent(mKeyboardFocusWidget, mKeyboardFocusElement, mTextInputEvent))
+		for(auto& elementInFocus : mElementsInFocus)
+		{
+			if(sendTextInputEvent(elementInFocus.widget, elementInFocus.element, mTextInputEvent))
 				event.markAsUsed();
 		}
 	}

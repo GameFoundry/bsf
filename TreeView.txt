@@ -9,8 +9,18 @@ TreeView
   - Deleting
       - Simply track currently selected element and Delete event
 
-IMMEDIATE:
- - Selection sprite seems to be one pixel too high even if its on the same level as the text sprite. I think this is a discrepancy on sprite level.
+TODO:
+ - Add better TreeViewEditBox texture
+ - In disableEdit make sure I actually apply name change
+   - Use Undo/Redo system (TODO: Not implemented yet)
+ - Clicking on an already selectecd element starts rename 
+    - Will likely need some kind of check to ignore double-clicks?
+ - Pressing F2 starts rename
+ - Context menu with rename
+ - Detect when I click outside of input box and disable edit (TODO: Need a way to easily detect this)
+ - Delete
+    - Needs Undo/Redo support
+
 
 Implementation steps:
  - Selection
@@ -41,3 +51,34 @@ Detecting external clicks:
  - When dragging in tree view automatically expand mouse over elements
  - Ability to select and drag multiple elements
  - "Ping" effect
+ - All operations should be undo-redoable
+ - Context menu with copy/paste
+ - Copy/Paste/Duplicate
+   - This is more of a problem with actual copying of SceneObjects (It's not implemented). I should be able to serialize, and then de-serialize with a new parent as a form of copy.
+
+
+ ---------------------
+
+ SHORTCUT BRAINSTORM:
+
+ Remove pre-defined GUICommandEvents and InputCommandType. They cannot be easily extended and I will need their functionality when I add support for shortcuts! 
+INSTEAD:
+ - Add GUIShortcutManager to BansheeEngine
+ - Platform forwards all input commands to ShortcutManager instead of gInput (via a callback)
+ - ShortcutManager checks if it has any registered shortcuts and if any are triggered it notifies GUIManager
+ - Shortcuts change depending on active GUIElement
+   - Each GUIELement can provide a list of shortcuts it listens to
+   - OnFocusGained/OnFocusLost adds/removes items from the list
+   - If multiple elements are in focus, all of their shortcuts are registered but the callbacks just don't get triggered on those elements that don't have the triggered shortcut
+     - If two elements have the same shortcut, only one of them will trigger (undefined which)
+ - (Obviously this functionality will need focusGained/focusLost functionality first)
+
+
+TODO: Can I integrate this with the input manager somehow?
+ - NO - Shortcut system should be GUI only, while in-game input and in-game shortcuts will be handled manually.
+
+When I implement focus gained/lost system, send keyboard input to all elements with focus. Remove "acceptsKeyboardFocus". Elements can choose to ignore keyboard focus by ignoring keyboard events.
+Remove Cut/Copy/Paste/Undo/Redo/Rename/SelectAll and similar shortcuts from InputCommands. Instead send generic shortcut commands whenever user presses some key (together with shift/ctrl/alt state).
+  - Some shift/ctrl combinations might not be general shortcuts, like shift + arrows for selection, in which case we send them as specific shortcuts instead of generic ones
+  - I should also add a GUIShortcutManager, as a centralized place for dealing with shortcuts (so that I my edit them at a later date)
+   - TODO - Figure out how would this work

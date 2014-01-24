@@ -269,6 +269,7 @@
     <ClInclude Include="Include\BsGUISceneTreeView.h" />
     <ClInclude Include="Include\BsGUITabbedTitleBar.h" />
     <ClInclude Include="Include\BsGUITabButton.h" />
+    <ClInclude Include="Include\BsGUITreeViewEditBox.h" />
     <ClInclude Include="Include\BsGUIWindowFrame.h" />
     <ClInclude Include="Include\BsGUIWindowFrameWidget.h" />
     <ClInclude Include="Include\BsGUIWindowDropArea.h" />
@@ -294,6 +295,7 @@
     <ClCompile Include="Source\BsGUISceneTreeView.cpp" />
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUITabButton.cpp" />
+    <ClCompile Include="Source\BsGUITreeViewEditBox.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />

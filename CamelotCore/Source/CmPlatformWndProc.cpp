@@ -455,6 +455,9 @@ namespace CamelotFramework
 		case VK_TAB:
 			command = InputCommandType::Tab;
 			return true;
+		case VK_F2:
+			command = InputCommandType::Rename;
+			return true;
 		case 0x41: // A
 			if(isCtrlPressed)
 			{

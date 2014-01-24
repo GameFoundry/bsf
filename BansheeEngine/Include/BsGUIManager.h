@@ -147,8 +147,8 @@ namespace BansheeEngine
 		CM::Vector<ElementInfo>::type mNewActiveElements;
 
 		// Element and widget that currently have the keyboard focus
-		GUIWidget* mKeyboardFocusWidget;
-		GUIElement* mKeyboardFocusElement;
+		CM::Vector<ElementInfo>::type mElementsInFocus;
+		CM::Vector<ElementInfo>::type mNewElementsInFocus;
 
 		GUIInputCaret* mInputCaret;
 		GUIInputSelection* mInputSelection;

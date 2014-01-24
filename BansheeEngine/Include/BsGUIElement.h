@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElement : public GUIElementBase
 	{
 	public:
-		GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool acceptsKeyboardFocus = true);
+		GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIElement();
 
 		/**
@@ -95,7 +95,6 @@ namespace BansheeEngine
 		void _setWidth(CM::UINT32 width);
 		void _setHeight(CM::UINT32 height);
 		void _setClipRect(const CM::RectI& clipRect);
-		void _setAcceptsKeyboardFocus(bool acceptsKeyboardFocus) { mAcceptsKeyboardFocus = acceptsKeyboardFocus; }
 		virtual void _setFocus(bool focus) {}
 		virtual void _changeParentWidget(GUIWidget* widget);
 
@@ -111,7 +110,6 @@ namespace BansheeEngine
 		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return *mParent; }
 		virtual bool _isInBounds(const CM::Vector2I position) const;
-		bool _acceptsKeyboardFocus() const { return mAcceptsKeyboardFocus; }
 
 		virtual GUIContextMenu* getContextMenu() const { return nullptr; }
 
@@ -143,7 +141,6 @@ namespace BansheeEngine
 		GUILayoutOptions mLayoutOptions;
 		CM::RectI mClippedBounds;
 
-		bool mAcceptsKeyboardFocus;
 		CM::UINT32 mDepth;
 		CM::Vector2I mOffset;
 		CM::UINT32 mWidth, mHeight;
