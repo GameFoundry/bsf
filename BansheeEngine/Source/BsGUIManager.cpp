@@ -829,8 +829,11 @@ namespace BansheeEngine
 		}
 
 		mNewElementsInFocus.clear();
-
+		mCommandEvent = GUICommandEvent();
+		
 		// Determine elements that gained focus
+		mCommandEvent.setType(GUICommandEventType::FocusGained);
+
 		for(auto& elementInfo : mElementsUnderCursor)
 		{
 			mNewElementsInFocus.push_back(elementInfo);
@@ -840,12 +843,13 @@ namespace BansheeEngine
 
 			if(iterFind == mElementsInFocus.end())
 			{
-				// TODO - Send FocusGained event
-				elementInfo.element->_setFocus(true);
+				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
 			}
 		}
 
 		// Determine elements that lost focus
+		mCommandEvent.setType(GUICommandEventType::FocusLost);
+
 		for(auto& elementInfo : mElementsInFocus)
 		{
 			auto iterFind = std::find_if(begin(mNewElementsInFocus), end(mNewElementsInFocus), 
@@ -853,8 +857,7 @@ namespace BansheeEngine
 
 			if(iterFind == mNewElementsInFocus.end())
 			{
-				// TODO - Send FocusLost event
-				elementInfo.element->_setFocus(false);
+				sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
 			}
 		}
 

@@ -533,6 +533,26 @@ namespace BansheeEngine
 			return true;
 		}
 
+		if(ev.getType() == GUICommandEventType::FocusGained)
+		{
+			mActiveTexture = mStyle->focused.texture;
+			markContentAsDirty();
+
+			mHasFocus = true;
+			return true;
+		}
+		
+		if(ev.getType() == GUICommandEventType::FocusLost)
+		{
+			mActiveTexture = mStyle->normal.texture;
+			hideCaret();
+			clearSelection();
+			markContentAsDirty();
+
+			mHasFocus = false;
+			return true;
+		}
+		
 		if(ev.getType() == GUICommandEventType::Backspace)
 		{
 			if(mText.size() > 0)
@@ -956,24 +976,6 @@ namespace BansheeEngine
 		textDesc.wordWrap = mIsMultiline;
 
 		return textDesc;
-	}
-
-	void GUIInputBox::_setFocus(bool focus)
-	{
-		if(focus)
-		{
-			mActiveTexture = mStyle->focused.texture;
-			markContentAsDirty();
-		}
-		else
-		{
-			mActiveTexture = mStyle->normal.texture;
-			hideCaret();
-			clearSelection();
-			markContentAsDirty();
-		}
-
-		mHasFocus = focus;
 	}
 
 	GUIContextMenu* GUIInputBox::getContextMenu() const

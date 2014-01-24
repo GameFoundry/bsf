@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	enum class GUICommandEventType
 	{
-		Redraw, CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
+		Redraw, FocusLost, FocusGained, CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
 		SelectLeft, SelectRight, SelectUp, SelectDown, Undo, Redo, Rename,
 		Escape, Delete, Backspace, Return, SelectAll, Copy, Cut, Paste, Tab
 	};

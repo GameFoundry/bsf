@@ -68,8 +68,8 @@ namespace BansheeEngine
 	void GUIElementBase::enableRecursively()
 	{
 		// Make sure to mark everything as dirty, as we didn't track any dirty flags while the element was disabled
-		markContentAsDirty();
 		mIsDisabled = false;
+		markContentAsDirty();
 
 		for(auto& elem : mChildren)
 		{

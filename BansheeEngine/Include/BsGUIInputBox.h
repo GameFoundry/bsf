@@ -63,7 +63,6 @@ namespace BansheeEngine
 		virtual CM::RectI _getTextInputRect() const;
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
-		virtual void _setFocus(bool focus);
 
 		virtual GUIContextMenu* getContextMenu() const;
 	private:

@@ -53,7 +53,6 @@ namespace BansheeEngine
 		GUIElementBase* _getParent() const { return mParentElement; }
 
 		void _markAsClean() { mIsDirty = 0; }
-		virtual void _setFocus(bool focus) {}
 
 		bool _isContentDirty() const;
 		bool _isMeshDirty() const; 

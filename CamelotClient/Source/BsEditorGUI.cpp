@@ -112,6 +112,7 @@ namespace BansheeEditor
 	const String EditorGUI::TreeViewExpandButtonOnHover = "TreeViewExpandButtonOnHover.psd";
 
 	const String EditorGUI::TreeViewSelectionBackground = "TreeViewSelectionBackground.psd";
+	const String EditorGUI::TreeViewEditBox = "TreeViewEditBox.psd";
 
 	EditorGUI::EditorGUI()
 	{
@@ -679,7 +680,28 @@ namespace BansheeEditor
 		mSkin.setStyle("TreeViewSelectionBackground", treeViewSelBackgroundStyle);
 
 		// Edit box
-		mSkin.setStyle(GUITreeViewEditBox::getGUITypeName(), inputBoxStyle);
+		GUIElementStyle treeViewEditBox;
+		treeViewEditBox.normal.texture = getTexture(TreeViewEditBox);
+		treeViewEditBox.hover.texture = treeViewEditBox.normal.texture;
+		treeViewEditBox.focused.texture = treeViewEditBox.normal.texture;
+		treeViewEditBox.active.texture = treeViewEditBox.normal.texture;
+		treeViewEditBox.border.left = 1;
+		treeViewEditBox.border.right = 1;
+		treeViewEditBox.border.top = 1;
+		treeViewEditBox.border.bottom = 1;
+		treeViewEditBox.margins.left = 1;
+		treeViewEditBox.margins.right = 1;
+		treeViewEditBox.margins.top = 1;
+		treeViewEditBox.margins.bottom = 1;
+		treeViewEditBox.fixedHeight = true;
+		treeViewEditBox.height = 13;
+		treeViewEditBox.minWidth = 10;
+		treeViewEditBox.font = font;
+		treeViewEditBox.fontSize = DefaultFontSize;
+		treeViewEditBox.textHorzAlign = THA_Left;
+		treeViewEditBox.textVertAlign = TVA_Top;
+
+		mSkin.setStyle(GUITreeViewEditBox::getGUITypeName(), treeViewEditBox);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const CM::String& name)

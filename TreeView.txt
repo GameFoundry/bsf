@@ -1,16 +1,6 @@
-TreeView
-  - Name editing
-     - Detect mouse input in TreeView and if I double click over a GUILabel start rename
-     - Or if I select it and hit F2 also start rename
-     - Has callbacks with which it notifies TreeView of actual changes
-  - Selecting
-     - Clicking on a row of TreeView sets a flag that item is selected, and a GUIElement is created. 
-     - Element is positioned in updateLayoutInternal and it shows a different colored background
-  - Deleting
-      - Simply track currently selected element and Delete event
-
 TODO:
  - Add better TreeViewEditBox texture
+ - Callback on tree item select
  - In disableEdit make sure I actually apply name change
    - Use Undo/Redo system (TODO: Not implemented yet)
  - Clicking on an already selectecd element starts rename 
@@ -20,16 +10,6 @@ TODO:
  - Detect when I click outside of input box and disable edit (TODO: Need a way to easily detect this)
  - Delete
     - Needs Undo/Redo support
-
-
-Implementation steps:
- - Selection
-   - Clicking on element selects it, delete removes it, F2 renames is. Slow double click renames it.
-   - Rename implementation to follow, just set up an empty method for now
-   - Callback on selection
- - Rename implementation
-   - When rename is initiated hide the objects label and replace it with an input-box with the same text as a label
-   - Rename ends when user hits enter or click anywhere else but the rename box
  - Drag and drop
    - If a mouse drag is detected DragAndDropManager is activated
    - Element is not removed from its original position until drag is complete
@@ -39,13 +19,9 @@ Implementation steps:
  - Auto scroll
     - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
 
-Detecting external clicks:
- - LostFocus event?
-   - Triggered when I click on another control within my own windows, or when controls parent window loses the focus himself
-   - Each GUIElement can implement acceptsMouseFocus event. If it does, then mouse click will cause a ReceivedFocus event.
-     - Mouse click on any other element, or window losing focus will trigger LostFocus events
- - I can replace clumsy Selective Input with this approach
- - DropDownBox can also use the same approach although I will likely need to convert DropDownBox to a GUIElement - DO THIS AFTER TreeView implementation is working
+Gained/Lost focus refactor:
+ - Add Window mouse hooks for detecting a mouse press outside of a window: http://www.codeproject.com/Articles/187869/Your-Desktop-and-Microsoft-s-SetWindowsHookEx
+ - Remove Selective input and port DropDownBox so it uses the focus system
 
  Other:
  - When dragging in tree view automatically expand mouse over elements
@@ -57,28 +33,12 @@ Detecting external clicks:
    - This is more of a problem with actual copying of SceneObjects (It's not implemented). I should be able to serialize, and then de-serialize with a new parent as a form of copy.
 
 
- ---------------------
+--------------------------------------------------
+LOW PRIORITY:
 
- SHORTCUT BRAINSTORM:
-
- Remove pre-defined GUICommandEvents and InputCommandType. They cannot be easily extended and I will need their functionality when I add support for shortcuts! 
-INSTEAD:
- - Add GUIShortcutManager to BansheeEngine
- - Platform forwards all input commands to ShortcutManager instead of gInput (via a callback)
- - ShortcutManager checks if it has any registered shortcuts and if any are triggered it notifies GUIManager
- - Shortcuts change depending on active GUIElement
-   - Each GUIELement can provide a list of shortcuts it listens to
-   - OnFocusGained/OnFocusLost adds/removes items from the list
-   - If multiple elements are in focus, all of their shortcuts are registered but the callbacks just don't get triggered on those elements that don't have the triggered shortcut
-     - If two elements have the same shortcut, only one of them will trigger (undefined which)
- - (Obviously this functionality will need focusGained/focusLost functionality first)
-
-
-TODO: Can I integrate this with the input manager somehow?
- - NO - Shortcut system should be GUI only, while in-game input and in-game shortcuts will be handled manually.
-
-When I implement focus gained/lost system, send keyboard input to all elements with focus. Remove "acceptsKeyboardFocus". Elements can choose to ignore keyboard focus by ignoring keyboard events.
-Remove Cut/Copy/Paste/Undo/Redo/Rename/SelectAll and similar shortcuts from InputCommands. Instead send generic shortcut commands whenever user presses some key (together with shift/ctrl/alt state).
-  - Some shift/ctrl combinations might not be general shortcuts, like shift + arrows for selection, in which case we send them as specific shortcuts instead of generic ones
-  - I should also add a GUIShortcutManager, as a centralized place for dealing with shortcuts (so that I my edit them at a later date)
-   - TODO - Figure out how would this work
+Shoutcuts ideas:
+Remove Cut/Copy/Paste/Undo/Redo/Rename/SelectAll and similar shortcuts from InputCommands. Instead send generic shortcut commands whenever user presses some key (with shift/ctrl/alt state).
+ - I will need some kind of generic shortcuts at some point so there is no point that Rename is hardcoded to F2
+ - I should also add a GUIShortcutManager, as a centralized place for dealing with shortcuts (so that I my edit them at a later date)
+  - TODO - Figure out how would this work. How would the centralized system know all of the UI shortcuts? Probably register them somehow on program start?
+ - This shortcut system would be separate from the input manager, and would not be meant for in-game use

@@ -95,7 +95,6 @@ namespace BansheeEngine
 		void _setWidth(CM::UINT32 width);
 		void _setHeight(CM::UINT32 height);
 		void _setClipRect(const CM::RectI& clipRect);
-		virtual void _setFocus(bool focus) {}
 		virtual void _changeParentWidget(GUIWidget* widget);
 
 		CM::UINT32 _getWidth() const { return mWidth; }

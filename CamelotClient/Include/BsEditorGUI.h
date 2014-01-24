@@ -109,6 +109,7 @@ namespace BansheeEditor
 		static const CM::String TreeViewExpandButtonOnHover;
 
 		static const CM::String TreeViewSelectionBackground;
+		static const CM::String TreeViewEditBox;
 
 		static BS::HSpriteTexture getTexture(const CM::String& name);
 	};
