@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsEditorCommand.h"
+#include "BsUndoRedo.h"
 
 namespace BansheeEditor
 {
@@ -19,10 +20,10 @@ namespace BansheeEditor
 				cm_free(mOldData);
 		}
 
-		void execute(const CM::GameObjectHandleBase& gameObject, const CM::String& fieldName, const T& fieldValue)
+		static void execute(const CM::GameObjectHandleBase& gameObject, const CM::String& fieldName, const T& fieldValue)
 		{
 			// Register command and commit it
-			CmdEditFieldGO* command = cm_new<CmdEditFieldGO>(gameObject, fieldName, fieldValue);
+			CmdEditPlainFieldGO* command = new (cm_alloc<CmdEditPlainFieldGO>()) CmdEditPlainFieldGO(gameObject, fieldName, fieldValue);
 			UndoRedo::instance().registerCommand(command);
 			command->commit();
 		}

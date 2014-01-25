@@ -34,6 +34,8 @@ namespace CamelotFramework
 	class CM_EXPORT GameObjectHandleBase
 	{
 	public:
+		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData> data);
+
 		/**
 		 * @brief	Checks if the object has been destroyed
 		 */
@@ -106,10 +108,9 @@ namespace CamelotFramework
 			return *this;
 		}
 
-		GameObjectHandleBase toBase()
+		inline operator GameObjectHandleBase()
 		{
-			GameObjectHandleBase base;
-			base.mData = this->mData;
+			GameObjectHandleBase base(mData);
 
 			return base;
 		}

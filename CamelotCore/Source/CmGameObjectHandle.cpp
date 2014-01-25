@@ -5,6 +5,10 @@
 
 namespace CamelotFramework
 {
+	GameObjectHandleBase::GameObjectHandleBase(std::shared_ptr<GameObjectHandleData> data)
+		:mData(data)
+	{ }
+
 	GameObjectHandleBase::GameObjectHandleBase()
 	{ }
 

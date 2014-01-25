@@ -45,58 +45,6 @@ namespace CamelotFramework
 			return 0;
 		}
 
-		template<class ObjectType, class DataType>
-		void getValue(ObjectType* object, DataType& value)
-		{
-			checkIsArray(false);
-			checkType<DataType>();
-
-			boost::function<DataType&(ObjectType*)> f = boost::any_cast<boost::function<DataType&(ObjectType*)>>(valueGetter);
-			value = f(object);
-		}
-
-		template<class ObjectType, class DataType>
-		void getArrayValue(ObjectType* object, UINT32 index, DataType& value)
-		{
-			checkIsArray(true);
-			checkType<DataType>();
-
-			boost::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
-			value = f(object, index);
-		}
-
-		template<class ObjectType, class DataType>
-		void setValue(ObjectType* object, DataType& value)
-		{
-			checkIsArray(false);
-			checkType<DataType>();
-
-			if(valueSetter.empty())
-			{
-				CM_EXCEPT(InternalErrorException,
-					"Specified field (" + mName + ") has no setter.");
-			}
-
-			boost::function<void(ObjectType*, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, DataType&)>>(valueSetter);
-			f(object, value);
-		}
-
-		template<class ObjectType, class DataType>
-		void setArrayValue(ObjectType* object, UINT32 index, DataType& value)
-		{
-			checkIsArray(true);
-			checkType<DataType>();
-
-			if(valueSetter.empty())
-			{
-				CM_EXCEPT(InternalErrorException, 
-					"Specified field (" + mName + ") has no setter.");
-			}
-
-			boost::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
-			f(object, index, value);
-		}
-
 		/**
 		 * @brief	Retrieves the value from the provided field of the provided object, and copies
 		 * 			it into the buffer. WARNING - It does not check if buffer is large enough.
@@ -210,8 +158,9 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			DataType value;
-			getValue(castObject, value);
+			boost::function<DataType&(ObjectType*)> f = boost::any_cast<boost::function<DataType&(ObjectType*)>>(valueGetter);
+			DataType value = f(castObject);
+
 			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
@@ -222,8 +171,9 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			DataType value;
-			getArrayValue(castObject, index, value);
+			boost::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
+			DataType value = f(castObject, index);
+
 			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
@@ -258,8 +208,9 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			DataType value;
-			getValue(castObject, value);
+			boost::function<DataType&(ObjectType*)> f = boost::any_cast<boost::function<DataType&(ObjectType*)>>(valueGetter);
+			DataType value = f(castObject);
+
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
@@ -270,8 +221,9 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			DataType value;
-			getArrayValue(castObject, index, value);
+			boost::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
+			DataType value = f(castObject, index);
+
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
@@ -284,7 +236,15 @@ namespace CamelotFramework
 
 			DataType value;
 			RTTIPlainType<DataType>::fromMemory(value, (char*)buffer);
-			setValue(castObject, value);
+
+			if(valueSetter.empty())
+			{
+				CM_EXCEPT(InternalErrorException,
+					"Specified field (" + mName + ") has no setter.");
+			}
+
+			boost::function<void(ObjectType*, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, DataType&)>>(valueSetter);
+			f(castObject, value);
 		}
 
 		virtual void arrayElemFromBuffer(void* object, int index, void* buffer)
@@ -296,7 +256,15 @@ namespace CamelotFramework
 
 			DataType value;
 			RTTIPlainType<DataType>::fromMemory(value, (char*)buffer);
-			setArrayValue(castObject, index, value);
+
+			if(valueSetter.empty())
+			{
+				CM_EXCEPT(InternalErrorException, 
+					"Specified field (" + mName + ") has no setter.");
+			}
+
+			boost::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
+			f(castObject, index, value);
 		}
 	};
 }

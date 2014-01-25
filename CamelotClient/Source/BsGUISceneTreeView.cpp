@@ -13,6 +13,7 @@
 #include "BsGUICommandEvent.h"
 #include "CmSceneObject.h"
 #include "CmSceneManager.h"
+#include "BsCmdEditPlainFieldGO.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -378,7 +379,8 @@ namespace BansheeEditor
 
 		if(applyChanges)
 		{
-			// TODO - Actually rename GameObject. Don't forget Undo/Redo
+			String newName = toString(mNameEditBox->getText());
+			CmdEditPlainFieldGO<String>::execute(mEditElement->mSceneObject, "mName", newName);
 		}
 
 		mNameEditBox->disableRecursively();

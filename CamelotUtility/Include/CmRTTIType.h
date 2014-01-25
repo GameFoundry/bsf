@@ -64,7 +64,19 @@ namespace CamelotFramework
 			genericField->checkIsPlain(false);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
-			field->setValue(object, value);
+
+			UINT32 typeSize = 0;
+			if(RTTIPlainType<DataType>::hasDynamicSize)
+				typeSize = RTTIPlainType<DataType>::getDynamicSize(value);
+			else
+				typeSize = sizeof(DataType);
+
+			UINT8* tempBuffer = stackAlloc(typeSize);
+			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
+			
+			field->fromBuffer(object, tempBuffer);
+
+			stackDeallocLast(tempBuffer);
 		}
 
 		template <class ObjectType, class DataType>
@@ -74,7 +86,19 @@ namespace CamelotFramework
 			genericField->checkIsPlain(true);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
-			field->setArrayValue(object, index, value);
+
+			UINT32 typeSize = 0;
+			if(RTTIPlainType<DataType>::hasDynamicSize)
+				typeSize = RTTIPlainType<DataType>::getDynamicSize(value);
+			else
+				typeSize = sizeof(DataType);
+
+			UINT8* tempBuffer = stackAlloc(typeSize);
+			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
+
+			field->arrayElemFromBuffer(object, index, tempBuffer);
+
+			stackDeallocLast(tempBuffer);
 		}
 
 		template <class ObjectType, class DataType>
@@ -147,7 +171,19 @@ namespace CamelotFramework
 			genericField->checkIsPlain(false);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
-			field->getValue(object, value);
+
+			UINT32 typeSize = 0;
+			if(field->hasDynamicSize())
+				typeSize = field->getDynamicSize(object);
+			else
+				typeSize = field->getTypeSize();
+
+			UINT8* tempBuffer = stackAlloc(typeSize);
+
+			field->toBuffer(object, tempBuffer);
+			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
+
+			stackDeallocLast(tempBuffer);
 		}
 
 		template <class ObjectType, class DataType>
@@ -157,7 +193,19 @@ namespace CamelotFramework
 			genericField->checkIsPlain(true);
 
 			RTTIPlainFieldBase* field = static_cast<RTTIPlainFieldBase*>(genericField);
-			field->getArrayValue(object, index, value);
+
+			UINT32 typeSize = 0;
+			if(field->hasDynamicSize())
+				typeSize = field->getArrayElemDynamicSize(object, arrIdx);
+			else
+				typeSize = field->getTypeSize();
+
+			UINT8* tempBuffer = stackAlloc(typeSize);
+
+			field->arrayElemToBuffer(object, index, tempBuffer);
+			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
+
+			stackDeallocLast(tempBuffer);
 		}	
 
 		template <class ObjectType>

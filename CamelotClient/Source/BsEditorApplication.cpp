@@ -5,6 +5,7 @@
 #include "CmApplication.h"
 #include "CmRenderWindow.h"
 #include "BsEditorGUI.h"
+#include "BsUndoRedo.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -214,6 +215,7 @@ namespace BansheeEditor
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
 
+		UndoRedo::startUp(cm_new<UndoRedo>());
 		EditorWindowManager::startUp(cm_new<EditorWindowManager>());
 		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
 
@@ -225,6 +227,7 @@ namespace BansheeEditor
 		gBansheeApp().runMainLoop();
 
 		EditorWindowManager::shutDown();
+		UndoRedo::shutDown();
 
 
 		/************************************************************************/
