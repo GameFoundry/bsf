@@ -43,6 +43,17 @@ namespace CamelotFramework
 		 * @brief	Internal method only. Not meant to be called directly.
 		 */
 		std::shared_ptr<GameObjectHandleData> getHandleData() const { return mData; }
+
+		GameObject* get() const 
+		{ 
+			throwIfDestroyed();
+
+			return mData->mPtr; 
+		}
+
+		GameObject* operator->() const { return get(); }
+		GameObject& operator*() const { return *get(); }
+
 	protected:
 		friend SceneObject;
 
@@ -68,6 +79,8 @@ namespace CamelotFramework
 		std::shared_ptr<GameObjectHandleData> mData;
 	};
 
+	// NOTE: It is important this class contains no data since we often value 
+	// cast it to its base 
 	template <typename T>
 	class GameObjectHandle : public GameObjectHandleBase
 	{
@@ -91,6 +104,14 @@ namespace CamelotFramework
 			mData->mPtr = nullptr;
 
 			return *this;
+		}
+
+		GameObjectHandleBase toBase()
+		{
+			GameObjectHandleBase base;
+			base.mData = this->mData;
+
+			return base;
 		}
 
 		T* get() const 

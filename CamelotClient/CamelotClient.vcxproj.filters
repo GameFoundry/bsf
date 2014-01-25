@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Editor">
       <UniqueIdentifier>{ccd6be96-5773-46cc-a751-18a7007716c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Editor\Commands">
+      <UniqueIdentifier>{c23d8d16-3a53-4e53-9e87-a15e33d5758c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Editor\Command">
+      <UniqueIdentifier>{fc5eed3b-3a94-4c0b-b462-636e84615f94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -99,6 +105,15 @@
     <ClInclude Include="Include\BsGUITreeViewEditBox.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsEditorCommand.h">
+      <Filter>Header Files\Editor\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsUndoRedo.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCmdEditPlainFieldGO.h">
+      <Filter>Header Files\Editor\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -172,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUITreeViewEditBox.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsEditorCommand.cpp">
+      <Filter>Source Files\Editor\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsUndoRedo.cpp">
+      <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

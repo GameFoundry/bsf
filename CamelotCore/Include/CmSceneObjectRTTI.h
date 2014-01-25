@@ -9,11 +9,13 @@ namespace CamelotFramework
 	class CM_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{
 	private:
+		String& getName(SceneObject* obj) { return obj->mName; }
+		void setName(SceneObject* obj, String& name) { obj->mName = name; }
 
 	public:
 		SceneObjectRTTI()
 		{
-
+			addPlainField("mName", 0, &SceneObjectRTTI::getName, &SceneObjectRTTI::setName);
 		}
 
 		virtual const String& getRTTIName()

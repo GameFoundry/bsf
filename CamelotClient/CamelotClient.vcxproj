@@ -255,8 +255,10 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsCmdEditPlainFieldGO.h" />
     <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsEditorApplication.h" />
+    <ClInclude Include="Include\BsEditorCommand.h" />
     <ClInclude Include="Include\BsEditorGUI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
     <ClInclude Include="Include\BsEditorWidget.h" />
@@ -278,12 +280,14 @@
     <ClInclude Include="Include\CmTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
     <ClInclude Include="Include\DbgEditorWidget2.h" />
+    <ClInclude Include="Include\BsUndoRedo.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamelotClient.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />
+    <ClCompile Include="Source\BsEditorCommand.cpp" />
     <ClCompile Include="Source\BsEditorGUI.cpp" />
     <ClCompile Include="Source\BsEditorWidget.cpp" />
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp" />
@@ -300,6 +304,7 @@
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
+    <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\CmDebugCamera.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />
     <ClCompile Include="Source\CmTestTextSprite.cpp" />
