@@ -256,14 +256,6 @@ namespace BansheeEditor
 		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
 			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, boost::bind(&GUIMenuBar::onSubMenuClosed, this));
 
-		GUIManager::instance().enableSelectiveInput(boost::bind(&GUIMenuBar::closeSubMenu, this));
-		GUIManager::instance().addSelectiveInputWidget(dropDownBox.get());
-
-		for(auto& childMenu : mChildMenus)
-		{
-			GUIManager::instance().addSelectiveInputElement(childMenu.button);
-		}
-
 		subMenu->button->_setOn(true);
 
 		mSubMenuButton = subMenu->button;
@@ -275,8 +267,7 @@ namespace BansheeEditor
 		if(mSubMenuOpen)
 		{
 			GUIDropDownBoxManager::instance().closeDropDownBox();
-			GUIManager::instance().disableSelectiveInput();
-			
+
 			mSubMenuButton->_setOn(false);
 			mSubMenuOpen = false;
 		}		
@@ -298,8 +289,6 @@ namespace BansheeEditor
 
 	void GUIMenuBar::onSubMenuClosed()
 	{
-		GUIManager::instance().disableSelectiveInput();
-
 		mSubMenuButton->_setOn(false);
 		mSubMenuOpen = false;
 	}

@@ -79,6 +79,11 @@ namespace BansheeEngine
 		 */
 		CM::RectI getBounds() const;
 
+		/**
+		 * @brief	Sets or removes focus from an element.
+		 */
+		void setFocus(bool enabled);
+
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool textInputEvent(const GUITextInputEvent& ev);
 		virtual bool commandEvent(const GUICommandEvent& ev);

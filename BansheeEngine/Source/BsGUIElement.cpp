@@ -137,6 +137,11 @@ namespace BansheeEngine
 		return RectI(mOffset.x, mOffset.y, mWidth, mHeight);
 	}
 
+	void GUIElement::setFocus(bool enabled)
+	{
+		GUIManager::instance().setFocus(this, enabled);
+	}
+
 	RectI GUIElement::getVisibleBounds() const
 	{
 		RectI bounds = _getClippedBounds();

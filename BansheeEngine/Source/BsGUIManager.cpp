@@ -64,7 +64,7 @@ namespace BansheeEngine
 	GUIManager::GUIManager()
 		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mSelectiveInputActive(false), mDragState(DragState::NoDrag)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDragState(DragState::NoDrag)
 	{
 		mOnCursorMovedConn = gInput().onCursorMoved.connect(boost::bind(&GUIManager::onCursorMoved, this, _1));
 		mOnCursorPressedConn = gInput().onCursorPressed.connect(boost::bind(&GUIManager::onCursorPressed, this, _1));
@@ -151,27 +151,6 @@ namespace BansheeEngine
 				mWidgets.erase(findIter);
 		}
 
-		{
-			auto findIter = std::find_if(begin(mElementsUnderCursor), end(mElementsUnderCursor), [=] (const ElementInfo& x) { return x.widget == widget; } );
-
-			if(findIter != mElementsUnderCursor.end())
-				mElementsUnderCursor.erase(findIter);
-		}
-
-		{
-			auto findIter = std::find_if(begin(mElementsInFocus), end(mElementsInFocus), [=] (const ElementInfo& x) { return x.widget == widget; } );
-
-			if(findIter != mElementsInFocus.end())
-				mElementsInFocus.erase(findIter);
-		}
-
-		{
-			auto findIter = std::find_if(begin(mActiveElements), end(mActiveElements), [=] (const ElementInfo& x) { return x.widget == widget; } );
-
-			if(findIter != mActiveElements.end())
-				mActiveElements.erase(findIter);
-		}
-
 		const Viewport* renderTarget = widget->getTarget();
 		GUIRenderData& renderData = mCachedGUIData[renderTarget];
 
@@ -247,6 +226,48 @@ namespace BansheeEngine
 		}
 
 		mElementsInFocus.swap(mNewElementsInFocus);
+
+		for(auto& focusElementInfo : mForcedFocusElements)
+		{
+			if(focusElementInfo.element->_isDestroyed())
+				continue;
+
+			if(focusElementInfo.focus)
+			{
+				auto iterFind = std::find_if(mElementsInFocus.begin(), mElementsInFocus.end(), 
+					[&](const ElementInfo& x) { return x.element == focusElementInfo.element; });
+
+				if(iterFind == mElementsInFocus.end())
+				{
+					mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, &focusElementInfo.element->_getParentWidget()));
+
+					mCommandEvent = GUICommandEvent();
+					mCommandEvent.setType(GUICommandEventType::FocusGained);
+
+					sendCommandEvent(&focusElementInfo.element->_getParentWidget(), focusElementInfo.element, mCommandEvent);
+				}
+			}
+			else
+			{
+				mNewElementsInFocus.clear();
+				for(auto& elementInfo : mElementsInFocus)
+				{
+					if(elementInfo.element == focusElementInfo.element)
+					{
+						mCommandEvent = GUICommandEvent();
+						mCommandEvent.setType(GUICommandEventType::FocusLost);
+
+						sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
+					}
+					else
+						mNewElementsInFocus.push_back(elementInfo);
+				}
+
+				mElementsInFocus.swap(mNewElementsInFocus);
+			}
+		}
+
+		mForcedFocusElements.clear();
 
 		processDestroyQueue();
 	}
@@ -790,13 +811,6 @@ namespace BansheeEngine
 
 		GUIMouseButton guiButton = buttonToGUIButton(event.button);
 
-		// Send out selective input callback when user clicks on non-selectable element
-		if(mSelectiveInputActive && mElementsUnderCursor.size() == 0)
-		{
-			if(mOnOutsideClickCallback != nullptr)
-				mOnOutsideClickCallback();
-		}
-
 		// We only check for mouse down if mouse isn't already being held down, and we are hovering over an element
 		if(mActiveElements.size() == 0)
 		{
@@ -1057,20 +1071,6 @@ namespace BansheeEngine
 				GUIWidget* widget = widgetInfo.widget;
 				if(widgetWindows[widgetIdx] == windowUnderCursor && widget->inBounds(windowToBridgedCoords(*widget, windowPos)))
 				{
-					SelectiveInputData* selectiveInputData = nullptr;
-					if(mSelectiveInputActive)
-					{
-						auto selectionIterFind = mSelectiveInputData.find(widget);
-
-						if(selectionIterFind == mSelectiveInputData.end())
-						{
-							widgetIdx++;
-							continue;
-						}
-						else
-							selectiveInputData = &selectionIterFind->second;
-					}
-
 					const Vector<GUIElement*>::type& elements = widget->getElements();
 					Vector2I localPos = getWidgetRelativePos(*widget, cursorScreenPos);
 
@@ -1081,12 +1081,6 @@ namespace BansheeEngine
 
 						if(!element->_isDisabled() && element->_isInBounds(localPos))
 						{
-							if(mSelectiveInputActive && !selectiveInputData->acceptAllElements)
-							{
-								if(selectiveInputData->elements.find(element) == selectiveInputData->elements.end())
-									continue;
-							}
-
 							mNewElementsUnderCursor.push_back(ElementInfo(element, widget));
 						}
 					}
@@ -1254,6 +1248,15 @@ namespace BansheeEngine
 		mScheduledForDestruction.push(element);
 	}
 
+	void GUIManager::setFocus(GUIElement* element, bool focus)
+	{
+		ElementFocusInfo efi;
+		efi.element = element;
+		efi.focus = focus;
+
+		mForcedFocusElements.push_back(efi);
+	}
+
 	void GUIManager::processDestroyQueue()
 	{
 		// Need two loops and a temporary since element destructors may themselves
@@ -1269,41 +1272,6 @@ namespace BansheeEngine
 				toDestroy.pop();
 			}
 		}
-	}
-
-	// HACK - This callback is very hackish and very specific. Attempt to replace it with a more
-	// general purpose solution
-	void GUIManager::enableSelectiveInput(std::function<void()> onOutsideClickCallback)
-	{
-		mSelectiveInputActive = true;
-		mOnOutsideClickCallback = onOutsideClickCallback;
-	}
-
-	void GUIManager::disableSelectiveInput()
-	{
-		mSelectiveInputData.clear();
-		mSelectiveInputActive = false;
-		mOnOutsideClickCallback = nullptr;
-	}
-
-	void GUIManager::addSelectiveInputWidget(const GUIWidget* widget)
-	{
-		auto findIter = mSelectiveInputData.find(widget);
-
-		if(findIter == mSelectiveInputData.end())
-		{
-			SelectiveInputData& data = mSelectiveInputData[widget];
-			data.acceptAllElements = true;
-		}
-		else
-		{
-			mSelectiveInputData[widget].acceptAllElements = true;
-		}
-	}
-
-	void GUIManager::addSelectiveInputElement(const GUIElement* element)
-	{
-		mSelectiveInputData[&element->_getParentWidget()].elements.insert(element);
 	}
 
 	void GUIManager::setInputBridge(const CM::RenderTexture* renderTex, const GUIElement* element)

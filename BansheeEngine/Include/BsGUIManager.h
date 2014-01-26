@@ -14,6 +14,16 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Manages the rendering and input of all GUI widgets in the scene. 
+	 * 			
+	 * @note	If adding or modifying GUIManager functionality ensure that GUIManager data never gets modified
+	 * 			outside of update() method or Input callbacks. If you need such functionality add temporary variables
+	 * 			that store you changes and then execute them delayed in update().  
+	 * 			
+	 *			This ensures that GUIElements don't recursively modify GUIManager while GUIManager is still using that data.
+	 *			
+	 *			e.g. setFocus usually gets called from within GUIElements, however we don't want elements in focus be modified immediately 
+	 *			since that setFocus call could have originated in sendCommandEvent and elements in focus array would be modified while
+	 *			still being iterated upon.
 	 */
 	class BS_EXPORT GUIManager : public CM::Module<GUIManager>
 	{
@@ -56,6 +66,12 @@ namespace BansheeEngine
 			GUIWidget* widget;
 		};
 
+		struct ElementFocusInfo
+		{
+			GUIElement* element;
+			bool focus;
+		};
+
 	public:
 		GUIManager();
 		~GUIManager();
@@ -68,6 +84,8 @@ namespace BansheeEngine
 
 		void queueForDestroy(GUIElement* element);
 
+		void setFocus(GUIElement* element, bool focus);
+
 		void setCaretColor(const CM::Color& color) { mCaretColor = color; updateCaretTexture(); }
 		void setTextSelectionColor(const CM::Color& color) { mTextSelectionColor = color; updateTextSelectionTexture(); }
 		const HSpriteTexture& getCaretTexture() const { return mCaretTexture; }
@@ -76,24 +94,6 @@ namespace BansheeEngine
 
 		GUIInputCaret* getInputCaretTool() const { return mInputCaret; }
 		GUIInputSelection* getInputSelectionTool() const { return mInputSelection; }
-
-		/**
-		 * @brief	Selective input allows you to limit input only to certain GUI elements. After
-		 * 			enabling selective input use addSelectiveInput* methods to add specific elements that
-		 * 			will be allowed to receive input.
-		 *
-		 * @param	onOutsideClickCallback	Callback that gets triggered when the user
-		 * 									presses a mouse button outside of the selective input area.
-		 */
-		void enableSelectiveInput(std::function<void()> onOutsideClickCallback);
-
-		/**
-		 * @brief	Disables selective input and clears any selective input elements.
-		 */
-		void disableSelectiveInput();
-
-		void addSelectiveInputWidget(const GUIWidget* widget);
-		void addSelectiveInputElement(const GUIElement* element);
 
 		/**
 		 * @brief	Allows you to bridge GUI input from a GUI element into another render target.
@@ -150,6 +150,8 @@ namespace BansheeEngine
 		CM::Vector<ElementInfo>::type mElementsInFocus;
 		CM::Vector<ElementInfo>::type mNewElementsInFocus;
 
+		CM::Vector<ElementFocusInfo>::type mForcedFocusElements;
+
 		GUIInputCaret* mInputCaret;
 		GUIInputSelection* mInputSelection;
 
@@ -171,11 +173,6 @@ namespace BansheeEngine
 
 		HSpriteTexture mTextSelectionTexture;
 		CM::Color mTextSelectionColor;
-
-		// Selective input
-		bool mSelectiveInputActive;
-		CM::Map<const GUIWidget*, SelectiveInputData>::type mSelectiveInputData;
-		std::function<void()> mOnOutsideClickCallback;
 
 		CM::Map<const CM::RenderTexture*, const GUIElement*>::type mInputBridge;
 

@@ -121,6 +121,7 @@ namespace BansheeEngine
 			CM::UINT32 mPage;
 			CM::INT32 x, y;
 			CM::UINT32 width, height;
+			CM::RectI mVisibleBounds;
 			CM::RectI mAvailableBounds;
 			CM::UINT32 mDepthOffset;
 			bool mOpenedUpward;
@@ -153,6 +154,8 @@ namespace BansheeEngine
 			void openSubMenu(GUIButton* source, CM::UINT32 elementIdx);
 			void closeSubMenu();
 
+			CM::RectI getVisibleBounds() const { return mVisibleBounds; }
+
 			CM::HString getElementLocalizedName(CM::UINT32 idx) const;
 		};
 
@@ -168,7 +171,13 @@ namespace BansheeEngine
 		HSpriteTexture mScrollDownBtnArrow;
 
 		DropDownSubMenu* mRootMenu;
+		GUIDropDownHitBox* mHitBox;
 
 		CM::UnorderedMap<CM::WString, CM::HString>::type mLocalizedEntryNames;
+
+		void notifySubMenuOpened(DropDownSubMenu* subMenu);
+		void notifySubMenuClosed(DropDownSubMenu* subMenu);
+
+		void dropDownFocusLost();
 	};
 }

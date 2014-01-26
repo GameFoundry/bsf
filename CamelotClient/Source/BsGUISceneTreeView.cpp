@@ -356,7 +356,8 @@ namespace BansheeEditor
 
 	void GUISceneTreeView::onEditCanceled()
 	{
-		disableEdit(false);
+		if(mEditElement != nullptr)
+			disableEdit(false);
 	}
 
 	void GUISceneTreeView::enableEdit(TreeElement* element)
@@ -365,6 +366,7 @@ namespace BansheeEditor
 
 		mEditElement = element;
 		mNameEditBox->enableRecursively();
+		mNameEditBox->setFocus(true);
 
 		if(element->mElement != nullptr)
 			element->mElement->disableRecursively();

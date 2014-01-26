@@ -536,6 +536,10 @@ namespace BansheeEngine
 		if(ev.getType() == GUICommandEventType::FocusGained)
 		{
 			mActiveTexture = mStyle->focused.texture;
+
+			clearSelection();
+			showCaret();
+
 			markContentAsDirty();
 
 			mHasFocus = true;

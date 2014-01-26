@@ -1,15 +1,10 @@
 TODO:
- - Add better TreeViewEditBox texture
  - Callback on tree item select
- - In disableEdit make sure I actually apply name change
-   - Use Undo/Redo system (TODO: Not implemented yet)
  - Clicking on an already selectecd element starts rename 
     - Will likely need some kind of check to ignore double-clicks?
- - Pressing F2 starts rename
  - Context menu with rename
- - Detect when I click outside of input box and disable edit (TODO: Need a way to easily detect this)
- - Delete
-    - Needs Undo/Redo support
+ - When edit box is initially opened, focus on it
+ - Delete with Undo/Redo support
  - Drag and drop
    - If a mouse drag is detected DragAndDropManager is activated
    - Element is not removed from its original position until drag is complete
@@ -19,9 +14,9 @@ TODO:
  - Auto scroll
     - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
 
-Gained/Lost focus refactor:
- - Add Window mouse hooks for detecting a mouse press outside of a window: http://www.codeproject.com/Articles/187869/Your-Desktop-and-Microsoft-s-SetWindowsHookEx
- - Remove Selective input and port DropDownBox so it uses the focus system
+Fix GUIDropDownHitBox 
+ - Ensure it is focused when initially created
+ - Test it works properly
 
  Other:
  - When dragging in tree view automatically expand mouse over elements

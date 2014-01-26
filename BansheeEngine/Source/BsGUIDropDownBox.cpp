@@ -9,6 +9,7 @@
 #include "BsGUIListBox.h"
 #include "BsGUIDropDownBoxManager.h"
 #include "CmSceneObject.h"
+#include "BsGUIDropDownHitBox.h"
 
 using namespace CamelotFramework;
 
@@ -76,7 +77,7 @@ namespace BansheeEngine
 		const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type)
 		:GUIWidget(parent, target), mScrollUpStyle(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
-		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr)
+		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr), mHitBox(nullptr)
 	{
 		String stylePrefix = "";
 		switch(type)
@@ -107,13 +108,52 @@ namespace BansheeEngine
 
 		mLocalizedEntryNames = dropDownData.localizedNames;
 
+		mHitBox = GUIDropDownHitBox::create(*this);
+		mHitBox->onFocusLost.connect(boost::bind(&GUIDropDownBox::dropDownFocusLost, this));
+		mHitBox->setFocus(true);
+
 		RectI availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
 		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
 	}
 
 	GUIDropDownBox::~GUIDropDownBox()
 	{
+		GUIElement::destroy(mHitBox);
 		cm_delete(mRootMenu);
+	}
+
+	void GUIDropDownBox::dropDownFocusLost()
+	{
+		mRootMenu->closeSubMenu();
+		GUIDropDownBoxManager::instance().closeDropDownBox();
+	}
+
+	void GUIDropDownBox::notifySubMenuOpened(DropDownSubMenu* subMenu)
+	{
+		Vector<RectI>::type bounds;
+
+		while(subMenu != nullptr)
+		{
+			bounds.push_back(subMenu->getVisibleBounds());
+
+			subMenu = subMenu->mSubMenu;
+		}
+
+		mHitBox->setBounds(bounds);
+	}
+
+	void GUIDropDownBox::notifySubMenuClosed(DropDownSubMenu* subMenu)
+	{
+		Vector<RectI>::type bounds;
+
+		while(subMenu != nullptr)
+		{
+			bounds.push_back(subMenu->getVisibleBounds());
+
+			subMenu = subMenu->mSubMenu;
+		}
+
+		mHitBox->setBounds(bounds);
 	}
 
 	GUIDropDownBox::DropDownSubMenu::DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
@@ -228,11 +268,15 @@ namespace BansheeEngine
 		mBackgroundArea->getLayout().addElement(mBackgroundFrame);
 
 		updateGUIElements();
+
+		mOwner->notifySubMenuOpened(this);
 	}
 
 	GUIDropDownBox::DropDownSubMenu::~DropDownSubMenu()
 	{
 		closeSubMenu();
+
+		mOwner->notifySubMenuClosed(this);
 
 		for(auto& elem : mCachedSeparators)
 			GUIElement::destroy(elem);
@@ -432,6 +476,8 @@ namespace BansheeEngine
 
 		mBackgroundArea->setSize(width, usedHeight);
 		mBackgroundArea->setPosition(x, actualY);
+
+		mVisibleBounds = RectI(x, actualY, width, usedHeight);
 
 		UINT32 contentWidth = (UINT32)std::max(0, (INT32)width - (INT32)mOwner->mBackgroundStyle->margins.left - (INT32)mOwner->mBackgroundStyle->margins.right);
 		UINT32 contentHeight = (UINT32)std::max(0, (INT32)usedHeight - (INT32)mOwner->mBackgroundStyle->margins.top - (INT32)mOwner->mBackgroundStyle->margins.bottom);

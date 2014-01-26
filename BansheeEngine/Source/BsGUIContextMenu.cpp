@@ -24,9 +24,6 @@ namespace BansheeEngine
 		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
 			placement, getDropDownData(), widget.getSkin(), GUIDropDownType::ContextMenu, boost::bind(&GUIContextMenu::onMenuClosed, this));
 
-		GUIManager::instance().enableSelectiveInput(boost::bind(&GUIContextMenu::close, this));
-		GUIManager::instance().addSelectiveInputWidget(dropDownBox.get());
-
 		mContextMenuOpen = true;
 	}
 
@@ -35,14 +32,12 @@ namespace BansheeEngine
 		if(mContextMenuOpen)
 		{
 			GUIDropDownBoxManager::instance().closeDropDownBox();
-			GUIManager::instance().disableSelectiveInput();
 			mContextMenuOpen = false;
 		}
 	}
 
 	void GUIContextMenu::onMenuClosed()
 	{
-		GUIManager::instance().disableSelectiveInput();
 		mContextMenuOpen = false;
 	}
 }

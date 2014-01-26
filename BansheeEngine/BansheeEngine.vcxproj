@@ -241,6 +241,7 @@
     <ClInclude Include="Include\BsDebugDrawMaterialInfo.h" />
     <ClInclude Include="Include\BsGUIDropDownBox.h" />
     <ClInclude Include="Include\BsGUIDropDownBoxManager.h" />
+    <ClInclude Include="Include\BsGUIDropDownHitBox.h" />
     <ClInclude Include="Include\BsGUIElementContainer.h" />
     <ClInclude Include="Include\BsGUIHelper.h" />
     <ClInclude Include="Include\BsGUIListBox.h" />
@@ -311,6 +312,7 @@
     <ClCompile Include="Source\BsGUIContent.cpp" />
     <ClCompile Include="Source\BsGUIDropDownBox.cpp" />
     <ClCompile Include="Source\BsGUIDropDownBoxManager.cpp" />
+    <ClCompile Include="Source\BsGUIDropDownHitBox.cpp" />
     <ClCompile Include="Source\BsGUIElementContainer.cpp" />
     <ClCompile Include="Source\BsGUIHelper.cpp" />
     <ClCompile Include="Source\BsGUILayoutOptions.cpp" />
