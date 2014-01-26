@@ -60,6 +60,13 @@ namespace BansheeEditor
 
 			return true;
 		}
+		else if(ev.getType() == GUICommandEventType::FocusLost)
+		{
+			if(!onInputCanceled.empty())
+				onInputCanceled();
+
+			return true;
+		}
 
 		return processed;
 	}

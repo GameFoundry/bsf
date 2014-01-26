@@ -29,17 +29,21 @@ namespace CamelotFramework
 			{
 				bool active = (LOWORD(wParam) != WA_INACTIVE);
 				if( active )
-				{
 					win->setActive(true);
 
-					if(!win->hasFocus())
-						windowFocusReceived(win);
-				}
-				else
-				{
-					if(win->hasFocus())
-						windowFocusLost(win);
-				}
+				break;
+			}
+		case WM_SETFOCUS:
+			{
+				if(!win->hasFocus())
+					windowFocusReceived(win);
+
+				break;
+			}
+		case WM_KILLFOCUS:
+			{
+				if(win->hasFocus())
+					windowFocusLost(win);
 
 				break;
 			}

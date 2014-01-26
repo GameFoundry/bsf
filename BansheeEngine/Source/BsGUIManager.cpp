@@ -1193,6 +1193,22 @@ namespace BansheeEngine
 			if(getWidgetWindow(*widget) == &win)
 				widget->ownerWindowFocusChanged();
 		}
+
+		mNewElementsInFocus.clear();
+		for(auto& focusedElement : mElementsInFocus)
+		{
+			if(getWidgetWindow(*focusedElement.widget) == &win)
+			{
+				mCommandEvent = GUICommandEvent();
+				mCommandEvent.setType(GUICommandEventType::FocusLost);
+
+				sendCommandEvent(focusedElement.widget, focusedElement.element, mCommandEvent);
+			}
+			else
+				mNewElementsInFocus.push_back(focusedElement);
+		}
+
+		mElementsInFocus.swap(mNewElementsInFocus);
 	}
 
 	// We stop getting mouse move events once it leaves the window, so make sure

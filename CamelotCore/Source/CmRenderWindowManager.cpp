@@ -51,6 +51,9 @@ namespace CamelotFramework
 	void RenderWindowManager::windowFocusLost(RenderWindow* window)
 	{
 		window->_windowFocusLost();
+
+		CM_LOCK_MUTEX(mWindowMutex);
+		mNewWindowInFocus = nullptr;
 	}
 
 	void RenderWindowManager::windowMovedOrResized(RenderWindow* window)

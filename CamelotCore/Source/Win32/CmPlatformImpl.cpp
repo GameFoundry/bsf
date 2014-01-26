@@ -474,6 +474,7 @@ namespace CamelotFramework
 			if(mRequiresStartUp)
 			{
 				OleInitialize(nullptr);
+
 				mRequiresStartUp = false;
 			}
 		}
