@@ -14,9 +14,10 @@ TODO:
  - Auto scroll
     - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
 
-Fix GUIDropDownHitBox 
- - Ensure it is focused when initially created
- - Test it works properly
+MenuBar problems:
+ - Mousing over a sub-menu hides the parent sub-menu
+ - Clicking the top menu item closes and immediately opens the menu again (it should only close it)
+   - Something similar probably also happens with ListBox
 
  Other:
  - When dragging in tree view automatically expand mouse over elements

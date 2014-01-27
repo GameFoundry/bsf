@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent, CM::Viewport* target, const GUIDropDownAreaPlacement& placement,
 		const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type)
-		:GUIWidget(parent, target), mScrollUpStyle(nullptr),
+		:GUIWidget(parent, target), mScrollUpStyle(nullptr), mRootMenu(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
 		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr), mHitBox(nullptr)
 	{

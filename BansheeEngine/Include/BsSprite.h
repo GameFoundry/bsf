@@ -90,7 +90,7 @@ namespace BansheeEngine
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
 		CM::UINT32 fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, CM::UINT32 maxNumQuads, 
-			CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx, const CM::Vector2I& offset, const CM::RectI& clipRect) const;
+			CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx, const CM::Vector2I& offset, const CM::RectI& clipRect, bool clip = true) const;
 
 		static void clipToRect(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32 numQuads, CM::UINT32 vertStride, const CM::RectI& clipRect);
 		static CM::Vector2I getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height);

@@ -45,7 +45,7 @@ namespace BansheeEngine
 	}
 
 	UINT32 Sprite::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
-		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const RectI& clipRect) const
+		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const RectI& clipRect, bool clip) const
 	{
 		auto renderElem = mCachedRenderElements.at(renderElementIdx);
 
@@ -66,7 +66,7 @@ namespace BansheeEngine
 
 		// TODO - I'm sure this can be done in a more cache friendly way. Profile it later.
 		Vector2 vecOffset((float)offset.x, (float)offset.y);
-		if(clipRect.width > 0 && clipRect.height > 0)
+		if(clip)
 		{
 			for(UINT32 i = 0; i < renderElem.numQuads; i++)
 			{

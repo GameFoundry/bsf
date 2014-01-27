@@ -437,14 +437,20 @@ namespace BansheeEngine
 						UINT32 startDepth = elemDepth;
 						UINT32 endDepth = group.depth;
 
+						RectI potentialGroupBounds = group.bounds;
+						potentialGroupBounds.encapsulate(tfrmedBounds);
+
 						bool foundOverlap = false;
 						for(auto& material : materialGroups)
 						{
-							for(auto& group : material.second)
+							for(auto& matGroup : material.second)
 							{
-								if(group.depth > startDepth && group.depth < endDepth)
+								if(&matGroup == &group)
+									continue;
+
+								if(matGroup.depth > startDepth && matGroup.depth < endDepth)
 								{
-									if(group.bounds.overlaps(tfrmedBounds))
+									if(matGroup.bounds.overlaps(potentialGroupBounds))
 									{
 										foundOverlap = true;
 										break;
