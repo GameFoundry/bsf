@@ -75,8 +75,8 @@ namespace CamelotFramework
 
 		x = newLeft;
 		y = newTop;
-		width = newRight - newLeft;
-		height = newBottom - newTop;
+		width = std::max(0, newRight - newLeft);
+		height = std::max(0, newBottom - newTop);
 	}
 
 	void RectI::transform(const Matrix4& matrix)
