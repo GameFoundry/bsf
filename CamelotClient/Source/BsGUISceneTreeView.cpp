@@ -194,8 +194,8 @@ namespace BansheeEditor
 						if(!mTempToDelete[i])
 							continue;
 
-						if(current->mIsSelected)
-							unselectElement(current);
+						if(current->mChildren[i]->mIsSelected)
+							unselectElement(current->mChildren[i]);
 
 						cm_delete(current->mChildren[i]);
 					}
@@ -287,7 +287,7 @@ namespace BansheeEditor
 						current->mFoldoutBtn = nullptr;
 					}
 
-					if(current->mIsVisible && current->mIsSelected)
+					if(visibilityChanged && current->mIsSelected)
 						unselectElement(current);
 				}
 
@@ -311,12 +311,18 @@ namespace BansheeEditor
 		if(event.getType() == GUIMouseEventType::MouseUp)
 		{
 			const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(event.getPosition());
+			TreeElement* treeElement = nullptr;
 
 			if(element != nullptr && element->isTreeElement())
 			{
+				treeElement = interactableToRealElement(*element);
+			}
+
+			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->getBounds().x)
+			{
 				if(event.isCtrlDown())
 				{
-					selectElement(interactableToRealElement(*element));
+					selectElement(treeElement);
 				}
 				else if(event.isShiftDown())
 				{
@@ -356,7 +362,7 @@ namespace BansheeEditor
 								for(;iterStartFind != (iterEndFind + 1); ++iterStartFind)
 								{
 									if(iterStartFind->isTreeElement())
-										selectElement(interactableToRealElement(*element));
+										selectElement(interactableToRealElement(*iterStartFind));
 								}
 							}
 							else if(iterEndFind < iterStartFind)
@@ -364,31 +370,31 @@ namespace BansheeEditor
 								for(;iterEndFind != (iterStartFind + 1); ++iterEndFind)
 								{
 									if(iterEndFind->isTreeElement())
-										selectElement(interactableToRealElement(*element));
+										selectElement(interactableToRealElement(*iterEndFind));
 								}
 							}
 							else
-								selectElement(interactableToRealElement(*element));
+								selectElement(treeElement);
 						}
 
 						if(!foundStart || !foundEnd)
-							selectElement(interactableToRealElement(*element));
+							selectElement(treeElement);
 					}
 					else
 					{
-						selectElement(interactableToRealElement(*element));
+						selectElement(treeElement);
 					}
 				}
 				else
 				{
 					unselectAll();
-					selectElement(interactableToRealElement(*element));
+					selectElement(treeElement);
 				}
+
+				markContentAsDirty();
+
+				return true;
 			}
-
-			markContentAsDirty();
-
-			return true;
 		}
 
 		return false;
@@ -423,6 +429,8 @@ namespace BansheeEditor
 		if(iterFind == mSelectedElements.end())
 		{
 			GUITexture* background = GUITexture::create(_getParentWidget(), mSelectionBackgroundStyle);
+			_registerChildElement(background);
+
 			element->mIsSelected = true;
 
 			mSelectedElements.push_back(SelectedElement(element, background));
@@ -530,8 +538,6 @@ namespace BansheeEditor
 			Stack<UpdateTreeElement>::type todo;
 			todo.push(UpdateTreeElement(&mRootElement, 0));
 
-			optimalSize.y += ELEMENT_EXTRA_SPACING;
-
 			while(!todo.empty())
 			{
 				UpdateTreeElement currentUpdateElement = todo.top();
@@ -622,11 +628,6 @@ namespace BansheeEditor
 			UINT32 indent = currentUpdateElement.indent;
 			todo.pop();
 
-			if(current->mParent != nullptr && current->mSortedIdx == 0)
-			{
-				mVisibleElements.push_back(InteractableElement(current->mParent, 0, RectI(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
-			}
-
 			INT32 btnHeight = 0;
 			INT32 yOffset = 0;
 			if(current->mElement != nullptr)
@@ -634,7 +635,11 @@ namespace BansheeEditor
 				Vector2I elementSize = current->mElement->_getOptimalSize();
 				btnHeight = elementSize.y;
 
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, RectI(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
+				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, RectI(x, offset.y + ELEMENT_EXTRA_SPACING, width, btnHeight)));
+
 				offset.x = INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
+				offset.y += ELEMENT_EXTRA_SPACING;
 
 				current->mElement->_setOffset(offset);
 				current->mElement->_setWidth(elementSize.x);
@@ -645,10 +650,7 @@ namespace BansheeEditor
 				RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 				current->mElement->_setClipRect(elemClipRect);
 
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, RectI(x, offset.y, width, btnHeight)));
-				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 2, RectI(x, offset.y + btnHeight, width, ELEMENT_EXTRA_SPACING)));
-
-				yOffset = btnHeight + ELEMENT_EXTRA_SPACING;
+				yOffset = btnHeight;
 			}
 
 			if(current->mFoldoutBtn != nullptr)
@@ -658,6 +660,8 @@ namespace BansheeEditor
 				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.y);
 
 				Vector2I myOffset = offset;
+				myOffset.y -= 2; // TODO: Arbitrary offset, I should adjust it based on font baseline so that the button is nicely centered on text
+
 				if(elementSize.y > btnHeight)
 				{
 					UINT32 diff = elementSize.y - btnHeight;
@@ -693,6 +697,11 @@ namespace BansheeEditor
 				todo.push(UpdateTreeElement(child, indent + 1));
 			}
 		}
+
+		UINT32 remainingHeight = (UINT32)std::max(0, (INT32)height - (offset.y - y));
+
+		if(remainingHeight > 0)
+			mVisibleElements.push_back(InteractableElement(&mRootElement, (UINT32)mRootElement.mChildren.size() * 2, RectI(x, offset.y, width, remainingHeight)));
 
 		for(auto selectedElem : mSelectedElements)
 		{

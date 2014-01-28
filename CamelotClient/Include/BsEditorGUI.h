@@ -111,6 +111,9 @@ namespace BansheeEditor
 		static const CM::String TreeViewSelectionBackground;
 		static const CM::String TreeViewEditBox;
 
+		static const CM::String TreeViewElementHighlight;
+		static const CM::String TreeViewElementSepHighlight;
+
 		static BS::HSpriteTexture getTexture(const CM::String& name);
 	};
 }

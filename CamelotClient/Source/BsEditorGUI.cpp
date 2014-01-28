@@ -113,6 +113,8 @@ namespace BansheeEditor
 
 	const String EditorGUI::TreeViewSelectionBackground = "TreeViewSelectionBackground.psd";
 	const String EditorGUI::TreeViewEditBox = "TreeViewEditBox.psd";
+	const String EditorGUI::TreeViewElementHighlight = "TreeViewElementHighlight.psd";
+	const String EditorGUI::TreeViewElementSepHighlight = "TreeViewElementSepHighlight.psd";
 
 	EditorGUI::EditorGUI()
 	{
@@ -702,6 +704,26 @@ namespace BansheeEditor
 		treeViewEditBox.textVertAlign = TVA_Top;
 
 		mSkin.setStyle(GUITreeViewEditBox::getGUITypeName(), treeViewEditBox);
+
+		// Element highlight
+		GUIElementStyle treeViewElementHighlight;
+		treeViewElementHighlight.normal.texture = getTexture(TreeViewElementHighlight);
+		treeViewElementHighlight.border.left = 1;
+		treeViewElementHighlight.border.right = 1;
+		treeViewElementHighlight.border.top = 1;
+		treeViewElementHighlight.border.bottom = 1;
+
+		mSkin.setStyle("TreeViewElementHighlight", treeViewElementHighlight);
+
+		// Element separator highlight
+		GUIElementStyle treeViewElementSepHighlight;
+		treeViewElementSepHighlight.normal.texture = getTexture(TreeViewElementSepHighlight);
+		treeViewElementSepHighlight.border.left = 1;
+		treeViewElementSepHighlight.border.right = 1;
+		treeViewElementSepHighlight.border.top = 1;
+		treeViewElementSepHighlight.border.bottom = 1;
+
+		mSkin.setStyle("TreeViewElementSepHighlight", treeViewElementSepHighlight);
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const CM::String& name)
