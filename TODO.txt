@@ -6,7 +6,6 @@ Editor localization should be different from in-game one.
 
 Optimization notes:
  - submitToCoreThread calls are EXTREMELY slow. In 10-50ms range.
- - GUIManager updateMeshes seems to be executing every frame
 
 A lot of stuff is still using GSyncedMainCA but it should be using gMainCA - Find and replace
 

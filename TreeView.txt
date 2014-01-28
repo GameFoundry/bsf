@@ -15,7 +15,6 @@ TODO:
     - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
 
 MenuBar problems:
- - Mousing over a sub-menu hides the parent sub-menu
  - Clicking the top menu item closes and immediately opens the menu again (it should only close it)
    - Something similar probably also happens with ListBox
 

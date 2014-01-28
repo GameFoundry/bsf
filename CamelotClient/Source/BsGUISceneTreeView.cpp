@@ -25,7 +25,7 @@ namespace BansheeEditor
 	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 16;
 
 	GUISceneTreeView::TreeElement::TreeElement()
-		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), 
+		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
 		mId(0), mIsExpanded(false), mSortedIdx(0), mIsDirty(false), mIsVisible(true)
 	{ }
 
@@ -47,8 +47,8 @@ namespace BansheeEditor
 		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
 		const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mBackgroundStyle(backgroundStyle),
-		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr),
-		mSelectedElement(nullptr), mSelectionBackground(nullptr), mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle)
+		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
+		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle)
 	{
 		if(mBackgroundStyle == nullptr)
 			mBackgroundStyle = parent.getSkin().getStyle("TreeViewBackground");
@@ -66,8 +66,6 @@ namespace BansheeEditor
 			mEditBoxStyle = parent.getSkin().getStyle("TreeViewEditBox");
 
 		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
-		mSelectionBackground = GUITexture::create(parent, mSelectionBackgroundStyle);
-		mSelectionBackground->disableRecursively();
 		mNameEditBox = GUITreeViewEditBox::create(parent, mEditBoxStyle);
 		mNameEditBox->disableRecursively();
 
@@ -75,7 +73,6 @@ namespace BansheeEditor
 		mNameEditBox->onInputCanceled.connect(boost::bind(&GUISceneTreeView::onEditCanceled, this));
 
 		_registerChildElement(mBackgroundImage);
-		_registerChildElement(mSelectionBackground);
 		_registerChildElement(mNameEditBox);
 	}
 
@@ -197,6 +194,9 @@ namespace BansheeEditor
 						if(!mTempToDelete[i])
 							continue;
 
+						if(current->mIsSelected)
+							unselectElement(current);
+
 						cm_delete(current->mChildren[i]);
 					}
 
@@ -286,6 +286,9 @@ namespace BansheeEditor
 						GUIElement::destroy(current->mFoldoutBtn);
 						current->mFoldoutBtn = nullptr;
 					}
+
+					if(current->mIsVisible && current->mIsSelected)
+						unselectElement(current);
 				}
 
 				markContentAsDirty();
@@ -301,17 +304,6 @@ namespace BansheeEditor
 				}
 			}
 		}
-
-		if(mSelectedElement != nullptr)
-		{
-			if(mSelectionBackground->_isDisabled())
-				mSelectionBackground->enableRecursively();
-		}
-		else
-		{
-			if(!mSelectionBackground->_isDisabled())
-				mSelectionBackground->disableRecursively();
-		}
 	}
 
 	bool GUISceneTreeView::mouseEvent(const GUIMouseEvent& event)
@@ -321,7 +313,78 @@ namespace BansheeEditor
 			const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(event.getPosition());
 
 			if(element != nullptr && element->isTreeElement())
-				mSelectedElement = interactableToRealElement(*element);
+			{
+				if(event.isCtrlDown())
+				{
+					selectElement(interactableToRealElement(*element));
+				}
+				else if(event.isShiftDown())
+				{
+					if(isSelectionActive())
+					{
+						TreeElement* selectionRoot = mSelectedElements[0].element;
+						unselectAll();
+
+						auto iterStartFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+							[&] (const InteractableElement& x) { return x.parent == selectionRoot->mParent; } );
+
+						bool foundStart = false;
+						bool foundEnd = false;
+						for(; iterStartFind != mVisibleElements.end(); ++iterStartFind)
+						{
+							if(!iterStartFind->isTreeElement())
+								continue;
+
+							TreeElement* curElem = interactableToRealElement(*iterStartFind);
+							if(curElem == selectionRoot)
+							{
+								foundStart = true;
+								break;
+							}
+						}
+
+						auto iterEndFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(),
+							[&] (const InteractableElement& x) { return &x == element; } );
+
+						if(iterEndFind != mVisibleElements.end())
+							foundEnd = true;
+
+						if(foundStart && foundEnd)
+						{
+							if(iterStartFind < iterEndFind)
+							{
+								for(;iterStartFind != (iterEndFind + 1); ++iterStartFind)
+								{
+									if(iterStartFind->isTreeElement())
+										selectElement(interactableToRealElement(*element));
+								}
+							}
+							else if(iterEndFind < iterStartFind)
+							{
+								for(;iterEndFind != (iterStartFind + 1); ++iterEndFind)
+								{
+									if(iterEndFind->isTreeElement())
+										selectElement(interactableToRealElement(*element));
+								}
+							}
+							else
+								selectElement(interactableToRealElement(*element));
+						}
+
+						if(!foundStart || !foundEnd)
+							selectElement(interactableToRealElement(*element));
+					}
+					else
+					{
+						selectElement(interactableToRealElement(*element));
+					}
+				}
+				else
+				{
+					unselectAll();
+					selectElement(interactableToRealElement(*element));
+				}
+			}
 
 			markContentAsDirty();
 
@@ -335,13 +398,67 @@ namespace BansheeEditor
 	{
 		if(ev.getType() == GUICommandEventType::Rename)
 		{
-			if(mSelectedElement != nullptr && mEditElement == nullptr)
-				enableEdit(mSelectedElement);
+			if(isSelectionActive() && mEditElement == nullptr)
+			{
+				unselectAll();
+				enableEdit(mSelectedElements[0].element);
+			}
 
 			return true;
 		}
 
 		return false;
+	}
+
+	bool GUISceneTreeView::isSelectionActive() const
+	{
+		return mIsElementSelected && mSelectedElements.size() > 0;
+	}
+
+	void GUISceneTreeView::selectElement(TreeElement* element)
+	{
+		auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
+			[&] (const SelectedElement& x) { return x.element == element; });
+
+		if(iterFind == mSelectedElements.end())
+		{
+			GUITexture* background = GUITexture::create(_getParentWidget(), mSelectionBackgroundStyle);
+			element->mIsSelected = true;
+
+			mSelectedElements.push_back(SelectedElement(element, background));
+			mIsElementSelected = true;
+		}
+	}
+
+	void GUISceneTreeView::unselectElement(TreeElement* element)
+	{
+		auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
+			[&] (const SelectedElement& x) { return x.element == element; });
+
+		if(iterFind != mSelectedElements.end())
+		{
+			iterFind->element->mIsSelected = false;
+			GUIElement::destroy(iterFind->background);
+
+			mSelectedElements.erase(iterFind);
+			markContentAsDirty();
+		}
+
+		mIsElementSelected = mSelectedElements.size() > 0;
+	}
+
+	void GUISceneTreeView::unselectAll()
+	{
+		for(auto& selectedElem : mSelectedElements)
+		{
+			selectedElem.element->mIsSelected = false;
+			GUIElement::destroy(selectedElem.background);
+		}
+
+		mSelectedElements.clear();
+		mIsElementSelected = false;
+
+		markContentAsDirty();
 	}
 
 	void GUISceneTreeView::elementToggled(TreeElement* element, bool toggled)
@@ -577,21 +694,21 @@ namespace BansheeEditor
 			}
 		}
 
-		if(mSelectedElement != nullptr)
+		for(auto selectedElem : mSelectedElements)
 		{
-			GUILabel* targetElement = mSelectedElement->mElement;
+			GUILabel* targetElement = selectedElem.element->mElement;
 
 			Vector2I offset = targetElement->_getOffset();
 			offset.x = x;
 
-			mSelectionBackground->_setOffset(offset);
-			mSelectionBackground->_setWidth(width);
-			mSelectionBackground->_setHeight(targetElement->_getHeight());
-			mSelectionBackground->_setAreaDepth(areaDepth + 1);
-			mSelectionBackground->_setWidgetDepth(widgetDepth);
+			selectedElem.background->_setOffset(offset);
+			selectedElem.background->_setWidth(width);
+			selectedElem.background->_setHeight(targetElement->_getHeight());
+			selectedElem.background->_setAreaDepth(areaDepth + 1);
+			selectedElem.background->_setWidgetDepth(widgetDepth);
 
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
-			mSelectionBackground->_setClipRect(elemClipRect);
+			selectedElem.background->_setClipRect(elemClipRect);
 		}
 
 		if(mEditElement != nullptr)

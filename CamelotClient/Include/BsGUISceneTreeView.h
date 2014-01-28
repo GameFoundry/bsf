@@ -25,6 +25,7 @@ namespace BansheeEditor
 
 			CM::UINT32 mSortedIdx;
 			bool mIsExpanded;
+			bool mIsSelected;
 			bool mIsDirty;
 			bool mIsVisible;
 		};
@@ -40,6 +41,16 @@ namespace BansheeEditor
 			TreeElement* parent;
 			CM::UINT32 index;
 			CM::RectI bounds;
+		};
+
+		struct SelectedElement
+		{
+			SelectedElement(TreeElement* elem, BS::GUITexture* back)
+				:element(elem), background(back)
+			{ }
+
+			TreeElement* element;
+			BS::GUITexture* background;
 		};
 
 	public:
@@ -82,8 +93,8 @@ namespace BansheeEditor
 		CM::Vector<InteractableElement>::type mVisibleElements;
 		CM::Vector<bool>::type mTempToDelete;
 
-		TreeElement* mSelectedElement;
-		BS::GUITexture* mSelectionBackground;
+		bool mIsElementSelected;
+		CM::Vector<SelectedElement>::type mSelectedElements;
 		
 		TreeElement* mEditElement;
 		GUITreeViewEditBox* mNameEditBox;
@@ -101,6 +112,11 @@ namespace BansheeEditor
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 		virtual bool commandEvent(const BS::GUICommandEvent& ev);
 		void elementToggled(TreeElement* element, bool toggled);
+
+		bool isSelectionActive() const;
+		void selectElement(TreeElement* element);
+		void unselectElement(TreeElement* element);
+		void unselectAll();
 
 		void onEditAccepted();
 		void onEditCanceled();
