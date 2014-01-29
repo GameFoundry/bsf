@@ -25,6 +25,7 @@ namespace BansheeEditor
 
 	enum class DragAndDropType
 	{
-		EditorWidget = 10000
+		EditorWidget = 10000,
+		SceneObject = 10001
 	};
 }

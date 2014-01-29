@@ -2,8 +2,7 @@ TODO:
  - Callback on tree item select
  - Clicking on an already selectecd element starts rename 
     - Will likely need some kind of check to ignore double-clicks?
- - Context menu with rename
- - When edit box is initially opened, focus on it
+ - Context menu with rename/copy/paste/duplicate
  - Delete with Undo/Redo support
  - Drag and drop
    - If a mouse drag is detected DragAndDropManager is activated
@@ -13,6 +12,8 @@ TODO:
    - Releasing the drag changes the element parents
  - Auto scroll
     - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
+ - Support for icons next to tree elements
+ - Ability to move selection via arrow keys
 
 MenuBar problems:
  - Clicking the top menu item closes and immediately opens the menu again (it should only close it)
@@ -20,10 +21,7 @@ MenuBar problems:
 
  Other:
  - When dragging in tree view automatically expand mouse over elements
- - Ability to select and drag multiple elements
  - "Ping" effect
- - All operations should be undo-redoable
- - Context menu with copy/paste
  - Copy/Paste/Duplicate
    - This is more of a problem with actual copying of SceneObjects (It's not implemented). I should be able to serialize, and then de-serialize with a new parent as a form of copy.
 

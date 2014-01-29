@@ -670,39 +670,17 @@ namespace BansheeEngine
 		{
 			for(auto& activeElement : mActiveElements)
 			{
-				Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
-
-				if(mLastCursorLocalPos != localPos)
+				if(mLastCursorScreenPos != event.screenPos)
 				{
-					mMouseEvent.setMouseDragData(localPos, localPos - mLastCursorLocalPos);
+					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
+
+					mMouseEvent.setMouseDragData(localPos, localPos - mLastCursorScreenPos);
 					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
 						event.markAsUsed();
-
-					mLastCursorLocalPos = localPos;
 				}
 			}
-		}
-		else // Otherwise, send MouseMove events if we are hovering over any element
-		{
-			for(auto& elementInfo : mElementsUnderCursor)
-			{
-				Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
 
-				// Send MouseMove event
-				if(mLastCursorLocalPos != localPos)
-				{
-					mMouseEvent.setMouseMoveData(localPos);
-					bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
-
-					mLastCursorLocalPos = localPos;
-
-					if(processed)
-					{
-						event.markAsUsed();
-						break;
-					}
-				}
-			}
+			mLastCursorScreenPos = event.screenPos;
 
 			// Also if drag is in progress send DragAndDrop events
 			if(DragAndDropManager::instance().isDragInProgress())
@@ -718,6 +696,27 @@ namespace BansheeEngine
 						break;
 					}
 				}
+			}
+		}
+		else // Otherwise, send MouseMove events if we are hovering over any element
+		{
+			for(auto& elementInfo : mElementsUnderCursor)
+			{
+				// Send MouseMove event
+				if(mLastCursorScreenPos != event.screenPos)
+				{
+					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
+					mMouseEvent.setMouseMoveData(localPos);
+					bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+
+					if(processed)
+					{
+						event.markAsUsed();
+						break;
+					}
+				}
+
+				mLastCursorScreenPos = event.screenPos;
 			}
 
 			if(Math::abs(event.mouseWheelScrollAmount) > 0.00001f)

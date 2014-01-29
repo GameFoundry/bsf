@@ -14,6 +14,7 @@
 #include "CmSceneObject.h"
 #include "CmSceneManager.h"
 #include "BsCmdEditPlainFieldGO.h"
+#include "BsDragAndDropManager.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -23,6 +24,19 @@ namespace BansheeEditor
 	const UINT32 GUISceneTreeView::ELEMENT_EXTRA_SPACING = 3;
 	const UINT32 GUISceneTreeView::INDENT_SIZE = 10;
 	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 16;
+	const UINT32 GUISceneTreeView::DRAG_MIN_DISTANCE = 3;
+
+	GUISceneTreeView::DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
+		:numObjects(numObjects)
+	{
+		objects = cm_newN<HSceneObject>(numObjects);
+	}
+
+	GUISceneTreeView::DraggedSceneObjects::~DraggedSceneObjects()
+	{
+		cm_deleteN(objects, numObjects);
+		objects = nullptr;
+	}
 
 	GUISceneTreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
@@ -45,10 +59,11 @@ namespace BansheeEditor
 
 	GUISceneTreeView::GUISceneTreeView(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
 		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
-		const GUILayoutOptions& layoutOptions)
+		BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
-		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle)
+		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
+		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr)
 	{
 		if(mBackgroundStyle == nullptr)
 			mBackgroundStyle = parent.getSkin().getStyle("TreeViewBackground");
@@ -65,6 +80,12 @@ namespace BansheeEditor
 		if(mEditBoxStyle == nullptr)
 			mEditBoxStyle = parent.getSkin().getStyle("TreeViewEditBox");
 
+		if(mDragHighlightStyle == nullptr)
+			mDragHighlightStyle = parent.getSkin().getStyle("TreeViewElementHighlight");
+
+		if(mDragSepHighlightStyle == nullptr)
+			mDragSepHighlightStyle = parent.getSkin().getStyle("TreeViewElementSepHighlight");
+
 		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
 		mNameEditBox = GUITreeViewEditBox::create(parent, mEditBoxStyle);
 		mNameEditBox->disableRecursively();
@@ -72,8 +93,16 @@ namespace BansheeEditor
 		mNameEditBox->onInputConfirmed.connect(boost::bind(&GUISceneTreeView::onEditAccepted, this));
 		mNameEditBox->onInputCanceled.connect(boost::bind(&GUISceneTreeView::onEditCanceled, this));
 
+		mDragHighlight = GUITexture::create(parent, mDragHighlightStyle);
+		mDragSepHighlight = GUITexture::create(parent, mDragSepHighlightStyle);
+
+		mDragHighlight->disableRecursively();
+		mDragSepHighlight->disableRecursively();
+
 		_registerChildElement(mBackgroundImage);
 		_registerChildElement(mNameEditBox);
+		_registerChildElement(mDragHighlight);
+		_registerChildElement(mDragSepHighlight);
 	}
 
 	GUISceneTreeView::~GUISceneTreeView()
@@ -82,17 +111,19 @@ namespace BansheeEditor
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle)
+		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, GUIElementStyle* dragHighlightStyle, 
+		GUIElementStyle* dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
-			selectionBackgroundStyle, editBoxStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
 	GUISceneTreeView* GUISceneTreeView::create(GUIWidget& parent, const GUIOptions& options, GUIElementStyle* backgroundStyle,
-		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle)
+		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, 
+		GUIElementStyle* editBoxStyle, GUIElementStyle* dragHighlightStyle, GUIElementStyle* dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(parent, backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
+			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
 	}
 
 	void GUISceneTreeView::update()
@@ -310,6 +341,9 @@ namespace BansheeEditor
 	{
 		if(event.getType() == GUIMouseEventType::MouseUp)
 		{
+			if(DragAndDropManager::instance().isDragInProgress())
+				return false;
+
 			const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(event.getPosition());
 			TreeElement* treeElement = nullptr;
 
@@ -396,6 +430,80 @@ namespace BansheeEditor
 				return true;
 			}
 		}
+		else if(event.getType() == GUIMouseEventType::MouseDragStart)
+		{
+			mDragStartPosition = event.getPosition();
+		}
+		else if(event.getType() == GUIMouseEventType::MouseDrag)
+		{
+			UINT32 dist = mDragStartPosition.manhattanDist(event.getPosition());
+
+			if(!DragAndDropManager::instance().isDragInProgress())
+			{
+				if(dist > DRAG_MIN_DISTANCE)
+				{
+					const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(mDragStartPosition);
+					TreeElement* treeElement = nullptr;
+
+					if(element != nullptr && element->isTreeElement())
+					{
+						// If element we are trying to drag isn't selected, select it
+						TreeElement* treeElement = interactableToRealElement(*element);
+						auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
+							[&] (const SelectedElement& x) { return x.element == treeElement; });
+
+						if(iterFind == mSelectedElements.end())
+						{
+							unselectAll();
+							selectElement(interactableToRealElement(*element));
+						}						
+					}
+
+					DraggedSceneObjects* draggedSceneObjects = cm_new<DraggedSceneObjects>((UINT32)mSelectedElements.size());
+
+					UINT32 cnt = 0;
+					for(auto& selectedElement : mSelectedElements)
+					{
+						draggedSceneObjects->objects[cnt] = selectedElement.element->mSceneObject;
+						cnt++;
+					}
+
+					DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::SceneObject, (void*)draggedSceneObjects, 
+						boost::bind(&GUISceneTreeView::dragAndDropEnded, this));
+
+					mDragPosition = event.getPosition();
+					mDragInProgress = true;
+					markContentAsDirty();
+				}
+			}
+		}
+		else if(event.getType() == GUIMouseEventType::MouseDragAndDropDragged)
+		{
+			if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject)
+			{
+				mDragPosition = event.getPosition();
+				mDragInProgress = true;
+				markContentAsDirty();
+
+				return true;
+			}
+		}
+		else if(event.getType() == GUIMouseEventType::MouseDragAndDropDropped)
+		{
+			if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject)
+			{
+				DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
+
+				// TODO - Actually perform parent change
+				
+				return true;
+			}
+		}
+		else if(event.getType() == GUIMouseEventType::MouseOut)
+		{
+			mDragInProgress = false;
+			markContentAsDirty();
+		}
 
 		return false;
 	}
@@ -414,6 +522,15 @@ namespace BansheeEditor
 		}
 
 		return false;
+	}
+
+	void GUISceneTreeView::dragAndDropEnded()
+	{
+		mDragInProgress = false;
+		markContentAsDirty();
+
+		DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
+		cm_delete(draggedSceneObjects);
 	}
 
 	bool GUISceneTreeView::isSelectionActive() const
@@ -736,6 +853,67 @@ namespace BansheeEditor
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mNameEditBox->_setClipRect(elemClipRect);
 
+		}
+
+		if(mDragInProgress)
+		{
+			const InteractableElement* interactableElement = findElementUnderCoord(mDragPosition);
+
+			if(interactableElement == nullptr)
+			{
+				if(!mDragHighlight->_isDisabled())
+					mDragHighlight->disableRecursively();
+
+				if(!mDragSepHighlight->_isDisabled())
+					mDragSepHighlight->disableRecursively();
+			}
+			else
+			{
+				if(interactableElement->isTreeElement())
+				{
+					if(!mDragSepHighlight->_isDisabled())
+						mDragSepHighlight->disableRecursively();
+
+					if(mDragHighlight->_isDisabled())
+						mDragHighlight->enableRecursively();
+
+					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
+					mDragHighlight->_setOffset(offset);
+					mDragHighlight->_setWidth(interactableElement->bounds.width);
+					mDragHighlight->_setHeight(interactableElement->bounds.height);
+					mDragHighlight->_setAreaDepth(areaDepth + 1);
+					mDragHighlight->_setWidgetDepth(widgetDepth);
+
+					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+					mDragHighlight->_setClipRect(elemClipRect);
+				}
+				else
+				{
+					if(!mDragHighlight->_isDisabled())
+						mDragHighlight->disableRecursively();
+
+					if(mDragSepHighlight->_isDisabled())
+						mDragSepHighlight->enableRecursively();
+
+					Vector2I offset(interactableElement->bounds.x, interactableElement->bounds.y);
+					mDragSepHighlight->_setOffset(offset);
+					mDragSepHighlight->_setWidth(interactableElement->bounds.width);
+					mDragSepHighlight->_setHeight(interactableElement->bounds.height);
+					mDragSepHighlight->_setAreaDepth(areaDepth + 1);
+					mDragSepHighlight->_setWidgetDepth(widgetDepth);
+
+					RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
+					mDragSepHighlight->_setClipRect(elemClipRect);
+				}
+			}
+		}
+		else
+		{
+			if(!mDragHighlight->_isDisabled())
+				mDragHighlight->disableRecursively();
+
+			if(!mDragSepHighlight->_isDisabled())
+				mDragSepHighlight->disableRecursively();
 		}
 	}
 

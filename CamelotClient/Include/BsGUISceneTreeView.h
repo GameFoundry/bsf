@@ -53,18 +53,29 @@ namespace BansheeEditor
 			BS::GUITexture* background;
 		};
 
+		struct DraggedSceneObjects
+		{
+			DraggedSceneObjects(CM::UINT32 numObjects);
+			~DraggedSceneObjects();
+
+			CM::UINT32 numObjects;
+			CM::HSceneObject* objects;
+		};
+
 	public:
 		static const CM::String& getGUITypeName();
 
 		static GUISceneTreeView* create(BS::GUIWidget& parent,
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
 			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
-			BS::GUIElementStyle* editBoxStyle = nullptr);
+			BS::GUIElementStyle* editBoxStyle = nullptr, BS::GUIElementStyle* dragHighlightStyle = nullptr, 
+			BS::GUIElementStyle* dragSepHighlightStyle = nullptr);
 
 		static GUISceneTreeView* create(BS::GUIWidget& parent, const BS::GUIOptions& options, 
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
 			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
-			BS::GUIElementStyle* editBoxStyle = nullptr);
+			BS::GUIElementStyle* editBoxStyle = nullptr, BS::GUIElementStyle* dragHighlightStyle = nullptr, 
+			BS::GUIElementStyle* dragSepHighlightStyle = nullptr);
 
 		void update();
 
@@ -80,12 +91,15 @@ namespace BansheeEditor
 		static const CM::UINT32 ELEMENT_EXTRA_SPACING;
 		static const CM::UINT32 INDENT_SIZE;
 		static const CM::UINT32 INITIAL_INDENT_OFFSET;
+		static const CM::UINT32 DRAG_MIN_DISTANCE;
 
 		const BS::GUIElementStyle* mBackgroundStyle;
 		const BS::GUIElementStyle* mElementBtnStyle;
 		const BS::GUIElementStyle* mFoldoutBtnStyle;
 		const BS::GUIElementStyle* mSelectionBackgroundStyle;
 		const BS::GUIElementStyle* mEditBoxStyle;
+		const BS::GUIElementStyle* mDragHighlightStyle;
+		const BS::GUIElementStyle* mDragSepHighlightStyle;
 
 		BS::GUITexture* mBackgroundImage;
 		TreeElement mRootElement;
@@ -99,9 +113,15 @@ namespace BansheeEditor
 		TreeElement* mEditElement;
 		GUITreeViewEditBox* mNameEditBox;
 
+		CM::Vector2I mDragStartPosition;
+		CM::Vector2I mDragPosition;
+		bool mDragInProgress;
+		BS::GUITexture* mDragHighlight;
+		BS::GUITexture* mDragSepHighlight;
+
 		GUISceneTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
-			const BS::GUILayoutOptions& layoutOptions);
+			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		const GUISceneTreeView::InteractableElement* findElementUnderCoord(const CM::Vector2I& coord) const;
 		GUISceneTreeView::TreeElement* GUISceneTreeView::interactableToRealElement(const GUISceneTreeView::InteractableElement& element);
@@ -120,5 +140,7 @@ namespace BansheeEditor
 
 		void onEditAccepted();
 		void onEditCanceled();
+
+		void dragAndDropEnded();
 	};
 }

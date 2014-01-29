@@ -156,7 +156,7 @@ namespace BansheeEngine
 		GUIInputSelection* mInputSelection;
 
 		bool mSeparateMeshesByWidget;
-		CM::Vector2I mLastCursorLocalPos;
+		CM::Vector2I mLastCursorScreenPos;
 
 		DragState mDragState;
 		CM::Vector2I mLastCursorClickPos;
