@@ -4,16 +4,19 @@ TODO:
     - Will likely need some kind of check to ignore double-clicks?
  - Context menu with rename/copy/paste/duplicate
  - Delete with Undo/Redo support
- - Drag and drop
-   - If a mouse drag is detected DragAndDropManager is activated
-   - Element is not removed from its original position until drag is complete
-   - Dragging over an element will make a highlight box appear around it
-   - Dragging between elements will make a thick line appear between them
-   - Releasing the drag changes the element parents
  - Auto scroll
     - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
  - Support for icons next to tree elements
  - Ability to move selection via arrow keys
+
+Drag and drop problem:
+ - Test it properly
+ If I make three element deep tree
+  A
+  --B
+  ----C
+
+And the move C to have parent A, nothing will happen when I first do it. And when I do it next time element will move properly but a ghost element will remain.
 
 MenuBar problems:
  - Clicking the top menu item closes and immediately opens the menu again (it should only close it)

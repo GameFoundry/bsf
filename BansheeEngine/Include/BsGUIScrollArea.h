@@ -29,6 +29,9 @@ namespace BansheeEngine
 		static GUIScrollArea* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
 			const GUIElementStyle* scrollAreaStyle = nullptr);
 
+		void scrollVertical(float pct);
+		void scrollHorizontal(float pct);
+
 		GUILayout& getLayout() const { return *mContentLayout; }
 	protected:
 		~GUIScrollArea();

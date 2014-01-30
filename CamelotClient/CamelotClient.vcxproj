@@ -256,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsCmdEditPlainFieldGO.h" />
+    <ClInclude Include="Include\BsCmdReparentSO.h" />
     <ClInclude Include="Include\BsDockManager.h" />
     <ClInclude Include="Include\BsEditorApplication.h" />
     <ClInclude Include="Include\BsEditorCommand.h" />
@@ -286,6 +287,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CamelotClient.cpp" />
+    <ClCompile Include="Source\BsCmdReparentSO.cpp" />
     <ClCompile Include="Source\BsDockManager.cpp" />
     <ClCompile Include="Source\BsEditorCommand.cpp" />
     <ClCompile Include="Source\BsEditorGUI.cpp" />

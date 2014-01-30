@@ -241,16 +241,26 @@ namespace BansheeEngine
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)
 	{
-		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentHeight) - INT32(mClippedContentHeight));
-		mVertOffset = scrollableHeight * scrollPos;
-
-		markContentAsDirty();
+		scrollVertical(scrollPos);
 	}
 
 	void GUIScrollArea::horzScrollUpdate(float scrollPos)
 	{
+		scrollHorizontal(scrollPos);
+	}
+
+	void GUIScrollArea::scrollVertical(float pct)
+	{
+		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentHeight) - INT32(mClippedContentHeight));
+		mVertOffset = scrollableHeight * Math::clamp01(pct);
+
+		markContentAsDirty();
+	}
+
+	void GUIScrollArea::scrollHorizontal(float pct)
+	{
 		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentWidth) - INT32(mClippedContentWidth));
-		mHorzOffset = scrollableWidth * scrollPos;
+		mHorzOffset = scrollableWidth * Math::clamp01(pct);
 
 		markContentAsDirty();
 	}

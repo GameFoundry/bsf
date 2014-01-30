@@ -15,6 +15,7 @@
 #include "CmSceneManager.h"
 #include "BsCmdEditPlainFieldGO.h"
 #include "BsDragAndDropManager.h"
+#include "BsCmdReparentSO.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -184,7 +185,10 @@ namespace BansheeEditor
 				{
 					Vector<TreeElement*>::type newChildren;
 
-					mTempToDelete.resize(current->mChildren.size(), true);
+					mTempToDelete.resize(current->mChildren.size());
+					for(UINT32 i = 0; i < (UINT32)current->mChildren.size(); i++)
+						mTempToDelete[i] = true;
+
 					for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 					{
 						HSceneObject currentSOChild = currentSO->getChild(i);
@@ -493,9 +497,33 @@ namespace BansheeEditor
 			if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject)
 			{
 				DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
+				const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(event.getPosition());
 
-				// TODO - Actually perform parent change
-				
+				TreeElement* treeElement = nullptr;
+				if(element != nullptr)
+				{
+					if(element->isTreeElement())
+						treeElement = interactableToRealElement(*element);
+					else
+						treeElement = element->parent;
+				}
+
+				if(treeElement != nullptr)
+				{
+					Vector<HSceneObject>::type sceneObjects;
+					HSceneObject newParent = treeElement->mSceneObject;
+
+					for(UINT32 i = 0; i < draggedSceneObjects->numObjects; i++)
+					{
+						if(draggedSceneObjects->objects[i] != newParent)
+							sceneObjects.push_back(draggedSceneObjects->objects[i]);
+					}
+
+					CmdReparentSO::execute(sceneObjects, newParent);
+				}
+
+				unselectAll();
+
 				return true;
 			}
 		}
