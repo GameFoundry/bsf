@@ -25,6 +25,7 @@
 #include "BsGUIContent.h"
 #include "CmStringTable.h"
 #include "BsGUISceneTreeView.h"
+#include "BsGUIScrollArea.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -50,9 +51,22 @@ namespace BansheeEditor
 		mSceneTreeView = GUISceneTreeView::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
 
 		GUILayout& sceneTreeViewLayout = area->getLayout().addLayoutY();
-		sceneTreeViewLayout.addFlexibleSpace();
-		sceneTreeViewLayout.addElement(mSceneTreeView);
-		sceneTreeViewLayout.addFlexibleSpace();
+		
+		//sceneTreeViewLayout.addElement(mSceneTreeView);
+		
+
+		SceneObject::create("FILLER_A");
+		SceneObject::create("FILLER_B");
+		SceneObject::create("FILLER_C");
+		SceneObject::create("FILLER_D");
+		SceneObject::create("FILLER_E");
+		SceneObject::create("FILLER_F");
+		SceneObject::create("FILLER_G");
+		SceneObject::create("FILLER_H");
+		SceneObject::create("FILLER_I");
+		SceneObject::create("FILLER_J");
+		SceneObject::create("FILLER_K");
+		SceneObject::create("FILLER_L");
 
 		//area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
 		//mLabel = GUILabel::create(*this, HString(L""));
@@ -64,6 +78,13 @@ namespace BansheeEditor
 		//dropDownElements.push_back(HString(L"Element #3"));
 		//mListBox = GUIListBox::create(*this, dropDownElements, GUIOptions(GUIOption::fixedWidth(50), GUIOption::fixedHeight(13)));
 		//area->getLayout().addElement(mListBox);
+
+		GUIScrollArea* scrollArea = GUIScrollArea::create(*this, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100)));
+		sceneTreeViewLayout.addFlexibleSpace();
+		area->getLayout().addElement(scrollArea);
+		sceneTreeViewLayout.addFlexibleSpace();
+
+		scrollArea->getLayout().addElement(mSceneTreeView);
 
 		GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
 		button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));

@@ -70,6 +70,7 @@ namespace BansheeEngine
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
 				optimalWidth = child->_getOptimalSize().x;
+				optimalHeight = child->_getOptimalSize().y;
 			}
 
 			mOptimalSizes[childIdx].x = optimalWidth;
@@ -376,6 +377,7 @@ namespace BansheeEngine
 				element->_setClipRect(elemClipRect);
 
 				RectI newClipRect(offset.x, offset.y, elemWidth, elemHeight);
+				newClipRect.clip(clipRect);
 				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, newClipRect, widgetDepth, areaDepth);
 
 				mActualHeight = std::max(mActualHeight, elemHeight);

@@ -9,15 +9,6 @@ TODO:
  - Support for icons next to tree elements
  - Ability to move selection via arrow keys
 
-Drag and drop problem:
- - Test it properly
- If I make three element deep tree
-  A
-  --B
-  ----C
-
-And the move C to have parent A, nothing will happen when I first do it. And when I do it next time element will move properly but a ghost element will remain.
-
 MenuBar problems:
  - Clicking the top menu item closes and immediately opens the menu again (it should only close it)
    - Something similar probably also happens with ListBox

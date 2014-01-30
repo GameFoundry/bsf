@@ -45,15 +45,25 @@ namespace BansheeEngine
 	void GUIScrollArea::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
-		mContentLayout->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, areaDepth);
-		UINT32 contentWidth = mContentLayout->_getActualWidth();
-		UINT32 contentHeight = mContentLayout->_getActualHeight();
+		// We want elements to use their optimal height, since scroll area
+		// technically provides "infinite" space
+		UINT32 contentLayoutWidth = width;
+		if(mHorzBarType != ScrollBarType::NeverShow)
+			contentLayoutWidth = mContentLayout->_getOptimalSize().x;
+
+		UINT32 contentLayoutHeight = height;
+		if(mVertBarType != ScrollBarType::NeverShow)
+			contentLayoutHeight = mContentLayout->_getOptimalSize().y;
+
+		mContentLayout->_updateLayoutInternal(x, y, contentLayoutWidth, contentLayoutHeight, clipRect, widgetDepth, areaDepth);
+		mContentWidth = mContentLayout->_getActualWidth();
+		mContentHeight = mContentLayout->_getActualHeight();
 
 		mClippedContentWidth = width;
 		mClippedContentHeight = height;
 
 		RectI layoutClipRect = clipRect;
-		bool addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentWidth > mWidth) || 
+		bool addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && mContentWidth > mWidth) || 
 			mHorzBarType == ScrollBarType::AlwaysShow && mHorzBarType != ScrollBarType::NeverShow;
 
 		bool hasHorzScrollbar = false;
@@ -65,14 +75,17 @@ namespace BansheeEngine
 			layoutClipRect.height = mClippedContentHeight;
 			hasHorzScrollbar = true;
 
-			mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y, 
-				mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight, layoutClipRect, widgetDepth, areaDepth);
+			if(mVertBarType == ScrollBarType::NeverShow)
+				contentLayoutHeight = mClippedContentHeight;
 
-			contentWidth = mContentLayout->_getActualWidth();
-			contentHeight = mContentLayout->_getActualHeight();
+			mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y, 
+				contentLayoutWidth, contentLayoutHeight, layoutClipRect, widgetDepth, areaDepth);
+
+			mContentWidth = mContentLayout->_getActualWidth();
+			mContentHeight = mContentLayout->_getActualHeight();
 		}
 
-		bool addVertScrollbar = (mVertBarType == ScrollBarType::ShowIfDoesntFit && contentHeight > mClippedContentHeight) || 
+		bool addVertScrollbar = (mVertBarType == ScrollBarType::ShowIfDoesntFit && mContentHeight > mClippedContentHeight) || 
 			mVertBarType == ScrollBarType::AlwaysShow && mVertBarType != ScrollBarType::NeverShow;
 
 		if(addVertScrollbar)
@@ -82,25 +95,28 @@ namespace BansheeEngine
 			layoutClipRect.width = mClippedContentWidth;
 			hasVertScrollbar = true;
 
+			if(mHorzBarType == ScrollBarType::NeverShow)
+				contentLayoutWidth = mClippedContentWidth;
+
 			if(hasHorzScrollbar)
 			{
 				mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
-					mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight + Math::floorToInt(mVertOffset), 
+					contentLayoutWidth, contentLayoutHeight, 
 					layoutClipRect, widgetDepth, areaDepth);
 			}
 			else
 			{
 				mContentLayout->_updateLayoutInternal(x, y - Math::floorToInt(mVertOffset), 
-					mClippedContentWidth, mClippedContentHeight + Math::floorToInt(mVertOffset), 
+					contentLayoutWidth, contentLayoutHeight, 
 					layoutClipRect, widgetDepth, areaDepth);
 			}
 
-			contentWidth = mContentLayout->_getActualWidth();
-			contentHeight = mContentLayout->_getActualHeight();
+			mContentWidth = mContentLayout->_getActualWidth();
+			mContentHeight = mContentLayout->_getActualHeight();
 
 			if(!hasHorzScrollbar) // Since width has been reduced, we need to check if we require the horizontal scrollbar
 			{
-				addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentWidth > mClippedContentWidth) && mHorzBarType != ScrollBarType::NeverShow;
+				addHorzScrollbar = (mHorzBarType == ScrollBarType::ShowIfDoesntFit && mContentWidth > mClippedContentWidth) && mHorzBarType != ScrollBarType::NeverShow;
 
 				if(addHorzScrollbar)
 				{
@@ -108,15 +124,23 @@ namespace BansheeEngine
 					mClippedContentHeight = (UINT32)std::max(0, (INT32)height - (INT32)ScrollBarWidth);
 					layoutClipRect.height = mClippedContentHeight;
 
+					if(mVertBarType == ScrollBarType::NeverShow)
+						contentLayoutHeight = mClippedContentHeight;
+
 					mContentLayout->_updateLayoutInternal(x - Math::floorToInt(mHorzOffset), y - Math::floorToInt(mVertOffset), 
-						mClippedContentWidth + Math::floorToInt(mHorzOffset), mClippedContentHeight + Math::floorToInt(mVertOffset), 
+						contentLayoutWidth, contentLayoutHeight, 
 						layoutClipRect, widgetDepth, areaDepth);
+
+					mContentWidth = mContentLayout->_getActualWidth();
+					mContentHeight = mContentLayout->_getActualHeight();
+
+					hasHorzScrollbar = true;
 				}
 			}
 		}
 
 		// Add/remove/update vertical scrollbar as needed
-		if((mVertBarType == ScrollBarType::ShowIfDoesntFit && contentHeight > mClippedContentHeight) || mVertBarType == ScrollBarType::AlwaysShow &&
+		if((mVertBarType == ScrollBarType::ShowIfDoesntFit && mContentHeight > mClippedContentHeight) || mVertBarType == ScrollBarType::AlwaysShow &&
 			mVertBarType != ScrollBarType::NeverShow)
 		{
 			if(mVertScroll == nullptr)
@@ -152,10 +176,10 @@ namespace BansheeEngine
 			mVertScroll->_updateLayout(offset.x, offset.y, ScrollBarWidth, scrollBarHeight, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
-			UINT32 newHandleSize = (UINT32)Math::floorToInt(mVertScroll->getMaxHandleSize() * (scrollBarHeight / (float)contentHeight));
+			UINT32 newHandleSize = (UINT32)Math::floorToInt(mVertScroll->getMaxHandleSize() * (scrollBarHeight / (float)mContentHeight));
 			newHandleSize = std::max(newHandleSize, MinHandleSize);
 
-			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(contentHeight) - INT32(scrollBarHeight));
+			UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentHeight) - INT32(scrollBarHeight));
 			float newScrollPct = 0.0f;
 
 			if(scrollableHeight > 0)
@@ -176,7 +200,7 @@ namespace BansheeEngine
 		}
 
 		// Add/remove/update horizontal scrollbar as needed
-		if((mHorzBarType == ScrollBarType::ShowIfDoesntFit && contentWidth > mClippedContentWidth) || mHorzBarType == ScrollBarType::AlwaysShow &&
+		if((mHorzBarType == ScrollBarType::ShowIfDoesntFit && mContentWidth > mClippedContentWidth) || mHorzBarType == ScrollBarType::AlwaysShow &&
 			mHorzBarType != ScrollBarType::NeverShow)
 		{ 
 			if(mHorzScroll == nullptr)
@@ -212,10 +236,10 @@ namespace BansheeEngine
 			mHorzScroll->_updateLayout(offset.x, offset.y, scrollBarWidth, ScrollBarWidth, scrollBarLayoutClipRect, widgetDepth, areaDepth);
 
 			// Set new handle size and update position to match the new size
-			UINT32 newHandleSize = (UINT32)Math::floorToInt(mHorzScroll->getMaxHandleSize() * (scrollBarWidth / (float)contentWidth));
+			UINT32 newHandleSize = (UINT32)Math::floorToInt(mHorzScroll->getMaxHandleSize() * (scrollBarWidth / (float)mContentWidth));
 			newHandleSize = std::max(newHandleSize, MinHandleSize);
 
-			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(contentWidth) - INT32(scrollBarWidth));
+			UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentWidth) - INT32(scrollBarWidth));
 			float newScrollPct = 0.0f;
 			
 			if(scrollableWidth > 0)
@@ -234,9 +258,6 @@ namespace BansheeEngine
 
 			mHorzOffset = 0.0f;
 		}
-
-		mContentWidth = contentWidth;
-		mContentHeight = contentHeight;
 	}
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)
