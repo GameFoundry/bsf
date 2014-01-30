@@ -739,6 +739,9 @@ namespace BansheeEditor
 	{
 		Vector2I offset = _getOffset();
 		mClippedBounds = RectI(offset.x, offset.y, _getWidth(), _getHeight());
+
+		RectI localClipRect(mClipRect.x + mOffset.x, mClipRect.y + mOffset.y, mClipRect.width, mClipRect.height);
+		mClippedBounds.clip(localClipRect);
 	}
 
 	void GUISceneTreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
