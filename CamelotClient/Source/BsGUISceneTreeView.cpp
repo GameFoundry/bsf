@@ -786,7 +786,7 @@ namespace BansheeEditor
 				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 0, RectI(x, offset.y, width, ELEMENT_EXTRA_SPACING)));
 				mVisibleElements.push_back(InteractableElement(current->mParent, current->mSortedIdx * 2 + 1, RectI(x, offset.y + ELEMENT_EXTRA_SPACING, width, btnHeight)));
 
-				offset.x = INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
+				offset.x = x + INITIAL_INDENT_OFFSET + indent * INDENT_SIZE;
 				offset.y += ELEMENT_EXTRA_SPACING;
 
 				current->mElement->_setOffset(offset);
@@ -805,7 +805,7 @@ namespace BansheeEditor
 			{
 				Vector2I elementSize = current->mFoldoutBtn->_getOptimalSize();
 
-				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.y);
+				offset.x -= std::min((INT32)INITIAL_INDENT_OFFSET, elementSize.x);
 
 				Vector2I myOffset = offset;
 				myOffset.y -= 2; // TODO: Arbitrary offset, I should adjust it based on font baseline so that the button is nicely centered on text

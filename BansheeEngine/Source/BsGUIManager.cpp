@@ -700,11 +700,11 @@ namespace BansheeEngine
 		}
 		else // Otherwise, send MouseMove events if we are hovering over any element
 		{
-			for(auto& elementInfo : mElementsUnderCursor)
+			if(mLastCursorScreenPos != event.screenPos)
 			{
-				// Send MouseMove event
-				if(mLastCursorScreenPos != event.screenPos)
+				for(auto& elementInfo : mElementsUnderCursor)
 				{
+					// Send MouseMove event
 					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
 					mMouseEvent.setMouseMoveData(localPos);
 					bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
@@ -715,9 +715,9 @@ namespace BansheeEngine
 						break;
 					}
 				}
-
-				mLastCursorScreenPos = event.screenPos;
 			}
+
+			mLastCursorScreenPos = event.screenPos;
 
 			if(Math::abs(event.mouseWheelScrollAmount) > 0.00001f)
 			{
