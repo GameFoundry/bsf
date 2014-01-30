@@ -1103,6 +1103,31 @@ namespace BansheeEngine
 
 		// Send MouseOut and MouseOver events
 		bool eventProcessed = false;
+		for(auto& elementInfo : mElementsUnderCursor)
+		{
+			GUIElement* element = elementInfo.element;
+			GUIWidget* widget = elementInfo.widget;
+
+			auto iterFind = std::find_if(mNewElementsUnderCursor.begin(), mNewElementsUnderCursor.end(), 
+				[=] (const ElementInfo& x) { return x.element == element; });
+
+			if(iterFind == mNewElementsUnderCursor.end())
+			{
+				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
+					[=](const ElementInfo& x) { return x.element == element; });
+
+				// Send MouseOut event
+				if(mActiveElements.size() == 0 || iterFind2 != mActiveElements.end())
+				{
+					Vector2I curLocalPos = getWidgetRelativePos(*widget, cursorScreenPos);
+
+					mMouseEvent.setMouseOutData(curLocalPos);
+					if(sendMouseEvent(widget, element, mMouseEvent))
+						eventProcessed = true;
+				}
+			}
+		}
+
 		for(auto& elementInfo : mNewElementsUnderCursor)
 		{
 			GUIElement* element = elementInfo.element;
@@ -1126,31 +1151,6 @@ namespace BansheeEngine
 					mMouseEvent = GUIMouseEvent(buttonStates, shift, control, alt);
 
 					mMouseEvent.setMouseOverData(localPos);
-					if(sendMouseEvent(widget, element, mMouseEvent))
-						eventProcessed = true;
-				}
-			}
-		}
-
-		for(auto& elementInfo : mElementsUnderCursor)
-		{
-			GUIElement* element = elementInfo.element;
-			GUIWidget* widget = elementInfo.widget;
-
-			auto iterFind = std::find_if(mNewElementsUnderCursor.begin(), mNewElementsUnderCursor.end(), 
-				[=] (const ElementInfo& x) { return x.element == element; });
-
-			if(iterFind == mNewElementsUnderCursor.end())
-			{
-				auto iterFind2 = std::find_if(mActiveElements.begin(), mActiveElements.end(), 
-					[=](const ElementInfo& x) { return x.element == element; });
-
-				// Send MouseOut event
-				if(mActiveElements.size() == 0 || iterFind2 != mActiveElements.end())
-				{
-					Vector2I curLocalPos = getWidgetRelativePos(*widget, cursorScreenPos);
-
-					mMouseEvent.setMouseOutData(curLocalPos);
 					if(sendMouseEvent(widget, element, mMouseEvent))
 						eventProcessed = true;
 				}

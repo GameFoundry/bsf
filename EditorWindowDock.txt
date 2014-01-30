@@ -1,7 +1,6 @@
 TODO:
  - Closing all docked widgets causes an exception
  - Test out minimum dock container size and maybe increase it a bit
- - (Unrelated) Can't click and drag a scroll handle
 
 Polish TOOD:
  - Change cursor icon when window is dragged
