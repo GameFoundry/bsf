@@ -60,6 +60,36 @@ namespace BansheeEditor
 		mChildren.clear();
 	}
 
+	bool GUISceneTreeView::TreeElement::isParentRec(TreeElement* element) const
+	{
+		TreeElement* curParent = mParent;
+		while(curParent != nullptr)
+		{
+			if(curParent == element)
+				return true;
+
+			curParent = curParent->mParent;
+		}
+
+		return false;
+	}
+
+	GUISceneTreeView::TreeElement* GUISceneTreeView::InteractableElement::getTreeElement() const
+	{
+		if(!isTreeElement())
+			return nullptr;
+
+		UINT32 sortedIdx = (index - 1) / 2;
+
+		auto findIter = std::find_if(parent->mChildren.begin(), parent->mChildren.end(),
+			[&](const TreeElement* x) { return x->mSortedIdx == sortedIdx; });
+
+		if(findIter != parent->mChildren.end())
+			return *findIter;
+
+		return nullptr;
+	}
+
 	GUISceneTreeView::GUISceneTreeView(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
 		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
 		BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
@@ -135,30 +165,7 @@ namespace BansheeEditor
 		if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject)
 		{
 			const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(mDragPosition);
-			if(element == nullptr || !element->isTreeElement())
-			{
-				mMouseOverDragElementTime = gTime().getTime();
-				mMouseOverDragElement = nullptr;
-			}
-			else
-			{
-				TreeElement* treeElement = element->getTreeElement();
-
-				if(mMouseOverDragElement == treeElement)
-				{
-					float timeDiff = gTime().getTime() - mMouseOverDragElementTime;
-					if(timeDiff >= AUTO_EXPAND_DELAY_SEC)
-					{
-						if(mMouseOverDragElement != nullptr)
-							mMouseOverDragElement->mIsExpanded = true;
-					}
-				}
-				else
-				{
-					mMouseOverDragElementTime = gTime().getTime();
-					mMouseOverDragElement = treeElement;
-				}
-			}
+			temporarilyExpandElement(element);
 		}
 
 		// NOTE - Instead of iterating through every visible element and comparing it with internal values,
@@ -327,6 +334,9 @@ namespace BansheeEditor
 							_registerChildElement(current->mFoldoutBtn);
 
 							current->mFoldoutBtn->onToggled.connect(boost::bind(&GUISceneTreeView::elementToggled, this, current, _1));
+
+							if(current->mIsExpanded)
+								current->mFoldoutBtn->toggleOn();
 						}
 					}
 					else
@@ -1092,25 +1102,62 @@ namespace BansheeEditor
 			return nullptr;
 	}
 
+	void GUISceneTreeView::temporarilyExpandElement(const GUISceneTreeView::InteractableElement* mouseOverElement)
+	{
+		TreeElement* treeElement = nullptr;
+		if(mouseOverElement != nullptr && mouseOverElement->isTreeElement())
+			treeElement = mouseOverElement->getTreeElement();
+
+		if(treeElement == nullptr || treeElement != mMouseOverDragElement)
+		{
+			while(!mAutoExpandedElements.empty())
+			{
+				TreeElement* autoExpandedElement = mAutoExpandedElements.top();
+
+				bool unexpandElement = false;
+				if(mouseOverElement != nullptr && mouseOverElement->parent != nullptr)
+				{
+					if(mouseOverElement->parent != autoExpandedElement && !mouseOverElement->parent->isParentRec(autoExpandedElement))
+						unexpandElement = true;
+					else
+						break;
+				}
+				else
+					unexpandElement = true;
+
+				if(unexpandElement)
+				{
+					autoExpandedElement->mIsExpanded = false;
+					if(autoExpandedElement->mFoldoutBtn != nullptr)
+						autoExpandedElement->mFoldoutBtn->toggleOff();
+
+					mAutoExpandedElements.pop();
+				}
+			}
+
+			mMouseOverDragElement = treeElement;
+			mMouseOverDragElementTime = gTime().getTime();
+		}
+		else
+		{
+			if(mMouseOverDragElement != nullptr && !mMouseOverDragElement->mIsExpanded)
+			{
+				float timeDiff = gTime().getTime() - mMouseOverDragElementTime;
+				if(timeDiff >= AUTO_EXPAND_DELAY_SEC)
+				{
+					mAutoExpandedElements.push(mMouseOverDragElement);
+					mMouseOverDragElement->mIsExpanded = true;
+
+					if(mMouseOverDragElement->mFoldoutBtn != nullptr)
+						mMouseOverDragElement->mFoldoutBtn->toggleOn();
+				}
+			}
+		}
+	}
+
 	const String& GUISceneTreeView::getGUITypeName()
 	{
 		static String typeName = "SceneTreeView";
 		return typeName;
-	}
-
-	GUISceneTreeView::TreeElement* GUISceneTreeView::InteractableElement::getTreeElement() const
-	{
-		if(!isTreeElement())
-			return nullptr;
-
-		UINT32 sortedIdx = (index - 1) / 2;
-
-		auto findIter = std::find_if(parent->mChildren.begin(), parent->mChildren.end(),
-			[&](const TreeElement* x) { return x->mSortedIdx == sortedIdx; });
-
-		if(findIter != parent->mChildren.end())
-			return *findIter;
-
-		return nullptr;
 	}
 }

@@ -28,6 +28,8 @@ namespace BansheeEditor
 			bool mIsSelected;
 			bool mIsDirty;
 			bool mIsVisible;
+
+			bool isParentRec(TreeElement* element) const;
 		};
 
 		struct InteractableElement
@@ -121,6 +123,7 @@ namespace BansheeEditor
 		BS::GUITexture* mDragHighlight;
 		BS::GUITexture* mDragSepHighlight;
 
+		CM::Stack<TreeElement*>::type mAutoExpandedElements;
 		TreeElement* mMouseOverDragElement;
 		float mMouseOverDragElementTime;
 
@@ -143,6 +146,8 @@ namespace BansheeEditor
 		void selectElement(TreeElement* element);
 		void unselectElement(TreeElement* element);
 		void unselectAll();
+
+		void temporarilyExpandElement(const GUISceneTreeView::InteractableElement* mouseOverElement);
 
 		void onEditAccepted();
 		void onEditCanceled();
