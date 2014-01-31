@@ -1,31 +1,36 @@
 TODO:
  - Callback on tree item select
- - Clicking on an already selectecd element starts rename 
-    - Will likely need some kind of check to ignore double-clicks?
+ - When dragging in tree view automatically expand mouse over elements
+ - Ability to move selection via arrow keys
  - Context menu with rename/copy/paste/duplicate
  - Delete with Undo/Redo support
  - Auto scroll
     - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
  - Support for icons next to tree elements
- - Ability to move selection via arrow keys
+ - Clicking on an already selectecd element starts rename 
+   - Will likely need some kind of check to ignore double-clicks?
 
 MenuBar problems:
  - Clicking the top menu item closes and immediately opens the menu again (it should only close it)
    - Something similar probably also happens with ListBox
 
  Other:
- - When dragging in tree view automatically expand mouse over elements
  - "Ping" effect
  - Copy/Paste/Duplicate
    - This is more of a problem with actual copying of SceneObjects (It's not implemented). I should be able to serialize, and then de-serialize with a new parent as a form of copy.
 
-
 --------------------------------------------------
 LOW PRIORITY:
 
-Shoutcuts ideas:
-Remove Cut/Copy/Paste/Undo/Redo/Rename/SelectAll and similar shortcuts from InputCommands. Instead send generic shortcut commands whenever user presses some key (with shift/ctrl/alt state).
- - I will need some kind of generic shortcuts at some point so there is no point that Rename is hardcoded to F2
- - I should also add a GUIShortcutManager, as a centralized place for dealing with shortcuts (so that I my edit them at a later date)
-  - TODO - Figure out how would this work. How would the centralized system know all of the UI shortcuts? Probably register them somehow on program start?
- - This shortcut system would be separate from the input manager, and would not be meant for in-game use
+Shortcut plan:
+Replace all GUICommandEventType with two things:
+ - Events like CursorMoveUp should just be received a keys + modifiers (shift/ctrl/alt) and the individual element can then decide what to do with them and how to interpret them.
+ - Events like Rename, Undo, Redo, Copy, Paste, etc. should be globally set shortcut keys
+    - Shortcut keys are globally registered on program start in ShortcutManager
+    - Objects can then register callbacks for certain shortcut using mechanism like: addCallback("Undo", onUndo).
+     - They should also be able to unregister those callbacks.
+    - GUIElement can choose to listen to certain shortcut keys
+        - getUsedShortcut is a overridable method that returns a list of shortcuts and callbacks
+        - When element comes into focus or loses focus GUIManager will register/unregister those shortcuts with ShortcutManager
+          - I should probably prevent one shortcut from possibly triggering multiple callbacks
+    - Whenever some key combination or a single key is pressed all elements in focus get send the shortcut key (if that shortcut exists)

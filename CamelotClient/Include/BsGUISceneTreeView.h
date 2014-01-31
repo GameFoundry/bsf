@@ -37,6 +37,7 @@ namespace BansheeEditor
 			{ }
 
 			bool isTreeElement() const { return index % 2 == 1; }
+			TreeElement* getTreeElement() const;
 
 			TreeElement* parent;
 			CM::UINT32 index;
@@ -124,7 +125,8 @@ namespace BansheeEditor
 			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		const GUISceneTreeView::InteractableElement* findElementUnderCoord(const CM::Vector2I& coord) const;
-		GUISceneTreeView::TreeElement* GUISceneTreeView::interactableToRealElement(const GUISceneTreeView::InteractableElement& element);
+		TreeElement* getTopMostSelectedElement() const;
+		TreeElement* getBottomMostSelectedElement() const;
 
 		void enableEdit(TreeElement* element);
 		void disableEdit(bool acceptChanges);

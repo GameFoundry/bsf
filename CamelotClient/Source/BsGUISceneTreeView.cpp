@@ -353,7 +353,7 @@ namespace BansheeEditor
 
 			if(element != nullptr && element->isTreeElement())
 			{
-				treeElement = interactableToRealElement(*element);
+				treeElement = element->getTreeElement();
 			}
 
 			if(treeElement != nullptr && event.getPosition().x >= treeElement->mElement->getBounds().x)
@@ -379,7 +379,7 @@ namespace BansheeEditor
 							if(!iterStartFind->isTreeElement())
 								continue;
 
-							TreeElement* curElem = interactableToRealElement(*iterStartFind);
+							TreeElement* curElem = iterStartFind->getTreeElement();
 							if(curElem == selectionRoot)
 							{
 								foundStart = true;
@@ -400,7 +400,7 @@ namespace BansheeEditor
 								for(;iterStartFind != (iterEndFind + 1); ++iterStartFind)
 								{
 									if(iterStartFind->isTreeElement())
-										selectElement(interactableToRealElement(*iterStartFind));
+										selectElement(iterStartFind->getTreeElement());
 								}
 							}
 							else if(iterEndFind < iterStartFind)
@@ -408,7 +408,7 @@ namespace BansheeEditor
 								for(;iterEndFind != (iterStartFind + 1); ++iterEndFind)
 								{
 									if(iterEndFind->isTreeElement())
-										selectElement(interactableToRealElement(*iterEndFind));
+										selectElement(iterEndFind->getTreeElement());
 								}
 							}
 							else
@@ -452,14 +452,14 @@ namespace BansheeEditor
 					if(element != nullptr && element->isTreeElement())
 					{
 						// If element we are trying to drag isn't selected, select it
-						TreeElement* treeElement = interactableToRealElement(*element);
+						TreeElement* treeElement = element->getTreeElement();
 						auto iterFind = std::find_if(mSelectedElements.begin(), mSelectedElements.end(), 
 							[&] (const SelectedElement& x) { return x.element == treeElement; });
 
 						if(iterFind == mSelectedElements.end())
 						{
 							unselectAll();
-							selectElement(interactableToRealElement(*element));
+							selectElement(element->getTreeElement());
 						}						
 					}
 
@@ -503,7 +503,7 @@ namespace BansheeEditor
 				if(element != nullptr)
 				{
 					if(element->isTreeElement())
-						treeElement = interactableToRealElement(*element);
+						treeElement = element->getTreeElement();
 					else
 						treeElement = element->parent;
 				}
@@ -547,6 +547,51 @@ namespace BansheeEditor
 			}
 
 			return true;
+		}
+		
+		if(ev.getType() == GUICommandEventType::CursorMoveUp || ev.getType() == GUICommandEventType::SelectUp)
+		{
+			TreeElement* topMostElement = getTopMostSelectedElement();
+			auto topMostIter = std::find_if(mVisibleElements.begin(), mVisibleElements.end(), 
+				[&] (const InteractableElement& x) { return x.getTreeElement() == topMostElement; });
+
+			if(topMostIter != mVisibleElements.end() && topMostIter != mVisibleElements.begin())
+			{
+				do 
+				{
+					topMostIter--;
+				} while (!topMostIter->isTreeElement() && topMostIter != mVisibleElements.begin());
+				
+				if(topMostIter->isTreeElement())
+				{
+					if(ev.getType() == GUICommandEventType::CursorMoveUp)
+						unselectAll();
+
+					selectElement(topMostIter->getTreeElement());
+				}
+			}
+		}
+		else if(ev.getType() == GUICommandEventType::CursorMoveDown || ev.getType() == GUICommandEventType::SelectDown)
+		{
+			TreeElement* bottoMostElement = getBottomMostSelectedElement();
+			auto bottomMostIter = std::find_if(mVisibleElements.begin(), mVisibleElements.end(), 
+				[&] (const InteractableElement& x) { return x.getTreeElement() == bottoMostElement; });
+
+			if(bottomMostIter != mVisibleElements.end())
+			{
+				do 
+				{
+					bottomMostIter++;
+				} while (bottomMostIter != mVisibleElements.end() && !bottomMostIter->isTreeElement());
+
+				if(bottomMostIter != mVisibleElements.end() && bottomMostIter->isTreeElement())
+				{
+					if(ev.getType() == GUICommandEventType::CursorMoveDown)
+						unselectAll();
+
+					selectElement(bottomMostIter->getTreeElement());
+				}
+			}
 		}
 
 		return false;
@@ -961,25 +1006,79 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	GUISceneTreeView::TreeElement* GUISceneTreeView::interactableToRealElement(const GUISceneTreeView::InteractableElement& element)
+	GUISceneTreeView::TreeElement* GUISceneTreeView::getTopMostSelectedElement() const
 	{
-		if(!element.isTreeElement())
+		auto topMostElement = mVisibleElements.end();
+
+		for(auto& selectedElement : mSelectedElements)
+		{
+			auto iterFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(), 
+				[&] (const InteractableElement& x) { return x.getTreeElement() == selectedElement.element; });
+
+			if(iterFind != mVisibleElements.end())
+			{
+				if(topMostElement == mVisibleElements.end())
+					topMostElement = iterFind;
+				else
+				{
+					if(iterFind->bounds.y < topMostElement->bounds.y)
+						topMostElement = iterFind;
+				}
+			}
+		}
+
+		if(topMostElement != mVisibleElements.end())
+			return topMostElement->getTreeElement();
+		else
 			return nullptr;
+	}
 
-		UINT32 sortedIdx = (element.index - 1) / 2;
+	GUISceneTreeView::TreeElement* GUISceneTreeView::getBottomMostSelectedElement() const
+	{
+		auto& botMostElement = mVisibleElements.end();
 
-		auto findIter = std::find_if(element.parent->mChildren.begin(), element.parent->mChildren.end(),
-			[&](const TreeElement* x) { return x->mSortedIdx == sortedIdx; });
+		for(auto& selectedElement : mSelectedElements)
+		{
+			auto iterFind = std::find_if(mVisibleElements.begin(), mVisibleElements.end(), 
+				[&] (const InteractableElement& x) { return x.getTreeElement() == selectedElement.element; });
 
-		if(findIter != element.parent->mChildren.end())
-			return *findIter;
+			if(iterFind != mVisibleElements.end())
+			{
+				if(botMostElement == mVisibleElements.end())
+					botMostElement = iterFind;
+				else
+				{
+					if((iterFind->bounds.y + iterFind->bounds.height) > (botMostElement->bounds.y + botMostElement->bounds.height))
+						botMostElement = iterFind;
+				}
+			}
+		}
 
-		return nullptr;
+		if(botMostElement != mVisibleElements.end())
+			return botMostElement->getTreeElement();
+		else
+			return nullptr;
 	}
 
 	const String& GUISceneTreeView::getGUITypeName()
 	{
 		static String typeName = "SceneTreeView";
 		return typeName;
+	}
+
+	GUISceneTreeView::TreeElement* GUISceneTreeView::InteractableElement::getTreeElement() const
+	{
+		if(!isTreeElement())
+			return nullptr;
+
+		UINT32 sortedIdx = (index - 1) / 2;
+
+		auto findIter = std::find_if(parent->mChildren.begin(), parent->mChildren.end(),
+			[&](const TreeElement* x) { return x->mSortedIdx == sortedIdx; });
+
+		if(findIter != parent->mChildren.end())
+			return *findIter;
+
+		return nullptr;
 	}
 }
