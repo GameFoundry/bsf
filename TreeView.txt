@@ -1,7 +1,7 @@
 TODO:
  - Callback on tree item select
  - When dragging in tree view automatically expand mouse over elements
- - Ability to move selection via arrow keys
+ - When I select elements in tree view via arrow keys, make sure to automatically scroll the scroll-area so that element becomes visible
  - Context menu with rename/copy/paste/duplicate
  - Delete with Undo/Redo support
  - Auto scroll

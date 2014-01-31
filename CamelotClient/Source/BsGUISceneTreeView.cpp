@@ -16,6 +16,7 @@
 #include "BsCmdEditPlainFieldGO.h"
 #include "BsDragAndDropManager.h"
 #include "BsCmdReparentSO.h"
+#include "CmTime.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -26,6 +27,7 @@ namespace BansheeEditor
 	const UINT32 GUISceneTreeView::INDENT_SIZE = 10;
 	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 16;
 	const UINT32 GUISceneTreeView::DRAG_MIN_DISTANCE = 3;
+	const float GUISceneTreeView::AUTO_EXPAND_DELAY_SEC = 0.5f;
 
 	GUISceneTreeView::DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
@@ -64,7 +66,7 @@ namespace BansheeEditor
 		:GUIElementContainer(parent, layoutOptions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
 		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
-		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr)
+		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f)
 	{
 		if(mBackgroundStyle == nullptr)
 			mBackgroundStyle = parent.getSkin().getStyle("TreeViewBackground");
@@ -129,6 +131,36 @@ namespace BansheeEditor
 
 	void GUISceneTreeView::update()
 	{
+		// Attempt to auto-expand elements we are dragging over
+		if(DragAndDropManager::instance().isDragInProgress() && DragAndDropManager::instance().getDragTypeId() == (UINT32)DragAndDropType::SceneObject)
+		{
+			const GUISceneTreeView::InteractableElement* element = findElementUnderCoord(mDragPosition);
+			if(element == nullptr || !element->isTreeElement())
+			{
+				mMouseOverDragElementTime = gTime().getTime();
+				mMouseOverDragElement = nullptr;
+			}
+			else
+			{
+				TreeElement* treeElement = element->getTreeElement();
+
+				if(mMouseOverDragElement == treeElement)
+				{
+					float timeDiff = gTime().getTime() - mMouseOverDragElementTime;
+					if(timeDiff >= AUTO_EXPAND_DELAY_SEC)
+					{
+						if(mMouseOverDragElement != nullptr)
+							mMouseOverDragElement->mIsExpanded = true;
+					}
+				}
+				else
+				{
+					mMouseOverDragElementTime = gTime().getTime();
+					mMouseOverDragElement = treeElement;
+				}
+			}
+		}
+
 		// NOTE - Instead of iterating through every visible element and comparing it with internal values,
 		// I might just want to add callbacks to SceneManager that notify me of any changes and then only perform
 		// update if anything is actually dirty

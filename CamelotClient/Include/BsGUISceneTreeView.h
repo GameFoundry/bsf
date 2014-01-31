@@ -93,6 +93,7 @@ namespace BansheeEditor
 		static const CM::UINT32 INDENT_SIZE;
 		static const CM::UINT32 INITIAL_INDENT_OFFSET;
 		static const CM::UINT32 DRAG_MIN_DISTANCE;
+		static const float AUTO_EXPAND_DELAY_SEC;
 
 		const BS::GUIElementStyle* mBackgroundStyle;
 		const BS::GUIElementStyle* mElementBtnStyle;
@@ -119,6 +120,9 @@ namespace BansheeEditor
 		bool mDragInProgress;
 		BS::GUITexture* mDragHighlight;
 		BS::GUITexture* mDragSepHighlight;
+
+		TreeElement* mMouseOverDragElement;
+		float mMouseOverDragElementTime;
 
 		GUISceneTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
