@@ -12,7 +12,7 @@ namespace CamelotFramework
 	GameObjectManager::~GameObjectManager()
 	{ }
 
-	GameObject* GameObjectManager::getObject(UINT64 id) const 
+	GameObjectHandleBase GameObjectManager::getObject(UINT64 id) const 
 	{ 
 		auto iterFind = mObjects.find(id);
 
@@ -27,19 +27,15 @@ namespace CamelotFramework
 		return mObjects.find(id) != mObjects.end(); 
 	}
 
-	UINT64 GameObjectManager::registerObject(GameObject* object)
+	UINT64 GameObjectManager::registerObject(const GameObjectHandleBase& object)
 	{
-		assert(object != nullptr);
-
 		mObjects[mNextAvailableID] = object;
 
 		return mNextAvailableID++;
 	}
 
-	void GameObjectManager::unregisterObject(GameObject* object)
+	void GameObjectManager::unregisterObject(const GameObjectHandleBase& object)
 	{
-		assert(object != nullptr);
-
 		mObjects.erase(object->getInstanceID());
 	}
 }

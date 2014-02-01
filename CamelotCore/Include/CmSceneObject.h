@@ -226,6 +226,7 @@ namespace CamelotFramework
 
 			GameObjectHandle<T> newComponent = GameObjectHandle<T>(
 				std::shared_ptr<T>(new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>()));
+
 			mComponents.push_back(newComponent);
 
 			gSceneManager().notifyComponentAdded(newComponent);

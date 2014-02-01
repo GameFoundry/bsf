@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
+#include "CmGameObjectHandle.h"
 
 namespace CamelotFramework
 {
@@ -11,14 +12,14 @@ namespace CamelotFramework
 		GameObjectManager();
 		~GameObjectManager();
 
-		UINT64 registerObject(GameObject* object);
-		void unregisterObject(GameObject* object);
+		UINT64 registerObject(const GameObjectHandleBase& object);
+		void unregisterObject(const GameObjectHandleBase& object);
 
-		GameObject* getObject(UINT64 id) const;
+		GameObjectHandleBase getObject(UINT64 id) const;
 		bool objectExists(UINT64 id) const;
 
 	private:
 		UINT64 mNextAvailableID; // 0 is not a valid ID
-		Map<UINT64, GameObject*>::type mObjects;
+		Map<UINT64, GameObjectHandleBase>::type mObjects;
 	};
 }

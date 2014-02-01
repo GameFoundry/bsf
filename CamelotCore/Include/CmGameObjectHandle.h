@@ -2,6 +2,8 @@
 
 namespace CamelotFramework
 {
+	class GameObjectManager;
+
 	struct CM_EXPORT GameObjectHandleData
 	{
 		GameObjectHandleData()
@@ -30,6 +32,7 @@ namespace CamelotFramework
 	class CM_EXPORT GameObjectHandleBase
 	{
 	public:
+		GameObjectHandleBase();
 		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData> data);
 
 		/**
@@ -62,14 +65,17 @@ namespace CamelotFramework
 	protected:
 		friend SceneObject;
 
-		GameObjectHandleBase();
-
 		inline void throwIfDestroyed() const;
 		
 		void destroy()
 		{
+			unregisterWithManager(*this);
+
 			mData->mPtr = nullptr;
 		}
+
+		void registerWithManager(const GameObjectHandleBase& object);
+		void unregisterWithManager(const GameObjectHandleBase& object);
 
 		std::shared_ptr<GameObjectHandleData> mData;
 	};
@@ -145,6 +151,7 @@ namespace CamelotFramework
 			:GameObjectHandleBase()
 		{
 			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(std::static_pointer_cast<GameObject>(ptr));
+			registerWithManager(*this);
 		}
 	};
 

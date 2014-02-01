@@ -6,14 +6,10 @@ namespace CamelotFramework
 {
 	GameObject::GameObject()
 		:mInstanceId(0)
-	{
-		mInstanceId = GameObjectManager::instance().registerObject(this);
-	}
+	{ }
 
 	GameObject::~GameObject()
-	{
-		GameObjectManager::instance().unregisterObject(this);
-	}
+	{ }
 	
 	RTTITypeBase* GameObject::getRTTIStatic()
 	{

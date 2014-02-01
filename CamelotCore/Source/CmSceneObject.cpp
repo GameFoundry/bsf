@@ -41,6 +41,7 @@ namespace CamelotFramework
 			&cm_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
 
 		HSceneObject sceneObject = GameObjectHandle<SceneObject>(sceneObjectPtr);
+
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;

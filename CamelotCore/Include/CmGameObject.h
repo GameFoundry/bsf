@@ -14,6 +14,8 @@ namespace CamelotFramework
 		UINT64 getInstanceID() const { return mInstanceId; }
 
 	private:
+		friend class GameObjectHandleBase;
+
 		UINT64 mInstanceId;
 
 		/************************************************************************/
