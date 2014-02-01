@@ -37,9 +37,10 @@ namespace CamelotFramework
 
 	HSceneObject SceneObject::createInternal(const String& name)
 	{
-		HSceneObject sceneObject = GameObjectHandle<SceneObject>(
-			new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name, NextFreeId++),
-			&cm_delete<PoolAlloc, GameObject>);
+		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name, NextFreeId++), 
+			&cm_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
+
+		HSceneObject sceneObject = GameObjectHandle<SceneObject>(sceneObjectPtr);
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;
@@ -378,7 +379,7 @@ namespace CamelotFramework
 	void SceneObject::destroyComponent(Component* component)
 	{
 		auto iterFind = std::find_if(mComponents.begin(), mComponents.end(), 
-			[component](const HComponent& x) { return x.getHandleData()->mPtr == component; });
+			[component](const HComponent& x) { return x.getHandleData()->mPtr.get() == component; });
 
 		if(iterFind == mComponents.end())
 		{

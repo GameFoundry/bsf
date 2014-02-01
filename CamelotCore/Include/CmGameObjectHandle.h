@@ -5,19 +5,15 @@ namespace CamelotFramework
 	struct CM_EXPORT GameObjectHandleData
 	{
 		GameObjectHandleData()
-			:mPtr(nullptr), mDeleter(nullptr)
+			:mPtr(nullptr)
 		{ }
 
-		GameObjectHandleData(GameObject* ptr, void(*deleter)(GameObject*))
+		GameObjectHandleData(const std::shared_ptr<GameObject>& ptr)
 		{
 			mPtr = ptr;
-			mDeleter = deleter;
 		}
 
-		typedef void(*HandleDeleter)(GameObject*);
-
-		GameObject* mPtr;
-		HandleDeleter mDeleter;
+		std::shared_ptr<GameObject> mPtr;
 	};
 
 	/**
@@ -50,7 +46,14 @@ namespace CamelotFramework
 		{ 
 			throwIfDestroyed();
 
-			return mData->mPtr; 
+			return mData->mPtr.get(); 
+		}
+
+		std::shared_ptr<GameObject> getInternalPtr() const
+		{
+			throwIfDestroyed();
+
+			return mData->mPtr;
 		}
 
 		GameObject* operator->() const { return get(); }
@@ -65,17 +68,7 @@ namespace CamelotFramework
 		
 		void destroy()
 		{
-			if(mData->mPtr != nullptr)
-			{
-				GameObject* toDelete = mData->mPtr;
-				mData->mPtr = nullptr; // Need to set this to null before deleting, otherwise destructor thinks object isn't destroyed
-				// and we end up here again
-
-				if(mData->mDeleter != nullptr)
-					mData->mDeleter(toDelete);
-				else
-					delete toDelete;
-			}
+			mData->mPtr = nullptr;
 		}
 
 		std::shared_ptr<GameObjectHandleData> mData;
@@ -119,8 +112,16 @@ namespace CamelotFramework
 		{ 
 			throwIfDestroyed();
 
-			return reinterpret_cast<T*>(mData->mPtr); 
+			return reinterpret_cast<T*>(mData->mPtr.get()); 
 		}
+
+		std::shared_ptr<T> getInternalPtr() const
+		{
+			throwIfDestroyed();
+
+			return std::static_pointer_cast<T>(mData->mPtr);
+		}
+
 		T* operator->() const { return get(); }
 		T& operator*() const { return *get(); }
 
@@ -140,10 +141,10 @@ namespace CamelotFramework
 	private:
 		friend SceneObject;
 
-		explicit GameObjectHandle(T* ptr, void(*deleter)(GameObject*) = nullptr)
+		explicit GameObjectHandle(const std::shared_ptr<T> ptr)
 			:GameObjectHandleBase()
 		{
-			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>((GameObject*)ptr, deleter);
+			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(std::static_pointer_cast<GameObject>(ptr));
 		}
 	};
 

@@ -16,6 +16,8 @@ namespace CamelotFramework
 	{
 		friend class SceneManager;
 	public:
+		~SceneObject();
+
 		static HSceneObject create(const String& name);
 		void destroy();
 
@@ -28,7 +30,6 @@ namespace CamelotFramework
 		HSceneObject mThisHandle;
 
 		SceneObject(const String& name, UINT32 id);
-		~SceneObject();
 
 		static HSceneObject createInternal(const String& name);
 		void destroyInternal();
@@ -224,7 +225,7 @@ namespace CamelotFramework
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
 
 			GameObjectHandle<T> newComponent = GameObjectHandle<T>(
-				new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, GameObject>);
+				std::shared_ptr<T>(new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>()));
 			mComponents.push_back(newComponent);
 
 			gSceneManager().notifyComponentAdded(newComponent);
@@ -241,8 +242,9 @@ namespace CamelotFramework
 				"Specified type is not a valid Component.");										\
 																									\
 			GameObjectHandle<Type> newComponent = GameObjectHandle<Type>(							\
-				new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle, std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~)),	\
-				&cm_delete<PoolAlloc, GameObject>);													\
+				std::shared_ptr<Type>(new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle,			\
+				std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~)),					\
+				&cm_delete<PoolAlloc, Type>, StdAlloc<PoolAlloc>()));								\
 																									\
 			mComponents.push_back(newComponent);													\
 																									\
