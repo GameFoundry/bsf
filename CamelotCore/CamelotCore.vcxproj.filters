@@ -525,6 +525,9 @@
     <ClInclude Include="Include\CmPixelVolume.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGameObjectManager.h">
+      <Filter>Header Files\Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -823,6 +826,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmPixelVolume.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGameObjectManager.cpp">
+      <Filter>Source Files\Scene</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

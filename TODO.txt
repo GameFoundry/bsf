@@ -4,6 +4,11 @@ Editor localization should be different from in-game one.
  - Because what happens when user decides to set "File" localized string to something else? It will also modify the editor string.
  - HString probably needs to accept an optional parameter of which StringTable to use
 
+CROSS MODULE SINGLETON ISSUE:
+ - I cannot have any singletons in CamelotClient (the .exe) as each loaded .dll will then use their own copy of the singleton
+ - I should move all BansheeEditor functionality into a separate .dll, and then make the .exe perform just a single DynLib call.
+ - This issue manifests when I try to load MBansheeEditor.dll and it accesses EditorGUI singleton from SBansheeEditor, where the instance is wrong
+
 Optimization notes:
  - submitToCoreThread calls are EXTREMELY slow. In 10-50ms range.
 

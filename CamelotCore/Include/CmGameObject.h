@@ -8,8 +8,13 @@ namespace CamelotFramework
 	class CM_EXPORT GameObject : public IReflectable
 	{
 	public:
-		virtual ~GameObject() 
-		{ }
+		GameObject();
+		virtual ~GameObject();
+
+		UINT64 getInstanceID() const { return mInstanceId; }
+
+	private:
+		UINT64 mInstanceId;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

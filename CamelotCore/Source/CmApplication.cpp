@@ -11,6 +11,7 @@
 #include "CmHighLevelGpuProgram.h"
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmCoreObjectManager.h"
+#include "CmGameObjectManager.h"
 #include "CmDynLib.h"
 #include "CmDynLibManager.h"
 #include "CmSceneManager.h"
@@ -58,6 +59,7 @@ namespace CamelotFramework
 		Time::startUp(cm_new<Time>());
 		DynLibManager::startUp(cm_new<DynLibManager>());
 		CoreGpuObjectManager::startUp(cm_new<CoreGpuObjectManager>());
+		GameObjectManager::startUp(cm_new<GameObjectManager>());
 		Resources::startUp(cm_new<Resources>(desc.resourceCacheDirectory));
 		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
 
@@ -185,6 +187,7 @@ namespace CamelotFramework
 
 		HighLevelGpuProgramManager::shutDown();
 		Resources::shutDown();
+		GameObjectManager::shutDown();
 		CoreGpuObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
 		DynLibManager::shutDown();
 		Time::shutDown();

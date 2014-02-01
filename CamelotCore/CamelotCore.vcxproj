@@ -282,6 +282,7 @@
     <ClInclude Include="Include\CmEventQuery.h" />
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
+    <ClInclude Include="Include\CmGameObjectManager.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
     <ClInclude Include="Include\CmGpuResourceData.h" />
     <ClInclude Include="Include\CmGpuParamBlockBuffer.h" />
@@ -439,6 +440,7 @@
     <ClCompile Include="Source\CmFont.cpp" />
     <ClCompile Include="Source\CmFontImportOptions.cpp" />
     <ClCompile Include="Source\CmFontManager.cpp" />
+    <ClCompile Include="Source\CmGameObjectManager.cpp" />
     <ClCompile Include="Source\CmGpuBuffer.cpp" />
     <ClCompile Include="Source\CmGpuBufferView.cpp" />
     <ClCompile Include="Source\CmGpuParamBlock.cpp" />
