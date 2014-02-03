@@ -4,6 +4,8 @@
 #include "CmException.h"
 #include "CmDebug.h"
 #include "CmSceneObjectRTTI.h"
+#include "CmMemorySerializer.h"
+#include "CmGameObjectManager.h"
 
 namespace CamelotFramework
 {
@@ -39,9 +41,8 @@ namespace CamelotFramework
 	{
 		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name, NextFreeId++), 
 			&cm_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
-
-		HSceneObject sceneObject = GameObjectHandle<SceneObject>(sceneObjectPtr);
-
+		
+		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);
 		sceneObject->mThisHandle = sceneObject;
 
 		return sceneObject;
@@ -70,11 +71,13 @@ namespace CamelotFramework
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
 		{
 			gSceneManager().notifyComponentRemoved((*iter));
+			GameObjectManager::instance().unregisterObject(*iter);
 			(*iter).destroy();
 		}
 
 		mComponents.clear();
 
+		GameObjectManager::instance().unregisterObject(mThisHandle);
 		mThisHandle.destroy();
 	}
 
@@ -345,6 +348,19 @@ namespace CamelotFramework
 		}
 	}
 
+	HSceneObject SceneObject::clone()
+	{
+		UINT32 bufferSize = 0;
+
+		MemorySerializer serializer;
+		UINT8* buffer = serializer.encode(this, bufferSize, &stackAlloc);
+
+		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
+		stackDeallocLast(buffer);
+
+		return cloneObj->mThisHandle;
+	}
+
 	HComponent SceneObject::getComponent(UINT32 typeId) const
 	{
 		for(auto iter = mComponents.begin(); iter != mComponents.end(); ++iter)
@@ -369,6 +385,7 @@ namespace CamelotFramework
 		if(iter != mComponents.end())
 		{
 			gSceneManager().notifyComponentRemoved((*iter));
+			GameObjectManager::instance().unregisterObject(component);
 
 			(*iter).destroy();
 			mComponents.erase(iter);
@@ -380,16 +397,27 @@ namespace CamelotFramework
 	void SceneObject::destroyComponent(Component* component)
 	{
 		auto iterFind = std::find_if(mComponents.begin(), mComponents.end(), 
-			[component](const HComponent& x) { return x.getHandleData()->mPtr.get() == component; });
+			[component](const HComponent& x) 
+		{ 
+			if(x.isDestroyed())
+				return false;
 
-		if(iterFind == mComponents.end())
-		{
-			LOGDBG("Trying to remove a component that doesn't exist on this SceneObject.");
-		}
-		else
+			return x.getHandleData()->mPtr->object.get() == component; }
+		);
+
+		if(iterFind != mComponents.end())
 		{
 			destroyComponent(*iterFind);
 		}
+	}
+
+	void SceneObject::addComponentInternal(const std::shared_ptr<Component> component)
+	{
+		GameObjectHandle<Component> newComponent = GameObjectHandle<Component>(component);
+		newComponent->mParent = mThisHandle;
+		mComponents.push_back(newComponent);
+
+		gSceneManager().notifyComponentAdded(newComponent);
 	}
 
 	RTTITypeBase* SceneObject::getRTTIStatic()

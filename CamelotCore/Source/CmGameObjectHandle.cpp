@@ -1,14 +1,24 @@
 #include "CmPrerequisites.h"
 #include "CmGameObject.h"
 #include "CmGameObjectHandle.h"
-#include "CmGameObjectManager.h"
 #include "CmException.h"
+#include "CmGameObjectHandleRTTI.h"
 
 namespace CamelotFramework
 {
-	GameObjectHandleBase::GameObjectHandleBase(std::shared_ptr<GameObjectHandleData> data)
+	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data)
 		:mData(data)
 	{ }
+
+	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObject> ptr)
+	{
+		mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(ptr->mInstanceData);
+	}
+
+	GameObjectHandleBase::GameObjectHandleBase(std::nullptr_t ptr)
+	{
+		mData->mPtr = nullptr;
+	}
 
 	GameObjectHandleBase::GameObjectHandleBase()
 	{ }
@@ -21,13 +31,13 @@ namespace CamelotFramework
 		}
 	}
 
-	void GameObjectHandleBase::registerWithManager(const GameObjectHandleBase& object)
+	RTTITypeBase* GameObjectHandleBase::getRTTIStatic()
 	{
-		object.get()->mInstanceId = GameObjectManager::instance().registerObject(object);
+		return GameObjectHandleRTTI::instance();
 	}
 
-	void GameObjectHandleBase::unregisterWithManager(const GameObjectHandleBase& object)
+	RTTITypeBase* GameObjectHandleBase::getRTTI() const
 	{
-		GameObjectManager::instance().unregisterObject(object);
+		return ResourceHandleBase::getRTTIStatic();
 	}
 }

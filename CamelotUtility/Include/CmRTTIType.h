@@ -71,7 +71,7 @@ namespace CamelotFramework
 			else
 				typeSize = sizeof(DataType);
 
-			UINT8* tempBuffer = stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
 			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
 			
 			field->fromBuffer(object, tempBuffer);
@@ -93,7 +93,7 @@ namespace CamelotFramework
 			else
 				typeSize = sizeof(DataType);
 
-			UINT8* tempBuffer = stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
 			RTTIPlainType<DataType>::toMemory(value, (char*)tempBuffer);
 
 			field->arrayElemFromBuffer(object, index, tempBuffer);
@@ -178,7 +178,7 @@ namespace CamelotFramework
 			else
 				typeSize = field->getTypeSize();
 
-			UINT8* tempBuffer = stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
 
 			field->toBuffer(object, tempBuffer);
 			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);
@@ -200,7 +200,7 @@ namespace CamelotFramework
 			else
 				typeSize = field->getTypeSize();
 
-			UINT8* tempBuffer = stackAlloc(typeSize);
+			UINT8* tempBuffer = (UINT8*)stackAlloc(typeSize);
 
 			field->arrayElemToBuffer(object, index, tempBuffer);
 			RTTIPlainType<DataType>::fromMemory(value, (char*)tempBuffer);

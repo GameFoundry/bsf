@@ -7,15 +7,17 @@ namespace CamelotFramework
 	struct CM_EXPORT GameObjectHandleData
 	{
 		GameObjectHandleData()
-			:mPtr(nullptr)
+			:mPtr(nullptr), mInstanceId(0)
 		{ }
 
-		GameObjectHandleData(const std::shared_ptr<GameObject>& ptr)
+		GameObjectHandleData(const std::shared_ptr<GameObjectInstanceData>& ptr)
 		{
 			mPtr = ptr;
+			mInstanceId = ptr->object->getInstanceId();
 		}
 
-		std::shared_ptr<GameObject> mPtr;
+		std::shared_ptr<GameObjectInstanceData> mPtr;
+		UINT64 mInstanceId;
 	};
 
 	/**
@@ -29,55 +31,70 @@ namespace CamelotFramework
 	 * 			object we're referencing has been deleted, and that is the main purpose of this class.
 	 * 			
 	 */
-	class CM_EXPORT GameObjectHandleBase
+	class CM_EXPORT GameObjectHandleBase : public IReflectable
 	{
 	public:
 		GameObjectHandleBase();
-		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData> data);
 
 		/**
 		 * @brief	Checks if the object has been destroyed
 		 */
-		bool isDestroyed() const { return mData->mPtr == nullptr; }
+		bool isDestroyed() const { return mData->mPtr == nullptr || mData->mPtr->object == nullptr; }
 
 		/**
 		 * @brief	Internal method only. Not meant to be called directly.
 		 */
 		std::shared_ptr<GameObjectHandleData> getHandleData() const { return mData; }
 
+		UINT64 getInstanceId() const { return mData->mInstanceId; }
+
+		void resolve(const GameObjectHandleBase& object) { mData->mPtr = object->mInstanceData; mData->mInstanceId = object->getInstanceId(); }
+
 		GameObject* get() const 
 		{ 
 			throwIfDestroyed();
 
-			return mData->mPtr.get(); 
+			return mData->mPtr->object.get(); 
 		}
 
 		std::shared_ptr<GameObject> getInternalPtr() const
 		{
 			throwIfDestroyed();
 
-			return mData->mPtr;
+			return mData->mPtr->object;
 		}
 
 		GameObject* operator->() const { return get(); }
 		GameObject& operator*() const { return *get(); }
 
 	protected:
-		friend SceneObject;
+		friend class SceneObject;
+		friend class SceneObjectRTTI;
+		friend class GameObjectManager;
+
+		GameObjectHandleBase(const std::shared_ptr<GameObject> ptr);
+		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data);
+		GameObjectHandleBase(std::nullptr_t ptr);
 
 		inline void throwIfDestroyed() const;
 		
 		void destroy()
 		{
-			unregisterWithManager(*this);
+			if(mData->mPtr != nullptr)
+				mData->mPtr->object = nullptr;
 
 			mData->mPtr = nullptr;
 		}
 
-		void registerWithManager(const GameObjectHandleBase& object);
-		void unregisterWithManager(const GameObjectHandleBase& object);
-
 		std::shared_ptr<GameObjectHandleData> mData;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class GameObjectHandleRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	// NOTE: It is important this class contains no data since we often value 
@@ -99,10 +116,15 @@ namespace CamelotFramework
 			mData = ptr.getHandleData();
 		}
 
+		GameObjectHandle(const GameObjectHandleBase& ptr)
+			:GameObjectHandleBase()
+		{ 	
+			mData = ptr.getHandleData();
+		}
+
 		inline GameObjectHandle<T>& operator=(std::nullptr_t ptr)
 		{ 	
 			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>();
-			mData->mPtr = nullptr;
 
 			return *this;
 		}
@@ -118,14 +140,14 @@ namespace CamelotFramework
 		{ 
 			throwIfDestroyed();
 
-			return reinterpret_cast<T*>(mData->mPtr.get()); 
+			return reinterpret_cast<T*>(mData->mPtr->object.get()); 
 		}
 
 		std::shared_ptr<T> getInternalPtr() const
 		{
 			throwIfDestroyed();
 
-			return std::static_pointer_cast<T>(mData->mPtr);
+			return std::static_pointer_cast<T>(mData->mPtr->object);
 		}
 
 		T* operator->() const { return get(); }
@@ -141,18 +163,17 @@ namespace CamelotFramework
 		// (Why not just directly convert to bool? Because then we can assign pointer to bool and that's weird)
 		operator int CM_Bool_struct<T>::*() const
 		{
-			return (((mData->mPtr != nullptr)) ? &CM_Bool_struct<T>::_Member : 0);
+			return (((mData->mPtr != nullptr) && (mData->mPtr->object != nullptr)) ? &CM_Bool_struct<T>::_Member : 0);
 		}
 
 	private:
-		friend SceneObject;
+		friend class SceneObject;
+		friend class SceneObjectRTTI;
+		friend class GameObjectManager;
 
 		explicit GameObjectHandle(const std::shared_ptr<T> ptr)
-			:GameObjectHandleBase()
-		{
-			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(std::static_pointer_cast<GameObject>(ptr));
-			registerWithManager(*this);
-		}
+			:GameObjectHandleBase(ptr)
+		{ }
 	};
 
 	template<class _Ty1, class _Ty2>
@@ -164,7 +185,7 @@ namespace CamelotFramework
 	template<class _Ty1, class _Ty2>
 	bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	
-		return (_Left.get() == _Right.get());
+		return (_Left == nullptr && _Right == nullptr) || (_Left != nullptr && _Right != nullptr && _Left.get() == _Right.get());
 	}
 
 	template<class _Ty1, class _Ty2>

@@ -5,18 +5,32 @@
 
 namespace CamelotFramework
 {
+	struct GameObjectInstanceData
+	{
+		GameObjectInstanceData()
+			:mInstanceId(0), object(nullptr)
+		{ }
+
+		std::shared_ptr<GameObject> object;
+		UINT64 mInstanceId;
+	};
+
 	class CM_EXPORT GameObject : public IReflectable
 	{
 	public:
 		GameObject();
 		virtual ~GameObject();
 
-		UINT64 getInstanceID() const { return mInstanceId; }
+		UINT64 getInstanceId() const { return mInstanceData->mInstanceId; }
 
 	private:
 		friend class GameObjectHandleBase;
+		friend class GameObjectManager;
 
-		UINT64 mInstanceId;
+		std::shared_ptr<GameObjectInstanceData> mInstanceData;
+
+	protected:
+		void initialize(const std::shared_ptr<GameObject>& object, UINT64 instanceId);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

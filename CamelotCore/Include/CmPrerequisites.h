@@ -281,7 +281,8 @@ namespace CamelotFramework
 		TID_PixelData = 1062,
 		TID_GpuResourceData = 1063,
 		TID_VertexDataDesc = 1064,
-		TID_MeshBase = 1065
+		TID_MeshBase = 1065,
+		TID_GameObjectHandleBase = 1066
 	};
 }
 

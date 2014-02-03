@@ -165,7 +165,7 @@ namespace CamelotFramework
 		static CM_THREADLOCAL MemStackInternal<1024 * 1024>* ThreadMemStack;
 	};
 
-	CM_UTILITY_EXPORT inline UINT8* stackAlloc(UINT32 numBytes);
+	CM_UTILITY_EXPORT inline void* stackAlloc(UINT32 numBytes);
 
 	template<class T>
 	T* stackAlloc()

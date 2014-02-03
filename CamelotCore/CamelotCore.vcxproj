@@ -282,6 +282,7 @@
     <ClInclude Include="Include\CmEventQuery.h" />
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
+    <ClInclude Include="Include\CmGameObjectHandleRTTI.h" />
     <ClInclude Include="Include\CmGameObjectManager.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
     <ClInclude Include="Include\CmGpuResourceData.h" />

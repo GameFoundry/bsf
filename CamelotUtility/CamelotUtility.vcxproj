@@ -249,6 +249,7 @@
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
     <ClCompile Include="Source\CmDegree.cpp" />
     <ClCompile Include="Source\CmFrameAlloc.cpp" />
+    <ClCompile Include="Source\CmMemorySerializer.cpp" />
     <ClCompile Include="Source\CmRectF.cpp" />
     <ClCompile Include="Source\CmVector2I.cpp" />
     <ClCompile Include="Source\CmManagedDataBlock.cpp" />
@@ -275,6 +276,7 @@
     <ClInclude Include="Include\CmFileSerializer.h" />
     <ClInclude Include="Include\CmFileSystem.h" />
     <ClInclude Include="Include\CmFrameAlloc.h" />
+    <ClInclude Include="Include\CmMemorySerializer.h" />
     <ClInclude Include="Include\CmRectF.h" />
     <ClInclude Include="Include\CmHString.h" />
     <ClInclude Include="Include\CmVector2I.h" />

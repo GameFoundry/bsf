@@ -4,7 +4,7 @@
 namespace CamelotFramework
 {
 	GameObjectManager::GameObjectManager()
-		:mNextAvailableID(1)
+		:mNextAvailableID(1), mIsDeserializationActive(false)
 	{
 
 	}
@@ -27,15 +27,76 @@ namespace CamelotFramework
 		return mObjects.find(id) != mObjects.end(); 
 	}
 
-	UINT64 GameObjectManager::registerObject(const GameObjectHandleBase& object)
+	GameObjectHandleBase GameObjectManager::registerObject(const std::shared_ptr<GameObject>& object)
 	{
-		mObjects[mNextAvailableID] = object;
+		object->initialize(object, mNextAvailableID);
 
-		return mNextAvailableID++;
+		GameObjectHandleBase handle(object);
+		mObjects[mNextAvailableID] = handle;
+		mNextAvailableID++;
+
+		return handle;
 	}
 
 	void GameObjectManager::unregisterObject(const GameObjectHandleBase& object)
 	{
-		mObjects.erase(object->getInstanceID());
+		mObjects.erase(object->getInstanceId());
+	}
+
+	void GameObjectManager::notifyDeserializationStarted(GameObject* object)
+	{
+		if(!mIsDeserializationActive)
+		{
+			mActiveDeserializedObject = object;
+			mIsDeserializationActive = true;
+		}
+	}
+
+	void GameObjectManager::notifyDeserializationEnded(GameObject* object)
+	{
+		if(object == mActiveDeserializedObject)
+		{
+			for(auto& unresolvedHandle : mUnresolvedHandles)
+			{
+				UINT64 instanceId = unresolvedHandle.getInstanceId();
+
+				auto findIter = mIdMapping.find(instanceId);
+				if(findIter != mIdMapping.end())
+				{
+					instanceId = findIter->second;
+				}
+
+				unresolvedHandle.resolve(getObject(instanceId));
+			}
+
+			mIsDeserializationActive = false;
+			mActiveDeserializedObject = nullptr;
+			mIdMapping.clear();
+			mUnresolvedHandles.clear();
+		}
+	}
+
+	void GameObjectManager::registerDeserializedId(UINT64 serializedId, UINT64 actualId)
+	{
+#if CM_DEBUG_MODE
+		if(!mIsDeserializationActive)
+		{
+			CM_EXCEPT(InvalidStateException, "ID mapping may only be modified while deserialization is active.");
+		}
+#endif
+
+		mIdMapping[serializedId] = actualId;
+	}
+
+	void GameObjectManager::registerUnresolvedHandle(const GameObjectHandleBase& object)
+	{
+#if CM_DEBUG_MODE
+		if(!mIsDeserializationActive)
+		{
+			CM_EXCEPT(InvalidStateException, "Unresolved handle queue only be modified while deserialization is active.");
+		}
+#endif
+
+		mUnresolvedHandles.push_back(object);
 	}
 }

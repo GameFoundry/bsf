@@ -36,9 +36,9 @@ namespace CamelotFramework
 		ThreadMemStack->dealloc(data);
 	}
 
-	UINT8* stackAlloc(UINT32 numBytes)
+	void* stackAlloc(UINT32 numBytes)
 	{
-		return MemStack::alloc(numBytes);
+		return (void*)MemStack::alloc(numBytes);
 	}
 
 	void stackDeallocLast(void* data)

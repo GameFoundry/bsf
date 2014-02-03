@@ -6,6 +6,7 @@
 #include "CmQuaternion.h"
 #include "CmRTTIType.h"
 #include "CmSceneManager.h"
+#include "CmGameObjectManager.h"
 #include "CmGameObject.h"
 
 #include "boost/static_assert.hpp"
@@ -195,6 +196,11 @@ namespace CamelotFramework
 		 */
 		UINT32 getNumChildren() const { return (UINT32)mChildren.size(); }
 
+		/**
+		 * @brief	Makes a deep copy of this object.
+		 */
+		HSceneObject clone();
+
 	private:
 		HSceneObject mParent;
 		Vector<HSceneObject>::type mChildren;
@@ -224,9 +230,9 @@ namespace CamelotFramework
 		{
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
 
-			GameObjectHandle<T> newComponent = GameObjectHandle<T>(
-				std::shared_ptr<T>(new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>()));
+			std::shared_ptr<T> gameObject(new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
 
+			GameObjectHandle<T> newComponent = GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
 			mComponents.push_back(newComponent);
 
 			gSceneManager().notifyComponentAdded(newComponent);
@@ -235,17 +241,19 @@ namespace CamelotFramework
 		}
 
 		// addComponent that accepts an arbitrary number of parameters > 0
-#define MAKE_ADD_COMPONENT(z, n, unused)											\
-		template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>				\
-		GameObjectHandle<Type> addComponent(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) )  \
-		{																			\
+#define MAKE_ADD_COMPONENT(z, n, unused)												\
+		template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>					\
+		GameObjectHandle<Type> addComponent(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) )	\
+		{																				\
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, Type>::value),  \
 				"Specified type is not a valid Component.");										\
 																									\
-			GameObjectHandle<Type> newComponent = GameObjectHandle<Type>(							\
-				std::shared_ptr<Type>(new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle,			\
+			std::shared_ptr<Type> gameObject(new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle,	\
 				std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~)),					\
-				&cm_delete<PoolAlloc, Type>, StdAlloc<PoolAlloc>()));								\
+				&cm_delete<PoolAlloc, Type>, StdAlloc<PoolAlloc>());								\
+																									\
+			GameObjectHandle<Type> newComponent =													\
+				GameObjectHandle<Type>(GameObjectManager::instance().registerObject(gameObject));	\
 																									\
 			mComponents.push_back(newComponent);													\
 																									\
@@ -333,6 +341,8 @@ namespace CamelotFramework
 		Vector<HComponent>::type& getComponents() { return mComponents; }
 
 	private:
+		void addComponentInternal(const std::shared_ptr<Component> component);
+
 		Vector<HComponent>::type mComponents;
 
 		/************************************************************************/
