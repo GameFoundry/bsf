@@ -48,7 +48,7 @@ namespace CamelotFramework
 
 		UINT64 getInstanceId() const { return mData->mInstanceId; }
 
-		void resolve(const GameObjectHandleBase& object) { mData->mPtr = object->mInstanceData; mData->mInstanceId = object->getInstanceId(); }
+		void resolve(const GameObjectHandleBase& object);
 
 		GameObject* get() const 
 		{ 

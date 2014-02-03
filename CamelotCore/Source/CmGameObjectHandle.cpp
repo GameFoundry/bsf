@@ -23,6 +23,11 @@ namespace CamelotFramework
 	GameObjectHandleBase::GameObjectHandleBase()
 	{ }
 
+	void GameObjectHandleBase::resolve(const GameObjectHandleBase& object) 
+	{ 
+		mData = object.mData;
+	}
+
 	void GameObjectHandleBase::throwIfDestroyed() const
 	{
 		if(isDestroyed()) 

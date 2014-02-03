@@ -1,19 +1,5 @@
-IMMEDIATE:
- - Add Clone() method to SceneObject
-
-
-Serialization
- - Proceeds as normal. Children serialized as ReflectablePtr array. Components also.
- - Potentially as a pre-processing step I break external references
-
-Deserialization
- - Proceeds as normal except that handles are all resolved when ROOT deserialization ends (root because that ensures everything was constructed)
- - On local deserialization end (per SceneObject) I register all components and their old IDs in SceneObjectSerializationManager
-   - Old ID is retrieved from GameObject RTTI
-   - SceneObjectSerializationManager instance can be kept in SceneObjects rtti field.
- - When handles are resolved in root I perform "old->new" id mapping if one exists
-
-Other
- - If external references need to be broken in serialized object that is done as a pre-processing step
- - If a clone of hierarchy needs to be serialized, that is also done as a pre-processing step
-    - TODO - How will this be done?
+TODO
+ - Test how Clone works on hierarchy of empty SceneObjects
+ - Add RTTI for Renderable and test how Clone works with Components
+   - Test it with component referenes
+ - Ability to break external references as a pre-processing step

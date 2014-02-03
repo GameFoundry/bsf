@@ -66,7 +66,12 @@ namespace CamelotFramework
 					instanceId = findIter->second;
 				}
 
-				unresolvedHandle.resolve(getObject(instanceId));
+				auto findIterObj = mObjects.find(instanceId);
+
+				if(findIterObj != mObjects.end())
+					unresolvedHandle.resolve(findIterObj->second);	
+				else
+					unresolvedHandle.resolve(nullptr);
 			}
 
 			mIsDeserializationActive = false;
