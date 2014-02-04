@@ -35,6 +35,7 @@ namespace CamelotFramework
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
+
 	public:
 		friend class GameObjectRTTI;
 		static RTTITypeBase* getRTTIStatic();

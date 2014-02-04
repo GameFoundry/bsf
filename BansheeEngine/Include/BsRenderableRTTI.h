@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "CmRTTIType.h"
 #include "BsRenderable.h"
+#include "CmGameObjectRTTI.h"
 
 namespace BansheeEngine
 {
@@ -41,7 +42,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return CM::cm_shared_ptr<Renderable, CM::PoolAlloc>(new (CM::cm_alloc<Renderable, CM::PoolAlloc>()) Renderable());
+			return CM::GameObjectRTTI::createGameObject<Renderable>();
 		}
 	};
 }

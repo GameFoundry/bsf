@@ -13,7 +13,10 @@ namespace CamelotFramework
 		GameObjectHandleData(const std::shared_ptr<GameObjectInstanceData>& ptr)
 		{
 			mPtr = ptr;
-			mInstanceId = ptr->object->getInstanceId();
+			if(ptr != nullptr)
+				mInstanceId = ptr->object->getInstanceId();
+			else
+				mInstanceId = 0;
 		}
 
 		std::shared_ptr<GameObjectInstanceData> mPtr;
@@ -80,10 +83,14 @@ namespace CamelotFramework
 		
 		void destroy()
 		{
+			// We need to clear mData->mPtr before we clear mData->mPtr->object,
+			// as this handle could be stored within the "object" and destroyed when
+			// we set it to null 
+			std::shared_ptr<GameObjectInstanceData> instanceData = mData->mPtr;
+			mData->mPtr = nullptr;
+
 			if(mData->mPtr != nullptr)
 				mData->mPtr->object = nullptr;
-
-			mData->mPtr = nullptr;
 		}
 
 		std::shared_ptr<GameObjectHandleData> mData;

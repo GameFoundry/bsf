@@ -17,15 +17,18 @@ namespace CamelotFramework
 
 	GameObjectHandleBase::GameObjectHandleBase(std::nullptr_t ptr)
 	{
-		mData->mPtr = nullptr;
+		mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
 	}
 
 	GameObjectHandleBase::GameObjectHandleBase()
-	{ }
+	{
+		mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
+	}
 
 	void GameObjectHandleBase::resolve(const GameObjectHandleBase& object) 
 	{ 
-		mData = object.mData;
+		mData->mPtr = object.mData->mPtr;
+		mData->mInstanceId = object.mData->mInstanceId;
 	}
 
 	void GameObjectHandleBase::throwIfDestroyed() const
@@ -43,6 +46,6 @@ namespace CamelotFramework
 
 	RTTITypeBase* GameObjectHandleBase::getRTTI() const
 	{
-		return ResourceHandleBase::getRTTIStatic();
+		return GameObjectHandleBase::getRTTIStatic();
 	}
 }

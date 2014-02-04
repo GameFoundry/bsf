@@ -341,6 +341,17 @@ namespace CamelotFramework
 		Vector<HComponent>::type& getComponents() { return mComponents; }
 
 	private:
+		template <typename T>
+		static std::shared_ptr<T> createEmptyComponent()
+		{
+			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
+
+			std::shared_ptr<T> gameObject(new (cm_alloc<T, PoolAlloc>()) T(), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
+			GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
+
+			return gameObject;
+		}
+
 		void addComponentInternal(const std::shared_ptr<Component> component);
 
 		Vector<HComponent>::type mComponents;
@@ -349,6 +360,7 @@ namespace CamelotFramework
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
+		friend class GameObjectRTTI;
 		friend class SceneObjectRTTI;
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;

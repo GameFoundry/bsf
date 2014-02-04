@@ -21,6 +21,7 @@
 #include "CmTechnique.h"
 #include "CmPass.h"
 #include "BsRenderable.h"
+#include "BsDbgTestGameObjectRef.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -204,6 +205,15 @@ namespace BansheeEditor
 
 		testRenderable->setMesh(dbgMeshRef);
 		testRenderable->setMaterial(0, testMaterial);
+
+		GameObjectHandle<DbgTestGameObjectRef> dbgTestGameObjectRef = testModelGO->addComponent<DbgTestGameObjectRef>();
+		dbgTestGameObjectRef->mRenderable = testRenderable;
+
+		HSceneObject clone = testModelGO->clone();
+		GameObjectHandle<DbgTestGameObjectRef> clonedDbgTestGameObjectRef = clone->getComponent<DbgTestGameObjectRef>();
+		
+		testModelGO->destroy();
+
 
 		HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import("C:\\CursorDbg.psd"));
 		PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);

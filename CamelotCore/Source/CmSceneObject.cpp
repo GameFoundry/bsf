@@ -353,10 +353,10 @@ namespace CamelotFramework
 		UINT32 bufferSize = 0;
 
 		MemorySerializer serializer;
-		UINT8* buffer = serializer.encode(this, bufferSize, &stackAlloc);
+		UINT8* buffer = serializer.encode(this, bufferSize, &cm_alloc);
 
 		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
-		stackDeallocLast(buffer);
+		cm_free(buffer);
 
 		return cloneObj->mThisHandle;
 	}

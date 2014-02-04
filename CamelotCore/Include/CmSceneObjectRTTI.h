@@ -49,7 +49,7 @@ namespace CamelotFramework
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			HSceneObject newObject = SceneObject::createInternal("");
+			HSceneObject newObject = SceneObject::create("");
 
 			return newObject.getInternalPtr();
 		}

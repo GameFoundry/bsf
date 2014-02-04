@@ -117,6 +117,12 @@
     <ClInclude Include="Include\BsCmdReparentSO.h">
       <Filter>Header Files\Editor\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsDbgTestGameObjectRef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDbgTestGameObjectRefRTTI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -199,6 +205,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsCmdReparentSO.cpp">
       <Filter>Source Files\Editor\Command</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDbgTestGameObjectRef.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

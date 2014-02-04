@@ -68,7 +68,7 @@ namespace BansheeEditor
 		SceneObject::create("FILLER_K");
 		SceneObject::create("FILLER_L");
 
-		//area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
+		area->getLayout().addElement(GUIRenderTexture::create(*this, sceneView, GUIOptions(GUIOption::fixedWidth(800), GUIOption::fixedHeight(600))));
 		//mLabel = GUILabel::create(*this, HString(L""));
 		//area->getLayout().addElement(mLabel);
 
