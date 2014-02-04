@@ -1,5 +1,5 @@
 TODO
  - Test how Clone works on hierarchy of empty SceneObjects
- - Add RTTI for Renderable and test how Clone works with Components
-   - Test it with component referenes
+ - Test how Clone works with Components
+ - Test it with component referenes
  - Ability to break external references as a pre-processing step
