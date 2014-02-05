@@ -4,8 +4,6 @@ TODO:
  - When I select elements in tree view via arrow keys, make sure to automatically scroll the scroll-area so that element becomes visible
  - Context menu with rename/copy/paste/duplicate
  - Delete with Undo/Redo support
- - Auto scroll
-    - Sliding over top or bottom of the tree view while dragging an element will search GUIElement parents to find a ScrollArea. If it finds one it will attempt to scroll up or down.
  - Support for icons next to tree elements
  - Clicking on an already selectecd element starts rename 
    - Will likely need some kind of check to ignore double-clicks?

@@ -1,5 +1,65 @@
 TODO
- - Test how Clone works on hierarchy of empty SceneObjects
- - Test how Clone works with Components
- - Test it with component referenes
  - Ability to break external references as a pre-processing step
+
+ ---------------------------------------
+ C# component serialization
+
+ Over the weekend
+  - Figure out how to serialize C# Components
+   - And generic non-component serializable types
+
+Will I need to break references to non-game object and non-resource elements when serializing?
+ - Well those should be ignored from serialization in the first place somehow
+   - Even for Undo/Redo because those values aren't persistent and dont need to be restored upon undo
+
+Ignoring serialization, how will I create custom Components in C# in the first place?
+ - Every custom Component derives from Component, which creates "ScriptComponent" in C++
+ - ScriptComponent has access to ScriptComponentRTTI (or more generic SerializableObjectRTTI), which is described further below
+
+
+RuntimeScriptObjects
+ - enumerateAll()
+   - Goes through all (non-C++) Components in C#
+     - For each it creates ScriptComponentRTTI
+     - Finds all its fields using reflection
+         - Only includes value type fields, structures marked with [Serializable], references to other Components, SceneObjects or Resources
+         - Considers attributes
+            - [Serialized] - Forces field to be serialized (If valid type)
+            - [NotSerialized] - Forced field not to be serialized
+            - By default all public members are serialized and private ones are not
+   - Goes through all non-Component classes marked with [Serializable]
+     - For each it creates ScriptSerializableStructureRTTI
+      - Find all its fields using reflection
+        - Only references value type fields, or fields holding other [Serializable] structures
+        - Plus arrays, and possibly C# List
+        - Considers attributes
+            - [Serialized] - Forces field to be serialized (If valid type)
+            - [NotSerialized] - Forced field not to be serialized
+            - By default all public members are serialized and private ones are not
+
+ScriptComponentRTTI
+ - Need to override all field getters from RTTIType so it can deal with fields dynamically
+ - Returned type name is exact name extracted from C# code.
+ - What about type id?
+   - How do I ensure type ids are consistent between enumerateAll calls? (Possibly even different projects like with Unity)
+     - Somehow replace type id with actual type name + namespace? - HOW? TODO
+ - How do I ensure different versions of the same Component serialize properly?
+   - e.g. I add or remove a field from Component, which requires recompilation and I have no way of ensuring field IDs will match the previous version
+     - Somehow replace field ids with actual field names? HOW? TODO
+
+SOLUTION: Make C# serialization a layer on top of the current system, so I don't need to change the current system
+ - This solves three of the problems above:
+   - I don't need to modify RTTIType so I can override its field methods
+   - And I can use field and class/namespace names instead of type IDs
+ - ScriptComponentRTTI contains just a few static fields:
+   - C# class name
+   - C# namespace name
+   - C# list of field names, field types and their values
+ - (Although I might want to move this functionality outside of ScriptComponentRTTI and make it more generic)
+
+Unity also has a way of saving generic ScriptObjects. They serialize the same as Components.
+ - Make a SerializableObject class that both Component and custom assets may derive from. Then it can use the same exact functionality.
+
+When I reference other C# Components I can't just use GameObject ID, since I cannot deduce the managed reference from that.
+ - In C++ store a dictionary with a mapping from all GameObjects (Maps from ID to Managed object)
+  - POTENTIALLY I can use that mapping for ALL managed objects?

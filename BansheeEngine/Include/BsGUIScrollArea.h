@@ -29,8 +29,19 @@ namespace BansheeEngine
 		static GUIScrollArea* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
 			const GUIElementStyle* scrollAreaStyle = nullptr);
 
-		void scrollVertical(float pct);
-		void scrollHorizontal(float pct);
+		virtual ElementType getElementType() const { return ElementType::ScrollArea; }
+
+		void scrollUpPx(CM::UINT32 pixels);
+		void scrollDownPx(CM::UINT32 pixels);
+
+		void scrollLeftPx(CM::UINT32 pixels);
+		void scrollRightPx(CM::UINT32 pixels);
+
+		void scrollUpPct(float percent);
+		void scrollDownPct(float percent);
+
+		void scrollLeftPct(float percent);
+		void scrollRightPct(float percent);
 
 		GUILayout& getLayout() const { return *mContentLayout; }
 	protected:
@@ -63,6 +74,9 @@ namespace BansheeEngine
 		static const CM::UINT32 WheelScrollAmount;
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
+
+		void scrollToVertical(float pct);
+		void scrollToHorizontal(float pct);
 
 		void vertScrollUpdate(float pct);
 		void horzScrollUpdate(float pct);

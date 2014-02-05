@@ -18,6 +18,8 @@ namespace BansheeEngine
 
 		void setElements(const CM::Vector<CM::HString>::type& elements);
 
+		virtual ElementType getElementType() const { return ElementType::ListBox; }
+
 		boost::signal<void(CM::UINT32)> onSelectionChanged;
 	protected:
 		~GUIListBox();

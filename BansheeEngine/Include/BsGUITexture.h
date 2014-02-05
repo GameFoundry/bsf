@@ -36,6 +36,8 @@ namespace BansheeEngine
 		static GUITexture* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
 
 		void setTexture(const HSpriteTexture& texture);
+		
+		virtual ElementType getElementType() const { return ElementType::Texture; }
 
 		virtual CM::Vector2I _getOptimalSize() const;
 	protected:

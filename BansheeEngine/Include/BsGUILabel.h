@@ -21,6 +21,7 @@ namespace BansheeEngine
 		void setContent(const GUIContent& content);
 
 		virtual CM::Vector2I _getOptimalSize() const;
+		virtual ElementType getElementType() const { return ElementType::Label; }
 	protected:
 		~GUILabel();
 

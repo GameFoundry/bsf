@@ -11,6 +11,20 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElement : public GUIElementBase
 	{
 	public:
+		enum class ElementType
+		{
+			Label,
+			Button,
+			Toggle,
+			Texture,
+			InputBox,
+			ListBox,
+			ScrollArea,
+			Layout,
+			Undefined
+		};
+
+	public:
 		GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIElement();
 
@@ -83,6 +97,8 @@ namespace BansheeEngine
 		 * @brief	Sets or removes focus from an element.
 		 */
 		void setFocus(bool enabled);
+
+		virtual ElementType getElementType() const { return ElementType::Undefined; }
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool textInputEvent(const GUITextInputEvent& ev);

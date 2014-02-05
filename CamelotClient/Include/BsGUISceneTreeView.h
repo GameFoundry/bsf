@@ -8,6 +8,15 @@ namespace BansheeEditor
 {
 	class GUISceneTreeView : public BS::GUIElementContainer
 	{
+		enum class ScrollState
+		{
+			None,
+			Up,
+			Down,
+			TransitioningUp,
+			TransitioningDown
+		};
+
 		struct TreeElement
 		{
 			TreeElement();
@@ -96,6 +105,8 @@ namespace BansheeEditor
 		static const CM::UINT32 INITIAL_INDENT_OFFSET;
 		static const CM::UINT32 DRAG_MIN_DISTANCE;
 		static const float AUTO_EXPAND_DELAY_SEC;
+		static const float SCROLL_AREA_HEIGHT_PCT;
+		static const CM::UINT32 SCROLL_SPEED_PX_PER_SEC;
 
 		const BS::GUIElementStyle* mBackgroundStyle;
 		const BS::GUIElementStyle* mElementBtnStyle;
@@ -123,6 +134,11 @@ namespace BansheeEditor
 		BS::GUITexture* mDragHighlight;
 		BS::GUITexture* mDragSepHighlight;
 
+		CM::RectI mTopScrollBounds;
+		CM::RectI mBottomScrollBounds;
+		ScrollState mScrollState;
+		float mLastScrollTime;
+
 		CM::Stack<TreeElement*>::type mAutoExpandedElements;
 		TreeElement* mMouseOverDragElement;
 		float mMouseOverDragElementTime;
@@ -148,6 +164,8 @@ namespace BansheeEditor
 		void unselectAll();
 
 		void temporarilyExpandElement(const GUISceneTreeView::InteractableElement* mouseOverElement);
+
+		BS::GUIScrollArea* findParentScrollArea() const;
 
 		void onEditAccepted();
 		void onEditCanceled();

@@ -19,6 +19,8 @@ namespace BansheeEngine
 		const CM::WString& getText() const { return mText; }
 		void setText(const CM::WString& text);
 
+		virtual ElementType getElementType() const { return ElementType::InputBox; }
+
 		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
 		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);

@@ -165,6 +165,11 @@ namespace BansheeEngine
 		mHandleBtn->setHandlePos(pct);
 	}
 
+	float GUIScrollBar::getScrollPos() const
+	{
+		return mHandleBtn->getHandlePos();
+	}
+
 	UINT32 GUIScrollBar::getMaxHandleSize() const
 	{
 		return mHandleBtn->getMaxSize();

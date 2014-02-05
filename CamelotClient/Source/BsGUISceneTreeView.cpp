@@ -17,6 +17,7 @@
 #include "BsDragAndDropManager.h"
 #include "BsCmdReparentSO.h"
 #include "CmTime.h"
+#include "BsGUIScrollArea.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -28,6 +29,8 @@ namespace BansheeEditor
 	const UINT32 GUISceneTreeView::INITIAL_INDENT_OFFSET = 16;
 	const UINT32 GUISceneTreeView::DRAG_MIN_DISTANCE = 3;
 	const float GUISceneTreeView::AUTO_EXPAND_DELAY_SEC = 0.5f;
+	const float GUISceneTreeView::SCROLL_AREA_HEIGHT_PCT = 0.1f;
+	const UINT32 GUISceneTreeView::SCROLL_SPEED_PX_PER_SEC = 25;
 
 	GUISceneTreeView::DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
@@ -96,7 +99,8 @@ namespace BansheeEditor
 		:GUIElementContainer(parent, layoutOptions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
 		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
-		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f)
+		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f),
+		mScrollState(ScrollState::None), mLastScrollTime(0.0f)
 	{
 		if(mBackgroundStyle == nullptr)
 			mBackgroundStyle = parent.getSkin().getStyle("TreeViewBackground");
@@ -381,6 +385,46 @@ namespace BansheeEditor
 				}
 			}
 		}
+
+		// Attempt to scroll if needed
+		if(mScrollState != ScrollState::None)
+		{
+			GUIScrollArea* scrollArea = findParentScrollArea();
+			if(scrollArea != nullptr)
+			{
+				float curTime = gTime().getTime();
+				float timeDiff = curTime - mLastScrollTime;
+				float secondsPerPixel = 1.0f / SCROLL_SPEED_PX_PER_SEC;
+
+				switch(mScrollState)
+				{
+				case ScrollState::TransitioningUp:
+					mScrollState = ScrollState::Up;
+					mLastScrollTime = curTime;
+					break;
+				case ScrollState::TransitioningDown:
+					mScrollState = ScrollState::Down;
+					mLastScrollTime = curTime;
+					break;
+				case ScrollState::Up:
+					{
+						UINT32 scrollAmount = (UINT32)Math::floorToInt(timeDiff / secondsPerPixel);
+						mLastScrollTime += scrollAmount * secondsPerPixel;
+
+						scrollArea->scrollUpPx(scrollAmount);
+					}
+					break;
+				case ScrollState::Down:
+					{
+						UINT32 scrollAmount = (UINT32)Math::floorToInt(timeDiff / secondsPerPixel);
+						mLastScrollTime += scrollAmount * secondsPerPixel;
+
+						scrollArea->scrollDownPx(scrollAmount);
+					}
+					break;
+				}
+			}
+		}
 	}
 
 	bool GUISceneTreeView::mouseEvent(const GUIMouseEvent& event)
@@ -519,6 +563,7 @@ namespace BansheeEditor
 
 					mDragPosition = event.getPosition();
 					mDragInProgress = true;
+					mScrollState = ScrollState::None;
 					markContentAsDirty();
 				}
 			}
@@ -530,6 +575,19 @@ namespace BansheeEditor
 				mDragPosition = event.getPosition();
 				mDragInProgress = true;
 				markContentAsDirty();
+
+				if(mBottomScrollBounds.contains(mDragPosition))
+				{
+					if(mScrollState != ScrollState::Down)
+						mScrollState = ScrollState::TransitioningDown;
+				}
+				else if(mTopScrollBounds.contains(mDragPosition))
+				{
+					if(mScrollState != ScrollState::Up)
+						mScrollState = ScrollState::TransitioningUp;
+				}
+				else
+					mScrollState = ScrollState::None;
 
 				return true;
 			}
@@ -1033,6 +1091,19 @@ namespace BansheeEditor
 			if(!mDragSepHighlight->_isDisabled())
 				mDragSepHighlight->disableRecursively();
 		}
+
+		// Update scroll bounds
+		UINT32 scrollHeight = (UINT32)Math::roundToInt(clipRect.height * SCROLL_AREA_HEIGHT_PCT);
+
+		mTopScrollBounds.x = clipRect.x;
+		mTopScrollBounds.y = clipRect.y;
+		mTopScrollBounds.width = clipRect.width;
+		mTopScrollBounds.height = scrollHeight;
+
+		mBottomScrollBounds.x = clipRect.x;
+		mBottomScrollBounds.y = clipRect.y + clipRect.height - scrollHeight;
+		mBottomScrollBounds.width = clipRect.width;
+		mBottomScrollBounds.height = scrollHeight;
 	}
 
 	const GUISceneTreeView::InteractableElement* GUISceneTreeView::findElementUnderCoord(const CM::Vector2I& coord) const
@@ -1153,6 +1224,29 @@ namespace BansheeEditor
 				}
 			}
 		}
+	}
+
+	GUIScrollArea* GUISceneTreeView::findParentScrollArea() const
+	{
+		GUIElementBase* parent = _getParent();
+		while(parent != nullptr)
+		{
+			if(parent->_getType() == GUIElementBase::Type::Element)
+			{
+				GUIElement* parentElement = static_cast<GUIElement*>(parent);
+				
+				if(parentElement->getElementType() == GUIElement::ElementType::ScrollArea)
+				{
+					GUIScrollArea* scrollArea = static_cast<GUIScrollArea*>(parentElement);
+					return scrollArea;
+
+				}
+			}
+
+			parent = parent->_getParent();
+		}
+
+		return nullptr;
 	}
 
 	const String& GUISceneTreeView::getGUITypeName()

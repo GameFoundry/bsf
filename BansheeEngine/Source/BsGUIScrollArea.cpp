@@ -262,15 +262,15 @@ namespace BansheeEngine
 
 	void GUIScrollArea::vertScrollUpdate(float scrollPos)
 	{
-		scrollVertical(scrollPos);
+		scrollToVertical(scrollPos);
 	}
 
 	void GUIScrollArea::horzScrollUpdate(float scrollPos)
 	{
-		scrollHorizontal(scrollPos);
+		scrollToHorizontal(scrollPos);
 	}
 
-	void GUIScrollArea::scrollVertical(float pct)
+	void GUIScrollArea::scrollToVertical(float pct)
 	{
 		UINT32 scrollableHeight = (UINT32)std::max(0, INT32(mContentHeight) - INT32(mClippedContentHeight));
 		mVertOffset = scrollableHeight * Math::clamp01(pct);
@@ -278,12 +278,92 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	void GUIScrollArea::scrollHorizontal(float pct)
+	void GUIScrollArea::scrollToHorizontal(float pct)
 	{
 		UINT32 scrollableWidth = (UINT32)std::max(0, INT32(mContentWidth) - INT32(mClippedContentWidth));
 		mHorzOffset = scrollableWidth * Math::clamp01(pct);
 
 		markContentAsDirty();
+	}
+
+	void GUIScrollArea::scrollUpPx(CM::UINT32 pixels)
+	{
+		if(mVertScroll != nullptr)
+		{
+			UINT32 scrollableSize = mVertScroll->getScrollableSize();
+
+			float offset = 0.0f;
+			if(scrollableSize > 0)
+				offset = pixels / (float)scrollableSize;
+
+			mVertScroll->scroll(offset);
+		}
+	}
+
+	void GUIScrollArea::scrollDownPx(CM::UINT32 pixels)
+	{
+		if(mVertScroll != nullptr)
+		{
+			UINT32 scrollableSize = mVertScroll->getScrollableSize();
+
+			float offset = 0.0f;
+			if(scrollableSize > 0)
+				offset = pixels / (float)scrollableSize;
+
+			mVertScroll->scroll(-offset);
+		}
+	}
+
+	void GUIScrollArea::scrollLeftPx(CM::UINT32 pixels)
+	{
+		if(mHorzScroll != nullptr)
+		{
+			UINT32 scrollableSize = mHorzScroll->getScrollableSize();
+
+			float offset = 0.0f;
+			if(scrollableSize > 0)
+				offset = pixels / (float)scrollableSize;
+
+			mHorzScroll->scroll(offset);
+		}
+	}
+
+	void GUIScrollArea::scrollRightPx(CM::UINT32 pixels)
+	{
+		if(mHorzScroll != nullptr)
+		{
+			UINT32 scrollableSize = mHorzScroll->getScrollableSize();
+
+			float offset = 0.0f;
+			if(scrollableSize > 0)
+				offset = pixels / (float)scrollableSize;
+
+			mHorzScroll->scroll(-offset);
+		}
+	}
+
+	void GUIScrollArea::scrollUpPct(float percent)
+	{
+		if(mVertScroll != nullptr)
+			mVertScroll->scroll(percent);
+	}
+
+	void GUIScrollArea::scrollDownPct(float percent)
+	{
+		if(mVertScroll != nullptr)
+			mVertScroll->scroll(-percent);
+	}
+
+	void GUIScrollArea::scrollLeftPct(float percent)
+	{
+		if(mHorzScroll != nullptr)
+			mHorzScroll->scroll(percent);
+	}
+
+	void GUIScrollArea::scrollRightPct(float percent)
+	{
+		if(mHorzScroll != nullptr)
+			mHorzScroll->scroll(-percent);
 	}
 
 	bool GUIScrollArea::mouseEvent(const GUIMouseEvent& ev)
