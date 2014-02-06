@@ -1,5 +1,6 @@
 #include "BsGUIDropDownHitBox.h"
 #include "BsGUICommandEvent.h"
+#include "BsGUIMouseEvent.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 
@@ -13,7 +14,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDropDownHitBox* GUIDropDownHitBox::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUIDropDownHitBox* GUIDropDownHitBox::create(GUIWidget& parent, bool captureMouse, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -21,10 +22,10 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(parent, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(parent, captureMouse, style, GUILayoutOptions::create(style));
 	}
 
-	GUIDropDownHitBox* GUIDropDownHitBox::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIDropDownHitBox* GUIDropDownHitBox::create(GUIWidget& parent, bool captureMouse, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
 		if(style == nullptr)
 		{
@@ -32,11 +33,11 @@ namespace BansheeEngine
 			style = skin.getStyle(getGUITypeName());
 		}
 
-		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(parent, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(parent, captureMouse, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUIDropDownHitBox::GUIDropDownHitBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions)
+	GUIDropDownHitBox::GUIDropDownHitBox(GUIWidget& parent, bool captureMouse, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(parent, layoutOptions), mCaptureMouse(captureMouse)
 	{
 
 	}
@@ -58,6 +59,25 @@ namespace BansheeEngine
 				onFocusLost();
 
 			return true;
+		}
+
+		return processed;
+	}
+
+	bool GUIDropDownHitBox::mouseEvent(const GUIMouseEvent& ev)
+	{
+		bool processed = GUIElementContainer::mouseEvent(ev);
+
+		if(mCaptureMouse)
+		{
+			if(ev.getType() == GUIMouseEventType::MouseUp)
+			{
+				return true;
+			}
+			else if(ev.getType() == GUIMouseEventType::MouseDown)
+			{
+				return true;
+			}
 		}
 
 		return processed;

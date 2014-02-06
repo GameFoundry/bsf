@@ -77,7 +77,7 @@ namespace BansheeEngine
 		const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type)
 		:GUIWidget(parent, target), mScrollUpStyle(nullptr), mRootMenu(nullptr),
 		mScrollDownStyle(nullptr), mEntryBtnStyle(nullptr), mEntryExpBtnStyle(nullptr), 
-		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr), mHitBox(nullptr)
+		mSeparatorStyle(nullptr), mBackgroundStyle(nullptr), mHitBox(nullptr), mCaptureHitBox(nullptr)
 	{
 		String stylePrefix = "";
 		switch(type)
@@ -108,9 +108,16 @@ namespace BansheeEngine
 
 		mLocalizedEntryNames = dropDownData.localizedNames;
 
-		mHitBox = GUIDropDownHitBox::create(*this);
+		mHitBox = GUIDropDownHitBox::create(*this, false);
 		mHitBox->onFocusLost.connect(boost::bind(&GUIDropDownBox::dropDownFocusLost, this));
 		mHitBox->setFocus(true);
+		mHitBox->_setWidgetDepth(0);
+		mHitBox->_setAreaDepth(0);
+
+		mCaptureHitBox = GUIDropDownHitBox::create(*this, true);
+		mCaptureHitBox->setBounds(RectI(0, 0, target->getWidth(), target->getHeight()));
+		mCaptureHitBox->_setWidgetDepth(0);
+		mCaptureHitBox->_setAreaDepth(200);
 
 		RectI availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
 		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
@@ -119,6 +126,7 @@ namespace BansheeEngine
 	GUIDropDownBox::~GUIDropDownBox()
 	{
 		GUIElement::destroy(mHitBox);
+		GUIElement::destroy(mCaptureHitBox);
 		cm_delete(mRootMenu);
 	}
 
@@ -257,12 +265,12 @@ namespace BansheeEngine
 
 		// Content area
 		mContentArea = GUIArea::create(*mOwner, x, actualY, width, height);
-		mContentArea->setDepth(10000 - depthOffset * 2 - 1);
+		mContentArea->setDepth(100 - depthOffset * 2 - 1);
 		mContentLayout = &mContentArea->getLayout().addLayoutY();
 
 		// Background frame
 		mBackgroundArea = GUIArea::create(*mOwner, x, actualY, width, height);
-		mBackgroundArea->setDepth(10000 - depthOffset * 2);
+		mBackgroundArea->setDepth(100 - depthOffset * 2);
 
 		mBackgroundFrame = GUITexture::create(*mOwner, GUIImageScaleMode::StretchToFit, mOwner->mBackgroundStyle);
 		mBackgroundArea->getLayout().addElement(mBackgroundFrame);
