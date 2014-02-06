@@ -290,7 +290,7 @@ namespace BansheeEngine
 	{
 		if(mVertScroll != nullptr)
 		{
-			UINT32 scrollableSize = mVertScroll->getScrollableSize();
+			UINT32 scrollableSize = (UINT32)std::max(0, INT32(mContentHeight) - INT32(mClippedContentHeight));
 
 			float offset = 0.0f;
 			if(scrollableSize > 0)
@@ -304,7 +304,7 @@ namespace BansheeEngine
 	{
 		if(mVertScroll != nullptr)
 		{
-			UINT32 scrollableSize = mVertScroll->getScrollableSize();
+			UINT32 scrollableSize = (UINT32)std::max(0, INT32(mContentHeight) - INT32(mClippedContentHeight));
 
 			float offset = 0.0f;
 			if(scrollableSize > 0)
@@ -318,7 +318,7 @@ namespace BansheeEngine
 	{
 		if(mHorzScroll != nullptr)
 		{
-			UINT32 scrollableSize = mHorzScroll->getScrollableSize();
+			UINT32 scrollableSize = (UINT32)std::max(0, INT32(mContentWidth) - INT32(mClippedContentWidth));
 
 			float offset = 0.0f;
 			if(scrollableSize > 0)
@@ -332,7 +332,7 @@ namespace BansheeEngine
 	{
 		if(mHorzScroll != nullptr)
 		{
-			UINT32 scrollableSize = mHorzScroll->getScrollableSize();
+			UINT32 scrollableSize = (UINT32)std::max(0, INT32(mContentWidth) - INT32(mClippedContentWidth));
 
 			float offset = 0.0f;
 			if(scrollableSize > 0)

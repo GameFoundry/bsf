@@ -667,7 +667,9 @@ namespace BansheeEditor
 					if(ev.getType() == GUICommandEventType::CursorMoveUp)
 						unselectAll();
 
-					selectElement(topMostIter->getTreeElement());
+					TreeElement* treeElement = topMostIter->getTreeElement();
+					selectElement(treeElement);
+					scrollToElement(treeElement, false);
 				}
 			}
 		}
@@ -689,7 +691,9 @@ namespace BansheeEditor
 					if(ev.getType() == GUICommandEventType::CursorMoveDown)
 						unselectAll();
 
-					selectElement(bottomMostIter->getTreeElement());
+					TreeElement* treeElement = bottomMostIter->getTreeElement();
+					selectElement(treeElement);
+					scrollToElement(treeElement, false);
 				}
 			}
 		}
@@ -1223,6 +1227,43 @@ namespace BansheeEditor
 						mMouseOverDragElement->mFoldoutBtn->toggleOn();
 				}
 			}
+		}
+	}
+
+	void GUISceneTreeView::scrollToElement(TreeElement* element, bool center)
+	{
+		if(element->mElement == nullptr)
+			return;
+
+		GUIScrollArea* scrollArea = findParentScrollArea();
+		if(scrollArea == nullptr)
+			return;
+
+		if(center)
+		{
+			RectI myBounds = _getClippedBounds();
+			INT32 clipVertCenter = myBounds.y + (INT32)Math::roundToInt(myBounds.height * 0.5f);
+			INT32 elemVertCenter = element->mElement->_getOffset().y + (INT32)Math::roundToInt(element->mElement->_getHeight() * 0.5f);
+
+			if(elemVertCenter > clipVertCenter)
+				scrollArea->scrollUpPx(elemVertCenter - clipVertCenter);
+			else
+				scrollArea->scrollDownPx(clipVertCenter - elemVertCenter);
+		}
+		else
+		{
+			RectI myBounds = _getClippedBounds();
+			INT32 elemVertTop = element->mElement->_getOffset().y;
+			INT32 elemVertBottom = element->mElement->_getOffset().y + element->mElement->_getHeight();
+
+			INT32 top = myBounds.y;
+			INT32 bottom = myBounds.y + myBounds.height;
+
+			INT32 offset = 0;
+			if(elemVertTop < top)
+				scrollArea->scrollUpPx(top - elemVertTop);
+			else if(elemVertBottom > bottom)
+				scrollArea->scrollDownPx(elemVertBottom - bottom);
 		}
 	}
 

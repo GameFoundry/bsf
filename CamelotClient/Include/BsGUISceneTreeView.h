@@ -164,6 +164,7 @@ namespace BansheeEditor
 		void unselectAll();
 
 		void temporarilyExpandElement(const GUISceneTreeView::InteractableElement* mouseOverElement);
+		void scrollToElement(TreeElement* element, bool center);
 
 		BS::GUIScrollArea* findParentScrollArea() const;
 
