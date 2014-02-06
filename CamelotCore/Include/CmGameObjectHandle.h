@@ -89,8 +89,8 @@ namespace CamelotFramework
 			std::shared_ptr<GameObjectInstanceData> instanceData = mData->mPtr;
 			mData->mPtr = nullptr;
 
-			if(mData->mPtr != nullptr)
-				mData->mPtr->object = nullptr;
+			if(instanceData != nullptr)
+				instanceData->object = nullptr;
 		}
 
 		std::shared_ptr<GameObjectHandleData> mData;
