@@ -272,10 +272,7 @@ namespace BansheeEditor
 						if(!mTempToDelete[i])
 							continue;
 
-						if(current->mChildren[i]->mIsSelected)
-							unselectElement(current->mChildren[i]);
-
-						cm_delete(current->mChildren[i]);
+						deleteTreeElement(current->mChildren[i]);
 					}
 
 					current->mChildren = newChildren;
@@ -791,6 +788,16 @@ namespace BansheeEditor
 			element->mElement->disableRecursively();
 	}
 
+	void GUISceneTreeView::deleteTreeElement(TreeElement* element)
+	{
+		closeTemporarilyExpandedElements(); // In case this element is one of them
+
+		if(element->mIsSelected)
+			unselectElement(element);
+
+		cm_delete(element);
+	}
+
 	void GUISceneTreeView::disableEdit(bool applyChanges)
 	{
 		assert(mEditElement != nullptr);
@@ -1175,6 +1182,11 @@ namespace BansheeEditor
 			return botMostElement->getTreeElement();
 		else
 			return nullptr;
+	}
+
+	void GUISceneTreeView::closeTemporarilyExpandedElements()
+	{
+		temporarilyExpandElement(nullptr);
 	}
 
 	void GUISceneTreeView::temporarilyExpandElement(const GUISceneTreeView::InteractableElement* mouseOverElement)

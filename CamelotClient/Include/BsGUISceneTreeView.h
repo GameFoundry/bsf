@@ -162,7 +162,10 @@ namespace BansheeEditor
 		void selectElement(TreeElement* element);
 		void unselectElement(TreeElement* element);
 		void unselectAll();
+		
+		void deleteTreeElement(TreeElement* element);
 
+		void closeTemporarilyExpandedElements();
 		void temporarilyExpandElement(const GUISceneTreeView::InteractableElement* mouseOverElement);
 		void scrollToElement(TreeElement* element, bool center);
 
