@@ -237,7 +237,7 @@ namespace CamelotFramework
 		{ }
 
 		ButtonCode buttonCode;
-		float timestamp;
+		UINT64 timestamp;
 
 		bool isKeyboard() const { return (buttonCode & 0xC0000000) == 0; }
 		bool isMouse() const { return (buttonCode & 0x80000000) != 0; }

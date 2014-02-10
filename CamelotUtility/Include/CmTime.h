@@ -59,6 +59,14 @@ namespace CamelotFramework
 		UINT64 getTimePrecise() const;
 
 		/**
+		 * @brief	Gets the time at which the application was started, counting
+		 * 			from system start.
+		 *
+		 * @return	The time since system to application start, in milliseconds.
+		 */
+		UINT64 getStartTimeMs() const { return mAppStartTime; }
+
+		/**
 		 * @brief	Called every frame. Should only be called by Application.
 		 */
 		void update();
@@ -68,7 +76,7 @@ namespace CamelotFramework
 		float mTimeSinceStart; // Time since start in seconds
 		UINT64 mTimeSinceStartMs;
 
-		unsigned long mAppStartTime; // Time the application started, in microseconds
+		UINT64 mAppStartTime; // Time the application started, in microseconds
 		unsigned long mLastFrameTime; // Time since last runOneFrame call, In microseconds
 		unsigned long mCurrentFrame;
 

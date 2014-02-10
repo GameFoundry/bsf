@@ -99,6 +99,13 @@ namespace CamelotFramework
 
 		/** Returns microseconds since initialisation or last reset, only CPU time measured */
 		unsigned long getMicrosecondsCPU();
+
+		/**
+		 * @brief	Returns the time at which the timer was initialized, in milliseconds.
+		 *
+		 * @return	Time in milliseconds.
+		 */
+		unsigned long getStartMs() const;
     };
 	/** @} */
 	/** @} */

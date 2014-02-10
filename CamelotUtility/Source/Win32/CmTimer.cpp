@@ -154,6 +154,13 @@ unsigned long Timer::getMilliseconds()
     return newTicks;
 }
 
+unsigned long Timer::getStartMs() const
+{
+	unsigned long newTicks = (unsigned long) (1000 * mStartTime.QuadPart / mFrequency.QuadPart);
+
+	return newTicks;
+}
+
 //-------------------------------------------------------------------------
 unsigned long Timer::getMicroseconds()
 {

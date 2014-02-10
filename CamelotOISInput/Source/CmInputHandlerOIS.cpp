@@ -2,11 +2,12 @@
 #include "CmVector2I.h"
 #include "OIS/OISException.h"
 #include "CmRenderWindow.h"
+#include "CmTime.h"
 
 namespace CamelotFramework
 {
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
-		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr)
+		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0)
 	{
 		OIS::ParamList pl;
 		std::ostringstream windowHndStr;
@@ -35,6 +36,9 @@ namespace CamelotFramework
 
 		mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
 		mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));
+
+		// OIS reports times since system start but we use time since program start
+		mTimestampClockOffset = gTime().getStartTimeMs();
 
 		mMouse->setEventCallback(this);
 		mKeyboard->setEventCallback(this);
@@ -73,13 +77,13 @@ namespace CamelotFramework
 
 	bool InputHandlerOIS::keyPressed(const OIS::KeyEvent &arg)
 	{
-		onButtonDown(keyCodeToButtonCode(arg.key), 0.0f);
+		onButtonDown(keyCodeToButtonCode(arg.key), arg.timestamp - mTimestampClockOffset);
 		return true;
 	}
 
 	bool InputHandlerOIS::keyReleased(const OIS::KeyEvent& arg)
 	{
-		onButtonUp(keyCodeToButtonCode(arg.key), 0.0f);
+		onButtonUp(keyCodeToButtonCode(arg.key), arg.timestamp - mTimestampClockOffset);
 		return true;
 	}
 
@@ -102,14 +106,14 @@ namespace CamelotFramework
 
 	bool InputHandlerOIS::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		onButtonDown(mouseButtonToButtonCode(id), 0.0f);
+		onButtonDown(mouseButtonToButtonCode(id), arg.timestamp - mTimestampClockOffset);
 
 		return true;
 	}
 
 	bool InputHandlerOIS::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		onButtonUp(mouseButtonToButtonCode(id), 0.0f);
+		onButtonUp(mouseButtonToButtonCode(id), arg.timestamp - mTimestampClockOffset);
 
 		return true;
 	}

@@ -9,7 +9,7 @@ namespace CamelotFramework
 		:mAppStartTime(0), mLastFrameTime(0), mFrameDelta(0.0f), mTimeSinceStart(0.0f), mCurrentFrame(0)
 	{
 		mTimer = cm_new<Timer>();
-		mAppStartTime = mTimer->getMicroseconds();
+		mAppStartTime = (UINT64)mTimer->getStartMs();
 	}
 
 	Time::~Time()

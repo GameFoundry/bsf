@@ -33,7 +33,7 @@ namespace BansheeEngine
 	}
 
 	InputConfiguration::InputConfiguration()
-		:mRepeatInterval(1.0f)
+		:mRepeatInterval(1000)
 	{ }
 
 	void InputConfiguration::registerButton(const CM::String& name, CM::ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)

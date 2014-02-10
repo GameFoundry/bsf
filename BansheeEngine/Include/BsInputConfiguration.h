@@ -69,8 +69,8 @@ namespace BansheeEngine
 		void registerButton(const CM::String& name, CM::ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
 		void unregisterButton(const CM::String& name);
 
-		void setRepeatInterval(float seconds) { mRepeatInterval = seconds; }
-		float getRepeatInterval() const { return mRepeatInterval; }
+		void setRepeatInterval(CM::UINT64 milliseconds) { mRepeatInterval = milliseconds; }
+		CM::UINT64 getRepeatInterval() const { return mRepeatInterval; }
 
 		bool getButton(CM::ButtonCode code, CM::UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const;
 
@@ -78,6 +78,6 @@ namespace BansheeEngine
 	private:
 		CM::Vector<VirtualButtonData>::type mButtons[CM::BC_Count];
 
-		float mRepeatInterval;
+		CM::UINT64 mRepeatInterval;
 	};
 }

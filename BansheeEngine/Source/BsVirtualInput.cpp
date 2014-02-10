@@ -69,8 +69,8 @@ namespace BansheeEngine
 		}
 
 		bool hasEvents = true;
-		float repeatInternal = mInputConfiguration->getRepeatInterval();
-		float currentTime = gTime().getTime();
+		UINT64 repeatInternal = mInputConfiguration->getRepeatInterval();
+		UINT64 currentTime = gTime().getTimeMs();
 
 		// Trigger all events
 		while(hasEvents)
@@ -104,7 +104,7 @@ namespace BansheeEngine
 				if(!state.second.allowRepeat)
 					continue;
 
-				float diff = currentTime - state.second.timestamp;
+				UINT64 diff = currentTime - state.second.timestamp;
 				if(diff >= repeatInternal)
 				{
 					state.second.timestamp += repeatInternal;

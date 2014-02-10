@@ -104,7 +104,7 @@ namespace CamelotFramework
 			mOSInputHandler->inputWindowChanged(win);
 	}
 
-	void Input::buttonDown(ButtonCode code, float timestamp)
+	void Input::buttonDown(ButtonCode code, UINT64 timestamp)
 	{
 		mKeyState[code & 0x0000FFFF] = ButtonState::ToggledOn;
 
@@ -118,7 +118,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Input::buttonUp(ButtonCode code, float timestamp)
+	void Input::buttonUp(ButtonCode code, UINT64 timestamp)
 	{
 		mKeyState[code & 0x0000FFFF] = ButtonState::ToggledOff;
 

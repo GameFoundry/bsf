@@ -20,7 +20,7 @@ namespace BansheeEngine
 		{
 			VirtualButton button;
 			ButtonState state;
-			float timestamp;
+			CM::UINT64 timestamp;
 			bool allowRepeat;
 		};
 

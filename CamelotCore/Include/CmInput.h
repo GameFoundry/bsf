@@ -78,8 +78,8 @@ namespace CamelotFramework
 		RawAxisState mAxes[RawInputAxis::Count];
 		ButtonState mKeyState[BC_Count];
 
-		void buttonDown(ButtonCode code, float timestamp);
-		void buttonUp(ButtonCode code, float timestamp);
+		void buttonDown(ButtonCode code, UINT64 timestamp);
+		void buttonUp(ButtonCode code, UINT64 timestamp);
 
 		void charInput(UINT32 chr);
 
