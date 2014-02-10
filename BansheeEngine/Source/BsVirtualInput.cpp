@@ -114,9 +114,8 @@ namespace BansheeEngine
 					event.state = ButtonState::On;
 
 					mEvents.push(event);
-				}
-
-				hasEvents = true;
+					hasEvents = true;
+				}				
 			}
 		}
 	}
