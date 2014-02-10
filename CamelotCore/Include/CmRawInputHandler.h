@@ -46,8 +46,8 @@ namespace CamelotFramework
 		RawInputHandler() {}
 		virtual ~RawInputHandler() {}
 
-		boost::signal<void(ButtonCode)> onButtonDown;
-		boost::signal<void(ButtonCode)> onButtonUp;
+		boost::signal<void(ButtonCode, float)> onButtonDown;
+		boost::signal<void(ButtonCode, float)> onButtonUp;
 
 		boost::signal<void(const RawAxisState&, RawInputAxis)> onAxisMoved;
 

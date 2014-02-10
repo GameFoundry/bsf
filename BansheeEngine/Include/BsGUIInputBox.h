@@ -4,6 +4,7 @@
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
+#include "BsVirtualInput.h"
 
 namespace BansheeEngine
 {
@@ -60,6 +61,7 @@ namespace BansheeEngine
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool textInputEvent(const GUITextInputEvent& ev);
 		virtual bool commandEvent(const GUICommandEvent& ev);
+		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 
 		virtual CM::Vector2I _getTextInputOffset() const;
 		virtual CM::RectI _getTextInputRect() const;
@@ -68,6 +70,11 @@ namespace BansheeEngine
 
 		virtual GUIContextMenu* getContextMenu() const;
 	private:
+		static VirtualButton mCopyVB;
+		static VirtualButton mPasteVB;
+		static VirtualButton mCutVB;
+		static VirtualButton mSelectAllVB;
+
 		// Sprites
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;

@@ -27,7 +27,7 @@ namespace CamelotFramework
 		}
 
 		for(int i = 0; i < BC_Count; i++)
-			mKeyState[i] = false;
+			mKeyState[i] = ButtonState::Off;
 
 		mOSInputHandler = cm_shared_ptr<OSInputHandler>();
 
@@ -56,8 +56,8 @@ namespace CamelotFramework
 
 			if(mRawInputHandler != nullptr)
 			{
-				mRawInputHandler->onButtonDown.connect(boost::bind(&Input::buttonDown, this, _1));
-				mRawInputHandler->onButtonUp.connect(boost::bind(&Input::buttonUp, this, _1));
+				mRawInputHandler->onButtonDown.connect(boost::bind(&Input::buttonDown, this, _1, _2));
+				mRawInputHandler->onButtonUp.connect(boost::bind(&Input::buttonUp, this, _1, _2));
 
 				mRawInputHandler->onAxisMoved.connect(boost::bind(&Input::axisMoved, this, _1, _2));
 			}
@@ -66,6 +66,16 @@ namespace CamelotFramework
 
 	void Input::update()
 	{
+		// Toggle states only remain active for a single frame before they are transitioned
+		// into permanent state
+		for(UINT32 i = 0; i < BC_Count; i++)
+		{
+			if(mKeyState[i] == ButtonState::ToggledOff)
+				mKeyState[i] = ButtonState::Off;
+			else if(mKeyState[i] == ButtonState::ToggledOn)
+				mKeyState[i] = ButtonState::On;
+		}
+
 		if(mRawInputHandler == nullptr)
 		{
 			LOGERR("Raw input handler not initialized!");
@@ -94,27 +104,29 @@ namespace CamelotFramework
 			mOSInputHandler->inputWindowChanged(win);
 	}
 
-	void Input::buttonDown(ButtonCode code)
+	void Input::buttonDown(ButtonCode code, float timestamp)
 	{
-		mKeyState[code & 0x0000FFFF] = true;
+		mKeyState[code & 0x0000FFFF] = ButtonState::ToggledOn;
 
 		if(!onButtonDown.empty())
 		{
 			ButtonEvent btnEvent;
 			btnEvent.buttonCode = code;
+			btnEvent.timestamp = timestamp;
 
 			onButtonDown(btnEvent);
 		}
 	}
 
-	void Input::buttonUp(ButtonCode code)
+	void Input::buttonUp(ButtonCode code, float timestamp)
 	{
-		mKeyState[code & 0x0000FFFF] = false;
+		mKeyState[code & 0x0000FFFF] = ButtonState::ToggledOff;
 
 		if(!onButtonUp.empty())
 		{
 			ButtonEvent btnEvent;
 			btnEvent.buttonCode = code;
+			btnEvent.timestamp = timestamp;
 
 			onButtonUp(btnEvent);
 		}
@@ -185,9 +197,19 @@ namespace CamelotFramework
 		return mSmoothVerticalAxis;
 	}
 
+	bool Input::isButtonHeld(ButtonCode button) const
+	{
+		return mKeyState[button & 0x0000FFFF] == ButtonState::On || mKeyState[button & 0x0000FFFF] == ButtonState::ToggledOn;
+	}
+
+	bool Input::isButtonUp(ButtonCode button) const
+	{
+		return mKeyState[button & 0x0000FFFF] == ButtonState::ToggledOff;
+	}
+
 	bool Input::isButtonDown(ButtonCode button) const
 	{
-		return mKeyState[button & 0x0000FFFF];
+		return mKeyState[button & 0x0000FFFF] == ButtonState::ToggledOn;
 	}
 
 	void Input::updateSmoothInput()

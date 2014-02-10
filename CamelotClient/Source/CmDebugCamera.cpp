@@ -29,12 +29,12 @@ namespace CamelotFramework
 
 	void DebugCamera::update()
 	{
-		bool goingForward = gInput().isButtonDown(BC_W) || gInput().isButtonDown(BC_UP);
-		bool goingBack = gInput().isButtonDown(BC_S) || gInput().isButtonDown(BC_DOWN);
-		bool goingLeft = gInput().isButtonDown(BC_A) || gInput().isButtonDown(BC_LEFT);
-		bool goingRight = gInput().isButtonDown(BC_D) || gInput().isButtonDown(BC_RIGHT);
-		bool fastMove = gInput().isButtonDown(BC_LSHIFT);
-		bool camRotating = gInput().isButtonDown(BC_MOUSE_RIGHT);
+		bool goingForward = gInput().isButtonHeld(BC_W) || gInput().isButtonHeld(BC_UP);
+		bool goingBack = gInput().isButtonHeld(BC_S) || gInput().isButtonHeld(BC_DOWN);
+		bool goingLeft = gInput().isButtonHeld(BC_A) || gInput().isButtonHeld(BC_LEFT);
+		bool goingRight = gInput().isButtonHeld(BC_D) || gInput().isButtonHeld(BC_RIGHT);
+		bool fastMove = gInput().isButtonHeld(BC_LSHIFT);
+		bool camRotating = gInput().isButtonHeld(BC_MOUSE_RIGHT);
 
 		if(camRotating != mLastButtonState)
 		{

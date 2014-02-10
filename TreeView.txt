@@ -6,27 +6,7 @@ TODO:
  - Clicking on an already selectecd element starts rename 
    - Will likely need some kind of check to ignore double-clicks?
 
-MenuBar problems:
- - Clicking the top menu item closes and immediately opens the menu again (it should only close it)
-   - Something similar probably also happens with ListBox
-
  Other:
  - "Ping" effect
  - Copy/Paste/Duplicate
    - This is more of a problem with actual copying of SceneObjects (It's not implemented). I should be able to serialize, and then de-serialize with a new parent as a form of copy.
-
---------------------------------------------------
-LOW PRIORITY:
-
-Shortcut plan:
-Replace all GUICommandEventType with two things:
- - Events like CursorMoveUp should just be received a keys + modifiers (shift/ctrl/alt) and the individual element can then decide what to do with them and how to interpret them.
- - Events like Rename, Undo, Redo, Copy, Paste, etc. should be globally set shortcut keys
-    - Shortcut keys are globally registered on program start in ShortcutManager
-    - Objects can then register callbacks for certain shortcut using mechanism like: addCallback("Undo", onUndo).
-     - They should also be able to unregister those callbacks.
-    - GUIElement can choose to listen to certain shortcut keys
-        - getUsedShortcut is a overridable method that returns a list of shortcuts and callbacks
-        - When element comes into focus or loses focus GUIManager will register/unregister those shortcuts with ShortcutManager
-          - I should probably prevent one shortcut from possibly triggering multiple callbacks
-    - Whenever some key combination or a single key is pressed all elements in focus get send the shortcut key (if that shortcut exists)

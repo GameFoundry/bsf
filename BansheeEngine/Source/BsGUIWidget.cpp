@@ -127,6 +127,11 @@ namespace BansheeEngine
 		return element->commandEvent(ev);
 	}
 
+	bool GUIWidget::_virtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& ev)
+	{
+		return element->virtualButtonEvent(ev);
+	}
+
 	void GUIWidget::registerElement(GUIElement* elem)
 	{
 		assert(elem != nullptr);

@@ -226,6 +226,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsInputConfiguration.cpp" />
+    <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
     <ClInclude Include="Include\BsDrawHelper3D.h" />
     <ClInclude Include="Include\BsDrawHelperTemplate.h" />
@@ -268,6 +270,8 @@
     <ClInclude Include="Include\BsGUIToggle.h" />
     <ClInclude Include="Include\BsGUIToggleGroup.h" />
     <ClInclude Include="Include\BsGUIViewport.h" />
+    <ClInclude Include="Include\BsGUIVirtualButtonEvent.h" />
+    <ClInclude Include="Include\BsInputConfiguration.h" />
     <ClInclude Include="Include\BsPrerequisites.h" />
     <ClInclude Include="Include\BsGUIElement.h" />
     <ClInclude Include="Include\BsGUIElementStyle.h" />
@@ -299,6 +303,7 @@
     <ClInclude Include="Include\BsUpdateCallback.h" />
     <ClCompile Include="Source\BsGUIButtonBase.cpp" />
     <ClCompile Include="Source\BsGUIContextMenu.cpp" />
+    <ClInclude Include="Include\BsVirtualInput.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsApplication.cpp" />

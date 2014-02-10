@@ -4,6 +4,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUITextInputEvent.h"
 #include "BsGUICommandEvent.h"
+#include "BsGUIVirtualButtonEvent.h"
 #include "BsGUIMaterialInfo.h"
 #include "CmModule.h"
 #include "CmColor.h"
@@ -164,6 +165,7 @@ namespace BansheeEngine
 		GUIMouseEvent mMouseEvent;
 		GUITextInputEvent mTextInputEvent;
 		GUICommandEvent mCommandEvent;
+		GUIVirtualButtonEvent mVirtualButtonEvent;
 
 		HSpriteTexture mCaretTexture;
 		CM::Color mCaretColor;
@@ -182,6 +184,7 @@ namespace BansheeEngine
 		boost::signals::connection mOnCursorDoubleClick;
 		boost::signals::connection mOnTextInputConn;
 		boost::signals::connection mOnInputCommandConn;
+		boost::signals::connection mOnVirtualButtonDown;
 
 		boost::signals::connection mDragEndedConn;
 
@@ -203,6 +206,7 @@ namespace BansheeEngine
 		void onCursorDoubleClick(const CM::PositionalInputEvent& event);
 		void onTextInput(const CM::TextInputEvent& event);
 		void onInputCommandEntered(CM::InputCommandType commandType);
+		void onVirtualButtonDown(const VirtualButton& button);
 
 		bool onMouseDragEnded(const CM::PositionalInputEvent& event);
 
@@ -219,6 +223,7 @@ namespace BansheeEngine
 		bool sendMouseEvent(GUIWidget* widget, GUIElement* element, const GUIMouseEvent& event);
 		bool sendTextInputEvent(GUIWidget* widget, GUIElement* element, const GUITextInputEvent& event);
 		bool sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event);
+		bool sendVirtualButtonEvent(GUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event);
 	};
 
 	BS_EXPORT GUIManager& gGUIManager();

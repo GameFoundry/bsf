@@ -23,6 +23,11 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	VirtualButton GUIInputBox::mCopyVB = VirtualButton("Copy");
+	VirtualButton GUIInputBox::mPasteVB = VirtualButton("Paste");
+	VirtualButton GUIInputBox::mCutVB = VirtualButton("Cut");
+	VirtualButton GUIInputBox::mSelectAllVB = VirtualButton("SelectAll");
+
 	const String& GUIInputBox::getGUITypeName()
 	{
 		static String name = "InputBox";
@@ -750,33 +755,35 @@ namespace BansheeEngine
 
 		}
 
-		if(ev.getType() == GUICommandEventType::SelectAll)
-		{
-			showSelection(0);
-			gGUIManager().getInputSelectionTool()->selectAll();
+		return false;
+	}
 
-			markContentAsDirty();
-			return true;
-		}
-
-		if(ev.getType() == GUICommandEventType::Cut)
+	bool GUIInputBox::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
+	{
+		if(ev.getButton() == mCutVB)
 		{
 			cutText();
 
 			markContentAsDirty();
 			return true;
 		}
-
-		if(ev.getType() == GUICommandEventType::Copy)
+		else if(ev.getButton() == mCopyVB)
 		{
 			copyText();
 
 			return true;
 		}
-
-		if(ev.getType() == GUICommandEventType::Paste)
+		else if(ev.getButton() == mPasteVB)
 		{
 			pasteText();
+
+			markContentAsDirty();
+			return true;
+		}
+		else if(ev.getButton() == mSelectAllVB)
+		{
+			showSelection(0);
+			gGUIManager().getInputSelectionTool()->selectAll();
 
 			markContentAsDirty();
 			return true;

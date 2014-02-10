@@ -11,6 +11,14 @@ namespace CamelotFramework
 {
 	class CM_EXPORT Input : public Module<Input>
 	{
+		enum class ButtonState
+		{
+			Off,
+			On,
+			ToggledOn,
+			ToggledOff
+		};
+
 	public:
 		Input();
 		~Input();
@@ -47,6 +55,8 @@ namespace CamelotFramework
 		 */
 		float getVerticalAxis() const;
 
+		bool isButtonHeld(ButtonCode keyCode) const;
+		bool isButtonUp(ButtonCode keyCode) const;
 		bool isButtonDown(ButtonCode keyCode) const;
 
 		Vector2I getCursorPosition() const { return mMouseAbsPos; }
@@ -66,10 +76,10 @@ namespace CamelotFramework
 		Vector2I mMouseAbsPos;
 
 		RawAxisState mAxes[RawInputAxis::Count];
-		bool mKeyState[BC_Count];
+		ButtonState mKeyState[BC_Count];
 
-		void buttonDown(ButtonCode code);
-		void buttonUp(ButtonCode code);
+		void buttonDown(ButtonCode code, float timestamp);
+		void buttonUp(ButtonCode code, float timestamp);
 
 		void charInput(UINT32 chr);
 

@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUIElementContainer.h"
+#include "BsVirtualInput.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEditor
@@ -143,6 +144,8 @@ namespace BansheeEditor
 		TreeElement* mMouseOverDragElement;
 		float mMouseOverDragElementTime;
 
+		static BS::VirtualButton mRenameVB;
+
 		GUISceneTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
 			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
@@ -156,6 +159,7 @@ namespace BansheeEditor
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 		virtual bool commandEvent(const BS::GUICommandEvent& ev);
+		virtual bool virtualButtonEvent(const BS::GUIVirtualButtonEvent& ev);
 		void elementToggled(TreeElement* element, bool toggled);
 
 		bool isSelectionActive() const;

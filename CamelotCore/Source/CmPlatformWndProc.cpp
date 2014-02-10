@@ -456,48 +456,6 @@ namespace CamelotFramework
 		case VK_DELETE:
 			command = InputCommandType::Delete;
 			return true;
-		case VK_TAB:
-			command = InputCommandType::Tab;
-			return true;
-		case VK_F2:
-			command = InputCommandType::Rename;
-			return true;
-		case 0x41: // A
-			if(isCtrlPressed)
-			{
-				command = InputCommandType::SelectAll;
-				return true;
-			}
-		case 0x43: // C
-			if(isCtrlPressed)
-			{
-				command = InputCommandType::Copy;
-				return true;
-			}
-		case 0x56: // V
-			if(isCtrlPressed)
-			{
-				command = InputCommandType::Paste;
-				return true;
-			}
-		case 0x58: // X
-			if(isCtrlPressed)
-			{
-				command = InputCommandType::Cut;
-				return true;
-			}
-		case 0x5A: // Z
-			if(isCtrlPressed)
-			{
-				command = InputCommandType::Undo;
-				return true;
-			}
-		case 0x59: // Y
-			if(isCtrlPressed)
-			{
-				command = InputCommandType::Redo;
-				return true;
-			}
 		}
 
 		return false;

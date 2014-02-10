@@ -73,13 +73,13 @@ namespace CamelotFramework
 
 	bool InputHandlerOIS::keyPressed(const OIS::KeyEvent &arg)
 	{
-		onButtonDown(keyCodeToButtonCode(arg.key));
+		onButtonDown(keyCodeToButtonCode(arg.key), 0.0f);
 		return true;
 	}
 
 	bool InputHandlerOIS::keyReleased(const OIS::KeyEvent& arg)
 	{
-		onButtonUp(keyCodeToButtonCode(arg.key));
+		onButtonUp(keyCodeToButtonCode(arg.key), 0.0f);
 		return true;
 	}
 
@@ -102,14 +102,14 @@ namespace CamelotFramework
 
 	bool InputHandlerOIS::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		onButtonDown(mouseButtonToButtonCode(id));
+		onButtonDown(mouseButtonToButtonCode(id), 0.0f);
 
 		return true;
 	}
 
 	bool InputHandlerOIS::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		onButtonUp(mouseButtonToButtonCode(id));
+		onButtonUp(mouseButtonToButtonCode(id), 0.0f);
 
 		return true;
 	}

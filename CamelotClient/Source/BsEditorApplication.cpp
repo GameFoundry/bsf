@@ -22,6 +22,7 @@
 #include "CmPass.h"
 #include "BsRenderable.h"
 #include "BsDbgTestGameObjectRef.h"
+#include "BsVirtualInput.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -41,6 +42,18 @@ namespace BansheeEditor
 		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
 		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer", "D:\\CamelotResourceMetas"); // TODO - Make renderer and resource cache dir customizable
 		EditorGUI::startUp(cm_new<EditorGUI>());
+
+		{
+			auto inputConfig = VirtualInput::instance().getConfiguration();
+
+			inputConfig->registerButton("Rename", BC_F2);
+			inputConfig->registerButton("Undo", BC_Z, VButtonModifier::Ctrl);
+			inputConfig->registerButton("Redo", BC_Y, VButtonModifier::Ctrl);
+			inputConfig->registerButton("Copy", BC_C, VButtonModifier::Ctrl);
+			inputConfig->registerButton("Cut", BC_X, VButtonModifier::Ctrl);
+			inputConfig->registerButton("Paste", BC_V, VButtonModifier::Ctrl);
+		}
+
 		//gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
 		/************************************************************************/

@@ -12,6 +12,7 @@
 #include "BsScriptManager.h"
 #include "CmApplication.h"
 #include "CmProfiler.h"
+#include "BsVirtualInput.h"
 
 using namespace CamelotFramework;
 
@@ -38,6 +39,7 @@ namespace BansheeEngine
 		
 		CM::gApplication().startUp(desc);
 
+		VirtualInput::startUp(cm_new<VirtualInput>());
 		ScriptManager::startUp(cm_new<ScriptManager>());
 		GUIManager::startUp(cm_new<GUIManager>());
 		GUIMaterialManager::startUp(cm_new<GUIMaterialManager>());
@@ -82,12 +84,14 @@ namespace BansheeEngine
 		GUIManager::shutDown();
 		GUIMaterialManager::shutDown();
 		ScriptManager::shutDown();
+		VirtualInput::shutDown();
 		
 		CM::gApplication().shutDown();
 	}
 
 	void Application::update()
 	{
+		VirtualInput::instance().update();
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 

@@ -55,6 +55,12 @@ namespace BansheeEngine
 		 */
 		virtual bool _commandEvent(GUIElement* element, const GUICommandEvent& ev);
 
+		/**
+		 * @brief	Forwards the specified virtual button event to the specified element. The element
+		 * 			must be a child of this widget.
+		 */
+		virtual bool _virtualButtonEvent(GUIElement* element, const GUIVirtualButtonEvent& ev);
+
 		static GUISkin DefaultSkin;
 	protected:
 		friend class CM::SceneObject;

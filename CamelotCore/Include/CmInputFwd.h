@@ -237,6 +237,7 @@ namespace CamelotFramework
 		{ }
 
 		ButtonCode buttonCode;
+		float timestamp;
 
 		bool isKeyboard() const { return (buttonCode & 0xC0000000) == 0; }
 		bool isMouse() const { return (buttonCode & 0x80000000) != 0; }
@@ -302,8 +303,8 @@ namespace CamelotFramework
 	enum class InputCommandType
 	{
 		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
-		SelectLeft, SelectRight, SelectUp, SelectDown, Undo, Redo, Rename,
-		Escape, Delete, Backspace, Return, SelectAll, Copy, Cut, Paste, Tab
+		SelectLeft, SelectRight, SelectUp, SelectDown,
+		Escape, Delete, Backspace, Return
 	};
 
 	struct TextInputEvent

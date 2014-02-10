@@ -11,6 +11,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUISkin.h"
 #include "BsGUICommandEvent.h"
+#include "BsGUIVirtualButtonEvent.h"
 #include "CmSceneObject.h"
 #include "CmSceneManager.h"
 #include "BsCmdEditPlainFieldGO.h"
@@ -31,6 +32,8 @@ namespace BansheeEditor
 	const float GUISceneTreeView::AUTO_EXPAND_DELAY_SEC = 0.5f;
 	const float GUISceneTreeView::SCROLL_AREA_HEIGHT_PCT = 0.1f;
 	const UINT32 GUISceneTreeView::SCROLL_SPEED_PX_PER_SEC = 25;
+
+	VirtualButton GUISceneTreeView::mRenameVB = VirtualButton("Rename");
 
 	GUISceneTreeView::DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
@@ -635,17 +638,6 @@ namespace BansheeEditor
 
 	bool GUISceneTreeView::commandEvent(const GUICommandEvent& ev)
 	{
-		if(ev.getType() == GUICommandEventType::Rename)
-		{
-			if(isSelectionActive() && mEditElement == nullptr)
-			{
-				unselectAll();
-				enableEdit(mSelectedElements[0].element);
-			}
-
-			return true;
-		}
-		
 		if(ev.getType() == GUICommandEventType::CursorMoveUp || ev.getType() == GUICommandEventType::SelectUp)
 		{
 			TreeElement* topMostElement = getTopMostSelectedElement();
@@ -693,6 +685,22 @@ namespace BansheeEditor
 					scrollToElement(treeElement, false);
 				}
 			}
+		}
+
+		return false;
+	}
+
+	bool GUISceneTreeView::virtualButtonEvent(const BS::GUIVirtualButtonEvent& ev)
+	{
+		if(ev.getButton() == mRenameVB)
+		{
+			if(isSelectionActive() && mEditElement == nullptr)
+			{
+				enableEdit(mSelectedElements[0].element);
+				unselectAll();
+			}
+
+			return true;
 		}
 
 		return false;

@@ -25,6 +25,10 @@ namespace CM = CamelotFramework;
 
 namespace BansheeEngine
 {
+	class VirtualButton;
+	class VirtualInput;
+	class InputConfiguration;
+
 	// GUI
 	class GUIManager;
 	class GUIWidget;
@@ -43,6 +47,7 @@ namespace BansheeEngine
 	class GUIMouseEvent;
 	class GUITextInputEvent;
 	class GUICommandEvent;
+	class GUIVirtualButtonEvent;
 	class GUIArea;
 	class GUILayout;
 	class GUILayoutX;

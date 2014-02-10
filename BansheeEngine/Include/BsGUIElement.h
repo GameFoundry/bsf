@@ -103,6 +103,7 @@ namespace BansheeEngine
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		virtual bool textInputEvent(const GUITextInputEvent& ev);
 		virtual bool commandEvent(const GUICommandEvent& ev);
+		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 
 		static void destroy(GUIElement* element);
 

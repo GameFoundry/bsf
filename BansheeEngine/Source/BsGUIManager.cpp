@@ -31,6 +31,7 @@
 #include "CmProfiler.h"
 #include "CmMeshHeap.h"
 #include "CmTransientMesh.h"
+#include "BsVirtualInput.h"
 
 using namespace CamelotFramework;
 namespace BansheeEngine
@@ -72,6 +73,7 @@ namespace BansheeEngine
 		mOnCursorDoubleClick = gInput().onDoubleClick.connect(boost::bind(&GUIManager::onCursorDoubleClick, this, _1));
 		mOnTextInputConn = gInput().onCharInput.connect(boost::bind(&GUIManager::onTextInput, this, _1)); 
 		mOnInputCommandConn = gInput().onInputCommand.connect(boost::bind(&GUIManager::onInputCommandEntered, this, _1)); 
+		mOnVirtualButtonDown = VirtualInput::instance().onButtonDown.connect(boost::bind(&GUIManager::onVirtualButtonDown, this, _1));
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
@@ -114,6 +116,7 @@ namespace BansheeEngine
 		mOnCursorDoubleClick.disconnect();
 		mOnTextInputConn.disconnect();
 		mOnInputCommandConn.disconnect();
+		mOnVirtualButtonDown.disconnect();
 
 		mDragEndedConn.disconnect();
 
@@ -951,35 +954,11 @@ namespace BansheeEngine
 		case InputCommandType::Delete:
 			mCommandEvent.setType(GUICommandEventType::Delete);
 			break;
-		case InputCommandType::Copy:
-			mCommandEvent.setType(GUICommandEventType::Copy);
-			break;
-		case InputCommandType::Cut:
-			mCommandEvent.setType(GUICommandEventType::Cut);
-			break;
-		case InputCommandType::Paste:
-			mCommandEvent.setType(GUICommandEventType::Paste);
-			break;
-		case InputCommandType::Undo:
-			mCommandEvent.setType(GUICommandEventType::Undo);
-			break;
-		case InputCommandType::Redo:
-			mCommandEvent.setType(GUICommandEventType::Redo);
-			break;
 		case InputCommandType::Return:
 			mCommandEvent.setType(GUICommandEventType::Return);
 			break;
 		case InputCommandType::Escape:
 			mCommandEvent.setType(GUICommandEventType::Escape);
-			break;
-		case InputCommandType::Tab:
-			mCommandEvent.setType(GUICommandEventType::Tab);
-			break;
-		case InputCommandType::Rename:
-			mCommandEvent.setType(GUICommandEventType::Rename);
-			break;
-		case InputCommandType::SelectAll:
-			mCommandEvent.setType(GUICommandEventType::SelectAll);
 			break;
 		case InputCommandType::CursorMoveLeft:
 			mCommandEvent.setType(GUICommandEventType::CursorMoveLeft);
@@ -1011,6 +990,19 @@ namespace BansheeEngine
 		{
 			sendCommandEvent(elementInfo.widget, elementInfo.element, mCommandEvent);
 		}		
+	}
+
+	void GUIManager::onVirtualButtonDown(const VirtualButton& button)
+	{
+		mVirtualButtonEvent.setButton(button);
+		
+		for(auto& elementInFocus : mElementsInFocus)
+		{
+			bool processed = sendVirtualButtonEvent(elementInFocus.widget, elementInFocus.element, mVirtualButtonEvent);
+
+			if(processed)
+				break;
+		}
 	}
 
 	bool GUIManager::findElementUnderCursor(const CM::Vector2I& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
@@ -1383,6 +1375,11 @@ namespace BansheeEngine
 	bool GUIManager::sendCommandEvent(GUIWidget* widget, GUIElement* element, const GUICommandEvent& event)
 	{
 		return widget->_commandEvent(element, event);
+	}
+
+	bool GUIManager::sendVirtualButtonEvent(GUIWidget* widget, GUIElement* element, const GUIVirtualButtonEvent& event)
+	{
+		return widget->_virtualButtonEvent(element, event);
 	}
 
 	GUIManager& gGUIManager()

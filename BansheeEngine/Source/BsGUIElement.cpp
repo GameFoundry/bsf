@@ -66,6 +66,11 @@ namespace BansheeEngine
 		return false;
 	}
 
+	bool GUIElement::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
+	{
+		return false;
+	}
+
 	void GUIElement::_setWidgetDepth(UINT8 depth) 
 	{ 
 		mDepth |= depth << 24; 
