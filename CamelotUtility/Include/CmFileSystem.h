@@ -7,24 +7,20 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT FileSystem
 	{
 	public:
-		static DataStreamPtr open(const String& fullPath, bool readOnly = true);
+		static DataStreamPtr openFile(const WString& fullPath, bool readOnly = true);
+		static DataStreamPtr createAndOpenFile(const WString& fullPath);
 
-		static DataStreamPtr create(const String& fullPath);
+		static UINT64 getFileSize(const WString& fullPath);
 
-		static void remove(const String& fullPath);
+		static void remove(const WString& fullPath, bool recursively = true);
+		static void createDir(const WString& fullPath);
 
-		static bool fileExists(const String& fullPath);
-		static bool dirExists(const String& fullPath);
+		static bool fileExists(const WString& fullPath);
+		static bool dirExists(const WString& fullPath);
 
-		static void createDir(const String& fullPath);
-		static void deleteDir(const String& fullPath);
+		static Vector<WString>::type getFiles(const WString& dirPath);
 
-		static Vector<String>::type getFiles(const String& dirPath);
-
-		static String getCurrentPath();
-
-		static bool isValidFileName(const String& name);
-
-		static String getDirectoryPath(const String& path);
+		static WString getWorkingDirectoryPath();
+		static WString getParentDirectory(const WString& path);
 	};
 }

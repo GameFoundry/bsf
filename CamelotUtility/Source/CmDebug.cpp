@@ -32,17 +32,17 @@ namespace CamelotFramework
 		mLog.logMsg(msg, channel);
 	}
 
-	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const String& filePath, bool overwrite) const
+	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const WString& filePath, bool overwrite) const
 	{
 		if(FileSystem::fileExists(filePath))
 		{
 			if(overwrite)
 				FileSystem::remove(filePath);
 			else
-				CM_EXCEPT(FileNotFoundException, "File already exists at specified location: " + filePath);
+				CM_EXCEPT(FileNotFoundException, "File already exists at specified location: " + toString(filePath));
 		}
 
-		DataStreamPtr ds = FileSystem::create(filePath);
+		DataStreamPtr ds = FileSystem::createAndOpenFile(filePath);
 
 		UINT32 bmpDataSize = BitmapWriter::getBMPSize(width, height, bytesPerPixel);
 		UINT8* bmpBuffer = cm_newN<UINT8, ScratchAlloc>(bmpDataSize);

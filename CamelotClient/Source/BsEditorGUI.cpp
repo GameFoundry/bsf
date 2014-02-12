@@ -19,102 +19,102 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	const String EditorGUI::DefaultFontPath = "arial.ttf";
+	const WString EditorGUI::DefaultFontPath = L"arial.ttf";
 	const UINT32 EditorGUI::DefaultFontSize = 10;
 
-	const String EditorGUI::DefaultFolder = "..\\..\\..\\..\\Data\\Editor\\Skin\\";
+	const WString EditorGUI::DefaultFolder = L"..\\..\\..\\..\\Data\\Editor\\Skin\\";
 
-	const String EditorGUI::WindowBackgroundTexture = "WindowBgTile.psd";
+	const WString EditorGUI::WindowBackgroundTexture = L"WindowBgTile.psd";
 
-	const String EditorGUI::ButtonNormalTex = "ButtonNormal.psd";
-	const String EditorGUI::ButtonHoverTex = "ButtonHover.psd";
+	const WString EditorGUI::ButtonNormalTex = L"ButtonNormal.psd";
+	const WString EditorGUI::ButtonHoverTex = L"ButtonHover.psd";
 
-	const String EditorGUI::WindowFrameNormal = "WindowFrameNormal.psd";
-	const String EditorGUI::WindowFrameFocused = "WindowFrameFocused.psd";
+	const WString EditorGUI::WindowFrameNormal = L"WindowFrameNormal.psd";
+	const WString EditorGUI::WindowFrameFocused = L"WindowFrameFocused.psd";
 
-	const String EditorGUI::WindowTitleBarBg = "WindowTitleBarBg.psd";
+	const WString EditorGUI::WindowTitleBarBg = L"WindowTitleBarBg.psd";
 
-	const String EditorGUI::WindowCloseButtonNormal = "WindowCloseBtnNormal.psd";
-	const String EditorGUI::WindowCloseButtonHover = "WindowCloseBtnHover.psd";
+	const WString EditorGUI::WindowCloseButtonNormal = L"WindowCloseBtnNormal.psd";
+	const WString EditorGUI::WindowCloseButtonHover = L"WindowCloseBtnHover.psd";
 
-	const String EditorGUI::WindowMinButtonNormal = "WindowMaxBtnNormal.psd";
-	const String EditorGUI::WindowMinButtonHover = "WindowMaxBtnHover.psd";
+	const WString EditorGUI::WindowMinButtonNormal = L"WindowMaxBtnNormal.psd";
+	const WString EditorGUI::WindowMinButtonHover = L"WindowMaxBtnHover.psd";
 
-	const String EditorGUI::WindowMaxButtonNormal = "WindowMinBtnNormal.psd";
-	const String EditorGUI::WindowMaxButtonHover = "WindowMinBtnHover.psd";
+	const WString EditorGUI::WindowMaxButtonNormal = L"WindowMinBtnNormal.psd";
+	const WString EditorGUI::WindowMaxButtonHover = L"WindowMinBtnHover.psd";
 
-	const String EditorGUI::TabbedBarBtnNormal = "TabbedButtonNormal.psd";
-	const String EditorGUI::TabbedBarBtnActive = "TabbedButtonActive.psd";
+	const WString EditorGUI::TabbedBarBtnNormal = L"TabbedButtonNormal.psd";
+	const WString EditorGUI::TabbedBarBtnActive = L"TabbedButtonActive.psd";
 
-	const String EditorGUI::InputBoxNormalTex = "InputBoxNormal.psd";
-	const String EditorGUI::InputBoxHoverTex = "InputBoxHover.psd";
-	const String EditorGUI::InputBoxFocusedTex = "InputBoxFocused.psd";
+	const WString EditorGUI::InputBoxNormalTex = L"InputBoxNormal.psd";
+	const WString EditorGUI::InputBoxHoverTex = L"InputBoxHover.psd";
+	const WString EditorGUI::InputBoxFocusedTex = L"InputBoxFocused.psd";
 
-	const String EditorGUI::ScrollBarUpNormalTex = "ScrollBarUpNormal.psd";
-	const String EditorGUI::ScrollBarUpHoverTex = "ScrollBarUpHover.psd";
-	const String EditorGUI::ScrollBarUpActiveTex = "ScrollBarUpActive.psd";
+	const WString EditorGUI::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
+	const WString EditorGUI::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
+	const WString EditorGUI::ScrollBarUpActiveTex = L"ScrollBarUpActive.psd";
 
-	const String EditorGUI::ScrollBarDownNormalTex = "ScrollBarDownNormal.psd";
-	const String EditorGUI::ScrollBarDownHoverTex = "ScrollBarDownHover.psd";
-	const String EditorGUI::ScrollBarDownActiveTex = "ScrollBarDownActive.psd";
+	const WString EditorGUI::ScrollBarDownNormalTex = L"ScrollBarDownNormal.psd";
+	const WString EditorGUI::ScrollBarDownHoverTex = L"ScrollBarDownHover.psd";
+	const WString EditorGUI::ScrollBarDownActiveTex = L"ScrollBarDownActive.psd";
 
-	const String EditorGUI::ScrollBarLeftNormalTex = "ScrollBarLeftNormal.psd";
-	const String EditorGUI::ScrollBarLeftHoverTex = "ScrollBarLeftHover.psd";
-	const String EditorGUI::ScrollBarLeftActiveTex = "ScrollBarLeftActive.psd";
+	const WString EditorGUI::ScrollBarLeftNormalTex = L"ScrollBarLeftNormal.psd";
+	const WString EditorGUI::ScrollBarLeftHoverTex = L"ScrollBarLeftHover.psd";
+	const WString EditorGUI::ScrollBarLeftActiveTex = L"ScrollBarLeftActive.psd";
 
-	const String EditorGUI::ScrollBarRightNormalTex = "ScrollBarRightNormal.psd";
-	const String EditorGUI::ScrollBarRightHoverTex = "ScrollBarRightHover.psd";
-	const String EditorGUI::ScrollBarRightActiveTex = "ScrollBarRightActive.psd";
+	const WString EditorGUI::ScrollBarRightNormalTex = L"ScrollBarRightNormal.psd";
+	const WString EditorGUI::ScrollBarRightHoverTex = L"ScrollBarRightHover.psd";
+	const WString EditorGUI::ScrollBarRightActiveTex = L"ScrollBarRightActive.psd";
 
-	const String EditorGUI::ScrollBarHandleHorzNormalTex = "ScrollBarHorzHandleNormal.psd";
-	const String EditorGUI::ScrollBarHandleHorzHoverTex = "ScrollBarHorzHandleHover.psd";
-	const String EditorGUI::ScrollBarHandleHorzActiveTex = "ScrollBarHorzHandleActive.psd";
+	const WString EditorGUI::ScrollBarHandleHorzNormalTex = L"ScrollBarHorzHandleNormal.psd";
+	const WString EditorGUI::ScrollBarHandleHorzHoverTex = L"ScrollBarHorzHandleHover.psd";
+	const WString EditorGUI::ScrollBarHandleHorzActiveTex = L"ScrollBarHorzHandleActive.psd";
 
-	const String EditorGUI::ScrollBarHandleVertNormalTex = "ScrollBarVertHandleNormal.psd";
-	const String EditorGUI::ScrollBarHandleVertHoverTex = "ScrollBarVertHandleHover.psd";
-	const String EditorGUI::ScrollBarHandleVertActiveTex = "ScrollBarVertHandleActive.psd";
+	const WString EditorGUI::ScrollBarHandleVertNormalTex = L"ScrollBarVertHandleNormal.psd";
+	const WString EditorGUI::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
+	const WString EditorGUI::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
 
-	const String EditorGUI::DropDownBtnNormalTex = "DropDownNormal.psd";
-	const String EditorGUI::DropDownBtnHoverTex = "DropDownHover.psd";
+	const WString EditorGUI::DropDownBtnNormalTex = L"DropDownNormal.psd";
+	const WString EditorGUI::DropDownBtnHoverTex = L"DropDownHover.psd";
 
-	const String EditorGUI::DropDownBoxBgTex = "DropDownBoxBg.psd";
-	const String EditorGUI::DropDownBoxEntryNormalTex = "DropDownButtonNormal.psd";
-	const String EditorGUI::DropDownBoxEntryHoverTex = "DropDownButtonHover.psd";
+	const WString EditorGUI::DropDownBoxBgTex = L"DropDownBoxBg.psd";
+	const WString EditorGUI::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
+	const WString EditorGUI::DropDownBoxEntryHoverTex = L"DropDownButtonHover.psd";
 
-	const String EditorGUI::DropDownBoxBtnUpNormalTex = "DropDownBoxBtnUpNormal.psd";
-	const String EditorGUI::DropDownBoxBtnUpHoverTex = "DropDownBoxBtnUpHover.psd";
+	const WString EditorGUI::DropDownBoxBtnUpNormalTex = L"DropDownBoxBtnUpNormal.psd";
+	const WString EditorGUI::DropDownBoxBtnUpHoverTex = L"DropDownBoxBtnUpHover.psd";
 
-	const String EditorGUI::DropDownBoxBtnDownNormalTex = "DropDownBoxBtnDownNormal.psd";
-	const String EditorGUI::DropDownBoxBtnDownHoverTex = "DropDownBoxBtnDownHover.psd";
+	const WString EditorGUI::DropDownBoxBtnDownNormalTex = L"DropDownBoxBtnDownNormal.psd";
+	const WString EditorGUI::DropDownBoxBtnDownHoverTex = L"DropDownBoxBtnDownHover.psd";
 
-	const String EditorGUI::DropDownBoxEntryExpNormalTex = "DropDownExpNormal.psd";
-	const String EditorGUI::DropDownBoxEntryExpHoverTex = "DropDownExpHover.psd";
+	const WString EditorGUI::DropDownBoxEntryExpNormalTex = L"DropDownExpNormal.psd";
+	const WString EditorGUI::DropDownBoxEntryExpHoverTex = L"DropDownExpHover.psd";
 
-	const String EditorGUI::DropDownSeparatorTex = "DropDownSeparator.psd";
+	const WString EditorGUI::DropDownSeparatorTex = L"DropDownSeparator.psd";
 
-	const String EditorGUI::DropDownBoxBtnUpArrowTex = "DropDownBoxBtnUpArrow.psd";
-	const String EditorGUI::DropDownBoxBtnDownArrowTex = "DropDownBoxBtnDownArrow.psd";
+	const WString EditorGUI::DropDownBoxBtnUpArrowTex = L"DropDownBoxBtnUpArrow.psd";
+	const WString EditorGUI::DropDownBoxBtnDownArrowTex = L"DropDownBoxBtnDownArrow.psd";
 
-	const String EditorGUI::ScrollBarBgTex = "ScrollBarBg.psd";
+	const WString EditorGUI::ScrollBarBgTex = L"ScrollBarBg.psd";
 
-	const String EditorGUI::MenuBarBgTex = "MenuBarBg.psd";
+	const WString EditorGUI::MenuBarBgTex = L"MenuBarBg.psd";
 
-	const String EditorGUI::MenuBarBtnNormalTex = "MenuBarButtonNormal.psd";
-	const String EditorGUI::MenuBarBtnHoverTex = "MenuBarButtonHover.psd";
+	const WString EditorGUI::MenuBarBtnNormalTex = L"MenuBarButtonNormal.psd";
+	const WString EditorGUI::MenuBarBtnHoverTex = L"MenuBarButtonHover.psd";
 
-	const String EditorGUI::MenuBarBansheeLogoTex = "MenuBarBansheeLogo.psd";
+	const WString EditorGUI::MenuBarBansheeLogoTex = L"MenuBarBansheeLogo.psd";
 
-	const String EditorGUI::DockSliderNormalTex = "DockSliderBtn.psd";
+	const WString EditorGUI::DockSliderNormalTex = L"DockSliderBtn.psd";
 
-	const String EditorGUI::TreeViewExpandButtonOffNormal = "TreeViewExpandButtonOffNormal.psd";
-	const String EditorGUI::TreeViewExpandButtonOffHover = "TreeViewExpandButtonOffHover.psd";
-	const String EditorGUI::TreeViewExpandButtonOnNormal = "TreeViewExpandButtonOnNormal.psd";
-	const String EditorGUI::TreeViewExpandButtonOnHover = "TreeViewExpandButtonOnHover.psd";
+	const WString EditorGUI::TreeViewExpandButtonOffNormal = L"TreeViewExpandButtonOffNormal.psd";
+	const WString EditorGUI::TreeViewExpandButtonOffHover = L"TreeViewExpandButtonOffHover.psd";
+	const WString EditorGUI::TreeViewExpandButtonOnNormal = L"TreeViewExpandButtonOnNormal.psd";
+	const WString EditorGUI::TreeViewExpandButtonOnHover = L"TreeViewExpandButtonOnHover.psd";
 
-	const String EditorGUI::TreeViewSelectionBackground = "TreeViewSelectionBackground.psd";
-	const String EditorGUI::TreeViewEditBox = "TreeViewEditBox.psd";
-	const String EditorGUI::TreeViewElementHighlight = "TreeViewElementHighlight.psd";
-	const String EditorGUI::TreeViewElementSepHighlight = "TreeViewElementSepHighlight.psd";
+	const WString EditorGUI::TreeViewSelectionBackground = L"TreeViewSelectionBackground.psd";
+	const WString EditorGUI::TreeViewEditBox = L"TreeViewEditBox.psd";
+	const WString EditorGUI::TreeViewElementHighlight = L"TreeViewElementHighlight.psd";
+	const WString EditorGUI::TreeViewElementSepHighlight = L"TreeViewElementSepHighlight.psd";
 
 	EditorGUI::EditorGUI()
 	{
@@ -125,7 +125,7 @@ namespace BansheeEditor
 		HFont font;
 
 		{
-			String fontPath = DefaultFolder + DefaultFontPath;
+			WString fontPath = DefaultFolder + DefaultFontPath;
 			ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
 			if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
 			{
@@ -424,7 +424,7 @@ namespace BansheeEditor
 		mSkin.setStyle("ListBox", dropDownListStyle);
 
 		// DropDown scroll up button arrow
-		HTexture dropDownBtnScrollUpArrow = static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DropDownBoxBtnUpArrowTex));
+		HTexture dropDownBtnScrollUpArrow = getTexture(DropDownBoxBtnUpArrowTex);
 
 		GUIElementStyle dropDownScrollUpBtnArrowStyle;
 		dropDownScrollUpBtnArrowStyle.normal.texture = getTexture(DropDownBoxBtnUpArrowTex);
@@ -726,8 +726,8 @@ namespace BansheeEditor
 		mSkin.setStyle("TreeViewElementSepHighlight", treeViewElementSepHighlight);
 	}
 
-	HSpriteTexture EditorGUI::getTexture(const CM::String& name)
+	HSpriteTexture EditorGUI::getTexture(const CM::WString& name)
 	{
-		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DefaultFolder + name)));
+		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultFolder + name)));
 	}
 }

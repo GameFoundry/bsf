@@ -17,8 +17,8 @@ namespace CamelotFramework
 	FontImporter::FontImporter()
 		:SpecificImporter() 
 	{
-		mExtensions.push_back("ttf");
-		mExtensions.push_back("otf");
+		mExtensions.push_back(L"ttf");
+		mExtensions.push_back(L"otf");
 	}
 
 	FontImporter::~FontImporter() 
@@ -26,9 +26,9 @@ namespace CamelotFramework
 
 	}
 
-	bool FontImporter::isExtensionSupported(const String& ext) const
+	bool FontImporter::isExtensionSupported(const WString& ext) const
 	{
-		String lowerCaseExt = ext;
+		WString lowerCaseExt = ext;
 		StringUtil::toLowerCase(lowerCaseExt);
 
 		return find(mExtensions.begin(), mExtensions.end(), lowerCaseExt) != mExtensions.end();
@@ -45,7 +45,7 @@ namespace CamelotFramework
 		return cm_shared_ptr<FontImportOptions, ScratchAlloc>();
 	}
 
-	HResource FontImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
+	HResource FontImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
 		const FontImportOptions* fontImportOptions = static_cast<const FontImportOptions*>(importOptions.get());
 
@@ -56,15 +56,15 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Error occurred during FreeType library initialization.");
 
 		FT_Face face;
-		error = FT_New_Face(library, filePath.c_str(), 0, &face);
+		error = FT_New_Face(library, toString(filePath).c_str(), 0, &face);
 
 		if (error == FT_Err_Unknown_File_Format)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath + ". Unsupported file format.");
+			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + toString(filePath) + ". Unsupported file format.");
 		}
 		else if (error)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath + ". Unknown error.");
+			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + toString(filePath) + ". Unknown error.");
 		}
 
 		Vector<std::pair<UINT32, UINT32>>::type charIndexRanges = fontImportOptions->getCharIndexRanges();

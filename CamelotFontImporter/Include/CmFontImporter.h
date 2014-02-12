@@ -26,20 +26,20 @@ namespace CamelotFramework
 		}
 
 		/** Inherited from SpecificImporter */
-		virtual bool isExtensionSupported(const String& ext) const;
+		virtual bool isExtensionSupported(const WString& ext) const;
 
 		/** Inherited from SpecificImporter */
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
 		/** Inherited from SpecificImporter */
-		virtual HResource import(const String& filePath, ConstImportOptionsPtr importOptions);
+		virtual HResource import(const WString& filePath, ConstImportOptionsPtr importOptions);
 
 		/**
 		 * @copydoc SpecificImporter::createImportOptions().
 		 */
 		virtual ImportOptionsPtr createImportOptions() const;
 	private:
-		Vector<String>::type mExtensions;
+		Vector<WString>::type mExtensions;
 
 		const static int MAXIMUM_TEXTURE_SIZE = 2048;
 	};

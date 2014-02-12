@@ -24,7 +24,7 @@ namespace CamelotFramework
 		 * @param	inputFilePath	Pathname of the input file.
 		 * @param	importOptions	(optional) Options for controlling the import.
 		 */
-		HResource import(const String& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		HResource import(const WString& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
 		/**
 		 * @brief	Automatically detects the importer needed for the provided file and returns valid type of
@@ -41,14 +41,14 @@ namespace CamelotFramework
 		 *			nullptr is returned if the file path is not valid, or if a valid importer cannot be found for
 		 *			the specified file.
 		 */
-		ImportOptionsPtr createImportOptions(const String& inputFilePath);
+		ImportOptionsPtr createImportOptions(const WString& inputFilePath);
 
 		/**
 		 * @brief	Checks if we can import a file with the specified extension.
 		 *
 		 * @param	extension	The extension without leading dot.
 		 */
-		bool supportsFileType(const String& extension) const;
+		bool supportsFileType(const WString& extension) const;
 
 		/**
 		 * @brief	Checks if we can import a file with the specified magic number.
@@ -71,6 +71,6 @@ namespace CamelotFramework
 	private:
 		Vector<SpecificImporter*>::type mAssetImporters;
 
-		SpecificImporter* getImporterForFile(const String& inputFilePath) const;
+		SpecificImporter* getImporterForFile(const WString& inputFilePath) const;
 	};
 }

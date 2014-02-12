@@ -16,7 +16,7 @@ namespace CamelotFramework
 	FBXImporter::FBXImporter()
 		:SpecificImporter() 
 	{
-		mExtensions.push_back("fbx");
+		mExtensions.push_back(L"fbx");
 	}
 
 	FBXImporter::~FBXImporter() 
@@ -24,9 +24,9 @@ namespace CamelotFramework
 
 	}
 
-	bool FBXImporter::isExtensionSupported(const String& ext) const
+	bool FBXImporter::isExtensionSupported(const WString& ext) const
 	{
-		String lowerCaseExt = ext;
+		WString lowerCaseExt = ext;
 		StringUtil::toLowerCase(lowerCaseExt);
 
 		return find(mExtensions.begin(), mExtensions.end(), lowerCaseExt) != mExtensions.end();
@@ -37,7 +37,7 @@ namespace CamelotFramework
 		return true; // FBX files can be plain-text so I don't even check for magic number
 	}
 
-	HResource FBXImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
+	HResource FBXImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
 		FbxManager* fbxManager = nullptr;
 		FbxScene* fbxScene = nullptr;
@@ -79,14 +79,14 @@ namespace CamelotFramework
 
 	}
 
-	void FBXImporter::loadScene(FbxManager* manager, FbxScene* scene, const String& filePath)
+	void FBXImporter::loadScene(FbxManager* manager, FbxScene* scene, const WString& filePath)
 	{
 		int lFileMajor, lFileMinor, lFileRevision;
 		int lSDKMajor,  lSDKMinor,  lSDKRevision;
 		FbxManager::GetFileFormatVersion(lSDKMajor, lSDKMinor, lSDKRevision);
 
 		FbxImporter* importer = FbxImporter::Create(manager, "");
-		bool importStatus = importer->Initialize(filePath.c_str(), -1, manager->GetIOSettings());
+		bool importStatus = importer->Initialize(toString(filePath).c_str(), -1, manager->GetIOSettings());
 		
 		importer->GetFileVersion(lFileMajor, lFileMinor, lFileRevision);
 

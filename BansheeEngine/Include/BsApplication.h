@@ -15,7 +15,7 @@ namespace BansheeEngine
 			 * @brief	Starts the application using the specified options. 
 			 * 			This is how you start the engine.
 			 */
-			void startUp(CM::RENDER_WINDOW_DESC& primaryWindowDesc, const CM::String& renderSystem, const CM::String& renderer, const CM::String& resourceCacheDir);
+			void startUp(CM::RENDER_WINDOW_DESC& primaryWindowDesc, const CM::String& renderSystem, const CM::String& renderer, const CM::WString& resourceCacheDir);
 
 			/**
 			 * @brief	Executes the main loop. This will cause actually rendering to be performed

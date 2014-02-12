@@ -11,7 +11,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc SpecificImporter::isExtensionSupported().
 		 */
-		virtual bool isExtensionSupported(const String& ext) const;
+		virtual bool isExtensionSupported(const WString& ext) const;
 
 		/**
 		 * @copydoc SpecificImporter::isMagicNumberSupported().
@@ -21,7 +21,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc SpecificImporter::import().
 		 */
-		virtual HResource import(const String& filePath, ConstImportOptionsPtr importOptions);
+		virtual HResource import(const WString& filePath, ConstImportOptionsPtr importOptions);
 
 		/**
 		 * @copydoc SpecificImporter::createImportOptions().

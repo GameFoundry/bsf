@@ -34,7 +34,7 @@ namespace CamelotFramework
 		FreeImage_Initialise(false);
 
 		// Register codecs
-		StringStream strExt;
+		WStringStream strExt;
 		strExt << "Supported formats: ";
 		bool first = true;
 		for (int i = 0; i < FreeImage_GetFIFCount(); ++i)
@@ -45,7 +45,7 @@ namespace CamelotFramework
 			if ((FREE_IMAGE_FORMAT)i == FIF_DDS)
 				continue;
 
-			String exts(FreeImage_GetFIFExtensionList((FREE_IMAGE_FORMAT)i));
+			WString exts = toWString(String(FreeImage_GetFIFExtensionList((FREE_IMAGE_FORMAT)i)));
 			if (!first)
 			{
 				strExt << ",";
@@ -54,14 +54,14 @@ namespace CamelotFramework
 			strExt << exts;
 
 			// Pull off individual formats (separated by comma by FI)
-			Vector<String>::type extsVector = StringUtil::split(exts, ",");
+			Vector<WString>::type extsVector = StringUtil::split(exts, L",");
 			for (auto v = extsVector.begin(); v != extsVector.end(); ++v)
 			{
 				auto findIter = std::find(mExtensions.begin(), mExtensions.end(), *v);
 
 				if(findIter == mExtensions.end())
 				{
-					String ext = *v;
+					WString ext = *v;
 					StringUtil::toLowerCase(ext);
 
 					mExtensionToFID.insert(std::make_pair(ext, i));
@@ -79,9 +79,9 @@ namespace CamelotFramework
 		FreeImage_DeInitialise();
 	}
 
-	bool FreeImgImporter::isExtensionSupported(const String& ext) const
+	bool FreeImgImporter::isExtensionSupported(const WString& ext) const
 	{
-		String lowerCaseExt = ext;
+		WString lowerCaseExt = ext;
 		StringUtil::toLowerCase(lowerCaseExt);
 
 		return find(mExtensions.begin(), mExtensions.end(), lowerCaseExt) != mExtensions.end();
@@ -89,12 +89,12 @@ namespace CamelotFramework
 
 	bool FreeImgImporter::isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const
 	{
-		String ext = magicNumToExtension(magicNumPtr, numBytes);
+		WString ext = magicNumToExtension(magicNumPtr, numBytes);
 
 		return isExtensionSupported(ext);
 	}
 
-	String FreeImgImporter::magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const
+	WString FreeImgImporter::magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const
 	{
 		// Set error handler
 		FreeImage_SetOutputMessage(FreeImageLoadErrorHandler);
@@ -107,19 +107,19 @@ namespace CamelotFramework
 
 		if (fif != FIF_UNKNOWN)
 		{
-			String ext(FreeImage_GetFormatFromFIF(fif));
+			WString ext = toWString(String(FreeImage_GetFormatFromFIF(fif)));
 			StringUtil::toLowerCase(ext);
 			return ext;
 		}
 		else
 		{
-			return StringUtil::BLANK;
+			return StringUtil::WBLANK;
 		}
 	}
 
-	HResource FreeImgImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
+	HResource FreeImgImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
-		DataStreamPtr fileData = FileSystem::open(filePath, true);
+		DataStreamPtr fileData = FileSystem::openFile(filePath, true);
 
 		TextureDataPtr imgData = importRawImage(fileData);
 		if(imgData == nullptr || imgData->getData() == nullptr)
@@ -158,11 +158,11 @@ namespace CamelotFramework
 		// return to start
 		fileData->seek(0);
 
-		String fileExtension = magicNumToExtension(magicBuf, magicLen);
+		WString fileExtension = magicNumToExtension(magicBuf, magicLen);
 		auto findFormat = mExtensionToFID.find(fileExtension);
 		if(findFormat == mExtensionToFID.end())
 		{
-			CM_EXCEPT(InvalidParametersException, "Type of the file provided is not supported by this importer. File type: " + fileExtension);
+			CM_EXCEPT(InvalidParametersException, "Type of the file provided is not supported by this importer. File type: " + toString(fileExtension));
 		}
 
 		FREE_IMAGE_FORMAT imageFormat = (FREE_IMAGE_FORMAT)findFormat->second;

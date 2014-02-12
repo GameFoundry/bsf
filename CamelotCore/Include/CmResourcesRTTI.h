@@ -11,8 +11,8 @@ namespace CamelotFramework
 		String& getUUID(Resources::ResourceMetaData* obj) { return obj->mUUID; }
 		void setUUID(Resources::ResourceMetaData* obj, String& val) { obj->mUUID = val; }
 
-		String& getPath(Resources::ResourceMetaData* obj) { return obj->mPath; }
-		void setPath(Resources::ResourceMetaData* obj, String& val) { obj->mPath = val; }
+		WString& getPath(Resources::ResourceMetaData* obj) { return obj->mPath; }
+		void setPath(Resources::ResourceMetaData* obj, WString& val) { obj->mPath = val; }
 
 	public:
 		ResourceMetaDataRTTI()

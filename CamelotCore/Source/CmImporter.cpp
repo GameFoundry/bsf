@@ -29,7 +29,7 @@ namespace CamelotFramework
 		mAssetImporters.clear();
 	}
 
-	bool Importer::supportsFileType(const String& extension) const
+	bool Importer::supportsFileType(const WString& extension) const
 	{
 		for(auto iter = mAssetImporters.begin(); iter != mAssetImporters.end(); ++iter)
 		{
@@ -51,11 +51,11 @@ namespace CamelotFramework
 		return false;
 	}
 
-	HResource Importer::import(const String& inputFilePath, ConstImportOptionsPtr importOptions)
+	HResource Importer::import(const WString& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
 		if(!FileSystem::fileExists(inputFilePath))
 		{
-			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath);
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
 			return HResource();
 		}
 
@@ -80,11 +80,11 @@ namespace CamelotFramework
 		return importedResource;
 	}
 
-	ImportOptionsPtr Importer::createImportOptions(const String& inputFilePath)
+	ImportOptionsPtr Importer::createImportOptions(const WString& inputFilePath)
 	{
 		if(!FileSystem::fileExists(inputFilePath))
 		{
-			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath);
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
 			return nullptr;
 		}
 
@@ -106,13 +106,13 @@ namespace CamelotFramework
 		mAssetImporters.push_back(importer);
 	}
 
-	SpecificImporter* Importer::getImporterForFile(const String& inputFilePath) const
+	SpecificImporter* Importer::getImporterForFile(const WString& inputFilePath) const
 	{
-		String ext = Path::getExtension(inputFilePath);
+		WString ext = Path::getExtension(inputFilePath);
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!supportsFileType(ext))
 		{
-			LOGWRN("There is no importer for the provided file type. (" + inputFilePath + ")");
+			LOGWRN("There is no importer for the provided file type. (" + toString(inputFilePath) + ")");
 			return nullptr;
 		}
 

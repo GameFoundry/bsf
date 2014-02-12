@@ -16,65 +16,65 @@ namespace BansheeEngine
 	private:
 		GUISkin mSkin;
 
-		static const CM::String DefaultFolder;
+		static const CM::WString DefaultFolder;
 
-		static const CM::String DefaultFontPath;
+		static const CM::WString DefaultFontPath;
 		static const CM::UINT32 DefaultFontSize;
 
-		static const CM::String ButtonNormalTex;
-		static const CM::String ButtonHoverTex;
+		static const CM::WString ButtonNormalTex;
+		static const CM::WString ButtonHoverTex;
 
-		static const CM::String InputBoxNormalTex;
-		static const CM::String InputBoxHoverTex;
-		static const CM::String InputBoxFocusedTex;
+		static const CM::WString InputBoxNormalTex;
+		static const CM::WString InputBoxHoverTex;
+		static const CM::WString InputBoxFocusedTex;
 
-		static const CM::String ScrollBarUpNormalTex;
-		static const CM::String ScrollBarUpHoverTex;
-		static const CM::String ScrollBarUpActiveTex;
+		static const CM::WString ScrollBarUpNormalTex;
+		static const CM::WString ScrollBarUpHoverTex;
+		static const CM::WString ScrollBarUpActiveTex;
 
-		static const CM::String ScrollBarDownNormalTex;
-		static const CM::String ScrollBarDownHoverTex;
-		static const CM::String ScrollBarDownActiveTex;
+		static const CM::WString ScrollBarDownNormalTex;
+		static const CM::WString ScrollBarDownHoverTex;
+		static const CM::WString ScrollBarDownActiveTex;
 
-		static const CM::String ScrollBarLeftNormalTex;
-		static const CM::String ScrollBarLeftHoverTex;
-		static const CM::String ScrollBarLeftActiveTex;
+		static const CM::WString ScrollBarLeftNormalTex;
+		static const CM::WString ScrollBarLeftHoverTex;
+		static const CM::WString ScrollBarLeftActiveTex;
 
-		static const CM::String ScrollBarRightNormalTex;
-		static const CM::String ScrollBarRightHoverTex;
-		static const CM::String ScrollBarRightActiveTex;
+		static const CM::WString ScrollBarRightNormalTex;
+		static const CM::WString ScrollBarRightHoverTex;
+		static const CM::WString ScrollBarRightActiveTex;
 
-		static const CM::String ScrollBarHandleHorzNormalTex;
-		static const CM::String ScrollBarHandleHorzHoverTex;
-		static const CM::String ScrollBarHandleHorzActiveTex;
+		static const CM::WString ScrollBarHandleHorzNormalTex;
+		static const CM::WString ScrollBarHandleHorzHoverTex;
+		static const CM::WString ScrollBarHandleHorzActiveTex;
 
-		static const CM::String ScrollBarHandleVertNormalTex;
-		static const CM::String ScrollBarHandleVertHoverTex;
-		static const CM::String ScrollBarHandleVertActiveTex;
+		static const CM::WString ScrollBarHandleVertNormalTex;
+		static const CM::WString ScrollBarHandleVertHoverTex;
+		static const CM::WString ScrollBarHandleVertActiveTex;
 
-		static const CM::String ScrollBarBgTex;
+		static const CM::WString ScrollBarBgTex;
 
-		static const CM::String DropDownBtnNormalTex;
-		static const CM::String DropDownBtnHoverTex;
+		static const CM::WString DropDownBtnNormalTex;
+		static const CM::WString DropDownBtnHoverTex;
 
-		static const CM::String DropDownBoxBgTex;
-		static const CM::String DropDownBoxEntryNormalTex;
-		static const CM::String DropDownBoxEntryHoverTex;
+		static const CM::WString DropDownBoxBgTex;
+		static const CM::WString DropDownBoxEntryNormalTex;
+		static const CM::WString DropDownBoxEntryHoverTex;
 
-		static const CM::String DropDownBoxBtnUpNormalTex;
-		static const CM::String DropDownBoxBtnUpHoverTex;
+		static const CM::WString DropDownBoxBtnUpNormalTex;
+		static const CM::WString DropDownBoxBtnUpHoverTex;
 
-		static const CM::String DropDownBoxBtnDownNormalTex;
-		static const CM::String DropDownBoxBtnDownHoverTex;
+		static const CM::WString DropDownBoxBtnDownNormalTex;
+		static const CM::WString DropDownBoxBtnDownHoverTex;
 
-		static const CM::String DropDownBoxEntryExpNormalTex;
-		static const CM::String DropDownBoxEntryExpHoverTex;
+		static const CM::WString DropDownBoxEntryExpNormalTex;
+		static const CM::WString DropDownBoxEntryExpHoverTex;
 
-		static const CM::String DropDownSeparatorTex;
+		static const CM::WString DropDownSeparatorTex;
 
-		static const CM::String DropDownBoxBtnUpArrowTex;
-		static const CM::String DropDownBoxBtnDownArrowTex;
+		static const CM::WString DropDownBoxBtnUpArrowTex;
+		static const CM::WString DropDownBoxBtnDownArrowTex;
 
-		static HSpriteTexture getTexture(const CM::String& name);
+		static HSpriteTexture getTexture(const CM::WString& name);
 	};
 }

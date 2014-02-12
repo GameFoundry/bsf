@@ -28,7 +28,7 @@ namespace CamelotFramework
 
 		Vector<String>::type importers;
 
-		String resourceCacheDirectory;
+		WString resourceCacheDirectory;
 	};
 
 	class CM_EXPORT Application

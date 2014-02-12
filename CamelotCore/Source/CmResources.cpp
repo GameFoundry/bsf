@@ -49,7 +49,7 @@ namespace CamelotFramework
 
 			if(!gResources().metaExists_UUID(resResponse->rawResource->getUUID()))
 			{
-				gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + resRequest->filePath);
+				gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + toString(resRequest->filePath));
 				gResources().addMetaData(resResponse->rawResource->getUUID(), resRequest->filePath);
 			}
 
@@ -61,7 +61,7 @@ namespace CamelotFramework
 		}
 	}
 
-	Resources::Resources(const String& metaDataFolder)
+	Resources::Resources(const WString& metaDataFolder)
 		:mRequestHandler(nullptr), mResponseHandler(nullptr), mWorkQueue(nullptr)
 	{
 		mMetaDataFolderPath = metaDataFolder;
@@ -110,12 +110,12 @@ namespace CamelotFramework
 			cm_delete(mResponseHandler);
 	}
 
-	HResource Resources::load(const String& filePath)
+	HResource Resources::load(const WString& filePath)
 	{
 		return loadInternal(filePath, true);
 	}
 
-	HResource Resources::loadAsync(const String& filePath)
+	HResource Resources::loadAsync(const WString& filePath)
 	{
 		return loadInternal(filePath, false);
 	}
@@ -146,7 +146,7 @@ namespace CamelotFramework
 		return loadAsync(metaEntry->mPath);
 	}
 
-	HResource Resources::loadInternal(const String& filePath, bool synchronous)
+	HResource Resources::loadInternal(const WString& filePath, bool synchronous)
 	{
 		// TODO Low priority - Right now I don't allow loading of resources that don't have meta-data, because I need to know resources UUID
 		// at this point. And I can't do that without having meta-data. Other option is to partially load the resource to read the UUID but due to the
@@ -197,7 +197,7 @@ namespace CamelotFramework
 
 		if(!FileSystem::fileExists(filePath))
 		{
-			gDebug().logWarning("Specified file: " + filePath + " doesn't exist.");
+			gDebug().logWarning("Specified file: " + toString(filePath) + " doesn't exist.");
 			return HResource();
 		}
 
@@ -221,7 +221,7 @@ namespace CamelotFramework
 		return newResource;
 	}
 
-	ResourcePtr Resources::loadFromDiskAndDeserialize(const String& filePath)
+	ResourcePtr Resources::loadFromDiskAndDeserialize(const WString& filePath)
 	{
 		FileSerializer fs;
 		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
@@ -268,7 +268,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Resources::create(HResource resource, const String& filePath, bool overwrite)
+	void Resources::create(HResource resource, const WString& filePath, bool overwrite)
 	{
 		if(resource == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Trying to save an uninitialized resource.");
@@ -312,7 +312,7 @@ namespace CamelotFramework
 		if(!metaExists_UUID(resource->getUUID()))
 			CM_EXCEPT(InvalidParametersException, "Cannot find resource meta-data. Please call Resources::create before trying to save the resource.");
 
-		const String& filePath = getPathFromUUID(resource->getUUID());
+		const WString& filePath = getPathFromUUID(resource->getUUID());
 
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
@@ -320,12 +320,12 @@ namespace CamelotFramework
 
 	void Resources::loadMetaData()
 	{
-		Vector<String>::type allFiles = FileSystem::getFiles(mMetaDataFolderPath);
+		Vector<WString>::type allFiles = FileSystem::getFiles(mMetaDataFolderPath);
 
 		for(auto iter = allFiles.begin(); iter != allFiles.end(); ++iter)
 		{
-			String& path = *iter;
-			if(Path::hasExtension(path, "resmeta"))
+			WString& path = *iter;
+			if(Path::hasExtension(path, L"resmeta"))
 			{
 				FileSerializer fs;
 				std::shared_ptr<IReflectable> loadedData = fs.decode(path);
@@ -339,7 +339,7 @@ namespace CamelotFramework
 
 	void Resources::saveMetaData(const ResourceMetaDataPtr metaData)
 	{
-		String fullPath = Path::combine(mMetaDataFolderPath, metaData->mUUID + ".resmeta");
+		WString fullPath = Path::combine(mMetaDataFolderPath, toWString(metaData->mUUID + ".resmeta"));
 
 		FileSerializer fs;
 		fs.encode(metaData.get(), fullPath);
@@ -347,7 +347,7 @@ namespace CamelotFramework
 
 	void Resources::removeMetaData(const String& uuid)
 	{
-		String fullPath = Path::combine(mMetaDataFolderPath, uuid + ".resmeta");
+		WString fullPath = Path::combine(mMetaDataFolderPath, toWString(uuid + ".resmeta"));
 		FileSystem::remove(fullPath);
 
 		auto iter = mResourceMetaData.find(uuid);
@@ -361,10 +361,10 @@ namespace CamelotFramework
 			gDebug().logWarning("Trying to remove meta data that doesn't exist.");
 	}
 
-	void Resources::addMetaData(const String& uuid, const String& filePath)
+	void Resources::addMetaData(const String& uuid, const WString& filePath)
 	{
 		if(metaExists_Path(filePath))
-			CM_EXCEPT(InvalidParametersException, "Resource with the path '" + filePath + "' already exists.");
+			CM_EXCEPT(InvalidParametersException, "Resource with the path '" + toString(filePath) + "' already exists.");
 
 		if(metaExists_UUID(uuid))
 			CM_EXCEPT(InternalErrorException, "Resource with the same UUID already exists. UUID: " + uuid);
@@ -379,11 +379,11 @@ namespace CamelotFramework
 		saveMetaData(dbEntry);
 	}
 
-	void Resources::updateMetaData(const String& uuid, const String& newFilePath)
+	void Resources::updateMetaData(const String& uuid, const WString& newFilePath)
 	{
 		if(!metaExists_UUID(uuid))
 		{
-			CM_EXCEPT(InvalidParametersException, "Cannot update a resource that doesn't exist. UUID: " + uuid + ". File path: " + newFilePath);
+			CM_EXCEPT(InvalidParametersException, "Cannot update a resource that doesn't exist. UUID: " + uuid + ". File path: " + toString(newFilePath));
 		}
 
 		ResourceMetaDataPtr dbEntry = mResourceMetaData[uuid];
@@ -392,17 +392,17 @@ namespace CamelotFramework
 		saveMetaData(dbEntry);
 	}
 
-	const String& Resources::getPathFromUUID(const String& uuid) const
+	const WString& Resources::getPathFromUUID(const String& uuid) const
 	{
 		auto findIter = mResourceMetaData.find(uuid);
 
 		if(findIter != mResourceMetaData.end())
 			return findIter->second->mPath;
 		else
-			return StringUtil::BLANK;
+			return StringUtil::WBLANK;
 	}
 
-	const String& Resources::getUUIDFromPath(const String& path) const
+	const String& Resources::getUUIDFromPath(const WString& path) const
 	{
 		auto findIter = mResourceMetaData_FilePath.find(path);
 
@@ -419,7 +419,7 @@ namespace CamelotFramework
 		return findIter != mResourceMetaData.end();
 	}
 
-	bool Resources::metaExists_Path(const String& path) const
+	bool Resources::metaExists_Path(const WString& path) const
 	{
 		auto findIter = mResourceMetaData_FilePath.find(path);
 

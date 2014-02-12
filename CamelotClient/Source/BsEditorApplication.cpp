@@ -40,7 +40,7 @@ namespace BansheeEditor
 		renderWindowDesc.border = WindowBorder::None;
 
 		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
-		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer", "D:\\CamelotResourceMetas"); // TODO - Make renderer and resource cache dir customizable
+		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer", L"D:\\CamelotResourceMetas"); // TODO - Make renderer and resource cache dir customizable
 		EditorGUI::startUp(cm_new<EditorGUI>());
 
 		{
@@ -66,8 +66,8 @@ namespace BansheeEditor
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
 		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
 
-		String psLoc;
-		String vsLoc;
+		WString psLoc;
+		WString vsLoc;
 
 		GpuProgramProfile psProfile;
 		GpuProgramProfile vsProfile;
@@ -81,8 +81,8 @@ namespace BansheeEditor
 		{
 		case RenderSystemPlugin::DX11:
 			{
-				psLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl11_ps.gpuprog";
-				vsLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl11_vs.gpuprog";
+				psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_ps.gpuprog";
+				vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_vs.gpuprog";
 				language = "hlsl";
 				psProfile = GPP_PS_4_0;
 				vsProfile = GPP_VS_4_0;
@@ -92,8 +92,8 @@ namespace BansheeEditor
 			}
 		case RenderSystemPlugin::DX9:
 			{
-				psLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl9_ps.gpuprog";
-				vsLoc = "C:\\Projects\\BansheeEngine\\Data\\hlsl9_vs.gpuprog";
+				psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_ps.gpuprog";
+				vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_vs.gpuprog";
 				language = "hlsl";
 				psProfile = GPP_PS_2_0;
 				vsProfile = GPP_VS_2_0;
@@ -103,8 +103,8 @@ namespace BansheeEditor
 			}
 		case RenderSystemPlugin::OpenGL:
 			{
-				psLoc = "C:\\Projects\\BansheeEngine\\Data\\glsl_ps.gpuprog";
-				vsLoc = "C:\\Projects\\BansheeEngine\\Data\\glsl_vs.gpuprog";
+				psLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_ps.gpuprog";
+				vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_vs.gpuprog";
 				language = "glsl";
 				psProfile = GPP_PS_2_0;
 				vsProfile = GPP_VS_2_0;
@@ -140,13 +140,13 @@ namespace BansheeEditor
 
 		HHighLevelGpuProgram vertProgRef = Importer::instance().import(vsLoc, gpuProgImportOptions);
 
-		gResources().create(vertProgRef, "C:\\vertProgCg.vprog", true);
+		gResources().create(vertProgRef, L"C:\\vertProgCg.vprog", true);
 		gResources().unload(vertProgRef);
-		vertProgRef = gResources().load("C:\\vertProgCg.vprog");
+		vertProgRef = gResources().load(L"C:\\vertProgCg.vprog");
 
-		gResources().create(fragProgRef, "C:\\fragProgCg.vprog", true);
+		gResources().create(fragProgRef, L"C:\\fragProgCg.vprog", true);
 		gResources().unload(fragProgRef);
-		fragProgRef = gResources().load("C:\\fragProgCg.vprog");
+		fragProgRef = gResources().load(L"C:\\fragProgCg.vprog");
 
 		ShaderPtr testShader = Shader::create("TestShader");
 
@@ -194,27 +194,27 @@ namespace BansheeEditor
 			testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
 		}
 
-		HTexture testTexRef = static_resource_cast<Texture>(Importer::instance().import("C:\\ArenaTowerDFS.psd"));
-		HMesh dbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import("C:\\X_Arena_Tower.FBX"));
+		HTexture testTexRef = static_resource_cast<Texture>(Importer::instance().import(L"C:\\ArenaTowerDFS.psd"));
+		HMesh dbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"C:\\X_Arena_Tower.FBX"));
 
-		gResources().create(testTexRef, "C:\\ExportTest.tex", true);
-		gResources().create(dbgMeshRef, "C:\\ExportMesh.mesh", true);
+		gResources().create(testTexRef, L"C:\\ExportTest.tex", true);
+		gResources().create(dbgMeshRef, L"C:\\ExportMesh.mesh", true);
 
 		gResources().unload(testTexRef);
 		gResources().unload(dbgMeshRef);
 
-		testTexRef = static_resource_cast<Texture>(gResources().loadAsync("C:\\ExportTest.tex"));
-		dbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync("C:\\ExportMesh.mesh"));
+		testTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"C:\\ExportTest.tex"));
+		dbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"C:\\ExportMesh.mesh"));
 
 		dbgMeshRef.synchronize();
 		testTexRef.synchronize();
 
 		testMaterial->setTexture("tex", testTexRef);
-		gResources().create(testMaterial, "C:\\ExportMaterial.mat", true);
+		gResources().create(testMaterial, L"C:\\ExportMaterial.mat", true);
 
 		gResources().unload(testMaterial);
 
-		testMaterial = gResources().load("C:\\ExportMaterial.mat");
+		testMaterial = gResources().load(L"C:\\ExportMaterial.mat");
 
 		testRenderable->setMesh(dbgMeshRef);
 		testRenderable->setMaterial(0, testMaterial);
@@ -228,7 +228,7 @@ namespace BansheeEditor
 		testModelGO->destroy();
 
 
-		HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import("C:\\CursorDbg.psd"));
+		HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import(L"C:\\CursorDbg.psd"));
 		PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
 
 		gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, cursorPixelData);

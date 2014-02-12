@@ -16,12 +16,12 @@ namespace CamelotFramework
 
 	}
 
-	bool GpuProgIncludeImporter::isExtensionSupported(const String& ext) const
+	bool GpuProgIncludeImporter::isExtensionSupported(const WString& ext) const
 	{
-		String lowerCaseExt = ext;
+		WString lowerCaseExt = ext;
 		StringUtil::toLowerCase(lowerCaseExt);
 
-		return lowerCaseExt == "gpuproginc";
+		return lowerCaseExt == L"gpuproginc";
 	}
 
 	bool GpuProgIncludeImporter::isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const
@@ -29,9 +29,9 @@ namespace CamelotFramework
 		return true; // Plain-text so I don't even check for magic number
 	}
 
-	HResource GpuProgIncludeImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
+	HResource GpuProgIncludeImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
-		DataStreamPtr stream = FileSystem::open(filePath);
+		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String includeString = stream->getAsString();
 
 		HGpuProgInclude gpuProgInclude = GpuProgInclude::create(includeString);

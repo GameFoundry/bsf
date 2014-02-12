@@ -11,34 +11,35 @@ namespace CamelotFramework
 	class Path
 	{
 	public:
-		static String getExtension(const String& path)
+		static WString getExtension(const WString& path)
 		{
-			return boost::filesystem::extension(boost::filesystem::path(path.c_str())).c_str();
+			boost::filesystem3::wpath ext = boost::filesystem3::extension(boost::filesystem3::wpath(path.c_str()));
+			return ext.wstring().c_str();
 		}
 
-		static bool hasExtension(const String& path, const String& extension)
+		static bool hasExtension(const WString& path, const WString& extension)
 		{
 			return getExtension(path) == extension;
 		}
 
-		static String combine(const String& base, const String& name)
+		static WString combine(const WString& base, const WString& name)
 		{
 			if (base.empty())
 				return name;
 			else
-				return base + '/' + name;
+				return base + L'/' + name;
 		}
 
 		/**
 		 * @brief	Method for standardizing paths - use forward slashes only, end with slash.
 		 */
-		String standardisePath(const String& inPath)
+		static WString standardisePath(const WString& inPath)
 		{
-			String path = inPath;
+			WString path = inPath;
 
-			std::replace(path.begin(), path.end(), '\\', '/');
-			if(path[path.length() - 1] != '/')
-				path += '/';
+			std::replace(path.begin(), path.end(), L'\\', L'/');
+			if(path[path.length() - 1] != L'/')
+				path += L'/';
 
 			return path;
 		}
@@ -46,13 +47,13 @@ namespace CamelotFramework
 		/**
 		 * @brief	Method for splitting a fully qualified filename into the base name and path.
 		 */
-		void splitFilename(const String& qualifiedName, String& outBasename, String& outPath)
+		static void splitFilename(const WString& qualifiedName, WString& outBasename, WString& outPath)
 		{
-			String path = qualifiedName;
+			WString path = qualifiedName;
 			// Replace \ with / first
-			std::replace( path.begin(), path.end(), '\\', '/' );
+			std::replace( path.begin(), path.end(), L'\\', L'/' );
 			// split based on final /
-			size_t i = path.find_last_of('/');
+			size_t i = path.find_last_of(L'/');
 
 			if (i == String::npos)
 			{
@@ -69,10 +70,10 @@ namespace CamelotFramework
 		/**
 		 * @brief	Method for splitting a filename into the base name and extension.
 		 */
-		void splitBaseFilename(const String& fullName, String& outBasename, String& outExtension)
+		static void splitBaseFilename(const WString& fullName, WString& outBasename, WString& outExtension)
 		{
-			size_t i = fullName.find_last_of(".");
-			if (i == CamelotFramework::String::npos)
+			size_t i = fullName.find_last_of(L".");
+			if (i == CamelotFramework::WString::npos)
 			{
 				outExtension.clear();
 				outBasename = fullName;
@@ -87,9 +88,9 @@ namespace CamelotFramework
 		/**
 		 * @brief	Method for splitting a fully qualified filename into the base name, extension and path.
 		 */
-		void splitFullFilename(const String& qualifiedName, String& outBasename, String& outExtention, String& outPath)
+		static void splitFullFilename(const WString& qualifiedName, WString& outBasename, WString& outExtention, WString& outPath)
 		{
-			String fullName;
+			WString fullName;
 			splitFilename(qualifiedName, fullName, outPath);
 			splitBaseFilename(fullName, outBasename, outExtention);
 		}

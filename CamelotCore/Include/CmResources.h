@@ -23,7 +23,7 @@ namespace CamelotFramework
 
 		struct CM_EXPORT ResourceLoadRequest
 		{
-			String filePath;
+			WString filePath;
 			HResource resource;
 		};
 
@@ -48,7 +48,7 @@ namespace CamelotFramework
 		 * @param	resMetaPath		Folder where the resource meta-data will be stored. If the folder doesn't exist
 		 * 							it will be created.
 		 */
-		Resources(const String& metaDataFolder);
+		Resources(const WString& metaDataFolder);
 		~Resources();
 
 		/**
@@ -63,7 +63,7 @@ namespace CamelotFramework
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		HResource load(const String& filePath);
+		HResource load(const WString& filePath);
 
 		/**
 		 * @brief	Loads the resource asynchronously. Initially returned resource should not be used
@@ -73,7 +73,7 @@ namespace CamelotFramework
 		 * 						
 		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
 		 */
-		HResource loadAsync(const String& filePath);
+		HResource loadAsync(const WString& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -125,13 +125,13 @@ namespace CamelotFramework
 		 * @param	overwrite	(optional) If true, any existing resource at the specified location will
 		 * 						be overwritten.
 		 */
-		void create(HResource resource, const String& filePath, bool overwrite = false);
+		void create(HResource resource, const WString& filePath, bool overwrite = false);
 
 	public:
 		struct ResourceMetaData : public IReflectable
 		{
 			String mUUID;
-			String mPath;
+			WString mPath;
 
 			/************************************************************************/
 			/* 								SERIALIZATION                      		*/
@@ -145,7 +145,7 @@ namespace CamelotFramework
 	private:
 		typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
 		Map<String, ResourceMetaDataPtr>::type mResourceMetaData;
-		Map<String, ResourceMetaDataPtr>::type mResourceMetaData_FilePath;
+		Map<WString, ResourceMetaDataPtr>::type mResourceMetaData_FilePath;
 
 		CM_MUTEX(mInProgressResourcesMutex);
 		CM_MUTEX(mLoadedResourceMutex);
@@ -159,27 +159,27 @@ namespace CamelotFramework
 		UnorderedMap<String, HResource>::type mLoadedResources; 
 		UnorderedMap<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
 
-		HResource loadInternal(const String& filePath, bool synchronous); 
-		ResourcePtr loadFromDiskAndDeserialize(const String& filePath);
+		HResource loadInternal(const WString& filePath, bool synchronous); 
+		ResourcePtr loadFromDiskAndDeserialize(const WString& filePath);
 
 		void loadMetaData();
 		void saveMetaData(const ResourceMetaDataPtr metaData);
 
-		void createMetaData(const String& uuid, const String& filePath);
-		void addMetaData(const String& uuid, const String& filePath);
-		void updateMetaData(const String& uuid, const String& newFilePath);
+		void createMetaData(const String& uuid, const WString& filePath);
+		void addMetaData(const String& uuid, const WString& filePath);
+		void updateMetaData(const String& uuid, const WString& newFilePath);
 		void removeMetaData(const String& uuid);
 
 		bool metaExists_UUID(const String& uuid) const;
-		bool metaExists_Path(const String& path) const;
+		bool metaExists_Path(const WString& path) const;
 
-		const String& getPathFromUUID(const String& uuid) const;
-		const String& getUUIDFromPath(const String& path) const;
+		const WString& getPathFromUUID(const String& uuid) const;
+		const String& getUUIDFromPath(const WString& path) const;
 
 		void notifyResourceLoadingFinished(HResource& handle);
 		void notifyNewResourceLoaded(HResource& handle);
 
-		String mMetaDataFolderPath;
+		WString mMetaDataFolderPath;
 	};
 
 	CM_EXPORT Resources& gResources();

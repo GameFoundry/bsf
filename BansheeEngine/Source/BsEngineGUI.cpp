@@ -17,64 +17,64 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const String EngineGUI::DefaultFontPath = "arial.ttf";
+	const WString EngineGUI::DefaultFontPath = L"arial.ttf";
 	const UINT32 EngineGUI::DefaultFontSize = 10;
 
-	const String EngineGUI::DefaultFolder = "..\\..\\..\\..\\Data\\Engine\\Skin\\";
+	const WString EngineGUI::DefaultFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
 
-	const String EngineGUI::ButtonNormalTex = "ButtonNormal.psd";
-	const String EngineGUI::ButtonHoverTex = "ButtonHover.psd";
+	const WString EngineGUI::ButtonNormalTex = L"ButtonNormal.psd";
+	const WString EngineGUI::ButtonHoverTex = L"ButtonHover.psd";
 
-	const String EngineGUI::InputBoxNormalTex = "InputBoxNormal.psd";
-	const String EngineGUI::InputBoxHoverTex = "InputBoxHover.psd";
-	const String EngineGUI::InputBoxFocusedTex = "InputBoxFocused.psd";
+	const WString EngineGUI::InputBoxNormalTex = L"InputBoxNormal.psd";
+	const WString EngineGUI::InputBoxHoverTex = L"InputBoxHover.psd";
+	const WString EngineGUI::InputBoxFocusedTex = L"InputBoxFocused.psd";
 
-	const String EngineGUI::ScrollBarUpNormalTex = "ScrollBarUpNormal.psd";
-	const String EngineGUI::ScrollBarUpHoverTex = "ScrollBarUpHover.psd";
-	const String EngineGUI::ScrollBarUpActiveTex = "ScrollBarUpActive.psd";
+	const WString EngineGUI::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
+	const WString EngineGUI::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
+	const WString EngineGUI::ScrollBarUpActiveTex = L"ScrollBarUpActive.psd";
 
-	const String EngineGUI::ScrollBarDownNormalTex = "ScrollBarDownNormal.psd";
-	const String EngineGUI::ScrollBarDownHoverTex = "ScrollBarDownHover.psd";
-	const String EngineGUI::ScrollBarDownActiveTex = "ScrollBarDownActive.psd";
+	const WString EngineGUI::ScrollBarDownNormalTex = L"ScrollBarDownNormal.psd";
+	const WString EngineGUI::ScrollBarDownHoverTex = L"ScrollBarDownHover.psd";
+	const WString EngineGUI::ScrollBarDownActiveTex = L"ScrollBarDownActive.psd";
 
-	const String EngineGUI::ScrollBarLeftNormalTex = "ScrollBarLeftNormal.psd";
-	const String EngineGUI::ScrollBarLeftHoverTex = "ScrollBarLeftHover.psd";
-	const String EngineGUI::ScrollBarLeftActiveTex = "ScrollBarLeftActive.psd";
+	const WString EngineGUI::ScrollBarLeftNormalTex = L"ScrollBarLeftNormal.psd";
+	const WString EngineGUI::ScrollBarLeftHoverTex = L"ScrollBarLeftHover.psd";
+	const WString EngineGUI::ScrollBarLeftActiveTex = L"ScrollBarLeftActive.psd";
 
-	const String EngineGUI::ScrollBarRightNormalTex = "ScrollBarRightNormal.psd";
-	const String EngineGUI::ScrollBarRightHoverTex = "ScrollBarRightHover.psd";
-	const String EngineGUI::ScrollBarRightActiveTex = "ScrollBarRightActive.psd";
+	const WString EngineGUI::ScrollBarRightNormalTex = L"ScrollBarRightNormal.psd";
+	const WString EngineGUI::ScrollBarRightHoverTex = L"ScrollBarRightHover.psd";
+	const WString EngineGUI::ScrollBarRightActiveTex = L"ScrollBarRightActive.psd";
 
-	const String EngineGUI::ScrollBarHandleHorzNormalTex = "ScrollBarHorzHandleNormal.psd";
-	const String EngineGUI::ScrollBarHandleHorzHoverTex = "ScrollBarHorzHandleHover.psd";
-	const String EngineGUI::ScrollBarHandleHorzActiveTex = "ScrollBarHorzHandleActive.psd";
+	const WString EngineGUI::ScrollBarHandleHorzNormalTex = L"ScrollBarHorzHandleNormal.psd";
+	const WString EngineGUI::ScrollBarHandleHorzHoverTex = L"ScrollBarHorzHandleHover.psd";
+	const WString EngineGUI::ScrollBarHandleHorzActiveTex = L"ScrollBarHorzHandleActive.psd";
 
-	const String EngineGUI::ScrollBarHandleVertNormalTex = "ScrollBarVertHandleNormal.psd";
-	const String EngineGUI::ScrollBarHandleVertHoverTex = "ScrollBarVertHandleHover.psd";
-	const String EngineGUI::ScrollBarHandleVertActiveTex = "ScrollBarVertHandleActive.psd";
+	const WString EngineGUI::ScrollBarHandleVertNormalTex = L"ScrollBarVertHandleNormal.psd";
+	const WString EngineGUI::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
+	const WString EngineGUI::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
 
-	const String EngineGUI::DropDownBtnNormalTex = "DropDownNormal.psd";
-	const String EngineGUI::DropDownBtnHoverTex = "DropDownHover.psd";
+	const WString EngineGUI::DropDownBtnNormalTex = L"DropDownNormal.psd";
+	const WString EngineGUI::DropDownBtnHoverTex = L"DropDownHover.psd";
 
-	const String EngineGUI::DropDownBoxBgTex = "DropDownBoxBg.psd";
-	const String EngineGUI::DropDownBoxEntryNormalTex = "DropDownButtonNormal.psd";
-	const String EngineGUI::DropDownBoxEntryHoverTex = "DropDownButtonHover.psd";
+	const WString EngineGUI::DropDownBoxBgTex = L"DropDownBoxBg.psd";
+	const WString EngineGUI::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
+	const WString EngineGUI::DropDownBoxEntryHoverTex = L"DropDownButtonHover.psd";
 
-	const String EngineGUI::DropDownBoxBtnUpNormalTex = "DropDownBoxBtnUpNormal.psd";
-	const String EngineGUI::DropDownBoxBtnUpHoverTex = "DropDownBoxBtnUpHover.psd";
+	const WString EngineGUI::DropDownBoxBtnUpNormalTex = L"DropDownBoxBtnUpNormal.psd";
+	const WString EngineGUI::DropDownBoxBtnUpHoverTex = L"DropDownBoxBtnUpHover.psd";
 
-	const String EngineGUI::DropDownBoxBtnDownNormalTex = "DropDownBoxBtnDownNormal.psd";
-	const String EngineGUI::DropDownBoxBtnDownHoverTex = "DropDownBoxBtnDownHover.psd";
+	const WString EngineGUI::DropDownBoxBtnDownNormalTex = L"DropDownBoxBtnDownNormal.psd";
+	const WString EngineGUI::DropDownBoxBtnDownHoverTex = L"DropDownBoxBtnDownHover.psd";
 
-	const String EngineGUI::DropDownBoxEntryExpNormalTex = "DropDownExpNormal.psd";
-	const String EngineGUI::DropDownBoxEntryExpHoverTex = "DropDownExpHover.psd";
+	const WString EngineGUI::DropDownBoxEntryExpNormalTex = L"DropDownExpNormal.psd";
+	const WString EngineGUI::DropDownBoxEntryExpHoverTex = L"DropDownExpHover.psd";
 
-	const String EngineGUI::DropDownSeparatorTex = "DropDownSeparator.psd";
+	const WString EngineGUI::DropDownSeparatorTex = L"DropDownSeparator.psd";
 
-	const String EngineGUI::DropDownBoxBtnUpArrowTex = "DropDownBoxBtnUpArrow.psd";
-	const String EngineGUI::DropDownBoxBtnDownArrowTex = "DropDownBoxBtnDownArrow.psd";
+	const WString EngineGUI::DropDownBoxBtnUpArrowTex = L"DropDownBoxBtnUpArrow.psd";
+	const WString EngineGUI::DropDownBoxBtnDownArrowTex = L"DropDownBoxBtnDownArrow.psd";
 
-	const String EngineGUI::ScrollBarBgTex = "ScrollBarBg.psd";
+	const WString EngineGUI::ScrollBarBgTex = L"ScrollBarBg.psd";
 
 	EngineGUI::EngineGUI()
 	{
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		HFont font;
 
 		{
-			String fontPath = DefaultFolder + DefaultFontPath;
+			WString fontPath = DefaultFolder + DefaultFontPath;
 			ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
 			if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
 			{
@@ -447,8 +447,8 @@ namespace BansheeEngine
 		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
 	}
 
-	HSpriteTexture EngineGUI::getTexture(const CM::String& name)
+	HSpriteTexture EngineGUI::getTexture(const CM::WString& name)
 	{
-		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getCurrentPath() + "\\" + DefaultFolder + name)));
+		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultFolder + name)));
 	}
 }

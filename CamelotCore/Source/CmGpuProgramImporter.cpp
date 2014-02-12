@@ -7,9 +7,9 @@
 
 namespace CamelotFramework
 {
-	bool GpuProgramImporter::isExtensionSupported(const String& ext) const
+	bool GpuProgramImporter::isExtensionSupported(const WString& ext) const
 	{
-		if(ext == "gpuprog")
+		if(ext == L"gpuprog")
 			return true;
 
 		return false;
@@ -21,12 +21,12 @@ namespace CamelotFramework
 		return true;
 	}
 
-	HResource GpuProgramImporter::import(const String& filePath, ConstImportOptionsPtr importOptions)
+	HResource GpuProgramImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
-		String ext = Path::getExtension(filePath);
+		WString ext = Path::getExtension(filePath);
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 
-		DataStreamPtr stream = FileSystem::open(filePath);
+		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String shaderSource = stream->getAsString();
 
 		const GpuProgramImportOptions* gpuProgImportOptions = static_cast<const GpuProgramImportOptions*>(importOptions.get());

@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 	}
 
-	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer, const String& resourceCacheDir)
+	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer, const WString& resourceCacheDir)
 	{
 		CM::START_UP_DESC desc;
 		desc.renderSystem = renderSystem;

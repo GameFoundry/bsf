@@ -5,35 +5,13 @@
 
 #include <boost/filesystem.hpp>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#if CM_PLATFORM == CM_PLATFORM_LINUX || CM_PLATFORM == CM_PLATFORM_APPLE || \
-	CM_PLATFORM == CM_PLATFORM_SYMBIAN || CM_PLATFORM == CM_PLATFORM_IPHONE
-#   include <sys/param.h>
-#   define MAX_PATH MAXPATHLEN
-#endif
-
-#if CM_PLATFORM == CM_PLATFORM_WIN32
-#  define WIN32_LEAN_AND_MEAN
-#  if !defined(NOMINMAX) && defined(_MSC_VER)
-#	define NOMINMAX // required to stop windows.h messing up std::min
-#  endif
-#  include <windows.h>
-#  include <direct.h>
-#  include <io.h>
-#endif
+using namespace boost::filesystem3;
 
 namespace CamelotFramework
 {
-	DataStreamPtr FileSystem::open(const String& fullPath, bool readOnly)
+	DataStreamPtr FileSystem::openFile(const WString& fullPath, bool readOnly)
 	{
-		// Use filesystem to determine size 
-		// (quicker than streaming to the end and back)
-		struct stat tagStat;
-		int ret = stat(fullPath.c_str(), &tagStat);
-		assert(ret == 0 && "Problem getting file size" );
-		(void)ret;  // Silence warning
+		UINT64 fileSize = getFileSize(fullPath);
 
 		// Always open in binary mode
 		// Also, always include reading
@@ -58,24 +36,24 @@ namespace CamelotFramework
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (baseStream->fail())
-			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath);
+			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + toString(fullPath));
 
 		/// Construct return stream, tell it to delete on destroy
 		FileDataStream* stream = 0;
 		if (rwStream)
 		{
 			// use the writeable stream 
-			stream = cm_new<FileDataStream, ScratchAlloc>(fullPath, rwStream, (size_t)tagStat.st_size, true);
+			stream = cm_new<FileDataStream, ScratchAlloc>(toString(fullPath), rwStream, (size_t)fileSize, true);
 		}
 		else
 		{
 			// read-only stream
-			stream = cm_new<FileDataStream, ScratchAlloc>(fullPath, roStream, (size_t)tagStat.st_size, true);
+			stream = cm_new<FileDataStream, ScratchAlloc>(toString(fullPath), roStream, (size_t)fileSize, true);
 		}
 		return cm_shared_ptr<FileDataStream, ScratchAlloc>(stream);
 	}
 
-	DataStreamPtr FileSystem::create(const String& fullPath)
+	DataStreamPtr FileSystem::createAndOpenFile(const WString& fullPath)
 	{
 		// Always open in binary mode
 		// Also, always include reading
@@ -85,53 +63,55 @@ namespace CamelotFramework
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (rwStream->fail())
-			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath);
+			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + toString(fullPath));
 
 		/// Construct return stream, tell it to delete on destroy
-		return cm_shared_ptr<FileDataStream, ScratchAlloc>(fullPath, rwStream, 0, true);
+		return cm_shared_ptr<FileDataStream, ScratchAlloc>(toString(fullPath), rwStream, 0, true);
 	}
 
-	void FileSystem::remove(const String& fullPath)
+	UINT64 FileSystem::getFileSize(const WString& fullPath)
 	{
-		::remove(fullPath.c_str());
+		return file_size(fullPath.c_str());
 	}
 
-	bool FileSystem::fileExists(const String& fullPath)
+	void FileSystem::remove(const WString& fullPath, bool recursively)
 	{
-		if(boost::filesystem::exists(fullPath.c_str()) && !boost::filesystem::is_directory(fullPath.c_str()))
+		if(recursively)
+			remove_all(fullPath.c_str());
+		else
+			boost::filesystem3::remove(fullPath.c_str());
+	}
+
+	bool FileSystem::fileExists(const WString& fullPath)
+	{
+		if(exists(fullPath.c_str()) && !is_directory(fullPath.c_str()))
 			return true;
 
 		return false;
 	}
 
-	bool FileSystem::dirExists(const String& fullPath)
+	bool FileSystem::dirExists(const WString& fullPath)
 	{
-		if(boost::filesystem::exists(fullPath.c_str()) && boost::filesystem::is_directory(fullPath.c_str()))
+		if(exists(fullPath.c_str()) && is_directory(fullPath.c_str()))
 			return true;
 
 		return false;
 	}
 
-	void FileSystem::createDir(const String& fullPath)
+	void FileSystem::createDir(const WString& fullPath)
 	{
-		boost::filesystem::create_directory(fullPath.c_str());
+		create_directory(fullPath.c_str());
 	}
 
-	void FileSystem::deleteDir(const String& fullPath)
+	Vector<WString>::type FileSystem::getFiles(const WString& dirPath)
 	{
-		boost::filesystem::remove_all(fullPath.c_str());
-	}
+		directory_iterator dirIter(dirPath.c_str());
 
-	Vector<String>::type FileSystem::getFiles(const String& dirPath)
-	{
-		boost::filesystem::directory_iterator dirIter(dirPath.c_str());
-
-		Vector<String>::type foundFiles;
-		
-		while(dirIter != boost::filesystem::directory_iterator())
+		Vector<WString>::type foundFiles;
+		while(dirIter != directory_iterator())
 		{
-			if(boost::filesystem::is_regular_file(dirIter->path()))
-				foundFiles.push_back(dirIter->path().string().c_str());
+			if(is_regular_file(dirIter->path()))
+				foundFiles.push_back(dirIter->path().wstring().c_str());
 
 			dirIter++;
 		}
@@ -139,24 +119,19 @@ namespace CamelotFramework
 		return foundFiles;
 	}
 
-	String FileSystem::getCurrentPath()
+	WString FileSystem::getWorkingDirectoryPath()
 	{
-		return boost::filesystem::current_path().string().c_str();
+		return current_path().wstring().c_str();
 	}
 
-	bool FileSystem::isValidFileName(const String& name)
+	WString FileSystem::getParentDirectory(const WString& path)
 	{
-		return boost::filesystem::portable_file_name(name.c_str());
-	}
-
-	String FileSystem::getDirectoryPath(const String& path)
-	{
-		boost::filesystem::path p(path.c_str());
-
+		boost::filesystem3::path p(path.c_str());
+		
 		if(!is_directory(p))
 		{
-			boost::filesystem::path dir = p.parent_path();
-			return dir.string().c_str();
+			boost::filesystem3::path dir = p.parent_path();
+			return dir.wstring().c_str();
 		}
 
 		return path;

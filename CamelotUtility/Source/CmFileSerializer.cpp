@@ -19,7 +19,7 @@ namespace CamelotFramework
 		cm_free<ScratchAlloc>(mWriteBuffer);
 	}
 
-	void FileSerializer::encode(IReflectable* object, String fileLocation)
+	void FileSerializer::encode(IReflectable* object, WString fileLocation)
 	{
 		mOutputStream.open(fileLocation.c_str(), std::ios::out | std::ios::binary);
 
@@ -31,7 +31,7 @@ namespace CamelotFramework
 		mOutputStream.clear();
 	}
 
-	std::shared_ptr<IReflectable> FileSerializer::decode(String fileLocation)
+	std::shared_ptr<IReflectable> FileSerializer::decode(WString fileLocation)
 	{
 		mInputStream.open(fileLocation.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
 		
