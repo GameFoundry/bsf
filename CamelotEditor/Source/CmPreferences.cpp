@@ -296,7 +296,7 @@ namespace CamelotEditor
 
 		String outputString = strStream.str();
 
-		DataStreamPtr stream = FileSystem::create(path);
+		DataStreamPtr stream = FileSystem::createAndOpenFile(path);
 		stream->write(outputString.data(), outputString.size());
 		stream->close();
 	}
@@ -306,7 +306,7 @@ namespace CamelotEditor
 		if(!FileSystem::fileExists(path))
 			CM_EXCEPT(FileNotFoundException, "Specified file: " + path + " does not exist.");
 
-		DataStreamPtr stream = FileSystem::open(path);
+		DataStreamPtr stream = FileSystem::openFile(path);
 		char buffer[4096];
 
 		String currentGroupName = "Global";

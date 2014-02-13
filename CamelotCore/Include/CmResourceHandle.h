@@ -55,7 +55,7 @@ namespace CamelotFramework
 		 * 			
 		 * @note	Two set construction is sometimes required due to multithreaded nature of resource loading.
 		 */
-		void setResourcePtr(std::shared_ptr<Resource> ptr);
+		void setHandleData(std::shared_ptr<Resource> ptr, const String& uuid);
 
 	private:
 		friend class Resources;
@@ -143,18 +143,18 @@ namespace CamelotFramework
 	private:
 		friend class Resource;
 
-		explicit ResourceHandle(T* ptr)
+		explicit ResourceHandle(T* ptr, const String& uuid)
 			:ResourceHandleBase()
 		{
 			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
-			setResourcePtr(std::shared_ptr<Resource>(ptr));
+			setHandleData(std::shared_ptr<Resource>(ptr, uuid));
 		}
 
-		ResourceHandle(std::shared_ptr<T> ptr)
+		ResourceHandle(std::shared_ptr<T> ptr, const String& uuid)
 			:ResourceHandleBase()
 		{
 			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
-			setResourcePtr(ptr);
+			setHandleData(ptr, uuid);
 		}
 	};
 

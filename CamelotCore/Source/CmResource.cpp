@@ -7,15 +7,11 @@ namespace CamelotFramework
 {
 	Resource::Resource(bool initializeOnRenderThread)
 		:CoreObject(initializeOnRenderThread), mSize(0)
-	{
-		// We always generate a random UUID, and then overwrite it with the actual one 
-		// during loading if one was previously generated and saved.
-		mUUID = UUIDGenerator::generateRandom();
-	}
+	{ }
 
 	HResource Resource::_createResourceHandle(ResourcePtr obj)
 	{
-		return HResource(obj);
+		return HResource(obj, UUIDGenerator::generateRandom());
 	}
 
 	RTTITypeBase* Resource::getRTTIStatic()

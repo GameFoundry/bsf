@@ -60,7 +60,7 @@ namespace CamelotFramework
 		DynLibManager::startUp(cm_new<DynLibManager>());
 		CoreGpuObjectManager::startUp(cm_new<CoreGpuObjectManager>());
 		GameObjectManager::startUp(cm_new<GameObjectManager>());
-		Resources::startUp(cm_new<Resources>(desc.resourceCacheDirectory));
+		Resources::startUp(cm_new<Resources>());
 		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
 
 		CoreThread::startUp(cm_new<CoreThread>());

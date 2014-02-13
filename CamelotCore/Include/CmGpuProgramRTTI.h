@@ -10,7 +10,6 @@ namespace CamelotFramework
 	{
 	private:
 		CM_SETGET_MEMBER(mSize, UINT32, GpuProgram)
-		CM_SETGET_MEMBER(mUUID, String, GpuProgram);
 
 		CM_SETGET_MEMBER(mType, GpuProgramType, GpuProgram);
 		CM_SETGET_MEMBER(mNeedsAdjacencyInfo, bool, GpuProgram);
@@ -23,7 +22,6 @@ namespace CamelotFramework
 		GpuProgramRTTI()
 		{
 			CM_ADD_PLAINFIELD(mSize, 0, GpuProgramRTTI)
-			CM_ADD_PLAINFIELD(mUUID, 1, GpuProgramRTTI)
 
 			CM_ADD_PLAINFIELD(mType, 2, GpuProgramRTTI)
 			CM_ADD_PLAINFIELD(mNeedsAdjacencyInfo, 3, GpuProgramRTTI)

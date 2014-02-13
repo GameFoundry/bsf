@@ -97,7 +97,7 @@ namespace CamelotEditor
 		if(lastUsedDir.exists())
 			mTxtProjectPath->setText(lastUsedDir.absolutePath());
 		else
-			mTxtProjectPath->setText(QString::fromStdString(FileSystem::getCurrentPath()));
+			mTxtProjectPath->setText(QString::fromStdString(FileSystem::getWorkingDirectoryPath()));
 	}
 
 	void QtNewProject::setObjectNames()
@@ -175,7 +175,7 @@ namespace CamelotEditor
 
 			if(fileNames.size() > 0)
 			{
-				QString dirPath = QString::fromStdString(FileSystem::getDirectoryPath(fileNames[0].toStdString()));
+				QString dirPath = QString::fromStdString(FileSystem::getParentDirectory(fileNames[0].toStdString()));
 				mTxtProjectPath->setText(dirPath);
 
 				gEditorPrefs().setLastUsedProjectDirectory(dirPath);

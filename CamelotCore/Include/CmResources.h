@@ -48,7 +48,7 @@ namespace CamelotFramework
 		 * @param	resMetaPath		Folder where the resource meta-data will be stored. If the folder doesn't exist
 		 * 							it will be created.
 		 */
-		Resources(const WString& metaDataFolder);
+		Resources();
 		~Resources();
 
 		/**
@@ -110,42 +110,36 @@ namespace CamelotFramework
 		void unloadAllUnused();
 
 		/**
-		 * @brief	Saves the resource. Resource must be registered using Resources::create beforehand.
-		 *
-		 * @param	resource   	The resource.
-		 */
-		void save(HResource resource);
-
-		/**
-		 * @brief	Creates a new resource at the specified location. Throws an exception if resource
-		 * 			already exists. Automatically calls Resources::save.
+		 * @brief	Saves the resource at the specified location.
 		 *
 		 * @param	resource 	Handle to the resource.
 		 * @param	filePath 	Full pathname of the file.
 		 * @param	overwrite	(optional) If true, any existing resource at the specified location will
 		 * 						be overwritten.
 		 */
-		void create(HResource resource, const WString& filePath, bool overwrite = false);
+		void save(HResource resource, const WString& filePath, bool overwrite);
 
-	public:
-		struct ResourceMetaData : public IReflectable
-		{
-			String mUUID;
-			WString mPath;
+		/**
+		 * @brief	Allows you to set a resource manifest containing UUID <-> file path mapping that is
+		 * 			used when resolving resource references.
+		 *
+		 * @note	If you want objects that reference resources (using ResourceHandles) to be able to
+		 * 			find that resource even after application restart, then you must save the resource
+		 * 			manifest before closing the application and restore it upon startup.
+		 * 			Otherwise resources will be assigned brand new UUIDs and references will be broken.
+		 */
+		void setResourceManifest(const ResourceManifestPtr& manifest) { mResourceManifest = manifest; }
 
-			/************************************************************************/
-			/* 								SERIALIZATION                      		*/
-			/************************************************************************/
-		public:
-			friend class ResourceMetaDataRTTI;
-			static RTTITypeBase* getRTTIStatic();
-			virtual RTTITypeBase* getRTTI() const;
-		};
+		/**
+		 * @brief	Allows you to retrieve resource manifest containing UUID <-> file path mapping that is
+		 * 			used when resolving resource references.
+		 *
+		 * @see		setResourceManifest
+		 */
+		ResourceManifestPtr getResourceManifest() const { return mResourceManifest; }
 
 	private:
-		typedef std::shared_ptr<ResourceMetaData> ResourceMetaDataPtr;
-		Map<String, ResourceMetaDataPtr>::type mResourceMetaData;
-		Map<WString, ResourceMetaDataPtr>::type mResourceMetaData_FilePath;
+		ResourceManifestPtr mResourceManifest;
 
 		CM_MUTEX(mInProgressResourcesMutex);
 		CM_MUTEX(mLoadedResourceMutex);
@@ -162,24 +156,11 @@ namespace CamelotFramework
 		HResource loadInternal(const WString& filePath, bool synchronous); 
 		ResourcePtr loadFromDiskAndDeserialize(const WString& filePath);
 
-		void loadMetaData();
-		void saveMetaData(const ResourceMetaDataPtr metaData);
-
-		void createMetaData(const String& uuid, const WString& filePath);
-		void addMetaData(const String& uuid, const WString& filePath);
-		void updateMetaData(const String& uuid, const WString& newFilePath);
-		void removeMetaData(const String& uuid);
-
-		bool metaExists_UUID(const String& uuid) const;
-		bool metaExists_Path(const WString& path) const;
-
 		const WString& getPathFromUUID(const String& uuid) const;
 		const String& getUUIDFromPath(const WString& path) const;
 
 		void notifyResourceLoadingFinished(HResource& handle);
 		void notifyNewResourceLoaded(HResource& handle);
-
-		WString mMetaDataFolderPath;
 	};
 
 	CM_EXPORT Resources& gResources();

@@ -15,8 +15,6 @@ namespace CamelotFramework
 		Resource(bool requiresGpuInitialization = true);
 		virtual ~Resource() {};
 
-		const String& getUUID() const { return mUUID; }
-
 		/**
 		 * @brief	Creates a new resource handle. Should only be called by internal methods.
 		 */
@@ -25,7 +23,6 @@ namespace CamelotFramework
 	protected:
 		friend class Resources;
 
-		String mUUID; 
 		UINT32 mSize;
 
 	/************************************************************************/

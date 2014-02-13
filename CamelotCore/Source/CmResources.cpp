@@ -1,12 +1,12 @@
 #include "CmResources.h"
 #include "CmResource.h"
+#include "CmResourceManifest.h"
 #include "CmException.h"
 #include "CmFileSerializer.h"
 #include "CmFileSystem.h"
 #include "CmUUID.h"
 #include "CmPath.h"
 #include "CmDebug.h"
-#include "CmResourcesRTTI.h"
 
 namespace CamelotFramework
 {
@@ -45,13 +45,7 @@ namespace CamelotFramework
 			
 			// This should be thread safe without any sync primitives, if other threads read a few cycles out of date value
 			// and think this resource isn't created when it really is, it hardly makes any difference
-			resRequest->resource.setResourcePtr(resResponse->rawResource);
-
-			if(!gResources().metaExists_UUID(resResponse->rawResource->getUUID()))
-			{
-				gDebug().logWarning("Loading a resource that doesn't have meta-data. Creating meta-data automatically. Resource path: " + toString(resRequest->filePath));
-				gResources().addMetaData(resResponse->rawResource->getUUID(), resRequest->filePath);
-			}
+			resRequest->resource.setHandleData(resResponse->rawResource, resRequest->resource.getUUID());
 
 			gResources().notifyNewResourceLoaded(resRequest->resource);
 		}
@@ -61,18 +55,10 @@ namespace CamelotFramework
 		}
 	}
 
-	Resources::Resources(const WString& metaDataFolder)
+	Resources::Resources()
 		:mRequestHandler(nullptr), mResponseHandler(nullptr), mWorkQueue(nullptr)
 	{
-		mMetaDataFolderPath = metaDataFolder;
-
-		if(!FileSystem::dirExists(mMetaDataFolderPath))
-		{
-			FileSystem::createDir(mMetaDataFolderPath);
-		}
-
-		loadMetaData();
-
+		mResourceManifest = cm_shared_ptr<ResourceManifest>();
 		mWorkQueue = cm_new<WorkQueue>();
 		mWorkQueueChannel = mWorkQueue->getChannel("Resources");
 		mRequestHandler = cm_new<ResourceRequestHandler>();
@@ -122,43 +108,38 @@ namespace CamelotFramework
 
 	HResource Resources::loadFromUUID(const String& uuid)
 	{
-		if(!metaExists_UUID(uuid))
+		if(!mResourceManifest->uuidExists(uuid))
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
 			return HResource();
 		}
 
-		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
-
-		return load(metaEntry->mPath);
+		WString filePath = getPathFromUUID(uuid);
+		return load(filePath);
 	}
 
 	HResource Resources::loadFromUUIDAsync(const String& uuid)
 	{
-		if(!metaExists_UUID(uuid))
+		if(!mResourceManifest->uuidExists(uuid))
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
 			return HResource();
 		}
 
-		ResourceMetaDataPtr metaEntry = mResourceMetaData[uuid];
-
-		return loadAsync(metaEntry->mPath);
+		WString filePath = getPathFromUUID(uuid);
+		return loadAsync(filePath);
 	}
 
 	HResource Resources::loadInternal(const WString& filePath, bool synchronous)
 	{
-		// TODO Low priority - Right now I don't allow loading of resources that don't have meta-data, because I need to know resources UUID
-		// at this point. And I can't do that without having meta-data. Other option is to partially load the resource to read the UUID but due to the
-		// nature of the serializer it could complicate things. (But possible if this approach proves troublesome)
-		// The reason I need the UUID is that when resource is loaded Async, the returned ResourceHandle needs to have a valid UUID, in case I assign that
-		// ResourceHandle to something and then save that something. If I didn't assign it, the saved ResourceHandle would have a blank (i.e. invalid) UUID.
-		if(!metaExists_Path(filePath))
+		String uuid;
+		if(!mResourceManifest->filePathExists(filePath))
 		{
-			CM_EXCEPT(InternalErrorException, "Cannot load resource that isn't registered in the meta database. Call Resources::create first.");
+			uuid = UUIDGenerator::generateRandom();
+			mResourceManifest->registerResource(uuid, filePath);
 		}
-
-		String uuid = getUUIDFromPath(filePath);
+		else
+			uuid = getUUIDFromPath(filePath);
 
 		{
 			CM_LOCK_MUTEX(mLoadedResourceMutex);
@@ -268,20 +249,12 @@ namespace CamelotFramework
 		}
 	}
 
-	void Resources::create(HResource resource, const WString& filePath, bool overwrite)
+	void Resources::save(HResource resource, const WString& filePath, bool overwrite)
 	{
-		if(resource == nullptr)
-			CM_EXCEPT(InvalidParametersException, "Trying to save an uninitialized resource.");
+		if(!resource.isLoaded())
+			resource.synchronize();
 
-		resource.synchronize();
-
-		if(metaExists_UUID(resource->getUUID()))
-			CM_EXCEPT(InvalidParametersException, "Specified resource already exists.");
-		
 		bool fileExists = FileSystem::fileExists(filePath);
-		const String& existingUUID = getUUIDFromPath(filePath);
-		bool metaExists = metaExists_UUID(existingUUID);
-
 		if(fileExists)
 		{
 			if(overwrite)
@@ -290,140 +263,20 @@ namespace CamelotFramework
 				CM_EXCEPT(InvalidParametersException, "Another file exists at the specified location.");
 		}
 
-		if(metaExists)
-			removeMetaData(existingUUID);
-
-		addMetaData(resource->getUUID(), filePath);
-
-		save(resource);
-
-		{
-			CM_LOCK_MUTEX(mLoadedResourceMutex);
-
-			mLoadedResources[resource->getUUID()] = resource;
-		}
-	}
-
-	void Resources::save(HResource resource)
-	{
-		if(!resource.isLoaded())
-			resource.synchronize();
-
-		if(!metaExists_UUID(resource->getUUID()))
-			CM_EXCEPT(InvalidParametersException, "Cannot find resource meta-data. Please call Resources::create before trying to save the resource.");
-
-		const WString& filePath = getPathFromUUID(resource->getUUID());
+		mResourceManifest->registerResource(resource.getUUID(), filePath);
 
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
 	}
 
-	void Resources::loadMetaData()
-	{
-		Vector<WString>::type allFiles = FileSystem::getFiles(mMetaDataFolderPath);
-
-		for(auto iter = allFiles.begin(); iter != allFiles.end(); ++iter)
-		{
-			WString& path = *iter;
-			if(Path::hasExtension(path, L"resmeta"))
-			{
-				FileSerializer fs;
-				std::shared_ptr<IReflectable> loadedData = fs.decode(path);
-
-				ResourceMetaDataPtr metaData = std::static_pointer_cast<ResourceMetaData>(loadedData);
-				mResourceMetaData[metaData->mUUID] = metaData;
-				mResourceMetaData_FilePath[metaData->mPath] = metaData;
-			}
-		}
-	}
-
-	void Resources::saveMetaData(const ResourceMetaDataPtr metaData)
-	{
-		WString fullPath = Path::combine(mMetaDataFolderPath, toWString(metaData->mUUID + ".resmeta"));
-
-		FileSerializer fs;
-		fs.encode(metaData.get(), fullPath);
-	}
-
-	void Resources::removeMetaData(const String& uuid)
-	{
-		WString fullPath = Path::combine(mMetaDataFolderPath, toWString(uuid + ".resmeta"));
-		FileSystem::remove(fullPath);
-
-		auto iter = mResourceMetaData.find(uuid);
-
-		if(iter != mResourceMetaData.end())
-		{
-			mResourceMetaData.erase(iter);
-			mResourceMetaData_FilePath.erase(iter->second->mPath);
-		}
-		else
-			gDebug().logWarning("Trying to remove meta data that doesn't exist.");
-	}
-
-	void Resources::addMetaData(const String& uuid, const WString& filePath)
-	{
-		if(metaExists_Path(filePath))
-			CM_EXCEPT(InvalidParametersException, "Resource with the path '" + toString(filePath) + "' already exists.");
-
-		if(metaExists_UUID(uuid))
-			CM_EXCEPT(InternalErrorException, "Resource with the same UUID already exists. UUID: " + uuid);
-
-		ResourceMetaDataPtr dbEntry = cm_shared_ptr<ResourceMetaData>();
-		dbEntry->mPath = filePath;
-		dbEntry->mUUID = uuid;
-
-		mResourceMetaData[uuid] = dbEntry;
-		mResourceMetaData_FilePath[filePath] = dbEntry;
-
-		saveMetaData(dbEntry);
-	}
-
-	void Resources::updateMetaData(const String& uuid, const WString& newFilePath)
-	{
-		if(!metaExists_UUID(uuid))
-		{
-			CM_EXCEPT(InvalidParametersException, "Cannot update a resource that doesn't exist. UUID: " + uuid + ". File path: " + toString(newFilePath));
-		}
-
-		ResourceMetaDataPtr dbEntry = mResourceMetaData[uuid];
-		dbEntry->mPath = newFilePath;
-
-		saveMetaData(dbEntry);
-	}
-
 	const WString& Resources::getPathFromUUID(const String& uuid) const
 	{
-		auto findIter = mResourceMetaData.find(uuid);
-
-		if(findIter != mResourceMetaData.end())
-			return findIter->second->mPath;
-		else
-			return StringUtil::WBLANK;
+		return mResourceManifest->uuidToFilePath(uuid);
 	}
 
 	const String& Resources::getUUIDFromPath(const WString& path) const
 	{
-		auto findIter = mResourceMetaData_FilePath.find(path);
-
-		if(findIter != mResourceMetaData_FilePath.end())
-			return findIter->second->mUUID;
-		else
-			return StringUtil::BLANK;
-	}
-
-	bool Resources::metaExists_UUID(const String& uuid) const
-	{
-		auto findIter = mResourceMetaData.find(uuid);
-
-		return findIter != mResourceMetaData.end();
-	}
-
-	bool Resources::metaExists_Path(const WString& path) const
-	{
-		auto findIter = mResourceMetaData_FilePath.find(path);
-
-		return findIter != mResourceMetaData_FilePath.end();
+		return mResourceManifest->filePathToUUID(path);
 	}
 
 	void Resources::notifyResourceLoadingFinished(HResource& handle)
@@ -443,18 +296,5 @@ namespace CamelotFramework
 	CM_EXPORT Resources& gResources()
 	{
 		return Resources::instance();
-	}
-
-	/************************************************************************/
-	/* 								SERIALIZATION                      		*/
-	/************************************************************************/
-	RTTITypeBase* Resources::ResourceMetaData::getRTTIStatic()
-	{
-		return ResourceMetaDataRTTI::instance();
-	}
-
-	RTTITypeBase* Resources::ResourceMetaData::getRTTI() const
-	{
-		return Resources::ResourceMetaData::getRTTIStatic();
 	}
 }

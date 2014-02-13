@@ -40,7 +40,7 @@ namespace BansheeEditor
 		renderWindowDesc.border = WindowBorder::None;
 
 		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
-		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer", L"D:\\CamelotResourceMetas"); // TODO - Make renderer and resource cache dir customizable
+		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer"); // TODO - Make renderer and resource cache dir customizable
 		EditorGUI::startUp(cm_new<EditorGUI>());
 
 		{
@@ -140,11 +140,11 @@ namespace BansheeEditor
 
 		HHighLevelGpuProgram vertProgRef = Importer::instance().import(vsLoc, gpuProgImportOptions);
 
-		gResources().create(vertProgRef, L"C:\\vertProgCg.vprog", true);
+		gResources().save(vertProgRef, L"C:\\vertProgCg.vprog", true);
 		gResources().unload(vertProgRef);
 		vertProgRef = gResources().load(L"C:\\vertProgCg.vprog");
 
-		gResources().create(fragProgRef, L"C:\\fragProgCg.vprog", true);
+		gResources().save(fragProgRef, L"C:\\fragProgCg.vprog", true);
 		gResources().unload(fragProgRef);
 		fragProgRef = gResources().load(L"C:\\fragProgCg.vprog");
 
@@ -197,8 +197,8 @@ namespace BansheeEditor
 		HTexture testTexRef = static_resource_cast<Texture>(Importer::instance().import(L"C:\\ArenaTowerDFS.psd"));
 		HMesh dbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"C:\\X_Arena_Tower.FBX"));
 
-		gResources().create(testTexRef, L"C:\\ExportTest.tex", true);
-		gResources().create(dbgMeshRef, L"C:\\ExportMesh.mesh", true);
+		gResources().save(testTexRef, L"C:\\ExportTest.tex", true);
+		gResources().save(dbgMeshRef, L"C:\\ExportMesh.mesh", true);
 
 		gResources().unload(testTexRef);
 		gResources().unload(dbgMeshRef);
@@ -210,7 +210,7 @@ namespace BansheeEditor
 		testTexRef.synchronize();
 
 		testMaterial->setTexture("tex", testTexRef);
-		gResources().create(testMaterial, L"C:\\ExportMaterial.mat", true);
+		gResources().save(testMaterial, L"C:\\ExportMaterial.mat", true);
 
 		gResources().unload(testMaterial);
 

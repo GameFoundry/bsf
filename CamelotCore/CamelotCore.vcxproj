@@ -305,6 +305,8 @@
     <ClInclude Include="Include\CmQueryManager.h" />
     <ClInclude Include="Include\CmRenderOperation.h" />
     <ClInclude Include="Include\CmRenderQueue.h" />
+    <ClInclude Include="Include\CmResourceManifest.h" />
+    <ClInclude Include="Include\CmResourceManifestRTTI.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
     <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmApplication.h" />
@@ -388,7 +390,6 @@
     <ClInclude Include="Include\CmResourceHandle.h" />
     <ClInclude Include="Include\CmResourceHandleRTTI.h" />
     <ClInclude Include="Include\CmResources.h" />
-    <ClInclude Include="Include\CmResourcesRTTI.h" />
     <ClInclude Include="Include\CmSamplerStateRTTI.h" />
     <ClInclude Include="Include\CmSceneManager.h" />
     <ClInclude Include="Include\CmShaderRTTI.h" />
@@ -476,6 +477,7 @@
     <ClCompile Include="Source\CmQueryManager.cpp" />
     <ClCompile Include="Source\CmRenderer.cpp" />
     <ClCompile Include="Source\CmRenderQueue.cpp" />
+    <ClCompile Include="Source\CmResourceManifest.cpp" />
     <ClCompile Include="Source\CmTextureView.cpp" />
     <ClCompile Include="Source\CmTextData.cpp" />
     <ClCompile Include="Source\CmTimerQuery.cpp" />

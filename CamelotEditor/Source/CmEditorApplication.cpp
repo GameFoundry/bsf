@@ -120,7 +120,7 @@ namespace CamelotEditor
 		QString styleSheet;
 		for(auto iter = fileInfos.begin(); iter != fileInfos.end(); ++iter)
 		{
-			DataStreamPtr dataStream = FileSystem::open(iter->absoluteFilePath().toStdString());
+			DataStreamPtr dataStream = FileSystem::openFile(iter->absoluteFilePath().toStdString());
 
 			styleSheet += QString::fromStdString(dataStream->getAsString());
 		}
@@ -164,7 +164,7 @@ namespace CamelotEditor
 
 	bool EditorApplication::isValidProjectName(const QString& name) const
 	{
-		return FileSystem::isValidFileName(name.toStdString());
+		return FileSystem::isValidFilename(name.toStdString());
 	}
 
 	QString EditorApplication::getFullProjectPath(const QString& absProjDir, const QString& projName) const
@@ -191,7 +191,7 @@ namespace CamelotEditor
 
 	QString EditorApplication::getEditorRootPath() const
 	{
-		return QString::fromStdString(FileSystem::getCurrentPath());
+		return QString::fromStdString(FileSystem::getWorkingDirectoryPath());
 	}
 
 	QString EditorApplication::getEditorPrefsPath() const

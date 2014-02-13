@@ -27,8 +27,6 @@ namespace CamelotFramework
 		RENDER_WINDOW_DESC primaryWindowDesc;
 
 		Vector<String>::type importers;
-
-		WString resourceCacheDirectory;
 	};
 
 	class CM_EXPORT Application

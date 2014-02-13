@@ -234,9 +234,6 @@
     <ClInclude Include="Include\CmCgProgramRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmResourcesRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmPassRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
@@ -529,6 +526,12 @@
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGameObjectHandleRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmResourceManifest.h">
+      <Filter>Header Files\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmResourceManifestRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -832,6 +835,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmGameObjectManager.cpp">
       <Filter>Source Files\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmResourceManifest.cpp">
+      <Filter>Source Files\Resources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

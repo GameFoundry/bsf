@@ -36,13 +36,13 @@ namespace CamelotFramework
 		mData->mPtr->synchonize();
 	}
 
-	void ResourceHandleBase::setResourcePtr(std::shared_ptr<Resource> ptr)
+	void ResourceHandleBase::setHandleData(std::shared_ptr<Resource> ptr, const String& uuid)
 	{
 		mData->mPtr = ptr;
 
 		if(mData->mPtr)
 		{
-			mData->mUUID = mData->mPtr->getUUID();
+			mData->mUUID = uuid;
 		
 			if(!mData->mIsCreated)
 			{

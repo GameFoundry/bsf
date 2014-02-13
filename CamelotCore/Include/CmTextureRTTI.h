@@ -17,7 +17,6 @@ namespace CamelotFramework
 	{
 	private:
 		CM_SETGET_MEMBER(mSize, UINT32, Texture)
-		CM_SETGET_MEMBER(mUUID, String, Texture);
 		CM_SETGET_MEMBER(mHeight, UINT32, Texture)
 		CM_SETGET_MEMBER(mWidth, UINT32, Texture)
 		CM_SETGET_MEMBER(mDepth, UINT32, Texture)
@@ -68,7 +67,6 @@ namespace CamelotFramework
 		TextureRTTI()
 		{
 			CM_ADD_PLAINFIELD(mSize, 0, TextureRTTI)
-			CM_ADD_PLAINFIELD(mUUID, 1, TextureRTTI)
 			CM_ADD_PLAINFIELD(mHeight, 2, TextureRTTI)
 			CM_ADD_PLAINFIELD(mWidth, 3, TextureRTTI)
 			CM_ADD_PLAINFIELD(mDepth, 4, TextureRTTI)

@@ -138,6 +138,7 @@ namespace CamelotFramework
 	// Resources
 	class Resource;
 	class Resources;
+	class ResourceManifest;
 	class Texture;
 	class Mesh;
 	class MeshBase;
@@ -221,6 +222,7 @@ namespace CamelotFramework
 	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueSync>> SyncedCoreAccessorPtr;
 	typedef std::shared_ptr<EventQuery> EventQueryPtr;
 	typedef std::shared_ptr<TimerQuery> TimerQueryPtr;
+	typedef std::shared_ptr<ResourceManifest> ResourceManifestPtr;
 }
 
 /************************************************************************/
@@ -240,7 +242,6 @@ namespace CamelotFramework
 		TID_GpuProgram = 1010,
 		TID_ResourceHandleData = 1011,
 		TID_CgProgram = 1012,
-		TID_ResourceMetaData = 1013,
 		TID_Pass = 1014,
 		TID_Technique = 1015,
 		TID_Shader = 1016,
@@ -282,7 +283,9 @@ namespace CamelotFramework
 		TID_GpuResourceData = 1063,
 		TID_VertexDataDesc = 1064,
 		TID_MeshBase = 1065,
-		TID_GameObjectHandleBase = 1066
+		TID_GameObjectHandleBase = 1066,
+		TID_ResourceManifest = 1067,
+		TID_ResourceManifestEntry = 1068
 	};
 }
 
