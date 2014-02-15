@@ -94,6 +94,9 @@
     <Filter Include="Header Files\Platform">
       <UniqueIdentifier>{d53f502a-b966-4162-a828-af2654f0408f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Platform">
+      <UniqueIdentifier>{88dfbdf1-6999-424c-ac32-1ffe65b6c9f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\CmApplication.h">
@@ -534,6 +537,9 @@
     <ClInclude Include="Include\CmResourceManifestRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmWin32FolderMonitor.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -838,6 +844,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmResourceManifest.cpp">
       <Filter>Source Files\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWin32FolderMonitor.cpp">
+      <Filter>Source Files\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

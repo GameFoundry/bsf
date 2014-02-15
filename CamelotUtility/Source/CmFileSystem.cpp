@@ -82,7 +82,7 @@ namespace CamelotFramework
 			boost::filesystem3::remove(fullPath.c_str());
 	}
 
-	bool FileSystem::fileExists(const WString& fullPath)
+	bool FileSystem::isFile(const WString& fullPath)
 	{
 		if(exists(fullPath.c_str()) && !is_directory(fullPath.c_str()))
 			return true;
@@ -90,7 +90,7 @@ namespace CamelotFramework
 		return false;
 	}
 
-	bool FileSystem::dirExists(const WString& fullPath)
+	bool FileSystem::isDirectory(const WString& fullPath)
 	{
 		if(exists(fullPath.c_str()) && is_directory(fullPath.c_str()))
 			return true;

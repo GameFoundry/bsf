@@ -176,7 +176,7 @@ namespace CamelotFramework
 			}
 		}
 
-		if(!FileSystem::fileExists(filePath))
+		if(!FileSystem::isFile(filePath))
 		{
 			gDebug().logWarning("Specified file: " + toString(filePath) + " doesn't exist.");
 			return HResource();
@@ -254,7 +254,7 @@ namespace CamelotFramework
 		if(!resource.isLoaded())
 			resource.synchronize();
 
-		bool fileExists = FileSystem::fileExists(filePath);
+		bool fileExists = FileSystem::isFile(filePath);
 		if(fileExists)
 		{
 			if(overwrite)

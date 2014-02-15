@@ -15,8 +15,8 @@ namespace CamelotFramework
 		static void remove(const WString& fullPath, bool recursively = true);
 		static void createDir(const WString& fullPath);
 
-		static bool fileExists(const WString& fullPath);
-		static bool dirExists(const WString& fullPath);
+		static bool isFile(const WString& fullPath);
+		static bool isDirectory(const WString& fullPath);
 
 		static Vector<WString>::type getFiles(const WString& dirPath);
 

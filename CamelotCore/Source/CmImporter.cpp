@@ -53,7 +53,7 @@ namespace CamelotFramework
 
 	HResource Importer::import(const WString& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
-		if(!FileSystem::fileExists(inputFilePath))
+		if(!FileSystem::isFile(inputFilePath))
 		{
 			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
 			return HResource();
@@ -82,7 +82,7 @@ namespace CamelotFramework
 
 	ImportOptionsPtr Importer::createImportOptions(const WString& inputFilePath)
 	{
-		if(!FileSystem::fileExists(inputFilePath))
+		if(!FileSystem::isFile(inputFilePath))
 		{
 			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
 			return nullptr;

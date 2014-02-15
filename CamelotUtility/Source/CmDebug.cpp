@@ -34,7 +34,7 @@ namespace CamelotFramework
 
 	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const WString& filePath, bool overwrite) const
 	{
-		if(FileSystem::fileExists(filePath))
+		if(FileSystem::isFile(filePath))
 		{
 			if(overwrite)
 				FileSystem::remove(filePath);

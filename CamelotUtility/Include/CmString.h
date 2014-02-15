@@ -78,6 +78,22 @@ namespace CamelotFramework
         */
         static void trim(WString& str, bool left = true, bool right = true);
 
+        /** Removes specified characters.
+            @remarks
+                The user may specify wether they want to trim only the
+                beginning or the end of the String ( the default action is
+                to trim both).
+        */
+        static void trim(String& str, const String& delims, bool left = true, bool right = true);
+
+        /** Removes specified characters.
+            @remarks
+                The user may specify wether they want to trim only the
+                beginning or the end of the String ( the default action is
+                to trim both).
+        */
+        static void trim(WString& str, const WString& delims, bool left = true, bool right = true);
+
         /** Returns a StringVector that contains all the substrings delimited
             by the characters in the passed <code>delims</code> argument.
             @param

@@ -45,15 +45,25 @@ namespace CamelotFramework
     void StringUtil::trim(String& str, bool left, bool right)
     {
         static const String delims = " \t\r";
-        if(right)
-            str.erase(str.find_last_not_of(delims)+1); // trim right
-        if(left)
-            str.erase(0, str.find_first_not_of(delims)); // trim left
+        trim(str, delims, left, right);
     }
 
 	void StringUtil::trim(WString& str, bool left, bool right)
 	{
 		static const WString delims = L" \t\r";
+		trim(str, delims, left, right);
+	}
+
+	void StringUtil::trim(String& str, const String& delims, bool left, bool right)
+	{
+		if(right)
+			str.erase(str.find_last_not_of(delims)+1); // trim right
+		if(left)
+			str.erase(0, str.find_first_not_of(delims)); // trim left
+	}
+
+	void StringUtil::trim(WString& str, const WString& delims, bool left, bool right)
+	{
 		if(right)
 			str.erase(str.find_last_not_of(delims)+1); // trim right
 		if(left)
