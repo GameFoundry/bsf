@@ -23,6 +23,7 @@
 #include "BsRenderable.h"
 #include "BsDbgTestGameObjectRef.h"
 #include "BsVirtualInput.h"
+#include "CmWin32FolderMonitor.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -227,6 +228,11 @@ namespace BansheeEditor
 		
 		testModelGO->destroy();
 
+		//Win32FolderMonitor* folderMonitor = cm_new<Win32FolderMonitor>();
+
+		//FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName | 
+		//	(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
+		//folderMonitor->startMonitor(L"D:\\TestDetect", true, folderChanges);
 
 		HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import(L"C:\\CursorDbg.psd"));
 		PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
@@ -308,6 +314,23 @@ namespace BansheeEditor
 	void EditorApplication::update()
 	{
 		EditorWindowManager::instance().update();	
+	}
+
+	bool EditorApplication::isProjectLoaded() const
+	{
+		return true; // TODO - DEBUG ONLY
+	}
+
+	const WString& EditorApplication::getActiveProjectPath() const
+	{
+		static WString dummyProjectPath = L"D:\\DummyBansheeProject";
+
+		return dummyProjectPath;
+	}
+
+	WString EditorApplication::getResourcesFolderPath() const
+	{
+		return getActiveProjectPath() + L"\\Resources";
 	}
 
 	const String& EditorApplication::getLibraryNameForRenderSystem(RenderSystemPlugin plugin)

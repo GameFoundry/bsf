@@ -280,6 +280,9 @@
     <ClInclude Include="Include\BsGUIWindowFrameWidget.h" />
     <ClInclude Include="Include\BsGUIWindowDropArea.h" />
     <ClInclude Include="Include\BsMainEditorWindow.h" />
+    <ClInclude Include="Include\BsProjectLibrary.h" />
+    <ClInclude Include="Include\BsResourceMeta.h" />
+    <ClInclude Include="Include\BsResourceMetaRTTI.h" />
     <ClInclude Include="Include\CmDebugCamera.h" />
     <ClInclude Include="Include\CmTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
@@ -311,6 +314,8 @@
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
     <ClCompile Include="Source\BsMainEditorWindow.cpp" />
+    <ClCompile Include="Source\BsProjectLibrary.cpp" />
+    <ClCompile Include="Source\BsResourceMeta.cpp" />
     <ClCompile Include="Source\BsUndoRedo.cpp" />
     <ClCompile Include="Source\CmDebugCamera.cpp" />
     <ClCompile Include="Source\BsEditorApplication.cpp" />

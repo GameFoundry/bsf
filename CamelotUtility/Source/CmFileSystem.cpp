@@ -77,14 +77,30 @@ namespace CamelotFramework
 	void FileSystem::remove(const WString& fullPath, bool recursively)
 	{
 		if(recursively)
-			remove_all(fullPath.c_str());
+			boost::filesystem3::remove_all(fullPath.c_str());
 		else
 			boost::filesystem3::remove(fullPath.c_str());
+	}
+
+	void FileSystem::remove(const WPath& fullPath, bool recursively)
+	{
+		if(recursively)
+			boost::filesystem3::remove_all(fullPath);
+		else
+			boost::filesystem3::remove(fullPath);
 	}
 
 	bool FileSystem::isFile(const WString& fullPath)
 	{
 		if(exists(fullPath.c_str()) && !is_directory(fullPath.c_str()))
+			return true;
+
+		return false;
+	}
+
+	bool FileSystem::isFile(const WPath& fullPath)
+	{
+		if(exists(fullPath) && !is_directory(fullPath))
 			return true;
 
 		return false;
@@ -98,25 +114,45 @@ namespace CamelotFramework
 		return false;
 	}
 
+	bool FileSystem::isDirectory(const WPath& fullPath)
+	{
+		if(exists(fullPath) && is_directory(fullPath))
+			return true;
+
+		return false;
+	}
+
 	void FileSystem::createDir(const WString& fullPath)
 	{
 		create_directory(fullPath.c_str());
 	}
 
-	Vector<WString>::type FileSystem::getFiles(const WString& dirPath)
+	void FileSystem::createDir(const WPath& fullPath)
+	{
+		create_directory(fullPath);
+	}
+
+	void FileSystem::getChildren(const WPath& dirPath, Vector<WPath>::type& files, Vector<WPath>::type& directories)
 	{
 		directory_iterator dirIter(dirPath.c_str());
 
 		Vector<WString>::type foundFiles;
 		while(dirIter != directory_iterator())
 		{
-			if(is_regular_file(dirIter->path()))
-				foundFiles.push_back(dirIter->path().wstring().c_str());
+			boost::filesystem3::path curPath = dirIter->path();
+
+			if(is_regular_file(curPath))
+				files.push_back(curPath);
+			else if(is_directory(curPath))
+				directories.push_back(curPath);
 
 			dirIter++;
 		}
+	}
 
-		return foundFiles;
+	std::time_t FileSystem::getLastModifiedTime(const WString& fullPath)
+	{
+		return last_write_time(fullPath.c_str());
 	}
 
 	WString FileSystem::getWorkingDirectoryPath()

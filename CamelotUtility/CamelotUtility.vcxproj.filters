@@ -371,5 +371,8 @@
     <ClCompile Include="Source\CmMemorySerializer.cpp">
       <Filter>Source Files\Serialization</Filter>
     </ClCompile>
+    <ClCompile Include="Source\CmPath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

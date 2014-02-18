@@ -5,10 +5,19 @@
 
 namespace CamelotFramework
 {
+	typedef boost::filesystem3::path Path;
+	typedef boost::filesystem3::wpath WPath;
+
+	Path CM_UTILITY_EXPORT toPath(const String& p);
+	WPath CM_UTILITY_EXPORT toPath(const WString& p);
+
+	String CM_UTILITY_EXPORT toString(const Path& p);
+	WString CM_UTILITY_EXPORT toWString(const WPath& p);
+
 	/**
 	 * @brief	Various string manipulations of file paths.
 	 */
-	class Path
+	class CM_UTILITY_EXPORT PathUtil
 	{
 	public:
 		static WString getExtension(const WString& path)
@@ -17,9 +26,40 @@ namespace CamelotFramework
 			return ext.wstring().c_str();
 		}
 
+		static WPath getExtension(const WPath& path)
+		{
+			return boost::filesystem3::extension(path);
+		}
+
 		static bool hasExtension(const WString& path, const WString& extension)
 		{
 			return getExtension(path) == extension;
+		}
+
+		static void replaceExtension(WPath& path, const WString& newExtension)
+		{
+			path.replace_extension(newExtension.c_str());
+		}
+
+		/**
+		 * @brief	Returns true if path child is included in path parent.
+		 * 			Both paths must be canonical.
+		 */
+		static bool includes(const WString& child, const WString& parent)
+		{
+			boost::filesystem3::wpath childPath = child.c_str();
+			boost::filesystem3::wpath parentPath = parent.c_str();
+
+			auto iterChild = childPath.begin();
+			auto iterParent = parentPath.begin();
+
+			for(; iterChild != childPath.end(); ++iterChild, ++iterParent)
+			{
+				if(*iterChild != *iterParent)
+					return false;
+			}
+
+			return true;
 		}
 
 		static WString combine(const WString& base, const WString& name)

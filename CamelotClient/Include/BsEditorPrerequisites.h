@@ -22,10 +22,18 @@ namespace BansheeEditor
 	class GUISceneTreeView;
 	class GUITreeViewEditBox;
 	class EditorCommand;
+	class ResourceMeta;
+
+	typedef std::shared_ptr<ResourceMeta> ResourceMetaPtr;
 
 	enum class DragAndDropType
 	{
 		EditorWidget = 10000,
 		SceneObject = 10001
+	};
+
+	enum TypeID_BansheeEditor
+	{
+		TID_ResourceMeta = 40000
 	};
 }

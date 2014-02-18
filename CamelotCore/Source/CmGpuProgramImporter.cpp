@@ -23,7 +23,7 @@ namespace CamelotFramework
 
 	HResource GpuProgramImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
-		WString ext = Path::getExtension(filePath);
+		WString ext = PathUtil::getExtension(filePath);
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 
 		DataStreamPtr stream = FileSystem::openFile(filePath);

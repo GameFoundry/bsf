@@ -20,6 +20,9 @@ namespace BansheeEditor
 
 		void runMainLoop();
 
+		bool isProjectLoaded() const;
+		const CM::WString& getActiveProjectPath() const;
+		CM::WString getResourcesFolderPath() const;
 	private:
 		RenderSystemPlugin mActiveRSPlugin;
 

@@ -108,7 +108,7 @@ namespace CamelotFramework
 
 	SpecificImporter* Importer::getImporterForFile(const WString& inputFilePath) const
 	{
-		WString ext = Path::getExtension(inputFilePath);
+		WString ext = PathUtil::getExtension(inputFilePath);
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!supportsFileType(ext))
 		{

@@ -111,17 +111,20 @@ namespace CamelotFramework
 
 		static UINT32 fromMemory(std::vector<T, StdAlloc<T>>& data, char* memory)
 		{ 
-			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32)); 
+			UINT32 size = 0;
+			UINT32 numElements;
+			memcpy(&numElements, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
+			size += sizeof(UINT32);
 
-			for(UINT32 i = 0; i < size; i++)
+			for(UINT32 i = 0; i < numElements; i++)
 			{
 				T element;
 				UINT32 elementSize = RTTIPlainType<T>::fromMemory(element, memory);
 				data.push_back(element);
 
 				memory += elementSize;
+				size += elementSize;
 			}
 
 			return size;
@@ -167,11 +170,13 @@ namespace CamelotFramework
 
 		static UINT32 fromMemory(std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
-			UINT32 size;
-			memcpy(&size, memory, sizeof(UINT32)); 
+			UINT32 size = 0;
+			UINT32 numElements;
+			memcpy(&numElements, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
+			size += sizeof(UINT32);
 
-			for(UINT32 i = 0; i < size; i++)
+			for(UINT32 i = 0; i < numElements; i++)
 			{
 				Key key;
 				UINT32 keySize = RTTIPlainType<Key>::fromMemory(key, memory);
@@ -182,6 +187,7 @@ namespace CamelotFramework
 				memory += valueSize;
 
 				data[key] = value; 
+				size += keySize + valueSize;
 			}
 
 			return size;
@@ -196,6 +202,45 @@ namespace CamelotFramework
 				dataSize += RTTIPlainType<Key>::getDynamicSize(iter->first);		
 				dataSize += RTTIPlainType<Value>::getDynamicSize(iter->second);
 			}
+
+			assert(dataSize <= std::numeric_limits<UINT32>::max());
+
+			return (UINT32)dataSize;
+		}	
+	}; 
+
+	template<class A, class B> struct RTTIPlainType<std::pair<A, B>>
+	{	
+		enum { id = TID_STDPAIR }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(const std::pair<A, B>& data, char* memory)
+		{ 
+			UINT32 firstSize = RTTIPlainType<A>::getDynamicSize(data.first);
+			RTTIPlainType<A>::toMemory(data.first, memory);
+
+			memory += firstSize;
+
+			UINT32 secondSize = RTTIPlainType<B>::getDynamicSize(data.second);
+			RTTIPlainType<B>::toMemory(data.second, memory);
+
+			memory += secondSize;
+		}
+
+		static UINT32 fromMemory(std::pair<A, B>& data, char* memory)
+		{ 
+			UINT32 firstSize = RTTIPlainType<A>::fromMemory(data.first, memory);
+			memory += firstSize;
+
+			UINT32 secondSize = RTTIPlainType<B>::fromMemory(data.second, memory);
+			memory += secondSize;
+
+			return firstSize + secondSize;
+		}
+
+		static UINT32 getDynamicSize(const std::pair<A, B>& data)	
+		{ 
+			UINT64 dataSize = RTTIPlainType<A>::getDynamicSize(data.first);		
+			dataSize += RTTIPlainType<B>::getDynamicSize(data.second);
 
 			assert(dataSize <= std::numeric_limits<UINT32>::max());
 
