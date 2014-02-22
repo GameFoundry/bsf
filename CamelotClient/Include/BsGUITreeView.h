@@ -76,7 +76,7 @@ namespace BansheeEditor
 		CM::Vector2I _getOptimalSize() const;
 		void updateClippedBounds();
 
-		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
+		virtual void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 	protected:
 		static const CM::UINT32 ELEMENT_EXTRA_SPACING;

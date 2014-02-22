@@ -51,10 +51,21 @@ namespace BansheeEditor
 	protected:
 		InternalDraggedResources* mDraggedResources;
 		ResourceTreeElement mRootElement;
+		CM::RenderWindow* mCurrentWindow;
+		CM::OSDropTarget* mDropTarget;
+		bool mDropTargetDragActive;
+
+		boost::signals::connection mDropTargetEnterConn;
+		boost::signals::connection mDropTargetMoveConn;
+		boost::signals::connection mDropTargetLeaveConn;
+		boost::signals::connection mDropTargetDroppedConn;
 
 		GUIResourceTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
 			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
+
+		virtual void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
+			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 
 		virtual TreeElement& getRootElement() { return mRootElement; }
 		virtual const TreeElement& getRootElementConst() const { return mRootElement; }
@@ -74,8 +85,17 @@ namespace BansheeEditor
 		void entryAdded(const CM::WPath& path);
 		void entryRemoved(const CM::WPath& path);
 
+		void setDropTarget(CM::RenderWindow* parentWindow, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void clearDropTarget();
+
+		void dropTargetDragMove(CM::INT32 x, CM::INT32 y);
+		void dropTargetDragLeave();
+		void dropTargetDragDropped(CM::INT32 x, CM::INT32 y);
+
 		void quicksortTreeElements(CM::Vector<TreeElement*>::type& elements, CM::INT32 first, CM::INT32 last);
 
 		CM::WPath findUniquePath(const CM::WPath& path);
+
+		void _changeParentWidget(BS::GUIWidget* widget);
 	};
 }

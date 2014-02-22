@@ -1,4 +1,13 @@
 
+Today:
+ - Fix TreeView issues with expand
+
+Tomorrow:
+ - Attempt to add ResourceTreeView to scene (and initialize ProjectLibrary)
+ - Project library save/load
+ - Figure out how to deal with import queue
+ 
+ 
  ProjectLibrary
   - Save/Load - saves/loads the hierarchy of ResourceEntries
 
