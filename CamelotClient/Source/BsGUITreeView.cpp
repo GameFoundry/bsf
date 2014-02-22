@@ -33,7 +33,7 @@ namespace BansheeEditor
 
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
-		mIsExpanded(false), mSortedIdx(0), mIsDirty(false), mIsVisible(true)
+		mIsExpanded(false), mSortedIdx(0), mIsVisible(true)
 	{ }
 
 	GUITreeView::TreeElement::~TreeElement()
@@ -148,82 +148,6 @@ namespace BansheeEditor
 		// update if anything is actually dirty
 
 		updateTreeElementHierarchy();
-
-		// Create/Destroy GUI elements
-		Stack<TreeElement*>::type todo;
-		todo.push(&getRootElement());
-
-		while(!todo.empty())
-		{
-			TreeElement* current = todo.top();
-			todo.pop();
-
-			if(current->mIsDirty && current != &getRootElement())
-			{
-				if(current->mIsVisible)
-				{
-					HString name(toWString(current->mName));
-					if(current->mElement == nullptr)
-					{
-						current->mElement = GUILabel::create(_getParentWidget(), name, mElementBtnStyle);
-						_registerChildElement(current->mElement);
-					}
-
-					if(current->mChildren.size() > 0)
-					{
-						if(current->mFoldoutBtn == nullptr)
-						{
-							current->mFoldoutBtn = GUIToggle::create(_getParentWidget(), GUIContent(HString(L"")), mFoldoutBtnStyle);
-							_registerChildElement(current->mFoldoutBtn);
-
-							current->mFoldoutBtn->onToggled.connect(boost::bind(&GUITreeView::elementToggled, this, current, _1));
-
-							if(current->mIsExpanded)
-								current->mFoldoutBtn->toggleOn();
-						}
-					}
-					else
-					{
-						if(current->mFoldoutBtn != nullptr)
-						{
-							GUIElement::destroy(current->mFoldoutBtn);
-							current->mFoldoutBtn = nullptr;
-						}
-					}
-
-					current->mElement->setContent(GUIContent(name));
-				}
-				else
-				{
-					if(current->mElement != nullptr)
-					{
-						GUIElement::destroy(current->mElement);
-						current->mElement = nullptr;
-					}
-
-					if(current->mFoldoutBtn != nullptr)
-					{
-						GUIElement::destroy(current->mFoldoutBtn);
-						current->mFoldoutBtn = nullptr;
-					}
-
-					if(current->mIsSelected && current->mIsExpanded)
-						unselectElement(current);
-				}
-
-				markContentAsDirty();
-				current->mIsDirty = false;
-			}
-
-			// Queue children for next iteration
-			if(current->mIsDirty || current->mIsVisible)
-			{
-				for(UINT32 i = 0; i < (UINT32)current->mChildren.size(); i++)
-				{
-					todo.push(current->mChildren[i]);
-				}
-			}
-		}
 
 		// Attempt to scroll if needed
 		if(mScrollState != ScrollState::None)
@@ -574,9 +498,132 @@ namespace BansheeEditor
 		markContentAsDirty();
 	}
 
+	void GUITreeView::expandElement(TreeElement* element)
+	{
+		if(element->mIsExpanded)
+			return;
+
+		element->mIsExpanded = true;
+
+		if(element->mParent == nullptr || (element->mParent->mIsVisible && element->mParent->mIsExpanded))
+		{
+			Stack<TreeElement*>::type todo;
+			todo.push(element);
+
+			while(!todo.empty())
+			{
+				TreeElement* curElem = todo.top();
+				todo.pop();
+
+				curElem->mIsVisible = true;
+				updateElementGUI(curElem);
+
+				if(curElem->mIsExpanded)
+				{
+					for(auto& child : curElem->mChildren)
+						todo.push(child);
+				}
+			}
+		}
+	}
+
+	void GUITreeView::collapseElement(TreeElement* element)
+	{
+		if(!element->mIsExpanded)
+			return;
+
+		element->mIsExpanded = false;
+		updateElementGUI(element);
+
+		if(element->mParent == nullptr || (element->mParent->mIsVisible && element->mParent->mIsExpanded))
+		{
+			Stack<TreeElement*>::type todo;
+
+			for(auto& child : element->mChildren)
+				todo.push(child);
+
+			while(!todo.empty())
+			{
+				TreeElement* curElem = todo.top();
+				todo.pop();
+
+				curElem->mIsVisible = false;
+				updateElementGUI(curElem);
+
+				if(curElem->mIsExpanded)
+				{
+					for(auto& child : curElem->mChildren)
+						todo.push(child);
+				}
+			}
+		}
+	}
+
+	void GUITreeView::updateElementGUI(TreeElement* element)
+	{
+		if(element == &getRootElement())
+			return;
+
+		if(element->mIsVisible)
+		{
+			HString name(toWString(element->mName));
+			if(element->mElement == nullptr)
+			{
+				element->mElement = GUILabel::create(_getParentWidget(), name, mElementBtnStyle);
+				_registerChildElement(element->mElement);
+			}
+
+			if(element->mChildren.size() > 0)
+			{
+				if(element->mFoldoutBtn == nullptr)
+				{
+					element->mFoldoutBtn = GUIToggle::create(_getParentWidget(), GUIContent(HString(L"")), mFoldoutBtnStyle);
+					_registerChildElement(element->mFoldoutBtn);
+
+					element->mFoldoutBtn->onToggled.connect(boost::bind(&GUITreeView::elementToggled, this, element, _1));
+
+					if(element->mIsExpanded)
+						element->mFoldoutBtn->toggleOn();
+				}
+			}
+			else
+			{
+				if(element->mFoldoutBtn != nullptr)
+				{
+					GUIElement::destroy(element->mFoldoutBtn);
+					element->mFoldoutBtn = nullptr;
+				}
+			}
+
+			element->mElement->setContent(GUIContent(name));
+		}
+		else
+		{
+			if(element->mElement != nullptr)
+			{
+				GUIElement::destroy(element->mElement);
+				element->mElement = nullptr;
+			}
+
+			if(element->mFoldoutBtn != nullptr)
+			{
+				GUIElement::destroy(element->mFoldoutBtn);
+				element->mFoldoutBtn = nullptr;
+			}
+
+			if(element->mIsSelected && element->mIsExpanded)
+				unselectElement(element);
+		}
+
+		markContentAsDirty();
+	}
+
 	void GUITreeView::elementToggled(TreeElement* element, bool toggled)
 	{
-		element->mIsExpanded = toggled;
+		if(toggled)
+			expandElement(element);
+		else
+			collapseElement(element);
 	}
 
 	void GUITreeView::onEditAccepted()
@@ -1018,7 +1065,8 @@ namespace BansheeEditor
 
 				if(unexpandElement)
 				{
-					autoExpandedElement->mIsExpanded = false;
+					collapseElement(autoExpandedElement);
+
 					if(autoExpandedElement->mFoldoutBtn != nullptr)
 						autoExpandedElement->mFoldoutBtn->toggleOff();
 
@@ -1037,7 +1085,7 @@ namespace BansheeEditor
 				if(timeDiff >= AUTO_EXPAND_DELAY_SEC)
 				{
 					mAutoExpandedElements.push(mMouseOverDragElement);
-					mMouseOverDragElement->mIsExpanded = true;
+					expandElement(mMouseOverDragElement);
 
 					if(mMouseOverDragElement->mFoldoutBtn != nullptr)
 						mMouseOverDragElement->mFoldoutBtn->toggleOn();

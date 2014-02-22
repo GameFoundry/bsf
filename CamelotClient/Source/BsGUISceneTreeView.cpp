@@ -53,134 +53,126 @@ namespace BansheeEditor
 			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
 	}
 
-	void GUISceneTreeView::updateTreeElement(SceneTreeElement* element, bool visible)
+	void GUISceneTreeView::updateTreeElement(SceneTreeElement* element)
 	{
 		HSceneObject currentSO = element->mSceneObject;
 
 		// Check if SceneObject has changed in any way and update the tree element
-		if(visible)
+
+		bool completeMatch = (UINT32)element->mChildren.size() == currentSO->getNumChildren();
+
+		// Early exit case - Most commonly there will be no changes between active and cached data so 
+		// we first do a quick check in order to avoid expensive comparison later
+		if(completeMatch)
 		{
-			bool completeMatch = (UINT32)element->mChildren.size() == currentSO->getNumChildren();
-
-			// Early exit case - Most commonly there will be no changes between active and cached data so 
-			// we first do a quick check in order to avoid expensive comparison later
-			if(completeMatch)
+			for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 			{
-				for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
-				{
-					SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[i]);
+				SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[i]);
 
-					UINT32 curId = currentSO->getChild(i)->getId();
-					if(curId != currentChild->mId)
+				UINT32 curId = currentSO->getChild(i)->getId();
+				if(curId != currentChild->mId)
+				{
+					completeMatch = false;
+					break;
+				}
+			}
+		}
+
+		// Not a complete match, compare everything and insert/delete elements as needed
+		bool needsUpdate = false;
+		if(!completeMatch)
+		{
+			Vector<TreeElement*>::type newChildren;
+
+			bool* tempToDelete = (bool*)stackAlloc(sizeof(bool) * (UINT32)element->mChildren.size());
+			for(UINT32 i = 0; i < (UINT32)element->mChildren.size(); i++)
+				tempToDelete[i] = true;
+
+			for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
+			{
+				HSceneObject currentSOChild = currentSO->getChild(i);
+				UINT32 curId = currentSOChild->getId();
+				bool found = false;
+				for(UINT32 j = 0; j < element->mChildren.size(); j++)
+				{
+					SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[j]);
+
+					if(curId == currentChild->mId)
 					{
-						completeMatch = false;
+						tempToDelete[j] = false;
+						currentChild->mSortedIdx = (UINT32)newChildren.size();
+						newChildren.push_back(currentChild);
+
+						found = true;
 						break;
 					}
 				}
-			}
 
-			// Not a complete match, compare everything and insert/delete elements as needed
-			if(!completeMatch)
-			{
-				Vector<TreeElement*>::type newChildren;
-
-				bool* tempToDelete = (bool*)stackAlloc(sizeof(bool) * (UINT32)element->mChildren.size());
-				for(UINT32 i = 0; i < (UINT32)element->mChildren.size(); i++)
-					tempToDelete[i] = true;
-
-				for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
+				if(!found)
 				{
-					HSceneObject currentSOChild = currentSO->getChild(i);
-					UINT32 curId = currentSOChild->getId();
-					bool found = false;
-					for(UINT32 j = 0; j < element->mChildren.size(); j++)
-					{
-						SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[j]);
+					SceneTreeElement* newChild = cm_new<SceneTreeElement>();
+					newChild->mParent = element;
+					newChild->mSceneObject = currentSOChild;
+					newChild->mId = currentSOChild->getId();
+					newChild->mName = currentSOChild->getName();
+					newChild->mSortedIdx = (UINT32)newChildren.size();
+					newChild->mIsVisible = element->mIsVisible && element->mIsExpanded;
 
-						if(curId == currentChild->mId)
-						{
-							tempToDelete[j] = false;
-							currentChild->mIsDirty = true;
-							currentChild->mSortedIdx = (UINT32)newChildren.size();
-							newChildren.push_back(currentChild);
+					newChildren.push_back(newChild);
 
-							found = true;
-							break;
-						}
-					}
-
-					if(!found)
-					{
-						SceneTreeElement* newChild = cm_new<SceneTreeElement>();
-						newChild->mParent = element;
-						newChild->mSceneObject = currentSOChild;
-						newChild->mId = currentSOChild->getId();
-						newChild->mName = currentSOChild->getName();
-						newChild->mSortedIdx = (UINT32)newChildren.size();
-						newChild->mIsDirty = true;
-
-						newChildren.push_back(newChild);
-					}
+					updateElementGUI(newChild);
 				}
+			}
 
-				for(UINT32 i = 0; i < element->mChildren.size(); i++)
+			for(UINT32 i = 0; i < element->mChildren.size(); i++)
+			{
+				if(!tempToDelete[i])
+					continue;
+
+				deleteTreeElement(element->mChildren[i]);
+			}
+
+			stackDeallocLast(tempToDelete);
+
+			element->mChildren = newChildren;
+			needsUpdate = true;
+		}
+
+		// Check if name needs updating
+		const String& name = element->mSceneObject->getName();
+		if(element->mName != name)
+		{
+			element->mName = name;
+			needsUpdate = true;	
+		}
+
+		if(needsUpdate)
+			updateElementGUI(element);
+
+		// Calculate the sorted index of the element based on its name
+		TreeElement* parent = element->mParent;
+		if(parent != nullptr)
+		{
+			for(UINT32 i = 0; i < (UINT32)parent->mChildren.size(); i++)
+			{
+				INT32 stringCompare = element->mName.compare(parent->mChildren[i]->mName);
+				if(stringCompare > 0)
 				{
-					if(!tempToDelete[i])
-						continue;
-
-					deleteTreeElement(element->mChildren[i]);
+					if(element->mSortedIdx < parent->mChildren[i]->mSortedIdx)
+						std::swap(element->mSortedIdx, parent->mChildren[i]->mSortedIdx);
 				}
-
-				stackDeallocLast(tempToDelete);
-
-				element->mChildren = newChildren;
-				element->mIsDirty = true;
-			}
-
-			// Check if name needs updating
-			const String& name = element->mSceneObject->getName();
-			if(element->mName != name)
-			{
-				element->mName = name;
-				element->mIsDirty = true;		
-			}
-
-			// Calculate the sorted index of the element based on its name
-			TreeElement* parent = element->mParent;
-			if(element->mIsDirty && parent != nullptr)
-			{
-				for(UINT32 i = 0; i < (UINT32)parent->mChildren.size(); i++)
+				else if(stringCompare < 0)
 				{
-					INT32 stringCompare = element->mName.compare(parent->mChildren[i]->mName);
-					if(stringCompare > 0)
-					{
-						if(element->mSortedIdx < parent->mChildren[i]->mSortedIdx)
-							std::swap(element->mSortedIdx, parent->mChildren[i]->mSortedIdx);
-					}
-					else if(stringCompare < 0)
-					{
-						if(element->mSortedIdx > parent->mChildren[i]->mSortedIdx)
-							std::swap(element->mSortedIdx, parent->mChildren[i]->mSortedIdx);
-					}
+					if(element->mSortedIdx > parent->mChildren[i]->mSortedIdx)
+						std::swap(element->mSortedIdx, parent->mChildren[i]->mSortedIdx);
 				}
 			}
 		}
 
-		bool visibilityChanged = false;
-		if(element->mIsVisible != visible)
+		for(UINT32 i = 0; i < (UINT32)element->mChildren.size(); i++)
 		{
-			visibilityChanged = true;
-			element->mIsVisible = visible;
-			element->mIsDirty = true;
-		}
-
-		if(visibilityChanged || element->mIsVisible)
-		{
-			for(UINT32 i = 0; i < (UINT32)element->mChildren.size(); i++)
-			{
-				SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(element->mChildren[i]);
-				updateTreeElement(sceneElement, element->mIsVisible && element->mIsExpanded);
-			}
+			SceneTreeElement* sceneElement = static_cast<SceneTreeElement*>(element->mChildren[i]);
+			updateTreeElement(sceneElement);
 		}
 	}
 
@@ -192,7 +184,7 @@ namespace BansheeEditor
 		mRootElement.mSortedIdx = 0;
 		mRootElement.mIsExpanded = true;
 
-		updateTreeElement(&mRootElement, true);
+		updateTreeElement(&mRootElement);
 	}
 
 	void GUISceneTreeView::renameTreeElement(GUITreeView::TreeElement* element, const CM::WString& name)

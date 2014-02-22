@@ -54,7 +54,7 @@ namespace BansheeEditor
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
 			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
 
-		void updateTreeElement(SceneTreeElement* element, bool visible);
+		void updateTreeElement(SceneTreeElement* element);
 
 		virtual TreeElement& getRootElement() { return mRootElement; }
 		virtual const TreeElement& getRootElementConst() const { return mRootElement; }

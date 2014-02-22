@@ -35,7 +35,6 @@ namespace BansheeEditor
 			CM::UINT32 mSortedIdx;
 			bool mIsExpanded;
 			bool mIsSelected;
-			bool mIsDirty;
 			bool mIsVisible;
 
 			bool isParentRec(TreeElement* element) const;
@@ -151,6 +150,11 @@ namespace BansheeEditor
 		void selectElement(TreeElement* element);
 		void unselectElement(TreeElement* element);
 		void unselectAll();
+
+		void expandElement(TreeElement* element);
+		void collapseElement(TreeElement* element);
+
+		void updateElementGUI(TreeElement* element);
 
 		void closeTemporarilyExpandedElements();
 		void temporarilyExpandElement(const GUITreeView::InteractableElement* mouseOverElement);

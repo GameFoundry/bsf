@@ -49,7 +49,7 @@ namespace BansheeEditor
 
 		const ProjectLibrary::LibraryEntry* rootEntry = ProjectLibrary::instance().getRootEntry();
 
-		mRootElement.mIsExpanded = true;
+		expandElement(&mRootElement);
 
 		Stack<StackElem>::type todo;
 		todo.push(StackElem(rootEntry, &mRootElement));
@@ -134,9 +134,12 @@ namespace BansheeEditor
 		newChild->mName = toString(PathUtil::getFilename(fullPath));
 		newChild->mFullPath = fullPath;
 		newChild->mSortedIdx = (UINT32)parent->mChildren.size();
-		newChild->mIsDirty = true;
+		newChild->mIsVisible = parent->mIsVisible && parent->mIsExpanded;
 
 		parent->mChildren.push_back(newChild);
+
+		updateElementGUI(parent);
+		updateElementGUI(newChild);
 
 		return newChild;
 	}
