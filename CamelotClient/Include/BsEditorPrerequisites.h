@@ -29,7 +29,8 @@ namespace BansheeEditor
 	enum class DragAndDropType
 	{
 		EditorWidget = 10000,
-		SceneObject = 10001
+		SceneObject = 10001,
+		Resources = 10002
 	};
 
 	enum TypeID_BansheeEditor

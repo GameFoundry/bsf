@@ -280,6 +280,7 @@
     <ClInclude Include="Include\CmDeferredCallManager.h" />
     <ClInclude Include="Include\CmDrawOps.h" />
     <ClInclude Include="Include\CmEventQuery.h" />
+    <ClInclude Include="Include\CmFolderMonitor.h" />
     <ClInclude Include="Include\CmGameObjectHandle.h" />
     <ClInclude Include="Include\CmGameObject.h" />
     <ClInclude Include="Include\CmGameObjectHandleRTTI.h" />

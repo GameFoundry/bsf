@@ -33,7 +33,7 @@ namespace BansheeEditor
 
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
-		mId(0), mIsExpanded(false), mSortedIdx(0), mIsDirty(false), mIsVisible(true)
+		mIsExpanded(false), mSortedIdx(0), mIsDirty(false), mIsVisible(true)
 	{ }
 
 	GUITreeView::TreeElement::~TreeElement()
@@ -600,16 +600,6 @@ namespace BansheeEditor
 
 		if(element->mElement != nullptr)
 			element->mElement->disableRecursively();
-	}
-
-	void GUITreeView::deleteTreeElement(TreeElement* element)
-	{
-		closeTemporarilyExpandedElements(); // In case this element is one of them
-
-		if(element->mIsSelected)
-			unselectElement(element);
-
-		cm_delete(element);
 	}
 
 	void GUITreeView::disableEdit(bool applyChanges)

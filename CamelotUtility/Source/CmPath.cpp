@@ -2,6 +2,8 @@
 
 namespace CamelotFramework
 {
+	const WPath PathUtil::BLANK = WPath();
+
 	Path toPath(const String& p) { return p.c_str(); }
 	WPath toPath(const WString& p) { return p.c_str(); }
 

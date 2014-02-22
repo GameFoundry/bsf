@@ -1,17 +1,23 @@
 
  ProjectLibrary
   - Save/Load - saves/loads the hierarchy of ResourceEntries
-  - import(filePath)
-    - Check if we have an importer that supports the resource with the specified extension
-	- If we are okay then import the resource, otherwise do nothing and return false
-	  - Check if importer failed and report error if it did, also return false
-  - move(oldLocation, newLocation)
-    - Moves the resource from one location to another, first performs the move on the disk, then updates the hierarchy
-	 - Potentially suspends file monitoring since we don't need to detect these changes?
-  - remove(location, subfolders)
-    - Removes the resource from the file-system, and the rest is handled by the auto-update system
-  - monitoring
-    - Sets up a FileMonitor at the Resources folder, and calls add/move/remove/import whenever changes are reported
+
+--------------------
+
+Imported resources should get queued. Since I want to display a progress bar with % of resources imported.
+ - Plus importers should work on separate threads (Will likely make Resources worker threads global and re-use them for importer)
+
+-------------------
+
+TOMORROW:
+mIsVisible seems to get set in updateTreeElement? Which means expanding/closing wont work without it
+ - I should probably move those so they are changed whenever mIsExpanded is toggled
+ - I might want to move stuff from TreeView::update in general to an event-based system. Only in case of Scene those events would be generated internally.
+
+Later: Projectlibrary add (tracking drag and drop using Win32DragAndDropManager)
+-------------------
+
+LOW PRIORITY
 
 ResourceManifest contains absolute file locations. What happens when the project moves?
  - When saving ResourceManifest make sure to process all paths and make them relative.
@@ -23,17 +29,3 @@ What happens when importer fails importing a file?
 	- In fact they should use exceptions but those should be translated to error codes when returned to Importer
 	  - OR just write directly to debug log?
 	   - Probably log and error code, since I will need to inform the outside world that import failed somehow
-
---------------------
-
-IMPLEMENTATION: First ensure scan and import works. Then work out how to deal with FileMonitor. And finally how to add/remove/move resources from outside.
-
-Don't forget meta files and a way to store import options.
-
-I'll likely need to update ResourceEntry in ProjectLibrary
- - Replace UUID field with ResourceMeta class
-    - Contains UUID and ImportOptions
-	- Created whenever resource is imported
-	- Deleted when resource is deleted
-
-Make ProjectLibrary also check for .meta files that have no corresponding file and delete them (With a warning logged)

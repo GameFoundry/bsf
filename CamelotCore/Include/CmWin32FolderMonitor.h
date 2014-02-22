@@ -16,14 +16,14 @@ namespace CamelotFramework
 		Security = 0x0080
 	};
 
-	class CM_EXPORT Win32FolderMonitor
+	class CM_EXPORT FolderMonitor
 	{
 		struct Pimpl;
 		class FileNotifyInfo;
 		struct FolderWatchInfo;
 	public:
-		Win32FolderMonitor();
-		~Win32FolderMonitor();
+		FolderMonitor();
+		~FolderMonitor();
 
 		void startMonitor(const WString& folderPath, bool subdirectories, FolderChange changeFilter);
 		void stopMonitor(const WString& folderPath);

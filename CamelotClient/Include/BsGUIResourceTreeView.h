@@ -3,41 +3,42 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUITreeView.h"
 #include "BsVirtualInput.h"
+#include "CmPath.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEditor
 {
-	class GUISceneTreeView : public GUITreeView
+	class GUIResourceTreeView : public GUITreeView
 	{
-		struct SceneTreeElement : public GUITreeView::TreeElement
+		struct ResourceTreeElement : public GUITreeView::TreeElement
 		{
-			SceneTreeElement()
-				:mId(0)
-			{ }
-
-			CM::HSceneObject mSceneObject;
-			CM::UINT32 mId;
+			CM::WPath mFullPath;
 		};
 
-		struct DraggedSceneObjects
+		struct DraggedResources
 		{
-			DraggedSceneObjects(CM::UINT32 numObjects);
-			~DraggedSceneObjects();
+			CM::Vector<CM::String>::type resourceUUIDs;
+		};
+
+		struct InternalDraggedResources
+		{
+			InternalDraggedResources(CM::UINT32 numObjects);
+			~InternalDraggedResources();
 
 			CM::UINT32 numObjects;
-			CM::HSceneObject* objects;
+			CM::WPath* resourcePaths;
 		};
 
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUISceneTreeView* create(BS::GUIWidget& parent,
+		static GUIResourceTreeView* create(BS::GUIWidget& parent,
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
 			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
 			BS::GUIElementStyle* editBoxStyle = nullptr, BS::GUIElementStyle* dragHighlightStyle = nullptr, 
 			BS::GUIElementStyle* dragSepHighlightStyle = nullptr);
 
-		static GUISceneTreeView* create(BS::GUIWidget& parent, const BS::GUIOptions& options, 
+		static GUIResourceTreeView* create(BS::GUIWidget& parent, const BS::GUIOptions& options, 
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
 			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
 			BS::GUIElementStyle* editBoxStyle = nullptr, BS::GUIElementStyle* dragHighlightStyle = nullptr, 
@@ -45,16 +46,15 @@ namespace BansheeEditor
 
 
 	protected:
-		virtual ~GUISceneTreeView();
+		virtual ~GUIResourceTreeView();
 
 	protected:
-		SceneTreeElement mRootElement;
+		InternalDraggedResources* mDraggedResources;
+		ResourceTreeElement mRootElement;
 
-		GUISceneTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
+		GUIResourceTreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
 			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
-
-		void updateTreeElement(SceneTreeElement* element, bool visible);
 
 		virtual TreeElement& getRootElement() { return mRootElement; }
 		virtual const TreeElement& getRootElementConst() const { return mRootElement; }
@@ -65,6 +65,17 @@ namespace BansheeEditor
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
 
-		void deleteTreeElement(TreeElement* element);
+		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const CM::WPath& fullPath);
+		void deleteTreeElement(ResourceTreeElement* element);
+		void sortTreeElement(ResourceTreeElement* element);
+
+		ResourceTreeElement* findTreeElement(const CM::WPath& fullPath);
+
+		void entryAdded(const CM::WPath& path);
+		void entryRemoved(const CM::WPath& path);
+
+		void quicksortTreeElements(CM::Vector<TreeElement*>::type& elements, CM::INT32 first, CM::INT32 last);
+
+		CM::WPath findUniquePath(const CM::WPath& path);
 	};
 }

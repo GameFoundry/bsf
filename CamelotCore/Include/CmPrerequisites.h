@@ -132,6 +132,7 @@ namespace CamelotFramework
 	class EventQuery;
 	class TimerQuery;
 	class FrameAlloc;
+	class FolderMonitor;
 	// Asset import
 	class SpecificImporter;
 	class Importer;

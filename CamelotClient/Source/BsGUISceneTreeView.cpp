@@ -68,8 +68,10 @@ namespace BansheeEditor
 			{
 				for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 				{
+					SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[i]);
+
 					UINT32 curId = currentSO->getChild(i)->getId();
-					if(curId != element->mChildren[i]->mId)
+					if(curId != currentChild->mId)
 					{
 						completeMatch = false;
 						break;
@@ -93,7 +95,7 @@ namespace BansheeEditor
 					bool found = false;
 					for(UINT32 j = 0; j < element->mChildren.size(); j++)
 					{
-						TreeElement* currentChild = element->mChildren[j];
+						SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[j]);
 
 						if(curId == currentChild->mId)
 						{
@@ -197,6 +199,16 @@ namespace BansheeEditor
 	{
 		SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(element);
 		CmdEditPlainFieldGO<String>::execute(sceneTreeElement->mSceneObject, "mName", toString(name));
+	}
+
+	void GUISceneTreeView::deleteTreeElement(GUITreeView::TreeElement* element)
+	{
+		closeTemporarilyExpandedElements(); // In case this element is one of them
+
+		if(element->mIsSelected)
+			unselectElement(element);
+
+		cm_delete(element);
 	}
 
 	bool GUISceneTreeView::acceptDragAndDrop() const

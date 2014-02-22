@@ -20,6 +20,8 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT PathUtil
 	{
 	public:
+		static const WPath BLANK;
+
 		static WString getExtension(const WString& path)
 		{
 			boost::filesystem3::wpath ext = boost::filesystem3::extension(boost::filesystem3::wpath(path.c_str()));
@@ -39,6 +41,16 @@ namespace CamelotFramework
 		static void replaceExtension(WPath& path, const WString& newExtension)
 		{
 			path.replace_extension(newExtension.c_str());
+		}
+
+		static WString parentPath(const WString& path)
+		{
+			return WPath(path.c_str()).parent_path().c_str();
+		}
+
+		static WPath parentPath(const WPath& path)
+		{
+			return path.parent_path();
 		}
 
 		/**
@@ -68,6 +80,16 @@ namespace CamelotFramework
 				return name;
 			else
 				return base + L'/' + name;
+		}
+
+		static WPath combine(const WPath& base, const WPath& name)
+		{
+			return base / name;
+		}
+
+		static WPath getFilename(const WPath& path)
+		{
+			return path.filename();
 		}
 
 		/**
@@ -135,4 +157,29 @@ namespace CamelotFramework
 			splitBaseFilename(fullName, outBasename, outExtention);
 		}
 	};
+
+	template<> struct RTTIPlainType<WPath>
+	{	
+		enum { id = TID_WPath }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(const WPath& data, char* memory)
+		{ 
+			rttiWriteElem(toWString(data), memory);
+		}
+
+		static UINT32 fromMemory(WPath& data, char* memory)
+		{ 
+			WString strData;
+
+			RTTIPlainType<WString>::fromMemory(strData, memory);
+			data = toPath(strData);
+
+			return rttiGetElemSize(strData);
+		}
+
+		static UINT32 getDynamicSize(const WPath& data)	
+		{ 
+			return rttiGetElemSize(toWString(data));
+		}	
+	}; 
 }

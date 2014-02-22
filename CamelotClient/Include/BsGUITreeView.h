@@ -31,7 +31,6 @@ namespace BansheeEditor
 			BS::GUILabel* mElement;
 
 			CM::String mName;
-			CM::UINT32 mId;
 
 			CM::UINT32 mSortedIdx;
 			bool mIsExpanded;
@@ -152,8 +151,6 @@ namespace BansheeEditor
 		void selectElement(TreeElement* element);
 		void unselectElement(TreeElement* element);
 		void unselectAll();
-
-		void deleteTreeElement(TreeElement* element);
 
 		void closeTemporarilyExpandedElements();
 		void temporarilyExpandElement(const GUITreeView::InteractableElement* mouseOverElement);

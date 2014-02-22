@@ -90,9 +90,34 @@ namespace CamelotFramework
 			boost::filesystem3::remove(fullPath);
 	}
 
+	void FileSystem::move(const WPath& oldPath, const WPath& newPath, bool overwriteExisting)
+	{
+		if(FileSystem::isFile(newPath) || FileSystem::isDirectory(newPath))
+		{
+			if(overwriteExisting)
+				FileSystem::remove(newPath, true);
+			else
+			{
+				CM_EXCEPT(InvalidStateException, "Move operation failed because another file already exists at the new path: \"" + toString(newPath) + "\"");
+			}
+		}
+
+		boost::filesystem3::rename(oldPath, newPath);
+	}
+
+	bool FileSystem::exists(const WString& fullPath)
+	{
+		return boost::filesystem3::exists(fullPath.c_str());
+	}
+
+	bool FileSystem::exists(const WPath& fullPath)
+	{
+		return boost::filesystem3::exists(fullPath);
+	}
+
 	bool FileSystem::isFile(const WString& fullPath)
 	{
-		if(exists(fullPath.c_str()) && !is_directory(fullPath.c_str()))
+		if(boost::filesystem3::exists(fullPath.c_str()) && !is_directory(fullPath.c_str()))
 			return true;
 
 		return false;
@@ -108,7 +133,7 @@ namespace CamelotFramework
 
 	bool FileSystem::isDirectory(const WString& fullPath)
 	{
-		if(exists(fullPath.c_str()) && is_directory(fullPath.c_str()))
+		if(boost::filesystem3::exists(fullPath.c_str()) && is_directory(fullPath.c_str()))
 			return true;
 
 		return false;
@@ -116,7 +141,7 @@ namespace CamelotFramework
 
 	bool FileSystem::isDirectory(const WPath& fullPath)
 	{
-		if(exists(fullPath) && is_directory(fullPath))
+		if(boost::filesystem3::exists(fullPath) && is_directory(fullPath))
 			return true;
 
 		return false;
@@ -153,6 +178,11 @@ namespace CamelotFramework
 	std::time_t FileSystem::getLastModifiedTime(const WString& fullPath)
 	{
 		return last_write_time(fullPath.c_str());
+	}
+
+	std::time_t FileSystem::getLastModifiedTime(const WPath& fullPath)
+	{
+		return last_write_time(fullPath);
 	}
 
 	WString FileSystem::getWorkingDirectoryPath()

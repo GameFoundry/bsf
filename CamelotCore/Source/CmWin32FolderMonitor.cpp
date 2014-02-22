@@ -18,15 +18,15 @@ namespace CamelotFramework
 	class WorkerFunc
 	{
 	public:
-		WorkerFunc(Win32FolderMonitor* owner);
+		WorkerFunc(FolderMonitor* owner);
 
 		void operator()();
 
 	private:
-		Win32FolderMonitor* mOwner;
+		FolderMonitor* mOwner;
 	};
 
-	struct Win32FolderMonitor::FolderWatchInfo
+	struct FolderMonitor::FolderWatchInfo
 	{
 		FolderWatchInfo(const WString& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags);
 		~FolderWatchInfo();
@@ -52,7 +52,7 @@ namespace CamelotFramework
 		CM_THREAD_SYNCHRONISER(mStartStopEvent)
 	};
 
-	Win32FolderMonitor::FolderWatchInfo::FolderWatchInfo(const WString& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags)
+	FolderMonitor::FolderWatchInfo::FolderWatchInfo(const WString& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags)
 		:mFolderToMonitor(folderToMonitor), mDirHandle(dirHandle), mState(MonitorState::Inactive), mBufferSize(0),
 		mMonitorSubdirectories(monitorSubdirectories), mMonitorFlags(monitorFlags), mReadError(0)
 	{
@@ -62,14 +62,14 @@ namespace CamelotFramework
 		memset(&mOverlapped, 0, sizeof(mOverlapped));
 	}
 
-	Win32FolderMonitor::FolderWatchInfo::~FolderWatchInfo()
+	FolderMonitor::FolderWatchInfo::~FolderWatchInfo()
 	{
 		assert(mState == MonitorState::Inactive);
 
 		stopMonitor(0);
 	}
 
-	void Win32FolderMonitor::FolderWatchInfo::startMonitor(HANDLE compPortHandle)
+	void FolderMonitor::FolderWatchInfo::startMonitor(HANDLE compPortHandle)
 	{
 		if(mState != MonitorState::Inactive)
 			return; // Already monitoring
@@ -96,7 +96,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Win32FolderMonitor::FolderWatchInfo::stopMonitor(HANDLE compPortHandle)
+	void FolderMonitor::FolderWatchInfo::stopMonitor(HANDLE compPortHandle)
 	{
 		if(mState != MonitorState::Inactive)
 		{
@@ -116,7 +116,7 @@ namespace CamelotFramework
 		}
 	}
 
-	class Win32FolderMonitor::FileNotifyInfo
+	class FolderMonitor::FileNotifyInfo
 	{
 	public:
 		FileNotifyInfo(UINT8* notifyBuffer, DWORD bufferSize)
@@ -138,7 +138,7 @@ namespace CamelotFramework
 		PFILE_NOTIFY_INFORMATION mCurrentRecord;
 	};
 
-	bool Win32FolderMonitor::FileNotifyInfo::getNext()
+	bool FolderMonitor::FileNotifyInfo::getNext()
 	{
 		if(mCurrentRecord && mCurrentRecord->NextEntryOffset != 0)
 		{
@@ -159,7 +159,7 @@ namespace CamelotFramework
 		return false;
 	}
 
-	DWORD Win32FolderMonitor::FileNotifyInfo::getAction() const
+	DWORD FolderMonitor::FileNotifyInfo::getAction() const
 	{ 
 		assert(mCurrentRecord != nullptr);
 
@@ -169,7 +169,7 @@ namespace CamelotFramework
 		return 0;
 	}
 
-	WString Win32FolderMonitor::FileNotifyInfo::getFileName() const
+	WString FolderMonitor::FileNotifyInfo::getFileName() const
 	{
 		if(mCurrentRecord)
 		{
@@ -184,7 +184,7 @@ namespace CamelotFramework
 		return WString();
 	}		
 
-	WString Win32FolderMonitor::FileNotifyInfo::getFileNameWithPath(const WString& rootPath) const
+	WString FolderMonitor::FileNotifyInfo::getFileNameWithPath(const WString& rootPath) const
 	{
 		WStringStream wss;
 		wss<<rootPath;
@@ -288,7 +288,7 @@ namespace CamelotFramework
 		FileActionType type;
 	};
 
-	struct Win32FolderMonitor::Pimpl
+	struct FolderMonitor::Pimpl
 	{
 		Vector<FolderWatchInfo*>::type mFoldersToWatch;
 		HANDLE mCompPortHandle;
@@ -300,14 +300,14 @@ namespace CamelotFramework
 		CM_THREAD_TYPE* mWorkerThread;
 	};
 
-	Win32FolderMonitor::Win32FolderMonitor()
+	FolderMonitor::FolderMonitor()
 	{
 		mPimpl = cm_new<Pimpl>();
 		mPimpl->mWorkerThread = nullptr;
 		mPimpl->mCompPortHandle = nullptr;
 	}
 
-	Win32FolderMonitor::~Win32FolderMonitor()
+	FolderMonitor::~FolderMonitor()
 	{
 		stopMonitorAll();
 
@@ -323,7 +323,7 @@ namespace CamelotFramework
 		cm_delete(mPimpl);
 	}
 
-	void Win32FolderMonitor::startMonitor(const WString& folderPath, bool subdirectories, FolderChange changeFilter)
+	void FolderMonitor::startMonitor(const WString& folderPath, bool subdirectories, FolderChange changeFilter)
 	{
 		if(!FileSystem::isDirectory(folderPath))
 		{
@@ -380,7 +380,7 @@ namespace CamelotFramework
 
 		if(mPimpl->mWorkerThread == nullptr)
 		{
-			CM_THREAD_CREATE(t, (boost::bind(&Win32FolderMonitor::workerThreadMain, this)));
+			CM_THREAD_CREATE(t, (boost::bind(&FolderMonitor::workerThreadMain, this)));
 			mPimpl->mWorkerThread = t;
 
 			if(mPimpl->mWorkerThread == nullptr)
@@ -412,7 +412,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Win32FolderMonitor::stopMonitor(const WString& folderPath)
+	void FolderMonitor::stopMonitor(const WString& folderPath)
 	{
 		WString folderPathForComparison = folderPath;
 		StringUtil::trim(folderPathForComparison, L"\\", false, true);
@@ -435,7 +435,7 @@ namespace CamelotFramework
 			stopMonitorAll();
 	}
 
-	void Win32FolderMonitor::stopMonitorAll()
+	void FolderMonitor::stopMonitorAll()
 	{
 		for(auto& watchInfo : mPimpl->mFoldersToWatch)
 		{
@@ -461,7 +461,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Win32FolderMonitor::workerThreadMain()
+	void FolderMonitor::workerThreadMain()
 	{
 		FolderWatchInfo* watchInfo = nullptr;
 
@@ -562,7 +562,7 @@ namespace CamelotFramework
 		} while (watchInfo != nullptr);
 	}
 
-	void Win32FolderMonitor::handleNotifications(FileNotifyInfo& notifyInfo, FolderWatchInfo& watchInfo)
+	void FolderMonitor::handleNotifications(FileNotifyInfo& notifyInfo, FolderWatchInfo& watchInfo)
 	{
 		Vector<FileAction*>::type mActions;
 
@@ -613,7 +613,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void Win32FolderMonitor::update()
+	void FolderMonitor::update()
 	{
 		{
 			CM_LOCK_MUTEX(mPimpl->mFileActionsMutex);

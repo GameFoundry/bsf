@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
+#include "CmPath.h"
 
 namespace CamelotFramework
 {
@@ -16,18 +17,18 @@ namespace CamelotFramework
 	class CM_EXPORT ResourceManifest : public IReflectable
 	{
 	public:
-		void registerResource(const String& uuid, const WString& filePath);
+		void registerResource(const String& uuid, const WPath& filePath);
 		void unregisterResource(const String& uuid);
 
-		const WString& uuidToFilePath(const String& uuid) const;
-		const String& filePathToUUID(const WString& filePath) const;
+		const WPath& uuidToFilePath(const String& uuid) const;
+		const String& filePathToUUID(const WPath& filePath) const;
 
 		bool uuidExists(const String& uuid) const;
-		bool filePathExists(const WString& filePath) const;
+		bool filePathExists(const WPath& filePath) const;
 
 	private:
-		Map<String, WString>::type mUUIDToFilePath;
-		Map<WString, String>::type mFilePathToUUID;
+		Map<String, WPath>::type mUUIDToFilePath;
+		Map<WPath, String>::type mFilePathToUUID;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

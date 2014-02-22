@@ -540,6 +540,9 @@
     <ClInclude Include="Include\CmWin32FolderMonitor.h">
       <Filter>Header Files\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmFolderMonitor.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
