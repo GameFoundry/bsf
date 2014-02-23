@@ -20,6 +20,7 @@ namespace BansheeEditor
 	class GUIMenuBar;
 	class GUIDockSlider;
 	class GUISceneTreeView;
+	class GUIResourceTreeView;
 	class GUITreeViewEditBox;
 	class EditorCommand;
 	class ResourceMeta;

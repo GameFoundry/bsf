@@ -2,7 +2,6 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUITreeView.h"
-#include "BsVirtualInput.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEditor

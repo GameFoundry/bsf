@@ -43,6 +43,11 @@ namespace CamelotFramework
 			path.replace_extension(newExtension.c_str());
 		}
 
+		static void replaceExtension(WString& path, const WString& newExtension)
+		{
+			path = toWString(toPath(path).replace_extension(newExtension.c_str()));
+		}
+
 		static WString parentPath(const WString& path)
 		{
 			return WPath(path.c_str()).parent_path().c_str();
@@ -59,19 +64,27 @@ namespace CamelotFramework
 		 */
 		static bool includes(const WString& child, const WString& parent)
 		{
-			boost::filesystem3::wpath childPath = child.c_str();
-			boost::filesystem3::wpath parentPath = parent.c_str();
+			Vector<WString>::type childPathElems = split(child);
+			Vector<WString>::type parentPathElems = split(parent);
 
-			auto iterChild = childPath.begin();
-			auto iterParent = parentPath.begin();
+			auto iterChild = childPathElems.begin();
+			auto iterParent = parentPathElems.begin();
 
-			for(; iterChild != childPath.end(); ++iterChild, ++iterParent)
+			for(; iterParent != parentPathElems.end(); ++iterChild, ++iterParent)
 			{
-				if(*iterChild != *iterParent)
+				if(!comparePathElements(*iterChild, *iterParent))
 					return false;
 			}
 
 			return true;
+		}
+
+		static Vector<WString>::type split(const WString& path)
+		{
+			Vector<WString>::type splitPath;
+
+			WString standardizedPath = standardisePath(path);
+			return StringUtil::split(standardizedPath, L"/");
 		}
 
 		static WString combine(const WString& base, const WString& name)
@@ -87,6 +100,57 @@ namespace CamelotFramework
 			return base / name;
 		}
 
+		/**
+		 * @brief	Compares two path elements for equality. 
+		 * 			
+		 * @note	Should not be used for comparing entire paths. First you need to split your
+		 * 			path into sub-elements using some other method and then send those sub-elements to
+		 * 			this method. 
+		 */
+		static bool comparePathElements(const WString& left, const WString& right)
+		{
+			if(left.size() != right.size())
+				return false;
+
+			for(UINT32 i = 0; i < (UINT32)left.size(); i++)
+			{
+#if CM_PLATFORM == CM_PLATFORM_WIN32 // Compare case insensitive
+				if(tolower(left[i]) != tolower(right[i]))
+					return false;
+#else
+				assert(false); // Implement case sensitive or insensitive comparison, depending on platform
+#endif
+			}
+
+			return true;
+		}
+
+		/**
+		 * @see		comparePathElements(const WString&, const WString&)
+		 */
+		static bool comparePathElements(const WPath& left, const WPath& right)
+		{
+			if(left.native().size() != right.native().size())
+				return false;
+
+			for(UINT32 i = 0; i < (UINT32)left.native().size(); i++)
+			{
+#if CM_PLATFORM == CM_PLATFORM_WIN32 // Compare case insensitive
+				if(tolower(left.native()[i]) != tolower(right.native()[i]))
+					return false;
+#else
+				assert(false); // Implement case sensitive or insensitive comparison, depending on platform
+#endif
+			}
+
+			return true;
+		}
+
+		static WString getFilename(const WString& path)
+		{
+			return toWString(toPath(path).filename());
+		}
+
 		static WPath getFilename(const WPath& path)
 		{
 			return path.filename();
@@ -100,61 +164,14 @@ namespace CamelotFramework
 			WString path = inPath;
 
 			std::replace(path.begin(), path.end(), L'\\', L'/');
-			if(path[path.length() - 1] != L'/')
-				path += L'/';
+
+			if(path.length() > 0)
+			{
+				if(path[path.length() - 1] != L'/')
+					path += L'/';
+			}
 
 			return path;
-		}
-
-		/**
-		 * @brief	Method for splitting a fully qualified filename into the base name and path.
-		 */
-		static void splitFilename(const WString& qualifiedName, WString& outBasename, WString& outPath)
-		{
-			WString path = qualifiedName;
-			// Replace \ with / first
-			std::replace( path.begin(), path.end(), L'\\', L'/' );
-			// split based on final /
-			size_t i = path.find_last_of(L'/');
-
-			if (i == String::npos)
-			{
-				outPath.clear();
-				outBasename = qualifiedName;
-			}
-			else
-			{
-				outBasename = path.substr(i+1, path.size() - i - 1);
-				outPath = path.substr(0, i+1);
-			}
-		}
-
-		/**
-		 * @brief	Method for splitting a filename into the base name and extension.
-		 */
-		static void splitBaseFilename(const WString& fullName, WString& outBasename, WString& outExtension)
-		{
-			size_t i = fullName.find_last_of(L".");
-			if (i == CamelotFramework::WString::npos)
-			{
-				outExtension.clear();
-				outBasename = fullName;
-			}
-			else
-			{
-				outExtension = fullName.substr(i+1);
-				outBasename = fullName.substr(0, i);
-			}
-		}
-
-		/**
-		 * @brief	Method for splitting a fully qualified filename into the base name, extension and path.
-		 */
-		static void splitFullFilename(const WString& qualifiedName, WString& outBasename, WString& outExtention, WString& outPath)
-		{
-			WString fullName;
-			splitFilename(qualifiedName, fullName, outPath);
-			splitBaseFilename(fullName, outBasename, outExtention);
 		}
 	};
 

@@ -52,12 +52,12 @@ namespace CamelotFramework
 	class CM_EXPORT ResourceManifestRTTI : public RTTIType<ResourceManifest, IReflectable, ResourceManifestRTTI>
 	{
 	private:
-		Map<String, WPath>::type& getUUIDMap(ResourceManifest* obj) 
+		Map<String, WString>::type& getUUIDMap(ResourceManifest* obj) 
 		{ 
 			return obj->mUUIDToFilePath;
 		}
 
-		void setUUIDMap(ResourceManifest* obj, Map<String, WPath>::type& val) 
+		void setUUIDMap(ResourceManifest* obj, Map<String, WString>::type& val) 
 		{ 
 			obj->mUUIDToFilePath = val; 
 

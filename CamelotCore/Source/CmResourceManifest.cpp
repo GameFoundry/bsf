@@ -3,7 +3,7 @@
 
 namespace CamelotFramework
 {
-	void ResourceManifest::registerResource(const String& uuid, const WPath& filePath)
+	void ResourceManifest::registerResource(const String& uuid, const WString& filePath)
 	{
 		auto iterFind = mUUIDToFilePath.find(uuid);
 
@@ -35,17 +35,17 @@ namespace CamelotFramework
 		}
 	}
 
-	const WPath& ResourceManifest::uuidToFilePath(const String& uuid) const
+	const WString& ResourceManifest::uuidToFilePath(const String& uuid) const
 	{
 		auto iterFind = mUUIDToFilePath.find(uuid);
 
 		if(iterFind != mUUIDToFilePath.end())
 			return iterFind->second;
 		else
-			return PathUtil::BLANK;
+			return StringUtil::WBLANK;
 	}
 
-	const String& ResourceManifest::filePathToUUID(const WPath& filePath) const
+	const String& ResourceManifest::filePathToUUID(const WString& filePath) const
 	{
 		auto iterFind = mFilePathToUUID.find(filePath);
 
@@ -62,7 +62,7 @@ namespace CamelotFramework
 		return iterFind != mUUIDToFilePath.end();
 	}
 
-	bool ResourceManifest::filePathExists(const WPath& filePath) const
+	bool ResourceManifest::filePathExists(const WString& filePath) const
 	{
 		auto iterFind = mFilePathToUUID.find(filePath);
 

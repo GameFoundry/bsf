@@ -2,7 +2,6 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUITreeView.h"
-#include "BsVirtualInput.h"
 #include "CmPath.h"
 #include <boost/signal.hpp>
 
@@ -12,7 +11,8 @@ namespace BansheeEditor
 	{
 		struct ResourceTreeElement : public GUITreeView::TreeElement
 		{
-			CM::WPath mFullPath;
+			CM::WString mFullPath;
+			CM::WString mElementName;
 		};
 
 		struct DraggedResources
@@ -26,7 +26,7 @@ namespace BansheeEditor
 			~InternalDraggedResources();
 
 			CM::UINT32 numObjects;
-			CM::WPath* resourcePaths;
+			CM::WString* resourcePaths;
 		};
 
 	public:
@@ -76,11 +76,11 @@ namespace BansheeEditor
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
 
-		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const CM::WPath& fullPath);
+		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const CM::WString& fullPath);
 		void deleteTreeElement(ResourceTreeElement* element);
 		void sortTreeElement(ResourceTreeElement* element);
 
-		ResourceTreeElement* findTreeElement(const CM::WPath& fullPath);
+		ResourceTreeElement* findTreeElement(const CM::WString& fullPath);
 
 		void entryAdded(const CM::WPath& path);
 		void entryRemoved(const CM::WPath& path);
@@ -92,9 +92,7 @@ namespace BansheeEditor
 		void dropTargetDragLeave();
 		void dropTargetDragDropped(CM::INT32 x, CM::INT32 y);
 
-		void quicksortTreeElements(CM::Vector<TreeElement*>::type& elements, CM::INT32 first, CM::INT32 last);
-
-		CM::WPath findUniquePath(const CM::WPath& path);
+		CM::WString findUniquePath(const CM::WString& path);
 
 		void _changeParentWidget(BS::GUIWidget* widget);
 	};

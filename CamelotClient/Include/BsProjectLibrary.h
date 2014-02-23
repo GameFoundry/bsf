@@ -21,20 +21,27 @@ namespace BansheeEditor
 
 		struct LibraryEntry
 		{
+			LibraryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type);
+
 			LibraryEntryType type;
 			CM::WPath path;
+			CM::WString elementName;
 
 			DirectoryEntry* parent;
 		};
 
 		struct ResourceEntry : public LibraryEntry
 		{
+			ResourceEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent);
+
 			ResourceMetaPtr meta;
 			std::time_t lastUpdateTime;
 		};
 
 		struct DirectoryEntry : public LibraryEntry
 		{
+			DirectoryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent);
+
 			CM::Vector<LibraryEntry*>::type mChildren;
 		};
 

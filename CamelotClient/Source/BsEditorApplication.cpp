@@ -24,6 +24,7 @@
 #include "BsDbgTestGameObjectRef.h"
 #include "BsVirtualInput.h"
 #include "CmWin32FolderMonitor.h"
+#include "BsProjectLibrary.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -54,6 +55,8 @@ namespace BansheeEditor
 			inputConfig->registerButton("Cut", BC_X, VButtonModifier::Ctrl);
 			inputConfig->registerButton("Paste", BC_V, VButtonModifier::Ctrl);
 		}
+
+		ProjectLibrary::startUp(cm_new<ProjectLibrary>());
 
 		//gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
@@ -294,6 +297,7 @@ namespace BansheeEditor
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
 
+		ProjectLibrary::shutDown();
 		EditorGUI::shutDown();
 		gBansheeApp().shutDown();
 
@@ -313,6 +317,7 @@ namespace BansheeEditor
 
 	void EditorApplication::update()
 	{
+		ProjectLibrary::instance().update();
 		EditorWindowManager::instance().update();	
 	}
 

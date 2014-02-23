@@ -43,6 +43,7 @@ namespace CamelotFramework
 	{
 		_clear();
 
+		mDropType = OSDropType::FileList;
 		mFileList = cm_new<Vector<WString>::type>();
 		*mFileList = fileList;
 	}

@@ -20,6 +20,7 @@ namespace BansheeEditor
 		BS::GUILabel* mLabel;
 		BS::GUIListBox* mListBox;
 		GUISceneTreeView* mSceneTreeView;
+		GUIResourceTreeView* mResourceTreeView;
 		CM::HString labelString;
 
 		CM::HSceneObject mDbgMainA;

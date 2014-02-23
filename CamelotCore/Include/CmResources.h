@@ -3,7 +3,6 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 #include "CmWorkQueue.h"
-#include "CmPath.h"
 
 namespace CamelotFramework
 {
@@ -157,7 +156,7 @@ namespace CamelotFramework
 		HResource loadInternal(const WString& filePath, bool synchronous); 
 		ResourcePtr loadFromDiskAndDeserialize(const WString& filePath);
 
-		const WPath& getPathFromUUID(const String& uuid) const;
+		const WString& getPathFromUUID(const String& uuid) const;
 		const String& getUUIDFromPath(const WString& path) const;
 
 		void notifyResourceLoadingFinished(HResource& handle);

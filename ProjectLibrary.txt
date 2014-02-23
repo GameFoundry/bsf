@@ -1,36 +1,38 @@
 
-Today:
- - Fix TreeView issues with expand
-
-Tomorrow:
- - Attempt to add ResourceTreeView to scene (and initialize ProjectLibrary)
- - Project library save/load
- - Figure out how to deal with import queue
- 
- 
- ProjectLibrary
-  - Save/Load - saves/loads the hierarchy of ResourceEntries
+TODO
+ - ResourceManifest filePathToUUID wont work as intended as file-path comparison is case sensitive plus it wont deal with slashes properly
+ - Remove WPath. In general, but specifically from CmPath.h, CmFileSystem.h and Projectlibrary
+ - ResourceTreeView - Element sorting doesn't work
+ - ProjectLibrary Save/Load - saves/loads the hierarchy of ResourceEntries
+    - ResourceManifest needs to store relative locations when I save it, so that user can move Project folder safely
+ - Resource import queue (ability to display progress bar for resources that are importing)
+ - Implement Delete command for ResourceTreeView
 
 --------------------
 
-Imported resources should get queued. Since I want to display a progress bar with % of resources imported.
- - Plus importers should work on separate threads (Will likely make Resources worker threads global and re-use them for importer)
+Test:
+ - OSDropTarget
+    - Drag and drop one file from Explorer into TreeView
+    - Drag and drop multiple files from Explorer into TreeView
+    - Drag and drop entire folders from Explorer into TreeView
+    - Dragging folders or files from within Resources to another sub-folder in Resources
 
--------------------
+ - File monitoring
+    - Add a file and ensure it is imported
+    - Delete a file and ensure it has been cleaned up
+    - Add a whole folder hierarchy with files and see if it is constructed properly
+    - Delete a folder hierarcha and ensure it has been cleaned up
 
-TOMORROW:
-mIsVisible seems to get set in updateTreeElement? Which means expanding/closing wont work without it
- - I should probably move those so they are changed whenever mIsExpanded is toggled
- - I might want to move stuff from TreeView::update in general to an event-based system. Only in case of Scene those events would be generated internally.
+ - Start-up
+     - Load up ProjectLibrary with a complex hierarchy already existing, with multiple files to import
 
-Later: Projectlibrary add (tracking drag and drop using Win32DragAndDropManager)
+ - Save/Load (After it is implemented)
+     - Ensure that leaving application and then reloading will still recognize previously saved assets and will not reimport them
+       - Also ensure that UUIDs will be properly read from .meta files
+
 -------------------
 
 LOW PRIORITY
-
-ResourceManifest contains absolute file locations. What happens when the project moves?
- - When saving ResourceManifest make sure to process all paths and make them relative.
- - Then reverse that process on load
 
 What happens when importer fails importing a file?
  - This can be one of the lasts steps, but I will likely need to go through all importers manually and set them up so they return proper error codes

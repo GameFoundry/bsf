@@ -19,7 +19,19 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	const WString ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal/Resources";
+	const WString ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal\\Resources";
+
+	ProjectLibrary::LibraryEntry::LibraryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type)
+		:path(path), parent(parent), type(type), elementName(name)
+	{ }
+
+	ProjectLibrary::ResourceEntry::ResourceEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent)
+		:LibraryEntry(path, name, parent, LibraryEntryType::File), lastUpdateTime(0)
+	{ }
+
+	ProjectLibrary::DirectoryEntry::DirectoryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent)
+		:LibraryEntry(path, name, parent, LibraryEntryType::Directory)
+	{ }
 
 	ProjectLibrary::ProjectLibrary()
 		:mRootEntry(nullptr)
@@ -33,10 +45,15 @@ namespace BansheeEditor
 		mMonitor->onAdded.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 		mMonitor->onRemoved.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 		mMonitor->onModified.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
+
+		// TODO - Load
+		checkForModifications(EditorApplication::instance().getResourcesFolderPath());
 	}
 
 	ProjectLibrary::~ProjectLibrary()
 	{
+		// TODO - Save
+
 		mMonitor->stopMonitorAll();
 		cm_delete(mMonitor);
 
@@ -56,8 +73,8 @@ namespace BansheeEditor
 
 		if(mRootEntry == nullptr)
 		{
-			mRootEntry = cm_new<DirectoryEntry>();
-			mRootEntry->path = toPath(EditorApplication::instance().getResourcesFolderPath());
+			WPath resPath = toPath(EditorApplication::instance().getResourcesFolderPath());
+			mRootEntry = cm_new<DirectoryEntry>(resPath, toWString(PathUtil::getFilename(resPath)), nullptr);
 		}
 
 		WPath pathToSearch = toPath(fullPath);
@@ -103,116 +120,119 @@ namespace BansheeEditor
 		}
 		else if(entry->type == LibraryEntryType::Directory) // Check folder and all subfolders for modifications
 		{
-			Stack<DirectoryEntry*>::type todo;
-			todo.push(static_cast<DirectoryEntry*>(entry));
-
-			Vector<WPath>::type childFiles;
-			Vector<WPath>::type childDirectories;
-			Vector<bool>::type existingEntries;
-			Vector<LibraryEntry*>::type toDelete;
-
-			while(!todo.empty())
+			if(!FileSystem::isDirectory(entry->path))
 			{
-				DirectoryEntry* currentDir = todo.top();
-				todo.pop();
+				deleteDirectoryInternal(static_cast<DirectoryEntry*>(entry));
+			}
+			else
+			{
+				Stack<DirectoryEntry*>::type todo;
+				todo.push(static_cast<DirectoryEntry*>(entry));
 
-				existingEntries.clear();
-				existingEntries.resize(currentDir->mChildren.size());
-				for(UINT32 i = 0; i < (UINT32)currentDir->mChildren.size(); i++)
-					existingEntries[i] = false;
+				Vector<WPath>::type childFiles;
+				Vector<WPath>::type childDirectories;
+				Vector<bool>::type existingEntries;
+				Vector<LibraryEntry*>::type toDelete;
 
-				childFiles.clear();
-				childDirectories.clear();
-
-				FileSystem::getChildren(currentDir->path, childFiles, childDirectories);
-			
-				for(auto& filePath : childFiles)
+				while(!todo.empty())
 				{
-					if(isMeta(filePath))
+					DirectoryEntry* currentDir = todo.top();
+					todo.pop();
+
+					existingEntries.clear();
+					existingEntries.resize(currentDir->mChildren.size());
+					for(UINT32 i = 0; i < (UINT32)currentDir->mChildren.size(); i++)
+						existingEntries[i] = false;
+
+					childFiles.clear();
+					childDirectories.clear();
+
+					FileSystem::getChildren(currentDir->path, childFiles, childDirectories);
+			
+					for(auto& filePath : childFiles)
 					{
-						WPath sourceFilePath = filePath;
-						PathUtil::replaceExtension(sourceFilePath, L"");
-
-						if(FileSystem::isFile(sourceFilePath))
+						if(isMeta(filePath))
 						{
-							LOGWRN("Found a .meta file without a corresponding resource. Deleting.");
+							WPath sourceFilePath = filePath;
+							PathUtil::replaceExtension(sourceFilePath, L"");
 
-							FileSystem::remove(filePath);
+							if(FileSystem::isFile(sourceFilePath))
+							{
+								LOGWRN("Found a .meta file without a corresponding resource. Deleting.");
+
+								FileSystem::remove(filePath);
+							}
+						}
+						else
+						{
+							ResourceEntry* existingEntry = nullptr;
+							UINT32 idx = 0;
+							for(auto& child : currentDir->mChildren)
+							{
+								if(child->type == LibraryEntryType::File && child->path == filePath)
+								{
+									existingEntries[idx] = true;
+									existingEntry = static_cast<ResourceEntry*>(child);
+									break;
+								}
+
+								idx++;
+							}
+
+							if(existingEntry != nullptr)
+							{
+								reimportResourceInternal(existingEntry);
+							}
+							else
+							{
+								addResourceInternal(currentDir, filePath);
+							}
 						}
 					}
-					else
+
+					for(auto& dirPath : childDirectories)
 					{
-						ResourceEntry* existingEntry = nullptr;
+						DirectoryEntry* existingEntry = nullptr;
 						UINT32 idx = 0;
 						for(auto& child : currentDir->mChildren)
 						{
-							if(child->type == LibraryEntryType::File && child->path == filePath)
+							if(child->type == LibraryEntryType::Directory && child->path == dirPath)
 							{
 								existingEntries[idx] = true;
-								existingEntry = static_cast<ResourceEntry*>(child);
+								existingEntry = static_cast<DirectoryEntry*>(child);
 								break;
 							}
 
 							idx++;
 						}
 
-						if(existingEntry != nullptr)
-						{
-							reimportResourceInternal(existingEntry);
-						}
-						else
-						{
-							addResourceInternal(currentDir, filePath);
-						}
+						if(existingEntry == nullptr)
+							addDirectoryInternal(currentDir, dirPath);
 					}
-				}
 
-				for(auto& dirPath : childDirectories)
-				{
-					DirectoryEntry* existingEntry = nullptr;
-					UINT32 idx = 0;
-					for(auto& child : currentDir->mChildren)
 					{
-						if(child->type == LibraryEntryType::Directory && child->path == dirPath)
+						for(UINT32 i = 0; i < (UINT32)existingEntries.size(); i++)
 						{
-							existingEntries[idx] = true;
-							existingEntry = static_cast<DirectoryEntry*>(child);
-							break;
+							if(existingEntries[i])
+								continue;
+
+							toDelete.push_back(currentDir->mChildren[i]);
 						}
 
-						idx++;
+						for(auto& child : toDelete)
+						{
+							if(child->type == LibraryEntryType::Directory)
+								deleteDirectoryInternal(static_cast<DirectoryEntry*>(child));
+							else if(child->type == LibraryEntryType::File)
+								deleteResourceInternal(static_cast<ResourceEntry*>(child));
+						}
 					}
 
-					if(existingEntry == nullptr)
-						addDirectoryInternal(currentDir, dirPath);
-				}
-
-				{
-					UINT32 idx = 0;
-					toDelete.clear();
 					for(auto& child : currentDir->mChildren)
-					{
-						if(existingEntries[idx])
-							continue;
-
-						toDelete.push_back(child);
-
-						idx++;
-					}
-
-					for(auto& child : toDelete)
 					{
 						if(child->type == LibraryEntryType::Directory)
-							deleteDirectoryInternal(static_cast<DirectoryEntry*>(child));
-						else if(child->type == LibraryEntryType::File)
-							deleteResourceInternal(static_cast<ResourceEntry*>(child));
+							todo.push(static_cast<DirectoryEntry*>(child));
 					}
-				}
-
-				for(auto& child : currentDir->mChildren)
-				{
-					if(child->type == LibraryEntryType::Directory)
-						todo.push(static_cast<DirectoryEntry*>(child));
 				}
 			}
 		}
@@ -220,11 +240,7 @@ namespace BansheeEditor
 
 	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const CM::WPath& filePath)
 	{
-		ResourceEntry* newResource = cm_new<ResourceEntry>();
-		newResource->type = LibraryEntryType::File;
-		newResource->path = filePath;
-		newResource->parent = parent;
-
+		ResourceEntry* newResource = cm_new<ResourceEntry>(filePath, toWString(PathUtil::getFilename(filePath)), parent);
 		parent->mChildren.push_back(newResource);
 
 		reimportResourceInternal(newResource);
@@ -237,11 +253,7 @@ namespace BansheeEditor
 
 	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const CM::WPath& dirPath)
 	{
-		DirectoryEntry* newEntry = cm_new<DirectoryEntry>();
-		newEntry->type = LibraryEntryType::Directory;
-		newEntry->path = dirPath;
-		newEntry->parent = parent;
-
+		DirectoryEntry* newEntry = cm_new<DirectoryEntry>(dirPath, toWString(PathUtil::getFilename(dirPath)), parent);
 		parent->mChildren.push_back(newEntry);
 
 		if(!onEntryAdded.empty())
@@ -258,7 +270,7 @@ namespace BansheeEditor
 		{
 			if(manifest->uuidExists(resource->meta->getUUID()))
 			{
-				const WPath& path = manifest->uuidToFilePath(resource->meta->getUUID());
+				const WString& path = manifest->uuidToFilePath(resource->meta->getUUID());
 				if(FileSystem::isFile(path))
 					FileSystem::remove(path);
 
@@ -355,7 +367,7 @@ namespace BansheeEditor
 			gResources().save(importedResource, toWString(internalResourcesPath), true);
 
 			ResourceManifestPtr manifest = gResources().getResourceManifest();
-			manifest->registerResource(importedResource.getUUID(), internalResourcesPath);
+			manifest->registerResource(importedResource.getUUID(), toWString(internalResourcesPath));
 
 			resource->lastUpdateTime = std::time(nullptr);
 		}
@@ -371,7 +383,7 @@ namespace BansheeEditor
 		if(!manifest->uuidExists(resource->meta->getUUID()))
 			return false;
 
-		const WPath& path = manifest->uuidToFilePath(resource->meta->getUUID());
+		const WString& path = manifest->uuidToFilePath(resource->meta->getUUID());
 		if(!FileSystem::isFile(path))
 			return false;
 
@@ -381,20 +393,22 @@ namespace BansheeEditor
 
 	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const CM::WPath& fullPath) const
 	{
-		auto pathIter = fullPath.begin();
-		auto rootIter = mRootEntry->path.begin();
+		Vector<WString>::type pathElems = PathUtil::split(toWString(fullPath));
+		Vector<WString>::type rootElems = PathUtil::split(toWString(mRootEntry->path));
 
-		while(*pathIter == *rootIter)
+		auto pathIter = pathElems.begin();
+		auto rootIter = rootElems.begin();
+
+		while(pathIter != pathElems.end() && rootIter != rootElems.end() && PathUtil::comparePathElements(*pathIter, *rootIter))
 		{
 			++pathIter;
 			++rootIter;
 		}
 
-		if(pathIter == fullPath.begin()) // Not a single entry matches Resources path
+		if(pathIter == pathElems.begin()) // Not a single entry matches Resources path
 			return nullptr;
 
 		--pathIter;
-
 		Stack<LibraryEntry*>::type todo;
 		todo.push(mRootEntry);
 
@@ -403,19 +417,22 @@ namespace BansheeEditor
 			LibraryEntry* current = todo.top();
 			todo.pop();
 
-			if(*pathIter == *(--(current->path.end())))
+			if(PathUtil::comparePathElements(*pathIter, current->elementName))
 			{
+				++pathIter;
+
+				if(pathIter == pathElems.end())
+					return current;
+
+				while(!todo.empty())
+					todo.pop();
+
 				if(current->type == LibraryEntryType::Directory)
 				{
 					DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(current);
 					for(auto& child : dirEntry->mChildren)
 						todo.push(child);
 				}
-
-				if(pathIter == fullPath.end())
-					return current;
-
-				++pathIter;
 			}
 		}
 
@@ -473,6 +490,7 @@ namespace BansheeEditor
 				newEntryParent->mChildren.push_back(oldEntry);
 				oldEntry->parent = newEntryParent;
 				oldEntry->path = newPath;
+				oldEntry->elementName = toWString(PathUtil::getFilename(newPath));
 
 				if(!onEntryRemoved.empty())
 					onEntryRemoved(oldPath);
@@ -557,9 +575,7 @@ namespace BansheeEditor
 
 	WPath ProjectLibrary::getMetaPath(const CM::WPath& path) const
 	{
-		WString ext = toWString(PathUtil::getExtension(path));
-		WPath metaPath = path;
-		PathUtil::replaceExtension(metaPath, ext + L".meta");
+		WPath metaPath = toPath(toWString(path) + L".meta");
 
 		return metaPath;
 	}
@@ -571,6 +587,14 @@ namespace BansheeEditor
 
 	void ProjectLibrary::onMonitorFileModified(const WString& path)
 	{
-		checkForModifications(path);
+		if(!isMeta(toPath(path)))
+			checkForModifications(path);
+		else
+		{
+			WPath resourcePath = toPath(path);
+			PathUtil::replaceExtension(resourcePath, L"");
+
+			checkForModifications(toWString(resourcePath));
+		}
 	}
 }

@@ -25,6 +25,7 @@
 #include "BsGUIContent.h"
 #include "CmStringTable.h"
 #include "BsGUISceneTreeView.h"
+#include "BsGUIResourceTreeView.h"
 #include "BsGUIScrollArea.h"
 
 using namespace CamelotFramework;
@@ -49,7 +50,7 @@ namespace BansheeEditor
 		GUIArea* area = GUIArea::createStretchedXY(*this, 0, 0, 0, 0);
 
 		mSceneTreeView = GUISceneTreeView::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
-
+		mResourceTreeView = GUIResourceTreeView::create(*this, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()));
 		GUILayout& sceneTreeViewLayout = area->getLayout().addLayoutY();
 		
 		//sceneTreeViewLayout.addElement(mSceneTreeView);
@@ -85,26 +86,27 @@ namespace BansheeEditor
 		sceneTreeViewLayout.addFlexibleSpace();
 
 		scrollArea->getLayout().addElement(mSceneTreeView);
+		area->getLayout().addElement(mResourceTreeView);
 
-		GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
-		button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));
-		area->getLayout().addElement(button);
+		//GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
+		//button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));
+		//area->getLayout().addElement(button);
 
-		button = GUIButton::create(*this, HString(L"Add GameObjects"));
-		button->onClick.connect(boost::bind(&TestTextSprite::dbgAdd, this));
-		area->getLayout().addElement(button);
+		//button = GUIButton::create(*this, HString(L"Add GameObjects"));
+		//button->onClick.connect(boost::bind(&TestTextSprite::dbgAdd, this));
+		//area->getLayout().addElement(button);
 
-		button = GUIButton::create(*this, HString(L"Rename GameObject"));
-		button->onClick.connect(boost::bind(&TestTextSprite::dbgRename, this));
-		area->getLayout().addElement(button);
+		//button = GUIButton::create(*this, HString(L"Rename GameObject"));
+		//button->onClick.connect(boost::bind(&TestTextSprite::dbgRename, this));
+		//area->getLayout().addElement(button);
 
-		button = GUIButton::create(*this, HString(L"Remove child GameObjects"));
-		button->onClick.connect(boost::bind(&TestTextSprite::dbgRemoveChildren, this));
-		area->getLayout().addElement(button);
+		//button = GUIButton::create(*this, HString(L"Remove child GameObjects"));
+		//button->onClick.connect(boost::bind(&TestTextSprite::dbgRemoveChildren, this));
+		//area->getLayout().addElement(button);
 
-		button = GUIButton::create(*this, HString(L"Remove parent GameObjects"));
-		button->onClick.connect(boost::bind(&TestTextSprite::dbgRemoveParents, this));
-		area->getLayout().addElement(button);
+		//button = GUIButton::create(*this, HString(L"Remove parent GameObjects"));
+		//button->onClick.connect(boost::bind(&TestTextSprite::dbgRemoveParents, this));
+		//area->getLayout().addElement(button);
 
 		area->getLayout().addFlexibleSpace();
 
@@ -116,6 +118,7 @@ namespace BansheeEditor
 	{
 		labelString.setParameter(0, toWString(Input::instance().getCursorPosition().x));
 		mSceneTreeView->update();
+		mResourceTreeView->update();
 		//labelString.setParameter(1, toWString(Input::instance().getCursorPosition().y));
 	}
 

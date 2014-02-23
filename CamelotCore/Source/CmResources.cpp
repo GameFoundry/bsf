@@ -114,7 +114,7 @@ namespace CamelotFramework
 			return HResource();
 		}
 
-		WString filePath = toWString(getPathFromUUID(uuid));
+		WString filePath = getPathFromUUID(uuid);
 		return load(filePath);
 	}
 
@@ -126,14 +126,14 @@ namespace CamelotFramework
 			return HResource();
 		}
 
-		WString filePath = toWString(getPathFromUUID(uuid));
+		WString filePath = getPathFromUUID(uuid);
 		return loadAsync(filePath);
 	}
 
 	HResource Resources::loadInternal(const WString& filePath, bool synchronous)
 	{
 		String uuid;
-		if(!mResourceManifest->filePathExists(toPath(filePath)))
+		if(!mResourceManifest->filePathExists(filePath))
 			uuid = UUIDGenerator::generateRandom();
 		else
 			uuid = getUUIDFromPath(filePath);
@@ -260,20 +260,20 @@ namespace CamelotFramework
 				CM_EXCEPT(InvalidParametersException, "Another file exists at the specified location.");
 		}
 
-		mResourceManifest->registerResource(resource.getUUID(), toPath(filePath));
+		mResourceManifest->registerResource(resource.getUUID(), filePath);
 
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
 	}
 
-	const WPath& Resources::getPathFromUUID(const String& uuid) const
+	const WString& Resources::getPathFromUUID(const String& uuid) const
 	{
 		return mResourceManifest->uuidToFilePath(uuid);
 	}
 
 	const String& Resources::getUUIDFromPath(const WString& path) const
 	{
-		return mResourceManifest->filePathToUUID(toPath(path));
+		return mResourceManifest->filePathToUUID(path);
 	}
 
 	void Resources::notifyResourceLoadingFinished(HResource& handle)

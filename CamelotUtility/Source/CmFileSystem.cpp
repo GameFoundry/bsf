@@ -149,12 +149,34 @@ namespace CamelotFramework
 
 	void FileSystem::createDir(const WString& fullPath)
 	{
-		create_directory(fullPath.c_str());
+		createDir(WPath(fullPath.c_str()));
 	}
 
 	void FileSystem::createDir(const WPath& fullPath)
 	{
-		create_directory(fullPath);
+		if(fullPath.empty())
+			return;
+
+		WPath parentPath = fullPath;
+		auto pathEnd = fullPath.end();
+
+		while(!exists(parentPath))
+		{
+			if(pathEnd == fullPath.begin())
+				break;
+
+			parentPath = parentPath.parent_path();
+			pathEnd--;
+		}
+
+		for(; pathEnd != fullPath.end(); ++pathEnd)
+		{
+			create_directory(parentPath);
+
+			parentPath /= *pathEnd;
+		}
+
+		create_directory(parentPath);
 	}
 
 	void FileSystem::getChildren(const WPath& dirPath, Vector<WPath>::type& files, Vector<WPath>::type& directories)
