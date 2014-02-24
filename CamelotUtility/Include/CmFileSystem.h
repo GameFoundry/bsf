@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
-#include "CmPath.h"
 
 namespace CamelotFramework
 {
@@ -14,26 +13,17 @@ namespace CamelotFramework
 		static UINT64 getFileSize(const WString& fullPath);
 
 		static void remove(const WString& fullPath, bool recursively = true);
-		static void remove(const WPath& fullPath, bool recursively = true);
-
-		static void move(const WPath& oldPath, const WPath& newPath, bool overwriteExisting = true);
+		static void move(const WString& oldPath, const WString& newPath, bool overwriteExisting = true);
 
 		static void createDir(const WString& fullPath);
-		static void createDir(const WPath& fullPath);
 
 		static bool exists(const WString& fullPath);
-		static bool exists(const WPath& fullPath);
-
 		static bool isFile(const WString& fullPath);
-		static bool isFile(const WPath& fullPath);
-		
 		static bool isDirectory(const WString& fullPath);
-		static bool isDirectory(const WPath& fullPath);
 
-		static void getChildren(const WPath& dirPath, Vector<WPath>::type& files, Vector<WPath>::type& directories);
+		static void getChildren(const WString& dirPath, Vector<WString>::type& files, Vector<WString>::type& directories);
 
 		static std::time_t getLastModifiedTime(const WString& fullPath);
-		static std::time_t getLastModifiedTime(const WPath& fullPath);
 
 		static WString getWorkingDirectoryPath();
 		static WString getParentDirectory(const WString& path);

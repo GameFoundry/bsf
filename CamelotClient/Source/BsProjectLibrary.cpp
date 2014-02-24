@@ -21,15 +21,15 @@ namespace BansheeEditor
 {
 	const WString ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal\\Resources";
 
-	ProjectLibrary::LibraryEntry::LibraryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type)
+	ProjectLibrary::LibraryEntry::LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type)
 		:path(path), parent(parent), type(type), elementName(name)
 	{ }
 
-	ProjectLibrary::ResourceEntry::ResourceEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent)
+	ProjectLibrary::ResourceEntry::ResourceEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent)
 		:LibraryEntry(path, name, parent, LibraryEntryType::File), lastUpdateTime(0)
 	{ }
 
-	ProjectLibrary::DirectoryEntry::DirectoryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent)
+	ProjectLibrary::DirectoryEntry::DirectoryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent)
 		:LibraryEntry(path, name, parent, LibraryEntryType::Directory)
 	{ }
 
@@ -68,20 +68,20 @@ namespace BansheeEditor
 
 	void ProjectLibrary::checkForModifications(const CM::WString& fullPath)
 	{
-		if(!PathUtil::includes(fullPath, EditorApplication::instance().getResourcesFolderPath()))
+		if(!Path::includes(fullPath, EditorApplication::instance().getResourcesFolderPath()))
 			return; // Folder not part of our resources path, so no modifications
 
 		if(mRootEntry == nullptr)
 		{
-			WPath resPath = toPath(EditorApplication::instance().getResourcesFolderPath());
-			mRootEntry = cm_new<DirectoryEntry>(resPath, toWString(PathUtil::getFilename(resPath)), nullptr);
+			WString resPath = EditorApplication::instance().getResourcesFolderPath();
+			mRootEntry = cm_new<DirectoryEntry>(resPath, Path::getFilename(resPath), nullptr);
 		}
 
-		WPath pathToSearch = toPath(fullPath);
+		WString pathToSearch = fullPath;
 		LibraryEntry* entry = findEntry(pathToSearch);
 		if(entry == nullptr) // File could be new, try to find parent directory entry
 		{
-			WPath parentDirPath = PathUtil::parentPath(pathToSearch);
+			WString parentDirPath = Path::parentPath(pathToSearch);
 			entry = findEntry(parentDirPath);
 
 			// Cannot find parent directory. Create the needed hierarchy.
@@ -101,11 +101,11 @@ namespace BansheeEditor
 				addDirectoryInternal(entryParent, pathToSearch);
 
 				if(newHierarchyParent == nullptr)
-					checkForModifications(toWString(pathToSearch));
+					checkForModifications(pathToSearch);
 			}
 
 			if(newHierarchyParent != nullptr)
-				checkForModifications(toWString(newHierarchyParent->path));
+				checkForModifications(newHierarchyParent->path);
 		}
 		else if(entry->type == LibraryEntryType::File)
 		{
@@ -129,8 +129,8 @@ namespace BansheeEditor
 				Stack<DirectoryEntry*>::type todo;
 				todo.push(static_cast<DirectoryEntry*>(entry));
 
-				Vector<WPath>::type childFiles;
-				Vector<WPath>::type childDirectories;
+				Vector<WString>::type childFiles;
+				Vector<WString>::type childDirectories;
 				Vector<bool>::type existingEntries;
 				Vector<LibraryEntry*>::type toDelete;
 
@@ -153,8 +153,8 @@ namespace BansheeEditor
 					{
 						if(isMeta(filePath))
 						{
-							WPath sourceFilePath = filePath;
-							PathUtil::replaceExtension(sourceFilePath, L"");
+							WString sourceFilePath = filePath;
+							Path::replaceExtension(sourceFilePath, L"");
 
 							if(FileSystem::isFile(sourceFilePath))
 							{
@@ -238,9 +238,9 @@ namespace BansheeEditor
 		}
 	}
 
-	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const CM::WPath& filePath)
+	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const CM::WString& filePath)
 	{
-		ResourceEntry* newResource = cm_new<ResourceEntry>(filePath, toWString(PathUtil::getFilename(filePath)), parent);
+		ResourceEntry* newResource = cm_new<ResourceEntry>(filePath, Path::getFilename(filePath), parent);
 		parent->mChildren.push_back(newResource);
 
 		reimportResourceInternal(newResource);
@@ -251,9 +251,9 @@ namespace BansheeEditor
 		return newResource;
 	}
 
-	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const CM::WPath& dirPath)
+	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const CM::WString& dirPath)
 	{
-		DirectoryEntry* newEntry = cm_new<DirectoryEntry>(dirPath, toWString(PathUtil::getFilename(dirPath)), parent);
+		DirectoryEntry* newEntry = cm_new<DirectoryEntry>(dirPath, Path::getFilename(dirPath), parent);
 		parent->mChildren.push_back(newEntry);
 
 		if(!onEntryAdded.empty())
@@ -317,9 +317,9 @@ namespace BansheeEditor
 
 	void ProjectLibrary::reimportResourceInternal(ResourceEntry* resource)
 	{
-		WString ext = toWString(PathUtil::getExtension(resource->path));
-		WPath metaPath = resource->path;
-		PathUtil::replaceExtension(metaPath, ext + L".meta");
+		WString ext = Path::getExtension(resource->path);
+		WString metaPath = resource->path;
+		Path::replaceExtension(metaPath, ext + L".meta");
 
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!Importer::instance().supportsFileType(ext))
@@ -330,7 +330,7 @@ namespace BansheeEditor
 			FileSerializer fs;
 			if(FileSystem::isFile(metaPath))
 			{
-				std::shared_ptr<IReflectable> loadedMeta = fs.decode(toWString(metaPath));
+				std::shared_ptr<IReflectable> loadedMeta = fs.decode(metaPath);
 
 				if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ResourceMeta::getRTTIStatic()))
 				{
@@ -347,27 +347,27 @@ namespace BansheeEditor
 			if(resource->meta != nullptr)
 				importOptions = resource->meta->getImportOptions();
 			else
-				importOptions = Importer::instance().createImportOptions(toWString(resource->path));
+				importOptions = Importer::instance().createImportOptions(resource->path);
 
-			HResource importedResource = Importer::instance().import(toWString(resource->path), importOptions);
+			HResource importedResource = Importer::instance().import(resource->path, importOptions);
 
 			if(resource->meta == nullptr)
 			{
 				resource->meta = ResourceMeta::create(importedResource.getUUID(), importOptions);
 				FileSerializer fs;
-				fs.encode(resource->meta.get(), toWString(metaPath));
+				fs.encode(resource->meta.get(), metaPath);
 			}
 
-			WPath internalResourcesPath = toPath(EditorApplication::instance().getActiveProjectPath()) / toPath(INTERNAL_RESOURCES_DIR);
+			WString internalResourcesPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
 			if(!FileSystem::isDirectory(internalResourcesPath))
 				FileSystem::createDir(internalResourcesPath);
 
-			internalResourcesPath /= toPath(toWString(importedResource.getUUID()) + L".asset");
+			internalResourcesPath = Path::combine(internalResourcesPath, toWString(importedResource.getUUID()) + L".asset");
 
-			gResources().save(importedResource, toWString(internalResourcesPath), true);
+			gResources().save(importedResource, internalResourcesPath, true);
 
 			ResourceManifestPtr manifest = gResources().getResourceManifest();
-			manifest->registerResource(importedResource.getUUID(), toWString(internalResourcesPath));
+			manifest->registerResource(importedResource.getUUID(), internalResourcesPath);
 
 			resource->lastUpdateTime = std::time(nullptr);
 		}
@@ -391,15 +391,15 @@ namespace BansheeEditor
 		return lastModifiedTime <= resource->lastUpdateTime;
 	}
 
-	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const CM::WPath& fullPath) const
+	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const CM::WString& fullPath) const
 	{
-		Vector<WString>::type pathElems = PathUtil::split(toWString(fullPath));
-		Vector<WString>::type rootElems = PathUtil::split(toWString(mRootEntry->path));
+		Vector<WString>::type pathElems = Path::split(fullPath);
+		Vector<WString>::type rootElems = Path::split(mRootEntry->path);
 
 		auto pathIter = pathElems.begin();
 		auto rootIter = rootElems.begin();
 
-		while(pathIter != pathElems.end() && rootIter != rootElems.end() && PathUtil::comparePathElements(*pathIter, *rootIter))
+		while(pathIter != pathElems.end() && rootIter != rootElems.end() && Path::comparePathElements(*pathIter, *rootIter))
 		{
 			++pathIter;
 			++rootIter;
@@ -417,7 +417,7 @@ namespace BansheeEditor
 			LibraryEntry* current = todo.top();
 			todo.pop();
 
-			if(PathUtil::comparePathElements(*pathIter, current->elementName))
+			if(Path::comparePathElements(*pathIter, current->elementName))
 			{
 				++pathIter;
 
@@ -439,19 +439,19 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	void ProjectLibrary::moveEntry(const CM::WPath& oldPath, const CM::WPath& newPath)
+	void ProjectLibrary::moveEntry(const CM::WString& oldPath, const CM::WString& newPath)
 	{
 		if(FileSystem::isFile(oldPath) || FileSystem::isDirectory(oldPath))
 			FileSystem::move(oldPath, newPath);
 
-		WPath oldMetaPath = getMetaPath(oldPath);
-		WPath newMetaPath = getMetaPath(newPath);
+		WString oldMetaPath = getMetaPath(oldPath);
+		WString newMetaPath = getMetaPath(newPath);
 
 		LibraryEntry* oldEntry = findEntry(oldPath);
 		if(oldEntry != nullptr) // Moving from the Resources folder
 		{
 			// Moved outside of Resources, delete entry & meta file
-			if(!PathUtil::includes(toWString(newPath), EditorApplication::instance().getResourcesFolderPath()))
+			if(!Path::includes(newPath, EditorApplication::instance().getResourcesFolderPath()))
 			{
 				if(oldEntry->type == LibraryEntryType::File)
 				{
@@ -473,7 +473,7 @@ namespace BansheeEditor
 				if(findIter != parent->mChildren.end())
 					parent->mChildren.erase(findIter);
 
-				WPath parentPath = PathUtil::parentPath(newPath);
+				WString parentPath = Path::parentPath(newPath);
 
 				DirectoryEntry* newEntryParent = nullptr;
 				LibraryEntry* newEntryParentLib = findEntry(parentPath);
@@ -490,7 +490,7 @@ namespace BansheeEditor
 				newEntryParent->mChildren.push_back(oldEntry);
 				oldEntry->parent = newEntryParent;
 				oldEntry->path = newPath;
-				oldEntry->elementName = toWString(PathUtil::getFilename(newPath));
+				oldEntry->elementName = Path::getFilename(newPath);
 
 				if(!onEntryRemoved.empty())
 					onEntryRemoved(oldPath);
@@ -499,16 +499,16 @@ namespace BansheeEditor
 					onEntryAdded(newPath);
 
 				if(newHierarchyParent != nullptr)
-					checkForModifications(toWString(newHierarchyParent->path));
+					checkForModifications(newHierarchyParent->path);
 			}
 		}
 		else // Moving from outside of the Resources folder (likely adding a new resource)
 		{
-			checkForModifications(toWString(newPath));
+			checkForModifications(newPath);
 		}
 	}
 
-	void ProjectLibrary::deleteEntry(const CM::WPath& path)
+	void ProjectLibrary::deleteEntry(const CM::WString& path)
 	{
 		if(FileSystem::isFile(path))
 			FileSystem::remove(path);
@@ -520,7 +520,7 @@ namespace BansheeEditor
 			{
 				deleteResourceInternal(static_cast<ResourceEntry*>(entry));
 
-				WPath metaPath = getMetaPath(path);
+				WString metaPath = getMetaPath(path);
 				if(FileSystem::isFile(metaPath))
 					FileSystem::remove(metaPath);
 			}
@@ -529,15 +529,15 @@ namespace BansheeEditor
 		}
 	}
 
-	void ProjectLibrary::createInternalParentHierarchy(const CM::WPath& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
+	void ProjectLibrary::createInternalParentHierarchy(const CM::WString& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
 	{
-		WPath parentPath = fullPath;
+		WString parentPath = fullPath;
 
 		DirectoryEntry* newEntryParent = nullptr;
-		Stack<WPath>::type parentPaths;
+		Stack<WString>::type parentPaths;
 		do 
 		{
-			WPath newParentPath = PathUtil::parentPath(parentPath);
+			WString newParentPath = Path::parentPath(parentPath);
 
 			if(newParentPath == parentPath)
 				break;
@@ -563,7 +563,7 @@ namespace BansheeEditor
 
 		while(!parentPaths.empty())
 		{
-			WPath curPath = parentPaths.top();
+			WString curPath = parentPaths.top();
 			parentPaths.pop();
 
 			newEntryParent = addDirectoryInternal(newEntryParent, curPath);
@@ -573,28 +573,28 @@ namespace BansheeEditor
 			*newHierarchyLeaf = newEntryParent;
 	}
 
-	WPath ProjectLibrary::getMetaPath(const CM::WPath& path) const
+	WString ProjectLibrary::getMetaPath(const CM::WString& path) const
 	{
-		WPath metaPath = toPath(toWString(path) + L".meta");
+		WString metaPath = path + L".meta";
 
 		return metaPath;
 	}
 
-	bool ProjectLibrary::isMeta(const WPath& fullPath) const
+	bool ProjectLibrary::isMeta(const WString& fullPath) const
 	{
-		return PathUtil::getExtension(fullPath) == toPath(L".meta");
+		return Path::getExtension(fullPath) == L".meta";
 	}
 
 	void ProjectLibrary::onMonitorFileModified(const WString& path)
 	{
-		if(!isMeta(toPath(path)))
+		if(!isMeta(path))
 			checkForModifications(path);
 		else
 		{
-			WPath resourcePath = toPath(path);
-			PathUtil::replaceExtension(resourcePath, L"");
+			WString resourcePath = path;
+			Path::replaceExtension(resourcePath, L"");
 
-			checkForModifications(toWString(resourcePath));
+			checkForModifications(resourcePath);
 		}
 	}
 }

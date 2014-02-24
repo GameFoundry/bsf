@@ -2,7 +2,6 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUITreeView.h"
-#include "CmPath.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEditor
@@ -82,8 +81,8 @@ namespace BansheeEditor
 
 		ResourceTreeElement* findTreeElement(const CM::WString& fullPath);
 
-		void entryAdded(const CM::WPath& path);
-		void entryRemoved(const CM::WPath& path);
+		void entryAdded(const CM::WString& path);
+		void entryRemoved(const CM::WString& path);
 
 		void setDropTarget(CM::RenderWindow* parentWindow, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 		void clearDropTarget();

@@ -10,6 +10,7 @@
 #include "CmViewport.h"
 #include "CmRenderWindow.h"
 #include "CmPlatform.h"
+#include "CmPath.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -49,8 +50,8 @@ namespace BansheeEditor
 
 		const ProjectLibrary::LibraryEntry* rootEntry = ProjectLibrary::instance().getRootEntry();
 
-		mRootElement.mFullPath = toWString(rootEntry->path);
-		mRootElement.mElementName = PathUtil::getFilename(mRootElement.mFullPath);
+		mRootElement.mFullPath = rootEntry->path;
+		mRootElement.mElementName = Path::getFilename(mRootElement.mFullPath);
 		expandElement(&mRootElement);
 
 		Stack<StackElem>::type todo;
@@ -65,7 +66,7 @@ namespace BansheeEditor
 
 			for(auto& child : dirEntry->mChildren)
 			{
-				ResourceTreeElement* newChild = addTreeElement(curElem.treeElem, toWString(child->path));
+				ResourceTreeElement* newChild = addTreeElement(curElem.treeElem, child->path);
 
 				if(child->type == ProjectLibrary::LibraryEntryType::Directory)
 					todo.push(StackElem(child, newChild));
@@ -124,20 +125,20 @@ namespace BansheeEditor
 		ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(element);
 		
 		WString oldPath = resourceTreeElement->mFullPath;
-		WString newPath = PathUtil::combine(PathUtil::parentPath(oldPath), name);
+		WString newPath = Path::combine(Path::parentPath(oldPath), name);
 
-		ProjectLibrary::instance().moveEntry(toPath(oldPath), toPath(findUniquePath(newPath)));
+		ProjectLibrary::instance().moveEntry(oldPath, findUniquePath(newPath));
 	}
 
 	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::addTreeElement(ResourceTreeElement* parent, const CM::WString& fullPath)
 	{
 		ResourceTreeElement* newChild = cm_new<ResourceTreeElement>();
 		newChild->mParent = parent;
-		newChild->mName = toString(PathUtil::getFilename(fullPath));
+		newChild->mName = toString(Path::getFilename(fullPath));
 		newChild->mFullPath = fullPath;
 		newChild->mSortedIdx = (UINT32)parent->mChildren.size();
 		newChild->mIsVisible = parent->mIsVisible && parent->mIsExpanded;
-		newChild->mElementName = PathUtil::getFilename(fullPath);
+		newChild->mElementName = Path::getFilename(fullPath);
 
 		parent->mChildren.push_back(newChild);
 
@@ -198,13 +199,13 @@ namespace BansheeEditor
 
 	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::findTreeElement(const CM::WString& fullPath)
 	{
-		Vector<WString>::type pathElems = PathUtil::split(fullPath);
-		Vector<WString>::type rootElems = PathUtil::split(mRootElement.mFullPath);
+		Vector<WString>::type pathElems = Path::split(fullPath);
+		Vector<WString>::type rootElems = Path::split(mRootElement.mFullPath);
 
 		auto pathIter = pathElems.begin();
 		auto rootIter = rootElems.begin();
 
-		while(pathIter != pathElems.end() && rootIter != rootElems.end() && PathUtil::comparePathElements(*pathIter, *rootIter))
+		while(pathIter != pathElems.end() && rootIter != rootElems.end() && Path::comparePathElements(*pathIter, *rootIter))
 		{
 			++pathIter;
 			++rootIter;
@@ -223,7 +224,7 @@ namespace BansheeEditor
 			ResourceTreeElement* current = todo.top();
 			todo.pop();
 
-			if(PathUtil::comparePathElements(*pathIter, current->mElementName))
+			if(Path::comparePathElements(*pathIter, current->mElementName))
 			{
 				++pathIter;
 
@@ -241,22 +242,22 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	void GUIResourceTreeView::entryAdded(const WPath& path)
+	void GUIResourceTreeView::entryAdded(const WString& path)
 	{
-		WPath parentPath = PathUtil::parentPath(path);
+		WString parentPath = Path::parentPath(path);
 
-		ResourceTreeElement* parentElement = findTreeElement(toWString(parentPath));
+		ResourceTreeElement* parentElement = findTreeElement(parentPath);
 		assert(parentElement != nullptr);
 
-		addTreeElement(parentElement, toWString(path));
+		addTreeElement(parentElement, path);
 		sortTreeElement(parentElement);
 
 		markContentAsDirty();
 	}
 
-	void GUIResourceTreeView::entryRemoved(const WPath& path)
+	void GUIResourceTreeView::entryRemoved(const WString& path)
 	{
-		ResourceTreeElement* treeElement = findTreeElement(toWString(path));
+		ResourceTreeElement* treeElement = findTreeElement(path);
 		
 		if(treeElement != nullptr)
 			deleteTreeElement(treeElement);
@@ -360,14 +361,14 @@ namespace BansheeEditor
 		if(FileSystem::exists(path))
 		{
 			WString noExtensionPath = path;
-			WString extension = PathUtil::getExtension(path);
-			PathUtil::replaceExtension(noExtensionPath, L"");
+			WString extension = Path::getExtension(path);
+			Path::replaceExtension(noExtensionPath, L"");
 
 			WString newPath;
 			UINT32 cnt = 1;
 			do 
 			{
-				newPath = PathUtil::combine(PathUtil::combine(noExtensionPath, L" " + toWString(cnt)), extension);
+				newPath = Path::combine(Path::combine(noExtensionPath, L" " + toWString(cnt)), extension);
 				cnt++;
 			} while (FileSystem::exists(newPath));
 
@@ -416,14 +417,14 @@ namespace BansheeEditor
 
 			WString destDir = resourceTreeElement->mFullPath;
 			if(FileSystem::isFile(destDir))
-				destDir = PathUtil::parentPath(destDir);
+				destDir = Path::parentPath(destDir);
 
 			for(UINT32 i = 0; i < mDraggedResources->numObjects; i++)
 			{
-				WString filename = PathUtil::getFilename(mDraggedResources->resourcePaths[i]);
+				WString filename = Path::getFilename(mDraggedResources->resourcePaths[i]);
 
-				WString newPath = PathUtil::combine(destDir, filename);
-				ProjectLibrary::instance().moveEntry(toPath(mDraggedResources->resourcePaths[i]), toPath(findUniquePath(newPath)));
+				WString newPath = Path::combine(destDir, filename);
+				ProjectLibrary::instance().moveEntry(mDraggedResources->resourcePaths[i], findUniquePath(newPath));
 			}
 		}
 	}

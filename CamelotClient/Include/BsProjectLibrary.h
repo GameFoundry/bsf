@@ -2,7 +2,6 @@
 
 #include "BsEditorPrerequisites.h"
 #include "CmModule.h"
-#include "CmPath.h"
 
 namespace BansheeEditor
 {
@@ -21,10 +20,10 @@ namespace BansheeEditor
 
 		struct LibraryEntry
 		{
-			LibraryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type);
+			LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type);
 
 			LibraryEntryType type;
-			CM::WPath path;
+			CM::WString path;
 			CM::WString elementName;
 
 			DirectoryEntry* parent;
@@ -32,7 +31,7 @@ namespace BansheeEditor
 
 		struct ResourceEntry : public LibraryEntry
 		{
-			ResourceEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent);
+			ResourceEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
 
 			ResourceMetaPtr meta;
 			std::time_t lastUpdateTime;
@@ -40,7 +39,7 @@ namespace BansheeEditor
 
 		struct DirectoryEntry : public LibraryEntry
 		{
-			DirectoryEntry(const CM::WPath& path, const CM::WString& name, DirectoryEntry* parent);
+			DirectoryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
 
 			CM::Vector<LibraryEntry*>::type mChildren;
 		};
@@ -53,32 +52,32 @@ namespace BansheeEditor
 		void checkForModifications(const CM::WString& fullPath);
 
 		const LibraryEntry* getRootEntry() const { return mRootEntry; }
-		LibraryEntry* findEntry(const CM::WPath& fullPath) const;
+		LibraryEntry* findEntry(const CM::WString& fullPath) const;
 
-		void moveEntry(const CM::WPath& oldPath, const CM::WPath& newPath);
-		void deleteEntry(const CM::WPath& path);
+		void moveEntry(const CM::WString& oldPath, const CM::WString& newPath);
+		void deleteEntry(const CM::WString& path);
 
-		boost::signal<void(const CM::WPath&)> onEntryRemoved;
-		boost::signal<void(const CM::WPath&)> onEntryAdded;
+		boost::signal<void(const CM::WString&)> onEntryRemoved;
+		boost::signal<void(const CM::WString&)> onEntryAdded;
 	private:
 		static const CM::WString INTERNAL_RESOURCES_DIR;
 
 		DirectoryEntry* mRootEntry;
 		CM::FolderMonitor* mMonitor;
 
-		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const CM::WPath& filePath);
-		DirectoryEntry* addDirectoryInternal(DirectoryEntry* parent, const CM::WPath& dirPath);
+		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const CM::WString& filePath);
+		DirectoryEntry* addDirectoryInternal(DirectoryEntry* parent, const CM::WString& dirPath);
 
 		void deleteResourceInternal(ResourceEntry* resource);
 		void deleteDirectoryInternal(DirectoryEntry* directory);
 
 		void reimportResourceInternal(ResourceEntry* resource);
 
-		void createInternalParentHierarchy(const CM::WPath& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf);
+		void createInternalParentHierarchy(const CM::WString& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf);
 
 		bool isUpToDate(ResourceEntry* resource) const;
-		CM::WPath getMetaPath(const CM::WPath& path) const;
-		bool isMeta(const CM::WPath& fullPath) const;
+		CM::WString getMetaPath(const CM::WString& path) const;
+		bool isMeta(const CM::WString& fullPath) const;
 
 		void onMonitorFileModified(const CM::WString& path);
 	};
