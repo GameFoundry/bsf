@@ -29,13 +29,11 @@ namespace CamelotFramework
 		return true; // Plain-text so I don't even check for magic number
 	}
 
-	HResource GpuProgIncludeImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr GpuProgIncludeImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
 		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String includeString = stream->getAsString();
 
-		HGpuProgInclude gpuProgInclude = GpuProgInclude::create(includeString);
-
-		return gpuProgInclude;
+		return GpuProgInclude::_createPtr(includeString);
 	}
 }

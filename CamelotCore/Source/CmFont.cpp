@@ -32,7 +32,7 @@ namespace CamelotFramework
 	Font::~Font()
 	{ }
 
-	void Font::initialize(Vector<FontData>::type& fontData)
+	void Font::initialize(const Vector<FontData>::type& fontData)
 	{
 		for(auto iter = fontData.begin(); iter != fontData.end(); ++iter)
 			mFontDataPerSize[iter->size] = *iter;
@@ -82,11 +82,16 @@ namespace CamelotFramework
 		return bestSize;
 	}
 
-	HFont Font::create(Vector<FontData>::type& fontData)
+	HFont Font::create(const Vector<FontData>::type& fontData)
 	{
-		FontPtr newFont = FontManager::instance().create(fontData);
+		FontPtr newFont = _createPtr(fontData);
 
 		return Resource::_createResourceHandle(newFont);
+	}
+
+	FontPtr Font::_createPtr(const Vector<FontData>::type& fontData)
+	{
+		return FontManager::instance().create(fontData);
 	}
 
 	RTTITypeBase* Font::getRTTIStatic()

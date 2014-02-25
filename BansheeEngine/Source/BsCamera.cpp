@@ -93,7 +93,7 @@ namespace BansheeEngine
     }
 	void Camera::initialize(RenderTargetPtr target, float left, float top, float width, float height)
 	{
-		target->synchonize();
+		target->synchronize();
 
 		mViewport = cm_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height);
 	}

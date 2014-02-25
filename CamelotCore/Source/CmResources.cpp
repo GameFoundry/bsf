@@ -45,7 +45,7 @@ namespace CamelotFramework
 			
 			// This should be thread safe without any sync primitives, if other threads read a few cycles out of date value
 			// and think this resource isn't created when it really is, it hardly makes any difference
-			resRequest->resource.setHandleData(resResponse->rawResource, resRequest->resource.getUUID());
+			resRequest->resource._setHandleData(resResponse->rawResource, resRequest->resource.getUUID());
 
 			gResources().notifyNewResourceLoaded(resRequest->resource);
 		}

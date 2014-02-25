@@ -349,13 +349,20 @@ namespace BansheeEditor
 			else
 				importOptions = Importer::instance().createImportOptions(resource->path);
 
-			HResource importedResource = Importer::instance().import(resource->path, importOptions);
+			HResource importedResource;
 
 			if(resource->meta == nullptr)
 			{
+				importedResource = Importer::instance().import(resource->path, importOptions);
+
 				resource->meta = ResourceMeta::create(importedResource.getUUID(), importOptions);
 				FileSerializer fs;
 				fs.encode(resource->meta.get(), metaPath);
+			}
+			else
+			{
+				importedResource = HResource(resource->meta->getUUID());
+				Importer::instance().reimport(importedResource, resource->path, importOptions);
 			}
 
 			WString internalResourcesPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
@@ -365,6 +372,7 @@ namespace BansheeEditor
 			internalResourcesPath = Path::combine(internalResourcesPath, toWString(importedResource.getUUID()) + L".asset");
 
 			gResources().save(importedResource, internalResourcesPath, true);
+			gResources().unload(importedResource);
 
 			ResourceManifestPtr manifest = gResources().getResourceManifest();
 			manifest->registerResource(importedResource.getUUID(), internalResourcesPath);

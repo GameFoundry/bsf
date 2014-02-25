@@ -295,5 +295,13 @@ namespace CamelotFramework
 		static HTexture create(TextureType texType, UINT32 width, UINT32 height, int num_mips,
 			PixelFormat format, int usage = TU_DEFAULT,
 			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+
+		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
+			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+
+		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int num_mips,
+			PixelFormat format, int usage = TU_DEFAULT,
+			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
     };
 }

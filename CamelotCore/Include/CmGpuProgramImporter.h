@@ -21,7 +21,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc SpecificImporter::import().
 		 */
-		virtual HResource import(const WString& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const WString& filePath, ConstImportOptionsPtr importOptions);
 
 		/**
 		 * @copydoc SpecificImporter::createImportOptions().

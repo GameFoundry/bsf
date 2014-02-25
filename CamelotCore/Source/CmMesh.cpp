@@ -352,7 +352,7 @@ namespace CamelotFramework
 	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
+		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
 	}
@@ -360,7 +360,7 @@ namespace CamelotFramework
 	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr meshPtr = MeshManager::instance().create(numVertices, numIndices, vertexDesc, 
+		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, 
 			initialMeshData, bufferType, drawOp, indexType);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
@@ -368,8 +368,26 @@ namespace CamelotFramework
 
 	HMesh Mesh::create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
 	{
-		MeshPtr meshPtr = MeshManager::instance().create(initialMeshData, bufferType, drawOp);
+		MeshPtr meshPtr = _createPtr(initialMeshData, bufferType, drawOp);
 
 		return static_resource_cast<Mesh>(Resource::_createResourceHandle(meshPtr));
+	}
+
+	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
+	{
+		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
+	}
+
+	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
+		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
+	{
+		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, 
+			initialMeshData, bufferType, drawOp, indexType);
+	}
+
+	MeshPtr Mesh::_createPtr(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
+	{
+		return MeshManager::instance().create(initialMeshData, bufferType, drawOp);
 	}
 }

@@ -11,6 +11,7 @@ namespace CamelotFramework
 		const String& getString() const { return mString; }
 
 		static HGpuProgInclude create(const String& includeString);
+		static GpuProgIncludePtr _createPtr(const String& includeString);
 	private:
 		GpuProgInclude(const String& includeString);
 

@@ -117,18 +117,18 @@ namespace CamelotFramework
 		}
 	}
 
-	HResource FreeImgImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr FreeImgImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
 		DataStreamPtr fileData = FileSystem::openFile(filePath, true);
 
 		TextureDataPtr imgData = importRawImage(fileData);
 		if(imgData == nullptr || imgData->getData() == nullptr)
-			return HTexture();
+			return nullptr;
 
-		HTexture newTexture = Texture::create(TEX_TYPE_2D, 
+		TexturePtr newTexture = Texture::_createPtr(TEX_TYPE_2D, 
 			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat());
 
-		newTexture->synchonize(); // TODO - Required due to a bug in allocateSubresourceBuffer
+		newTexture->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 
 		for(UINT32 mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
 		{
@@ -137,7 +137,7 @@ namespace CamelotFramework
 
 			imgData->getPixels(mip, *src);
 
-			gMainSyncedCA().writeSubresource(newTexture.getInternalPtr(), subresourceIdx, src);
+			gMainSyncedCA().writeSubresource(newTexture, subresourceIdx, src);
 		}
 
 		fileData->close();
@@ -317,7 +317,6 @@ namespace CamelotFramework
 		FreeImage_Unload(fiBitmap);
 		FreeImage_CloseMemory(fiMem);
 
-		
 		return texData;
 	}
 }

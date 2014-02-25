@@ -21,7 +21,7 @@ namespace CamelotFramework
 		return true;
 	}
 
-	HResource GpuProgramImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr GpuProgramImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
 		WString ext = Path::getExtension(filePath);
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
@@ -37,8 +37,8 @@ namespace CamelotFramework
 		GpuProgramType gptype = gpuProgImportOptions->getType();
 		Vector<HGpuProgInclude>::type includes = gpuProgImportOptions->getIncludes();
 
-		HHighLevelGpuProgram gpuProgram = HighLevelGpuProgram::create(shaderSource, entryPoint, language, gptype, profile, &includes);
-		gpuProgram.synchronize();
+		HighLevelGpuProgramPtr gpuProgram = HighLevelGpuProgram::_createPtr(shaderSource, entryPoint, language, gptype, profile, &includes);
+		gpuProgram->synchronize();
 
 		return gpuProgram;
 	}

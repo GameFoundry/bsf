@@ -581,7 +581,7 @@ namespace BansheeEngine
 		if(mCaretTexture == nullptr)
 		{
 			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
-			newTex->synchonize(); // TODO - Required due to a bug in allocateSubresourceBuffer
+			newTex->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 			mCaretTexture = SpriteTexture::create(newTex);
 		}
 
@@ -599,7 +599,7 @@ namespace BansheeEngine
 		if(mTextSelectionTexture == nullptr)
 		{
 			HTexture newTex = Texture::create(TEX_TYPE_2D, 1, 1, 0, PF_R8G8B8A8);
-			newTex->synchonize(); // TODO - Required due to a bug in allocateSubresourceBuffer
+			newTex->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 			mTextSelectionTexture = SpriteTexture::create(newTex);
 		}
 

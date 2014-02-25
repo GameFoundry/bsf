@@ -18,7 +18,7 @@ namespace CamelotFramework
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
 		/** Inherited from SpecificImporter */
-		virtual HResource import(const WString& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const WString& filePath, ConstImportOptionsPtr importOptions);
 	private:
 	};
 }

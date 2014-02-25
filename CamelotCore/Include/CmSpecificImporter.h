@@ -28,7 +28,7 @@ namespace CamelotFramework
 		 *
 		 * @return	null if it fails, otherwise the loaded object.
 		 */
-		virtual HResource import(const WString& filePath, ConstImportOptionsPtr importOptions) = 0;
+		virtual ResourcePtr import(const WString& filePath, ConstImportOptionsPtr importOptions) = 0;
 
 		/**
 		 * @brief	Creates import options specific for this importer. Import

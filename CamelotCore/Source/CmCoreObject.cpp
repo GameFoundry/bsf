@@ -97,7 +97,7 @@ namespace CamelotFramework
 		}
 	}
 
-	void CoreObject::synchonize()
+	void CoreObject::synchronize()
 	{
 		if(!isInitialized())
 		{

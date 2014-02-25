@@ -35,7 +35,7 @@ namespace CamelotFramework
 				HResource loadedResource = gResources().loadFromUUID(resourceHandle->mData->mUUID);
 
 				if(loadedResource)
-					resourceHandle->setHandleData(loadedResource.getInternalPtr(), resourceHandle->mData->mUUID);
+					resourceHandle->_setHandleData(loadedResource.getInternalPtr(), resourceHandle->mData->mUUID);
 			}
 		}
 

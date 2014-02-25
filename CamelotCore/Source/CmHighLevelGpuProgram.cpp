@@ -33,24 +33,22 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
-    //---------------------------------------------------------------------------
 	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
         : GpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired), 
         mAssemblerProgram(nullptr)
     {
     }
-	//---------------------------------------------------------------------------
+
 	HighLevelGpuProgram::~HighLevelGpuProgram()
 	{
 
 	}
-    //---------------------------------------------------------------------------
+
     void HighLevelGpuProgram::initialize_internal()
     {
 		if (isSupported())
 		{
-			// load constructed assembler program (if it exists)
 			if (mAssemblerProgram != nullptr && mAssemblerProgram.get() != this)
 			{
 				mAssemblerProgram->initialize();
@@ -59,19 +57,25 @@ namespace CamelotFramework
 
 		GpuProgram::initialize_internal();
     }
-    //---------------------------------------------------------------------------
+
     void HighLevelGpuProgram::destroy_internal()
     {   
         mAssemblerProgram = nullptr;
 
 		GpuProgram::destroy_internal();
     }
-	//---------------------------------------------------------------------
+
 	HHighLevelGpuProgram HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
 		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
 	{
-		HighLevelGpuProgramPtr programPtr = HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes);
+		HighLevelGpuProgramPtr programPtr = _createPtr(source, entryPoint, language, gptype, profile, includes);
 
 		return static_resource_cast<HighLevelGpuProgram>(Resource::_createResourceHandle(programPtr));
+	}
+
+	HighLevelGpuProgramPtr HighLevelGpuProgram::_createPtr(const String& source, const String& entryPoint, 
+		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
+	{
+		return HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes);
 	}
 }

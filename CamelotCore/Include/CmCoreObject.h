@@ -57,7 +57,7 @@ o		 *
 		 * @brief	Blocks the current thread until the resource is fully initialized.
 		 * 			If you call this without calling initialize first a deadlock will occurr.
 		 */
-		void synchonize();
+		void synchronize();
 
 		/**
 		 * @brief	Sets a shared this pointer to this object. This MUST be called immediately after construction.

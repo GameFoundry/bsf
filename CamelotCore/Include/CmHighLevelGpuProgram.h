@@ -95,6 +95,9 @@ namespace CamelotFramework {
 	public:
 		static HHighLevelGpuProgram create(const String& source, const String& entryPoint, 
 			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes = nullptr);
+
+		static HighLevelGpuProgramPtr _createPtr(const String& source, const String& entryPoint, 
+			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes = nullptr);
     };
 
 	/** @} */

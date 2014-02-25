@@ -122,5 +122,16 @@ namespace CamelotFramework
 
 		static HMesh create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static, 
 			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+
+		static MeshPtr _createPtr(UINT32 numVertices, UINT32 numIndices, 
+			const VertexDataDescPtr& vertexDesc, MeshBufferType bufferType = MeshBufferType::Static, 
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+
+		static MeshPtr _createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, const MeshDataPtr& initialMeshData, 
+			MeshBufferType bufferType = MeshBufferType::Static, DrawOperationType drawOp = DOT_TRIANGLE_LIST, 
+			IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
+
+		static MeshPtr _createPtr(const MeshDataPtr& initialMeshData, MeshBufferType bufferType = MeshBufferType::Static, 
+			DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 	};
 }

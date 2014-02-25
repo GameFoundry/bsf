@@ -33,7 +33,7 @@ namespace CamelotFramework
 	public:
 		virtual ~Font();
 
-		void initialize(Vector<FontData>::type& fontData);
+		void initialize(const Vector<FontData>::type& fontData);
 
 		const FontData* getFontDataForSize(UINT32 size) const;
 		INT32 getClosestAvailableSize(UINT32 size) const;
@@ -59,6 +59,7 @@ namespace CamelotFramework
 		/************************************************************************/
 		
 	public:
-		static HFont create(Vector<FontData>::type& fontInitData);
+		static HFont create(const Vector<FontData>::type& fontInitData);
+		static FontPtr _createPtr(const Vector<FontData>::type& fontInitData);
 	};
 }

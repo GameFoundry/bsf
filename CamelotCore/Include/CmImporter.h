@@ -27,6 +27,14 @@ namespace CamelotFramework
 		HResource import(const WString& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
 		/**
+		 * @brief	Imports a resource and replaces the contents of the provided existing resource with new imported data.
+		 *
+		 * @param	inputFilePath	Pathname of the input file.
+		 * @param	importOptions	(optional) Options for controlling the import.
+		 */
+		void reimport(HResource& existingResource, const WString& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+
+		/**
 		 * @brief	Automatically detects the importer needed for the provided file and returns valid type of
 		 * 			import options for that importer.
 		 *

@@ -37,7 +37,7 @@ namespace CamelotFramework
 		return true; // FBX files can be plain-text so I don't even check for magic number
 	}
 
-	HResource FBXImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr FBXImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
 		FbxManager* fbxManager = nullptr;
 		FbxScene* fbxScene = nullptr;
@@ -50,7 +50,7 @@ namespace CamelotFramework
 
 		shutDownSdk(fbxManager);
 
-		HMesh mesh = Mesh::create(meshData);
+		MeshPtr mesh = Mesh::_createPtr(meshData);
 		mesh->setSubMeshes(subMeshes);
 
 		return mesh;
@@ -76,7 +76,6 @@ namespace CamelotFramework
 	void FBXImporter::shutDownSdk(FbxManager* manager)
 	{
 		manager->Destroy();
-
 	}
 
 	void FBXImporter::loadScene(FbxManager* manager, FbxScene* scene, const WString& filePath)

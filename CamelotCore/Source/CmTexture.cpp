@@ -328,7 +328,7 @@ namespace CamelotFramework
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
 	{
-		TexturePtr texturePtr = TextureManager::instance().createTexture(texType, 
+		TexturePtr texturePtr = _createPtr(texType, 
 			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 
 		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
@@ -337,10 +337,24 @@ namespace CamelotFramework
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, 
 		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
 	{
-		TexturePtr texturePtr = TextureManager::instance().createTexture(texType, 
+		TexturePtr texturePtr = _createPtr(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 
 		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
+	}
+
+	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+	{
+		return TextureManager::instance().createTexture(texType, 
+			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+	}
+
+	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, 
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+	{
+		return TextureManager::instance().createTexture(texType, 
+			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 	}
 
 	const HTexture& Texture::dummy()

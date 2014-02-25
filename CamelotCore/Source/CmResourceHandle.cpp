@@ -33,10 +33,10 @@ namespace CamelotFramework
 			}
 		}
 
-		mData->mPtr->synchonize();
+		mData->mPtr->synchronize();
 	}
 
-	void ResourceHandleBase::setHandleData(std::shared_ptr<Resource> ptr, const String& uuid)
+	void ResourceHandleBase::_setHandleData(std::shared_ptr<Resource> ptr, const String& uuid)
 	{
 		mData->mPtr = ptr;
 

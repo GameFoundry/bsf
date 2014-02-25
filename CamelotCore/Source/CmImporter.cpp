@@ -9,6 +9,7 @@
 #include "CmDebug.h"
 #include "CmDataStream.h"
 #include "CmException.h"
+#include "CmUUID.h"
 
 namespace CamelotFramework
 {
@@ -75,9 +76,36 @@ namespace CamelotFramework
 			}
 		}
 
-		HResource importedResource = importer->import(inputFilePath, importOptions);
+		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
+		return Resource::_createResourceHandle(importedResource);
+	}
 
-		return importedResource;
+	void Importer::reimport(HResource& existingResource, const WString& inputFilePath, ConstImportOptionsPtr importOptions)
+	{
+		if(!FileSystem::isFile(inputFilePath))
+		{
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
+			return;
+		}
+
+		SpecificImporter* importer = getImporterForFile(inputFilePath);
+		if(importer == nullptr)
+			return;
+
+		if(importOptions == nullptr)
+			importOptions = importer->getDefaultImportOptions();
+		else
+		{
+			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
+			if(importOptions->getTypeId() != defaultImportOptions->getTypeId())
+			{
+				CM_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
+					"Expected: " + defaultImportOptions->getTypeName() + ". Got: " + importOptions->getTypeName() + ".");
+			}
+		}
+
+		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
+		existingResource._setHandleData(importedResource, existingResource.getUUID());
 	}
 
 	ImportOptionsPtr Importer::createImportOptions(const WString& inputFilePath)

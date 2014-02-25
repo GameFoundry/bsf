@@ -45,7 +45,7 @@ namespace CamelotFramework
 		return cm_shared_ptr<FontImportOptions, ScratchAlloc>();
 	}
 
-	HResource FontImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr FontImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
 	{
 		const FontImportOptions* fontImportOptions = static_cast<const FontImportOptions*>(importOptions.get());
 
@@ -306,7 +306,7 @@ namespace CamelotFramework
 			dataPerSize.push_back(fontData);
 		}
 
-		HFont newFont = Font::create(dataPerSize);
+		FontPtr newFont = Font::_createPtr(dataPerSize);
 
 		FT_Done_FreeType(library);
 

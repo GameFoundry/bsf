@@ -43,11 +43,6 @@ namespace CamelotFramework
 		 */
 		const std::shared_ptr<ResourceHandleData>& getHandleData() const { return mData; }
 
-	protected:
-		ResourceHandleBase();
-
-		std::shared_ptr<ResourceHandleData> mData;
-
 		/**
 		 * @brief	Sets the created flag to true and assigns the resource pointer. Called
 		 * 			by the constructors, or if you constructed just using a UUID, then you need to
@@ -55,7 +50,12 @@ namespace CamelotFramework
 		 * 			
 		 * @note	Two set construction is sometimes required due to multithreaded nature of resource loading.
 		 */
-		void setHandleData(std::shared_ptr<Resource> ptr, const String& uuid);
+		void _setHandleData(std::shared_ptr<Resource> ptr, const String& uuid);
+
+	protected:
+		ResourceHandleBase();
+
+		std::shared_ptr<ResourceHandleData> mData;
 
 	private:
 		friend class Resources;
@@ -83,7 +83,7 @@ namespace CamelotFramework
 			:ResourceHandleBase()
 		{ }
 
-		// Note: This constructor requires you to call "resolve" with the actual resource pointer,
+		// Note: This constructor requires you to call "setHandleData" with the actual resource pointer,
 		// before the resource is considered as loaded
 		ResourceHandle(const String& uuid)
 			:ResourceHandleBase()
@@ -147,14 +147,14 @@ namespace CamelotFramework
 			:ResourceHandleBase()
 		{
 			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
-			setHandleData(std::shared_ptr<Resource>(ptr, uuid));
+			_setHandleData(std::shared_ptr<Resource>(ptr, uuid));
 		}
 
 		ResourceHandle(std::shared_ptr<T> ptr, const String& uuid)
 			:ResourceHandleBase()
 		{
 			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
-			setHandleData(ptr, uuid);
+			_setHandleData(ptr, uuid);
 		}
 	};
 
