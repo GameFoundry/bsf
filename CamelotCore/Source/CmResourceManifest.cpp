@@ -1,5 +1,6 @@
 #include "CmResourceManifest.h"
 #include "CmResourceManifestRTTI.h"
+#include "CmPath.h"
 
 namespace CamelotFramework
 {
@@ -7,20 +8,23 @@ namespace CamelotFramework
 	{
 		auto iterFind = mUUIDToFilePath.find(uuid);
 
+		WString standardizedFilePath = Path::standardizePath(filePath);
+		StringUtil::toLowerCase(standardizedFilePath);
+
 		if(iterFind != mUUIDToFilePath.end())
 		{
-			if(iterFind->second != filePath)
+			if(iterFind->second != standardizedFilePath)
 			{
 				mFilePathToUUID.erase(iterFind->second);
 
-				mUUIDToFilePath[uuid] = filePath;
-				mFilePathToUUID[filePath] = uuid;
+				mUUIDToFilePath[uuid] = standardizedFilePath;
+				mFilePathToUUID[standardizedFilePath] = uuid;
 			}
 		}
 		else
 		{
-			mUUIDToFilePath[uuid] = filePath;
-			mFilePathToUUID[filePath] = uuid;
+			mUUIDToFilePath[uuid] = standardizedFilePath;
+			mFilePathToUUID[standardizedFilePath] = uuid;
 		}
 	}
 
@@ -47,7 +51,10 @@ namespace CamelotFramework
 
 	const String& ResourceManifest::filePathToUUID(const WString& filePath) const
 	{
-		auto iterFind = mFilePathToUUID.find(filePath);
+		WString standardizedFilePath = Path::standardizePath(filePath);
+		StringUtil::toLowerCase(standardizedFilePath);
+
+		auto iterFind = mFilePathToUUID.find(standardizedFilePath);
 
 		if(iterFind != mFilePathToUUID.end())
 			return iterFind->second;
@@ -64,7 +71,10 @@ namespace CamelotFramework
 
 	bool ResourceManifest::filePathExists(const WString& filePath) const
 	{
-		auto iterFind = mFilePathToUUID.find(filePath);
+		WString standardizedFilePath = Path::standardizePath(filePath);
+		StringUtil::toLowerCase(standardizedFilePath);
+
+		auto iterFind = mFilePathToUUID.find(standardizedFilePath);
 
 		return iterFind != mFilePathToUUID.end();
 	}

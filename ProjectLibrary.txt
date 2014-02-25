@@ -1,9 +1,5 @@
 
 TODO
- - Moving files within the TreeView will still cause them to be reimported
-  - UUIDs in meta files dont seem to match.
-  - I need a way to import a resource while keeping the existing UUID (maybe reimport() method?)
- - ResourceManifest filePathToUUID wont work as intended as file-path comparison is case sensitive plus it wont deal with slashes properly
  - ProjectLibrary Save/Load - saves/loads the hierarchy of ResourceEntries
     - ResourceManifest needs to store relative locations when I save it, so that user can move Project folder safely
  - Resource import queue (ability to display progress bar for resources that are importing)
@@ -12,10 +8,6 @@ TODO
 --------------------
 
 Test:
- - File monitoring
-    - Delete a file and ensure it has been cleaned up
-    - Delete a folder hierarcha and ensure it has been cleaned up
-
  - Save/Load (After it is implemented)
      - Ensure that leaving application and then reloading will still recognize previously saved assets and will not reimport them
        - Also ensure that UUIDs will be properly read from .meta files
