@@ -35,16 +35,6 @@ namespace BansheeEditor
 		:GUITreeView(parent, backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions), mDraggedResources(nullptr), mCurrentWindow(nullptr), mDropTarget(nullptr), mDropTargetDragActive(false)
 	{
-		struct StackElem
-		{
-			StackElem(const ProjectLibrary::LibraryEntry* entry, ResourceTreeElement* treeElem)
-				:entry(entry), treeElem(treeElem)
-			{ }
-
-			const ProjectLibrary::LibraryEntry* entry;
-			ResourceTreeElement* treeElem;
-		};
-
 		ProjectLibrary::instance().onEntryAdded.connect(boost::bind(&GUIResourceTreeView::entryAdded, this, _1));
 		ProjectLibrary::instance().onEntryRemoved.connect(boost::bind(&GUIResourceTreeView::entryRemoved, this, _1));
 
@@ -54,28 +44,7 @@ namespace BansheeEditor
 		mRootElement.mElementName = Path::getFilename(mRootElement.mFullPath);
 		expandElement(&mRootElement);
 
-		Stack<StackElem>::type todo;
-		todo.push(StackElem(rootEntry, &mRootElement));
-
-		while(!todo.empty())
-		{
-			StackElem curElem = todo.top();
-			todo.pop();
-
-			const ProjectLibrary::DirectoryEntry* dirEntry = static_cast<const ProjectLibrary::DirectoryEntry*>(curElem.entry);
-
-			for(auto& child : dirEntry->mChildren)
-			{
-				ResourceTreeElement* newChild = addTreeElement(curElem.treeElem, child->path);
-
-				if(child->type == ProjectLibrary::LibraryEntryType::Directory)
-					todo.push(StackElem(child, newChild));
-			}
-
-			sortTreeElement(curElem.treeElem);
-		}
-
-		
+		updateFromProjectLibraryEntry(&mRootElement, rootEntry);
 
 		if(parent.getTarget()->getTarget()->isWindow())
 		{
@@ -128,6 +97,43 @@ namespace BansheeEditor
 		WString newPath = Path::combine(Path::parentPath(oldPath), name);
 
 		ProjectLibrary::instance().moveEntry(oldPath, findUniquePath(newPath));
+	}
+
+	void GUIResourceTreeView::updateFromProjectLibraryEntry(ResourceTreeElement* treeElement, const ProjectLibrary::LibraryEntry* libraryEntry)
+	{
+		struct StackElem
+		{
+			StackElem(const ProjectLibrary::LibraryEntry* entry, ResourceTreeElement* treeElem)
+				:entry(entry), treeElem(treeElem)
+			{ }
+
+			const ProjectLibrary::LibraryEntry* entry;
+			ResourceTreeElement* treeElem;
+		};
+
+		if(libraryEntry->type == ProjectLibrary::LibraryEntryType::Directory)
+		{
+			Stack<StackElem>::type todo;
+			todo.push(StackElem(libraryEntry, treeElement));
+
+			while(!todo.empty())
+			{
+				StackElem curElem = todo.top();
+				todo.pop();
+
+				const ProjectLibrary::DirectoryEntry* dirEntry = static_cast<const ProjectLibrary::DirectoryEntry*>(curElem.entry);
+
+				for(auto& child : dirEntry->mChildren)
+				{
+					ResourceTreeElement* newChild = addTreeElement(curElem.treeElem, child->path);
+
+					if(child->type == ProjectLibrary::LibraryEntryType::Directory)
+						todo.push(StackElem(child, newChild));
+				}
+
+				sortTreeElement(curElem.treeElem);
+			}
+		}
 	}
 
 	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::addTreeElement(ResourceTreeElement* parent, const CM::WString& fullPath)
@@ -249,8 +255,13 @@ namespace BansheeEditor
 		ResourceTreeElement* parentElement = findTreeElement(parentPath);
 		assert(parentElement != nullptr);
 
-		addTreeElement(parentElement, path);
+		ResourceTreeElement* newElement = addTreeElement(parentElement, path);
 		sortTreeElement(parentElement);
+
+		ProjectLibrary::LibraryEntry* libEntry = ProjectLibrary::instance().findEntry(path);
+		
+		assert(libEntry != nullptr);
+		updateFromProjectLibraryEntry(newElement, libEntry);
 
 		markContentAsDirty();
 	}
@@ -397,10 +408,11 @@ namespace BansheeEditor
 		{
 			ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(selectedElement.element);
 			internalDraggedResources->resourcePaths[cnt] = resourceTreeElement->mFullPath; 
-			cnt++;
 
 			if(resourceManifest->filePathExists(internalDraggedResources->resourcePaths[cnt]))
 				draggedResources->resourceUUIDs.push_back(resourceManifest->filePathToUUID(internalDraggedResources->resourcePaths[cnt]));
+
+			cnt++;
 		}
 
 		mDraggedResources = internalDraggedResources;
@@ -422,9 +434,13 @@ namespace BansheeEditor
 			for(UINT32 i = 0; i < mDraggedResources->numObjects; i++)
 			{
 				WString filename = Path::getFilename(mDraggedResources->resourcePaths[i]);
+				WString currentParent = Path::parentPath(mDraggedResources->resourcePaths[i]);
 
-				WString newPath = Path::combine(destDir, filename);
-				ProjectLibrary::instance().moveEntry(mDraggedResources->resourcePaths[i], findUniquePath(newPath));
+				if(!Path::equals(currentParent, destDir))
+				{
+					WString newPath = Path::combine(destDir, filename);
+					ProjectLibrary::instance().moveEntry(mDraggedResources->resourcePaths[i], findUniquePath(newPath));
+				}
 			}
 		}
 	}

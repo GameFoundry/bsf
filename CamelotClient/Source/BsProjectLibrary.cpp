@@ -156,7 +156,7 @@ namespace BansheeEditor
 							WString sourceFilePath = filePath;
 							Path::replaceExtension(sourceFilePath, L"");
 
-							if(FileSystem::isFile(sourceFilePath))
+							if(!FileSystem::isFile(sourceFilePath))
 							{
 								LOGWRN("Found a .meta file without a corresponding resource. Deleting.");
 
@@ -169,7 +169,7 @@ namespace BansheeEditor
 							UINT32 idx = 0;
 							for(auto& child : currentDir->mChildren)
 							{
-								if(child->type == LibraryEntryType::File && child->path == filePath)
+								if(child->type == LibraryEntryType::File && Path::equals(child->path, filePath))
 								{
 									existingEntries[idx] = true;
 									existingEntry = static_cast<ResourceEntry*>(child);
@@ -196,7 +196,7 @@ namespace BansheeEditor
 						UINT32 idx = 0;
 						for(auto& child : currentDir->mChildren)
 						{
-							if(child->type == LibraryEntryType::Directory && child->path == dirPath)
+							if(child->type == LibraryEntryType::Directory && Path::equals(child->path, dirPath))
 							{
 								existingEntries[idx] = true;
 								existingEntry = static_cast<DirectoryEntry*>(child);
@@ -295,7 +295,8 @@ namespace BansheeEditor
 		if(directory == mRootEntry)
 			mRootEntry = nullptr;
 
-		for(auto& child : directory->mChildren)
+		CM::Vector<LibraryEntry*>::type childrenToDestroy = directory->mChildren;
+		for(auto& child : childrenToDestroy)
 		{
 			if(child->type == LibraryEntryType::Directory)
 				deleteDirectoryInternal(static_cast<DirectoryEntry*>(child));
@@ -318,8 +319,7 @@ namespace BansheeEditor
 	void ProjectLibrary::reimportResourceInternal(ResourceEntry* resource)
 	{
 		WString ext = Path::getExtension(resource->path);
-		WString metaPath = resource->path;
-		Path::replaceExtension(metaPath, ext + L".meta");
+		WString metaPath = resource->path + L".meta";
 
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!Importer::instance().supportsFileType(ext))
@@ -491,6 +491,27 @@ namespace BansheeEditor
 				oldEntry->parent = newEntryParent;
 				oldEntry->path = newPath;
 				oldEntry->elementName = Path::getFilename(newPath);
+
+				if(oldEntry->type == LibraryEntryType::Directory) // Update child paths
+				{
+					Stack<LibraryEntry*>::type todo;
+					todo.push(oldEntry);
+
+					while(!todo.empty())
+					{
+						LibraryEntry* curEntry = todo.top();
+						todo.pop();
+
+						DirectoryEntry* curDirEntry = static_cast<DirectoryEntry*>(curEntry);
+						for(auto& child : curDirEntry->mChildren)
+						{
+							child->path = Path::combine(child->parent->path, child->elementName);
+
+							if(child->type == LibraryEntryType::Directory)
+								todo.push(child);
+						}
+					}
+				}
 
 				if(!onEntryRemoved.empty())
 					onEntryRemoved(oldPath);

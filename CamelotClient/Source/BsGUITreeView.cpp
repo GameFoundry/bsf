@@ -548,6 +548,9 @@ namespace BansheeEditor
 				todo.pop();
 
 				curElem->mIsVisible = false;
+				if(curElem->mIsSelected)
+					unselectElement(curElem);
+
 				updateElementGUI(curElem);
 
 				if(curElem->mIsExpanded)

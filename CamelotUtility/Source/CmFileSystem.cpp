@@ -2,6 +2,7 @@
 #include "CmDataStream.h"
 #include "CmPath.h"
 #include "CmException.h"
+#include "CmDebug.h"
 
 #include <boost/filesystem.hpp>
 

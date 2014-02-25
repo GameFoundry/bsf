@@ -1,8 +1,9 @@
 
 TODO
+ - Moving files within the TreeView will still cause them to be reimported
+  - UUIDs in meta files dont seem to match.
+  - I need a way to import a resource while keeping the existing UUID (maybe reimport() method?)
  - ResourceManifest filePathToUUID wont work as intended as file-path comparison is case sensitive plus it wont deal with slashes properly
- - Remove WPath. In general, but specifically from CmPath.h, CmFileSystem.h and Projectlibrary
- - ResourceTreeView - Element sorting doesn't work
  - ProjectLibrary Save/Load - saves/loads the hierarchy of ResourceEntries
     - ResourceManifest needs to store relative locations when I save it, so that user can move Project folder safely
  - Resource import queue (ability to display progress bar for resources that are importing)
@@ -11,20 +12,9 @@ TODO
 --------------------
 
 Test:
- - OSDropTarget
-    - Drag and drop one file from Explorer into TreeView
-    - Drag and drop multiple files from Explorer into TreeView
-    - Drag and drop entire folders from Explorer into TreeView
-    - Dragging folders or files from within Resources to another sub-folder in Resources
-
  - File monitoring
-    - Add a file and ensure it is imported
     - Delete a file and ensure it has been cleaned up
-    - Add a whole folder hierarchy with files and see if it is constructed properly
     - Delete a folder hierarcha and ensure it has been cleaned up
-
- - Start-up
-     - Load up ProjectLibrary with a complex hierarchy already existing, with multiple files to import
 
  - Save/Load (After it is implemented)
      - Ensure that leaving application and then reloading will still recognize previously saved assets and will not reimport them

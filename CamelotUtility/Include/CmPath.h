@@ -61,7 +61,7 @@ namespace CamelotFramework
 		{
 			Vector<WString>::type splitPath;
 
-			WString standardizedPath = standardisePath(path);
+			WString standardizedPath = standardizePath(path);
 			return StringUtil::split(standardizedPath, L"/");
 		}
 
@@ -71,6 +71,41 @@ namespace CamelotFramework
 				return name;
 			else
 				return base + L'/' + name;
+		}
+
+		/**
+		 * @brief	Compares two canonical paths and returns true if they are equal.
+		 */
+		static bool equals(const WString& left, const WString& right)
+		{
+			Vector<WString>::type leftElements = split(left);
+			Vector<WString>::type rightElements = split(right);
+
+			UINT32 idx = 0;
+			for(auto& leftElem : leftElements)
+			{
+				if(leftElem.empty())
+					continue;
+				
+				while(idx < (UINT32)rightElements.size() && rightElements[idx].empty())
+					idx++;
+
+				if(idx >= (UINT32)rightElements.size())
+					return false; // Right path is deeper than left path
+
+				if(!comparePathElements(leftElem, rightElements[idx]))
+					return false;
+
+				idx++;
+			}
+
+			while(idx < (UINT32)rightElements.size() && rightElements[idx].empty())
+				idx++;
+
+			if(idx < (UINT32)rightElements.size())
+				return false; // Left path is deeper than right path
+
+			return true;
 		}
 
 		/**
@@ -106,19 +141,16 @@ namespace CamelotFramework
 		}
 
 		/**
-		 * @brief	Method for standardizing paths - use forward slashes only, end with slash.
+		 * @brief	Method for standardizing paths - use forward slashes only, end without a slash.
 		 */
-		static WString standardisePath(const WString& inPath)
+		static WString standardizePath(const WString& inPath)
 		{
 			WString path = inPath;
 
 			std::replace(path.begin(), path.end(), L'\\', L'/');
 
-			if(path.length() > 0)
-			{
-				if(path[path.length() - 1] != L'/')
-					path += L'/';
-			}
+			while(path.length() > 0 && path.back() == L'/')
+				path.pop_back();
 
 			return path;
 		}

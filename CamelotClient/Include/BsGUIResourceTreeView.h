@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUITreeView.h"
+#include "BsProjectLibrary.h"
 #include <boost/signal.hpp>
 
 namespace BansheeEditor
@@ -75,6 +76,7 @@ namespace BansheeEditor
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
 
+		void updateFromProjectLibraryEntry(ResourceTreeElement* treeElement, const ProjectLibrary::LibraryEntry* libraryEntry);
 		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const CM::WString& fullPath);
 		void deleteTreeElement(ResourceTreeElement* element);
 		void sortTreeElement(ResourceTreeElement* element);
