@@ -2,6 +2,7 @@
 #include "CmRenderStateManager.h"
 #include "CmRenderSystem.h"
 #include "CmBlendStateRTTI.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -77,7 +78,7 @@ namespace CamelotFramework
 	{
 		BlendStatePtr blendStatePtr = RenderStateManager::instance().createBlendState(desc);
 
-		return static_resource_cast<BlendState>(Resource::_createResourceHandle(blendStatePtr));
+		return static_resource_cast<BlendState>(gResources().createResourceHandle(blendStatePtr));
 	}
 
 	/************************************************************************/

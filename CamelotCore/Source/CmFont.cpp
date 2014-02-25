@@ -1,6 +1,7 @@
 #include "CmFont.h"
 #include "CmFontRTTI.h"
 #include "CmFontManager.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -86,7 +87,7 @@ namespace CamelotFramework
 	{
 		FontPtr newFont = _createPtr(fontData);
 
-		return Resource::_createResourceHandle(newFont);
+		return gResources().createResourceHandle(newFont);
 	}
 
 	FontPtr Font::_createPtr(const Vector<FontData>::type& fontData)

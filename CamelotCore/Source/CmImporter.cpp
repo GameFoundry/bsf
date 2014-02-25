@@ -10,6 +10,7 @@
 #include "CmDataStream.h"
 #include "CmException.h"
 #include "CmUUID.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -77,7 +78,7 @@ namespace CamelotFramework
 		}
 
 		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
-		return Resource::_createResourceHandle(importedResource);
+		return gResources().createResourceHandle(importedResource);
 	}
 
 	void Importer::reimport(HResource& existingResource, const WString& inputFilePath, ConstImportOptionsPtr importOptions)

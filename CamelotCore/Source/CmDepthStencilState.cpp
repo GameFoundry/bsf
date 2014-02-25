@@ -3,6 +3,7 @@
 #include "CmRenderSystem.h"
 #include "CmDepthStencilStateRTTI.h"
 #include "CmException.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -22,7 +23,7 @@ namespace CamelotFramework
 	{
 		DepthStencilStatePtr depthStencilPtr = RenderStateManager::instance().createDepthStencilState(desc);
 
-		return static_resource_cast<DepthStencilState>(Resource::_createResourceHandle(depthStencilPtr));
+		return static_resource_cast<DepthStencilState>(gResources().createResourceHandle(depthStencilPtr));
 	}
 
 	/************************************************************************/

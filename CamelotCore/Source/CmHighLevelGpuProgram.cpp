@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmCoreThread.h"
 #include "CmAsyncOp.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -70,7 +71,7 @@ namespace CamelotFramework
 	{
 		HighLevelGpuProgramPtr programPtr = _createPtr(source, entryPoint, language, gptype, profile, includes);
 
-		return static_resource_cast<HighLevelGpuProgram>(Resource::_createResourceHandle(programPtr));
+		return static_resource_cast<HighLevelGpuProgram>(gResources().createResourceHandle(programPtr));
 	}
 
 	HighLevelGpuProgramPtr HighLevelGpuProgram::_createPtr(const String& source, const String& entryPoint, 

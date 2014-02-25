@@ -3,6 +3,7 @@
 #include "CmRenderStateManager.h"
 #include "CmRenderSystem.h"
 #include "CmException.h"
+#include "CmResources.h"
 
 namespace CamelotFramework 
 {
@@ -42,7 +43,7 @@ namespace CamelotFramework
 	{
 		SamplerStatePtr samplerPtr = RenderStateManager::instance().createSamplerState(desc);
 
-		return static_resource_cast<SamplerState>(Resource::_createResourceHandle(samplerPtr));
+		return static_resource_cast<SamplerState>(gResources().createResourceHandle(samplerPtr));
 	}
 
 	/************************************************************************/

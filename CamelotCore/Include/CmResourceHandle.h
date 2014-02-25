@@ -141,7 +141,7 @@ namespace CamelotFramework
 		}
 
 	private:
-		friend class Resource;
+		friend class Resources;
 
 		explicit ResourceHandle(T* ptr, const String& uuid)
 			:ResourceHandleBase()

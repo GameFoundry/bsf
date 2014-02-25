@@ -15,11 +15,6 @@ namespace CamelotFramework
 		Resource(bool requiresGpuInitialization = true);
 		virtual ~Resource() {};
 
-		/**
-		 * @brief	Creates a new resource handle. Should only be called by internal methods.
-		 */
-		static HResource _createResourceHandle(ResourcePtr obj);
-
 	protected:
 		friend class Resources;
 

@@ -120,6 +120,13 @@ namespace CamelotFramework
 		void save(HResource resource, const WString& filePath, bool overwrite);
 
 		/**
+		 * @brief	Creates a new resource handle from a resource pointer. 
+		 * 			You will almost never need to call this manually and should instead use
+		 * 			resource-specific methods that return a resource handle in the first place.
+		 */
+		HResource createResourceHandle(const ResourcePtr& obj);
+
+		/**
 		 * @brief	Allows you to set a resource manifest containing UUID <-> file path mapping that is
 		 * 			used when resolving resource references.
 		 *

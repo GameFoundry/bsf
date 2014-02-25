@@ -12,6 +12,7 @@
 #include "CmMaterialRTTI.h"
 #include "CmMaterialManager.h"
 #include "CmDebug.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -713,14 +714,14 @@ namespace CamelotFramework
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create();
 
-		return static_resource_cast<Material>(Resource::_createResourceHandle(materialPtr));
+		return static_resource_cast<Material>(gResources().createResourceHandle(materialPtr));
 	}
 
 	HMaterial Material::create(ShaderPtr shader)
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create(shader);
 
-		return static_resource_cast<Material>(Resource::_createResourceHandle(materialPtr));
+		return static_resource_cast<Material>(gResources().createResourceHandle(materialPtr));
 	}
 
 	RTTITypeBase* Material::getRTTIStatic()

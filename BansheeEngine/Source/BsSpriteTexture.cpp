@@ -1,6 +1,7 @@
 #include "BsSpriteTexture.h"
 #include "BsSpriteTextureRTTI.h"
 #include "CmTexture.h"
+#include "CmResources.h"
 
 using namespace CamelotFramework;
 
@@ -34,7 +35,7 @@ namespace BansheeEngine
 		SpriteTexturePtr texturePtr = cm_core_ptr<SpriteTexture, PoolAlloc>
 			(new (cm_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(Vector2(0.0f, 0.0f), Vector2(1.0f, 1.0f), texture));
 
-		return static_resource_cast<SpriteTexture>(Resource::_createResourceHandle(texturePtr));
+		return static_resource_cast<SpriteTexture>(gResources().createResourceHandle(texturePtr));
 	}
 
 	HSpriteTexture SpriteTexture::create(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture)
@@ -42,7 +43,7 @@ namespace BansheeEngine
 		SpriteTexturePtr texturePtr = cm_core_ptr<SpriteTexture, PoolAlloc>
 			(new (cm_alloc<SpriteTexture, PoolAlloc>()) SpriteTexture(uvOffset, uvScale, texture));
 
-		return static_resource_cast<SpriteTexture>(Resource::_createResourceHandle(texturePtr));
+		return static_resource_cast<SpriteTexture>(gResources().createResourceHandle(texturePtr));
 	}
 
 	SpriteTexturePtr SpriteTexture::createEmpty()

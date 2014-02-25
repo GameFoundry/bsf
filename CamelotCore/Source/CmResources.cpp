@@ -266,6 +266,20 @@ namespace CamelotFramework
 		fs.encode(resource.get(), filePath);
 	}
 
+	HResource Resources::createResourceHandle(const ResourcePtr& obj)
+	{
+		String uuid = UUIDGenerator::generateRandom();
+		HResource newHandle(obj, uuid);
+
+		{
+			CM_LOCK_MUTEX(mLoadedResourceMutex);
+
+			mLoadedResources[uuid] = newHandle;
+		}
+	
+		return newHandle;
+	}
+
 	const WString& Resources::getPathFromUUID(const String& uuid) const
 	{
 		return mResourceManifest->uuidToFilePath(uuid);

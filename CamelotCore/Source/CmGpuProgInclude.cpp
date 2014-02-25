@@ -1,4 +1,5 @@
 #include "CmGpuProgInclude.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -10,7 +11,7 @@ namespace CamelotFramework
 
 	HGpuProgInclude GpuProgInclude::create(const String& includeString)
 	{
-		return static_resource_cast<GpuProgInclude>(Resource::_createResourceHandle(_createPtr(includeString)));
+		return static_resource_cast<GpuProgInclude>(gResources().createResourceHandle(_createPtr(includeString)));
 	}
 
 	GpuProgIncludePtr GpuProgInclude::_createPtr(const String& includeString)

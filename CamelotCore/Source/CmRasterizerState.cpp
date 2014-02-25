@@ -2,6 +2,7 @@
 #include "CmRenderStateManager.h"
 #include "CmRenderSystem.h"
 #include "CmRasterizerStateRTTI.h"
+#include "CmResources.h"
 
 namespace CamelotFramework
 {
@@ -21,7 +22,7 @@ namespace CamelotFramework
 	{
 		RasterizerStatePtr rasterizerPtr = RenderStateManager::instance().createRasterizerState(desc);
 
-		return static_resource_cast<RasterizerState>(Resource::_createResourceHandle(rasterizerPtr));
+		return static_resource_cast<RasterizerState>(gResources().createResourceHandle(rasterizerPtr));
 	}
 
 	/************************************************************************/

@@ -33,6 +33,7 @@ THE SOFTWARE.
 #include "CmDebug.h"
 #include "CmCoreThread.h"
 #include "CmAsyncOp.h"
+#include "CmResources.h"
 
 namespace CamelotFramework 
 {
@@ -331,7 +332,7 @@ namespace CamelotFramework
 		TexturePtr texturePtr = _createPtr(texType, 
 			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 
-		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
+		return static_resource_cast<Texture>(gResources().createResourceHandle(texturePtr));
 	}
 	
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, 
@@ -340,7 +341,7 @@ namespace CamelotFramework
 		TexturePtr texturePtr = _createPtr(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 
-		return static_resource_cast<Texture>(Resource::_createResourceHandle(texturePtr));
+		return static_resource_cast<Texture>(gResources().createResourceHandle(texturePtr));
 	}
 
 	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
