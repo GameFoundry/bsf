@@ -20,6 +20,7 @@ namespace BansheeEditor
 
 		struct LibraryEntry
 		{
+			LibraryEntry() {}
 			LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type);
 
 			LibraryEntryType type;
@@ -31,6 +32,7 @@ namespace BansheeEditor
 
 		struct ResourceEntry : public LibraryEntry
 		{
+			ResourceEntry() {}
 			ResourceEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
 
 			ResourceMetaPtr meta;
@@ -39,6 +41,7 @@ namespace BansheeEditor
 
 		struct DirectoryEntry : public LibraryEntry
 		{
+			DirectoryEntry() {}
 			DirectoryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
 
 			CM::Vector<LibraryEntry*>::type mChildren;
@@ -61,9 +64,14 @@ namespace BansheeEditor
 		boost::signal<void(const CM::WString&)> onEntryAdded;
 	private:
 		static const CM::WString INTERNAL_RESOURCES_DIR;
+		static const CM::WString LIBRARY_ENTRIES_FILENAME;
+		static const CM::WString RESOURCE_MANIFEST_FILENAME;
 
 		DirectoryEntry* mRootEntry;
 		CM::FolderMonitor* mMonitor;
+
+		void save();
+		void load();
 
 		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const CM::WString& filePath);
 		DirectoryEntry* addDirectoryInternal(DirectoryEntry* parent, const CM::WString& dirPath);

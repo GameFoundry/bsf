@@ -49,6 +49,25 @@ namespace CamelotFramework
 		return memory + rttiGetElemSize(data);
 	}
 
+	/**
+	 * @brief	Helper method when serializing known data types that have valid
+	 * 			RTTIPlainType specializations.
+	 * 			
+	 *			Reads the specified data into memory, advances the memory pointer by the
+	 *			bytes read and returns pointer to new memory. Also increases the size 
+	 *			value by the size of the read element.
+	 */
+	template<class ElemType>
+	char* rttiReadElem(ElemType& data, char* memory, UINT32& size)
+	{
+		RTTIPlainType<ElemType>::fromMemory(data, memory);
+
+		UINT32 elemSize = rttiGetElemSize(data);
+		size += elemSize;
+
+		return memory + elemSize;
+	}
+
 	template<class T>
 	struct RTTIPlainType 
 	{ 

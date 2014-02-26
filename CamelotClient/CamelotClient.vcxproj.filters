@@ -138,6 +138,12 @@
     <ClInclude Include="Include\BsGUIResourceTreeView.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsProjectLibraryEntries.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h">
+      <Filter>Header Files\Editor</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -234,6 +240,9 @@
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUIResourceTreeView.cpp">
+      <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsProjectLibraryEntries.cpp">
       <Filter>Source Files\Editor</Filter>
     </ClCompile>
   </ItemGroup>

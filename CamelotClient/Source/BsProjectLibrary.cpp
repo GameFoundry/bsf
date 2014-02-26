@@ -13,6 +13,7 @@
 #include "CmFileSerializer.h"
 #include "CmFolderMonitor.h"
 #include "CmDebug.h"
+#include "BsProjectLibraryEntries.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -20,6 +21,8 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	const WString ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal\\Resources";
+	const WString ProjectLibrary::LIBRARY_ENTRIES_FILENAME = L"ProjectLibrary.asset";
+	const WString ProjectLibrary::RESOURCE_MANIFEST_FILENAME = L"ResourceManifest.asset";
 
 	ProjectLibrary::LibraryEntry::LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type)
 		:path(path), parent(parent), type(type), elementName(name)
@@ -46,13 +49,13 @@ namespace BansheeEditor
 		mMonitor->onRemoved.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 		mMonitor->onModified.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 
-		// TODO - Load
+		load();
 		checkForModifications(EditorApplication::instance().getResourcesFolderPath());
 	}
 
 	ProjectLibrary::~ProjectLibrary()
 	{
-		// TODO - Save
+		save();
 
 		mMonitor->stopMonitorAll();
 		cm_delete(mMonitor);
@@ -624,6 +627,98 @@ namespace BansheeEditor
 			Path::replaceExtension(resourcePath, L"");
 
 			checkForModifications(resourcePath);
+		}
+	}
+
+	void ProjectLibrary::save()
+	{
+		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
+
+		WString libraryEntriesPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		libraryEntriesPath = Path::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
+
+		FileSerializer fs;
+		fs.encode(libEntries.get(), libraryEntriesPath);
+
+		ResourceManifestPtr manifest = gResources().getResourceManifest();
+
+		WString resourceManifestPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		resourceManifestPath = Path::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
+
+		fs.encode(manifest.get(), resourceManifestPath);
+	}
+
+	void ProjectLibrary::load()
+	{
+		if(mRootEntry != nullptr)
+		{
+			deleteDirectoryInternal(mRootEntry);
+			mRootEntry = nullptr;
+		}
+
+		WString resPath = EditorApplication::instance().getResourcesFolderPath();
+		mRootEntry = cm_new<DirectoryEntry>(resPath, Path::getFilename(resPath), nullptr);
+
+		WString libraryEntriesPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		libraryEntriesPath = Path::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
+
+		if(FileSystem::exists(libraryEntriesPath))
+		{
+			FileSerializer fs;
+			std::shared_ptr<ProjectLibraryEntries> libEntries = std::static_pointer_cast<ProjectLibraryEntries>(fs.decode(libraryEntriesPath));
+
+			*mRootEntry = libEntries->getRootEntry();
+		}
+
+		// Load all meta files
+		Stack<DirectoryEntry*>::type todo;
+		todo.push(mRootEntry);
+
+		while(!todo.empty())
+		{
+			DirectoryEntry* curDir = todo.top();
+			todo.pop();
+
+			for(auto& child : curDir->mChildren)
+			{
+				if(child->type == LibraryEntryType::File)
+				{
+					ResourceEntry* resEntry = static_cast<ResourceEntry*>(child);
+
+					if(resEntry->meta == nullptr)
+					{
+						WString metaPath = resEntry->path + L".meta";
+
+						FileSerializer fs;
+						if(FileSystem::isFile(metaPath))
+						{
+							std::shared_ptr<IReflectable> loadedMeta = fs.decode(metaPath);
+
+							if(loadedMeta != nullptr && loadedMeta->isDerivedFrom(ResourceMeta::getRTTIStatic()))
+							{
+								ResourceMetaPtr resourceMeta = std::static_pointer_cast<ResourceMeta>(loadedMeta);
+								resEntry->meta = resourceMeta;
+							}
+						}
+					}
+				}
+				else if(child->type == LibraryEntryType::Directory)
+				{
+					todo.push(static_cast<DirectoryEntry*>(child));
+				}
+			}
+		}
+
+		// Load resource manifest
+		WString resourceManifestPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		resourceManifestPath = Path::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
+
+		if(FileSystem::exists(resourceManifestPath))
+		{
+			FileSerializer fs;
+			ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode(resourceManifestPath));
+
+			gResources().setResourceManifest(manifest);
 		}
 	}
 }
