@@ -67,6 +67,7 @@ namespace BansheeEditor
 		static const CM::WString LIBRARY_ENTRIES_FILENAME;
 		static const CM::WString RESOURCE_MANIFEST_FILENAME;
 
+		CM::ResourceManifestPtr mResourceManifest;
 		DirectoryEntry* mRootEntry;
 		CM::FolderMonitor* mMonitor;
 

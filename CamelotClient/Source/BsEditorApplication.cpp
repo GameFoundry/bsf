@@ -278,8 +278,6 @@ namespace BansheeEditor
 		fragProgRef = nullptr;
 		vertProgRef = nullptr;
 
-		testModelGO->destroy();
-
 		newPassGL = nullptr;
 		newTechniqueGL = nullptr;
 

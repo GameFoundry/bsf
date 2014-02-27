@@ -50,11 +50,40 @@ namespace CamelotFramework
 
 			for(; iterParent != parentPathElems.end(); ++iterChild, ++iterParent)
 			{
+				if(iterChild == childPathElems.end())
+					return false;
+
 				if(!comparePathElements(*iterChild, *iterParent))
 					return false;
 			}
 
 			return true;
+		}
+
+		/**
+		 * @brief	Returns path relative to base.
+		 */
+		static WString relative(const WString& base, const WString& path)
+		{
+			Vector<WString>::type basePathElems = split(base);
+			Vector<WString>::type pathElems = split(path);
+
+			auto iterBase = basePathElems.begin();
+			auto iterPath = pathElems.begin();
+
+			for(; iterBase != basePathElems.end(); ++iterBase, ++iterPath)
+			{
+				if(!comparePathElements(*iterBase, *iterPath))
+					return L"";
+			}
+
+			WString relativePath;
+			for(; iterPath != pathElems.end(); ++iterPath)
+			{
+				relativePath = Path::combine(relativePath, *iterPath);
+			}
+
+			return relativePath;
 		}
 
 		static Vector<WString>::type split(const WString& path)

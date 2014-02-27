@@ -15,8 +15,7 @@ namespace BansheeEditor
 		ProjectLibraryEntries(const ProjectLibrary::DirectoryEntry& rootEntry);
 
 		static std::shared_ptr<ProjectLibraryEntries> create(const ProjectLibrary::DirectoryEntry& rootEntry);
-		static std::shared_ptr<ProjectLibraryEntries> createEmpty();
-
+		
 		const ProjectLibrary::DirectoryEntry& getRootEntry() const { return mRootEntry; }
 
 	private:
@@ -25,6 +24,7 @@ namespace BansheeEditor
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
 		/************************************************************************/
+		static std::shared_ptr<ProjectLibraryEntries> createEmpty();
 
 	public:
 		friend class ProjectLibraryEntriesRTTI;

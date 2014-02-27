@@ -135,18 +135,25 @@ namespace CamelotFramework
 		 * 			manifest before closing the application and restore it upon startup.
 		 * 			Otherwise resources will be assigned brand new UUIDs and references will be broken.
 		 */
-		void setResourceManifest(const ResourceManifestPtr& manifest) { mResourceManifest = manifest; }
+		void registerResourceManifest(const ResourceManifestPtr& manifest);
 
 		/**
 		 * @brief	Allows you to retrieve resource manifest containing UUID <-> file path mapping that is
 		 * 			used when resolving resource references.
+		 * 			
+		 * @note	Resources module internally holds a "Default" manifest that it automatically updated whenever
+		 * 			a resource is saved.
 		 *
-		 * @see		setResourceManifest
+		 * @see		registerResourceManifest
 		 */
-		ResourceManifestPtr getResourceManifest() const { return mResourceManifest; }
+		ResourceManifestPtr getResourceManifest(const String& name) const;
+
+		bool getFilePathFromUUID(const String& uuid, WString& filePath) const;
+		bool getUUIDFromFilePath(const WString& path, String& uuid) const;
 
 	private:
-		ResourceManifestPtr mResourceManifest;
+		Vector<ResourceManifestPtr>::type mResourceManifests;
+		ResourceManifestPtr mDefaultResourceManifest;
 
 		CM_MUTEX(mInProgressResourcesMutex);
 		CM_MUTEX(mLoadedResourceMutex);
@@ -162,9 +169,6 @@ namespace CamelotFramework
 
 		HResource loadInternal(const WString& filePath, bool synchronous); 
 		ResourcePtr loadFromDiskAndDeserialize(const WString& filePath);
-
-		const WString& getPathFromUUID(const String& uuid) const;
-		const String& getUUIDFromPath(const WString& path) const;
 
 		void notifyResourceLoadingFinished(HResource& handle);
 		void notifyNewResourceLoaded(HResource& handle);

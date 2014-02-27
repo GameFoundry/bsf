@@ -58,7 +58,9 @@ namespace CamelotFramework
 	Resources::Resources()
 		:mRequestHandler(nullptr), mResponseHandler(nullptr), mWorkQueue(nullptr)
 	{
-		mResourceManifest = cm_shared_ptr<ResourceManifest>();
+		mDefaultResourceManifest = ResourceManifest::create("Default");
+		mResourceManifests.push_back(mDefaultResourceManifest);
+
 		mWorkQueue = cm_new<WorkQueue>();
 		mWorkQueueChannel = mWorkQueue->getChannel("Resources");
 		mRequestHandler = cm_new<ResourceRequestHandler>();
@@ -108,35 +110,67 @@ namespace CamelotFramework
 
 	HResource Resources::loadFromUUID(const String& uuid)
 	{
-		if(!mResourceManifest->uuidExists(uuid))
+		WString filePath;
+		bool foundPath = false;
+
+		// Default manifest is at 0th index but all other take priority since Default manifest could
+		// contain obsolete data. 
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		{
+			if((*iter)->uuidToFilePath(uuid, filePath))
+			{
+				foundPath = true;
+				break;
+			}
+		}
+
+		if(!foundPath)
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
 			return HResource();
 		}
 
-		WString filePath = getPathFromUUID(uuid);
 		return load(filePath);
 	}
 
 	HResource Resources::loadFromUUIDAsync(const String& uuid)
 	{
-		if(!mResourceManifest->uuidExists(uuid))
+		WString filePath;
+		bool foundPath = false;
+
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		{
+			if((*iter)->uuidToFilePath(uuid, filePath))
+			{
+				foundPath = true;
+				break;
+			}
+		}
+
+		if(!foundPath)
 		{
 			gDebug().logWarning("Cannot load resource. Resource with UUID '" + uuid + "' doesn't exist.");
 			return HResource();
 		}
 
-		WString filePath = getPathFromUUID(uuid);
 		return loadAsync(filePath);
 	}
 
 	HResource Resources::loadInternal(const WString& filePath, bool synchronous)
 	{
 		String uuid;
-		if(!mResourceManifest->filePathExists(filePath))
+		bool foundUUID = false;
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		{
+			if((*iter)->filePathToUUID(filePath, uuid))
+			{
+				foundUUID = true;
+				break;
+			}
+		}
+
+		if(!foundUUID)
 			uuid = UUIDGenerator::generateRandom();
-		else
-			uuid = getUUIDFromPath(filePath);
 
 		{
 			CM_LOCK_MUTEX(mLoadedResourceMutex);
@@ -260,10 +294,33 @@ namespace CamelotFramework
 				CM_EXCEPT(InvalidParametersException, "Another file exists at the specified location.");
 		}
 
-		mResourceManifest->registerResource(resource.getUUID(), filePath);
+		mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
 
 		FileSerializer fs;
 		fs.encode(resource.get(), filePath);
+	}
+
+	void Resources::registerResourceManifest(const ResourceManifestPtr& manifest)
+	{
+		if(manifest->getName() == "Default")
+			return;
+
+		auto findIter = std::find(mResourceManifests.begin(), mResourceManifests.end(), manifest);
+		if(findIter == mResourceManifests.end())
+			mResourceManifests.push_back(manifest);
+		else
+			*findIter = manifest;
+	}
+
+	ResourceManifestPtr Resources::getResourceManifest(const String& name) const
+	{
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		{
+			if(name == (*iter)->getName())
+				return (*iter);
+		}
+
+		return nullptr;
 	}
 
 	HResource Resources::createResourceHandle(const ResourcePtr& obj)
@@ -280,14 +337,26 @@ namespace CamelotFramework
 		return newHandle;
 	}
 
-	const WString& Resources::getPathFromUUID(const String& uuid) const
+	bool Resources::getFilePathFromUUID(const String& uuid, WString& filePath) const
 	{
-		return mResourceManifest->uuidToFilePath(uuid);
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		{
+			if((*iter)->uuidToFilePath(uuid, filePath))
+				return true;
+		}
+
+		return false;
 	}
 
-	const String& Resources::getUUIDFromPath(const WString& path) const
+	bool Resources::getUUIDFromFilePath(const WString& path, String& uuid) const
 	{
-		return mResourceManifest->filePathToUUID(path);
+		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
+		{
+			if((*iter)->filePathToUUID(path, uuid))
+				return true;
+		}
+
+		return false;
 	}
 
 	void Resources::notifyResourceLoadingFinished(HResource& handle)

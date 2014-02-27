@@ -1,16 +1,7 @@
 
-TODO
- - ProjectLibrary Save/Load - saves/loads the hierarchy of ResourceEntries
-    - ResourceManifest needs to store relative locations when I save it, so that user can move Project folder safely
  - Resource import queue (ability to display progress bar for resources that are importing)
+  - Plus modal windows?
  - Implement Delete command for ResourceTreeView
-
---------------------
-
-Test:
- - Save/Load (After it is implemented)
-     - Ensure that leaving application and then reloading will still recognize previously saved assets and will not reimport them
-       - Also ensure that UUIDs will be properly read from .meta files
 
 -------------------
 

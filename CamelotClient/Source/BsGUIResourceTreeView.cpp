@@ -401,16 +401,15 @@ namespace BansheeEditor
 		DraggedResources* draggedResources = cm_new<DraggedResources>();
 		InternalDraggedResources* internalDraggedResources = cm_new<InternalDraggedResources>((UINT32)mSelectedElements.size());
 
-		ResourceManifestPtr resourceManifest = gResources().getResourceManifest();
-
 		UINT32 cnt = 0;
 		for(auto& selectedElement : mSelectedElements)
 		{
 			ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(selectedElement.element);
 			internalDraggedResources->resourcePaths[cnt] = resourceTreeElement->mFullPath; 
 
-			if(resourceManifest->filePathExists(internalDraggedResources->resourcePaths[cnt]))
-				draggedResources->resourceUUIDs.push_back(resourceManifest->filePathToUUID(internalDraggedResources->resourcePaths[cnt]));
+			String uuid;
+			if(gResources().getUUIDFromFilePath(internalDraggedResources->resourcePaths[cnt], uuid))
+				draggedResources->resourceUUIDs.push_back(uuid);
 
 			cnt++;
 		}

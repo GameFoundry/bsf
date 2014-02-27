@@ -825,9 +825,12 @@ namespace CamelotFramework
 			memory += sizeof(UINT32);
 
 			UINT32 stringSize = size - sizeof(UINT32);
-			WString::value_type* buffer = (WString::value_type*)cm_alloc<ScratchAlloc>(stringSize + 1);
+			WString::value_type* buffer = (WString::value_type*)cm_alloc<ScratchAlloc>(stringSize + sizeof(WString::value_type));
 			memcpy(buffer, memory, stringSize); 
-			buffer[stringSize] = '\0';
+
+			UINT32 numChars =  stringSize / sizeof(WString::value_type);
+			buffer[numChars] = L'\0';
+
 			data = WString(buffer);
 
 			cm_free<ScratchAlloc>(buffer);

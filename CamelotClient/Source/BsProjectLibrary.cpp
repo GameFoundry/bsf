@@ -50,6 +50,12 @@ namespace BansheeEditor
 		mMonitor->onModified.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 
 		load();
+
+		if(mResourceManifest == nullptr)
+			mResourceManifest = ResourceManifest::create("ProjectLibrary");
+
+		gResources().registerResourceManifest(mResourceManifest);
+
 		checkForModifications(EditorApplication::instance().getResourcesFolderPath());
 	}
 
@@ -267,17 +273,15 @@ namespace BansheeEditor
 
 	void ProjectLibrary::deleteResourceInternal(ResourceEntry* resource)
 	{
-		ResourceManifestPtr manifest = gResources().getResourceManifest();
-
 		if(resource->meta != nullptr)
 		{
-			if(manifest->uuidExists(resource->meta->getUUID()))
+			WString path;
+			if(mResourceManifest->uuidToFilePath(resource->meta->getUUID(), path))
 			{
-				const WString& path = manifest->uuidToFilePath(resource->meta->getUUID());
 				if(FileSystem::isFile(path))
 					FileSystem::remove(path);
 
-				manifest->unregisterResource(resource->meta->getUUID());
+				mResourceManifest->unregisterResource(resource->meta->getUUID());
 			}
 		}
 
@@ -308,10 +312,13 @@ namespace BansheeEditor
 		}
 
 		DirectoryEntry* parent = directory->parent;
-		auto findIter = std::find_if(parent->mChildren.begin(), parent->mChildren.end(), 
-			[&] (const LibraryEntry* entry) { return entry == directory; });
+		if(parent != nullptr)
+		{
+			auto findIter = std::find_if(parent->mChildren.begin(), parent->mChildren.end(), 
+				[&] (const LibraryEntry* entry) { return entry == directory; });
 
-		parent->mChildren.erase(findIter);
+			parent->mChildren.erase(findIter);
+		}
 
 		if(!onEntryRemoved.empty())
 			onEntryRemoved(directory->path);
@@ -377,8 +384,7 @@ namespace BansheeEditor
 			gResources().save(importedResource, internalResourcesPath, true);
 			gResources().unload(importedResource);
 
-			ResourceManifestPtr manifest = gResources().getResourceManifest();
-			manifest->registerResource(importedResource.getUUID(), internalResourcesPath);
+			mResourceManifest->registerResource(importedResource.getUUID(), internalResourcesPath);
 
 			resource->lastUpdateTime = std::time(nullptr);
 		}
@@ -389,12 +395,10 @@ namespace BansheeEditor
 		if(resource->meta == nullptr)
 			return false;
 
-		ResourceManifestPtr manifest = gResources().getResourceManifest();
-
-		if(!manifest->uuidExists(resource->meta->getUUID()))
+		WString path;
+		if(!mResourceManifest->uuidToFilePath(resource->meta->getUUID(), path))
 			return false;
 
-		const WString& path = manifest->uuidToFilePath(resource->meta->getUUID());
 		if(!FileSystem::isFile(path))
 			return false;
 
@@ -634,18 +638,18 @@ namespace BansheeEditor
 	{
 		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
 
-		WString libraryEntriesPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		WString projectPath = EditorApplication::instance().getActiveProjectPath();
+
+		WString libraryEntriesPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
 		libraryEntriesPath = Path::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
 
 		FileSerializer fs;
 		fs.encode(libEntries.get(), libraryEntriesPath);
 
-		ResourceManifestPtr manifest = gResources().getResourceManifest();
-
-		WString resourceManifestPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		WString resourceManifestPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
 		resourceManifestPath = Path::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
 
-		fs.encode(manifest.get(), resourceManifestPath);
+		ResourceManifest::save(mResourceManifest, resourceManifestPath, projectPath);
 	}
 
 	void ProjectLibrary::load()
@@ -656,10 +660,12 @@ namespace BansheeEditor
 			mRootEntry = nullptr;
 		}
 
+		WString projectPath = EditorApplication::instance().getActiveProjectPath();
+
 		WString resPath = EditorApplication::instance().getResourcesFolderPath();
 		mRootEntry = cm_new<DirectoryEntry>(resPath, Path::getFilename(resPath), nullptr);
 
-		WString libraryEntriesPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		WString libraryEntriesPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
 		libraryEntriesPath = Path::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
 
 		if(FileSystem::exists(libraryEntriesPath))
@@ -710,15 +716,12 @@ namespace BansheeEditor
 		}
 
 		// Load resource manifest
-		WString resourceManifestPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+		WString resourceManifestPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
 		resourceManifestPath = Path::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
 
 		if(FileSystem::exists(resourceManifestPath))
 		{
-			FileSerializer fs;
-			ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode(resourceManifestPath));
-
-			gResources().setResourceManifest(manifest);
+			mResourceManifest = ResourceManifest::load(resourceManifestPath, projectPath);
 		}
 	}
 }

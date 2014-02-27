@@ -35,6 +35,26 @@ namespace CamelotFramework
 	}
 
 	/**
+	* @brief	Helper method when serializing known data types that have valid
+	* 			RTTIPlainType specializations.
+	* 			
+	*			Writes the specified data into memory, advances the memory pointer by the
+	*			bytes written and returns pointer to new memory. Also increases the size 
+	 *			value by the size of the written element.
+	 */
+	template<class ElemType>
+	char* rttiWriteElem(const ElemType& data, char* memory, UINT32& size)
+	{
+		RTTIPlainType<ElemType>::toMemory(data, memory);
+
+		UINT32 elemSize = rttiGetElemSize(data);
+		size += elemSize;
+
+		return memory + elemSize;
+	}
+
+
+	/**
 	 * @brief	Helper method when serializing known data types that have valid
 	 * 			RTTIPlainType specializations.
 	 * 			
@@ -114,10 +134,14 @@ namespace CamelotFramework
 
 		static void toMemory(const std::vector<T, StdAlloc<T>>& data, char* memory)
 		{ 
-			UINT32 size = (UINT32)data.size();
-
-			memcpy(memory, &size, sizeof(UINT32));
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
 			memory += sizeof(UINT32);
+
+			UINT32 numElements = (UINT32)data.size();
+			memcpy(memory, &numElements, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size += sizeof(UINT32);
 
 			for(auto iter = data.begin(); iter != data.end(); ++iter)
 			{
@@ -125,16 +149,21 @@ namespace CamelotFramework
 				RTTIPlainType<T>::toMemory(*iter, memory);
 
 				memory += elementSize;
+				size += elementSize;
 			}
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
 		static UINT32 fromMemory(std::vector<T, StdAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = 0;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
 			UINT32 numElements;
 			memcpy(&numElements, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
-			size += sizeof(UINT32);
 
 			for(UINT32 i = 0; i < numElements; i++)
 			{
@@ -143,7 +172,6 @@ namespace CamelotFramework
 				data.push_back(element);
 
 				memory += elementSize;
-				size += elementSize;
 			}
 
 			return size;
@@ -151,7 +179,7 @@ namespace CamelotFramework
 
 		static UINT32 getDynamicSize(const std::vector<T, StdAlloc<T>>& data)	
 		{ 
-			UINT64 dataSize = sizeof(UINT32);
+			UINT64 dataSize = sizeof(UINT32) * 2;
 
 			for(auto iter = data.begin(); iter != data.end(); ++iter)
 				dataSize += RTTIPlainType<T>::getDynamicSize(*iter);		
@@ -168,10 +196,14 @@ namespace CamelotFramework
 
 		static void toMemory(const std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
-			UINT32 size = (UINT32)data.size();
-
-			memcpy(memory, &size, sizeof(UINT32));
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
 			memory += sizeof(UINT32);
+
+			UINT32 numElements = (UINT32)data.size();
+			memcpy(memory, &numElements, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size += sizeof(UINT32);
 
 			for(auto iter = data.begin(); iter != data.end(); ++iter)
 			{
@@ -179,21 +211,27 @@ namespace CamelotFramework
 				RTTIPlainType<Key>::toMemory(iter->first, memory);
 
 				memory += keySize;
+				size += keySize;
 
 				UINT32 valueSize = RTTIPlainType<Value>::getDynamicSize(iter->second);
 				RTTIPlainType<Value>::toMemory(iter->second, memory);
 
 				memory += valueSize;
+				size += valueSize;
 			}
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
 		static UINT32 fromMemory(std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
 			UINT32 size = 0;
+			memcpy(&size, memory, sizeof(UINT32)); 
+			memory += sizeof(UINT32);
+
 			UINT32 numElements;
 			memcpy(&numElements, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
-			size += sizeof(UINT32);
 
 			for(UINT32 i = 0; i < numElements; i++)
 			{
@@ -206,7 +244,6 @@ namespace CamelotFramework
 				memory += valueSize;
 
 				data[key] = value; 
-				size += keySize + valueSize;
 			}
 
 			return size;
@@ -214,7 +251,7 @@ namespace CamelotFramework
 
 		static UINT32 getDynamicSize(const std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data)	
 		{ 
-			UINT64 dataSize = sizeof(UINT32);
+			UINT64 dataSize = sizeof(UINT32) * 2;
 
 			for(auto iter = data.begin(); iter != data.end(); ++iter)
 			{
@@ -234,31 +271,44 @@ namespace CamelotFramework
 
 		static void toMemory(const std::pair<A, B>& data, char* memory)
 		{ 
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
+			memory += sizeof(UINT32);
+
 			UINT32 firstSize = RTTIPlainType<A>::getDynamicSize(data.first);
 			RTTIPlainType<A>::toMemory(data.first, memory);
 
 			memory += firstSize;
+			size += firstSize;
 
 			UINT32 secondSize = RTTIPlainType<B>::getDynamicSize(data.second);
 			RTTIPlainType<B>::toMemory(data.second, memory);
 
 			memory += secondSize;
+			size += secondSize;
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
 		static UINT32 fromMemory(std::pair<A, B>& data, char* memory)
 		{ 
+			UINT32 size = 0;
+			memcpy(&size, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
 			UINT32 firstSize = RTTIPlainType<A>::fromMemory(data.first, memory);
 			memory += firstSize;
 
 			UINT32 secondSize = RTTIPlainType<B>::fromMemory(data.second, memory);
 			memory += secondSize;
 
-			return firstSize + secondSize;
+			return size;
 		}
 
 		static UINT32 getDynamicSize(const std::pair<A, B>& data)	
 		{ 
-			UINT64 dataSize = RTTIPlainType<A>::getDynamicSize(data.first);		
+			UINT64 dataSize = sizeof(UINT32);
+			dataSize += RTTIPlainType<A>::getDynamicSize(data.first);		
 			dataSize += RTTIPlainType<B>::getDynamicSize(data.second);
 
 			assert(dataSize <= std::numeric_limits<UINT32>::max());
