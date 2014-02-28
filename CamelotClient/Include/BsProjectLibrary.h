@@ -48,7 +48,7 @@ namespace BansheeEditor
 		};
 
 	public:
-		ProjectLibrary();
+		ProjectLibrary(const CM::WString& projectFolder);
 		~ProjectLibrary();
 
 		void update();
@@ -63,6 +63,7 @@ namespace BansheeEditor
 		boost::signal<void(const CM::WString&)> onEntryRemoved;
 		boost::signal<void(const CM::WString&)> onEntryAdded;
 	private:
+		static const CM::WString RESOURCES_DIR;
 		static const CM::WString INTERNAL_RESOURCES_DIR;
 		static const CM::WString LIBRARY_ENTRIES_FILENAME;
 		static const CM::WString RESOURCE_MANIFEST_FILENAME;
@@ -70,6 +71,8 @@ namespace BansheeEditor
 		CM::ResourceManifestPtr mResourceManifest;
 		DirectoryEntry* mRootEntry;
 		CM::FolderMonitor* mMonitor;
+		CM::WString mProjectFolder;
+		CM::WString mResourcesFolder;
 
 		void save();
 		void load();

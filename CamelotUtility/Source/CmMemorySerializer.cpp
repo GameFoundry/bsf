@@ -35,7 +35,11 @@ namespace CamelotFramework
 		UINT32 offset = 0;
 		for(auto iter = mBufferPieces.begin(); iter != mBufferPieces.end(); ++iter)
 		{
-			memcpy(resultBuffer + offset, iter->buffer, iter->size);
+			if(iter->size > 0)
+			{
+				memcpy(resultBuffer + offset, iter->buffer, iter->size);
+				offset += iter->size;
+			}
 		}
 
 		for(auto iter = mBufferPieces.rbegin(); iter != mBufferPieces.rend(); ++iter)

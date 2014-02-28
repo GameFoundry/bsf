@@ -1,5 +1,4 @@
 #include "BsProjectLibrary.h"
-#include "BsEditorApplication.h"
 #include "CmPath.h"
 #include "CmFileSystem.h"
 #include "CmException.h"
@@ -20,6 +19,7 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
+	const WString ProjectLibrary::RESOURCES_DIR = L"Resources";
 	const WString ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal\\Resources";
 	const WString ProjectLibrary::LIBRARY_ENTRIES_FILENAME = L"ProjectLibrary.asset";
 	const WString ProjectLibrary::RESOURCE_MANIFEST_FILENAME = L"ResourceManifest.asset";
@@ -36,14 +36,15 @@ namespace BansheeEditor
 		:LibraryEntry(path, name, parent, LibraryEntryType::Directory)
 	{ }
 
-	ProjectLibrary::ProjectLibrary()
-		:mRootEntry(nullptr)
+	ProjectLibrary::ProjectLibrary(const WString& projectFolder)
+		:mRootEntry(nullptr), mProjectFolder(projectFolder)
 	{
+		mResourcesFolder = Path::combine(mProjectFolder, RESOURCES_DIR);
 		mMonitor = cm_new<FolderMonitor>();
 
 		FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName | 
 				(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
-		mMonitor->startMonitor(EditorApplication::instance().getResourcesFolderPath(), true, folderChanges);
+		mMonitor->startMonitor(mResourcesFolder, true, folderChanges);
 
 		mMonitor->onAdded.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 		mMonitor->onRemoved.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
@@ -56,7 +57,7 @@ namespace BansheeEditor
 
 		gResources().registerResourceManifest(mResourceManifest);
 
-		checkForModifications(EditorApplication::instance().getResourcesFolderPath());
+		checkForModifications(mResourcesFolder);
 	}
 
 	ProjectLibrary::~ProjectLibrary()
@@ -77,12 +78,12 @@ namespace BansheeEditor
 
 	void ProjectLibrary::checkForModifications(const CM::WString& fullPath)
 	{
-		if(!Path::includes(fullPath, EditorApplication::instance().getResourcesFolderPath()))
+		if(!Path::includes(fullPath, mResourcesFolder))
 			return; // Folder not part of our resources path, so no modifications
 
 		if(mRootEntry == nullptr)
 		{
-			WString resPath = EditorApplication::instance().getResourcesFolderPath();
+			WString resPath = mResourcesFolder;
 			mRootEntry = cm_new<DirectoryEntry>(resPath, Path::getFilename(resPath), nullptr);
 		}
 
@@ -375,7 +376,7 @@ namespace BansheeEditor
 				Importer::instance().reimport(importedResource, resource->path, importOptions);
 			}
 
-			WString internalResourcesPath = Path::combine(EditorApplication::instance().getActiveProjectPath(), INTERNAL_RESOURCES_DIR);
+			WString internalResourcesPath = Path::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
 			if(!FileSystem::isDirectory(internalResourcesPath))
 				FileSystem::createDir(internalResourcesPath);
 
@@ -466,7 +467,7 @@ namespace BansheeEditor
 		if(oldEntry != nullptr) // Moving from the Resources folder
 		{
 			// Moved outside of Resources, delete entry & meta file
-			if(!Path::includes(newPath, EditorApplication::instance().getResourcesFolderPath()))
+			if(!Path::includes(newPath, mResourcesFolder))
 			{
 				if(oldEntry->type == LibraryEntryType::File)
 				{
@@ -638,18 +639,16 @@ namespace BansheeEditor
 	{
 		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
 
-		WString projectPath = EditorApplication::instance().getActiveProjectPath();
-
-		WString libraryEntriesPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
+		WString libraryEntriesPath = Path::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
 		libraryEntriesPath = Path::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
 
 		FileSerializer fs;
 		fs.encode(libEntries.get(), libraryEntriesPath);
 
-		WString resourceManifestPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
+		WString resourceManifestPath = Path::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
 		resourceManifestPath = Path::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
 
-		ResourceManifest::save(mResourceManifest, resourceManifestPath, projectPath);
+		ResourceManifest::save(mResourceManifest, resourceManifestPath, mProjectFolder);
 	}
 
 	void ProjectLibrary::load()
@@ -660,12 +659,10 @@ namespace BansheeEditor
 			mRootEntry = nullptr;
 		}
 
-		WString projectPath = EditorApplication::instance().getActiveProjectPath();
-
-		WString resPath = EditorApplication::instance().getResourcesFolderPath();
+		WString resPath = mResourcesFolder;
 		mRootEntry = cm_new<DirectoryEntry>(resPath, Path::getFilename(resPath), nullptr);
 
-		WString libraryEntriesPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
+		WString libraryEntriesPath = Path::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
 		libraryEntriesPath = Path::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
 
 		if(FileSystem::exists(libraryEntriesPath))
@@ -716,12 +713,12 @@ namespace BansheeEditor
 		}
 
 		// Load resource manifest
-		WString resourceManifestPath = Path::combine(projectPath, INTERNAL_RESOURCES_DIR);
+		WString resourceManifestPath = Path::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
 		resourceManifestPath = Path::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
 
 		if(FileSystem::exists(resourceManifestPath))
 		{
-			mResourceManifest = ResourceManifest::load(resourceManifestPath, projectPath);
+			mResourceManifest = ResourceManifest::load(resourceManifestPath, mProjectFolder);
 		}
 	}
 }

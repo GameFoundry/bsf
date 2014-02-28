@@ -71,7 +71,11 @@ namespace BansheeEngine
 			for(auto& meta : mTypeMetas)
 			{
 				meta->scriptClass = &assembly->getClass(meta->ns, meta->name);
-				meta->thisPtrField = &meta->scriptClass->getField("mCachedPtr");
+				if(meta->scriptClass->hasField("mCachedPtr"))
+					meta->thisPtrField = &meta->scriptClass->getField("mCachedPtr");
+				else
+					meta->thisPtrField = nullptr;
+
 				meta->initCallback();
 			}
 

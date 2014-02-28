@@ -80,6 +80,13 @@ namespace BansheeEngine
 		return *newMethod;
 	}
 
+	bool MonoClass::hasField(const String& name) const
+	{
+		MonoClassField* field = mono_class_get_field_from_name(mClass, name.c_str());
+
+		return field != nullptr;
+	}
+
 	MonoField& MonoClass::getField(const String& name)
 	{
 		auto iterFind = mFields.find(name);

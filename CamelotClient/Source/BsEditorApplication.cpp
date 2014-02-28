@@ -56,7 +56,7 @@ namespace BansheeEditor
 			inputConfig->registerButton("Paste", BC_V, VButtonModifier::Ctrl);
 		}
 
-		ProjectLibrary::startUp(cm_new<ProjectLibrary>());
+		ProjectLibrary::startUp(cm_new<ProjectLibrary>(getActiveProjectPath()));
 
 		//gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
@@ -329,11 +329,6 @@ namespace BansheeEditor
 		static WString dummyProjectPath = L"D:\\DummyBansheeProject";
 
 		return dummyProjectPath;
-	}
-
-	WString EditorApplication::getResourcesFolderPath() const
-	{
-		return getActiveProjectPath() + L"\\Resources";
 	}
 
 	const String& EditorApplication::getLibraryNameForRenderSystem(RenderSystemPlugin plugin)

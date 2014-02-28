@@ -28,7 +28,7 @@ namespace CamelotFramework
 			~MemBlock()
 			{ }
 
-			UINT8* alloc(UINT8 amount)
+			UINT8* alloc(UINT32 amount)
 			{
 				UINT8* freePtr = &mData[mFreePtr];
 				mFreePtr += amount;
@@ -36,7 +36,7 @@ namespace CamelotFramework
 				return freePtr;
 			}
 
-			void dealloc(UINT8* data, UINT8 amount)
+			void dealloc(UINT8* data, UINT32 amount)
 			{
 				mFreePtr -= amount;
 				assert((&mData[mFreePtr]) == data && "Out of order stack deallocation detected. Deallocations need to happen in order opposite of allocations.");

@@ -32,6 +32,8 @@ namespace BansheeEngine
 		MonoField& getField(const CM::String& name);
 		MonoProperty& getProperty(const CM::String& name);
 
+		bool hasField(const CM::String& name) const;
+
 		MonoObject* invokeMethod(const CM::String& name, MonoObject* instance = nullptr, void** params = nullptr, CM::UINT32 numParams = 0);
 		void addInternalCall(const CM::String& name, const void* method);
 
