@@ -129,7 +129,7 @@ namespace BansheeEditor
 				if(!tempToDelete[i])
 					continue;
 
-				deleteTreeElement(element->mChildren[i]);
+				deleteTreeElementInternal(element->mChildren[i]);
 			}
 
 			stackDeallocLast(tempToDelete);
@@ -193,7 +193,12 @@ namespace BansheeEditor
 		CmdEditPlainFieldGO<String>::execute(sceneTreeElement->mSceneObject, "mName", toString(name));
 	}
 
-	void GUISceneTreeView::deleteTreeElement(GUITreeView::TreeElement* element)
+	void GUISceneTreeView::deleteTreeElement(TreeElement* element)
+	{
+		// TODO - Actually delete the scene object
+	}
+
+	void GUISceneTreeView::deleteTreeElementInternal(GUITreeView::TreeElement* element)
 	{
 		closeTemporarilyExpandedElements(); // In case this element is one of them
 

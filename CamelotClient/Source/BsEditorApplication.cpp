@@ -54,6 +54,7 @@ namespace BansheeEditor
 			inputConfig->registerButton("Copy", BC_C, VButtonModifier::Ctrl);
 			inputConfig->registerButton("Cut", BC_X, VButtonModifier::Ctrl);
 			inputConfig->registerButton("Paste", BC_V, VButtonModifier::Ctrl);
+			inputConfig->registerButton("Delete", BC_DELETE);
 		}
 
 		ProjectLibrary::startUp(cm_new<ProjectLibrary>(getActiveProjectPath()));

@@ -30,6 +30,7 @@ namespace BansheeEditor
 	const UINT32 GUITreeView::SCROLL_SPEED_PX_PER_SEC = 25;
 
 	VirtualButton GUITreeView::mRenameVB = VirtualButton("Rename");
+	VirtualButton GUITreeView::mDeleteVB = VirtualButton("Delete");
 
 	GUITreeView::TreeElement::TreeElement()
 		:mParent(nullptr), mFoldoutBtn(nullptr), mElement(nullptr), mIsSelected(false),
@@ -440,6 +441,45 @@ namespace BansheeEditor
 			}
 
 			return true;
+		}
+		else if(ev.getButton() == mDeleteVB)
+		{
+			if(isSelectionActive())
+			{
+				auto isChildOf = [&] (const TreeElement* parent, const TreeElement* child)
+				{
+					const TreeElement* elem = child;
+
+					while(elem != nullptr && elem != parent)
+						elem = child->mParent;
+
+					return elem == parent;
+				};
+
+				// Ensure we don't unnecessarily try to delete children if their
+				// parent is getting deleted anyway
+				Vector<TreeElement*>::type elementsToDelete;
+				for(UINT32 i = 0; i < (UINT32)mSelectedElements.size(); i++)
+				{
+					bool hasDeletedParent = false;
+					for(UINT32 j = i + 1; j < (UINT32)mSelectedElements.size(); j++)
+					{
+						if(isChildOf(mSelectedElements[j].element, mSelectedElements[i].element))
+						{
+							hasDeletedParent = true;
+							break;
+						}
+					}
+
+					if(!hasDeletedParent)
+						elementsToDelete.push_back(mSelectedElements[i].element);
+				}
+
+				unselectAll();
+
+				for(auto& elem : elementsToDelete)
+					deleteTreeElement(elem);
+			}
 		}
 
 		return false;

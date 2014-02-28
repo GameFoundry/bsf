@@ -149,6 +149,7 @@ namespace CamelotFramework
 					BansheeEditor::ProjectLibrary::ResourceEntry* childResEntry = cm_new<BansheeEditor::ProjectLibrary::ResourceEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
 					memory = rttiReadElem(*childResEntry, memory);
 
+					childResEntry->parent = &data;
 					data.mChildren.push_back(childResEntry);
 				}
 				else if(childType == BansheeEditor::ProjectLibrary::LibraryEntryType::Directory)
@@ -156,6 +157,7 @@ namespace CamelotFramework
 					BansheeEditor::ProjectLibrary::DirectoryEntry* childDirEntry = cm_new<BansheeEditor::ProjectLibrary::DirectoryEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
 					memory = rttiReadElem(*childDirEntry, memory);
 
+					childDirEntry->parent = &data;
 					data.mChildren.push_back(childDirEntry);
 				}
 			}

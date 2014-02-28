@@ -120,6 +120,7 @@ namespace BansheeEditor
 		float mMouseOverDragElementTime;
 
 		static BS::VirtualButton mRenameVB;
+		static BS::VirtualButton mDeleteVB;
 
 		GUITreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
@@ -141,6 +142,7 @@ namespace BansheeEditor
 		virtual const TreeElement& getRootElementConst() const = 0;
 		virtual void updateTreeElementHierarchy() = 0;
 		virtual void renameTreeElement(TreeElement* element, const CM::WString& name) = 0;
+		virtual void deleteTreeElement(TreeElement* element) = 0;
 		virtual bool acceptDragAndDrop() const = 0;
 		virtual void dragAndDropStart() = 0;
 		virtual void dragAndDropEnded(TreeElement* overTreeElement) = 0;

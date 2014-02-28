@@ -59,11 +59,12 @@ namespace BansheeEditor
 		virtual const TreeElement& getRootElementConst() const { return mRootElement; }
 		virtual void updateTreeElementHierarchy();
 		virtual void renameTreeElement(TreeElement* element, const CM::WString& name);
+		virtual void deleteTreeElement(TreeElement* element);
 		virtual bool acceptDragAndDrop() const;
 		virtual void dragAndDropStart();
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
 
-		void deleteTreeElement(TreeElement* element);
+		void deleteTreeElementInternal(TreeElement* element);
 	};
 }

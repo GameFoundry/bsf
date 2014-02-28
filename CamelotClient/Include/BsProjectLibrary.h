@@ -20,7 +20,7 @@ namespace BansheeEditor
 
 		struct LibraryEntry
 		{
-			LibraryEntry() {}
+			LibraryEntry();
 			LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type);
 
 			LibraryEntryType type;
@@ -32,7 +32,7 @@ namespace BansheeEditor
 
 		struct ResourceEntry : public LibraryEntry
 		{
-			ResourceEntry() {}
+			ResourceEntry();
 			ResourceEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
 
 			ResourceMetaPtr meta;
@@ -41,7 +41,7 @@ namespace BansheeEditor
 
 		struct DirectoryEntry : public LibraryEntry
 		{
-			DirectoryEntry() {}
+			DirectoryEntry();
 			DirectoryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
 
 			CM::Vector<LibraryEntry*>::type mChildren;

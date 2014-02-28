@@ -99,6 +99,13 @@ namespace BansheeEditor
 		ProjectLibrary::instance().moveEntry(oldPath, findUniquePath(newPath));
 	}
 
+	void GUIResourceTreeView::deleteTreeElement(TreeElement* element) 
+	{
+		ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(element);
+
+		ProjectLibrary::instance().deleteEntry(resourceTreeElement->mFullPath);
+	}
+
 	void GUIResourceTreeView::updateFromProjectLibraryEntry(ResourceTreeElement* treeElement, const ProjectLibrary::LibraryEntry* libraryEntry)
 	{
 		struct StackElem

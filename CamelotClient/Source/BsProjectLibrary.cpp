@@ -24,12 +24,23 @@ namespace BansheeEditor
 	const WString ProjectLibrary::LIBRARY_ENTRIES_FILENAME = L"ProjectLibrary.asset";
 	const WString ProjectLibrary::RESOURCE_MANIFEST_FILENAME = L"ResourceManifest.asset";
 
+	ProjectLibrary::LibraryEntry::LibraryEntry()
+		:parent(nullptr), type(LibraryEntryType::Directory)
+	{ }
+
 	ProjectLibrary::LibraryEntry::LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type)
 		:path(path), parent(parent), type(type), elementName(name)
 	{ }
 
+	ProjectLibrary::ResourceEntry::ResourceEntry()
+		:lastUpdateTime(0)
+	{ }
+
 	ProjectLibrary::ResourceEntry::ResourceEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent)
 		:LibraryEntry(path, name, parent, LibraryEntryType::File), lastUpdateTime(0)
+	{ }
+
+	ProjectLibrary::DirectoryEntry::DirectoryEntry()
 	{ }
 
 	ProjectLibrary::DirectoryEntry::DirectoryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent)
@@ -547,7 +558,7 @@ namespace BansheeEditor
 
 	void ProjectLibrary::deleteEntry(const CM::WString& path)
 	{
-		if(FileSystem::isFile(path))
+		if(FileSystem::exists(path))
 			FileSystem::remove(path);
 
 		LibraryEntry* entry = findEntry(path);
@@ -671,6 +682,10 @@ namespace BansheeEditor
 			std::shared_ptr<ProjectLibraryEntries> libEntries = std::static_pointer_cast<ProjectLibraryEntries>(fs.decode(libraryEntriesPath));
 
 			*mRootEntry = libEntries->getRootEntry();
+			for(auto& child : mRootEntry->mChildren)
+				child->parent = mRootEntry;
+
+			mRootEntry->parent = nullptr;
 		}
 
 		// Load all meta files
