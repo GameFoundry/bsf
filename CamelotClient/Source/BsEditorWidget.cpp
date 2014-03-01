@@ -13,23 +13,23 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	EditorWidget::EditorWidget(const HString& name)
+	EditorWidgetBase::EditorWidgetBase(const HString& name)
 		:mName(name), mParent(nullptr), mContent(nullptr)
 	{
 		
 	}
 
-	EditorWidget::~EditorWidget()
+	EditorWidgetBase::~EditorWidgetBase()
 	{
 
 	}
 
-	void EditorWidget::destroy(EditorWidget* widget)
+	void EditorWidgetBase::destroy(EditorWidgetBase* widget)
 	{
 		cm_delete(widget);
 	}
 
-	void EditorWidget::_setPosition(INT32 x, INT32 y)
+	void EditorWidgetBase::_setPosition(INT32 x, INT32 y)
 	{
 		if(mContent == nullptr)
 			return;
@@ -37,7 +37,7 @@ namespace BansheeEditor
 		mContent->setPosition(x, y);
 	}
 
-	void EditorWidget::_setSize(UINT32 width, UINT32 height)
+	void EditorWidgetBase::_setSize(UINT32 width, UINT32 height)
 	{
 		if(mContent == nullptr)
 			return;
@@ -45,7 +45,7 @@ namespace BansheeEditor
 		mContent->setSize(width, height);
 	}
 
-	void EditorWidget::_changeParent(EditorWidgetContainer* parent)
+	void EditorWidgetBase::_changeParent(EditorWidgetContainer* parent)
 	{
 		if(mParent != parent) 
 		{
@@ -66,17 +66,17 @@ namespace BansheeEditor
 		}
 	}
 
-	void EditorWidget::_disable()
+	void EditorWidgetBase::_disable()
 	{
 		mContent->disable();
 	}
 
-	void EditorWidget::_enable()
+	void EditorWidgetBase::_enable()
 	{
 		mContent->enable();
 	}
 
-	GUIWidget& EditorWidget::getParentWidget() const
+	GUIWidget& EditorWidgetBase::getParentWidget() const
 	{
 		return mParent->getParentWidget();
 	}

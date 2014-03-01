@@ -12,3 +12,47 @@ Other things to remember:
  - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
  - A way to persist window states
  - Also a way to reset all widgets to original locations
+
+
+ ------------------------
+
+ EditorWindow enumeraton in C#:
+
+ To get all classes in a mono image:
+MonoClass*
+mono_assembly_get_classes (MonoAssembly *assembly, gpointer *iter)
+{
+	MonoImage *image;
+	int num_types;
+	gssize *index;
+
+	if (!iter)
+		return NULL;
+
+	index = (gssize *) iter;
+
+	/* skip the <Module> */
+	if (!*index)
+		*index = 1;
+
+	image = mono_assembly_get_image (assembly);
+	num_types = mono_image_get_table_rows (image, MONO_TABLE_TYPEDEF);
+
+	if (*index < num_types) {
+		(*index)++;
+		return mono_class_get (image, *index | MONO_TOKEN_TYPE_DEF);
+	} else {
+		*index = 0;
+		return NULL;
+	}
+}
+
+More info on how to potentially access other properties, here: http://docs.go-mono.com/?link=xhtml%3adeploy%2fmono-api-metadata.html
+
+
+To get class hierarchy:
+ mono_class_get_parent to get parent class (does this mean base class?)
+ mono_class_is_assignable_from potentially
+ mono_class_is_subclass_of
+
+Attributes: Very much undocumented but a lot of stuff here relates to attributes: http://docs.go-mono.com/?link=xhtml%3adeploy%2fmono-api-reflection.html

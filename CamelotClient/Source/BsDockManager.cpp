@@ -141,7 +141,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
+	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		mIsLeaf = true;
 		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow);
@@ -176,27 +176,27 @@ namespace BansheeEditor
 		mWidgets->setSize(mArea.width, mArea.height);
 	}
 
-	void DockManager::DockContainer::addLeft(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
+	void DockManager::DockContainer::addLeft(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		splitContainer(widgetParent, parentWindow, widget, false, true);
 	}
 
-	void DockManager::DockContainer::addRight(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
+	void DockManager::DockContainer::addRight(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		splitContainer(widgetParent, parentWindow, widget, false, false);
 	}
 
-	void DockManager::DockContainer::addTop(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
+	void DockManager::DockContainer::addTop(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		splitContainer(widgetParent, parentWindow, widget, true, true);
 	}
 
-	void DockManager::DockContainer::addBottom(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget)
+	void DockManager::DockContainer::addBottom(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		splitContainer(widgetParent, parentWindow, widget, true, false);
 	}
 
-	void DockManager::DockContainer::splitContainer(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidget* widget, bool horizontal, bool newChildIsFirst)
+	void DockManager::DockContainer::splitContainer(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget, bool horizontal, bool newChildIsFirst)
 	{
 		UINT32 idxA = newChildIsFirst ? 0 : 1;
 		UINT32 idxB = (idxA + 1) % 2;
@@ -419,7 +419,7 @@ namespace BansheeEditor
 		renderQueue.add(mDropOverlayMat.getInternalPtr(), mDropOverlayMesh.getInternalPtr(), 0, Vector3::ZERO);
 	}
 
-	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location)
+	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location)
 	{
 		if(relativeTo != nullptr)
 		{
@@ -682,7 +682,7 @@ namespace BansheeEditor
 			if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
 				return false;
 
-			EditorWidget* draggedWidget = reinterpret_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
+			EditorWidgetBase* draggedWidget = reinterpret_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 
 			const Vector2I& widgetRelPos = event.getPosition();
 			const Matrix4& worldTfrm = mParent->SO()->getWorldTfrm();

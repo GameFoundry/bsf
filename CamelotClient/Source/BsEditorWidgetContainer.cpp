@@ -38,16 +38,16 @@ namespace BansheeEditor
 
 		for(auto& widget : mWidgets)
 		{
-			EditorWidget::destroy(widget.second);
+			EditorWidgetBase::destroy(widget.second);
 		}
 	}
 
-	void EditorWidgetContainer::add(EditorWidget& widget)
+	void EditorWidgetContainer::add(EditorWidgetBase& widget)
 	{
 		insert((UINT32)mWidgets.size(), widget);
 	}
 
-	void EditorWidgetContainer::remove(EditorWidget& widget)
+	void EditorWidgetContainer::remove(EditorWidgetBase& widget)
 	{
 		INT32 tabIdx = 0;
 		for(auto& curWidget : mWidgets)
@@ -76,7 +76,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void EditorWidgetContainer::insert(CM::UINT32 idx, EditorWidget& widget)
+	void EditorWidgetContainer::insert(CM::UINT32 idx, EditorWidgetBase& widget)
 	{
 		for(auto& curWidget : mWidgets)
 		{
@@ -103,7 +103,7 @@ namespace BansheeEditor
 
 		if(mActiveWidget >= 0)
 		{
-			EditorWidget* activeWidgetPtr = mWidgets[mActiveWidget];
+			EditorWidgetBase* activeWidgetPtr = mWidgets[mActiveWidget];
 			UINT32 contentHeight = (UINT32)std::max(0, (INT32)height - (INT32)TitleBarHeight);
 
 			activeWidgetPtr->_setSize(width, contentHeight);
@@ -119,7 +119,7 @@ namespace BansheeEditor
 
 		if(mActiveWidget >= 0)
 		{
-			EditorWidget* activeWidgetPtr = mWidgets[mActiveWidget];
+			EditorWidgetBase* activeWidgetPtr = mWidgets[mActiveWidget];
 
 			activeWidgetPtr->_setPosition(x, y + TitleBarHeight);
 		}
@@ -156,9 +156,9 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::tabClosed(UINT32 uniqueIdx)
 	{
-		EditorWidget* widget = mWidgets[uniqueIdx];
+		EditorWidgetBase* widget = mWidgets[uniqueIdx];
 		remove(*widget);
-		EditorWidget::destroy(widget);
+		EditorWidgetBase::destroy(widget);
 
 		if(!onWidgetClosed.empty())
 			onWidgetClosed();
@@ -166,7 +166,7 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::tabDraggedOff(CM::UINT32 uniqueIdx)
 	{
-		EditorWidget* widget = mWidgets[uniqueIdx];
+		EditorWidgetBase* widget = mWidgets[uniqueIdx];
 		remove(*widget);
 
 		// TODO - Hook up drag and drop texture
@@ -187,7 +187,7 @@ namespace BansheeEditor
 			CM_EXCEPT(InternalErrorException, "Tab drag and drop reported but drag type is invalid.");
 #endif
 
-		EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
+		EditorWidgetBase* draggedWidget = static_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 
 		insert(seqIdx, *draggedWidget);
 		setActiveWidget(mTitleBar->getTabIdx(seqIdx));
@@ -200,7 +200,7 @@ namespace BansheeEditor
 
 		if(!wasDragProcessed)
 		{
-			EditorWidget* draggedWidget = static_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
+			EditorWidgetBase* draggedWidget = static_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 			EditorWindow* newWindow = EditorWindow::create();
 
 			newWindow->widgets().add(*draggedWidget);
@@ -215,7 +215,7 @@ namespace BansheeEditor
 		return RectI(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
 	}
 
-	void EditorWidgetContainer::_notifyWidgetDestroyed(EditorWidget* widget)
+	void EditorWidgetContainer::_notifyWidgetDestroyed(EditorWidgetBase* widget)
 	{
 		for(auto& curWidget : mWidgets)
 		{

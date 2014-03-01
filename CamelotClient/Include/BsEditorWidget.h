@@ -1,14 +1,17 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
+#include "BsEditorWidgetManager.h"
 #include "boost/signal.hpp"
 
 namespace BansheeEditor
 {
-	class EditorWidget
+	class EditorWidgetBase
 	{
 	public:
-		virtual ~EditorWidget();
+		virtual ~EditorWidgetBase();
+
+		virtual void initialize() { }
 
 		const CM::HString& getName() const { return mName; }
 
@@ -19,9 +22,11 @@ namespace BansheeEditor
 		void _disable();
 		void _enable();
 
-		static void destroy(EditorWidget* widget);
+		static void destroy(EditorWidgetBase* widget);
 	protected:
-		EditorWidget(const CM::HString& name);
+		friend class EditorWidgetManager;
+
+		EditorWidgetBase(const CM::HString& name);
 
 		CM::HString mName;
 		EditorWidgetContainer* mParent;
@@ -29,4 +34,45 @@ namespace BansheeEditor
 
 		BS::GUIWidget& getParentWidget() const;
 	};
+
+	template<typename Type>
+	struct RegisterWidgetOnStart
+	{
+	public:
+		RegisterWidgetOnStart()
+		{
+			EditorWidgetManager::preRegisterWidget(Type::getTypeName(), &create);
+		}
+
+		static EditorWidgetBase* create()
+		{
+			return cm_new<Type>(EditorWidget<Type>::ConstructPrivately());
+		}
+
+		void makeSureIAmInstantiated() { }
+	};
+
+	template <class Type>
+	class EditorWidget : public EditorWidgetBase
+	{
+		static RegisterWidgetOnStart<Type> RegisterOnStart;
+
+	protected:
+		friend struct RegisterWidgetOnStart<Type>;
+
+		struct ConstructPrivately {};
+
+		EditorWidget(const CM::HString& name)
+			:EditorWidgetBase(name)
+		{
+			RegisterOnStart.makeSureIAmInstantiated();
+		}
+
+	public:
+
+		virtual ~EditorWidget() { }
+	};
+
+	template <typename Type>
+	RegisterWidgetOnStart<Type> EditorWidget<Type>::RegisterOnStart;
 }

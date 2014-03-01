@@ -54,7 +54,7 @@ namespace BansheeEditor
 		BS::GUIToggleGroupPtr mTabToggleGroup;
 		CM::RenderWindow* mParentWindow;
 
-		EditorWidget* mTempDraggedWidget;
+		EditorWidgetBase* mTempDraggedWidget;
 		CM::UINT32 mTempDraggedTabIdx;
 
 		bool mDragInProgress;

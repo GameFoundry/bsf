@@ -6,8 +6,7 @@
 #include "BsGUIScrollArea.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
-#include "BsEditorWindow.h"
-#include "BsEditorWidgetContainer.h"
+#include "BsEditorWidgetManager.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -16,8 +15,8 @@ namespace BansheeEditor
 {
 	DbgEditorWidget1* DbgEditorWidget1::Instance = nullptr;
 
-	DbgEditorWidget1::DbgEditorWidget1()
-		:EditorWidget(HString(L"DbgEditorWidget1"))
+	DbgEditorWidget1::DbgEditorWidget1(const ConstructPrivately& dummy)
+		:EditorWidget<DbgEditorWidget1>(HString(L"DbgEditorWidget1"))
 	{
 		
 	}
@@ -91,28 +90,20 @@ namespace BansheeEditor
 
 	DbgEditorWidget1* DbgEditorWidget1::open()
 	{
-		if(Instance != nullptr)
-			return Instance;
-
-		EditorWindow* newWindow = EditorWindow::create();
-
-		DbgEditorWidget1* newWidget = new (cm_alloc<DbgEditorWidget1>()) DbgEditorWidget1();
-		newWindow->widgets().add(*newWidget);
-		newWidget->initialize();
-		Instance = newWidget;
-
-		return newWidget;
+		return static_cast<DbgEditorWidget1*>(EditorWidgetManager::instance().open(getTypeName()));
 	}
 
 	void DbgEditorWidget1::close()
 	{
 		if(Instance != nullptr)
-		{
-			Instance->mParent->_notifyWidgetDestroyed(Instance);
-
-			EditorWidget::destroy(Instance);
-		}
+			EditorWidgetManager::instance().close(Instance);
 		
 		Instance = nullptr; 
+	}
+
+	const String& DbgEditorWidget1::getTypeName()
+	{
+		static String name = "DbgEditorWidget1";
+		return name;
 	}
 }

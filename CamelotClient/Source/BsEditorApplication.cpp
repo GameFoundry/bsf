@@ -1,5 +1,6 @@
 #include "BsEditorApplication.h"
 #include "BsEditorWindowManager.h"
+#include "BsEditorWidgetManager.h"
 #include "BsMainEditorWindow.h"
 #include "BsApplication.h"
 #include "CmApplication.h"
@@ -250,6 +251,7 @@ namespace BansheeEditor
 
 		UndoRedo::startUp(cm_new<UndoRedo>());
 		EditorWindowManager::startUp(cm_new<EditorWindowManager>());
+		EditorWidgetManager::startUp(cm_new<EditorWidgetManager>());
 		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
 
 		gApplication().mainLoopCallback.connect(boost::bind(&EditorApplication::update, this));
@@ -259,6 +261,7 @@ namespace BansheeEditor
 
 		gBansheeApp().runMainLoop();
 
+		EditorWidgetManager::shutDown();
 		EditorWindowManager::shutDown();
 		UndoRedo::shutDown();
 

@@ -11,9 +11,9 @@ namespace BansheeEditor
 		EditorWidgetContainer(BS::GUIWidget* parent, CM::RenderWindow* renderWindow);
 		virtual ~EditorWidgetContainer();
 
-		void add(EditorWidget& widget);
-		void remove(EditorWidget& widget);
-		void insert(CM::UINT32 idx, EditorWidget& widget);
+		void add(EditorWidgetBase& widget);
+		void remove(EditorWidgetBase& widget);
+		void insert(CM::UINT32 idx, EditorWidgetBase& widget);
 
 		void setSize(CM::UINT32 width, CM::UINT32 height);
 		void setPosition(CM::INT32 x, CM::INT32 y);
@@ -23,7 +23,7 @@ namespace BansheeEditor
 
 		CM::RectI getContentBounds() const;
 
-		void _notifyWidgetDestroyed(EditorWidget* widget);
+		void _notifyWidgetDestroyed(EditorWidgetBase* widget);
 
 		boost::signal<void()> onWidgetClosed;
 	private:
@@ -32,7 +32,7 @@ namespace BansheeEditor
 		BS::GUIWidget* mParent;
 		CM::INT32 mX, mY;
 		CM::UINT32 mWidth, mHeight;
-		CM::UnorderedMap<CM::UINT32, EditorWidget*>::type mWidgets;
+		CM::UnorderedMap<CM::UINT32, EditorWidgetBase*>::type mWidgets;
 		CM::INT32 mActiveWidget;
 
 		static const CM::UINT32 TitleBarHeight;

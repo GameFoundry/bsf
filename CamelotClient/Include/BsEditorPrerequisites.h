@@ -7,8 +7,9 @@ namespace BansheeEditor
 	// GUI
 	class EditorWindowBase;
 	class EditorWindow;
-	class EditorWidget;
+	class EditorWidgetBase;
 	class EditorWidgetContainer;
+	class EditorWidgetManager;
 	class GUITabbedTitleBar;
 	class GUITabButton;
 	class GUIWindowDropArea;

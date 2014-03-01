@@ -134,7 +134,7 @@ namespace BansheeEditor
 			if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
 				return false;
 
-			EditorWidget* draggedWidget = reinterpret_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
+			EditorWidgetBase* draggedWidget = reinterpret_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 			const Vector2I& widgetRelPos = event.getPosition();
 
 			if(mTempDraggedWidget == nullptr)
@@ -202,7 +202,7 @@ namespace BansheeEditor
 			if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
 				return false;
 
-			EditorWidget* draggedWidget = reinterpret_cast<EditorWidget*>(DragAndDropManager::instance().getDragData());
+			EditorWidgetBase* draggedWidget = reinterpret_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 			const Vector2I& widgetRelPos = event.getPosition();
 
 			if(mTempDraggedWidget != nullptr)

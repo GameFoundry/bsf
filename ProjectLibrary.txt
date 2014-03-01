@@ -1,11 +1,6 @@
 
  - Resource import queue (ability to display progress bar for resources that are importing)
   - Plus modal windows?
- - Implement Delete command for ResourceTreeView
-
- TODO OTHER:
-  - Shutting down causes a crash in FolderMonitor
-  - During app startup I get ~10 first chance exceptions
 
 -------------------
 

@@ -22,12 +22,12 @@ namespace BansheeEditor
 			~DockContainer();
 
 			void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
-			void makeLeaf(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
+			void makeLeaf(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
 			void makeLeaf(EditorWidgetContainer* existingContainer);
-			void addLeft(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
-			void addRight(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
-			void addTop(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
-			void addBottom(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget);
+			void addLeft(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void addRight(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void addTop(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void addBottom(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
 
 			DockContainer* find(EditorWidgetContainer* widgetContainer);
 
@@ -55,7 +55,7 @@ namespace BansheeEditor
 			static const CM::UINT32 MIN_CHILD_SIZE;
 
 		private:
-			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidget* widget, bool horizontal, bool newChildIsFirst);
+			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget, bool horizontal, bool newChildIsFirst);
 			void updateChildAreas();
 
 			void sliderDragged(const CM::Vector2I& delta);
@@ -79,7 +79,7 @@ namespace BansheeEditor
 		void update();
 
 		void render(const CM::Viewport* viewport, CM::RenderQueue& renderQueue);
-		void insert(EditorWidgetContainer* relativeTo, EditorWidget* widgetToInsert, DockLocation location);
+		void insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location);
 
 		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
