@@ -81,6 +81,9 @@ namespace BansheeEditor
 		void render(const CM::Viewport* viewport, CM::RenderQueue& renderQueue);
 		void insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location);
 
+		DockManagerLayoutPtr getLayout() const;
+		void setLayout(const DockManagerLayoutPtr& layout, const CM::Vector<EditorWidgetBase*>::type& widgets);
+
 		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
 	protected:

@@ -9,30 +9,34 @@ namespace BansheeEditor
 	class EditorWidgetBase
 	{
 	public:
-		virtual ~EditorWidgetBase();
-
 		virtual void initialize() { }
 
-		const CM::HString& getName() const { return mName; }
+		const CM::String& getName() const { return mName; }
+		const CM::HString& getDisplayName() const { return mDisplayName; }
 
 		void _setSize(CM::UINT32 width, CM::UINT32 height);
 		void _setPosition(CM::INT32 x, CM::INT32 y);
 		void _changeParent(EditorWidgetContainer* parent);
+		EditorWidgetContainer* _getParent() const { return mParent; }
 
 		void _disable();
 		void _enable();
 
-		static void destroy(EditorWidgetBase* widget);
+		void close();
 	protected:
 		friend class EditorWidgetManager;
 
-		EditorWidgetBase(const CM::HString& name);
+		EditorWidgetBase(const CM::HString& displayName, const CM::String& name);
+		virtual ~EditorWidgetBase();
 
-		CM::HString mName;
+		CM::String mName;
+		CM::HString mDisplayName;
 		EditorWidgetContainer* mParent;
 		BS::GUIArea* mContent;
 
 		BS::GUIWidget& getParentWidget() const;
+
+		static void destroy(EditorWidgetBase* widget);
 	};
 
 	template<typename Type>
@@ -62,8 +66,8 @@ namespace BansheeEditor
 
 		struct ConstructPrivately {};
 
-		EditorWidget(const CM::HString& name)
-			:EditorWidgetBase(name)
+		EditorWidget(const CM::HString& displayName)
+			:EditorWidgetBase(displayName, Type::getTypeName())
 		{
 			RegisterOnStart.makeSureIAmInstantiated();
 		}

@@ -16,9 +16,9 @@ namespace BansheeEditor
 {
 	const CM::UINT32 EditorWidgetContainer::TitleBarHeight = 13;
 
-	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent, RenderWindow* renderWindow)
+	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent, RenderWindow* renderWindow, EditorWindow* parentEditorWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
-		mTitleBarArea(nullptr)
+		mTitleBarArea(nullptr), mParentWindow(parentEditorWindow)
 	{
 		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 9900);
 
@@ -33,13 +33,13 @@ namespace BansheeEditor
 
 	EditorWidgetContainer::~EditorWidgetContainer()
 	{
-		GUIArea::destroy(mTitleBarArea);
-		GUIElement::destroy(mTitleBar);
-
 		for(auto& widget : mWidgets)
 		{
-			EditorWidgetBase::destroy(widget.second);
+			widget.second->close();
 		}
+
+		GUIArea::destroy(mTitleBarArea);
+		GUIElement::destroy(mTitleBar);
 	}
 
 	void EditorWidgetContainer::add(EditorWidgetBase& widget)
@@ -78,15 +78,12 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::insert(CM::UINT32 idx, EditorWidgetBase& widget)
 	{
-		for(auto& curWidget : mWidgets)
-		{
-			if(curWidget.second == &widget)
-				return;
-		}
+		if(contains(widget))
+			return;
 
 		idx = Math::clamp(idx, 0U, (UINT32)mWidgets.size());
 
-		UINT32 tabIdx = mTitleBar->insertTab(idx, widget.getName());
+		UINT32 tabIdx = mTitleBar->insertTab(idx, widget.getDisplayName());
 		mWidgets[tabIdx] = &widget;
 		widget._changeParent(this);
 
@@ -94,6 +91,32 @@ namespace BansheeEditor
 			setActiveWidget(mTitleBar->getTabIdx(mTitleBar->getNumTabs() - 1));
 		else
 			widget._disable();
+	}
+
+	bool EditorWidgetContainer::contains(EditorWidgetBase& widget)
+	{
+		for(auto& curWidget : mWidgets)
+		{
+			if(curWidget.second == &widget)
+				return true;
+		}
+
+		return false;
+	}
+
+	EditorWidgetBase* EditorWidgetContainer::getWidget(CM::UINT32 idx) const
+	{
+		if(idx >= (UINT32)mWidgets.size())
+			return nullptr;
+
+		UINT32 tabIdx = mTitleBar->getTabIdx(idx);
+
+		auto iterFind = mWidgets.find(tabIdx);
+
+		if(iterFind != mWidgets.end())
+			return iterFind->second;
+
+		return nullptr;
 	}
 
 	void EditorWidgetContainer::setSize(UINT32 width, UINT32 height)
@@ -157,8 +180,7 @@ namespace BansheeEditor
 	void EditorWidgetContainer::tabClosed(UINT32 uniqueIdx)
 	{
 		EditorWidgetBase* widget = mWidgets[uniqueIdx];
-		remove(*widget);
-		EditorWidgetBase::destroy(widget);
+		widget->close();
 
 		if(!onWidgetClosed.empty())
 			onWidgetClosed();

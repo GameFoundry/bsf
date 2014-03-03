@@ -7,14 +7,15 @@
 #include "BsEngineGUI.h"
 #include "BsGUIArea.h"
 #include "BsEditorWidgetContainer.h"
+#include "BsEditorWidgetManager.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	EditorWidgetBase::EditorWidgetBase(const HString& name)
-		:mName(name), mParent(nullptr), mContent(nullptr)
+	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const CM::String& name)
+		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr)
 	{
 		
 	}
@@ -24,9 +25,15 @@ namespace BansheeEditor
 
 	}
 
+	void EditorWidgetBase::close()
+	{
+		EditorWidgetManager::instance().close(this);
+	}
+
 	void EditorWidgetBase::destroy(EditorWidgetBase* widget)
 	{
-		cm_delete(widget);
+		widget->~EditorWidgetBase();
+		cm_free(widget);
 	}
 
 	void EditorWidgetBase::_setPosition(INT32 x, INT32 y)

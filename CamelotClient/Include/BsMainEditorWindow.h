@@ -12,6 +12,8 @@ namespace BansheeEditor
 
 		void update();
 
+		DockManager& getDockManager() const { return *mDockManager; }
+
 		static MainEditorWindow* create(const CM::RenderWindowPtr& renderWindow);
 	protected:
 		friend class EditorWindowManager;

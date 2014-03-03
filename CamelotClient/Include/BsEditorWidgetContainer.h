@@ -8,18 +8,21 @@ namespace BansheeEditor
 	class EditorWidgetContainer
 	{
 	public:
-		EditorWidgetContainer(BS::GUIWidget* parent, CM::RenderWindow* renderWindow);
+		EditorWidgetContainer(BS::GUIWidget* parent, CM::RenderWindow* renderWindow, EditorWindow* parentEditorWindow);
 		virtual ~EditorWidgetContainer();
 
 		void add(EditorWidgetBase& widget);
 		void remove(EditorWidgetBase& widget);
 		void insert(CM::UINT32 idx, EditorWidgetBase& widget);
+		bool contains(EditorWidgetBase& widget);
 
 		void setSize(CM::UINT32 width, CM::UINT32 height);
 		void setPosition(CM::INT32 x, CM::INT32 y);
 
 		CM::UINT32 getNumWidgets() const { return (CM::UINT32)mWidgets.size(); }
+		EditorWidgetBase* getWidget(CM::UINT32 idx) const;
 		BS::GUIWidget& getParentWidget() const { return *mParent; }
+		EditorWindow* getParentWindow() const { return mParentWindow; }
 
 		CM::RectI getContentBounds() const;
 
@@ -27,6 +30,7 @@ namespace BansheeEditor
 
 		boost::signal<void()> onWidgetClosed;
 	private:
+		EditorWindow* mParentWindow;
 		GUITabbedTitleBar* mTitleBar;
 		BS::GUIArea* mTitleBarArea;
 		BS::GUIWidget* mParent;

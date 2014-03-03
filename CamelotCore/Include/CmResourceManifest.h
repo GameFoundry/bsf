@@ -9,7 +9,7 @@ namespace CamelotFramework
 	 * @brief	Serializable class that contains UUID <-> file path mapping for resources.
 	 * 			
 	 * @note	This class allows you to reference resources between sessions. At the end of a session
-	 * 			save the resource manifest, and then restore it at the start of your session. This way
+	 * 			save the resource manifest, and then restore it at the start of a new session. This way
 	 * 			ensures that resource UUIDs stay consistent and anything referencing them can find the
 	 * 			resources.
 	 */

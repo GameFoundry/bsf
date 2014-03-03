@@ -16,6 +16,8 @@ namespace BansheeEditor
 		EditorWindow* create();
 		void destroy(EditorWindowBase* window);
 
+		MainEditorWindow* getMainWindow() const { return mMainWindow; }
+
 		void update();
 	protected:
 		MainEditorWindow* mMainWindow;

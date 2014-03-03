@@ -212,7 +212,7 @@ namespace CamelotFramework
 		}
 
 		/**
-		 * @copydoc RenderSystem::writeSubresource()
+		 * @copydoc RenderSystem::readSubresource()
 		 *
 		 * @note "data" parameter is populated with subresource data when the async operation completes. 
 		 * 		 Until the async operation completes "data" is owned by the core thread and you won't

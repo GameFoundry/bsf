@@ -7,16 +7,24 @@ Polish TOOD:
  - Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
 
 ------------------------
+Layout saving/loading:
+TODO:
+ DockManager::setLayout
+ DockManagerLayoutRTTI
+ EditorWidgetLayout & EditorWidgetLayoutRTTI
+ EditorWidgetManager::setLayout, EditorWidgetManager::getLayout
+ Some kind of automatic loading & saving of currently selected EditorWidgetLayout
+ C# EditorWindows
+
+------------------------
 
 Other things to remember:
  - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
- - A way to persist window states
- - Also a way to reset all widgets to original locations
-
 
  ------------------------
 
- EditorWindow enumeraton in C#:
+ EditorWindow enumeraton in C#: - HOWEVER I think it's almost certainly better do just use C# reflection. I don't see any advantages
+ to doing it in C++.
 
  To get all classes in a mono image:
 MonoClass*

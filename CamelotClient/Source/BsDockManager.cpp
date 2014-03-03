@@ -1,5 +1,6 @@
 #include "BsDockManager.h"
 #include "BsEditorWidgetContainer.h"
+#include "BsEditorWidget.h"
 #include "CmMath.h"
 #include "CmException.h"
 #include "CmMesh.h"
@@ -19,6 +20,7 @@
 #include "CmVertexDataDesc.h"
 #include "BsGUISkin.h"
 #include "BsEngineGUI.h"
+#include "BsDockManagerLayout.h"
 
 #include "BsGUISkin.h"
 #include "BsEngineGUI.h"
@@ -144,7 +146,7 @@ namespace BansheeEditor
 	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		mIsLeaf = true;
-		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow);
+		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow, nullptr);
 
 		mWidgets->onWidgetClosed.connect(boost::bind(&DockManager::DockContainer::widgetRemoved, this));
 
@@ -459,9 +461,225 @@ namespace BansheeEditor
 		updateDropOverlay(x, y, width, height);
 	}
 
+	DockManagerLayoutPtr DockManager::getLayout() const
+	{
+		struct StackElem
+		{
+			StackElem(DockManagerLayout::Entry* layoutEntry, const DockContainer* container)
+				:layoutEntry(layoutEntry), container(container)
+			{ }
+
+			DockManagerLayout::Entry* layoutEntry;
+			const DockContainer* container;
+		};
+
+		auto GetWidgetNamesInContainer = [&] (const DockContainer* container)
+		{
+			Vector<String>::type widgetNames;
+			if(container->mWidgets != nullptr)
+			{
+				UINT32 numWidgets = container->mWidgets->getNumWidgets();
+
+				for(UINT32 i = 0; i < numWidgets; i++)
+				{
+					EditorWidgetBase* widget = container->mWidgets->getWidget(i);
+					widgetNames.push_back(widget->getName());
+				}				
+			}
+
+			return widgetNames;
+		};
+
+		DockManagerLayoutPtr layout = cm_shared_ptr<DockManagerLayout>();
+		DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
+		
+		if(mRootContainer.mIsLeaf)
+		{
+			rootEntry->isLeaf = true;
+			rootEntry->widgetNames = GetWidgetNamesInContainer(&mRootContainer);
+		}
+		else
+		{
+			rootEntry->isLeaf = true;
+			rootEntry->horizontalSplit = mRootContainer.mIsHorizontal;
+			rootEntry->firstChildSize = mRootContainer.mFirstChildSize;
+			rootEntry->parent = nullptr;
+		}
+
+		Stack<StackElem>::type todo;
+		todo.push(StackElem(rootEntry, &mRootContainer));
+
+		while(!todo.empty())
+		{
+			StackElem currentElem = todo.top();
+			todo.pop();
+
+			if(!currentElem.container->mIsLeaf)
+			{
+				for(UINT32 i = 0; i < 2; i++)
+				{
+					if(currentElem.container->mChildren[i] == nullptr)
+						continue;
+
+					if(currentElem.container->mChildren[i]->mIsLeaf)
+					{
+						Vector<String>::type widgetNames = GetWidgetNamesInContainer(currentElem.container);
+						currentElem.layoutEntry->children[i] = 
+							DockManagerLayout::Entry::createLeaf(currentElem.layoutEntry, i, widgetNames);
+					}
+					else
+					{
+						currentElem.layoutEntry->children[i] = 
+							DockManagerLayout::Entry::createContainer(currentElem.layoutEntry, i, currentElem.container->mFirstChildSize, 
+							currentElem.container->mIsHorizontal);
+					}
+				}
+			}
+		}
+
+		return layout;
+	}
+
+	void DockManager::setLayout(const DockManagerLayoutPtr& layout, const Vector<EditorWidgetBase*>::type& widgets)
+	{
+		// Undock all currently docked widgets
+		Vector<EditorWidgetBase*>::type undockedWidgets;
+
+		Stack<DockContainer*>::type todo;
+		todo.push(&mRootContainer);
+
+		while(!todo.empty())
+		{
+			DockContainer* current = todo.top();
+			todo.pop();
+
+			if(current->mIsLeaf)
+			{
+				if(current->mWidgets != nullptr)
+				{
+					while(current->mWidgets->getNumWidgets() > 0)
+					{
+						EditorWidgetBase* curWidget = current->mWidgets->getWidget(0);
+						current->mWidgets->remove(*curWidget);
+
+						undockedWidgets.push_back(curWidget);
+					}
+				}
+			}
+			else
+			{
+				todo.push(current->mChildren[0]);
+				todo.push(current->mChildren[1]);
+			}
+		}
+
+		mRootContainer = DockContainer();
+
+		// Load layout
+		struct StackEntry
+		{
+			StackEntry(const DockManagerLayout::Entry* layoutEntry, DockContainer* container)
+				:layoutEntry(layoutEntry), container(container)
+			{ }
+
+			const DockManagerLayout::Entry* layoutEntry;
+			DockContainer* container;
+		};
+
+		auto GetLeafEntry = [] (const DockManagerLayout::Entry* parentEntry, UINT32 childIdx) -> const DockManagerLayout::Entry*
+		{
+			while(true)
+			{
+				if(parentEntry->isLeaf)
+					return parentEntry;
+
+				parentEntry = parentEntry->children[childIdx];
+			}
+
+			return nullptr;
+		};
+
+		auto GetWidgets = [&] (const Vector<String>::type& widgetNames)
+		{
+			Vector<EditorWidgetBase*>::type resultWidgets;
+			for(auto& widgetName : widgetNames)
+			{
+				for(auto& widget : widgets)
+				{
+					if(widgetName == widget->getName())
+					{
+						resultWidgets.push_back(widget);
+						break;
+					}
+				}
+			}
+
+			return resultWidgets;
+		};
+
+		// Dock elements
+		const DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
+		const DockManagerLayout::Entry* leafEntry = GetLeafEntry(rootEntry, 0);
+		Vector<EditorWidgetBase*>::type currentWidgets = GetWidgets(leafEntry->widgetNames);
+
+		if(currentWidgets.size() > 0) // If zero, entire layout is empty
+		{
+			mRootContainer.makeLeaf(mParent, mParentWindow, currentWidgets[0]);
+			for(UINT32 i = 1; i < (UINT32)currentWidgets.size(); i++)
+				mRootContainer.mWidgets->add(*currentWidgets[i]);
+
+			if(!rootEntry->isLeaf)
+			{
+				Stack<StackEntry>::type layoutTodo;
+				layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
+
+				while(!layoutTodo.empty())
+				{
+					StackEntry curEntry = layoutTodo.top();
+					layoutTodo.pop();
+
+					leafEntry = GetLeafEntry(curEntry.layoutEntry->children[1], 0);
+					currentWidgets = GetWidgets(leafEntry->widgetNames);
+
+					bool isEmpty = currentWidgets.size() == 0;
+
+					if(!isEmpty)
+					{
+						if(curEntry.layoutEntry->horizontalSplit)
+							curEntry.container->addBottom(mParent, mParentWindow, currentWidgets[0]);
+						else
+							curEntry.container->addRight(mParent, mParentWindow, currentWidgets[0]);
+
+						DockContainer* otherChild = curEntry.container->mChildren[1];
+						for(UINT32 i = 0; i < (UINT32)currentWidgets.size(); i++)
+							otherChild->mWidgets->add(*currentWidgets[i]);
+
+						if(!curEntry.layoutEntry->isLeaf)
+						{
+							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
+							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
+						}
+					}
+					else
+					{
+						if(!curEntry.layoutEntry->isLeaf)
+							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container));
+					}
+				}
+			}
+		}
+
+		// Destroy any widgets that are no longer docked anywhere
+		for(auto& widget : undockedWidgets)
+		{
+			if(widget->_getParent() == nullptr)
+				widget->close();
+		}
+	}
+
 	void DockManager::updateClippedBounds()
 	{
-		// TODO - Clipping not actually accounted for
+		// TODO - Clipping not actually accounted for but shouldn't matter as right now DockManager is only used in one specific situation
 		mClippedBounds = mRootContainer.mArea;
 	}
 

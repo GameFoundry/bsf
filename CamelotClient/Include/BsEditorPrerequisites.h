@@ -10,12 +10,14 @@ namespace BansheeEditor
 	class EditorWidgetBase;
 	class EditorWidgetContainer;
 	class EditorWidgetManager;
+	class EditorWidgetLayout;
 	class GUITabbedTitleBar;
 	class GUITabButton;
 	class GUIWindowDropArea;
 	class GUIWindowFrame;
 	class EditorWindowManager;
 	class DockManager;
+	class DockManagerLayout;
 	class MainEditorWindow;
 	class WindowFrameWidget;
 	class GUIMenuBar;
@@ -27,6 +29,8 @@ namespace BansheeEditor
 	class ResourceMeta;
 
 	typedef std::shared_ptr<ResourceMeta> ResourceMetaPtr;
+	typedef std::shared_ptr<DockManagerLayout> DockManagerLayoutPtr;
+	typedef std::shared_ptr<EditorWidgetLayout> EditorWidgetLayoutPtr;
 
 	enum class DragAndDropType
 	{
@@ -40,6 +44,10 @@ namespace BansheeEditor
 		TID_ResourceMeta = 40000,
 		TID_ProjectLibraryEntries = 40001,
 		TID_ProjectLibraryResEntry = 40002,
-		TID_ProjectLibraryDirEntry = 40003
+		TID_ProjectLibraryDirEntry = 40003,
+		TID_DockManagerLayout = 40004,
+		TID_DockManagerLayoutEntry = 40005,
+		TID_EditorWidgetLayout = 40006,
+		TID_EditorWidgetLayoutEntry = 40007
 	};
 }

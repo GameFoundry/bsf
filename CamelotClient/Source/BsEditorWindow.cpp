@@ -9,7 +9,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	EditorWindow::EditorWindow()
-		:EditorWindowBase(), mWidgets(cm_new<EditorWidgetContainer>(mGUI.get(), mRenderWindow.get()))
+		:EditorWindowBase(), mWidgets(cm_new<EditorWidgetContainer>(mGUI.get(), mRenderWindow.get(), this))
 	{
 		updateSize();
 		
