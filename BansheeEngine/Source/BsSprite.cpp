@@ -305,6 +305,12 @@ namespace BansheeEngine
 			float du = (uvB->x - uvA->x) / (vecB->x - vecA->x);
 			float dv = (uvA->y - uvC->y) / (vecA->y - vecD->y);
 
+			if(right < left)
+				std::swap(left, right);
+
+			if(bottom < top)
+				std::swap(bottom, top);
+
 			// Clip left
 			float newLeft = Math::clamp(vecA->x, left, right);
 			float uvLeftOffset = (newLeft - vecA->x) * du;

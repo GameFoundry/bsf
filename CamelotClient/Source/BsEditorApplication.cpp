@@ -7,6 +7,10 @@
 #include "CmRenderWindow.h"
 #include "BsEditorGUI.h"
 #include "BsUndoRedo.h"
+#include "CmFileSerializer.h"
+#include "CmFileSystem.h"
+#include "CmPath.h"
+#include "BsEditorWidgetLayout.h"
 
 // DEBUG ONLY
 #include "DbgEditorWidget1.h"
@@ -32,6 +36,8 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
+	const WString EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
+
 	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
 		:mActiveRSPlugin(renderSystemPlugin)
 	{
@@ -251,8 +257,13 @@ namespace BansheeEditor
 
 		UndoRedo::startUp(cm_new<UndoRedo>());
 		EditorWindowManager::startUp(cm_new<EditorWindowManager>());
-		EditorWidgetManager::startUp(cm_new<EditorWidgetManager>());
+		
 		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
+		EditorWidgetManager::startUp(cm_new<EditorWidgetManager>());
+
+		EditorWidgetLayoutPtr layout = loadWidgetLayout();
+		if(layout != nullptr)
+			EditorWidgetManager::instance().setLayout(layout);
 
 		gApplication().mainLoopCallback.connect(boost::bind(&EditorApplication::update, this));
 
@@ -260,6 +271,8 @@ namespace BansheeEditor
 		DbgEditorWidget2::open(); // DEBUG ONLY
 
 		gBansheeApp().runMainLoop();
+
+		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
 
 		EditorWidgetManager::shutDown();
 		EditorWindowManager::shutDown();
@@ -352,5 +365,26 @@ namespace BansheeEditor
 		}
 
 		return StringUtil::BLANK;
+	}
+
+	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()
+	{
+		WString layoutPath = Path::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
+
+		if(FileSystem::exists(layoutPath))
+		{
+			FileSerializer fs;
+			return std::static_pointer_cast<EditorWidgetLayout>(fs.decode(layoutPath));
+		}
+
+		return nullptr;
+	}
+
+	void EditorApplication::saveWidgetLayout(const EditorWidgetLayoutPtr& layout)
+	{
+		WString layoutPath = Path::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
+
+		FileSerializer fs;
+		fs.encode(layout.get(), layoutPath);
 	}
 }

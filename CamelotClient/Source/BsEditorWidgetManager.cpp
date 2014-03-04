@@ -38,6 +38,11 @@ namespace BansheeEditor
 
 	EditorWidgetBase* EditorWidgetManager::open(const String& name)
 	{
+		auto iterFind = mActiveWidgets.find(name);
+
+		if(iterFind != mActiveWidgets.end())
+			return iterFind->second;
+
 		EditorWidgetBase* newWidget = create(name);
 		if(newWidget == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Trying to open a widget that is not registered with the widget manager. Name: \"" + name + "\"");
@@ -171,6 +176,8 @@ namespace BansheeEditor
 		{
 			if(widget.second->_getParent() != nullptr)
 				widget.second->_getParent()->remove(*(widget.second));
+
+			unparentedWidgets.push_back(widget.second);
 		}
 
 		// Restore floating widgets
@@ -198,7 +205,10 @@ namespace BansheeEditor
 
 		// Initialize any newly opened widgets
 		for(auto& widget : widgetsNeedInitialization)
-			widget->initialize();
+		{
+			if(widget->_getParent() != nullptr)
+				widget->initialize();
+		}
 
 		// Destroy any widgets that are no longer have parents
 		for(auto& widget : unparentedWidgets)

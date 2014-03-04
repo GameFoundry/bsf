@@ -7,7 +7,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	DockManagerLayout::Entry::Entry()
-		:isLeaf(true), firstChildSize(0), horizontalSplit(false),
+		:isLeaf(true), splitPosition(0), horizontalSplit(false),
 		parent(nullptr)
 	{
 		children[0] = nullptr;
@@ -15,18 +15,10 @@ namespace BansheeEditor
 	}
 
 	DockManagerLayout::Entry::~Entry()
-	{
-		if(!isLeaf)
-		{
-			if(children[0] != nullptr)
-				cm_delete(children[0]);
+	{ }
 
-			if(children[1] != nullptr)
-				cm_delete(children[1]);
-		}
-	}
-
-	DockManagerLayout::Entry* DockManagerLayout::Entry::createLeaf(Entry* parent, CM::UINT32 childIdx, const CM::Vector<CM::String>::type& widgetNames)
+	DockManagerLayout::Entry* DockManagerLayout::Entry::createLeaf(Entry* parent, UINT32 childIdx, 
+		const Vector<String>::type& widgetNames)
 	{
 		Entry* newEntry = cm_new<Entry>();
 		newEntry->isLeaf = true;
@@ -40,7 +32,8 @@ namespace BansheeEditor
 		return newEntry;
 	}
 
-	DockManagerLayout::Entry* DockManagerLayout::Entry::createContainer(Entry* parent, CM::UINT32 childIdx, CM::UINT32 firstChildSize, bool horizontalSplit)
+	DockManagerLayout::Entry* DockManagerLayout::Entry::createContainer(Entry* parent, UINT32 childIdx, 
+		float splitPosition, bool horizontalSplit)
 	{
 		Entry* newEntry = cm_new<Entry>();
 		newEntry->isLeaf = false;
@@ -50,9 +43,33 @@ namespace BansheeEditor
 			parent->children[childIdx] = newEntry;
 
 		newEntry->horizontalSplit = horizontalSplit;
-		newEntry->firstChildSize = firstChildSize;
+		newEntry->splitPosition = splitPosition;
 
 		return newEntry;
+	}
+
+	DockManagerLayout::~DockManagerLayout()
+	{
+		Stack<Entry*>::type todo;
+		if(!mRootEntry.isLeaf)
+		{
+			todo.push(mRootEntry.children[0]);
+			todo.push(mRootEntry.children[1]);
+		}
+
+		while(!todo.empty())
+		{
+			Entry* current = todo.top();
+			todo.pop();
+
+			if(!current->isLeaf)
+			{
+				todo.push(current->children[0]);
+				todo.push(current->children[1]);
+			}
+
+			cm_delete(current);
+		}
 	}
 
 	/************************************************************************/

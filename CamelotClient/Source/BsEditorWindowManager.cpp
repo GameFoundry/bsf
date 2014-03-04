@@ -44,7 +44,7 @@ namespace BansheeEditor
 		auto iterFind = std::find(begin(mEditorWindows), end(mEditorWindows), window);
 
 		if(iterFind == end(mEditorWindows))
-			CM_EXCEPT(InternalErrorException, "Trying to destroy an editor window that's not registered in the window manager.");
+			return;
 
 		auto iterFind2 = std::find(begin(mScheduledForDestruction), end(mScheduledForDestruction), window);
 		

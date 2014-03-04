@@ -48,7 +48,7 @@ namespace BansheeEditor
 			EditorWidgetContainer* mWidgets;
 			GUIDockSlider* mSlider;
 			CM::RectI mArea;
-			CM::UINT32 mFirstChildSize;
+			float mSplitPosition;
 			bool mIsHorizontal;
 
 			static const CM::UINT32 SLIDER_SIZE;

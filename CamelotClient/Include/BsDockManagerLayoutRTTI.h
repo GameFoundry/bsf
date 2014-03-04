@@ -51,7 +51,7 @@ namespace CamelotFramework
 
 			memory = rttiWriteElem(data.isLeaf, memory, size);
 			memory = rttiWriteElem(data.horizontalSplit, memory, size);
-			memory = rttiWriteElem(data.firstChildSize, memory, size);
+			memory = rttiWriteElem(data.splitPosition, memory, size);
 			memory = rttiWriteElem(data.widgetNames, memory, size);
 
 			if(!data.isLeaf)
@@ -71,13 +71,13 @@ namespace CamelotFramework
 
 			memory = rttiReadElem(data.isLeaf, memory);
 			memory = rttiReadElem(data.horizontalSplit, memory);
-			memory = rttiReadElem(data.firstChildSize, memory);
+			memory = rttiReadElem(data.splitPosition, memory);
 			memory = rttiReadElem(data.widgetNames, memory);
 
 			if(!data.isLeaf)
 			{
-				data.children[0] = cm_alloc<BansheeEditor::DockManagerLayout::Entry>();
-				data.children[1] = cm_alloc<BansheeEditor::DockManagerLayout::Entry>();
+				data.children[0] = cm_new<BansheeEditor::DockManagerLayout::Entry>();
+				data.children[1] = cm_new<BansheeEditor::DockManagerLayout::Entry>();
 
 				memory = rttiReadElem(*data.children[0], memory);
 				memory = rttiReadElem(*data.children[1], memory);
@@ -92,7 +92,7 @@ namespace CamelotFramework
 		static UINT32 getDynamicSize(const BansheeEditor::DockManagerLayout::Entry& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) + rttiGetElemSize(data.isLeaf) + rttiGetElemSize(data.horizontalSplit) + 
-				rttiGetElemSize(data.firstChildSize) + rttiGetElemSize(data.widgetNames);
+				rttiGetElemSize(data.splitPosition) + rttiGetElemSize(data.widgetNames);
 
 			if(!data.isLeaf)
 			{

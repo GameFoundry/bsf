@@ -38,7 +38,7 @@ namespace BansheeEditor
 	const CM::Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockManager::DockContainer::DockContainer()
-		:mIsLeaf(false), mWidgets(nullptr), mFirstChildSize(0),
+		:mIsLeaf(true), mWidgets(nullptr), mSplitPosition(0.5f),
 		mIsHorizontal(false), mParent(nullptr), mSlider(nullptr)
 	{
 		mChildren[0] = nullptr;
@@ -46,7 +46,7 @@ namespace BansheeEditor
 	}
 
 	DockManager::DockContainer::DockContainer(DockContainer* parent)
-		:mIsLeaf(false), mWidgets(nullptr), mFirstChildSize(0),
+		:mIsLeaf(false), mWidgets(nullptr), mSplitPosition(0.5f),
 		mIsHorizontal(false), mParent(parent), mSlider(nullptr)
 	{
 		mChildren[0] = nullptr;
@@ -84,25 +84,6 @@ namespace BansheeEditor
 				mWidgets->setSize(width, height);
 			}
 		}
-		else if(mChildren[0] != nullptr && mChildren[1] != nullptr)
-		{
-			if(mIsHorizontal)
-			{
-				UINT32 currentRemainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
-				float splitPosition = (float)mFirstChildSize / (float)currentRemainingSize;
-
-				UINT32 remainingSize = (UINT32)std::max(0, (INT32)height - (INT32)SLIDER_SIZE);
-				mFirstChildSize = Math::floorToInt(remainingSize * splitPosition);
-			}
-			else
-			{
-				UINT32 currentRemainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);
-				float splitPosition = mFirstChildSize / (float)currentRemainingSize;
-
-				UINT32 remainingSize = (UINT32)std::max(0, (INT32)width - (INT32)SLIDER_SIZE);
-				mFirstChildSize = Math::floorToInt(remainingSize * splitPosition);
-			}
-		}
 
 		mArea.x = x;
 		mArea.y = y;
@@ -119,24 +100,26 @@ namespace BansheeEditor
 			if(mIsHorizontal)
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
-				UINT32 sizeBottom = remainingSize - mFirstChildSize;
+				UINT32 sizeTop = Math::floorToInt(remainingSize * mSplitPosition);
+				UINT32 sizeBottom = remainingSize - sizeTop;
 
-				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, mFirstChildSize);
-				mChildren[1]->setArea(mArea.x, mArea.y + mFirstChildSize + SLIDER_SIZE, mArea.width, sizeBottom);
+				mChildren[0]->setArea(mArea.x, mArea.y, mArea.width, sizeTop);
+				mChildren[1]->setArea(mArea.x, mArea.y + sizeTop + SLIDER_SIZE, mArea.width, sizeBottom);
 
-				mSlider->_setOffset(Vector2I(mArea.x, mArea.y + mFirstChildSize));
+				mSlider->_setOffset(Vector2I(mArea.x, mArea.y + sizeTop));
 				mSlider->_setWidth(mArea.width);
 				mSlider->_setHeight(SLIDER_SIZE);
 			}
 			else
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);
-				UINT32 sizeRight = remainingSize - mFirstChildSize;
+				UINT32 sizeLeft = Math::floorToInt(remainingSize * mSplitPosition);
+				UINT32 sizeRight = remainingSize - sizeLeft;
 
-				mChildren[0]->setArea(mArea.x, mArea.y, mFirstChildSize, mArea.height);
-				mChildren[1]->setArea(mArea.x + mFirstChildSize + SLIDER_SIZE, mArea.y, sizeRight, mArea.height);
+				mChildren[0]->setArea(mArea.x, mArea.y, sizeLeft, mArea.height);
+				mChildren[1]->setArea(mArea.x + sizeLeft + SLIDER_SIZE, mArea.y, sizeRight, mArea.height);
 
-				mSlider->_setOffset(Vector2I(mArea.x + mFirstChildSize, mArea.y));
+				mSlider->_setOffset(Vector2I(mArea.x + sizeLeft, mArea.y));
 				mSlider->_setWidth(SLIDER_SIZE);
 				mSlider->_setHeight(mArea.height);
 			}
@@ -214,22 +197,17 @@ namespace BansheeEditor
 		mIsLeaf = false;
 		mIsHorizontal = horizontal;
 		mWidgets = nullptr;
+		mSplitPosition = 0.5f;
 
 		if(horizontal)
 		{
 			mSlider = GUIDockSlider::create(*widgetParent, true, widgetParent->getSkin().getStyle("DockSliderBtn"));
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
-
-			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
-			mFirstChildSize = Math::floorToInt(remainingSize * 0.5f);
 		}
 		else
 		{
 			mSlider = GUIDockSlider::create(*widgetParent, false, widgetParent->getSkin().getStyle("DockSliderBtn"));
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
-
-			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);
-			mFirstChildSize = Math::floorToInt(remainingSize * 0.5f);
 		}
 
 		mSlider->onDragged.connect(boost::bind(&DockManager::DockContainer::sliderDragged, this, _1));
@@ -242,14 +220,16 @@ namespace BansheeEditor
 		if(mIsHorizontal && delta.y != 0)
 		{
 			UINT32 maxSize = (UINT32)std::max(MIN_CHILD_SIZE, (INT32)mArea.height - (INT32)SLIDER_SIZE - MIN_CHILD_SIZE);
-			mFirstChildSize = Math::clamp(mFirstChildSize + delta.y, MIN_CHILD_SIZE, maxSize);
+			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
+			mSplitPosition = Math::clamp((UINT32)Math::floorToInt(remainingSize * mSplitPosition) + delta.y, MIN_CHILD_SIZE, maxSize) / (float)remainingSize;
 
 			updateChildAreas();
 		}
 		else if(!mIsHorizontal && delta.x != 0)
 		{
 			UINT32 maxSize = (UINT32)std::max(MIN_CHILD_SIZE, (INT32)mArea.width - (INT32)SLIDER_SIZE - MIN_CHILD_SIZE);
-			mFirstChildSize = Math::clamp(mFirstChildSize + delta.x, MIN_CHILD_SIZE, maxSize);
+			UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.width - (INT32)SLIDER_SIZE);
+			mSplitPosition = Math::clamp((UINT32)Math::floorToInt(remainingSize * mSplitPosition) + delta.x, MIN_CHILD_SIZE, maxSize) / (float)remainingSize;
 
 			updateChildAreas();
 		}
@@ -267,7 +247,7 @@ namespace BansheeEditor
 				mWidgets = nullptr;
 
 				mIsLeaf = false;
-				mFirstChildSize = 0;
+				mSplitPosition = 0.5f;
 				mIsHorizontal = false;
 			}
 			else
@@ -334,7 +314,7 @@ namespace BansheeEditor
 
 	RectI DockManager::DockContainer::getContentBounds() const
 	{
-		if(!mIsLeaf)
+		if(!mIsLeaf || mWidgets == nullptr)
 			return mArea;
 
 		return mWidgets->getContentBounds();
@@ -492,7 +472,7 @@ namespace BansheeEditor
 
 		DockManagerLayoutPtr layout = cm_shared_ptr<DockManagerLayout>();
 		DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
-		
+
 		if(mRootContainer.mIsLeaf)
 		{
 			rootEntry->isLeaf = true;
@@ -500,9 +480,9 @@ namespace BansheeEditor
 		}
 		else
 		{
-			rootEntry->isLeaf = true;
+			rootEntry->isLeaf = false;
 			rootEntry->horizontalSplit = mRootContainer.mIsHorizontal;
-			rootEntry->firstChildSize = mRootContainer.mFirstChildSize;
+			rootEntry->splitPosition = mRootContainer.mSplitPosition;
 			rootEntry->parent = nullptr;
 		}
 
@@ -523,14 +503,14 @@ namespace BansheeEditor
 
 					if(currentElem.container->mChildren[i]->mIsLeaf)
 					{
-						Vector<String>::type widgetNames = GetWidgetNamesInContainer(currentElem.container);
+						Vector<String>::type widgetNames = GetWidgetNamesInContainer(currentElem.container->mChildren[i]);
 						currentElem.layoutEntry->children[i] = 
 							DockManagerLayout::Entry::createLeaf(currentElem.layoutEntry, i, widgetNames);
 					}
 					else
 					{
 						currentElem.layoutEntry->children[i] = 
-							DockManagerLayout::Entry::createContainer(currentElem.layoutEntry, i, currentElem.container->mFirstChildSize, 
+							DockManagerLayout::Entry::createContainer(currentElem.layoutEntry, i, currentElem.container->mSplitPosition, 
 							currentElem.container->mIsHorizontal);
 					}
 				}
@@ -625,6 +605,7 @@ namespace BansheeEditor
 		if(currentWidgets.size() > 0) // If zero, entire layout is empty
 		{
 			mRootContainer.makeLeaf(mParent, mParentWindow, currentWidgets[0]);
+
 			for(UINT32 i = 1; i < (UINT32)currentWidgets.size(); i++)
 				mRootContainer.mWidgets->add(*currentWidgets[i]);
 
@@ -650,21 +631,41 @@ namespace BansheeEditor
 						else
 							curEntry.container->addRight(mParent, mParentWindow, currentWidgets[0]);
 
+						curEntry.container->mSplitPosition = curEntry.layoutEntry->splitPosition;
+
 						DockContainer* otherChild = curEntry.container->mChildren[1];
-						for(UINT32 i = 0; i < (UINT32)currentWidgets.size(); i++)
+						for(UINT32 i = 1; i < (UINT32)currentWidgets.size(); i++)
 							otherChild->mWidgets->add(*currentWidgets[i]);
 
-						if(!curEntry.layoutEntry->isLeaf)
-						{
+						if(!curEntry.layoutEntry->children[0]->isLeaf)
 							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
+
+						if(!curEntry.layoutEntry->children[1]->isLeaf)
 							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
-						}
 					}
 					else
 					{
-						if(!curEntry.layoutEntry->isLeaf)
+						if(!curEntry.layoutEntry->children[0]->isLeaf)
 							layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container));
 					}
+				}
+			}
+		}
+
+		// Set container sizes
+		{
+			Stack<StackEntry>::type layoutTodo;
+			layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
+
+			while(!layoutTodo.empty())
+			{
+				StackEntry curEntry = layoutTodo.top();
+				layoutTodo.pop();
+
+				if(!curEntry.layoutEntry->isLeaf)
+				{
+					layoutTodo.push(StackEntry(curEntry.layoutEntry->children[0], curEntry.container->mChildren[0]));
+					layoutTodo.push(StackEntry(curEntry.layoutEntry->children[1], curEntry.container->mChildren[1]));
 				}
 			}
 		}
