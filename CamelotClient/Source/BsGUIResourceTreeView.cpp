@@ -168,18 +168,6 @@ namespace BansheeEditor
 		if(element->mIsSelected)
 			unselectElement(element);
 
-		Stack<ResourceTreeElement*>::type todo;
-		todo.push(element);
-
-		while(!todo.empty())
-		{
-			ResourceTreeElement* cur = todo.top();
-			todo.pop();
-
-			for(auto& child : cur->mChildren)
-				todo.push(static_cast<ResourceTreeElement*>(child));
-		}
-
 		if(element->mParent != nullptr)
 		{
 			auto iterFind = std::find(element->mParent->mChildren.begin(), element->mParent->mChildren.end(), element);
@@ -190,7 +178,8 @@ namespace BansheeEditor
 			updateElementGUI(element->mParent);
 		}
 
-		cm_delete(element);
+		if(&mRootElement != element)
+			cm_delete(element);
 	}
 
 	void GUIResourceTreeView::sortTreeElement(ResourceTreeElement* element)

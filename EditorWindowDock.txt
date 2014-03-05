@@ -9,11 +9,7 @@ Polish TOOD:
 ------------------------
 Layout saving/loading:
 TODO:
- DockManager::setLayout
- DockManagerLayoutRTTI
- EditorWidgetLayout & EditorWidgetLayoutRTTI
- EditorWidgetManager::setLayout, EditorWidgetManager::getLayout
- Some kind of automatic loading & saving of currently selected EditorWidgetLayout
+ Register a bunch of duplicate widgets and open and dock them
  C# EditorWindows
 
 ------------------------

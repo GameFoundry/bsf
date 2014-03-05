@@ -2,6 +2,8 @@
 #include "CmFileSystem.h"
 #include "CmException.h"
 
+#include "CmDebug.h"
+
 #include <windows.h>
 
 namespace CamelotFramework
@@ -296,7 +298,7 @@ namespace CamelotFramework
 		Queue<FileAction*>::type mFileActions;
 		Queue<FileAction*>::type mActiveFileActions;
 
-		CM_MUTEX(mFileActionsMutex);
+		CM_MUTEX(mMainMutex);
 		CM_THREAD_TYPE* mWorkerThread;
 	};
 
@@ -440,7 +442,15 @@ namespace CamelotFramework
 		for(auto& watchInfo : mPimpl->mFoldersToWatch)
 		{
 			watchInfo->stopMonitor(mPimpl->mCompPortHandle);
-			cm_delete(watchInfo);
+
+			{
+				// Note: Need this mutex to ensure worker thread is done with watchInfo.
+				// Even though we wait for a condition variable from the worker thread in stopMonitor,
+				// that doesn't mean the worker thread is done with the condition variable
+				// (which is stored inside watchInfo)
+				CM_LOCK_MUTEX(mPimpl->mMainMutex); 
+				cm_delete(watchInfo);
+			}
 		}
 
 		mPimpl->mFoldersToWatch.clear();
@@ -537,8 +547,15 @@ namespace CamelotFramework
 					}
 					else
 					{
-						watchInfo->mState = MonitorState::Inactive;
-						CM_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
+						{
+							CM_LOCK_MUTEX(watchInfo->mStatusMutex);
+							watchInfo->mState = MonitorState::Inactive;
+						}
+
+						{
+							CM_LOCK_MUTEX(mPimpl->mMainMutex); // Ensures that we don't delete "watchInfo" before this thread is done with mStartStopEvent
+							CM_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
+						}
 					}
 
 					break;
@@ -551,8 +568,15 @@ namespace CamelotFramework
 					}
 					else
 					{
-						watchInfo->mState = MonitorState::Inactive;
-						CM_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
+						{
+							CM_LOCK_MUTEX(watchInfo->mStatusMutex);
+							watchInfo->mState = MonitorState::Inactive;
+						}
+
+						{
+							CM_LOCK_MUTEX(mPimpl->mMainMutex); // Ensures that we don't delete "watchInfo" before this thread is done with mStartStopEvent
+							CM_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
+						}
 					}
 
 					break;
@@ -606,7 +630,7 @@ namespace CamelotFramework
 		} while(notifyInfo.getNext());
 
 		{
-			CM_LOCK_MUTEX(mPimpl->mFileActionsMutex);
+			CM_LOCK_MUTEX(mPimpl->mMainMutex);
 
 			for(auto& action : mActions)
 				mPimpl->mFileActions.push(action);
@@ -616,7 +640,7 @@ namespace CamelotFramework
 	void FolderMonitor::update()
 	{
 		{
-			CM_LOCK_MUTEX(mPimpl->mFileActionsMutex);
+			CM_LOCK_MUTEX(mPimpl->mMainMutex);
 
 			mPimpl->mActiveFileActions.swap(mPimpl->mFileActions);
 		}
