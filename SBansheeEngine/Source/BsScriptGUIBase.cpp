@@ -11,8 +11,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUIBase::ScriptGUIBase(GUIWidget& widget)
-		:mWidget(widget)
+	ScriptGUIBase::ScriptGUIBase()
 	{
 
 	}

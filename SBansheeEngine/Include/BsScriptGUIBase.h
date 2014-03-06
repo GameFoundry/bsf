@@ -16,7 +16,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIBase
 	{
 	public:
-		GUIWidget& getWidget() const { return mWidget; }
+		virtual GUIWidget& getWidget() const = 0;
 
 		static void initRuntimeData() { }
 
@@ -26,8 +26,6 @@ namespace BansheeEngine
 		}
 
 	protected:
-		ScriptGUIBase(GUIWidget& widget);
-
-		GUIWidget& mWidget;
+		ScriptGUIBase();
 	};
 }

@@ -3,6 +3,9 @@
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
 #include "BsScriptModalWindow.h"
+#include "BsScriptEditorWindow.h"
+#include "BsEditorWidget.h"
+#include "BsEditorWidgetContainer.h"
 #include "BsGUIWidget.h"
 #include "BsCamera.h"
 #include "CmSceneObject.h"
@@ -13,8 +16,8 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	ScriptEditorGUI::ScriptEditorGUI(GUIWidget& widget, ScriptModalWindow* parentWindow)
-		:ScriptGUIBase(widget)
+	ScriptEditorGUI::ScriptEditorGUI(ScriptEditorWindow* parentWindow)
+		:ScriptGUIBase(), mParentWindow(parentWindow)
 	{
 
 	}
@@ -32,16 +35,11 @@ namespace BansheeEditor
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptEditorGUI::internal_destroyInstance);
 	}
 
-	void ScriptEditorGUI::internal_createInstance(MonoObject* instance, MonoObject* parentModalWindow)
+	void ScriptEditorGUI::internal_createInstance(MonoObject* instance, MonoObject* parentEditorWindow)
 	{
-		ScriptModalWindow* nativeParentWindow = ScriptModalWindow::toNative(parentModalWindow);
+		ScriptEditorWindow* nativeParentWindow = ScriptEditorWindow::toNative(parentEditorWindow);
 
-		HSceneObject sceneObj = nativeParentWindow->getSceneObject();
-		HGUIWidget widget = sceneObj->addComponent<GUIWidget>(nativeParentWindow->getCamera()->getViewport().get());
-		widget->setSkin(EditorGUI::instance().getSkin());
-		widget->setDepth(128);
-
-		ScriptEditorGUI* nativeInstance = new (cm_alloc<ScriptEditorGUI>()) ScriptEditorGUI(*widget.get(), nativeParentWindow);
+		ScriptEditorGUI* nativeInstance = new (cm_alloc<ScriptEditorGUI>()) ScriptEditorGUI(nativeParentWindow);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, (ScriptGUIBase*)nativeInstance);
@@ -51,5 +49,14 @@ namespace BansheeEditor
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	GUIWidget& ScriptEditorGUI::getWidget() const
+	{
+		EditorWidgetContainer* widgetContainer = mParentWindow->getEditorWidget()->_getParent();
+		if(widgetContainer == nullptr)
+			CM_EXCEPT(InternalErrorException, "Attempting to retrieve GUI widget of an unparented EditorWidget.");
+
+		return widgetContainer->getParentWidget();
 	}
 }

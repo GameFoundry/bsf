@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
+#include "BsEditorPrerequisites.h"
 
 #if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(__MINGW32__)
 #	ifdef BS_SCR_BED_EXPORTS

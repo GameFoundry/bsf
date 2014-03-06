@@ -11,12 +11,15 @@ namespace BansheeEditor
 	public:
 		static void initMetaData();
 
+		virtual GUIWidget& getWidget() const;
 	private:
-		ScriptEditorGUI(BS::GUIWidget& widget, ScriptModalWindow* parentWindow);
+		ScriptEditorGUI(ScriptEditorWindow* parentWindow);
 
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentModalWindow);
+		static void internal_createInstance(MonoObject* instance, MonoObject* parentEditorWindow);
 		static void internal_destroyInstance(ScriptEditorGUI* nativeInstance);
 
 		static void initRuntimeData();
+
+		ScriptEditorWindow* mParentWindow;
 	};
 }

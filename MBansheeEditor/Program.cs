@@ -14,7 +14,7 @@ namespace BansheeEditor
 
             // TODO - A class to manipulate menu items
 
-            ProjectSelectWindow window = new ProjectSelectWindow();
+            //ProjectSelectWindow window = new ProjectSelectWindow();
 
             //GUIElementStateStyle dbgStyle = new GUIElementStateStyle();
             //Color newColor = Color.red;

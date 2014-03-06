@@ -228,11 +228,13 @@
   <ItemGroup>
     <ClInclude Include="Include\BsScriptEditorGUI.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
+    <ClInclude Include="Include\BsScriptEditorWindow.h" />
     <ClInclude Include="Include\BsScriptModalWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptEditorGUI.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
+    <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
     <ClCompile Include="Source\BsScriptModalWindow.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

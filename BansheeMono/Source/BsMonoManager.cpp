@@ -70,7 +70,10 @@ namespace BansheeEngine
 			Vector<ScriptMeta*>::type& mTypeMetas = getTypesToInitialize()[name];
 			for(auto& meta : mTypeMetas)
 			{
-				meta->scriptClass = &assembly->getClass(meta->ns, meta->name);
+				meta->scriptClass = assembly->getClass(meta->ns, meta->name);
+				if(meta->scriptClass == nullptr)
+					CM_EXCEPT(InvalidParametersException, "Unable to find class of type: \"" + meta->ns + "::" + meta->name + "\"");
+
 				if(meta->scriptClass->hasField("mCachedPtr"))
 					meta->thisPtrField = &meta->scriptClass->getField("mCachedPtr");
 				else
@@ -98,5 +101,31 @@ namespace BansheeEngine
 	{
 		Vector<ScriptMeta*>::type& mMetas = getTypesToInitialize()[metaData->assembly];
 		mMetas.push_back(metaData);
+	}
+
+	MonoObject* MonoManager::createInstance(const CM::String& ns, const CM::String& typeName)
+	{
+		MonoClass* monoClass = nullptr;
+		for(auto& assembly : mAssemblies)
+		{
+			monoClass = assembly.second->getClass(ns, typeName);
+			if(monoClass != nullptr)
+				break;
+		}
+
+		if(monoClass != nullptr)
+			return monoClass->createInstance();
+
+		return nullptr;
+	}
+
+	String MonoManager::getTypeName(MonoObject* obj)
+	{
+		if(obj == nullptr)
+			CM_EXCEPT(InvalidParametersException, "Object cannot be null.");
+
+		::MonoClass* monoClass = mono_object_get_class(obj);
+
+		return String(mono_class_get_namespace(monoClass)) + "::" + String(mono_class_get_name(monoClass));
 	}
 }

@@ -94,7 +94,7 @@ namespace BansheeEngine
 		}
 	}
 
-	MonoClass& MonoAssembly::getClass(const String& namespaceName, const String& name)
+	MonoClass* MonoAssembly::getClass(const String& namespaceName, const String& name)
 	{
 		if(!mIsLoaded)
 			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
@@ -103,18 +103,16 @@ namespace BansheeEngine
 		auto iterFind = mClasses.find(classId);
 
 		if(iterFind != mClasses.end())
-			return *iterFind->second;
+			return iterFind->second;
 
 		::MonoClass* monoClass = mono_class_from_name(mMonoImage, namespaceName.c_str(), name.c_str());
 		if(monoClass == nullptr)
-		{
-			CM_EXCEPT(InvalidParametersException, "Cannot get Mono class: " + namespaceName + "." + name);
-		}
+			return nullptr;
 
 		String fullClassName = namespaceName + "." + name;
 		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(fullClassName, monoClass, this);
 		mClasses[classId] = newClass;
 
-		return *newClass;
+		return newClass;
 	}
 }
