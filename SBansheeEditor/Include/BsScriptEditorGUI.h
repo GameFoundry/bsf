@@ -11,7 +11,7 @@ namespace BansheeEditor
 	public:
 		static void initMetaData();
 
-		virtual GUIWidget& getWidget() const;
+		virtual BS::GUIWidget& getWidget() const;
 	private:
 		ScriptEditorGUI(ScriptEditorWindow* parentWindow);
 

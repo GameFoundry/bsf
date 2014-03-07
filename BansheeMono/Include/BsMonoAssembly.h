@@ -29,7 +29,8 @@ namespace BansheeEngine
 	public:
 		~MonoAssembly();
 
-		MonoClass* getClass(const CM::String& namespaceName, const CM::String& name);
+		MonoClass* getClass(const CM::String& namespaceName, const CM::String& name) const;
+		CM::Vector<MonoClass*>::type getAllClasses() const;
 
 	private:
 		friend class MonoManager;

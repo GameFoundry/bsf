@@ -21,5 +21,5 @@
 
 namespace BansheeEditor
 {
-	class ScriptModalWindow;
+	class ScriptEditorWindow;
 }

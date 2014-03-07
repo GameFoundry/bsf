@@ -9,6 +9,8 @@ Polish TOOD:
 ------------------------
 Layout saving/loading:
 TODO:
+ EditorWindow creation from Scripts is currently disabled as I need to export EditorWidget classes
+   - I will probably want to move BansheeEditor stuff into its own BansheeEditor .dll (need it for singleton instantiation as well)
  Register a bunch of duplicate widgets and open and dock them
  C# EditorWindows
 
@@ -16,47 +18,3 @@ TODO:
 
 Other things to remember:
  - Possibly add a way to have hidden widgets in the EditorWidgetContainer (like side-bars that pop on mouse over in Visual Studio)
-
- ------------------------
-
- EditorWindow enumeraton in C#: - HOWEVER I think it's almost certainly better do just use C# reflection. I don't see any advantages
- to doing it in C++.
-
- To get all classes in a mono image:
-MonoClass*
-mono_assembly_get_classes (MonoAssembly *assembly, gpointer *iter)
-{
-	MonoImage *image;
-	int num_types;
-	gssize *index;
-
-	if (!iter)
-		return NULL;
-
-	index = (gssize *) iter;
-
-	/* skip the <Module> */
-	if (!*index)
-		*index = 1;
-
-	image = mono_assembly_get_image (assembly);
-	num_types = mono_image_get_table_rows (image, MONO_TABLE_TYPEDEF);
-
-	if (*index < num_types) {
-		(*index)++;
-		return mono_class_get (image, *index | MONO_TOKEN_TYPE_DEF);
-	} else {
-		*index = 0;
-		return NULL;
-	}
-}
-
-More info on how to potentially access other properties, here: http://docs.go-mono.com/?link=xhtml%3adeploy%2fmono-api-metadata.html
-
-
-To get class hierarchy:
- mono_class_get_parent to get parent class (does this mean base class?)
- mono_class_is_assignable_from potentially
- mono_class_is_subclass_of
-
-Attributes: Very much undocumented but a lot of stuff here relates to attributes: http://docs.go-mono.com/?link=xhtml%3adeploy%2fmono-api-reflection.html

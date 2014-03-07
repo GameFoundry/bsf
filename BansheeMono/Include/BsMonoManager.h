@@ -19,7 +19,10 @@ namespace BansheeEngine
 		MonoAssembly& loadAssembly(const CM::String& path, const CM::String& name, const CM::String& entryPoint = CM::StringUtil::BLANK);
 		void unloadAssembly(MonoAssembly& assembly);
 
-		MonoObject* createInstance(const CM::String& ns, const CM::String& typeName);
+		/**
+		 * @brief	Searches all loaded assemblies for the specified class.
+		 */
+		MonoClass* findClass(const CM::String& ns, const CM::String& typeName);
 
 		/**
 		 * @brief	Returns the type name of the provided object, with namespace.
@@ -29,6 +32,7 @@ namespace BansheeEngine
 		CM::String getTypeName(MonoObject* obj);
 
 		MonoDomain* getDomain() const { return mDomain; }
+		MonoAssembly* getAssembly(const CM::String& name) const;
 
 		static void registerScriptType(ScriptMeta* metaData);
 	private:

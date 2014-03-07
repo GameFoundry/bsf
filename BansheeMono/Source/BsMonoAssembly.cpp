@@ -6,6 +6,7 @@
 #include "CmException.h"
 
 #include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/tokentype.h>
 
 using namespace CamelotFramework;
 
@@ -57,6 +58,21 @@ namespace BansheeEngine
 			CM_EXCEPT(InvalidParametersException, "Cannot get script assembly image.");
 		}
 
+		// Load all classes
+		int numRows = mono_image_get_table_rows (mMonoImage, MONO_TABLE_TYPEDEF);
+
+		for(int i = 1; i < numRows; i++)
+		{
+			::MonoClass* monoClass = mono_class_get (mMonoImage, i | MONO_TOKEN_TYPE_DEF);
+
+			String ns = mono_class_get_namespace(monoClass);
+			String type = mono_class_get_name(monoClass);
+
+			String fullClassName = ns + "." + type;
+			MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(fullClassName, monoClass, this);
+			mClasses[ClassId(ns, type)] = newClass;
+		}
+
 		mIsLoaded = true;
 	}
 
@@ -94,7 +110,7 @@ namespace BansheeEngine
 		}
 	}
 
-	MonoClass* MonoAssembly::getClass(const String& namespaceName, const String& name)
+	MonoClass* MonoAssembly::getClass(const String& namespaceName, const String& name) const
 	{
 		if(!mIsLoaded)
 			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
@@ -105,14 +121,17 @@ namespace BansheeEngine
 		if(iterFind != mClasses.end())
 			return iterFind->second;
 
-		::MonoClass* monoClass = mono_class_from_name(mMonoImage, namespaceName.c_str(), name.c_str());
-		if(monoClass == nullptr)
-			return nullptr;
+		return nullptr;
+	}
 
-		String fullClassName = namespaceName + "." + name;
-		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(fullClassName, monoClass, this);
-		mClasses[classId] = newClass;
+	CM::Vector<MonoClass*>::type MonoAssembly::getAllClasses() const
+	{
+		CM::Vector<MonoClass*>::type classes;
+		classes.reserve(classes.size());
 
-		return newClass;
+		for(auto& curClass : mClasses)
+			classes.push_back(curClass.second);
+
+		return classes;
 	}
 }

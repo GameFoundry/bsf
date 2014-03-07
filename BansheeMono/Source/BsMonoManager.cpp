@@ -97,24 +97,31 @@ namespace BansheeEngine
 			mono_assembly_close(monoAssembly);
 	}
 
+	MonoAssembly* MonoManager::getAssembly(const CM::String& name) const
+	{
+		auto iterFind = mAssemblies.find(name);
+
+		if(iterFind != mAssemblies.end())
+			return iterFind->second;
+
+		return nullptr;
+	}
+
 	void MonoManager::registerScriptType(ScriptMeta* metaData)
 	{
 		Vector<ScriptMeta*>::type& mMetas = getTypesToInitialize()[metaData->assembly];
 		mMetas.push_back(metaData);
 	}
 
-	MonoObject* MonoManager::createInstance(const CM::String& ns, const CM::String& typeName)
+	MonoClass* MonoManager::findClass(const CM::String& ns, const CM::String& typeName)
 	{
 		MonoClass* monoClass = nullptr;
 		for(auto& assembly : mAssemblies)
 		{
 			monoClass = assembly.second->getClass(ns, typeName);
 			if(monoClass != nullptr)
-				break;
+				return monoClass;
 		}
-
-		if(monoClass != nullptr)
-			return monoClass->createInstance();
 
 		return nullptr;
 	}
@@ -126,6 +133,6 @@ namespace BansheeEngine
 
 		::MonoClass* monoClass = mono_object_get_class(obj);
 
-		return String(mono_class_get_namespace(monoClass)) + "::" + String(mono_class_get_name(monoClass));
+		return String(mono_class_get_namespace(monoClass)) + "." + String(mono_class_get_name(monoClass));
 	}
 }

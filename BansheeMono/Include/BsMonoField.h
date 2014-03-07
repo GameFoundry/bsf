@@ -12,6 +12,9 @@ namespace BansheeEngine
 		void* getValue(MonoObject* instance);
 		void setValue(MonoObject* instance, void* value);
 
+		bool hasAttribute(MonoClass* monoClass);
+		MonoObject* getAttribute(MonoClass* monoClass);
+
 	private:
 		friend class MonoClass;
 

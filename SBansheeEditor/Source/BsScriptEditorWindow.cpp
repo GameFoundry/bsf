@@ -17,13 +17,13 @@ namespace BansheeEditor
 	ScriptEditorWindow::ScriptEditorWindow(const CM::String& windowName)
 		:mWidget(nullptr)
 	{
-		mWidget = EditorWidgetManager::instance().open(windowName);
+		//mWidget = EditorWidgetManager::instance().open(windowName);
 	}
 
 	ScriptEditorWindow::~ScriptEditorWindow()
 	{
-		if(mWidget != nullptr)
-			mWidget->close();
+		//if(mWidget != nullptr)
+		//	mWidget->close();
 	}
 
 	void ScriptEditorWindow::initMetaData()
@@ -44,17 +44,17 @@ namespace BansheeEditor
 	{
 		String strTypeName = toString(MonoUtil::monoToWString(typeName));
 		String strNamespace = toString(MonoUtil::monoToWString(ns));
-		String fullName = strNamespace + "::" + strTypeName;
+		String fullName = strNamespace + "." + strTypeName;
 
 		auto findIter = OpenScriptEditorWindows.find(fullName);
 		if(findIter != OpenScriptEditorWindows.end())
 			return findIter->second->mManagedInstance;
 
-		MonoObject* instance = MonoManager::instance().createInstance(strNamespace, strTypeName);
-		if(instance == nullptr)
+		BS::MonoClass* monoClass = MonoManager::instance().findClass(strNamespace, strTypeName);
+		if(monoClass == nullptr)
 			CM_EXCEPT(InvalidParametersException, "Provided name is not a valid type name \"" + fullName + "\"");
 
-		return instance;
+		return monoClass->createInstance();
 	}
 
 	void ScriptEditorWindow::internal_createInstance(MonoObject* instance)
@@ -71,5 +71,10 @@ namespace BansheeEditor
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptEditorWindow::registerManagedEditorWindows()
+	{
+		// TODO
 	}
 }

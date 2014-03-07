@@ -37,6 +37,8 @@ namespace BansheeEngine
 		MonoObject* invokeMethod(const CM::String& name, MonoObject* instance = nullptr, void** params = nullptr, CM::UINT32 numParams = 0);
 		void addInternalCall(const CM::String& name, const void* method);
 
+		::MonoClass* _getInternalClass() const { return mClass; }
+
 		MonoObject* createInstance() const;
 	private:
 		friend class MonoAssembly;
