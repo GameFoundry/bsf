@@ -22,14 +22,7 @@ namespace BansheeEngine
 		static void internal_createInstanceExternal(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStateStyle);
 		static void internal_destroyInstance(ScriptGUIElementStateStyle* nativeInstance);
 
-		static void initRuntimeData()
-		{
-			metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStateStyle::internal_createInstance);
-			metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIElementStateStyle::internal_destroyInstance);
-
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStateStyle, Texture);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStateStyle, TextColor);
-		}
+		static void initRuntimeData();
 
 		CM_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStateStyle, ScriptSpriteTexture, Texture, mElementStateStyle->texture, mSpriteTexture);
 		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStateStyle, CM::Color, TextColor, mElementStateStyle->textColor);

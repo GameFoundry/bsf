@@ -66,6 +66,16 @@ namespace BansheeEditor
 
 		ProjectLibrary::startUp(cm_new<ProjectLibrary>(getActiveProjectPath()));
 
+		UndoRedo::startUp(cm_new<UndoRedo>());
+		EditorWindowManager::startUp(cm_new<EditorWindowManager>());
+
+		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
+		EditorWidgetManager::startUp(cm_new<EditorWidgetManager>());
+
+		EditorWidgetLayoutPtr layout = loadWidgetLayout();
+		if(layout != nullptr)
+			EditorWidgetManager::instance().setLayout(layout);
+
 		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
 		/************************************************************************/
@@ -254,16 +264,6 @@ namespace BansheeEditor
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
-
-		UndoRedo::startUp(cm_new<UndoRedo>());
-		EditorWindowManager::startUp(cm_new<EditorWindowManager>());
-		
-		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
-		EditorWidgetManager::startUp(cm_new<EditorWidgetManager>());
-
-		EditorWidgetLayoutPtr layout = loadWidgetLayout();
-		if(layout != nullptr)
-			EditorWidgetManager::instance().setLayout(layout);
 
 		gApplication().mainLoopCallback.connect(boost::bind(&EditorApplication::update, this));
 

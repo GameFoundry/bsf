@@ -5,7 +5,7 @@
 
 namespace BansheeEditor
 {
-	class EditorWidgetContainer
+	class BS_ED_EXPORT EditorWidgetContainer
 	{
 	public:
 		EditorWidgetContainer(BS::GUIWidget* parent, CM::RenderWindow* renderWindow, EditorWindow* parentEditorWindow);

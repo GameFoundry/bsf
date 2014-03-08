@@ -45,7 +45,7 @@ namespace BansheeEditor
 
 		EditorWidgetBase* newWidget = create(name);
 		if(newWidget == nullptr)
-			CM_EXCEPT(InvalidParametersException, "Trying to open a widget that is not registered with the widget manager. Name: \"" + name + "\"");
+			return nullptr;
 
 		EditorWindow* window = EditorWindow::create();
 		window->widgets().add(*newWidget);
@@ -87,7 +87,9 @@ namespace BansheeEditor
 			return nullptr;
 
 		EditorWidgetBase* newWidget = mCreateCallbacks[name]();
-		mActiveWidgets[name] = newWidget;
+
+		if(newWidget != nullptr)
+			mActiveWidgets[name] = newWidget;
 
 		return newWidget;
 	}
@@ -190,7 +192,8 @@ namespace BansheeEditor
 			for(auto& widgetName : entry.widgetNames)
 			{
 				EditorWidgetBase* widget = create(widgetName); // This will returned previously created widget
-				window->widgets().add(*widget);
+				if(widget != nullptr)
+					window->widgets().add(*widget);
 			}
 
 			window->setPosition(entry.x, entry.y);

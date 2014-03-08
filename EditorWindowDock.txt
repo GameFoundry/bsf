@@ -2,6 +2,11 @@ TODO:
  - Closing all docked widgets causes an exception
  - Test out minimum dock container size and maybe increase it a bit
 
+I should consider adding multiple C# EditorWindow types (via an enum)
+ - Normal dockable EditorWindow, a tool window (unockable, no tabs), a modal window or maybe others
+   - Dockable EditorWindow would internally be EditorWidgetBase as it is now and I would create different types for other windows
+   - (Other windows should not need layout)
+
 Polish TOOD:
  - Change cursor icon when window is dragged
  - Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
@@ -9,8 +14,6 @@ Polish TOOD:
 ------------------------
 Layout saving/loading:
 TODO:
- EditorWindow creation from Scripts is currently disabled as I need to export EditorWidget classes
-   - I will probably want to move BansheeEditor stuff into its own BansheeEditor .dll (need it for singleton instantiation as well)
  Register a bunch of duplicate widgets and open and dock them
  C# EditorWindows
 

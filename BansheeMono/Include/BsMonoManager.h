@@ -29,6 +29,20 @@ namespace BansheeEngine
 		 *
 		 * @param 	obj	If non-null, the object to get the type name of.
 		 */
+		CM::String getFullTypeName(MonoObject* obj);
+
+		/**
+		 * @brief	Returns the namespace of the provided object.
+		 *
+		 * @param 	obj	If non-null, the object to get the namespace of.
+		 */
+		CM::String getNamespace(MonoObject* obj);
+
+		/**
+		 * @brief	Returns the type name of the provided object, without namespace.
+		 *
+		 * @param 	obj	If non-null, the object to get the type name of.
+		 */
 		CM::String getTypeName(MonoObject* obj);
 
 		MonoDomain* getDomain() const { return mDomain; }

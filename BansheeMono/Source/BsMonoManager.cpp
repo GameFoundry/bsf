@@ -126,6 +126,41 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	String MonoManager::getFullTypeName(MonoObject* obj)
+	{
+		if(obj == nullptr)
+			CM_EXCEPT(InvalidParametersException, "Object cannot be null.");
+
+		::MonoClass* monoClass = mono_object_get_class(obj);
+
+		const char* nameSpaceChars = mono_class_get_namespace(monoClass);
+		String namespaceStr;
+		if(nameSpaceChars != nullptr)
+			namespaceStr = nameSpaceChars;
+
+		const char* typeNameChars = mono_class_get_name(monoClass);
+		String typeNameStr;
+		if(typeNameChars != nullptr)
+			typeNameStr = typeNameChars;
+
+		return namespaceStr + "." + typeNameStr;
+	}
+
+	String MonoManager::getNamespace(MonoObject* obj)
+	{
+		if(obj == nullptr)
+			CM_EXCEPT(InvalidParametersException, "Object cannot be null.");
+
+		::MonoClass* monoClass = mono_object_get_class(obj);
+
+		const char* nameSpaceChars = mono_class_get_namespace(monoClass);
+		String namespaceStr;
+		if(nameSpaceChars != nullptr)
+			namespaceStr = nameSpaceChars;
+
+		return namespaceStr;
+	}
+
 	String MonoManager::getTypeName(MonoObject* obj)
 	{
 		if(obj == nullptr)
@@ -133,6 +168,11 @@ namespace BansheeEngine
 
 		::MonoClass* monoClass = mono_object_get_class(obj);
 
-		return String(mono_class_get_namespace(monoClass)) + "." + String(mono_class_get_name(monoClass));
+		const char* typeNameChars = mono_class_get_name(monoClass);
+		String typeNameStr;
+		if(typeNameChars != nullptr)
+			typeNameStr = typeNameChars;
+
+		return typeNameStr;
 	}
 }

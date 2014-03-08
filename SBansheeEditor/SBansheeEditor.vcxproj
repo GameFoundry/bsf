@@ -127,7 +127,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -142,7 +142,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x64/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -162,7 +162,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -181,7 +181,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -201,7 +201,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x64/$(Configuration);../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -220,7 +220,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x64/$(Configuration);../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>

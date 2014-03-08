@@ -61,15 +61,14 @@ namespace BansheeEngine
 		// Load all classes
 		int numRows = mono_image_get_table_rows (mMonoImage, MONO_TABLE_TYPEDEF);
 
-		for(int i = 1; i < numRows; i++)
+		for(int i = 1; i < numRows; i++) // Skip Module
 		{
-			::MonoClass* monoClass = mono_class_get (mMonoImage, i | MONO_TOKEN_TYPE_DEF);
+			::MonoClass* monoClass = mono_class_get (mMonoImage, (i + 1) | MONO_TOKEN_TYPE_DEF);
 
 			String ns = mono_class_get_namespace(monoClass);
 			String type = mono_class_get_name(monoClass);
 
-			String fullClassName = ns + "." + type;
-			MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(fullClassName, monoClass, this);
+			MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(ns, type, monoClass, this);
 			mClasses[ClassId(ns, type)] = newClass;
 		}
 

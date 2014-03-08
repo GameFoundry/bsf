@@ -30,10 +30,10 @@ namespace BansheeEngine
 
 	}
 
-	MonoClass::MonoClass(const String& fullName, ::MonoClass* monoClass, MonoAssembly* parentAssembly)
-		:mFullName(fullName), mClass(monoClass), mParentAssembly(parentAssembly)
+	MonoClass::MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, MonoAssembly* parentAssembly)
+		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly)
 	{
-
+		mFullName = ns + "." + type;
 	}
 
 	MonoClass::~MonoClass()
@@ -87,6 +87,14 @@ namespace BansheeEngine
 		return field != nullptr;
 	}
 
+	bool MonoClass::isSubClassOf(const BS::MonoClass* monoClass) const
+	{
+		if(monoClass == nullptr)
+			return false;
+
+		return mono_class_is_subclass_of(mClass, monoClass->mClass, true) != 0;
+	}
+
 	MonoField& MonoClass::getField(const String& name)
 	{
 		auto iterFind = mFields.find(name);
@@ -96,7 +104,7 @@ namespace BansheeEngine
 		MonoClassField* field = mono_class_get_field_from_name(mClass, name.c_str());
 		if(field == nullptr)
 		{
-			String fullFieldName = mFullName + "::" + name;
+			String fullFieldName = mFullName + "." + name;
 			CM_EXCEPT(InvalidParametersException, "Cannot get Mono field: " + fullFieldName);
 		}
 
@@ -115,7 +123,7 @@ namespace BansheeEngine
 		::MonoProperty* property = mono_class_get_property_from_name(mClass, name.c_str());
 		if(property == nullptr)
 		{
-			String fullPropertyName = mFullName + "::" + name;
+			String fullPropertyName = mFullName + "." + name;
 			CM_EXCEPT(InvalidParametersException, "Cannot get Mono property: " + fullPropertyName);
 		}
 
@@ -139,6 +147,15 @@ namespace BansheeEngine
 	MonoObject* MonoClass::createInstance() const
 	{
 		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
+		mono_runtime_object_init(obj);
+
+		return obj;
+	}
+
+	MonoObject* MonoClass::createInstance(void** params, UINT32 numParams)
+	{
+		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
+		getMethod(".ctor", numParams).invoke(obj, params);
 
 		return obj;
 	}

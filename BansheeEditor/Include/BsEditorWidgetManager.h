@@ -11,7 +11,7 @@ namespace BansheeEditor
 	 * 			upon program shutdown/startup, as well as being able to change widget layout on
 	 * 			the fly.
 	 */
-	class EditorWidgetManager : public CM::Module<EditorWidgetManager>
+	class BS_ED_EXPORT EditorWidgetManager : public CM::Module<EditorWidgetManager>
 	{
 	public:
 		EditorWidgetManager();

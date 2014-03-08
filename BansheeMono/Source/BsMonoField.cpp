@@ -30,7 +30,7 @@ namespace BansheeEngine
 		::MonoClass* parentClass = mono_field_get_parent(mField);
 		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_field(parentClass, mField);
 
-		bool hasAttr = mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass());
+		bool hasAttr = mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass()) != 0;
 
 		mono_custom_attrs_free(attrInfo);
 

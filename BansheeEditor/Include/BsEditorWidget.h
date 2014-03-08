@@ -6,7 +6,7 @@
 
 namespace BansheeEditor
 {
-	class EditorWidgetBase
+	class BS_ED_EXPORT EditorWidgetBase
 	{
 	public:
 		virtual void initialize() { }

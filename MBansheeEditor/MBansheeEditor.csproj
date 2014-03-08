@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbgEditorWindow.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorGUI.cs" />
     <Compile Include="EditorWindow.cs" />

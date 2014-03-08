@@ -36,6 +36,15 @@ namespace BansheeEngine
 		MonoManager::registerScriptType(&metaData);
 	}
 
+	void ScriptGUIElementStateStyle::initRuntimeData()
+	{
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStateStyle::internal_createInstance);
+		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIElementStateStyle::internal_destroyInstance);
+
+		CM_SCRIPT_SETGET_META(ScriptGUIElementStateStyle, Texture);
+		CM_SCRIPT_SETGET_META(ScriptGUIElementStateStyle, TextColor);
+	}
+
 	void ScriptGUIElementStateStyle::internal_createInstance(MonoObject* instance)
 	{
 		ScriptGUIElementStateStyle* nativeInstance = new (cm_alloc<ScriptGUIElementStateStyle>()) ScriptGUIElementStateStyle();

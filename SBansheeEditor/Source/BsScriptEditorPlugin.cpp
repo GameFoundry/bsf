@@ -1,4 +1,5 @@
 #include "BsScriptEditorPrerequisites.h"
+#include "BsScriptEditorWindow.h"
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
 
@@ -19,7 +20,8 @@ namespace BansheeEditor
 		const CM::String ENGINE_ASSEMBLY_NAME = "MBansheeEditor";
 		const CM::String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
 
-		MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME, ASSEMBLY_ENTRY_POINT);
+		BS::MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME, ASSEMBLY_ENTRY_POINT);
+		ScriptEditorWindow::registerManagedEditorWindows();
 
 		return nullptr;
 	}

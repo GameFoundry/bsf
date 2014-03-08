@@ -28,11 +28,16 @@ namespace BansheeEngine
 	public:
 		~MonoClass();
 
+		const CM::String& getNamespace() const { return mNamespace; }
+		const CM::String& getTypeName() const { return mTypeName; }
+		const CM::String& getFullName() const { return mFullName; }
+
 		MonoMethod& getMethod(const CM::String& name, CM::UINT32 numParams = 0);
 		MonoField& getField(const CM::String& name);
 		MonoProperty& getProperty(const CM::String& name);
 
 		bool hasField(const CM::String& name) const;
+		bool isSubClassOf(const BS::MonoClass* monoClass) const;
 
 		MonoObject* invokeMethod(const CM::String& name, MonoObject* instance = nullptr, void** params = nullptr, CM::UINT32 numParams = 0);
 		void addInternalCall(const CM::String& name, const void* method);
@@ -40,13 +45,16 @@ namespace BansheeEngine
 		::MonoClass* _getInternalClass() const { return mClass; }
 
 		MonoObject* createInstance() const;
+		MonoObject* createInstance(void** params, CM::UINT32 numParams);
 	private:
 		friend class MonoAssembly;
 
-		MonoClass(const CM::String& fullName, ::MonoClass* monoClass, MonoAssembly* parentAssembly);
+		MonoClass(const CM::String& ns, const CM::String& type, ::MonoClass* monoClass, MonoAssembly* parentAssembly);
 
 		MonoAssembly* mParentAssembly;
 		::MonoClass* mClass;
+		CM::String mNamespace;
+		CM::String mTypeName;
 		CM::String mFullName;
 
 		CM::UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals>::type mMethods; 
