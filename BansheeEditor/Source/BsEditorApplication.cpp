@@ -66,7 +66,7 @@ namespace BansheeEditor
 
 		ProjectLibrary::startUp(cm_new<ProjectLibrary>(getActiveProjectPath()));
 
-		//gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
+		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/

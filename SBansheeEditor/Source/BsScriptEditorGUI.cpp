@@ -2,7 +2,6 @@
 #include "BsMonoManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoClass.h"
-#include "BsScriptModalWindow.h"
 #include "BsScriptEditorWindow.h"
 #include "BsEditorWidget.h"
 #include "BsEditorWidgetContainer.h"

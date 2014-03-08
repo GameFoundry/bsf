@@ -12,7 +12,7 @@ namespace BansheeEditor
 		OpenGL
 	};
 
-	class EditorApplication : public CM::Module<EditorApplication>
+	class BS_ED_EXPORT EditorApplication : public CM::Module<EditorApplication>
 	{
 	public:
 		EditorApplication(RenderSystemPlugin renderSystemPlugin);

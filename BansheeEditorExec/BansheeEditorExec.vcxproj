@@ -27,45 +27,45 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2DA6824A-4D3A-4B59-8AE9-85D3C14074A3}</ProjectGuid>
-    <RootNamespace>SBansheeEditor</RootNamespace>
+    <ProjectGuid>{11D4409F-3BF0-4074-B809-B959FB45B1B1}</ProjectGuid>
+    <RootNamespace>BansheeEditorExec</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>NotSet</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>NotSet</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>NotSet</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v110</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -83,10 +83,10 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'" Label="PropertySheets">
@@ -105,13 +105,13 @@
     <OutDir>..\bin\x86\$(Configuration)\</OutDir>
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
-    <OutDir>..\bin\x86\$(Configuration)\</OutDir>
-    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>..\bin\$(Platform)\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+    <OutDir>..\bin\x86\$(Configuration)\</OutDir>
+    <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
     <IntDir>.\Intermediate\$(Platform)\$(Configuration)\</IntDir>
@@ -122,14 +122,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeEditor\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
-      <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -137,14 +136,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeEditor\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/x64/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
-      <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x64\$(Configuration);..\Dependencies\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -154,36 +152,16 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeEditor\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
-      <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
-    <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
-      <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -193,17 +171,35 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeEditor\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
-      <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/x64/$(Configuration);../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
-      <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x64\$(Configuration);..\Dependencies\lib\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeEditor\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>..\lib\x86\$(Configuration);..\Dependencies\lib\x86\DebugRelease</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DebugRelease|x64'">
@@ -213,27 +209,20 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\BansheeEditor\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeMono\Include;..\SBansheeEngine\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>BS_SCR_BED_EXPORTS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>.\Include;..\CamelotCore\Include;..\CamelotUtility\Include;..\Dependencies\Include;..\BansheeEngine\Include;..\BansheeEditor\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeMono.lib;SBansheeEngine.lib;mono-2.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../lib/x64/$(Configuration);../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
-      <ImportLibrary>..\lib\x64\$(Configuration)\$(TargetName).lib</ImportLibrary>
+      <AdditionalLibraryDirectories>..\lib\x64\$(Configuration);..\Dependencies\lib\x64\DebugRelease</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CamelotCore.lib;CamelotUtility.lib;BansheeEngine.lib;BansheeEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsScriptEditorGUI.h" />
-    <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
-    <ClInclude Include="Include\BsScriptEditorWindow.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Source\BsScriptEditorGUI.cpp" />
-    <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
-    <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
+    <ClCompile Include="BsEditorExec.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
