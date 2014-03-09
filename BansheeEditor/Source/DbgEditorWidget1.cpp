@@ -15,18 +15,8 @@ namespace BansheeEditor
 {
 	DbgEditorWidget1* DbgEditorWidget1::Instance = nullptr;
 
-	DbgEditorWidget1::DbgEditorWidget1(const ConstructPrivately& dummy)
-		:EditorWidget<DbgEditorWidget1>(HString(L"DbgEditorWidget1"))
-	{
-		
-	}
-
-	DbgEditorWidget1::~DbgEditorWidget1()
-	{
-
-	}
-
-	void DbgEditorWidget1::initialize()
+	DbgEditorWidget1::DbgEditorWidget1(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
+		:EditorWidget<DbgEditorWidget1>(HString(L"DbgEditorWidget1"), parentContainer)
 	{
 		GUILayout& layout = mContent->getLayout();
 		//
@@ -81,6 +71,11 @@ namespace BansheeEditor
 
 		//mRenderWindow->resize(300, 250);
 		//mRenderWindow->setVisible(false);
+	}
+
+	DbgEditorWidget1::~DbgEditorWidget1()
+	{
+
 	}
 
 	DbgEditorWidget1* DbgEditorWidget1::instance()

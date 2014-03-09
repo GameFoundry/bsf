@@ -13,20 +13,20 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	Stack<std::pair<String, std::function<EditorWidgetBase*()>>>::type EditorWidgetManager::QueuedCreateCallbacks;
+	Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>>::type EditorWidgetManager::QueuedCreateCallbacks;
 
 	EditorWidgetManager::EditorWidgetManager()
 	{
 		while(!QueuedCreateCallbacks.empty())
 		{
-			std::pair<String, std::function<EditorWidgetBase*()>> curElement = QueuedCreateCallbacks.top();
+			std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>> curElement = QueuedCreateCallbacks.top();
 			QueuedCreateCallbacks.pop();
 
 			registerWidget(curElement.first, curElement.second);
 		}
 	}
 
-	void EditorWidgetManager::registerWidget(const String& name, std::function<EditorWidgetBase*()> createCallback)
+	void EditorWidgetManager::registerWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback)
 	{
 		auto iterFind = mCreateCallbacks.find(name);
 
@@ -43,13 +43,13 @@ namespace BansheeEditor
 		if(iterFind != mActiveWidgets.end())
 			return iterFind->second;
 
-		EditorWidgetBase* newWidget = create(name);
-		if(newWidget == nullptr)
-			return nullptr;
-
 		EditorWindow* window = EditorWindow::create();
-		window->widgets().add(*newWidget);
-		newWidget->initialize();
+		EditorWidgetBase* newWidget = create(name, window->widgets());
+		if(newWidget == nullptr)
+		{
+			window->close();
+			return nullptr;
+		}
 
 		return newWidget;
 	}
@@ -68,25 +68,28 @@ namespace BansheeEditor
 		EditorWidgetBase::destroy(widget);
 	}
 
-	bool EditorWidgetManager::isOpen(const CM::String& name) const
-	{
-		auto iterFind = mActiveWidgets.find(name);
-
-		return iterFind != mActiveWidgets.end();
-	}
-
-	EditorWidgetBase* EditorWidgetManager::create(const CM::String& name)
+	EditorWidgetBase* EditorWidgetManager::create(const CM::String& name, EditorWidgetContainer& parentContainer)
 	{
 		auto iterFind = mActiveWidgets.find(name);
 
 		if(iterFind != mActiveWidgets.end())
+		{
+			EditorWidgetBase* existingWidget = iterFind->second;
+			if(existingWidget->_getParent() != nullptr && existingWidget->_getParent() != &parentContainer)
+				existingWidget->_getParent()->remove(*existingWidget);
+
+			if(existingWidget->_getParent() != &parentContainer)
+				parentContainer.add(*iterFind->second);
+
 			return iterFind->second;
+		}
 
 		auto iterFindCreate = mCreateCallbacks.find(name);
 		if(iterFindCreate == mCreateCallbacks.end())
 			return nullptr;
 
-		EditorWidgetBase* newWidget = mCreateCallbacks[name]();
+		EditorWidgetBase* newWidget = mCreateCallbacks[name](parentContainer);
+		parentContainer.add(*newWidget);
 
 		if(newWidget != nullptr)
 			mActiveWidgets[name] = newWidget;
@@ -152,26 +155,6 @@ namespace BansheeEditor
 
 	void EditorWidgetManager::setLayout(const EditorWidgetLayoutPtr& layout)
 	{
-		Vector<EditorWidgetBase*>::type openWidgets;
-		Vector<EditorWidgetBase*>::type widgetsNeedInitialization;
-
-		// Create any necessary widgets
-		for(auto& entry : layout->getEntries())
-		{
-			for(auto& widgetName : entry.widgetNames)
-			{
-				bool needsInitialization = !isOpen(widgetName);
-				EditorWidgetBase* newWidget = create(widgetName);
-				if(newWidget != nullptr)
-				{
-					openWidgets.push_back(newWidget);
-
-					if(needsInitialization)
-						widgetsNeedInitialization.push_back(newWidget);
-				}
-			}
-		}
-
 		// Unparent all widgets
 		Vector<EditorWidgetBase*>::type unparentedWidgets;
 		for(auto& widget : mActiveWidgets)
@@ -191,27 +174,21 @@ namespace BansheeEditor
 			EditorWindow* window = EditorWindow::create();
 			for(auto& widgetName : entry.widgetNames)
 			{
-				EditorWidgetBase* widget = create(widgetName); // This will returned previously created widget
-				if(widget != nullptr)
-					window->widgets().add(*widget);
+				create(widgetName, window->widgets());
 			}
 
 			window->setPosition(entry.x, entry.y);
 			window->setSize(entry.width, entry.height);
+
+			if(window->widgets().getNumWidgets() == 0)
+				window->close();
 		}
 
 		// Restore docked widgets
 		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
 		DockManager& dockManager = mainWindow->getDockManager();
 
-		dockManager.setLayout(layout->getDockLayout(), openWidgets);
-
-		// Initialize any newly opened widgets
-		for(auto& widget : widgetsNeedInitialization)
-		{
-			if(widget->_getParent() != nullptr)
-				widget->initialize();
-		}
+		dockManager.setLayout(layout->getDockLayout());
 
 		// Destroy any widgets that are no longer have parents
 		for(auto& widget : unparentedWidgets)
@@ -221,8 +198,8 @@ namespace BansheeEditor
 		}
 	}
 
-	void EditorWidgetManager::preRegisterWidget(const String& name, std::function<EditorWidgetBase*()> createCallback)
+	void EditorWidgetManager::preRegisterWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback)
 	{
-		QueuedCreateCallbacks.push(std::pair<String, std::function<EditorWidgetBase*()>>(name, createCallback));
+		QueuedCreateCallbacks.push(std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>(name, createCallback));
 	}
 }

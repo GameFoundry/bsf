@@ -41,6 +41,8 @@ namespace BansheeEditor
 
 		static const CM::UINT32 TitleBarHeight;
 
+		void removeInternal(EditorWidgetBase& widget);
+
 		void setActiveWidget(CM::UINT32 idx);
 		void tabActivated(CM::UINT32 idx);
 		void tabClosed(CM::UINT32 idx);

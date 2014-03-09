@@ -14,18 +14,8 @@ namespace BansheeEditor
 {
 	DbgEditorWidget2* DbgEditorWidget2::Instance = nullptr;
 
-	DbgEditorWidget2::DbgEditorWidget2(const ConstructPrivately& dummy)
-		:EditorWidget<DbgEditorWidget2>(HString(L"DbgEditorWidget2"))
-	{
-
-	}
-
-	DbgEditorWidget2::~DbgEditorWidget2()
-	{
-
-	}
-
-	void DbgEditorWidget2::initialize()
+	DbgEditorWidget2::DbgEditorWidget2(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
+		:EditorWidget<DbgEditorWidget2>(HString(L"DbgEditorWidget2"), parentContainer)
 	{
 		GUILayout& layout = mContent->getLayout();
 
@@ -41,6 +31,11 @@ namespace BansheeEditor
 		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test C"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
 		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test D"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
 		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test E"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
+	}
+
+	DbgEditorWidget2::~DbgEditorWidget2()
+	{
+
 	}
 
 	DbgEditorWidget2* DbgEditorWidget2::instance()

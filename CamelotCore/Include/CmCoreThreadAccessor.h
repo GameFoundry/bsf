@@ -246,6 +246,22 @@ namespace CamelotFramework
 		}
 
 		/**
+		* @brief	Queues a new generic command that will be added to the command queue.
+		*/
+		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback)
+		{
+			return mCommandQueue->queueReturn(commandCallback);
+		}
+
+		/**
+		* @brief	Queues a new generic command that will be added to the command queue.
+		*/
+		void queueCommand(boost::function<void()> commandCallback)
+		{
+			mCommandQueue->queue(commandCallback);
+		}
+
+		/**
 		 * @brief	Makes all the currently queued commands available to the core thread. They will be executed
 		 * 			as soon as the core thread is ready.
 		 */

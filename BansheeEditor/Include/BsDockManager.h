@@ -22,12 +22,16 @@ namespace BansheeEditor
 			~DockContainer();
 
 			void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
-			void makeLeaf(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void makeLeaf(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow);
 			void makeLeaf(EditorWidgetContainer* existingContainer);
+			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, bool horizontal, bool newChildIsFirst, float splitPosition = 0.5f);
 			void addLeft(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
 			void addRight(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
 			void addTop(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
 			void addBottom(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
+
+			void addWidget(EditorWidgetBase* widget);
+			void addWidget(const CM::String& name);
 
 			DockContainer* find(EditorWidgetContainer* widgetContainer);
 
@@ -55,7 +59,6 @@ namespace BansheeEditor
 			static const CM::UINT32 MIN_CHILD_SIZE;
 
 		private:
-			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget, bool horizontal, bool newChildIsFirst);
 			void updateChildAreas();
 
 			void sliderDragged(const CM::Vector2I& delta);
@@ -82,7 +85,7 @@ namespace BansheeEditor
 		void insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location);
 
 		DockManagerLayoutPtr getLayout() const;
-		void setLayout(const DockManagerLayoutPtr& layout, const CM::Vector<EditorWidgetBase*>::type& widgets);
+		void setLayout(const DockManagerLayoutPtr& layout);
 
 		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 

@@ -3,6 +3,8 @@
 
 namespace CamelotFramework
 {
+	CM_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
+
 	CoreThread::CoreThread()
 		: mCoreThreadFunc(nullptr)
 		, mCoreThreadStarted(false)
@@ -25,6 +27,16 @@ namespace CamelotFramework
 	{
 		// TODO - What if something gets queued between the queued call to destroy_internal and this!?
 		shutdownCoreThread();
+
+		{
+			CM_LOCK_MUTEX(mAccessorMutex);
+			for(auto& accessor : mAccessors)
+			{
+				cm_delete(accessor);
+			}
+
+			mAccessors.clear();
+		}
 
 		if(mCommandQueue != nullptr)
 		{
@@ -130,9 +142,19 @@ namespace CamelotFramework
 		mCoreThreadStarted = false;
 	}
 
-	CoreAccessorPtr CoreThread::createAccessor()
+	CoreAccessorPtr CoreThread::getAccessor()
 	{
-		return cm_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(CM_THREAD_CURRENT_ID);
+		if(mAccessor == nullptr)
+		{
+			CoreAccessorPtr newAccessor = cm_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(CM_THREAD_CURRENT_ID);
+			mAccessor = cm_new<AccessorContainer>();
+			mAccessor->accessor = newAccessor;
+
+			CM_LOCK_MUTEX(mAccessorMutex);
+			mAccessors.push_back(mAccessor);
+		}
+
+		return mAccessor->accessor;
 	}
 
 	SyncedCoreAccessor& CoreThread::getSyncedAccessor()

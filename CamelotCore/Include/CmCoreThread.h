@@ -10,26 +10,31 @@ namespace CamelotFramework
 	 * @brief	Manager for the core thread. Takes care of starting, running, queuing commands
 	 * 			and shutting down the core thread.
 	 */
-	class CM_EXPORT CoreThread : public Module<CoreThread>
+	class CoreThread : public Module<CoreThread>
 	{
+		struct AccessorContainer
+		{
+			CoreAccessorPtr accessor;
+		};
+
 public:
-	CoreThread();
-	~CoreThread();
+	CM_EXPORT CoreThread();
+	CM_EXPORT ~CoreThread();
 
 	/**
 		* @brief	Returns the id of the core thread. If a separate core thread
 		* 			is not used, then it returns the id of the thread RenderSystem
 		* 			was initialized on.
 		*/
-	CM_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
+	CM_EXPORT CM_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
 
 	/**
-		* @brief	Creates an accessor that you can use for executing commands on the core thread from 
+		* @brief	Creates or retrieves an accessor that you can use for executing commands on the core thread from 
 		* 			a non-core thread. You can have as many of these as you wish, the only limitation
 		* 			is that you do not use a single instance on more than one thread. Each thread
 		* 			requires its own accessor. The accessor will be bound to the thread you call this method on.
 		*/
-	CoreAccessorPtr createAccessor();
+	CM_EXPORT CoreAccessorPtr getAccessor();
 
 	/**
 	* @brief	Retrieves an accessor that you can use for executing commands on the core thread from
@@ -37,35 +42,35 @@ public:
 	* 			Note however that it is much more efficient to create a separate non-synchronized accessor using
 	* 			"createCoreAccessor" for each thread you will be using it on.
 		*/
-	SyncedCoreAccessor& getSyncedAccessor();
+	CM_EXPORT SyncedCoreAccessor& getSyncedAccessor();
 
 	/**
 		* @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,
 		* 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
 		* 			
-		* @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there be many commands queued before it
+		* @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there may be many commands queued before it
 		* 							   and they all need to be executed in order before the current command is reached, which might take a long time.
 		* 	
 		* @see		CommandQueue::queueReturn
 		*/
-	AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
+	CM_EXPORT AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
 
 	/**
 	* @brief	Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
 		* 			however be aware that it involves possibly slow synchronization primitives, so limit your usage.
 		* 	
-		* @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there be many commands queued before it
+		* @param	blockUntilComplete If true the thread will be blocked until the command executes. Be aware that there may be many commands queued before it
 		* 							   and they all need to be executed in order before the current command is reached, which might take a long time.
 		* @see		CommandQueue::queue
 		*/
-	void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false);
+	CM_EXPORT void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false);
 
 	/**
 	 * @brief	Called once every frame.
 	 * 			
 	 * @note	Must be called before sim thread schedules any CoreThread operations that frame. 
 	 */
-	void update();
+	CM_EXPORT void update();
 
 	/**
 	 * @brief	Returns a frame allocator that should be used for allocating temporary data being passed to the
@@ -74,7 +79,7 @@ public:
 	 * 			
 	 * @note	Sim thread only.
 	 */
-	FrameAlloc* getFrameAlloc() const;
+	CM_EXPORT FrameAlloc* getFrameAlloc() const;
 private:
 	class CoreThreadWorkerFunc CM_THREAD_WORKER_INHERIT
 	{
@@ -92,6 +97,9 @@ private:
 	FrameAlloc* mFrameAllocs[2]; 
 	UINT32 mActiveFrameAlloc;
 
+	static CM_THREADLOCAL AccessorContainer* mAccessor;
+	Vector<AccessorContainer*>::type mAccessors;
+
 	CoreThreadWorkerFunc* mCoreThreadFunc;
 	volatile bool mCoreThreadStarted;
 	volatile bool mCoreThreadShutdown;
@@ -100,6 +108,7 @@ private:
 	CM_THREAD_SYNCHRONISER(mCoreThreadStartCondition)
 	CM_MUTEX(mCoreThreadStartMutex)
 	CM_MUTEX(mCommandQueueMutex)
+	CM_MUTEX(mAccessorMutex)
 	CM_THREAD_SYNCHRONISER(mCommandReadyCondition)
 	CM_MUTEX(mCommandNotifyMutex)
 	CM_THREAD_SYNCHRONISER(mCommandCompleteCondition)

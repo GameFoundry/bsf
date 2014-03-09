@@ -9,8 +9,6 @@ namespace BansheeEditor
 	class BS_ED_EXPORT EditorWidgetBase
 	{
 	public:
-		virtual void initialize() { }
-
 		const CM::String& getName() const { return mName; }
 		const CM::HString& getDisplayName() const { return mDisplayName; }
 
@@ -26,7 +24,7 @@ namespace BansheeEditor
 	protected:
 		friend class EditorWidgetManager;
 
-		EditorWidgetBase(const CM::HString& displayName, const CM::String& name);
+		EditorWidgetBase(const CM::HString& displayName, const CM::String& name, EditorWidgetContainer& parentContainer);
 		virtual ~EditorWidgetBase();
 
 		CM::String mName;
@@ -48,9 +46,9 @@ namespace BansheeEditor
 			EditorWidgetManager::preRegisterWidget(Type::getTypeName(), &create);
 		}
 
-		static EditorWidgetBase* create()
+		static EditorWidgetBase* create(EditorWidgetContainer& parentContainer)
 		{
-			return cm_new<Type>(EditorWidget<Type>::ConstructPrivately());
+			return cm_new<Type>(EditorWidget<Type>::ConstructPrivately(), parentContainer);
 		}
 
 		void makeSureIAmInstantiated() { }
@@ -66,8 +64,8 @@ namespace BansheeEditor
 
 		struct ConstructPrivately {};
 
-		EditorWidget(const CM::HString& displayName)
-			:EditorWidgetBase(displayName, Type::getTypeName())
+		EditorWidget(const CM::HString& displayName, EditorWidgetContainer& parentContainer)
+			:EditorWidgetBase(displayName, Type::getTypeName(), parentContainer)
 		{
 			RegisterOnStart.makeSureIAmInstantiated();
 		}

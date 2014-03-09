@@ -15,12 +15,10 @@ namespace BansheeEditor
 {
 	UnorderedMap<String, ScriptEditorWindow::EditorWindowHandle>::type ScriptEditorWindow::OpenScriptEditorWindows;
 
-	ScriptEditorWindow::ScriptEditorWindow(const CM::String& windowName, const CM::String& displayName)
-		:mName(windowName)
+	ScriptEditorWindow::ScriptEditorWindow(const CM::String& windowName, const CM::String& displayName, EditorWidgetBase* editorWidget)
+		:mName(windowName), mEditorWidget(editorWidget)
 	{
-		// This will be cleaned up by EditorWidgetManager since technically this should be done in the "create"
-		// callback but we're doing it here for convenience.
-		mEditorWidget = cm_new<ScriptEditorWidget>(HString(toWString(displayName)), this); 
+
 	}
 
 	ScriptEditorWindow::~ScriptEditorWindow()
@@ -38,7 +36,6 @@ namespace BansheeEditor
 	void ScriptEditorWindow::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptEditorWindow::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptEditorWindow::internal_destroyInstance);
 	}
 
@@ -59,17 +56,6 @@ namespace BansheeEditor
 			return findIter2->second.nativeObj->mManagedInstance;
 
 		return nullptr;
-	}
-
-	void ScriptEditorWindow::internal_createInstance(MonoObject* instance)
-	{
-		String windowFullTypeName = MonoManager::instance().getFullTypeName(instance);
-		String displayName = MonoManager::instance().getTypeName(instance);
-
-		ScriptEditorWindow* nativeInstance = new (cm_alloc<ScriptEditorWindow>()) ScriptEditorWindow(windowFullTypeName, displayName);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, nativeInstance);
 	}
 
 	void ScriptEditorWindow::internal_destroyInstance(ScriptEditorWindow* nativeInstance)
@@ -102,16 +88,13 @@ namespace BansheeEditor
 				{
 					const String& className = curClass->getFullName();
 					EditorWidgetManager::instance().registerWidget(className, 
-						std::bind(&ScriptEditorWindow::openEditorWidgetCallback, curClass->getNamespace(), curClass->getTypeName()));
-
-					// DEBUG ONLY
-					EditorWidgetManager::instance().open(className);
+						std::bind(&ScriptEditorWindow::openEditorWidgetCallback, curClass->getNamespace(), curClass->getTypeName(), std::placeholders::_1));
 				}
 			}
 		}
 	}
 
-	EditorWidgetBase* ScriptEditorWindow::openEditorWidgetCallback(CM::String ns, CM::String type)
+	EditorWidgetBase* ScriptEditorWindow::openEditorWidgetCallback(CM::String ns, CM::String type, EditorWidgetContainer& parentContainer)
 	{
 		BS::MonoAssembly* assembly = MonoManager::instance().getAssembly("MBansheeEditor");
 
@@ -123,12 +106,24 @@ namespace BansheeEditor
 		if(editorWindowClass == nullptr)
 			return nullptr;
 
-		MonoObject* editorWindowInstance = editorWindowClass->createInstance();
+		MonoObject* editorWindowInstance = editorWindowClass->createInstance(false);
 		if(editorWindowInstance == nullptr)
 			return nullptr;
 
-		ScriptEditorWindow* scriptEditorWindow = ScriptEditorWindow::toNative(editorWindowInstance);
-		return scriptEditorWindow->getEditorWidget();
+		String windowFullTypeName = MonoManager::instance().getFullTypeName(editorWindowInstance);
+		String displayName = MonoManager::instance().getTypeName(editorWindowInstance);
+
+		ScriptEditorWidget* editorWidget = cm_new<ScriptEditorWidget>(windowFullTypeName, HString(toWString(displayName)), parentContainer);
+		ScriptEditorWindow* nativeInstance = new (cm_alloc<ScriptEditorWindow>()) ScriptEditorWindow(windowFullTypeName, displayName, editorWidget);
+		nativeInstance->createInstance(editorWindowInstance);
+
+		metaData.thisPtrField->setValue(editorWindowInstance, nativeInstance);
+
+		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
+
+		mono_runtime_object_init(editorWindowInstance); // Construct it
+
+		return editorWidget;
 	}
 
 	void ScriptEditorWindow::registerScriptEditorWindow(ScriptEditorWindow* editorWindow)
@@ -147,12 +142,9 @@ namespace BansheeEditor
 		}
 	}
 
-	void ScriptEditorWindow::unregisterScriptEditorWindow(ScriptEditorWindow* editorWindow)
+	void ScriptEditorWindow::unregisterScriptEditorWindow(const CM::String& windowTypeName)
 	{
-		if(editorWindow == nullptr)
-			return;
-
-		auto findIter = OpenScriptEditorWindows.find(editorWindow->mName);
+		auto findIter = OpenScriptEditorWindows.find(windowTypeName);
 		if(findIter != OpenScriptEditorWindows.end())
 		{
 			EditorWindowHandle& foundHandle = findIter->second;
@@ -162,17 +154,14 @@ namespace BansheeEditor
 		}
 	}
 
-	ScriptEditorWidget::ScriptEditorWidget(const CM::HString& displayName, ScriptEditorWindow* window)
-		:EditorWidgetBase(displayName, window->mName), mWindow(window)
+	ScriptEditorWidget::ScriptEditorWidget(const String& windowTypeName, const HString& displayName, EditorWidgetContainer& parentContainer)
+		:EditorWidgetBase(displayName, windowTypeName, parentContainer), mWindowTypeName(windowTypeName)
 	{
-		ScriptEditorWindow::registerScriptEditorWindow(mWindow);
-
-		// TODO - This is clumsy. Try to create a window in one step
-		window->metaData.scriptClass->invokeMethod("Initialize", window->mManagedInstance);
+		
 	}
 
 	ScriptEditorWidget::~ScriptEditorWidget()
 	{
-		ScriptEditorWindow::unregisterScriptEditorWindow(mWindow);
+		ScriptEditorWindow::unregisterScriptEditorWindow(mWindowTypeName);
 	}
 }

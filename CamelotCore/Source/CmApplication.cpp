@@ -74,7 +74,7 @@ namespace CamelotFramework
 		loadPlugin(desc.renderer);
 		RendererManager::instance().setActive(desc.renderer);
 
-		mPrimaryCoreAccessor = gCoreThread().createAccessor();
+		mPrimaryCoreAccessor = gCoreThread().getAccessor();
 		mPrimarySyncedCoreAccessor = &gCoreThread().getSyncedAccessor();
 
 		SceneManager::startUp((SceneManager*)loadPlugin(desc.sceneManager));

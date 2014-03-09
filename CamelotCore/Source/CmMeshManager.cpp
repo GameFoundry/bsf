@@ -71,8 +71,6 @@ namespace CamelotFramework
 		indices[1] = 0;
 		indices[2] = 0;
 
-		SyncedCoreAccessor& coreAccessor = gMainSyncedCA();
-
 		mDummyMesh = Mesh::create(mDummyMeshData);
 	}
 }

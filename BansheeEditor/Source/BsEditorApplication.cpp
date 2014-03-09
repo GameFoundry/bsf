@@ -72,11 +72,11 @@ namespace BansheeEditor
 		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
 		EditorWidgetManager::startUp(cm_new<EditorWidgetManager>());
 
+		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
+
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
 		if(layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
-
-		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 
 		/************************************************************************/
 		/* 								DEBUG CODE                      		*/

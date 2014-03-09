@@ -26,10 +26,9 @@ namespace BansheeEditor
 	private:
 		friend class ScriptEditorWidget;
 
-		ScriptEditorWindow(const CM::String& windowName, const CM::String& displayName);
+		ScriptEditorWindow(const CM::String& windowName, const CM::String& displayName, EditorWidgetBase* editorWidget);
 
 		static MonoObject* internal_createOrGetInstance(MonoString* ns, MonoString* typeName);
-		static void internal_createInstance(MonoObject* instance);
 		static void internal_destroyInstance(ScriptEditorWindow* nativeInstance);
 
 		static void initRuntimeData();
@@ -39,20 +38,20 @@ namespace BansheeEditor
 
 		// Global editor window management methods
 		static void registerScriptEditorWindow(ScriptEditorWindow* editorWindow);
-		static void unregisterScriptEditorWindow(ScriptEditorWindow* editorWindow);
+		static void unregisterScriptEditorWindow(const CM::String& windowTypeName);
 
 		static CM::UnorderedMap<CM::String, EditorWindowHandle>::type OpenScriptEditorWindows;
 
-		static EditorWidgetBase* openEditorWidgetCallback(CM::String ns, CM::String type);
+		static EditorWidgetBase* openEditorWidgetCallback(CM::String ns, CM::String type, EditorWidgetContainer& parentContainer);
 	};
 
 	class BS_SCR_BED_EXPORT ScriptEditorWidget : public EditorWidgetBase
 	{
 	public:
-		ScriptEditorWidget(const CM::HString& displayName, ScriptEditorWindow* window);
+		ScriptEditorWidget(const CM::String& windowTypeName, const CM::HString& displayName, EditorWidgetContainer& parentContainer);
 		~ScriptEditorWidget();
 
 	private:
-		ScriptEditorWindow* mWindow;
+		CM::String mWindowTypeName;
 	};
 }

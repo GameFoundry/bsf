@@ -144,10 +144,12 @@ namespace BansheeEngine
 		mono_add_internal_call(fullMethodName.c_str(), method);
 	}
 
-	MonoObject* MonoClass::createInstance() const
+	MonoObject* MonoClass::createInstance(bool construct) const
 	{
 		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
-		mono_runtime_object_init(obj);
+
+		if(construct)
+			mono_runtime_object_init(obj);
 
 		return obj;
 	}

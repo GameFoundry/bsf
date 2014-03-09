@@ -44,7 +44,7 @@ namespace BansheeEngine
 
 		::MonoClass* _getInternalClass() const { return mClass; }
 
-		MonoObject* createInstance() const;
+		MonoObject* createInstance(bool construct = true) const;
 		MonoObject* createInstance(void** params, CM::UINT32 numParams);
 	private:
 		friend class MonoAssembly;

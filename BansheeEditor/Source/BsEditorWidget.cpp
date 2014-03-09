@@ -14,10 +14,10 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const CM::String& name)
+	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const CM::String& name, EditorWidgetContainer& parentContainer)
 		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr)
 	{
-		
+		parentContainer.add(*this);
 	}
 
 	EditorWidgetBase::~EditorWidgetBase()
@@ -52,6 +52,7 @@ namespace BansheeEditor
 		mContent->setSize(width, height);
 	}
 
+	// Note: Must not be virtual as parent container uses it in constructor
 	void EditorWidgetBase::_changeParent(EditorWidgetContainer* parent)
 	{
 		if(mParent != parent) 

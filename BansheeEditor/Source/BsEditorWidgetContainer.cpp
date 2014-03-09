@@ -49,6 +49,14 @@ namespace BansheeEditor
 
 	void EditorWidgetContainer::remove(EditorWidgetBase& widget)
 	{
+		removeInternal(widget);
+
+		if(!onWidgetClosed.empty())
+			onWidgetClosed();
+	}
+
+	void EditorWidgetContainer::removeInternal(EditorWidgetBase& widget)
+	{
 		INT32 tabIdx = 0;
 		for(auto& curWidget : mWidgets)
 		{
@@ -68,9 +76,9 @@ namespace BansheeEditor
 
 		if(tabIdx == mActiveWidget)
 		{
+			mActiveWidget = -1;
 			if(mTitleBar->getNumTabs() > 0)
 			{
-				mActiveWidget = -1;
 				setActiveWidget(mTitleBar->getTabIdx(0));
 			}
 		}
@@ -189,7 +197,7 @@ namespace BansheeEditor
 	void EditorWidgetContainer::tabDraggedOff(CM::UINT32 uniqueIdx)
 	{
 		EditorWidgetBase* widget = mWidgets[uniqueIdx];
-		remove(*widget);
+		removeInternal(*widget);
 
 		// TODO - Hook up drag and drop texture
 		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::EditorWidget, (void*)widget, 
@@ -243,7 +251,7 @@ namespace BansheeEditor
 		{
 			if(curWidget.second == widget)
 			{
-				remove(*widget);
+				removeInternal(*widget);
 
 				if(!onWidgetClosed.empty())
 					onWidgetClosed();

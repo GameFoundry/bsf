@@ -15,16 +15,8 @@ namespace BansheeEditor
 
         protected EditorWindow()
         {
-            Internal_CreateInstance(this);
-        }
-
-        private void Initialize()
-        {
             GUI = new EditorGUI(this);
         }
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(EditorWindow instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern EditorWindow Internal_CreateOrGetInstance(string ns, string typeName);

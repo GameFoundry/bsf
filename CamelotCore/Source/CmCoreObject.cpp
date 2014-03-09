@@ -1,6 +1,7 @@
 #include "CmCoreObject.h"
 #include "CmCoreThread.h"
 #include "CmCoreObjectManager.h"
+#include "CmCoreThreadAccessor.h"
 #include "CmDebug.h"
 
 namespace CamelotFramework
@@ -158,6 +159,7 @@ namespace CamelotFramework
 		// We could have called the function directly using "this" pointer but then we couldn't have used a shared_ptr for the object,
 		// in which case there is a possibility that the object would be released and deleted while still being in the command queue.
 		CoreThread::instance().queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
+
 	}
 
 	AsyncOp CoreObject::queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func)
