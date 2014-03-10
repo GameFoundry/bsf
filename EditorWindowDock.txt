@@ -14,8 +14,6 @@ Polish TOOD:
 
 ------------------------
 
-Docked widgets are not shown anymore
-
 LATER:
  get rid of CmApplication gMainCA and similar methods. Users may access CoreThread singleton directly now
  get rid of CoreAccessor::submitToCoreThread and instead leave that functionally only available to CoreThread

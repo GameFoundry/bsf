@@ -30,6 +30,11 @@
 #include "BsVirtualInput.h"
 #include "CmWin32FolderMonitor.h"
 #include "BsProjectLibrary.h"
+#include "BsCamera.h"
+#include "BsGUIWidget.h"
+#include "BsGUIArea.h"
+#include "BsGUIButton.h"
+#include "BsGUILayout.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -274,6 +279,25 @@ namespace BansheeEditor
 
 		RenderWindowPtr modalWindow = RenderWindow::create(modalWindowDesc, gApplication().getPrimaryWindow());
 
+		HSceneObject modalSceneObject = SceneObject::create("ModalWindow");
+
+		HCamera modalCamera = modalSceneObject->addComponent<Camera>();
+		modalCamera->initialize(modalWindow, 0.0f, 0.0f, 1.0f, 1.0f);
+		modalCamera->setNearClipDistance(5);
+		modalCamera->setAspectRatio(1.0f);
+		modalCamera->setIgnoreSceneRenderables(true);
+
+		HGUIWidget modalGUI = modalSceneObject->addComponent<GUIWidget>(modalCamera->getViewport().get());
+		modalGUI->setDepth(128);
+
+		modalGUI->setSkin(EditorGUI::instance().getSkin());
+
+		GUIArea* modalArea = GUIArea::createStretchedXY(*modalGUI, 0, 0, 0, 0, 500);
+		GUIButton* modalButton = GUIButton::create(*modalGUI, HString(L"Close"));
+		modalButton->onClick.connect(boost::bind(&EditorApplication::closeModalWindow, modalWindow, modalSceneObject));
+
+		modalArea->getLayout().addElement(modalButton);
+
 
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
@@ -330,6 +354,12 @@ namespace BansheeEditor
 		EditorGUI::shutDown();
 		gBansheeApp().shutDown();
 
+	}
+
+	void EditorApplication::closeModalWindow(RenderWindowPtr window, CM::HSceneObject sceneObject)
+	{
+		sceneObject->destroy();
+		window->destroy();
 	}
 
 	EditorApplication::~EditorApplication()

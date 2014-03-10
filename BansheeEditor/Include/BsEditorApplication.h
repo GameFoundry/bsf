@@ -32,5 +32,7 @@ namespace BansheeEditor
 
 		EditorWidgetLayoutPtr loadWidgetLayout();
 		void saveWidgetLayout(const EditorWidgetLayoutPtr& layout);
+
+		static void closeModalWindow(CM::RenderWindowPtr window, CM::HSceneObject sceneObject);
 	};
 }
