@@ -259,6 +259,7 @@ namespace CamelotFramework
 
 		static bool mIsTrackingMouse;
 		static Vector<RenderWindow*>::type mMouseLeftWindows;
+		static Stack<RenderWindow*>::type mModalWindowStack;
 
 		static NativeDropTargetData mDropTargets;
 

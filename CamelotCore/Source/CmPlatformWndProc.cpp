@@ -3,6 +3,7 @@
 #include "CmApplication.h"
 #include "CmInput.h"
 #include "CmDebug.h"
+#include "CmRenderWindowManager.h"
 
 namespace CamelotFramework
 {
@@ -14,6 +15,35 @@ namespace CamelotFramework
 		if (uMsg == WM_CREATE)
 		{	// Store pointer to Win32Window in user data area
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)(((LPCREATESTRUCT)lParam)->lpCreateParams));
+
+			RenderWindow* newWindow = (RenderWindow*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
+			if(newWindow->isModal())
+			{
+				if(!mModalWindowStack.empty())
+				{
+					RenderWindow* curModalWindow = mModalWindowStack.top();
+
+					HWND curHwnd;
+					curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
+					EnableWindow(curHwnd, FALSE);
+				}
+				else
+				{
+					Vector<RenderWindow*>::type renderWindows = RenderWindowManager::instance().getRenderWindows();
+					for(auto& renderWindow : renderWindows)
+					{
+						if(renderWindow == newWindow)
+							continue;
+
+						HWND curHwnd;
+						renderWindow->getCustomAttribute("WINDOW", &curHwnd);
+						EnableWindow(curHwnd, FALSE);
+					}
+				}
+
+				mModalWindowStack.push(newWindow);
+			}
+
 			return 0;
 		}
 
@@ -30,6 +60,58 @@ namespace CamelotFramework
 				bool active = (LOWORD(wParam) != WA_INACTIVE);
 				if( active )
 					win->setActive(true);
+
+				break;
+			}
+		case WM_DESTROY:
+			{
+				bool reenableWindows = false;
+				if(!mModalWindowStack.empty())
+				{
+					if(mModalWindowStack.top() == win) // This is the most common case, top-most modal was closed
+					{
+						mModalWindowStack.pop();
+					}
+					else // Possibly some other window was closed somehow, see if it was modal and remove from stack if it is
+					{
+						Stack<RenderWindow*>::type newStack;
+
+						while(!mModalWindowStack.empty())
+						{
+							RenderWindow* curWindow = mModalWindowStack.top();
+							mModalWindowStack.pop();
+
+							if(curWindow == win)
+								continue;
+
+							newStack.push(curWindow);
+						}
+
+						mModalWindowStack = newStack;
+					}
+
+					if(!mModalWindowStack.empty()) // Enable next modal window
+					{
+						RenderWindow* curModalWindow = mModalWindowStack.top();
+
+						HWND curHwnd;
+						curModalWindow->getCustomAttribute("WINDOW", &curHwnd);
+						EnableWindow(curHwnd, TRUE);
+					}
+					else
+						reenableWindows = true; // No more modal windows, re-enable any remaining window
+				}
+
+				if(reenableWindows)
+				{
+					Vector<RenderWindow*>::type renderWindows = RenderWindowManager::instance().getRenderWindows();
+					for(auto& renderWindow : renderWindows)
+					{
+						HWND curHwnd;
+						renderWindow->getCustomAttribute("WINDOW", &curHwnd);
+						EnableWindow(curHwnd, TRUE);
+					}
+				}
 
 				break;
 			}

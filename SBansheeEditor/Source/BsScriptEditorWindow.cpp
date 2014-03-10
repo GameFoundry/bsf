@@ -89,8 +89,6 @@ namespace BansheeEditor
 					const String& className = curClass->getFullName();
 					EditorWidgetManager::instance().registerWidget(className, 
 						std::bind(&ScriptEditorWindow::openEditorWidgetCallback, curClass->getNamespace(), curClass->getTypeName(), std::placeholders::_1));
-
-					EditorWidgetManager::instance().open(className);
 				}
 			}
 		}

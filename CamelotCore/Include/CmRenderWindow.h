@@ -47,7 +47,7 @@ namespace CamelotFramework
 			, displayFrequency(60), colorDepth(32), depthBuffer(true)
 			, FSAA(0), FSAAHint(""), gamma(false), left(-1), top(-1)
 			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
-			, monitorIndex(-1), toolWindow(false)
+			, monitorIndex(-1), toolWindow(false), modal(false)
 		{ }
 
 		UINT32 width;
@@ -69,7 +69,8 @@ namespace CamelotFramework
 		bool outerDimensions;
 		bool enableDoubleClick;
 		bool toolWindow;
-		UINT32 monitorIndex; // -1 == select based on coordinates
+		bool modal;
+		INT32 monitorIndex; // -1 == select based on coordinates
 
 		NameValuePairList platformSpecific;
 	};
@@ -108,7 +109,7 @@ namespace CamelotFramework
         /**
          * @brief	Indicates whether the window is visible (not minimized or obscured).
          */
-        virtual bool isVisible(void) const { return true; }
+        virtual bool isVisible() const { return true; }
 
         /** 
         * @copydoc RenderTarget::isActive
@@ -124,6 +125,11 @@ namespace CamelotFramework
         * @brief Returns true if window is running in fullscreen mode.
 		*/
         virtual bool isFullScreen() const;
+
+		/**
+		 * @brief	Returns true if the window is modal.
+		 */
+		bool isModal() const { return mDesc.modal; }
 
 		INT32 getLeft() const { return mLeft; }
 		INT32 getTop() const { return mTop; }

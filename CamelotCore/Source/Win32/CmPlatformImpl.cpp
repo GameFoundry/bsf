@@ -27,6 +27,8 @@ namespace CamelotFramework
 	bool Platform::mIsTrackingMouse = false;
 	Vector<RenderWindow*>::type Platform::mMouseLeftWindows;
 
+	Stack<RenderWindow*>::type Platform::mModalWindowStack;
+
 	NativeDropTargetData Platform::mDropTargets;
 
 	bool Platform::mRequiresStartUp = false;

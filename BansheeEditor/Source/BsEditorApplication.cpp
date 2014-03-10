@@ -261,6 +261,20 @@ namespace BansheeEditor
 		gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, cursorPixelData);
 		gMainSyncedCA().submitToCoreThread(true);
 
+		RENDER_WINDOW_DESC modalWindowDesc;
+		modalWindowDesc.width = 200;
+		modalWindowDesc.height = 200;
+		modalWindowDesc.left = 0;
+		modalWindowDesc.top = 0;
+		modalWindowDesc.title = "ModalWindow";
+		modalWindowDesc.fullscreen = false;
+		modalWindowDesc.border = WindowBorder::None;
+		modalWindowDesc.toolWindow = true;
+		modalWindowDesc.modal = true;
+
+		RenderWindowPtr modalWindow = RenderWindow::create(modalWindowDesc, gApplication().getPrimaryWindow());
+
+
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
