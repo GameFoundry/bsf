@@ -1294,6 +1294,9 @@ namespace BansheeEngine
 	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Vector2I& screenPos) const
 	{
 		const RenderWindow* window = getWidgetWindow(widget);
+		if(window == nullptr)
+			return Vector2I();
+
 		Vector2I windowPos = window->screenToWindowPos(screenPos);
 		windowPos = windowToBridgedCoords(widget, windowPos);
 

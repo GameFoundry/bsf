@@ -281,7 +281,8 @@ namespace CamelotFramework {
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		target->swapBuffers();
+		if(target->isInitialized())
+			target->swapBuffers();
 	}
 
 	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp)

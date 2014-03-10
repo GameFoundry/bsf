@@ -358,7 +358,7 @@ namespace BansheeEditor
 
 	void EditorApplication::closeModalWindow(RenderWindowPtr window, CM::HSceneObject sceneObject)
 	{
-		sceneObject->destroy();
+		//sceneObject->destroy();
 		window->destroy();
 	}
 
