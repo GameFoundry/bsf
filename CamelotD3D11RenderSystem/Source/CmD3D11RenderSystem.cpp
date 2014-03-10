@@ -40,8 +40,7 @@ namespace CamelotFramework
 
 	D3D11RenderSystem::~D3D11RenderSystem()
 	{
-		// This needs to be called from the child class, since destroy_internal is virtual
-		gCoreThread().queueCommand(boost::bind(&D3D11RenderSystem::destroy_internal, this), true);
+
 	}
 
 	const String& D3D11RenderSystem::getName() const

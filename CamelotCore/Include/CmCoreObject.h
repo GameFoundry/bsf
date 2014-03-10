@@ -154,6 +154,9 @@ o		 *
 		CM_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
 		CM_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
 
+		static void queueInitializeGpuCommand(std::shared_ptr<CoreObject>& obj);
+		static void queueDestroyGpuCommand(std::shared_ptr<CoreObject>& obj);
+
 		static void executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func);
 		static void executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op); 
 	};

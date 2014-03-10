@@ -406,6 +406,8 @@ namespace CamelotFramework
 		 */
 		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
 		virtual void initialize_internal(AsyncOp& asyncOp);
+
+		void destroy();
 		virtual void destroy_internal();
 
 		/// Internal method used to set the underlying clip planes when needed

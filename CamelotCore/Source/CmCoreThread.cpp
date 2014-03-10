@@ -30,6 +30,7 @@ namespace CamelotFramework
 
 		{
 			CM_LOCK_MUTEX(mAccessorMutex);
+
 			for(auto& accessor : mAccessors)
 			{
 				cm_delete(accessor);
@@ -160,6 +161,22 @@ namespace CamelotFramework
 	SyncedCoreAccessor& CoreThread::getSyncedAccessor()
 	{
 		return *mSyncedCoreAccessor;
+	}
+
+	void CoreThread::submitAccessors(bool blockUntilComplete)
+	{
+		Vector<AccessorContainer*>::type accessorCopies;
+
+		{
+			CM_LOCK_MUTEX(mAccessorMutex);
+
+			accessorCopies = mAccessors;
+		}
+
+		for(auto& accessor : accessorCopies)
+			accessor->accessor->submitToCoreThread(blockUntilComplete);
+
+		mSyncedCoreAccessor->submitToCoreThread(blockUntilComplete);
 	}
 
 	AsyncOp CoreThread::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)

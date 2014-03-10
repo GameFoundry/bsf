@@ -75,6 +75,7 @@ namespace CamelotFramework {
 		mPrimaryWindowDesc = primaryWindowDesc;
 
 		AsyncOp op = gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);
+
 		return op.getReturnValue<RenderWindowPtr>();
 	}
 
@@ -85,6 +86,12 @@ namespace CamelotFramework {
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
+	}
+
+	void RenderSystem::destroy()
+	{
+		gCoreThread().getAccessor()->queueCommand(boost::bind(&RenderSystem::destroy_internal, this));
+		gCoreThread().submitAccessors(true);
 	}
 
 	void RenderSystem::destroy_internal()

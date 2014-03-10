@@ -466,6 +466,7 @@ namespace BansheeEditor
 	void DockManager::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		mRootContainer.setArea(x, y, width, height);
+		mArea = RectI(x, y, width, height);
 
 		updateDropOverlay(x, y, width, height);
 	}
@@ -678,6 +679,8 @@ namespace BansheeEditor
 			if(widget->_getParent() == nullptr)
 				widget->close();
 		}
+
+		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
 	}
 
 	void DockManager::updateClippedBounds()

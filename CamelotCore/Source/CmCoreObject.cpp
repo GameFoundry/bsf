@@ -42,7 +42,10 @@ namespace CamelotFramework
 		{
 			setScheduledToBeDeleted(true);
 
-			queueGpuCommand(mThis.lock(), boost::bind(&CoreObject::destroy_internal, this));
+			if(CM_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
+				mThis.lock()->destroy_internal();
+			else
+				queueDestroyGpuCommand(mThis.lock());
 		}
 		else
 		{
@@ -71,7 +74,10 @@ namespace CamelotFramework
 		{
 			setScheduledToBeInitialized(true);
 
-			queueGpuCommand(mThis.lock(), boost::bind(&CoreObject::initialize_internal, this));
+			if(CM_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
+				mThis.lock()->initialize_internal();
+			else
+				queueInitializeGpuCommand(mThis.lock());
 		}
 		else
 		{
@@ -158,14 +164,28 @@ namespace CamelotFramework
 		// reference to the obj (saved in the bound function).
 		// We could have called the function directly using "this" pointer but then we couldn't have used a shared_ptr for the object,
 		// in which case there is a possibility that the object would be released and deleted while still being in the command queue.
-		CoreThread::instance().queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
-
+		CoreThread::instance().getAccessor()->queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
 	AsyncOp CoreObject::queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func)
 	{
 		// See queueGpuCommand
-		return CoreThread::instance().queueReturnCommand(boost::bind(&CoreObject::executeReturnGpuCommand, obj, func, _1));
+		return CoreThread::instance().getAccessor()->queueReturnCommand(boost::bind(&CoreObject::executeReturnGpuCommand, obj, func, _1));
+	}
+
+	void CoreObject::queueInitializeGpuCommand(std::shared_ptr<CoreObject>& obj)
+	{
+		boost::function<void()> func = boost::bind(&CoreObject::initialize_internal, obj.get());
+
+		CoreThread::instance().queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
+	}
+
+	void CoreObject::queueDestroyGpuCommand(std::shared_ptr<CoreObject>& obj)
+	{
+		boost::function<void()> func = boost::bind(&CoreObject::destroy_internal, obj.get());
+
+		CoreThread::instance().getAccessor()->queueCommand(
+			boost::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
 	void CoreObject::executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func)

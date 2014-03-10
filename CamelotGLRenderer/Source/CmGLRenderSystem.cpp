@@ -116,8 +116,7 @@ namespace CamelotFramework
 
 	GLRenderSystem::~GLRenderSystem()
 	{
-		// This needs to be called from the child class, since destroy_internal is virtual
-		gCoreThread().queueCommand(boost::bind(&GLRenderSystem::destroy_internal, this), true);
+
 	}
 
 	const String& GLRenderSystem::getName(void) const

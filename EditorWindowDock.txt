@@ -2,26 +2,23 @@ TODO:
  - Closing all docked widgets causes an exception
  - Test out minimum dock container size and maybe increase it a bit
 
-Fix up DockManager::setLayout and ensure it opens widgets properly
-Check SVN modifications and re-evaluate my changes
-
 I should consider adding multiple C# EditorWindow types (via an enum)
  - Normal dockable EditorWindow, a tool window (unockable, no tabs), a modal window or maybe others
    - Dockable EditorWindow would internally be EditorWidgetBase as it is now and I would create different types for other windows
    - (Other windows should not need layout)
 
-I should try to get rid of two-step EditorWidget initialization
- - Both C++ and C# scripts require additional calls to initialize() after construction
- - SOLUTION: Update GUI so it can accept a "null" parent widget. Then it just needs to reintialize on _chageParentWidget which it does anyway
 
 Polish TOOD:
  - Change cursor icon when window is dragged
  - Prevent docking if available size is less than 20 pixels, otherwise there might be some weirdness
 
 ------------------------
-Layout saving/loading:
-TODO:
- Register a bunch of duplicate widgets and open and dock them
+
+Docked widgets are not shown anymore
+
+LATER:
+ get rid of CmApplication gMainCA and similar methods. Users may access CoreThread singleton directly now
+ get rid of CoreAccessor::submitToCoreThread and instead leave that functionally only available to CoreThread
 
 ------------------------
 

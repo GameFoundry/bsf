@@ -77,11 +77,6 @@ namespace CamelotFramework
 {
 	D3D9RenderSystem* D3D9RenderSystem::msD3D9RenderSystem = NULL;
 
-	/************************************************************************/
-	/* 								PUBLIC INTERFACE                      	*/
-	/************************************************************************/
-
-	//---------------------------------------------------------------------
 	D3D9RenderSystem::D3D9RenderSystem( HINSTANCE hInstance )
 		: mTexStageDesc(nullptr)
 		, mNumTexStages(0)
@@ -109,11 +104,10 @@ namespace CamelotFramework
 		mScissorRect.top = 0;
 		mScissorRect.bottom = 720;
 	}
-	//---------------------------------------------------------------------
+
 	D3D9RenderSystem::~D3D9RenderSystem()
 	{
-		// This needs to be called from the child class, since destroy_internal is virtual
-		gCoreThread().queueCommand(boost::bind(&D3D9RenderSystem::destroy_internal, this), true);
+
 	}
 
 	const String& D3D9RenderSystem::getName() const

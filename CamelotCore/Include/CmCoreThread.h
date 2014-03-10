@@ -9,6 +9,19 @@ namespace CamelotFramework
 	/**
 	 * @brief	Manager for the core thread. Takes care of starting, running, queuing commands
 	 * 			and shutting down the core thread.
+	 * 			
+	 * @note	How threading works:
+	 * 			 - This class contains a queue which is filled by commands from other threads via queueCommand and queueReturnCommand  
+	 * 			 - Commands are executed on the core thread as soon as they are queued (if core thread is not busy with previous commands)  
+	 * 			 - Core thread accessors are helpers for queuing commands. They serve two purposes:  
+	 * 				- They contain helper methods for various common Core thread commands.
+	 * 				- They perform better than queuing each command directly using queueCommand or queueReturnCommand    
+	 * 			 - Accessors contain a command queue of their own, and queuing commands in them will not automatically start executing the commands  
+	 * 			   like with queueCommand or queueReturnCommand. Instead you must manually call "submitAccessors" when you are ready to send their
+	 * 			   commands to the core thread.
+	 * 			 - Synced accessor is a special type of accessor which may be accessed from any thread. Its commands are always executed after all other  
+	 * 			   non-synced accessors. It is primarily useful when multiple threads are managing the same resource and you must ensure proper order of operations.
+	 * 			   You should use normal accessors whenever possible as synced accessors involve potentially slow synchronization operations.
 	 */
 	class CoreThread : public Module<CoreThread>
 	{
@@ -30,9 +43,10 @@ public:
 
 	/**
 		* @brief	Creates or retrieves an accessor that you can use for executing commands on the core thread from 
-		* 			a non-core thread. You can have as many of these as you wish, the only limitation
-		* 			is that you do not use a single instance on more than one thread. Each thread
-		* 			requires its own accessor. The accessor will be bound to the thread you call this method on.
+		* 			a non-core thread. The accessor will be bound to the thread you call this method on.
+		* 			
+		* @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
+		* 			to the core thread via "submitAccessors" method.
 		*/
 	CM_EXPORT CoreAccessorPtr getAccessor();
 
@@ -41,8 +55,18 @@ public:
 	* 			a non-core thread. There is only one synchronized accessor and you may access it from any thread you wish.
 	* 			Note however that it is much more efficient to create a separate non-synchronized accessor using
 	* 			"createCoreAccessor" for each thread you will be using it on.
-		*/
+	* 			
+	* @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
+	* 			to the core thread via "submitAccessors" method.
+	* 			
+	*			Synced accessor commands are sent after all non-synced accessor commands are sent.
+	*/
 	CM_EXPORT SyncedCoreAccessor& getSyncedAccessor();
+
+	/**
+	 * @brief	Queues all the accessor commands and starts executing them on the core thread.
+	 */
+	CM_EXPORT void submitAccessors(bool blockUntilComplete = false);
 
 	/**
 		* @brief	Queues a new command that will be added to the global command queue. You are allowed to call this from any thread,

@@ -131,8 +131,7 @@ namespace CamelotFramework
 			}
 
 			gCoreThread().queueCommand(&Platform::coreUpdate);
-			PROFILE_CALL(mPrimaryCoreAccessor->submitToCoreThread(), "CommandSubmit");
-			PROFILE_CALL(mPrimarySyncedCoreAccessor->submitToCoreThread(), "SyncCommandSubmit");
+			gCoreThread().submitAccessors();
 			gCoreThread().queueCommand(boost::bind(&Application::endCoreProfiling, this));
 			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
 
@@ -181,7 +180,7 @@ namespace CamelotFramework
 		SceneManager::shutDown();
 
 		RendererManager::shutDown();
-		RenderSystem::shutDown();
+		RenderSystemManager::shutDown();
 		CoreThread::shutDown();
 		Input::shutDown();
 

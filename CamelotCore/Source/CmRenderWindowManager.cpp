@@ -37,6 +37,11 @@ namespace CamelotFramework
 				CM_EXCEPT(InternalErrorException, "Trying to destroy a window that is not in the created windows list.");
 
 			mCreatedWindows.erase(iterFind);
+
+			auto iterFind2 = std::find(begin(mMovedOrResizedWindows), end(mMovedOrResizedWindows), window);
+
+			if(iterFind2 != mMovedOrResizedWindows.end())
+				mMovedOrResizedWindows.erase(iterFind2);
 		}
 	}
 
@@ -58,6 +63,16 @@ namespace CamelotFramework
 
 	void RenderWindowManager::windowMovedOrResized(RenderWindow* window)
 	{
+		bool isValidWindow = false;
+		{
+			CM_LOCK_MUTEX(mWindowMutex);
+
+			isValidWindow = std::find(begin(mCreatedWindows), end(mCreatedWindows), window) != mCreatedWindows.end();
+		}
+
+		if(!isValidWindow)
+			return;
+
 		window->_windowMovedOrResized();
 
 		CM_LOCK_MUTEX(mWindowMutex);

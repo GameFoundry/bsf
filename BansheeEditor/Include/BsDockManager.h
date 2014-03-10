@@ -102,6 +102,7 @@ namespace BansheeEditor
 
 		CM::RenderWindow* mParentWindow;
 		DockContainer mRootContainer;
+		CM::RectI mArea;
 
 		CM::HMesh mDropOverlayMesh;
 		CM::HMaterial mDropOverlayMat;
