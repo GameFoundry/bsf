@@ -15,7 +15,7 @@ namespace BansheeEngine
 	const String MonoManager::MONO_ETC_DIR = "..\\..\\Mono\\etc";
 
 	MonoManager::MonoManager()
-		:mDomain(nullptr)
+		:mDomain(nullptr), mIsCoreLoaded(false)
 	{
 		mono_set_dirs(MONO_LIB_DIR.c_str(), MONO_ETC_DIR.c_str()); 
 		mono_config_parse(nullptr);
@@ -83,6 +83,17 @@ namespace BansheeEngine
 			}
 
 			assembly->initialize(entryPoint); // Perform any initialization after everything is loaded
+		}
+
+		if(!mIsCoreLoaded)
+		{
+			mIsCoreLoaded = true;
+
+			MonoAssembly* mscorlib = new (cm_alloc<MonoAssembly>()) MonoAssembly();
+			mAssemblies["mscorlib"] = mscorlib;
+			mscorlib->loadAsDependency(assembly->mMonoImage, "mscorlib");
+
+			mIsCoreLoaded = true;
 		}
 
 		return *assembly;

@@ -27,10 +27,10 @@ namespace BansheeEngine
 	MonoClass::MethodId::MethodId(const String& name, UINT32 numParams)
 		:name(name), numParams(numParams)
 	{
-
+		
 	}
 
-	MonoClass::MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, MonoAssembly* parentAssembly)
+	MonoClass::MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly)
 		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly)
 	{
 		mFullName = ns + "." + type;
@@ -160,5 +160,31 @@ namespace BansheeEngine
 		getMethod(".ctor", numParams).invoke(obj, params);
 
 		return obj;
+	}
+
+	bool MonoClass::hasAttribute(MonoClass* monoClass) const
+	{
+		// TODO - Consider caching custom attributes or just initializing them all at load
+
+		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
+
+		bool hasAttr = mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass()) != 0;
+
+		mono_custom_attrs_free(attrInfo);
+
+		return hasAttr;
+	}
+
+	MonoObject* MonoClass::getAttribute(MonoClass* monoClass) const
+	{
+		// TODO - Consider caching custom attributes or just initializing them all at load
+
+		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
+
+		MonoObject* foundAttr = mono_custom_attrs_get_attr(attrInfo, monoClass->_getInternalClass());
+
+		mono_custom_attrs_free(attrInfo);
+
+		return foundAttr;
 	}
 }

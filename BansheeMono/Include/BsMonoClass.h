@@ -35,7 +35,9 @@ namespace BansheeEngine
 		MonoMethod& getMethod(const CM::String& name, CM::UINT32 numParams = 0);
 		MonoField& getField(const CM::String& name);
 		MonoProperty& getProperty(const CM::String& name);
+		MonoObject* getAttribute(MonoClass* monoClass) const;
 
+		bool hasAttribute(MonoClass* monoClass) const;
 		bool hasField(const CM::String& name) const;
 		bool isSubClassOf(const BS::MonoClass* monoClass) const;
 
@@ -49,9 +51,9 @@ namespace BansheeEngine
 	private:
 		friend class MonoAssembly;
 
-		MonoClass(const CM::String& ns, const CM::String& type, ::MonoClass* monoClass, MonoAssembly* parentAssembly);
+		MonoClass(const CM::String& ns, const CM::String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly);
 
-		MonoAssembly* mParentAssembly;
+		const MonoAssembly* mParentAssembly;
 		::MonoClass* mClass;
 		CM::String mNamespace;
 		CM::String mTypeName;

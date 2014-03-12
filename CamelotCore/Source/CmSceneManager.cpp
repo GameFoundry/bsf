@@ -25,7 +25,7 @@ namespace CamelotFramework
 			HSceneObject currentGO = todo.top();
 			todo.pop();
 			                  
-			Vector<HComponent>::type components = currentGO->getComponents();
+			const Vector<HComponent>::type& components = currentGO->getComponents();
 
 			for(auto iter = components.begin(); iter != components.end(); ++iter)
 			{

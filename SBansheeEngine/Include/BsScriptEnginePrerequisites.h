@@ -29,4 +29,11 @@ namespace BansheeEngine
 	class ScriptGUIArea;
 	class ScriptGUILayout;
 	class ScriptGUILabel;
+	class ScriptComponent;
+	class ManagedComponent;
+
+	enum TypeID_BansheeScript
+	{
+		TID_ManagedComponent = 50000
+	};
 }

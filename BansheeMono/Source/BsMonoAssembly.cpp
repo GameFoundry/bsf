@@ -32,7 +32,7 @@ namespace BansheeEngine
 	}
 
 	MonoAssembly::MonoAssembly()
-		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr)
+		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mIsDependency(false)
 	{
 
 	}
@@ -58,21 +58,24 @@ namespace BansheeEngine
 			CM_EXCEPT(InvalidParametersException, "Cannot get script assembly image.");
 		}
 
-		// Load all classes
-		int numRows = mono_image_get_table_rows (mMonoImage, MONO_TABLE_TYPEDEF);
+		mIsLoaded = true;
+		mIsDependency = false;
+	}
 
-		for(int i = 1; i < numRows; i++) // Skip Module
+	void MonoAssembly::loadAsDependency(MonoImage* image, const CM::String& name)
+	{
+		::MonoAssembly* monoAssembly = mono_image_get_assembly(image);
+		if(monoAssembly == nullptr)
 		{
-			::MonoClass* monoClass = mono_class_get (mMonoImage, (i + 1) | MONO_TOKEN_TYPE_DEF);
-
-			String ns = mono_class_get_namespace(monoClass);
-			String type = mono_class_get_name(monoClass);
-
-			MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(ns, type, monoClass, this);
-			mClasses[ClassId(ns, type)] = newClass;
+			CM_EXCEPT(InvalidParametersException, "Cannot get assembly from image.");
 		}
 
+		mName = name;
+		mMonoAssembly = monoAssembly;
+		mMonoImage = image;
+
 		mIsLoaded = true;
+		mIsDependency = true;
 	}
 
 	void MonoAssembly::unload()
@@ -85,7 +88,7 @@ namespace BansheeEngine
 
 		mClasses.clear();
 
-		if(mMonoImage != nullptr)
+		if(mMonoImage != nullptr && !mIsDependency)
 		{
 			mono_image_close(mMonoImage);
 			mMonoImage = nullptr;
@@ -93,19 +96,24 @@ namespace BansheeEngine
 
 		mIsLoaded = false;
 		mMonoAssembly = nullptr;
+		mHaveCachedClassList = false;
 	}
 
 	void MonoAssembly::initialize(const CM::String& entryPoint)
 	{
 		MonoMethodDesc* methodDesc = mono_method_desc_new(entryPoint.c_str(), false);
-		::MonoMethod* entry = mono_method_desc_search_in_image(methodDesc, mMonoImage);
 
-		if(entry != nullptr)
+		if(methodDesc != nullptr)
 		{
-			MonoObject* exception = nullptr;
-			mono_runtime_invoke(entry, nullptr, nullptr, &exception);
+			::MonoMethod* entry = mono_method_desc_search_in_image(methodDesc, mMonoImage);
 
-			MonoUtil::throwIfException(exception);
+			if(entry != nullptr)
+			{
+				MonoObject* exception = nullptr;
+				mono_runtime_invoke(entry, nullptr, nullptr, &exception);
+
+				MonoUtil::throwIfException(exception);
+			}
 		}
 	}
 
@@ -114,23 +122,46 @@ namespace BansheeEngine
 		if(!mIsLoaded)
 			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
 
-		ClassId classId(namespaceName, name);
+		MonoAssembly::ClassId classId(namespaceName, name);
 		auto iterFind = mClasses.find(classId);
 
 		if(iterFind != mClasses.end())
 			return iterFind->second;
 
-		return nullptr;
+		::MonoClass* monoClass = mono_class_from_name(mMonoImage, namespaceName.c_str(), name.c_str());
+		if(monoClass == nullptr)
+			return nullptr;
+
+		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(namespaceName, name, monoClass, this);
+		mClasses[classId] = newClass;
+
+		return newClass;
 	}
 
-	CM::Vector<MonoClass*>::type MonoAssembly::getAllClasses() const
+	const CM::Vector<MonoClass*>::type& MonoAssembly::getAllClasses() const
 	{
-		CM::Vector<MonoClass*>::type classes;
-		classes.reserve(classes.size());
+		if(mHaveCachedClassList)
+			return mCachedClassList;
 
-		for(auto& curClass : mClasses)
-			classes.push_back(curClass.second);
+		mCachedClassList.clear();
 
-		return classes;
+		int numRows = mono_image_get_table_rows (mMonoImage, MONO_TABLE_TYPEDEF);
+
+		for(int i = 1; i < numRows; i++) // Skip Module
+		{
+			::MonoClass* monoClass = mono_class_get (mMonoImage, (i + 1) | MONO_TOKEN_TYPE_DEF);
+
+			String ns = mono_class_get_namespace(monoClass);
+			String type = mono_class_get_name(monoClass);
+
+			MonoClass* curClass = getClass(ns, type);
+
+			if(curClass != nullptr)
+				mCachedClassList.push_back(curClass);
+		}
+
+		mHaveCachedClassList = true;
+
+		return mCachedClassList;
 	}
 }

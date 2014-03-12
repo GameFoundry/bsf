@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="BuiltinResources.cs" />
     <Compile Include="Color.cs" />
+    <Compile Include="Component.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GUI\GUI.cs" />
     <Compile Include="GUI\GUIArea.cs" />

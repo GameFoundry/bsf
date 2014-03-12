@@ -61,5 +61,6 @@ namespace BansheeEngine
 
 		CM::UnorderedMap<CM::String, MonoAssembly*>::type mAssemblies;
 		MonoDomain* mDomain;
+		bool mIsCoreLoaded;
 	};
 }

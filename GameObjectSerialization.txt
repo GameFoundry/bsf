@@ -4,62 +4,86 @@ TODO
  ---------------------------------------
  C# component serialization
 
- Over the weekend
-  - Figure out how to serialize C# Components
-   - And generic non-component serializable types
-
-Will I need to break references to non-game object and non-resource elements when serializing?
- - Well those should be ignored from serialization in the first place somehow
-   - Even for Undo/Redo because those values aren't persistent and dont need to be restored upon undo
-
-Ignoring serialization, how will I create custom Components in C# in the first place?
- - Every custom Component derives from Component, which creates "ScriptComponent" in C++
- - ScriptComponent has access to ScriptComponentRTTI (or more generic SerializableObjectRTTI), which is described further below
-
-
-RuntimeScriptObjects
- - enumerateAll()
-   - Goes through all (non-C++) Components in C#
-     - For each it creates ScriptComponentRTTI
-     - Finds all its fields using reflection
-         - Only includes value type fields, structures marked with [Serializable], references to other Components, SceneObjects or Resources
-         - Considers attributes
-            - [Serialized] - Forces field to be serialized (If valid type)
-            - [NotSerialized] - Forced field not to be serialized
-            - By default all public members are serialized and private ones are not
-   - Goes through all non-Component classes marked with [Serializable]
-     - For each it creates ScriptSerializableStructureRTTI
-      - Find all its fields using reflection
-        - Only references value type fields, or fields holding other [Serializable] structures
+ RuntimeScriptObjects
+ - enumerateSerializable()
+   - Goes through all (non-C++) Components and non-Component classes marked with [Serializable]
+    - Using C++ it finds all fields in those classes. Fields and their references are stored in C++ classes.
+	  - Need to enumerate value type fields, or fields holding other [Serializable] structures, references to other Components, SceneObjects or Resources
         - Plus arrays, and possibly C# List
         - Considers attributes
             - [Serialized] - Forces field to be serialized (If valid type)
             - [NotSerialized] - Forced field not to be serialized
             - By default all public members are serialized and private ones are not
+	  - Something like SerializableComponentInfo (per-component), SerializableObjectInfo(per-non-component), SerializablePlainField,
+	    SerializableArrayField, SerializableResourceField, SerializableGameObjectField, SerializableObjectField, etc.
+ - Internally it holds a Map with name -> Serializable*Info mapping for every supported type
+   - User can query if type is supported or not, and retrieve the serialization info if needed
+   - Using the serialization info user can retrieve actual values from an instance easily
+   - Serializable*Info classes contain findField method that accepts a name and a type
+     - This is used for deserialization
+ - Using Serializable*Info you can create a brand new instance of a Component or a [Serializable] non-component
+
+ScriptComponent
+ - C++ half of the C# component
+ - Returned from SerializableComponentInfo::createInstance and created automatically whenever a managed component is created
+ - Contains a managed type-name of the component
+ - Has ScriptComponentRTTI
 
 ScriptComponentRTTI
- - Need to override all field getters from RTTIType so it can deal with fields dynamically
- - Returned type name is exact name extracted from C# code.
- - What about type id?
-   - How do I ensure type ids are consistent between enumerateAll calls? (Possibly even different projects like with Unity)
-     - Somehow replace type id with actual type name + namespace? - HOW? TODO
- - How do I ensure different versions of the same Component serialize properly?
-   - e.g. I add or remove a field from Component, which requires recompilation and I have no way of ensuring field IDs will match the previous version
-     - Somehow replace field ids with actual field names? HOW? TODO
+ - Allows for easy and automatic serialization and deserialization
+ - Saves managed component type-name
+ - Uses RuntimeScriptObjects to get Serializable*Info, which is in turn used to find component fields
+ - Has various methods returning arrays of fields
+  - GetPlainFields
+    - Returns FieldId -> (int, bool, byte, etc.) mapping
+  - GetStringFields
+    - Returns FieldId -> string mapping
+  - GetSerializableObjectFields
+    - Returns FieldId -> ReflectablePtr to ScriptSerializableObject (which will be serialized recursively)
+  - GetGameObjectFields
+    - Returns FieldId -> HGameObject
+  - GetResourceFields
+    - Returns FieldID -> HResource
+ - When serializing all those arrays are prepared in OnSerializatioStarted
+ - When deserializing they are send to the object in OnDeserializationEnded
+   - However existance for the fields is first checked by getting new copy of SerializableComponentInfo and seeing
+     which fields match
+ - FieldId is just a name + type of the field.
+ - When deserializing and component type name cannot be found, returns an empty ScriptComponent
 
-SOLUTION: Make C# serialization a layer on top of the current system, so I don't need to change the current system
- - This solves three of the problems above:
-   - I don't need to modify RTTIType so I can override its field methods
-   - And I can use field and class/namespace names instead of type IDs
- - ScriptComponentRTTI contains just a few static fields:
-   - C# class name
-   - C# namespace name
-   - C# list of field names, field types and their values
- - (Although I might want to move this functionality outside of ScriptComponentRTTI and make it more generic)
+ScriptSerializableObject
+ - Has ScriptSerializableObjectRTTI
+ - When deserializing and component type name cannot be found, returns null
+ - Otherwise equivalent to its ScriptComponent and ScriptComponentRTTI counterpart
 
-Unity also has a way of saving generic ScriptObjects. They serialize the same as Components.
- - Make a SerializableObject class that both Component and custom assets may derive from. Then it can use the same exact functionality.
+TO CUT DOWN ON SERIALIZATION SIZE
+ - Serialize the Serializable*Info itself, and then FieldId can be just numerical ids
+ - Just having the RTTI class holding a reference to Serializable*Info (and it being IReflectable) should
+   ensure only one copy of it is stored.
 
-When I reference other C# Components I can't just use GameObject ID, since I cannot deduce the managed reference from that.
- - In C++ store a dictionary with a mapping from all GameObjects (Maps from ID to Managed object)
-  - POTENTIALLY I can use that mapping for ALL managed objects?
+TODO - Possibly flesh out and example with Resources or Gameobject references a bit more
+ - When deserializing HResource and HGameObject handles how do I find their managed counterparts? I can create new handles
+   but they could already be loaded and it doesn't make sense to have two different handles.
+ - Some kind of managed <-> native mapping?
+
+ ------------------------------------------------------
+ General C# component management
+
+ Native components like Camera
+  - ScriptCamera derives from Camera
+    - Then whenever I check for managed Components I need to check if object type of ScriptComponent or
+	  any of the built-in types. 
+	   - Checking each type might be a bit slow, but normally we will be looking for an exact type
+	     so hopefully this will only matter when enumerating all components which shouldn't be during performance
+		 critical moments.
+
+Inspector
+ - RuntimeScriptObjects::enumerateInspectable creates a list of all inspectable classes (Components and others marked with [Serializable]
+  - Returns a hierarchy very similar to Serializable*Info and their children (Likely re-use the same hierarchy but with different flags?)
+  - This information is then used to generate needed fields
+
+ - Importer inspectors are special and custom-built and shouldn't be considered here
+
+TODO - When reloading scripts how to handle restoring references?
+TODO - When I destroy a Component, how will I refresh the inspector to let it know that something has changed
+  - Can happen from C# and C++

@@ -226,6 +226,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsManagedComponent.h" />
+    <ClInclude Include="Include\BsManagedComponentRTTI.h" />
+    <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
+    <ClInclude Include="Include\BsScriptComponent.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
     <ClInclude Include="Include\BsScriptGUIButton.h" />
     <ClInclude Include="Include\BsScriptGUIFixedSpace.h" />
@@ -252,6 +256,9 @@
     <ClInclude Include="Include\BsScriptGUIContent.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsManagedComponent.cpp" />
+    <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
+    <ClCompile Include="Source\BsScriptComponent.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
     <ClCompile Include="Source\BsScriptGUIButton.cpp" />
     <ClCompile Include="Source\BsScriptGUIFixedSpace.cpp" />

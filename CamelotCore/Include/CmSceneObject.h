@@ -338,7 +338,7 @@ namespace CamelotFramework
 		/**
 		 * @brief	Returns all components on this SceneObject.
 		 */
-		Vector<HComponent>::type& getComponents() { return mComponents; }
+		const Vector<HComponent>::type& getComponents() const { return mComponents; }
 
 	private:
 		template <typename T>

@@ -8,6 +8,7 @@ namespace BansheeEngine
 {
 	class BS_MONO_EXPORT MonoAssembly
 	{
+	public:
 		struct ClassId
 		{
 			struct Hash
@@ -27,10 +28,10 @@ namespace BansheeEngine
 		};
 
 	public:
-		~MonoAssembly();
+		virtual ~MonoAssembly();
 
 		MonoClass* getClass(const CM::String& namespaceName, const CM::String& name) const;
-		CM::Vector<MonoClass*>::type getAllClasses() const;
+		const CM::Vector<MonoClass*>::type& getAllClasses() const;
 
 	private:
 		friend class MonoManager;
@@ -38,6 +39,7 @@ namespace BansheeEngine
 		MonoAssembly();
 
 		void load(const CM::String& path, const CM::String& name);
+		void loadAsDependency(MonoImage* image, const CM::String& name);
 		void unload();
 
 		void initialize(const CM::String& entryPoint);
@@ -46,6 +48,11 @@ namespace BansheeEngine
 		MonoImage* mMonoImage;
 		::MonoAssembly* mMonoAssembly;
 		bool mIsLoaded;
-		CM::UnorderedMap<ClassId, MonoClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
+		bool mIsDependency;
+		
+		mutable CM::UnorderedMap<ClassId, MonoClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
+
+		mutable bool mHaveCachedClassList;
+		mutable CM::Vector<MonoClass*>::type mCachedClassList;
 	};
 }
