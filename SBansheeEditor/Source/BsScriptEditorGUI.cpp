@@ -23,7 +23,7 @@ namespace BansheeEditor
 
 	void ScriptEditorGUI::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEditor", "BansheeEditor", "EditorGUI", &ScriptEditorGUI::initRuntimeData);
+		metaData = ScriptMeta(BansheeEditorAssemblyName, "BansheeEditor", "EditorGUI", &ScriptEditorGUI::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

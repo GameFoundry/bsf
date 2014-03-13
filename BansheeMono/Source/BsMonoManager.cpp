@@ -75,7 +75,7 @@ namespace BansheeEngine
 					CM_EXCEPT(InvalidParametersException, "Unable to find class of type: \"" + meta->ns + "::" + meta->name + "\"");
 
 				if(meta->scriptClass->hasField("mCachedPtr"))
-					meta->thisPtrField = &meta->scriptClass->getField("mCachedPtr");
+					meta->thisPtrField = meta->scriptClass->getField("mCachedPtr");
 				else
 					meta->thisPtrField = nullptr;
 
@@ -89,11 +89,16 @@ namespace BansheeEngine
 		{
 			mIsCoreLoaded = true;
 
-			MonoAssembly* mscorlib = new (cm_alloc<MonoAssembly>()) MonoAssembly();
-			mAssemblies["mscorlib"] = mscorlib;
-			mscorlib->loadAsDependency(assembly->mMonoImage, "mscorlib");
+			MonoImage* existingImage = mono_image_loaded("mscorlib");
+			if(existingImage != nullptr)
+			{
+				MonoAssembly* mscorlib = new (cm_alloc<MonoAssembly>()) MonoAssembly();
+				mAssemblies["mscorlib"] = mscorlib;
 
-			mIsCoreLoaded = true;
+				mscorlib->loadAsDependency(existingImage, "mscorlib");
+			}
+			else
+				loadAssembly("mscorlib", "mscorlib", "");			
 		}
 
 		return *assembly;

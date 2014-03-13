@@ -87,3 +87,8 @@ Inspector
 TODO - When reloading scripts how to handle restoring references?
 TODO - When I destroy a Component, how will I refresh the inspector to let it know that something has changed
   - Can happen from C# and C++
+
+  -------------------------------------------------------
+
+  Other:
+  Instantiating mono generic classes: http://stackoverflow.com/questions/17628411/get-generic-type-using-mono-embedded

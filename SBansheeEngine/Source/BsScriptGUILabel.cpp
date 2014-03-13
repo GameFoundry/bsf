@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 	void ScriptGUILabel::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUILabel", &ScriptGUILabel::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUILabel", &ScriptGUILabel::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

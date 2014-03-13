@@ -19,16 +19,16 @@ namespace BansheeEngine
 
 	void ScriptGUIContent::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUIContent", &ScriptGUIContent::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIContent", &ScriptGUIContent::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIContent::initRuntimeData()
 	{
-		mTextField = &metaData.scriptClass->getField("_text");
-		mTooltipField = &metaData.scriptClass->getField("_tooltip");
-		mImageField = &metaData.scriptClass->getField("_image");
+		mTextField = metaData.scriptClass->getField("_text");
+		mTooltipField = metaData.scriptClass->getField("_tooltip");
+		mImageField = metaData.scriptClass->getField("_image");
 	}
 
 	const CM::HString& ScriptGUIContent::getText(MonoObject* instance)

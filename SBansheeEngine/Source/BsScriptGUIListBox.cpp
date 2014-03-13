@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 	void ScriptGUIListBox::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUIListBox", &ScriptGUIListBox::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIListBox", &ScriptGUIListBox::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

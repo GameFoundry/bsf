@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	void ScriptGUIFixedSpace::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUIFixedSpace", &ScriptGUIFixedSpace::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIFixedSpace", &ScriptGUIFixedSpace::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

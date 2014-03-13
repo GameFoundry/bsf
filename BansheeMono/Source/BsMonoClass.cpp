@@ -31,7 +31,7 @@ namespace BansheeEngine
 	}
 
 	MonoClass::MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly)
-		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly)
+		:mNamespace(ns), mTypeName(type), mClass(monoClass), mParentAssembly(parentAssembly), mHasCachedFields(false)
 	{
 		mFullName = ns + "." + type;
 	}
@@ -95,23 +95,20 @@ namespace BansheeEngine
 		return mono_class_is_subclass_of(mClass, monoClass->mClass, true) != 0;
 	}
 
-	MonoField& MonoClass::getField(const String& name)
+	MonoField* MonoClass::getField(const String& name) const
 	{
 		auto iterFind = mFields.find(name);
 		if(iterFind != mFields.end())
-			return *iterFind->second;
+			return iterFind->second;
 
 		MonoClassField* field = mono_class_get_field_from_name(mClass, name.c_str());
 		if(field == nullptr)
-		{
-			String fullFieldName = mFullName + "." + name;
-			CM_EXCEPT(InvalidParametersException, "Cannot get Mono field: " + fullFieldName);
-		}
+			return nullptr;
 
 		MonoField* newField = new (cm_alloc<MonoField>()) MonoField(field);
 		mFields[name] = newField;
 
-		return *newField;
+		return newField;
 	}
 
 	MonoProperty& MonoClass::getProperty(const String& name)
@@ -131,6 +128,29 @@ namespace BansheeEngine
 		mProperties[name] = newProperty;
 
 		return *newProperty;
+	}
+
+	const CM::Vector<MonoField*>::type MonoClass::getAllFields() const
+	{
+		if(mHasCachedFields)
+			return mCachedFieldList;
+
+		mCachedFieldList.clear();
+
+		void* iter = nullptr;
+		MonoClassField* curClassField = mono_class_get_fields(mClass, &iter);
+		while(curClassField != nullptr)
+		{
+			const char* fieldName = mono_field_get_name(curClassField);
+			MonoField* curField = getField(fieldName);
+
+			mCachedFieldList.push_back(curField);
+
+			curClassField = mono_class_get_fields(mClass, &iter);
+		}
+
+		mHasCachedFields = true;
+		return mCachedFieldList;
 	}
 
 	MonoObject* MonoClass::invokeMethod(const String& name, MonoObject* instance, void** params, UINT32 numParams)
@@ -167,6 +187,8 @@ namespace BansheeEngine
 		// TODO - Consider caching custom attributes or just initializing them all at load
 
 		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
+		if(attrInfo == nullptr)
+			return false;
 
 		bool hasAttr = mono_custom_attrs_has_attr(attrInfo, monoClass->_getInternalClass()) != 0;
 
@@ -180,11 +202,25 @@ namespace BansheeEngine
 		// TODO - Consider caching custom attributes or just initializing them all at load
 
 		MonoCustomAttrInfo* attrInfo = mono_custom_attrs_from_class(mClass);
+		if(attrInfo == nullptr)
+			return nullptr;
 
 		MonoObject* foundAttr = mono_custom_attrs_get_attr(attrInfo, monoClass->_getInternalClass());
 
 		mono_custom_attrs_free(attrInfo);
 
 		return foundAttr;
+	}
+
+	MonoClass* MonoClass::getBaseClass() const
+	{
+		::MonoClass* monoBase = mono_class_get_parent(mClass);
+		if(monoBase == nullptr)
+			return nullptr;
+
+		String ns = mono_class_get_namespace(monoBase);
+		String typeName = mono_class_get_name(monoBase);
+
+		return MonoManager::instance().findClass(ns, typeName);
 	}
 }

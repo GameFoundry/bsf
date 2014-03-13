@@ -33,9 +33,17 @@ namespace BansheeEngine
 		const CM::String& getFullName() const { return mFullName; }
 
 		MonoMethod& getMethod(const CM::String& name, CM::UINT32 numParams = 0);
-		MonoField& getField(const CM::String& name);
+		MonoField* getField(const CM::String& name) const;
 		MonoProperty& getProperty(const CM::String& name);
 		MonoObject* getAttribute(MonoClass* monoClass) const;
+		MonoClass* getBaseClass() const;
+
+		/**
+		 * @brief	Returns all fields belonging to this class.
+		 *
+		 * @note	Be aware this will not include the fields of any base classes.
+		 */
+		const CM::Vector<MonoField*>::type getAllFields() const;
 
 		bool hasAttribute(MonoClass* monoClass) const;
 		bool hasField(const CM::String& name) const;
@@ -60,7 +68,10 @@ namespace BansheeEngine
 		CM::String mFullName;
 
 		CM::UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals>::type mMethods; 
-		CM::UnorderedMap<CM::String, MonoField*>::type mFields; 
+		mutable CM::UnorderedMap<CM::String, MonoField*>::type mFields; 
 		CM::UnorderedMap<CM::String, MonoProperty*>::type mProperties;
+
+		mutable bool mHasCachedFields;
+		mutable CM::Vector<MonoField*>::type mCachedFieldList;
 	};
 }

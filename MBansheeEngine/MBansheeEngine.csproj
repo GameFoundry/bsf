@@ -45,6 +45,7 @@
     <Compile Include="BuiltinResources.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Component.cs" />
+    <Compile Include="DbgComponent.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GUI\GUI.cs" />
     <Compile Include="GUI\GUIArea.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="GUI\GUITexture.cs" />
     <Compile Include="GUI\GUIToggle.cs" />
     <Compile Include="GUI\GUIToggleGroup.cs" />
+    <Compile Include="HideInInspector.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="Math\MathEx.cs" />
     <Compile Include="Math\Matrix3.cs" />
@@ -76,6 +78,7 @@
     <Compile Include="Math\Quaternion.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="ScriptObject.cs" />
+    <Compile Include="SerializeField.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StringTable.cs" />
     <Compile Include="Texture2D.cs" />

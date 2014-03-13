@@ -28,7 +28,7 @@ namespace BansheeEditor
 
 	void ScriptEditorWindow::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEditor", "BansheeEditor", "EditorWindow", &ScriptEditorWindow::initRuntimeData);
+		metaData = ScriptMeta(BansheeEditorAssemblyName, "BansheeEditor", "EditorWindow", &ScriptEditorWindow::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}
@@ -75,13 +75,13 @@ namespace BansheeEditor
 
 	void ScriptEditorWindow::registerManagedEditorWindows()
 	{
-		BS::MonoAssembly* assembly = MonoManager::instance().getAssembly("MBansheeEditor");
+		BS::MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
 
 		if(assembly != nullptr)
 		{
 			BS::MonoClass* editorWindowClass = assembly->getClass("BansheeEditor", "EditorWindow");
 
-			CM::Vector<BS::MonoClass*>::type allClasses = assembly->getAllClasses();
+			const CM::Vector<BS::MonoClass*>::type& allClasses = assembly->getAllClasses();
 			for(auto& curClass : allClasses)
 			{
 				if(curClass->isSubClassOf(editorWindowClass) && curClass != editorWindowClass)
@@ -96,7 +96,7 @@ namespace BansheeEditor
 
 	EditorWidgetBase* ScriptEditorWindow::openEditorWidgetCallback(CM::String ns, CM::String type, EditorWidgetContainer& parentContainer)
 	{
-		BS::MonoAssembly* assembly = MonoManager::instance().getAssembly("MBansheeEditor");
+		BS::MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
 
 		if(assembly == nullptr)
 			return nullptr;

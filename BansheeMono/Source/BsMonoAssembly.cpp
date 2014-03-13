@@ -32,7 +32,7 @@ namespace BansheeEngine
 	}
 
 	MonoAssembly::MonoAssembly()
-		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mIsDependency(false)
+		:mIsLoaded(false), mMonoImage(nullptr), mMonoAssembly(nullptr), mIsDependency(false), mHaveCachedClassList(false)
 	{
 
 	}

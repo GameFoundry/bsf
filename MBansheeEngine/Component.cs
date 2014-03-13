@@ -12,5 +12,7 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(Component instance, string ns, string type);
+
+        private int dbgBase;
     }
 }

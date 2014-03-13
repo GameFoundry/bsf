@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	void ScriptGUILayout::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUILayout", &ScriptGUILayout::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUILayout", &ScriptGUILayout::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

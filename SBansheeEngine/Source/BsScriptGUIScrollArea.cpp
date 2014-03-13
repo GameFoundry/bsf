@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 	void ScriptGUIScrollArea::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUIScrollArea", &ScriptGUIScrollArea::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIScrollArea", &ScriptGUIScrollArea::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

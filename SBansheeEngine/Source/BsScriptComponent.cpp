@@ -9,7 +9,7 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptComponent::ScriptComponent(ManagedComponent* managedComponent)
+	ScriptComponent::ScriptComponent(const CM::GameObjectHandle<ManagedComponent>& managedComponent)
 		:mManagedComponent(managedComponent)
 	{
 
@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	void ScriptComponent::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "Component", &ScriptComponent::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "Component", &ScriptComponent::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}
@@ -32,7 +32,7 @@ namespace BansheeEngine
 	{
 		// TODO - Just a placeholder
 
-		ScriptComponent* nativeInstance = new (cm_alloc<ScriptComponent>()) ScriptComponent(nullptr);
+		ScriptComponent* nativeInstance = new (cm_alloc<ScriptComponent>()) ScriptComponent(GameObjectHandle<ManagedComponent>());
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, nativeInstance);
@@ -42,5 +42,10 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptComponent::setNativeHandle(const CM::HGameObject& gameObject)
+	{
+		mManagedComponent = static_object_cast<ManagedComponent>(gameObject);
 	}
 }

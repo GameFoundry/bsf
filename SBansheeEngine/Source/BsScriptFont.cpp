@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	void ScriptFont::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "Font", &ScriptFont::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "Font", &ScriptFont::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

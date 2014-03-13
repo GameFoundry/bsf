@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 	void ScriptGUIInputBox::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUITextBox", &ScriptGUIInputBox::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUITextBox", &ScriptGUIInputBox::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

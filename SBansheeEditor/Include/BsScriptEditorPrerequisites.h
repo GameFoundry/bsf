@@ -22,4 +22,6 @@
 namespace BansheeEditor
 {
 	class ScriptEditorWindow;
+
+	static const char* BansheeEditorAssemblyName = "MBansheeEditor";
 }

@@ -231,6 +231,7 @@
     <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
+    <ClInclude Include="Include\BsScriptGameObject.h" />
     <ClInclude Include="Include\BsScriptGUIButton.h" />
     <ClInclude Include="Include\BsScriptGUIFixedSpace.h" />
     <ClInclude Include="Include\BsScriptGUIFlexibleSpace.h" />
@@ -250,6 +251,7 @@
     <ClInclude Include="Include\BsScriptHString.h" />
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
+    <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />

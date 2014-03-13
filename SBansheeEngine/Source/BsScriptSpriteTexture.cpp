@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	void ScriptSpriteTexture::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "SpriteTexture", &ScriptSpriteTexture::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "SpriteTexture", &ScriptSpriteTexture::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}
@@ -40,5 +40,10 @@ namespace BansheeEngine
 	{
 		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
+	}
+
+	void ScriptSpriteTexture::setNativeHandle(const HResource& resource) 
+	{ 
+		mTexture = static_resource_cast<Resource>(mTexture); 
 	}
 }

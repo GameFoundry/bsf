@@ -36,4 +36,6 @@ namespace BansheeEngine
 	{
 		TID_ManagedComponent = 50000
 	};
+
+	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
 }

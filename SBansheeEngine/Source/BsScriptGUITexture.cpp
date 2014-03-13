@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 	void ScriptGUITexture::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUITexture", &ScriptGUITexture::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUITexture", &ScriptGUITexture::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

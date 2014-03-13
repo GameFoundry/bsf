@@ -11,7 +11,7 @@ namespace BansheeEngine
 {
 	void ScriptStringTable::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "StringTable", &ScriptStringTable::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "StringTable", &ScriptStringTable::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}

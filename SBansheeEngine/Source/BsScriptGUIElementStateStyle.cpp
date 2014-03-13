@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStateStyle::initMetaData()
 	{
-		metaData = ScriptMeta("MBansheeEngine", "BansheeEngine", "GUIElementStateStyle", &ScriptGUIElementStateStyle::initRuntimeData);
+		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIElementStateStyle", &ScriptGUIElementStateStyle::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}
