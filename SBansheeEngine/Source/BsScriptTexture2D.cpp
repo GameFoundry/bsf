@@ -1,4 +1,5 @@
 #include "BsScriptTexture2D.h"
+#include "BsScriptResourceManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
@@ -51,16 +52,12 @@ namespace BansheeEngine
 
 		HTexture texture = Texture::create(TEX_TYPE_2D, width, height, numMips, texFormat, TU_STATIC, gammaCorrection);
 
-		ScriptTexture2D* nativeInstance = new (cm_alloc<ScriptTexture2D>()) ScriptTexture2D(texture);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		ScriptResourceManager::instance().createScriptTexture(instance, texture);
 	}
 
 	void ScriptTexture2D::internal_destroyInstance(ScriptTexture2D* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
-		cm_delete(nativeInstance);
+		ScriptResourceManager::instance().destroyScriptResource(nativeInstance);
 	}
 
 	void ScriptTexture2D::setNativeHandle(const HResource& resource) 

@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "CmModule.h"
+#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {
@@ -20,9 +21,12 @@ namespace BansheeEngine
 		Float,
 		Double,
 		String,
-		SerializableObject,
-		ResourceRef,
-		GameObjectRef,
+		SerializableObjectValue,
+		SerializableObjectRef,
+		TextureRef,
+		SpriteTextureRef,
+		SceneObjectRef,
+		ComponentRef,
 		Other
 	};
 
@@ -48,55 +52,71 @@ namespace BansheeEngine
 
 		MonoField* mMonoField;
 
-		CM::UINT32 getNumArrayElement(MonoObject* obj);
-		void setNumArrayElements(MonoObject* obj, CM::UINT32 numElements);
+		bool isArray();
+		bool isReferenceType();
+		bool isNull(MonoObject* obj);
+		void setNull(MonoObject* obj);
+
+		CM::UINT32 getNumArrayElements(MonoObject* obj);
+		void setNumArrayElements(MonoObject* obj, CM::UINT32 numElements, bool discardExisting = true);
 
 		void setU8(MonoObject* obj, CM::UINT8 val, CM::UINT32 arrayIdx = 0);
-		CM::UINT8 getU8(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		CM::UINT8 getU8(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setI8(MonoObject* obj,CM::INT8 val, CM::UINT32 arrayIdx = 0);
-		CM::INT8 getI8(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setI8(MonoObject* obj, CM::INT8 val, CM::UINT32 arrayIdx = 0);
+		CM::INT8 getI8(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setU16(MonoObject* obj,CM::UINT16 val, CM::UINT32 arrayIdx = 0);
-		CM::UINT16 getU16(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setU16(MonoObject* obj, CM::UINT16 val, CM::UINT32 arrayIdx = 0);
+		CM::UINT16 getU16(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setI16(MonoObject* obj,CM::INT16 val, CM::UINT32 arrayIdx = 0);
-		CM::INT16 getI16(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setI16(MonoObject* obj, CM::INT16 val, CM::UINT32 arrayIdx = 0);
+		CM::INT16 getI16(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setU32(MonoObject* obj,CM::UINT32 val, CM::UINT32 arrayIdx = 0);
-		CM::UINT32 getU32(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setU32(MonoObject* obj, CM::UINT32 val, CM::UINT32 arrayIdx = 0);
+		CM::UINT32 getU32(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setI32(MonoObject* obj,CM::INT32 val, CM::UINT32 arrayIdx = 0);
-		CM::INT32 getI32(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setI32(MonoObject* obj, CM::INT32 val, CM::UINT32 arrayIdx = 0);
+		CM::INT32 getI32(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setU64(MonoObject* obj,CM::UINT64 val, CM::UINT32 arrayIdx = 0);
-		CM::UINT64 getU64(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setU64(MonoObject* obj, CM::UINT64 val, CM::UINT32 arrayIdx = 0);
+		CM::UINT64 getU64(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setI64(MonoObject* obj,CM::INT64 val, CM::UINT32 arrayIdx = 0);
-		CM::INT64 getI64(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setI64(MonoObject* obj, CM::INT64 val, CM::UINT32 arrayIdx = 0);
+		CM::INT64 getI64(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setBool(MonoObject* obj,bool val, CM::UINT32 arrayIdx = 0);
-		bool getBool(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setBool(MonoObject* obj, bool val, CM::UINT32 arrayIdx = 0);
+		bool getBool(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setChar(MonoObject* obj,wchar_t val, CM::UINT32 arrayIdx = 0);
-		wchar_t getChar(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setChar(MonoObject* obj, wchar_t val, CM::UINT32 arrayIdx = 0);
+		wchar_t getChar(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setFloat(MonoObject* obj,float val, CM::UINT32 arrayIdx = 0);
-		float getFloat(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setFloat(MonoObject* obj, float val, CM::UINT32 arrayIdx = 0);
+		float getFloat(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setDouble(MonoObject* obj,double val, CM::UINT32 arrayIdx = 0);
-		double getDouble(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setDouble(MonoObject* obj, double val, CM::UINT32 arrayIdx = 0);
+		double getDouble(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setString(MonoObject* obj,const CM::WString& val, CM::UINT32 arrayIdx = 0);
-		CM::WString getString(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setString(MonoObject* obj, const CM::WString& val, CM::UINT32 arrayIdx = 0);
+		CM::WString getString(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setResource(MonoObject* obj,const CM::HResource& resource, CM::UINT32 arrayIdx = 0);
-		CM::HResource getResource(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setTexture(MonoObject* obj, const CM::HTexture& resource, CM::UINT32 arrayIdx = 0);
+		CM::HTexture getTexture(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		void setGameObject(MonoObject* obj,const CM::HGameObject& gameObject, CM::UINT32 arrayIdx = 0);
-		CM::HGameObject getGameObject(MonoObject* obj,CM::UINT32 arrayIdx = 0);
+		void setSpriteTexture(MonoObject* obj, const HSpriteTexture& resource, CM::UINT32 arrayIdx = 0);
+		HSpriteTexture getSpriteTexture(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 
-		// TODO - Set/Get for SerializableObject
+		void setSceneObject(MonoObject* obj, const CM::HSceneObject& sceneObject, CM::UINT32 arrayIdx = 0);
+		CM::HSceneObject getSceneObject(MonoObject* obj, CM::UINT32 arrayIdx = 0);
+
+		void setComponent(MonoObject* obj, const CM::HComponent& component, CM::UINT32 arrayIdx = 0);
+		CM::HComponent getComponent(MonoObject* obj, CM::UINT32 arrayIdx = 0);
+
+		void setSerializableObject(MonoObject* obj, const MonoObject* value, CM::UINT32 arrayIdx = 0);
+		MonoObject* getSerializableObject(MonoObject* obj, CM::UINT32 arrayIdx = 0);
+
+	private:
+		void setValue(MonoObject* obj, void* val, CM::UINT32 arrayIdx = 0);
+		void* getValue(MonoObject* obj, CM::UINT32 arrayIdx = 0);
 	};
 
 	struct BS_SCR_BE_EXPORT SerializableObjectInfo
@@ -130,6 +150,7 @@ namespace BansheeEngine
 
 		void refreshScriptObjects(const CM::String& assemblyName);
 		bool getSerializableObjectInfo(const CM::String& ns, const CM::String& typeName, std::shared_ptr<SerializableObjectInfo>& outInfo);
+		bool hasSerializableObjectInfo(const CM::String& ns, const CM::String& typeName);
 	private:
 		CM::UnorderedMap<CM::String, std::shared_ptr<SerializableAssemblyInfo>>::type mAssemblyInfos;
 

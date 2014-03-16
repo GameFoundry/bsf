@@ -47,6 +47,7 @@
     <Compile Include="Component.cs" />
     <Compile Include="DbgComponent.cs" />
     <Compile Include="Font.cs" />
+    <Compile Include="GameObject.cs" />
     <Compile Include="GUI\GUI.cs" />
     <Compile Include="GUI\GUIArea.cs" />
     <Compile Include="GUI\GUIBase.cs" />

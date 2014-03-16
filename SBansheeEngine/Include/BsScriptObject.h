@@ -63,14 +63,6 @@ namespace BansheeEngine
 			mManagedInstance = instance;
 		}
 
-		void destroyInstance()
-		{
-			if(mManagedInstance == nullptr)
-				return;
-
-			mManagedInstance = nullptr;
-		}
-
 		template <class Type2>
 		static void throwIfInstancesDontMatch(ScriptObject<Type2>* lhs, void* rhs)
 		{

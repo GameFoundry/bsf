@@ -4,24 +4,16 @@ TODO
  ---------------------------------------
  C# component serialization
 
- RuntimeScriptObjects
- - enumerateSerializable()
-   - Goes through all (non-C++) Components and non-Component classes marked with [Serializable]
-    - Using C++ it finds all fields in those classes. Fields and their references are stored in C++ classes.
-	  - Need to enumerate value type fields, or fields holding other [Serializable] structures, references to other Components, SceneObjects or Resources
-        - Plus arrays, and possibly C# List
-        - Considers attributes
-            - [Serialized] - Forces field to be serialized (If valid type)
-            - [NotSerialized] - Forced field not to be serialized
-            - By default all public members are serialized and private ones are not
-	  - Something like SerializableComponentInfo (per-component), SerializableObjectInfo(per-non-component), SerializablePlainField,
-	    SerializableArrayField, SerializableResourceField, SerializableGameObjectField, SerializableObjectField, etc.
- - Internally it holds a Map with name -> Serializable*Info mapping for every supported type
-   - User can query if type is supported or not, and retrieve the serialization info if needed
-   - Using the serialization info user can retrieve actual values from an instance easily
-   - Serializable*Info classes contain findField method that accepts a name and a type
-     - This is used for deserialization
- - Using Serializable*Info you can create a brand new instance of a Component or a [Serializable] non-component
+ TODO:
+  - Add support for generic Lists, and potentially dictionaries
+   - Be careful with current field array support, lists should probably be handled completely differently and shouldn't share that code
+ - Implement set/get methods for strings/resourceRefs/gameObjectRefs/serializableObjects
+ - Make SerializableObjectInfo IReflectable and create its RTTI
+ - In BsScriptEnginePlugin.cpp I create RuntimeScriptObjects class but never destroy it, for debug purposes. Remember to remove that.
+ - Need a class that will keep track of all instances of ScriptResource and ScriptGameObject
+   - Need to update existing createInstance methods
+ - Need a way to create SerializableObject - likely createInstance() method in SerializableObjectField
+
 
 ScriptComponent
  - C++ half of the C# component
@@ -44,6 +36,7 @@ ScriptComponentRTTI
     - Returns FieldId -> HGameObject
   - GetResourceFields
     - Returns FieldID -> HResource
+ - Make sure to scan all base classes as well
  - When serializing all those arrays are prepared in OnSerializatioStarted
  - When deserializing they are send to the object in OnDeserializationEnded
    - However existance for the fields is first checked by getting new copy of SerializableComponentInfo and seeing
@@ -76,13 +69,6 @@ TODO - Possibly flesh out and example with Resources or Gameobject references a 
 	   - Checking each type might be a bit slow, but normally we will be looking for an exact type
 	     so hopefully this will only matter when enumerating all components which shouldn't be during performance
 		 critical moments.
-
-Inspector
- - RuntimeScriptObjects::enumerateInspectable creates a list of all inspectable classes (Components and others marked with [Serializable]
-  - Returns a hierarchy very similar to Serializable*Info and their children (Likely re-use the same hierarchy but with different flags?)
-  - This information is then used to generate needed fields
-
- - Importer inspectors are special and custom-built and shouldn't be considered here
 
 TODO - When reloading scripts how to handle restoring references?
 TODO - When I destroy a Component, how will I refresh the inspector to let it know that something has changed

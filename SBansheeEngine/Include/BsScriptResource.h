@@ -9,5 +9,11 @@ namespace BansheeEngine
 	public:
 		virtual CM::HResource getNativeHandle() const = 0;
 		virtual void setNativeHandle(const CM::HResource& resource) = 0;
+
+	protected:
+		friend class ScriptResourceManager;
+
+		ScriptResource() {}
+		virtual ~ScriptResource() {}
 	};
 }

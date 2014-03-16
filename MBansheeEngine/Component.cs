@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public class Component : ScriptObject
+    public class Component : GameObject
     {
         public Component()
         {

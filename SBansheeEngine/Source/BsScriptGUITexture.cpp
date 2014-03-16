@@ -74,7 +74,6 @@ namespace BansheeEngine
 
 	void ScriptGUITexture::internal_destroyInstance(ScriptGUITexture* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

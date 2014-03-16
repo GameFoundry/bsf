@@ -68,7 +68,6 @@ namespace BansheeEngine
 
 	void ScriptGUILabel::internal_destroyInstance(ScriptGUILabel* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

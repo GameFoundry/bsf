@@ -50,7 +50,6 @@ namespace BansheeEngine
 
 	void ScriptGUIFlexibleSpace::internal_destroyInstance(ScriptGUIFlexibleSpace* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

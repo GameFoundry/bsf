@@ -70,7 +70,6 @@ namespace BansheeEngine
 
 	void ScriptGUIInputBox::internal_destroyInstance(ScriptGUIInputBox* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

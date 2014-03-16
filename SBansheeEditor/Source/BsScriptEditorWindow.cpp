@@ -69,7 +69,6 @@ namespace BansheeEditor
 		assert(iterFind == OpenScriptEditorWindows.end());
 #endif
 
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

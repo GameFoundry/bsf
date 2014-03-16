@@ -89,7 +89,6 @@ namespace BansheeEngine
 
 	void ScriptGUIListBox::internal_destroyInstance(ScriptGUIListBox* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

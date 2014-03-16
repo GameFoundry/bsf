@@ -83,7 +83,6 @@ namespace BansheeEngine
 
 	void ScriptGUIButton::internal_destroyInstance(ScriptGUIButton* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

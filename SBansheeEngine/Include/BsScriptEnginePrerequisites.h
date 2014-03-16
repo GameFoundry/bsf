@@ -20,6 +20,8 @@
 
 namespace BansheeEngine
 {
+	class ScriptResourceManager;
+	class ScriptResource;
 	class ScriptFont;
 	class ScriptSpriteTexture;
 	class ScriptTexture2D;
@@ -29,6 +31,7 @@ namespace BansheeEngine
 	class ScriptGUIArea;
 	class ScriptGUILayout;
 	class ScriptGUILabel;
+	class ScriptGameObject;
 	class ScriptComponent;
 	class ManagedComponent;
 

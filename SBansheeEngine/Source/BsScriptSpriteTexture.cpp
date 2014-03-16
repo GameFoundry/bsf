@@ -1,4 +1,5 @@
 #include "BsScriptSpriteTexture.h"
+#include "BsScriptResourceManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
@@ -30,16 +31,12 @@ namespace BansheeEngine
 
 	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance)
 	{
-		ScriptSpriteTexture* nativeInstance = new (cm_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(SpriteTexture::dummy()); // TODO - DUMMY CODE!
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		ScriptResourceManager::instance().createScriptSpriteTexture(instance, SpriteTexture::dummy()); // TODO - DUMMY CODE!
 	}
 
 	void ScriptSpriteTexture::internal_destroyInstance(ScriptSpriteTexture* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
-		cm_delete(nativeInstance);
+		ScriptResourceManager::instance().destroyScriptResource(nativeInstance);
 	}
 
 	void ScriptSpriteTexture::setNativeHandle(const HResource& resource) 

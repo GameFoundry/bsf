@@ -40,7 +40,6 @@ namespace BansheeEngine
 
 	void ScriptComponent::internal_destroyInstance(ScriptComponent* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

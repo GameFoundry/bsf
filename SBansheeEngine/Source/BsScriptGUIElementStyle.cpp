@@ -65,7 +65,6 @@ namespace BansheeEngine
 
 	void ScriptGUIElementStyle::internal_destroyInstance(ScriptGUIElementStyle* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 }

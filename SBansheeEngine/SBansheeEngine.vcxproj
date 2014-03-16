@@ -232,6 +232,7 @@
     <ClInclude Include="Include\BsScriptComponent.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
     <ClInclude Include="Include\BsScriptGameObject.h" />
+    <ClInclude Include="Include\BsScriptGameObjectManager.h" />
     <ClInclude Include="Include\BsScriptGUIButton.h" />
     <ClInclude Include="Include\BsScriptGUIFixedSpace.h" />
     <ClInclude Include="Include\BsScriptGUIFlexibleSpace.h" />
@@ -252,6 +253,7 @@
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
+    <ClInclude Include="Include\BsScriptResourceManager.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
@@ -262,6 +264,7 @@
     <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
+    <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
     <ClCompile Include="Source\BsScriptGUIButton.cpp" />
     <ClCompile Include="Source\BsScriptGUIFixedSpace.cpp" />
     <ClCompile Include="Source\BsScriptGUIFlexibleSpace.cpp" />
@@ -279,6 +282,7 @@
     <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
+    <ClCompile Include="Source\BsScriptResourceManager.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />

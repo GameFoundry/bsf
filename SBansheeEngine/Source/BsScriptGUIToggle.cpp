@@ -94,7 +94,6 @@ namespace BansheeEngine
 
 	void ScriptGUIToggle::internal_destroyInstance(ScriptGUIToggle* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

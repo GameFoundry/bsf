@@ -46,7 +46,6 @@ namespace BansheeEditor
 
 	void ScriptEditorGUI::internal_destroyInstance(ScriptEditorGUI* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

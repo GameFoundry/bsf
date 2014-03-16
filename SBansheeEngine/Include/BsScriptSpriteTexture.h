@@ -17,12 +17,15 @@ namespace BansheeEngine
 		void setNativeHandle(const CM::HResource& resource);
 
 	private:
+		friend class ScriptResourceManager;
+
 		static void internal_createInstance(MonoObject* instance);
 		static void internal_destroyInstance(ScriptSpriteTexture* nativeInstance);
 
 		static void initRuntimeData();
 
 		ScriptSpriteTexture(const HSpriteTexture& texture);
+		~ScriptSpriteTexture() {}
 
 		HSpriteTexture mTexture;
 	};

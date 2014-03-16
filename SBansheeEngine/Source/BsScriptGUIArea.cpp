@@ -91,7 +91,6 @@ namespace BansheeEngine
 
 	void ScriptGUIArea::internal_destroyInstance(ScriptGUIArea* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 

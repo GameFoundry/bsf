@@ -42,7 +42,6 @@ namespace BansheeEngine
 
 	void ScriptFont::internal_destroyInstance(ScriptFont* nativeInstance)
 	{
-		nativeInstance->destroyInstance();
 		cm_delete(nativeInstance);
 	}
 }
