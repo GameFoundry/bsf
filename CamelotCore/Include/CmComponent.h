@@ -20,6 +20,8 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Called once per frame on all components.
+		 * 			
+		 * @note	Internal method.
 		 */
 		virtual void update() = 0;
 
@@ -35,6 +37,8 @@ namespace CamelotFramework
 
 		Component(const HSceneObject& parent);
 		virtual ~Component();
+
+		virtual void onDestroyed() {}
 
 		HSceneObject mParent;
 	private:

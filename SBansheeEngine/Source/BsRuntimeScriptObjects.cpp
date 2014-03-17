@@ -8,6 +8,8 @@
 #include "BsMonoUtil.h"
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
+#include "BsScriptSceneObject.h"
+#include "BsScriptComponent.h"
 
 using namespace CamelotFramework;
 
@@ -322,14 +324,14 @@ namespace BansheeEngine
 
 	void SerializableFieldInfo::setSpriteTexture(MonoObject* obj, const HSpriteTexture& resource, UINT32 arrayIdx)
 	{
+		assert(mType == ScriptFieldType::SpriteTextureRef);
+
 		if(resource == nullptr)
 		{
 			setValue(obj, nullptr, arrayIdx);
 		}
 		else
 		{
-			assert(mType == ScriptFieldType::SpriteTextureRef);
-
 			ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(resource);
 			if(scriptResource == nullptr)
 				scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(resource);
@@ -355,30 +357,62 @@ namespace BansheeEngine
 	{
 		assert(mType == ScriptFieldType::SceneObjectRef);
 
-		// TODO
+		if(sceneObject == nullptr)
+		{
+			setValue(obj, nullptr, arrayIdx);
+		}
+		else
+		{
+			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObject);
+			if(scriptSceneObject == nullptr)
+				scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
+
+			MonoObject* managedInstance = scriptSceneObject->getManagedInstance();
+			setValue(obj, (void*)managedInstance, arrayIdx);
+		}
 	}
 
 	HSceneObject SerializableFieldInfo::getSceneObject(MonoObject* obj, UINT32 arrayIdx)
 	{
 		assert(mType == ScriptFieldType::SceneObjectRef);
 
-		// TODO
-		return HSceneObject();
+		MonoObject* managedInstance = (MonoObject*)getValue(obj, arrayIdx);
+		if(managedInstance == nullptr)
+			return HSceneObject();
+
+		ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(managedInstance);
+		return static_object_cast<SceneObject>(scriptSceneObject->getNativeHandle());
 	}
 
 	void SerializableFieldInfo::setComponent(MonoObject* obj, const HComponent& component, UINT32 arrayIdx)
 	{
 		assert(mType == ScriptFieldType::ComponentRef);
 
-		// TODO
+		if(component == nullptr)
+		{
+			setValue(obj, nullptr, arrayIdx);
+		}
+		else
+		{
+			ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(component);
+			if(scriptComponent == nullptr)
+				scriptComponent = ScriptGameObjectManager::instance().createScriptComponent(component);
+
+			MonoObject* managedInstance = scriptComponent->getManagedInstance();
+			setValue(obj, (void*)managedInstance, arrayIdx);
+		}
 	}
 
 	HComponent SerializableFieldInfo::getComponent(MonoObject* obj, UINT32 arrayIdx)
 	{
 		assert(mType == ScriptFieldType::ComponentRef);
 
-		// TODO
-		return HComponent();
+		MonoObject* managedInstance = (MonoObject*)getValue(obj, arrayIdx);
+		if(managedInstance == nullptr)
+			return HComponent();
+
+		ScriptComponent* scriptComponent = ScriptComponent::toNative(managedInstance);
+		return static_object_cast<Component>(scriptComponent->getNativeHandle());
 	}
 
 

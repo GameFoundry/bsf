@@ -2,32 +2,27 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "CmModule.h"
+#include <mono/jit/jit.h>
 
 namespace BansheeEngine
 {
 	class BS_SCR_BE_EXPORT ScriptGameObjectManager : public CM::Module<ScriptGameObjectManager>
 	{
 	public:
-		// TODO - Add create methods
+		ScriptGameObjectManager();
 
-		/**
-		 * @note Returns nullptr if script SceneObject doesn't exist.
-		 */
-		//ScriptSceneObject* getScriptSceneObject(CM::UINT64 id);
+		ScriptComponent* createScriptComponent(const CM::GameObjectHandle<ManagedComponent>& component);
+		ScriptSceneObject* createScriptSceneObject(const CM::HSceneObject& sceneObject);
+		ScriptSceneObject* createScriptSceneObject(MonoObject* existingInstance, const CM::HSceneObject& sceneObject);
 
-		/**
-		 * @note Returns nullptr if script Component doesn't exist.
-		 */
-		//ScriptComponent* getScriptComponent(CM::UINT64 id);
+		ScriptComponent* getScriptComponent(const CM::GameObjectHandle<ManagedComponent>& component);
+		ScriptSceneObject* getScriptSceneObject(const CM::HSceneObject& sceneObject);
 
-		/**
-		 * @note Returns nullptr if script GameObject doesn't exist.
-		 */
-		//ScriptGameObject* getScriptGameObject(CM::UINT64 id);
-
-		//void destroyScriptGameObject(ScriptGameObject* gameObject);
+		void destroyScriptGameObject(ScriptGameObject* gameObject);
 
 	private:
-		CM::UnorderedMap<CM::UINT64, ScriptGameObject*>::type mScriptResources;
+		CM::UnorderedMap<CM::UINT64, ScriptGameObject*>::type mScriptGameObjects;
+
+		MonoClass* mSceneObjectClass;
 	};
 }

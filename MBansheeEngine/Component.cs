@@ -5,14 +5,14 @@ namespace BansheeEngine
 {
     public class Component : GameObject
     {
-        public Component()
-        {
-            Internal_CreateInstance(this, GetType().Namespace, GetType().Name);
-        }
+        // Internal use only
+        protected Component()
+        { }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(Component instance, string ns, string type);
+        internal static extern Component Internal_AddComponent(SceneObject parent, string ns, string type);
 
-        private int dbgBase;
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern Component Internal_RemoveComponent(SceneObject parent, string ns, string type);
     }
 }

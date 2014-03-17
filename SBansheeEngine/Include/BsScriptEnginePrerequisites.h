@@ -32,6 +32,7 @@ namespace BansheeEngine
 	class ScriptGUILayout;
 	class ScriptGUILabel;
 	class ScriptGameObject;
+	class ScriptSceneObject;
 	class ScriptComponent;
 	class ManagedComponent;
 

@@ -387,6 +387,7 @@ namespace CamelotFramework
 			gSceneManager().notifyComponentRemoved((*iter));
 			GameObjectManager::instance().unregisterObject(component);
 
+			(*iter)->onDestroyed();
 			(*iter).destroy();
 			mComponents.erase(iter);
 		}

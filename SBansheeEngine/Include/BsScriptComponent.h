@@ -16,12 +16,16 @@ namespace BansheeEngine
 		virtual void setNativeHandle(const CM::HGameObject& gameObject);
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoString* ns, MonoString* typeName);
+		friend class ScriptGameObjectManager;
+
+		static MonoObject* internal_addComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName);
+		static void internal_removeComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName);
 		static void internal_destroyInstance(ScriptComponent* nativeInstance);
 
 		static void initRuntimeData();
 
 		ScriptComponent(const CM::GameObjectHandle<ManagedComponent>& managedComponent);
+		~ScriptComponent() {}
 
 		CM::GameObjectHandle<ManagedComponent> mManagedComponent;
 	};

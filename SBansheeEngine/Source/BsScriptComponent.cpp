@@ -1,9 +1,13 @@
 #include "BsScriptComponent.h"
+#include "BsScriptGameObjectManager.h"
 #include "BsScriptMeta.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
+#include "BsMonoUtil.h"
+#include "BsScriptSceneObject.h"
 #include "BsManagedComponent.h"
+#include "CmSceneObject.h"
 
 using namespace CamelotFramework;
 
@@ -24,23 +28,73 @@ namespace BansheeEngine
 
 	void ScriptComponent::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptComponent::internal_destroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_AddComponent", &ScriptComponent::internal_addComponent);
+		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptComponent::internal_destroyInstance);
 	}
 
-	void ScriptComponent::internal_createInstance(MonoObject* instance, MonoString* ns, MonoString* typeName)
+	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName)
 	{
-		// TODO - Just a placeholder
+		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
+		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
-		ScriptComponent* nativeInstance = new (cm_alloc<ScriptComponent>()) ScriptComponent(GameObjectHandle<ManagedComponent>());
-		nativeInstance->createInstance(instance);
+		String strNs = toString(MonoUtil::monoToWString(ns));
+		String strTypeName = toString(MonoUtil::monoToWString(typeName));
+		String fullTypeName = strNs + "." + strTypeName;
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		// We only allow single component per type
+		const Vector<HComponent>::type& mComponents = so->getComponents();
+		for(auto& component : mComponents)
+		{
+			if(component->getTypeId() == TID_ManagedComponent)
+			{
+				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+
+				if(managedComponent->getManagedFullTypeName() == fullTypeName)
+				{
+					LOGWRN("Attempting to add a component \"" + fullTypeName + "\" that already exists on SceneObject \"" + so->getName() + "\"");
+					return managedComponent->getManagedInstance();
+				}
+			}
+		}
+
+		GameObjectHandle<ManagedComponent> mc = so->addComponent<ManagedComponent>(strNs, strTypeName);
+		ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(mc);
+		
+		return nativeInstance->getManagedInstance();
+	}
+
+	void ScriptComponent::internal_removeComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName)
+	{
+		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
+		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+
+		String strNs = toString(MonoUtil::monoToWString(ns));
+		String strTypeName = toString(MonoUtil::monoToWString(typeName));
+		String fullTypeName = strNs + "." + strTypeName;
+
+		// We only allow single component per type
+		const Vector<HComponent>::type& mComponents = so->getComponents();
+		for(auto& component : mComponents)
+		{
+			if(component->getTypeId() == TID_ManagedComponent)
+			{
+				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+
+				if(managedComponent->getManagedFullTypeName() == fullTypeName)
+				{
+					managedComponent->destroy();
+					return;
+				}
+			}
+		}
+
+		LOGWRN("Attempting to remove a component \"" + fullTypeName + "\" that doesn't exists on SceneObject \"" + so->getName() + "\"");
 	}
 
 	void ScriptComponent::internal_destroyInstance(ScriptComponent* nativeInstance)
 	{
-		cm_delete(nativeInstance);
+		ScriptGameObjectManager::instance().destroyScriptGameObject(nativeInstance);
 	}
 
 	void ScriptComponent::setNativeHandle(const CM::HGameObject& gameObject)

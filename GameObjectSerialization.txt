@@ -4,16 +4,40 @@ TODO
  ---------------------------------------
  C# component serialization
 
- TODO:
-  - Add support for generic Lists, and potentially dictionaries
-   - Be careful with current field array support, lists should probably be handled completely differently and shouldn't share that code
- - Implement set/get methods for strings/resourceRefs/gameObjectRefs/serializableObjects
- - Make SerializableObjectInfo IReflectable and create its RTTI
- - In BsScriptEnginePlugin.cpp I create RuntimeScriptObjects class but never destroy it, for debug purposes. Remember to remove that.
- - Need a class that will keep track of all instances of ScriptResource and ScriptGameObject
-   - Need to update existing createInstance methods
- - Need a way to create SerializableObject - likely createInstance() method in SerializableObjectField
+Stage 1:
+ - Test if SceneObject/Component serialization works when managed components are used
+   - Ignore managed component fields for now
+ - Ensure non-existing types are handled
 
+Stage 2:
+ - Get managed component field serialization working
+ - SerializableObjectInfoRTTI
+ - Ignore arrays and collections
+   - But delete existing array code as its obsolete
+ - Don't ignore serializable objects
+
+Stage 3:
+ - Support for arrays & collections
+
+Stage 4:
+ - Polish: 
+     - Ensure that unknown components retain their field data so when they are no longer unknown their
+       data may be restored
+     - Get rid of ScriptObject::createInstance and replace it with parameter in constructor
+ - How to deal with components like Camera?
+ - A way to serialize any object into a Resource (and deserialize it from Resource)
+
+ARRAY/COLLECTION HANDLING
+ - Encode arrays/lists/dictionaries as specialized SerializableObjects.
+ - When decoding SerializableObjects I initialize SerializableObject with type name and namespace
+   - In case of arrays, multi-rank arrays, lists or dictionaries it will be the same
+   - createManagedInstance will instantiate a managed instance of that type
+   - Internally SerializableObjectRTTI will have special handling for arrays/lists/dictionaries
+     - Normally it would just query fields from RuntimeScriptObjects but now it will call: 
+       - RuntimeScriptObjects::getArrayFields, RuntimeScriptObjects::getListFields, etc.
+       - Dictionary entries will return special type containing two entries (or just std::pair)
+       - Multi-rank arrays will return a 1D list of entries but laid out in a specific manner so we can decode them back
+ - Remove my current way of handling arrays iz SerializableFieldInfo
 
 ScriptComponent
  - C++ half of the C# component
