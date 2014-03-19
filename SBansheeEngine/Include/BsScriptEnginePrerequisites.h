@@ -35,11 +35,30 @@ namespace BansheeEngine
 	class ScriptSceneObject;
 	class ScriptComponent;
 	class ManagedComponent;
+	class ManagedSerializationData;
+	class ScriptSerializableAssemblyInfo;
+	class ScriptSerializableObjectInfo;
+	class ScriptSerializableFieldInfo;
+	class ScriptSerializableFieldInfoPlain;
+	class ScriptSerializableFieldInfoArray;
 
 	enum TypeID_BansheeScript
 	{
-		TID_ManagedComponent = 50000
+		TID_ManagedComponent = 50000,
+		TID_ManagedSerializationData = 50001,
+		TID_SerializableAssemblyInfo = 50004,
+		TID_SerializableObjectInfo = 50005,
+		TID_SerializableFieldInfo = 50006,
+		TID_SerializableFieldInfoPlain = 50007,
+		TID_SerializableFieldInfoArray = 50008
 	};
 
 	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
+
+	typedef std::shared_ptr<ManagedSerializationData> ManagedSerializationDataPtr;
+	typedef std::shared_ptr<ScriptSerializableAssemblyInfo> ScriptSerializableAssemblyInfoPtr;
+	typedef std::shared_ptr<ScriptSerializableObjectInfo> ScriptSerializableObjectInfoPtr;
+	typedef std::shared_ptr<ScriptSerializableFieldInfo> ScriptSerializableFieldInfoPtr;
+	typedef std::shared_ptr<ScriptSerializableFieldInfoPlain> ScriptSerializableFieldInfoPlainPtr;
+	typedef std::shared_ptr<ScriptSerializableFieldInfoArray> ScriptSerializableFieldInfoArrayPtr;
 }

@@ -6,471 +6,11 @@
 #include "BsMonoClass.h"
 #include "BsMonoField.h"
 #include "BsMonoUtil.h"
-#include "BsScriptTexture2D.h"
-#include "BsScriptSpriteTexture.h"
-#include "BsScriptSceneObject.h"
-#include "BsScriptComponent.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	SerializableObjectInfo::SerializableObjectInfo()
-		:mMonoClass(nullptr), mTypeId(0)
-	{
-
-	}
-
-	SerializableObjectInfo::~SerializableObjectInfo()
-	{
-		for(auto& field : mFields)
-		{
-			cm_delete(field.second);
-		}
-	}
-
-	SerializableFieldInfo::SerializableFieldInfo()
-		:mMonoField(nullptr), mType(ScriptFieldType::Other), mFlags((ScriptFieldFlags)0), mFieldId(0)
-	{
-
-	}
-
-	SerializableFieldInfo::~SerializableFieldInfo()
-	{
-
-	}
-
-	bool SerializableFieldInfo::isArray()
-	{
-		return ((UINT32)mFlags & (UINT32)ScriptFieldFlags::Array) != 0;
-	}
-
-	bool SerializableFieldInfo::isReferenceType()
-	{
-		return (isArray() || mType == ScriptFieldType::TextureRef || mType == ScriptFieldType::SpriteTextureRef || 
-			mType == ScriptFieldType::SceneObjectRef || mType == ScriptFieldType::ComponentRef || mType == ScriptFieldType::SerializableObjectRef);
-	}
-
-	bool SerializableFieldInfo::isNull(MonoObject* obj)
-	{
-		assert(isReferenceType());
-
-		void* val = mMonoField->getValue(obj);
-
-		return val == nullptr;
-	}
-
-	void SerializableFieldInfo::setNull(MonoObject* obj)
-	{
-		assert(isReferenceType());
-
-		mMonoField->setValue(obj, nullptr);
-	}
-
-	UINT32 SerializableFieldInfo::getNumArrayElements(MonoObject* obj)
-	{
-		assert(((UINT32)mFlags & (UINT32)ScriptFieldFlags::Array) != 0);
-
-		MonoArray* array = reinterpret_cast<MonoArray*>(mMonoField->getValue(obj));
-		return (UINT32)mono_array_length(array);
-	}
-
-	void SerializableFieldInfo::setNumArrayElements(MonoObject* obj, UINT32 numElements, bool discardExisting)
-	{
-		assert(((UINT32)mFlags & (UINT32)ScriptFieldFlags::Array) != 0);
-
-		uint32_t lengths[1] = { numElements };
-
-		MonoArray* newArray = mono_array_new_full(MonoManager::instance().getDomain(), 
-			mMonoField->getType()->_getInternalClass(), (uintptr_t*)lengths, nullptr);
-
-		if(!discardExisting)
-		{
-			MonoArray* existingArray = reinterpret_cast<MonoArray*>(mMonoField->getValue(obj));
-			UINT32 existingArrayLength = (UINT32)mono_array_length(existingArray);
-
-			UINT32 elemsToCopy = std::min(existingArrayLength, numElements);
-			int32_t elemSize = mono_array_element_size(mMonoField->getType()->_getInternalClass());
-
-			for(UINT32 i = 0; i < elemsToCopy; i++)
-			{
-				void* existingValAddr = (void*)mono_array_addr_with_size(existingArray, elemSize, (uintptr_t)i);
-				void* newValAddr = (void*)mono_array_addr_with_size(newArray, elemSize, (uintptr_t)i);
-
-				memcpy(newValAddr, existingValAddr, elemSize);
-			}
-		}
-
-		mMonoField->setValue(obj, newArray);
-	}
-
-	void SerializableFieldInfo::setU8(MonoObject* obj, UINT8 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U8);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	UINT8 SerializableFieldInfo::getU8(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U8);
-
-		return *(UINT8*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setI8(MonoObject* obj, INT8 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I8);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	INT8 SerializableFieldInfo::getI8(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I8);
-
-		return *(INT8*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setU16(MonoObject* obj, UINT16 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U16);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	UINT16 SerializableFieldInfo::getU16(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U16);
-
-		return *(UINT16*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setI16(MonoObject* obj, INT16 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I16);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	INT16 SerializableFieldInfo::getI16(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I16);
-
-		return *(INT16*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setU32(MonoObject* obj, UINT32 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U32);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	UINT32 SerializableFieldInfo::getU32(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U32);
-
-		return *(UINT32*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setI32(MonoObject* obj, INT32 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I32);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	INT32 SerializableFieldInfo::getI32(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I32);
-
-		return *(INT32*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setU64(MonoObject* obj, UINT64 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U64);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	UINT64 SerializableFieldInfo::getU64(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::U64);
-
-		return *(UINT64*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setI64(MonoObject* obj, INT64 val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I64);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	INT64 SerializableFieldInfo::getI64(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::I64);
-
-		return *(INT64*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setBool(MonoObject* obj, bool val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Bool);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	bool SerializableFieldInfo::getBool(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Bool);
-
-		return *(bool*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setChar(MonoObject* obj, wchar_t val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Char);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	wchar_t SerializableFieldInfo::getChar(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Char);
-
-		return *(wchar_t*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setFloat(MonoObject* obj, float val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Float);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	float SerializableFieldInfo::getFloat(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Float);
-
-		return *(float*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setDouble(MonoObject* obj, double val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Double);
-
-		setValue(obj, &val, arrayIdx);
-	}
-
-	double SerializableFieldInfo::getDouble(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::Double);
-
-		return *(double*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setString(MonoObject* obj, const WString& val, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::String);
-
-		MonoString* str = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), val);
-		setValue(obj, str, arrayIdx);
-	}
-
-	WString SerializableFieldInfo::getString(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::String);
-
-		MonoString* str = (MonoString*)getValue(obj, arrayIdx);
-		if(str == nullptr)
-			return L"";
-
-		return MonoUtil::monoToWString(str);
-	}
-
-	void SerializableFieldInfo::setTexture(MonoObject* obj, const HTexture& resource, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::TextureRef);
-
-		if(resource == nullptr)
-		{
-			setValue(obj, nullptr, arrayIdx);
-		}
-		else
-		{
-			ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(resource);
-			if(scriptResource == nullptr)
-				scriptResource = ScriptResourceManager::instance().createScriptTexture(resource);
-
-			MonoObject* managedInstance = scriptResource->getManagedInstance();
-			setValue(obj, (void*)managedInstance, arrayIdx);
-		}
-	}
-
-	CM::HTexture SerializableFieldInfo::getTexture(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::TextureRef);
-
-		MonoObject* managedInstance = (MonoObject*)getValue(obj, arrayIdx);
-		if(managedInstance == nullptr)
-			return HTexture();
-
-		ScriptTexture2D* scriptResource = ScriptTexture2D::toNative(managedInstance);
-		return static_resource_cast<Texture>(scriptResource->getNativeHandle());
-	}
-
-	void SerializableFieldInfo::setSpriteTexture(MonoObject* obj, const HSpriteTexture& resource, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::SpriteTextureRef);
-
-		if(resource == nullptr)
-		{
-			setValue(obj, nullptr, arrayIdx);
-		}
-		else
-		{
-			ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(resource);
-			if(scriptResource == nullptr)
-				scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(resource);
-
-			MonoObject* managedInstance = scriptResource->getManagedInstance();
-			setValue(obj, (void*)managedInstance, arrayIdx);
-		}
-	}
-
-	HSpriteTexture SerializableFieldInfo::getSpriteTexture(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::SpriteTextureRef);
-
-		MonoObject* managedInstance = (MonoObject*)getValue(obj, arrayIdx);
-		if(managedInstance == nullptr)
-			return HTexture();
-
-		ScriptSpriteTexture* scriptResource = ScriptSpriteTexture::toNative(managedInstance);
-		return static_resource_cast<SpriteTexture>(scriptResource->getNativeHandle());
-	}
-
-	void SerializableFieldInfo::setSceneObject(MonoObject* obj, const HSceneObject& sceneObject, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::SceneObjectRef);
-
-		if(sceneObject == nullptr)
-		{
-			setValue(obj, nullptr, arrayIdx);
-		}
-		else
-		{
-			ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(sceneObject);
-			if(scriptSceneObject == nullptr)
-				scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
-
-			MonoObject* managedInstance = scriptSceneObject->getManagedInstance();
-			setValue(obj, (void*)managedInstance, arrayIdx);
-		}
-	}
-
-	HSceneObject SerializableFieldInfo::getSceneObject(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::SceneObjectRef);
-
-		MonoObject* managedInstance = (MonoObject*)getValue(obj, arrayIdx);
-		if(managedInstance == nullptr)
-			return HSceneObject();
-
-		ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(managedInstance);
-		return static_object_cast<SceneObject>(scriptSceneObject->getNativeHandle());
-	}
-
-	void SerializableFieldInfo::setComponent(MonoObject* obj, const HComponent& component, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::ComponentRef);
-
-		if(component == nullptr)
-		{
-			setValue(obj, nullptr, arrayIdx);
-		}
-		else
-		{
-			ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(component);
-			if(scriptComponent == nullptr)
-				scriptComponent = ScriptGameObjectManager::instance().createScriptComponent(component);
-
-			MonoObject* managedInstance = scriptComponent->getManagedInstance();
-			setValue(obj, (void*)managedInstance, arrayIdx);
-		}
-	}
-
-	HComponent SerializableFieldInfo::getComponent(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::ComponentRef);
-
-		MonoObject* managedInstance = (MonoObject*)getValue(obj, arrayIdx);
-		if(managedInstance == nullptr)
-			return HComponent();
-
-		ScriptComponent* scriptComponent = ScriptComponent::toNative(managedInstance);
-		return static_object_cast<Component>(scriptComponent->getNativeHandle());
-	}
-
-
-	void SerializableFieldInfo::setSerializableObject(MonoObject* obj, const MonoObject* value, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::SerializableObjectRef || mType == ScriptFieldType::SerializableObjectValue);
-
-		setValue(obj, (void*)value, arrayIdx);
-	}
-
-	MonoObject* SerializableFieldInfo::getSerializableObject(MonoObject* obj, UINT32 arrayIdx)
-	{
-		assert(mType == ScriptFieldType::SerializableObjectRef || mType == ScriptFieldType::SerializableObjectValue);
-
-		return (MonoObject*)getValue(obj, arrayIdx);
-	}
-
-	void SerializableFieldInfo::setValue(MonoObject* obj, void* val, CM::UINT32 arrayIdx)
-	{
-		if(isArray())
-		{
-			MonoArray* array = (MonoArray*)mMonoField->getValue(obj);
-			UINT32 elemSize = mono_array_element_size(mMonoField->getType()->_getInternalClass());
-
-			UINT32 numElems = (UINT32)mono_array_length(array);
-			assert(arrayIdx < numElems);
-
-			void* elemAddr = mono_array_addr_with_size(array, elemSize, arrayIdx);
-			memcpy(elemAddr, val, elemSize);
-		}
-		else
-		{
-			assert(arrayIdx == 0);
-
-			mMonoField->setValue(obj, val);
-		}
-	}
-
-	void* SerializableFieldInfo::getValue(MonoObject* obj, CM::UINT32 arrayIdx)
-	{
-		if(isArray())
-		{
-			MonoArray* array = (MonoArray*)mMonoField->getValue(obj);
-			UINT32 elemSize = mono_array_element_size(mMonoField->getType()->_getInternalClass());
-
-			UINT32 numElems = (UINT32)mono_array_length(array);
-			assert(arrayIdx < numElems);
-
-			return mono_array_addr_with_size(array, elemSize, arrayIdx);
-		}
-		else
-		{
-			assert(arrayIdx == 0);
-
-			return mMonoField->getValue(obj);
-		}
-	}
-
 	RuntimeScriptObjects::~RuntimeScriptObjects()
 	{
 
@@ -532,7 +72,9 @@ namespace BansheeEngine
 		if(curAssembly == nullptr)
 			return;
 
-		std::shared_ptr<SerializableAssemblyInfo> assemblyInfo = cm_shared_ptr<SerializableAssemblyInfo>();
+		std::shared_ptr<ScriptSerializableAssemblyInfo> assemblyInfo = cm_shared_ptr<ScriptSerializableAssemblyInfo>();
+		assemblyInfo->mName = assemblyName;
+
 		mAssemblyInfos[assemblyName] = assemblyInfo;
 
 		// Populate class data
@@ -541,15 +83,14 @@ namespace BansheeEngine
 		{
 			if((curClass->isSubClassOf(componentClass) || curClass->hasAttribute(serializableAttribute)) && curClass != componentClass)
 			{
-				std::shared_ptr<SerializableObjectInfo> objInfo = cm_shared_ptr<SerializableObjectInfo>();
+				std::shared_ptr<ScriptSerializableObjectInfo> objInfo = cm_shared_ptr<ScriptSerializableObjectInfo>();
 
 				objInfo->mTypeId = mUniqueTypeId++;
 				objInfo->mTypeName = curClass->getTypeName();
 				objInfo->mNamespace = curClass->getNamespace();
 				objInfo->mMonoClass = curClass;
 
-				String fullTypeName = objInfo->mNamespace + "." + objInfo->mTypeName;
-				assemblyInfo->mTypeNameToId[fullTypeName] = objInfo->mTypeId;
+				assemblyInfo->mTypeNameToId[objInfo->getFullTypeName()] = objInfo->mTypeId;
 				assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
 			}
 		}
@@ -557,7 +98,7 @@ namespace BansheeEngine
 		// Populate field data
 		for(auto& curClassInfo : assemblyInfo->mObjectInfos)
 		{
-			std::shared_ptr<SerializableObjectInfo> objInfo = curClassInfo.second;
+			std::shared_ptr<ScriptSerializableObjectInfo> objInfo = curClassInfo.second;
 
 			String fullTypeName = objInfo->mNamespace + "." + objInfo->mTypeName;
 			assemblyInfo->mTypeNameToId[fullTypeName] = objInfo->mTypeId;
@@ -571,23 +112,21 @@ namespace BansheeEngine
 				if(field->isStatic())
 					continue;
 
-				SerializableFieldInfo* fieldInfo = cm_new<SerializableFieldInfo>();
-				fieldInfo->mFieldId = mUniqueFieldId++;
-				fieldInfo->mMonoField = field;
-				fieldInfo->mName = field->getName();
-
 				MonoClass* fieldType = field->getType();
-				fieldInfo->mTypeNamespace = fieldType->getNamespace();
-				fieldInfo->mTypeName = fieldType->getTypeName();
-
 				MonoClass* fieldElementClass = fieldType;
 				MonoType* monoType = mono_class_get_type(fieldType->_getInternalClass());
 				int monoPrimitiveType = mono_type_get_type(monoType);
 
-				// TODO - We don't support nested arrays or multi-dimensional arrays
+				std::shared_ptr<ScriptSerializableFieldInfo> fieldInfo = nullptr;
+
 				bool isSupportedType = true;
 				if(monoPrimitiveType == MONO_TYPE_ARRAY) 
 				{
+					std::shared_ptr<ScriptSerializableFieldInfoArray> arrayFieldInfo = cm_shared_ptr<ScriptSerializableFieldInfoArray>();
+					arrayFieldInfo->mArrayDimensions = (UINT32)mono_class_get_rank(fieldType->_getInternalClass());
+
+					fieldInfo = arrayFieldInfo;
+
 					::MonoClass* elementClass = mono_class_get_element_class(fieldType->_getInternalClass());
 					if(elementClass != nullptr)
 					{
@@ -600,10 +139,25 @@ namespace BansheeEngine
 
 						fieldElementClass = MonoManager::instance().findClass(elementNs, elementTypeName);
 					}
-
-					fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Array);
 				}
-				// TODO - Also check for List and get its generic primitive
+				else if(monoPrimitiveType == MONO_TYPE_CLASS)
+				{
+					// TODO - Check for List or Dictionary
+					
+					// If not List/Dictionary
+					fieldInfo = cm_shared_ptr<ScriptSerializableFieldInfoPlain>();
+				}
+				else
+				{
+					fieldInfo = cm_shared_ptr<ScriptSerializableFieldInfoPlain>();
+				}
+
+				fieldInfo->mFieldId = mUniqueFieldId++;
+				fieldInfo->mMonoField = field;
+				fieldInfo->mName = field->getName();
+
+				fieldInfo->mTypeNamespace = fieldType->getNamespace();
+				fieldInfo->mTypeName = fieldType->getTypeName();
 
 				//  Determine field type
 				switch(monoPrimitiveType) // TODO - If array I need to get underlying type
@@ -658,7 +212,7 @@ namespace BansheeEngine
 						fieldInfo->mType = ScriptFieldType::ComponentRef;
 					else
 					{
-						if(hasSerializableObjectInfo(fieldElementClass->getNamespace(), fieldElementClass->getTypeName()))
+						if(hasSerializableObjectInfo(fieldElementClass->getNamespace(), fieldElementClass->getTypeName())) // TODO - Ensure this checks for array types
 							fieldInfo->mType = ScriptFieldType::SerializableObjectRef;
 					}
 
@@ -699,7 +253,7 @@ namespace BansheeEngine
 			MonoClass* base = curClass.second->mMonoClass->getBaseClass();
 			while(base != nullptr)
 			{
-				std::shared_ptr<SerializableObjectInfo> baseObjInfo;
+				std::shared_ptr<ScriptSerializableObjectInfo> baseObjInfo;
 				if(getSerializableObjectInfo(base->getNamespace(), base->getTypeName(), baseObjInfo))
 				{
 					curClass.second->mBaseClass = baseObjInfo;
@@ -718,7 +272,7 @@ namespace BansheeEngine
 		mAssemblyInfos.erase(assemblyName);
 	}
 
-	bool RuntimeScriptObjects::getSerializableObjectInfo(const CM::String& ns, const CM::String& typeName, std::shared_ptr<SerializableObjectInfo>& outInfo)
+	bool RuntimeScriptObjects::getSerializableObjectInfo(const CM::String& ns, const CM::String& typeName, std::shared_ptr<ScriptSerializableObjectInfo>& outInfo)
 	{
 		String fullName = ns + "." + typeName;
 		for(auto& curAssembly : mAssemblyInfos)

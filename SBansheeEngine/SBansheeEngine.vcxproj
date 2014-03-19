@@ -228,6 +228,8 @@
   <ItemGroup>
     <ClInclude Include="Include\BsManagedComponent.h" />
     <ClInclude Include="Include\BsManagedComponentRTTI.h" />
+    <ClInclude Include="Include\BsManagedSerializationData.h" />
+    <ClInclude Include="Include\BsManagedSerializationDataRTTI.h" />
     <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
@@ -255,13 +257,16 @@
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
+    <ClInclude Include="Include\BsScriptSerializableObjectInfoRTTI.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
     <ClInclude Include="Include\BsScriptGUIContent.h" />
+    <ClInclude Include="Include\BsScriptSerializableObjectInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsManagedComponent.cpp" />
+    <ClCompile Include="Source\BsManagedSerializationData.cpp" />
     <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
@@ -285,6 +290,7 @@
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableObjectInfo.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />
     <ClCompile Include="Source\BsScriptTexture2D.cpp" />

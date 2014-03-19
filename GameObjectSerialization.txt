@@ -2,6 +2,50 @@ TODO
  - Ability to break external references as a pre-processing step
 
  ---------------------------------------
+
+ Serialization:
+ - Starts in ManagedComponent
+ - in onSerializationStarted
+   - I find managed class from RuntimeScriptObject
+   - I query all fields of the class, and its base classes
+   - I add the fields in multiple internal arrays separated by type (int, float, ComponentRef, etc.)
+     - Those arrays are assigned to mRTTIData
+   - Data from those arrays is retrieved using various set/get functions in the RTTI using normal RTTI functionality
+     - Returned field data contains type id, field id and value
+   - I will also store a list of ReflectablePtrs pointing to SerializableObjectInfo describing each used type
+     - I should probably ensure that SerializableObjectInfo RTTI does not include children when serializing to prevent including useless data
+   - What happens when I encounter a SerializableObject?
+     - Instantiate a new instance of SerializableObject class and return a reference to it
+	   - It will have SerializableObjectRTTI which will do the same job ScriptComponentRTTI (this class) does
+	   - They should probably derive from same base class
+ - in onSerializationEnded
+   - I clear mRTTIData
+ - in onDeserializationStarted
+   - I create an empty set of arrays in mRTTIData
+ - in onDeserializationEnded
+   - TODO - Pretty much the exact reverse of above?
+    - But make sure to gracefully handle non-existing types
+
+In RuntimeScriptObjects I need to ensure I return array types when GetSerializableObjectInfo is called
+ - Arrays with different ranks should count as different types?
+ - Also make sure to properly deal with generic parameters
+ScriptSerializableFieldInfoArray doesn't support multi-dimensional arrays (need to figure out how to look those up in Mono)
+Consider removing mNamespace/mTypename from SerializableFieldInfo and adding a special SerializableFieldInfo for SerializableObjects
+
+Dictionaries:
+ - WIll need special SerializableFieldInfo for KeyValuePair
+
+ ---------------------------------------
+
+ Testing:
+ Set up a test case - Initially disable field serialization
+ - In C# create SceneObject("ManagedSO")
+  - Add to it DbgComponent
+ - Call a dummy C++ method (in ScriptSceneObject for example)
+   - C++ method calls clone() on the scene object and creates a new "ManagedSOClone" object and parents it as a child of current SO
+   - C# then retrieves a child and checks if the component is there
+
+ ---------------------------------------
  C# component serialization
 
 Stage 1:
