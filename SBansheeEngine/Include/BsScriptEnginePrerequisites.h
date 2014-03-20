@@ -35,30 +35,61 @@ namespace BansheeEngine
 	class ScriptSceneObject;
 	class ScriptComponent;
 	class ManagedComponent;
-	class ManagedSerializationData;
+	class ScriptSerializableFieldData;
+	class ScriptSerializableFieldKey;
+	class ScriptSerializableFieldDataEntry;
+	class ScriptSerializableTypeInfo;
+	class ScriptSerializableTypeInfoPrimitive;
+	class ScriptSerializableTypeInfoObject;
+	class ScriptSerializableTypeInfoArray;
+	class ScriptSerializableObject;
+	class ScriptSerializableArray;
 	class ScriptSerializableAssemblyInfo;
 	class ScriptSerializableObjectInfo;
 	class ScriptSerializableFieldInfo;
-	class ScriptSerializableFieldInfoPlain;
-	class ScriptSerializableFieldInfoArray;
 
 	enum TypeID_BansheeScript
 	{
 		TID_ManagedComponent = 50000,
-		TID_ManagedSerializationData = 50001,
+		TID_ScriptSerializableObject = 50001,
+		TID_ScriptSerializableArray = 50002,
 		TID_SerializableAssemblyInfo = 50004,
 		TID_SerializableObjectInfo = 50005,
 		TID_SerializableFieldInfo = 50006,
-		TID_SerializableFieldInfoPlain = 50007,
-		TID_SerializableFieldInfoArray = 50008
+		TID_SerializableTypeInfo = 50007,
+		TID_SerializableTypeInfoPrimitive = 50008,
+		TID_SerializableTypeInfoObject = 50009,
+		TID_SerializableTypeInfoArray = 50010,
+		TID_SerializableFieldData = 50011,
+		TID_SerializableFieldKey = 50012,
+		TID_SerializableFieldDataEntry = 50013,
+		TID_SerializableFieldDataBool = 50014,
+		TID_SerializableFieldDataChar = 50015,
+		TID_SerializableFieldDataI8 = 50016,
+		TID_SerializableFieldDataU8 = 50017,
+		TID_SerializableFieldDataI16 = 50018,
+		TID_SerializableFieldDataU16 = 50019,
+		TID_SerializableFieldDataI32 = 50020,
+		TID_SerializableFieldDataU32 = 50021,
+		TID_SerializableFieldDataI64 = 50022,
+		TID_SerializableFieldDataU64 = 50023,
+		TID_SerializableFieldDataFloat = 50024,
+		TID_SerializableFieldDataDouble = 50025,
+		TID_SerializableFieldDataString = 50026,
+		TID_SerializableFieldDataResourceRef = 50027,
+		TID_SerializableFieldDataGameObjectRef = 50028
 	};
 
 	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
 
-	typedef std::shared_ptr<ManagedSerializationData> ManagedSerializationDataPtr;
+	typedef std::shared_ptr<ScriptSerializableFieldData> ScriptSerializableFieldDataPtr;
+	typedef std::shared_ptr<ScriptSerializableFieldKey> ScriptSerializableFieldKeyPtr;
+	typedef std::shared_ptr<ScriptSerializableFieldDataEntry> ScriptSerializableFieldDataEntryPtr;
+	typedef std::shared_ptr<ScriptSerializableTypeInfo> ScriptSerializableTypeInfoPtr;
+	typedef std::shared_ptr<ScriptSerializableObject> ScriptSerializableObjectPtr;
+	typedef std::shared_ptr<ScriptSerializableArray> ScriptSerializableArrayPtr;
 	typedef std::shared_ptr<ScriptSerializableAssemblyInfo> ScriptSerializableAssemblyInfoPtr;
 	typedef std::shared_ptr<ScriptSerializableObjectInfo> ScriptSerializableObjectInfoPtr;
 	typedef std::shared_ptr<ScriptSerializableFieldInfo> ScriptSerializableFieldInfoPtr;
-	typedef std::shared_ptr<ScriptSerializableFieldInfoPlain> ScriptSerializableFieldInfoPlainPtr;
-	typedef std::shared_ptr<ScriptSerializableFieldInfoArray> ScriptSerializableFieldInfoArrayPtr;
+	typedef std::shared_ptr<ScriptSerializableTypeInfoArray> ScriptSerializableTypeInfoArrayPtr;
 }

@@ -228,8 +228,11 @@
   <ItemGroup>
     <ClInclude Include="Include\BsManagedComponent.h" />
     <ClInclude Include="Include\BsManagedComponentRTTI.h" />
-    <ClInclude Include="Include\BsManagedSerializationData.h" />
-    <ClInclude Include="Include\BsManagedSerializationDataRTTI.h" />
+    <ClInclude Include="Include\BsScriptSerializableArray.h" />
+    <ClInclude Include="Include\BsScriptSerializableArrayRTTI.h" />
+    <ClInclude Include="Include\BsScriptSerializableField.h" />
+    <ClInclude Include="Include\BsScriptSerializableFieldRTTI.h" />
+    <ClInclude Include="Include\BsScriptSerializableObject.h" />
     <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
@@ -258,6 +261,7 @@
     <ClInclude Include="Include\BsScriptResourceManager.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
     <ClInclude Include="Include\BsScriptSerializableObjectInfoRTTI.h" />
+    <ClInclude Include="Include\BsScriptSerializableObjectRTTI.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
     <ClInclude Include="Include\BsScriptTexture2D.h" />
@@ -266,7 +270,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsManagedComponent.cpp" />
-    <ClCompile Include="Source\BsManagedSerializationData.cpp" />
     <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
@@ -290,6 +293,9 @@
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableArray.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableField.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableObject.cpp" />
     <ClCompile Include="Source\BsScriptSerializableObjectInfo.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />

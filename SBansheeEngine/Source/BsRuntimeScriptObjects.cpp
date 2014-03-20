@@ -11,6 +11,14 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	RuntimeScriptObjects::RuntimeScriptObjects()
+		:mBaseTypesInitialized(false), mSerializableAttribute(nullptr), mNonSerializedAttribute(nullptr), 
+		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTextureClass(nullptr), mSpriteTextureClass(nullptr),
+		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr)
+	{
+
+	}
+
 	RuntimeScriptObjects::~RuntimeScriptObjects()
 	{
 
@@ -20,51 +28,9 @@ namespace BansheeEngine
 	{
 		clearScriptObjects(assemblyName);
 
-		// Get necessary classes for detecting needed class & field information
-		MonoAssembly* mscorlib = MonoManager::instance().getAssembly("mscorlib");
-		if(mscorlib == nullptr)
-			CM_EXCEPT(InvalidStateException, "mscorlib assembly is not loaded.");
+		if(!mBaseTypesInitialized)
+			initializeBaseTypes();
 
-		MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(BansheeEngineAssemblyName);
-		if(bansheeEngineAssembly == nullptr)
-			CM_EXCEPT(InvalidStateException, String(BansheeEngineAssemblyName) +  " assembly is not loaded.");
-
-		MonoClass* serializableAttribute = mscorlib->getClass("System", "SerializableAttribute");
-		if(serializableAttribute == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find SerializableAttribute managed class.");
-
-		MonoClass* nonSerializedAttribute = mscorlib->getClass("System", "NonSerializedAttribute");
-		if(nonSerializedAttribute == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find NonSerializedAttribute managed class.");
-
-		MonoClass* genericListClass = mscorlib->getClass("System", "List`1");
-		if(genericListClass == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find List<T> managed class.");
-
-		MonoClass* componentClass = bansheeEngineAssembly->getClass("BansheeEngine", "Component");
-		if(componentClass == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find Component managed class.");
-
-		MonoClass* sceneObjectClass = bansheeEngineAssembly->getClass("BansheeEngine", "SceneObject");
-		if(sceneObjectClass == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find SceneObject managed class.");
-
-		MonoClass* textureClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture2D");
-		if(textureClass == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find Texture2D managed class.");
-
-		MonoClass* spriteTextureClass = bansheeEngineAssembly->getClass("BansheeEngine", "SpriteTexture");
-		if(spriteTextureClass == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find SpriteTexture managed class.");
-
-		MonoClass* serializeFieldAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializeField");
-		if(serializeFieldAttribute == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find SerializeField managed class.");
-
-		MonoClass* hideInInspectorAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "HideInInspector");
-		if(hideInInspectorAttribute == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find HideInInspector managed class.");
-		
 		// Process all classes and fields
 		CM::UINT32 mUniqueTypeId = 1;
 
@@ -81,7 +47,7 @@ namespace BansheeEngine
 		const Vector<MonoClass*>::type& allClasses = curAssembly->getAllClasses();
 		for(auto& curClass : allClasses)
 		{
-			if((curClass->isSubClassOf(componentClass) || curClass->hasAttribute(serializableAttribute)) && curClass != componentClass)
+			if((curClass->isSubClassOf(mComponentClass) || curClass->hasAttribute(mSerializableAttribute)) && curClass != mComponentClass)
 			{
 				std::shared_ptr<ScriptSerializableObjectInfo> objInfo = cm_shared_ptr<ScriptSerializableObjectInfo>();
 
@@ -112,132 +78,27 @@ namespace BansheeEngine
 				if(field->isStatic())
 					continue;
 
-				MonoClass* fieldType = field->getType();
-				MonoClass* fieldElementClass = fieldType;
-				MonoType* monoType = mono_class_get_type(fieldType->_getInternalClass());
-				int monoPrimitiveType = mono_type_get_type(monoType);
-
-				std::shared_ptr<ScriptSerializableFieldInfo> fieldInfo = nullptr;
-
-				bool isSupportedType = true;
-				if(monoPrimitiveType == MONO_TYPE_ARRAY) 
-				{
-					std::shared_ptr<ScriptSerializableFieldInfoArray> arrayFieldInfo = cm_shared_ptr<ScriptSerializableFieldInfoArray>();
-					arrayFieldInfo->mArrayDimensions = (UINT32)mono_class_get_rank(fieldType->_getInternalClass());
-
-					fieldInfo = arrayFieldInfo;
-
-					::MonoClass* elementClass = mono_class_get_element_class(fieldType->_getInternalClass());
-					if(elementClass != nullptr)
-					{
-						monoType = mono_class_get_type(elementClass);
-						monoPrimitiveType = mono_type_get_type(monoType);
-
-						::MonoClass* elementClass = mono_type_get_class(monoType);
-						String elementNs = mono_class_get_namespace(elementClass);
-						String elementTypeName = mono_class_get_name(elementClass);
-
-						fieldElementClass = MonoManager::instance().findClass(elementNs, elementTypeName);
-					}
-				}
-				else if(monoPrimitiveType == MONO_TYPE_CLASS)
-				{
-					// TODO - Check for List or Dictionary
-					
-					// If not List/Dictionary
-					fieldInfo = cm_shared_ptr<ScriptSerializableFieldInfoPlain>();
-				}
-				else
-				{
-					fieldInfo = cm_shared_ptr<ScriptSerializableFieldInfoPlain>();
-				}
+				std::shared_ptr<ScriptSerializableFieldInfo> fieldInfo = cm_shared_ptr<ScriptSerializableFieldInfo>();
 
 				fieldInfo->mFieldId = mUniqueFieldId++;
-				fieldInfo->mMonoField = field;
 				fieldInfo->mName = field->getName();
-
-				fieldInfo->mTypeNamespace = fieldType->getNamespace();
-				fieldInfo->mTypeName = fieldType->getTypeName();
-
-				//  Determine field type
-				switch(monoPrimitiveType) // TODO - If array I need to get underlying type
-				{
-				case MONO_TYPE_BOOLEAN:
-					fieldInfo->mType = ScriptFieldType::Bool;
-					break;
-				case MONO_TYPE_CHAR:
-					fieldInfo->mType = ScriptFieldType::Char;
-					break;
-				case MONO_TYPE_I1:
-					fieldInfo->mType = ScriptFieldType::I8;
-					break;
-				case MONO_TYPE_U1:
-					fieldInfo->mType = ScriptFieldType::U8;
-					break;
-				case MONO_TYPE_I2:
-					fieldInfo->mType = ScriptFieldType::I16;
-					break;
-				case MONO_TYPE_U2:
-					fieldInfo->mType = ScriptFieldType::U16;
-					break;
-				case MONO_TYPE_I4:
-					fieldInfo->mType = ScriptFieldType::I32;
-					break;
-				case MONO_TYPE_U4:
-					fieldInfo->mType = ScriptFieldType::U32;
-					break;
-				case MONO_TYPE_I8:
-					fieldInfo->mType = ScriptFieldType::U64;
-					break;
-				case MONO_TYPE_U8:
-					fieldInfo->mType = ScriptFieldType::U64;
-					break;
-				case MONO_TYPE_STRING:
-					fieldInfo->mType = ScriptFieldType::String;
-					break;
-				case MONO_TYPE_R4:
-					fieldInfo->mType = ScriptFieldType::Float;
-					break;
-				case MONO_TYPE_R8:
-					fieldInfo->mType = ScriptFieldType::Double;
-					break;
-				case MONO_TYPE_CLASS:
-					if(fieldElementClass->isSubClassOf(textureClass))
-						fieldInfo->mType = ScriptFieldType::TextureRef;
-					else if(fieldElementClass->isSubClassOf(spriteTextureClass))
-						fieldInfo->mType = ScriptFieldType::SpriteTextureRef;
-					else if(fieldElementClass->isSubClassOf(sceneObjectClass))
-						fieldInfo->mType = ScriptFieldType::SceneObjectRef;
-					else if(fieldElementClass->isSubClassOf(componentClass))
-						fieldInfo->mType = ScriptFieldType::ComponentRef;
-					else
-					{
-						if(hasSerializableObjectInfo(fieldElementClass->getNamespace(), fieldElementClass->getTypeName())) // TODO - Ensure this checks for array types
-							fieldInfo->mType = ScriptFieldType::SerializableObjectRef;
-					}
-
-					break;
-				case MONO_TYPE_VALUETYPE:
-					if(hasSerializableObjectInfo(fieldElementClass->getNamespace(), fieldElementClass->getTypeName()))
-						fieldInfo->mType = ScriptFieldType::SerializableObjectValue;
-
-					break;
-				}
-
-				if(fieldInfo->mType != ScriptFieldType::Other)
+				fieldInfo->mMonoField = field;
+				fieldInfo->mTypeInfo = determineType(field->getType());
+				
+				if(fieldInfo->mTypeInfo != nullptr)
 				{
 					MonoFieldVisibility visibility = field->getVisibility();
 					if(visibility == MonoFieldVisibility::Public)
 					{
-						if(!field->hasAttribute(nonSerializedAttribute))
+						if(!field->hasAttribute(mNonSerializedAttribute))
 							fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
 
-						if(!field->hasAttribute(hideInInspectorAttribute))
+						if(!field->hasAttribute(mHideInInspectorAttribute))
 							fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Inspectable);
 					}
 					else
 					{
-						if(field->hasAttribute(serializeFieldAttribute))
+						if(field->hasAttribute(mSerializeFieldAttribute))
 							fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
 					}
 				}
@@ -267,9 +128,245 @@ namespace BansheeEngine
 		}
 	}
 
+	ScriptSerializableTypeInfoPtr RuntimeScriptObjects::determineType(MonoClass* monoClass)
+	{
+		if(!mBaseTypesInitialized)
+			CM_EXCEPT(InvalidStateException, "Calling determineType without previously initializing base types.");
+
+		MonoType* monoType = mono_class_get_type(monoClass->_getInternalClass());
+		int monoPrimitiveType = mono_type_get_type(monoType);
+
+		//  Determine field type
+		switch(monoPrimitiveType)
+		{
+		case MONO_TYPE_BOOLEAN:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::Bool;
+				return typeInfo;
+			}
+		case MONO_TYPE_CHAR:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::Char;
+				return typeInfo;
+			}
+		case MONO_TYPE_I1:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::I8;
+				return typeInfo;
+			}
+		case MONO_TYPE_U1:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::U8;
+				return typeInfo;
+			}
+		case MONO_TYPE_I2:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::I16;
+				return typeInfo;
+			}
+		case MONO_TYPE_U2:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::U16;
+				return typeInfo;
+			}
+		case MONO_TYPE_I4:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::I32;
+				return typeInfo;
+			}
+		case MONO_TYPE_U4:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::U32;
+				return typeInfo;
+			}
+		case MONO_TYPE_I8:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::I64;
+				return typeInfo;
+			}
+		case MONO_TYPE_U8:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::U64;
+				return typeInfo;
+			}
+		case MONO_TYPE_STRING:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::String;
+				return typeInfo;
+			}
+		case MONO_TYPE_R4:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::Float;
+				return typeInfo;
+			}
+		case MONO_TYPE_R8:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::Double;
+				return typeInfo;
+			}
+		case MONO_TYPE_CLASS:
+			if(monoClass->isSubClassOf(mTextureClass))
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::TextureRef;
+				return typeInfo;
+			}
+			else if(monoClass->isSubClassOf(mSpriteTextureClass))
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::SpriteTextureRef;
+				return typeInfo;
+			}
+			else if(monoClass->isSubClassOf(mSceneObjectClass))
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::SceneObjectRef;
+				return typeInfo;
+			}
+			else if(monoClass->isSubClassOf(mComponentClass))
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoPrimitive> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+				typeInfo->mType = ScriptPrimitiveType::ComponentRef;
+				return typeInfo;
+			}
+			else
+			{
+				if(hasSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName()))
+				{
+					std::shared_ptr<ScriptSerializableTypeInfoObject> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoObject>();
+					typeInfo->mTypeNamespace = monoClass->getNamespace();
+					typeInfo->mTypeName = monoClass->getTypeName();
+
+					return typeInfo;
+				}
+				else
+				{
+					// TODO - Later check for List or Dictionary here
+				}
+			}
+
+			break;
+		case MONO_TYPE_VALUETYPE:
+			if(hasSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName()))
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoObject> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoObject>();
+				typeInfo->mTypeNamespace = monoClass->getNamespace();
+				typeInfo->mTypeName = monoClass->getTypeName();
+
+				return typeInfo;
+			}
+
+			break;
+		case MONO_TYPE_ARRAY:
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoArray> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoArray>();
+
+				::MonoClass* elementClass = mono_class_get_element_class(monoClass->_getInternalClass());
+				if(elementClass != nullptr)
+				{
+					monoType = mono_class_get_type(elementClass);
+					monoPrimitiveType = mono_type_get_type(monoType);
+
+					::MonoClass* elementClass = mono_type_get_class(monoType);
+					String elementNs = mono_class_get_namespace(elementClass);
+					String elementTypeName = mono_class_get_name(elementClass);
+
+					MonoClass* monoElementClass = MonoManager::instance().findClass(elementNs, elementTypeName);
+					if(monoElementClass != nullptr)
+						typeInfo->mElementType = determineType(monoElementClass);
+				}
+
+				typeInfo->mRank = (UINT32)mono_class_get_rank(monoClass->_getInternalClass());
+
+				return typeInfo;
+			}
+		}
+
+		return nullptr;
+	}
+
 	void RuntimeScriptObjects::clearScriptObjects(const CM::String& assemblyName)
 	{
 		mAssemblyInfos.erase(assemblyName);
+
+		mBaseTypesInitialized = false;
+
+		mSystemArrayClass = nullptr;
+
+		mSerializableAttribute = nullptr;
+		mNonSerializedAttribute = nullptr;
+
+		mComponentClass = nullptr;
+		mSceneObjectClass = nullptr;
+
+		mTextureClass = nullptr;
+		mSpriteTextureClass = nullptr;
+
+		mSerializeFieldAttribute = nullptr;
+		mHideInInspectorAttribute = nullptr;
+	}
+
+	void RuntimeScriptObjects::initializeBaseTypes()
+	{
+		// Get necessary classes for detecting needed class & field information
+		MonoAssembly* mscorlib = MonoManager::instance().getAssembly("mscorlib");
+		if(mscorlib == nullptr)
+			CM_EXCEPT(InvalidStateException, "mscorlib assembly is not loaded.");
+
+		MonoAssembly* bansheeEngineAssembly = MonoManager::instance().getAssembly(BansheeEngineAssemblyName);
+		if(bansheeEngineAssembly == nullptr)
+			CM_EXCEPT(InvalidStateException, String(BansheeEngineAssemblyName) +  " assembly is not loaded.");
+
+		mSystemArrayClass = mscorlib->getClass("System", "Array");
+		if(mSystemArrayClass == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find System.Array managed class.");
+
+		mSerializableAttribute = mscorlib->getClass("System", "SerializableAttribute");
+		if(mSerializableAttribute == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find SerializableAttribute managed class.");
+
+		mNonSerializedAttribute = mscorlib->getClass("System", "NonSerializedAttribute");
+		if(mNonSerializedAttribute == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find NonSerializedAttribute managed class.");
+
+		mComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "Component");
+		if(mComponentClass == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find Component managed class.");
+
+		mSceneObjectClass = bansheeEngineAssembly->getClass("BansheeEngine", "SceneObject");
+		if(mSceneObjectClass == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find SceneObject managed class.");
+
+		mTextureClass = bansheeEngineAssembly->getClass("BansheeEngine", "Texture2D");
+		if(mTextureClass == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find Texture2D managed class.");
+
+		mSpriteTextureClass = bansheeEngineAssembly->getClass("BansheeEngine", "SpriteTexture");
+		if(mSpriteTextureClass == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find SpriteTexture managed class.");
+
+		mSerializeFieldAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializeField");
+		if(mSerializeFieldAttribute == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find SerializeField managed class.");
+
+		mHideInInspectorAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "HideInInspector");
+		if(mHideInInspectorAttribute == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find HideInInspector managed class.");
+
+		mBaseTypesInitialized = true;
 	}
 
 	bool RuntimeScriptObjects::getSerializableObjectInfo(const CM::String& ns, const CM::String& typeName, std::shared_ptr<ScriptSerializableObjectInfo>& outInfo)
@@ -300,5 +397,14 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	bool RuntimeScriptObjects::isArray(MonoObject* object)
+	{
+		if(!mBaseTypesInitialized)
+			CM_EXCEPT(InvalidStateException, "Calling isArray without previously initializing base types.");
+
+		::MonoClass* monoClass = mono_object_get_class(object);
+		return mono_class_is_subclass_of(monoClass, mSystemArrayClass->_getInternalClass(), false) != 0;
 	}
 }

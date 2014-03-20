@@ -114,16 +114,28 @@
     <ClInclude Include="Include\BsScriptSceneObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsManagedSerializationData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsManagedSerializationDataRTTI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptSerializableObjectInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsScriptSerializableObjectInfoRTTI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableObjectRTTI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableArrayRTTI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableFieldRTTI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -212,10 +224,16 @@
     <ClCompile Include="Source\BsScriptSceneObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsManagedSerializationData.cpp">
+    <ClCompile Include="Source\BsScriptSerializableObjectInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptSerializableObjectInfo.cpp">
+    <ClCompile Include="Source\BsScriptSerializableObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptSerializableArray.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptSerializableField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

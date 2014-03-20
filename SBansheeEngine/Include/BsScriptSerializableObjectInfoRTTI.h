@@ -29,14 +29,14 @@ namespace BansheeEngine
 			return iter->second;
 		}
 
-		void setSerializableObjectInfo(ScriptSerializableAssemblyInfo* obj, UINT32 idx, ScriptSerializableObjectInfoPtr val) 
+		void setSerializableObjectInfo(ScriptSerializableAssemblyInfo* obj, CM::UINT32 idx, ScriptSerializableObjectInfoPtr val) 
 		{ 
 			obj->mTypeNameToId[val->getFullTypeName()] = val->mTypeId;
 			obj->mObjectInfos[val->mTypeId] = val;
 		}
 		
-		UINT32 getSerializableObjectInfoArraySize(ScriptSerializableAssemblyInfo* obj) { return (UINT32)obj->mObjectInfos.size(); }
-		void setSerializableObjectInfoArraySize(ScriptSerializableAssemblyInfo* obj, UINT32 size) {  }
+		CM::UINT32 getSerializableObjectInfoArraySize(ScriptSerializableAssemblyInfo* obj) { return (CM::UINT32)obj->mObjectInfos.size(); }
+		void setSerializableObjectInfoArraySize(ScriptSerializableAssemblyInfo* obj, CM::UINT32 size) {  }
 
 	public:
 		ScriptSerializableAssemblyInfoRTTI()
@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ScriptSerializableAssemblyInfo>();
+			return CM::cm_shared_ptr<ScriptSerializableAssemblyInfo>();
 		}
 	};
 
@@ -116,14 +116,14 @@ namespace BansheeEngine
 			return iter->second;
 		}
 
-		void setSerializableFieldInfo(ScriptSerializableObjectInfo* obj, UINT32 idx, ScriptSerializableFieldInfoPtr val) 
+		void setSerializableFieldInfo(ScriptSerializableObjectInfo* obj, CM::UINT32 idx, ScriptSerializableFieldInfoPtr val) 
 		{ 
 			obj->mFieldNameToId[val->mName] = val->mFieldId;
 			obj->mFields[val->mFieldId] = val;
 		}
 
-		UINT32 getSerializableFieldInfoArraySize(ScriptSerializableObjectInfo* obj) { return (UINT32)obj->mFields.size(); }
-		void setSerializableFieldInfoArraySize(ScriptSerializableObjectInfo* obj, UINT32 size) {  }
+		CM::UINT32 getSerializableFieldInfoArraySize(ScriptSerializableObjectInfo* obj) { return (CM::UINT32)obj->mFields.size(); }
+		void setSerializableFieldInfoArraySize(ScriptSerializableObjectInfo* obj, CM::UINT32 size) {  }
 
 	public:
 		ScriptSerializableObjectInfoRTTI()
@@ -151,31 +151,21 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ScriptSerializableObjectInfo>();
+			return CM::cm_shared_ptr<ScriptSerializableObjectInfo>();
 		}
 	};
 
 	class BS_SCR_BE_EXPORT ScriptSerializableFieldInfoRTTI : public CM::RTTIType<ScriptSerializableFieldInfo, CM::IReflectable, ScriptSerializableFieldInfoRTTI>
 	{
 	private:
-		CM::String& getTypeNamespace(ScriptSerializableFieldInfo* obj)
+		ScriptSerializableTypeInfoPtr getTypeInfo(ScriptSerializableFieldInfo* obj)
 		{
-			return obj->mTypeNamespace;
+			return obj->mTypeInfo;
 		}
 
-		void setTypeNamespace(ScriptSerializableFieldInfo* obj, CM::String& val)
+		void setTypeInfo(ScriptSerializableFieldInfo* obj, ScriptSerializableTypeInfoPtr val)
 		{
-			obj->mTypeNamespace = val;
-		}
-
-		CM::String& getTypeName(ScriptSerializableFieldInfo* obj)
-		{
-			return obj->mTypeName;
-		}
-
-		void setTypeName(ScriptSerializableFieldInfo* obj, CM::String& val)
-		{
-			obj->mTypeName = val;
+			obj->mTypeInfo = val;
 		}
 
 		CM::String& getName(ScriptSerializableFieldInfo* obj)
@@ -200,9 +190,7 @@ namespace BansheeEngine
 
 		CM::UINT32& getFlags(ScriptSerializableFieldInfo* obj)
 		{
-			CM::UINT32 flags = (CM::UINT32)obj->mFlags;
-
-			return flags;
+			return (CM::UINT32&)obj->mFlags;
 		}
 
 		void setFlags(ScriptSerializableFieldInfo* obj, CM::UINT32& val)
@@ -210,27 +198,13 @@ namespace BansheeEngine
 			obj->mFlags = (ScriptFieldFlags)val;
 		}
 
-		CM::UINT32& getType(ScriptSerializableFieldInfo* obj)
-		{
-			CM::UINT32 flags = (CM::UINT32)obj->mType;
-
-			return flags;
-		}
-
-		void setType(ScriptSerializableFieldInfo* obj, CM::UINT32& val)
-		{
-			obj->mType = (ScriptFieldType)val;
-		}
-
 	public:
 		ScriptSerializableFieldInfoRTTI()
 		{
 			addPlainField("mName", 0, &ScriptSerializableFieldInfoRTTI::getName, &ScriptSerializableFieldInfoRTTI::setName);
-			addPlainField("mTypeNamespace", 1, &ScriptSerializableFieldInfoRTTI::getTypeNamespace, &ScriptSerializableFieldInfoRTTI::setTypeNamespace);
-			addPlainField("mTypeName", 2, &ScriptSerializableFieldInfoRTTI::getTypeName, &ScriptSerializableFieldInfoRTTI::setTypeName);
-			addPlainField("mFieldId", 3, &ScriptSerializableFieldInfoRTTI::getFieldId, &ScriptSerializableFieldInfoRTTI::setFieldId);
-			addPlainField("mFlags", 4, &ScriptSerializableFieldInfoRTTI::getFlags, &ScriptSerializableFieldInfoRTTI::setFlags);
-			addPlainField("mType", 5, &ScriptSerializableFieldInfoRTTI::getType, &ScriptSerializableFieldInfoRTTI::setType);
+			addReflectablePtrField("mTypeInfo", 1, &ScriptSerializableFieldInfoRTTI::getTypeInfo, &ScriptSerializableFieldInfoRTTI::setTypeInfo);
+			addPlainField("mFieldId", 2, &ScriptSerializableFieldInfoRTTI::getFieldId, &ScriptSerializableFieldInfoRTTI::setFieldId);
+			addPlainField("mFlags", 3, &ScriptSerializableFieldInfoRTTI::getFlags, &ScriptSerializableFieldInfoRTTI::setFlags);
 		}
 
 		virtual const CM::String& getRTTIName()
@@ -246,61 +220,164 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			CM_EXCEPT(CM::InvalidStateException, "Cannot instantiate an abstract class.");
+			return CM::cm_shared_ptr<ScriptSerializableFieldInfo>();
 		}
 	};
 
-	class BS_SCR_BE_EXPORT ScriptSerializableFieldInfoPlainRTTI : public CM::RTTIType<ScriptSerializableFieldInfoPlain, ScriptSerializableFieldInfo, ScriptSerializableFieldInfoPlainRTTI>
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoRTTI : public CM::RTTIType<ScriptSerializableTypeInfo, CM::IReflectable, ScriptSerializableTypeInfoRTTI>
 	{
 	private:
 
 	public:
-		ScriptSerializableFieldInfoPlainRTTI()
+		ScriptSerializableTypeInfoRTTI()
 		{
 
 		}
 
 		virtual const CM::String& getRTTIName()
 		{
-			static CM::String name = "ScriptSerializableFieldInfoPlain";
+			static CM::String name = "ScriptSerializableTypeInfo";
 			return name;
 		}
 
 		virtual CM::UINT32 getRTTIId()
 		{
-			return TID_SerializableFieldInfoPlain;
+			return TID_SerializableTypeInfo;
 		}
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ScriptSerializableFieldInfoPlain>();
+			return CM::cm_shared_ptr<ScriptSerializableTypeInfo>();
 		}
 	};
 
-	class BS_SCR_BE_EXPORT ScriptSerializableFieldInfoArrayRTTI : public CM::RTTIType<ScriptSerializableFieldInfoArray, ScriptSerializableFieldInfo, ScriptSerializableFieldInfoArrayRTTI>
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoPrimitiveRTTI : public CM::RTTIType<ScriptSerializableTypeInfoPrimitive, ScriptSerializableTypeInfo, ScriptSerializableTypeInfoPrimitiveRTTI>
 	{
 	private:
+		ScriptPrimitiveType& getType(ScriptSerializableTypeInfoPrimitive* obj)
+		{
+			return obj->mType;
+		}
+
+		void setType(ScriptSerializableTypeInfoPrimitive* obj, ScriptPrimitiveType& val)
+		{
+			obj->mType = val;
+		}
 
 	public:
-		ScriptSerializableFieldInfoArrayRTTI()
+		ScriptSerializableTypeInfoPrimitiveRTTI()
 		{
-
+			addPlainField("mType", 0, &ScriptSerializableTypeInfoPrimitiveRTTI::getType, &ScriptSerializableTypeInfoPrimitiveRTTI::setType);
 		}
 
 		virtual const CM::String& getRTTIName()
 		{
-			static CM::String name = "ScriptSerializableFieldInfoArray";
+			static CM::String name = "ScriptSerializableTypeInfoPrimitive";
 			return name;
 		}
 
 		virtual CM::UINT32 getRTTIId()
 		{
-			return TID_SerializableFieldInfoArray;
+			return TID_SerializableTypeInfoPrimitive;
 		}
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ScriptSerializableFieldInfoArray>();
+			return CM::cm_shared_ptr<ScriptSerializableTypeInfoPrimitive>();
+		}
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoObjectRTTI : public CM::RTTIType<ScriptSerializableTypeInfoObject, ScriptSerializableTypeInfo, ScriptSerializableTypeInfoObjectRTTI>
+	{
+	private:
+		CM::String& getTypeNamespace(ScriptSerializableTypeInfoObject* obj)
+		{
+			return obj->mTypeNamespace;
+		}
+
+		void setTypeNamespace(ScriptSerializableTypeInfoObject* obj, CM::String& val)
+		{
+			obj->mTypeNamespace = val;
+		}
+
+		CM::String& getTypeName(ScriptSerializableTypeInfoObject* obj)
+		{
+			return obj->mTypeName;
+		}
+
+		void setTypeName(ScriptSerializableTypeInfoObject* obj, CM::String& val)
+		{
+			obj->mTypeName = val;
+		}
+
+	public:
+		ScriptSerializableTypeInfoObjectRTTI()
+		{
+			addPlainField("mTypeName", 0, &ScriptSerializableTypeInfoObjectRTTI::getTypeName, &ScriptSerializableTypeInfoObjectRTTI::setTypeName);
+			addPlainField("mTypeNamespace", 1, &ScriptSerializableTypeInfoObjectRTTI::getTypeNamespace, &ScriptSerializableTypeInfoObjectRTTI::setTypeNamespace);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "ScriptSerializableTypeInfoObject";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableTypeInfoObject;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableTypeInfoObject>();
+		}
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoArrayRTTI : public CM::RTTIType<ScriptSerializableTypeInfoArray, ScriptSerializableTypeInfo, ScriptSerializableTypeInfoArrayRTTI>
+	{
+	private:
+		ScriptSerializableTypeInfoPtr getElementType(ScriptSerializableTypeInfoArray* obj)
+		{
+			return obj->mElementType;
+		}
+
+		void setElementType(ScriptSerializableTypeInfoArray* obj, ScriptSerializableTypeInfoPtr val)
+		{
+			obj->mElementType = val;
+		}
+
+		CM::UINT32& getRank(ScriptSerializableTypeInfoArray* obj)
+		{
+			return obj->mRank;
+		}
+
+		void setRank(ScriptSerializableTypeInfoArray* obj, CM::UINT32& val)
+		{
+			obj->mRank = val;
+		}
+
+	public:
+		ScriptSerializableTypeInfoArrayRTTI()
+		{
+			addReflectablePtrField("mElementType", 0, &ScriptSerializableTypeInfoArrayRTTI::getElementType, &ScriptSerializableTypeInfoArrayRTTI::setElementType);
+			addPlainField("mRank", 1, &ScriptSerializableTypeInfoArrayRTTI::getRank, &ScriptSerializableTypeInfoArrayRTTI::setRank);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "ScriptSerializableTypeInfoArray";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableTypeInfoArray;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableTypeInfoArray>();
 		}
 	};
 }
