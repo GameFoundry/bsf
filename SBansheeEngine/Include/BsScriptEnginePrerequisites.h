@@ -77,7 +77,9 @@ namespace BansheeEngine
 		TID_SerializableFieldDataDouble = 50025,
 		TID_SerializableFieldDataString = 50026,
 		TID_SerializableFieldDataResourceRef = 50027,
-		TID_SerializableFieldDataGameObjectRef = 50028
+		TID_SerializableFieldDataGameObjectRef = 50028,
+		TID_SerializableFieldDataObject = 50029,
+		TID_SerializableFieldDataArray = 50030
 	};
 
 	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
@@ -86,6 +88,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ScriptSerializableFieldKey> ScriptSerializableFieldKeyPtr;
 	typedef std::shared_ptr<ScriptSerializableFieldDataEntry> ScriptSerializableFieldDataEntryPtr;
 	typedef std::shared_ptr<ScriptSerializableTypeInfo> ScriptSerializableTypeInfoPtr;
+	typedef std::shared_ptr<ScriptSerializableTypeInfoObject> ScriptSerializableTypeInfoObjectPtr;
 	typedef std::shared_ptr<ScriptSerializableObject> ScriptSerializableObjectPtr;
 	typedef std::shared_ptr<ScriptSerializableArray> ScriptSerializableArrayPtr;
 	typedef std::shared_ptr<ScriptSerializableAssemblyInfo> ScriptSerializableAssemblyInfoPtr;

@@ -67,24 +67,14 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableObjectInfoRTTI : public CM::RTTIType<ScriptSerializableObjectInfo, CM::IReflectable, ScriptSerializableObjectInfoRTTI>
 	{
 	private:
-		CM::String& getNamespace(ScriptSerializableObjectInfo* obj)
+		ScriptSerializableTypeInfoObjectPtr getTypeInfo(ScriptSerializableObjectInfo* obj)
 		{
-			return obj->mNamespace;
+			return obj->mTypeInfo;
 		}
 
-		void setNamespace(ScriptSerializableObjectInfo* obj, CM::String& val)
+		void setTypeInfo(ScriptSerializableObjectInfo* obj, ScriptSerializableTypeInfoObjectPtr val)
 		{
-			obj->mNamespace = val;
-		}
-
-		CM::String& getTypename(ScriptSerializableObjectInfo* obj)
-		{
-			return obj->mTypeName;
-		}
-
-		void setTypename(ScriptSerializableObjectInfo* obj, CM::String& val)
-		{
-			obj->mTypeName = val;
+			obj->mTypeInfo = val;
 		}
 
 		CM::UINT32& getTypeId(ScriptSerializableObjectInfo* obj)
@@ -99,7 +89,7 @@ namespace BansheeEngine
 
 		ScriptSerializableObjectInfoPtr getBaseClass(ScriptSerializableObjectInfo* obj)
 		{
-			return obj->mBaseClass.lock();
+			return obj->mBaseClass;
 		}
 
 		void setBaseClass(ScriptSerializableObjectInfo* obj, ScriptSerializableObjectInfoPtr val)
@@ -128,12 +118,11 @@ namespace BansheeEngine
 	public:
 		ScriptSerializableObjectInfoRTTI()
 		{
-			addPlainField("mNamespace", 0, &ScriptSerializableObjectInfoRTTI::getNamespace, &ScriptSerializableObjectInfoRTTI::setNamespace);
-			addPlainField("mTypename", 1, &ScriptSerializableObjectInfoRTTI::getTypename, &ScriptSerializableObjectInfoRTTI::setTypename);
-			addPlainField("mTypeId", 2, &ScriptSerializableObjectInfoRTTI::getTypeId, &ScriptSerializableObjectInfoRTTI::setTypeId);
-			addReflectablePtrField("mBaseClass", 3, &ScriptSerializableObjectInfoRTTI::getBaseClass, &ScriptSerializableObjectInfoRTTI::setBaseClass);
+			addReflectablePtrField("mTypeInfo", 0, &ScriptSerializableObjectInfoRTTI::getTypeInfo, &ScriptSerializableObjectInfoRTTI::setTypeInfo);
+			addPlainField("mTypeId", 1, &ScriptSerializableObjectInfoRTTI::getTypeId, &ScriptSerializableObjectInfoRTTI::setTypeId);
+			addReflectablePtrField("mBaseClass", 2, &ScriptSerializableObjectInfoRTTI::getBaseClass, &ScriptSerializableObjectInfoRTTI::setBaseClass);
 
-			addReflectablePtrArrayField("mFields", 4, &ScriptSerializableObjectInfoRTTI::getSerializableFieldInfo, 
+			addReflectablePtrArrayField("mFields", 3, &ScriptSerializableObjectInfoRTTI::getSerializableFieldInfo, 
 				&ScriptSerializableObjectInfoRTTI::getSerializableFieldInfoArraySize, &ScriptSerializableObjectInfoRTTI::setSerializableFieldInfo, 
 				&ScriptSerializableObjectInfoRTTI::setSerializableFieldInfoArraySize);
 		}
@@ -220,7 +209,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return CM::cm_shared_ptr<ScriptSerializableFieldInfo>();
+			CM_EXCEPT(CM::InvalidStateException, "Cannot instantiate an abstract class");
 		}
 	};
 
@@ -247,7 +236,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
 		{
-			return CM::cm_shared_ptr<ScriptSerializableTypeInfo>();
+			CM_EXCEPT(CM::InvalidStateException, "Cannot instantiate an abstract class");
 		}
 	};
 
@@ -310,11 +299,22 @@ namespace BansheeEngine
 			obj->mTypeName = val;
 		}
 
+		bool& getIsValueType(ScriptSerializableTypeInfoObject* obj)
+		{
+			return obj->mValueType;
+		}
+
+		void setIsValueType(ScriptSerializableTypeInfoObject* obj, bool& val)
+		{
+			obj->mValueType = val;
+		}
+
 	public:
 		ScriptSerializableTypeInfoObjectRTTI()
 		{
 			addPlainField("mTypeName", 0, &ScriptSerializableTypeInfoObjectRTTI::getTypeName, &ScriptSerializableTypeInfoObjectRTTI::setTypeName);
 			addPlainField("mTypeNamespace", 1, &ScriptSerializableTypeInfoObjectRTTI::getTypeNamespace, &ScriptSerializableTypeInfoObjectRTTI::setTypeNamespace);
+			addPlainField("mValueType", 2, &ScriptSerializableTypeInfoObjectRTTI::getIsValueType, &ScriptSerializableTypeInfoObjectRTTI::setIsValueType);
 		}
 
 		virtual const CM::String& getRTTIName()

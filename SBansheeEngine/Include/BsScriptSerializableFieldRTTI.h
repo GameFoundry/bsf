@@ -534,4 +534,62 @@ namespace BansheeEngine
 			return CM::cm_shared_ptr<ScriptSerializableFieldDataGameObjectRef>();
 		}
 	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataObjectRTTI : public CM::RTTIType<ScriptSerializableFieldDataObject, ScriptSerializableFieldData, ScriptSerializableFieldDataObjectRTTI>
+	{
+	private:
+		ScriptSerializableObjectPtr getValue(ScriptSerializableFieldDataObject* obj) { return obj->value; }
+		void setValue(ScriptSerializableFieldDataObject* obj, ScriptSerializableObjectPtr val) { obj->value = val; }
+
+	public:
+		ScriptSerializableFieldDataObjectRTTI()
+		{
+			addReflectablePtrField("mValue", 0, &ScriptSerializableFieldDataObjectRTTI::getValue, &ScriptSerializableFieldDataObjectRTTI::setValue);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "SerializableFieldDataObject";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableFieldDataObject;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableFieldDataObject>();
+		}
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataArrayRTTI : public CM::RTTIType<ScriptSerializableFieldDataArray, ScriptSerializableFieldData, ScriptSerializableFieldDataArrayRTTI>
+	{
+	private:
+		ScriptSerializableArrayPtr getValue(ScriptSerializableFieldDataArray* obj) { return obj->value; }
+		void setValue(ScriptSerializableFieldDataArray* obj, ScriptSerializableArrayPtr val) { obj->value = val; }
+
+	public:
+		ScriptSerializableFieldDataArrayRTTI()
+		{
+			addReflectablePtrField("mValue", 0, &ScriptSerializableFieldDataArrayRTTI::getValue, &ScriptSerializableFieldDataArrayRTTI::setValue);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "SerializableFieldDataArray";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableFieldDataArray;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableFieldDataArray>();
+		}
+	};
 }

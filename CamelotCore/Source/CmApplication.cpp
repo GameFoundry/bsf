@@ -198,7 +198,7 @@ namespace CamelotFramework
 		Platform::shutDown();
 	}
 
-	void* Application::loadPlugin(const String& pluginName)
+	void* Application::loadPlugin(const String& pluginName, DynLib** library)
 	{
 		String name = pluginName;
 #if CM_PLATFORM == CM_PLATFORM_LINUX
@@ -216,17 +216,33 @@ namespace CamelotFramework
 			name += ".dll";
 #endif
 
-		DynLib* library = gDynLibManager().load(name);
-
+		DynLib* loadedLibrary = gDynLibManager().load(name);
 		if(library != nullptr)
+			*library = loadedLibrary;
+
+		if(loadedLibrary != nullptr)
 		{
 			typedef void* (*LoadPluginFunc)();
 
-			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)library->getSymbol("loadPlugin");
-			return loadPluginFunc();
+			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
+
+			if(loadPluginFunc != nullptr)
+				return loadPluginFunc();
 		}
 
 		return nullptr;
+	}
+
+	void Application::unloadPlugin(DynLib* library)
+	{
+		typedef void (*UnloadPluginFunc)();
+
+		UnloadPluginFunc unloadPluginFunc = (UnloadPluginFunc)library->getSymbol("unloadPlugin");
+
+		if(unloadPluginFunc != nullptr)
+			unloadPluginFunc();
+
+		gDynLibManager().unload(library);
 	}
 
 	UINT64 Application::getAppWindowId()

@@ -68,7 +68,12 @@ namespace CamelotFramework
 			 *
 			 * @param	pluginName	Name of the plugin to load, without extension.
 			 */
-			void* loadPlugin(const String& pluginName);
+			void* loadPlugin(const String& pluginName, DynLib** library = nullptr);
+
+			/**
+			 * @brief	Unloads a plugin. 
+			 */
+			void unloadPlugin(DynLib* library);
 
 			/**
 			 * @brief	Called every frame by the main loop, after scene update and before rendering.

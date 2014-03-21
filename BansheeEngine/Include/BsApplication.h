@@ -31,6 +31,8 @@ namespace BansheeEngine
 			const CM::ViewportPtr& getPrimaryViewport() const;
 	private:
 		boost::signals::connection updateCallbackConn;
+		CM::DynLib* mMonoPlugin;
+		CM::DynLib* mSBansheeEnginePlugin;
 
 		void update();
 	};

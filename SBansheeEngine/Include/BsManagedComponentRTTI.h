@@ -4,6 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmGameObjectRTTI.h"
 #include "BsManagedComponent.h"
+#include "BsScriptSerializableObject.h"
 
 namespace BansheeEngine
 {
@@ -30,21 +31,37 @@ namespace BansheeEngine
 			obj->mTypeName = val;
 		}
 
+		ScriptSerializableObjectPtr getObjectData(ManagedComponent* obj)
+		{
+			return boost::any_cast<ScriptSerializableObjectPtr>(obj->mRTTIData);
+		}
+
+		void setObjectData(ManagedComponent* obj, ScriptSerializableObjectPtr val)
+		{
+			obj->mRTTIData = val;
+		}
+
 	public:
 		ManagedComponentRTTI()
 		{
 			addPlainField("mNamespace", 0, &ManagedComponentRTTI::getNamespace, &ManagedComponentRTTI::setNamespace);
 			addPlainField("mTypename", 1, &ManagedComponentRTTI::getTypename, &ManagedComponentRTTI::setTypename);
+			addReflectablePtrField("mObjectData", 2, &ManagedComponentRTTI::getObjectData, &ManagedComponentRTTI::setObjectData);
 		}
 
 		void onSerializationStarted(CM::IReflectable* obj)
 		{
+			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
+
+			mc->mRTTIData = ScriptSerializableObject::create(mc->getManagedInstance());
 		}
 
 		virtual void onDeserializationEnded(CM::IReflectable* obj)
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
-			mc->construct();
+			ScriptSerializableObjectPtr serializableObject = boost::any_cast<ScriptSerializableObjectPtr>(mc->mRTTIData);
+
+			mc->construct(serializableObject->getManagedInstance());
 		}
 
 		virtual const CM::String& getRTTIName()

@@ -313,4 +313,38 @@ namespace BansheeEngine
 		static CM::RTTITypeBase* getRTTIStatic();
 		virtual CM::RTTITypeBase* getRTTI() const;
 	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataObject : public ScriptSerializableFieldData
+	{
+	public:
+		ScriptSerializableObjectPtr value;
+
+		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class ScriptSerializableFieldDataObjectRTTI;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataArray : public ScriptSerializableFieldData
+	{
+	public:
+		ScriptSerializableArrayPtr value;
+
+		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class ScriptSerializableFieldDataArrayRTTI;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
+	};
 }

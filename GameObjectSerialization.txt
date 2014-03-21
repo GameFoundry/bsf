@@ -4,20 +4,9 @@ TODO
  ---------------------------------------
 
 IMMEDIATE:
-ScriptSerializableObjectRTTI::onDeserializationEnded
- - Compare stored and new SerializableObjectInfo (if it even exists)
-   - Must ensure the object info instances match
-    - (I might also want to compare type class/struct status in case it changed)
- - Create new managed object instance
- - Fill out the class fields (those whose types match the new SerializableObjectInfo->mFields)
 
-ScriptSerializableArrayRTTI::onDeserializationEnded
- - Attempt to create new managed object instance
-
-Need Object & Array ScriptSerializableField classes
-ManagedComponent needs to create SerializableObject and return it in its RTTI
-
-When deserializing SerializableObjectInfo base classes references won't be held anywhere (they're only pointed to by mBaseClass which is a weak_pointer)
+setValue in ScriptSerializableObject & ScriptSerializableArray should check if value is null and if the field type isn't a value type (can't be null)
+ScriptSerializableArray::onDeserializationEnded doesn't create an array instance because I'm not sure how yet
 
 In ScriptEnginePlugin I am running RuntimeScriptObjects but never shutting it down - Right now its only for debug purposes
 

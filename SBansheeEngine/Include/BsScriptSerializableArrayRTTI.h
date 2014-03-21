@@ -3,6 +3,8 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "CmRTTIType.h"
 #include "BsScriptSerializableArray.h"
+#include "BsRuntimeScriptObjects.h"
+#include "BsMonoManager.h"
 
 namespace BansheeEngine
 {
@@ -51,7 +53,18 @@ namespace BansheeEngine
 		{
 			ScriptSerializableArray* serializableObject = static_cast<ScriptSerializableArray*>(obj);
 
-			// TODO
+			uint32_t lengths[1] = { serializableObject->mNumElements };
+
+			MonoArray* newArray = mono_array_new_full(MonoManager::instance().getDomain(), 
+				nullptr, (uintptr_t*)lengths, nullptr); // TODO - Type is nullptr
+
+			serializableObject->mManagedInstance = (MonoObject*)newArray;
+
+			CM::UINT32 idx = 0;
+			for(auto& arrayEntry : serializableObject->mArrayEntries)
+			{
+				serializableObject->setFieldData(idx, arrayEntry);
+			}
 		}
 
 		virtual const CM::String& getRTTIName()

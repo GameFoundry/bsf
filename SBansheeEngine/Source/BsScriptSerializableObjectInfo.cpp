@@ -67,6 +67,16 @@ namespace BansheeEngine
 		return ScriptSerializableTypeInfo::getRTTIStatic();
 	}
 
+	bool ScriptSerializableTypeInfoPrimitive::matches(const ScriptSerializableTypeInfoPtr& typeInfo) const
+	{
+		if(!rtti_is_of_type<ScriptSerializableTypeInfoPrimitive>(typeInfo))
+			return false;
+
+		auto primTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoPrimitive>(typeInfo);
+
+		return primTypeInfo->mType == mType;
+	}
+
 	RTTITypeBase* ScriptSerializableTypeInfoPrimitive::getRTTIStatic()
 	{
 		return ScriptSerializableTypeInfoPrimitiveRTTI::instance();
@@ -77,6 +87,16 @@ namespace BansheeEngine
 		return ScriptSerializableTypeInfoPrimitive::getRTTIStatic();
 	}
 
+	bool ScriptSerializableTypeInfoObject::matches(const ScriptSerializableTypeInfoPtr& typeInfo) const
+	{
+		if(!rtti_is_of_type<ScriptSerializableTypeInfoObject>(typeInfo))
+			return false;
+
+		auto objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(typeInfo);
+
+		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName;
+	}
+
 	RTTITypeBase* ScriptSerializableTypeInfoObject::getRTTIStatic()
 	{
 		return ScriptSerializableTypeInfoObjectRTTI::instance();
@@ -85,6 +105,16 @@ namespace BansheeEngine
 	RTTITypeBase* ScriptSerializableTypeInfoObject::getRTTI() const
 	{
 		return ScriptSerializableTypeInfoObject::getRTTIStatic();
+	}
+
+	bool ScriptSerializableTypeInfoArray::matches(const ScriptSerializableTypeInfoPtr& typeInfo) const
+	{
+		if(!rtti_is_of_type<ScriptSerializableTypeInfoArray>(typeInfo))
+			return false;
+
+		auto arrayTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo);
+
+		return arrayTypeInfo->mRank == mRank && arrayTypeInfo->mElementType->matches(mElementType);
 	}
 
 	RTTITypeBase* ScriptSerializableTypeInfoArray::getRTTIStatic()

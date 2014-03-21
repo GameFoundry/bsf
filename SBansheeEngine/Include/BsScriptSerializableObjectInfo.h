@@ -35,6 +35,8 @@ namespace BansheeEngine
 
 	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfo : public CM::IReflectable
 	{
+	public:
+		virtual bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -50,6 +52,8 @@ namespace BansheeEngine
 	public:
 		ScriptPrimitiveType mType;
 
+		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -64,6 +68,9 @@ namespace BansheeEngine
 	public:
 		CM::String mTypeNamespace;
 		CM::String mTypeName;
+		bool mValueType;
+
+		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -80,6 +87,8 @@ namespace BansheeEngine
 		ScriptSerializableTypeInfoPtr mElementType;
 		CM::UINT32 mRank;
 
+		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
+
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
@@ -89,7 +98,7 @@ namespace BansheeEngine
 		virtual CM::RTTITypeBase* getRTTI() const;
 	};
 
-	class BS_SCR_BE_EXPORT ScriptSerializableFieldInfo : public ScriptSerializableTypeInfo
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldInfo : public CM::IReflectable
 	{
 	public:
 		ScriptSerializableFieldInfo();
@@ -102,6 +111,8 @@ namespace BansheeEngine
 		ScriptFieldFlags mFlags;
 
 		MonoField* mMonoField;
+
+		bool isSerializable() const { return ((CM::UINT32)mFlags & (CM::UINT32)ScriptFieldFlags::Serializable) != 0; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -117,8 +128,7 @@ namespace BansheeEngine
 	public:
 		ScriptSerializableObjectInfo();
 
-		CM::String mNamespace;
-		CM::String mTypeName;
+		ScriptSerializableTypeInfoObjectPtr mTypeInfo;
 		CM::UINT32 mTypeId;
 
 		MonoClass* mMonoClass;
@@ -126,10 +136,10 @@ namespace BansheeEngine
 		CM::UnorderedMap<CM::String, CM::UINT32>::type mFieldNameToId;
 		CM::UnorderedMap<CM::UINT32, std::shared_ptr<ScriptSerializableFieldInfo>>::type mFields;
 
-		std::weak_ptr<ScriptSerializableObjectInfo> mBaseClass;
+		std::shared_ptr<ScriptSerializableObjectInfo> mBaseClass;
 		CM::Vector<std::weak_ptr<ScriptSerializableObjectInfo>>::type mDerivedClasses;
 
-		CM::String getFullTypeName() const { return mNamespace + "." + mTypeName; }
+		CM::String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

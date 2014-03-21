@@ -15,6 +15,9 @@ namespace BansheeEngine
 		ScriptSerializableObject(const ConstructPrivately& dummy, ScriptSerializableObjectInfoPtr objInfo, MonoObject* managedInstance);
 		ScriptSerializableObject(const ConstructPrivately& dummy);
 
+		MonoObject* getManagedInstance() const { return mManagedInstance; }
+		ScriptSerializableObjectInfoPtr getObjectInfo() const { return mObjInfo; }
+
 		static ScriptSerializableObjectPtr create(MonoObject* managedInstance);
 
 	protected:

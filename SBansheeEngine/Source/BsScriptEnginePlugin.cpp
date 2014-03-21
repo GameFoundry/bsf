@@ -1,9 +1,9 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
-
-// DEBUG ONLY
 #include "BsRuntimeScriptObjects.h"
+#include "BsScriptResourceManager.h"
+#include "BsScriptGameObjectManager.h"
 
 using namespace CamelotFramework;
 
@@ -24,8 +24,18 @@ namespace BansheeEngine
 		MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME, ASSEMBLY_ENTRY_POINT);
 
 		RuntimeScriptObjects::startUp(cm_new<RuntimeScriptObjects>());
+		ScriptResourceManager::startUp(cm_new<ScriptResourceManager>());
+		ScriptGameObjectManager::startUp(cm_new<ScriptGameObjectManager>());
+
 		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEngineAssemblyName);
 
 		return nullptr;
+	}
+
+	extern "C" BS_SCR_BE_EXPORT void unloadPlugin()
+	{
+		ScriptGameObjectManager::shutDown();
+		ScriptResourceManager::shutDown();
+		RuntimeScriptObjects::shutDown();
 	}
 }

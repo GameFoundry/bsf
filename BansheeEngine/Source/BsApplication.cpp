@@ -19,6 +19,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	Application::Application()
+		:mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
 
 	}
@@ -55,8 +56,8 @@ namespace BansheeEngine
 
 		EngineGUI::startUp(cm_new<EngineGUI>());
 
-		CM::gApplication().loadPlugin("BansheeMono");
-		CM::gApplication().loadPlugin("SBansheeEngine"); // Scripting interface
+		CM::gApplication().loadPlugin("BansheeMono", &mMonoPlugin);
+		CM::gApplication().loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
 		
 		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
 	}
@@ -69,6 +70,9 @@ namespace BansheeEngine
 	void Application::shutDown()
 	{
 		CM::gApplication().mainLoopCallback.disconnect(updateCallbackConn);
+
+		CM::gApplication().unloadPlugin(mSBansheeEnginePlugin);
+		CM::gApplication().unloadPlugin(mMonoPlugin);
 
 		EngineGUI::shutDown();
 

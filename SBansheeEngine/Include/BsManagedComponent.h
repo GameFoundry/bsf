@@ -30,7 +30,7 @@ namespace BansheeEngine
 		/** Standard constructor.
         */
 		ManagedComponent(const CM::HSceneObject& parent, const CM::String& ns, const CM::String& typeName);
-		void construct();
+		void construct(MonoObject* object);
 
 		void onDestroyed();
 

@@ -23,8 +23,12 @@ namespace BansheeEngine
 		UINT32 numFields = 0;
 		while(curType != nullptr)
 		{
-			numFields += (UINT32)mObjInfo->mFields.size();
-			curType = curType->mBaseClass.lock();
+			for(auto& field : mObjInfo->mFields)
+			{
+				if(field.second->isSerializable())
+					numFields++;
+			}
+			curType = curType->mBaseClass;
 		}
 
 		mFieldEntries.resize(numFields);
@@ -32,10 +36,11 @@ namespace BansheeEngine
 		UINT32 curIdx = 0;
 		while(curType != nullptr)
 		{
-			numFields += (UINT32)mObjInfo->mFields.size();
-
 			for(auto& field : mObjInfo->mFields)
 			{
+				if(!field.second->isSerializable())
+					continue;
+
 				ScriptSerializableFieldKeyPtr fieldKey = ScriptSerializableFieldKey::create(curType->mTypeId, field.second->mFieldId);
 				ScriptSerializableFieldDataPtr fieldData = getFieldData(field.second);
 
@@ -43,7 +48,7 @@ namespace BansheeEngine
 				curIdx++;
 			}
 
-			curType = curType->mBaseClass.lock();
+			curType = curType->mBaseClass;
 		}
 	}
 

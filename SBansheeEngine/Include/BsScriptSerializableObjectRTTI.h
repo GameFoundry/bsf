@@ -2,7 +2,10 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "CmRTTIType.h"
+#include "BsRuntimeScriptObjects.h"
 #include "BsScriptSerializableObject.h"
+#include "BsScriptSerializableField.h"
+#include "BsMonoClass.h"
 
 namespace BansheeEngine
 {
@@ -51,7 +54,84 @@ namespace BansheeEngine
 		{
 			ScriptSerializableObject* serializableObject = static_cast<ScriptSerializableObject*>(obj);
 			
-			// TODO
+			ScriptSerializableObjectInfoPtr storedObjInfo = serializableObject->getObjectInfo();
+			ScriptSerializableObjectInfoPtr currentObjInfo = nullptr;
+
+			// See if this type even still exists
+			if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(storedObjInfo->mTypeInfo->mTypeNamespace, storedObjInfo->mTypeInfo->mTypeName, currentObjInfo))
+				return;
+
+			serializableObject->mManagedInstance = currentObjInfo->mMonoClass->createInstance();
+
+			auto findFieldInfoFromKey = [&] (CM::UINT16 typeId, CM::UINT16 fieldId, ScriptSerializableObjectInfoPtr objInfo, 
+				ScriptSerializableFieldInfoPtr& outFieldInfo, ScriptSerializableObjectInfoPtr &outObjInfo) -> bool
+			{
+				while(objInfo != nullptr)
+				{
+					if(objInfo->mTypeId == typeId)
+					{
+						auto iterFind = objInfo->mFields.find(fieldId);
+						if(iterFind != objInfo->mFields.end())
+						{
+							outFieldInfo = iterFind->second;
+							outObjInfo = objInfo;
+
+							return true;
+						}
+
+						return false;
+					}
+
+					objInfo = objInfo->mBaseClass;
+				}
+
+				return false;
+			};
+
+			auto findTypeNameMatchingFieldInfo = [&] (const ScriptSerializableFieldInfoPtr& fieldInfo, const ScriptSerializableObjectInfoPtr& fieldObjInfo, 
+				ScriptSerializableObjectInfoPtr objInfo) -> ScriptSerializableFieldInfoPtr
+			{
+				while(objInfo != nullptr)
+				{
+					if(objInfo->mTypeInfo->matches(fieldObjInfo->mTypeInfo))
+					{
+						auto iterFind = objInfo->mFieldNameToId.find(fieldInfo->mName);
+						if(iterFind != objInfo->mFieldNameToId.end())
+						{
+							auto iterFind2 = objInfo->mFields.find(iterFind->second);
+							if(iterFind2 != objInfo->mFields.end())
+							{
+								ScriptSerializableFieldInfoPtr foundField = iterFind2->second;
+								if(foundField->isSerializable())
+								{
+									if(fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
+										return foundField;
+								}
+							}
+						}
+
+						return nullptr;
+					}
+
+					objInfo = objInfo->mBaseClass;
+				}
+
+				return nullptr;
+			};
+
+			// Scan all fields and ensure the fields still exist
+			for(auto& fieldEntry : serializableObject->mFieldEntries)
+			{
+				ScriptSerializableFieldInfoPtr storedFieldEntry;
+				ScriptSerializableObjectInfoPtr storedFieldObjEntry;
+				
+				if(!findFieldInfoFromKey(fieldEntry->mKey->mTypeId, fieldEntry->mKey->mFieldId, storedObjInfo, storedFieldEntry, storedFieldObjEntry))
+					continue;
+
+				ScriptSerializableFieldInfoPtr matchingFieldInfo = findTypeNameMatchingFieldInfo(storedFieldEntry, storedFieldObjEntry, currentObjInfo);
+				if(matchingFieldInfo != nullptr)
+					serializableObject->setFieldData(matchingFieldInfo, fieldEntry->mValue);
+			}
 		}
 
 		virtual const CM::String& getRTTIName()

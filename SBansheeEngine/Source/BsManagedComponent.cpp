@@ -11,13 +11,6 @@ namespace BansheeEngine
 	ManagedComponent::ManagedComponent(const CM::HSceneObject& parent, const CM::String& ns, const CM::String& typeName)
 		:mManagedInstance(nullptr), mNamespace(ns), mTypeName(typeName)
 	{
-
-	}
-
-	void ManagedComponent::construct()
-	{
-		mFullTypeName = mNamespace + "." + mTypeName;
-
 		MonoClass* managedClass = MonoManager::instance().findClass(mNamespace, mTypeName);
 		if(managedClass == nullptr)
 		{
@@ -25,7 +18,14 @@ namespace BansheeEngine
 			return;
 		}
 
-		mManagedInstance = managedClass->createInstance();
+		construct(managedClass->createInstance());
+	}
+
+	void ManagedComponent::construct(MonoObject* object)
+	{
+		mFullTypeName = mNamespace + "." + mTypeName;
+
+		mManagedInstance = object;
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
 	}
 

@@ -9,6 +9,8 @@
 #include "BsScriptSpriteTexture.h"
 #include "BsScriptSceneObject.h"
 #include "BsScriptComponent.h"
+#include "BsScriptSerializableObject.h"
+#include "BsScriptSerializableArray.h"
 
 using namespace CamelotFramework;
 
@@ -175,6 +177,26 @@ namespace BansheeEngine
 					return fieldData;
 				}
 			}
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
+		{
+			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataObject>();
+			if(value != nullptr)
+			{
+				fieldData->value = ScriptSerializableObject::create((MonoObject*)value);
+			}
+
+			return fieldData;
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
+		{
+			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataArray>();
+			if(value != nullptr)
+			{
+				fieldData->value = ScriptSerializableArray::create((MonoObject*)value, std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo));
+			}
+
+			return fieldData;
 		}
 
 		return nullptr;
@@ -392,6 +414,30 @@ namespace BansheeEngine
 		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
+	void* ScriptSerializableFieldDataObject::getValue(const ScriptSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
+		{
+			auto objectTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(typeInfo);
+
+			return value->getManagedInstance();
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ScriptSerializableFieldDataArray::getValue(const ScriptSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
+		{
+			auto objectTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo);
+
+			return value->getManagedInstance();
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
 	RTTITypeBase* ScriptSerializableFieldKey::getRTTIStatic()
 	{
 		return ScriptSerializableFieldKeyRTTI::instance();
@@ -570,5 +616,25 @@ namespace BansheeEngine
 	RTTITypeBase* ScriptSerializableFieldDataGameObjectRef::getRTTI() const
 	{
 		return ScriptSerializableFieldDataGameObjectRef::getRTTIStatic();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataObject::getRTTIStatic()
+	{
+		return ScriptSerializableFieldDataObjectRTTI::instance();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataObject::getRTTI() const
+	{
+		return ScriptSerializableFieldDataObject::getRTTIStatic();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataArray::getRTTIStatic()
+	{
+		return ScriptSerializableFieldDataArrayRTTI::instance();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataArray::getRTTI() const
+	{
+		return ScriptSerializableFieldDataArray::getRTTIStatic();
 	}
 }

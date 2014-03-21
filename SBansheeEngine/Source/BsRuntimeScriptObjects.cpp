@@ -1,11 +1,13 @@
 #include "BsRuntimeScriptObjects.h"
 #include "BsScriptResourceManager.h"
 #include "BsScriptGameObjectManager.h"
+#include "BsScriptSerializableObjectInfo.h"
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoField.h"
 #include "BsMonoUtil.h"
+#include "CmRTTIType.h"
 
 using namespace CamelotFramework;
 
@@ -49,15 +51,19 @@ namespace BansheeEngine
 		{
 			if((curClass->isSubClassOf(mComponentClass) || curClass->hasAttribute(mSerializableAttribute)) && curClass != mComponentClass)
 			{
-				std::shared_ptr<ScriptSerializableObjectInfo> objInfo = cm_shared_ptr<ScriptSerializableObjectInfo>();
+				ScriptSerializableTypeInfoPtr typeInfo = determineType(curClass);
+				if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(typeInfo))
+				{
+					std::shared_ptr<ScriptSerializableObjectInfo> objInfo = cm_shared_ptr<ScriptSerializableObjectInfo>();
 
-				objInfo->mTypeId = mUniqueTypeId++;
-				objInfo->mTypeName = curClass->getTypeName();
-				objInfo->mNamespace = curClass->getNamespace();
-				objInfo->mMonoClass = curClass;
+					objInfo->mTypeId = mUniqueTypeId++;
 
-				assemblyInfo->mTypeNameToId[objInfo->getFullTypeName()] = objInfo->mTypeId;
-				assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
+					objInfo->mTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(typeInfo);
+					objInfo->mMonoClass = curClass;
+
+					assemblyInfo->mTypeNameToId[objInfo->getFullTypeName()] = objInfo->mTypeId;
+					assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
+				}
 			}
 		}
 
@@ -66,7 +72,7 @@ namespace BansheeEngine
 		{
 			std::shared_ptr<ScriptSerializableObjectInfo> objInfo = curClassInfo.second;
 
-			String fullTypeName = objInfo->mNamespace + "." + objInfo->mTypeName;
+			String fullTypeName = objInfo->getFullTypeName();
 			assemblyInfo->mTypeNameToId[fullTypeName] = objInfo->mTypeId;
 			assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
 
@@ -249,6 +255,7 @@ namespace BansheeEngine
 					std::shared_ptr<ScriptSerializableTypeInfoObject> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoObject>();
 					typeInfo->mTypeNamespace = monoClass->getNamespace();
 					typeInfo->mTypeName = monoClass->getTypeName();
+					typeInfo->mValueType = false;
 
 					return typeInfo;
 				}
@@ -265,6 +272,7 @@ namespace BansheeEngine
 				std::shared_ptr<ScriptSerializableTypeInfoObject> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoObject>();
 				typeInfo->mTypeNamespace = monoClass->getNamespace();
 				typeInfo->mTypeName = monoClass->getTypeName();
+				typeInfo->mValueType = true;
 
 				return typeInfo;
 			}
