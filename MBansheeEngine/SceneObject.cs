@@ -25,17 +25,17 @@ namespace BansheeEngine
 
         public T AddComponent<T>() where T : Component
         {
-            return (T)Component.Internal_AddComponent(this, typeof (T).Namespace, typeof (T).Name);
+            return (T)Component.Internal_AddComponent(this, typeof (T));
         }
 
         public T GetComponent<T>() where T : Component
         {
-            return (T)Component.Internal_GetComponent(this, typeof(T).Namespace, typeof(T).Name);
+            return (T)Component.Internal_GetComponent(this, typeof(T));
         }
 
         public void RemoveComponent<T>() where T : Component
         {
-            Component.Internal_RemoveComponent(this, typeof(T).Namespace, typeof(T).Name);
+            Component.Internal_RemoveComponent(this, typeof(T));
         }
 
         public int GetNumChildren()

@@ -8,9 +8,15 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ManagedComponent::ManagedComponent(const CM::HSceneObject& parent, const CM::String& ns, const CM::String& typeName)
-		:mManagedInstance(nullptr), mNamespace(ns), mTypeName(typeName)
+	ManagedComponent::ManagedComponent(const CM::HSceneObject& parent, MonoReflectionType* runtimeType)
+		:mManagedInstance(nullptr), mRuntimeType(runtimeType)
 	{
+		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
+		::MonoClass* monoClass = mono_type_get_class(monoType);
+
+		mNamespace = mono_class_get_namespace(monoClass);
+		mTypeName = mono_class_get_name(monoClass);
+
 		MonoClass* managedClass = MonoManager::instance().findClass(mNamespace, mTypeName);
 		if(managedClass == nullptr)
 		{
@@ -18,14 +24,15 @@ namespace BansheeEngine
 			return;
 		}
 
-		construct(managedClass->createInstance());
+		construct(managedClass->createInstance(), runtimeType);
 	}
 
-	void ManagedComponent::construct(MonoObject* object)
+	void ManagedComponent::construct(MonoObject* object, MonoReflectionType* runtimeType)
 	{
 		mFullTypeName = mNamespace + "." + mTypeName;
 
 		mManagedInstance = object;
+		mRuntimeType = runtimeType;
 		mManagedHandle = mono_gchandle_new(mManagedInstance, false);
 	}
 

@@ -23,8 +23,12 @@ namespace BansheeEngine
 		cloneSO->setParent(SO);
 	}
 
-	void reportDbgValue(int dbgValue)
+	void reportDbgValue(int dbgValue, MonoReflectionType* type)
 	{
+		::MonoClass* monoClass = mono_type_get_class(mono_reflection_type_get_type(type));
+
+		String className = mono_class_get_name(monoClass);
+		
 		int a = dbgValue;
 	}
 

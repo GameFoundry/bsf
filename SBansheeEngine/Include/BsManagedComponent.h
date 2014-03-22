@@ -10,10 +10,12 @@ namespace BansheeEngine
 	{
 	public:
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
+		MonoReflectionType* getRuntimeType() const { return mRuntimeType; }
 		const CM::String& getManagedFullTypeName() const { return mFullTypeName; }
 
 	private:
 		MonoObject* mManagedInstance;
+		MonoReflectionType* mRuntimeType;
 		uint32_t mManagedHandle;
 
 		CM::String mNamespace;
@@ -29,8 +31,8 @@ namespace BansheeEngine
 
 		/** Standard constructor.
         */
-		ManagedComponent(const CM::HSceneObject& parent, const CM::String& ns, const CM::String& typeName);
-		void construct(MonoObject* object);
+		ManagedComponent(const CM::HSceneObject& parent, MonoReflectionType* runtimeType);
+		void construct(MonoObject* object, MonoReflectionType* runtimeType);
 
 		void onDestroyed();
 

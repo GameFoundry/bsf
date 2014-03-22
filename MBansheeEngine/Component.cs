@@ -10,12 +10,12 @@ namespace BansheeEngine
         { }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern Component Internal_AddComponent(SceneObject parent, string ns, string type);
+        internal static extern Component Internal_AddComponent(SceneObject parent, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern Component Internal_GetComponent(SceneObject parent, string ns, string type);
+        internal static extern Component Internal_GetComponent(SceneObject parent, Type type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        internal static extern Component Internal_RemoveComponent(SceneObject parent, string ns, string type);
+        internal static extern Component Internal_RemoveComponent(SceneObject parent, Type type);
     }
 }

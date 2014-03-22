@@ -20,7 +20,7 @@ namespace BansheeEngine
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
-                reportDbgValue(childSO.GetComponent<DbgComponent>().a);
+                reportDbgValue(childSO.GetComponent<DbgComponent>().a, typeof(DbgComponent));
             }
 
             //Color newColor = Color.red;
@@ -34,6 +34,6 @@ namespace BansheeEngine
         private static extern void dbgTestComponentClone(SceneObject so);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void reportDbgValue(int dbgVal);
+        private static extern void reportDbgValue(int dbgVal, Type type);
     }
 }

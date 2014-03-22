@@ -4,6 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmGameObjectRTTI.h"
 #include "BsManagedComponent.h"
+#include "BsMonoManager.h"
 #include "BsScriptSerializableObject.h"
 
 namespace BansheeEngine
@@ -61,7 +62,11 @@ namespace BansheeEngine
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
 			ScriptSerializableObjectPtr serializableObject = boost::any_cast<ScriptSerializableObjectPtr>(mc->mRTTIData);
 
-			mc->construct(serializableObject->getManagedInstance());
+			::MonoClass* monoClass = mono_object_get_class(serializableObject->getManagedInstance());
+			MonoType* monoType = mono_class_get_type(monoClass);
+			MonoReflectionType* runtimeType = mono_type_get_object(MonoManager::instance().getDomain(), monoType);
+
+			mc->construct(serializableObject->getManagedInstance(), runtimeType);
 		}
 
 		virtual const CM::String& getRTTIName()

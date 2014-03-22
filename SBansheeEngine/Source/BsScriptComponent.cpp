@@ -34,14 +34,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptComponent::internal_destroyInstance);
 	}
 
-	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName)
+	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
 	{
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
-
-		String strNs = toString(MonoUtil::monoToWString(ns));
-		String strTypeName = toString(MonoUtil::monoToWString(typeName));
-		String fullTypeName = strNs + "." + strTypeName;
 
 		// We only allow single component per type
 		const Vector<HComponent>::type& mComponents = so->getComponents();
@@ -51,28 +47,24 @@ namespace BansheeEngine
 			{
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				if(managedComponent->getManagedFullTypeName() == fullTypeName)
+				if(managedComponent->getRuntimeType() == type)
 				{
-					LOGWRN("Attempting to add a component \"" + fullTypeName + "\" that already exists on SceneObject \"" + so->getName() + "\"");
+					LOGWRN("Attempting to add a component that already exists on SceneObject \"" + so->getName() + "\"");
 					return managedComponent->getManagedInstance();
 				}
 			}
 		}
 
-		GameObjectHandle<ManagedComponent> mc = so->addComponent<ManagedComponent>(strNs, strTypeName);
+		GameObjectHandle<ManagedComponent> mc = so->addComponent<ManagedComponent>(type);
 		ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(mc);
 		
 		return nativeInstance->getManagedInstance();
 	}
 
-	MonoObject* ScriptComponent::internal_getComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName)
+	MonoObject* ScriptComponent::internal_getComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
 	{
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
-
-		String strNs = toString(MonoUtil::monoToWString(ns));
-		String strTypeName = toString(MonoUtil::monoToWString(typeName));
-		String fullTypeName = strNs + "." + strTypeName;
 
 		const Vector<HComponent>::type& mComponents = so->getComponents();
 		for(auto& component : mComponents)
@@ -81,7 +73,7 @@ namespace BansheeEngine
 			{
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				if(managedComponent->getManagedFullTypeName() == fullTypeName)
+				if(managedComponent->getRuntimeType() == type)
 				{
 					return managedComponent->getManagedInstance();
 				}
@@ -91,14 +83,10 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptComponent::internal_removeComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName)
+	void ScriptComponent::internal_removeComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
 	{
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
-
-		String strNs = toString(MonoUtil::monoToWString(ns));
-		String strTypeName = toString(MonoUtil::monoToWString(typeName));
-		String fullTypeName = strNs + "." + strTypeName;
 
 		// We only allow single component per type
 		const Vector<HComponent>::type& mComponents = so->getComponents();
@@ -108,7 +96,7 @@ namespace BansheeEngine
 			{
 				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
 
-				if(managedComponent->getManagedFullTypeName() == fullTypeName)
+				if(managedComponent->getRuntimeType() == type)
 				{
 					managedComponent->destroy();
 					return;
@@ -116,7 +104,7 @@ namespace BansheeEngine
 			}
 		}
 
-		LOGWRN("Attempting to remove a component \"" + fullTypeName + "\" that doesn't exists on SceneObject \"" + so->getName() + "\"");
+		LOGWRN("Attempting to remove a component that doesn't exists on SceneObject \"" + so->getName() + "\"");
 	}
 
 	void ScriptComponent::internal_destroyInstance(ScriptComponent* nativeInstance)
