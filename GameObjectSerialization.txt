@@ -1,14 +1,12 @@
 TODO
  - Ability to break external references as a pre-processing step
+ - I need to properly unload all assemblies (and possibly shutdown mono runtime?) before I shut down various modules used in ScriptBansheeEngine.
 
  ---------------------------------------
 
 IMMEDIATE:
 
 setValue in ScriptSerializableObject & ScriptSerializableArray should check if value is null and if the field type isn't a value type (can't be null)
-ScriptSerializableArray::onDeserializationEnded doesn't create an array instance because I'm not sure how yet
-
-In ScriptEnginePlugin I am running RuntimeScriptObjects but never shutting it down - Right now its only for debug purposes
 
 LOW PRIORITY
 - Add Multi-dimensional arrays / Lists / Dictionaries

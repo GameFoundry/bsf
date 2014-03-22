@@ -51,19 +51,27 @@ namespace BansheeEngine
 		{
 			if((curClass->isSubClassOf(mComponentClass) || curClass->hasAttribute(mSerializableAttribute)) && curClass != mComponentClass)
 			{
-				ScriptSerializableTypeInfoPtr typeInfo = determineType(curClass);
-				if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(typeInfo))
-				{
-					std::shared_ptr<ScriptSerializableObjectInfo> objInfo = cm_shared_ptr<ScriptSerializableObjectInfo>();
+				std::shared_ptr<ScriptSerializableTypeInfoObject> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoObject>();
+				typeInfo->mTypeNamespace = curClass->getNamespace();
+				typeInfo->mTypeName = curClass->getTypeName();
 
-					objInfo->mTypeId = mUniqueTypeId++;
+				MonoType* monoType = mono_class_get_type(curClass->_getInternalClass());
+				int monoPrimitiveType = mono_type_get_type(monoType);
 
-					objInfo->mTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(typeInfo);
-					objInfo->mMonoClass = curClass;
+				if(monoPrimitiveType == MONO_TYPE_VALUETYPE)
+					typeInfo->mValueType = true;
+				else
+					typeInfo->mValueType = false;
 
-					assemblyInfo->mTypeNameToId[objInfo->getFullTypeName()] = objInfo->mTypeId;
-					assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
-				}
+				std::shared_ptr<ScriptSerializableObjectInfo> objInfo = cm_shared_ptr<ScriptSerializableObjectInfo>();
+
+				objInfo->mTypeId = mUniqueTypeId++;
+
+				objInfo->mTypeInfo = typeInfo;
+				objInfo->mMonoClass = curClass;
+
+				assemblyInfo->mTypeNameToId[objInfo->getFullTypeName()] = objInfo->mTypeId;
+				assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
 			}
 		}
 

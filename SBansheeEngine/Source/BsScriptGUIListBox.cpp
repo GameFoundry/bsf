@@ -84,7 +84,7 @@ namespace BansheeEngine
 		ScriptGUIListBox* nativeInstance = new (cm_alloc<ScriptGUIListBox>()) ScriptGUIListBox(guiListBox);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIListBox::internal_destroyInstance(ScriptGUIListBox* nativeInstance)

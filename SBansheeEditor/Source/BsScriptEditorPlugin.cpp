@@ -20,7 +20,9 @@ namespace BansheeEditor
 		const CM::String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
 		const CM::String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
 
-		BS::MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME, ASSEMBLY_ENTRY_POINT);
+		BS::MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
+		assembly.invoke(ASSEMBLY_ENTRY_POINT);
+
 		ScriptEditorWindow::registerManagedEditorWindows();
 
 		return nullptr;

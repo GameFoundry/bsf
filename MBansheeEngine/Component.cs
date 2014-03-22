@@ -13,6 +13,9 @@ namespace BansheeEngine
         internal static extern Component Internal_AddComponent(SceneObject parent, string ns, string type);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern Component Internal_GetComponent(SceneObject parent, string ns, string type);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
         internal static extern Component Internal_RemoveComponent(SceneObject parent, string ns, string type);
     }
 }

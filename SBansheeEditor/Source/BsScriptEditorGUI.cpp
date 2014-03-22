@@ -41,7 +41,7 @@ namespace BansheeEditor
 		ScriptEditorGUI* nativeInstance = new (cm_alloc<ScriptEditorGUI>()) ScriptEditorGUI(nativeParentWindow);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, (ScriptGUIBase*)nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptEditorGUI::internal_destroyInstance(ScriptEditorGUI* nativeInstance)

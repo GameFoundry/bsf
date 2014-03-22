@@ -50,7 +50,7 @@ namespace BansheeEngine
 		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIArea::internal_createInstanceResizeableX(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetLeft, CM::UINT32 offsetRight, 
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIArea::internal_createInstanceResizeableY(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetTop, 
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIArea::internal_createInstanceResizeableXY(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetLeft, 
@@ -86,7 +86,7 @@ namespace BansheeEngine
 		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIArea::internal_destroyInstance(ScriptGUIArea* nativeInstance)

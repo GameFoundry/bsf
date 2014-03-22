@@ -65,7 +65,7 @@ namespace BansheeEngine
 		ScriptGUIInputBox* nativeInstance = new (cm_alloc<ScriptGUIInputBox>()) ScriptGUIInputBox(guiInputBox);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIInputBox::internal_destroyInstance(ScriptGUIInputBox* nativeInstance)

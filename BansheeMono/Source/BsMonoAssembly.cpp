@@ -99,9 +99,9 @@ namespace BansheeEngine
 		mHaveCachedClassList = false;
 	}
 
-	void MonoAssembly::initialize(const CM::String& entryPoint)
+	void MonoAssembly::invoke(const CM::String& functionName)
 	{
-		MonoMethodDesc* methodDesc = mono_method_desc_new(entryPoint.c_str(), false);
+		MonoMethodDesc* methodDesc = mono_method_desc_new(functionName.c_str(), false);
 
 		if(methodDesc != nullptr)
 		{

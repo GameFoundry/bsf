@@ -22,7 +22,10 @@ namespace BansheeEngine
 
 		static ScriptGUIBase* toNative(MonoObject* managedInstance)
 		{
-			return reinterpret_cast<ScriptGUIBase*>(ScriptGUIBaseMeta::metaData.thisPtrField->getValue(managedInstance));
+			ScriptGUIBase* nativeInstance = nullptr;
+			ScriptGUIBaseMeta::metaData.thisPtrField->getValue(managedInstance, &nativeInstance);
+
+			return nativeInstance;
 		}
 
 	protected:

@@ -42,7 +42,7 @@ namespace BansheeEngine
 		mScriptResources[uuid] = scriptResource;
 
 		scriptResource->createInstance(instance);
-		scriptResource->metaData.thisPtrField->setValue(instance, scriptResource);
+		scriptResource->metaData.thisPtrField->setValue(instance, &scriptResource);
 
 		return scriptResource;
 	}
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		mScriptResources[uuid] = scriptResource;
 
 		scriptResource->createInstance(instance);
-		scriptResource->metaData.thisPtrField->setValue(instance, scriptResource);
+		scriptResource->metaData.thisPtrField->setValue(instance, &scriptResource);
 
 		return scriptResource;
 	}

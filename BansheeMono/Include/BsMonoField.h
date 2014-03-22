@@ -21,7 +21,7 @@ namespace BansheeEngine
 		const CM::String& getName() const { return mName; }
 		MonoClass* getType();
 
-		void* getValue(MonoObject* instance);
+		void getValue(MonoObject* instance, void* outValue);
 		void setValue(MonoObject* instance, void* value);
 
 		bool hasAttribute(MonoClass* monoClass);

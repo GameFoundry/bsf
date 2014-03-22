@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 	void ScriptSceneObject::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSceneObject::internal_destroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSceneObject::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptSceneObject::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetParent", &ScriptSceneObject::internal_getParent);
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptSceneObject::internal_setParent);
@@ -38,7 +38,7 @@ namespace BansheeEngine
 	{
 		HSceneObject sceneObject = SceneObject::create(toString(MonoUtil::monoToWString(name)));
 
-		ScriptGameObjectManager::instance().createScriptSceneObject(sceneObject);
+		ScriptGameObjectManager::instance().createScriptSceneObject(instance, sceneObject);
 	}
 
 	void ScriptSceneObject::internal_destroyInstance(ScriptSceneObject* nativeInstance)

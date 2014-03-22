@@ -35,7 +35,7 @@ namespace BansheeEngine
 		ScriptHString* nativeInstance = new (cm_alloc<ScriptHString>()) ScriptHString(string);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptHString::internal_destroyInstance(ScriptHString* nativeInstance)

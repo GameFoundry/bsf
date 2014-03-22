@@ -48,7 +48,7 @@ namespace BansheeEngine
 		ScriptGUIElementStyle* nativeInstance = new (cm_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(styleName);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIElementStyle::internal_createInstanceExternal(MonoObject* instance, MonoString* name, GUIElementStyle* externalStyle)
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		ScriptGUIElementStyle* nativeInstance = new (cm_alloc<ScriptGUIElementStyle>()) ScriptGUIElementStyle(styleName, externalStyle);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIElementStyle::internal_destroyInstance(ScriptGUIElementStyle* nativeInstance)

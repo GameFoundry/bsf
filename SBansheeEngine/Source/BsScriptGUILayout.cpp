@@ -48,7 +48,7 @@ namespace BansheeEngine
 			ScriptGUILayout(&nativeArea->getLayout(), scriptArea->getParentWidget(), nullptr);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUILayout::internal_createInstanceXFromLayout(MonoObject* instance, MonoObject* parentLayout)
@@ -61,7 +61,7 @@ namespace BansheeEngine
 			ScriptGUILayout(&layout, scriptLayout->getParentWidget(), nativeLayout);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUILayout::internal_createInstanceYFromLayout(MonoObject* instance, MonoObject* parentLayout)
@@ -74,7 +74,7 @@ namespace BansheeEngine
 			ScriptGUILayout(&layout, scriptLayout->getParentWidget(), nativeLayout);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUILayout::internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea)
@@ -86,7 +86,7 @@ namespace BansheeEngine
 			ScriptGUILayout(nativeLayout, scriptScrollArea->getParentWidget(), nativeLayout);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUILayout::internal_destroyInstance(ScriptGUILayout* nativeInstance)

@@ -29,7 +29,8 @@ namespace BansheeEngine
 	void ScriptComponent::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_AddComponent", &ScriptComponent::internal_addComponent);
-		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_destroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
+		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptComponent::internal_destroyInstance);
 	}
 
@@ -62,6 +63,32 @@ namespace BansheeEngine
 		ScriptComponent* nativeInstance = ScriptGameObjectManager::instance().createScriptComponent(mc);
 		
 		return nativeInstance->getManagedInstance();
+	}
+
+	MonoObject* ScriptComponent::internal_getComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName)
+	{
+		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
+		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+
+		String strNs = toString(MonoUtil::monoToWString(ns));
+		String strTypeName = toString(MonoUtil::monoToWString(typeName));
+		String fullTypeName = strNs + "." + strTypeName;
+
+		const Vector<HComponent>::type& mComponents = so->getComponents();
+		for(auto& component : mComponents)
+		{
+			if(component->getTypeId() == TID_ManagedComponent)
+			{
+				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+
+				if(managedComponent->getManagedFullTypeName() == fullTypeName)
+				{
+					return managedComponent->getManagedInstance();
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	void ScriptComponent::internal_removeComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName)

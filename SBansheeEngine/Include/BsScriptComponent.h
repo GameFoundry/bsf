@@ -19,6 +19,7 @@ namespace BansheeEngine
 		friend class ScriptGameObjectManager;
 
 		static MonoObject* internal_addComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName);
+		static MonoObject* internal_getComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName);
 		static void internal_removeComponent(MonoObject* parentSceneObject, MonoString* ns, MonoString* typeName);
 		static void internal_destroyInstance(ScriptComponent* nativeInstance);
 

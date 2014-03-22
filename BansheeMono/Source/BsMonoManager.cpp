@@ -38,7 +38,7 @@ namespace BansheeEngine
 		}
 	}
 
-	MonoAssembly& MonoManager::loadAssembly(const String& path, const String& name, const String& entryPoint)
+	MonoAssembly& MonoManager::loadAssembly(const String& path, const String& name)
 	{
 		MonoAssembly* assembly = nullptr;
 
@@ -81,8 +81,6 @@ namespace BansheeEngine
 
 				meta->initCallback();
 			}
-
-			assembly->initialize(entryPoint); // Perform any initialization after everything is loaded
 		}
 
 		if(!mIsCoreLoaded)
@@ -98,7 +96,7 @@ namespace BansheeEngine
 				mscorlib->loadAsDependency(existingImage, "mscorlib");
 			}
 			else
-				loadAssembly("mscorlib", "mscorlib", "");			
+				loadAssembly("mscorlib", "mscorlib");			
 		}
 
 		return *assembly;

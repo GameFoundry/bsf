@@ -47,7 +47,10 @@ namespace BansheeEngine
 
 		static Type* toNative(MonoObject* managedInstance)
 		{
-			return reinterpret_cast<Type*>(metaData.thisPtrField->getValue(managedInstance));
+			Type* nativeInstance = nullptr;
+			metaData.thisPtrField->getValue(managedInstance, &nativeInstance);
+
+			return nativeInstance;
 		}
 
 	protected:

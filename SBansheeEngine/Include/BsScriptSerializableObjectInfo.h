@@ -37,6 +37,8 @@ namespace BansheeEngine
 	{
 	public:
 		virtual bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const = 0;
+		virtual bool isTypeLoaded() const = 0;
+		virtual ::MonoClass* getMonoClass() const = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -53,6 +55,8 @@ namespace BansheeEngine
 		ScriptPrimitiveType mType;
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
+		bool isTypeLoaded() const;
+		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -71,6 +75,8 @@ namespace BansheeEngine
 		bool mValueType;
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
+		bool isTypeLoaded() const;
+		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -88,6 +94,8 @@ namespace BansheeEngine
 		CM::UINT32 mRank;
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
+		bool isTypeLoaded() const;
+		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -102,7 +110,6 @@ namespace BansheeEngine
 	{
 	public:
 		ScriptSerializableFieldInfo();
-		virtual ~ScriptSerializableFieldInfo() { }
 
 		CM::String mName;
 		CM::UINT32 mFieldId;

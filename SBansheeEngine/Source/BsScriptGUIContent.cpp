@@ -33,7 +33,8 @@ namespace BansheeEngine
 
 	const CM::HString& ScriptGUIContent::getText(MonoObject* instance)
 	{
-		MonoObject* textManaged = (MonoObject*)mTextField->getValue(instance);
+		MonoObject* textManaged = nullptr;
+		mTextField->getValue(instance, &textManaged);
 
 		if(textManaged == nullptr)
 			return HString::dummy();
@@ -44,7 +45,8 @@ namespace BansheeEngine
 
 	const CM::HString& ScriptGUIContent::getTooltip(MonoObject* instance)
 	{
-		MonoObject* tooltipManaged = (MonoObject*)mTooltipField->getValue(instance);
+		MonoObject* tooltipManaged = nullptr;
+		mTooltipField->getValue(instance, &tooltipManaged);
 
 		if(tooltipManaged == nullptr)
 			return HString::dummy();
@@ -55,7 +57,8 @@ namespace BansheeEngine
 
 	HSpriteTexture ScriptGUIContent::getImage(MonoObject* instance)
 	{
-		MonoObject* imageManaged = (MonoObject*)mImageField->getValue(instance);
+		MonoObject* imageManaged = nullptr;
+		mImageField->getValue(instance, &imageManaged);
 
 		if(imageManaged == nullptr)
 			return HSpriteTexture();

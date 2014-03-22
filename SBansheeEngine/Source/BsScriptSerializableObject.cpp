@@ -72,22 +72,15 @@ namespace BansheeEngine
 
 	void ScriptSerializableObject::setFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo, const ScriptSerializableFieldDataPtr& val)
 	{
-		setValue(fieldInfo, val->getValue(fieldInfo->mTypeInfo));
+		fieldInfo->mMonoField->setValue(mManagedInstance, val->getValue(fieldInfo->mTypeInfo));
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableObject::getFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo)
 	{
-		return ScriptSerializableFieldData::create(fieldInfo->mTypeInfo, getValue(fieldInfo));
-	}
+		UINT8 outBuffer[32]; // Buffer more than large enough to hold any pointer or primitive value
+		fieldInfo->mMonoField->getValue(mManagedInstance, outBuffer);
 
-	void ScriptSerializableObject::setValue(const ScriptSerializableFieldInfoPtr& fieldInfo, void* val)
-	{
-		fieldInfo->mMonoField->setValue(mManagedInstance, val);
-	}
-
-	void* ScriptSerializableObject::getValue(const ScriptSerializableFieldInfoPtr& fieldInfo)
-	{
-		return fieldInfo->mMonoField->getValue(mManagedInstance);
+		return ScriptSerializableFieldData::create(fieldInfo->mTypeInfo, outBuffer);
 	}
 
 	RTTITypeBase* ScriptSerializableObject::getRTTIStatic()

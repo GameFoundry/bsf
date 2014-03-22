@@ -16,7 +16,7 @@ namespace BansheeEngine
 		MonoManager();
 		~MonoManager();
 
-		MonoAssembly& loadAssembly(const CM::String& path, const CM::String& name, const CM::String& entryPoint = CM::StringUtil::BLANK);
+		MonoAssembly& loadAssembly(const CM::String& path, const CM::String& name);
 		void unloadAssembly(MonoAssembly& assembly);
 
 		/**

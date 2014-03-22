@@ -89,7 +89,7 @@ namespace BansheeEngine
 		ScriptGUIToggle* nativeInstance = new (cm_alloc<ScriptGUIToggle>()) ScriptGUIToggle(guiToggle);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIToggle::internal_destroyInstance(ScriptGUIToggle* nativeInstance)

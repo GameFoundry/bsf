@@ -36,7 +36,7 @@ namespace BansheeEngine
 		ScriptComponent* nativeInstance = new (cm_alloc<ScriptComponent>()) ScriptComponent(component);
 
 		nativeInstance->createInstance(component->getManagedInstance());
-		nativeInstance->metaData.thisPtrField->setValue(component->getManagedInstance(), nativeInstance);
+		nativeInstance->metaData.thisPtrField->setValue(component->getManagedInstance(), &nativeInstance);
 
 		mScriptGameObjects[component->getInstanceId()] = nativeInstance;
 
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		ScriptSceneObject* nativeInstance = new (cm_alloc<ScriptSceneObject>()) ScriptSceneObject(sceneObject);
 
 		nativeInstance->createInstance(existingInstance);
-		nativeInstance->metaData.thisPtrField->setValue(existingInstance, nativeInstance);
+		nativeInstance->metaData.thisPtrField->setValue(existingInstance, &nativeInstance);
 
 		mScriptGameObjects[sceneObject->getInstanceId()] = nativeInstance;
 

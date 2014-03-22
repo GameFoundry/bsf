@@ -78,7 +78,7 @@ namespace BansheeEngine
 		ScriptGUIButton* nativeInstance = new (cm_alloc<ScriptGUIButton>()) ScriptGUIButton(guiButton);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIButton::internal_destroyInstance(ScriptGUIButton* nativeInstance)

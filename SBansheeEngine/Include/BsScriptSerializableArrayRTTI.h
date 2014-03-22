@@ -5,6 +5,7 @@
 #include "BsScriptSerializableArray.h"
 #include "BsRuntimeScriptObjects.h"
 #include "BsMonoManager.h"
+#include "BsMonoClass.h"
 
 namespace BansheeEngine
 {
@@ -53,10 +54,13 @@ namespace BansheeEngine
 		{
 			ScriptSerializableArray* serializableObject = static_cast<ScriptSerializableArray*>(obj);
 
+			if(!serializableObject->mArrayTypeInfo->isTypeLoaded())
+				return;
+
 			uint32_t lengths[1] = { serializableObject->mNumElements };
 
 			MonoArray* newArray = mono_array_new_full(MonoManager::instance().getDomain(), 
-				nullptr, (uintptr_t*)lengths, nullptr); // TODO - Type is nullptr
+				serializableObject->mArrayTypeInfo->getMonoClass(), (uintptr_t*)lengths, nullptr); 
 
 			serializableObject->mManagedInstance = (MonoObject*)newArray;
 

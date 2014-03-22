@@ -28,9 +28,6 @@ namespace BansheeEngine
 		void setFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo, const ScriptSerializableFieldDataPtr& val);
 		ScriptSerializableFieldDataPtr getFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo);
 
-		void setValue(const ScriptSerializableFieldInfoPtr& fieldInfo, void* val);
-		void* getValue(const ScriptSerializableFieldInfoPtr& fieldInfo);
-
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/

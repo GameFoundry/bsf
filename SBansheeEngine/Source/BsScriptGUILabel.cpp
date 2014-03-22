@@ -63,7 +63,7 @@ namespace BansheeEngine
 		ScriptGUILabel* nativeInstance = new (cm_alloc<ScriptGUILabel>()) ScriptGUILabel(guiLabel);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUILabel::internal_destroyInstance(ScriptGUILabel* nativeInstance)

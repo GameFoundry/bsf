@@ -45,7 +45,7 @@ namespace BansheeEngine
 		ScriptGUIFlexibleSpace* nativeInstance = new (cm_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(space, nativeLayout);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIFlexibleSpace::internal_destroyInstance(ScriptGUIFlexibleSpace* nativeInstance)

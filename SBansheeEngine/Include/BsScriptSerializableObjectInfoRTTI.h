@@ -208,8 +208,7 @@ namespace BansheeEngine
 		}
 
 		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
-		{
-			CM_EXCEPT(CM::InvalidStateException, "Cannot instantiate an abstract class");
+		{return CM::cm_shared_ptr<ScriptSerializableFieldInfo>();
 		}
 	};
 

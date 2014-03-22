@@ -69,7 +69,7 @@ namespace BansheeEngine
 		ScriptGUITexture* nativeInstance = new (cm_alloc<ScriptGUITexture>()) ScriptGUITexture(guiTexture);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUITexture::internal_destroyInstance(ScriptGUITexture* nativeInstance)

@@ -18,6 +18,12 @@ namespace BansheeEngine
 		bool hasSerializableObjectInfo(const CM::String& ns, const CM::String& typeName);
 
 		bool isArray(MonoObject* object);
+
+		MonoClass* getSystemArrayClass() const { return mSystemArrayClass; }
+		MonoClass* getComponentClass() const { return mComponentClass; }
+		MonoClass* getSceneObjectClass() const { return mSceneObjectClass; }
+		MonoClass* getTextureClass() const { return mTextureClass; }
+		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
 	private:
 		CM::UnorderedMap<CM::String, std::shared_ptr<ScriptSerializableAssemblyInfo>>::type mAssemblyInfos;
 		bool mBaseTypesInitialized;

@@ -32,16 +32,14 @@ namespace BansheeEngine
 		return mFieldType;
 	}
 
-	void* MonoField::getValue(MonoObject* instance)
+	void MonoField::getValue(MonoObject* instance, void* outValue)
 	{
-		void* value = nullptr;
-		mono_field_get_value(instance, mField, &value);
-		return value;
+		mono_field_get_value(instance, mField, outValue);
 	}
 
 	void MonoField::setValue(MonoObject* instance, void* value)
 	{
-		mono_field_set_value(instance, mField, &value);
+		mono_field_set_value(instance, mField, value);
 	}
 
 	bool MonoField::hasAttribute(MonoClass* monoClass)
@@ -80,15 +78,15 @@ namespace BansheeEngine
 	{
 		uint32_t flags = mono_field_get_flags(mField);
 
-		if((flags & MONO_FIELD_ATTR_PRIVATE) != 0)
+		if(flags == MONO_FIELD_ATTR_PRIVATE)
 			return MonoFieldVisibility::Private;
-		else if((flags & MONO_FIELD_ATTR_FAM_AND_ASSEM) != 0)
+		else if(flags == MONO_FIELD_ATTR_FAM_AND_ASSEM)
 			return MonoFieldVisibility::ProtectedInternal;
-		else if((flags & MONO_FIELD_ATTR_ASSEMBLY) != 0)
+		else if(flags == MONO_FIELD_ATTR_ASSEMBLY)
 			return MonoFieldVisibility::Internal;
-		else if((flags & MONO_FIELD_ATTR_FAMILY) != 0)
+		else if(flags == MONO_FIELD_ATTR_FAMILY)
 			return MonoFieldVisibility::Protected;
-		else if((flags & MONO_FIELD_ATTR_PUBLIC) != 0)
+		else if(flags == MONO_FIELD_ATTR_PUBLIC)
 			return MonoFieldVisibility::Public;
 
 		assert(false);

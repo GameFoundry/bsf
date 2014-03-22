@@ -5,8 +5,8 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    class DbgComponent : Component
+    public class DbgComponent : Component
     {
-        private int a;
+        public int a;
     }
 }

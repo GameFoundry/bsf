@@ -116,7 +116,7 @@ namespace BansheeEditor
 		ScriptEditorWindow* nativeInstance = new (cm_alloc<ScriptEditorWindow>()) ScriptEditorWindow(windowFullTypeName, displayName, editorWidget);
 		nativeInstance->createInstance(editorWindowInstance);
 
-		metaData.thisPtrField->setValue(editorWindowInstance, nativeInstance);
+		metaData.thisPtrField->setValue(editorWindowInstance, &nativeInstance);
 
 		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
 

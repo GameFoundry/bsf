@@ -74,7 +74,7 @@ namespace BansheeEngine
 		ScriptGUIScrollArea* nativeInstance = new (cm_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(guiScrollArea, scriptLayout->getParentWidget());
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptGUIScrollArea::internal_destroyInstance(ScriptGUIScrollArea* nativeInstance)

@@ -33,6 +33,8 @@ namespace BansheeEngine
 		MonoClass* getClass(const CM::String& namespaceName, const CM::String& name) const;
 		const CM::Vector<MonoClass*>::type& getAllClasses() const;
 
+		void invoke(const CM::String& functionName);
+
 	private:
 		friend class MonoManager;
 
@@ -41,8 +43,6 @@ namespace BansheeEngine
 		void load(const CM::String& path, const CM::String& name);
 		void loadAsDependency(MonoImage* image, const CM::String& name);
 		void unload();
-
-		void initialize(const CM::String& entryPoint);
 
 		CM::String mName;
 		MonoImage* mMonoImage;

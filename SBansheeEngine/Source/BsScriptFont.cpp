@@ -37,7 +37,7 @@ namespace BansheeEngine
 		ScriptFont* nativeInstance = new (cm_alloc<ScriptFont>()) ScriptFont(font);
 		nativeInstance->createInstance(instance);
 
-		metaData.thisPtrField->setValue(instance, nativeInstance);
+		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
 	void ScriptFont::internal_destroyInstance(ScriptFont* nativeInstance)
