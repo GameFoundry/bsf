@@ -18,12 +18,15 @@ LOW PRIORITY
  ---------------------------------------
 
  Testing:
- Set up a test case - Initially disable field serialization
- - In C# create SceneObject("ManagedSO")
-  - Add to it DbgComponent
- - Call a dummy C++ method (in ScriptSceneObject for example)
-   - C++ method calls clone() on the scene object and creates a new "ManagedSOClone" object and parents it as a child of current SO
-   - C# then retrieves a child and checks if the component is there
+Test SerializableObject
+Test arrays
+Test arrays of arrays
+Test references to Components
+Test references to Resources
+Test how structs work
+Test how things work when class gets removed
+
+Test and implement multi-rank arrays
 
  ------------------------------------------------------
  General C# component management

@@ -14,13 +14,15 @@ namespace BansheeEngine
             SceneObject so = new SceneObject("TestSO");
             DbgComponent dbgComponent = so.AddComponent<DbgComponent>();
             dbgComponent.a = 5;
+            dbgComponent.complex.someValue = 19;
+            dbgComponent.complex.anotherValue = "AnotherValue";
 
             dbgTestComponentClone(so);
 
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
-                reportDbgValue(childSO.GetComponent<DbgComponent>().a, typeof(DbgComponent));
+                reportDbgValue(childSO.GetComponent<DbgComponent>().complex.someValue, typeof(DbgComponent));
             }
 
             //Color newColor = Color.red;

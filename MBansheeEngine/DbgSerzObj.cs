@@ -5,9 +5,10 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    public class DbgComponent : Component
+    [SerializableObject]
+    public class DbgSerzObj
     {
-        public int a;
-        public DbgSerzObj complex = new DbgSerzObj();
+        public int someValue;
+        public string anotherValue;
     }
 }

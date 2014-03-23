@@ -46,6 +46,8 @@
     <Compile Include="Color.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="DbgComponent.cs" />
+    <Compile Include="DbgSerzObj.cs" />
+    <Compile Include="DontSerializeField.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="GUI\GUI.cs" />
@@ -80,6 +82,7 @@
     <Compile Include="Resource.cs" />
     <Compile Include="SceneObject.cs" />
     <Compile Include="ScriptObject.cs" />
+    <Compile Include="SerializableObject.cs" />
     <Compile Include="SerializeField.cs" />
     <Compile Include="SpriteTexture.cs" />
     <Compile Include="StringTable.cs" />

@@ -27,16 +27,7 @@ namespace BansheeEngine
 
 		static MonoString* wstringToMono(MonoDomain* domain, const CM::WString& str)
 		{
-			CM::UINT32 len = (CM::UINT32)str.length();
-			mono_unichar2* monoChars = (mono_unichar2*)CM::cm_alloc<mono_unichar2>(len);
-
-			for(CM::UINT32 i = 0; i < len; i++)
-				monoChars[i] = str[i];
-
-			MonoString* monoString = mono_string_new_utf16(domain, monoChars, len);
-
-			CM::cm_free(monoChars);
-			return monoString;
+			return mono_string_from_utf16((mono_unichar2*)str.c_str());
 		}
 
 		static void throwIfException(MonoException* exception)

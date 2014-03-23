@@ -14,7 +14,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	RuntimeScriptObjects::RuntimeScriptObjects()
-		:mBaseTypesInitialized(false), mSerializableAttribute(nullptr), mNonSerializedAttribute(nullptr), 
+		:mBaseTypesInitialized(false), mSerializableObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
 		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTextureClass(nullptr), mSpriteTextureClass(nullptr),
 		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr)
 	{
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		const Vector<MonoClass*>::type& allClasses = curAssembly->getAllClasses();
 		for(auto& curClass : allClasses)
 		{
-			if((curClass->isSubClassOf(mComponentClass) || curClass->hasAttribute(mSerializableAttribute)) && curClass != mComponentClass)
+			if((curClass->isSubClassOf(mComponentClass) || curClass->hasAttribute(mSerializableObjectAttribute)) && curClass != mComponentClass)
 			{
 				std::shared_ptr<ScriptSerializableTypeInfoObject> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoObject>();
 				typeInfo->mTypeNamespace = curClass->getNamespace();
@@ -104,7 +104,7 @@ namespace BansheeEngine
 					MonoFieldVisibility visibility = field->getVisibility();
 					if(visibility == MonoFieldVisibility::Public)
 					{
-						if(!field->hasAttribute(mNonSerializedAttribute))
+						if(!field->hasAttribute(mDontSerializeFieldAttribute))
 							fieldInfo->mFlags = (ScriptFieldFlags)((UINT32)fieldInfo->mFlags | (UINT32)ScriptFieldFlags::Serializable);
 
 						if(!field->hasAttribute(mHideInInspectorAttribute))
@@ -322,8 +322,8 @@ namespace BansheeEngine
 
 		mSystemArrayClass = nullptr;
 
-		mSerializableAttribute = nullptr;
-		mNonSerializedAttribute = nullptr;
+		mSerializableObjectAttribute = nullptr;
+		mDontSerializeFieldAttribute = nullptr;
 
 		mComponentClass = nullptr;
 		mSceneObjectClass = nullptr;
@@ -350,13 +350,13 @@ namespace BansheeEngine
 		if(mSystemArrayClass == nullptr)
 			CM_EXCEPT(InvalidStateException, "Cannot find System.Array managed class.");
 
-		mSerializableAttribute = mscorlib->getClass("System", "SerializableAttribute");
-		if(mSerializableAttribute == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find SerializableAttribute managed class.");
+		mSerializableObjectAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializableObject");
+		if(mSerializableObjectAttribute == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find SerializableObject managed class.");
 
-		mNonSerializedAttribute = mscorlib->getClass("System", "NonSerializedAttribute");
-		if(mNonSerializedAttribute == nullptr)
-			CM_EXCEPT(InvalidStateException, "Cannot find NonSerializedAttribute managed class.");
+		mDontSerializeFieldAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "DontSerializeField");
+		if(mDontSerializeFieldAttribute == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find DontSerializeField managed class.");
 
 		mComponentClass = bansheeEngineAssembly->getClass("BansheeEngine", "Component");
 		if(mComponentClass == nullptr)

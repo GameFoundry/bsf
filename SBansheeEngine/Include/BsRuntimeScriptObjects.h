@@ -30,15 +30,14 @@ namespace BansheeEngine
 
 		MonoClass* mSystemArrayClass;
 
-		MonoClass* mSerializableAttribute;
-		MonoClass* mNonSerializedAttribute;
-
 		MonoClass* mComponentClass;
 		MonoClass* mSceneObjectClass;
 
 		MonoClass* mTextureClass;
 		MonoClass* mSpriteTextureClass;
 
+		MonoClass* mSerializableObjectAttribute;
+		MonoClass* mDontSerializeFieldAttribute;
 		MonoClass* mSerializeFieldAttribute;
 		MonoClass* mHideInInspectorAttribute;
 

@@ -115,20 +115,21 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::String:
 				{
+					MonoString* strVal = *(MonoString**)(value);
+
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataString>();
-					if(value != nullptr)
-						fieldData->value = MonoUtil::monoToWString((MonoString*)value);
+					if(strVal != nullptr)
+						fieldData->value = MonoUtil::monoToWString(strVal);
 					return fieldData;
 				}
 			case ScriptPrimitiveType::TextureRef:
 				{
+					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataResourceRef>();
 
-					if(value != nullptr)
+					if(objVal != nullptr)
 					{
-						MonoObject* managedInstance = (MonoObject*)value;
-
-						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(managedInstance);
+						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(objVal);
 						fieldData->value = static_resource_cast<ScriptTexture2D>(scriptTexture2D->getNativeHandle());
 					}
 
@@ -136,13 +137,12 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::SpriteTextureRef:
 				{
+					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataResourceRef>();
 					
-					if(value != nullptr)
+					if(objVal != nullptr)
 					{
-						MonoObject* managedInstance = (MonoObject*)value;
-
-						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(managedInstance);
+						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(objVal);
 						fieldData->value = static_resource_cast<SpriteTexture>(scriptSpriteTexture->getNativeHandle());
 					}
 
@@ -150,13 +150,12 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::SceneObjectRef:
 				{
+					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataGameObjectRef>();
 
-					if(value != nullptr)
+					if(objVal != nullptr)
 					{
-						MonoObject* managedInstance = (MonoObject*)value;
-
-						ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(managedInstance);
+						ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(objVal);
 						fieldData->value = static_object_cast<SceneObject>(scriptSceneObject->getNativeHandle());
 					}
 
@@ -164,13 +163,12 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::ComponentRef:
 				{
+					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataGameObjectRef>();
 
-					if(value != nullptr)
+					if(objVal != nullptr)
 					{
-						MonoObject* managedInstance = (MonoObject*)value;
-
-						ScriptComponent* scriptComponent = ScriptComponent::toNative(managedInstance);
+						ScriptComponent* scriptComponent = ScriptComponent::toNative(objVal);
 						fieldData->value = static_object_cast<Component>(scriptComponent->getNativeHandle());
 					}
 
@@ -180,20 +178,24 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
 		{
+			MonoObject* objVal = *(MonoObject**)(value);
+
 			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataObject>();
-			if(value != nullptr)
+			if(objVal != nullptr)
 			{
-				fieldData->value = ScriptSerializableObject::create((MonoObject*)value);
+				fieldData->value = ScriptSerializableObject::create(objVal);
 			}
 
 			return fieldData;
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
 		{
+			MonoObject* objVal = *(MonoObject**)(value);
+
 			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataArray>();
-			if(value != nullptr)
+			if(objVal != nullptr)
 			{
-				fieldData->value = ScriptSerializableArray::create((MonoObject*)value, std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo));
+				fieldData->value = ScriptSerializableArray::create(objVal, std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo));
 			}
 
 			return fieldData;
