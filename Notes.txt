@@ -1,11 +1,4 @@
 Reminders:
-  - Assets manifest
-     - I need to be able to create a list of assets used in the game. Assets referenced from the editor
-       should be easy to account for. But assets loaded from code are special. Maybe be like Unity and allow
-	   special Resources folder?
-  - When displaying inspector data for a component, take into consideration that it will need to be able
-    to display that data for user created C# classes as well. AND I will most certainly have C# versions of all my
-	components. Therefore is there any purpose of having C++ only inspector parsing code?
   - When I'll be doing SRGB write make sure GUI textures are handled properly. Right now they are read in gamma space, and displayed
     as normal, but if I switch to SRGB write then gamma would be applied twice to those textures.
   - Async callbacks. I'd like to be able to assign a callback to an async method, that will execute on the calling thread once the async operation is complete.
@@ -24,9 +17,6 @@ Reminders:
 	    it could be replaced with a variable parameter version of addComponent.
   - Profiling: Create an easy to browse list of all loaded Resources (similar to Hierarchy in Unity, just for loaded resources)
     - Possibly also for all core objects
-  - Attempt to get rid of selective input click callback in GUIManager. It's too specific.
-    - Instead of using selective input I might be able to block all input using event filter (by adding return values to them)
-    - Some kind of GUISelectiveInput class? I think it makes sense to move it out of GUIManager
   - GUI ignores image in GUIContent for most elements
   - Each view (i.e. camera) of the scene should be put into its own thread
   - How do I handle multiple mesh formats? Some files need animation, other don't. Some would mabye like to use QTangent, others the proper tangent frame.
@@ -38,7 +28,6 @@ Reminders:
   - Port boost threads to std threads (CmThreadDefines.h)
   - Remove HardwarePixelBuffer (DX11 doesn't use it, and DX9 and OpenGL textures can be rewritten so they have its methods internally)
   - Multihead device
-  - 3D rendering (use low level hardware methods for it)
   - Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
   - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
   - Go to GEA book and read about resource managers before implementing them
@@ -69,10 +58,6 @@ Reminders:
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.
- - UI buffer updates
-   - https://developer.nvidia.com/sites/default/files/akamai/gamedev/files/gdc12/Efficient_Buffer_Management_McDonald.pdf
-   - See here how to avoid locks and stalls when updating just parts of a GUI buffer. In need to modify my mesh update code because it currently always updates 100% of the buffer.
-  - Maybe get rid of CPU UI buffers completely.
  - UI shader resolution params for gui should be in a separate constant buffer
 
 ----------------------------------------------------------------------------------------------

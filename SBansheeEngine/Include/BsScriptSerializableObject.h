@@ -16,7 +16,6 @@ namespace BansheeEngine
 		ScriptSerializableObject(const ConstructPrivately& dummy);
 
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
-		ScriptSerializableObjectInfoPtr getObjectInfo() const { return mObjInfo; }
 
 		static ScriptSerializableObjectPtr create(MonoObject* managedInstance);
 
@@ -24,6 +23,16 @@ namespace BansheeEngine
 		ScriptSerializableObjectInfoPtr mObjInfo;
 		MonoObject* mManagedInstance;
 		CM::Vector<ScriptSerializableFieldDataEntryPtr>::type mFieldEntries;
+
+		/**
+		 * @brief	Populates internal field data based on currently active managed instance.
+		 */
+		void serializeManagedInstance();
+
+		/**
+		 * @brief	Creates a new managed instance and populates it with stored field data.
+		 */
+		void deserializeManagedInstance();
 
 		void setFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo, const ScriptSerializableFieldDataPtr& val);
 		ScriptSerializableFieldDataPtr getFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo);

@@ -53,18 +53,5 @@ namespace CamelotFramework
 
 			return newObject.getInternalPtr();
 		}
-
-	protected:
-		virtual void onDeserializationStarted(IReflectable* obj)
-		{
-			SceneObject* sceneObj = static_cast<SceneObject*>(obj);
-			GameObjectManager::instance().notifyDeserializationStarted(sceneObj);
-		}
-
-		virtual void onDeserializationEnded(IReflectable* obj)
-		{
-			SceneObject* sceneObj = static_cast<SceneObject*>(obj);
-			GameObjectManager::instance().notifyDeserializationEnded(sceneObj);
-		}
 	};
 }

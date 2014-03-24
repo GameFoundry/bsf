@@ -67,7 +67,6 @@ Medium priority:
  - Command buffer:
    - Make CommandQueue not use mutexes and use atomics instead??
    - When importing a resource, and registering it with Resources I don't think it properly gets added to the loaded resources array? For some reason shaders get created twice.
- - Closing down a window (any window) will shut down main rendering loop
  - GUIManager draw call merging:
     I merge two GUI elements if they don't overlap each other, however I don't consider if there is some world geometry between them. Another reason to move batching out of GUIManager.
  - Update Mesh DX11 buffers so they get initialized with data immediately upon construction as an optimization and see if OpenGL has something similar

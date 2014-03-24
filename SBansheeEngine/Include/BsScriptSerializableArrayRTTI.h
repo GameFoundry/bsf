@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "CmRTTIType.h"
+#include "CmGameObjectManager.h"
 #include "BsScriptSerializableArray.h"
 #include "BsRuntimeScriptObjects.h"
 #include "BsMonoManager.h"
@@ -20,6 +21,16 @@ namespace BansheeEngine
 		void setTypeInfo(ScriptSerializableArray* obj, ScriptSerializableTypeInfoArrayPtr val)
 		{
 			obj->mArrayTypeInfo = val;
+		}
+
+		CM::UINT32& getNumElements(ScriptSerializableArray* obj)
+		{
+			return (CM::UINT32)obj->mNumElements;
+		}
+
+		void setNumElements(ScriptSerializableArray* obj, CM::UINT32& numElements)
+		{
+			obj->mNumElements = numElements;
 		}
 
 		ScriptSerializableFieldDataPtr getArrayEntry(ScriptSerializableArray* obj, CM::UINT32 arrayIdx)
@@ -46,29 +57,27 @@ namespace BansheeEngine
 		ScriptSerializableArrayRTTI()
 		{
 			addReflectablePtrField("mArrayTypeInfo", 0, &ScriptSerializableArrayRTTI::getTypeInfo, &ScriptSerializableArrayRTTI::setTypeInfo);
-			addReflectablePtrArrayField("mArrayEntries", 1, &ScriptSerializableArrayRTTI::getArrayEntry, &ScriptSerializableArrayRTTI::getNumArrayEntries, 
+			addPlainField("mNumElements", 1, &ScriptSerializableArrayRTTI::getNumElements, &ScriptSerializableArrayRTTI::setNumElements);
+			addReflectablePtrArrayField("mArrayEntries", 2, &ScriptSerializableArrayRTTI::getArrayEntry, &ScriptSerializableArrayRTTI::getNumArrayEntries, 
 				&ScriptSerializableArrayRTTI::setArrayEntry, &ScriptSerializableArrayRTTI::setNumArrayEntries);
 		}
 
-		virtual void onDeserializationEnded(CM::IReflectable* obj)
+		virtual void onSerializationStarted(CM::IReflectable* obj)
+		{
+			ScriptSerializableArray* serializableObject = static_cast<ScriptSerializableArray*>(obj);
+			serializableObject->serializeManagedInstance();
+		}
+
+		virtual void onDeserializationStarted(CM::IReflectable* obj)
 		{
 			ScriptSerializableArray* serializableObject = static_cast<ScriptSerializableArray*>(obj);
 
-			if(!serializableObject->mArrayTypeInfo->isTypeLoaded())
-				return;
-
-			uint32_t lengths[1] = { serializableObject->mNumElements };
-
-			MonoArray* newArray = mono_array_new_full(MonoManager::instance().getDomain(), 
-				serializableObject->mArrayTypeInfo->getMonoClass(), (uintptr_t*)lengths, nullptr); 
-
-			serializableObject->mManagedInstance = (MonoObject*)newArray;
-
-			CM::UINT32 idx = 0;
-			for(auto& arrayEntry : serializableObject->mArrayEntries)
-			{
-				serializableObject->setFieldData(idx, arrayEntry);
-			}
+			// If we are deserializing a GameObject we need to defer deserializing actual field values
+			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
+			if(CM::GameObjectManager::instance().isGameObjectDeserializationActive())
+				CM::GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
+			else
+				serializableObject->deserializeManagedInstance();
 		}
 
 		virtual const CM::String& getRTTIName()

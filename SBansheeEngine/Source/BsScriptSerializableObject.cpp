@@ -18,6 +18,29 @@ namespace BansheeEngine
 	ScriptSerializableObject::ScriptSerializableObject(const ConstructPrivately& dummy, ScriptSerializableObjectInfoPtr objInfo, MonoObject* managedInstance)
 		:mObjInfo(objInfo), mManagedInstance(managedInstance)
 	{
+
+	}
+
+	ScriptSerializableObjectPtr ScriptSerializableObject::create(MonoObject* managedInstance)
+	{
+		::MonoClass* monoClass = mono_object_get_class(managedInstance);
+		String elementNs = mono_class_get_namespace(monoClass);
+		String elementTypeName = mono_class_get_name(monoClass);
+
+		ScriptSerializableObjectInfoPtr objInfo;
+		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
+			return nullptr;
+
+		return cm_shared_ptr<ScriptSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
+	}
+
+	ScriptSerializableObjectPtr ScriptSerializableObject::createEmpty()
+	{
+		return cm_shared_ptr<ScriptSerializableObject>(ConstructPrivately());
+	}
+
+	void ScriptSerializableObject::serializeManagedInstance()
+	{
 		ScriptSerializableObjectInfoPtr curType = mObjInfo;
 
 		UINT32 numFields = 0;
@@ -52,22 +75,86 @@ namespace BansheeEngine
 		}
 	}
 
-	ScriptSerializableObjectPtr ScriptSerializableObject::create(MonoObject* managedInstance)
+	void ScriptSerializableObject::deserializeManagedInstance()
 	{
-		::MonoClass* monoClass = mono_object_get_class(managedInstance);
-		String elementNs = mono_class_get_namespace(monoClass);
-		String elementTypeName = mono_class_get_name(monoClass);
+		ScriptSerializableObjectInfoPtr storedObjInfo = mObjInfo;
+		ScriptSerializableObjectInfoPtr currentObjInfo = nullptr;
 
-		ScriptSerializableObjectInfoPtr objInfo;
-		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
+		// See if this type even still exists
+		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(storedObjInfo->mTypeInfo->mTypeNamespace, storedObjInfo->mTypeInfo->mTypeName, currentObjInfo))
+			return;
+
+		mManagedInstance = currentObjInfo->mMonoClass->createInstance();
+
+		auto findFieldInfoFromKey = [&] (CM::UINT16 typeId, CM::UINT16 fieldId, ScriptSerializableObjectInfoPtr objInfo, 
+			ScriptSerializableFieldInfoPtr& outFieldInfo, ScriptSerializableObjectInfoPtr &outObjInfo) -> bool
+		{
+			while(objInfo != nullptr)
+			{
+				if(objInfo->mTypeId == typeId)
+				{
+					auto iterFind = objInfo->mFields.find(fieldId);
+					if(iterFind != objInfo->mFields.end())
+					{
+						outFieldInfo = iterFind->second;
+						outObjInfo = objInfo;
+
+						return true;
+					}
+
+					return false;
+				}
+
+				objInfo = objInfo->mBaseClass;
+			}
+
+			return false;
+		};
+
+		auto findTypeNameMatchingFieldInfo = [&] (const ScriptSerializableFieldInfoPtr& fieldInfo, const ScriptSerializableObjectInfoPtr& fieldObjInfo, 
+			ScriptSerializableObjectInfoPtr objInfo) -> ScriptSerializableFieldInfoPtr
+		{
+			while(objInfo != nullptr)
+			{
+				if(objInfo->mTypeInfo->matches(fieldObjInfo->mTypeInfo))
+				{
+					auto iterFind = objInfo->mFieldNameToId.find(fieldInfo->mName);
+					if(iterFind != objInfo->mFieldNameToId.end())
+					{
+						auto iterFind2 = objInfo->mFields.find(iterFind->second);
+						if(iterFind2 != objInfo->mFields.end())
+						{
+							ScriptSerializableFieldInfoPtr foundField = iterFind2->second;
+							if(foundField->isSerializable())
+							{
+								if(fieldInfo->mTypeInfo->matches(foundField->mTypeInfo))
+									return foundField;
+							}
+						}
+					}
+
+					return nullptr;
+				}
+
+				objInfo = objInfo->mBaseClass;
+			}
+
 			return nullptr;
+		};
 
-		return cm_shared_ptr<ScriptSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
-	}
+		// Scan all fields and ensure the fields still exist
+		for(auto& fieldEntry : mFieldEntries)
+		{
+			ScriptSerializableFieldInfoPtr storedFieldEntry;
+			ScriptSerializableObjectInfoPtr storedFieldObjEntry;
 
-	ScriptSerializableObjectPtr ScriptSerializableObject::createEmpty()
-	{
-		return cm_shared_ptr<ScriptSerializableObject>(ConstructPrivately());
+			if(!findFieldInfoFromKey(fieldEntry->mKey->mTypeId, fieldEntry->mKey->mFieldId, storedObjInfo, storedFieldEntry, storedFieldObjEntry))
+				continue;
+
+			ScriptSerializableFieldInfoPtr matchingFieldInfo = findTypeNameMatchingFieldInfo(storedFieldEntry, storedFieldObjEntry, currentObjInfo);
+			if(matchingFieldInfo != nullptr)
+				setFieldData(matchingFieldInfo, fieldEntry->mValue);
+		}
 	}
 
 	void ScriptSerializableObject::setFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo, const ScriptSerializableFieldDataPtr& val)

@@ -26,6 +26,16 @@ namespace BansheeEngine
 		::MonoClass* mClass;
 		CM::UINT32 mNumElements;
 
+		/**
+		 * @brief	Populates internal field data based on currently active managed instance.
+		 */
+		void serializeManagedInstance();
+
+		/**
+		 * @brief	Creates a new managed instance and populates it with stored field data.
+		 */
+		void deserializeManagedInstance();
+
 		void setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val);
 		ScriptSerializableFieldDataPtr getFieldData(CM::UINT32 arrayIdx);
 

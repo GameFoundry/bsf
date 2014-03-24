@@ -40,6 +40,34 @@ namespace BansheeEngine
 		return cm_shared_ptr<ScriptSerializableArray>(ConstructPrivately());
 	}
 
+	void ScriptSerializableArray::serializeManagedInstance()
+	{
+		mArrayEntries.resize(mNumElements);
+		for(UINT32 i = 0; i < mNumElements; i++)
+		{
+			mArrayEntries[i] = getFieldData(i);
+		}
+	}
+
+	void ScriptSerializableArray::deserializeManagedInstance()
+	{
+		if(!mArrayTypeInfo->isTypeLoaded())
+			return;
+
+		uint32_t lengths[1] = { mNumElements };
+
+		MonoArray* newArray = mono_array_new_full(MonoManager::instance().getDomain(), 
+			mArrayTypeInfo->getMonoClass(), (uintptr_t*)lengths, nullptr); 
+
+		mManagedInstance = (MonoObject*)newArray;
+
+		CM::UINT32 idx = 0;
+		for(auto& arrayEntry : mArrayEntries)
+		{
+			setFieldData(idx, arrayEntry);
+		}
+	}
+
 	void ScriptSerializableArray::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
 		setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));

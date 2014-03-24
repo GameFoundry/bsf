@@ -11,14 +11,30 @@ setValue in ScriptSerializableObject & ScriptSerializableArray should check if v
 LOW PRIORITY
 - Add Multi-dimensional arrays / Lists / Dictionaries
   - (To get array lengths per rank I probably need to cast to System.Array and then call GetLength)
+  - For List/Dictionary I will probably want to do it though ICollection interface
+  - Use mono_object_get_virtual_method() to get virtual method
+  - Getting a generic type: Try mono_reflection_type_from_name
 - Ensure that unknown components retain their field data so when they are no longer unknown their data may be restored
 - Get rid of ScriptObject::createInstance and replace it with parameter in constructor
 - A way to serialize any object into a Resource (and deserialize it from Resource)
 
+----------------------------------------
+
+I attempt to resolve SceneObject handle during deserialization, while it should only be done after deserialization is done
+ - Issue happens in ScriptSerializableFieldDataGameObjectRef::getValue
+
+HACKY WAY: <- THE RIGHT WAY
+ - I can add a callback to GameObject that gets triggered when deserialization for a GameObject is fully done
+ - Then I perform ManagedComponent deserilization there
+ - SerializableSceneObject & SerializableSceneArray would have to be modified so that they don't resolve fields on deserialization
+
+In ScriptSerializableObject & ScriptSerializableArray add:
+ serializeManagedInstance <- Called when serialization starts and recursively
+ deserializeManagedInstance <- Called by the deserialization callback in ManagedComponent and recursively
+
  ---------------------------------------
 
  Testing:
-Test SerializableObject
 Test arrays
 Test arrays of arrays
 Test references to Components

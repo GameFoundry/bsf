@@ -23,22 +23,27 @@ namespace CamelotFramework
 		/************************************************************************/
 		// Note: GameObjects need a bit of special handling when it comes to deserialization,
 		// which is what this part of the code is used for. It performs two main actions:
-		//  - 1. Resolves all GameObjectHandles on deserialization end
+		//  - 1. Resolves all GameObjectHandles on deserialization
 		//    - We can't just resolve them as we go because during deserialization not all objects
 		//      have necessarily been created.
 		//  - 2. Maps serialized IDs to actual in-engine ids. 
 
 		/**
 		 * @brief	Needs to be called whenever GameObject deserialization starts. Must be followed
-		 * 			by notifyDeserializationEnded call.
+		 * 			by endDeserialization call.
 		 */
-		void notifyDeserializationStarted(GameObject* object);
+		void startDeserialization();
 
 		/**
 		 * @brief	Needs to be called whenever GameObject deserialization ends. Must be preceded
-		 * 			by notifyDeserializationStarted call.
+		 * 			by startDeserialization call.
 		 */
-		void notifyDeserializationEnded(GameObject* object);
+		void endDeserialization();
+
+		/**
+		 * @brief	Returns true if GameObject deserialization is currently in progress.
+		 */
+		bool isGameObjectDeserializationActive() const { return mIsDeserializationActive; }
 
 		/**
 		 * @brief	Registers an id that was deserialized, and has been remapped to
@@ -52,6 +57,11 @@ namespace CamelotFramework
 		 */
 		void registerUnresolvedHandle(const GameObjectHandleBase& object);
 
+		/**
+		 * @brief	Registers a callback that will be triggered when GameObject serialization ends.
+		 */
+		void registerOnDeserializationEndCallback(std::function<void()> callback);
+
 	private:
 		UINT64 mNextAvailableID; // 0 is not a valid ID
 		Map<UINT64, GameObjectHandleBase>::type mObjects;
@@ -60,5 +70,6 @@ namespace CamelotFramework
 		bool mIsDeserializationActive;
 		Map<UINT64, UINT64>::type mIdMapping;
 		Vector<GameObjectHandleBase>::type mUnresolvedHandles;
+		Vector<std::function<void()>>::type mEndCallbacks;
 	};
 }

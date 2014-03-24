@@ -115,16 +115,6 @@ namespace BansheeEngine
 		void setInputBridge(const CM::RenderTexture* renderTex, const GUIElement* element);
 
 	private:
-		struct SelectiveInputData
-		{
-			SelectiveInputData()
-				:acceptAllElements(false)
-			{ }
-
-			CM::Set<const GUIElement*>::type elements;
-			bool acceptAllElements;
-		};
-
 		static const CM::UINT32 DRAG_DISTANCE;
 
 		static const CM::UINT32 MESH_HEAP_INITIAL_NUM_VERTS;

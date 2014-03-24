@@ -403,7 +403,7 @@ namespace BansheeEngine
 
 				return scriptSceneObject->getManagedInstance();
 			}
-			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::SpriteTextureRef)
+			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::ComponentRef)
 			{
 				ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(value);
 				if(scriptComponent == nullptr)

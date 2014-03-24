@@ -10,19 +10,25 @@ namespace BansheeEngine
     {
         static void Main()
         {
+            SceneObject otherSO = new SceneObject("OtherSO");
+            DbgComponent2 dbgComponent2 = otherSO.AddComponent<DbgComponent2>();
+            dbgComponent2.a2 = 33;
+
             GUIElementStateStyle dbgStyle = new GUIElementStateStyle();
             SceneObject so = new SceneObject("TestSO");
             DbgComponent dbgComponent = so.AddComponent<DbgComponent>();
             dbgComponent.a = 5;
             dbgComponent.complex.someValue = 19;
             dbgComponent.complex.anotherValue = "AnotherValue";
+            dbgComponent.otherComponent = dbgComponent2;
+            dbgComponent.otherSO = otherSO;
 
             dbgTestComponentClone(so);
 
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
-                reportDbgValue(childSO.GetComponent<DbgComponent>().complex.someValue, typeof(DbgComponent));
+                reportDbgValue(childSO.GetComponent<DbgComponent>().otherComponent.a2, typeof(DbgComponent));
             }
 
             //Color newColor = Color.red;

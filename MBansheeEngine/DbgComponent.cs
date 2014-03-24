@@ -9,5 +9,7 @@ namespace BansheeEngine
     {
         public int a;
         public DbgSerzObj complex = new DbgSerzObj();
+        public DbgComponent2 otherComponent;
+        public SceneObject otherSO;
     }
 }

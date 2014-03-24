@@ -43,42 +43,45 @@ namespace CamelotFramework
 		mObjects.erase(object->getInstanceId());
 	}
 
-	void GameObjectManager::notifyDeserializationStarted(GameObject* object)
+	void GameObjectManager::startDeserialization()
 	{
-		if(!mIsDeserializationActive)
-		{
-			mActiveDeserializedObject = object;
-			mIsDeserializationActive = true;
-		}
+		assert(!mIsDeserializationActive);
+
+		mIsDeserializationActive = true;
 	}
 
-	void GameObjectManager::notifyDeserializationEnded(GameObject* object)
+	void GameObjectManager::endDeserialization()
 	{
-		if(object == mActiveDeserializedObject)
+		assert(mIsDeserializationActive);
+
+		for(auto& unresolvedHandle : mUnresolvedHandles)
 		{
-			for(auto& unresolvedHandle : mUnresolvedHandles)
+			UINT64 instanceId = unresolvedHandle.getInstanceId();
+
+			auto findIter = mIdMapping.find(instanceId);
+			if(findIter != mIdMapping.end())
 			{
-				UINT64 instanceId = unresolvedHandle.getInstanceId();
-
-				auto findIter = mIdMapping.find(instanceId);
-				if(findIter != mIdMapping.end())
-				{
-					instanceId = findIter->second;
-				}
-
-				auto findIterObj = mObjects.find(instanceId);
-
-				if(findIterObj != mObjects.end())
-					unresolvedHandle.resolve(findIterObj->second);	
-				else
-					unresolvedHandle.resolve(nullptr);
+				instanceId = findIter->second;
 			}
 
-			mIsDeserializationActive = false;
-			mActiveDeserializedObject = nullptr;
-			mIdMapping.clear();
-			mUnresolvedHandles.clear();
+			auto findIterObj = mObjects.find(instanceId);
+
+			if(findIterObj != mObjects.end())
+				unresolvedHandle.resolve(findIterObj->second);	
+			else
+				unresolvedHandle.resolve(nullptr);
 		}
+
+		for(auto iter = mEndCallbacks.rbegin(); iter != mEndCallbacks.rend(); ++iter)
+		{
+			(*iter)();
+		}
+
+		mIsDeserializationActive = false;
+		mActiveDeserializedObject = nullptr;
+		mIdMapping.clear();
+		mUnresolvedHandles.clear();
+		mEndCallbacks.clear();
 	}
 
 	void GameObjectManager::registerDeserializedId(UINT64 serializedId, UINT64 actualId)
@@ -103,5 +106,17 @@ namespace CamelotFramework
 #endif
 
 		mUnresolvedHandles.push_back(object);
+	}
+
+	void GameObjectManager::registerOnDeserializationEndCallback(std::function<void()> callback)
+	{
+#if CM_DEBUG_MODE
+		if(!mIsDeserializationActive)
+		{
+			CM_EXCEPT(InvalidStateException, "Callback queue only be modified while deserialization is active.");
+		}
+#endif
+
+		mEndCallbacks.push_back(callback);
 	}
 }

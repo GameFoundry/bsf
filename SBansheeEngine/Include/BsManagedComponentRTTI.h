@@ -6,6 +6,7 @@
 #include "BsManagedComponent.h"
 #include "BsMonoManager.h"
 #include "BsScriptSerializableObject.h"
+#include "CmGameObjectManager.h"
 
 namespace BansheeEngine
 {
@@ -57,9 +58,15 @@ namespace BansheeEngine
 			mc->mRTTIData = ScriptSerializableObject::create(mc->getManagedInstance());
 		}
 
-		virtual void onDeserializationEnded(CM::IReflectable* obj)
+		virtual void onDeserializationStarted(CM::IReflectable* obj)
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
+
+			CM::GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&ManagedComponentRTTI::finalizeDeserialization, mc));
+		}
+
+		static void finalizeDeserialization(ManagedComponent* mc)
+		{
 			ScriptSerializableObjectPtr serializableObject = boost::any_cast<ScriptSerializableObjectPtr>(mc->mRTTIData);
 
 			::MonoClass* monoClass = mono_object_get_class(serializableObject->getManagedInstance());

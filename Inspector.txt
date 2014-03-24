@@ -1,0 +1,27 @@
+Needed controls:
+IntField (With drag sliding)
+FloatField (With drag sliding)
+Vector2 field
+Vector3 field
+Vector4 field
+Color field
+Array field/List field/Dictionary field
+Matrix3 field
+Matrix4 field
+GameObject field
+Resource field
+Component foldout field
+Text field
+
+-------------
+
+When Inspector is displayed a SerializedObject of a Component (or some other type) is created
+ - It will contain a list of SerializedFields, which you can call set/get on (setInt, setString, setObject, setArray, etc.)
+ - It will also know its own type in an enum
+ - You can query all SerializedFields of an SerializedObject or find individual ones by name
+
+You can call EditorGUI.SerializedField to automatically draw GUI depending on field type.
+ - Or SerializedObject to draw GUI for entire object
+
+------------
+PRIMARY advantage of handling properties like this, instead of making custom inspectors and calling GUI methods manually is that you get undo/redo support.
