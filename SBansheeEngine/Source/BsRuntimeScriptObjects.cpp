@@ -294,9 +294,6 @@ namespace BansheeEngine
 				::MonoClass* elementClass = mono_class_get_element_class(monoClass->_getInternalClass());
 				if(elementClass != nullptr)
 				{
-					monoType = mono_class_get_type(elementClass);
-					::MonoClass* elementClass = mono_type_get_class(monoType);
-
 					MonoClass* monoElementClass = MonoManager::instance().findClass(elementClass);
 					if(monoElementClass != nullptr)
 						typeInfo->mElementType = determineType(monoElementClass);

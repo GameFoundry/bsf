@@ -93,7 +93,13 @@ namespace BansheeEngine
 
 	void ScriptSerializableArray::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
-		setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
+		if(val->isValueType())
+			setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
+		else
+		{
+			MonoObject* ptrToObj = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
+			setValue(arrayIdx, &ptrToObj);
+		}
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableArray::getFieldData(CM::UINT32 arrayIdx)
