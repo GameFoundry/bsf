@@ -6,6 +6,14 @@ TODO
 
 IMMEDIATE:
 
+Create a wrapper around MonoArray to make it easier to use?
+ - With support for multirank
+Create a similar wrapper for ICollection
+ - Expose mono_class_bind_generic_parameters
+ - Expose mono_reflection_bind_generic_method_parameters
+   - MonoReflectionMethod->method to get MonoMethod
+
+
 setValue in ScriptSerializableObject & ScriptSerializableArray should check if value is null and if the field type isn't a value type (can't be null)
 
 LOW PRIORITY
@@ -37,8 +45,6 @@ In ScriptSerializableObject & ScriptSerializableArray add:
  Testing:
 Test arrays
 Test arrays of arrays
-Test references to Components
-Test references to Resources
 Test how structs work
 Test how things work when class gets removed
 
@@ -63,3 +69,19 @@ TODO - When I destroy a Component, how will I refresh the inspector to let it kn
 
   Other:
   Instantiating mono generic classes: http://stackoverflow.com/questions/17628411/get-generic-type-using-mono-embedded
+
+ * 		/*MonoClass* kvpClass = mscorlib->getClass("System.Collections.Generic", "KeyValuePair`2");
+*
+*		MonoType* kvpTypes[2];
+*		kvpTypes[0] = mono_class_get_type(mono_get_string_class());
+*		kvpTypes[1] = mono_class_get_type(mono_get_int32_class());
+*		::MonoClass* kvpStrIntClass = mono_class_bind_generic_parameters(kvpClass->_getInternalClass(), 2, kvpTypes, false);
+*
+*		MonoObject* kvpStrIntInstance = mono_object_new(MonoManager::instance().getDomain(), kvpStrIntClass);
+*		::MonoProperty* prop = mono_class_get_property_from_name(kvpStrIntClass, "Key");
+*
+*		int propDummy = 7;
+*		void* propParams[1] = { &propDummy };
+*		mono_property_set_value(prop, kvpStrIntInstance, propParams, nullptr);
+*
+*		int propVal = *(int*)mono_property_get_value(prop, kvpStrIntInstance, nullptr, nullptr);*/

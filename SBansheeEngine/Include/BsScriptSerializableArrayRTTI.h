@@ -23,14 +23,34 @@ namespace BansheeEngine
 			obj->mArrayTypeInfo = val;
 		}
 
-		CM::UINT32& getNumElements(ScriptSerializableArray* obj)
+		CM::UINT32& getElementSize(ScriptSerializableArray* obj)
 		{
-			return (CM::UINT32)obj->mNumElements;
+			return (CM::UINT32)obj->mElemSize;
 		}
 
-		void setNumElements(ScriptSerializableArray* obj, CM::UINT32& numElements)
+		void setElementSize(ScriptSerializableArray* obj, CM::UINT32& numElements)
 		{
-			obj->mNumElements = numElements;
+			obj->mElemSize = numElements;
+		}
+
+		CM::UINT32& getNumElements(ScriptSerializableArray* obj, CM::UINT32 arrayIdx)
+		{
+			return (CM::UINT32)obj->mNumElements[arrayIdx];
+		}
+
+		void setNumElements(ScriptSerializableArray* obj, CM::UINT32 arrayIdx, CM::UINT32& numElements)
+		{
+			obj->mNumElements[arrayIdx] = numElements;
+		}
+
+		CM::UINT32 getNumElementsNumEntries(ScriptSerializableArray* obj)
+		{
+			return (CM::UINT32)obj->mNumElements.size();
+		}
+
+		void setNumElementsNumEntries(ScriptSerializableArray* obj, CM::UINT32 numEntries)
+		{
+			obj->mNumElements.resize(numEntries);
 		}
 
 		ScriptSerializableFieldDataPtr getArrayEntry(ScriptSerializableArray* obj, CM::UINT32 arrayIdx)
@@ -57,8 +77,10 @@ namespace BansheeEngine
 		ScriptSerializableArrayRTTI()
 		{
 			addReflectablePtrField("mArrayTypeInfo", 0, &ScriptSerializableArrayRTTI::getTypeInfo, &ScriptSerializableArrayRTTI::setTypeInfo);
-			addPlainField("mNumElements", 1, &ScriptSerializableArrayRTTI::getNumElements, &ScriptSerializableArrayRTTI::setNumElements);
-			addReflectablePtrArrayField("mArrayEntries", 2, &ScriptSerializableArrayRTTI::getArrayEntry, &ScriptSerializableArrayRTTI::getNumArrayEntries, 
+			addPlainField("mElementSize", 1, &ScriptSerializableArrayRTTI::getElementSize, &ScriptSerializableArrayRTTI::setElementSize);
+			addPlainArrayField("mNumElements", 2, &ScriptSerializableArrayRTTI::getNumElements, &ScriptSerializableArrayRTTI::getNumElementsNumEntries, 
+				&ScriptSerializableArrayRTTI::setNumElements, &ScriptSerializableArrayRTTI::setNumElementsNumEntries);
+			addReflectablePtrArrayField("mArrayEntries", 3, &ScriptSerializableArrayRTTI::getArrayEntry, &ScriptSerializableArrayRTTI::getNumArrayEntries, 
 				&ScriptSerializableArrayRTTI::setArrayEntry, &ScriptSerializableArrayRTTI::setNumArrayEntries);
 		}
 

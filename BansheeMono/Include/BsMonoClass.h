@@ -39,6 +39,13 @@ namespace BansheeEngine
 		MonoClass* getBaseClass() const;
 
 		/**
+		 * @brief	Retrieves a method, expects exact method name with parameters.
+		 *
+		 * @note	Example: Name = "CreateInstance", Signature = "type,int[]"
+		 */
+		MonoMethod* getMethodExact(const CM::String& name, const CM::String& signature);
+
+		/**
 		 * @brief	Returns all fields belonging to this class.
 		 *
 		 * @note	Be aware this will not include the fields of any base classes.

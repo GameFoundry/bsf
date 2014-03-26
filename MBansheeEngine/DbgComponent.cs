@@ -11,5 +11,6 @@ namespace BansheeEngine
         public DbgSerzObj complex = new DbgSerzObj();
         public DbgComponent2 otherComponent;
         public SceneObject otherSO;
+        public int[] zeArray;
     }
 }

@@ -84,6 +84,20 @@ guint8 *stackBottom = (guint8*)tib->StackLimit;
   - Build "mono" project. 
   - You should end up with mono-2.0.dll, mono-2.0.lib, MonoPosixHelper.dll and mono.exe and we are done compiling
 
+-------------------------------Special Banshee-specific changes--------------------------------------------
+
+Move & modify:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, gboolean is_dynamic) MONO_INTERNAL; 
+from object-internals.h
+to:
+  MONO_API MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic);
+in object.h
+
+In reflection.c change:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, gboolean is_dynamic)
+to:
+  MonoClass* mono_class_bind_generic_parameters (MonoClass *klass, int type_argc, MonoType **types, mono_bool is_dynamic)
+
 
 --------------------------------Integrating Mono into Banshee----------------------------------------------
  - Add mono-2.0.dll to (BansheeRootDir)/bin/(Platform)/(Configuration)

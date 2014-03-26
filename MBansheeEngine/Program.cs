@@ -22,13 +22,15 @@ namespace BansheeEngine
             dbgComponent.complex.anotherValue = "AnotherValue";
             dbgComponent.otherComponent = dbgComponent2;
             dbgComponent.otherSO = otherSO;
+            dbgComponent.zeArray = new int[5];
+            dbgComponent.zeArray[4] = 129;
 
             dbgTestComponentClone(so);
 
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
-                reportDbgValue(childSO.GetComponent<DbgComponent>().otherComponent.a2, typeof(DbgComponent));
+                reportDbgValue(childSO.GetComponent<DbgComponent>().otherComponent.a2, childSO.GetComponent<DbgComponent>().zeArray[4], typeof(DbgComponent));
             }
 
             //Color newColor = Color.red;
@@ -42,6 +44,6 @@ namespace BansheeEngine
         private static extern void dbgTestComponentClone(SceneObject so);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void reportDbgValue(int dbgVal, Type type);
+        private static extern void reportDbgValue(int dbgVal, int dbgVal2, Type type);
     }
 }

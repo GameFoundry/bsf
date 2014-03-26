@@ -25,6 +25,11 @@ namespace BansheeEngine
 		MonoClass* findClass(const CM::String& ns, const CM::String& typeName);
 
 		/**
+		 * @brief	Searches all loaded assemblies for the specified class.
+		 */
+		MonoClass* findClass(::MonoClass* rawMonoClass);
+
+		/**
 		 * @brief	Returns the type name of the provided object, with namespace.
 		 *
 		 * @param 	obj	If non-null, the object to get the type name of.

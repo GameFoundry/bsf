@@ -286,6 +286,7 @@ namespace BansheeEngine
 			}
 
 			break;
+		case MONO_TYPE_SZARRAY:
 		case MONO_TYPE_ARRAY:
 			{
 				std::shared_ptr<ScriptSerializableTypeInfoArray> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoArray>();
@@ -294,13 +295,9 @@ namespace BansheeEngine
 				if(elementClass != nullptr)
 				{
 					monoType = mono_class_get_type(elementClass);
-					monoPrimitiveType = mono_type_get_type(monoType);
-
 					::MonoClass* elementClass = mono_type_get_class(monoType);
-					String elementNs = mono_class_get_namespace(elementClass);
-					String elementTypeName = mono_class_get_name(elementClass);
 
-					MonoClass* monoElementClass = MonoManager::instance().findClass(elementNs, elementTypeName);
+					MonoClass* monoElementClass = MonoManager::instance().findClass(elementClass);
 					if(monoElementClass != nullptr)
 						typeInfo->mElementType = determineType(monoElementClass);
 				}

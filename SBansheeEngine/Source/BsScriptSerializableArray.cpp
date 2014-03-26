@@ -4,12 +4,21 @@
 #include "BsRuntimeScriptObjects.h"
 #include "BsScriptSerializableField.h"
 
+// DEBUG ONLY
+#include "BsMonoAssembly.h"
+#include "BsMonoClass.h"
+#include "BsMonoMethod.h"
+#include <mono/metadata/object.h>
+#include <mono/metadata/debug-helpers.h>
+#include <mono/metadata/metadata.h>
+#include "CmDebug.h"
+
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
 	ScriptSerializableArray::ScriptSerializableArray(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mNumElements(0), mClass(nullptr)
+		:mManagedInstance(nullptr), mElemSize(0)
 	{
 
 	}
@@ -17,14 +26,12 @@ namespace BansheeEngine
 	ScriptSerializableArray::ScriptSerializableArray(const ConstructPrivately& dummy, const ScriptSerializableTypeInfoArrayPtr& typeInfo, MonoObject* managedInstance)
 		:mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0)
 	{
-		mClass = mono_object_get_class(mManagedInstance);
-		mNumElements = (UINT32)mono_array_length((MonoArray*)mManagedInstance);
+		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
+		mElemSize = mono_array_element_size(monoClass);
 
-		mArrayEntries.resize(mNumElements);
-		for(UINT32 i = 0; i < mNumElements; i++)
-		{
-			mArrayEntries[i] = getFieldData(i);
-		}
+		mNumElements.resize(typeInfo->mRank);
+		for(UINT32 i = 0; i < typeInfo->mRank; i++)
+			mNumElements[i] = getLength(i);
 	}
 
 	ScriptSerializableArrayPtr ScriptSerializableArray::create(MonoObject* managedInstance, const ScriptSerializableTypeInfoArrayPtr& typeInfo)
@@ -42,8 +49,14 @@ namespace BansheeEngine
 
 	void ScriptSerializableArray::serializeManagedInstance()
 	{
-		mArrayEntries.resize(mNumElements);
-		for(UINT32 i = 0; i < mNumElements; i++)
+		UINT32 totalNumElements = 0;
+		for(auto& numElems : mNumElements)
+		{
+			totalNumElements += numElems;
+		}
+
+		mArrayEntries.resize(totalNumElements);
+		for(UINT32 i = 0; i < totalNumElements; i++)
 		{
 			mArrayEntries[i] = getFieldData(i);
 		}
@@ -54,17 +67,27 @@ namespace BansheeEngine
 		if(!mArrayTypeInfo->isTypeLoaded())
 			return;
 
-		uint32_t lengths[1] = { mNumElements };
+		MonoClass* arrayClass = RuntimeScriptObjects::instance().getSystemArrayClass();
 
-		MonoArray* newArray = mono_array_new_full(MonoManager::instance().getDomain(), 
-			mArrayTypeInfo->getMonoClass(), (uintptr_t*)lengths, nullptr); 
+		MonoMethod* createInstance = arrayClass->getMethodExact("CreateInstance", "Type,int[]");
+		MonoArray* lengthArray = mono_array_new(MonoManager::instance().getDomain(), mono_get_int32_class(), (UINT32)mNumElements.size());
 
-		mManagedInstance = (MonoObject*)newArray;
+		for(UINT32 i = 0; i < (UINT32)mNumElements.size(); i++)
+		{
+			void* elemAddr = mono_array_addr_with_size(lengthArray, sizeof(int), i);
+			memcpy(elemAddr, &mNumElements[i], sizeof(int));
+		}
+
+		void* params[2] = { 
+			mono_type_get_object(MonoManager::instance().getDomain(), mono_class_get_type(mArrayTypeInfo->getMonoClass())), lengthArray };
+
+		mManagedInstance = createInstance->invoke(nullptr, params);
 
 		CM::UINT32 idx = 0;
 		for(auto& arrayEntry : mArrayEntries)
 		{
 			setFieldData(idx, arrayEntry);
+			idx++;
 		}
 	}
 
@@ -80,31 +103,53 @@ namespace BansheeEngine
 	
 	void ScriptSerializableArray::setValue(CM::UINT32 arrayIdx, void* val)
 	{
-		if(arrayIdx >= mNumElements)
-			CM_EXCEPT(InvalidParametersException, "Array index out of range: " + toString(arrayIdx) + ". Valid range is [0, " + toString(mNumElements) + ")");
-
 		MonoArray* array = (MonoArray*)mManagedInstance;
-		UINT32 elemSize = mono_array_element_size(mClass);
-	
+
 		UINT32 numElems = (UINT32)mono_array_length(array);
 		assert(arrayIdx < numElems);
 	
-		void* elemAddr = mono_array_addr_with_size(array, elemSize, arrayIdx);
-		memcpy(elemAddr, val, elemSize);
+		void* elemAddr = mono_array_addr_with_size(array, mElemSize, arrayIdx);
+		memcpy(elemAddr, val, mElemSize);
 	}
 	
 	void* ScriptSerializableArray::getValue(CM::UINT32 arrayIdx)
 	{
-		if(arrayIdx >= mNumElements)
-			CM_EXCEPT(InvalidParametersException, "Array index out of range: " + toString(arrayIdx) + ". Valid range is [0, " + toString(mNumElements) + ")");
-
 		MonoArray* array = (MonoArray*)mManagedInstance;
-		UINT32 elemSize = mono_array_element_size(mClass);
-	
+
 		UINT32 numElems = (UINT32)mono_array_length(array);
 		assert(arrayIdx < numElems);
 	
-		return mono_array_addr_with_size(array, elemSize, arrayIdx);
+		return mono_array_addr_with_size(array, mElemSize, arrayIdx);
+	}
+
+	UINT32 ScriptSerializableArray::toSequentialIdx(const CM::Vector<CM::UINT32>::type& idx) const
+	{
+		// TODO - Never actually tested if it works, IDX calculation might work differently
+		if(idx.size() != (UINT32)mNumElements.size())
+			CM_EXCEPT(InvalidParametersException, "Provided index doesn't have the correct number of dimensions");
+
+		UINT32 curIdx = 0;
+		UINT32 prevDimensionSize = 1;
+		
+		for(UINT32 i = 0; i < (UINT32)mNumElements.size(); i++)
+		{
+			curIdx += idx[i] * prevDimensionSize;
+
+			prevDimensionSize *= mNumElements[i];
+		}
+
+		return curIdx;
+	}
+
+	UINT32 ScriptSerializableArray::getLength(UINT32 dimension) const
+	{
+		MonoClass* systemArray = RuntimeScriptObjects::instance().getSystemArrayClass();
+		MonoMethod& getLength = systemArray->getMethod("GetLength", 1);
+
+		void* params[1] = { &dimension };
+		MonoObject* returnObj = getLength.invoke(mManagedInstance, params);
+
+		return *(UINT32*)mono_object_unbox(returnObj);
 	}
 
 	RTTITypeBase* ScriptSerializableArray::getRTTIStatic()

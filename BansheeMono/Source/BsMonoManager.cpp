@@ -140,6 +140,19 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
+	MonoClass* MonoManager::findClass(::MonoClass* rawMonoClass)
+	{
+		MonoClass* monoClass = nullptr;
+		for(auto& assembly : mAssemblies)
+		{
+			monoClass = assembly.second->getClass(rawMonoClass);
+			if(monoClass != nullptr)
+				return monoClass;
+		}
+
+		return nullptr;
+	}
+
 	String MonoManager::getFullTypeName(MonoObject* obj)
 	{
 		if(obj == nullptr)

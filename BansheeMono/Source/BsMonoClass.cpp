@@ -6,6 +6,7 @@
 #include "BsMonoManager.h"
 #include "CmUtil.h"
 #include "CmException.h"
+#include <mono/metadata/debug-helpers.h>
 
 using namespace CamelotFramework;
 
@@ -78,6 +79,36 @@ namespace BansheeEngine
 		mMethods[mehodId] = newMethod;
 
 		return *newMethod;
+	}
+
+	MonoMethod* MonoClass::getMethodExact(const CM::String& name, const CM::String& signature)
+	{
+		MethodId mehodId(name + "(" + signature + ")", 0);
+		auto iterFind = mMethods.find(mehodId);
+		if(iterFind != mMethods.end())
+			return iterFind->second;
+
+		::MonoMethod* method;
+		void* iter = nullptr;
+
+		const char* rawName = name.c_str();
+		const char* rawSig = signature.c_str();
+		while ((method = mono_class_get_methods(mClass, &iter)))
+		{
+			if (strcmp(rawName, mono_method_get_name(method)) == 0)
+			{
+				const char* curSig = mono_signature_get_desc(mono_method_signature(method), false);
+				if(strcmp(rawSig, curSig) == 0)
+				{
+					MonoMethod* newMethod = new (cm_alloc<MonoMethod>()) MonoMethod(method);
+					mMethods[mehodId] = newMethod;
+
+					return newMethod;
+				}
+			}
+		}
+
+		return nullptr;
 	}
 
 	bool MonoClass::hasField(const String& name) const

@@ -24,10 +24,7 @@ namespace BansheeEngine
 		if(fieldClass == nullptr)
 			return nullptr;	
 		
-		String ns = mono_class_get_namespace(fieldClass);
-		String typeName = mono_class_get_name(fieldClass);
-
-		mFieldType = MonoManager::instance().findClass(ns, typeName);
+		mFieldType = MonoManager::instance().findClass(fieldClass);
 
 		return mFieldType;
 	}

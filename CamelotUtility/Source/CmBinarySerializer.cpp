@@ -570,7 +570,9 @@ namespace CamelotFramework
 
 								if(findObj == mObjectMap.end())
 								{
-									LOGWRN("When deserializing, object ID: " + toString(objectId) + " was found but no such object was contained in the file.");
+									if(objectId != 0)
+										LOGWRN("When deserializing, object ID: " + toString(objectId) + " was found but no such object was contained in the file.");
+
 									curField->setArrayValue(object.get(), i, nullptr);
 								}
 								else
@@ -671,7 +673,9 @@ namespace CamelotFramework
 
 							if(findObj == mObjectMap.end())
 							{
-								LOGWRN("When deserializing, object ID: " + toString(objectId) + " was found but no such object was contained in the file.");
+								if(objectId != 0)
+									LOGWRN("When deserializing, object ID: " + toString(objectId) + " was found but no such object was contained in the file.");
+
 								curField->setValue(object.get(), nullptr);
 							}
 							else

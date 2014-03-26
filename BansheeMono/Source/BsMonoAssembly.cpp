@@ -138,6 +138,29 @@ namespace BansheeEngine
 		return newClass;
 	}
 
+	MonoClass* MonoAssembly::getClass(::MonoClass* rawMonoClass) const
+	{
+		if(!mIsLoaded)
+			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
+
+		if(rawMonoClass == nullptr)
+			return nullptr;
+
+		String ns = mono_class_get_namespace(rawMonoClass);
+		String typeName = mono_class_get_name(rawMonoClass);
+
+		MonoAssembly::ClassId classId(ns, typeName);
+		auto iterFind = mClasses.find(classId);
+
+		if(iterFind != mClasses.end())
+			return iterFind->second;
+
+		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(ns, typeName, rawMonoClass, this);
+		mClasses[classId] = newClass;
+
+		return newClass;
+	}
+
 	const CM::Vector<MonoClass*>::type& MonoAssembly::getAllClasses() const
 	{
 		if(mHaveCachedClassList)

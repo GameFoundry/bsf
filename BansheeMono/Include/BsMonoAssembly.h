@@ -31,6 +31,7 @@ namespace BansheeEngine
 		virtual ~MonoAssembly();
 
 		MonoClass* getClass(const CM::String& namespaceName, const CM::String& name) const;
+		MonoClass* getClass(::MonoClass* rawMonoClass) const;
 		const CM::Vector<MonoClass*>::type& getAllClasses() const;
 
 		void invoke(const CM::String& functionName);
