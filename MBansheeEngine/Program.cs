@@ -22,15 +22,15 @@ namespace BansheeEngine
             dbgComponent.complex.anotherValue = "AnotherValue";
             dbgComponent.otherComponent = dbgComponent2;
             dbgComponent.otherSO = otherSO;
-            dbgComponent.zeArray = new int[5];
-            dbgComponent.zeArray[4] = 129;
+            dbgComponent.zeArray = new int[5,6,7];
+            dbgComponent.zeArray[4,1,3] = 129;
 
             dbgTestComponentClone(so);
 
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
-                reportDbgValue(childSO.GetComponent<DbgComponent>().otherComponent.a2, childSO.GetComponent<DbgComponent>().zeArray[4], typeof(DbgComponent));
+                reportDbgValue(childSO.GetComponent<DbgComponent>().otherComponent.a2, childSO.GetComponent<DbgComponent>().zeArray[4, 1, 3], typeof(DbgComponent));
             }
 
             //Color newColor = Color.red;

@@ -49,10 +49,10 @@ namespace BansheeEngine
 
 	void ScriptSerializableArray::serializeManagedInstance()
 	{
-		UINT32 totalNumElements = 0;
+		UINT32 totalNumElements = 1;
 		for(auto& numElems : mNumElements)
 		{
-			totalNumElements += numElems;
+			totalNumElements *= numElems;
 		}
 
 		mArrayEntries.resize(totalNumElements);
@@ -124,14 +124,18 @@ namespace BansheeEngine
 
 	UINT32 ScriptSerializableArray::toSequentialIdx(const CM::Vector<CM::UINT32>::type& idx) const
 	{
-		// TODO - Never actually tested if it works, IDX calculation might work differently
-		if(idx.size() != (UINT32)mNumElements.size())
+		UINT32 mNumDims = (UINT32)mNumElements.size();
+
+		if(idx.size() != mNumDims)
 			CM_EXCEPT(InvalidParametersException, "Provided index doesn't have the correct number of dimensions");
+
+		if(mNumElements.size() == 0)
+			return 0;
 
 		UINT32 curIdx = 0;
 		UINT32 prevDimensionSize = 1;
 		
-		for(UINT32 i = 0; i < (UINT32)mNumElements.size(); i++)
+		for(INT32 i = mNumDims - 1; i >= 0; i--)
 		{
 			curIdx += idx[i] * prevDimensionSize;
 
