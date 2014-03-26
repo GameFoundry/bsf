@@ -254,4 +254,13 @@ namespace BansheeEngine
 
 		return MonoManager::instance().findClass(ns, typeName);
 	}
+
+	bool MonoClass::isInstanceOfType(MonoObject* object) const
+	{
+		if(object == nullptr)
+			return false;
+
+		::MonoClass* monoClass = mono_object_get_class(object);
+		return mono_class_is_subclass_of(monoClass, mClass, false) != 0;
+	}
 }

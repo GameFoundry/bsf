@@ -55,6 +55,7 @@ namespace BansheeEngine
 		bool hasAttribute(MonoClass* monoClass) const;
 		bool hasField(const CM::String& name) const;
 		bool isSubClassOf(const BS::MonoClass* monoClass) const;
+		bool isInstanceOfType(MonoObject* object) const;
 
 		MonoObject* invokeMethod(const CM::String& name, MonoObject* instance = nullptr, void** params = nullptr, CM::UINT32 numParams = 0);
 		void addInternalCall(const CM::String& name, const void* method);

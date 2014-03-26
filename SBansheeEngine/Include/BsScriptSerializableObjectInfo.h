@@ -36,6 +36,8 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfo : public CM::IReflectable
 	{
 	public:
+		virtual ~ScriptSerializableTypeInfo() {}
+
 		virtual bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const = 0;
 		virtual bool isTypeLoaded() const = 0;
 		virtual ::MonoClass* getMonoClass() const = 0;
@@ -102,6 +104,43 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableTypeInfoArrayRTTI;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoList : public ScriptSerializableTypeInfo
+	{
+	public:
+		ScriptSerializableTypeInfoPtr mElementType;
+
+		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
+		bool isTypeLoaded() const;
+		::MonoClass* getMonoClass() const;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ScriptSerializableTypeInfoListRTTI;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoDictionary : public ScriptSerializableTypeInfo
+	{
+	public:
+		ScriptSerializableTypeInfoPtr mKeyType;
+		ScriptSerializableTypeInfoPtr mValueType;
+
+		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
+		bool isTypeLoaded() const;
+		::MonoClass* getMonoClass() const;
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+	public:
+		friend class ScriptSerializableTypeInfoDictionaryRTTI;
 		static CM::RTTITypeBase* getRTTIStatic();
 		virtual CM::RTTITypeBase* getRTTI() const;
 	};

@@ -6,6 +6,7 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoField.h"
+#include "BsMonoProperty.h"
 #include "BsMonoUtil.h"
 #include "CmRTTIType.h"
 
@@ -16,7 +17,8 @@ namespace BansheeEngine
 	RuntimeScriptObjects::RuntimeScriptObjects()
 		:mBaseTypesInitialized(false), mSerializableObjectAttribute(nullptr), mDontSerializeFieldAttribute(nullptr), 
 		mComponentClass(nullptr), mSceneObjectClass(nullptr), mTextureClass(nullptr), mSpriteTextureClass(nullptr),
-		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr)
+		mSerializeFieldAttribute(nullptr), mHideInInspectorAttribute(nullptr), mSystemArrayClass(nullptr), mSystemGenericListClass(nullptr),
+		mSystemGenericDictionaryClass(nullptr)
 	{
 
 	}
@@ -256,6 +258,35 @@ namespace BansheeEngine
 				typeInfo->mType = ScriptPrimitiveType::ComponentRef;
 				return typeInfo;
 			}
+			else if(monoClass->isSubClassOf(mSystemGenericListClass))
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoList> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoList>();
+				
+				MonoProperty& itemProperty = monoClass->getProperty("Item");
+				MonoClass* itemClass = itemProperty.getReturnType();
+
+				if(itemClass != nullptr)
+					typeInfo->mElementType = determineType(itemClass);
+
+				return typeInfo;
+			}
+			else if(monoClass->isSubClassOf(mSystemGenericDictionaryClass))
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoDictionary> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoDictionary>();
+
+				MonoProperty& keyProperty = monoClass->getProperty("Key");
+				MonoProperty& valueProperty = monoClass->getProperty("Value");
+
+				MonoClass* keyClass = keyProperty.getReturnType();
+				if(keyClass != nullptr)
+					typeInfo->mKeyType = determineType(keyClass);
+
+				MonoClass* valueClass = valueProperty.getReturnType();
+				if(valueClass != nullptr)
+					typeInfo->mValueType = determineType(valueClass);
+
+				return typeInfo;
+			}
 			else
 			{
 				if(hasSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName()))
@@ -266,10 +297,6 @@ namespace BansheeEngine
 					typeInfo->mValueType = false;
 
 					return typeInfo;
-				}
-				else
-				{
-					// TODO - Later check for List or Dictionary here
 				}
 			}
 
@@ -315,6 +342,8 @@ namespace BansheeEngine
 		mBaseTypesInitialized = false;
 
 		mSystemArrayClass = nullptr;
+		mSystemGenericListClass = nullptr;
+		mSystemGenericDictionaryClass = nullptr;
 
 		mSerializableObjectAttribute = nullptr;
 		mDontSerializeFieldAttribute = nullptr;
@@ -343,6 +372,14 @@ namespace BansheeEngine
 		mSystemArrayClass = mscorlib->getClass("System", "Array");
 		if(mSystemArrayClass == nullptr)
 			CM_EXCEPT(InvalidStateException, "Cannot find System.Array managed class.");
+
+		mSystemGenericListClass = mscorlib->getClass("System.Collections.Generic", "List`1");
+		if(mSystemGenericListClass == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find List<T> managed class.");
+
+		mSystemGenericDictionaryClass = mscorlib->getClass("System.Collections.Generic", "Dictionary`2");
+		if(mSystemGenericDictionaryClass == nullptr)
+			CM_EXCEPT(InvalidStateException, "Cannot find Dictionary<TKey, TValue> managed class.");
 
 		mSerializableObjectAttribute = bansheeEngineAssembly->getClass("BansheeEngine", "SerializableObject");
 		if(mSerializableObjectAttribute == nullptr)
@@ -407,14 +444,5 @@ namespace BansheeEngine
 		}
 
 		return false;
-	}
-
-	bool RuntimeScriptObjects::isArray(MonoObject* object)
-	{
-		if(!mBaseTypesInitialized)
-			CM_EXCEPT(InvalidStateException, "Calling isArray without previously initializing base types.");
-
-		::MonoClass* monoClass = mono_object_get_class(object);
-		return mono_class_is_subclass_of(monoClass, mSystemArrayClass->_getInternalClass(), false) != 0;
 	}
 }

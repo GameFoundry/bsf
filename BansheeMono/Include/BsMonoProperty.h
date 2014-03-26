@@ -11,6 +11,7 @@ namespace BansheeEngine
 		MonoObject* get(MonoObject* instance) const;
 		void set(MonoObject* instance, MonoObject* value) const;
 
+		MonoClass* getReturnType();
 	private:
 		friend class MonoClass;
 
@@ -19,5 +20,6 @@ namespace BansheeEngine
 		::MonoProperty* mProperty;
 		::MonoMethod* mGetMethod;
 		::MonoMethod* mSetMethod;
+		MonoClass* mPropertyType;
 	};
 }

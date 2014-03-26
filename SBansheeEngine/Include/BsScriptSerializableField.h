@@ -365,4 +365,40 @@ namespace BansheeEngine
 		static CM::RTTITypeBase* getRTTIStatic();
 		virtual CM::RTTITypeBase* getRTTI() const;
 	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataList : public ScriptSerializableFieldData
+	{
+	public:
+		ScriptSerializableListPtr value;
+
+		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
+		bool isValueType() const { return false; }
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class ScriptSerializableFieldDataListRTTI;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataDictionary : public ScriptSerializableFieldData
+	{
+	public:
+		ScriptSerializableDictionaryPtr value;
+
+		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
+		bool isValueType() const { return false; }
+
+		/************************************************************************/
+		/* 								RTTI		                     		*/
+		/************************************************************************/
+
+	public:
+		friend class ScriptSerializableFieldDataDictionaryRTTI;
+		static CM::RTTITypeBase* getRTTIStatic();
+		virtual CM::RTTITypeBase* getRTTI() const;
+	};
 }

@@ -592,4 +592,62 @@ namespace BansheeEngine
 			return CM::cm_shared_ptr<ScriptSerializableFieldDataArray>();
 		}
 	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataListRTTI : public CM::RTTIType<ScriptSerializableFieldDataList, ScriptSerializableFieldData, ScriptSerializableFieldDataListRTTI>
+	{
+	private:
+		ScriptSerializableListPtr getValue(ScriptSerializableFieldDataList* obj) { return obj->value; }
+		void setValue(ScriptSerializableFieldDataList* obj, ScriptSerializableListPtr val) { obj->value = val; }
+
+	public:
+		ScriptSerializableFieldDataListRTTI()
+		{
+			addReflectablePtrField("mValue", 0, &ScriptSerializableFieldDataListRTTI::getValue, &ScriptSerializableFieldDataListRTTI::setValue);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "SerializableFieldDataList";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableFieldDataList;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableFieldDataList>();
+		}
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldDataDictionaryRTTI : public CM::RTTIType<ScriptSerializableFieldDataDictionary, ScriptSerializableFieldData, ScriptSerializableFieldDataDictionaryRTTI>
+	{
+	private:
+		ScriptSerializableDictionaryPtr getValue(ScriptSerializableFieldDataDictionary* obj) { return obj->value; }
+		void setValue(ScriptSerializableFieldDataDictionary* obj, ScriptSerializableDictionaryPtr val) { obj->value = val; }
+
+	public:
+		ScriptSerializableFieldDataDictionaryRTTI()
+		{
+			addReflectablePtrField("mValue", 0, &ScriptSerializableFieldDataDictionaryRTTI::getValue, &ScriptSerializableFieldDataDictionaryRTTI::setValue);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "SerializableFieldDataDictionary";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableFieldDataDictionary;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableFieldDataDictionary>();
+		}
+	};
 }

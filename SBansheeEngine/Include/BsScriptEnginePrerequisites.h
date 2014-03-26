@@ -42,8 +42,12 @@ namespace BansheeEngine
 	class ScriptSerializableTypeInfoPrimitive;
 	class ScriptSerializableTypeInfoObject;
 	class ScriptSerializableTypeInfoArray;
+	class ScriptSerializableTypeInfoList;
+	class ScriptSerializableTypeInfoDictionary;
 	class ScriptSerializableObject;
 	class ScriptSerializableArray;
+	class ScriptSerializableList;
+	class ScriptSerializableDictionary;
 	class ScriptSerializableAssemblyInfo;
 	class ScriptSerializableObjectInfo;
 	class ScriptSerializableFieldInfo;
@@ -79,7 +83,13 @@ namespace BansheeEngine
 		TID_SerializableFieldDataResourceRef = 50027,
 		TID_SerializableFieldDataGameObjectRef = 50028,
 		TID_SerializableFieldDataObject = 50029,
-		TID_SerializableFieldDataArray = 50030
+		TID_SerializableFieldDataArray = 50030,
+		TID_SerializableFieldDataList = 50031,
+		TID_SerializableFieldDataDictionary = 50032,
+		TID_SerializableTypeInfoList = 50033,
+		TID_SerializableTypeInfoDictionary = 50034,
+		TID_ScriptSerializableList = 50035,
+		TID_ScriptSerializableDictionary = 50036,
 	};
 
 	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
@@ -91,8 +101,12 @@ namespace BansheeEngine
 	typedef std::shared_ptr<ScriptSerializableTypeInfoObject> ScriptSerializableTypeInfoObjectPtr;
 	typedef std::shared_ptr<ScriptSerializableObject> ScriptSerializableObjectPtr;
 	typedef std::shared_ptr<ScriptSerializableArray> ScriptSerializableArrayPtr;
+	typedef std::shared_ptr<ScriptSerializableList> ScriptSerializableListPtr;
+	typedef std::shared_ptr<ScriptSerializableDictionary> ScriptSerializableDictionaryPtr;
 	typedef std::shared_ptr<ScriptSerializableAssemblyInfo> ScriptSerializableAssemblyInfoPtr;
 	typedef std::shared_ptr<ScriptSerializableObjectInfo> ScriptSerializableObjectInfoPtr;
 	typedef std::shared_ptr<ScriptSerializableFieldInfo> ScriptSerializableFieldInfoPtr;
 	typedef std::shared_ptr<ScriptSerializableTypeInfoArray> ScriptSerializableTypeInfoArrayPtr;
+	typedef std::shared_ptr<ScriptSerializableTypeInfoList> ScriptSerializableTypeInfoListPtr;
+	typedef std::shared_ptr<ScriptSerializableTypeInfoDictionary> ScriptSerializableTypeInfoDictionaryPtr;
 }

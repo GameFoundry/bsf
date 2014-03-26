@@ -11,6 +11,8 @@
 #include "BsScriptComponent.h"
 #include "BsScriptSerializableObject.h"
 #include "BsScriptSerializableArray.h"
+#include "BsScriptSerializableList.h"
+#include "BsScriptSerializableDictionary.h"
 
 using namespace CamelotFramework;
 
@@ -196,6 +198,30 @@ namespace BansheeEngine
 			if(objVal != nullptr)
 			{
 				fieldData->value = ScriptSerializableArray::create(objVal, std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo));
+			}
+
+			return fieldData;
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
+		{
+			MonoObject* objVal = *(MonoObject**)(value);
+
+			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataList>();
+			if(objVal != nullptr)
+			{
+				fieldData->value = ScriptSerializableList::create(objVal, std::static_pointer_cast<ScriptSerializableTypeInfoList>(typeInfo));
+			}
+
+			return fieldData;
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
+		{
+			MonoObject* objVal = *(MonoObject**)(value);
+
+			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataDictionary>();
+			if(objVal != nullptr)
+			{
+				fieldData->value = ScriptSerializableDictionary::create(objVal, std::static_pointer_cast<ScriptSerializableTypeInfoDictionary>(typeInfo));
 			}
 
 			return fieldData;
@@ -440,6 +466,30 @@ namespace BansheeEngine
 		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
+	void* ScriptSerializableFieldDataList::getValue(const ScriptSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
+		{
+			auto listTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoList>(typeInfo);
+
+			return value->getManagedInstance();
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ScriptSerializableFieldDataDictionary::getValue(const ScriptSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
+		{
+			auto dictionaryTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoDictionary>(typeInfo);
+
+			return value->getManagedInstance();
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
 	RTTITypeBase* ScriptSerializableFieldKey::getRTTIStatic()
 	{
 		return ScriptSerializableFieldKeyRTTI::instance();
@@ -638,5 +688,25 @@ namespace BansheeEngine
 	RTTITypeBase* ScriptSerializableFieldDataArray::getRTTI() const
 	{
 		return ScriptSerializableFieldDataArray::getRTTIStatic();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataList::getRTTIStatic()
+	{
+		return ScriptSerializableFieldDataListRTTI::instance();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataList::getRTTI() const
+	{
+		return ScriptSerializableFieldDataList::getRTTIStatic();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataDictionary::getRTTIStatic()
+	{
+		return ScriptSerializableFieldDataDictionaryRTTI::instance();
+	}
+
+	RTTITypeBase* ScriptSerializableFieldDataDictionary::getRTTI() const
+	{
+		return ScriptSerializableFieldDataDictionary::getRTTIStatic();
 	}
 }

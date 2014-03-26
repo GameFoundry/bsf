@@ -3,15 +3,8 @@
 #include "BsMonoManager.h"
 #include "BsRuntimeScriptObjects.h"
 #include "BsScriptSerializableField.h"
-
-// DEBUG ONLY
-#include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
-#include <mono/metadata/object.h>
-#include <mono/metadata/debug-helpers.h>
-#include <mono/metadata/metadata.h>
-#include "CmDebug.h"
 
 using namespace CamelotFramework;
 
@@ -24,7 +17,7 @@ namespace BansheeEngine
 	}
 
 	ScriptSerializableArray::ScriptSerializableArray(const ConstructPrivately& dummy, const ScriptSerializableTypeInfoArrayPtr& typeInfo, MonoObject* managedInstance)
-		:mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0)
+		:mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mElemSize(0)
 	{
 		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
 		mElemSize = mono_array_element_size(monoClass);
@@ -36,7 +29,7 @@ namespace BansheeEngine
 
 	ScriptSerializableArrayPtr ScriptSerializableArray::create(MonoObject* managedInstance, const ScriptSerializableTypeInfoArrayPtr& typeInfo)
 	{
-		if(!RuntimeScriptObjects::instance().isArray(managedInstance))
+		if(!RuntimeScriptObjects::instance().getSystemArrayClass()->isInstanceOfType(managedInstance))
 			return nullptr;
 
 		return cm_shared_ptr<ScriptSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);

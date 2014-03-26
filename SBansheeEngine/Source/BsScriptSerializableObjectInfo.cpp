@@ -204,4 +204,79 @@ namespace BansheeEngine
 	{
 		return ScriptSerializableTypeInfoArray::getRTTIStatic();
 	}
+
+	bool ScriptSerializableTypeInfoList::matches(const ScriptSerializableTypeInfoPtr& typeInfo) const
+	{
+		if(!rtti_is_of_type<ScriptSerializableTypeInfoList>(typeInfo))
+			return false;
+
+		auto listTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoList>(typeInfo);
+
+		return listTypeInfo->mElementType->matches(mElementType);
+	}
+
+	bool ScriptSerializableTypeInfoList::isTypeLoaded() const
+	{
+		return mElementType->isTypeLoaded();
+	}
+
+	::MonoClass* ScriptSerializableTypeInfoList::getMonoClass() const
+	{
+		::MonoClass* elementClass = mElementType->getMonoClass();
+		if(elementClass == nullptr)
+			return nullptr;
+
+		MonoClass* genericListClass = RuntimeScriptObjects::instance().getSystemGenericListClass();
+		MonoType* genParams[1] = { mono_class_get_type(elementClass) };
+
+		return mono_class_bind_generic_parameters(genericListClass->_getInternalClass(), 1, genParams, false);
+	}
+
+	RTTITypeBase* ScriptSerializableTypeInfoList::getRTTIStatic()
+	{
+		return ScriptSerializableTypeInfoListRTTI::instance();
+	}
+
+	RTTITypeBase* ScriptSerializableTypeInfoList::getRTTI() const
+	{
+		return ScriptSerializableTypeInfoList::getRTTIStatic();
+	}
+
+	bool ScriptSerializableTypeInfoDictionary::matches(const ScriptSerializableTypeInfoPtr& typeInfo) const
+	{
+		if(!rtti_is_of_type<ScriptSerializableTypeInfoDictionary>(typeInfo))
+			return false;
+
+		auto dictTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoDictionary>(typeInfo);
+
+		return dictTypeInfo->mKeyType->matches(mKeyType) && dictTypeInfo->mValueType->matches(mValueType);
+	}
+
+	bool ScriptSerializableTypeInfoDictionary::isTypeLoaded() const
+	{
+		return mKeyType->isTypeLoaded() && mValueType->isTypeLoaded();
+	}
+
+	::MonoClass* ScriptSerializableTypeInfoDictionary::getMonoClass() const
+	{
+		::MonoClass* keyClass = mKeyType->getMonoClass();
+		::MonoClass* valueClass = mValueType->getMonoClass();
+		if(keyClass == nullptr || valueClass == nullptr)
+			return nullptr;
+
+		MonoClass* genericDictionaryClass = RuntimeScriptObjects::instance().getSystemGenericDictionaryClass();
+		MonoType* genParams[2] = { mono_class_get_type(keyClass), mono_class_get_type(valueClass) };
+
+		return mono_class_bind_generic_parameters(genericDictionaryClass->_getInternalClass(), 2, genParams, false);
+	}
+
+	RTTITypeBase* ScriptSerializableTypeInfoDictionary::getRTTIStatic()
+	{
+		return ScriptSerializableTypeInfoDictionaryRTTI::instance();
+	}
+
+	RTTITypeBase* ScriptSerializableTypeInfoDictionary::getRTTI() const
+	{
+		return ScriptSerializableTypeInfoDictionary::getRTTIStatic();
+	}
 }

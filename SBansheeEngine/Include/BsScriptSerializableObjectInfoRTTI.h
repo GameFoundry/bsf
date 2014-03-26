@@ -379,4 +379,87 @@ namespace BansheeEngine
 			return CM::cm_shared_ptr<ScriptSerializableTypeInfoArray>();
 		}
 	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoListRTTI : public CM::RTTIType<ScriptSerializableTypeInfoList, ScriptSerializableTypeInfo, ScriptSerializableTypeInfoListRTTI>
+	{
+	private:
+		ScriptSerializableTypeInfoPtr getElementType(ScriptSerializableTypeInfoList* obj)
+		{
+			return obj->mElementType;
+		}
+
+		void setElementType(ScriptSerializableTypeInfoList* obj, ScriptSerializableTypeInfoPtr val)
+		{
+			obj->mElementType = val;
+		}
+
+	public:
+		ScriptSerializableTypeInfoListRTTI()
+		{
+			addReflectablePtrField("mElementType", 0, &ScriptSerializableTypeInfoListRTTI::getElementType, &ScriptSerializableTypeInfoListRTTI::setElementType);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "ScriptSerializableTypeInfoList";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableTypeInfoList;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableTypeInfoList>();
+		}
+	};
+
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoDictionaryRTTI : public CM::RTTIType<ScriptSerializableTypeInfoDictionary, ScriptSerializableTypeInfo, ScriptSerializableTypeInfoDictionaryRTTI>
+	{
+	private:
+		ScriptSerializableTypeInfoPtr getKeyType(ScriptSerializableTypeInfoDictionary* obj)
+		{
+			return obj->mKeyType;
+		}
+
+		void setKeyType(ScriptSerializableTypeInfoDictionary* obj, ScriptSerializableTypeInfoPtr val)
+		{
+			obj->mKeyType = val;
+		}
+
+		ScriptSerializableTypeInfoPtr getValueType(ScriptSerializableTypeInfoDictionary* obj)
+		{
+			return obj->mValueType;
+		}
+
+		void setValueType(ScriptSerializableTypeInfoDictionary* obj, ScriptSerializableTypeInfoPtr val)
+		{
+			obj->mValueType = val;
+		}
+
+	public:
+		ScriptSerializableTypeInfoDictionaryRTTI()
+		{
+			addReflectablePtrField("mKeyType", 0, &ScriptSerializableTypeInfoDictionaryRTTI::getKeyType, &ScriptSerializableTypeInfoDictionaryRTTI::setKeyType);
+			addReflectablePtrField("mValueType", 1, &ScriptSerializableTypeInfoDictionaryRTTI::getValueType, &ScriptSerializableTypeInfoDictionaryRTTI::setValueType);
+		}
+
+		virtual const CM::String& getRTTIName()
+		{
+			static CM::String name = "ScriptSerializableTypeInfoDictionary";
+			return name;
+		}
+
+		virtual CM::UINT32 getRTTIId()
+		{
+			return TID_SerializableTypeInfoDictionary;
+		}
+
+		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		{
+			return CM::cm_shared_ptr<ScriptSerializableTypeInfoDictionary>();
+		}
+	};
 }
