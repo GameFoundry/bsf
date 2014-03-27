@@ -64,6 +64,7 @@ namespace BansheeEngine
 
 		MonoObject* createInstance(bool construct = true) const;
 		MonoObject* createInstance(void** params, CM::UINT32 numParams);
+		MonoObject* createInstance(const CM::String& ctorSignature, void** params);
 	private:
 		friend class MonoAssembly;
 

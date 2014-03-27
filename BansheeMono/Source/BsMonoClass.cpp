@@ -213,6 +213,14 @@ namespace BansheeEngine
 		return obj;
 	}
 
+	MonoObject* MonoClass::createInstance(const CM::String& ctorSignature, void** params)
+	{
+		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
+		getMethodExact(".ctor", ctorSignature)->invoke(obj, params);
+
+		return obj;
+	}
+
 	bool MonoClass::hasAttribute(MonoClass* monoClass) const
 	{
 		// TODO - Consider caching custom attributes or just initializing them all at load

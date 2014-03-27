@@ -23,6 +23,9 @@ namespace BansheeEngine
 
 	ScriptSerializableObjectPtr ScriptSerializableObject::create(MonoObject* managedInstance)
 	{
+		if(managedInstance == nullptr)
+			return nullptr;
+
 		::MonoClass* monoClass = mono_object_get_class(managedInstance);
 		String elementNs = mono_class_get_namespace(monoClass);
 		String elementTypeName = mono_class_get_name(monoClass);

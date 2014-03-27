@@ -23,6 +23,12 @@ namespace BansheeEngine
             dbgComponent.otherComponent = dbgComponent2;
             dbgComponent.otherSO = otherSO;
             dbgComponent.zeArray = new int[5][][];
+            dbgComponent.zeList = new List<int>();
+
+            dbgComponent.zeList.Add(0);
+            dbgComponent.zeList.Add(0);
+            dbgComponent.zeList.Add(99);
+            dbgComponent.zeList.Add(0);
 
             for (int i = 0; i < dbgComponent.zeArray.Length; i++)
             {
@@ -39,7 +45,7 @@ namespace BansheeEngine
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
-                reportDbgValue(childSO.GetComponent<DbgComponent>().otherComponent.a2, childSO.GetComponent<DbgComponent>().zeArray[4][1][3], typeof(DbgComponent));
+                reportDbgValue(childSO.GetComponent<DbgComponent>().zeList[2], childSO.GetComponent<DbgComponent>().zeArray[4][1][3], typeof(DbgComponent));
             }
 
             //Color newColor = Color.red;

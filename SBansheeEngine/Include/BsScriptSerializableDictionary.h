@@ -9,6 +9,22 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableDictionary : public CM::IReflectable
 	{
 	private:
+		class Enumerator
+		{
+		public:
+			Enumerator(MonoObject* instance, const ScriptSerializableDictionary* parent);
+
+			ScriptSerializableFieldDataPtr getKey() const;
+			ScriptSerializableFieldDataPtr getValue() const;
+
+			bool moveNext();
+
+		private:
+			MonoObject* mInstance;
+			MonoObject* mCurrent;
+			const ScriptSerializableDictionary* mParent;
+		};
+
 		struct ConstructPrivately {};
 
 	public:
@@ -22,10 +38,18 @@ namespace BansheeEngine
 	protected:
 		MonoObject* mManagedInstance;
 
+		MonoMethod* mAddMethod;
+		MonoMethod* mGetEnumerator;
+		MonoMethod* mEnumMoveNext;
+		MonoProperty* mEnumCurrentProp;
+		MonoProperty* mKeyProp;
+		MonoProperty* mValueProp;
+
 		ScriptSerializableTypeInfoDictionaryPtr mDictionaryTypeInfo;
-		CM::Vector<ScriptSerializableFieldDataPtr>::type mDictionaryEntries;
-		
-		CM::UINT32 mNumElements;
+		CM::Vector<ScriptSerializableFieldDataPtr>::type mKeyEntries;
+		CM::Vector<ScriptSerializableFieldDataPtr>::type mValueEntries;
+
+		void initMonoObjects(MonoClass* dictionaryClass);
 
 		/**
 		 * @brief	Populates internal field data based on currently active managed instance.
@@ -37,14 +61,8 @@ namespace BansheeEngine
 		 */
 		void deserializeManagedInstance();
 
-		void setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val);
-		ScriptSerializableFieldDataPtr getFieldData(CM::UINT32 arrayIdx);
-
-		void setValue(CM::UINT32 arrayIdx, void* val);
-		void* getValue(CM::UINT32 arrayIdx);
-
-		CM::UINT32 getLength() const;
-		void setLength(CM::UINT32 length);
+		void setFieldData(const ScriptSerializableFieldDataPtr& key, const ScriptSerializableFieldDataPtr& val);
+		Enumerator getEnumerator() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

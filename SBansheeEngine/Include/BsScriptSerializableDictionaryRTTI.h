@@ -13,53 +13,27 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableDictionaryRTTI : public CM::RTTIType<ScriptSerializableDictionary, CM::IReflectable, ScriptSerializableDictionaryRTTI>
 	{
 	private:
-		ScriptSerializableTypeInfoDictionaryPtr getTypeInfo(ScriptSerializableDictionary* obj)
-		{
-			return obj->mDictionaryTypeInfo;
-		}
+		ScriptSerializableTypeInfoDictionaryPtr getTypeInfo(ScriptSerializableDictionary* obj) { return obj->mDictionaryTypeInfo; }
+		void setTypeInfo(ScriptSerializableDictionary* obj, ScriptSerializableTypeInfoDictionaryPtr val) { obj->mDictionaryTypeInfo = val; }
 
-		void setTypeInfo(ScriptSerializableDictionary* obj, ScriptSerializableTypeInfoDictionaryPtr val)
-		{
-			obj->mDictionaryTypeInfo = val;
-		}
+		ScriptSerializableFieldDataPtr getKeyEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx) { return obj->mKeyEntries[arrayIdx]; }
+		void setKeyEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx, ScriptSerializableFieldDataPtr val) { obj->mKeyEntries[arrayIdx] = val; }
+		CM::UINT32 getNumKeyEntries(ScriptSerializableDictionary* obj) { return (CM::UINT32)obj->mKeyEntries.size(); }
+		void setNumKeyEntries(ScriptSerializableDictionary* obj, CM::UINT32 numEntries) { obj->mKeyEntries.resize(numEntries); }
 
-		CM::UINT32& getNumElements(ScriptSerializableDictionary* obj)
-		{
-			return (CM::UINT32)obj->mNumElements;
-		}
-
-		void setNumElements(ScriptSerializableDictionary* obj, CM::UINT32& numElements)
-		{
-			obj->mNumElements = numElements;
-		}
-
-		ScriptSerializableFieldDataPtr getListEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx)
-		{
-			return obj->mDictionaryEntries[arrayIdx];
-		}
-
-		void setListEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx, ScriptSerializableFieldDataPtr val)
-		{
-			obj->mDictionaryEntries[arrayIdx] = val;
-		}
-
-		CM::UINT32 getNumListEntries(ScriptSerializableDictionary* obj)
-		{
-			return (CM::UINT32)obj->mDictionaryEntries.size();
-		}
-
-		void setNumListEntries(ScriptSerializableDictionary* obj, CM::UINT32 numEntries)
-		{
-			obj->mDictionaryEntries.resize(numEntries);
-		}
+		ScriptSerializableFieldDataPtr getValueEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx) { return obj->mKeyEntries[arrayIdx]; }
+		void setValueEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx, ScriptSerializableFieldDataPtr val) { obj->mKeyEntries[arrayIdx] = val; }
+		CM::UINT32 getNumValueEntries(ScriptSerializableDictionary* obj) { return (CM::UINT32)obj->mKeyEntries.size(); }
+		void setNumValueEntries(ScriptSerializableDictionary* obj, CM::UINT32 numEntries) { obj->mKeyEntries.resize(numEntries); }
 
 	public:
 		ScriptSerializableDictionaryRTTI()
 		{
 			addReflectablePtrField("mListTypeInfo", 0, &ScriptSerializableDictionaryRTTI::getTypeInfo, &ScriptSerializableDictionaryRTTI::setTypeInfo);
-			addPlainField("mNumElements", 1, &ScriptSerializableDictionaryRTTI::getNumElements, &ScriptSerializableDictionaryRTTI::setNumElements);
-			addReflectablePtrArrayField("mListEntries", 2, &ScriptSerializableDictionaryRTTI::getListEntry, &ScriptSerializableDictionaryRTTI::getNumListEntries, 
-				&ScriptSerializableDictionaryRTTI::setListEntry, &ScriptSerializableDictionaryRTTI::setNumListEntries);
+			addReflectablePtrArrayField("mKeyEntries", 1, &ScriptSerializableDictionaryRTTI::getKeyEntry, &ScriptSerializableDictionaryRTTI::getNumKeyEntries, 
+				&ScriptSerializableDictionaryRTTI::setKeyEntry, &ScriptSerializableDictionaryRTTI::setNumKeyEntries);
+			addReflectablePtrArrayField("mValueEntries", 2, &ScriptSerializableDictionaryRTTI::getValueEntry, &ScriptSerializableDictionaryRTTI::getNumValueEntries, 
+				&ScriptSerializableDictionaryRTTI::setValueEntry, &ScriptSerializableDictionaryRTTI::setNumValueEntries);
 		}
 
 		virtual void onSerializationStarted(CM::IReflectable* obj)

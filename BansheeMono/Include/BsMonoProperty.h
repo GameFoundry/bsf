@@ -9,7 +9,10 @@ namespace BansheeEngine
 	{
 	public:
 		MonoObject* get(MonoObject* instance) const;
-		void set(MonoObject* instance, MonoObject* value) const;
+		void set(MonoObject* instance, void* value) const;
+
+		MonoObject* getIndexed(MonoObject* instance, void* index) const;
+		void setIndexed(MonoObject* instance, void* index, void* value) const;
 
 		MonoClass* getReturnType();
 	private:
@@ -20,6 +23,6 @@ namespace BansheeEngine
 		::MonoProperty* mProperty;
 		::MonoMethod* mGetMethod;
 		::MonoMethod* mSetMethod;
-		MonoClass* mPropertyType;
+		MonoClass* mGetReturnType;
 	};
 }

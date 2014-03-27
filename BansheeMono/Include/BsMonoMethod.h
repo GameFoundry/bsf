@@ -20,6 +20,8 @@ namespace BansheeEngine
 
 		CM::String getName() const;
 
+		MonoClass* getReturnType();
+
 	private:
 		friend class MonoClass;
 		friend class MonoProperty;
@@ -27,6 +29,7 @@ namespace BansheeEngine
 		MonoMethod(::MonoMethod* method);
 
 		::MonoMethod* mMethod;
+		MonoClass* mReturnType;
 		void* mThunk;
 	};
 }

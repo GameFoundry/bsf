@@ -22,10 +22,16 @@ namespace BansheeEngine
 	protected:
 		MonoObject* mManagedInstance;
 
+		MonoMethod* mAddMethod;
+		MonoProperty* mItemProp;
+		MonoProperty* mCountProp;
+
 		ScriptSerializableTypeInfoListPtr mListTypeInfo;
 		CM::Vector<ScriptSerializableFieldDataPtr>::type mListEntries;
 		
 		CM::UINT32 mNumElements;
+
+		void initMonoObjects(MonoClass* listClass);
 
 		/**
 		 * @brief	Populates internal field data based on currently active managed instance.
@@ -38,13 +44,10 @@ namespace BansheeEngine
 		void deserializeManagedInstance();
 
 		void setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val);
+		void addFieldData(const ScriptSerializableFieldDataPtr& val);
 		ScriptSerializableFieldDataPtr getFieldData(CM::UINT32 arrayIdx);
 
-		void setValue(CM::UINT32 arrayIdx, void* val);
-		void* getValue(CM::UINT32 arrayIdx);
-
 		CM::UINT32 getLength() const;
-		void setLength(CM::UINT32 length);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

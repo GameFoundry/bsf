@@ -29,6 +29,9 @@ namespace BansheeEngine
 
 	ScriptSerializableArrayPtr ScriptSerializableArray::create(MonoObject* managedInstance, const ScriptSerializableTypeInfoArrayPtr& typeInfo)
 	{
+		if(managedInstance == nullptr)
+			return nullptr;
+
 		if(!RuntimeScriptObjects::instance().getSystemArrayClass()->isInstanceOfType(managedInstance))
 			return nullptr;
 

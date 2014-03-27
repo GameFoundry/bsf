@@ -258,35 +258,6 @@ namespace BansheeEngine
 				typeInfo->mType = ScriptPrimitiveType::ComponentRef;
 				return typeInfo;
 			}
-			else if(monoClass->isSubClassOf(mSystemGenericListClass))
-			{
-				std::shared_ptr<ScriptSerializableTypeInfoList> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoList>();
-				
-				MonoProperty& itemProperty = monoClass->getProperty("Item");
-				MonoClass* itemClass = itemProperty.getReturnType();
-
-				if(itemClass != nullptr)
-					typeInfo->mElementType = determineType(itemClass);
-
-				return typeInfo;
-			}
-			else if(monoClass->isSubClassOf(mSystemGenericDictionaryClass))
-			{
-				std::shared_ptr<ScriptSerializableTypeInfoDictionary> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoDictionary>();
-
-				MonoProperty& keyProperty = monoClass->getProperty("Key");
-				MonoProperty& valueProperty = monoClass->getProperty("Value");
-
-				MonoClass* keyClass = keyProperty.getReturnType();
-				if(keyClass != nullptr)
-					typeInfo->mKeyType = determineType(keyClass);
-
-				MonoClass* valueClass = valueProperty.getReturnType();
-				if(valueClass != nullptr)
-					typeInfo->mValueType = determineType(valueClass);
-
-				return typeInfo;
-			}
 			else
 			{
 				if(hasSerializableObjectInfo(monoClass->getNamespace(), monoClass->getTypeName()))
@@ -312,6 +283,37 @@ namespace BansheeEngine
 				return typeInfo;
 			}
 
+			break;
+		case MONO_TYPE_GENERICINST:
+			if(monoClass->getFullName() == mSystemGenericListClass->getFullName()) // Full name is part of CIL spec, so it is just fine to compare like this
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoList> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoList>();
+
+				MonoProperty& itemProperty = monoClass->getProperty("Item");
+				MonoClass* itemClass = itemProperty.getReturnType();
+
+				if(itemClass != nullptr)
+					typeInfo->mElementType = determineType(itemClass);
+
+				return typeInfo;
+			}
+			else if(monoClass->getFullName() == mSystemGenericDictionaryClass->getFullName())
+			{
+				std::shared_ptr<ScriptSerializableTypeInfoDictionary> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoDictionary>();
+
+				MonoProperty& keyProperty = monoClass->getProperty("Key");
+				MonoProperty& valueProperty = monoClass->getProperty("Value");
+
+				MonoClass* keyClass = keyProperty.getReturnType();
+				if(keyClass != nullptr)
+					typeInfo->mKeyType = determineType(keyClass);
+
+				MonoClass* valueClass = valueProperty.getReturnType();
+				if(valueClass != nullptr)
+					typeInfo->mValueType = determineType(valueClass);
+
+				return typeInfo;
+			}
 			break;
 		case MONO_TYPE_SZARRAY:
 		case MONO_TYPE_ARRAY:

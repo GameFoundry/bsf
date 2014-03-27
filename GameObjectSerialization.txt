@@ -5,50 +5,19 @@ TODO
  ---------------------------------------
 
 IMMEDIATE:
-
-Create a wrapper around MonoArray to make it easier to use?
- - With support for multirank
-Create a similar wrapper for ICollection
- - Expose mono_class_bind_generic_parameters
- - Expose mono_reflection_bind_generic_method_parameters
-   - MonoReflectionMethod->method to get MonoMethod
-
-
+Implement TODO ScriptSerializableList.cpp & ScriptSerializableDictionary.cpp methods
 setValue in ScriptSerializableObject & ScriptSerializableArray should check if value is null and if the field type isn't a value type (can't be null)
 
 LOW PRIORITY
-- Add Multi-dimensional arrays / Lists / Dictionaries
-  - (To get array lengths per rank I probably need to cast to System.Array and then call GetLength)
-  - For List/Dictionary I will probably want to do it though ICollection interface
-  - Use mono_object_get_virtual_method() to get virtual method
-  - Getting a generic type: Try mono_reflection_type_from_name
 - Ensure that unknown components retain their field data so when they are no longer unknown their data may be restored
 - Get rid of ScriptObject::createInstance and replace it with parameter in constructor
 - A way to serialize any object into a Resource (and deserialize it from Resource)
 
-----------------------------------------
-
-I attempt to resolve SceneObject handle during deserialization, while it should only be done after deserialization is done
- - Issue happens in ScriptSerializableFieldDataGameObjectRef::getValue
-
-HACKY WAY: <- THE RIGHT WAY
- - I can add a callback to GameObject that gets triggered when deserialization for a GameObject is fully done
- - Then I perform ManagedComponent deserilization there
- - SerializableSceneObject & SerializableSceneArray would have to be modified so that they don't resolve fields on deserialization
-
-In ScriptSerializableObject & ScriptSerializableArray add:
- serializeManagedInstance <- Called when serialization starts and recursively
- deserializeManagedInstance <- Called by the deserialization callback in ManagedComponent and recursively
-
  ---------------------------------------
 
  Testing:
-Test arrays
-Test arrays of arrays
 Test how structs work
 Test how things work when class gets removed
-
-Test and implement multi-rank arrays
 
  ------------------------------------------------------
  General C# component management
@@ -64,24 +33,3 @@ Test and implement multi-rank arrays
 TODO - When reloading scripts how to handle restoring references?
 TODO - When I destroy a Component, how will I refresh the inspector to let it know that something has changed
   - Can happen from C# and C++
-
-  -------------------------------------------------------
-
-  Other:
-  Instantiating mono generic classes: http://stackoverflow.com/questions/17628411/get-generic-type-using-mono-embedded
-
- * 		/*MonoClass* kvpClass = mscorlib->getClass("System.Collections.Generic", "KeyValuePair`2");
-*
-*		MonoType* kvpTypes[2];
-*		kvpTypes[0] = mono_class_get_type(mono_get_string_class());
-*		kvpTypes[1] = mono_class_get_type(mono_get_int32_class());
-*		::MonoClass* kvpStrIntClass = mono_class_bind_generic_parameters(kvpClass->_getInternalClass(), 2, kvpTypes, false);
-*
-*		MonoObject* kvpStrIntInstance = mono_object_new(MonoManager::instance().getDomain(), kvpStrIntClass);
-*		::MonoProperty* prop = mono_class_get_property_from_name(kvpStrIntClass, "Key");
-*
-*		int propDummy = 7;
-*		void* propParams[1] = { &propDummy };
-*		mono_property_set_value(prop, kvpStrIntInstance, propParams, nullptr);
-*
-*		int propVal = *(int*)mono_property_get_value(prop, kvpStrIntInstance, nullptr, nullptr);*/

@@ -5,26 +5,42 @@
 #include "BsScriptSerializableField.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
+#include "BsMonoProperty.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
 	ScriptSerializableList::ScriptSerializableList(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mNumElements(0)
+		:mManagedInstance(nullptr), mNumElements(0), mItemProp(nullptr), mCountProp(nullptr), mAddMethod(nullptr)
 	{
 
 	}
 
 	ScriptSerializableList::ScriptSerializableList(const ConstructPrivately& dummy, const ScriptSerializableTypeInfoListPtr& typeInfo, MonoObject* managedInstance)
-		:mListTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0)
+		:mListTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0), mItemProp(nullptr),
+		mCountProp(nullptr), mAddMethod(nullptr)
 	{
+		MonoClass* listClass = MonoManager::instance().findClass(mono_object_get_class(managedInstance));
+		if(listClass == nullptr)
+			return;
+
+		initMonoObjects(listClass);
+
 		mNumElements = getLength();
 	}
 
 	ScriptSerializableListPtr ScriptSerializableList::create(MonoObject* managedInstance, const ScriptSerializableTypeInfoListPtr& typeInfo)
 	{
-		if(!RuntimeScriptObjects::instance().getSystemGenericListClass()->isInstanceOfType(managedInstance))
+		if(managedInstance == nullptr)
+			return nullptr;
+
+		::MonoClass* monoClass = mono_object_get_class(managedInstance);
+		String elementNs = mono_class_get_namespace(monoClass);
+		String elementTypeName = mono_class_get_name(monoClass);
+		String fullName = elementNs + "." + elementTypeName;
+
+		if(RuntimeScriptObjects::instance().getSystemGenericListClass()->getFullName() != fullName)
 			return nullptr;
 
 		return cm_shared_ptr<ScriptSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
@@ -54,55 +70,56 @@ namespace BansheeEngine
 		if(listClass == nullptr)
 			return;
 
-		mManagedInstance = listClass->createInstance();
-		setLength(mNumElements);
+		initMonoObjects(listClass);
 
-		CM::UINT32 idx = 0;
+		void* params[1] = { &mNumElements };
+		mManagedInstance = listClass->createInstance("int", params);
+
 		for(auto& arrayEntry : mListEntries)
 		{
-			setFieldData(idx, arrayEntry);
-			idx++;
+			addFieldData(arrayEntry);
 		}
 	}
 
 	void ScriptSerializableList::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
-		if(val->isValueType())
-			setValue(arrayIdx, val->getValue(mListTypeInfo->mElementType));
-		else
-		{
-			MonoObject* ptrToObj = (MonoObject*)val->getValue(mListTypeInfo->mElementType);
-			setValue(arrayIdx, &ptrToObj);
-		}
+		mItemProp->setIndexed(mManagedInstance, &arrayIdx, val->getValue(mListTypeInfo->mElementType));
+	}
+
+
+	void ScriptSerializableList::addFieldData(const ScriptSerializableFieldDataPtr& val)
+	{
+		void* params[1];
+		params[0] = val->getValue(mListTypeInfo->mElementType);
+
+		mAddMethod->invoke(mManagedInstance, params);
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableList::getFieldData(CM::UINT32 arrayIdx)
 	{
-		return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, getValue(arrayIdx));
-	}
+		MonoObject* obj = mItemProp->getIndexed(mManagedInstance, &arrayIdx);
 
-	void ScriptSerializableList::setValue(CM::UINT32 arrayIdx, void* val)
-	{
-		// TODO
-	}
-
-	void* ScriptSerializableList::getValue(CM::UINT32 arrayIdx)
-	{
-		// TODO
-		
-		return nullptr;
+		if(mono_class_is_valuetype(mono_object_get_class(obj)))
+			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, mono_object_unbox(obj));
+		else
+			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, obj);
 	}
 
 	UINT32 ScriptSerializableList::getLength() const
 	{
-		// TODO
-		
-		return 0;
+		MonoObject* length = mCountProp->get(mManagedInstance);
+
+		if(length == nullptr)
+			return 0;
+
+		return *(UINT32*)mono_object_unbox(length);
 	}
 
-	void ScriptSerializableList::setLength(UINT32 length)
+	void ScriptSerializableList::initMonoObjects(MonoClass* listClass)
 	{
-		// TODO
+		mItemProp = &listClass->getProperty("Item");
+		mCountProp = &listClass->getProperty("Count");
+		mAddMethod = &listClass->getMethod("Add", 1);
 	}
 
 	RTTITypeBase* ScriptSerializableList::getRTTIStatic()

@@ -5,26 +5,66 @@
 #include "BsScriptSerializableField.h"
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
+#include "BsMonoProperty.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptSerializableDictionary::ScriptSerializableDictionary(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mNumElements(0)
-	{
+	ScriptSerializableDictionary::Enumerator::Enumerator(MonoObject* instance, const ScriptSerializableDictionary* parent)
+		:mInstance(instance), mParent(parent), mCurrent(nullptr)
+	{ }
 
+	ScriptSerializableFieldDataPtr ScriptSerializableDictionary::Enumerator::getKey() const
+	{
+		MonoObject* obj = mParent->mKeyProp->get(mCurrent);
+
+		if(mono_class_is_valuetype(mono_object_get_class(obj)))
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, mono_object_unbox(obj));
+		else
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, obj);
 	}
 
-	ScriptSerializableDictionary::ScriptSerializableDictionary(const ConstructPrivately& dummy, const ScriptSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* managedInstance)
-		:mDictionaryTypeInfo(typeInfo), mManagedInstance(managedInstance), mNumElements(0)
+	ScriptSerializableFieldDataPtr ScriptSerializableDictionary::Enumerator::getValue() const
 	{
-		mNumElements = getLength();
+		MonoObject* obj = mParent->mValueProp->get(mCurrent);
+
+		if(mono_class_is_valuetype(mono_object_get_class(obj)))
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, mono_object_unbox(obj));
+		else
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, obj);
+	}
+
+	bool ScriptSerializableDictionary::Enumerator::moveNext()
+	{
+		mCurrent = mParent->mEnumMoveNext->invoke(mInstance, nullptr);
+
+		return mCurrent != nullptr;
+	}
+
+	ScriptSerializableDictionary::ScriptSerializableDictionary(const ConstructPrivately& dummy)
+		:mManagedInstance(nullptr), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr),
+		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr)
+	{ }
+
+	ScriptSerializableDictionary::ScriptSerializableDictionary(const ConstructPrivately& dummy, const ScriptSerializableTypeInfoDictionaryPtr& typeInfo, MonoObject* managedInstance)
+		:mDictionaryTypeInfo(typeInfo), mManagedInstance(managedInstance), mAddMethod(nullptr), mGetEnumerator(nullptr), mEnumMoveNext(nullptr),
+		mEnumCurrentProp(nullptr), mKeyProp(nullptr), mValueProp(nullptr)
+	{
+
 	}
 
 	ScriptSerializableDictionaryPtr ScriptSerializableDictionary::create(MonoObject* managedInstance, const ScriptSerializableTypeInfoDictionaryPtr& typeInfo)
 	{
-		if(!RuntimeScriptObjects::instance().getSystemGenericDictionaryClass()->isInstanceOfType(managedInstance))
+		if(managedInstance == nullptr)
+			return nullptr;
+
+		::MonoClass* monoClass = mono_object_get_class(managedInstance);
+		String elementNs = mono_class_get_namespace(monoClass);
+		String elementTypeName = mono_class_get_name(monoClass);
+		String fullName = elementNs + "." + elementTypeName;
+
+		if(RuntimeScriptObjects::instance().getSystemGenericDictionaryClass()->getFullName() != fullName)
 			return nullptr;
 
 		return cm_shared_ptr<ScriptSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
@@ -37,10 +77,21 @@ namespace BansheeEngine
 
 	void ScriptSerializableDictionary::serializeManagedInstance()
 	{
-		mDictionaryEntries.resize(mNumElements * 2);
-		for(UINT32 i = 0; i < mNumElements; i++)
+		MonoClass* dictionaryClass = MonoManager::instance().findClass(mono_object_get_class(mManagedInstance));
+		if(dictionaryClass == nullptr)
+			return;
+
+		initMonoObjects(dictionaryClass);
+
+		mKeyEntries.clear();
+		mValueEntries.clear();
+
+		Enumerator enumerator = getEnumerator();
+
+		while(enumerator.moveNext())
 		{
-			mDictionaryEntries[i] = getFieldData(i);
+			mKeyEntries.push_back(enumerator.getKey());
+			mValueEntries.push_back(enumerator.getValue());
 		}
 	}
 
@@ -54,69 +105,47 @@ namespace BansheeEngine
 		if(dictionaryClass == nullptr)
 			return;
 
+		initMonoObjects(dictionaryClass);
+
 		mManagedInstance = dictionaryClass->createInstance();
-		setLength(mNumElements);
+		assert(mKeyEntries.size() == mValueEntries.size());
 
-		CM::UINT32 idx = 0;
-		for(auto& arrayEntry : mDictionaryEntries)
+		for(UINT32 i = 0; i < (UINT32)mKeyEntries.size(); i++)
 		{
-			setFieldData(idx, arrayEntry);
-			idx++;
+			setFieldData(mKeyEntries[i], mValueEntries[i]);
 		}
 	}
 
-	void ScriptSerializableDictionary::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
+	void ScriptSerializableDictionary::setFieldData(const ScriptSerializableFieldDataPtr& key, const ScriptSerializableFieldDataPtr& val)
 	{
-		if(val->isValueType())
-		{
-			if((arrayIdx % 2) == 0)
-				setValue(arrayIdx, val->getValue(mDictionaryTypeInfo->mKeyType));
-			else
-				setValue(arrayIdx, val->getValue(mDictionaryTypeInfo->mValueType));
-		}
-		else
-		{
-			MonoObject* ptrToObj = nullptr;
-			
-			if((arrayIdx % 2) == 0)
-				ptrToObj = (MonoObject*)val->getValue(mDictionaryTypeInfo->mKeyType);
-			else
-				ptrToObj = (MonoObject*)val->getValue(mDictionaryTypeInfo->mValueType);
+		void* params[2];
+		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
+		params[1] = val->getValue(mDictionaryTypeInfo->mValueType);
 
-			setValue(arrayIdx, &ptrToObj);
-		}
+		mAddMethod->invoke(mManagedInstance, params);
 	}
 
-	ScriptSerializableFieldDataPtr ScriptSerializableDictionary::getFieldData(CM::UINT32 arrayIdx)
+	ScriptSerializableDictionary::Enumerator ScriptSerializableDictionary::getEnumerator() const
 	{
-		if((arrayIdx % 2) == 0)
-			return ScriptSerializableFieldData::create(mDictionaryTypeInfo->mKeyType, getValue(arrayIdx));
-		else
-			return ScriptSerializableFieldData::create(mDictionaryTypeInfo->mValueType, getValue(arrayIdx));
+		return Enumerator(mGetEnumerator->invoke(mManagedInstance, nullptr), this);
 	}
 
-	void ScriptSerializableDictionary::setValue(CM::UINT32 arrayIdx, void* val)
+	void ScriptSerializableDictionary::initMonoObjects(MonoClass* dictionaryClass)
 	{
-		// TODO
-	}
+		mAddMethod = &dictionaryClass->getMethod("Add", 2);
+		mGetEnumerator = &dictionaryClass->getMethod("GetEnumerator");
 
-	void* ScriptSerializableDictionary::getValue(CM::UINT32 arrayIdx)
-	{
-		// TODO
+		MonoClass* enumeratorClass = mGetEnumerator->getReturnType();
+		assert(enumeratorClass != nullptr);
 
-		return nullptr;
-	}
+		mEnumMoveNext = &enumeratorClass->getMethod("MoveNext");
+		mEnumCurrentProp = &enumeratorClass->getProperty("Current");
 
-	UINT32 ScriptSerializableDictionary::getLength() const
-	{
-		// TODO
+		MonoClass* keyValuePairClass = mEnumCurrentProp->getReturnType();
+		assert(keyValuePairClass != nullptr);
 
-		return 0;
-	}
-
-	void ScriptSerializableDictionary::setLength(UINT32 length)
-	{
-		// TODO
+		mKeyProp = &keyValuePairClass->getProperty("Key");
+		mValueProp = &keyValuePairClass->getProperty("Value");
 	}
 
 	RTTITypeBase* ScriptSerializableDictionary::getRTTIStatic()
