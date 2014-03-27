@@ -12,6 +12,6 @@ namespace BansheeEngine
         public DbgComponent2 otherComponent;
         public SceneObject otherSO;
         public int[][][] zeArray;
-        public List<int> zeList;
+        public List<DbgSerzObj> zeList;
     }
 }

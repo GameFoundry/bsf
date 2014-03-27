@@ -102,7 +102,7 @@ namespace BansheeEngine
 		if(mono_class_is_valuetype(mono_object_get_class(obj)))
 			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, mono_object_unbox(obj));
 		else
-			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, obj);
+			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, &obj);
 	}
 
 	UINT32 ScriptSerializableList::getLength() const

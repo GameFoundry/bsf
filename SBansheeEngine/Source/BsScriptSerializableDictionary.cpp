@@ -22,7 +22,7 @@ namespace BansheeEngine
 		if(mono_class_is_valuetype(mono_object_get_class(obj)))
 			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, mono_object_unbox(obj));
 		else
-			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, obj);
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, &obj);
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableDictionary::Enumerator::getValue() const
@@ -32,7 +32,7 @@ namespace BansheeEngine
 		if(mono_class_is_valuetype(mono_object_get_class(obj)))
 			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, mono_object_unbox(obj));
 		else
-			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, obj);
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, &obj);
 	}
 
 	bool ScriptSerializableDictionary::Enumerator::moveNext()
