@@ -8,6 +8,7 @@
 // DEBUG ONLY
 #include "BsScriptSceneObject.h"
 #include "CmSceneObject.h"
+#include "BsMonoUtil.h"
 
 using namespace CamelotFramework;
 
@@ -23,13 +24,12 @@ namespace BansheeEngine
 		cloneSO->setParent(SO);
 	}
 
-	void reportDbgValue(int dbgValue, int dbgValue2, int dbgValue3, MonoReflectionType* type)
+	void reportDbgValue(int a, MonoString* b, int a2, MonoString* b2)
 	{
-		::MonoClass* monoClass = mono_type_get_class(mono_reflection_type_get_type(type));
+		WString bStr = MonoUtil::monoToWString(b);
+		WString b2Str = MonoUtil::monoToWString(b2);
 
-		String className = mono_class_get_name(monoClass);
-		
-		int a = dbgValue;
+		int end = 5;
 	}
 
 	extern "C" BS_SCR_BE_EXPORT const String& getPluginName()

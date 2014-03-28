@@ -22,6 +22,7 @@ namespace BansheeEngine
 		MonoClass* getType();
 
 		void getValue(MonoObject* instance, void* outValue);
+		MonoObject* getValueBoxed(MonoObject* instance);
 		void setValue(MonoObject* instance, void* value);
 
 		bool hasAttribute(MonoClass* monoClass);

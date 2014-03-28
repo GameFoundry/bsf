@@ -2,16 +2,16 @@ TODO
  - Ability to break external references as a pre-processing step
  - I need to properly unload all assemblies (and possibly shutdown mono runtime?) before I shut down various modules used in ScriptBansheeEngine.
 
+C# Serialization
+ - Ensure that everything still works when a serialized type is removed
+ - Ensure that such components retain their field data so when they are no longer unknown their data may be restored
+
  ---------------------------------------
 
 IMMEDIATE:
-In some places (especially list and dict) I do: if(mono_class_is_valuetype(mono_object_get_class(obj))).
-This will return true for strings, which don't work as intended when unboxed (or at least don't show consistent behaviour with other types)
-
 setValue in ScriptSerializableObject & ScriptSerializableArray should check if value is null and if the field type isn't a value type (can't be null)
 
 LOW PRIORITY
-- Ensure that unknown components retain their field data so when they are no longer unknown their data may be restored
 - Get rid of ScriptObject::createInstance and replace it with parameter in constructor
 - A way to serialize any object into a Resource (and deserialize it from Resource)
 
@@ -19,7 +19,6 @@ LOW PRIORITY
 
  Testing:
 Test how structs work
-Test how things work when class gets removed
 
  ------------------------------------------------------
  General C# component management

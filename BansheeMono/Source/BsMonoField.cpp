@@ -34,6 +34,11 @@ namespace BansheeEngine
 		mono_field_get_value(instance, mField, outValue);
 	}
 
+	MonoObject* MonoField::getValueBoxed(MonoObject* instance)
+	{
+		return mono_field_get_value_object(MonoManager::instance().getDomain(), mField, instance);
+	}
+
 	void MonoField::setValue(MonoObject* instance, void* value)
 	{
 		mono_field_set_value(instance, mField, value);

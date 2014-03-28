@@ -127,7 +127,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	bool ScriptSerializableTypeInfoPrimitive::isMonoObject() const
+	bool ScriptSerializableTypeInfoPrimitive::isRawType() const
 	{
 		switch(mType)
 		{
@@ -136,10 +136,10 @@ namespace BansheeEngine
 			case ScriptPrimitiveType::TextureRef:
 			case ScriptPrimitiveType::SpriteTextureRef:
 			case ScriptPrimitiveType::String:
-				return true;
+				return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	RTTITypeBase* ScriptSerializableTypeInfoPrimitive::getRTTIStatic()
@@ -159,7 +159,7 @@ namespace BansheeEngine
 
 		auto objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(typeInfo);
 
-		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName;
+		return objTypeInfo->mTypeNamespace == mTypeNamespace && objTypeInfo->mTypeName == mTypeName && objTypeInfo->mValueType == mValueType;
 	}
 
 	bool ScriptSerializableTypeInfoObject::isTypeLoaded() const

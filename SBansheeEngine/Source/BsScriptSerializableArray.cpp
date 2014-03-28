@@ -11,16 +11,18 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	ScriptSerializableArray::ScriptSerializableArray(const ConstructPrivately& dummy)
-		:mManagedInstance(nullptr), mElemSize(0)
+		:mManagedInstance(nullptr), mElemSize(0), mElementMonoClass(nullptr)
 	{
 
 	}
 
 	ScriptSerializableArray::ScriptSerializableArray(const ConstructPrivately& dummy, const ScriptSerializableTypeInfoArrayPtr& typeInfo, MonoObject* managedInstance)
-		:mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mElemSize(0)
+		:mArrayTypeInfo(typeInfo), mManagedInstance(managedInstance), mElemSize(0), mElementMonoClass(nullptr)
 	{
 		::MonoClass* monoClass = mono_object_get_class(mManagedInstance);
 		mElemSize = mono_array_element_size(monoClass);
+
+		initMonoObjects();
 
 		mNumElements.resize(typeInfo->mRank);
 		for(UINT32 i = 0; i < typeInfo->mRank; i++)
@@ -78,6 +80,7 @@ namespace BansheeEngine
 			mono_type_get_object(MonoManager::instance().getDomain(), mono_class_get_type(mArrayTypeInfo->getMonoClass())), lengthArray };
 
 		mManagedInstance = createInstance->invoke(nullptr, params);
+		initMonoObjects();
 
 		CM::UINT32 idx = 0;
 		for(auto& arrayEntry : mArrayEntries)
@@ -89,18 +92,58 @@ namespace BansheeEngine
 
 	void ScriptSerializableArray::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
-		if(!mArrayTypeInfo->mElementType->isMonoObject())
-			setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
+		bool isBoxedValueType = false;
+		if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(mArrayTypeInfo->mElementType))
+		{
+			ScriptSerializableTypeInfoObjectPtr objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(mArrayTypeInfo->mElementType);
+			isBoxedValueType = objTypeInfo->mValueType;
+		}
+
+		if(isBoxedValueType)
+		{
+			MonoObject* value = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
+
+			if(value != nullptr)
+				setValue(arrayIdx, mono_object_unbox(value)); // Value types need to be set as native unboxed types
+		}
 		else
 		{
-			MonoObject* ptrToObj = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
-			setValue(arrayIdx, &ptrToObj);
+			if(mArrayTypeInfo->mElementType->isRawType())
+				setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
+			else
+			{
+				MonoObject* ptrToObj = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
+				setValue(arrayIdx, &ptrToObj);
+			}
 		}
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableArray::getFieldData(CM::UINT32 arrayIdx)
 	{
-		return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, getValue(arrayIdx));
+		MonoArray* array = (MonoArray*)mManagedInstance;
+
+		UINT32 numElems = (UINT32)mono_array_length(array);
+		assert(arrayIdx < numElems);
+
+		void* arrayValue = mono_array_addr_with_size(array, mElemSize, arrayIdx);
+
+		if(mArrayTypeInfo->mElementType->isRawType())
+		{
+			return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
+		}
+		else
+		{
+			if(mono_class_is_valuetype(mElementMonoClass))
+			{
+				void* rawObj = *(void**)arrayValue;
+				assert(rawObj != nullptr);
+
+				MonoObject* boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, rawObj);
+				return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, &boxedObj);
+			}
+			else
+				return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
+		}
 	}
 	
 	void ScriptSerializableArray::setValue(CM::UINT32 arrayIdx, void* val)
@@ -113,15 +156,10 @@ namespace BansheeEngine
 		void* elemAddr = mono_array_addr_with_size(array, mElemSize, arrayIdx);
 		memcpy(elemAddr, val, mElemSize);
 	}
-	
-	void* ScriptSerializableArray::getValue(CM::UINT32 arrayIdx)
-	{
-		MonoArray* array = (MonoArray*)mManagedInstance;
 
-		UINT32 numElems = (UINT32)mono_array_length(array);
-		assert(arrayIdx < numElems);
-	
-		return mono_array_addr_with_size(array, mElemSize, arrayIdx);
+	void ScriptSerializableArray::initMonoObjects()
+	{
+		mElementMonoClass = mArrayTypeInfo->mElementType->getMonoClass();
 	}
 
 	UINT32 ScriptSerializableArray::toSequentialIdx(const CM::Vector<CM::UINT32>::type& idx) const

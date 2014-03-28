@@ -21,12 +21,15 @@ namespace BansheeEngine
 
 	protected:
 		MonoObject* mManagedInstance;
+		::MonoClass* mElementMonoClass;
 
 		ScriptSerializableTypeInfoArrayPtr mArrayTypeInfo;
 		CM::Vector<ScriptSerializableFieldDataPtr>::type mArrayEntries;
 		
 		CM::Vector<CM::UINT32>::type mNumElements;
 		CM::UINT32 mElemSize;
+
+		void initMonoObjects();
 
 		/**
 		 * @brief	Populates internal field data based on currently active managed instance.
@@ -42,7 +45,6 @@ namespace BansheeEngine
 		ScriptSerializableFieldDataPtr getFieldData(CM::UINT32 arrayIdx);
 
 		void setValue(CM::UINT32 arrayIdx, void* val);
-		void* getValue(CM::UINT32 arrayIdx);
 
 		CM::UINT32 toSequentialIdx(const CM::Vector<CM::UINT32>::type& idx) const;
 		CM::UINT32 getLength(CM::UINT32 dimension) const;

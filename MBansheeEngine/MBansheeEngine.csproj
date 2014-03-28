@@ -47,6 +47,7 @@
     <Compile Include="Component.cs" />
     <Compile Include="DbgComponent.cs" />
     <Compile Include="DbgComponent2.cs" />
+    <Compile Include="DbgSerzCls.cs" />
     <Compile Include="DbgSerzObj.cs" />
     <Compile Include="DontSerializeField.cs" />
     <Compile Include="Font.cs" />
