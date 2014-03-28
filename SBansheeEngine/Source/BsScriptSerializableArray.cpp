@@ -89,7 +89,7 @@ namespace BansheeEngine
 
 	void ScriptSerializableArray::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
-		if(val->isValueType())
+		if(!mArrayTypeInfo->mElementType->isMonoObject())
 			setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
 		else
 		{

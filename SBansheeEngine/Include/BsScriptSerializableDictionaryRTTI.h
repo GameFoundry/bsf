@@ -21,10 +21,10 @@ namespace BansheeEngine
 		CM::UINT32 getNumKeyEntries(ScriptSerializableDictionary* obj) { return (CM::UINT32)obj->mKeyEntries.size(); }
 		void setNumKeyEntries(ScriptSerializableDictionary* obj, CM::UINT32 numEntries) { obj->mKeyEntries.resize(numEntries); }
 
-		ScriptSerializableFieldDataPtr getValueEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx) { return obj->mKeyEntries[arrayIdx]; }
-		void setValueEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx, ScriptSerializableFieldDataPtr val) { obj->mKeyEntries[arrayIdx] = val; }
-		CM::UINT32 getNumValueEntries(ScriptSerializableDictionary* obj) { return (CM::UINT32)obj->mKeyEntries.size(); }
-		void setNumValueEntries(ScriptSerializableDictionary* obj, CM::UINT32 numEntries) { obj->mKeyEntries.resize(numEntries); }
+		ScriptSerializableFieldDataPtr getValueEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx) { return obj->mValueEntries[arrayIdx]; }
+		void setValueEntry(ScriptSerializableDictionary* obj, CM::UINT32 arrayIdx, ScriptSerializableFieldDataPtr val) { obj->mValueEntries[arrayIdx] = val; }
+		CM::UINT32 getNumValueEntries(ScriptSerializableDictionary* obj) { return (CM::UINT32)obj->mValueEntries.size(); }
+		void setNumValueEntries(ScriptSerializableDictionary* obj, CM::UINT32 numEntries) { obj->mValueEntries.resize(numEntries); }
 
 	public:
 		ScriptSerializableDictionaryRTTI()

@@ -37,9 +37,15 @@ namespace BansheeEngine
 
 	bool ScriptSerializableDictionary::Enumerator::moveNext()
 	{
-		mCurrent = mParent->mEnumMoveNext->invoke(mInstance, nullptr);
+		MonoObject* returnVal = mParent->mEnumMoveNext->invoke(mInstance, nullptr);
+		bool isValid = *(bool*)mono_object_unbox(returnVal);
 
-		return mCurrent != nullptr;
+		if(isValid)
+			mCurrent = (MonoObject*)mono_object_unbox(mParent->mEnumCurrentProp->get(mInstance));
+		else
+			mCurrent = nullptr;
+
+		return isValid;
 	}
 
 	ScriptSerializableDictionary::ScriptSerializableDictionary(const ConstructPrivately& dummy)
@@ -127,7 +133,7 @@ namespace BansheeEngine
 
 	ScriptSerializableDictionary::Enumerator ScriptSerializableDictionary::getEnumerator() const
 	{
-		return Enumerator(mGetEnumerator->invoke(mManagedInstance, nullptr), this);
+		return Enumerator((MonoObject*)mono_object_unbox(mGetEnumerator->invoke(mManagedInstance, nullptr)), this);
 	}
 
 	void ScriptSerializableDictionary::initMonoObjects(MonoClass* dictionaryClass)

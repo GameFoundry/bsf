@@ -5,7 +5,9 @@ TODO
  ---------------------------------------
 
 IMMEDIATE:
-Implement TODO ScriptSerializableList.cpp & ScriptSerializableDictionary.cpp methods
+In some places (especially list and dict) I do: if(mono_class_is_valuetype(mono_object_get_class(obj))).
+This will return true for strings, which don't work as intended when unboxed (or at least don't show consistent behaviour with other types)
+
 setValue in ScriptSerializableObject & ScriptSerializableArray should check if value is null and if the field type isn't a value type (can't be null)
 
 LOW PRIORITY

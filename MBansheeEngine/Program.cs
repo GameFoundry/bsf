@@ -24,6 +24,7 @@ namespace BansheeEngine
             dbgComponent.otherSO = otherSO;
             dbgComponent.zeArray = new int[5][][];
             dbgComponent.zeList = new List<DbgSerzObj>();
+            dbgComponent.zeDict = new Dictionary<string, int>();
 
             dbgComponent.zeList.Add(new DbgSerzObj());
             dbgComponent.zeList.Add(new DbgSerzObj());
@@ -31,6 +32,16 @@ namespace BansheeEngine
             dbgComponent.zeList.Add(new DbgSerzObj());
 
             dbgComponent.zeList[2].someValue = 101;
+
+            dbgComponent.zeDict["supSup"] = 10001;
+            dbgComponent.zeDict["lolz"] = 696969;
+
+            var enumerator = dbgComponent.zeDict.GetEnumerator();
+            int all = 0;
+            while (enumerator.MoveNext())
+            {
+                all += enumerator.Current.Value;
+            }
 
             for (int i = 0; i < dbgComponent.zeArray.Length; i++)
             {
@@ -47,7 +58,7 @@ namespace BansheeEngine
             for (int i = 0; i < so.GetNumChildren(); i++)
             {
                 SceneObject childSO = so.GetChild(i);
-                reportDbgValue(childSO.GetComponent<DbgComponent>().zeList[2].someValue, childSO.GetComponent<DbgComponent>().zeArray[4][1][3], typeof(DbgComponent));
+                reportDbgValue(childSO.GetComponent<DbgComponent>().zeDict["lolz"], childSO.GetComponent<DbgComponent>().zeList[2].someValue, childSO.GetComponent<DbgComponent>().zeArray[4][1][3], typeof(DbgComponent));
             }
 
             //Color newColor = Color.red;
@@ -61,6 +72,6 @@ namespace BansheeEngine
         private static extern void dbgTestComponentClone(SceneObject so);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void reportDbgValue(int dbgVal, int dbgVal2, Type type);
+        private static extern void reportDbgValue(int dbgVal, int dbgVal2, int dbgVal3, Type type);
     }
 }

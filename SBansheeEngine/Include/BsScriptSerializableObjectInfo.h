@@ -40,6 +40,7 @@ namespace BansheeEngine
 
 		virtual bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const = 0;
 		virtual bool isTypeLoaded() const = 0;
+		virtual bool isMonoObject() const = 0;
 		virtual ::MonoClass* getMonoClass() const = 0;
 
 		/************************************************************************/
@@ -58,6 +59,7 @@ namespace BansheeEngine
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
 		bool isTypeLoaded() const;
+		bool isMonoObject() const;
 		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/
@@ -78,6 +80,7 @@ namespace BansheeEngine
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
 		bool isTypeLoaded() const;
+		bool isMonoObject() const { return true; }
 		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/
@@ -97,6 +100,7 @@ namespace BansheeEngine
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
 		bool isTypeLoaded() const;
+		bool isMonoObject() const { return true; }
 		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/
@@ -115,6 +119,7 @@ namespace BansheeEngine
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
 		bool isTypeLoaded() const;
+		bool isMonoObject() const { return true; }
 		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/
@@ -134,6 +139,7 @@ namespace BansheeEngine
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
 		bool isTypeLoaded() const;
+		bool isMonoObject() const { return true; }
 		::MonoClass* getMonoClass() const;
 
 		/************************************************************************/

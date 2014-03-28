@@ -6,6 +6,7 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoField.h"
+#include "BsMonoMethod.h"
 #include "BsMonoProperty.h"
 #include "BsMonoUtil.h"
 #include "CmRTTIType.h"
@@ -301,8 +302,14 @@ namespace BansheeEngine
 			{
 				std::shared_ptr<ScriptSerializableTypeInfoDictionary> typeInfo = cm_shared_ptr<ScriptSerializableTypeInfoDictionary>();
 
-				MonoProperty& keyProperty = monoClass->getProperty("Key");
-				MonoProperty& valueProperty = monoClass->getProperty("Value");
+				MonoMethod& getEnumerator = monoClass->getMethod("GetEnumerator");
+				MonoClass* enumClass = getEnumerator.getReturnType();
+
+				MonoProperty& currentProp = enumClass->getProperty("Current");
+				MonoClass* keyValuePair = currentProp.getReturnType();
+
+				MonoProperty& keyProperty = keyValuePair->getProperty("Key");
+				MonoProperty& valueProperty = keyValuePair->getProperty("Value");
 
 				MonoClass* keyClass = keyProperty.getReturnType();
 				if(keyClass != nullptr)

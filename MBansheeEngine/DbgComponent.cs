@@ -13,5 +13,6 @@ namespace BansheeEngine
         public SceneObject otherSO;
         public int[][][] zeArray;
         public List<DbgSerzObj> zeList;
+        public Dictionary<string, int> zeDict;
     }
 }

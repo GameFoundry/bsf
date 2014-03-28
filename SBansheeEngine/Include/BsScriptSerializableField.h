@@ -29,7 +29,6 @@ namespace BansheeEngine
 	public:
 		static ScriptSerializableFieldDataPtr create(const ScriptSerializableTypeInfoPtr& typeInfo, void* value);
 		virtual void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo) = 0;
-		virtual bool isValueType() const = 0;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -65,7 +64,6 @@ namespace BansheeEngine
 		bool value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -83,7 +81,6 @@ namespace BansheeEngine
 		wchar_t value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -101,7 +98,6 @@ namespace BansheeEngine
 		CM::INT8 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -119,7 +115,6 @@ namespace BansheeEngine
 		CM::UINT8 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -137,7 +132,6 @@ namespace BansheeEngine
 		CM::INT16 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -155,7 +149,6 @@ namespace BansheeEngine
 		CM::UINT16 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -173,7 +166,6 @@ namespace BansheeEngine
 		CM::INT32 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -191,7 +183,6 @@ namespace BansheeEngine
 		CM::UINT32 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -209,7 +200,6 @@ namespace BansheeEngine
 		CM::INT64 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -227,7 +217,6 @@ namespace BansheeEngine
 		CM::UINT64 value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -245,7 +234,6 @@ namespace BansheeEngine
 		float value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -264,7 +252,6 @@ namespace BansheeEngine
 		double value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return true; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -282,7 +269,6 @@ namespace BansheeEngine
 		CM::WString value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return false; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -300,7 +286,6 @@ namespace BansheeEngine
 		CM::HResource value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return false; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -318,7 +303,6 @@ namespace BansheeEngine
 		CM::HGameObject value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return false; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -336,7 +320,6 @@ namespace BansheeEngine
 		ScriptSerializableObjectPtr value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return false; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -354,7 +337,6 @@ namespace BansheeEngine
 		ScriptSerializableArrayPtr value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return false; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -372,7 +354,6 @@ namespace BansheeEngine
 		ScriptSerializableListPtr value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return false; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -390,7 +371,6 @@ namespace BansheeEngine
 		ScriptSerializableDictionaryPtr value;
 
 		void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo);
-		bool isValueType() const { return false; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
