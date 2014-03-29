@@ -21,10 +21,12 @@ namespace BansheeEngine
 				inline bool operator()(const ClassId &a, const ClassId &b) const;
 			};
 
-			ClassId(const CM::String& namespaceName, CM::String name);
+			ClassId();
+			ClassId(const CM::String& namespaceName, CM::String name, ::MonoClass* genericInstance = nullptr);
 
 			CM::String namespaceName;
 			CM::String name;
+			::MonoClass* genericInstance;
 		};
 
 	public:
@@ -45,6 +47,8 @@ namespace BansheeEngine
 		void loadAsDependency(MonoImage* image, const CM::String& name);
 		void unload();
 
+		bool isGenericClass(const CM::String& name) const;
+
 		CM::String mName;
 		MonoImage* mMonoImage;
 		::MonoAssembly* mMonoAssembly;
@@ -52,6 +56,7 @@ namespace BansheeEngine
 		bool mIsDependency;
 		
 		mutable CM::UnorderedMap<ClassId, MonoClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
+		mutable CM::UnorderedMap<::MonoClass*, MonoClass*>::type mClassesByRaw;
 
 		mutable bool mHaveCachedClassList;
 		mutable CM::Vector<MonoClass*>::type mCachedClassList;

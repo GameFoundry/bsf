@@ -127,23 +127,22 @@ namespace BansheeEngine
 
 		void* arrayValue = mono_array_addr_with_size(array, mElemSize, arrayIdx);
 
-		if(mArrayTypeInfo->mElementType->isRawType())
+		if(mono_class_is_valuetype(mElementMonoClass))
 		{
-			return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
-		}
-		else
-		{
-			if(mono_class_is_valuetype(mElementMonoClass))
+			if(mArrayTypeInfo->mElementType->isRawType())
+				return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
+			else
 			{
-				void* rawObj = *(void**)arrayValue;
-				assert(rawObj != nullptr);
+				MonoObject* boxedObj = nullptr;
 
-				MonoObject* boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, rawObj);
+				if(arrayValue != nullptr)
+					boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, arrayValue);
+
 				return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, &boxedObj);
 			}
-			else
-				return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
 		}
+		else
+			return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
 	}
 	
 	void ScriptSerializableArray::setValue(CM::UINT32 arrayIdx, void* val)

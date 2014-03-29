@@ -101,7 +101,7 @@ namespace CamelotFramework
 		Vector<ObjectToEncode>::type mObjectsToEncode;
 		int mTotalBytesWritten;
 
-		UnorderedMap<UINT32, ObjectToDecode>::type mObjectMap;
+		Map<UINT32, ObjectToDecode>::type mObjectMap;
 
 		UINT32 getObjectSize(IReflectable* object);
 

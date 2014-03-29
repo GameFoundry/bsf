@@ -12,6 +12,16 @@ namespace BansheeEngine
         public DbgSerzObj complex = new DbgSerzObj();
         public DbgSerzCls complex2 = new DbgSerzCls();
 
+        public int[] arrA;
+        public string[] arrB;
+        public DbgSerzObj[] arrComplex;
+        public DbgSerzCls[] arrComplex2;
+
+        public List<int> listA;
+        public List<string> listB;
+        public List<DbgSerzObj> listComplex;
+        public List<DbgSerzCls> listComplex2;
+
         public DbgComponent2 otherComponent;
         public SceneObject otherSO;
 

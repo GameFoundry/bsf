@@ -9,16 +9,13 @@ C# Serialization
  ---------------------------------------
 
 IMMEDIATE:
-setValue in ScriptSerializableObject & ScriptSerializableArray should check if value is null and if the field type isn't a value type (can't be null)
+MonoManager class caching doesn't work with generic types because they all share the same name
+Ensure that List works with all data types
+When it works copy its set/get code to Dictionary
 
 LOW PRIORITY
 - Get rid of ScriptObject::createInstance and replace it with parameter in constructor
 - A way to serialize any object into a Resource (and deserialize it from Resource)
-
- ---------------------------------------
-
- Testing:
-Test how structs work
 
  ------------------------------------------------------
  General C# component management

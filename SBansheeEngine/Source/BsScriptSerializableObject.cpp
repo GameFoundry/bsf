@@ -189,9 +189,11 @@ namespace BansheeEngine
 
 		if(fieldInfo->mTypeInfo->isRawType())
 		{
-			assert(fieldValue != nullptr);
+			void* unboxedValue = nullptr;
+			if(fieldValue != nullptr)
+				unboxedValue = mono_object_unbox(fieldValue);
 
-			return ScriptSerializableFieldData::create(fieldInfo->mTypeInfo, mono_object_unbox(fieldValue));
+			return ScriptSerializableFieldData::create(fieldInfo->mTypeInfo, unboxedValue);
 		}
 		else
 		{

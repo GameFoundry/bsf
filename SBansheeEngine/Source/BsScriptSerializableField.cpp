@@ -396,19 +396,30 @@ namespace BansheeEngine
 
 			if(primitiveTypeInfo->mType == ScriptPrimitiveType::TextureRef)
 			{
-				ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(value);
-				if(scriptResource == nullptr)
-					scriptResource = ScriptResourceManager::instance().createScriptTexture(value);
+				if(value)
+				{
+					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(value);
+					if(scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptTexture(value);
 
-				return scriptResource->getManagedInstance();
+					return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
 			}
 			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::SpriteTextureRef)
 			{
-				ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(value);
-				if(scriptResource == nullptr)
-					scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(value);
+				if(value)
+				{
+					ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(value);
+					if(scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(value);
 
-				return scriptResource->getManagedInstance();
+					if(scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
 			}
 		}
 
@@ -423,19 +434,29 @@ namespace BansheeEngine
 
 			if(primitiveTypeInfo->mType == ScriptPrimitiveType::SceneObjectRef)
 			{
-				ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(value);
-				if(scriptSceneObject == nullptr)
-					scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(value);
+				if(value)
+				{
+					ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(value);
+					if(scriptSceneObject == nullptr)
+						scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(value);
 
-				return scriptSceneObject->getManagedInstance();
+					return scriptSceneObject->getManagedInstance();
+				}
+				else
+					return nullptr;
 			}
 			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::ComponentRef)
 			{
-				ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(value);
-				if(scriptComponent == nullptr)
-					scriptComponent = ScriptGameObjectManager::instance().createScriptComponent(value);
+				if(value)
+				{
+					ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(value);
+					if(scriptComponent == nullptr)
+						scriptComponent = ScriptGameObjectManager::instance().createScriptComponent(value);
 
-				return scriptComponent->getManagedInstance();
+					return scriptComponent->getManagedInstance();
+				}
+				else
+					return nullptr;
 			}
 		}
 
@@ -448,7 +469,10 @@ namespace BansheeEngine
 		{
 			auto objectTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(typeInfo);
 
-			return value->getManagedInstance();
+			if(value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
 		}
 
 		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -460,7 +484,10 @@ namespace BansheeEngine
 		{
 			auto objectTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo);
 
-			return value->getManagedInstance();
+			if(value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
 		}
 
 		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -472,7 +499,10 @@ namespace BansheeEngine
 		{
 			auto listTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoList>(typeInfo);
 
-			return value->getManagedInstance();
+			if(value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
 		}
 
 		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
@@ -484,7 +514,10 @@ namespace BansheeEngine
 		{
 			auto dictionaryTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoDictionary>(typeInfo);
 
-			return value->getManagedInstance();
+			if(value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
 		}
 
 		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");

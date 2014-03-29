@@ -89,20 +89,47 @@ namespace BansheeEngine
 
 	void ScriptSerializableList::addFieldData(const ScriptSerializableFieldDataPtr& val)
 	{
-		void* params[1];
-		params[0] = val->getValue(mListTypeInfo->mElementType);
+		bool isBoxedValueType = false;
+		if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(mListTypeInfo->mElementType))
+		{
+			ScriptSerializableTypeInfoObjectPtr objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(mListTypeInfo->mElementType);
+			isBoxedValueType = objTypeInfo->mValueType;
+		}
 
-		mAddMethod->invoke(mManagedInstance, params);
+		void* params[1];
+		if(isBoxedValueType)
+		{
+			MonoObject* value = (MonoObject*)val->getValue(mListTypeInfo->mElementType);
+
+			if(value != nullptr)
+			{
+				params[0] = mono_object_unbox(value); // Value types need to be set as native unboxed types
+				mAddMethod->invoke(mManagedInstance, params);
+			}
+		}
+		else
+		{
+			params[0] = val->getValue(mListTypeInfo->mElementType);
+			mAddMethod->invoke(mManagedInstance, params);
+		}
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableList::getFieldData(CM::UINT32 arrayIdx)
 	{
 		MonoObject* obj = mItemProp->getIndexed(mManagedInstance, &arrayIdx);
 
-		if(mono_class_is_valuetype(mono_object_get_class(obj)))
-			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, mono_object_unbox(obj));
+		if(mListTypeInfo->mElementType->isRawType())
+		{
+			void* unboxedValue = nullptr;
+			if(obj != nullptr)
+				unboxedValue = mono_object_unbox(obj);
+
+			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, unboxedValue);
+		}
 		else
+		{
 			return ScriptSerializableFieldData::create(mListTypeInfo->mElementType, &obj);
+		}	
 	}
 
 	UINT32 ScriptSerializableList::getLength() const

@@ -14,19 +14,23 @@ namespace BansheeEngine
 {
 	inline size_t MonoAssembly::ClassId::Hash::operator()(const MonoAssembly::ClassId& v) const
 	{
+		size_t genInstanceAddr = (size_t)v.genericInstance;
+
 		size_t seed = 0;
 		hash_combine(seed, v.namespaceName);
 		hash_combine(seed, v.name);
+		hash_combine(seed, genInstanceAddr);
+
 		return seed;
 	}
 
 	inline bool MonoAssembly::ClassId::Equals::operator()(const MonoAssembly::ClassId& a, const MonoAssembly::ClassId& b) const
 	{
-		return a.name == b.name && a.namespaceName == b.namespaceName;
+		return a.name == b.name && a.namespaceName == b.namespaceName && a.genericInstance == b.genericInstance;
 	}
 
-	MonoAssembly::ClassId::ClassId(const String& namespaceName, String name)
-		:namespaceName(namespaceName), name(name)
+	MonoAssembly::ClassId::ClassId(const String& namespaceName, String name, ::MonoClass* genericInstance)
+		:namespaceName(namespaceName), name(name), genericInstance(genericInstance)
 	{
 
 	}
@@ -83,10 +87,11 @@ namespace BansheeEngine
 		if(!mIsLoaded)
 			return;
 
-		for(auto& entry : mClasses)
+		for(auto& entry : mClassesByRaw)
 			cm_delete(entry.second);
 
 		mClasses.clear();
+		mClassesByRaw.clear();
 
 		if(mMonoImage != nullptr && !mIsDependency)
 		{
@@ -122,6 +127,8 @@ namespace BansheeEngine
 		if(!mIsLoaded)
 			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
 
+
+
 		MonoAssembly::ClassId classId(namespaceName, name);
 		auto iterFind = mClasses.find(classId);
 
@@ -134,6 +141,7 @@ namespace BansheeEngine
 
 		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(namespaceName, name, monoClass, this);
 		mClasses[classId] = newClass;
+		mClassesByRaw[monoClass] = newClass;
 
 		return newClass;
 	}
@@ -146,17 +154,23 @@ namespace BansheeEngine
 		if(rawMonoClass == nullptr)
 			return nullptr;
 
+		auto iterFind = mClassesByRaw.find(rawMonoClass);
+
+		if(iterFind != mClassesByRaw.end())
+			return iterFind->second;
+
 		String ns = mono_class_get_namespace(rawMonoClass);
 		String typeName = mono_class_get_name(rawMonoClass);
 
-		MonoAssembly::ClassId classId(ns, typeName);
-		auto iterFind = mClasses.find(classId);
-
-		if(iterFind != mClasses.end())
-			return iterFind->second;
-
 		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(ns, typeName, rawMonoClass, this);
-		mClasses[classId] = newClass;
+		
+		mClassesByRaw[rawMonoClass] = newClass;
+
+		if(!isGenericClass(typeName)) // No point in referencing generic types by name as all instances share it
+		{
+			MonoAssembly::ClassId classId(ns, typeName);
+			mClasses[classId] = newClass;
+		}
 
 		return newClass;
 	}
@@ -186,5 +200,14 @@ namespace BansheeEngine
 		mHaveCachedClassList = true;
 
 		return mCachedClassList;
+	}
+
+	bool MonoAssembly::isGenericClass(const CM::String& name) const
+	{
+		// By CIL convention generic classes have ` separating their name and
+		// number of generic parameters
+		auto iterFind = std::find(name.rbegin(), name.rend(), '`');
+
+		return iterFind != name.rend();
 	}
 }
