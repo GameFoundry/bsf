@@ -36,7 +36,7 @@ namespace BansheeEngine
 		return fieldDataEntry;
 	}
 
-	ScriptSerializableFieldDataPtr ScriptSerializableFieldData::create(const ScriptSerializableTypeInfoPtr& typeInfo, void* value)
+	ScriptSerializableFieldDataPtr ScriptSerializableFieldData::create(const ScriptSerializableTypeInfoPtr& typeInfo, MonoObject* value)
 	{
 		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
 		{
@@ -46,78 +46,91 @@ namespace BansheeEngine
 			case ScriptPrimitiveType::Bool:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataBool>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Char:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataChar>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I8:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataI8>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U8:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataU8>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I16:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataI16>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U16:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataU16>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I32:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataI32>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U32:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataU32>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I64:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataI64>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U64:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataU64>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Float:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataFloat>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Double:
 				{
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataDouble>();
-					memcpy(&fieldData->value, value, sizeof(fieldData->value));
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::String:
 				{
-					MonoString* strVal = *(MonoString**)(value);
+					MonoString* strVal = (MonoString*)(value);
 
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataString>();
 					if(strVal != nullptr)
@@ -126,12 +139,11 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::TextureRef:
 				{
-					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataResourceRef>();
 
-					if(objVal != nullptr)
+					if(value != nullptr)
 					{
-						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(objVal);
+						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(value);
 						fieldData->value = static_resource_cast<ScriptTexture2D>(scriptTexture2D->getNativeHandle());
 					}
 
@@ -139,12 +151,11 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::SpriteTextureRef:
 				{
-					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataResourceRef>();
 					
-					if(objVal != nullptr)
+					if(value != nullptr)
 					{
-						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(objVal);
+						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(value);
 						fieldData->value = static_resource_cast<SpriteTexture>(scriptSpriteTexture->getNativeHandle());
 					}
 
@@ -152,12 +163,11 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::SceneObjectRef:
 				{
-					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataGameObjectRef>();
 
-					if(objVal != nullptr)
+					if(value != nullptr)
 					{
-						ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(objVal);
+						ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(value);
 						fieldData->value = static_object_cast<SceneObject>(scriptSceneObject->getNativeHandle());
 					}
 
@@ -165,12 +175,11 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::ComponentRef:
 				{
-					MonoObject* objVal = *(MonoObject**)(value);
 					auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataGameObjectRef>();
 
-					if(objVal != nullptr)
+					if(value != nullptr)
 					{
-						ScriptComponent* scriptComponent = ScriptComponent::toNative(objVal);
+						ScriptComponent* scriptComponent = ScriptComponent::toNative(value);
 						fieldData->value = static_object_cast<Component>(scriptComponent->getNativeHandle());
 					}
 
@@ -180,48 +189,40 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
 		{
-			MonoObject* objVal = *(MonoObject**)(value);
-
 			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataObject>();
-			if(objVal != nullptr)
+			if(value != nullptr)
 			{
-				fieldData->value = ScriptSerializableObject::create(objVal);
+				fieldData->value = ScriptSerializableObject::create(value);
 			}
 
 			return fieldData;
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
 		{
-			MonoObject* objVal = *(MonoObject**)(value);
-
 			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataArray>();
-			if(objVal != nullptr)
+			if(value != nullptr)
 			{
-				fieldData->value = ScriptSerializableArray::create(objVal, std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo));
+				fieldData->value = ScriptSerializableArray::create(value, std::static_pointer_cast<ScriptSerializableTypeInfoArray>(typeInfo));
 			}
 
 			return fieldData;
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
 		{
-			MonoObject* objVal = *(MonoObject**)(value);
-
 			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataList>();
-			if(objVal != nullptr)
+			if(value != nullptr)
 			{
-				fieldData->value = ScriptSerializableList::create(objVal, std::static_pointer_cast<ScriptSerializableTypeInfoList>(typeInfo));
+				fieldData->value = ScriptSerializableList::create(value, std::static_pointer_cast<ScriptSerializableTypeInfoList>(typeInfo));
 			}
 
 			return fieldData;
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
 		{
-			MonoObject* objVal = *(MonoObject**)(value);
-
 			auto fieldData = cm_shared_ptr<ScriptSerializableFieldDataDictionary>();
-			if(objVal != nullptr)
+			if(value != nullptr)
 			{
-				fieldData->value = ScriptSerializableDictionary::create(objVal, std::static_pointer_cast<ScriptSerializableTypeInfoDictionary>(typeInfo));
+				fieldData->value = ScriptSerializableDictionary::create(value, std::static_pointer_cast<ScriptSerializableTypeInfoDictionary>(typeInfo));
 			}
 
 			return fieldData;
@@ -470,7 +471,17 @@ namespace BansheeEngine
 			auto objectTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(typeInfo);
 
 			if(value != nullptr)
-				return value->getManagedInstance();
+			{
+				if(objectTypeInfo->mValueType)
+				{
+					MonoObject* managedInstance = value->getManagedInstance();
+					
+					if(managedInstance != nullptr)
+						return mono_object_unbox(managedInstance); // Structs are passed as raw types because mono expects them as such
+				}
+				else
+					return value->getManagedInstance();
+			}
 
 			return nullptr;
 		}

@@ -127,21 +127,6 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	bool ScriptSerializableTypeInfoPrimitive::isRawType() const
-	{
-		switch(mType)
-		{
-			case ScriptPrimitiveType::SceneObjectRef:
-			case ScriptPrimitiveType::ComponentRef:
-			case ScriptPrimitiveType::TextureRef:
-			case ScriptPrimitiveType::SpriteTextureRef:
-			case ScriptPrimitiveType::String:
-				return false;
-		}
-
-		return true;
-	}
-
 	RTTITypeBase* ScriptSerializableTypeInfoPrimitive::getRTTIStatic()
 	{
 		return ScriptSerializableTypeInfoPrimitiveRTTI::instance();

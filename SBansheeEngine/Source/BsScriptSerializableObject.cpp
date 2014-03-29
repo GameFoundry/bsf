@@ -165,40 +165,14 @@ namespace BansheeEngine
 
 	void ScriptSerializableObject::setFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo, const ScriptSerializableFieldDataPtr& val)
 	{
-		bool isBoxedValueType = false;
-		if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(fieldInfo->mTypeInfo))
-		{
-			ScriptSerializableTypeInfoObjectPtr objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(fieldInfo->mTypeInfo);
-			isBoxedValueType = objTypeInfo->mValueType;
-		}
-
-		if(isBoxedValueType)
-		{
-			MonoObject* value = (MonoObject*)val->getValue(fieldInfo->mTypeInfo);
-
-			if(value != nullptr)
-				fieldInfo->mMonoField->setValue(mManagedInstance, mono_object_unbox(value)); // Value types need to be set as native unboxed types
-		}
-		else
-			fieldInfo->mMonoField->setValue(mManagedInstance, val->getValue(fieldInfo->mTypeInfo));
+		fieldInfo->mMonoField->setValue(mManagedInstance, val->getValue(fieldInfo->mTypeInfo));
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableObject::getFieldData(const ScriptSerializableFieldInfoPtr& fieldInfo)
 	{
 		MonoObject* fieldValue = fieldInfo->mMonoField->getValueBoxed(mManagedInstance);
 
-		if(fieldInfo->mTypeInfo->isRawType())
-		{
-			void* unboxedValue = nullptr;
-			if(fieldValue != nullptr)
-				unboxedValue = mono_object_unbox(fieldValue);
-
-			return ScriptSerializableFieldData::create(fieldInfo->mTypeInfo, unboxedValue);
-		}
-		else
-		{
-			return ScriptSerializableFieldData::create(fieldInfo->mTypeInfo, &fieldValue);
-		}			
+		return ScriptSerializableFieldData::create(fieldInfo->mTypeInfo, fieldValue);		
 	}
 
 	RTTITypeBase* ScriptSerializableObject::getRTTIStatic()

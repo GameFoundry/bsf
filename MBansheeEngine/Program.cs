@@ -90,11 +90,11 @@ namespace BansheeEngine
                 SceneObject childSO = so.GetChild(i);
 
                 DbgComponent otherComponent = childSO.GetComponent<DbgComponent>();
-                //reportDbgValue(otherComponent.a, otherComponent.b, otherComponent.complex.someValue,
-                //               otherComponent.complex2.anotherValue2);
+                reportDbgValue(otherComponent.a, otherComponent.b, otherComponent.complex.someValue,
+                               otherComponent.complex2.anotherValue2);
 
-               // reportDbgValue(otherComponent.arrA[4], otherComponent.arrB[4], otherComponent.arrComplex[4].someValue,
-               //   otherComponent.arrComplex2[4].anotherValue2);
+                reportDbgValue(otherComponent.arrA[4], otherComponent.arrB[4], otherComponent.arrComplex[4].someValue,
+                  otherComponent.arrComplex2[4].anotherValue2);
 
                 reportDbgValue(otherComponent.listA[0], otherComponent.listB[0], otherComponent.listComplex[1].someValue,
                     otherComponent.listComplex2[0].anotherValue2);

@@ -27,7 +27,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableFieldData : public CM::IReflectable
 	{
 	public:
-		static ScriptSerializableFieldDataPtr create(const ScriptSerializableTypeInfoPtr& typeInfo, void* value);
+		static ScriptSerializableFieldDataPtr create(const ScriptSerializableTypeInfoPtr& typeInfo, MonoObject* value);
 		virtual void* getValue(const ScriptSerializableTypeInfoPtr& typeInfo) = 0;
 
 		/************************************************************************/

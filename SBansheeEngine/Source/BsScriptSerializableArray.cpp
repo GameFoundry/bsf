@@ -92,29 +92,12 @@ namespace BansheeEngine
 
 	void ScriptSerializableArray::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
-		bool isBoxedValueType = false;
-		if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(mArrayTypeInfo->mElementType))
-		{
-			ScriptSerializableTypeInfoObjectPtr objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(mArrayTypeInfo->mElementType);
-			isBoxedValueType = objTypeInfo->mValueType;
-		}
-
-		if(isBoxedValueType)
-		{
-			MonoObject* value = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
-
-			if(value != nullptr)
-				setValue(arrayIdx, mono_object_unbox(value)); // Value types need to be set as native unboxed types
-		}
+		if(mono_class_is_valuetype(mElementMonoClass))
+			setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
 		else
 		{
-			if(mArrayTypeInfo->mElementType->isRawType())
-				setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
-			else
-			{
-				MonoObject* ptrToObj = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
-				setValue(arrayIdx, &ptrToObj);
-			}
+			MonoObject* ptrToObj = (MonoObject*)val->getValue(mArrayTypeInfo->mElementType);
+			setValue(arrayIdx, &ptrToObj);
 		}
 	}
 
@@ -129,20 +112,15 @@ namespace BansheeEngine
 
 		if(mono_class_is_valuetype(mElementMonoClass))
 		{
-			if(mArrayTypeInfo->mElementType->isRawType())
-				return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
-			else
-			{
-				MonoObject* boxedObj = nullptr;
+			MonoObject* boxedObj = nullptr;
 
-				if(arrayValue != nullptr)
-					boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, arrayValue);
+			if(arrayValue != nullptr)
+				boxedObj = mono_value_box(MonoManager::instance().getDomain(), mElementMonoClass, arrayValue);
 
-				return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, &boxedObj);
-			}
+			return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, boxedObj);
 		}
 		else
-			return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, arrayValue);
+			return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, *(MonoObject**)arrayValue);
 	}
 	
 	void ScriptSerializableArray::setValue(CM::UINT32 arrayIdx, void* val)
