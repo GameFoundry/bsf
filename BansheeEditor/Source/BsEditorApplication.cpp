@@ -266,37 +266,41 @@ namespace BansheeEditor
 		gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, cursorPixelData);
 		gMainSyncedCA().submitToCoreThread(true);
 
-		RENDER_WINDOW_DESC modalWindowDesc;
-		modalWindowDesc.width = 200;
-		modalWindowDesc.height = 200;
-		modalWindowDesc.left = 0;
-		modalWindowDesc.top = 0;
-		modalWindowDesc.title = "ModalWindow";
-		modalWindowDesc.fullscreen = false;
-		modalWindowDesc.border = WindowBorder::None;
-		modalWindowDesc.toolWindow = true;
-		modalWindowDesc.modal = true;
+		/************************************************************************/
+		/* 								MODAL WINDOW                      		*/
+		/************************************************************************/
 
-		RenderWindowPtr modalWindow = RenderWindow::create(modalWindowDesc, gApplication().getPrimaryWindow());
+		//RENDER_WINDOW_DESC modalWindowDesc;
+		//modalWindowDesc.width = 200;
+		//modalWindowDesc.height = 200;
+		//modalWindowDesc.left = 0;
+		//modalWindowDesc.top = 0;
+		//modalWindowDesc.title = "ModalWindow";
+		//modalWindowDesc.fullscreen = false;
+		//modalWindowDesc.border = WindowBorder::None;
+		//modalWindowDesc.toolWindow = true;
+		//modalWindowDesc.modal = true;
 
-		HSceneObject modalSceneObject = SceneObject::create("ModalWindow");
+		//RenderWindowPtr modalWindow = RenderWindow::create(modalWindowDesc, gApplication().getPrimaryWindow());
 
-		HCamera modalCamera = modalSceneObject->addComponent<Camera>();
-		modalCamera->initialize(modalWindow, 0.0f, 0.0f, 1.0f, 1.0f);
-		modalCamera->setNearClipDistance(5);
-		modalCamera->setAspectRatio(1.0f);
-		modalCamera->setIgnoreSceneRenderables(true);
+		//HSceneObject modalSceneObject = SceneObject::create("ModalWindow");
 
-		HGUIWidget modalGUI = modalSceneObject->addComponent<GUIWidget>(modalCamera->getViewport().get());
-		modalGUI->setDepth(128);
+		//HCamera modalCamera = modalSceneObject->addComponent<Camera>();
+		//modalCamera->initialize(modalWindow, 0.0f, 0.0f, 1.0f, 1.0f);
+		//modalCamera->setNearClipDistance(5);
+		//modalCamera->setAspectRatio(1.0f);
+		//modalCamera->setIgnoreSceneRenderables(true);
 
-		modalGUI->setSkin(EditorGUI::instance().getSkin());
+		//HGUIWidget modalGUI = modalSceneObject->addComponent<GUIWidget>(modalCamera->getViewport().get());
+		//modalGUI->setDepth(128);
 
-		GUIArea* modalArea = GUIArea::createStretchedXY(*modalGUI, 0, 0, 0, 0, 500);
-		GUIButton* modalButton = GUIButton::create(*modalGUI, HString(L"Close"));
-		modalButton->onClick.connect(boost::bind(&EditorApplication::closeModalWindow, modalWindow, modalSceneObject));
+		//modalGUI->setSkin(EditorGUI::instance().getSkin());
 
-		modalArea->getLayout().addElement(modalButton);
+		//GUIArea* modalArea = GUIArea::createStretchedXY(*modalGUI, 0, 0, 0, 0, 500);
+		//GUIButton* modalButton = GUIButton::create(*modalGUI, HString(L"Close"));
+		//modalButton->onClick.connect(boost::bind(&EditorApplication::closeModalWindow, modalWindow, modalSceneObject));
+
+		//modalArea->getLayout().addElement(modalButton);
 
 
 		/************************************************************************/

@@ -36,6 +36,8 @@ namespace BansheeEditor
 		UINT32 widgetHeight = (UINT32)std::max(0, (INT32)getHeight() - 2);
 
 		mWidgets->setSize(widgetWidth, widgetHeight);
+
+		Platform::setCaptionNonClientAreas(*mRenderWindow.get(), mWidgets->getDraggableAreas());
 	}
 
 	void EditorWindow::widgetRemoved()

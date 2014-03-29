@@ -245,6 +245,11 @@ namespace BansheeEditor
 		return RectI(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
 	}
 
+	Vector<RectI>::type EditorWidgetContainer::getDraggableAreas() const
+	{
+		return mTitleBar->calcDraggableAreas(mX, mY, mWidth, TitleBarHeight);
+	}
+
 	void EditorWidgetContainer::_notifyWidgetDestroyed(EditorWidgetBase* widget)
 	{
 		for(auto& curWidget : mWidgets)

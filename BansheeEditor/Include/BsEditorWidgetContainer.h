@@ -25,6 +25,7 @@ namespace BansheeEditor
 		EditorWindow* getParentWindow() const { return mParentWindow; }
 
 		CM::RectI getContentBounds() const;
+		CM::Vector<CM::RectI>::type getDraggableAreas() const;
 
 		void _notifyWidgetDestroyed(EditorWidgetBase* widget);
 

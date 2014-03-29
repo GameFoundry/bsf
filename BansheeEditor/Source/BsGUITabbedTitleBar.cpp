@@ -248,7 +248,6 @@ namespace BansheeEditor
 		RectI tabClipRect = clipRect;
 		tabClipRect.width -= endButtonWidth;
 
-		CM::Vector<CM::RectI>::type nonClientAreas;
 		{
 			Vector2I optimalSize = mBackgroundImage->_getOptimalSize();
 			Vector2I offset(x + 1, y + 1);
@@ -271,7 +270,6 @@ namespace BansheeEditor
 			Vector2I optimalSize = btn->_getOptimalSize();
 
 			tabBtnHeight = optimalSize.y;
-			nonClientAreas.push_back(RectI(curX, curY, TAB_SPACING, tabBtnHeight));
 			curX += TAB_SPACING;
 
 			Vector2I offset;
@@ -296,9 +294,6 @@ namespace BansheeEditor
 
 			curX += optimalSize.x;
 		}
-
-		UINT32 remainingWidth = (UINT32)std::max(0, (INT32)(width - curX - endButtonWidth - 1));
-		nonClientAreas.push_back(RectI(curX, curY, remainingWidth, tabBtnHeight));
 
 		INT32 optionBtnXPos = x + width - endButtonWidth - 1;
 		{
@@ -329,8 +324,34 @@ namespace BansheeEditor
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mCloseBtn->_setClipRect(elemClipRect);
 		}
+	}
 
-		Platform::setCaptionNonClientAreas(*mParentWindow, nonClientAreas);
+	Vector<RectI>::type GUITabbedTitleBar::calcDraggableAreas(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height) const
+	{
+		CM::Vector<CM::RectI>::type draggableAreas;
+
+		UINT32 curX = x + 1;
+		UINT32 curY = y;
+		for(UINT32 i = 0; i < (UINT32)mTabButtons.size(); i++)
+		{
+			GUITabButton* btn = mTabButtons[i];
+			Vector2I optimalSize = btn->_getOptimalSize();
+
+			draggableAreas.push_back(RectI(curX, curY, TAB_SPACING, height));
+
+			curX += TAB_SPACING + optimalSize.x;
+		}
+
+		Vector2I minBtnOptimalSize = mMinBtn->_getOptimalSize();
+		Vector2I closeBtnOptimalSize = mCloseBtn->_getOptimalSize();
+
+		UINT32 endButtonWidth = minBtnOptimalSize.x + closeBtnOptimalSize.x + OPTION_BTN_SPACING;
+		UINT32 remainingWidth = (UINT32)std::max(0, (INT32)(width - curX - endButtonWidth - 1));
+
+		if(remainingWidth > 0)
+			draggableAreas.push_back(RectI(curX, curY, remainingWidth, height));
+
+		return draggableAreas;
 	}
 
 	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx, bool toggledOn)

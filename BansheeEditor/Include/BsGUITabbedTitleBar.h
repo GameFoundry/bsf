@@ -28,6 +28,8 @@ namespace BansheeEditor
 		CM::UINT32 getTabIdx(CM::UINT32 position) const;
 		CM::UINT32 getNumTabs() const { return (CM::UINT32)mTabButtons.size(); }
 
+		CM::Vector<CM::RectI>::type calcDraggableAreas(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height) const;
+
 		boost::signal<void(CM::UINT32)> onTabActivated;
 		boost::signal<void(CM::UINT32)> onTabClosed;
 		boost::signal<void(CM::UINT32)> onTabDraggedOff;
