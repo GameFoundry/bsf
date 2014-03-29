@@ -72,7 +72,7 @@ namespace CamelotFramework
 				unresolvedHandle.resolve(nullptr);
 		}
 
-		for(auto iter = mEndCallbacks.begin(); iter != mEndCallbacks.end(); ++iter)
+		for(auto iter = mEndCallbacks.rbegin(); iter != mEndCallbacks.rend(); ++iter)
 		{
 			(*iter)();
 		}

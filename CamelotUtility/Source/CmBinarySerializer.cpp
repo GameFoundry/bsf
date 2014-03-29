@@ -150,9 +150,7 @@ namespace CamelotFramework
 		} while (decodeInternal(nullptr, dataIter, dataLength, bytesRead));
 
 		// Now go through all of the objects and actually decode them
-		// We go back to front because objects with highest ids are the ones lowest in the object hierarchy,
-		// so we want to decode them before their parents
-		for(auto iter = mObjectMap.rbegin(); iter != mObjectMap.rend(); ++iter)
+		for(auto iter = mObjectMap.begin(); iter != mObjectMap.end(); ++iter)
 		{
 			ObjectToDecode& objToDecode = iter->second;
 
