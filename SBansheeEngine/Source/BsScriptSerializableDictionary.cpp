@@ -19,20 +19,36 @@ namespace BansheeEngine
 	{
 		MonoObject* obj = mParent->mKeyProp->get(mCurrent);
 
-		if(mono_class_is_valuetype(mono_object_get_class(obj)))
-			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, mono_object_unbox(obj));
+		if(mParent->mDictionaryTypeInfo->mKeyType->isRawType())
+		{
+			void* unboxedValue = nullptr;
+			if(obj != nullptr)
+				unboxedValue = mono_object_unbox(obj);
+
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, unboxedValue);
+		}
 		else
+		{
 			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mKeyType, &obj);
+		}
 	}
 
 	ScriptSerializableFieldDataPtr ScriptSerializableDictionary::Enumerator::getValue() const
 	{
 		MonoObject* obj = mParent->mValueProp->get(mCurrent);
 
-		if(mono_class_is_valuetype(mono_object_get_class(obj)))
-			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, mono_object_unbox(obj));
+		if(mParent->mDictionaryTypeInfo->mValueType->isRawType())
+		{
+			void* unboxedValue = nullptr;
+			if(obj != nullptr)
+				unboxedValue = mono_object_unbox(obj);
+
+			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, unboxedValue);
+		}
 		else
+		{
 			return ScriptSerializableFieldData::create(mParent->mDictionaryTypeInfo->mValueType, &obj);
+		}
 	}
 
 	bool ScriptSerializableDictionary::Enumerator::moveNext()
@@ -125,8 +141,48 @@ namespace BansheeEngine
 	void ScriptSerializableDictionary::setFieldData(const ScriptSerializableFieldDataPtr& key, const ScriptSerializableFieldDataPtr& val)
 	{
 		void* params[2];
-		params[0] = key->getValue(mDictionaryTypeInfo->mKeyType);
-		params[1] = val->getValue(mDictionaryTypeInfo->mValueType);
+
+		bool isBoxedValueType = false;
+		if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(mDictionaryTypeInfo->mKeyType))
+		{
+			ScriptSerializableTypeInfoObjectPtr objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(mDictionaryTypeInfo->mKeyType);
+			isBoxedValueType = objTypeInfo->mValueType;
+		}
+
+		if(isBoxedValueType)
+		{
+			MonoObject* value = (MonoObject*)val->getValue(mDictionaryTypeInfo->mKeyType);
+
+			if(value != nullptr)
+			{
+				params[0] = mono_object_unbox(value); // Value types need to be set as native unboxed types
+			}
+		}
+		else
+		{
+			params[0] = val->getValue(mDictionaryTypeInfo->mKeyType);
+		}
+
+		isBoxedValueType = false;
+		if(rtti_is_of_type<ScriptSerializableTypeInfoObject>(mDictionaryTypeInfo->mValueType))
+		{
+			ScriptSerializableTypeInfoObjectPtr objTypeInfo = std::static_pointer_cast<ScriptSerializableTypeInfoObject>(mDictionaryTypeInfo->mValueType);
+			isBoxedValueType = objTypeInfo->mValueType;
+		}
+
+		if(isBoxedValueType)
+		{
+			MonoObject* value = (MonoObject*)val->getValue(mDictionaryTypeInfo->mValueType);
+
+			if(value != nullptr)
+			{
+				params[1] = mono_object_unbox(value); // Value types need to be set as native unboxed types
+			}
+		}
+		else
+		{
+			params[1] = val->getValue(mDictionaryTypeInfo->mValueType);
+		}
 
 		mAddMethod->invoke(mManagedInstance, params);
 	}
