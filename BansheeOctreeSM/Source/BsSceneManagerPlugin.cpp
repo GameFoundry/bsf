@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	extern "C" BS_SM_EXPORT void* loadPlugin()
 	{
-		SceneManager::startUp<OctreeSceneManager>();
+		SceneManager::startUp(cm_new<OctreeSceneManager>());
 
 		return nullptr;
 	}

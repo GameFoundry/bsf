@@ -11,7 +11,7 @@ namespace CamelotFramework
 	 * 			
 	 * @note	Core thread only.
 	 */
-	class CM_EXPORT QueryManager : public Module<QueryManager, true>
+	class CM_EXPORT QueryManager : public Module<QueryManager>
 	{
 	public:
 		QueryManager();

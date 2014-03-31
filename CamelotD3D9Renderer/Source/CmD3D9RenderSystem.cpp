@@ -151,10 +151,10 @@ namespace CamelotFramework
 		mDeviceManager = cm_new<D3D9DeviceManager>();
 
 		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp<D3D9HardwareBufferManager>();
+		HardwareBufferManager::startUp(cm_new<D3D9HardwareBufferManager>());
 
 		// Create the GPU program manager		
-		GpuProgramManager::startUp<D3D9GpuProgramManager>();
+		GpuProgramManager::startUp(cm_new<D3D9GpuProgramManager>());
 
 		// Create & register HLSL factory		
 		mHLSLProgramFactory = cm_new<D3D9HLSLProgramFactory>();
@@ -163,10 +163,10 @@ namespace CamelotFramework
 		mCgProgramFactory = cm_new<CgProgramFactory>();
 
 		// Create render window manager
-		RenderWindowManager::startUp<D3D9RenderWindowManager>(this);
+		RenderWindowManager::startUp(cm_new<D3D9RenderWindowManager>(this));
 
 		// Create render state manager
-		RenderStateManager::startUp<RenderStateManager>();
+		RenderStateManager::startUp(cm_new<RenderStateManager>());
 
 		// Create primary window and finalize initialization
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
@@ -174,9 +174,9 @@ namespace CamelotFramework
 		updateRenderSystemCapabilities(d3d9renderWindow);
 
 		// Create the texture manager for use by others		
-		TextureManager::startUp<D3D9TextureManager>();
+		TextureManager::startUp(cm_new<D3D9TextureManager>());
 
-		QueryManager::startUp<D3D9QueryManager>();
+		QueryManager::startUp(cm_new<D3D9QueryManager>());
 
 		// call superclass method
 		RenderSystem::initialize_internal(asyncOp);

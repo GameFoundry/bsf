@@ -78,7 +78,7 @@ namespace CamelotFramework
 	@version
 	1.0
 	*/
-	class CM_EXPORT RenderSystem : public Module<RenderSystem, true>
+	class CM_EXPORT RenderSystem : public Module<RenderSystem>
 	{
 	public:
 		/** Default Constructor.

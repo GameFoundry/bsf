@@ -104,22 +104,22 @@ namespace CamelotFramework
 		}
 
 		// Create the texture manager for use by others		
-		TextureManager::startUp<D3D11TextureManager>();
+		TextureManager::startUp(cm_new<D3D11TextureManager>());
 
 		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp<D3D11HardwareBufferManager>(std::ref(*mDevice));
+		HardwareBufferManager::startUp(cm_new<D3D11HardwareBufferManager>(std::ref(*mDevice)));
 
 		// Create the GPU program manager		
-		GpuProgramManager::startUp<D3D11GpuProgramManager>(std::ref(*mDevice));
+		GpuProgramManager::startUp(cm_new<D3D11GpuProgramManager>(std::ref(*mDevice)));
 
 		// Create render window manager
-		RenderWindowManager::startUp<D3D11RenderWindowManager>(this);
+		RenderWindowManager::startUp(cm_new<D3D11RenderWindowManager>(this));
 
 		// Create & register HLSL factory		
 		mHLSLFactory = cm_new<D3D11HLSLProgramFactory>();
 
 		// Create render state manager
-		RenderStateManager::startUp<D3D11RenderStateManager>();
+		RenderStateManager::startUp(cm_new<D3D11RenderStateManager>());
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
 
@@ -130,9 +130,9 @@ namespace CamelotFramework
 
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
 
-		D3D11RenderUtility::startUp(mDevice);
+		D3D11RenderUtility::startUp(cm_new<D3D11RenderUtility>(mDevice));
 
-		QueryManager::startUp<D3D11QueryManager>();
+		QueryManager::startUp(cm_new<D3D11QueryManager>());
 
 		RenderSystem::initialize_internal(asyncOp);
 

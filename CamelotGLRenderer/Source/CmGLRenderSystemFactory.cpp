@@ -5,7 +5,7 @@ namespace CamelotFramework
 {
 	void GLRenderSystemFactory::create()
 	{
-		RenderSystem::startUp<GLRenderSystem>();
+		RenderSystem::startUp(cm_new<GLRenderSystem>());
 	}
 
 	GLRenderSystemFactory::InitOnStart GLRenderSystemFactory::initOnStart;

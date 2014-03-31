@@ -5,7 +5,7 @@
 
 namespace CamelotFramework
 {
-	class CM_EXPORT RenderStateManager : public Module<RenderStateManager, true>
+	class CM_EXPORT RenderStateManager : public Module<RenderStateManager>
 	{
 	public:
 		/**

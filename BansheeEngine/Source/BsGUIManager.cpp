@@ -83,10 +83,10 @@ namespace BansheeEngine
 		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>();
 		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
-		DragAndDropManager::startUp();
+		DragAndDropManager::startUp(cm_new<DragAndDropManager>());
 		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(boost::bind(&GUIManager::onMouseDragEnded, this, _1));
 
-		GUIDropDownBoxManager::startUp();
+		GUIDropDownBoxManager::startUp(cm_new<GUIDropDownBoxManager>());
 
 		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);

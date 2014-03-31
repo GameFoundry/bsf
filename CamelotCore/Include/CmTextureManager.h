@@ -39,7 +39,7 @@ namespace CamelotFramework
      *
      * @note	Must be initialized when RenderSystem is first started.
      */
-    class CM_EXPORT TextureManager : public Module<TextureManager, true>
+    class CM_EXPORT TextureManager : public Module<TextureManager>
     {
     public:
 

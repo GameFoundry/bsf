@@ -53,23 +53,23 @@ namespace CamelotFramework
 		Platform::startUp();
 		MemStack::beginThread();
 
-		Profiler::startUp();
-		StringTable::startUp();
-		DeferredCallManager::startUp();
-		Time::startUp();
-		DynLibManager::startUp();
-		CoreGpuObjectManager::startUp();
-		GameObjectManager::startUp();
-		Resources::startUp();
-		HighLevelGpuProgramManager::startUp();
+		Profiler::startUp(cm_new<Profiler>());
+		StringTable::startUp(cm_new<StringTable>());
+		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
+		Time::startUp(cm_new<Time>());
+		DynLibManager::startUp(cm_new<DynLibManager>());
+		CoreGpuObjectManager::startUp(cm_new<CoreGpuObjectManager>());
+		GameObjectManager::startUp(cm_new<GameObjectManager>());
+		Resources::startUp(cm_new<Resources>());
+		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
 
-		CoreThread::startUp();
-		RenderSystemManager::startUp();
+		CoreThread::startUp(cm_new<CoreThread>());
+		RenderSystemManager::startUp(cm_new<RenderSystemManager>());
 
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
-		Input::startUp();
-		RendererManager::startUp();
+		Input::startUp(cm_new<Input>());
+		RendererManager::startUp(cm_new<RendererManager>());
 
 		loadPlugin(desc.renderer);
 		RendererManager::instance().setActive(desc.renderer);
@@ -79,11 +79,11 @@ namespace CamelotFramework
 
 		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
 
-		MeshManager::startUp();
-		MaterialManager::startUp();
-		FontManager::startUp();
+		MeshManager::startUp(cm_new<MeshManager>());
+		MaterialManager::startUp(cm_new<MaterialManager>());
+		FontManager::startUp(cm_new<FontManager>());
 
-		Importer::startUp();
+		Importer::startUp(cm_new<Importer>());
 
 		for(auto& importerName : desc.importers)
 			loadPlugin(importerName);
