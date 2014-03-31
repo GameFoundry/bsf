@@ -7,7 +7,7 @@
 
 namespace CamelotFramework
 {
-	class CM_EXPORT RenderWindowManager : public Module<RenderWindowManager>
+	class CM_EXPORT RenderWindowManager : public Module<RenderWindowManager, true>
 	{
 	public:
 		RenderWindowManager();

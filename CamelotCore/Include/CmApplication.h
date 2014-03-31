@@ -88,6 +88,8 @@ namespace CamelotFramework
 		CoreAccessorPtr mPrimaryCoreAccessor;
 		SyncedCoreAccessor* mPrimarySyncedCoreAccessor;
 
+		DynLib* mSceneManagerPlugin;
+
 		bool mIsFrameRenderingFinished;
 		CM_MUTEX(mFrameRenderingFinishedMutex);
 		CM_THREAD_SYNCHRONISER(mFrameRenderingFinishedCondition);

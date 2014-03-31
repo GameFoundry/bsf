@@ -4,7 +4,7 @@
 #include "BsGUITexture.h"
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
-#include "BsEngineGUI.h"
+#include "BsBuiltinResources.h"
 #include "BsGUIArea.h"
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWidgetManager.h"

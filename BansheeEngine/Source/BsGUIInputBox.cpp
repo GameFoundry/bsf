@@ -18,6 +18,7 @@
 #include "BsDragAndDropManager.h"
 #include "BsGUIContextMenu.h"
 #include "BsGUIHelper.h"
+#include "BsCursor.h"
 
 using namespace CamelotFramework;
 
@@ -392,7 +393,7 @@ namespace BansheeEngine
 
 			if(!mInputCursorSet)
 			{
-				Platform::setCursor(CursorType::IBeam);
+				Cursor::instance().setCursor(CursorType::IBeam);
 				mInputCursorSet = true;
 			}
 
@@ -410,7 +411,7 @@ namespace BansheeEngine
 
 			if(!mDragInProgress && mInputCursorSet)
 			{
-				Platform::setCursor(CursorType::Arrow);
+				Cursor::instance().setCursor(CursorType::Arrow);
 				mInputCursorSet = false;
 			}
 
@@ -484,7 +485,7 @@ namespace BansheeEngine
 
 				if(!mIsMouseOver && mInputCursorSet)
 				{
-					Platform::setCursor(CursorType::Arrow);
+					Cursor::instance().setCursor(CursorType::Arrow);
 					mInputCursorSet = false;
 				}
 

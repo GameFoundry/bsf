@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 	void MonoScriptSystem::initialize()
 	{
-		MonoManager::startUp(cm_new<MonoManager>());
+		MonoManager::startUp();
 		mIsInitialized = true;
 	}
 }

@@ -1,4 +1,4 @@
-#include "BsEngineGUI.h"
+#include "BsBuiltinResources.h"
 #include "BsGUIElementStyle.h"
 
 #include "BsGUILabel.h"
@@ -17,66 +17,66 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	const WString EngineGUI::DefaultFontPath = L"arial.ttf";
-	const UINT32 EngineGUI::DefaultFontSize = 10;
+	const WString BuiltinResources::DefaultFontPath = L"arial.ttf";
+	const UINT32 BuiltinResources::DefaultFontSize = 10;
 
-	const WString EngineGUI::DefaultFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
+	const WString BuiltinResources::DefaultFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
 
-	const WString EngineGUI::ButtonNormalTex = L"ButtonNormal.psd";
-	const WString EngineGUI::ButtonHoverTex = L"ButtonHover.psd";
+	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.psd";
+	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.psd";
 
-	const WString EngineGUI::InputBoxNormalTex = L"InputBoxNormal.psd";
-	const WString EngineGUI::InputBoxHoverTex = L"InputBoxHover.psd";
-	const WString EngineGUI::InputBoxFocusedTex = L"InputBoxFocused.psd";
+	const WString BuiltinResources::InputBoxNormalTex = L"InputBoxNormal.psd";
+	const WString BuiltinResources::InputBoxHoverTex = L"InputBoxHover.psd";
+	const WString BuiltinResources::InputBoxFocusedTex = L"InputBoxFocused.psd";
 
-	const WString EngineGUI::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
-	const WString EngineGUI::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
-	const WString EngineGUI::ScrollBarUpActiveTex = L"ScrollBarUpActive.psd";
+	const WString BuiltinResources::ScrollBarUpNormalTex = L"ScrollBarUpNormal.psd";
+	const WString BuiltinResources::ScrollBarUpHoverTex = L"ScrollBarUpHover.psd";
+	const WString BuiltinResources::ScrollBarUpActiveTex = L"ScrollBarUpActive.psd";
 
-	const WString EngineGUI::ScrollBarDownNormalTex = L"ScrollBarDownNormal.psd";
-	const WString EngineGUI::ScrollBarDownHoverTex = L"ScrollBarDownHover.psd";
-	const WString EngineGUI::ScrollBarDownActiveTex = L"ScrollBarDownActive.psd";
+	const WString BuiltinResources::ScrollBarDownNormalTex = L"ScrollBarDownNormal.psd";
+	const WString BuiltinResources::ScrollBarDownHoverTex = L"ScrollBarDownHover.psd";
+	const WString BuiltinResources::ScrollBarDownActiveTex = L"ScrollBarDownActive.psd";
 
-	const WString EngineGUI::ScrollBarLeftNormalTex = L"ScrollBarLeftNormal.psd";
-	const WString EngineGUI::ScrollBarLeftHoverTex = L"ScrollBarLeftHover.psd";
-	const WString EngineGUI::ScrollBarLeftActiveTex = L"ScrollBarLeftActive.psd";
+	const WString BuiltinResources::ScrollBarLeftNormalTex = L"ScrollBarLeftNormal.psd";
+	const WString BuiltinResources::ScrollBarLeftHoverTex = L"ScrollBarLeftHover.psd";
+	const WString BuiltinResources::ScrollBarLeftActiveTex = L"ScrollBarLeftActive.psd";
 
-	const WString EngineGUI::ScrollBarRightNormalTex = L"ScrollBarRightNormal.psd";
-	const WString EngineGUI::ScrollBarRightHoverTex = L"ScrollBarRightHover.psd";
-	const WString EngineGUI::ScrollBarRightActiveTex = L"ScrollBarRightActive.psd";
+	const WString BuiltinResources::ScrollBarRightNormalTex = L"ScrollBarRightNormal.psd";
+	const WString BuiltinResources::ScrollBarRightHoverTex = L"ScrollBarRightHover.psd";
+	const WString BuiltinResources::ScrollBarRightActiveTex = L"ScrollBarRightActive.psd";
 
-	const WString EngineGUI::ScrollBarHandleHorzNormalTex = L"ScrollBarHorzHandleNormal.psd";
-	const WString EngineGUI::ScrollBarHandleHorzHoverTex = L"ScrollBarHorzHandleHover.psd";
-	const WString EngineGUI::ScrollBarHandleHorzActiveTex = L"ScrollBarHorzHandleActive.psd";
+	const WString BuiltinResources::ScrollBarHandleHorzNormalTex = L"ScrollBarHorzHandleNormal.psd";
+	const WString BuiltinResources::ScrollBarHandleHorzHoverTex = L"ScrollBarHorzHandleHover.psd";
+	const WString BuiltinResources::ScrollBarHandleHorzActiveTex = L"ScrollBarHorzHandleActive.psd";
 
-	const WString EngineGUI::ScrollBarHandleVertNormalTex = L"ScrollBarVertHandleNormal.psd";
-	const WString EngineGUI::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
-	const WString EngineGUI::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
+	const WString BuiltinResources::ScrollBarHandleVertNormalTex = L"ScrollBarVertHandleNormal.psd";
+	const WString BuiltinResources::ScrollBarHandleVertHoverTex = L"ScrollBarVertHandleHover.psd";
+	const WString BuiltinResources::ScrollBarHandleVertActiveTex = L"ScrollBarVertHandleActive.psd";
 
-	const WString EngineGUI::DropDownBtnNormalTex = L"DropDownNormal.psd";
-	const WString EngineGUI::DropDownBtnHoverTex = L"DropDownHover.psd";
+	const WString BuiltinResources::DropDownBtnNormalTex = L"DropDownNormal.psd";
+	const WString BuiltinResources::DropDownBtnHoverTex = L"DropDownHover.psd";
 
-	const WString EngineGUI::DropDownBoxBgTex = L"DropDownBoxBg.psd";
-	const WString EngineGUI::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
-	const WString EngineGUI::DropDownBoxEntryHoverTex = L"DropDownButtonHover.psd";
+	const WString BuiltinResources::DropDownBoxBgTex = L"DropDownBoxBg.psd";
+	const WString BuiltinResources::DropDownBoxEntryNormalTex = L"DropDownButtonNormal.psd";
+	const WString BuiltinResources::DropDownBoxEntryHoverTex = L"DropDownButtonHover.psd";
 
-	const WString EngineGUI::DropDownBoxBtnUpNormalTex = L"DropDownBoxBtnUpNormal.psd";
-	const WString EngineGUI::DropDownBoxBtnUpHoverTex = L"DropDownBoxBtnUpHover.psd";
+	const WString BuiltinResources::DropDownBoxBtnUpNormalTex = L"DropDownBoxBtnUpNormal.psd";
+	const WString BuiltinResources::DropDownBoxBtnUpHoverTex = L"DropDownBoxBtnUpHover.psd";
 
-	const WString EngineGUI::DropDownBoxBtnDownNormalTex = L"DropDownBoxBtnDownNormal.psd";
-	const WString EngineGUI::DropDownBoxBtnDownHoverTex = L"DropDownBoxBtnDownHover.psd";
+	const WString BuiltinResources::DropDownBoxBtnDownNormalTex = L"DropDownBoxBtnDownNormal.psd";
+	const WString BuiltinResources::DropDownBoxBtnDownHoverTex = L"DropDownBoxBtnDownHover.psd";
 
-	const WString EngineGUI::DropDownBoxEntryExpNormalTex = L"DropDownExpNormal.psd";
-	const WString EngineGUI::DropDownBoxEntryExpHoverTex = L"DropDownExpHover.psd";
+	const WString BuiltinResources::DropDownBoxEntryExpNormalTex = L"DropDownExpNormal.psd";
+	const WString BuiltinResources::DropDownBoxEntryExpHoverTex = L"DropDownExpHover.psd";
 
-	const WString EngineGUI::DropDownSeparatorTex = L"DropDownSeparator.psd";
+	const WString BuiltinResources::DropDownSeparatorTex = L"DropDownSeparator.psd";
 
-	const WString EngineGUI::DropDownBoxBtnUpArrowTex = L"DropDownBoxBtnUpArrow.psd";
-	const WString EngineGUI::DropDownBoxBtnDownArrowTex = L"DropDownBoxBtnDownArrow.psd";
+	const WString BuiltinResources::DropDownBoxBtnUpArrowTex = L"DropDownBoxBtnUpArrow.psd";
+	const WString BuiltinResources::DropDownBoxBtnDownArrowTex = L"DropDownBoxBtnDownArrow.psd";
 
-	const WString EngineGUI::ScrollBarBgTex = L"ScrollBarBg.psd";
+	const WString BuiltinResources::ScrollBarBgTex = L"ScrollBarBg.psd";
 
-	EngineGUI::EngineGUI()
+	BuiltinResources::BuiltinResources()
 	{
 		// TODO - Normally I want to load this from some file
 		
@@ -447,8 +447,63 @@ namespace BansheeEngine
 		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
 	}
 
-	HSpriteTexture EngineGUI::getTexture(const CM::WString& name)
+	HSpriteTexture BuiltinResources::getTexture(const CM::WString& name)
 	{
 		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultFolder + name)));
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorWait(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorIBeam(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorHand(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorSizeAll(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorSizeNESW(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorSizeNS(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorSizeNWSE(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorSizeWE(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorDeny(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorMoveLeftRight(Vector2I& hotSpot)
+	{
+		CM_EXCEPT(NotImplementedException, "Not implemented");
 	}
 }

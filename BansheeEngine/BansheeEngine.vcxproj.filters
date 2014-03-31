@@ -114,9 +114,6 @@
     <ClInclude Include="Include\BsGLBuiltinMaterialFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsEngineGUI.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsUpdateCallback.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
@@ -264,6 +261,12 @@
     <ClInclude Include="Include\BsGUIVirtualButtonEvent.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCursor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsBuiltinResources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -325,9 +328,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsGLBuiltinMaterialFactory.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsEngineGUI.cpp">
-      <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsUpdateCallback.cpp">
       <Filter>Source Files\Components</Filter>
@@ -456,6 +456,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsInputConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCursor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsBuiltinResources.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

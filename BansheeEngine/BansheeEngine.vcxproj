@@ -226,14 +226,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
     <ClInclude Include="Include\BsApplication.h" />
+    <ClInclude Include="Include\BsCursor.h" />
     <ClInclude Include="Include\BsDrawHelper3D.h" />
     <ClInclude Include="Include\BsDrawHelperTemplate.h" />
     <ClInclude Include="Include\BsDragAndDropManager.h" />
     <ClInclude Include="Include\BsDrawHelper2D.h" />
-    <ClInclude Include="Include\BsEngineGUI.h" />
+    <ClInclude Include="Include\BsBuiltinResources.h" />
     <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUIButtonBase.h" />
@@ -311,7 +313,7 @@
     <ClCompile Include="Source\BsDrawHelper3D.cpp" />
     <ClCompile Include="Source\BsDrawHelperTemplate.cpp" />
     <ClCompile Include="Source\BsDragAndDropManager.cpp" />
-    <ClCompile Include="Source\BsEngineGUI.cpp" />
+    <ClCompile Include="Source\BsBuiltinResources.cpp" />
     <ClCompile Include="Source\BsGUIArea.cpp" />
     <ClCompile Include="Source\BsGUIButton.cpp" />
     <ClCompile Include="Source\BsGUIContent.cpp" />

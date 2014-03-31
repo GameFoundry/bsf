@@ -4,7 +4,7 @@
 
 namespace CamelotFramework
 {
-	enum class CursorType
+	enum class PlatformCursorType
 	{
 		Arrow,
 		Wait,

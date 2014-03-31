@@ -3,7 +3,7 @@
 #include "BsGUILayout.h"
 #include "BsGUITexture.h"
 #include "BsGUIWindowFrame.h"
-#include "BsEngineGUI.h"
+#include "BsBuiltinResources.h"
 #include "BsGUIMouseEvent.h"
 #include "CmRenderWindow.h"
 #include "CmMath.h"

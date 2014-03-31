@@ -117,12 +117,6 @@ namespace CamelotFramework
 		static bool isCursorHidden() { return mIsCursorHidden; }
 		
 		/**
-		 * @brief	Sets a cursor icon. Uses built-in platform cursor types.
-		 *
-		 * @note	Thread safe.
-		 */
-		static void setCursor(CursorType type);
-		/**
 		 * @brief	Sets a cursor using a custom image.
 		 *
 		 * @param 	pixelData	Cursor image data.
@@ -130,7 +124,7 @@ namespace CamelotFramework
 		 * 						
 		 * @note	Thread safe.
 		 */
-		static void setCustomCursor(PixelData& pixelData, const Vector2I& hotSpot);
+		static void setCursor(PixelData& pixelData, const Vector2I& hotSpot);
 
 		/**
 		 * @brief	Sets custom caption non client areas for the specified window. Using custom client

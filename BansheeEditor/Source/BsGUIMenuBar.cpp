@@ -7,7 +7,7 @@
 #include "BsGUISpace.h"
 #include "BsGUIMenu.h"
 #include "BsGUIManager.h"
-#include "BsEngineGUI.h"
+#include "BsBuiltinResources.h"
 #include "BsGUIDropDownBoxManager.h"
 #include "CmSceneObject.h"
 #include "CmPlatform.h"

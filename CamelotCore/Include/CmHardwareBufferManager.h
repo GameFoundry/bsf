@@ -46,7 +46,7 @@ namespace CamelotFramework {
 
 	/** Base definition of a hardware buffer manager.
 	*/
-	class CM_EXPORT HardwareBufferManager : public Module<HardwareBufferManager>
+	class CM_EXPORT HardwareBufferManager : public Module<HardwareBufferManager, true>
 	{
     public:
         HardwareBufferManager();

@@ -4,6 +4,7 @@
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUITabbedTitleBar.h"
+#include "BsCursor.h"
 #include "CmPlatform.h"
 
 using namespace CamelotFramework;
@@ -56,7 +57,7 @@ namespace BansheeEditor
 
 			if(!mIsCursorSet)
 			{
-				Platform::setCursor(mHorizontal ? CursorType::SizeNS : CursorType::SizeWE);
+				Cursor::instance().setCursor(mHorizontal ? CursorType::SizeNS : CursorType::SizeWE);
 				mIsCursorSet = true;
 			}
 
@@ -68,7 +69,7 @@ namespace BansheeEditor
 
 			if(!mDragInProgress && mIsCursorSet)
 			{
-				Platform::setCursor(CursorType::Arrow);
+				Cursor::instance().setCursor(CursorType::Arrow);
 				mIsCursorSet = false;
 			}
 
@@ -97,7 +98,7 @@ namespace BansheeEditor
 
 			if(mIsCursorSet && !mIsMouseOver)
 			{
-				Platform::setCursor(CursorType::Arrow);
+				Cursor::instance().setCursor(CursorType::Arrow);
 				mIsCursorSet = false;
 			}
 

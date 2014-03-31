@@ -20,11 +20,10 @@
 #include "BsGUIDockSlider.h"
 #include "CmVertexDataDesc.h"
 #include "BsGUISkin.h"
-#include "BsEngineGUI.h"
+#include "BsBuiltinResources.h"
 #include "BsDockManagerLayout.h"
 
 #include "BsGUISkin.h"
-#include "BsEngineGUI.h"
 #include "BsGUIButton.h"
 
 using namespace CamelotFramework;

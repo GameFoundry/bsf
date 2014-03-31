@@ -12,7 +12,7 @@ namespace CamelotFramework
 	 * 			query functionality. You should override it with your own version that
 	 * 			implements a spatial data structure of your choice for faster queries.
 	 */
-	class CM_EXPORT SceneManager : public Module<SceneManager>
+	class CM_EXPORT SceneManager : public Module<SceneManager, true>
 	{
 	public:
 		SceneManager();

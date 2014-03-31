@@ -14,6 +14,15 @@ Component foldout field
 Text field
 
 -------------
+Cursor
+ - Implement get*Cursor methods in BsBuiltinResources
+ - A way to save/load a set of cursors
+
+Other:
+ - Refactor BuiltinMaterialFactory to BuiltinEngineResources
+ - Need to set up parameter pass-through for Modules
+
+-------------
 
 When Inspector is displayed a SerializedObject of a Component (or some other type) is created
  - It will contain a list of SerializedFields, which you can call set/get on (setInt, setString, setObject, setArray, etc.)
@@ -25,3 +34,4 @@ You can call EditorGUI.SerializedField to automatically draw GUI depending on fi
 
 ------------
 PRIMARY advantage of handling properties like this, instead of making custom inspectors and calling GUI methods manually is that you get undo/redo support.
+ALSO I need tab movement

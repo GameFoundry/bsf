@@ -8,11 +8,6 @@ C# Serialization
 
  ---------------------------------------
 
-IMMEDIATE:
-MonoManager class caching doesn't work with generic types because they all share the same name
-Ensure that List works with all data types
-When it works copy its set/get code to Dictionary
-
 LOW PRIORITY
 - Get rid of ScriptObject::createInstance and replace it with parameter in constructor
 - A way to serialize any object into a Resource (and deserialize it from Resource)

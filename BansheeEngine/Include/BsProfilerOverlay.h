@@ -46,6 +46,7 @@ namespace BansheeEngine
 		};
 
 	public:
+		ProfilerOverlay() {} // For Module purposes only
 		ProfilerOverlay(const CM::ViewportPtr& target);
 		~ProfilerOverlay();
 

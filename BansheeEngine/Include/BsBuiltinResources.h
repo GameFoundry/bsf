@@ -6,12 +6,24 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT EngineGUI : public CamelotFramework::Module<EngineGUI>
+	class BS_EXPORT BuiltinResources : public CamelotFramework::Module<BuiltinResources>
 	{
 	public:
-		EngineGUI();
+		BuiltinResources();
 
 		const GUISkin& getSkin() const { return mSkin; }
+
+		const CM::PixelData& getCursorArrow(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorWait(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorIBeam(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorHand(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorSizeAll(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorSizeNESW(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorSizeNS(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorSizeNWSE(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorSizeWE(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorDeny(CM::Vector2I& hotSpot);
+		const CM::PixelData& getCursorMoveLeftRight(CM::Vector2I& hotSpot);
 
 	private:
 		GUISkin mSkin;

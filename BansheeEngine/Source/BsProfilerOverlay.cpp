@@ -6,7 +6,7 @@
 #include "BsGUIElement.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
-#include "BsEngineGUI.h"
+#include "BsBuiltinResources.h"
 #include "CmProfiler.h"
 #include "CmViewport.h"
 
@@ -263,7 +263,7 @@ namespace BansheeEngine
 		mWidgetSO = SceneObject::create("ProfilerOverlay");
 		mWidget = mWidgetSO->addComponent<GUIWidget>(mTarget.get());
 		mWidget->setDepth(127);
-		mWidget->setSkin(EngineGUI::instance().getSkin());
+		mWidget->setSkin(BuiltinResources::instance().getSkin());
 
 		mBasicAreaLabels = GUIArea::create(*mWidget, 0, 0);
 		mPreciseAreaLabels = GUIArea::create(*mWidget, 0, 0);

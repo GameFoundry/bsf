@@ -167,59 +167,8 @@ namespace CamelotFramework
 		ClipCursor(NULL);
 	}
 
-	void Platform::setCursor(CursorType type)
-	{
-		if(mUsingCustomCursor)
-		{
-			SetCursor(0);
-			DestroyIcon(mCursor.data->cursor);
-			mUsingCustomCursor = false;
-		}
-
-		switch(type)
-		{
-		case CursorType::Arrow:
-			mCursor.data->cursor = LoadCursor(0, IDC_ARROW);
-			break;
-		case CursorType::Wait:
-			mCursor.data->cursor = LoadCursor(0, IDC_WAIT);
-			break;
-		case CursorType::IBeam:
-			mCursor.data->cursor = LoadCursor(0, IDC_IBEAM);
-			break;
-		case CursorType::Help:
-			mCursor.data->cursor = LoadCursor(0, IDC_HELP);
-			break;
-		case CursorType::Hand:
-			mCursor.data->cursor = LoadCursor(0, IDC_HAND);
-			break;
-		case CursorType::SizeAll:
-			mCursor.data->cursor = LoadCursor(0, IDC_SIZEALL);
-			break;
-		case CursorType::SizeNESW:
-			mCursor.data->cursor = LoadCursor(0, IDC_SIZENESW);
-			break;
-		case CursorType::SizeNS:
-			mCursor.data->cursor = LoadCursor(0, IDC_SIZENS);
-			break;
-		case CursorType::SizeNWSE:
-			mCursor.data->cursor = LoadCursor(0, IDC_SIZENWSE);
-			break;
-		case CursorType::SizeWE:
-			mCursor.data->cursor = LoadCursor(0, IDC_SIZEWE);
-			break;
-		}
-
-		// Make sure we notify the message loop to perform the actual cursor update
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
-		HWND hwnd;
-		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
-
-		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
-	}
-
 	// TODO - Add support for animated custom cursor
-	void Platform::setCustomCursor(PixelData& pixelData, const Vector2I& hotSpot)
+	void Platform::setCursor(PixelData& pixelData, const Vector2I& hotSpot)
 	{
 		if(mUsingCustomCursor)
 		{

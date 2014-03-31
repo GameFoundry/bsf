@@ -137,11 +137,11 @@ namespace CamelotFramework
 		THROW_IF_NOT_CORE_THREAD;
 
 		mGLSupport->start();
-		RenderWindowManager::startUp(cm_new<GLRenderWindowManager>(this));
+		RenderWindowManager::startUp<GLRenderWindowManager>(this);
 
-		RenderStateManager::startUp(cm_new<RenderStateManager>());
+		RenderStateManager::startUp<RenderStateManager>();
 
-		QueryManager::startUp(cm_new<GLQueryManager>());
+		QueryManager::startUp<GLQueryManager>();
 
 		// Initialize a window so we have something to create a GL context with
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
@@ -1800,11 +1800,11 @@ namespace CamelotFramework
 			glUnmapBufferARB = glUnmapBuffer;
 		}
 
-		HardwareBufferManager::startUp(cm_new<GLHardwareBufferManager>());
+		HardwareBufferManager::startUp<GLHardwareBufferManager>();
 		checkForErrors();
 
 		// GPU Program Manager setup
-		GpuProgramManager::startUp(cm_new<GLGpuProgramManager>());
+		GpuProgramManager::startUp<GLGpuProgramManager>();
 		checkForErrors();
 
 		if(caps->isShaderProfileSupported("glsl"))
@@ -1850,7 +1850,7 @@ namespace CamelotFramework
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
-				GLRTTManager::startUp(cm_new<GLRTTManager>());
+				GLRTTManager::startUp();
 				checkForErrors();
 			}
 		}
@@ -1899,7 +1899,7 @@ namespace CamelotFramework
 			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
 		/// Create the texture manager   
-		TextureManager::startUp(cm_new<GLTextureManager>(std::ref(*mGLSupport))); 
+		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport)); 
 		checkForErrors();
 	}
 

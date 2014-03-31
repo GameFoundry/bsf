@@ -42,7 +42,7 @@ namespace CamelotFramework {
 	/** \addtogroup Resources
 	*  @{
 	*/
-	class CM_EXPORT GpuProgramManager : public Module<GpuProgramManager>
+	class CM_EXPORT GpuProgramManager : public Module<GpuProgramManager, true>
 	{
 	public:
 

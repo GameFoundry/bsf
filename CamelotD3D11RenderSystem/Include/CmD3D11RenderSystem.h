@@ -8,6 +8,7 @@ namespace CamelotFramework
 	class CM_D3D11_EXPORT D3D11RenderSystem : public RenderSystem
 	{
 	public:
+		D3D11RenderSystem();
 		~D3D11RenderSystem();
 
 		/**
@@ -94,7 +95,6 @@ namespace CamelotFramework
 
 	protected:
 		friend class D3D11RenderSystemFactory;
-		D3D11RenderSystem();
 
 		/**
 		 * @copydoc	RenderSystem::initialize_internal().
