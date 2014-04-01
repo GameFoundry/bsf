@@ -81,60 +81,98 @@ namespace CamelotFramework
     class CM_EXPORT Texture : public GpuResource
     {
     public:
-        /** Gets the type of texture 
-        */
-        virtual TextureType getTextureType(void) const { return mTextureType; }
-
-        /** Gets the number of mipmaps to be used for this texture. This number excludes the top level  
-         * map (which is always assumed to be present). 
+        /**
+         * @brief	Gets the type of texture.
+         * 			
+		 * @note	Thread safe.
          */
-        virtual UINT32 getNumMipmaps(void) const {return mNumMipmaps;}
+        virtual TextureType getTextureType() const { return mTextureType; }
 
-		/** Gets whether this texture will be set up so that on sampling it, 
-		hardware gamma correction is applied.
-		*/
+        /**
+		 * @brief	Gets the number of mipmaps to be used for this texture. This number excludes the top level  
+		 *			map (which is always assumed to be present).
+         *
+         * @note	Thread safe.
+         */
+        virtual UINT32 getNumMipmaps() const {return mNumMipmaps;}
+
+		/**
+		 * @brief	Gets whether this texture will be set up so that on sampling it,
+		 *			hardware gamma correction is applied.
+		 *
+		 * @note	Thread safe.
+		 */
 		virtual bool isHardwareGammaEnabled() const { return mHwGamma; }
 
-		/** Get the level of multisample AA to be used if this texture is a 
-		rendertarget.
-		*/
+		/**
+		 * @brief	Get the level of multisample AA to be used.
+		 *
+		 * @note	Thread safe.
+		 */
 		virtual UINT32 getFSAA() const { return mFSAA; }
 
-		/** Get the multisample AA hint if this texture is a rendertarget.
-		*/
+		/**
+		 * @brief	Get the multisample AA hint.
+		 *
+		 * @note	Thread safe.
+		 */
 		virtual const String& getFSAAHint() const { return mFSAAHint; }
 
-		/** Returns the height of the texture.
-        */
+        /**
+         * @brief	Returns the height of the texture.
+         *
+         * @note	Thread safe.
+         */
         virtual UINT32 getHeight() const { return mHeight; }
 
-        /** Returns the width of the texture.
-        */
+        /**
+         * @brief	Returns the width of the texture.
+         *
+         * @note	Thread safe.
+         */
         virtual UINT32 getWidth() const { return mWidth; }
 
-        /** Returns the depth of the texture (only applicable for 3D textures).
-        */
+        /**
+         * @brief	Returns the depth of the texture (only applicable for 3D textures).
+         *
+         * @note	Thread safe.
+         */
         virtual UINT32 getDepth() const { return mDepth; }
 
-        /** Returns the TextureUsage indentifier for this Texture
-        */
+        /**
+         * @brief	Returns texture usage (TextureUsage) of this texture.
+         *
+         * @note	Thread safe.
+         */
         virtual int getUsage() const { return mUsage; }
 
-		/** Returns the pixel format for the texture surface. */
+		/**
+		 * @brief	Returns the pixel format for the texture surface.
+		 *
+		 * @note	Thread safe.
+		 */
 		virtual PixelFormat getFormat() const { return mFormat; }
 
-        /** Returns true if the texture has an alpha layer. */
+        /**
+         * @brief	Returns true if the texture has an alpha layer.
+         *
+         * @note	Thread safe.
+         */
         virtual bool hasAlpha() const;
 
-        /** Return the number of faces this texture has. This will be 6 for a cubemap
-        	texture and 1 for a 1D, 2D or 3D one.
-        */
+        /**
+         * @brief	Return the number of faces this texture has.
+         *
+         * @note	Thread safe.
+         */
         virtual UINT32 getNumFaces() const;
 
 		/**
 		 * @brief	Returns true if the texture can be bound to a shader.
 		 * 			
 		 * @note	This is only false for some rare special cases. (e.g. AA render texture in DX9)
+		 * 			
+		 *			Core thread only.
 		 */
 		virtual bool isBindableAsShaderResource() const { return true; }
 
@@ -152,7 +190,7 @@ namespace CamelotFramework
 		 * @brief	Allocates a buffer you may use for storage when reading a subresource. You
 		 * 			need to allocate such a buffer if you are calling "readSubresource".
 		 * 			
-		 * @note	This method is thread safe.
+		 * @note	Thread safe.
 		 */
 		PixelDataPtr allocateSubresourceBuffer(UINT32 subresourceIdx) const;
 
@@ -163,6 +201,8 @@ namespace CamelotFramework
 		 * @note	Subresource index is only valid for the instance it was created on. You cannot use a subresource
 		 * 			index from a different texture and expect to get valid result. Modifying the resource so the number
 		 * 			of subresources changes, invalidates all subresource indexes.
+		 * 			
+		 *			Thread safe.
 		 */
 		void mapFromSubresourceIdx(UINT32 subresourceIdx, UINT32& face, UINT32& mip) const;
 
@@ -172,6 +212,8 @@ namespace CamelotFramework
 		 * 			
 		 * @note	Generated subresource index is only valid for the instance it was created on. Modifying the resource so the number
 		 * 			of subresources changes, invalidates all subresource indexes.
+		 * 			
+		 *			Thread safe.
 		 */
 		UINT32 mapToSubresourceIdx(UINT32 face, UINT32 mip) const;
 
@@ -184,35 +226,47 @@ namespace CamelotFramework
 		 * 						
 		 * @return	Pointer to the buffer data. Only valid until you call unlock.
 		 * 			
-		 * @note If you are just reading or writing one block of data use
-		 * 		readData/writeData methods as they can be must faster in certain situations.
+		 * @note	If you are just reading or writing one block of data use
+		 * 			readData/writeData methods as they can be must faster in certain situations.
+		 * 			
+		 *			Core thread only.
 		 */
 		PixelData lock(GpuLockOptions options, UINT32 mipLevel = 0, UINT32 face = 0);
 
 		/**
 		 * @brief	Unlocks a previously locked buffer. After the buffer is unlocked,
 		 * 			any data returned by lock becomes invalid.
+		 * 			
+		 * @note	Core thread only.
 		 */
 		void unlock();
 
 		/**
-		* @brief	Copies the contents of this texture to another texture. Texture format
-		* 			and size must match.
+		 * @brief	Copies the contents of this texture to another texture. Texture format
+		 * 			and size must match.
+		 * 			
+		 * @note	Core thread only.
 		 */
 		void copy(TexturePtr& target);
 
 		/**
-		 * @brief Reads data from the texture buffer into the provided buffer.
+		 * @brief	Reads data from the texture buffer into the provided buffer.
+		 * 		  
+		 * @note	Core thread only.
 		 */
 		virtual void readData(PixelData& dest, UINT32 mipLevel = 0, UINT32 face = 0) = 0;
 
 		/**
-		 * @brief Writes data from the provided buffer into the texture buffer.
+		 * @brief	Writes data from the provided buffer into the texture buffer.
+		 * 		  
+		 * @note	Core thread only.
 		 */
 		virtual void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false) = 0;
 
 		/**
 		 * @brief	Returns a dummy 2x2 texture. Don't modify the returned texture.
+		 * 			
+		 * @note	Thread safe.
 		 */
 		static const HTexture& dummy();
 

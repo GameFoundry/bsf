@@ -72,12 +72,12 @@ namespace CamelotFramework
 		Resource::initialize();
 	}
 
-    bool Texture::hasAlpha(void) const
+    bool Texture::hasAlpha() const
     {
         return PixelUtil::hasAlpha(mFormat);
     }
 
-	UINT32 Texture::calculateSize(void) const
+	UINT32 Texture::calculateSize() const
 	{
         return getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 	}

@@ -138,7 +138,10 @@ namespace CamelotFramework
 
 			imgData->getPixels(mip, *src);
 
-			gSyncedCoreAccessor().writeSubresource(newTexture, subresourceIdx, src);
+			AsyncOp op;
+
+			src->lock();
+			gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, src, true, op));
 		}
 
 		fileData->close();

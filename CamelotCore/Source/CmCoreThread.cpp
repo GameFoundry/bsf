@@ -296,11 +296,6 @@ namespace CamelotFramework
 		return *CoreThread::instance().getAccessor();
 	}
 
-	CoreThreadAccessor<CommandQueueSync>& gSyncedCoreAccessor()
-	{
-		return CoreThread::instance().getSyncedAccessor();
-	}
-
 	void throwIfNotCoreThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING

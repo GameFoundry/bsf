@@ -15,13 +15,10 @@ Text field
 
 -------------
 Cursor
- - Set cursor hotspots
- - Fix cursor images
  - A way to save/load a set of cursors
 
 Other:
  - Refactor BuiltinMaterialFactory to BuiltinEngineResources
- - Need to set up parameter pass-through for Modules
 
 -------------
 

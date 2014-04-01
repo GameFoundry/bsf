@@ -12,7 +12,7 @@ namespace CamelotFramework
 		 * @brief	Updates a part of the current resource with the provided data. Specific resource
 		 * 			implementations provide a way to retrieve a subresource index.
 		 * 			
-		 * @note	Call only from core thread.
+		 * @note	Core thread only.
 		 */
 		virtual void writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer) = 0;
 
@@ -22,7 +22,7 @@ namespace CamelotFramework
 		 * 			provide a way to retrieve a subresource index and a way to allocate
 		 * 			the GpuResourceData buffer.
 		 * 			
-		 * @note	Call only from core thread.
+		 * @note	Core thread only.
 		 */
 		virtual void readSubresource(UINT32 subresourceIdx, GpuResourceData& data) = 0;
 

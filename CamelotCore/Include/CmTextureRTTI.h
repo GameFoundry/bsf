@@ -6,10 +6,10 @@
 #include "CmManagedDataBlock.h"
 #include "CmMath.h"
 #include "CmApplication.h"
-#include "CmCoreThreadAccessor.h"
-
-// DEBUG ONLY
+#include "CmCoreThread.h"
+#include "CmRenderSystem.h"
 #include "CmTextureManager.h"
+#include "CmPixelData.h"
 
 namespace CamelotFramework
 {
@@ -38,8 +38,10 @@ namespace CamelotFramework
 
 			GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
-			gSyncedCoreAccessor().readSubresource(sharedTexPtr, subresourceIdx, pixelData);
-			gSyncedCoreAccessor().submitToCoreThread(true); // We need the data right away, so execute the context and wait until we get it
+			// We want the data right away so queue directly to main core thread queue and block until we get it
+			pixelData->lock();
+			gCoreThread().queueReturnCommand(
+				boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), sharedTexPtr, subresourceIdx, std::static_pointer_cast<GpuResourceData>(pixelData), _1), true);
 
 			return pixelData;
 		}
@@ -111,7 +113,11 @@ namespace CamelotFramework
 				UINT32 subresourceIdx = texture->mapToSubresourceIdx(face, mipmap);
 
 				GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(texture->getThisPtr());
-				gSyncedCoreAccessor().writeSubresource(sharedTexPtr, subresourceIdx, pixelData->at(i));
+
+				AsyncOp op;
+
+				pixelData->at(i)->lock();
+				gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), sharedTexPtr, subresourceIdx, pixelData->at(i), true, op));
 			}
 
 			cm_delete<PoolAlloc>(pixelData);

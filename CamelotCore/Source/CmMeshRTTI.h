@@ -22,11 +22,11 @@ namespace CamelotFramework
 		MeshDataPtr getMeshData(Mesh* obj) 
 		{ 
 			MeshDataPtr meshData = obj->allocateSubresourceBuffer(0);
-
 			GpuResourcePtr sharedMeshPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
-			gSyncedCoreAccessor().readSubresource(sharedMeshPtr, 0, meshData);
-			gSyncedCoreAccessor().submitToCoreThread(true); // We need the data right away, so execute the context and wait until we get it
+			meshData->lock();
+			gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
+				sharedMeshPtr, 0, std::static_pointer_cast<GpuResourceData>(meshData), _1), true);
 
 			return meshData;
 		}

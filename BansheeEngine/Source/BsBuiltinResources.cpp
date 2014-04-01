@@ -120,36 +120,36 @@ namespace BansheeEngine
 		HTexture cursorSizeWETex = getCursorTexture(CursorSizeWETex);
 
 		mCursorArrow = cursorArrowTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorArrowTex.getInternalPtr(), 0, mCursorArrow);
+		gCoreAccessor().readSubresource(cursorArrowTex.getInternalPtr(), 0, mCursorArrow);
 
 		mCursorArrowDrag = cursorArrowDragTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorArrowDragTex.getInternalPtr(), 0, mCursorArrowDrag);
+		gCoreAccessor().readSubresource(cursorArrowDragTex.getInternalPtr(), 0, mCursorArrowDrag);
 
 		mCursorArrowLeftRight = cursorArrowLeftRightTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorArrowLeftRightTex.getInternalPtr(), 0, mCursorArrowLeftRight);
+		gCoreAccessor().readSubresource(cursorArrowLeftRightTex.getInternalPtr(), 0, mCursorArrowLeftRight);
 
 		mCursorIBeam = cursorIBeamTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorIBeamTex.getInternalPtr(), 0, mCursorIBeam);
+		gCoreAccessor().readSubresource(cursorIBeamTex.getInternalPtr(), 0, mCursorIBeam);
 
 		mCursorDeny = cursorDenyTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorDenyTex.getInternalPtr(), 0, mCursorDeny);
+		gCoreAccessor().readSubresource(cursorDenyTex.getInternalPtr(), 0, mCursorDeny);
 
 		mCursorWait = cursorWaitTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorWaitTex.getInternalPtr(), 0, mCursorWait);
+		gCoreAccessor().readSubresource(cursorWaitTex.getInternalPtr(), 0, mCursorWait);
 
 		mCursorSizeNESW = cursorSizeNESWTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorSizeNESWTex.getInternalPtr(), 0, mCursorSizeNESW);
+		gCoreAccessor().readSubresource(cursorSizeNESWTex.getInternalPtr(), 0, mCursorSizeNESW);
 
 		mCursorSizeNS = cursorSizeNSTex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorSizeNSTex.getInternalPtr(), 0, mCursorSizeNS);
+		gCoreAccessor().readSubresource(cursorSizeNSTex.getInternalPtr(), 0, mCursorSizeNS);
 
 		mCursorSizeNWSE = cursorSizeNWSETex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorSizeNWSETex.getInternalPtr(), 0, mCursorSizeNWSE);
+		gCoreAccessor().readSubresource(cursorSizeNWSETex.getInternalPtr(), 0, mCursorSizeNWSE);
 
 		mCursorSizeWE = cursorSizeWETex->allocateSubresourceBuffer(0);
-		gSyncedCoreAccessor().readSubresource(cursorSizeWETex.getInternalPtr(), 0, mCursorSizeWE);
+		gCoreAccessor().readSubresource(cursorSizeWETex.getInternalPtr(), 0, mCursorSizeWE);
 
-		gSyncedCoreAccessor().submitToCoreThread(true);
+		gCoreAccessor().submitToCoreThread(true);
 
 		// Label
 		// TODO - Instead of importing font every time, try to save a resource and then just load it?
