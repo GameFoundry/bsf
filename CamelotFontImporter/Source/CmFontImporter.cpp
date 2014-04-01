@@ -279,11 +279,11 @@ namespace CamelotFramework
 					PixelDataPtr temp = newTex->allocateSubresourceBuffer(subresourceIdx);
 					PixelUtil::bulkPixelConversion(*pixelData, *temp);
 
-					gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, temp);
+					gSyncedCoreAccessor().writeSubresource(newTex.getInternalPtr(), subresourceIdx, temp);
 				}
 				else
 				{
-					gMainSyncedCA().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);
+					gSyncedCoreAccessor().writeSubresource(newTex.getInternalPtr(), subresourceIdx, pixelData);
 				}
 
 				fontData.texturePages.push_back(newTex);

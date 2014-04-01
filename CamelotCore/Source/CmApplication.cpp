@@ -74,9 +74,6 @@ namespace CamelotFramework
 		loadPlugin(desc.renderer);
 		RendererManager::instance().setActive(desc.renderer);
 
-		mPrimaryCoreAccessor = gCoreThread().getAccessor();
-		mPrimarySyncedCoreAccessor = &gCoreThread().getSyncedAccessor();
-
 		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
 
 		MeshManager::startUp(cm_new<MeshManager>());
@@ -260,15 +257,5 @@ namespace CamelotFramework
 	{
 		static Application application;
 		return application;
-	}
-
-	CoreAccessor& gMainCA()
-	{
-		return *gApplication().mPrimaryCoreAccessor.get();
-	}
-
-	SyncedCoreAccessor& gMainSyncedCA()
-	{
-		return *gApplication().mPrimarySyncedCoreAccessor;
 	}
 }

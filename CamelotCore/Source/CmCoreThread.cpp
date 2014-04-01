@@ -1,5 +1,4 @@
 #include "CmCoreThread.h"
-#include "CmCoreThreadAccessor.h"
 
 namespace CamelotFramework
 {
@@ -290,6 +289,16 @@ namespace CamelotFramework
 	CoreThread& gCoreThread()
 	{
 		return CoreThread::instance();
+	}
+
+	CoreThreadAccessor<CommandQueueNoSync>& gCoreAccessor()
+	{
+		return *CoreThread::instance().getAccessor();
+	}
+
+	CoreThreadAccessor<CommandQueueSync>& gSyncedCoreAccessor()
+	{
+		return CoreThread::instance().getSyncedAccessor();
 	}
 
 	void throwIfNotCoreThread()

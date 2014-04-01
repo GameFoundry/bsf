@@ -8,6 +8,7 @@
 #include "CmTexture.h"
 #include "CmFileSystem.h"
 #include "CmApplication.h"
+#include "CmCoreThread.h"
 #include "CmCoreThreadAccessor.h"
 
 #include "FreeImage.h"
@@ -137,7 +138,7 @@ namespace CamelotFramework
 
 			imgData->getPixels(mip, *src);
 
-			gMainSyncedCA().writeSubresource(newTexture, subresourceIdx, src);
+			gSyncedCoreAccessor().writeSubresource(newTexture, subresourceIdx, src);
 		}
 
 		fileData->close();

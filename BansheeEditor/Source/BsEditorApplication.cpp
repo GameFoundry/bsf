@@ -260,11 +260,11 @@ namespace BansheeEditor
 		//	(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
 		//folderMonitor->startMonitor(L"D:\\TestDetect", true, folderChanges);
 
-		HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import(L"C:\\CursorDbg.psd"));
-		PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
+		//HTexture dbgCursor = static_resource_cast<Texture>(Importer::instance().import(L"C:\\CursorDbg.psd"));
+		//PixelDataPtr cursorPixelData = dbgCursor->allocateSubresourceBuffer(0);
 
-		gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, cursorPixelData);
-		gMainSyncedCA().submitToCoreThread(true);
+		//gMainSyncedCA().readSubresource(dbgCursor.getInternalPtr(), 0, cursorPixelData);
+		//gMainSyncedCA().submitToCoreThread(true);
 
 		/************************************************************************/
 		/* 								MODAL WINDOW                      		*/

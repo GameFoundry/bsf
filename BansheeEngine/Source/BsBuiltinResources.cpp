@@ -12,6 +12,7 @@
 #include "CmImporter.h"
 #include "CmRTTIType.h"
 #include "CmFileSystem.h"
+#include "CmApplication.h"
 
 using namespace CamelotFramework;
 
@@ -20,7 +21,8 @@ namespace BansheeEngine
 	const WString BuiltinResources::DefaultFontPath = L"arial.ttf";
 	const UINT32 BuiltinResources::DefaultFontSize = 10;
 
-	const WString BuiltinResources::DefaultFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
+	const WString BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
+	const WString BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
 
 	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.psd";
 	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.psd";
@@ -76,16 +78,85 @@ namespace BansheeEngine
 
 	const WString BuiltinResources::ScrollBarBgTex = L"ScrollBarBg.psd";
 
+	const WString BuiltinResources::CursorArrowTex = L"Arrow.psd";
+	const WString BuiltinResources::CursorArrowDragTex = L"ArrowDrag.psd";
+	const WString BuiltinResources::CursorArrowLeftRightTex = L"ArrowLeftRight.psd";
+	const WString BuiltinResources::CursorIBeamTex = L"IBeam.psd";
+	const WString BuiltinResources::CursorDenyTex = L"Deny.psd";
+	const WString BuiltinResources::CursorWaitTex = L"Wait.psd";
+	const WString BuiltinResources::CursorSizeNESWTex = L"SizeNESW.psd";
+	const WString BuiltinResources::CursorSizeNSTex = L"SizeNS.psd";
+	const WString BuiltinResources::CursorSizeNWSETex = L"SizeNWSE.psd";
+	const WString BuiltinResources::CursorSizeWETex = L"SizeWE.psd";
+
+	const Vector2I BuiltinResources::CursorArrowHotspot = Vector2I(11, 8);
+	const Vector2I BuiltinResources::CursorArrowDragHotspot = Vector2I(11, 8);
+	const Vector2I BuiltinResources::CursorArrowLeftRightHotspot = Vector2I(9, 4);
+	const Vector2I BuiltinResources::CursorIBeamHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorDenyHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorWaitHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorSizeNESWHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorSizeNSHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorSizeNWSEHotspot = Vector2I(15, 15);
+	const Vector2I BuiltinResources::CursorSizeWEHotspot = Vector2I(15, 15);
+
 	BuiltinResources::BuiltinResources()
 	{
 		// TODO - Normally I want to load this from some file
 		
+		/************************************************************************/
+		/* 								CURSOR		                     		*/
+		/************************************************************************/
+
+		HTexture cursorArrowTex = getCursorTexture(CursorArrowTex);
+		HTexture cursorArrowDragTex = getCursorTexture(CursorArrowDragTex);
+		HTexture cursorArrowLeftRightTex = getCursorTexture(CursorArrowLeftRightTex);
+		HTexture cursorIBeamTex = getCursorTexture(CursorIBeamTex);
+		HTexture cursorDenyTex = getCursorTexture(CursorDenyTex);
+		HTexture cursorWaitTex = getCursorTexture(CursorWaitTex);
+		HTexture cursorSizeNESWTex = getCursorTexture(CursorSizeNESWTex);
+		HTexture cursorSizeNSTex = getCursorTexture(CursorSizeNSTex);
+		HTexture cursorSizeNWSETex = getCursorTexture(CursorSizeNWSETex);
+		HTexture cursorSizeWETex = getCursorTexture(CursorSizeWETex);
+
+		mCursorArrow = cursorArrowTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorArrowTex.getInternalPtr(), 0, mCursorArrow);
+
+		mCursorArrowDrag = cursorArrowDragTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorArrowDragTex.getInternalPtr(), 0, mCursorArrowDrag);
+
+		mCursorArrowLeftRight = cursorArrowLeftRightTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorArrowLeftRightTex.getInternalPtr(), 0, mCursorArrowLeftRight);
+
+		mCursorIBeam = cursorIBeamTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorIBeamTex.getInternalPtr(), 0, mCursorIBeam);
+
+		mCursorDeny = cursorDenyTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorDenyTex.getInternalPtr(), 0, mCursorDeny);
+
+		mCursorWait = cursorWaitTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorWaitTex.getInternalPtr(), 0, mCursorWait);
+
+		mCursorSizeNESW = cursorSizeNESWTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorSizeNESWTex.getInternalPtr(), 0, mCursorSizeNESW);
+
+		mCursorSizeNS = cursorSizeNSTex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorSizeNSTex.getInternalPtr(), 0, mCursorSizeNS);
+
+		mCursorSizeNWSE = cursorSizeNWSETex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorSizeNWSETex.getInternalPtr(), 0, mCursorSizeNWSE);
+
+		mCursorSizeWE = cursorSizeWETex->allocateSubresourceBuffer(0);
+		gSyncedCoreAccessor().readSubresource(cursorSizeWETex.getInternalPtr(), 0, mCursorSizeWE);
+
+		gSyncedCoreAccessor().submitToCoreThread(true);
+
 		// Label
 		// TODO - Instead of importing font every time, try to save a resource and then just load it?
 		HFont font;
 
 		{
-			WString fontPath = DefaultFolder + DefaultFontPath;
+			WString fontPath = DefaultSkinFolder + DefaultFontPath;
 			ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
 			if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
 			{
@@ -112,8 +183,8 @@ namespace BansheeEngine
 
 		// Button
 		GUIElementStyle buttonStyle;
-		buttonStyle.normal.texture = getTexture(ButtonNormalTex);
-		buttonStyle.hover.texture = getTexture(ButtonHoverTex);
+		buttonStyle.normal.texture = getSkinTexture(ButtonNormalTex);
+		buttonStyle.hover.texture = getSkinTexture(ButtonHoverTex);
 		buttonStyle.active.texture = buttonStyle.hover.texture;
 		buttonStyle.border.left = 5;
 		buttonStyle.border.right = 5;
@@ -137,9 +208,9 @@ namespace BansheeEngine
 
 		// Input box
 		GUIElementStyle inputBoxStyle;
-		inputBoxStyle.normal.texture = getTexture(InputBoxNormalTex);
-		inputBoxStyle.hover.texture = getTexture(InputBoxHoverTex);
-		inputBoxStyle.focused.texture = getTexture(InputBoxFocusedTex);
+		inputBoxStyle.normal.texture = getSkinTexture(InputBoxNormalTex);
+		inputBoxStyle.hover.texture = getSkinTexture(InputBoxHoverTex);
+		inputBoxStyle.focused.texture = getSkinTexture(InputBoxFocusedTex);
 		inputBoxStyle.active.texture = inputBoxStyle.normal.texture;
 		inputBoxStyle.border.left = 5;
 		inputBoxStyle.border.right = 5;
@@ -167,9 +238,9 @@ namespace BansheeEngine
 
 		// Up button
 		GUIElementStyle scrollUpBtnStyle;
-		scrollUpBtnStyle.normal.texture = getTexture(ScrollBarUpNormalTex);
-		scrollUpBtnStyle.hover.texture = getTexture(ScrollBarUpHoverTex);
-		scrollUpBtnStyle.active.texture = getTexture(ScrollBarUpActiveTex);
+		scrollUpBtnStyle.normal.texture = getSkinTexture(ScrollBarUpNormalTex);
+		scrollUpBtnStyle.hover.texture = getSkinTexture(ScrollBarUpHoverTex);
+		scrollUpBtnStyle.active.texture = getSkinTexture(ScrollBarUpActiveTex);
 		scrollUpBtnStyle.fixedHeight = true;
 		scrollUpBtnStyle.fixedWidth = true;
 		scrollUpBtnStyle.height = 4;
@@ -179,9 +250,9 @@ namespace BansheeEngine
 
 		// Down button
 		GUIElementStyle scrollDownBtnStyle;
-		scrollDownBtnStyle.normal.texture = getTexture(ScrollBarDownNormalTex);
-		scrollDownBtnStyle.hover.texture = getTexture(ScrollBarDownHoverTex);
-		scrollDownBtnStyle.active.texture = getTexture(ScrollBarDownActiveTex);
+		scrollDownBtnStyle.normal.texture = getSkinTexture(ScrollBarDownNormalTex);
+		scrollDownBtnStyle.hover.texture = getSkinTexture(ScrollBarDownHoverTex);
+		scrollDownBtnStyle.active.texture = getSkinTexture(ScrollBarDownActiveTex);
 		scrollDownBtnStyle.fixedHeight = true;
 		scrollDownBtnStyle.fixedWidth = true;
 		scrollDownBtnStyle.height = 4;
@@ -191,9 +262,9 @@ namespace BansheeEngine
 
 		// Left button
 		GUIElementStyle scrollLeftBtnStyle;
-		scrollLeftBtnStyle.normal.texture = getTexture(ScrollBarLeftNormalTex);
-		scrollLeftBtnStyle.hover.texture = getTexture(ScrollBarLeftHoverTex);
-		scrollLeftBtnStyle.active.texture = getTexture(ScrollBarLeftActiveTex);
+		scrollLeftBtnStyle.normal.texture = getSkinTexture(ScrollBarLeftNormalTex);
+		scrollLeftBtnStyle.hover.texture = getSkinTexture(ScrollBarLeftHoverTex);
+		scrollLeftBtnStyle.active.texture = getSkinTexture(ScrollBarLeftActiveTex);
 		scrollLeftBtnStyle.fixedHeight = true;
 		scrollLeftBtnStyle.fixedWidth = true;
 		scrollLeftBtnStyle.height = 8;
@@ -203,9 +274,9 @@ namespace BansheeEngine
 
 		// Right button
 		GUIElementStyle scrollRightBtnStyle;
-		scrollRightBtnStyle.normal.texture = getTexture(ScrollBarRightNormalTex);
-		scrollRightBtnStyle.hover.texture = getTexture(ScrollBarRightHoverTex);
-		scrollRightBtnStyle.active.texture = getTexture(ScrollBarRightActiveTex);
+		scrollRightBtnStyle.normal.texture = getSkinTexture(ScrollBarRightNormalTex);
+		scrollRightBtnStyle.hover.texture = getSkinTexture(ScrollBarRightHoverTex);
+		scrollRightBtnStyle.active.texture = getSkinTexture(ScrollBarRightActiveTex);
 		scrollRightBtnStyle.fixedHeight = true;
 		scrollRightBtnStyle.fixedWidth = true;
 		scrollRightBtnStyle.height = 8;
@@ -215,9 +286,9 @@ namespace BansheeEngine
 
 		// Horizontal handle
 		GUIElementStyle scrollBarHorzBtnStyle;
-		scrollBarHorzBtnStyle.normal.texture = getTexture(ScrollBarHandleHorzNormalTex);
-		scrollBarHorzBtnStyle.hover.texture = getTexture(ScrollBarHandleHorzHoverTex);
-		scrollBarHorzBtnStyle.active.texture = getTexture(ScrollBarHandleHorzActiveTex);
+		scrollBarHorzBtnStyle.normal.texture = getSkinTexture(ScrollBarHandleHorzNormalTex);
+		scrollBarHorzBtnStyle.hover.texture = getSkinTexture(ScrollBarHandleHorzHoverTex);
+		scrollBarHorzBtnStyle.active.texture = getSkinTexture(ScrollBarHandleHorzActiveTex);
 		scrollBarHorzBtnStyle.fixedHeight = true;
 		scrollBarHorzBtnStyle.fixedWidth = true;
 		scrollBarHorzBtnStyle.height = 6;
@@ -227,9 +298,9 @@ namespace BansheeEngine
 
 		// Vertical handle
 		GUIElementStyle scrollBarVertBtnStyle;
-		scrollBarVertBtnStyle.normal.texture = getTexture(ScrollBarHandleVertNormalTex);
-		scrollBarVertBtnStyle.hover.texture = getTexture(ScrollBarHandleVertHoverTex);
-		scrollBarVertBtnStyle.active.texture = getTexture(ScrollBarHandleVertActiveTex);
+		scrollBarVertBtnStyle.normal.texture = getSkinTexture(ScrollBarHandleVertNormalTex);
+		scrollBarVertBtnStyle.hover.texture = getSkinTexture(ScrollBarHandleVertHoverTex);
+		scrollBarVertBtnStyle.active.texture = getSkinTexture(ScrollBarHandleVertActiveTex);
 		scrollBarVertBtnStyle.fixedHeight = true;
 		scrollBarVertBtnStyle.fixedWidth = true;
 		scrollBarVertBtnStyle.height = 4;
@@ -237,7 +308,7 @@ namespace BansheeEngine
 
 		mSkin.setStyle("ScrollBarVertBtn", scrollBarVertBtnStyle);
 
-		HSpriteTexture scrollBarBgPtr = getTexture(ScrollBarBgTex);
+		HSpriteTexture scrollBarBgPtr = getSkinTexture(ScrollBarBgTex);
 
 		// Vertical scroll bar
 		GUIElementStyle vertScrollBarStyle;
@@ -269,8 +340,8 @@ namespace BansheeEngine
 
 		// ListBox button
 		GUIElementStyle dropDownListStyle;
-		dropDownListStyle.normal.texture = getTexture(DropDownBtnNormalTex);
-		dropDownListStyle.hover.texture = getTexture(DropDownBtnHoverTex);
+		dropDownListStyle.normal.texture = getSkinTexture(DropDownBtnNormalTex);
+		dropDownListStyle.hover.texture = getSkinTexture(DropDownBtnHoverTex);
 		dropDownListStyle.active.texture = dropDownListStyle.hover.texture;
 		dropDownListStyle.normalOn.texture = dropDownListStyle.hover.texture;
 		dropDownListStyle.hoverOn.texture = dropDownListStyle.hover.texture;
@@ -296,7 +367,7 @@ namespace BansheeEngine
 
 		// DropDown scroll up button arrow
 		GUIElementStyle dropDownScrollUpBtnArrowStyle;
-		dropDownScrollUpBtnArrowStyle.normal.texture = getTexture(DropDownBoxBtnUpArrowTex);
+		dropDownScrollUpBtnArrowStyle.normal.texture = getSkinTexture(DropDownBoxBtnUpArrowTex);
 		dropDownScrollUpBtnArrowStyle.hover.texture = dropDownScrollUpBtnArrowStyle.normal.texture;
 		dropDownScrollUpBtnArrowStyle.active.texture = dropDownScrollUpBtnArrowStyle.hover.texture;
 		dropDownScrollUpBtnArrowStyle.fixedHeight = true;
@@ -314,8 +385,8 @@ namespace BansheeEngine
 
 		// DropDown scroll up button
 		GUIElementStyle dropDownScrollUpBtnStyle;
-		dropDownScrollUpBtnStyle.normal.texture = getTexture(DropDownBoxBtnUpNormalTex);
-		dropDownScrollUpBtnStyle.hover.texture = getTexture(DropDownBoxBtnUpHoverTex);
+		dropDownScrollUpBtnStyle.normal.texture = getSkinTexture(DropDownBoxBtnUpNormalTex);
+		dropDownScrollUpBtnStyle.hover.texture = getSkinTexture(DropDownBoxBtnUpHoverTex);
 		dropDownScrollUpBtnStyle.active.texture = dropDownScrollUpBtnStyle.hover.texture;
 		dropDownScrollUpBtnStyle.fixedHeight = true;
 		dropDownScrollUpBtnStyle.fixedWidth = false;
@@ -332,7 +403,7 @@ namespace BansheeEngine
 
 		// DropDown scroll down button arrow
 		GUIElementStyle dropDownScrollDownBtnArrowStyle;
-		dropDownScrollDownBtnArrowStyle.normal.texture = getTexture(DropDownBoxBtnDownArrowTex);
+		dropDownScrollDownBtnArrowStyle.normal.texture = getSkinTexture(DropDownBoxBtnDownArrowTex);
 		dropDownScrollDownBtnArrowStyle.hover.texture = dropDownScrollDownBtnArrowStyle.normal.texture;
 		dropDownScrollDownBtnArrowStyle.active.texture = dropDownScrollDownBtnArrowStyle.hover.texture;
 		dropDownScrollDownBtnArrowStyle.fixedHeight = true;
@@ -350,8 +421,8 @@ namespace BansheeEngine
 
 		// DropDown scroll down button
 		GUIElementStyle dropDownScrollDownBtnStyle;
-		dropDownScrollDownBtnStyle.normal.texture = getTexture(DropDownBoxBtnDownNormalTex);
-		dropDownScrollDownBtnStyle.hover.texture = getTexture(DropDownBoxBtnDownHoverTex);
+		dropDownScrollDownBtnStyle.normal.texture = getSkinTexture(DropDownBoxBtnDownNormalTex);
+		dropDownScrollDownBtnStyle.hover.texture = getSkinTexture(DropDownBoxBtnDownHoverTex);
 		dropDownScrollDownBtnStyle.active.texture = dropDownScrollDownBtnStyle.hover.texture;
 		dropDownScrollDownBtnStyle.fixedHeight = true;
 		dropDownScrollDownBtnStyle.fixedWidth = false;
@@ -368,8 +439,8 @@ namespace BansheeEngine
 
 		// DropDown entry button
 		GUIElementStyle dropDownEntryBtnStyle;
-		dropDownEntryBtnStyle.normal.texture = getTexture(DropDownBoxEntryNormalTex);
-		dropDownEntryBtnStyle.hover.texture = getTexture(DropDownBoxEntryHoverTex);
+		dropDownEntryBtnStyle.normal.texture = getSkinTexture(DropDownBoxEntryNormalTex);
+		dropDownEntryBtnStyle.hover.texture = getSkinTexture(DropDownBoxEntryHoverTex);
 		dropDownEntryBtnStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownEntryBtnStyle.fixedHeight = true;
 		dropDownEntryBtnStyle.fixedWidth = false;
@@ -390,8 +461,8 @@ namespace BansheeEngine
 
 		// DropDown entry button with expand
 		GUIElementStyle dropDownEntryExpBtnStyle;
-		dropDownEntryExpBtnStyle.normal.texture = getTexture(DropDownBoxEntryExpNormalTex);
-		dropDownEntryExpBtnStyle.hover.texture = getTexture(DropDownBoxEntryExpHoverTex);
+		dropDownEntryExpBtnStyle.normal.texture = getSkinTexture(DropDownBoxEntryExpNormalTex);
+		dropDownEntryExpBtnStyle.hover.texture = getSkinTexture(DropDownBoxEntryExpHoverTex);
 		dropDownEntryExpBtnStyle.active.texture = dropDownEntryExpBtnStyle.hover.texture;
 		dropDownEntryExpBtnStyle.fixedHeight = true;
 		dropDownEntryExpBtnStyle.fixedWidth = false;
@@ -412,7 +483,7 @@ namespace BansheeEngine
 
 		// DropDown box frame
 		GUIElementStyle dropDownBoxStyle;
-		dropDownBoxStyle.normal.texture = getTexture(DropDownBoxBgTex);
+		dropDownBoxStyle.normal.texture = getSkinTexture(DropDownBoxBgTex);
 		dropDownBoxStyle.hover.texture = dropDownEntryBtnStyle.normal.texture;
 		dropDownBoxStyle.active.texture = dropDownEntryBtnStyle.hover.texture;
 		dropDownBoxStyle.fixedHeight = false;
@@ -432,7 +503,7 @@ namespace BansheeEngine
 
 		// Drop down separator
 		GUIElementStyle dropDownSeparatorStyle;
-		dropDownSeparatorStyle.normal.texture = getTexture(DropDownSeparatorTex);
+		dropDownSeparatorStyle.normal.texture = getSkinTexture(DropDownSeparatorTex);
 		dropDownSeparatorStyle.fixedHeight = true;
 		dropDownSeparatorStyle.fixedWidth = false;
 		dropDownSeparatorStyle.height = 3;
@@ -447,63 +518,73 @@ namespace BansheeEngine
 		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
 	}
 
-	HSpriteTexture BuiltinResources::getTexture(const CM::WString& name)
+	HSpriteTexture BuiltinResources::getSkinTexture(const CM::WString& name)
 	{
-		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultFolder + name)));
+		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultSkinFolder + name)));
+	}
+
+	HTexture BuiltinResources::getCursorTexture(const CM::WString& name)
+	{
+		return static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultCursorFolder + name));
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorArrowHotspot;
+		return *mCursorArrow.get();
+	}
+
+	const CM::PixelData& BuiltinResources::getCursorArrowDrag(Vector2I& hotSpot)
+	{
+		hotSpot = CursorArrowDragHotspot;
+		return *mCursorArrowDrag.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorWait(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorWaitHotspot;
+		return *mCursorWait.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorIBeam(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
-	}
-
-	const CM::PixelData& BuiltinResources::getCursorHand(Vector2I& hotSpot)
-	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
-	}
-
-	const CM::PixelData& BuiltinResources::getCursorSizeAll(Vector2I& hotSpot)
-	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorIBeamHotspot;
+		return *mCursorIBeam.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorSizeNESW(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorSizeNESWHotspot;
+		return *mCursorSizeNESW.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorSizeNS(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorSizeNSHotspot;
+		return *mCursorSizeNS.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorSizeNWSE(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorSizeNWSEHotspot;
+		return *mCursorSizeNWSE.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorSizeWE(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorSizeWEHotspot;
+		return *mCursorSizeWE.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorDeny(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorDenyHotspot;
+		return *mCursorDeny.get();
 	}
 
 	const CM::PixelData& BuiltinResources::getCursorMoveLeftRight(Vector2I& hotSpot)
 	{
-		CM_EXCEPT(NotImplementedException, "Not implemented");
+		hotSpot = CursorArrowLeftRightHotspot;
+		return *mCursorArrowLeftRight.get();
 	}
 }

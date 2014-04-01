@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include "CmRenderSystem.h"
 
-#include "CmCoreThreadAccessor.h"
+#include "CmCoreThread.h"
 #include "CmViewport.h"
 #include "CmException.h"
 #include "CmRenderTarget.h"
@@ -90,7 +90,7 @@ namespace CamelotFramework {
 
 	void RenderSystem::destroy()
 	{
-		gCoreThread().getAccessor()->queueCommand(boost::bind(&RenderSystem::destroy_internal, this));
+		gCoreAccessor().queueCommand(boost::bind(&RenderSystem::destroy_internal, this));
 		gCoreThread().submitAccessors(true);
 	}
 

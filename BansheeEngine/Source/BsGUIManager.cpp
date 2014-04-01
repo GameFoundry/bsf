@@ -591,7 +591,7 @@ namespace BansheeEngine
 
 		data->setColorAt(mCaretColor, 0, 0);
 
-		gMainCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
 	void GUIManager::updateTextSelectionTexture()
@@ -609,7 +609,7 @@ namespace BansheeEngine
 
 		data->setColorAt(mTextSelectionColor, 0, 0);
 
-		gMainCA().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
+		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
 	bool GUIManager::onMouseDragEnded(const CM::PositionalInputEvent& event)

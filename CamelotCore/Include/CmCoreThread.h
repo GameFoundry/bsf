@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 #include "CmCommandQueue.h"
+#include "CmCoreThreadAccessor.h"
 
 namespace CamelotFramework
 {
@@ -180,6 +181,10 @@ private:
 	};
 
 	CM_EXPORT CoreThread& gCoreThread();
+
+	CM_EXPORT CoreThreadAccessor<CommandQueueNoSync>& gCoreAccessor();
+
+	CM_EXPORT CoreThreadAccessor<CommandQueueSync>& gSyncedCoreAccessor();
 
 	/**
 		* @brief	Throws an exception if current thread isn't the core thread;

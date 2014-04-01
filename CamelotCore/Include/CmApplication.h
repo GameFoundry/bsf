@@ -81,12 +81,7 @@ namespace CamelotFramework
 			boost::signal<void()> mainLoopCallback;
 
 	private:
-		friend CM_EXPORT CoreAccessor& gMainCA();
-		friend CM_EXPORT SyncedCoreAccessor& gMainSyncedCA();
-
 		RenderWindowPtr mPrimaryWindow;
-		CoreAccessorPtr mPrimaryCoreAccessor;
-		SyncedCoreAccessor* mPrimarySyncedCoreAccessor;
 
 		DynLib* mSceneManagerPlugin;
 
@@ -113,20 +108,4 @@ namespace CamelotFramework
 	};
 
 	CM_EXPORT Application& gApplication();
-
-	/**
-	 * @brief	A shortcut for accessing the primary core accessor. It may only be accessed safely
-	 * 			from the main thread.
-	 */
-	CM_EXPORT CoreAccessor& gMainCA();
-
-	/**
-	 * @brief	A shortcut for accessing the primary synchronized core accessor. This accessor may be accessed
-	 * 			from all threads except the core thread. All operations from this accessor will be executed after
-	 * 			non-synchronized primary accessor has finished executing.
-	 * 			
-	 * @note	It is more efficient to create your own non-synchronized core accessor if you plan on often using it from
-	 * 			threads other than main.
-	 */
-	CM_EXPORT SyncedCoreAccessor& gMainSyncedCA();
 }

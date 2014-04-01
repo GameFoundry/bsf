@@ -1,5 +1,6 @@
 #include "BsEditorWindowBase.h"
 #include "CmApplication.h"
+#include "CmCoreThread.h"
 #include "CmSceneObject.h"
 #include "CmRenderWindow.h"
 
@@ -58,7 +59,7 @@ namespace BansheeEditor
 
 	void EditorWindowBase::hide()
 	{
-		gMainSyncedCA().hideWindow(mRenderWindow);
+		gCoreAccessor().hideWindow(mRenderWindow);
 	}
 
 	void EditorWindowBase::construct(const RenderWindowPtr& renderWindow)
@@ -85,12 +86,12 @@ namespace BansheeEditor
 
 	void EditorWindowBase::setPosition(CM::INT32 x, CM::INT32 y)
 	{
-		gMainCA().moveWindow(mRenderWindow, x, y);
+		gCoreAccessor().moveWindow(mRenderWindow, x, y);
 	}
 
 	void EditorWindowBase::setSize(CM::UINT32 width, CM::UINT32 height)
 	{
-		gMainCA().resizeWindow(mRenderWindow, width, height);
+		gCoreAccessor().resizeWindow(mRenderWindow, width, height);
 	}
 
 	INT32 EditorWindowBase::getLeft() const

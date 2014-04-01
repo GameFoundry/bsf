@@ -546,7 +546,9 @@ namespace BansheeEngine
 	{
 		closeSubMenu();
 
-		mData.entries[idx].getCallback()();
+		auto callback = mData.entries[idx].getCallback();
+		if(callback != nullptr)
+			callback();
 
 		GUIDropDownBoxManager::instance().closeDropDownBox();
 	}

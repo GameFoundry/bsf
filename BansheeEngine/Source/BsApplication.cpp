@@ -62,6 +62,8 @@ namespace BansheeEngine
 		CM::gApplication().loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
 		
 		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
+
+		Cursor::instance().setCursor(CursorType::Arrow);
 	}
 
 	void Application::runMainLoop()

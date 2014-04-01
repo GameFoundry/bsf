@@ -15,7 +15,8 @@ Text field
 
 -------------
 Cursor
- - Implement get*Cursor methods in BsBuiltinResources
+ - Set cursor hotspots
+ - Fix cursor images
  - A way to save/load a set of cursors
 
 Other:

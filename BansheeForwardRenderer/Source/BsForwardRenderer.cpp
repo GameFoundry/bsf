@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 		gSceneManager().updateRenderableBounds();
 
-		CoreAccessor& coreAccessor = gMainCA();
+		CoreAccessor& coreAccessor = gCoreAccessor();
 		const Vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
 
 		struct RenderTargetRenderInfo
@@ -132,7 +132,7 @@ namespace BansheeEngine
 		if(!camera->getIgnoreSceneRenderables())
 			allRenderables = gSceneManager().getVisibleRenderables(camera);
 
-		CoreAccessor& coreAccessor = gMainCA();
+		CoreAccessor& coreAccessor = gCoreAccessor();
 		coreAccessor.setViewport(camera->getViewport());
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();

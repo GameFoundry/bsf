@@ -25,8 +25,8 @@ namespace CamelotFramework
 
 			GpuResourcePtr sharedMeshPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
-			gMainSyncedCA().readSubresource(sharedMeshPtr, 0, meshData);
-			gMainSyncedCA().submitToCoreThread(true); // We need the data right away, so execute the context and wait until we get it
+			gSyncedCoreAccessor().readSubresource(sharedMeshPtr, 0, meshData);
+			gSyncedCoreAccessor().submitToCoreThread(true); // We need the data right away, so execute the context and wait until we get it
 
 			return meshData;
 		}
