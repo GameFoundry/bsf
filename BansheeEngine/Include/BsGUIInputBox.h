@@ -20,6 +20,8 @@ namespace BansheeEngine
 		const CM::WString& getText() const { return mText; }
 		void setText(const CM::WString& text);
 
+		void setFilter(std::function<bool(const CM::WString&)> filter) { mFilter = filter; }
+
 		virtual ElementType getElementType() const { return ElementType::InputBox; }
 
 		virtual CM::Vector2I _getOptimalSize() const;
@@ -86,6 +88,7 @@ namespace BansheeEngine
 		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
+		std::function<bool(const CM::WString&)> mFilter;
 
 		bool mCaretShown;
 		bool mSelectionShown;

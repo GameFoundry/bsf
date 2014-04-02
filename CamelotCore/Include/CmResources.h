@@ -116,6 +116,10 @@ namespace CamelotFramework
 		 * @param	filePath 	Full pathname of the file.
 		 * @param	overwrite	(optional) If true, any existing resource at the specified location will
 		 * 						be overwritten.
+		 * 						
+		 * @note	If the resource is a GpuResource and you are in some way modifying it from the Core thread, make
+		 * 			sure all those commands are submitted before you call this method. Otherwise an obsolete
+		 * 			version of the resource might get saved.
 		 */
 		void save(HResource resource, const WString& filePath, bool overwrite);
 

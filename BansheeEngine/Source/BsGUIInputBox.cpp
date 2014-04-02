@@ -98,22 +98,31 @@ namespace BansheeEngine
 
 	void GUIInputBox::setText(const CM::WString& text)
 	{
-		mText = text;
+		bool filterOkay = true;
+		if(mFilter != nullptr)
+		{
+			filterOkay = mFilter(text);
+		}
 
-		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Vector2I offset = getTextOffset();
+		if(filterOkay)
+		{
+			mText = text;
 
-		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
-		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+			TEXT_SPRITE_DESC textDesc = getTextDesc();
+			Vector2I offset = getTextOffset();
 
-		if(mText.size() > 0)
-			gGUIManager().getInputCaretTool()->moveCaretToChar((UINT32)mText.size() - 1, CARET_AFTER);
-		else
-			gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+			gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 
-		scrollTextToCaret();
+			if(mText.size() > 0)
+				gGUIManager().getInputCaretTool()->moveCaretToChar((UINT32)mText.size() - 1, CARET_AFTER);
+			else
+				gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
 
-		markContentAsDirty();
+			scrollTextToCaret();
+
+			markContentAsDirty();
+		}
 	}
 
 	UINT32 GUIInputBox::getNumRenderElements() const
@@ -521,13 +530,26 @@ namespace BansheeEngine
 			deleteSelectedText();
 
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
-		insertChar(charIdx, ev.getInputChar());
 
-		gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+		bool filterOkay = true;
+		if(mFilter != nullptr)
+		{
+			WString newText = mText;
+			newText.insert(newText.begin() + charIdx, ev.getInputChar());
 
-		scrollTextToCaret();
+			filterOkay = mFilter(newText);
+		}
 
-		markContentAsDirty();
+		if(filterOkay)
+		{
+			insertChar(charIdx, ev.getInputChar());
+
+			gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+			scrollTextToCaret();
+
+			markContentAsDirty();
+		}
+
 		return true;
 	}
 
@@ -577,14 +599,26 @@ namespace BansheeEngine
 
 					if(charIdx < (UINT32)mText.size())
 					{
-						eraseChar(charIdx);
+						bool filterOkay = true;
+						if(mFilter != nullptr)
+						{
+							WString newText = mText;
+							newText.erase(charIdx, 1);
 
-						if(charIdx > 0)
-							charIdx--;
+							filterOkay = mFilter(newText);
+						}
 
-						gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+						if(filterOkay)
+						{
+							eraseChar(charIdx);
 
-						scrollTextToCaret();
+							if(charIdx > 0)
+								charIdx--;
+
+							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+
+							scrollTextToCaret();
+						}
 					}
 				}
 
@@ -607,14 +641,26 @@ namespace BansheeEngine
 					UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 					if(charIdx < (UINT32)mText.size())
 					{
-						eraseChar(charIdx);
+						bool filterOkay = true;
+						if(mFilter != nullptr)
+						{
+							WString newText = mText;
+							newText.erase(charIdx, 1);
 
-						if(charIdx > 0)
-							charIdx--;
+							filterOkay = mFilter(newText);
+						}
 
-						gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+						if(filterOkay)
+						{
+							eraseChar(charIdx);
 
-						scrollTextToCaret();
+							if(charIdx > 0)
+								charIdx--;
+
+							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
+
+							scrollTextToCaret();
+						}
 					}
 				}
 
@@ -745,12 +791,27 @@ namespace BansheeEngine
 				if(mSelectionShown)
 					deleteSelectedText();
 
-				insertChar(gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos(), '\n');
+				UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
 
-				gGUIManager().getInputCaretTool()->moveCaretRight();
-				scrollTextToCaret();
+				bool filterOkay = true;
+				if(mFilter != nullptr)
+				{
+					WString newText = mText;
+					newText.insert(newText.begin() + charIdx, '\n');
 
-				markContentAsDirty();
+					filterOkay = mFilter(newText);
+				}
+
+				if(filterOkay)
+				{
+					insertChar(charIdx, '\n');
+
+					gGUIManager().getInputCaretTool()->moveCaretRight();
+					scrollTextToCaret();
+
+					markContentAsDirty();
+				}
+
 				return true;
 			}
 
@@ -930,24 +991,39 @@ namespace BansheeEngine
 	void GUIInputBox::deleteSelectedText()
 	{
 		UINT32 selStart = gGUIManager().getInputSelectionTool()->getSelectionStart();
-		mText.erase(mText.begin() + selStart, mText.begin() + gGUIManager().getInputSelectionTool()->getSelectionEnd());
+		UINT32 selEnd = gGUIManager().getInputSelectionTool()->getSelectionEnd();
 
-		TEXT_SPRITE_DESC textDesc = getTextDesc();
-		Vector2I offset = getTextOffset();
-		gGUIManager().getInputCaretTool()->updateText(this, textDesc);
-		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+		bool filterOkay = true;
+		if(mFilter != nullptr)
+		{
+			WString newText = mText;
+			newText.erase(newText.begin() + selStart, newText.begin() + selEnd);
 
-		if(selStart > 0)
-		{
-			UINT32 newCaretPos = selStart - 1;
-			gGUIManager().getInputCaretTool()->moveCaretToChar(newCaretPos, CARET_AFTER);
-		}
-		else
-		{
-			gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+			filterOkay = mFilter(newText);
 		}
 
-		scrollTextToCaret();
+		if(filterOkay)
+		{
+			mText.erase(mText.begin() + selStart, mText.begin() + selEnd);
+
+			TEXT_SPRITE_DESC textDesc = getTextDesc();
+			Vector2I offset = getTextOffset();
+			gGUIManager().getInputCaretTool()->updateText(this, textDesc);
+			gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
+
+			if(selStart > 0)
+			{
+				UINT32 newCaretPos = selStart - 1;
+				gGUIManager().getInputCaretTool()->moveCaretToChar(newCaretPos, CARET_AFTER);
+			}
+			else
+			{
+				gGUIManager().getInputCaretTool()->moveCaretToChar(0, CARET_BEFORE);
+			}
+
+			scrollTextToCaret();
+		}
+
 		clearSelection();
 	}
 
@@ -1027,13 +1103,26 @@ namespace BansheeEngine
 		WString textInClipboard = Platform::copyFromClipboard();
 
 		UINT32 charIdx = gGUIManager().getInputCaretTool()->getCharIdxAtCaretPos();
-		insertString(charIdx, textInClipboard);
 
-		if(textInClipboard.size() > 0)
-			gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx + ((UINT32)textInClipboard.size() - 1), CARET_AFTER);
+		bool filterOkay = true;
+		if(mFilter != nullptr)
+		{
+			WString newText = mText;
+			newText.insert(newText.begin() + charIdx, textInClipboard.begin(), textInClipboard.end());
 
-		scrollTextToCaret();
+			filterOkay = mFilter(newText);
+		}
 
-		markContentAsDirty();
+		if(filterOkay)
+		{
+			insertString(charIdx, textInClipboard);
+
+			if(textInClipboard.size() > 0)
+				gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx + ((UINT32)textInClipboard.size() - 1), CARET_AFTER);
+
+			scrollTextToCaret();
+
+			markContentAsDirty();
+		}
 	}
 }

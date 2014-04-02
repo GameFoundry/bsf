@@ -27,6 +27,8 @@
 #include "BsGUISceneTreeView.h"
 #include "BsGUIResourceTreeView.h"
 #include "BsGUIScrollArea.h"
+#include "BsGUIIntField.h"
+#include "BsGUIFloatField.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -88,6 +90,10 @@ namespace BansheeEditor
 		scrollArea->getLayout().addElement(mSceneTreeView);
 		area->getLayout().addElement(mResourceTreeView);
 
+		GUIIntField* intField = GUIIntField::create(*this, HString(L"Int Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIFloatField* floatField = GUIFloatField::create(*this, HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		area->getLayout().addElement(intField);
+		area->getLayout().addElement(floatField);
 		//GUIButton* button = GUIButton::create(*this, HString(L"dbgBtn"));
 		//button->onClick.connect(boost::bind(&TestTextSprite::dbgBtn, this));
 		//area->getLayout().addElement(button);

@@ -275,6 +275,8 @@
     <ClInclude Include="Include\BsEditorWidgetLayout.h" />
     <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h" />
     <ClInclude Include="Include\BsEditorWidgetManager.h" />
+    <ClInclude Include="Include\BsGUIFloatField.h" />
+    <ClInclude Include="Include\BsGUIIntField.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
     <ClInclude Include="Include\BsEditorWidget.h" />
@@ -319,6 +321,8 @@
     <ClCompile Include="Source\BsEditorWindowBase.cpp" />
     <ClCompile Include="Source\BsEditorWindowManager.cpp" />
     <ClCompile Include="Source\BsGUIDockSlider.cpp" />
+    <ClCompile Include="Source\BsGUIFloatField.cpp" />
+    <ClCompile Include="Source\BsGUIIntField.cpp" />
     <ClCompile Include="Source\BsGUIMenuBar.cpp" />
     <ClCompile Include="Source\BsGUIResourceTreeView.cpp" />
     <ClCompile Include="Source\BsGUISceneTreeView.cpp" />
