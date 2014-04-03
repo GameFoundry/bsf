@@ -50,6 +50,9 @@ o		 *
 		/**
 		 * @brief	Returns true if the object has been properly initialized. You are not
 		 * 			allowed to call any methods on the resource until you are sure resource is initialized.
+		 * 			
+		 * @note	Normally CPU objects are initialized on creation and this will never be false, and GPU
+		 * 			objects are initialized when the Core Thread processes them.
 		 */
 		bool isInitialized() const { return (mFlags & CGO_INITIALIZED) != 0; }
 

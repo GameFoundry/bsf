@@ -97,6 +97,7 @@ namespace BansheeEditor
 	{
 		if(!mIsLeaf && mChildren[0] != nullptr && mChildren[1] != nullptr)
 		{
+			RectI clipRect = mArea;
 			if(mIsHorizontal)
 			{
 				UINT32 remainingSize = (UINT32)std::max(0, (INT32)mArea.height - (INT32)SLIDER_SIZE);
@@ -109,6 +110,9 @@ namespace BansheeEditor
 				mSlider->_setOffset(Vector2I(mArea.x, mArea.y + sizeTop));
 				mSlider->_setWidth(mArea.width);
 				mSlider->_setHeight(SLIDER_SIZE);
+
+				RectI elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
+				mSlider->_setClipRect(elemClipRect);
 			}
 			else
 			{
@@ -122,6 +126,9 @@ namespace BansheeEditor
 				mSlider->_setOffset(Vector2I(mArea.x + sizeLeft, mArea.y));
 				mSlider->_setWidth(SLIDER_SIZE);
 				mSlider->_setHeight(mArea.height);
+
+				RectI elemClipRect(clipRect.x - mArea.x, clipRect.y - mArea.y, clipRect.width, clipRect.height);
+				mSlider->_setClipRect(elemClipRect);
 			}
 		}
 	}
