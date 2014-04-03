@@ -53,6 +53,13 @@ namespace CamelotFramework
 		virtual ~Platform() { }
 
 		/**
+		 * @brief	Retrieves the cursor position in screen coordinates.
+		 * 			
+		 * @note	Thread safe. 
+		 */
+		static Vector2I getCursorPosition();
+
+		/**
 		 * @brief	Moves the cursor to the specified screen position.
 		 * 			
 		 * @note	Thread safe. 

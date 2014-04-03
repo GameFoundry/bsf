@@ -17,6 +17,10 @@ Text field
 Cursor
  - A way to save/load a set of cursors
 
+ IMMEDIATE:
+  - Deleting first entry in input field moves the cursor incorrectly
+  - Test if parsing int/float value from int/float field actually works
+
 Other:
  - Refactor BuiltinMaterialFactory to BuiltinEngineResources
 

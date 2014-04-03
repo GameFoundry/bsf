@@ -17,24 +17,7 @@ namespace BansheeEditor
 		void init(const BS::HCamera& camera, const CM::String& text, CM::RenderTexturePtr sceneView);
 
 	private:
-		BS::GUILabel* mLabel;
-		BS::GUIListBox* mListBox;
 		GUISceneTreeView* mSceneTreeView;
 		GUIResourceTreeView* mResourceTreeView;
-		CM::HString labelString;
-
-		CM::HSceneObject mDbgMainA;
-		CM::HSceneObject mDbgMainB;
-
-		CM::HSceneObject mDbgChildA;
-		CM::HSceneObject mDbgChildB;
-		CM::HSceneObject mDbgChildC;
-
-		void dbgBtn();
-
-		void dbgAdd();
-		void dbgRename();
-		void dbgRemoveChildren();
-		void dbgRemoveParents();
 	};
 }

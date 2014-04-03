@@ -48,7 +48,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Moves the cursor to the specified screen position.
 		 */
-		void move(const CM::Vector2I& screenPos);
+		void setScreenPosition(const CM::Vector2I& screenPos);
+
+		/**
+		 * @brief	Retrieves the cursor position in screen coordinates.
+		 */
+		CM::Vector2I getScreenPosition();
 
 		/**
 		 * @brief	Hides the cursor.
@@ -129,5 +134,6 @@ namespace BansheeEngine
 		CM::UINT32 mActiveCursorId;
 
 		void restoreCursorIcon(CursorType type);
+		void updateCursorImage();
 	};
 }

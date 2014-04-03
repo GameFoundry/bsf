@@ -72,6 +72,19 @@ namespace CamelotFramework
 	NativeCursorData Platform::mCursor;
 	bool Platform::mUsingCustomCursor = false;
 
+	Vector2I Platform::getCursorPosition()
+	{
+		Vector2I screenPos;
+
+		POINT cursorPos;
+		GetCursorPos(&cursorPos);
+
+		screenPos.x = cursorPos.x;
+		screenPos.y = cursorPos.y;
+
+		return screenPos;
+	}
+
 	void Platform::setCursorPosition(const Vector2I& screenPos)
 	{
 		SetCursorPos(screenPos.x, screenPos.y);

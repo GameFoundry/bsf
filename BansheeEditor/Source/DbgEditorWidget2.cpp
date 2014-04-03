@@ -6,6 +6,10 @@
 #include "BsGUILayout.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
+#include "BsGUIIntField.h"
+#include "BsGUIFloatField.h"
+#include "BsGUISpace.h"
+#include "CmHString.h"
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
@@ -19,18 +23,12 @@ namespace BansheeEditor
 	{
 		GUILayout& layout = mContent->getLayout();
 
-		GUIScrollArea* scrollArea = GUIScrollArea::create(getParentWidget());
-		layout.addElement(scrollArea);
+		GUIIntField* intField = GUIIntField::create(getParentWidget(), HString(L"Int Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIFloatField* floatField = GUIFloatField::create(getParentWidget(), HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		layout.addElement(intField);
+		layout.addElement(floatField);
 
-		GUILayout& scrollLayout = scrollArea->getLayout().addLayoutY();
-
-		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup();
-
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test A"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test B"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test C"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test D"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
-		scrollLayout.addElement(GUIToggle::create(getParentWidget(), HString(L"Test E"), toggleGroup, getParentWidget().getSkin().getStyle("Button")));
+		layout.addFlexibleSpace();
 	}
 
 	DbgEditorWidget2::~DbgEditorWidget2()

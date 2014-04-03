@@ -778,18 +778,21 @@ namespace BansheeEngine
 		}
 
 		// Send DragEnd event to whichever element is active
-		bool acceptEndDrag = mDragState == DragState::Dragging && mActiveMouseButton == guiButton && 
+		bool acceptEndDrag = (mDragState == DragState::Dragging || mDragState == DragState::HeldWithoutDrag) && mActiveMouseButton == guiButton && 
 			(guiButton == GUIMouseButton::Left);
 
 		if(acceptEndDrag)
 		{
-			for(auto& activeElement : mActiveElements)
+			if(mDragState == DragState::Dragging)
 			{
-				Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
+				for(auto& activeElement : mActiveElements)
+				{
+					Vector2I localPos = getWidgetRelativePos(*activeElement.widget, event.screenPos);
 
-				mMouseEvent.setMouseDragEndData(localPos);
-				if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
-					event.markAsUsed();
+					mMouseEvent.setMouseDragEndData(localPos);
+					if(sendMouseEvent(activeElement.widget, activeElement.element, mMouseEvent))
+						event.markAsUsed();
+				}
 			}
 
 			mDragState = DragState::NoDrag;

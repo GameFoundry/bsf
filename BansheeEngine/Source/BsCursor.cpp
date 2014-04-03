@@ -14,11 +14,17 @@ namespace BansheeEngine
 			restoreCursorIcon((CursorType)i);
 
 		setCursor(CursorType::Arrow);
+		updateCursorImage();
 	}
 
-	void Cursor::move(const Vector2I& screenPos)
+	void Cursor::setScreenPosition(const Vector2I& screenPos)
 	{
 		Platform::setCursorPosition(screenPos);
+	}
+
+	Vector2I Cursor::getScreenPosition()
+	{
+		return Platform::getCursorPosition();
 	}
 
 	void Cursor::hide()
@@ -49,11 +55,11 @@ namespace BansheeEngine
 	void Cursor::setCursor(CursorType type)
 	{
 		UINT32 id = (UINT32)type;
-		CustomIcon& customIcon = mCustomIcons[id];
-
-		Platform::setCursor(customIcon.pixelData, customIcon.hotSpot);
-
-		mActiveCursorId = id;
+		if(mActiveCursorId != id)
+		{
+			mActiveCursorId = id;
+			updateCursorImage();
+		}
 	}
 
 	void Cursor::setCursor(const CM::String& name)
@@ -66,10 +72,11 @@ namespace BansheeEngine
 		}
 
 		UINT32 id = iterFind->second;
-		CustomIcon& customIcon = mCustomIcons[id];
-		Platform::setCursor(customIcon.pixelData, customIcon.hotSpot);
-
-		mActiveCursorId = id;
+		if(mActiveCursorId != id)
+		{
+			mActiveCursorId = id;
+			updateCursorImage();
+		}
 	}
 
 	void Cursor::setCursorIcon(const CM::String& name, const CM::PixelData& pixelData, const CM::Vector2I& hotSpot)
@@ -81,7 +88,7 @@ namespace BansheeEngine
 			mCustomIcons[id] = CustomIcon(pixelData, hotSpot);
 
 			if(mActiveCursorId == id)
-				setCursor(name); // Refresh active
+				updateCursorImage(); // Refresh active
 		}
 		else
 		{
@@ -99,7 +106,7 @@ namespace BansheeEngine
 		mCustomIcons[id].hotSpot = hotSpot;
 
 		if(mActiveCursorId == id)
-			setCursor(type); // Refresh active
+			updateCursorImage(); // Refresh active
 	}
 
 	void Cursor::clearCursorIcon(const CM::String& name)
@@ -117,7 +124,7 @@ namespace BansheeEngine
 		restoreCursorIcon(type);
 
 		if(mActiveCursorId == (UINT32)type)
-			setCursor(type); // Refresh active
+			updateCursorImage(); // Refresh active
 	}
 
 	void Cursor::restoreCursorIcon(CursorType type)
@@ -160,5 +167,11 @@ namespace BansheeEngine
 		}
 
 		CM_EXCEPT(InvalidParametersException, "Invalid cursor type: " + toString((UINT32)type));
+	}
+
+	void Cursor::updateCursorImage()
+	{
+		CustomIcon& customIcon = mCustomIcons[mActiveCursorId];
+		Platform::setCursor(customIcon.pixelData, customIcon.hotSpot);
 	}
 }

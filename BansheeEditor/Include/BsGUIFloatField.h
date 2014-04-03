@@ -42,13 +42,19 @@ namespace BansheeEditor
 	protected:
 		virtual ~GUIFloatField();
 
+		void updateClippedBounds();
+
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 	protected:
 		static const float SPLIT_POSITION;
+		static const float DRAG_SPEED;
 
 		BS::GUILabel* mLabel;
 		BS::GUIInputBox* mInputBox;
+		CM::INT32 mLastDragPos;
+		bool mIsDragging;
+		bool mIsDragCursorSet;
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 

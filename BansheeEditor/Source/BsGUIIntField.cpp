@@ -7,6 +7,9 @@
 #include "BsBuiltinResources.h"
 #include "BsGUIWidget.h"
 #include "BsGUIMouseEvent.h"
+#include "BsGUIWidget.h"
+#include "BsCursor.h"
+#include "CmViewport.h"
 #include <regex>
 
 using namespace CamelotFramework;
@@ -15,10 +18,12 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	const float GUIIntField::SPLIT_POSITION = 0.5f;
+	const INT32 GUIIntField::DRAG_SPEED = 5;
 
 	GUIIntField::GUIIntField(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mInputBox(nullptr)
+		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mInputBox(nullptr), mIsDragging(false),
+		mLastDragPos(0), mIsDragCursorSet(false)
 	{
 		const GUIElementStyle* curLabelStyle = labelStyle;
 		const GUIElementStyle* curInputBoxStyle = inputBoxStyle;
@@ -35,11 +40,14 @@ namespace BansheeEditor
 
 		_registerChildElement(mLabel);
 		_registerChildElement(mInputBox);
+
+		setValue(0);
 	}
 
 	GUIIntField::GUIIntField(const PrivatelyConstruct& dummy, GUIWidget& parent, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mInputBox(nullptr)
+		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mInputBox(nullptr), mIsDragging(false),
+		mLastDragPos(0)
 	{
 		const GUIElementStyle* curInputBoxStyle = inputBoxStyle;
 
@@ -50,6 +58,8 @@ namespace BansheeEditor
 		mInputBox->setFilter(&GUIIntField::intFilter);
 
 		_registerChildElement(mInputBox);
+
+		setValue(0);
 	}
 
 	GUIIntField::~GUIIntField()
@@ -102,29 +112,117 @@ namespace BansheeEditor
 	{
 		GUIElementContainer::mouseEvent(event);
 
+		RectI draggableArea;
+
+		if(mLabel != nullptr)
+			draggableArea = mLabel->getBounds();
+
 		if(event.getType() == GUIMouseEventType::MouseDragStart)
 		{
-			// TODO -If over draggable area start drag
+			if(draggableArea.contains(event.getPosition()))
+			{
+				mLastDragPos = event.getPosition().x;
+				mIsDragging = true;
+
+				Cursor::instance().setCursor(CursorType::ArrowLeftRight);
+				mIsDragCursorSet = true;
+			}
 
 			return true;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseDrag)
 		{
-			// TODO - If drag is started increase/lower the value
+			if(mIsDragging)
+			{
+				INT32 xDiff = event.getPosition().x - mLastDragPos;
+
+				INT32 jumpAmount = 0;
+				if(event.getPosition().x < 0)
+				{
+					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
+					cursorScreenPos.x += _getParentWidget().getTarget()->getWidth();
+					jumpAmount = _getParentWidget().getTarget()->getWidth();
+
+					Cursor::instance().setScreenPosition(cursorScreenPos);
+				}
+				else if(event.getPosition().x >= _getParentWidget().getTarget()->getWidth())
+				{
+					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
+					cursorScreenPos.x -= _getParentWidget().getTarget()->getWidth();
+					jumpAmount = -_getParentWidget().getTarget()->getWidth();
+
+					Cursor::instance().setScreenPosition(cursorScreenPos);
+				}
+
+				INT32 oldValue = getValue();
+				INT32 newValue = oldValue;
+
+				if(xDiff >= DRAG_SPEED)
+				{
+					while(xDiff >= DRAG_SPEED)
+					{
+						newValue++;
+						xDiff -= DRAG_SPEED;
+					}
+				}
+				else if(xDiff <= -DRAG_SPEED)
+				{
+					while(xDiff <= -DRAG_SPEED)
+					{
+						newValue--;
+						xDiff += DRAG_SPEED;
+					}
+				}
+				
+				mLastDragPos += (newValue - oldValue) * DRAG_SPEED + jumpAmount;
+
+				if(oldValue != newValue)
+					setValue(newValue);
+			}
+
+			return true;
+		}
+		else if(event.getType() == GUIMouseEventType::MouseDragEnd)
+		{
+			mIsDragging = false;
+
+			if(mIsDragCursorSet)
+			{
+				Cursor::instance().setCursor(CursorType::Arrow);
+				mIsDragCursorSet = false;
+			}
 
 			return true;
 		}
 		else if(event.getType() == GUIMouseEventType::MouseOut)
 		{
-			// TODO - Ensure cursor is set back to arrow
-			
-			return true;
+			if(!mIsDragging)
+			{
+				if(mIsDragCursorSet)
+				{
+					Cursor::instance().setCursor(CursorType::Arrow);
+					mIsDragCursorSet = false;
+				}
+			}
 		}
 		else if(event.getType() == GUIMouseEventType::MouseMove)
 		{
-			// TODO - If mouse is over drag area change cursor to Arrow Left/Right
-
-			return true;
+			if(draggableArea.contains(event.getPosition()))
+			{
+				Cursor::instance().setCursor(CursorType::ArrowLeftRight);
+				mIsDragCursorSet = true;
+			}
+			else
+			{
+				if(!mIsDragging)
+				{
+					if(mIsDragCursorSet)
+					{
+						Cursor::instance().setCursor(CursorType::Arrow);
+						mIsDragCursorSet = false;
+					}
+				}
+			}
 		}
 
 		return false;
@@ -138,6 +236,12 @@ namespace BansheeEditor
 	void GUIIntField::setValue(CM::INT32 value)
 	{
 		mInputBox->setText(toWString(value));
+	}
+
+	void GUIIntField::updateClippedBounds()
+	{
+		Vector2I offset = _getOffset();
+		mClippedBounds = RectI(offset.x, offset.y, _getWidth(), _getHeight());
 	}
 
 	void GUIIntField::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,

@@ -400,11 +400,8 @@ namespace BansheeEngine
 				markContentAsDirty();
 			}
 
-			if(!mInputCursorSet)
-			{
-				Cursor::instance().setCursor(CursorType::IBeam);
-				mInputCursorSet = true;
-			}
+			Cursor::instance().setCursor(CursorType::IBeam);
+			mInputCursorSet = true;
 
 			mIsMouseOver = true;
 
@@ -425,6 +422,13 @@ namespace BansheeEngine
 			}
 
 			mIsMouseOver = false;
+
+			return true;
+		}
+		else if(ev.getType() == GUIMouseEventType::MouseMove)
+		{
+			Cursor::instance().setCursor(CursorType::IBeam);
+			mInputCursorSet = true;
 
 			return true;
 		}
