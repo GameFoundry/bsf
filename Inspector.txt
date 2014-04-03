@@ -20,6 +20,7 @@ Cursor
  IMMEDIATE:
   - Deleting first entry in input field moves the cursor incorrectly
   - Test if parsing int/float value from int/float field actually works
+  - ProfilerOverlay elements are constantly dirty? even though I'm not calling update
 
 Other:
  - Refactor BuiltinMaterialFactory to BuiltinEngineResources

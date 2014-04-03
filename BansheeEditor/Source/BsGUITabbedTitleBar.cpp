@@ -257,7 +257,7 @@ namespace BansheeEditor
 			mBackgroundImage->_setAreaDepth(areaDepth + 2);
 			mBackgroundImage->_setWidgetDepth(widgetDepth);
 
-			RectI elemClipRect(tabClipRect.x - offset.x, tabClipRect.y - offset.y, tabClipRect.width, tabClipRect.height);
+			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mBackgroundImage->_setClipRect(elemClipRect);
 		}
 
