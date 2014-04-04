@@ -8,6 +8,8 @@
 #include "BsGUISkin.h"
 #include "BsGUIIntField.h"
 #include "BsGUIFloatField.h"
+#include "BsGUITextField.h"
+#include "BsGUIVector4Field.h"
 #include "BsGUISpace.h"
 #include "CmHString.h"
 
@@ -21,12 +23,17 @@ namespace BansheeEditor
 	DbgEditorWidget2::DbgEditorWidget2(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
 		:EditorWidget<DbgEditorWidget2>(HString(L"DbgEditorWidget2"), parentContainer)
 	{
-		GUILayout& layout = mContent->getLayout();
+		GUILayout& layout = mContent->getLayout().addLayoutY();
 
 		GUIIntField* intField = GUIIntField::create(getParentWidget(), HString(L"Int Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIFloatField* floatField = GUIFloatField::create(getParentWidget(), HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUITextField* textField = GUITextField::create(getParentWidget(), HString(L"Text Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIVector4Field* vec4Field = GUIVector4Field::create(getParentWidget(), HString(L"Vec4 Field"), GUIOptions(GUIOption::fixedWidth(200)));
+
 		layout.addElement(intField);
 		layout.addElement(floatField);
+		layout.addElement(textField);
+		layout.addElement(vec4Field);
 
 		layout.addFlexibleSpace();
 	}

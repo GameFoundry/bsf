@@ -1,6 +1,7 @@
 Needed controls:
 IntField (With drag sliding)
 FloatField (With drag sliding)
+ToggleFIeld
 Vector2 field
 Vector3 field
 Vector4 field

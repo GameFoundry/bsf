@@ -17,13 +17,12 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	const float GUIFloatField::SPLIT_POSITION = 0.5f;
 	const float GUIFloatField::DRAG_SPEED = 0.05f;
 
 	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mInputBox(nullptr), mIsDragging(false),
-		mLastDragPos(0), mIsDragCursorSet(false)
+		mLastDragPos(0), mIsDragCursorSet(false), mLabelWidth(100)
 	{
 		const GUIElementStyle* curLabelStyle = labelStyle;
 		const GUIElementStyle* curInputBoxStyle = inputBoxStyle;
@@ -47,7 +46,7 @@ namespace BansheeEditor
 	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, GUIWidget& parent, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mInputBox(nullptr), mIsDragging(false),
-		mLastDragPos(0)
+		mLastDragPos(0), mLabelWidth(100)
 	{
 		const GUIElementStyle* curInputBoxStyle = inputBoxStyle;
 
@@ -221,6 +220,13 @@ namespace BansheeEditor
 		mInputBox->setText(toWString(value));
 	}
 
+	void GUIFloatField::setLabelWidth(UINT32 width)
+	{
+		mLabelWidth = width;
+
+		markContentAsDirty();
+	}
+
 	void GUIFloatField::updateClippedBounds()
 	{
 		Vector2I offset = _getOffset();
@@ -235,7 +241,7 @@ namespace BansheeEditor
 
 		if(mLabel != nullptr)
 		{
-			UINT32 labelWidth = Math::roundToInt(width * SPLIT_POSITION);
+			UINT32 labelWidth = mLabelWidth;
 
 			Vector2I optimalSize = mLabel->_getOptimalSize();
 			INT32 yOffset = Math::roundToInt((height - optimalSize.y) * 0.5f);
@@ -270,6 +276,19 @@ namespace BansheeEditor
 			RectI elemClipRect(clipRect.x - offset.x, clipRect.y - offset.y, clipRect.width, clipRect.height);
 			mInputBox->_setClipRect(elemClipRect);
 		}
+	}
+
+	Vector2I GUIFloatField::_getOptimalSize() const
+	{
+		Vector2I optimalsize = mInputBox->_getOptimalSize();
+
+		if(mLabel != nullptr)
+		{
+			optimalsize.x += mLabel->_getOptimalSize().x;
+			optimalsize.y = std::max(optimalsize.y, mLabel->_getOptimalSize().y);
+		}
+
+		return optimalsize;
 	}
 
 	const String& GUIFloatField::getGUITypeName()

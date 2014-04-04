@@ -39,17 +39,21 @@ namespace BansheeEditor
 		CM::INT32 getValue() const;
 		void setValue(CM::INT32 value);
 
+		void setLabelWidth(CM::UINT32 value);
+
+		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
+			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+
+		CM::Vector2I _getOptimalSize() const;
 	protected:
 		virtual ~GUIIntField();
 
 		void updateClippedBounds();
 
-		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
-			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 	protected:
-		static const float SPLIT_POSITION;
 		static const CM::INT32 DRAG_SPEED;
 
+		CM::UINT32 mLabelWidth;
 		BS::GUILabel* mLabel;
 		BS::GUIInputBox* mInputBox;
 		CM::INT32 mLastDragPos;

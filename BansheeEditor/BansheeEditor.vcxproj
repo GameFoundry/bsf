@@ -277,6 +277,8 @@
     <ClInclude Include="Include\BsEditorWidgetManager.h" />
     <ClInclude Include="Include\BsGUIFloatField.h" />
     <ClInclude Include="Include\BsGUIIntField.h" />
+    <ClInclude Include="Include\BsGUITextField.h" />
+    <ClInclude Include="Include\BsGUIVector4Field.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
     <ClInclude Include="Include\BsEditorWidget.h" />
@@ -328,8 +330,10 @@
     <ClCompile Include="Source\BsGUISceneTreeView.cpp" />
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUITabButton.cpp" />
+    <ClCompile Include="Source\BsGUITextField.cpp" />
     <ClCompile Include="Source\BsGUITreeView.cpp" />
     <ClCompile Include="Source\BsGUITreeViewEditBox.cpp" />
+    <ClCompile Include="Source\BsGUIVector4Field.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />
     <ClCompile Include="Source\BsGUIWindowDropArea.cpp" />
