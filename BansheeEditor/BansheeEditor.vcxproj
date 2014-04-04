@@ -278,6 +278,7 @@
     <ClInclude Include="Include\BsGUIFloatField.h" />
     <ClInclude Include="Include\BsGUIIntField.h" />
     <ClInclude Include="Include\BsGUITextField.h" />
+    <ClInclude Include="Include\BsGUIVector3Field.h" />
     <ClInclude Include="Include\BsGUIVector4Field.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
     <ClInclude Include="Include\BsEditorPrerequisites.h" />
@@ -302,6 +303,7 @@
     <ClInclude Include="Include\BsProjectLibraryEntries.h" />
     <ClInclude Include="Include\BsResourceMeta.h" />
     <ClInclude Include="Include\BsResourceMetaRTTI.h" />
+    <ClInclude Include="Include\BsGUIVector2Field.h" />
     <ClInclude Include="Include\CmDebugCamera.h" />
     <ClInclude Include="Include\CmTestTextSprite.h" />
     <ClInclude Include="Include\DbgEditorWidget1.h" />
@@ -333,6 +335,8 @@
     <ClCompile Include="Source\BsGUITextField.cpp" />
     <ClCompile Include="Source\BsGUITreeView.cpp" />
     <ClCompile Include="Source\BsGUITreeViewEditBox.cpp" />
+    <ClCompile Include="Source\BsGUIVector2Field.cpp" />
+    <ClCompile Include="Source\BsGUIVector3Field.cpp" />
     <ClCompile Include="Source\BsGUIVector4Field.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrame.cpp" />
     <ClCompile Include="Source\BsGUIWindowFrameWidget.cpp" />

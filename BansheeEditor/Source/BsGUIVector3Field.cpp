@@ -1,4 +1,4 @@
-#include "BsGUIVector4Field.h"
+#include "BsGUIVector3Field.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
 #include "BsGUILabel.h"
@@ -13,70 +13,70 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	const UINT32 GUIVector4Field::ELEMENT_LABEL_WIDTH = 10;
+	const UINT32 GUIVector3Field::ELEMENT_LABEL_WIDTH = 10;
 
-	GUIVector4Field::GUIVector4Field(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, 
+	GUIVector3Field::GUIVector3Field(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mFieldX(nullptr), mFieldY(nullptr),
-		mFieldZ(nullptr), mFieldW(nullptr)
+		mFieldZ(nullptr)
 	{
 		construct(parent, labelContent, labelStyle, inputBoxStyle, layoutOptions, true);
 	}
 
-	GUIVector4Field::GUIVector4Field(const PrivatelyConstruct& dummy, GUIWidget& parent, 
+	GUIVector3Field::GUIVector3Field(const PrivatelyConstruct& dummy, GUIWidget& parent, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mFieldX(nullptr), mFieldY(nullptr),
-		mFieldZ(nullptr), mFieldW(nullptr)
+		mFieldZ(nullptr)
 	{
 		construct(parent, GUIContent(HString()), labelStyle, inputBoxStyle, layoutOptions, false);
 	}
 
-	GUIVector4Field::~GUIVector4Field()
+	GUIVector3Field::~GUIVector3Field()
 	{
 
 	}
 
-	GUIVector4Field* GUIVector4Field::create(GUIWidget& parent, const GUIContent& labelContent, const GUIOptions& layoutOptions, 
+	GUIVector3Field* GUIVector3Field::create(GUIWidget& parent, const GUIContent& labelContent, const GUIOptions& layoutOptions, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle)
 	{
-		return cm_new<GUIVector4Field>(PrivatelyConstruct(), parent, labelContent, labelStyle, inputBoxStyle, 
+		return cm_new<GUIVector3Field>(PrivatelyConstruct(), parent, labelContent, labelStyle, inputBoxStyle, 
 			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
 	}
 
-	GUIVector4Field* GUIVector4Field::create(GUIWidget& parent, const GUIContent& labelContent, GUIElementStyle* labelStyle, 
+	GUIVector3Field* GUIVector3Field::create(GUIWidget& parent, const GUIContent& labelContent, GUIElementStyle* labelStyle, 
 		GUIElementStyle* inputBoxStyle)
 	{
-		return cm_new<GUIVector4Field>(PrivatelyConstruct(), parent, labelContent, labelStyle, inputBoxStyle, 
+		return cm_new<GUIVector3Field>(PrivatelyConstruct(), parent, labelContent, labelStyle, inputBoxStyle, 
 			GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
-	GUIVector4Field* GUIVector4Field::create(GUIWidget& parent, const HString& labelContent, const GUIOptions& layoutOptions, 
+	GUIVector3Field* GUIVector3Field::create(GUIWidget& parent, const HString& labelContent, const GUIOptions& layoutOptions, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle)
 	{
-		return cm_new<GUIVector4Field>(PrivatelyConstruct(), parent, GUIContent(labelContent), labelStyle, 
+		return cm_new<GUIVector3Field>(PrivatelyConstruct(), parent, GUIContent(labelContent), labelStyle, 
 			inputBoxStyle, GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
 	}
 
-	GUIVector4Field* GUIVector4Field::create(GUIWidget& parent, const HString& labelContent, GUIElementStyle* labelStyle, 
+	GUIVector3Field* GUIVector3Field::create(GUIWidget& parent, const HString& labelContent, GUIElementStyle* labelStyle, 
 		GUIElementStyle* inputBoxStyle)
 	{
-		return cm_new<GUIVector4Field>(PrivatelyConstruct(), parent, GUIContent(labelContent), labelStyle, inputBoxStyle, 
+		return cm_new<GUIVector3Field>(PrivatelyConstruct(), parent, GUIContent(labelContent), labelStyle, inputBoxStyle, 
 			GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
-	GUIVector4Field* GUIVector4Field::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUIElementStyle* labelStyle, 
+	GUIVector3Field* GUIVector3Field::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUIElementStyle* labelStyle, 
 		GUIElementStyle* inputBoxStyle)
 	{
-		return cm_new<GUIVector4Field>(PrivatelyConstruct(), parent, labelStyle, inputBoxStyle, 
+		return cm_new<GUIVector3Field>(PrivatelyConstruct(), parent, labelStyle, inputBoxStyle, 
 			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
 	}
 
-	GUIVector4Field* GUIVector4Field::create(GUIWidget& parent, GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle)
+	GUIVector3Field* GUIVector3Field::create(GUIWidget& parent, GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle)
 	{
-		return cm_new<GUIVector4Field>(PrivatelyConstruct(), parent, labelStyle, inputBoxStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+		return cm_new<GUIVector3Field>(PrivatelyConstruct(), parent, labelStyle, inputBoxStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
-	void GUIVector4Field::construct(GUIWidget& parent, const GUIContent& labelContent, GUIElementStyle* labelStyle, 
+	void GUIVector3Field::construct(GUIWidget& parent, const GUIContent& labelContent, GUIElementStyle* labelStyle, 
 		GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 	{
 		if(withLabel)
@@ -92,40 +92,35 @@ namespace BansheeEditor
 		mFieldX = GUIFloatField::create(parent, HString(L"X"), labelStyle, inputBoxStyle);
 		mFieldY = GUIFloatField::create(parent, HString(L"Y"), labelStyle, inputBoxStyle);
 		mFieldZ = GUIFloatField::create(parent, HString(L"Z"), labelStyle, inputBoxStyle);
-		mFieldW = GUIFloatField::create(parent, HString(L"W"), labelStyle, inputBoxStyle);
 
 		mFieldX->setLabelWidth(ELEMENT_LABEL_WIDTH);
 		mFieldY->setLabelWidth(ELEMENT_LABEL_WIDTH);
 		mFieldZ->setLabelWidth(ELEMENT_LABEL_WIDTH);
-		mFieldW->setLabelWidth(ELEMENT_LABEL_WIDTH);
 
 		_registerChildElement(mLabel);
 		_registerChildElement(mFieldX);
 		_registerChildElement(mFieldY);
 		_registerChildElement(mFieldZ);
-		_registerChildElement(mFieldW);
 	}
 
-	Vector4 GUIVector4Field::getValue() const
+	Vector3 GUIVector3Field::getValue() const
 	{
-		Vector4 value;
+		Vector3 value;
 		value.x = mFieldX->getValue();
 		value.y = mFieldY->getValue();
 		value.z = mFieldZ->getValue();
-		value.w = mFieldW->getValue();
 
 		return value;
 	}
 
-	void GUIVector4Field::setValue(const Vector4& value)
+	void GUIVector3Field::setValue(const Vector3& value)
 	{
 		mFieldX->setValue(value.x);
 		mFieldY->setValue(value.y);
 		mFieldZ->setValue(value.z);
-		mFieldW->setValue(value.w);
 	}
 
-	void GUIVector4Field::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
+	void GUIVector3Field::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
 		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 inputBoxYOffset = 0;
@@ -146,7 +141,7 @@ namespace BansheeEditor
 			inputBoxYOffset = optimalSize.y;
 		}
 
-		GUIFloatField* fields[] = { mFieldX, mFieldY, mFieldZ, mFieldW };
+		GUIFloatField* fields[] = { mFieldX, mFieldY, mFieldZ };
 		UINT32 numFields = sizeof(fields) / sizeof(fields[0]);
 
 		UINT32 sizePerField = width / numFields;
@@ -175,9 +170,9 @@ namespace BansheeEditor
 		}
 	}
 
-	Vector2I GUIVector4Field::_getOptimalSize() const
+	Vector2I GUIVector3Field::_getOptimalSize() const
 	{
-		GUIFloatField* fields[] = { mFieldX, mFieldY, mFieldZ, mFieldW };
+		GUIFloatField* fields[] = { mFieldX, mFieldY, mFieldZ };
 		UINT32 numFields = sizeof(fields) / sizeof(fields[0]);
 
 		Vector2I optimalSize;
@@ -197,9 +192,9 @@ namespace BansheeEditor
 		return optimalSize;
 	}
 
-	const String& GUIVector4Field::getGUITypeName()
+	const String& GUIVector3Field::getGUITypeName()
 	{
-		static String typeName = "GUIVector4Field";
+		static String typeName = "GUIVector3Field";
 		return typeName;
 	}
 }

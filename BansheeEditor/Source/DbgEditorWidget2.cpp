@@ -9,6 +9,8 @@
 #include "BsGUIIntField.h"
 #include "BsGUIFloatField.h"
 #include "BsGUITextField.h"
+#include "BsGUIVector2Field.h"
+#include "BsGUIVector3Field.h"
 #include "BsGUIVector4Field.h"
 #include "BsGUISpace.h"
 #include "CmHString.h"
@@ -29,11 +31,15 @@ namespace BansheeEditor
 		GUIFloatField* floatField = GUIFloatField::create(getParentWidget(), HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUITextField* textField = GUITextField::create(getParentWidget(), HString(L"Text Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIVector4Field* vec4Field = GUIVector4Field::create(getParentWidget(), HString(L"Vec4 Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIVector3Field* vec3Field = GUIVector3Field::create(getParentWidget(), HString(L"Vec3 Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIVector2Field* vec2Field = GUIVector2Field::create(getParentWidget(), HString(L"Vec2 Field"), GUIOptions(GUIOption::fixedWidth(200)));
 
 		layout.addElement(intField);
 		layout.addElement(floatField);
 		layout.addElement(textField);
 		layout.addElement(vec4Field);
+		layout.addElement(vec3Field);
+		layout.addElement(vec2Field);
 
 		layout.addFlexibleSpace();
 	}
