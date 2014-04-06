@@ -33,6 +33,11 @@ namespace BansheeEngine
             return (T)Component.Internal_GetComponent(this, typeof(T));
         }
 
+        public Component[] GetComponents()
+        {
+            throw new NotImplementedException();
+        }
+
         public void RemoveComponent<T>() where T : Component
         {
             Component.Internal_RemoveComponent(this, typeof(T));
