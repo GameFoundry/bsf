@@ -108,10 +108,11 @@ namespace BansheeEngine
 		String psCode = "																			\
 			SamplerState mainTexSamp : register(s0);												\
 			Texture2D mainTexture : register(t0);													\
+			float4 tint;																			\
 																									\
 			float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target		\
 			{																						\
-				float4 color = float4(1.0f, 1.0f, 1.0f, mainTexture.Sample(mainTexSamp, uv).r);		\
+				float4 color = float4(tint.rgb, mainTexture.Sample(mainTexSamp, uv).r * tint.a);	\
 				return color;																		\
 			}";
 
@@ -128,6 +129,7 @@ namespace BansheeEngine
 		mSpriteTextShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 		mSpriteTextShader->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
 		mSpriteTextShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		mSpriteTextShader->addParameter("tint", "tint", GPDT_FLOAT4);
 
 		TechniquePtr newTechnique = mSpriteTextShader->addTechnique("D3D11RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();
@@ -178,11 +180,12 @@ namespace BansheeEngine
 		String psCode = "																					\
 						SamplerState mainTexSamp : register(s0);											\
 						Texture2D mainTexture : register(t0);												\
+						float4 tint;																		\
 																											\
 						float4 ps_main(in float4 inPos : SV_Position, float2 uv : TEXCOORD0) : SV_Target	\
 						{																					\
 						float4 color = mainTexture.Sample(mainTexSamp, uv);									\
-						return color;																		\
+						return color * tint;																\
 						}";
 
 		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -198,6 +201,7 @@ namespace BansheeEngine
 		mSpriteImageShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 		mSpriteImageShader->addParameter("mainTexSamp", "mainTexSamp", GPOT_SAMPLER2D);
 		mSpriteImageShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		mSpriteImageShader->addParameter("tint", "tint", GPDT_FLOAT4);
 
 		TechniquePtr newTechnique = mSpriteImageShader->addTechnique("D3D11RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();

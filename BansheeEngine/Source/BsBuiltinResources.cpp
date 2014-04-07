@@ -24,6 +24,8 @@ namespace BansheeEngine
 	const WString BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
 	const WString BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
 
+	const WString BuiltinResources::WhiteTex = L"White.psd";
+
 	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.psd";
 	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.psd";
 
@@ -104,6 +106,8 @@ namespace BansheeEngine
 	{
 		// TODO - Normally I want to load this from some file
 		
+		mWhiteSpriteTexture = getSkinTexture(WhiteTex);
+
 		/************************************************************************/
 		/* 								CURSOR		                     		*/
 		/************************************************************************/

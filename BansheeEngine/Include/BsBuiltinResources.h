@@ -16,6 +16,8 @@ namespace BansheeEngine
 
 		const GUISkin& getSkin() const { return mSkin; }
 
+		const HSpriteTexture getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
+
 		const CM::PixelData& getCursorArrow(CM::Vector2I& hotSpot);
 		const CM::PixelData& getCursorArrowDrag(CM::Vector2I& hotSpot);
 		const CM::PixelData& getCursorWait(CM::Vector2I& hotSpot);
@@ -41,11 +43,15 @@ namespace BansheeEngine
 		CM::PixelDataPtr mCursorSizeNWSE;
 		CM::PixelDataPtr mCursorSizeWE;
 
+		HSpriteTexture mWhiteSpriteTexture;
+
 		static const CM::WString DefaultSkinFolder;
 		static const CM::WString DefaultCursorFolder;
 
 		static const CM::WString DefaultFontPath;
 		static const CM::UINT32 DefaultFontSize;
+
+		static const CM::WString WhiteTex;
 
 		static const CM::WString ButtonNormalTex;
 		static const CM::WString ButtonHoverTex;

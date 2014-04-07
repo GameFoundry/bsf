@@ -20,6 +20,7 @@ namespace BansheeEngine
 		CM::Vector2 uvOffset;
 
 		SpriteTexturePtr texture;
+		CM::Color color;
 		CM::UINT32 borderLeft, borderRight, borderTop, borderBottom;
 	};
 

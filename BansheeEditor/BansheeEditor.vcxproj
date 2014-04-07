@@ -275,9 +275,11 @@
     <ClInclude Include="Include\BsEditorWidgetLayout.h" />
     <ClInclude Include="Include\BsEditorWidgetLayoutRTTI.h" />
     <ClInclude Include="Include\BsEditorWidgetManager.h" />
+    <ClInclude Include="Include\BsGUIColor.h" />
     <ClInclude Include="Include\BsGUIFloatField.h" />
     <ClInclude Include="Include\BsGUIIntField.h" />
     <ClInclude Include="Include\BsGUITextField.h" />
+    <ClInclude Include="Include\BsGUIToggleField.h" />
     <ClInclude Include="Include\BsGUIVector3Field.h" />
     <ClInclude Include="Include\BsGUIVector4Field.h" />
     <ClInclude Include="Include\BsProjectLibraryEntriesRTTI.h" />
@@ -324,6 +326,7 @@
     <ClCompile Include="Source\BsEditorWindow.cpp" />
     <ClCompile Include="Source\BsEditorWindowBase.cpp" />
     <ClCompile Include="Source\BsEditorWindowManager.cpp" />
+    <ClCompile Include="Source\BsGUIColor.cpp" />
     <ClCompile Include="Source\BsGUIDockSlider.cpp" />
     <ClCompile Include="Source\BsGUIFloatField.cpp" />
     <ClCompile Include="Source\BsGUIIntField.cpp" />
@@ -333,6 +336,7 @@
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />
     <ClCompile Include="Source\BsGUITabButton.cpp" />
     <ClCompile Include="Source\BsGUITextField.cpp" />
+    <ClCompile Include="Source\BsGUIToggleField.cpp" />
     <ClCompile Include="Source\BsGUITreeView.cpp" />
     <ClCompile Include="Source\BsGUITreeViewEditBox.cpp" />
     <ClCompile Include="Source\BsGUIVector2Field.cpp" />

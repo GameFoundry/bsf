@@ -85,15 +85,23 @@ namespace BansheeEngine
 				getNewMaterial = true;
 			else
 			{
-				if(cachedElem.matInfo.mainTexture.get() != tex)
+				const GUIMaterialInfo* matInfo = GUIMaterialManager::instance().findExistingImageMaterial(tex, desc.color);
+				if(matInfo == nullptr)
 				{
-					GUIMaterialManager::instance().releaseMaterial(cachedElem.matInfo);
 					getNewMaterial = true;
+				}
+				else
+				{
+					if(matInfo->material != cachedElem.matInfo.material)
+					{
+						GUIMaterialManager::instance().releaseMaterial(cachedElem.matInfo);
+						getNewMaterial = true;
+					}
 				}
 			}
 
 			if(getNewMaterial)
-				cachedElem.matInfo = GUIMaterialManager::instance().requestTextMaterial(tex);
+				cachedElem.matInfo = GUIMaterialManager::instance().requestTextMaterial(tex, desc.color);
 
 			texPage++;
 		}

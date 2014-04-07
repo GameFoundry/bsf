@@ -106,14 +106,15 @@ namespace BansheeEngine
 						";
 
 		String psCode = "#version 400\n										\
-						\
+																			\
 						uniform sampler2D mainTexture;						\
+						uniform vec4 tint;									\
 						in vec2 texcoord0;									\
 						out vec4 fragColor;									\
-						\
-						void main()										\
+																			\
+						void main()											\
 						{													\
-						vec4 color = vec4(1.0f, 1.0f, 1.0f, texture2D(mainTexture, texcoord0.st).r);	\
+						vec4 color = vec4(tint.rgb, texture2D(mainTexture, texcoord0.st).r * tint.a);	\
 						fragColor = color;									\
 						}";
 
@@ -128,6 +129,7 @@ namespace BansheeEngine
 		mSpriteTextShader->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
 		mSpriteTextShader->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
 		mSpriteTextShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+		mSpriteTextShader->addParameter("tint", "tint", GPDT_FLOAT4);
 		mSpriteTextShader->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 		mSpriteTextShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 
@@ -180,13 +182,14 @@ namespace BansheeEngine
 		String psCode = "#version 400\n										\
 						\
 						uniform sampler2D mainTexture;						\
+						uniform vec4 tint;									\
 						in vec2 texcoord0;									\
 						out vec4 fragColor;									\
 						\
-						void main()										\
+						void main()											\
 						{													\
 						vec4 color = texture2D(mainTexture, texcoord0.st);	\
-						fragColor = color;									\
+						fragColor = color * tint;							\
 						}";
 
 		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
@@ -200,6 +203,7 @@ namespace BansheeEngine
 		mSpriteImageShader->addParameter("worldTransform", "worldTransform", GPDT_MATRIX_4X4);
 		mSpriteImageShader->addParameter("invViewportWidth", "invViewportWidth", GPDT_FLOAT1);
 		mSpriteImageShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
+		mSpriteImageShader->addParameter("tint", "tint", GPDT_FLOAT4);
 		mSpriteImageShader->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 		mSpriteImageShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
 

@@ -107,10 +107,11 @@ namespace BansheeEngine
 
 		String psCode = "																\
 			sampler2D mainTexture;														\
+			float4 tint;																\
 																						\
 			float4 ps_main(float2 uv : TEXCOORD0) : COLOR0								\
 			{																			\
-				float4 color = float4(1.0f, 1.0f, 1.0f, tex2D(mainTexture, uv).r);		\
+				float4 color = float4(tint.rgb, tex2D(mainTexture, uv).r * tint.a);		\
 				return color;															\
 			}";
 
@@ -127,6 +128,7 @@ namespace BansheeEngine
 		mSpriteTextShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 		mSpriteTextShader->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 		mSpriteTextShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		mSpriteTextShader->addParameter("tint", "tint", GPDT_FLOAT4);
 
 		TechniquePtr newTechnique = mSpriteTextShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();
@@ -176,11 +178,12 @@ namespace BansheeEngine
 
 		String psCode = "												\
 						sampler2D mainTexture;							\
-						\
+						float4 tint;									\
+																		\
 						float4 ps_main(float2 uv : TEXCOORD0) : COLOR0	\
 						{												\
 						float4 color = tex2D(mainTexture, uv);			\
-						return color;									\
+						return color * tint;							\
 						}";
 
 		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
@@ -196,6 +199,7 @@ namespace BansheeEngine
 		mSpriteImageShader->addParameter("invViewportHeight", "invViewportHeight", GPDT_FLOAT1);
 		mSpriteImageShader->addParameter("mainTexSamp", "mainTexture", GPOT_SAMPLER2D);
 		mSpriteImageShader->addParameter("mainTexture", "mainTexture", GPOT_TEXTURE2D);
+		mSpriteImageShader->addParameter("tint", "tint", GPDT_FLOAT4);
 
 		TechniquePtr newTechnique = mSpriteImageShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName()); 
 		PassPtr newPass = newTechnique->addPass();

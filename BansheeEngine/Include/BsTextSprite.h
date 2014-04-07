@@ -30,6 +30,7 @@ namespace BansheeEngine
 		CM::WString text;
 		CM::HFont font;
 		CM::UINT32 fontSize;
+		CM::Color color;
 		TextHorzAlign horzAlign;
 		TextVertAlign vertAlign;
 		bool wordWrap;

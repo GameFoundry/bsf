@@ -32,6 +32,8 @@ namespace BansheeEngine
 		void toggleOn();
 		void toggleOff();
 
+		bool isToggled() const { return mIsToggled; }
+
 		virtual ElementType getElementType() const { return ElementType::Toggle; }
 
 		void _setToggleGroup(std::shared_ptr<GUIToggleGroup> toggleGroup);

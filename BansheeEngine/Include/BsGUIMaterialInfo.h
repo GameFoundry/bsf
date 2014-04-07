@@ -12,5 +12,6 @@ namespace BansheeEngine
 		CM::GpuParamFloat invViewportWidth;
 		CM::GpuParamFloat invViewportHeight;
 		CM::GpuParamTexture mainTexture;
+		CM::GpuParamVec4 tint;
 	};
 }

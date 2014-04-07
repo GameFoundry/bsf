@@ -21,7 +21,7 @@ namespace BansheeEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const GUIMaterialInfo& requestTextMaterial(const CM::HTexture& texture) const;
+		const GUIMaterialInfo& requestTextMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
@@ -31,13 +31,16 @@ namespace BansheeEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const GUIMaterialInfo& requestImageMaterial(const CM::HTexture& texture) const;
+		const GUIMaterialInfo& requestImageMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
 
 		/**
 		 * @brief	Releases the held reference to the material. This allows us to fully unload a material
 		 * 			and their textures when they are no longer being used.
 		 */
 		void releaseMaterial(const GUIMaterialInfo& material) const;
+
+		const GUIMaterialInfo* findExistingTextMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
+		const GUIMaterialInfo* findExistingImageMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
 
 		void forceReleaseAllMaterials();
 	private:

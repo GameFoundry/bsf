@@ -22,6 +22,38 @@ Other:
 
 -------------
 
+How will I add editor fields to GUILayout? Right now I have a bunch of Add* methods and that won't work for Editor-only fields. I could extend GUILayout to EditorGUILayout but then GUIArea needs to be aware of that as well...
+
+GUIElement has GetChild/GetNumChildren, which isn't really useful for elements like GUIToggle, GUIButton, etc.
+ - GUIElements and GUILayout should still share same base class, but make it GUIElementBase, that doesn't include children
+
+Refactor GUILayout so it has AddElement, RemoveElement, InsertElement, GetChildren, GetNumChildren methods
+ - GUIElement reference should be kept by parent layout, so if it is ever removed (or never added) it will get garbage collected and destroyed
+
+Layouts/Areas/Elements need SetVisible(true/false) toggle
+
+-------------
+Implementation order:
+
+Today:
+ - Ensure color and toggle compile correctly
+ - Add normal toggle icon (I think I already have the graphic)
+ - Component foldout
+
+Then:
+ - GameObject/resource field
+ - Matrix fields
+ - Refactor C# GUI
+ - Basic InspectableObject and basic Inspector that open Inspector window, display SceneManager base fields and a list of components
+ - Per-component generic and custom inspectors
+
+-------------
+IMPORTANT:
+ - I should probably consider making each Component part of the inspector its own separate GUIWidget, otherwise I wont
+   be able to use multiple GUIAreas in the Inspectors, which is fairly limiting.
+     - Each has a separate EditorGUI instance?
+
+
 TOMORROW:
  - InspectableObject calls a C++ method which gets all SerializableFields, and C++ in turn
    generates a list of InspectableFields

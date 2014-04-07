@@ -85,7 +85,7 @@ namespace CamelotFramework
 				blockDesc.slot = resourceDesc.BindPoint + i;
 				blockDesc.blockSize = 0; // Calculated manually as we add parameters
 
-				if(resourceDesc.Name == "$Global" || resourceDesc.Name == "$Param") // Special buffers, as defined by DX11 docs
+				if(strcmp(resourceDesc.Name, "$Globals") == 0 || strcmp(resourceDesc.Name, "$Param") == 0) // Special buffers, as defined by DX11 docs
 					blockDesc.isShareable = false;
 				else
 					blockDesc.isShareable = true;

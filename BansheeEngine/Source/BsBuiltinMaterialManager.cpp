@@ -30,6 +30,7 @@ namespace BansheeEngine
 		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
 		info.worldTransform = info.material->getParamMat4("worldTransform");
 		info.mainTexture = info.material->getParamTexture("mainTexture");
+		info.tint = info.material->getParamVec4("tint");
 
 		return info;
 	}
@@ -44,6 +45,7 @@ namespace BansheeEngine
 		info.invViewportHeight = info.material->getParamFloat("invViewportHeight");
 		info.worldTransform = info.material->getParamMat4("worldTransform");
 		info.mainTexture = info.material->getParamTexture("mainTexture");
+		info.tint = info.material->getParamVec4("tint");
 
 		return info;
 	}
