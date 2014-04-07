@@ -272,7 +272,6 @@ namespace CamelotFramework
 				newTex.synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
 
 				UINT32 subresourceIdx = newTex->mapToSubresourceIdx(0, 0);
-				AsyncOp op;
 
 				// It's possible the formats no longer match
 				if(newTex->getFormat() != pixelData->getFormat())
@@ -282,13 +281,13 @@ namespace CamelotFramework
 
 					temp->lock();
 					gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, 
-						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, temp, true, op));
+						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, temp, false, _1));
 				}
 				else
 				{
 					pixelData->lock();
 					gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, 
-						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, true, op));
+						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, false, _1));
 				}
 
 				fontData.texturePages.push_back(newTex);

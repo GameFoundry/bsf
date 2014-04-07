@@ -114,10 +114,8 @@ namespace CamelotFramework
 
 				GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(texture->getThisPtr());
 
-				AsyncOp op;
-
 				pixelData->at(i)->lock();
-				gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), sharedTexPtr, subresourceIdx, pixelData->at(i), true, op));
+				gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), sharedTexPtr, subresourceIdx, pixelData->at(i), false, _1));
 			}
 
 			cm_delete<PoolAlloc>(pixelData);

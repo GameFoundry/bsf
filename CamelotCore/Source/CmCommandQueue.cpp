@@ -106,7 +106,8 @@ namespace CamelotFramework
 
 			if(command.returnsValue)
 			{
-				command.callbackWithReturnValue(*command.asyncOp);
+				AsyncOp& op = *command.asyncOp;
+				command.callbackWithReturnValue(op);
 
 				if(!command.asyncOp->hasCompleted())
 				{

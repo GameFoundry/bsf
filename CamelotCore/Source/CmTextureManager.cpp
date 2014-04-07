@@ -58,6 +58,8 @@ namespace CamelotFramework
 		data->setColorAt(Color::Red, 1, 1);
 
 		AsyncOp op;
+
+		data->lock();
 		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, false, op);
 	}
 
