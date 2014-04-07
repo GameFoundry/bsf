@@ -4,6 +4,8 @@
 #include "BsGUILabel.h"
 #include "BsGUIButton.h"
 #include "BsGUIInputBox.h"
+#include "BsGUIToggle.h"
+#include "BsGUIColor.h"
 #include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
 #include "BsGUITreeViewEditBox.h"
@@ -28,6 +30,13 @@ namespace BansheeEditor
 
 	const WString EditorGUI::ButtonNormalTex = L"ButtonNormal.psd";
 	const WString EditorGUI::ButtonHoverTex = L"ButtonHover.psd";
+
+	const WString EditorGUI::ToggleNormalTex = L"ToggleNormal.psd";
+	const WString EditorGUI::ToggleHoverTex = L"ToggleHover.psd";
+	const WString EditorGUI::ToggleActiveTex = L"ToggleActive.psd";
+	const WString EditorGUI::ToggleNormalOnTex = L"ToggleOnNormal.psd";
+	const WString EditorGUI::ToggleHoverOnTex = L"ToggleOnHover.psd";
+	const WString EditorGUI::ToggleActiveOnTex = L"ToggleOnActive.psd";
 
 	const WString EditorGUI::WindowFrameNormal = L"WindowFrameNormal.psd";
 	const WString EditorGUI::WindowFrameFocused = L"WindowFrameFocused.psd";
@@ -185,6 +194,33 @@ namespace BansheeEditor
 		buttonStyle.textVertAlign = TVA_Center;
 
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
+
+		// Toggle
+		GUIElementStyle toggleStyle;
+		toggleStyle.normal.texture = getTexture(ToggleNormalTex);
+		toggleStyle.hover.texture = getTexture(ToggleHoverTex);
+		toggleStyle.active.texture = getTexture(ToggleActiveTex);
+		toggleStyle.normalOn.texture = getTexture(ToggleNormalOnTex);
+		toggleStyle.hoverOn.texture = getTexture(ToggleHoverOnTex);
+		toggleStyle.activeOn.texture = getTexture(ToggleActiveOnTex);
+		toggleStyle.fixedHeight = true;
+		toggleStyle.fixedWidth = true;
+		toggleStyle.height = 15;
+		toggleStyle.width = 15;
+
+		mSkin.setStyle(GUIToggle::getGUITypeName(), toggleStyle);
+
+		// Color
+		GUIElementStyle colorStyle;
+		colorStyle.margins.left = 2;
+		colorStyle.margins.right = 2;
+		colorStyle.margins.top = 2;
+		colorStyle.margins.bottom = 2;
+		colorStyle.fixedHeight = true;
+		colorStyle.height = 10;
+		colorStyle.minWidth = 10;
+
+		mSkin.setStyle(GUIColor::getGUITypeName(), colorStyle);
 
 		// Window background texture
 		GUIElementStyle windowBgStyle;

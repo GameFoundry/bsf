@@ -131,7 +131,7 @@ namespace BansheeEditor
 
 	Vector2I GUIColor::_getOptimalSize() const
 	{
-		return Vector2I(80, 20); // Arbitrary
+		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *mStyle, _getLayoutOptions()); // Arbitrary size
 	}
 
 	void GUIColor::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
@@ -154,7 +154,6 @@ namespace BansheeEditor
 
 			RectI alphaClipRect = mClipRect;
 			alphaClipRect.x -= xOffset;
-			alphaClipRect.width = (UINT32)std::max(0, (INT32)alphaClipRect.width - (INT32)xOffset);
 
 			mAlphaSprite->fillBuffer(vertices, uv, indices, startingQuad, maxNumQuads, 
 				vertexStride, indexStride, alphaSpriteIdx - renderElementIdx, alphaOffset, alphaClipRect);

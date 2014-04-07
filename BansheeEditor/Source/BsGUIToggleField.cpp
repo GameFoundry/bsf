@@ -116,7 +116,6 @@ namespace BansheeEditor
 		RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)
 	{
 		UINT32 toggleOffset = 0;
-		UINT32 toggleWidth = width;
 
 		if(mLabel != nullptr)
 		{
@@ -136,10 +135,7 @@ namespace BansheeEditor
 			mLabel->_setClipRect(elemClipRect);
 
 			toggleOffset = labelWidth;
-			toggleWidth = width - labelWidth;
 		}
-
-		Vector2I toggleSize = mToggle->_getOptimalSize();
 
 		{
 			Vector2I optimalSize = mToggle->_getOptimalSize();
@@ -147,7 +143,7 @@ namespace BansheeEditor
 
 			Vector2I offset(x + toggleOffset, y + yOffset);
 			mToggle->_setOffset(offset);
-			mToggle->_setWidth(toggleWidth);
+			mToggle->_setWidth(optimalSize.x);
 			mToggle->_setHeight(optimalSize.y);
 			mToggle->_setAreaDepth(areaDepth);
 			mToggle->_setWidgetDepth(widgetDepth);

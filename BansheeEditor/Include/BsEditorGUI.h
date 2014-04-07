@@ -43,6 +43,13 @@ namespace BansheeEditor
 		static const CM::WString ButtonNormalTex;
 		static const CM::WString ButtonHoverTex;
 
+		static const CM::WString ToggleNormalTex;
+		static const CM::WString ToggleHoverTex;
+		static const CM::WString ToggleActiveTex;
+		static const CM::WString ToggleNormalOnTex;
+		static const CM::WString ToggleHoverOnTex;
+		static const CM::WString ToggleActiveOnTex;
+
 		static const CM::WString InputBoxNormalTex;
 		static const CM::WString InputBoxHoverTex;
 		static const CM::WString InputBoxFocusedTex;

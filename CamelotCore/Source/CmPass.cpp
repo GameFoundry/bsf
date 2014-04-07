@@ -9,21 +9,20 @@
 
 namespace CamelotFramework
 {
-    //-----------------------------------------------------------------------------
 	Pass::Pass()
 		:mStencilRefValue(0)
     { }
-    //-----------------------------------------------------------------------------
+
 	Pass::Pass(const Pass& oth)
     {
         *this = oth;
     }
-    //-----------------------------------------------------------------------------
+
     Pass::~Pass()
     {
 	
     }
-    //-----------------------------------------------------------------------------
+
     Pass& Pass::operator=(const Pass& oth)
     {
 	    // Default blending (overwrite)
@@ -41,7 +40,7 @@ namespace CamelotFramework
 
 		return *this;
     }
-    //-----------------------------------------------------------------------
+
     bool Pass::isTransparent(void) const
     {
 		bool transparent = false;
@@ -64,47 +63,47 @@ namespace CamelotFramework
 
 		return transparent;
     }
-	//----------------------------------------------------------------------
+
 	void Pass::setBlendState(HBlendState& blendState)
 	{
 		mBlendState = blendState;
 	}
-	//----------------------------------------------------------------------
+
 	HBlendState Pass::getBlendState() const
 	{
 		return mBlendState;
 	}
-	//----------------------------------------------------------------------
+
 	void Pass::setRasterizerState(HRasterizerState& rasterizerState)
 	{
 		mRasterizerState = rasterizerState;
 	}
-	//----------------------------------------------------------------------
+
 	HRasterizerState Pass::getRasterizerState() const
 	{
 		return mRasterizerState;
 	}
-	//-----------------------------------------------------------------------
+
 	void Pass::setDepthStencilState(HDepthStencilState& depthStencilState)
 	{
 		mDepthStencilState = depthStencilState;
 	}
-	//-----------------------------------------------------------------------
+
 	HDepthStencilState Pass::getDepthStencilState() const
 	{
 		return mDepthStencilState;
 	}
-	//----------------------------------------------------------------------
+
 	void Pass::setStencilRefValue(UINT32 refValue)
 	{
 		mStencilRefValue = refValue;
 	}
-	//----------------------------------------------------------------------
+
 	UINT32 Pass::getStencilRefValue() const
 	{
 		return mStencilRefValue;
 	}
-	//----------------------------------------------------------------------
+
 	void Pass::activate(CoreAccessor& coreAccessor) const
 	{
 		HGpuProgram vertProgram = getVertexProgram();
@@ -161,7 +160,7 @@ namespace CamelotFramework
 		else
 			coreAccessor.setRasterizerState(RasterizerState::getDefault());
 	}
-	//----------------------------------------------------------------------
+
 	void Pass::bindParameters(CoreAccessor& coreAccessor, const PassParametersPtr& params) const
 	{
 		HGpuProgram vertProgram = getVertexProgram();
@@ -188,12 +187,12 @@ namespace CamelotFramework
 		if(computeProgram)
 			coreAccessor.bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
 	}
-	//----------------------------------------------------------------------
+
 	RTTITypeBase* Pass::getRTTIStatic()
 	{
 		return PassRTTI::instance();
 	}
-	//----------------------------------------------------------------------
+
 	RTTITypeBase* Pass::getRTTI() const
 	{
 		return Pass::getRTTIStatic();

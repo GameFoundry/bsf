@@ -4,6 +4,7 @@
 #include "BsGUILabel.h"
 #include "BsGUIButton.h"
 #include "BsGUIInputBox.h"
+#include "BsGUIToggle.h"
 #include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
 
@@ -28,6 +29,13 @@ namespace BansheeEngine
 
 	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.psd";
 	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.psd";
+
+	const WString BuiltinResources::ToggleNormalTex = L"ToggleNormal.psd";
+	const WString BuiltinResources::ToggleHoverTex = L"ToggleHover.psd";
+	const WString BuiltinResources::ToggleActiveTex = L"ToggleActive.psd";
+	const WString BuiltinResources::ToggleNormalOnTex = L"ToggleOnNormal.psd";
+	const WString BuiltinResources::ToggleHoverOnTex = L"ToggleOnHover.psd";
+	const WString BuiltinResources::ToggleActiveOnTex = L"ToggleOnActive.psd";
 
 	const WString BuiltinResources::InputBoxNormalTex = L"InputBoxNormal.psd";
 	const WString BuiltinResources::InputBoxHoverTex = L"InputBoxHover.psd";
@@ -209,6 +217,21 @@ namespace BansheeEngine
 		buttonStyle.textVertAlign = TVA_Center;
 
 		mSkin.setStyle(GUIButton::getGUITypeName(), buttonStyle);
+
+		// Toggle
+		GUIElementStyle toggleStyle;
+		toggleStyle.normal.texture = getSkinTexture(ToggleNormalTex);
+		toggleStyle.hover.texture = getSkinTexture(ToggleHoverTex);
+		toggleStyle.active.texture = getSkinTexture(ToggleActiveTex);
+		toggleStyle.normalOn.texture = getSkinTexture(ToggleNormalOnTex);
+		toggleStyle.hoverOn.texture = getSkinTexture(ToggleHoverOnTex);
+		toggleStyle.activeOn.texture = getSkinTexture(ToggleActiveOnTex);
+		toggleStyle.fixedHeight = true;
+		toggleStyle.fixedWidth = true;
+		toggleStyle.height = 15;
+		toggleStyle.width = 15;
+
+		mSkin.setStyle(GUIToggle::getGUITypeName(), toggleStyle);
 
 		// Input box
 		GUIElementStyle inputBoxStyle;
