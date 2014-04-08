@@ -50,6 +50,12 @@ namespace BansheeEditor
 		static const CM::WString ToggleHoverOnTex;
 		static const CM::WString ToggleActiveOnTex;
 
+		static const CM::WString FoldoutOpenNormalTex;
+		static const CM::WString FoldoutOpenHoverTex;
+		static const CM::WString FoldoutClosedNormalTex;
+		static const CM::WString FoldoutClosedHoverTex;
+		static const CM::WString FoldoutBackgroundTex;
+
 		static const CM::WString InputBoxNormalTex;
 		static const CM::WString InputBoxHoverTex;
 		static const CM::WString InputBoxFocusedTex;

@@ -147,7 +147,7 @@ namespace BansheeEngine
 	{
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
-		if(mActiveTexture != nullptr)
+		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
 		{
 			imageWidth = mActiveTexture->getTexture()->getWidth();
 			imageHeight = mActiveTexture->getTexture()->getHeight();

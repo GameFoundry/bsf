@@ -1,6 +1,4 @@
 Needed controls:
-Toggle field
-Color field
 Array field/List field/Dictionary field
 Matrix3 field
 Matrix4 field
@@ -34,13 +32,10 @@ Layouts/Areas/Elements need SetVisible(true/false) toggle
 
 -------------
 Implementation order:
-
-Today:
- - Ensure color and toggle compile correctly
- - Add normal toggle icon (I think I already have the graphic)
  - Component foldout
-
-Then:
+ - Color picker modular window
+   - Possibly a generic ModularWindow class
+   - EditorUtility::showColorPicker
  - GameObject/resource field
  - Matrix fields
  - Refactor C# GUI

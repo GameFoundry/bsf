@@ -38,6 +38,12 @@ namespace BansheeEditor
 	const WString EditorGUI::ToggleHoverOnTex = L"ToggleOnHover.psd";
 	const WString EditorGUI::ToggleActiveOnTex = L"ToggleOnActive.psd";
 
+	const WString EditorGUI::FoldoutOpenNormalTex = L"FoldoutOpenNormal.psd";
+	const WString EditorGUI::FoldoutOpenHoverTex = L"FoldoutOpenHover.psd";
+	const WString EditorGUI::FoldoutClosedNormalTex = L"FoldoutClosedNormal.psd";
+	const WString EditorGUI::FoldoutClosedHoverTex = L"FoldoutClosedHover.psd";
+	const WString EditorGUI::FoldoutBackgroundTex = L"FoldoutBackground.psd";
+
 	const WString EditorGUI::WindowFrameNormal = L"WindowFrameNormal.psd";
 	const WString EditorGUI::WindowFrameFocused = L"WindowFrameFocused.psd";
 
@@ -325,6 +331,26 @@ namespace BansheeEditor
 		inputBoxStyle.textVertAlign = TVA_Top;
 
 		mSkin.setStyle(GUIInputBox::getGUITypeName(), inputBoxStyle);
+
+		// Foldout
+		GUIElementStyle foldoutBtnStyle;
+		foldoutBtnStyle.normal.texture = getTexture(FoldoutClosedNormalTex);
+		foldoutBtnStyle.hover.texture = getTexture(FoldoutClosedHoverTex);
+		foldoutBtnStyle.active.texture = foldoutBtnStyle.hover.texture;
+		foldoutBtnStyle.normalOn.texture = getTexture(FoldoutOpenNormalTex);
+		foldoutBtnStyle.hoverOn.texture = getTexture(FoldoutOpenHoverTex);
+		foldoutBtnStyle.activeOn.texture = foldoutBtnStyle.hoverOn.texture;
+		foldoutBtnStyle.fixedHeight = true;
+		foldoutBtnStyle.fixedWidth = true;
+		foldoutBtnStyle.height = 8;
+		foldoutBtnStyle.width = 8;
+
+		mSkin.setStyle("FoldoutButton", foldoutBtnStyle);
+
+		GUIElementStyle foldoutBackgroundStyle;
+		foldoutBackgroundStyle.normal.texture = getTexture(FoldoutBackgroundTex);
+
+		mSkin.setStyle("FoldoutBackground", foldoutBackgroundStyle);
 
 		/************************************************************************/
 		/* 								SCROLL BAR                      		*/

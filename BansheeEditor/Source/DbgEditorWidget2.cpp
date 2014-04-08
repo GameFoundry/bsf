@@ -14,6 +14,7 @@
 #include "BsGUIVector4Field.h"
 #include "BsGUIToggleField.h"
 #include "BsGUIColorField.h"
+#include "BsGUIFoldout.h"
 #include "BsGUISpace.h"
 #include "CmHString.h"
 
@@ -37,6 +38,7 @@ namespace BansheeEditor
 		GUIVector2Field* vec2Field = GUIVector2Field::create(getParentWidget(), HString(L"Vec2 Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIToggleField* toggleField = GUIToggleField::create(getParentWidget(), HString(L"Toggle Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIColorField* colorField = GUIColorField::create(getParentWidget(), HString(L"Color Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIFoldout* foldout = GUIFoldout::create(getParentWidget(), GUIOptions(GUIOption::fixedWidth(200)));
 		colorField->setValue(Color::Red);
 
 		layout.addElement(intField);
@@ -47,6 +49,7 @@ namespace BansheeEditor
 		layout.addElement(vec2Field);
 		layout.addElement(toggleField);
 		layout.addElement(colorField);
+		layout.addElement(foldout);
 
 		layout.addFlexibleSpace();
 	}
