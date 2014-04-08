@@ -15,7 +15,7 @@ namespace BansheeEditor
 			{ }
 
 			CM::HSceneObject mSceneObject;
-			CM::UINT32 mId;
+			CM::UINT64 mId;
 		};
 
 		struct DraggedSceneObjects

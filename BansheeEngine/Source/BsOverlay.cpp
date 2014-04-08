@@ -8,6 +8,8 @@ namespace BansheeEngine
 	Overlay::Overlay(const HSceneObject& parent, CM::Viewport* target)
 		:Component(parent), mRenderTarget(nullptr), mDepth(0)
 	{
+		setName("Overlay");
+
 		if(mRenderTarget != nullptr)
 			OverlayManager::instance().detachOverlay(mRenderTarget, this);
 

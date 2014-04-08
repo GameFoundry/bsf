@@ -11,9 +11,6 @@ namespace CamelotFramework
 	class CM_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{
 	private:
-		String& getName(SceneObject* obj) { return obj->mName; }
-		void setName(SceneObject* obj, String& name) { obj->mName = name; }
-
 		// NOTE - These can only be set sequentially, specific array index is ignored
 		std::shared_ptr<SceneObject> getChild(SceneObject* obj, UINT32 idx) { return obj->mChildren[idx].getInternalPtr(); }
 		void setChild(SceneObject* obj, UINT32 idx, std::shared_ptr<SceneObject> param) { param->setParent(obj->mThisHandle); } // NOTE: Can only be used for sequentially adding elements
@@ -29,10 +26,9 @@ namespace CamelotFramework
 	public:
 		SceneObjectRTTI()
 		{
-			addPlainField("mName", 0, &SceneObjectRTTI::getName, &SceneObjectRTTI::setName);
-			addReflectablePtrArrayField("mChildren", 1, &SceneObjectRTTI::getChild, 
+			addReflectablePtrArrayField("mChildren", 0, &SceneObjectRTTI::getChild, 
 				&SceneObjectRTTI::getNumChildren, &SceneObjectRTTI::setChild, &SceneObjectRTTI::setNumChildren);
-			addReflectablePtrArrayField("mComponents", 2, &SceneObjectRTTI::getComponent, 
+			addReflectablePtrArrayField("mComponents", 1, &SceneObjectRTTI::getComponent, 
 				&SceneObjectRTTI::getNumComponents, &SceneObjectRTTI::setComponent, &SceneObjectRTTI::setNumComponents);
 		}
 

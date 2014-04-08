@@ -23,6 +23,9 @@ namespace CamelotFramework
 
 		UINT64 getInstanceId() const { return mInstanceData->mInstanceId; }
 
+		const String& getName() const { return mName; }
+		void setName(const String& name) { mName = name; }
+
 	private:
 		friend class GameObjectHandleBase;
 		friend class GameObjectManager;
@@ -30,6 +33,8 @@ namespace CamelotFramework
 		std::shared_ptr<GameObjectInstanceData> mInstanceData;
 
 	protected:
+		String mName;
+
 		void initialize(const std::shared_ptr<GameObject>& object, UINT64 instanceId);
 
 		/************************************************************************/

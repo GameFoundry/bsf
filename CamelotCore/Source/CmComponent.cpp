@@ -7,7 +7,7 @@ namespace CamelotFramework
 	Component::Component(const HSceneObject& parent)
 		:mParent(parent)
 	{
-
+		setName("Component");
 	}
 
 	Component::~Component()

@@ -25,6 +25,8 @@ namespace BansheeEngine
 	GUIWidget::GUIWidget(const HSceneObject& parent, CM::Viewport* target)
 		:Component(parent), mSkin(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
 	{
+		setName("GUIWidget");
+
 		mLastFramePosition = SO()->getWorldPosition();
 		mLastFrameRotation = SO()->getWorldRotation();
 		mLastFrameScale = SO()->getWorldScale();

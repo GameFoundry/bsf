@@ -70,6 +70,8 @@ namespace BansheeEngine
 		mPriority(0),
 		mLayers(0xFFFFFFFFFFFFFFFF)
     {
+		setName("Camera");
+
 		updateView();
 		updateFrustum();
 

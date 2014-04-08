@@ -7,7 +7,7 @@ namespace BansheeEngine
 	UpdateCallback::UpdateCallback(const HSceneObject& parent)
 		:Component(parent)
 	{
-
+		setName("UpdateCallback");
 	}
 
 	UpdateCallback::~UpdateCallback()

@@ -4,7 +4,6 @@ Matrix3 field
 Matrix4 field
 GameObject field
 Resource field
-Component foldout field
 
 -------------
 Cursor

@@ -20,6 +20,8 @@ namespace CamelotFramework
 	DebugCamera::DebugCamera(const HSceneObject& parent)
 		:Component(parent), mPitch(0.0f), mYaw(0.0f), mLastButtonState(false)
 	{
+		setName("DebugCamera");
+
 		mCamera = sceneObject()->getComponent<Camera>();
 		mCamera->setNearClipDistance(5);
 

@@ -11,6 +11,9 @@ namespace CamelotFramework
 	class CM_EXPORT GameObjectRTTI : public RTTIType<GameObject, IReflectable, GameObjectRTTI>
 	{
 	private:
+		String& getName(GameObject* obj) { return obj->mName; }
+		void setName(GameObject* obj, String& name) { obj->mName = name; }
+
 		UINT64& getInstanceID(GameObject* obj) { return obj->mInstanceData->mInstanceId; }
 		void setInstanceID(GameObject* obj, UINT64& instanceId) 
 		{  
@@ -30,6 +33,7 @@ namespace CamelotFramework
 		GameObjectRTTI()
 		{
 			addPlainField("mInstanceID", 0, &GameObjectRTTI::getInstanceID, &GameObjectRTTI::setInstanceID);
+			addPlainField("mName", 1, &GameObjectRTTI::getName, &GameObjectRTTI::setName);
 		}
 
 		virtual const String& getRTTIName()

@@ -9,15 +9,15 @@
 
 namespace CamelotFramework
 {
-	UINT32 SceneObject::NextFreeId = 0;
-
-	SceneObject::SceneObject(const String& name, UINT32 id)
-		:mName(name), mId(id), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
+	SceneObject::SceneObject(const String& name)
+		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
 		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
 		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false)
-	{ }
+	{
+		setName(name);
+	}
 
 	SceneObject::~SceneObject()
 	{
@@ -39,7 +39,7 @@ namespace CamelotFramework
 
 	HSceneObject SceneObject::createInternal(const String& name)
 	{
-		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name, NextFreeId++), 
+		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name), 
 			&cm_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
 		
 		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);

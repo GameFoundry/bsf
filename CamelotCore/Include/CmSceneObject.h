@@ -22,15 +22,10 @@ namespace CamelotFramework
 		static HSceneObject create(const String& name);
 		void destroy();
 
-		UINT32 getId() const { return mId; }
-		const String& getName() const { return mName; }
-
-		void setName(const String& name) { mName = name; }
-
 	private:
 		HSceneObject mThisHandle;
 
-		SceneObject(const String& name, UINT32 id);
+		SceneObject(const String& name);
 
 		static HSceneObject createInternal(const String& name);
 		void destroyInternal();
@@ -125,11 +120,6 @@ namespace CamelotFramework
 		void pitch(const Radian& angle);
 
 	private:
-		static UINT32 NextFreeId;
-
-		String mName;
-		UINT32 mId;
-
 		Vector3 mPosition;
 		Quaternion mRotation;
 		Vector3 mScale;

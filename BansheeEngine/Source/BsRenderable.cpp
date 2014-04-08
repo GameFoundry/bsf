@@ -12,6 +12,8 @@ namespace BansheeEngine
 	Renderable::Renderable(const HSceneObject& parent)
 		:Component(parent), mLayer(1)
 	{
+		setName("Renderable");
+
 		mMaterials.resize(1);
 		mMatViewProjParam.resize(1);
 	}

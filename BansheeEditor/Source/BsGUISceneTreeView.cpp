@@ -69,7 +69,7 @@ namespace BansheeEditor
 			{
 				SceneTreeElement* currentChild = static_cast<SceneTreeElement*>(element->mChildren[i]);
 
-				UINT32 curId = currentSO->getChild(i)->getId();
+				UINT64 curId = currentSO->getChild(i)->getInstanceId();
 				if(curId != currentChild->mId)
 				{
 					completeMatch = false;
@@ -91,7 +91,7 @@ namespace BansheeEditor
 			for(UINT32 i = 0; i < currentSO->getNumChildren(); i++)
 			{
 				HSceneObject currentSOChild = currentSO->getChild(i);
-				UINT32 curId = currentSOChild->getId();
+				UINT64 curId = currentSOChild->getInstanceId();
 				bool found = false;
 				for(UINT32 j = 0; j < element->mChildren.size(); j++)
 				{
@@ -113,7 +113,7 @@ namespace BansheeEditor
 					SceneTreeElement* newChild = cm_new<SceneTreeElement>();
 					newChild->mParent = element;
 					newChild->mSceneObject = currentSOChild;
-					newChild->mId = currentSOChild->getId();
+					newChild->mId = currentSOChild->getInstanceId();
 					newChild->mName = currentSOChild->getName();
 					newChild->mSortedIdx = (UINT32)newChildren.size();
 					newChild->mIsVisible = element->mIsVisible && element->mIsExpanded;
@@ -180,7 +180,7 @@ namespace BansheeEditor
 	{
 		HSceneObject root = CM::gSceneManager().getRootNode();
 		mRootElement.mSceneObject = root;
-		mRootElement.mId = root->getId();
+		mRootElement.mId = root->getInstanceId();
 		mRootElement.mSortedIdx = 0;
 		mRootElement.mIsExpanded = true;
 
