@@ -4,6 +4,7 @@
 #include "CmTexture.h"
 #include "CmResources.h"
 #include "CmDebug.h"
+#include "CmPath.h"
 #include "CmTexAtlasGenerator.h"
 #include "CmApplication.h"
 #include "CmCoreThreadAccessor.h"
@@ -290,6 +291,7 @@ namespace CamelotFramework
 						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, false, _1));
 				}
 
+				newTex->setName("FontPage" + toString((UINT32)fontData.texturePages.size()));
 				fontData.texturePages.push_back(newTex);
 
 				pageIdx++;
@@ -313,6 +315,9 @@ namespace CamelotFramework
 		FontPtr newFont = Font::_createPtr(dataPerSize);
 
 		FT_Done_FreeType(library);
+
+		WString fileName = Path::getFilename(filePath, false);
+		newFont->setName(toString(fileName));
 
 		return newFont;
 	}

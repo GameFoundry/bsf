@@ -40,6 +40,9 @@ namespace CamelotFramework
 		HighLevelGpuProgramPtr gpuProgram = HighLevelGpuProgram::_createPtr(shaderSource, entryPoint, language, gptype, profile, &includes);
 		gpuProgram->synchronize();
 
+		WString fileName = Path::getFilename(filePath, false);
+		gpuProgram->setName(toString(fileName));
+
 		return gpuProgram;
 	}
 

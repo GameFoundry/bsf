@@ -1,5 +1,6 @@
 #include "CmGpuProgIncludeImporter.h"
 #include "CmGpuProgInclude.h"
+#include "CmPath.h"
 #include "CmDataStream.h"
 #include "CmFileSystem.h"
 
@@ -34,6 +35,11 @@ namespace CamelotFramework
 		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String includeString = stream->getAsString();
 
-		return GpuProgInclude::_createPtr(includeString);
+		GpuProgIncludePtr gpuInclude = GpuProgInclude::_createPtr(includeString);
+
+		WString fileName = Path::getFilename(filePath, false);
+		gpuInclude->setName(toString(fileName));
+
+		return gpuInclude;
 	}
 }

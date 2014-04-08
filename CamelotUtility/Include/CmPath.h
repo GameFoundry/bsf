@@ -162,11 +162,14 @@ namespace CamelotFramework
 			return true;
 		}
 
-		static WString getFilename(const WString& path)
+		static WString getFilename(const WString& path, bool includeExtension = true)
 		{
 			boost::filesystem3::path internalPath = path.c_str();
-
-			return internalPath.filename().c_str();
+			
+			if(includeExtension)
+				return internalPath.filename().c_str();
+			else
+				return internalPath.stem().c_str();
 		}
 
 		/**

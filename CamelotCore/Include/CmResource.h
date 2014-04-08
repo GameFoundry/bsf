@@ -15,10 +15,14 @@ namespace CamelotFramework
 		Resource(bool requiresGpuInitialization = true);
 		virtual ~Resource() {};
 
+		const String& getName() const { return mName; }
+		void setName(const String& name) { mName = name; }
+
 	protected:
 		friend class Resources;
 
 		UINT32 mSize;
+		String mName;
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

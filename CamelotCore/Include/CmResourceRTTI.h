@@ -12,10 +12,14 @@ namespace CamelotFramework
 		UINT32& getSize(Resource* obj) { return obj->mSize; }
 		void setSize(Resource* obj, UINT32& size) { obj->mSize = size; } 
 
+		String& getName(Resource* obj) { return obj->mName; }
+		void setName(Resource* obj, String& name) { obj->mName = name; }
+
 	public:
 		ResourceRTTI()
 		{
-			addPlainField("Size", 0, &ResourceRTTI::getSize, &ResourceRTTI::setSize);
+			addPlainField("mSize", 0, &ResourceRTTI::getSize, &ResourceRTTI::setSize);
+			addPlainField("mName", 1, &ResourceRTTI::getName, &ResourceRTTI::setName);
 		}
 
 		virtual const String& getRTTIName()

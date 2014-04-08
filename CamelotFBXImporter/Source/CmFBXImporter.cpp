@@ -53,6 +53,9 @@ namespace CamelotFramework
 		MeshPtr mesh = Mesh::_createPtr(meshData);
 		mesh->setSubMeshes(subMeshes);
 
+		WString fileName = Path::getFilename(filePath, false);
+		mesh->setName(toString(fileName));
+
 		return mesh;
 	}
 
