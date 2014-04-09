@@ -30,6 +30,7 @@ namespace BansheeEditor
 
 	const WString EditorGUI::ButtonNormalTex = L"ButtonNormal.psd";
 	const WString EditorGUI::ButtonHoverTex = L"ButtonHover.psd";
+	const WString EditorGUI::ButtonActiveTex = L"ButtonActive.psd";
 
 	const WString EditorGUI::ToggleNormalTex = L"ToggleNormal.psd";
 	const WString EditorGUI::ToggleHoverTex = L"ToggleHover.psd";
@@ -37,6 +38,12 @@ namespace BansheeEditor
 	const WString EditorGUI::ToggleNormalOnTex = L"ToggleOnNormal.psd";
 	const WString EditorGUI::ToggleHoverOnTex = L"ToggleOnHover.psd";
 	const WString EditorGUI::ToggleActiveOnTex = L"ToggleOnActive.psd";
+
+	const WString EditorGUI::ObjectDropBtnNormalTex = L"ObjectFieldDropNormal.psd";
+	const WString EditorGUI::ObjectDropBtnNormalOnTex = L"ObjectFieldDropNormalOn.psd";
+	const WString EditorGUI::ObjectClearBtnNormalTex = L"ObjectFieldBtnNormal.psd";
+	const WString EditorGUI::ObjectClearBtnHoverTex = L"ObjectFieldBtnHover.psd";
+	const WString EditorGUI::ObjectClearBtnActiveTex = L"ObjectFieldBtnActive.psd";
 
 	const WString EditorGUI::FoldoutOpenNormalTex = L"FoldoutOpenNormal.psd";
 	const WString EditorGUI::FoldoutOpenHoverTex = L"FoldoutOpenHover.psd";
@@ -180,19 +187,15 @@ namespace BansheeEditor
 		GUIElementStyle buttonStyle;
 		buttonStyle.normal.texture = getTexture(ButtonNormalTex);
 		buttonStyle.hover.texture = getTexture(ButtonHoverTex);
-		buttonStyle.active.texture = buttonStyle.hover.texture;
-		buttonStyle.border.left = 5;
-		buttonStyle.border.right = 5;
-		buttonStyle.border.top = 5;
-		buttonStyle.border.bottom = 5;
-		buttonStyle.margins.left = 4;
-		buttonStyle.margins.right = 4;
-		buttonStyle.margins.top = 4;
-		buttonStyle.margins.bottom = 4;
-		buttonStyle.contentOffset.left = 2;
-		buttonStyle.contentOffset.right = 2;
+		buttonStyle.active.texture = getTexture(ButtonActiveTex);
+		buttonStyle.border.left = 6;
+		buttonStyle.border.right = 6;
+		buttonStyle.border.top = 6;
+		buttonStyle.border.bottom = 6;
+		buttonStyle.contentOffset.left = 3;
+		buttonStyle.contentOffset.right = 3;
 		buttonStyle.fixedHeight = true;
-		buttonStyle.height = 21;
+		buttonStyle.height = 15;
 		buttonStyle.minWidth = 50;
 		buttonStyle.font = font;
 		buttonStyle.fontSize = DefaultFontSize;
@@ -786,6 +789,34 @@ namespace BansheeEditor
 		treeViewElementSepHighlight.border.bottom = 1;
 
 		mSkin.setStyle("TreeViewElementSepHighlight", treeViewElementSepHighlight);
+	
+		/************************************************************************/
+		/* 							OBJECT DROP FIELD                      		*/
+		/************************************************************************/
+		GUIElementStyle objectDropStyle;
+		objectDropStyle.normal.texture = getTexture(ObjectDropBtnNormalTex);
+		objectDropStyle.normalOn.texture = getTexture(ObjectDropBtnNormalOnTex);
+		objectDropStyle.fixedHeight = true;
+		objectDropStyle.height = 15;
+		objectDropStyle.minWidth = 50;
+		objectDropStyle.font = font;
+		objectDropStyle.fontSize = DefaultFontSize;
+		objectDropStyle.textHorzAlign = THA_Center;
+		objectDropStyle.textVertAlign = TVA_Center;
+
+		mSkin.setStyle("DropButton", objectDropStyle);
+
+		GUIElementStyle objectClearBtnStyle;
+		objectClearBtnStyle.normal.texture = getTexture(ObjectClearBtnNormalTex);
+		objectClearBtnStyle.hover.texture = getTexture(ObjectClearBtnHoverTex);
+		objectClearBtnStyle.active.texture = getTexture(ObjectClearBtnActiveTex);
+		objectClearBtnStyle.fixedHeight = true;
+		objectClearBtnStyle.fixedWidth = true;
+		objectClearBtnStyle.height = 15;
+		objectClearBtnStyle.width = 13;
+
+		mSkin.setStyle("ObjectClearButton", objectClearBtnStyle);
+
 	}
 
 	HSpriteTexture EditorGUI::getTexture(const CM::WString& name)

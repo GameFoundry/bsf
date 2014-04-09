@@ -55,6 +55,7 @@ namespace BansheeEngine
 
 		static const CM::WString ButtonNormalTex;
 		static const CM::WString ButtonHoverTex;
+		static const CM::WString ButtonActiveTex;
 
 		static const CM::WString ToggleNormalTex;
 		static const CM::WString ToggleHoverTex;

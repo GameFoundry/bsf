@@ -22,6 +22,19 @@ namespace CamelotFramework
 		return nullptr;
 	}
 
+	bool GameObjectManager::tryGetObject(UINT64 id, GameObjectHandleBase& object) const
+	{
+		auto iterFind = mObjects.find(id);
+
+		if(iterFind != mObjects.end())
+		{
+			object = iterFind->second;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool GameObjectManager::objectExists(UINT64 id) const 
 	{ 
 		return mObjects.find(id) != mObjects.end(); 

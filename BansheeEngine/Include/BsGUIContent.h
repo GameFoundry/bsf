@@ -6,6 +6,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIContent
 	{
 	public:
+		GUIContent();
 		explicit GUIContent(const CM::HString& text);
 		GUIContent(const CM::HString& text, const CM::HString& tooltip);
 

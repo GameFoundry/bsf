@@ -279,7 +279,9 @@
     <ClInclude Include="Include\BsGUIColorField.h" />
     <ClInclude Include="Include\BsGUIFloatField.h" />
     <ClInclude Include="Include\BsGUIFoldout.h" />
+    <ClInclude Include="Include\BsGUIGameObjectField.h" />
     <ClInclude Include="Include\BsGUIIntField.h" />
+    <ClInclude Include="Include\BsGUIDropButton.h" />
     <ClInclude Include="Include\BsGUITextField.h" />
     <ClInclude Include="Include\BsGUIToggleField.h" />
     <ClInclude Include="Include\BsGUIVector3Field.h" />
@@ -333,8 +335,10 @@
     <ClCompile Include="Source\BsGUIDockSlider.cpp" />
     <ClCompile Include="Source\BsGUIFloatField.cpp" />
     <ClCompile Include="Source\BsGUIFoldout.cpp" />
+    <ClCompile Include="Source\BsGUIGameObjectField.cpp" />
     <ClCompile Include="Source\BsGUIIntField.cpp" />
     <ClCompile Include="Source\BsGUIMenuBar.cpp" />
+    <ClCompile Include="Source\BsGUIDropButton.cpp" />
     <ClCompile Include="Source\BsGUIResourceTreeView.cpp" />
     <ClCompile Include="Source\BsGUISceneTreeView.cpp" />
     <ClCompile Include="Source\BsGUITabbedTitleBar.cpp" />

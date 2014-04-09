@@ -29,6 +29,7 @@ namespace BansheeEngine
 
 	const WString BuiltinResources::ButtonNormalTex = L"ButtonNormal.psd";
 	const WString BuiltinResources::ButtonHoverTex = L"ButtonHover.psd";
+	const WString BuiltinResources::ButtonActiveTex = L"ButtonActive.psd";
 
 	const WString BuiltinResources::ToggleNormalTex = L"ToggleNormal.psd";
 	const WString BuiltinResources::ToggleHoverTex = L"ToggleHover.psd";
@@ -197,19 +198,15 @@ namespace BansheeEngine
 		GUIElementStyle buttonStyle;
 		buttonStyle.normal.texture = getSkinTexture(ButtonNormalTex);
 		buttonStyle.hover.texture = getSkinTexture(ButtonHoverTex);
-		buttonStyle.active.texture = buttonStyle.hover.texture;
-		buttonStyle.border.left = 5;
-		buttonStyle.border.right = 5;
-		buttonStyle.border.top = 5;
-		buttonStyle.border.bottom = 5;
-		buttonStyle.margins.left = 4;
-		buttonStyle.margins.right = 4;
-		buttonStyle.margins.top = 4;
-		buttonStyle.margins.bottom = 4;
-		buttonStyle.contentOffset.left = 2;
-		buttonStyle.contentOffset.right = 2;
+		buttonStyle.active.texture = getSkinTexture(ButtonActiveTex);
+		buttonStyle.border.left = 6;
+		buttonStyle.border.right = 6;
+		buttonStyle.border.top = 6;
+		buttonStyle.border.bottom = 6;
+		buttonStyle.contentOffset.left = 3;
+		buttonStyle.contentOffset.right = 3;
 		buttonStyle.fixedHeight = true;
-		buttonStyle.height = 21;
+		buttonStyle.height = 15;
 		buttonStyle.minWidth = 50;
 		buttonStyle.font = font;
 		buttonStyle.fontSize = DefaultFontSize;

@@ -6,6 +6,15 @@
 
 namespace BansheeEditor
 {
+	struct DraggedSceneObjects
+	{
+		DraggedSceneObjects(CM::UINT32 numObjects);
+		~DraggedSceneObjects();
+
+		CM::UINT32 numObjects;
+		CM::HSceneObject* objects;
+	};
+
 	class GUISceneTreeView : public GUITreeView
 	{
 		struct SceneTreeElement : public GUITreeView::TreeElement
@@ -16,15 +25,6 @@ namespace BansheeEditor
 
 			CM::HSceneObject mSceneObject;
 			CM::UINT64 mId;
-		};
-
-		struct DraggedSceneObjects
-		{
-			DraggedSceneObjects(CM::UINT32 numObjects);
-			~DraggedSceneObjects();
-
-			CM::UINT32 numObjects;
-			CM::HSceneObject* objects;
 		};
 
 	public:

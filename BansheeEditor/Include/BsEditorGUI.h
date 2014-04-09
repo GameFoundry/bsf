@@ -42,6 +42,7 @@ namespace BansheeEditor
 
 		static const CM::WString ButtonNormalTex;
 		static const CM::WString ButtonHoverTex;
+		static const CM::WString ButtonActiveTex;
 
 		static const CM::WString ToggleNormalTex;
 		static const CM::WString ToggleHoverTex;
@@ -49,6 +50,12 @@ namespace BansheeEditor
 		static const CM::WString ToggleNormalOnTex;
 		static const CM::WString ToggleHoverOnTex;
 		static const CM::WString ToggleActiveOnTex;
+
+		static const CM::WString ObjectDropBtnNormalTex;
+		static const CM::WString ObjectDropBtnNormalOnTex;
+		static const CM::WString ObjectClearBtnNormalTex;
+		static const CM::WString ObjectClearBtnHoverTex;
+		static const CM::WString ObjectClearBtnActiveTex;
 
 		static const CM::WString FoldoutOpenNormalTex;
 		static const CM::WString FoldoutOpenHoverTex;

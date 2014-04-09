@@ -11,13 +11,13 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	GUISceneTreeView::DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
+	DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
 	{
 		objects = cm_newN<HSceneObject>(numObjects);
 	}
 
-	GUISceneTreeView::DraggedSceneObjects::~DraggedSceneObjects()
+	DraggedSceneObjects::~DraggedSceneObjects()
 	{
 		cm_deleteN(objects, numObjects);
 		objects = nullptr;

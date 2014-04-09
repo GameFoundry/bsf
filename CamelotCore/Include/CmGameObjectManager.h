@@ -16,6 +16,7 @@ namespace CamelotFramework
 		void unregisterObject(const GameObjectHandleBase& object);
 
 		GameObjectHandleBase getObject(UINT64 id) const;
+		bool tryGetObject(UINT64 id, GameObjectHandleBase& object) const;
 		bool objectExists(UINT64 id) const;
 
 		/************************************************************************/

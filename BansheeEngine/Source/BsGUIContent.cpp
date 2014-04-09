@@ -4,6 +4,10 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
+	GUIContent::GUIContent()
+		:mText(L"")
+	{ }
+
 	GUIContent::GUIContent(const CM::HString& text)
 		:mText(text)
 	{ }

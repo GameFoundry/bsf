@@ -14,6 +14,8 @@
 #include "BsGUIVector4Field.h"
 #include "BsGUIToggleField.h"
 #include "BsGUIColorField.h"
+#include "BsGUIGameObjectField.h"
+#include "BsGUIButton.h"
 #include "BsGUIFoldout.h"
 #include "BsGUISpace.h"
 #include "CmHString.h"
@@ -39,7 +41,10 @@ namespace BansheeEditor
 		GUIToggleField* toggleField = GUIToggleField::create(getParentWidget(), HString(L"Toggle Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIColorField* colorField = GUIColorField::create(getParentWidget(), HString(L"Color Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIFoldout* foldout = GUIFoldout::create(getParentWidget(), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIGameObjectField* gameObjectField = GUIGameObjectField::create(getParentWidget(), HString(L"Object Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		colorField->setValue(Color::Red);
+
+		GUIButton* button = GUIButton::create(getParentWidget(), HString(L"Testing"), GUIOptions(GUIOption::fixedWidth(100)));
 
 		layout.addElement(intField);
 		layout.addElement(floatField);
@@ -50,6 +55,8 @@ namespace BansheeEditor
 		layout.addElement(toggleField);
 		layout.addElement(colorField);
 		layout.addElement(foldout);
+		layout.addElement(button);
+		layout.addElement(gameObjectField);
 
 		layout.addFlexibleSpace();
 	}

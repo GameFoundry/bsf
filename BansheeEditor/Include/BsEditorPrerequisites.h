@@ -35,6 +35,7 @@ namespace BansheeEditor
 	class GUIFloatField;
 	class GUITextField;
 	class GUIColor;
+	class GUIDropButton;
 	class EditorWindowManager;
 	class DockManager;
 	class DockManagerLayout;
