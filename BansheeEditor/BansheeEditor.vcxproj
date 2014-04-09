@@ -277,6 +277,7 @@
     <ClInclude Include="Include\BsEditorWidgetManager.h" />
     <ClInclude Include="Include\BsGUIColor.h" />
     <ClInclude Include="Include\BsGUIColorField.h" />
+    <ClInclude Include="Include\BsGUIFieldBase.h" />
     <ClInclude Include="Include\BsGUIFloatField.h" />
     <ClInclude Include="Include\BsGUIFoldout.h" />
     <ClInclude Include="Include\BsGUIGameObjectField.h" />
@@ -333,6 +334,7 @@
     <ClCompile Include="Source\BsGUIColor.cpp" />
     <ClCompile Include="Source\BsGUIColorField.cpp" />
     <ClCompile Include="Source\BsGUIDockSlider.cpp" />
+    <ClCompile Include="Source\BsGUIFieldBase.cpp" />
     <ClCompile Include="Source\BsGUIFloatField.cpp" />
     <ClCompile Include="Source\BsGUIFoldout.cpp" />
     <ClCompile Include="Source\BsGUIGameObjectField.cpp" />

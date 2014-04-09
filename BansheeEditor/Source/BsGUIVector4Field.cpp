@@ -89,15 +89,10 @@ namespace BansheeEditor
 			mLabel = GUILabel::create(parent, labelContent, curLabelStyle);
 		}
 
-		mFieldX = GUIFloatField::create(parent, HString(L"X"), labelStyle, inputBoxStyle);
-		mFieldY = GUIFloatField::create(parent, HString(L"Y"), labelStyle, inputBoxStyle);
-		mFieldZ = GUIFloatField::create(parent, HString(L"Z"), labelStyle, inputBoxStyle);
-		mFieldW = GUIFloatField::create(parent, HString(L"W"), labelStyle, inputBoxStyle);
-
-		mFieldX->setLabelWidth(ELEMENT_LABEL_WIDTH);
-		mFieldY->setLabelWidth(ELEMENT_LABEL_WIDTH);
-		mFieldZ->setLabelWidth(ELEMENT_LABEL_WIDTH);
-		mFieldW->setLabelWidth(ELEMENT_LABEL_WIDTH);
+		mFieldX = GUIFloatField::create(parent, HString(L"X"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldY = GUIFloatField::create(parent, HString(L"Y"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldZ = GUIFloatField::create(parent, HString(L"Z"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldW = GUIFloatField::create(parent, HString(L"W"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
 
 		_registerChildElement(mLabel);
 		_registerChildElement(mFieldX);

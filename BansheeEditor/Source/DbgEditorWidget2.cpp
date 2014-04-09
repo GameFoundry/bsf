@@ -32,7 +32,7 @@ namespace BansheeEditor
 	{
 		GUILayout& layout = mContent->getLayout().addLayoutY();
 
-		GUIIntField* intField = GUIIntField::create(getParentWidget(), HString(L"Int Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIIntField* intField = GUIIntField::create(getParentWidget(), GUIContent(HString(L"Int Field")), 100, GUIOptions(GUIOption::fixedWidth(200)));
 		GUIFloatField* floatField = GUIFloatField::create(getParentWidget(), HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUITextField* textField = GUITextField::create(getParentWidget(), HString(L"Text Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		GUIVector4Field* vec4Field = GUIVector4Field::create(getParentWidget(), HString(L"Vec4 Field"), GUIOptions(GUIOption::fixedWidth(200)));
