@@ -22,8 +22,9 @@ Other:
 REFACTOR c++ GUI a bit:
  - Add new graphic for input boxes and add object field graphics
  - Add "padding" to GUIElementStyle and make sure GUILayout (and whatever else) uses it
- - Edit all Editor *Field classes and make sure they use GUILayout internally (where possible, probably not for Foldout which has a background element that would require 2 layers)
-
+ - GameObjectField
+   - When dragging over GameObjectField cursor needs to change depending whether drop will be accepted or not
+   - How will I limit it to just certain component types?
 
 How will I add editor fields to GUILayout? Right now I have a bunch of Add* methods and that won't work for Editor-only fields. I could extend GUILayout to EditorGUILayout but then GUIArea needs to be aware of that as well...
 
