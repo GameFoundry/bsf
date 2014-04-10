@@ -18,7 +18,6 @@
 #include "BsDragAndDropManager.h"
 #include "BsGUIContextMenu.h"
 #include "BsGUIHelper.h"
-#include "BsCursor.h"
 
 using namespace CamelotFramework;
 
@@ -36,7 +35,7 @@ namespace BansheeEngine
 	}
 
 	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
-		:GUIElement(parent, style, layoutOptions), mInputCursorSet(false), mDragInProgress(false),
+		:GUIElement(parent, style, layoutOptions), mDragInProgress(false),
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -379,6 +378,17 @@ namespace BansheeEngine
 			return _getDepth() - 1;
 	}
 
+	bool GUIInputBox::_hasCustomCursor(const CM::Vector2I position, CursorType& type) const
+	{
+		if(_isInBounds(position))
+		{
+			type = CursorType::IBeam;
+			return true;
+		}
+
+		return false;
+	}
+
 	void GUIInputBox::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
 		UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const
 	{
@@ -400,9 +410,6 @@ namespace BansheeEngine
 				markContentAsDirty();
 			}
 
-			Cursor::instance().setCursor(CursorType::IBeam);
-			mInputCursorSet = true;
-
 			mIsMouseOver = true;
 
 			return true;
@@ -415,20 +422,7 @@ namespace BansheeEngine
 				markContentAsDirty();
 			}
 
-			if(!mDragInProgress && mInputCursorSet)
-			{
-				Cursor::instance().setCursor(CursorType::Arrow);
-				mInputCursorSet = false;
-			}
-
 			mIsMouseOver = false;
-
-			return true;
-		}
-		else if(ev.getType() == GUIMouseEventType::MouseMove)
-		{
-			Cursor::instance().setCursor(CursorType::IBeam);
-			mInputCursorSet = true;
 
 			return true;
 		}
@@ -495,12 +489,6 @@ namespace BansheeEngine
 			if(!ev.isShiftDown())
 			{
 				mDragInProgress = false;
-
-				if(!mIsMouseOver && mInputCursorSet)
-				{
-					Cursor::instance().setCursor(CursorType::Arrow);
-					mInputCursorSet = false;
-				}
 
 				gGUIManager().getInputSelectionTool()->selectionDragEnd();
 
@@ -674,7 +662,7 @@ namespace BansheeEngine
 			return true;
 		}
 
-		if(ev.getType() == GUICommandEventType::CursorMoveLeft)
+		if(ev.getType() == GUICommandEventType::MoveLeft)
 		{
 			if(mSelectionShown)
 			{
@@ -707,7 +695,7 @@ namespace BansheeEngine
 			return true;
 		}
 
-		if(ev.getType() == GUICommandEventType::CursorMoveRight)
+		if(ev.getType() == GUICommandEventType::MoveRight)
 		{
 			if(mSelectionShown)
 			{
@@ -740,7 +728,7 @@ namespace BansheeEngine
 			return true;
 		}
 
-		if(ev.getType() == GUICommandEventType::CursorMoveUp)
+		if(ev.getType() == GUICommandEventType::MoveUp)
 		{
 			clearSelection();
 
@@ -764,7 +752,7 @@ namespace BansheeEngine
 			return true;
 		}
 
-		if(ev.getType() == GUICommandEventType::CursorMoveDown)
+		if(ev.getType() == GUICommandEventType::MoveDown)
 		{
 			clearSelection();
 

@@ -69,6 +69,7 @@ namespace BansheeEngine
 		virtual CM::RectI _getTextInputRect() const;
 
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
+		virtual bool _hasCustomCursor(const CM::Vector2I position, CursorType& type) const;
 
 		virtual GUIContextMenu* getContextMenu() const;
 	private:
@@ -92,7 +93,6 @@ namespace BansheeEngine
 
 		bool mCaretShown;
 		bool mSelectionShown;
-		bool mInputCursorSet;
 		bool mDragInProgress;
 
 		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;

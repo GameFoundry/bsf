@@ -236,6 +236,7 @@
     <ClInclude Include="Include\BsDragAndDropManager.h" />
     <ClInclude Include="Include\BsDrawHelper2D.h" />
     <ClInclude Include="Include\BsBuiltinResources.h" />
+    <ClInclude Include="Include\BsEnums.h" />
     <ClInclude Include="Include\BsGUIArea.h" />
     <ClInclude Include="Include\BsGUIButton.h" />
     <ClInclude Include="Include\BsGUIButtonBase.h" />

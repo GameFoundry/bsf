@@ -41,6 +41,22 @@ namespace BansheeEditor
 
 	}
 
+	bool GUIIntField::_hasCustomCursor(const CM::Vector2I position, CursorType& type) const
+	{
+		RectI draggableArea;
+
+		if(mLabel != nullptr)
+			draggableArea = mLabel->getBounds();
+
+		if(draggableArea.contains(position))
+		{
+			type = CursorType::ArrowLeftRight;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool GUIIntField::mouseEvent(const GUIMouseEvent& event)
 	{
 		GUIElementContainer::mouseEvent(event);
@@ -56,9 +72,6 @@ namespace BansheeEditor
 			{
 				mLastDragPos = event.getPosition().x;
 				mIsDragging = true;
-
-				Cursor::instance().setCursor(CursorType::ArrowLeftRight);
-				mIsDragCursorSet = true;
 			}
 
 			return true;
@@ -119,43 +132,7 @@ namespace BansheeEditor
 		{
 			mIsDragging = false;
 
-			if(mIsDragCursorSet)
-			{
-				Cursor::instance().setCursor(CursorType::Arrow);
-				mIsDragCursorSet = false;
-			}
-
 			return true;
-		}
-		else if(event.getType() == GUIMouseEventType::MouseOut)
-		{
-			if(!mIsDragging)
-			{
-				if(mIsDragCursorSet)
-				{
-					Cursor::instance().setCursor(CursorType::Arrow);
-					mIsDragCursorSet = false;
-				}
-			}
-		}
-		else if(event.getType() == GUIMouseEventType::MouseMove)
-		{
-			if(draggableArea.contains(event.getPosition()))
-			{
-				Cursor::instance().setCursor(CursorType::ArrowLeftRight);
-				mIsDragCursorSet = true;
-			}
-			else
-			{
-				if(!mIsDragging)
-				{
-					if(mIsDragCursorSet)
-					{
-						Cursor::instance().setCursor(CursorType::Arrow);
-						mIsDragCursorSet = false;
-					}
-				}
-			}
 		}
 
 		return false;

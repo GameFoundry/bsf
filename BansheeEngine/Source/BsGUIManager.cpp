@@ -32,6 +32,7 @@
 #include "CmMeshHeap.h"
 #include "CmTransientMesh.h"
 #include "BsVirtualInput.h"
+#include "BsCursor.h"
 
 using namespace CamelotFramework;
 namespace BansheeEngine
@@ -65,7 +66,8 @@ namespace BansheeEngine
 	GUIManager::GUIManager()
 		:mSeparateMeshesByWidget(true), mActiveMouseButton(GUIMouseButton::Left),
 		mCaretBlinkInterval(0.5f), mCaretLastBlinkTime(0.0f), mCaretColor(1.0f, 0.6588f, 0.0f), mIsCaretOn(false),
-		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDragState(DragState::NoDrag)
+		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDragState(DragState::NoDrag),
+		mActiveCursor(CursorType::Arrow)
 	{
 		mOnCursorMovedConn = gInput().onCursorMoved.connect(boost::bind(&GUIManager::onCursorMoved, this, _1));
 		mOnCursorPressedConn = gInput().onCursorPressed.connect(boost::bind(&GUIManager::onCursorPressed, this, _1));
@@ -705,17 +707,50 @@ namespace BansheeEngine
 		{
 			if(mLastCursorScreenPos != event.screenPos)
 			{
+				bool moveProcessed = false;
+				bool hasCustomCursor = false;
 				for(auto& elementInfo : mElementsUnderCursor)
 				{
-					// Send MouseMove event
 					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
-					mMouseEvent.setMouseMoveData(localPos);
-					bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
 
-					if(processed)
+					if(!moveProcessed)
 					{
-						event.markAsUsed();
+						// Send MouseMove event
+						mMouseEvent.setMouseMoveData(localPos);
+						moveProcessed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+
+						if(moveProcessed)
+						{
+							event.markAsUsed();
+							break;
+						}
+					}
+
+					if(!hasCustomCursor)
+					{
+						CursorType newCursor = CursorType::Arrow;
+						if(elementInfo.element->_hasCustomCursor(localPos, newCursor))
+						{
+							if(newCursor != mActiveCursor)
+							{
+								Cursor::instance().setCursor(newCursor);
+								mActiveCursor = newCursor;
+							}
+
+							hasCustomCursor = true;
+						}
+					}
+
+					if(moveProcessed && hasCustomCursor)
 						break;
+				}
+
+				if(!hasCustomCursor)
+				{
+					if(mActiveCursor != CursorType::Arrow)
+					{
+						Cursor::instance().setCursor(CursorType::Arrow);
+						mActiveCursor = CursorType::Arrow;
 					}
 				}
 			}
@@ -802,6 +837,12 @@ namespace BansheeEngine
 		{
 			mActiveElements.clear();
 			mActiveMouseButton = GUIMouseButton::Left;
+		}
+
+		if(mActiveCursor != CursorType::Arrow)
+		{
+			Cursor::instance().setCursor(CursorType::Arrow);
+			mActiveCursor = CursorType::Arrow;
 		}
 	}
 
@@ -964,16 +1005,16 @@ namespace BansheeEngine
 			mCommandEvent.setType(GUICommandEventType::Escape);
 			break;
 		case InputCommandType::CursorMoveLeft:
-			mCommandEvent.setType(GUICommandEventType::CursorMoveLeft);
+			mCommandEvent.setType(GUICommandEventType::MoveLeft);
 			break;
 		case InputCommandType::CursorMoveRight:
-			mCommandEvent.setType(GUICommandEventType::CursorMoveRight);
+			mCommandEvent.setType(GUICommandEventType::MoveRight);
 			break;
 		case InputCommandType::CursorMoveUp:
-			mCommandEvent.setType(GUICommandEventType::CursorMoveUp);
+			mCommandEvent.setType(GUICommandEventType::MoveUp);
 			break;
 		case InputCommandType::CursorMoveDown:
-			mCommandEvent.setType(GUICommandEventType::CursorMoveDown);
+			mCommandEvent.setType(GUICommandEventType::MoveDown);
 			break;
 		case InputCommandType::SelectLeft:
 			mCommandEvent.setType(GUICommandEventType::SelectLeft);

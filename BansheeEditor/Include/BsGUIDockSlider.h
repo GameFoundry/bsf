@@ -19,10 +19,10 @@ namespace BansheeEditor
 	protected:
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 
+		bool _hasCustomCursor(const CM::Vector2I position, BS::CursorType& type) const;
 	private:
 		CM::Vector2I mLastDragPosition;
 		bool mHorizontal;
-		bool mIsMouseOver;
 		bool mIsCursorSet;
 		bool mDragInProgress;
 

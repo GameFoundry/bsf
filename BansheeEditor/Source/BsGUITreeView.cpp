@@ -378,7 +378,7 @@ namespace BansheeEditor
 
 	bool GUITreeView::commandEvent(const GUICommandEvent& ev)
 	{
-		if(ev.getType() == GUICommandEventType::CursorMoveUp || ev.getType() == GUICommandEventType::SelectUp)
+		if(ev.getType() == GUICommandEventType::MoveUp || ev.getType() == GUICommandEventType::SelectUp)
 		{
 			TreeElement* topMostElement = getTopMostSelectedElement();
 			auto topMostIter = std::find_if(mVisibleElements.begin(), mVisibleElements.end(), 
@@ -393,7 +393,7 @@ namespace BansheeEditor
 
 				if(topMostIter->isTreeElement())
 				{
-					if(ev.getType() == GUICommandEventType::CursorMoveUp)
+					if(ev.getType() == GUICommandEventType::MoveUp)
 						unselectAll();
 
 					TreeElement* treeElement = topMostIter->getTreeElement();
@@ -402,7 +402,7 @@ namespace BansheeEditor
 				}
 			}
 		}
-		else if(ev.getType() == GUICommandEventType::CursorMoveDown || ev.getType() == GUICommandEventType::SelectDown)
+		else if(ev.getType() == GUICommandEventType::MoveDown || ev.getType() == GUICommandEventType::SelectDown)
 		{
 			TreeElement* bottoMostElement = getBottomMostSelectedElement();
 			auto bottomMostIter = std::find_if(mVisibleElements.begin(), mVisibleElements.end(), 
@@ -417,7 +417,7 @@ namespace BansheeEditor
 
 				if(bottomMostIter != mVisibleElements.end() && bottomMostIter->isTreeElement())
 				{
-					if(ev.getType() == GUICommandEventType::CursorMoveDown)
+					if(ev.getType() == GUICommandEventType::MoveDown)
 						unselectAll();
 
 					TreeElement* treeElement = bottomMostIter->getTreeElement();

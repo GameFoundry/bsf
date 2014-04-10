@@ -7,23 +7,6 @@
 
 namespace BansheeEngine
 {
-	enum class CursorType
-	{
-		Arrow,
-		ArrowDrag,
-		ArrowLeftRight,
-		Wait,
-		IBeam,
-		SizeNESW,
-		SizeNS,
-		SizeNWSE,
-		SizeWE,
-		Deny,
-
-		// Keep at the end
-		Count
-	};
-
 	/**
 	 * @brief	Allows you to manipulate the platform cursor in various ways.
 	 * 			

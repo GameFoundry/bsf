@@ -162,6 +162,7 @@ namespace BansheeEngine
 		float mCaretBlinkInterval;
 		float mCaretLastBlinkTime;
 		bool mIsCaretOn;
+		CursorType mActiveCursor;
 
 		HSpriteTexture mTextSelectionTexture;
 		CM::Color mTextSelectionColor;

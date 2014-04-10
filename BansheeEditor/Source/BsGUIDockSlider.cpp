@@ -20,7 +20,7 @@ namespace BansheeEditor
 
 	GUIDockSlider::GUIDockSlider(BS::GUIWidget& parent, bool horizontal, const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions)
 		:GUIButtonBase(parent, style, GUIContent(HString(L"")), layoutOptions),
-		mIsMouseOver(false), mDragInProgress(false), mHorizontal(horizontal), mIsCursorSet(false)
+		mDragInProgress(false), mHorizontal(horizontal), mIsCursorSet(false)
 	{
 
 	}
@@ -47,35 +47,22 @@ namespace BansheeEditor
 		return new (cm_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(parent, horizontal, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
+	bool GUIDockSlider::_hasCustomCursor(const CM::Vector2I position, CursorType& type) const
+	{
+		if(_isInBounds(position))
+		{
+			type = mHorizontal ? CursorType::SizeNS : CursorType::SizeWE;
+			return true;
+		}
+
+		return false;
+	}
+
 	bool GUIDockSlider::mouseEvent(const GUIMouseEvent& ev)
 	{	
 		bool processed = GUIButtonBase::mouseEvent(ev);
 
-		if(ev.getType() == GUIMouseEventType::MouseOver)
-		{
-			mIsMouseOver = true;
-
-			if(!mIsCursorSet)
-			{
-				Cursor::instance().setCursor(mHorizontal ? CursorType::SizeNS : CursorType::SizeWE);
-				mIsCursorSet = true;
-			}
-
-			return true;
-		}
-		else if(ev.getType() == GUIMouseEventType::MouseOut)
-		{
-			mIsMouseOver = false;
-
-			if(!mDragInProgress && mIsCursorSet)
-			{
-				Cursor::instance().setCursor(CursorType::Arrow);
-				mIsCursorSet = false;
-			}
-
-			return true;
-		}
-		else if(ev.getType() == GUIMouseEventType::MouseDragStart)
+		if(ev.getType() == GUIMouseEventType::MouseDragStart)
 		{
 			mLastDragPosition = ev.getPosition();
 			mDragInProgress = true;
@@ -95,12 +82,6 @@ namespace BansheeEditor
 		else if(ev.getType() == GUIMouseEventType::MouseDragEnd)
 		{
 			mDragInProgress = false;
-
-			if(mIsCursorSet && !mIsMouseOver)
-			{
-				Cursor::instance().setCursor(CursorType::Arrow);
-				mIsCursorSet = false;
-			}
 
 			return true;
 		}

@@ -27,8 +27,8 @@ namespace BansheeEditor
 		BS::GUIInputBox* mInputBox;
 		CM::INT32 mLastDragPos;
 		bool mIsDragging;
-		bool mIsDragCursorSet;
 
+		bool _hasCustomCursor(const CM::Vector2I position, BS::CursorType& type) const;
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 
 		static bool floatFilter(const CM::WString& str);

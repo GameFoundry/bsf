@@ -19,6 +19,7 @@
 #endif
 
 #include "CmGameObject.h"
+#include "BsEnums.h"
 
 // To avoid a lot of typing
 namespace CM = CamelotFramework;
