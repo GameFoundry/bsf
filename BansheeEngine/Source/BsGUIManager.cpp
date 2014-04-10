@@ -627,11 +627,20 @@ namespace BansheeEngine
 				if(elementInfo.widget != nullptr)
 					localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
 
-				mMouseEvent.setDragAndDropDroppedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-				bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+				bool acceptDrop = true;
+				if(DragAndDropManager::instance().needsValidDropTarget())
+				{
+					acceptDrop = elementInfo.element->_acceptDragAndDrop(localPos, DragAndDropManager::instance().getDragTypeId());
+				}
 
-				if(processed)
-					return true;
+				if(acceptDrop)
+				{
+					mMouseEvent.setDragAndDropDroppedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+					bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+
+					if(processed)
+						return true;
+				}
 			}
 		}
 
@@ -690,17 +699,44 @@ namespace BansheeEngine
 			// Also if drag is in progress send DragAndDrop events
 			if(DragAndDropManager::instance().isDragInProgress())
 			{
+				bool acceptDrop = true;
 				for(auto& elementInfo : mElementsUnderCursor)
 				{
 					Vector2I localPos = getWidgetRelativePos(*elementInfo.widget, event.screenPos);
 
-					mMouseEvent.setDragAndDropDraggedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					if(sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+					acceptDrop = true;
+					if(DragAndDropManager::instance().needsValidDropTarget())
 					{
-						event.markAsUsed();
-						break;
+						acceptDrop = elementInfo.element->_acceptDragAndDrop(localPos, DragAndDropManager::instance().getDragTypeId());
+					}
+
+					if(acceptDrop)
+					{
+						mMouseEvent.setDragAndDropDraggedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
+						if(sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent))
+						{
+							event.markAsUsed();
+							break;
+						}
 					}
 				}
+
+				if(acceptDrop)
+				{
+					if(mActiveCursor != CursorType::ArrowDrag)
+					{
+						Cursor::instance().setCursor(CursorType::ArrowDrag);
+						mActiveCursor = CursorType::ArrowDrag;
+					}
+				}
+				else
+				{
+					if(mActiveCursor != CursorType::Deny)
+					{
+						Cursor::instance().setCursor(CursorType::Deny);
+						mActiveCursor = CursorType::Deny;
+					}
+				}				
 			}
 		}
 		else // Otherwise, send MouseMove events if we are hovering over any element

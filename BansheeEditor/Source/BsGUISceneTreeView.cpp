@@ -225,8 +225,8 @@ namespace BansheeEditor
 			cnt++;
 		}
 
-		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::SceneObject, (void*)draggedSceneObjects, 
-			boost::bind(&GUISceneTreeView::dragAndDropFinalize, this));
+		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::SceneObject, (void*)draggedSceneObjects, 
+			boost::bind(&GUISceneTreeView::dragAndDropFinalize, this), true);
 	}
 
 	void GUISceneTreeView::dragAndDropEnded(TreeElement* overTreeElement)
@@ -256,6 +256,11 @@ namespace BansheeEditor
 
 		DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
 		cm_delete(draggedSceneObjects);
+	}
+
+	bool GUISceneTreeView::_acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const
+	{
+		return typeId == (UINT32)DragAndDropType::SceneObject;
 	}
 
 	const String& GUISceneTreeView::getGUITypeName()

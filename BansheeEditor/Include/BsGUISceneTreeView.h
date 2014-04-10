@@ -64,6 +64,7 @@ namespace BansheeEditor
 		virtual void dragAndDropStart();
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
+		virtual bool _acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const;
 
 		void deleteTreeElementInternal(TreeElement* element);
 	};

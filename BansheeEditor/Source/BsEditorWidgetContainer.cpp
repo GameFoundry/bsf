@@ -199,9 +199,8 @@ namespace BansheeEditor
 		EditorWidgetBase* widget = mWidgets[uniqueIdx];
 		removeInternal(*widget);
 
-		// TODO - Hook up drag and drop texture
-		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::EditorWidget, (void*)widget, 
-			boost::bind(&EditorWidgetContainer::tabDroppedCallback, _1));
+		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::EditorWidget, (void*)widget, 
+			boost::bind(&EditorWidgetContainer::tabDroppedCallback, _1), false);
 
 		if(!onWidgetClosed.empty())
 			onWidgetClosed();

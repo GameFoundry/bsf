@@ -7,7 +7,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	DragAndDropManager::DragAndDropManager()
-		:mIsDragInProgress(false), mDragTypeId(0), mData(nullptr), mCaptureChanged(false), mCaptureActive(0)
+		:mIsDragInProgress(false), mDragTypeId(0), mData(nullptr), mCaptureChanged(false), mCaptureActive(0), mNeedsValidDropTarget(false)
 	{
 		Platform::onMouseCaptureChanged.connect(boost::bind(&DragAndDropManager::mouseCaptureChanged, this));
 		Input::instance().onCursorReleased.connect(boost::bind(&DragAndDropManager::cursorReleased, this, _1));
@@ -18,11 +18,11 @@ namespace BansheeEngine
 		mDropCallbacks.push_back(dropCallback);
 	}
 
-	void DragAndDropManager::startDrag(CM::HTexture icon, CM::UINT32 typeId, void* data, std::function<void(bool)> dropCallback)
+	void DragAndDropManager::startDrag(CM::UINT32 typeId, void* data, std::function<void(bool)> dropCallback, bool needsValidDropTarget)
 	{
-		mIcon = icon;
 		mDragTypeId = typeId;
 		mData = data;
+		mNeedsValidDropTarget = needsValidDropTarget;
 		addDropCallback(dropCallback);
 		mIsDragInProgress = true;
 

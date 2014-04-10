@@ -76,6 +76,7 @@ namespace BansheeEditor
 		virtual void dragAndDropStart();
 		virtual void dragAndDropEnded(TreeElement* overTreeElement);
 		virtual void dragAndDropFinalize();
+		virtual bool _acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const;
 
 		void updateFromProjectLibraryEntry(ResourceTreeElement* treeElement, const ProjectLibrary::LibraryEntry* libraryEntry);
 		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const CM::WString& fullPath);

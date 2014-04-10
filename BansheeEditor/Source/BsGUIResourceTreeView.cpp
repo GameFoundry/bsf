@@ -412,8 +412,8 @@ namespace BansheeEditor
 
 		mDraggedResources = internalDraggedResources;
 
-		DragAndDropManager::instance().startDrag(HTexture(), (UINT32)DragAndDropType::Resources, (void*)draggedResources, 
-			boost::bind(&GUIResourceTreeView::dragAndDropFinalize, this));
+		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::Resources, (void*)draggedResources, 
+			boost::bind(&GUIResourceTreeView::dragAndDropFinalize, this), true);
 	}
 
 	void GUIResourceTreeView::dragAndDropEnded(TreeElement* overTreeElement)
@@ -466,6 +466,11 @@ namespace BansheeEditor
 		}
 		else
 			clearDropTarget();
+	}
+
+	bool GUIResourceTreeView::_acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const
+	{
+		return typeId == (UINT32)DragAndDropType::Resources;
 	}
 
 	const String& GUIResourceTreeView::getGUITypeName()

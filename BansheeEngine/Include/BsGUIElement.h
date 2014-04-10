@@ -132,6 +132,7 @@ namespace BansheeEngine
 		GUIWidget& _getParentWidget() const { return *mParent; }
 		virtual bool _isInBounds(const CM::Vector2I position) const;
 		virtual bool _hasCustomCursor(const CM::Vector2I position, CursorType& type) const { return false; }
+		virtual bool _acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const { return false; }
 
 		virtual GUIContextMenu* getContextMenu() const { return nullptr; }
 
