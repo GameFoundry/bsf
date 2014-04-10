@@ -152,4 +152,11 @@ namespace BansheeEngine
 
 		return *entry;
 	}
+
+	const RectOffset& GUILayout::_getPadding() const
+	{
+		static RectOffset padding;
+
+		return padding;
+	}
 }

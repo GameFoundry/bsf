@@ -287,6 +287,7 @@
     <ClInclude Include="Include\BsGUIWidget.h" />
     <ClInclude Include="Include\BsImageSprite.h" />
     <ClInclude Include="Include\BsProfilerOverlay.h" />
+    <ClInclude Include="Include\BsRectOffset.h" />
     <ClInclude Include="Include\BsSceneManager.h" />
     <ClInclude Include="Include\BsGUIScrollArea.h" />
     <ClInclude Include="Include\BsScriptManager.h" />

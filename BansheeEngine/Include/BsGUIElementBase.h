@@ -5,6 +5,7 @@
 #include "BsGUILayoutOptions.h"
 #include "CmRectI.h"
 #include "CmVector2I.h"
+#include "BsRectOffset.h"
 
 namespace BansheeEngine
 {
@@ -49,6 +50,7 @@ namespace BansheeEngine
 		void _setParent(GUIElementBase* parent) { mParentElement = parent; }
 
 		virtual CM::Vector2I _getOptimalSize() const = 0;
+		virtual const RectOffset& _getPadding() const = 0;
 		virtual Type _getType() const = 0;
 		GUIElementBase* _getParent() const { return mParentElement; }
 

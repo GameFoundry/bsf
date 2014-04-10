@@ -73,11 +73,14 @@ namespace BansheeEngine
 				optimalHeight = child->_getOptimalSize().y;
 			}
 
+			UINT32 paddingX = child->_getPadding().left + child->_getPadding().right;
+			UINT32 paddingY = child->_getPadding().top + child->_getPadding().bottom;
+
 			mOptimalSizes[childIdx].x = optimalWidth;
-			mOptimalWidth += optimalWidth;
+			mOptimalWidth += optimalWidth + paddingX;
 
 			mOptimalSizes[childIdx].y = optimalHeight;
-			mOptimalHeight = std::max(mOptimalHeight, optimalHeight);
+			mOptimalHeight = std::max(mOptimalHeight, optimalHeight + paddingY);
 
 			childIdx++;
 		}
@@ -345,6 +348,7 @@ namespace BansheeEngine
 		for(auto& child : mChildren)
 		{
 			UINT32 elemWidth = elementSizes[childIdx];
+			xOffset += child->_getPadding().left;
 
 			if(child->_getType() == GUIElementBase::Type::Element)
 			{
@@ -365,7 +369,8 @@ namespace BansheeEngine
 
 				element->_setHeight(elemHeight);
 
-				INT32 yOffset = Math::ceilToInt(((INT32)height - (INT32)element->_getHeight()) * 0.5f);
+				UINT32 yPadding = element->_getPadding().top + element->_getPadding().bottom;
+				INT32 yOffset = Math::ceilToInt(((INT32)height - (INT32)(element->_getHeight() + yPadding)) * 0.5f);
 				yOffset = std::max(0, yOffset);
 
 				Vector2I offset(x + xOffset, y + yOffset);
@@ -397,8 +402,8 @@ namespace BansheeEngine
 				elemWidth = layout->_getActualWidth();
 			}
 
-			mActualWidth += elemWidth;
-			xOffset += elemWidth;
+			mActualWidth += elemWidth + child->_getPadding().left + child->_getPadding().right;
+			xOffset += elemWidth + child->_getPadding().right;
 			childIdx++;
 		}
 

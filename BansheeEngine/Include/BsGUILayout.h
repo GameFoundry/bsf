@@ -34,6 +34,7 @@ namespace BansheeEngine
 		void removeChildAt(CM::UINT32 idx);
 
 		CM::Vector2I _getOptimalSize() const { return CM::Vector2I(mOptimalWidth, mOptimalHeight); }
+		const RectOffset& _getPadding() const;
 		Type _getType() const { return GUIElementBase::Type::Layout; }
 
 		/**

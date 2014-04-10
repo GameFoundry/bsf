@@ -137,6 +137,18 @@ namespace BansheeEngine
 		GUIElementBase::_changeParentWidget(widget);
 	}
 
+	const RectOffset& GUIElement::_getPadding() const
+	{
+		if(mStyle != nullptr)
+			return mStyle->padding;
+		else
+		{
+			static RectOffset padding;
+
+			return padding;
+		}
+	}
+
 	RectI GUIElement::getBounds() const
 	{
 		return RectI(mOffset.x, mOffset.y, mWidth, mHeight);

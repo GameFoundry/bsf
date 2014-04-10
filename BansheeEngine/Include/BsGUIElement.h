@@ -128,6 +128,7 @@ namespace BansheeEngine
 
 		const CM::RectI& _getClippedBounds() const { return mClippedBounds; }
 		const CM::RectI& _getClipRect() const { return mClipRect; }
+		const RectOffset& _getPadding() const;
 		CM::UINT32 _getDepth() const { return mDepth; }
 		GUIWidget& _getParentWidget() const { return *mParent; }
 		virtual bool _isInBounds(const CM::Vector2I position) const;
