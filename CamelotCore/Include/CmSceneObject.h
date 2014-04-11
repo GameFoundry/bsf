@@ -9,8 +9,6 @@
 #include "CmGameObjectManager.h"
 #include "CmGameObject.h"
 
-#include "boost/static_assert.hpp"
-
 namespace CamelotFramework
 {
 	class CM_EXPORT SceneObject : public GameObject
@@ -218,7 +216,7 @@ namespace CamelotFramework
 		template <typename T>
 		GameObjectHandle<T> addComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
+			static_assert((std::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
 
 			std::shared_ptr<T> gameObject(new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
 
@@ -235,7 +233,7 @@ namespace CamelotFramework
 		template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>					\
 		GameObjectHandle<Type> addComponent(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) )	\
 		{																				\
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, Type>::value),  \
+			static_assert((std::is_base_of<CamelotFramework::Component, Type>::value),  \
 				"Specified type is not a valid Component.");										\
 																									\
 			std::shared_ptr<Type> gameObject(new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle,	\
@@ -274,7 +272,7 @@ namespace CamelotFramework
 		template <typename T>
 		GameObjectHandle<T> getComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), 
+			static_assert((std::is_base_of<CamelotFramework::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
 			return static_object_cast<T>(getComponent(T::getRTTIStatic()->getRTTIId()));
@@ -292,7 +290,7 @@ namespace CamelotFramework
 		template <typename T>
 		bool hasComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), 
+			static_assert((std::is_base_of<CamelotFramework::Component, T>::value), 
 				"Specified type is not a valid Component.");
 
 			return hasComponent(T::getRTTIStatic()->getRTTIId());
@@ -334,7 +332,7 @@ namespace CamelotFramework
 		template <typename T>
 		static std::shared_ptr<T> createEmptyComponent()
 		{
-			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
+			static_assert((std::is_base_of<CamelotFramework::Component, T>::value), "Specified type is not a valid Component.");
 
 			std::shared_ptr<T> gameObject(new (cm_alloc<T, PoolAlloc>()) T(), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
 			GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));

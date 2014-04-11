@@ -2,7 +2,6 @@
 
 #include "CmPrerequisites.h"
 #include "CmAsyncOp.h"
-#include <boost/function.hpp>
 #include <boost/preprocessor.hpp>
 
 namespace CamelotFramework

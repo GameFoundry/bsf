@@ -2,9 +2,7 @@
 
 #include <string>
 
-#include <boost/function.hpp>
 #include <boost/any.hpp>
-#include <boost/static_assert.hpp>
 #include <type_traits>
 
 #include "CmPrerequisitesUtil.h"

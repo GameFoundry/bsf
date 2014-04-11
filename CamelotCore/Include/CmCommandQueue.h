@@ -3,7 +3,6 @@
 #include "CmPrerequisites.h"
 #include "CmAsyncOp.h"
 #include "CmCommonEnums.h"
-#include "boost/function.hpp"
 #include <functional>
 
 namespace CamelotFramework

@@ -49,7 +49,6 @@ THE SOFTWARE.
 #include "CmPlane.h"
 #include "CmModule.h"
 
-#include "boost/function.hpp"
 #include "boost/signal.hpp"
 
 namespace CamelotFramework

@@ -102,7 +102,7 @@ namespace CamelotFramework
 		{
 			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
 
-			BOOST_STATIC_ASSERT_MSG((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+			static_assert((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
 				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
 				" RTTIPlainType, set hasDynamicSize to true.");
 
@@ -129,7 +129,7 @@ namespace CamelotFramework
 		{
 			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
 
-			BOOST_STATIC_ASSERT_MSG((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
+			static_assert((RTTIPlainType<DataType>::hasDynamicSize != 0 || (sizeof(DataType) <= 255)), 
 				"Trying to create a plain RTTI field with size larger than 255. In order to use larger sizes for plain types please specialize " \
 				" RTTIPlainType, set hasDynamicSize to true.");
 

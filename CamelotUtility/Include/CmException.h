@@ -2,9 +2,6 @@
 
 #include "CmPrerequisitesUtil.h"
 
-#include <boost/static_assert.hpp>
-#include <boost/type_traits.hpp>
-
 #if defined(_MSC_VER)
 #undef __PRETTY_FUNCTION__
 #define __PRETTY_FUNCTION__ __FUNCSIG__
@@ -133,7 +130,7 @@ namespace CamelotFramework
 #ifndef CM_EXCEPT
 #define CM_EXCEPT(type, desc)	\
 	{                           \
-	BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotFramework::Exception."); \
+	static_assert((std::is_base_of<CamelotFramework::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotFramework::Exception."); \
 	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif

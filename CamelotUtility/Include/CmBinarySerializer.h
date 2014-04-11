@@ -1,7 +1,6 @@
 #pragma once
 
 #include <unordered_map>
-#include <boost/function.hpp>
 
 #include "CmPrerequisitesUtil.h"
 #include "CmRTTIField.h"
