@@ -382,7 +382,7 @@ namespace CamelotFramework
 
 		if(mPimpl->mWorkerThread == nullptr)
 		{
-			CM_THREAD_CREATE(t, (boost::bind(&FolderMonitor::workerThreadMain, this)));
+			CM_THREAD_CREATE(t, (std::bind(&FolderMonitor::workerThreadMain, this)));
 			mPimpl->mWorkerThread = t;
 
 			if(mPimpl->mWorkerThread == nullptr)

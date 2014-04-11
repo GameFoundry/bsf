@@ -24,7 +24,7 @@ namespace CamelotFramework
 		if(stringData->commonData != mStringData->commonData)
 		{
 			mUpdateConn.disconnect();
-			mUpdateConn = stringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, this));
+			mUpdateConn = stringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, this));
 		}
 
 		mStringData = stringData;
@@ -42,7 +42,7 @@ namespace CamelotFramework
 		if(mData->mStringData->numParameters > 0)
 			mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
 
-		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, mData.get()));
+		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
 	}
 
 	HString::HString(const WString& identifierString)
@@ -54,7 +54,7 @@ namespace CamelotFramework
 		if(mData->mStringData->numParameters > 0)
 			mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
 
-		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(boost::bind(&HString::StringData::updateString, mData.get()));
+		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
 	}
 
 	HString::HString(const HString& copy)
@@ -100,7 +100,7 @@ namespace CamelotFramework
 		mData->onStringModified();
 	}
 
-	boost::signals::connection HString::addOnStringModifiedCallback(boost::function<void()> callback) const
+	boost::signals::connection HString::addOnStringModifiedCallback(std::function<void()> callback) const
 	{
 		return mData->onStringModified.connect(callback);
 	}

@@ -69,7 +69,7 @@ namespace CamelotFramework
 			checkIsArray(false);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			boost::function<DataType&(ObjectType*)> f = boost::any_cast<boost::function<DataType&(ObjectType*)>>(valueGetter);
+			std::function<DataType&(ObjectType*)> f = boost::any_cast<std::function<DataType&(ObjectType*)>>(valueGetter);
 			IReflectable& castDataType = f(castObjType);
 
 			return castDataType;
@@ -80,7 +80,7 @@ namespace CamelotFramework
 			checkIsArray(true);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			boost::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
+			std::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<std::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
 
 			IReflectable& castDataType = f(castObjType, index);
 			return castDataType;
@@ -98,7 +98,7 @@ namespace CamelotFramework
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
 			DataType& castDataObj = static_cast<DataType&>(value);
-			boost::function<void(ObjectType*, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, DataType&)>>(valueSetter);
+			std::function<void(ObjectType*, DataType&)> f = boost::any_cast<std::function<void(ObjectType*, DataType&)>>(valueSetter);
 			f(castObjType, castDataObj);
 		}
 
@@ -114,7 +114,7 @@ namespace CamelotFramework
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
 			DataType& castDataObj = static_cast<DataType&>(value);
-			boost::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
+			std::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<std::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
 			f(castObjType, index, castDataObj);
 		}
 
@@ -122,7 +122,7 @@ namespace CamelotFramework
 		{
 			checkIsArray(true);
 
-			boost::function<UINT32(ObjectType*)> f = boost::any_cast<boost::function<UINT32(ObjectType*)>>(arraySizeGetter);
+			std::function<UINT32(ObjectType*)> f = boost::any_cast<std::function<UINT32(ObjectType*)>>(arraySizeGetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			return f(castObject);
 		}
@@ -137,7 +137,7 @@ namespace CamelotFramework
 					"Specified field (" + mName + ") has no array size setter.");
 			}
 
-			boost::function<void(ObjectType*, UINT32)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
+			std::function<void(ObjectType*, UINT32)> f = boost::any_cast<std::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			f(castObject, size);
 		}

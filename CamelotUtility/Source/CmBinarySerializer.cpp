@@ -43,7 +43,7 @@ namespace CamelotFramework
 	{
 	}
 
-	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, int* bytesWritten, boost::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+	void BinarySerializer::encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, int* bytesWritten, std::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
 	{
 		mObjectsToEncode.clear();
 		mObjectAddrToId.clear();
@@ -167,7 +167,7 @@ namespace CamelotFramework
 	}
 
 	UINT8* BinarySerializer::encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, 
-		int* bytesWritten, boost::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+		int* bytesWritten, std::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
 	{
 		static const UINT32 META_SIZE = 4; // Meta field size
 		static const UINT32 NUM_ELEM_FIELD_SIZE = 4; // Size of the field storing number of array elements
@@ -1024,7 +1024,7 @@ exit:
 	}
 
 	UINT8* BinarySerializer::complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, 
-		int* bytesWritten, boost::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
+		int* bytesWritten, std::function<UINT8*(UINT8*, int, UINT32&)> flushBufferCallback)
 	{
 		static const UINT32 COMPLEX_TYPE_FIELD_SIZE = 4; // Size of the field storing the size of a child complex type
 

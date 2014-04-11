@@ -15,6 +15,7 @@
 #include "BsScriptHString.h"
 
 using namespace CamelotFramework;
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {

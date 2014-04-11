@@ -41,7 +41,8 @@ namespace CamelotFramework
 			// We want the data right away so queue directly to main core thread queue and block until we get it
 			pixelData->lock();
 			gCoreThread().queueReturnCommand(
-				boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), sharedTexPtr, subresourceIdx, std::static_pointer_cast<GpuResourceData>(pixelData), _1), true);
+				std::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), sharedTexPtr, subresourceIdx, 
+				std::static_pointer_cast<GpuResourceData>(pixelData), std::placeholders::_1), true);
 
 			return pixelData;
 		}
@@ -115,7 +116,8 @@ namespace CamelotFramework
 				GpuResourcePtr sharedTexPtr = std::static_pointer_cast<GpuResource>(texture->getThisPtr());
 
 				pixelData->at(i)->lock();
-				gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), sharedTexPtr, subresourceIdx, pixelData->at(i), false, _1));
+				gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), 
+					sharedTexPtr, subresourceIdx, pixelData->at(i), false, std::placeholders::_1));
 			}
 
 			cm_delete<PoolAlloc>(pixelData);

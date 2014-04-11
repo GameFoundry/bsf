@@ -23,7 +23,7 @@ namespace CamelotFramework
 		if(target != nullptr)
 		{
 			// Note: RenderTarget resize will only get triggered for RenderWindows, RenderTextures are immutable
-			mTargetResizedConn = target->onResized.connect(boost::bind(&Viewport::targetResized, this));
+			mTargetResizedConn = target->onResized.connect(std::bind(&Viewport::targetResized, this));
 		}
 
         updateArea();

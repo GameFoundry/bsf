@@ -43,9 +43,9 @@ THE SOFTWARE.
 #include "CmGpuResource.h"
 #include "CmCoreThread.h"
 #include "CmMesh.h"
-#include "boost/bind.hpp"
-
 #include "CmProfiler.h"
+
+using namespace std::placeholders;
 
 namespace CamelotFramework {
 
@@ -74,7 +74,7 @@ namespace CamelotFramework {
 	{
 		mPrimaryWindowDesc = primaryWindowDesc;
 
-		AsyncOp op = gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::initialize_internal, this, _1), true);
+		AsyncOp op = gCoreThread().queueReturnCommand(std::bind(&RenderSystem::initialize_internal, this, _1), true);
 
 		return op.getReturnValue<RenderWindowPtr>();
 	}
@@ -90,7 +90,7 @@ namespace CamelotFramework {
 
 	void RenderSystem::destroy()
 	{
-		gCoreAccessor().queueCommand(boost::bind(&RenderSystem::destroy_internal, this));
+		gCoreAccessor().queueCommand(std::bind(&RenderSystem::destroy_internal, this));
 		gCoreThread().submitAccessors(true);
 	}
 

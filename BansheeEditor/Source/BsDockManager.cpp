@@ -28,6 +28,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {
@@ -138,7 +139,7 @@ namespace BansheeEditor
 		mIsLeaf = true;
 		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow, nullptr);
 
-		mWidgets->onWidgetClosed.connect(boost::bind(&DockManager::DockContainer::widgetRemoved, this));
+		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
 
 		if(mSlider != nullptr)
 		{
@@ -155,7 +156,7 @@ namespace BansheeEditor
 		mIsLeaf = true;
 		mWidgets = existingContainer;
 
-		mWidgets->onWidgetClosed.connect(boost::bind(&DockManager::DockContainer::widgetRemoved, this));
+		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
 
 		if(mSlider != nullptr)
 		{
@@ -228,7 +229,7 @@ namespace BansheeEditor
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 		}
 
-		mSlider->onDragged.connect(boost::bind(&DockManager::DockContainer::sliderDragged, this, _1));
+		mSlider->onDragged.connect(std::bind(&DockManager::DockContainer::sliderDragged, this, _1));
 
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);
 	}
@@ -365,7 +366,7 @@ namespace BansheeEditor
 
 		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
 
-		RendererManager::instance().getActive()->addRenderCallback(mParent->getTarget(), boost::bind(&DockManager::render, this, _1, _2));
+		RendererManager::instance().getActive()->addRenderCallback(mParent->getTarget(), std::bind(&DockManager::render, this, _1, _2));
 	}
 
 	DockManager::~DockManager()

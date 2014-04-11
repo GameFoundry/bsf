@@ -12,6 +12,7 @@
 #include "CmException.h"
 
 using namespace CamelotFramework;
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -51,10 +52,10 @@ namespace BansheeEngine
 		mLayout->addElement(mDownBtn);
 		mLayout->addSpace(2);
 
-		mHandleBtn->onHandleMoved.connect(boost::bind(&GUIScrollBar::handleMoved, this, _1));
+		mHandleBtn->onHandleMoved.connect(std::bind(&GUIScrollBar::handleMoved, this, _1));
 
-		mUpBtn->onClick.connect(boost::bind(&GUIScrollBar::upButtonClicked, this));
-		mDownBtn->onClick.connect(boost::bind(&GUIScrollBar::downButtonClicked, this));
+		mUpBtn->onClick.connect(std::bind(&GUIScrollBar::upButtonClicked, this));
+		mDownBtn->onClick.connect(std::bind(&GUIScrollBar::downButtonClicked, this));
 	}
 
 	GUIScrollBar::~GUIScrollBar()

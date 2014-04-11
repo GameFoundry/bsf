@@ -10,6 +10,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {

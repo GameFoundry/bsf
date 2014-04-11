@@ -35,6 +35,8 @@
 #include "BsCursor.h"
 
 using namespace CamelotFramework;
+using namespace std::placeholders;
+
 namespace BansheeEngine
 {
 	struct GUIGroupElement
@@ -69,24 +71,24 @@ namespace BansheeEngine
 		mTextSelectionColor(1.0f, 0.6588f, 0.0f), mInputCaret(nullptr), mInputSelection(nullptr), mDragState(DragState::NoDrag),
 		mActiveCursor(CursorType::Arrow)
 	{
-		mOnCursorMovedConn = gInput().onCursorMoved.connect(boost::bind(&GUIManager::onCursorMoved, this, _1));
-		mOnCursorPressedConn = gInput().onCursorPressed.connect(boost::bind(&GUIManager::onCursorPressed, this, _1));
-		mOnCursorReleasedConn = gInput().onCursorReleased.connect(boost::bind(&GUIManager::onCursorReleased, this, _1));
-		mOnCursorDoubleClick = gInput().onDoubleClick.connect(boost::bind(&GUIManager::onCursorDoubleClick, this, _1));
-		mOnTextInputConn = gInput().onCharInput.connect(boost::bind(&GUIManager::onTextInput, this, _1)); 
-		mOnInputCommandConn = gInput().onInputCommand.connect(boost::bind(&GUIManager::onInputCommandEntered, this, _1)); 
-		mOnVirtualButtonDown = VirtualInput::instance().onButtonDown.connect(boost::bind(&GUIManager::onVirtualButtonDown, this, _1));
+		mOnCursorMovedConn = gInput().onCursorMoved.connect(std::bind(&GUIManager::onCursorMoved, this, _1));
+		mOnCursorPressedConn = gInput().onCursorPressed.connect(std::bind(&GUIManager::onCursorPressed, this, _1));
+		mOnCursorReleasedConn = gInput().onCursorReleased.connect(std::bind(&GUIManager::onCursorReleased, this, _1));
+		mOnCursorDoubleClick = gInput().onDoubleClick.connect(std::bind(&GUIManager::onCursorDoubleClick, this, _1));
+		mOnTextInputConn = gInput().onCharInput.connect(std::bind(&GUIManager::onTextInput, this, _1)); 
+		mOnInputCommandConn = gInput().onInputCommand.connect(std::bind(&GUIManager::onInputCommandEntered, this, _1)); 
+		mOnVirtualButtonDown = VirtualInput::instance().onButtonDown.connect(std::bind(&GUIManager::onVirtualButtonDown, this, _1));
 
-		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(boost::bind(&GUIManager::onWindowFocusGained, this, _1));
-		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(boost::bind(&GUIManager::onWindowFocusLost, this, _1));
+		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(std::bind(&GUIManager::onWindowFocusGained, this, _1));
+		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(std::bind(&GUIManager::onWindowFocusLost, this, _1));
 
-		mMouseLeftWindowConn = Platform::onMouseLeftWindow.connect(boost::bind(&GUIManager::onMouseLeftWindow, this, _1));
+		mMouseLeftWindowConn = Platform::onMouseLeftWindow.connect(std::bind(&GUIManager::onMouseLeftWindow, this, _1));
 
 		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>();
 		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
 		DragAndDropManager::startUp(cm_new<DragAndDropManager>());
-		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(boost::bind(&GUIManager::onMouseDragEnded, this, _1));
+		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&GUIManager::onMouseDragEnded, this, _1));
 
 		GUIDropDownBoxManager::startUp(cm_new<GUIDropDownBoxManager>());
 

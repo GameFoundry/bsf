@@ -61,7 +61,7 @@ namespace BansheeEngine
 		CM::gApplication().loadPlugin("BansheeMono", &mMonoPlugin);
 		CM::gApplication().loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
 		
-		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(boost::bind(&Application::update, this));
+		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(std::bind(&Application::update, this));
 
 		Cursor::instance().setCursor(CursorType::Arrow);
 	}

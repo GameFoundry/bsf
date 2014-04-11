@@ -104,8 +104,8 @@ namespace CamelotFramework
 
 			PROFILE_CALL(gSceneManager().update(), "SceneManager");
 
-			gCoreThread().queueCommand(boost::bind(&Application::beginCoreProfiling, this));
-			gCoreThread().queueCommand(boost::bind(&QueryManager::update, QueryManager::instancePtr()));
+			gCoreThread().queueCommand(std::bind(&Application::beginCoreProfiling, this));
+			gCoreThread().queueCommand(std::bind(&QueryManager::update, QueryManager::instancePtr()));
 
 			if(!mainLoopCallback.empty())
 				mainLoopCallback();
@@ -127,8 +127,8 @@ namespace CamelotFramework
 
 			gCoreThread().queueCommand(&Platform::coreUpdate);
 			gCoreThread().submitAccessors();
-			gCoreThread().queueCommand(boost::bind(&Application::endCoreProfiling, this));
-			gCoreThread().queueCommand(boost::bind(&Application::frameRenderingFinishedCallback, this));
+			gCoreThread().queueCommand(std::bind(&Application::endCoreProfiling, this));
+			gCoreThread().queueCommand(std::bind(&Application::frameRenderingFinishedCallback, this));
 
 			gTime().update();
 

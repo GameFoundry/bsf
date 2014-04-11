@@ -49,9 +49,9 @@ namespace BansheeEditor
 		mainLayout.addElement(mCloseBtn);
 		mainLayout.addSpace(3);
 
-		mMinBtn->onClick.connect(boost::bind(&GUIMenuBar::onMinimizeClicked, this));
-		mMaxBtn->onClick.connect(boost::bind(&GUIMenuBar::onMaximizeClicked, this));
-		mCloseBtn->onClick.connect(boost::bind(&GUIMenuBar::onCloseClicked, this));
+		mMinBtn->onClick.connect(std::bind(&GUIMenuBar::onMinimizeClicked, this));
+		mMaxBtn->onClick.connect(std::bind(&GUIMenuBar::onMaximizeClicked, this));
+		mCloseBtn->onClick.connect(std::bind(&GUIMenuBar::onCloseClicked, this));
 
 		refreshNonClientAreas();
 	}
@@ -135,8 +135,8 @@ namespace BansheeEditor
 		newSubMenu.menu = cm_new<GUIMenu>();
 
 		GUIButton* newButton = GUIButton::create(*mParentWidget, HString(name), mParentWidget->getSkin().getStyle("MenuBarBtn"));
-		newButton->onClick.connect(boost::bind(&GUIMenuBar::openSubMenu, this, name));
-		newButton->onHover.connect(boost::bind(&GUIMenuBar::onSubMenuHover, this, name));
+		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
+		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
 		mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
 
 		newSubMenu.button = newButton;
@@ -254,7 +254,7 @@ namespace BansheeEditor
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(subMenu->button->getBounds());
 
 		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
-			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, boost::bind(&GUIMenuBar::onSubMenuClosed, this));
+			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIMenuBar::onSubMenuClosed, this));
 
 		subMenu->button->_setOn(true);
 

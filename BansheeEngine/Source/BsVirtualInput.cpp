@@ -3,6 +3,7 @@
 #include "CmTime.h"
 
 using namespace CamelotFramework;
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -11,8 +12,8 @@ namespace BansheeEngine
 	{
 		mInputConfiguration = createConfiguration();
 
-		Input::instance().onButtonDown.connect(boost::bind(&VirtualInput::buttonDown, this, _1));
-		Input::instance().onButtonUp.connect(boost::bind(&VirtualInput::buttonUp, this, _1));
+		Input::instance().onButtonDown.connect(std::bind(&VirtualInput::buttonDown, this, _1));
+		Input::instance().onButtonUp.connect(std::bind(&VirtualInput::buttonUp, this, _1));
 	}
 
 	std::shared_ptr<InputConfiguration> VirtualInput::createConfiguration()

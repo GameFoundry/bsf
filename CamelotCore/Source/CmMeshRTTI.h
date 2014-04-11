@@ -25,8 +25,8 @@ namespace CamelotFramework
 			GpuResourcePtr sharedMeshPtr = std::static_pointer_cast<GpuResource>(obj->getThisPtr());
 
 			meshData->lock();
-			gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
-				sharedMeshPtr, 0, std::static_pointer_cast<GpuResourceData>(meshData), _1), true);
+			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
+				sharedMeshPtr, 0, std::static_pointer_cast<GpuResourceData>(meshData), std::placeholders::_1), true);
 
 			return meshData;
 		}

@@ -16,6 +16,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {
@@ -57,9 +58,9 @@ namespace BansheeEditor
 				(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
 		mMonitor->startMonitor(mResourcesFolder, true, folderChanges);
 
-		mMonitor->onAdded.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
-		mMonitor->onRemoved.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
-		mMonitor->onModified.connect(boost::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
+		mMonitor->onAdded.connect(std::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
+		mMonitor->onRemoved.connect(std::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
+		mMonitor->onModified.connect(std::bind(&ProjectLibrary::onMonitorFileModified, this, _1));
 
 		load();
 

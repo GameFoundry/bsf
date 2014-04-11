@@ -60,21 +60,21 @@ namespace CamelotFramework
 	struct QueuedCommand
 	{
 #if CM_DEBUG_MODE
-		QueuedCommand(boost::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		QueuedCommand(std::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(cm_new<AsyncOp>()), ownsData(true)
 		{ }
 
-		QueuedCommand(boost::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		QueuedCommand(std::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 			:callback(_callback), debugId(_debugId), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr), ownsData(true)
 		{ }
 
 		UINT32 debugId;
 #else
-		QueuedCommand(boost::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		QueuedCommand(std::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(cm_new<AsyncOp>()), ownsData(true)
 		{ }
 
-		QueuedCommand(boost::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		QueuedCommand(std::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 			:callback(_callback), returnsValue(false), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(nullptr), ownsData(true)
 		{ }
 #endif
@@ -113,8 +113,8 @@ namespace CamelotFramework
 			return *this;
 		}
 
-		boost::function<void()> callback;
-		boost::function<void(AsyncOp&)> callbackWithReturnValue;
+		std::function<void()> callback;
+		std::function<void(AsyncOp&)> callbackWithReturnValue;
 		AsyncOp* asyncOp;
 		bool returnsValue;
 		UINT32 callbackId;
@@ -146,7 +146,7 @@ namespace CamelotFramework
 		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
 		 * 								The callback will receive "callbackId" of the command.
 		 */
-		void playback(Queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback);
+		void playbackWithNotify(Queue<QueuedCommand>::type* commands, std::function<void(UINT32)> notifyCallback);
 
 		/**
 		 * @brief	Plays all provided commands. To get the commands call flush().
@@ -186,7 +186,7 @@ namespace CamelotFramework
 		 * 			it completes AsyncOp::isResolved will return true and return data will be valid (if
 		 * 			the callback provided any).
 		 */
-		AsyncOp queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
+		AsyncOp queueReturn(std::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
 
 		/**
 		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
@@ -199,7 +199,7 @@ namespace CamelotFramework
 		 * @param	_callbackId		   	(optional) Identifier for the callback so you can then later find
 		 * 								it if needed.
 		 */
-		void queue(boost::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
+		void queue(std::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0);
 
 		/**
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
@@ -291,7 +291,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CommandQueueBase::queueReturn
 		 */
-		AsyncOp queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		AsyncOp queueReturn(std::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
@@ -310,7 +310,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CommandQueueBase::queue
 		 */
-		void queue(boost::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
+		void queue(std::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0

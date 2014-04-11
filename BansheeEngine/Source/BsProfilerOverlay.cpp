@@ -255,7 +255,7 @@ namespace BansheeEngine
 
 		mTarget = target;
 
-		mTargetResizedConn = target->onResized.connect(boost::bind(&ProfilerOverlay::targetResized, this));
+		mTargetResizedConn = target->onResized.connect(std::bind(&ProfilerOverlay::targetResized, this));
 
 		if(mWidgetSO)
 			mWidgetSO->destroy();

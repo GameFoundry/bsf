@@ -3,19 +3,21 @@
 #include "CmInput.h"
 #include "CmMath.h"
 
+using namespace std::placeholders;
+
 namespace CamelotFramework
 {
 	OSInputHandler::OSInputHandler()
 		:mMouseScroll(0.0f)
 	{
-		mCharInputConn = Platform::onCharInput.connect(boost::bind(&OSInputHandler::charInput, this, _1));
-		mCursorMovedConn = Platform::onCursorMoved.connect(boost::bind(&OSInputHandler::cursorMoved, this, _1, _2));
-		mCursorPressedConn = Platform::onCursorButtonPressed.connect(boost::bind(&OSInputHandler::cursorPressed, this, _1, _2, _3));
-		mCursorReleasedConn = Platform::onCursorButtonReleased.connect(boost::bind(&OSInputHandler::cursorReleased, this, _1, _2, _3));
-		mCursorDoubleClickConn = Platform::onCursorDoubleClick.connect(boost::bind(&OSInputHandler::cursorDoubleClick, this, _1, _2));
-		mInputCommandConn = Platform::onInputCommand.connect(boost::bind(&OSInputHandler::inputCommandEntered, this, _1));
+		mCharInputConn = Platform::onCharInput.connect(std::bind(&OSInputHandler::charInput, this, _1));
+		mCursorMovedConn = Platform::onCursorMoved.connect(std::bind(&OSInputHandler::cursorMoved, this, _1, _2));
+		mCursorPressedConn = Platform::onCursorButtonPressed.connect(std::bind(&OSInputHandler::cursorPressed, this, _1, _2, _3));
+		mCursorReleasedConn = Platform::onCursorButtonReleased.connect(std::bind(&OSInputHandler::cursorReleased, this, _1, _2, _3));
+		mCursorDoubleClickConn = Platform::onCursorDoubleClick.connect(std::bind(&OSInputHandler::cursorDoubleClick, this, _1, _2));
+		mInputCommandConn = Platform::onInputCommand.connect(std::bind(&OSInputHandler::inputCommandEntered, this, _1));
 
-		mMouseWheelScrolledConn  = Platform::onMouseWheelScrolled.connect(boost::bind(&OSInputHandler::mouseWheelScrolled, this, _1));
+		mMouseWheelScrolledConn  = Platform::onMouseWheelScrolled.connect(std::bind(&OSInputHandler::mouseWheelScrolled, this, _1));
 	}
 
 	OSInputHandler::~OSInputHandler()

@@ -40,115 +40,115 @@ namespace CamelotFramework
 		/** @copydoc RenderSystem::disableTextureUnit() */
 		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::disableTextureUnit, RenderSystem::instancePtr(), gptype, texUnit));
+			mCommandQueue->queue(std::bind(&RenderSystem::disableTextureUnit, RenderSystem::instancePtr(), gptype, texUnit));
 		}
 
 		/** @copydoc RenderSystem::setTexture() */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr));
+			mCommandQueue->queue(std::bind(&RenderSystem::setTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr));
 		}
 
 		/** @copydoc RenderSystem::setSamplerState() */
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setSamplerState, RenderSystem::instancePtr(), gptype, texUnit, samplerState));
+			mCommandQueue->queue(std::bind(&RenderSystem::setSamplerState, RenderSystem::instancePtr(), gptype, texUnit, samplerState));
 		}
 
 		/** @copydoc RenderSystem::setBlendState() */
 		void setBlendState(const BlendStatePtr& blendState)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setBlendState, RenderSystem::instancePtr(), blendState));
+			mCommandQueue->queue(std::bind(&RenderSystem::setBlendState, RenderSystem::instancePtr(), blendState));
 		}
 
 		/** @copydoc RenderSystem::setRasterizerState() */
 		void setRasterizerState(const RasterizerStatePtr& rasterizerState)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setRasterizerState, RenderSystem::instancePtr(), rasterizerState));
+			mCommandQueue->queue(std::bind(&RenderSystem::setRasterizerState, RenderSystem::instancePtr(), rasterizerState));
 		}
 
 		/** @copydoc RenderSystem::setRasterizerState() */
 		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setDepthStencilState, RenderSystem::instancePtr(), depthStencilState, stencilRefValue));
+			mCommandQueue->queue(std::bind(&RenderSystem::setDepthStencilState, RenderSystem::instancePtr(), depthStencilState, stencilRefValue));
 		}
 
 		/** @copydoc RenderSystem::setViewport() */
 		void setViewport(const ViewportPtr& vp)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setViewport, RenderSystem::instancePtr(), vp));
+			mCommandQueue->queue(std::bind(&RenderSystem::setViewport, RenderSystem::instancePtr(), vp));
 		}
 
 		/** @copydoc RenderSystem::setDrawOperation() */
 		void setDrawOperation(DrawOperationType op)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setDrawOperation, RenderSystem::instancePtr(), op));
+			mCommandQueue->queue(std::bind(&RenderSystem::setDrawOperation, RenderSystem::instancePtr(), op));
 		}
 
 		/** @copydoc RenderSystem::setClipPlanes() */
 		void setClipPlanes(const PlaneList& clipPlanes)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setClipPlanes, RenderSystem::instancePtr(), clipPlanes));
+			mCommandQueue->queue(std::bind(&RenderSystem::setClipPlanes, RenderSystem::instancePtr(), clipPlanes));
 		}
 
 		/** @copydoc RenderSystem::addClipPlane(const Plane&) */
 		void addClipPlane(const Plane& p)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::addClipPlane, RenderSystem::instancePtr(), p));
+			mCommandQueue->queue(std::bind(&RenderSystem::addClipPlane, RenderSystem::instancePtr(), p));
 		}
 
 		/** @copydoc RenderSystem::addClipPlane(float, float, float, float) */
 		void addClipPlane(float A, float B, float C, float D)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::addClipPlane, RenderSystem::instancePtr(), A, B, C, D));
+			mCommandQueue->queue(std::bind(&RenderSystem::addClipPlane, RenderSystem::instancePtr(), A, B, C, D));
 		}
 
 		/** @copydoc RenderSystem::resetClipPlanes() */
 		void resetClipPlanes()
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::resetClipPlanes, RenderSystem::instancePtr()));
+			mCommandQueue->queue(std::bind(&RenderSystem::resetClipPlanes, RenderSystem::instancePtr()));
 		}
 
 		/** @copydoc RenderSystem::setScissorTest() */
 		void setScissorTest(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setScissorRect, RenderSystem::instancePtr(), left, top, right, bottom));
+			mCommandQueue->queue(std::bind(&RenderSystem::setScissorRect, RenderSystem::instancePtr(), left, top, right, bottom));
 		}
 
 		/** @copydoc RenderSystem::setRenderTarget() */
 		void setRenderTarget(RenderTargetPtr target)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::setRenderTarget, RenderSystem::instancePtr(), target));
+			mCommandQueue->queue(std::bind(&RenderSystem::setRenderTarget, RenderSystem::instancePtr(), target));
 		}
 
 		/** @copydoc RenderSystem::bindGpuProgram() */
 		void bindGpuProgram(HGpuProgram prg)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuProgram, RenderSystem::instancePtr(), prg));
+			mCommandQueue->queue(std::bind(&RenderSystem::bindGpuProgram, RenderSystem::instancePtr(), prg));
 		}
 
 		/** @copydoc RenderSystem::unbindGpuProgram() */
 		void unbindGpuProgram(GpuProgramType gptype)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::unbindGpuProgram, RenderSystem::instancePtr(), gptype));
+			mCommandQueue->queue(std::bind(&RenderSystem::unbindGpuProgram, RenderSystem::instancePtr(), gptype));
 		}
 
 		/** @copydoc RenderSystem::bindGpuParams() */
 		void bindGpuParams(GpuProgramType gptype, const GpuParamsPtr& params)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::bindGpuParams, RenderSystem::instancePtr(), gptype, BindableGpuParams(params, gCoreThread().getFrameAlloc())));
+			mCommandQueue->queue(std::bind(&RenderSystem::bindGpuParams, RenderSystem::instancePtr(), gptype, BindableGpuParams(params, gCoreThread().getFrameAlloc())));
 		}
 
 		/** @copydoc RenderSystem::beginFrame() */
 		void beginRender(void)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::beginFrame, RenderSystem::instancePtr()));
+			mCommandQueue->queue(std::bind(&RenderSystem::beginFrame, RenderSystem::instancePtr()));
 		}
 
 		/** @copydoc RenderSystem::endFrame() */
 		void endRender(void)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::endFrame, RenderSystem::instancePtr()));
+			mCommandQueue->queue(std::bind(&RenderSystem::endFrame, RenderSystem::instancePtr()));
 		}
 
 		/**
@@ -156,7 +156,7 @@ namespace CamelotFramework
 		 */
 		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::clearRenderTarget, RenderSystem::instancePtr(), buffers, color, depth, stencil));
+			mCommandQueue->queue(std::bind(&RenderSystem::clearRenderTarget, RenderSystem::instancePtr(), buffers, color, depth, stencil));
 		}
 
 		/**
@@ -164,31 +164,31 @@ namespace CamelotFramework
 		 */
 		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::clearViewport, RenderSystem::instancePtr(), buffers, color, depth, stencil));
+			mCommandQueue->queue(std::bind(&RenderSystem::clearViewport, RenderSystem::instancePtr(), buffers, color, depth, stencil));
 		}
 
 		/** @copydoc RenderSystem::swapBuffers() */
 		void swapBuffers(RenderTargetPtr target)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::swapBuffers, RenderSystem::instancePtr(), target));
+			mCommandQueue->queue(std::bind(&RenderSystem::swapBuffers, RenderSystem::instancePtr(), target));
 		}
 
 		/** @copydoc RenderSystem::render() */
 		void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::render, RenderSystem::instancePtr(), mesh, indexOffset, indexCount, useIndices, drawOp));
+			mCommandQueue->queue(std::bind(&RenderSystem::render, RenderSystem::instancePtr(), mesh, indexOffset, indexCount, useIndices, drawOp));
 		}
 
 		/** @copydoc RenderSystem::draw() */
 		void draw(UINT32 vertexOffset, UINT32 vertexCount)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::draw, RenderSystem::instancePtr(), vertexOffset, vertexCount));
+			mCommandQueue->queue(std::bind(&RenderSystem::draw, RenderSystem::instancePtr(), vertexOffset, vertexCount));
 		}
 
 		/** @copydoc RenderSystem::drawIndexed() */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 		{
-			mCommandQueue->queue(boost::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexOffset, vertexCount));
+			mCommandQueue->queue(std::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexOffset, vertexCount));
 		}
 
 		/**
@@ -208,7 +208,8 @@ namespace CamelotFramework
 		{
 			data->lock();
 
-			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, data, discardEntireBuffer, _1));
+			return mCommandQueue->queueReturn(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, 
+				subresourceIdx, data, discardEntireBuffer, std::placeholders::_1));
 		}
 
 		/**
@@ -222,33 +223,34 @@ namespace CamelotFramework
 		{
 			data->lock();
 
-			return mCommandQueue->queueReturn(boost::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), resource, subresourceIdx, data, _1));
+			return mCommandQueue->queueReturn(std::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
+				resource, subresourceIdx, data, std::placeholders::_1));
 		}
 
 		void resizeWindow(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
 		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::resize, renderWindow.get(), width, height));
+			mCommandQueue->queue(std::bind(&RenderWindow::resize, renderWindow.get(), width, height));
 		}
 
 		void moveWindow(RenderWindowPtr& renderWindow, INT32 left, INT32 top)
 		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::move, renderWindow.get(), left, top));
+			mCommandQueue->queue(std::bind(&RenderWindow::move, renderWindow.get(), left, top));
 		}
 
 		void hideWindow(RenderWindowPtr& renderWindow)
 		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::setHidden, renderWindow.get(), true));
+			mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), true));
 		}
 
 		void showWindow(RenderWindowPtr& renderWindow)
 		{
-			mCommandQueue->queue(boost::bind(&RenderWindow::setHidden, renderWindow.get(), false));
+			mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), false));
 		}
 
 		/**
 		* @brief	Queues a new generic command that will be added to the command queue.
 		*/
-		AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback)
+		AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback)
 		{
 			return mCommandQueue->queueReturn(commandCallback);
 		}
@@ -256,7 +258,7 @@ namespace CamelotFramework
 		/**
 		* @brief	Queues a new generic command that will be added to the command queue.
 		*/
-		void queueCommand(boost::function<void()> commandCallback)
+		void queueCommand(std::function<void()> commandCallback)
 		{
 			mCommandQueue->queue(commandCallback);
 		}
@@ -269,7 +271,7 @@ namespace CamelotFramework
 		{
 			Queue<QueuedCommand>::type* commands = mCommandQueue->flush();
 
-			gCoreThread().queueCommand(boost::bind(&CommandQueueBase::playback, mCommandQueue, commands), blockUntilComplete);
+			gCoreThread().queueCommand(std::bind(&CommandQueueBase::playback, mCommandQueue, commands), blockUntilComplete);
 		}
 
 		/**

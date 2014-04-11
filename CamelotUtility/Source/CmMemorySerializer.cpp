@@ -4,7 +4,7 @@
 #include "CmIReflectable.h"
 #include "CmBinarySerializer.h"
 
-#include <boost/bind.hpp>
+using namespace std::placeholders;
 
 namespace CamelotFramework
 {
@@ -16,6 +16,8 @@ namespace CamelotFramework
 
 	UINT8* MemorySerializer::encode(IReflectable* object, UINT32& bytesWritten, std::function<void*(UINT32)> allocator)
 	{
+		using namespace std::placeholders;
+
 		BinarySerializer bs;
 
 		BufferPiece piece;
@@ -24,7 +26,7 @@ namespace CamelotFramework
 
 		mBufferPieces.push_back(piece);
 
-		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, (INT32*)&bytesWritten, boost::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3));
+		bs.encode(object, piece.buffer, WRITE_BUFFER_SIZE, (INT32*)&bytesWritten, std::bind(&MemorySerializer::flushBuffer, this, _1, _2, _3));
 
 		UINT8* resultBuffer;
 		if(allocator != nullptr)

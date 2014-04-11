@@ -11,6 +11,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {
@@ -23,10 +24,10 @@ namespace BansheeEditor
 		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 9900);
 
 		mTitleBar = GUITabbedTitleBar::create(*parent, renderWindow);
-		mTitleBar->onTabActivated.connect(boost::bind(&EditorWidgetContainer::tabActivated, this, _1));
-		mTitleBar->onTabClosed.connect(boost::bind(&EditorWidgetContainer::tabClosed, this, _1));
-		mTitleBar->onTabDraggedOff.connect(boost::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));
-		mTitleBar->onTabDraggedOn.connect(boost::bind(&EditorWidgetContainer::tabDraggedOn, this, _1));
+		mTitleBar->onTabActivated.connect(std::bind(&EditorWidgetContainer::tabActivated, this, _1));
+		mTitleBar->onTabClosed.connect(std::bind(&EditorWidgetContainer::tabClosed, this, _1));
+		mTitleBar->onTabDraggedOff.connect(std::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));
+		mTitleBar->onTabDraggedOn.connect(std::bind(&EditorWidgetContainer::tabDraggedOn, this, _1));
 
 		mTitleBarArea->getLayout().addElement(mTitleBar);
 	}
@@ -200,7 +201,7 @@ namespace BansheeEditor
 		removeInternal(*widget);
 
 		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::EditorWidget, (void*)widget, 
-			boost::bind(&EditorWidgetContainer::tabDroppedCallback, _1), false);
+			std::bind(&EditorWidgetContainer::tabDroppedCallback, _1), false);
 
 		if(!onWidgetClosed.empty())
 			onWidgetClosed();

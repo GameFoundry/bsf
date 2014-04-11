@@ -22,7 +22,7 @@ namespace BansheeEngine
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundPosition(position);
 
 		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
-			placement, getDropDownData(), widget.getSkin(), GUIDropDownType::ContextMenu, boost::bind(&GUIContextMenu::onMenuClosed, this));
+			placement, getDropDownData(), widget.getSkin(), GUIDropDownType::ContextMenu, std::bind(&GUIContextMenu::onMenuClosed, this));
 
 		mContextMenuOpen = true;
 	}

@@ -56,7 +56,7 @@ namespace CamelotFramework
 		 * 									If the returned buffer address is NULL, encoding is aborted.
 		 */
 		void encode(IReflectable* object, UINT8* buffer, UINT32 bufferLength, int* bytesWritten, 
-			boost::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
 		 * @brief	Decodes an object from a binary format.
@@ -109,7 +109,7 @@ namespace CamelotFramework
 		 * @brief	Encodes a single IReflectable object. 
 		 */
 		UINT8* encodeInternal(IReflectable* object, UINT32 objectId, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, 
-			boost::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
 		 * @brief	Decodes a single IReflectable object.
@@ -151,7 +151,7 @@ namespace CamelotFramework
 		 * @brief	Helper method for encoding a complex object and copying its data to a buffer.
 		 */
 		UINT8* complexTypeToBuffer(IReflectable* object, UINT8* buffer, UINT32& bufferLength, int* bytesWritten, 
-			boost::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
+			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
 		 * @brief	Helper method for decoding a complex object from the provided data buffer.

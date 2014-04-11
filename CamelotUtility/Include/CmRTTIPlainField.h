@@ -158,7 +158,7 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			boost::function<DataType&(ObjectType*)> f = boost::any_cast<boost::function<DataType&(ObjectType*)>>(valueGetter);
+			std::function<DataType&(ObjectType*)> f = boost::any_cast<std::function<DataType&(ObjectType*)>>(valueGetter);
 			DataType value = f(castObject);
 
 			return RTTIPlainType<DataType>::getDynamicSize(value);
@@ -171,7 +171,7 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			boost::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
+			std::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<std::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
 			DataType value = f(castObject, index);
 
 			return RTTIPlainType<DataType>::getDynamicSize(value);
@@ -181,7 +181,7 @@ namespace CamelotFramework
 		{
 			checkIsArray(true);
 
-			boost::function<UINT32(ObjectType*)> f = boost::any_cast<boost::function<UINT32(ObjectType*)>>(arraySizeGetter);
+			std::function<UINT32(ObjectType*)> f = boost::any_cast<std::function<UINT32(ObjectType*)>>(arraySizeGetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			return f(castObject);
 		}
@@ -196,7 +196,7 @@ namespace CamelotFramework
 					"Specified field (" + mName + ") has no array size setter.");
 			}
 
-			boost::function<void(ObjectType*, UINT32)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
+			std::function<void(ObjectType*, UINT32)> f = boost::any_cast<std::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			f(castObject, size);
 		}
@@ -208,7 +208,7 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			boost::function<DataType&(ObjectType*)> f = boost::any_cast<boost::function<DataType&(ObjectType*)>>(valueGetter);
+			std::function<DataType&(ObjectType*)> f = boost::any_cast<std::function<DataType&(ObjectType*)>>(valueGetter);
 			DataType value = f(castObject);
 
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
@@ -221,7 +221,7 @@ namespace CamelotFramework
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			boost::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<boost::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
+			std::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<std::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
 			DataType value = f(castObject, index);
 
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
@@ -243,7 +243,7 @@ namespace CamelotFramework
 					"Specified field (" + mName + ") has no setter.");
 			}
 
-			boost::function<void(ObjectType*, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, DataType&)>>(valueSetter);
+			std::function<void(ObjectType*, DataType&)> f = boost::any_cast<std::function<void(ObjectType*, DataType&)>>(valueSetter);
 			f(castObject, value);
 		}
 
@@ -263,7 +263,7 @@ namespace CamelotFramework
 					"Specified field (" + mName + ") has no setter.");
 			}
 
-			boost::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
+			std::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<std::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
 			f(castObject, index, value);
 		}
 	};

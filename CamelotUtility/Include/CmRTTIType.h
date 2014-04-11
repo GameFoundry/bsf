@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
 #include <boost/type_traits.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/preprocessor/punctuation/comma.hpp>
@@ -449,8 +447,8 @@ namespace CamelotFramework
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, DataType&)>(setter), flags);
+				std::function<DataType&(ObjectType*)>(getter), 
+				std::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
 		template<class ObjectType, class DataType>
@@ -458,8 +456,8 @@ namespace CamelotFramework
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
 		{
 			addReflectableField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, DataType&)>(setter), flags);
+				std::function<DataType&(ObjectType*)>(getter), 
+				std::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
 		template<class ObjectType, class DataType>
@@ -467,8 +465,8 @@ namespace CamelotFramework
 			void (ObjectType::*setter)(std::shared_ptr<DataType>) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<std::shared_ptr<DataType>(ObjectType*)>(getter), 
-				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(setter), flags);
+				std::function<std::shared_ptr<DataType>(ObjectType*)>(getter), 
+				std::function<void(ObjectType*, std::shared_ptr<DataType>)>(setter), flags);
 		}
 
 		template<class ObjectType, class DataType>
@@ -476,10 +474,10 @@ namespace CamelotFramework
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*, UINT32)>(getter), 
-				boost::function<UINT32(ObjectType*)>(getSize), 
-				boost::function<void(ObjectType*, UINT32, DataType&)>(setter), 
-				boost::function<void(ObjectType*, UINT32)>(setSize), flags);
+				std::function<DataType&(ObjectType*, UINT32)>(getter), 
+				std::function<UINT32(ObjectType*)>(getSize), 
+				std::function<void(ObjectType*, UINT32, DataType&)>(setter), 
+				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}	
 
 		template<class ObjectType, class DataType>
@@ -487,10 +485,10 @@ namespace CamelotFramework
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*, UINT32)>(getter), 
-				boost::function<UINT32(ObjectType*)>(getSize), 
-				boost::function<void(ObjectType*, UINT32, DataType&)>(setter), 
-				boost::function<void(ObjectType*, UINT32)>(setSize), flags);
+				std::function<DataType&(ObjectType*, UINT32)>(getter), 
+				std::function<UINT32(ObjectType*)>(getSize), 
+				std::function<void(ObjectType*, UINT32, DataType&)>(setter), 
+				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
 		template<class ObjectType, class DataType>
@@ -498,10 +496,10 @@ namespace CamelotFramework
 			void (ObjectType::*setter)(UINT32, std::shared_ptr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
 		{
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(getter), 
-				boost::function<UINT32(ObjectType*)>(getSize), 
-				boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(setter), 
-				boost::function<void(ObjectType*, UINT32)>(setSize), flags);
+				std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(getter), 
+				std::function<UINT32(ObjectType*)>(getSize), 
+				std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(setter), 
+				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
 		template<class ObjectType>
@@ -509,8 +507,8 @@ namespace CamelotFramework
 			void (ObjectType::*setter)(ManagedDataBlock) = nullptr, UINT64 flags = 0, UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
 		{
 			addDataBlockField<ObjectType>(name, uniqueId, 
-				boost::function<ManagedDataBlock(ObjectType*)>(getter),  
-				boost::function<void(ObjectType*, ManagedDataBlock)>(setter), flags, customAllocator);
+				std::function<ManagedDataBlock(ObjectType*)>(getter),  
+				std::function<void(ObjectType*, ManagedDataBlock)>(setter), flags, customAllocator);
 		}	
 
 	protected:
@@ -525,6 +523,8 @@ namespace CamelotFramework
 			DataType& (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
+			using namespace std::placeholders;
+
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
 				"Class with the get/set methods must derive from CamelotFramework::RTTIType.");
 
@@ -532,8 +532,8 @@ namespace CamelotFramework
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
+				std::function<DataType&(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+				std::function<void(ObjectType*, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -541,9 +541,11 @@ namespace CamelotFramework
 			DataType& (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, DataType&), UINT64 flags = 0)
 		{
+			using namespace std::placeholders;
+
 			addReflectableField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
+				std::function<DataType&(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+				std::function<void(ObjectType*, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -551,9 +553,11 @@ namespace CamelotFramework
 			std::shared_ptr<DataType> (InterfaceType::*getter)(ObjectType*), 
 			void (InterfaceType::*setter)(ObjectType*, std::shared_ptr<DataType>), UINT64 flags = 0)
 		{
+			using namespace std::placeholders;
+
 			addReflectablePtrField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<std::shared_ptr<DataType>(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, std::shared_ptr<DataType>)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
+				std::function<std::shared_ptr<DataType>(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)), 
+				std::function<void(ObjectType*, std::shared_ptr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -563,6 +567,8 @@ namespace CamelotFramework
 			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
+			using namespace std::placeholders;
+
 			BOOST_STATIC_ASSERT_MSG((boost::is_base_of<CamelotFramework::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
 				"Class with the get/set methods must derive from CamelotFramework::RTTIType.");
 
@@ -570,10 +576,10 @@ namespace CamelotFramework
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
-				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, UINT32, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
-				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
+				std::function<DataType&(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
+				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
+				std::function<void(ObjectType*, UINT32, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}	
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -583,11 +589,13 @@ namespace CamelotFramework
 			void (InterfaceType::*setter)(ObjectType*, UINT32, DataType&), 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
+			using namespace std::placeholders;
+
 			addReflectableArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<DataType&(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
-				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, UINT32, DataType&)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
-				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
+				std::function<DataType&(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
+				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
+				std::function<void(ObjectType*, UINT32, DataType&)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType, class DataType>
@@ -597,11 +605,13 @@ namespace CamelotFramework
 			void (InterfaceType::*setter)(ObjectType*, UINT32, std::shared_ptr<DataType>), 
 			void(InterfaceType::*setSize)(ObjectType*, UINT32), UINT64 flags = 0)
 		{
+			using namespace std::placeholders;
+
 			addReflectablePtrArrayField<ObjectType, DataType>(name, uniqueId, 
-				boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
-				boost::function<UINT32(ObjectType*)>(boost::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
-				boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
-				boost::function<void(ObjectType*, UINT32)>(boost::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
+				std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>(std::bind(getter, static_cast<InterfaceType*>(this), _1, _2)), 
+				std::function<UINT32(ObjectType*)>(std::bind(getSize, static_cast<InterfaceType*>(this), _1)), 
+				std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2, _3)), 
+				std::function<void(ObjectType*, UINT32)>(std::bind(setSize, static_cast<InterfaceType*>(this), _1, _2)), flags);
 		}
 
 		template<class InterfaceType, class ObjectType>
@@ -609,18 +619,22 @@ namespace CamelotFramework
 			void (InterfaceType::*setter)(ObjectType*, ManagedDataBlock), UINT64 flags = 0, 
 			UINT8* (customAllocator)(ObjectType*, UINT32) = 0)
 		{
+			using namespace std::placeholders;
+
 			if(customAllocator != 0)
 			{
+				std::function<UINT8*(ObjectType*, UINT32)> customAllocFunc = std::bind(customAllocator, _1, _2);
+
 				addDataBlockField<ObjectType>(name, uniqueId, 
-					boost::function<ManagedDataBlock(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)),  
-					boost::function<void(ObjectType*, ManagedDataBlock)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags, 
-					boost::function<UINT8*(ObjectType*, UINT32)>(customAllocator));
+					std::function<ManagedDataBlock(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)),  
+					std::function<void(ObjectType*, ManagedDataBlock)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags, 
+					customAllocFunc);
 			}
 			else
 			{
 				addDataBlockField<ObjectType>(name, uniqueId, 
-					boost::function<ManagedDataBlock(ObjectType*)>(boost::bind(getter, static_cast<InterfaceType*>(this), _1)),  
-					boost::function<void(ObjectType*, ManagedDataBlock)>(boost::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
+					std::function<ManagedDataBlock(ObjectType*)>(std::bind(getter, static_cast<InterfaceType*>(this), _1)),  
+					std::function<void(ObjectType*, ManagedDataBlock)>(std::bind(setter, static_cast<InterfaceType*>(this), _1, _2)), flags);
 			}
 		}	
 

@@ -298,7 +298,7 @@ namespace BansheeEditor
 
 		//GUIArea* modalArea = GUIArea::createStretchedXY(*modalGUI, 0, 0, 0, 0, 500);
 		//GUIButton* modalButton = GUIButton::create(*modalGUI, HString(L"Close"));
-		//modalButton->onClick.connect(boost::bind(&EditorApplication::closeModalWindow, modalWindow, modalSceneObject));
+		//modalButton->onClick.connect(std::bind(&EditorApplication::closeModalWindow, modalWindow, modalSceneObject));
 
 		//modalArea->getLayout().addElement(modalButton);
 
@@ -307,7 +307,7 @@ namespace BansheeEditor
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
 
-		gApplication().mainLoopCallback.connect(boost::bind(&EditorApplication::update, this));
+		gApplication().mainLoopCallback.connect(std::bind(&EditorApplication::update, this));
 
 		DbgEditorWidget1::open(); // DEBUG ONLY
 		DbgEditorWidget2::open(); // DEBUG ONLY

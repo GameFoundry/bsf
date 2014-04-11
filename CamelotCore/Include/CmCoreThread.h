@@ -78,7 +78,7 @@ public:
 		* 	
 		* @see		CommandQueue::queueReturn
 		*/
-	CM_EXPORT AsyncOp queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
+	CM_EXPORT AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete = false);
 
 	/**
 	* @brief	Queues a new command that will be added to the global command queue.You are allowed to call this from any thread,
@@ -88,7 +88,7 @@ public:
 		* 							   and they all need to be executed in order before the current command is reached, which might take a long time.
 		* @see		CommandQueue::queue
 		*/
-	CM_EXPORT void queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete = false);
+	CM_EXPORT void queueCommand(std::function<void()> commandCallback, bool blockUntilComplete = false);
 
 	/**
 	 * @brief	Called once every frame.

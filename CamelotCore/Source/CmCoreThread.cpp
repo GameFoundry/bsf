@@ -1,5 +1,7 @@
 #include "CmCoreThread.h"
 
+using namespace std::placeholders;
+
 namespace CamelotFramework
 {
 	CM_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
@@ -106,7 +108,7 @@ namespace CamelotFramework
 			}
 
 			// Play commands
-			mCommandQueue->playback(commands, boost::bind(&CoreThread::commandCompletedNotify, this, _1)); 
+			mCommandQueue->playbackWithNotify(commands, std::bind(&CoreThread::commandCompletedNotify, this, _1)); 
 		}
 
 		cm_delete(mSyncedCoreAccessor);
@@ -178,7 +180,7 @@ namespace CamelotFramework
 		mSyncedCoreAccessor->submitToCoreThread(blockUntilComplete);
 	}
 
-	AsyncOp CoreThread::queueReturnCommand(boost::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
+	AsyncOp CoreThread::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback, bool blockUntilComplete)
 	{
 		AsyncOp op;
 
@@ -209,7 +211,7 @@ namespace CamelotFramework
 		return op;
 	}
 
-	void CoreThread::queueCommand(boost::function<void()> commandCallback, bool blockUntilComplete)
+	void CoreThread::queueCommand(std::function<void()> commandCallback, bool blockUntilComplete)
 	{
 		if(CM_THREAD_CURRENT_ID == getCoreThreadId())
 		{

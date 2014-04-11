@@ -35,7 +35,7 @@ namespace BansheeEngine
 
 		mTarget = target;
 
-		mOwnerTargetResizedConn = mTarget->onResized.connect(boost::bind(&GUIWidget::ownerTargetResized, this));
+		mOwnerTargetResizedConn = mTarget->onResized.connect(std::bind(&GUIWidget::ownerTargetResized, this));
 
 		GUIManager::instance().registerWidget(this);
 	}

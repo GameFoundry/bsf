@@ -226,7 +226,7 @@ namespace BansheeEditor
 		}
 
 		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::SceneObject, (void*)draggedSceneObjects, 
-			boost::bind(&GUISceneTreeView::dragAndDropFinalize, this), true);
+			std::bind(&GUISceneTreeView::dragAndDropFinalize, this), true);
 	}
 
 	void GUISceneTreeView::dragAndDropEnded(TreeElement* overTreeElement)

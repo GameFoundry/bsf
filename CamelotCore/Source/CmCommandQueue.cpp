@@ -38,7 +38,7 @@ namespace CamelotFramework
 		}
 	}
 
-	AsyncOp CommandQueueBase::queueReturn(boost::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
+	AsyncOp CommandQueueBase::queueReturn(std::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
 #if CM_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
@@ -58,7 +58,7 @@ namespace CamelotFramework
 		return *newCommand.asyncOp;
 	}
 
-	void CommandQueueBase::queue(boost::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
+	void CommandQueueBase::queue(std::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
 #if CM_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
@@ -93,7 +93,7 @@ namespace CamelotFramework
 		return oldCommands;
 	}
 
-	void CommandQueueBase::playback(CamelotFramework::Queue<QueuedCommand>::type* commands, boost::function<void(UINT32)> notifyCallback)
+	void CommandQueueBase::playbackWithNotify(CamelotFramework::Queue<QueuedCommand>::type* commands, std::function<void(UINT32)> notifyCallback)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -121,7 +121,7 @@ namespace CamelotFramework
 				command.callback();
 			}
 
-			if(command.notifyWhenComplete && !notifyCallback.empty())
+			if(command.notifyWhenComplete && notifyCallback != nullptr)
 			{
 				notifyCallback(command.callbackId);
 			}
@@ -134,7 +134,7 @@ namespace CamelotFramework
 
 	void CommandQueueBase::playback(CamelotFramework::Queue<QueuedCommand>::type* commands)
 	{
-		playback(commands, boost::function<void(UINT32)>());
+		playbackWithNotify(commands, std::function<void(UINT32)>());
 	}
 
 	void CommandQueueBase::cancelAll()

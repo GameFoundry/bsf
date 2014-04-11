@@ -16,6 +16,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {
@@ -51,7 +52,7 @@ namespace BansheeEditor
 		mCloseBtn = GUIButton::create(parent, HString(L""), mCloseBtnStyle);
 		_registerChildElement(mCloseBtn);
 
-		mCloseBtn->onClick.connect(boost::bind(&GUITabbedTitleBar::tabClosed, this));
+		mCloseBtn->onClick.connect(std::bind(&GUITabbedTitleBar::tabClosed, this));
 
 		mTabToggleGroup = GUIToggle::createToggleGroup();
 	}
@@ -95,9 +96,9 @@ namespace BansheeEditor
 
 		UINT32 uniqueIdx = mUniqueTabIdx++;
 
-		newTabToggle->onToggled.connect(boost::bind(&GUITabbedTitleBar::tabToggled, this, uniqueIdx, _1));
-		newTabToggle->onDragged.connect(boost::bind(&GUITabbedTitleBar::tabDragged, this, _1, _2));
-		newTabToggle->onDragEnd.connect(boost::bind(&GUITabbedTitleBar::tabDragEnd, this, _1, _2));
+		newTabToggle->onToggled.connect(std::bind(&GUITabbedTitleBar::tabToggled, this, uniqueIdx, _1));
+		newTabToggle->onDragged.connect(std::bind(&GUITabbedTitleBar::tabDragged, this, _1, _2));
+		newTabToggle->onDragEnd.connect(std::bind(&GUITabbedTitleBar::tabDragEnd, this, _1, _2));
 
 		mTabButtons.insert(mTabButtons.begin() + position, newTabToggle);
 

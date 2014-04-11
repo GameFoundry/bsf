@@ -5,7 +5,7 @@
 #include "CmDebug.h"
 #include "CmRenderWindowManager.h"
 
-#include <boost/bind.hpp>
+using namespace std::placeholders;
 
 namespace CamelotFramework
 {
@@ -31,14 +31,14 @@ namespace CamelotFramework
 
 		mOSInputHandler = cm_shared_ptr<OSInputHandler>();
 
-		mOSInputHandler->onCharInput.connect(boost::bind(&Input::charInput, this, _1));
-		mOSInputHandler->onCursorMoved.connect(boost::bind(&Input::cursorMoved, this, _1));
-		mOSInputHandler->onCursorPressed.connect(boost::bind(&Input::cursorPressed, this, _1));
-		mOSInputHandler->onCursorReleased.connect(boost::bind(&Input::cursorReleased, this, _1));
-		mOSInputHandler->onDoubleClick.connect(boost::bind(&Input::cursorDoubleClick, this, _1));
-		mOSInputHandler->onInputCommand.connect(boost::bind(&Input::inputCommandEntered, this, _1));
+		mOSInputHandler->onCharInput.connect(std::bind(&Input::charInput, this, _1));
+		mOSInputHandler->onCursorMoved.connect(std::bind(&Input::cursorMoved, this, _1));
+		mOSInputHandler->onCursorPressed.connect(std::bind(&Input::cursorPressed, this, _1));
+		mOSInputHandler->onCursorReleased.connect(std::bind(&Input::cursorReleased, this, _1));
+		mOSInputHandler->onDoubleClick.connect(std::bind(&Input::cursorDoubleClick, this, _1));
+		mOSInputHandler->onInputCommand.connect(std::bind(&Input::inputCommandEntered, this, _1));
 
-		RenderWindowManager::instance().onFocusGained.connect(boost::bind(&Input::inputWindowChanged, this, _1));
+		RenderWindowManager::instance().onFocusGained.connect(std::bind(&Input::inputWindowChanged, this, _1));
 	}
 
 	Input::~Input()
@@ -56,10 +56,10 @@ namespace CamelotFramework
 
 			if(mRawInputHandler != nullptr)
 			{
-				mRawInputHandler->onButtonDown.connect(boost::bind(&Input::buttonDown, this, _1, _2));
-				mRawInputHandler->onButtonUp.connect(boost::bind(&Input::buttonUp, this, _1, _2));
+				mRawInputHandler->onButtonDown.connect(std::bind(&Input::buttonDown, this, _1, _2));
+				mRawInputHandler->onButtonUp.connect(std::bind(&Input::buttonUp, this, _1, _2));
 
-				mRawInputHandler->onAxisMoved.connect(boost::bind(&Input::axisMoved, this, _1, _2));
+				mRawInputHandler->onAxisMoved.connect(std::bind(&Input::axisMoved, this, _1, _2));
 			}
 		}
 	}

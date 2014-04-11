@@ -18,6 +18,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {
@@ -115,8 +116,8 @@ namespace BansheeEditor
 		mNameEditBox = GUITreeViewEditBox::create(parent, mEditBoxStyle);
 		mNameEditBox->disableRecursively();
 
-		mNameEditBox->onInputConfirmed.connect(boost::bind(&GUITreeView::onEditAccepted, this));
-		mNameEditBox->onInputCanceled.connect(boost::bind(&GUITreeView::onEditCanceled, this));
+		mNameEditBox->onInputConfirmed.connect(std::bind(&GUITreeView::onEditAccepted, this));
+		mNameEditBox->onInputCanceled.connect(std::bind(&GUITreeView::onEditCanceled, this));
 
 		mDragHighlight = GUITexture::create(parent, mDragHighlightStyle);
 		mDragSepHighlight = GUITexture::create(parent, mDragSepHighlightStyle);
@@ -623,7 +624,7 @@ namespace BansheeEditor
 					element->mFoldoutBtn = GUIToggle::create(_getParentWidget(), GUIContent(HString(L"")), mFoldoutBtnStyle);
 					_registerChildElement(element->mFoldoutBtn);
 
-					element->mFoldoutBtn->onToggled.connect(boost::bind(&GUITreeView::elementToggled, this, element, _1));
+					element->mFoldoutBtn->onToggled.connect(std::bind(&GUITreeView::elementToggled, this, element, _1));
 
 					if(element->mIsExpanded)
 						element->mFoldoutBtn->toggleOn();

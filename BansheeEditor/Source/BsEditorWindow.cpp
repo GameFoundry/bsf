@@ -13,7 +13,7 @@ namespace BansheeEditor
 	{
 		updateSize();
 		
-		mWidgets->onWidgetClosed.connect(boost::bind(&EditorWindow::widgetRemoved, this));
+		mWidgets->onWidgetClosed.connect(std::bind(&EditorWindow::widgetRemoved, this));
 	}
 
 	EditorWindow::~EditorWindow()

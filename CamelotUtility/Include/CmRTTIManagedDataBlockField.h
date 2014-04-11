@@ -63,14 +63,14 @@ namespace CamelotFramework
 		virtual ManagedDataBlock getValue(void* object)
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
-			boost::function<ManagedDataBlock(ObjectType*)> f = boost::any_cast<boost::function<ManagedDataBlock(ObjectType*)>>(valueGetter);
+			std::function<ManagedDataBlock(ObjectType*)> f = boost::any_cast<std::function<ManagedDataBlock(ObjectType*)>>(valueGetter);
 			return f(castObj);
 		}
 
 		virtual void setValue(void* object, ManagedDataBlock value)
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
-			boost::function<void(ObjectType*, ManagedDataBlock)> f = boost::any_cast<boost::function<void(ObjectType*, ManagedDataBlock)>>(valueSetter);
+			std::function<void(ObjectType*, ManagedDataBlock)> f = boost::any_cast<std::function<void(ObjectType*, ManagedDataBlock)>>(valueSetter);
 			f(castObj, value);
 		}
 
@@ -81,7 +81,7 @@ namespace CamelotFramework
 			else
 			{
 				ObjectType* castObj = static_cast<ObjectType*>(object);
-				boost::function<UINT8*(ObjectType*, UINT32)> f = boost::any_cast<boost::function<UINT8*(ObjectType*, UINT32)>>(mCustomAllocator);
+				std::function<UINT8*(ObjectType*, UINT32)> f = boost::any_cast<std::function<UINT8*(ObjectType*, UINT32)>>(mCustomAllocator);
 				return f(castObj, bytes);
 			}
 		}

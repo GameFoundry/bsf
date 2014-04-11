@@ -1,14 +1,16 @@
 #include "CmRenderWindowManager.h"
 #include "CmPlatform.h"
 
+using namespace std::placeholders;
+
 namespace CamelotFramework
 {
 	RenderWindowManager::RenderWindowManager()
 		:mWindowInFocus(nullptr), mNewWindowInFocus(nullptr)
 	{
-		Platform::onWindowFocusReceived.connect(boost::bind(&RenderWindowManager::windowFocusReceived, this, _1));
-		Platform::onWindowFocusLost.connect(boost::bind(&RenderWindowManager::windowFocusLost, this, _1));
-		Platform::onWindowMovedOrResized.connect(boost::bind(&RenderWindowManager::windowMovedOrResized, this, _1));
+		Platform::onWindowFocusReceived.connect(std::bind(&RenderWindowManager::windowFocusReceived, this, _1));
+		Platform::onWindowFocusLost.connect(std::bind(&RenderWindowManager::windowFocusLost, this, _1));
+		Platform::onWindowMovedOrResized.connect(std::bind(&RenderWindowManager::windowMovedOrResized, this, _1));
 	}
 
 	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)

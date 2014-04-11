@@ -18,6 +18,7 @@
 #include "BsScriptGUIContent.h"
 
 using namespace CamelotFramework;
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {

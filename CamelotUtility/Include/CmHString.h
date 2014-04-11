@@ -47,7 +47,7 @@ namespace CamelotFramework
 
 		void setParameter(UINT32 idx, const WString& value);
 		
-		boost::signals::connection addOnStringModifiedCallback(boost::function<void()> callback) const;
+		boost::signals::connection addOnStringModifiedCallback(std::function<void()> callback) const;
 
 		static const HString& dummy();
 	private:

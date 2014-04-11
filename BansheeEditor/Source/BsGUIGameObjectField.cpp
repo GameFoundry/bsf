@@ -13,6 +13,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {
@@ -50,7 +51,7 @@ namespace BansheeEditor
 		mLayout->addElement(mDropButton);
 		mLayout->addElement(mClearButton);
 
-		mDropButton->onDataDropped.connect(boost::bind(&GUIGameObjectField::dataDropped, this, _1));
+		mDropButton->onDataDropped.connect(std::bind(&GUIGameObjectField::dataDropped, this, _1));
 	}
 
 	GUIGameObjectField::~GUIGameObjectField()

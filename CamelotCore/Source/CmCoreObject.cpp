@@ -4,6 +4,8 @@
 #include "CmCoreThreadAccessor.h"
 #include "CmDebug.h"
 
+using namespace std::placeholders;
+
 namespace CamelotFramework
 {
 	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreObject)
@@ -158,43 +160,43 @@ namespace CamelotFramework
 #endif
 	}
 
-	void CoreObject::queueGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func)
+	void CoreObject::queueGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void()> func)
 	{
 		// We call another internal method and go through an additional layer of abstraction in order to keep an active
 		// reference to the obj (saved in the bound function).
 		// We could have called the function directly using "this" pointer but then we couldn't have used a shared_ptr for the object,
 		// in which case there is a possibility that the object would be released and deleted while still being in the command queue.
-		gCoreAccessor().queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
+		gCoreAccessor().queueCommand(std::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
-	AsyncOp CoreObject::queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func)
+	AsyncOp CoreObject::queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void(AsyncOp&)> func)
 	{
 		// See queueGpuCommand
-		return gCoreAccessor().queueReturnCommand(boost::bind(&CoreObject::executeReturnGpuCommand, obj, func, _1));
+		return gCoreAccessor().queueReturnCommand(std::bind(&CoreObject::executeReturnGpuCommand, obj, func, _1));
 	}
 
 	void CoreObject::queueInitializeGpuCommand(std::shared_ptr<CoreObject>& obj)
 	{
-		boost::function<void()> func = boost::bind(&CoreObject::initialize_internal, obj.get());
+		std::function<void()> func = std::bind(&CoreObject::initialize_internal, obj.get());
 
-		CoreThread::instance().queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
+		CoreThread::instance().queueCommand(std::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
 	void CoreObject::queueDestroyGpuCommand(std::shared_ptr<CoreObject>& obj)
 	{
-		boost::function<void()> func = boost::bind(&CoreObject::destroy_internal, obj.get());
+		std::function<void()> func = std::bind(&CoreObject::destroy_internal, obj.get());
 
-		gCoreAccessor().queueCommand(boost::bind(&CoreObject::executeGpuCommand, obj, func));
+		gCoreAccessor().queueCommand(std::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
-	void CoreObject::executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func)
+	void CoreObject::executeGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void()> func)
 	{
 		volatile std::shared_ptr<CoreObject> objParam = obj; // Makes sure obj isn't optimized out?
 
 		func();
 	}
 
-	void CoreObject::executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op)
+	void CoreObject::executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void(AsyncOp&)> func, AsyncOp& op)
 	{
 		volatile std::shared_ptr<CoreObject> objParam = obj; // Makes sure obj isn't optimized out?
 

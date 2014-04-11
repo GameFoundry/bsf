@@ -127,7 +127,7 @@ o		 *
 		 * 			make sure the object is not deleted before the command executes. Can be null if the 
 		 * 			function is static or global.
 		 */
-		static void queueGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func);
+		static void queueGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void()> func);
 
 		/**
 		 * @brief	Queues a command to be executed on the core thread, with a return value in the form of AsyncOp.
@@ -138,7 +138,7 @@ o		 *
 		 * 			make sure the object is not deleted before the command executes. Can be null if the
 		 * 			function is static or global.
 		 */
-		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func);
+		static AsyncOp queueReturnGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void(AsyncOp&)> func);
 
 		bool isScheduledToBeInitialized() const { return (mFlags & CGO_SCHEDULED_FOR_INIT) != 0; }
 		bool isScheduledToBeDeleted() const { return (mFlags & CGO_SCHEDULED_FOR_DELETE) != 0; }
@@ -160,8 +160,8 @@ o		 *
 		static void queueInitializeGpuCommand(std::shared_ptr<CoreObject>& obj);
 		static void queueDestroyGpuCommand(std::shared_ptr<CoreObject>& obj);
 
-		static void executeGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void()> func);
-		static void executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, boost::function<void(AsyncOp&)> func, AsyncOp& op); 
+		static void executeGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void()> func);
+		static void executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void(AsyncOp&)> func, AsyncOp& op); 
 	};
 
 #define MAKE_CM_NEW_CORE(z, n, unused)                                     \

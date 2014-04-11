@@ -1065,9 +1065,9 @@ namespace BansheeEngine
 
 		if(!initialized)
 		{
-			mContextMenu.addMenuItem(L"Cut", boost::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)));
-			mContextMenu.addMenuItem(L"Copy", boost::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)));
-			mContextMenu.addMenuItem(L"Paste", boost::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
+			mContextMenu.addMenuItem(L"Cut", std::bind(&GUIInputBox::cutText, const_cast<GUIInputBox*>(this)));
+			mContextMenu.addMenuItem(L"Copy", std::bind(&GUIInputBox::copyText, const_cast<GUIInputBox*>(this)));
+			mContextMenu.addMenuItem(L"Paste", std::bind(&GUIInputBox::pasteText, const_cast<GUIInputBox*>(this)));
 
 			mContextMenu.setLocalizedName(L"Cut", HString(L"Cut"));
 			mContextMenu.setLocalizedName(L"Copy", HString(L"Copy"));

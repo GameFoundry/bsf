@@ -5,7 +5,8 @@
 #include "CmBinarySerializer.h"
 
 #include <numeric>
-#include <boost/bind.hpp>
+
+using namespace std::placeholders;
 
 namespace CamelotFramework
 {
@@ -25,7 +26,7 @@ namespace CamelotFramework
 
 		BinarySerializer bs;
 		int totalBytesWritten = 0;
-		bs.encode(object, mWriteBuffer, WRITE_BUFFER_SIZE, &totalBytesWritten, boost::bind(&FileSerializer::flushBuffer, this, _1, _2, _3));
+		bs.encode(object, mWriteBuffer, WRITE_BUFFER_SIZE, &totalBytesWritten, std::bind(&FileSerializer::flushBuffer, this, _1, _2, _3));
 
 		mOutputStream.close();
 		mOutputStream.clear();

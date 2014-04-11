@@ -109,7 +109,7 @@ namespace BansheeEngine
 		for(auto& elem : mElements)
 		{
 			WString identifier = toWString(i);
-			dropDownData.entries.push_back(GUIDropDownDataEntry::button(identifier, boost::bind(&GUIListBox::elementSelected, this, i)));
+			dropDownData.entries.push_back(GUIDropDownDataEntry::button(identifier, std::bind(&GUIListBox::elementSelected, this, i)));
 			dropDownData.localizedNames[identifier] = elem;
 			i++;
 		}
@@ -118,7 +118,7 @@ namespace BansheeEngine
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(getBounds());
 
 		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
-			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, boost::bind(&GUIListBox::onListBoxClosed, this));
+			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIListBox::onListBoxClosed, this));
 
 		_setOn(true);
 		mIsListBoxOpen = true;

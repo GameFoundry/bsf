@@ -13,6 +13,8 @@
 #include <freetype/freetype.h>
 #include FT_FREETYPE_H
 
+using namespace std::placeholders;
+
 namespace CamelotFramework
 {
 	FontImporter::FontImporter()
@@ -281,13 +283,13 @@ namespace CamelotFramework
 					PixelUtil::bulkPixelConversion(*pixelData, *temp);
 
 					temp->lock();
-					gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, 
+					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
 						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, temp, false, _1));
 				}
 				else
 				{
 					pixelData->lock();
-					gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, 
+					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
 						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, false, _1));
 				}
 

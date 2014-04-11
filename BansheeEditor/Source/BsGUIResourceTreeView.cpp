@@ -14,6 +14,7 @@
 
 using namespace CamelotFramework;
 using namespace BansheeEngine;
+using namespace std::placeholders;
 
 namespace BansheeEditor
 {
@@ -35,8 +36,8 @@ namespace BansheeEditor
 		:GUITreeView(parent, backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions), mDraggedResources(nullptr), mCurrentWindow(nullptr), mDropTarget(nullptr), mDropTargetDragActive(false)
 	{
-		ProjectLibrary::instance().onEntryAdded.connect(boost::bind(&GUIResourceTreeView::entryAdded, this, _1));
-		ProjectLibrary::instance().onEntryRemoved.connect(boost::bind(&GUIResourceTreeView::entryRemoved, this, _1));
+		ProjectLibrary::instance().onEntryAdded.connect(std::bind(&GUIResourceTreeView::entryAdded, this, _1));
+		ProjectLibrary::instance().onEntryRemoved.connect(std::bind(&GUIResourceTreeView::entryRemoved, this, _1));
 
 		const ProjectLibrary::LibraryEntry* rootEntry = ProjectLibrary::instance().getRootEntry();
 
@@ -287,10 +288,10 @@ namespace BansheeEditor
 			mCurrentWindow = parentWindow;
 			mDropTarget = &Platform::createDropTarget(mCurrentWindow, _getOffset().x, _getOffset().y, _getWidth(), _getHeight());
 
-			mDropTargetEnterConn = mDropTarget->onEnter.connect(boost::bind(&GUIResourceTreeView::dropTargetDragMove, this, _1, _2));
-			mDropTargetMoveConn = mDropTarget->onDragOver.connect(boost::bind(&GUIResourceTreeView::dropTargetDragMove, this, _1, _2));
-			mDropTargetLeaveConn = mDropTarget->onLeave.connect(boost::bind(&GUIResourceTreeView::dropTargetDragLeave, this));
-			mDropTargetDroppedConn = mDropTarget->onDrop.connect(boost::bind(&GUIResourceTreeView::dropTargetDragDropped, this, _1, _2));
+			mDropTargetEnterConn = mDropTarget->onEnter.connect(std::bind(&GUIResourceTreeView::dropTargetDragMove, this, _1, _2));
+			mDropTargetMoveConn = mDropTarget->onDragOver.connect(std::bind(&GUIResourceTreeView::dropTargetDragMove, this, _1, _2));
+			mDropTargetLeaveConn = mDropTarget->onLeave.connect(std::bind(&GUIResourceTreeView::dropTargetDragLeave, this));
+			mDropTargetDroppedConn = mDropTarget->onDrop.connect(std::bind(&GUIResourceTreeView::dropTargetDragDropped, this, _1, _2));
 		}
 		else
 			mDropTarget = nullptr;
@@ -413,7 +414,7 @@ namespace BansheeEditor
 		mDraggedResources = internalDraggedResources;
 
 		DragAndDropManager::instance().startDrag((UINT32)DragAndDropType::Resources, (void*)draggedResources, 
-			boost::bind(&GUIResourceTreeView::dragAndDropFinalize, this), true);
+			std::bind(&GUIResourceTreeView::dragAndDropFinalize, this), true);
 	}
 
 	void GUIResourceTreeView::dragAndDropEnded(TreeElement* overTreeElement)

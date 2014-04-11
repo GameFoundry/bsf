@@ -109,7 +109,7 @@ namespace BansheeEngine
 		mLocalizedEntryNames = dropDownData.localizedNames;
 
 		mHitBox = GUIDropDownHitBox::create(*this, false);
-		mHitBox->onFocusLost.connect(boost::bind(&GUIDropDownBox::dropDownFocusLost, this));
+		mHitBox->onFocusLost.connect(std::bind(&GUIDropDownBox::dropDownFocusLost, this));
 		mHitBox->setFocus(true);
 		mHitBox->_setWidgetDepth(0);
 		mHitBox->_setAreaDepth(0);
@@ -368,7 +368,7 @@ namespace BansheeEngine
 			if(mScrollUpBtn == nullptr)
 			{
 				mScrollUpBtn = GUIButton::create(*mOwner, GUIContent(HString(L""), mOwner->mScrollUpBtnArrow), mOwner->mScrollUpStyle);
-				mScrollUpBtn->onClick.connect(boost::bind(&DropDownSubMenu::scrollUp, this));
+				mScrollUpBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollUp, this));
 			}
 
 			mContentLayout->addElement(mScrollUpBtn);			
@@ -416,7 +416,7 @@ namespace BansheeEngine
 				else
 				{
 					expEntryBtn = GUIButton::create(*mOwner, getElementLocalizedName(i), mOwner->mEntryExpBtnStyle);
-					expEntryBtn->onHover.connect(boost::bind(&DropDownSubMenu::openSubMenu, this, expEntryBtn, i));
+					expEntryBtn->onHover.connect(std::bind(&DropDownSubMenu::openSubMenu, this, expEntryBtn, i));
 				}
 
 				mContentLayout->addElement(expEntryBtn);
@@ -433,8 +433,8 @@ namespace BansheeEngine
 				else
 				{
 					entryBtn = GUIButton::create(*mOwner, getElementLocalizedName(i), mOwner->mEntryBtnStyle);
-					entryBtn->onHover.connect(boost::bind(&DropDownSubMenu::closeSubMenu, this));
-					entryBtn->onClick.connect(boost::bind(&DropDownSubMenu::elementClicked, this,  i));
+					entryBtn->onHover.connect(std::bind(&DropDownSubMenu::closeSubMenu, this));
+					entryBtn->onClick.connect(std::bind(&DropDownSubMenu::elementClicked, this,  i));
 				}
 
 				mContentLayout->addElement(entryBtn);
@@ -462,7 +462,7 @@ namespace BansheeEngine
 			if(mScrollDownBtn == nullptr)
 			{
 				mScrollDownBtn = GUIButton::create(*mOwner, GUIContent(HString(L""), mOwner->mScrollDownBtnArrow), mOwner->mScrollDownStyle);
-				mScrollDownBtn->onClick.connect(boost::bind(&DropDownSubMenu::scrollDown, this));
+				mScrollDownBtn->onClick.connect(std::bind(&DropDownSubMenu::scrollDown, this));
 			}
 
 			mContentLayout->addElement(mScrollDownBtn);			

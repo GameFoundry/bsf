@@ -167,7 +167,7 @@ namespace BansheeEditor
 		labelStyle.fontSize = DefaultFontSize;
 		labelStyle.fixedWidth = false;
 		labelStyle.fixedHeight = true;
-		labelStyle.height = 16;
+		labelStyle.height = 11;
 		labelStyle.minWidth = 10;
 
 		mSkin.setStyle(GUILabel::getGUITypeName(), labelStyle);

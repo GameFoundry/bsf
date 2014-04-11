@@ -3,14 +3,15 @@
 #include "CmApplication.h"
 
 using namespace CamelotFramework;
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
 	DragAndDropManager::DragAndDropManager()
 		:mIsDragInProgress(false), mDragTypeId(0), mData(nullptr), mCaptureChanged(false), mCaptureActive(0), mNeedsValidDropTarget(false)
 	{
-		Platform::onMouseCaptureChanged.connect(boost::bind(&DragAndDropManager::mouseCaptureChanged, this));
-		Input::instance().onCursorReleased.connect(boost::bind(&DragAndDropManager::cursorReleased, this, _1));
+		Platform::onMouseCaptureChanged.connect(std::bind(&DragAndDropManager::mouseCaptureChanged, this));
+		Input::instance().onCursorReleased.connect(std::bind(&DragAndDropManager::cursorReleased, this, _1));
 	}
 
 	void DragAndDropManager::addDropCallback(std::function<void(bool)> dropCallback)

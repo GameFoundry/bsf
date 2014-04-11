@@ -13,6 +13,8 @@
 
 #include "FreeImage.h"
 
+using namespace std::placeholders;
+
 namespace CamelotFramework
 {
 	void FreeImageLoadErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 
@@ -139,7 +141,7 @@ namespace CamelotFramework
 			imgData->getPixels(mip, *src);
 
 			src->lock();
-			gCoreThread().queueReturnCommand(boost::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, src, false, _1));
+			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, src, false, _1));
 		}
 
 		fileData->close();

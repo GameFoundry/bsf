@@ -76,7 +76,7 @@ namespace CamelotFramework
 
 		mMeshes[meshIdx] = transientMeshPtr;
 
-		queueGpuCommand(getThisPtr(), boost::bind(&MeshHeap::allocInternal, this, meshIdx, meshData));
+		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::allocInternal, this, meshIdx, meshData));
 
 		return transientMeshPtr;
 	}
@@ -90,7 +90,7 @@ namespace CamelotFramework
 		mesh->markAsDestroyed();
 		mMeshes.erase(iterFind);
 
-		queueGpuCommand(getThisPtr(), boost::bind(&MeshHeap::deallocInternal, this, mesh->mId));
+		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::deallocInternal, this, mesh->mId));
 	}
 
 	void MeshHeap::allocInternal(UINT32 meshId, const MeshDataPtr& meshData)
@@ -555,7 +555,7 @@ namespace CamelotFramework
 		QueryData& queryData = mEventQueries[allocData.eventQueryIdx];
 		queryData.queryId = mNextQueryId++;
 		queryData.query->onTriggered.disconnect_all_slots();
-		queryData.query->onTriggered.connect(boost::bind(&MeshHeap::queryTriggered, this, meshId, queryData.queryId));
+		queryData.query->onTriggered.connect(std::bind(&MeshHeap::queryTriggered, this, meshId, queryData.queryId));
 		queryData.query->begin();
 	}
 

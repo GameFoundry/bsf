@@ -71,7 +71,7 @@ namespace CamelotFramework
 			checkIsArray(false);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			boost::function<std::shared_ptr<DataType>(ObjectType*)> f = boost::any_cast<boost::function<std::shared_ptr<DataType>(ObjectType*)>>(valueGetter);
+			std::function<std::shared_ptr<DataType>(ObjectType*)> f = boost::any_cast<std::function<std::shared_ptr<DataType>(ObjectType*)>>(valueGetter);
 			std::shared_ptr<IReflectable> castDataType = f(castObjType);
 
 			return castDataType;
@@ -82,7 +82,7 @@ namespace CamelotFramework
 			checkIsArray(true);
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
-			boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)> f = boost::any_cast<boost::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>>(valueGetter);
+			std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)> f = boost::any_cast<std::function<std::shared_ptr<DataType>(ObjectType*, UINT32)>>(valueGetter);
 
 			std::shared_ptr<IReflectable> castDataType = f(castObjType, index);
 			return castDataType;
@@ -100,7 +100,7 @@ namespace CamelotFramework
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
 			std::shared_ptr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
-			boost::function<void(ObjectType*, std::shared_ptr<DataType>)> f = boost::any_cast<boost::function<void(ObjectType*, std::shared_ptr<DataType>)>>(valueSetter);
+			std::function<void(ObjectType*, std::shared_ptr<DataType>)> f = boost::any_cast<std::function<void(ObjectType*, std::shared_ptr<DataType>)>>(valueSetter);
 			f(castObjType, castDataObj);
 		}
 
@@ -116,7 +116,7 @@ namespace CamelotFramework
 
 			ObjectType* castObjType = static_cast<ObjectType*>(object);
 			std::shared_ptr<DataType> castDataObj = std::static_pointer_cast<DataType>(value);
-			boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>>(valueSetter);
+			std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)> f = boost::any_cast<std::function<void(ObjectType*, UINT32, std::shared_ptr<DataType>)>>(valueSetter);
 			f(castObjType, index, castDataObj);
 		}
 
@@ -124,7 +124,7 @@ namespace CamelotFramework
 		{
 			checkIsArray(true);
 
-			boost::function<UINT32(ObjectType*)> f = boost::any_cast<boost::function<UINT32(ObjectType*)>>(arraySizeGetter);
+			std::function<UINT32(ObjectType*)> f = boost::any_cast<std::function<UINT32(ObjectType*)>>(arraySizeGetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			return f(castObject);
 		}
@@ -139,7 +139,7 @@ namespace CamelotFramework
 					"Specified field (" + mName + ") has no array size setter.");
 			}
 
-			boost::function<void(ObjectType*, UINT32)> f = boost::any_cast<boost::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
+			std::function<void(ObjectType*, UINT32)> f = boost::any_cast<std::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			f(castObject, size);
 		}
