@@ -33,7 +33,7 @@ namespace CamelotFramework
 	{
 	public:
 		CommandQueueSync()
-			:mLock(mCommandQueueMutex, boost::defer_lock)
+			:mLock(mCommandQueueMutex, CM_DEFER_LOCK)
 		{ }
 		virtual ~CommandQueueSync() {}
 

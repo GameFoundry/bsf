@@ -34,15 +34,11 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
-	CM_STATIC_MUTEX_INSTANCE(D3D9PixelBuffer::msDeviceAccessMutex)
-	//-----------------------------------------------------------------------------  
+	D3D9PixelBuffer::D3D9PixelBuffer(GpuBufferUsage usage, D3D9Texture* ownerTexture)
+		:PixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
+		 mDoMipmapGen(0), mHWMipmaps(0), mOwnerTexture(ownerTexture)
+	{ }
 
-	D3D9PixelBuffer::D3D9PixelBuffer(GpuBufferUsage usage, 
-													 D3D9Texture* ownerTexture):
-		PixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
-		mDoMipmapGen(0), mHWMipmaps(0), mOwnerTexture(ownerTexture)
-	{	
-	}
 	D3D9PixelBuffer::~D3D9PixelBuffer()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION

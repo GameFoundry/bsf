@@ -100,8 +100,6 @@ namespace CamelotFramework {
 		// The current lock flags of this surface.
 		DWORD mLockFlags;
 
-		// Device access mutex.
-		CM_STATIC_MUTEX(msDeviceAccessMutex)		
 	protected:
 		/// Lock a box
 		PixelData lockImpl(const PixelVolume lockBox,  GpuLockOptions options);

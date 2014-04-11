@@ -264,7 +264,6 @@ namespace CamelotFramework
 		CM_THREAD_SYNCHRONISER(mRequestCondition)
 
 		/// Init notification mutex (must lock before waiting on initCondition)
-		CM_MUTEX(mInitMutex)
 		CM_MUTEX(mRequestMutex)
 		CM_MUTEX(mProcessMutex)
 		CM_RW_MUTEX(mRequestHandlerMutex);

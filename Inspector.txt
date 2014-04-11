@@ -20,7 +20,6 @@ Other:
 -------------
 
 REFACTOR c++ GUI a bit:
- - Add new graphic for input boxes and add object field graphics
  - GameObjectField
    - When dragging over GameObjectField cursor needs to change depending whether drop will be accepted or not
    - How will I limit it to just certain component types?
