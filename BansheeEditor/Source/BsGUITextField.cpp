@@ -13,16 +13,11 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	GUITextField::GUITextField(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, CM::UINT32 labelWidth, 
+	GUITextField::GUITextField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, CM::UINT32 labelWidth, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, parent, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr)
+		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr)
 	{
-		const GUIElementStyle* curInputBoxStyle = inputBoxStyle;
-
-		if(curInputBoxStyle == nullptr)
-			curInputBoxStyle = parent.getSkin().getStyle("InputBox");
-
-		mInputBox = GUIInputBox::create(parent, false, inputBoxStyle);
+		mInputBox = GUIInputBox::create(false, inputBoxStyle);
 		mLayout->addElement(mInputBox);
 	}
 

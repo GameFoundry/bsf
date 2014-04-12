@@ -18,33 +18,21 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIWindowDropArea::GUIWindowDropArea(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUITexture(parent, style, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, layoutOptions)
+	GUIWindowDropArea::GUIWindowDropArea(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUITexture(style, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, layoutOptions)
 	{ }
 
 	GUIWindowDropArea::~GUIWindowDropArea()
 	{ }
 
-	GUIWindowDropArea* GUIWindowDropArea::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUIWindowDropArea* GUIWindowDropArea::create(const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(parent, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(style, GUILayoutOptions::create(style));
 	}
 
-	GUIWindowDropArea* GUIWindowDropArea::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(parent, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIWindowDropArea::setFocused(bool focused)

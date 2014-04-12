@@ -26,7 +26,7 @@ namespace BansheeEditor
 		//layout.addElement(GUIInputBox::create(*mGUI));
 		//layout.addElement(GUIInputBox::create(*mGUI, GUILayoutOptions::fixed(100, 100), true));
 
-		GUIScrollArea* scrollArea = GUIScrollArea::create(getParentWidget());
+		GUIScrollArea* scrollArea = GUIScrollArea::create();
 		layout.addElement(scrollArea);
 
 		GUILayout& scrollLayout = scrollArea->getLayout().addLayoutX();
@@ -44,9 +44,9 @@ namespace BansheeEditor
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test K"));
 		//scrollLayout.addElement(GUIButton::create(*mGUI, L"Test L"));
 
-		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
-		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
-		scrollLayout.addElement(GUIInputBox::create(getParentWidget(), true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
+		scrollLayout.addElement(GUIInputBox::create(true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
+		scrollLayout.addElement(GUIInputBox::create(true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
+		scrollLayout.addElement(GUIInputBox::create(true, GUIOptions(GUIOption::fixedWidth(100), GUIOption::fixedHeight(100))));
 
 		//GUIFlexibleSpace& space4 = otherLayout.addFlexibleSpace();
 		//otherLayout.addElement(mDbgLabel);

@@ -82,10 +82,10 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	GUITreeView::GUITreeView(GUIWidget& parent, GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
+	GUITreeView::GUITreeView(GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
 		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
 		BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mBackgroundStyle(backgroundStyle),
+		:GUIElementContainer(layoutOptions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
 		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
 		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f),
@@ -112,15 +112,15 @@ namespace BansheeEditor
 		if(mDragSepHighlightStyle == nullptr)
 			mDragSepHighlightStyle = parent.getSkin().getStyle("TreeViewElementSepHighlight");
 
-		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
-		mNameEditBox = GUITreeViewEditBox::create(parent, mEditBoxStyle);
+		mBackgroundImage = GUITexture::create(mBackgroundStyle);
+		mNameEditBox = GUITreeViewEditBox::create(mEditBoxStyle);
 		mNameEditBox->disableRecursively();
 
 		mNameEditBox->onInputConfirmed.connect(std::bind(&GUITreeView::onEditAccepted, this));
 		mNameEditBox->onInputCanceled.connect(std::bind(&GUITreeView::onEditCanceled, this));
 
-		mDragHighlight = GUITexture::create(parent, mDragHighlightStyle);
-		mDragSepHighlight = GUITexture::create(parent, mDragSepHighlightStyle);
+		mDragHighlight = GUITexture::create(mDragHighlightStyle);
+		mDragSepHighlight = GUITexture::create(mDragSepHighlightStyle);
 
 		mDragHighlight->disableRecursively();
 		mDragSepHighlight->disableRecursively();
@@ -498,7 +498,7 @@ namespace BansheeEditor
 
 		if(iterFind == mSelectedElements.end())
 		{
-			GUITexture* background = GUITexture::create(_getParentWidget(), mSelectionBackgroundStyle);
+			GUITexture* background = GUITexture::create(mSelectionBackgroundStyle);
 			_registerChildElement(background);
 
 			element->mIsSelected = true;
@@ -613,7 +613,7 @@ namespace BansheeEditor
 			HString name(toWString(element->mName));
 			if(element->mElement == nullptr)
 			{
-				element->mElement = GUILabel::create(_getParentWidget(), name, mElementBtnStyle);
+				element->mElement = GUILabel::create(name, mElementBtnStyle);
 				_registerChildElement(element->mElement);
 			}
 
@@ -621,7 +621,7 @@ namespace BansheeEditor
 			{
 				if(element->mFoldoutBtn == nullptr)
 				{
-					element->mFoldoutBtn = GUIToggle::create(_getParentWidget(), GUIContent(HString(L"")), mFoldoutBtnStyle);
+					element->mFoldoutBtn = GUIToggle::create(GUIContent(HString(L"")), mFoldoutBtnStyle);
 					_registerChildElement(element->mFoldoutBtn);
 
 					element->mFoldoutBtn->onToggled.connect(std::bind(&GUITreeView::elementToggled, this, element, _1));

@@ -23,9 +23,9 @@ namespace BansheeEditor
 	const UINT32 GUITabbedTitleBar::TAB_SPACING = 20;
 	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
 
-	GUITabbedTitleBar::GUITabbedTitleBar(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, 
+	GUITabbedTitleBar::GUITabbedTitleBar(RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, 
 		GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mParentWindow(parentWindow), mMinBtn(nullptr), 
+		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMinBtn(nullptr), 
 		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle), mTempDraggedWidget(nullptr),
@@ -43,13 +43,13 @@ namespace BansheeEditor
 		if(mTabBtnStyle == nullptr)
 			mTabBtnStyle = parent.getSkin().getStyle("TabbedBarBtn");
 
-		mBackgroundImage = GUITexture::create(parent, mBackgroundStyle);
+		mBackgroundImage = GUITexture::create(mBackgroundStyle);
 		_registerChildElement(mBackgroundImage);
 
-		mMinBtn = GUIButton::create(parent, HString(L""), mMinimizeBtnStyle);
+		mMinBtn = GUIButton::create(HString(L""), mMinimizeBtnStyle);
 		_registerChildElement(mMinBtn);
 
-		mCloseBtn = GUIButton::create(parent, HString(L""), mCloseBtnStyle);
+		mCloseBtn = GUIButton::create(HString(L""), mCloseBtnStyle);
 		_registerChildElement(mCloseBtn);
 
 		mCloseBtn->onClick.connect(std::bind(&GUITabbedTitleBar::tabClosed, this));
@@ -62,23 +62,23 @@ namespace BansheeEditor
 
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, 
+	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, 
 		GUIElementStyle* tabBtnStyle, GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle)
 	{
-		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parent, parentWindow, backgroundStyle, tabBtnStyle, 
+		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
+	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
 	{
-		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parent, parentWindow, nullptr, nullptr, 
+		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, nullptr, nullptr, 
 			nullptr, nullptr, layoutOptions);
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(GUIWidget& parent, RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
+	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
 		GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle)
 	{
-		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parent, parentWindow, backgroundStyle, tabBtnStyle, 
+		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, layoutOptions);
 	}
 
@@ -89,7 +89,7 @@ namespace BansheeEditor
 
 	UINT32 GUITabbedTitleBar::insertTab(UINT32 position, const CM::HString& name)
 	{
-		GUITabButton* newTabToggle = GUITabButton::create(*mParent, mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
+		GUITabButton* newTabToggle = GUITabButton::create(mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
 		_registerChildElement(newTabToggle);
 
 		position = Math::clamp(position, 0U, (UINT32)mTabButtons.size());

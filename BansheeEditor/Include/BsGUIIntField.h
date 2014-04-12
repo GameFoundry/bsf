@@ -10,7 +10,7 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		GUIIntField(const PrivatelyConstruct& dummy, BS::GUIWidget& parent, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
+		GUIIntField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
 			BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* inputBoxStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
 
 		CM::INT32 getValue() const;

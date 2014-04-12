@@ -11,8 +11,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mContent(content)
+	GUILabel::GUILabel(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIElement(style, layoutOptions), mContent(content)
 	{
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
@@ -83,36 +83,24 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const HString& text, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const HString& text, const GUIElementStyle* style)
 	{
-		return create(parent, GUIContent(text), style);
+		return create(GUIContent(text), style);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		return create(parent, GUIContent(text), layoutOptions, style);
+		return create(GUIContent(text), layoutOptions, style);
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const GUIContent& content, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, content, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(style, content, GUILayoutOptions::create(style));
 	}
 
-	GUILabel* GUILabel::create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(parent, style, content, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(style, content, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	const String& GUILabel::getGUITypeName()

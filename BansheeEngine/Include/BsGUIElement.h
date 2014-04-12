@@ -25,7 +25,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIElement(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIElement();
 
 		/**
@@ -130,7 +130,6 @@ namespace BansheeEngine
 		const CM::RectI& _getClipRect() const { return mClipRect; }
 		const RectOffset& _getPadding() const;
 		CM::UINT32 _getDepth() const { return mDepth; }
-		GUIWidget& _getParentWidget() const { return *mParent; }
 		virtual bool _isInBounds(const CM::Vector2I position) const;
 		virtual bool _hasCustomCursor(const CM::Vector2I position, CursorType& type) const { return false; }
 		virtual bool _acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const { return false; }
@@ -160,7 +159,6 @@ namespace BansheeEngine
 		CM::RectI getContentBounds() const;
 		CM::RectI getContentClipRect() const;
 
-		GUIWidget* mParent;
 		bool mIsDestroyed;
 		GUILayoutOptions mLayoutOptions;
 		CM::RectI mClippedBounds;

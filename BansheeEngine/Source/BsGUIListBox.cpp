@@ -21,8 +21,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIListBox::GUIListBox(GUIWidget& parent, const GUIElementStyle* style, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(parent, style, GUIContent(HString(L"")), layoutOptions), mElements(elements), mSelectedIdx(0), mIsListBoxOpen(false)
+	GUIListBox::GUIListBox(const GUIElementStyle* style, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions)
+		:GUIButtonBase(style, GUIContent(HString(L"")), layoutOptions), mElements(elements), mSelectedIdx(0), mIsListBoxOpen(false)
 	{
 		if(elements.size() > 0)
 			setContent(GUIContent(mElements[mSelectedIdx]));
@@ -33,26 +33,14 @@ namespace BansheeEngine
 		closeListBox();
 	}
 
-	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<HString>::type& elements, const GUIElementStyle* style)
+	GUIListBox* GUIListBox::create(const Vector<HString>::type& elements, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(style, elements, GUILayoutOptions::create(style));
 	}
 
-	GUIListBox* GUIListBox::create(GUIWidget& parent, const Vector<HString>::type& elements, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIListBox* GUIListBox::create(const Vector<HString>::type& elements, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(parent, style, elements, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(style, elements, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIListBox::setElements(const CM::Vector<CM::HString>::type& elements)
@@ -114,11 +102,11 @@ namespace BansheeEngine
 			i++;
 		}
 
-		GUIWidget& widget = _getParentWidget();
+		GUIWidget* widget = _getParentWidget();
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(getBounds());
 
-		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
-			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIListBox::onListBoxClosed, this));
+		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget->getTarget(), 
+			placement, dropDownData, widget->getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIListBox::onListBoxClosed, this));
 
 		_setOn(true);
 		mIsListBoxOpen = true;

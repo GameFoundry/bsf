@@ -220,12 +220,12 @@ namespace BansheeEditor
 
 		if(horizontal)
 		{
-			mSlider = GUIDockSlider::create(*widgetParent, true, widgetParent->getSkin().getStyle("DockSliderBtn"));
+			mSlider = GUIDockSlider::create(true, widgetParent->getSkin().getStyle("DockSliderBtn"));
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 		}
 		else
 		{
-			mSlider = GUIDockSlider::create(*widgetParent, false, widgetParent->getSkin().getStyle("DockSliderBtn"));
+			mSlider = GUIDockSlider::create(false, widgetParent->getSkin().getStyle("DockSliderBtn"));
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 		}
 
@@ -355,8 +355,8 @@ namespace BansheeEditor
 		return mWidgets->getContentBounds();
 	}
 
-	DockManager::DockManager(BS::GUIWidget& parent, CM::RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
+	DockManager::DockManager(CM::RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
 		mShowOverlay(false)
 	{
 		mTopDropPolygon = cm_newN<Vector2>(4);
@@ -377,9 +377,9 @@ namespace BansheeEditor
 		cm_deleteN(mRightDropPolygon, 4);
 	}
 
-	DockManager* DockManager::create(GUIWidget& parent, RenderWindow* parentWindow)
+	DockManager* DockManager::create(RenderWindow* parentWindow)
 	{
-		return new (cm_alloc<DockManager, PoolAlloc>()) DockManager(parent, parentWindow, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+		return new (cm_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
 	void DockManager::update()
@@ -447,16 +447,16 @@ namespace BansheeEditor
 			switch(location)
 			{
 			case DockLocation::Left:
-				container->addLeft(mParent, mParentWindow, widgetToInsert);
+				container->addLeft(_getParentWidget(), mParentWindow, widgetToInsert);
 				break;
 			case DockLocation::Right:
-				container->addRight(mParent, mParentWindow, widgetToInsert);
+				container->addRight(_getParentWidget(), mParentWindow, widgetToInsert);
 				break;
 			case DockLocation::Top:
-				container->addTop(mParent, mParentWindow, widgetToInsert);
+				container->addTop(_getParentWidget(), mParentWindow, widgetToInsert);
 				break;
 			case DockLocation::Bottom:
-				container->addBottom(mParent, mParentWindow, widgetToInsert);
+				container->addBottom(_getParentWidget(), mParentWindow, widgetToInsert);
 				break;
 			}
 		}
@@ -465,7 +465,7 @@ namespace BansheeEditor
 			if(mRootContainer.mWidgets != nullptr)
 				CM_EXCEPT(InternalErrorException, "Trying to insert a widget into dock manager root container but one already exists.");
 
-			mRootContainer.makeLeaf(mParent, mParentWindow);
+			mRootContainer.makeLeaf(_getParentWidget(), mParentWindow);
 			mRootContainer.addWidget(widgetToInsert);
 		}
 	}
@@ -633,7 +633,7 @@ namespace BansheeEditor
 
 		if(leafEntry->widgetNames.size() > 0) // If zero, entire layout is empty
 		{
-			mRootContainer.makeLeaf(mParent, mParentWindow);
+			mRootContainer.makeLeaf(_getParentWidget(), mParentWindow);
 			OpenWidgets(&mRootContainer, leafEntry->widgetNames);
 
 			if(!rootEntry->isLeaf)
@@ -648,7 +648,7 @@ namespace BansheeEditor
 
 					leafEntry = GetLeafEntry(curEntry.layoutEntry->children[1], 0);
 
-					curEntry.container->splitContainer(mParent, mParentWindow, curEntry.layoutEntry->horizontalSplit, false, curEntry.layoutEntry->splitPosition);
+					curEntry.container->splitContainer(_getParentWidget(), mParentWindow, curEntry.layoutEntry->horizontalSplit, false, curEntry.layoutEntry->splitPosition);
 
 					DockContainer* otherChild = curEntry.container->mChildren[1];
 					OpenWidgets(otherChild, leafEntry->widgetNames);
@@ -858,7 +858,7 @@ namespace BansheeEditor
 
 			const Vector2I& widgetRelPos = event.getPosition();
 
-			const Matrix4& worldTfrm = mParent->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
 
 			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);
@@ -916,7 +916,7 @@ namespace BansheeEditor
 			EditorWidgetBase* draggedWidget = reinterpret_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());
 
 			const Vector2I& widgetRelPos = event.getPosition();
-			const Matrix4& worldTfrm = mParent->SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = _getParentWidget()->SO()->getWorldTfrm();
 
 			Vector4 tfrmdPos = worldTfrm.multiply3x4(Vector4((float)widgetRelPos.x, (float)widgetRelPos.y, 0.0f, 1.0f));
 			Vector2 windowPosVec(tfrmdPos.x, tfrmdPos.y);

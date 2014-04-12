@@ -28,15 +28,32 @@ REFACTOR c++ GUI a bit:
    - When dragging over GameObjectField cursor needs to change depending whether drop will be accepted or not
    - How will I limit it to just certain component types?
 
-How will I add editor fields to GUILayout? Right now I have a bunch of Add* methods and that won't work for Editor-only fields. I could extend GUILayout to EditorGUILayout but then GUIArea needs to be aware of that as well...
+Refactor GUIElements so that they don't require GUIwidget on creation
+Hide "mStyle"
+ - Replace it with getStyle()
+   - If custom style is set always return that
+   - If widget is set return widget style
+   - Otherwise return dummy style
+ - Need to ensure that anything that uses mStyle is constantly refreshed instead of just queried once during construction
 
-GUIElement has GetChild/GetNumChildren, which isn't really useful for elements like GUIToggle, GUIButton, etc.
- - GUIElements and GUILayout should still share same base class, but make it GUIElementBase, that doesn't include children
+GUIScrollBar uses parent.GetSkin - need to get around that
+ - Likely a method like _overrideDefaultStyleName()
+ - Or just inherit the type if its only for a couple of buttons?
+ - OR PROBABLY replace current GUIElementStyle parameter with a string overriding the default style
+ - Also using it:
+   - GUIFoldout
+   - GUITreeView
+   - GUITabbedTitleBar
+   - GUIGameObjectField
 
-Refactor GUILayout so it has AddElement, RemoveElement, InsertElement, GetChildren, GetNumChildren methods
- - GUIElement reference should be kept by parent layout, so if it is ever removed (or never added) it will get garbage collected and destroyed
+DockManager was retrieving a viewport from the parent widget. Provide it manually?
 
-Layouts/Areas/Elements need SetVisible(true/false) toggle
+Make a common class for ScriptGUIElement as they all share:
+ - Destroy(), DestroyInstance(), SetParent(), SetVisible() methods, and potentially others
+
+Add InsertElement to GUILayout
+
+
 
 -------------
 Implementation order:

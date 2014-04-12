@@ -16,8 +16,8 @@ namespace BansheeEditor
 {
 	const float GUIColor::ALPHA_SPLIT_POSITION = 0.75f;
 
-	GUIColor::GUIColor(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
+	GUIColor::GUIColor(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIElement(style, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
 	{
 		mColorSprite = cm_new<ImageSprite, PoolAlloc>();
 		mAlphaSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -38,26 +38,14 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIColor* GUIColor::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUIColor* GUIColor::create(const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(parent, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(style, GUILayoutOptions::create(style));
 	}
 
-	GUIColor* GUIColor::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(parent, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIColor::setColor(const Color& color)

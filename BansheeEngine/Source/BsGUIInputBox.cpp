@@ -34,8 +34,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIInputBox::GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
-		:GUIElement(parent, style, layoutOptions), mDragInProgress(false),
+	GUIInputBox::GUIInputBox(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
+		:GUIElement(style, layoutOptions), mDragInProgress(false),
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -62,37 +62,19 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIInputBox* GUIInputBox::create(GUIWidget& parent, bool multiline, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(bool multiline, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(style), multiline);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(style, GUILayoutOptions::create(style), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(GUIWidget& parent, bool multiline, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(layoutOptions, style), multiline);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(style, GUILayoutOptions::create(layoutOptions, style), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(parent, style, GUILayoutOptions::create(layoutOptions, style), false);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(style, GUILayoutOptions::create(layoutOptions, style), false);
 	}
 
 	void GUIInputBox::setText(const CM::WString& text)

@@ -13,9 +13,9 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIInputBox* create(GUIWidget& parent, bool multiline = false, const GUIElementStyle* style = nullptr);
-		static GUIInputBox* create(GUIWidget& parent, bool multiline, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
-		static GUIInputBox* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIInputBox* create(bool multiline = false, const GUIElementStyle* style = nullptr);
+		static GUIInputBox* create(bool multiline, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIInputBox* create(const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		const CM::WString& getText() const { return mText; }
 		void setText(const CM::WString& text);
@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
-		GUIInputBox(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
+		GUIInputBox(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
 		virtual ~GUIInputBox();
 
 		/**

@@ -14,30 +14,18 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUITreeViewEditBox* GUITreeViewEditBox::create(BS::GUIWidget& parent, const BS::GUIElementStyle* style)
+	GUITreeViewEditBox* GUITreeViewEditBox::create(const BS::GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(parent, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(style, GUILayoutOptions::create(style));
 	}
 
-	GUITreeViewEditBox* GUITreeViewEditBox::create(BS::GUIWidget& parent, const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style)
+	GUITreeViewEditBox* GUITreeViewEditBox::create(const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(parent, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUITreeViewEditBox::GUITreeViewEditBox(BS::GUIWidget& parent, const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions)
-		:GUIInputBox(parent, style, layoutOptions, false)
+	GUITreeViewEditBox::GUITreeViewEditBox(const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions)
+		:GUIInputBox(style, layoutOptions, false)
 	{
 
 	}

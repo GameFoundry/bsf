@@ -8,7 +8,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIElementContainer : public BS::GUIElement
 	{
 	protected:
-		GUIElementContainer(BS::GUIWidget& parent, const BS::GUILayoutOptions& layoutOptions);
+		GUIElementContainer(const BS::GUILayoutOptions& layoutOptions);
 		virtual ~GUIElementContainer();
 
 		/**

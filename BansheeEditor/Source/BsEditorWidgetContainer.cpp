@@ -23,7 +23,7 @@ namespace BansheeEditor
 	{
 		mTitleBarArea = GUIArea::create(*parent, 0, 0, 0, 0, 9900);
 
-		mTitleBar = GUITabbedTitleBar::create(*parent, renderWindow);
+		mTitleBar = GUITabbedTitleBar::create(renderWindow);
 		mTitleBar->onTabActivated.connect(std::bind(&EditorWidgetContainer::tabActivated, this, _1));
 		mTitleBar->onTabClosed.connect(std::bind(&EditorWidgetContainer::tabClosed, this, _1));
 		mTitleBar->onTabDraggedOff.connect(std::bind(&EditorWidgetContainer::tabDraggedOff, this, _1));

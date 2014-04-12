@@ -10,7 +10,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUILayout::GUILayout()
-		:mOptimalWidth(0), mOptimalHeight(0), mActualWidth(0), mActualHeight(0)
+		:mOptimalWidth(0), mOptimalHeight(0), mActualWidth(0), mActualHeight(0), mWidgetParent(nullptr)
 	{
 
 	}

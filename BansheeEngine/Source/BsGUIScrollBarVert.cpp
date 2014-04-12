@@ -14,8 +14,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIScrollBarVert::GUIScrollBarVert(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIScrollBar(parent, false, style, layoutOptions)
+	GUIScrollBarVert::GUIScrollBarVert(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIScrollBar(false, style, layoutOptions)
 	{
 
 	}
@@ -25,26 +25,14 @@ namespace BansheeEngine
 
 	}
 
-	GUIScrollBarVert* GUIScrollBarVert::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUIScrollBarVert* GUIScrollBarVert::create(const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(parent, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(style, GUILayoutOptions::create(style));
 	}
 
-	GUIScrollBarVert* GUIScrollBarVert::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollBarVert* GUIScrollBarVert::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(parent, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	const String& GUIScrollBarVert::getGUITypeName()

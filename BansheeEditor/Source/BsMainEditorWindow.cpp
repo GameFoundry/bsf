@@ -31,7 +31,7 @@ namespace BansheeEditor
 		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
 		mMenuBar(cm_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{
-		mDockManager = DockManager::create(*mGUI.get(), mRenderWindow.get());
+		mDockManager = DockManager::create(mRenderWindow.get());
 
 		updateAreas();
 

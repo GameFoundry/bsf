@@ -122,7 +122,7 @@ namespace BansheeEditor
 		static BS::VirtualButton mRenameVB;
 		static BS::VirtualButton mDeleteVB;
 
-		GUITreeView(BS::GUIWidget& parent, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
+		GUITreeView(BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
 			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
 			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
 

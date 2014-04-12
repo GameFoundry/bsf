@@ -12,12 +12,12 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUITabbedTitleBar* create(BS::GUIWidget& parent, CM::RenderWindow* parentWindow,
+		static GUITabbedTitleBar* create(CM::RenderWindow* parentWindow,
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* tabBtnStyle = nullptr, 
 			BS::GUIElementStyle* minBtnStyle = nullptr, BS::GUIElementStyle* closeBtnStyle = nullptr);
 
-		static GUITabbedTitleBar* create(BS::GUIWidget& parent, CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions);
-		static GUITabbedTitleBar* create(BS::GUIWidget& parent, CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions, 
+		static GUITabbedTitleBar* create(CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions);
+		static GUITabbedTitleBar* create(CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions, 
 			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* tabBtnStyle = nullptr, 
 			BS::GUIElementStyle* minBtnStyle = nullptr, BS::GUIElementStyle* closeBtnStyle = nullptr);
 
@@ -69,7 +69,7 @@ namespace BansheeEditor
 		const BS::GUIElementStyle* mMinimizeBtnStyle;
 		const BS::GUIElementStyle* mTabBtnStyle;
 
-		GUITabbedTitleBar(BS::GUIWidget& parent, CM::RenderWindow* parentWindow, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* tabBtnStyle, 
+		GUITabbedTitleBar(CM::RenderWindow* parentWindow, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* tabBtnStyle, 
 			BS::GUIElementStyle* minBtnStyle, BS::GUIElementStyle* closeBtnStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);

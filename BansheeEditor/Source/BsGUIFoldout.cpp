@@ -13,9 +13,9 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, GUIWidget& parent, BS::GUIElementStyle* buttonStyle, 
+	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, BS::GUIElementStyle* buttonStyle, 
 		BS::GUIElementStyle* backgroundStyle, const BS::GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mToggle(nullptr), mBackground(nullptr), mIsExpanded(false)
+		:GUIElementContainer(layoutOptions), mToggle(nullptr), mBackground(nullptr), mIsExpanded(false)
 	{
 		const GUIElementStyle* curButtonStyle = buttonStyle;
 		const GUIElementStyle* curBackgroundStyle = backgroundStyle;
@@ -38,17 +38,17 @@ namespace BansheeEditor
 
 	}
 
-	GUIFoldout* GUIFoldout::create(GUIWidget& parent, const GUIOptions& layoutOptions, 
+	GUIFoldout* GUIFoldout::create(const GUIOptions& layoutOptions, 
 		GUIElementStyle* buttonStyle, GUIElementStyle* backgroundStyle)
 	{
-		return cm_new<GUIFoldout>(PrivatelyConstruct(), parent, buttonStyle, backgroundStyle, 
+		return cm_new<GUIFoldout>(PrivatelyConstruct(), buttonStyle, backgroundStyle, 
 			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
 	}
 
-	GUIFoldout* GUIFoldout::create(GUIWidget& parent, GUIElementStyle* buttonStyle, 
+	GUIFoldout* GUIFoldout::create(GUIElementStyle* buttonStyle, 
 		GUIElementStyle* backgroundStyle)
 	{
-		return cm_new<GUIFoldout>(PrivatelyConstruct(), parent, buttonStyle, backgroundStyle, 
+		return cm_new<GUIFoldout>(PrivatelyConstruct(), buttonStyle, backgroundStyle, 
 			GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 

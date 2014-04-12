@@ -12,45 +12,45 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const BS::GUIContent& labelContent, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
+		static GUIGameObjectField* create(const BS::GUIContent& labelContent, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const BS::GUIContent& labelContent, const BS::GUIOptions& layoutOptions, 
+		static GUIGameObjectField* create(const BS::GUIContent& labelContent, const BS::GUIOptions& layoutOptions, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const CM::HString& labelText, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
+		static GUIGameObjectField* create(const CM::HString& labelText, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const CM::HString& labelText, const BS::GUIOptions& layoutOptions, 
+		static GUIGameObjectField* create(const CM::HString& labelText, const BS::GUIOptions& layoutOptions, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const BS::GUIOptions& layoutOptions, BS::GUIElementStyle* dropButtonStyle = nullptr,
+		static GUIGameObjectField* create(const BS::GUIOptions& layoutOptions, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const BS::GUIContent& labelContent, CM::UINT32 labelWidth, 
+		static GUIGameObjectField* create(const BS::GUIContent& labelContent, CM::UINT32 labelWidth, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const BS::GUIContent& labelContent, 
+		static GUIGameObjectField* create(const BS::GUIContent& labelContent, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const CM::HString& labelText, CM::UINT32 labelWidth, 
+		static GUIGameObjectField* create(const CM::HString& labelText, CM::UINT32 labelWidth, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, const CM::HString& labelText, 
+		static GUIGameObjectField* create(const CM::HString& labelText, 
 			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		static GUIGameObjectField* create(BS::GUIWidget& parent, BS::GUIElementStyle* dropButtonStyle = nullptr,
+		static GUIGameObjectField* create(BS::GUIElementStyle* dropButtonStyle = nullptr,
 			BS::GUIElementStyle* clearButtonStyle = nullptr);
 
-		GUIGameObjectField(const PrivatelyConstruct& dummy, BS::GUIWidget& parent, const BS::GUIContent& labelContent, 
+		GUIGameObjectField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, 
 			CM::UINT32 labelWidth, BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle,
 			BS::GUIElementStyle* clearButtonStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
 

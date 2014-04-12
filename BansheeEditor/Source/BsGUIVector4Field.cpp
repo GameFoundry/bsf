@@ -15,14 +15,14 @@ namespace BansheeEditor
 {
 	const UINT32 GUIVector4Field::ELEMENT_LABEL_WIDTH = 10;
 
-	GUIVector4Field::GUIVector4Field(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, 
+	GUIVector4Field::GUIVector4Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
 		CM::UINT32 labelWidth, GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, parent, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mFieldX(nullptr), mFieldY(nullptr)
+		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mFieldX(nullptr), mFieldY(nullptr)
 	{
-		mFieldX = GUIFloatField::create(parent, HString(L"X"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
-		mFieldY = GUIFloatField::create(parent, HString(L"Y"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
-		mFieldZ = GUIFloatField::create(parent, HString(L"Z"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
-		mFieldW = GUIFloatField::create(parent, HString(L"W"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldX = GUIFloatField::create(HString(L"X"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldY = GUIFloatField::create(HString(L"Y"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldZ = GUIFloatField::create(HString(L"Z"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
+		mFieldW = GUIFloatField::create(HString(L"W"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);
 
 		mLayout->removeElement(mLabel);
 

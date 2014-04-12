@@ -10,7 +10,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	GUIElementBase::GUIElementBase()
-		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false)
+		:mIsDirty(true), mParentElement(nullptr), mIsDisabled(false), mParentWidget(nullptr)
 	{
 
 	}
@@ -107,6 +107,20 @@ namespace BansheeEngine
 		for(auto& child : mChildren)
 		{
 			child->_updateLayoutInternal(x, y, width, height, clipRect, widgetDepth, areaDepth);
+		}
+	}
+
+	void GUIElementBase::_setParent(GUIElementBase* parent) 
+	{ 
+		if(mParentElement != parent)
+		{
+			mParentElement = parent; 
+
+			if(parent != nullptr)
+			{
+				if(_getParentWidget() != parent->_getParentWidget())
+					_changeParentWidget(parent->_getParentWidget());
+			}
 		}
 	}
 
@@ -220,6 +234,8 @@ namespace BansheeEngine
 
 	void GUIElementBase::_changeParentWidget(GUIWidget* widget)
 	{
+		mParentWidget = widget;
+
 		for(auto& child : mChildren)
 		{
 			child->_changeParentWidget(widget);

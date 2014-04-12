@@ -17,16 +17,16 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIScrollArea* create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			const GUIElementStyle* scrollBarStyle = nullptr, const GUIElementStyle* scrollAreaStyle = nullptr);
 
-		static GUIScrollArea* create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
 			const GUIElementStyle* scrollAreaStyle = nullptr);
 
-		static GUIScrollArea* create(GUIWidget& parent, const GUIElementStyle* scrollBarStyle = nullptr, const GUIElementStyle* scrollAreaStyle = nullptr);
+		static GUIScrollArea* create(const GUIElementStyle* scrollBarStyle = nullptr, const GUIElementStyle* scrollAreaStyle = nullptr);
 
-		static GUIScrollArea* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
+		static GUIScrollArea* create(const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
 			const GUIElementStyle* scrollAreaStyle = nullptr);
 
 		virtual ElementType getElementType() const { return ElementType::ScrollArea; }
@@ -52,7 +52,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 	private:
-		GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions);
 
 		ScrollBarType mVertBarType;

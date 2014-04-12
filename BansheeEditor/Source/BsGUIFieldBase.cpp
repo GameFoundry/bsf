@@ -11,19 +11,15 @@ namespace BansheeEditor
 {
 	const UINT32 GUIFieldBase::DEFAULT_LABEL_WIDTH = 100;
 
-	GUIFieldBase::GUIFieldBase(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, UINT32 labelWidth,
+	GUIFieldBase::GUIFieldBase(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
 		GUIElementStyle* labelStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:GUIElementContainer(parent, layoutOptions)
+		:GUIElementContainer(layoutOptions)
 	{
 		mLayout = &addLayoutXInternal(this);
 
 		if(withLabel)
 		{
-			const GUIElementStyle* curLabelStyle = labelStyle;
-			if(curLabelStyle == nullptr)
-				curLabelStyle = parent.getSkin().getStyle("Label");
-
-			mLabel = BS::GUILabel::create(parent, labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), curLabelStyle);
+			mLabel = BS::GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), labelStyle);
 			mLayout->addElement(mLabel);
 		}
 	}

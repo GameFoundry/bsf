@@ -10,7 +10,7 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		GUIFloatField(const PrivatelyConstruct& dummy, BS::GUIWidget& parent, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
+		GUIFloatField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
 			BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* inputBoxStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
 
 		float getValue() const;

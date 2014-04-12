@@ -19,7 +19,7 @@ namespace BansheeEngine
 	const UINT32 GUIScrollArea::MinHandleSize = 4;
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
-	GUIScrollArea::GUIScrollArea(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+	GUIScrollArea::GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 		const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(parent, layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0), mVertBarType(vertBarType), mHorzBarType(horzBarType),
@@ -147,9 +147,9 @@ namespace BansheeEngine
 			if(mVertScroll == nullptr)
 			{
 				if(mScrollBarStyle != nullptr)
-					mVertScroll = GUIScrollBarVert::create(_getParentWidget(), mScrollBarStyle);
+					mVertScroll = GUIScrollBarVert::create(mScrollBarStyle);
 				else
-					mVertScroll = GUIScrollBarVert::create(_getParentWidget());
+					mVertScroll = GUIScrollBarVert::create();
 
 				_registerChildElement(mVertScroll);
 
@@ -207,9 +207,9 @@ namespace BansheeEngine
 			if(mHorzScroll == nullptr)
 			{
 				if(mScrollBarStyle != nullptr)
-					mHorzScroll = GUIScrollBarHorz::create(_getParentWidget(), mScrollBarStyle);
+					mHorzScroll = GUIScrollBarHorz::create(mScrollBarStyle);
 				else
-					mHorzScroll = GUIScrollBarHorz::create(_getParentWidget());
+					mHorzScroll = GUIScrollBarHorz::create();
 
 				_registerChildElement(mHorzScroll);
 
@@ -385,55 +385,31 @@ namespace BansheeEngine
 		return false;
 	}
 
-	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
 		const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle)
 	{
-		if(scrollAreaStyle == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			scrollAreaStyle = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, vertBarType, horzBarType, scrollBarStyle, 
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
 			scrollAreaStyle, GUILayoutOptions::create(scrollAreaStyle));
 	}
 
-	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle, 
+	GUIScrollArea* GUIScrollArea::create(const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle, 
 		const GUIElementStyle* scrollAreaStyle)
 	{
-		if(scrollAreaStyle == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			scrollAreaStyle = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, ScrollBarType::ShowIfDoesntFit, 
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, 
 			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, scrollAreaStyle, GUILayoutOptions::create(layoutOptions, scrollAreaStyle));
 	}
 
-	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle)
+	GUIScrollArea* GUIScrollArea::create(const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle)
 	{
-		if(scrollAreaStyle == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			scrollAreaStyle = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, ScrollBarType::ShowIfDoesntFit, ScrollBarType::ShowIfDoesntFit, scrollBarStyle, 
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, ScrollBarType::ShowIfDoesntFit, scrollBarStyle, 
 			scrollAreaStyle, GUILayoutOptions::create(scrollAreaStyle));
 	}
 
-	GUIScrollArea* GUIScrollArea::create(GUIWidget& parent, ScrollBarType vertBarType, 
+	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, 
 		ScrollBarType horzBarType, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle, 
 		const GUIElementStyle* scrollAreaStyle)
 	{
-		if(scrollAreaStyle == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			scrollAreaStyle = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(parent, vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, GUILayoutOptions::create(layoutOptions, scrollAreaStyle));
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, GUILayoutOptions::create(layoutOptions, scrollAreaStyle));
 	}
 
 	const String& GUIScrollArea::getGUITypeName()

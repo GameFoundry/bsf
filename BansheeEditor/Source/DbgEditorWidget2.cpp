@@ -32,19 +32,19 @@ namespace BansheeEditor
 	{
 		GUILayout& layout = mContent->getLayout().addLayoutY();
 
-		GUIIntField* intField = GUIIntField::create(getParentWidget(), GUIContent(HString(L"Int Field")), 100, GUIOptions(GUIOption::fixedWidth(200)));
-		GUIFloatField* floatField = GUIFloatField::create(getParentWidget(), HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUITextField* textField = GUITextField::create(getParentWidget(), HString(L"Text Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIVector4Field* vec4Field = GUIVector4Field::create(getParentWidget(), HString(L"Vec4 Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIVector3Field* vec3Field = GUIVector3Field::create(getParentWidget(), HString(L"Vec3 Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIVector2Field* vec2Field = GUIVector2Field::create(getParentWidget(), HString(L"Vec2 Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIToggleField* toggleField = GUIToggleField::create(getParentWidget(), HString(L"Toggle Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIColorField* colorField = GUIColorField::create(getParentWidget(), HString(L"Color Field"), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIFoldout* foldout = GUIFoldout::create(getParentWidget(), GUIOptions(GUIOption::fixedWidth(200)));
-		GUIGameObjectField* gameObjectField = GUIGameObjectField::create(getParentWidget(), HString(L"Object Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIIntField* intField = GUIIntField::create(GUIContent(HString(L"Int Field")), 100, GUIOptions(GUIOption::fixedWidth(200)));
+		GUIFloatField* floatField = GUIFloatField::create(HString(L"Float Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUITextField* textField = GUITextField::create(HString(L"Text Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIVector4Field* vec4Field = GUIVector4Field::create(HString(L"Vec4 Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIVector3Field* vec3Field = GUIVector3Field::create(HString(L"Vec3 Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIVector2Field* vec2Field = GUIVector2Field::create(HString(L"Vec2 Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIToggleField* toggleField = GUIToggleField::create(HString(L"Toggle Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIColorField* colorField = GUIColorField::create(HString(L"Color Field"), GUIOptions(GUIOption::fixedWidth(200)));
+		GUIFoldout* foldout = GUIFoldout::create(GUIOptions(GUIOption::fixedWidth(200)));
+		GUIGameObjectField* gameObjectField = GUIGameObjectField::create(HString(L"Object Field"), GUIOptions(GUIOption::fixedWidth(200)));
 		colorField->setValue(Color::Red);
 
-		GUIButton* button = GUIButton::create(getParentWidget(), HString(L"Testing"), GUIOptions(GUIOption::fixedWidth(100)));
+		GUIButton* button = GUIButton::create(HString(L"Testing"), GUIOptions(GUIOption::fixedWidth(100)));
 
 		layout.addElement(intField);
 		layout.addElement(floatField);

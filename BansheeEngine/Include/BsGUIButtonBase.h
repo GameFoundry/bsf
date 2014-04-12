@@ -35,7 +35,7 @@ namespace BansheeEngine
 		boost::signal<void()> onHover;
 		boost::signal<void()> onOut;
 	protected:
-		GUIButtonBase(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUIButtonBase(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIButtonBase();
 
 		/**

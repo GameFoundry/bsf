@@ -26,20 +26,20 @@ namespace BansheeEditor
 		mBackgroundArea = GUIArea::create(*parent, 0, 0, 1, 13, 9900);
 		mMainArea = GUIArea::create(*parent, 0, 0, 1, 13, 9899);
 
-		mBgTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()),
+		mBgTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, GUIOptions(GUIOption::flexibleWidth(), GUIOption::flexibleHeight()),
 			parent->getSkin().getStyle("MenuBarBg"));
 		mBackgroundArea->getLayout().addElement(mBgTexture);
 
-		mLogoTexture = GUITexture::create(*parent, GUIImageScaleMode::StretchToFit, parent->getSkin().getStyle("MenuBarBansheeLogo"));
+		mLogoTexture = GUITexture::create(GUIImageScaleMode::StretchToFit, parent->getSkin().getStyle("MenuBarBansheeLogo"));
 		GUILayout& mainLayout = mMainArea->getLayout();
 
 		mainLayout.addElement(mLogoTexture);
 		mainLayout.addSpace(5);
 		mainLayout.addFlexibleSpace();
 
-		mMinBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinMinimizeBtn"));
-		mMaxBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinMaximizeBtn"));
-		mCloseBtn = GUIButton::create(*parent, HString(L""), parent->getSkin().getStyle("WinCloseBtn"));
+		mMinBtn = GUIButton::create(HString(L""), parent->getSkin().getStyle("WinMinimizeBtn"));
+		mMaxBtn = GUIButton::create(HString(L""), parent->getSkin().getStyle("WinMaximizeBtn"));
+		mCloseBtn = GUIButton::create(HString(L""), parent->getSkin().getStyle("WinCloseBtn"));
 
 		mainLayout.addSpace(3);
 		mainLayout.addElement(mMinBtn);
@@ -134,7 +134,7 @@ namespace BansheeEditor
 		newSubMenu.name = name;
 		newSubMenu.menu = cm_new<GUIMenu>();
 
-		GUIButton* newButton = GUIButton::create(*mParentWidget, HString(name), mParentWidget->getSkin().getStyle("MenuBarBtn"));
+		GUIButton* newButton = GUIButton::create(HString(name), mParentWidget->getSkin().getStyle("MenuBarBtn"));
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
 		newButton->onHover.connect(std::bind(&GUIMenuBar::onSubMenuHover, this, name));
 		mMainArea->getLayout().insertElement(mMainArea->getLayout().getNumChildren() - NUM_ELEMENTS_AFTER_CONTENT, newButton);
@@ -249,12 +249,12 @@ namespace BansheeEditor
 		}
 
 		GUIDropDownData dropDownData = subMenu->menu->getDropDownData();
-		GUIWidget& widget = subMenu->button->_getParentWidget();
+		GUIWidget* widget = subMenu->button->_getParentWidget();
 
 		GUIDropDownAreaPlacement placement = GUIDropDownAreaPlacement::aroundBoundsHorz(subMenu->button->getBounds());
 
-		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget.getTarget(), 
-			placement, dropDownData, widget.getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIMenuBar::onSubMenuClosed, this));
+		GameObjectHandle<GUIDropDownBox> dropDownBox = GUIDropDownBoxManager::instance().openDropDownBox(widget->getTarget(), 
+			placement, dropDownData, widget->getSkin(), GUIDropDownType::MenuBar, std::bind(&GUIMenuBar::onSubMenuClosed, this));
 
 		subMenu->button->_setOn(true);
 

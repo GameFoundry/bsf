@@ -18,9 +18,9 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIViewport::GUIViewport(GUIWidget& parent, const GUIElementStyle* style, const HCamera& camera, 
+	GUIViewport::GUIViewport(const GUIElementStyle* style, const HCamera& camera, 
 		float aspectRatio, CM::Degree fieldOfView, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
+		:GUIElement(style, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
 		mFieldOfView(fieldOfView)
 	{
 		RenderTargetPtr guiRenderTarget = parent.getTarget()->getTarget();
@@ -37,27 +37,15 @@ namespace BansheeEngine
 
 	}
 
-	GUIViewport* GUIViewport::create(GUIWidget& parent, const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style)
+	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(style));
 	}
 
-	GUIViewport* GUIViewport::create(GUIWidget& parent, const GUIOptions& layoutOptions, const HCamera& camera, 
+	GUIViewport* GUIViewport::create(const GUIOptions& layoutOptions, const HCamera& camera, 
 		float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(parent, style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	UINT32 GUIViewport::getNumRenderElements() const

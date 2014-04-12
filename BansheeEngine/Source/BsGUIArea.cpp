@@ -14,6 +14,7 @@ namespace BansheeEngine
 		mResizeXWithWidget(false), mResizeYWithWidget(false), mWidth(0), mHeight(0), mRight(0), mBottom(0)
 	{
 		mLayout = cm_new<GUILayoutX, PoolAlloc>();
+		mLayout->_changeParentWidget(widget);
 
 		mWidget->registerArea(this);
 	}

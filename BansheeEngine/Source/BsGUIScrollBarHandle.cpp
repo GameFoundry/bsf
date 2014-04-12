@@ -19,8 +19,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIScrollBarHandle::GUIScrollBarHandle(GUIWidget& parent, bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
+	GUIScrollBarHandle::GUIScrollBarHandle(bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIElement(style, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
 		mHandleDragged(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -32,26 +32,14 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, bool horizontal, const GUIElementStyle* style)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, style, GUILayoutOptions::create(style));
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(GUIWidget& parent, bool horizontal, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(parent, horizontal, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIScrollBarHandle::setHandleSize(CM::UINT32 size)

@@ -74,7 +74,7 @@ namespace BansheeEditor
 			None
 		};
 	public:
-		static DockManager* create(BS::GUIWidget& parent, CM::RenderWindow* parentWindow);
+		static DockManager* create(CM::RenderWindow* parentWindow);
 
 		/**
 		 * @brief	Internal method. Called once every frame.
@@ -95,7 +95,7 @@ namespace BansheeEditor
 		void updateClippedBounds();
 
 	private:
-		DockManager(BS::GUIWidget& parent, CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions);
+		DockManager(CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions);
 
 		static const CM::Color TINT_COLOR;
 		static const CM::Color HIGHLIGHT_COLOR;

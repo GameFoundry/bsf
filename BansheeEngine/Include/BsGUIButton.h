@@ -14,14 +14,14 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIButton* create(GUIWidget& parent, const CM::HString& text, const GUIElementStyle* style = nullptr);
-		static GUIButton* create(GUIWidget& parent, const CM::HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIButton* create(const CM::HString& text, const GUIElementStyle* style = nullptr);
+		static GUIButton* create(const CM::HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
-		static GUIButton* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
-		static GUIButton* create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIButton* create(const GUIContent& content, const GUIElementStyle* style = nullptr);
+		static GUIButton* create(const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		virtual ElementType getElementType() const { return ElementType::Button; }
 	private:
-		GUIButton(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUIButton(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 	};
 }

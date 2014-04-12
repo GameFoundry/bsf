@@ -246,12 +246,12 @@ namespace BansheeEngine
 
 				if(iterFind == mElementsInFocus.end())
 				{
-					mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, &focusElementInfo.element->_getParentWidget()));
+					mElementsInFocus.push_back(ElementInfo(focusElementInfo.element, focusElementInfo.element->_getParentWidget()));
 
 					mCommandEvent = GUICommandEvent();
 					mCommandEvent.setType(GUICommandEventType::FocusGained);
 
-					sendCommandEvent(&focusElementInfo.element->_getParentWidget(), focusElementInfo.element, mCommandEvent);
+					sendCommandEvent(focusElementInfo.element->_getParentWidget(), focusElementInfo.element, mCommandEvent);
 				}
 			}
 			else
@@ -401,7 +401,7 @@ namespace BansheeEngine
 				UINT32 elemDepth = guiElem->_getRenderElementDepth(renderElemIdx);
 
 				RectI tfrmedBounds = guiElem->_getClippedBounds();
-				tfrmedBounds.transform(guiElem->_getParentWidget().SO()->getWorldTfrm());
+				tfrmedBounds.transform(guiElem->_getParentWidget()->SO()->getWorldTfrm());
 
 				const GUIMaterialInfo& matInfo = guiElem->getMaterial(renderElemIdx);
 
@@ -427,7 +427,7 @@ namespace BansheeEngine
 						if(groupIter->elements.size() > 0)
 						{
 							GUIElement* otherElem = groupIter->elements.begin()->element; // We only need to check the first element
-							if(&otherElem->_getParentWidget() != &guiElem->_getParentWidget())
+							if(otherElem->_getParentWidget() != guiElem->_getParentWidget())
 								continue;
 						}
 					}
@@ -537,7 +537,7 @@ namespace BansheeEngine
 					else
 					{
 						GUIElement* elem = group->elements.begin()->element;
-						renderData.cachedWidgetsPerMesh[groupIdx] = &elem->_getParentWidget();
+						renderData.cachedWidgetsPerMesh[groupIdx] = elem->_getParentWidget();
 					}
 				}
 
@@ -1402,7 +1402,7 @@ namespace BansheeEngine
 		{
 			const GUIElement* bridgeElement = iterFind->second;
 
-			const Matrix4& worldTfrm = bridgeElement->_getParentWidget().SO()->getWorldTfrm();
+			const Matrix4& worldTfrm = bridgeElement->_getParentWidget()->SO()->getWorldTfrm();
 
 			Vector4 vecLocalPos = worldTfrm.inverse().multiply3x4(Vector4((float)windowPos.x, (float)windowPos.y, 0.0f, 1.0f));
 			RectI bridgeBounds = bridgeElement->getBounds();
@@ -1430,10 +1430,10 @@ namespace BansheeEngine
 		auto iterFind = mInputBridge.find(renderTexture);
 		if(iterFind != mInputBridge.end())
 		{
-			GUIWidget& parentWidget = iterFind->second->_getParentWidget();
-			if(&parentWidget != &widget)
+			GUIWidget* parentWidget = iterFind->second->_getParentWidget();
+			if(parentWidget != &widget)
 			{
-				return getWidgetWindow(parentWidget);
+				return getWidgetWindow(*parentWidget);
 			}
 		}
 

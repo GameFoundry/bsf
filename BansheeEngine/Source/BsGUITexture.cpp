@@ -16,9 +16,9 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUITexture::GUITexture(GUIWidget& parent, const GUIElementStyle* style, const HSpriteTexture& texture, 
+	GUITexture::GUITexture(const GUIElementStyle* style, const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mScaleMode(scale)
+		:GUIElement(style, layoutOptions), mScaleMode(scale)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
@@ -38,95 +38,47 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
+	GUITexture* GUITexture::create(const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, texture, scale, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
+	GUITexture* GUITexture::create(const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, scale, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, texture, scale, GUILayoutOptions::create(style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, 
+	GUITexture* GUITexture::create(const HSpriteTexture& texture, 
 		const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const HSpriteTexture& texture, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(const HSpriteTexture& texture, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HTexture(), scale, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, HTexture(), scale, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, GUIImageScaleMode scale, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(GUIImageScaleMode scale, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HSpriteTexture(), scale, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, HSpriteTexture(), scale, GUILayoutOptions::create(style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUITexture* GUITexture::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUITexture* GUITexture::create(const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(parent, style, HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(style, HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(style));
 	}
 
 	void GUITexture::setTexture(const HSpriteTexture& texture)

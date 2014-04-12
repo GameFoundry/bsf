@@ -19,21 +19,21 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, GUIImageScaleMode scale, 
+		static GUITexture* create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
 			const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, GUIImageScaleMode scale, 
+		static GUITexture* create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
 			const GUIElementStyle* style = nullptr);
 
-		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, 
+		static GUITexture* create(const HSpriteTexture& texture, 
 			const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const HSpriteTexture& texture, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(const HSpriteTexture& texture, const GUIElementStyle* style = nullptr);
 
 		
-		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, GUIImageScaleMode scale, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(GUIImageScaleMode scale, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(GUIImageScaleMode scale, const GUIElementStyle* style = nullptr);
 
-		static GUITexture* create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
-		static GUITexture* create(GUIWidget& parent, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUITexture* create(const GUIElementStyle* style = nullptr);
 
 		void setTexture(const HSpriteTexture& texture);
 		
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		IMAGE_SPRITE_DESC mDesc;
 		GUIImageScaleMode mScaleMode;
 
-		GUITexture(GUIWidget& parent, const GUIElementStyle* style, const HSpriteTexture& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
+		GUITexture(const GUIElementStyle* style, const HSpriteTexture& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
 		virtual ~GUITexture();
 
 		/**

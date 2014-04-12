@@ -13,8 +13,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIButtonBase::GUIButtonBase(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIElement(parent, style, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
+	GUIButtonBase::GUIButtonBase(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIElement(style, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();

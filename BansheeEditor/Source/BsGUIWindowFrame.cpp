@@ -21,8 +21,8 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUITexture(parent, style, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions)
+	GUIWindowFrame::GUIWindowFrame(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUITexture(style, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions)
 	{
 
 	}
@@ -30,26 +30,14 @@ namespace BansheeEditor
 	GUIWindowFrame::~GUIWindowFrame()
 	{ }
 
-	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUIElementStyle* style)
+	GUIWindowFrame* GUIWindowFrame::create(const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(style, GUILayoutOptions::create(style));
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(GUIWidget& parent, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(parent, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIWindowFrame::setFocused(bool focused)

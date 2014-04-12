@@ -14,30 +14,18 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIDropDownHitBox* GUIDropDownHitBox::create(GUIWidget& parent, bool captureMouse, const GUIElementStyle* style)
+	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouse, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(parent, captureMouse, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(captureMouse, style, GUILayoutOptions::create(style));
 	}
 
-	GUIDropDownHitBox* GUIDropDownHitBox::create(GUIWidget& parent, bool captureMouse, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIDropDownHitBox* GUIDropDownHitBox::create(bool captureMouse, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(parent, captureMouse, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIDropDownHitBox, PoolAlloc>()) GUIDropDownHitBox(captureMouse, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
-	GUIDropDownHitBox::GUIDropDownHitBox(GUIWidget& parent, bool captureMouse, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mCaptureMouse(captureMouse)
+	GUIDropDownHitBox::GUIDropDownHitBox(bool captureMouse, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(layoutOptions), mCaptureMouse(captureMouse)
 	{
 
 	}

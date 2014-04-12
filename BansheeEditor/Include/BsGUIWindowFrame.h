@@ -11,12 +11,12 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIWindowFrame* create(BS::GUIWidget& parent, const BS::GUIElementStyle* style = nullptr);
-		static GUIWindowFrame* create(BS::GUIWidget& parent, const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style = nullptr);
+		static GUIWindowFrame* create(const BS::GUIElementStyle* style = nullptr);
+		static GUIWindowFrame* create(const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style = nullptr);
 
 		void setFocused(bool focused);
 	protected:
 		~GUIWindowFrame();
-		GUIWindowFrame(BS::GUIWidget& parent, const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions);
+		GUIWindowFrame(const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions);
 	};
 }

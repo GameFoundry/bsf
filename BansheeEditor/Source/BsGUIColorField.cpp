@@ -13,36 +13,22 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, 
+	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
 		GUIElementStyle* labelStyle, GUIElementStyle* colorStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
+		:GUIElementContainer(layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{
-		const GUIElementStyle* curLabelStyle = labelStyle;
-		const GUIElementStyle* curColorStyle = colorStyle;
-
-		if(curLabelStyle == nullptr)
-			curLabelStyle = parent.getSkin().getStyle("Label");
-
-		if(curColorStyle == nullptr)
-			curColorStyle = parent.getSkin().getStyle("Color");
-
-		mLabel = GUILabel::create(parent, labelContent, curLabelStyle);
-		mColor = GUIColor::create(parent, curColorStyle);
+		mLabel = GUILabel::create(labelContent, labelStyle);
+		mColor = GUIColor::create(colorStyle);
 
 		_registerChildElement(mLabel);
 		_registerChildElement(mColor);
 	}
 
-	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, GUIWidget& parent, 
+	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, 
 		GUIElementStyle* labelStyle, GUIElementStyle* colorStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
+		:GUIElementContainer(layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{
-		const GUIElementStyle* curColorStyle = colorStyle;
-
-		if(curColorStyle == nullptr)
-			curColorStyle = parent.getSkin().getStyle("Color");
-
-		mColor = GUIColor::create(parent, curColorStyle);
+		mColor = GUIColor::create(colorStyle);
 
 		_registerChildElement(mColor);
 	}
@@ -52,44 +38,44 @@ namespace BansheeEditor
 
 	}
 
-	GUIColorField* GUIColorField::create(GUIWidget& parent, const GUIContent& labelContent, const GUIOptions& layoutOptions, 
+	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const GUIOptions& layoutOptions, 
 		GUIElementStyle* labelStyle, GUIElementStyle* toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), parent, labelContent, labelStyle, toggleStyle, 
+		return cm_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
 			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
 	}
 
-	GUIColorField* GUIColorField::create(GUIWidget& parent, const GUIContent& labelContent, GUIElementStyle* labelStyle, 
+	GUIColorField* GUIColorField::create(const GUIContent& labelContent, GUIElementStyle* labelStyle, 
 		GUIElementStyle* toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), parent, labelContent, labelStyle, toggleStyle, 
+		return cm_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
 			GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
-	GUIColorField* GUIColorField::create(GUIWidget& parent, const HString& labelContent, const GUIOptions& layoutOptions, 
+	GUIColorField* GUIColorField::create(const HString& labelContent, const GUIOptions& layoutOptions, 
 		GUIElementStyle* labelStyle, GUIElementStyle* toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), parent, GUIContent(labelContent), labelStyle, 
+		return cm_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, 
 			toggleStyle, GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
 	}
 
-	GUIColorField* GUIColorField::create(GUIWidget& parent, const HString& labelContent, GUIElementStyle* labelStyle, 
+	GUIColorField* GUIColorField::create( const HString& labelContent, GUIElementStyle* labelStyle, 
 		GUIElementStyle* toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), parent, GUIContent(labelContent), labelStyle, toggleStyle, 
+		return cm_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, toggleStyle, 
 			GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
-	GUIColorField* GUIColorField::create(GUIWidget& parent, const GUIOptions& layoutOptions, GUIElementStyle* labelStyle, 
+	GUIColorField* GUIColorField::create(const GUIOptions& layoutOptions, GUIElementStyle* labelStyle, 
 		GUIElementStyle* toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), parent, labelStyle, toggleStyle, 
+		return cm_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, 
 			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
 	}
 
-	GUIColorField* GUIColorField::create(GUIWidget& parent, GUIElementStyle* labelStyle, GUIElementStyle* toggleStyle)
+	GUIColorField* GUIColorField::create(GUIElementStyle* labelStyle, GUIElementStyle* toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), parent, labelStyle, toggleStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+		return cm_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
 	}
 
 	Color GUIColorField::getValue() const

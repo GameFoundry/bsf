@@ -9,11 +9,11 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(GUIWidget& parent, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:mParent(&parent), mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
+	GUIElement::GUIElement(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
 		mIsDestroyed(false)
 	{
-		mParent->registerElement(this);
+
 	}
 
 	GUIElement::~GUIElement()
@@ -123,15 +123,13 @@ namespace BansheeEngine
 
 	void GUIElement::_changeParentWidget(GUIWidget* widget)
 	{
-		if(mParent != widget)
+		if(mParentWidget != widget)
 		{
-			if(mParent != nullptr)
-				mParent->unregisterElement(this);
+			if(mParentWidget != nullptr)
+				mParentWidget->unregisterElement(this);
 
 			if(widget != nullptr)
 				widget->registerElement(this);
-
-			mParent = widget;
 		}
 
 		GUIElementBase::_changeParentWidget(widget);
@@ -213,8 +211,8 @@ namespace BansheeEngine
 		if(element->mIsDestroyed)
 			return;
 
-		if(element->mParent != nullptr)
-			element->mParent->unregisterElement(element);
+		if(element->mParentWidget != nullptr)
+			element->mParentWidget->unregisterElement(element);
 
 		element->mIsDestroyed = true;
 

@@ -267,9 +267,6 @@
     <ClInclude Include="Include\BsBuiltinResources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsGUIFoldout.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsEnums.h">
       <Filter>Header Files</Filter>
     </ClInclude>

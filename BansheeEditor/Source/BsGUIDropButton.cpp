@@ -21,8 +21,8 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIDropButton::GUIDropButton(GUIWidget& parent, CM::UINT32 dragType, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(parent, style, GUIContent(HString(L"None")), layoutOptions)
+	GUIDropButton::GUIDropButton(CM::UINT32 dragType, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
+		:GUIButtonBase(style, GUIContent(HString(L"None")), layoutOptions)
 	{
 
 	}
@@ -30,26 +30,14 @@ namespace BansheeEditor
 	GUIDropButton::~GUIDropButton()
 	{ }
 
-	GUIDropButton* GUIDropButton::create(GUIWidget& parent, CM::UINT32 dragType, const GUIElementStyle* style)
+	GUIDropButton* GUIDropButton::create(CM::UINT32 dragType, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(parent, dragType, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, style, GUILayoutOptions::create(style));
 	}
 
-	GUIDropButton* GUIDropButton::create(GUIWidget& parent, CM::UINT32 dragType, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIDropButton* GUIDropButton::create(CM::UINT32 dragType, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(parent, dragType, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, style, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	bool GUIDropButton::mouseEvent(const GUIMouseEvent& ev)

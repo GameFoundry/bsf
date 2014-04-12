@@ -12,11 +12,11 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUILabel* create(GUIWidget& parent, const CM::HString& text, const GUIElementStyle* style = nullptr);
-		static GUILabel* create(GUIWidget& parent, const CM::HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(const CM::HString& text, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(const CM::HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
-		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style = nullptr);
-		static GUILabel* create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(const GUIContent& content, const GUIElementStyle* style = nullptr);
+		static GUILabel* create(const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		void setContent(const GUIContent& content);
 
@@ -62,6 +62,6 @@ namespace BansheeEngine
 
 		TEXT_SPRITE_DESC mDesc;
 		
-		GUILabel(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUILabel(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 	};
 }

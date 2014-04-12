@@ -19,39 +19,27 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(GUIWidget& parent, const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(parent, style, content, layoutOptions)
+	GUIButton::GUIButton(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIButtonBase(style, content, layoutOptions)
 	{ }
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const HString& text, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const HString& text, const GUIElementStyle* style)
 	{
-		return create(parent, GUIContent(text), style);
+		return create(GUIContent(text), style);
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		return create(parent, GUIContent(text), layoutOptions, style);
+		return create(GUIContent(text), layoutOptions, style);
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const GUIContent& content, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const GUIContent& content, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, content, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(style, content, GUILayoutOptions::create(style));
 	}
 
-	GUIButton* GUIButton::create(GUIWidget& parent, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(parent, style, content, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(style, content, GUILayoutOptions::create(layoutOptions, style));
 	}
 }

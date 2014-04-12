@@ -47,12 +47,13 @@ namespace BansheeEngine
 		virtual void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
 
-		void _setParent(GUIElementBase* parent) { mParentElement = parent; }
+		void _setParent(GUIElementBase* parent);
 
 		virtual CM::Vector2I _getOptimalSize() const = 0;
 		virtual const RectOffset& _getPadding() const = 0;
 		virtual Type _getType() const = 0;
 		GUIElementBase* _getParent() const { return mParentElement; }
+		GUIWidget* _getParentWidget() const { return mParentWidget; }
 
 		void _markAsClean() { mIsDirty = 0; }
 
@@ -83,6 +84,7 @@ namespace BansheeEngine
 		GUILayout& insertLayoutXInternal(GUIElementBase* parent, CM::UINT32 idx);
 		GUILayout& insertLayoutYInternal(GUIElementBase* parent, CM::UINT32 idx);
 
+		GUIWidget* mParentWidget;
 		GUIElementBase* mParentElement;
 		CM::Vector<GUIElementBase*>::type mChildren;	
 		CM::UINT8 mIsDirty;

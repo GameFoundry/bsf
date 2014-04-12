@@ -19,16 +19,12 @@ namespace BansheeEditor
 {
 	const float GUIFloatField::DRAG_SPEED = 0.05f;
 
-	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, CM::UINT32 labelWidth, 
+	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, CM::UINT32 labelWidth, 
 		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, parent, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
+		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
 		mLastDragPos(0)
 	{
-		const GUIElementStyle* curInputBoxStyle = inputBoxStyle;
-		if(curInputBoxStyle == nullptr)
-			curInputBoxStyle = parent.getSkin().getStyle("InputBox");
-
-		mInputBox = GUIInputBox::create(parent, false, GUIOptions(GUIOption::flexibleWidth()), inputBoxStyle);
+		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), inputBoxStyle);
 		mInputBox->setFilter(&GUIFloatField::floatFilter);
 
 		mLayout->addElement(mInputBox);
@@ -86,16 +82,16 @@ namespace BansheeEditor
 				if(event.getPosition().x < 0)
 				{
 					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-					cursorScreenPos.x += _getParentWidget().getTarget()->getWidth();
-					jumpAmount = _getParentWidget().getTarget()->getWidth();
+					cursorScreenPos.x += _getParentWidget()->getTarget()->getWidth();
+					jumpAmount = _getParentWidget()->getTarget()->getWidth();
 
 					Cursor::instance().setScreenPosition(cursorScreenPos);
 				}
-				else if(event.getPosition().x >= _getParentWidget().getTarget()->getWidth())
+				else if(event.getPosition().x >= _getParentWidget()->getTarget()->getWidth())
 				{
 					Vector2I cursorScreenPos = Cursor::instance().getScreenPosition();
-					cursorScreenPos.x -= _getParentWidget().getTarget()->getWidth();
-					jumpAmount = -_getParentWidget().getTarget()->getWidth();
+					cursorScreenPos.x -= _getParentWidget()->getTarget()->getWidth();
+					jumpAmount = -_getParentWidget()->getTarget()->getWidth();
 
 					Cursor::instance().setScreenPosition(cursorScreenPos);
 				}

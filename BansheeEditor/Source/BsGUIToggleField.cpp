@@ -13,16 +13,11 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	GUIToggleField::GUIToggleField(const PrivatelyConstruct& dummy, GUIWidget& parent, const GUIContent& labelContent, 
+	GUIToggleField::GUIToggleField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
 		UINT32 labelWidth, GUIElementStyle* labelStyle, GUIElementStyle* toggleStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
-		:TGUIField(dummy, parent, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mToggle(nullptr)
+		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mToggle(nullptr)
 	{
-		const GUIElementStyle* curToggleStyle = toggleStyle;
-
-		if(curToggleStyle == nullptr)
-			curToggleStyle = parent.getSkin().getStyle("Toggle");
-
-		mToggle = GUIToggle::create(parent, HString(L""), curToggleStyle);
+		mToggle = GUIToggle::create(HString(L""), toggleStyle);
 		mLayout->addElement(mToggle);
 	}
 

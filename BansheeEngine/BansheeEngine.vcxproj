@@ -248,7 +248,6 @@
     <ClInclude Include="Include\BsGUIDropDownBoxManager.h" />
     <ClInclude Include="Include\BsGUIDropDownHitBox.h" />
     <ClInclude Include="Include\BsGUIElementContainer.h" />
-    <ClInclude Include="Include\BsGUIFoldout.h" />
     <ClInclude Include="Include\BsGUIHelper.h" />
     <ClInclude Include="Include\BsGUIListBox.h" />
     <ClInclude Include="Include\BsGUIElementBase.h" />

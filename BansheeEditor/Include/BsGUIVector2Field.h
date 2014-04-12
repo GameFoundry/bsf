@@ -11,7 +11,7 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		GUIVector2Field(const PrivatelyConstruct& dummy, BS::GUIWidget& parent, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
+		GUIVector2Field(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
 			BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* inputBoxStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
 
 		CM::Vector2 getValue() const;

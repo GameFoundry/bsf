@@ -10,8 +10,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIDropDownHitBox* create(GUIWidget& parent, bool captureMouse, const GUIElementStyle* style = nullptr);
-		static GUIDropDownHitBox* create(GUIWidget& parent, bool captureMouse, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIDropDownHitBox* create(bool captureMouse, const GUIElementStyle* style = nullptr);
+		static GUIDropDownHitBox* create(bool captureMouse, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
 
 		void setBounds(const CM::RectI& bounds) { mBounds.clear(); mBounds.push_back(bounds); }
 		void setBounds(const CM::Vector<CM::RectI>::type& bounds) { mBounds = bounds; }
@@ -20,7 +20,7 @@ namespace BansheeEngine
 		boost::signal<void()> onFocusGained;
 
 	private:
-		GUIDropDownHitBox(GUIWidget& parent, bool captureMouse, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIDropDownHitBox(bool captureMouse, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
 
 		virtual bool commandEvent(const GUICommandEvent& ev);
 		virtual bool mouseEvent(const GUIMouseEvent& ev);

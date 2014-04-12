@@ -12,13 +12,13 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIFoldout* create(BS::GUIWidget& parent, const BS::GUIOptions& layoutOptions, 
+		static GUIFoldout* create(const BS::GUIOptions& layoutOptions, 
 			BS::GUIElementStyle* buttonStyle = nullptr, BS::GUIElementStyle* backgroundStyle = nullptr);
 
-		static GUIFoldout* create(BS::GUIWidget& parent, BS::GUIElementStyle* labelStyle = nullptr,
+		static GUIFoldout* create(BS::GUIElementStyle* labelStyle = nullptr,
 			BS::GUIElementStyle* backgroundStyle = nullptr);
 
-		GUIFoldout(const PrivatelyConstruct& dummy, BS::GUIWidget& parent, BS::GUIElementStyle* buttonStyle, 
+		GUIFoldout(const PrivatelyConstruct& dummy, BS::GUIElementStyle* buttonStyle, 
 			BS::GUIElementStyle* backgroundStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		bool isExpanded() const { return mIsExpanded; }

@@ -15,8 +15,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIRenderTexture::GUIRenderTexture(GUIWidget& parent, const GUIElementStyle* style, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
-		:GUITexture(parent, style, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions), mSourceTexture(texture.get())
+	GUIRenderTexture::GUIRenderTexture(const GUIElementStyle* style, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
+		:GUITexture(style, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions), mSourceTexture(texture.get())
 	{
 		if(mSourceTexture->requiresTextureFlipping())
 		{
@@ -33,26 +33,14 @@ namespace BansheeEngine
 		GUIManager::instance().setInputBridge(mSourceTexture, nullptr);
 	}
 
-	GUIRenderTexture* GUIRenderTexture::create(GUIWidget& parent, const RenderTexturePtr& texture, const GUIElementStyle* style)
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(parent, style, texture, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(style, texture, GUILayoutOptions::create(style));
 	}
 
-	GUIRenderTexture* GUIRenderTexture::create(GUIWidget& parent, const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const GUIElementStyle* style)
 	{
-		if(style == nullptr)
-		{
-			const GUISkin& skin = parent.getSkin();
-			style = skin.getStyle(getGUITypeName());
-		}
-
-		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(parent, style, texture, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(style, texture, GUILayoutOptions::create(layoutOptions, style));
 	}
 
 	void GUIRenderTexture::updateRenderElementsInternal()
