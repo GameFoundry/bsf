@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BuiltinResources.cs" />
+    <Compile Include="Debug.cs" />
     <Compile Include="Color.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="DbgComponent.cs" />

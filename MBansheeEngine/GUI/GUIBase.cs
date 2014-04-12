@@ -23,10 +23,9 @@ namespace BansheeEngine
 
         ~GUIBase()
         {
-            for (int i = 0; i < childAreas.Count; i++)
-            {
-                childAreas[i].Destroy();
-            }
+            GUIArea[] childArray = childAreas.ToArray(); // Iterating over it will modify it so make a copy
+            for (int i = 0; i < childArray.Length; i++)
+                childArray[i].Destroy();
 
             childAreas.Clear();
         }
@@ -40,7 +39,7 @@ namespace BansheeEngine
         public GUIArea AddArea(int x, int y, int width = 0, int height = 0, short depth = 0)
         {
             GUIArea area = GUIArea.Create(this, x, y, width, height, depth);
-            childAreas.Add(area);
+            area.SetParent(this);
 
             return area;
         }
@@ -48,7 +47,7 @@ namespace BansheeEngine
         public GUIArea AddResizableAreaX(int offsetLeft, int offsetRight, int offsetTop, int height, short depth = 0)
         {
             GUIArea area = GUIArea.CreateResizableX(this, offsetLeft, offsetRight, offsetTop, height, depth);
-            childAreas.Add(area);
+            area.SetParent(this);
 
             return area;
         }
@@ -56,7 +55,7 @@ namespace BansheeEngine
         public GUIArea AddResizableAreaY(int offsetTop, int offsetBottom, int offsetLeft, int width, short depth = 0)
         {
             GUIArea area = GUIArea.CreateResizableY(this, offsetTop, offsetBottom, offsetLeft, width, depth);
-            childAreas.Add(area);
+            area.SetParent(this);
 
             return area;
         }
@@ -64,7 +63,7 @@ namespace BansheeEngine
         public GUIArea AddResizableAreaXY(int offsetLeft, int offsetRight, int offsetTop, int offsetBottom, short depth = 0)
         {
             GUIArea area = GUIArea.CreateResizableXY(this, offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
-            childAreas.Add(area);
+            area.SetParent(this);
 
             return area;
         }

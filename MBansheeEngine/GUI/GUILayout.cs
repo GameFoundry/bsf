@@ -1,157 +1,110 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
     public abstract class GUILayout : GUIElement
     {
-        internal GUILayout(GUIElement parent)
-            :base(parent)
-        { }
+        internal List<GUIElement> children = new List<GUIElement>();
 
-        public GUILabel AddLabel(GUIContent content, GUIElementStyle style, params GUIOption[] options)
+        internal override bool IsStatic()
         {
-            return new GUILabel(this, content, style, options);
+            return true;
         }
 
-        public GUILabel AddLabel(GUIContent content, params GUIOption[] options)
+        internal void AddElementInternal(GUIElement element)
         {
-            return new GUILabel(this, content, null, options);
+            if (IsDestroyed())
+            {
+                Debug.LogWarning("Attempting to add an element to a destroyed layout. Ignoring operation.");
+                return;
+            }
+
+            if (!children.Contains(element))
+                element.SetParent(this);
         }
 
-        public GUIButton AddButton(GUIContent content, GUIElementStyle style, params GUIOption[] options)
+        public void AddElement(GUIElement element)
         {
-            return new GUIButton(this, content, style, options);
-        }
+            if (element.IsStatic())
+            {
+                Debug.LogWarning("You are trying to change parent of a static GUI element. Ignoring operation.");
+                return;
+            }
 
-        public GUIButton AddButton(GUIContent content, GUIElementStyle style)
-        {
-            return new GUIButton(this, content, style, new GUIOption[0]);
-        }
-
-        public GUIButton AddButton(GUIContent content, params GUIOption[] options)
-        {
-            return new GUIButton(this, content, null, options);
-        }
-
-        public GUIToggle AddToggle(GUIContent content, GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUIToggle(this, content, null, style, options);
-        }
-
-        public GUIToggle AddToggle(GUIContent content, GUIElementStyle style)
-        {
-            return new GUIToggle(this, content, null, style, new GUIOption[0]);
-        }
-
-        public GUIToggle AddToggle(GUIContent content, params GUIOption[] options)
-        {
-            return new GUIToggle(this, content, null, null, options);
-        }
-
-        public GUIToggle AddToggle(GUIContent content, GUIToggleGroup toggleGroup, GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUIToggle(this, content, toggleGroup, style, options);
-        }
-
-        public GUIToggle AddToggle(GUIContent content, GUIToggleGroup toggleGroup, GUIElementStyle style)
-        {
-            return new GUIToggle(this, content, toggleGroup, style, new GUIOption[0]);
-        }
-
-        public GUIToggle AddToggle(GUIContent content, GUIToggleGroup toggleGroup, params GUIOption[] options)
-        {
-            return new GUIToggle(this, content, toggleGroup, null, options);
-        }
-
-        public GUITexture AddTexture(SpriteTexture texture, GUIImageScaleMode scale, GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUITexture(this, texture, scale, style, options);
-        }
-
-        public GUITexture AddTexture(SpriteTexture texture, GUIImageScaleMode scale, params GUIOption[] options)
-        {
-            return new GUITexture(this, texture, scale, null, options);
-        }
-
-        public GUITexture AddTexture(SpriteTexture texture, GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUITexture(this, texture, GUIImageScaleMode.StretchToFit, style, options);
-        }
-
-        public GUITexture AddTexture(SpriteTexture texture, params GUIOption[] options)
-        {
-            return new GUITexture(this, texture, GUIImageScaleMode.StretchToFit, null, options);
-        }
-
-        public GUITextBox AddTextBox(bool multiline, GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUITextBox(this, multiline, style, options);
-        }
-
-        public GUITextBox AddTextBox(bool multiline, params GUIOption[] options)
-        {
-            return new GUITextBox(this, multiline, null, options);
-        }
-
-        public GUITextBox AddTextBox(GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUITextBox(this, false, style, options);
-        }
-
-        public GUITextBox AddTextBox(params GUIOption[] options)
-        {
-            return new GUITextBox(this, false, null, options);
-        }
-
-        public GUIScrollArea AddScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUIScrollArea(this, vertBarType, horzBarType, null, style, options);
-        }
-
-        public GUIScrollArea AddScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, params GUIOption[] options)
-        {
-            return new GUIScrollArea(this, vertBarType, horzBarType, null, null, options);
-        }
-
-        public GUIScrollArea AddScrollArea(GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUIScrollArea(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, null, style, options);
-        }
-
-        public GUIScrollArea AddScrollArea(params GUIOption[] options)
-        {
-            return new GUIScrollArea(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, null, null, options);
-        }
-
-        public GUIScrollArea AddScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options)
-        {
-            return new GUIScrollArea(this, vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, options);
-        }
-
-        public GUIScrollArea AddScrollArea(GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options)
-        {
-            return new GUIScrollArea(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, scrollBarStyle, scrollAreaStyle, options);
-        }
-
-        public GUIListBox AddListBox(LocString[] elements, GUIElementStyle style, params GUIOption[] options)
-        {
-            return new GUIListBox(this, elements, style, options);
-        }
-
-        public GUIListBox AddListBox(LocString[] elements, params GUIOption[] options)
-        {
-            return new GUIListBox(this, elements, null, options);
+            AddElementInternal(element);
         }
 
         public GUIFixedSpace AddSpace(int size)
         {
-            return new GUIFixedSpace(this, size);
+            GUIFixedSpace fixedSpace = new GUIFixedSpace(this, size);
+            AddElementInternal(fixedSpace);
+
+            return fixedSpace;
         }
 
         public GUIFlexibleSpace AddFlexibleSpace()
         {
-            return new GUIFlexibleSpace(this);
+            GUIFlexibleSpace flexibleSpace = new GUIFlexibleSpace(this);
+            AddElementInternal(flexibleSpace);
+
+            return flexibleSpace;
+        }
+
+        public GUILayoutX AddLayoutX()
+        {
+            GUILayoutX layoutX = new GUILayoutX(this);
+            AddElementInternal(layoutX);
+
+            return layoutX;
+        }
+
+        public GUILayoutY AddLayoutY()
+        {
+            GUILayoutY layoutY = new GUILayoutY(this);
+            AddElementInternal(layoutY);
+
+            return layoutY;
+        }
+
+        public void Remove(GUIElement element)
+        {
+            if (children.Contains(element))
+                element.SetParent(null);
+        }
+
+        public void Remove(int childIdx)
+        {
+            if (childIdx >= 0 && childIdx < children.Count)
+            {
+                GUIElement element = children[childIdx];
+                element.SetParent(null);
+            }
+        }
+
+        public int GetNumChildren()
+        {
+            return children.Count;
+        }
+
+        public GUIElement GetChild(int index)
+        {
+            if (index < 0 || index >= children.Count)
+                return null;
+
+            return children[index];
+        }
+
+        public override void Destroy()
+        {
+            GUIElement[] childArray = children.ToArray(); // Iterating over it will modify it so make a copy
+            for (int i = 0; i < childArray.Length; i++)
+                childArray[i].Destroy();
+
+            children.Clear();
+
+            base.Destroy();
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

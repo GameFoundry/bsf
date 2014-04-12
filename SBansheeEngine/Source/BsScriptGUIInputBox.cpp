@@ -20,7 +20,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	ScriptGUIInputBox::ScriptGUIInputBox(GUIInputBox* inputBox)
-		:mInputBox(inputBox)
+		:mInputBox(inputBox), mIsDestroyed(false)
 	{
 
 	}
@@ -40,13 +40,23 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIInputBox::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIInputBox::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIInputBox::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIInputBox::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIInputBox::internal_setParent);
 	}
 
-	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, bool multiline, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUIInputBox::destroy()
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+		if(!mIsDestroyed)
+		{
+			GUIElement::destroy(mInputBox);
+			mInputBox = nullptr;
+
+			mIsDestroyed = true;
+		}
+	}
+
+	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoObject* style, MonoArray* guiOptions)
+	{
 		GUIOptions options;
 
 		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
@@ -58,19 +68,12 @@ namespace BansheeEngine
 		if(style != nullptr)
 			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
 
-		GUIInputBox* guiInputBox = GUIInputBox::create(scriptLayout->getParentWidget(), multiline, options, elemStyle);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(guiInputBox);
+		GUIInputBox* guiInputBox = GUIInputBox::create(multiline, options, elemStyle);
 
 		ScriptGUIInputBox* nativeInstance = new (cm_alloc<ScriptGUIInputBox>()) ScriptGUIInputBox(guiInputBox);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIInputBox::internal_destroyInstance(ScriptGUIInputBox* nativeInstance)
-	{
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIInputBox::internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text)
@@ -85,16 +88,28 @@ namespace BansheeEngine
 
 	void ScriptGUIInputBox::internal_destroy(ScriptGUIInputBox* nativeInstance)
 	{
-		GUIElement::destroy(nativeInstance->getInternalValue());
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUIInputBox::internal_disable(ScriptGUIInputBox* nativeInstance)
+	void ScriptGUIInputBox::internal_destroyInstance(ScriptGUIInputBox* nativeInstance)
 	{
-		nativeInstance->getInternalValue()->disableRecursively();
+		nativeInstance->destroy();
+		cm_delete(nativeInstance);
 	}
 
-	void ScriptGUIInputBox::internal_enable(ScriptGUIInputBox* nativeInstance)
+	void ScriptGUIInputBox::internal_setVisible(ScriptGUIInputBox* nativeInstance, bool visible)
 	{
-		nativeInstance->getInternalValue()->enableRecursively();
+		if(visible)
+			nativeInstance->getInternalValue()->enableRecursively();
+		else
+			nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUIInputBox::internal_setParent(ScriptGUIInputBox* nativeInstance, MonoObject* parentLayout)
+	{
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		nativeLayout->addElement(nativeInstance->getInternalValue());
 	}
 }

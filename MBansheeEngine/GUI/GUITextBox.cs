@@ -5,10 +5,24 @@ namespace BansheeEngine
 {
     public sealed class GUITextBox : GUIElement
     {
-        internal GUITextBox(GUILayout parentLayout, bool multiline, GUIElementStyle style, params GUIOption[] options)
-            :base(parentLayout)
+        public GUITextBox(bool multiline, GUIElementStyle style, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, parentLayout, multiline, style, options);
+            Internal_CreateInstance(this, multiline, style, options);
+        }
+
+        public GUITextBox(bool multiline, params GUIOption[] options)
+        {
+            Internal_CreateInstance(this, multiline, null, options);
+        }
+
+        public GUITextBox(GUIElementStyle style, params GUIOption[] options)
+        {
+            Internal_CreateInstance(this, false, style, options);
+        }
+
+        public GUITextBox(params GUIOption[] options)
+        {
+            Internal_CreateInstance(this, false, null, options);
         }
 
         public string text
@@ -18,7 +32,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUITextBox instance, GUILayout layout, bool multiline, GUIElementStyle style, GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUITextBox instance, bool multiline, GUIElementStyle style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetText(IntPtr nativeInstance, string text);

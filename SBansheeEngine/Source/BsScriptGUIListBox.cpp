@@ -22,7 +22,7 @@ namespace BansheeEngine
 	ScriptGUIListBox::OnSelectionChangedThunkDef ScriptGUIListBox::onSelectionChangedThunk;
 
 	ScriptGUIListBox::ScriptGUIListBox(GUIListBox* listBox)
-		:mListBox(listBox)
+		:mListBox(listBox), mIsDestroyed(false)
 	{
 
 	}
@@ -41,15 +41,25 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetElements", &ScriptGUIListBox::internal_setElements);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIListBox::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIListBox::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIListBox::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIListBox::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIListBox::internal_setParent);
 
 		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1).getThunk();
 	}
 
-	void ScriptGUIListBox::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoArray* elements, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUIListBox::destroy()
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+		if(!mIsDestroyed)
+		{
+			GUIElement::destroy(mListBox);
+			mListBox = nullptr;
+
+			mIsDestroyed = true;
+		}
+	}
+
+	void ScriptGUIListBox::internal_createInstance(MonoObject* instance, MonoArray* elements, MonoObject* style, MonoArray* guiOptions)
+	{
 		GUIOptions options;
 
 		UINT32 optionsArrayLen = (UINT32)mono_array_length(guiOptions);
@@ -76,21 +86,13 @@ namespace BansheeEngine
 			}
 		}
 
-		GUIListBox* guiListBox = GUIListBox::create(scriptLayout->getParentWidget(), nativeElements, options, elemStyle);
+		GUIListBox* guiListBox = GUIListBox::create(nativeElements, options, elemStyle);
 		guiListBox->onSelectionChanged.connect(std::bind(&ScriptGUIListBox::onSelectionChanged, instance, std::placeholders::_1));
-
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(guiListBox);
 
 		ScriptGUIListBox* nativeInstance = new (cm_alloc<ScriptGUIListBox>()) ScriptGUIListBox(guiListBox);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIListBox::internal_destroyInstance(ScriptGUIListBox* nativeInstance)
-	{
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIListBox::internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements)
@@ -115,17 +117,29 @@ namespace BansheeEngine
 
 	void ScriptGUIListBox::internal_destroy(ScriptGUIListBox* nativeInstance)
 	{
-		GUIElement::destroy(nativeInstance->getInternalValue());
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUIListBox::internal_disable(ScriptGUIListBox* nativeInstance)
+	void ScriptGUIListBox::internal_destroyInstance(ScriptGUIListBox* nativeInstance)
 	{
-		nativeInstance->getInternalValue()->disableRecursively();
+		nativeInstance->destroy();
+		cm_delete(nativeInstance);
 	}
 
-	void ScriptGUIListBox::internal_enable(ScriptGUIListBox* nativeInstance)
+	void ScriptGUIListBox::internal_setVisible(ScriptGUIListBox* nativeInstance, bool visible)
 	{
-		nativeInstance->getInternalValue()->enableRecursively();
+		if(visible)
+			nativeInstance->getInternalValue()->enableRecursively();
+		else
+			nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUIListBox::internal_setParent(ScriptGUIListBox* nativeInstance, MonoObject* parentLayout)
+	{
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		nativeLayout->addElement(nativeInstance->getInternalValue());
 	}
 
 	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, CM::UINT32 index)

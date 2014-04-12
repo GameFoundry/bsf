@@ -15,13 +15,13 @@ namespace BansheeEngine
 		void* getNativeRaw() const { return mListBox; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoArray* elements, MonoObject* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, MonoArray* elements, MonoObject* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIListBox* nativeInstance);
 		static void internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements);
 
 		static void internal_destroy(ScriptGUIListBox* nativeInstance);
-		static void internal_disable(ScriptGUIListBox* nativeInstance);
-		static void internal_enable(ScriptGUIListBox* nativeInstance);
+		static void internal_setVisible(ScriptGUIListBox* nativeInstance, bool visible);
+		static void internal_setParent(ScriptGUIListBox* nativeInstance, MonoObject* parentLayout);
 
 		static void initRuntimeData();
 
@@ -29,7 +29,10 @@ namespace BansheeEngine
 
 		ScriptGUIListBox(GUIListBox* listBox);
 
+		void destroy();
+
 		GUIListBox* mListBox;
+		bool mIsDestroyed;
 
 		typedef void (__stdcall *OnSelectionChangedThunkDef) (MonoObject*, CM::UINT32, MonoException**);
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;

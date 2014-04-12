@@ -13,7 +13,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	ScriptGUIArea::ScriptGUIArea(GUIArea* area, ScriptGUIBase* parentGUI)
-		:mArea(area), mParentGUI(parentGUI)
+		:mArea(area), mParentGUI(parentGUI), mIsDestroyed(false)
 	{
 
 	}
@@ -33,13 +33,18 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstanceResizableXY", &ScriptGUIArea::internal_createInstanceResizeableXY);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIArea::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIArea::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIArea::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIArea::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIArea::internal_setVisible);
 	}
 
-	GUIWidget& ScriptGUIArea::getParentWidget() const 
-	{ 
-		return mParentGUI->getWidget(); 
+	void ScriptGUIArea::destroy()
+	{
+		if(!mIsDestroyed)
+		{
+			GUIArea::destroy(mArea);
+			mArea = nullptr;
+
+			mIsDestroyed = true;
+		}
 	}
 
 	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* parentGUI, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth)
@@ -91,21 +96,20 @@ namespace BansheeEngine
 
 	void ScriptGUIArea::internal_destroyInstance(ScriptGUIArea* nativeInstance)
 	{
+		nativeInstance->destroy();
 		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIArea::internal_destroy(ScriptGUIArea* nativeInstance)
 	{
-		GUIArea::destroy(nativeInstance->getInternalValue());
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUIArea::internal_disable(ScriptGUIArea* nativeInstance)
+	void ScriptGUIArea::internal_setVisible(ScriptGUIArea* nativeInstance, bool visible)
 	{
-		nativeInstance->getInternalValue()->disable();
-	}
-
-	void ScriptGUIArea::internal_enable(ScriptGUIArea* nativeInstance)
-	{
-		nativeInstance->getInternalValue()->enable();
+		if(visible)
+			nativeInstance->getInternalValue()->enable();
+		else
+			nativeInstance->getInternalValue()->disable();
 	}
 }

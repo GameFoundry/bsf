@@ -13,8 +13,6 @@ namespace BansheeEngine
 		GUIArea* getInternalValue() const { return mArea; }
 		void* getNativeRaw() const { return mArea; }
 
-		GUIWidget& getParentWidget() const;
-
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* parentGUI, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth);
 		static void internal_createInstanceResizeableX(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetLeft, CM::UINT32 offsetRight, 
@@ -29,14 +27,16 @@ namespace BansheeEngine
 		static void internal_destroyInstance(ScriptGUIArea* nativeInstance);
 
 		static void internal_destroy(ScriptGUIArea* nativeInstance);
-		static void internal_disable(ScriptGUIArea* nativeInstance);
-		static void internal_enable(ScriptGUIArea* nativeInstance);
+		static void internal_setVisible(ScriptGUIArea* nativeInstance, bool visible);
 
 		static void initRuntimeData();
 
 		ScriptGUIArea(GUIArea* area, ScriptGUIBase* parentGUI);
 
+		void destroy();
+
 		GUIArea* mArea;
 		ScriptGUIBase* mParentGUI;
+		bool mIsDestroyed;
 	};
 }

@@ -14,7 +14,7 @@ namespace BansheeEngine
 		void* getNativeRaw() const { return mToggle; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* content, 
+		static void internal_createInstance(MonoObject* instance, MonoObject* content, 
 			MonoObject* toggleGroup, MonoObject* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIToggle* nativeInstance);
 		static void internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content);
@@ -22,8 +22,8 @@ namespace BansheeEngine
 		static void internal_toggleOff(ScriptGUIToggle* nativeInstance);
 
 		static void internal_destroy(ScriptGUIToggle* nativeInstance);
-		static void internal_disable(ScriptGUIToggle* nativeInstance);
-		static void internal_enable(ScriptGUIToggle* nativeInstance);
+		static void internal_setVisible(ScriptGUIToggle* nativeInstance, bool visible);
+		static void internal_setParent(ScriptGUIToggle* nativeInstance, MonoObject* parentLayout);
 
 		static void initRuntimeData();
 
@@ -34,7 +34,10 @@ namespace BansheeEngine
 
 		ScriptGUIToggle(GUIToggle* toggle);
 
+		void destroy();
+
 		GUIToggle* mToggle;
+		bool mIsDestroyed;
 
 		typedef void (__stdcall *OnClickThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnHoverThunkDef) (MonoObject*, MonoException**);

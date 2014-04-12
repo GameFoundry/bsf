@@ -14,18 +14,21 @@ namespace BansheeEngine
 		void* getNativeRaw() const { return mLabel; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* content, MonoObject* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoObject* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUILabel* nativeInstance);
 		static void internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content);
 
 		static void internal_destroy(ScriptGUILabel* nativeInstance);
-		static void internal_disable(ScriptGUILabel* nativeInstance);
-		static void internal_enable(ScriptGUILabel* nativeInstance);
+		static void internal_setVisible(ScriptGUILabel* nativeInstance, bool visible);
+		static void internal_setParent(ScriptGUILabel* nativeInstance, MonoObject* parentLayout);
 
 		static void initRuntimeData();
 
 		ScriptGUILabel(GUILabel* label);
 
+		void destroy();
+
 		GUILabel* mLabel;
+		bool mIsDestroyed;
 	};
 }

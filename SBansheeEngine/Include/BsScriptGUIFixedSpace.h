@@ -15,15 +15,17 @@ namespace BansheeEngine
 		static void internal_destroyInstance(ScriptGUIFixedSpace* nativeInstance);
 
 		static void internal_destroy(ScriptGUIFixedSpace* nativeInstance);
-		static void internal_disable(ScriptGUIFixedSpace* nativeInstance);
-		static void internal_enable(ScriptGUIFixedSpace* nativeInstance);
+		static void internal_setVisible(ScriptGUIFixedSpace* nativeInstance, bool visible);
+		static void internal_setParent(ScriptGUIFixedSpace* nativeInstance, MonoObject* parentLayout);
 
 		static void initRuntimeData();
 
 		ScriptGUIFixedSpace(GUIFixedSpace& fixedSpace, GUILayout* parentLayout);
 
+		void destroy();
+
 		GUIFixedSpace& mFixedSpace;
 		GUILayout* mParentLayout;
-
+		bool mIsDestroyed;
 	};
 }

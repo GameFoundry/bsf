@@ -11,13 +11,26 @@ namespace BansheeEngine
 		RepeatToFit
 	};
 
-
     public sealed class GUITexture : GUIElement
     {
-        internal GUITexture(GUILayout parentLayout, SpriteTexture texture, GUIImageScaleMode scale, GUIElementStyle style, params GUIOption[] options)
-            :base(parentLayout)
+        public GUITexture(SpriteTexture texture, GUIImageScaleMode scale, GUIElementStyle style, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, parentLayout, texture, scale, style, options);
+            Internal_CreateInstance(this, texture, scale, style, options);
+        }
+
+        public GUITexture(SpriteTexture texture, GUIImageScaleMode scale, params GUIOption[] options)
+        {
+            Internal_CreateInstance(this, texture, scale, null, options);
+        }
+
+        public GUITexture(SpriteTexture texture, GUIElementStyle style, params GUIOption[] options)
+        {
+            Internal_CreateInstance(this, texture, GUIImageScaleMode.StretchToFit, style, options);
+        }
+
+        public GUITexture(SpriteTexture texture, params GUIOption[] options)
+        {
+            Internal_CreateInstance(this, texture, GUIImageScaleMode.StretchToFit, null, options);
         }
 
         public void SetTexture(SpriteTexture texture)
@@ -26,7 +39,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUITexture instance, GUILayout layout, SpriteTexture texture, 
+        private static extern void Internal_CreateInstance(GUITexture instance, SpriteTexture texture, 
             GUIImageScaleMode scale, GUIElementStyle style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]

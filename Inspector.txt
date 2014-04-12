@@ -19,6 +19,10 @@ Other:
 
 -------------
 
+Boost any replacement: http://www.codeproject.com/Articles/11250/High-Performance-Dynamic-Typing-in-C-using-a-Repla
+
+-------------
+
 REFACTOR c++ GUI a bit:
  - GameObjectField
    - When dragging over GameObjectField cursor needs to change depending whether drop will be accepted or not

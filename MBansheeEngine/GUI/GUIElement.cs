@@ -4,64 +4,54 @@ using System.Runtime.CompilerServices;
 
 namespace BansheeEngine
 {
-    public class GUIElement : ScriptObject
+    public abstract class GUIElement : ScriptObject
     {
-        protected GUIElement parent;
-        protected List<GUIElement> children = new List<GUIElement>();
+        protected GUILayout parent;
+        private bool isDestroyed;
 
-        internal GUIElement(GUIElement parent)
+        internal void SetParent(GUILayout layout)
         {
-            this.parent = parent;
+            if (parent != null)
+                parent.Remove(this);
+
+            parent = layout;
 
             if (parent != null)
                 parent.children.Add(this);
+
+            Internal_SetParent(mCachedPtr, layout);
         }
 
-        public int GetNumChildren()
+        internal virtual bool IsStatic()
         {
-            return children.Count;
+            return false;
         }
 
-        public GUIElement GetChild(int index)
+        public virtual void Destroy()
         {
-            if (index < 0 || index >= children.Count)
-                return null;
-
-            return children[index];
-        }
-
-        public void Destroy()
-        {
-            for (int i = 0; i < children.Count; i++)
-                children[i].Destroy();
-
-            children.Clear();
-
-            if (parent != null)
-                parent.children.Remove(this);
-
-            parent = null;
+            SetParent(null);
 
             Internal_Destroy(mCachedPtr);
+            isDestroyed = true;
         }
 
-        public void Enable()
+        public bool IsDestroyed()
         {
-            Internal_Enable(mCachedPtr);
+            return isDestroyed;
         }
 
-        public void Disable()
+        public void SetVisible(bool visible)
         {
-            Internal_Disable(mCachedPtr);
+            Internal_SetVisible(mCachedPtr, visible);
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetParent(IntPtr nativeInstance, GUILayout parent);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Enable(IntPtr nativeInstance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Disable(IntPtr nativeInstance);
     }
 }

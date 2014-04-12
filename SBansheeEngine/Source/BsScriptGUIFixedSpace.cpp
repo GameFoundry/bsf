@@ -14,7 +14,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	ScriptGUIFixedSpace::ScriptGUIFixedSpace(GUIFixedSpace& fixedSpace, GUILayout* parentLayout)
-		:mFixedSpace(fixedSpace), mParentLayout(parentLayout)
+		:mFixedSpace(fixedSpace), mParentLayout(parentLayout), mIsDestroyed(false)
 	{
 
 	}
@@ -32,8 +32,19 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIFixedSpace::internal_destroyInstance);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFixedSpace::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIFixedSpace::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIFixedSpace::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIFixedSpace::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIFixedSpace::internal_setParent);
+	}
+
+	void ScriptGUIFixedSpace::destroy()
+	{
+		if(!mIsDestroyed)
+		{
+			mParentLayout->removeSpace(mFixedSpace);
+			mParentLayout = nullptr;
+
+			mIsDestroyed = true;
+		}
 	}
 
 	void ScriptGUIFixedSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, UINT32 size)
@@ -50,21 +61,25 @@ namespace BansheeEngine
 
 	void ScriptGUIFixedSpace::internal_destroyInstance(ScriptGUIFixedSpace* nativeInstance)
 	{
+		nativeInstance->destroy();
 		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIFixedSpace::internal_destroy(ScriptGUIFixedSpace* nativeInstance)
 	{
-		nativeInstance->mParentLayout->removeSpace(nativeInstance->mFixedSpace);
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUIFixedSpace::internal_disable(ScriptGUIFixedSpace* nativeInstance)
+	void ScriptGUIFixedSpace::internal_setVisible(ScriptGUIFixedSpace* nativeInstance, bool visible)
 	{
-		nativeInstance->mFixedSpace.disableRecursively();
+		if(visible)
+			nativeInstance->mFixedSpace.enableRecursively();
+		else
+			nativeInstance->mFixedSpace.disableRecursively();
 	}
 
-	void ScriptGUIFixedSpace::internal_enable(ScriptGUIFixedSpace* nativeInstance)
+	void ScriptGUIFixedSpace::internal_setParent(ScriptGUIFixedSpace* nativeInstance, MonoObject* parentLayout)
 	{
-		nativeInstance->mFixedSpace.enableRecursively();
+		// FixedSpace parent is static, so do nothing
 	}
 }

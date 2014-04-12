@@ -7,6 +7,7 @@ namespace BansheeEngine
     {
         private GUILayout _layout;
         private GUIBase parent;
+        private bool isDestroyed;
 
         public GUILayout layout
         {
@@ -16,11 +17,20 @@ namespace BansheeEngine
         internal GUIArea()
         { }
 
+        internal void SetParent(GUIBase parent)
+        {
+            if (this.parent != null)
+                this.parent.childAreas.Remove(this);
+
+            this.parent = parent;
+
+            parent.childAreas.Add(this);
+        }
+
         internal static GUIArea Create(GUIBase parent, int x, int y, int width, int height, short depth)
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstance(newArea, parent, x, y, width, height, depth);
-            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -30,7 +40,6 @@ namespace BansheeEngine
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstanceResizableX(newArea, parent, offsetLeft, offsetRight, offsetTop, height, depth);
-            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -40,7 +49,6 @@ namespace BansheeEngine
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstanceResizableY(newArea, parent, offsetTop, offsetBottom, offsetLeft, width, depth);
-            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
@@ -50,28 +58,28 @@ namespace BansheeEngine
         {
             GUIArea newArea = new GUIArea();
             Internal_CreateInstanceResizableXY(newArea, parent, offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
-            newArea.parent = parent;
             newArea._layout = new GUILayoutX(newArea);
 
             return newArea;
         }
 
+        public void SetVisible(bool visible)
+        {
+            Internal_SetVisible(mCachedPtr, visible);
+        }
+
+        public bool IsDestroyed()
+        {
+            return isDestroyed;
+        }
+
         public void Destroy()
         {
+            SetParent(null);
             _layout.Destroy();
-            parent.childAreas.Remove(this);
+            isDestroyed = true;
 
             Internal_Destroy(mCachedPtr);
-        }
-
-        public void Enable()
-        {
-            Internal_Enable(mCachedPtr);
-        }
-
-        public void Disable()
-        {
-            Internal_Disable(mCachedPtr);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
@@ -93,9 +101,6 @@ namespace BansheeEngine
         private static extern void Internal_Destroy(IntPtr nativeInstance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Enable(IntPtr nativeInstance);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_Disable(IntPtr nativeInstance);
+        private static extern void Internal_SetVisible(IntPtr nativeInstance, bool visible);
     }
 }

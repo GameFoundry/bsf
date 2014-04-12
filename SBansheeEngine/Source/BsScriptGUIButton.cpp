@@ -24,7 +24,7 @@ namespace BansheeEngine
 	ScriptGUIButton::OnOutThunkDef ScriptGUIButton::onOutThunk;
 
 	ScriptGUIButton::ScriptGUIButton(GUIButton* button)
-		:mButton(button)
+		:mButton(button), mIsDestroyed(false)
 	{
 
 	}
@@ -43,17 +43,27 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIButton::internal_setContent);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIButton::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIButton::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIButton::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIButton::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIButton::internal_setParent);
 
 		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick").getThunk();
 		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover").getThunk();
 		onOutThunk = (OnOutThunkDef)metaData.scriptClass->getMethod("DoOnOut").getThunk();
 	}
 
-	void ScriptGUIButton::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* content, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUIButton::destroy()
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+		if(!mIsDestroyed)
+		{
+			GUIElement::destroy(mButton);
+			mButton = nullptr;
+
+			mIsDestroyed = true;
+		}
+	}
+
+	void ScriptGUIButton::internal_createInstance(MonoObject* instance, MonoObject* content, MonoObject* style, MonoArray* guiOptions)
+	{
 		GUIOptions options;
 
 		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
@@ -66,24 +76,16 @@ namespace BansheeEngine
 			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
 
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		GUIButton* guiButton = GUIButton::create(scriptLayout->getParentWidget(), nativeContent, options, elemStyle);
+		GUIButton* guiButton = GUIButton::create(nativeContent, options, elemStyle);
 
 		guiButton->onClick.connect(std::bind(&ScriptGUIButton::onClick, instance));
 		guiButton->onHover.connect(std::bind(&ScriptGUIButton::onHover, instance));
 		guiButton->onOut.connect(std::bind(&ScriptGUIButton::onOut, instance));
 
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(guiButton);
-
 		ScriptGUIButton* nativeInstance = new (cm_alloc<ScriptGUIButton>()) ScriptGUIButton(guiButton);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIButton::internal_destroyInstance(ScriptGUIButton* nativeInstance)
-	{
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIButton::internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content)
@@ -94,17 +96,29 @@ namespace BansheeEngine
 
 	void ScriptGUIButton::internal_destroy(ScriptGUIButton* nativeInstance)
 	{
-		GUIElement::destroy(nativeInstance->getInternalValue());
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUIButton::internal_disable(ScriptGUIButton* nativeInstance)
+	void ScriptGUIButton::internal_destroyInstance(ScriptGUIButton* nativeInstance)
 	{
-		nativeInstance->getInternalValue()->disableRecursively();
+		nativeInstance->destroy();
+		cm_delete(nativeInstance);
 	}
 
-	void ScriptGUIButton::internal_enable(ScriptGUIButton* nativeInstance)
+	void ScriptGUIButton::internal_setVisible(ScriptGUIButton* nativeInstance, bool visible)
 	{
-		nativeInstance->getInternalValue()->enableRecursively();
+		if(visible)
+			nativeInstance->getInternalValue()->enableRecursively();
+		else
+			nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUIButton::internal_setParent(ScriptGUIButton* nativeInstance, MonoObject* parentLayout)
+	{
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		nativeLayout->addElement(nativeInstance->getInternalValue());
 	}
 
 	void ScriptGUIButton::onClick(MonoObject* instance)

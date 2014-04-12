@@ -13,8 +13,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUILayout::ScriptGUILayout(GUILayout* layout, GUIWidget& parentWidget, GUILayout* parentLayout)
-		:mLayout(layout), mParentWidget(parentWidget), mParentLayout(parentLayout)
+	ScriptGUILayout::ScriptGUILayout(GUILayout* layout, GUILayout* parentLayout)
+		:mLayout(layout), mParentLayout(parentLayout), mIsDestroyed(false)
 	{
 
 	}
@@ -35,8 +35,22 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUILayout::internal_destroyInstance);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUILayout::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUILayout::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUILayout::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUILayout::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUILayout::internal_setParent);
+	}
+
+	void ScriptGUILayout::destroy()
+	{
+		if(!mIsDestroyed)
+		{
+			if(mParentLayout != nullptr)
+				mParentLayout->removeLayout(*mLayout);
+
+			mLayout = nullptr;
+			mParentLayout = nullptr;
+
+			mIsDestroyed = true;
+		}
 	}
 
 	void ScriptGUILayout::internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea)
@@ -45,7 +59,7 @@ namespace BansheeEngine
 		GUIArea* nativeArea = scriptArea->getInternalValue();
 
 		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(&nativeArea->getLayout(), scriptArea->getParentWidget(), nullptr);
+			ScriptGUILayout(&nativeArea->getLayout(), nullptr);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
@@ -58,7 +72,7 @@ namespace BansheeEngine
 		GUILayout& layout = nativeLayout->addLayoutX();
 
 		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(&layout, scriptLayout->getParentWidget(), nativeLayout);
+			ScriptGUILayout(&layout, nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
@@ -71,7 +85,7 @@ namespace BansheeEngine
 		GUILayout& layout = nativeLayout->addLayoutY();
 
 		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(&layout, scriptLayout->getParentWidget(), nativeLayout);
+			ScriptGUILayout(&layout, nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
@@ -83,7 +97,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = &scriptScrollArea->getInternalValue()->getLayout();
 
 		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
-			ScriptGUILayout(nativeLayout, scriptScrollArea->getParentWidget(), nativeLayout);
+			ScriptGUILayout(nativeLayout, nativeLayout);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
@@ -91,22 +105,25 @@ namespace BansheeEngine
 
 	void ScriptGUILayout::internal_destroyInstance(ScriptGUILayout* nativeInstance)
 	{
+		nativeInstance->destroy();
 		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUILayout::internal_destroy(ScriptGUILayout* nativeInstance)
 	{
-		if(nativeInstance->mParentLayout != nullptr)
-			nativeInstance->mParentLayout->removeLayout(*nativeInstance->mLayout);
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUILayout::internal_disable(ScriptGUILayout* nativeInstance)
+	void ScriptGUILayout::internal_setVisible(ScriptGUILayout* nativeInstance, bool visible)
 	{
-		nativeInstance->getInternalValue()->disableRecursively();
+		if(visible)
+			nativeInstance->getInternalValue()->enableRecursively();
+		else
+			nativeInstance->getInternalValue()->disableRecursively();
 	}
 
-	void ScriptGUILayout::internal_enable(ScriptGUILayout* nativeInstance)
+	void ScriptGUILayout::internal_setParent(ScriptGUILayout* nativeInstance, MonoObject* parentLayout)
 	{
-		nativeInstance->getInternalValue()->enableRecursively();
+		// Layout parent is static, so do nothing
 	}
 }

@@ -19,8 +19,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUIScrollArea::ScriptGUIScrollArea(GUIScrollArea* scrollArea, GUIWidget& parentWidget)
-		:mScrollArea(scrollArea), mParentWidget(parentWidget)
+	ScriptGUIScrollArea::ScriptGUIScrollArea(GUIScrollArea* scrollArea)
+		:mScrollArea(scrollArea), mIsDestroyed(false)
 	{
 
 	}
@@ -38,19 +38,24 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIScrollArea::internal_destroyInstance);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIScrollArea::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUIScrollArea::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUIScrollArea::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIScrollArea::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIScrollArea::internal_setParent);
 	}
 
-	GUIWidget& ScriptGUIScrollArea::getParentWidget() const
+	void ScriptGUIScrollArea::destroy()
 	{
-		return mParentWidget;
+		if(!mIsDestroyed)
+		{
+			GUIElement::destroy(mScrollArea);
+			mScrollArea = nullptr;
+
+			mIsDestroyed = true;
+		}
 	}
 
-	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 		MonoObject* scrollBarStyle, MonoObject* scrollAreaStyle, MonoArray* guiOptions)
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUIOptions options;
 
 		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
@@ -67,11 +72,9 @@ namespace BansheeEngine
 		if(scrollBarNativeStyle != nullptr)
 			scrollBarNativeStyle = ScriptGUIElementStyle::toNative(scrollBarStyle)->getInternalValue();
 
-		GUIScrollArea* guiScrollArea = GUIScrollArea::create(scriptLayout->getParentWidget(), vertBarType, horzBarType, options, scrollBarNativeStyle, scrollAreaNativeStyle);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(guiScrollArea);
+		GUIScrollArea* guiScrollArea = GUIScrollArea::create(vertBarType, horzBarType, options, scrollBarNativeStyle, scrollAreaNativeStyle);
 
-		ScriptGUIScrollArea* nativeInstance = new (cm_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(guiScrollArea, scriptLayout->getParentWidget());
+		ScriptGUIScrollArea* nativeInstance = new (cm_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(guiScrollArea);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
@@ -79,21 +82,28 @@ namespace BansheeEngine
 
 	void ScriptGUIScrollArea::internal_destroyInstance(ScriptGUIScrollArea* nativeInstance)
 	{
+		nativeInstance->destroy();
 		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIScrollArea::internal_destroy(ScriptGUIScrollArea* nativeInstance)
 	{
-		GUIElement::destroy(nativeInstance->getInternalValue());
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUIScrollArea::internal_disable(ScriptGUIScrollArea* nativeInstance)
+	void ScriptGUIScrollArea::internal_setVisible(ScriptGUIScrollArea* nativeInstance, bool visible)
 	{
-		nativeInstance->getInternalValue()->disableRecursively();
+		if(visible)
+			nativeInstance->getInternalValue()->enableRecursively();
+		else
+			nativeInstance->getInternalValue()->disableRecursively();
 	}
 
-	void ScriptGUIScrollArea::internal_enable(ScriptGUIScrollArea* nativeInstance)
+	void ScriptGUIScrollArea::internal_setParent(ScriptGUIScrollArea* nativeInstance, MonoObject* parentLayout)
 	{
-		nativeInstance->getInternalValue()->enableRecursively();
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		nativeLayout->addElement(nativeInstance->getInternalValue());
 	}
 }

@@ -14,21 +14,22 @@ namespace BansheeEngine
 		GUIScrollArea* getInternalValue() const { return mScrollArea; }
 		void* getNativeRaw() const { return mScrollArea; }
 
-		GUIWidget& getParentWidget() const;
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, ScrollBarType vertBarType, ScrollBarType horzBarType, 
+		static void internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 			MonoObject* scrollBarStyle, MonoObject* scrollAreaStyle, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIScrollArea* nativeInstance);
 
 		static void internal_destroy(ScriptGUIScrollArea* nativeInstance);
-		static void internal_disable(ScriptGUIScrollArea* nativeInstance);
-		static void internal_enable(ScriptGUIScrollArea* nativeInstance);
+		static void internal_setVisible(ScriptGUIScrollArea* nativeInstance, bool visible);
+		static void internal_setParent(ScriptGUIScrollArea* nativeInstance, MonoObject* parentLayout);
 
 		static void initRuntimeData();
 
-		ScriptGUIScrollArea(GUIScrollArea* scrollArea, GUIWidget& parentWidget);
+		ScriptGUIScrollArea(GUIScrollArea* scrollArea);
+
+		void destroy();
 
 		GUIScrollArea* mScrollArea;
-		GUIWidget& mParentWidget;
+		bool mIsDestroyed;
 	};
 }

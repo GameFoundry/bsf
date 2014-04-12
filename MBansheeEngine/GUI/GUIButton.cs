@@ -13,10 +13,19 @@ namespace BansheeEngine
         public event OnHoverDelegate OnHover;
         public event OnOutDelegate OnOut;
 
-        internal GUIButton(GUILayout parentLayout, GUIContent content, GUIElementStyle style, params GUIOption[] options)
-            :base(parentLayout)
+        public GUIButton(GUIContent content, GUIElementStyle style, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, parentLayout, content, style, options);
+            Internal_CreateInstance(this, content, style, options);
+        }
+
+        public GUIButton(GUIContent content, GUIElementStyle style)
+        {
+            Internal_CreateInstance(this, content, style, new GUIOption[0]);
+        }
+
+        public GUIButton(GUIContent content, params GUIOption[] options)
+        {
+            Internal_CreateInstance(this, content, null, options);
         }
 
         public void SetContent(GUIContent content)
@@ -43,7 +52,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIButton instance, GUILayout layout, GUIContent content, GUIElementStyle style, GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUIButton instance, GUIContent content, GUIElementStyle style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);

@@ -20,7 +20,7 @@ using namespace CamelotFramework;
 namespace BansheeEngine
 {
 	ScriptGUITexture::ScriptGUITexture(GUITexture* texture)
-		:mTexture(texture)
+		:mTexture(texture), mIsDestroyed(false)
 	{
 
 	}
@@ -39,14 +39,24 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptGUITexture::internal_setTexture);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUITexture::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_Enable", &ScriptGUITexture::internal_enable);
-		metaData.scriptClass->addInternalCall("Internal_Disable", &ScriptGUITexture::internal_disable);
+		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUITexture::internal_setVisible);
+		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUITexture::internal_setParent);
 	}
 
-	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* parentLayout, MonoObject* texture, 
+	void ScriptGUITexture::destroy()
+	{
+		if(!mIsDestroyed)
+		{
+			GUIElement::destroy(mTexture);
+			mTexture = nullptr;
+
+			mIsDestroyed = true;
+		}
+	}
+
+	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* texture, 
 		GUIImageScaleMode scale, MonoObject* style, MonoArray* guiOptions)
 	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUIOptions options;
 
 		UINT32 arrayLen = (UINT32)mono_array_length(guiOptions);
@@ -62,19 +72,12 @@ namespace BansheeEngine
 		if(texture != nullptr)
 			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
 
-		GUITexture* guiTexture = GUITexture::create(scriptLayout->getParentWidget(), nativeTexture, scale, options, elemStyle);
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(guiTexture);
+		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, options, elemStyle);
 
 		ScriptGUITexture* nativeInstance = new (cm_alloc<ScriptGUITexture>()) ScriptGUITexture(guiTexture);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUITexture::internal_destroyInstance(ScriptGUITexture* nativeInstance)
-	{
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUITexture::internal_setTexture(ScriptGUITexture* nativeInstance, MonoObject* texture)
@@ -88,16 +91,28 @@ namespace BansheeEngine
 
 	void ScriptGUITexture::internal_destroy(ScriptGUITexture* nativeInstance)
 	{
-		GUIElement::destroy(nativeInstance->getInternalValue());
+		nativeInstance->destroy();
 	}
 
-	void ScriptGUITexture::internal_disable(ScriptGUITexture* nativeInstance)
+	void ScriptGUITexture::internal_destroyInstance(ScriptGUITexture* nativeInstance)
 	{
-		nativeInstance->getInternalValue()->disableRecursively();
+		nativeInstance->destroy();
+		cm_delete(nativeInstance);
 	}
 
-	void ScriptGUITexture::internal_enable(ScriptGUITexture* nativeInstance)
+	void ScriptGUITexture::internal_setVisible(ScriptGUITexture* nativeInstance, bool visible)
 	{
-		nativeInstance->getInternalValue()->enableRecursively();
+		if(visible)
+			nativeInstance->getInternalValue()->enableRecursively();
+		else
+			nativeInstance->getInternalValue()->disableRecursively();
+	}
+
+	void ScriptGUITexture::internal_setParent(ScriptGUITexture* nativeInstance, MonoObject* parentLayout)
+	{
+		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
+
+		GUILayout* nativeLayout = scriptLayout->getInternalValue();
+		nativeLayout->addElement(nativeInstance->getInternalValue());
 	}
 }
