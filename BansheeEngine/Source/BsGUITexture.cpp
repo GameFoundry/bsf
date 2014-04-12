@@ -18,19 +18,17 @@ namespace BansheeEngine
 
 	GUITexture::GUITexture(const GUIElementStyle* style, const HSpriteTexture& texture, 
 		GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions)
-		:GUIElement(style, layoutOptions), mScaleMode(scale)
+		:GUIElement(style, layoutOptions), mScaleMode(scale), mUsingStyleTexture(false)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
 		if(texture != nullptr)
+		{
 			mActiveTexture = texture;
+			mUsingStyleTexture = false;
+		}
 		else
-			mActiveTexture = style->normal.texture;
-	
-		mDesc.borderLeft = mStyle->border.left;
-		mDesc.borderRight = mStyle->border.right;
-		mDesc.borderTop = mStyle->border.top;
-		mDesc.borderBottom = mStyle->border.bottom;
+			mUsingStyleTexture = true;
 	}
 
 	GUITexture::~GUITexture()
@@ -84,6 +82,8 @@ namespace BansheeEngine
 	void GUITexture::setTexture(const HSpriteTexture& texture)
 	{
 		mActiveTexture = texture;
+		mUsingStyleTexture = false;
+
 		markContentAsDirty();
 	}
 
@@ -106,6 +106,14 @@ namespace BansheeEngine
 	{		
 		mDesc.width = mWidth;
 		mDesc.height = mHeight;
+
+		mDesc.borderLeft = _getStyle()->border.left;
+		mDesc.borderRight = _getStyle()->border.right;
+		mDesc.borderTop = _getStyle()->border.top;
+		mDesc.borderBottom = _getStyle()->border.bottom;
+
+		if(mUsingStyleTexture)
+			mActiveTexture = _getStyle()->normal.texture;
 
 		float optimalWidth = 0.0f;
 		float optimalHeight = 0.0f;

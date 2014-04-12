@@ -36,24 +36,11 @@ namespace BansheeEngine
 
 	GUIInputBox::GUIInputBox(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
 		:GUIElement(style, layoutOptions), mDragInProgress(false),
-		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false)
+		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
+		mState(State::Normal)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
-
-		mActiveTexture = mStyle->normal.texture;
-
-		if(mActiveTexture != nullptr && mActiveTexture.isLoaded() &&
-			mActiveTexture->getTexture() != nullptr && mActiveTexture->getTexture().isLoaded())
-		{
-			mImageDesc.width = mActiveTexture->getTexture()->getWidth();
-			mImageDesc.height = mActiveTexture->getTexture()->getHeight();
-		}
-
-		mImageDesc.borderLeft = mStyle->border.left;
-		mImageDesc.borderRight = mStyle->border.right;
-		mImageDesc.borderTop = mStyle->border.top;
-		mImageDesc.borderBottom = mStyle->border.bottom;
 	}
 
 	GUIInputBox::~GUIInputBox()
@@ -144,11 +131,21 @@ namespace BansheeEngine
 
 	void GUIInputBox::updateRenderElementsInternal()
 	{		
-		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
-			mImageDesc.texture = mActiveTexture.getInternalPtr();
-
 		mImageDesc.width = mWidth;
 		mImageDesc.height = mHeight;
+		mImageDesc.borderLeft = _getStyle()->border.left;
+		mImageDesc.borderRight = _getStyle()->border.right;
+		mImageDesc.borderTop = _getStyle()->border.top;
+		mImageDesc.borderBottom = _getStyle()->border.bottom;
+
+		if(isActiveTextureLoaded())
+		{
+			const HSpriteTexture& activeTex = getActiveTexture();
+
+			mImageDesc.width = activeTex->getTexture()->getWidth();
+			mImageDesc.height = activeTex->getTexture()->getHeight();
+			mImageDesc.texture = activeTex.getInternalPtr();
+		}
 
 		mImageSprite->update(mImageDesc);
 
@@ -318,13 +315,15 @@ namespace BansheeEngine
 	{
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
-		if(mActiveTexture != nullptr && mActiveTexture.isLoaded())
+		if(isActiveTextureLoaded())
 		{
-			imageWidth = mActiveTexture->getTexture()->getWidth();
-			imageHeight = mActiveTexture->getTexture()->getHeight();
+			const HSpriteTexture& activeTex = getActiveTexture();
+
+			imageWidth = activeTex->getTexture()->getWidth();
+			imageHeight = activeTex->getTexture()->getHeight();
 		}
 
-		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *mStyle, _getLayoutOptions());
+		Vector2I contentSize = GUIHelper::calcOptimalContentsSize(mText, *_getStyle(), _getLayoutOptions());
 		UINT32 contentWidth = std::max(imageWidth, (UINT32)contentSize.x);
 		UINT32 contentHeight = std::max(imageHeight, (UINT32)contentSize.y);
 
@@ -388,7 +387,7 @@ namespace BansheeEngine
 		{
 			if(!mHasFocus)
 			{
-				mActiveTexture = mStyle->hover.texture;
+				mState = State::Hover;
 				markContentAsDirty();
 			}
 
@@ -400,7 +399,7 @@ namespace BansheeEngine
 		{
 			if(!mHasFocus)
 			{
-				mActiveTexture = mStyle->normal.texture;
+				mState = State::Normal;
 				markContentAsDirty();
 			}
 
@@ -537,7 +536,7 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUICommandEventType::FocusGained)
 		{
-			mActiveTexture = mStyle->focused.texture;
+			mState = State::Focused;
 
 			clearSelection();
 			showCaret();
@@ -550,7 +549,8 @@ namespace BansheeEngine
 		
 		if(ev.getType() == GUICommandEventType::FocusLost)
 		{
-			mActiveTexture = mStyle->normal.texture;
+			mState = State::Normal;
+
 			hideCaret();
 			clearSelection();
 			markContentAsDirty();
@@ -1027,17 +1027,39 @@ namespace BansheeEngine
 	{
 		TEXT_SPRITE_DESC textDesc;
 		textDesc.text = mText;
-		textDesc.font = mStyle->font;
-		textDesc.fontSize = mStyle->fontSize;
+		textDesc.font = _getStyle()->font;
+		textDesc.fontSize = _getStyle()->fontSize;
 
 		RectI textBounds = getContentBounds();
 		textDesc.width = textBounds.width;
 		textDesc.height = textBounds.height;
-		textDesc.horzAlign = mStyle->textHorzAlign;
-		textDesc.vertAlign = mStyle->textVertAlign;
+		textDesc.horzAlign = _getStyle()->textHorzAlign;
+		textDesc.vertAlign = _getStyle()->textVertAlign;
 		textDesc.wordWrap = mIsMultiline;
 
 		return textDesc;
+	}
+
+	const HSpriteTexture& GUIInputBox::getActiveTexture() const
+	{
+		switch(mState)
+		{
+		case State::Focused:
+			return _getStyle()->focused.texture;
+		case State::Hover:
+			return _getStyle()->hover.texture;
+		case State::Normal:
+			return _getStyle()->normal.texture;
+		}
+
+		return _getStyle()->normal.texture;
+	}
+
+	bool GUIInputBox::isActiveTextureLoaded() const
+	{
+		const HSpriteTexture& activeTex = getActiveTexture();
+
+		return activeTex != nullptr && activeTex.isLoaded() && activeTex->getTexture() != nullptr && activeTex->getTexture().isLoaded();
 	}
 
 	GUIContextMenu* GUIInputBox::getContextMenu() const

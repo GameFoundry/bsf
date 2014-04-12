@@ -119,7 +119,7 @@ namespace BansheeEditor
 
 	Vector2I GUIColor::_getOptimalSize() const
 	{
-		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *mStyle, _getLayoutOptions()); // Arbitrary size
+		return GUIHelper::calcOptimalContentsSize(Vector2I(80, 10), *_getStyle(), _getLayoutOptions()); // Arbitrary size
 	}
 
 	void GUIColor::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

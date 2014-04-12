@@ -38,9 +38,9 @@ namespace BansheeEditor
 	void GUIWindowDropArea::setFocused(bool focused)
 	{
 		if(focused)
-			mActiveTexture = mStyle->focused.texture;
+			mActiveTexture = _getStyle()->focused.texture;
 		else
-			mActiveTexture = mStyle->normal.texture;
+			mActiveTexture = _getStyle()->normal.texture;
 
 		markContentAsDirty();
 	}

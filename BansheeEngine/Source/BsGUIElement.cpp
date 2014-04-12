@@ -9,11 +9,11 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(style),
-		mIsDestroyed(false)
+	GUIElement::GUIElement(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+		:mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(nullptr),
+		mIsDestroyed(false), mStyleName(styleName)
 	{
-
+		_refreshStyle();
 	}
 
 	GUIElement::~GUIElement()
@@ -130,6 +130,8 @@ namespace BansheeEngine
 
 			if(widget != nullptr)
 				widget->registerElement(this);
+
+			_refreshStyle();
 		}
 
 		GUIElementBase::_changeParentWidget(widget);
@@ -204,6 +206,21 @@ namespace BansheeEngine
 		RectI contentBounds = getVisibleBounds();
 
 		return contentBounds.contains(position);
+	}
+
+	void GUIElement::_refreshStyle()
+	{
+		const GUIElementStyle* newStyle = nullptr;
+		if(_getParentWidget() != nullptr)
+			newStyle = _getParentWidget()->getSkin().getStyle(mStyleName);
+		else
+			newStyle = &GUISkin::DefaultStyle;
+
+		if(newStyle != mStyle)
+		{
+			mStyle = newStyle;
+			markContentAsDirty();
+		}
 	}
 
 	void GUIElement::destroy(GUIElement* element)

@@ -181,6 +181,9 @@ namespace BansheeEngine
 	void GUIWidget::setSkin(const GUISkin& skin)
 	{
 		mSkin = &skin;
+
+		for(auto& element : mElements)
+			element->_refreshStyle();
 	}
 
 	const GUISkin& GUIWidget::getSkin() const

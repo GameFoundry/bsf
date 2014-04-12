@@ -16,12 +16,6 @@ namespace BansheeEngine
 	{
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
-		mDesc.font = mStyle->font;
-		mDesc.fontSize = mStyle->fontSize;
-		mDesc.wordWrap = mStyle->wordWrap;
-		mDesc.horzAlign = mStyle->textHorzAlign;
-		mDesc.vertAlign = mStyle->textVertAlign;
-
 		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUILabel::markContentAsDirty, this));
 	}
 
@@ -48,6 +42,11 @@ namespace BansheeEngine
 
 	void GUILabel::updateRenderElementsInternal()
 	{		
+		mDesc.font = _getStyle()->font;
+		mDesc.fontSize = _getStyle()->fontSize;
+		mDesc.wordWrap = _getStyle()->wordWrap;
+		mDesc.horzAlign = _getStyle()->textHorzAlign;
+		mDesc.vertAlign = _getStyle()->textVertAlign;
 		mDesc.width = mWidth;
 		mDesc.height = mHeight;
 		mDesc.text = mContent.getText();
@@ -64,7 +63,7 @@ namespace BansheeEngine
 
 	Vector2I GUILabel::_getOptimalSize() const
 	{
-		return GUIHelper::calcOptimalContentsSize(mContent, *mStyle, _getLayoutOptions());
+		return GUIHelper::calcOptimalContentsSize(mContent, *_getStyle(), _getLayoutOptions());
 	}
 
 	void GUILabel::fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 

@@ -158,7 +158,7 @@ namespace BansheeEngine
 				{
 					mMouseOverHandle = false;
 
-					mCurTexture = mStyle->normal.texture;
+					mCurTexture = _getStyle()->normal.texture;
 					markContentAsDirty();
 
 					return true;
@@ -170,7 +170,7 @@ namespace BansheeEngine
 				{
 					mMouseOverHandle = true;
 
-					mCurTexture = mStyle->hover.texture;
+					mCurTexture = _getStyle()->hover.texture;
 					markContentAsDirty();
 
 					return true;
@@ -180,7 +180,7 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseDown && mMouseOverHandle)
 		{
-			mCurTexture = mStyle->active.texture;
+			mCurTexture = _getStyle()->active.texture;
 			markContentAsDirty();
 
 			if(mHorizontal)
@@ -227,7 +227,7 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseOut && !mHandleDragged)
 		{
-			mCurTexture = mStyle->normal.texture;
+			mCurTexture = _getStyle()->normal.texture;
 			mMouseOverHandle = false;
 			markContentAsDirty();
 
@@ -237,9 +237,9 @@ namespace BansheeEngine
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
 			if(mMouseOverHandle)
-				mCurTexture = mStyle->hover.texture;
+				mCurTexture = _getStyle()->hover.texture;
 			else
-				mCurTexture = mStyle->normal.texture;
+				mCurTexture = _getStyle()->normal.texture;
 
 			// If we clicked above or below the scroll handle, scroll by one page
 			INT32 handleOffset = 0;
@@ -287,9 +287,9 @@ namespace BansheeEngine
 			mHandleDragged = false;
 
 			if(mMouseOverHandle)
-				mCurTexture = mStyle->hover.texture;
+				mCurTexture = _getStyle()->hover.texture;
 			else
-				mCurTexture = mStyle->normal.texture;
+				mCurTexture = _getStyle()->normal.texture;
 
 			markContentAsDirty();
 			return true;

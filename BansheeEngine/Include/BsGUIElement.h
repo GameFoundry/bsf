@@ -25,7 +25,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		GUIElement(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIElement(const CM::String& styleName, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIElement();
 
 		/**
@@ -125,6 +125,8 @@ namespace BansheeEngine
 		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
 		Type _getType() const { return GUIElementBase::Type::Element; }
 		bool _isDestroyed() const { return mIsDestroyed; }
+		void _refreshStyle();
+		const GUIElementStyle* _getStyle() const { return mStyle; }
 
 		const CM::RectI& _getClippedBounds() const { return mClippedBounds; }
 		const CM::RectI& _getClipRect() const { return mClipRect; }
@@ -167,6 +169,9 @@ namespace BansheeEngine
 		CM::Vector2I mOffset;
 		CM::UINT32 mWidth, mHeight;
 		CM::RectI mClipRect;
+
+	private:
 		const GUIElementStyle* mStyle;
+		CM::String mStyleName;
 	};
 }

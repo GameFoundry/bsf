@@ -86,8 +86,8 @@ namespace BansheeEngine
 	{
 		IMAGE_SPRITE_DESC desc;
 
-		if(mStyle->normal.texture != nullptr && mStyle->normal.texture.isLoaded())
-			desc.texture = mStyle->normal.texture.getInternalPtr();
+		if(_getStyle()->normal.texture != nullptr && _getStyle()->normal.texture.isLoaded())
+			desc.texture = _getStyle()->normal.texture.getInternalPtr();
 
 		desc.width = mWidth;
 		desc.height = mHeight;

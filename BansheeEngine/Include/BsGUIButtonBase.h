@@ -77,13 +77,15 @@ namespace BansheeEngine
 
 		void setState(GUIButtonState state);
 		GUIButtonState getState() const { return mActiveState; }
+
+		const HSpriteTexture& getActiveTexture() const;
+		bool isActiveTextureLoaded() const;
 	private:
 		ImageSprite* mImageSprite;
 		ImageSprite* mContentImageSprite;
 		TextSprite* mTextSprite;
 		GUIButtonState mActiveState;
 
-		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;
 

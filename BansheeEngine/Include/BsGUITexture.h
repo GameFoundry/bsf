@@ -45,6 +45,7 @@ namespace BansheeEngine
 		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mDesc;
 		GUIImageScaleMode mScaleMode;
+		bool mUsingStyleTexture;
 
 		GUITexture(const GUIElementStyle* style, const HSpriteTexture& texture, GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions);
 		virtual ~GUITexture();

@@ -10,6 +10,13 @@ namespace BansheeEngine
 {
 	class BS_EXPORT GUIInputBox : public GUIElement
 	{
+		enum class State
+		{
+			Normal,
+			Hover,
+			Focused
+		};
+
 	public:
 		static const CM::String& getGUITypeName();
 
@@ -85,8 +92,8 @@ namespace BansheeEngine
 		CM::Vector2I mTextOffset;
 		bool mHasFocus;
 		bool mIsMouseOver;
+		State mState;
 
-		HSpriteTexture mActiveTexture;
 		IMAGE_SPRITE_DESC mImageDesc;
 		CM::WString mText;
 		std::function<bool(const CM::WString&)> mFilter;
@@ -120,6 +127,8 @@ namespace BansheeEngine
 		CM::Vector2I getTextOffset() const;
 		CM::RectI getTextClipRect() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
+		const HSpriteTexture& getActiveTexture() const;
+		bool isActiveTextureLoaded() const;
 		
 		void cutText();
 		void copyText();
