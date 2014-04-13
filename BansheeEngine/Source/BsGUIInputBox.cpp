@@ -141,8 +141,6 @@ namespace BansheeEngine
 		const HSpriteTexture& activeTex = getActiveTexture();
 		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			mImageDesc.width = activeTex->getTexture()->getWidth();
-			mImageDesc.height = activeTex->getTexture()->getHeight();
 			mImageDesc.texture = activeTex.getInternalPtr();
 		}
 

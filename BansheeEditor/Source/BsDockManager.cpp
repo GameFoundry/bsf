@@ -229,6 +229,8 @@ namespace BansheeEditor
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 		}
 
+		mSlider->_changeParentWidget(widgetParent);
+
 		mSlider->onDragged.connect(std::bind(&DockManager::DockContainer::sliderDragged, this, _1));
 
 		setArea(mArea.x, mArea.y, mArea.width, mArea.height);

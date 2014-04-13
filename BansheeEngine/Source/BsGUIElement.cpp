@@ -123,6 +123,7 @@ namespace BansheeEngine
 
 	void GUIElement::_changeParentWidget(GUIWidget* widget)
 	{
+		bool doRefreshStyle = false;
 		if(mParentWidget != widget)
 		{
 			if(mParentWidget != nullptr)
@@ -131,10 +132,13 @@ namespace BansheeEngine
 			if(widget != nullptr)
 				widget->registerElement(this);
 
-			_refreshStyle();
+			doRefreshStyle = true;
 		}
 
 		GUIElementBase::_changeParentWidget(widget);
+
+		if(doRefreshStyle)
+			_refreshStyle();
 	}
 
 	const RectOffset& GUIElement::_getPadding() const
