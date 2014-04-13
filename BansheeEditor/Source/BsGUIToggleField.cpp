@@ -14,7 +14,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	GUIToggleField::GUIToggleField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		UINT32 labelWidth, GUIElementStyle* labelStyle, GUIElementStyle* toggleStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		UINT32 labelWidth, const CM::String& labelStyle, const CM::String& toggleStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mToggle(nullptr)
 	{
 		mToggle = GUIToggle::create(HString(L""), toggleStyle);

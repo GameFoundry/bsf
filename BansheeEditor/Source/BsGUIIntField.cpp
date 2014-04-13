@@ -20,7 +20,7 @@ namespace BansheeEditor
 	const INT32 GUIIntField::DRAG_SPEED = 5;
 
 	GUIIntField::GUIIntField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const CM::String& labelStyle, const CM::String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
 		mLastDragPos(0), mIsDragCursorSet(false)
 	{

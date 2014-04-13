@@ -11,7 +11,7 @@ namespace BansheeEditor
 		static const CM::String& getGUITypeName();
 
 		GUIToggleField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
-			BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* toggleStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
+			const CM::String& labelStyle, const CM::String& toggleStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
 
 		bool getValue() const;
 		void setValue(bool value);

@@ -12,8 +12,8 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIColor* create(const BS::GUIElementStyle* style = nullptr);
-		static GUIColor* create(const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style = nullptr);
+		static GUIColor* create(const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIColor* create(const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
 
 		virtual CM::Vector2I _getOptimalSize() const;
 
@@ -21,7 +21,7 @@ namespace BansheeEditor
 		CM::Color getColor() const { return mColor; }
 
 	protected:
-		GUIColor(const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions);
+		GUIColor(const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
 		virtual ~GUIColor();
 
 		/**

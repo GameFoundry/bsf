@@ -12,7 +12,7 @@ namespace BansheeEditor
 
 	public:
 		GUIFieldBase(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
-			BS::GUIElementStyle* labelStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
+			const CM::String& labelStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
 
 		void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
@@ -33,75 +33,75 @@ namespace BansheeEditor
 	{
 	public:
 		static T* create(const BS::GUIContent& labelContent, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(layoutOptions), true);
 		}
 
 		static T* create(const BS::GUIContent& labelContent, const BS::GUIOptions& layoutOptions, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(layoutOptions), true);
 		}
 
 		static T* create(const CM::HString& labelText, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), BS::GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(layoutOptions), true);
 		}
 
 		static T* create(const CM::HString& labelText, const BS::GUIOptions& layoutOptions, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), BS::GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(layoutOptions), true);
 		}
 
-		static T* create(const BS::GUIOptions& layoutOptions, BS::GUIElementStyle* entryElementStyle = nullptr)
+		static T* create(const BS::GUIOptions& layoutOptions, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), BS::GUIContent(), 0, nullptr, entryElementStyle, 
-				GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), false);
+				GUILayoutOptions::create(layoutOptions), false);
 		}
 
 		static T* create(const BS::GUIContent& labelContent, CM::UINT32 labelWidth, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(), true);
 		}
 
 		static T* create(const BS::GUIContent& labelContent, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(), true);
 		}
 
 		static T* create(const CM::HString& labelText, CM::UINT32 labelWidth, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), BS::GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(), true);
 		}
 
 		static T* create(const CM::HString& labelText, 
-			BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* entryElementStyle = nullptr)
+			const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), BS::GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
-				GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+				GUILayoutOptions::create(), true);
 		}
 
-		static T* create(BS::GUIElementStyle* entryElementStyle = nullptr)
+		static T* create(const CM::String& entryElementStyle = CM::StringUtil::BLANK)
 		{
 			return cm_new<T>(PrivatelyConstruct(), BS::GUIContent(), 0, nullptr, entryElementStyle, 
-				GUILayoutOptions::create(&GUISkin::DefaultStyle), false);
+				GUILayoutOptions::create(), false);
 		}
 
 		TGUIField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
-			BS::GUIElementStyle* labelStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel)
+			const CM::String& labelStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel)
 			:GUIFieldBase(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel)
 		{ }
 	};

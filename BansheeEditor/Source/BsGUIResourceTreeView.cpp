@@ -30,9 +30,9 @@ namespace BansheeEditor
 		resourcePaths = nullptr;
 	}
 
-	GUIResourceTreeView::GUIResourceTreeView(GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
-		BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
+	GUIResourceTreeView::GUIResourceTreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
+		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
+		const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
 		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions), mDraggedResources(nullptr), mCurrentWindow(nullptr), mDropTarget(nullptr), mDropTargetDragActive(false)
 	{
@@ -53,20 +53,20 @@ namespace BansheeEditor
 		clearDropTarget();
 	}
 
-	GUIResourceTreeView* GUIResourceTreeView::create(GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, GUIElementStyle* dragHighlightStyle, 
-		GUIElementStyle* dragSepHighlightStyle)
+	GUIResourceTreeView* GUIResourceTreeView::create(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
+		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, 
+		const CM::String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
-			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create());
 	}
 
-	GUIResourceTreeView* GUIResourceTreeView::create(const GUIOptions& options, GUIElementStyle* backgroundStyle,
-		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, 
-		GUIElementStyle* editBoxStyle, GUIElementStyle* dragHighlightStyle, GUIElementStyle* dragSepHighlightStyle)
+	GUIResourceTreeView* GUIResourceTreeView::create(const GUIOptions& options, const CM::String& backgroundStyle,
+		const CM::String& elementBtnStyle, const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, 
+		const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
+			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options));
 	}
 
 	void GUIResourceTreeView::_updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height, RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth)

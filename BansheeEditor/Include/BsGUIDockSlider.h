@@ -12,8 +12,8 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIDockSlider* create(bool horizontal, const BS::GUIElementStyle* style = nullptr);
-		static GUIDockSlider* create(bool horizontal, const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style = nullptr);
+		static GUIDockSlider* create(bool horizontal, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIDockSlider* create(bool horizontal, const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
 
 		boost::signal<void(const CM::Vector2I&)> onDragged;
 	protected:
@@ -26,6 +26,6 @@ namespace BansheeEditor
 		bool mIsCursorSet;
 		bool mDragInProgress;
 
-		GUIDockSlider(bool horizontal, const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions);
+		GUIDockSlider(bool horizontal, const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
 	};
 }

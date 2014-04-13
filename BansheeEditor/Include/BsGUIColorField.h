@@ -13,26 +13,26 @@ namespace BansheeEditor
 		static const CM::String& getGUITypeName();
 
 		static GUIColorField* create(const BS::GUIContent& labelContent, 
-			const BS::GUIOptions& layoutOptions, BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* toggleStyle = nullptr);
+			const BS::GUIOptions& layoutOptions, const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& toggleStyle = CM::StringUtil::BLANK);
 
 		static GUIColorField* create(const CM::HString& labelText, 
-			const BS::GUIOptions& layoutOptions, BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* toggleStyle = nullptr);
+			const BS::GUIOptions& layoutOptions, const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& toggleStyle = CM::StringUtil::BLANK);
 
-		static GUIColorField* create(const BS::GUIOptions& layoutOptions, BS::GUIElementStyle* labelStyle = nullptr, 
-			BS::GUIElementStyle* toggleStyle = nullptr);
+		static GUIColorField* create(const BS::GUIOptions& layoutOptions, const CM::String& labelStyle = CM::StringUtil::BLANK, 
+			const CM::String& toggleStyle = CM::StringUtil::BLANK);
 
-		static GUIColorField* create(const BS::GUIContent& labelContent, BS::GUIElementStyle* labelStyle = nullptr, 
-			BS::GUIElementStyle* toggleStyle = nullptr);
+		static GUIColorField* create(const BS::GUIContent& labelContent, const CM::String& labelStyle = CM::StringUtil::BLANK, 
+			const CM::String& toggleStyle = CM::StringUtil::BLANK);
 
-		static GUIColorField* create(const CM::HString& labelText, BS::GUIElementStyle* labelStyle = nullptr,
-			BS::GUIElementStyle* toggleStyle = nullptr);
+		static GUIColorField* create(const CM::HString& labelText, const CM::String& labelStyle = CM::StringUtil::BLANK,
+			const CM::String& toggleStyle = CM::StringUtil::BLANK);
 
-		static GUIColorField* create(BS::GUIElementStyle* labelStyle = nullptr, BS::GUIElementStyle* toggleStyle = nullptr);
+		static GUIColorField* create(const CM::String& labelStyle = CM::StringUtil::BLANK, const CM::String& toggleStyle = CM::StringUtil::BLANK);
 
 		GUIColorField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, 
-			BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* toggleStyle, const BS::GUILayoutOptions& layoutOptions);
+			const CM::String& labelStyle, const CM::String& toggleStyle, const BS::GUILayoutOptions& layoutOptions);
 
-		GUIColorField(const PrivatelyConstruct& dummy, BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* toggleStyle, 
+		GUIColorField(const PrivatelyConstruct& dummy, const CM::String& labelStyle, const CM::String& toggleStyle, 
 			const BS::GUILayoutOptions& layoutOptions);
 
 		CM::Color getValue() const;

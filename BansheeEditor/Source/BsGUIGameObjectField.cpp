@@ -18,35 +18,32 @@ using namespace std::placeholders;
 namespace BansheeEditor
 {
 	const UINT32 GUIGameObjectField::DEFAULT_LABEL_WIDTH = 100;
+	const String GUIGameObjectField::DROP_BUTTON_STYLE = "DropButton";
+	const String GUIGameObjectField::CLEAR_BUTTON_STYLE = "ObjectClearButton";
 
 	GUIGameObjectField::GUIGameObjectField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, CM::UINT32 labelWidth,
-		GUIElementStyle* labelStyle, GUIElementStyle* dropButtonStyle, GUIElementStyle* clearButtonStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:GUIElementContainer(layoutOptions), mLabel(nullptr), mClearButton(nullptr), mDropButton(nullptr), mInstanceId(0)
 	{
 		mLayout = &addLayoutXInternal(this);
 
 		if(withLabel)
 		{
-			const GUIElementStyle* curLabelStyle = labelStyle;
-
-			if(curLabelStyle == nullptr)
-				curLabelStyle = parent.getSkin().getStyle("Label");
-
-			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), curLabelStyle);
+			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), labelStyle);
 			mLayout->addElement(mLabel);
 		}
 
-		const GUIElementStyle* curDropButtonStyle = dropButtonStyle;
-		const GUIElementStyle* curClearButtonStyle = clearButtonStyle;
+		const String* curDropButtonStyle = &dropButtonStyle;
+		const String* curClearButtonStyle = &clearButtonStyle;
 
-		if(curDropButtonStyle == nullptr)
-			curDropButtonStyle = parent.getSkin().getStyle("DropButton");
+		if(*curDropButtonStyle == StringUtil::BLANK)
+			curDropButtonStyle = &DROP_BUTTON_STYLE;
 
-		if(curClearButtonStyle == nullptr)
-			curClearButtonStyle = parent.getSkin().getStyle("ObjectClearButton");
+		if(*curClearButtonStyle == StringUtil::BLANK)
+			curClearButtonStyle = &CLEAR_BUTTON_STYLE;
 
-		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::SceneObject, GUIOptions(GUIOption::flexibleWidth()), curDropButtonStyle);
-		mClearButton = GUIButton::create(HString(L""), curClearButtonStyle);
+		mDropButton = GUIDropButton::create((UINT32)DragAndDropType::SceneObject, GUIOptions(GUIOption::flexibleWidth()), *curDropButtonStyle);
+		mClearButton = GUIButton::create(HString(L""), *curClearButtonStyle);
 
 		mLayout->addElement(mDropButton);
 		mLayout->addElement(mClearButton);
@@ -60,72 +57,72 @@ namespace BansheeEditor
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const BS::GUIContent& labelContent, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(layoutOptions), true);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const BS::GUIContent& labelContent, const BS::GUIOptions& layoutOptions, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(layoutOptions), true);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const CM::HString& labelText, CM::UINT32 labelWidth, const BS::GUIOptions& layoutOptions, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), BS::GUIContent(labelText), labelWidth, labelStyle, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(layoutOptions), true);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const CM::HString& labelText, const BS::GUIOptions& layoutOptions, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), BS::GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, dropButtonStyle, clearButtonStyle, 
-			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(layoutOptions), true);
 	}
 
-	GUIGameObjectField* GUIGameObjectField::create(const BS::GUIOptions& layoutOptions, BS::GUIElementStyle* dropButtonStyle,
-		BS::GUIElementStyle* clearButtonStyle)
+	GUIGameObjectField* GUIGameObjectField::create(const BS::GUIOptions& layoutOptions, const CM::String& dropButtonStyle,
+		const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), BS::GUIContent(), 0, nullptr, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle), false);
+			GUILayoutOptions::create(layoutOptions), false);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const BS::GUIContent& labelContent, CM::UINT32 labelWidth, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(), true);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const BS::GUIContent& labelContent, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(), true);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const CM::HString& labelText, CM::UINT32 labelWidth, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), BS::GUIContent(labelText), labelWidth, labelStyle, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(), true);
 	}
 
 	GUIGameObjectField* GUIGameObjectField::create(const CM::HString& labelText, 
-		BS::GUIElementStyle* labelStyle, BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+		const CM::String& labelStyle, const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), BS::GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, dropButtonStyle, clearButtonStyle, 
-			GUILayoutOptions::create(&GUISkin::DefaultStyle), true);
+			GUILayoutOptions::create(), true);
 	}
 
-	GUIGameObjectField* GUIGameObjectField::create(BS::GUIElementStyle* dropButtonStyle, BS::GUIElementStyle* clearButtonStyle)
+	GUIGameObjectField* GUIGameObjectField::create(const CM::String& dropButtonStyle, const CM::String& clearButtonStyle)
 	{
 		return cm_new<GUIGameObjectField>(PrivatelyConstruct(), BS::GUIContent(), 0, nullptr, dropButtonStyle, clearButtonStyle,
-			GUILayoutOptions::create(&GUISkin::DefaultStyle), false);
+			GUILayoutOptions::create(), false);
 	}
 
 	CM::HGameObject GUIGameObjectField::getValue() const

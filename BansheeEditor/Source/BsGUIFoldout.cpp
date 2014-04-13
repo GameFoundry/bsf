@@ -13,21 +13,15 @@ using namespace BansheeEngine;
 
 namespace BansheeEditor
 {
-	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, BS::GUIElementStyle* buttonStyle, 
-		BS::GUIElementStyle* backgroundStyle, const BS::GUILayoutOptions& layoutOptions)
+	const String GUIFoldout::FOLDOUT_BUTTON_STYLE = "FoldoutButton";
+	const String GUIFoldout::FOLDOUT_BG_STYLE = "FoldoutBackground";
+
+	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, const CM::String& toggleStyle, 
+		const CM::String& backgroundStyle, const BS::GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mToggle(nullptr), mBackground(nullptr), mIsExpanded(false)
 	{
-		const GUIElementStyle* curButtonStyle = buttonStyle;
-		const GUIElementStyle* curBackgroundStyle = backgroundStyle;
-
-		if(curButtonStyle == nullptr)
-			curButtonStyle = parent.getSkin().getStyle("FoldoutButton");
-
-		if(curBackgroundStyle == nullptr)
-			curBackgroundStyle = parent.getSkin().getStyle("FoldoutBackground");
-
-		mToggle = GUIToggle::create(parent, HString(L""), curButtonStyle);
-		mBackground = GUITexture::create(parent, curBackgroundStyle);
+		mToggle = GUIToggle::create(HString(L""), toggleStyle);
+		mBackground = GUITexture::create(backgroundStyle);
 
 		_registerChildElement(mToggle);
 		_registerChildElement(mBackground);
@@ -39,17 +33,33 @@ namespace BansheeEditor
 	}
 
 	GUIFoldout* GUIFoldout::create(const GUIOptions& layoutOptions, 
-		GUIElementStyle* buttonStyle, GUIElementStyle* backgroundStyle)
+		const CM::String& toggleStyle, const CM::String& backgroundStyle)
 	{
-		return cm_new<GUIFoldout>(PrivatelyConstruct(), buttonStyle, backgroundStyle, 
-			GUILayoutOptions::create(layoutOptions, &GUISkin::DefaultStyle));
+		const String* curToggleStyle = &toggleStyle;
+		if(*curToggleStyle == StringUtil::BLANK)
+			curToggleStyle = &FOLDOUT_BUTTON_STYLE;
+
+		const String* curBackgroundStyle = &backgroundStyle;
+		if(*curBackgroundStyle == StringUtil::BLANK)
+			curBackgroundStyle = &FOLDOUT_BG_STYLE;
+
+		return cm_new<GUIFoldout>(PrivatelyConstruct(), *curToggleStyle, *curBackgroundStyle, 
+			GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIFoldout* GUIFoldout::create(GUIElementStyle* buttonStyle, 
-		GUIElementStyle* backgroundStyle)
+	GUIFoldout* GUIFoldout::create(const CM::String& toggleStyle, 
+		const CM::String& backgroundStyle)
 	{
-		return cm_new<GUIFoldout>(PrivatelyConstruct(), buttonStyle, backgroundStyle, 
-			GUILayoutOptions::create(&GUISkin::DefaultStyle));
+		const String* curToggleStyle = &toggleStyle;
+		if(*curToggleStyle == StringUtil::BLANK)
+			curToggleStyle = &FOLDOUT_BUTTON_STYLE;
+
+		const String* curBackgroundStyle = &backgroundStyle;
+		if(*curBackgroundStyle == StringUtil::BLANK)
+			curBackgroundStyle = &FOLDOUT_BG_STYLE;
+
+		return cm_new<GUIFoldout>(PrivatelyConstruct(), *curToggleStyle, *curBackgroundStyle, 
+			GUILayoutOptions::create());
 	}
 
 	void GUIFoldout::setExpanded(bool expanded)

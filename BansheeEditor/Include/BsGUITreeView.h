@@ -86,13 +86,13 @@ namespace BansheeEditor
 		static const float SCROLL_AREA_HEIGHT_PCT;
 		static const CM::UINT32 SCROLL_SPEED_PX_PER_SEC;
 
-		const BS::GUIElementStyle* mBackgroundStyle;
-		const BS::GUIElementStyle* mElementBtnStyle;
-		const BS::GUIElementStyle* mFoldoutBtnStyle;
-		const BS::GUIElementStyle* mSelectionBackgroundStyle;
-		const BS::GUIElementStyle* mEditBoxStyle;
-		const BS::GUIElementStyle* mDragHighlightStyle;
-		const BS::GUIElementStyle* mDragSepHighlightStyle;
+		CM::String mBackgroundStyle;
+		CM::String mElementBtnStyle;
+		CM::String mFoldoutBtnStyle;
+		CM::String mSelectionBackgroundStyle;
+		CM::String mEditBoxStyle;
+		CM::String mDragHighlightStyle;
+		CM::String mDragSepHighlightStyle;
 
 		BS::GUITexture* mBackgroundImage;
 
@@ -122,9 +122,9 @@ namespace BansheeEditor
 		static BS::VirtualButton mRenameVB;
 		static BS::VirtualButton mDeleteVB;
 
-		GUITreeView(BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
-			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
-			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
+		GUITreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
+			const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
+			const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		const GUITreeView::InteractableElement* findElementUnderCoord(const CM::Vector2I& coord) const;
 		TreeElement* getTopMostSelectedElement() const;

@@ -16,8 +16,8 @@ namespace BansheeEditor
 {
 	const float GUIColor::ALPHA_SPLIT_POSITION = 0.75f;
 
-	GUIColor::GUIColor(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(style, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
+	GUIColor::GUIColor(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+		:GUIElement(styleName, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
 	{
 		mColorSprite = cm_new<ImageSprite, PoolAlloc>();
 		mAlphaSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -38,14 +38,14 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIColor* GUIColor::create(const GUIElementStyle* style)
+	GUIColor* GUIColor::create(const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUIColor::setColor(const Color& color)

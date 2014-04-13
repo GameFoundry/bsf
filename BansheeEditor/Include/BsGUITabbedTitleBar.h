@@ -13,13 +13,12 @@ namespace BansheeEditor
 		static const CM::String& getGUITypeName();
 
 		static GUITabbedTitleBar* create(CM::RenderWindow* parentWindow,
-			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* tabBtnStyle = nullptr, 
-			BS::GUIElementStyle* minBtnStyle = nullptr, BS::GUIElementStyle* closeBtnStyle = nullptr);
+			const CM::String& backgroundStyle = CM::StringUtil::BLANK, const CM::String& tabBtnStyle = CM::StringUtil::BLANK, 
+			const CM::String& minBtnStyle = CM::StringUtil::BLANK, const CM::String& closeBtnStyle = CM::StringUtil::BLANK);
 
-		static GUITabbedTitleBar* create(CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions);
 		static GUITabbedTitleBar* create(CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions, 
-			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* tabBtnStyle = nullptr, 
-			BS::GUIElementStyle* minBtnStyle = nullptr, BS::GUIElementStyle* closeBtnStyle = nullptr);
+			const CM::String& backgroundStyle = CM::StringUtil::BLANK, const CM::String& tabBtnStyle = CM::StringUtil::BLANK, 
+			const CM::String& minBtnStyle = CM::StringUtil::BLANK, const CM::String& closeBtnStyle = CM::StringUtil::BLANK);
 
 		void addTab(const CM::HString& name);
 		CM::UINT32 insertTab(CM::UINT32 position, const CM::HString& name);
@@ -64,13 +63,13 @@ namespace BansheeEditor
 		CM::INT32 mDragBtnOffset;
 		CM::INT32 mInitialDragOffset;
 
-		const BS::GUIElementStyle* mBackgroundStyle;
-		const BS::GUIElementStyle* mCloseBtnStyle;
-		const BS::GUIElementStyle* mMinimizeBtnStyle;
-		const BS::GUIElementStyle* mTabBtnStyle;
+		CM::String mBackgroundStyle;
+		CM::String mCloseBtnStyle;
+		CM::String mMinimizeBtnStyle;
+		CM::String mTabBtnStyle;
 
-		GUITabbedTitleBar(CM::RenderWindow* parentWindow, BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* tabBtnStyle, 
-			BS::GUIElementStyle* minBtnStyle, BS::GUIElementStyle* closeBtnStyle, const BS::GUILayoutOptions& layoutOptions);
+		GUITabbedTitleBar(CM::RenderWindow* parentWindow, const CM::String& backgroundStyle, const CM::String& tabBtnStyle, 
+			const CM::String& minBtnStyle, const CM::String& closeBtnStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 

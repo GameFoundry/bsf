@@ -23,25 +23,25 @@ namespace BansheeEditor
 	const UINT32 GUITabbedTitleBar::TAB_SPACING = 20;
 	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
 
-	GUITabbedTitleBar::GUITabbedTitleBar(RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, 
-		GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle, const GUILayoutOptions& layoutOptions)
+	GUITabbedTitleBar::GUITabbedTitleBar(RenderWindow* parentWindow, const CM::String& backgroundStyle, const CM::String& tabBtnStyle, 
+		const CM::String& minBtnStyle, const CM::String& closeBtnStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMinBtn(nullptr), 
 		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle), mTempDraggedWidget(nullptr),
 		mTempDraggedTabIdx(0)
 	{
-		if(mBackgroundStyle == nullptr)
-			mBackgroundStyle = parent.getSkin().getStyle("TitleBarBackground");
+		if(mBackgroundStyle == CM::StringUtil::BLANK)
+			mBackgroundStyle = "TitleBarBackground";
 
-		if(mMinimizeBtnStyle == nullptr)
-			mMinimizeBtnStyle = parent.getSkin().getStyle("WinMinimizeBtn");
+		if(mMinimizeBtnStyle == CM::StringUtil::BLANK)
+			mMinimizeBtnStyle = "WinMinimizeBtn";
 
-		if(mCloseBtnStyle == nullptr)
-			mCloseBtnStyle = parent.getSkin().getStyle("WinCloseBtn");
+		if(mCloseBtnStyle == CM::StringUtil::BLANK)
+			mCloseBtnStyle = "WinCloseBtn";
 
-		if(mTabBtnStyle == nullptr)
-			mTabBtnStyle = parent.getSkin().getStyle("TabbedBarBtn");
+		if(mTabBtnStyle == CM::StringUtil::BLANK)
+			mTabBtnStyle = "TabbedBarBtn";
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
 		_registerChildElement(mBackgroundImage);
@@ -62,21 +62,15 @@ namespace BansheeEditor
 
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, GUIElementStyle* backgroundStyle, 
-		GUIElementStyle* tabBtnStyle, GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle)
+	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const CM::String& backgroundStyle, 
+		const CM::String& tabBtnStyle, const CM::String& minBtnStyle, const CM::String& closeBtnStyle)
 	{
 		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
-			minBtnStyle, closeBtnStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
-	}
-
-	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
-	{
-		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, nullptr, nullptr, 
-			nullptr, nullptr, layoutOptions);
+			minBtnStyle, closeBtnStyle, GUILayoutOptions::create());
 	}
 
 	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
-		GUIElementStyle* backgroundStyle, GUIElementStyle* tabBtnStyle, GUIElementStyle* minBtnStyle, GUIElementStyle* closeBtnStyle)
+		const CM::String& backgroundStyle, const CM::String& tabBtnStyle, const CM::String& minBtnStyle, const CM::String& closeBtnStyle)
 	{
 		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, layoutOptions);

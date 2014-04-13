@@ -23,9 +23,9 @@ namespace BansheeEditor
 		objects = nullptr;
 	}
 
-	GUISceneTreeView::GUISceneTreeView(GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
-		BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
+	GUISceneTreeView::GUISceneTreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
+		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
+		const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
 		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions)
 	{
@@ -37,20 +37,20 @@ namespace BansheeEditor
 		
 	}
 
-	GUISceneTreeView* GUISceneTreeView::create(GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, GUIElementStyle* dragHighlightStyle, 
-		GUIElementStyle* dragSepHighlightStyle)
+	GUISceneTreeView* GUISceneTreeView::create(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
+		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, 
+		const CM::String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
-			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create());
 	}
 
-	GUISceneTreeView* GUISceneTreeView::create(const GUIOptions& options, GUIElementStyle* backgroundStyle,
-		GUIElementStyle* elementBtnStyle, GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, 
-		GUIElementStyle* editBoxStyle, GUIElementStyle* dragHighlightStyle, GUIElementStyle* dragSepHighlightStyle)
+	GUISceneTreeView* GUISceneTreeView::create(const GUIOptions& options, const CM::String& backgroundStyle,
+		const CM::String& elementBtnStyle, const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, 
+		const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, 
-			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options, &GUISkin::DefaultStyle));
+			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options));
 	}
 
 	void GUISceneTreeView::updateTreeElement(SceneTreeElement* element)

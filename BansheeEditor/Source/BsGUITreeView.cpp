@@ -82,35 +82,35 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	GUITreeView::GUITreeView(GUIElementStyle* backgroundStyle, GUIElementStyle* elementBtnStyle, 
-		GUIElementStyle* foldoutBtnStyle, GUIElementStyle* selectionBackgroundStyle, GUIElementStyle* editBoxStyle, 
-		BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
+	GUITreeView::GUITreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
+		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
+		const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
 		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
 		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f),
 		mScrollState(ScrollState::None), mLastScrollTime(0.0f)
 	{
-		if(mBackgroundStyle == nullptr)
-			mBackgroundStyle = parent.getSkin().getStyle("TreeViewBackground");
+		if(mBackgroundStyle == CM::StringUtil::BLANK)
+			mBackgroundStyle = "TreeViewBackground";
 
-		if(mElementBtnStyle == nullptr)
-			mElementBtnStyle = parent.getSkin().getStyle("TreeViewElementBtn");
+		if(mElementBtnStyle == CM::StringUtil::BLANK)
+			mElementBtnStyle = "TreeViewElementBtn";
 
-		if(mFoldoutBtnStyle == nullptr)
-			mFoldoutBtnStyle = parent.getSkin().getStyle("TreeViewFoldoutBtn");
+		if(mFoldoutBtnStyle == CM::StringUtil::BLANK)
+			mFoldoutBtnStyle = "TreeViewFoldoutBtn";
 
-		if(mSelectionBackgroundStyle == nullptr)
-			mSelectionBackgroundStyle = parent.getSkin().getStyle("TreeViewSelectionBackground");
+		if(mSelectionBackgroundStyle == CM::StringUtil::BLANK)
+			mSelectionBackgroundStyle = "TreeViewSelectionBackground";
 
-		if(mEditBoxStyle == nullptr)
-			mEditBoxStyle = parent.getSkin().getStyle("TreeViewEditBox");
+		if(mEditBoxStyle == CM::StringUtil::BLANK)
+			mEditBoxStyle = "TreeViewEditBox";
 
-		if(mDragHighlightStyle == nullptr)
-			mDragHighlightStyle = parent.getSkin().getStyle("TreeViewElementHighlight");
+		if(mDragHighlightStyle == CM::StringUtil::BLANK)
+			mDragHighlightStyle = "TreeViewElementHighlight";
 
-		if(mDragSepHighlightStyle == nullptr)
-			mDragSepHighlightStyle = parent.getSkin().getStyle("TreeViewElementSepHighlight");
+		if(mDragSepHighlightStyle == CM::StringUtil::BLANK)
+			mDragSepHighlightStyle = "TreeViewElementSepHighlight";
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
 		mNameEditBox = GUITreeViewEditBox::create(mEditBoxStyle);

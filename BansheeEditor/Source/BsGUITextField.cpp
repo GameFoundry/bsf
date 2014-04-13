@@ -14,7 +14,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	GUITextField::GUITextField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, CM::UINT32 labelWidth, 
-		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const CM::String& labelStyle, const CM::String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr)
 	{
 		mInputBox = GUIInputBox::create(false, inputBoxStyle);

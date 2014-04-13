@@ -220,12 +220,12 @@ namespace BansheeEditor
 
 		if(horizontal)
 		{
-			mSlider = GUIDockSlider::create(true, widgetParent->getSkin().getStyle("DockSliderBtn"));
+			mSlider = GUIDockSlider::create(true, "DockSliderBtn");
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 		}
 		else
 		{
-			mSlider = GUIDockSlider::create(false, widgetParent->getSkin().getStyle("DockSliderBtn"));
+			mSlider = GUIDockSlider::create(false, "DockSliderBtn");
 			mSlider->_setWidgetDepth(widgetParent->getDepth());
 		}
 
@@ -357,7 +357,7 @@ namespace BansheeEditor
 
 	DockManager::DockManager(CM::RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
-		mShowOverlay(false)
+		mShowOverlay(false), mAddedRenderCallback(false)
 	{
 		mTopDropPolygon = cm_newN<Vector2>(4);
 		mBotDropPolygon = cm_newN<Vector2>(4);
@@ -365,8 +365,6 @@ namespace BansheeEditor
 		mRightDropPolygon = cm_newN<Vector2>(4);
 
 		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
-
-		RendererManager::instance().getActive()->addRenderCallback(mParent->getTarget(), std::bind(&DockManager::render, this, _1, _2));
 	}
 
 	DockManager::~DockManager()
@@ -379,7 +377,7 @@ namespace BansheeEditor
 
 	DockManager* DockManager::create(RenderWindow* parentWindow)
 	{
-		return new (cm_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUILayoutOptions::create(&GUISkin::DefaultStyle));
+		return new (cm_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUILayoutOptions::create());
 	}
 
 	void DockManager::update()
@@ -948,6 +946,24 @@ namespace BansheeEditor
 		}
 
 		return false;
+	}
+	
+	void DockManager::_changeParentWidget(GUIWidget* widget)
+	{
+		GUIElement::_changeParentWidget(widget);
+
+		if(widget != nullptr)
+		{
+			if(mAddedRenderCallback)
+			{
+				// Note: Adding support for this should be fairly simple though, I just didn't bother with it. You could
+				// remove the current render callback and register a new one. Will likely need to make other minor fixes.
+				CM_EXCEPT(InvalidStateException, "Attempting to change parent widget of a DockManager. This is not supported");
+			}
+
+			RendererManager::instance().getActive()->addRenderCallback(widget->getTarget(), std::bind(&DockManager::render, this, _1, _2));
+			mAddedRenderCallback = true;
+		}
 	}
 
 	// TODO - Move to a separate Polygon class?

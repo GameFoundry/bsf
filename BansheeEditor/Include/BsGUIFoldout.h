@@ -13,13 +13,13 @@ namespace BansheeEditor
 		static const CM::String& getGUITypeName();
 
 		static GUIFoldout* create(const BS::GUIOptions& layoutOptions, 
-			BS::GUIElementStyle* buttonStyle = nullptr, BS::GUIElementStyle* backgroundStyle = nullptr);
+			const CM::String& toggleStyle = CM::StringUtil::BLANK, const CM::String& backgroundStyle = CM::StringUtil::BLANK);
 
-		static GUIFoldout* create(BS::GUIElementStyle* labelStyle = nullptr,
-			BS::GUIElementStyle* backgroundStyle = nullptr);
+		static GUIFoldout* create(const CM::String& toggleStyle = CM::StringUtil::BLANK,
+			const CM::String& backgroundStyle = CM::StringUtil::BLANK);
 
-		GUIFoldout(const PrivatelyConstruct& dummy, BS::GUIElementStyle* buttonStyle, 
-			BS::GUIElementStyle* backgroundStyle, const BS::GUILayoutOptions& layoutOptions);
+		GUIFoldout(const PrivatelyConstruct& dummy, const CM::String& toggleStyle, 
+			const CM::String& backgroundStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		bool isExpanded() const { return mIsExpanded; }
 		void setExpanded(bool expanded);
@@ -34,6 +34,9 @@ namespace BansheeEditor
 		virtual ~GUIFoldout();
 
 	protected:
+		static const CM::String FOLDOUT_BUTTON_STYLE;
+		static const CM::String FOLDOUT_BG_STYLE;
+
 		BS::GUIToggle* mToggle;
 		BS::GUITexture* mBackground;
 

@@ -115,10 +115,13 @@ namespace BansheeEditor
 		CM::Vector2* mBotDropPolygon;
 		CM::Vector2* mLeftDropPolygon;
 		CM::Vector2* mRightDropPolygon;
+		bool mAddedRenderCallback;
 
 		void updateDropOverlay(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
 
 		bool mouseEvent(const BS::GUIMouseEvent& event);
 		bool insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const;
+
+		void _changeParentWidget(BS::GUIWidget* widget);
 	};
 }

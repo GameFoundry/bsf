@@ -16,7 +16,7 @@ namespace BansheeEditor
 	const UINT32 GUIVector4Field::ELEMENT_LABEL_WIDTH = 10;
 
 	GUIVector4Field::GUIVector4Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		CM::UINT32 labelWidth, GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		CM::UINT32 labelWidth, const CM::String& labelStyle, const CM::String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mFieldX(nullptr), mFieldY(nullptr)
 	{
 		mFieldX = GUIFloatField::create(HString(L"X"), ELEMENT_LABEL_WIDTH, labelStyle, inputBoxStyle);

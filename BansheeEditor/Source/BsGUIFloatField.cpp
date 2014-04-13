@@ -20,7 +20,7 @@ namespace BansheeEditor
 	const float GUIFloatField::DRAG_SPEED = 0.05f;
 
 	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, CM::UINT32 labelWidth, 
-		GUIElementStyle* labelStyle, GUIElementStyle* inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const CM::String& labelStyle, const CM::String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
 		mLastDragPos(0)
 	{

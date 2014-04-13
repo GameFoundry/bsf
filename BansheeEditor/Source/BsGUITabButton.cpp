@@ -18,30 +18,39 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUITabButton::GUITabButton(const GUIElementStyle* style, const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIToggle(style, content, toggleGroup, layoutOptions), mIndex(index), mDraggedState(false)
+	GUITabButton::GUITabButton(const CM::String& styleName, const GUIToggleGroupPtr& toggleGroup, 
+		CM::UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIToggle(styleName, content, toggleGroup, layoutOptions), mIndex(index), mDraggedState(false)
 	{
 
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const HString& text, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
+		const HString& text, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(style, toggleGroup, index, GUIContent(text), GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create());
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
+		const HString& text, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(style, toggleGroup, index, GUIContent(text), GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const GUIContent& content, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
+		const GUIContent& content, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(style, toggleGroup, index, content, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create());
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
+		const GUIContent& content, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(style, toggleGroup, index, content, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUITabButton::_setDraggedState(bool active) 

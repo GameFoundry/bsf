@@ -14,18 +14,18 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUITreeViewEditBox* GUITreeViewEditBox::create(const BS::GUIElementStyle* style)
+	GUITreeViewEditBox* GUITreeViewEditBox::create(const CM::String& styleName)
 	{
-		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUILayoutOptions::create());
 	}
 
-	GUITreeViewEditBox* GUITreeViewEditBox::create(const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style)
+	GUITreeViewEditBox* GUITreeViewEditBox::create(const BS::GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUITreeViewEditBox::GUITreeViewEditBox(const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions)
-		:GUIInputBox(style, layoutOptions, false)
+	GUITreeViewEditBox::GUITreeViewEditBox(const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions)
+		:GUIInputBox(styleName, layoutOptions, false)
 	{
 
 	}

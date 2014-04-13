@@ -33,16 +33,16 @@ namespace BansheeEditor
 		static const CM::String& getGUITypeName();
 
 		static GUIResourceTreeView* create(
-			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
-			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
-			BS::GUIElementStyle* editBoxStyle = nullptr, BS::GUIElementStyle* dragHighlightStyle = nullptr, 
-			BS::GUIElementStyle* dragSepHighlightStyle = nullptr);
+			const CM::String& backgroundStyle = CM::StringUtil::BLANK, const CM::String& elementBtnStyle = CM::StringUtil::BLANK, 
+			const CM::String& foldoutBtnStyle = CM::StringUtil::BLANK, const CM::String& selectionBackgroundStyle = CM::StringUtil::BLANK,
+			const CM::String& editBoxStyle = CM::StringUtil::BLANK, const CM::String& dragHighlightStyle = CM::StringUtil::BLANK, 
+			const CM::String& dragSepHighlightStyle = CM::StringUtil::BLANK);
 
 		static GUIResourceTreeView* create(const BS::GUIOptions& options, 
-			BS::GUIElementStyle* backgroundStyle = nullptr, BS::GUIElementStyle* elementBtnStyle = nullptr, 
-			BS::GUIElementStyle* foldoutBtnStyle = nullptr, BS::GUIElementStyle* selectionBackgroundStyle = nullptr,
-			BS::GUIElementStyle* editBoxStyle = nullptr, BS::GUIElementStyle* dragHighlightStyle = nullptr, 
-			BS::GUIElementStyle* dragSepHighlightStyle = nullptr);
+			const CM::String& backgroundStyle = CM::StringUtil::BLANK, const CM::String& elementBtnStyle = CM::StringUtil::BLANK, 
+			const CM::String& foldoutBtnStyle = CM::StringUtil::BLANK, const CM::String& selectionBackgroundStyle = CM::StringUtil::BLANK,
+			const CM::String& editBoxStyle = CM::StringUtil::BLANK, const CM::String& dragHighlightStyle = CM::StringUtil::BLANK, 
+			const CM::String& dragSepHighlightStyle = CM::StringUtil::BLANK);
 
 
 	protected:
@@ -60,9 +60,9 @@ namespace BansheeEditor
 		boost::signals::connection mDropTargetLeaveConn;
 		boost::signals::connection mDropTargetDroppedConn;
 
-		GUIResourceTreeView(BS::GUIElementStyle* backgroundStyle, BS::GUIElementStyle* elementBtnStyle, 
-			BS::GUIElementStyle* foldoutBtnStyle, BS::GUIElementStyle* selectionBackgroundStyle, BS::GUIElementStyle* editBoxStyle, 
-			BS::GUIElementStyle* dragHighlightStyle, BS::GUIElementStyle* dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
+		GUIResourceTreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
+			const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
+			const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
 
 		virtual void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
 			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);

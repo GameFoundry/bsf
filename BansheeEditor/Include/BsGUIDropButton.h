@@ -15,15 +15,16 @@ namespace BansheeEditor
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIDropButton* create(CM::UINT32 dragType, const BS::GUIElementStyle* style = nullptr);
-		static GUIDropButton* create(CM::UINT32 dragType, const BS::GUIOptions& layoutOptions, const BS::GUIElementStyle* style = nullptr);
+		static GUIDropButton* create(CM::UINT32 dragType, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIDropButton* create(CM::UINT32 dragType, const BS::GUIOptions& layoutOptions, 
+			const CM::String& styleName = CM::StringUtil::BLANK);
 
 		boost::signal<void(void*)> onDataDropped;
 	protected:
 		virtual ~GUIDropButton();
 
 	protected:
-		GUIDropButton(CM::UINT32 dragType, const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions);
+		GUIDropButton(CM::UINT32 dragType, const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
 

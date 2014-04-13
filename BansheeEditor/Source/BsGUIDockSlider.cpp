@@ -18,21 +18,23 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIDockSlider::GUIDockSlider(bool horizontal, const BS::GUIElementStyle* style, const BS::GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(style, GUIContent(HString(L"")), layoutOptions),
+	GUIDockSlider::GUIDockSlider(bool horizontal, const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions)
+		:GUIButtonBase(styleName, GUIContent(HString(L"")), layoutOptions),
 		mDragInProgress(false), mHorizontal(horizontal), mIsCursorSet(false)
 	{
 
 	}
 
-	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIElementStyle* style)
+	GUIDockSlider* GUIDockSlider::create(bool horizontal, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
+			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& layoutOptions, const BS::GUIElementStyle* style)
+	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
+			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	bool GUIDockSlider::_hasCustomCursor(const CM::Vector2I position, CursorType& type) const

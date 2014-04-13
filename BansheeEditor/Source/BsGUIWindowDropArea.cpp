@@ -18,21 +18,23 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIWindowDropArea::GUIWindowDropArea(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUITexture(style, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, layoutOptions)
+	GUIWindowDropArea::GUIWindowDropArea(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, layoutOptions)
 	{ }
 
 	GUIWindowDropArea::~GUIWindowDropArea()
 	{ }
 
-	GUIWindowDropArea* GUIWindowDropArea::create(const GUIElementStyle* style)
+	GUIWindowDropArea* GUIWindowDropArea::create(const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) 
+			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) GUIWindowDropArea(style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) 
+			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUIWindowDropArea::setFocused(bool focused)
