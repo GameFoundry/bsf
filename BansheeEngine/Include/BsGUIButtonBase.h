@@ -35,7 +35,7 @@ namespace BansheeEngine
 		boost::signal<void()> onHover;
 		boost::signal<void()> onOut;
 	protected:
-		GUIButtonBase(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions);
+		GUIButtonBase(const CM::String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIButtonBase();
 
 		/**
@@ -79,7 +79,6 @@ namespace BansheeEngine
 		GUIButtonState getState() const { return mActiveState; }
 
 		const HSpriteTexture& getActiveTexture() const;
-		bool isActiveTextureLoaded() const;
 	private:
 		ImageSprite* mImageSprite;
 		ImageSprite* mContentImageSprite;

@@ -13,8 +13,8 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIListBox* create(const CM::Vector<CM::HString>::type& elements, const GUIElementStyle* style = nullptr);
-		static GUIListBox* create(const CM::Vector<CM::HString>::type& elements, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIListBox* create(const CM::Vector<CM::HString>::type& elements, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIListBox* create(const CM::Vector<CM::HString>::type& elements, const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
 
 		void setElements(const CM::Vector<CM::HString>::type& elements);
 
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		CM::Vector<CM::HString>::type mElements;
 		bool mIsListBoxOpen;
 
-		GUIListBox(const GUIElementStyle* style, const CM::Vector<CM::HString>::type& elements, const GUILayoutOptions& layoutOptions);
+		GUIListBox(const CM::String& styleName, const CM::Vector<CM::HString>::type& elements, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 

@@ -20,6 +20,8 @@ namespace BansheeEngine
 		static const HSpriteTexture& dummy();
 		static HSpriteTexture create(const CM::HTexture& texture);
 		static HSpriteTexture create(const CM::Vector2& uvOffset, const CM::Vector2& uvScale, const CM::HTexture& texture);
+
+		static bool checkIsLoaded(const HSpriteTexture& tex);
 	private:
 		friend class SpriteTextureRTTI;
 

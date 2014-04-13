@@ -34,8 +34,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIInputBox::GUIInputBox(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline)
-		:GUIElement(style, layoutOptions), mDragInProgress(false),
+	GUIInputBox::GUIInputBox(const CM::String& styleName, const GUILayoutOptions& layoutOptions, bool multiline)
+		:GUIElement(styleName, layoutOptions), mDragInProgress(false),
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
 		mState(State::Normal)
 	{
@@ -49,19 +49,19 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIInputBox* GUIInputBox::create(bool multiline, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(bool multiline, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(style, GUILayoutOptions::create(style), multiline);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(style, GUILayoutOptions::create(layoutOptions, style), multiline);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(style, GUILayoutOptions::create(layoutOptions, style), false);
+		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), false);
 	}
 
 	void GUIInputBox::setText(const CM::WString& text)
@@ -138,10 +138,9 @@ namespace BansheeEngine
 		mImageDesc.borderTop = _getStyle()->border.top;
 		mImageDesc.borderBottom = _getStyle()->border.bottom;
 
-		if(isActiveTextureLoaded())
+		const HSpriteTexture& activeTex = getActiveTexture();
+		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			const HSpriteTexture& activeTex = getActiveTexture();
-
 			mImageDesc.width = activeTex->getTexture()->getWidth();
 			mImageDesc.height = activeTex->getTexture()->getHeight();
 			mImageDesc.texture = activeTex.getInternalPtr();
@@ -315,10 +314,10 @@ namespace BansheeEngine
 	{
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
-		if(isActiveTextureLoaded())
-		{
-			const HSpriteTexture& activeTex = getActiveTexture();
 
+		const HSpriteTexture& activeTex = getActiveTexture();
+		if(SpriteTexture::checkIsLoaded(activeTex))
+		{
 			imageWidth = activeTex->getTexture()->getWidth();
 			imageHeight = activeTex->getTexture()->getHeight();
 		}
@@ -1053,13 +1052,6 @@ namespace BansheeEngine
 		}
 
 		return _getStyle()->normal.texture;
-	}
-
-	bool GUIInputBox::isActiveTextureLoaded() const
-	{
-		const HSpriteTexture& activeTex = getActiveTexture();
-
-		return activeTex != nullptr && activeTex.isLoaded() && activeTex->getTexture() != nullptr && activeTex->getTexture().isLoaded();
 	}
 
 	GUIContextMenu* GUIInputBox::getContextMenu() const

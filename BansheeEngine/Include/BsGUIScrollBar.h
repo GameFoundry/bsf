@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
-		GUIScrollBar(bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIScrollBar(bool horizontal, const CM::String& styleName, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIScrollBar();
 
 		/**

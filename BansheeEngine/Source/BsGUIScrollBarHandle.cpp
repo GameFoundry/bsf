@@ -19,12 +19,11 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIScrollBarHandle::GUIScrollBarHandle(bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(style, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
-		mHandleDragged(false)
+	GUIScrollBarHandle::GUIScrollBarHandle(bool horizontal, const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
+		mHandleDragged(false), mState(State::Normal)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
-		mCurTexture = style->normal.texture;
 	}
 
 	GUIScrollBarHandle::~GUIScrollBarHandle()
@@ -32,14 +31,14 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIElementStyle* style)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUIScrollBarHandle::setHandleSize(CM::UINT32 size)
@@ -92,8 +91,9 @@ namespace BansheeEngine
 	{		
 		IMAGE_SPRITE_DESC desc;
 
-		if(mCurTexture != nullptr && mCurTexture.isLoaded())
-			desc.texture = mCurTexture.getInternalPtr();
+		HSpriteTexture activeTex = getActiveTexture();
+		if(SpriteTexture::checkIsLoaded(activeTex))
+			desc.texture = activeTex.getInternalPtr();
 
 		if(mHorizontal)
 		{
@@ -121,10 +121,10 @@ namespace BansheeEngine
 
 	Vector2I GUIScrollBarHandle::_getOptimalSize() const
 	{
-		if(mCurTexture != nullptr)
-		{
-			return Vector2I(mCurTexture->getTexture()->getWidth(), mCurTexture->getTexture()->getHeight());
-		}
+		HSpriteTexture activeTex = getActiveTexture();
+
+		if(SpriteTexture::checkIsLoaded(activeTex))
+			return Vector2I(activeTex->getTexture()->getWidth(), activeTex->getTexture()->getHeight());
 
 		return Vector2I();
 	}
@@ -158,7 +158,7 @@ namespace BansheeEngine
 				{
 					mMouseOverHandle = false;
 
-					mCurTexture = _getStyle()->normal.texture;
+					mState = State::Normal;
 					markContentAsDirty();
 
 					return true;
@@ -170,7 +170,7 @@ namespace BansheeEngine
 				{
 					mMouseOverHandle = true;
 
-					mCurTexture = _getStyle()->hover.texture;
+					mState = State::Hover;
 					markContentAsDirty();
 
 					return true;
@@ -180,7 +180,7 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseDown && mMouseOverHandle)
 		{
-			mCurTexture = _getStyle()->active.texture;
+			mState = State::Active;
 			markContentAsDirty();
 
 			if(mHorizontal)
@@ -227,7 +227,7 @@ namespace BansheeEngine
 
 		if(ev.getType() == GUIMouseEventType::MouseOut && !mHandleDragged)
 		{
-			mCurTexture = _getStyle()->normal.texture;
+			mState = State::Normal;
 			mMouseOverHandle = false;
 			markContentAsDirty();
 
@@ -237,9 +237,9 @@ namespace BansheeEngine
 		if(ev.getType() == GUIMouseEventType::MouseUp)
 		{
 			if(mMouseOverHandle)
-				mCurTexture = _getStyle()->hover.texture;
+				mState = State::Hover;
 			else
-				mCurTexture = _getStyle()->normal.texture;
+				mState = State::Normal;
 
 			// If we clicked above or below the scroll handle, scroll by one page
 			INT32 handleOffset = 0;
@@ -287,9 +287,9 @@ namespace BansheeEngine
 			mHandleDragged = false;
 
 			if(mMouseOverHandle)
-				mCurTexture = _getStyle()->hover.texture;
+				mState = State::Hover;
 			else
-				mCurTexture = _getStyle()->normal.texture;
+				mState = State::Normal;
 
 			markContentAsDirty();
 			return true;
@@ -327,5 +327,20 @@ namespace BansheeEngine
 			maxSize = mWidth;
 
 		return maxSize;
+	}
+
+	const HSpriteTexture& GUIScrollBarHandle::getActiveTexture() const
+	{
+		switch(mState)
+		{
+		case State::Active:
+			return _getStyle()->active.texture;
+		case State::Hover:
+			return _getStyle()->hover.texture;
+		case State::Normal:
+			return _getStyle()->normal.texture;
+		}
+
+		return _getStyle()->normal.texture;
 	}
 }

@@ -6,18 +6,14 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUILayoutOptions GUILayoutOptions::create(const GUIOptions& options, const GUIElementStyle* style)
+	GUILayoutOptions GUILayoutOptions::create()
+	{
+		return GUILayoutOptions();
+	}
+
+	GUILayoutOptions GUILayoutOptions::create(const GUIOptions& options)
 	{
 		GUILayoutOptions layoutOptions;
-
-		layoutOptions.fixedWidth = style->fixedWidth;
-		layoutOptions.fixedHeight = style->fixedHeight;
-		layoutOptions.width = style->width;
-		layoutOptions.height = style->height;
-		layoutOptions.minWidth = style->minWidth;
-		layoutOptions.maxWidth = style->maxWidth;
-		layoutOptions.minHeight = style->minHeight;
-		layoutOptions.maxHeight = style->maxHeight;
 
 		for(auto& option : options.mOptions)
 		{
@@ -26,20 +22,24 @@ namespace BansheeEngine
 			case GUIOption::Type::FixedWidth:
 				layoutOptions.fixedWidth = true;
 				layoutOptions.width = option.min;
+				layoutOptions.overridenWidth = true;
 				break;
 			case GUIOption::Type::FixedHeight:
 				layoutOptions.fixedHeight = true;
 				layoutOptions.height = option.min;
+				layoutOptions.overridenHeight = true;
 				break;
 			case GUIOption::Type::FlexibleWidth:
 				layoutOptions.fixedWidth = false;
 				layoutOptions.minWidth = option.min;
 				layoutOptions.maxWidth = option.max;
+				layoutOptions.overridenWidth = true;
 				break;
 			case GUIOption::Type::FlexibleHeight:
 				layoutOptions.fixedHeight = false;
 				layoutOptions.minHeight = option.min;
 				layoutOptions.maxHeight = option.max;
+				layoutOptions.overridenHeight = true;
 				break;
 			}
 		}
@@ -47,25 +47,29 @@ namespace BansheeEngine
 		return layoutOptions;
 	}
 
-	GUILayoutOptions GUILayoutOptions::create(const GUIElementStyle* style)
+	void GUILayoutOptions::updateWithStyle(const GUIElementStyle* style)
 	{
-		GUILayoutOptions layoutOptions;
+		if(!overridenWidth)
+		{
+			fixedWidth = style->fixedWidth;
+			width = style->width;
+			minWidth = style->minWidth;
+			maxWidth = style->maxWidth;
+		}
 
-		layoutOptions.fixedWidth = style->fixedWidth;
-		layoutOptions.fixedHeight = style->fixedHeight;
-		layoutOptions.width = style->width;
-		layoutOptions.height = style->height;
-		layoutOptions.minWidth = style->minWidth;
-		layoutOptions.maxWidth = style->maxWidth;
-		layoutOptions.minHeight = style->minHeight;
-		layoutOptions.maxHeight = style->maxHeight;
-
-		return layoutOptions;
+		if(!overridenHeight)
+		{
+			fixedHeight = style->fixedHeight;
+			height = style->height;
+			minHeight = style->minHeight;
+			maxHeight = style->maxHeight;
+		}
 	}
 
 	GUILayoutOptions::GUILayoutOptions()
 		:width(0), height(0), minWidth(0), maxWidth(0),
-		minHeight(0), maxHeight(0), fixedWidth(false), fixedHeight(false)
+		minHeight(0), maxHeight(0), fixedWidth(false), fixedHeight(false),
+		overridenWidth(false), overridenHeight(false)
 	{
 
 	}

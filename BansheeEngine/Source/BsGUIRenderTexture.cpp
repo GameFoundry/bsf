@@ -15,8 +15,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIRenderTexture::GUIRenderTexture(const GUIElementStyle* style, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
-		:GUITexture(style, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions), mSourceTexture(texture.get())
+	GUIRenderTexture::GUIRenderTexture(const CM::String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions)
+		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions), mSourceTexture(texture.get())
 	{
 		if(mSourceTexture->requiresTextureFlipping())
 		{
@@ -33,14 +33,14 @@ namespace BansheeEngine
 		GUIManager::instance().setInputBridge(mSourceTexture, nullptr);
 	}
 
-	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIElementStyle* style)
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(style, texture, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create());
 	}
 
-	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(style, texture, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUIRenderTexture::updateRenderElementsInternal()

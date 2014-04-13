@@ -17,13 +17,13 @@ namespace BansheeEngine
 		/**
 		 * @note Render target used by the GUIWidget and Camera must be the same. 
 		 */
-		static GUIViewport* create(const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style = nullptr);
+		static GUIViewport* create(const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const CM::String& styleName = CM::StringUtil::BLANK);
 
 		/**
 		 * @note Render target used by the GUIWidget and Camera must be the same. 
 		 */
 		static GUIViewport* create(const GUIOptions& layoutOptions, const HCamera& camera, 
-			float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style = nullptr);
+			float aspectRatio, CM::Degree fieldOfView, const CM::String& styleName = CM::StringUtil::BLANK);
 
 		virtual CM::Vector2I _getOptimalSize() const;
 
@@ -67,6 +67,8 @@ namespace BansheeEngine
 		CM::Degree mFieldOfView;
 		CM::Radian mVerticalFOV;
 
-		GUIViewport(const GUIElementStyle* style, const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const GUILayoutOptions& layoutOptions);
+		GUIViewport(const CM::String& styleName, const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const GUILayoutOptions& layoutOptions);
+
+		void _changeParentWidget(BS::GUIWidget* widget);
 	};
 }

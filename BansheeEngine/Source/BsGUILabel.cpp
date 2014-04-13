@@ -11,8 +11,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIElement(style, layoutOptions), mContent(content)
+	GUILabel::GUILabel(const CM::String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIElement(styleName, layoutOptions), mContent(content)
 	{
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
@@ -82,24 +82,24 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	GUILabel* GUILabel::create(const HString& text, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const HString& text, const CM::String& styleName)
 	{
-		return create(GUIContent(text), style);
+		return create(GUIContent(text), styleName);
 	}
 
-	GUILabel* GUILabel::create(const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const HString& text, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return create(GUIContent(text), layoutOptions, style);
+		return create(GUIContent(text), layoutOptions, styleName);
 	}
 
-	GUILabel* GUILabel::create(const GUIContent& content, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const GUIContent& content, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(style, content, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create());
 	}
 
-	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(style, content, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create(layoutOptions));
 	}
 
 	const String& GUILabel::getGUITypeName()

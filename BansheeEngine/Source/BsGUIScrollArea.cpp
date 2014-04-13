@@ -20,8 +20,8 @@ namespace BansheeEngine
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
 	GUIScrollArea::GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-		const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions)
-		:GUIElementContainer(parent, layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
+		const CM::String& scrollBarStyle, const CM::String& scrollAreaStyle, const GUILayoutOptions& layoutOptions)
+		:GUIElementContainer(layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0), mVertBarType(vertBarType), mHorzBarType(horzBarType),
 		mScrollBarStyle(scrollBarStyle)
 	{
@@ -146,10 +146,7 @@ namespace BansheeEngine
 		{
 			if(mVertScroll == nullptr)
 			{
-				if(mScrollBarStyle != nullptr)
-					mVertScroll = GUIScrollBarVert::create(mScrollBarStyle);
-				else
-					mVertScroll = GUIScrollBarVert::create();
+				mVertScroll = GUIScrollBarVert::create(mScrollBarStyle);
 
 				_registerChildElement(mVertScroll);
 
@@ -206,10 +203,7 @@ namespace BansheeEngine
 		{ 
 			if(mHorzScroll == nullptr)
 			{
-				if(mScrollBarStyle != nullptr)
-					mHorzScroll = GUIScrollBarHorz::create(mScrollBarStyle);
-				else
-					mHorzScroll = GUIScrollBarHorz::create();
+				mHorzScroll = GUIScrollBarHorz::create(mScrollBarStyle);
 
 				_registerChildElement(mHorzScroll);
 
@@ -386,30 +380,31 @@ namespace BansheeEngine
 	}
 
 	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-		const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle)
+		const CM::String& scrollBarStyle, const CM::String& scrollAreaStyle)
 	{
 		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
-			scrollAreaStyle, GUILayoutOptions::create(scrollAreaStyle));
+			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create());
 	}
 
-	GUIScrollArea* GUIScrollArea::create(const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle, 
-		const GUIElementStyle* scrollAreaStyle)
+	GUIScrollArea* GUIScrollArea::create(const GUIOptions& layoutOptions, const CM::String& scrollBarStyle, 
+		const CM::String& scrollAreaStyle)
 	{
 		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, 
-			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, scrollAreaStyle, GUILayoutOptions::create(layoutOptions, scrollAreaStyle));
+			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIScrollArea* GUIScrollArea::create(const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle)
+	GUIScrollArea* GUIScrollArea::create(const CM::String& scrollBarStyle, const CM::String& scrollAreaStyle)
 	{
 		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, ScrollBarType::ShowIfDoesntFit, scrollBarStyle, 
-			scrollAreaStyle, GUILayoutOptions::create(scrollAreaStyle));
+			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create());
 	}
 
 	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, 
-		ScrollBarType horzBarType, const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle, 
-		const GUIElementStyle* scrollAreaStyle)
+		ScrollBarType horzBarType, const GUIOptions& layoutOptions, const CM::String& scrollBarStyle, 
+		const CM::String& scrollAreaStyle)
 	{
-		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, GUILayoutOptions::create(layoutOptions, scrollAreaStyle));
+		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
+			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create(layoutOptions));
 	}
 
 	const String& GUIScrollArea::getGUITypeName()

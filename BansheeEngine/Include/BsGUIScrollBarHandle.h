@@ -9,12 +9,17 @@ namespace BansheeEngine
 {
 	class BS_EXPORT GUIScrollBarHandle : public GUIElement
 	{
+		enum class State
+		{
+			Normal, Hover, Active
+		};
+
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIScrollBarHandle* create(bool horizontal, const GUIElementStyle* style = nullptr);
+		static GUIScrollBarHandle* create(bool horizontal, const CM::String& styleName = CM::StringUtil::BLANK);
 		static GUIScrollBarHandle* create(bool horizontal, const GUIOptions& layoutOptions, 
-			const GUIElementStyle* style = nullptr);
+			const CM::String& styleName = CM::StringUtil::BLANK);
 
 		void setHandleSize(CM::UINT32 size);
 		void setHandlePos(float pct);
@@ -63,16 +68,19 @@ namespace BansheeEngine
 	private:
 		ImageSprite* mImageSprite;
 		CM::UINT32 mHandleSize;
-		HSpriteTexture mCurTexture;
+		
 		bool mHorizontal; // Otherwise its vertical
 		float mHandlePos;
 		CM::INT32 mDragStartPos;
 		bool mMouseOverHandle;
 		bool mHandleDragged;
+		State mState;
 
-		GUIScrollBarHandle(bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIScrollBarHandle(bool horizontal, const CM::String& styleName, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 		bool isOnHandle(const CM::Vector2I& pos) const;
+
+		const HSpriteTexture& getActiveTexture() const;
 	};
 }

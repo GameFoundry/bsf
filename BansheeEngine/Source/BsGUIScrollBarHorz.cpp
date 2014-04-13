@@ -14,8 +14,8 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIScrollBarHorz::GUIScrollBarHorz(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIScrollBar(true, style, layoutOptions)
+	GUIScrollBarHorz::GUIScrollBarHorz(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+		:GUIScrollBar(true, styleName, layoutOptions)
 	{
 
 	}
@@ -25,14 +25,14 @@ namespace BansheeEngine
 
 	}
 
-	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIElementStyle* style)
+	GUIScrollBarHorz* GUIScrollBarHorz::create(const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(style, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& layoutOptions, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(style, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	const String& GUIScrollBarHorz::getGUITypeName()

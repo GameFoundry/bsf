@@ -161,12 +161,12 @@ namespace BansheeEngine
 
 		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
 
-		const GUIElementStyle* mScrollUpStyle;
-		const GUIElementStyle* mScrollDownStyle;
-		const GUIElementStyle* mEntryBtnStyle;
-		const GUIElementStyle* mEntryExpBtnStyle;
-		const GUIElementStyle* mSeparatorStyle;
-		const GUIElementStyle* mBackgroundStyle;
+		CM::String mScrollUpStyle;
+		CM::String mScrollDownStyle;
+		CM::String mEntryBtnStyle;
+		CM::String mEntryExpBtnStyle;
+		CM::String mSeparatorStyle;
+		CM::String mBackgroundStyle;
 		HSpriteTexture mScrollUpBtnArrow;
 		HSpriteTexture mScrollDownBtnArrow;
 

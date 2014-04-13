@@ -157,6 +157,15 @@ namespace BansheeEngine
 
 		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
 		
+		template<class T>
+		static const CM::String& getStyleName(const CM::String& overrideStyle)
+		{
+			if(overrideStyle == CM::StringUtil::BLANK)
+				return T::getGUITypeName();
+
+			return overrideStyle;
+		}
+
 		CM::RectI getVisibleBounds() const;
 		CM::RectI getContentBounds() const;
 		CM::RectI getContentClipRect() const;

@@ -18,16 +18,17 @@ namespace BansheeEngine
 		static const CM::String& getGUITypeName();
 
 		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const GUIElementStyle* scrollBarStyle = nullptr, const GUIElementStyle* scrollAreaStyle = nullptr);
+			const CM::String& scrollBarStyle = CM::StringUtil::BLANK, const CM::String& scrollAreaStyle = CM::StringUtil::BLANK);
 
 		static GUIScrollArea* create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
-			const GUIElementStyle* scrollAreaStyle = nullptr);
+			const GUIOptions& layoutOptions, const CM::String& scrollBarStyle = CM::StringUtil::BLANK, 
+			const CM::String& scrollAreaStyle = CM::StringUtil::BLANK);
 
-		static GUIScrollArea* create(const GUIElementStyle* scrollBarStyle = nullptr, const GUIElementStyle* scrollAreaStyle = nullptr);
+		static GUIScrollArea* create(const CM::String& scrollBarStyle = CM::StringUtil::BLANK, 
+			const CM::String& scrollAreaStyle = CM::StringUtil::BLANK);
 
-		static GUIScrollArea* create(const GUIOptions& layoutOptions, const GUIElementStyle* scrollBarStyle = nullptr, 
-			const GUIElementStyle* scrollAreaStyle = nullptr);
+		static GUIScrollArea* create(const GUIOptions& layoutOptions, const CM::String& scrollBarStyle = CM::StringUtil::BLANK, 
+			const CM::String& scrollAreaStyle = CM::StringUtil::BLANK);
 
 		virtual ElementType getElementType() const { return ElementType::ScrollArea; }
 
@@ -53,11 +54,11 @@ namespace BansheeEngine
 		virtual void updateClippedBounds();
 	private:
 		GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			const GUIElementStyle* scrollBarStyle, const GUIElementStyle* scrollAreaStyle, const GUILayoutOptions& layoutOptions);
+			const CM::String& scrollBarStyle, const CM::String& scrollAreaStyle, const GUILayoutOptions& layoutOptions);
 
 		ScrollBarType mVertBarType;
 		ScrollBarType mHorzBarType;
-		const GUIElementStyle* mScrollBarStyle;
+		CM::String mScrollBarStyle;
 
 		GUILayout* mContentLayout;
 		GUIScrollBarVert* mVertScroll;

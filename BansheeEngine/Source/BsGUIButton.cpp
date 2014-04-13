@@ -19,27 +19,27 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIButtonBase(style, content, layoutOptions)
+	GUIButton::GUIButton(const CM::String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIButtonBase(styleName, content, layoutOptions)
 	{ }
 
-	GUIButton* GUIButton::create(const HString& text, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const HString& text, const String& styleName)
 	{
-		return create(GUIContent(text), style);
+		return create(GUIContent(text), styleName);
 	}
 
-	GUIButton* GUIButton::create(const HString& text, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const HString& text, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return create(GUIContent(text), layoutOptions, style);
+		return create(GUIContent(text), layoutOptions, styleName);
 	}
 
-	GUIButton* GUIButton::create(const GUIContent& content, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const GUIContent& content, const String& styleName)
 	{
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(style, content, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create());
 	}
 
-	GUIButton* GUIButton::create(const GUIContent& content, const GUIOptions& layoutOptions, const GUIElementStyle* style)
+	GUIButton* GUIButton::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(style, content, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create(layoutOptions));
 	}
 }

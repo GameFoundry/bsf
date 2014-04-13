@@ -16,13 +16,13 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIRenderTexture* create(const CM::RenderTexturePtr& texture, const GUIElementStyle* style = nullptr);
-		static GUIRenderTexture* create(const CM::RenderTexturePtr& texture, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIRenderTexture* create(const CM::RenderTexturePtr& texture, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIRenderTexture* create(const CM::RenderTexturePtr& texture, const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
 
 	protected:
 		const CM::RenderTexture* mSourceTexture;
 
-		GUIRenderTexture(const GUIElementStyle* style, const CM::RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
+		GUIRenderTexture(const CM::String& styleName, const CM::RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIRenderTexture();
 
 		/**

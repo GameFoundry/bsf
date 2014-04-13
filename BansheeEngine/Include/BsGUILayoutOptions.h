@@ -9,13 +9,16 @@ namespace BansheeEngine
 	 */
 	struct BS_EXPORT GUILayoutOptions
 	{
-		static GUILayoutOptions create(const GUIOptions& options, const GUIElementStyle* style);
-		static GUILayoutOptions create(const GUIElementStyle* style);
+		static GUILayoutOptions create();
+		static GUILayoutOptions create(const GUIOptions& options);
 
 		GUILayoutOptions();
+
+		void updateWithStyle(const GUIElementStyle* style);
 
 		CM::UINT32 width, height;
 		CM::UINT32 minWidth, maxWidth, minHeight, maxHeight;
 		bool fixedWidth, fixedHeight;
+		bool overridenWidth, overridenHeight;
 	};
 }

@@ -30,6 +30,11 @@ namespace BansheeEngine
 		return dummyTex;
 	}
 
+	bool SpriteTexture::checkIsLoaded(const HSpriteTexture& tex)
+	{
+		return tex != nullptr && tex.isLoaded() && tex->getTexture() != nullptr && tex.isLoaded();
+	}
+
 	HSpriteTexture SpriteTexture::create(const HTexture& texture)
 	{
 		SpriteTexturePtr texturePtr = cm_core_ptr<SpriteTexture, PoolAlloc>

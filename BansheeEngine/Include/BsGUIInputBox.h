@@ -20,9 +20,9 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIInputBox* create(bool multiline = false, const GUIElementStyle* style = nullptr);
-		static GUIInputBox* create(bool multiline, const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
-		static GUIInputBox* create(const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIInputBox* create(bool multiline = false, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIInputBox* create(bool multiline, const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIInputBox* create(const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
 
 		const CM::WString& getText() const { return mText; }
 		void setText(const CM::WString& text);
@@ -33,7 +33,7 @@ namespace BansheeEngine
 
 		virtual CM::Vector2I _getOptimalSize() const;
 	protected:
-		GUIInputBox(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions, bool multiline);
+		GUIInputBox(const CM::String& styleName, const GUILayoutOptions& layoutOptions, bool multiline);
 		virtual ~GUIInputBox();
 
 		/**
@@ -128,7 +128,6 @@ namespace BansheeEngine
 		CM::RectI getTextClipRect() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
 		const HSpriteTexture& getActiveTexture() const;
-		bool isActiveTextureLoaded() const;
 		
 		void cutText();
 		void copyText();

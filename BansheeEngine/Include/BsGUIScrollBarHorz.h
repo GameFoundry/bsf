@@ -12,10 +12,10 @@ namespace BansheeEngine
 	public:
 		static const CM::String& getGUITypeName();
 
-		static GUIScrollBarHorz* create(const GUIElementStyle* style = nullptr);
-		static GUIScrollBarHorz* create(const GUIOptions& layoutOptions, const GUIElementStyle* style = nullptr);
+		static GUIScrollBarHorz* create(const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIScrollBarHorz* create(const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
 	protected:
-		GUIScrollBarHorz(const GUIElementStyle* style, const GUILayoutOptions& layoutOptions);
+		GUIScrollBarHorz(const CM::String& styleName, const GUILayoutOptions& layoutOptions);
 		~GUIScrollBarHorz();
 	};
 }

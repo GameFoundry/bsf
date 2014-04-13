@@ -219,6 +219,8 @@ namespace BansheeEngine
 		if(newStyle != mStyle)
 		{
 			mStyle = newStyle;
+			mLayoutOptions.updateWithStyle(mStyle);
+
 			markContentAsDirty();
 		}
 	}

@@ -18,17 +18,11 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIViewport::GUIViewport(const GUIElementStyle* style, const HCamera& camera, 
+	GUIViewport::GUIViewport(const CM::String& styleName, const HCamera& camera, 
 		float aspectRatio, CM::Degree fieldOfView, const GUILayoutOptions& layoutOptions)
-		:GUIElement(style, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
+		:GUIElement(styleName, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
 		mFieldOfView(fieldOfView)
 	{
-		RenderTargetPtr guiRenderTarget = parent.getTarget()->getTarget();
-		RenderTargetPtr cameraRenderTarget = camera->getViewport()->getTarget();
-
-		if(guiRenderTarget != cameraRenderTarget)
-			CM_EXCEPT(InvalidParametersException, "Camera provided to GUIViewport must use the same render target as the GUIWidget this element is located on.")
-
 		mVerticalFOV = 2.0f * Math::atan(Math::tan(mFieldOfView.valueRadians() * 0.5f) * (1.0f / mAspectRatio));
 	}
 
@@ -37,15 +31,15 @@ namespace BansheeEngine
 
 	}
 
-	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style)
+	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(style));
+		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create());
 	}
 
 	GUIViewport* GUIViewport::create(const GUIOptions& layoutOptions, const HCamera& camera, 
-		float aspectRatio, CM::Degree fieldOfView, const GUIElementStyle* style)
+		float aspectRatio, CM::Degree fieldOfView, const CM::String& styleName)
 	{
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(style, camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions, style));
+		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions));
 	}
 
 	UINT32 GUIViewport::getNumRenderElements() const
@@ -99,5 +93,19 @@ namespace BansheeEngine
 		float height = mHeight / (float)renderTarget->getHeight();
 
 		viewport->setArea(x, y, width, height);
+	}
+
+	void GUIViewport::_changeParentWidget(GUIWidget* widget)
+	{
+		GUIElement::_changeParentWidget(widget);
+
+		if(widget != nullptr)
+		{
+			RenderTargetPtr guiRenderTarget = widget->getTarget()->getTarget();
+			RenderTargetPtr cameraRenderTarget = mCamera->getViewport()->getTarget();
+
+			if(guiRenderTarget != cameraRenderTarget)
+				CM_EXCEPT(InvalidParametersException, "Camera provided to GUIViewport must use the same render target as the GUIWidget this element is located on.")
+		}
 	}
 }

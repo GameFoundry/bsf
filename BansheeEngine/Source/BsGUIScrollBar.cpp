@@ -18,8 +18,8 @@ namespace BansheeEngine
 {
 	const UINT32 GUIScrollBar::ButtonScrollAmount = 10;
 
-	GUIScrollBar::GUIScrollBar(bool horizontal, const GUIElementStyle* style, const GUILayoutOptions& layoutOptions)
-		:GUIElement(style, layoutOptions), mHorizontal(horizontal)
+	GUIScrollBar::GUIScrollBar(bool horizontal, const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
@@ -27,21 +27,21 @@ namespace BansheeEngine
 		{
 			mLayout = &addLayoutXInternal(this);
 
-			mUpBtn = GUIButton::create(HString(L""), parent.getSkin().getStyle("ScrollLeftBtn"));
-			mDownBtn = GUIButton::create(HString(L""), parent.getSkin().getStyle("ScrollRightBtn"));
+			mUpBtn = GUIButton::create(HString(L""), "ScrollLeftBtn");
+			mDownBtn = GUIButton::create(HString(L""), "ScrollRightBtn");
 
-			mHandleBtn = GUIScrollBarHandle::create(parent, mHorizontal, 
-				GUIOptions(GUIOption::flexibleWidth(), GUIOption::fixedHeight(6)), parent.getSkin().getStyle("ScrollBarHorzBtn"));
+			mHandleBtn = GUIScrollBarHandle::create(mHorizontal, 
+				GUIOptions(GUIOption::flexibleWidth(), GUIOption::fixedHeight(6)), "ScrollBarHorzBtn");
 		}
 		else
 		{
 			mLayout = &addLayoutYInternal(this);
 
-			mUpBtn = GUIButton::create(HString(L""), parent.getSkin().getStyle("ScrollUpBtn"));
-			mDownBtn = GUIButton::create(HString(L""), parent.getSkin().getStyle("ScrollDownBtn"));
+			mUpBtn = GUIButton::create(HString(L""), "ScrollUpBtn");
+			mDownBtn = GUIButton::create(HString(L""), "ScrollDownBtn");
 
-			mHandleBtn = GUIScrollBarHandle::create(parent, mHorizontal, 
-				GUIOptions(GUIOption::fixedWidth(6), GUIOption::flexibleHeight()), parent.getSkin().getStyle("ScrollBarVertBtn"));
+			mHandleBtn = GUIScrollBarHandle::create(mHorizontal, 
+				GUIOptions(GUIOption::fixedWidth(6), GUIOption::flexibleHeight()), "ScrollBarVertBtn");
 		}
 
 		mLayout->addSpace(2);

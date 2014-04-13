@@ -13,14 +13,14 @@ using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	GUIButtonBase::GUIButtonBase(const GUIElementStyle* style, const GUIContent& content, const GUILayoutOptions& layoutOptions)
-		:GUIElement(style, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
+	GUIButtonBase::GUIButtonBase(const CM::String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+		:GUIElement(styleName, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
 
 		HSpriteTexture contentTex = content.getImage();
-		if(contentTex != nullptr && contentTex.isLoaded())
+		if(SpriteTexture::checkIsLoaded(contentTex))
 			mContentImageSprite = cm_new<ImageSprite, PoolAlloc>();
 
 		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::markContentAsDirty, this));
@@ -105,10 +105,9 @@ namespace BansheeEngine
 		mImageDesc.width = mWidth;
 		mImageDesc.height = mHeight;
 
-		if(isActiveTextureLoaded())
+		const HSpriteTexture& activeTex = getActiveTexture();
+		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			const HSpriteTexture& activeTex = getActiveTexture();
-
 			mImageDesc.width = activeTex->getTexture()->getWidth();
 			mImageDesc.height = activeTex->getTexture()->getHeight();
 			mImageDesc.texture = activeTex.getInternalPtr();
@@ -146,10 +145,9 @@ namespace BansheeEngine
 		UINT32 imageWidth = 0;
 		UINT32 imageHeight = 0;
 
-		if(isActiveTextureLoaded())
+		const HSpriteTexture& activeTex = getActiveTexture();
+		if(SpriteTexture::checkIsLoaded(activeTex))
 		{
-			const HSpriteTexture& activeTex = getActiveTexture();
-
 			imageWidth = activeTex->getTexture()->getWidth();
 			imageHeight = activeTex->getTexture()->getHeight();
 		}
@@ -337,12 +335,5 @@ namespace BansheeEngine
 		}
 
 		return _getStyle()->normal.texture;
-	}
-
-	bool GUIButtonBase::isActiveTextureLoaded() const
-	{
-		const HSpriteTexture& activeTex = getActiveTexture();
-
-		return activeTex != nullptr && activeTex.isLoaded() && activeTex->getTexture() != nullptr && activeTex->getTexture().isLoaded();
 	}
 }
