@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
@@ -32,6 +5,9 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
+    /**
+     * @brief	Class representing a 3x3 matrix.
+     */
     class CM_UTILITY_EXPORT Matrix3
     {
 	private:
@@ -87,7 +63,7 @@ namespace CamelotFramework
         }
 
 		/**
-         * @brief	Construct a matrix from an angle/axis.
+         * @brief	Construct a matrix from an angle/axis pair.
          */
         explicit Matrix3(const Vector3& axis, const Radian& angle)
         {
@@ -122,6 +98,9 @@ namespace CamelotFramework
 			fromEulerAngles(xAngle, yAngle, zAngle, order);
 		}
 
+		/**
+		 * @brief	Swaps the contents of this matrix with another.
+		 */
 		void swap(Matrix3& other)
 		{
 			std::swap(m[0][0], other.m[0][0]);
@@ -135,13 +114,18 @@ namespace CamelotFramework
 			std::swap(m[2][2], other.m[2][2]);
 		}
 
-        inline float* operator[] (size_t row) const
+        /**
+         * @brief	Returns a row of the matrix.
+         */
+        inline float* operator[] (UINT32 row) const
 		{
+			assert(row < 3);
+
 			return (float*)m[row];
 		}
 
-        Vector3 getColumn(size_t col) const;
-        void setColumn(size_t col, const Vector3& vec);
+        Vector3 getColumn(UINT32 col) const;
+        void setColumn(UINT32 col, const Vector3& vec);
 
         Matrix3& operator= (const Matrix3& rhs)
 		{
@@ -159,14 +143,65 @@ namespace CamelotFramework
 
 		friend Matrix3 operator* (float lhs, const Matrix3& rhs);
 
+		/**
+		 * @brief	Transforms the given vector by this matrix and returns
+		 * 			the newly transformed vector.
+		 */
 		Vector3 transform(const Vector3& vec) const;
+
+        /**
+         * @brief	Returns a transpose of the matrix (switched columns and rows).
+         */
         Matrix3 transpose () const;
+
+        /**
+         * @brief	Calculates an inverse of the matrix if it exists.
+         *
+         * @param [out]	mat		Resulting matrix inverse.
+         * @param	fTolerance 	(optional) Tolerance to use when checking
+         * 						if determinant is zero (or near zero in this case).
+         * 						Zero determinant means inverse doesn't exist.
+         *
+         * @return	True if inverse exists, false otherwise.
+         */
         bool inverse(Matrix3& mat, float fTolerance = 1e-06f) const;
+
+        /**
+         * @brief	Calculates an inverse of the matrix if it exists.
+         *
+		 * @param	fTolerance 	(optional) Tolerance to use when checking
+		 * 						if determinant is zero (or near zero in this case).
+		 * 						Zero determinant means inverse doesn't exist.
+         *
+         * @return	Resulting matrix inverse if it exists, otherwise a zero matrix.
+         */
         Matrix3 inverse(float fTolerance = 1e-06f) const;
+
+        /**
+         * @brief	Calculates the matrix determinant.
+         */
         float determinant() const;
 
-        void singularValueDecomposition (Matrix3& matL, Vector3& matS, Matrix3& matR) const;
-		void QDUDecomposition (Matrix3& matQ, Vector3& vecD, Vector3& vecU) const;
+        /**
+         * @brief	Decomposes the matrix into various useful values.
+         *
+         * @param [out]	matL	Unitary matrix. Columns form orthonormal bases. If your matrix is affine and
+         * 						doesn't use non-uniform scaling this matrix will be a conjugate transpose of the rotation part of the matrix.
+         * @param [out]	matS	Singular values of the matrix. If your matrix is affine these will be scaling factors of the matrix.
+		 * @param [out]	matR	Unitary matrix. Columns form orthonormal bases. If your matrix is affine and
+		 * 						doesn't use non-uniform scaling this matrix will be the rotation part of the matrix.
+         */
+        void singularValueDecomposition(Matrix3& matL, Vector3& matS, Matrix3& matR) const;
+
+        /**
+         * @brief	Decomposes the matrix into various useful values.
+         *
+         * @param [out]	matQ	Columns form orthonormal bases. If your matrix is affine and
+         * 						doesn't use non-uniform scaling this matrix will be the rotation part of the matrix.
+         * @param [out]	vecD	If your matrix is affine these will be scaling factors of the matrix.
+		 * @param [out]	vecU	If your matrix is affine these will be shear factors of the matrix.
+         */
+		void QDUDecomposition(Matrix3& matQ, Vector3& vecD, Vector3& vecU) const;
 
         /**
          * @brief	Gram-Schmidt orthonormalization (applied to columns of rotation matrix)

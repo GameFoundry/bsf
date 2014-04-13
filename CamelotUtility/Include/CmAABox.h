@@ -7,6 +7,9 @@
 
 namespace CamelotFramework 
 {
+	/**
+	 * @brief	Axis aligned box represented by minimum and maximum point.
+	 */
 	class CM_UTILITY_EXPORT AABox
 	{
 	public:
@@ -50,21 +53,54 @@ namespace CamelotFramework
 
 		Vector3 getCorner(CornerEnum cornerToGet) const;
 
+		/**
+		 * @brief	Merges the two boxes, creating a new 
+		 * 			bounding box that encapsulates them both.
+		 */
 		void merge(const AABox& rhs);
+
+		/**
+		 * @brief	Expands the bounding box so it includes
+		 * 			the provided point.
+		 */
 		void merge(const Vector3& point);
 
+		/**
+		 * @brief	Transforms the bounding box by the given matrix.
+		 *
+		 * @note	As the resulting box will no longer be axis aligned,
+		 * 			an axis align box is instead created from the transformed oriented bounding box.
+		 */
 		void transform(const Matrix4& matrix);
+
+		/**
+		 * @brief	Transforms the bounding box by the given matrix.
+		 *
+		 * @note	As the resulting box will no longer be axis aligned,
+		 * 			an axis align box is instead created from the transformed oriented bounding box.
+		 * 			
+		 *			Provided matrix must be affine.
+		 */
 		void transformAffine(const Matrix4& matrix);
 
-		AABox intersection(const AABox& b2) const;
-
+		/**
+		 * @brief	Returns true if this and the provided box intersect.
+		 */
 		bool intersects(const AABox& b2) const;
+
+		/**
+		 * @brief	Returns true if the sphere intersects the bounding box.
+		 */
 		bool intersects(const Sphere& s) const;
+
+		/**
+		 * @brief	Returns true if the plane intersects the bounding box.
+		 */
 		bool intersects(const Plane& p) const;
-		bool intersects(const Vector3& v) const;
 
         /**
-         * @brief	Ray / box intersection, returns boolean result and distance.
+         * @brief	Ray / box intersection, returns a boolean result and nearest distance
+         * 			to intersection.
          */
         std::pair<bool, float> intersects(const Ray& ray) const;
 
@@ -79,7 +115,14 @@ namespace CamelotFramework
 		float getRadius() const;
 		float getVolume() const;
 
+        /**
+         * @brief	Returns true if the provided point is inside the bounding box.
+         */
         bool contains(const Vector3& v) const;
+
+        /**
+         * @brief	Returns true if the provided bounding box is completely inside the bounding box.
+         */
         bool contains(const AABox& other) const;
 
         bool operator== (const AABox& rhs) const;

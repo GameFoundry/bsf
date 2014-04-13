@@ -37,9 +37,6 @@
     <Filter Include="Header Files\Reflection">
       <UniqueIdentifier>{ceeeab21-95fc-4e22-922c-7c91ecaba0df}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\RTTI">
-      <UniqueIdentifier>{e58e84a8-5f39-4bbd-874e-cfa000ebd881}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Debug">
       <UniqueIdentifier>{cdfa7307-cdee-490f-8d31-d8be0d929c70}</UniqueIdentifier>
     </Filter>

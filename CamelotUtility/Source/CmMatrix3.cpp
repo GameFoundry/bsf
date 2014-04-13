@@ -1,35 +1,6 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmMatrix3.h"
 #include "CmQuaternion.h"
 #include "CmMath.h"
-
-// Adapted from Matrix math by Wild Magic http://www.geometrictools.com/
 
 namespace CamelotFramework
 {
@@ -43,16 +14,16 @@ namespace CamelotFramework
 		  { 1, 2, 0, 1.0f}, { 2, 0, 1,  1.0f}, { 2, 1, 0, -1.0f} };;
 
 
-    Vector3 Matrix3::getColumn(size_t col) const
+    Vector3 Matrix3::getColumn(UINT32 col) const
     {
-        assert(0 <= col && col < 3);
+        assert(col < 3);
         
 		return Vector3(m[0][col],m[1][col], m[2][col]);
     }
 
-    void Matrix3::setColumn(size_t col, const Vector3& vec)
+    void Matrix3::setColumn(UINT32 col, const Vector3& vec)
     {
-        assert(0 <= col && col < 3);
+        assert(col < 3);
 
         m[0][col] = vec.x;
         m[1][col] = vec.y;
@@ -68,9 +39,9 @@ namespace CamelotFramework
 
     bool Matrix3::operator== (const Matrix3& rhs) const
     {
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
             {
                 if (m[row][col] != rhs.m[row][col])
                     return false;
@@ -88,9 +59,9 @@ namespace CamelotFramework
     Matrix3 Matrix3::operator+ (const Matrix3& rhs) const
     {
         Matrix3 sum;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
             {
                 sum.m[row][col] = m[row][col] + rhs.m[row][col];
             }
@@ -102,9 +73,9 @@ namespace CamelotFramework
     Matrix3 Matrix3::operator- (const Matrix3& rhs) const
     {
         Matrix3 diff;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
             {
                 diff.m[row][col] = m[row][col] -
                     rhs.m[row][col];
@@ -117,9 +88,9 @@ namespace CamelotFramework
     Matrix3 Matrix3::operator* (const Matrix3& rhs) const
     {
         Matrix3 prod;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
             {
                 prod.m[row][col] = m[row][0]*rhs.m[0][col] +
                     m[row][1]*rhs.m[1][col] + m[row][2]*rhs.m[2][col];
@@ -132,9 +103,9 @@ namespace CamelotFramework
     Matrix3 Matrix3::operator- () const
     {
         Matrix3 neg;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
                 neg[row][col] = -m[row][col];
         }
 
@@ -144,9 +115,9 @@ namespace CamelotFramework
     Matrix3 Matrix3::operator* (float rhs) const
     {
         Matrix3 prod;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
                 prod[row][col] = rhs*m[row][col];
         }
 
@@ -156,9 +127,9 @@ namespace CamelotFramework
     Matrix3 operator* (float lhs, const Matrix3& rhs)
     {
         Matrix3 prod;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
                 prod[row][col] = lhs*rhs.m[row][col];
         }
 
@@ -168,7 +139,7 @@ namespace CamelotFramework
 	Vector3 Matrix3::transform(const Vector3& vec) const
 	{
 		Vector3 prod;
-		for (size_t row = 0; row < 3; row++)
+		for (UINT32 row = 0; row < 3; row++)
 		{
 			prod[row] =
 				m[row][0]*vec[0] +
@@ -179,19 +150,19 @@ namespace CamelotFramework
 		return prod;
 	}
 
-    Matrix3 Matrix3::transpose () const
+    Matrix3 Matrix3::transpose() const
     {
         Matrix3 matTranspose;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
                 matTranspose[row][col] = m[col][row];
         }
 
         return matTranspose;
     }
 
-    bool Matrix3::inverse (Matrix3& matInv, float tolerance) const
+    bool Matrix3::inverse(Matrix3& matInv, float tolerance) const
     {
         matInv[0][0] = m[1][1]*m[2][2] - m[1][2]*m[2][1];
         matInv[0][1] = m[0][2]*m[2][1] - m[0][1]*m[2][2];
@@ -209,16 +180,16 @@ namespace CamelotFramework
             return false;
 
         float invDet = 1.0f/det;
-        for (size_t row = 0; row < 3; row++)
+        for (UINT32 row = 0; row < 3; row++)
         {
-            for (size_t col = 0; col < 3; col++)
+            for (UINT32 col = 0; col < 3; col++)
                 matInv[row][col] *= invDet;
         }
 
         return true;
     }
 
-    Matrix3 Matrix3::inverse (float tolerance) const
+    Matrix3 Matrix3::inverse(float tolerance) const
     {
         Matrix3 matInv = Matrix3::ZERO;
         inverse(matInv, tolerance);
@@ -374,7 +345,7 @@ namespace CamelotFramework
         matA[1][0] = -sin*matA[1][1];
         matA[1][1] *= cos;
 
-        size_t row;
+        UINT32 row;
         for (row = 0; row < 3; row++)
         {
             tmp0 = matR[0][row];
@@ -398,7 +369,7 @@ namespace CamelotFramework
         matA[0][2] = -sin*matA[1][2];
         matA[1][2] *= cos;
 
-        size_t col;
+        UINT32 col;
         for (col = 0; col < 3; col++)
         {
             tmp0 = matL[col][0];
@@ -454,7 +425,7 @@ namespace CamelotFramework
 
     void Matrix3::singularValueDecomposition(Matrix3& matL, Vector3& matS, Matrix3& matR) const
     {
-		size_t row, col;
+		UINT32 row, col;
 
         Matrix3 mat = *this;
         bidiagonalize(mat, matL, matR);
@@ -642,8 +613,8 @@ namespace CamelotFramework
 
         if (fDet < 0.0f)
         {
-            for (size_t row = 0; row < 3; row++)
-                for (size_t col = 0; col < 3; col++)
+            for (UINT32 row = 0; row < 3; row++)
+                for (UINT32 col = 0; col < 3; col++)
                     matQ[row][col] = -matQ[row][col];
         }
 
@@ -1039,7 +1010,7 @@ namespace CamelotFramework
         mat.tridiagonal(eigenValues, subDiag);
         mat.QLAlgorithm(eigenValues, subDiag);
 
-        for (size_t i = 0; i < 3; i++)
+        for (UINT32 i = 0; i < 3; i++)
         {
             eigenVectors[i][0] = mat[0][i];
             eigenVectors[i][1] = mat[1][i];

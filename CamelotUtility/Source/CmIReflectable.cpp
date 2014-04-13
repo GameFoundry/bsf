@@ -4,9 +4,9 @@
 
 namespace CamelotFramework
 {
-	void IReflectable::registerDerivedClass(RTTITypeBase* derivedClass)
+	void IReflectable::_registerDerivedClass(RTTITypeBase* derivedClass)
 	{
-		if(isTypeIdDuplicate(derivedClass->getRTTIId()))
+		if(_isTypeIdDuplicate(derivedClass->getRTTIId()))
 		{
 			CM_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
 				"\" has a duplicate ID: " + toString(derivedClass->getRTTIId()));
@@ -17,7 +17,7 @@ namespace CamelotFramework
 
 	std::shared_ptr<IReflectable> IReflectable::createInstanceFromTypeId(UINT32 rttiTypeId)
 	{
-		RTTITypeBase* type = getRTTIfromTypeId(rttiTypeId);
+		RTTITypeBase* type = _getRTTIfromTypeId(rttiTypeId);
 
 		if(type != nullptr)
 			return type->newRTTIObject();
@@ -25,7 +25,7 @@ namespace CamelotFramework
 		return nullptr;
 	}
 
-	RTTITypeBase* IReflectable::getRTTIfromTypeId(UINT32 rttiTypeId)
+	RTTITypeBase* IReflectable::_getRTTIfromTypeId(UINT32 rttiTypeId)
 	{
 		Stack<RTTITypeBase*>::type todo;
 		Vector<RTTITypeBase*>::type& rootClasses = getDerivedClasses();
@@ -49,12 +49,12 @@ namespace CamelotFramework
 		return nullptr;
 	}
 
-	bool IReflectable::isTypeIdDuplicate(UINT32 typeId)
+	bool IReflectable::_isTypeIdDuplicate(UINT32 typeId)
 	{
 		if(typeId == TID_Abstract)
 			return false;
 
-		return IReflectable::getRTTIfromTypeId(typeId) != nullptr;
+		return IReflectable::_getRTTIfromTypeId(typeId) != nullptr;
 	}
 
 	bool IReflectable::isDerivedFrom(RTTITypeBase* base)

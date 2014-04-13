@@ -69,8 +69,8 @@ namespace CamelotFramework
         else
         {
             // |w| <= 1/2
-            static size_t nextLookup[3] = { 1, 2, 0 };
-            size_t i = 0;
+            static UINT32 nextLookup[3] = { 1, 2, 0 };
+            UINT32 i = 0;
 
             if (mat[1][1] > mat[0][0])
                 i = 1;
@@ -78,8 +78,8 @@ namespace CamelotFramework
             if (mat[2][2] > mat[i][i])
                 i = 2;
 
-            size_t j = nextLookup[i];
-            size_t k = nextLookup[j];
+            UINT32 j = nextLookup[i];
+            UINT32 k = nextLookup[j];
 
             root = Math::sqrt(mat[i][i]-mat[j][j]-mat[k][k] + 1.0f);
 

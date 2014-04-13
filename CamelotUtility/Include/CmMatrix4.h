@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
@@ -36,6 +9,9 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
+	 /**
+     * @brief	Class representing a 4x4 matrix.
+     */
     class CM_UTILITY_EXPORT Matrix4
     {
     private:
@@ -97,6 +73,9 @@ namespace CamelotFramework
 			setTRS(translation, rot, scale);
         }
         
+		/**
+		 * @brief	Swaps the contents of this matrix with another.
+		 */
 		void swap(Matrix4& other)
 		{
 			std::swap(m[0][0], other.m[0][0]);
@@ -117,14 +96,17 @@ namespace CamelotFramework
 			std::swap(m[3][3], other.m[3][3]);
 		}
 
-		float* operator[] (size_t row)
+		/**
+         * @brief	Returns a row of the matrix.
+         */
+		float* operator[] (UINT32 row)
         {
             assert(row < 4);
 
             return m[row];
         }
 
-        const float *operator[] (size_t row) const
+        const float *operator[] (UINT32 row) const
         {
             assert(row < 4);
 
@@ -213,12 +195,14 @@ namespace CamelotFramework
 
         inline bool operator== (const Matrix4& rhs ) const
         {
-            if( 
-                m[0][0] != rhs.m[0][0] || m[0][1] != rhs.m[0][1] || m[0][2] != rhs.m[0][2] || m[0][3] != rhs.m[0][3] ||
-                m[1][0] != rhs.m[1][0] || m[1][1] != rhs.m[1][1] || m[1][2] != rhs.m[1][2] || m[1][3] != rhs.m[1][3] ||
-                m[2][0] != rhs.m[2][0] || m[2][1] != rhs.m[2][1] || m[2][2] != rhs.m[2][2] || m[2][3] != rhs.m[2][3] ||
-                m[3][0] != rhs.m[3][0] || m[3][1] != rhs.m[3][1] || m[3][2] != rhs.m[3][2] || m[3][3] != rhs.m[3][3] )
+            if(m[0][0] != rhs.m[0][0] || m[0][1] != rhs.m[0][1] || m[0][2] != rhs.m[0][2] || m[0][3] != rhs.m[0][3] ||
+               m[1][0] != rhs.m[1][0] || m[1][1] != rhs.m[1][1] || m[1][2] != rhs.m[1][2] || m[1][3] != rhs.m[1][3] ||
+               m[2][0] != rhs.m[2][0] || m[2][1] != rhs.m[2][1] || m[2][2] != rhs.m[2][2] || m[2][3] != rhs.m[2][3] ||
+               m[3][0] != rhs.m[3][0] || m[3][1] != rhs.m[3][1] || m[3][2] != rhs.m[3][2] || m[3][3] != rhs.m[3][3] )
+			{
                 return false;
+			}
+
             return true;
         }
 
@@ -229,13 +213,15 @@ namespace CamelotFramework
 
 		Matrix4 operator*(float rhs) const
 		{
-			return Matrix4(
-				rhs*m[0][0], rhs*m[0][1], rhs*m[0][2], rhs*m[0][3],
-				rhs*m[1][0], rhs*m[1][1], rhs*m[1][2], rhs*m[1][3],
-				rhs*m[2][0], rhs*m[2][1], rhs*m[2][2], rhs*m[2][3],
-				rhs*m[3][0], rhs*m[3][1], rhs*m[3][2], rhs*m[3][3]);
+			return Matrix4(rhs*m[0][0], rhs*m[0][1], rhs*m[0][2], rhs*m[0][3],
+						   rhs*m[1][0], rhs*m[1][1], rhs*m[1][2], rhs*m[1][3],
+						   rhs*m[2][0], rhs*m[2][1], rhs*m[2][2], rhs*m[2][3],
+						   rhs*m[3][0], rhs*m[3][1], rhs*m[3][2], rhs*m[3][3]);
 		}
 
+        /**
+         * @brief	Returns a transpose of the matrix (switched columns and rows).
+         */
         Matrix4 transpose() const
         {
             return Matrix4(m[0][0], m[1][0], m[2][0], m[3][0],
@@ -245,7 +231,7 @@ namespace CamelotFramework
         }
 
         /**
-         * @brief	Extracts the rotation/scaling part of the Matrix as a 3x3 matrix.
+         * @brief	Extracts the rotation/scaling part of the matrix as a 3x3 matrix.
          */
         void extract3x3Matrix(Matrix3& m3x3) const
         {
@@ -260,8 +246,19 @@ namespace CamelotFramework
             m3x3.m[2][2] = m[2][2];
         }
 
+		/**
+		 * @brief	Calculates the adjoint of the matrix.
+		 */
 		Matrix4 adjoint() const;
+
+		/**
+		 * @brief	Calculates the determinant of the matrix.
+		 */
 		float determinant() const;
+
+		/**
+		 * @brief	Calculates the inverse of the matrix.
+		 */
 		Matrix4 inverse() const;
         
         /**
@@ -303,7 +300,7 @@ namespace CamelotFramework
          *
          * @note	Matrix must be affine.
          */
-        Matrix4 inverseAffine(void) const;
+        Matrix4 inverseAffine() const;
 
         /**
          * @brief	Concatenate two affine matrices.
@@ -382,7 +379,7 @@ namespace CamelotFramework
         }
 
         /**
-         * @brief	Transform a 3D vector by this matrix.  
+         * @brief	Transform a 4D vector by this matrix.  
          *
          * @note	After transformation all components are projected back so that w remains 1.
          * 			

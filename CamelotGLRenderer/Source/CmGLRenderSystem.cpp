@@ -1580,10 +1580,10 @@ namespace CamelotFramework
 	//-----------------------------------------------------------------------------
 	void GLRenderSystem::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
 	{
-		size_t x = 0;
-		for (size_t i = 0; i < 4; i++)
+		UINT32 x = 0;
+		for (UINT32 i = 0; i < 4; i++)
 		{
-			for (size_t j = 0; j < 4; j++)
+			for (UINT32 j = 0; j < 4; j++)
 			{
 				gl_matrix[x] = m[j][i];
 				x++;

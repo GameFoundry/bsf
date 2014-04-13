@@ -102,7 +102,7 @@ namespace CamelotFramework
 		oldMax = mMaximum;
 
 		// We sequentially compute the corners in the following order :
-		// 0, 6, 5, 1, 2, 4 ,7 , 3
+		// 0, 6, 5, 1, 2, 4, 7, 3
 		// This sequence allows us to only change one member at a time to get at all corners.
 
 		// For each one, we transform it using the matrix
@@ -158,25 +158,6 @@ namespace CamelotFramework
 		setExtents(newCentre - newHalfSize, newCentre + newHalfSize);
 	}
 
-	AABox AABox::intersection(const AABox& b2) const
-	{
-		Vector3 intMin = mMinimum;
-        Vector3 intMax = mMaximum;
-
-        intMin.ceil(b2.getMin());
-        intMax.floor(b2.getMax());
-
-        // Check intersection isn't null
-        if (intMin.x < intMax.x &&
-            intMin.y < intMax.y &&
-            intMin.z < intMax.z)
-        {
-            return AABox(intMin, intMax);
-        }
-
-        return AABox();
-	}
-
 	bool AABox::intersects(const AABox& b2) const
 	{
 		// Use up to 6 separating planes
@@ -227,13 +208,6 @@ namespace CamelotFramework
 	bool AABox::intersects(const Plane& p) const
 	{
 		return (p.getSide(*this) == Plane::BOTH_SIDE);
-	}
-
-	bool AABox::intersects(const Vector3& v) const
-	{
-		return(v.x >= mMinimum.x  &&  v.x <= mMaximum.x  && 
-			v.y >= mMinimum.y  &&  v.y <= mMaximum.y  && 
-			v.z >= mMinimum.z  &&  v.z <= mMaximum.z);
 	}
 
 	std::pair<bool, float> AABox::intersects(const Ray& ray) const

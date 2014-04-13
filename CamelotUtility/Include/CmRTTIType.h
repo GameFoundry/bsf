@@ -43,7 +43,7 @@ namespace CamelotFramework
 
 		virtual Vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
 		virtual RTTITypeBase* getBaseClass() = 0;
-		virtual void registerDerivedClass(RTTITypeBase* derivedClass) = 0;
+		virtual void _registerDerivedClass(RTTITypeBase* derivedClass) = 0;
 		virtual std::shared_ptr<IReflectable> newRTTIObject() = 0;
 		virtual const String& getRTTIName() = 0;
 		virtual UINT32 getRTTIId() = 0;
@@ -344,7 +344,7 @@ namespace CamelotFramework
 	public:
 		InitRTTIOnStart()
 		{
-			BaseType::getRTTIStatic()->registerDerivedClass(Type::getRTTIStatic());
+			BaseType::getRTTIStatic()->_registerDerivedClass(Type::getRTTIStatic());
 		}
 
 		void makeSureIAmInstantiated() { }
@@ -359,7 +359,7 @@ namespace CamelotFramework
 	public:
 		InitRTTIOnStart()
 		{
-			IReflectable::registerDerivedClass(Type::getRTTIStatic());
+			IReflectable::_registerDerivedClass(Type::getRTTIStatic());
 		}
 
 		void makeSureIAmInstantiated() { }
@@ -426,9 +426,9 @@ namespace CamelotFramework
 			return GetRTTIType<BaseType>()();
 		}
 
-		virtual void registerDerivedClass(RTTITypeBase* derivedClass)
+		virtual void _registerDerivedClass(RTTITypeBase* derivedClass)
 		{
-			if(IReflectable::isTypeIdDuplicate(derivedClass->getRTTIId()))
+			if(IReflectable::_isTypeIdDuplicate(derivedClass->getRTTIId()))
 			{
 				CM_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
 					"\" has a duplicate ID: " + toString(derivedClass->getRTTIId()));

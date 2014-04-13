@@ -8,12 +8,12 @@ namespace CamelotFramework
 	/**
 	 * @brief	Wrapper class which indicates a given angle value is in Degrees.
 	 * 			
-	 *	@note Degree values are interchangeable with Radian values, and conversions
-	 *	will be done automatically between them.
+	 *	@note	Degree values are interchangeable with Radian values, and conversions
+	 *			will be done automatically between them.
 	 */
 	class CM_UTILITY_EXPORT Degree
 	{
-		float mDeg; // if you get an error here - make sure to define/typedef 'float' first
+		float mDeg;
 
 	public:
 		explicit Degree(float d = 0.0f) : mDeg(d) {}
