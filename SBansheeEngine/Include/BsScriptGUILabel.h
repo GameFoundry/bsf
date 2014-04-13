@@ -14,7 +14,7 @@ namespace BansheeEngine
 		void* getNativeRaw() const { return mLabel; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoObject* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUILabel* nativeInstance);
 		static void internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content);
 

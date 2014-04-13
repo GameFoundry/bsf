@@ -58,18 +58,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIListBox::internal_createInstance(MonoObject* instance, MonoArray* elements, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUIListBox::internal_createInstance(MonoObject* instance, MonoArray* elements, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
 		UINT32 optionsArrayLen = (UINT32)mono_array_length(guiOptions);
 		for(UINT32 i = 0; i < optionsArrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
-
-		GUIElementStyle* elemStyle = nullptr;
-
-		if(style != nullptr)
-			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
 
 		UINT32 elementsArrayLen = (UINT32)mono_array_length(elements);
 		Vector<HString>::type nativeElements;
@@ -86,7 +81,7 @@ namespace BansheeEngine
 			}
 		}
 
-		GUIListBox* guiListBox = GUIListBox::create(nativeElements, options, elemStyle);
+		GUIListBox* guiListBox = GUIListBox::create(nativeElements, options, toString(MonoUtil::monoToWString(style)));
 		guiListBox->onSelectionChanged.connect(std::bind(&ScriptGUIListBox::onSelectionChanged, instance, std::placeholders::_1));
 
 		ScriptGUIListBox* nativeInstance = new (cm_alloc<ScriptGUIListBox>()) ScriptGUIListBox(guiListBox);

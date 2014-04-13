@@ -23,6 +23,11 @@ Boost any replacement: http://www.codeproject.com/Articles/11250/High-Performanc
 
 -------------
 
+Get rid of the CamelotFramework namespace
+ - I shouldn't need to prefix each variable with CM::
+
+Fix C# interface to GUI elements
+
 REFACTOR c++ GUI a bit:
  - GameObjectField
    - When dragging over GameObjectField cursor needs to change depending whether drop will be accepted or not

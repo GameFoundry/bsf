@@ -15,7 +15,7 @@ namespace BansheeEngine
 		void* getNativeRaw() const { return mInputBox; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, bool multiline, MonoObject* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIInputBox* nativeInstance);
 
 		static void internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text);

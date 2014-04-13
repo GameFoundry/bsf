@@ -62,7 +62,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIButton::internal_createInstance(MonoObject* instance, MonoObject* content, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUIButton::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -70,13 +70,8 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		GUIElementStyle* elemStyle = nullptr;
-
-		if(style != nullptr)
-			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
-
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		GUIButton* guiButton = GUIButton::create(nativeContent, options, elemStyle);
+		GUIButton* guiButton = GUIButton::create(nativeContent, options, toString(MonoUtil::monoToWString(style)));
 
 		guiButton->onClick.connect(std::bind(&ScriptGUIButton::onClick, instance));
 		guiButton->onHover.connect(std::bind(&ScriptGUIButton::onHover, instance));

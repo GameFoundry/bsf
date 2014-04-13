@@ -15,7 +15,7 @@ namespace BansheeEngine
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, 
-			MonoObject* toggleGroup, MonoObject* style, MonoArray* guiOptions);
+			MonoObject* toggleGroup, MonoString* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIToggle* nativeInstance);
 		static void internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content);
 		static void internal_toggleOn(ScriptGUIToggle* nativeInstance);

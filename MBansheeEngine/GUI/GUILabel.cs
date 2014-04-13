@@ -5,7 +5,7 @@ namespace BansheeEngine
 {
     public sealed class GUILabel : GUIElement
     {
-        public GUILabel(GUIContent content, GUIElementStyle style, params GUIOption[] options)
+        public GUILabel(GUIContent content, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, content, style, options);
         }
@@ -16,7 +16,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUILabel instance, GUIContent content, GUIElementStyle style, GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUILabel instance, GUIContent content, string style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);

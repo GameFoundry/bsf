@@ -14,7 +14,7 @@ namespace BansheeEngine
 		void* getNativeRaw() const { return mButton; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoObject* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIButton* nativeInstance);
 		static void internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content);
 

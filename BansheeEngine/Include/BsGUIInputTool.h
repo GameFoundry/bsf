@@ -50,6 +50,7 @@ namespace BansheeEngine
 		CM::RectI getCharRect(CM::UINT32 charIdx) const;
 		CM::RectI getLocalCharRect(CM::UINT32 charIdx) const;
 		CM::INT32 getCharIdxAtPos(const CM::Vector2I& pos) const;
+		bool isDescValid() const;
 
 		/**
 		 * @brief	Gets a character index AFTER the input index. 

@@ -15,34 +15,34 @@ namespace BansheeEngine
         public event OnOutDelegate OnOut;
         public event OnToggleDelegate OnToggled;
 
-        public GUIToggle(GUIContent content, GUIToggleGroup toggleGroup, GUIElementStyle style, params GUIOption[] options)
+        public GUIToggle(GUIContent content, GUIToggleGroup toggleGroup, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, content, toggleGroup, style, options);
         }
 
-        public GUIToggle(GUIContent content, GUIElementStyle style, params GUIOption[] options)
+        public GUIToggle(GUIContent content, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, content, null, style, options);
         }
 
-        public GUIToggle(GUIContent content, GUIElementStyle style)
+        public GUIToggle(GUIContent content, string style)
         {
             Internal_CreateInstance(this, content, null, style, new GUIOption[0]);
         }
 
         public GUIToggle(GUIContent content, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, content, null, null, options);
+            Internal_CreateInstance(this, content, null, "", options);
         }
 
-        public GUIToggle(GUIContent content, GUIToggleGroup toggleGroup, GUIElementStyle style)
+        public GUIToggle(GUIContent content, GUIToggleGroup toggleGroup, string style)
         {
             Internal_CreateInstance(this, content, toggleGroup, style, new GUIOption[0]);
         }
 
         public GUIToggle(GUIContent content, GUIToggleGroup toggleGroup, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, content, toggleGroup, null, options);
+            Internal_CreateInstance(this, content, toggleGroup, "", options);
         }
 
         public void SetContent(GUIContent content)
@@ -85,8 +85,8 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIToggle instance, GUIContent content, 
-            GUIToggleGroup toggleGroup, GUIElementStyle style, GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUIToggle instance, GUIContent content,
+            GUIToggleGroup toggleGroup, string style, GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetContent(IntPtr nativeInstance, GUIContent content);

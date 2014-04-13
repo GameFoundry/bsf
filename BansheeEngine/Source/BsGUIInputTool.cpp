@@ -253,6 +253,17 @@ namespace BansheeEngine
 		return false;
 	}
 
+	bool GUIInputTool::isDescValid() const
+	{
+		// We we have some text but line descs are empty we may assume
+		// something went wrong when creating the line descs, therefore it is
+		// not valid and no text is displayed.
+		if(mTextDesc.text.size() > 0)
+			return mLineDescs.size() > 0;
+
+		return true;
+	}
+
 	GUIInputLineDesc::GUIInputLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline)
 		:mStartChar(startChar), mEndChar(endChar), mLineHeight(lineHeight), mLineYStart(lineYStart), mIncludesNewline(includesNewline)
 	{

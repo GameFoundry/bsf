@@ -9,14 +9,14 @@ namespace BansheeEngine
 
         public event OnSelectionChangedDelegate OnSelectionChanged;
 
-        public GUIListBox(LocString[] elements, GUIElementStyle style, params GUIOption[] options)
+        public GUIListBox(LocString[] elements, string style, params GUIOption[] options)
         {
             Internal_CreateInstance(this, elements, style, options);
         }
 
         public GUIListBox(LocString[] elements, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, elements, null, options);
+            Internal_CreateInstance(this, elements, "", options);
         }
 
         public void SetElements(LocString[] elements)
@@ -31,7 +31,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(GUIListBox instance, LocString[] elements, GUIElementStyle style, params GUIOption[] options);
+        private static extern void Internal_CreateInstance(GUIListBox instance, LocString[] elements, string style, params GUIOption[] options);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_SetElements(IntPtr nativeInstance, LocString[] elements);

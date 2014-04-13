@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 	private:
 		static void internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
-			MonoObject* scrollBarStyle, MonoObject* scrollAreaStyle, MonoArray* guiOptions);
+			MonoString* scrollBarStyle, MonoString* scrollAreaStyle, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIScrollArea* nativeInstance);
 
 		static void internal_destroy(ScriptGUIScrollArea* nativeInstance);

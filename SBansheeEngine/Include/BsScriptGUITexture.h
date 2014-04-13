@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* texture, 
-			GUIImageScaleMode scale, MonoObject* style, MonoArray* guiOptions);
+			GUIImageScaleMode scale, MonoString* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUITexture* nativeInstance);
 		static void internal_setTexture(ScriptGUITexture* nativeInstance, MonoObject* texture);
 

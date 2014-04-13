@@ -18,38 +18,38 @@ namespace BansheeEngine
             get { return _mainLayout; }
         }
 
-        public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, GUIElementStyle scrollBarStyle, 
-            GUIElementStyle scrollAreaStyle, params GUIOption[] options)
+        public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, string scrollBarStyle,
+            string scrollAreaStyle, params GUIOption[] options)
         {
             Internal_CreateInstance(this, vertBarType, horzBarType, scrollBarStyle, scrollAreaStyle, options);
             _mainLayout = new GUILayoutY(this);
         }
 
-        public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, GUIElementStyle style, params GUIOption[] options)
+        public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, string style, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, vertBarType, horzBarType, null, style, options);
+            Internal_CreateInstance(this, vertBarType, horzBarType, "", style, options);
             _mainLayout = new GUILayoutY(this);
         }
 
         public GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, vertBarType, horzBarType, null, null, options);
+            Internal_CreateInstance(this, vertBarType, horzBarType, "", "", options);
             _mainLayout = new GUILayoutY(this);
         }
 
-        public GUIScrollArea(GUIElementStyle style, params GUIOption[] options)
+        public GUIScrollArea(string style, params GUIOption[] options)
         {
-            Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, null, style, options);
+            Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, "", style, options);
             _mainLayout = new GUILayoutY(this);
         }
 
         public GUIScrollArea(params GUIOption[] options)
         {
-            Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, null, null, options);
+            Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, "", "", options);
             _mainLayout = new GUILayoutY(this);
         }
 
-        public GUIScrollArea(GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options)
+        public GUIScrollArea(string scrollBarStyle, string scrollAreaStyle, params GUIOption[] options)
         {
             Internal_CreateInstance(this, ScrollBarType.ShowIfDoesntFit, ScrollBarType.ShowIfDoesntFit, scrollBarStyle, scrollAreaStyle, options);
             _mainLayout = new GUILayoutY(this);
@@ -64,6 +64,6 @@ namespace BansheeEngine
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIScrollArea instance, ScrollBarType vertBarType, ScrollBarType horzBarType,
-            GUIElementStyle scrollBarStyle, GUIElementStyle scrollAreaStyle, params GUIOption[] options);
+            string scrollBarStyle, string scrollAreaStyle, params GUIOption[] options);
     }
 }

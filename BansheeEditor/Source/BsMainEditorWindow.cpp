@@ -7,6 +7,8 @@
 #include "CmRenderTexture.h"
 #include "BsApplication.h"
 #include "CmProfiler.h"
+#include "BsGUIArea.h"
+#include "BsGUILayout.h"
 
 // DEBUG ONLY
 #include "CmTestTextSprite.h"
@@ -32,6 +34,9 @@ namespace BansheeEditor
 		mMenuBar(cm_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{
 		mDockManager = DockManager::create(mRenderWindow.get());
+
+		GUIArea* dockArea = GUIArea::createStretchedXY(*mGUI.get(), 0, 0, 0, 0);
+		dockArea->getLayout().addElement(mDockManager);
 
 		updateAreas();
 

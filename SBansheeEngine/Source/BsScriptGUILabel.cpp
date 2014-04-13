@@ -53,7 +53,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* content, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -61,13 +61,8 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		GUIElementStyle* elemStyle = nullptr;
-		
-		if(style != nullptr)
-			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
-
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		GUILabel* guiLabel = GUILabel::create(nativeContent, options, elemStyle);
+		GUILabel* guiLabel = GUILabel::create(nativeContent, options, toString(MonoUtil::monoToWString(style)));
 
 		ScriptGUILabel* nativeInstance = new (cm_alloc<ScriptGUILabel>()) ScriptGUILabel(guiLabel);
 		nativeInstance->createInstance(instance);

@@ -15,7 +15,7 @@ namespace BansheeEngine
 		void* getNativeRaw() const { return mListBox; }
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoArray* elements, MonoObject* style, MonoArray* guiOptions);
+		static void internal_createInstance(MonoObject* instance, MonoArray* elements, MonoString* style, MonoArray* guiOptions);
 		static void internal_destroyInstance(ScriptGUIListBox* nativeInstance);
 		static void internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements);
 

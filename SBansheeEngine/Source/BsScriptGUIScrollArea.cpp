@@ -54,7 +54,7 @@ namespace BansheeEngine
 	}
 
 	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
-		MonoObject* scrollBarStyle, MonoObject* scrollAreaStyle, MonoArray* guiOptions)
+		MonoString* scrollBarStyle, MonoString* scrollAreaStyle, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -62,17 +62,8 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		GUIElementStyle* scrollAreaNativeStyle = nullptr;
-
-		if(scrollAreaStyle != nullptr)
-			scrollAreaNativeStyle = ScriptGUIElementStyle::toNative(scrollAreaStyle)->getInternalValue();
-
-		GUIElementStyle* scrollBarNativeStyle = nullptr;
-
-		if(scrollBarNativeStyle != nullptr)
-			scrollBarNativeStyle = ScriptGUIElementStyle::toNative(scrollBarStyle)->getInternalValue();
-
-		GUIScrollArea* guiScrollArea = GUIScrollArea::create(vertBarType, horzBarType, options, scrollBarNativeStyle, scrollAreaNativeStyle);
+		GUIScrollArea* guiScrollArea = GUIScrollArea::create(vertBarType, horzBarType, options, 
+			toString(MonoUtil::monoToWString(scrollBarStyle)), toString(MonoUtil::monoToWString(scrollAreaStyle)));
 
 		ScriptGUIScrollArea* nativeInstance = new (cm_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(guiScrollArea);
 		nativeInstance->createInstance(instance);

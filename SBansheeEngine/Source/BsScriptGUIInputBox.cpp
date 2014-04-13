@@ -55,7 +55,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoObject* style, MonoArray* guiOptions)
+	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
 
@@ -63,12 +63,7 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < arrayLen; i++)
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
-		GUIElementStyle* elemStyle = nullptr;
-
-		if(style != nullptr)
-			elemStyle = ScriptGUIElementStyle::toNative(style)->getInternalValue();
-
-		GUIInputBox* guiInputBox = GUIInputBox::create(multiline, options, elemStyle);
+		GUIInputBox* guiInputBox = GUIInputBox::create(multiline, options, toString(MonoUtil::monoToWString(style)));
 
 		ScriptGUIInputBox* nativeInstance = new (cm_alloc<ScriptGUIInputBox>()) ScriptGUIInputBox(guiInputBox);
 		nativeInstance->createInstance(instance);

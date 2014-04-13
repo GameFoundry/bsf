@@ -227,10 +227,11 @@ namespace BansheeEngine
 
 	Vector2I GUIInputCaret::getCaretPosition(const CM::Vector2I& offset) const
 	{
-		if(mTextDesc.text.size() > 0)
+		if(mTextDesc.text.size() > 0 && isDescValid())
 		{
 			UINT32 curPos = 0;
 			UINT32 numLines = getNumLines();
+
 			for(UINT32 i = 0; i < numLines; i++)
 			{
 				const GUIInputLineDesc& lineDesc = getLineDesc(i);
@@ -256,10 +257,8 @@ namespace BansheeEngine
 
 			return Vector2I(charRect.x + charRect.width, yOffset);
 		}
-		else
-		{
-			return offset;
-		}		
+
+		return offset;
 	}
 
 	UINT32 GUIInputCaret::getCaretHeight() const
@@ -268,7 +267,7 @@ namespace BansheeEngine
 		if(charIdx > 0)
 			charIdx -= 1;	
 
-		if(charIdx < (UINT32)mTextDesc.text.size())
+		if(charIdx < (UINT32)mTextDesc.text.size() && isDescValid())
 		{
 			UINT32 lineIdx = getLineForChar(charIdx);
 			return getLineDesc(lineIdx).getLineHeight();
