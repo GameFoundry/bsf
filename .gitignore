@@ -1,8 +1,8 @@
 # Ignored files
-*.suo 
-*.user 
+*.suo
+*.user
 *.sdf
-bin 
+bin
 obj
 lib
 Intermediate
