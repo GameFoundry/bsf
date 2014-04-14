@@ -4,6 +4,10 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	Represents a 2D rectangle using real values.
+	 * 			Rectangle is represented with an origin and size values.
+	 */
 	class CM_UTILITY_EXPORT RectF
 	{
 	public:
@@ -12,9 +16,28 @@ namespace CamelotFramework
 
 		float x, y, width, height;
 
+		/**
+		 * @brief	Returns true if the rectangle contains the provided point.
+		 */
 		bool contains(const Vector2& point) const;
+
+		/**
+		 * @brief	Returns true if the rectangle overlaps the provided rectangle.
+		 * 			Also returns true if the rectangles are contained within each other completely
+		 * 			(no intersecting edges).
+		 */
 		bool overlaps(const RectF& other) const;
+
+		/**
+		 * @brief	Extends this rectangle so that the provided rectangle is
+		 * 			completely contained within it.
+		 */
 		void encapsulate(const RectF& other);
+
+		/**
+		 * @brief	Clips current rectangle so that it does not overlap
+		 * 			the provided rectangle.
+		 */
 		void clip(const RectF& clipRect);
 
 		/**

@@ -68,16 +68,18 @@ namespace CamelotFramework
 		/**
 		 * @brief	Transforms the bounding box by the given matrix.
 		 *
-		 * @note	As the resulting box will no longer be axis aligned,
-		 * 			an axis align box is instead created from the transformed oriented bounding box.
+		 * @note	As the resulting box will no longer be axis aligned, an axis align box 
+		 * 			is instead created by encompassing the transformed oriented bounding box.
+		 * 			Retrieving the value as an actual OBB would provide a tighter fit.
 		 */
 		void transform(const Matrix4& matrix);
 
 		/**
 		 * @brief	Transforms the bounding box by the given matrix.
 		 *
-		 * @note	As the resulting box will no longer be axis aligned,
-		 * 			an axis align box is instead created from the transformed oriented bounding box.
+		 * @note	As the resulting box will no longer be axis aligned, an axis align box 
+		 * 			is instead created by encompassing the transformed oriented bounding box.
+		 * 			Retrieving the value as an actual OBB would provide a tighter fit.
 		 * 			
 		 *			Provided matrix must be affine.
 		 */

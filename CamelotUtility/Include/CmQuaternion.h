@@ -1,38 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-// This file is based on material originally from:
-// Geometric Tools, LLC
-// Copyright (c) 1998-2010
-// Distributed under the Boost Software License, Version 1.0.
-// http://www.boost.org/LICENSE_1_0.txt
-// http://www.geometrictools.com/License/Boost/LICENSE_1_0.txt
-
-
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
@@ -41,6 +6,9 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
+    /**
+     * @brief	Represents a quaternion used for 3D rotations.
+     */
     class CM_UTILITY_EXPORT Quaternion
     {
 	private:
@@ -123,8 +91,25 @@ namespace CamelotFramework
 			return *(&w+i);
 		}
 
+		/**
+		 * @brief	Initializes the quaternion from a 3x3 rotation matrix.
+		 * 			
+		 * @note	It's up to the caller to ensure the matrix is orthonormal.
+		 */
 		void fromRotationMatrix(const Matrix3& mat);
+
+		/**
+		 * @brief	Initializes the quaternion from an angle axis pair. Quaternion
+		 * 			will represent a rotation of "angle" radians around "axis".
+		 */
         void fromAxisAngle(const Vector3& axis, const Radian& angle);
+
+        /**
+         * @brief	Initializes the quaternion from orthonormal set of axes. Quaternion
+         * 			will represent a rotation from base axes to the specified set of axes.
+         * 			
+		 * @note	It's up to the caller to ensure the axes are orthonormal.
+         */
         void fromAxes(const Vector3& xAxis, const Vector3& yAxis, const Vector3& zAxis);
         
         /**
@@ -150,16 +135,34 @@ namespace CamelotFramework
          */
         void fromEulerAngles(const Radian& xAngle, const Radian& yAngle, const Radian& zAngle, EulerAngleOrder order);
 
+		/**
+		 * @brief	Converts a quaternion to a rotation matrix.
+		 */
 		void toRotationMatrix(Matrix3& mat) const;
+
+		/**
+		 * @brief	Converts a quaternion to an angle axis pair.
+		 *
+		 * @param [out]	axis 	The axis around the which rotation takes place.
+		 * @param [out]	angle	The angle in radians determining amount of rotation around the axis.
+		 */
 		void toAxisAngle(Vector3& axis, Radian& angle) const;
+
+		/**
+		 * @brief	Converts a quaternion to an orthonormal set of axes.
+		 *
+		 * @param [out]	xAxis	The X axis.
+		 * @param [out]	yAxis	The Y axis.
+		 * @param [out]	zAxis	The Z axis.
+		 */
 		void toAxes(Vector3& xAxis, Vector3& yAxis, Vector3& zAxis) const;
 
 		/**
          * @brief	Extracts Pitch/Yaw/Roll rotations from this quaternion.
          *
-         * @param [in,out]	xAngle	Rotation about x axis. (AKA Pitch)
-         * @param [in,out]	yAngle  Rotation about y axis. (AKA Yaw)
-         * @param [in,out]	zAngle 	Rotation about z axis. (AKA Roll)
+         * @param [out]	xAngle	Rotation about x axis. (AKA Pitch)
+         * @param [out]	yAngle  Rotation about y axis. (AKA Yaw)
+         * @param [out]	zAngle 	Rotation about z axis. (AKA Roll)
          *
          * @return	True if unique solution was found, false otherwise.
          * 			
@@ -171,9 +174,9 @@ namespace CamelotFramework
 		/**
 		 * @brief	Extracts Pitch/Yaw/Roll rotations from this quaternion.
 		 *
-		 * @param	xAngle	Rotation about x axis. (AKA Pitch)
-		 * @param	yAngle	Rotation about y axis. (AKA Yaw)
-		 * @param	zAngle	Rotation about z axis. (AKA Roll)
+		 * @param [out]	xAngle	Rotation about x axis. (AKA Pitch)
+		 * @param [out]	yAngle	Rotation about y axis. (AKA Yaw)
+		 * @param [out]	zAngle	Rotation about z axis. (AKA Roll)
 		 * @param	order 	The order in which rotations will be extracted. 
 		 * 					Different values can be retrieved depending on the order.
 		 *
@@ -224,6 +227,9 @@ namespace CamelotFramework
 
 		friend Quaternion operator* (float lhs, const Quaternion& rhs);
 
+        /**
+         * @brief	Calculates the dot product of this quaternion and another.
+         */
         float dot(const Quaternion& other) const;  
 
         /**
@@ -243,6 +249,9 @@ namespace CamelotFramework
          */
         Vector3 rotate(const Vector3& vec) const;
 
+		/**
+		* @brief	Query if any of the components of the quaternion are NaN.
+		 */
 		bool isNaN() const
 		{
 			return Math::isNaN(x) || Math::isNaN(y) || Math::isNaN(z) || Math::isNaN(w);

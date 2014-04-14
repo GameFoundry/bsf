@@ -24,9 +24,7 @@ namespace CamelotFramework
 		const Vector3& b, const Vector3& c, const Vector3& normal,
 		bool positiveSide, bool negativeSide) const
 	{
-		//
 		// Calculate intersection with plane.
-		//
 		float t;
 		{
 			float denom = normal.dot(getDirection());
@@ -45,7 +43,7 @@ namespace CamelotFramework
 			else
 			{
 				// Parallel or triangle area is close to zero when
-				// the plane normal not normalised.
+				// the plane normal not normalized.
 				return std::pair<bool, float>(false, 0.0f);
 			}
 
@@ -58,9 +56,7 @@ namespace CamelotFramework
 			}
 		}
 
-		//
 		// Calculate the largest area projection plane in X, Y or Z.
-		//
 		size_t i0, i1;
 		{
 			float n0 = Math::abs(normal[0]);
@@ -78,9 +74,7 @@ namespace CamelotFramework
 			}
 		}
 
-		//
 		// Check the intersection point is inside the triangle.
-		//
 		{
 			float u1 = b[i0] - a[i0];
 			float v1 = b[i1] - a[i1];
@@ -93,7 +87,7 @@ namespace CamelotFramework
 			float beta  = u1 * v0 - u0 * v1;
 			float area  = u1 * v2 - u2 * v1;
 
-			// epsilon to avoid float precision error
+			// Epsilon to avoid float precision errors.
 			const float EPSILON = 1e-6f;
 
 			float tolerance = - EPSILON * area;

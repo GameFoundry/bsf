@@ -1,132 +1,78 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+#pragma once
 
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __Ray_H_
-#define __Ray_H_
-
-// Precompiler options
 #include "CmPrerequisitesUtil.h"
-
 #include "CmVector3.h"
 
-namespace CamelotFramework {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-	/** Representation of a ray in space, i.e. a line with an origin and direction. */
+namespace CamelotFramework 
+{
+    /**
+     * @brief	A ray in 3D space represented with an origin and direction.
+     */
     class CM_UTILITY_EXPORT Ray
     {
-    protected:
-        Vector3 mOrigin;
-        Vector3 mDirection;
     public:
-        Ray():mOrigin(Vector3::ZERO), mDirection(Vector3::UNIT_Z) {}
+        Ray()
+			:mOrigin(Vector3::ZERO), mDirection(Vector3::UNIT_Z) 
+		{ }
+
         Ray(const Vector3& origin, const Vector3& direction)
-            :mOrigin(origin), mDirection(direction) {}
+            :mOrigin(origin), mDirection(direction) 
+		{ }
 
-        /** Sets the origin of the ray. */
-        void setOrigin(const Vector3& origin) {mOrigin = origin;} 
-        /** Gets the origin of the ray. */
-        const Vector3& getOrigin(void) const {return mOrigin;} 
+        void setOrigin(const Vector3& origin) { mOrigin = origin; } 
+        const Vector3& getOrigin(void) const { return mOrigin; } 
 
-        /** Sets the direction of the ray. */
-        void setDirection(const Vector3& dir) {mDirection = dir;} 
-        /** Gets the direction of the ray. */
+        void setDirection(const Vector3& dir) { mDirection = dir; } 
         const Vector3& getDirection(void) const {return mDirection;} 
 
-		/** Gets the position of a point t units along the ray. */
-		Vector3 getPoint(float t) const { 
+		/**
+		 * @brief	Gets the position of a point t units along the ray.
+		 */
+		Vector3 getPoint(float t) const 
+		{ 
 			return Vector3(mOrigin + (mDirection * t));
 		}
 		
-		/** Gets the position of a point t units along the ray. */
-		Vector3 operator*(float t) const { 
+		/**
+		 * @brief	Gets the position of a point t units along the ray.
+		 */
+		Vector3 operator*(float t) const 
+		{ 
 			return getPoint(t);
 		}
 
-		/** Tests whether this ray intersects the given plane. 
-		@returns A pair structure where the first element indicates whether
-			an intersection occurs, and if true, the second element will
-			indicate the distance along the ray at which it intersects. 
-			This can be converted to a point in space by calling getPoint().
-		*/
+		/**
+		 * @brief	Ray/plane intersection, returns boolean result and distance to intersection point.
+		 */
 		std::pair<bool, float> intersects(const Plane& p) const;
 
-		/** Tests whether this ray intersects the given sphere. 
-		@returns A pair structure where the first element indicates whether
-			an intersection occurs, and if true, the second element will
-			indicate the distance along the ray at which it intersects. 
-			This can be converted to a point in space by calling getPoint().
-		*/
+		/**
+		 * @brief	Ray/sphere intersection, returns boolean result and distance to nearest intersection point.
+		 */
 		std::pair<bool, float> intersects(const Sphere& s) const;
 
-		/** Tests whether this ray intersects the given box. 
-		@returns A pair structure where the first element indicates whether
-			an intersection occurs, and if true, the second element will
-			indicate the distance along the ray at which it intersects. 
-			This can be converted to a point in space by calling getPoint().
-		*/
+		/**
+		 * @brief	Ray/axis aligned box intersection, returns boolean result and distance to nearest intersection point.
+		 */
 		std::pair<bool, float> intersects(const AABox& box) const;
 
-        /** Ray / triangle intersection, returns boolean result and distance.
-        @param
-            ray The ray.
-        @param
-            a The triangle's first vertex.
-        @param
-            b The triangle's second vertex.
-        @param
-            c The triangle's third vertex.
-		@param 
-			normal The triangle plane's normal (passed in rather than calculated
-				on demand since the caller may already have it), doesn't need
-                normalised since we don't care.
-        @param
-            positiveSide Intersect with "positive side" of the triangle
-        @param
-            negativeSide Intersect with "negative side" of the triangle
-        @returns
-            If the ray is intersects the triangle, a pair of <b>true</b> and the
-            distance between intersection point and ray origin returned.
-        @par
-            If the ray isn't intersects the triangle, a pair of <b>false</b> and
-            <b>0</b> returned.
-        */
-        std::pair<bool, float> intersects(const Vector3& a,
-            const Vector3& b, const Vector3& c, const Vector3& normal,
-            bool positiveSide = true, bool negativeSide = true) const;
+        /**
+         * @brief	Ray/triangle intersection, returns boolean result and distance to intersection point.
+         *
+         * @param	a				Triangle first vertex.
+         * @param	b				Triangle second vertex.
+         * @param	c				Triangle third vertex.
+         * @param	normal			The normal of the triangle. Doesn't need to be normalized.
+         * @param	positiveSide	(optional) Should intersections with the positive side (normal facing) count.
+         * @param	negativeSide	(optional) Should intersections with the negative side (opposite of normal facing) count.
+         *
+         * @return	Boolean result if intersection happened and distance to intersection point.
+         */
+        std::pair<bool, float> intersects(const Vector3& a, const Vector3& b, const Vector3& c, 
+			const Vector3& normal, bool positiveSide = true, bool negativeSide = true) const;
 
+	protected:
+		Vector3 mOrigin;
+		Vector3 mDirection;
     };
-	/** @} */
-	/** @} */
-
 }
-#endif

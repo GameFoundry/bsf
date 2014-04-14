@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
@@ -32,6 +5,9 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
+    /**
+     * @brief	A sphere represented by a center point and a radius.
+     */
     class CM_UTILITY_EXPORT Sphere
     {
     public:
@@ -66,6 +42,14 @@ namespace CamelotFramework
         void setCenter(const Vector3& center) { mCenter = center; }
 
 		/**
+		 * @brief	Returns whether or not this sphere contains the provided point.
+		 */
+		bool contains(const Vector3& v) const
+		{
+            return ((v - mCenter).squaredLength() <= Math::sqr(mRadius));
+		}
+
+		/**
 		 * @brief	Returns whether or not this sphere intersects another sphere.
 		 */
 		bool intersects(const Sphere& s) const
@@ -85,15 +69,10 @@ namespace CamelotFramework
 		bool intersects(const Plane& plane) const;
 
 		/**
-		 * @brief	Returns whether or not this sphere intersects a point.
-		 */
-		bool intersects(const Vector3& v) const
-		{
-            return ((v - mCenter).squaredLength() <= Math::sqr(mRadius));
-		}
-
-		/**
-		 * @brief	Ray / sphere intersection, returns boolean result and distance.
+		 * @brief	Ray/sphere intersection, returns boolean result and distance to nearest intersection.
+		 * 			
+		 * @param	discardInside	(optional) If true the intersection will be discarded if ray origin
+		 * 							is located within the sphere.
 		 */
 		std::pair<bool, float> intersects(const Ray& ray, bool discardInside = true) const;
 
