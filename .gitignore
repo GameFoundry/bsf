@@ -1,0 +1,9 @@
+# Ignored files
+*.suo 
+*.user 
+*.sdf
+bin 
+obj
+lib
+Intermediate
+Dependencies
