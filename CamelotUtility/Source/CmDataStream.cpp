@@ -1,45 +1,15 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmDataStream.h"
 #include "CmDebug.h"
 #include "CmException.h"
 
 namespace CamelotFramework 
 {
-
-    //-----------------------------------------------------------------------
-    //-----------------------------------------------------------------------
     template <typename T> DataStream& DataStream::operator >>(T& val)
     {
         read(static_cast<void*>(&val), sizeof(T));
         return *this;
     }
-    //-----------------------------------------------------------------------
+
     String DataStream::getLine(bool trimAfter)
     {
         char tmpBuf[OGRE_STREAM_TEMP_SIZE];
@@ -81,7 +51,7 @@ namespace CamelotFramework
 
         return retString;
     }
-    //-----------------------------------------------------------------------
+
     size_t DataStream::readLine(char* buf, size_t maxCount, const String& delim)
     {
 		// Deal with both Unix & Windows LFs
@@ -137,7 +107,7 @@ namespace CamelotFramework
 
         return totalCount;
     }
-    //-----------------------------------------------------------------------
+
     size_t DataStream::skipLine(const String& delim)
     {
         char tmpBuf[OGRE_STREAM_TEMP_SIZE];
@@ -168,7 +138,7 @@ namespace CamelotFramework
 
         return total;
     }
-    //-----------------------------------------------------------------------
+
     String DataStream::getAsString(void)
     {
         // Read the entire buffer - ideally in one read, but if the size of
@@ -186,8 +156,7 @@ namespace CamelotFramework
         free(pBuf);
         return result;
     }
-    //-----------------------------------------------------------------------
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(void* pMem, size_t inSize, bool freeOnClose, bool readOnly)
 		: DataStream(static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
     {
@@ -197,7 +166,7 @@ namespace CamelotFramework
         mFreeOnClose = freeOnClose;
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(const String& name, void* pMem, size_t inSize, 
         bool freeOnClose, bool readOnly)
         : DataStream(name, static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
@@ -208,7 +177,7 @@ namespace CamelotFramework
         mFreeOnClose = freeOnClose;
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(DataStream& sourceStream, 
         bool freeOnClose, bool readOnly)
         : DataStream(static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
@@ -234,7 +203,7 @@ namespace CamelotFramework
         }
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(DataStreamPtr& sourceStream, 
         bool freeOnClose, bool readOnly)
         : DataStream(static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
@@ -260,7 +229,7 @@ namespace CamelotFramework
         }
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(const String& name, DataStream& sourceStream, 
         bool freeOnClose, bool readOnly)
         : DataStream(name, static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
@@ -286,7 +255,7 @@ namespace CamelotFramework
         }
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(const String& name, const DataStreamPtr& sourceStream, 
         bool freeOnClose, bool readOnly)
         : DataStream(name, static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
@@ -312,7 +281,7 @@ namespace CamelotFramework
         }
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(size_t inSize, bool freeOnClose, bool readOnly)
         : DataStream(static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
     {
@@ -323,7 +292,7 @@ namespace CamelotFramework
         mEnd = mData + mSize;
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::MemoryDataStream(const String& name, size_t inSize, 
         bool freeOnClose, bool readOnly)
         : DataStream(name, static_cast<UINT16>(readOnly ? READ : (READ | WRITE)))
@@ -335,12 +304,12 @@ namespace CamelotFramework
         mEnd = mData + mSize;
         assert(mEnd >= mPos);
     }
-    //-----------------------------------------------------------------------
+
     MemoryDataStream::~MemoryDataStream()
     {
         close();
     }
-    //-----------------------------------------------------------------------
+
     size_t MemoryDataStream::read(void* buf, size_t count)
     {
         size_t cnt = count;
@@ -356,7 +325,7 @@ namespace CamelotFramework
         mPos += cnt;
         return cnt;
     }
-	//---------------------------------------------------------------------
+
 	size_t MemoryDataStream::write(const void* buf, size_t count)
 	{
 		size_t written = 0;
@@ -375,7 +344,7 @@ namespace CamelotFramework
 		}
 		return written;
 	}
-    //-----------------------------------------------------------------------
+
     size_t MemoryDataStream::readLine(char* buf, size_t maxCount, 
         const String& delim)
     {
@@ -413,7 +382,7 @@ namespace CamelotFramework
 
         return pos;
     }
-    //-----------------------------------------------------------------------
+
     size_t MemoryDataStream::skipLine(const String& delim)
     {
         size_t pos = 0;
@@ -432,7 +401,7 @@ namespace CamelotFramework
         return pos;
 
     }
-    //-----------------------------------------------------------------------
+
     void MemoryDataStream::skip(long count)
     {
         size_t newpos = (size_t)( ( mPos - mData ) + count );
@@ -440,24 +409,24 @@ namespace CamelotFramework
 
         mPos = mData + newpos;
     }
-    //-----------------------------------------------------------------------
+
     void MemoryDataStream::seek( size_t pos )
     {
         assert( mData + pos <= mEnd );
         mPos = mData + pos;
     }
-    //-----------------------------------------------------------------------
+
     size_t MemoryDataStream::tell(void) const
 	{
 		//mData is start, mPos is current location
 		return mPos - mData;
 	}
-	//-----------------------------------------------------------------------
+
     bool MemoryDataStream::eof(void) const
     {
         return mPos >= mEnd;
     }
-    //-----------------------------------------------------------------------
+
     void MemoryDataStream::close(void)    
     {
         if (mFreeOnClose && mData)
@@ -467,8 +436,7 @@ namespace CamelotFramework
         }
 
     }
-    //-----------------------------------------------------------------------
-    //-----------------------------------------------------------------------
+
     FileDataStream::FileDataStream(std::shared_ptr<std::ifstream> s, bool freeOnClose)
         : DataStream(), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
     {
@@ -478,7 +446,7 @@ namespace CamelotFramework
         mpInStream->seekg(0, std::ios_base::beg);
 		determineAccess();
     }
-    //-----------------------------------------------------------------------
+
     FileDataStream::FileDataStream(const String& name, 
         std::shared_ptr<std::ifstream> s, bool freeOnClose)
         : DataStream(name), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
@@ -489,7 +457,7 @@ namespace CamelotFramework
         mpInStream->seekg(0, std::ios_base::beg);
 		determineAccess();
     }
-    //-----------------------------------------------------------------------
+
     FileDataStream::FileDataStream(const String& name, 
         std::shared_ptr<std::ifstream> s, size_t inSize, bool freeOnClose)
         : DataStream(name), mpInStream(s), mpFStreamRO(s), mpFStream(0), mFreeOnClose(freeOnClose)
@@ -498,7 +466,7 @@ namespace CamelotFramework
         mSize = inSize;
 		determineAccess();
     }
-	//---------------------------------------------------------------------
+
 	FileDataStream::FileDataStream(std::shared_ptr<std::fstream> s, bool freeOnClose)
 		: DataStream(false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
 	{
@@ -510,7 +478,7 @@ namespace CamelotFramework
 		determineAccess();
 
 	}
-	//-----------------------------------------------------------------------
+
 	FileDataStream::FileDataStream(const String& name, 
 		std::shared_ptr<std::fstream> s, bool freeOnClose)
 		: DataStream(name, false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
@@ -522,7 +490,7 @@ namespace CamelotFramework
 		mpInStream->seekg(0, std::ios_base::beg);
 		determineAccess();
 	}
-	//-----------------------------------------------------------------------
+
 	FileDataStream::FileDataStream(const String& name, 
 		std::shared_ptr<std::fstream> s, size_t inSize, bool freeOnClose)
 		: DataStream(name, false), mpInStream(s), mpFStreamRO(0), mpFStream(s), mFreeOnClose(freeOnClose)
@@ -532,7 +500,7 @@ namespace CamelotFramework
 		mSize = inSize;
 		determineAccess();
 	}
-	//---------------------------------------------------------------------
+
 	void FileDataStream::determineAccess()
 	{
 		mAccess = 0;
@@ -541,18 +509,18 @@ namespace CamelotFramework
 		if (mpFStream)
 			mAccess |= WRITE;
 	}
-    //-----------------------------------------------------------------------
+
     FileDataStream::~FileDataStream()
     {
         close();
     }
-    //-----------------------------------------------------------------------
+
     size_t FileDataStream::read(void* buf, size_t count)
     {
 		mpInStream->read(static_cast<char*>(buf), static_cast<std::streamsize>(count));
         return (size_t)mpInStream->gcount();
     }
-	//-----------------------------------------------------------------------
+
 	size_t FileDataStream::write(const void* buf, size_t count)
 	{
 		size_t written = 0;
@@ -563,7 +531,7 @@ namespace CamelotFramework
 		}
 		return written;
 	}
-    //-----------------------------------------------------------------------
+
     size_t FileDataStream::readLine(char* buf, size_t maxCount, 
         const String& delim)
     {
@@ -626,7 +594,7 @@ namespace CamelotFramework
 		}
 		return ret;
 	}
-    //-----------------------------------------------------------------------
+
     void FileDataStream::skip(long count)
     {
 #if defined(STLPORT)
@@ -645,24 +613,24 @@ namespace CamelotFramework
 		mpInStream->clear(); //Clear fail status in case eof was set
 		mpInStream->seekg(static_cast<std::ifstream::pos_type>(count), std::ios::cur);
     }
-    //-----------------------------------------------------------------------
+
     void FileDataStream::seek( size_t pos )
     {
 		mpInStream->clear(); //Clear fail status in case eof was set
 		mpInStream->seekg(static_cast<std::streamoff>(pos), std::ios::beg);
 	}
-	//-----------------------------------------------------------------------
+
     size_t FileDataStream::tell(void) const
 	{
 		mpInStream->clear(); //Clear fail status in case eof was set
 		return (size_t)mpInStream->tellg();
 	}
-	//-----------------------------------------------------------------------
+
     bool FileDataStream::eof(void) const
     {
         return mpInStream->eof();
     }
-    //-----------------------------------------------------------------------
+
     void FileDataStream::close(void)
     {
         if (mpInStream)

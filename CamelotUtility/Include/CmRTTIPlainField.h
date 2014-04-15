@@ -6,6 +6,12 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	Base class containing common functionality for a plain class field. 
+	 * 			
+	 * @note	Plain fields are considered those that may be serialized directly by copying their memory.
+	 * 			(All built-in types, strings, etc.)
+	 */
 	struct RTTIPlainFieldBase : public RTTIField
 	{
 		/**
@@ -24,22 +30,36 @@ namespace CamelotFramework
 					"SerializableSimpleTypeFieldBase::checkType()");
 			}*/
 		}
-
+		
+		/**
+		 * @copydoc RTTIField::getTypeId
+		 */
 		virtual UINT32 getTypeId()
 		{
 			return 0;
 		}
 
+		/**
+		 * @copydoc RTTIField::hasDynamicSize
+		 */
 		virtual bool hasDynamicSize()
 		{
 			return false;
 		}
 
+		/**
+		 * @brief	Gets the dynamic size of the object. If object has no dynamic size,
+		 * 			static size of the object is returned.
+		 */
 		virtual UINT32 getDynamicSize(void* object)
 		{
 			return 0;
 		}
 
+		/**
+		 * @brief	Gets the dynamic size of an array element. If the element has no dynamic size,
+		 * 			static size of the element is returned.
+		 */
 		virtual UINT32 getArrayElemDynamicSize(void* object, int index)
 		{
 			return 0;
@@ -48,8 +68,6 @@ namespace CamelotFramework
 		/**
 		 * @brief	Retrieves the value from the provided field of the provided object, and copies
 		 * 			it into the buffer. WARNING - It does not check if buffer is large enough.
-		 * 			
-		 * @note	Size of the data copied to buffer is mType.size
 		 */
 		virtual void toBuffer(void* object, void* buffer) = 0;
 
@@ -57,8 +75,6 @@ namespace CamelotFramework
 		 * @brief	Retrieves the value at the specified array index on the provided field of the
 		 * 			provided object, and copies it into the buffer. WARNING - It does not check if buffer
 		 * 			is large enough.
-		 * 			
-		 * @note	Size of the data copied to buffer is mType.size
 		 */
 		virtual void arrayElemToBuffer(void* object, int index, void* buffer) = 0;
 
@@ -66,8 +82,6 @@ namespace CamelotFramework
 		 * @brief	Sets the value on the provided field of the provided object. Value is copied from the buffer. 
 		 * 			WARNING - It does not check the value in the buffer in any way. You must make sure buffer points
 		 * 			to the proper location and contains the proper type.
-		 * 			
-		 * @note	Size of the data copied from buffer is mType.size
 		 */
 		virtual void fromBuffer(void* object, void* buffer) = 0;
 
@@ -76,27 +90,27 @@ namespace CamelotFramework
 		 * 			object. Value is copied from the buffer. WARNING - It does not check the value in the
 		 * 			buffer in any way. You must make sure buffer points to the proper location and
 		 * 			contains the proper type.
-		 * 			
-		 * 	@note	Size of the data copied from buffer is mType.size.
 		 */
 		virtual void arrayElemFromBuffer(void* object, int index, void* buffer) = 0;
 	};
 
+	/**
+	 * @brief	Represents a plain class field containing a specific type.
+	 */
 	template <class DataType, class ObjectType>
 	struct RTTIPlainField : public RTTIPlainFieldBase
 	{
 		/**
-		 * @brief	Initializes a field with one of the built-in types. You may provide your own type ID,
-		 * 			just make sure it doesn't conflict with any standard types.
+		 * @brief	Initializes a plain field containing a single value.
 		 *
 		 * @param	name		Name of the field.
 		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
 		 * 						identifier we want a small data type that can be used for efficiently
 		 * 						serializing data to disk and similar. It is primarily used for compatibility
 		 * 						between different versions of serialized data.
-		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: DataType(ObjectType*).
-		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, DataType)
-		 * @param	flags		Various flags you can use to specialize how systems handle this field
+		 * @param	getter  	The getter method for the field. Must be a specific signature: DataType(ObjectType*).
+		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, DataType)
+		 * @param	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
 		 */
 		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
@@ -110,19 +124,18 @@ namespace CamelotFramework
 		}
 
 		/**
-		 * @brief	Initializes a VECTOR field with one of the built-in types. You may provide your own
-		 * 			type ID, just make sure it doesn't conflict with any standard types.
+		 * @brief	Initializes a plain field containing multiple values in an array. 
 		 *
 		 * @param	name		Name of the field.
 		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
 		 * 						identifier we want a small data type that can be used for efficiently
 		 * 						serializing data to disk and similar. It is primarily used for compatibility
 		 * 						between different versions of serialized data.
-		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: DataType(ObjectType*, UINT32)
-		 * @param	getSize 	Getter method that returns the size of an array. Cannot be null. Must be a specific signature: UINT32(ObjectType*)
-		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, UINT32, DataType)
+		 * @param	getter  	The getter method for the field. Must be a specific signature: DataType(ObjectType*, UINT32)
+		 * @param	getSize 	Getter method that returns the size of an array. Must be a specific signature: UINT32(ObjectType*)
+		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, UINT32, DataType)
 		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
-		 * @param	flags		Various flags you can use to specialize how systems handle this field
+		 * @param	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
 		 */
 		void initArray(const String& name, UINT16 uniqueId, boost::any getter, 
 			boost::any getSize, boost::any setter, boost::any setSize, UINT64 flags)
@@ -136,21 +149,33 @@ namespace CamelotFramework
 			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Plain, flags);
 		}
 
+		/**
+		 * @copydoc RTTIField::getTypeSize
+		 */
 		virtual UINT32 getTypeSize()
 		{
 			return sizeof(DataType);
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::getTypeId
+		 */
 		virtual UINT32 getTypeId()
 		{
 			return RTTIPlainType<DataType>::id;
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::hasDynamicSize
+		 */
 		virtual bool hasDynamicSize()
 		{
 			return RTTIPlainType<DataType>::hasDynamicSize != 0;
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::getDynamicSize
+		 */
 		virtual UINT32 getDynamicSize(void* object)
 		{
 			checkIsArray(false);
@@ -164,6 +189,9 @@ namespace CamelotFramework
 			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::getArrayElemDynamicSize
+		 */
 		virtual UINT32 getArrayElemDynamicSize(void* object, int index)
 		{
 			checkIsArray(true);
@@ -177,6 +205,9 @@ namespace CamelotFramework
 			return RTTIPlainType<DataType>::getDynamicSize(value);
 		}
 
+		/**
+		 * @copydoc RTTIPlainField::getArraySize
+		 */
 		virtual UINT32 getArraySize(void* object)
 		{
 			checkIsArray(true);
@@ -186,6 +217,9 @@ namespace CamelotFramework
 			return f(castObject);
 		}
 
+		/**
+		 * @copydoc RTTIPlainField::setArraySize
+		 */
 		virtual void setArraySize(void* object, UINT32 size)
 		{
 			checkIsArray(true);
@@ -201,6 +235,9 @@ namespace CamelotFramework
 			f(castObject, size);
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::toBuffer
+		 */
 		virtual void toBuffer(void* object, void* buffer)
 		{
 			checkIsArray(false);
@@ -214,6 +251,9 @@ namespace CamelotFramework
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::arrayElemToBuffer
+		 */
 		virtual void arrayElemToBuffer(void* object, int index, void* buffer)
 		{
 			checkIsArray(true);
@@ -227,6 +267,9 @@ namespace CamelotFramework
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::fromBuffer
+		 */
 		virtual void fromBuffer(void* object, void* buffer)
 		{
 			checkIsArray(false);
@@ -247,6 +290,9 @@ namespace CamelotFramework
 			f(castObject, value);
 		}
 
+		/**
+		 * @copydoc RTTIPlainFieldBase::arrayElemFromBuffer
+		 */
 		virtual void arrayElemFromBuffer(void* object, int index, void* buffer)
 		{
 			checkIsArray(true);
