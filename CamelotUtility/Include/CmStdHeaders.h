@@ -4,20 +4,6 @@
     #define __STD_ALGORITHM
 #endif
 
-#if defined ( CM_GCC_VISIBILITY ) && (CM_PLATFORM != CM_PLATFORM_APPLE)
-/* Until libstdc++ for gcc 4.2 is released, we have to declare all
- * symbols in libstdc++.so externally visible, otherwise we end up
- * with them marked as hidden by -fvisible=hidden.
- *
- * See http://gcc.gnu.org/bugzilla/show_bug.cgi?id=20218
- *
- * Due to a more strict linker included with Xcode 4, this is disabled on Mac OS X and iOS.
- * The reason? It changes the visibility of Boost functions.  The mismatch between visibility Boost when used in the engine (default)
- * and Boost when compiled (hidden) results in mysterious link errors such as "Bad codegen, pointer diff".
- */
-#   pragma GCC visibility push(default)
-#endif
-
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
@@ -112,10 +98,6 @@ extern "C" {
 #   include <sys/param.h>
 #   include <CoreFoundation/CoreFoundation.h>
 }
-#endif
-
-#if defined ( CM_GCC_VISIBILITY ) && (CM_PLATFORM != CM_PLATFORM_APPLE)
-#   pragma GCC visibility pop
 #endif
 
 namespace CamelotFramework

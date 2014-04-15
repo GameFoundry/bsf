@@ -2,6 +2,8 @@
 
 #include "CmPlatformDefines.h"
 
+// Contains commonly used types
+
 namespace CamelotFramework
 {
 	typedef char INT8;
@@ -19,11 +21,4 @@ namespace CamelotFramework
 	typedef unsigned long long UINT64;
 	typedef long long INT64;
 #endif
-
-	enum TypeID_Utility
-	{
-		TID_Abstract = 50, // Special type ID used for Abstract classes. Only type ID that may be used by more than one class.
-		TID_WString = 51,
-		TID_WPath = 52
-	};
 }

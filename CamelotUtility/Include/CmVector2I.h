@@ -4,6 +4,10 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	A two dimensional vector with integer
+	 *			coordinates.
+	 */
 	struct CM_UTILITY_EXPORT Vector2I
 	{
 		INT32 x;
@@ -21,12 +25,18 @@ namespace CamelotFramework
             :x(val), y(val)
         { }
 
+		/**
+		 * @brief	Exchange the contents of this vector with another.
+		 */
 		void swap(Vector2I& other)
 		{
 			std::swap(x, other.x);
 			std::swap(y, other.y);
 		}
 
+		/**
+		 * @brief	Returns the manhattan distance between this and another vector.
+		 */
 		UINT32 manhattanDist(const Vector2I& other)
 		{
 			return (UINT32)fabs(float(other.x - x)) + (UINT32)fabs(float(other.y - y));

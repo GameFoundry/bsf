@@ -1,5 +1,7 @@
 #pragma once
 
+// Contains forward declares used as a convenience
+
 namespace CamelotFramework 
 {
 	/**
@@ -60,4 +62,11 @@ namespace CamelotFramework
 	typedef std::shared_ptr<MeshData> MeshDataPtr;
 	typedef std::shared_ptr<PixelData> PixelDataPtr;
 	typedef std::shared_ptr<GpuResourceData> GpuResourceDataPtr;
+
+	enum TypeID_Utility
+	{
+		TID_Abstract = 50, // Special type ID used for Abstract classes. Only type ID that may be used by more than one class.
+		TID_WString = 51,
+		TID_WPath = 52
+	};
 }

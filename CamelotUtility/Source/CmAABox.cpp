@@ -191,14 +191,14 @@ namespace CamelotFramework
 		float s, d = 0;
 		for (int i = 0; i < 3; ++i)
 		{
-			if (center.ptr()[i] < min.ptr()[i])
+			if (center[i] < min[i])
 			{
-				s = center.ptr()[i] - min.ptr()[i];
+				s = center[i] - min[i];
 				d += s * s; 
 			}
-			else if(center.ptr()[i] > max.ptr()[i])
+			else if(center[i] > max[i])
 			{
-				s = center.ptr()[i] - max.ptr()[i];
+				s = center[i] - max[i];
 				d += s * s; 
 			}
 		}

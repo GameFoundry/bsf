@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
@@ -32,6 +5,9 @@ THE SOFTWARE.
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	A two dimensional vector.
+	 */
     class CM_UTILITY_EXPORT Vector2
     {
     public:
@@ -54,14 +30,14 @@ namespace CamelotFramework
 			std::swap(y, other.y);
 		}
 
-		float operator[] (size_t i) const
+		float operator[] (UINT32 i) const
         {
             assert(i < 2);
 
             return *(&x+i);
         }
 
-		float& operator[] (size_t i)
+		float& operator[] (UINT32 i)
         {
             assert(i < 2);
 
@@ -370,6 +346,9 @@ namespace CamelotFramework
 			v.normalize();
 		}
 
+		/**
+		 * @brief	Normalizes the provided vector and returns a new normalized instance.
+		 */
 		static Vector2 normalize(const Vector2& val)
 		{
 			float len = Math::sqrt(val.x * val.x + val.y * val.y);
@@ -386,16 +365,27 @@ namespace CamelotFramework
 			return normalizedVec;
 		}
 
+		/**
+		 * @brief	Checks are any of the vector components NaN.
+		 */
 		bool isNaN() const
 		{
 			return Math::isNaN(x) || Math::isNaN(y);
 		}
 
+		/**
+		 * @brief	Returns the minimum of all the vector components as a 
+		 *			new vector.
+		 */
 		static Vector2 min(const Vector2& a, const Vector2& b)
 		{
 			return Vector2(std::min(a.x, b.x), std::min(a.y, b.y));
 		}
 
+		/**
+		 * @brief	Returns the maximum of all the vector components as a 
+		 *			new vector.
+		 */
 		static Vector2 max(const Vector2& a, const Vector2& b)
 		{
 			return Vector2(std::max(a.x, b.x), std::max(a.y, b.y));
