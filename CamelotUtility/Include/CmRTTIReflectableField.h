@@ -6,33 +6,73 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	Base class containing common functionality for a reflectable class field. 
+	 * 			
+	 * @note	Reflectable fields are fields containing complex types deriving from IReflectable. They
+	 * 			are serialized recursively and you may add/remove fields from them without breaking
+	 * 			the serialized data.
+	 */
 	struct RTTIReflectableFieldBase : public RTTIField
 	{
+		/**
+		 * @brief	Retrieves the IReflectable value from the provided instance.
+		 * 			
+		 * @note	Field type must not be an array.
+		 */
 		virtual IReflectable& getValue(void* object) = 0;
+
+		/**
+		 * @brief	Retrieves the IReflectable value from an array on the provided instance
+		 * 			and index.
+		 * 			
+		 * @note	Field type must be an array.
+		 */
 		virtual IReflectable& getArrayValue(void* object, UINT32 index) = 0;
 
+		/**
+		 * @brief	Sets the IReflectable value in the provided instance.
+		 * 			
+		 * @note	Field type must not be an array.
+		 */
 		virtual void setValue(void* object, IReflectable& value) = 0;
+
+		/**
+		 * @brief	Sets the IReflectable value in an array on the provided instance
+		 * 			and index.
+		 * 			
+		 * @note	Field type must be an array.
+		 */
 		virtual void setArrayValue(void* object, UINT32 index, IReflectable& value) = 0;
 
+		/**
+		 * @brief	Creates a new object of the field type.
+		 */
 		virtual std::shared_ptr<IReflectable> newObject() = 0;
 
+		/**
+		 * @copydoc RTTIField::hasDynamicSize
+		 */
 		virtual bool hasDynamicSize() { return true; }
 	};
 
+	/**
+	 * @brief	Class containing a reflectable field containing a specific type.
+	 */
 	template <class DataType, class ObjectType>
 	struct RTTIReflectableField : public RTTIReflectableFieldBase
 	{
 		/**
-		 * @brief	Initializes a field with a data type implementing IReflectable interface. 
+		 * @brief	Initializes a field containing a single data type implementing IReflectable interface. 
 		 *
 		 * @param	name		Name of the field.
 		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
 		 * 						identifier we want a small data type that can be used for efficiently
 		 * 						serializing data to disk and similar. It is primarily used for compatibility
 		 * 						between different versions of serialized data.
-		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: DataType&(ObjectType*)
-		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, DataType)
-		 * @param	flags		Various flags you can use to specialize how systems handle this field
+		 * @param	getter  	The getter method for the field. Must be a specific signature: DataType&(ObjectType*)
+		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, DataType)
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See "RTTIFieldFlag".
 		 */
 		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
@@ -40,18 +80,18 @@ namespace CamelotFramework
 		}
 
 		/**
-		 * @brief	Initializes a VECTOR field with data type implementing by IReflectable interface.
+		 * @brief	Initializes a field containing an array of data types implementing IReflectable interface.
 		 *
 		 * @param	name		Name of the field.
 		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
 		 * 						identifier we want a small data type that can be used for efficiently
 		 * 						serializing data to disk and similar. It is primarily used for compatibility
 		 * 						between different versions of serialized data.
-		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: DataType&(ObjectType*, UINT32)
-		 * @param	getSize 	Getter method that returns the size of an array. Cannot be null. Must be a specific signature: UINT32(ObjectType*)
-		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, UINT32, DataType)
-		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
-		 * @param	flags		Various flags you can use to specialize how systems handle this field
+		 * @param	getter  	The getter method for the field. Must be a specific signature: DataType&(ObjectType*, UINT32)
+		 * @param	getSize 	Getter method that returns the size of an array. Must be a specific signature: UINT32(ObjectType*)
+		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, UINT32, DataType)
+		 * @param	setSize 	Setter method that allows you to resize an array. Must be a specific signature: void(ObjectType*, UINT32)
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See "RTTIFieldFlag".
 		 */
 		void initArray(const String& name, UINT16 uniqueId, boost::any getter, 
 			boost::any getSize, boost::any setter, boost::any setSize, UINT64 flags)
@@ -59,11 +99,17 @@ namespace CamelotFramework
 			initAll(getter, setter, getSize, setSize, name, uniqueId, true, SerializableFT_Reflectable, flags);
 		}
 
+		/**
+		 * @copydoc RTTIField::getTypeSize
+		 */
 		virtual UINT32 getTypeSize()
 		{
 			return 0; // Complex types don't store size the conventional way
 		}
 
+		/**
+		 * @copydoc RTTIReflectableFieldBase::getValue
+		 */
 		virtual IReflectable& getValue(void* object)
 		{
 			checkIsArray(false);
@@ -75,6 +121,9 @@ namespace CamelotFramework
 			return castDataType;
 		}
 
+		/**
+		 * @copydoc RTTIReflectableFieldBase::getArrayValue
+		 */
 		virtual IReflectable& getArrayValue(void* object, UINT32 index)
 		{
 			checkIsArray(true);
@@ -86,6 +135,9 @@ namespace CamelotFramework
 			return castDataType;
 		}
 
+		/**
+		 * @copydoc RTTIReflectableFieldBase::setValue
+		 */
 		virtual void setValue(void* object, IReflectable& value)
 		{
 			checkIsArray(false);
@@ -102,6 +154,9 @@ namespace CamelotFramework
 			f(castObjType, castDataObj);
 		}
 
+		/**
+		 * @copydoc RTTIReflectableFieldBase::setArrayValue
+		 */
 		virtual void setArrayValue(void* object, UINT32 index, IReflectable& value)
 		{
 			checkIsArray(true);
@@ -118,6 +173,9 @@ namespace CamelotFramework
 			f(castObjType, index, castDataObj);
 		}
 
+		/**
+		 * @copydoc RTTIField::getArraySize
+		 */
 		virtual UINT32 getArraySize(void* object)
 		{
 			checkIsArray(true);
@@ -127,6 +185,9 @@ namespace CamelotFramework
 			return f(castObject);
 		}
 
+		/**
+		 * @copydoc RTTIField::setArraySize
+		 */
 		virtual void setArraySize(void* object, UINT32 size)
 		{
 			checkIsArray(true);
@@ -142,6 +203,9 @@ namespace CamelotFramework
 			f(castObject, size);
 		}
 
+		/**
+		 * @copydoc RTTIReflectableFieldBase::newObject
+		 */
 		virtual std::shared_ptr<IReflectable> newObject()
 		{
 			return DataType::getRTTIStatic()->newRTTIObject();

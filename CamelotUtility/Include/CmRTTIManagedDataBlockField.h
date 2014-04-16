@@ -6,16 +6,37 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	Base class containing common functionality for a managed data block class field. 
+	 * 			
+	 * @note	Managed data blocks are just blocks of memory that may, or may not be released
+	 * 			automatically when they are no longer referenced. They are useful when wanting to
+	 * 			return some temporary data only for serialization purposes.
+	 */
 	struct RTTIManagedDataBlockFieldBase : public RTTIField
 	{
 		boost::any mCustomAllocator;
 
+		/**
+		 * @brief	Retrieves a managed data block from the specified instance.
+		 */
 		virtual ManagedDataBlock getValue(void* object) = 0;
+
+		/**
+		 * @brief	Sets a managed data block on the specified instance.
+		 */
 		virtual void setValue(void* object, ManagedDataBlock value) = 0;
 
+		/**
+		 * @brief	Allocate memory for the managed data block. Used primarily
+		 * 			to allocate memory before sending it to "setValue" method.
+		 */
 		virtual UINT8* allocate(void* object, UINT32 bytes) = 0;
 	};
 
+	/**
+	 * @brief	Class containing a managed data block field containing a specific type.
+	 */
 	template <class DataType, class ObjectType>
 	struct RTTIManagedDataBlockField : public RTTIManagedDataBlockFieldBase
 	{
@@ -27,9 +48,9 @@ namespace CamelotFramework
 		 * 						identifier we want a small data type that can be used for efficiently
 		 * 						serializing data to disk and similar. It is primarily used for compatibility
 		 * 						between different versions of serialized data.
-		 * @param	getter  	The getter method for the field. Cannot be null. Must be a specific signature: SerializableDataBlock(ObjectType*)
-		 * @param	setter  	The setter method for the field. Can be null. Must be a specific signature: void(ObjectType*, SerializableDataBlock)	
-		 * @param	flags		Various flags you can use to specialize how systems handle this field
+		 * @param	getter  	The getter method for the field. Must be a specific signature: SerializableDataBlock(ObjectType*)
+		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, SerializableDataBlock)	
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See "RTTIFieldFlag".
 		 * @param	customAllocator (optional) Custom allocator that will be used when de-serializing DataBlock memory.
 		 */
 		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
@@ -38,28 +59,43 @@ namespace CamelotFramework
 			mCustomAllocator = customAllocator;
 		}
 
+		/**
+		 * @copydoc RTTIField::getTypeSize
+		 */
 		virtual UINT32 getTypeSize()
 		{
 			return 0; // Data block types don't store size the conventional way
 		}
 
+		/**
+		 * @copydoc RTTIField::hasDynamicSize
+		 */
 		virtual bool hasDynamicSize()
 		{
 			return true;
 		}
 
+		/**
+		 * @copydoc RTTIField::getArraySize
+		 */
 		virtual UINT32 getArraySize(void* object)
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Data block types don't support arrays.");
 		}
 
+		/**
+		 * @copydoc RTTIField::setArraySize
+		 */
 		virtual void setArraySize(void* object, UINT32 size)
 		{
 			CM_EXCEPT(InternalErrorException, 
 				"Data block types don't support arrays.");
 		}
 
+		/**
+		 * @copydoc RTTIManagedDataBlockFieldBase::getValue
+		 */
 		virtual ManagedDataBlock getValue(void* object)
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
@@ -67,6 +103,9 @@ namespace CamelotFramework
 			return f(castObj);
 		}
 
+		/**
+		 * @copydoc RTTIManagedDataBlockFieldBase::setValue
+		 */
 		virtual void setValue(void* object, ManagedDataBlock value)
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
@@ -74,6 +113,9 @@ namespace CamelotFramework
 			f(castObj, value);
 		}
 
+		/**
+		 * @copydoc RTTIManagedDataBlockFieldBase::allocate
+		 */
 		virtual UINT8* allocate(void* object, UINT32 bytes)
 		{
 			if(mCustomAllocator.empty())
