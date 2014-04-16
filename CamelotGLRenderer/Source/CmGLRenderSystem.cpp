@@ -180,7 +180,7 @@ namespace CamelotFramework
 
 		RenderSystem::initialize_internal(asyncOp);
 
-		asyncOp.completeOperation(primaryWindow);
+		asyncOp._completeOperation(primaryWindow);
 	}
 
 	void GLRenderSystem::destroy_internal()

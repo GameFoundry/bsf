@@ -75,13 +75,6 @@
     <Compile Include="GUI\GUIToggle.cs" />
     <Compile Include="GUI\GUIToggleGroup.cs" />
     <Compile Include="HideInInspector.cs" />
-    <Compile Include="Inspector\CustomInspector.cs" />
-    <Compile Include="Inspector\EditorField.cs" />
-    <Compile Include="Inspector\InspectableArray.cs" />
-    <Compile Include="Inspector\InspectableField.cs" />
-    <Compile Include="Inspector\InspectableObject.cs" />
-    <Compile Include="Inspector\InspectableObjectBase.cs" />
-    <Compile Include="Inspector\Inspector.cs" />
     <Compile Include="LocString.cs" />
     <Compile Include="Math\MathEx.cs" />
     <Compile Include="Math\Matrix3.cs" />

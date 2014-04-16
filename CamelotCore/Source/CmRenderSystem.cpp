@@ -298,7 +298,7 @@ namespace CamelotFramework {
 		gProfiler().beginSample("writeSubresourceB");
 
 		data->unlock();
-		asyncOp.completeOperation();
+		asyncOp._completeOperation();
 
 		gProfiler().endSample("writeSubresourceB");
 	}
@@ -311,7 +311,7 @@ namespace CamelotFramework {
 
 		resource->readSubresource(subresourceIdx, *data);
 		data->unlock();
-		asyncOp.completeOperation();
+		asyncOp._completeOperation();
 
 		gProfiler().endSample("readSubresource");
 	}

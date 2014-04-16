@@ -10,8 +10,8 @@
 #define CM_COMPILER_INTEL 3
 #define CM_COMPILER_CLANG 4
 
-#define CM_ARCHITECTURE_32 1
-#define CM_ARCHITECTURE_64 2
+#define CM_ARCHITECTURE_x86_32 1
+#define CM_ARCHITECTURE_x86_64 2
 
 #define CM_ENDIAN_LITTLE 1
 #define CM_ENDIAN_BIG 2
@@ -65,10 +65,10 @@
 #endif
 
 // Find the architecture type
-#if defined(__x86_64__) || defined(_M_X64) || defined(__powerpc64__) || defined(__alpha__) || defined(__ia64__) || defined(__s390__) || defined(__s390x__)
-#   define CM_ARCH_TYPE CM_ARCHITECTURE_64
+#if defined(__x86_64__) || defined(_M_X64)
+#   define CM_ARCH_TYPE CM_ARCHITECTURE_x86_64
 #else
-#   define CM_ARCH_TYPE CM_ARCHITECTURE_32
+#   define CM_ARCH_TYPE CM_ARCHITECTURE_x86_32
 #endif
 
 // Windows Settings

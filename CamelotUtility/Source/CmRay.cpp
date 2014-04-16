@@ -57,7 +57,7 @@ namespace CamelotFramework
 		}
 
 		// Calculate the largest area projection plane in X, Y or Z.
-		size_t i0, i1;
+		UINT32 i0, i1;
 		{
 			float n0 = Math::abs(normal[0]);
 			float n1 = Math::abs(normal[1]);

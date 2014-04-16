@@ -113,7 +113,7 @@ namespace CamelotFramework
 				{
 					LOGDBG("Async operation return value wasn't resolved properly. Resolving automatically to nullptr. " \
 						"Make sure to complete the operation before returning from the command callback method.");
-					command.asyncOp->completeOperation(nullptr);
+					command.asyncOp->_completeOperation(nullptr);
 				}
 			}
 			else

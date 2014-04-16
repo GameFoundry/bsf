@@ -2,13 +2,13 @@
 
 namespace CamelotFramework
 {
-	void AsyncOp::completeOperation(boost::any returnValue) 
+	void AsyncOp::_completeOperation(boost::any returnValue) 
 	{ 
 		mData->mReturnValue = returnValue; 
 		mData->mIsCompleted = true; 
 	}
 
-	void AsyncOp::completeOperation() 
+	void AsyncOp::_completeOperation() 
 	{ 
 		mData->mIsCompleted = true; 
 	}

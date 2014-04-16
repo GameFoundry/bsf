@@ -63,6 +63,11 @@ namespace BansheeEngine
             return newArea;
         }
 
+        public void SetArea(int x, int y, int width, int height, short depth = 0)
+        {
+            // TODO
+        }
+
         public void SetVisible(bool visible)
         {
             Internal_SetVisible(mCachedPtr, visible);

@@ -11,6 +11,10 @@ namespace CamelotFramework
 	 *			Contains uninitialized data until "hasCompleted" returns true. 
 	 * 			
 	 * @note	You are allowed (and meant to) to copy this by value.
+	 * 			
+	 *			You'll notice mIsCompleted isn't locked. This is safe on x86 architectures because all stores
+	 *			are executed in order. Loads may be executed out of order from stores but worst case scenario is that
+	 *			mIsCompleted reports false a few cycles too late, which is not relevant for practical use.
 	 */
 	class CM_UTILITY_EXPORT AsyncOp
 	{
@@ -28,7 +32,11 @@ namespace CamelotFramework
 	public:
 		AsyncOp()
 			:mData(cm_shared_ptr<AsyncOpData, ScratchAlloc>())
-		{}
+		{
+#if CM_ARCH_TYPE != CM_ARCHITECTURE_x86_32 && CM_ARCH_TYPE != CM_ARCHITECTURE_x86_64
+			static_assert(false, "You will likely need to add locks for mIsCompleted on architectures other than x86.");
+#endif
+		}
 
 		/**
 		 * @brief	True if the async operation has completed.
@@ -38,12 +46,12 @@ namespace CamelotFramework
 		/**
 		 * @brief	Internal method. Mark the async operation as completed.
 		 */
-		void completeOperation(boost::any returnValue);
+		void _completeOperation(boost::any returnValue);
 
 		/**
 		 * @brief	Internal method. Mark the async operation as completed, without setting a return value.
 		 */
-		void completeOperation();
+		void _completeOperation();
 
 		/**
 		 * @brief	Retrieves the value returned by the async operation. Only valid
