@@ -26,13 +26,12 @@ namespace CamelotFramework
 	 *			Like for any serializable class, fields are defined in RTTIType that each
 	 *			IReflectable class must be able to return.
 	 *
-	 * 			Any data the object or its children are pointing to will also be serialized (unless the pointer isn't
-	 * 			registered in RTTIType). Upon decoding the pointer addresses will be set
-	 * 			to proper values.
+	 * 			Any data the object or its children are pointing to will also be serialized 
+	 *			(unless the pointer isn't registered in RTTIType). Upon decoding the pointer 
+	 *			addresses will be set to proper values.
 	 * 			
-	 * @note	When deserializing make sure not to access any child members of a deserialized object in your RTTIType class.
-	 * 			Objects might be deserialized in an unknown order, so it is not guaranteed that child elements have been
-	 * 			deserialized before their parent. 
+	 * @note	Child elements are guaranteed to be fully deserialized before their parents, except for fields
+	 *			marked with WeakRef flag.
 	 */
 	class CM_UTILITY_EXPORT BinarySerializer
 	{
@@ -44,7 +43,7 @@ namespace CamelotFramework
 		 * 			Whenever a chunk is filled a callback is triggered that gives the user opportunity to expand or 
 		 * 			empty the buffer (for example write the chunk to disk)
 		 *
-		 * @param [in]	object				Object to encode into binary format.
+		 * @param		object				Object to encode into binary format.
 		 * @param [out]	buffer				Preallocated buffer where the data will be stored.
 		 * @param	bufferLength			Length of the buffer, in bytes.
 		 * @param [out]	bytesWritten		Length of the data that was actually written to the buffer,
@@ -58,9 +57,9 @@ namespace CamelotFramework
 			std::function<UINT8*(UINT8* buffer, int bytesWritten, UINT32& newBufferSize)> flushBufferCallback);
 
 		/**
-		 * @brief	Decodes an object from a binary format.
+		 * @brief	Decodes an object from binary data.
 		 *
-		 * @param [in]	data  	Binary data to decode.
+		 * @param 	data  	Binary data to decode.
 		 * @param	dataLength	Length of the data.
 		 */
 		std::shared_ptr<IReflectable> decode(UINT8* data, UINT32 dataLength);
@@ -102,6 +101,10 @@ namespace CamelotFramework
 
 		Map<UINT32, ObjectToDecode>::type mObjectMap;
 
+		/**
+		 * @brief	Parses the entire object and calculates total size required for
+		 *			saving the object and all the objects it contains.
+		 */
 		UINT32 getObjectSize(IReflectable* object);
 
 		/**

@@ -31,7 +31,7 @@ namespace CamelotFramework
 	 *			Supported data types:
 	 *			 - Plain types - All types defined in CmRTTIField.h, mostly native types and POD (plain old data) structs. Data is parsed byte by byte.  
 	 *			                 No pointers to plain types are supported. Data is passed around by value.
-	 *			 - Reflectable types - Any class deriving from IReflectable. Data is parsed based on fields in its ReflectionInterface. Can be pointer or value type.
+	 *			 - Reflectable types - Any class deriving from IReflectable. Data is parsed based on fields in its RTTI class. Can be pointer or value type.
 	 *			 - Arrays of both plain and reflectable types are supported
 	 *			 - Data blocks - A managed or unmanaged block of data. See CmManagedDataBlock.h
 	 */
@@ -41,18 +41,75 @@ namespace CamelotFramework
 		RTTITypeBase();
 		virtual ~RTTITypeBase();
 
+		/**
+		 * @brief	Returns RTTI type information for all classes that derive from the class
+		 *			that owns this RTTI type.
+		 */
 		virtual Vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
+
+		/**
+		 * @brief	Returns RTTI type information for the class that owns this RTTI type. 
+		 *			If the class has not base type, null is returned instead.
+		 */
 		virtual RTTITypeBase* getBaseClass() = 0;
+
+		/**
+		 * @brief	Internal method. Called by the RTTI system when a class is first found in
+		 *			order to form child/parent class hierarchy.
+		 */
 		virtual void _registerDerivedClass(RTTITypeBase* derivedClass) = 0;
+
+		/**
+		 * @brief	Creates a new instance of the class owning this RTTI type.
+		 */
 		virtual std::shared_ptr<IReflectable> newRTTIObject() = 0;
+
+		/**
+		 * @brief	Returns the name of the class owning this RTTI type.
+		 */
 		virtual const String& getRTTIName() = 0;
+
+		/**
+		 * @brief	Returns an RTTI id that uniquely represents each class in the RTTI
+		 *			system.
+		 */
 		virtual UINT32 getRTTIId() = 0;
 
+		/**
+		 * @brief	Called by the serializers when serialization for this object has started.
+		 *			Use this to do any preprocessing on data you might need during serialization itself.
+		 */
 		virtual void onSerializationStarted(IReflectable* obj) {}
+
+		/**
+		 * @brief	Called by the serializers when serialization for this object has ended.
+		 *			After serialization has ended you can be sure that the type has been fully serialized,
+		 *			and you may clean up any temporary data.
+		 */
 		virtual void onSerializationEnded(IReflectable* obj) {}
+
+		/**
+		 * @brief	Called by the serializers when deserialization for this object has started.
+		 *			Use this to do any preprocessing on data you might need during deserialization itself.
+		 */
 		virtual void onDeserializationStarted(IReflectable* obj) {}
+
+		/**
+		 * @brief	Called by the serializers when deserialization for this object has ended.
+		 *			At this point you can be sure the instance has been fully deserialized and you
+		 *			may safely use it.
+		 *
+		 *			One exception being are fields you marked with "WeakRef" flag, as they might be resolved
+		 *			only after deserialization has fully completed for all objects.
+		 */
 		virtual void onDeserializationEnded(IReflectable* obj) {}
 
+		/**
+		 * @brief	Allows you to assign a value to a plain field with the specified name on 
+		 *			the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void setPlainValue(ObjectType* object, const String& name, DataType& value)
 		{
@@ -75,6 +132,12 @@ namespace CamelotFramework
 			stackDeallocLast(tempBuffer);
 		}
 
+		/**
+		 * @brief	Allows you to assign a value to a plain field array element with the 
+		 *			specified name and index on the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void setPlainArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
@@ -97,6 +160,12 @@ namespace CamelotFramework
 			stackDeallocLast(tempBuffer);
 		}
 
+		/**
+		 * @brief	Allows you to assign a value to a reflectable field with the specified name on 
+		 *			the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void setReflectableValue(ObjectType* object, const String& name, DataType& value)
 		{
@@ -110,6 +179,12 @@ namespace CamelotFramework
 			field->setValue(object, value);
 		}
 
+		/**
+		 * @brief	Allows you to assign a value to a reflectable field array element with the 
+		 *			specified name and index on the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void setReflectableArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
@@ -123,6 +198,12 @@ namespace CamelotFramework
 			field->setArrayValue(object, index, value);
 		}
 
+		/**
+		 * @brief	Allows you to assign a value to a managed data block field with the specified name on 
+		 *			the provided instance.
+		 *
+		 * @note	Caller must ensure instance type is valid for this field.
+		 */
 		template <class ObjectType>
 		void setDataBlockValue(ObjectType* object, const String& name, ManagedDataBlock value)
 		{
@@ -133,7 +214,12 @@ namespace CamelotFramework
 			field->setValue(object, value);
 		}
 
-
+		/**
+		 * @brief	Allows you to assign a value to a reflectable pointer field with the specified name on 
+		 *			the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void setReflectablePtrValue(ObjectType* object, const String& name, std::shared_ptr<DataType> value)
 		{
@@ -147,6 +233,12 @@ namespace CamelotFramework
 			field->setValue(object, value);
 		}
 
+		/**
+		 * @brief	Allows you to assign a value to a reflectable pointer field array element with the 
+		 *			specified name and index on the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void setReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index, std::shared_ptr<DataType> value)
 		{
@@ -160,6 +252,11 @@ namespace CamelotFramework
 			field->setArrayValue(object, index, value);
 		}
 
+		/**
+		 * @brief	Reads a value from a plain field with the specified name from the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void getPlainValue(ObjectType* object, const String& name, DataType& value)
 		{
@@ -182,6 +279,11 @@ namespace CamelotFramework
 			stackDeallocLast(tempBuffer);
 		}
 
+		/**
+		 * @brief	Reads a value from a plain array field with the specified name and index from the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType, class DataType>
 		void getPlainArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
@@ -204,6 +306,11 @@ namespace CamelotFramework
 			stackDeallocLast(tempBuffer);
 		}	
 
+		/**
+		 * @brief	Reads a value from a reflectable object field with the specified name from the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType>
 		IReflectable& getReflectableValue(ObjectType* object, const String& name)
 		{
@@ -214,6 +321,11 @@ namespace CamelotFramework
 			return field->getValue(object);
 		}
 
+		/**
+		 * @brief	Reads a value from a reflectable object array field with the specified name and index from the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType>
 		IReflectable& getReflectableArrayValue(ObjectType* object, const String& name, UINT32 index)
 		{
@@ -224,6 +336,11 @@ namespace CamelotFramework
 			return field->getArrayValue(object, index);
 		}
 
+		/**
+		 * @brief	Reads a managed data block field with the specified name from the provided instance.
+		 *
+		 * @note	Caller must ensure instance type is valid for this field.
+		 */
 		template <class ObjectType>
 		ManagedDataBlock getDataBlockValue(ObjectType* object, const String& name)
 		{
@@ -234,6 +351,11 @@ namespace CamelotFramework
 			return field->getValue(object);
 		}
 
+		/**
+		 * @brief	Reads a value from a reflectable object pointer field with the specified name from the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType>
 		std::shared_ptr<IReflectable> getReflectablePtrValue(ObjectType* object, const String& name)
 		{
@@ -244,6 +366,11 @@ namespace CamelotFramework
 			return field->getValue(object);
 		}
 
+		/**
+		 * @brief	Reads a value from a reflectable pointer array field with the specified name and index from the provided instance.
+		 *
+		 * @note	Caller must ensure instance and value types are valid for this field.
+		 */
 		template <class ObjectType>
 		std::shared_ptr<IReflectable> getReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index)
 		{
@@ -254,6 +381,11 @@ namespace CamelotFramework
 			return field->getArrayValue(object, index);
 		}
 
+		/**
+		 * @brief	Returns the size of the array of the field with the specified name on the provided instance.
+		 *
+		 * @note	Caller must ensure instance type is valid and that the field as an array.
+		 */
 		template <class ObjectType>
 		UINT32 getArraySize(ObjectType* object, const String& name)
 		{
@@ -261,6 +393,12 @@ namespace CamelotFramework
 			return field->getArraySize(object);
 		}
 
+		/**
+		 * @brief	Sets the size of the array of the field with the specified name on the provided instance.
+		 *
+		 * @note	Caller must ensure instance type is valid and that the field as an array. 
+		 *			This might clear any existing data from the array.
+		 */
 		template <class ObjectType>
 		void setArraySize(ObjectType* object, const String& name, UINT32 size)
 		{
@@ -268,7 +406,15 @@ namespace CamelotFramework
 			field->setArraySize(object, size);
 		}	
 
+		/**
+		 * @brief	Returns the total number of fields in this RTTI type.
+		 */
 		UINT32 getNumFields() { return (UINT32)mFields.size(); }
+
+		/**
+		 * @brief	Returns a field based on the field index. Use "getNumFields" to
+		 *			get total number of fields available.
+		 */
 		RTTIField* getField(UINT32 idx) { return mFields.at(idx); }
 
 		/**
@@ -375,6 +521,9 @@ namespace CamelotFramework
 		RTTITypeBase* operator()() { return Type::getRTTIStatic(); }
 	};
 
+	/**
+	 * @brief	Specialization for root class of RTTI hierarchy - IReflectable
+	 */
 	template<>
 	struct GetRTTIType<IReflectable>
 	{
@@ -385,9 +534,11 @@ namespace CamelotFramework
 	 * @brief	Allows you to provide a run-time type information for a specific class, along with 
 	 * 			support for serialization/deserialization.
 	 * 			
-	 * 			Derive from this class and return the derived class from IReflectable::getRTTI. 
-	 * 			This way you can separate serialization logic from
-	 * 			the actual class you're serializing.
+	 * 			Derive from this class and return the that class from IReflectable::getRTTI. 
+	 * 			This way you can separate serialization logic from the actual class you're serializing.
+	 *
+	 *			This class will provide a way to register individual fields in the class, together with ways to
+	 *			read and write them, as well a providing information about class hierarchy, and run-time type checking.
 	 */
 	template <typename Type, typename BaseType, typename MyRTTIType>
 	class RTTIType : public RTTITypeBase
@@ -409,23 +560,35 @@ namespace CamelotFramework
 		}
 		virtual ~RTTIType() {}
 
+		/**
+		 * @brief	Returns a singleton of this RTTI type.
+		 */
 		static MyRTTIType* instance()
 		{
 			static MyRTTIType inst;
 			return &inst;
 		}
 
+		/**
+		 * @copydoc	RTTITypeBase::getDerivedClasses
+		 */
 		virtual Vector<RTTITypeBase*>::type& getDerivedClasses()
 		{
 			static Vector<RTTITypeBase*>::type mRTTIDerivedClasses;
 			return mRTTIDerivedClasses;
 		}
 
+		/**
+		 * @copydoc	RTTITypeBase::getBaseClass
+		 */
 		virtual RTTITypeBase* getBaseClass()
 		{
 			return GetRTTIType<BaseType>()();
 		}
 
+		/**
+		 * @copydoc	RTTITypeBase::_registerDerivedClass
+		 */
 		virtual void _registerDerivedClass(RTTITypeBase* derivedClass)
 		{
 			if(IReflectable::_isTypeIdDuplicate(derivedClass->getRTTIId()))
@@ -440,6 +603,20 @@ namespace CamelotFramework
 		/************************************************************************/
 		/* 			FIELDS OPERATING DIRECTLY ON SERIALIZABLE OBJECT            */
 		/************************************************************************/
+
+		/**
+		 * @brief	Registers a new plain field. This field can then be accessed dynamically from the RTTI system and
+		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 *
+		 * @param	name		Name of the field.
+		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
+		 * 						identifier we want a small data type that can be used for efficiently
+		 * 						serializing data to disk and similar. It is primarily used for compatibility
+		 * 						between different versions of serialized data.
+		 * @param	getter  	Method used for retrieving the value of this field.
+		 * @param	setter  	Method used for setting the value of this field.
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 */
 		template<class ObjectType, class DataType>
 		void addPlainField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
@@ -449,6 +626,19 @@ namespace CamelotFramework
 				std::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
+		/**
+		 * @brief	Registers a new reflectable object field. This field can then be accessed dynamically from the RTTI system and
+		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 *
+		 * @param	name		Name of the field.
+		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
+		 * 						identifier we want a small data type that can be used for efficiently
+		 * 						serializing data to disk and similar. It is primarily used for compatibility
+		 * 						between different versions of serialized data.
+		 * @param	getter  	Method used for retrieving the value of this field.
+		 * @param	setter  	Method used for setting the value of this field.
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 */
 		template<class ObjectType, class DataType>
 		void addReflectableField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(DataType&) = nullptr, UINT64 flags = 0)
@@ -458,6 +648,19 @@ namespace CamelotFramework
 				std::function<void(ObjectType*, DataType&)>(setter), flags);
 		}
 
+		/**
+		 * @brief	Registers a new reflectable object pointer field. This field can then be accessed dynamically from the RTTI system and
+		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 *
+		 * @param	name		Name of the field.
+		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
+		 * 						identifier we want a small data type that can be used for efficiently
+		 * 						serializing data to disk and similar. It is primarily used for compatibility
+		 * 						between different versions of serialized data.
+		 * @param	getter  	Method used for retrieving the value of this field.
+		 * @param	setter  	Method used for setting the value of this field.
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 */
 		template<class ObjectType, class DataType>
 		void addReflectablePtrField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(std::shared_ptr<DataType>) = nullptr, UINT64 flags = 0)
@@ -467,6 +670,21 @@ namespace CamelotFramework
 				std::function<void(ObjectType*, std::shared_ptr<DataType>)>(setter), flags);
 		}
 
+		/**
+		 * @brief	Registers a new field containg an array of plain values. This field can then be accessed dynamically from the RTTI system and
+		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 *
+		 * @param	name		Name of the field.
+		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
+		 * 						identifier we want a small data type that can be used for efficiently
+		 * 						serializing data to disk and similar. It is primarily used for compatibility
+		 * 						between different versions of serialized data.
+		 * @param	getter  	Method used for retrieving a single element of the array.
+		 * @param	getSize 	Getter method that returns the size of the array.
+		 * @param	setter  	Method used for setting the a single element of the field.
+		 * @param	setSize 	Setter method that allows you to resize the array. 
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 */
 		template<class ObjectType, class DataType>
 		void addPlainArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
@@ -478,6 +696,22 @@ namespace CamelotFramework
 				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}	
 
+		/**
+		 * @brief	Registers a new field containg an array of reflectable object values. This field can then be accessed 
+		 *			dynamically from the RTTI system and used for automatic serialization. See RTTIField for more information 
+		 *			about field types.
+		 *
+		 * @param	name		Name of the field.
+		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
+		 * 						identifier we want a small data type that can be used for efficiently
+		 * 						serializing data to disk and similar. It is primarily used for compatibility
+		 * 						between different versions of serialized data.
+		 * @param	getter  	Method used for retrieving a single element of the array.
+		 * @param	getSize 	Getter method that returns the size of the array.
+		 * @param	setter  	Method used for setting the a single element of the field.
+		 * @param	setSize 	Setter method that allows you to resize the array. 
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 */
 		template<class ObjectType, class DataType>
 		void addReflectableArrayField(const String& name, UINT32 uniqueId, DataType& (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
 			void (ObjectType::*setter)(UINT32, DataType&) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
@@ -489,6 +723,22 @@ namespace CamelotFramework
 				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
+		/**
+		 * @brief	Registers a new field containg an array of reflectable obejct pointers. This field can then be accessed 
+		 *			dynamically from the RTTI system and used for automatic serialization. See RTTIField for more information 
+		 *			about field types.
+		 *
+		 * @param	name		Name of the field.
+		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
+		 * 						identifier we want a small data type that can be used for efficiently
+		 * 						serializing data to disk and similar. It is primarily used for compatibility
+		 * 						between different versions of serialized data.
+		 * @param	getter  	Method used for retrieving a single element of the array.
+		 * @param	getSize 	Getter method that returns the size of the array.
+		 * @param	setter  	Method used for setting the a single element of the field.
+		 * @param	setSize 	Setter method that allows you to resize the array. 
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 */
 		template<class ObjectType, class DataType>
 		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, std::shared_ptr<DataType> (ObjectType::*getter)(UINT32), UINT32 (ObjectType::*getSize)(), 
 			void (ObjectType::*setter)(UINT32, std::shared_ptr<DataType>) = nullptr, void(ObjectType::*setSize)(UINT32) = nullptr, UINT64 flags = 0)
@@ -500,6 +750,19 @@ namespace CamelotFramework
 				std::function<void(ObjectType*, UINT32)>(setSize), flags);
 		}
 
+		/**
+		 * @brief	Registers a new managed data block field. This field can then be accessed dynamically from the RTTI system and
+		 *			used for automatic serialization. See RTTIField for more information about field types.
+		 *
+		 * @param	name		Name of the field.
+		 * @param	uniqueId	Unique identifier for this field. Although name is also a unique
+		 * 						identifier we want a small data type that can be used for efficiently
+		 * 						serializing data to disk and similar. It is primarily used for compatibility
+		 * 						between different versions of serialized data.
+		 * @param	getter  	Method used for retrieving the value of this field.
+		 * @param	setter  	Method used for setting the value of this field.
+		 * @param	flags		Various flags you can use to specialize how systems handle this field. See RTTIFieldFlag.
+		 */
 		template<class ObjectType>
 		void addDataBlockField(const String& name, UINT32 uniqueId, ManagedDataBlock (ObjectType::*getter)(), 
 			void (ObjectType::*setter)(ManagedDataBlock) = nullptr, UINT64 flags = 0, UINT8* (customAllocator)(ObjectType*, UINT32) = 0)

@@ -6,13 +6,26 @@ namespace CamelotFramework
 {
 	// TODO - Low priority. Eventually I'll want to generalize BinarySerializer to Serializer class, then I can make this class accept
 	// a generic Serializer interface so it may write both binary, plain-text or some other form of data.
+
+	/**
+	  * @brief	Encodes/decodes an IReflectable object from/to a file. 
+	  */
 	class CM_UTILITY_EXPORT FileSerializer
 	{
 	public:
 		FileSerializer();
 		~FileSerializer();
 
+		/**
+		 * @brief	Parses the provided object, serializes all of its data as specified by its
+		 *			RTTIType and saves the serialized data to the provided file location.
+		 */
 		void encode(IReflectable* object, WString fileLocation);
+
+		/**
+		 * @brief	Deserializes an IReflectable object by reading the binary data at
+		 *			the provided file location.
+		 */
 		std::shared_ptr<IReflectable> decode(WString fileLocation);
 
 	private:
@@ -21,6 +34,9 @@ namespace CamelotFramework
 
 		std::ifstream mInputStream;
 
+		/**
+		 * @brief	Called by the binary serializer whenever the buffer gets full.
+		 */
 		UINT8* flushBuffer(UINT8* bufferStart, int bytesWritten, UINT32& newBufferSize);
 
 		/************************************************************************/

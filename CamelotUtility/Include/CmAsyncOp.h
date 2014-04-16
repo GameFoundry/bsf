@@ -7,8 +7,8 @@
 namespace CamelotFramework
 {
 	/**
-	 * @brief	Asynchronous operation. Contains uninitialized data until
-	 * 			hasCompleted returns true.
+	 * @brief	Object you may use to check on the results of an asynchronous operation. 
+	 *			Contains uninitialized data until "hasCompleted" returns true. 
 	 * 			
 	 * @note	You are allowed (and meant to) to copy this by value.
 	 */
@@ -36,17 +36,18 @@ namespace CamelotFramework
 		bool hasCompleted() const { return mData->mIsCompleted; }
 
 		/**
-		 * @brief	Mark the async operation as completed.
+		 * @brief	Internal method. Mark the async operation as completed.
 		 */
 		void completeOperation(boost::any returnValue);
 
 		/**
-		 * @brief	Mark the async operation as completed, without setting a return value;
+		 * @brief	Internal method. Mark the async operation as completed, without setting a return value.
 		 */
 		void completeOperation();
 
 		/**
-		 * @brief	Retrieves the value returned by the async operation.
+		 * @brief	Retrieves the value returned by the async operation. Only valid
+		 *			if "hasCompleted" returns true.
 		 */
 		template <typename T>
 		T getReturnValue() const 
