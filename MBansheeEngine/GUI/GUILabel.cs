@@ -10,6 +10,11 @@ namespace BansheeEngine
             Internal_CreateInstance(this, content, style, options);
         }
 
+        public GUILabel(GUIContent content, string style = "")
+        {
+            Internal_CreateInstance(this, content, style, new GUIOption[0]);
+        }
+
         public void SetContent(GUIContent content)
         {
             Internal_SetContent(mCachedPtr, content);

@@ -53,9 +53,8 @@
     <Compile Include="DontSerializeField.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="GameObject.cs" />
-    <Compile Include="GUI\GUI.cs" />
     <Compile Include="GUI\GUIArea.cs" />
-    <Compile Include="GUI\GUIBase.cs" />
+    <Compile Include="GUI\GUIPanel.cs" />
     <Compile Include="GUI\GUIButton.cs" />
     <Compile Include="GUI\GUIContent.cs" />
     <Compile Include="GUI\GUIElement.cs" />

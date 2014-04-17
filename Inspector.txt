@@ -29,7 +29,6 @@ Get rid of the CamelotFramework namespace
 Undocking a window wont remove the tabbed title bar
 While dragging an undocked window, dropping it over the main window (not over dock overlays) will not restore it
 
-REFACTOR c++ GUI a bit:
  - GameObjectField
    - When dragging over GameObjectField cursor needs to change depending whether drop will be accepted or not
    - How will I limit it to just certain component types?
@@ -40,30 +39,24 @@ Make a common class for ScriptGUIElement as they all share:
 Add InsertElement to GUILayout
 
 -------------
-Implementation order:
- - Component foldout
- - Color picker modular window
-   - Possibly a generic ModularWindow class
-   - EditorUtility::showColorPicker
- - GameObject/resource field
- - Matrix fields
- - Refactor C# GUI
- - Basic InspectableObject and basic Inspector that open Inspector window, display SceneManager base fields and a list of components
- - Per-component generic and custom inspectors
+Get rid of EditorGUI and GUI classes and instead make them a single class GUIPanel
+ - IMPORANT. Consider replacing InspectorArea with GUIPanels (they internally in C++ are just clipped GUIAreas). This way I have a generic system
 
--------------
-IMPORTANT:
- - I should probably consider making each Component part of the inspector its own separate GUIWidget, otherwise I wont
-   be able to use multiple GUIAreas in the Inspectors, which is fairly limiting.
-     - Each has a separate EditorGUI instance?
-
-
-TOMORROW:
- - InspectableObject calls a C++ method which gets all SerializableFields, and C++ in turn
-   generates a list of InspectableFields
-     - They should have a type, name, and get/set methods
-
-Dont forget to implement SceneObject.GetComponents
+IMPLEMENT:
+EditorWindow
+ WindowResized
+ Internal_GetWidth
+ Internal_GetHeight
+ Internal_CreateGUIPanel
+GUIPanel
+ Internal_SetArea
+ Internal_Destroy
+SceneObject
+ GetComponents
+GUIArea
+ SetArea
+Refactor existing ScriptGUI and ScriptEditorGUI and add support for GUIPanel instead
+Remove support for resizable areas
 
 Tab indexes
  - EditorFields should have SetNextField method that allow you to set tab order directly
@@ -98,10 +91,46 @@ UndoRedo
     - but when I click outside maybe I just want to undo to the previous state before I even focused on that text field
       - plus it doesn't make sense for example to undo a text field if I'm currently focusing on something in scene
 
-IMPLEMENTATION
- - Add a Foldout GUI type and its C# version
- - Attempt to display a list of Components on a SceneObject just by using the foldouts
+---------------------------
 
- - Add basic IntField and hook it up with InspectableField (get/set methods and everything)
+SerializableObject(object obj)
+ - GetFields()
 
- - Add Multi-rank array, List & Dictionary types
+SerializableField
+ - Type
+ - GetInt/SetInt
+ - GetString/SetString
+ - GetObject/SetObject
+ - GetArray/SetArray
+ - etc.
+
+SerializableArray
+ - GetInt(arrayIdx)/SetInt(arrayIdx)
+ - GetKVP(arrayIdx)/SetKVP(arrayIdx)
+ - etc.
+
+SerializableDictionary
+ - GetInt(key)/SetInt(key)
+ - GetKVP(key)/SetKVP(key)
+ - etc.
+
+----------------
+
+InspectableObject(SerializableObject)
+ - Internally creates a list of InspectorFields (does not initialize any GUI elements)
+ - CreateGUI(GUILayout) <- populates the GUI layout with every InspectorField
+     - For nested objects it creates child layouts and indents them appropriately
+
+InspectorField(SerializableField)
+ - CreateGUI(GUILayout) <- Inserts the corresponding GUI element into the layout
+
+-------------------
+
+When creating a custom inspector, where will I store InspectorFields? Require user to store them?
+ - I guess. If user doesn't store them they get destructed and upon destruction they remove their GUI element from the layout.
+ - But what happens when Destroy is called? GUI elements get destroyed as normal and InspectorField will need to check for that, in which case it will essentially do nothing.
+
+How do I refresh Inspector fields if source object changes?
+ - Keep all InspectorFields in InspectorManager class, which will call Update on it regularily
+ - If InspectorField GUI elements were destroyed then Update will show a warning
+ - Otherwise you are required to call destroy on an InspectorField to properly remove it

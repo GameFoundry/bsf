@@ -10,7 +10,9 @@ namespace BansheeEditor
     {
         internal override void Refresh()
         {
-            throw new NotImplementedException();
+            InspectableObject obj = new InspectableObject(serializableObject);
+
+            obj.CreateGUI(GUI.layout);
         }
 
         internal override int GetOptimalHeight()
