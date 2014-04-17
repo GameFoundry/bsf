@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
@@ -32,32 +5,10 @@ THE SOFTWARE.
 
 namespace CamelotFramework 
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
-
-	/** General purpose class used for encapsulating the reading and writing of data.
-	@remarks
-		This class performs basically the same tasks as std::basic_istream, 
-		except that it does not have any formatting capabilities, and is
-		designed to be subclassed to receive data from multiple sources,
-		including libraries which have no compatibility with the STL's
-		stream interfaces. As such, this is an abstraction of a set of 
-		wrapper classes which pretend to be standard stream classes but 
-		can actually be implemented quite differently. 
-	@par
-		Generally, if a plugin or application provides an ArchiveFactory, 
-		it should also provide a DataStream subclass which will be used
-		to stream data out of that Archive implementation, unless it can 
-		use one of the common implementations included.
-	@note
-		Ogre makes no guarantees about thread safety, for performance reasons.
-		If you wish to access stream data asynchronously then you should
-		organise your own mutexes to avoid race conditions. 
-	*/
+	/**
+	 * @brief	General purpose class used for encapsulating the reading and writing of data from
+	 *			and to various sources using a common interface.
+	 */
 	class CM_UTILITY_EXPORT DataStream
 	{
 	public:
@@ -66,15 +17,7 @@ namespace CamelotFramework
 			READ = 1, 
 			WRITE = 2
 		};
-	protected:
-		/// The name (e.g. resource name) that can be used to identify the source fot his data (optional)
-		String mName;		
-        /// Size of the data in the stream (may be 0 if size cannot be determined)
-        size_t mSize;
-		/// What type of access is allowed (AccessMode)
-		UINT16 mAccess;
 
-        #define OGRE_STREAM_TEMP_SIZE 128
 	public:
 		/// Constructor for creating unnamed streams
         DataStream(UINT16 accessMode = READ) : mSize(0), mAccess(accessMode) {}
@@ -184,7 +127,15 @@ namespace CamelotFramework
         /** Close the stream; this makes further operations invalid. */
         virtual void close(void) = 0;
 		
+	protected:
+		/// The name (e.g. resource name) that can be used to identify the source fot his data (optional)
+		String mName;		
+        /// Size of the data in the stream (may be 0 if size cannot be determined)
+        size_t mSize;
+		/// What type of access is allowed (AccessMode)
+		UINT16 mAccess;
 
+        #define OGRE_STREAM_TEMP_SIZE 128
 	};
 
 	/** Shared pointer to allow data streams to be passed around without
@@ -323,40 +274,49 @@ namespace CamelotFramework
 		/** Get a pointer to the current position in the memory block this stream holds. */
 		UINT8* getCurrentPtr(void) { return mPos; }
 		
-		/** @copydoc DataStream::read
-		*/
+        /** 
+		 * @copydoc DataStream::read
+         */
 		size_t read(void* buf, size_t count);
 
-		/** @copydoc DataStream::write
-		*/
+        /** 
+		 * @copydoc DataStream::write
+         */
 		size_t write(const void* buf, size_t count);
 
-		/** @copydoc DataStream::readLine
-		*/
+        /** 
+		 * @copydoc DataStream::readLine
+         */
 		size_t readLine(char* buf, size_t maxCount, const String& delim = "\n");
 		
-		/** @copydoc DataStream::skipLine
-		*/
+        /** 
+		 * @copydoc DataStream::skipLine
+         */
 		size_t skipLine(const String& delim = "\n");
 
-		/** @copydoc DataStream::skip
-		*/
+        /** 
+		 * @copydoc DataStream::skip
+         */
 		void skip(long count);
 	
-		/** @copydoc DataStream::seek
-		*/
+        /** 
+		 * @copydoc DataStream::seek
+         */
 	    void seek( size_t pos );
 		
-		/** @copydoc DataStream::tell
-		*/
+        /** 
+		 * @copydoc DataStream::tell
+         */
 	    size_t tell(void) const;
 
-		/** @copydoc DataStream::eof
-		*/
+        /** 
+		 * @copydoc DataStream::eof
+         */
 	    bool eof(void) const;
 
-        /** @copydoc DataStream::close
-        */
+        /** 
+		 * @copydoc DataStream::close
+         */
         void close(void);
 
 		/** Sets whether or not to free the encapsulated memory on close. */
@@ -459,41 +419,45 @@ namespace CamelotFramework
 
 		~FileDataStream();
 
-		/** @copydoc DataStream::read
-		*/
+        /** 
+		 * @copydoc DataStream::read
+         */
 		size_t read(void* buf, size_t count);
 
-		/** @copydoc DataStream::write
-		*/
+        /** 
+		 * @copydoc DataStream::write
+         */
 		size_t write(const void* buf, size_t count);
 
-		/** @copydoc DataStream::readLine
-		*/
+        /** 
+		 * @copydoc DataStream::readLine
+         */
         size_t readLine(char* buf, size_t maxCount, const String& delim = "\n");
 		
-		/** @copydoc DataStream::skip
-		*/
+        /** 
+		 * @copydoc DataStream::skip
+         */
 		void skip(long count);
 	
-		/** @copydoc DataStream::seek
-		*/
-	    void seek( size_t pos );
+        /** 
+		 * @copydoc DataStream::seek
+         */
+	    void seek(size_t pos);
 
-		/** @copydoc DataStream::tell
-		*/
-		size_t tell(void) const;
+        /** 
+		 * @copydoc DataStream::tell
+         */
+		size_t tell() const;
 
-		/** @copydoc DataStream::eof
-		*/
-	    bool eof(void) const;
+        /** 
+		 * @copydoc DataStream::eof
+         */
+	    bool eof() const;
 
-        /** @copydoc DataStream::close
-        */
-        void close(void);
-		
-		
+        /** 
+		 * @copydoc DataStream::close
+         */
+        void close();
 	};
-
-	/** @} */
 }
 

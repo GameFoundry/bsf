@@ -10,7 +10,7 @@ namespace CamelotFramework
     const Color Color::Green = Color(0.0,1.0,0.0);
     const Color Color::Blue = Color(0.0,0.0,1.0);
 
-    ABGR Color::getAsABGR(void) const
+    ABGR Color::getAsABGR() const
     {
         UINT8 val8;
         UINT32 val32 = 0;
@@ -37,7 +37,7 @@ namespace CamelotFramework
         return val32;
     }
 
-    BGRA Color::getAsBGRA(void) const
+    BGRA Color::getAsBGRA() const
     {
         UINT8 val8;
         UINT32 val32 = 0;
@@ -61,11 +61,10 @@ namespace CamelotFramework
         val8 = static_cast<UINT8>(b * 255);
         val32 += val8;
 
-
         return val32;
     }
 
-	ARGB Color::getAsARGB(void) const
+	ARGB Color::getAsARGB() const
 	{
 		UINT8 val8;
 		UINT32 val32 = 0;
@@ -93,7 +92,7 @@ namespace CamelotFramework
 		return val32;
 	}
 
-    RGBA Color::getAsRGBA(void) const
+    RGBA Color::getAsRGBA() const
     {
         UINT8 val8;
         UINT32 val32 = 0;
@@ -246,7 +245,6 @@ namespace CamelotFramework
 			return;
 		}
 
-
 		float hueDomain  = hue * 6.0f;
 		if (hueDomain >= 6.0f)
 		{
@@ -297,13 +295,10 @@ namespace CamelotFramework
 			b = f2;
 			break;
 		}
-
-
 	}
 
 	void Color::getHSB(float* hue, float* saturation, float* brightness) const
 	{
-
 		float vMin = std::min(r, std::min(g, b));
 		float vMax = std::max(r, std::max(g, b));
 		float delta = vMax - vMin;

@@ -1,59 +1,18 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef _COLOURVALUE_H__
-#define _COLOURVALUE_H__
+#pragma once
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
-
+namespace CamelotFramework 
+{
     typedef UINT32 RGBA;
     typedef UINT32 ARGB;
     typedef UINT32 ABGR;
 	typedef UINT32 BGRA;
 
-    /** Class representing colour.
-	    @remarks
-		    Colour is represented as 4 components, each of which is a
-		    floating-point value from 0.0 to 1.0.
-	    @par
-		    The 3 'normal' colour components are red, green and blue, a higher
-		    number indicating greater amounts of that component in the colour.
-		    The forth component is the 'alpha' value, which represents
-		    transparency. In this case, 0.0 is completely transparent and 1.0 is
-		    fully opaque.
-    */
+	/** 
+	 * @brief	Color represented as 4 components, each being a floating point value ranging from
+	 *			0 to 1. Color components are Red, Green, Blue and Alpha.
+	 */
     class CM_UTILITY_EXPORT Color
     {
     public:
@@ -64,51 +23,28 @@ namespace CamelotFramework {
         static const Color Green;
         static const Color Blue;
 
-	    explicit Color( float red = 1.0f,
-				    float green = 1.0f,
-				    float blue = 1.0f,
-				    float alpha = 1.0f ) : r(red), g(green), b(blue), a(alpha)
+	    explicit Color(float red = 1.0f, float green = 1.0f,
+				    float blue = 1.0f, float alpha = 1.0f ) 
+					:r(red), g(green), b(blue), a(alpha)
         { }
 
 	    bool operator==(const Color& rhs) const;
 	    bool operator!=(const Color& rhs) const;
 
-        float r,g,b,a;
-
-	    /** Retrieves colour as RGBA.
-	    */
 	    RGBA getAsRGBA(void) const;
-
-	    /** Retrieves colour as ARGB.
-	    */
 	    ARGB getAsARGB(void) const;
-
-		/** Retrieves colour as BGRA.
-		*/
 		BGRA getAsBGRA(void) const;
-
-		/** Retrieves colours as ABGR */
 	    ABGR getAsABGR(void) const;
 
-	    /** Sets colour as RGBA.
-	    */
         void setAsRGBA(const RGBA val);
-
-	    /** Sets colour as ARGB.
-	    */
         void setAsARGB(const ARGB val);
-
-		/** Sets colour as BGRA.
-		*/
 		void setAsBGRA(const BGRA val);
-
-	    /** Sets colour as ABGR.
-	    */
         void setAsABGR(const ABGR val);
 
-        /** Clamps colour value to the range [0, 1].
-        */
-        void saturate(void)
+		/** 
+		 * @brief	Clamps colour value to the range [0, 1].
+		 */
+        void saturate()
         {
             if (r < 0)
                 r = 0;
@@ -131,81 +67,84 @@ namespace CamelotFramework {
                 a = 1;
         }
 
-        /** As saturate, except that this colour value is unaffected and
-            the saturated colour value is returned as a copy. */
-        Color saturateCopy(void) const
+		/** 
+		 * @brief	Clamps colour value to the range [0, 1]. Returned saturated
+		 *			color as a copy.
+		 */
+        Color saturateCopy() const
         {
             Color ret = *this;
             ret.saturate();
             return ret;
         }
 
-		/// Array accessor operator
-		inline float operator [] ( const size_t i ) const
+		inline float operator[] (const UINT32 i) const
 		{
-			assert( i < 4 );
+			assert(i < 4);
 
 			return *(&r+i);
 		}
 
-		/// Array accessor operator
-		inline float& operator [] ( const size_t i )
+		inline float& operator[] (const UINT32 i)
 		{
-			assert( i < 4 );
+			assert(i < 4);
 
 			return *(&r+i);
 		}
 
-		/// Pointer accessor for direct copying
+		/** 
+		 * @brief	Pointer accessor for direct copying.
+		 */
 		inline float* ptr()
 		{
 			return &r;
 		}
-		/// Pointer accessor for direct copying
+
+		/** 
+		 * @brief	Pointer accessor for direct copying.
+		 */
 		inline const float* ptr() const
 		{
 			return &r;
 		}
 
-		
-		// arithmetic operations
-        inline Color operator + ( const Color& rkVector ) const
+        inline Color operator+ (const Color& rhs) const
         {
             Color kSum;
 
-            kSum.r = r + rkVector.r;
-            kSum.g = g + rkVector.g;
-            kSum.b = b + rkVector.b;
-            kSum.a = a + rkVector.a;
+            kSum.r = r + rhs.r;
+            kSum.g = g + rhs.g;
+            kSum.b = b + rhs.b;
+            kSum.a = a + rhs.a;
 
             return kSum;
         }
 
-        inline Color operator - ( const Color& rkVector ) const
+        inline Color operator- ( const Color& rhs) const
         {
             Color kDiff;
 
-            kDiff.r = r - rkVector.r;
-            kDiff.g = g - rkVector.g;
-            kDiff.b = b - rkVector.b;
-            kDiff.a = a - rkVector.a;
+            kDiff.r = r - rhs.r;
+            kDiff.g = g - rhs.g;
+            kDiff.b = b - rhs.b;
+            kDiff.a = a - rhs.a;
 
             return kDiff;
         }
 
-        inline Color operator * (const float fScalar ) const
+        inline Color operator* (const float rhs) const
         {
             Color kProd;
 
-            kProd.r = fScalar*r;
-            kProd.g = fScalar*g;
-            kProd.b = fScalar*b;
-            kProd.a = fScalar*a;
+            kProd.r = rhs*r;
+            kProd.g = rhs*g;
+            kProd.b = rhs*b;
+            kProd.a = rhs*a;
 
             return kProd;
         }
 
-        inline Color operator * ( const Color& rhs) const
+        inline Color operator* (const Color& rhs) const
         {
             Color kProd;
 
@@ -217,7 +156,7 @@ namespace CamelotFramework {
             return kProd;
         }
 
-        inline Color operator / ( const Color& rhs) const
+        inline Color operator/ (const Color& rhs) const
         {
             Color kProd;
 
@@ -229,13 +168,13 @@ namespace CamelotFramework {
             return kProd;
         }
 
-        inline Color operator / (const float fScalar ) const
+        inline Color operator/ (const float rhs) const
         {
-            assert( fScalar != 0.0 );
+            assert(rhs != 0.0f);
 
             Color kDiv;
 
-            float fInv = 1.0f / fScalar;
+            float fInv = 1.0f / rhs;
             kDiv.r = r * fInv;
             kDiv.g = g * fInv;
             kDiv.b = b * fInv;
@@ -244,92 +183,82 @@ namespace CamelotFramework {
             return kDiv;
         }
 
-        inline friend Color operator * (const float fScalar, const Color& rkVector )
+        inline friend Color operator* (const float lhs, const Color& rhs)
         {
-            Color kProd;
+            Color result;
 
-            kProd.r = fScalar * rkVector.r;
-            kProd.g = fScalar * rkVector.g;
-            kProd.b = fScalar * rkVector.b;
-            kProd.a = fScalar * rkVector.a;
+            result.r = lhs * rhs.r;
+            result.g = lhs * rhs.g;
+            result.b = lhs * rhs.b;
+            result.a = lhs * rhs.a;
 
             return kProd;
         }
 
-        // arithmetic updates
-        inline Color& operator += ( const Color& rkVector )
+        inline Color& operator+= (const Color& rhs)
         {
-            r += rkVector.r;
-            g += rkVector.g;
-            b += rkVector.b;
-            a += rkVector.a;
+            r += rhs.r;
+            g += rhs.g;
+            b += rhs.b;
+            a += rhs.a;
 
             return *this;
         }
 
-        inline Color& operator -= ( const Color& rkVector )
+        inline Color& operator-= (const Color& rhs)
         {
-            r -= rkVector.r;
-            g -= rkVector.g;
-            b -= rkVector.b;
-            a -= rkVector.a;
+            r -= rhs.r;
+            g -= rhs.g;
+            b -= rhs.b;
+            a -= rhs.a;
 
             return *this;
         }
 
-        inline Color& operator *= (const float fScalar )
+        inline Color& operator*= (const float rhs)
         {
-            r *= fScalar;
-            g *= fScalar;
-            b *= fScalar;
-            a *= fScalar;
-            return *this;
-        }
-
-        inline Color& operator /= (const float fScalar )
-        {
-            assert( fScalar != 0.0 );
-
-            float fInv = 1.0f / fScalar;
-
-            r *= fInv;
-            g *= fInv;
-            b *= fInv;
-            a *= fInv;
+            r *= rhs;
+            g *= rhs;
+            b *= rhs;
+            a *= rhs;
 
             return *this;
         }
 
-		/** Set a colour value from Hue, Saturation and Brightness.
-		@param hue Hue value, scaled to the [0,1] range as opposed to the 0-360
-		@param saturation Saturation level, [0,1]
-		@param brightness Brightness level, [0,1]
-		*/
+        inline Color& operator/= (const float rhs)
+        {
+            assert(rhs != 0.0f);
+
+            float fInv = 1.0f / rhs;
+
+            r *= rhs;
+            g *= rhs;
+            b *= rhs;
+            a *= rhs;
+
+            return *this;
+        }
+
+		/** 
+		 * @brief	Set a colour value from Hue, Saturation and Brightness.
+		 *
+		 * @param hue				Hue value, scaled to the [0,1] range.
+		 * @param saturation		Saturation level, [0,1].
+		 * @param brightness		Brightness level, [0,1].
+		 */
 		void setHSB(float hue, float saturation, float brightness);
 
-		/** Convert the current colour to Hue, Saturation and Brightness values. 
-		@param hue Output hue value, scaled to the [0,1] range as opposed to the 0-360
-		@param saturation Output saturation level, [0,1]
-		@param brightness Output brightness level, [0,1]
-		*/
+		/** 
+		 * @brief Convert the current color to Hue, Saturation and Brightness values. 
+		 * 
+		 * @param hue			Output hue value, scaled to the [0,1] range.
+		 * @param saturation	Output saturation level, [0,1].
+		 * @param brightness	Output brightness level, [0,1].
+		 */
 		void getHSB(float* hue, float* saturation, float* brightness) const;
 
-
-
-		/** Function for writing to a stream.
-		*/
-		inline CM_UTILITY_EXPORT friend std::ostream& operator <<
-			( std::ostream& o, const Color& c )
-		{
-			o << "ColourValue(" << c.r << ", " << c.g << ", " << c.b << ", " << c.a << ")";
-			return o;
-		}
-
+		float r, g, b, a;
     };
-	/** @} */
-	/** @} */
 
 	CM_ALLOW_MEMCPY_SERIALIZATION(Color);
-} // namespace
-
-#endif
+}

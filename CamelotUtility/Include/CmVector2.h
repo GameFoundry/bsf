@@ -43,12 +43,18 @@ namespace CamelotFramework
 
             return *(&x+i);
         }
-
+		
+		/** 
+		 * @brief	Pointer accessor for direct copying.
+		 */
 		float* ptr()
 		{
 			return &x;
 		}
 
+		/** 
+		 * @brief	Pointer accessor for direct copying.
+		 */
 		const float* ptr() const
 		{
 			return &x;

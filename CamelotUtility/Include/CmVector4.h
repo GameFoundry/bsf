@@ -32,25 +32,31 @@ namespace CamelotFramework
 			std::swap(w, other.w);
 		}
 	
-		float operator[] (size_t i) const
+		float operator[] (UINT32 i) const
         {
             assert (i < 4);
 
             return *(&x+i);
         }
 
-		float& operator[] (size_t i)
+		float& operator[] (UINT32 i)
         {
             assert(i < 4);
 
             return *(&x+i);
         }
 
+		/** 
+		 * @brief	Pointer accessor for direct copying.
+		 */
 		float* ptr()
 		{
 			return &x;
 		}
 
+		/** 
+		 * @brief	Pointer accessor for direct copying.
+		 */
 		const float* ptr() const
 		{
 			return &x;

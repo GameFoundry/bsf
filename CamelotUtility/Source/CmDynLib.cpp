@@ -1,5 +1,4 @@
 #include "CmDynLib.h"
-
 #include "CmException.h"
 
 #if CM_PLATFORM == CM_PLATFORM_WIN32
@@ -17,7 +16,7 @@
 
 namespace CamelotFramework 
 {
-    DynLib::DynLib( const String& name )
+    DynLib::DynLib(const String& name)
     {
         mName = name;
         m_hInst = NULL;
@@ -29,6 +28,9 @@ namespace CamelotFramework
 
     void DynLib::load()
     {
+		if(m_hInst)
+			return;
+
 		String name = mName;
 #if CM_PLATFORM == CM_PLATFORM_LINUX
         // dlopen() does not add .so to the filename, like windows does for .dll
@@ -44,33 +46,38 @@ namespace CamelotFramework
 		if (name.substr(name.length() - 4, 4) != ".dll")
 			name += ".dll";
 #endif
-        m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD( name.c_str() );
+        m_hInst = (DYNLIB_HANDLE)DYNLIB_LOAD(name.c_str());
 
-        if( !m_hInst )
+        if(!m_hInst)
 		{
-            CM_EXCEPT(InternalErrorException, 
-                "Could not load dynamic library " + mName + 
+            CM_EXCEPT(InternalErrorException,  
+				"Could not load dynamic library " + mName + 
                 ".  System Error: " + dynlibError());
 		}
     }
 
     void DynLib::unload()
     {
-        if( DYNLIB_UNLOAD( m_hInst ) )
+		if(!m_hInst)
+			return;
+
+        if(DYNLIB_UNLOAD(m_hInst))
 		{
 			CM_EXCEPT(InternalErrorException, 
                 "Could not unload dynamic library " + mName +
                 ".  System Error: " + dynlibError());
 		}
-
     }
 
-    void* DynLib::getSymbol( const String& strName ) const throw()
+    void* DynLib::getSymbol(const String& strName) const
     {
-        return (void*)DYNLIB_GETSYM( m_hInst, strName.c_str() );
+		if(!m_hInst)
+			return nullptr;
+
+        return (void*)DYNLIB_GETSYM(m_hInst, strName.c_str());
     }
 
-    String DynLib::dynlibError( void ) 
+    String DynLib::dynlibError() 
     {
 #if CM_PLATFORM == CM_PLATFORM_WIN32
         LPVOID lpMsgBuf; 
@@ -87,7 +94,7 @@ namespace CamelotFramework
             ); 
         String ret = (char*)lpMsgBuf;
         // Free the buffer.
-        LocalFree( lpMsgBuf );
+        LocalFree(lpMsgBuf);
         return ret;
 #elif CM_PLATFORM == CM_PLATFORM_LINUX || CM_PLATFORM == CM_PLATFORM_APPLE
         return String(dlerror());

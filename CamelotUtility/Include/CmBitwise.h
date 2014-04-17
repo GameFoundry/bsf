@@ -1,50 +1,19 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef _Bitwise_H__
-#define _Bitwise_H__
+#pragma once
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Math
-	*  @{
-	*/
-
-    /** Class for manipulating bit patterns.
-    */
-    class Bitwise {
+namespace CamelotFramework 
+{
+    /** 
+	 * @brief	Class for manipulating bit patterns.
+     */
+    class Bitwise 
+	{
     public:
-        /** Returns the most significant bit set in a value.
-        */
-        static FORCEINLINE unsigned int mostSignificantBitSet(unsigned int value)
+		/** 
+		 * @brief	Returns the most significant bit set in a value.
+		 */
+		static FORCEINLINE unsigned int mostSignificantBitSet(unsigned int value)
         {
             unsigned int result = 0;
             while (value != 0) {
@@ -53,10 +22,10 @@ namespace CamelotFramework {
             }
             return result-1;
         }
-        /** Returns the closest power-of-two number greater or equal to value.
-            @note 0 and 1 are powers of two, so 
-                firstPO2From(0)==0 and firstPO2From(1)==1.
-        */
+
+		/** 
+		 * @brief	Returns the closest power-of-two number greater or equal to value.
+		 */
         static FORCEINLINE UINT32 firstPO2From(UINT32 n)
         {
             --n;            
@@ -68,17 +37,20 @@ namespace CamelotFramework {
             ++n;
             return n;
         }
-        /** Determines whether the number is power-of-two or not.
-            @note 0 and 1 are tread as power of two.
-        */
+
+		/** 
+		 * @brief	Determines whether the number is power-of-two or not.
+		 */
         template<typename T>
         static FORCEINLINE bool isPO2(T n)
         {
             return (n & (n-1)) == 0;
         }
-        /** Returns the number of bits a pattern must be shifted right by to
-            remove right-hand zeros.
-        */
+
+		/** 
+		 * @brief	Returns the number of bits a pattern must be shifted right by to
+         *			remove right-hand zeros.
+		 */
 		template<typename T>
         static FORCEINLINE unsigned int getBitShift(T mask)
 		{
@@ -93,11 +65,10 @@ namespace CamelotFramework {
 			return result;
 		}
 
-        /** Takes a value with a given src bit mask, and produces another
-            value with a desired bit mask.
-            @remarks
-                This routine is useful for colour conversion.
-        */
+		/** 
+		 * @brief	Takes a value with a given src bit mask, and produces another
+         *			value with a desired bit mask.
+		 */
 		template<typename SrcT, typename DestT>
         static inline DestT convertBitPattern(SrcT srcValue, SrcT srcBitMask, DestT destBitMask)
 		{
@@ -120,10 +91,10 @@ namespace CamelotFramework {
 			return (destValue << destBitShift);
 		}
 
-        /**
-         * Convert N bit colour channel value to P bits. It fills P bits with the
-         * bit pattern repeated. (this is /((1<<n)-1) in fixed point)
-         */
+		/** 
+		 * @brief	Convert N bit colour channel value to P bits. It fills P bits with the
+         *			bit pattern repeated. (this is /((1<<n)-1) in fixed point).
+		 */
         static inline unsigned int fixedToFixed(UINT32 value, unsigned int n, unsigned int p) 
         {
             if(n > p) 
@@ -144,10 +115,10 @@ namespace CamelotFramework {
             return value;    
         }
 
-        /**
-         * Convert floating point colour channel value between 0.0 and 1.0 (otherwise clamped) 
-         * to integer of a certain number of bits. Works for any value of bits between 0 and 31.
-         */
+		/** 
+		 * @brief	Convert floating point color channel value between 0.0 and 1.0 (otherwise clamped) 
+         *			to integer of a certain number of bits. Works for any value of bits between 0 and 31.
+		 */
         static inline unsigned int floatToFixed(const float value, const unsigned int bits)
         {
             if(value <= 0.0f) return 0;
@@ -155,17 +126,17 @@ namespace CamelotFramework {
             else return (unsigned int)(value * (1<<bits));     
         }
 
-        /**
-         * Fixed point to float
-         */
+		/** 
+		 * @brief	Fixed point to float.
+		 */
         static inline float fixedToFloat(unsigned value, unsigned int bits)
         {
             return (float)value/(float)((1<<bits)-1);
         }
 
-        /**
-         * Write a n*8 bits integer value to memory in native endian.
-         */
+		/** 
+		 * @brief	Write a n*8 bits integer value to memory in native endian.
+		 */
         static inline void intWrite(void *dest, const int n, const unsigned int value)
         {
             switch(n) {
@@ -191,9 +162,10 @@ namespace CamelotFramework {
                     break;                
             }        
         }
-        /**
-         * Read a n*8 bits integer value to memory in native endian.
-         */
+
+		/** 
+		 * @brief	Read a n*8 bits integer value to memory in native endian.
+		 */
         static inline unsigned int intRead(const void *src, int n) {
             switch(n) {
                 case 1:
@@ -216,17 +188,19 @@ namespace CamelotFramework {
             return 0; // ?
         }
 
-        /** Convert a float32 to a float16 (NV_half_float)
-         	Courtesy of OpenEXR
-        */
+		/** 
+		 * @brief	Convert a float32 to a float16 (NV_half_float).
+		 */
         static inline UINT16 floatToHalf(float i)
         {
             union { float f; UINT32 i; } v;
             v.f = i;
             return floatToHalfI(v.i);
         }
-		/** Converts float in UINT32 format to a a half in UINT16 format
-		*/
+
+		/** 
+		 * @brief	Converts float in UINT32 format to a a half in UINT16 format.
+		 */
         static inline UINT16 floatToHalfI(UINT32 i)
         {
             register int s =  (i >> 16) & 0x00008000;
@@ -266,18 +240,19 @@ namespace CamelotFramework {
             }
         }
         
-        /**
-         * Convert a float16 (NV_half_float) to a float32
-         * Courtesy of OpenEXR
-         */
+		/** 
+		 * @brief	Convert a float16 (NV_half_float) to a float32.
+		 */
         static inline float halfToFloat(UINT16 y)
         {
             union { float f; UINT32 i; } v;
             v.i = halfToFloatI(y);
             return v.f;
         }
-		/** Converts a half in UINT16 format to a float
-		 	in UINT32 format
+
+		/** 
+		 * @brief	Converts a half in UINT16 format to a float
+		 *			in UINT32 format.
 		 */
         static inline UINT32 halfToFloatI(UINT16 y)
         {
@@ -320,12 +295,5 @@ namespace CamelotFramework {
         
             return (s << 31) | (e << 23) | m;
         }
-         
-
     };
-	/** @} */
-	/** @} */
-
 }
-
-#endif

@@ -139,7 +139,7 @@ namespace CamelotFramework
         return total;
     }
 
-    String DataStream::getAsString(void)
+    String DataStream::getAsString()
     {
         // Read the entire buffer - ideally in one read, but if the size of
         // the buffer is unknown, do multiple fixed size reads.
@@ -345,8 +345,7 @@ namespace CamelotFramework
 		return written;
 	}
 
-    size_t MemoryDataStream::readLine(char* buf, size_t maxCount, 
-        const String& delim)
+    size_t MemoryDataStream::readLine(char* buf, size_t maxCount, const String& delim)
     {
         // Deal with both Unix & Windows LFs
 		bool trimCR = false;
@@ -434,7 +433,6 @@ namespace CamelotFramework
             free(mData);
             mData = 0;
         }
-
     }
 
     FileDataStream::FileDataStream(std::shared_ptr<std::ifstream> s, bool freeOnClose)
@@ -532,8 +530,7 @@ namespace CamelotFramework
 		return written;
 	}
 
-    size_t FileDataStream::readLine(char* buf, size_t maxCount, 
-        const String& delim)
+    size_t FileDataStream::readLine(char* buf, size_t maxCount,  const String& delim)
     {
 		if (delim.empty())
 		{
