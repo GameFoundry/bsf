@@ -178,7 +178,8 @@ namespace CamelotFramework
 		FreeImage_SetOutputMessage(FreeImageLoadErrorHandler);
 
 		// Buffer stream into memory (TODO: override IO functions instead?)
-		MemoryDataStream memStream(fileData, true);
+		MemoryDataStream memStream(fileData);
+		fileData->close();
 
 		FIMEMORY* fiMem = FreeImage_OpenMemory(memStream.getPtr(), static_cast<DWORD>(memStream.size()));
 
@@ -207,7 +208,7 @@ namespace CamelotFramework
 		case FIT_INT32:
 		case FIT_DOUBLE:
 		default:
-			CM_EXCEPT(ItemIdentityException, "Unknown or unsupported image format");
+			CM_EXCEPT(InternalErrorException, "Unknown or unsupported image format");
 
 			break;
 		case FIT_BITMAP:

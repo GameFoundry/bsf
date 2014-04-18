@@ -19,260 +19,154 @@ namespace CamelotFramework
 		};
 
 	public:
-		/// Constructor for creating unnamed streams
-        DataStream(UINT16 accessMode = READ) : mSize(0), mAccess(accessMode) {}
-		/// Constructor for creating named streams
+        /**
+         * @brief	Creates an unnamed stream.
+         */
+        DataStream(UINT16 accessMode = READ) 
+			:mSize(0), mAccess(accessMode) 
+		{ }
+
+        /**
+         * @brief	Creates a named stream.
+         */
 		DataStream(const String& name, UINT16 accessMode = READ) 
-			: mName(name), mSize(0), mAccess(accessMode) {}
-		/// Returns the name of the stream, if it has one.
+			:mName(name), mSize(0), mAccess(accessMode) {}
+
+		virtual ~DataStream() {}
+
 		const String& getName(void) { return mName; }
-		/// Gets the access mode of the stream
 		UINT16 getAccessMode() const { return mAccess; }
-		/** Reports whether this stream is readable. */
+
 		virtual bool isReadable() const { return (mAccess & READ) != 0; }
-		/** Reports whether this stream is writeable. */
 		virtual bool isWriteable() const { return (mAccess & WRITE) != 0; }
-        virtual ~DataStream() {}
-		// Streaming operators
+       
+        /**
+         * @brief	Reads data from the buffer and copies it to the specified value.
+         */
         template<typename T> DataStream& operator>>(T& val);
-		/** Read the requisite number of bytes from the stream, 
-			stopping at the end of the file.
-		@param buf Reference to a buffer pointer
-		@param count Number of bytes to read
-		@returns The number of bytes read
-		*/
+
+		/**
+		 * @brief	Read the requisite number of bytes from the stream,
+		 *			stopping at the end of the file.
+		 *
+		 * @param	buf		Pre-allocated buffer to read the data into.
+		 * @param	count	Number of bytes to read.
+		 *
+		 * @return	Number of bytes actually read.
+		 * 			
+		 * @note	Stream must be created with READ access mode.
+		 */
 		virtual size_t read(void* buf, size_t count) = 0;
-		/** Write the requisite number of bytes from the stream (only applicable to 
-			streams that are not read-only)
-		@param buf Pointer to a buffer containing the bytes to write
-		@param count Number of bytes to write
-		@returns The number of bytes written
-		*/
-		virtual size_t write(const void* buf, size_t count)
-		{
-                        (void)buf;
-                        (void)count;
-			// default to not supported
-			return 0;
-		}
 
-		/** Get a single line from the stream.
-		@remarks
-			The delimiter character is not included in the data
-			returned, and it is skipped over so the next read will occur
-			after it. The buffer contents will include a
-			terminating character.
-        @note
-            If you used this function, you <b>must</b> open the stream in <b>binary mode</b>,
-            otherwise, it'll produce unexpected results.
-		@param buf Reference to a buffer pointer
-		@param maxCount The maximum length of data to be read, excluding the terminating character
-		@param delim The delimiter to stop at
-		@returns The number of bytes read, excluding the terminating character
-		*/
-		virtual size_t readLine(char* buf, size_t maxCount, const String& delim = "\n");
-		
-	    /** Returns a String containing the next line of data, optionally 
-		    trimmed for whitespace. 
-	    @remarks
-		    This is a convenience method for text streams only, allowing you to 
-		    retrieve a String object containing the next line of data. The data
-		    is read up to the next newline character and the result trimmed if
-		    required.
-        @note
-            If you used this function, you <b>must</b> open the stream in <b>binary mode</b>,
-            otherwise, it'll produce unexpected results.
-	    @param 
-		    trimAfter If true, the line is trimmed for whitespace (as in 
-		    String.trim(true,true))
-	    */
-	    virtual String getLine( bool trimAfter = true );
+		/**
+		 * @brief	Write the requisite number of bytes to the stream.
+		 *
+		 * @param	buf		Buffer containing bytes to write.
+		 * @param	count	Number of bytes to write.
+		 *
+		 * @return	Number of bytes actually written.
+		 * 			
+		 * @note	Stream must be created with WRITE access mode.
+		 */
+		virtual size_t write(const void* buf, size_t count) { return 0; }
 
-	    /** Returns a String containing the entire stream. 
-	    @remarks
-		    This is a convenience method for text streams only, allowing you to 
-		    retrieve a String object containing all the data in the stream.
-	    */
-	    virtual String getAsString(void);
+	    /**
+	     * @brief	Returns a string containing the entire stream.
+	     *
+		 * @note	 This is a convenience method for text streams only, allowing you to
+		 *			retrieve a String object containing all the data in the stream.
+	     */
+	    virtual String getAsString();
 
-		/** Skip a single line from the stream.
-        @note
-            If you used this function, you <b>must</b> open the stream in <b>binary mode</b>,
-            otherwise, it'll produce unexpected results.
-		@param delim The delimiter(s) to stop at
-		@returns The number of bytes skipped
-		*/
-		virtual size_t skipLine(const String& delim = "\n");
+	    /**
+	     * @brief	Returns a wide string containing the entire stream.
+	     *
+		 * @note	This is a convenience method for text streams only, allowing you to
+		 *			retrieve a WString object containing all the data in the stream.
+	     */
+	    virtual WString getAsWString();
 
-		/** Skip a defined number of bytes. This can also be a negative value, in which case
-		the file pointer rewinds a defined number of bytes. */
-		virtual void skip(long count) = 0;
+		/**
+		 * @brief	Skip a defined number of bytes. This can also be a negative value, in which case
+		 *			the file pointer rewinds a defined number of bytes.
+		 */
+		virtual void skip(size_t count) = 0;
 	
-		/** Repositions the read point to a specified byte.
-	    */
-	    virtual void seek( size_t pos ) = 0;
+	    /**
+	     * @brief	Repositions the read point to a specified byte.
+	     */
+	    virtual void seek(size_t pos) = 0;
 		
-		/** Returns the current byte offset from beginning */
-	    virtual size_t tell(void) const = 0;
+	    /**
+	     * @brief	Returns the current byte offset from beginning
+	     */
+	    virtual size_t tell() const = 0;
 
-		/** Returns true if the stream has reached the end.
-	    */
-	    virtual bool eof(void) const = 0;
+	    /**
+	     * @brief	Returns true if the stream has reached the end.
+	     */
+	    virtual bool eof() const = 0;
 
-		/** Returns the total size of the data to be read from the stream, 
-			or 0 if this is indeterminate for this stream. 
-		*/
-        size_t size(void) const { return mSize; }
+        /**
+		 * @brief	Returns the total size of the data to be read from the stream,
+		 *			or 0 if this is indeterminate for this stream.
+         */
+        size_t size() const { return mSize; }
 
-        /** Close the stream; this makes further operations invalid. */
-        virtual void close(void) = 0;
+        /**
+         * @brief	Close the stream. This makes further operations invalid.
+         */
+        virtual void close() = 0;
 		
 	protected:
-		/// The name (e.g. resource name) that can be used to identify the source fot his data (optional)
-		String mName;		
-        /// Size of the data in the stream (may be 0 if size cannot be determined)
-        size_t mSize;
-		/// What type of access is allowed (AccessMode)
-		UINT16 mAccess;
+		static const UINT32 StreamTempSize;
 
-        #define OGRE_STREAM_TEMP_SIZE 128
+		String mName;		
+        size_t mSize;
+		UINT16 mAccess;
 	};
 
-	/** Shared pointer to allow data streams to be passed around without
-		worrying about deallocation
-	*/
-	typedef std::shared_ptr<DataStream> DataStreamPtr;
-
-	/// List of DataStream items
-	typedef List<DataStreamPtr>::type DataStreamList;
-	/// Shared pointer to list of DataStream items
-	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;
-
-	/** Common subclass of DataStream for handling data from chunks of memory.
-	*/
+	/**
+	 * @brief	Data stream for handling data from memory.
+	 */
 	class CM_UTILITY_EXPORT MemoryDataStream : public DataStream
-	{
-	protected:
-        /// Pointer to the start of the data area
-	    UINT8* mData;
-        /// Pointer to the current position in the memory
-	    UINT8* mPos;
-        /// Pointer to the end of the memory
-	    UINT8* mEnd;
-        /// Do we delete the memory on close
-		bool mFreeOnClose;			
+	{		
 	public:
+		/**
+		 * @brief	Wrap an existing memory chunk in a stream.
+		 *
+		 * @param 	memory		Memory to wrap the data stream around.
+		 * @param	size		Size of the memory chunk in bytes.
+		 */
+		MemoryDataStream(void* memory, size_t size);
 		
-		/** Wrap an existing memory chunk in a stream.
-		@param pMem Pointer to the existing memory
-		@param size The size of the memory chunk in bytes
-		@param freeOnClose If true, the memory associated will be destroyed
-			when the stream is destroyed. Note: it's important that if you set
-			this option to true, that you allocated the memory using OGRE_ALLOC_T
-			with a category of MEMCATEGORY_GENERAL ensure the freeing of memory 
-			matches up.
-		@param readOnly Whether to make the stream on this memory read-only once created
-		*/
-		MemoryDataStream(void* pMem, size_t size, bool freeOnClose = false, bool readOnly = false);
+		/**
+		 * @brief	Create a stream which pre-buffers the contents of another stream. Data
+		 * 			from the other buffer will be entirely read and stored in an internal buffer.
+		 *
+		 * @param [in]	sourceStream		Stream to read data from.
+		 */
+		MemoryDataStream(DataStream& sourceStream);
 		
-		/** Wrap an existing memory chunk in a named stream.
-		@param name The name to give the stream
-		@param pMem Pointer to the existing memory
-		@param size The size of the memory chunk in bytes
-		@param freeOnClose If true, the memory associated will be destroyed
-			when the stream is destroyed. Note: it's important that if you set
-			this option to true, that you allocated the memory using OGRE_ALLOC_T
-			with a category of MEMCATEGORY_GENERAL ensure the freeing of memory 
-			matches up.
-		@param readOnly Whether to make the stream on this memory read-only once created
-		*/
-		MemoryDataStream(const String& name, void* pMem, size_t size, 
-				bool freeOnClose = false, bool readOnly = false);
-
-		/** Create a stream which pre-buffers the contents of another stream.
-		@remarks
-			This constructor can be used to intentionally read in the entire
-			contents of another stream, copying them to the internal buffer
-			and thus making them available in memory as a single unit.
-		@param sourceStream Another DataStream which will provide the source
-			of data
-		@param freeOnClose If true, the memory associated will be destroyed
-			when the stream is destroyed.
-		@param readOnly Whether to make the stream on this memory read-only once created
-		*/
-		MemoryDataStream(DataStream& sourceStream, 
-				bool freeOnClose = true, bool readOnly = false);
-		
-		/** Create a stream which pre-buffers the contents of another stream.
-		@remarks
-			This constructor can be used to intentionally read in the entire
-			contents of another stream, copying them to the internal buffer
-			and thus making them available in memory as a single unit.
-		@param sourceStream Weak reference to another DataStream which will provide the source
-			of data
-		@param freeOnClose If true, the memory associated will be destroyed
-			when the stream is destroyed.
-		@param readOnly Whether to make the stream on this memory read-only once created
-		*/
-		MemoryDataStream(DataStreamPtr& sourceStream, 
-				bool freeOnClose = true, bool readOnly = false);
-
-		/** Create a named stream which pre-buffers the contents of 
-			another stream.
-		@remarks
-			This constructor can be used to intentionally read in the entire
-			contents of another stream, copying them to the internal buffer
-			and thus making them available in memory as a single unit.
-		@param name The name to give the stream
-		@param sourceStream Another DataStream which will provide the source
-			of data
-		@param freeOnClose If true, the memory associated will be destroyed
-			when the stream is destroyed.
-		@param readOnly Whether to make the stream on this memory read-only once created
-		*/
-		MemoryDataStream(const String& name, DataStream& sourceStream, 
-				bool freeOnClose = true, bool readOnly = false);
-
-        /** Create a named stream which pre-buffers the contents of 
-        another stream.
-        @remarks
-        This constructor can be used to intentionally read in the entire
-        contents of another stream, copying them to the internal buffer
-        and thus making them available in memory as a single unit.
-        @param name The name to give the stream
-        @param sourceStream Another DataStream which will provide the source
-        of data
-        @param freeOnClose If true, the memory associated will be destroyed
-        when the stream is destroyed.
-		@param readOnly Whether to make the stream on this memory read-only once created
-        */
-        MemoryDataStream(const String& name, const DataStreamPtr& sourceStream, 
-            bool freeOnClose = true, bool readOnly = false);
-
-        /** Create a stream with a brand new empty memory chunk.
-		@param size The size of the memory chunk to create in bytes
-		@param freeOnClose If true, the memory associated will be destroyed
-			when the stream is destroyed.
-		@param readOnly Whether to make the stream on this memory read-only once created
-		*/
-		MemoryDataStream(size_t size, bool freeOnClose = true, bool readOnly = false);
-		/** Create a named stream with a brand new empty memory chunk.
-		@param name The name to give the stream
-		@param size The size of the memory chunk to create in bytes
-		@param freeOnClose If true, the memory associated will be destroyed
-			when the stream is destroyed.
-		@param readOnly Whether to make the stream on this memory read-only once created
-		*/
-		MemoryDataStream(const String& name, size_t size, 
-				bool freeOnClose = true, bool readOnly = false);
+		/**
+		 * @brief	Create a stream which pre-buffers the contents of another stream. Data
+		 * 			from the other buffer will be entirely read and stored in an internal buffer.
+		 *
+		 * @param [in]	sourceStream		Stream to read data from.
+		 */
+		MemoryDataStream(const DataStreamPtr& sourceStream);
 
 		~MemoryDataStream();
 
-		/** Get a pointer to the start of the memory block this stream holds. */
-		UINT8* getPtr(void) { return mData; }
+		/**
+		 * @brief	Get a pointer to the start of the memory block this stream holds.
+		 */
+		UINT8* getPtr() { return mData; }
 		
-		/** Get a pointer to the current position in the memory block this stream holds. */
-		UINT8* getCurrentPtr(void) { return mPos; }
+		/**
+		 * @brief	Get a pointer to the current position in the memory block this stream holds.
+		 */
+		UINT8* getCurrentPtr() { return mPos; }
 		
         /** 
 		 * @copydoc DataStream::read
@@ -285,19 +179,9 @@ namespace CamelotFramework
 		size_t write(const void* buf, size_t count);
 
         /** 
-		 * @copydoc DataStream::readLine
-         */
-		size_t readLine(char* buf, size_t maxCount, const String& delim = "\n");
-		
-        /** 
-		 * @copydoc DataStream::skipLine
-         */
-		size_t skipLine(const String& delim = "\n");
-
-        /** 
 		 * @copydoc DataStream::skip
          */
-		void skip(long count);
+		void skip(size_t count);
 	
         /** 
 		 * @copydoc DataStream::seek
@@ -319,103 +203,53 @@ namespace CamelotFramework
          */
         void close(void);
 
-		/** Sets whether or not to free the encapsulated memory on close. */
-		void setFreeOnClose(bool free) { mFreeOnClose = free; }
+	protected:
+		UINT8* mData;
+		UINT8* mPos;
+		UINT8* mEnd;
+
+		bool mFreeOnClose;
 	};
 
-    /** Shared pointer to allow memory data streams to be passed around without
-    worrying about deallocation
-    */
-    typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
-
-    /** Common subclass of DataStream for handling data from 
-		std::basic_istream.
-	*/
+	/**
+	 * @brief	Data stream for handling data from standard streams.
+	 */
 	class CM_UTILITY_EXPORT FileDataStream : public DataStream
 	{
-	protected:
-		/// Reference to source stream (read)
-		std::shared_ptr<std::istream> mpInStream;
-		/// Reference to source file stream (read-only)
-		std::shared_ptr<std::ifstream> mpFStreamRO;
-		/// Reference to source file stream (read-write)
-		std::shared_ptr<std::fstream> mpFStream;
-        bool mFreeOnClose;	
-
-		void determineAccess();
 	public:
-		/** Construct a read-only stream from an STL stream
-        @param s Pointer to source stream
-        @param freeOnClose Whether to delete the underlying stream on 
-            destruction of this class
-        */
-		FileDataStream(std::shared_ptr<std::ifstream> s, 
-            bool freeOnClose = true);
-		/** Construct a read-write stream from an STL stream
-		@param s Pointer to source stream
-		@param freeOnClose Whether to delete the underlying stream on 
-		destruction of this class
-		*/
-		FileDataStream(std::shared_ptr<std::fstream> s, 
-			bool freeOnClose = true);
+		/**
+		 * @brief	Construct read-only stream from an standard stream.
+		 * 			
+		 *			If "freeOnClose" is true, the STL stream will be freed once the data stream is closed.
+		 */
+		FileDataStream(std::shared_ptr<std::ifstream> s, bool freeOnClose = true);
 
-		/** Construct named read-only stream from an STL stream
-        @param name The name to give this stream
-        @param s Pointer to source stream
-        @param freeOnClose Whether to delete the underlying stream on 
-            destruction of this class
-        */
-		FileDataStream(const String& name, 
-            std::shared_ptr<std::ifstream> s, 
-            bool freeOnClose = true);
+		/**
+		 * @brief	Construct read-write stream from an standard stream.
+		 * 			
+		 *			If "freeOnClose" is true, the STL stream will be freed once the data stream is closed.
+		 */
+		FileDataStream(std::shared_ptr<std::fstream> s, bool freeOnClose = true);
 
-		/** Construct named read-write stream from an STL stream
-		@param name The name to give this stream
-		@param s Pointer to source stream
-		@param freeOnClose Whether to delete the underlying stream on 
-		destruction of this class
-		*/
-		FileDataStream(const String& name, 
-			std::shared_ptr<std::fstream> s, 
-			bool freeOnClose = true);
+		/**
+		 * @brief	Construct read-only stream from an standard stream, and tell it the size.
+		 * 			
+		 *			Size parameter allows you to specify the size without requiring us to seek to the end of the stream
+		 *			to find the size.
+		 *			
+		 *			If "freeOnClose" is true, the STL stream will be freed once the data stream is closed.
+		 */
+		FileDataStream(std::shared_ptr<std::ifstream> s, size_t size, bool freeOnClose = true);
 
-		/** Construct named read-only stream from an STL stream, and tell it the size
-        @remarks
-            This variant tells the class the size of the stream too, which 
-            means this class does not need to seek to the end of the stream 
-            to determine the size up-front. This can be beneficial if you have
-            metadata about the contents of the stream already.
-        @param name The name to give this stream
-        @param s Pointer to source stream
-        @param size Size of the stream contents in bytes
-        @param freeOnClose Whether to delete the underlying stream on 
-            destruction of this class. If you specify 'true' for this you
-			must ensure that the stream was allocated using OGRE_NEW_T with 
-			MEMCATEGRORY_GENERAL.
-        */
-		FileDataStream(const String& name, 
-            std::shared_ptr<std::ifstream> s, 
-            size_t size, 
-            bool freeOnClose = true);
-
-		/** Construct named read-write stream from an STL stream, and tell it the size
-		@remarks
-		This variant tells the class the size of the stream too, which 
-		means this class does not need to seek to the end of the stream 
-		to determine the size up-front. This can be beneficial if you have
-		metadata about the contents of the stream already.
-		@param name The name to give this stream
-		@param s Pointer to source stream
-		@param size Size of the stream contents in bytes
-		@param freeOnClose Whether to delete the underlying stream on 
-		destruction of this class. If you specify 'true' for this you
-		must ensure that the stream was allocated using OGRE_NEW_T with 
-		MEMCATEGRORY_GENERAL.
-		*/
-		FileDataStream(const String& name, 
-			std::shared_ptr<std::fstream> s, 
-			size_t size, 
-			bool freeOnClose = true);
+		/**
+		 * @brief	Construct read-write stream from an standard stream, and tell it the size.
+		 * 			
+		 *			Size parameter allows you to specify the size without requiring us to seek to the end of the stream
+		 *			to find the size.
+		 *			
+		 *			If "freeOnClose" is true, the STL stream will be freed once the data stream is closed.
+		 */
+		FileDataStream(std::shared_ptr<std::fstream> s, size_t size, bool freeOnClose = true);
 
 		~FileDataStream();
 
@@ -430,14 +264,9 @@ namespace CamelotFramework
 		size_t write(const void* buf, size_t count);
 
         /** 
-		 * @copydoc DataStream::readLine
-         */
-        size_t readLine(char* buf, size_t maxCount, const String& delim = "\n");
-		
-        /** 
 		 * @copydoc DataStream::skip
          */
-		void skip(long count);
+		void skip(size_t count);
 	
         /** 
 		 * @copydoc DataStream::seek
@@ -458,6 +287,14 @@ namespace CamelotFramework
 		 * @copydoc DataStream::close
          */
         void close();
+
+	protected:
+		std::shared_ptr<std::istream> mpInStream;
+		std::shared_ptr<std::ifstream> mpFStreamRO;
+		std::shared_ptr<std::fstream> mpFStream;
+		bool mFreeOnClose;	
+
+		void determineAccess();
 	};
 }
 

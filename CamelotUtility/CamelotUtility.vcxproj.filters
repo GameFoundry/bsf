@@ -174,9 +174,6 @@
     <ClInclude Include="Include\CmWorkQueue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmKeyValuePair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmAsyncOp.h">
       <Filter>Header Files\Threading</Filter>
     </ClInclude>

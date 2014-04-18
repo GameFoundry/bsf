@@ -62,6 +62,11 @@ namespace CamelotFramework
 	typedef std::shared_ptr<MeshData> MeshDataPtr;
 	typedef std::shared_ptr<PixelData> PixelDataPtr;
 	typedef std::shared_ptr<GpuResourceData> GpuResourceDataPtr;
+	typedef std::shared_ptr<DataStream> DataStreamPtr;
+	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
+
+	typedef List<DataStreamPtr>::type DataStreamList;
+	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;
 
 	enum TypeID_Utility
 	{

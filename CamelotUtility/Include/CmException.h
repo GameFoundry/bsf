@@ -9,124 +9,140 @@
 
 namespace CamelotFramework
 {
+	/**
+	 * @brief	Base class for all Banshee exceptions.
+	 */
 	class CM_UTILITY_EXPORT Exception : public std::exception
     {
-    protected:
-        long mLine;
-		String mTypeName;
-        String mDescription;
-        String mSource;
-        String mFile;
-		mutable String mFullDesc;
     public:
-        /** Default constructor.
-        */
 		Exception(const char* type, const String& description, const String& source);
-
-        /** Advanced constructor.
-        */
 		Exception(const char* type, const String& description, const String& source, const char* file, long line);
 
-        /** Copy constructor.
-        */
         Exception(const Exception& rhs);
-
-		/// Needed for  compatibility with std::exception
 		~Exception() throw() {}
 
-        /** Assignment operator.
-        */
         void operator = (const Exception& rhs);
 
-        /** Returns a string with the full description of this error.
-            @remarks
-                The description contains the error number, the description
-                supplied by the thrower, what routine threw the exception,
-                and will also supply extra platform-specific information
-                where applicable. For example - in the case of a rendering
-                library error, the description of the error will include both
-                the place in which OGRE found the problem, and a text
-                description from the 3D rendering library, if available.
-        */
+		/**
+		 * @brief	Returns a string with the full description of the exception.
+		 *
+		 * @note	The description contains the error number, the description
+		 *			supplied by the thrower, what routine threw the exception,
+		 *			and will also supply extra platform-specific information
+		 *			where applicable.
+		 */
 		virtual const String& getFullDescription() const;
 
-        /** Gets the source function.
-        */
+		/**
+		 * @brief	Gets the source function that threw the exception.
+		 */
 		virtual const String& getSource() const { return mSource; }
 
-        /** Gets source file name.
-        */
+		/**
+		 * @brief	Gets the source file name in which the exception was thrown.
+		 */
 		virtual const String& getFile() const { return mFile; }
 
-        /** Gets line number.
-        */
+        /**
+         * @brief	Gets line number on which the exception was thrown.
+         */
         virtual long getLine() const { return mLine; }
 
-		/** Returns a string with only the 'description' field of this exception. Use 
-			getFullDescriptionto get a full description of the error including line number,
-			error number and what function threw the exception.
-        */
+		/**
+		 * @brief	Gets a short description about the exception.
+		 */
 		virtual const String& getDescription(void) const { return mDescription; }
 
-		/// Override std::exception::what
+		/**
+		 * @brief	Overriden std::exception::what. Returns the same value as "getFullDescription".
+		 */
 		const char* what() const throw() { return getFullDescription().c_str(); }
+
+	protected:
+		long mLine;
+		String mTypeName;
+		String mDescription;
+		String mSource;
+		String mFile;
+		mutable String mFullDesc;
     };
 
+	/**
+	 * @brief	Exception for signaling not implemented parts of the code.
+	 */
 	class CM_UTILITY_EXPORT NotImplementedException : public Exception 
 	{
 	public:
 		NotImplementedException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("NotImplementedException", inDescription, inSource, inFile, inLine) {}
 	};
+
+	/**
+	 * @brief	Exception for signaling file system errors when file could not be found.
+	 */
 	class CM_UTILITY_EXPORT FileNotFoundException : public Exception
 	{
 	public:
 		FileNotFoundException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("FileNotFoundException", inDescription, inSource, inFile, inLine) {}
 	};
+
+	/**
+	 * @brief	Exception for signaling general IO errors.
+	 * 			
+	 * @note	An example being failed to open a file or a network connection.
+	 */
 	class CM_UTILITY_EXPORT IOException : public Exception
 	{
 	public:
 		IOException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("IOException", inDescription, inSource, inFile, inLine) {}
 	};
+
+	/**
+	 * @brief	Exception for signaling not currently executing code in not in a valid state.
+	 */
 	class CM_UTILITY_EXPORT InvalidStateException : public Exception
 	{
 	public:
 		InvalidStateException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("InvalidStateException", inDescription, inSource, inFile, inLine) {}
 	};
+
+	/**
+	 * @brief	Exception for signaling not some parameters you have provided are not valid.
+	 */
 	class CM_UTILITY_EXPORT InvalidParametersException : public Exception
 	{
 	public:
 		InvalidParametersException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("InvalidParametersException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_UTILITY_EXPORT ItemIdentityException : public Exception
-	{
-	public:
-		ItemIdentityException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception("ItemIdentityException", inDescription, inSource, inFile, inLine) {}
-	};
+
+	/**
+	 * @brief	Exception for signaling an internal error, normally something that shouldn't have happened or
+	 * 			wasn't anticipated by the programmers of that system.
+	 */
 	class CM_UTILITY_EXPORT InternalErrorException : public Exception
 	{
 	public:
 		InternalErrorException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("InternalErrorException", inDescription, inSource, inFile, inLine) {}
 	};
+
+	/**
+	 * @brief	Exception for signaling an error in a rendering API.
+	 */
 	class CM_UTILITY_EXPORT RenderingAPIException : public Exception
 	{
 	public:
 		RenderingAPIException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
 			: Exception("RenderingAPIException", inDescription, inSource, inFile, inLine) {}
 	};
-	class CM_UTILITY_EXPORT RuntimeAssertionException : public Exception
-	{
-	public:
-		RuntimeAssertionException(const String& inDescription, const String& inSource, const char* inFile, long inLine)
-			: Exception("RuntimeAssertionException", inDescription, inSource, inFile, inLine) {}
-	};
 
+	/**
+	 * @brief Macro for throwing exceptions that will automatically fill out function name, file name and line number of the exception.
+	 */
 #ifndef CM_EXCEPT
 #define CM_EXCEPT(type, desc)	\
 	{                           \

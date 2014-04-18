@@ -9,27 +9,30 @@ namespace CamelotFramework
 
     DynLib* DynLibManager::load( const String& filename)
     {
-		DynLibList::iterator i = mLibList.find(filename);
-		if (i != mLibList.end())
+		auto iterFind = mLoadedLibraries.find(filename);
+		if (iterFind != mLoadedLibraries.end())
 		{
-			return i->second;
+			return iterFind->second;
 		}
 		else
 		{
-	        DynLib* pLib = cm_new<DynLib>(filename);
-			pLib->load();        
-        	mLibList[filename] = pLib;
-	        return pLib;
+	        DynLib* newLib = new (cm_alloc<DynLib>()) DynLib(filename);
+
+			newLib->load();       
+        	mLoadedLibraries[filename] = newLib;
+
+	        return newLib;
 		}
     }
 
 	void DynLibManager::unload(DynLib* lib)
 	{
-		DynLibList::iterator i = mLibList.find(lib->getName());
-		if (i != mLibList.end())
+		auto iterFind = mLoadedLibraries.find(lib->getName());
+		if (iterFind != mLoadedLibraries.end())
 		{
-			mLibList.erase(i);
+			mLoadedLibraries.erase(iterFind);
 		}
+
 		lib->unload();
 		cm_delete(lib);
 	}
@@ -37,14 +40,14 @@ namespace CamelotFramework
 	DynLibManager::~DynLibManager()
     {
         // Unload & delete resources in turn
-        for( DynLibList::iterator it = mLibList.begin(); it != mLibList.end(); ++it )
+        for(auto& entry : mLoadedLibraries)
         {
-            it->second->unload();
-			cm_delete(it->second);
+            entry.second->unload();
+			cm_delete(entry.second);
         }
 
         // Empty the list
-        mLibList.clear();
+        mLoadedLibraries.clear();
     }
 
 	DynLibManager& gDynLibManager()

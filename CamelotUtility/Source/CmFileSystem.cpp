@@ -44,12 +44,12 @@ namespace CamelotFramework
 		if (rwStream)
 		{
 			// use the writeable stream 
-			stream = cm_new<FileDataStream, ScratchAlloc>(toString(fullPath), rwStream, (size_t)fileSize, true);
+			stream = cm_new<FileDataStream, ScratchAlloc>(rwStream, (size_t)fileSize, true);
 		}
 		else
 		{
 			// read-only stream
-			stream = cm_new<FileDataStream, ScratchAlloc>(toString(fullPath), roStream, (size_t)fileSize, true);
+			stream = cm_new<FileDataStream, ScratchAlloc>(roStream, (size_t)fileSize, true);
 		}
 		return cm_shared_ptr<FileDataStream, ScratchAlloc>(stream);
 	}
@@ -67,7 +67,7 @@ namespace CamelotFramework
 			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + toString(fullPath));
 
 		/// Construct return stream, tell it to delete on destroy
-		return cm_shared_ptr<FileDataStream, ScratchAlloc>(toString(fullPath), rwStream, 0, true);
+		return cm_shared_ptr<FileDataStream, ScratchAlloc>(rwStream, 0, true);
 	}
 
 	UINT64 FileSystem::getFileSize(const WString& fullPath)
@@ -177,9 +177,9 @@ namespace CamelotFramework
 		return current_path().wstring().c_str();
 	}
 
-	WString FileSystem::getParentDirectory(const WString& path)
+	WString FileSystem::getParentDirectory(const WString& fullPath)
 	{
-		boost::filesystem3::path p(path.c_str());
+		boost::filesystem3::path p(fullPath.c_str());
 		
 		if(!is_directory(p))
 		{
@@ -187,6 +187,6 @@ namespace CamelotFramework
 			return dir.wstring().c_str();
 		}
 
-		return path;
+		return fullPath;
 	}
 }

@@ -5,13 +5,11 @@
 namespace CamelotFramework
 {
 	/**
-	 * @brief	Frame allocator. Very fast allocations but can only free all of its memory at once.
+	 * @brief	Frame allocator. Performs very fast allocations but can only free all of its memory at once.
 	 * 			Perfect for allocations that last just a single frame.
 	 * 			
 	 * @note	Not thread safe with an exception. "alloc" and "clear" methods need to be called from the same thread.
 	 * 			"dealloc" is thread safe and can be called from any thread.
-	 * 			
-	 *			Each allocation comes with a pretty hefty 4 byte memory overhead, so don't use it for small allocations.
 	 */
 	class CM_UTILITY_EXPORT FrameAlloc
 	{
@@ -38,6 +36,8 @@ namespace CamelotFramework
 		 * @brief	Allocates a new block of memory of the specified size.
 		 *
 		 * @param	amount	Amount of memory to allocate, in bytes.
+		 * 					
+		 * @note	Not thread safe.
 		 */
 		UINT8* alloc(UINT32 amount);
 
@@ -53,6 +53,8 @@ namespace CamelotFramework
 
 		/**
 		 * @brief	Deallocates all allocated memory.
+		 * 			
+		 * @note	Not thread safe.
 		 */
 		void clear();
 

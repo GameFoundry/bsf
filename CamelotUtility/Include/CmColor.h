@@ -192,7 +192,7 @@ namespace CamelotFramework
             result.b = lhs * rhs.b;
             result.a = lhs * rhs.a;
 
-            return kProd;
+            return result;
         }
 
         inline Color& operator+= (const Color& rhs)

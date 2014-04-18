@@ -49,7 +49,7 @@ namespace CamelotFramework
 	class MemoryAllocator : public MemoryAllocatorBase
 	{
 	public:
-		static inline void* allocate(UINT32 bytes)
+		static inline void* allocate(size_t bytes)
 		{
 #if CM_PROFILING_ENABLED
 			incAllocCount();
@@ -58,7 +58,7 @@ namespace CamelotFramework
 			return malloc(bytes);
 		}
 
-		static inline void* allocateArray(UINT32 bytes, UINT32 count)
+		static inline void* allocateArray(size_t bytes, UINT32 count)
 		{
 #if CM_PROFILING_ENABLED
 			incAllocCount();
@@ -112,7 +112,7 @@ namespace CamelotFramework
 	 * @brief	Allocates the specified number of bytes.
 	 */
 	template<class Alloc> 
-	inline void* cm_alloc(UINT32 count)
+	inline void* cm_alloc(size_t count)
 	{
 		return MemoryAllocator<Alloc>::allocate(count);
 	}
@@ -204,7 +204,7 @@ namespace CamelotFramework
 	/**
 	 * @brief	Allocates the specified number of bytes.
 	 */
-	inline void* cm_alloc(UINT32 count)
+	inline void* cm_alloc(size_t count)
 	{
 		return MemoryAllocator<GenAlloc>::allocate(count);
 	}
@@ -360,7 +360,7 @@ namespace CamelotFramework
 		// allocate but don't initialize num elements of type T
 		pointer allocate (size_type num, const void* = 0) 
 		{
-			pointer ret = (pointer)(cm_alloc<Alloc>((UINT32)num*sizeof(T)));
+			pointer ret = (pointer)(cm_alloc<Alloc>((size_t)num*sizeof(T)));
 			return ret;
 		}
 

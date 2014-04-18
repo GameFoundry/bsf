@@ -1,7 +1,6 @@
 #include "CmLog.h"
+#include "CmException.h"
 #include "boost/signal.hpp"
-
-void dbg_VSLog(const CamelotFramework::String& message);
 
 namespace CamelotFramework
 {
@@ -9,15 +8,12 @@ namespace CamelotFramework
 		:mMsg(msg), mChannel(level)
 	{ }
 
-	Log::Log(const String& logFilePath, bool autoSave, bool suppressFileOutput)
-		:mAutoSave(autoSave), mSuppressFileOutput(suppressFileOutput), mSaveFilePath(logFilePath)
+	Log::Log()
 	{
 	}
 
 	Log::~Log()
 	{
-		flush();
-
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
 			cm_delete<PoolAlloc>(*iter);
 	}
@@ -28,11 +24,6 @@ namespace CamelotFramework
 		mEntries.push_back(newEntry);
 
 		doOnEntryAdded(*newEntry);
-
-		dbg_VSLog(message);
-
-		if(mAutoSave)
-			flush();
 	}
 
 	void Log::clear()
@@ -41,33 +32,16 @@ namespace CamelotFramework
 			cm_delete<PoolAlloc>(*iter);
 
 		mEntries.clear();
-
-		if(mAutoSave)
-			flush();
 	}
 
-	void Log::flush()
+	void Log::saveToFile(const WString& path)
 	{
-		if(mSuppressFileOutput)
-			return;
-
-		// TODO - Write to disk and throw exception if it can't
+		// TODO - Save the log as HTML
+		CM_EXCEPT(NotImplementedException, "Log save to file not yet implemented.");
 	}
 
 	void Log::doOnEntryAdded(const LogEntry& entry)
 	{
 		onEntryAdded(entry);
 	}
-
-
-}
-
-// TODO: Debug only - Remove later
-
-#include <windows.h>
-
-void dbg_VSLog(const CamelotFramework::String& message)
-{
-	OutputDebugString(message.c_str());
-	OutputDebugString("\n");
 }

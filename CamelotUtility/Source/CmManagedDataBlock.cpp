@@ -3,12 +3,12 @@
 
 namespace CamelotFramework
 {
-	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size)
-		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true)
+	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size, std::function<void(UINT8*)> deallocator)
+		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true), mDeallocator(deallocator)
 	{ }
 
 	ManagedDataBlock::ManagedDataBlock(UINT32 size)
-		:mSize(size), mManaged(true), mIsDataOwner(true)
+		:mSize(size), mManaged(true), mIsDataOwner(true), mDeallocator(nullptr)
 	{
 		mData = (UINT8*)cm_alloc<ScratchAlloc>(size);
 	}
@@ -18,6 +18,7 @@ namespace CamelotFramework
 		mData = source.mData;
 		mSize = source.mSize;
 		mManaged = source.mManaged;
+		mDeallocator = source.mDeallocator;
 
 		mIsDataOwner = true;
 		source.mIsDataOwner = false;
@@ -26,6 +27,11 @@ namespace CamelotFramework
 	ManagedDataBlock::~ManagedDataBlock()
 	{
 		if(mManaged && mIsDataOwner)
-			cm_free<ScratchAlloc>(mData);
+		{
+			if(mDeallocator != nullptr)
+				mDeallocator(mData);
+			else
+				cm_free<ScratchAlloc>(mData);
+		}
 	}
 }

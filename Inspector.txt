@@ -4,24 +4,66 @@ Matrix3 field
 Matrix4 field
 GameObject field
 Resource field
-
 -------------
-Cursor
- - A way to save/load a set of cursors
 
- IMMEDIATE:
+Update C++ side of the GUI so it properly uses GUIPanels
+ - (Remove current GUI and EditorGUI and replace them with GUIPanel)
+ - Ensure GUI panel clips any of its child GUIAreas to the panel area
+
+Remove support for resizeable areas (Update ScriptGUIArea)
+
+Things to think about/do:
+ - Inspectable fields need TAB support
+  - Modify C++ GUIElement so I can do setNextTabElement(GUIElement*)
+ - Inspectable fields need Undo/Redo support. Consider how to best implement it
+  - C++ Undo/Redo system needs nested contexts
+  - C++ Ensure that Undo/Redo works on per-field basis (undoing items within a field)
+  - Add C# UndoRedo
+ - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
+  - When user is currently writing in an input box I don't want refresh to overwrite that value.
+ - Expand/Collapse needs to work for both Components and their sub-objects (Structs, Arrays, etc.)
+ - Support for initializing SerializableObject/SerializableArray (and their fields, together with getters/setters)
+ - How do I refresh currently visible inspector fields.
+   - Also how will this be done with custom inspectors, when I might not use InspectableObject
+ - Currently I do not have a way to creating an Inspector field for just a single field, only for an entire object
+ - Finally once all other things are done implement support for multi-rank arrays, lists and dictionaries
+
+
+How will UndoRedo keep a reference to the object? 
+ - What if the object gets destroyed? 
+ - Keeping a reference will prevent the object from being destroyed.
+   - Although heavy stuff is destroyed manually via Destroy anyway
+
+
+STUBBED IN METHODS:
+EditorWindow
+ WindowResized
+ Internal_GetWidth
+ Internal_GetHeight
+ Internal_CreateGUIPanel
+GUIPanel
+ Internal_SetArea
+ Internal_Destroy
+SceneObject
+ GetComponents
+GUIArea
+ SetArea
+SerializableObject
+SerializableArray
+SerializableField
+
+ ----------------------
+
+ Non-inspector:
+
   - Deleting first entry in input field moves the cursor incorrectly
   - Test if parsing int/float value from int/float field actually works
   - ProfilerOverlay elements are constantly dirty? even though I'm not calling update
 
-Other:
- - Refactor BuiltinMaterialFactory to BuiltinEngineResources
+Refactor BuiltinMaterialFactory to BuiltinEngineResources
 
--------------
-
-Boost any replacement: http://www.codeproject.com/Articles/11250/High-Performance-Dynamic-Typing-in-C-using-a-Repla
-
--------------
+Cursor
+ - A way to save/load a set of cursors
 
 Get rid of the CamelotFramework namespace
  - I shouldn't need to prefix each variable with CM::
@@ -38,99 +80,5 @@ Make a common class for ScriptGUIElement as they all share:
 
 Add InsertElement to GUILayout
 
--------------
-Get rid of EditorGUI and GUI classes and instead make them a single class GUIPanel
- - IMPORANT. Consider replacing InspectorArea with GUIPanels (they internally in C++ are just clipped GUIAreas). This way I have a generic system
-
-IMPLEMENT:
-EditorWindow
- WindowResized
- Internal_GetWidth
- Internal_GetHeight
- Internal_CreateGUIPanel
-GUIPanel
- Internal_SetArea
- Internal_Destroy
-SceneObject
- GetComponents
-GUIArea
- SetArea
-Refactor existing ScriptGUI and ScriptEditorGUI and add support for GUIPanel instead
-Remove support for resizable areas
-
-Tab indexes
- - EditorFields should have SetNextField method that allow you to set tab order directly
- - InspectableField are automatically assigned ID
-   - ID is part depth (also governs identation) and part sequential index
-   - This allows me to add/remove elements from objects like lists and arrays and not mess up the tab order
-   - Also collapse/expand doesn't require us to modify tab indexes
-   - InspectableObjects should likely have a reference to the Inspector so that they can query next InspectableField based on tab ID
-   - These IDs are then used for calling SetNextField on normal EditorFields
-
-Custom inspector
- - Custom inspector should have complete knowledge of the GUI objects within it (so that parent Inspector can expand/collapse it without worrying about the user forgetting to hide an element and messing up the other inspectors)
- - Since custom inspector should have all of its elements in a specific GUILayout, we should be able to just manipulate that GUILayout
-
-Positioning/Indentation
- - Inspector needs to be provided with a layout
- - Whenever an InspectableObject is created it will create a new X layout with a space (for indenting) and a Y layout (for child elements)
-   - We will provide it with parent layout from which to create those on
-   - And depth for determining indent amount
-   - For top level objects there is no space or X layout (depth is 0)
-  - InspectableFields will use the Layouts they are given by their parent InspectableObjects
-
-C++ bit for creating InspectableField
- - Need a way to list all fields in an object (should already have most of that functionality)
- - And hook up those fields with get/set callbacks for editing/updating
-
-UndoRedo
- - A global UndoRedo class for generic use
- - Specific UndoRedo for automatic use in InspectableField
- - Will likely need Undo/Redo context
-    - e.g. when in a text field I want to undo/redo my changes in that text field one by one
-    - but when I click outside maybe I just want to undo to the previous state before I even focused on that text field
-      - plus it doesn't make sense for example to undo a text field if I'm currently focusing on something in scene
-
----------------------------
-
-SerializableObject(object obj)
- - GetFields()
-
-SerializableField
- - Type
- - GetInt/SetInt
- - GetString/SetString
- - GetObject/SetObject
- - GetArray/SetArray
- - etc.
-
-SerializableArray
- - GetInt(arrayIdx)/SetInt(arrayIdx)
- - GetKVP(arrayIdx)/SetKVP(arrayIdx)
- - etc.
-
-SerializableDictionary
- - GetInt(key)/SetInt(key)
- - GetKVP(key)/SetKVP(key)
- - etc.
-
-----------------
-
-InspectableObject(SerializableObject)
- - Internally creates a list of InspectorFields (does not initialize any GUI elements)
- - CreateGUI(GUILayout) <- populates the GUI layout with every InspectorField
-     - For nested objects it creates child layouts and indents them appropriately
-
-InspectorField(SerializableField)
- - CreateGUI(GUILayout) <- Inserts the corresponding GUI element into the layout
-
--------------------
-
-When creating a custom inspector, where will I store InspectorFields? Require user to store them?
- - I guess. If user doesn't store them they get destructed and upon destruction they remove their GUI element from the layout.
- - But what happens when Destroy is called? GUI elements get destroyed as normal and InspectorField will need to check for that, in which case it will essentially do nothing.
-
-How do I refresh Inspector fields if source object changes?
- - Keep all InspectorFields in InspectorManager class, which will call Update on it regularily
- - If InspectorField GUI elements were destroyed then Update will show a warning
- - Otherwise you are required to call destroy on an InspectorField to properly remove it
+ Boost any replacement: http://www.codeproject.com/Articles/11250/High-Performance-Dynamic-Typing-in-C-using-a-Repla
+  - Also POCO has any class

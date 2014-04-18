@@ -282,7 +282,6 @@
     <ClInclude Include="Include\CmHString.h" />
     <ClInclude Include="Include\CmVector2I.h" />
     <ClInclude Include="Include\CmIReflectable.h" />
-    <ClInclude Include="Include\CmKeyValuePair.h" />
     <ClInclude Include="Include\CmLog.h" />
     <ClInclude Include="Include\CmManagedDataBlock.h" />
     <ClInclude Include="Include\CmMemoryAllocator.h" />

@@ -13,7 +13,6 @@
 #include "CmShader.h"
 #include "CmDebug.h"
 #include "CmException.h"
-#include "CmKeyValuePair.h"
 
 namespace CamelotFramework
 {

@@ -37,19 +37,26 @@ namespace CamelotFramework
 
 	UINT8* FrameAlloc::alloc(UINT32 amount)
 	{
+#if CM_DEBUG_MODE
 		amount += sizeof(UINT32);
+#endif
 
 		UINT32 freeMem = mFreeBlock->mSize - mFreeBlock->mFreePtr;
 		if(amount > freeMem)
 			allocBlock(amount);
 
 		UINT8* data = mFreeBlock->alloc(amount);
+
+#if CM_DEBUG_MODE
 		mTotalAllocBytes += amount;
 
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 		*storedSize = amount;
 
 		return data + sizeof(UINT32);
+#else
+		return data;
+#endif
 	}
 
 	void FrameAlloc::dealloc(UINT8* data)
@@ -57,15 +64,19 @@ namespace CamelotFramework
 		// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
 		// happens in "clear"
 			
+#if CM_DEBUG_MODE
 		data -= sizeof(UINT32);
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 		mTotalAllocBytes -= *storedSize;
+#endif
 	}
 
 	void FrameAlloc::clear()
 	{
+#if CM_DEBUG_MODE
 		if(mTotalAllocBytes.load() > 0)
 			CM_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
+#endif
 
 		// Merge all blocks into one
 		UINT32 totalBytes = 0;
