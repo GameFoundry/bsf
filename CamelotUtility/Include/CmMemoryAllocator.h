@@ -10,6 +10,10 @@ namespace CamelotFramework
 {
 	class MemoryAllocatorBase;
 
+	/**
+	 * @brief	Thread safe class used for storing total number of memory allocations and deallocations,
+	 * 			primarily for statistic purposes.
+	 */
 	class MemoryCounter
 	{
 	public:
@@ -34,6 +38,10 @@ namespace CamelotFramework
 		static CM_THREADLOCAL UINT64 Frees;
 	};
 
+	/**
+	 * @brief	Base class all memory allocators need to inherit. Provides
+	 * 			allocation and free counting.
+	 */
 	class MemoryAllocatorBase
 	{
 	protected:
@@ -44,6 +52,9 @@ namespace CamelotFramework
 	/**
 	 * @brief	Memory allocator providing a generic implementation. 
 	 * 			Specialize for specific categories as needed.
+	 * 			
+	 * @note	For example you might implement a pool allocator for specific types in order
+	 * 			to reduce allocation overhead. By default standard malloc/free are used.
 	 */
 	template<class T>
 	class MemoryAllocator : public MemoryAllocatorBase
@@ -96,6 +107,8 @@ namespace CamelotFramework
 	/**
 	 * @brief	Allocator used for allocating small amounts of temporary memory that
 	 * 			used and then quickly released
+	 * 			
+	 * @note	Currently not used.
 	 */
 	class ScratchAlloc
 	{ };
@@ -103,6 +116,8 @@ namespace CamelotFramework
 	/**
 	 * @brief	Pool allocator that is only suited for allocating one specific type of data. Most useful when you are
 	 * 			often allocating one certain data type, with no specific allocation or deallocation order.
+	 * 			
+	 * @note	Currently not used.
 	 */
 	class PoolAlloc
 	{ };
@@ -157,8 +172,11 @@ namespace CamelotFramework
 #undef FORWARD_T
 #undef MAKE_CM_NEW
 
-	// Create a new object with the specified allocator without any parameters
-	// (Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types)
+	/**
+	 * @brief	Create a new object with the specified allocator without any parameters
+	 *
+	 * @note	Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types.
+	 */
 	template<class Type, class Alloc>
 	Type* cm_new() 
 	{
@@ -232,7 +250,9 @@ namespace CamelotFramework
 		return ptr;
 	}
 
-	// Create a new object with the general allocator and the specified parameters.
+	/**
+	 * @brief	Create a new object with the specified allocator and the specified parameters.
+	 */
 #define MAKE_CM_NEW(z, n, unused)                                     \
 	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
 	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) ) { \
@@ -247,8 +267,11 @@ namespace CamelotFramework
 #undef FORWARD_T
 #undef MAKE_CM_NEW
 
-	// Create a new object with the general allocator without any parameters
-	// (Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types)
+	/**
+	 * @brief	Create a new object with the specified allocator without any parameters
+	 *
+	 * @note	Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types.
+	 */
 	template<class Type>
 	Type* cm_new() 
 	{
@@ -304,12 +327,15 @@ namespace CamelotFramework
 
 namespace CamelotFramework
 {
-	// Allocator we can use in the standard library
+    /**
+     * @brief	Allocator for the standard library that internally uses Banshee
+     * 			memory allocator.
+     */
     template <class T, class Alloc = GenAlloc>
 	class StdAlloc 
 	{
-		public:
-		// type definitions
+	public:
+		// Type definitions
 		typedef T        value_type;
 		typedef T*       pointer;
 		typedef const T* const_pointer;
@@ -318,26 +344,15 @@ namespace CamelotFramework
 		typedef std::size_t    size_type;
 		typedef std::ptrdiff_t difference_type;
 
-		// rebind allocator to type U
+		/**
+		 * @brief	Rebind allocator to type U
+		 */
 		template <class U>
 		struct rebind 
 		{
 			typedef StdAlloc<U, Alloc> other;
 		};
 
-		// return address of values
-		pointer address (reference value) const 
-		{
-			return &value;
-		}
-		const_pointer address (const_reference value) const 
-		{
-			return &value;
-		}
-
-		/* constructors and destructor
-		* - nothing to do because the allocator has no state
-		*/
 		StdAlloc() throw() 
 		{ }
 
@@ -351,47 +366,76 @@ namespace CamelotFramework
 		~StdAlloc() throw() 
 		{ }
 
-		// return maximum number of elements that can be allocated
+		/**
+		 * @brief	Return address of value.
+		 */
+		pointer address (reference value) const 
+		{
+			return &value;
+		}
+
+		/**
+		 * @brief	Return address of value.
+		 */
+		const_pointer address (const_reference value) const 
+		{
+			return &value;
+		}
+
+		/**
+		 * @brief	Return maximum number of elements that can be allocated.
+		 */
 		size_type max_size () const throw() 
 		{
 			return std::numeric_limits<std::size_t>::max() / sizeof(T);
 		}
 
-		// allocate but don't initialize num elements of type T
+		/**
+		 * @brief	Allocate but don't initialize number elements of type T.
+		 */
 		pointer allocate (size_type num, const void* = 0) 
 		{
 			pointer ret = (pointer)(cm_alloc<Alloc>((size_t)num*sizeof(T)));
 			return ret;
 		}
 
-		// initialize elements of allocated storage p with value value
+		/**
+		 * @brief	Initialize elements of allocated storage p with value "value".
+		 */
 		void construct (pointer p, const T& value) 
 		{
-			// initialize memory with placement new
 			new((void*)p)T(value);
 		}
 
-		// destroy elements of initialized storage p
+		/**
+		 * @brief	Destroy elements of initialized storage p.
+		 */
 		void destroy (pointer p) 
 		{
-			// destroy objects by calling their destructor
 			p->~T();
 		}
 
-		// deallocate storage p of deleted elements
+		/**
+		 * @brief	Deallocate storage p of deleted elements.
+		 */
 		void deallocate (pointer p, size_type num) 
 		{
-			// print message and deallocate memory with global delete
 			cm_free<Alloc>((void*)p);
 		}
 	};
 
-   // return that all specializations of this allocator are interchangeable
+   /**
+    * @brief	Return that all specializations of this allocator are interchangeable.
+    */
    template <class T1, class T2, class Alloc>
    bool operator== (const StdAlloc<T1, Alloc>&,
                     const StdAlloc<T2, Alloc>&) throw() {
        return true;
    }
+
+   /**
+    * @brief	Return that all specializations of this allocator are interchangeable.
+    */
    template <class T1, class T2, class Alloc>
    bool operator!= (const StdAlloc<T1, Alloc>&,
                     const StdAlloc<T2, Alloc>&) throw() {

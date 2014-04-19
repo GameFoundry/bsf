@@ -11,17 +11,29 @@ namespace CamelotFramework
 	class CM_UTILITY_EXPORT Path
 	{
 	public:
+		/**
+		 * @brief	Returns file extension extracted from the provided
+		 * 			path, with a leading ".".
+		 */
 		static WString getExtension(const WString& path)
 		{
 			boost::filesystem3::wpath ext = boost::filesystem3::extension(boost::filesystem3::wpath(path.c_str()));
 			return ext.wstring().c_str();
 		}
 
+		/**
+		 * @brief	Query if a path has the specified extension. Provided
+		 * 			extension must contain the leading ".".
+		 */
 		static bool hasExtension(const WString& path, const WString& extension)
 		{
 			return getExtension(path) == extension;
 		}
 
+		/**
+		 * @brief	Replaces or adds an extension on a file path. Provided
+		 * 			extension must contain the leading ".".
+		 */
 		static void replaceExtension(WString& path, const WString& newExtension)
 		{
 			boost::filesystem3::path internalPath = path.c_str();
@@ -29,6 +41,10 @@ namespace CamelotFramework
 			path = internalPath.replace_extension(newExtension.c_str()).c_str();
 		}
 
+		/**
+		 * @brief	Returns a path that is one level higher than the provided path, unless the path
+		 * 			is already at the root. Otherwise returns the initial path.
+		 */
 		static WString parentPath(const WString& path)
 		{
 			boost::filesystem3::path internalPath = path.c_str();
@@ -86,6 +102,11 @@ namespace CamelotFramework
 			return relativePath;
 		}
 
+		/**
+		 * @brief	Splits a path into string entries. Path separator
+		 * 			may be "\" or "/". Path separator will not be included
+		 * 			in the returned strings.
+		 */
 		static Vector<WString>::type split(const WString& path)
 		{
 			Vector<WString>::type splitPath;
@@ -94,6 +115,9 @@ namespace CamelotFramework
 			return StringUtil::split(standardizedPath, L"/");
 		}
 
+		/**
+		 * @brief	Combines two paths using the "/" path separator.
+		 */
 		static WString combine(const WString& base, const WString& name)
 		{
 			if (base.empty())
@@ -162,6 +186,12 @@ namespace CamelotFramework
 			return true;
 		}
 
+		/**
+		 * @brief	Extracts filename from the provided path.
+		 *
+		 * @param	path				Path to the file.
+		 * @param	includeExtension	(optional) If true, filename extension will be included in the returned string.
+		 */
 		static WString getFilename(const WString& path, bool includeExtension = true)
 		{
 			boost::filesystem3::path internalPath = path.c_str();

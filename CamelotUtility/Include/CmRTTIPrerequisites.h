@@ -4,7 +4,7 @@ namespace CamelotFramework
 {
 	/**
 	* @brief	Helper method when serializing known data types that have valid
-	* 			RTTIPlainType specializations.
+	* 			RTTIPlainType specialization.
 	* 			
 	*			Returns the size of the element. If elements serializable type is 
 	*			specialized with hasDynamicSize == true, the dynamic size is calculated, 
@@ -21,7 +21,7 @@ namespace CamelotFramework
 
 	/**
 	 * @brief	Helper method when serializing known data types that have valid
-	 * 			RTTIPlainType specializations.
+	 * 			RTTIPlainType specialization.
 	 * 			
 	 *			Writes the specified data into memory, advances the memory pointer by the
 	 *			bytes written and returns pointer to new memory.
@@ -36,7 +36,7 @@ namespace CamelotFramework
 
 	/**
 	* @brief	Helper method when serializing known data types that have valid
-	* 			RTTIPlainType specializations.
+	* 			RTTIPlainType specialization.
 	* 			
 	*			Writes the specified data into memory, advances the memory pointer by the
 	*			bytes written and returns pointer to new memory. Also increases the size 
@@ -56,7 +56,7 @@ namespace CamelotFramework
 
 	/**
 	 * @brief	Helper method when serializing known data types that have valid
-	 * 			RTTIPlainType specializations.
+	 * 			RTTIPlainType specialization.
 	 * 			
 	 *			Reads the specified data into memory, advances the memory pointer by the
 	 *			bytes read and returns pointer to new memory.
@@ -71,7 +71,7 @@ namespace CamelotFramework
 
 	/**
 	 * @brief	Helper method when serializing known data types that have valid
-	 * 			RTTIPlainType specializations.
+	 * 			RTTIPlainType specialization.
 	 * 			
 	 *			Reads the specified data into memory, advances the memory pointer by the
 	 *			bytes read and returns pointer to new memory. Also increases the size 
@@ -88,6 +88,21 @@ namespace CamelotFramework
 		return memory + elemSize;
 	}
 
+	/**
+	 * @brief	Template that you may specialize with a class if you want to provide
+	 * 			simple serialization for it. 
+	 * 			
+	 *			Any type that uses the "plain" field in the RTTI system must specialize this class.
+	 * 			
+	 * @note	Normally you will want to implement IReflectable interface if you want to provide serialization
+	 * 			as that interface properly handles versioning, nested objects, pointer handling and more.
+	 * 			
+	 *			This class is useful for types you can easily serialize using a memcpy (built-in types like int/float/etc), or
+	 *			types you cannot modify so they implement IReflectable interface (like std::string or std::vector).
+	 *			
+	 * @see		RTTIType
+	 * @see		RTTIField
+	 */
 	template<class T>
 	struct RTTIPlainType 
 	{ 
@@ -95,20 +110,32 @@ namespace CamelotFramework
 			"Provided type isn't plain-old-data. You need to specialize RTTIPlainType template in order to serialize this type. "\
 			" (Or call CM_ALLOW_MEMCPY_SERIALIZATION(type) macro if you are sure the type can be properly serialized using just memcpy.)");
 
-		enum { id = 0 }; 
-		enum { hasDynamicSize = 0 };
+		enum { id = 0 /**< Unique id for the serializable type. */ }; 
+		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, e.g. int) or 1 (Dynamic size with no size restriction, e.g. string) */ };
 
+		/**
+		 * @brief	Serializes the provided object into the provided pre-allocated
+		 * 			memory buffer.
+		 */
 		static void toMemory(const T& data, char* memory)	
 		{ 
 			memcpy(memory, &data, sizeof(T)); 
 		}
 
+		/**
+		 * @brief	Deserializes a previously allocated object from the provided
+		 * 			memory buffer. Return the number of bytes read from the memory buffer.
+		 */
 		static UINT32 fromMemory(T& data, char* memory)
 		{
 			memcpy(&data, memory, sizeof(T)); 
 			return sizeof(T);
 		}
 
+		/**
+		 * @brief	Returns the size of the provided object. (Works for both
+		 * 			static and dynamic size types)
+		 */
 		static UINT32 getDynamicSize(const T& data)
 		{ 
 			assert(false); 
@@ -116,6 +143,14 @@ namespace CamelotFramework
 		}
 	};
 
+	/**
+	 * @brief	Tell the RTTI system that the specified type may be serialized just by
+	 * 			using a memcpy.
+	 *
+	 * @note	Internally this creates a basic RTTIPlainType specialization for the type.
+	 * 
+	 * @see		RTTIPlainType
+	 */
 #define CM_ALLOW_MEMCPY_SERIALIZATION(type)				\
 	template<> struct RTTIPlainType<##type##>			\
 	{	enum { id=0 }; enum { hasDynamicSize = 0 };		\
@@ -127,11 +162,18 @@ namespace CamelotFramework
 	{ assert(false); return sizeof(##type##); }				\
 	}; 
 
-	// RTTI types for some standard classes
+	/**
+	 * @brief	RTTIPlainType for std::vector.
+	 * 			
+	 * @see		RTTIPlainType
+	 */
 	template<class T> struct RTTIPlainType<std::vector<T, StdAlloc<T>>>
 	{	
 		enum { id = TID_STDVECTOR }; enum { hasDynamicSize = 1 };
 
+		/**
+		 * @copydoc		RTTIPlainType::toMemory
+		 */
 		static void toMemory(const std::vector<T, StdAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -155,6 +197,9 @@ namespace CamelotFramework
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
+		/**
+		 * @copydoc		RTTIPlainType::toMemory
+		 */
 		static UINT32 fromMemory(std::vector<T, StdAlloc<T>>& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -177,6 +222,9 @@ namespace CamelotFramework
 			return size;
 		}
 
+		/**
+		 * @copydoc		RTTIPlainType::toMemory
+		 */
 		static UINT32 getDynamicSize(const std::vector<T, StdAlloc<T>>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) * 2;
@@ -190,10 +238,18 @@ namespace CamelotFramework
 		}	
 	}; 
 
+	/**
+	 * @brief	RTTIPlainType for std::map.
+	 * 			
+	 * @see		RTTIPlainType
+	 */
 	template<class Key, class Value> struct RTTIPlainType<std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>>
 	{	
 		enum { id = TID_STDMAP }; enum { hasDynamicSize = 1 };
 
+		/**
+		 * @copydoc		RTTIPlainType::toMemory
+		 */
 		static void toMemory(const std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -223,6 +279,9 @@ namespace CamelotFramework
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
+		/**
+		 * @copydoc		RTTIPlainType::fromMemory
+		 */
 		static UINT32 fromMemory(std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -249,6 +308,9 @@ namespace CamelotFramework
 			return size;
 		}
 
+		/**
+		 * @copydoc		RTTIPlainType::getDynamicSize
+		 */
 		static UINT32 getDynamicSize(const std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) * 2;
@@ -265,10 +327,18 @@ namespace CamelotFramework
 		}	
 	}; 
 
+	/**
+	 * @brief	RTTIPlainType for std::pair.
+	 * 			
+	 * @see		RTTIPlainType
+	 */
 	template<class A, class B> struct RTTIPlainType<std::pair<A, B>>
 	{	
 		enum { id = TID_STDPAIR }; enum { hasDynamicSize = 1 };
 
+		/**
+		 * @copydoc		RTTIPlainType::toMemory
+		 */
 		static void toMemory(const std::pair<A, B>& data, char* memory)
 		{ 
 			UINT32 size = sizeof(UINT32);
@@ -290,6 +360,9 @@ namespace CamelotFramework
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
+		/**
+		 * @copydoc		RTTIPlainType::fromMemory
+		 */
 		static UINT32 fromMemory(std::pair<A, B>& data, char* memory)
 		{ 
 			UINT32 size = 0;
@@ -305,6 +378,9 @@ namespace CamelotFramework
 			return size;
 		}
 
+		/**
+		 * @copydoc		RTTIPlainType::getDynamicSize
+		 */
 		static UINT32 getDynamicSize(const std::pair<A, B>& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
