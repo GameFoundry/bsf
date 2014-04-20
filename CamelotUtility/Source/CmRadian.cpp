@@ -1,7 +1,7 @@
 #include "CmRadian.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	inline Radian::Radian (const Degree& d) : mRad(d.valueRadians()) 
 	{ }

@@ -17,12 +17,12 @@ namespace BansheeEngine
 		void updateArea();
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentGUI, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth);
+		static void internal_createInstance(MonoObject* instance, MonoObject* parentGUI, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth);
 		static void internal_destroyInstance(ScriptGUIArea* nativeInstance);
 
 		static void internal_destroy(ScriptGUIArea* thisPtr);
 		static void internal_setVisible(ScriptGUIArea* thisPtr, bool visible);
-		static void internal_setArea(ScriptGUIArea* thisPtr, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth);
+		static void internal_setArea(ScriptGUIArea* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth);
 
 		static void initRuntimeData();
 
@@ -31,7 +31,7 @@ namespace BansheeEngine
 		void destroy();
 
 		GUIArea* mGUIArea;
-		CM::RectI mArea;
+		RectI mArea;
 		ScriptGUIPanel* mParentPanel;
 		bool mIsDestroyed;
 	};

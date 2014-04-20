@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmVertexDeclaration.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT VertexDataDesc : public IReflectable
 	{

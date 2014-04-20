@@ -1,7 +1,7 @@
 #include "CmTexAtlasGenerator.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class TexAtlasNode
 	{

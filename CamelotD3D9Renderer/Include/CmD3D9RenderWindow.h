@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmRenderWindow.h"
 #include "CmD3D9Device.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_D3D9_EXPORT D3D9RenderWindow : public RenderWindow
 	{

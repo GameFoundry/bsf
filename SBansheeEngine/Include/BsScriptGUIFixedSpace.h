@@ -11,7 +11,7 @@ namespace BansheeEngine
 		static void initMetaData();
 
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, CM::UINT32 size);
+		static void internal_createInstance(MonoObject* instance, MonoObject* parentLayout, UINT32 size);
 		static void internal_destroyInstance(ScriptGUIFixedSpace* nativeInstance);
 
 		static void internal_destroy(ScriptGUIFixedSpace* nativeInstance);

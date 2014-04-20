@@ -2,7 +2,7 @@
 
 #include <boost/signals.hpp>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	String handle. Provides a wrapper around an Unicode string, primarily

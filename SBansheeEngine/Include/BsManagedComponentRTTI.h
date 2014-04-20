@@ -10,25 +10,25 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ManagedComponentRTTI : public CM::RTTIType<ManagedComponent, CM::Component, ManagedComponentRTTI>
+	class BS_SCR_BE_EXPORT ManagedComponentRTTI : public RTTIType<ManagedComponent, Component, ManagedComponentRTTI>
 	{
 	private:
-		CM::String& getNamespace(ManagedComponent* obj)
+		String& getNamespace(ManagedComponent* obj)
 		{
 			return obj->mNamespace;
 		}
 
-		void setNamespace(ManagedComponent* obj, CM::String& val)
+		void setNamespace(ManagedComponent* obj, String& val)
 		{
 			obj->mNamespace = val;
 		}
 
-		CM::String& getTypename(ManagedComponent* obj)
+		String& getTypename(ManagedComponent* obj)
 		{
 			return obj->mTypeName;
 		}
 
-		void setTypename(ManagedComponent* obj, CM::String& val)
+		void setTypename(ManagedComponent* obj, String& val)
 		{
 			obj->mTypeName = val;
 		}
@@ -51,18 +51,18 @@ namespace BansheeEngine
 			addReflectablePtrField("mObjectData", 2, &ManagedComponentRTTI::getObjectData, &ManagedComponentRTTI::setObjectData);
 		}
 
-		void onSerializationStarted(CM::IReflectable* obj)
+		void onSerializationStarted(IReflectable* obj)
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
 
 			mc->mRTTIData = ScriptSerializableObject::create(mc->getManagedInstance());
 		}
 
-		virtual void onDeserializationStarted(CM::IReflectable* obj)
+		virtual void onDeserializationStarted(IReflectable* obj)
 		{
 			ManagedComponent* mc = static_cast<ManagedComponent*>(obj);
 
-			CM::GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&ManagedComponentRTTI::finalizeDeserialization, mc));
+			GameObjectManager::instance().registerOnDeserializationEndCallback(std::bind(&ManagedComponentRTTI::finalizeDeserialization, mc));
 		}
 
 		static void finalizeDeserialization(ManagedComponent* mc)
@@ -76,20 +76,20 @@ namespace BansheeEngine
 			mc->construct(serializableObject->getManagedInstance(), runtimeType);
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "ManagedComponent";
+			static String name = "ManagedComponent";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_ManagedComponent;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return CM::GameObjectRTTI::createGameObject<ManagedComponent>();
+			return GameObjectRTTI::createGameObject<ManagedComponent>();
 		}
 	};
 }

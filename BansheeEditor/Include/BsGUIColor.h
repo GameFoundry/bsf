@@ -5,45 +5,45 @@
 #include "BsImageSprite.h"
 #include "BsGUIContent.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUIColor : public BS::GUIElement
+	class GUIColor : public GUIElement
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIColor* create(const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIColor* create(const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIColor* create(const String& styleName = StringUtil::BLANK);
+		static GUIColor* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		virtual CM::Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const;
 
-		void setColor(const CM::Color& color);
-		CM::Color getColor() const { return mColor; }
+		void setColor(const Color& color);
+		Color getColor() const { return mColor; }
 
 	protected:
-		GUIColor(const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
+		GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIColor();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */
-		virtual CM::UINT32 getNumRenderElements() const;
+		virtual UINT32 getNumRenderElements() const;
 
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const BS::GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()
 		 */
-		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
+		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
-		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
-			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
+		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()
@@ -55,17 +55,17 @@ namespace BansheeEditor
 		 */
 		virtual void updateClippedBounds();
 
-		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
 	private:
 		static const float ALPHA_SPLIT_POSITION;
 
-		BS::ImageSprite* mColorSprite;
-		BS::ImageSprite* mAlphaSprite;
+		ImageSprite* mColorSprite;
+		ImageSprite* mAlphaSprite;
 
-		BS::IMAGE_SPRITE_DESC mColorImageDesc;
-		BS::IMAGE_SPRITE_DESC mAlphaImageDesc;
+		IMAGE_SPRITE_DESC mColorImageDesc;
+		IMAGE_SPRITE_DESC mAlphaImageDesc;
 
-		CM::Color mColor;
+		Color mColor;
 	};
 }

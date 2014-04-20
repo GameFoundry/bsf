@@ -4,7 +4,7 @@
 #include "CmColor.h"
 #include "CmCoreObject.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/// Vertex element semantics, used to identify the meaning of vertex buffer contents
 	enum VertexElementSemantic {

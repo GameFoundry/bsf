@@ -5,7 +5,7 @@
 #include "CmD3D11GpuParamBlockBuffer.h"
 #include "CmGpuParamDesc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11HardwareBufferManager::D3D11HardwareBufferManager(D3D11Device& device)
 		: mDevice(device)

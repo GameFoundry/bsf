@@ -26,7 +26,7 @@ typedef struct HINSTANCE__* hInstance;
 
 #endif
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /** 
 	 * @brief	Class that holds data about a dynamic library.

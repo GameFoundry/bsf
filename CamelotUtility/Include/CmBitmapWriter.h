@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Utility class from generating BMP images.

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 	//---------------------------------------------------------------------------
 	GpuProgramManager::GpuProgramManager()
 	{
@@ -56,7 +56,7 @@ namespace CamelotFramework {
 	const GpuProgramManager::SyntaxCodes& GpuProgramManager::getSupportedSyntax(void) const
     {
 		// Use the current render system
-		RenderSystem* rs = CamelotFramework::RenderSystem::instancePtr();
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
 
 		// Get the supported syntaxed from RenderSystemCapabilities 
 		return rs->getCapabilities()->getSupportedShaderProfiles();
@@ -65,7 +65,7 @@ namespace CamelotFramework {
     bool GpuProgramManager::isSyntaxSupported(const String& syntaxCode) const
         {
 			// Use the current render system
-			RenderSystem* rs = CamelotFramework::RenderSystem::instancePtr();
+			RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
 
 			// Get the supported syntaxed from RenderSystemCapabilities 
 			return rs->getCapabilities()->isShaderProfileSupported(syntaxCode);
@@ -75,7 +75,7 @@ namespace CamelotFramework {
 	String GpuProgramManager::gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const
 	{
 		// Use the current render system
-		RenderSystem* rs = CamelotFramework::RenderSystem::instancePtr();
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
 
 		return  rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(gpuProgProfile);
 	}

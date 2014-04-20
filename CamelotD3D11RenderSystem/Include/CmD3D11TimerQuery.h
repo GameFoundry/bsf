@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmTimerQuery.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @copydoc TimerQuery

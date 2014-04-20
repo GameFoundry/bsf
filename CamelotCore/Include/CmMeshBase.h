@@ -5,7 +5,7 @@
 #include "CmDrawOps.h"
 #include "CmSubMesh.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	enum class MeshBufferType
 	{

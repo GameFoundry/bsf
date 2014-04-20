@@ -8,7 +8,7 @@
 #include "CmAsyncOp.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11Texture::D3D11Texture()
 		: Texture()

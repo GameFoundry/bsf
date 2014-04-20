@@ -4,23 +4,23 @@
 #include "BsGUITexture.h"
 #include <boost/signals.hpp>
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUIWindowDropArea : public BS::GUITexture
+	class GUIWindowDropArea : public GUITexture
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIWindowDropArea* create(const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIWindowDropArea* create(const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIWindowDropArea* create(const String& styleName = StringUtil::BLANK);
+		static GUIWindowDropArea* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 		void setFocused(bool focused);
 
 		boost::signal<void()> onDraggedItemDropped;
 	protected:
 		~GUIWindowDropArea();
-		GUIWindowDropArea(const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
+		GUIWindowDropArea(const String& styleName, const GUILayoutOptions& layoutOptions);
 
-		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 	};
 }

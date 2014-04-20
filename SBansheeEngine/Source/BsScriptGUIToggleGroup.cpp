@@ -7,8 +7,6 @@
 #include "BsMonoUtil.h"
 #include "BsGUIToggle.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUIToggleGroup::ScriptGUIToggleGroup(const std::shared_ptr<GUIToggleGroup>& toggleGroup)

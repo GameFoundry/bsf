@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include "CmGpuProgInclude.h"
 #include "CmGpuProgramRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     //-----------------------------------------------------------------------------
     GpuProgram::GpuProgram(const String& source, const String& entryPoint, const String& language, 
@@ -75,7 +75,7 @@ namespace CamelotFramework
         if (!isRequiredCapabilitiesSupported())
             return false;
 
-		RenderSystem* rs = CamelotFramework::RenderSystem::instancePtr();
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported(mSyntaxCode);
     }
 	//-----------------------------------------------------------------------------

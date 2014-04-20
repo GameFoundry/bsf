@@ -5,7 +5,7 @@
 #include "CmStdHeaders.h"
 #include "CmThreadDefines.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Describes a memory stack of a certain block capacity. See "MemoryStack" for more information.

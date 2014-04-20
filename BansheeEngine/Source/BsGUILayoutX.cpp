@@ -4,8 +4,6 @@
 #include "CmMath.h"
 #include "CmVector2I.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	void GUILayoutX::_updateOptimalLayoutSizes()

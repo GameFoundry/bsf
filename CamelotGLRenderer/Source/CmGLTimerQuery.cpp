@@ -1,7 +1,7 @@
 #include "CmGLTimerQuery.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GLTimerQuery::GLTimerQuery()
 		:mQueryStartObj(0), mQueryEndObj(0), 

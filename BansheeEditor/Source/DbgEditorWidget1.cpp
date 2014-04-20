@@ -8,10 +8,7 @@
 #include "BsGUILayout.h"
 #include "BsEditorWidgetManager.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	DbgEditorWidget1* DbgEditorWidget1::Instance = nullptr;
 

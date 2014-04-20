@@ -36,10 +36,7 @@
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const WString EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
 
@@ -360,7 +357,7 @@ namespace BansheeEditor
 
 	}
 
-	void EditorApplication::closeModalWindow(RenderWindowPtr window, CM::HSceneObject sceneObject)
+	void EditorApplication::closeModalWindow(RenderWindowPtr window, HSceneObject sceneObject)
 	{
 		//sceneObject->destroy();
 		window->destroy();

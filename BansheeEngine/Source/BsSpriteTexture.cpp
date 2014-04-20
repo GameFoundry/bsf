@@ -3,8 +3,6 @@
 #include "CmTexture.h"
 #include "CmResources.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	SpriteTexture::SpriteTexture(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture)

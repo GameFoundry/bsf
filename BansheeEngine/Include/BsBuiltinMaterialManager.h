@@ -15,14 +15,14 @@ namespace BansheeEngine
 		virtual void startUp() {}
 		virtual void shutDown() {}
 
-		virtual const CM::String& getSupportedRenderSystem() const = 0;
+		virtual const String& getSupportedRenderSystem() const = 0;
 
-		virtual CM::HMaterial createSpriteTextMaterial() const = 0;
-		virtual CM::HMaterial createSpriteImageMaterial() const = 0;
-		virtual CM::HMaterial createDebugDraw2DClipSpaceMaterial() const = 0;
-		virtual CM::HMaterial createDebugDraw2DScreenSpaceMaterial() const = 0;
-		virtual CM::HMaterial createDebugDraw3DMaterial() const = 0;
-		virtual CM::HMaterial createDockDropOverlayMaterial() const = 0;
+		virtual HMaterial createSpriteTextMaterial() const = 0;
+		virtual HMaterial createSpriteImageMaterial() const = 0;
+		virtual HMaterial createDebugDraw2DClipSpaceMaterial() const = 0;
+		virtual HMaterial createDebugDraw2DScreenSpaceMaterial() const = 0;
+		virtual HMaterial createDebugDraw3DMaterial() const = 0;
+		virtual HMaterial createDockDropOverlayMaterial() const = 0;
 	};
 
 	/**
@@ -30,7 +30,7 @@ namespace BansheeEngine
 	 * 			Each render system implementation needs to provide its own implementation of this
 	 * 			module.
 	 */
-	class BS_EXPORT BuiltinMaterialManager : public CM::Module<BuiltinMaterialManager>
+	class BS_EXPORT BuiltinMaterialManager : public Module<BuiltinMaterialManager>
 	{
 	public:
 		BuiltinMaterialManager();
@@ -41,13 +41,13 @@ namespace BansheeEngine
 		DebugDraw2DClipSpaceMatInfo createDebugDraw2DClipSpaceMaterial() const;
 		DebugDraw2DScreenSpaceMatInfo createDebugDraw2DScreenSpaceMaterial() const;
 		DebugDraw3DMatInfo createDebugDraw3DMaterial() const;
-		CM::HMaterial createDockDropOverlayMaterial() const;
+		HMaterial createDockDropOverlayMaterial() const;
 
 		void addFactory(BuiltinMaterialFactory* factory);
-		void setActive(const CM::String& renderSystemName);
+		void setActive(const String& renderSystemName);
 
 	private:
-		CM::UnorderedMap<CM::String, BuiltinMaterialFactory*>::type mAvailableFactories;
+		UnorderedMap<String, BuiltinMaterialFactory*>::type mAvailableFactories;
 		BuiltinMaterialFactory* mActiveFactory;
 	};
 }

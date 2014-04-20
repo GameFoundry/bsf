@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     RenderTarget::RenderTarget()
 		:mActive(true), mHwGamma(false), mVSync(false), mFSAA(0),

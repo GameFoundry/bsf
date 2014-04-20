@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Represents a GPU query that gets triggered when GPU starts processing the query.

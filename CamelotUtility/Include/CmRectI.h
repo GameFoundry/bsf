@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Represents a 2D rectangle using integer values.

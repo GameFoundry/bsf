@@ -8,8 +8,6 @@
 #include "CmDepthStencilState.h"
 #include "CmRendererManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	void GLBuiltinMaterialFactory::startUp()
@@ -39,7 +37,7 @@ namespace BansheeEngine
 		mDockDropOverlayShader = nullptr;
 	}
 
-	const CM::String& GLBuiltinMaterialFactory::getSupportedRenderSystem() const
+	const String& GLBuiltinMaterialFactory::getSupportedRenderSystem() const
 	{
 		static String renderSystem = "CamelotGLRenderSystem";
 

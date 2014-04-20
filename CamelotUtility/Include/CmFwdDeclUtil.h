@@ -2,7 +2,7 @@
 
 // Contains forward declares used as a convenience
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/**
 	 * @brief	Values that represent in which order are euler

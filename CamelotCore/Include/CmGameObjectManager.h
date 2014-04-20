@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmGameObject.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT GameObjectManager : public Module<GameObjectManager>
 	{

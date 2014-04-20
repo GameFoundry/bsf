@@ -10,19 +10,19 @@ namespace BansheeEngine
 	/**
 	 * @brief	Loads Mono script assemblies and manages script objects.
 	 */
-	class BS_MONO_EXPORT MonoManager : public CM::Module<MonoManager>
+	class BS_MONO_EXPORT MonoManager : public Module<MonoManager>
 	{
 	public:
 		MonoManager();
 		~MonoManager();
 
-		MonoAssembly& loadAssembly(const CM::String& path, const CM::String& name);
+		MonoAssembly& loadAssembly(const String& path, const String& name);
 		void unloadAssembly(MonoAssembly& assembly);
 
 		/**
 		 * @brief	Searches all loaded assemblies for the specified class.
 		 */
-		MonoClass* findClass(const CM::String& ns, const CM::String& typeName);
+		MonoClass* findClass(const String& ns, const String& typeName);
 
 		/**
 		 * @brief	Searches all loaded assemblies for the specified class.
@@ -34,37 +34,37 @@ namespace BansheeEngine
 		 *
 		 * @param 	obj	If non-null, the object to get the type name of.
 		 */
-		CM::String getFullTypeName(MonoObject* obj);
+		String getFullTypeName(MonoObject* obj);
 
 		/**
 		 * @brief	Returns the namespace of the provided object.
 		 *
 		 * @param 	obj	If non-null, the object to get the namespace of.
 		 */
-		CM::String getNamespace(MonoObject* obj);
+		String getNamespace(MonoObject* obj);
 
 		/**
 		 * @brief	Returns the type name of the provided object, without namespace.
 		 *
 		 * @param 	obj	If non-null, the object to get the type name of.
 		 */
-		CM::String getTypeName(MonoObject* obj);
+		String getTypeName(MonoObject* obj);
 
 		MonoDomain* getDomain() const { return mDomain; }
-		MonoAssembly* getAssembly(const CM::String& name) const;
+		MonoAssembly* getAssembly(const String& name) const;
 
 		static void registerScriptType(ScriptMeta* metaData);
 	private:
-		static const CM::String MONO_LIB_DIR;
-		static const CM::String MONO_ETC_DIR;
+		static const String MONO_LIB_DIR;
+		static const String MONO_ETC_DIR;
 
-		static CM::UnorderedMap<CM::String, CM::Vector<ScriptMeta*>::type>::type& getTypesToInitialize()
+		static UnorderedMap<String, Vector<ScriptMeta*>::type>::type& getTypesToInitialize()
 		{
-			static CM::UnorderedMap<CM::String, CM::Vector<ScriptMeta*>::type>::type mTypesToInitialize;
+			static UnorderedMap<String, Vector<ScriptMeta*>::type>::type mTypesToInitialize;
 			return mTypesToInitialize;
 		}
 
-		CM::UnorderedMap<CM::String, MonoAssembly*>::type mAssemblies;
+		UnorderedMap<String, MonoAssembly*>::type mAssemblies;
 		MonoDomain* mDomain;
 		bool mIsCoreLoaded;
 	};

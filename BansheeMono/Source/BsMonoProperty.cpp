@@ -2,8 +2,6 @@
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	MonoProperty::MonoProperty(::MonoProperty* monoProp)

@@ -1,7 +1,7 @@
 #include "CmRTTIType.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	RTTITypeBase::RTTITypeBase()
 	{ }

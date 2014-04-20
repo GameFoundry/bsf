@@ -1,7 +1,7 @@
 #include "CmManagedDataBlock.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	ManagedDataBlock::ManagedDataBlock(UINT8* data, UINT32 size, std::function<void(UINT8*)> deallocator)
 		:mData(data), mSize(size), mManaged(false), mIsDataOwner(true), mDeallocator(deallocator)

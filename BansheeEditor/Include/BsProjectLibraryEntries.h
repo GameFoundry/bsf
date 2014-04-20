@@ -4,9 +4,9 @@
 #include "BsProjectLibrary.h"
 #include "CmIReflectable.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class ProjectLibraryEntries : public CM::IReflectable
+	class ProjectLibraryEntries : public IReflectable
 	{
 		struct ConstructPrivately { };
 
@@ -28,7 +28,7 @@ namespace BansheeEditor
 
 	public:
 		friend class ProjectLibraryEntriesRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

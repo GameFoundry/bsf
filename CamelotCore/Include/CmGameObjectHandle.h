@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class GameObjectManager;
 

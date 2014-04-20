@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Represents a GPU query that measures execution time of GPU operations. The query will measure

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmGLTexture.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     void GLSupport::initialiseExtensions(void)
     {

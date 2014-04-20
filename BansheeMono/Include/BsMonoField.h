@@ -18,7 +18,7 @@ namespace BansheeEngine
 	class BS_MONO_EXPORT MonoField
 	{
 	public:
-		const CM::String& getName() const { return mName; }
+		const String& getName() const { return mName; }
 		MonoClass* getType();
 
 		void getValue(MonoObject* instance, void* outValue);
@@ -36,7 +36,7 @@ namespace BansheeEngine
 
 		MonoField(MonoClassField* field);
 
-		CM::String mName;
+		String mName;
 		MonoClassField* mField;
 		MonoClass* mFieldType;
 		void* mThunk;

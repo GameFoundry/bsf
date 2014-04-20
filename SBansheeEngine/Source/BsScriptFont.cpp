@@ -5,11 +5,9 @@
 #include "BsMonoManager.h"
 #include "BsSpriteTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	ScriptFont::ScriptFont(const CM::HFont& font)
+	ScriptFont::ScriptFont(const HFont& font)
 		:mFont(font)
 	{
 
@@ -32,7 +30,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptFont::internal_destroyInstance);
 	}
 
-	void ScriptFont::internal_createInstanceExternal(MonoObject* instance, const CM::HFont& font)
+	void ScriptFont::internal_createInstanceExternal(MonoObject* instance, const HFont& font)
 	{
 		ScriptFont* nativeInstance = new (cm_alloc<ScriptFont>()) ScriptFont(font);
 		nativeInstance->createInstance(instance);

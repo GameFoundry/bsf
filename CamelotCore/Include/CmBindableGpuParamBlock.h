@@ -4,7 +4,7 @@
 #include "CmCommonEnums.h"
 #include "CmCoreObject.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	* @note	Due to the way allocation is handled, this class is not allowed to have a destructor.

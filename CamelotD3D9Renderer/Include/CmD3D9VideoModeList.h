@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmD3D9Driver.h"
 #include "CmD3D9VideoMode.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_D3D9_EXPORT D3D9VideoModeList
 	{

@@ -23,14 +23,14 @@ namespace BansheeEngine
 			horzAlign(THA_Left), vertAlign(TVA_Top), wordWrap(false)
 		{ }
 
-		CM::UINT32 width;
-		CM::UINT32 height;
+		UINT32 width;
+		UINT32 height;
 		SpriteAnchor anchor;
 
-		CM::WString text;
-		CM::HFont font;
-		CM::UINT32 fontSize;
-		CM::Color color;
+		WString text;
+		HFont font;
+		UINT32 fontSize;
+		Color color;
 		TextHorzAlign horzAlign;
 		TextVertAlign vertAlign;
 		bool wordWrap;
@@ -43,8 +43,8 @@ namespace BansheeEngine
 
 		void update(const TEXT_SPRITE_DESC& desc);
 
-		static CM::Vector<CM::Vector2I>::type getAlignmentOffsets(const CM::TextData& textData, 
-			CM::UINT32 width, CM::UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
+		static Vector<Vector2I>::type getAlignmentOffsets(const TextData& textData, 
+			UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 
 		/**
 		 * @brief	Calculates text quads you may use for text rendering, based on the specified text
@@ -57,9 +57,9 @@ namespace BansheeEngine
 		 *
 		 * @return	Number of generated quads.
 		 */
-		static CM::UINT32 genTextQuads(CM::UINT32 page, const CM::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
-			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32* indices, 
-			CM::UINT32 bufferSizeQuads);
+		static UINT32 genTextQuads(UINT32 page, const TextData& textData, UINT32 width, UINT32 height, 
+			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
+			UINT32 bufferSizeQuads);
 
 		/**
 		 * @brief	Calculates text quads you may use for text rendering, based on the specified text data. Generates quads for all pages.
@@ -71,8 +71,8 @@ namespace BansheeEngine
 		 *
 		 * @return	Number of generated quads.
 		 */
-		static CM::UINT32 genTextQuads(const CM::TextData& textData, CM::UINT32 width, CM::UINT32 height, 
-			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, CM::Vector2* vertices, CM::Vector2* uv, CM::UINT32* indices, 
-			CM::UINT32 bufferSizeQuads);
+		static UINT32 genTextQuads(const TextData& textData, UINT32 width, UINT32 height, 
+			TextHorzAlign horzAlign, TextVertAlign vertAlign, SpriteAnchor anchor, Vector2* vertices, Vector2* uv, UINT32* indices, 
+			UINT32 bufferSizeQuads);
 	};
 }

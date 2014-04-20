@@ -12,8 +12,6 @@
 #include "BsBuiltinMaterialManager.h"
 #include "CmVertexDataDesc.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	DrawHelper2D::DrawHelper2D()
@@ -25,7 +23,7 @@ namespace BansheeEngine
 		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 	}
 
-	void DrawHelper2D::quad(const CM::RectF& area, const MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper2D::quad(const RectF& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -42,22 +40,22 @@ namespace BansheeEngine
 		polygonFill_Pixel(points, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void DrawHelper2D::line_Pixel(const Vector2& a, const Vector2& b, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper2D::line_Pixel(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector2>::line_Pixel(a, b, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper2D::line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector2>::line_AA(a, b, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::lineList_Pixel(const CM::Vector<Vector2>::type& linePoints, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper2D::lineList_Pixel(const Vector<Vector2>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector2>::lineList_Pixel(linePoints, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::lineList_AA(const CM::Vector<Vector2>::type& linePoints, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper2D::lineList_AA(const Vector<Vector2>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector2>::lineList_AA(linePoints, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
@@ -66,7 +64,7 @@ namespace BansheeEngine
 	/* 								2D - DRAW	                     		*/
 	/************************************************************************/
 
-	void DrawHelper2D::drawQuad(const HCamera& camera, const CM::RectF& area, const Color& color, DebugDrawCoordType coordType, float timeout)
+	void DrawHelper2D::drawQuad(const HCamera& camera, const RectF& area, const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -239,8 +237,8 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::drawLineList_AA(const HCamera& camera, const CM::Vector<CM::Vector2>::type& linePoints, float width, float borderWidth, 
-		const CM::Color& color, DebugDrawCoordType coordType, float timeout)
+	void DrawHelper2D::drawLineList_AA(const HCamera& camera, const Vector<Vector2>::type& linePoints, float width, float borderWidth, 
+		const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 

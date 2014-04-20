@@ -5,8 +5,6 @@
 #include "CmMaterial.h"
 #include "CmRenderQueue.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	Renderable::Renderable(const HSceneObject& parent)
@@ -18,19 +16,19 @@ namespace BansheeEngine
 		mMatViewProjParam.resize(1);
 	}
 
-	void Renderable::setNumMaterials(CM::UINT32 numMaterials)
+	void Renderable::setNumMaterials(UINT32 numMaterials)
 	{
 		mMaterials.resize(numMaterials);
 		mMatViewProjParam.resize(numMaterials);
 	}
 
-	void Renderable::setMaterial(CM::UINT32 idx, CM::HMaterial material)
+	void Renderable::setMaterial(UINT32 idx, HMaterial material)
 	{
 		mMaterials[idx] = material;
 		mMatViewProjParam[idx] = material->getParamMat4("matViewProjection");
 	}
 
-	void Renderable::render(CM::RenderQueue& renderQueue, const Matrix4& viewProjMatrix)
+	void Renderable::render(RenderQueue& renderQueue, const Matrix4& viewProjMatrix)
 	{
 		if(mMesh == nullptr || !mMesh.isLoaded())
 			return;

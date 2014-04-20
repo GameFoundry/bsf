@@ -5,7 +5,7 @@
 #include "CmException.h"
 #include "CmResources.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	void SamplerState::initialize(const SAMPLER_STATE_DESC& desc)
 	{

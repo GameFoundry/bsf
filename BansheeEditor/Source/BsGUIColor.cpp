@@ -9,14 +9,11 @@
 #include "BsBuiltinResources.h"
 #include "CmTexture.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const float GUIColor::ALPHA_SPLIT_POSITION = 0.75f;
 
-	GUIColor::GUIColor(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIColor::GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
 	{
 		mColorSprite = cm_new<ImageSprite, PoolAlloc>();
@@ -38,12 +35,12 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIColor* GUIColor::create(const CM::String& styleName)
+	GUIColor* GUIColor::create(const String& styleName)
 	{
 		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create(layoutOptions));
 	}

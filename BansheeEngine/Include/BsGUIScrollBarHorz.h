@@ -10,12 +10,12 @@ namespace BansheeEngine
 	class BS_EXPORT GUIScrollBarHorz : public GUIScrollBar
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIScrollBarHorz* create(const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIScrollBarHorz* create(const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIScrollBarHorz* create(const String& styleName = StringUtil::BLANK);
+		static GUIScrollBarHorz* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 	protected:
-		GUIScrollBarHorz(const CM::String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIScrollBarHorz(const String& styleName, const GUILayoutOptions& layoutOptions);
 		~GUIScrollBarHorz();
 	};
 }

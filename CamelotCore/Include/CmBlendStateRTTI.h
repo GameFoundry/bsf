@@ -5,7 +5,7 @@
 #include "CmBlendState.h"
 #include "CmRenderStateManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	template<> struct RTTIPlainType<BLEND_STATE_DESC>
 	{	

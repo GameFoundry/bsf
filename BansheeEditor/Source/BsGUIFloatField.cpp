@@ -12,15 +12,12 @@
 #include "CmViewport.h"
 #include <regex>
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const float GUIFloatField::DRAG_SPEED = 0.05f;
 
-	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, CM::UINT32 labelWidth, 
-		const CM::String& labelStyle, const CM::String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+	GUIFloatField::GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth, 
+		const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
 		mLastDragPos(0)
 	{
@@ -37,7 +34,7 @@ namespace BansheeEditor
 
 	}
 
-	bool GUIFloatField::_hasCustomCursor(const CM::Vector2I position, CursorType& type) const
+	bool GUIFloatField::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
 		RectI draggableArea;
 
@@ -139,7 +136,7 @@ namespace BansheeEditor
 		return typeName;
 	}
 
-	bool GUIFloatField::floatFilter(const CM::WString& str)
+	bool GUIFloatField::floatFilter(const WString& str)
 	{
 		return std::regex_match(str, std::wregex(L"-?(\\d+(\\.\\d*)?)?"));
 	}

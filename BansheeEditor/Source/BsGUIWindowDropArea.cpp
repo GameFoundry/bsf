@@ -7,10 +7,7 @@
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const String& GUIWindowDropArea::getGUITypeName()
 	{
@@ -18,20 +15,20 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIWindowDropArea::GUIWindowDropArea(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIWindowDropArea::GUIWindowDropArea(const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::ScaleToFit, layoutOptions)
 	{ }
 
 	GUIWindowDropArea::~GUIWindowDropArea()
 	{ }
 
-	GUIWindowDropArea* GUIWindowDropArea::create(const CM::String& styleName)
+	GUIWindowDropArea* GUIWindowDropArea::create(const String& styleName)
 	{
 		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) 
 			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) 
 			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create(layoutOptions));

@@ -3,22 +3,22 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIFieldBase.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class BS_ED_EXPORT GUITextField : public TGUIField<GUITextField>
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		GUITextField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
-			const CM::String& labelStyle, const CM::String& inputBoxStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
+		GUITextField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
+			const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
 
-		CM::WString getValue() const;
-		void setValue(const CM::WString& value);
+		WString getValue() const;
+		void setValue(const WString& value);
 	protected:
 		virtual ~GUITextField();
 
 	protected:
-		BS::GUIInputBox* mInputBox;
+		GUIInputBox* mInputBox;
 	};
 }

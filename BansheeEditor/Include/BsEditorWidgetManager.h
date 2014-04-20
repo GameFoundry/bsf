@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "CmModule.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Handles opening and closing of EditorWidgets. Its primary purpose
@@ -11,7 +11,7 @@ namespace BansheeEditor
 	 * 			upon program shutdown/startup, as well as being able to change widget layout on
 	 * 			the fly.
 	 */
-	class BS_ED_EXPORT EditorWidgetManager : public CM::Module<EditorWidgetManager>
+	class BS_ED_EXPORT EditorWidgetManager : public Module<EditorWidgetManager>
 	{
 	public:
 		EditorWidgetManager();
@@ -23,7 +23,7 @@ namespace BansheeEditor
 		 * @param	name				  	Unique name for the widget.
 		 * @param 	createCallback			Callback that returns a new instance of the widget.
 		 */
-		void registerWidget(const CM::String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
+		void registerWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
 
 		/**
 		 * @brief	Creates a widget with the given name. If widget is already created it returns the existing instance.
@@ -33,12 +33,12 @@ namespace BansheeEditor
 		 *
 		 * @return	Always returns the created widget, and throws an exception if it fails.
 		 */
-		EditorWidgetBase* open(const CM::String& name);
+		EditorWidgetBase* open(const String& name);
 
 		/**
 		 * @brief	Creates a new widget an inserts it into the specified container.
 		 */
-		EditorWidgetBase* create(const CM::String& name, EditorWidgetContainer& parentContainer);
+		EditorWidgetBase* create(const String& name, EditorWidgetContainer& parentContainer);
 
 		/**
 		 * @brief	Closes the given widget.
@@ -64,12 +64,12 @@ namespace BansheeEditor
 		 * @note	Useful primarily when widgets are being registered from static methods, because then there is no
 		 * 			EditorWidgetManager instance yet.
 		 */
-		static void preRegisterWidget(const CM::String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
+		static void preRegisterWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
 
 	private:
-		CM::Map<CM::String, EditorWidgetBase*>::type mActiveWidgets;
-		CM::Map<CM::String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>::type mCreateCallbacks;
+		Map<String, EditorWidgetBase*>::type mActiveWidgets;
+		Map<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>::type mCreateCallbacks;
 
-		static CM::Stack<std::pair<CM::String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>>::type QueuedCreateCallbacks;
+		static Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>>::type QueuedCreateCallbacks;
 	};
 }

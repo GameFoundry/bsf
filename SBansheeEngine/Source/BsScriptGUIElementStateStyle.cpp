@@ -7,8 +7,6 @@
 #include "CmException.h"
 #include "BsGUIElementStyle.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUIElementStateStyle::ScriptGUIElementStateStyle()

@@ -5,7 +5,7 @@
 #include "CmD3D11Device.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11GpuBuffer::D3D11GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter) 
 		: GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter), mBuffer(nullptr)

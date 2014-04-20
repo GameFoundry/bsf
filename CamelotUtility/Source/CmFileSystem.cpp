@@ -8,7 +8,7 @@
 
 using namespace boost::filesystem3;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	DataStreamPtr FileSystem::openFile(const WString& fullPath, bool readOnly)
 	{

@@ -8,8 +8,6 @@
 #include "BsGUIElementStyle.h"
 #include "BsScriptGUIElementStateStyle.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUIElementStyle::ScriptGUIElementStyle(const String& name)

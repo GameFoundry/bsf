@@ -4,13 +4,13 @@
 #include "CmDebug.h"
 #include "CmUtil.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 #if CM_DEBUG_MODE
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId), mMaxDebugIdx(0)
 	{
-		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
+		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>::type, PoolAlloc>();
 
 		{
 			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -22,7 +22,7 @@ namespace CamelotFramework
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId)
 	{
-		mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
+		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>::type, PoolAlloc>();
 	}
 #endif
 
@@ -76,9 +76,9 @@ namespace CamelotFramework
 #endif
 	}
 
-	CamelotFramework::Queue<QueuedCommand>::type* CommandQueueBase::flush()
+	BansheeEngine::Queue<QueuedCommand>::type* CommandQueueBase::flush()
 	{
-		CamelotFramework::Queue<QueuedCommand>::type* oldCommands = mCommands;
+		BansheeEngine::Queue<QueuedCommand>::type* oldCommands = mCommands;
 
 		if(!mEmptyCommandQueues.empty())
 		{
@@ -87,13 +87,13 @@ namespace CamelotFramework
 		}
 		else
 		{
-			mCommands = cm_new<CamelotFramework::Queue<QueuedCommand>::type, PoolAlloc>();
+			mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>::type, PoolAlloc>();
 		}
 
 		return oldCommands;
 	}
 
-	void CommandQueueBase::playbackWithNotify(CamelotFramework::Queue<QueuedCommand>::type* commands, std::function<void(UINT32)> notifyCallback)
+	void CommandQueueBase::playbackWithNotify(BansheeEngine::Queue<QueuedCommand>::type* commands, std::function<void(UINT32)> notifyCallback)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -132,14 +132,14 @@ namespace CamelotFramework
 		mEmptyCommandQueues.push(commands);
 	}
 
-	void CommandQueueBase::playback(CamelotFramework::Queue<QueuedCommand>::type* commands)
+	void CommandQueueBase::playback(BansheeEngine::Queue<QueuedCommand>::type* commands)
 	{
 		playbackWithNotify(commands, std::function<void(UINT32)>());
 	}
 
 	void CommandQueueBase::cancelAll()
 	{
-		CamelotFramework::Queue<QueuedCommand>::type* commands = flush();
+		BansheeEngine::Queue<QueuedCommand>::type* commands = flush();
 
 		while(!commands->empty())
 			commands->pop();

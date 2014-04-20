@@ -5,7 +5,7 @@
 #include "CmUtil.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11TextureView::D3D11TextureView()
 		:TextureView(), mSRV(nullptr), mUAV(nullptr), mDSV(nullptr), mRTV(nullptr)

@@ -7,7 +7,7 @@
 #include "CmVertexDataDesc.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType)
 	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mData(nullptr), mResourceIndexOffset(0),

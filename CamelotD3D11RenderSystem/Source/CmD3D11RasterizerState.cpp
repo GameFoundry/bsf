@@ -3,7 +3,7 @@
 #include "CmD3D11Device.h"
 #include "CmD3D11Mappings.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11RasterizerState::D3D11RasterizerState()
 		:mRasterizerState(nullptr)

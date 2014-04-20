@@ -15,7 +15,7 @@
 #include "CmRTTIManagedDataBlockField.h"
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 #define CM_SETGET_MEMBER(name, type, parentType)								\
 	type##& get##name(parentType##* obj) { return obj->##name; }				\
@@ -169,8 +169,8 @@ namespace CamelotFramework
 		template <class ObjectType, class DataType>
 		void setReflectableValue(ObjectType* object, const String& name, DataType& value)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplex(false);
@@ -188,8 +188,8 @@ namespace CamelotFramework
 		template <class ObjectType, class DataType>
 		void setReflectableArrayValue(ObjectType* object, const String& name, UINT32 index, DataType& value)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplex(true);
@@ -223,8 +223,8 @@ namespace CamelotFramework
 		template <class ObjectType, class DataType>
 		void setReflectablePtrValue(ObjectType* object, const String& name, std::shared_ptr<DataType> value)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(false);
@@ -242,8 +242,8 @@ namespace CamelotFramework
 		template <class ObjectType, class DataType>
 		void setReflectablePtrArrayValue(ObjectType* object, const String& name, UINT32 index, std::shared_ptr<DataType> value)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIField* genericField = findField(name);
 			genericField->checkIsComplexPtr(true);
@@ -786,10 +786,10 @@ namespace CamelotFramework
 		{
 			using namespace std::placeholders;
 
-			static_assert((std::is_base_of<CamelotFramework::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
-				"Class with the get/set methods must derive from CamelotFramework::RTTIType.");
+			static_assert((std::is_base_of<BansheeEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
+				"Class with the get/set methods must derive from BansheeEngine::RTTIType.");
 
-			static_assert(!(std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+			static_assert(!(std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
 			addPlainField<ObjectType, DataType>(name, uniqueId, 
@@ -830,10 +830,10 @@ namespace CamelotFramework
 		{
 			using namespace std::placeholders;
 
-			static_assert((std::is_base_of<CamelotFramework::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
-				"Class with the get/set methods must derive from CamelotFramework::RTTIType.");
+			static_assert((std::is_base_of<BansheeEngine::RTTIType<Type, BaseType, MyRTTIType>, InterfaceType>::value), 
+				"Class with the get/set methods must derive from BansheeEngine::RTTIType.");
 
-			static_assert(!(std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
+			static_assert(!(std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Data type derives from IReflectable but it is being added as a plain field.");
 
 			addPlainArrayField<ObjectType, DataType>(name, uniqueId, 
@@ -912,8 +912,8 @@ namespace CamelotFramework
 		template<class ObjectType, class DataType>
 		void addReflectableField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = 
 				cm_new<RTTIReflectableField<DataType, ObjectType>>();
@@ -924,8 +924,8 @@ namespace CamelotFramework
 		template<class ObjectType, class DataType>
 		void addReflectablePtrField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			if((flags & RTTI_Flag_WeakRef) == 0)
 				checkForCircularReferences<DataType>();
@@ -950,8 +950,8 @@ namespace CamelotFramework
 		void addReflectableArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = 
 				cm_new<RTTIReflectableField<DataType, ObjectType>>();
@@ -963,8 +963,8 @@ namespace CamelotFramework
 		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
 			boost::any setter, boost::any setSize, UINT64 flags)
 		{
-			static_assert((std::is_base_of<CamelotFramework::IReflectable, DataType>::value), 
-				"Invalid data type for complex field. It needs to derive from CamelotFramework::IReflectable.");
+			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
+				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			if((flags & RTTI_Flag_WeakRef) == 0)
 				checkForCircularReferences<DataType>();
@@ -994,8 +994,8 @@ namespace CamelotFramework
 	template<class T>
 	bool rtti_is_of_type(IReflectable* object)
 	{
-		static_assert((std::is_base_of<CamelotFramework::IReflectable, T>::value), 
-			"Invalid data type for type checking. It needs to derive from CamelotFramework::IReflectable.");
+		static_assert((std::is_base_of<BansheeEngine::IReflectable, T>::value), 
+			"Invalid data type for type checking. It needs to derive from BansheeEngine::IReflectable.");
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
 	}
@@ -1006,8 +1006,8 @@ namespace CamelotFramework
 	template<class T>
 	bool rtti_is_of_type(std::shared_ptr<IReflectable> object)
 	{
-		static_assert((std::is_base_of<CamelotFramework::IReflectable, T>::value), 
-			"Invalid data type for type checking. It needs to derive from CamelotFramework::IReflectable.");
+		static_assert((std::is_base_of<BansheeEngine::IReflectable, T>::value), 
+			"Invalid data type for type checking. It needs to derive from BansheeEngine::IReflectable.");
 
 		return object->getTypeId() == T::getRTTIStatic()->getRTTIId();
 	}

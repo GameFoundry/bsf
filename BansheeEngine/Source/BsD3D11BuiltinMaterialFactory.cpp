@@ -8,8 +8,6 @@
 #include "CmBlendState.h"
 #include "CmDepthStencilState.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	void D3D11BuiltinMaterialFactory::startUp()
@@ -39,7 +37,7 @@ namespace BansheeEngine
 		mDockDropOverlayShader = nullptr;
 	}
 
-	const CM::String& D3D11BuiltinMaterialFactory::getSupportedRenderSystem() const
+	const String& D3D11BuiltinMaterialFactory::getSupportedRenderSystem() const
 	{
 		static String renderSystem = "CamelotD3D11RenderSystem";
 

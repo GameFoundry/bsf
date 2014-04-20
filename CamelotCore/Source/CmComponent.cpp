@@ -2,7 +2,7 @@
 #include "CmSceneObject.h"
 #include "CmComponentRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Component::Component(const HSceneObject& parent)
 		:mParent(parent)

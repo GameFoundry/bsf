@@ -7,11 +7,11 @@ namespace BansheeEngine
 {
 	struct GUIMaterialInfo
 	{
-		CM::HMaterial material;
-		CM::GpuParamMat4 worldTransform;
-		CM::GpuParamFloat invViewportWidth;
-		CM::GpuParamFloat invViewportHeight;
-		CM::GpuParamTexture mainTexture;
-		CM::GpuParamVec4 tint;
+		HMaterial material;
+		GpuParamMat4 worldTransform;
+		GpuParamFloat invViewportWidth;
+		GpuParamFloat invViewportHeight;
+		GpuParamTexture mainTexture;
+		GpuParamVec4 tint;
 	};
 }

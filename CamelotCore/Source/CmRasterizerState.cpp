@@ -4,7 +4,7 @@
 #include "CmRasterizerStateRTTI.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void RasterizerState::initialize(const RASTERIZER_STATE_DESC& desc)
 	{

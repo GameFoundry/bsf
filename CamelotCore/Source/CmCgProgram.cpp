@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmCgProgramRTTI.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	void checkForCgError(const String& ogreMethod, const String& errorTextPrefix, CGcontext context)
 	{

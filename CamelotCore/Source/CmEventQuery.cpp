@@ -1,7 +1,7 @@
 #include "CmEventQuery.h"
 #include "CmQueryManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	EventQueryPtr EventQuery::create()
 	{

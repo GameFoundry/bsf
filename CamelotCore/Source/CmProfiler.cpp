@@ -1,7 +1,7 @@
 #include "CmProfiler.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const UINT32 Profiler::NUM_SAVED_FRAMES = 200;
 

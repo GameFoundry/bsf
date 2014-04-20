@@ -1,7 +1,7 @@
 #include "CmWorkQueue.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 	WorkQueue::WorkQueue() 
 		: mNextChannel(0) 		
 		, mWorkerThreadCount(1)

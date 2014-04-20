@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmVertexDataDesc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT VertexDataDescRTTI : public RTTIType<VertexDataDesc, IReflectable, VertexDataDescRTTI>
 	{

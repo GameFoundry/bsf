@@ -1,7 +1,7 @@
 #include "CmRenderQueue.h"
 #include "CmRenderOperation.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	RenderQueue::RenderQueue()
 	{

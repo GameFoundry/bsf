@@ -8,16 +8,16 @@ namespace BansheeEngine
 	class BS_EXPORT GUIFixedSpace : public GUIElementBase
 	{
 	public:
-		GUIFixedSpace(CM::UINT32 size)
+		GUIFixedSpace(UINT32 size)
 			:mSize(size)
 		{
 			_markAsClean();
 		}
 
-		CM::UINT32 getSize() const { return mSize; }
+		UINT32 getSize() const { return mSize; }
 		Type _getType() const { return GUIElementBase::Type::FixedSpace; }
 
-		virtual CM::Vector2I _getOptimalSize() const { return CM::Vector2I(getSize(), getSize()); }
+		virtual Vector2I _getOptimalSize() const { return Vector2I(getSize(), getSize()); }
 		virtual const RectOffset& _getPadding() const 
 		{
 			static RectOffset padding;
@@ -26,7 +26,7 @@ namespace BansheeEngine
 		}
 
 	protected:
-		CM::UINT32 mSize;
+		UINT32 mSize;
 	};
 
 	class BS_EXPORT GUIFlexibleSpace : public GUIElementBase
@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 		Type _getType() const { return GUIElementBase::Type::FlexibleSpace; }
 
-		virtual CM::Vector2I _getOptimalSize() const { return CM::Vector2I(0, 0); }
+		virtual Vector2I _getOptimalSize() const { return Vector2I(0, 0); }
 		virtual const RectOffset& _getPadding() const 
 		{
 			static RectOffset padding;

@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmPixelBuffer.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     class CM_RSGL_EXPORT GLTexture : public Texture
     {

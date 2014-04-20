@@ -4,12 +4,12 @@
 #include "CmModule.h"
 #include "CmCPUProfiler.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 #define PROFILE_CALL(call, name) \
-	CamelotFramework::gProfiler().beginSample(##name##); \
+	BansheeEngine::gProfiler().beginSample(##name##); \
 	call; \
-	CamelotFramework::gProfiler().endSample(##name##);
+	BansheeEngine::gProfiler().endSample(##name##);
 
 	struct ProfilerReport
 	{

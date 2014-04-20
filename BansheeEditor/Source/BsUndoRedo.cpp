@@ -1,12 +1,9 @@
 #include "BsUndoRedo.h"
 #include "BsEditorCommand.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	const CM::UINT32 UndoRedo::MAX_STACK_ELEMENTS = 1000;
+	const UINT32 UndoRedo::MAX_STACK_ELEMENTS = 1000;
 
 	UndoRedo::UndoRedo()
 		:mUndoStackPtr(0), mUndoNumElements(0),

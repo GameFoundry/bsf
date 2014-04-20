@@ -7,19 +7,19 @@ namespace BansheeEngine
 {
 	struct DebugDraw2DClipSpaceMatInfo
 	{
-		CM::HMaterial material;
+		HMaterial material;
 	};
 
 	struct DebugDraw2DScreenSpaceMatInfo
 	{
-		CM::HMaterial material;
-		CM::GpuParamFloat invViewportWidth;
-		CM::GpuParamFloat invViewportHeight;
+		HMaterial material;
+		GpuParamFloat invViewportWidth;
+		GpuParamFloat invViewportHeight;
 	};
 
 	struct DebugDraw3DMatInfo
 	{
-		CM::HMaterial material;
-		CM::GpuParamMat4 matViewProj;
+		HMaterial material;
+		GpuParamMat4 matViewProj;
 	};
 }

@@ -4,7 +4,7 @@
 #include "CmAsyncOp.h"
 #include <boost/preprocessor.hpp>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	This class provides some common functionality that all low-level GPU-related objects

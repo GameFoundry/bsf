@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmGLPixelBuffer.h"
 #include "CmPixelData.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/** GL surface descriptor. Points to a 2D surface that can be rendered to. 
     */

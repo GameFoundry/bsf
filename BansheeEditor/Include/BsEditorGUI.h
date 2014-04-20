@@ -4,136 +4,136 @@
 #include "BsGUISkin.h"
 #include "CmModule.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class EditorGUI : public CamelotFramework::Module<EditorGUI>
+	class EditorGUI : public BansheeEngine::Module<EditorGUI>
 	{
 	public:
 		EditorGUI();
 
-		const BS::GUISkin& getSkin() const { return mSkin; }
+		const GUISkin& getSkin() const { return mSkin; }
 
 	private:
-		BS::GUISkin mSkin;
+		GUISkin mSkin;
 
-		static const CM::WString DefaultFolder;
+		static const WString DefaultFolder;
 
-		static const CM::WString DefaultFontPath;
-		static const CM::UINT32 DefaultFontSize;
+		static const WString DefaultFontPath;
+		static const UINT32 DefaultFontSize;
 
-		static const CM::WString WindowBackgroundTexture;
+		static const WString WindowBackgroundTexture;
 
-		static const CM::WString WindowFrameNormal;
-		static const CM::WString WindowFrameFocused;
+		static const WString WindowFrameNormal;
+		static const WString WindowFrameFocused;
 
-		static const CM::WString WindowTitleBarBg;
+		static const WString WindowTitleBarBg;
 
-		static const CM::WString WindowCloseButtonNormal;
-		static const CM::WString WindowCloseButtonHover;
+		static const WString WindowCloseButtonNormal;
+		static const WString WindowCloseButtonHover;
 
-		static const CM::WString WindowMinButtonNormal;
-		static const CM::WString WindowMinButtonHover;
+		static const WString WindowMinButtonNormal;
+		static const WString WindowMinButtonHover;
 
-		static const CM::WString WindowMaxButtonNormal;
-		static const CM::WString WindowMaxButtonHover;
+		static const WString WindowMaxButtonNormal;
+		static const WString WindowMaxButtonHover;
 
-		static const CM::WString TabbedBarBtnNormal;
-		static const CM::WString TabbedBarBtnActive;
+		static const WString TabbedBarBtnNormal;
+		static const WString TabbedBarBtnActive;
 
-		static const CM::WString ButtonNormalTex;
-		static const CM::WString ButtonHoverTex;
-		static const CM::WString ButtonActiveTex;
+		static const WString ButtonNormalTex;
+		static const WString ButtonHoverTex;
+		static const WString ButtonActiveTex;
 
-		static const CM::WString ToggleNormalTex;
-		static const CM::WString ToggleHoverTex;
-		static const CM::WString ToggleActiveTex;
-		static const CM::WString ToggleNormalOnTex;
-		static const CM::WString ToggleHoverOnTex;
-		static const CM::WString ToggleActiveOnTex;
+		static const WString ToggleNormalTex;
+		static const WString ToggleHoverTex;
+		static const WString ToggleActiveTex;
+		static const WString ToggleNormalOnTex;
+		static const WString ToggleHoverOnTex;
+		static const WString ToggleActiveOnTex;
 
-		static const CM::WString ObjectDropBtnNormalTex;
-		static const CM::WString ObjectDropBtnNormalOnTex;
-		static const CM::WString ObjectClearBtnNormalTex;
-		static const CM::WString ObjectClearBtnHoverTex;
-		static const CM::WString ObjectClearBtnActiveTex;
+		static const WString ObjectDropBtnNormalTex;
+		static const WString ObjectDropBtnNormalOnTex;
+		static const WString ObjectClearBtnNormalTex;
+		static const WString ObjectClearBtnHoverTex;
+		static const WString ObjectClearBtnActiveTex;
 
-		static const CM::WString FoldoutOpenNormalTex;
-		static const CM::WString FoldoutOpenHoverTex;
-		static const CM::WString FoldoutClosedNormalTex;
-		static const CM::WString FoldoutClosedHoverTex;
-		static const CM::WString FoldoutBackgroundTex;
+		static const WString FoldoutOpenNormalTex;
+		static const WString FoldoutOpenHoverTex;
+		static const WString FoldoutClosedNormalTex;
+		static const WString FoldoutClosedHoverTex;
+		static const WString FoldoutBackgroundTex;
 
-		static const CM::WString InputBoxNormalTex;
-		static const CM::WString InputBoxHoverTex;
-		static const CM::WString InputBoxFocusedTex;
+		static const WString InputBoxNormalTex;
+		static const WString InputBoxHoverTex;
+		static const WString InputBoxFocusedTex;
 
-		static const CM::WString ScrollBarUpNormalTex;
-		static const CM::WString ScrollBarUpHoverTex;
-		static const CM::WString ScrollBarUpActiveTex;
+		static const WString ScrollBarUpNormalTex;
+		static const WString ScrollBarUpHoverTex;
+		static const WString ScrollBarUpActiveTex;
 
-		static const CM::WString ScrollBarDownNormalTex;
-		static const CM::WString ScrollBarDownHoverTex;
-		static const CM::WString ScrollBarDownActiveTex;
+		static const WString ScrollBarDownNormalTex;
+		static const WString ScrollBarDownHoverTex;
+		static const WString ScrollBarDownActiveTex;
 
-		static const CM::WString ScrollBarLeftNormalTex;
-		static const CM::WString ScrollBarLeftHoverTex;
-		static const CM::WString ScrollBarLeftActiveTex;
+		static const WString ScrollBarLeftNormalTex;
+		static const WString ScrollBarLeftHoverTex;
+		static const WString ScrollBarLeftActiveTex;
 
-		static const CM::WString ScrollBarRightNormalTex;
-		static const CM::WString ScrollBarRightHoverTex;
-		static const CM::WString ScrollBarRightActiveTex;
+		static const WString ScrollBarRightNormalTex;
+		static const WString ScrollBarRightHoverTex;
+		static const WString ScrollBarRightActiveTex;
 
-		static const CM::WString ScrollBarHandleHorzNormalTex;
-		static const CM::WString ScrollBarHandleHorzHoverTex;
-		static const CM::WString ScrollBarHandleHorzActiveTex;
+		static const WString ScrollBarHandleHorzNormalTex;
+		static const WString ScrollBarHandleHorzHoverTex;
+		static const WString ScrollBarHandleHorzActiveTex;
 
-		static const CM::WString ScrollBarHandleVertNormalTex;
-		static const CM::WString ScrollBarHandleVertHoverTex;
-		static const CM::WString ScrollBarHandleVertActiveTex;
+		static const WString ScrollBarHandleVertNormalTex;
+		static const WString ScrollBarHandleVertHoverTex;
+		static const WString ScrollBarHandleVertActiveTex;
 
-		static const CM::WString ScrollBarBgTex;
+		static const WString ScrollBarBgTex;
 
-		static const CM::WString DropDownBtnNormalTex;
-		static const CM::WString DropDownBtnHoverTex;
+		static const WString DropDownBtnNormalTex;
+		static const WString DropDownBtnHoverTex;
 
-		static const CM::WString DropDownBoxBgTex;
-		static const CM::WString DropDownBoxEntryNormalTex;
-		static const CM::WString DropDownBoxEntryHoverTex;
+		static const WString DropDownBoxBgTex;
+		static const WString DropDownBoxEntryNormalTex;
+		static const WString DropDownBoxEntryHoverTex;
 
-		static const CM::WString DropDownBoxBtnUpNormalTex;
-		static const CM::WString DropDownBoxBtnUpHoverTex;
+		static const WString DropDownBoxBtnUpNormalTex;
+		static const WString DropDownBoxBtnUpHoverTex;
 
-		static const CM::WString DropDownBoxBtnDownNormalTex;
-		static const CM::WString DropDownBoxBtnDownHoverTex;
+		static const WString DropDownBoxBtnDownNormalTex;
+		static const WString DropDownBoxBtnDownHoverTex;
 
-		static const CM::WString DropDownBoxEntryExpNormalTex;
-		static const CM::WString DropDownBoxEntryExpHoverTex;
+		static const WString DropDownBoxEntryExpNormalTex;
+		static const WString DropDownBoxEntryExpHoverTex;
 
-		static const CM::WString DropDownSeparatorTex;
+		static const WString DropDownSeparatorTex;
 
-		static const CM::WString DropDownBoxBtnUpArrowTex;
-		static const CM::WString DropDownBoxBtnDownArrowTex;
+		static const WString DropDownBoxBtnUpArrowTex;
+		static const WString DropDownBoxBtnDownArrowTex;
 
-		static const CM::WString MenuBarBgTex;
+		static const WString MenuBarBgTex;
 
-		static const CM::WString MenuBarBtnNormalTex;
-		static const CM::WString MenuBarBtnHoverTex;
+		static const WString MenuBarBtnNormalTex;
+		static const WString MenuBarBtnHoverTex;
 
-		static const CM::WString MenuBarBansheeLogoTex;
+		static const WString MenuBarBansheeLogoTex;
 
-		static const CM::WString DockSliderNormalTex;
+		static const WString DockSliderNormalTex;
 
-		static const CM::WString TreeViewExpandButtonOffNormal;
-		static const CM::WString TreeViewExpandButtonOffHover;
-		static const CM::WString TreeViewExpandButtonOnNormal;
-		static const CM::WString TreeViewExpandButtonOnHover;
+		static const WString TreeViewExpandButtonOffNormal;
+		static const WString TreeViewExpandButtonOffHover;
+		static const WString TreeViewExpandButtonOnNormal;
+		static const WString TreeViewExpandButtonOnHover;
 
-		static const CM::WString TreeViewSelectionBackground;
-		static const CM::WString TreeViewEditBox;
+		static const WString TreeViewSelectionBackground;
+		static const WString TreeViewEditBox;
 
-		static const CM::WString TreeViewElementHighlight;
-		static const CM::WString TreeViewElementSepHighlight;
+		static const WString TreeViewElementHighlight;
+		static const WString TreeViewElementSepHighlight;
 
-		static BS::HSpriteTexture getTexture(const CM::WString& name);
+		static HSpriteTexture getTexture(const WString& name);
 	};
 }

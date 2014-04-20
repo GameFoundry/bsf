@@ -2,20 +2,20 @@
 #include "CmSceneObject.h"
 #include "CmComponent.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
-	SceneManager::SceneManager()
+	SceneManagerBase::SceneManagerBase()
 	{
 		mRootNode = SceneObject::createInternal("SceneRoot");
 	}
 
-	SceneManager::~SceneManager()
+	SceneManagerBase::~SceneManagerBase()
 	{
 		if(mRootNode != nullptr)
 			mRootNode->destroy();
 	}
 
-	void SceneManager::update()
+	void SceneManagerBase::update()
 	{
 		Stack<HSceneObject>::type todo;
 		todo.push(mRootNode);
@@ -37,17 +37,17 @@ namespace CamelotFramework
 		}
 	}
 
-	void SceneManager::registerNewGO(const HSceneObject& node) 
+	void SceneManagerBase::registerNewGO(const HSceneObject& node) 
 	{ 
 		if(mRootNode) // If root node is null, then this new node is the root node
 			node->setParent(mRootNode);
 	}
 
-	void SceneManager::notifyComponentAdded(const HComponent& component) { }
-	void SceneManager::notifyComponentRemoved(const HComponent& component) { }
+	void SceneManagerBase::notifyComponentAdded(const HComponent& component) { }
+	void SceneManagerBase::notifyComponentRemoved(const HComponent& component) { }
 
-	SceneManager& gSceneManager()
+	SceneManagerBase& gSceneManager()
 	{
-		return SceneManager::instance();
+		return SceneManagerBase::instance();
 	}
 }

@@ -3,7 +3,7 @@
 #include "CmFontManager.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const CHAR_DESC& FontData::getCharDesc(UINT32 charId) const
 	{

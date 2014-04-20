@@ -1,6 +1,6 @@
 #include "CmDeferredCallManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	DeferredCallManager::DeferredCallManager()
 	{

@@ -41,15 +41,15 @@ namespace BansheeEngine
 		/**
 		 * @brief	Re-arranges the elements to fit the layout. (Internal use only)
 		 */
-		virtual void _updateLayout(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, 
-			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+		virtual void _updateLayout(INT32 x, INT32 y, UINT32 width, UINT32 height, 
+			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 		virtual void _updateOptimalLayoutSizes();
-		virtual void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
-			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
+			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 
 		void _setParent(GUIElementBase* parent);
 
-		virtual CM::Vector2I _getOptimalSize() const = 0;
+		virtual Vector2I _getOptimalSize() const = 0;
 		virtual const RectOffset& _getPadding() const = 0;
 		virtual Type _getType() const = 0;
 		GUIElementBase* _getParent() const { return mParentElement; }
@@ -81,13 +81,13 @@ namespace BansheeEngine
 		GUILayout& addLayoutXInternal(GUIElementBase* parent);
 		GUILayout& addLayoutYInternal(GUIElementBase* parent);
 		void removeLayoutInternal(GUILayout& layout);
-		GUILayout& insertLayoutXInternal(GUIElementBase* parent, CM::UINT32 idx);
-		GUILayout& insertLayoutYInternal(GUIElementBase* parent, CM::UINT32 idx);
+		GUILayout& insertLayoutXInternal(GUIElementBase* parent, UINT32 idx);
+		GUILayout& insertLayoutYInternal(GUIElementBase* parent, UINT32 idx);
 
 		GUIWidget* mParentWidget;
 		GUIElementBase* mParentElement;
-		CM::Vector<GUIElementBase*>::type mChildren;	
-		CM::UINT8 mIsDirty;
+		Vector<GUIElementBase*>::type mChildren;	
+		UINT8 mIsDirty;
 		bool mIsDisabled;
 	};
 }

@@ -2,7 +2,7 @@
 #include "CmQuaternion.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     const float Matrix3::EPSILON = 1e-06f;
     const Matrix3 Matrix3::ZERO(0,0,0,0,0,0,0,0,0);

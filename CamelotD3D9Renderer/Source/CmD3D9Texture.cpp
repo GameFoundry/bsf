@@ -37,7 +37,7 @@ THE SOFTWARE.
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	
     D3D9Texture::D3D9Texture()
@@ -431,7 +431,7 @@ namespace CamelotFramework
 		// Check FSAA level
 		if ((mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0)
 		{
-			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
+			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, 
 				&mFSAAType, &mFSAAQuality);
 		}

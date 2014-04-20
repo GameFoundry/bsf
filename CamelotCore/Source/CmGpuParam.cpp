@@ -1,6 +1,6 @@
 #include "CmGpuParam.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/************************************************************************/
 	/* 									STRUCT	                     		*/

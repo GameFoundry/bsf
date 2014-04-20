@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmD3D9Texture.h"
 #include "CmTextureManager.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_D3D9_EXPORT D3D9TextureManager : public TextureManager
 	{

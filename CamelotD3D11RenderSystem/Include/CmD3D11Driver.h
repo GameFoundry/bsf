@@ -2,7 +2,7 @@
 
 #include "CmD3D11Prerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class D3D11Driver
 	{

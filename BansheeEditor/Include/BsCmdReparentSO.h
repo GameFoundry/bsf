@@ -4,12 +4,12 @@
 #include "BsEditorCommand.h"
 #include "BsUndoRedo.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class CmdReparentSO : public EditorCommand
 	{
 	public:
-		static void execute(const CM::Vector<CM::HSceneObject>::type& sceneObjects, const CM::HSceneObject& newParent);
+		static void execute(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent);
 
 		void commit();
 		void revert();
@@ -17,10 +17,10 @@ namespace BansheeEditor
 	private:
 		friend class UndoRedo;
 
-		CmdReparentSO(const CM::Vector<CM::HSceneObject>::type& sceneObjects, const CM::HSceneObject& newParent);
+		CmdReparentSO(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent);
 
-		CM::Vector<CM::HSceneObject>::type mSceneObjects;
-		CM::Vector<CM::HSceneObject>::type mOldParents;
-		CM::HSceneObject mNewParent;
+		Vector<HSceneObject>::type mSceneObjects;
+		Vector<HSceneObject>::type mOldParents;
+		HSceneObject mNewParent;
 	};
 }

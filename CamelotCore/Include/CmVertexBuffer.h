@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmCoreObject.h"
 #include "CmColor.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/** \addtogroup Core
 	*  @{

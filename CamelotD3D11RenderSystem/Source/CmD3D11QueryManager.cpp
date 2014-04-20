@@ -2,7 +2,7 @@
 #include "CmD3D11EventQuery.h"
 #include "CmD3D11TimerQuery.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	EventQueryPtr D3D11QueryManager::createEventQuery() const
 	{

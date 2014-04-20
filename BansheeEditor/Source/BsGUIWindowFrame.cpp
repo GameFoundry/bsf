@@ -10,10 +10,7 @@
 #include "CmTexture.h"
 #include "CmRenderWindow.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const String& GUIWindowFrame::getGUITypeName()
 	{
@@ -21,7 +18,7 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIWindowFrame::GUIWindowFrame(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIWindowFrame::GUIWindowFrame(const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUITexture(styleName, HSpriteTexture(), GUIImageScaleMode::StretchToFit, layoutOptions)
 	{
 
@@ -30,12 +27,12 @@ namespace BansheeEditor
 	GUIWindowFrame::~GUIWindowFrame()
 	{ }
 
-	GUIWindowFrame* GUIWindowFrame::create(const CM::String& styleName)
+	GUIWindowFrame* GUIWindowFrame::create(const String& styleName)
 	{
 		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIWindowFrame* GUIWindowFrame::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIWindowFrame, PoolAlloc>()) GUIWindowFrame(getStyleName<GUIWindowFrame>(styleName), GUILayoutOptions::create(layoutOptions));
 	}

@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmIndexBuffer.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 { 
     class CM_RSGL_EXPORT GLIndexBuffer : public IndexBuffer
     {

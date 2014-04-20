@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmSamplerState.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_D3D11_EXPORT D3D11SamplerState : public SamplerState
 	{

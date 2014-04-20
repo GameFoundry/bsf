@@ -6,32 +6,32 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ManagedComponent : public CM::Component
+	class BS_SCR_BE_EXPORT ManagedComponent : public Component
 	{
 	public:
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 		MonoReflectionType* getRuntimeType() const { return mRuntimeType; }
-		const CM::String& getManagedFullTypeName() const { return mFullTypeName; }
+		const String& getManagedFullTypeName() const { return mFullTypeName; }
 
 	private:
 		MonoObject* mManagedInstance;
 		MonoReflectionType* mRuntimeType;
 		uint32_t mManagedHandle;
 
-		CM::String mNamespace;
-		CM::String mTypeName;
-		CM::String mFullTypeName;
+		String mNamespace;
+		String mTypeName;
+		String mFullTypeName;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
 		/************************************************************************/
 
 	protected:
-		friend class CM::SceneObject;
+		friend class SceneObject;
 
 		/** Standard constructor.
         */
-		ManagedComponent(const CM::HSceneObject& parent, MonoReflectionType* runtimeType);
+		ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType);
 		void construct(MonoObject* object, MonoReflectionType* runtimeType);
 
 		void onDestroyed();
@@ -44,8 +44,8 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ManagedComponentRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 
 	protected:
 		ManagedComponent() {} // Serialization only

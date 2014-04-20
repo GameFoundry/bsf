@@ -4,7 +4,7 @@
 #include "CmResource.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct CM_EXPORT SHADER_DATA_PARAM_DESC
 	{

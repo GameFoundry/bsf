@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	* @brief	Helper method when serializing known data types that have valid

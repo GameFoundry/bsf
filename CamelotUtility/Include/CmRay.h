@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmVector3.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /**
      * @brief	A ray in 3D space represented with an origin and direction.

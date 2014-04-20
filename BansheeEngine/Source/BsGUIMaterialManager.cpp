@@ -3,11 +3,9 @@
 #include "CmDebug.h"
 #include "BsBuiltinMaterialManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	const GUIMaterialInfo& GUIMaterialManager::requestTextMaterial(const HTexture& texture, const CM::Color& tint) const
+	const GUIMaterialInfo& GUIMaterialManager::requestTextMaterial(const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
@@ -27,7 +25,7 @@ namespace BansheeEngine
 		return guiMat.handle;
 	}
 
-	const GUIMaterialInfo& GUIMaterialManager::requestImageMaterial(const HTexture& texture, const CM::Color& tint) const
+	const GUIMaterialInfo& GUIMaterialManager::requestImageMaterial(const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
@@ -47,7 +45,7 @@ namespace BansheeEngine
 		return guiMat.handle;
 	}
 
-	const GUIMaterialInfo* GUIMaterialManager::findExistingTextMaterial(const CM::HTexture& texture, const CM::Color& tint) const
+	const GUIMaterialInfo* GUIMaterialManager::findExistingTextMaterial(const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 
@@ -63,7 +61,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	const GUIMaterialInfo* GUIMaterialManager::findExistingImageMaterial(const CM::HTexture& texture, const CM::Color& tint) const
+	const GUIMaterialInfo* GUIMaterialManager::findExistingImageMaterial(const HTexture& texture, const Color& tint) const
 	{
 		Vector4 vecColor(tint.r, tint.g, tint.b, tint.a);
 

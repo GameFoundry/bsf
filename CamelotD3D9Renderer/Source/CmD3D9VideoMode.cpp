@@ -27,7 +27,7 @@ THE SOFTWARE.
 */
 #include "CmD3D9VideoMode.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	String D3D9VideoMode::getDescription() const
 	{

@@ -19,7 +19,7 @@ namespace BansheeEngine
 		 */
 		void* getThunk() const;
 
-		CM::String getName() const;
+		String getName() const;
 
 		MonoClass* getReturnType();
 

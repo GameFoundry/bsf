@@ -6,7 +6,7 @@
 #include "CmMeshBase.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CM_ALLOW_MEMCPY_SERIALIZATION(SubMesh);
 

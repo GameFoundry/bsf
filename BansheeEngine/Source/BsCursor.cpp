@@ -3,8 +3,6 @@
 #include "CmException.h"
 #include "BsBuiltinResources.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	Cursor::Cursor()
@@ -62,7 +60,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Cursor::setCursor(const CM::String& name)
+	void Cursor::setCursor(const String& name)
 	{
 		auto iterFind = mCustomIconNameToId.find(name);
 		if(iterFind == mCustomIconNameToId.end())
@@ -79,7 +77,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Cursor::setCursorIcon(const CM::String& name, const CM::PixelData& pixelData, const CM::Vector2I& hotSpot)
+	void Cursor::setCursorIcon(const String& name, const PixelData& pixelData, const Vector2I& hotSpot)
 	{
 		auto iterFind = mCustomIconNameToId.find(name);
 		if(iterFind != mCustomIconNameToId.end())
@@ -98,7 +96,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Cursor::setCursorIcon(CursorType type, const CM::PixelData& pixelData, const CM::Vector2I& hotSpot)
+	void Cursor::setCursorIcon(CursorType type, const PixelData& pixelData, const Vector2I& hotSpot)
 	{
 		UINT32 id = (UINT32)type;
 
@@ -109,7 +107,7 @@ namespace BansheeEngine
 			updateCursorImage(); // Refresh active
 	}
 
-	void Cursor::clearCursorIcon(const CM::String& name)
+	void Cursor::clearCursorIcon(const String& name)
 	{
 		auto iterFind = mCustomIconNameToId.find(name);
 		if(iterFind == mCustomIconNameToId.end())

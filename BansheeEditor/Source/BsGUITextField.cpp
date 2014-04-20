@@ -8,13 +8,10 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIWidget.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	GUITextField::GUITextField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, CM::UINT32 labelWidth, 
-		const CM::String& labelStyle, const CM::String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+	GUITextField::GUITextField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth, 
+		const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr)
 	{
 		mInputBox = GUIInputBox::create(false, inputBoxStyle);

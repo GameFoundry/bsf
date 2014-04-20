@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmResource.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT ResourceRTTI : public RTTIType<Resource, IReflectable, ResourceRTTI>
 	{

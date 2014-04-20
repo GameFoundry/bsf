@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Serializable class that contains UUID <-> file path mapping for resources.

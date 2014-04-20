@@ -31,7 +31,7 @@ THE SOFTWARE.
 
 #include "CmWin32GLSupport.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     
 inline GLSupport* getGLSupport()
 {

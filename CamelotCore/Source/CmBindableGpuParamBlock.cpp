@@ -1,7 +1,7 @@
 #include "CmBindableGpuParamBlock.h"
 #include "CmGpuParamBlockBuffer.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	BindableGpuParamBlock::BindableGpuParamBlock()
 		:mDirty(true), mData(nullptr), mSize(0)

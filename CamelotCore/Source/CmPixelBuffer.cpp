@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmPixelBuffer.h"
 #include "CmException.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     PixelBuffer::PixelBuffer(UINT32 width, UINT32 height, UINT32 depth,
             PixelFormat format,

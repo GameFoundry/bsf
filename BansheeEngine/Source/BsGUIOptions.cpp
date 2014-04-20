@@ -1,7 +1,5 @@
 #include "BsGUIOptions.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIOption::GUIOption()
@@ -10,7 +8,7 @@ namespace BansheeEngine
 
 	}
 
-	GUIOption GUIOption::fixedWidth(CM::UINT32 value)
+	GUIOption GUIOption::fixedWidth(UINT32 value)
 	{
 		GUIOption option;
 
@@ -20,7 +18,7 @@ namespace BansheeEngine
 		return option;
 	}
 
-	GUIOption GUIOption::flexibleWidth(CM::UINT32 min, CM::UINT32 max)
+	GUIOption GUIOption::flexibleWidth(UINT32 min, UINT32 max)
 	{
 		GUIOption option;
 
@@ -31,7 +29,7 @@ namespace BansheeEngine
 		return option;
 	}
 
-	GUIOption GUIOption::fixedHeight(CM::UINT32 value)
+	GUIOption GUIOption::fixedHeight(UINT32 value)
 	{
 		GUIOption option;
 
@@ -41,7 +39,7 @@ namespace BansheeEngine
 		return option;
 	}
 
-	GUIOption GUIOption::flexibleHeight(CM::UINT32 min, CM::UINT32 max)
+	GUIOption GUIOption::flexibleHeight(UINT32 min, UINT32 max)
 	{
 		GUIOption option;
 

@@ -5,12 +5,12 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT UpdateCallback : public CM::Component
+	class BS_EXPORT UpdateCallback : public Component
 	{
 	protected:
-		friend class CM::SceneObject;
+		friend class SceneObject;
 
-		UpdateCallback(const CM::HSceneObject& parent);
+		UpdateCallback(const HSceneObject& parent);
 	public:
 		~UpdateCallback();
 

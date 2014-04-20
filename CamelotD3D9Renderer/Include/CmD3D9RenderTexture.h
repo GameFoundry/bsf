@@ -3,7 +3,7 @@
 #include "CmD3D9Prerequisites.h"
 #include "CmRenderTexture.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/// RenderTexture implementation for D3D9
 	class CM_D3D9_EXPORT D3D9RenderTexture : public RenderTexture

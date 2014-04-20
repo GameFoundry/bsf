@@ -7,7 +7,7 @@
 #include "CmRectF.h"
 #include <boost/signals/connection.hpp>
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/**
 	 * @brief	Viewport provides you with a way to render to only a part of a 

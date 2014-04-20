@@ -3,9 +3,9 @@
 #include "BsEditorPrerequisites.h"
 #include "CmIReflectable.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class ResourceMeta : public CM::IReflectable
+	class ResourceMeta : public IReflectable
 	{
 	private:
 		struct ConstructPrivately {};
@@ -13,14 +13,14 @@ namespace BansheeEditor
 	public:
 		explicit ResourceMeta(const ConstructPrivately&);
 
-		static ResourceMetaPtr create(const CM::String& uuid, const CM::ImportOptionsPtr& importOptions);
+		static ResourceMetaPtr create(const String& uuid, const ImportOptionsPtr& importOptions);
 
-		const CM::String& getUUID() const { return mUUID; }
-		const CM::ImportOptionsPtr& getImportOptions() const { return mImportOptions; }
+		const String& getUUID() const { return mUUID; }
+		const ImportOptionsPtr& getImportOptions() const { return mImportOptions; }
 
 	private:
-		CM::String mUUID;
-		CM::ImportOptionsPtr mImportOptions;
+		String mUUID;
+		ImportOptionsPtr mImportOptions;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -29,7 +29,7 @@ namespace BansheeEditor
 
 	public:
 		friend class ResourceMetaRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;	
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

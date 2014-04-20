@@ -1,7 +1,7 @@
 #include "CmDegree.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Degree::Degree(const Radian& r) 
 		:mDeg(r.valueDegrees()) 

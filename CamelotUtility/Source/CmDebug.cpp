@@ -5,7 +5,7 @@
 #include "CmFileSystem.h"
 #include "CmDataStream.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void Debug::logDebug(const String& msg)
 	{

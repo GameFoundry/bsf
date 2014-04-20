@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLHardwareBufferManager.h"
 #include "CmException.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     GLIndexBuffer::GLIndexBuffer(HardwareBufferManager* mgr, IndexType idxType,
         UINT32 numIndexes, GpuBufferUsage usage)

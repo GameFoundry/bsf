@@ -3,7 +3,7 @@
 
 using namespace std::placeholders;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	RenderWindowManager::RenderWindowManager()
 		:mWindowInFocus(nullptr), mNewWindowInFocus(nullptr)

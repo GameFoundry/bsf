@@ -12,11 +12,11 @@ namespace BansheeEngine
 		
 		GUISkin() {}
 
-		const GUIElementStyle* getStyle(const CM::String& guiElemType) const;
-		void setStyle(const CM::String& guiElemType, const GUIElementStyle& style);
+		const GUIElementStyle* getStyle(const String& guiElemType) const;
+		void setStyle(const String& guiElemType, const GUIElementStyle& style);
 
 	private:
-		CM::UnorderedMap<CM::String, GUIElementStyle>::type mStyles;
+		UnorderedMap<String, GUIElementStyle>::type mStyles;
 
 		GUISkin(const GUISkin& skin) {} // Disable copying
 	};

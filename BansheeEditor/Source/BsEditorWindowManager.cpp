@@ -2,10 +2,7 @@
 #include "BsEditorWindow.h"
 #include "BsMainEditorWindow.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	EditorWindowManager::EditorWindowManager()
 		:mMainWindow(nullptr)
@@ -22,7 +19,7 @@ namespace BansheeEditor
 			cm_delete(mMainWindow);
 	}
 
-	MainEditorWindow* EditorWindowManager::createMain(const CM::RenderWindowPtr& parentRenderWindow)
+	MainEditorWindow* EditorWindowManager::createMain(const RenderWindowPtr& parentRenderWindow)
 	{
 		if(mMainWindow == nullptr)
 			mMainWindow = new (cm_alloc<MainEditorWindow>()) MainEditorWindow(parentRenderWindow);

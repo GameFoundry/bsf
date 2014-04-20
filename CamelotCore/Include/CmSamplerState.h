@@ -9,7 +9,7 @@
 #include "CmColor.h"
 #include "CmResource.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	struct CM_EXPORT SAMPLER_STATE_DESC
 	{

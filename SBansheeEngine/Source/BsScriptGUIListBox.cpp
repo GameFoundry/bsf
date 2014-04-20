@@ -14,7 +14,6 @@
 #include "BsScriptGUIArea.h"
 #include "BsScriptHString.h"
 
-using namespace CamelotFramework;
 using namespace std::placeholders;
 
 namespace BansheeEngine
@@ -137,7 +136,7 @@ namespace BansheeEngine
 		nativeLayout->addElement(nativeInstance->getInternalValue());
 	}
 
-	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, CM::UINT32 index)
+	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, UINT32 index)
 	{
 		MonoException* exception = nullptr;
 		onSelectionChangedThunk(instance, index, &exception);

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <stdio.h>
 #include <assert.h>
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 // Limit max number of macro arguments to this
 #define MAX_MACRO_ARGS 16
@@ -1298,4 +1298,4 @@ char *CPreprocessor::Parse (const char *iSource, size_t iLength, size_t &oLength
     return retval.Buffer;
 }
 
-} // namespace CamelotFramework
+}

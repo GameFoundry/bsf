@@ -5,7 +5,7 @@
 #include "CmCommonEnums.h"
 #include <functional>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CommandQueueNoSync
 	{
@@ -204,7 +204,7 @@ namespace CamelotFramework
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
 		 * 			that created the command queue. Returned commands MUST be passed to "playback" method.
 		 */
-		CamelotFramework::Queue<QueuedCommand>::type* flush();
+		BansheeEngine::Queue<QueuedCommand>::type* flush();
 
 		/**
 		 * @brief	Cancels all currently queued commands.
@@ -220,8 +220,8 @@ namespace CamelotFramework
 		void throwInvalidThreadException(const String& message) const;
 
 	private:
-		CamelotFramework::Queue<QueuedCommand>::type* mCommands;
-		Stack<CamelotFramework::Queue<QueuedCommand>::type*>::type mEmptyCommandQueues; // List of empty queues for reuse
+		BansheeEngine::Queue<QueuedCommand>::type* mCommands;
+		Stack<BansheeEngine::Queue<QueuedCommand>::type*>::type mEmptyCommandQueues; // List of empty queues for reuse
 
 		CM_THREAD_ID_TYPE mMyThreadId;
 
@@ -326,7 +326,7 @@ namespace CamelotFramework
 		/**
 		 * @copydoc CommandQueueBase::flush
 		 */
-		CamelotFramework::Queue<QueuedCommand>::type* flush()
+		BansheeEngine::Queue<QueuedCommand>::type* flush()
 		{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
@@ -336,7 +336,7 @@ namespace CamelotFramework
 #endif
 
 			lock();
-			CamelotFramework::Queue<QueuedCommand>::type* commands = CommandQueueBase::flush();
+			BansheeEngine::Queue<QueuedCommand>::type* commands = CommandQueueBase::flush();
 			unlock();
 
 			return commands;

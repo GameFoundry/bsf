@@ -15,8 +15,6 @@
 #include "CmFileSystem.h"
 #include "CmApplication.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	const WString BuiltinResources::DefaultFontPath = L"arial.ttf";
@@ -175,7 +173,7 @@ namespace BansheeEngine
 			{
 				FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
 
-				Vector<CamelotFramework::UINT32>::type fontSizes;
+				Vector<BansheeEngine::UINT32>::type fontSizes;
 				fontSizes.push_back(DefaultFontSize);
 				importOptions->setFontSizes(fontSizes);
 				importOptions->setAntialiasing(false);
@@ -540,71 +538,71 @@ namespace BansheeEngine
 		mSkin.setStyle("ContextMenuSeparator", dropDownSeparatorStyle);
 	}
 
-	HSpriteTexture BuiltinResources::getSkinTexture(const CM::WString& name)
+	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)
 	{
 		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultSkinFolder + name)));
 	}
 
-	HTexture BuiltinResources::getCursorTexture(const CM::WString& name)
+	HTexture BuiltinResources::getCursorTexture(const WString& name)
 	{
 		return static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultCursorFolder + name));
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)
 	{
 		hotSpot = CursorArrowHotspot;
 		return *mCursorArrow.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorArrowDrag(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorArrowDrag(Vector2I& hotSpot)
 	{
 		hotSpot = CursorArrowDragHotspot;
 		return *mCursorArrowDrag.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorWait(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorWait(Vector2I& hotSpot)
 	{
 		hotSpot = CursorWaitHotspot;
 		return *mCursorWait.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorIBeam(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorIBeam(Vector2I& hotSpot)
 	{
 		hotSpot = CursorIBeamHotspot;
 		return *mCursorIBeam.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorSizeNESW(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorSizeNESW(Vector2I& hotSpot)
 	{
 		hotSpot = CursorSizeNESWHotspot;
 		return *mCursorSizeNESW.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorSizeNS(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorSizeNS(Vector2I& hotSpot)
 	{
 		hotSpot = CursorSizeNSHotspot;
 		return *mCursorSizeNS.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorSizeNWSE(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorSizeNWSE(Vector2I& hotSpot)
 	{
 		hotSpot = CursorSizeNWSEHotspot;
 		return *mCursorSizeNWSE.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorSizeWE(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorSizeWE(Vector2I& hotSpot)
 	{
 		hotSpot = CursorSizeWEHotspot;
 		return *mCursorSizeWE.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorDeny(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorDeny(Vector2I& hotSpot)
 	{
 		hotSpot = CursorDenyHotspot;
 		return *mCursorDeny.get();
 	}
 
-	const CM::PixelData& BuiltinResources::getCursorMoveLeftRight(Vector2I& hotSpot)
+	const PixelData& BuiltinResources::getCursorMoveLeftRight(Vector2I& hotSpot)
 	{
 		hotSpot = CursorArrowLeftRightHotspot;
 		return *mCursorArrowLeftRight.get();

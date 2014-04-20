@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmVector3.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	A four dimensional vector.

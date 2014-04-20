@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsEditorWindowBase.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class EditorWindow : public EditorWindowBase
 	{

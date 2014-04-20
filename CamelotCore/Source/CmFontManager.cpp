@@ -1,7 +1,7 @@
 #include "CmFontManager.h"
 #include "CmFont.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	FontPtr FontManager::create(const Vector<FontData>::type& fontData) const
 	{

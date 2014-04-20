@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmVector2I.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	// Contains all possible keys, including keyboard scan codes, mouse buttons and gamepad buttons
 	// Note: These KeyCodes are only keyboard scan codes. This means that exact scan code identifier might 

@@ -2,7 +2,6 @@
 #include "CmPlatform.h"
 #include "CmApplication.h"
 
-using namespace CamelotFramework;
 using namespace std::placeholders;
 
 namespace BansheeEngine
@@ -19,7 +18,7 @@ namespace BansheeEngine
 		mDropCallbacks.push_back(dropCallback);
 	}
 
-	void DragAndDropManager::startDrag(CM::UINT32 typeId, void* data, std::function<void(bool)> dropCallback, bool needsValidDropTarget)
+	void DragAndDropManager::startDrag(UINT32 typeId, void* data, std::function<void(bool)> dropCallback, bool needsValidDropTarget)
 	{
 		mDragTypeId = typeId;
 		mData = data;

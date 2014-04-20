@@ -1,6 +1,6 @@
 #include "CmRenderer.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void Renderer::addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, RenderQueue&)> callback)
 	{

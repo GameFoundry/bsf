@@ -5,8 +5,6 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	void ScriptStringTable::initMetaData()
@@ -25,17 +23,17 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetLocalizedString", &ScriptStringTable::internal_GetLocalizedString);
 	}
 
-	void ScriptStringTable::internal_GetActiveLanguage(CM::Language* value)
+	void ScriptStringTable::internal_GetActiveLanguage(Language* value)
 	{
 		*value = StringTable::instance().getActiveLanguage();
 	}
 
-	void ScriptStringTable::internal_SetActiveLanguage(CM::Language value)
+	void ScriptStringTable::internal_SetActiveLanguage(Language value)
 	{
 		StringTable::instance().setActiveLanguage(value);
 	}
 
-	void ScriptStringTable::internal_SetString(MonoString* identifier, CM::Language language, MonoString* value)
+	void ScriptStringTable::internal_SetString(MonoString* identifier, Language language, MonoString* value)
 	{
 		StringTable::instance().setString(MonoUtil::monoToWString(identifier), language, MonoUtil::monoToWString(value));
 	}
@@ -47,7 +45,7 @@ namespace BansheeEngine
 
 	void ScriptStringTable::internal_GetLocalizedString(MonoString* identifier, MonoString** value)
 	{
-		CM::HString stringHandle(MonoUtil::monoToWString(identifier));
+		HString stringHandle(MonoUtil::monoToWString(identifier));
 		WString outString = stringHandle;
 
 		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), outString);

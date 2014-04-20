@@ -8,16 +8,13 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIWidget.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const String GUIFoldout::FOLDOUT_BUTTON_STYLE = "FoldoutButton";
 	const String GUIFoldout::FOLDOUT_BG_STYLE = "FoldoutBackground";
 
-	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, const CM::String& toggleStyle, 
-		const CM::String& backgroundStyle, const BS::GUILayoutOptions& layoutOptions)
+	GUIFoldout::GUIFoldout(const PrivatelyConstruct& dummy, const String& toggleStyle, 
+		const String& backgroundStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mToggle(nullptr), mBackground(nullptr), mIsExpanded(false)
 	{
 		mToggle = GUIToggle::create(HString(L""), toggleStyle);
@@ -33,7 +30,7 @@ namespace BansheeEditor
 	}
 
 	GUIFoldout* GUIFoldout::create(const GUIOptions& layoutOptions, 
-		const CM::String& toggleStyle, const CM::String& backgroundStyle)
+		const String& toggleStyle, const String& backgroundStyle)
 	{
 		const String* curToggleStyle = &toggleStyle;
 		if(*curToggleStyle == StringUtil::BLANK)
@@ -47,8 +44,8 @@ namespace BansheeEditor
 			GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIFoldout* GUIFoldout::create(const CM::String& toggleStyle, 
-		const CM::String& backgroundStyle)
+	GUIFoldout* GUIFoldout::create(const String& toggleStyle, 
+		const String& backgroundStyle)
 	{
 		const String* curToggleStyle = &toggleStyle;
 		if(*curToggleStyle == StringUtil::BLANK)

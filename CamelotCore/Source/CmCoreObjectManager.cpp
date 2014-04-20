@@ -2,7 +2,7 @@
 #include "CmCoreObject.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CoreGpuObjectManager::CoreGpuObjectManager()
 		:mNextAvailableID(1)

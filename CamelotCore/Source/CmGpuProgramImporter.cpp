@@ -5,7 +5,7 @@
 #include "CmGpuProgramImportOptions.h"
 #include "CmHighLevelGpuProgram.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	bool GpuProgramImporter::isExtensionSupported(const WString& ext) const
 	{

@@ -19,17 +19,14 @@
 #include "BsProfilerOverlay.h"
 #include "CmPlatform.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	MainEditorWindow* MainEditorWindow::create(const CM::RenderWindowPtr& renderWindow)
+	MainEditorWindow* MainEditorWindow::create(const RenderWindowPtr& renderWindow)
 	{
 		return EditorWindowManager::instance().createMain(renderWindow);
 	}
 
-	MainEditorWindow::MainEditorWindow(const CM::RenderWindowPtr& renderWindow)
+	MainEditorWindow::MainEditorWindow(const RenderWindowPtr& renderWindow)
 		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
 		mMenuBar(cm_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{

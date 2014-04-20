@@ -40,7 +40,7 @@
 
 #include "CmRendererManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Application::Application()
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), mSceneManagerPlugin(nullptr)

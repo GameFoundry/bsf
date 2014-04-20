@@ -7,8 +7,6 @@
 #include <mono/metadata/assembly.h>
 #include <mono/metadata/mono-config.h>
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	const String MonoManager::MONO_LIB_DIR = "..\\..\\Mono\\lib";
@@ -111,7 +109,7 @@ namespace BansheeEngine
 			mono_assembly_close(monoAssembly);
 	}
 
-	MonoAssembly* MonoManager::getAssembly(const CM::String& name) const
+	MonoAssembly* MonoManager::getAssembly(const String& name) const
 	{
 		auto iterFind = mAssemblies.find(name);
 
@@ -127,7 +125,7 @@ namespace BansheeEngine
 		mMetas.push_back(metaData);
 	}
 
-	MonoClass* MonoManager::findClass(const CM::String& ns, const CM::String& typeName)
+	MonoClass* MonoManager::findClass(const String& ns, const String& typeName)
 	{
 		MonoClass* monoClass = nullptr;
 		for(auto& assembly : mAssemblies)

@@ -3,7 +3,7 @@
 #include "CmCoreThread.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GpuResourceData::GpuResourceData()
 		:mData(nullptr), mLocked(false), mOwnsData(false)

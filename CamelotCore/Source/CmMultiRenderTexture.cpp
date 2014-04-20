@@ -3,7 +3,7 @@
 #include "CmException.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	MultiRenderTexture::MultiRenderTexture()
 	{
@@ -42,7 +42,7 @@ namespace CamelotFramework
 				{
 					mWidth = texture->getWidth();
 					mHeight = texture->getWidth();
-					mColorDepth = CamelotFramework::PixelUtil::getNumElemBits(texture->getFormat());
+					mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
 					mActive = true;
 					mHwGamma = texture->isHardwareGammaEnabled();
 					mFSAA = texture->getFSAA();

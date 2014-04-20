@@ -51,7 +51,7 @@ THE SOFTWARE.
 
 #include "boost/signal.hpp"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/** \addtogroup Core
 	*  @{
@@ -321,7 +321,7 @@ namespace CamelotFramework
 		@remarks
 		Because different APIs have different requirements (some incompatible) for the
 		projection matrix, this method allows each to implement their own correctly and pass
-		back a generic Camelot matrix for storage in the engine.
+		back a generic Banshee matrix for storage in the engine.
 		*/
 		virtual void convertProjectionMatrix(const Matrix4& matrix,
 			Matrix4& dest, bool forGpuProgram = false) = 0;

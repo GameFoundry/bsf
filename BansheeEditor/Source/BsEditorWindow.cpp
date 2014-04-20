@@ -3,10 +3,7 @@
 #include "BsEditorWindowManager.h"
 #include "BsDragAndDropManager.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	EditorWindow::EditorWindow()
 		:EditorWindowBase(), mWidgets(cm_new<EditorWidgetContainer>(mGUI.get(), mRenderWindow.get(), this))

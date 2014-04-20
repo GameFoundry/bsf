@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmAsyncOp.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)

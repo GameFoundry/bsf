@@ -1,7 +1,7 @@
 #include "CmFBXPrerequisites.h"
 #include "CmFBXImporter.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	extern "C" CM_FBX_EXPORT const String& getPluginName()
 	{

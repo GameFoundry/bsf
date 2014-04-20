@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	enum class MonitorState
 	{
@@ -344,28 +344,28 @@ namespace CamelotFramework
 
 		DWORD filterFlags = 0;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::FileName) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::FileName) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_FILE_NAME;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::DirName) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::DirName) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_DIR_NAME;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::Attributes) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::Attributes) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_ATTRIBUTES;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::Size) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::Size) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_SIZE;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::LastWrite) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::LastWrite) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_LAST_WRITE;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::LastAccess) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::LastAccess) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_LAST_ACCESS;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::Creation) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::Creation) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_CREATION;
 
-		if((((UINT32)changeFilter) & (UINT32)CamelotFramework::FolderChange::Security) != 0)
+		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::Security) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_SECURITY;
 
 		mPimpl->mFoldersToWatch.push_back(cm_new<FolderWatchInfo>(folderPath, dirHandle, subdirectories, filterFlags));

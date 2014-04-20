@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmD3D9Device.h"
 #include "CmD3D9ResourceManager.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	//---------------------------------------------------------------------
     D3D9IndexBuffer::D3D9IndexBuffer(HardwareBufferManager* mgr, IndexBuffer::IndexType idxType, 

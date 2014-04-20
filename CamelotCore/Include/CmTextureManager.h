@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmTexture.h"
 #include "CmModule.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /**
      * @brief	Class for loading and managing textures.

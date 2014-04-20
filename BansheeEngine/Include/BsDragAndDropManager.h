@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT DragAndDropManager : public CM::Module<DragAndDropManager>
+	class BS_EXPORT DragAndDropManager : public Module<DragAndDropManager>
 	{
 	public:
 		DragAndDropManager();
@@ -28,9 +28,9 @@ namespace BansheeEngine
 		 * 									
 		 *									Additionally this will determine the cursor displayed (whether or not it can have a "denied" state).
 		 */
-		void startDrag(CM::UINT32 typeId, void* data, std::function<void(bool)> dropCallback, bool needsValidDropTarget = false);
+		void startDrag(UINT32 typeId, void* data, std::function<void(bool)> dropCallback, bool needsValidDropTarget = false);
 		bool isDragInProgress() const { return mIsDragInProgress; }
-		CM::UINT32 getDragTypeId() const { return mDragTypeId; }
+		UINT32 getDragTypeId() const { return mDragTypeId; }
 		void* getDragData() const { return mData; }
 		bool needsValidDropTarget() const { return mNeedsValidDropTarget; }
 		void addDropCallback(std::function<void(bool)> dropCallback);
@@ -40,11 +40,11 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		boost::signal<bool(const CM::PositionalInputEvent&)> onDragEnded;
+		boost::signal<bool(const PositionalInputEvent&)> onDragEnded;
 	private:
-		CM::UINT32 mDragTypeId;
+		UINT32 mDragTypeId;
 		void* mData;
-		CM::Vector<std::function<void(bool)>>::type mDropCallbacks;
+		Vector<std::function<void(bool)>>::type mDropCallbacks;
 		bool mIsDragInProgress;
 		bool mNeedsValidDropTarget;
 
@@ -53,6 +53,6 @@ namespace BansheeEngine
 
 		void endDrag(bool processed);
 		void mouseCaptureChanged();
-		void cursorReleased(const CM::PositionalInputEvent& event);
+		void cursorReleased(const PositionalInputEvent& event);
 	};
 }

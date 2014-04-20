@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmD3D9Prerequisites.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	enum D3D9ResourceCreationPolicy
 	{

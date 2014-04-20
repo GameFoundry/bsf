@@ -70,7 +70,7 @@ namespace BansheeEngine
 
 		CM_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStyle, ScriptFont, Font, mElementStyle->font, mFont);
 
-		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, FontSize, mElementStyle->fontSize);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, UINT32, FontSize, mElementStyle->fontSize);
 		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, TextHorzAlign, TextHorzAlign, mElementStyle->textHorzAlign);
 		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, TextVertAlign, TextVertAlign, mElementStyle->textVertAlign);
 		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, GUIImagePosition, ImagePosition, mElementStyle->imagePosition);
@@ -90,19 +90,19 @@ namespace BansheeEngine
 		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStyle, RectOffset, Margins, mElementStyle->margins);
 		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStyle, RectOffset, ContentOffset, mElementStyle->contentOffset);
 
-		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, Width, mElementStyle->width);
-		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, Height, mElementStyle->height);
-		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MinWidth, mElementStyle->minWidth);
-		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MaxWidth, mElementStyle->maxWidth);
-		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MinHeight, mElementStyle->minHeight);
-		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, CM::UINT32, MaxHeight, mElementStyle->maxHeight);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, UINT32, Width, mElementStyle->width);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, UINT32, Height, mElementStyle->height);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, UINT32, MinWidth, mElementStyle->minWidth);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, UINT32, MaxWidth, mElementStyle->maxWidth);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, UINT32, MinHeight, mElementStyle->minHeight);
+		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, UINT32, MaxHeight, mElementStyle->maxHeight);
 		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, bool, FixedWidth, mElementStyle->fixedWidth);
 		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, bool, FixedHeight, mElementStyle->fixedHeight);
 
-		ScriptGUIElementStyle(const CM::String& name);
-		ScriptGUIElementStyle(const CM::String& name, GUIElementStyle* externalStyle);
+		ScriptGUIElementStyle(const String& name);
+		ScriptGUIElementStyle(const String& name, GUIElementStyle* externalStyle);
 
-		CM::String mName;
+		String mName;
 		GUIElementStyle* mElementStyle;
 		bool mOwnsStyle;
 

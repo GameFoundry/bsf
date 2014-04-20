@@ -5,7 +5,7 @@
 #include "CmCommandQueue.h"
 #include "CmCoreThreadAccessor.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Manager for the core thread. Takes care of starting, running, queuing commands

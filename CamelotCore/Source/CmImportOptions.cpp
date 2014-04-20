@@ -1,7 +1,7 @@
 #include "CmImportOptions.h"
 #include "CmImportOptionsRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

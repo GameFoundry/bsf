@@ -9,14 +9,11 @@
 #include "CmMath.h"
 #include "CmPlatform.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const UINT32 WindowFrameWidget::RESIZE_BORDER_WIDTH = 3;
 
-	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* parentWindow, const GUISkin& skin)
+	WindowFrameWidget::WindowFrameWidget(const HSceneObject& parent, Viewport* target, RenderWindow* parentWindow, const GUISkin& skin)
 		:GUIWidget(parent, target), mWindowFrameArea(nullptr), mParentWindow(parentWindow)
 	{
 		setSkin(skin);
@@ -70,7 +67,7 @@ namespace BansheeEditor
 		UINT32 width = mWindowFrameArea->width();
 		UINT32 height = mWindowFrameArea->height();
 
-		CM::Vector<NonClientResizeArea>::type nonClientAreas(8);
+		Vector<NonClientResizeArea>::type nonClientAreas(8);
 
 		nonClientAreas[0].type = NonClientAreaBorderType::TopLeft;
 		nonClientAreas[0].area = RectI(x, y, 

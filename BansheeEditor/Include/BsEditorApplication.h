@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "CmModule.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	enum class RenderSystemPlugin
 	{
@@ -12,7 +12,7 @@ namespace BansheeEditor
 		OpenGL
 	};
 
-	class BS_ED_EXPORT EditorApplication : public CM::Module<EditorApplication>
+	class BS_ED_EXPORT EditorApplication : public Module<EditorApplication>
 	{
 	public:
 		EditorApplication(RenderSystemPlugin renderSystemPlugin);
@@ -21,18 +21,18 @@ namespace BansheeEditor
 		void runMainLoop();
 
 		bool isProjectLoaded() const;
-		const CM::WString& getActiveProjectPath() const;
+		const WString& getActiveProjectPath() const;
 	private:
-		static const CM::WString WIDGET_LAYOUT_PATH;
+		static const WString WIDGET_LAYOUT_PATH;
 		RenderSystemPlugin mActiveRSPlugin;
 
-		static const CM::String& getLibraryNameForRenderSystem(RenderSystemPlugin plugin);
+		static const String& getLibraryNameForRenderSystem(RenderSystemPlugin plugin);
 
 		void update();
 
 		EditorWidgetLayoutPtr loadWidgetLayout();
 		void saveWidgetLayout(const EditorWidgetLayoutPtr& layout);
 
-		static void closeModalWindow(CM::RenderWindowPtr window, CM::HSceneObject sceneObject);
+		static void closeModalWindow(RenderWindowPtr window, HSceneObject sceneObject);
 	};
 }

@@ -10,7 +10,7 @@
 #include "CmManagedDataBlock.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class RTTITypeBase;
 	struct RTTIField;

@@ -6,7 +6,7 @@
 #include "CmDebug.h"
 #include "CmFrameAlloc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	BindableGpuParams::BindableGpuParams(const GpuParamsPtr& params, FrameAlloc* allocator)
 		:mOwnsData(true), mParamDesc(params->getParamDesc()), mData(nullptr), mNumParamBlocks(0), mAllocator(allocator),

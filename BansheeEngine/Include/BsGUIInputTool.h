@@ -8,20 +8,20 @@ namespace BansheeEngine
 	class BS_EXPORT GUIInputLineDesc
 	{
 	public:
-		GUIInputLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline);
+		GUIInputLineDesc(UINT32 startChar, UINT32 endChar, UINT32 lineHeight, INT32 lineYStart, bool includesNewline);
 
-		CM::UINT32 getEndChar(bool includeNewline = true) const;
-		CM::UINT32 getStartChar() const { return mStartChar; }
-		CM::UINT32 getLineHeight() const { return mLineHeight; }
-		CM::INT32 getLineYStart() const { return mLineYStart; }
-		bool isNewline(CM::UINT32 charIdx) const;
+		UINT32 getEndChar(bool includeNewline = true) const;
+		UINT32 getStartChar() const { return mStartChar; }
+		UINT32 getLineHeight() const { return mLineHeight; }
+		INT32 getLineYStart() const { return mLineYStart; }
+		bool isNewline(UINT32 charIdx) const;
 		bool hasNewlineChar() const { return mIncludesNewline; }
 
 	private:
-		CM::UINT32 mStartChar;
-		CM::UINT32 mEndChar;
-		CM::UINT32 mLineHeight;
-		CM::INT32 mLineYStart;
+		UINT32 mStartChar;
+		UINT32 mEndChar;
+		UINT32 mLineHeight;
+		INT32 mLineYStart;
 		bool mIncludesNewline;
 	};
 
@@ -35,21 +35,21 @@ namespace BansheeEngine
 	protected:
 		const GUIElement* mElement;
 
-		CM::Vector2* mQuads;
-		CM::UINT32 mNumQuads;
+		Vector2* mQuads;
+		UINT32 mNumQuads;
 
 		TEXT_SPRITE_DESC mTextDesc;
 
-		CM::Vector<GUIInputLineDesc>::type mLineDescs;
+		Vector<GUIInputLineDesc>::type mLineDescs;
 
-		CM::Vector2I getTextOffset() const;
+		Vector2I getTextOffset() const;
 
-		CM::UINT32 getNumLines() const { return (CM::UINT32)mLineDescs.size(); }
-		const GUIInputLineDesc& getLineDesc(CM::UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
-		CM::UINT32 getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine = false) const;
-		CM::RectI getCharRect(CM::UINT32 charIdx) const;
-		CM::RectI getLocalCharRect(CM::UINT32 charIdx) const;
-		CM::INT32 getCharIdxAtPos(const CM::Vector2I& pos) const;
+		UINT32 getNumLines() const { return (UINT32)mLineDescs.size(); }
+		const GUIInputLineDesc& getLineDesc(UINT32 lineIdx) const { return mLineDescs.at(lineIdx); }
+		UINT32 getLineForChar(UINT32 charIdx, bool newlineCountsOnNextLine = false) const;
+		RectI getCharRect(UINT32 charIdx) const;
+		RectI getLocalCharRect(UINT32 charIdx) const;
+		INT32 getCharIdxAtPos(const Vector2I& pos) const;
 		bool isDescValid() const;
 
 		/**
@@ -59,9 +59,9 @@ namespace BansheeEngine
 		 * 			
 		 * @note	This can return an out of range character index, in case the input index is specified after the last character.
 		 */
-		CM::UINT32 getCharIdxAtInputIdx(CM::UINT32 inputIdx) const;
+		UINT32 getCharIdxAtInputIdx(UINT32 inputIdx) const;
 
-		bool isNewlineChar(CM::UINT32 charIdx) const;
-		bool isNewline(CM::UINT32 inputIdx) const;
+		bool isNewlineChar(UINT32 charIdx) const;
+		bool isNewline(UINT32 inputIdx) const;
 	};
 }

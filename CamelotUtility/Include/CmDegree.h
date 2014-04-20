@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmRadian.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Wrapper class which indicates a given angle value is in Degrees.

@@ -5,13 +5,13 @@
 #include "BsDbgTestGameObjectRef.h"
 #include "CmGameObjectRTTI.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class DbgTestGameObjectRefRTTI : public CM::RTTIType<DbgTestGameObjectRef, CM::Component, DbgTestGameObjectRefRTTI>
+	class DbgTestGameObjectRefRTTI : public RTTIType<DbgTestGameObjectRef, Component, DbgTestGameObjectRefRTTI>
 	{
 	private:
-		BS::HRenderable& getRenderable(DbgTestGameObjectRef* obj) { return obj->mRenderable; }
-		void setRenderable(DbgTestGameObjectRef* obj, BS::HRenderable& val) 
+		HRenderable& getRenderable(DbgTestGameObjectRef* obj) { return obj->mRenderable; }
+		void setRenderable(DbgTestGameObjectRef* obj, HRenderable& val) 
 		{ 
 			obj->mRenderable = val; 
 		} 
@@ -22,20 +22,20 @@ namespace BansheeEditor
 			addReflectableField("mRenderable", 0, &DbgTestGameObjectRefRTTI::getRenderable, &DbgTestGameObjectRefRTTI::setRenderable);
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "DbgTestGameObjectRef";
+			static String name = "DbgTestGameObjectRef";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return 600001; // NOTE: Just a debug value
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return CM::GameObjectRTTI::createGameObject<DbgTestGameObjectRef>();
+			return GameObjectRTTI::createGameObject<DbgTestGameObjectRef>();
 		}
 	};
 }

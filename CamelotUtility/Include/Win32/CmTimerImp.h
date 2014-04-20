@@ -10,7 +10,7 @@
 #endif
 #include "windows.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Timer class used for querying high precision timers.

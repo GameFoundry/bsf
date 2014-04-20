@@ -1,7 +1,5 @@
 #include "BsGUITextInputEvent.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUITextInputEvent::GUITextInputEvent()

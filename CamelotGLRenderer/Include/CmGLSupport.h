@@ -33,7 +33,7 @@ THE SOFTWARE.
 
 #include "CmRenderWindow.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     
 class CM_RSGL_EXPORT GLSupport
@@ -106,6 +106,6 @@ private:
 
 }; // class GLSupport
 
-}; // namespace CamelotFramework
+};
 
 #endif 

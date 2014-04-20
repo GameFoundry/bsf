@@ -30,7 +30,7 @@ THE SOFTWARE
 #include "CmRenderTarget.h"
 #include "CmVector2I.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	enum class WindowBorder
 	{

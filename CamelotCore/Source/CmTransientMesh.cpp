@@ -3,7 +3,7 @@
 #include "CmIndexData.h"
 #include "CmMeshHeap.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	TransientMesh::TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
 		:MeshBase(numVertices, numIndices, drawOp), mParentHeap(parentHeap), mId(id), mIsDestroyed(false)

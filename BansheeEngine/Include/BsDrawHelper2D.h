@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT DrawHelper2D : public DrawHelperTemplate<CM::Vector2>, public CM::Module<DrawHelper2D>
+	class BS_EXPORT DrawHelper2D : public DrawHelperTemplate<Vector2>, public Module<DrawHelper2D>
 	{
 	public:
 		DrawHelper2D();
@@ -26,7 +26,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 * 			  Enough space for 4 vertices and 6 indices
 		 */
-		void quad(const CM::RectF& area, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+		void quad(const RectF& area, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Fills the mesh data with vertices representing a per-pixel line.
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 * 			  Enough space for 2 vertices and 2 indices
 		 */
-		void line_Pixel(const CM::Vector2& a, const CM::Vector2& b, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+		void line_Pixel(const Vector2& a, const Vector2& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Fills the mesh data with vertices representing an anti-aliased line of specific width. Antialiasing is done using alpha blending.
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 *			  Enough space for 8 vertices and 30 indices
 		 */
-		void line_AA(const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+		void line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Fills the mesh data with vertices representing per-pixel lines.
@@ -81,7 +81,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 * 			  Enough space for (numLines * 2) vertices and (numLines * 2) indices
 		 */
-		void lineList_Pixel(const CM::Vector<CM::Vector2>::type& linePoints, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+		void lineList_Pixel(const Vector<Vector2>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Fills the mesh data with vertices representing anti-aliased lines of specific width. Antialiasing is done using alpha blending.
@@ -100,31 +100,31 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 *			  Enough space for (numLines * 8) vertices and (numLines * 30) indices
 		 */
-		void lineList_AA(const CM::Vector<CM::Vector2>::type& linePoints, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset);
+		void lineList_AA(const Vector<Vector2>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
-		void drawQuad(const HCamera& camera, const CM::RectF& area, const CM::Color& color = CM::Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
-		void drawLine_Pixel(const HCamera& camera, const CM::Vector2& a, const CM::Vector2& b, const CM::Color& color = CM::Color::White, 
+		void drawQuad(const HCamera& camera, const RectF& area, const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
+		void drawLine_Pixel(const HCamera& camera, const Vector2& a, const Vector2& b, const Color& color = Color::White, 
 			DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
-		void drawLine_AA(const HCamera& camera, const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, 
-			const CM::Color& color = CM::Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
-		void drawLineList_Pixel(const HCamera& camera, const CM::Vector<CM::Vector2>::type& linePoints, const CM::Color& color = CM::Color::White, 
+		void drawLine_AA(const HCamera& camera, const Vector2& a, const Vector2& b, float width, float borderWidth, 
+			const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
+		void drawLineList_Pixel(const HCamera& camera, const Vector<Vector2>::type& linePoints, const Color& color = Color::White, 
 			DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
-		void drawLineList_AA(const HCamera& camera, const CM::Vector<CM::Vector2>::type& linePoints, float width, float borderWidth, 
-			const CM::Color& color = CM::Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
+		void drawLineList_AA(const HCamera& camera, const Vector<Vector2>::type& linePoints, float width, float borderWidth, 
+			const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 	private:
 		DebugDraw2DClipSpaceMatInfo mMaterial2DClipSpace;
 
-		CM::VertexDataDescPtr mVertexDesc;
+		VertexDataDescPtr mVertexDesc;
 
-		CM::RectF normalizedCoordToClipSpace(const CM::RectF& area) const;
-		CM::Vector2 normalizedCoordToClipSpace(const CM::Vector2& pos) const;
+		RectF normalizedCoordToClipSpace(const RectF& area) const;
+		Vector2 normalizedCoordToClipSpace(const Vector2& pos) const;
 
 	protected:
-		void line_AA(const CM::Vector2& a, const CM::Vector2& b, float width, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset);
+		void line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
-		void polygon_AA(const CM::Vector<CM::Vector2>::type& points, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset);
+		void polygon_AA(const Vector<Vector2>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 	};
 }

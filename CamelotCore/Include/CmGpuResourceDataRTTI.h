@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmGpuResourceData.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT GpuResourceDataRTTI : public RTTIType<GpuResourceData, IReflectable, GpuResourceDataRTTI>
 	{

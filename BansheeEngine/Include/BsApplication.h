@@ -6,16 +6,16 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT Application
+	class BS_EXPORT BsApplication
 	{
 	public:
-			Application();
+			BsApplication();
 
 			/**
 			 * @brief	Starts the application using the specified options. 
 			 * 			This is how you start the engine.
 			 */
-			void startUp(CM::RENDER_WINDOW_DESC& primaryWindowDesc, const CM::String& renderSystem, const CM::String& renderer);
+			void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer);
 
 			/**
 			 * @brief	Executes the main loop. This will cause actually rendering to be performed
@@ -28,14 +28,14 @@ namespace BansheeEngine
 			 */
 			void shutDown();
 
-			const CM::ViewportPtr& getPrimaryViewport() const;
+			const ViewportPtr& getPrimaryViewport() const;
 	private:
 		boost::signals::connection updateCallbackConn;
-		CM::DynLib* mMonoPlugin;
-		CM::DynLib* mSBansheeEnginePlugin;
+		DynLib* mMonoPlugin;
+		DynLib* mSBansheeEnginePlugin;
 
 		void update();
 	};
 
-	BS_EXPORT Application& gBansheeApp();
+	BS_EXPORT BsApplication& gBansheeApp();
 }

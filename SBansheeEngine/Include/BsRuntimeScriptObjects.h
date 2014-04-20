@@ -7,15 +7,15 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT RuntimeScriptObjects : public CM::Module<RuntimeScriptObjects>
+	class BS_SCR_BE_EXPORT RuntimeScriptObjects : public Module<RuntimeScriptObjects>
 	{
 	public:
 		RuntimeScriptObjects();
 		~RuntimeScriptObjects();
 
-		void refreshScriptObjects(const CM::String& assemblyName);
-		bool getSerializableObjectInfo(const CM::String& ns, const CM::String& typeName, std::shared_ptr<ScriptSerializableObjectInfo>& outInfo);
-		bool hasSerializableObjectInfo(const CM::String& ns, const CM::String& typeName);
+		void refreshScriptObjects(const String& assemblyName);
+		bool getSerializableObjectInfo(const String& ns, const String& typeName, std::shared_ptr<ScriptSerializableObjectInfo>& outInfo);
+		bool hasSerializableObjectInfo(const String& ns, const String& typeName);
 
 		MonoClass* getSystemArrayClass() const { return mSystemArrayClass; }
 		MonoClass* getSystemGenericListClass() const { return mSystemGenericListClass; }
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		MonoClass* getTextureClass() const { return mTextureClass; }
 		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
 	private:
-		CM::UnorderedMap<CM::String, std::shared_ptr<ScriptSerializableAssemblyInfo>>::type mAssemblyInfos;
+		UnorderedMap<String, std::shared_ptr<ScriptSerializableAssemblyInfo>>::type mAssemblyInfos;
 		bool mBaseTypesInitialized;
 
 		MonoClass* mSystemArrayClass;
@@ -43,7 +43,7 @@ namespace BansheeEngine
 		MonoClass* mSerializeFieldAttribute;
 		MonoClass* mHideInInspectorAttribute;
 
-		void clearScriptObjects(const CM::String& assemblyName);
+		void clearScriptObjects(const String& assemblyName);
 
 		void initializeBaseTypes();
 		ScriptSerializableTypeInfoPtr determineType(MonoClass* monoClass);

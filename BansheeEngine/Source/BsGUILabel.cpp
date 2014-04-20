@@ -7,11 +7,9 @@
 #include "BsGUIHelper.h"
 #include "CmTextData.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	GUILabel::GUILabel(const CM::String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mContent(content)
 	{
 		mTextSprite = cm_new<TextSprite, PoolAlloc>();
@@ -82,22 +80,22 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	GUILabel* GUILabel::create(const HString& text, const CM::String& styleName)
+	GUILabel* GUILabel::create(const HString& text, const String& styleName)
 	{
 		return create(GUIContent(text), styleName);
 	}
 
-	GUILabel* GUILabel::create(const HString& text, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUILabel* GUILabel::create(const HString& text, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return create(GUIContent(text), layoutOptions, styleName);
 	}
 
-	GUILabel* GUILabel::create(const GUIContent& content, const CM::String& styleName)
+	GUILabel* GUILabel::create(const GUIContent& content, const String& styleName)
 	{
 		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create());
 	}
 
-	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create(layoutOptions));
 	}

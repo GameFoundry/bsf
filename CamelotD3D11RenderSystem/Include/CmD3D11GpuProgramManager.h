@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmGpuProgramManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class D3D11GpuProgramManager : public GpuProgramManager
 	{

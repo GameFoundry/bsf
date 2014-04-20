@@ -9,7 +9,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT GUIWidget : public CM::Component
+	class BS_EXPORT GUIWidget : public Component
 	{
 	public:
 		virtual ~GUIWidget();
@@ -17,11 +17,11 @@ namespace BansheeEngine
 		void setSkin(const GUISkin& skin);
 		const GUISkin& getSkin() const;
 
-		CM::UINT8 getDepth() const { return mDepth; }
-		void setDepth(CM::UINT8 depth) { mDepth = depth; mWidgetIsDirty = true; }
+		UINT8 getDepth() const { return mDepth; }
+		void setDepth(UINT8 depth) { mDepth = depth; mWidgetIsDirty = true; }
 
-		bool inBounds(const CM::Vector2I& position) const;
-		const CM::RectI& getBounds() const { return mBounds; }
+		bool inBounds(const Vector2I& position) const;
+		const RectI& getBounds() const { return mBounds; }
 
 		/**
 		 * @brief	Return true if widget or any of its elements are dirty.
@@ -32,8 +32,8 @@ namespace BansheeEngine
 		 */
 		bool isDirty(bool cleanIfDirty);
 
-		CM::Viewport* getTarget() const { return mTarget; }
-		const CM::Vector<GUIElement*>::type& getElements() const { return mElements; }
+		Viewport* getTarget() const { return mTarget; }
+		const Vector<GUIElement*>::type& getElements() const { return mElements; }
 
 		void _updateLayout();
 
@@ -63,12 +63,12 @@ namespace BansheeEngine
 
 		static GUISkin DefaultSkin;
 	protected:
-		friend class CM::SceneObject;
+		friend class SceneObject;
 		friend class GUIElement;
 		friend class GUIArea;
 		friend class GUIManager;
 
-		GUIWidget(const CM::HSceneObject& parent, CM::Viewport* target);
+		GUIWidget(const HSceneObject& parent, Viewport* target);
 
 		void registerElement(GUIElement* elem);
 		void unregisterElement(GUIElement* elem);
@@ -85,21 +85,21 @@ namespace BansheeEngine
 
 		void updateBounds() const;
 
-		CM::Viewport* mTarget;
-		CM::Vector<GUIElement*>::type mElements;
-		CM::Vector<GUIArea*>::type mAreas;
-		CM::UINT8 mDepth;
+		Viewport* mTarget;
+		Vector<GUIElement*>::type mElements;
+		Vector<GUIArea*>::type mAreas;
+		UINT8 mDepth;
 
-		CM::Vector3 mLastFramePosition;
-		CM::Quaternion mLastFrameRotation;
-		CM::Vector3 mLastFrameScale;
+		Vector3 mLastFramePosition;
+		Quaternion mLastFrameRotation;
+		Vector3 mLastFrameScale;
 
 		boost::signals::connection mOwnerTargetResizedConn;
 
 		mutable bool mWidgetIsDirty;
-		mutable CM::RectI mBounds;
-		mutable CM::Vector<CM::HMesh>::type mCachedMeshes;
-		mutable CM::Vector<CM::HMaterial>::type mCachedMaterials;
+		mutable RectI mBounds;
+		mutable Vector<HMesh>::type mCachedMeshes;
+		mutable Vector<HMaterial>::type mCachedMaterials;
 
 		const GUISkin* mSkin;
 	};

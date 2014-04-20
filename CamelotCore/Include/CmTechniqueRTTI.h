@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmTechnique.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT TechniqueRTTI : public RTTIType<Technique, IReflectable, TechniqueRTTI>
 	{

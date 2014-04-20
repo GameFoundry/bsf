@@ -6,7 +6,7 @@
 #include "CmGameObjectHandle.h"
 #include "CmGameObjectManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT SceneObjectRTTI : public RTTIType<SceneObject, GameObject, SceneObjectRTTI>
 	{

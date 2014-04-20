@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmBitwise.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework  {
+namespace BansheeEngine  {
 	//-----------------------------------------------------------------------------
     GLenum GLPixelUtil::getGLOriginFormat(PixelFormat mFormat)
     {
@@ -345,7 +345,7 @@ namespace CamelotFramework  {
     //-----------------------------------------------------------------------------    
     UINT32 GLPixelUtil::optionalPO2(UINT32 value)
     {
-        const RenderSystemCapabilities *caps = CamelotFramework::RenderSystem::instancePtr()->getCapabilities();
+        const RenderSystemCapabilities *caps = BansheeEngine::RenderSystem::instancePtr()->getCapabilities();
         if(caps->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))
             return value;
         else

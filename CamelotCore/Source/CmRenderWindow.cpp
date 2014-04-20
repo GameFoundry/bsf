@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmViewport.h"
 #include "CmPlatform.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     RenderWindow::RenderWindow(const RENDER_WINDOW_DESC& desc)
         : RenderTarget(), mIsFullScreen(false), mDesc(desc), mHasFocus(false), mLeft(0), mTop(0), mHidden(false)

@@ -5,7 +5,7 @@
 
 using namespace boost::uuids;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	String UUIDGenerator::generateRandom()
 	{

@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmTextureManager.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     /** GL-specific implementation of a TextureManager */
     class CM_RSGL_EXPORT GLTextureManager : public TextureManager
     {

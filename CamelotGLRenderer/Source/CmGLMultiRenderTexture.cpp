@@ -1,7 +1,7 @@
 #include "CmGLMultiRenderTexture.h"
 #include "CmGLTexture.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GLMultiRenderTexture::GLMultiRenderTexture()
 		:MultiRenderTexture(), mFB(nullptr)

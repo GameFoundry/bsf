@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmGameObject.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Manages all objects in the scene and provides various query methods
@@ -12,11 +12,11 @@ namespace CamelotFramework
 	 * 			query functionality. You should override it with your own version that
 	 * 			implements a spatial data structure of your choice for faster queries.
 	 */
-	class CM_EXPORT SceneManager : public Module<SceneManager>
+	class CM_EXPORT SceneManagerBase : public Module<SceneManagerBase>
 	{
 	public:
-		SceneManager();
-		virtual ~SceneManager();
+		SceneManagerBase();
+		virtual ~SceneManagerBase();
 
 		HSceneObject getRootNode() const { return mRootNode; }
 
@@ -39,5 +39,5 @@ namespace CamelotFramework
 		virtual void notifyComponentRemoved(const HComponent& component);
 	};
 
-	CM_EXPORT SceneManager& gSceneManager();
+	CM_EXPORT SceneManagerBase& gSceneManager();
 }

@@ -5,8 +5,6 @@
 #include "BsGUIElement.h"
 #include "CmFont.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIInputCaret::GUIInputCaret()
@@ -25,7 +23,7 @@ namespace BansheeEngine
 		return getCaretPosition(getTextOffset());
 	}
 
-	RectI GUIInputCaret::getSpriteClipRect(const CM::RectI& parentClipRect) const
+	RectI GUIInputCaret::getSpriteClipRect(const RectI& parentClipRect) const
 	{
 		Vector2I clipOffset = getSpriteOffset() - mElement->_getOffset() - 
 			Vector2I(mElement->_getTextInputRect().x, mElement->_getTextInputRect().y);
@@ -129,7 +127,7 @@ namespace BansheeEngine
 		moveCaretToPos(caretCoords);
 	}
 
-	void GUIInputCaret::moveCaretToPos(const CM::Vector2I& pos)
+	void GUIInputCaret::moveCaretToPos(const Vector2I& pos)
 	{
 		INT32 charIdx = getCharIdxAtPos(pos);
 
@@ -225,7 +223,7 @@ namespace BansheeEngine
 		return getCharIdxAtInputIdx(mCaretPos);
 	}
 
-	Vector2I GUIInputCaret::getCaretPosition(const CM::Vector2I& offset) const
+	Vector2I GUIInputCaret::getCaretPosition(const Vector2I& offset) const
 	{
 		if(mTextDesc.text.size() > 0 && isDescValid())
 		{

@@ -4,14 +4,14 @@
 #include "BsGUIElementContainer.h"
 #include "CmRectI.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	enum class DockLocation
 	{
 		Left, Right, Top, Bottom, Center
 	};
 
-	class DockManager : public BS::GUIElementContainer
+	class DockManager : public GUIElementContainer
 	{
 	public:
 		class DockContainer
@@ -21,17 +21,17 @@ namespace BansheeEditor
 			DockContainer(DockContainer* parent);
 			~DockContainer();
 
-			void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
-			void makeLeaf(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow);
+			void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
+			void makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow);
 			void makeLeaf(EditorWidgetContainer* existingContainer);
-			void splitContainer(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, bool horizontal, bool newChildIsFirst, float splitPosition = 0.5f);
-			void addLeft(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
-			void addRight(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
-			void addTop(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
-			void addBottom(BS::GUIWidget* widgetParent, CM::RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void splitContainer(GUIWidget* widgetParent, RenderWindow* parentWindow, bool horizontal, bool newChildIsFirst, float splitPosition = 0.5f);
+			void addLeft(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void addRight(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void addTop(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
+			void addBottom(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget);
 
 			void addWidget(EditorWidgetBase* widget);
-			void addWidget(const CM::String& name);
+			void addWidget(const String& name);
 
 			DockContainer* find(EditorWidgetContainer* widgetContainer);
 
@@ -42,26 +42,26 @@ namespace BansheeEditor
 			 *
 			 * @return	null if it fails, else the found DockContainer at position.
 			 */
-			DockContainer* findAtPos(const CM::Vector2I& pos);
+			DockContainer* findAtPos(const Vector2I& pos);
 
-			CM::RectI getContentBounds() const;
+			RectI getContentBounds() const;
 
 			bool mIsLeaf;
 			DockContainer* mChildren[2];
 			DockContainer* mParent;
 			EditorWidgetContainer* mWidgets;
 			GUIDockSlider* mSlider;
-			CM::RectI mArea;
+			RectI mArea;
 			float mSplitPosition;
 			bool mIsHorizontal;
 
-			static const CM::UINT32 SLIDER_SIZE;
-			static const CM::UINT32 MIN_CHILD_SIZE;
+			static const UINT32 SLIDER_SIZE;
+			static const UINT32 MIN_CHILD_SIZE;
 
 		private:
 			void updateChildAreas();
 
-			void sliderDragged(const CM::Vector2I& delta);
+			void sliderDragged(const Vector2I& delta);
 			void widgetRemoved();
 		};
 
@@ -74,20 +74,20 @@ namespace BansheeEditor
 			None
 		};
 	public:
-		static DockManager* create(CM::RenderWindow* parentWindow);
+		static DockManager* create(RenderWindow* parentWindow);
 
 		/**
 		 * @brief	Internal method. Called once every frame.
 		 */
 		void update();
 
-		void render(const CM::Viewport* viewport, CM::RenderQueue& renderQueue);
+		void render(const Viewport* viewport, RenderQueue& renderQueue);
 		void insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location);
 
 		DockManagerLayoutPtr getLayout() const;
 		void setLayout(const DockManagerLayoutPtr& layout);
 
-		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
 	protected:
 		~DockManager();
@@ -95,33 +95,33 @@ namespace BansheeEditor
 		void updateClippedBounds();
 
 	private:
-		DockManager(CM::RenderWindow* parentWindow, const BS::GUILayoutOptions& layoutOptions);
+		DockManager(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions);
 
-		static const CM::Color TINT_COLOR;
-		static const CM::Color HIGHLIGHT_COLOR;
+		static const Color TINT_COLOR;
+		static const Color HIGHLIGHT_COLOR;
 
-		CM::RenderWindow* mParentWindow;
+		RenderWindow* mParentWindow;
 		DockContainer mRootContainer;
-		CM::RectI mArea;
+		RectI mArea;
 
-		CM::HMesh mDropOverlayMesh;
-		CM::HMaterial mDropOverlayMat;
-		CM::RectI mLastOverlayBounds;
+		HMesh mDropOverlayMesh;
+		HMaterial mDropOverlayMat;
+		RectI mLastOverlayBounds;
 
 		DockContainer* mMouseOverContainer;
 		DockLocation mHighlightedDropLoc;
 		bool mShowOverlay;
-		CM::Vector2* mTopDropPolygon;
-		CM::Vector2* mBotDropPolygon;
-		CM::Vector2* mLeftDropPolygon;
-		CM::Vector2* mRightDropPolygon;
+		Vector2* mTopDropPolygon;
+		Vector2* mBotDropPolygon;
+		Vector2* mLeftDropPolygon;
+		Vector2* mRightDropPolygon;
 		bool mAddedRenderCallback;
 
-		void updateDropOverlay(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void updateDropOverlay(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
-		bool mouseEvent(const BS::GUIMouseEvent& event);
-		bool insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const;
+		bool mouseEvent(const GUIMouseEvent& event);
+		bool insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const;
 
-		void _changeParentWidget(BS::GUIWidget* widget);
+		void _changeParentWidget(GUIWidget* widget);
 	};
 }

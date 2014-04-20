@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmD3D9Prerequisites.h"
 #include "CmRenderTarget.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	class D3D9RenderWindow;
 	class D3D9DeviceManager;

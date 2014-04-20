@@ -18,7 +18,7 @@
 #    define CM_FREEIMG_EXPORT
 #endif
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class TextureData;
 	typedef std::shared_ptr<TextureData> TextureDataPtr;

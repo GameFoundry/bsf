@@ -2,7 +2,7 @@
 #include "CmRenderOperation.h"
 #include "CmMaterial.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void DefaultRenderQueue::sort()
 	{

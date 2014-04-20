@@ -57,7 +57,10 @@ Cursor
  - A way to save/load a set of cursors
 
 Get rid of the CamelotFramework namespace
- - I shouldn't need to prefix each variable with CM::
+ - I shouldn't need to prefix each variable with 
+ - Rename files/variables/macros starting with Cm
+ - Rename projects starting with Camelot
+ - Search for any remaining uses of "Camelot" and remove them
 
 Undocking a window wont remove the tabbed title bar
 While dragging an undocked window, dropping it over the main window (not over dock overlays) will not restore it

@@ -4,7 +4,7 @@
 #include "CmCommonEnums.h"
 #include "CmResource.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct CM_EXPORT RASTERIZER_STATE_DESC
 	{

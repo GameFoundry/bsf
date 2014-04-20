@@ -1,8 +1,6 @@
 #include "BsGUIDropDownBoxManager.h"
 #include "CmSceneObject.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIDropDownBoxManager::~GUIDropDownBoxManager()
@@ -10,7 +8,7 @@ namespace BansheeEngine
 		closeDropDownBox();
 	}
 
-	CM::GameObjectHandle<GUIDropDownBox> GUIDropDownBoxManager::openDropDownBox(CM::Viewport* target, const GUIDropDownAreaPlacement& placement,
+	GameObjectHandle<GUIDropDownBox> GUIDropDownBoxManager::openDropDownBox(Viewport* target, const GUIDropDownAreaPlacement& placement,
 		const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type, std::function<void()> onClosedCallback)
 	{
 		closeDropDownBox();

@@ -5,8 +5,6 @@
 #include "BsRuntimeScriptObjects.h"
 #include "BsMonoField.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptSerializableObject::ScriptSerializableObject(const ConstructPrivately& dummy)
@@ -92,7 +90,7 @@ namespace BansheeEngine
 		else
 			mManagedInstance = currentObjInfo->mMonoClass->createInstance();
 
-		auto findFieldInfoFromKey = [&] (CM::UINT16 typeId, CM::UINT16 fieldId, ScriptSerializableObjectInfoPtr objInfo, 
+		auto findFieldInfoFromKey = [&] (UINT16 typeId, UINT16 fieldId, ScriptSerializableObjectInfoPtr objInfo, 
 			ScriptSerializableFieldInfoPtr& outFieldInfo, ScriptSerializableObjectInfoPtr &outObjInfo) -> bool
 		{
 			while(objInfo != nullptr)

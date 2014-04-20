@@ -5,7 +5,7 @@
 #include "CmGLSupport.h"
 #include "CmGLRenderSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     
 	class CM_RSGL_EXPORT Win32GLSupport : public GLSupport

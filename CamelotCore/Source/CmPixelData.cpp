@@ -2,7 +2,7 @@
 #include "CmPixelUtil.h"
 #include "CmPixelDataRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	PixelData::PixelData(const PixelData& copy)
 		:GpuResourceData(copy)

@@ -4,7 +4,7 @@
 #include "CmGpuParam.h"
 #include "CmBindableGpuParams.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT GpuParams
 	{

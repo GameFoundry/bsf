@@ -1,7 +1,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmMemStack.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	MemStackInternal<1024 * 1024>* MemStack::ThreadMemStack = nullptr;
 

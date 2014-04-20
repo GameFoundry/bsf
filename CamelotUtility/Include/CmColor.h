@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     typedef UINT32 RGBA;
     typedef UINT32 ARGB;

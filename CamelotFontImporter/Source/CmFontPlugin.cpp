@@ -1,7 +1,7 @@
 #include "CmFontPrerequisites.h"
 #include "CmFontImporter.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	extern "C" CM_FONT_EXPORT const String& getPluginName()
 	{

@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmPlatformWndProc.h"
 #include "CmD3D9DeviceManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
         : RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true)  
@@ -695,7 +695,7 @@ namespace CamelotFramework
 			// 16-bit depth, software stencil
 			presentParams->AutoDepthStencilFormat	= D3DFMT_D16;
 
-		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
+		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 
 		D3DMULTISAMPLE_TYPE fsaaType;
 		DWORD fsaaQuality;

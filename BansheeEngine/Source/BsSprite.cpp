@@ -2,8 +2,6 @@
 #include "BsGUIMaterialManager.h"
 #include "CmVector2.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	Sprite::Sprite()
@@ -16,7 +14,7 @@ namespace BansheeEngine
 		clearMesh();
 	}
 
-	CM::RectI Sprite::getBounds(const Vector2I& offset, const RectI& clipRect) const 
+	RectI Sprite::getBounds(const Vector2I& offset, const RectI& clipRect) const 
 	{
 		RectI bounds = mBounds;
 

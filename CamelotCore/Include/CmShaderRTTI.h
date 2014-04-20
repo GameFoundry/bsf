@@ -5,7 +5,7 @@
 #include "CmShader.h"
 #include "CmMaterial.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	template<> struct RTTIPlainType<SHADER_DATA_PARAM_DESC>
 	{	

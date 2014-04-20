@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmGameObject.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT Component : public GameObject
 	{

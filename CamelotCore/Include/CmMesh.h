@@ -8,7 +8,7 @@
 #include "CmDrawOps.h"
 #include "CmSubMesh.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT Mesh : public MeshBase
 	{

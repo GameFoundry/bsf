@@ -5,7 +5,7 @@
 #include "CmMesh.h"
 #include "CmVertexDataDesc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	MeshManager::MeshManager()
 	{

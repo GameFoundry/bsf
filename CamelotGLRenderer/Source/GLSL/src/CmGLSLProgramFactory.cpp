@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLSLProgramFactory.h"
 #include "CmGLSLProgram.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     //-----------------------------------------------------------------------
     String GLSLProgramFactory::sLanguageName = "glsl";
     //-----------------------------------------------------------------------

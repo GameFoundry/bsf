@@ -60,7 +60,7 @@
 
 #include "CmMemAllocCategories.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 // Pre-declare classes
 // Allows use of pointers in header files without including individual .h
@@ -173,7 +173,7 @@ namespace CamelotFramework
 /* 						Shared pointer typedefs	                    	*/
 /************************************************************************/
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
 	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
@@ -229,7 +229,7 @@ namespace CamelotFramework
 /************************************************************************/
 /* 									RTTI                      			*/
 /************************************************************************/
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	enum TypeID_Core
 	{
@@ -297,7 +297,7 @@ namespace CamelotFramework
 
 #include "CmResourceHandle.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	// Resource handles
 	typedef ResourceHandle<Resource> HResource;
@@ -314,7 +314,7 @@ namespace CamelotFramework
 	typedef ResourceHandle<Font> HFont;
 }
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Defers function execution until the next frame. If this function is called

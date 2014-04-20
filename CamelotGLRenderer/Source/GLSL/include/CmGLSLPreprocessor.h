@@ -34,7 +34,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 /**
  * This is a simplistic C/C++-like preprocessor.
@@ -520,6 +520,6 @@ public:
     void *ErrorData;
 };
 
-} // namespace CamelotFramework
+}
 
 #endif 

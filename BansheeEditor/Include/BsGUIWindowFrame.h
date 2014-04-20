@@ -4,19 +4,19 @@
 #include "BsGUITexture.h"
 #include "BsImageSprite.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUIWindowFrame : public BS::GUITexture
+	class GUIWindowFrame : public GUITexture
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIWindowFrame* create(const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIWindowFrame* create(const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIWindowFrame* create(const String& styleName = StringUtil::BLANK);
+		static GUIWindowFrame* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 		void setFocused(bool focused);
 	protected:
 		~GUIWindowFrame();
-		GUIWindowFrame(const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
+		GUIWindowFrame(const String& styleName, const GUILayoutOptions& layoutOptions);
 	};
 }

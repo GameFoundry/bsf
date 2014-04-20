@@ -30,12 +30,9 @@
 #include "BsGUIIntField.h"
 #include "BsGUIFloatField.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	TestTextSprite::TestTextSprite(const HSceneObject& parent, CM::Viewport* target)
+	TestTextSprite::TestTextSprite(const HSceneObject& parent, Viewport* target)
 		:GUIWidget(parent, target)
 	{
 	}
@@ -44,9 +41,9 @@ namespace BansheeEditor
 	{
 	}
 
-	void TestTextSprite::init(const HCamera& camera, const String& text, CM::RenderTexturePtr sceneView)
+	void TestTextSprite::init(const HCamera& camera, const String& text, RenderTexturePtr sceneView)
 	{
-		setSkin(BansheeEditor::EditorGUI::instance().getSkin());
+		setSkin(BansheeEngine::EditorGUI::instance().getSkin());
 		setDepth(128);
 
 		SceneObject::create("FILLER_A");

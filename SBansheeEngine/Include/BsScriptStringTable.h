@@ -12,10 +12,10 @@ namespace BansheeEngine
 		static void initMetaData();
 
 	private:
-		static void internal_GetActiveLanguage(CM::Language* value);
-		static void internal_SetActiveLanguage(CM::Language value);
+		static void internal_GetActiveLanguage(Language* value);
+		static void internal_SetActiveLanguage(Language value);
 
-		static void internal_SetString(MonoString* identifier, CM::Language language, MonoString* value);
+		static void internal_SetString(MonoString* identifier, Language language, MonoString* value);
 		static void internal_RemoveString(MonoString* identifier);
 		static void internal_GetLocalizedString(MonoString* identifier, MonoString** value);
 

@@ -8,26 +8,26 @@
 #include "BsGUIContent.h"
 #include "boost/signal.hpp"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUIDropButton : public BS::GUIButtonBase
+	class GUIDropButton : public GUIButtonBase
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIDropButton* create(CM::UINT32 dragType, const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIDropButton* create(CM::UINT32 dragType, const BS::GUIOptions& layoutOptions, 
-			const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIDropButton* create(UINT32 dragType, const String& styleName = StringUtil::BLANK);
+		static GUIDropButton* create(UINT32 dragType, const GUIOptions& layoutOptions, 
+			const String& styleName = StringUtil::BLANK);
 
 		boost::signal<void(void*)> onDataDropped;
 	protected:
 		virtual ~GUIDropButton();
 
 	protected:
-		GUIDropButton(CM::UINT32 dragType, const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
+		GUIDropButton(UINT32 dragType, const String& styleName, const GUILayoutOptions& layoutOptions);
 
-		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-		CM::UINT32 mDragType;
+		UINT32 mDragType;
 	};
 }

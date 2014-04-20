@@ -3,7 +3,7 @@
 #include "CmException.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11GpuProgram::D3D11GpuProgram(GpuProgramType type, const String& profile) 
 		: GpuProgram("", "", profile, type, GPP_NONE, nullptr)

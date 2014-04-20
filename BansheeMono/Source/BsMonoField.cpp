@@ -4,8 +4,6 @@
 
 #include <mono/metadata/attrdefs.h>
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	MonoField::MonoField(MonoClassField* field)

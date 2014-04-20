@@ -4,7 +4,7 @@
 #include "CmGameObject.h"
 #include <boost/signals.hpp>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT Renderer
 	{

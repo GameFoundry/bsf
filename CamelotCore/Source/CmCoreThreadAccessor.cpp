@@ -7,7 +7,7 @@
 #include "CmGpuResourceData.h"
 #include "CmGpuParams.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 
 }

@@ -4,7 +4,7 @@
 #include "CmDegree.h"
 #include "CmRadian.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     /**
      * @brief	Utility class providing common scalar math operations.

@@ -11,7 +11,7 @@
 #include "CmTextureManager.h"
 #include "CmPixelData.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT TextureRTTI : public RTTIType<Texture, Resource, TextureRTTI>
 	{

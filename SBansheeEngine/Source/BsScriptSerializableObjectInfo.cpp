@@ -13,8 +13,6 @@
 #include "BsScriptSerializableObjectInfo.h"
 #include "BsRuntimeScriptObjects.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	RTTITypeBase* ScriptSerializableAssemblyInfo::getRTTIStatic()

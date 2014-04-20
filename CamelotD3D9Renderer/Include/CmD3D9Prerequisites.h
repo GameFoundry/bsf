@@ -57,7 +57,7 @@ THE SOFTWARE.
 #include <DxErr.h>
 
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	// Predefine classes
 	class D3D9RenderSystem;

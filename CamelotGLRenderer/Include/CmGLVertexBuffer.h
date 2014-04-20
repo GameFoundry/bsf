@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmVertexBuffer.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     /// Specialisation of HardwareVertexBuffer for OpenGL
     class CM_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 

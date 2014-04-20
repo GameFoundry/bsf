@@ -4,7 +4,7 @@
 #include "CmDataStream.h"
 #include "CmFileSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GpuProgIncludeImporter::GpuProgIncludeImporter()
 		:SpecificImporter()

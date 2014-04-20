@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 #include "CmPixelData.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     /**
      * Some utility functions for packing and unpacking pixel data
      */

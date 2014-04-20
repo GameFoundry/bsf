@@ -1,7 +1,5 @@
 #include "BsInputConfiguration.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	Map<String, UINT32>::type VirtualButton::UniqueButtonIds;
@@ -19,7 +17,7 @@ namespace BansheeEngine
 		:buttonIdentifier(0)
 	{ }
 
-	VirtualButton::VirtualButton(const CM::String& name)
+	VirtualButton::VirtualButton(const String& name)
 	{
 		auto findIter = UniqueButtonIds.find(name);
 
@@ -36,7 +34,7 @@ namespace BansheeEngine
 		:mRepeatInterval(300)
 	{ }
 
-	void InputConfiguration::registerButton(const CM::String& name, CM::ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
+	void InputConfiguration::registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
 	{
 		Vector<VirtualButtonData>::type& btnData = mButtons[buttonCode & 0x0000FFFF];
 
@@ -62,7 +60,7 @@ namespace BansheeEngine
 		btn.button = VirtualButton(name);
 	}
 
-	void InputConfiguration::unregisterButton(const CM::String& name)
+	void InputConfiguration::unregisterButton(const String& name)
 	{
 		Vector<UINT32>::type toRemove;
 
@@ -86,7 +84,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool InputConfiguration::getButton(CM::ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const
+	bool InputConfiguration::getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const
 	{
 		const Vector<VirtualButtonData>::type& btnData = mButtons[code & 0x0000FFFF];
 

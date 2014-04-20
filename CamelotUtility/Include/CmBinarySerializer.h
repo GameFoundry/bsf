@@ -5,7 +5,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmRTTIField.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class IReflectable;
 	struct RTTIReflectableFieldBase;

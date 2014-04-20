@@ -5,18 +5,18 @@
 
 namespace BansheeEngine
 {
-	class BS_FWDRND_EXPORT ForwardRenderer : public CM::Renderer
+	class BS_FWDRND_EXPORT ForwardRenderer : public Renderer
 	{
 	public:
 		ForwardRenderer();
 		~ForwardRenderer();
 
-		virtual const CM::String& getName() const;
+		virtual const String& getName() const;
 
 		virtual void renderAll();
 		virtual void render(const HCamera& camera);
 
 	private:
-		CM::RenderQueue* mRenderQueue; // TODO - Move this to base class
+		RenderQueue* mRenderQueue; // TODO - Move this to base class
 	};
 }

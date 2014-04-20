@@ -2,7 +2,7 @@
 #include "CmD3D11Driver.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11DriverList::D3D11DriverList(IDXGIFactory* dxgiFactory) 
 	{

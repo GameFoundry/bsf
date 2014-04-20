@@ -15,7 +15,7 @@
 
 using namespace std::placeholders;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	FontImporter::FontImporter()
 		:SpecificImporter() 

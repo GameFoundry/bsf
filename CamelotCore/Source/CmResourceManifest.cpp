@@ -4,7 +4,7 @@
 #include "CmFileSerializer.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	ResourceManifest::ResourceManifest(const ConstructPrivately& dummy)
 	{

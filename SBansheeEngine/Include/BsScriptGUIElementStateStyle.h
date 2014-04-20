@@ -25,7 +25,7 @@ namespace BansheeEngine
 		static void initRuntimeData();
 
 		CM_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStateStyle, ScriptSpriteTexture, Texture, mElementStateStyle->texture, mSpriteTexture);
-		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStateStyle, CM::Color, TextColor, mElementStateStyle->textColor);
+		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStateStyle, Color, TextColor, mElementStateStyle->textColor);
 
 		ScriptGUIElementStateStyle();
 		ScriptGUIElementStateStyle(GUIElementStyle::GUIElementStateStyle* externalStyle);

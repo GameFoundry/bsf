@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmGLVertexBuffer.h"
 #include "CmException.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     GLVertexBuffer::GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 
         UINT32 numVertices, GpuBufferUsage usage)

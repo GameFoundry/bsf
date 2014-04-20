@@ -2,7 +2,7 @@
 
 #include "CmD3D9Prerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class D3D9HLSLParamParser
 	{

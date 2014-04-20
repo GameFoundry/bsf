@@ -18,44 +18,44 @@ namespace BansheeEngine
 		};
 
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIInputBox* create(bool multiline = false, const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIInputBox* create(bool multiline, const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIInputBox* create(const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIInputBox* create(bool multiline = false, const String& styleName = StringUtil::BLANK);
+		static GUIInputBox* create(bool multiline, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIInputBox* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		const CM::WString& getText() const { return mText; }
-		void setText(const CM::WString& text);
+		const WString& getText() const { return mText; }
+		void setText(const WString& text);
 
-		void setFilter(std::function<bool(const CM::WString&)> filter) { mFilter = filter; }
+		void setFilter(std::function<bool(const WString&)> filter) { mFilter = filter; }
 
 		virtual ElementType getElementType() const { return ElementType::InputBox; }
 
-		virtual CM::Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const;
 	protected:
-		GUIInputBox(const CM::String& styleName, const GUILayoutOptions& layoutOptions, bool multiline);
+		GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline);
 		virtual ~GUIInputBox();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */
-		virtual CM::UINT32 getNumRenderElements() const;
+		virtual UINT32 getNumRenderElements() const;
 
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()
 		 */
-		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
+		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
-		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
-			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
+		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()
@@ -72,11 +72,11 @@ namespace BansheeEngine
 		virtual bool commandEvent(const GUICommandEvent& ev);
 		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 
-		virtual CM::Vector2I _getTextInputOffset() const;
-		virtual CM::RectI _getTextInputRect() const;
+		virtual Vector2I _getTextInputOffset() const;
+		virtual RectI _getTextInputRect() const;
 
-		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
-		virtual bool _hasCustomCursor(const CM::Vector2I position, CursorType& type) const;
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
+		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
 
 		virtual GUIContextMenu* getContextMenu() const;
 	private:
@@ -89,43 +89,43 @@ namespace BansheeEngine
 		ImageSprite* mImageSprite;
 		TextSprite* mTextSprite;
 		bool mIsMultiline;
-		CM::Vector2I mTextOffset;
+		Vector2I mTextOffset;
 		bool mHasFocus;
 		bool mIsMouseOver;
 		State mState;
 
 		IMAGE_SPRITE_DESC mImageDesc;
-		CM::WString mText;
-		std::function<bool(const CM::WString&)> mFilter;
+		WString mText;
+		std::function<bool(const WString&)> mFilter;
 
 		bool mCaretShown;
 		bool mSelectionShown;
 		bool mDragInProgress;
 
-		Sprite* renderElemToSprite(CM::UINT32 renderElemIdx, CM::UINT32& localRenderElemIdx) const;
-		CM::Vector2I renderElemToOffset(CM::UINT32 renderElemIdx) const;
-		CM::RectI renderElemToClipRect(CM::UINT32 renderElemIdx) const;
+		Sprite* renderElemToSprite(UINT32 renderElemIdx, UINT32& localRenderElemIdx) const;
+		Vector2I renderElemToOffset(UINT32 renderElemIdx) const;
+		RectI renderElemToClipRect(UINT32 renderElemIdx) const;
 
-		void insertString(CM::UINT32 charIdx, const CM::WString& string);
-		void insertChar(CM::UINT32 charIdx, CM::UINT32 charCode);
-		void eraseChar(CM::UINT32 charIdx);
+		void insertString(UINT32 charIdx, const WString& string);
+		void insertChar(UINT32 charIdx, UINT32 charCode);
+		void eraseChar(UINT32 charIdx);
 		void deleteSelectedText();
-		CM::WString getSelectedText();
+		WString getSelectedText();
 
 		void showCaret();
 		void hideCaret();
 
-		void showSelection(CM::UINT32 anchorCaretPos);
+		void showSelection(UINT32 anchorCaretPos);
 		void clearSelection();
 
 		void moveSelectionLeft(bool skipNewline);
 		void moveSelectionRight(bool skipNewline);
 
 		void scrollTextToCaret();
-		void clampScrollToBounds(CM::RectI unclippedTextBounds);
+		void clampScrollToBounds(RectI unclippedTextBounds);
 
-		CM::Vector2I getTextOffset() const;
-		CM::RectI getTextClipRect() const;
+		Vector2I getTextOffset() const;
+		RectI getTextClipRect() const;
 		TEXT_SPRITE_DESC getTextDesc() const;
 		const HSpriteTexture& getActiveTexture() const;
 		

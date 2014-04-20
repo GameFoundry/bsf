@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "CmAsyncOp.h"
 #include "CmResources.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     Texture::Texture()
         : 

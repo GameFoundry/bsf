@@ -4,7 +4,7 @@
 #include "BsEditorCommand.h"
 #include "BsUndoRedo.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	// TODO - This is only valid for plain field types. Add something similar for pointers and/or arrays?
 	template<class T>
@@ -20,7 +20,7 @@ namespace BansheeEditor
 				cm_free(mOldData);
 		}
 
-		static void execute(const CM::GameObjectHandleBase& gameObject, const CM::String& fieldName, const T& fieldValue)
+		static void execute(const GameObjectHandleBase& gameObject, const String& fieldName, const T& fieldValue)
 		{
 			// Register command and commit it
 			CmdEditPlainFieldGO* command = new (cm_alloc<CmdEditPlainFieldGO>()) CmdEditPlainFieldGO(gameObject, fieldName, fieldValue);
@@ -34,9 +34,9 @@ namespace BansheeEditor
 				return;
 
 			T fieldValue;
-			CM::RTTIPlainType<T>::fromMemory(fieldValue, (char*)mNewData);
+			RTTIPlainType<T>::fromMemory(fieldValue, (char*)mNewData);
 
-			CM::RTTITypeBase* rtti = mGameObject->getRTTI();
+			RTTITypeBase* rtti = mGameObject->getRTTI();
 			rtti->setPlainValue(mGameObject.get(), mFieldName, fieldValue);
 		}
 
@@ -46,36 +46,36 @@ namespace BansheeEditor
 				return;
 
 			T fieldValue;
-			CM::RTTIPlainType<T>::fromMemory(fieldValue, (char*)mOldData);
+			RTTIPlainType<T>::fromMemory(fieldValue, (char*)mOldData);
 
-			CM::RTTITypeBase* rtti = mGameObject->getRTTI();
+			RTTITypeBase* rtti = mGameObject->getRTTI();
 			rtti->setPlainValue(mGameObject.get(), mFieldName, fieldValue);
 		}
 
 	private:
 		friend class UndoRedo;
 
-		CmdEditPlainFieldGO(const CM::GameObjectHandleBase& gameObject, const CM::String& fieldName, const T& fieldValue)
+		CmdEditPlainFieldGO(const GameObjectHandleBase& gameObject, const String& fieldName, const T& fieldValue)
 			:mGameObject(gameObject), mFieldName(fieldName), mNewData(nullptr), mOldData(nullptr)
 		{
 			// Convert new value to bytes
-			CM::UINT32 newDataNumBytes = CM::RTTIPlainType<T>::getDynamicSize(fieldValue);
-			mNewData = CM::cm_alloc(newDataNumBytes);
+			UINT32 newDataNumBytes = RTTIPlainType<T>::getDynamicSize(fieldValue);
+			mNewData = cm_alloc(newDataNumBytes);
 
-			CM::RTTIPlainType<T>::toMemory(fieldValue, (char*)mNewData);
+			RTTIPlainType<T>::toMemory(fieldValue, (char*)mNewData);
 
 			// Get old value and also convert it to bytes
-			CM::String oldFieldValue;
+			String oldFieldValue;
 			gameObject->getRTTI()->getPlainValue(gameObject.get(), fieldName, oldFieldValue);
 
-			CM::UINT32 oldDataNumBytes = CM::RTTIPlainType<T>::getDynamicSize(oldFieldValue);
+			UINT32 oldDataNumBytes = RTTIPlainType<T>::getDynamicSize(oldFieldValue);
 			mOldData = cm_alloc(oldDataNumBytes);
 
-			CM::RTTIPlainType<T>::toMemory(oldFieldValue, (char*)mOldData);
+			RTTIPlainType<T>::toMemory(oldFieldValue, (char*)mOldData);
 		}
 
-		CM::GameObjectHandleBase mGameObject;
-		CM::String mFieldName;
+		GameObjectHandleBase mGameObject;
+		String mFieldName;
 
 		void* mNewData;
 		void* mOldData;

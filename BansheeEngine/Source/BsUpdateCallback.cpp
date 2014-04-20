@@ -1,7 +1,5 @@
 #include "BsUpdateCallback.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	UpdateCallback::UpdateCallback(const HSceneObject& parent)

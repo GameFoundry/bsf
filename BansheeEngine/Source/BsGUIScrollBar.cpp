@@ -11,14 +11,13 @@
 #include "BsGUISpace.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
 using namespace std::placeholders;
 
 namespace BansheeEngine
 {
 	const UINT32 GUIScrollBar::ButtonScrollAmount = 10;
 
-	GUIScrollBar::GUIScrollBar(bool horizontal, const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIScrollBar::GUIScrollBar(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();

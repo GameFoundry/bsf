@@ -5,7 +5,7 @@
 #include "CmRenderSystemManager.h"
 #include "CmGLRenderSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const String SystemName = "GLRenderSystem";
 

@@ -7,22 +7,22 @@ namespace BansheeEngine
 	{
 	public:
 		GUIContent();
-		explicit GUIContent(const CM::HString& text);
-		GUIContent(const CM::HString& text, const CM::HString& tooltip);
+		explicit GUIContent(const HString& text);
+		GUIContent(const HString& text, const HString& tooltip);
 
 		explicit GUIContent(const HSpriteTexture& image);
-		GUIContent(const HSpriteTexture& image, const CM::HString& tooltip);
+		GUIContent(const HSpriteTexture& image, const HString& tooltip);
 
-		GUIContent(const CM::HString& text, const HSpriteTexture& image);
-		GUIContent(const CM::HString& text, const HSpriteTexture& image, const CM::HString& tooltip);
+		GUIContent(const HString& text, const HSpriteTexture& image);
+		GUIContent(const HString& text, const HSpriteTexture& image, const HString& tooltip);
 
-		const CM::HString& getText() const { return mText; }
+		const HString& getText() const { return mText; }
 		const HSpriteTexture& getImage() const { return mImage; }
-		const CM::HString& getTooltip() const { return mTooltipText; }
+		const HString& getTooltip() const { return mTooltipText; }
 
 	private:
-		CM::HString mText;
+		HString mText;
 		HSpriteTexture mImage;
-		CM::HString mTooltipText;
+		HString mTooltipText;
 	};
 }

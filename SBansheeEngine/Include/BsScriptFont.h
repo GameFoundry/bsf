@@ -12,16 +12,16 @@ namespace BansheeEngine
 		static void initMetaData();
 
 		void* getNativeRaw() const;
-		const CM::HFont& getInternalValue() const { return mFont; }
+		const HFont& getInternalValue() const { return mFont; }
 
 	private:
-		static void internal_createInstanceExternal(MonoObject* instance, const CM::HFont& font);
+		static void internal_createInstanceExternal(MonoObject* instance, const HFont& font);
 		static void internal_destroyInstance(ScriptFont* nativeInstance);
 
 		static void initRuntimeData();
 
-		ScriptFont(const CM::HFont& font);
+		ScriptFont(const HFont& font);
 
-		CM::HFont mFont;
+		HFont mFont;
 	};
 }

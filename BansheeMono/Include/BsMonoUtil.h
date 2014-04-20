@@ -10,22 +10,22 @@ namespace BansheeEngine
 	class BS_MONO_EXPORT MonoUtil
 	{
 	public:
-		static CM::WString monoToWString(MonoString* str)
+		static WString monoToWString(MonoString* str)
 		{
 			if(str == nullptr)
-				return CM::StringUtil::WBLANK;
+				return StringUtil::WBLANK;
 
 			int len = mono_string_length(str);
 			mono_unichar2* monoChars = mono_string_chars(str);
 
-			CM::WString ret(len, '0');
+			WString ret(len, '0');
 			for(int i = 0; i < len; i++)
 				ret[i] = monoChars[i];
 
 			return ret;
 		}
 
-		static MonoString* wstringToMono(MonoDomain* domain, const CM::WString& str)
+		static MonoString* wstringToMono(MonoDomain* domain, const WString& str)
 		{
 			return mono_string_from_utf16((mono_unichar2*)str.c_str());
 		}
@@ -48,10 +48,10 @@ namespace BansheeEngine
 				::MonoMethod* exceptionStackGetter = mono_property_get_get_method(exceptionStackProp);
 				MonoString* exceptionStackTrace = (MonoString*)mono_runtime_invoke(exceptionStackGetter, exception, nullptr, nullptr);
 
-				CM::String msg =  "Managed exception: " + toString(monoToWString(exceptionMsg)) + "\n" + toString(monoToWString(exceptionStackTrace));
+				String msg =  "Managed exception: " + toString(monoToWString(exceptionMsg)) + "\n" + toString(monoToWString(exceptionStackTrace));
 
 				LOGERR(msg);
-				CM_EXCEPT(CM::InternalErrorException, msg);
+				CM_EXCEPT(InternalErrorException, msg);
 			}
 		}
 	};

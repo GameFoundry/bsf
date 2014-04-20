@@ -3,7 +3,7 @@
 #include "CmGLPrerequisites.h"
 #include "CmQueryManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_RSGL_EXPORT GLQueryManager : public QueryManager
 	{

@@ -3,7 +3,7 @@
 #include "CmPlane.h"
 #include "CmSphere.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const AABox AABox::BOX_EMPTY;
 

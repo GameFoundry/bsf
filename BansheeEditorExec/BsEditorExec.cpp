@@ -3,8 +3,6 @@
 
 #include "BsEditorApplication.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEditor;
 using namespace BansheeEngine;
 
 int CALLBACK WinMain(

@@ -3,22 +3,22 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIInputBox.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUITreeViewEditBox : public BS::GUIInputBox
+	class GUITreeViewEditBox : public GUIInputBox
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUITreeViewEditBox* create(const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUITreeViewEditBox* create(const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUITreeViewEditBox* create(const String& styleName = StringUtil::BLANK);
+		static GUITreeViewEditBox* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 		boost::signal<void()> onInputConfirmed;
 		boost::signal<void()> onInputCanceled;
 
 	private:
-		GUITreeViewEditBox(const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
+		GUITreeViewEditBox(const String& styleName, const GUILayoutOptions& layoutOptions);
 
-		virtual bool commandEvent(const BS::GUICommandEvent& ev);
+		virtual bool commandEvent(const GUICommandEvent& ev);
 	};
 }

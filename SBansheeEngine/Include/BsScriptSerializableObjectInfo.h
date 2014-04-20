@@ -33,7 +33,7 @@ namespace BansheeEngine
 		Inspectable = 0x02
 	};
 
-	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfo : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfo : public IReflectable
 	{
 	public:
 		virtual ~ScriptSerializableTypeInfo() {}
@@ -48,8 +48,8 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableTypeInfoRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoPrimitive : public ScriptSerializableTypeInfo
@@ -67,15 +67,15 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableTypeInfoPrimitiveRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoObject : public ScriptSerializableTypeInfo
 	{
 	public:
-		CM::String mTypeNamespace;
-		CM::String mTypeName;
+		String mTypeNamespace;
+		String mTypeName;
 		bool mValueType;
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
@@ -88,15 +88,15 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableTypeInfoObjectRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoArray : public ScriptSerializableTypeInfo
 	{
 	public:
 		ScriptSerializableTypeInfoPtr mElementType;
-		CM::UINT32 mRank;
+		UINT32 mRank;
 
 		bool matches(const ScriptSerializableTypeInfoPtr& typeInfo) const;
 		bool isTypeLoaded() const;
@@ -108,8 +108,8 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableTypeInfoArrayRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoList : public ScriptSerializableTypeInfo
@@ -127,8 +127,8 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableTypeInfoListRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class BS_SCR_BE_EXPORT ScriptSerializableTypeInfoDictionary : public ScriptSerializableTypeInfo
@@ -147,75 +147,75 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableTypeInfoDictionaryRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
-	class BS_SCR_BE_EXPORT ScriptSerializableFieldInfo : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableFieldInfo : public IReflectable
 	{
 	public:
 		ScriptSerializableFieldInfo();
 
-		CM::String mName;
-		CM::UINT32 mFieldId;
+		String mName;
+		UINT32 mFieldId;
 
 		ScriptSerializableTypeInfoPtr mTypeInfo;
 		ScriptFieldFlags mFlags;
 
 		MonoField* mMonoField;
 
-		bool isSerializable() const { return ((CM::UINT32)mFlags & (CM::UINT32)ScriptFieldFlags::Serializable) != 0; }
+		bool isSerializable() const { return ((UINT32)mFlags & (UINT32)ScriptFieldFlags::Serializable) != 0; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableFieldInfoRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
-	class BS_SCR_BE_EXPORT ScriptSerializableObjectInfo : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableObjectInfo : public IReflectable
 	{
 	public:
 		ScriptSerializableObjectInfo();
 
 		ScriptSerializableTypeInfoObjectPtr mTypeInfo;
-		CM::UINT32 mTypeId;
+		UINT32 mTypeId;
 
 		MonoClass* mMonoClass;
 
-		CM::UnorderedMap<CM::String, CM::UINT32>::type mFieldNameToId;
-		CM::UnorderedMap<CM::UINT32, std::shared_ptr<ScriptSerializableFieldInfo>>::type mFields;
+		UnorderedMap<String, UINT32>::type mFieldNameToId;
+		UnorderedMap<UINT32, std::shared_ptr<ScriptSerializableFieldInfo>>::type mFields;
 
 		std::shared_ptr<ScriptSerializableObjectInfo> mBaseClass;
-		CM::Vector<std::weak_ptr<ScriptSerializableObjectInfo>>::type mDerivedClasses;
+		Vector<std::weak_ptr<ScriptSerializableObjectInfo>>::type mDerivedClasses;
 
-		CM::String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
+		String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableObjectInfoRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
-	class BS_SCR_BE_EXPORT ScriptSerializableAssemblyInfo : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableAssemblyInfo : public IReflectable
 	{
 	public:
-		CM::String mName;
+		String mName;
 
-		CM::UnorderedMap<CM::String, CM::UINT32>::type mTypeNameToId;
-		CM::UnorderedMap<CM::UINT32, std::shared_ptr<ScriptSerializableObjectInfo>>::type mObjectInfos;
+		UnorderedMap<String, UINT32>::type mTypeNameToId;
+		UnorderedMap<UINT32, std::shared_ptr<ScriptSerializableObjectInfo>>::type mObjectInfos;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
 		/************************************************************************/
 	public:
 		friend class ScriptSerializableAssemblyInfoRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

@@ -4,7 +4,7 @@
 #include "CmEventQuery.h"
 #include "CmModule.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Handles creation and destruction of GPU queries.

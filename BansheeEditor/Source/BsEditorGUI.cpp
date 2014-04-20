@@ -16,10 +16,7 @@
 #include "CmRTTIType.h"
 #include "CmFileSystem.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const WString EditorGUI::DefaultFontPath = L"arial.ttf";
 	const UINT32 EditorGUI::DefaultFontSize = 10;
@@ -153,7 +150,7 @@ namespace BansheeEditor
 			{
 				FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
 
-				Vector<CamelotFramework::UINT32>::type fontSizes;
+				Vector<BansheeEngine::UINT32>::type fontSizes;
 				fontSizes.push_back(DefaultFontSize);
 				importOptions->setFontSizes(fontSizes);
 				importOptions->setAntialiasing(false);
@@ -817,7 +814,7 @@ namespace BansheeEditor
 
 	}
 
-	HSpriteTexture EditorGUI::getTexture(const CM::WString& name)
+	HSpriteTexture EditorGUI::getTexture(const WString& name)
 	{
 		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultFolder + name)));
 	}

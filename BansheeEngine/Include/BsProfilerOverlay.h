@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT ProfilerOverlay : public CM::Module<ProfilerOverlay>
+	class BS_EXPORT ProfilerOverlay : public Module<ProfilerOverlay>
 	{
 	public:
 		struct BasicRow
@@ -14,17 +14,17 @@ namespace BansheeEngine
 			GUILayout* labelLayout;
 			GUILayout* contentLayout;
 
-			CM::Vector<GUIElement*>::type elements;
+			Vector<GUIElement*>::type elements;
 
-			CM::HString name;
-			CM::HString pctOfParent;
-			CM::HString numCalls;
-			CM::HString numAllocs;
-			CM::HString numFrees;
-			CM::HString avgTime;
-			CM::HString totalTime;
-			CM::HString avgTimeSelf;
-			CM::HString totalTimeSelf;
+			HString name;
+			HString pctOfParent;
+			HString numCalls;
+			HString numAllocs;
+			HString numFrees;
+			HString avgTime;
+			HString totalTime;
+			HString avgTimeSelf;
+			HString totalTimeSelf;
 		};
 
 		struct PreciseRow
@@ -32,24 +32,24 @@ namespace BansheeEngine
 			GUILayout* labelLayout;
 			GUILayout* contentLayout;
 
-			CM::Vector<GUIElement*>::type elements;
+			Vector<GUIElement*>::type elements;
 
-			CM::HString name;
-			CM::HString pctOfParent;
-			CM::HString numCalls;
-			CM::HString numAllocs;
-			CM::HString numFrees;
-			CM::HString avgCycles;
-			CM::HString totalCycles;
-			CM::HString avgCyclesSelf;
-			CM::HString totalCyclesSelf;
+			HString name;
+			HString pctOfParent;
+			HString numCalls;
+			HString numAllocs;
+			HString numFrees;
+			HString avgCycles;
+			HString totalCycles;
+			HString avgCyclesSelf;
+			HString totalCyclesSelf;
 		};
 
 	public:
-		ProfilerOverlay(const CM::ViewportPtr& target);
+		ProfilerOverlay(const ViewportPtr& target);
 		~ProfilerOverlay();
 
-		void setTarget(const CM::ViewportPtr& target);
+		void setTarget(const ViewportPtr& target);
 
 		void show();
 		void hide();
@@ -59,12 +59,12 @@ namespace BansheeEngine
 		 */
 		void update();
 	private:
-		static const CM::UINT32 MAX_DEPTH;
+		static const UINT32 MAX_DEPTH;
 
-		CM::ViewportPtr mTarget;
+		ViewportPtr mTarget;
 
-		CM::HSceneObject mWidgetSO;
-		CM::GameObjectHandle<GUIWidget> mWidget;
+		HSceneObject mWidgetSO;
+		GameObjectHandle<GUIWidget> mWidget;
 		GUIArea* mBasicAreaLabels;
 		GUIArea* mPreciseAreaLabels;
 		GUIArea* mBasicAreaContents;
@@ -95,14 +95,14 @@ namespace BansheeEngine
 		GUIElement* mTitlePreciseAvgCyclesSelf;
 		GUIElement* mTitlePreciseTotalCyclesSelf;
 
-		CM::Vector<BasicRow>::type mBasicRows;
-		CM::Vector<PreciseRow>::type mPreciseRows;
+		Vector<BasicRow>::type mBasicRows;
+		Vector<PreciseRow>::type mPreciseRows;
 
 		boost::signals::connection mTargetResizedConn;
 		bool mIsShown;
 
 		void targetResized();
 		void updateAreaSizes();
-		void updateContents(const CM::ProfilerReport& simReport, const CM::ProfilerReport& coreReport);
+		void updateContents(const ProfilerReport& simReport, const ProfilerReport& coreReport);
 	};
 }

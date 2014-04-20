@@ -16,8 +16,8 @@ namespace BansheeEngine
 
 		void updateWithStyle(const GUIElementStyle* style);
 
-		CM::UINT32 width, height;
-		CM::UINT32 minWidth, maxWidth, minHeight, maxHeight;
+		UINT32 width, height;
+		UINT32 minWidth, maxWidth, minHeight, maxHeight;
 		bool fixedWidth, fixedHeight;
 		bool overridenWidth, overridenHeight;
 	};

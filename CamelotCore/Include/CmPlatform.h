@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	enum class PlatformCursorType
 	{

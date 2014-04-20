@@ -9,8 +9,6 @@
 #include "BsGUISpace.h"
 #include "BsScriptGUILayout.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUIFixedSpace::ScriptGUIFixedSpace(GUIFixedSpace& fixedSpace, GUILayout* parentLayout)

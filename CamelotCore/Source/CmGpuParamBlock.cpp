@@ -4,7 +4,7 @@
 #include "CmHardwareBufferManager.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GpuParamBlock::GpuParamBlock(UINT32 size)
 		:mDirty(true), mData(nullptr), mSize(size)

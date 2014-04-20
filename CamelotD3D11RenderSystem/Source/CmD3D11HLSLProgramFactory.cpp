@@ -1,7 +1,7 @@
 #include "CmD3D11HLSLProgramFactory.h"
 #include "CmD3D11HLSLProgram.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     String D3D11HLSLProgramFactory::sLanguageName = "hlsl";
 

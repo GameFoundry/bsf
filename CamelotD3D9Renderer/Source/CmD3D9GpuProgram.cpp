@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmGpuParams.h"
 #include "CmAsyncOp.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     //-----------------------------------------------------------------------------
     D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile) 

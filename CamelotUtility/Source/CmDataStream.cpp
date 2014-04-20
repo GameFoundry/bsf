@@ -2,7 +2,7 @@
 #include "CmDebug.h"
 #include "CmException.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	const UINT32 DataStream::StreamTempSize = 128;
 

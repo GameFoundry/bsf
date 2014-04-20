@@ -3,7 +3,7 @@
 #include "CmD3D11Device.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11TimerQuery::D3D11TimerQuery()
 		:mFinalized(false), mContext(nullptr), mBeginQuery(nullptr), 

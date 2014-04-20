@@ -9,10 +9,7 @@
 #include "BsGUIWindowFrameWidget.h"
 #include "BsEditorGUI.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	EditorWindowBase::EditorWindowBase()
 		:mOwnsRenderWindow(true)
@@ -30,7 +27,7 @@ namespace BansheeEditor
 		construct(mRenderWindow);
 	}
 
-	EditorWindowBase::EditorWindowBase(const CM::RenderWindowPtr& renderWindow)
+	EditorWindowBase::EditorWindowBase(const RenderWindowPtr& renderWindow)
 		:mOwnsRenderWindow(false)
 	{
 		construct(renderWindow);
@@ -84,12 +81,12 @@ namespace BansheeEditor
 		mResizedConn = mCamera->getViewport()->onResized.connect(std::bind(&EditorWindowBase::resized, this));
 	}
 
-	void EditorWindowBase::setPosition(CM::INT32 x, CM::INT32 y)
+	void EditorWindowBase::setPosition(INT32 x, INT32 y)
 	{
 		gCoreAccessor().moveWindow(mRenderWindow, x, y);
 	}
 
-	void EditorWindowBase::setSize(CM::UINT32 width, CM::UINT32 height)
+	void EditorWindowBase::setSize(UINT32 width, UINT32 height)
 	{
 		gCoreAccessor().resizeWindow(mRenderWindow, width, height);
 	}

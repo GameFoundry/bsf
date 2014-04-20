@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmGLPrerequisites.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     /**
      * Class that encapsulates an GL context. (IE a window/pbuffer). This is a 

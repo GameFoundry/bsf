@@ -1,7 +1,7 @@
 #include "CmD3D11Device.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11Device::D3D11Device() 
 		:mD3D11Device(nullptr), mImmediateContext(nullptr), mClassLinkage(nullptr)

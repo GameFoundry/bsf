@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include <CmGLPrerequisites.h>
 
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     // Forward declarations
     class Win32GLSupport;
     class Win32Window;

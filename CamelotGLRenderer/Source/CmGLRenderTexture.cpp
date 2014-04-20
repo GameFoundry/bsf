@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLPixelBuffer.h"
 #include "CmTextureView.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	GLRenderTexture::GLRenderTexture()
 		:mFB(nullptr)

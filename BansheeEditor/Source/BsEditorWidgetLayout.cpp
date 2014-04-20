@@ -1,10 +1,7 @@
 #include "BsEditorWidgetLayout.h"
 #include "BsEditorWidgetLayoutRTTI.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	EditorWidgetLayout::Entry::Entry()
 		:isDocked(true), x(0), y(0), width(0), height(0)

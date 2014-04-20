@@ -15,19 +15,17 @@
 #include "BsVirtualInput.h"
 #include "BsCursor.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	Application::Application()
+	BsApplication::BsApplication()
 		:mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
 
 	}
 
-	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
+	void BsApplication::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
 	{
-		CM::START_UP_DESC desc;
+		START_UP_DESC desc;
 		desc.renderSystem = renderSystem;
 		desc.renderer= renderer;
 		desc.primaryWindowDesc = primaryWindowDesc;
@@ -38,7 +36,7 @@ namespace BansheeEngine
 		desc.importers.push_back("CamelotFBXImporter");
 		desc.importers.push_back("CamelotFontImporter");
 		
-		CM::gApplication().startUp(desc);
+		gApplication().startUp(desc);
 
 		VirtualInput::startUp(cm_new<VirtualInput>());
 		ScriptManager::startUp(cm_new<ScriptManager>());
@@ -58,25 +56,25 @@ namespace BansheeEngine
 		BuiltinResources::startUp(cm_new<BuiltinResources>());
 		Cursor::startUp(cm_new<Cursor>());
 
-		CM::gApplication().loadPlugin("BansheeMono", &mMonoPlugin);
-		CM::gApplication().loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
+		gApplication().loadPlugin("BansheeMono", &mMonoPlugin);
+		gApplication().loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
 		
-		updateCallbackConn = CM::gApplication().mainLoopCallback.connect(std::bind(&Application::update, this));
+		updateCallbackConn = gApplication().mainLoopCallback.connect(std::bind(&BsApplication::update, this));
 
 		Cursor::instance().setCursor(CursorType::Arrow);
 	}
 
-	void Application::runMainLoop()
+	void BsApplication::runMainLoop()
 	{
-		CM::gApplication().runMainLoop();
+		gApplication().runMainLoop();
 	}
 
-	void Application::shutDown()
+	void BsApplication::shutDown()
 	{
-		CM::gApplication().mainLoopCallback.disconnect(updateCallbackConn);
+		gApplication().mainLoopCallback.disconnect(updateCallbackConn);
 
-		CM::gApplication().unloadPlugin(mSBansheeEnginePlugin);
-		CM::gApplication().unloadPlugin(mMonoPlugin);
+		gApplication().unloadPlugin(mSBansheeEnginePlugin);
+		gApplication().unloadPlugin(mMonoPlugin);
 
 		Cursor::shutDown();
 		BuiltinResources::shutDown();
@@ -94,24 +92,24 @@ namespace BansheeEngine
 		ScriptManager::shutDown();
 		VirtualInput::shutDown();
 		
-		CM::gApplication().shutDown();
+		gApplication().shutDown();
 	}
 
-	void Application::update()
+	void BsApplication::update()
 	{
 		VirtualInput::instance().update();
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 
-	const CM::ViewportPtr& Application::getPrimaryViewport() const
+	const ViewportPtr& BsApplication::getPrimaryViewport() const
 	{
 		// TODO - Need a way to determine primary viewport!
 		return nullptr;
 	}
 
-	Application& gBansheeApp()
+	BsApplication& gBansheeApp()
 	{
-		static Application application;
+		static BsApplication application;
 		return application;
 	}
 }

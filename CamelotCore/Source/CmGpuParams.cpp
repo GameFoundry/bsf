@@ -7,7 +7,7 @@
 #include "CmDebug.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GpuParams::GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices)
 		:mParamDesc(paramDesc), mTransposeMatrices(transposeMatrices), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0),

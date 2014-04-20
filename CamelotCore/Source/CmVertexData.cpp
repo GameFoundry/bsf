@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	VertexData::VertexData(HardwareBufferManager* mgr)
 		:mOwnsDeclaration(true)

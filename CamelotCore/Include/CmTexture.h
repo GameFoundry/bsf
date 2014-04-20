@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmPixelUtil.h"
 #include "CmTextureView.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/** Enum identifying the texture usage
     */

@@ -9,8 +9,6 @@
 #include "BsGUILayout.h"
 #include "BsGUIScrollArea.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUILayout::ScriptGUILayout(GUILayout* layout, GUILayout* parentLayout)

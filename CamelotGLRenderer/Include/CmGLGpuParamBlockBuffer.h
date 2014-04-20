@@ -4,7 +4,7 @@
 #include "CmGpuParamBlockBuffer.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_RSGL_EXPORT GLGpuParamBlockBuffer : public GpuParamBlockBuffer
 	{

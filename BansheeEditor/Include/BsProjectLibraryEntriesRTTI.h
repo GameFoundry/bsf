@@ -4,9 +4,9 @@
 #include "CmRTTIType.h"
 #include "BsProjectLibraryEntries.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class ProjectLibraryEntriesRTTI : public CM::RTTIType<ProjectLibraryEntries, CM::IReflectable, ProjectLibraryEntriesRTTI>
+	class ProjectLibraryEntriesRTTI : public RTTIType<ProjectLibraryEntries, IReflectable, ProjectLibraryEntriesRTTI>
 	{
 	private:
 		ProjectLibrary::DirectoryEntry& getRootElement(ProjectLibraryEntries* obj) { return obj->mRootEntry; }
@@ -18,31 +18,31 @@ namespace BansheeEditor
 			addPlainField("mRootElement", 0, &ProjectLibraryEntriesRTTI::getRootElement, &ProjectLibraryEntriesRTTI::setRootElement);
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "ProjectLibraryEntries";
+			static String name = "ProjectLibraryEntries";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_ProjectLibraryEntries;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
 			return ProjectLibraryEntries::createEmpty();
 		}
 	};
 }
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
-	template<> struct CM::RTTIPlainType<BansheeEditor::ProjectLibrary::ResourceEntry>
+	template<> struct RTTIPlainType<BansheeEngine::ProjectLibrary::ResourceEntry>
 	{	
-		enum { id = BansheeEditor::TID_ProjectLibraryResEntry }; enum { hasDynamicSize = 1 };
+		enum { id = BansheeEngine::TID_ProjectLibraryResEntry }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const BansheeEditor::ProjectLibrary::ResourceEntry& data, char* memory)
+		static void toMemory(const BansheeEngine::ProjectLibrary::ResourceEntry& data, char* memory)
 		{ 
 			UINT32 size = 0;
 			char* memoryStart = memory;
@@ -58,7 +58,7 @@ namespace CamelotFramework
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		static UINT32 fromMemory(BansheeEditor::ProjectLibrary::ResourceEntry& data, char* memory)
+		static UINT32 fromMemory(BansheeEngine::ProjectLibrary::ResourceEntry& data, char* memory)
 		{ 
 			UINT32 size = 0;
 			memcpy(&size, memory, sizeof(UINT32));
@@ -66,7 +66,7 @@ namespace CamelotFramework
 
 			UINT32 type;
 			memory = rttiReadElem(type, memory);
-			data.type = (BansheeEditor::ProjectLibrary::LibraryEntryType)type;
+			data.type = (BansheeEngine::ProjectLibrary::LibraryEntryType)type;
 
 			memory = rttiReadElem(data.path, memory);
 			memory = rttiReadElem(data.elementName, memory);
@@ -75,7 +75,7 @@ namespace CamelotFramework
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const BansheeEditor::ProjectLibrary::ResourceEntry& data)	
+		static UINT32 getDynamicSize(const BansheeEngine::ProjectLibrary::ResourceEntry& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) + rttiGetElemSize(data.type) + rttiGetElemSize(data.path) + rttiGetElemSize(data.elementName) +
 				rttiGetElemSize(data.lastUpdateTime);
@@ -91,11 +91,11 @@ namespace CamelotFramework
 		}	
 	}; 
 
-	template<> struct CM::RTTIPlainType<BansheeEditor::ProjectLibrary::DirectoryEntry>
+	template<> struct RTTIPlainType<BansheeEngine::ProjectLibrary::DirectoryEntry>
 	{	
-		enum { id = BansheeEditor::TID_ProjectLibraryDirEntry }; enum { hasDynamicSize = 1 };
+		enum { id = BansheeEngine::TID_ProjectLibraryDirEntry }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const BansheeEditor::ProjectLibrary::DirectoryEntry& data, char* memory)
+		static void toMemory(const BansheeEngine::ProjectLibrary::DirectoryEntry& data, char* memory)
 		{ 
 			UINT32 size = 0;
 			char* memoryStart = memory;
@@ -111,14 +111,14 @@ namespace CamelotFramework
 
 			for(auto& child : data.mChildren)
 			{
-				if(child->type == BansheeEditor::ProjectLibrary::LibraryEntryType::File)
+				if(child->type == BansheeEngine::ProjectLibrary::LibraryEntryType::File)
 				{
-					BansheeEditor::ProjectLibrary::ResourceEntry* childResEntry = static_cast<BansheeEditor::ProjectLibrary::ResourceEntry*>(child);
+					BansheeEngine::ProjectLibrary::ResourceEntry* childResEntry = static_cast<BansheeEngine::ProjectLibrary::ResourceEntry*>(child);
 					memory = rttiWriteElem(*childResEntry, memory, size);
 				}
-				else if(child->type == BansheeEditor::ProjectLibrary::LibraryEntryType::Directory)
+				else if(child->type == BansheeEngine::ProjectLibrary::LibraryEntryType::Directory)
 				{
-					BansheeEditor::ProjectLibrary::DirectoryEntry* childDirEntry = static_cast<BansheeEditor::ProjectLibrary::DirectoryEntry*>(child);
+					BansheeEngine::ProjectLibrary::DirectoryEntry* childDirEntry = static_cast<BansheeEngine::ProjectLibrary::DirectoryEntry*>(child);
 					memory = rttiWriteElem(*childDirEntry, memory, size);
 				}
 			}
@@ -126,7 +126,7 @@ namespace CamelotFramework
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		static UINT32 fromMemory(BansheeEditor::ProjectLibrary::DirectoryEntry& data, char* memory)
+		static UINT32 fromMemory(BansheeEngine::ProjectLibrary::DirectoryEntry& data, char* memory)
 		{ 
 			UINT32 size = 0;
 			memcpy(&size, memory, sizeof(UINT32));
@@ -141,20 +141,20 @@ namespace CamelotFramework
 
 			for(UINT32 i = 0; i < numChildren; i++)
 			{
-				BansheeEditor::ProjectLibrary::LibraryEntryType childType = BansheeEditor::ProjectLibrary::LibraryEntryType::File;
+				BansheeEngine::ProjectLibrary::LibraryEntryType childType = BansheeEngine::ProjectLibrary::LibraryEntryType::File;
 				rttiReadElem(childType, memory + sizeof(UINT32)); // Skip ahead to get type
 
-				if(childType == BansheeEditor::ProjectLibrary::LibraryEntryType::File)
+				if(childType == BansheeEngine::ProjectLibrary::LibraryEntryType::File)
 				{
-					BansheeEditor::ProjectLibrary::ResourceEntry* childResEntry = cm_new<BansheeEditor::ProjectLibrary::ResourceEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
+					BansheeEngine::ProjectLibrary::ResourceEntry* childResEntry = cm_new<BansheeEngine::ProjectLibrary::ResourceEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
 					memory = rttiReadElem(*childResEntry, memory);
 
 					childResEntry->parent = &data;
 					data.mChildren.push_back(childResEntry);
 				}
-				else if(childType == BansheeEditor::ProjectLibrary::LibraryEntryType::Directory)
+				else if(childType == BansheeEngine::ProjectLibrary::LibraryEntryType::Directory)
 				{
-					BansheeEditor::ProjectLibrary::DirectoryEntry* childDirEntry = cm_new<BansheeEditor::ProjectLibrary::DirectoryEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
+					BansheeEngine::ProjectLibrary::DirectoryEntry* childDirEntry = cm_new<BansheeEngine::ProjectLibrary::DirectoryEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
 					memory = rttiReadElem(*childDirEntry, memory);
 
 					childDirEntry->parent = &data;
@@ -165,7 +165,7 @@ namespace CamelotFramework
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const BansheeEditor::ProjectLibrary::DirectoryEntry& data)	
+		static UINT32 getDynamicSize(const BansheeEngine::ProjectLibrary::DirectoryEntry& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) + rttiGetElemSize(data.type) + rttiGetElemSize(data.path) + rttiGetElemSize(data.elementName);
 
@@ -173,14 +173,14 @@ namespace CamelotFramework
 
 			for(auto& child : data.mChildren)
 			{
-				if(child->type == BansheeEditor::ProjectLibrary::LibraryEntryType::File)
+				if(child->type == BansheeEngine::ProjectLibrary::LibraryEntryType::File)
 				{
-					BansheeEditor::ProjectLibrary::ResourceEntry* childResEntry = static_cast<BansheeEditor::ProjectLibrary::ResourceEntry*>(child);
+					BansheeEngine::ProjectLibrary::ResourceEntry* childResEntry = static_cast<BansheeEngine::ProjectLibrary::ResourceEntry*>(child);
 					dataSize += rttiGetElemSize(*childResEntry);
 				}
-				else if(child->type == BansheeEditor::ProjectLibrary::LibraryEntryType::Directory)
+				else if(child->type == BansheeEngine::ProjectLibrary::LibraryEntryType::Directory)
 				{
-					BansheeEditor::ProjectLibrary::DirectoryEntry* childDirEntry = static_cast<BansheeEditor::ProjectLibrary::DirectoryEntry*>(child);
+					BansheeEngine::ProjectLibrary::DirectoryEntry* childDirEntry = static_cast<BansheeEngine::ProjectLibrary::DirectoryEntry*>(child);
 					dataSize += rttiGetElemSize(*childDirEntry);
 				}
 			}

@@ -1,7 +1,7 @@
 #include "CmColor.h"
 #include "CmMath.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     const Color Color::ZERO = Color(0.0,0.0,0.0,0.0);
     const Color Color::Black = Color(0.0,0.0,0.0);

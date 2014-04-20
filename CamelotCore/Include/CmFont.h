@@ -4,7 +4,7 @@
 #include "CmResource.h"
 #include "CmFontDesc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct CM_EXPORT FontData : public IReflectable
 	{

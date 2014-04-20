@@ -4,7 +4,7 @@
 #include "CmMatrix3.h"
 #include "CmQuaternion.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     const Matrix4 Matrix4::ZERO(
         0.0f, 0.0f, 0.0f, 0.0f,

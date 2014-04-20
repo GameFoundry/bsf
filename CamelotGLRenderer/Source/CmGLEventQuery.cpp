@@ -1,6 +1,6 @@
 #include "CmGLEventQuery.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GLEventQuery::GLEventQuery()
 		:mQueryObj(0)

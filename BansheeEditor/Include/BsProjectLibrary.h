@@ -3,9 +3,9 @@
 #include "BsEditorPrerequisites.h"
 #include "CmModule.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class ProjectLibrary : public CM::Module<ProjectLibrary>
+	class ProjectLibrary : public Module<ProjectLibrary>
 	{
 	public:
 		struct LibraryEntry;
@@ -21,11 +21,11 @@ namespace BansheeEditor
 		struct LibraryEntry
 		{
 			LibraryEntry();
-			LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type);
+			LibraryEntry(const WString& path, const WString& name, DirectoryEntry* parent, LibraryEntryType type);
 
 			LibraryEntryType type;
-			CM::WString path;
-			CM::WString elementName;
+			WString path;
+			WString elementName;
 
 			DirectoryEntry* parent;
 		};
@@ -33,7 +33,7 @@ namespace BansheeEditor
 		struct ResourceEntry : public LibraryEntry
 		{
 			ResourceEntry();
-			ResourceEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
+			ResourceEntry(const WString& path, const WString& name, DirectoryEntry* parent);
 
 			ResourceMetaPtr meta;
 			std::time_t lastUpdateTime;
@@ -42,55 +42,55 @@ namespace BansheeEditor
 		struct DirectoryEntry : public LibraryEntry
 		{
 			DirectoryEntry();
-			DirectoryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent);
+			DirectoryEntry(const WString& path, const WString& name, DirectoryEntry* parent);
 
-			CM::Vector<LibraryEntry*>::type mChildren;
+			Vector<LibraryEntry*>::type mChildren;
 		};
 
 	public:
-		ProjectLibrary(const CM::WString& projectFolder);
+		ProjectLibrary(const WString& projectFolder);
 		~ProjectLibrary();
 
 		void update();
-		void checkForModifications(const CM::WString& fullPath);
+		void checkForModifications(const WString& fullPath);
 
 		const LibraryEntry* getRootEntry() const { return mRootEntry; }
-		LibraryEntry* findEntry(const CM::WString& fullPath) const;
+		LibraryEntry* findEntry(const WString& fullPath) const;
 
-		void moveEntry(const CM::WString& oldPath, const CM::WString& newPath);
-		void deleteEntry(const CM::WString& path);
+		void moveEntry(const WString& oldPath, const WString& newPath);
+		void deleteEntry(const WString& path);
 
-		boost::signal<void(const CM::WString&)> onEntryRemoved;
-		boost::signal<void(const CM::WString&)> onEntryAdded;
+		boost::signal<void(const WString&)> onEntryRemoved;
+		boost::signal<void(const WString&)> onEntryAdded;
 	private:
-		static const CM::WString RESOURCES_DIR;
-		static const CM::WString INTERNAL_RESOURCES_DIR;
-		static const CM::WString LIBRARY_ENTRIES_FILENAME;
-		static const CM::WString RESOURCE_MANIFEST_FILENAME;
+		static const WString RESOURCES_DIR;
+		static const WString INTERNAL_RESOURCES_DIR;
+		static const WString LIBRARY_ENTRIES_FILENAME;
+		static const WString RESOURCE_MANIFEST_FILENAME;
 
-		CM::ResourceManifestPtr mResourceManifest;
+		ResourceManifestPtr mResourceManifest;
 		DirectoryEntry* mRootEntry;
-		CM::FolderMonitor* mMonitor;
-		CM::WString mProjectFolder;
-		CM::WString mResourcesFolder;
+		FolderMonitor* mMonitor;
+		WString mProjectFolder;
+		WString mResourcesFolder;
 
 		void save();
 		void load();
 
-		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const CM::WString& filePath);
-		DirectoryEntry* addDirectoryInternal(DirectoryEntry* parent, const CM::WString& dirPath);
+		ResourceEntry* addResourceInternal(DirectoryEntry* parent, const WString& filePath);
+		DirectoryEntry* addDirectoryInternal(DirectoryEntry* parent, const WString& dirPath);
 
 		void deleteResourceInternal(ResourceEntry* resource);
 		void deleteDirectoryInternal(DirectoryEntry* directory);
 
 		void reimportResourceInternal(ResourceEntry* resource);
 
-		void createInternalParentHierarchy(const CM::WString& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf);
+		void createInternalParentHierarchy(const WString& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf);
 
 		bool isUpToDate(ResourceEntry* resource) const;
-		CM::WString getMetaPath(const CM::WString& path) const;
-		bool isMeta(const CM::WString& fullPath) const;
+		WString getMetaPath(const WString& path) const;
+		bool isMeta(const WString& fullPath) const;
 
-		void onMonitorFileModified(const CM::WString& path);
+		void onMonitorFileModified(const WString& path);
 	};
 }

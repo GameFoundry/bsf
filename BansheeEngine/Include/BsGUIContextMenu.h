@@ -11,7 +11,7 @@ namespace BansheeEngine
 		GUIContextMenu();
 		~GUIContextMenu();
 
-		void open(const CM::Vector2I& position, GUIWidget& widget);
+		void open(const Vector2I& position, GUIWidget& widget);
 
 	private:
 		bool mContextMenuOpen;

@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	  * @brief	Encodes/decodes an IReflectable object from/to memory. 

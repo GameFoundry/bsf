@@ -14,7 +14,7 @@ namespace BansheeEngine
 	 * 
 	 * @see Overlay
 	 */
-	class BS_EXPORT OverlayManager : public CM::Module<OverlayManager>
+	class BS_EXPORT OverlayManager : public Module<OverlayManager>
 	{
 		struct OverlayComparer
 		{
@@ -22,15 +22,15 @@ namespace BansheeEngine
 		};
 
 	public:
-		void render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const;
+		void render(ViewportPtr& target, RenderQueue& renderQueue) const;
 
 	private:
 		friend class Overlay;
 
-		void attachOverlay(const CM::Viewport* target, const Overlay* overlay);
-		void detachOverlay(const CM::Viewport* target, const Overlay* overlay);
+		void attachOverlay(const Viewport* target, const Overlay* overlay);
+		void detachOverlay(const Viewport* target, const Overlay* overlay);
 		void detachOverlayFromAll(const Overlay* overlay);
 
-		CM::UnorderedMap<const CM::Viewport*, CM::Set<const Overlay*, OverlayComparer>::type>::type mOverlaysPerTarget;
+		UnorderedMap<const Viewport*, Set<const Overlay*, OverlayComparer>::type>::type mOverlaysPerTarget;
 	};
 }

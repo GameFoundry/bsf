@@ -59,7 +59,7 @@
 #include <sstream>
 
 #ifdef __BORLANDC__
-namespace CamelotFramework
+namespace BansheeEngine
 {
     using namespace std;
 }
@@ -100,7 +100,7 @@ extern "C" {
 }
 #endif
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	// Standard containers, for easier access in my own namespace
 	template <typename T, typename A = StdAlloc<T>> 

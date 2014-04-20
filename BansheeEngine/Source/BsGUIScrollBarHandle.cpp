@@ -9,8 +9,6 @@
 #include "CmDebug.h"
 #include "CmTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	const String& GUIScrollBarHandle::getGUITypeName()
@@ -19,7 +17,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIScrollBarHandle::GUIScrollBarHandle(bool horizontal, const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIScrollBarHandle::GUIScrollBarHandle(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
 		mHandleDragged(false), mState(State::Normal)
 	{
@@ -31,17 +29,17 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const CM::String& styleName)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const String& styleName)
 	{
 		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
-	void GUIScrollBarHandle::setHandleSize(CM::UINT32 size)
+	void GUIScrollBarHandle::setHandleSize(UINT32 size)
 	{
 		mHandleSize = std::min(getMaxSize(), size);
 		markContentAsDirty();
@@ -298,7 +296,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIScrollBarHandle::isOnHandle(const CM::Vector2I& pos) const
+	bool GUIScrollBarHandle::isOnHandle(const Vector2I& pos) const
 	{
 		if(mHorizontal)
 		{

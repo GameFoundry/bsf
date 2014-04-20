@@ -6,7 +6,7 @@
 #include "CmRenderer.h"
 #include "CmTechniqueRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Technique::Technique(const String& renderSystem, const String& renderer)
 		:mRenderSystem(renderSystem), mRenderer(renderer)

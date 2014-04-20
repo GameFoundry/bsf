@@ -7,8 +7,6 @@
 #include "BsMonoMethod.h"
 #include "BsMonoProperty.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptSerializableDictionary::Enumerator::Enumerator(MonoObject* instance, const ScriptSerializableDictionary* parent)

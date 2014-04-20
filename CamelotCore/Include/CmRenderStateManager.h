@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT RenderStateManager : public Module<RenderStateManager>
 	{

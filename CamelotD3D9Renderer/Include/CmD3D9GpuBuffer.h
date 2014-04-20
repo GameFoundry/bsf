@@ -3,7 +3,7 @@
 #include "CmD3D9Prerequisites.h"
 #include "CmGpuBuffer.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_D3D9_EXPORT D3D9GpuBuffer : public GpuBuffer
 	{

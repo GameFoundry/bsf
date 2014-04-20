@@ -6,7 +6,7 @@
 
 using namespace std::placeholders;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	MemorySerializer::MemorySerializer()
 	{ }

@@ -1,6 +1,6 @@
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Exception::Exception(const char* type, const String& desc, const String& src) 
 		:mLine(0), mTypeName(type), mDescription(desc), mSource(src)
@@ -30,7 +30,7 @@ namespace CamelotFramework
 		{
 			StringStream desc;
 
-			desc<< "CAMELOT EXCEPTION(" << mTypeName << "): "
+			desc<< "BANSHEE EXCEPTION(" << mTypeName << "): "
 				<< mDescription 
 				<< " in " << mSource;
 

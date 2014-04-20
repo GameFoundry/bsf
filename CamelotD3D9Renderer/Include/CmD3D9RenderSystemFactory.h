@@ -5,7 +5,7 @@
 #include "CmRenderSystemManager.h"
 #include "CmD3D9RenderSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const String SystemName = "D3D9RenderSystem";
 

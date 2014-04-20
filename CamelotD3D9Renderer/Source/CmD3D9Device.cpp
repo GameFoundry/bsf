@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmHardwareBufferManager.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	HWND D3D9Device::msSharedFocusWindow = NULL;
 
@@ -198,7 +198,7 @@ namespace CamelotFramework
 	{
 		if (mpDevice != NULL)
 		{
-			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
+			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 
 			//// Clean up depth stencil surfaces
 			//renderSystem->_cleanupDepthStencils(mpDevice);	
@@ -237,7 +237,7 @@ namespace CamelotFramework
 		// Case we just moved from valid state to lost state.
 		mDeviceLost = true;	
 
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 
 		renderSystem->notifyOnDeviceLost(this);
 	}	
@@ -337,7 +337,7 @@ namespace CamelotFramework
 		// Lock access to rendering device.
 		D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
 					
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 
 		// Inform all resources that device lost.
 		D3D9RenderSystem::getResourceManager()->notifyOnDeviceLost(mpDevice);
@@ -554,7 +554,7 @@ namespace CamelotFramework
 	//---------------------------------------------------------------------
 	void D3D9Device::clearDeviceStreams()
 	{
-		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(CamelotFramework::RenderSystem::instancePtr());
+		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 
 		// Set all texture units to nothing to release texture surfaces
 		for (DWORD stage = 0; stage < mD3D9DeviceCaps.MaxSimultaneousTextures; ++stage)
@@ -1317,7 +1317,7 @@ namespace CamelotFramework
 			}
 		}
 
-		PixelFormat format = CamelotFramework::D3D9Mappings::_getPF(desc.Format);
+		PixelFormat format = BansheeEngine::D3D9Mappings::_getPF(desc.Format);
 
 		if (format == PF_UNKNOWN)
 		{

@@ -10,7 +10,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSerializableObjectRTTI : public CM::RTTIType<ScriptSerializableObject, CM::IReflectable, ScriptSerializableObjectRTTI>
+	class BS_SCR_BE_EXPORT ScriptSerializableObjectRTTI : public RTTIType<ScriptSerializableObject, IReflectable, ScriptSerializableObjectRTTI>
 	{
 	private:
 		ScriptSerializableObjectInfoPtr getInfo(ScriptSerializableObject* obj)
@@ -23,22 +23,22 @@ namespace BansheeEngine
 			obj->mObjInfo = val;
 		}
 
-		ScriptSerializableFieldDataEntryPtr getFieldEntry(ScriptSerializableObject* obj, CM::UINT32 arrayIdx)
+		ScriptSerializableFieldDataEntryPtr getFieldEntry(ScriptSerializableObject* obj, UINT32 arrayIdx)
 		{
 			return obj->mFieldEntries[arrayIdx];
 		}
 
-		void setFieldsEntry(ScriptSerializableObject* obj, CM::UINT32 arrayIdx, ScriptSerializableFieldDataEntryPtr val)
+		void setFieldsEntry(ScriptSerializableObject* obj, UINT32 arrayIdx, ScriptSerializableFieldDataEntryPtr val)
 		{
 			obj->mFieldEntries[arrayIdx] = val;
 		}
 
-		CM::UINT32 getNumFieldEntries(ScriptSerializableObject* obj)
+		UINT32 getNumFieldEntries(ScriptSerializableObject* obj)
 		{
-			return (CM::UINT32)obj->mFieldEntries.size();
+			return (UINT32)obj->mFieldEntries.size();
 		}
 
-		void setNumFieldEntries(ScriptSerializableObject* obj, CM::UINT32 numEntries)
+		void setNumFieldEntries(ScriptSerializableObject* obj, UINT32 numEntries)
 		{
 			obj->mFieldEntries.resize(numEntries);
 		}
@@ -51,36 +51,36 @@ namespace BansheeEngine
 				&ScriptSerializableObjectRTTI::setFieldsEntry, &ScriptSerializableObjectRTTI::setNumFieldEntries);
 		}
 
-		virtual void onSerializationStarted(CM::IReflectable* obj)
+		virtual void onSerializationStarted(IReflectable* obj)
 		{
 			ScriptSerializableObject* serializableObject = static_cast<ScriptSerializableObject*>(obj);
 			serializableObject->serializeManagedInstance();
 		}
 
-		virtual void onDeserializationStarted(CM::IReflectable* obj)
+		virtual void onDeserializationStarted(IReflectable* obj)
 		{
 			ScriptSerializableObject* serializableObject = static_cast<ScriptSerializableObject*>(obj);
 
 			// If we are deserializing a GameObject we need to defer deserializing actual field values
 			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if(CM::GameObjectManager::instance().isGameObjectDeserializationActive())
-				CM::GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
+			if(GameObjectManager::instance().isGameObjectDeserializationActive())
+				GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
 			else
 				serializableObject->deserializeManagedInstance();
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "ScriptSerializableObject";
+			static String name = "ScriptSerializableObject";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_ScriptSerializableObject;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
 			return ScriptSerializableObject::createEmpty();
 		}

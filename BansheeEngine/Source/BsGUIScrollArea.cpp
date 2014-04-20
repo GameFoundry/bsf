@@ -10,7 +10,6 @@
 #include "BsGUIMouseEvent.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
 using namespace std::placeholders;
 
 namespace BansheeEngine
@@ -20,7 +19,7 @@ namespace BansheeEngine
 	const UINT32 GUIScrollArea::WheelScrollAmount = 50;
 
 	GUIScrollArea::GUIScrollArea(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-		const CM::String& scrollBarStyle, const CM::String& scrollAreaStyle, const GUILayoutOptions& layoutOptions)
+		const String& scrollBarStyle, const String& scrollAreaStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mVertScroll(nullptr), mHorzScroll(nullptr), mVertOffset(0), mHorzOffset(0),
 		mContentWidth(0), mContentHeight(0), mClippedContentWidth(0), mClippedContentHeight(0), mVertBarType(vertBarType), mHorzBarType(horzBarType),
 		mScrollBarStyle(scrollBarStyle)
@@ -281,7 +280,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	void GUIScrollArea::scrollUpPx(CM::UINT32 pixels)
+	void GUIScrollArea::scrollUpPx(UINT32 pixels)
 	{
 		if(mVertScroll != nullptr)
 		{
@@ -295,7 +294,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIScrollArea::scrollDownPx(CM::UINT32 pixels)
+	void GUIScrollArea::scrollDownPx(UINT32 pixels)
 	{
 		if(mVertScroll != nullptr)
 		{
@@ -309,7 +308,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIScrollArea::scrollLeftPx(CM::UINT32 pixels)
+	void GUIScrollArea::scrollLeftPx(UINT32 pixels)
 	{
 		if(mHorzScroll != nullptr)
 		{
@@ -323,7 +322,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIScrollArea::scrollRightPx(CM::UINT32 pixels)
+	void GUIScrollArea::scrollRightPx(UINT32 pixels)
 	{
 		if(mHorzScroll != nullptr)
 		{
@@ -380,28 +379,28 @@ namespace BansheeEngine
 	}
 
 	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, ScrollBarType horzBarType, 
-		const CM::String& scrollBarStyle, const CM::String& scrollAreaStyle)
+		const String& scrollBarStyle, const String& scrollAreaStyle)
 	{
 		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
 			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create());
 	}
 
-	GUIScrollArea* GUIScrollArea::create(const GUIOptions& layoutOptions, const CM::String& scrollBarStyle, 
-		const CM::String& scrollAreaStyle)
+	GUIScrollArea* GUIScrollArea::create(const GUIOptions& layoutOptions, const String& scrollBarStyle, 
+		const String& scrollAreaStyle)
 	{
 		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, 
 			ScrollBarType::ShowIfDoesntFit, scrollBarStyle, getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIScrollArea* GUIScrollArea::create(const CM::String& scrollBarStyle, const CM::String& scrollAreaStyle)
+	GUIScrollArea* GUIScrollArea::create(const String& scrollBarStyle, const String& scrollAreaStyle)
 	{
 		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(ScrollBarType::ShowIfDoesntFit, ScrollBarType::ShowIfDoesntFit, scrollBarStyle, 
 			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create());
 	}
 
 	GUIScrollArea* GUIScrollArea::create(ScrollBarType vertBarType, 
-		ScrollBarType horzBarType, const GUIOptions& layoutOptions, const CM::String& scrollBarStyle, 
-		const CM::String& scrollAreaStyle)
+		ScrollBarType horzBarType, const GUIOptions& layoutOptions, const String& scrollBarStyle, 
+		const String& scrollAreaStyle)
 	{
 		return new (cm_alloc<GUIScrollArea, PoolAlloc>()) GUIScrollArea(vertBarType, horzBarType, scrollBarStyle, 
 			getStyleName<GUIScrollArea>(scrollAreaStyle), GUILayoutOptions::create(layoutOptions));

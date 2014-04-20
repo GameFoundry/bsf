@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include <istream>
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/**
 	 * @brief	General purpose class used for encapsulating the reading and writing of data from

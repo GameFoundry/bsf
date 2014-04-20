@@ -7,14 +7,14 @@
 
 #include "boost/signal.hpp"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class RenderWindow;
 	class Viewport;
 	class HighLevelGpuProgramManager;
 }
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct START_UP_DESC
 	{

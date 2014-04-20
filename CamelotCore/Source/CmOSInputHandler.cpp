@@ -5,7 +5,7 @@
 
 using namespace std::placeholders;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	OSInputHandler::OSInputHandler()
 		:mMouseScroll(0.0f)

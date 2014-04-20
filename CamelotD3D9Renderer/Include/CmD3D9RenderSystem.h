@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "CmD3D9Mappings.h"
 #include "CmCgProgramFactory.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/**
 	Implementation of DirectX9 as a rendering system.

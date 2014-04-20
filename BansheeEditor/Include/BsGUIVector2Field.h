@@ -4,24 +4,24 @@
 #include "BsGUIFieldBase.h"
 #include "CmVector2.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class BS_ED_EXPORT GUIVector2Field : public TGUIField<GUIVector2Field>
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		GUIVector2Field(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
-			const CM::String& labelStyle, const CM::String& inputBoxStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
+		GUIVector2Field(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
+			const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
 
-		CM::Vector2 getValue() const;
-		void setValue(const CM::Vector2& value);
+		Vector2 getValue() const;
+		void setValue(const Vector2& value);
 
 	protected:
 		virtual ~GUIVector2Field() { }
 
 	protected:
-		static const CM::UINT32 ELEMENT_LABEL_WIDTH;
+		static const UINT32 ELEMENT_LABEL_WIDTH;
 
 		GUIFloatField* mFieldX;
 		GUIFloatField* mFieldY;

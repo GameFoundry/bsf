@@ -5,7 +5,7 @@
 #include "CmException.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void DepthStencilState::initialize(const DEPTH_STENCIL_STATE_DESC& desc)
 	{

@@ -9,8 +9,8 @@ namespace BansheeEngine
 	class BS_EXPORT GUIHelper
 	{
 	public:
-		static CM::Vector2I calcOptimalContentsSize(const CM::Vector2I& contentSize, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
-		static CM::Vector2I calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
-		static CM::Vector2I calcOptimalContentsSize(const CM::WString& text, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
+		static Vector2I calcOptimalContentsSize(const Vector2I& contentSize, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
+		static Vector2I calcOptimalContentsSize(const GUIContent& content, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
+		static Vector2I calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions);
 	};
 }

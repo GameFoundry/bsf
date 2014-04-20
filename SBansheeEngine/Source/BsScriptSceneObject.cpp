@@ -7,11 +7,9 @@
 #include "CmSceneObject.h"
 #include "BsMonoUtil.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	ScriptSceneObject::ScriptSceneObject(const CM::HSceneObject& sceneObject)
+	ScriptSceneObject::ScriptSceneObject(const HSceneObject& sceneObject)
 		:mSceneObject(sceneObject)
 	{
 
@@ -87,7 +85,7 @@ namespace BansheeEngine
 		return childScriptSO->getManagedInstance();
 	}
 
-	void ScriptSceneObject::setNativeHandle(const CM::HGameObject& gameObject)
+	void ScriptSceneObject::setNativeHandle(const HGameObject& gameObject)
 	{
 		mSceneObject = static_object_cast<SceneObject>(gameObject);
 	}

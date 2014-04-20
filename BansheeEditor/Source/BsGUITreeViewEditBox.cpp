@@ -3,34 +3,31 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	const CM::String& GUITreeViewEditBox::getGUITypeName()
+	const String& GUITreeViewEditBox::getGUITypeName()
 	{
 		static String name = "TreeViewEditBox";
 		return name;
 	}
 
-	GUITreeViewEditBox* GUITreeViewEditBox::create(const CM::String& styleName)
+	GUITreeViewEditBox* GUITreeViewEditBox::create(const String& styleName)
 	{
 		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUILayoutOptions::create());
 	}
 
-	GUITreeViewEditBox* GUITreeViewEditBox::create(const BS::GUIOptions& layoutOptions, const CM::String& styleName)
+	GUITreeViewEditBox* GUITreeViewEditBox::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUITreeViewEditBox, PoolAlloc>()) GUITreeViewEditBox(getStyleName<GUITreeViewEditBox>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUITreeViewEditBox::GUITreeViewEditBox(const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions)
+	GUITreeViewEditBox::GUITreeViewEditBox(const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIInputBox(styleName, layoutOptions, false)
 	{
 
 	}
 
-	bool GUITreeViewEditBox::commandEvent(const BS::GUICommandEvent& ev)
+	bool GUITreeViewEditBox::commandEvent(const GUICommandEvent& ev)
 	{
 		bool processed = GUIInputBox::commandEvent(ev);
 

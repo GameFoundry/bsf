@@ -1,8 +1,6 @@
 #include "BsMonoPrerequisites.h"
 #include "BsMonoScriptManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	extern "C" BS_MONO_EXPORT const String& getPluginName()

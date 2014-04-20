@@ -9,11 +9,9 @@
 #include "BsManagedComponent.h"
 #include "CmSceneObject.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	ScriptComponent::ScriptComponent(const CM::GameObjectHandle<ManagedComponent>& managedComponent)
+	ScriptComponent::ScriptComponent(const GameObjectHandle<ManagedComponent>& managedComponent)
 		:mManagedComponent(managedComponent)
 	{
 
@@ -143,7 +141,7 @@ namespace BansheeEngine
 		ScriptGameObjectManager::instance().destroyScriptGameObject(nativeInstance);
 	}
 
-	void ScriptComponent::setNativeHandle(const CM::HGameObject& gameObject)
+	void ScriptComponent::setNativeHandle(const HGameObject& gameObject)
 	{
 		mManagedComponent = static_object_cast<ManagedComponent>(gameObject);
 	}

@@ -8,7 +8,7 @@
 #include "CmDrawOps.h"
 #include "CmSubMesh.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	template<class T>
 	class VertexElemIter

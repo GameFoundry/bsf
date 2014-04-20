@@ -5,7 +5,7 @@
 #include "CmVector3.h"
 #include "CmMatrix4.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/**
 	 * @brief	Axis aligned box represented by minimum and maximum point.

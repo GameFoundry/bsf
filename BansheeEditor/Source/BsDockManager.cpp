@@ -26,17 +26,15 @@
 #include "BsGUISkin.h"
 #include "BsGUIButton.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
 using namespace std::placeholders;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	const CM::UINT32 DockManager::DockContainer::SLIDER_SIZE = 4;
-	const CM::UINT32 DockManager::DockContainer::MIN_CHILD_SIZE = 20;
+	const UINT32 DockManager::DockContainer::SLIDER_SIZE = 4;
+	const UINT32 DockManager::DockContainer::MIN_CHILD_SIZE = 20;
 
-	const CM::Color DockManager::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
-	const CM::Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
+	const Color DockManager::TINT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.22f);
+	const Color DockManager::HIGHLIGHT_COLOR = Color(0.44f, 0.44f, 0.44f, 0.42f);
 
 	DockManager::DockContainer::DockContainer()
 		:mIsLeaf(true), mWidgets(nullptr), mSplitPosition(0.5f),
@@ -75,7 +73,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void DockManager::DockContainer::setArea(CM::INT32 x, CM::INT32 y, UINT32 width, UINT32 height)
+	void DockManager::DockContainer::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		if(mIsLeaf)
 		{
@@ -168,7 +166,7 @@ namespace BansheeEditor
 		mWidgets->setSize(mArea.width, mArea.height);
 	}
 
-	void DockManager::DockContainer::addLeft(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addLeft(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
 			splitContainer(widgetParent, parentWindow, false, true);
@@ -176,7 +174,7 @@ namespace BansheeEditor
 		mChildren[0]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::addRight(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addRight(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
 			splitContainer(widgetParent, parentWindow, false, false);
@@ -184,7 +182,7 @@ namespace BansheeEditor
 		mChildren[1]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::addTop(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addTop(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
 			splitContainer(widgetParent, parentWindow, true, true);
@@ -192,7 +190,7 @@ namespace BansheeEditor
 		mChildren[0]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::addBottom(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
+	void DockManager::DockContainer::addBottom(GUIWidget* widgetParent, RenderWindow* parentWindow, EditorWidgetBase* widget)
 	{
 		if(mIsLeaf)
 			splitContainer(widgetParent, parentWindow, true, false);
@@ -200,7 +198,7 @@ namespace BansheeEditor
 		mChildren[1]->addWidget(widget);
 	}
 
-	void DockManager::DockContainer::splitContainer(BS::GUIWidget* widgetParent, RenderWindow* parentWindow, bool horizontal, bool newChildIsFirst, float splitPosition)
+	void DockManager::DockContainer::splitContainer(GUIWidget* widgetParent, RenderWindow* parentWindow, bool horizontal, bool newChildIsFirst, float splitPosition)
 	{
 		UINT32 idxA = newChildIsFirst ? 0 : 1;
 		UINT32 idxB = (idxA + 1) % 2;
@@ -244,7 +242,7 @@ namespace BansheeEditor
 		mWidgets->add(*widget);
 	}
 
-	void DockManager::DockContainer::addWidget(const CM::String& name)
+	void DockManager::DockContainer::addWidget(const String& name)
 	{
 		if(!mIsLeaf)
 			return;
@@ -252,7 +250,7 @@ namespace BansheeEditor
 		EditorWidgetManager::instance().create(name, *mWidgets);
 	}
 
-	void DockManager::DockContainer::sliderDragged(const CM::Vector2I& delta)
+	void DockManager::DockContainer::sliderDragged(const Vector2I& delta)
 	{
 		if(mIsHorizontal && delta.y != 0)
 		{
@@ -328,7 +326,7 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	DockManager::DockContainer* DockManager::DockContainer::findAtPos(const CM::Vector2I& pos)
+	DockManager::DockContainer* DockManager::DockContainer::findAtPos(const Vector2I& pos)
 	{
 		if(mIsLeaf)
 		{
@@ -357,7 +355,7 @@ namespace BansheeEditor
 		return mWidgets->getContentBounds();
 	}
 
-	DockManager::DockManager(CM::RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
+	DockManager::DockManager(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
 		mShowOverlay(false), mAddedRenderCallback(false)
 	{
@@ -391,7 +389,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void DockManager::render(const Viewport* viewport, CM::RenderQueue& renderQueue)
+	void DockManager::render(const Viewport* viewport, RenderQueue& renderQueue)
 	{
 		if(!mShowOverlay)
 			return;
@@ -969,7 +967,7 @@ namespace BansheeEditor
 	}
 
 	// TODO - Move to a separate Polygon class?
-	bool DockManager::insidePolygon(CM::Vector2* polyPoints, CM::UINT32 numPoints, CM::Vector2 point) const
+	bool DockManager::insidePolygon(Vector2* polyPoints, UINT32 numPoints, Vector2 point) const
 	{
 		bool isInside = false;
 		for (UINT32 i = 0, j = numPoints - 1; i < numPoints; j = i++) 

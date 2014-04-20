@@ -6,7 +6,7 @@
 #include "CmFontManager.h"
 #include "CmTexture.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT FontDataRTTI : public RTTIType<FontData, Resource, FontDataRTTI>
 	{

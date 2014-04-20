@@ -3,7 +3,7 @@
 #include "CmD3D9Device.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D9EventQuery::D3D9EventQuery()
 		:mQuery(nullptr)

@@ -25,7 +25,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		GUIElement(const CM::String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIElement(const String& styleName, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIElement();
 
 		/**
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 *
 		 * @return	The number render elements.
 		 */
-		virtual CM::UINT32 getNumRenderElements() const = 0;
+		virtual UINT32 getNumRenderElements() const = 0;
 
 		/**
 		 * @brief	Gets a material for the specified render element index.
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		virtual const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const = 0;
+		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		 *			
 		 * @return	Number of quads for the specified render element. 
 		 */
-		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const = 0;
+		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
@@ -79,8 +79,8 @@ namespace BansheeEngine
 		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
-		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
-			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const = 0;
+		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const = 0;
 
 		/**
 		 * @brief	Recreates the internal render elements. Must be called before fillBuffer if element is dirty. 
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets non-clipped bounds that were assigned to the element by the parent layout.
 		 */
-		CM::RectI getBounds() const;
+		RectI getBounds() const;
 
 		/**
 		 * @brief	Sets or removes focus from an element.
@@ -111,30 +111,30 @@ namespace BansheeEngine
 		/* 							INTERNAL METHODS                      		*/
 		/************************************************************************/
 
-		void _setWidgetDepth(CM::UINT8 depth);
-		void _setAreaDepth(CM::UINT16 depth);
-		void _setOffset(const CM::Vector2I& offset);
-		void _setWidth(CM::UINT32 width);
-		void _setHeight(CM::UINT32 height);
-		void _setClipRect(const CM::RectI& clipRect);
+		void _setWidgetDepth(UINT8 depth);
+		void _setAreaDepth(UINT16 depth);
+		void _setOffset(const Vector2I& offset);
+		void _setWidth(UINT32 width);
+		void _setHeight(UINT32 height);
+		void _setClipRect(const RectI& clipRect);
 		virtual void _changeParentWidget(GUIWidget* widget);
 
-		CM::UINT32 _getWidth() const { return mWidth; }
-		CM::UINT32 _getHeight() const { return mHeight; }
-		CM::Vector2I _getOffset() const { return mOffset; }
-		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const { return _getDepth(); }
+		UINT32 _getWidth() const { return mWidth; }
+		UINT32 _getHeight() const { return mHeight; }
+		Vector2I _getOffset() const { return mOffset; }
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const { return _getDepth(); }
 		Type _getType() const { return GUIElementBase::Type::Element; }
 		bool _isDestroyed() const { return mIsDestroyed; }
 		void _refreshStyle();
 		const GUIElementStyle* _getStyle() const { return mStyle; }
 
-		const CM::RectI& _getClippedBounds() const { return mClippedBounds; }
-		const CM::RectI& _getClipRect() const { return mClipRect; }
+		const RectI& _getClippedBounds() const { return mClippedBounds; }
+		const RectI& _getClipRect() const { return mClipRect; }
 		const RectOffset& _getPadding() const;
-		CM::UINT32 _getDepth() const { return mDepth; }
-		virtual bool _isInBounds(const CM::Vector2I position) const;
-		virtual bool _hasCustomCursor(const CM::Vector2I position, CursorType& type) const { return false; }
-		virtual bool _acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const { return false; }
+		UINT32 _getDepth() const { return mDepth; }
+		virtual bool _isInBounds(const Vector2I position) const;
+		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const { return false; }
+		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const { return false; }
 
 		virtual GUIContextMenu* getContextMenu() const { return nullptr; }
 
@@ -142,13 +142,13 @@ namespace BansheeEngine
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
 		 * 			the input text.
 		 */
-		virtual CM::Vector2I _getTextInputOffset() const { return CM::Vector2I(); }
+		virtual Vector2I _getTextInputOffset() const { return Vector2I(); }
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for clipping
 		 * 			the input text.
 		 */
-		virtual CM::RectI _getTextInputRect() const { return CM::RectI(); }
+		virtual RectI _getTextInputRect() const { return RectI(); }
 
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 	protected:
@@ -158,29 +158,29 @@ namespace BansheeEngine
 		void setLayoutOptions(const GUILayoutOptions& layoutOptions);
 		
 		template<class T>
-		static const CM::String& getStyleName(const CM::String& overrideStyle)
+		static const String& getStyleName(const String& overrideStyle)
 		{
-			if(overrideStyle == CM::StringUtil::BLANK)
+			if(overrideStyle == StringUtil::BLANK)
 				return T::getGUITypeName();
 
 			return overrideStyle;
 		}
 
-		CM::RectI getVisibleBounds() const;
-		CM::RectI getContentBounds() const;
-		CM::RectI getContentClipRect() const;
+		RectI getVisibleBounds() const;
+		RectI getContentBounds() const;
+		RectI getContentClipRect() const;
 
 		bool mIsDestroyed;
 		GUILayoutOptions mLayoutOptions;
-		CM::RectI mClippedBounds;
+		RectI mClippedBounds;
 
-		CM::UINT32 mDepth;
-		CM::Vector2I mOffset;
-		CM::UINT32 mWidth, mHeight;
-		CM::RectI mClipRect;
+		UINT32 mDepth;
+		Vector2I mOffset;
+		UINT32 mWidth, mHeight;
+		RectI mClipRect;
 
 	private:
 		const GUIElementStyle* mStyle;
-		CM::String mStyleName;
+		String mStyleName;
 	};
 }

@@ -5,8 +5,6 @@
 #include "BsScriptTexture2D.h"
 #include "BsScriptSpriteTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptResourceManager::ScriptResourceManager()
@@ -68,7 +66,7 @@ namespace BansheeEngine
 		return scriptResource;
 	}
 
-	ScriptTexture2D* ScriptResourceManager::getScriptTexture(const CM::HTexture& resourceHandle)
+	ScriptTexture2D* ScriptResourceManager::getScriptTexture(const HTexture& resourceHandle)
 	{
 		return static_cast<ScriptTexture2D*>(getScriptResource(resourceHandle));
 	}
@@ -78,7 +76,7 @@ namespace BansheeEngine
 		return static_cast<ScriptSpriteTexture*>(getScriptResource(resourceHandle));
 	}
 
-	ScriptResource* ScriptResourceManager::getScriptResource(const CM::HResource& resourceHandle)
+	ScriptResource* ScriptResourceManager::getScriptResource(const HResource& resourceHandle)
 	{
 		const String& uuid = resourceHandle.getUUID();
 
@@ -110,7 +108,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptResourceManager::throwExceptionIfInvalidOrDuplicate(const CM::String& uuid) const
+	void ScriptResourceManager::throwExceptionIfInvalidOrDuplicate(const String& uuid) const
 	{
 		if(uuid == "")
 			CM_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");

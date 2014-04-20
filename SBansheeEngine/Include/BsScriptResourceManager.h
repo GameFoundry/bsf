@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptResourceManager : public CM::Module<ScriptResourceManager>
+	class BS_SCR_BE_EXPORT ScriptResourceManager : public Module<ScriptResourceManager>
 	{
 	public:
 		ScriptResourceManager();
@@ -15,13 +15,13 @@ namespace BansheeEngine
 		 * @note Throws an exception if resource for the handle already exists.
 		 * 		 Creates a new managed instance of the object.
 		 */
-		ScriptTexture2D* createScriptTexture(const CM::HTexture& resourceHandle);
+		ScriptTexture2D* createScriptTexture(const HTexture& resourceHandle);
 
 		/**
 		 * @note Throws an exception if resource for the handle already exists.
 		 * 		 Initializes the ScriptResource with an existing managed instance.
 		 */
-		ScriptTexture2D* createScriptTexture(MonoObject* existingInstance, const CM::HTexture& resourceHandle);
+		ScriptTexture2D* createScriptTexture(MonoObject* existingInstance, const HTexture& resourceHandle);
 
 		/**
 		 * @note Throws an exception if resource for the handle already exists.
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
-		ScriptTexture2D* getScriptTexture(const CM::HTexture& resourceHandle);
+		ScriptTexture2D* getScriptTexture(const HTexture& resourceHandle);
 
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.
@@ -48,15 +48,15 @@ namespace BansheeEngine
 		/**
 		 * @note Returns nullptr if script resource doesn't exist.
 		 */
-		ScriptResource* getScriptResource(const CM::HResource& resourceHandle);
+		ScriptResource* getScriptResource(const HResource& resourceHandle);
 
 		void destroyScriptResource(ScriptResource* resource);
 
 	private:
-		CM::UnorderedMap<CM::String, ScriptResource*>::type mScriptResources;
+		UnorderedMap<String, ScriptResource*>::type mScriptResources;
 		MonoClass* mTextureClass;
 		MonoClass* mSpriteTextureClass;
 
-		void throwExceptionIfInvalidOrDuplicate(const CM::String& uuid) const;
+		void throwExceptionIfInvalidOrDuplicate(const String& uuid) const;
 	};
 }

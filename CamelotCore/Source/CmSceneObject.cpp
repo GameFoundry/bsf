@@ -7,7 +7,7 @@
 #include "CmMemorySerializer.h"
 #include "CmGameObjectManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	SceneObject::SceneObject(const String& name)
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),

@@ -4,7 +4,7 @@
 #include "CmException.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, VertexDeclarationPtr& inputParams)
 	{

@@ -4,7 +4,7 @@
 #include "CmRenderSystem.h"
 #include "CmUtil.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	VertexElement::VertexElement(unsigned short source, UINT32 offset, 
 		VertexElementType theType, VertexElementSemantic semantic, unsigned short index)
@@ -122,9 +122,9 @@ namespace CamelotFramework
 	VertexElementType VertexElement::getBestColourVertexElementType(void)
 	{
 		// Use the current render system to determine if possible
-		if (CamelotFramework::RenderSystem::instancePtr())
+		if (BansheeEngine::RenderSystem::instancePtr())
 		{
-			return CamelotFramework::RenderSystem::instancePtr()->getColorVertexElementType();
+			return BansheeEngine::RenderSystem::instancePtr()->getColorVertexElementType();
 		}
 		else
 		{

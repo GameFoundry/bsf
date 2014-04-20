@@ -7,8 +7,6 @@
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUIPanel::ScriptGUIPanel()
@@ -43,7 +41,7 @@ namespace BansheeEngine
 		cm_delete(thisPtr);
 	}
 
-	void ScriptGUIPanel::internal_setArea(ScriptGUIPanel* thisPtr, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth)
+	void ScriptGUIPanel::internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
 	{
 		thisPtr->mMyArea.x = x;
 		thisPtr->mMyArea.y = y;
@@ -53,7 +51,7 @@ namespace BansheeEngine
 		thisPtr->updateArea();
 	}
 
-	void ScriptGUIPanel::setParentArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height)
+	void ScriptGUIPanel::setParentArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		mParentArea.x = x;
 		mParentArea.y = y;

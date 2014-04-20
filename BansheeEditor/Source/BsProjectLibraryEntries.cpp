@@ -1,10 +1,7 @@
 #include "BsProjectLibraryEntries.h"
 #include "BsProjectLibraryEntriesRTTI.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	ProjectLibraryEntries::ProjectLibraryEntries(const ProjectLibrary::DirectoryEntry& rootEntry)
 		:mRootEntry(rootEntry)

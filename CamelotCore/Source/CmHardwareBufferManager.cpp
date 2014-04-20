@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmVertexDeclaration.h"
 #include "CmGpuParamBlockBuffer.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     //-----------------------------------------------------------------------
     HardwareBufferManager::HardwareBufferManager()
     {

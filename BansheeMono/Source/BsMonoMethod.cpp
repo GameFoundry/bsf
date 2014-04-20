@@ -1,8 +1,6 @@
 #include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	MonoMethod::MonoMethod(::MonoMethod* method)

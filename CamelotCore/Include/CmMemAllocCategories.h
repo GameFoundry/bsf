@@ -2,7 +2,7 @@
 
 #include "CmMemoryAllocator.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Allocator used for various GUI elements.

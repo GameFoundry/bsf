@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <Cg/cg.h>
 #include "CmHighLevelGpuProgram.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     /** Specialisation of HighLevelGpuProgram to provide support for nVidia's CG language.
     @remarks
         In its current state Cg only acts as a translator and internally creates either a HLSL

@@ -5,7 +5,7 @@
 #include <boost/signal.hpp>
 #include "CmVector2I.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 		* @brief	Represents a specific way of acquiring OS input. InputManager (which provides a higher level input)

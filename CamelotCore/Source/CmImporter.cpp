@@ -12,7 +12,7 @@
 #include "CmUUID.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Importer::Importer()
 	{

@@ -5,7 +5,7 @@
 #include <boost/signal.hpp>
 #include "CmVector2I.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct RawAxisState
 	{

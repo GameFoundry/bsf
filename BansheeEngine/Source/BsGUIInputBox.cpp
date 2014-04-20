@@ -19,8 +19,6 @@
 #include "BsGUIContextMenu.h"
 #include "BsGUIHelper.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	VirtualButton GUIInputBox::mCopyVB = VirtualButton("Copy");
@@ -34,7 +32,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIInputBox::GUIInputBox(const CM::String& styleName, const GUILayoutOptions& layoutOptions, bool multiline)
+	GUIInputBox::GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline)
 		:GUIElement(styleName, layoutOptions), mDragInProgress(false),
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
 		mState(State::Normal)
@@ -49,22 +47,22 @@ namespace BansheeEngine
 		cm_delete<PoolAlloc>(mImageSprite);
 	}
 
-	GUIInputBox* GUIInputBox::create(bool multiline, const CM::String& styleName)
+	GUIInputBox* GUIInputBox::create(bool multiline, const String& styleName)
 	{
 		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), multiline);
 	}
 
-	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), false);
 	}
 
-	void GUIInputBox::setText(const CM::WString& text)
+	void GUIInputBox::setText(const WString& text)
 	{
 		bool filterOkay = true;
 		if(mFilter != nullptr)
@@ -327,12 +325,12 @@ namespace BansheeEngine
 		return Vector2I(contentWidth, contentHeight);
 	}
 
-	CM::Vector2I GUIInputBox::_getTextInputOffset() const
+	Vector2I GUIInputBox::_getTextInputOffset() const
 	{
 		return mTextOffset;	
 	}
 
-	CM::RectI GUIInputBox::_getTextInputRect() const
+	RectI GUIInputBox::_getTextInputRect() const
 	{
 		RectI textBounds = getContentBounds();
 		textBounds.x -= mOffset.x;
@@ -356,7 +354,7 @@ namespace BansheeEngine
 			return _getDepth() - 1;
 	}
 
-	bool GUIInputBox::_hasCustomCursor(const CM::Vector2I position, CursorType& type) const
+	bool GUIInputBox::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
 		if(_isInBounds(position))
 		{
@@ -842,7 +840,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	void GUIInputBox::showSelection(CM::UINT32 anchorCaretPos)
+	void GUIInputBox::showSelection(UINT32 anchorCaretPos)
 	{
 		TEXT_SPRITE_DESC textDesc = getTextDesc();
 		Vector2I offset = getTextOffset();
@@ -926,7 +924,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIInputBox::insertString(CM::UINT32 charIdx, const WString& string)
+	void GUIInputBox::insertString(UINT32 charIdx, const WString& string)
 	{
 		mText.insert(mText.begin() + charIdx, string.begin(), string.end());
 
@@ -937,7 +935,7 @@ namespace BansheeEngine
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 	}
 
-	void GUIInputBox::insertChar(CM::UINT32 charIdx, CM::UINT32 charCode)
+	void GUIInputBox::insertChar(UINT32 charIdx, UINT32 charCode)
 	{
 		mText.insert(mText.begin() + charIdx, charCode);
 
@@ -948,7 +946,7 @@ namespace BansheeEngine
 		gGUIManager().getInputSelectionTool()->updateText(this, textDesc);
 	}
 
-	void GUIInputBox::eraseChar(CM::UINT32 charIdx)
+	void GUIInputBox::eraseChar(UINT32 charIdx)
 	{
 		mText.erase(charIdx, 1);
 
@@ -1008,13 +1006,13 @@ namespace BansheeEngine
 		mText.erase(mText.begin() + selStart, mText.begin() + gGUIManager().getInputSelectionTool()->getSelectionEnd());
 	}
 
-	CM::Vector2I GUIInputBox::getTextOffset() const
+	Vector2I GUIInputBox::getTextOffset() const
 	{
 		RectI textBounds = getContentBounds();
 		return Vector2I(textBounds.x, textBounds.y) + mTextOffset;
 	}
 
-	CM::RectI GUIInputBox::getTextClipRect() const
+	RectI GUIInputBox::getTextClipRect() const
 	{
 		RectI contentClipRect = getContentClipRect();
 		return RectI(contentClipRect.x - mTextOffset.x, contentClipRect.y - mTextOffset.y, contentClipRect.width, contentClipRect.height);

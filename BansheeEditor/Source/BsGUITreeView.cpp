@@ -16,11 +16,9 @@
 #include "BsDragAndDropManager.h"
 #include "CmTime.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
 using namespace std::placeholders;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const UINT32 GUITreeView::ELEMENT_EXTRA_SPACING = 3;
 	const UINT32 GUITreeView::INDENT_SIZE = 10;
@@ -82,34 +80,34 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	GUITreeView::GUITreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
-		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
-		const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
+	GUITreeView::GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
+		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
+		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mBackgroundStyle(backgroundStyle),
 		mElementBtnStyle(elementBtnStyle), mFoldoutBtnStyle(foldoutBtnStyle), mEditBoxStyle(editBoxStyle), mEditElement(nullptr), mIsElementSelected(false),
 		mNameEditBox(nullptr), mSelectionBackgroundStyle(selectionBackgroundStyle), mDragInProgress(nullptr), mDragHighlightStyle(dragHighlightStyle),
 		mDragSepHighlightStyle(dragSepHighlightStyle), mDragHighlight(nullptr), mDragSepHighlight(nullptr), mMouseOverDragElement(nullptr), mMouseOverDragElementTime(0.0f),
 		mScrollState(ScrollState::None), mLastScrollTime(0.0f)
 	{
-		if(mBackgroundStyle == CM::StringUtil::BLANK)
+		if(mBackgroundStyle == StringUtil::BLANK)
 			mBackgroundStyle = "TreeViewBackground";
 
-		if(mElementBtnStyle == CM::StringUtil::BLANK)
+		if(mElementBtnStyle == StringUtil::BLANK)
 			mElementBtnStyle = "TreeViewElementBtn";
 
-		if(mFoldoutBtnStyle == CM::StringUtil::BLANK)
+		if(mFoldoutBtnStyle == StringUtil::BLANK)
 			mFoldoutBtnStyle = "TreeViewFoldoutBtn";
 
-		if(mSelectionBackgroundStyle == CM::StringUtil::BLANK)
+		if(mSelectionBackgroundStyle == StringUtil::BLANK)
 			mSelectionBackgroundStyle = "TreeViewSelectionBackground";
 
-		if(mEditBoxStyle == CM::StringUtil::BLANK)
+		if(mEditBoxStyle == StringUtil::BLANK)
 			mEditBoxStyle = "TreeViewEditBox";
 
-		if(mDragHighlightStyle == CM::StringUtil::BLANK)
+		if(mDragHighlightStyle == StringUtil::BLANK)
 			mDragHighlightStyle = "TreeViewElementHighlight";
 
-		if(mDragSepHighlightStyle == CM::StringUtil::BLANK)
+		if(mDragSepHighlightStyle == StringUtil::BLANK)
 			mDragSepHighlightStyle = "TreeViewElementSepHighlight";
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
@@ -431,7 +429,7 @@ namespace BansheeEditor
 		return false;
 	}
 
-	bool GUITreeView::virtualButtonEvent(const BS::GUIVirtualButtonEvent& ev)
+	bool GUITreeView::virtualButtonEvent(const GUIVirtualButtonEvent& ev)
 	{
 		if(ev.getButton() == mRenameVB)
 		{
@@ -1012,7 +1010,7 @@ namespace BansheeEditor
 		mBottomScrollBounds.height = scrollHeight;
 	}
 
-	const GUITreeView::InteractableElement* GUITreeView::findElementUnderCoord(const CM::Vector2I& coord) const
+	const GUITreeView::InteractableElement* GUITreeView::findElementUnderCoord(const Vector2I& coord) const
 	{
 		for(auto& element : mVisibleElements)
 		{

@@ -1,7 +1,7 @@
 #include "CmD3D11IndexBuffer.h"
 #include "CmD3D11Device.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
 		GpuBufferUsage usage, bool useSystemMem)

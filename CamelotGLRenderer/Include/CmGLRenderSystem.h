@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmCgProgramFactory.h"
 #include "CmVector4.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     /**
       Implementation of GL as a rendering system.
      */

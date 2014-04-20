@@ -9,7 +9,7 @@
 #include "CmVector4.h"
 #include "CmException.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	const String StringUtil::BLANK;
 	const WString StringUtil::WBLANK;
@@ -333,10 +333,10 @@ namespace CamelotFramework
 		return stream.str();
 	}
 
-	WString toWString(const Vector<CamelotFramework::WString>::type& val)
+	WString toWString(const Vector<BansheeEngine::WString>::type& val)
 	{
 		WStringStream stream;
-		Vector<CamelotFramework::WString>::type::const_iterator i, iend, ibegin;
+		Vector<BansheeEngine::WString>::type::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
 		for (i = ibegin; i != iend; ++i)
@@ -557,10 +557,10 @@ namespace CamelotFramework
 		return stream.str();
 	}
 
-	String toString(const Vector<CamelotFramework::String>::type& val)
+	String toString(const Vector<BansheeEngine::String>::type& val)
 	{
 		StringStream stream;
-		Vector<CamelotFramework::String>::type::const_iterator i, iend, ibegin;
+		Vector<BansheeEngine::String>::type::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
 		for (i = ibegin; i != iend; ++i)

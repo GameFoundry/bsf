@@ -1,7 +1,7 @@
 #include "CmGpuProgInclude.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GpuProgInclude::GpuProgInclude(const String& includeString)
 		:Resource(false), mString(includeString)

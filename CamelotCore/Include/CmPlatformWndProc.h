@@ -3,7 +3,7 @@
 #include "CmPlatform.h"
 #include "CmWin32Defs.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @note	This is separated from the main Platform because we don't want to include various Windows

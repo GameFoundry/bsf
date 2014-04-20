@@ -6,10 +6,7 @@
 #include "BsDragAndDropManager.h"
 #include "BsCmdReparentSO.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
@@ -23,9 +20,9 @@ namespace BansheeEditor
 		objects = nullptr;
 	}
 
-	GUISceneTreeView::GUISceneTreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
-		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
-		const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
+	GUISceneTreeView::GUISceneTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
+		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
+		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
 		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions)
 	{
@@ -37,17 +34,17 @@ namespace BansheeEditor
 		
 	}
 
-	GUISceneTreeView* GUISceneTreeView::create(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
-		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, 
-		const CM::String& dragSepHighlightStyle)
+	GUISceneTreeView* GUISceneTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, 
+		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle, 
+		const String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
 			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create());
 	}
 
-	GUISceneTreeView* GUISceneTreeView::create(const GUIOptions& options, const CM::String& backgroundStyle,
-		const CM::String& elementBtnStyle, const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, 
-		const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle)
+	GUISceneTreeView* GUISceneTreeView::create(const GUIOptions& options, const String& backgroundStyle,
+		const String& elementBtnStyle, const String& foldoutBtnStyle, const String& selectionBackgroundStyle, 
+		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, 
 			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options));
@@ -178,7 +175,7 @@ namespace BansheeEditor
 
 	void GUISceneTreeView::updateTreeElementHierarchy()
 	{
-		HSceneObject root = CM::gSceneManager().getRootNode();
+		HSceneObject root = gSceneManager().getRootNode();
 		mRootElement.mSceneObject = root;
 		mRootElement.mId = root->getInstanceId();
 		mRootElement.mSortedIdx = 0;
@@ -187,7 +184,7 @@ namespace BansheeEditor
 		updateTreeElement(&mRootElement);
 	}
 
-	void GUISceneTreeView::renameTreeElement(GUITreeView::TreeElement* element, const CM::WString& name)
+	void GUISceneTreeView::renameTreeElement(GUITreeView::TreeElement* element, const WString& name)
 	{
 		SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(element);
 		CmdEditPlainFieldGO<String>::execute(sceneTreeElement->mSceneObject, "mName", toString(name));
@@ -258,7 +255,7 @@ namespace BansheeEditor
 		cm_delete(draggedSceneObjects);
 	}
 
-	bool GUISceneTreeView::_acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const
+	bool GUISceneTreeView::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
 	{
 		return typeId == (UINT32)DragAndDropType::SceneObject;
 	}

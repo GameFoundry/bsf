@@ -7,7 +7,7 @@
 #include "CmVector4.h"
 #include "CmPlane.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	 /**
      * @brief	Class representing a 4x4 matrix.

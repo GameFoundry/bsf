@@ -10,7 +10,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSerializableListRTTI : public CM::RTTIType<ScriptSerializableList, CM::IReflectable, ScriptSerializableListRTTI>
+	class BS_SCR_BE_EXPORT ScriptSerializableListRTTI : public RTTIType<ScriptSerializableList, IReflectable, ScriptSerializableListRTTI>
 	{
 	private:
 		ScriptSerializableTypeInfoListPtr getTypeInfo(ScriptSerializableList* obj)
@@ -23,32 +23,32 @@ namespace BansheeEngine
 			obj->mListTypeInfo = val;
 		}
 
-		CM::UINT32& getNumElements(ScriptSerializableList* obj)
+		UINT32& getNumElements(ScriptSerializableList* obj)
 		{
-			return (CM::UINT32)obj->mNumElements;
+			return (UINT32)obj->mNumElements;
 		}
 
-		void setNumElements(ScriptSerializableList* obj, CM::UINT32& numElements)
+		void setNumElements(ScriptSerializableList* obj, UINT32& numElements)
 		{
 			obj->mNumElements = numElements;
 		}
 
-		ScriptSerializableFieldDataPtr getListEntry(ScriptSerializableList* obj, CM::UINT32 arrayIdx)
+		ScriptSerializableFieldDataPtr getListEntry(ScriptSerializableList* obj, UINT32 arrayIdx)
 		{
 			return obj->mListEntries[arrayIdx];
 		}
 
-		void setListEntry(ScriptSerializableList* obj, CM::UINT32 arrayIdx, ScriptSerializableFieldDataPtr val)
+		void setListEntry(ScriptSerializableList* obj, UINT32 arrayIdx, ScriptSerializableFieldDataPtr val)
 		{
 			obj->mListEntries[arrayIdx] = val;
 		}
 
-		CM::UINT32 getNumListEntries(ScriptSerializableList* obj)
+		UINT32 getNumListEntries(ScriptSerializableList* obj)
 		{
-			return (CM::UINT32)obj->mListEntries.size();
+			return (UINT32)obj->mListEntries.size();
 		}
 
-		void setNumListEntries(ScriptSerializableList* obj, CM::UINT32 numEntries)
+		void setNumListEntries(ScriptSerializableList* obj, UINT32 numEntries)
 		{
 			obj->mListEntries.resize(numEntries);
 		}
@@ -62,36 +62,36 @@ namespace BansheeEngine
 				&ScriptSerializableListRTTI::setListEntry, &ScriptSerializableListRTTI::setNumListEntries);
 		}
 
-		virtual void onSerializationStarted(CM::IReflectable* obj)
+		virtual void onSerializationStarted(IReflectable* obj)
 		{
 			ScriptSerializableList* serializableObject = static_cast<ScriptSerializableList*>(obj);
 			serializableObject->serializeManagedInstance();
 		}
 
-		virtual void onDeserializationStarted(CM::IReflectable* obj)
+		virtual void onDeserializationStarted(IReflectable* obj)
 		{
 			ScriptSerializableList* serializableObject = static_cast<ScriptSerializableList*>(obj);
 
 			// If we are deserializing a GameObject we need to defer deserializing actual field values
 			// to ensure GameObject handles instances have been fixed up (which only happens after deserialization is done)
-			if(CM::GameObjectManager::instance().isGameObjectDeserializationActive())
-				CM::GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
+			if(GameObjectManager::instance().isGameObjectDeserializationActive())
+				GameObjectManager::instance().registerOnDeserializationEndCallback([=] () { serializableObject->deserializeManagedInstance(); });
 			else
 				serializableObject->deserializeManagedInstance();
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "ScriptSerializableList";
+			static String name = "ScriptSerializableList";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_ScriptSerializableList;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
 			return ScriptSerializableList::createEmpty();
 		}

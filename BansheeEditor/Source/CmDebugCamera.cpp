@@ -7,9 +7,7 @@
 #include "BsCamera.h"
 #include "CmPlatform.h"
 
-using namespace BansheeEngine;
-
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const float DebugCamera::START_SPEED = 40.0f;
 	const float DebugCamera::TOP_SPEED = 130.0f;

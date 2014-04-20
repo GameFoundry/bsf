@@ -9,15 +9,13 @@
 #include "BsGUIWidget.h"
 #include "BsGUILayout.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
 using namespace std::placeholders;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	const CM::UINT32 EditorWidgetContainer::TitleBarHeight = 13;
+	const UINT32 EditorWidgetContainer::TitleBarHeight = 13;
 
-	EditorWidgetContainer::EditorWidgetContainer(BS::GUIWidget* parent, RenderWindow* renderWindow, EditorWindow* parentEditorWindow)
+	EditorWidgetContainer::EditorWidgetContainer(GUIWidget* parent, RenderWindow* renderWindow, EditorWindow* parentEditorWindow)
 		:mParent(parent), mX(0), mY(0), mWidth(0), mHeight(0), mTitleBar(nullptr), mActiveWidget(-1),
 		mTitleBarArea(nullptr), mParentWindow(parentEditorWindow)
 	{
@@ -85,7 +83,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void EditorWidgetContainer::insert(CM::UINT32 idx, EditorWidgetBase& widget)
+	void EditorWidgetContainer::insert(UINT32 idx, EditorWidgetBase& widget)
 	{
 		if(contains(widget))
 			return;
@@ -113,7 +111,7 @@ namespace BansheeEditor
 		return false;
 	}
 
-	EditorWidgetBase* EditorWidgetContainer::getWidget(CM::UINT32 idx) const
+	EditorWidgetBase* EditorWidgetContainer::getWidget(UINT32 idx) const
 	{
 		if(idx >= (UINT32)mWidgets.size())
 			return nullptr;
@@ -195,7 +193,7 @@ namespace BansheeEditor
 			onWidgetClosed();
 	}
 
-	void EditorWidgetContainer::tabDraggedOff(CM::UINT32 uniqueIdx)
+	void EditorWidgetContainer::tabDraggedOff(UINT32 uniqueIdx)
 	{
 		EditorWidgetBase* widget = mWidgets[uniqueIdx];
 		removeInternal(*widget);
@@ -207,7 +205,7 @@ namespace BansheeEditor
 			onWidgetClosed();
 	}
 
-	void EditorWidgetContainer::tabDraggedOn(CM::UINT32 seqIdx)
+	void EditorWidgetContainer::tabDraggedOn(UINT32 seqIdx)
 	{
 #if CM_DEBUG_MODE
 		if(!DragAndDropManager::instance().isDragInProgress())

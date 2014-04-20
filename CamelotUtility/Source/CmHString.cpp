@@ -2,7 +2,7 @@
 #include "CmHString.h"
 #include "CmStringTable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	HString::StringData::StringData()
 		:mParameters(nullptr), mIsDirty(true), mStringPtr(nullptr)

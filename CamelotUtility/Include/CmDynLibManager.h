@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmModule.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /**
 	 * @brief	This manager keeps a track of all the open dynamic-loading

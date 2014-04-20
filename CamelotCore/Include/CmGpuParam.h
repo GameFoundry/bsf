@@ -8,7 +8,7 @@
 #include "CmMatrix3.h"
 #include "CmMatrix4.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	A handle that allows you to set a GpuProgram parameter.

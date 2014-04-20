@@ -2,7 +2,7 @@
 #include "CmHardwareBufferManager.h"
 #include "CmVertexDataDescRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void VertexDataDesc::addVertElem(VertexElementType type, VertexElementSemantic semantic, UINT32 semanticIdx, UINT32 streamIdx)
 	{

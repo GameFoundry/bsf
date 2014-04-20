@@ -5,12 +5,9 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUITabbedTitleBar.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	const CM::UINT32 GUITabButton::DRAG_MIN_DISTANCE = 3;
+	const UINT32 GUITabButton::DRAG_MIN_DISTANCE = 3;
 
 	const String& GUITabButton::getGUITypeName()
 	{
@@ -18,36 +15,36 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUITabButton::GUITabButton(const CM::String& styleName, const GUIToggleGroupPtr& toggleGroup, 
-		CM::UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+	GUITabButton::GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, 
+		UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions)
 		:GUIToggle(styleName, content, toggleGroup, layoutOptions), mIndex(index), mDraggedState(false)
 	{
 
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
-		const HString& text, const CM::String& styleName)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+		const HString& text, const String& styleName)
 	{
 		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create());
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
-		const HString& text, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+		const HString& text, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
-		const GUIContent& content, const CM::String& styleName)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+		const GUIContent& content, const String& styleName)
 	{
 		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create());
 	}
 
-	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, 
-		const GUIContent& content, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
+		const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create(layoutOptions));

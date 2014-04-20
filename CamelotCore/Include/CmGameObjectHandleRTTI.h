@@ -5,7 +5,7 @@
 #include "CmGameObjectHandle.h"
 #include "CmGameObjectManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT GameObjectHandleRTTI : public RTTIType<GameObjectHandleBase, IReflectable, GameObjectHandleRTTI>
 	{

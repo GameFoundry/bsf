@@ -1,7 +1,7 @@
 #include "CmFreeImgPrerequisites.h"
 #include "CmFreeImgImporter.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	extern "C" CM_FREEIMG_EXPORT const String& getPluginName()
 	{

@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmD3D9RenderSystem.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	D3D9DriverList::D3D9DriverList()
 	{

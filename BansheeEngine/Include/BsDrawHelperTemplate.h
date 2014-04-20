@@ -29,31 +29,31 @@ namespace BansheeEngine
 
 	struct DebugDrawCommand
 	{
-		CM::HMesh mesh;
+		HMesh mesh;
 
 		DebugDraw2DClipSpaceMatInfo matInfo2DClipSpace;
 		DebugDraw2DScreenSpaceMatInfo matInfo2DScreenSpace;
 		DebugDraw3DMatInfo matInfo3D;
 
 		DebugDrawType type;
-		CM::Vector3 worldCenter;
+		Vector3 worldCenter;
 		float endTime;
 	};
 
 	class BS_EXPORT DrawHelperTemplateBase
 	{
 	public:
-		void render(const HCamera& camera, CM::RenderQueue& renderQueue);
+		void render(const HCamera& camera, RenderQueue& renderQueue);
 
 	protected:
-		CM::UnorderedMap<const CM::Viewport*, CM::Vector<DebugDrawCommand>::type>::type mCommandsPerViewport;
+		UnorderedMap<const Viewport*, Vector<DebugDrawCommand>::type>::type mCommandsPerViewport;
 	};
 
 	template <class T>
 	class BS_EXPORT DrawHelperTemplate : public DrawHelperTemplateBase
 	{
 	protected:
-		void line_Pixel(const T& a, const T& b, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+		void line_Pixel(const T& a, const T& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -65,7 +65,7 @@ namespace BansheeEngine
 			line_Pixel(a, b, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
-		void line_AA(const T& a, const T& b, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+		void line_AA(const T& a, const T& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			UINT32* indexData = meshData->getIndices32();
 			UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -77,7 +77,7 @@ namespace BansheeEngine
 			line_AA(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
-		void lineList_Pixel(const typename CM::Vector<T>::type& linePoints, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+		void lineList_Pixel(const typename Vector<T>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -101,7 +101,7 @@ namespace BansheeEngine
 			}
 		}
 
-		void lineList_AA(const typename CM::Vector<T>::type& linePoints, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+		void lineList_AA(const typename Vector<T>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -125,8 +125,8 @@ namespace BansheeEngine
 			}
 		}
 
-		void line_Pixel(const T& a, const T& b, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
+		void line_Pixel(const T& a, const T& b, const Color& color, UINT8* outVertices, UINT8* outColors, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			outVertices += (vertexOffset * vertexStride);
 			outColors += (vertexOffset * vertexStride);
@@ -148,14 +148,14 @@ namespace BansheeEngine
 			outIndices[1] = vertexOffset + 1;
 		}
 
-		virtual void line_AA(const T& a, const T& b, float width, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset) = 0;
+		virtual void line_AA(const T& a, const T& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
-		virtual void polygon_AA(const typename CM::Vector<T>::type& points, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset) = 0;
+		virtual void polygon_AA(const typename Vector<T>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
-		void polygonFill_Pixel(const typename CM::Vector<T>::type& points, CM::UINT8* outVertices, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
+		void polygonFill_Pixel(const typename Vector<T>::type& points, UINT8* outVertices, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			outVertices += (vertexOffset * vertexStride);
 
@@ -178,8 +178,8 @@ namespace BansheeEngine
 			}
 		}
 
-		void polygonBorder_Pixel(const typename CM::Vector<T>::type& points, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-			CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
+		void polygonBorder_Pixel(const typename Vector<T>::type& points, const Color& color, UINT8* outVertices, UINT8* outColors, 
+			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			INT32 numPoints = (INT32)points.size();
 			UINT32 curVertOffset = vertexOffset;

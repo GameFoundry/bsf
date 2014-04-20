@@ -4,7 +4,7 @@
 #include "CmIReflectable.h"
 #include "CmCoreObject.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Base class for all resources used in the engine.

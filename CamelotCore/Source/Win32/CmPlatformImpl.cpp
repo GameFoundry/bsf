@@ -6,7 +6,7 @@
 #include "CmDebug.h"
 #include "Win32/CmWin32DropTarget.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	boost::signal<void(RenderWindow*)> Platform::onMouseLeftWindow;
 

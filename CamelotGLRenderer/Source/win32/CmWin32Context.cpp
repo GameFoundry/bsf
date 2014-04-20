@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmWin32Context.h"
 #include "CmException.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     Win32Context::Win32Context(HDC     HDC,
                  HGLRC   Glrc):
@@ -71,7 +71,7 @@ namespace CamelotFramework {
 // declared in CmGLPrerequisites.h 
 WGLEWContext * wglewGetContext()
 {
-	using namespace CamelotFramework;
+	using namespace BansheeEngine;
 	static CM_THREAD_POINTER_VAR(WGLEWContext, WGLEWContextsPtr);
 
 	WGLEWContext * currentWGLEWContextsPtr = CM_THREAD_POINTER_GET(WGLEWContextsPtr);

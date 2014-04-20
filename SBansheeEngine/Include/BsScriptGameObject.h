@@ -7,7 +7,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGameObject
 	{
 	public:
-		virtual CM::HGameObject getNativeHandle() const = 0;
-		virtual void setNativeHandle(const CM::HGameObject& gameObject) = 0;
+		virtual HGameObject getNativeHandle() const = 0;
+		virtual void setNativeHandle(const HGameObject& gameObject) = 0;
 	};
 }

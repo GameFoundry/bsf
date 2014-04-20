@@ -14,33 +14,31 @@
 #include "CmMath.h"
 #include "CmPlatform.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
 using namespace std::placeholders;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const UINT32 GUITabbedTitleBar::TAB_SPACING = 20;
 	const UINT32 GUITabbedTitleBar::OPTION_BTN_SPACING = 3;
 
-	GUITabbedTitleBar::GUITabbedTitleBar(RenderWindow* parentWindow, const CM::String& backgroundStyle, const CM::String& tabBtnStyle, 
-		const CM::String& minBtnStyle, const CM::String& closeBtnStyle, const GUILayoutOptions& layoutOptions)
+	GUITabbedTitleBar::GUITabbedTitleBar(RenderWindow* parentWindow, const String& backgroundStyle, const String& tabBtnStyle, 
+		const String& minBtnStyle, const String& closeBtnStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMinBtn(nullptr), 
 		mCloseBtn(nullptr), mBackgroundImage(nullptr), mUniqueTabIdx(0), mActiveTabIdx(0),
 		mDragInProgress(false), mDraggedBtn(nullptr), mDragBtnOffset(0), mInitialDragOffset(0), mBackgroundStyle(backgroundStyle),
 		mTabBtnStyle(tabBtnStyle), mMinimizeBtnStyle(minBtnStyle), mCloseBtnStyle(closeBtnStyle), mTempDraggedWidget(nullptr),
 		mTempDraggedTabIdx(0)
 	{
-		if(mBackgroundStyle == CM::StringUtil::BLANK)
+		if(mBackgroundStyle == StringUtil::BLANK)
 			mBackgroundStyle = "TitleBarBackground";
 
-		if(mMinimizeBtnStyle == CM::StringUtil::BLANK)
+		if(mMinimizeBtnStyle == StringUtil::BLANK)
 			mMinimizeBtnStyle = "WinMinimizeBtn";
 
-		if(mCloseBtnStyle == CM::StringUtil::BLANK)
+		if(mCloseBtnStyle == StringUtil::BLANK)
 			mCloseBtnStyle = "WinCloseBtn";
 
-		if(mTabBtnStyle == CM::StringUtil::BLANK)
+		if(mTabBtnStyle == StringUtil::BLANK)
 			mTabBtnStyle = "TabbedBarBtn";
 
 		mBackgroundImage = GUITexture::create(mBackgroundStyle);
@@ -62,26 +60,26 @@ namespace BansheeEditor
 
 	}
 
-	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const CM::String& backgroundStyle, 
-		const CM::String& tabBtnStyle, const CM::String& minBtnStyle, const CM::String& closeBtnStyle)
+	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const String& backgroundStyle, 
+		const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
 	{
 		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, GUILayoutOptions::create());
 	}
 
 	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
-		const CM::String& backgroundStyle, const CM::String& tabBtnStyle, const CM::String& minBtnStyle, const CM::String& closeBtnStyle)
+		const String& backgroundStyle, const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
 	{
 		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, layoutOptions);
 	}
 
-	void GUITabbedTitleBar::addTab(const CM::HString& name)
+	void GUITabbedTitleBar::addTab(const HString& name)
 	{
 		insertTab((UINT32)mTabButtons.size(), name);
 	}
 
-	UINT32 GUITabbedTitleBar::insertTab(UINT32 position, const CM::HString& name)
+	UINT32 GUITabbedTitleBar::insertTab(UINT32 position, const HString& name)
 	{
 		GUITabButton* newTabToggle = GUITabButton::create(mTabToggleGroup, mUniqueTabIdx, name, mTabBtnStyle);
 		_registerChildElement(newTabToggle);
@@ -117,7 +115,7 @@ namespace BansheeEditor
 		mTabButtons[uniqueIdxToSeqIdx(uniqueIdx)]->toggleOn();
 	}
 
-	CM::UINT32 GUITabbedTitleBar::getTabIdx(CM::UINT32 position) const
+	UINT32 GUITabbedTitleBar::getTabIdx(UINT32 position) const
 	{
 		return mTabButtons[position]->getIndex();
 	}
@@ -321,9 +319,9 @@ namespace BansheeEditor
 		}
 	}
 
-	Vector<RectI>::type GUITabbedTitleBar::calcDraggableAreas(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height) const
+	Vector<RectI>::type GUITabbedTitleBar::calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const
 	{
-		CM::Vector<CM::RectI>::type draggableAreas;
+		Vector<RectI>::type draggableAreas;
 
 		UINT32 curX = x + 1;
 		UINT32 curY = y;
@@ -349,7 +347,7 @@ namespace BansheeEditor
 		return draggableAreas;
 	}
 
-	void GUITabbedTitleBar::tabToggled(CM::UINT32 tabIdx, bool toggledOn)
+	void GUITabbedTitleBar::tabToggled(UINT32 tabIdx, bool toggledOn)
 	{
 		if(!toggledOn)
 			return;
@@ -371,7 +369,7 @@ namespace BansheeEditor
 			mActiveTabIdx = mTabButtons[0]->getIndex();
 	}
 
-	void GUITabbedTitleBar::startDrag(CM::UINT32 seqIdx, const Vector2I& startDragPos)
+	void GUITabbedTitleBar::startDrag(UINT32 seqIdx, const Vector2I& startDragPos)
 	{
 		if(!mDragInProgress)
 		{
@@ -397,7 +395,7 @@ namespace BansheeEditor
 		mDraggedBtn = nullptr;
 	}
 
-	void GUITabbedTitleBar::tabDragged(CM::UINT32 tabIdx, const Vector2I& dragPos)
+	void GUITabbedTitleBar::tabDragged(UINT32 tabIdx, const Vector2I& dragPos)
 	{
 		INT32 idx = uniqueIdxToSeqIdx(tabIdx);
 		if(idx != -1)
@@ -453,7 +451,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void GUITabbedTitleBar::tabDragEnd(CM::UINT32 tabIdx, const Vector2I& dragPos)
+	void GUITabbedTitleBar::tabDragEnd(UINT32 tabIdx, const Vector2I& dragPos)
 	{
 		endDrag();
 
@@ -463,7 +461,7 @@ namespace BansheeEditor
 		markContentAsDirty();
 	}
 
-	CM::INT32 GUITabbedTitleBar::uniqueIdxToSeqIdx(CM::UINT32 uniqueIdx) const
+	INT32 GUITabbedTitleBar::uniqueIdxToSeqIdx(UINT32 uniqueIdx) const
 	{
 		UINT32 idx = 0;
 		for(auto& tab : mTabButtons)

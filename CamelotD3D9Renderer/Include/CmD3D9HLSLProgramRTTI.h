@@ -6,7 +6,7 @@
 #include "CmHighLevelGpuProgram.h"
 #include "CmD3D9HLSLProgram.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_D3D9_EXPORT D3D9HLSLProgramRTTI : public RTTIType<D3D9HLSLProgram, HighLevelGpuProgram, D3D9HLSLProgramRTTI>
 	{

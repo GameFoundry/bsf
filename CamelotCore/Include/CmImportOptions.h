@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT ImportOptions : public IReflectable
 	{

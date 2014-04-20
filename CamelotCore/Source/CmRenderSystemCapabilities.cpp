@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmString.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	//-----------------------------------------------------------------------
 	RenderSystemCapabilities::RenderSystemCapabilities()
@@ -73,7 +73,7 @@ namespace CamelotFramework {
 	{
 	}
 	//---------------------------------------------------------------------
-	Vector<CamelotFramework::String>::type RenderSystemCapabilities::msGPUVendorStrings;
+	Vector<BansheeEngine::String>::type RenderSystemCapabilities::msGPUVendorStrings;
 	//---------------------------------------------------------------------
 	GPUVendor RenderSystemCapabilities::vendorFromString(const String& vendorString)
 	{

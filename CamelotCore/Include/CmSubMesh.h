@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmDrawOps.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct CM_EXPORT SubMesh
 	{

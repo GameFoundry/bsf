@@ -2,7 +2,7 @@
 #include "CmEventQuery.h"
 #include "CmTimerQuery.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	QueryManager::QueryManager()
 	{

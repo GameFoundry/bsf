@@ -34,7 +34,6 @@
 #include "BsVirtualInput.h"
 #include "BsCursor.h"
 
-using namespace CamelotFramework;
 using namespace std::placeholders;
 
 namespace BansheeEngine
@@ -279,7 +278,7 @@ namespace BansheeEngine
 		processDestroyQueue();
 	}
 
-	void GUIManager::render(ViewportPtr& target, CM::RenderQueue& renderQueue) const
+	void GUIManager::render(ViewportPtr& target, RenderQueue& renderQueue) const
 	{
 		auto findIter = mCachedGUIData.find(target.get());
 
@@ -616,7 +615,7 @@ namespace BansheeEngine
 		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
-	bool GUIManager::onMouseDragEnded(const CM::PositionalInputEvent& event)
+	bool GUIManager::onMouseDragEnded(const PositionalInputEvent& event)
 	{
 		GUIMouseButton guiButton = buttonToGUIButton(event.button);
 
@@ -810,7 +809,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::onCursorReleased(const CM::PositionalInputEvent& event)
+	void GUIManager::onCursorReleased(const PositionalInputEvent& event)
 	{
 		if(event.isUsed())
 			return;
@@ -884,7 +883,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::onCursorPressed(const CM::PositionalInputEvent& event)
+	void GUIManager::onCursorPressed(const PositionalInputEvent& event)
 	{
 		if(event.isUsed())
 			return;
@@ -990,7 +989,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::onCursorDoubleClick(const CM::PositionalInputEvent& event)
+	void GUIManager::onCursorDoubleClick(const PositionalInputEvent& event)
 	{
 		if(event.isUsed())
 			return;
@@ -1021,7 +1020,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::onInputCommandEntered(CM::InputCommandType commandType)
+	void GUIManager::onInputCommandEntered(InputCommandType commandType)
 	{
 		if(mElementsInFocus.size() == 0)
 			return;
@@ -1087,7 +1086,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool GUIManager::findElementUnderCursor(const CM::Vector2I& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
+	bool GUIManager::findElementUnderCursor(const Vector2I& cursorScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
 	{
 		Vector<const RenderWindow*>::type widgetWindows;
 		for(auto& widgetInfo : mWidgets)
@@ -1236,7 +1235,7 @@ namespace BansheeEngine
 		return eventProcessed;
 	}
 
-	void GUIManager::onTextInput(const CM::TextInputEvent& event)
+	void GUIManager::onTextInput(const TextInputEvent& event)
 	{
 		mTextInputEvent = GUITextInputEvent();
 		mTextInputEvent.setData(event.textChar);
@@ -1286,7 +1285,7 @@ namespace BansheeEngine
 
 	// We stop getting mouse move events once it leaves the window, so make sure
 	// nothing stays in hover state
-	void GUIManager::onMouseLeftWindow(CM::RenderWindow* win)
+	void GUIManager::onMouseLeftWindow(RenderWindow* win)
 	{
 		bool buttonStates[3];
 		buttonStates[0] = false;
@@ -1342,8 +1341,8 @@ namespace BansheeEngine
 		// queue other elements for destruction
 		while(!mScheduledForDestruction.empty())
 		{
-			CM::Stack<GUIElement*>::type toDestroy = mScheduledForDestruction;
-			mScheduledForDestruction = CM::Stack<GUIElement*>::type();
+			Stack<GUIElement*>::type toDestroy = mScheduledForDestruction;
+			mScheduledForDestruction = Stack<GUIElement*>::type();
 
 			while(!toDestroy.empty())
 			{
@@ -1353,7 +1352,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GUIManager::setInputBridge(const CM::RenderTexture* renderTex, const GUIElement* element)
+	void GUIManager::setInputBridge(const RenderTexture* renderTex, const GUIElement* element)
 	{
 		if(element == nullptr)
 			mInputBridge.erase(renderTex);
@@ -1420,7 +1419,7 @@ namespace BansheeEngine
 		return windowPos;
 	}
 
-	const CM::RenderWindow* GUIManager::getWidgetWindow(const GUIWidget& widget) const
+	const RenderWindow* GUIManager::getWidgetWindow(const GUIWidget& widget) const
 	{
 		// This cast might not be valid (the render target could be a window), but we only really need to cast
 		// so that mInputBridge map allows us to search through it - we don't access anything unless the target is bridged

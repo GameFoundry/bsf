@@ -6,7 +6,7 @@
 #include "CmManagedDataBlock.h"
 #include "CmVertexDeclaration.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CM_ALLOW_MEMCPY_SERIALIZATION(IndexBuffer::IndexType);
 

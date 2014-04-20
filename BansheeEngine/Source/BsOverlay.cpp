@@ -1,11 +1,9 @@
 #include "BsOverlay.h"
 #include "BsOverlayManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	Overlay::Overlay(const HSceneObject& parent, CM::Viewport* target)
+	Overlay::Overlay(const HSceneObject& parent, Viewport* target)
 		:Component(parent), mRenderTarget(nullptr), mDepth(0)
 	{
 		setName("Overlay");

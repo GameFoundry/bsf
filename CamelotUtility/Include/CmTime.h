@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmModule.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Manages all time related functionality.

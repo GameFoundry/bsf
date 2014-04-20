@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRenderTarget.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct CM_EXPORT MULTI_RENDER_TEXTURE_DESC
 	{

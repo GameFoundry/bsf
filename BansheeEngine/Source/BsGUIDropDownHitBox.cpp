@@ -4,11 +4,9 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	const CM::String& GUIDropDownHitBox::getGUITypeName()
+	const String& GUIDropDownHitBox::getGUITypeName()
 	{
 		static String name = "DropDownHitBox";
 		return name;
@@ -71,7 +69,7 @@ namespace BansheeEngine
 		return processed;
 	}
 
-	bool GUIDropDownHitBox::_isInBounds(const CM::Vector2I position) const
+	bool GUIDropDownHitBox::_isInBounds(const Vector2I position) const
 	{
 		for(auto& bound : mBounds)
 		{

@@ -4,7 +4,7 @@
 #include "CmImportOptions.h"
 #include "CmFont.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT FontImportOptions : public ImportOptions
 	{

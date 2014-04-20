@@ -2,7 +2,7 @@
 #include "CmMaterialManager.h"
 #include "CmGpuParamDesc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	RTTITypeBase* MaterialFloatParam::getRTTIStatic() { return MaterialFloatParamRTTI::instance(); }
 	RTTITypeBase* MaterialFloatParam::getRTTI() const { return MaterialFloatParam::getRTTIStatic(); }

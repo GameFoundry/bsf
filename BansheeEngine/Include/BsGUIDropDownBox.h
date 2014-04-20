@@ -9,8 +9,8 @@ namespace BansheeEngine
 {
 	struct BS_EXPORT GUIDropDownData
 	{
-		CM::Vector<GUIDropDownDataEntry>::type entries;
-		CM::UnorderedMap<CM::WString, CM::HString>::type localizedNames;
+		Vector<GUIDropDownDataEntry>::type entries;
+		UnorderedMap<WString, HString>::type localizedNames;
 	};
 
 	class BS_EXPORT GUIDropDownDataEntry
@@ -24,13 +24,13 @@ namespace BansheeEngine
 
 	public:
 		static GUIDropDownDataEntry separator();
-		static GUIDropDownDataEntry button(const CM::WString& label, std::function<void()> callback);
-		static GUIDropDownDataEntry subMenu(const CM::WString& label, const GUIDropDownData& data);
+		static GUIDropDownDataEntry button(const WString& label, std::function<void()> callback);
+		static GUIDropDownDataEntry subMenu(const WString& label, const GUIDropDownData& data);
 
 		bool isSeparator() const { return mType == Type::Separator; }
 		bool isSubMenu() const { return mType == Type::SubMenu; }
 
-		const CM::WString& getLabel() const { return mLabel; }
+		const WString& getLabel() const { return mLabel; }
 		std::function<void()> getCallback() const { return mCallback; }
 		const GUIDropDownData& getSubMenuData() const { return mChildData; }
 	private:
@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		std::function<void()> mCallback;
 		GUIDropDownData mChildData;
-		CM::WString mLabel;
+		WString mLabel;
 		Type mType; 
 	};
 
@@ -65,32 +65,32 @@ namespace BansheeEngine
 		 * 			prefers the top left corner of the box to correspond to the position, but if
 		 * 			other corners offer more space for the contents, those will be used instead.
 		 */
-		static GUIDropDownAreaPlacement aroundPosition(const CM::Vector2I& position);
+		static GUIDropDownAreaPlacement aroundPosition(const Vector2I& position);
 
 		/**
 		 * @brief	Drop down box will be placed at the specified bounds. Box will be horizontally aligned to the left
 		 * 			of the provided bounds. Vertically system prefers placing the box at the bottom of the bounds, but may choose
 		 * 			to align it with the top of the bounds if it offers more space for the contents.
 		 */
-		static GUIDropDownAreaPlacement aroundBoundsVert(const CM::RectI& bounds);
+		static GUIDropDownAreaPlacement aroundBoundsVert(const RectI& bounds);
 		
 		/**
 		 * @brief	Drop down box will be placed at the specified bounds. Box will be vertically aligned to the top
 		 * 			of the provided bounds. Horizontally system prefers placing the box at the right of the bounds, but may choose
 		 * 			to align it with the left of the bounds if it offers more space for the contents.
 		 */
-		static GUIDropDownAreaPlacement aroundBoundsHorz(const CM::RectI& bounds);
+		static GUIDropDownAreaPlacement aroundBoundsHorz(const RectI& bounds);
 
 		Type getType() const { return mType; }
-		const CM::RectI& getBounds() const { return mBounds; }
-		const CM::Vector2I& getPosition() const { return mPosition; }
+		const RectI& getBounds() const { return mBounds; }
+		const Vector2I& getPosition() const { return mPosition; }
 
 	private:
 		GUIDropDownAreaPlacement() { }
 
 		Type mType;
-		CM::RectI mBounds;
-		CM::Vector2I mPosition;
+		RectI mBounds;
+		Vector2I mPosition;
 	};
 
 	enum class GUIDropDownType
@@ -107,7 +107,7 @@ namespace BansheeEngine
 	class BS_EXPORT GUIDropDownBox : public GUIWidget
 	{
 	public:
-		GUIDropDownBox(const CM::HSceneObject& parent, CM::Viewport* target, const GUIDropDownAreaPlacement& placement,
+		GUIDropDownBox(const HSceneObject& parent, Viewport* target, const GUIDropDownAreaPlacement& placement,
 			const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type);
 		~GUIDropDownBox();
 
@@ -118,17 +118,17 @@ namespace BansheeEngine
 
 			GUIDropDownType mType;
 			GUIDropDownData mData;
-			CM::UINT32 mPage;
-			CM::INT32 x, y;
-			CM::UINT32 width, height;
-			CM::RectI mVisibleBounds;
-			CM::RectI mAvailableBounds;
-			CM::UINT32 mDepthOffset;
+			UINT32 mPage;
+			INT32 x, y;
+			UINT32 width, height;
+			RectI mVisibleBounds;
+			RectI mAvailableBounds;
+			UINT32 mDepthOffset;
 			bool mOpenedUpward;
 
-			CM::Vector<GUITexture*>::type mCachedSeparators;
-			CM::Vector<GUIButton*>::type mCachedEntryBtns;
-			CM::Vector<GUIButton*>::type mCachedExpEntryBtns;
+			Vector<GUITexture*>::type mCachedSeparators;
+			Vector<GUIButton*>::type mCachedEntryBtns;
+			Vector<GUIButton*>::type mCachedExpEntryBtns;
 			GUIButton* mScrollUpBtn;
 			GUIButton* mScrollDownBtn;
 			GUITexture* mBackgroundFrame;
@@ -140,7 +140,7 @@ namespace BansheeEngine
 			DropDownSubMenu* mSubMenu;
 
 			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-				const CM::RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, CM::UINT32 depthOffset);
+				const RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset);
 			~DropDownSubMenu();
 
 			void updateGUIElements();
@@ -148,25 +148,25 @@ namespace BansheeEngine
 			void scrollDown();
 			void scrollUp();
 
-			CM::UINT32 getElementHeight(CM::UINT32 idx) const;
+			UINT32 getElementHeight(UINT32 idx) const;
 
-			void elementClicked(CM::UINT32 idx);
-			void openSubMenu(GUIButton* source, CM::UINT32 elementIdx);
+			void elementClicked(UINT32 idx);
+			void openSubMenu(GUIButton* source, UINT32 elementIdx);
 			void closeSubMenu();
 
-			CM::RectI getVisibleBounds() const { return mVisibleBounds; }
+			RectI getVisibleBounds() const { return mVisibleBounds; }
 
-			CM::HString getElementLocalizedName(CM::UINT32 idx) const;
+			HString getElementLocalizedName(UINT32 idx) const;
 		};
 
-		static const CM::UINT32 DROP_DOWN_BOX_WIDTH;
+		static const UINT32 DROP_DOWN_BOX_WIDTH;
 
-		CM::String mScrollUpStyle;
-		CM::String mScrollDownStyle;
-		CM::String mEntryBtnStyle;
-		CM::String mEntryExpBtnStyle;
-		CM::String mSeparatorStyle;
-		CM::String mBackgroundStyle;
+		String mScrollUpStyle;
+		String mScrollDownStyle;
+		String mEntryBtnStyle;
+		String mEntryExpBtnStyle;
+		String mSeparatorStyle;
+		String mBackgroundStyle;
 		HSpriteTexture mScrollUpBtnArrow;
 		HSpriteTexture mScrollDownBtnArrow;
 
@@ -177,7 +177,7 @@ namespace BansheeEngine
 		// the drop down to lose focus and close, but if the button still processes the mouse click it will be immediately opened again)
 		GUIDropDownHitBox* mCaptureHitBox; 
 
-		CM::UnorderedMap<CM::WString, CM::HString>::type mLocalizedEntryNames;
+		UnorderedMap<WString, HString>::type mLocalizedEntryNames;
 
 		void notifySubMenuOpened(DropDownSubMenu* subMenu);
 		void notifySubMenuClosed(DropDownSubMenu* subMenu);

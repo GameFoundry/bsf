@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 		* @brief	Specialized class for binding GPU parameters to the render system. This is a temporary class that

@@ -2,8 +2,6 @@
 #include "BsGUIElementStyle.h"
 #include "CmDebug.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIElementStyle GUISkin::DefaultStyle;

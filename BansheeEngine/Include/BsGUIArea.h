@@ -13,7 +13,7 @@ namespace BansheeEngine
 		 * @brief	Sets up a new GUI area. All the layouts used in the area will be placed
 		 * 			within the specified bounds.
 		 */
-		static GUIArea* create(GUIWidget& widget, CM::INT32 x, CM::INT32 y, CM::UINT32 width = 0, CM::UINT32 height = 0, CM::UINT16 depth = 0);
+		static GUIArea* create(GUIWidget& widget, INT32 x, INT32 y, UINT32 width = 0, UINT32 height = 0, UINT16 depth = 0);
 
 		/**
 		 * @brief	Sets up a new GUI area. All the layouts used in the area will be placed
@@ -22,8 +22,8 @@ namespace BansheeEngine
 		 *			This kind of GUI area will always stretch to completely fill the parent widget, while respecting the
 		 *			provided offsets. 
 		 */
-		static GUIArea* createStretchedXY(GUIWidget& widget, CM::UINT32 offsetLeft, 
-			CM::UINT32 offsetRight, CM::UINT32 offsetTop, CM::UINT32 offsetBottom, CM::UINT16 depth = 0);
+		static GUIArea* createStretchedXY(GUIWidget& widget, UINT32 offsetLeft, 
+			UINT32 offsetRight, UINT32 offsetTop, UINT32 offsetBottom, UINT16 depth = 0);
 
 		/**
 		 * @brief	Sets up a new GUI area. All the layouts used in the area will be placed
@@ -32,8 +32,8 @@ namespace BansheeEngine
 		 *			This kind of GUI area will always stretch in X dimension to completely fill the parent widget, while respecting the
 		 *			provided offsets. 
 		 */
-		static GUIArea* createStretchedX(GUIWidget& widget, CM::UINT32 offsetLeft, 
-			CM::UINT32 offsetRight, CM::UINT32 offsetTop, CM::UINT32 height, CM::UINT16 depth = 0);
+		static GUIArea* createStretchedX(GUIWidget& widget, UINT32 offsetLeft, 
+			UINT32 offsetRight, UINT32 offsetTop, UINT32 height, UINT16 depth = 0);
 
 		/**
 		 * @brief	Sets up a new GUI area. All the layouts used in the area will be placed
@@ -42,37 +42,37 @@ namespace BansheeEngine
 		 *			This kind of GUI area will always stretch in Y dimension to completely fill the parent widget, while respecting the
 		 *			provided offsets. 
 		 */
-		static GUIArea* createStretchedY(GUIWidget& widget, CM::UINT32 offsetTop, 
-			CM::UINT32 offsetBottom, CM::UINT32 offsetLeft, CM::UINT32 width, CM::UINT16 depth = 0);
+		static GUIArea* createStretchedY(GUIWidget& widget, UINT32 offsetTop, 
+			UINT32 offsetBottom, UINT32 offsetLeft, UINT32 width, UINT16 depth = 0);
 
 		static void destroy(GUIArea* area);
 
 		GUILayout& getLayout() const { return *mLayout; }
 
-		CM::UINT16 getDepth() const { return mDepth; }
-		void setDepth(CM::UINT16 depth) { mDepth = depth; }
+		UINT16 getDepth() const { return mDepth; }
+		void setDepth(UINT16 depth) { mDepth = depth; }
 
-		void setPosition(CM::INT32 x, CM::INT32 y);
-		void setSize(CM::UINT32 width, CM::UINT32 height);
+		void setPosition(INT32 x, INT32 y);
+		void setSize(UINT32 width, UINT32 height);
 
 		void disable();
 		void enable();
 
 		void changeParentWidget(GUIWidget* widget);
 
-		CM::INT32 x() const { return mLeft; }
-		CM::INT32 y() const { return mTop; }
-		CM::UINT32 width() const { return mWidth; }
-		CM::UINT32 height() const { return mHeight; }
+		INT32 x() const { return mLeft; }
+		INT32 y() const { return mTop; }
+		UINT32 width() const { return mWidth; }
+		UINT32 height() const { return mHeight; }
 
 		void _update();		
 	private:
 		friend class GUIWidget;
 
 		GUIWidget* mWidget;
-		CM::INT32 mLeft, mRight, mTop, mBottom;
-		CM::UINT32 mWidth, mHeight;
-		CM::UINT16 mDepth;
+		INT32 mLeft, mRight, mTop, mBottom;
+		UINT32 mWidth, mHeight;
+		UINT16 mDepth;
 		bool mResizeXWithWidget;
 		bool mResizeYWithWidget;
 		bool mIsDirty;
@@ -80,10 +80,10 @@ namespace BansheeEngine
 
 		GUILayout* mLayout;
 
-		GUIArea(GUIWidget* widget, CM::INT32 x, CM::INT32 y, CM::UINT16 depth);
+		GUIArea(GUIWidget* widget, INT32 x, INT32 y, UINT16 depth);
 
 		bool isDirty() const;
-		void updateSizeBasedOnParent(CM::UINT32 parentWidth, CM::UINT32 parentHeight);
+		void updateSizeBasedOnParent(UINT32 parentWidth, UINT32 parentHeight);
 
 		static void destroyInternal(GUIArea* area);
 	};

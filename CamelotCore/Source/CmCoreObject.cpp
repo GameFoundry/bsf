@@ -6,7 +6,7 @@
 
 using namespace std::placeholders;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mCoreGpuObjectLoadedCondition, CoreObject)
 	CM_STATIC_MUTEX_CLASS_INSTANCE(mCoreGpuObjectLoadedMutex, CoreObject)

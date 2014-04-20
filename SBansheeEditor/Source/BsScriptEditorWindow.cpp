@@ -11,16 +11,14 @@
 #include "BsEditorWidgetContainer.h"
 #include "BsMonoAssembly.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
 using namespace std::placeholders;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	UnorderedMap<String, ScriptEditorWindow::EditorWindowHandle>::type ScriptEditorWindow::OpenScriptEditorWindows;
-	BS::MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
+	MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
 
-	ScriptEditorWindow::ScriptEditorWindow(const CM::String& windowName, const CM::String& displayName, EditorWidgetBase* editorWidget)
+	ScriptEditorWindow::ScriptEditorWindow(const String& windowName, const String& displayName, EditorWidgetBase* editorWidget)
 		:mName(windowName), mEditorWidget(editorWidget)
 	{
 		mOnWidgetMovedConn = editorWidget->onMoved.connect(std::bind(&ScriptEditorWindow::onWidgetMoved, this, _1, _2));
@@ -87,12 +85,12 @@ namespace BansheeEditor
 		cm_delete(thisPtr);
 	}
 
-	CM::UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)
+	UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)
 	{
 		return thisPtr->mEditorWidget->getWidth();
 	}
 
-	CM::UINT32 ScriptEditorWindow::internal_getHeight(ScriptEditorWindow* thisPtr)
+	UINT32 ScriptEditorWindow::internal_getHeight(ScriptEditorWindow* thisPtr)
 	{
 		return thisPtr->mEditorWidget->getHeight();
 	}
@@ -108,7 +106,7 @@ namespace BansheeEditor
 		scriptGUIPanel->setParentWidget(&thisPtr->mEditorWidget->_getParent()->getParentWidget());
 	}
 
-	void ScriptEditorWindow::onWidgetMoved(CM::INT32 x, CM::INT32 y)
+	void ScriptEditorWindow::onWidgetMoved(INT32 x, INT32 y)
 	{
 		for(auto& panel : mPanels)
 		{
@@ -117,7 +115,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void ScriptEditorWindow::onWidgetResized(CM::UINT32 width, CM::UINT32 height)
+	void ScriptEditorWindow::onWidgetResized(UINT32 width, UINT32 height)
 	{
 		for(auto& panel : mPanels)
 		{
@@ -142,13 +140,13 @@ namespace BansheeEditor
 
 	void ScriptEditorWindow::registerManagedEditorWindows()
 	{
-		BS::MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
 
 		if(assembly != nullptr)
 		{
-			BS::MonoClass* editorWindowClass = assembly->getClass("BansheeEditor", "EditorWindow");
+			MonoClass* editorWindowClass = assembly->getClass("BansheeEditor", "EditorWindow");
 
-			const CM::Vector<BS::MonoClass*>::type& allClasses = assembly->getAllClasses();
+			const Vector<MonoClass*>::type& allClasses = assembly->getAllClasses();
 			for(auto& curClass : allClasses)
 			{
 				if(curClass->isSubClassOf(editorWindowClass) && curClass != editorWindowClass)
@@ -161,14 +159,14 @@ namespace BansheeEditor
 		}
 	}
 
-	EditorWidgetBase* ScriptEditorWindow::openEditorWidgetCallback(CM::String ns, CM::String type, EditorWidgetContainer& parentContainer)
+	EditorWidgetBase* ScriptEditorWindow::openEditorWidgetCallback(String ns, String type, EditorWidgetContainer& parentContainer)
 	{
-		BS::MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
+		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEditorAssemblyName);
 
 		if(assembly == nullptr)
 			return nullptr;
 
-		BS::MonoClass* editorWindowClass = assembly->getClass(ns, type);
+		MonoClass* editorWindowClass = assembly->getClass(ns, type);
 
 		if(editorWindowClass == nullptr)
 			return nullptr;
@@ -209,7 +207,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void ScriptEditorWindow::unregisterScriptEditorWindow(const CM::String& windowTypeName)
+	void ScriptEditorWindow::unregisterScriptEditorWindow(const String& windowTypeName)
 	{
 		auto findIter = OpenScriptEditorWindows.find(windowTypeName);
 		if(findIter != OpenScriptEditorWindows.end())

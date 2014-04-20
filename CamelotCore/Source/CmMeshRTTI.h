@@ -6,7 +6,7 @@
 #include "CmMesh.h"
 #include "CmMeshManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class MeshRTTI : public RTTIType<Mesh, MeshBase, MeshRTTI>
 	{

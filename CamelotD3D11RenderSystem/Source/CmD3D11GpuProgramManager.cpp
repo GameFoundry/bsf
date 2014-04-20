@@ -1,7 +1,7 @@
 #include "CmD3D11GpuProgramManager.h"
 #include "CmD3D11GpuProgram.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11GpuProgramManager::D3D11GpuProgramManager(D3D11Device& device)
 		:mDevice(device)

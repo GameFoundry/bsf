@@ -15,8 +15,6 @@
 #include "BsScriptHString.h"
 #include "BsScriptGUIContent.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUIInputBox::ScriptGUIInputBox(GUIInputBox* inputBox)

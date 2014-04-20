@@ -19,23 +19,23 @@ namespace BansheeEngine
 				inline bool operator()(const MethodId &a, const MethodId &b) const;
 			};
 
-			MethodId(const CM::String& name, CM::UINT32 numParams);
+			MethodId(const String& name, UINT32 numParams);
 
-			CM::String name;
-			CM::UINT32 numParams;
+			String name;
+			UINT32 numParams;
 		};
 
 	public:
 		~MonoClass();
 
-		const CM::String& getNamespace() const { return mNamespace; }
-		const CM::String& getTypeName() const { return mTypeName; }
-		const CM::String& getFullName() const { return mFullName; }
+		const String& getNamespace() const { return mNamespace; }
+		const String& getTypeName() const { return mTypeName; }
+		const String& getFullName() const { return mFullName; }
 
-		MonoMethod& getMethod(const CM::String& name, CM::UINT32 numParams = 0);
+		MonoMethod& getMethod(const String& name, UINT32 numParams = 0);
 
-		MonoField* getField(const CM::String& name) const;
-		MonoProperty& getProperty(const CM::String& name);
+		MonoField* getField(const String& name) const;
+		MonoProperty& getProperty(const String& name);
 		MonoObject* getAttribute(MonoClass* monoClass) const;
 		MonoClass* getBaseClass() const;
 
@@ -44,44 +44,44 @@ namespace BansheeEngine
 		 *
 		 * @note	Example: Name = "CreateInstance", Signature = "type,int[]"
 		 */
-		MonoMethod* getMethodExact(const CM::String& name, const CM::String& signature);
+		MonoMethod* getMethodExact(const String& name, const String& signature);
 
 		/**
 		 * @brief	Returns all fields belonging to this class.
 		 *
 		 * @note	Be aware this will not include the fields of any base classes.
 		 */
-		const CM::Vector<MonoField*>::type getAllFields() const;
+		const Vector<MonoField*>::type getAllFields() const;
 
 		bool hasAttribute(MonoClass* monoClass) const;
-		bool hasField(const CM::String& name) const;
-		bool isSubClassOf(const BS::MonoClass* monoClass) const;
+		bool hasField(const String& name) const;
+		bool isSubClassOf(const MonoClass* monoClass) const;
 		bool isInstanceOfType(MonoObject* object) const;
 
-		MonoObject* invokeMethod(const CM::String& name, MonoObject* instance = nullptr, void** params = nullptr, CM::UINT32 numParams = 0);
-		void addInternalCall(const CM::String& name, const void* method);
+		MonoObject* invokeMethod(const String& name, MonoObject* instance = nullptr, void** params = nullptr, UINT32 numParams = 0);
+		void addInternalCall(const String& name, const void* method);
 
 		::MonoClass* _getInternalClass() const { return mClass; }
 
 		MonoObject* createInstance(bool construct = true) const;
-		MonoObject* createInstance(void** params, CM::UINT32 numParams);
-		MonoObject* createInstance(const CM::String& ctorSignature, void** params);
+		MonoObject* createInstance(void** params, UINT32 numParams);
+		MonoObject* createInstance(const String& ctorSignature, void** params);
 	private:
 		friend class MonoAssembly;
 
-		MonoClass(const CM::String& ns, const CM::String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly);
+		MonoClass(const String& ns, const String& type, ::MonoClass* monoClass, const MonoAssembly* parentAssembly);
 
 		const MonoAssembly* mParentAssembly;
 		::MonoClass* mClass;
-		CM::String mNamespace;
-		CM::String mTypeName;
-		CM::String mFullName;
+		String mNamespace;
+		String mTypeName;
+		String mFullName;
 
-		CM::UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals>::type mMethods; 
-		mutable CM::UnorderedMap<CM::String, MonoField*>::type mFields; 
-		CM::UnorderedMap<CM::String, MonoProperty*>::type mProperties;
+		UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals>::type mMethods; 
+		mutable UnorderedMap<String, MonoField*>::type mFields; 
+		UnorderedMap<String, MonoProperty*>::type mProperties;
 
 		mutable bool mHasCachedFields;
-		mutable CM::Vector<MonoField*>::type mCachedFieldList;
+		mutable Vector<MonoField*>::type mCachedFieldList;
 	};
 }

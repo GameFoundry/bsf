@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     // Forward declarations
     class GLSupport;
     class GLRenderSystem;

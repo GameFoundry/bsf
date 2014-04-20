@@ -7,7 +7,7 @@
 #include "CmRawInputHandler.h"
 #include "CmInputFwd.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT Input : public Module<Input>
 	{

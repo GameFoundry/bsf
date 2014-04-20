@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/**
 	 * @brief	Basic string that uses Banshee memory allocators.
@@ -545,7 +545,7 @@ namespace CamelotFramework
      * @brief	Converts a vector of strings into a single string where the substrings are
 	 *			delimited by spaces.
      */
-    CM_UTILITY_EXPORT WString toWString(const Vector<CamelotFramework::WString>::type& val);
+    CM_UTILITY_EXPORT WString toWString(const Vector<BansheeEngine::WString>::type& val);
 
 	/**
 	* @brief	Converts a wide string to a narrow string.
@@ -669,7 +669,7 @@ namespace CamelotFramework
      * @brief	Converts a vector of strings into a single string where the substrings are
 	 *			delimited by spaces.
      */
-    CM_UTILITY_EXPORT String toString(const Vector<CamelotFramework::String>::type& val);
+    CM_UTILITY_EXPORT String toString(const Vector<BansheeEngine::String>::type& val);
 
     /**
      * @brief	Converts a String to a float.
@@ -884,9 +884,9 @@ namespace CamelotFramework
  * @brief	Hash value generator for SString.
  */
 template<> 
-struct std::hash<CamelotFramework::String>
+struct std::hash<BansheeEngine::String>
 {
-	size_t operator()(const CamelotFramework::String& string) const
+	size_t operator()(const BansheeEngine::String& string) const
 	{
 		size_t hash = 0;
 		for(size_t i = 0; i < string.size(); i++) 
@@ -899,9 +899,9 @@ struct std::hash<CamelotFramework::String>
  * @brief	Hash value generator for WString.
  */
 template<> 
-struct std::hash<CamelotFramework::WString>
+struct std::hash<BansheeEngine::WString>
 {
-	size_t operator()(const CamelotFramework::WString& string) const
+	size_t operator()(const BansheeEngine::WString& string) const
 	{
 		size_t hash = 0;
 		for(size_t i = 0; i < string.size(); i++) 

@@ -10,8 +10,6 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGameObjectManager::ScriptGameObjectManager()
@@ -43,14 +41,14 @@ namespace BansheeEngine
 		return nativeInstance;
 	}
 
-	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(const CM::HSceneObject& sceneObject)
+	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(const HSceneObject& sceneObject)
 	{
 		MonoObject* instance = mSceneObjectClass->createInstance();
 
 		return createScriptSceneObject(instance, sceneObject);
 	}
 
-	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(MonoObject* existingInstance, const CM::HSceneObject& sceneObject)
+	ScriptSceneObject* ScriptGameObjectManager::createScriptSceneObject(MonoObject* existingInstance, const HSceneObject& sceneObject)
 	{
 		auto findIter = mScriptGameObjects.find(sceneObject->getInstanceId());
 		if(findIter != mScriptGameObjects.end())
@@ -75,7 +73,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(const CM::HSceneObject& sceneObject)
+	ScriptSceneObject* ScriptGameObjectManager::getScriptSceneObject(const HSceneObject& sceneObject)
 	{
 		auto findIter = mScriptGameObjects.find(sceneObject->getInstanceId());
 		if(findIter != mScriptGameObjects.end())

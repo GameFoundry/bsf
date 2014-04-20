@@ -7,38 +7,38 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT Renderable : public CM::Component
+	class BS_EXPORT Renderable : public Component
 	{
 	public:
-		void setMesh(CM::HMesh mesh) { mMesh = mesh; }
-		void setNumMaterials(CM::UINT32 numMaterials);
-		void setMaterial(CM::UINT32 idx, CM::HMaterial material);
-		void setLayer(CM::UINT64 layer);
+		void setMesh(HMesh mesh) { mMesh = mesh; }
+		void setNumMaterials(UINT32 numMaterials);
+		void setMaterial(UINT32 idx, HMaterial material);
+		void setLayer(UINT64 layer);
 
-		CM::UINT64 getLayer() const { return mLayer; }
-		CM::UINT32 getNumMaterials() const { return (CM::UINT32)mMaterials.size(); }
-		CM::HMaterial& getMaterial(CM::UINT32 idx) { return mMaterials[idx]; }
+		UINT64 getLayer() const { return mLayer; }
+		UINT32 getNumMaterials() const { return (UINT32)mMaterials.size(); }
+		HMaterial& getMaterial(UINT32 idx) { return mMaterials[idx]; }
 
-		void render(CM::RenderQueue& renderQueue, const CM::Matrix4& viewProjMatrix);
+		void render(RenderQueue& renderQueue, const Matrix4& viewProjMatrix);
 		void updateWorldBounds();
 	private:
-		CM::HMesh mMesh;
-		CM::Vector<CM::HMaterial>::type mMaterials;
-		CM::UINT64 mLayer;
-		CM::Vector<CM::AABox>::type mWorldBounds;
+		HMesh mMesh;
+		Vector<HMaterial>::type mMaterials;
+		UINT64 mLayer;
+		Vector<AABox>::type mWorldBounds;
 
-		CM::Vector<CM::GpuParamMat4>::type mMatViewProjParam;
+		Vector<GpuParamMat4>::type mMatViewProjParam;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
 		/************************************************************************/
 
 	protected:
-		friend class CM::SceneObject;
+		friend class SceneObject;
 
 		/** Standard constructor.
         */
-		Renderable(const CM::HSceneObject& parent);
+		Renderable(const HSceneObject& parent);
 
 	public:
 		virtual void update() {}
@@ -48,8 +48,8 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		friend class RenderableRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 
 	protected:
 		Renderable() {} // Serialization only

@@ -4,7 +4,7 @@
 #include "CmException.h"
 #include "boost/any.hpp"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Object you may use to check on the results of an asynchronous operation. 

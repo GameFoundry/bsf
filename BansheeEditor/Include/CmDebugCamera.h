@@ -4,7 +4,7 @@
 #include "CmComponent.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class DebugCamera : public Component
 	{
@@ -15,7 +15,7 @@ namespace CamelotFramework
 		Degree mYaw;
 		bool mLastButtonState;
 
-		BS::HCamera mCamera;
+		HCamera mCamera;
 
 		static const float START_SPEED;
 		static const float TOP_SPEED;

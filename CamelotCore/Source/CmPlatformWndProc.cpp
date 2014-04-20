@@ -5,7 +5,7 @@
 #include "CmDebug.h"
 #include "CmRenderWindowManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	bool PlatformWndProc::isShiftPressed = false;
 	bool PlatformWndProc::isCtrlPressed = false;

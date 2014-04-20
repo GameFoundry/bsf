@@ -1,7 +1,7 @@
 #include "CmTime.h"
 #include "CmTimer.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const double Time::MICROSEC_TO_SEC = 1.0/1000000.0;
 

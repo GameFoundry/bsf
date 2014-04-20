@@ -7,7 +7,7 @@
 #include "CmDebug.h"
 #include "CmUtil.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	size_t D3D11InputLayoutManager::HashFunc::operator()
 		(const D3D11InputLayoutManager::VertexDeclarationKey &key) const

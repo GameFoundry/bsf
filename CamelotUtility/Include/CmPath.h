@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include <boost/filesystem.hpp>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Various string manipulations of file paths.

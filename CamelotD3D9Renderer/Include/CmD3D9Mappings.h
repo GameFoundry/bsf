@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "CmHardwareBuffer.h"
 #include "CmIndexBuffer.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_D3D9_EXPORT D3D9Mappings
 	{

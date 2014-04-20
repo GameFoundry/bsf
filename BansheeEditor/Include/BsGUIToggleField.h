@@ -3,15 +3,15 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIFieldBase.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class BS_ED_EXPORT GUIToggleField : public TGUIField<GUIToggleField>
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		GUIToggleField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
-			const CM::String& labelStyle, const CM::String& toggleStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
+		GUIToggleField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
+			const String& labelStyle, const String& toggleStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
 
 		bool getValue() const;
 		void setValue(bool value);
@@ -20,6 +20,6 @@ namespace BansheeEditor
 		virtual ~GUIToggleField() { }
 
 	protected:
-		BS::GUIToggle* mToggle;
+		GUIToggle* mToggle;
 	};
 }

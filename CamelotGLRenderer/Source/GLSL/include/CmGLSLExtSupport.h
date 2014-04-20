@@ -36,7 +36,7 @@ THE SOFTWARE.
 //
 // OpenGL Shading Language entry points
 //
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	enum GLSLObjectType
 	{
@@ -73,6 +73,6 @@ namespace CamelotFramework
 	bool logProgramInfo(String& msg, const GLuint obj);
 
 
-} // namespace CamelotFramework
+}
 
 #endif // __GLSLExtSupport_H__

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmPixelBuffer.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class GLTextureBuffer;
 

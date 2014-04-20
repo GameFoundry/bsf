@@ -4,8 +4,6 @@
 #include "BsGUILayoutOptions.h"
 #include "CmTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	Vector2I GUIHelper::calcOptimalContentsSize(const Vector2I& contentSize, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions)
@@ -31,7 +29,7 @@ namespace BansheeEngine
 		return Vector2I(std::max((UINT32)textContentBounds.x, contentWidth), std::max((UINT32)textContentBounds.y, contentHeight));
 	}
 
-	CM::Vector2I GUIHelper::calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions)
+	Vector2I GUIHelper::calcOptimalContentsSize(const WString& text, const GUIElementStyle& style, const GUILayoutOptions& layoutOptions)
 	{
 		UINT32 wordWrapWidth = 0;
 

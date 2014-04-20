@@ -47,7 +47,7 @@ THE SOFTWARE.
 
 using namespace std::placeholders;
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     static const TexturePtr sNullTexPtr;
 

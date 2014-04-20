@@ -1,7 +1,7 @@
 #include "CmGpuResource.h"
 #include "CmGpuResourceRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	RTTITypeBase* GpuResource::getRTTIStatic()
 	{

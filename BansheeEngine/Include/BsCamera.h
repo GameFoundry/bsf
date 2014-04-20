@@ -103,7 +103,7 @@ namespace BansheeEngine {
             This is useful for implementing more complex Camera / object
             relationships i.e. having a camera attached to a world object.
     */
-    class BS_EXPORT Camera : public CM::Component
+    class BS_EXPORT Camera : public Component
     {
     public:
         /** Sets the Y-dimension Field Of View (FOV) of the frustum.
@@ -118,11 +118,11 @@ namespace BansheeEngine {
             @note
                 Setting the FOV overrides the value supplied for frustum::setNearClipPlane.
          */
-        virtual void setHorzFOV(const CM::Radian& fovy);
+        virtual void setHorzFOV(const Radian& fovy);
 
         /** Retrieves the frustums Y-dimension Field Of View (FOV).
         */
-        virtual const CM::Radian& getHorzFOV(void) const;
+        virtual const Radian& getHorzFOV(void) const;
 
         /** Sets the position of the near clipping plane.
             @remarks
@@ -192,7 +192,7 @@ namespace BansheeEngine {
             @param
                 offset The horizontal and vertical plane offsets.
         */
-        virtual void setFrustumOffset(const CM::Vector2& offset);
+        virtual void setFrustumOffset(const Vector2& offset);
 
         /** Sets frustum offsets, used in stereo rendering.
             @remarks
@@ -211,7 +211,7 @@ namespace BansheeEngine {
 
         /** Retrieves the frustum offsets.
         */
-        virtual const CM::Vector2& getFrustumOffset() const;
+        virtual const Vector2& getFrustumOffset() const;
 
         /** Sets frustum focal length (used in stereo rendering).
             @param
@@ -243,7 +243,7 @@ namespace BansheeEngine {
             getProjectionMatrix.
 
         */
-        virtual const CM::Matrix4& getProjectionMatrixRS(void) const;
+        virtual const Matrix4& getProjectionMatrixRS(void) const;
         /** Gets the depth-adjusted projection matrix for the current rendersystem,
 			but one which still conforms to right-hand rules.
         @remarks
@@ -255,7 +255,7 @@ namespace BansheeEngine {
             GL uses [-1,1], and the range must be kept the same between programmable
             and fixed-function pipelines.
         */
-        virtual const CM::Matrix4& getProjectionMatrixWithRSDepth(void) const;
+        virtual const Matrix4& getProjectionMatrixWithRSDepth(void) const;
         /** Gets the normal projection matrix for this frustum, ie the 
         projection matrix which conforms to standard right-handed rules and
         uses depth range [-1,+1].
@@ -265,11 +265,11 @@ namespace BansheeEngine {
             range [-1,+1], result no matter what rendering API is being used - this
             is required for some uniform algebra for example.
         */
-        virtual const CM::Matrix4& getProjectionMatrix(void) const;
+        virtual const Matrix4& getProjectionMatrix(void) const;
 
         /** Gets the view matrix for this frustum. Mainly for use by OGRE internally.
         */
-        virtual const CM::Matrix4& getViewMatrix(void) const;
+        virtual const Matrix4& getViewMatrix(void) const;
 
 		/** Set whether to use a custom view matrix on this frustum.
 		@remarks
@@ -289,7 +289,7 @@ namespace BansheeEngine {
 		@see Frustum::setCustomProjectionMatrix, Matrix4::isAffine
 		*/
 		virtual void setCustomViewMatrix(bool enable, 
-			const CM::Matrix4& viewMatrix = CM::Matrix4::IDENTITY);
+			const Matrix4& viewMatrix = Matrix4::IDENTITY);
 		/// Returns whether a custom view matrix is in use
 		virtual bool isCustomViewMatrixEnabled(void) const 
 		{ return mCustomViewMatrix; }
@@ -314,7 +314,7 @@ namespace BansheeEngine {
 		@see Frustum::setCustomViewMatrix
 		*/
 		virtual void setCustomProjectionMatrix(bool enable, 
-			const CM::Matrix4& projectionMatrix = CM::Matrix4::IDENTITY);
+			const Matrix4& projectionMatrix = Matrix4::IDENTITY);
 		/// Returns whether a custom projection matrix is in use
 		virtual bool isCustomProjectionMatrixEnabled(void) const
 		{ return mCustomProjMatrix; }
@@ -323,13 +323,13 @@ namespace BansheeEngine {
         @remarks
             The clipping planes are ordered as declared in enumerate constants FrustumPlane.
         */
-        virtual const CM::Plane* getFrustumPlanes(void) const;
+        virtual const Plane* getFrustumPlanes(void) const;
 
         /** Retrieves a specified plane of the frustum (world space).
             @remarks
                 Gets a reference to one of the planes which make up the frustum frustum, e.g. for clipping purposes.
         */
-        virtual const CM::Plane& getFrustumPlane( unsigned short plane ) const;
+        virtual const Plane& getFrustumPlane( unsigned short plane ) const;
 
         /** Tests whether the given container is visible in the Frustum.
             @param
@@ -342,7 +342,7 @@ namespace BansheeEngine {
             @par
                 Otherwise, false is returned.
         */
-        virtual bool isVisible(const CM::AABox& bound, FrustumPlane* culledBy = 0) const;
+        virtual bool isVisible(const AABox& bound, FrustumPlane* culledBy = 0) const;
 
         /** Tests whether the given container is visible in the Frustum.
             @param
@@ -355,7 +355,7 @@ namespace BansheeEngine {
             @par
                 Otherwise, false is returned.
         */
-        virtual bool isVisible(const CM::Sphere& bound, FrustumPlane* culledBy = 0) const;
+        virtual bool isVisible(const Sphere& bound, FrustumPlane* culledBy = 0) const;
 
         /** Tests whether the given vertex is visible in the Frustum.
             @param
@@ -368,10 +368,10 @@ namespace BansheeEngine {
             @par
                 Otherwise, false is returned.
         */
-        virtual bool isVisible(const CM::Vector3& vert, FrustumPlane* culledBy = 0) const;
+        virtual bool isVisible(const Vector3& vert, FrustumPlane* culledBy = 0) const;
 
         /** Overridden from MovableObject */
-        const CM::AABox& getBoundingBox(void) const;
+        const AABox& getBoundingBox(void) const;
 
         /** Overridden from MovableObject */
 		float getBoundingRadius(void) const;
@@ -382,7 +382,7 @@ namespace BansheeEngine {
             top-left near, bottom-left near, bottom-right near, 
             top-right far, top-left far, bottom-left far, bottom-right far.
         */
-        virtual const CM::Vector3* getWorldSpaceCorners(void) const;
+        virtual const Vector3* getWorldSpaceCorners(void) const;
 
         /** Sets the type of projection to use (orthographic or perspective). Default is perspective.
         */
@@ -421,7 +421,7 @@ namespace BansheeEngine {
 		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; }
 		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
 
-		CM::INT32 getPriority() const { return mPriority; }
+		INT32 getPriority() const { return mPriority; }
 
 		/**
 		 * @brief	Sets a priority that determines in which orders the cameras are rendered to.
@@ -429,22 +429,22 @@ namespace BansheeEngine {
 		 *
 		 * @param	priority	The priority. Higher value means the camera will be rendered sooner.
 		 */
-		void setPriority(CM::INT32 priority) { mPriority = priority; }
+		void setPriority(INT32 priority) { mPriority = priority; }
 
-		CM::UINT64 getLayers() const { return mLayers; }
-		void setLayers(CM::UINT64 layers) { mLayers = layers; }
+		UINT64 getLayers() const { return mLayers; }
+		void setLayers(UINT64 layers) { mLayers = layers; }
 
         /// Small constant used to reduce far plane projection to avoid inaccuracies
         static const float INFINITE_FAR_PLANE_ADJUST;
     protected:
-		CM::ViewportPtr mViewport;
-		CM::UINT64 mLayers;
+		ViewportPtr mViewport;
+		UINT64 mLayers;
 
 		/// Orthographic or perspective?
 		ProjectionType mProjType;
 
 		/// y-direction field-of-view (default 45)
-		CM::Radian mHorzFOV;
+		Radian mHorzFOV;
 		/// Far clip distance - default 10000
 		float mFarDist;
 		/// Near clip distance - default 100
@@ -454,26 +454,26 @@ namespace BansheeEngine {
 		/// Ortho height size (world units)
 		float mOrthoHeight;
 		/// Off-axis frustum center offset - default (0.0, 0.0)
-		CM::Vector2 mFrustumOffset;
+		Vector2 mFrustumOffset;
 		/// Focal length of frustum (for stereo rendering, defaults to 1.0)
 		float mFocalLength;
-		CM::INT32 mPriority;
+		INT32 mPriority;
 
 		/// The 6 main clipping planes
-		mutable CM::Plane mFrustumPlanes[6];
+		mutable Plane mFrustumPlanes[6];
 
 		/// Stored versions of parent orientation / position
-		mutable CM::Quaternion mLastParentOrientation;
-		mutable CM::Vector3 mLastParentPosition;
+		mutable Quaternion mLastParentOrientation;
+		mutable Vector3 mLastParentPosition;
 
 		/// Pre-calced projection matrix for the specific render system
-		mutable CM::Matrix4 mProjMatrixRS;
+		mutable Matrix4 mProjMatrixRS;
 		/// Pre-calced standard projection matrix but with render system depth range
-		mutable CM::Matrix4 mProjMatrixRSDepth;
+		mutable Matrix4 mProjMatrixRSDepth;
 		/// Pre-calced standard projection matrix
-		mutable CM::Matrix4 mProjMatrix;
+		mutable Matrix4 mProjMatrix;
 		/// Pre-calced view matrix
-		mutable CM::Matrix4 mViewMatrix;
+		mutable Matrix4 mViewMatrix;
 		/// Something's changed in the frustum shape?
 		mutable bool mRecalcFrustum;
 		/// Something re the frustum planes has changed
@@ -509,30 +509,30 @@ namespace BansheeEngine {
 		/// Signal to update frustum information.
 		virtual void invalidateFrustum(void) const;
 
-		mutable CM::AABox mBoundingBox;
+		mutable AABox mBoundingBox;
 
-		mutable CM::Vector3 mWorldSpaceCorners[8];
+		mutable Vector3 mWorldSpaceCorners[8];
 
     public:
         /** Standard destructor.
         */
         virtual ~Camera();
 
-		void initialize(CM::RenderTargetPtr target = nullptr,
+		void initialize(RenderTargetPtr target = nullptr,
 			float left = 0.0f, float top = 0.0f,
 			float width = 1.0f, float height = 1.0f);
 
-		CM::ViewportPtr getViewport() const { return mViewport; }
+		ViewportPtr getViewport() const { return mViewport; }
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
 		/************************************************************************/
 	protected:
-		friend class CM::SceneObject;
+		friend class SceneObject;
 
 		/** Standard constructor.
         */
-		Camera(const CM::HSceneObject& parent);
+		Camera(const HSceneObject& parent);
 
 	public:
 		virtual void update() {}
@@ -542,8 +542,8 @@ namespace BansheeEngine {
 		/************************************************************************/
 	public:
 		friend class CameraRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 
 	protected:
 		Camera() {} // Serialization only
@@ -551,5 +551,5 @@ namespace BansheeEngine {
 	 /** @} */
 	 /** @} */
 
-} // namespace CamelotFramework
+} 
 #endif

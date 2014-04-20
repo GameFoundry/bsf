@@ -2,7 +2,7 @@
 
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	template <typename T>
 	class ResourceHandle;

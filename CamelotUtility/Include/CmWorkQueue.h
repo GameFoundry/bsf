@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "boost/any.hpp"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/** \addtogroup Core
 	*  @{

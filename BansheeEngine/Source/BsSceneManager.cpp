@@ -3,8 +3,8 @@
 
 namespace BansheeEngine
 {
-	SceneManager& gSceneManager()
+	SceneManager& gBsSceneManager()
 	{
-		return static_cast<BS::SceneManager&>(CM::gSceneManager());
+		return static_cast<SceneManager&>(gSceneManager());
 	}
 }

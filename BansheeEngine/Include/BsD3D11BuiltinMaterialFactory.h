@@ -13,24 +13,24 @@ namespace BansheeEngine
 	public:
 		void startUp();
 		void shutDown();
-		const CM::String& getSupportedRenderSystem() const;
+		const String& getSupportedRenderSystem() const;
 		
-		CM::HMaterial createSpriteTextMaterial() const;
-		CM::HMaterial createSpriteImageMaterial() const;
-		CM::HMaterial createDebugDraw2DClipSpaceMaterial() const;
-		CM::HMaterial createDebugDraw2DScreenSpaceMaterial() const;
-		CM::HMaterial createDebugDraw3DMaterial() const;
-		CM::HMaterial createDockDropOverlayMaterial() const;
+		HMaterial createSpriteTextMaterial() const;
+		HMaterial createSpriteImageMaterial() const;
+		HMaterial createDebugDraw2DClipSpaceMaterial() const;
+		HMaterial createDebugDraw2DScreenSpaceMaterial() const;
+		HMaterial createDebugDraw3DMaterial() const;
+		HMaterial createDockDropOverlayMaterial() const;
 
 	protected:
-		CM::ShaderPtr mSpriteTextShader;
-		CM::ShaderPtr mSpriteImageShader;
-		CM::ShaderPtr mDebugDraw2DClipSpaceShader;
-		CM::ShaderPtr mDebugDraw2DScreenSpaceShader;
-		CM::ShaderPtr mDebugDraw3DShader;
-		CM::ShaderPtr mDockDropOverlayShader;
+		ShaderPtr mSpriteTextShader;
+		ShaderPtr mSpriteImageShader;
+		ShaderPtr mDebugDraw2DClipSpaceShader;
+		ShaderPtr mDebugDraw2DScreenSpaceShader;
+		ShaderPtr mDebugDraw3DShader;
+		ShaderPtr mDockDropOverlayShader;
 
-		CM::HSamplerState mGUISamplerState;
+		HSamplerState mGUISamplerState;
 
 		void initSpriteTextShader();
 		void initSpriteImageShader();

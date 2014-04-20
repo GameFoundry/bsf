@@ -1,12 +1,9 @@
 #include "BsCmdReparentSO.h"
 #include "CmSceneObject.h"
 
-using namespace BansheeEngine;
-using namespace CamelotFramework;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	CmdReparentSO::CmdReparentSO(const CM::Vector<CM::HSceneObject>::type& sceneObjects, const CM::HSceneObject& newParent)
+	CmdReparentSO::CmdReparentSO(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent)
 		:mSceneObjects(sceneObjects), mNewParent(newParent)
 	{
 		for(auto& sceneObject : mSceneObjects)
@@ -15,7 +12,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void CmdReparentSO::execute(const CM::Vector<CM::HSceneObject>::type& sceneObjects, const CM::HSceneObject& newParent)
+	void CmdReparentSO::execute(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent)
 	{
 		// Register command and commit it
 		CmdReparentSO* command = new (cm_alloc<CmdReparentSO>()) CmdReparentSO(sceneObjects, newParent);

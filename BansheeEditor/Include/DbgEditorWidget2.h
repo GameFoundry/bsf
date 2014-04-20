@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsEditorWidget.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class DbgEditorWidget2 : public EditorWidget<DbgEditorWidget2>
 	{
@@ -14,7 +14,7 @@ namespace BansheeEditor
 		static DbgEditorWidget2* instance();
 		static DbgEditorWidget2* open();
 		static void close();
-		static const CM::String& getTypeName();
+		static const String& getTypeName();
 
 	private:
 		static DbgEditorWidget2* Instance;

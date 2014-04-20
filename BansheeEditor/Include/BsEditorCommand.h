@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class EditorCommand
 	{

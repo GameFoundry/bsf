@@ -12,8 +12,6 @@
 #include "BsBuiltinMaterialManager.h"
 #include "CmVertexDataDesc.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	DrawHelper3D::DrawHelper3D()
@@ -23,7 +21,7 @@ namespace BansheeEngine
 		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 	}
 
-	void DrawHelper3D::aabox(const CM::AABox& box, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper3D::aabox(const AABox& box, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		UINT32* indexData = meshData->getIndices32();
 		UINT8* positionData = meshData->getElementData(VES_POSITION);
@@ -34,22 +32,22 @@ namespace BansheeEngine
 		aabox(box, positionData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 	}
 
-	void DrawHelper3D::line_Pixel(const Vector3& a, const Vector3& b, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper3D::line_Pixel(const Vector3& a, const Vector3& b, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::line_Pixel(a, b, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::line_AA(a, b, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::lineList_Pixel(const CM::Vector<Vector3>::type& linePoints, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper3D::lineList_Pixel(const Vector<Vector3>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::lineList_Pixel(linePoints, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::lineList_AA(const CM::Vector<Vector3>::type& linePoints, float width, float borderWidth, const CM::Color& color, const CM::MeshDataPtr& meshData, CM::UINT32 vertexOffset, CM::UINT32 indexOffset)
+	void DrawHelper3D::lineList_AA(const Vector<Vector3>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::lineList_AA(linePoints, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
@@ -131,8 +129,8 @@ namespace BansheeEngine
 		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
-	void DrawHelper3D::drawLineList_AA(const HCamera& camera, const CM::Vector<CM::Vector3>::type& linePoints, float width, float borderWidth, 
-		const CM::Color& color, float timeout)
+	void DrawHelper3D::drawLineList_AA(const HCamera& camera, const Vector<Vector3>::type& linePoints, float width, float borderWidth, 
+		const Color& color, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -156,7 +154,7 @@ namespace BansheeEngine
 		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
-	void DrawHelper3D::drawAABox(const HCamera& camera, const CM::AABox& box, const CM::Color& color, float timeout)
+	void DrawHelper3D::drawAABox(const HCamera& camera, const AABox& box, const Color& color, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
@@ -286,7 +284,7 @@ namespace BansheeEngine
 		outIndices[35] = vertexOffset + 4;
 	}
 
-	CM::Vector3 DrawHelper3D::calcCenter(UINT8* vertices, UINT32 numVertices, UINT32 vertexStride)
+	Vector3 DrawHelper3D::calcCenter(UINT8* vertices, UINT32 numVertices, UINT32 vertexStride)
 	{
 		Vector3 center = Vector3::ZERO;
 		for(UINT32 i = 0; i < numVertices; i++)
@@ -301,14 +299,14 @@ namespace BansheeEngine
 		return center;
 	}
 
-	void DrawHelper3D::line_AA(const CM::Vector3& a, const CM::Vector3& b, float width, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-		CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
+	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		CM_EXCEPT(NotImplementedException, "3D AA line drawing not implemented.");
 	}
 
-	void DrawHelper3D::polygon_AA(const CM::Vector<Vector3>::type& points, float borderWidth, const CM::Color& color, CM::UINT8* outVertices, CM::UINT8* outColors, 
-		CM::UINT32 vertexOffset, CM::UINT32 vertexStride, CM::UINT32* outIndices, CM::UINT32 indexOffset)
+	void DrawHelper3D::polygon_AA(const Vector<Vector3>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		CM_EXCEPT(NotImplementedException, "3D AA polygon drawing not implemented.");
 	}

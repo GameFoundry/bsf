@@ -36,7 +36,7 @@ THE SOFTWARE.
 #include "CmIndexBuffer.h"
 #include "CmGpuParamBlock.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 	/** \addtogroup Core
 	*  @{
 	*/

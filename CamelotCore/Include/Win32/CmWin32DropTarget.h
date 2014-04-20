@@ -4,7 +4,7 @@
 
 // This is just a helper include for CmPlatformImpl.cpp, it's not meant to be used on its own
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	* @brief	Called by the OS when various drag and drop actions are performed over a

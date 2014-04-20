@@ -1,7 +1,7 @@
 #include "CmD3D9RenderSystemFactory.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void D3D9RenderSystemFactory::create()
 	{

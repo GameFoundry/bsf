@@ -4,7 +4,7 @@
 #include "CmDebug.h"
 #include "CmShaderRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Shader::Shader(const String& name)
 		:mName(name)

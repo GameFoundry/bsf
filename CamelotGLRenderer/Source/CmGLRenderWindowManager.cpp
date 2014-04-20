@@ -3,7 +3,7 @@
 #include "CmGLSupport.h"
 #include "CmAsyncOp.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GLRenderWindowManager::GLRenderWindowManager(GLRenderSystem* renderSystem)
 		:mRenderSystem(renderSystem)

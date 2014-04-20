@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT VirtualInput : public CM::Module<VirtualInput>
+	class BS_EXPORT VirtualInput : public Module<VirtualInput>
 	{
 		enum class ButtonState
 		{
@@ -20,7 +20,7 @@ namespace BansheeEngine
 		{
 			VirtualButton button;
 			ButtonState state;
-			CM::UINT64 timestamp;
+			UINT64 timestamp;
 			bool allowRepeat;
 		};
 
@@ -51,11 +51,11 @@ namespace BansheeEngine
 		friend class VirtualButton;
 
 		std::shared_ptr<InputConfiguration> mInputConfiguration;
-		CM::Map<CM::UINT32, ButtonData>::type mCachedStates;
-		CM::Queue<VirtualButtonEvent>::type mEvents;
-		CM::UINT32 mActiveModifiers;
+		Map<UINT32, ButtonData>::type mCachedStates;
+		Queue<VirtualButtonEvent>::type mEvents;
+		UINT32 mActiveModifiers;
 
-		void buttonDown(const CM::ButtonEvent& event);
-		void buttonUp(const CM::ButtonEvent& event);
+		void buttonDown(const ButtonEvent& event);
+		void buttonUp(const ButtonEvent& event);
 	};
 }

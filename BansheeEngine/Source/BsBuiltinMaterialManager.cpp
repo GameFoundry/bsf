@@ -1,8 +1,6 @@
 #include "BsBuiltinMaterialManager.h"
 #include "CmMaterial.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	BuiltinMaterialManager::BuiltinMaterialManager()
@@ -83,7 +81,7 @@ namespace BansheeEngine
 		return info;
 	}
 
-	CM::HMaterial BuiltinMaterialManager::createDockDropOverlayMaterial() const
+	HMaterial BuiltinMaterialManager::createDockDropOverlayMaterial() const
 	{
 		assert(mActiveFactory != nullptr);
 
@@ -97,7 +95,7 @@ namespace BansheeEngine
 		mAvailableFactories[factory->getSupportedRenderSystem()] = factory;
 	}
 
-	void BuiltinMaterialManager::setActive(const CM::String& renderSystemName)
+	void BuiltinMaterialManager::setActive(const String& renderSystemName)
 	{
 		auto iterFind = mAvailableFactories.find(renderSystemName);
 

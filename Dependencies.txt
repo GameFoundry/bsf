@@ -1,4 +1,4 @@
-Camelot relies on the following 3rd party libraries:
+Banshee relies on the following 3rd party libraries:
  - Boost 1.49
     - http://www.boost.org
  - Cg 3.1
@@ -14,7 +14,7 @@ Place dependency files in:
 
 ----------------------------------------------------------------------------------
 
-Camelot plug-in dependencies:
+Banshee plug-in dependencies:
 
 CamelotFBXImporter (optional) relies on:
  - FBX SDK 2013.3
@@ -31,8 +31,8 @@ CamelotFontImporter (optional) relies on:
     in provided Visual Studio projects, which can cause a headache.
 
 CamelotOISInput relies on:
- - CamelotOIS - Slightly modified version of OIS 1.3 specifically for Camelot
-  - Supplied with Camelot source code but compiled as a separate project into a dependency
+ - CamelotOIS - Slightly modified version of OIS 1.3 specifically for Banshee
+  - Supplied with Banshee source code but compiled as a separate project into a dependency
 
 Place plug-in specific dependency files in:
  - Library include files in (BansheeRootDir)/(PluginDir)/Dependencies/Include

@@ -26,10 +26,10 @@ namespace BansheeEngine
 			:vertices(nullptr), uvs(nullptr), indexes(nullptr), numQuads(0)
 		{ }
 
-		CM::Vector2* vertices;
-		CM::Vector2* uvs;
-		CM::UINT32* indexes;
-		CM::UINT32 numQuads;
+		Vector2* vertices;
+		Vector2* uvs;
+		UINT32* indexes;
+		UINT32 numQuads;
 		GUIMaterialInfo matInfo;
 	};
 
@@ -39,7 +39,7 @@ namespace BansheeEngine
 		Sprite();
 		virtual ~Sprite();
 
-		CM::RectI getBounds(const CM::Vector2I& offset, const CM::RectI& clipRect) const;
+		RectI getBounds(const Vector2I& offset, const RectI& clipRect) const;
 
 		/**
 		 * @brief	Returns the number of separate render elements in the sprite. Normally this is one, but some sprites
@@ -47,7 +47,7 @@ namespace BansheeEngine
 		 * 			
 		 * @return	The number render elements.
 		 */
-		CM::UINT32 getNumRenderElements() const;
+		UINT32 getNumRenderElements() const;
 
 		/**
 		 * @brief	Gets a material for the specified render element index.
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		 * 		
 		 * @return	Handle to the material.
 		 */
-		const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const;
+		const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Returns the number of quads that the specified render element will use. You will need this
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		 *			
 		 * @return	Number of quads for the specified render element. 
 		 */
-		CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
+		UINT32 getNumQuads(UINT32 renderElementIdx) const;
 
 		/**
 		 * @brief	Fill the pre-allocated vertex, uv and index buffers with the mesh data for the
@@ -89,14 +89,14 @@ namespace BansheeEngine
 		 * @param	indexStride			Number of bytes between two indexes in the provided index data.
 		 * @param	renderElementIdx	Zero-based index of the render element.
 		 */
-		CM::UINT32 fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, CM::UINT32 maxNumQuads, 
-			CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx, const CM::Vector2I& offset, const CM::RectI& clipRect, bool clip = true) const;
+		UINT32 fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, UINT32 maxNumQuads, 
+			UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx, const Vector2I& offset, const RectI& clipRect, bool clip = true) const;
 
-		static void clipToRect(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32 numQuads, CM::UINT32 vertStride, const CM::RectI& clipRect);
-		static CM::Vector2I getAnchorOffset(SpriteAnchor anchor, CM::UINT32 width, CM::UINT32 height);
+		static void clipToRect(UINT8* vertices, UINT8* uv, UINT32 numQuads, UINT32 vertStride, const RectI& clipRect);
+		static Vector2I getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height);
 	protected:
-		mutable CM::RectI mBounds;
-		mutable CM::Vector<SpriteRenderElement>::type mCachedRenderElements;
+		mutable RectI mBounds;
+		mutable Vector<SpriteRenderElement>::type mCachedRenderElements;
 
 		void updateBounds() const;
 		void clearMesh() const;

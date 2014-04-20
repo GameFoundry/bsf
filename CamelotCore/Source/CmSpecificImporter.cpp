@@ -2,7 +2,7 @@
 #include "CmImportOptions.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	ImportOptionsPtr SpecificImporter::createImportOptions() const
 	{

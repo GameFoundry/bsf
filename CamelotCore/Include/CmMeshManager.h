@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmMesh.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT MeshManager : public Module<MeshManager>
 	{

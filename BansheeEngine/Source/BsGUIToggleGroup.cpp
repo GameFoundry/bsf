@@ -1,8 +1,6 @@
 #include "BsGUIToggleGroup.h"
 #include "BsGUIToggle.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIToggleGroup::~GUIToggleGroup()

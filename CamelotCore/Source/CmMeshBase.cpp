@@ -3,7 +3,7 @@
 #include "CmCoreThread.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
 		:mNumIndices(numIndices), mNumVertices(numVertices), mDefaultSubMesh(0, numIndices, drawOp)

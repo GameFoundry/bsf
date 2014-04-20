@@ -11,8 +11,6 @@
 #include "BsGUIDropDownBoxManager.h"
 #include "CmTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	const String& GUIListBox::getGUITypeName()
@@ -21,7 +19,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIListBox::GUIListBox(const CM::String& styleName, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions)
+	GUIListBox::GUIListBox(const String& styleName, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions)
 		:GUIButtonBase(styleName, GUIContent(HString(L"")), layoutOptions), mElements(elements), mSelectedIdx(0), mIsListBoxOpen(false)
 	{
 		if(elements.size() > 0)
@@ -33,17 +31,17 @@ namespace BansheeEngine
 		closeListBox();
 	}
 
-	GUIListBox* GUIListBox::create(const Vector<HString>::type& elements, const CM::String& styleName)
+	GUIListBox* GUIListBox::create(const Vector<HString>::type& elements, const String& styleName)
 	{
 		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUILayoutOptions::create());
 	}
 
-	GUIListBox* GUIListBox::create(const Vector<HString>::type& elements, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIListBox* GUIListBox::create(const Vector<HString>::type& elements, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIListBox, PoolAlloc>()) GUIListBox(getStyleName<GUIListBox>(styleName), elements, GUILayoutOptions::create(layoutOptions));
 	}
 
-	void GUIListBox::setElements(const CM::Vector<CM::HString>::type& elements)
+	void GUIListBox::setElements(const Vector<HString>::type& elements)
 	{
 		bool wasOpen = mIsListBoxOpen;
 
@@ -77,7 +75,7 @@ namespace BansheeEngine
 		return processed;
 	}
 
-	void GUIListBox::elementSelected(CM::UINT32 idx)
+	void GUIListBox::elementSelected(UINT32 idx)
 	{
 		if(!onSelectionChanged.empty())
 			onSelectionChanged(idx);

@@ -8,8 +8,6 @@
 #include "BsGUILayout.h"
 #include "BsScriptGUIPanel.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptGUIArea::ScriptGUIArea(GUIArea* area, ScriptGUIPanel* parentGUI)
@@ -47,7 +45,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth)
+	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
 	{
 		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
 		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, depth);
@@ -77,7 +75,7 @@ namespace BansheeEngine
 			thisPtr->mGUIArea->disable();
 	}
 
-	void ScriptGUIArea::internal_setArea(ScriptGUIArea* thisPtr, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth)
+	void ScriptGUIArea::internal_setArea(ScriptGUIArea* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
 	{
 		thisPtr->mArea.x = x;
 		thisPtr->mArea.y = y;

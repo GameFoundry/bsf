@@ -6,8 +6,6 @@
 
 #include "CmProfiler.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ImageSprite::ImageSprite()

@@ -2,7 +2,6 @@
 #include "CmInput.h"
 #include "CmTime.h"
 
-using namespace CamelotFramework;
 using namespace std::placeholders;
 
 namespace BansheeEngine

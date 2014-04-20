@@ -7,7 +7,7 @@
 #include "CmGpuParams.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Pass::Pass()
 		:mStencilRefValue(0)

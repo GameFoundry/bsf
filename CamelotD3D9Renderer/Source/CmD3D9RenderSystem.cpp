@@ -73,7 +73,7 @@ D3DFORMAT ddDepthStencilFormats[]={
 };
 #define NDSFORMATS (sizeof(ddDepthStencilFormats)/sizeof(D3DFORMAT))
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	D3D9RenderSystem* D3D9RenderSystem::msD3D9RenderSystem = NULL;
 
@@ -254,7 +254,7 @@ namespace CamelotFramework
 		{
 			mDeviceManager->linkRenderWindow(d3d9renderWindow);
 		}
-		catch (const CamelotFramework::RenderingAPIException&)
+		catch (const BansheeEngine::RenderingAPIException&)
 		{
 			// after catching the exception, clean up
 			mResourceManager->unlockDeviceAccess();

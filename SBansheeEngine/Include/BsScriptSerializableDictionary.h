@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSerializableDictionary : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableDictionary : public IReflectable
 	{
 	private:
 		class Enumerator
@@ -46,8 +46,8 @@ namespace BansheeEngine
 		MonoProperty* mValueProp;
 
 		ScriptSerializableTypeInfoDictionaryPtr mDictionaryTypeInfo;
-		CM::Vector<ScriptSerializableFieldDataPtr>::type mKeyEntries;
-		CM::Vector<ScriptSerializableFieldDataPtr>::type mValueEntries;
+		Vector<ScriptSerializableFieldDataPtr>::type mKeyEntries;
+		Vector<ScriptSerializableFieldDataPtr>::type mValueEntries;
 
 		void initMonoObjects(MonoClass* dictionaryClass);
 
@@ -72,7 +72,7 @@ namespace BansheeEngine
 
 	public:
 		friend class ScriptSerializableDictionaryRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

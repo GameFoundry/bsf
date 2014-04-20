@@ -12,8 +12,8 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
-		virtual CM::HGameObject getNativeHandle() const { return mManagedComponent; }
-		virtual void setNativeHandle(const CM::HGameObject& gameObject);
+		virtual HGameObject getNativeHandle() const { return mManagedComponent; }
+		virtual void setNativeHandle(const HGameObject& gameObject);
 
 	private:
 		friend class ScriptGameObjectManager;
@@ -26,9 +26,9 @@ namespace BansheeEngine
 
 		static void initRuntimeData();
 
-		ScriptComponent(const CM::GameObjectHandle<ManagedComponent>& managedComponent);
+		ScriptComponent(const GameObjectHandle<ManagedComponent>& managedComponent);
 		~ScriptComponent() {}
 
-		CM::GameObjectHandle<ManagedComponent> mManagedComponent;
+		GameObjectHandle<ManagedComponent> mManagedComponent;
 	};
 }

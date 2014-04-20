@@ -2,8 +2,6 @@
 #include "BsCamera.h"
 #include "BsOverlay.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	bool OverlayManager::OverlayComparer::operator() (const Overlay* const& a, const Overlay* const& b)
@@ -11,7 +9,7 @@ namespace BansheeEngine
 		return a->getDepth() > b->getDepth();
 	}
 
-	void OverlayManager::render(CM::ViewportPtr& target, CM::RenderQueue& renderQueue) const
+	void OverlayManager::render(ViewportPtr& target, RenderQueue& renderQueue) const
 	{
 		auto overlays = mOverlaysPerTarget.find(target.get());
 
@@ -25,12 +23,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void OverlayManager::attachOverlay(const CM::Viewport* target, const Overlay* overlay)
+	void OverlayManager::attachOverlay(const Viewport* target, const Overlay* overlay)
 	{
 		mOverlaysPerTarget[target].insert(overlay);
 	}
 
-	void OverlayManager::detachOverlay(const CM::Viewport* target, const Overlay* overlay)
+	void OverlayManager::detachOverlay(const Viewport* target, const Overlay* overlay)
 	{
 		mOverlaysPerTarget[target].erase(overlay);
 	}

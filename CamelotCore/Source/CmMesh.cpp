@@ -14,7 +14,7 @@
 
 #include "CmProfiler.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)

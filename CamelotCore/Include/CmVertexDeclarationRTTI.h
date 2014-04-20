@@ -5,7 +5,7 @@
 #include "CmVertexBuffer.h"
 #include "CmHardwareBufferManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class VertexDeclarationRTTI : public RTTIType<VertexDeclaration, IReflectable, VertexDeclarationRTTI>
 	{

@@ -2,7 +2,7 @@
 #include "CmRenderer.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void RendererManager::setActive(const String& name)
 	{

@@ -2,7 +2,7 @@
 #include "CmRTTIType.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void IReflectable::_registerDerivedClass(RTTITypeBase* derivedClass)
 	{

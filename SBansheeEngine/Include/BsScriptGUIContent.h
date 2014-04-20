@@ -10,8 +10,8 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
-		static const CM::HString& getText(MonoObject* instance);
-		static const CM::HString& getTooltip(MonoObject* instance);
+		static const HString& getText(MonoObject* instance);
+		static const HString& getTooltip(MonoObject* instance);
 		static HSpriteTexture getImage(MonoObject* instance);
 
 	private:

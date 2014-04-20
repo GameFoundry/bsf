@@ -5,7 +5,7 @@
 #include "CmGpuResourceData.h"
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/** The pixel format used for images, textures, and render surfaces */
     enum PixelFormat

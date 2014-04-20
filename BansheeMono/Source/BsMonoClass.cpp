@@ -8,8 +8,6 @@
 #include "CmException.h"
 #include <mono/metadata/debug-helpers.h>
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	inline size_t MonoClass::MethodId::Hash::operator()(const MonoClass::MethodId& v) const
@@ -81,7 +79,7 @@ namespace BansheeEngine
 		return *newMethod;
 	}
 
-	MonoMethod* MonoClass::getMethodExact(const CM::String& name, const CM::String& signature)
+	MonoMethod* MonoClass::getMethodExact(const String& name, const String& signature)
 	{
 		MethodId mehodId(name + "(" + signature + ")", 0);
 		auto iterFind = mMethods.find(mehodId);
@@ -118,7 +116,7 @@ namespace BansheeEngine
 		return field != nullptr;
 	}
 
-	bool MonoClass::isSubClassOf(const BS::MonoClass* monoClass) const
+	bool MonoClass::isSubClassOf(const MonoClass* monoClass) const
 	{
 		if(monoClass == nullptr)
 			return false;
@@ -161,7 +159,7 @@ namespace BansheeEngine
 		return *newProperty;
 	}
 
-	const CM::Vector<MonoField*>::type MonoClass::getAllFields() const
+	const Vector<MonoField*>::type MonoClass::getAllFields() const
 	{
 		if(mHasCachedFields)
 			return mCachedFieldList;
@@ -213,7 +211,7 @@ namespace BansheeEngine
 		return obj;
 	}
 
-	MonoObject* MonoClass::createInstance(const CM::String& ctorSignature, void** params)
+	MonoObject* MonoClass::createInstance(const String& ctorSignature, void** params)
 	{
 		MonoObject* obj = mono_object_new(MonoManager::instance().getDomain(), mClass);
 		getMethodExact(".ctor", ctorSignature)->invoke(obj, params);

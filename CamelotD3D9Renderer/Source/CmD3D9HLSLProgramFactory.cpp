@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmString.h"
 #include "CmD3D9HLSLProgram.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     //-----------------------------------------------------------------------
     String D3D9HLSLProgramFactory::sLanguageName = "hlsl";
     //-----------------------------------------------------------------------

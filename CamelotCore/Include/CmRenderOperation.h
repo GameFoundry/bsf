@@ -4,7 +4,7 @@
 #include "CmDrawOps.h"
 #include "CmVector3.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	struct CM_EXPORT RenderOperation
 	{

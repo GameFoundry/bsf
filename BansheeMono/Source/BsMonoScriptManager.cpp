@@ -1,8 +1,6 @@
 #include "BsMonoScriptManager.h"
 #include "BsMonoManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	MonoScriptSystem::MonoScriptSystem()

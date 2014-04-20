@@ -1,7 +1,7 @@
 #include "CmFontImportOptions.h"
 #include "CmFontImportOptionsRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	FontImportOptions::FontImportOptions()
 		:mDPI(72), mAntialiasing(true)

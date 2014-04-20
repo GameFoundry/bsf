@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "CmD3D9PixelBuffer.h"
 #include "CmD3D9Resource.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 	class CM_D3D9_EXPORT D3D9Texture : public Texture, public D3D9Resource
 	{
 	public:

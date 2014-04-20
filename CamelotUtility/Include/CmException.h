@@ -7,7 +7,7 @@
 #define __PRETTY_FUNCTION__ __FUNCSIG__
 #endif
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Base class for all Banshee exceptions.
@@ -146,7 +146,7 @@ namespace CamelotFramework
 #ifndef CM_EXCEPT
 #define CM_EXCEPT(type, desc)	\
 	{                           \
-	static_assert((std::is_base_of<CamelotFramework::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from CamelotFramework::Exception."); \
+	static_assert((std::is_base_of<BansheeEngine::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from BansheeEngine::Exception."); \
 	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif

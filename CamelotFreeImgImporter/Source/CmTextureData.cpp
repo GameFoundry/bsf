@@ -1,7 +1,7 @@
 #include "CmTextureData.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	TextureData::TextureData(UINT32 width, UINT32 height, UINT32 size, 
 		PixelFormat format, UINT32 depth, INT32 flags, UINT32 numMipmaps)

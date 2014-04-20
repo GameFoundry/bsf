@@ -14,7 +14,7 @@
 #include "CmDebug.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/************************************************************************/
 	/* 					HELPER STRUCTS TO HELP SERIALIZING                  */

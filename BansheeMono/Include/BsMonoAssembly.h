@@ -22,43 +22,43 @@ namespace BansheeEngine
 			};
 
 			ClassId();
-			ClassId(const CM::String& namespaceName, CM::String name, ::MonoClass* genericInstance = nullptr);
+			ClassId(const String& namespaceName, String name, ::MonoClass* genericInstance = nullptr);
 
-			CM::String namespaceName;
-			CM::String name;
+			String namespaceName;
+			String name;
 			::MonoClass* genericInstance;
 		};
 
 	public:
 		virtual ~MonoAssembly();
 
-		MonoClass* getClass(const CM::String& namespaceName, const CM::String& name) const;
+		MonoClass* getClass(const String& namespaceName, const String& name) const;
 		MonoClass* getClass(::MonoClass* rawMonoClass) const;
-		const CM::Vector<MonoClass*>::type& getAllClasses() const;
+		const Vector<MonoClass*>::type& getAllClasses() const;
 
-		void invoke(const CM::String& functionName);
+		void invoke(const String& functionName);
 
 	private:
 		friend class MonoManager;
 
 		MonoAssembly();
 
-		void load(const CM::String& path, const CM::String& name);
-		void loadAsDependency(MonoImage* image, const CM::String& name);
+		void load(const String& path, const String& name);
+		void loadAsDependency(MonoImage* image, const String& name);
 		void unload();
 
-		bool isGenericClass(const CM::String& name) const;
+		bool isGenericClass(const String& name) const;
 
-		CM::String mName;
+		String mName;
 		MonoImage* mMonoImage;
 		::MonoAssembly* mMonoAssembly;
 		bool mIsLoaded;
 		bool mIsDependency;
 		
-		mutable CM::UnorderedMap<ClassId, MonoClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
-		mutable CM::UnorderedMap<::MonoClass*, MonoClass*>::type mClassesByRaw;
+		mutable UnorderedMap<ClassId, MonoClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
+		mutable UnorderedMap<::MonoClass*, MonoClass*>::type mClassesByRaw;
 
 		mutable bool mHaveCachedClassList;
-		mutable CM::Vector<MonoClass*>::type mCachedClassList;
+		mutable Vector<MonoClass*>::type mCachedClassList;
 	};
 }

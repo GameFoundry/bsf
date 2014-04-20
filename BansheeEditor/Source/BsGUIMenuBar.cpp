@@ -12,14 +12,11 @@
 #include "CmSceneObject.h"
 #include "CmPlatform.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const UINT32 GUIMenuBar::NUM_ELEMENTS_AFTER_CONTENT = 8;
 
-	GUIMenuBar::GUIMenuBar(BS::GUIWidget* parent, RenderWindow* parentWindow)
+	GUIMenuBar::GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow)
 		:mParentWidget(parent), mParentWindow(parentWindow), mMainArea(nullptr), mBackgroundArea(nullptr), 
 		mBgTexture(nullptr), mLogoTexture(nullptr), mSubMenuOpen(false), mSubMenuButton(nullptr)
 	{
@@ -76,7 +73,7 @@ namespace BansheeEditor
 		GUIArea::destroy(mBackgroundArea);
 	}
 
-	void GUIMenuBar::setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height)
+	void GUIMenuBar::setArea(INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		mMainArea->setPosition(x, y);
 		mBackgroundArea->setPosition(x, y);
@@ -87,7 +84,7 @@ namespace BansheeEditor
 		refreshNonClientAreas();
 	}
 
-	const GUIMenuItem* GUIMenuBar::addMenuItem(const CM::WString& path, std::function<void()> callback)
+	const GUIMenuItem* GUIMenuBar::addMenuItem(const WString& path, std::function<void()> callback)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -106,7 +103,7 @@ namespace BansheeEditor
 		return subMenu->menu->addMenuItem(strippedPath, callback);
 	}
 
-	const GUIMenuItem* GUIMenuBar::addSeparator(const CM::WString& path)
+	const GUIMenuItem* GUIMenuBar::addSeparator(const WString& path)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -125,7 +122,7 @@ namespace BansheeEditor
 		return subMenu->menu->addSeparator(strippedPath);
 	}
 
-	GUIMenuBar::GUIMenuBarData* GUIMenuBar::addNewButton(const CM::WString& name)
+	GUIMenuBar::GUIMenuBarData* GUIMenuBar::addNewButton(const WString& name)
 	{
 		mChildMenus.push_back(GUIMenuBarData());
 
@@ -143,7 +140,7 @@ namespace BansheeEditor
 		return &newSubMenu;
 	}
 
-	const GUIMenuItem* GUIMenuBar::getMenuItem(const CM::WString& path) const
+	const GUIMenuItem* GUIMenuBar::getMenuItem(const WString& path) const
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -158,7 +155,7 @@ namespace BansheeEditor
 		return subMenu->menu->getMenuItem(strippedPath);
 	}
 
-	void GUIMenuBar::removeMenuItem(const CM::WString& path)
+	void GUIMenuBar::removeMenuItem(const WString& path)
 	{
 		WString strippedPath = path;
 		WString rootName;
@@ -205,7 +202,7 @@ namespace BansheeEditor
 		subMenu->menu->removeMenuItem(item);
 	}
 
-	const GUIMenuBar::GUIMenuBarData* GUIMenuBar::getSubMenu(const CM::WString& name) const
+	const GUIMenuBar::GUIMenuBarData* GUIMenuBar::getSubMenu(const WString& name) const
 	{
 		for(auto& subMenu : mChildMenus)
 		{
@@ -216,7 +213,7 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	bool GUIMenuBar::stripPath(CM::WString& path, CM::WString& pathRoot) const
+	bool GUIMenuBar::stripPath(WString& path, WString& pathRoot) const
 	{
 		Vector<WString>::type pathElements = StringUtil::split(path, L"/");
 		if(pathElements.size() == 0)
@@ -231,7 +228,7 @@ namespace BansheeEditor
 		return true;
 	}
 
-	void GUIMenuBar::openSubMenu(const CM::WString& name)
+	void GUIMenuBar::openSubMenu(const WString& name)
 	{
 		const GUIMenuBarData* subMenu = getSubMenu(name);
 		if(subMenu == nullptr)
@@ -272,7 +269,7 @@ namespace BansheeEditor
 		}		
 	}
 
-	void GUIMenuBar::onSubMenuHover(const CM::WString& name)
+	void GUIMenuBar::onSubMenuHover(const WString& name)
 	{
 		if(mSubMenuOpen)
 		{
@@ -313,7 +310,7 @@ namespace BansheeEditor
 		// so force the update right away so we get correct element bounds
 		mMainArea->_update();
 
-		CM::Vector<CM::RectI>::type nonClientAreas;
+		Vector<RectI>::type nonClientAreas;
 		nonClientAreas.push_back(mLogoTexture->getBounds());
 
 		if(mChildMenus.size() > 0)

@@ -9,7 +9,7 @@ namespace BansheeEngine
 {
 	// TODO - Currently this class will always import resources, but it would be better if it first
 	// checks for a pre-processed asset and only import it if that doesn't exist
-	class BS_EXPORT BuiltinResources : public CamelotFramework::Module<BuiltinResources>
+	class BS_EXPORT BuiltinResources : public BansheeEngine::Module<BuiltinResources>
 	{
 	public:
 		BuiltinResources();
@@ -18,126 +18,126 @@ namespace BansheeEngine
 
 		const HSpriteTexture getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
 
-		const CM::PixelData& getCursorArrow(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorArrowDrag(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorWait(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorIBeam(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorSizeNESW(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorSizeNS(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorSizeNWSE(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorSizeWE(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorDeny(CM::Vector2I& hotSpot);
-		const CM::PixelData& getCursorMoveLeftRight(CM::Vector2I& hotSpot);
+		const PixelData& getCursorArrow(Vector2I& hotSpot);
+		const PixelData& getCursorArrowDrag(Vector2I& hotSpot);
+		const PixelData& getCursorWait(Vector2I& hotSpot);
+		const PixelData& getCursorIBeam(Vector2I& hotSpot);
+		const PixelData& getCursorSizeNESW(Vector2I& hotSpot);
+		const PixelData& getCursorSizeNS(Vector2I& hotSpot);
+		const PixelData& getCursorSizeNWSE(Vector2I& hotSpot);
+		const PixelData& getCursorSizeWE(Vector2I& hotSpot);
+		const PixelData& getCursorDeny(Vector2I& hotSpot);
+		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
 	private:
 		GUISkin mSkin;
 
-		CM::PixelDataPtr mCursorArrow;
-		CM::PixelDataPtr mCursorArrowDrag;
-		CM::PixelDataPtr mCursorArrowLeftRight;
-		CM::PixelDataPtr mCursorIBeam;
-		CM::PixelDataPtr mCursorDeny;
-		CM::PixelDataPtr mCursorWait;
-		CM::PixelDataPtr mCursorSizeNESW;
-		CM::PixelDataPtr mCursorSizeNS;
-		CM::PixelDataPtr mCursorSizeNWSE;
-		CM::PixelDataPtr mCursorSizeWE;
+		PixelDataPtr mCursorArrow;
+		PixelDataPtr mCursorArrowDrag;
+		PixelDataPtr mCursorArrowLeftRight;
+		PixelDataPtr mCursorIBeam;
+		PixelDataPtr mCursorDeny;
+		PixelDataPtr mCursorWait;
+		PixelDataPtr mCursorSizeNESW;
+		PixelDataPtr mCursorSizeNS;
+		PixelDataPtr mCursorSizeNWSE;
+		PixelDataPtr mCursorSizeWE;
 
 		HSpriteTexture mWhiteSpriteTexture;
 
-		static const CM::WString DefaultSkinFolder;
-		static const CM::WString DefaultCursorFolder;
+		static const WString DefaultSkinFolder;
+		static const WString DefaultCursorFolder;
 
-		static const CM::WString DefaultFontPath;
-		static const CM::UINT32 DefaultFontSize;
+		static const WString DefaultFontPath;
+		static const UINT32 DefaultFontSize;
 
-		static const CM::WString WhiteTex;
+		static const WString WhiteTex;
 
-		static const CM::WString ButtonNormalTex;
-		static const CM::WString ButtonHoverTex;
-		static const CM::WString ButtonActiveTex;
+		static const WString ButtonNormalTex;
+		static const WString ButtonHoverTex;
+		static const WString ButtonActiveTex;
 
-		static const CM::WString ToggleNormalTex;
-		static const CM::WString ToggleHoverTex;
-		static const CM::WString ToggleActiveTex;
-		static const CM::WString ToggleNormalOnTex;
-		static const CM::WString ToggleHoverOnTex;
-		static const CM::WString ToggleActiveOnTex;
+		static const WString ToggleNormalTex;
+		static const WString ToggleHoverTex;
+		static const WString ToggleActiveTex;
+		static const WString ToggleNormalOnTex;
+		static const WString ToggleHoverOnTex;
+		static const WString ToggleActiveOnTex;
 
-		static const CM::WString InputBoxNormalTex;
-		static const CM::WString InputBoxHoverTex;
-		static const CM::WString InputBoxFocusedTex;
+		static const WString InputBoxNormalTex;
+		static const WString InputBoxHoverTex;
+		static const WString InputBoxFocusedTex;
 
-		static const CM::WString ScrollBarUpNormalTex;
-		static const CM::WString ScrollBarUpHoverTex;
-		static const CM::WString ScrollBarUpActiveTex;
+		static const WString ScrollBarUpNormalTex;
+		static const WString ScrollBarUpHoverTex;
+		static const WString ScrollBarUpActiveTex;
 
-		static const CM::WString ScrollBarDownNormalTex;
-		static const CM::WString ScrollBarDownHoverTex;
-		static const CM::WString ScrollBarDownActiveTex;
+		static const WString ScrollBarDownNormalTex;
+		static const WString ScrollBarDownHoverTex;
+		static const WString ScrollBarDownActiveTex;
 
-		static const CM::WString ScrollBarLeftNormalTex;
-		static const CM::WString ScrollBarLeftHoverTex;
-		static const CM::WString ScrollBarLeftActiveTex;
+		static const WString ScrollBarLeftNormalTex;
+		static const WString ScrollBarLeftHoverTex;
+		static const WString ScrollBarLeftActiveTex;
 
-		static const CM::WString ScrollBarRightNormalTex;
-		static const CM::WString ScrollBarRightHoverTex;
-		static const CM::WString ScrollBarRightActiveTex;
+		static const WString ScrollBarRightNormalTex;
+		static const WString ScrollBarRightHoverTex;
+		static const WString ScrollBarRightActiveTex;
 
-		static const CM::WString ScrollBarHandleHorzNormalTex;
-		static const CM::WString ScrollBarHandleHorzHoverTex;
-		static const CM::WString ScrollBarHandleHorzActiveTex;
+		static const WString ScrollBarHandleHorzNormalTex;
+		static const WString ScrollBarHandleHorzHoverTex;
+		static const WString ScrollBarHandleHorzActiveTex;
 
-		static const CM::WString ScrollBarHandleVertNormalTex;
-		static const CM::WString ScrollBarHandleVertHoverTex;
-		static const CM::WString ScrollBarHandleVertActiveTex;
+		static const WString ScrollBarHandleVertNormalTex;
+		static const WString ScrollBarHandleVertHoverTex;
+		static const WString ScrollBarHandleVertActiveTex;
 
-		static const CM::WString ScrollBarBgTex;
+		static const WString ScrollBarBgTex;
 
-		static const CM::WString DropDownBtnNormalTex;
-		static const CM::WString DropDownBtnHoverTex;
+		static const WString DropDownBtnNormalTex;
+		static const WString DropDownBtnHoverTex;
 
-		static const CM::WString DropDownBoxBgTex;
-		static const CM::WString DropDownBoxEntryNormalTex;
-		static const CM::WString DropDownBoxEntryHoverTex;
+		static const WString DropDownBoxBgTex;
+		static const WString DropDownBoxEntryNormalTex;
+		static const WString DropDownBoxEntryHoverTex;
 
-		static const CM::WString DropDownBoxBtnUpNormalTex;
-		static const CM::WString DropDownBoxBtnUpHoverTex;
+		static const WString DropDownBoxBtnUpNormalTex;
+		static const WString DropDownBoxBtnUpHoverTex;
 
-		static const CM::WString DropDownBoxBtnDownNormalTex;
-		static const CM::WString DropDownBoxBtnDownHoverTex;
+		static const WString DropDownBoxBtnDownNormalTex;
+		static const WString DropDownBoxBtnDownHoverTex;
 
-		static const CM::WString DropDownBoxEntryExpNormalTex;
-		static const CM::WString DropDownBoxEntryExpHoverTex;
+		static const WString DropDownBoxEntryExpNormalTex;
+		static const WString DropDownBoxEntryExpHoverTex;
 
-		static const CM::WString DropDownSeparatorTex;
+		static const WString DropDownSeparatorTex;
 
-		static const CM::WString DropDownBoxBtnUpArrowTex;
-		static const CM::WString DropDownBoxBtnDownArrowTex;
+		static const WString DropDownBoxBtnUpArrowTex;
+		static const WString DropDownBoxBtnDownArrowTex;
 
-		static const CM::WString CursorArrowTex;
-		static const CM::WString CursorArrowDragTex;
-		static const CM::WString CursorArrowLeftRightTex;
-		static const CM::WString CursorIBeamTex;
-		static const CM::WString CursorDenyTex;
-		static const CM::WString CursorWaitTex;
-		static const CM::WString CursorSizeNESWTex;
-		static const CM::WString CursorSizeNSTex;
-		static const CM::WString CursorSizeNWSETex;
-		static const CM::WString CursorSizeWETex;
+		static const WString CursorArrowTex;
+		static const WString CursorArrowDragTex;
+		static const WString CursorArrowLeftRightTex;
+		static const WString CursorIBeamTex;
+		static const WString CursorDenyTex;
+		static const WString CursorWaitTex;
+		static const WString CursorSizeNESWTex;
+		static const WString CursorSizeNSTex;
+		static const WString CursorSizeNWSETex;
+		static const WString CursorSizeWETex;
 
-		static const CM::Vector2I CursorArrowHotspot;
-		static const CM::Vector2I CursorArrowDragHotspot;
-		static const CM::Vector2I CursorArrowLeftRightHotspot;
-		static const CM::Vector2I CursorIBeamHotspot;
-		static const CM::Vector2I CursorDenyHotspot;
-		static const CM::Vector2I CursorWaitHotspot;
-		static const CM::Vector2I CursorSizeNESWHotspot;
-		static const CM::Vector2I CursorSizeNSHotspot;
-		static const CM::Vector2I CursorSizeNWSEHotspot;
-		static const CM::Vector2I CursorSizeWEHotspot;
+		static const Vector2I CursorArrowHotspot;
+		static const Vector2I CursorArrowDragHotspot;
+		static const Vector2I CursorArrowLeftRightHotspot;
+		static const Vector2I CursorIBeamHotspot;
+		static const Vector2I CursorDenyHotspot;
+		static const Vector2I CursorWaitHotspot;
+		static const Vector2I CursorSizeNESWHotspot;
+		static const Vector2I CursorSizeNSHotspot;
+		static const Vector2I CursorSizeNWSEHotspot;
+		static const Vector2I CursorSizeWEHotspot;
 
-		static HSpriteTexture getSkinTexture(const CM::WString& name);
-		static CM::HTexture getCursorTexture(const CM::WString& name);
+		static HSpriteTexture getSkinTexture(const WString& name);
+		static HTexture getCursorTexture(const WString& name);
 	};
 }

@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmWin32Prerequisites.h"
 #include "CmRenderWindow.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     class CM_RSGL_EXPORT Win32Window : public RenderWindow
     {

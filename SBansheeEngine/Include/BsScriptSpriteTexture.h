@@ -13,8 +13,8 @@ namespace BansheeEngine
 
 		const HSpriteTexture& getInternalValue() const { return mTexture; }
 
-		CM::HResource getNativeHandle() const { return mTexture; }
-		void setNativeHandle(const CM::HResource& resource);
+		HResource getNativeHandle() const { return mTexture; }
+		void setNativeHandle(const HResource& resource);
 
 	private:
 		friend class ScriptResourceManager;

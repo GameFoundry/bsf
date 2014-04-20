@@ -5,8 +5,6 @@
 #include "BsRenderable.h"
 #include "BsCamera.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	Vector<HRenderable>::type OctreeSceneManager::getVisibleRenderables(const HCamera& camera) const

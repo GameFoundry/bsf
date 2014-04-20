@@ -9,11 +9,9 @@
 #include "BsGUIHelper.h"
 #include "CmTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	GUIButtonBase::GUIButtonBase(const CM::String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
 	{
 		mImageSprite = cm_new<ImageSprite, PoolAlloc>();

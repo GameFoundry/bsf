@@ -4,7 +4,7 @@
 #include "CmSphere.h"
 #include "CmRay.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	Plane::Plane()
 	{

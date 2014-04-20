@@ -6,7 +6,7 @@
 #include "CmException.h"
 #include "CmGpuParamDesc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct GLSLAttribute
 	{

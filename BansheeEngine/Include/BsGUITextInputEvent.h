@@ -11,12 +11,12 @@ namespace BansheeEngine
 	public:
 		GUITextInputEvent();
 
-		const CM::UINT32& getInputChar() const { return mInputChar; }
+		const UINT32& getInputChar() const { return mInputChar; }
 	private:
 		friend class GUIManager;
 
-		CM::UINT32 mInputChar;
+		UINT32 mInputChar;
 
-		void setData(CM::UINT32 inputChar);
+		void setData(UINT32 inputChar);
 	};
 }

@@ -11,8 +11,6 @@
 #include "BsMonoUtil.h"
 #include "CmRTTIType.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	RuntimeScriptObjects::RuntimeScriptObjects()
@@ -37,7 +35,7 @@ namespace BansheeEngine
 			initializeBaseTypes();
 
 		// Process all classes and fields
-		CM::UINT32 mUniqueTypeId = 1;
+		UINT32 mUniqueTypeId = 1;
 
 		MonoAssembly* curAssembly = MonoManager::instance().getAssembly(assemblyName);
 		if(curAssembly == nullptr)
@@ -87,8 +85,8 @@ namespace BansheeEngine
 			assemblyInfo->mTypeNameToId[fullTypeName] = objInfo->mTypeId;
 			assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
 
-			CM::UINT32 mUniqueFieldId = 1;
-			const CM::Vector<MonoField*>::type& fields = objInfo->mMonoClass->getAllFields();
+			UINT32 mUniqueFieldId = 1;
+			const Vector<MonoField*>::type& fields = objInfo->mMonoClass->getAllFields();
 
 			for(auto& field : fields)
 			{
@@ -344,7 +342,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void RuntimeScriptObjects::clearScriptObjects(const CM::String& assemblyName)
+	void RuntimeScriptObjects::clearScriptObjects(const String& assemblyName)
 	{
 		mAssemblyInfos.erase(assemblyName);
 
@@ -425,7 +423,7 @@ namespace BansheeEngine
 		mBaseTypesInitialized = true;
 	}
 
-	bool RuntimeScriptObjects::getSerializableObjectInfo(const CM::String& ns, const CM::String& typeName, std::shared_ptr<ScriptSerializableObjectInfo>& outInfo)
+	bool RuntimeScriptObjects::getSerializableObjectInfo(const String& ns, const String& typeName, std::shared_ptr<ScriptSerializableObjectInfo>& outInfo)
 	{
 		String fullName = ns + "." + typeName;
 		for(auto& curAssembly : mAssemblyInfos)
@@ -442,7 +440,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool RuntimeScriptObjects::hasSerializableObjectInfo(const CM::String& ns, const CM::String& typeName)
+	bool RuntimeScriptObjects::hasSerializableObjectInfo(const String& ns, const String& typeName)
 	{
 		String fullName = ns + "." + typeName;
 		for(auto& curAssembly : mAssemblyInfos)

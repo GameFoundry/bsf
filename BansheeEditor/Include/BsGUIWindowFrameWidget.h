@@ -4,24 +4,24 @@
 #include "BsGUIWidget.h"
 #include <boost/signal.hpp>
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class WindowFrameWidget : public BS::GUIWidget
+	class WindowFrameWidget : public GUIWidget
 	{
 	public:
-		WindowFrameWidget(const CM::HSceneObject& parent, CM::Viewport* target, CM::RenderWindow* ownerWindow, const BS::GUISkin& skin);
+		WindowFrameWidget(const HSceneObject& parent, Viewport* target, RenderWindow* ownerWindow, const GUISkin& skin);
 		virtual ~WindowFrameWidget();
 
 	protected:
-		static const CM::UINT32 RESIZE_BORDER_WIDTH;
+		static const UINT32 RESIZE_BORDER_WIDTH;
 
-		BS::GUIArea* mWindowFrameArea;
-		CM::RenderWindow* mParentWindow;
+		GUIArea* mWindowFrameArea;
+		RenderWindow* mParentWindow;
 		GUIWindowFrame* mWindowFrame;
 
 		virtual void update();
 
-		virtual bool _mouseEvent(BS::GUIElement* element, const BS::GUIMouseEvent& ev);
+		virtual bool _mouseEvent(GUIElement* element, const GUIMouseEvent& ev);
 		virtual void ownerWindowFocusChanged();
 		virtual void ownerTargetResized();
 

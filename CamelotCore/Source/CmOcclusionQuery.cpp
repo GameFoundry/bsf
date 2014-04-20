@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmOcclusionQuery.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 
     OcclusionQuery::OcclusionQuery() : 

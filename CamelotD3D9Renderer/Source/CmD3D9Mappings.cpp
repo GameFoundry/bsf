@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	//---------------------------------------------------------------------
 	D3DTEXTUREADDRESS D3D9Mappings::get(TextureAddressingMode tam, const D3DCAPS9& devCaps)
@@ -80,7 +80,7 @@ namespace CamelotFramework
 		return D3DBLEND_FORCE_DWORD;
 	}
 	//---------------------------------------------------------------------
-	D3DBLENDOP D3D9Mappings::get(CamelotFramework::BlendOperation sbo)
+	D3DBLENDOP D3D9Mappings::get(BansheeEngine::BlendOperation sbo)
 	{
 		switch(sbo)
 		{
@@ -495,13 +495,13 @@ namespace CamelotFramework
 		}
 	}
 	/****************************************************************************************/
-	D3DFORMAT D3D9Mappings::_getPF(PixelFormat camelotPf)
+	D3DFORMAT D3D9Mappings::_getPF(PixelFormat pf)
 	{
 		// DX9 uses different format semantics than most render systems, where most significant bit is signified by the
 		// first channel letter. For example in RGBA8 format, R is most-significant byte. Which is why most formats map to their
 		// reverse version in-engine as seen below.
 		// (This is not the case for floating point formats, EXCEPT for green-red one)
-		switch(camelotPf)
+		switch(pf)
 		{
 		case PF_B8G8R8A8:
 			return D3DFMT_A8R8G8B8;

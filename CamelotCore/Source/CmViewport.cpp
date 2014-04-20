@@ -5,7 +5,7 @@
 #include "CmMath.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	const Color Viewport::DEFAULT_CLEAR_COLOR = Color(143.0f / 255.0f, 111.0f / 255.0f, 0);
 

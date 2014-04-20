@@ -4,8 +4,6 @@
 #include "CmVector2.h"
 #include "CmFont.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIInputTool::GUIInputTool()
@@ -170,7 +168,7 @@ namespace BansheeEngine
 		return nearestChar;
 	}
 
-	CM::UINT32 GUIInputTool::getLineForChar(CM::UINT32 charIdx, bool newlineCountsOnNextLine) const
+	UINT32 GUIInputTool::getLineForChar(UINT32 charIdx, bool newlineCountsOnNextLine) const
 	{
 		UINT32 idx = 0;
 		for(auto& line : mLineDescs)
@@ -224,7 +222,7 @@ namespace BansheeEngine
 		return 0;
 	}
 
-	bool GUIInputTool::isNewline(CM::UINT32 inputIdx) const
+	bool GUIInputTool::isNewline(UINT32 inputIdx) const
 	{
 		if(mTextDesc.text.size() == 0)
 			return true;
@@ -245,7 +243,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool GUIInputTool::isNewlineChar(CM::UINT32 charIdx) const
+	bool GUIInputTool::isNewlineChar(UINT32 charIdx) const
 	{
 		if(mTextDesc.text[charIdx] == '\n')
 			return true;
@@ -264,7 +262,7 @@ namespace BansheeEngine
 		return true;
 	}
 
-	GUIInputLineDesc::GUIInputLineDesc(CM::UINT32 startChar, CM::UINT32 endChar, CM::UINT32 lineHeight, CM::INT32 lineYStart, bool includesNewline)
+	GUIInputLineDesc::GUIInputLineDesc(UINT32 startChar, UINT32 endChar, UINT32 lineHeight, INT32 lineYStart, bool includesNewline)
 		:mStartChar(startChar), mEndChar(endChar), mLineHeight(lineHeight), mLineYStart(lineYStart), mIncludesNewline(includesNewline)
 	{
 

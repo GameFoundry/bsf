@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmDrawOps.h"
 #include "CmSamplerState.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	/** \addtogroup Core
 	*  @{

@@ -1,11 +1,9 @@
 #include "BsGUIMenu.h"
 #include "BsGUIDropDownBox.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const CM::WString& name, std::function<void()> callback)
+	GUIMenuItem::GUIMenuItem(GUIMenuItem* parent, const WString& name, std::function<void()> callback)
 		:mParent(parent), mName(name), mCallback(callback), mIsSeparator(false)
 	{
 
@@ -23,7 +21,7 @@ namespace BansheeEngine
 			cm_delete<PoolAlloc>(child);
 	}
 
-	const GUIMenuItem* GUIMenuItem::findChild(const CM::WString& name) const
+	const GUIMenuItem* GUIMenuItem::findChild(const WString& name) const
 	{
 		auto iterFind = std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
 
@@ -33,7 +31,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	GUIMenuItem* GUIMenuItem::findChild(const CM::WString& name)
+	GUIMenuItem* GUIMenuItem::findChild(const WString& name)
 	{
 		auto iterFind = std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
 
@@ -43,7 +41,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void GUIMenuItem::removeChild(const CM::WString& name)
+	void GUIMenuItem::removeChild(const WString& name)
 	{
 		auto iterFind = std::find_if(begin(mChildren), end(mChildren), [&] (GUIMenuItem* x) { return x->getName() == name; });
 
@@ -65,17 +63,17 @@ namespace BansheeEngine
 
 	}
 
-	const GUIMenuItem* GUIMenu::addMenuItem(const CM::WString& path, std::function<void()> callback)
+	const GUIMenuItem* GUIMenu::addMenuItem(const WString& path, std::function<void()> callback)
 	{
 		return addMenuItemInternal(path, callback, false);
 	}
 
-	const GUIMenuItem* GUIMenu::addSeparator(const CM::WString& path)
+	const GUIMenuItem* GUIMenu::addSeparator(const WString& path)
 	{
 		return addMenuItemInternal(path, nullptr, true);
 	}
 
-	const GUIMenuItem* GUIMenu::addMenuItemInternal(const CM::WString& path, std::function<void()> callback, bool isSeparator)
+	const GUIMenuItem* GUIMenu::addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator)
 	{
 		Vector<WString>::type pathElements = StringUtil::split(path, L"/");
 
@@ -119,7 +117,7 @@ namespace BansheeEngine
 		return curSubMenu;
 	}
 
-	const GUIMenuItem* GUIMenu::getMenuItem(const CM::WString& path) const
+	const GUIMenuItem* GUIMenu::getMenuItem(const WString& path) const
 	{
 		Vector<WString>::type pathElements = StringUtil::split(path, L"/");
 

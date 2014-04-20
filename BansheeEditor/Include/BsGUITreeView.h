@@ -5,9 +5,9 @@
 #include "BsVirtualInput.h"
 #include <boost/signal.hpp>
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUITreeView : public BS::GUIElementContainer
+	class GUITreeView : public GUIElementContainer
 	{
 	protected:
 		enum class ScrollState
@@ -25,14 +25,14 @@ namespace BansheeEditor
 			virtual ~TreeElement();
 
 			TreeElement* mParent;
-			CM::Vector<TreeElement*>::type mChildren;
+			Vector<TreeElement*>::type mChildren;
 
-			BS::GUIToggle* mFoldoutBtn;
-			BS::GUILabel* mElement;
+			GUIToggle* mFoldoutBtn;
+			GUILabel* mElement;
 
-			CM::String mName;
+			String mName;
 
-			CM::UINT32 mSortedIdx;
+			UINT32 mSortedIdx;
 			bool mIsExpanded;
 			bool mIsSelected;
 			bool mIsVisible;
@@ -42,7 +42,7 @@ namespace BansheeEditor
 
 		struct InteractableElement
 		{
-			InteractableElement(TreeElement* parent, CM::UINT32 index, const CM::RectI& bounds)
+			InteractableElement(TreeElement* parent, UINT32 index, const RectI& bounds)
 				:parent(parent), index(index), bounds(bounds)
 			{ }
 
@@ -50,98 +50,98 @@ namespace BansheeEditor
 			TreeElement* getTreeElement() const;
 
 			TreeElement* parent;
-			CM::UINT32 index;
-			CM::RectI bounds;
+			UINT32 index;
+			RectI bounds;
 		};
 
 		struct SelectedElement
 		{
-			SelectedElement(TreeElement* elem, BS::GUITexture* back)
+			SelectedElement(TreeElement* elem, GUITexture* back)
 				:element(elem), background(back)
 			{ }
 
 			TreeElement* element;
-			BS::GUITexture* background;
+			GUITexture* background;
 		};
 
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
 		void update();
 
 	protected:
 		virtual ~GUITreeView();
 
-		CM::Vector2I _getOptimalSize() const;
+		Vector2I _getOptimalSize() const;
 		void updateClippedBounds();
 
-		virtual void _updateLayoutInternal(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height,
-			CM::RectI clipRect, CM::UINT8 widgetDepth, CM::UINT16 areaDepth);
+		virtual void _updateLayoutInternal(INT32 x, INT32 y, UINT32 width, UINT32 height,
+			RectI clipRect, UINT8 widgetDepth, UINT16 areaDepth);
 	protected:
-		static const CM::UINT32 ELEMENT_EXTRA_SPACING;
-		static const CM::UINT32 INDENT_SIZE;
-		static const CM::UINT32 INITIAL_INDENT_OFFSET;
-		static const CM::UINT32 DRAG_MIN_DISTANCE;
+		static const UINT32 ELEMENT_EXTRA_SPACING;
+		static const UINT32 INDENT_SIZE;
+		static const UINT32 INITIAL_INDENT_OFFSET;
+		static const UINT32 DRAG_MIN_DISTANCE;
 		static const float AUTO_EXPAND_DELAY_SEC;
 		static const float SCROLL_AREA_HEIGHT_PCT;
-		static const CM::UINT32 SCROLL_SPEED_PX_PER_SEC;
+		static const UINT32 SCROLL_SPEED_PX_PER_SEC;
 
-		CM::String mBackgroundStyle;
-		CM::String mElementBtnStyle;
-		CM::String mFoldoutBtnStyle;
-		CM::String mSelectionBackgroundStyle;
-		CM::String mEditBoxStyle;
-		CM::String mDragHighlightStyle;
-		CM::String mDragSepHighlightStyle;
+		String mBackgroundStyle;
+		String mElementBtnStyle;
+		String mFoldoutBtnStyle;
+		String mSelectionBackgroundStyle;
+		String mEditBoxStyle;
+		String mDragHighlightStyle;
+		String mDragSepHighlightStyle;
 
-		BS::GUITexture* mBackgroundImage;
+		GUITexture* mBackgroundImage;
 
-		CM::Vector<InteractableElement>::type mVisibleElements;
+		Vector<InteractableElement>::type mVisibleElements;
 
 		bool mIsElementSelected;
-		CM::Vector<SelectedElement>::type mSelectedElements;
+		Vector<SelectedElement>::type mSelectedElements;
 
 		TreeElement* mEditElement;
 		GUITreeViewEditBox* mNameEditBox;
 
-		CM::Vector2I mDragStartPosition;
-		CM::Vector2I mDragPosition;
+		Vector2I mDragStartPosition;
+		Vector2I mDragPosition;
 		bool mDragInProgress;
-		BS::GUITexture* mDragHighlight;
-		BS::GUITexture* mDragSepHighlight;
+		GUITexture* mDragHighlight;
+		GUITexture* mDragSepHighlight;
 
-		CM::RectI mTopScrollBounds;
-		CM::RectI mBottomScrollBounds;
+		RectI mTopScrollBounds;
+		RectI mBottomScrollBounds;
 		ScrollState mScrollState;
 		float mLastScrollTime;
 
-		CM::Stack<TreeElement*>::type mAutoExpandedElements;
+		Stack<TreeElement*>::type mAutoExpandedElements;
 		TreeElement* mMouseOverDragElement;
 		float mMouseOverDragElementTime;
 
-		static BS::VirtualButton mRenameVB;
-		static BS::VirtualButton mDeleteVB;
+		static VirtualButton mRenameVB;
+		static VirtualButton mDeleteVB;
 
-		GUITreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
-			const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
-			const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const BS::GUILayoutOptions& layoutOptions);
+		GUITreeView(const String& backgroundStyle, const String& elementBtnStyle, 
+			const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
+			const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions);
 
-		const GUITreeView::InteractableElement* findElementUnderCoord(const CM::Vector2I& coord) const;
+		const GUITreeView::InteractableElement* findElementUnderCoord(const Vector2I& coord) const;
 		TreeElement* getTopMostSelectedElement() const;
 		TreeElement* getBottomMostSelectedElement() const;
 
 		void enableEdit(TreeElement* element);
 		void disableEdit(bool acceptChanges);
 
-		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
-		virtual bool commandEvent(const BS::GUICommandEvent& ev);
-		virtual bool virtualButtonEvent(const BS::GUIVirtualButtonEvent& ev);
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+		virtual bool commandEvent(const GUICommandEvent& ev);
+		virtual bool virtualButtonEvent(const GUIVirtualButtonEvent& ev);
 		void elementToggled(TreeElement* element, bool toggled);
 
 		virtual TreeElement& getRootElement() = 0;
 		virtual const TreeElement& getRootElementConst() const = 0;
 		virtual void updateTreeElementHierarchy() = 0;
-		virtual void renameTreeElement(TreeElement* element, const CM::WString& name) = 0;
+		virtual void renameTreeElement(TreeElement* element, const WString& name) = 0;
 		virtual void deleteTreeElement(TreeElement* element) = 0;
 		virtual bool acceptDragAndDrop() const = 0;
 		virtual void dragAndDropStart() = 0;
@@ -162,7 +162,7 @@ namespace BansheeEditor
 		void temporarilyExpandElement(const GUITreeView::InteractableElement* mouseOverElement);
 		void scrollToElement(TreeElement* element, bool center);
 
-		BS::GUIScrollArea* findParentScrollArea() const;
+		GUIScrollArea* findParentScrollArea() const;
 
 		void onEditAccepted();
 		void onEditCanceled();

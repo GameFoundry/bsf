@@ -4,7 +4,7 @@
 #include "CmFontDesc.h"
 #include "CmVector2I.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class TextData
 	{

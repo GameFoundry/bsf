@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmD3D9GpuProgram.h"
 #include "CmException.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     //-----------------------------------------------------------------------------
     D3D9GpuProgramManager::D3D9GpuProgramManager()
 		:GpuProgramManager()

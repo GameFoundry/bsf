@@ -12,7 +12,7 @@ namespace BansheeEngine
 	public:
 		boost::signal<void(float newPosition)> onScrollPositionChanged;
 
-		void setHandleSize(CM::UINT32 size);
+		void setHandleSize(UINT32 size);
 		void setScrollPos(float pct);
 
 		float getScrollPos() const;
@@ -23,34 +23,34 @@ namespace BansheeEngine
 		 */
 		void scroll(float amount);
 
-		CM::UINT32 getMaxHandleSize() const;
-		CM::UINT32 getScrollableSize() const;
+		UINT32 getMaxHandleSize() const;
+		UINT32 getScrollableSize() const;
 
-		virtual CM::Vector2I _getOptimalSize() const;
+		virtual Vector2I _getOptimalSize() const;
 	protected:
-		GUIScrollBar(bool horizontal, const CM::String& styleName, const GUILayoutOptions& layoutOptions);
+		GUIScrollBar(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIScrollBar();
 
 		/**
 		 * @copydoc GUIElement::getNumRenderElements()
 		 */
-		virtual CM::UINT32 getNumRenderElements() const;
+		virtual UINT32 getNumRenderElements() const;
 
 		/**
 		 * @copydoc GUIElement::getMaterial()
 		 */
-		virtual const GUIMaterialInfo& getMaterial(CM::UINT32 renderElementIdx) const;
+		virtual const GUIMaterialInfo& getMaterial(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::getNumQuads()
 		 */
-		virtual CM::UINT32 getNumQuads(CM::UINT32 renderElementIdx) const;
+		virtual UINT32 getNumQuads(UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::fillBuffer()
 		 */
-		virtual void fillBuffer(CM::UINT8* vertices, CM::UINT8* uv, CM::UINT32* indices, CM::UINT32 startingQuad, 
-			CM::UINT32 maxNumQuads, CM::UINT32 vertexStride, CM::UINT32 indexStride, CM::UINT32 renderElementIdx) const;
+		virtual void fillBuffer(UINT8* vertices, UINT8* uv, UINT32* indices, UINT32 startingQuad, 
+			UINT32 maxNumQuads, UINT32 vertexStride, UINT32 indexStride, UINT32 renderElementIdx) const;
 
 		/**
 		 * @copydoc GUIElement::updateRenderElementsInternal()
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		 */
 		virtual void updateClippedBounds();
 
-		virtual CM::UINT32 _getRenderElementDepth(CM::UINT32 renderElementIdx) const;
+		virtual UINT32 _getRenderElementDepth(UINT32 renderElementIdx) const;
 	private:
 		GUILayout* mLayout;
 		ImageSprite* mImageSprite;
@@ -72,7 +72,7 @@ namespace BansheeEngine
 		GUIScrollBarHandle* mHandleBtn;
 		bool mHorizontal;
 
-		static const CM::UINT32 ButtonScrollAmount;
+		static const UINT32 ButtonScrollAmount;
 
 		void handleMoved(float handlePct);
 		void upButtonClicked();

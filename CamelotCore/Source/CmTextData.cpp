@@ -3,7 +3,7 @@
 #include "CmVector2.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const int SPACE_CHAR = 32;
 

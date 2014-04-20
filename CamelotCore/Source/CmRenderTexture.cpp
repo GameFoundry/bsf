@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmTextureManager.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	RenderTexture::RenderTexture()
 		:mColorSurface(nullptr), mDepthStencilSurface(nullptr)
@@ -78,7 +78,7 @@ namespace CamelotFramework
 
 			mWidth = texture->getWidth();
 			mHeight = texture->getHeight();
-			mColorDepth = CamelotFramework::PixelUtil::getNumElemBits(texture->getFormat());
+			mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
 			mActive = true;
 			mHwGamma = texture->isHardwareGammaEnabled();
 			mFSAA = texture->getFSAA();

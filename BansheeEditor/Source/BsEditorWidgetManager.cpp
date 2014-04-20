@@ -8,10 +8,7 @@
 #include "BsDockManager.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>>::type EditorWidgetManager::QueuedCreateCallbacks;
 
@@ -68,7 +65,7 @@ namespace BansheeEditor
 		EditorWidgetBase::destroy(widget);
 	}
 
-	EditorWidgetBase* EditorWidgetManager::create(const CM::String& name, EditorWidgetContainer& parentContainer)
+	EditorWidgetBase* EditorWidgetManager::create(const String& name, EditorWidgetContainer& parentContainer)
 	{
 		auto iterFind = mActiveWidgets.find(name);
 

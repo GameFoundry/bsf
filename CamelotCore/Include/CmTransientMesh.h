@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmMeshBase.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT TransientMesh : public MeshBase
 	{

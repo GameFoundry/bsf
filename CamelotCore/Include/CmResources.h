@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmWorkQueue.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT Resources : public Module<Resources>
 	{

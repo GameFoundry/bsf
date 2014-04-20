@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "CmRenderSystemFactory.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	typedef std::shared_ptr<RenderSystemFactory> RenderSystemFactoryPtr;
 

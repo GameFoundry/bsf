@@ -37,7 +37,7 @@ THE SOFTWARE.
 /// Extra GL constants
 #define GL_DEPTH24_STENCIL8_EXT                           0x88F0
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {  
     /** Base class for GL Render Textures
     */

@@ -5,16 +5,16 @@
 #include "BsResourceMeta.h"
 #include "CmImportOptions.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class ResourceMetaRTTI : public CM::RTTIType<ResourceMeta, CM::IReflectable, ResourceMetaRTTI>
+	class ResourceMetaRTTI : public RTTIType<ResourceMeta, IReflectable, ResourceMetaRTTI>
 	{
 	private:
-		CM::String& getUUID(ResourceMeta* obj) { return obj->mUUID; }
-		void setUUID(ResourceMeta* obj, CM::String& val) { obj->mUUID = val; } 
+		String& getUUID(ResourceMeta* obj) { return obj->mUUID; }
+		void setUUID(ResourceMeta* obj, String& val) { obj->mUUID = val; } 
 
-		CM::ImportOptionsPtr getImportOptions(ResourceMeta* obj) { return obj->mImportOptions; }
-		void setImportOptions(ResourceMeta* obj, CM::ImportOptionsPtr val) { obj->mImportOptions = val; }
+		ImportOptionsPtr getImportOptions(ResourceMeta* obj) { return obj->mImportOptions; }
+		void setImportOptions(ResourceMeta* obj, ImportOptionsPtr val) { obj->mImportOptions = val; }
 
 	public:
 		ResourceMetaRTTI()
@@ -23,18 +23,18 @@ namespace BansheeEditor
 			addReflectablePtrField("mImportOptions", 1, &ResourceMetaRTTI::getImportOptions, &ResourceMetaRTTI::setImportOptions);
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "ResourceMeta";
+			static String name = "ResourceMeta";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_ResourceMeta;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
 			return ResourceMeta::createEmpty();
 		}

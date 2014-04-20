@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSerializableArray : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableArray : public IReflectable
 	{
 	private:
 		struct ConstructPrivately {};
@@ -24,10 +24,10 @@ namespace BansheeEngine
 		::MonoClass* mElementMonoClass;
 
 		ScriptSerializableTypeInfoArrayPtr mArrayTypeInfo;
-		CM::Vector<ScriptSerializableFieldDataPtr>::type mArrayEntries;
+		Vector<ScriptSerializableFieldDataPtr>::type mArrayEntries;
 		
-		CM::Vector<CM::UINT32>::type mNumElements;
-		CM::UINT32 mElemSize;
+		Vector<UINT32>::type mNumElements;
+		UINT32 mElemSize;
 
 		void initMonoObjects();
 
@@ -41,13 +41,13 @@ namespace BansheeEngine
 		 */
 		void deserializeManagedInstance();
 
-		void setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val);
-		ScriptSerializableFieldDataPtr getFieldData(CM::UINT32 arrayIdx);
+		void setFieldData(UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val);
+		ScriptSerializableFieldDataPtr getFieldData(UINT32 arrayIdx);
 
-		void setValue(CM::UINT32 arrayIdx, void* val);
+		void setValue(UINT32 arrayIdx, void* val);
 
-		CM::UINT32 toSequentialIdx(const CM::Vector<CM::UINT32>::type& idx) const;
-		CM::UINT32 getLength(CM::UINT32 dimension) const;
+		UINT32 toSequentialIdx(const Vector<UINT32>::type& idx) const;
+		UINT32 getLength(UINT32 dimension) const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 	public:
 		friend class ScriptSerializableArrayRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

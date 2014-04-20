@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmLog.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class Log;
 
@@ -54,10 +54,10 @@ namespace CamelotFramework
 
 	CM_UTILITY_EXPORT Debug& gDebug();
 
-#define LOGDBG(x) CamelotFramework::gDebug().logDebug((x));
-#define LOGINFO(x) CamelotFramework::gDebug().logInfo((x));
-#define LOGWRN(x) CamelotFramework::gDebug().logWarning((x));
-#define LOGERR(x) CamelotFramework::gDebug().logError((x));
+#define LOGDBG(x) BansheeEngine::gDebug().logDebug((x));
+#define LOGINFO(x) BansheeEngine::gDebug().logInfo((x));
+#define LOGWRN(x) BansheeEngine::gDebug().logWarning((x));
+#define LOGERR(x) BansheeEngine::gDebug().logError((x));
 
 #define CM_ASSERT(x) assert(x)
 }

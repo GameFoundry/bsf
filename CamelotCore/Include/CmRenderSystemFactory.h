@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class RenderSystem;
 	typedef std::shared_ptr<RenderSystem> RenderSystemPtr;

@@ -4,7 +4,7 @@
 #include "CmModule.h"
 #include "boost/signals.hpp"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Loosely based on ISO 639-1 two letter language codes

@@ -10,11 +10,9 @@
 #include "BsGUISpace.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	GUIScrollBarHorz::GUIScrollBarHorz(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIScrollBarHorz::GUIScrollBarHorz(const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIScrollBar(true, styleName, layoutOptions)
 	{
 
@@ -25,12 +23,12 @@ namespace BansheeEngine
 
 	}
 
-	GUIScrollBarHorz* GUIScrollBarHorz::create(const CM::String& styleName)
+	GUIScrollBarHorz* GUIScrollBarHorz::create(const String& styleName)
 	{
 		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIScrollBarHorz* GUIScrollBarHorz::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIScrollBarHorz, PoolAlloc>()) GUIScrollBarHorz(getStyleName<GUIScrollBarHorz>(styleName), GUILayoutOptions::create(layoutOptions));
 	}

@@ -3,7 +3,7 @@
 #include "CmGLPrerequisites.h"
 #include "CmGpuBuffer.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_RSGL_EXPORT GLGpuBuffer : public GpuBuffer
 	{

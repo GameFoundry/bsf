@@ -4,7 +4,7 @@
 #include "CmRTTIField.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Base class containing common functionality for a plain class field. 

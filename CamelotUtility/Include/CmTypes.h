@@ -4,7 +4,7 @@
 
 // Contains commonly used types
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	typedef char INT8;
 	typedef unsigned char UINT8;

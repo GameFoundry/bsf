@@ -4,7 +4,7 @@
 #include "CmDynLib.h"
 #include "CmDynLibManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	RenderSystemManager::RenderSystemManager()
 		:mRenderSystemInitialized(false)

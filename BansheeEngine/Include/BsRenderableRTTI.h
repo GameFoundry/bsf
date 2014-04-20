@@ -7,19 +7,19 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT RenderableRTTI : public CM::RTTIType<Renderable, CM::Component, RenderableRTTI>
+	class BS_EXPORT RenderableRTTI : public RTTIType<Renderable, Component, RenderableRTTI>
 	{
 	private:
-		CM::HMesh& getMesh(Renderable* obj) { return obj->mMesh; }
-		void setMesh(Renderable* obj, CM::HMesh& val) { obj->mMesh = val; } 
+		HMesh& getMesh(Renderable* obj) { return obj->mMesh; }
+		void setMesh(Renderable* obj, HMesh& val) { obj->mMesh = val; } 
 
-		CM::UINT64& getLayer(Renderable* obj) { return obj->mLayer; }
-		void setLayer(Renderable* obj, CM::UINT64& val) { obj->mLayer = val; }
+		UINT64& getLayer(Renderable* obj) { return obj->mLayer; }
+		void setLayer(Renderable* obj, UINT64& val) { obj->mLayer = val; }
 
-		CM::HMaterial& getMaterial(Renderable* obj, CM::UINT32 idx) { return obj->mMaterials[idx]; }
-		void setMaterial(Renderable* obj, CM::UINT32 idx, CM::HMaterial& val) { obj->setMaterial(idx, val); }
-		CM::UINT32 getNumMaterials(Renderable* obj) { return (CM::UINT32)obj->mMaterials.size(); }
-		void setNumMaterials(Renderable* obj, CM::UINT32 num) { obj->setNumMaterials(num); }
+		HMaterial& getMaterial(Renderable* obj, UINT32 idx) { return obj->mMaterials[idx]; }
+		void setMaterial(Renderable* obj, UINT32 idx, HMaterial& val) { obj->setMaterial(idx, val); }
+		UINT32 getNumMaterials(Renderable* obj) { return (UINT32)obj->mMaterials.size(); }
+		void setNumMaterials(Renderable* obj, UINT32 num) { obj->setNumMaterials(num); }
 
 	public:
 		RenderableRTTI()
@@ -29,20 +29,20 @@ namespace BansheeEngine
 			addReflectableArrayField("mMaterials", 2, &RenderableRTTI::getMaterial, &RenderableRTTI::getNumMaterials, &RenderableRTTI::setMaterial, &RenderableRTTI::setNumMaterials);
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "Renderable";
+			static String name = "Renderable";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_Renderable;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return CM::GameObjectRTTI::createGameObject<Renderable>();
+			return GameObjectRTTI::createGameObject<Renderable>();
 		}
 	};
 }

@@ -5,8 +5,6 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptHString::ScriptHString(const HString& string)
@@ -48,7 +46,7 @@ namespace BansheeEngine
 		nativeInstance->setParameter(idx, MonoUtil::monoToWString(value));
 	}
 
-	void ScriptHString::internal_getValue(CM::HString* nativeInstance, MonoString** value)
+	void ScriptHString::internal_getValue(HString* nativeInstance, MonoString** value)
 	{
 		*value = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->getValue());
 	}

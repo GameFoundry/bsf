@@ -40,8 +40,6 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmSceneObject.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine 
 {
 	const float Camera::INFINITE_FAR_PLANE_ADJUST = 0.00001f;
@@ -487,7 +485,7 @@ namespace BansheeEngine
 			} // ortho            
 		} // !mCustomProjMatrix
 
-		RenderSystem* renderSystem = CamelotFramework::RenderSystem::instancePtr();
+		RenderSystem* renderSystem = BansheeEngine::RenderSystem::instancePtr();
 		// API specific
 		renderSystem->convertProjectionMatrix(mProjMatrix, mProjMatrixRS);
 		// API specific for Gpu Programs
@@ -790,4 +788,4 @@ namespace BansheeEngine
 	{
 		return Camera::getRTTIStatic();
 	}
-} // namespace CamelotFramework
+} 

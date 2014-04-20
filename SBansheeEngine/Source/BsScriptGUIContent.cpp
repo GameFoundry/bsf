@@ -9,8 +9,6 @@
 #include "BsScriptSpriteTexture.h"
 #include "BsSpriteTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	MonoField* ScriptGUIContent::mTextField;
@@ -31,7 +29,7 @@ namespace BansheeEngine
 		mImageField = metaData.scriptClass->getField("_image");
 	}
 
-	const CM::HString& ScriptGUIContent::getText(MonoObject* instance)
+	const HString& ScriptGUIContent::getText(MonoObject* instance)
 	{
 		MonoObject* textManaged = nullptr;
 		mTextField->getValue(instance, &textManaged);
@@ -43,7 +41,7 @@ namespace BansheeEngine
 		return textScript->getInternalValue();
 	}
 
-	const CM::HString& ScriptGUIContent::getTooltip(MonoObject* instance)
+	const HString& ScriptGUIContent::getTooltip(MonoObject* instance)
 	{
 		MonoObject* tooltipManaged = nullptr;
 		mTooltipField->getValue(instance, &tooltipManaged);

@@ -3,7 +3,7 @@
 #include "CmSphere.h"
 #include "CmAABox.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	std::pair<bool, float> Ray::intersects(const Plane& p) const
 	{

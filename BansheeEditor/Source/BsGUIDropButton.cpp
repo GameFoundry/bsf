@@ -10,10 +10,7 @@
 #include "CmTexture.h"
 #include "BsDragAndDropManager.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const String& GUIDropButton::getGUITypeName()
 	{
@@ -21,7 +18,7 @@ namespace BansheeEditor
 		return name;
 	}
 
-	GUIDropButton::GUIDropButton(CM::UINT32 dragType, const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIDropButton::GUIDropButton(UINT32 dragType, const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIButtonBase(styleName, GUIContent(HString(L"None")), layoutOptions)
 	{
 
@@ -30,13 +27,13 @@ namespace BansheeEditor
 	GUIDropButton::~GUIDropButton()
 	{ }
 
-	GUIDropButton* GUIDropButton::create(CM::UINT32 dragType, const CM::String& styleName)
+	GUIDropButton* GUIDropButton::create(UINT32 dragType, const String& styleName)
 	{
 		return new (cm_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
 			getStyleName<GUIDropButton>(styleName), GUILayoutOptions::create());
 	}
 
-	GUIDropButton* GUIDropButton::create(CM::UINT32 dragType, const GUIOptions& layoutOptions, const CM::String& styleName)
+	GUIDropButton* GUIDropButton::create(UINT32 dragType, const GUIOptions& layoutOptions, const String& styleName)
 	{
 		return new (cm_alloc<GUIDropButton, PoolAlloc>()) GUIDropButton(dragType, 
 			getStyleName<GUIDropButton>(styleName), GUILayoutOptions::create(layoutOptions));

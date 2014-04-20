@@ -1,6 +1,6 @@
 #pragma once
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Specialized allocator for profiler so we can avoid tracking internal profiler memory allocations

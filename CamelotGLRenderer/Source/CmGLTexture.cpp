@@ -47,7 +47,7 @@ THE SOFTWARE.
 #  include <wingdi.h>
 #endif
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     GLTexture::GLTexture(GLSupport& support) 
         : Texture(),

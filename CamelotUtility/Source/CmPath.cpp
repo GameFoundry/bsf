@@ -1,6 +1,6 @@
 #include "CmPath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 
 }

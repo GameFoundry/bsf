@@ -1,10 +1,7 @@
 #include "BsResourceMeta.h"
 #include "BsResourceMetaRTTI.h"
 
-using namespace BansheeEngine;
-using namespace CamelotFramework;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	ResourceMeta::ResourceMeta(const ConstructPrivately& dummy)
 	{

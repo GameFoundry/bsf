@@ -11,7 +11,7 @@
 #include "CmException.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	UINT32 D3D11HLSLProgram::globalProgramId = 0;
 

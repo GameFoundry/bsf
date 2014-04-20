@@ -18,16 +18,16 @@ namespace BansheeEngine
 	public:
 		GUIOption();
 
-		static GUIOption fixedWidth(CM::UINT32 value);
-		static GUIOption flexibleWidth(CM::UINT32 min = 0, CM::UINT32 max = 0);
+		static GUIOption fixedWidth(UINT32 value);
+		static GUIOption flexibleWidth(UINT32 min = 0, UINT32 max = 0);
 
-		static GUIOption fixedHeight(CM::UINT32 value);
-		static GUIOption flexibleHeight(CM::UINT32 min = 0, CM::UINT32 max = 0);
+		static GUIOption fixedHeight(UINT32 value);
+		static GUIOption flexibleHeight(UINT32 min = 0, UINT32 max = 0);
 
 	private:
 		friend struct GUILayoutOptions;
 
-		CM::UINT32 min, max;
+		UINT32 min, max;
 		Type type;
 	};
 
@@ -60,6 +60,6 @@ namespace BansheeEngine
 	private:
 		friend struct GUILayoutOptions;
 
-		CM::Vector<GUIOption>::type mOptions;
+		Vector<GUIOption>::type mOptions;
 	};
 }

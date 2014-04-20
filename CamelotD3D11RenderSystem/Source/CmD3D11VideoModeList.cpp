@@ -2,7 +2,7 @@
 #include "CmException.h"
 #include "CmD3D11Driver.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11VideoModeList::D3D11VideoModeList(D3D11Driver* driver, UINT32 adapterOutput)
 	{

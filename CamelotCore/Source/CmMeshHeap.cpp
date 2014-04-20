@@ -9,7 +9,7 @@
 #include "CmMath.h"
 #include "CmEventQuery.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const float MeshHeap::GrowPercent = 1.5f;
 

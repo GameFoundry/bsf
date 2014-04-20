@@ -3,10 +3,7 @@
 #include "CmSceneObject.h"
 #include "BsRenderable.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	DbgTestGameObjectRef::DbgTestGameObjectRef(const HSceneObject& parent)
 		:Component(parent)

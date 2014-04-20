@@ -5,7 +5,7 @@
 #include "CmIndexData.h"
 #include "CmDrawOps.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Mesh heap allows you to quickly allocate and deallocate a 

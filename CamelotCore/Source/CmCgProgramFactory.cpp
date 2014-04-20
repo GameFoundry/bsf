@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmCgProgramFactory.h"
 #include "CmCgProgram.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     //-----------------------------------------------------------------------
     String CgProgramFactory::sLanguageName = "cg";
     //-----------------------------------------------------------------------

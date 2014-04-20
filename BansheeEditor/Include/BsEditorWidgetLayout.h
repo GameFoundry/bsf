@@ -3,9 +3,9 @@
 #include "BsEditorPrerequisites.h"
 #include "CmIReflectable.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class EditorWidgetLayout : public CM::IReflectable
+	class EditorWidgetLayout : public IReflectable
 	{
 	public:
 		struct Entry
@@ -14,10 +14,10 @@ namespace BansheeEditor
 			Entry();
 			~Entry();
 
-			CM::Vector<CM::String>::type widgetNames;
+			Vector<String>::type widgetNames;
 			bool isDocked;
-			CM::INT32 x, y;
-			CM::UINT32 width, height;
+			INT32 x, y;
+			UINT32 width, height;
 		};
 
 	private:
@@ -27,11 +27,11 @@ namespace BansheeEditor
 		EditorWidgetLayout(const DockManagerLayoutPtr& dockLayout);
 		EditorWidgetLayout(const PrivatelyConstruct& dummy) { }
 
-		CM::Vector<Entry>::type& getEntries() { return mEntries; }
+		Vector<Entry>::type& getEntries() { return mEntries; }
 		const DockManagerLayoutPtr& getDockLayout() const { return mDockLayout; }
 
 	private:
-		CM::Vector<Entry>::type mEntries;
+		Vector<Entry>::type mEntries;
 		DockManagerLayoutPtr mDockLayout;
 
 		/************************************************************************/
@@ -39,7 +39,7 @@ namespace BansheeEditor
 		/************************************************************************/
 	public:
 		friend class EditorWidgetLayoutRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;	
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

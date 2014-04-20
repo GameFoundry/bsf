@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Represents one engine module. Essentially it is a specialized type of singleton.

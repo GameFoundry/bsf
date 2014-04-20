@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmGpuParamBlockBuffer.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_D3D11_EXPORT D3D11GpuParamBlockBuffer : public GpuParamBlockBuffer
 	{

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmGLPrerequisites.h"
 #include "CmGpuProgramManager.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_RSGL_EXPORT GLGpuProgramManager : public GpuProgramManager
 	{
@@ -45,6 +45,6 @@ namespace CamelotFramework
 			GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
 	};
 
-}; //namespace CamelotFramework
+};
 
 #endif //__GLGpuProgramManager_H__

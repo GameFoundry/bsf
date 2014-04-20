@@ -3,9 +3,9 @@
 #include "BsEditorPrerequisites.h"
 #include "CmModule.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class UndoRedo : public CM::Module<UndoRedo>
+	class UndoRedo : public Module<UndoRedo>
 	{
 	public:
 		UndoRedo();
@@ -17,16 +17,16 @@ namespace BansheeEditor
 		void registerCommand(EditorCommand* command);
 
 	private:
-		static const CM::UINT32 MAX_STACK_ELEMENTS;
+		static const UINT32 MAX_STACK_ELEMENTS;
 
 		EditorCommand** mUndoStack;
 		EditorCommand** mRedoStack;
 
-		CM::UINT32 mUndoStackPtr;
-		CM::UINT32 mUndoNumElements;
+		UINT32 mUndoStackPtr;
+		UINT32 mUndoNumElements;
 
-		CM::UINT32 mRedoStackPtr;
-		CM::UINT32 mRedoNumElements;
+		UINT32 mRedoStackPtr;
+		UINT32 mRedoNumElements;
 
 		void clearUndoStack();
 		void clearRedoStack();

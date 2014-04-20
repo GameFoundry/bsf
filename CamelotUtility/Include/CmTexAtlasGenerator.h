@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmVector2.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Represents a single element used as in input to

@@ -1,7 +1,5 @@
 #include "BsGUIMouseEvent.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIMouseEvent::GUIMouseEvent()
@@ -108,7 +106,7 @@ namespace BansheeEngine
 		mWheelScrollAmount = 0.0f;
 	}
 
-	void GUIMouseEvent::setDragAndDropDroppedData(const Vector2I& position, CM::UINT32 dragTypeId, void* dragData)
+	void GUIMouseEvent::setDragAndDropDroppedData(const Vector2I& position, UINT32 dragTypeId, void* dragData)
 	{
 		mType = GUIMouseEventType::MouseDragAndDropDropped;
 		mPosition = position;
@@ -119,7 +117,7 @@ namespace BansheeEngine
 		mDragData = dragData;
 	}
 
-	void GUIMouseEvent::setDragAndDropDraggedData(const Vector2I& position, CM::UINT32 dragTypeId, void* dragData)
+	void GUIMouseEvent::setDragAndDropDraggedData(const Vector2I& position, UINT32 dragTypeId, void* dragData)
 	{
 		mType = GUIMouseEventType::MouseDragAndDropDragged;
 		mPosition = position;

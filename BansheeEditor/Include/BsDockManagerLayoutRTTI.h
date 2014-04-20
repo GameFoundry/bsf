@@ -4,9 +4,9 @@
 #include "BsDockManagerLayout.h"
 #include "CmRTTIType.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class DockManagerLayoutRTTI : public CM::RTTIType<DockManagerLayout, CM::IReflectable, DockManagerLayoutRTTI>
+	class DockManagerLayoutRTTI : public RTTIType<DockManagerLayout, IReflectable, DockManagerLayoutRTTI>
 	{
 	private:
 		DockManagerLayout::Entry& getRootEntry(DockManagerLayout* obj) { return obj->mRootEntry; }
@@ -18,31 +18,31 @@ namespace BansheeEditor
 			addPlainField("mRootEntry", 0, &DockManagerLayoutRTTI::getRootEntry, &DockManagerLayoutRTTI::setRootEntry);
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "DockManagerLayout";
+			static String name = "DockManagerLayout";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_DockManagerLayout;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return CM::cm_shared_ptr<DockManagerLayout>();
+			return cm_shared_ptr<DockManagerLayout>();
 		}
 	};
 }
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
-	template<> struct CM::RTTIPlainType<BansheeEditor::DockManagerLayout::Entry>
+	template<> struct RTTIPlainType<BansheeEngine::DockManagerLayout::Entry>
 	{	
-		enum { id = BansheeEditor::TID_DockManagerLayoutEntry }; enum { hasDynamicSize = 1 };
+		enum { id = BansheeEngine::TID_DockManagerLayoutEntry }; enum { hasDynamicSize = 1 };
 
-		static void toMemory(const BansheeEditor::DockManagerLayout::Entry& data, char* memory)
+		static void toMemory(const BansheeEngine::DockManagerLayout::Entry& data, char* memory)
 		{ 
 			UINT32 size = 0;
 			char* memoryStart = memory;
@@ -63,7 +63,7 @@ namespace CamelotFramework
 			memcpy(memoryStart, &size, sizeof(UINT32));
 		}
 
-		static UINT32 fromMemory(BansheeEditor::DockManagerLayout::Entry& data, char* memory)
+		static UINT32 fromMemory(BansheeEngine::DockManagerLayout::Entry& data, char* memory)
 		{ 
 			UINT32 size = 0;
 			memcpy(&size, memory, sizeof(UINT32));
@@ -76,8 +76,8 @@ namespace CamelotFramework
 
 			if(!data.isLeaf)
 			{
-				data.children[0] = cm_new<BansheeEditor::DockManagerLayout::Entry>();
-				data.children[1] = cm_new<BansheeEditor::DockManagerLayout::Entry>();
+				data.children[0] = cm_new<BansheeEngine::DockManagerLayout::Entry>();
+				data.children[1] = cm_new<BansheeEngine::DockManagerLayout::Entry>();
 
 				memory = rttiReadElem(*data.children[0], memory);
 				memory = rttiReadElem(*data.children[1], memory);
@@ -89,7 +89,7 @@ namespace CamelotFramework
 			return size;
 		}
 
-		static UINT32 getDynamicSize(const BansheeEditor::DockManagerLayout::Entry& data)	
+		static UINT32 getDynamicSize(const BansheeEngine::DockManagerLayout::Entry& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32) + rttiGetElemSize(data.isLeaf) + rttiGetElemSize(data.horizontalSplit) + 
 				rttiGetElemSize(data.splitPosition) + rttiGetElemSize(data.widgetNames);

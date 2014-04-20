@@ -7,8 +7,6 @@
 #include "BsMonoMethod.h"
 #include "BsMonoProperty.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptSerializableList::ScriptSerializableList(const ConstructPrivately& dummy)
@@ -81,7 +79,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptSerializableList::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
+	void ScriptSerializableList::setFieldData(UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
 		mItemProp->setIndexed(mManagedInstance, &arrayIdx, val->getValue(mListTypeInfo->mElementType));
 	}
@@ -94,7 +92,7 @@ namespace BansheeEngine
 		mAddMethod->invoke(mManagedInstance, params);
 	}
 
-	ScriptSerializableFieldDataPtr ScriptSerializableList::getFieldData(CM::UINT32 arrayIdx)
+	ScriptSerializableFieldDataPtr ScriptSerializableList::getFieldData(UINT32 arrayIdx)
 	{
 		MonoObject* obj = mItemProp->getIndexed(mManagedInstance, &arrayIdx);
 

@@ -3,15 +3,15 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIFieldBase.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class BS_ED_EXPORT GUIFloatField : public TGUIField<GUIFloatField>
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		GUIFloatField(const PrivatelyConstruct& dummy, const BS::GUIContent& labelContent, CM::UINT32 labelWidth,
-			const CM::String& labelStyle, const CM::String& inputBoxStyle, const BS::GUILayoutOptions& layoutOptions, bool withLabel);
+		GUIFloatField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
+			const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel);
 
 		float getValue() const;
 		void setValue(float value);
@@ -24,13 +24,13 @@ namespace BansheeEditor
 	protected:
 		static const float DRAG_SPEED;
 
-		BS::GUIInputBox* mInputBox;
-		CM::INT32 mLastDragPos;
+		GUIInputBox* mInputBox;
+		INT32 mLastDragPos;
 		bool mIsDragging;
 
-		bool _hasCustomCursor(const CM::Vector2I position, BS::CursorType& type) const;
-		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-		static bool floatFilter(const CM::WString& str);
+		static bool floatFilter(const WString& str);
 	};
 }

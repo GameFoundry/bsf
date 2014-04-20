@@ -1,7 +1,7 @@
 #include "CmGameObjectManager.h"
 #include "CmGameObject.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GameObjectManager::GameObjectManager()
 		:mNextAvailableID(1), mIsDeserializationActive(false)

@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "CmD3D9Prerequisites.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	/** Represents a Direct3D rendering resource.
 	Provide unified interface to

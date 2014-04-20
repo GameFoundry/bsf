@@ -6,13 +6,11 @@
 #include "CmGLTexture.h"
 #include "CmWin32Window.h"
 
-using namespace CamelotFramework;
-
 #if CM_THREAD_SUPPORT != 1
-GLenum __stdcall wglewContextInit (CamelotFramework::GLSupport *glSupport);
+GLenum __stdcall wglewContextInit (BansheeEngine::GLSupport *glSupport);
 #endif
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	Win32GLSupport::Win32GLSupport()
         : mInitialWindow(0)

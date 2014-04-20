@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	}
 
-	ScriptMeta::ScriptMeta(const CM::String& assembly, const CM::String& ns, const CM::String& name, std::function<void()> initCallback)
+	ScriptMeta::ScriptMeta(const String& assembly, const String& ns, const String& name, std::function<void()> initCallback)
 		:assembly(assembly), ns(ns), name(name), initCallback(initCallback)
 	{
 

@@ -2,8 +2,6 @@
 #include "BsForwardRendererFactory.h"
 #include "CmRendererManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	extern "C" BS_FWDRND_EXPORT const String& getPluginName()

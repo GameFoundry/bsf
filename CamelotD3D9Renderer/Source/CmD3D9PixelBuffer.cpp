@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmBitwise.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	D3D9PixelBuffer::D3D9PixelBuffer(GpuBufferUsage usage, D3D9Texture* ownerTexture)
 		:PixelBuffer(0, 0, 0, PF_UNKNOWN, usage, false),
@@ -303,7 +303,7 @@ namespace CamelotFramework
 	}
 
 	//-----------------------------------------------------------------------------  
-	CamelotFramework::PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
+	BansheeEngine::PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
 													   const PixelVolume &lockBox, 
 													   DWORD flags)
 	{

@@ -12,17 +12,17 @@ namespace BansheeEngine
 	 * 			
 	 * @note	Thread safe.
 	 */
-	class BS_EXPORT Cursor : public CM::Module<Cursor>
+	class BS_EXPORT Cursor : public Module<Cursor>
 	{
 		struct CustomIcon
 		{
 			CustomIcon() {}
-			CustomIcon(const CM::PixelData& pixelData, const CM::Vector2I& hotSpot)
+			CustomIcon(const PixelData& pixelData, const Vector2I& hotSpot)
 				:hotSpot(hotSpot), pixelData(pixelData)
 			{ }
 
-			CM::Vector2I hotSpot;
-			CM::PixelData pixelData;
+			Vector2I hotSpot;
+			PixelData pixelData;
 		};
 
 	public:
@@ -31,12 +31,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Moves the cursor to the specified screen position.
 		 */
-		void setScreenPosition(const CM::Vector2I& screenPos);
+		void setScreenPosition(const Vector2I& screenPos);
 
 		/**
 		 * @brief	Retrieves the cursor position in screen coordinates.
 		 */
-		CM::Vector2I getScreenPosition();
+		Vector2I getScreenPosition();
 
 		/**
 		 * @brief	Hides the cursor.
@@ -51,12 +51,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Limit cursor movement to the specified window.
 		 */
-		void clipToWindow(const CM::RenderWindow& window);
+		void clipToWindow(const RenderWindow& window);
 
 		/**
 		 * @brief	Limit cursor movement to specific area on the screen.
 		 */
-		void clipToRect(const CM::RectI& screenRect);
+		void clipToRect(const RectI& screenRect);
 
 		/**
 		 * @brief	Disables cursor clipping that was set using any of the "clipTo*" methods.
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		 * 			
 		 * @param	name		The name to identify the cursor, one set previously by calling "addCursorIcon".
 		 */
-		void setCursor(const CM::String& name);
+		void setCursor(const String& name);
 
 		/**
 		 * @brief	Registers a new custom cursor icon you can then set by calling "setCursor".
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		 * @note	Stores an internal copy of the pixel data. Clear it by calling "removeCursorIcon".
 		 * 			If a custom icon with the same name already exists it will be replaced.
 		 */
-		void setCursorIcon(const CM::String& name, const CM::PixelData& pixelData, const CM::Vector2I& hotSpot);
+		void setCursorIcon(const String& name, const PixelData& pixelData, const Vector2I& hotSpot);
 
 		/**
 		 * @brief	Registers a new custom cursor icon you can then set by calling "setCursor".
@@ -97,12 +97,12 @@ namespace BansheeEngine
 		 * @note	Stores an internal copy of the pixel data. Clear it by calling "removeCursorIcon".
 		 * 			If a custom icon with the same type already exists it will be replaced.
 		 */
-		void setCursorIcon(CursorType type, const CM::PixelData& pixelData, const CM::Vector2I& hotSpot);
+		void setCursorIcon(CursorType type, const PixelData& pixelData, const Vector2I& hotSpot);
 
 		/**
 		 * @brief	Removes a custom cursor icon and releases any data associated with it.
 		 */
-		void clearCursorIcon(const CM::String& name);
+		void clearCursorIcon(const String& name);
 
 		/**
 		 * @brief	Removes a custom cursor icon and releases any data associated with it. Restores
@@ -111,10 +111,10 @@ namespace BansheeEngine
 		void clearCursorIcon(CursorType type);
 
 	private:
-		CM::UnorderedMap<CM::String, CM::UINT32>::type mCustomIconNameToId;
-		CM::UnorderedMap<CM::UINT32, CustomIcon>::type mCustomIcons;
-		CM::UINT32 mNextUniqueId;
-		CM::UINT32 mActiveCursorId;
+		UnorderedMap<String, UINT32>::type mCustomIconNameToId;
+		UnorderedMap<UINT32, CustomIcon>::type mCustomIcons;
+		UINT32 mNextUniqueId;
+		UINT32 mActiveCursorId;
 
 		void restoreCursorIcon(CursorType type);
 		void updateCursorImage();

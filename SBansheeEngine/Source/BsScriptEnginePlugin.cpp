@@ -10,16 +10,14 @@
 #include "CmSceneObject.h"
 #include "BsMonoUtil.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	void dbgTestComponentClone(MonoObject* instance)
 	{
 		ScriptSceneObject* nativeInstance = ScriptSceneObject::toNative(instance);
 
-		CM::HSceneObject SO = static_object_cast<CM::SceneObject>(nativeInstance->getNativeHandle());
-		CM::HSceneObject cloneSO = SO->clone();
+		HSceneObject SO = static_object_cast<SceneObject>(nativeInstance->getNativeHandle());
+		HSceneObject cloneSO = SO->clone();
 
 		cloneSO->setParent(SO);
 	}
@@ -40,9 +38,9 @@ namespace BansheeEngine
 
 	extern "C" BS_SCR_BE_EXPORT void* loadPlugin()
 	{
-		const CM::String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEngine.dll";
-		const CM::String ENGINE_ASSEMBLY_NAME = BansheeEngineAssemblyName;
-		const CM::String ASSEMBLY_ENTRY_POINT = "Program::Main";
+		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEngine.dll";
+		const String ENGINE_ASSEMBLY_NAME = BansheeEngineAssemblyName;
+		const String ASSEMBLY_ENTRY_POINT = "Program::Main";
 
 		MonoAssembly& bansheeEngineAssembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
 

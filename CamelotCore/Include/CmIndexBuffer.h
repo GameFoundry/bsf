@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmHardwareBuffer.h"
 #include "CmCoreObject.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/** \addtogroup Core
 	*  @{

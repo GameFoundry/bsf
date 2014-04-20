@@ -16,13 +16,11 @@
 #include "CmSceneObject.h"
 #include "CmRenderWindow.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUISkin GUIWidget::DefaultSkin;
 
-	GUIWidget::GUIWidget(const HSceneObject& parent, CM::Viewport* target)
+	GUIWidget::GUIWidget(const HSceneObject& parent, Viewport* target)
 		:Component(parent), mSkin(nullptr), mWidgetIsDirty(false), mTarget(nullptr), mDepth(0)
 	{
 		setName("GUIWidget");

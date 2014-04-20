@@ -3,7 +3,7 @@
 #include "CmApplication.h"
 #include "CmInput.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	extern "C" CM_OIS_EXPORT const String& getPluginName()
 	{

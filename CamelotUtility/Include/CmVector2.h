@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	A two dimensional vector.

@@ -4,22 +4,19 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const UINT32 GUIFieldBase::DEFAULT_LABEL_WIDTH = 100;
 
 	GUIFieldBase::GUIFieldBase(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-		const CM::String& labelStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const String& labelStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:GUIElementContainer(layoutOptions)
 	{
 		mLayout = &addLayoutXInternal(this);
 
 		if(withLabel)
 		{
-			mLabel = BS::GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), labelStyle);
+			mLabel = GUILabel::create(labelContent, GUIOptions(GUIOption::fixedWidth(labelWidth)), labelStyle);
 			mLayout->addElement(mLabel);
 		}
 	}

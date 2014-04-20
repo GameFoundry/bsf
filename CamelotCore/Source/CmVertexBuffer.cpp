@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmVertexDeclarationRTTI.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     VertexBuffer::VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize,  
         UINT32 numVertices, GpuBufferUsage usage, 

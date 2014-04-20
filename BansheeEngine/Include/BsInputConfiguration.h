@@ -20,9 +20,9 @@ namespace BansheeEngine
 	struct VIRTUAL_BUTTON_DESC
 	{
 		VIRTUAL_BUTTON_DESC();
-		VIRTUAL_BUTTON_DESC(CM::ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
+		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
 
-		CM::ButtonCode buttonCode;
+		ButtonCode buttonCode;
 		VButtonModifier modifiers;
 		bool repeatable;
 	};
@@ -40,9 +40,9 @@ namespace BansheeEngine
 	{
 	public:
 		VirtualButton();
-		VirtualButton(const CM::String& name);
+		VirtualButton(const String& name);
 
-		CM::UINT32 buttonIdentifier;
+		UINT32 buttonIdentifier;
 
 		bool operator== (const VirtualButton& rhs) const
 		{
@@ -50,15 +50,15 @@ namespace BansheeEngine
 		}
 
 	private:
-		static CM::Map<CM::String, CM::UINT32>::type UniqueButtonIds;
-		static CM::UINT32 NextButtonId;
+		static Map<String, UINT32>::type UniqueButtonIds;
+		static UINT32 NextButtonId;
 	};
 
 	class BS_EXPORT InputConfiguration
 	{
 		struct VirtualButtonData
 		{
-			CM::String name;
+			String name;
 			VirtualButton button;
 			VIRTUAL_BUTTON_DESC desc;
 		};
@@ -66,18 +66,18 @@ namespace BansheeEngine
 	public:
 		InputConfiguration();
 
-		void registerButton(const CM::String& name, CM::ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
-		void unregisterButton(const CM::String& name);
+		void registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
+		void unregisterButton(const String& name);
 
-		void setRepeatInterval(CM::UINT64 milliseconds) { mRepeatInterval = milliseconds; }
-		CM::UINT64 getRepeatInterval() const { return mRepeatInterval; }
+		void setRepeatInterval(UINT64 milliseconds) { mRepeatInterval = milliseconds; }
+		UINT64 getRepeatInterval() const { return mRepeatInterval; }
 
-		bool getButton(CM::ButtonCode code, CM::UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const;
+		bool getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const;
 
 		// TODO - registerAxis
 	private:
-		CM::Vector<VirtualButtonData>::type mButtons[CM::BC_Count];
+		Vector<VirtualButtonData>::type mButtons[BC_Count];
 
-		CM::UINT64 mRepeatInterval;
+		UINT64 mRepeatInterval;
 	};
 }

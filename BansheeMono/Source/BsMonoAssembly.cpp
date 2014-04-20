@@ -8,8 +8,6 @@
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/tokentype.h>
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	inline size_t MonoAssembly::ClassId::Hash::operator()(const MonoAssembly::ClassId& v) const
@@ -46,7 +44,7 @@ namespace BansheeEngine
 		unload();
 	}
 
-	void MonoAssembly::load(const CM::String& path, const CM::String& name)
+	void MonoAssembly::load(const String& path, const String& name)
 	{
 		::MonoAssembly* monoAssembly = mono_domain_assembly_open (MonoManager::instance().getDomain(), path.c_str());
 		if(monoAssembly == nullptr)
@@ -66,7 +64,7 @@ namespace BansheeEngine
 		mIsDependency = false;
 	}
 
-	void MonoAssembly::loadAsDependency(MonoImage* image, const CM::String& name)
+	void MonoAssembly::loadAsDependency(MonoImage* image, const String& name)
 	{
 		::MonoAssembly* monoAssembly = mono_image_get_assembly(image);
 		if(monoAssembly == nullptr)
@@ -104,7 +102,7 @@ namespace BansheeEngine
 		mHaveCachedClassList = false;
 	}
 
-	void MonoAssembly::invoke(const CM::String& functionName)
+	void MonoAssembly::invoke(const String& functionName)
 	{
 		MonoMethodDesc* methodDesc = mono_method_desc_new(functionName.c_str(), false);
 
@@ -175,7 +173,7 @@ namespace BansheeEngine
 		return newClass;
 	}
 
-	const CM::Vector<MonoClass*>::type& MonoAssembly::getAllClasses() const
+	const Vector<MonoClass*>::type& MonoAssembly::getAllClasses() const
 	{
 		if(mHaveCachedClassList)
 			return mCachedClassList;
@@ -202,7 +200,7 @@ namespace BansheeEngine
 		return mCachedClassList;
 	}
 
-	bool MonoAssembly::isGenericClass(const CM::String& name) const
+	bool MonoAssembly::isGenericClass(const String& name) const
 	{
 		// By CIL convention generic classes have ` separating their name and
 		// number of generic parameters

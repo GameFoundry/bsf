@@ -2,8 +2,6 @@
 #include "BsGUIElementStyle.h"
 #include "BsGUIOptions.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUILayoutOptions GUILayoutOptions::create()

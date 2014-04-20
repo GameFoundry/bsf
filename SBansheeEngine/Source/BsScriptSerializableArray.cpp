@@ -6,8 +6,6 @@
 #include "BsMonoClass.h"
 #include "BsMonoMethod.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptSerializableArray::ScriptSerializableArray(const ConstructPrivately& dummy)
@@ -82,7 +80,7 @@ namespace BansheeEngine
 		mManagedInstance = createInstance->invoke(nullptr, params);
 		initMonoObjects();
 
-		CM::UINT32 idx = 0;
+		UINT32 idx = 0;
 		for(auto& arrayEntry : mArrayEntries)
 		{
 			setFieldData(idx, arrayEntry);
@@ -90,7 +88,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptSerializableArray::setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
+	void ScriptSerializableArray::setFieldData(UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val)
 	{
 		if(mono_class_is_valuetype(mElementMonoClass))
 			setValue(arrayIdx, val->getValue(mArrayTypeInfo->mElementType));
@@ -101,7 +99,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ScriptSerializableFieldDataPtr ScriptSerializableArray::getFieldData(CM::UINT32 arrayIdx)
+	ScriptSerializableFieldDataPtr ScriptSerializableArray::getFieldData(UINT32 arrayIdx)
 	{
 		MonoArray* array = (MonoArray*)mManagedInstance;
 
@@ -123,7 +121,7 @@ namespace BansheeEngine
 			return ScriptSerializableFieldData::create(mArrayTypeInfo->mElementType, *(MonoObject**)arrayValue);
 	}
 	
-	void ScriptSerializableArray::setValue(CM::UINT32 arrayIdx, void* val)
+	void ScriptSerializableArray::setValue(UINT32 arrayIdx, void* val)
 	{
 		MonoArray* array = (MonoArray*)mManagedInstance;
 
@@ -139,7 +137,7 @@ namespace BansheeEngine
 		mElementMonoClass = mArrayTypeInfo->mElementType->getMonoClass();
 	}
 
-	UINT32 ScriptSerializableArray::toSequentialIdx(const CM::Vector<CM::UINT32>::type& idx) const
+	UINT32 ScriptSerializableArray::toSequentialIdx(const Vector<UINT32>::type& idx) const
 	{
 		UINT32 mNumDims = (UINT32)mNumElements.size();
 

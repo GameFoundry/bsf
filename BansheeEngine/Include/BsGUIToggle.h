@@ -13,25 +13,25 @@ namespace BansheeEngine
 	class BS_EXPORT GUIToggle : public GUIButtonBase
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIToggle* create(const CM::HString& text, const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIToggle* create(const CM::HString& text, const GUIOptions& layoutOptions, 
-			const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIToggle* create(const HString& text, const String& styleName = StringUtil::BLANK);
+		static GUIToggle* create(const HString& text, const GUIOptions& layoutOptions, 
+			const String& styleName = StringUtil::BLANK);
 	
-		static GUIToggle* create(const CM::HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
-			const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIToggle* create(const CM::HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
-			const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIToggle* create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+			const String& styleName = StringUtil::BLANK);
+		static GUIToggle* create(const HString& text, std::shared_ptr<GUIToggleGroup> toggleGroup, 
+			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		static GUIToggle* create(const GUIContent& content, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIToggle* create(const GUIContent& content, const String& styleName = StringUtil::BLANK);
 		static GUIToggle* create(const GUIContent& content, const GUIOptions& layoutOptions, 
-			const CM::String& styleName = CM::StringUtil::BLANK);
+			const String& styleName = StringUtil::BLANK);
 
 		static GUIToggle* create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
-			const CM::String& styleName = CM::StringUtil::BLANK);
+			const String& styleName = StringUtil::BLANK);
 		static GUIToggle* create(const GUIContent& content, std::shared_ptr<GUIToggleGroup> toggleGroup, 
-			const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 		static std::shared_ptr<GUIToggleGroup> createToggleGroup();
 
@@ -49,7 +49,7 @@ namespace BansheeEngine
 		virtual ~GUIToggle();
 
 	protected:
-		GUIToggle(const CM::String& styleName, const GUIContent& content, 
+		GUIToggle(const String& styleName, const GUIContent& content, 
 			std::shared_ptr<GUIToggleGroup> toggleGroup, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);

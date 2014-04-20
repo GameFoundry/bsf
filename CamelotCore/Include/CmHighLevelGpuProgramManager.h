@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmException.h"
 #include "CmHighLevelGpuProgram.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	/** \addtogroup Core
 	*  @{

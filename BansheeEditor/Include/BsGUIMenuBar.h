@@ -2,49 +2,49 @@
 
 #include "BsEditorPrerequisites.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class GUIMenuBar
 	{
 		struct GUIMenuBarData
 		{
-			CM::WString name;
-			BS::GUIMenu* menu;
-			BS::GUIButton* button;
+			WString name;
+			GUIMenu* menu;
+			GUIButton* button;
 		};
 
 	public:
-		GUIMenuBar(BS::GUIWidget* parent, CM::RenderWindow* parentWindow);
+		GUIMenuBar(GUIWidget* parent, RenderWindow* parentWindow);
 		virtual ~GUIMenuBar();
 
-		void setArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void setArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
 
-		const BS::GUIMenuItem* addMenuItem(const CM::WString& path, std::function<void()> callback);
-		const BS::GUIMenuItem* addSeparator(const CM::WString& path);
-		const BS::GUIMenuItem* getMenuItem(const CM::WString& path) const;
-		void removeMenuItem(const CM::WString& path);
+		const GUIMenuItem* addMenuItem(const WString& path, std::function<void()> callback);
+		const GUIMenuItem* addSeparator(const WString& path);
+		const GUIMenuItem* getMenuItem(const WString& path) const;
+		void removeMenuItem(const WString& path);
 	private:
-		static const CM::UINT32 NUM_ELEMENTS_AFTER_CONTENT;
+		static const UINT32 NUM_ELEMENTS_AFTER_CONTENT;
 
-		CM::RenderWindow* mParentWindow;
-		BS::GUIWidget* mParentWidget;
-		BS::GUIArea* mMainArea;
-		BS::GUIArea* mBackgroundArea;
-		BS::GUITexture* mBgTexture;
-		BS::GUITexture* mLogoTexture;
+		RenderWindow* mParentWindow;
+		GUIWidget* mParentWidget;
+		GUIArea* mMainArea;
+		GUIArea* mBackgroundArea;
+		GUITexture* mBgTexture;
+		GUITexture* mLogoTexture;
 
-		BS::GUIButton* mMinBtn;
-		BS::GUIButton* mMaxBtn;
-		BS::GUIButton* mCloseBtn;
+		GUIButton* mMinBtn;
+		GUIButton* mMaxBtn;
+		GUIButton* mCloseBtn;
 
-		CM::Vector<GUIMenuBarData>::type mChildMenus;
+		Vector<GUIMenuBarData>::type mChildMenus;
 
-		BS::GUIButton* mSubMenuButton;
+		GUIButton* mSubMenuButton;
 		bool mSubMenuOpen;
 
-		const GUIMenuBarData* getSubMenu(const CM::WString& name) const;
+		const GUIMenuBarData* getSubMenu(const WString& name) const;
 
-		GUIMenuBarData* addNewButton(const CM::WString& name);
+		GUIMenuBarData* addNewButton(const WString& name);
 
 		/**
 		 * @brief	Attempts to remove the first element from the specified path. First element
@@ -53,12 +53,12 @@ namespace BansheeEditor
 		 *
 		 * @return	False if first element doesn't exist, true otherwise.
 		 */
-		bool stripPath(CM::WString& path, CM::WString& pathRoot) const;
+		bool stripPath(WString& path, WString& pathRoot) const;
 
-		void openSubMenu(const CM::WString& name);
+		void openSubMenu(const WString& name);
 		void closeSubMenu();
 
-		void onSubMenuHover(const CM::WString& name);
+		void onSubMenuHover(const WString& name);
 		void onSubMenuClosed();
 
 		void onMinimizeClicked();

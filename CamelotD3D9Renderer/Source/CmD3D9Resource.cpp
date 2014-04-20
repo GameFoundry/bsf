@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9RenderSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CM_STATIC_MUTEX_INSTANCE(D3D9Resource::msDeviceAccessMutex)
 

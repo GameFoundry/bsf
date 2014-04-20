@@ -10,11 +10,9 @@
 #include "BsCamera.h"
 #include "BsBuiltinMaterialManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	void DrawHelperTemplateBase::render(const HCamera& camera, CM::RenderQueue& renderQueue)
+	void DrawHelperTemplateBase::render(const HCamera& camera, RenderQueue& renderQueue)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];

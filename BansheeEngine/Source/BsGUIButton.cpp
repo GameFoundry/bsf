@@ -9,8 +9,6 @@
 #include "BsGUIHelper.h"
 #include "CmTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	const String& GUIButton::getGUITypeName()
@@ -19,7 +17,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIButton::GUIButton(const CM::String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
+	GUIButton::GUIButton(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
 		:GUIButtonBase(styleName, content, layoutOptions)
 	{ }
 

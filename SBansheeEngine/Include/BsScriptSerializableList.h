@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSerializableList : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableList : public IReflectable
 	{
 	private:
 		struct ConstructPrivately {};
@@ -27,9 +27,9 @@ namespace BansheeEngine
 		MonoProperty* mCountProp;
 
 		ScriptSerializableTypeInfoListPtr mListTypeInfo;
-		CM::Vector<ScriptSerializableFieldDataPtr>::type mListEntries;
+		Vector<ScriptSerializableFieldDataPtr>::type mListEntries;
 		
-		CM::UINT32 mNumElements;
+		UINT32 mNumElements;
 
 		void initMonoObjects(MonoClass* listClass);
 
@@ -43,11 +43,11 @@ namespace BansheeEngine
 		 */
 		void deserializeManagedInstance();
 
-		void setFieldData(CM::UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val);
+		void setFieldData(UINT32 arrayIdx, const ScriptSerializableFieldDataPtr& val);
 		void addFieldData(const ScriptSerializableFieldDataPtr& val);
-		ScriptSerializableFieldDataPtr getFieldData(CM::UINT32 arrayIdx);
+		ScriptSerializableFieldDataPtr getFieldData(UINT32 arrayIdx);
 
-		CM::UINT32 getLength() const;
+		UINT32 getLength() const;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -57,7 +57,7 @@ namespace BansheeEngine
 
 	public:
 		friend class ScriptSerializableListRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

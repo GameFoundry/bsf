@@ -1,7 +1,7 @@
 #include "CmD3D9GpuBuffer.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D9GpuBuffer::D3D9GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter) 
 		: GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter)

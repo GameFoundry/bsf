@@ -10,7 +10,7 @@
 #include "CmMatrix4.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT PassParameters
 	{

@@ -2,7 +2,7 @@
 #include "CmTexture.h"
 #include "CmUtil.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	size_t TextureView::HashFunction::operator()(const TEXTURE_VIEW_DESC &key) const
 	{

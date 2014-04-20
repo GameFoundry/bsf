@@ -7,7 +7,7 @@
 #include "CmD3D11RasterizerState.h"
 #include "CmD3D11DepthStencilState.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct ClearVertex
 	{

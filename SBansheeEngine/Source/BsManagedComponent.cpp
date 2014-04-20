@@ -4,11 +4,9 @@
 #include "BsMonoClass.h"
 #include "CmDebug.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	ManagedComponent::ManagedComponent(const CM::HSceneObject& parent, MonoReflectionType* runtimeType)
+	ManagedComponent::ManagedComponent(const HSceneObject& parent, MonoReflectionType* runtimeType)
 		:mManagedInstance(nullptr), mRuntimeType(runtimeType)
 	{
 		MonoType* monoType = mono_reflection_type_get_type(mRuntimeType);
@@ -45,12 +43,12 @@ namespace BansheeEngine
 		}
 	}
 
-	CM::RTTITypeBase* ManagedComponent::getRTTIStatic()
+	RTTITypeBase* ManagedComponent::getRTTIStatic()
 	{
 		return ManagedComponentRTTI::instance();
 	}
 
-	CM::RTTITypeBase* ManagedComponent::getRTTI() const
+	RTTITypeBase* ManagedComponent::getRTTI() const
 	{
 		return ManagedComponent::getRTTIStatic();
 	}

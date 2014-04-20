@@ -1,7 +1,7 @@
 #include "CmGLGpuParamBlockBuffer.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GLGpuParamBlockBuffer::GLGpuParamBlockBuffer()
 		:mGLHandle(0)

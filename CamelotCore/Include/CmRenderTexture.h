@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmTexture.h"
 #include "CmRenderTarget.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {    
 	struct CM_EXPORT RENDER_TEXTURE_DESC
 	{

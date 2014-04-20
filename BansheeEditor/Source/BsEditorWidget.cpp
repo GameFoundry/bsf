@@ -9,12 +9,9 @@
 #include "BsEditorWidgetContainer.h"
 #include "BsEditorWidgetManager.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const CM::String& name, EditorWidgetContainer& parentContainer)
+	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const String& name, EditorWidgetContainer& parentContainer)
 		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr), mX(0), mY(0), mWidth(0), mHeight(0)
 	{
 		parentContainer.add(*this);

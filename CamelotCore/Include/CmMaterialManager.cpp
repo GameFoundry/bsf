@@ -1,7 +1,7 @@
 #include "CmMaterialManager.h"
 #include "CmMaterial.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	MaterialPtr MaterialManager::create() const
 	{

@@ -4,7 +4,7 @@
 #include "CmRendererFactory.h"
 #include "CmModule.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT RendererManager : public Module<RendererManager>
 	{

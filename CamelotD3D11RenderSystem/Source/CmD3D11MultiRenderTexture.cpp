@@ -3,7 +3,7 @@
 #include "CmD3D11RenderTexture.h"
 #include "CmD3D11TextureView.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11MultiRenderTexture::D3D11MultiRenderTexture()
 		:MultiRenderTexture()

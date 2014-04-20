@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRenderQueue.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_EXPORT DefaultRenderQueue : public RenderQueue
 	{

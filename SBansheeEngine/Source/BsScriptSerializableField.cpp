@@ -14,11 +14,9 @@
 #include "BsScriptSerializableList.h"
 #include "BsScriptSerializableDictionary.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	ScriptSerializableFieldKeyPtr ScriptSerializableFieldKey::create(CM::UINT16 typeId, CM::UINT16 fieldId)
+	ScriptSerializableFieldKeyPtr ScriptSerializableFieldKey::create(UINT16 typeId, UINT16 fieldId)
 	{
 		ScriptSerializableFieldKeyPtr fieldKey = cm_shared_ptr<ScriptSerializableFieldKey>();
 		fieldKey->mTypeId = typeId;

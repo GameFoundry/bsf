@@ -12,9 +12,9 @@ namespace BansheeEngine
 		static void initMetaData();
 
 		GUIWidget& getWidget() const { return *mParentWidget; }
-		const CM::RectI& getClippedArea() const { return mClippedArea; }
+		const RectI& getClippedArea() const { return mClippedArea; }
 
-		void setParentArea(CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height);
+		void setParentArea(INT32 x, INT32 y, UINT32 width, UINT32 height);
 		void setParentWidget(GUIWidget* widget);
 
 		void registerArea(ScriptGUIArea* area);
@@ -27,16 +27,16 @@ namespace BansheeEngine
 
 		static void internal_createInstance(MonoObject* instance);
 		static void internal_destroyInstance(ScriptGUIPanel* thisPtr);
-		static void internal_setArea(ScriptGUIPanel* thisPtr, CM::INT32 x, CM::INT32 y, 
-			CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth);
+		static void internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, 
+			UINT32 width, UINT32 height, UINT16 depth);
 
 		void updateArea();
 
 		GUIWidget* mParentWidget;
-		CM::Vector<ScriptGUIArea*>::type mAreas;
+		Vector<ScriptGUIArea*>::type mAreas;
 
-		CM::RectI mParentArea;
-		CM::RectI mMyArea;
-		CM::RectI mClippedArea;
+		RectI mParentArea;
+		RectI mMyArea;
+		RectI mClippedArea;
 	};
 }

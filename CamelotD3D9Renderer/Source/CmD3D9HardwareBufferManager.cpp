@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmGpuParamBlockBuffer.h"
 #include "CmException.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     //-----------------------------------------------------------------------
     D3D9HardwareBufferManager::D3D9HardwareBufferManager()       

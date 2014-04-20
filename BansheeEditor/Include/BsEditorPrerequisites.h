@@ -18,7 +18,7 @@
 #    define BS_ED_EXPORT
 #endif
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	// GUI
 	class EditorWindowBase;

@@ -4,7 +4,7 @@
 #include "CmRTTIField.h"
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Base class containing common functionality for a reflectable class field. 

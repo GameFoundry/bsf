@@ -7,7 +7,7 @@
 #include "CmTextureManager.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11RenderTexture::D3D11RenderTexture()
 		:RenderTexture()

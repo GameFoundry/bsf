@@ -5,11 +5,9 @@
 #include "BsGUIManager.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	GUIElement::GUIElement(const CM::String& styleName, const GUILayoutOptions& layoutOptions)
+	GUIElement::GUIElement(const String& styleName, const GUILayoutOptions& layoutOptions)
 		:mLayoutOptions(layoutOptions), mWidth(0), mHeight(0), mDepth(0), mStyle(nullptr),
 		mIsDestroyed(false), mStyleName(styleName)
 	{
@@ -83,7 +81,7 @@ namespace BansheeEngine
 		markMeshAsDirty();
 	}
 
-	void GUIElement::_setOffset(const CM::Vector2I& offset) 
+	void GUIElement::_setOffset(const Vector2I& offset) 
 	{ 
 		if(mOffset != offset)
 		{
@@ -110,7 +108,7 @@ namespace BansheeEngine
 		mHeight = height;
 	}
 
-	void GUIElement::_setClipRect(const CM::RectI& clipRect) 
+	void GUIElement::_setClipRect(const RectI& clipRect) 
 	{ 
 		if(mClipRect != clipRect)
 		{
@@ -205,7 +203,7 @@ namespace BansheeEngine
 		return contentClipRect;
 	}
 
-	bool GUIElement::_isInBounds(const CM::Vector2I position) const
+	bool GUIElement::_isInBounds(const Vector2I position) const
 	{
 		RectI contentBounds = getVisibleBounds();
 

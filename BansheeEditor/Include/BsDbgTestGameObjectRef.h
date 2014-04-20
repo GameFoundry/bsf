@@ -3,23 +3,23 @@
 #include "BsPrerequisites.h"
 #include "CmComponent.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class DbgTestGameObjectRef : public CM::Component
+	class DbgTestGameObjectRef : public Component
 	{
 	public:
-		BS::HRenderable mRenderable;
+		HRenderable mRenderable;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/
 		/************************************************************************/
 
 	protected:
-		friend class CM::SceneObject;
+		friend class SceneObject;
 
 		/** Standard constructor.
         */
-		DbgTestGameObjectRef(const CM::HSceneObject& parent);
+		DbgTestGameObjectRef(const HSceneObject& parent);
 
 	public:
 		virtual void update() {}
@@ -29,8 +29,8 @@ namespace BansheeEditor
 		/************************************************************************/
 	public:
 		friend class DbgTestGameObjectRefRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 
 	protected:
 		DbgTestGameObjectRef() {} // Serialization only

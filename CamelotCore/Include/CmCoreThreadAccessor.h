@@ -11,7 +11,7 @@
 #include "CmColor.h"
 #include "CmFrameAlloc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Core thread accessor allows you to schedule core commands outside of the core thread.

@@ -14,11 +14,9 @@
 #include "CmDebug.h"
 #include "BsProjectLibraryEntries.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
 using namespace std::placeholders;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const WString ProjectLibrary::RESOURCES_DIR = L"Resources";
 	const WString ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal\\Resources";
@@ -29,7 +27,7 @@ namespace BansheeEditor
 		:parent(nullptr), type(LibraryEntryType::Directory)
 	{ }
 
-	ProjectLibrary::LibraryEntry::LibraryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent, LibraryEntryType type)
+	ProjectLibrary::LibraryEntry::LibraryEntry(const WString& path, const WString& name, DirectoryEntry* parent, LibraryEntryType type)
 		:path(path), parent(parent), type(type), elementName(name)
 	{ }
 
@@ -37,14 +35,14 @@ namespace BansheeEditor
 		:lastUpdateTime(0)
 	{ }
 
-	ProjectLibrary::ResourceEntry::ResourceEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent)
+	ProjectLibrary::ResourceEntry::ResourceEntry(const WString& path, const WString& name, DirectoryEntry* parent)
 		:LibraryEntry(path, name, parent, LibraryEntryType::File), lastUpdateTime(0)
 	{ }
 
 	ProjectLibrary::DirectoryEntry::DirectoryEntry()
 	{ }
 
-	ProjectLibrary::DirectoryEntry::DirectoryEntry(const CM::WString& path, const CM::WString& name, DirectoryEntry* parent)
+	ProjectLibrary::DirectoryEntry::DirectoryEntry(const WString& path, const WString& name, DirectoryEntry* parent)
 		:LibraryEntry(path, name, parent, LibraryEntryType::Directory)
 	{ }
 
@@ -88,7 +86,7 @@ namespace BansheeEditor
 		mMonitor->update();
 	}
 
-	void ProjectLibrary::checkForModifications(const CM::WString& fullPath)
+	void ProjectLibrary::checkForModifications(const WString& fullPath)
 	{
 		if(!Path::includes(fullPath, mResourcesFolder))
 			return; // Folder not part of our resources path, so no modifications
@@ -260,7 +258,7 @@ namespace BansheeEditor
 		}
 	}
 
-	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const CM::WString& filePath)
+	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const WString& filePath)
 	{
 		ResourceEntry* newResource = cm_new<ResourceEntry>(filePath, Path::getFilename(filePath), parent);
 		parent->mChildren.push_back(newResource);
@@ -273,7 +271,7 @@ namespace BansheeEditor
 		return newResource;
 	}
 
-	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const CM::WString& dirPath)
+	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const WString& dirPath)
 	{
 		DirectoryEntry* newEntry = cm_new<DirectoryEntry>(dirPath, Path::getFilename(dirPath), parent);
 		parent->mChildren.push_back(newEntry);
@@ -315,7 +313,7 @@ namespace BansheeEditor
 		if(directory == mRootEntry)
 			mRootEntry = nullptr;
 
-		CM::Vector<LibraryEntry*>::type childrenToDestroy = directory->mChildren;
+		Vector<LibraryEntry*>::type childrenToDestroy = directory->mChildren;
 		for(auto& child : childrenToDestroy)
 		{
 			if(child->type == LibraryEntryType::Directory)
@@ -419,7 +417,7 @@ namespace BansheeEditor
 		return lastModifiedTime <= resource->lastUpdateTime;
 	}
 
-	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const CM::WString& fullPath) const
+	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const WString& fullPath) const
 	{
 		Vector<WString>::type pathElems = Path::split(fullPath);
 		Vector<WString>::type rootElems = Path::split(mRootEntry->path);
@@ -467,7 +465,7 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	void ProjectLibrary::moveEntry(const CM::WString& oldPath, const CM::WString& newPath)
+	void ProjectLibrary::moveEntry(const WString& oldPath, const WString& newPath)
 	{
 		if(FileSystem::isFile(oldPath) || FileSystem::isDirectory(oldPath))
 			FileSystem::move(oldPath, newPath);
@@ -557,7 +555,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void ProjectLibrary::deleteEntry(const CM::WString& path)
+	void ProjectLibrary::deleteEntry(const WString& path)
 	{
 		if(FileSystem::exists(path))
 			FileSystem::remove(path);
@@ -578,7 +576,7 @@ namespace BansheeEditor
 		}
 	}
 
-	void ProjectLibrary::createInternalParentHierarchy(const CM::WString& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
+	void ProjectLibrary::createInternalParentHierarchy(const WString& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
 	{
 		WString parentPath = fullPath;
 
@@ -622,7 +620,7 @@ namespace BansheeEditor
 			*newHierarchyLeaf = newEntryParent;
 	}
 
-	WString ProjectLibrary::getMetaPath(const CM::WString& path) const
+	WString ProjectLibrary::getMetaPath(const WString& path) const
 	{
 		WString metaPath = path + L".meta";
 

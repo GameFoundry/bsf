@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 		static void initRuntimeData();
 
-		static void onSelectionChanged(MonoObject* instance, CM::UINT32 index);
+		static void onSelectionChanged(MonoObject* instance, UINT32 index);
 
 		ScriptGUIListBox(GUIListBox* listBox);
 
@@ -34,7 +34,7 @@ namespace BansheeEngine
 		GUIListBox* mListBox;
 		bool mIsDestroyed;
 
-		typedef void (__stdcall *OnSelectionChangedThunkDef) (MonoObject*, CM::UINT32, MonoException**);
+		typedef void (__stdcall *OnSelectionChangedThunkDef) (MonoObject*, UINT32, MonoException**);
 		static OnSelectionChangedThunkDef onSelectionChangedThunk;
 	};
 }

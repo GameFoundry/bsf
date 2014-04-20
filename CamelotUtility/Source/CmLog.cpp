@@ -2,7 +2,7 @@
 #include "CmException.h"
 #include "boost/signal.hpp"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	LogEntry::LogEntry(const String& msg, const String& level)
 		:mMsg(msg), mChannel(level)

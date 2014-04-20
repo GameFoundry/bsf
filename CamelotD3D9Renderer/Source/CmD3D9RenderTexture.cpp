@@ -4,7 +4,7 @@
 #include "CmD3D9RenderSystem.h"
 #include "CmTextureView.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D9RenderTexture::D3D9RenderTexture()
 		:mDX9ColorSurface(nullptr), mDX9DepthStencilSurface(nullptr), mIsBindableToShader(false)

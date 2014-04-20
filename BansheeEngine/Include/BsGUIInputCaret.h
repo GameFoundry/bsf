@@ -19,8 +19,8 @@ namespace BansheeEngine
 		~GUIInputCaret();
 
 		ImageSprite* getSprite() const { return mCaretSprite; }
-		CM::Vector2I getSpriteOffset() const;
-		CM::RectI getSpriteClipRect(const CM::RectI& parentClipRect) const;
+		Vector2I getSpriteOffset() const;
+		RectI getSpriteClipRect(const RectI& parentClipRect) const;
 
 		void updateSprite();
 
@@ -30,18 +30,18 @@ namespace BansheeEngine
 		void moveCaretRight();
 		void moveCaretUp();
 		void moveCaretDown();
-		void moveCaretToPos(const CM::Vector2I& pos);
-		void moveCaretToChar(CM::UINT32 charIdx, CaretPos caretPos);
+		void moveCaretToPos(const Vector2I& pos);
+		void moveCaretToChar(UINT32 charIdx, CaretPos caretPos);
 
-		CM::UINT32 getCharIdxAtCaretPos() const;
-		CM::Vector2I getCaretPosition(const CM::Vector2I& offset) const;
-		CM::UINT32 getCaretHeight() const;
+		UINT32 getCharIdxAtCaretPos() const;
+		Vector2I getCaretPosition(const Vector2I& offset) const;
+		UINT32 getCaretHeight() const;
 
 		bool isCaretAtNewline() const;
-		CM::UINT32 getMaxCaretPos() const;
-		CM::UINT32 getCaretPos() const { return mCaretPos; }
+		UINT32 getMaxCaretPos() const;
+		UINT32 getCaretPos() const { return mCaretPos; }
 	private:
-		CM::UINT32 mCaretPos;
+		UINT32 mCaretPos;
 		ImageSprite* mCaretSprite;
 	};
 }

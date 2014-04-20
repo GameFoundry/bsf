@@ -5,7 +5,7 @@
 #include "CmRTTIType.h"
 #include "CmManagedDataBlock.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT PixelDataRTTI : public RTTIType<PixelData, GpuResourceData, PixelDataRTTI>
 	{

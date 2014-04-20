@@ -15,7 +15,7 @@
 
 using namespace std::placeholders;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void FreeImageLoadErrorHandler(FREE_IMAGE_FORMAT fif, const char *message) 
 	{

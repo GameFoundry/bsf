@@ -1,7 +1,7 @@
 #include "CmFrameAlloc.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	FrameAlloc::MemBlock::MemBlock(UINT32 size)
 		:mData(nullptr), mFreePtr(0), mSize(size)

@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmGLMultiRenderTexture.h"
 #include "CmGLPixelFormat.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     GLTextureManager::GLTextureManager( GLSupport& support)
         :TextureManager(), mGLSupport(support)

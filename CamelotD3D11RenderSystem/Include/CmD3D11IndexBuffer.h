@@ -4,7 +4,7 @@
 #include "CmIndexBuffer.h"
 #include "CmD3D11HardwareBuffer.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
 	{

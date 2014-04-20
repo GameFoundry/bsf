@@ -1,7 +1,7 @@
 #include "CmVector2.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     const Vector2 Vector2::ZERO(0, 0);
 	const Vector2 Vector2::ONE(1, 1);

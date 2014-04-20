@@ -1,7 +1,7 @@
 #include "CmDynLibManager.h"
 #include "CmDynLib.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	DynLibManager::DynLibManager()
 	{

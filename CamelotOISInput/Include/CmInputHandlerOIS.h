@@ -8,7 +8,7 @@
 #include <OIS/OISKeyboard.h>
 #include <OIS/OISMouse.h>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_OIS_EXPORT InputHandlerOIS : public RawInputHandler, public OIS::KeyListener, public OIS::MouseListener
 	{

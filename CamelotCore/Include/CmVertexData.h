@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include "CmVertexDeclaration.h"
 #include "CmVertexBuffer.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 	/** \addtogroup Core
 	*  @{
 	*/

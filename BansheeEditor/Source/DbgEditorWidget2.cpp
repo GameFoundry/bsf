@@ -20,10 +20,7 @@
 #include "BsGUISpace.h"
 #include "CmHString.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	DbgEditorWidget2* DbgEditorWidget2::Instance = nullptr;
 

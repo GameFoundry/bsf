@@ -4,7 +4,7 @@
 #include "CmSpecificImporter.h"
 #include "CmImporter.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class FreeImgImporter : public SpecificImporter
 	{

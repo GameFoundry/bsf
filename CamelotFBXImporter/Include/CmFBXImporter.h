@@ -8,7 +8,7 @@
 #define FBXSDK_NEW_API
 #include <fbxsdk.h>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_FBX_EXPORT FBXImporter : public SpecificImporter
 	{

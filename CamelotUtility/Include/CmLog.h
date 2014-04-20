@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "boost/signal.hpp"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	A single log entry, containing a message and a channel the message

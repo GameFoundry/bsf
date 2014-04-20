@@ -8,13 +8,10 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIWidget.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	GUIToggleField::GUIToggleField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		UINT32 labelWidth, const CM::String& labelStyle, const CM::String& toggleStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		UINT32 labelWidth, const String& labelStyle, const String& toggleStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mToggle(nullptr)
 	{
 		mToggle = GUIToggle::create(HString(L""), toggleStyle);

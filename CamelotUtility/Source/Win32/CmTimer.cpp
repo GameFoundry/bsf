@@ -1,7 +1,7 @@
 #include "CmTimer.h"
 #include "CmBitwise.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Timer::Timer()
 	{

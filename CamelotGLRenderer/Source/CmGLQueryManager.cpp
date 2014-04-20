@@ -2,7 +2,7 @@
 #include "CmGLEventQuery.h"
 #include "CmGLTimerQuery.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	EventQueryPtr GLQueryManager::createEventQuery() const
 	{

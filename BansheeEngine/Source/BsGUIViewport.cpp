@@ -8,8 +8,6 @@
 #include "CmRenderTarget.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	const String& GUIViewport::getGUITypeName()
@@ -18,8 +16,8 @@ namespace BansheeEngine
 		return name;
 	}
 
-	GUIViewport::GUIViewport(const CM::String& styleName, const HCamera& camera, 
-		float aspectRatio, CM::Degree fieldOfView, const GUILayoutOptions& layoutOptions)
+	GUIViewport::GUIViewport(const String& styleName, const HCamera& camera, 
+		float aspectRatio, Degree fieldOfView, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mCamera(camera), mAspectRatio(aspectRatio),
 		mFieldOfView(fieldOfView)
 	{
@@ -31,13 +29,13 @@ namespace BansheeEngine
 
 	}
 
-	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, CM::Degree fieldOfView, const CM::String& styleName)
+	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
 		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create());
 	}
 
 	GUIViewport* GUIViewport::create(const GUIOptions& layoutOptions, const HCamera& camera, 
-		float aspectRatio, CM::Degree fieldOfView, const CM::String& styleName)
+		float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
 		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions));
 	}

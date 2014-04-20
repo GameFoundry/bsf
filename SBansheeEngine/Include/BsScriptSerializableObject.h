@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSerializableObject : public CM::IReflectable
+	class BS_SCR_BE_EXPORT ScriptSerializableObject : public IReflectable
 	{
 	private:
 		struct ConstructPrivately {};
@@ -22,7 +22,7 @@ namespace BansheeEngine
 	protected:
 		ScriptSerializableObjectInfoPtr mObjInfo;
 		MonoObject* mManagedInstance;
-		CM::Vector<ScriptSerializableFieldDataEntryPtr>::type mFieldEntries;
+		Vector<ScriptSerializableFieldDataEntryPtr>::type mFieldEntries;
 
 		/**
 		 * @brief	Populates internal field data based on currently active managed instance.
@@ -45,7 +45,7 @@ namespace BansheeEngine
 
 	public:
 		friend class ScriptSerializableObjectRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }

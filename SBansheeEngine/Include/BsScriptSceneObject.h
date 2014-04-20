@@ -12,8 +12,8 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
-		virtual CM::HGameObject getNativeHandle() const { return mSceneObject; }
-		virtual void setNativeHandle(const CM::HGameObject& gameObject);
+		virtual HGameObject getNativeHandle() const { return mSceneObject; }
+		virtual void setNativeHandle(const HGameObject& gameObject);
 
 	private:
 		friend class ScriptGameObjectManager;
@@ -24,14 +24,14 @@ namespace BansheeEngine
 		static void internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent);
 		static MonoObject* internal_getParent(ScriptSceneObject* nativeInstance);
 
-		static CM::UINT32 internal_getNumChildren(ScriptSceneObject* nativeInstance);
-		static MonoObject* internal_getChild(ScriptSceneObject* nativeInstance, CM::UINT32 idx);
+		static UINT32 internal_getNumChildren(ScriptSceneObject* nativeInstance);
+		static MonoObject* internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx);
 
 		static void initRuntimeData();
 
-		ScriptSceneObject(const CM::HSceneObject& sceneObject);
+		ScriptSceneObject(const HSceneObject& sceneObject);
 		~ScriptSceneObject() {}
 
-		CM::HSceneObject mSceneObject;
+		HSceneObject mSceneObject;
 	};
 }

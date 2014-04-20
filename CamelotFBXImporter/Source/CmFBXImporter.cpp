@@ -11,7 +11,7 @@
 #include "CmVector4.h"
 #include "CmVertexDataDesc.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	FBXImporter::FBXImporter()
 		:SpecificImporter() 

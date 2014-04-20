@@ -4,21 +4,21 @@
 #include "BsEditorWidgetManager.h"
 #include "boost/signal.hpp"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class BS_ED_EXPORT EditorWidgetBase
 	{
 	public:
-		const CM::String& getName() const { return mName; }
-		const CM::HString& getDisplayName() const { return mDisplayName; }
+		const String& getName() const { return mName; }
+		const HString& getDisplayName() const { return mDisplayName; }
 
-		CM::INT32 getX() const { return mX; }
-		CM::INT32 getY() const { return mY; }
-		CM::UINT32 getWidth() const { return mWidth; }
-		CM::UINT32 getHeight() const { return mHeight; }
+		INT32 getX() const { return mX; }
+		INT32 getY() const { return mY; }
+		UINT32 getWidth() const { return mWidth; }
+		UINT32 getHeight() const { return mHeight; }
 
-		void _setSize(CM::UINT32 width, CM::UINT32 height);
-		void _setPosition(CM::INT32 x, CM::INT32 y);
+		void _setSize(UINT32 width, UINT32 height);
+		void _setPosition(INT32 x, INT32 y);
 		void _changeParent(EditorWidgetContainer* parent);
 		EditorWidgetContainer* _getParent() const { return mParent; }
 
@@ -27,23 +27,23 @@ namespace BansheeEditor
 
 		void close();
 
-		boost::signal<void(CM::UINT32, CM::UINT32)> onResized;
-		boost::signal<void(CM::INT32, CM::INT32)> onMoved;
+		boost::signal<void(UINT32, UINT32)> onResized;
+		boost::signal<void(INT32, INT32)> onMoved;
 		boost::signal<void(EditorWidgetContainer*)> onParentChanged;
 	protected:
 		friend class EditorWidgetManager;
 
-		EditorWidgetBase(const CM::HString& displayName, const CM::String& name, EditorWidgetContainer& parentContainer);
+		EditorWidgetBase(const HString& displayName, const String& name, EditorWidgetContainer& parentContainer);
 		virtual ~EditorWidgetBase();
 
-		CM::String mName;
-		CM::HString mDisplayName;
+		String mName;
+		HString mDisplayName;
 		EditorWidgetContainer* mParent;
-		CM::INT32 mX, mY;
-		CM::UINT32 mWidth, mHeight;
-		BS::GUIArea* mContent;
+		INT32 mX, mY;
+		UINT32 mWidth, mHeight;
+		GUIArea* mContent;
 
-		BS::GUIWidget& getParentWidget() const;
+		GUIWidget& getParentWidget() const;
 
 		static void destroy(EditorWidgetBase* widget);
 	};
@@ -75,7 +75,7 @@ namespace BansheeEditor
 
 		struct ConstructPrivately {};
 
-		EditorWidget(const CM::HString& displayName, EditorWidgetContainer& parentContainer)
+		EditorWidget(const HString& displayName, EditorWidgetContainer& parentContainer)
 			:EditorWidgetBase(displayName, Type::getTypeName(), parentContainer)
 		{
 			RegisterOnStart.makeSureIAmInstantiated();

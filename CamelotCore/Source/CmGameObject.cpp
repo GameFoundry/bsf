@@ -2,7 +2,7 @@
 #include "CmGameObjectRTTI.h"
 #include "CmGameObjectManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GameObject::GameObject()
 	{ }

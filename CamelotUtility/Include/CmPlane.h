@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmVector3.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /**
      * @brief	A plane represented by a normal and a distance.

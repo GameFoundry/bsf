@@ -1,7 +1,7 @@
 #include "CmStringTable.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const Language StringTable::DEFAULT_LANGUAGE = Language::EnglishUS;
 

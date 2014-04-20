@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmPrerequisites.h"
 #include "CmGpuProgram.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	/** \addtogroup Core
 	*  @{

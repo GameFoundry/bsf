@@ -6,7 +6,7 @@
 #include "CmColor.h"
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/** Class defining a single pass of a Technique (of a Material), i.e.
         a single rendering call.

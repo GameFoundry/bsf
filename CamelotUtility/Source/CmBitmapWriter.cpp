@@ -1,6 +1,6 @@
 #include "CmBitmapWriter.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 #pragma pack(push, 2) // Align to 2byte boundary so we don't get extra 2 bytes for this struct
 

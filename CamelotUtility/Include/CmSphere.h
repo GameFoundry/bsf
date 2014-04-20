@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmVector3.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /**
      * @brief	A sphere represented by a center point and a radius.

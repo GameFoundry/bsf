@@ -5,8 +5,6 @@
 #include "BsGUISpace.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUILayout::GUILayout()
@@ -47,7 +45,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 	}
 
-	void GUILayout::removeChildAt(CM::UINT32 idx)
+	void GUILayout::removeChildAt(UINT32 idx)
 	{
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
 			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));

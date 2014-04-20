@@ -1,7 +1,7 @@
 #include "CmGpuParamBlockBuffer.h"
 #include "CmGpuParamBlock.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GpuParamBlockBuffer::GpuParamBlockBuffer()
 		:mSize(0), mUsage(GPBU_DYNAMIC), mParamBlock(nullptr)

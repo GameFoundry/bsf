@@ -12,15 +12,12 @@
 #include "CmViewport.h"
 #include <regex>
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	const INT32 GUIIntField::DRAG_SPEED = 5;
 
 	GUIIntField::GUIIntField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, UINT32 labelWidth,
-		const CM::String& labelStyle, const CM::String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
+		const String& labelStyle, const String& inputBoxStyle, const GUILayoutOptions& layoutOptions, bool withLabel)
 		:TGUIField(dummy, labelContent, labelWidth, labelStyle, layoutOptions, withLabel), mInputBox(nullptr), mIsDragging(false),
 		mLastDragPos(0), mIsDragCursorSet(false)
 	{
@@ -37,7 +34,7 @@ namespace BansheeEditor
 
 	}
 
-	bool GUIIntField::_hasCustomCursor(const CM::Vector2I position, CursorType& type) const
+	bool GUIIntField::_hasCustomCursor(const Vector2I position, CursorType& type) const
 	{
 		RectI draggableArea;
 
@@ -134,12 +131,12 @@ namespace BansheeEditor
 		return false;
 	}
 
-	CM::INT32 GUIIntField::getValue() const
+	INT32 GUIIntField::getValue() const
 	{
 		return parseInt(mInputBox->getText());
 	}
 
-	void GUIIntField::setValue(CM::INT32 value)
+	void GUIIntField::setValue(INT32 value)
 	{
 		mInputBox->setText(toWString(value));
 	}
@@ -156,7 +153,7 @@ namespace BansheeEditor
 		return typeName;
 	}
 
-	bool GUIIntField::intFilter(const CM::WString& str)
+	bool GUIIntField::intFilter(const WString& str)
 	{
 		return std::regex_match(str, std::wregex(L"-?(\\d+)?"));
 	}

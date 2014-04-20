@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct GameObjectInstanceData
 	{
@@ -50,7 +50,7 @@ namespace CamelotFramework
 
 #include "CmGameObjectHandle.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	// Game object handles
 	typedef GameObjectHandle<GameObject> HGameObject;

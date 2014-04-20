@@ -3,7 +3,7 @@
 #include "CmD3D11Prerequisites.h"
 #include "CmModule.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class D3D11RenderUtility : public Module<D3D11RenderUtility>
 	{

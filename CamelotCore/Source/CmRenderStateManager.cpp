@@ -4,7 +4,7 @@
 #include "CmRasterizerState.h"
 #include "CmBlendState.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{

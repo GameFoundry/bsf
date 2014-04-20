@@ -14,7 +14,7 @@
 #   include <dlfcn.h>
 #endif
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     DynLib::DynLib(const String& name)
     {

@@ -27,7 +27,7 @@
 #include "CmDebug.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11RenderSystem::D3D11RenderSystem()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)

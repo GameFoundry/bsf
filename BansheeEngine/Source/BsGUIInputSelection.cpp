@@ -4,8 +4,6 @@
 #include "BsGUIElement.h"
 #include "BsGUIManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIInputSelection::GUIInputSelection()
@@ -58,7 +56,7 @@ namespace BansheeEngine
 		return Vector2I(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y) + getTextOffset();
 	}
 
-	RectI GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const CM::RectI& parentClipRect) const
+	RectI GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const RectI& parentClipRect) const
 	{
 		Vector2I selectionOffset(mSelectionRects[spriteIdx].x, mSelectionRects[spriteIdx].y);
 		Vector2I clipOffset = selectionOffset + mElement->_getTextInputOffset();
@@ -170,7 +168,7 @@ namespace BansheeEngine
 		return selectionRects;
 	}
 
-	void GUIInputSelection::showSelection(CM::UINT32 anchorCaretPos)
+	void GUIInputSelection::showSelection(UINT32 anchorCaretPos)
 	{
 		UINT32 charIdx = getCharIdxAtInputIdx(anchorCaretPos);
 

@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT CameraRTTI : public CM::RTTIType<Camera, CM::Component, CameraRTTI>
+	class BS_EXPORT CameraRTTI : public RTTIType<Camera, Component, CameraRTTI>
 	{
 	private:
 
@@ -16,20 +16,20 @@ namespace BansheeEngine
 
 		}
 
-		virtual const CM::String& getRTTIName()
+		virtual const String& getRTTIName()
 		{
-			static CM::String name = "Camera";
+			static String name = "Camera";
 			return name;
 		}
 
-		virtual CM::UINT32 getRTTIId()
+		virtual UINT32 getRTTIId()
 		{
 			return TID_Camera;
 		}
 
-		virtual std::shared_ptr<CM::IReflectable> newRTTIObject()
+		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return CM::cm_shared_ptr<Camera, CM::PoolAlloc>(new (CM::cm_alloc<Camera, CM::PoolAlloc>()) Camera());
+			return cm_shared_ptr<Camera, PoolAlloc>(new (cm_alloc<Camera, PoolAlloc>()) Camera());
 		}
 	};
 }

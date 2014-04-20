@@ -2,7 +2,7 @@
 #include "CmD3D9RenderSystem.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D9TimerQuery::D3D9TimerQuery()
 		:mFinalized(false), mBeginQuery(nullptr), mFreqQuery(nullptr),

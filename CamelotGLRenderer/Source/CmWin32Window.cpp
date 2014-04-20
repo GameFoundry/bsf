@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "CmPlatformWndProc.h"
 #include "CmGLPixelFormat.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	#define _MAX_CLASS_NAME_ 128
 
@@ -617,8 +617,8 @@ namespace CamelotFramework
 			buffer = mIsFullScreen? FB_FRONT : FB_BACK;
 		}
 
-		GLenum format = CamelotFramework::GLPixelUtil::getGLOriginFormat(dst.getFormat());
-		GLenum type = CamelotFramework::GLPixelUtil::getGLOriginDataType(dst.getFormat());
+		GLenum format = BansheeEngine::GLPixelUtil::getGLOriginFormat(dst.getFormat());
+		GLenum type = BansheeEngine::GLPixelUtil::getGLOriginDataType(dst.getFormat());
 
 		if ((format == GL_NONE) || (type == 0))
 		{

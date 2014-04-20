@@ -5,7 +5,7 @@
 #include "CmSamplerState.h"
 #include "CmRenderStateManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CM_ALLOW_MEMCPY_SERIALIZATION(SAMPLER_STATE_DESC);
 

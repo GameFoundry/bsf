@@ -32,7 +32,7 @@ THE SOFTWARE.
 #include <Cg/cg.h>
 #include "CmHighLevelGpuProgramManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     /** Factory class for Cg programs. */
     class CM_EXPORT CgProgramFactory : public HighLevelGpuProgramFactory

@@ -6,8 +6,6 @@
 
 #include "CmProfiler.h" // PROFILING ONLY
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	TextSprite::TextSprite()

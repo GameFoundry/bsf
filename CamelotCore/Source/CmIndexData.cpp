@@ -7,7 +7,7 @@
 #include "CmException.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	IndexData::IndexData()
 	{

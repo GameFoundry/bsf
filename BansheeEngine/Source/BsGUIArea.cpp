@@ -5,8 +5,6 @@
 #include "CmRenderWindow.h"
 #include "CmViewport.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIArea::GUIArea(GUIWidget* widget, INT32 x, INT32 y, UINT16 depth)
@@ -48,8 +46,8 @@ namespace BansheeEngine
 		return area;
 	}
 
-	GUIArea* GUIArea::createStretchedX(GUIWidget& widget, CM::UINT32 offsetLeft, 
-		CM::UINT32 offsetRight, CM::UINT32 offsetTop, CM::UINT32 height, CM::UINT16 depth)
+	GUIArea* GUIArea::createStretchedX(GUIWidget& widget, UINT32 offsetLeft, 
+		UINT32 offsetRight, UINT32 offsetTop, UINT32 height, UINT16 depth)
 	{
 		GUIArea* area = new (cm_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth);
 
@@ -62,8 +60,8 @@ namespace BansheeEngine
 		return area;
 	}
 
-	GUIArea* GUIArea::createStretchedY(GUIWidget& widget, CM::UINT32 offsetTop, 
-		CM::UINT32 offsetBottom, CM::UINT32 offsetLeft, CM::UINT32 width, CM::UINT16 depth)
+	GUIArea* GUIArea::createStretchedY(GUIWidget& widget, UINT32 offsetTop, 
+		UINT32 offsetBottom, UINT32 offsetLeft, UINT32 width, UINT16 depth)
 	{
 		GUIArea* area = new (cm_alloc<GUIArea, PoolAlloc>()) GUIArea(&widget, offsetLeft, offsetTop, depth);
 
@@ -161,7 +159,7 @@ namespace BansheeEngine
 		mIsDirty = true;
 	}
 
-	void GUIArea::updateSizeBasedOnParent(CM::UINT32 parentWidth, CM::UINT32 parentHeight)
+	void GUIArea::updateSizeBasedOnParent(UINT32 parentWidth, UINT32 parentHeight)
 	{
 		if(mResizeXWithWidget)
 			mWidth = (UINT32)std::max(0, (INT32)parentWidth - (INT32)mLeft - (INT32)mRight);

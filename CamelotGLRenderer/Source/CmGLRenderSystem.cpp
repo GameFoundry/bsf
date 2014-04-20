@@ -59,10 +59,10 @@ THE SOFTWARE.s
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 #if CM_THREAD_SUPPORT != 1
-GLenum __stdcall glewContextInit (CamelotFramework::GLSupport *glSupport);
+GLenum __stdcall glewContextInit (BansheeEngine::GLSupport *glSupport);
 #endif
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/************************************************************************/
 	/* 								PUBLIC INTERFACE                   		*/
@@ -97,7 +97,7 @@ namespace CamelotFramework
 		mCurrentDrawOperation(DOT_TRIANGLE_LIST)
 	{
 		// Get our GLSupport
-		mGLSupport = CamelotFramework::getGLSupport();
+		mGLSupport = BansheeEngine::getGLSupport();
 
 		mViewMatrix = Matrix4::IDENTITY;
 
@@ -153,7 +153,7 @@ namespace CamelotFramework
 
 		checkForErrors();
 
-		Vector<CamelotFramework::String>::type tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+		Vector<BansheeEngine::String>::type tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
 		if (!tokens.empty())
 		{

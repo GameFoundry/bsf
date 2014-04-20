@@ -18,7 +18,7 @@ namespace BansheeEngine
 		struct BS_EXPORT GUIElementStateStyle
 		{
 			HSpriteTexture texture;
-			CM::Color textColor;
+			Color textColor;
 		};
 
 		GUIElementStyle()
@@ -30,8 +30,8 @@ namespace BansheeEngine
 
 		}
 
-		CM::HFont font;
-		CM::UINT32 fontSize;
+		HFont font;
+		UINT32 fontSize;
 		TextHorzAlign textHorzAlign;
 		TextVertAlign textVertAlign;
 		GUIImagePosition imagePosition;
@@ -53,10 +53,10 @@ namespace BansheeEngine
 		RectOffset contentOffset; // Additional offset to the content, that doesn't effect the bounds. Applied on top of the margins offsets.
 		RectOffset padding; // Determines extra distance between this and other elements in a layout
 
-		CM::UINT32 width;
-		CM::UINT32 height;
-		CM::UINT32 minWidth, maxWidth;
-		CM::UINT32 minHeight, maxHeight;
+		UINT32 width;
+		UINT32 height;
+		UINT32 minWidth, maxWidth;
+		UINT32 minHeight, maxHeight;
 		bool fixedWidth;
 		bool fixedHeight;
 	};

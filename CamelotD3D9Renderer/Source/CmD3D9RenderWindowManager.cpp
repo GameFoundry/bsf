@@ -3,7 +3,7 @@
 #include "CmD3D9RenderWindow.h"
 #include "CmAsyncOp.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D9RenderWindowManager::D3D9RenderWindowManager(D3D9RenderSystem* renderSystem)
 		:mRenderSystem(renderSystem)

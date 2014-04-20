@@ -6,7 +6,7 @@
 #include <boost/preprocessor.hpp>
 #include <atomic>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class MemoryAllocatorBase;
 
@@ -325,7 +325,7 @@ namespace CamelotFramework
 	MemoryAllocator<Alloc>::free(ptr);
 }
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     /**
      * @brief	Allocator for the standard library that internally uses Banshee

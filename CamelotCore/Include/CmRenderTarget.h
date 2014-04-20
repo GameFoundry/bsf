@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "CmCoreObject.h"
 #include "boost/signal.hpp"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	struct CM_EXPORT RENDER_SURFACE_DESC
 	{

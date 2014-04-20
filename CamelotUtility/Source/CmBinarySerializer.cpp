@@ -36,7 +36,7 @@ memcpy(buffer, dataIter##, size##);										\
 buffer += size##;														\
 *bytesWritten += size##;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	BinarySerializer::BinarySerializer()
 		:mLastUsedObjectId(1)

@@ -10,7 +10,7 @@
 #include "CmSamplerState.h"
 #include "CmDrawOps.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_D3D11_EXPORT D3D11Mappings
 	{

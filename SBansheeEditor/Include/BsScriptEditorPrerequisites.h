@@ -19,7 +19,7 @@
 #    define BS_SCR_BED_EXPORT
 #endif
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class ScriptEditorWindow;
 

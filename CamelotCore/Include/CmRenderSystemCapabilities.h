@@ -48,7 +48,7 @@ THE SOFTWARE.
 
 #define MAX_BOUND_VERTEX_BUFFERS 32
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	/** \addtogroup Core
 	*  @{
@@ -200,7 +200,7 @@ namespace CamelotFramework
 
 		void fromString(const String& versionString)
 		{
-			Vector<CamelotFramework::String>::type tokens = StringUtil::split(versionString, ".");
+			Vector<BansheeEngine::String>::type tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
 				major = parseInt(tokens[0]);
@@ -253,7 +253,7 @@ namespace CamelotFramework
 		/// GPU Vendor
 		GPUVendor mVendor;
 
-		static Vector<CamelotFramework::String>::type msGPUVendorStrings;
+		static Vector<BansheeEngine::String>::type msGPUVendorStrings;
 		static void initVendorStrings();
 
 		/// The number of world matrices available

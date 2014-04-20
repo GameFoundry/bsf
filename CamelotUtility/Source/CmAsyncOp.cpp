@@ -1,6 +1,6 @@
 #include "CmAsyncOp.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void AsyncOp::_completeOperation(boost::any returnValue) 
 	{ 

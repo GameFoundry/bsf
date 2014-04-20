@@ -10,7 +10,7 @@ namespace BansheeEngine
 	 * @brief	Manages the materials used by the GUI system. Ensures that the GUI system doesn't
 	 * 			create an unnecessarily large amount of equivalent materials.
 	 */
-	class BS_EXPORT GUIMaterialManager : public CM::Module<GUIMaterialManager>
+	class BS_EXPORT GUIMaterialManager : public Module<GUIMaterialManager>
 	{
 	public:
 		/**
@@ -21,7 +21,7 @@ namespace BansheeEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const GUIMaterialInfo& requestTextMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
+		const GUIMaterialInfo& requestTextMaterial(const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Creates a new material, or returns a reference to an existing one based on
@@ -31,7 +31,7 @@ namespace BansheeEngine
 		 *			
 		 *			Make sure to release all materials with a call to "releaseMaterial()".
 		 */
-		const GUIMaterialInfo& requestImageMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
+		const GUIMaterialInfo& requestImageMaterial(const HTexture& texture, const Color& tint) const;
 
 		/**
 		 * @brief	Releases the held reference to the material. This allows us to fully unload a material
@@ -39,8 +39,8 @@ namespace BansheeEngine
 		 */
 		void releaseMaterial(const GUIMaterialInfo& material) const;
 
-		const GUIMaterialInfo* findExistingTextMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
-		const GUIMaterialInfo* findExistingImageMaterial(const CM::HTexture& texture, const CM::Color& tint) const;
+		const GUIMaterialInfo* findExistingTextMaterial(const HTexture& texture, const Color& tint) const;
+		const GUIMaterialInfo* findExistingImageMaterial(const HTexture& texture, const Color& tint) const;
 
 		void forceReleaseAllMaterials();
 	private:
@@ -51,10 +51,10 @@ namespace BansheeEngine
 			{ }
 
 			GUIMaterialInfo handle;
-			CM::UINT32 refCount;
+			UINT32 refCount;
 		};
 
-		mutable CM::Vector<GUIMaterial>::type mTextMaterials;
-		mutable CM::Vector<GUIMaterial>::type mImageMaterials;
+		mutable Vector<GUIMaterial>::type mTextMaterials;
+		mutable Vector<GUIMaterial>::type mImageMaterials;
 	};
 }

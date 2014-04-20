@@ -2,8 +2,6 @@
 #include "BsGUIDropDownBoxManager.h"
 #include "BsGUIManager.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	GUIContextMenu::GUIContextMenu()

@@ -1,9 +1,6 @@
 #include "BsEditorCommand.h"
 
-using namespace BansheeEngine;
-using namespace CamelotFramework;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	void EditorCommand::destroy(EditorCommand* command)
 	{

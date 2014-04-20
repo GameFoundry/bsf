@@ -36,8 +36,8 @@
 #define CM_LOCK_RW_MUTEX_WRITE(name) std::unique_lock<std::mutex> cmnameLock(name)
 // Thread objects and related functions
 #define CM_THREAD_TYPE std::thread
-#define CM_THREAD_CREATE(name, worker) std::thread* name = new (CamelotFramework::MemoryAllocator<CamelotFramework::GenAlloc>::allocate(sizeof(std::thread))) std::thread(worker);
-#define CM_THREAD_DESTROY(name) CamelotFramework::cm_delete<CamelotFramework::GenAlloc, std::thread>(name);
+#define CM_THREAD_CREATE(name, worker) std::thread* name = new (BansheeEngine::MemoryAllocator<BansheeEngine::GenAlloc>::allocate(sizeof(std::thread))) std::thread(worker);
+#define CM_THREAD_DESTROY(name) BansheeEngine::cm_delete<BansheeEngine::GenAlloc, std::thread>(name);
 #define CM_THREAD_HARDWARE_CONCURRENCY std::thread::hardware_concurrency()
 #define CM_THREAD_CURRENT_ID std::this_thread::get_id()
 #define CM_THREAD_ID_TYPE std::thread::id

@@ -20,8 +20,6 @@
 
 #include "CmProfiler.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ForwardRenderer::ForwardRenderer()
@@ -44,10 +42,10 @@ namespace BansheeEngine
 	{
 		gProfiler().beginSample("renderA");
 
-		gSceneManager().updateRenderableBounds();
+		gBsSceneManager().updateRenderableBounds();
 
 		CoreAccessor& coreAccessor = gCoreAccessor();
-		const Vector<HCamera>::type& allCameras = gSceneManager().getAllCameras();
+		const Vector<HCamera>::type& allCameras = gBsSceneManager().getAllCameras();
 
 		struct RenderTargetRenderInfo
 		{
@@ -130,7 +128,7 @@ namespace BansheeEngine
 		Vector<HRenderable>::type allRenderables;
 		
 		if(!camera->getIgnoreSceneRenderables())
-			allRenderables = gSceneManager().getVisibleRenderables(camera);
+			allRenderables = gBsSceneManager().getVisibleRenderables(camera);
 
 		CoreAccessor& coreAccessor = gCoreAccessor();
 		coreAccessor.setViewport(camera->getViewport());

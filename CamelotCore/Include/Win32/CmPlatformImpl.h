@@ -6,7 +6,7 @@
 #include "CmRectI.h"
 #include <boost/signals.hpp>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	// Encapsulate native cursor type so we can avoid including windows.h as it pollutes the global namespace
 	struct CM_EXPORT NativeCursorData

@@ -8,13 +8,10 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIWidget.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, const GUIContent& labelContent, 
-		const CM::String& labelStyle, const CM::String& colorStyle, const GUILayoutOptions& layoutOptions)
+		const String& labelStyle, const String& colorStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{
 		mLabel = GUILabel::create(labelContent, labelStyle);
@@ -25,7 +22,7 @@ namespace BansheeEditor
 	}
 
 	GUIColorField::GUIColorField(const PrivatelyConstruct& dummy, 
-		const CM::String& labelStyle, const CM::String& colorStyle, const GUILayoutOptions& layoutOptions)
+		const String& labelStyle, const String& colorStyle, const GUILayoutOptions& layoutOptions)
 		:GUIElementContainer(layoutOptions), mLabel(nullptr), mColor(nullptr), mLabelWidth(100)
 	{
 		mColor = GUIColor::create(colorStyle);
@@ -39,41 +36,41 @@ namespace BansheeEditor
 	}
 
 	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const GUIOptions& layoutOptions, 
-		const CM::String& labelStyle, const CM::String& toggleStyle)
+		const String& labelStyle, const String& toggleStyle)
 	{
 		return cm_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
 			GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const CM::String& labelStyle, 
-		const CM::String& toggleStyle)
+	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const String& labelStyle, 
+		const String& toggleStyle)
 	{
 		return cm_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
 			GUILayoutOptions::create());
 	}
 
 	GUIColorField* GUIColorField::create(const HString& labelContent, const GUIOptions& layoutOptions, 
-		const CM::String& labelStyle, const CM::String& toggleStyle)
+		const String& labelStyle, const String& toggleStyle)
 	{
 		return cm_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, 
 			toggleStyle, GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIColorField* GUIColorField::create( const HString& labelContent, const CM::String& labelStyle, 
-		const CM::String& toggleStyle)
+	GUIColorField* GUIColorField::create( const HString& labelContent, const String& labelStyle, 
+		const String& toggleStyle)
 	{
 		return cm_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, toggleStyle, 
 			GUILayoutOptions::create());
 	}
 
-	GUIColorField* GUIColorField::create(const GUIOptions& layoutOptions, const CM::String& labelStyle, 
-		const CM::String& toggleStyle)
+	GUIColorField* GUIColorField::create(const GUIOptions& layoutOptions, const String& labelStyle, 
+		const String& toggleStyle)
 	{
 		return cm_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, 
 			GUILayoutOptions::create(layoutOptions));
 	}
 
-	GUIColorField* GUIColorField::create(const CM::String& labelStyle, const CM::String& toggleStyle)
+	GUIColorField* GUIColorField::create(const String& labelStyle, const String& toggleStyle)
 	{
 		return cm_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, GUILayoutOptions::create());
 	}
@@ -83,7 +80,7 @@ namespace BansheeEditor
 		return mColor->getColor();
 	}
 
-	void GUIColorField::setValue(const CM::Color& color)
+	void GUIColorField::setValue(const Color& color)
 	{
 		mColor->setColor(color);
 	}

@@ -2,7 +2,7 @@
 
 using namespace std::placeholders;
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CM_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
 
@@ -65,7 +65,7 @@ namespace CamelotFramework
 			CM_THREAD_WAIT(mCoreThreadStartCondition, mCoreThreadStartMutex, lock);
 
 #else
-		CM_EXCEPT(InternalErrorException, "Attempting to start a core thread but Camelot isn't compiled with thread support.");
+		CM_EXCEPT(InternalErrorException, "Attempting to start a core thread but application isn't compiled with thread support.");
 #endif
 #endif
 	}

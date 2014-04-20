@@ -1,10 +1,7 @@
 #include "BsDockManagerLayout.h"
 #include "BsDockManagerLayoutRTTI.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	DockManagerLayout::Entry::Entry()
 		:isLeaf(true), splitPosition(0), horizontalSplit(false),

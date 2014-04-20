@@ -6,39 +6,39 @@
 #include "BsImageSprite.h"
 #include "boost/signal.hpp"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUITabButton : public BS::GUIToggle
+	class GUITabButton : public GUIToggle
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUITabButton* create(const BS::GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const CM::HString& text, 
-			const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUITabButton* create(const BS::GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const CM::HString& text, 
-			const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
+			const String& styleName = StringUtil::BLANK);
+		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const HString& text, 
+			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 	
-		static GUITabButton* create(const BS::GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const BS::GUIContent& content, 
-			const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUITabButton* create(const BS::GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const BS::GUIContent& content, 
-			const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
+			const String& styleName = StringUtil::BLANK);
+		static GUITabButton* create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, 
+			const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		CM::UINT32 getIndex() const { return mIndex; }
+		UINT32 getIndex() const { return mIndex; }
 		void _setDraggedState(bool active);
 
-		boost::signal<void(CM::UINT32, const CM::Vector2I&)> onDragged;
-		boost::signal<void(CM::UINT32, const CM::Vector2I&)> onDragEnd;
+		boost::signal<void(UINT32, const Vector2I&)> onDragged;
+		boost::signal<void(UINT32, const Vector2I&)> onDragEnd;
 	protected:
-		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
 	private:
-		CM::UINT32 mIndex;
-		CM::Vector2I mDragStartPosition;
+		UINT32 mIndex;
+		Vector2I mDragStartPosition;
 		bool mDraggedState;
-		BS::GUIButtonState mInactiveState;
+		GUIButtonState mInactiveState;
 
-		static const CM::UINT32 DRAG_MIN_DISTANCE;
+		static const UINT32 DRAG_MIN_DISTANCE;
 
-		GUITabButton(const CM::String& styleName, const BS::GUIToggleGroupPtr& toggleGroup, CM::UINT32 index, const BS::GUIContent& content, const BS::GUILayoutOptions& layoutOptions);
+		GUITabButton(const String& styleName, const GUIToggleGroupPtr& toggleGroup, UINT32 index, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 	};
 }

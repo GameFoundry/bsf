@@ -4,7 +4,7 @@
 #include "CmMath.h"
 #include "CmVector3.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /**
      * @brief	Represents a quaternion used for 3D rotations.

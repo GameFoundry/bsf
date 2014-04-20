@@ -21,9 +21,6 @@
 #include "CmGameObject.h"
 #include "BsEnums.h"
 
-// To avoid a lot of typing
-namespace CM = CamelotFramework;
-
 namespace BansheeEngine
 {
 	class VirtualButton;
@@ -88,11 +85,11 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Renderable> RenderablePtr;
 	typedef std::shared_ptr<GUIToggleGroup> GUIToggleGroupPtr;
 
-	typedef CM::GameObjectHandle<GUIWidget> HGUIWidget;
-	typedef CM::GameObjectHandle<Camera> HCamera;
-	typedef CM::GameObjectHandle<Renderable> HRenderable;
+	typedef GameObjectHandle<GUIWidget> HGUIWidget;
+	typedef GameObjectHandle<Camera> HCamera;
+	typedef GameObjectHandle<Renderable> HRenderable;
 
-	typedef CM::ResourceHandle<SpriteTexture> HSpriteTexture;
+	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
 
 	enum TypeID_Banshee
 	{
@@ -101,5 +98,3 @@ namespace BansheeEngine
 		TID_SpriteTexture = 30002
 	};
 }
-
-namespace BS = BansheeEngine;

@@ -13,7 +13,7 @@ namespace BansheeEngine
 		virtual void initialize() = 0;
 	};
 
-	class BS_EXPORT ScriptManager : public CM::Module<ScriptManager>
+	class BS_EXPORT ScriptManager : public Module<ScriptManager>
 	{
 	public:
 		ScriptManager() { }

@@ -14,15 +14,15 @@ namespace BansheeEngine
 	class BS_EXPORT GUIRenderTexture : public GUITexture
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIRenderTexture* create(const CM::RenderTexturePtr& texture, const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIRenderTexture* create(const CM::RenderTexturePtr& texture, const GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIRenderTexture* create(const RenderTexturePtr& texture, const String& styleName = StringUtil::BLANK);
+		static GUIRenderTexture* create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 	protected:
-		const CM::RenderTexture* mSourceTexture;
+		const RenderTexture* mSourceTexture;
 
-		GUIRenderTexture(const CM::String& styleName, const CM::RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
+		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIRenderTexture();
 
 		/**

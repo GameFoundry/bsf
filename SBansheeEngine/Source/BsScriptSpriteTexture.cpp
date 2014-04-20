@@ -6,8 +6,6 @@
 #include "BsMonoManager.h"
 #include "BsSpriteTexture.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	ScriptSpriteTexture::ScriptSpriteTexture(const HSpriteTexture& texture)

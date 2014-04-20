@@ -2,7 +2,7 @@
 
 #include "CmGLPrerequisites.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct GLSLProgramPipeline
 	{

@@ -3,10 +3,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	extern "C" BS_SCR_BED_EXPORT const String& getPluginName()
 	{
@@ -16,11 +13,11 @@ namespace BansheeEditor
 
 	extern "C" BS_SCR_BED_EXPORT void* loadPlugin()
 	{
-		const CM::String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
-		const CM::String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
-		const CM::String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
+		const String ENGINE_ASSEMBLY_PATH = "..\\..\\Assemblies\\MBansheeEditor.dll";
+		const String ENGINE_ASSEMBLY_NAME = BansheeEditorAssemblyName;
+		const String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
 
-		BS::MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
+		MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
 		assembly.invoke(ASSEMBLY_ENTRY_POINT);
 
 		ScriptEditorWindow::registerManagedEditorWindows();

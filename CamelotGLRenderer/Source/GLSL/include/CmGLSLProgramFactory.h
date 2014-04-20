@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmGLSLExtSupport.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     /** Factory class for GLSL programs. */
     class CM_RSGL_EXPORT GLSLProgramFactory : public HighLevelGpuProgramFactory

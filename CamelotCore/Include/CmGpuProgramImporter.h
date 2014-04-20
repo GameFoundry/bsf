@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmSpecificImporter.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT GpuProgramImporter : public SpecificImporter
 	{

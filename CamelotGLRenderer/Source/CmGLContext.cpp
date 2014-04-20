@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 #include "CmGLContext.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
     // Empty base class
     GLContext::GLContext()
 	{ }
@@ -45,7 +45,7 @@ namespace CamelotFramework {
 // declared in CmGLPrerequisites.h 
 GLEWContext * glewGetContext()
 {
-	using namespace CamelotFramework;
+	using namespace BansheeEngine;
 	static CM_THREAD_POINTER_VAR(GLEWContext, GLEWContextsPtr);
 
 	GLEWContext * currentGLEWContextsPtr =  CM_THREAD_POINTER_GET(GLEWContextsPtr);

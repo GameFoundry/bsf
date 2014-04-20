@@ -3,7 +3,7 @@
 #include "CmMatrix4.h"
 #include "CmMath.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	const RectF RectF::EMPTY = RectF();
 

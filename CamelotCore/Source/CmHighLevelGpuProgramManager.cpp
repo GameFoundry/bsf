@@ -28,7 +28,7 @@ THE SOFTWARE.
 #include "CmHighLevelGpuProgramManager.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	String sNullLang = "null";
 	class NullProgram : public HighLevelGpuProgram

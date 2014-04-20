@@ -4,7 +4,7 @@
 #include "CmUUID.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Resource::Resource(bool initializeOnRenderThread)
 		:CoreObject(initializeOnRenderThread), mSize(0)

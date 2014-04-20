@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
 	UINT32 GLSLGpuProgram::mVertexShaderCount = 0;
 	UINT32 GLSLGpuProgram::mFragmentShaderCount = 0;

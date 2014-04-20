@@ -5,7 +5,7 @@
 #include "CmGpuBufferView.h"
 #include "CmCoreObject.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_EXPORT GpuBuffer : public CoreObject
     {

@@ -3,7 +3,7 @@
 #include "CmGLPrerequisites.h"
 #include "CmEventQuery.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @copydoc EventQuery

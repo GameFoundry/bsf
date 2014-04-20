@@ -11,8 +11,6 @@
 #include "CmSceneObject.h"
 #include "BsGUIDropDownHitBox.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	const UINT32 GUIDropDownBox::DROP_DOWN_BOX_WIDTH = 150;
@@ -46,7 +44,7 @@ namespace BansheeEngine
 		return dataEntry;
 	}
 
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundPosition(const CM::Vector2I& position)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundPosition(const Vector2I& position)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::Position;
@@ -55,7 +53,7 @@ namespace BansheeEngine
 		return instance;
 	}
 
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsVert(const CM::RectI& bounds)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsVert(const RectI& bounds)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::BoundsVert;
@@ -64,7 +62,7 @@ namespace BansheeEngine
 		return instance;
 	}
 		
-	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsHorz(const CM::RectI& bounds)
+	GUIDropDownAreaPlacement GUIDropDownAreaPlacement::aroundBoundsHorz(const RectI& bounds)
 	{
 		GUIDropDownAreaPlacement instance;
 		instance.mType = Type::BoundsHorz;
@@ -73,7 +71,7 @@ namespace BansheeEngine
 		return instance;
 	}
 
-	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent, CM::Viewport* target, const GUIDropDownAreaPlacement& placement,
+	GUIDropDownBox::GUIDropDownBox(const HSceneObject& parent, Viewport* target, const GUIDropDownAreaPlacement& placement,
 		const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type)
 		:GUIWidget(parent, target), mRootMenu(nullptr), mHitBox(nullptr), mCaptureHitBox(nullptr)
 	{
@@ -390,9 +388,9 @@ namespace BansheeEngine
 			}
 		}
 
-		CM::Vector<GUITexture*>::type newSeparators;
-		CM::Vector<GUIButton*>::type newEntryBtns;
-		CM::Vector<GUIButton*>::type newExpEntryBtns;
+		Vector<GUITexture*>::type newSeparators;
+		Vector<GUIButton*>::type newEntryBtns;
+		Vector<GUIButton*>::type newExpEntryBtns;
 		for(UINT32 i = pageStart; i < pageEnd; i++)
 		{
 			GUIDropDownDataEntry& element = mData.entries[i];
@@ -501,7 +499,7 @@ namespace BansheeEngine
 		mContentArea->setPosition(x + backgroundStyle->margins.left, actualY + backgroundStyle->margins.top);
 	}
 
-	UINT32 GUIDropDownBox::DropDownSubMenu::getElementHeight(CM::UINT32 idx) const
+	UINT32 GUIDropDownBox::DropDownSubMenu::getElementHeight(UINT32 idx) const
 	{
 		if(mData.entries[idx].isSeparator())
 			return mOwner->getSkin().getStyle(mOwner->mSeparatorStyle)->height;
@@ -511,7 +509,7 @@ namespace BansheeEngine
 			return mOwner->getSkin().getStyle(mOwner->mEntryBtnStyle)->height;
 	}
 
-	HString GUIDropDownBox::DropDownSubMenu::getElementLocalizedName(CM::UINT32 idx) const
+	HString GUIDropDownBox::DropDownSubMenu::getElementLocalizedName(UINT32 idx) const
 	{
 		const WString& label = mData.entries[idx].getLabel();
 

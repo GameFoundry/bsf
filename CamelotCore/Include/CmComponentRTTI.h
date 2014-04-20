@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmComponent.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT ComponentRTTI : public RTTIType<Component, GameObject, ComponentRTTI>
 	{

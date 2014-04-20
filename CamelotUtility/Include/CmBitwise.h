@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     /** 
 	 * @brief	Class for manipulating bit patterns.

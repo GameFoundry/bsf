@@ -1,7 +1,7 @@
 #include "CmGLPrerequisites.h"
 #include "CmGLRenderSystemFactory.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	extern "C" CM_RSGL_EXPORT const String& getPluginName()
 	{

@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "CmD3D9HLSLParamParser.h"
 #include "CmD3D9HLSLProgramRTTI.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 	//-----------------------------------------------------------------------
 	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
@@ -237,7 +237,7 @@ namespace CamelotFramework {
 
 		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
 
-		RenderSystem* rs = CamelotFramework::RenderSystem::instancePtr();
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
 		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
     }
 	//-----------------------------------------------------------------------

@@ -5,7 +5,7 @@
 #include "CmRenderWindow.h"
 #include <boost/signals.hpp>
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT RenderWindowManager : public Module<RenderWindowManager>
 	{

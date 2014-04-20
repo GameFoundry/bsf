@@ -4,7 +4,7 @@
 #include "CmRTTIType.h"
 #include "CmFontImportOptions.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT FontImportOptionsRTTI : public RTTIType<FontImportOptions, IReflectable, FontImportOptionsRTTI>
 	{

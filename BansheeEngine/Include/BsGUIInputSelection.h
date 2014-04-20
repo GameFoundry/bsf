@@ -12,34 +12,34 @@ namespace BansheeEngine
 		GUIInputSelection();
 		~GUIInputSelection();
 
-		const CM::Vector<ImageSprite*>::type& getSprites() const { return mSprites; }
-		CM::Vector2I GUIInputSelection::getSelectionSpriteOffset(CM::UINT32 spriteIdx) const;
-		CM::RectI GUIInputSelection::getSelectionSpriteClipRect(CM::UINT32 spriteIdx, const CM::RectI& parentClipRect) const;
+		const Vector<ImageSprite*>::type& getSprites() const { return mSprites; }
+		Vector2I GUIInputSelection::getSelectionSpriteOffset(UINT32 spriteIdx) const;
+		RectI GUIInputSelection::getSelectionSpriteClipRect(UINT32 spriteIdx, const RectI& parentClipRect) const;
 		void updateSprite();
 
-		void showSelection(CM::UINT32 anchorCaretPos);
+		void showSelection(UINT32 anchorCaretPos);
 		void clearSelection();
 
-		void moveSelectionToCaret(CM::UINT32 caretPos);
+		void moveSelectionToCaret(UINT32 caretPos);
 		bool isSelectionEmpty() const;
 		void selectAll();
 
-		void selectionDragStart(CM::UINT32 caretPos);
-		void selectionDragUpdate(CM::UINT32 caretPos);
+		void selectionDragStart(UINT32 caretPos);
+		void selectionDragUpdate(UINT32 caretPos);
 		void selectionDragEnd();
 
-		CM::UINT32 getSelectionStart() const { return mSelectionStart; }
-		CM::UINT32 getSelectionEnd() const { return mSelectionEnd; }
+		UINT32 getSelectionStart() const { return mSelectionStart; }
+		UINT32 getSelectionEnd() const { return mSelectionEnd; }
 
 	private:
-		CM::UINT32 mSelectionStart;
-		CM::UINT32 mSelectionEnd;
-		CM::UINT32 mSelectionAnchor;
-		CM::UINT32 mSelectionDragAnchor;
+		UINT32 mSelectionStart;
+		UINT32 mSelectionEnd;
+		UINT32 mSelectionAnchor;
+		UINT32 mSelectionDragAnchor;
 
-		CM::Vector<CM::RectI>::type mSelectionRects;
-		CM::Vector<ImageSprite*>::type mSprites;
+		Vector<RectI>::type mSelectionRects;
+		Vector<ImageSprite*>::type mSprites;
 
-		CM::Vector<CM::RectI>::type getSelectionRects() const;
+		Vector<RectI>::type getSelectionRects() const;
 	};
 }

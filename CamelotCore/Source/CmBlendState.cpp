@@ -4,7 +4,7 @@
 #include "CmBlendStateRTTI.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void BlendState::initialize(const BLEND_STATE_DESC& desc)
 	{

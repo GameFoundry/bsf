@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsEditorWindowBase.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	class MainEditorWindow : public EditorWindowBase
 	{
@@ -14,10 +14,10 @@ namespace BansheeEditor
 
 		DockManager& getDockManager() const { return *mDockManager; }
 
-		static MainEditorWindow* create(const CM::RenderWindowPtr& renderWindow);
+		static MainEditorWindow* create(const RenderWindowPtr& renderWindow);
 	protected:
 		friend class EditorWindowManager;
-		MainEditorWindow(const CM::RenderWindowPtr& renderWindow);
+		MainEditorWindow(const RenderWindowPtr& renderWindow);
 
 	protected:
 		GUIMenuBar* mMenuBar;

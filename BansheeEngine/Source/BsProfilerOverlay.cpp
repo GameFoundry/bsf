@@ -10,8 +10,6 @@
 #include "CmProfiler.h"
 #include "CmViewport.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
 	class BasicRowFiller
@@ -224,7 +222,7 @@ namespace BansheeEngine
 
 	const UINT32 ProfilerOverlay::MAX_DEPTH = 4;
 
-	ProfilerOverlay::ProfilerOverlay(const CM::ViewportPtr& target)
+	ProfilerOverlay::ProfilerOverlay(const ViewportPtr& target)
 		:mIsShown(false), mBasicAreaLabels(nullptr), mPreciseAreaLabels(nullptr), mBasicAreaContents(nullptr), mPreciseAreaContents(nullptr),
 		mBasicLayoutLabels(nullptr), mPreciseLayoutLabels(nullptr), mBasicLayoutContents(nullptr), mPreciseLayoutContents(nullptr),
 		mTitleBasicName(nullptr), mTitleBasicPctOfParent(nullptr), mTitleBasicNumCalls(nullptr), mTitleBasicNumAllocs(nullptr), mTitleBasicNumFrees(nullptr),
@@ -248,7 +246,7 @@ namespace BansheeEngine
 			mWidgetSO->destroy();
 	}
 
-	void ProfilerOverlay::setTarget(const CM::ViewportPtr& target)
+	void ProfilerOverlay::setTarget(const ViewportPtr& target)
 	{
 		if(mTarget != nullptr)
 			mTargetResizedConn.disconnect();
@@ -390,7 +388,7 @@ namespace BansheeEngine
 		mPreciseAreaContents->setSize(contentWidth, height);
 	}
 
-	void ProfilerOverlay::updateContents(const CM::ProfilerReport& simReport, const CM::ProfilerReport& coreReport)
+	void ProfilerOverlay::updateContents(const ProfilerReport& simReport, const ProfilerReport& coreReport)
 	{
 		static const UINT32 NUM_ROOT_ENTRIES = 2;
 

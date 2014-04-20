@@ -4,7 +4,7 @@
 #include "CmImportOptions.h"
 #include "CmGpuProgram.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class CM_EXPORT GpuProgramImportOptions : public ImportOptions
 	{

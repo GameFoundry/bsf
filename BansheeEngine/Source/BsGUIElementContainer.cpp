@@ -1,9 +1,6 @@
 #include "BsGUIElementContainer.h"
 #include "BsGUISkin.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
-
 namespace BansheeEngine
 {
 	GUIElementContainer::GUIElementContainer(const GUILayoutOptions& layoutOptions)

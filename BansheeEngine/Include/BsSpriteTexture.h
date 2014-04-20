@@ -11,25 +11,25 @@ namespace BansheeEngine
 	 * 			to create a sprite texture atlas, without requiring any of the sprite classes to directly
 	 * 			know about it.
 	 */
-	class BS_EXPORT SpriteTexture : public CM::Resource
+	class BS_EXPORT SpriteTexture : public Resource
 	{
 	public:
-		const CM::HTexture& getTexture() const;
-		CM::Vector2 transformUV(const CM::Vector2& uv) const;
+		const HTexture& getTexture() const;
+		Vector2 transformUV(const Vector2& uv) const;
 
 		static const HSpriteTexture& dummy();
-		static HSpriteTexture create(const CM::HTexture& texture);
-		static HSpriteTexture create(const CM::Vector2& uvOffset, const CM::Vector2& uvScale, const CM::HTexture& texture);
+		static HSpriteTexture create(const HTexture& texture);
+		static HSpriteTexture create(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture);
 
 		static bool checkIsLoaded(const HSpriteTexture& tex);
 	private:
 		friend class SpriteTextureRTTI;
 
-		SpriteTexture(const CM::Vector2& uvOffset, const CM::Vector2& uvScale, const CM::HTexture& texture);
+		SpriteTexture(const Vector2& uvOffset, const Vector2& uvScale, const HTexture& texture);
 
-		CM::HTexture mAtlasTexture;
-		CM::Vector2 mUVOffset;
-		CM::Vector2 mUVScale;
+		HTexture mAtlasTexture;
+		Vector2 mUVOffset;
+		Vector2 mUVScale;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		static SpriteTexturePtr createEmpty();
 	public:
 		friend class SpriteTextureRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;	
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

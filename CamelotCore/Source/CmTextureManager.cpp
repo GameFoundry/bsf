@@ -31,7 +31,7 @@ THE SOFTWARE.
 #include "CmMultiRenderTexture.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
     TextureManager::TextureManager()
     {

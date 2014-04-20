@@ -3,7 +3,7 @@
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	D3D11GpuParamBlockBuffer::D3D11GpuParamBlockBuffer()
 		:mBuffer(nullptr)

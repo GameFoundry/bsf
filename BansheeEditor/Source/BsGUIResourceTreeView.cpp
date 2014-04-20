@@ -12,11 +12,9 @@
 #include "CmPlatform.h"
 #include "CmPath.h"
 
-using namespace CamelotFramework;
-using namespace BansheeEngine;
 using namespace std::placeholders;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
 	GUIResourceTreeView::InternalDraggedResources::InternalDraggedResources(UINT32 numObjects)
 		:numObjects(numObjects)
@@ -30,9 +28,9 @@ namespace BansheeEditor
 		resourcePaths = nullptr;
 	}
 
-	GUIResourceTreeView::GUIResourceTreeView(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
-		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, 
-		const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
+	GUIResourceTreeView::GUIResourceTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
+		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 
+		const String& dragHighlightStyle, const String& dragSepHighlightStyle, const GUILayoutOptions& layoutOptions)
 		:GUITreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle,
 		dragSepHighlightStyle, layoutOptions), mDraggedResources(nullptr), mCurrentWindow(nullptr), mDropTarget(nullptr), mDropTargetDragActive(false)
 	{
@@ -53,17 +51,17 @@ namespace BansheeEditor
 		clearDropTarget();
 	}
 
-	GUIResourceTreeView* GUIResourceTreeView::create(const CM::String& backgroundStyle, const CM::String& elementBtnStyle, 
-		const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, 
-		const CM::String& dragSepHighlightStyle)
+	GUIResourceTreeView* GUIResourceTreeView::create(const String& backgroundStyle, const String& elementBtnStyle, 
+		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle, 
+		const String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
 			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create());
 	}
 
-	GUIResourceTreeView* GUIResourceTreeView::create(const GUIOptions& options, const CM::String& backgroundStyle,
-		const CM::String& elementBtnStyle, const CM::String& foldoutBtnStyle, const CM::String& selectionBackgroundStyle, 
-		const CM::String& editBoxStyle, const CM::String& dragHighlightStyle, const CM::String& dragSepHighlightStyle)
+	GUIResourceTreeView* GUIResourceTreeView::create(const GUIOptions& options, const String& backgroundStyle,
+		const String& elementBtnStyle, const String& foldoutBtnStyle, const String& selectionBackgroundStyle, 
+		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
 		return new (cm_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, 
 			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options));
@@ -84,7 +82,7 @@ namespace BansheeEditor
 		// Do nothing, updates are handled via callbacks
 	}
 
-	void GUIResourceTreeView::renameTreeElement(GUITreeView::TreeElement* element, const CM::WString& name)
+	void GUIResourceTreeView::renameTreeElement(GUITreeView::TreeElement* element, const WString& name)
 	{
 		ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(element);
 		
@@ -138,7 +136,7 @@ namespace BansheeEditor
 		}
 	}
 
-	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::addTreeElement(ResourceTreeElement* parent, const CM::WString& fullPath)
+	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::addTreeElement(ResourceTreeElement* parent, const WString& fullPath)
 	{
 		ResourceTreeElement* newChild = cm_new<ResourceTreeElement>();
 		newChild->mParent = parent;
@@ -194,7 +192,7 @@ namespace BansheeEditor
 		}
 	}
 
-	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::findTreeElement(const CM::WString& fullPath)
+	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::findTreeElement(const WString& fullPath)
 	{
 		Vector<WString>::type pathElems = Path::split(fullPath);
 		Vector<WString>::type rootElems = Path::split(mRootElement.mFullPath);
@@ -265,7 +263,7 @@ namespace BansheeEditor
 			deleteTreeElement(treeElement);
 	}
 
-	void GUIResourceTreeView::setDropTarget(CM::RenderWindow* parentWindow, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height)
+	void GUIResourceTreeView::setDropTarget(RenderWindow* parentWindow, INT32 x, INT32 y, UINT32 width, UINT32 height)
 	{
 		if(mDropTarget != nullptr)
 		{
@@ -296,7 +294,7 @@ namespace BansheeEditor
 		setDropTarget(nullptr, 0, 0, 0, 0);
 	}
 
-	void GUIResourceTreeView::dropTargetDragMove(CM::INT32 x, CM::INT32 y)
+	void GUIResourceTreeView::dropTargetDragMove(INT32 x, INT32 y)
 	{
 		mDragPosition = Vector2I(x, y);
 		mDragInProgress = true;
@@ -324,7 +322,7 @@ namespace BansheeEditor
 		markContentAsDirty();
 	}
 
-	void GUIResourceTreeView::dropTargetDragDropped(CM::INT32 x, CM::INT32 y)
+	void GUIResourceTreeView::dropTargetDragDropped(INT32 x, INT32 y)
 	{
 		const GUITreeView::InteractableElement* element = findElementUnderCoord(Vector2I(x, y));
 
@@ -358,7 +356,7 @@ namespace BansheeEditor
 		markContentAsDirty();
 	}
 
-	CM::WString GUIResourceTreeView::findUniquePath(const CM::WString& path)
+	WString GUIResourceTreeView::findUniquePath(const WString& path)
 	{
 		if(FileSystem::exists(path))
 		{
@@ -463,7 +461,7 @@ namespace BansheeEditor
 			clearDropTarget();
 	}
 
-	bool GUIResourceTreeView::_acceptDragAndDrop(const CM::Vector2I position, CM::UINT32 typeId) const
+	bool GUIResourceTreeView::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const
 	{
 		return typeId == (UINT32)DragAndDropType::Resources;
 	}

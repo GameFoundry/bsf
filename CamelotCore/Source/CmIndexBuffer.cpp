@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmHardwareBufferManager.h"
 #include "CmRenderSystem.h"
 
-namespace CamelotFramework {
+namespace BansheeEngine {
 
     //-----------------------------------------------------------------------------
     IndexBuffer::IndexBuffer(HardwareBufferManager* mgr, IndexType idxType, 

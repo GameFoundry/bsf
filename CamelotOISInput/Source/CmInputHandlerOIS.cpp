@@ -4,7 +4,7 @@
 #include "CmRenderWindow.h"
 #include "CmTime.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
 		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0)

@@ -4,7 +4,7 @@
 #include "CmRTTIField.h"
 #include "CmManagedDataBlock.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	/**
 	 * @brief	Base class containing common functionality for a managed data block class field. 

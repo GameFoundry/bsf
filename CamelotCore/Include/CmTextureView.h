@@ -4,7 +4,7 @@
 #include "CmCoreObject.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	struct CM_EXPORT TEXTURE_VIEW_DESC
 	{

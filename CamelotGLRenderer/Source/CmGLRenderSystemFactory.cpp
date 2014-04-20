@@ -1,7 +1,7 @@
 #include "CmGLRenderSystemFactory.h"
 #include "CmGLRenderSystem.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void GLRenderSystemFactory::create()
 	{

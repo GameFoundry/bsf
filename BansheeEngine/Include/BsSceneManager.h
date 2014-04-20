@@ -5,7 +5,7 @@
 
 namespace BansheeEngine
 {
-	class BS_EXPORT SceneManager : public CM::SceneManager
+	class BS_EXPORT SceneManager : public SceneManagerBase
 	{
 	public:
 		SceneManager() {}
@@ -14,15 +14,15 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns all cameras in the scene.
 		 */
-		virtual const CM::Vector<HCamera>::type& getAllCameras() const = 0;
+		virtual const Vector<HCamera>::type& getAllCameras() const = 0;
 
 		/**
 		 * @brief	Returns all renderables visible to the specified camera.
 		 */
-		virtual CM::Vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const = 0;
+		virtual Vector<HRenderable>::type getVisibleRenderables(const HCamera& camera) const = 0;
 
 		virtual void updateRenderableBounds() = 0;
 	};
 
-	BS_EXPORT SceneManager& gSceneManager();
+	BS_EXPORT SceneManager& gBsSceneManager();
 }

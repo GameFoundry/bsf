@@ -4,7 +4,7 @@
 #include "CmGpuBuffer.h"
 #include "CmCommonEnums.h"
 
-namespace CamelotFramework 
+namespace BansheeEngine 
 {
 	class CM_D3D11_EXPORT D3D11GpuBuffer : public GpuBuffer
     {

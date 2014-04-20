@@ -30,7 +30,7 @@ THE SOFTWARE.
 #include "CmGLSupport.h"
 #include "CmDebug.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
     void checkForGLSLError(const String& ogreMethod, const String& errorTextPrefix, const GLuint obj, 
 		GLSLObjectType objectType, const bool forceInfoLog, const bool forceException)
@@ -135,4 +135,4 @@ namespace CamelotFramework
 		return false;
 	}
 
-} // namespace CamelotFramework
+}

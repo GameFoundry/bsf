@@ -14,7 +14,7 @@
 #include "CmDebug.h"
 #include "CmResources.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	Material::Material()
 		:Resource(false), mRenderQueue(0)

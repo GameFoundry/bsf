@@ -1,7 +1,7 @@
 #include "CmRTTIField.h"
 #include "CmException.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	void RTTIField::checkIsPlain(bool array)
 	{

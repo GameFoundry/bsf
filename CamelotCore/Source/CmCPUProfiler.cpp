@@ -2,7 +2,7 @@
 #include "CmDebug.h"
 #include "CmPlatform.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	CPUProfiler::Timer::Timer()
 	{

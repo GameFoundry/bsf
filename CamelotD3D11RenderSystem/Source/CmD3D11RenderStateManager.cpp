@@ -4,7 +4,7 @@
 #include "CmD3D11RasterizerState.h"
 #include "CmD3D11BlendState.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	SamplerStatePtr D3D11RenderStateManager::createSamplerStateImpl() const
 	{

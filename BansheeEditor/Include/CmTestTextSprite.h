@@ -1,20 +1,20 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIWidget.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class TestTextSprite : public BS::GUIWidget
+	class TestTextSprite : public GUIWidget
 	{
 	protected:
-		friend class CM::SceneObject;
+		friend class SceneObject;
 
-		TestTextSprite(const CM::HSceneObject& parent, CM::Viewport* target);
+		TestTextSprite(const HSceneObject& parent, Viewport* target);
 	public:
 		~TestTextSprite();
 
 		virtual void update();
 
-		void init(const BS::HCamera& camera, const CM::String& text, CM::RenderTexturePtr sceneView);
+		void init(const HCamera& camera, const String& text, RenderTexturePtr sceneView);
 
 	private:
 		GUISceneTreeView* mSceneTreeView;

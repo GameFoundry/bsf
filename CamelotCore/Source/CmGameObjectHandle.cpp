@@ -4,7 +4,7 @@
 #include "CmException.h"
 #include "CmGameObjectHandleRTTI.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data)
 		:mData(data)

@@ -4,7 +4,7 @@
 #include "CmTexture.h"
 #include "CmRenderTexture.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	class D3D11RenderTexture : public RenderTexture
 	{

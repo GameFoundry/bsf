@@ -4,9 +4,9 @@
 #include "CmIReflectable.h"
 #include "CmRectI.h"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class DockManagerLayout : public CM::IReflectable
+	class DockManagerLayout : public IReflectable
 	{
 	public:
 		struct Entry
@@ -15,12 +15,12 @@ namespace BansheeEditor
 			Entry();
 			~Entry();
 
-			static Entry* createLeaf(Entry* parent, CM::UINT32 childIdx, 
-				const CM::Vector<CM::String>::type& widgetNames);
-			static Entry* createContainer(Entry* parent, CM::UINT32 childIdx, float splitPosition, 
+			static Entry* createLeaf(Entry* parent, UINT32 childIdx, 
+				const Vector<String>::type& widgetNames);
+			static Entry* createContainer(Entry* parent, UINT32 childIdx, float splitPosition, 
 				bool horizontalSplit);
 
-			CM::Vector<CM::String>::type widgetNames;
+			Vector<String>::type widgetNames;
 			bool isLeaf;
 			float splitPosition;
 			bool horizontalSplit;
@@ -43,7 +43,7 @@ namespace BansheeEditor
 
 	public:
 		friend class DockManagerLayoutRTTI;
-		static CM::RTTITypeBase* getRTTIStatic();
-		virtual CM::RTTITypeBase* getRTTI() const;	
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;	
 	};
 }

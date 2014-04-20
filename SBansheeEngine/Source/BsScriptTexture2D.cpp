@@ -8,11 +8,9 @@
 #include "CmPixelUtil.h"
 #include "CmException.h"
 
-using namespace CamelotFramework;
-
 namespace BansheeEngine
 {
-	ScriptTexture2D::ScriptTexture2D(const CM::HTexture& texture)
+	ScriptTexture2D::ScriptTexture2D(const HTexture& texture)
 		:mTexture(texture)
 	{
 
@@ -31,7 +29,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptTexture2D::internal_destroyInstance);
 	}
 
-	void ScriptTexture2D::internal_createInstance(MonoObject* instance, CM::UINT32 format, CM::UINT32 width, CM::UINT32 height, bool hasMipmaps, bool gammaCorrection)
+	void ScriptTexture2D::internal_createInstance(MonoObject* instance, UINT32 format, UINT32 width, UINT32 height, bool hasMipmaps, bool gammaCorrection)
 	{
 		PixelFormat texFormat = PF_R8G8B8;
 		switch(format)

@@ -1,7 +1,7 @@
 #include "CmTimerQuery.h"
 #include "CmQueryManager.h"
 
-namespace CamelotFramework
+namespace BansheeEngine
 {
 	TimerQueryPtr TimerQuery::create()
 	{

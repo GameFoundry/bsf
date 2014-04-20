@@ -5,27 +5,27 @@
 #include "BsDockManager.h"
 #include "boost/signal.hpp"
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
-	class GUIDockSlider : public BS::GUIButtonBase
+	class GUIDockSlider : public GUIButtonBase
 	{
 	public:
-		static const CM::String& getGUITypeName();
+		static const String& getGUITypeName();
 
-		static GUIDockSlider* create(bool horizontal, const CM::String& styleName = CM::StringUtil::BLANK);
-		static GUIDockSlider* create(bool horizontal, const BS::GUIOptions& layoutOptions, const CM::String& styleName = CM::StringUtil::BLANK);
+		static GUIDockSlider* create(bool horizontal, const String& styleName = StringUtil::BLANK);
+		static GUIDockSlider* create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		boost::signal<void(const CM::Vector2I&)> onDragged;
+		boost::signal<void(const Vector2I&)> onDragged;
 	protected:
-		virtual bool mouseEvent(const BS::GUIMouseEvent& ev);
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
 
-		bool _hasCustomCursor(const CM::Vector2I position, BS::CursorType& type) const;
+		bool _hasCustomCursor(const Vector2I position, CursorType& type) const;
 	private:
-		CM::Vector2I mLastDragPosition;
+		Vector2I mLastDragPosition;
 		bool mHorizontal;
 		bool mIsCursorSet;
 		bool mDragInProgress;
 
-		GUIDockSlider(bool horizontal, const CM::String& styleName, const BS::GUILayoutOptions& layoutOptions);
+		GUIDockSlider(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions);
 	};
 }
