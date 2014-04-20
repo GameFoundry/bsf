@@ -16,6 +16,13 @@ namespace BansheeEngine
 		return mono_runtime_invoke(mMethod, instance, params, nullptr);
 	}		
 
+	MonoObject* MonoMethod::invokeVirtual(MonoObject* instance, void** params)
+	{
+		::MonoMethod* virtualMethod = mono_object_get_virtual_method(instance, mMethod);
+
+		return mono_runtime_invoke(virtualMethod, instance, params, nullptr);
+	}		
+
 	void* MonoMethod::getThunk() const
 	{
 		return mThunk;

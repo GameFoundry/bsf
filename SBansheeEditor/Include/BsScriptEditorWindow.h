@@ -29,12 +29,27 @@ namespace BansheeEditor
 		ScriptEditorWindow(const CM::String& windowName, const CM::String& displayName, EditorWidgetBase* editorWidget);
 
 		static MonoObject* internal_createOrGetInstance(MonoString* ns, MonoString* typeName);
-		static void internal_destroyInstance(ScriptEditorWindow* nativeInstance);
+		static void internal_destroyInstance(ScriptEditorWindow* thisPtr);
 
 		static void initRuntimeData();
 
+		static CM::UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);
+		static CM::UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
+
+		static void internal_initializeGUIPanel(ScriptEditorWindow* thisPtr, MonoObject* panel);
+
+		void onWidgetMoved(CM::INT32 x, CM::INT32 y);
+		void onWidgetResized(CM::UINT32 width, CM::UINT32 height);
+		void onWidgetParentChanged(EditorWidgetContainer* newParent);
+
 		CM::String mName;
 		EditorWidgetBase* mEditorWidget;
+		CM::Vector<BS::ScriptGUIPanel*>::type mPanels;
+		boost::signals::connection mOnWidgetMovedConn;
+		boost::signals::connection mOnWidgetResizedConn;
+		boost::signals::connection mOnParentChangedConn;
+
+		static BS::MonoMethod* onResizedMethod;
 
 		// Global editor window management methods
 		static void registerScriptEditorWindow(ScriptEditorWindow* editorWindow);

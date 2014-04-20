@@ -6,16 +6,16 @@
 #include "BsScriptGUIArea.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
-#include "BsScriptGUIBase.h"
+#include "BsScriptGUIPanel.h"
 
 using namespace CamelotFramework;
 
 namespace BansheeEngine
 {
-	ScriptGUIArea::ScriptGUIArea(GUIArea* area, ScriptGUIBase* parentGUI)
-		:mArea(area), mParentGUI(parentGUI), mIsDestroyed(false)
+	ScriptGUIArea::ScriptGUIArea(GUIArea* area, ScriptGUIPanel* parentGUI)
+		:mGUIArea(area), mParentPanel(parentGUI), mIsDestroyed(false)
 	{
-
+		mParentPanel->registerArea(this);
 	}
 
 	void ScriptGUIArea::initMetaData()
@@ -28,9 +28,7 @@ namespace BansheeEngine
 	void ScriptGUIArea::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIArea::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceResizableX", &ScriptGUIArea::internal_createInstanceResizeableX);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceResizableY", &ScriptGUIArea::internal_createInstanceResizeableY);
-		metaData.scriptClass->addInternalCall("Internal_CreateInstanceResizableXY", &ScriptGUIArea::internal_createInstanceResizeableXY);
+		metaData.scriptClass->addInternalCall("Internal_SetArea", &ScriptGUIArea::internal_setArea);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIArea::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIArea::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIArea::internal_setVisible);
@@ -40,76 +38,62 @@ namespace BansheeEngine
 	{
 		if(!mIsDestroyed)
 		{
-			GUIArea::destroy(mArea);
-			mArea = nullptr;
+			mParentPanel->unregisterArea(this);
+
+			GUIArea::destroy(mGUIArea);
+			mGUIArea = nullptr;
 
 			mIsDestroyed = true;
 		}
 	}
 
-	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* parentGUI, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth)
+	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth)
 	{
-		ScriptGUIBase* scriptGUIBase = ScriptGUIBase::toNative(parentGUI);
-		GUIArea* nativeArea = GUIArea::create(scriptGUIBase->getWidget(), x, y, width, height, depth);
+		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
+		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, depth);
 
-		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
+		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIPanel);
 		nativeInstance->createInstance(instance);
 
 		metaData.thisPtrField->setValue(instance, &nativeInstance);
 	}
 
-	void ScriptGUIArea::internal_createInstanceResizeableX(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetLeft, CM::UINT32 offsetRight, 
-		CM::UINT32 offsetTop, CM::UINT32 height, CM::UINT16 depth)
+	void ScriptGUIArea::internal_destroyInstance(ScriptGUIArea* thisPtr)
 	{
-		ScriptGUIBase* scriptGUIBase = ScriptGUIBase::toNative(parentGUI);
-		GUIArea* nativeArea = GUIArea::createStretchedX(scriptGUIBase->getWidget(), offsetLeft, offsetRight, offsetTop, height, depth);
-		
-		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		thisPtr->destroy();
+		cm_delete(thisPtr);
 	}
 
-	void ScriptGUIArea::internal_createInstanceResizeableY(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetTop, 
-		CM::UINT32 offsetBottom, CM::UINT32 offsetLeft, CM::UINT32 width, CM::UINT16 depth)
+	void ScriptGUIArea::internal_destroy(ScriptGUIArea* thisPtr)
 	{
-		ScriptGUIBase* scriptGUIBase = ScriptGUIBase::toNative(parentGUI);
-		GUIArea* nativeArea = GUIArea::createStretchedY(scriptGUIBase->getWidget(), offsetTop, offsetBottom, offsetLeft, width, depth);
-
-		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		thisPtr->destroy();
 	}
 
-	void ScriptGUIArea::internal_createInstanceResizeableXY(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetLeft, 
-		CM::UINT32 offsetRight, CM::UINT32 offsetTop, CM::UINT32 offsetBottom, CM::UINT16 depth)
-	{
-		ScriptGUIBase* scriptGUIBase = ScriptGUIBase::toNative(parentGUI);
-		GUIArea* nativeArea = GUIArea::createStretchedXY(scriptGUIBase->getWidget(), offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
-
-		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIBase);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIArea::internal_destroyInstance(ScriptGUIArea* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
-	}
-
-	void ScriptGUIArea::internal_destroy(ScriptGUIArea* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIArea::internal_setVisible(ScriptGUIArea* nativeInstance, bool visible)
+	void ScriptGUIArea::internal_setVisible(ScriptGUIArea* thisPtr, bool visible)
 	{
 		if(visible)
-			nativeInstance->getInternalValue()->enable();
+			thisPtr->mGUIArea->enable();
 		else
-			nativeInstance->getInternalValue()->disable();
+			thisPtr->mGUIArea->disable();
+	}
+
+	void ScriptGUIArea::internal_setArea(ScriptGUIArea* thisPtr, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth)
+	{
+		thisPtr->mArea.x = x;
+		thisPtr->mArea.y = y;
+		thisPtr->mArea.width = width;
+		thisPtr->mArea.height = height;
+
+		thisPtr->updateArea();
+	}
+
+	void ScriptGUIArea::updateArea()
+	{
+		RectI parentArea = mParentPanel->getClippedArea();
+		RectI myClippedArea = mArea;
+		myClippedArea.clip(parentArea);
+		
+		mGUIArea->setPosition(myClippedArea.x, myClippedArea.y);
+		mGUIArea->setSize(myClippedArea.width, myClippedArea.height);
 	}
 }

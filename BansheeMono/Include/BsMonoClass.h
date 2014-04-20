@@ -33,6 +33,7 @@ namespace BansheeEngine
 		const CM::String& getFullName() const { return mFullName; }
 
 		MonoMethod& getMethod(const CM::String& name, CM::UINT32 numParams = 0);
+
 		MonoField* getField(const CM::String& name) const;
 		MonoProperty& getProperty(const CM::String& name);
 		MonoObject* getAttribute(MonoClass* monoClass) const;

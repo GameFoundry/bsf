@@ -226,12 +226,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsScriptEditorGUI.h" />
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsScriptEditorGUI.cpp" />
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
   </ItemGroup>

@@ -12,6 +12,11 @@ namespace BansheeEditor
 		const CM::String& getName() const { return mName; }
 		const CM::HString& getDisplayName() const { return mDisplayName; }
 
+		CM::INT32 getX() const { return mX; }
+		CM::INT32 getY() const { return mY; }
+		CM::UINT32 getWidth() const { return mWidth; }
+		CM::UINT32 getHeight() const { return mHeight; }
+
 		void _setSize(CM::UINT32 width, CM::UINT32 height);
 		void _setPosition(CM::INT32 x, CM::INT32 y);
 		void _changeParent(EditorWidgetContainer* parent);
@@ -21,6 +26,10 @@ namespace BansheeEditor
 		void _enable();
 
 		void close();
+
+		boost::signal<void(CM::UINT32, CM::UINT32)> onResized;
+		boost::signal<void(CM::INT32, CM::INT32)> onMoved;
+		boost::signal<void(EditorWidgetContainer*)> onParentChanged;
 	protected:
 		friend class EditorWidgetManager;
 
@@ -30,6 +39,8 @@ namespace BansheeEditor
 		CM::String mName;
 		CM::HString mDisplayName;
 		EditorWidgetContainer* mParent;
+		CM::INT32 mX, mY;
+		CM::UINT32 mWidth, mHeight;
 		BS::GUIArea* mContent;
 
 		BS::GUIWidget& getParentWidget() const;

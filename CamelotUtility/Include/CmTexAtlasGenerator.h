@@ -9,9 +9,9 @@ namespace CamelotFramework
 	 * @brief	Represents a single element used as in input to
 	 * 			TexAtlasGenerator. Usually represents a single texture.
 	 * 			
-	 * @note	input is required to be filled in before passing it to
-	 * 			TexAtlasGenerator
-	 * 			output will be filled in by TexAtlasGenerator after a call to
+	 * @note	"input" is required to be filled in before passing it to
+	 * 			TexAtlasGenerator.
+	 * 			"output" will be filled in by TexAtlasGenerator after a call to
 	 * 			TexAtlasGenerator::createAtlasLayout
 	 */
 	struct TexAtlasElementDesc
@@ -38,11 +38,14 @@ namespace CamelotFramework
 
 	class TexAtlasNode;
 
+	/**
+	 * @brief	Organizes a set of textures into a single larger texture (an atlas) by minimizing empty space.
+	 */
 	class CM_UTILITY_EXPORT TexAtlasGenerator
 	{
 	public:
 		/**
-		 * @brief	Constructor.
+		 * @brief	Constructs a new texture atlas generator with the provided parameters.
 		 *
 		 * @param	square			(optional) Should the returned texture always be square. (width == height)
 		 * 							This option is only used if "fixedSize" parameter is set to false.
@@ -75,9 +78,35 @@ namespace CamelotFramework
 		UINT32 mMaxTexWidth;
 		UINT32 mMaxTexHeight;
 
+		/**
+		 * @brief	Organize all of the provide elements and place them into minimum number of pages with the specified width and height.
+		 * 			
+		 * 			Caller must ensure "elements" array has the page indexes reset to -1 before calling, otherwise it will be assumed
+		 * 			those elements already have assigned pages.
+		 * 			
+		 *			Using "startPage" parameter you may add an offset to the generated page indexes.
+		 *
+		 * @return	Number of pages generated.
+		 */
 		int generatePagesForSize(Vector<TexAtlasElementDesc>::type& elements, UINT32 width, UINT32 height, UINT32 startPage = 0) const;
+
+		/**
+		 * @brief	Finds the largest element without a page that fits within the provided node.
+		 *
+		 * @return	Array index of the found page, or -1 if all textures have a page.
+		 */
 		int addLargestTextureWithoutPageThatFits(Vector<TexAtlasElementDesc>::type& elements, TexAtlasNode& node) const;
+
+		/**
+		 * @brief	Scan all of the provided elements and find the largest one that still doesn't have a page assigned.
+		 * 			
+		 * @return	Array index of the found page, or -1 if all textures have a page.
+		 */
 		int findLargestTextureWithoutPage(const Vector<TexAtlasElementDesc>::type& elements) const;
+
+		/**
+		 * @brief	Sorts all the texture elements so that larget elements come first.
+		 */
 		void sortBySize(Vector<TexAtlasElementDesc>::type& elements) const;
 	};
 }

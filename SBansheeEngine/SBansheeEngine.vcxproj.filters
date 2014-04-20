@@ -111,9 +111,6 @@
     <ClInclude Include="Include\BsScriptGUIArea.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptGUIBase.h">
-      <Filter>Header Files\GUI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsScriptGUIButton.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
@@ -154,6 +151,9 @@
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsScriptGUIToggleGroup.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIPanel.h">
       <Filter>Header Files\GUI</Filter>
     </ClInclude>
   </ItemGroup>
@@ -215,9 +215,6 @@
     <ClCompile Include="Source\BsScriptGUIArea.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptGUIBase.cpp">
-      <Filter>Source Files\GUI</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsScriptGUIButton.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
@@ -258,6 +255,9 @@
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp">
+      <Filter>Source Files\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIPanel.cpp">
       <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>

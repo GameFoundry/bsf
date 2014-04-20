@@ -772,8 +772,8 @@ namespace CamelotFramework
 	
 	void D3D9Texture::_setFinalAttributes(IDirect3DDevice9* d3d9Device, 
 		TextureResources* textureResources,
-		unsigned long width, unsigned long height, 
-        unsigned long depth, PixelFormat format)
+		UINT32 width, UINT32 height, 
+        UINT32 depth, PixelFormat format)
 	{ 
 		if(width != mWidth || height != mHeight || depth != mDepth)
 		{

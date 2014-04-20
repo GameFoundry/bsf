@@ -199,6 +199,10 @@ namespace CamelotFramework
 		Count // Number of entries
 	};
 
+	/**
+	 * @brief	Internal data used for representing a localized string instance.
+	 * 			e.g. a specific instance of a localized string using specific parameters.
+	 */
 	struct LocalizedStringData
 	{
 		struct Common
@@ -234,6 +238,10 @@ namespace CamelotFramework
 		void updateString(const WString& string);
 	};
 
+	/**
+	 * @brief	Class that handles string localization. Stores strings and their translations
+	 * 			in various languages, along with the ability to switch currently active language.
+	 */
 	class CM_UTILITY_EXPORT StringTable : public Module<StringTable>
 	{
 		// TODO - When editing string table I will need to ensure that all languages of the same string have the same number of parameters
@@ -246,10 +254,25 @@ namespace CamelotFramework
 		StringTable();
 		~StringTable();
 
+		/**
+		 * @brief	Gets the currently active language.
+		 */
 		Language getActiveLanguage() const { return mActiveLanguage; }
+
+		/**
+		 * @brief	Changes the currently active language.
+		 * 			This will update any localized string instances.
+		 */
 		void setActiveLanguage(Language language);
 
+		/**
+		 * @brief	Adds or modifies string translation for the specified language.
+		 */
 		void setString(const WString& identifier, Language language, const WString& string);
+
+		/**
+		 * @brief	Removes the string described by identifier, from all languages.
+		 */
 		void removeString(const WString& identifier);
 
 		/**

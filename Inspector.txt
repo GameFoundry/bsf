@@ -6,13 +6,18 @@ GameObject field
 Resource field
 -------------
 
-Update C++ side of the GUI so it properly uses GUIPanels
- - (Remove current GUI and EditorGUI and replace them with GUIPanel)
- - Ensure GUI panel clips any of its child GUIAreas to the panel area
+A way to close a window & destroy a GUI panel!
+ - Will likely need to refactor ScriptEditorWindow as currently it performs initialization
+   in constructor and destroy in destructor, but open/close will be called within its lifetime
+ - Also a way to get notified if the window gets closed from C++
+ - Once closed the referenced GUIPanels should no longer work (set "destroyed" flag?)
+ - What about calling Destroy on a GUIPanel?
+   - It should notify owning EditorWindow
 
-Remove support for resizeable areas (Update ScriptGUIArea)
+Ensure that setting depth for GUIArea works properly. It's not properly implemented yet.
 
 Things to think about/do:
+ - Add EditorFields to C#
  - Inspectable fields need TAB support
   - Modify C++ GUIElement so I can do setNextTabElement(GUIElement*)
  - Inspectable fields need Undo/Redo support. Consider how to best implement it
@@ -28,26 +33,12 @@ Things to think about/do:
  - Currently I do not have a way to creating an Inspector field for just a single field, only for an entire object
  - Finally once all other things are done implement support for multi-rank arrays, lists and dictionaries
 
-
 How will UndoRedo keep a reference to the object? 
  - What if the object gets destroyed? 
  - Keeping a reference will prevent the object from being destroyed.
    - Although heavy stuff is destroyed manually via Destroy anyway
 
-
 STUBBED IN METHODS:
-EditorWindow
- WindowResized
- Internal_GetWidth
- Internal_GetHeight
- Internal_CreateGUIPanel
-GUIPanel
- Internal_SetArea
- Internal_Destroy
-SceneObject
- GetComponents
-GUIArea
- SetArea
 SerializableObject
 SerializableArray
 SerializableField

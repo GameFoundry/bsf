@@ -1,11 +1,14 @@
 #include "BsScriptEditorWindow.h"
 #include "BsScriptMeta.h"
+#include "BsScriptGUIPanel.h"
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
+#include "BsMonoMethod.h"
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsEditorWidget.h"
 #include "BsEditorWidgetManager.h"
+#include "BsEditorWidgetContainer.h"
 #include "BsMonoAssembly.h"
 
 using namespace CamelotFramework;
@@ -15,16 +18,22 @@ using namespace std::placeholders;
 namespace BansheeEditor
 {
 	UnorderedMap<String, ScriptEditorWindow::EditorWindowHandle>::type ScriptEditorWindow::OpenScriptEditorWindows;
+	BS::MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
 
 	ScriptEditorWindow::ScriptEditorWindow(const CM::String& windowName, const CM::String& displayName, EditorWidgetBase* editorWidget)
 		:mName(windowName), mEditorWidget(editorWidget)
 	{
-
+		mOnWidgetMovedConn = editorWidget->onMoved.connect(std::bind(&ScriptEditorWindow::onWidgetMoved, this, _1, _2));
+		mOnWidgetResizedConn = editorWidget->onResized.connect(std::bind(&ScriptEditorWindow::onWidgetResized, this, _1, _2));
+		mOnParentChangedConn = editorWidget->onParentChanged.connect(std::bind(&ScriptEditorWindow::onWidgetParentChanged, this, _1));
 	}
 
 	ScriptEditorWindow::~ScriptEditorWindow()
 	{
-
+		// TODO - This probably need to be called whenever we close a window, and not when script class is destructed
+		mOnWidgetMovedConn.disconnect();
+		mOnWidgetResizedConn.disconnect();
+		mOnParentChangedConn.disconnect();
 	}
 
 	void ScriptEditorWindow::initMetaData()
@@ -38,6 +47,11 @@ namespace BansheeEditor
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptEditorWindow::internal_destroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_InitializeGUIPanel", &ScriptEditorWindow::internal_initializeGUIPanel);
+		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
+		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
+
+		onResizedMethod = &metaData.scriptClass->getMethod("WindowResized", 2);
 	}
 
 	MonoObject* ScriptEditorWindow::internal_createOrGetInstance(MonoString* ns, MonoString* typeName)
@@ -59,10 +73,10 @@ namespace BansheeEditor
 		return nullptr;
 	}
 
-	void ScriptEditorWindow::internal_destroyInstance(ScriptEditorWindow* nativeInstance)
+	void ScriptEditorWindow::internal_destroyInstance(ScriptEditorWindow* thisPtr)
 	{
 #if CM_DEBUG_MODE
-		auto iterFind = OpenScriptEditorWindows.find(nativeInstance->mName);
+		auto iterFind = OpenScriptEditorWindows.find(thisPtr->mName);
 
 		// It is assumed that this method will only be called after "unregisterScriptEditorWindow" is called,
 		// since that is the only place keeping a reference to the managed editor window. So if window was
@@ -70,7 +84,60 @@ namespace BansheeEditor
 		assert(iterFind == OpenScriptEditorWindows.end());
 #endif
 
-		cm_delete(nativeInstance);
+		cm_delete(thisPtr);
+	}
+
+	CM::UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)
+	{
+		return thisPtr->mEditorWidget->getWidth();
+	}
+
+	CM::UINT32 ScriptEditorWindow::internal_getHeight(ScriptEditorWindow* thisPtr)
+	{
+		return thisPtr->mEditorWidget->getHeight();
+	}
+
+	void ScriptEditorWindow::internal_initializeGUIPanel(ScriptEditorWindow* thisPtr, MonoObject* panel)
+	{
+		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
+		thisPtr->mPanels.push_back(scriptGUIPanel);
+
+		scriptGUIPanel->setParentArea(thisPtr->mEditorWidget->getX(), thisPtr->mEditorWidget->getY(), 
+			thisPtr->mEditorWidget->getWidth(), thisPtr->mEditorWidget->getHeight());
+
+		scriptGUIPanel->setParentWidget(&thisPtr->mEditorWidget->_getParent()->getParentWidget());
+	}
+
+	void ScriptEditorWindow::onWidgetMoved(CM::INT32 x, CM::INT32 y)
+	{
+		for(auto& panel : mPanels)
+		{
+			panel->setParentArea(x, y, 
+				mEditorWidget->getWidth(), mEditorWidget->getHeight());
+		}
+	}
+
+	void ScriptEditorWindow::onWidgetResized(CM::UINT32 width, CM::UINT32 height)
+	{
+		for(auto& panel : mPanels)
+		{
+			panel->setParentArea(mEditorWidget->getX(), mEditorWidget->getY(), 
+				width, height);
+		}
+
+		void* params[2] = { &width, &height };
+		onResizedMethod->invokeVirtual(mManagedInstance, params);
+	}
+
+	void ScriptEditorWindow::onWidgetParentChanged(EditorWidgetContainer* newParent)
+	{
+		for(auto& panel : mPanels)
+		{
+			if(newParent != nullptr)
+				panel->setParentWidget(&newParent->getParentWidget());
+			else
+				panel->setParentWidget(nullptr);
+		}
 	}
 
 	void ScriptEditorWindow::registerManagedEditorWindows()

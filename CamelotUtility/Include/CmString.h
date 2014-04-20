@@ -1,225 +1,201 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
 
 namespace CamelotFramework 
 {
+	/**
+	 * @brief	Basic string that uses Banshee memory allocators.
+	 */
 	template <typename T>
 	struct BasicString 
 	{ 
 		typedef typename std::basic_string<T, std::char_traits<T>, StdAlloc<T>> type; 
 	}; 
 
+	/**
+	 * @brief	Basic string stream that uses Banshee memory allocators.
+	 */
 	template <typename T>
 	struct BasicStringStream
 	{ 
 		typedef typename std::basic_stringstream<T, std::char_traits<T>, StdAlloc<T>> type; 
 	}; 
 
+	/**
+	 * @brief	Wide string used primarily for handling Unicode text.
+	 */
 	typedef BasicString<wchar_t>::type WString;
+
+	/**
+	 * @brief	Narrow string used primarily for handling ASCII text.
+	 */
 	typedef BasicString<char>::type String;
 
+	/**
+	 * @brief	Wide string stream used for primarily for constructing
+	 * 			strings consisting of Unicode text.
+	 */
 	typedef BasicStringStream<wchar_t>::type WStringStream;
+
+	/**
+	 * @brief	Wide string stream used for primarily for constructing
+	 * 			strings consisting of ASCII text.
+	 */
 	typedef BasicStringStream<char>::type StringStream;
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
-
-    /** Utility class for manipulating Strings.  */
+    /**
+     * @brief	Utility class for manipulating Strings.
+     */
     class CM_UTILITY_EXPORT StringUtil
     {
 	public:
-        /** Removes any whitespace characters, be it standard space or
-            TABs and so on.
-            @remarks
-                The user may specify wether they want to trim only the
-                beginning or the end of the String ( the default action is
-                to trim both).
-        */
+        /**
+         * @brief	Removes any whitespace characters from beginning or end of the string.
+         */
         static void trim(String& str, bool left = true, bool right = true);
 
-        /** Removes any whitespace characters, be it standard space or
-            TABs and so on.
-            @remarks
-                The user may specify wether they want to trim only the
-                beginning or the end of the String ( the default action is
-                to trim both).
-        */
+        /**
+         * @copydoc StringUtil::trim(String&, bool, bool)
+         */
         static void trim(WString& str, bool left = true, bool right = true);
 
-        /** Removes specified characters.
-            @remarks
-                The user may specify wether they want to trim only the
-                beginning or the end of the String ( the default action is
-                to trim both).
-        */
+        /**
+         * @brief	Removes specified characters from beginning or end of the string.
+         */
         static void trim(String& str, const String& delims, bool left = true, bool right = true);
 
-        /** Removes specified characters.
-            @remarks
-                The user may specify wether they want to trim only the
-                beginning or the end of the String ( the default action is
-                to trim both).
-        */
+		/**
+         * @copydoc StringUtil::trim(String&, const String&, bool, bool)
+         */
         static void trim(WString& str, const WString& delims, bool left = true, bool right = true);
 
-        /** Returns a StringVector that contains all the substrings delimited
-            by the characters in the passed <code>delims</code> argument.
-            @param
-                delims A list of delimiter characters to split by
-            @param
-                maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
-                parameters is > 0, the splitting process will stop after this many splits, left to right.
-        */
+		/**
+		 * @brief	Returns a vector of strings containing all the substrings delimited
+		 * 			by the provided delimiter characters.
+		 *
+		 * @param	str		 	The string to split.
+		 * @param	delims   	(optional) Delimiter characters to split the string by. They will not
+		 * 						be included in resulting substrings.
+		 * @param	maxSplits	(optional) The maximum number of splits to perform (0 for unlimited splits). If this
+		 *						parameters is > 0, the splitting process will stop after this many splits, left to right.
+		 */
 		static Vector<String>::type split(const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
 
-		/** Returns a StringVector that contains all the substrings delimited
-            by the characters in the passed <code>delims</code> argument.
-            @param
-                delims A list of delimiter characters to split by
-            @param
-                maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
-                parameters is > 0, the splitting process will stop after this many splits, left to right.
-        */
+		/**
+		 * @copydoc	StringUtil::split(const String&, const String&, unsigned int)
+		 */
 		static Vector<WString>::type split(const WString& str, const WString& delims = L"\t\n ", unsigned int maxSplits = 0);
 
-		/** Returns a StringVector that contains all the substrings delimited
-            by the characters in the passed <code>delims</code> argument, 
-			or in the <code>doubleDelims</code> argument, which is used to include (normal) 
-			delimeters in the tokenised string. For example, "strings like this".
-            @param
-                delims A list of delimiter characters to split by
-			@param
-                delims A list of double delimeters characters to tokenise by
-            @param
-                maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
-                parameters is > 0, the splitting process will stop after this many splits, left to right.
-        */
+		/**
+		 * @brief	Returns a vector of strings containing all the substrings delimited
+		 *			by the provided delimiter characters, or the double delimiters used for including
+		 *			normal delimiter characters in the tokenized string. 
+		 *
+		 * @param	str		 	The string to split.
+		 * @param	delims   	(optional) Delimiter characters to split the string by. They will not
+		 * 						be included in resulting substrings.
+		 * @params	doubleDelims (optional) Delimiter character you may use to surround other normal delimiters, in order
+		 * 						to include them in the tokensized string.
+		 * @param	maxSplits	(optional) The maximum number of splits to perform (0 for unlimited splits). If this
+		 *						parameters is > 0, the splitting process will stop after this many splits, left to right.
+		 */
 		static Vector<String>::type tokenise(const String& str, const String& delims = "\t\n ", const String& doubleDelims = "\"", unsigned int maxSplits = 0);
 
-		/** Returns a StringVector that contains all the substrings delimited
-            by the characters in the passed <code>delims</code> argument, 
-			or in the <code>doubleDelims</code> argument, which is used to include (normal) 
-			delimeters in the tokenised string. For example, "strings like this".
-            @param
-                delims A list of delimiter characters to split by
-			@param
-                delims A list of double delimeters characters to tokenise by
-            @param
-                maxSplits The maximum number of splits to perform (0 for unlimited splits). If this
-                parameters is > 0, the splitting process will stop after this many splits, left to right.
-        */
+		/**
+		 * @copydoc	StringUtil::tokenise(const String&, const String&, const String&, unsigned int)
+		 */
 		static Vector<WString>::type tokenise(const WString& str, const WString& delims = L"\t\n ", const WString& doubleDelims = L"\"", unsigned int maxSplits = 0);
 
-		/** Lower-cases all the characters in the string.
-        */
+        /**
+         * @brief	Converts all the characters in the string to lower case.
+         */
         static void toLowerCase(String& str);
 
-		/** Lower-cases all the characters in the string.
-        */
+        /**
+         * @brief	Converts all the characters in the string to lower case.
+         */
         static void toLowerCase(WString& str);
 
-        /** Upper-cases all the characters in the string.
-        */
+        /**
+         * @brief	Converts all the characters in the string to upper case.
+         */
         static void toUpperCase(String& str);
 
-        /** Upper-cases all the characters in the string.
-        */
+        /**
+         * @brief	Converts all the characters in the string to upper case.
+         */
         static void toUpperCase(WString& str);
 
-        /** Returns whether the string begins with the pattern passed in.
-        @param pattern The pattern to compare with.
-        @param lowerCase If true, the start of the string will be lower cased before
-            comparison, pattern should also be in lower case.
-        */
+        /**
+         * @brief	Returns whether the string begins with the pattern passed in.
+         *
+         * @param	str		 	String to compare.
+         * @param	pattern		Pattern to compare with.
+		 * @param	lowerCase	(optional) If true, the start of the string will be lower cased before
+		 *						comparison, and the pattern should also be in lower case.
+         */
         static bool startsWith(const String& str, const String& pattern, bool lowerCase = true);
 
-        /** Returns whether the string begins with the pattern passed in.
-        @param pattern The pattern to compare with.
-        @param lowerCase If true, the start of the string will be lower cased before
-            comparison, pattern should also be in lower case.
-        */
+        /**
+         * @copydoc startsWidth(const String&, const String&, bool)
+         */
         static bool startsWith(const WString& str, const WString& pattern, bool lowerCase = true);
 
-        /** Returns whether the string ends with the pattern passed in.
-        @param pattern The pattern to compare with.
-        @param lowerCase If true, the end of the string will be lower cased before
-            comparison, pattern should also be in lower case.
-        */
+        /**
+         * @brief	Returns whether the string end with the pattern passed in.
+         *
+         * @param	str		 	String to compare.
+         * @param	pattern		Pattern to compare with.
+		 * @param	lowerCase	(optional) If true, the start of the string will be lower cased before
+		 *						comparison, and the pattern should also be in lower case.
+         */
         static bool endsWith(const String& str, const String& pattern, bool lowerCase = true);
 
-        /** Returns whether the string ends with the pattern passed in.
-        @param pattern The pattern to compare with.
-        @param lowerCase If true, the end of the string will be lower cased before
-            comparison, pattern should also be in lower case.
-        */
+        /**
+         * @copydoc endsWith(const String&, const String&, bool)
+         */
         static bool endsWith(const WString& str, const WString& pattern, bool lowerCase = true);
 
-        /** Simple pattern-matching routine allowing a wildcard pattern.
-        @param str String to test
-        @param pattern Pattern to match against; can include simple '*' wildcards
-        @param caseSensitive Whether the match is case sensitive or not
-        */
+        /**
+         * @brief	Returns true if the string matches the provided pattern. Pattern may use
+         * 			a "*" wildcard for matching any characters.
+         *
+         * @param	str			 	The string to test.
+         * @param	pattern		 	Patterns to look for.
+         * @param	caseSensitive	(optional) Should the match be case sensitive or not.
+         */
         static bool match(const String& str, const String& pattern, bool caseSensitive = true);
 
-		/** Simple pattern-matching routine allowing a wildcard pattern.
-        @param str String to test
-        @param pattern Pattern to match against; can include simple '*' wildcards
-        @param caseSensitive Whether the match is case sensitive or not
-        */
+		/**
+         * @copydoc match(const String&, const String&, bool)
+         */
         static bool match(const WString& str, const WString& pattern, bool caseSensitive = true);
 
-		/** Replace all instances of a sub-string with a another sub-string.
-		@param source Source string
-		@param replaceWhat Sub-string to find and replace
-		@param replaceWithWhat Sub-string to replace with (the new sub-string)
-		@returns An updated string with the sub-string replaced
-		*/
+		/**
+		 * @brief	 Replace all instances of a substring with a another substring.
+		 *
+		 * @param	source		   	String to search.
+		 * @param	replaceWhat	   	Substring to find and replace
+		 * @param	replaceWithWhat	Substring to replace with (the new sub-string)
+		 *
+		 * @return	An updated string with the substrings replaced.
+		 */
 		static const String replaceAll(const String& source, const String& replaceWhat, const String& replaceWithWhat);
 
-		/** Replace all instances of a sub-string with a another sub-string.
-		@param source Source string
-		@param replaceWhat Sub-string to find and replace
-		@param replaceWithWhat Sub-string to replace with (the new sub-string)
-		@returns An updated string with the sub-string replaced
-		*/
+		/**
+         * @copydoc match(const String&, const String&, const String&)
+         */
 		static const WString replaceAll(const WString& source, const WString& replaceWhat, const WString& replaceWithWhat);
 
-        /// Constant blank string, useful for returning by ref where local does not exist
+		/**
+		 * @brief	Constant blank string, useful for returning by ref where local does not exist.
+		 */
         static const String BLANK;
 
-		/// Constant blank string, useful for returning by ref where local does not exist
+		/**
+		 * @brief	Constant blank wide string, useful for returning by ref where local does not exist.
+		 */
 		static const WString WBLANK;
 
 	private:
@@ -447,115 +423,128 @@ namespace CamelotFramework
 		}
     };
 
-
 	/**
-	* @brief	Converts a narrow string to a wide string.
-	*/
+	 * @brief	Converts a narrow string to a wide string.
+	 */
 	CM_UTILITY_EXPORT WString toWString(const String& source);
 
-	/** Converts a float to a WString. */
+	/**
+	 * @brief	Converts a float to a string.
+	 */
     CM_UTILITY_EXPORT WString toWString(float val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-	/** Converts a double to a WString. */
+	/**
+	 * @brief	Converts a double to a string.
+	 */
 	CM_UTILITY_EXPORT WString toWString(double val, unsigned short precision = 6, 
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts a Radian to a WString. */
+	/**
+	 * @brief	Converts a Radian to a string.
+	 */
     CM_UTILITY_EXPORT WString toWString(Radian val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts a Degree to a WString. */
+	/**
+	 * @brief	Converts a Degree to a string.
+	 */
     CM_UTILITY_EXPORT WString toWString(Degree val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts an int to a WString. */
+	/**
+	 * @brief	Converts an int to a string.
+	 */
     CM_UTILITY_EXPORT WString toWString(int val, unsigned short width = 0, 
         char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts an unsigned int to a WString. */
+	/**
+	 * @brief	Converts an unsigned int to a string.
+	 */
     CM_UTILITY_EXPORT WString toWString(unsigned int val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-	/** Converts a long to a WString. */
-	CM_UTILITY_EXPORT WString toWString(long val, 
-		unsigned short width = 0, char fill = ' ', 
-		std::ios::fmtflags flags = std::ios::fmtflags(0) );
-
-    /** Converts an unsigned long to a WString. */
-    CM_UTILITY_EXPORT WString toWString(unsigned long val, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
-
-	/** Converts an INT64 to a WString. */
+	/**
+	 * @brief	Converts an 64bit integer to a string.
+	 */
 	CM_UTILITY_EXPORT WString toWString(INT64 val, 
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-	/** Converts an UINT64 to a WString. */
+	/**
+	 * @brief	Converts an 64bit unsigned to a string.
+	 */
 	CM_UTILITY_EXPORT WString toWString(UINT64 val, 
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts a boolean to a WString. 
-    @param yesNo If set to true, result is 'yes' or 'no' instead of 'true' or 'false'
-    */
+    /**
+     * @brief	Converts a boolean to a string.
+     *
+     * @param	val  	Value to convert.
+     * @param	yesNo	(optional) If set to true, result is "yes" or "no" instead of "true" or "false".
+     */
     CM_UTILITY_EXPORT WString toWString(bool val, bool yesNo = false);
 
-	/** Converts a Vector2 to a WString. 
-    @remarks
-        Format is "x y" (i.e. 2x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a 2 dimensional vector to a string.
+     * 			
+	 * @note	Format is "x y".
+     */
     CM_UTILITY_EXPORT WString toWString(const Vector2& val);
 
-    /** Converts a Vector3 to a WString. 
-    @remarks
-        Format is "x y z" (i.e. 3x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a 3 dimensional vector to a string.
+     * 			
+	 * @note	Format is "x y z".
+     */
     CM_UTILITY_EXPORT WString toWString(const Vector3& val);
 
-	/** Converts a Vector4 to a WString. 
-    @remarks
-        Format is "x y z w" (i.e. 4x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a 4 dimensional vector to a string.
+     * 			
+	 * @note	Format is "x y z w".
+     */
     CM_UTILITY_EXPORT WString toWString(const Vector4& val);
 
-    /** Converts a Matrix3 to a WString. 
-    @remarks
-        Format is "00 01 02 10 11 12 20 21 22" where '01' means row 0 column 1 etc.
-    */
+    /**
+     * @brief	Converts a 3x3 matrix to a string.
+     * 			
+	 * @note	Format is "00 01 02 10 11 12 20 21 22".
+     */
     CM_UTILITY_EXPORT WString toWString(const Matrix3& val);
 
-    /** Converts a Matrix4 to a WString. 
-    @remarks
-        Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33" where 
-        '01' means row 0 column 1 etc.
-    */
+    /**
+     * @brief	Converts a 4x4 matrix to a string.
+     * 			
+	 * @note	Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33".
+     */
     CM_UTILITY_EXPORT WString toWString(const Matrix4& val);
 
-    /** Converts a Quaternion to a WString. 
-    @remarks
-        Format is "w x y z" (i.e. 4x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a Quaternion to a string.
+     * 			
+	 * @note	Format is "w x y z".
+     */
     CM_UTILITY_EXPORT WString toWString(const Quaternion& val);
 
-    /** Converts a ColourValue to a WString. 
-    @remarks
-        Format is "r g b a" (i.e. 4x float values, space delimited). 
-    */
+    /**
+     * @brief	Converts a color to a string.
+     * 			
+	 * @note	Format is "r g b a".
+     */
     CM_UTILITY_EXPORT WString toWString(const Color& val);
 
-    /** Converts a StringVector to a WString.
-    @remarks
-        Strings must not contain spaces since space is used as a delimiter in
-        the output.
-    */
+    /**
+     * @brief	Converts a vector of strings into a single string where the substrings are
+	 *			delimited by spaces.
+     */
     CM_UTILITY_EXPORT WString toWString(const Vector<CamelotFramework::WString>::type& val);
 
 	/**
@@ -563,197 +552,231 @@ namespace CamelotFramework
 	*/
 	CM_UTILITY_EXPORT String toString(const WString& source);
 
-	/** Converts a float to a String. */
+	/**
+	 * @brief	Converts a float to a string.
+	 */
     CM_UTILITY_EXPORT String toString(float val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-	/** Converts a double to a String. */
+	/**
+	 * @brief	Converts a double to a string.
+	 */
 	CM_UTILITY_EXPORT String toString(double val, unsigned short precision = 6, 
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts a Radian to a String. */
+	/**
+	 * @brief	Converts a Radian to a string.
+	 */
     CM_UTILITY_EXPORT String toString(Radian val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts a Degree to a String. */
+	/**
+	 * @brief	Converts a Degree to a string.
+	 */
     CM_UTILITY_EXPORT String toString(Degree val, unsigned short precision = 6, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts an int to a String. */
+	/**
+	 * @brief	Converts an int to a string.
+	 */
     CM_UTILITY_EXPORT String toString(int val, unsigned short width = 0, 
         char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts an unsigned int to a String. */
+	/**
+	 * @brief	Converts an unsigned int to a string.
+	 */
     CM_UTILITY_EXPORT String toString(unsigned int val, 
         unsigned short width = 0, char fill = ' ', 
         std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-	/** Converts a long to a String. */
-	CM_UTILITY_EXPORT String toString(long val, 
-		unsigned short width = 0, char fill = ' ', 
-		std::ios::fmtflags flags = std::ios::fmtflags(0) );
-
-    /** Converts an unsigned long to a String. */
-    CM_UTILITY_EXPORT String toString(unsigned long val, 
-        unsigned short width = 0, char fill = ' ', 
-        std::ios::fmtflags flags = std::ios::fmtflags(0) );
-
-	/** Converts an unsigned long to a String. */
+	/**
+	 * @brief	Converts a 64bit int to a string.
+	 */
 	CM_UTILITY_EXPORT String toString(INT64 val, 
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-	/** Converts an unsigned long to a String. */
+	/**
+	 * @brief	Converts an 64bit unsigned int to a string.
+	 */
 	CM_UTILITY_EXPORT String toString(UINT64 val, 
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
-    /** Converts a boolean to a String. 
-    @param yesNo If set to true, result is 'yes' or 'no' instead of 'true' or 'false'
-    */
+    /**
+     * @brief	Converts a boolean to a string.
+     *
+     * @param	val  	true to value.
+     * @param	yesNo	(optional) If set to true, result is "yes" or "no" instead of "true" or "false".
+     */
     CM_UTILITY_EXPORT String toString(bool val, bool yesNo = false);
 
-	/** Converts a Vector2 to a String. 
-    @remarks
-        Format is "x y" (i.e. 2x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a 2 dimensional vector to a string.
+     * 			
+	 * @note	Format is "x y".
+     */
     CM_UTILITY_EXPORT String toString(const Vector2& val);
 
-    /** Converts a Vector3 to a String. 
-    @remarks
-        Format is "x y z" (i.e. 3x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a 3 dimensional vector to a string.
+     * 			
+	 * @note	Format is "x y z".
+     */
     CM_UTILITY_EXPORT String toString(const Vector3& val);
 
-	/** Converts a Vector4 to a String. 
-    @remarks
-        Format is "x y z w" (i.e. 4x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a 4 dimensional vector to a string.
+     * 			
+	 * @note	Format is "x y z w".
+     */
     CM_UTILITY_EXPORT String toString(const Vector4& val);
 
-    /** Converts a Matrix3 to a String. 
-    @remarks
-        Format is "00 01 02 10 11 12 20 21 22" where '01' means row 0 column 1 etc.
-    */
+    /**
+     * @brief	Converts a 3x3 matrix to a string.
+     * 			
+	 * @note	Format is "00 01 02 10 11 12 20 21 22".
+     */
     CM_UTILITY_EXPORT String toString(const Matrix3& val);
 
-    /** Converts a Matrix4 to a String. 
-    @remarks
-        Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33" where 
-        '01' means row 0 column 1 etc.
-    */
+    /**
+     * @brief	Converts a 4x4 matrix to a string.
+     * 			
+	 * @note	Format is "00 01 02 03 10 11 12 13 20 21 22 23 30 31 32 33".
+     */
     CM_UTILITY_EXPORT String toString(const Matrix4& val);
 
-    /** Converts a Quaternion to a String. 
-    @remarks
-        Format is "w x y z" (i.e. 4x float values, space delimited)
-    */
+    /**
+     * @brief	Converts a Quaternion to a string.
+     * 			
+	 * @note	Format is "w x y z".
+     */
     CM_UTILITY_EXPORT String toString(const Quaternion& val);
 
-    /** Converts a ColourValue to a String. 
-    @remarks
-        Format is "r g b a" (i.e. 4x float values, space delimited). 
-    */
+    /**
+     * @brief	Converts a color to a string.
+     * 			
+	 * @note	Format is "r g b a".
+     */
     CM_UTILITY_EXPORT String toString(const Color& val);
 
-    /** Converts a StringVector to a string.
-    @remarks
-        Strings must not contain spaces since space is used as a delimiter in
-        the output.
-    */
+    /**
+     * @brief	Converts a vector of strings into a single string where the substrings are
+	 *			delimited by spaces.
+     */
     CM_UTILITY_EXPORT String toString(const Vector<CamelotFramework::String>::type& val);
 
-    /** Converts a String to a float. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the float version of the String.
-    */
+    /**
+     * @brief	Converts a String to a float.
+     *
+     * @note	0.0f if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT float parseFloat(const String& val, float defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a String to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT int parseInt(const String& val, int defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a String to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT unsigned int parseUnsignedInt(const String& val, unsigned int defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a String to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT long parseLong(const String& val, long defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a String to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT unsigned long parseUnsignedLong(const String& val, unsigned long defaultValue = 0);
 
-    /** Converts a String to a boolean. 
-    @remarks
-        Returns true if case-insensitive match of the start of the string
-		matches "true", "yes" or "1", false otherwise.
-    */
+    /**
+     * @brief	Converts a String to a boolean.
+     *
+	 * @note	Returns true if case-insensitive match of the start of the string
+	 *			matches "true", "yes" or "1", false otherwise.
+     */
     CM_UTILITY_EXPORT bool parseBool(const String& val, bool defaultValue = 0);
 
-    /** Checks the String is a valid number value. */
+    /**
+     * @brief	Checks the String is a valid number value.
+     */
     CM_UTILITY_EXPORT bool isNumber(const String& val);
 
-/** Converts a String to a float. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the float version of the String.
-    */
+    /**
+     * @brief	Converts a WString to a float.
+     *
+     * @note	0.0f if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT float parseFloat(const WString& val, float defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a WString to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT int parseInt(const WString& val, int defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a WString to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT unsigned int parseUnsignedInt(const WString& val, unsigned int defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a WString to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT long parseLong(const WString& val, long defaultValue = 0);
 
-    /** Converts a String to a whole number. 
-    @returns
-        0.0 if the value could not be parsed, otherwise the numeric version of the String.
-    */
+    /**
+     * @brief	Converts a WString to a whole number.
+     *
+     * @note	0 if the value could not be parsed, otherwise the numeric version of the string.
+     */
     CM_UTILITY_EXPORT unsigned long parseUnsignedLong(const WString& val, unsigned long defaultValue = 0);
 
-    /** Converts a String to a boolean. 
-    @remarks
-        Returns true if case-insensitive match of the start of the string
-		matches "true", "yes" or "1", false otherwise.
-    */
+    /**
+     * @brief	Converts a WString to a boolean.
+     *
+	 * @note	Returns true if case-insensitive match of the start of the string
+	 *			matches "true", "yes" or "1", false otherwise.
+     */
     CM_UTILITY_EXPORT bool parseBool(const WString& val, bool defaultValue = 0);
 
-    /** Checks the String is a valid number value. */
+    /**
+     * @brief	Checks the WString is a valid number value.
+     */
     CM_UTILITY_EXPORT bool isNumber(const WString& val);
 
-	/** @} */
-
+	/**
+	 * @brief	Helper method that throws an exception regarding a data overflow.
+	 */
 	void CM_UTILITY_EXPORT __string_throwDataOverflowException();
 
 	/**
-	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
+	 * @brief	RTTIPlainType specialization for String that allows strings be serialized as
+	 * 			value types.
+	 * 			
+	 * @see		RTTIPlainType
 	 */
 	template<> struct RTTIPlainType<String>
 	{	
@@ -802,7 +825,10 @@ namespace CamelotFramework
 	}; 
 
 	/**
-	 * @brief	Strings need to copy their data in a slightly more intricate way than just memcpy.
+	 * @brief	RTTIPlainType specialization for WString that allows strings be serialized as
+	 * 			value types.
+	 * 			
+	 * @see		RTTIPlainType
 	 */
 	template<> struct RTTIPlainType<WString>
 	{	
@@ -852,9 +878,11 @@ namespace CamelotFramework
 			return (UINT32)dataSize;
 		}	
 	}; 
+}
 
-} // namespace CamelotFramework
-
+/**
+ * @brief	Hash value generator for SString.
+ */
 template<> 
 struct std::hash<CamelotFramework::String>
 {
@@ -867,6 +895,9 @@ struct std::hash<CamelotFramework::String>
 	}
 };
 
+/**
+ * @brief	Hash value generator for WString.
+ */
 template<> 
 struct std::hash<CamelotFramework::WString>
 {

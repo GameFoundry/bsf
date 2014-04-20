@@ -17,7 +17,7 @@ namespace CamelotFramework
 		{
 			HWND hWnd;
 			parentWindow->getCustomAttribute("WINDOW", &hWnd);
-			desc.platformSpecific["parentWindowHandle"] = toString((unsigned long)hWnd);
+			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
 		}
 
 		D3D9RenderWindow* window = new (cm_alloc<D3D9RenderWindow, PoolAlloc>()) D3D9RenderWindow(desc, mRenderSystem->getInstanceHandle());

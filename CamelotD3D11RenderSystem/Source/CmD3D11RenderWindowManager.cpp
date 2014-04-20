@@ -20,7 +20,7 @@ namespace CamelotFramework
 		{
 			HWND hWnd;
 			parentWindow->getCustomAttribute("WINDOW", &hWnd);
-			desc.platformSpecific["parentWindowHandle"] = toString((unsigned long)hWnd);
+			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
 		}
 
 		// Create the window

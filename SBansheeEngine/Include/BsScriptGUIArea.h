@@ -2,6 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
+#include "CmRectI.h"
 
 namespace BansheeEngine
 {
@@ -10,33 +11,28 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
-		GUIArea* getInternalValue() const { return mArea; }
-		void* getNativeRaw() const { return mArea; }
+		GUIArea* getInternalValue() const { return mGUIArea; }
+		void* getNativeRaw() const { return mGUIArea; }
+
+		void updateArea();
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* parentGUI, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth);
-		static void internal_createInstanceResizeableX(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetLeft, CM::UINT32 offsetRight, 
-			CM::UINT32 offsetTop, CM::UINT32 height, CM::UINT16 depth);
-
-		static void internal_createInstanceResizeableY(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetTop, 
-			CM::UINT32 offsetBottom, CM::UINT32 offsetLeft, CM::UINT32 width, CM::UINT16 depth);
-
-		static void internal_createInstanceResizeableXY(MonoObject* instance, MonoObject* parentGUI, CM::UINT32 offsetLeft, 
-			CM::UINT32 offsetRight, CM::UINT32 offsetTop, CM::UINT32 offsetBottom, CM::UINT16 depth);
-
 		static void internal_destroyInstance(ScriptGUIArea* nativeInstance);
 
-		static void internal_destroy(ScriptGUIArea* nativeInstance);
-		static void internal_setVisible(ScriptGUIArea* nativeInstance, bool visible);
+		static void internal_destroy(ScriptGUIArea* thisPtr);
+		static void internal_setVisible(ScriptGUIArea* thisPtr, bool visible);
+		static void internal_setArea(ScriptGUIArea* thisPtr, CM::INT32 x, CM::INT32 y, CM::UINT32 width, CM::UINT32 height, CM::UINT16 depth);
 
 		static void initRuntimeData();
 
-		ScriptGUIArea(GUIArea* area, ScriptGUIBase* parentGUI);
+		ScriptGUIArea(GUIArea* area, ScriptGUIPanel* panel);
 
 		void destroy();
 
-		GUIArea* mArea;
-		ScriptGUIBase* mParentGUI;
+		GUIArea* mGUIArea;
+		CM::RectI mArea;
+		ScriptGUIPanel* mParentPanel;
 		bool mIsDestroyed;
 	};
 }

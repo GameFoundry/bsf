@@ -15,7 +15,7 @@ using namespace BansheeEngine;
 namespace BansheeEditor
 {
 	EditorWidgetBase::EditorWidgetBase(const HString& displayName, const CM::String& name, EditorWidgetContainer& parentContainer)
-		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr)
+		:mDisplayName(displayName), mName(name), mParent(nullptr), mContent(nullptr), mX(0), mY(0), mWidth(0), mHeight(0)
 	{
 		parentContainer.add(*this);
 	}
@@ -38,18 +38,26 @@ namespace BansheeEditor
 
 	void EditorWidgetBase::_setPosition(INT32 x, INT32 y)
 	{
-		if(mContent == nullptr)
-			return;
+		mX = x;
+		mY = y;
 
-		mContent->setPosition(x, y);
+		if(mContent != nullptr)
+			mContent->setPosition(x, y);
+
+		if(!onMoved.empty())
+			onMoved(x, y);
 	}
 
 	void EditorWidgetBase::_setSize(UINT32 width, UINT32 height)
 	{
-		if(mContent == nullptr)
-			return;
+		mWidth = width;
+		mHeight = height;
 
-		mContent->setSize(width, height);
+		if(mContent != nullptr)
+			mContent->setSize(width, height);
+
+		if(!onResized.empty())
+			onResized(width, height);
 	}
 
 	// Note: Must not be virtual as parent container uses it in constructor
@@ -71,6 +79,9 @@ namespace BansheeEditor
 			}
 
 			mParent = parent;
+
+			if(!onParentChanged.empty())
+				onParentChanged(mParent);
 		}
 	}
 

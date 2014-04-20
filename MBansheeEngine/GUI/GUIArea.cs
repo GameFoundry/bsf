@@ -36,36 +36,9 @@ namespace BansheeEngine
             return newArea;
         }
 
-        internal static GUIArea CreateResizableX(GUIPanel parent, int offsetLeft, int offsetRight, int offsetTop, int height, short depth)
-        {
-            GUIArea newArea = new GUIArea();
-            Internal_CreateInstanceResizableX(newArea, parent, offsetLeft, offsetRight, offsetTop, height, depth);
-            newArea._layout = new GUILayoutX(newArea);
-
-            return newArea;
-        }
-
-        internal static GUIArea CreateResizableY(GUIPanel parent, int offsetTop, int offsetBottom, int offsetLeft, int width, short depth)
-        {
-            GUIArea newArea = new GUIArea();
-            Internal_CreateInstanceResizableY(newArea, parent, offsetTop, offsetBottom, offsetLeft, width, depth);
-            newArea._layout = new GUILayoutX(newArea);
-
-            return newArea;
-        }
-
-        internal static GUIArea CreateResizableXY(GUIPanel parent, int offsetLeft, int offsetRight, int offsetTop, int offsetBottom, short depth)
-        {
-            GUIArea newArea = new GUIArea();
-            Internal_CreateInstanceResizableXY(newArea, parent, offsetLeft, offsetRight, offsetTop, offsetBottom, depth);
-            newArea._layout = new GUILayoutX(newArea);
-
-            return newArea;
-        }
-
         public void SetArea(int x, int y, int width, int height, short depth = 0)
         {
-            // TODO
+            Internal_SetArea(mCachedPtr, x, y, width, height, depth);
         }
 
         public void SetVisible(bool visible)
@@ -91,16 +64,7 @@ namespace BansheeEngine
         private static extern void Internal_CreateInstance(GUIArea instance, GUIPanel parent, int x, int y, int width, int height, short depth);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstanceResizableX(GUIArea instance, GUIPanel parent, int offsetLeft, int offsetRight, int offsetTop, 
-            int height, short depth);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstanceResizableY(GUIArea instance, GUIPanel parent, int offsetTop, int offsetBottom, int offsetLeft,
-            int width, short depth);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstanceResizableXY(GUIArea instance, GUIPanel parent, int offsetLeft, int offsetRight, int offsetTop,
-            int offsetBottom, short depth);
+        private static extern void Internal_SetArea(IntPtr nativeInstance, int x, int y, int width, int height, short depth);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_Destroy(IntPtr nativeInstance);

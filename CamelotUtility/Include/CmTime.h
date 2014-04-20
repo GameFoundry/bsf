@@ -6,7 +6,9 @@
 namespace CamelotFramework
 {
 	/**
-	 * @brief	Manages all time related functionality
+	 * @brief	Manages all time related functionality.
+	 * 			
+	 * @note	Not thread safe.
 	 */
 	class CM_UTILITY_EXPORT Time : public Module<Time>
 	{
@@ -72,12 +74,12 @@ namespace CamelotFramework
 		void update();
 
 	private:
-		float mFrameDelta; // Frame delta in seconds
-		float mTimeSinceStart; // Time since start in seconds
+		float mFrameDelta; /**< Frame delta in seconds */
+		float mTimeSinceStart; /**< Time since start in seconds */
 		UINT64 mTimeSinceStartMs;
 
-		UINT64 mAppStartTime; // Time the application started, in microseconds
-		unsigned long mLastFrameTime; // Time since last runOneFrame call, In microseconds
+		UINT64 mAppStartTime; /**< Time the application started, in microseconds */
+		unsigned long mLastFrameTime; /**< Time since last runOneFrame call, In microseconds */
 		unsigned long mCurrentFrame;
 
 		Timer* mTimer;

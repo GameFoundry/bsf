@@ -188,7 +188,7 @@ namespace CamelotFramework {
 		void createInternalResources(IDirect3DDevice9* d3d9Device);
 		/// internal method, set Texture class final texture protected attributes
 		void _setFinalAttributes(IDirect3DDevice9* d3d9Device, TextureResources* textureResources, 
-			unsigned long width, unsigned long height, unsigned long depth, PixelFormat format);
+			UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
 		/// internal method, return the best by hardware supported filter method
 		D3DTEXTUREFILTERTYPE _getBestFilterMethod(IDirect3DDevice9* d3d9Device);
 		/// internal method, return true if the device/texture combination can use dynamic textures

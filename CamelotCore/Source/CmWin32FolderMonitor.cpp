@@ -339,7 +339,7 @@ namespace CamelotFramework
 
 		if(dirHandle == INVALID_HANDLE_VALUE)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to open folder \"" + toString(folderPath) + "\" for monitoring. Error code: " + toString(GetLastError()));
+			CM_EXCEPT(InternalErrorException, "Failed to open folder \"" + toString(folderPath) + "\" for monitoring. Error code: " + toString((UINT64)GetLastError()));
 		}
 
 		DWORD filterFlags = 0;
@@ -377,7 +377,7 @@ namespace CamelotFramework
 		{
 			mPimpl->mFoldersToWatch.erase(mPimpl->mFoldersToWatch.end() - 1);
 			cm_delete(watchInfo);
-			CM_EXCEPT(InternalErrorException, "Failed to open completition port for folder monitoring. Error code: " + toString(GetLastError()));
+			CM_EXCEPT(InternalErrorException, "Failed to open completition port for folder monitoring. Error code: " + toString((UINT64)GetLastError()));
 		}
 
 		if(mPimpl->mWorkerThread == nullptr)

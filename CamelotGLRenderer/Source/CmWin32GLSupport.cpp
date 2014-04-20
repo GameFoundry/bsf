@@ -61,7 +61,7 @@ namespace CamelotFramework
 		{
 			HWND hWnd;
 			parentWindow->getCustomAttribute("WINDOW", &hWnd);
-			desc.platformSpecific["parentWindowHandle"] = toString((unsigned long)hWnd);
+			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
 		}
 
 		Win32Window* window = new (cm_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);

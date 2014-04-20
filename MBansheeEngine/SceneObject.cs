@@ -35,7 +35,7 @@ namespace BansheeEngine
 
         public Component[] GetComponents()
         {
-            throw new NotImplementedException();
+            return Component.Internal_GetComponents(this);
         }
 
         public void RemoveComponent<T>() where T : Component

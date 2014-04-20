@@ -70,7 +70,7 @@ namespace CamelotFramework
 		unsigned long long hWnd;
 		win.getCustomAttribute("WINDOW", &hWnd);
 
-		std::string normalString = toString((unsigned long)hWnd).c_str();
+		std::string normalString = toString((UINT64)hWnd).c_str();
 		mKeyboard->setCaptureContext(normalString);
 		mMouse->setCaptureContext(normalString);
 	}

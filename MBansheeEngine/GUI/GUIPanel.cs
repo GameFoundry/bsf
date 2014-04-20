@@ -48,7 +48,7 @@ namespace BansheeEngine
 
         internal void SetArea(int x, int y, int width, int height)
         {
-            Internal_SetArea(x, y, width, height);
+            Internal_SetArea(mCachedPtr, x, y, width, height);
 
             mainArea.SetArea(x, y, width, height);
         }
@@ -65,7 +65,7 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetArea(int x, int y, int width, int height);
+        private static extern void Internal_SetArea(IntPtr nativeInstance, int x, int y, int width, int height);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
         private static extern void Internal_CreateInstance(GUIPanel instance);

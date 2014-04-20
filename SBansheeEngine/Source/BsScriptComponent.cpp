@@ -30,6 +30,7 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_AddComponent", &ScriptComponent::internal_addComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
+		metaData.scriptClass->addInternalCall("Internal_GetComponents", &ScriptComponent::internal_getComponents);
 		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptComponent::internal_destroyInstance);
 	}
@@ -81,6 +82,36 @@ namespace BansheeEngine
 		}
 
 		return nullptr;
+	}
+
+	MonoArray* ScriptComponent::internal_getComponents(MonoObject* parentSceneObject)
+	{
+		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
+		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
+
+		const Vector<HComponent>::type& mComponents = so->getComponents();
+		Vector<MonoObject*>::type managedComponents;
+
+		for(auto& component : mComponents)
+		{
+			if(component->getTypeId() == TID_ManagedComponent)
+			{
+				GameObjectHandle<ManagedComponent> managedComponent = static_object_cast<ManagedComponent>(component);
+
+				managedComponents.push_back(managedComponent->getManagedInstance());
+			}
+		}
+
+		MonoArray* componentArray = mono_array_new(MonoManager::instance().getDomain(), 
+			metaData.scriptClass->_getInternalClass(), (UINT32)managedComponents.size());
+
+		for(UINT32 i = 0; i < (UINT32)managedComponents.size(); i++)
+		{
+			void* elemAddr = mono_array_addr_with_size(componentArray, sizeof(MonoObject*), i);
+			memcpy(elemAddr, &managedComponents[i], sizeof(MonoObject*));
+		}
+
+		return componentArray;
 	}
 
 	void ScriptComponent::internal_removeComponent(MonoObject* parentSceneObject, MonoReflectionType* type)

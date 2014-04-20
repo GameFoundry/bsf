@@ -9,6 +9,7 @@ namespace BansheeEngine
 	{
 	public:
 		MonoObject* invoke(MonoObject* instance, void** params);
+		MonoObject* invokeVirtual(MonoObject* instance, void** params);
 
 		/**
 		 * @brief	Gets a thunk for this method. A thunk is a C++ like function

@@ -27,7 +27,7 @@ namespace BansheeEngine
 	class ScriptTexture2D;
 	class ScriptGUIElementStyle;
 	class ScriptGUIElementStateStyle;
-	class ScriptGUIBase;
+	class ScriptGUIPanel;
 	class ScriptGUIArea;
 	class ScriptGUILayout;
 	class ScriptGUILabel;
