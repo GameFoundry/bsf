@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    [SerializableObject]
+    [SerializeObject]
     public struct DbgSerzObj
     {
         public DbgSerzObj(int someValue, string anotherValue)

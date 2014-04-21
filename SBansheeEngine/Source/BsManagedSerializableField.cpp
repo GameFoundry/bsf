@@ -1,0 +1,754 @@
+#include "BsManagedSerializableField.h"
+#include "BsManagedSerializableObjectInfo.h"
+#include "BsManagedSerializableFieldRTTI.h"
+#include "BsMonoUtil.h"
+#include "BsMonoManager.h"
+#include "BsScriptResourceManager.h"
+#include "BsScriptGameObjectManager.h"
+#include "BsScriptTexture2D.h"
+#include "BsScriptSpriteTexture.h"
+#include "BsScriptSceneObject.h"
+#include "BsScriptComponent.h"
+#include "BsManagedSerializableObject.h"
+#include "BsManagedSerializableArray.h"
+#include "BsManagedSerializableList.h"
+#include "BsManagedSerializableDictionary.h"
+
+namespace BansheeEngine
+{
+	ManagedSerializableFieldKeyPtr ManagedSerializableFieldKey::create(UINT16 typeId, UINT16 fieldId)
+	{
+		ManagedSerializableFieldKeyPtr fieldKey = cm_shared_ptr<ManagedSerializableFieldKey>();
+		fieldKey->mTypeId = typeId;
+		fieldKey->mFieldId = fieldId;
+
+		return fieldKey;
+	}
+
+	ManagedSerializableFieldDataEntryPtr ManagedSerializableFieldDataEntry::create(const ManagedSerializableFieldKeyPtr& key, const ManagedSerializableFieldDataPtr& value)
+	{
+		ManagedSerializableFieldDataEntryPtr fieldDataEntry = cm_shared_ptr<ManagedSerializableFieldDataEntry>();
+		fieldDataEntry->mKey = key;
+		fieldDataEntry->mValue = value;
+
+		return fieldDataEntry;
+	}
+
+	ManagedSerializableFieldDataPtr ManagedSerializableFieldData::create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* value)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			switch (primitiveTypeInfo->mType)
+			{
+			case ScriptPrimitiveType::Bool:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataBool>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+
+					return fieldData;
+				}
+			case ScriptPrimitiveType::Char:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataChar>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::I8:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI8>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::U8:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU8>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::I16:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI16>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::U16:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU16>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::I32:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI32>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::U32:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU32>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::I64:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI64>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::U64:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU64>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::Float:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataFloat>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::Double:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataDouble>();
+					if(value != nullptr)
+						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
+					return fieldData;
+				}
+			case ScriptPrimitiveType::String:
+				{
+					MonoString* strVal = (MonoString*)(value);
+
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataString>();
+					if(strVal != nullptr)
+						fieldData->value = MonoUtil::monoToWString(strVal);
+					return fieldData;
+				}
+			case ScriptPrimitiveType::TextureRef:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+
+					if(value != nullptr)
+					{
+						ScriptTexture2D* scriptTexture2D = ScriptTexture2D::toNative(value);
+						fieldData->value = static_resource_cast<ScriptTexture2D>(scriptTexture2D->getNativeHandle());
+					}
+
+					return fieldData;
+				}
+			case ScriptPrimitiveType::SpriteTextureRef:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+					
+					if(value != nullptr)
+					{
+						ScriptSpriteTexture* scriptSpriteTexture = ScriptSpriteTexture::toNative(value);
+						fieldData->value = static_resource_cast<SpriteTexture>(scriptSpriteTexture->getNativeHandle());
+					}
+
+					return fieldData;
+				}
+			case ScriptPrimitiveType::SceneObjectRef:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
+
+					if(value != nullptr)
+					{
+						ScriptSceneObject* scriptSceneObject = ScriptSceneObject::toNative(value);
+						fieldData->value = static_object_cast<SceneObject>(scriptSceneObject->getNativeHandle());
+					}
+
+					return fieldData;
+				}
+			case ScriptPrimitiveType::ComponentRef:
+				{
+					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
+
+					if(value != nullptr)
+					{
+						ScriptComponent* scriptComponent = ScriptComponent::toNative(value);
+						fieldData->value = static_object_cast<Component>(scriptComponent->getNativeHandle());
+					}
+
+					return fieldData;
+				}
+			}
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
+		{
+			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataObject>();
+			if(value != nullptr)
+			{
+				fieldData->value = ManagedSerializableObject::create(value);
+			}
+
+			return fieldData;
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
+		{
+			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataArray>();
+			if(value != nullptr)
+			{
+				fieldData->value = ManagedSerializableArray::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo));
+			}
+
+			return fieldData;
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
+		{
+			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataList>();
+			if(value != nullptr)
+			{
+				fieldData->value = ManagedSerializableList::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo));
+			}
+
+			return fieldData;
+		}
+		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
+		{
+			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataDictionary>();
+			if(value != nullptr)
+			{
+				fieldData->value = ManagedSerializableDictionary::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo));
+			}
+
+			return fieldData;
+		}
+
+		return nullptr;
+	}
+
+	void* ManagedSerializableFieldDataBool::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::Bool)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataChar::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::Char)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataI8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::I8)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataU8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::U8)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataI16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::I16)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataU16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::U16)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataI32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::I32)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataU32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::U32)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataI64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::I64)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataU64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::U64)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataFloat::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::Float)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataDouble::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::Double)
+				return &value;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataString::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::String)
+			{
+				return MonoUtil::wstringToMono(MonoManager::instance().getDomain(), value);
+			}
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataResourceRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::TextureRef)
+			{
+				if(value)
+				{
+					ScriptTexture2D* scriptResource = ScriptResourceManager::instance().getScriptTexture(value);
+					if(scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptTexture(value);
+
+					return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::SpriteTextureRef)
+			{
+				if(value)
+				{
+					ScriptSpriteTexture* scriptResource = ScriptResourceManager::instance().getScriptSpriteTexture(value);
+					if(scriptResource == nullptr)
+						scriptResource = ScriptResourceManager::instance().createScriptSpriteTexture(value);
+
+					if(scriptResource != nullptr)
+						return scriptResource->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataGameObjectRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoPrimitive)
+		{
+			auto primitiveTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoPrimitive>(typeInfo);
+
+			if(primitiveTypeInfo->mType == ScriptPrimitiveType::SceneObjectRef)
+			{
+				if(value)
+				{
+					ScriptSceneObject* scriptSceneObject = ScriptGameObjectManager::instance().getScriptSceneObject(value);
+					if(scriptSceneObject == nullptr)
+						scriptSceneObject = ScriptGameObjectManager::instance().createScriptSceneObject(value);
+
+					return scriptSceneObject->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+			else if(primitiveTypeInfo->mType == ScriptPrimitiveType::ComponentRef)
+			{
+				if(value)
+				{
+					ScriptComponent* scriptComponent = ScriptGameObjectManager::instance().getScriptComponent(value);
+					if(scriptComponent == nullptr)
+						scriptComponent = ScriptGameObjectManager::instance().createScriptComponent(value);
+
+					return scriptComponent->getManagedInstance();
+				}
+				else
+					return nullptr;
+			}
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataObject::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
+		{
+			auto objectTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoObject>(typeInfo);
+
+			if(value != nullptr)
+			{
+				if(objectTypeInfo->mValueType)
+				{
+					MonoObject* managedInstance = value->getManagedInstance();
+					
+					if(managedInstance != nullptr)
+						return mono_object_unbox(managedInstance); // Structs are passed as raw types because mono expects them as such
+				}
+				else
+					return value->getManagedInstance();
+			}
+
+			return nullptr;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataArray::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
+		{
+			auto objectTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo);
+
+			if(value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataList::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
+		{
+			auto listTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo);
+
+			if(value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	void* ManagedSerializableFieldDataDictionary::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
+	{
+		if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
+		{
+			auto dictionaryTypeInfo = std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo);
+
+			if(value != nullptr)
+				return value->getManagedInstance();
+
+			return nullptr;
+		}
+
+		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+	}
+
+	RTTITypeBase* ManagedSerializableFieldKey::getRTTIStatic()
+	{
+		return ManagedSerializableFieldKeyRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldKey::getRTTI() const
+	{
+		return ManagedSerializableFieldKey::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldData::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldData::getRTTI() const
+	{
+		return ManagedSerializableFieldData::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataEntry::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataEntryRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataEntry::getRTTI() const
+	{
+		return ManagedSerializableFieldDataEntry::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataBool::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataBoolRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataBool::getRTTI() const
+	{
+		return ManagedSerializableFieldDataBool::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataChar::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataCharRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataChar::getRTTI() const
+	{
+		return ManagedSerializableFieldDataChar::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI8::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataI8RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI8::getRTTI() const
+	{
+		return ManagedSerializableFieldDataI8::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU8::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataU8RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU8::getRTTI() const
+	{
+		return ManagedSerializableFieldDataU8::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI16::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataI16RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI16::getRTTI() const
+	{
+		return ManagedSerializableFieldDataI16::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU16::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataU16RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU16::getRTTI() const
+	{
+		return ManagedSerializableFieldDataU16::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI32::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataI32RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI32::getRTTI() const
+	{
+		return ManagedSerializableFieldDataI32::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU32::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataU32RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU32::getRTTI() const
+	{
+		return ManagedSerializableFieldDataU32::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI64::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataI64RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataI64::getRTTI() const
+	{
+		return ManagedSerializableFieldDataI64::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU64::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataU64RTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataU64::getRTTI() const
+	{
+		return ManagedSerializableFieldDataU64::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataFloat::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataFloatRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataFloat::getRTTI() const
+	{
+		return ManagedSerializableFieldDataFloat::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataDouble::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataDoubleRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataDouble::getRTTI() const
+	{
+		return ManagedSerializableFieldDataDouble::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataString::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataStringRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataString::getRTTI() const
+	{
+		return ManagedSerializableFieldDataString::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataResourceRef::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataResourceRefRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataResourceRef::getRTTI() const
+	{
+		return ManagedSerializableFieldDataResourceRef::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataGameObjectRef::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataGameObjectRefRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataGameObjectRef::getRTTI() const
+	{
+		return ManagedSerializableFieldDataGameObjectRef::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataObject::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataObjectRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataObject::getRTTI() const
+	{
+		return ManagedSerializableFieldDataObject::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataArray::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataArrayRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataArray::getRTTI() const
+	{
+		return ManagedSerializableFieldDataArray::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataList::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataListRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataList::getRTTI() const
+	{
+		return ManagedSerializableFieldDataList::getRTTIStatic();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataDictionary::getRTTIStatic()
+	{
+		return ManagedSerializableFieldDataDictionaryRTTI::instance();
+	}
+
+	RTTITypeBase* ManagedSerializableFieldDataDictionary::getRTTI() const
+	{
+		return ManagedSerializableFieldDataDictionary::getRTTIStatic();
+	}
+}

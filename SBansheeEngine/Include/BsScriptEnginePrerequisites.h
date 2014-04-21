@@ -35,22 +35,22 @@ namespace BansheeEngine
 	class ScriptSceneObject;
 	class ScriptComponent;
 	class ManagedComponent;
-	class ScriptSerializableFieldData;
-	class ScriptSerializableFieldKey;
-	class ScriptSerializableFieldDataEntry;
-	class ScriptSerializableTypeInfo;
-	class ScriptSerializableTypeInfoPrimitive;
-	class ScriptSerializableTypeInfoObject;
-	class ScriptSerializableTypeInfoArray;
-	class ScriptSerializableTypeInfoList;
-	class ScriptSerializableTypeInfoDictionary;
-	class ScriptSerializableObject;
-	class ScriptSerializableArray;
-	class ScriptSerializableList;
-	class ScriptSerializableDictionary;
-	class ScriptSerializableAssemblyInfo;
-	class ScriptSerializableObjectInfo;
-	class ScriptSerializableFieldInfo;
+	class ManagedSerializableFieldData;
+	class ManagedSerializableFieldKey;
+	class ManagedSerializableFieldDataEntry;
+	class ManagedSerializableTypeInfo;
+	class ManagedSerializableTypeInfoPrimitive;
+	class ManagedSerializableTypeInfoObject;
+	class ManagedSerializableTypeInfoArray;
+	class ManagedSerializableTypeInfoList;
+	class ManagedSerializableTypeInfoDictionary;
+	class ManagedSerializableObject;
+	class ManagedSerializableArray;
+	class ManagedSerializableList;
+	class ManagedSerializableDictionary;
+	class ManagedSerializableAssemblyInfo;
+	class ManagedSerializableObjectInfo;
+	class ManagedSerializableFieldInfo;
 
 	enum TypeID_BansheeScript
 	{
@@ -94,19 +94,19 @@ namespace BansheeEngine
 
 	static const char* BansheeEngineAssemblyName = "MBansheeEngine";
 
-	typedef std::shared_ptr<ScriptSerializableFieldData> ScriptSerializableFieldDataPtr;
-	typedef std::shared_ptr<ScriptSerializableFieldKey> ScriptSerializableFieldKeyPtr;
-	typedef std::shared_ptr<ScriptSerializableFieldDataEntry> ScriptSerializableFieldDataEntryPtr;
-	typedef std::shared_ptr<ScriptSerializableTypeInfo> ScriptSerializableTypeInfoPtr;
-	typedef std::shared_ptr<ScriptSerializableTypeInfoObject> ScriptSerializableTypeInfoObjectPtr;
-	typedef std::shared_ptr<ScriptSerializableObject> ScriptSerializableObjectPtr;
-	typedef std::shared_ptr<ScriptSerializableArray> ScriptSerializableArrayPtr;
-	typedef std::shared_ptr<ScriptSerializableList> ScriptSerializableListPtr;
-	typedef std::shared_ptr<ScriptSerializableDictionary> ScriptSerializableDictionaryPtr;
-	typedef std::shared_ptr<ScriptSerializableAssemblyInfo> ScriptSerializableAssemblyInfoPtr;
-	typedef std::shared_ptr<ScriptSerializableObjectInfo> ScriptSerializableObjectInfoPtr;
-	typedef std::shared_ptr<ScriptSerializableFieldInfo> ScriptSerializableFieldInfoPtr;
-	typedef std::shared_ptr<ScriptSerializableTypeInfoArray> ScriptSerializableTypeInfoArrayPtr;
-	typedef std::shared_ptr<ScriptSerializableTypeInfoList> ScriptSerializableTypeInfoListPtr;
-	typedef std::shared_ptr<ScriptSerializableTypeInfoDictionary> ScriptSerializableTypeInfoDictionaryPtr;
+	typedef std::shared_ptr<ManagedSerializableFieldData> ManagedSerializableFieldDataPtr;
+	typedef std::shared_ptr<ManagedSerializableFieldKey> ManagedSerializableFieldKeyPtr;
+	typedef std::shared_ptr<ManagedSerializableFieldDataEntry> ManagedSerializableFieldDataEntryPtr;
+	typedef std::shared_ptr<ManagedSerializableTypeInfo> ManagedSerializableTypeInfoPtr;
+	typedef std::shared_ptr<ManagedSerializableTypeInfoObject> ScriptSerializableTypeInfoObjectPtr;
+	typedef std::shared_ptr<ManagedSerializableObject> ManagedSerializableObjectPtr;
+	typedef std::shared_ptr<ManagedSerializableArray> ManagedSerializableArrayPtr;
+	typedef std::shared_ptr<ManagedSerializableList> ManagedSerializableListPtr;
+	typedef std::shared_ptr<ManagedSerializableDictionary> ManagedSerializableDictionaryPtr;
+	typedef std::shared_ptr<ManagedSerializableAssemblyInfo> ManagedSerializableAssemblyInfoPtr;
+	typedef std::shared_ptr<ManagedSerializableObjectInfo> ManagedSerializableObjectInfoPtr;
+	typedef std::shared_ptr<ManagedSerializableFieldInfo> ManagedSerializableFieldInfoPtr;
+	typedef std::shared_ptr<ManagedSerializableTypeInfoArray> ManagedSerializableTypeInfoArrayPtr;
+	typedef std::shared_ptr<ManagedSerializableTypeInfoList> ManagedSerializableTypeInfoListPtr;
+	typedef std::shared_ptr<ManagedSerializableTypeInfoDictionary> ManagedSerializableTypeInfoDictionaryPtr;
 }

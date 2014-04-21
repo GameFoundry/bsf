@@ -45,13 +45,9 @@
     <Compile Include="EditorWindow.cs" />
     <Compile Include="Inspector\CustomInspector.cs" />
     <Compile Include="Inspector\GenericInspector.cs" />
-    <Compile Include="Inspector\SerializableArray.cs" />
-    <Compile Include="Inspector\SerializableField.cs" />
     <Compile Include="Inspector\InspectableObject.cs" />
     <Compile Include="Inspector\Inspector.cs" />
     <Compile Include="Inspector\InspectorWindow.cs" />
-    <Compile Include="Inspector\SerializableObject.cs" />
-    <Compile Include="Inspector\SerializableValue.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

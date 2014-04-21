@@ -5,7 +5,7 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    [SerializableObject]
+    [SerializeObject]
     public class DbgSerzCls
     {
         public int someValue2;

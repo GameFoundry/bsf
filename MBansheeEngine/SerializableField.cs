@@ -4,7 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace BansheeEditor
+namespace BansheeEngine
 {
     public class SerializableField
     {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "BsScriptSerializableObjectInfo.h"
+#include "BsManagedSerializableObjectInfo.h"
 #include "CmModule.h"
 #include <mono/jit/jit.h>
 
@@ -14,7 +14,7 @@ namespace BansheeEngine
 		~RuntimeScriptObjects();
 
 		void refreshScriptObjects(const String& assemblyName);
-		bool getSerializableObjectInfo(const String& ns, const String& typeName, std::shared_ptr<ScriptSerializableObjectInfo>& outInfo);
+		bool getSerializableObjectInfo(const String& ns, const String& typeName, std::shared_ptr<ManagedSerializableObjectInfo>& outInfo);
 		bool hasSerializableObjectInfo(const String& ns, const String& typeName);
 
 		MonoClass* getSystemArrayClass() const { return mSystemArrayClass; }
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		MonoClass* getTextureClass() const { return mTextureClass; }
 		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
 	private:
-		UnorderedMap<String, std::shared_ptr<ScriptSerializableAssemblyInfo>>::type mAssemblyInfos;
+		UnorderedMap<String, std::shared_ptr<ManagedSerializableAssemblyInfo>>::type mAssemblyInfos;
 		bool mBaseTypesInitialized;
 
 		MonoClass* mSystemArrayClass;
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		MonoClass* mTextureClass;
 		MonoClass* mSpriteTextureClass;
 
-		MonoClass* mSerializableObjectAttribute;
+		MonoClass* mSerializeObjectAttribute;
 		MonoClass* mDontSerializeFieldAttribute;
 		MonoClass* mSerializeFieldAttribute;
 		MonoClass* mHideInInspectorAttribute;
@@ -46,6 +46,6 @@ namespace BansheeEngine
 		void clearScriptObjects(const String& assemblyName);
 
 		void initializeBaseTypes();
-		ScriptSerializableTypeInfoPtr determineType(MonoClass* monoClass);
+		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
 	};
 }
