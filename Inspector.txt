@@ -16,6 +16,17 @@ A way to close a window & destroy a GUI panel!
 
 Ensure that setting depth for GUIArea works properly. It's not properly implemented yet.
 
+Test setting/getting field values using my SerializableObject/SerializableField interface
+ - I'm guessing it won't work because of unboxing & value type issues. I might want to consider somehow 
+   refactoring managedSerializableField so that I can re-use it for setting/getting field values in general purpose case.
+
+UndoRedo should work on URI type basis where it remembers object ID, and path across its fields to the field that was modified
+ - SerializableField should probably be the type responsible for handling the URI
+ - Will I need two different URI types for resources and scene objects?
+   - Probably, resources don't need hierarchies, but I think I should ignore resources for now as I'm not sure they will be using Inspectable system
+ - When trying to undo/redo and object id cannot be found, it just skips it
+ - When recompiling clear the undo/redo queue
+
 Things to think about/do:
  - Add EditorFields to C#
  - Inspectable fields need TAB support

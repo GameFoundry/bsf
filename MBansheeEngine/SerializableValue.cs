@@ -11,25 +11,29 @@ namespace BansheeEngine
         internal delegate void Setter(object value);
         internal delegate object Getter();
 
+        private Type type;
         private Setter setter;
         private Getter getter;
 
-        internal SerializableValue(Setter setter, Getter getter)
+        internal SerializableValue(Type type, Getter getter, Setter setter)
         {
-            this.setter = setter;
+            this.type = type;
             this.getter = getter;
+            this.setter = setter;
         }
 
         public T GetValue<T>()
         {
-            // TODO - Check for valid type?
+            if (typeof (T) != type)
+                throw new Exception("Attempted to retrieve a serializable value using an invalid type.");
 
             return (T) getter();
         }
 
         public void SetValue<T>(T value)
         {
-            // TODO - Check for valid type?
+            if (typeof(T) != type)
+                throw new Exception("Attempted to set a serializable value using an invalid type.");
 
             setter(value);
         }

@@ -53,6 +53,8 @@ namespace BansheeEngine
 			return nativeInstance;
 		}
 
+		static const ScriptMeta* getMetaData() { return &metaData; }
+
 	protected:
 		static ScriptMeta metaData;
 

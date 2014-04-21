@@ -1,23 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BansheeEngine
 {
-    public sealed class SerializableObject
+    public sealed class SerializableObject : ScriptObject
     {
+        internal object referencedObject;
         private SerializableField[] _fields;
 
         public SerializableObject(object obj)
         {
-            // TODO - Populate _fields
+            Internal_CreateInstance(this, obj);
+
+            referencedObject = obj;
         }
 
         public SerializableField[] fields
         {
             get { return _fields; }
         }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        private static extern void Internal_CreateInstance(SerializableObject instance, object obj);
     }
 }

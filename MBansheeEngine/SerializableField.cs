@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BansheeEngine
 {
-    public class SerializableField
+    public class SerializableField : ScriptObject
     {
         public enum FieldType
         {
@@ -28,14 +28,18 @@ namespace BansheeEngine
 
         private SerializableObject parent;
         private FieldType type;
-        private int fieldId;
+        private int flags;
+        private Type internalType;
         private string name;
 
-        internal SerializableField(SerializableObject parent, FieldType type, int fieldId)
+        // Only constructed from native code
+        private SerializableField(SerializableObject parent, string name, int flags, Type internalType)
         {
             this.parent = parent;
-            this.type = type;
-            this.fieldId = fieldId;
+            this.name = name;
+            this.flags = flags;
+            this.type = DetermineFieldType(internalType);
+            this.internalType = internalType;
         }
 
         public FieldType Type
@@ -48,23 +52,93 @@ namespace BansheeEngine
             get { return name; }
         }
 
-        public SerializableValue GetValue()
+        public bool Inspectable
         {
-            return null; // TODO - Return actual SerializableValue
+            get { return (flags & 0x02) != 0; } // Flags as defined in native code in BsManagedSerializableObjectInfo.h
         }
 
-        // TODO - Add getters/setters for all fields
+        public bool Serializable
+        {
+            get { return (flags & 0x01) != 0; } // Flags as defined in native code in BsManagedSerializableObjectInfo.h
+        }
+
+        public SerializableValue GetValue()
+        {
+            SerializableValue.Getter getValue = () => Internal_GetValue(mCachedPtr, parent.referencedObject);
+            SerializableValue.Setter setValue = (object value) => Internal_SetValue(mCachedPtr, parent.referencedObject, value);
+
+            return new SerializableValue(internalType, getValue, setValue);
+        }
+
+        private static FieldType DetermineFieldType(Type internalType)
+        {
+            if (!internalType.IsArray)
+            {
+                if (internalType == typeof (Byte))
+                    return FieldType.Int;
+                else if (internalType == typeof (SByte))
+                    return FieldType.Int;
+                else if (internalType == typeof (Int16))
+                    return FieldType.Int;
+                else if (internalType == typeof (UInt16))
+                    return FieldType.Int;
+                else if (internalType == typeof (Int32))
+                    return FieldType.Int;
+                else if (internalType == typeof (UInt32))
+                    return FieldType.Int;
+                else if (internalType == typeof (Int64))
+                    return FieldType.Int;
+                else if (internalType == typeof (UInt64))
+                    return FieldType.Int;
+                else if (internalType == typeof (bool))
+                    return FieldType.Bool;
+                else if (internalType == typeof (float))
+                    return FieldType.Float;
+                else if (internalType == typeof (double))
+                    return FieldType.Float;
+                else if (internalType == typeof (string))
+                    return FieldType.String;
+                else if (internalType == typeof (Vector2))
+                    return FieldType.Vector2;
+                else if (internalType == typeof (Vector3))
+                    return FieldType.Vector3;
+                else if (internalType == typeof (Vector4))
+                    return FieldType.Vector4;
+                else if (internalType == typeof (Color))
+                    return FieldType.Color;
+                else if (internalType.IsSubclassOf(typeof (GameObject)))
+                    return FieldType.GameObjectRef;
+                else if (internalType.IsSubclassOf(typeof (Resource)))
+                    return FieldType.ResourceRef;
+                else if (internalType.IsGenericType)
+                {
+                    Type genericType = internalType.GetGenericTypeDefinition();
+
+                    if (genericType == typeof (List<>))
+                    {
+                        return FieldType.List;
+                    }
+                    else if (genericType == typeof (Dictionary<,>))
+                    {
+                        return FieldType.Dictionary;
+                    }
+
+                    // Shouldn't happen because native code should only supply us with supported types
+                    throw new Exception("Cannot determine field type. Found an unsupported generic type.");
+                }
+
+
+                // Otherwise the type must be an object, unless some error occurred
+                return FieldType.Object;
+            }
+
+            return FieldType.Array;
+        }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetInt32(IntPtr nativeInstance, int fieldId, Int32 value);
+        private static extern object Internal_GetValue(IntPtr nativeInstance, object instance);
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern Int32 Internal_GetInt32(IntPtr nativeInstance, int fieldId);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_SetObject(IntPtr nativeInstance, int fieldId, object value);
-
-        [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern object Internal_GetObject(IntPtr nativeInstance, int fieldId);
+        private static extern void Internal_SetValue(IntPtr nativeInstance, object instance, object value);
     }
 }

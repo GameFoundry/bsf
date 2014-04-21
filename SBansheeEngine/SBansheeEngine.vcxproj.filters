@@ -165,6 +165,12 @@
     <ClInclude Include="Include\BsManagedSerializableObjectInfo.h">
       <Filter>Header Files\Serialization</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsScriptSerializableField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -268,6 +274,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsManagedSerializableObjectInfo.cpp">
       <Filter>Source Files\Serialization</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptSerializableObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptSerializableField.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
