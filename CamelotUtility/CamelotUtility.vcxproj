@@ -244,6 +244,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsTaskScheduler.cpp" />
+    <ClCompile Include="Source\BsThreadPool.cpp" />
     <ClCompile Include="Source\CmAABox.cpp" />
     <ClCompile Include="Source\CmAsyncOp.cpp" />
     <ClCompile Include="Source\CmBitmapWriter.cpp" />
@@ -265,6 +267,8 @@
     <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\CmWorkQueue.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
+    <ClInclude Include="Include\BsTaskScheduler.h" />
+    <ClInclude Include="Include\BsThreadPool.h" />
     <ClInclude Include="Include\CmAsyncOp.h" />
     <ClInclude Include="Include\CmBinarySerializer.h" />
     <ClInclude Include="Include\CmBitmapWriter.h" />

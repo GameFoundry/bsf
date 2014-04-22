@@ -35,6 +35,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		RenderOperation.txt = RenderOperation.txt
 		ResourceBundles.txt = ResourceBundles.txt
 		SpriteTexture.txt = SpriteTexture.txt
+		TaskScheduler.txt = TaskScheduler.txt
 		TODO.txt = TODO.txt
 		TODODoc.txt = TODODoc.txt
 		TransformUpdatesAndRenderer.txt = TransformUpdatesAndRenderer.txt
@@ -157,10 +158,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeEditor", "BansheeEdi
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SubversionScc) = preSolution
-		Svn-Managed = True
-		Manager = AnkhSVN - Subversion Support for Visual Studio
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
 		Debug|Win32 = Debug|Win32
@@ -518,5 +515,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
 	EndGlobalSection
 EndGlobal

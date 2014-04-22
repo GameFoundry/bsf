@@ -30,3 +30,9 @@
 	  In such class it is assumed all methods are internal and generally aren't meant for normal day to day use.
 	- "Core method" notation in method documentation. This means the method is only meant to be called from the core thread. Calling it from another thread
 	  will cause an exception at best, or cause unpredictable behaviour at worst.
+
+
+
+Classes to document:
+ - ThreadPool
+ - TaskScheduler

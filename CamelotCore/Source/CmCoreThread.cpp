@@ -97,6 +97,7 @@ namespace BansheeEngine
 				{
 					if(mCoreThreadShutdown)
 					{
+						cm_delete(mSyncedCoreAccessor);
 						MemStack::endThread();
 						return;
 					}
@@ -110,9 +111,6 @@ namespace BansheeEngine
 			// Play commands
 			mCommandQueue->playbackWithNotify(commands, std::bind(&CoreThread::commandCompletedNotify, this, _1)); 
 		}
-
-		cm_delete(mSyncedCoreAccessor);
-		MemStack::endThread();
 #endif
 	}
 
@@ -128,7 +126,7 @@ namespace BansheeEngine
 		// Wake all threads. They will quit after they see the shutdown flag
 		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
-		mCoreThread->join();
+		CM_THREAD_JOIN((*mCoreThread));
 		CM_THREAD_DESTROY(mCoreThread);
 
 		mCoreThread = nullptr;

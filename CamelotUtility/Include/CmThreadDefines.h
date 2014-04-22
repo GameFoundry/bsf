@@ -30,6 +30,7 @@
 #define CM_THREAD_WAIT(sync, mutex, lock) sync.wait(lock);
 #define CM_THREAD_NOTIFY_ONE(sync) sync.notify_one(); 
 #define CM_THREAD_NOTIFY_ALL(sync) sync.notify_all(); 
+#define CM_THREAD_JOIN(thread) thread.join();
 // Read-write mutex
 #define CM_RW_MUTEX(name) mutable std::mutex name
 #define CM_LOCK_RW_MUTEX_READ(name) std::unique_lock<std::mutex> cmnameLock(name)
@@ -71,6 +72,7 @@
 #define CM_THREAD_WAIT(sync, lock) 
 #define CM_THREAD_NOTIFY_ONE(sync) 
 #define CM_THREAD_NOTIFY_ALL(sync) 
+#define CM_THREAD_JOIN(thread)
 #define CM_THREAD_SLEEP(ms)
 #define CM_THREAD_ID_TYPE UINT32
 #define CM_THREAD_WORKER_INHERIT
