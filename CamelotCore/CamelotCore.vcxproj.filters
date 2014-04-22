@@ -543,6 +543,9 @@
     <ClInclude Include="Include\CmFolderMonitor.h">
       <Filter>Header Files\Platform</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsThreadPolicy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -850,6 +853,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmWin32FolderMonitor.cpp">
       <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsThreadPolicy.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

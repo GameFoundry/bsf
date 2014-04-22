@@ -32,6 +32,8 @@
 #include "CmStringTable.h"
 #include "CmProfiler.h"
 #include "CmQueryManager.h"
+#include "BsThreadPool.h"
+#include "BsThreadPolicy.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -50,10 +52,13 @@ namespace BansheeEngine
 
 	void Application::startUp(START_UP_DESC& desc)
 	{
+		UINT32 numWorkerThreads = CM_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
+
 		Platform::startUp();
 		MemStack::beginThread();
 
 		Profiler::startUp(cm_new<Profiler>());
+		ThreadPool<ThreadBansheePolicy>::startUp(cm_new<ThreadPool<ThreadBansheePolicy>>(numWorkerThreads));
 		StringTable::startUp(cm_new<StringTable>());
 		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
 		Time::startUp(cm_new<Time>());
@@ -188,6 +193,7 @@ namespace BansheeEngine
 		DeferredCallManager::shutDown();
 		StringTable::shutDown();
 
+		ThreadPool<ThreadBansheePolicy>::shutDown();
 		Profiler::shutDown();
 		MemStack::endThread();
 		Platform::shutDown();

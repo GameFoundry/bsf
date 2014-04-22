@@ -272,6 +272,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsThreadPolicy.h" />
     <ClInclude Include="Include\CmBindableGpuParamBlock.h" />
     <ClInclude Include="Include\CmBindableGpuParams.h" />
     <ClInclude Include="Include\CmCoreThread.h" />
@@ -423,6 +424,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Include\CmMaterialManager.cpp" />
+    <ClCompile Include="Source\BsThreadPolicy.cpp" />
     <ClCompile Include="Source\CmBindableGpuParamBlock.cpp" />
     <ClCompile Include="Source\CmBindableGpuParams.cpp" />
     <ClCompile Include="Source\CmCoreThread.cpp" />
