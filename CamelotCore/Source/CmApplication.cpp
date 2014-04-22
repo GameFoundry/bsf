@@ -58,7 +58,7 @@ namespace BansheeEngine
 		MemStack::beginThread();
 
 		Profiler::startUp(cm_new<Profiler>());
-		ThreadPool<ThreadBansheePolicy>::startUp(cm_new<ThreadPool<ThreadBansheePolicy>>(numWorkerThreads));
+		ThreadPool::startUp(cm_new<TThreadPool<ThreadBansheePolicy>>(numWorkerThreads));
 		StringTable::startUp(cm_new<StringTable>());
 		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
 		Time::startUp(cm_new<Time>());
@@ -193,7 +193,7 @@ namespace BansheeEngine
 		DeferredCallManager::shutDown();
 		StringTable::shutDown();
 
-		ThreadPool<ThreadBansheePolicy>::shutDown();
+		ThreadPool::shutDown();
 		Profiler::shutDown();
 		MemStack::endThread();
 		Platform::shutDown();

@@ -5,8 +5,15 @@ namespace BansheeEngine
 	PooledThread::PooledThread(const String& name)
 		:mName(name), mIdle(true), mThreadStarted(false),
 			mThreadReady(false), mIdleTime(0)
+	{ }
+
+	PooledThread::~PooledThread()
+	{ }
+
+	void PooledThread::initialize()
 	{
 		CM_THREAD_CREATE(t, std::bind(&PooledThread::run, this));
+		mThread = t;
 
 		CM_LOCK_MUTEX_NAMED(mMutex, lock);
 
@@ -14,16 +21,14 @@ namespace BansheeEngine
 			CM_THREAD_WAIT(mStartedCond, mMutex, lock);
 	}
 
-	PooledThread::~PooledThread()
-	{
-
-	}
-
 	void PooledThread::start(std::function<void()> workerMethod)
 	{
 		{
 			CM_LOCK_MUTEX(mMutex);
+
 			mWorkerMethod = workerMethod;
+			mIdle = false;
+			mIdleTime = std::time(nullptr);
 			mThreadReady = true;
 		}
 
@@ -58,7 +63,6 @@ namespace BansheeEngine
 				}
 
 				worker = mWorkerMethod;
-				mIdle = false;
 			}
 
 			worker();
@@ -105,23 +109,23 @@ namespace BansheeEngine
 		mName = name;
 	}
 
-	ThreadPoolBase::ThreadPoolBase(UINT32 threadCapacity, UINT32 maxCapacity, UINT32 idleTimeout)
+	ThreadPool::ThreadPool(UINT32 threadCapacity, UINT32 maxCapacity, UINT32 idleTimeout)
 		:mDefaultCapacity(threadCapacity), mMaxCapacity(maxCapacity), mIdleTimeout(idleTimeout), mAge(0)
 	{
 
 	}
 
-	ThreadPoolBase::~ThreadPoolBase()
+	ThreadPool::~ThreadPool()
 	{
 		stopAll();
 	}
 
-	void ThreadPoolBase::run(const String& name, std::function<void()> workerMethod)
+	void ThreadPool::run(const String& name, std::function<void()> workerMethod)
 	{
 		getThread(name)->start(workerMethod);
 	}
 
-	void ThreadPoolBase::stopAll()
+	void ThreadPool::stopAll()
 	{
 		CM_LOCK_MUTEX(mMutex);
 		for(auto& thread : mThreads)
@@ -132,7 +136,7 @@ namespace BansheeEngine
 		mThreads.clear();
 	}
 
-	void ThreadPoolBase::clearUnused()
+	void ThreadPool::clearUnused()
 	{
 		CM_LOCK_MUTEX(mMutex);
 		mAge = 0;
@@ -178,13 +182,13 @@ namespace BansheeEngine
 		mThreads.insert(mThreads.end(), activeThreads.begin(), activeThreads.end());
 	}
 
-	void ThreadPoolBase::destroyThread(PooledThread* thread)
+	void ThreadPool::destroyThread(PooledThread* thread)
 	{
 		thread->destroy();
 		cm_delete(thread);
 	}
 
-	PooledThread* ThreadPoolBase::getThread(const String& name)
+	PooledThread* ThreadPool::getThread(const String& name)
 	{
 		UINT32 age = 0;
 		{
@@ -219,7 +223,7 @@ namespace BansheeEngine
 		return newThread;
 	}
 
-	UINT32 ThreadPoolBase::getNumAvailable() const
+	UINT32 ThreadPool::getNumAvailable() const
 	{
 		UINT32 numAvailable = 0;
 
@@ -233,7 +237,7 @@ namespace BansheeEngine
 		return numAvailable;
 	}
 
-	UINT32 ThreadPoolBase::getNumActive() const
+	UINT32 ThreadPool::getNumActive() const
 	{
 		UINT32 numActive = 0;
 
@@ -247,7 +251,7 @@ namespace BansheeEngine
 		return numActive;
 	}
 
-	UINT32 ThreadPoolBase::getNumAllocated() const
+	UINT32 ThreadPool::getNumAllocated() const
 	{
 		CM_LOCK_MUTEX(mMutex);
 

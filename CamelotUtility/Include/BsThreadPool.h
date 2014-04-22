@@ -11,6 +11,7 @@ namespace BansheeEngine
 		PooledThread(const String& name);
 		virtual ~PooledThread();
 
+		void initialize();
 		void start(std::function<void()> workerMethod);
 		void run();
 		void destroy();
@@ -57,11 +58,11 @@ namespace BansheeEngine
 		}
 	};
 
-	class CM_UTILITY_EXPORT ThreadPoolBase : public Module<ThreadPoolBase>
+	class CM_UTILITY_EXPORT ThreadPool : public Module<ThreadPool>
 	{
 	public:
-		ThreadPoolBase(UINT32 threadCapacity, UINT32 maxCapacity = 16, UINT32 idleTimeout = 60);
-		virtual ~ThreadPoolBase();
+		ThreadPool(UINT32 threadCapacity, UINT32 maxCapacity = 16, UINT32 idleTimeout = 60);
+		virtual ~ThreadPool();
 
 		void run(const String& name, std::function<void()> workerMethod);
 
@@ -96,11 +97,11 @@ namespace BansheeEngine
 	};
 
 	template<class ThreadPolicy = ThreadNoPolicy>
-	class ThreadPool : public ThreadPoolBase
+	class TThreadPool : public ThreadPool
 	{
 	public:
-		ThreadPool(UINT32 threadCapacity, UINT32 maxCapacity = 16, UINT32 idleTimeout = 60)
-			:ThreadPoolBase(threadCapacity, maxCapacity, idleTimeout)
+		TThreadPool(UINT32 threadCapacity, UINT32 maxCapacity = 16, UINT32 idleTimeout = 60)
+			:ThreadPool(threadCapacity, maxCapacity, idleTimeout)
 		{
 
 		}
@@ -108,7 +109,10 @@ namespace BansheeEngine
 	protected:
 		PooledThread* createThread(const String& name)
 		{
-			return cm_new<TPooledThread<ThreadPolicy>>(name);
+			PooledThread* newThread = cm_new<TPooledThread<ThreadPolicy>>(name);
+			newThread->initialize();
+
+			return newThread;
 		}
 	};
 }

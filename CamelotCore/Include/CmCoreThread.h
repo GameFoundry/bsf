@@ -106,17 +106,6 @@ public:
 	 */
 	CM_EXPORT FrameAlloc* getFrameAlloc() const;
 private:
-	class CoreThreadWorkerFunc CM_THREAD_WORKER_INHERIT
-	{
-	public:
-		CoreThreadWorkerFunc(CoreThread* owner);
-
-		void operator()();
-
-	private:
-		CoreThread* mOwner;
-	};
-
 	// Double buffered frame allocators - Means sim thread cannot be more than 1 frame ahead of core thread
 	// (If that changes you should be able to easily add more)
 	FrameAlloc* mFrameAllocs[2]; 
@@ -125,22 +114,14 @@ private:
 	static CM_THREADLOCAL AccessorContainer* mAccessor;
 	Vector<AccessorContainer*>::type mAccessors;
 
-	CoreThreadWorkerFunc* mCoreThreadFunc;
-	volatile bool mCoreThreadStarted;
 	volatile bool mCoreThreadShutdown;
 
 	CM_THREAD_ID_TYPE mCoreThreadId;
-	CM_THREAD_SYNCHRONISER(mCoreThreadStartCondition)
-	CM_MUTEX(mCoreThreadStartMutex)
 	CM_MUTEX(mCommandQueueMutex)
 	CM_MUTEX(mAccessorMutex)
 	CM_THREAD_SYNCHRONISER(mCommandReadyCondition)
 	CM_MUTEX(mCommandNotifyMutex)
 	CM_THREAD_SYNCHRONISER(mCommandCompleteCondition)
-
-#if CM_THREAD_SUPPORT
-	CM_THREAD_TYPE* mCoreThread;
-#endif
 
 	CommandQueue<CommandQueueSync>* mCommandQueue;
 

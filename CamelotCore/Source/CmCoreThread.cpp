@@ -1,4 +1,5 @@
 #include "CmCoreThread.h"
+#include "BsThreadPool.h"
 
 using namespace std::placeholders;
 
@@ -7,9 +8,7 @@ namespace BansheeEngine
 	CM_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
 
 	CoreThread::CoreThread()
-		: mCoreThreadFunc(nullptr)
-		, mCoreThreadStarted(false)
-		, mCoreThreadShutdown(false)
+		: mCoreThreadShutdown(false)
 		, mCommandQueue(nullptr)
 		, mMaxCommandNotifyId(0)
 		, mSyncedCoreAccessor(nullptr)
@@ -53,17 +52,8 @@ namespace BansheeEngine
 	void CoreThread::initCoreThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
-		mCoreThreadFunc = cm_new<CoreThreadWorkerFunc>(this);
-
 #if CM_THREAD_SUPPORT
-		CM_THREAD_CREATE(t, *mCoreThreadFunc);
-		mCoreThread = t;
-
-		CM_LOCK_MUTEX_NAMED(mCoreThreadStartMutex, lock);
-
-		while(!mCoreThreadStarted)
-			CM_THREAD_WAIT(mCoreThreadStartCondition, mCoreThreadStartMutex, lock);
-
+		ThreadPool::instance().run("Core", std::bind(&CoreThread::runCoreThread, this));
 #else
 		CM_EXCEPT(InternalErrorException, "Attempting to start a core thread but application isn't compiled with thread support.");
 #endif
@@ -73,18 +63,8 @@ namespace BansheeEngine
 	void CoreThread::runCoreThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
-		MemStack::beginThread();
-
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
 		mSyncedCoreAccessor = cm_new<CoreThreadAccessor<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
-
-		{
-			CM_LOCK_MUTEX(mCoreThreadStartMutex);
-
-			mCoreThreadStarted = true;
-		}
-
-		CM_THREAD_NOTIFY_ALL(mCoreThreadStartCondition)
 
 		while(true)
 		{
@@ -98,7 +78,6 @@ namespace BansheeEngine
 					if(mCoreThreadShutdown)
 					{
 						cm_delete(mSyncedCoreAccessor);
-						MemStack::endThread();
 						return;
 					}
 
@@ -126,20 +105,8 @@ namespace BansheeEngine
 		// Wake all threads. They will quit after they see the shutdown flag
 		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
-		CM_THREAD_JOIN((*mCoreThread));
-		CM_THREAD_DESTROY(mCoreThread);
-
-		mCoreThread = nullptr;
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
-
-		if(mCoreThreadFunc != nullptr)
-		{
-			cm_delete(mCoreThreadFunc);
-			mCoreThreadFunc = nullptr;
-		}
 #endif
-
-		mCoreThreadStarted = false;
 	}
 
 	CoreAccessorPtr CoreThread::getAccessor()
@@ -310,20 +277,5 @@ namespace BansheeEngine
 		if(CM_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
 			CM_EXCEPT(InternalErrorException, "This method cannot be accessed from the core thread.");
 #endif
-	}
-
-	/************************************************************************/
-	/* 								THREAD WORKER                      		*/
-	/************************************************************************/
-
-	CoreThread::CoreThreadWorkerFunc::CoreThreadWorkerFunc(CoreThread* owner)
-		:mOwner(owner)
-	{
-		assert(mOwner != nullptr);
-	}
-
-	void CoreThread::CoreThreadWorkerFunc::operator()()
-	{
-		mOwner->runCoreThread();
 	}
 }
