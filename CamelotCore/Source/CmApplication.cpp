@@ -34,6 +34,7 @@
 #include "CmQueryManager.h"
 #include "BsThreadPool.h"
 #include "BsThreadPolicy.h"
+#include "BsTaskScheduler.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -59,11 +60,13 @@ namespace BansheeEngine
 
 		Profiler::startUp(cm_new<Profiler>());
 		ThreadPool::startUp(cm_new<TThreadPool<ThreadBansheePolicy>>(numWorkerThreads));
+		TaskScheduler::startUp(cm_new<TaskScheduler>());
+		TaskScheduler::instance().removeWorker();
 		StringTable::startUp(cm_new<StringTable>());
 		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
 		Time::startUp(cm_new<Time>());
 		DynLibManager::startUp(cm_new<DynLibManager>());
-		CoreGpuObjectManager::startUp(cm_new<CoreGpuObjectManager>());
+		CoreObjectManager::startUp(cm_new<CoreObjectManager>());
 		GameObjectManager::startUp(cm_new<GameObjectManager>());
 		Resources::startUp(cm_new<Resources>());
 		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
@@ -125,7 +128,11 @@ namespace BansheeEngine
 				CM_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
 
 				while(!mIsFrameRenderingFinished)
+				{
+					TaskScheduler::instance().addWorker();
 					CM_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+					TaskScheduler::instance().removeWorker();
+				}
 
 				mIsFrameRenderingFinished = false;
 			}
@@ -187,12 +194,13 @@ namespace BansheeEngine
 		HighLevelGpuProgramManager::shutDown();
 		Resources::shutDown();
 		GameObjectManager::shutDown();
-		CoreGpuObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
+		CoreObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries
 		DynLibManager::shutDown();
 		Time::shutDown();
 		DeferredCallManager::shutDown();
 		StringTable::shutDown();
 
+		TaskScheduler::shutDown();
 		ThreadPool::shutDown();
 		Profiler::shutDown();
 		MemStack::endThread();

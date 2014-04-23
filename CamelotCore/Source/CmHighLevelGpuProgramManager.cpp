@@ -141,7 +141,7 @@ namespace BansheeEngine {
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
         HighLevelGpuProgramPtr ret = factory->create(source, entryPoint, gptype, profile, includes);
-		ret->setThisPtr(ret);
+		ret->_setThisPtr(ret);
 		ret->initialize();
 
         return ret;
@@ -151,7 +151,7 @@ namespace BansheeEngine {
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
 		HighLevelGpuProgramPtr ret = factory->create();
-		ret->setThisPtr(ret);
+		ret->_setThisPtr(ret);
 		ret->initialize();
 
 		return ret;
@@ -161,7 +161,7 @@ namespace BansheeEngine {
 	{
 		HighLevelGpuProgramFactory* factory = getFactory(language);
 		HighLevelGpuProgramPtr ret = factory->create();
-		ret->setThisPtr(ret);
+		ret->_setThisPtr(ret);
 
 		return ret;
 	}

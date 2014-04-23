@@ -46,7 +46,7 @@ namespace BansheeEngine {
     VertexDeclarationPtr HardwareBufferManager::createVertexDeclaration(void)
     {
         VertexDeclarationPtr decl = createVertexDeclarationImpl();
-		decl->setThisPtr(decl);
+		decl->_setThisPtr(decl);
 		decl->initialize();
         return decl;
     }
@@ -56,7 +56,7 @@ namespace BansheeEngine {
 		assert (numVerts > 0);
 
 		VertexBufferPtr vbuf = createVertexBufferImpl(vertexSize, numVerts, usage, streamOut);
-		vbuf->setThisPtr(vbuf);
+		vbuf->_setThisPtr(vbuf);
 		vbuf->initialize();
 		return vbuf;
 	}
@@ -66,7 +66,7 @@ namespace BansheeEngine {
 		assert (numIndexes > 0);
 
 		IndexBufferPtr ibuf = createIndexBufferImpl(itype, numIndexes, usage);
-		ibuf->setThisPtr(ibuf);
+		ibuf->_setThisPtr(ibuf);
 		ibuf->initialize();
 		return ibuf;
 
@@ -75,7 +75,7 @@ namespace BansheeEngine {
 	GpuParamBlockBufferPtr HardwareBufferManager::createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage)
 	{
 		GpuParamBlockBufferPtr paramBlockPtr = createGpuParamBlockBufferImpl();
-		paramBlockPtr->setThisPtr(paramBlockPtr);
+		paramBlockPtr->_setThisPtr(paramBlockPtr);
 		paramBlockPtr->initialize(size, usage);
 
 		return paramBlockPtr;
@@ -85,7 +85,7 @@ namespace BansheeEngine {
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		GpuBufferPtr gbuf = createGpuBufferImpl(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
-		gbuf->setThisPtr(gbuf);
+		gbuf->_setThisPtr(gbuf);
 		gbuf->initialize();
 		return gbuf;
 	}

@@ -265,7 +265,6 @@
     <ClCompile Include="Source\CmStringTable.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\CmUUID.cpp" />
-    <ClCompile Include="Source\CmWorkQueue.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
     <ClInclude Include="Include\BsThreadPool.h" />
@@ -333,7 +332,6 @@
     <ClCompile Include="Source\CmIReflectable.cpp" />
     <ClCompile Include="Source\CmRTTIField.cpp" />
     <ClCompile Include="Source\CmRTTIType.cpp" />
-    <ClInclude Include="Include\CmWorkQueue.h" />
     <ClInclude Include="Include\CmTexAtlasGenerator.h" />
     <ClCompile Include="Source\CmHString.cpp" />
   </ItemGroup>

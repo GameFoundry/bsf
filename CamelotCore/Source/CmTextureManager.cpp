@@ -68,7 +68,7 @@ namespace BansheeEngine
 		UINT32 fsaa, const String& fsaaHint)
     {
         TexturePtr ret = createTextureImpl();
-		ret->setThisPtr(ret);
+		ret->_setThisPtr(ret);
 		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
 
 		return ret;
@@ -77,7 +77,7 @@ namespace BansheeEngine
 	TexturePtr TextureManager::createEmpty()
 	{
 		TexturePtr texture = createTextureImpl();
-		texture->setThisPtr(texture);
+		texture->_setThisPtr(texture);
 
 		return texture;
 	}
@@ -113,7 +113,7 @@ namespace BansheeEngine
 	RenderTexturePtr TextureManager::createRenderTexture(const RENDER_TEXTURE_DESC& desc)
 	{
 		RenderTexturePtr newRT = createRenderTextureImpl();
-		newRT->setThisPtr(newRT);
+		newRT->_setThisPtr(newRT);
 		newRT->initialize(desc);
 
 		return newRT;
@@ -122,7 +122,7 @@ namespace BansheeEngine
 	MultiRenderTexturePtr TextureManager::createEmptyMultiRenderTexture()
 	{
 		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl();
-		newRT->setThisPtr(newRT);
+		newRT->_setThisPtr(newRT);
 
 		return newRT;
 	}

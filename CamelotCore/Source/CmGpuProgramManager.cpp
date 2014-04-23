@@ -44,7 +44,7 @@ namespace BansheeEngine {
 	GpuProgramPtr GpuProgramManager::createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
     {
 		GpuProgramPtr prg = create(source, entryPoint, language, gptype, profile);
-		prg->setThisPtr(prg);
+		prg->_setThisPtr(prg);
 
 		// TODO: Gpu programs get initialized by their parent HighLevelGpuProgram. I might handle that more intuitively later but
 		// it works just fine as it is

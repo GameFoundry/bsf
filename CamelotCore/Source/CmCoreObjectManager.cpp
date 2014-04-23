@@ -4,13 +4,13 @@
 
 namespace BansheeEngine
 {
-	CoreGpuObjectManager::CoreGpuObjectManager()
+	CoreObjectManager::CoreObjectManager()
 		:mNextAvailableID(1)
 	{
 
 	}
 
-	CoreGpuObjectManager::~CoreGpuObjectManager()
+	CoreObjectManager::~CoreObjectManager()
 	{
 		CM_LOCK_MUTEX(mObjectsMutex);
 
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		}
 	}
 
-	UINT64 CoreGpuObjectManager::registerObject(CoreObject* object)
+	UINT64 CoreObjectManager::registerObject(CoreObject* object)
 	{
 		assert(object != nullptr);
 
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		return mNextAvailableID++;
 	}
 
-	void CoreGpuObjectManager::unregisterObject(CoreObject* object)
+	void CoreObjectManager::unregisterObject(CoreObject* object)
 	{
 		assert(object != nullptr);
 

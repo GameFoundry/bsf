@@ -44,6 +44,7 @@ namespace BansheeEngine
 	class MeshData;
 	class FileSystem;
 	class Timer;
+	class Task;
 	class GpuResourceData;
 	class PixelData;
 	class HString;
@@ -64,6 +65,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<GpuResourceData> GpuResourceDataPtr;
 	typedef std::shared_ptr<DataStream> DataStreamPtr;
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
+	typedef std::shared_ptr<Task> TaskPtr;
 
 	typedef List<DataStreamPtr>::type DataStreamList;
 	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;

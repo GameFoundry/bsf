@@ -36,7 +36,7 @@ namespace BansheeEngine
 		MeshHeap* meshHeap = new (cm_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
 		MeshHeapPtr meshHeapPtr = cm_core_ptr<MeshHeap, GenAlloc>(meshHeap);
 
-		meshHeapPtr->setThisPtr(meshHeapPtr);
+		meshHeapPtr->_setThisPtr(meshHeapPtr);
 		meshHeapPtr->initialize();
 
 		return meshHeapPtr;
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		TransientMesh* transientMesh = new (cm_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
 		TransientMeshPtr transientMeshPtr = cm_core_ptr<TransientMesh, GenAlloc>(transientMesh);
 
-		transientMeshPtr->setThisPtr(transientMeshPtr);
+		transientMeshPtr->_setThisPtr(transientMeshPtr);
 		transientMeshPtr->initialize();
 
 		mMeshes[meshIdx] = transientMeshPtr;

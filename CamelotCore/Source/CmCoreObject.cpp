@@ -14,8 +14,8 @@ namespace BansheeEngine
 	CoreObject::CoreObject(bool initializeOnRenderThread)
 		: mFlags(0), mInternalID(0)
 	{
-		mInternalID = CoreGpuObjectManager::instance().registerObject(this);
-		mFlags = initializeOnRenderThread ? mFlags | CGO_INIT_ON_RENDER_THREAD : mFlags;
+		mInternalID = CoreObjectManager::instance().registerObject(this);
+		mFlags = initializeOnRenderThread ? mFlags | CGO_INIT_ON_CORE_THREAD : mFlags;
 	}
 
 	CoreObject::~CoreObject() 
@@ -35,12 +35,12 @@ namespace BansheeEngine
 		}
 #endif
 
-		CoreGpuObjectManager::instance().unregisterObject(this);
+		CoreObjectManager::instance().unregisterObject(this);
 	}
 
 	void CoreObject::destroy()
 	{
-		if(requiresInitOnRenderThread())
+		if(requiresInitOnCoreThread())
 		{
 			setScheduledToBeDeleted(true);
 
@@ -72,7 +72,7 @@ namespace BansheeEngine
 			CM_EXCEPT(InternalErrorException, "Trying to initialize an object that is already initialized.");
 #endif
 
-		if(requiresInitOnRenderThread())
+		if(requiresInitOnCoreThread())
 		{
 			setScheduledToBeInitialized(true);
 
@@ -89,7 +89,7 @@ namespace BansheeEngine
 
 	void CoreObject::initialize_internal()
 	{
-		if(requiresInitOnRenderThread())
+		if(requiresInitOnCoreThread())
 		{
 			{
 				CM_LOCK_MUTEX(mCoreGpuObjectLoadedMutex);
@@ -110,7 +110,7 @@ namespace BansheeEngine
 	{
 		if(!isInitialized())
 		{
-			if(requiresInitOnRenderThread())
+			if(requiresInitOnCoreThread())
 			{
 #if CM_DEBUG_MODE
 				if(CM_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
@@ -133,7 +133,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void CoreObject::setThisPtr(std::shared_ptr<CoreObject> ptrThis)
+	void CoreObject::_setThisPtr(std::shared_ptr<CoreObject> ptrThis)
 	{
 		mThis = ptrThis;
 	}

@@ -4,98 +4,22 @@
 #include "CmException.h"
 #include "CmFileSerializer.h"
 #include "CmFileSystem.h"
+#include "BsTaskScheduler.h"
 #include "CmUUID.h"
 #include "CmPath.h"
 #include "CmDebug.h"
 
 namespace BansheeEngine
 {
-	bool Resources::ResourceRequestHandler::canHandleRequest(const WorkQueue::Request* req, const WorkQueue* srcQ)
-	{
-		return true;
-	}
-
-	WorkQueue::Response* Resources::ResourceRequestHandler::handleRequest(WorkQueue::Request* req, const WorkQueue* srcQ)
-	{
-		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(req->getData());
-
-		ResourceLoadResponsePtr resResponse = cm_shared_ptr<Resources::ResourceLoadResponse, ScratchAlloc>();
-		resResponse->rawResource = gResources().loadFromDiskAndDeserialize(resRequest->filePath);
-
-		return cm_new<WorkQueue::Response, ScratchAlloc>(req, true, resResponse);
-	}
-
-	bool Resources::ResourceResponseHandler::canHandleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
-	{
-		return true;
-	}
-
-	void Resources::ResourceResponseHandler::handleResponse(const WorkQueue::Response* res, const WorkQueue* srcQ)
-	{
-		ResourceLoadRequestPtr resRequest = boost::any_cast<ResourceLoadRequestPtr>(res->getRequest()->getData());
-
-		if(res->getRequest()->getAborted())
-			return;
-
-		gResources().notifyResourceLoadingFinished(resRequest->resource);
-
-		if(res->succeeded())
-		{
-			ResourceLoadResponsePtr resResponse = boost::any_cast<ResourceLoadResponsePtr>(res->getData());
-			
-			// This should be thread safe without any sync primitives, if other threads read a few cycles out of date value
-			// and think this resource isn't created when it really is, it hardly makes any difference
-			resRequest->resource._setHandleData(resResponse->rawResource, resRequest->resource.getUUID());
-
-			gResources().notifyNewResourceLoaded(resRequest->resource);
-		}
-		else
-		{
-			gDebug().logWarning("Resource load request failed.");
-		}
-	}
-
 	Resources::Resources()
-		:mRequestHandler(nullptr), mResponseHandler(nullptr), mWorkQueue(nullptr)
 	{
 		mDefaultResourceManifest = ResourceManifest::create("Default");
 		mResourceManifests.push_back(mDefaultResourceManifest);
-
-		mWorkQueue = cm_new<WorkQueue>();
-		mWorkQueueChannel = mWorkQueue->getChannel("Resources");
-		mRequestHandler = cm_new<ResourceRequestHandler>();
-		mResponseHandler = cm_new<ResourceResponseHandler>();
-
-		mWorkQueue->addRequestHandler(mWorkQueueChannel, mRequestHandler);
-		mWorkQueue->addResponseHandler(mWorkQueueChannel, mResponseHandler);
-
-		// TODO Low priority - I might want to make this more global so other classes can use it
-#if CM_THREAD_SUPPORT
-		mWorkQueue->setWorkerThreadCount(CM_THREAD_HARDWARE_CONCURRENCY);
-#endif
-		mWorkQueue->startup();
 	}
 
 	Resources::~Resources()
 	{
-		if(mWorkQueue)
-		{
-			if(mRequestHandler != nullptr)
-				mWorkQueue->removeRequestHandler(mWorkQueueChannel, mRequestHandler);
 
-			if(mResponseHandler != nullptr)
-				mWorkQueue->removeResponseHandler(mWorkQueueChannel, mResponseHandler);
-
-			mWorkQueue->shutdown();
-
-			cm_delete(mWorkQueue);
-		}
-
-		if(mRequestHandler != nullptr)
-			cm_delete(mRequestHandler);
-
-		if(mResponseHandler != nullptr)
-			cm_delete(mResponseHandler);
 	}
 
 	HResource Resources::load(const WString& filePath)
@@ -189,7 +113,7 @@ namespace BansheeEngine
 			auto iterFind2 = mInProgressResources.find(uuid);
 			if(iterFind2 != mInProgressResources.end()) 
 			{
-				existingResource = iterFind2->second.resource;
+				existingResource = iterFind2->second;
 				resourceLoadingInProgress = true;
 			}
 		}
@@ -215,21 +139,24 @@ namespace BansheeEngine
 
 		HResource newResource(uuid);
 
-		ResourceLoadRequestPtr resRequest = cm_shared_ptr<Resources::ResourceLoadRequest, ScratchAlloc>();
-		resRequest->filePath = filePath;
-		resRequest->resource = newResource;
-
-		WorkQueue::RequestID requestId = mWorkQueue->peekNextFreeRequestId();
-		ResourceAsyncOp newAsyncOp;
-		newAsyncOp.resource = newResource;
-		newAsyncOp.requestID = requestId;
-
 		{
 			CM_LOCK_MUTEX(mInProgressResourcesMutex);
-			mInProgressResources[uuid] = newAsyncOp;
+			mInProgressResources[uuid] = newResource;
 		}
 
-		mWorkQueue->addRequest(mWorkQueueChannel, resRequest, 0, synchronous);
+		if(synchronous)
+		{
+			loadCallback(filePath, newResource);
+		}
+		else
+		{
+			String fileName = toString(Path::getFilename(filePath));
+			String taskName = "Resource load: " + fileName;
+
+			TaskPtr task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, std::ref(newResource)));
+			TaskScheduler::instance().addTask(task);
+		}
+
 		return newResource;
 	}
 
@@ -359,18 +286,21 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void Resources::notifyResourceLoadingFinished(HResource& handle)
+	void Resources::loadCallback(const WString& filePath, HResource& resource)
 	{
-		CM_LOCK_MUTEX(mInProgressResourcesMutex);
+		ResourcePtr rawResource = loadFromDiskAndDeserialize(filePath);
 
-		mInProgressResources.erase(handle.getUUID());
-	}
+		{
+			CM_LOCK_MUTEX(mInProgressResourcesMutex);
+			mInProgressResources.erase(resource.getUUID());
+		}
 
-	void Resources::notifyNewResourceLoaded(HResource& handle)
-	{
-		CM_LOCK_MUTEX(mLoadedResourceMutex);
+		resource._setHandleData(rawResource, resource.getUUID());
 
-		mLoadedResources[handle.getUUID()] = handle;
+		{
+			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			mLoadedResources[resource.getUUID()] = resource;
+		}
 	}
 
 	CM_EXPORT Resources& gResources()

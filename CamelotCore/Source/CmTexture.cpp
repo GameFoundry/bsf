@@ -250,7 +250,7 @@ namespace BansheeEngine
 	TextureViewPtr Texture::createView()
 	{
 		TextureViewPtr viewPtr = cm_core_ptr<TextureView, PoolAlloc>(new (cm_alloc<TextureView, PoolAlloc>()) TextureView());
-		viewPtr->setThisPtr(viewPtr);
+		viewPtr->_setThisPtr(viewPtr);
 
 		return viewPtr;
 	}

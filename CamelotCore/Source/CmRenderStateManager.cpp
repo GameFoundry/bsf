@@ -9,7 +9,7 @@ namespace BansheeEngine
 	SamplerStatePtr RenderStateManager::createSamplerState(const SAMPLER_STATE_DESC& desc) const
 	{
 		SamplerStatePtr samplerState = createSamplerStateImpl();
-		samplerState->setThisPtr(samplerState);
+		samplerState->_setThisPtr(samplerState);
 		samplerState->initialize(desc);
 
 		return samplerState;
@@ -18,7 +18,7 @@ namespace BansheeEngine
 	DepthStencilStatePtr RenderStateManager::createDepthStencilState(const DEPTH_STENCIL_STATE_DESC& desc) const
 	{
 		DepthStencilStatePtr depthStencilState = createDepthStencilStateImpl();
-		depthStencilState->setThisPtr(depthStencilState);
+		depthStencilState->_setThisPtr(depthStencilState);
 		depthStencilState->initialize(desc);
 
 		return depthStencilState;
@@ -27,7 +27,7 @@ namespace BansheeEngine
 	RasterizerStatePtr RenderStateManager::createRasterizerState(const RASTERIZER_STATE_DESC& desc) const
 	{
 		RasterizerStatePtr rasterizerState = createRasterizerStateImpl();
-		rasterizerState->setThisPtr(rasterizerState);
+		rasterizerState->_setThisPtr(rasterizerState);
 		rasterizerState->initialize(desc);
 
 		return rasterizerState;
@@ -36,7 +36,7 @@ namespace BansheeEngine
 	BlendStatePtr RenderStateManager::createBlendState(const BLEND_STATE_DESC& desc) const
 	{
 		BlendStatePtr blendState = createBlendStateImpl();
-		blendState->setThisPtr(blendState);
+		blendState->_setThisPtr(blendState);
 		blendState->initialize(desc);
 
 		return blendState;
@@ -45,7 +45,7 @@ namespace BansheeEngine
 	SamplerStatePtr RenderStateManager::createEmptySamplerState() const
 	{
 		SamplerStatePtr samplerState = createSamplerStateImpl();
-		samplerState->setThisPtr(samplerState);
+		samplerState->_setThisPtr(samplerState);
 
 		return samplerState;
 	}
@@ -53,7 +53,7 @@ namespace BansheeEngine
 	DepthStencilStatePtr RenderStateManager::createEmptyDepthStencilState() const
 	{
 		DepthStencilStatePtr depthStencilState = createDepthStencilStateImpl();
-		depthStencilState->setThisPtr(depthStencilState);
+		depthStencilState->_setThisPtr(depthStencilState);
 
 		return depthStencilState;
 	}
@@ -61,7 +61,7 @@ namespace BansheeEngine
 	RasterizerStatePtr RenderStateManager::createEmptyRasterizerState() const
 	{
 		RasterizerStatePtr rasterizerState = createRasterizerStateImpl();
-		rasterizerState->setThisPtr(rasterizerState);
+		rasterizerState->_setThisPtr(rasterizerState);
 
 		return rasterizerState;
 	}
@@ -69,7 +69,7 @@ namespace BansheeEngine
 	BlendStatePtr RenderStateManager::createEmptyBlendState() const
 	{
 		BlendStatePtr blendState = createBlendStateImpl();
-		blendState->setThisPtr(blendState);
+		blendState->_setThisPtr(blendState);
 
 		return blendState;
 	}

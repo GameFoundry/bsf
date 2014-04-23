@@ -16,7 +16,7 @@ namespace BansheeEngine
 	RenderWindowPtr RenderWindowManager::create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{
 		RenderWindowPtr renderWindow = createImpl(desc, parentWindow);
-		renderWindow->setThisPtr(renderWindow);
+		renderWindow->_setThisPtr(renderWindow);
 		renderWindow->initialize();
 
 		{

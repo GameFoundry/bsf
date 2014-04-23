@@ -99,7 +99,6 @@ namespace BansheeEngine
 	class RawInputHandler;
 	class Renderer;
 	class RendererFactory;
-	class WorkQueue;
 	class PassParameters;
 	class AsyncOp;
 	class HardwareBufferManager;
@@ -194,7 +193,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Material> MaterialPtr;
 	typedef std::shared_ptr<Renderer> RendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
-	typedef std::shared_ptr<WorkQueue> WorkQueuePtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
 	typedef std::shared_ptr<Component> ComponentPtr;
 	typedef std::shared_ptr<SceneObject> GameObjectPtr;

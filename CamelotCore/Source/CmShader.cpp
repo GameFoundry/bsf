@@ -207,7 +207,7 @@ namespace BansheeEngine
 	ShaderPtr Shader::create(const String& name)
 	{
 		ShaderPtr newShader = cm_core_ptr<Shader, PoolAlloc>(new (cm_alloc<Shader, PoolAlloc>()) Shader(name));
-		newShader->setThisPtr(newShader);
+		newShader->_setThisPtr(newShader);
 		newShader->initialize();
 
 		return newShader;

@@ -1,5 +1,6 @@
 #include "CmCoreThread.h"
 #include "BsThreadPool.h"
+#include "BsTaskScheduler.h"
 
 using namespace std::placeholders;
 
@@ -63,6 +64,8 @@ namespace BansheeEngine
 	void CoreThread::runCoreThread()
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING
+		TaskScheduler::instance().removeWorker(); // One less worker because we are reserving one core for this thread
+
 		mCoreThreadId = CM_THREAD_CURRENT_ID;
 		mSyncedCoreAccessor = cm_new<CoreThreadAccessor<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
 
@@ -78,10 +81,13 @@ namespace BansheeEngine
 					if(mCoreThreadShutdown)
 					{
 						cm_delete(mSyncedCoreAccessor);
+						TaskScheduler::instance().addWorker();
 						return;
 					}
 
+					TaskScheduler::instance().addWorker(); // Do something else while we wait, otherwise this core will be unused
 					CM_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock);
+					TaskScheduler::instance().removeWorker();
 				}
 
 				commands = mCommandQueue->flush();

@@ -22,7 +22,7 @@ namespace BansheeEngine
 	{
 		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) 
 			Mesh(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType));
-		mesh->setThisPtr(mesh);
+		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
@@ -33,7 +33,7 @@ namespace BansheeEngine
 	{
 		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) 
 			Mesh(numVertices, numIndices, vertexDesc, initialData, bufferType, drawOp, indexType));
-		mesh->setThisPtr(mesh);
+		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
@@ -42,7 +42,7 @@ namespace BansheeEngine
 	MeshPtr MeshManager::create(const MeshDataPtr& initialData, MeshBufferType bufferType, DrawOperationType drawOp)
 	{
 		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh(initialData, bufferType, drawOp));
-		mesh->setThisPtr(mesh);
+		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
 		return mesh;
@@ -51,7 +51,7 @@ namespace BansheeEngine
 	MeshPtr MeshManager::createEmpty()
 	{
 		MeshPtr mesh = cm_core_ptr<Mesh, PoolAlloc>(new (cm_alloc<Mesh, PoolAlloc>()) Mesh());
-		mesh->setThisPtr(mesh);
+		mesh->_setThisPtr(mesh);
 
 		return mesh;
 	}

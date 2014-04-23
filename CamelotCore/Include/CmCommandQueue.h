@@ -7,6 +7,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Command queue policy that provides no synchonization. Should be used
+	 * 			with command queues that are used on a single thread only.
+	 */
 	class CommandQueueNoSync
 	{
 	public:
@@ -18,16 +22,14 @@ namespace BansheeEngine
 			return CM_THREAD_CURRENT_ID == ownerThread;
 		}
 
-		void lock() 
-		{
-		};
-
-		void unlock()
-		{
-		}
-
+		void lock() { };
+		void unlock() { }
 	};
 
+	/**
+	 * @brief	Command queue policy that provides synchonization. Should be used
+	 * 			with command queues that are used on multiple threads.
+	 */
 	class CommandQueueSync
 	{
 	public:
@@ -56,6 +58,10 @@ namespace BansheeEngine
 		CM_LOCK_TYPE mLock;
 	};
 
+	/**
+	 * @brief	Represents a single queued command in the command list. Contains all the data for executing the command
+	 * 			and checking up on the command status.
+	 */
 	struct QueuedCommand
 	{
 #if CM_DEBUG_MODE
@@ -123,8 +129,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains a list of commands that can be queued by one thread,
-	 * 			and executed by another.
+	 * @brief	Contains a list of commands you may queue for later execution on the core thread.
 	 */
 	class CM_EXPORT CommandQueueBase
 	{
@@ -132,15 +137,21 @@ namespace BansheeEngine
 		/**
 		 * @brief	Constructor.
 		 *
-		 * @param	threadId	   	Identifier for the thread the command queue will be used on.						
+		 * @param	threadId	   	Identifier for the thread the command queue will be getting commands from.					
 		 */
 		CommandQueueBase(CM_THREAD_ID_TYPE threadId);
 		virtual ~CommandQueueBase();
 
+		/**
+		 * @brief	Gets the thread identifier the command queue is used on.
+		 * 			
+		 * @note	If the command queue is using a synchonized access policy generally this
+		 * 			is not relevant as it may be used on multiple threads.
+		 */
 		CM_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
 
 		/**
-		 * @brief	Plays all provided commands. To get the commands call flush().
+		 * @brief	Executes all provided commands one by one in order. To get the commands you should call flush().
 		 *
 		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
 		 * 								The callback will receive "callbackId" of the command.
@@ -148,7 +159,7 @@ namespace BansheeEngine
 		void playbackWithNotify(Queue<QueuedCommand>::type* commands, std::function<void(UINT32)> notifyCallback);
 
 		/**
-		 * @brief	Plays all provided commands. To get the commands call flush().
+		 * @brief	Executes all provided commands one by one in order. To get the commands you should call flush().
 		 */
 		void playback(Queue<QueuedCommand>::type* commands);
 
@@ -168,7 +179,7 @@ namespace BansheeEngine
 	protected:
 		/**
 		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
-		 * 			parameters properly bound. Last parameter must be unbound and of AsyncOp&amp; type.
+		 * 			parameters properly bound. Last parameter must be unbound and of AsyncOp& type.
 		 * 			This is used to signal that the command is completed, and also for storing the return
 		 * 			value.
 		 * 			
@@ -178,10 +189,10 @@ namespace BansheeEngine
 		 *
 		 * @param	_notifyWhenComplete	(optional) Call the notify method (provided in the call to CommandQueue::playback)
 		 * 								when the command is complete.
-		 * @param	_callbackId			   	(optional) Identifier for the callback so you can then later find it
-		 * 									if needed.
+		 * @param	_callbackId			(optional) Identifier for the callback so you can then later find it
+		 * 								if needed.
 		 *
-		 * @return	Async operation object you can continuously check until the command completes. After
+		 * @return	Async operation object that you can continuously check until the command completes. After
 		 * 			it completes AsyncOp::isResolved will return true and return data will be valid (if
 		 * 			the callback provided any).
 		 */
@@ -190,8 +201,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
 		 * 			parameters properly bound. Provided command is not expected to return a value. If you
-		 * 			wish to return a value from the callback use the other overload of queueCommand which
-		 * 			accepts AsyncOp parameter.
+		 * 			wish to return a value from the callback use the queueReturn which accepts an AsyncOp parameter.
 		 *
 		 * @param	_notifyWhenComplete	(optional) Call the notify method (provided in the call to CommandQueue::playback)
 		 * 								when the command is complete.
@@ -217,6 +227,10 @@ namespace BansheeEngine
 		bool isEmpty();
 
 	protected:
+		/**
+		 * @brief	Helper method that throws an "Invalid thread" exception. Used primarily
+		 * 			so we can avoid including Exception include in this header.
+		 */
 		void throwInvalidThreadException(const String& message) const;
 
 	private:
@@ -259,12 +273,18 @@ namespace BansheeEngine
 		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction>::type SetBreakpoints;
 		CM_STATIC_MUTEX(CommandQueueBreakpointMutex);
 
+		/**
+		 * @brief	Checks if the specified command has a breakpoint and throw an assert if it does.
+		 */
 		static void breakIfNeeded(UINT32 queueIdx, UINT32 commandIdx);
 #endif
 	};
 
 	/**
 	 * @copydoc CommandQueueBase
+	 * 			
+	 * @brief	Use SyncPolicy to choose whether you want command queue be synchonized or not. Synchonized
+	 * 			command queues may be used across multiple threads and non-synchonized only on one.
 	 */
 	template<class SyncPolicy = CommandQueueNoSync>
 	class CommandQueue : public CommandQueueBase, public SyncPolicy

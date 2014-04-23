@@ -2,45 +2,11 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
-#include "CmWorkQueue.h"
 
 namespace BansheeEngine
 {
 	class CM_EXPORT Resources : public Module<Resources>
 	{
-	private:
-		class CM_EXPORT ResourceRequestHandler : public WorkQueue::RequestHandler
-		{
-			virtual bool canHandleRequest( const WorkQueue::Request* req, const WorkQueue* srcQ );
-			virtual WorkQueue::Response* handleRequest(WorkQueue::Request* req, const WorkQueue* srcQ );
-		};
-
-		class CM_EXPORT ResourceResponseHandler : public WorkQueue::ResponseHandler
-		{
-			virtual bool canHandleResponse( const WorkQueue::Response* res, const WorkQueue* srcQ );
-			virtual void handleResponse( const WorkQueue::Response* res, const WorkQueue* srcQ );
-		};
-
-		struct CM_EXPORT ResourceLoadRequest
-		{
-			WString filePath;
-			HResource resource;
-		};
-
-		struct CM_EXPORT ResourceLoadResponse
-		{
-			ResourcePtr rawResource;
-		};
-
-		struct CM_EXPORT ResourceAsyncOp
-		{
-			HResource resource;
-			WorkQueue::RequestID requestID;
-		};
-
-		typedef std::shared_ptr<ResourceLoadRequest> ResourceLoadRequestPtr;
-		typedef std::shared_ptr<ResourceLoadResponse> ResourceLoadResponsePtr;
-
 	public:
 		/**
 		 * @brief	Constructor.
@@ -162,20 +128,13 @@ namespace BansheeEngine
 		CM_MUTEX(mInProgressResourcesMutex);
 		CM_MUTEX(mLoadedResourceMutex);
 
-		ResourceRequestHandler* mRequestHandler;
-		ResourceResponseHandler* mResponseHandler;
-
-		WorkQueue* mWorkQueue;
-		UINT16 mWorkQueueChannel;
-
 		UnorderedMap<String, HResource>::type mLoadedResources; 
-		UnorderedMap<String, ResourceAsyncOp>::type mInProgressResources; // Resources that are being asynchronously loaded
+		UnorderedMap<String, HResource>::type mInProgressResources; // Resources that are being asynchronously loaded
 
 		HResource loadInternal(const WString& filePath, bool synchronous); 
 		ResourcePtr loadFromDiskAndDeserialize(const WString& filePath);
 
-		void notifyResourceLoadingFinished(HResource& handle);
-		void notifyNewResourceLoaded(HResource& handle);
+		void loadCallback(const WString& filePath, HResource& resource);
 	};
 
 	CM_EXPORT Resources& gResources();
