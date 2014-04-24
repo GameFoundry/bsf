@@ -36,9 +36,7 @@ public:
 	CM_EXPORT ~CoreThread();
 
 	/**
-		* @brief	Returns the id of the core thread. If a separate core thread
-		* 			is not used, then it returns the id of the thread RenderSystem
-		* 			was initialized on.
+		* @brief	Returns the id of the core thread. 
 		*/
 	CM_EXPORT CM_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
 
@@ -54,8 +52,8 @@ public:
 	/**
 	* @brief	Retrieves an accessor that you can use for executing commands on the core thread from
 	* 			a non-core thread. There is only one synchronized accessor and you may access it from any thread you wish.
-	* 			Note however that it is much more efficient to create a separate non-synchronized accessor using
-	* 			"createCoreAccessor" for each thread you will be using it on.
+	* 			Note however that it is much more efficient to retrieve a separate non-synchronized accessor using
+	* 			"getAccessor" for each thread you will be using it on.
 	* 			
 	* @note		Accessors contain their own command queue and their commands will only start to get executed once that queue is submitted
 	* 			to the core thread via "submitAccessors" method.
@@ -93,7 +91,7 @@ public:
 	/**
 	 * @brief	Called once every frame.
 	 * 			
-	 * @note	Must be called before sim thread schedules any CoreThread operations that frame. 
+	 * @note	Must be called before sim thread schedules any core thread operations for the frame. 
 	 */
 	CM_EXPORT void update();
 
@@ -106,8 +104,10 @@ public:
 	 */
 	CM_EXPORT FrameAlloc* getFrameAlloc() const;
 private:
-	// Double buffered frame allocators - Means sim thread cannot be more than 1 frame ahead of core thread
-	// (If that changes you should be able to easily add more)
+	/**
+	 * @brief	Double buffered frame allocators. Means sim thread cannot be more than 1 frame ahead of core thread
+	 *			(If that changes you should be able to easily add more).
+	 */
 	FrameAlloc* mFrameAllocs[2]; 
 	UINT32 mActiveFrameAlloc;
 
@@ -125,18 +125,18 @@ private:
 
 	CommandQueue<CommandQueueSync>* mCommandQueue;
 
-	UINT32 mMaxCommandNotifyId; // ID that will be assigned to the next command with a notifier callback
-	Vector<UINT32>::type mCommandsCompleted; // Completed commands that have notifier callbacks set up
+	UINT32 mMaxCommandNotifyId; /**< ID that will be assigned to the next command with a notifier callback. */
+	Vector<UINT32>::type mCommandsCompleted; /**< Completed commands that have notifier callbacks set up */
 
 	SyncedCoreAccessor* mSyncedCoreAccessor;
 
 	/**
-		* @brief	Initializes a separate core thread. Should only be called once.
+		* @brief	Starts the core thread worker method. Should only be called once.
 		*/
 	void initCoreThread();
 
 	/**
-		* @brief	Main function of the core thread. Called once thread is started.
+		* @brief	Main worker method of the core thread. Called once thread is started.
 		*/
 	void runCoreThread();
 
@@ -161,20 +161,37 @@ private:
 	void commandCompletedNotify(UINT32 commandId);
 	};
 
+	/**
+	 * @brief	Returns the core thread manager used for dealing with the core thread from external threads.
+	 * 			
+	 * @see		CoreThread
+	 */
 	CM_EXPORT CoreThread& gCoreThread();
 
+	/**
+	 * @brief	Returns a core thread accessor for the current thread. Accessor is retrieved or created depending
+	 * 			if it previously existed. Each thread has its own accessor.
+	 * 	
+	 * @see		CoreThread
+	 */
 	CM_EXPORT CoreThreadAccessor<CommandQueueNoSync>& gCoreAccessor();
 
+	/**
+	 * @brief	Returns a synchronized core accessor you may call from any thread for working with the core thread.
+	 * 			Only one of these exists.
+	 * 			
+	 * @see		CoreThread
+	 */
 	CM_EXPORT CoreThreadAccessor<CommandQueueSync>& gSyncedCoreAccessor();
 
 	/**
-		* @brief	Throws an exception if current thread isn't the core thread;
-		*/
+	  * @brief	Throws an exception if current thread isn't the core thread;
+	  */
 	CM_EXPORT void throwIfNotCoreThread();
 
 	/**
-		* @brief	Throws an exception if current thread is the core thread;
-		*/
+	  * @brief	Throws an exception if current thread is the core thread;
+	  */
 	CM_EXPORT void throwIfCoreThread();
 
 #if CM_DEBUG_MODE

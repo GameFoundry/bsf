@@ -14,9 +14,10 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Core thread accessor allows you to schedule core commands outside of the core thread.
+	 * @brief	Core thread accessor allows you to schedule core commands outside of the core thread. Provides a set of common
+	 * 			methods you may want to execute on the core thread, as well as a general command queuing methods.
 	 * 			
-	 * @note	All commands are queued and only executed after the call to submitToCoreThread, in the order they were called.
+	 * @note	Queued commands are only executed after the call to submitToCoreThread, in the order they were submitted.
 	 */
 	template <class CommandQueueSyncPolicy = CommandQueueNoSync>
 	class CM_EXPORT CoreThreadAccessor
@@ -227,21 +228,33 @@ namespace BansheeEngine
 				resource, subresourceIdx, data, std::placeholders::_1));
 		}
 
+		/**
+		 * @brief	Resize the provided window to specified width and height in pixels.
+		 */
 		void resizeWindow(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
 		{
 			mCommandQueue->queue(std::bind(&RenderWindow::resize, renderWindow.get(), width, height));
 		}
 
+		/**
+		 * @brief	Move the provided window to specified screen coordinates.
+		 */
 		void moveWindow(RenderWindowPtr& renderWindow, INT32 left, INT32 top)
 		{
 			mCommandQueue->queue(std::bind(&RenderWindow::move, renderWindow.get(), left, top));
 		}
 
+		/**
+		 * @brief	Hide the provided window. (Does not destroy it, just hides it).
+		 */
 		void hideWindow(RenderWindowPtr& renderWindow)
 		{
 			mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), true));
 		}
 
+		/**
+		 * @brief	Shows a previously hidden window.
+		 */
 		void showWindow(RenderWindowPtr& renderWindow)
 		{
 			mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), false));
@@ -265,7 +278,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Makes all the currently queued commands available to the core thread. They will be executed
-		 * 			as soon as the core thread is ready.
+		 * 			as soon as the core thread is ready. All queued commands are removed from the accessor.
 		 */
 		void submitToCoreThread(bool blockUntilComplete = false)
 		{
