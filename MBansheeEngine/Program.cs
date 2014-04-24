@@ -107,6 +107,8 @@ namespace BansheeEngine
             //dbgStyle.textColor = newColor;
             //Color myColor = dbgStyle.textColor;
             //dbgStyle.textColor = myColor;
+
+            //SerializableObject obj = new SerializableObject(new DbgSerzCls());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

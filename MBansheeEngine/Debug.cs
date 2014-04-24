@@ -1,20 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace BansheeEngine
 {
-    public class Debug
+    public sealed class Debug
     {
         public static void Log(string message)
         {
-            // TODO - Not implemented
+            Internal_Log(message);
         }
 
         public static void LogWarning(string message)
         {
-            // TODO - Not implemented
+            Internal_LogWarning(message);
         }
+
+        public static void LogError(string message)
+        {
+            Internal_LogError(message);
+        }
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern Component Internal_Log(string message);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern Component Internal_LogWarning(string message);
+
+        [MethodImpl(MethodImplOptions.InternalCall)]
+        internal static extern Component Internal_LogError(string message);
     }
 }

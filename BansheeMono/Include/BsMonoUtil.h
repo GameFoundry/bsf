@@ -25,9 +25,29 @@ namespace BansheeEngine
 			return ret;
 		}
 
+		static String monoToString(MonoString* str)
+		{
+			if(str == nullptr)
+				return StringUtil::BLANK;
+
+			int len = mono_string_length(str);
+			mono_unichar2* monoChars = mono_string_chars(str);
+
+			String ret(len, '0');
+			for(int i = 0; i < len; i++)
+				ret[i] = (char)monoChars[i];
+
+			return ret;
+		}
+
 		static MonoString* wstringToMono(MonoDomain* domain, const WString& str)
 		{
 			return mono_string_from_utf16((mono_unichar2*)str.c_str());
+		}
+
+		static MonoString* stringToMono(MonoDomain* domain, const String& str)
+		{
+			return wstringToMono(domain, toWString(str));
 		}
 
 		static void throwIfException(MonoException* exception)

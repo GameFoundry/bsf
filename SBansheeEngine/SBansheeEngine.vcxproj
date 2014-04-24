@@ -239,6 +239,7 @@
     <ClInclude Include="Include\BsManagedSerializableObject.h" />
     <ClInclude Include="Include\BsRuntimeScriptObjects.h" />
     <ClInclude Include="Include\BsScriptComponent.h" />
+    <ClInclude Include="Include\BsScriptDebug.h" />
     <ClInclude Include="Include\BsScriptEnginePrerequisites.h" />
     <ClInclude Include="Include\BsScriptGameObject.h" />
     <ClInclude Include="Include\BsScriptGameObjectManager.h" />
@@ -278,6 +279,7 @@
     <ClCompile Include="Source\BsManagedComponent.cpp" />
     <ClCompile Include="Source\BsRuntimeScriptObjects.cpp" />
     <ClCompile Include="Source\BsScriptComponent.cpp" />
+    <ClCompile Include="Source\BsScriptDebug.cpp" />
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
     <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
     <ClCompile Include="Source\BsScriptGUIButton.cpp" />

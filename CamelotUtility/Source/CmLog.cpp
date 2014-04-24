@@ -14,12 +14,16 @@ namespace BansheeEngine
 
 	Log::~Log()
 	{
+		CM_LOCK_RECURSIVE_MUTEX(mMutex);
+
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
 			cm_delete<PoolAlloc>(*iter);
 	}
 
 	void Log::logMsg(const String& message, const String& level)
 	{
+		CM_LOCK_RECURSIVE_MUTEX(mMutex);
+
 		LogEntry* newEntry = cm_new<LogEntry, PoolAlloc>(message, level);
 		mEntries.push_back(newEntry);
 
@@ -28,6 +32,8 @@ namespace BansheeEngine
 
 	void Log::clear()
 	{
+		CM_LOCK_RECURSIVE_MUTEX(mMutex);
+
 		for(auto iter = mEntries.begin(); iter != mEntries.end(); ++iter)
 			cm_delete<PoolAlloc>(*iter);
 

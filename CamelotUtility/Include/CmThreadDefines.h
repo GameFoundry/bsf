@@ -31,6 +31,9 @@
 #define CM_THREAD_NOTIFY_ONE(sync) sync.notify_one(); 
 #define CM_THREAD_NOTIFY_ALL(sync) sync.notify_all(); 
 #define CM_THREAD_JOIN(thread) thread.join();
+// Recursive mutex
+#define CM_RECURSIVE_MUTEX(name) mutable std::recursive_mutex name
+#define CM_LOCK_RECURSIVE_MUTEX(name) std::unique_lock<std::recursive_mutex> cmnameLock(name);
 // Read-write mutex
 #define CM_RW_MUTEX(name) mutable std::mutex name
 #define CM_LOCK_RW_MUTEX_READ(name) std::unique_lock<std::mutex> cmnameLock(name)

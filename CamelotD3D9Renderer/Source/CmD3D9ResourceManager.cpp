@@ -140,8 +140,7 @@ namespace BansheeEngine
 		assert(mDeviceAccessLockCount >= 0);
 		mDeviceAccessLockCount++;
 		if (mDeviceAccessLockCount == 1)
-		{					
-			CM_LOCK_RECURSIVE_MUTEX(mResourcesMutex);		
+		{						
 			D3D9Resource::lockDeviceAccess();
 			D3D9PixelBuffer::lockDeviceAccess();
 		}
@@ -155,8 +154,7 @@ namespace BansheeEngine
 		if (mDeviceAccessLockCount == 0)
 		{						
 			D3D9PixelBuffer::unlockDeviceAccess();
-			D3D9Resource::unlockDeviceAccess();			
-			CM_UNLOCK_RECURSIVE_MUTEX(mResourcesMutex);			
+			D3D9Resource::unlockDeviceAccess();				
 		}
 	}
 }

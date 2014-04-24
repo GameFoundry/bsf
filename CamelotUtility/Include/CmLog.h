@@ -25,6 +25,8 @@ namespace BansheeEngine
 	/**
 	 * @brief	Used for logging messages. Can categorize messages according to channels, save the log to a file
 	 * 			and send out callbacks when a new message is added.
+	 * 			
+	 * @note	Thread safe.
 	 */
 	class CM_UTILITY_EXPORT Log
 	{
@@ -52,6 +54,7 @@ namespace BansheeEngine
 
 	private:
 		Vector<LogEntry*>::type mEntries;
+		CM_RECURSIVE_MUTEX(mMutex);
 
 		/**
 		 * @brief	Called whenever a new entry is added.
@@ -64,6 +67,8 @@ namespace BansheeEngine
 	public:
 		/**
 		 * @brief	Triggered when a new entry in the log is added.
+		 * 			
+		 * @note	
 		 */
 		boost::signal<void(const LogEntry&)> onEntryAdded;
 	};
