@@ -153,7 +153,7 @@ namespace BansheeEngine
 			String fileName = toString(Path::getFilename(filePath));
 			String taskName = "Resource load: " + fileName;
 
-			TaskPtr task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, std::ref(newResource)));
+			TaskPtr task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, newResource));
 			TaskScheduler::instance().addTask(task);
 		}
 

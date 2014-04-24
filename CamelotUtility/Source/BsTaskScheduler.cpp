@@ -96,7 +96,7 @@ namespace BansheeEngine
 			if(mShutdown)
 				break;
 
-			for(UINT32 i = 0; i < mTaskQueue.size(), mNumActiveTasks < mMaxActiveTasks; i++)
+			for(UINT32 i = 0; (i < mTaskQueue.size()) && (mNumActiveTasks < mMaxActiveTasks); i++)
 			{
 				TaskPtr curTask = *mTaskQueue.begin();
 				mTaskQueue.erase(mTaskQueue.begin());
@@ -110,7 +110,7 @@ namespace BansheeEngine
 				curTask->mState.store(1);
 				mNumActiveTasks++;
 
-				ThreadPool::instance().run(curTask->mName, std::bind(&TaskScheduler::runTask, this, std::cref(curTask)));
+				ThreadPool::instance().run(curTask->mName, std::bind(&TaskScheduler::runTask, this, curTask));
 			}
 		}
 	}
