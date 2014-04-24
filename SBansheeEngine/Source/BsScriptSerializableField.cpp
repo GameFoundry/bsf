@@ -24,8 +24,8 @@ namespace BansheeEngine
 	void ScriptSerializableField::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptSerializableField::internal_destroyInstance);
-		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptSerializableField::internal_setValue);
-		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptSerializableField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptSerializableField::internal_getValue);
+		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptSerializableField::internal_setValue);
 	}
 
 	ScriptSerializableField* ScriptSerializableField::create(MonoObject* parentObject, const ManagedSerializableFieldInfoPtr& fieldInfo)
@@ -52,19 +52,19 @@ namespace BansheeEngine
 		cm_free(nativeInstance);
 	}
 
-	MonoObject* ScriptSerializableField::internal_getValue(ScriptSerializableField* nativeInstance)
+	MonoObject* ScriptSerializableField::internal_getValue(ScriptSerializableField* nativeInstance, MonoObject* instance)
 	{
-		return nativeInstance->mFieldInfo->mMonoField->getValueBoxed(nativeInstance->getManagedInstance());
+		return nativeInstance->mFieldInfo->mMonoField->getValueBoxed(instance);
 	}
 
-	void ScriptSerializableField::internal_setValue(ScriptSerializableField* nativeInstance, MonoObject* value)
+	void ScriptSerializableField::internal_setValue(ScriptSerializableField* nativeInstance, MonoObject* instance, MonoObject* value)
 	{
 		if(mono_class_is_valuetype(mono_object_get_class(value)))
 		{
 			void* rawValue = mono_object_unbox(value);
-			nativeInstance->mFieldInfo->mMonoField->setValue(nativeInstance->getManagedInstance(), rawValue);
+			nativeInstance->mFieldInfo->mMonoField->setValue(instance, rawValue);
 		}
 		else
-			nativeInstance->mFieldInfo->mMonoField->setValue(nativeInstance->getManagedInstance(), value);
+			nativeInstance->mFieldInfo->mMonoField->setValue(instance, value);
 	}
 }

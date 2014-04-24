@@ -108,7 +108,31 @@ namespace BansheeEngine
             //Color myColor = dbgStyle.textColor;
             //dbgStyle.textColor = myColor;
 
-            //SerializableObject obj = new SerializableObject(new DbgSerzCls());
+            SerializableObject obj = new SerializableObject(new DbgSerzCls());
+
+            Debug.Log(obj.fields.Length);
+            for (int i = 0; i < obj.fields.Length; i++)
+            {
+                Debug.Log(i + ". " + obj.fields[i].Name + " - " + obj.fields[i].Type.ToString());
+            }
+
+            SerializableValue val = obj.fields[0].GetValue();
+            Debug.Log("Old value: " + val.GetValue<int>());
+            val.SetValue<int>(33);
+            Debug.Log("New value: " + val.GetValue<int>());
+
+            SerializableValue val2 = obj.fields[2].GetValue();
+
+            Debug.Log("Old value: " + (val2.GetValue<DbgSerzCls>() == null));
+
+            DbgSerzCls child = new DbgSerzCls();
+            child.anotherValue2 = "ass";
+            val2.SetValue<DbgSerzCls>(child);
+
+            if (val2.GetValue<DbgSerzCls>() == null)
+                Debug.Log("New value: null");
+            else
+                Debug.Log("New value: " + val2.GetValue<DbgSerzCls>().anotherValue2);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

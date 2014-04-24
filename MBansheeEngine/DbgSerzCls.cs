@@ -10,5 +10,7 @@ namespace BansheeEngine
     {
         public int someValue2;
         public string anotherValue2;
+
+        public DbgSerzCls child;
     }
 }

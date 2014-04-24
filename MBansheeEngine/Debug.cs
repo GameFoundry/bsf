@@ -8,19 +8,19 @@ namespace BansheeEngine
 {
     public sealed class Debug
     {
-        public static void Log(string message)
+        public static void Log(object message)
         {
-            Internal_Log(message);
+            Internal_Log(message.ToString());
         }
 
-        public static void LogWarning(string message)
+        public static void LogWarning(object message)
         {
-            Internal_LogWarning(message);
+            Internal_LogWarning(message.ToString());
         }
 
-        public static void LogError(string message)
+        public static void LogError(object message)
         {
-            Internal_LogError(message);
+            Internal_LogError(message.ToString());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

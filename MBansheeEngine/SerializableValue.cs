@@ -25,7 +25,7 @@ namespace BansheeEngine
         public T GetValue<T>()
         {
             if (typeof (T) != type)
-                throw new Exception("Attempted to retrieve a serializable value using an invalid type.");
+                throw new Exception("Attempted to retrieve a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + type);
 
             return (T) getter();
         }
@@ -33,7 +33,7 @@ namespace BansheeEngine
         public void SetValue<T>(T value)
         {
             if (typeof(T) != type)
-                throw new Exception("Attempted to set a serializable value using an invalid type.");
+                throw new Exception("Attempted to set a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + type);
 
             setter(value);
         }
