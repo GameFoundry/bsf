@@ -51,22 +51,22 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) moves.
 		 */
-		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
+		boost::signal<void(const PointerEvent&)> onPointerMoved;
 
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is pressed.
 		 */
-		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
+		boost::signal<void(const PointerEvent&)> onPointerPressed;
 
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is released.
 		 */
-		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
+		boost::signal<void(const PointerEvent&)> onPointerReleased;
 
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is double clicked.
 		 */
-		boost::signal<void(const PositionalInputEvent&)> onDoubleClick;
+		boost::signal<void(const PointerEvent&)> onPointerDoubleClick;
 
 		// TODO Low priority: Remove this, I can emulate it using virtual input
 		/**
@@ -79,14 +79,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
+		void _registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
 
 		/**
 		 * @brief	Called every frame. Dispatches any callbacks resulting from input by the user.
 		 *
 		 * @note	Internal method.
 		 */
-		void update();
+		void _update();
 
 		/**
 		 * @brief	Returns smoothed mouse/joystick input in the horizontal axis.
@@ -152,22 +152,22 @@ namespace BansheeEngine
 		/**
 		 * @brief	Cursor movement as OS reports it. Used for screen cursor position.
 		 */
-		void cursorMoved(const PositionalInputEvent& event);
+		void cursorMoved(const PointerEvent& event);
 
 		/**
 		 * @brief	Cursor button presses as OS reports it. 
 		 */
-		void cursorPressed(const PositionalInputEvent& event);
+		void cursorPressed(const PointerEvent& event);
 
 		/**
 		 * @brief	Cursor button releases as OS reports it.
 		 */
-		void cursorReleased(const PositionalInputEvent& event);
+		void cursorReleased(const PointerEvent& event);
 		
 		/**
 		 * @brief	Cursor button releases as OS reports it.
 		 */
-		void cursorDoubleClick(const PositionalInputEvent& event);
+		void cursorDoubleClick(const PointerEvent& event);
 
 		/**
 		 * @brief	Input commands as OS reports them.

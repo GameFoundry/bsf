@@ -10,7 +10,7 @@ namespace BansheeEngine
 		:mIsDragInProgress(false), mDragTypeId(0), mData(nullptr), mCaptureChanged(false), mCaptureActive(0), mNeedsValidDropTarget(false)
 	{
 		Platform::onMouseCaptureChanged.connect(std::bind(&DragAndDropManager::mouseCaptureChanged, this));
-		Input::instance().onCursorReleased.connect(std::bind(&DragAndDropManager::cursorReleased, this, _1));
+		Input::instance().onPointerReleased.connect(std::bind(&DragAndDropManager::cursorReleased, this, _1));
 	}
 
 	void DragAndDropManager::addDropCallback(std::function<void(bool)> dropCallback)
@@ -62,7 +62,7 @@ namespace BansheeEngine
 		mCaptureChanged.store(true);
 	}
 
-	void DragAndDropManager::cursorReleased(const PositionalInputEvent& event)
+	void DragAndDropManager::cursorReleased(const PointerEvent& event)
 	{
 		if(!mIsDragInProgress)
 			return;

@@ -239,7 +239,7 @@ namespace BansheeEngine
 				ReleaseCapture();
 
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -252,7 +252,7 @@ namespace BansheeEngine
 				ReleaseCapture();
 
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -265,7 +265,7 @@ namespace BansheeEngine
 				ReleaseCapture();
 
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -278,7 +278,7 @@ namespace BansheeEngine
 				SetCapture(hWnd);
 
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -291,7 +291,7 @@ namespace BansheeEngine
 				SetCapture(hWnd);
 
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -304,7 +304,7 @@ namespace BansheeEngine
 				SetCapture(hWnd);
 
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -315,7 +315,7 @@ namespace BansheeEngine
 		case WM_LBUTTONDBLCLK:
 			{
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -342,7 +342,7 @@ namespace BansheeEngine
 					return true;
 
 				Vector2I intMousePos;
-				OSPositionalInputButtonStates btnStates;
+				OSPointerButtonStates btnStates;
 				
 				getMouseData(hWnd, wParam, lParam, intMousePos, btnStates);
 
@@ -491,7 +491,7 @@ namespace BansheeEngine
 		return dir;
 	}
 
-	void PlatformWndProc::getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Vector2I& mousePos, OSPositionalInputButtonStates& btnStates)
+	void PlatformWndProc::getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Vector2I& mousePos, OSPointerButtonStates& btnStates)
 	{
 		POINT clientPoint;
 

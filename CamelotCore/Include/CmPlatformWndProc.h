@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 		static LRESULT translateNonClientAreaType(NonClientAreaBorderType type);
 
-		static void getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Vector2I& mousePos, OSPositionalInputButtonStates& btnStates);
+		static void getMouseData(HWND hWnd, WPARAM wParam, LPARAM lParam, Vector2I& mousePos, OSPointerButtonStates& btnStates);
 		static bool getCommand(unsigned int virtualKeyCode, InputCommandType& command);
 	};
 }

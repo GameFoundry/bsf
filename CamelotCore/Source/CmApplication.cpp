@@ -108,7 +108,7 @@ namespace BansheeEngine
 			Platform::update();
 			DeferredCallManager::instance().update();
 			RenderWindowManager::instance().update();
-			gInput().update();
+			gInput()._update();
 
 			PROFILE_CALL(gSceneManager().update(), "SceneManager");
 

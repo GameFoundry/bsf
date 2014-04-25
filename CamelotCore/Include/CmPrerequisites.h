@@ -95,7 +95,7 @@ namespace BansheeEngine
     class VertexData;
     class VertexDeclaration;
 	class Input;
-	struct PositionalInputEvent;
+	struct PointerEvent;
 	class RawInputHandler;
 	class Renderer;
 	class RendererFactory;

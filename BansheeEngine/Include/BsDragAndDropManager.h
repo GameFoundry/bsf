@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		boost::signal<bool(const PositionalInputEvent&)> onDragEnded;
+		boost::signal<bool(const PointerEvent&)> onDragEnded;
 	private:
 		UINT32 mDragTypeId;
 		void* mData;
@@ -53,6 +53,6 @@ namespace BansheeEngine
 
 		void endDrag(bool processed);
 		void mouseCaptureChanged();
-		void cursorReleased(const PositionalInputEvent& event);
+		void cursorReleased(const PointerEvent& event);
 	};
 }

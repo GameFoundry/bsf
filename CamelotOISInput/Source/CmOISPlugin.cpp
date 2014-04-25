@@ -18,7 +18,7 @@ namespace BansheeEngine
 
 		std::shared_ptr<RawInputHandler> inputHandler = cm_shared_ptr<InputHandlerOIS>(windowId);
 
-		gInput().registerRawInputHandler(inputHandler);
+		gInput()._registerRawInputHandler(inputHandler);
 
 		return nullptr;
 	}

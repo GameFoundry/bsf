@@ -48,7 +48,7 @@ namespace BansheeEngine
 		cm_deleteN(mTimesHistoryBuffer, HISTORY_BUFFER_SIZE);
 	}
 
-	void Input::registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler)
+	void Input::_registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler)
 	{
 		if(mRawInputHandler != inputHandler)
 		{
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Input::update()
+	void Input::_update()
 	{
 		// Toggle states only remain active for a single frame before they are transitioned
 		// into permanent state
@@ -140,34 +140,34 @@ namespace BansheeEngine
 		mAxes[(int)axis] = state;
 	}
 
-	void Input::cursorMoved(const PositionalInputEvent& event)
+	void Input::cursorMoved(const PointerEvent& event)
 	{
 		mMouseAbsPos = event.screenPos;
 
-		if(!onCursorMoved.empty())
-			onCursorMoved(event);
+		if(!onPointerMoved.empty())
+			onPointerMoved(event);
 	}
 
-	void Input::cursorPressed(const PositionalInputEvent& event)
+	void Input::cursorPressed(const PointerEvent& event)
 	{
 		mMouseAbsPos = event.screenPos;
 
-		if(!onCursorPressed.empty())
-			onCursorPressed(event);
+		if(!onPointerPressed.empty())
+			onPointerPressed(event);
 	}
 
-	void Input::cursorReleased(const PositionalInputEvent& event)
+	void Input::cursorReleased(const PointerEvent& event)
 	{
 		mMouseAbsPos = event.screenPos;
 
-		if(!onCursorReleased.empty())
-			onCursorReleased(event);
+		if(!onPointerReleased.empty())
+			onPointerReleased(event);
 	}
 
-	void Input::cursorDoubleClick(const PositionalInputEvent& event)
+	void Input::cursorDoubleClick(const PointerEvent& event)
 	{
-		if(!onDoubleClick.empty())
-			onDoubleClick(event);
+		if(!onPointerDoubleClick.empty())
+			onPointerDoubleClick(event);
 	}
 
 	void Input::inputCommandEntered(InputCommandType commandType)

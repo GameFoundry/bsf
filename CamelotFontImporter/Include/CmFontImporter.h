@@ -21,7 +21,7 @@ namespace BansheeEngine
 			if(importer == nullptr)
 			{
 				importer = cm_new<FontImporter>();
-				Importer::instance().registerAssetImporter(importer);
+				Importer::instance()._registerAssetImporter(importer);
 			}
 		}
 

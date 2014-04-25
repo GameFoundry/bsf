@@ -128,9 +128,9 @@ namespace BansheeEngine
 
 		Stack<GUIElement*>::type mScheduledForDestruction;
 
-		// Element and widget mouse is currently over
-		Vector<ElementInfo>::type mElementsUnderCursor;
-		Vector<ElementInfo>::type mNewElementsUnderCursor;
+		// Element and widget pointer is currently over
+		Vector<ElementInfo>::type mElementsUnderPointer;
+		Vector<ElementInfo>::type mNewElementsUnderPointer;
 
 		// Element and widget that's being clicked on
 		GUIMouseButton mActiveMouseButton;
@@ -147,10 +147,10 @@ namespace BansheeEngine
 		GUIInputSelection* mInputSelection;
 
 		bool mSeparateMeshesByWidget;
-		Vector2I mLastCursorScreenPos;
+		Vector2I mLastPointerScreenPos;
 
 		DragState mDragState;
-		Vector2I mLastCursorClickPos;
+		Vector2I mLastPointerClickPos;
 
 		GUIMouseEvent mMouseEvent;
 		GUITextInputEvent mTextInputEvent;
@@ -169,10 +169,10 @@ namespace BansheeEngine
 
 		Map<const RenderTexture*, const GUIElement*>::type mInputBridge;
 
-		boost::signals::connection mOnCursorMovedConn;
-		boost::signals::connection mOnCursorPressedConn;
-		boost::signals::connection mOnCursorReleasedConn;
-		boost::signals::connection mOnCursorDoubleClick;
+		boost::signals::connection mOnPointerMovedConn;
+		boost::signals::connection mOnPointerPressedConn;
+		boost::signals::connection mOnPointerReleasedConn;
+		boost::signals::connection mOnPointerDoubleClick;
 		boost::signals::connection mOnTextInputConn;
 		boost::signals::connection mOnInputCommandConn;
 		boost::signals::connection mOnVirtualButtonDown;
@@ -189,24 +189,24 @@ namespace BansheeEngine
 		void updateTextSelectionTexture();
 		void processDestroyQueue();
 
-		bool findElementUnderCursor(const Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
+		bool findElementUnderPointer(const Vector2I& screenMousePos, bool buttonStates[3], bool shift, bool control, bool alt);
 
-		void onCursorMoved(const PositionalInputEvent& event);
-		void onCursorReleased(const PositionalInputEvent& event);
-		void onCursorPressed(const PositionalInputEvent& event);
-		void onCursorDoubleClick(const PositionalInputEvent& event);
+		void onPointerMoved(const PointerEvent& event);
+		void onPointerReleased(const PointerEvent& event);
+		void onPointerPressed(const PointerEvent& event);
+		void onPointerDoubleClick(const PointerEvent& event);
 		void onTextInput(const TextInputEvent& event);
 		void onInputCommandEntered(InputCommandType commandType);
 		void onVirtualButtonDown(const VirtualButton& button);
 
-		bool onMouseDragEnded(const PositionalInputEvent& event);
+		bool onMouseDragEnded(const PointerEvent& event);
 
 		void onWindowFocusGained(RenderWindow& win);
 		void onWindowFocusLost(RenderWindow& win);
 
 		void onMouseLeftWindow(RenderWindow* win);
 
-		GUIMouseButton buttonToGUIButton(PositionalInputEventButton cursorButton) const;
+		GUIMouseButton buttonToGUIButton(PointerEventButton pointerButton) const;
 		Vector2I getWidgetRelativePos(const GUIWidget& widget, const Vector2I& screenPos) const;
 		Vector2I windowToBridgedCoords(const GUIWidget& widget, const Vector2I& windowPos) const;
 		const RenderWindow* getWidgetWindow(const GUIWidget& widget) const;

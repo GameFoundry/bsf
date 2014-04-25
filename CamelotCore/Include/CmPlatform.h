@@ -35,9 +35,9 @@ namespace BansheeEngine
 		Left, Middle, Right, Count
 	};
 
-	struct CM_EXPORT OSPositionalInputButtonStates
+	struct CM_EXPORT OSPointerButtonStates
 	{
-		OSPositionalInputButtonStates()
+		OSPointerButtonStates()
 		{
 			mouseButtons[0] = false;
 			mouseButtons[1] = false;

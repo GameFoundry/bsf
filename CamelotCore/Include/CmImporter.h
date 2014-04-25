@@ -80,7 +80,7 @@ namespace BansheeEngine
 		 * @param [in]	importer	The importer that is able to handle files with the specified extension. nullptr if you
 		 * 							want to remove an asset importer for the extension.
 		 */
-		void registerAssetImporter(SpecificImporter* importer);
+		void _registerAssetImporter(SpecificImporter* importer);
 	private:
 		Vector<SpecificImporter*>::type mAssetImporters;
 

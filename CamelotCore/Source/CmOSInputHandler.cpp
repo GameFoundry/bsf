@@ -36,7 +36,7 @@ namespace BansheeEngine
 		WString inputString;
 		Vector2I mousePosition;
 		float mouseScroll;
-		OSPositionalInputButtonStates mouseMoveBtnState;
+		OSPointerButtonStates mouseMoveBtnState;
 		Queue<ButtonStateChange>::type buttonStates;
 		Queue<DoubleClick>::type doubleClicks;
 		Queue<InputCommandType>::type inputCommands;
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		{
 			if(!onCursorMoved.empty())
 			{
-				PositionalInputEvent event;
+				PointerEvent event;
 				event.alt = false;
 				event.shift = mouseMoveBtnState.shift;
 				event.control = mouseMoveBtnState.ctrl;
@@ -75,7 +75,7 @@ namespace BansheeEngine
 				event.buttonStates[2] = mouseMoveBtnState.mouseButtons[2];
 				event.mouseWheelScrollAmount = mouseScroll;
 
-				event.type = PositionalInputEventType::CursorMoved;
+				event.type = PointerEventType::CursorMoved;
 				event.screenPos = mousePosition;
 
 				onCursorMoved(event);
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		{
 			ButtonStateChange& btnState = buttonStates.front();
 
-			PositionalInputEvent event;
+			PointerEvent event;
 			event.alt = false;
 			event.shift = btnState.btnStates.shift;
 			event.control = btnState.btnStates.ctrl;
@@ -99,13 +99,13 @@ namespace BansheeEngine
 			switch(btnState.button)
 			{
 			case OSMouseButton::Left:
-				event.button = PositionalInputEventButton::Left;
+				event.button = PointerEventButton::Left;
 				break;
 			case OSMouseButton::Middle:
-				event.button = PositionalInputEventButton::Middle;
+				event.button = PointerEventButton::Middle;
 				break;
 			case OSMouseButton::Right:
-				event.button = PositionalInputEventButton::Right;
+				event.button = PointerEventButton::Right;
 				break;
 			}
 			
@@ -113,14 +113,14 @@ namespace BansheeEngine
 
 			if(btnState.pressed)
 			{
-				event.type = PositionalInputEventType::ButtonPressed;
+				event.type = PointerEventType::ButtonPressed;
 
 				if(!onCursorPressed.empty())
 					onCursorPressed(event);
 			}
 			else
 			{
-				event.type = PositionalInputEventType::ButtonReleased;
+				event.type = PointerEventType::ButtonReleased;
 
 				if(!onCursorReleased.empty())
 					onCursorReleased(event);
@@ -135,16 +135,16 @@ namespace BansheeEngine
 			{
 				DoubleClick& btnState = doubleClicks.front();
 
-				PositionalInputEvent event;
+				PointerEvent event;
 				event.alt = false;
 				event.shift = btnState.btnStates.shift;
 				event.control = btnState.btnStates.ctrl;
 				event.buttonStates[0] = btnState.btnStates.mouseButtons[0];
 				event.buttonStates[1] = btnState.btnStates.mouseButtons[1];
 				event.buttonStates[2] = btnState.btnStates.mouseButtons[2];
-				event.button = PositionalInputEventButton::Left;
+				event.button = PointerEventButton::Left;
 				event.screenPos = btnState.cursorPos;
-				event.type = PositionalInputEventType::DoubleClick;
+				event.type = PointerEventType::DoubleClick;
 
 				onDoubleClick(event);
 			}
@@ -176,7 +176,7 @@ namespace BansheeEngine
 		mInputString += character;
 	}
 
-	void OSInputHandler::cursorMoved(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates)
+	void OSInputHandler::cursorMoved(const Vector2I& cursorPos, OSPointerButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
 
@@ -185,7 +185,7 @@ namespace BansheeEngine
 	}
 
 	void OSInputHandler::cursorPressed(const Vector2I& cursorPos, 
-		OSMouseButton button, OSPositionalInputButtonStates& btnStates)
+		OSMouseButton button, OSPointerButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
 
@@ -199,7 +199,7 @@ namespace BansheeEngine
 	}
 
 	void OSInputHandler::cursorReleased(const Vector2I& cursorPos, 
-		OSMouseButton button, OSPositionalInputButtonStates& btnStates)
+		OSMouseButton button, OSPointerButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
 
@@ -212,7 +212,7 @@ namespace BansheeEngine
 		btnState.btnStates = btnStates;
 	}
 
-	void OSInputHandler::cursorDoubleClick(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates)
+	void OSInputHandler::cursorDoubleClick(const Vector2I& cursorPos, OSPointerButtonStates& btnStates)
 	{
 		CM_LOCK_MUTEX(mOSInputMutex);
 

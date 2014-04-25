@@ -19,7 +19,7 @@ namespace BansheeEngine
 		struct ButtonStateChange
 		{
 			Vector2I cursorPos;
-			OSPositionalInputButtonStates btnStates;
+			OSPointerButtonStates btnStates;
 			OSMouseButton button;
 			bool pressed;
 		};
@@ -27,7 +27,7 @@ namespace BansheeEngine
 		struct DoubleClick
 		{
 			Vector2I cursorPos;
-			OSPositionalInputButtonStates btnStates;
+			OSPointerButtonStates btnStates;
 		};
 
 	public:
@@ -36,10 +36,10 @@ namespace BansheeEngine
 
 		boost::signal<void(UINT32)> onCharInput;
 		boost::signal<void(const Vector2I&, float)> onMouseWheelScrolled;
-		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
-		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
-		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
-		boost::signal<void(const PositionalInputEvent&)> onDoubleClick;
+		boost::signal<void(const PointerEvent&)> onCursorMoved;
+		boost::signal<void(const PointerEvent&)> onCursorPressed;
+		boost::signal<void(const PointerEvent&)> onCursorReleased;
+		boost::signal<void(const PointerEvent&)> onDoubleClick;
 		boost::signal<void(InputCommandType)> onInputCommand;
 
 		/**
@@ -61,7 +61,7 @@ namespace BansheeEngine
 		Queue<ButtonStateChange>::type mButtonStates;
 		Queue<DoubleClick>::type mDoubleClicks;
 		Queue<InputCommandType>::type mInputCommands;
-		OSPositionalInputButtonStates mMouseMoveBtnState;
+		OSPointerButtonStates mMouseMoveBtnState;
 
 		boost::signals::connection mCharInputConn;
 		boost::signals::connection mCursorMovedConn;
@@ -79,22 +79,22 @@ namespace BansheeEngine
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorMoved(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates);
+		void cursorMoved(const Vector2I& cursorPos, OSPointerButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorPressed(const Vector2I& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
+		void cursorPressed(const Vector2I& cursorPos, OSMouseButton button, OSPointerButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorReleased(const Vector2I& cursorPos, OSMouseButton button, OSPositionalInputButtonStates& btnStates);
+		void cursorReleased(const Vector2I& cursorPos, OSMouseButton button, OSPointerButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.
 		 */
-		void cursorDoubleClick(const Vector2I& cursorPos, OSPositionalInputButtonStates& btnStates);
+		void cursorDoubleClick(const Vector2I& cursorPos, OSPointerButtonStates& btnStates);
 
 		/**
 		 * @brief	Called from the message loop.

@@ -241,10 +241,10 @@ namespace BansheeEngine
 
 		// Callbacks triggered on the core thread. Be careful so that none
 		// of the connected methods call methods intended for sim thread.
-		static boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> onCursorMoved;
-		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonPressed;
-		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> onCursorButtonReleased;
-		static boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> onCursorDoubleClick;
+		static boost::signal<void(const Vector2I&, OSPointerButtonStates)> onCursorMoved;
+		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonPressed;
+		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonReleased;
+		static boost::signal<void(const Vector2I&, OSPointerButtonStates)> onCursorDoubleClick;
 		static boost::signal<void(InputCommandType)> onInputCommand;
 		static boost::signal<void(float)> onMouseWheelScrolled;
 		static boost::signal<void(UINT32)> onCharInput;

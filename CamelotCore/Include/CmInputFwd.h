@@ -255,7 +255,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Query is the pressed button a gamepad button.
 		 */
-		bool isJoystick() const { return (buttonCode & 0x40000000) != 0; }
+		bool isGamepad() const { return (buttonCode & 0x40000000) != 0; }
 
 		/**
 		 * @brief	Check if the event has been marked as used. Internally this means nothing
@@ -273,18 +273,18 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Positional input buttons. Generally these correspond to mouse
+	 * @brief	Pointer buttons. Generally these correspond to mouse
 	 * 			buttons, but may be used in some form for touch input as well.
 	 */
-	enum class PositionalInputEventButton
+	enum class PointerEventButton
 	{
 		Left, Middle, Right, Count
 	};
 
 	/**
-	 * @brief	Type of positional input event.
+	 * @brief	Type of pointer event.
 	 */
-	enum class PositionalInputEventType
+	enum class PointerEventType
 	{
 		CursorMoved,
 		ButtonPressed,
@@ -296,12 +296,12 @@ namespace BansheeEngine
 	 * @brief	Event that gets sent out when user interacts with the screen in some way,
 	 * 			usually by moving the mouse cursor or using touch input.
 	 */
-	struct PositionalInputEvent
+	struct PointerEvent
 	{
 	public:
-		PositionalInputEvent()
-			:mIsUsed(false), mouseWheelScrollAmount(0.0f), type(PositionalInputEventType::CursorMoved),
-			shift(false), control(false), alt(false), button(PositionalInputEventButton::Left)
+		PointerEvent()
+			:mIsUsed(false), mouseWheelScrollAmount(0.0f), type(PointerEventType::CursorMoved),
+			shift(false), control(false), alt(false), button(PointerEventButton::Left)
 		{
 			buttonStates[0] = false;
 			buttonStates[1] = false;
@@ -309,16 +309,16 @@ namespace BansheeEngine
 		}
 
 		Vector2I screenPos; /**< Screen position where the input event occurred. */
-		bool buttonStates[PositionalInputEventButton::Count]; /**< States of the positional input buttons (e.g. mouse buttons). */
-		PositionalInputEventButton button; /**< Button that triggered the positional input event. Might be irrelevant 
-										   depending on event type. (e.g. move events don't correspond to a button. */
-		PositionalInputEventType type; /**< Type of the positional input event. */
+		bool buttonStates[PointerEventButton::Count]; /**< States of the pointer buttons (e.g. mouse buttons). */
+		PointerEventButton button; /**< Button that triggered the pointer event. Might be irrelevant 
+										depending on event type. (e.g. move events don't correspond to a button. */
+		PointerEventType type; /**< Type of the pointer event. */
 
 		bool shift; /**< Is Shift button on the keyboard being held down. */
 		bool control; /**< Is Control button on the keyboard being held down. */
 		bool alt; /**< Is Alt button on the keyboard being held down. */
 
-		float mouseWheelScrollAmount; /**< If mouse wheel is being scrolled, what is the amount. */
+		float mouseWheelScrollAmount; /**< If mouse wheel is being scrolled, what is the amount. Only relevant on move events. */
 
 		/**
 		 * @brief	Check if the event has been marked as used. Internally this means nothing

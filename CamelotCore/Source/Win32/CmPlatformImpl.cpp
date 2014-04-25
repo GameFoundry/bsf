@@ -10,10 +10,10 @@ namespace BansheeEngine
 {
 	boost::signal<void(RenderWindow*)> Platform::onMouseLeftWindow;
 
-	boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> Platform::onCursorMoved;
-	boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonPressed;
-	boost::signal<void(const Vector2I&, OSMouseButton button, OSPositionalInputButtonStates)> Platform::onCursorButtonReleased;
-	boost::signal<void(const Vector2I&, OSPositionalInputButtonStates)> Platform::onCursorDoubleClick;
+	boost::signal<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorMoved;
+	boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonPressed;
+	boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonReleased;
+	boost::signal<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorDoubleClick;
 	boost::signal<void(InputCommandType)> Platform::onInputCommand;
 	boost::signal<void(float)> Platform::onMouseWheelScrolled;
 	boost::signal<void(UINT32)> Platform::onCharInput;

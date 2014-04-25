@@ -25,7 +25,7 @@ namespace BansheeEngine
 			if(importer == nullptr)
 			{
 				importer = cm_new<FBXImporter>();
-				Importer::instance().registerAssetImporter(importer);
+				Importer::instance()._registerAssetImporter(importer);
 			}
 		}
 

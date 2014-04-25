@@ -16,8 +16,8 @@ namespace BansheeEngine
 {
 	Importer::Importer()
 	{
-		registerAssetImporter(cm_new<GpuProgIncludeImporter>());
-		registerAssetImporter(cm_new<GpuProgramImporter>());
+		_registerAssetImporter(cm_new<GpuProgIncludeImporter>());
+		_registerAssetImporter(cm_new<GpuProgramImporter>());
 	}
 
 	Importer::~Importer()
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		return importer->createImportOptions();
 	}
 
-	void Importer::registerAssetImporter(SpecificImporter* importer)
+	void Importer::_registerAssetImporter(SpecificImporter* importer)
 	{
 		if(!importer)
 		{
