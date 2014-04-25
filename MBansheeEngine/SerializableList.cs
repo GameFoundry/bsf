@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BansheeEngine
 {
-    public sealed class SerializableArray : ScriptObject
+    public sealed class SerializableList : ScriptObject
     {
         private object referencedObject;
         private SerializableField.FieldType elementType;
@@ -33,7 +33,7 @@ namespace BansheeEngine
 
         public int Rank
         {
-            get { return rank;  }
+            get { return rank; }
         }
 
         public T GetValue<T>(params int[] indexes)

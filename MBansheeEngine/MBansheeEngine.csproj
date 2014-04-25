@@ -85,7 +85,9 @@
     <Compile Include="SceneObject.cs" />
     <Compile Include="ScriptObject.cs" />
     <Compile Include="SerializableArray.cs" />
+    <Compile Include="SerializableDictionary.cs" />
     <Compile Include="SerializableField.cs" />
+    <Compile Include="SerializableList.cs" />
     <Compile Include="SerializableObject.cs" />
     <Compile Include="SerializableValue.cs" />
     <Compile Include="SerializeObject.cs" />
