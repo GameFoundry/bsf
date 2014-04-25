@@ -9,35 +9,82 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Primary module used for dealing with input. Allows you to receieve 
+	 *			and query raw or OS input for mouse/keyboard/gamepad.
+	 *
+	 *			All inputs are received through an input handler, which can be overriden to 
+	 *			provide custom input functionality.
+	 */
 	class CM_EXPORT Input : public Module<Input>
 	{
+		/**
+		 * @brief	Possible button states
+		 */
 		enum class ButtonState
 		{
-			Off,
-			On,
-			ToggledOn,
-			ToggledOff
+			Off, /**< Button is not being pressed. */
+			On, /**< Button is being pressed. */
+			ToggledOn, /**< Button has been pressed this frame. */
+			ToggledOff /**< Button has been released this frame. */
 		};
 
 	public:
 		Input();
 		~Input();
 
+		/**
+		 * @brief	Triggered whenever a button is first pressed.
+		 */
 		boost::signal<void(const ButtonEvent&)> onButtonDown;
+
+		/**
+		 * @brief	Triggered whenever a button is first released.
+		 */
 		boost::signal<void(const ButtonEvent&)> onButtonUp;
+
+		/**
+		 * @brief	Triggered whenever user inputs a text character. 
+		 */
 		boost::signal<void(const TextInputEvent&)> onCharInput;
 
+		/**
+		 * @brief	Triggers when some pointing device (mouse cursor, touch) moves.
+		 */
 		boost::signal<void(const PositionalInputEvent&)> onCursorMoved;
+
+		/**
+		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is pressed.
+		 */
 		boost::signal<void(const PositionalInputEvent&)> onCursorPressed;
+
+		/**
+		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is released.
+		 */
 		boost::signal<void(const PositionalInputEvent&)> onCursorReleased;
+
+		/**
+		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is double clicked.
+		 */
 		boost::signal<void(const PositionalInputEvent&)> onDoubleClick;
 
+		// TODO Low priority: Remove this, I can emulate it using virtual input
+		/**
+		 * @brief	Triggers on special input commands.
+		 */
 		boost::signal<void(InputCommandType)> onInputCommand;
 
+		/**
+		 * @brief	Registers a new input handler. Replaces any previous input handler.
+		 *
+		 * @note	Internal method.
+		 */
 		void registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler);
 
 		/**
-		 * @brief	Called every frame. Dispatches any callbacks resulting from input by the user. Should only be called by Application.
+		 * @brief	Called every frame. Dispatches any callbacks resulting from input by the user.
+		 *
+		 * @note	Internal method.
 		 */
 		void update();
 
@@ -55,10 +102,24 @@ namespace BansheeEngine
 		 */
 		float getVerticalAxis() const;
 
+		/**
+		 * @brief	Query if the provided button is currently being held (this frame or previous frames).
+		 */
 		bool isButtonHeld(ButtonCode keyCode) const;
+
+		/**
+		 * @brief	Query if the provided button is currently being released (one true for one frame).
+		 */
 		bool isButtonUp(ButtonCode keyCode) const;
+
+		/**
+		 * @brief	Query if the provided button is currently being pressed (one true for one frame).
+		 */
 		bool isButtonDown(ButtonCode keyCode) const;
 
+		/**
+		 * @brief	Returns mouse cursor position.
+		 */
 		Vector2I getCursorPosition() const { return mMouseAbsPos; }
 	private:
 		std::shared_ptr<RawInputHandler> mRawInputHandler;
@@ -130,5 +191,8 @@ namespace BansheeEngine
 		static const float WEIGHT_MODIFIER;
 	};
 
+	/**
+	 * @copydoc	Input
+	 */
 	CM_EXPORT Input& gInput();
 }

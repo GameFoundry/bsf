@@ -12,9 +12,6 @@ namespace BansheeEngine
 	class CM_EXPORT Importer : public Module<Importer>
 	{
 	public:
-		/**
-		 * @brief	Constructor.
-		 */
 		Importer(); 
 		~Importer(); 
 
@@ -22,7 +19,11 @@ namespace BansheeEngine
 		 * @brief	Imports a resource at the specified location, and returns the loaded data.
 		 *
 		 * @param	inputFilePath	Pathname of the input file.
-		 * @param	importOptions	(optional) Options for controlling the import.
+		 * @param	importOptions	(optional) Options for controlling the import. Caller must
+		 *							ensure import options actually match the type of the importer used
+		 *							for the file type.
+		 *
+		 * @see		createImportOptions
 		 */
 		HResource import(const WString& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
@@ -30,7 +31,11 @@ namespace BansheeEngine
 		 * @brief	Imports a resource and replaces the contents of the provided existing resource with new imported data.
 		 *
 		 * @param	inputFilePath	Pathname of the input file.
-		 * @param	importOptions	(optional) Options for controlling the import.
+		 * @param	importOptions	(optional) Options for controlling the import. Caller must
+		 *							ensure import options actually match the type of the importer used
+		 *							for the file type. 
+		 *
+		 * @see		createImportOptions
 		 */
 		void reimport(HResource& existingResource, const WString& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
@@ -54,7 +59,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks if we can import a file with the specified extension.
 		 *
-		 * @param	extension	The extension without leading dot.
+		 * @param	extension	The extension without the leading dot.
 		 */
 		bool supportsFileType(const WString& extension) const;
 
@@ -70,7 +75,7 @@ namespace BansheeEngine
 		 * @brief	Adds a new asset importer for the specified file extension. If an asset importer for that extension
 		 * 			already exists, it is removed and replaced with the current one.
 		 * 			
-		 * @note	This method should only be called by asset importers themselves on startup.
+		 * @note	Internal method. This method should only be called by asset importers themselves on startup.
 		 *
 		 * @param [in]	importer	The importer that is able to handle files with the specified extension. nullptr if you
 		 * 							want to remove an asset importer for the extension.

@@ -18,7 +18,16 @@ namespace BansheeEngine
 		SpecificImporter() {}
 		virtual ~SpecificImporter() {}
 
+		/**
+		 * @brief	Check is the provided extension supported by this importer.
+		 *
+		 * @note	Provided extension should be without the leading dot.
+		 */
 		virtual bool isExtensionSupported(const WString& ext) const = 0;
+
+		/**
+		 * @brief	Check if the provided magic number is supported by this importer.
+		 */
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const = 0; 
 
 		/**

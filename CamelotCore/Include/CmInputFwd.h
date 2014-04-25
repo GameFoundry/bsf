@@ -229,6 +229,9 @@ namespace BansheeEngine
 		BC_NumJoy = 0x20,
 	};
 
+	/**
+	 * @brief	Structure containing information about a button input event.
+	 */
 	struct ButtonEvent
 	{
 	public:
@@ -236,14 +239,34 @@ namespace BansheeEngine
 			:mIsUsed(false)
 		{ }
 
-		ButtonCode buttonCode;
-		UINT64 timestamp;
+		ButtonCode buttonCode; /**< Button code this event is referring to. */
+		UINT64 timestamp; /**< Timestamp in ticks when the event happened. */
 
+		/**
+		 * @brief	Query is the pressed button a keyboard button.
+		 */
 		bool isKeyboard() const { return (buttonCode & 0xC0000000) == 0; }
+
+		/**
+		 * @brief	Query is the pressed button a mouse button.
+		 */
 		bool isMouse() const { return (buttonCode & 0x80000000) != 0; }
+
+		/**
+		 * @brief	Query is the pressed button a gamepad button.
+		 */
 		bool isJoystick() const { return (buttonCode & 0x40000000) != 0; }
 
+		/**
+		 * @brief	Check if the event has been marked as used. Internally this means nothing
+		 *			but caller might choose to ignore an used event.
+		 */
 		bool isUsed() const { return mIsUsed; }
+
+		/**
+		 * @brief	Mark the event as used. Internally this means nothing
+		 *			but caller might choose to ignore an used event.
+		 */
 		void markAsUsed() const { mIsUsed = true; }
 	private:
 		mutable bool mIsUsed;
@@ -258,6 +281,9 @@ namespace BansheeEngine
 		Left, Middle, Right, Count
 	};
 
+	/**
+	 * @brief	Type of positional input event.
+	 */
 	enum class PositionalInputEventType
 	{
 		CursorMoved,
@@ -282,24 +308,37 @@ namespace BansheeEngine
 			buttonStates[2] = false;
 		}
 
-		Vector2I screenPos;
-		bool buttonStates[PositionalInputEventButton::Count];
-		PositionalInputEventButton button;
-		PositionalInputEventType type;
+		Vector2I screenPos; /**< Screen position where the input event occurred. */
+		bool buttonStates[PositionalInputEventButton::Count]; /**< States of the positional input buttons (e.g. mouse buttons). */
+		PositionalInputEventButton button; /**< Button that triggered the positional input event. Might be irrelevant 
+										   depending on event type. (e.g. move events don't correspond to a button. */
+		PositionalInputEventType type; /**< Type of the positional input event. */
 
-		bool shift;
-		bool control;
-		bool alt;
+		bool shift; /**< Is Shift button on the keyboard being held down. */
+		bool control; /**< Is Control button on the keyboard being held down. */
+		bool alt; /**< Is Alt button on the keyboard being held down. */
 
-		float mouseWheelScrollAmount;
+		float mouseWheelScrollAmount; /**< If mouse wheel is being scrolled, what is the amount. */
 
+		/**
+		 * @brief	Check if the event has been marked as used. Internally this means nothing
+		 *			but caller might choose to ignore an used event.
+		 */
 		bool isUsed() const { return mIsUsed; }
+
+		/**
+		 * @brief	Mark the event as used. Internally this means nothing
+		 *			but caller might choose to ignore an used event.
+		 */
 		void markAsUsed() const { mIsUsed = true; }
 
 	private:
 		mutable bool mIsUsed;
 	};
 
+	/**
+	 * @brief	Type of special input command types.
+	 */
 	enum class InputCommandType
 	{
 		CursorMoveLeft, CursorMoveRight, CursorMoveUp, CursorMoveDown, 
@@ -307,6 +346,10 @@ namespace BansheeEngine
 		Escape, Delete, Backspace, Return
 	};
 
+	/**
+	 * @brief	Event that gets sent out when user inputs some text. These events may be preceeded by
+	 *			normal button events if user is typing on a keyboard. 
+	 */
 	struct TextInputEvent
 	{
 	public:
@@ -314,9 +357,18 @@ namespace BansheeEngine
 			:mIsUsed(false)
 		{ }
 
-		UINT32 textChar;
+		UINT32 textChar; /**< Character the user is inputting. */
 
+		/**
+		 * @brief	Check if the event has been marked as used. Internally this means nothing
+		 *			but caller might choose to ignore an used event.
+		 */
 		bool isUsed() const { return mIsUsed; }
+
+		/**
+		 * @brief	Mark the event as used. Internally this means nothing
+		 *			but caller might choose to ignore an used event.
+		 */
 		void markAsUsed() const { mIsUsed = true; }
 
 	private:
