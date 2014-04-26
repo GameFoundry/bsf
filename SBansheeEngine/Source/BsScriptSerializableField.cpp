@@ -5,6 +5,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsManagedSerializableObjectInfo.h"
+#include "BsScriptSerializableProperty.h"
 
 namespace BansheeEngine
 {
@@ -24,6 +25,7 @@ namespace BansheeEngine
 	void ScriptSerializableField::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptSerializableField::internal_destroyInstance);
+		metaData.scriptClass->addInternalCall("Internal_CreateProperty", &ScriptSerializableField::internal_createProperty);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptSerializableField::internal_getValue);
 		metaData.scriptClass->addInternalCall("Internal_SetValue", &ScriptSerializableField::internal_setValue);
 	}
@@ -50,6 +52,13 @@ namespace BansheeEngine
 	{
 		nativeInstance->~ScriptSerializableField();
 		cm_free(nativeInstance);
+	}
+
+	MonoObject* ScriptSerializableField::internal_createProperty(ScriptSerializableField* nativeInstance)
+	{
+		ScriptSerializableProperty* newProperty = ScriptSerializableProperty::create(nativeInstance->mFieldInfo->mTypeInfo);
+
+		return newProperty->getManagedInstance();
 	}
 
 	MonoObject* ScriptSerializableField::internal_getValue(ScriptSerializableField* nativeInstance, MonoObject* instance)

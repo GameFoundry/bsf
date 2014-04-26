@@ -10,14 +10,20 @@ namespace BansheeEngine
 	public:
 		static void initMetaData();
 
+		static ScriptSerializableObject* create(const ManagedSerializableTypeInfoPtr& typeInfo, MonoObject* object);
+
 	private:
-		static void internal_createInstance(MonoObject* instance, MonoObject* object);
+		static void internal_createInstance(MonoObject* instance, MonoReflectionType* type, MonoObject* object);
 		static void internal_destroyInstance(ScriptSerializableObject* nativeInstance);
 
 		static void initRuntimeData();
 
-		ScriptSerializableObject();
+		static ScriptSerializableObject* createInternal(MonoObject* instance, const ManagedSerializableObjectInfoPtr& objInfo);
+
+		ScriptSerializableObject(const ManagedSerializableTypeInfoPtr& typeInfo);
 		~ScriptSerializableObject() {}
+
+		ManagedSerializableTypeInfoPtr mTypeInfo;
 
 		static MonoField* FieldsField;
 	};

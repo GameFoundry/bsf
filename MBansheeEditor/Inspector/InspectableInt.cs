@@ -21,7 +21,7 @@ namespace BansheeEditor
 
         protected void Initialize(GUILayout layout)
         {
-            if(property.Type == SerializableField.FieldType.Int)
+            if(property.Type == SerializableProperty.FieldType.Int)
             {
                 guiLabel = new GUILabel(title);
                 layout.AddElement(guiLabel); // TODO - Use an IntEditorField

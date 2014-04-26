@@ -14,18 +14,22 @@ namespace BansheeEditor
 
         private void Initialize()
         {
-            SerializableObject serializableObject = new SerializableObject(referencedObject);
-
-            foreach (var field in serializableObject.fields)
+            if (referencedObject != null)
             {
-                if (!field.Inspectable)
-                    continue;
+                SerializableObject serializableObject = new SerializableObject(referencedObject.GetType(), referencedObject);
 
-                if (field.HasCustomInspector)
-                    inspectableFields.Add(InspectableObjectBase.CreateCustomInspectable(field.CustomInspectorType, field.Name, field.GetProperty()));
-                else
-                    inspectableFields.Add(InspectableObjectBase.CreateDefaultInspectable(field.Name, field.GetProperty()));
+                foreach (var field in serializableObject.fields)
+                {
+                    if (!field.Inspectable)
+                        continue;
+
+                    if (field.HasCustomInspector)
+                        inspectableFields.Add(InspectableObjectBase.CreateCustomInspectable(field.CustomInspectorType, field.Name, field.GetProperty()));
+                    else
+                        inspectableFields.Add(InspectableObjectBase.CreateDefaultInspectable(field.Name, field.GetProperty()));
+                }
             }
+
 
             // TODO - Add Component foldout
 

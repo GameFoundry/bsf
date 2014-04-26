@@ -174,13 +174,10 @@
     <ClInclude Include="Include\BsScriptDebug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptSerializableArrayInfo.h">
+    <ClInclude Include="Include\BsScriptSerializableArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsScriptSerializableDictionaryInfo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsScriptSerializableListInfo.h">
+    <ClInclude Include="Include\BsScriptSerializableProperty.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -296,13 +293,10 @@
     <ClCompile Include="Source\BsScriptDebug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptSerializableArrayInfo.cpp">
+    <ClCompile Include="Source\BsScriptSerializableArray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsScriptSerializableDictionaryInfo.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsScriptSerializableListInfo.cpp">
+    <ClCompile Include="Source\BsScriptSerializableProperty.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

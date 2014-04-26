@@ -13,11 +13,17 @@ namespace BansheeEngine
         internal object referencedObject;
         private SerializableField[] _fields;
 
-        public SerializableObject(object obj)
+        public SerializableObject(Type objectType, object instance)
         {
-            Internal_CreateInstance(this, obj);
+            Internal_CreateInstance(this, objectType, instance);
 
-            referencedObject = obj;
+            referencedObject = instance;
+        }
+
+        // Constructed from native code
+        private SerializableObject(object instance)
+        {
+            referencedObject = instance;
         }
 
         public SerializableField[] fields
@@ -26,6 +32,6 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(SerializableObject instance, object obj);
+        private static extern void Internal_CreateInstance(SerializableObject instance, Type objectType, object objInstance);
     }
 }

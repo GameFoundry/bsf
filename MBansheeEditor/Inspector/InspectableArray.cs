@@ -27,7 +27,7 @@ namespace BansheeEditor
 
         protected void Initialize(GUILayout layout)
         {
-            if (property.Type != SerializableField.FieldType.Array)
+            if (property.Type != SerializableProperty.FieldType.Array)
                 return;
 
             guiLabel = new GUILabel(title);

@@ -15,6 +15,7 @@ namespace BansheeEngine
 	private:
 		static void internal_destroyInstance(ScriptSerializableField* nativeInstance);
 
+		static MonoObject* internal_createProperty(ScriptSerializableField* nativeInstance);
 		static MonoObject* internal_getValue(ScriptSerializableField* nativeInstance, MonoObject* instance);
 		static void internal_setValue(ScriptSerializableField* nativeInstance, MonoObject* instance, MonoObject* value);
 

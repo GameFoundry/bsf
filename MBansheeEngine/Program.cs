@@ -108,7 +108,7 @@ namespace BansheeEngine
             //Color myColor = dbgStyle.textColor;
             //dbgStyle.textColor = myColor;
 
-            SerializableObject obj = new SerializableObject(new DbgSerzCls());
+            SerializableObject obj = new SerializableObject(typeof(DbgSerzCls), new DbgSerzCls());
 
             Debug.Log(obj.fields.Length);
             for (int i = 0; i < obj.fields.Length; i++)

@@ -6,19 +6,21 @@ namespace BansheeEngine
     #pragma warning disable 649
     public sealed class SerializableArray : ScriptObject
     {
-        private SerializableField.FieldType elementType;
+        private SerializableProperty.FieldType elementType;
         private Type internalElementType;
         private Array referencedArray;
 
-        public SerializableField.FieldType ElementType
+        public SerializableProperty.FieldType ElementType
         {
             get { return elementType; }
         }
 
-        internal SerializableArray(Array array)
+        // Constructed from native code
+        private SerializableArray(Array array, Type internalElementType)
         {
             referencedArray = array;
-            Internal_CreateInstance(this, referencedArray);
+            this.internalElementType = internalElementType;
+            elementType = SerializableProperty.DetermineFieldType(internalElementType);
         }
 
         public SerializableProperty GetProperty(int elementIdx)
@@ -26,7 +28,10 @@ namespace BansheeEngine
             SerializableProperty.Getter getter = () => referencedArray.GetValue(elementIdx);
             SerializableProperty.Setter setter = (object value) => referencedArray.SetValue(value, elementIdx);
 
-            return new SerializableProperty(ElementType, internalElementType, getter, setter);
+            SerializableProperty property = Internal_CreateProperty(mCachedPtr);
+            property.Construct(ElementType, internalElementType, getter, setter);
+
+            return property;
         }
 
         public int GetLength()
@@ -35,6 +40,6 @@ namespace BansheeEngine
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_CreateInstance(SerializableArray instance, object obj);
+        private static extern SerializableProperty Internal_CreateProperty(IntPtr nativeInstance);
     }
 }

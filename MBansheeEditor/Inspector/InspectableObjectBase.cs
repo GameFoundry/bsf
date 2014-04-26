@@ -74,11 +74,11 @@ namespace BansheeEditor
         {
             switch (property.Type)
             {
-                case SerializableField.FieldType.Int:
+                case SerializableProperty.FieldType.Int:
                     return new InspectableInt(title, property);
-                case SerializableField.FieldType.Object:
+                case SerializableProperty.FieldType.Object:
                     return new InspectableObject(title, property);
-                case SerializableField.FieldType.Array:
+                case SerializableProperty.FieldType.Array:
                     return new InspectableArray(title, property);
                 // TODO - Add all other types
             }
