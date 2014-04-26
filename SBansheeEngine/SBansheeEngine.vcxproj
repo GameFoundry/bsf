@@ -267,7 +267,10 @@
     <ClInclude Include="Include\BsScriptSceneObject.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectInfoRTTI.h" />
     <ClInclude Include="Include\BsManagedSerializableObjectRTTI.h" />
+    <ClInclude Include="Include\BsScriptSerializableArrayInfo.h" />
+    <ClInclude Include="Include\BsScriptSerializableDictionaryInfo.h" />
     <ClInclude Include="Include\BsScriptSerializableField.h" />
+    <ClInclude Include="Include\BsScriptSerializableListInfo.h" />
     <ClInclude Include="Include\BsScriptSerializableObject.h" />
     <ClInclude Include="Include\BsScriptSpriteTexture.h" />
     <ClInclude Include="Include\BsScriptStringTable.h" />
@@ -307,7 +310,10 @@
     <ClCompile Include="Source\BsManagedSerializableList.cpp" />
     <ClCompile Include="Source\BsManagedSerializableObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableObjectInfo.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableArrayInfo.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableDictionaryInfo.cpp" />
     <ClCompile Include="Source\BsScriptSerializableField.cpp" />
+    <ClCompile Include="Source\BsScriptSerializableListInfo.cpp" />
     <ClCompile Include="Source\BsScriptSerializableObject.cpp" />
     <ClCompile Include="Source\BsScriptSpriteTexture.cpp" />
     <ClCompile Include="Source\BsScriptStringTable.cpp" />

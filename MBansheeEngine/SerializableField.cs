@@ -62,14 +62,6 @@ namespace BansheeEngine
             get { return (flags & 0x01) != 0; } // Flags as defined in native code in BsManagedSerializableObjectInfo.h
         }
 
-        public SerializableValue GetValue()
-        {
-            SerializableValue.Getter getValue = () => Internal_GetValue(mCachedPtr, parent.referencedObject);
-            SerializableValue.Setter setValue = (object value) => Internal_SetValue(mCachedPtr, parent.referencedObject, value);
-
-            return new SerializableValue(internalType, getValue, setValue);
-        }
-
         private static FieldType DetermineFieldType(Type internalType)
         {
             if (!internalType.IsArray)
@@ -133,6 +125,46 @@ namespace BansheeEngine
             }
 
             return FieldType.Array;
+        }
+
+        public T GetValue<T>()
+        {
+            if (!typeof(T).IsAssignableFrom(internalType))
+                throw new Exception("Attempted to retrieve a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + internalType);
+
+            return (T)Internal_GetValue(mCachedPtr, parent.referencedObject);
+        }
+
+        public void SetValue<T>(T value)
+        {
+            if (!typeof(T).IsAssignableFrom(internalType))
+                throw new Exception("Attempted to set a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + internalType);
+
+            Internal_SetValue(mCachedPtr, parent.referencedObject, value);
+        }
+
+        public SerializableArrayInfo GetSerializableArrayInfo()
+        {
+            if (type != FieldType.Array)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain an array.");
+
+            return new SerializableArrayInfo(GetValue<object>());
+        }
+
+        public SerializableListInfo GetSerializableListInfo()
+        {
+            if (type != FieldType.List)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain an array.");
+
+            return new SerializableListInfo(GetValue<object>());
+        }
+
+        public SerializableDictionaryInfo GetSerializableDictionaryInfo()
+        {
+            if (type != FieldType.Dictionary)
+                throw new Exception("Attempting to retrieve array information from a field that doesn't contain an array.");
+
+            return new SerializableDictionaryInfo(GetValue<object>());
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

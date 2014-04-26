@@ -116,23 +116,21 @@ namespace BansheeEngine
                 Debug.Log(i + ". " + obj.fields[i].Name + " - " + obj.fields[i].Type.ToString());
             }
 
-            SerializableValue val = obj.fields[0].GetValue();
-            Debug.Log("Old value: " + val.GetValue<int>());
+
+            Debug.Log("Old value: " + obj.fields[0].GetValue<int>());
             val.SetValue<int>(33);
-            Debug.Log("New value: " + val.GetValue<int>());
+            Debug.Log("New value: " + obj.fields[0].GetValue<int>());
 
-            SerializableValue val2 = obj.fields[2].GetValue();
-
-            Debug.Log("Old value: " + (val2.GetValue<DbgSerzCls>() == null));
+            Debug.Log("Old value: " + (obj.fields[2].GetValue<DbgSerzCls>() == null));
 
             DbgSerzCls child = new DbgSerzCls();
             child.anotherValue2 = "ass";
-            val2.SetValue<DbgSerzCls>(child);
+            obj.fields[2].SetValue<DbgSerzCls>(child);
 
-            if (val2.GetValue<DbgSerzCls>() == null)
+            if (obj.fields[2].GetValue<DbgSerzCls>() == null)
                 Debug.Log("New value: null");
             else
-                Debug.Log("New value: " + val2.GetValue<DbgSerzCls>().anotherValue2);
+                Debug.Log("New value: " + obj.fields[2].GetValue<DbgSerzCls>().anotherValue2);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

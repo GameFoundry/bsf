@@ -24,6 +24,8 @@ namespace BansheeEngine
 		MonoClass* getSceneObjectClass() const { return mSceneObjectClass; }
 		MonoClass* getTextureClass() const { return mTextureClass; }
 		MonoClass* getSpriteTextureClass() const { return mSpriteTextureClass; }
+
+		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
 	private:
 		UnorderedMap<String, std::shared_ptr<ManagedSerializableAssemblyInfo>>::type mAssemblyInfos;
 		bool mBaseTypesInitialized;
@@ -46,6 +48,5 @@ namespace BansheeEngine
 		void clearScriptObjects(const String& assemblyName);
 
 		void initializeBaseTypes();
-		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
 	};
 }

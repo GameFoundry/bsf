@@ -1,10 +1,28 @@
-Needed controls:
-Array field/List field/Dictionary field
-Matrix3 field
-Matrix4 field
-GameObject field
-Resource field
--------------
+
+My SerializableArray/list/dictionary approach is BROKEN:
+ - I cannot determine their type just from an object, since object may be null. I need their parent field/collection type to do that.
+
+SerializableField
+ - Normal GetValue/SetValue 
+ - But also GetSerializableArray, GetSerializableList, GetSerializableDictionary
+
+SerializableArray
+ - Also has GetSerializableArray, GetSerializableList, GetSerializableDictionary
+
+ ------------------------------------------------
+
+My Inspector approach is BROKEN:
+ - Number of array/list/dictionary elements in a field may dynamically change. How do I handle that? Current system just keeps the static fields.
+
+Rebuilding gui N times per second is OUT OF THE QUESTION
+ - My GUI system isn't built for it
+ - e.g. If I'm currently focusing on and element or writing in an input box refreshing the GUI would break it
+ - Instead I must leave it to the user to track modifications, simply save old value and compare with new, and if it changed update the UI.
+  - I should potentially provide the user with overridable InspectableField. One that will automatically call CreateGUI when field value changes,
+    and user can then override it if he wants to draw custom controls. 
+
+-----------------------------------------------
+LESS IMPORTANT
 
 A way to close a window & destroy a GUI panel!
  - Will likely need to refactor ScriptEditorWindow as currently it performs initialization
@@ -16,11 +34,15 @@ A way to close a window & destroy a GUI panel!
 
 Ensure that setting depth for GUIArea works properly. It's not properly implemented yet.
 
-Test setting/getting field values using my SerializableObject/SerializableField interface
- - I'm guessing it won't work because of unboxing & value type issues. I might want to consider somehow 
-   refactoring managedSerializableField so that I can re-use it for setting/getting field values in general purpose case.
+Missing C++ field types:
+ - Array field/List field/Dictionary field
+ - Matrix3 field
+ - Matrix4 field
+ - GameObject field
+ - Resource field
 
 UndoRedo should work on URI type basis where it remembers object ID, and path across its fields to the field that was modified
+ - This way it wont keep an unnecessary reference to object
  - SerializableField should probably be the type responsible for handling the URI
  - Will I need two different URI types for resources and scene objects?
    - Probably, resources don't need hierarchies, but I think I should ignore resources for now as I'm not sure they will be using Inspectable system
@@ -38,22 +60,11 @@ Things to think about/do:
  - Modify C++ Editor fields so that calling setValue doesn't update the visual value until focus is lost
   - When user is currently writing in an input box I don't want refresh to overwrite that value.
  - Expand/Collapse needs to work for both Components and their sub-objects (Structs, Arrays, etc.)
- - Support for initializing SerializableObject/SerializableArray (and their fields, together with getters/setters)
  - How do I refresh currently visible inspector fields.
    - Also how will this be done with custom inspectors, when I might not use InspectableObject
- - Currently I do not have a way to creating an Inspector field for just a single field, only for an entire object
- - Finally once all other things are done implement support for multi-rank arrays, lists and dictionaries
-
-How will UndoRedo keep a reference to the object? 
- - What if the object gets destroyed? 
- - Keeping a reference will prevent the object from being destroyed.
-   - Although heavy stuff is destroyed manually via Destroy anyway
-
-STUBBED IN METHODS:
-SerializableObject
-SerializableArray
-SerializableField
-
+ - Multi-rank arrays aren't properly supported in InspectableObject
+ - Dictionaries aren't properly supported in InspectableObject
+ - Need a way to add entries to arrays/lists/dictionaries (possibly also clone and delete entries) from inspector
  ----------------------
 
  Non-inspector:
