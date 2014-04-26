@@ -9,12 +9,12 @@ namespace BansheeEditor
     public abstract class Inspector
     {
         protected GUIPanel GUI;
-        protected SerializableObject serializableObject;
+        protected object referencedObject;
 
         internal void Initialize(GUIPanel gui, object instance)
         {
             GUI = gui;
-            serializableObject = new SerializableObject(instance);
+            referencedObject = instance;
         }
 
         internal void SetArea(int x, int y, int width, int height)

@@ -7,26 +7,27 @@ using BansheeEngine;
 
 namespace BansheeEditor
 {
-    public class InspectableObject : InspectableObjectBase
+    public class InspectableArray : InspectableObjectBase
     {
         private const int IndentAmount = 15;
 
         private object oldPropertyValue;
+        private List<InspectableObjectBase> arrayElements = new List<InspectableObjectBase>();
 
         private GUILabel guiLabel;
         private GUILayout guiChildLayout;
         private GUILayout guiContentLayout;
         private bool isInitialized;
 
-        public InspectableObject(string title, SerializableProperty property)
+        public InspectableArray(string title, SerializableProperty property)
             : base(title, property)
         {
-            
+
         }
 
         protected void Initialize(GUILayout layout)
         {
-            if (property.Type != SerializableField.FieldType.Object)
+            if (property.Type != SerializableField.FieldType.Array)
                 return;
 
             guiLabel = new GUILabel(title);
@@ -36,19 +37,6 @@ namespace BansheeEditor
             guiChildLayout.AddSpace(IndentAmount);
 
             guiContentLayout = guiChildLayout.AddLayoutY();
-
-            SerializableObject serializableObject = property.GetObject();
-
-            foreach (var field in serializableObject.fields)
-            {
-                if (!field.Inspectable)
-                    continue;
-
-                if (field.HasCustomInspector)
-                    AddChild(CreateCustomInspectable(field.CustomInspectorType, field.Name, field.GetProperty()));
-                else
-                    AddChild(CreateDefaultInspectable(field.Name, field.GetProperty()));
-            }
 
             isInitialized = true;
         }
@@ -63,6 +51,10 @@ namespace BansheeEditor
                 return true;
             }
 
+            SerializableArray array = property.GetArray();
+            if (array.GetLength() != arrayElements.Count)
+                return true;
+
             return base.IsModified();
         }
 
@@ -73,7 +65,25 @@ namespace BansheeEditor
             if (!isInitialized)
                 Initialize(layout);
 
-            // TODO - Update GUI element(s) with value from property
+            // TODO - Update base GUI elements
+
+            SerializableArray array = property.GetArray();
+
+            for (int i = arrayElements.Count; i < array.GetLength(); i++)
+            {
+                InspectableObjectBase childObj = CreateDefaultInspectable(i + ".", array.GetProperty(i));
+                AddChild(childObj);
+                arrayElements.Add(childObj);
+
+                childObj.Refresh(layout);
+            }
+
+            for (int i = array.GetLength(); i < arrayElements.Count; i++)
+            {
+                arrayElements[i].Destroy();
+            }
+
+            arrayElements.RemoveRange(array.GetLength(), arrayElements.Count - array.GetLength());
         }
 
         public override void Destroy()

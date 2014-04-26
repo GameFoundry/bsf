@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace BansheeEngine
 {
+    #pragma warning disable 649
     public sealed class SerializableObject : ScriptObject
     {
         internal object referencedObject;

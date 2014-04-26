@@ -116,21 +116,22 @@ namespace BansheeEngine
                 Debug.Log(i + ". " + obj.fields[i].Name + " - " + obj.fields[i].Type.ToString());
             }
 
+            SerializableProperty prop = obj.fields[0].GetProperty();
+            Debug.Log("Old value: " + prop.GetValue<int>());
+            prop.SetValue<int>(33);
+            Debug.Log("New value: " + prop.GetValue<int>());
 
-            Debug.Log("Old value: " + obj.fields[0].GetValue<int>());
-            val.SetValue<int>(33);
-            Debug.Log("New value: " + obj.fields[0].GetValue<int>());
-
-            Debug.Log("Old value: " + (obj.fields[2].GetValue<DbgSerzCls>() == null));
+            SerializableProperty prop2 = obj.fields[2].GetProperty();
+            Debug.Log("Old value: " + (prop2.GetValue<DbgSerzCls>() == null));
 
             DbgSerzCls child = new DbgSerzCls();
             child.anotherValue2 = "ass";
-            obj.fields[2].SetValue<DbgSerzCls>(child);
+            prop2.SetValue<DbgSerzCls>(child);
 
-            if (obj.fields[2].GetValue<DbgSerzCls>() == null)
+            if (prop2.GetValue<DbgSerzCls>() == null)
                 Debug.Log("New value: null");
             else
-                Debug.Log("New value: " + obj.fields[2].GetValue<DbgSerzCls>().anotherValue2);
+                Debug.Log("New value: " + prop2.GetValue<DbgSerzCls>().anotherValue2);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]

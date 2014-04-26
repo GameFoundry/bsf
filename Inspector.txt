@@ -1,25 +1,13 @@
 
-My SerializableArray/list/dictionary approach is BROKEN:
- - I cannot determine their type just from an object, since object may be null. I need their parent field/collection type to do that.
+Add SerializableField.GetProperty
+ - Also GetObject & GetArray
+ - Remove existing GetValue/SetValue
 
-SerializableField
- - Normal GetValue/SetValue 
- - But also GetSerializableArray, GetSerializableList, GetSerializableDictionary
-
-SerializableArray
- - Also has GetSerializableArray, GetSerializableList, GetSerializableDictionary
+Do the same for SerializableObject/SerializableArray, etc.
 
  ------------------------------------------------
 
-My Inspector approach is BROKEN:
- - Number of array/list/dictionary elements in a field may dynamically change. How do I handle that? Current system just keeps the static fields.
-
-Rebuilding gui N times per second is OUT OF THE QUESTION
- - My GUI system isn't built for it
- - e.g. If I'm currently focusing on and element or writing in an input box refreshing the GUI would break it
- - Instead I must leave it to the user to track modifications, simply save old value and compare with new, and if it changed update the UI.
-  - I should potentially provide the user with overridable InspectableField. One that will automatically call CreateGUI when field value changes,
-    and user can then override it if he wants to draw custom controls. 
+Add ability to create InspectableObject directly from "object".
 
 -----------------------------------------------
 LESS IMPORTANT

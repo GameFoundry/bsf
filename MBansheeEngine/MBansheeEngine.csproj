@@ -84,11 +84,10 @@
     <Compile Include="Resource.cs" />
     <Compile Include="SceneObject.cs" />
     <Compile Include="ScriptObject.cs" />
-    <Compile Include="SerializableArrayInfo.cs" />
-    <Compile Include="SerializableDictionaryInfo.cs" />
+    <Compile Include="SerializableArray.cs" />
     <Compile Include="SerializableField.cs" />
-    <Compile Include="SerializableListInfo.cs" />
     <Compile Include="SerializableObject.cs" />
+    <Compile Include="SerializableProperty.cs" />
     <Compile Include="SerializeObject.cs" />
     <Compile Include="SerializeField.cs" />
     <Compile Include="SpriteTexture.cs" />

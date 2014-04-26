@@ -47,6 +47,16 @@ namespace BansheeEngine
             get { return type; }
         }
 
+        public bool HasCustomInspector
+        {
+            get { return false; } // TODO - Add [UseCustomInspector(typeof(InspecableType))] attribute and parse it
+        }
+
+        public Type CustomInspectorType
+        {
+            get { return null; } // TODO - See above. Return type from UseCustomInspector attribute
+        }
+
         public string Name
         {
             get { return name; }
@@ -119,7 +129,6 @@ namespace BansheeEngine
                     throw new Exception("Cannot determine field type. Found an unsupported generic type.");
                 }
 
-
                 // Otherwise the type must be an object, unless some error occurred
                 return FieldType.Object;
             }
@@ -127,44 +136,12 @@ namespace BansheeEngine
             return FieldType.Array;
         }
 
-        public T GetValue<T>()
+        public SerializableProperty GetProperty()
         {
-            if (!typeof(T).IsAssignableFrom(internalType))
-                throw new Exception("Attempted to retrieve a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + internalType);
+            SerializableProperty.Getter getter = () => Internal_GetValue(mCachedPtr, parent.referencedObject);
+            SerializableProperty.Setter setter = (object value) => Internal_SetValue(mCachedPtr, parent.referencedObject, value);
 
-            return (T)Internal_GetValue(mCachedPtr, parent.referencedObject);
-        }
-
-        public void SetValue<T>(T value)
-        {
-            if (!typeof(T).IsAssignableFrom(internalType))
-                throw new Exception("Attempted to set a serializable value using an invalid type. Provided type: " + typeof(T) + ". Needed type: " + internalType);
-
-            Internal_SetValue(mCachedPtr, parent.referencedObject, value);
-        }
-
-        public SerializableArrayInfo GetSerializableArrayInfo()
-        {
-            if (type != FieldType.Array)
-                throw new Exception("Attempting to retrieve array information from a field that doesn't contain an array.");
-
-            return new SerializableArrayInfo(GetValue<object>());
-        }
-
-        public SerializableListInfo GetSerializableListInfo()
-        {
-            if (type != FieldType.List)
-                throw new Exception("Attempting to retrieve array information from a field that doesn't contain an array.");
-
-            return new SerializableListInfo(GetValue<object>());
-        }
-
-        public SerializableDictionaryInfo GetSerializableDictionaryInfo()
-        {
-            if (type != FieldType.Dictionary)
-                throw new Exception("Attempting to retrieve array information from a field that doesn't contain an array.");
-
-            return new SerializableDictionaryInfo(GetValue<object>());
+            return new SerializableProperty(type, internalType, getter, setter);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
