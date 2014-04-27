@@ -10,23 +10,15 @@ namespace BansheeEngine
 {
 	MonoField* ScriptSerializableObject::FieldsField = nullptr;
 
-	ScriptSerializableObject::ScriptSerializableObject(const ManagedSerializableTypeInfoPtr& typeInfo)
-		:mTypeInfo(typeInfo)
+	ScriptSerializableObject::ScriptSerializableObject(MonoObject* instance, const ManagedSerializableTypeInfoPtr& typeInfo)
+		:ScriptObject(instance), mTypeInfo(typeInfo)
 	{
 
-	}
-
-	void ScriptSerializableObject::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "SerializableObject", &ScriptSerializableObject::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptSerializableObject::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSerializableObject::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptSerializableObject::internal_destroyInstance);
 
 		FieldsField = metaData.scriptClass->getField("_fields");
 	}
@@ -62,10 +54,7 @@ namespace BansheeEngine
 		if(objInfo != nullptr)
 			typeInfo = objInfo->mTypeInfo;
 
-		ScriptSerializableObject* nativeInstance = new (cm_alloc<ScriptSerializableObject>()) ScriptSerializableObject(typeInfo);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptSerializableObject* nativeInstance = new (cm_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, typeInfo);
 
 		if(objInfo != nullptr)
 		{
@@ -90,11 +79,5 @@ namespace BansheeEngine
 		}
 
 		return nativeInstance;
-	}
-
-	void ScriptSerializableObject::internal_destroyInstance(ScriptSerializableObject* nativeInstance)
-	{
-		nativeInstance->~ScriptSerializableObject();
-		cm_free(nativeInstance);
 	}
 }

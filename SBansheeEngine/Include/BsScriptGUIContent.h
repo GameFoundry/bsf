@@ -8,17 +8,17 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIContent : public ScriptObject<ScriptGUIContent>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIContent")
 
 		static const HString& getText(MonoObject* instance);
 		static const HString& getTooltip(MonoObject* instance);
 		static HSpriteTexture getImage(MonoObject* instance);
 
 	private:
-		static void initRuntimeData();
-
 		static MonoField* mTextField;
 		static MonoField* mTooltipField;
 		static MonoField* mImageField;
+
+		ScriptGUIContent(MonoObject* instance);
 	};
 }

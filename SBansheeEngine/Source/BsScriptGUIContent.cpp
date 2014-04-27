@@ -5,7 +5,6 @@
 #include "BsMonoManager.h"
 #include "BsMonoUtil.h"
 #include "BsScriptHString.h"
-#include "BsScriptGUIContent.h"
 #include "BsScriptSpriteTexture.h"
 #include "BsSpriteTexture.h"
 
@@ -15,12 +14,9 @@ namespace BansheeEngine
 	MonoField* ScriptGUIContent::mTooltipField;
 	MonoField* ScriptGUIContent::mImageField;
 
-	void ScriptGUIContent::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIContent", &ScriptGUIContent::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
-	}
+	ScriptGUIContent::ScriptGUIContent(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
 
 	void ScriptGUIContent::initRuntimeData()
 	{

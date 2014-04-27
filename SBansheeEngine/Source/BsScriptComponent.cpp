@@ -11,18 +11,9 @@
 
 namespace BansheeEngine
 {
-	ScriptComponent::ScriptComponent(const GameObjectHandle<ManagedComponent>& managedComponent)
-		:mManagedComponent(managedComponent)
-	{
-
-	}
-
-	void ScriptComponent::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "Component", &ScriptComponent::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
-	}
+	ScriptComponent::ScriptComponent(MonoObject* instance, const GameObjectHandle<ManagedComponent>& managedComponent)
+		:ScriptObject(instance), mManagedComponent(managedComponent)
+	{ }
 
 	void ScriptComponent::initRuntimeData()
 	{
@@ -30,7 +21,6 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_GetComponent", &ScriptComponent::internal_getComponent);
 		metaData.scriptClass->addInternalCall("Internal_GetComponents", &ScriptComponent::internal_getComponents);
 		metaData.scriptClass->addInternalCall("Internal_RemoveComponent", &ScriptComponent::internal_removeComponent);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptComponent::internal_destroyInstance);
 	}
 
 	MonoObject* ScriptComponent::internal_addComponent(MonoObject* parentSceneObject, MonoReflectionType* type)
@@ -136,9 +126,9 @@ namespace BansheeEngine
 		LOGWRN("Attempting to remove a component that doesn't exists on SceneObject \"" + so->getName() + "\"");
 	}
 
-	void ScriptComponent::internal_destroyInstance(ScriptComponent* nativeInstance)
+	void ScriptComponent::_onManagedInstanceDeleted()
 	{
-		ScriptGameObjectManager::instance().destroyScriptGameObject(nativeInstance);
+		ScriptGameObjectManager::instance().destroyScriptGameObject(this);
 	}
 
 	void ScriptComponent::setNativeHandle(const HGameObject& gameObject)

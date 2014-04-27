@@ -20,23 +20,15 @@ namespace BansheeEngine
 {
 	ScriptGUIListBox::OnSelectionChangedThunkDef ScriptGUIListBox::onSelectionChangedThunk;
 
-	ScriptGUIListBox::ScriptGUIListBox(GUIListBox* listBox)
-		:mListBox(listBox), mIsDestroyed(false)
+	ScriptGUIListBox::ScriptGUIListBox(MonoObject* instance, GUIListBox* listBox)
+		:ScriptObject(instance), mListBox(listBox), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUIListBox::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIListBox", &ScriptGUIListBox::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIListBox::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIListBox::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIListBox::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetElements", &ScriptGUIListBox::internal_setElements);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIListBox::internal_destroy);
@@ -55,6 +47,13 @@ namespace BansheeEngine
 
 			mIsDestroyed = true;
 		}
+	}
+
+	void ScriptGUIListBox::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUIListBox::internal_createInstance(MonoObject* instance, MonoArray* elements, MonoString* style, MonoArray* guiOptions)
@@ -83,10 +82,7 @@ namespace BansheeEngine
 		GUIListBox* guiListBox = GUIListBox::create(nativeElements, options, toString(MonoUtil::monoToWString(style)));
 		guiListBox->onSelectionChanged.connect(std::bind(&ScriptGUIListBox::onSelectionChanged, instance, std::placeholders::_1));
 
-		ScriptGUIListBox* nativeInstance = new (cm_alloc<ScriptGUIListBox>()) ScriptGUIListBox(guiListBox);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptGUIListBox* nativeInstance = new (cm_alloc<ScriptGUIListBox>()) ScriptGUIListBox(instance, guiListBox);
 	}
 
 	void ScriptGUIListBox::internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements)
@@ -112,12 +108,6 @@ namespace BansheeEngine
 	void ScriptGUIListBox::internal_destroy(ScriptGUIListBox* nativeInstance)
 	{
 		nativeInstance->destroy();
-	}
-
-	void ScriptGUIListBox::internal_destroyInstance(ScriptGUIListBox* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIListBox::internal_setVisible(ScriptGUIListBox* nativeInstance, bool visible)

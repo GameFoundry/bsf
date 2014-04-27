@@ -9,36 +9,21 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIPanel::ScriptGUIPanel()
+	ScriptGUIPanel::ScriptGUIPanel(MonoObject* instance)
+		:ScriptObject(instance)
 	{
 
-	}
-
-	void ScriptGUIPanel::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIPanel", &ScriptGUIPanel::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIPanel::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIPanel::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIPanel::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetArea", &ScriptGUIPanel::internal_setArea);
 	}
 
 	void ScriptGUIPanel::internal_createInstance(MonoObject* instance)
 	{
-		ScriptGUIPanel* nativeInstance = new (cm_alloc<ScriptGUIPanel>()) ScriptGUIPanel();
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIPanel::internal_destroyInstance(ScriptGUIPanel* thisPtr)
-	{
-		cm_delete(thisPtr);
+		ScriptGUIPanel* nativeInstance = new (cm_alloc<ScriptGUIPanel>()) ScriptGUIPanel(instance);
 	}
 
 	void ScriptGUIPanel::internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)

@@ -16,23 +16,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUILabel::ScriptGUILabel(GUILabel* label)
-		:mLabel(label), mIsDestroyed(false)
+	ScriptGUILabel::ScriptGUILabel(MonoObject* instance, GUILabel* label)
+		:ScriptObject(instance), mLabel(label), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUILabel::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUILabel", &ScriptGUILabel::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUILabel::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUILabel::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUILabel::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUILabel::internal_setContent);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUILabel::internal_destroy);
@@ -51,6 +43,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUILabel::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUILabel::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
@@ -62,10 +61,7 @@ namespace BansheeEngine
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
 		GUILabel* guiLabel = GUILabel::create(nativeContent, options, toString(MonoUtil::monoToWString(style)));
 
-		ScriptGUILabel* nativeInstance = new (cm_alloc<ScriptGUILabel>()) ScriptGUILabel(guiLabel);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptGUILabel* nativeInstance = new (cm_alloc<ScriptGUILabel>()) ScriptGUILabel(instance, guiLabel);
 	}
 
 	void ScriptGUILabel::internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content)
@@ -77,12 +73,6 @@ namespace BansheeEngine
 	void ScriptGUILabel::internal_destroy(ScriptGUILabel* nativeInstance)
 	{
 		nativeInstance->destroy();
-	}
-
-	void ScriptGUILabel::internal_destroyInstance(ScriptGUILabel* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUILabel::internal_setVisible(ScriptGUILabel* nativeInstance, bool visible)

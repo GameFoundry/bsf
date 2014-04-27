@@ -7,12 +7,10 @@
 
 namespace BansheeEngine
 {
-	void ScriptStringTable::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "StringTable", &ScriptStringTable::initRuntimeData);
+	ScriptStringTable::ScriptStringTable(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
 
-		MonoManager::registerScriptType(&metaData);
-	}
 	void ScriptStringTable::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_GetActiveLanguage", &ScriptStringTable::internal_GetActiveLanguage);

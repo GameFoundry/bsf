@@ -21,52 +21,15 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIElementStyle : public ScriptObject<ScriptGUIElementStyle>
 	{
 	public:
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIElementStyle")
+
 		~ScriptGUIElementStyle();
 
-		static void initMetaData();
 		GUIElementStyle* getInternalValue() const { return mElementStyle; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoString* name);
 		static void internal_createInstanceExternal(MonoObject* instance, MonoString* name, GUIElementStyle* externalStyle);
-		static void internal_destroyInstance(ScriptGUIElementStyle* nativeInstance);
-
-		static void initRuntimeData()
-		{
-			metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIElementStyle::internal_createInstance);
-			metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIElementStyle::internal_destroyInstance);
-
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Font);
-
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FontSize);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, TextHorzAlign);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, TextVertAlign);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, ImagePosition);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, WordWrap);
-
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Normal);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Hover);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Active);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Focused);
-
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, NormalOn);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, HoverOn);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, ActiveOn);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FocusedOn);
-
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Border);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Margins);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, ContentOffset);
-
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Width);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, Height);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MinWidth);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MaxWidth);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MinHeight);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, MaxHeight);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FixedWidth);
-			CM_SCRIPT_SETGET_META(ScriptGUIElementStyle, FixedHeight);
-		}
 
 		CM_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStyle, ScriptFont, Font, mElementStyle->font, mFont);
 
@@ -99,8 +62,8 @@ namespace BansheeEngine
 		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, bool, FixedWidth, mElementStyle->fixedWidth);
 		CM_SCRIPT_GETSET_VALUE(ScriptGUIElementStyle, bool, FixedHeight, mElementStyle->fixedHeight);
 
-		ScriptGUIElementStyle(const String& name);
-		ScriptGUIElementStyle(const String& name, GUIElementStyle* externalStyle);
+		ScriptGUIElementStyle(MonoObject* instance, const String& name);
+		ScriptGUIElementStyle(MonoObject* instance, const String& name, GUIElementStyle* externalStyle);
 
 		String mName;
 		GUIElementStyle* mElementStyle;

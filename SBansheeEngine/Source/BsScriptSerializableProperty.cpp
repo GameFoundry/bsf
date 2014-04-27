@@ -10,22 +10,14 @@
 
 namespace BansheeEngine
 {
-	ScriptSerializableProperty::ScriptSerializableProperty(const ManagedSerializableTypeInfoPtr& typeInfo)
-		:mTypeInfo(typeInfo)
+	ScriptSerializableProperty::ScriptSerializableProperty(MonoObject* instance, const ManagedSerializableTypeInfoPtr& typeInfo)
+		:ScriptObject(instance), mTypeInfo(typeInfo)
 	{
 
-	}
-
-	void ScriptSerializableProperty::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "SerializableProperty", &ScriptSerializableProperty::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptSerializableProperty::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptSerializableProperty::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_CreateObject", &ScriptSerializableProperty::internal_createObject);
 		metaData.scriptClass->addInternalCall("Internal_CreateArray", &ScriptSerializableProperty::internal_createArray);
 	}
@@ -34,10 +26,7 @@ namespace BansheeEngine
 	{
 		MonoObject* managedInstance = metaData.scriptClass->createInstance();
 
-		ScriptSerializableProperty* nativeInstance = new (cm_alloc<ScriptSerializableProperty>()) ScriptSerializableProperty(typeInfo);
-		nativeInstance->createInstance(managedInstance);
-
-		metaData.thisPtrField->setValue(managedInstance, &nativeInstance);
+		ScriptSerializableProperty* nativeInstance = new (cm_alloc<ScriptSerializableProperty>()) ScriptSerializableProperty(managedInstance, typeInfo);
 
 		return nativeInstance;
 	}
@@ -55,11 +44,5 @@ namespace BansheeEngine
 		ScriptSerializableArray* newObject = ScriptSerializableArray::create(arrayTypeInfo, object);
 
 		return newObject->getManagedInstance();
-	}
-
-	void ScriptSerializableProperty::internal_destroyInstance(ScriptSerializableProperty* nativeInstance)
-	{
-		nativeInstance->~ScriptSerializableProperty();
-		cm_free(nativeInstance);
 	}
 }

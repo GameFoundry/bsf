@@ -8,13 +8,13 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptDebug : public ScriptObject<ScriptDebug>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Debug")
 
 	private:
 		static void internal_log(MonoString* message);
 		static void internal_logWarning(MonoString* message);
 		static void internal_logError(MonoString* message);
 
-		static void initRuntimeData();
+		ScriptDebug(MonoObject* instance);
 	};
 }

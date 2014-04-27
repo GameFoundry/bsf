@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIPanel : public ScriptObject<ScriptGUIPanel>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIPanel")
 
 		GUIWidget& getWidget() const { return *mParentWidget; }
 		const RectI& getClippedArea() const { return mClippedArea; }
@@ -21,12 +21,9 @@ namespace BansheeEngine
 		void unregisterArea(ScriptGUIArea* area);
 
 	protected:
-		ScriptGUIPanel();
-
-		static void initRuntimeData();
+		ScriptGUIPanel(MonoObject* instance);
 
 		static void internal_createInstance(MonoObject* instance);
-		static void internal_destroyInstance(ScriptGUIPanel* thisPtr);
 		static void internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, 
 			UINT32 width, UINT32 height, UINT16 depth);
 

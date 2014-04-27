@@ -17,23 +17,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUITexture::ScriptGUITexture(GUITexture* texture)
-		:mTexture(texture), mIsDestroyed(false)
+	ScriptGUITexture::ScriptGUITexture(MonoObject* instance, GUITexture* texture)
+		:ScriptObject(instance), mTexture(texture), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUITexture::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUITexture", &ScriptGUITexture::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUITexture::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUITexture::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUITexture::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptGUITexture::internal_setTexture);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUITexture::internal_destroy);
@@ -52,6 +44,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUITexture::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* texture, 
 		GUIImageScaleMode scale, MonoString* style, MonoArray* guiOptions)
 	{
@@ -67,10 +66,7 @@ namespace BansheeEngine
 
 		GUITexture* guiTexture = GUITexture::create(nativeTexture, scale, options, toString(MonoUtil::monoToWString(style)));
 
-		ScriptGUITexture* nativeInstance = new (cm_alloc<ScriptGUITexture>()) ScriptGUITexture(guiTexture);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptGUITexture* nativeInstance = new (cm_alloc<ScriptGUITexture>()) ScriptGUITexture(instance, guiTexture);
 	}
 
 	void ScriptGUITexture::internal_setTexture(ScriptGUITexture* nativeInstance, MonoObject* texture)
@@ -85,12 +81,6 @@ namespace BansheeEngine
 	void ScriptGUITexture::internal_destroy(ScriptGUITexture* nativeInstance)
 	{
 		nativeInstance->destroy();
-	}
-
-	void ScriptGUITexture::internal_destroyInstance(ScriptGUITexture* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUITexture::internal_setVisible(ScriptGUITexture* nativeInstance, bool visible)

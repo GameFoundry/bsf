@@ -8,23 +8,15 @@
 
 namespace BansheeEngine
 {
-	ScriptSpriteTexture::ScriptSpriteTexture(const HSpriteTexture& texture)
-		:mTexture(texture)
+	ScriptSpriteTexture::ScriptSpriteTexture(MonoObject* instance,const HSpriteTexture& texture)
+		:ScriptObject(instance), mTexture(texture)
 	{
 
-	}
-
-	void ScriptSpriteTexture::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "SpriteTexture", &ScriptSpriteTexture::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptSpriteTexture::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSpriteTexture::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptSpriteTexture::internal_destroyInstance);
 	}
 
 	void ScriptSpriteTexture::internal_createInstance(MonoObject* instance)
@@ -32,9 +24,9 @@ namespace BansheeEngine
 		ScriptResourceManager::instance().createScriptSpriteTexture(instance, SpriteTexture::dummy()); // TODO - DUMMY CODE!
 	}
 
-	void ScriptSpriteTexture::internal_destroyInstance(ScriptSpriteTexture* nativeInstance)
+	void ScriptSpriteTexture::_onManagedInstanceDeleted()
 	{
-		ScriptResourceManager::instance().destroyScriptResource(nativeInstance);
+		ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 
 	void ScriptSpriteTexture::setNativeHandle(const HResource& resource) 

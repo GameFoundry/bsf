@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptTexture2D : public ScriptResource, public ScriptObject<ScriptTexture2D>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Texture2D")
 
 		void* getNativeRaw() const { return mTexture.get(); }
 
@@ -20,12 +20,10 @@ namespace BansheeEngine
 		friend class ScriptResourceManager;
 
 		static void internal_createInstance(MonoObject* instance, UINT32 format, UINT32 width, UINT32 height, bool hasMipmaps, bool gammaCorrection);
-		static void internal_destroyInstance(ScriptTexture2D* nativeInstance);
 
-		static void initRuntimeData();
+		ScriptTexture2D(MonoObject* instance, const HTexture& texture);
 
-		ScriptTexture2D(const HTexture& texture);
-		~ScriptTexture2D() {}
+		void _onManagedInstanceDeleted();
 
 		HTexture mTexture;
 	};

@@ -18,8 +18,8 @@ namespace BansheeEngine
 	UnorderedMap<String, ScriptEditorWindow::EditorWindowHandle>::type ScriptEditorWindow::OpenScriptEditorWindows;
 	MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
 
-	ScriptEditorWindow::ScriptEditorWindow(const String& windowName, const String& displayName, EditorWidgetBase* editorWidget)
-		:mName(windowName), mEditorWidget(editorWidget)
+	ScriptEditorWindow::ScriptEditorWindow(MonoObject* instance, const String& windowName, const String& displayName, EditorWidgetBase* editorWidget)
+		:ScriptObject(instance), mName(windowName), mEditorWidget(editorWidget)
 	{
 		mOnWidgetMovedConn = editorWidget->onMoved.connect(std::bind(&ScriptEditorWindow::onWidgetMoved, this, _1, _2));
 		mOnWidgetResizedConn = editorWidget->onResized.connect(std::bind(&ScriptEditorWindow::onWidgetResized, this, _1, _2));
@@ -34,17 +34,9 @@ namespace BansheeEngine
 		mOnParentChangedConn.disconnect();
 	}
 
-	void ScriptEditorWindow::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEditorAssemblyName, "BansheeEditor", "EditorWindow", &ScriptEditorWindow::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
-	}
-
 	void ScriptEditorWindow::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateOrGetInstance", &ScriptEditorWindow::internal_createOrGetInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptEditorWindow::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_InitializeGUIPanel", &ScriptEditorWindow::internal_initializeGUIPanel);
 		metaData.scriptClass->addInternalCall("Internal_GetWidth", &ScriptEditorWindow::internal_getWidth);
 		metaData.scriptClass->addInternalCall("Internal_GetHeight", &ScriptEditorWindow::internal_getHeight);
@@ -71,10 +63,10 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ScriptEditorWindow::internal_destroyInstance(ScriptEditorWindow* thisPtr)
+	void ScriptEditorWindow::_onManagedInstanceDeleted()
 	{
 #if CM_DEBUG_MODE
-		auto iterFind = OpenScriptEditorWindows.find(thisPtr->mName);
+		auto iterFind = OpenScriptEditorWindows.find(mName);
 
 		// It is assumed that this method will only be called after "unregisterScriptEditorWindow" is called,
 		// since that is the only place keeping a reference to the managed editor window. So if window was
@@ -82,7 +74,7 @@ namespace BansheeEngine
 		assert(iterFind == OpenScriptEditorWindows.end());
 #endif
 
-		cm_delete(thisPtr);
+		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	UINT32 ScriptEditorWindow::internal_getWidth(ScriptEditorWindow* thisPtr)
@@ -179,10 +171,7 @@ namespace BansheeEngine
 		String displayName = MonoManager::instance().getTypeName(editorWindowInstance);
 
 		ScriptEditorWidget* editorWidget = cm_new<ScriptEditorWidget>(windowFullTypeName, HString(toWString(displayName)), parentContainer);
-		ScriptEditorWindow* nativeInstance = new (cm_alloc<ScriptEditorWindow>()) ScriptEditorWindow(windowFullTypeName, displayName, editorWidget);
-		nativeInstance->createInstance(editorWindowInstance);
-
-		metaData.thisPtrField->setValue(editorWindowInstance, &nativeInstance);
+		ScriptEditorWindow* nativeInstance = new (cm_alloc<ScriptEditorWindow>()) ScriptEditorWindow(editorWindowInstance, windowFullTypeName, displayName, editorWidget);
 
 		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
 

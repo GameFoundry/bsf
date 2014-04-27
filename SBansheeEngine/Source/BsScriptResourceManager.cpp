@@ -36,11 +36,8 @@ namespace BansheeEngine
 		const String& uuid = resourceHandle.getUUID();
 		throwExceptionIfInvalidOrDuplicate(uuid);
 
-		ScriptTexture2D* scriptResource = new (cm_alloc<ScriptTexture2D>()) ScriptTexture2D(resourceHandle);
+		ScriptTexture2D* scriptResource = new (cm_alloc<ScriptTexture2D>()) ScriptTexture2D(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
-
-		scriptResource->createInstance(instance);
-		scriptResource->metaData.thisPtrField->setValue(instance, &scriptResource);
 
 		return scriptResource;
 	}
@@ -57,11 +54,8 @@ namespace BansheeEngine
 		const String& uuid = resourceHandle.getUUID();
 		throwExceptionIfInvalidOrDuplicate(uuid);
 
-		ScriptSpriteTexture* scriptResource = new (cm_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(resourceHandle);
+		ScriptSpriteTexture* scriptResource = new (cm_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
-
-		scriptResource->createInstance(instance);
-		scriptResource->metaData.thisPtrField->setValue(instance, &scriptResource);
 
 		return scriptResource;
 	}

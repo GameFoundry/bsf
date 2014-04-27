@@ -22,23 +22,15 @@ namespace BansheeEngine
 {
 	ScriptGUIFoldout::OnToggledThunkDef ScriptGUIFoldout::onToggledThunk;
 
-	ScriptGUIFoldout::ScriptGUIFoldout(GUIFoldout* foldout)
-		:mFoldout(foldout), mIsDestroyed(false)
+	ScriptGUIFoldout::ScriptGUIFoldout(MonoObject* instance, GUIFoldout* foldout)
+		:ScriptObject(instance), mFoldout(foldout), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUIFoldout::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEditorAssemblyName, "BansheeEditor", "GUIFoldout", &ScriptGUIFoldout::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIFoldout::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFoldout::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIFoldout::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIFoldout::internal_setContent);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFoldout::internal_destroy);
@@ -59,6 +51,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIFoldout::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUIFoldout::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
@@ -72,10 +71,7 @@ namespace BansheeEngine
 
 		guiFoldout->onStateChanged.connect(std::bind(&ScriptGUIFoldout::onToggled, instance, _1));
 
-		ScriptGUIFoldout* nativeInstance = new (cm_alloc<ScriptGUIFoldout>()) ScriptGUIFoldout(guiFoldout);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptGUIFoldout* nativeInstance = new (cm_alloc<ScriptGUIFoldout>()) ScriptGUIFoldout(instance, guiFoldout);
 	}
 
 	void ScriptGUIFoldout::internal_setContent(ScriptGUIFoldout* nativeInstance, MonoObject* content)
@@ -88,12 +84,6 @@ namespace BansheeEngine
 	void ScriptGUIFoldout::internal_destroy(ScriptGUIFoldout* nativeInstance)
 	{
 		nativeInstance->destroy();
-	}
-
-	void ScriptGUIFoldout::internal_destroyInstance(ScriptGUIFoldout* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIFoldout::internal_setVisible(ScriptGUIFoldout* nativeInstance, bool visible)

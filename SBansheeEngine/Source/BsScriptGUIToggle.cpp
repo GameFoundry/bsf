@@ -26,23 +26,15 @@ namespace BansheeEngine
 	ScriptGUIToggle::OnOutThunkDef ScriptGUIToggle::onOutThunk;
 	ScriptGUIToggle::OnToggledThunkDef ScriptGUIToggle::onToggledThunk;
 
-	ScriptGUIToggle::ScriptGUIToggle(GUIToggle* toggle)
-		:mToggle(toggle), mIsDestroyed(false)
+	ScriptGUIToggle::ScriptGUIToggle(MonoObject* instance, GUIToggle* toggle)
+		:ScriptObject(instance), mToggle(toggle), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUIToggle::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIToggle", &ScriptGUIToggle::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIToggle::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIToggle::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIToggle::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIToggle::internal_setContent);
 		metaData.scriptClass->addInternalCall("Internal_ToggleOn", &ScriptGUIToggle::internal_toggleOn);
 		metaData.scriptClass->addInternalCall("Internal_ToggleOff", &ScriptGUIToggle::internal_toggleOff);
@@ -68,6 +60,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIToggle::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUIToggle::internal_createInstance(MonoObject* instance, MonoObject* content, 
 		MonoObject* toggleGroup, MonoString* style, MonoArray* guiOptions)
 	{
@@ -89,10 +88,7 @@ namespace BansheeEngine
 		guiToggle->onOut.connect(std::bind(&ScriptGUIToggle::onOut, instance));
 		guiToggle->onToggled.connect(std::bind(&ScriptGUIToggle::onToggled, instance, std::placeholders::_1));
 
-		ScriptGUIToggle* nativeInstance = new (cm_alloc<ScriptGUIToggle>()) ScriptGUIToggle(guiToggle);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptGUIToggle* nativeInstance = new (cm_alloc<ScriptGUIToggle>()) ScriptGUIToggle(instance, guiToggle);
 	}
 
 	void ScriptGUIToggle::internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content)
@@ -114,12 +110,6 @@ namespace BansheeEngine
 	void ScriptGUIToggle::internal_destroy(ScriptGUIToggle* nativeInstance)
 	{
 		nativeInstance->destroy();
-	}
-
-	void ScriptGUIToggle::internal_destroyInstance(ScriptGUIToggle* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIToggle::internal_setVisible(ScriptGUIToggle* nativeInstance, bool visible)

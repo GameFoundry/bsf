@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSceneObject : public ScriptGameObject, public ScriptObject<ScriptSceneObject>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SceneObject")
 
 		virtual HGameObject getNativeHandle() const { return mSceneObject; }
 		virtual void setNativeHandle(const HGameObject& gameObject);
@@ -19,7 +19,6 @@ namespace BansheeEngine
 		friend class ScriptGameObjectManager;
 
 		static void internal_createInstance(MonoObject* instance, MonoString* name);
-		static void internal_destroyInstance(ScriptSceneObject* nativeInstance);
 
 		static void internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent);
 		static MonoObject* internal_getParent(ScriptSceneObject* nativeInstance);
@@ -27,10 +26,9 @@ namespace BansheeEngine
 		static UINT32 internal_getNumChildren(ScriptSceneObject* nativeInstance);
 		static MonoObject* internal_getChild(ScriptSceneObject* nativeInstance, UINT32 idx);
 
-		static void initRuntimeData();
+		ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject);
 
-		ScriptSceneObject(const HSceneObject& sceneObject);
-		~ScriptSceneObject() {}
+		void _onManagedInstanceDeleted();
 
 		HSceneObject mSceneObject;
 	};

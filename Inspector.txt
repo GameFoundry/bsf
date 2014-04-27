@@ -1,13 +1,7 @@
 
-Add SerializableField.GetProperty
- - Also GetObject & GetArray
- - Remove existing GetValue/SetValue
-
-Do the same for SerializableObject/SerializableArray, etc.
-
- ------------------------------------------------
-
-Add ability to create InspectableObject directly from "object".
+Port all remaining Script* classes to new ScriptObject system
+GUIElement script objects need to be fixed to have a common base class. Currently I'm trying to implement an internal method in specific Script  types, but that method only exists on GUIElement.
+When I change an object in InspectableObject field I probably need to rebuild entire GUI hierarchy for that object. Right now I'm not.
 
 -----------------------------------------------
 LESS IMPORTANT

@@ -21,23 +21,15 @@ namespace BansheeEngine
 	ScriptGUIButton::OnHoverThunkDef ScriptGUIButton::onHoverThunk;
 	ScriptGUIButton::OnOutThunkDef ScriptGUIButton::onOutThunk;
 
-	ScriptGUIButton::ScriptGUIButton(GUIButton* button)
-		:mButton(button), mIsDestroyed(false)
+	ScriptGUIButton::ScriptGUIButton(MonoObject* instance, GUIButton* button)
+		:ScriptObject(instance), mButton(button), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUIButton::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIButton", &ScriptGUIButton::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIButton::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIButton::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIButton::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIButton::internal_setContent);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIButton::internal_destroy);
@@ -60,6 +52,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIButton::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUIButton::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
@@ -75,10 +74,7 @@ namespace BansheeEngine
 		guiButton->onHover.connect(std::bind(&ScriptGUIButton::onHover, instance));
 		guiButton->onOut.connect(std::bind(&ScriptGUIButton::onOut, instance));
 
-		ScriptGUIButton* nativeInstance = new (cm_alloc<ScriptGUIButton>()) ScriptGUIButton(guiButton);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptGUIButton* nativeInstance = new (cm_alloc<ScriptGUIButton>()) ScriptGUIButton(instance, guiButton);
 	}
 
 	void ScriptGUIButton::internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content)
@@ -90,12 +86,6 @@ namespace BansheeEngine
 	void ScriptGUIButton::internal_destroy(ScriptGUIButton* nativeInstance)
 	{
 		nativeInstance->destroy();
-	}
-
-	void ScriptGUIButton::internal_destroyInstance(ScriptGUIButton* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIButton::internal_setVisible(ScriptGUIButton* nativeInstance, bool visible)

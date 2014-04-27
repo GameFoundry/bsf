@@ -17,23 +17,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIInputBox::ScriptGUIInputBox(GUIInputBox* inputBox)
-		:mInputBox(inputBox), mIsDestroyed(false)
+	ScriptGUIInputBox::ScriptGUIInputBox(MonoObject* instance, GUIInputBox* inputBox)
+		:ScriptObject(instance), mInputBox(inputBox), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUIInputBox::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUITextBox", &ScriptGUIInputBox::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIInputBox::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIInputBox::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIInputBox::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptGUIInputBox::internal_getText);
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
 
@@ -53,6 +45,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIInputBox::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions)
 	{
 		GUIOptions options;
@@ -63,10 +62,7 @@ namespace BansheeEngine
 
 		GUIInputBox* guiInputBox = GUIInputBox::create(multiline, options, toString(MonoUtil::monoToWString(style)));
 
-		ScriptGUIInputBox* nativeInstance = new (cm_alloc<ScriptGUIInputBox>()) ScriptGUIInputBox(guiInputBox);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
+		ScriptGUIInputBox* nativeInstance = new (cm_alloc<ScriptGUIInputBox>()) ScriptGUIInputBox(instance, guiInputBox);
 	}
 
 	void ScriptGUIInputBox::internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text)
@@ -82,12 +78,6 @@ namespace BansheeEngine
 	void ScriptGUIInputBox::internal_destroy(ScriptGUIInputBox* nativeInstance)
 	{
 		nativeInstance->destroy();
-	}
-
-	void ScriptGUIInputBox::internal_destroyInstance(ScriptGUIInputBox* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
 	}
 
 	void ScriptGUIInputBox::internal_setVisible(ScriptGUIInputBox* nativeInstance, bool visible)

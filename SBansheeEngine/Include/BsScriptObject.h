@@ -2,7 +2,6 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptMeta.h"
-#include "BsMonoField.h"
 #include "CmException.h"
 #include <mono/jit/jit.h>
 
@@ -14,21 +13,42 @@ namespace BansheeEngine
 	public:
 		InitScriptObjectOnStart()
 		{
-			Type::initMetaData();
+			ScriptObject<Type>::_initMetaData();
 		}
 
 		void makeSureIAmInstantiated() { }
+	};
+
+	class BS_SCR_BE_EXPORT ScriptObjectBase
+	{
+	public:
+		ScriptObjectBase(MonoObject* instance);
+		virtual ~ScriptObjectBase();
+
+		static const ScriptMeta* getMetaData() { return &metaData; }
+
+		MonoObject* getManagedInstance() const { return mManagedInstance; }
+		virtual void* getNativeRaw() const { return nullptr; }
+
+		virtual void _onManagedInstanceDeleted();
+
+	protected:
+		static ScriptMeta metaData;
+		MonoObject* mManagedInstance;
+
+		static void registerTypeWithManager();
+		static void* getNativeInstance(MonoObject* managedInstance);
 	};
 
 	/**
 	 * @brief	 Base class for objects that can be extended using Mono scripting
 	 */
 	template <class Type>
-	class ScriptObject
+	class ScriptObject : public ScriptObjectBase
 	{
 	public:
-		ScriptObject()
-			:mManagedInstance(nullptr)
+		ScriptObject(MonoObject* instance)
+			:ScriptObjectBase(instance)
 		{	
 			// Compiler will only generate code for stuff that is directly used, including static data members,
 			// so we fool it here like we're using the class directly. Otherwise compiler won't generate the code for the member
@@ -37,37 +57,21 @@ namespace BansheeEngine
 		}
 
 		virtual ~ScriptObject() 
-		{
-			if(mManagedInstance != nullptr)
-				CM_EXCEPT(InvalidStateException, "Script object is being destroyed without its instance previously being released.");
-		}
-
-		MonoObject* getManagedInstance() const { return mManagedInstance; }
-		virtual void* getNativeRaw() const { return nullptr; }
+		{ }
 
 		static Type* toNative(MonoObject* managedInstance)
 		{
-			Type* nativeInstance = nullptr;
-			metaData.thisPtrField->getValue(managedInstance, &nativeInstance);
-
-			return nativeInstance;
+			return reinterpret_cast<Type*>(getNativeInstance(managedInstance));
 		}
 
-		static const ScriptMeta* getMetaData() { return &metaData; }
+		static void _initMetaData()
+		{
+			metaData = ScriptMeta(Type::getAssemblyName(), Type::getNamespace(), Type::getTypeName(), &Type::initRuntimeData);
+
+			registerTypeWithManager();
+		}
 
 	protected:
-		static ScriptMeta metaData;
-
-		MonoObject* mManagedInstance;
-
-		void createInstance(MonoObject* instance)
-		{
-			if(mManagedInstance != nullptr)
-				CM_EXCEPT(InvalidStateException, "Trying to instantiate an already instantiated script object.");
-
-			mManagedInstance = instance;
-		}
-
 		template <class Type2>
 		static void throwIfInstancesDontMatch(ScriptObject<Type2>* lhs, void* rhs)
 		{
@@ -87,6 +91,9 @@ namespace BansheeEngine
 	template <typename Type>
 	InitScriptObjectOnStart<Type> ScriptObject<Type>::initOnStart;
 
-	template <typename Type>
-	ScriptMeta ScriptObject<Type>::metaData;
+#define SCRIPT_OBJ(assembly, namespace, name)		\
+	static String getAssemblyName() { return assembly; }	\
+	static String getNamespace() { return namespace; }		\
+	static String getTypeName() { return name; }			\
+	static void initRuntimeData();
 }

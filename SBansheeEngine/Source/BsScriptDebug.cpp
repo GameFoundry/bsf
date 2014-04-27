@@ -6,12 +6,9 @@
 
 namespace BansheeEngine
 {
-	void ScriptDebug::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "Debug", &ScriptDebug::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
-	}
+	ScriptDebug::ScriptDebug(MonoObject* instance)
+		:ScriptObject(instance)
+	{ }
 
 	void ScriptDebug::initRuntimeData()
 	{

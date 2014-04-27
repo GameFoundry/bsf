@@ -16,22 +16,19 @@ namespace BansheeEngine
 			ScriptEditorWindow* nativeObj;
 		};
 	public:
+		SCRIPT_OBJ(BansheeEditorAssemblyName, "BansheeEditor", "EditorWindow")
+
 		~ScriptEditorWindow();
 
 		EditorWidgetBase* getEditorWidget() const { return mEditorWidget; }
-
-		static void initMetaData();
 
 		static void registerManagedEditorWindows();
 	private:
 		friend class ScriptEditorWidget;
 
-		ScriptEditorWindow(const String& windowName, const String& displayName, EditorWidgetBase* editorWidget);
+		ScriptEditorWindow(MonoObject* instance, const String& windowName, const String& displayName, EditorWidgetBase* editorWidget);
 
 		static MonoObject* internal_createOrGetInstance(MonoString* ns, MonoString* typeName);
-		static void internal_destroyInstance(ScriptEditorWindow* thisPtr);
-
-		static void initRuntimeData();
 
 		static UINT32 internal_getWidth(ScriptEditorWindow* thisPtr);
 		static UINT32 internal_getHeight(ScriptEditorWindow* thisPtr);
@@ -41,6 +38,8 @@ namespace BansheeEngine
 		void onWidgetMoved(INT32 x, INT32 y);
 		void onWidgetResized(UINT32 width, UINT32 height);
 		void onWidgetParentChanged(EditorWidgetContainer* newParent);
+
+		void _onManagedInstanceDeleted();
 
 		String mName;
 		EditorWidgetBase* mEditorWidget;

@@ -262,6 +262,7 @@
     <ClInclude Include="Include\BsScriptHString.h" />
     <ClInclude Include="Include\BsScriptMacros.h" />
     <ClInclude Include="Include\BsScriptObject.h" />
+    <ClInclude Include="Include\BsScriptObjectImpl.h" />
     <ClInclude Include="Include\BsScriptResource.h" />
     <ClInclude Include="Include\BsScriptResourceManager.h" />
     <ClInclude Include="Include\BsScriptSceneObject.h" />
@@ -301,6 +302,8 @@
     <ClCompile Include="Source\BsScriptGUIToggleGroup.cpp" />
     <ClCompile Include="Source\BsScriptHString.cpp" />
     <ClCompile Include="Source\BsScriptGUIInputBox.cpp" />
+    <ClCompile Include="Source\BsScriptObject.cpp" />
+    <ClCompile Include="Source\BsScriptObjectImpl.cpp" />
     <ClCompile Include="Source\BsScriptResourceManager.cpp" />
     <ClCompile Include="Source\BsScriptSceneObject.cpp" />
     <ClCompile Include="Source\BsManagedSerializableArray.cpp" />

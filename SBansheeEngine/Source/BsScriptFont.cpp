@@ -7,17 +7,10 @@
 
 namespace BansheeEngine
 {
-	ScriptFont::ScriptFont(const HFont& font)
-		:mFont(font)
+	ScriptFont::ScriptFont(MonoObject* instance, const HFont& font)
+		:ScriptObject(instance), mFont(font)
 	{
 
-	}
-
-	void ScriptFont::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "Font", &ScriptFont::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void* ScriptFont::getNativeRaw() const
@@ -27,19 +20,11 @@ namespace BansheeEngine
 
 	void ScriptFont::initRuntimeData()
 	{
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptFont::internal_destroyInstance);
+
 	}
 
 	void ScriptFont::internal_createInstanceExternal(MonoObject* instance, const HFont& font)
 	{
-		ScriptFont* nativeInstance = new (cm_alloc<ScriptFont>()) ScriptFont(font);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptFont::internal_destroyInstance(ScriptFont* nativeInstance)
-	{
-		cm_delete(nativeInstance);
+		ScriptFont* nativeInstance = new (cm_alloc<ScriptFont>()) ScriptFont(instance, font);
 	}
 }

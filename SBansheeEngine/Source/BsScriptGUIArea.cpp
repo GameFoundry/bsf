@@ -10,24 +10,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIArea::ScriptGUIArea(GUIArea* area, ScriptGUIPanel* parentGUI)
-		:mGUIArea(area), mParentPanel(parentGUI), mIsDestroyed(false)
+	ScriptGUIArea::ScriptGUIArea(MonoObject* instance, GUIArea* area, ScriptGUIPanel* parentGUI)
+		:ScriptObject(instance), mGUIArea(area), mParentPanel(parentGUI), mIsDestroyed(false)
 	{
 		mParentPanel->registerArea(this);
 	}
-
-	void ScriptGUIArea::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIArea", &ScriptGUIArea::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
-	}
-
 	void ScriptGUIArea::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIArea::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetArea", &ScriptGUIArea::internal_setArea);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIArea::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIArea::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIArea::internal_setVisible);
 	}
@@ -45,21 +36,19 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIArea::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)
 	{
 		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
 		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, depth);
 
-		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(nativeArea, scriptGUIPanel);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIArea::internal_destroyInstance(ScriptGUIArea* thisPtr)
-	{
-		thisPtr->destroy();
-		cm_delete(thisPtr);
+		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(instance, nativeArea, scriptGUIPanel);
 	}
 
 	void ScriptGUIArea::internal_destroy(ScriptGUIArea* thisPtr)

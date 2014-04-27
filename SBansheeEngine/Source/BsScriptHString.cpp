@@ -7,21 +7,13 @@
 
 namespace BansheeEngine
 {
-	ScriptHString::ScriptHString(const HString& string)
-		:mString(string)
+	ScriptHString::ScriptHString(MonoObject* instance, const HString& string)
+		:ScriptObject(instance), mString(string)
 	{ }
-
-	void ScriptHString::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "LocString", &ScriptHString::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
-	}
 
 	void ScriptHString::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptHString::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptHString::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetParameter", &ScriptHString::internal_setParameter);
 		metaData.scriptClass->addInternalCall("Internal_GetValue", &ScriptHString::internal_getValue);
 	}
@@ -30,15 +22,7 @@ namespace BansheeEngine
 	{
 		HString string(MonoUtil::monoToWString(identifier));
 		
-		ScriptHString* nativeInstance = new (cm_alloc<ScriptHString>()) ScriptHString(string);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptHString::internal_destroyInstance(ScriptHString* nativeInstance)
-	{
-		cm_delete(nativeInstance);
+		ScriptHString* nativeInstance = new (cm_alloc<ScriptHString>()) ScriptHString(instance, string);
 	}
 
 	void ScriptHString::internal_setParameter(HString* nativeInstance, UINT32 idx, MonoString* value)

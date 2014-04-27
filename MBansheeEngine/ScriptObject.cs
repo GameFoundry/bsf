@@ -9,10 +9,10 @@ namespace BansheeEngine
 
         ~ScriptObject()
         {
-            Internal_DestroyInstance(mCachedPtr);
+            Internal_ManagedInstanceDeleted(mCachedPtr);
         }
 
         [MethodImpl(MethodImplOptions.InternalCall)]
-        private static extern void Internal_DestroyInstance(IntPtr nativeInstance);
+        private static extern void Internal_ManagedInstanceDeleted(IntPtr nativeInstance);
     }
 }

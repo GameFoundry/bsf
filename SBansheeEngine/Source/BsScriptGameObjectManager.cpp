@@ -31,11 +31,7 @@ namespace BansheeEngine
 		if(findIter != mScriptGameObjects.end())
 			CM_EXCEPT(InvalidStateException, "Script component for this Component already exists.");
 
-		ScriptComponent* nativeInstance = new (cm_alloc<ScriptComponent>()) ScriptComponent(component);
-
-		nativeInstance->createInstance(component->getManagedInstance());
-		nativeInstance->metaData.thisPtrField->setValue(component->getManagedInstance(), &nativeInstance);
-
+		ScriptComponent* nativeInstance = new (cm_alloc<ScriptComponent>()) ScriptComponent(component->getManagedInstance(), component);
 		mScriptGameObjects[component->getInstanceId()] = nativeInstance;
 
 		return nativeInstance;
@@ -54,11 +50,7 @@ namespace BansheeEngine
 		if(findIter != mScriptGameObjects.end())
 			CM_EXCEPT(InvalidStateException, "Script SceneObject for this SceneObject already exists.");
 
-		ScriptSceneObject* nativeInstance = new (cm_alloc<ScriptSceneObject>()) ScriptSceneObject(sceneObject);
-
-		nativeInstance->createInstance(existingInstance);
-		nativeInstance->metaData.thisPtrField->setValue(existingInstance, &nativeInstance);
-
+		ScriptSceneObject* nativeInstance = new (cm_alloc<ScriptSceneObject>()) ScriptSceneObject(existingInstance, sceneObject);
 		mScriptGameObjects[sceneObject->getInstanceId()] = nativeInstance;
 
 		return nativeInstance;

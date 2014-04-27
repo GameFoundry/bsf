@@ -17,23 +17,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIScrollArea::ScriptGUIScrollArea(GUIScrollArea* scrollArea)
-		:mScrollArea(scrollArea), mIsDestroyed(false)
+	ScriptGUIScrollArea::ScriptGUIScrollArea(MonoObject* instance, GUIScrollArea* scrollArea)
+		:ScriptObject(instance), mScrollArea(scrollArea), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUIScrollArea::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIScrollArea", &ScriptGUIScrollArea::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIScrollArea::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIScrollArea::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIScrollArea::internal_destroyInstance);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIScrollArea::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIScrollArea::internal_setVisible);
@@ -51,6 +43,13 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIScrollArea::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUIScrollArea::internal_createInstance(MonoObject* instance, ScrollBarType vertBarType, ScrollBarType horzBarType, 
 		MonoString* scrollBarStyle, MonoString* scrollAreaStyle, MonoArray* guiOptions)
 	{
@@ -63,16 +62,7 @@ namespace BansheeEngine
 		GUIScrollArea* guiScrollArea = GUIScrollArea::create(vertBarType, horzBarType, options, 
 			toString(MonoUtil::monoToWString(scrollBarStyle)), toString(MonoUtil::monoToWString(scrollAreaStyle)));
 
-		ScriptGUIScrollArea* nativeInstance = new (cm_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(guiScrollArea);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIScrollArea::internal_destroyInstance(ScriptGUIScrollArea* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
+		ScriptGUIScrollArea* nativeInstance = new (cm_alloc<ScriptGUIScrollArea>()) ScriptGUIScrollArea(instance, guiScrollArea);
 	}
 
 	void ScriptGUIScrollArea::internal_destroy(ScriptGUIScrollArea* nativeInstance)

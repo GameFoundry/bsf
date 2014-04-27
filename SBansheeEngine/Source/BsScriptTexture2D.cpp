@@ -10,23 +10,15 @@
 
 namespace BansheeEngine
 {
-	ScriptTexture2D::ScriptTexture2D(const HTexture& texture)
-		:mTexture(texture)
+	ScriptTexture2D::ScriptTexture2D(MonoObject* instance, const HTexture& texture)
+		:ScriptObject(instance), mTexture(texture)
 	{
 
-	}
-
-	void ScriptTexture2D::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "Texture2D", &ScriptTexture2D::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptTexture2D::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptTexture2D::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptTexture2D::internal_destroyInstance);
 	}
 
 	void ScriptTexture2D::internal_createInstance(MonoObject* instance, UINT32 format, UINT32 width, UINT32 height, bool hasMipmaps, bool gammaCorrection)
@@ -53,9 +45,9 @@ namespace BansheeEngine
 		ScriptResourceManager::instance().createScriptTexture(instance, texture);
 	}
 
-	void ScriptTexture2D::internal_destroyInstance(ScriptTexture2D* nativeInstance)
+	void ScriptTexture2D::_onManagedInstanceDeleted()
 	{
-		ScriptResourceManager::instance().destroyScriptResource(nativeInstance);
+		ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 
 	void ScriptTexture2D::setNativeHandle(const HResource& resource) 

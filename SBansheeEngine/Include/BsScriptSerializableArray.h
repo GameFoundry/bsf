@@ -8,18 +8,14 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSerializableArray : public ScriptObject<ScriptSerializableArray>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SerializableArray")
 
 		static ScriptSerializableArray* create(const ManagedSerializableTypeInfoArrayPtr& typeInfo, MonoObject* object);
 
 	private:
-		static void internal_destroyInstance(ScriptSerializableArray* nativeInstance);
 		static MonoObject* internal_createProperty(ScriptSerializableArray* nativeInstance);
 
-		static void initRuntimeData();
-
-		ScriptSerializableArray(const ManagedSerializableTypeInfoArrayPtr& typeInfo);
-		~ScriptSerializableArray() {}
+		ScriptSerializableArray(MonoObject* instance, const ManagedSerializableTypeInfoArrayPtr& typeInfo);
 
 		ManagedSerializableTypeInfoArrayPtr mTypeInfo;
 	};

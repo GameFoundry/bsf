@@ -9,23 +9,15 @@
 
 namespace BansheeEngine
 {
-	ScriptSceneObject::ScriptSceneObject(const HSceneObject& sceneObject)
-		:mSceneObject(sceneObject)
+	ScriptSceneObject::ScriptSceneObject(MonoObject* instance, const HSceneObject& sceneObject)
+		:ScriptObject(instance), mSceneObject(sceneObject)
 	{
 
-	}
-
-	void ScriptSceneObject::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "SceneObject", &ScriptSceneObject::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptSceneObject::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptSceneObject::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptSceneObject::internal_destroyInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetParent", &ScriptSceneObject::internal_getParent);
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptSceneObject::internal_setParent);
 		metaData.scriptClass->addInternalCall("Internal_GetNumChildren", &ScriptSceneObject::internal_getNumChildren);
@@ -37,11 +29,6 @@ namespace BansheeEngine
 		HSceneObject sceneObject = SceneObject::create(toString(MonoUtil::monoToWString(name)));
 
 		ScriptGameObjectManager::instance().createScriptSceneObject(instance, sceneObject);
-	}
-
-	void ScriptSceneObject::internal_destroyInstance(ScriptSceneObject* nativeInstance)
-	{
-		ScriptGameObjectManager::instance().destroyScriptGameObject(nativeInstance);
 	}
 
 	void ScriptSceneObject::internal_setParent(ScriptSceneObject* nativeInstance, MonoObject* parent)
@@ -83,6 +70,11 @@ namespace BansheeEngine
 			childScriptSO = ScriptGameObjectManager::instance().createScriptSceneObject(childSO);
 
 		return childScriptSO->getManagedInstance();
+	}
+
+	void ScriptSceneObject::_onManagedInstanceDeleted()
+	{
+		ScriptGameObjectManager::instance().destroyScriptGameObject(this);
 	}
 
 	void ScriptSceneObject::setNativeHandle(const HGameObject& gameObject)

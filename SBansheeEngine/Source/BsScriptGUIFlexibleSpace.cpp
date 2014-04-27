@@ -11,23 +11,15 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout)
-		:mFlexibleSpace(flexibleSpace), mParentLayout(parentLayout), mIsDestroyed(false)
+	ScriptGUIFlexibleSpace::ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout)
+		:ScriptObject(instance), mFlexibleSpace(flexibleSpace), mParentLayout(parentLayout), mIsDestroyed(false)
 	{
 
-	}
-
-	void ScriptGUIFlexibleSpace::initMetaData()
-	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIFlexibleSpace", &ScriptGUIFlexibleSpace::initRuntimeData);
-
-		MonoManager::registerScriptType(&metaData);
 	}
 
 	void ScriptGUIFlexibleSpace::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFlexibleSpace::internal_createInstance);
-		metaData.scriptClass->addInternalCall("Internal_DestroyInstance", &ScriptGUIFlexibleSpace::internal_destroyInstance);
 
 		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFlexibleSpace::internal_destroy);
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIFlexibleSpace::internal_setVisible);
@@ -45,22 +37,20 @@ namespace BansheeEngine
 		}
 	}
 
+	void ScriptGUIFlexibleSpace::_onManagedInstanceDeleted()
+	{
+		destroy();
+
+		ScriptObject::_onManagedInstanceDeleted();
+	}
+
 	void ScriptGUIFlexibleSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUIFlexibleSpace& space = nativeLayout->addFlexibleSpace();
 
-		ScriptGUIFlexibleSpace* nativeInstance = new (cm_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(space, nativeLayout);
-		nativeInstance->createInstance(instance);
-
-		metaData.thisPtrField->setValue(instance, &nativeInstance);
-	}
-
-	void ScriptGUIFlexibleSpace::internal_destroyInstance(ScriptGUIFlexibleSpace* nativeInstance)
-	{
-		nativeInstance->destroy();
-		cm_delete(nativeInstance);
+		ScriptGUIFlexibleSpace* nativeInstance = new (cm_alloc<ScriptGUIFlexibleSpace>()) ScriptGUIFlexibleSpace(instance, space, nativeLayout);
 	}
 
 	void ScriptGUIFlexibleSpace::internal_destroy(ScriptGUIFlexibleSpace* nativeInstance)

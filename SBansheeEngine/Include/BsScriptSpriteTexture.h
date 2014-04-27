@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptSpriteTexture : public ScriptResource, public ScriptObject<ScriptSpriteTexture>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SpriteTexture")
 
 		const HSpriteTexture& getInternalValue() const { return mTexture; }
 
@@ -20,12 +20,10 @@ namespace BansheeEngine
 		friend class ScriptResourceManager;
 
 		static void internal_createInstance(MonoObject* instance);
-		static void internal_destroyInstance(ScriptSpriteTexture* nativeInstance);
 
-		static void initRuntimeData();
+		ScriptSpriteTexture(MonoObject* instance, const HSpriteTexture& texture);
 
-		ScriptSpriteTexture(const HSpriteTexture& texture);
-		~ScriptSpriteTexture() {}
+		void _onManagedInstanceDeleted();
 
 		HSpriteTexture mTexture;
 	};

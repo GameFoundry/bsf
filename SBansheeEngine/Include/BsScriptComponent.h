@@ -10,7 +10,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptComponent : public ScriptGameObject, public ScriptObject<ScriptComponent>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "Component")
 
 		virtual HGameObject getNativeHandle() const { return mManagedComponent; }
 		virtual void setNativeHandle(const HGameObject& gameObject);
@@ -22,12 +22,11 @@ namespace BansheeEngine
 		static MonoObject* internal_getComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
 		static MonoArray* internal_getComponents(MonoObject* parentSceneObject);
 		static void internal_removeComponent(MonoObject* parentSceneObject, MonoReflectionType* type);
-		static void internal_destroyInstance(ScriptComponent* nativeInstance);
 
-		static void initRuntimeData();
-
-		ScriptComponent(const GameObjectHandle<ManagedComponent>& managedComponent);
+		ScriptComponent(MonoObject* instance, const GameObjectHandle<ManagedComponent>& managedComponent);
 		~ScriptComponent() {}
+
+		void _onManagedInstanceDeleted();
 
 		GameObjectHandle<ManagedComponent> mManagedComponent;
 	};

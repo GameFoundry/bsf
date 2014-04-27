@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptStringTable : public ScriptObject<ScriptStringTable>
 	{
 	public:
-		static void initMetaData();
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "StringTable")
 
 	private:
 		static void internal_GetActiveLanguage(Language* value);
@@ -19,8 +19,6 @@ namespace BansheeEngine
 		static void internal_RemoveString(MonoString* identifier);
 		static void internal_GetLocalizedString(MonoString* identifier, MonoString** value);
 
-		static void initRuntimeData();
-
-		ScriptStringTable() { }
+		ScriptStringTable(MonoObject* instance);
 	};
 }
