@@ -27,7 +27,7 @@ namespace BansheeEngine
 	ScriptGUIToggle::OnToggledThunkDef ScriptGUIToggle::onToggledThunk;
 
 	ScriptGUIToggle::ScriptGUIToggle(MonoObject* instance, GUIToggle* toggle)
-		:ScriptObject(instance), mToggle(toggle), mIsDestroyed(false)
+		:TScriptGUIElement(instance, toggle)
 	{
 
 	}
@@ -39,32 +39,10 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_ToggleOn", &ScriptGUIToggle::internal_toggleOn);
 		metaData.scriptClass->addInternalCall("Internal_ToggleOff", &ScriptGUIToggle::internal_toggleOff);
 
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIToggle::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIToggle::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIToggle::internal_setParent);
-
 		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick").getThunk();
 		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover").getThunk();
 		onOutThunk = (OnOutThunkDef)metaData.scriptClass->getMethod("DoOnOut").getThunk();
 		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1).getThunk();
-	}
-
-	void ScriptGUIToggle::destroy()
-	{
-		if(!mIsDestroyed)
-		{
-			GUIElement::destroy(mToggle);
-			mToggle = nullptr;
-
-			mIsDestroyed = true;
-		}
-	}
-
-	void ScriptGUIToggle::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUIToggle::internal_createInstance(MonoObject* instance, MonoObject* content, 
@@ -94,38 +72,21 @@ namespace BansheeEngine
 	void ScriptGUIToggle::internal_setContent(ScriptGUIToggle* nativeInstance, MonoObject* content)
 	{
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		nativeInstance->getInternalValue()->setContent(nativeContent);
+
+		GUIToggle* toggle = (GUIToggle*)nativeInstance->getGUIElement();
+		toggle->setContent(nativeContent);
 	}
 
 	void ScriptGUIToggle::internal_toggleOn(ScriptGUIToggle* nativeInstance)
 	{
-		nativeInstance->getInternalValue()->toggleOn();
+		GUIToggle* toggle = (GUIToggle*)nativeInstance->getGUIElement();
+		toggle->toggleOn();
 	}
 
 	void ScriptGUIToggle::internal_toggleOff(ScriptGUIToggle* nativeInstance)
 	{
-		nativeInstance->getInternalValue()->toggleOff();
-	}
-
-	void ScriptGUIToggle::internal_destroy(ScriptGUIToggle* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIToggle::internal_setVisible(ScriptGUIToggle* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->getInternalValue()->enableRecursively();
-		else
-			nativeInstance->getInternalValue()->disableRecursively();
-	}
-
-	void ScriptGUIToggle::internal_setParent(ScriptGUIToggle* nativeInstance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(nativeInstance->getInternalValue());
+		GUIToggle* toggle = (GUIToggle*)nativeInstance->getGUIElement();
+		toggle->toggleOff();
 	}
 
 	void ScriptGUIToggle::onClick(MonoObject* instance)

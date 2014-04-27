@@ -82,7 +82,9 @@ namespace BansheeEngine
 	void ScriptGUILayout::internal_createInstanceYFromScrollArea(MonoObject* instance, MonoObject* parentScrollArea)
 	{
 		ScriptGUIScrollArea* scriptScrollArea = ScriptGUIScrollArea::toNative(parentScrollArea);
-		GUILayout* nativeLayout = &scriptScrollArea->getInternalValue()->getLayout();
+		GUIScrollArea* scrollArea = (GUIScrollArea*)scriptScrollArea->getGUIElement();
+
+		GUILayout* nativeLayout = &scrollArea->getLayout();
 
 		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
 			ScriptGUILayout(instance, nativeLayout, nativeLayout);

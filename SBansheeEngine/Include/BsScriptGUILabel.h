@@ -1,32 +1,19 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "BsScriptObject.h"
+#include "BsScriptGUIElement.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptGUILabel : public ScriptObject<ScriptGUILabel>
+	class BS_SCR_BE_EXPORT ScriptGUILabel : public TScriptGUIElement<ScriptGUILabel>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUILabel")
-
-		GUILabel* getInternalValue() const { return mLabel; }
-		void* getNativeRaw() const { return mLabel; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions);
 		static void internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content);
 
-		static void internal_destroy(ScriptGUILabel* nativeInstance);
-		static void internal_setVisible(ScriptGUILabel* nativeInstance, bool visible);
-		static void internal_setParent(ScriptGUILabel* nativeInstance, MonoObject* parentLayout);
-
 		ScriptGUILabel(MonoObject* instance, GUILabel* label);
-
-		void destroy();
-		void _onManagedInstanceDeleted();
-
-		GUILabel* mLabel;
-		bool mIsDestroyed;
 	};
 }

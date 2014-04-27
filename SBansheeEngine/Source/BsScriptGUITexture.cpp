@@ -18,7 +18,7 @@
 namespace BansheeEngine
 {
 	ScriptGUITexture::ScriptGUITexture(MonoObject* instance, GUITexture* texture)
-		:ScriptObject(instance), mTexture(texture), mIsDestroyed(false)
+		:TScriptGUIElement(instance, texture)
 	{
 
 	}
@@ -27,28 +27,6 @@ namespace BansheeEngine
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUITexture::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetTexture", &ScriptGUITexture::internal_setTexture);
-
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUITexture::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUITexture::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUITexture::internal_setParent);
-	}
-
-	void ScriptGUITexture::destroy()
-	{
-		if(!mIsDestroyed)
-		{
-			GUIElement::destroy(mTexture);
-			mTexture = nullptr;
-
-			mIsDestroyed = true;
-		}
-	}
-
-	void ScriptGUITexture::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUITexture::internal_createInstance(MonoObject* instance, MonoObject* texture, 
@@ -75,27 +53,7 @@ namespace BansheeEngine
 		if(texture != nullptr)
 			nativeTexture = ScriptSpriteTexture::toNative(texture)->getInternalValue();
 
-		nativeInstance->getInternalValue()->setTexture(nativeTexture);
-	}
-
-	void ScriptGUITexture::internal_destroy(ScriptGUITexture* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUITexture::internal_setVisible(ScriptGUITexture* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->getInternalValue()->enableRecursively();
-		else
-			nativeInstance->getInternalValue()->disableRecursively();
-	}
-
-	void ScriptGUITexture::internal_setParent(ScriptGUITexture* nativeInstance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(nativeInstance->getInternalValue());
+		GUITexture* guiTexture = (GUITexture*)nativeInstance->getGUIElement();
+		guiTexture->setTexture(nativeTexture);
 	}
 }

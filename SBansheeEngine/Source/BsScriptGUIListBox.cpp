@@ -21,7 +21,7 @@ namespace BansheeEngine
 	ScriptGUIListBox::OnSelectionChangedThunkDef ScriptGUIListBox::onSelectionChangedThunk;
 
 	ScriptGUIListBox::ScriptGUIListBox(MonoObject* instance, GUIListBox* listBox)
-		:ScriptObject(instance), mListBox(listBox), mIsDestroyed(false)
+		:TScriptGUIElement(instance, listBox)
 	{
 
 	}
@@ -31,29 +31,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIListBox::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetElements", &ScriptGUIListBox::internal_setElements);
 
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIListBox::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIListBox::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIListBox::internal_setParent);
-
 		onSelectionChangedThunk = (OnSelectionChangedThunkDef)metaData.scriptClass->getMethod("DoOnSelectionChanged", 1).getThunk();
-	}
-
-	void ScriptGUIListBox::destroy()
-	{
-		if(!mIsDestroyed)
-		{
-			GUIElement::destroy(mListBox);
-			mListBox = nullptr;
-
-			mIsDestroyed = true;
-		}
-	}
-
-	void ScriptGUIListBox::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUIListBox::internal_createInstance(MonoObject* instance, MonoArray* elements, MonoString* style, MonoArray* guiOptions)
@@ -102,28 +80,8 @@ namespace BansheeEngine
 			}
 		}
 
-		nativeInstance->getInternalValue()->setElements(nativeElements);
-	}
-
-	void ScriptGUIListBox::internal_destroy(ScriptGUIListBox* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIListBox::internal_setVisible(ScriptGUIListBox* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->getInternalValue()->enableRecursively();
-		else
-			nativeInstance->getInternalValue()->disableRecursively();
-	}
-
-	void ScriptGUIListBox::internal_setParent(ScriptGUIListBox* nativeInstance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(nativeInstance->getInternalValue());
+		GUIListBox* listBox = (GUIListBox*)nativeInstance->getGUIElement();
+		listBox->setElements(nativeElements);
 	}
 
 	void ScriptGUIListBox::onSelectionChanged(MonoObject* instance, UINT32 index)

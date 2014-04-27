@@ -1,17 +1,14 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "BsScriptObject.h"
+#include "BsScriptGUIElement.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptGUIToggle : public ScriptObject<ScriptGUIToggle>
+	class BS_SCR_BE_EXPORT ScriptGUIToggle : public TScriptGUIElement<ScriptGUIToggle>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIToggle")
-
-		GUIToggle* getInternalValue() const { return mToggle; }
-		void* getNativeRaw() const { return mToggle; }
 
 	private:
 		static void internal_createInstance(MonoObject* instance, MonoObject* content, 
@@ -20,22 +17,12 @@ namespace BansheeEngine
 		static void internal_toggleOn(ScriptGUIToggle* nativeInstance);
 		static void internal_toggleOff(ScriptGUIToggle* nativeInstance);
 
-		static void internal_destroy(ScriptGUIToggle* nativeInstance);
-		static void internal_setVisible(ScriptGUIToggle* nativeInstance, bool visible);
-		static void internal_setParent(ScriptGUIToggle* nativeInstance, MonoObject* parentLayout);
-
 		static void onClick(MonoObject* instance);
 		static void onHover(MonoObject* instance);
 		static void onOut(MonoObject* instance);
 		static void onToggled(MonoObject* instance, bool toggled);
 
 		ScriptGUIToggle(MonoObject* instance, GUIToggle* toggle);
-
-		void destroy();
-		void _onManagedInstanceDeleted();
-
-		GUIToggle* mToggle;
-		bool mIsDestroyed;
 
 		typedef void (__stdcall *OnClickThunkDef) (MonoObject*, MonoException**);
 		typedef void (__stdcall *OnHoverThunkDef) (MonoObject*, MonoException**);

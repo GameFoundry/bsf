@@ -23,7 +23,7 @@ namespace BansheeEngine
 	ScriptGUIFoldout::OnToggledThunkDef ScriptGUIFoldout::onToggledThunk;
 
 	ScriptGUIFoldout::ScriptGUIFoldout(MonoObject* instance, GUIFoldout* foldout)
-		:ScriptObject(instance), mFoldout(foldout), mIsDestroyed(false)
+		:TScriptGUIElement(instance, foldout)
 	{
 
 	}
@@ -33,29 +33,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIFoldout::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIFoldout::internal_setContent);
 
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIFoldout::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIFoldout::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIFoldout::internal_setParent);
-
 		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1).getThunk();
-	}
-
-	void ScriptGUIFoldout::destroy()
-	{
-		if(!mIsDestroyed)
-		{
-			GUIElement::destroy(mFoldout);
-			mFoldout = nullptr;
-
-			mIsDestroyed = true;
-		}
-	}
-
-	void ScriptGUIFoldout::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUIFoldout::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
@@ -79,27 +57,6 @@ namespace BansheeEngine
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
 		
 		// TODO - Update GUIFoldout once it has a label
-	}
-
-	void ScriptGUIFoldout::internal_destroy(ScriptGUIFoldout* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIFoldout::internal_setVisible(ScriptGUIFoldout* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->getInternalValue()->enableRecursively();
-		else
-			nativeInstance->getInternalValue()->disableRecursively();
-	}
-
-	void ScriptGUIFoldout::internal_setParent(ScriptGUIFoldout* nativeInstance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(nativeInstance->getInternalValue());
 	}
 
 	void ScriptGUIFoldout::onToggled(MonoObject* instance, bool expanded)

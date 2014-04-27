@@ -244,6 +244,7 @@
     <ClInclude Include="Include\BsScriptGameObject.h" />
     <ClInclude Include="Include\BsScriptGameObjectManager.h" />
     <ClInclude Include="Include\BsScriptGUIButton.h" />
+    <ClInclude Include="Include\BsScriptGUIElement.h" />
     <ClInclude Include="Include\BsScriptGUIFixedSpace.h" />
     <ClInclude Include="Include\BsScriptGUIFlexibleSpace.h" />
     <ClInclude Include="Include\BsScriptFont.h" />
@@ -286,6 +287,7 @@
     <ClCompile Include="Source\BsScriptEnginePlugin.cpp" />
     <ClCompile Include="Source\BsScriptGameObjectManager.cpp" />
     <ClCompile Include="Source\BsScriptGUIButton.cpp" />
+    <ClCompile Include="Source\BsScriptGUIElement.cpp" />
     <ClCompile Include="Source\BsScriptGUIFixedSpace.cpp" />
     <ClCompile Include="Source\BsScriptGUIFlexibleSpace.cpp" />
     <ClCompile Include="Source\BsScriptFont.cpp" />

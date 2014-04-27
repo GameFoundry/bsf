@@ -183,6 +183,9 @@
     <ClInclude Include="Include\BsScriptObjectImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsScriptGUIElement.h">
+      <Filter>Header Files\GUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptTexture2D.cpp">
@@ -307,6 +310,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsScriptObject.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsScriptGUIElement.cpp">
+      <Filter>Source Files\GUI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

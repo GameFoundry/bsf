@@ -18,7 +18,7 @@
 namespace BansheeEngine
 {
 	ScriptGUIInputBox::ScriptGUIInputBox(MonoObject* instance, GUIInputBox* inputBox)
-		:ScriptObject(instance), mInputBox(inputBox), mIsDestroyed(false)
+		:TScriptGUIElement(instance, inputBox)
 	{
 
 	}
@@ -28,28 +28,6 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIInputBox::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_GetText", &ScriptGUIInputBox::internal_getText);
 		metaData.scriptClass->addInternalCall("Internal_SetText", &ScriptGUIInputBox::internal_setText);
-
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIInputBox::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIInputBox::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIInputBox::internal_setParent);
-	}
-
-	void ScriptGUIInputBox::destroy()
-	{
-		if(!mIsDestroyed)
-		{
-			GUIElement::destroy(mInputBox);
-			mInputBox = nullptr;
-
-			mIsDestroyed = true;
-		}
-	}
-
-	void ScriptGUIInputBox::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUIInputBox::internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions)
@@ -67,32 +45,15 @@ namespace BansheeEngine
 
 	void ScriptGUIInputBox::internal_getText(ScriptGUIInputBox* nativeInstance, MonoString** text)
 	{
-		*text = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), nativeInstance->getInternalValue()->getText());
+		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
+
+		*text = MonoUtil::wstringToMono(MonoManager::instance().getDomain(), inputBox->getText());
 	}
 
 	void ScriptGUIInputBox::internal_setText(ScriptGUIInputBox* nativeInstance, MonoString* text)
 	{
-		nativeInstance->getInternalValue()->setText(MonoUtil::monoToWString(text));
-	}
+		GUIInputBox* inputBox = (GUIInputBox*)nativeInstance->getGUIElement();
 
-	void ScriptGUIInputBox::internal_destroy(ScriptGUIInputBox* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIInputBox::internal_setVisible(ScriptGUIInputBox* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->getInternalValue()->enableRecursively();
-		else
-			nativeInstance->getInternalValue()->disableRecursively();
-	}
-
-	void ScriptGUIInputBox::internal_setParent(ScriptGUIInputBox* nativeInstance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(nativeInstance->getInternalValue());
+		inputBox->setText(MonoUtil::monoToWString(text));
 	}
 }

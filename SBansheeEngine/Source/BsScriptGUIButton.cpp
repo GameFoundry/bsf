@@ -22,7 +22,7 @@ namespace BansheeEngine
 	ScriptGUIButton::OnOutThunkDef ScriptGUIButton::onOutThunk;
 
 	ScriptGUIButton::ScriptGUIButton(MonoObject* instance, GUIButton* button)
-		:ScriptObject(instance), mButton(button), mIsDestroyed(false)
+		:TScriptGUIElement(instance, button)
 	{
 
 	}
@@ -32,31 +32,9 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIButton::internal_createInstance);
 		metaData.scriptClass->addInternalCall("Internal_SetContent", &ScriptGUIButton::internal_setContent);
 
-		metaData.scriptClass->addInternalCall("Internal_Destroy", &ScriptGUIButton::internal_destroy);
-		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIButton::internal_setVisible);
-		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIButton::internal_setParent);
-
 		onClickThunk = (OnClickThunkDef)metaData.scriptClass->getMethod("DoOnClick").getThunk();
 		onHoverThunk = (OnHoverThunkDef)metaData.scriptClass->getMethod("DoOnHover").getThunk();
 		onOutThunk = (OnOutThunkDef)metaData.scriptClass->getMethod("DoOnOut").getThunk();
-	}
-
-	void ScriptGUIButton::destroy()
-	{
-		if(!mIsDestroyed)
-		{
-			GUIElement::destroy(mButton);
-			mButton = nullptr;
-
-			mIsDestroyed = true;
-		}
-	}
-
-	void ScriptGUIButton::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUIButton::internal_createInstance(MonoObject* instance, MonoObject* content, MonoString* style, MonoArray* guiOptions)
@@ -80,28 +58,9 @@ namespace BansheeEngine
 	void ScriptGUIButton::internal_setContent(ScriptGUIButton* nativeInstance, MonoObject* content)
 	{
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
-		nativeInstance->getInternalValue()->setContent(nativeContent);
-	}
 
-	void ScriptGUIButton::internal_destroy(ScriptGUIButton* nativeInstance)
-	{
-		nativeInstance->destroy();
-	}
-
-	void ScriptGUIButton::internal_setVisible(ScriptGUIButton* nativeInstance, bool visible)
-	{
-		if(visible)
-			nativeInstance->getInternalValue()->enableRecursively();
-		else
-			nativeInstance->getInternalValue()->disableRecursively();
-	}
-
-	void ScriptGUIButton::internal_setParent(ScriptGUIButton* nativeInstance, MonoObject* parentLayout)
-	{
-		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);
-
-		GUILayout* nativeLayout = scriptLayout->getInternalValue();
-		nativeLayout->addElement(nativeInstance->getInternalValue());
+		GUIButton* button = (GUIButton*)nativeInstance->getGUIElement();
+		button->setContent(nativeContent);
 	}
 
 	void ScriptGUIButton::onClick(MonoObject* instance)
