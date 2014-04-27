@@ -30,7 +30,7 @@ namespace BansheeEngine
 
 	void ScriptGUIFoldout::initMetaData()
 	{
-		metaData = ScriptMeta(BansheeEngineAssemblyName, "BansheeEngine", "GUIFoldout", &ScriptGUIFoldout::initRuntimeData);
+		metaData = ScriptMeta(BansheeEditorAssemblyName, "BansheeEditor", "GUIFoldout", &ScriptGUIFoldout::initRuntimeData);
 
 		MonoManager::registerScriptType(&metaData);
 	}
@@ -45,7 +45,7 @@ namespace BansheeEngine
 		metaData.scriptClass->addInternalCall("Internal_SetVisible", &ScriptGUIFoldout::internal_setVisible);
 		metaData.scriptClass->addInternalCall("Internal_SetParent", &ScriptGUIFoldout::internal_setParent);
 
-		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled").getThunk();
+		onToggledThunk = (OnToggledThunkDef)metaData.scriptClass->getMethod("DoOnToggled", 1).getThunk();
 	}
 
 	void ScriptGUIFoldout::destroy()

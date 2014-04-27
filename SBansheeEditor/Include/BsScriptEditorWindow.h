@@ -8,7 +8,7 @@ namespace BansheeEngine
 {
 	class ScriptEditorWidget;
 
-	class BS_SCR_BED_EXPORT ScriptEditorWindow : public BansheeEngine::ScriptObject<ScriptEditorWindow>
+	class BS_SCR_BED_EXPORT ScriptEditorWindow : public ScriptObject<ScriptEditorWindow>
 	{
 		struct EditorWindowHandle
 		{

@@ -10,12 +10,12 @@ namespace BansheeEditor
         {
             InspectorWindow window = EditorWindow.OpenWindow<InspectorWindow>();
 
-            //SceneObject newDbgObject = new SceneObject("NewDbgObject");
-            //newDbgObject.AddComponent<Debug_Component1>();
-            //newDbgObject.AddComponent<Debug_Component2>();
+            SceneObject newDbgObject = new SceneObject("NewDbgObject");
+            newDbgObject.AddComponent<Debug_Component1>();
+            newDbgObject.AddComponent<Debug_Component2>();
 
-            //window.SetObjectToInspect(newDbgObject);
-            //window.Refresh(); // TODO - This should be called N times per second
+            window.SetObjectToInspect(newDbgObject);
+            window.Refresh(); // TODO - This should be called N times per second
 
 
 
