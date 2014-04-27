@@ -18,9 +18,9 @@ namespace BansheeEngine
 		const String ASSEMBLY_ENTRY_POINT = "ProgramEd::Main";
 
 		MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
-		assembly.invoke(ASSEMBLY_ENTRY_POINT);
-
 		ScriptEditorWindow::registerManagedEditorWindows();
+
+		assembly.invoke(ASSEMBLY_ENTRY_POINT);
 
 		return nullptr;
 	}

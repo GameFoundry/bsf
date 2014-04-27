@@ -6,9 +6,15 @@ namespace BansheeEditor
 {
     internal sealed class InspectorWindow : EditorWindow
     {
-        private List<Inspector> inspectors = new List<Inspector>();
+        private class InspectorData
+        {
+            public GUIFoldout foldout;
+            public Inspector inspector;
+        }
 
-        internal void Initialize(SceneObject so)
+        private List<InspectorData> inspectorData = new List<InspectorData>();
+
+        internal void SetObjectToInspect(SceneObject so)
         {
             Clear();
 
@@ -17,23 +23,31 @@ namespace BansheeEditor
             Component[] allComponents = so.GetComponents();
             for (int i = 0; i < allComponents.Length; i++)
             {
-                // TODO
-                //  - Create component foldout
-                //  - Hook up the foldout so when clicked it will expand/collapse the custom inspector or child object
+                InspectorData data = new InspectorData();
 
-                Inspector inspector = GetInspector(allComponents[i].GetType());
-                inspector.Initialize(CreatePanel(0, 0, 0, 0), allComponents[i]);
+                data.foldout = new GUIFoldout(allComponents[i].GetType().Name);
+                GUI.layout.AddElement(data.foldout);
 
-                inspectors.Add(inspector);
+                data.inspector = GetInspector(allComponents[i].GetType());
+                data.inspector.Initialize(CreatePanel(0, 0, 0, 0), allComponents[i]);
+
+                data.foldout.OnToggled += (bool expanded) => Foldout_OnToggled(data.inspector, expanded);
+
+                inspectorData.Add(data);
             }
 
             RepositionInspectors();
         }
 
+        void Foldout_OnToggled(Inspector inspector, bool expanded)
+        {
+            inspector.SetVisible(expanded);
+        }
+
         internal void Refresh()
         {
-            for (int i = 0; i < inspectors.Count; i++)
-                inspectors[i].Refresh();
+            for (int i = 0; i < inspectorData.Count; i++)
+                inspectorData[i].inspector.Refresh();
         }
 
         internal void Destroy()
@@ -45,10 +59,13 @@ namespace BansheeEditor
 
         internal void Clear()
         {
-            for (int i = 0; i < inspectors.Count; i++)
-                inspectors[i].Destroy();
+            for (int i = 0; i < inspectorData.Count; i++)
+            {
+                inspectorData[i].foldout.Destroy();
+                inspectorData[i].inspector.Destroy();
+            }
 
-            inspectors.Clear();
+            inspectorData.Clear();
         }
 
         protected override void WindowResized(int width, int height)
@@ -59,11 +76,11 @@ namespace BansheeEditor
         private void RepositionInspectors()
         {
             int curPosition = 0;
-            for (int i = 0; i < inspectors.Count; i++)
+            for (int i = 0; i < inspectorData.Count; i++)
             {
-                int inspectorHeight = inspectors[i].GetOptimalHeight();
+                int inspectorHeight = inspectorData[i].inspector.GetOptimalHeight();
 
-                inspectors[i].SetArea(0, curPosition, width, inspectorHeight);
+                inspectorData[i].inspector.SetArea(0, curPosition, width, inspectorHeight);
                 curPosition += inspectorHeight;
             } 
         }

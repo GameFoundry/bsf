@@ -46,6 +46,12 @@ namespace BansheeEngine
             return area;
         }
 
+        public void SetVisible(bool visible)
+        {
+            for (int i = 0; i < childAreas.Count; i++)
+                childAreas[i].SetVisible(visible);
+        }
+
         internal void SetArea(int x, int y, int width, int height)
         {
             Internal_SetArea(mCachedPtr, x, y, width, height);

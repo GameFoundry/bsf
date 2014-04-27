@@ -11,9 +11,9 @@ namespace BansheeEditor
 
         protected GUIPanel GUI;
 
-        public static EditorWindow OpenWindow<T>() where T : EditorWindow
+        public static T OpenWindow<T>() where T : EditorWindow
         {
-            return Internal_CreateOrGetInstance(typeof(T).Namespace, typeof(T).Name);
+            return (T)Internal_CreateOrGetInstance(typeof(T).Namespace, typeof(T).Name);
         }
 
         protected EditorWindow()

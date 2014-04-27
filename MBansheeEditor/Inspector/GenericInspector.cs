@@ -49,7 +49,7 @@ namespace BansheeEditor
 
         internal override int GetOptimalHeight()
         {
-            throw new NotImplementedException();
+            return 200; // TODO  - Implement properly
         }
     }
 }

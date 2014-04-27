@@ -41,8 +41,11 @@
   <ItemGroup>
     <Compile Include="DbgCustomInspector.cs" />
     <Compile Include="DbgEditorWindow.cs" />
+    <Compile Include="Debug_Component1.cs" />
+    <Compile Include="Debug_Component2.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorWindow.cs" />
+    <Compile Include="GUIFoldout.cs" />
     <Compile Include="Inspector\CustomInspector.cs" />
     <Compile Include="Inspector\GenericInspector.cs" />
     <Compile Include="Inspector\InspectableArray.cs" />

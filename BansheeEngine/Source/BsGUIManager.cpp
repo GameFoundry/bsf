@@ -1319,6 +1319,15 @@ namespace BansheeEngine
 		}
 
 		mElementsUnderPointer.swap(mNewElementsUnderPointer);
+
+		if(mDragState != DragState::Dragging)
+		{
+			if(mActiveCursor != CursorType::Arrow)
+			{
+				Cursor::instance().setCursor(CursorType::Arrow);
+				mActiveCursor = CursorType::Arrow;
+			}
+		}
 	}
 
 	void GUIManager::queueForDestroy(GUIElement* element)

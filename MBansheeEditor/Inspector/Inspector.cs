@@ -22,6 +22,11 @@ namespace BansheeEditor
             GUI.SetArea(x, y, width, height);
         }
 
+        internal void SetVisible(bool visible)
+        {
+            GUI.SetVisible(visible);
+        }
+
         internal void Destroy()
         {
             GUI.Destroy();

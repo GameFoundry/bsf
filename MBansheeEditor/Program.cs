@@ -8,6 +8,19 @@ namespace BansheeEditor
     {
         static void Main()
         {
+            InspectorWindow window = EditorWindow.OpenWindow<InspectorWindow>();
+
+            //SceneObject newDbgObject = new SceneObject("NewDbgObject");
+            //newDbgObject.AddComponent<Debug_Component1>();
+            //newDbgObject.AddComponent<Debug_Component2>();
+
+            //window.SetObjectToInspect(newDbgObject);
+            //window.Refresh(); // TODO - This should be called N times per second
+
+
+
+
+
             // Starts main editor window with the specified width/height and render system
             // (Window position and sizes are stored internally. Restored upon StartUp and saved upon ShutDown)
             //EditorApplication.StartUp(RenderSystem.DX11, 1024, 800);
