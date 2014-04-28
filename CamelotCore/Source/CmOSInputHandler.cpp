@@ -31,7 +31,7 @@ namespace BansheeEngine
 		mMouseWheelScrolledConn.disconnect();
 	}
 
-	void OSInputHandler::update()
+	void OSInputHandler::_update()
 	{
 		WString inputString;
 		Vector2I mousePosition;

@@ -4,193 +4,99 @@
 #include "CmCommonEnums.h"
 #include "CmRenderSystem.h"
 #include "CmCommandQueue.h"
-#include "CmSamplerState.h"
-#include "CmGpuProgram.h"
-#include "CmCoreThread.h"
 #include "CmAsyncOp.h"
 #include "CmColor.h"
-#include "CmFrameAlloc.h"
 
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Core thread accessor allows you to schedule core commands outside of the core thread. Provides a set of common
-	 * 			methods you may want to execute on the core thread, as well as a general command queuing methods.
+	 * @brief	Contains some base functionality used for CoreThreadAccessor.
 	 * 			
-	 * @note	Queued commands are only executed after the call to submitToCoreThread, in the order they were submitted.
+	 * @see		CoreThreadAccesor
 	 */
-	template <class CommandQueueSyncPolicy = CommandQueueNoSync>
-	class CM_EXPORT CoreThreadAccessor
+	class CM_EXPORT CoreThreadAccessorBase
 	{
 	public:
-		/**
-		 * @brief	Constructor.
-		 *
-		 * @param	threadId		Identifier for the thread that created the accessor.
-		 */
-		CoreThreadAccessor(CM_THREAD_ID_TYPE threadId)
-		{
-			mCommandQueue = cm_new<CommandQueue<CommandQueueSyncPolicy>>(threadId);
-		}
-
-		~CoreThreadAccessor()
-		{
-			cm_delete(mCommandQueue);
-		}
+		CoreThreadAccessorBase(CommandQueueBase* commandQueue);
+		virtual ~CoreThreadAccessorBase();
 
 		/** @copydoc RenderSystem::disableTextureUnit() */
-		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::disableTextureUnit, RenderSystem::instancePtr(), gptype, texUnit));
-		}
+		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
 		/** @copydoc RenderSystem::setTexture() */
-		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setTexture, RenderSystem::instancePtr(), gptype, unit, enabled, texPtr));
-		}
+		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
 
 		/** @copydoc RenderSystem::setSamplerState() */
-		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setSamplerState, RenderSystem::instancePtr(), gptype, texUnit, samplerState));
-		}
+		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState);
 
 		/** @copydoc RenderSystem::setBlendState() */
-		void setBlendState(const BlendStatePtr& blendState)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setBlendState, RenderSystem::instancePtr(), blendState));
-		}
+		void setBlendState(const BlendStatePtr& blendState);
 
 		/** @copydoc RenderSystem::setRasterizerState() */
-		void setRasterizerState(const RasterizerStatePtr& rasterizerState)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setRasterizerState, RenderSystem::instancePtr(), rasterizerState));
-		}
+		void setRasterizerState(const RasterizerStatePtr& rasterizerState);
 
 		/** @copydoc RenderSystem::setRasterizerState() */
-		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setDepthStencilState, RenderSystem::instancePtr(), depthStencilState, stencilRefValue));
-		}
+		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
 		/** @copydoc RenderSystem::setViewport() */
-		void setViewport(const ViewportPtr& vp)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setViewport, RenderSystem::instancePtr(), vp));
-		}
+		void setViewport(const ViewportPtr& vp);
 
 		/** @copydoc RenderSystem::setDrawOperation() */
-		void setDrawOperation(DrawOperationType op)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setDrawOperation, RenderSystem::instancePtr(), op));
-		}
+		void setDrawOperation(DrawOperationType op);
 
 		/** @copydoc RenderSystem::setClipPlanes() */
-		void setClipPlanes(const PlaneList& clipPlanes)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setClipPlanes, RenderSystem::instancePtr(), clipPlanes));
-		}
+		void setClipPlanes(const PlaneList& clipPlanes);
 
 		/** @copydoc RenderSystem::addClipPlane(const Plane&) */
-		void addClipPlane(const Plane& p)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::addClipPlane, RenderSystem::instancePtr(), p));
-		}
-
-		/** @copydoc RenderSystem::addClipPlane(float, float, float, float) */
-		void addClipPlane(float A, float B, float C, float D)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::addClipPlane, RenderSystem::instancePtr(), A, B, C, D));
-		}
+		void addClipPlane(const Plane& p);
 
 		/** @copydoc RenderSystem::resetClipPlanes() */
-		void resetClipPlanes()
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::resetClipPlanes, RenderSystem::instancePtr()));
-		}
+		void resetClipPlanes();
 
 		/** @copydoc RenderSystem::setScissorTest() */
-		void setScissorTest(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setScissorRect, RenderSystem::instancePtr(), left, top, right, bottom));
-		}
+		void setScissorTest(UINT32 left = 0, UINT32 top = 0, UINT32 right = 800, UINT32 bottom = 600);
 
 		/** @copydoc RenderSystem::setRenderTarget() */
-		void setRenderTarget(RenderTargetPtr target)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::setRenderTarget, RenderSystem::instancePtr(), target));
-		}
+		void setRenderTarget(RenderTargetPtr target);
 
 		/** @copydoc RenderSystem::bindGpuProgram() */
-		void bindGpuProgram(HGpuProgram prg)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::bindGpuProgram, RenderSystem::instancePtr(), prg));
-		}
+		void bindGpuProgram(HGpuProgram prg);
 
 		/** @copydoc RenderSystem::unbindGpuProgram() */
-		void unbindGpuProgram(GpuProgramType gptype)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::unbindGpuProgram, RenderSystem::instancePtr(), gptype));
-		}
+		void unbindGpuProgram(GpuProgramType gptype);
 
 		/** @copydoc RenderSystem::bindGpuParams() */
-		void bindGpuParams(GpuProgramType gptype, const GpuParamsPtr& params)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::bindGpuParams, RenderSystem::instancePtr(), gptype, BindableGpuParams(params, gCoreThread().getFrameAlloc())));
-		}
+		void bindGpuParams(GpuProgramType gptype, const GpuParamsPtr& params);
 
 		/** @copydoc RenderSystem::beginFrame() */
-		void beginRender(void)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::beginFrame, RenderSystem::instancePtr()));
-		}
+		void beginRender();
 
 		/** @copydoc RenderSystem::endFrame() */
-		void endRender(void)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::endFrame, RenderSystem::instancePtr()));
-		}
+		void endRender();
 
-		/**
-		 * @copydoc RenderSystem::clearRenderTarget()
-		 */
-		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::clearRenderTarget, RenderSystem::instancePtr(), buffers, color, depth, stencil));
-		}
+		/** @copydoc RenderSystem::clearRenderTarget() */
+		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
-		/**
-		 * @copydoc RenderSystem::clearViewport()
-		 */
-		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::clearViewport, RenderSystem::instancePtr(), buffers, color, depth, stencil));
-		}
+		/** @copydoc RenderSystem::clearViewport() */
+		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		/** @copydoc RenderSystem::swapBuffers() */
-		void swapBuffers(RenderTargetPtr target)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::swapBuffers, RenderSystem::instancePtr(), target));
-		}
+		void swapBuffers(RenderTargetPtr target);
 
 		/** @copydoc RenderSystem::render() */
-		void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::render, RenderSystem::instancePtr(), mesh, indexOffset, indexCount, useIndices, drawOp));
-		}
+		void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/** @copydoc RenderSystem::draw() */
-		void draw(UINT32 vertexOffset, UINT32 vertexCount)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::draw, RenderSystem::instancePtr(), vertexOffset, vertexCount));
-		}
+		void draw(UINT32 vertexOffset, UINT32 vertexCount);
 
 		/** @copydoc RenderSystem::drawIndexed() */
-		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
-		{
-			mCommandQueue->queue(std::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexOffset, vertexCount));
-		}
+		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
+
+		/**
+		 * @brief	Binds the specified parameters to the pass GPU programs and activates the pass and its
+		 * 			states for any further rendering.
+		 */
+		void setPass(const PassPtr& pass, const PassParametersPtr& params);
 
 		/**
 		 * @copydoc RenderSystem::writeSubresource()
@@ -205,13 +111,7 @@ namespace BansheeEngine
 		 * 		 
 		 *		Normally dynamic buffers will require you to enable "discardEntireBuffer" flag, while static buffers require it disabled.
 		 */
-		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer = false)
-		{
-			data->lock();
-
-			return mCommandQueue->queueReturn(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, 
-				subresourceIdx, data, discardEntireBuffer, std::placeholders::_1));
-		}
+		AsyncOp writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer = false);
 
 		/**
 		 * @copydoc RenderSystem::readSubresource()
@@ -220,84 +120,72 @@ namespace BansheeEngine
 		 * 		 Until the async operation completes "data" is owned by the core thread and you won't
 		 * 		 be able to access it.
 		 */
-		AsyncOp readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data)
-		{
-			data->lock();
-
-			return mCommandQueue->queueReturn(std::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
-				resource, subresourceIdx, data, std::placeholders::_1));
-		}
+		AsyncOp readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data);
 
 		/**
 		 * @brief	Resize the provided window to specified width and height in pixels.
 		 */
-		void resizeWindow(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
-		{
-			mCommandQueue->queue(std::bind(&RenderWindow::resize, renderWindow.get(), width, height));
-		}
+		void resizeWindow(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height);
 
 		/**
 		 * @brief	Move the provided window to specified screen coordinates.
 		 */
-		void moveWindow(RenderWindowPtr& renderWindow, INT32 left, INT32 top)
-		{
-			mCommandQueue->queue(std::bind(&RenderWindow::move, renderWindow.get(), left, top));
-		}
+		void moveWindow(RenderWindowPtr& renderWindow, INT32 left, INT32 top);
 
 		/**
 		 * @brief	Hide the provided window. (Does not destroy it, just hides it).
 		 */
-		void hideWindow(RenderWindowPtr& renderWindow)
-		{
-			mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), true));
-		}
+		void hideWindow(RenderWindowPtr& renderWindow);
 
 		/**
 		 * @brief	Shows a previously hidden window.
 		 */
-		void showWindow(RenderWindowPtr& renderWindow)
-		{
-			mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), false));
-		}
+		void showWindow(RenderWindowPtr& renderWindow);
 
 		/**
 		* @brief	Queues a new generic command that will be added to the command queue.
 		*/
-		AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback)
-		{
-			return mCommandQueue->queueReturn(commandCallback);
-		}
+		AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback);
 
 		/**
 		* @brief	Queues a new generic command that will be added to the command queue.
 		*/
-		void queueCommand(std::function<void()> commandCallback)
-		{
-			mCommandQueue->queue(commandCallback);
-		}
+		void queueCommand(std::function<void()> commandCallback);
 
 		/**
 		 * @brief	Makes all the currently queued commands available to the core thread. They will be executed
 		 * 			as soon as the core thread is ready. All queued commands are removed from the accessor.
 		 */
-		void submitToCoreThread(bool blockUntilComplete = false)
-		{
-			Queue<QueuedCommand>::type* commands = mCommandQueue->flush();
-
-			gCoreThread().queueCommand(std::bind(&CommandQueueBase::playback, mCommandQueue, commands), blockUntilComplete);
-		}
+		void submitToCoreThread(bool blockUntilComplete = false);
 
 		/**
 		 * @brief	Cancels all commands in the queue.
 		 */
-		void cancelAll()
-		{
-			// Note that this won't free any Frame data allocated for all the canceled commands since
-			// frame data will only get cleared at frame start
-			mCommandQueue->cancelAll();
-		}
+		void cancelAll();
 
 	private:
-		CommandQueue<CommandQueueSyncPolicy>* mCommandQueue;
+		CommandQueueBase* mCommandQueue;
+	};
+
+	/**
+	 * @brief	Core thread accessor allows you to schedule core commands outside of the core thread. Provides a set of common
+	 * 			methods you may want to execute on the core thread, as well as a general command queuing methods.
+	 * 			
+	 * @note	Queued commands are only executed after the call to submitToCoreThread, in the order they were submitted.
+	 */
+	template <class CommandQueueSyncPolicy = CommandQueueNoSync>
+	class CM_EXPORT CoreThreadAccessor : public CoreThreadAccessorBase
+	{
+	public:
+		/**
+		 * @brief	Constructor.
+		 *
+		 * @param	threadId		Identifier for the thread that created the accessor.
+		 */
+		CoreThreadAccessor(CM_THREAD_ID_TYPE threadId)
+			:CoreThreadAccessorBase(cm_new<CommandQueue<CommandQueueSyncPolicy>>(threadId))
+		{
+
+		}
 	};
 }

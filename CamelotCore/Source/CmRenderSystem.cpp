@@ -126,13 +126,6 @@ namespace BansheeEngine {
 		mClipPlanesDirty = true;
 	}
 
-	void RenderSystem::addClipPlane (float A, float B, float C, float D)
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		addClipPlane(Plane(A, B, C, D));
-	}
-
 	void RenderSystem::setClipPlanes(const PlaneList& clipPlanes)
 	{
 		THROW_IF_NOT_CORE_THREAD;

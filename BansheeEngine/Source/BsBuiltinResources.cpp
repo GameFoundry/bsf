@@ -14,6 +14,7 @@
 #include "CmRTTIType.h"
 #include "CmFileSystem.h"
 #include "CmApplication.h"
+#include "CmCoreThread.h"
 
 namespace BansheeEngine
 {

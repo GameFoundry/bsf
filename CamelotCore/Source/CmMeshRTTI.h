@@ -5,6 +5,7 @@
 #include "CmApplication.h"
 #include "CmMesh.h"
 #include "CmMeshManager.h"
+#include "CmCoreThread.h"
 
 namespace BansheeEngine
 {

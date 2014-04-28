@@ -59,13 +59,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void InputHandlerOIS::update()
+	void InputHandlerOIS::_update()
 	{
 		mMouse->capture();
 		mKeyboard->capture();
 	}
 
-	void InputHandlerOIS::inputWindowChanged(const RenderWindow& win)
+	void InputHandlerOIS::_inputWindowChanged(const RenderWindow& win)
 	{
 		unsigned long long hWnd;
 		win.getCustomAttribute("WINDOW", &hWnd);

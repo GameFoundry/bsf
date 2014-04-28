@@ -33,6 +33,7 @@
 #include "CmTransientMesh.h"
 #include "BsVirtualInput.h"
 #include "BsCursor.h"
+#include "CmCoreThread.h"
 
 using namespace std::placeholders;
 

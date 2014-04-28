@@ -82,7 +82,7 @@ namespace BansheeEngine
 			return;
 		}
 		else
-			mRawInputHandler->update();
+			mRawInputHandler->_update();
 
 		if(mOSInputHandler == nullptr)
 		{
@@ -90,7 +90,7 @@ namespace BansheeEngine
 			return;
 		}
 		else
-			mOSInputHandler->update();
+			mOSInputHandler->_update();
 
 		updateSmoothInput();
 	}
@@ -98,10 +98,10 @@ namespace BansheeEngine
 	void Input::inputWindowChanged(RenderWindow& win)
 	{
 		if(mRawInputHandler != nullptr)
-			mRawInputHandler->inputWindowChanged(win);
+			mRawInputHandler->_inputWindowChanged(win);
 
 		if(mOSInputHandler != nullptr)
-			mOSInputHandler->inputWindowChanged(win);
+			mOSInputHandler->_inputWindowChanged(win);
 	}
 
 	void Input::buttonDown(ButtonCode code, UINT64 timestamp)

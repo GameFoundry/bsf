@@ -7,6 +7,7 @@
 #include "CmPath.h"
 #include "CmTexAtlasGenerator.h"
 #include "CmApplication.h"
+#include "CmCoreThread.h"
 #include "CmCoreThreadAccessor.h"
 
 #include <ft2build.h>

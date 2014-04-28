@@ -17,6 +17,7 @@
 #include "BsDrawHelper2D.h"
 #include "BsDrawHelper3D.h"
 #include "BsGUIManager.h"
+#include "CmCoreThread.h"
 
 #include "CmProfiler.h"
 
@@ -185,14 +186,13 @@ namespace BansheeEngine
 			const RenderOperation& renderOp = *iter->baseOperation;
 			MaterialPtr material = renderOp.material;
 
-			PassPtr pass = material->getPass(iter->passIdx);
-			pass->activate(coreAccessor);
-
 			gProfiler().endSample("renderG");
 			gProfiler().beginSample("renderH");
 
+			PassPtr pass = material->getPass(iter->passIdx);
 			PassParametersPtr paramsPtr = material->getPassParameters(iter->passIdx);
-			pass->bindParameters(coreAccessor, paramsPtr);
+
+			coreAccessor.setPass(pass, paramsPtr);
 
 			gProfiler().endSample("renderH");
 			gProfiler().beginSample("renderI");

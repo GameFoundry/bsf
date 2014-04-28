@@ -29,8 +29,8 @@ namespace BansheeEngine
 		virtual bool mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
 		virtual bool mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id);
 
-		virtual void update();
-		virtual void inputWindowChanged(const RenderWindow& win);
+		virtual void _update();
+		virtual void _inputWindowChanged(const RenderWindow& win);
 
 		ButtonCode keyCodeToButtonCode(OIS::KeyCode keyCode) const;
 		ButtonCode mouseButtonToButtonCode(OIS::MouseButtonID mouseBtn) const;

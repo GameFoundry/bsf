@@ -251,8 +251,6 @@ namespace BansheeEngine
 
 		/** Add a user clipping plane. */
 		virtual void addClipPlane (const Plane& p);
-		/** Add a user clipping plane. */
-		virtual void addClipPlane (float A, float B, float C, float D);
 
 		/** Clears the user clipping region.
 		*/

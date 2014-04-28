@@ -176,7 +176,6 @@ namespace BansheeEngine
 		 */
 		static void addBreakpoint(UINT32 queueIdx, UINT32 commandIdx);
 
-	protected:
 		/**
 		 * @brief	Queue up a new command to execute. Make sure the provided function has all of its
 		 * 			parameters properly bound. Last parameter must be unbound and of AsyncOp& type.

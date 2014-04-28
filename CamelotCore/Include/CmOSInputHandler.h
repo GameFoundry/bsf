@@ -16,6 +16,9 @@ namespace BansheeEngine
 		*/
 	class CM_EXPORT OSInputHandler
 	{
+		/**
+		 * @brief	Contains information regarding a button state change event.
+		 */
 		struct ButtonStateChange
 		{
 			Vector2I cursorPos;
@@ -24,6 +27,9 @@ namespace BansheeEngine
 			bool pressed;
 		};
 
+		/**
+		 * @brief	Contains information regarding a double click event.
+		 */
 		struct DoubleClick
 		{
 			Vector2I cursorPos;
@@ -34,23 +40,60 @@ namespace BansheeEngine
 		OSInputHandler();
 		virtual ~OSInputHandler();
 
+		/**
+		 * @brief	Triggers when user inputs a character. The character might be a result of pressing
+		 * 			multiple keys, so character input will not necessarily correspond with button presses.
+		 * 			Provide character code of the input character.
+		 */
 		boost::signal<void(UINT32)> onCharInput;
+
+		/**
+		 * @brief	Triggers whenever user scrolls the mouse wheel. Returns the screen
+		 * 			position of the mouse cursor and delta amount of mouse scroll (can be negative or positive).
+		 */
 		boost::signal<void(const Vector2I&, float)> onMouseWheelScrolled;
+
+		/**
+		 * @brief	Triggers whenever user moves the mouse cursor.
+		 */
 		boost::signal<void(const PointerEvent&)> onCursorMoved;
+
+		/**
+		 * @brief	Triggers whenever user presses one of the mouse buttons.
+		 */
 		boost::signal<void(const PointerEvent&)> onCursorPressed;
+
+		/**
+		 * @brief	Triggers whenever user releases one of the mouse buttons.
+		 */
 		boost::signal<void(const PointerEvent&)> onCursorReleased;
+
+		/**
+		 * @brief	Triggers when user clicks a mouse button quickly twice in a row.
+		 */
 		boost::signal<void(const PointerEvent&)> onDoubleClick;
+
+		/**
+		 * @brief	Triggers when user inputa a special input command, like commands user
+		 * 			for manipulating text input.
+		 */
 		boost::signal<void(InputCommandType)> onInputCommand;
 
 		/**
-			* @brief	Called every frame by InputManager. Capture input here if needed.
-			*/
-		virtual void update();
+		 * @brief	Called once per frame. Capture input here if needed.
+		 * 			
+		 * @note	Internal method.
+		 */
+		virtual void _update();
 
 		/**
-			* @brief	Called by InputManager whenever window in focus changes.
-			*/
-		virtual void inputWindowChanged(const RenderWindow& win) {}
+		 * @brief	Called whenever the active window changes.
+		 *
+		 * @param	win	Newly active window.
+		 * 				
+		 * @note	Internal method.
+		 */
+		virtual void _inputWindowChanged(const RenderWindow& win) {}
 
 	private:
 		CM_MUTEX(mOSInputMutex);
@@ -72,37 +115,51 @@ namespace BansheeEngine
 		boost::signals::connection mMouseWheelScrolledConn;
 
 		/**
-		 * @brief	Called from the message loop.
+		 * @brief	Called from the message loop to notify user has entered a character.
+		 * 			
+		 * @see		onCharInput
 		 */
 		void charInput(UINT32 character);
 
 		/**
-		 * @brief	Called from the message loop.
+		 * @brief	Called from the message loop to notify user has moved the cursor.
+		 * 			
+		 * @see		onCursorMoved
 		 */
 		void cursorMoved(const Vector2I& cursorPos, OSPointerButtonStates& btnStates);
 
 		/**
-		 * @brief	Called from the message loop.
+		 * @brief	Called from the message loop to notify user has pressed a mouse button.
+		 * 			
+		 * @see		onCursorPressed
 		 */
 		void cursorPressed(const Vector2I& cursorPos, OSMouseButton button, OSPointerButtonStates& btnStates);
 
 		/**
-		 * @brief	Called from the message loop.
+		 * @brief	Called from the message loop to notify user has released a mouse button.
+		 * 			
+		 * @see		onCursorReleased
 		 */
 		void cursorReleased(const Vector2I& cursorPos, OSMouseButton button, OSPointerButtonStates& btnStates);
 
 		/**
-		 * @brief	Called from the message loop.
+		 * @brief	Called from the message loop to notify user has double-clicked a mouse button.
+		 * 
+		 * @see		onDoubleClick
 		 */
 		void cursorDoubleClick(const Vector2I& cursorPos, OSPointerButtonStates& btnStates);
 
 		/**
-		 * @brief	Called from the message loop.
+		 * @brief	Called from the message loop to notify user has entered an input command.
+		 * 			
+		 * @see		onInputCommand
 		 */
 		void inputCommandEntered(InputCommandType commandType);
 
 		/**
-		 * @brief	Called from the message loop.
+		 * @brief	Called from the message loop to notify user has scrolled the mouse wheel.
+		 * 			
+		 * @see		onMouseWheelScrolled
 		 */
 		void mouseWheelScrolled(float scrollPos);
 	};

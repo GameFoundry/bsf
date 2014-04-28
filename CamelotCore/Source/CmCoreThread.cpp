@@ -1,6 +1,7 @@
 #include "CmCoreThread.h"
 #include "BsThreadPool.h"
 #include "BsTaskScheduler.h"
+#include "CmFrameAlloc.h"
 
 using namespace std::placeholders;
 
