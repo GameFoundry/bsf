@@ -95,7 +95,6 @@ namespace BansheeEngine
 		mActiveD3DDriver = NULL;	
 		mUseNVPerfHUD = false;
 		mHLSLProgramFactory = NULL;		
-		mCgProgramFactory = NULL;
 		mDeviceManager = NULL;	
 		mResourceManager = nullptr;	
 
@@ -159,9 +158,6 @@ namespace BansheeEngine
 		// Create & register HLSL factory		
 		mHLSLProgramFactory = cm_new<D3D9HLSLProgramFactory>();
 
-		// Create & register Cg factory		
-		mCgProgramFactory = cm_new<CgProgramFactory>();
-
 		// Create render window manager
 		RenderWindowManager::startUp(cm_new<D3D9RenderWindowManager>(this));
 
@@ -220,13 +216,6 @@ namespace BansheeEngine
 			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
 			cm_delete(mHLSLProgramFactory);
 			mHLSLProgramFactory = 0;
-		}
-
-		if(mCgProgramFactory)
-		{
-			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
-			cm_delete(mCgProgramFactory);
-			mCgProgramFactory = 0;
 		}
 
 		SAFE_RELEASE( mpD3D );
@@ -2259,9 +2248,6 @@ namespace BansheeEngine
 
 		if (caps->isShaderProfileSupported("hlsl"))
 			HighLevelGpuProgramManager::instance().addFactory(mHLSLProgramFactory);
-
-		if (caps->isShaderProfileSupported("cg"))
-			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
 
 		mNumTexStages = caps->getNumCombinedTextureUnits();
 		mTexStageDesc = cm_newN<sD3DTextureStageDesc>(mNumTexStages);

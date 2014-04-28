@@ -33,7 +33,6 @@ THE SOFTWARE.
 #include "CmGLHardwareBufferManager.h"
 #include "CmGLGpuProgramManager.h"
 #include "CmGLSLProgramFactory.h"
-#include "CmCgProgramFactory.h"
 #include "CmVector4.h"
 
 namespace BansheeEngine {
@@ -259,7 +258,6 @@ namespace BansheeEngine {
         bool mGLInitialised;
 
 		GLSLProgramFactory* mGLSLProgramFactory;
-		CgProgramFactory* mCgProgramFactory;
 		GLSLProgramPipelineManager* mProgramPipelineManager;
 
         GLuint getCombinedMinMipFilter(void) const;

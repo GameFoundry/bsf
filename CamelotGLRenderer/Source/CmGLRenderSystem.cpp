@@ -71,7 +71,6 @@ namespace BansheeEngine
 	GLRenderSystem::GLRenderSystem()
 		: mDepthWrite(true),
 		mGLSLProgramFactory(nullptr),
-		mCgProgramFactory(nullptr),
 		mProgramPipelineManager(nullptr),
 		mActivePipeline(nullptr),
 		mActiveTextureUnit(0),
@@ -194,15 +193,6 @@ namespace BansheeEngine
 			HighLevelGpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
 			cm_delete(mGLSLProgramFactory);
 			mGLSLProgramFactory = nullptr;
-		}
-
-		// Deleting Cg GLSL program factory
-		if (mCgProgramFactory)
-		{
-			// Remove from manager safely
-			HighLevelGpuProgramManager::instance().removeFactory(mCgProgramFactory);
-			cm_delete(mCgProgramFactory);
-			mCgProgramFactory = nullptr;
 		}
 
 		// Deleting the GPU program manager and hardware buffer manager.  Has to be done before the mGLSupport->stop().
@@ -1811,13 +1801,6 @@ namespace BansheeEngine
 		{
 			mGLSLProgramFactory = cm_new<GLSLProgramFactory>();
 			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
-			checkForErrors();
-		}
-
-		if(caps->isShaderProfileSupported("cg"))
-		{
-			mCgProgramFactory = cm_new<CgProgramFactory>();
-			HighLevelGpuProgramManager::instance().addFactory(mCgProgramFactory);
 			checkForErrors();
 		}
 
