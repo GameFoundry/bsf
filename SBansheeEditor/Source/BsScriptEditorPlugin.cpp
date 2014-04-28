@@ -2,6 +2,7 @@
 #include "BsScriptEditorWindow.h"
 #include "BsMonoManager.h"
 #include "BsMonoAssembly.h"
+#include "BsRuntimeScriptObjects.h"
 
 namespace BansheeEngine
 {
@@ -19,6 +20,8 @@ namespace BansheeEngine
 
 		MonoAssembly& assembly = MonoManager::instance().loadAssembly(ENGINE_ASSEMBLY_PATH, ENGINE_ASSEMBLY_NAME);
 		ScriptEditorWindow::registerManagedEditorWindows();
+
+		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEditorAssemblyName);
 
 		assembly.invoke(ASSEMBLY_ENTRY_POINT);
 

@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class BS_SCR_BE_EXPORT ScriptGUIInputBox : public TScriptGUIElement<ScriptGUIInputBox>
 	{
 	public:
-		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUIInputBox")
+		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "GUITextBox")
 
 	private:
 		static void internal_createInstance(MonoObject* instance, bool multiline, MonoString* style, MonoArray* guiOptions);

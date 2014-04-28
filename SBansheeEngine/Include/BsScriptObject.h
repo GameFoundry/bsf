@@ -3,6 +3,8 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptMeta.h"
 #include "CmException.h"
+#include "BsMonoManager.h"
+#include "BsMonoField.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine
@@ -25,19 +27,14 @@ namespace BansheeEngine
 		ScriptObjectBase(MonoObject* instance);
 		virtual ~ScriptObjectBase();
 
-		static const ScriptMeta* getMetaData() { return &metaData; }
-
 		MonoObject* getManagedInstance() const { return mManagedInstance; }
 		virtual void* getNativeRaw() const { return nullptr; }
 
 		virtual void _onManagedInstanceDeleted();
 
 	protected:
-		static ScriptMeta metaData;
+		
 		MonoObject* mManagedInstance;
-
-		static void registerTypeWithManager();
-		static void* getNativeInstance(MonoObject* managedInstance);
 	};
 
 	/**
@@ -54,6 +51,11 @@ namespace BansheeEngine
 			// so we fool it here like we're using the class directly. Otherwise compiler won't generate the code for the member
 			// and our type won't get initialized on start (Actual behavior is a bit more random)
 			initOnStart.makeSureIAmInstantiated();
+
+			Type* param = (Type*)(ScriptObjectBase*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
+
+			if(metaData.thisPtrField != nullptr)
+				metaData.thisPtrField->setValue(instance, &param);
 		}
 
 		virtual ~ScriptObject() 
@@ -61,17 +63,26 @@ namespace BansheeEngine
 
 		static Type* toNative(MonoObject* managedInstance)
 		{
-			return reinterpret_cast<Type*>(getNativeInstance(managedInstance));
+			Type* nativeInstance = nullptr;
+
+			if(metaData.thisPtrField != nullptr)
+				metaData.thisPtrField->getValue(managedInstance, &nativeInstance);
+
+			return nativeInstance;
 		}
+
+		static const ScriptMeta* getMetaData() { return &metaData; }
 
 		static void _initMetaData()
 		{
 			metaData = ScriptMeta(Type::getAssemblyName(), Type::getNamespace(), Type::getTypeName(), &Type::initRuntimeData);
 
-			registerTypeWithManager();
+			MonoManager::registerScriptType(&metaData);
 		}
 
 	protected:
+		static ScriptMeta metaData;
+
 		template <class Type2>
 		static void throwIfInstancesDontMatch(ScriptObject<Type2>* lhs, void* rhs)
 		{
@@ -90,6 +101,9 @@ namespace BansheeEngine
 
 	template <typename Type>
 	InitScriptObjectOnStart<Type> ScriptObject<Type>::initOnStart;
+
+	template <typename Type>
+	ScriptMeta ScriptObject<Type>::metaData;
 
 #define SCRIPT_OBJ(assembly, namespace, name)		\
 	static String getAssemblyName() { return assembly; }	\

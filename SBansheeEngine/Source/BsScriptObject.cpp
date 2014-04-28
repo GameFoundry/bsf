@@ -4,15 +4,10 @@
 
 namespace BansheeEngine
 {
-	ScriptMeta ScriptObjectBase::metaData;
-
 	ScriptObjectBase::ScriptObjectBase(MonoObject* instance)
 		:mManagedInstance(instance)
 	{	
-		ScriptObjectBase* param = this;
 
-		if(metaData.thisPtrField != nullptr)
-			metaData.thisPtrField->setValue(instance, &param);
 	}
 
 	ScriptObjectBase::~ScriptObjectBase() 
@@ -24,20 +19,5 @@ namespace BansheeEngine
 	void ScriptObjectBase::_onManagedInstanceDeleted()
 	{
 		cm_delete(this);
-	}
-
-	void ScriptObjectBase::registerTypeWithManager()
-	{
-		MonoManager::registerScriptType(&metaData);
-	}
-
-	void* ScriptObjectBase::getNativeInstance(MonoObject* managedInstance)
-	{
-		void* nativeInstance = nullptr;
-
-		if(metaData.thisPtrField != nullptr)
-			metaData.thisPtrField->getValue(managedInstance, &nativeInstance);
-
-		return nativeInstance;
 	}
 }

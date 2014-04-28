@@ -30,9 +30,6 @@ namespace BansheeEditor
                 }
             }
 
-
-            // TODO - Add Component foldout
-
             isInitialized = true;
         }
 

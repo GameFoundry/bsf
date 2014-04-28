@@ -78,6 +78,8 @@ namespace BansheeEngine
 	{
 		RectI parentArea = mParentPanel->getClippedArea();
 		RectI myClippedArea = mArea;
+		myClippedArea.x += parentArea.x;
+		myClippedArea.y += parentArea.y;
 		myClippedArea.clip(parentArea);
 		
 		mGUIArea->setPosition(myClippedArea.x, myClippedArea.y);
