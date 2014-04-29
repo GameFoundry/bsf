@@ -8,7 +8,9 @@
 
 namespace BansheeEngine
 {
-	// Encapsulate native cursor type so we can avoid including windows.h as it pollutes the global namespace
+	/**
+	 * @brief	Encapsulate native cursor data so we can avoid including windows.h as it pollutes the global namespace
+	 */
 	struct CM_EXPORT NativeCursorData
 	{
 		struct Pimpl;
@@ -19,7 +21,9 @@ namespace BansheeEngine
 		Pimpl* data;
 	};
 
-	// Encapsulate native cursor type so we can avoid including windows.h as it pollutes the global namespace
+	/**
+	 * @brief	Encapsulate drop target data so we can avoid including windows.h as it pollutes the global namespace
+	 */
 	struct CM_EXPORT NativeDropTargetData
 	{
 		struct Pimpl;
@@ -30,12 +34,18 @@ namespace BansheeEngine
 		Pimpl* data;
 	};
 
+	/**
+	 * @brief	Represents a specific non client area used for window resizing.
+	 */
 	struct CM_EXPORT NonClientResizeArea
 	{
 		NonClientAreaBorderType type;
 		RectI area;
 	};
 
+	/**
+	 * @brief	Contains a list of window move and resize non client areas.
+	 */
 	struct CM_EXPORT WindowNonClientAreaData
 	{
 		Vector<NonClientResizeArea>::type resizeAreas;
@@ -165,6 +175,8 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Adds a string to the clipboard.
+		 * 			
+		 * @note	Thread safe.
 		 */
 		static void copyToClipboard(const WString& string);
 
@@ -174,12 +186,16 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Both wide and normal strings will be read, but normal strings will be converted to
 		 * 			a wide string before returning.
+		 * 			
+		 *			Thread safe.
 		 */
 		static WString copyFromClipboard();
 
 		/**
 		 * @brief	Queries the internal system performance counter you can use for very precise time
 		 * 			measurements. Value is in milliseconds.
+		 * 			
+		 * @note	Thread safe.
 		 */
 		static double queryPerformanceTimerMs();
 
@@ -206,51 +222,126 @@ namespace BansheeEngine
 		/**
 		 * @brief	Message pump. Processes OS messages and returns when it's free.
 		 * 			
-		 * @note	This method must be called from the core thread.
-		 * 			Internal method.
+		 * @note	Internal method.
+		 * 			Core thread only.
 		 */
-		static void messagePump();
+		static void _messagePump();
 
 		/**
 		 * @brief	Called during application start up from the sim thread.
 		 * 			Must be called before any other operations are done.
+		 * 			
+		 * @note	Internal method.
 		 */
-		static void startUp();
+		static void _startUp();
 
 		/**
 		 * @brief	Called once per frame from the sim thread.
 		 * 			
 		 * @note	Internal method.
+		 * 			Sim thread only.
 		 */
-		static void update();
+		static void _update();
 
 		/**
 		 * @brief	Called once per frame from the core thread.
 		 * 			
 		 * @note	Internal method.
+		 * 			Core thread only.
 		 */
-		static void coreUpdate();
+		static void _coreUpdate();
 
 		/**
 		 * @brief	Called during application shut down from the sim thread.
+		 * 			
+		 * @note	Internal method.
+		 * 			Sim thread only.
 		 */
-		static void shutDown();
+		static void _shutDown();
 
-		// Callbacks triggered on the sim thread
+		/**
+		 * @brief	Triggered when a pointer leaves the provided window.
+		 * 			
+		 * @note	Sim thread only.
+		 */
 		static boost::signal<void(RenderWindow*)> onMouseLeftWindow;
 
-		// Callbacks triggered on the core thread. Be careful so that none
-		// of the connected methods call methods intended for sim thread.
+		/**
+		 * @brief	Triggered whenever the pointer moves.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(const Vector2I&, OSPointerButtonStates)> onCursorMoved;
+
+		/**
+		 * @brief	Triggered whenever a pointer button is pressed.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonPressed;
+
+		/**
+		 * @brief	Triggered whenever pointer button is released.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonReleased;
+
+		/**
+		 * @brief	Triggered whenever a pointer button is double clicked.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(const Vector2I&, OSPointerButtonStates)> onCursorDoubleClick;
+
+		/**
+		 * @brief	Triggered whenever an input command is entered.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(InputCommandType)> onInputCommand;
+
+		/**
+		 * @brief	Triggered whenever the mouse wheel is scolled.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(float)> onMouseWheelScrolled;
+
+		/**
+		 * @brief	Triggered whenever a character is entered.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(UINT32)> onCharInput;
+
+		/**
+		 * @brief	Triggered whenever a window receives focus.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(RenderWindow*)> onWindowFocusReceived;
+
+		/**
+		 * @brief	Triggered whenever a window loses focus.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(RenderWindow*)> onWindowFocusLost;
+
+		/**
+		 * @brief	Triggered whenever a window gets moved or resized.
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void(RenderWindow*)> onWindowMovedOrResized;
+
+		/**
+		 * @brief	Triggered whenever mouse capture state for the window is changed
+		 * 			(it receives or loses it).
+		 * 			
+		 * @note	Core thread only.
+		 */
 		static boost::signal<void()> onMouseCaptureChanged;
 	protected:
 		static bool mIsCursorHidden;

@@ -109,7 +109,7 @@ namespace BansheeEngine
 			Map<String, GpuParamBlockBufferPtr>::type paramBlockBuffers;
 
 			// Create param blocks
-			const Map<String, SHADER_PARAM_BLOCK_DESC>::type& shaderDesc = mShader->getParamBlocks();
+			const Map<String, SHADER_PARAM_BLOCK_DESC>::type& shaderDesc = mShader->_getParamBlocks();
 			for(auto iter = validShareableParamBlocks.begin(); iter != validShareableParamBlocks.end(); ++iter)
 			{
 				bool isShared = false;
@@ -146,7 +146,7 @@ namespace BansheeEngine
 			}
 
 			// Create data param mappings
-			const Map<String, SHADER_DATA_PARAM_DESC>::type& dataParamDesc = mShader->getDataParams();
+			const Map<String, SHADER_DATA_PARAM_DESC>::type& dataParamDesc = mShader->_getDataParams();
 			for(auto iter = dataParamDesc.begin(); iter != dataParamDesc.end(); ++iter)
 			{
 				auto findIter = validDataParameters.find(iter->second.gpuVariableName);
@@ -179,7 +179,7 @@ namespace BansheeEngine
 			}
 
 			// Create object param mappings
-			const Map<String, SHADER_OBJECT_PARAM_DESC>::type& objectParamDesc = mShader->getObjectParams();
+			const Map<String, SHADER_OBJECT_PARAM_DESC>::type& objectParamDesc = mShader->_getObjectParams();
 			for(auto iter = objectParamDesc.begin(); iter != objectParamDesc.end(); ++iter)
 			{
 				auto findIter = validObjectParameters.find(iter->second.gpuVariableName);

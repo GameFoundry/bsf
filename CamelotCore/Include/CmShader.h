@@ -152,18 +152,24 @@ namespace BansheeEngine
 
 		/** 
 		 * @brief	Returns a map of all data parameters in the shader.
+		 * 			
+		 * @note	Internal method.
 		 */
-		const Map<String, SHADER_DATA_PARAM_DESC>::type& getDataParams() const { return mDataParams; }
+		const Map<String, SHADER_DATA_PARAM_DESC>::type& _getDataParams() const { return mDataParams; }
 
 		/** 
 		 * @brief	Returns a map of all object parameters in the shader.
+		 * 			
+		 * @note	Internal method.
 		 */
-		const Map<String, SHADER_OBJECT_PARAM_DESC>::type& getObjectParams() const { return mObjectParams; }
+		const Map<String, SHADER_OBJECT_PARAM_DESC>::type& _getObjectParams() const { return mObjectParams; }
 
 		/** 
 		 * @brief	Returns a map of all parameter blocks.
+		 * 			
+		 * @note	Internal method.
 		 */
-		const Map<String, SHADER_PARAM_BLOCK_DESC>::type& getParamBlocks() const { return mParamBlocks; }
+		const Map<String, SHADER_PARAM_BLOCK_DESC>::type& _getParamBlocks() const { return mParamBlocks; }
 
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);

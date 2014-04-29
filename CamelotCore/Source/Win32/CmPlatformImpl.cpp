@@ -392,7 +392,7 @@ namespace BansheeEngine
 		CM_PVT_DELETE(OSDropTarget, &target);
 	}
 
-	void Platform::messagePump()
+	void Platform::_messagePump()
 	{
 		MSG  msg;
 		while(PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE))
@@ -402,14 +402,14 @@ namespace BansheeEngine
 		}
 	}
 
-	void Platform::startUp()
+	void Platform::_startUp()
 	{
 		CM_LOCK_MUTEX(mSync);
 
 		mRequiresStartUp = true;
 	}
 
-	void Platform::update()
+	void Platform::_update()
 	{
 		Vector<RenderWindow*>::type windowsCopy;
 		{
@@ -431,7 +431,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Platform::coreUpdate()
+	void Platform::_coreUpdate()
 	{
 		{
 			CM_LOCK_MUTEX(mSync);
@@ -464,7 +464,7 @@ namespace BansheeEngine
 			mDropTargets.data->dropTargetsToDestroy.clear();
 		}
 
-		messagePump();
+		_messagePump();
 
 		{
 			CM_LOCK_MUTEX(mSync);
@@ -476,7 +476,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Platform::shutDown()
+	void Platform::_shutDown()
 	{
 		CM_LOCK_MUTEX(mSync);
 

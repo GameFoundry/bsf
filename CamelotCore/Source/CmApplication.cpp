@@ -55,7 +55,7 @@ namespace BansheeEngine
 	{
 		UINT32 numWorkerThreads = CM_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 
-		Platform::startUp();
+		Platform::_startUp();
 		MemStack::beginThread();
 
 		Profiler::startUp(cm_new<Profiler>());
@@ -105,7 +105,7 @@ namespace BansheeEngine
 			gProfiler().beginThread("Sim");
 
 			gCoreThread().update();
-			Platform::update();
+			Platform::_update();
 			DeferredCallManager::instance().update();
 			RenderWindowManager::instance().update();
 			gInput()._update();
@@ -137,7 +137,7 @@ namespace BansheeEngine
 				mIsFrameRenderingFinished = false;
 			}
 
-			gCoreThread().queueCommand(&Platform::coreUpdate);
+			gCoreThread().queueCommand(&Platform::_coreUpdate);
 			gCoreThread().submitAccessors();
 			gCoreThread().queueCommand(std::bind(&Application::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&Application::frameRenderingFinishedCallback, this));
@@ -204,7 +204,7 @@ namespace BansheeEngine
 		ThreadPool::shutDown();
 		Profiler::shutDown();
 		MemStack::endThread();
-		Platform::shutDown();
+		Platform::_shutDown();
 	}
 
 	void* Application::loadPlugin(const String& pluginName, DynLib** library)

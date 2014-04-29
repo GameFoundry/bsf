@@ -83,7 +83,7 @@ namespace BansheeEngine
 
 	void ProjectLibrary::update()
 	{
-		mMonitor->update();
+		mMonitor->_update();
 	}
 
 	void ProjectLibrary::checkForModifications(const WString& fullPath)

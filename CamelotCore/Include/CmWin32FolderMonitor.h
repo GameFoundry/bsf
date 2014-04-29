@@ -59,7 +59,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Internal method.
 		 */
-		void update();
+		void _update();
 
 		/**
 		 * @brief	Triggers when a file is modified. Provides

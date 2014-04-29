@@ -637,7 +637,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void FolderMonitor::update()
+	void FolderMonitor::_update()
 	{
 		{
 			CM_LOCK_MUTEX(mPimpl->mMainMutex);
