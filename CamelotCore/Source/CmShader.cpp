@@ -56,9 +56,9 @@ namespace BansheeEngine
 			}
 		}
 
-		CM_EXCEPT(InternalErrorException, "No techniques are supported!");
+		return nullptr;
 
-		// TODO - Low priority. Instead of throwing an exception use an extremely simple technique that will be supported almost everywhere as a fallback.
+		// TODO - Low priority. Instead of returning null use an extremely simple technique that will be supported almost everywhere as a fallback.
 	}
 
 	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, UINT32 elementSize, bool hidden)
