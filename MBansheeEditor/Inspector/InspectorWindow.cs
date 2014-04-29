@@ -79,6 +79,8 @@ namespace BansheeEditor
 
         protected override void WindowResized(int width, int height)
         {
+            base.WindowResized(width, height);
+
             RepositionInspectors();
         }
 

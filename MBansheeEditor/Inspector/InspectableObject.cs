@@ -30,7 +30,7 @@ namespace BansheeEditor
                 return;
 
             guiLabel = new GUILabel(title);
-            layout.AddElement(guiLabel); // TODO - Add foldout and hook up its callbacks
+            layout.AddElement(guiLabel);
 
             guiChildLayout = layout.AddLayoutX();
             guiChildLayout.AddSpace(IndentAmount);

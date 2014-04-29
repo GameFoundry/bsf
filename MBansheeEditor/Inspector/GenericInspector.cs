@@ -40,7 +40,7 @@ namespace BansheeEditor
 
             foreach (var field in inspectableFields)
             {
-                field.Refresh(GUI.layout);
+                field.Refresh(layout);
             }
         }
 

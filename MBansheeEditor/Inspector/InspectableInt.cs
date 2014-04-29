@@ -32,6 +32,9 @@ namespace BansheeEditor
 
         protected override bool IsModified()
         {
+            if (!isInitialized)
+                return true;
+
             int newPropertyValue = property.GetValue<int>();
             if (oldPropertyValue != newPropertyValue)
             {

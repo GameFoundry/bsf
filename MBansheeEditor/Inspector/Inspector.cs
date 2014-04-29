@@ -9,11 +9,13 @@ namespace BansheeEditor
     public abstract class Inspector
     {
         protected GUIPanel GUI;
+        protected GUILayout layout;
         protected object referencedObject;
 
         internal void Initialize(GUIPanel gui, object instance)
         {
             GUI = gui;
+            layout = gui.layout.AddLayoutY();
             referencedObject = instance;
         }
 
@@ -29,6 +31,7 @@ namespace BansheeEditor
 
         internal void Destroy()
         {
+            layout.Destroy();
             GUI.Destroy();
         }
 

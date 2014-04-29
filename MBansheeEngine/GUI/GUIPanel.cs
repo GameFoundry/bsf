@@ -56,7 +56,7 @@ namespace BansheeEngine
         {
             Internal_SetArea(mCachedPtr, x, y, width, height);
 
-            mainArea.SetArea(x, y, width, height);
+            mainArea.SetArea(0, 0, width, height);
         }
 
         internal void Destroy()
