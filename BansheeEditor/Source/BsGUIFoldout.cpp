@@ -96,10 +96,13 @@ namespace BansheeEngine
 		}
 
 		{
-			Vector2I offset(x, y);
+			Vector2I optimalSize = mToggle->_getOptimalSize();
+			INT32 yOffset = Math::roundToInt((height - optimalSize.y) * 0.5f);
+
+			Vector2I offset(x, y + yOffset);
 			mBackground->_setOffset(offset);
 			mBackground->_setWidth(mWidth);
-			mBackground->_setHeight(mHeight);
+			mBackground->_setHeight(optimalSize.y);
 			mBackground->_setAreaDepth(areaDepth + 1);
 			mBackground->_setWidgetDepth(widgetDepth);
 

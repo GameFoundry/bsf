@@ -30,6 +30,7 @@ namespace BansheeEngine
 	// GUI
 	class GUIManager;
 	class GUIWidget;
+	class GUIElementBase;
 	class GUIElement;
 	class GUILabel;
 	class GUIButton;

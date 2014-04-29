@@ -11,7 +11,7 @@ namespace BansheeEngine
 		ScriptGUIElementBase(GUIElement* element);
 		virtual ~ScriptGUIElementBase() {}
 
-		GUIElement* getGUIElement() const { return mElement; }
+		GUIElement* getGUIElement() const { return (GUIElement*)mElement; }
 
 		virtual void destroy();
 

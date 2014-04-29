@@ -25,6 +25,17 @@ namespace BansheeEngine
                 element.SetParent(this);
         }
 
+        internal override void SetParent(GUILayout layout)
+        {
+            if (parent != null)
+                parent.Remove(this);
+
+            parent = layout;
+
+            if (parent != null)
+                parent.children.Add(this);
+        }
+
         public void AddElement(GUIElement element)
         {
             if (element.IsStatic())

@@ -13,6 +13,7 @@ namespace BansheeEditor
         }
 
         private List<InspectorData> inspectorData = new List<InspectorData>();
+        private GUILayout inspectorLayout;
 
         internal void SetObjectToInspect(SceneObject so)
         {
@@ -20,13 +21,15 @@ namespace BansheeEditor
 
             // TODO - Create SceneObject gui elements (name + transform)
 
+            inspectorLayout = GUI.layout.AddLayoutY();
+
             Component[] allComponents = so.GetComponents();
             for (int i = 0; i < allComponents.Length; i++)
             {
                 InspectorData data = new InspectorData();
 
                 data.foldout = new GUIFoldout(allComponents[i].GetType().Name);
-                GUI.layout.AddElement(data.foldout);
+                inspectorLayout.AddElement(data.foldout);
 
                 data.inspector = GetInspector(allComponents[i].GetType());
                 data.inspector.Initialize(CreatePanel(0, 0, 0, 0), allComponents[i]);
@@ -66,6 +69,12 @@ namespace BansheeEditor
             }
 
             inspectorData.Clear();
+
+            if (inspectorLayout != null)
+            {
+                inspectorLayout.Destroy();
+                inspectorLayout = null;
+            }
         }
 
         protected override void WindowResized(int width, int height)

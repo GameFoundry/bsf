@@ -9,7 +9,7 @@ namespace BansheeEngine
         protected GUILayout parent;
         private bool isDestroyed;
 
-        internal void SetParent(GUILayout layout)
+        internal virtual void SetParent(GUILayout layout)
         {
             if (parent != null)
                 parent.Remove(this);
