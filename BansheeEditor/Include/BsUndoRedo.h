@@ -7,12 +7,21 @@ namespace BansheeEngine
 {
 	class UndoRedo : public Module<UndoRedo>
 	{
+		struct GroupData
+		{
+			String name;
+			UINT32 numEntries;
+		};
+
 	public:
 		UndoRedo();
 		~UndoRedo();
 
 		void undo();
 		void redo();
+
+		void pushGroup(const String& name);
+		void popGroup(const String& name);
 
 		void registerCommand(EditorCommand* command);
 
@@ -27,6 +36,11 @@ namespace BansheeEngine
 
 		UINT32 mRedoStackPtr;
 		UINT32 mRedoNumElements;
+
+		Stack<GroupData>::type mGroups;
+
+		EditorCommand* removeLastFromUndoStack();
+		void addToUndoStack(EditorCommand* command);
 
 		void clearUndoStack();
 		void clearRedoStack();

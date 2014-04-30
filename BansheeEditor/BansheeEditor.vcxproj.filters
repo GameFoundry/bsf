@@ -192,6 +192,9 @@
     <ClInclude Include="Include\BsGUIFieldBase.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCmdInputFieldValueChange.h">
+      <Filter>Header Files\Editor\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">

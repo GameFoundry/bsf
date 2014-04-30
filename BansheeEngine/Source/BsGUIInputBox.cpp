@@ -72,6 +72,7 @@ namespace BansheeEngine
 
 		if(filterOkay)
 		{
+			WString oldText = mText;
 			mText = text;
 
 			TEXT_SPRITE_DESC textDesc = getTextDesc();
@@ -516,6 +517,9 @@ namespace BansheeEngine
 			scrollTextToCaret();
 
 			markContentAsDirty();
+
+			if(!onValueChanged.empty())
+				onValueChanged(mText);
 		}
 
 		return true;
@@ -539,6 +543,10 @@ namespace BansheeEngine
 			markContentAsDirty();
 
 			mHasFocus = true;
+
+			if(!onFocusGained.empty())
+				onFocusGained();
+
 			return true;
 		}
 		
@@ -551,6 +559,10 @@ namespace BansheeEngine
 			markContentAsDirty();
 
 			mHasFocus = false;
+
+			if(!onFocusLost.empty())
+				onFocusLost();
+
 			return true;
 		}
 		
@@ -587,6 +599,9 @@ namespace BansheeEngine
 							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
 
 							scrollTextToCaret();
+
+							if(!onValueChanged.empty())
+								onValueChanged(mText);
 						}
 					}
 				}
@@ -629,6 +644,9 @@ namespace BansheeEngine
 							gGUIManager().getInputCaretTool()->moveCaretToChar(charIdx, CARET_AFTER);
 
 							scrollTextToCaret();
+
+							if(!onValueChanged.empty())
+								onValueChanged(mText);
 						}
 					}
 				}
@@ -779,6 +797,9 @@ namespace BansheeEngine
 					scrollTextToCaret();
 
 					markContentAsDirty();
+
+					if(!onValueChanged.empty())
+						onValueChanged(mText);
 				}
 
 				return true;
@@ -991,6 +1012,9 @@ namespace BansheeEngine
 			}
 
 			scrollTextToCaret();
+
+			if(!onValueChanged.empty())
+				onValueChanged(mText);
 		}
 
 		clearSelection();
@@ -1107,6 +1131,9 @@ namespace BansheeEngine
 			scrollTextToCaret();
 
 			markContentAsDirty();
+
+			if(!onValueChanged.empty())
+				onValueChanged(mText);
 		}
 	}
 }

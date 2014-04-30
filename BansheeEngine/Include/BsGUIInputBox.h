@@ -32,6 +32,10 @@ namespace BansheeEngine
 		virtual ElementType getElementType() const { return ElementType::InputBox; }
 
 		virtual Vector2I _getOptimalSize() const;
+
+		boost::signal<void(const WString&)> onValueChanged;
+		boost::signal<void()> onFocusGained;
+		boost::signal<void()> onFocusLost;
 	protected:
 		GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline);
 		virtual ~GUIInputBox();

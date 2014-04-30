@@ -45,7 +45,8 @@
     <Compile Include="Debug_Component2.cs" />
     <Compile Include="EditorApplication.cs" />
     <Compile Include="EditorWindow.cs" />
-    <Compile Include="GUIFoldout.cs" />
+    <Compile Include="GUI\GUIFoldout.cs" />
+    <Compile Include="GUI\GUIIntField.cs" />
     <Compile Include="Inspector\CustomInspector.cs" />
     <Compile Include="Inspector\GenericInspector.cs" />
     <Compile Include="Inspector\InspectableArray.cs" />

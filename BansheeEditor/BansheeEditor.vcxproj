@@ -263,6 +263,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsCmdEditPlainFieldGO.h" />
+    <ClInclude Include="Include\BsCmdInputFieldValueChange.h" />
     <ClInclude Include="Include\BsCmdReparentSO.h" />
     <ClInclude Include="Include\BsDbgTestGameObjectRef.h" />
     <ClInclude Include="Include\BsDbgTestGameObjectRefRTTI.h" />

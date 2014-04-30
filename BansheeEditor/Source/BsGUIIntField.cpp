@@ -9,8 +9,12 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIWidget.h"
 #include "BsCursor.h"
+#include "BsUndoRedo.h"
 #include "CmViewport.h"
+#include "BsCmdInputFieldValueChange.h"
 #include <regex>
+
+using namespace std::placeholders;
 
 namespace BansheeEngine
 {
@@ -23,6 +27,10 @@ namespace BansheeEngine
 	{
 		mInputBox = GUIInputBox::create(false, GUIOptions(GUIOption::flexibleWidth()), inputBoxStyle);
 		mInputBox->setFilter(&GUIIntField::intFilter);
+
+		mInputBox->onValueChanged.connect(std::bind(&GUIIntField::valueChanged, this, _1));
+		mInputBox->onFocusGained.connect(std::bind(&GUIIntField::focusGained, this));
+		mInputBox->onFocusLost.connect(std::bind(&GUIIntField::focusLost, this));
 
 		mLayout->addElement(mInputBox);
 
@@ -112,7 +120,7 @@ namespace BansheeEngine
 						xDiff += DRAG_SPEED;
 					}
 				}
-				
+
 				mLastDragPos += (newValue - oldValue) * DRAG_SPEED + jumpAmount;
 
 				if(oldValue != newValue)
@@ -131,13 +139,9 @@ namespace BansheeEngine
 		return false;
 	}
 
-	INT32 GUIIntField::getValue() const
-	{
-		return parseInt(mInputBox->getText());
-	}
-
 	void GUIIntField::setValue(INT32 value)
 	{
+		mValue = value;
 		mInputBox->setText(toWString(value));
 	}
 
@@ -151,6 +155,26 @@ namespace BansheeEngine
 	{
 		static String typeName = "GUIIntField";
 		return typeName;
+	}
+
+	void GUIIntField::valueChanged(const WString& newValue)
+	{
+		INT32 newIntValue = parseInt(newValue);
+
+		CmdInputFieldValueChange<GUIIntField, INT32>::execute(this, newIntValue);
+
+		if(!onValueChanged.empty())
+			onValueChanged(newIntValue);
+	}
+
+	void GUIIntField::focusGained()
+	{
+		UndoRedo::instance().pushGroup("InputBox");
+	}
+
+	void GUIIntField::focusLost()
+	{
+		UndoRedo::instance().popGroup("InputBox");
 	}
 
 	bool GUIIntField::intFilter(const WString& str)

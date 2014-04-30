@@ -28,13 +28,11 @@ namespace BansheeEngine
 		if(mUndoNumElements == 0)
 			return;
 
-		EditorCommand* command = mUndoStack[mUndoStackPtr];
-		mUndoStackPtr = (mUndoStackPtr - 1) % MAX_STACK_ELEMENTS;
-		mUndoNumElements--;
-
+		EditorCommand* command = removeLastFromUndoStack();
+		
 		mRedoStackPtr = (mRedoStackPtr + 1) % MAX_STACK_ELEMENTS;
 		mRedoStack[mRedoStackPtr] = command;
-		mRedoNumElements++;
+		mRedoNumElements = std::min(mRedoNumElements + 1, MAX_STACK_ELEMENTS);
 
 		command->revert();
 	}
@@ -48,20 +46,84 @@ namespace BansheeEngine
 		mRedoStackPtr = (mRedoStackPtr - 1) % MAX_STACK_ELEMENTS;
 		mRedoNumElements--;
 
-		mUndoStackPtr = (mUndoStackPtr + 1) % MAX_STACK_ELEMENTS;
-		mUndoStack[mUndoStackPtr] = command;
-		mUndoNumElements++;
+		addToUndoStack(command);
 
 		command->commit();
 	}
 
+	void UndoRedo::pushGroup(const String& name)
+	{
+		mGroups.push(GroupData());
+		GroupData& newGroup = mGroups.top();
+
+		newGroup.name = name;
+		newGroup.numEntries = 0;
+
+		clearRedoStack();
+	}
+
+	void UndoRedo::popGroup(const String& name)
+	{
+		if(mGroups.empty())
+			CM_EXCEPT(InvalidStateException, "Attempting to pop an UndoRedo group that doesn't exist: " + name);
+
+		GroupData& topGroup = mGroups.top();
+		if(topGroup.name != name)
+			CM_EXCEPT(InvalidStateException, "Attempting to pop invalid UndoRedo group. Got: " + name + ". Expected: " + topGroup.name);
+
+		for(UINT32 i = 0; i < topGroup.numEntries; i++)
+		{
+			EditorCommand* command = mUndoStack[mUndoStackPtr];
+			mUndoStackPtr = (mUndoStackPtr - 1) % MAX_STACK_ELEMENTS;
+			mUndoNumElements--;
+
+			EditorCommand::destroy(command);
+		}
+
+		mGroups.pop();
+		clearRedoStack();
+	}
+
 	void UndoRedo::registerCommand(EditorCommand* command)
+	{
+		addToUndoStack(command);
+
+		clearRedoStack();
+	}
+
+	EditorCommand* UndoRedo::removeLastFromUndoStack()
+	{
+		EditorCommand* command = mUndoStack[mUndoStackPtr];
+		mUndoStackPtr = (mUndoStackPtr - 1) % MAX_STACK_ELEMENTS;
+		mUndoNumElements--;
+
+		if(!mGroups.empty())
+		{
+			GroupData& topGroup = mGroups.top();
+
+			if(topGroup.numEntries == 0)
+			{
+				CM_EXCEPT(InvalidStateException, "Removing an element from UndoRedo stack while in an " \
+					"invalid UndoRedo group. Current group: " + topGroup.name);
+			}
+
+			topGroup.numEntries--;
+		}
+
+		return command;
+	}
+
+	void UndoRedo::addToUndoStack(EditorCommand* command)
 	{
 		mUndoStackPtr = (mUndoStackPtr + 1) % MAX_STACK_ELEMENTS;
 		mUndoStack[mUndoStackPtr] = command;
-		mUndoNumElements++;
+		mUndoNumElements = std::min(mUndoNumElements + 1, MAX_STACK_ELEMENTS);
 
-		clearRedoStack();
+		if(!mGroups.empty())
+		{
+			GroupData& topGroup = mGroups.top();
+			topGroup.numEntries = std::min(topGroup.numEntries + 1, MAX_STACK_ELEMENTS);
+		}
 	}
 
 	void UndoRedo::clearUndoStack()
@@ -74,6 +136,9 @@ namespace BansheeEngine
 
 			EditorCommand::destroy(command);
 		}
+
+		while(!mGroups.empty())
+			mGroups.pop();
 	}
 
 	void UndoRedo::clearRedoStack()

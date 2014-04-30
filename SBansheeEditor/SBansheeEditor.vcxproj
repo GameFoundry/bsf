@@ -229,11 +229,13 @@
     <ClInclude Include="Include\BsScriptEditorPrerequisites.h" />
     <ClInclude Include="Include\BsScriptEditorWindow.h" />
     <ClInclude Include="Include\BsScriptGUIFoldout.h" />
+    <ClInclude Include="Include\BsScriptGUIIntField.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsScriptEditorPlugin.cpp" />
     <ClCompile Include="Source\BsScriptEditorWindow.cpp" />
     <ClCompile Include="Source\BsScriptGUIFoldout.cpp" />
+    <ClCompile Include="Source\BsScriptGUIIntField.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
