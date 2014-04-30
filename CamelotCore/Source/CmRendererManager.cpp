@@ -31,7 +31,7 @@ namespace BansheeEngine
 		return name;
 	}
 
-	void RendererManager::registerFactory(RendererFactoryPtr factory)
+	void RendererManager::_registerFactory(RendererFactoryPtr factory)
 	{
 		assert(factory != nullptr);
 

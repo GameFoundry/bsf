@@ -6,6 +6,10 @@
 
 namespace BansheeEngine 
 {
+	/**
+	 * @brief	A render operation describing everything we need for rendering
+	 * 			a single object.
+	 */
 	struct CM_EXPORT RenderOperation
 	{
 		RenderOperation()

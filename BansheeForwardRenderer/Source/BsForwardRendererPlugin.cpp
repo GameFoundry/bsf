@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	extern "C" BS_FWDRND_EXPORT void* loadPlugin()
 	{
-		RendererManager::instance().registerFactory(cm_shared_ptr<ForwardRendererFactory>());
+		RendererManager::instance()._registerFactory(cm_shared_ptr<ForwardRendererFactory>());
 
 		return nullptr;
 	}

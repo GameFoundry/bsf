@@ -4,6 +4,37 @@ Test new ScriptObject* system
 When I change an object in InspectableObject field I probably need to rebuild entire GUI hierarchy for that object. Right now I'm not.
 
 -----------------------------------------------
+FINE GRAINED TASKS
+
+- Add GUIUtility and a way how to calculate GUILayout height for use in inspectors
+
+- Determine how will InspectorFields update child GUI elements. i.e. when number of elements in an array changes.
+
+- Ensure all C++ editor fields have:
+ - onValueChanged
+ - setValue/getValue
+ - undo/redo functionality
+
+- Ensure that focus lost gets sent even when element gets destroyed. Otherwise UndoRedo buffer will fail to be properly cleared.
+
+- Extend text field so it can be multi-line
+- Add label to foldout
+- Extend GameObject field so it can only accept a certain type
+- Add ResourceField to C++
+
+- Port to C#:
+ - IntField
+ - FloatField
+ - ColorField
+ - ToggleField
+ - TextField
+ - Vector2Field
+ - Vector3Field
+ - Vector4Field
+ - GameObjectField
+ - ResourceField
+
+-----------------------------------------------
 LESS IMPORTANT
 
 A way to close a window & destroy a GUI panel!
@@ -15,13 +46,6 @@ A way to close a window & destroy a GUI panel!
    - It should notify owning EditorWindow
 
 Ensure that setting depth for GUIArea works properly. It's not properly implemented yet.
-
-Missing C++ field types:
- - Array field/List field/Dictionary field
- - Matrix3 field
- - Matrix4 field
- - GameObject field
- - Resource field
 
 UndoRedo should work on URI type basis where it remembers object ID, and path across its fields to the field that was modified
  - This way it wont keep an unnecessary reference to object
