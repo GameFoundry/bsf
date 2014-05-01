@@ -60,9 +60,9 @@ namespace BansheeEngine
 		TmpClass instance;
 		Event<void (int)> myEvent;
 		myEvent += delegate(&instance, &TmpClass::someMEthod);
+		myEvent -= delegate(&instance, &TmpClass::someMEthod);
 
-		int arg = 5;
-		myEvent(arg);
+		myEvent(5);
 
 		// END DEBUG
 

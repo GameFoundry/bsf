@@ -14,12 +14,12 @@ namespace BansheeEngine
 	class Delegate1Abstract
 	{
 	public:
-		virtual RetType call(P0& p0) = 0;
+		virtual RetType call(P0 p0) = 0;
 		virtual bool equals(const Delegate1Abstract<P0, RetType>& other) = 0;
 	};
 
 	/************************************************************************/
-	/* 							MEMBER DELEGATE                      		*/
+	/* 						MEMBER FUNCTION DELEGATE                   		*/
 	/************************************************************************/
 
 	// 1 parameter
@@ -31,7 +31,7 @@ namespace BansheeEngine
 			:mInstance(instance), mFunc(func)
 		{ }
 
-		RetType call(P0& p0)
+		RetType call(P0 p0)
 		{
 			(mInstance->*mFunc)(p0);
 		}
@@ -68,7 +68,7 @@ namespace BansheeEngine
 			:mInstance(instance), mFunc(func)
 		{ }
 
-		RetType call(P0& p0)
+		RetType call(P0 p0)
 		{
 			(*mFunc)(p0);
 		}
@@ -92,7 +92,7 @@ namespace BansheeEngine
 	}	
 
 	/************************************************************************/
-	/* 									EVENTS					     		*/
+	/* 								EVENTS									*/
 	/************************************************************************/
 	
 	// 1 parameter
@@ -123,7 +123,7 @@ namespace BansheeEngine
 			}
 		}
 
-		void operator() (P0& args)
+		void operator() (P0 args)
 		{
 			// TODO - Lock each call separately using a spin lock
 
