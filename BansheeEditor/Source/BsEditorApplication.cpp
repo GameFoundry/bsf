@@ -59,9 +59,9 @@ namespace BansheeEngine
 
 		TmpClass instance;
 		Event<void (int)> myEvent;
-		myEvent += delegate(&instance, &TmpClass::someMEthod);
-		myEvent -= delegate(&instance, &TmpClass::someMEthod);
+		HEvent evSomeMethod = myEvent.connect(std::bind(&TmpClass::someMEthod, instance, std::placeholders::_1));
 
+		evSomeMethod.disconnect();
 		myEvent(5);
 
 		// END DEBUG
