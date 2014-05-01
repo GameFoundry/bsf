@@ -122,7 +122,6 @@ namespace BansheeEngine
 	class PoolAlloc
 	{ };
 
-
 	/**
 	 * @brief	Allocates the specified number of bytes.
 	 */

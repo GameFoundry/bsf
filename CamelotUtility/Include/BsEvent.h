@@ -49,26 +49,45 @@ namespace BansheeEngine
 
 		HEvent connect(std::function<RetType(P0)> func)
 		{
-			// TODO - Lock
-
 			ConnectionData* connData = cm_new<ConnectionData>(func);
-			mConnections.push_back(connData);
 
+			{
+				ScopedSpinLock lock;
+				mConnections.push_back(connData);
+			}
+			
 			return HEvent(connData, this, &Event1::disconnectCallback);
 		}
 
 		void operator() (P0 args)
 		{
-			// TODO - Lock each call separately using a spin lock
+			SpinLock lock;
+
+			// TODO - This isn't correct as iterator isn't locked while function is executing
+
+			// Fix by:
+			//  - Using stack alloc allocate N std::function objects
+			//  - Create std::function objects using a stack allocator internally
+
+
+			lock.lock();
 
 			for(auto& connection : mConnections)
-				connection->func(args);
+			{
+				std::function<RetType(P0)> func = connection->func;
+				lock.unlock();
+
+				func(args);
+
+				lock.lock();
+			}
+			lock.unlock();
 		}
 
 		void clear()
 		{
-			// TODO - Lock
-			
+			ScopedSpinLock lock;
+
 			for(auto& connection : mConnections)
 			{
 				cm_delete(connection);
@@ -79,7 +98,8 @@ namespace BansheeEngine
 
 		bool empty()
 		{
-			// TODO - Lock
+			ScopedSpinLock lock;
+
 			return mConnections.size() == 0;
 		}
 
@@ -99,7 +119,7 @@ namespace BansheeEngine
 
 		void disconnect(ConnectionData* connData)
 		{
-			// TODO - Lock
+			ScopedSpinLock lock;
 
 			for(auto& iter = mConnections.begin(); iter != mConnections.end(); ++iter)
 			{

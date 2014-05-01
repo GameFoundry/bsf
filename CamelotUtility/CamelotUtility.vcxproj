@@ -267,6 +267,7 @@
     <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
     <ClInclude Include="Include\BsEvent.h" />
+    <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
     <ClInclude Include="Include\BsThreadPool.h" />
     <ClInclude Include="Include\CmAsyncOp.h" />

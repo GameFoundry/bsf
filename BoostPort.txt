@@ -1,0 +1,20 @@
+Events:
+ - Locking currently doesn't work properly. I need to use stack allocation to temporarily allocate std::functions when triggering an event
+ - Add support for variadic number of parameters. Initially just by using boost preprocessor like in other places.
+  - Note for events and its function style arguments: "class variadic_extended_signature<R (Args...)>"
+
+Replace boost::any from Any in POCO
+Replace boost::uid from UUID in POCO
+Temporarily make filesystem use VS filesystem header
+
+
+
+--------------
+Once ported to VS:
+ - Remove boost preprocessor macros and use variadic templates
+ - Remove ::type extensions from vectors
+ - Port filesystem from VS implementation to custom one
+
+--------------
+Other:
+ - std::function allocates memory yet I'm not using a custom allocator for it.

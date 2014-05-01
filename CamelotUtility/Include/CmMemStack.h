@@ -290,4 +290,43 @@ namespace BansheeEngine
 	 * @copydoc	MemoryStackInternal::dealloc()
 	 */
 	CM_UTILITY_EXPORT inline void stackDeallocLast(void* data);
+
+	/**
+	* @brief	Allows use of a stack allocator by using normal new/delete/free/dealloc operators.
+	* 			
+	* @see		MemStack
+	*/
+	class StackAlloc
+	{ };
+
+	/**
+	* @brief	Specialized memory allocator implementations that allows use of a 
+	* 			stack allocator in normal new/delete/free/dealloc operators.
+	* 			
+	* @see		MemStack
+	*/
+	template<>
+	class MemoryAllocator<StackAlloc> : public MemoryAllocatorBase
+	{
+	public:
+		static inline void* allocate(size_t bytes)
+		{
+			stackAlloc((UINT32)bytes);
+		}
+
+		static inline void* allocateArray(size_t bytes, UINT32 count)
+		{
+			return stackAlloc((UINT32)(bytes * count));
+		}
+
+		static inline void free(void* ptr)
+		{
+			stackDeallocLast(ptr);
+		}
+
+		static inline void freeArray(void* ptr, UINT32 count)
+		{
+			stackDeallocLast(ptr);
+		}
+	};
 }

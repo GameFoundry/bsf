@@ -8,6 +8,7 @@
 #include <chrono>
 #include <mutex>
 #include <condition_variable>
+#include "BsSpinLock.h"
 
 #define CM_AUTO_MUTEX mutable std::mutex CM_AUTO_MUTEX_NAME;
 #define CM_LOCK_AUTO_MUTEX std::unique_lock<std::mutex> cmAutoMutexLock(CM_AUTO_MUTEX_NAME);
