@@ -35,6 +35,7 @@
 #include "BsGUIArea.h"
 #include "BsGUIButton.h"
 #include "BsGUILayout.h"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -43,6 +44,28 @@ namespace BansheeEngine
 	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
 		:mActiveRSPlugin(renderSystemPlugin)
 	{
+		// START DEBUG
+		
+		class TmpClass
+		{
+		public:
+			void someMEthod(int a)
+			{
+				b = a;
+			}
+
+			int b;
+		};
+
+		TmpClass instance;
+		Event<void (int)> myEvent;
+		myEvent += delegate(&instance, &TmpClass::someMEthod);
+
+		int arg = 5;
+		myEvent(arg);
+
+		// END DEBUG
+
 		RENDER_WINDOW_DESC renderWindowDesc;
 		renderWindowDesc.width = 1280;
 		renderWindowDesc.height = 720;
@@ -298,7 +321,6 @@ namespace BansheeEngine
 		//modalButton->onClick.connect(std::bind(&EditorApplication::closeModalWindow, modalWindow, modalSceneObject));
 
 		//modalArea->getLayout().addElement(modalButton);
-
 
 		/************************************************************************/
 		/* 							END DEBUG CODE                      		*/
