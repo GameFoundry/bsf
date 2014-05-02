@@ -150,7 +150,7 @@
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -168,7 +168,7 @@
     <Link>
       <SubSystem>NotSet</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -192,7 +192,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -217,7 +217,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -241,7 +241,7 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
@@ -266,12 +266,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>CamelotUtility.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>CamelotUtility.lib;IPHLPAPI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsCommonStructs.h" />
     <ClInclude Include="Include\BsThreadPolicy.h" />
     <ClInclude Include="Include\CmBindableGpuParamBlock.h" />
     <ClInclude Include="Include\CmBindableGpuParams.h" />
@@ -355,6 +356,7 @@
     <ClInclude Include="Include\CmTextData.h" />
     <ClInclude Include="Include\CmTimerQuery.h" />
     <ClInclude Include="Include\CmTransientMesh.h" />
+    <ClInclude Include="Include\CmUUID.h" />
     <ClInclude Include="Include\CmVertexBuffer.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgram.h" />
     <ClInclude Include="Include\CmHighLevelGpuProgramManager.h" />
@@ -481,6 +483,7 @@
     <ClCompile Include="Source\CmTextData.cpp" />
     <ClCompile Include="Source\CmTimerQuery.cpp" />
     <ClCompile Include="Source\CmTransientMesh.cpp" />
+    <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\CmVertexBuffer.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgram.cpp" />
     <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp" />

@@ -264,7 +264,6 @@
     <ClCompile Include="Source\CmSphere.cpp" />
     <ClCompile Include="Source\CmStringTable.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
-    <ClCompile Include="Source\CmUUID.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
     <ClInclude Include="Include\BsEvent.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
@@ -322,7 +321,6 @@
     <ClInclude Include="Include\CmSphere.h" />
     <ClInclude Include="Include\CmStdHeaders.h" />
     <ClInclude Include="Include\CmUtil.h" />
-    <ClInclude Include="Include\CmUUID.h" />
     <ClInclude Include="Include\CmVector2.h" />
     <ClInclude Include="Include\CmVector3.h" />
     <ClInclude Include="Include\CmVector4.h" />

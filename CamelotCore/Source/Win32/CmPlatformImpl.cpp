@@ -5,6 +5,7 @@
 #include "CmWin32Defs.h"
 #include "CmDebug.h"
 #include "Win32/CmWin32DropTarget.h"
+#include <iphlpapi.h>
 
 namespace BansheeEngine
 {
@@ -327,6 +328,47 @@ namespace BansheeEngine
 		}
 
 		return L"";
+	}
+
+	bool Platform::getMACAddress(MACAddress& address)
+	{
+		std::memset(&address, 0, sizeof(address));
+
+		PIP_ADAPTER_INFO adapterInfo = cm_alloc<IP_ADAPTER_INFO>();
+		
+		ULONG len = sizeof(IP_ADAPTER_INFO);
+		DWORD rc = GetAdaptersInfo(adapterInfo, &len);
+
+		if (rc == ERROR_BUFFER_OVERFLOW)
+		{
+			cm_free(adapterInfo);
+			adapterInfo = reinterpret_cast<IP_ADAPTER_INFO*>(cm_alloc(len));
+		}
+		else if (rc != ERROR_SUCCESS)
+		{
+			cm_free(adapterInfo);
+			return false;
+		}
+
+		if (GetAdaptersInfo(adapterInfo, &len) == NO_ERROR)
+		{
+			PIP_ADAPTER_INFO curAdapter = nullptr;
+			curAdapter = adapterInfo;
+
+			while (curAdapter)
+			{
+				if (curAdapter->Type == MIB_IF_TYPE_ETHERNET && curAdapter->AddressLength == sizeof(address))
+				{
+					std::memcpy(&address, curAdapter->Address, curAdapter->AddressLength);
+					return true;
+				}
+
+				curAdapter = curAdapter->Next;
+			}
+		}
+
+		cm_free(adapterInfo);
+		return false;
 	}
 
 	double Platform::queryPerformanceTimerMs()

@@ -120,9 +120,6 @@
     <ClInclude Include="Include\CmLog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmUUID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmPath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -312,9 +309,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Win32\CmTimer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmUUID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmManagedDataBlock.cpp">

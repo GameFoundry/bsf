@@ -94,7 +94,7 @@ namespace BansheeEngine
 		}
 
 		if(!foundUUID)
-			uuid = UUIDGenerator::generateRandom();
+			uuid = UUIDGenerator::instance().generateRandom();
 
 		{
 			CM_LOCK_MUTEX(mLoadedResourceMutex);
@@ -252,7 +252,7 @@ namespace BansheeEngine
 
 	HResource Resources::createResourceHandle(const ResourcePtr& obj)
 	{
-		String uuid = UUIDGenerator::generateRandom();
+		String uuid = UUIDGenerator::instance().generateRandom();
 		HResource newHandle(obj, uuid);
 
 		{

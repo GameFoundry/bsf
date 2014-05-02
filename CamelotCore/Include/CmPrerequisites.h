@@ -332,3 +332,5 @@ namespace BansheeEngine
 	 */
 	void CM_EXPORT deferredCall(std::function<void()> callback);
 }
+
+#include "BsCommonStructs.h"

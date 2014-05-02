@@ -35,6 +35,7 @@
 #include "BsThreadPool.h"
 #include "BsThreadPolicy.h"
 #include "BsTaskScheduler.h"
+#include "CmUUID.h"
 
 #include "CmMaterial.h"
 #include "CmShader.h"
@@ -58,6 +59,7 @@ namespace BansheeEngine
 		Platform::_startUp();
 		MemStack::beginThread();
 
+		UUIDGenerator::startUp(cm_new<UUIDGenerator>());
 		Profiler::startUp(cm_new<Profiler>());
 		ThreadPool::startUp(cm_new<TThreadPool<ThreadBansheePolicy>>(numWorkerThreads));
 		TaskScheduler::startUp(cm_new<TaskScheduler>());
@@ -203,6 +205,8 @@ namespace BansheeEngine
 		TaskScheduler::shutDown();
 		ThreadPool::shutDown();
 		Profiler::shutDown();
+		UUIDGenerator::shutDown();
+
 		MemStack::endThread();
 		Platform::_shutDown();
 	}

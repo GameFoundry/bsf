@@ -192,6 +192,12 @@ namespace BansheeEngine
 		static WString copyFromClipboard();
 
 		/**
+		 * @brief	Populates the provided buffer with a MAC address of the first available
+		 *			adapter, if one exists. If no adapters exist, returns false.
+		 */
+		static bool getMACAddress(MACAddress& address);
+
+		/**
 		 * @brief	Queries the internal system performance counter you can use for very precise time
 		 * 			measurements. Value is in milliseconds.
 		 * 			

@@ -531,6 +531,12 @@
     <ClInclude Include="Include\BsThreadPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCommonStructs.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmUUID.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -834,6 +840,9 @@
       <Filter>Source Files\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsThreadPolicy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmUUID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

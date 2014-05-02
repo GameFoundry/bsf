@@ -7,8 +7,6 @@ Replace boost::any from Any in POCO
 Replace boost::uid from UUID in POCO
 Temporarily make filesystem use VS filesystem header
 
-
-
 --------------
 Once ported to VS:
  - Remove boost preprocessor macros and use variadic templates
@@ -17,4 +15,5 @@ Once ported to VS:
 
 --------------
 Other:
- - std::function allocates memory yet I'm not using a custom allocator for it.
+ - std::function allocates memory yet I'm not using a custom allocator for it. Replace std::function with custom Function method.
+ - Ability to construct Module without having to do allocation outside of it
