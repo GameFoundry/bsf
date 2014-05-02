@@ -52,7 +52,7 @@ namespace BansheeEngine
 			ConnectionData* connData = cm_new<ConnectionData>(func);
 
 			{
-				ScopedSpinLock lock;
+				CM_LOCK_MUTEX(mMutex);
 				mConnections.push_back(connData);
 			}
 			
@@ -61,17 +61,7 @@ namespace BansheeEngine
 
 		void operator() (P0 args)
 		{
-			SpinLock lock;
-
-			// TODO - This is TERRIBLE as the spin lock might lock for a long while while
-			// the called method is executing. But there is no reason to lock while method is executing.
-			// Fix by copying list of connections temporarily.
-
-			// Fix by:
-			//  - Using stack alloc allocate N std::function objects
-			//  - Create std::function objects using a stack allocator internally
-
-			lock.lock();
+			CM_LOCK_MUTEX(mMutex);
 
 			for(auto& connection : mConnections)
 			{
@@ -79,13 +69,11 @@ namespace BansheeEngine
 
 				func(args);
 			}
-
-			lock.unlock();
 		}
 
 		void clear()
 		{
-			ScopedSpinLock lock;
+			CM_LOCK_MUTEX(mMutex);
 
 			for(auto& connection : mConnections)
 			{
@@ -97,7 +85,7 @@ namespace BansheeEngine
 
 		bool empty()
 		{
-			ScopedSpinLock lock;
+			CM_LOCK_MUTEX(mMutex);
 
 			return mConnections.size() == 0;
 		}
@@ -106,6 +94,7 @@ namespace BansheeEngine
 		friend class EventHandle1;
 
 		typename Vector<ConnectionData*>::type mConnections;
+		CM_MUTEX(mMutex);
 
 		static void disconnectCallback(void* connection, void* event)
 		{
@@ -118,7 +107,7 @@ namespace BansheeEngine
 
 		void disconnect(ConnectionData* connData)
 		{
-			ScopedSpinLock lock;
+			CM_LOCK_MUTEX(mMutex);
 
 			for(auto& iter = mConnections.begin(); iter != mConnections.end(); ++iter)
 			{
