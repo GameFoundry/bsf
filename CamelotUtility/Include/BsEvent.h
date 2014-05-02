@@ -63,24 +63,23 @@ namespace BansheeEngine
 		{
 			SpinLock lock;
 
-			// TODO - This isn't correct as iterator isn't locked while function is executing
+			// TODO - This is TERRIBLE as the spin lock might lock for a long while while
+			// the called method is executing. But there is no reason to lock while method is executing.
+			// Fix by copying list of connections temporarily.
 
 			// Fix by:
 			//  - Using stack alloc allocate N std::function objects
 			//  - Create std::function objects using a stack allocator internally
-
 
 			lock.lock();
 
 			for(auto& connection : mConnections)
 			{
 				std::function<RetType(P0)> func = connection->func;
-				lock.unlock();
 
 				func(args);
-
-				lock.lock();
 			}
+
 			lock.unlock();
 		}
 

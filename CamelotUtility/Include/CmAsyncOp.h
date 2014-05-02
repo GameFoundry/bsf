@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 #include "CmException.h"
-#include "boost/any.hpp"
+#include "BsAny.h"
 
 namespace BansheeEngine
 {
@@ -25,7 +25,7 @@ namespace BansheeEngine
 				:mIsCompleted(false)
 			{ }
 
-			boost::any mReturnValue;
+			Any mReturnValue;
 			volatile bool mIsCompleted;
 		};
 
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Internal method. Mark the async operation as completed.
 		 */
-		void _completeOperation(boost::any returnValue);
+		void _completeOperation(Any returnValue);
 
 		/**
 		 * @brief	Internal method. Mark the async operation as completed, without setting a return value.
@@ -64,9 +64,9 @@ namespace BansheeEngine
 			if(!hasCompleted())
 				CM_EXCEPT(InternalErrorException, "Trying to get AsyncOp return value but the operation hasn't completed.");
 #endif
-			// Be careful if boost returns bad_any_cast. It doesn't support casting of polymorphic types. Provided and returned
+			// Be careful if cast throws an exception. It doesn't support casting of polymorphic types. Provided and returned
 			// types must be EXACT. (You'll have to cast the data yourself when completing the operation)
-			return boost::any_cast<T>(mData->mReturnValue);
+			return any_cast<T>(mData->mReturnValue);
 		}
 
 	private:

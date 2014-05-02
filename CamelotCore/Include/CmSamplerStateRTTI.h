@@ -29,7 +29,7 @@ namespace BansheeEngine
 			SamplerState* samplerState = static_cast<SamplerState*>(obj);
 			if(!samplerState->mRTTIData.empty())
 			{
-				SAMPLER_STATE_DESC desc = boost::any_cast<SAMPLER_STATE_DESC>(samplerState->mRTTIData);
+				SAMPLER_STATE_DESC desc = any_cast<SAMPLER_STATE_DESC>(samplerState->mRTTIData);
 
 				samplerState->initialize(desc);
 			}

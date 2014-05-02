@@ -208,7 +208,7 @@ namespace BansheeEngine
 
 		material->initBestTechnique();
 
-		std::shared_ptr<MaterialParams> params = boost::any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
+		std::shared_ptr<MaterialParams> params = any_cast<std::shared_ptr<MaterialParams>>(material->mRTTIData);
 
 		ShaderPtr shader = material->getShader();
 		if(shader != nullptr)

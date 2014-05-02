@@ -4,8 +4,6 @@
 #include <algorithm>
 #include <unordered_map>
 
-#include <boost/preprocessor/punctuation/comma.hpp>
-
 #include "CmPrerequisitesUtil.h"
 #include "CmManagedDataBlock.h"
 #include "CmRTTIField.h"
@@ -901,7 +899,7 @@ namespace BansheeEngine
 
 	private:
 		template<class ObjectType, class DataType>
-		void addPlainField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void addPlainField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = 
 				cm_new<RTTIPlainField<DataType, ObjectType>>();
@@ -910,7 +908,7 @@ namespace BansheeEngine
 		}
 		
 		template<class ObjectType, class DataType>
-		void addReflectableField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void addReflectableField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
@@ -922,7 +920,7 @@ namespace BansheeEngine
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void addReflectablePtrField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
@@ -937,8 +935,8 @@ namespace BansheeEngine
 		}
 
 		template<class ObjectType, class DataType>
-		void addPlainArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
-			boost::any setter, boost::any setSize, UINT64 flags)
+		void addPlainArrayField(const String& name, UINT32 uniqueId, Any getter, Any getSize,
+			Any setter, Any setSize, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = 
 				cm_new<RTTIPlainField<DataType, ObjectType>>();
@@ -947,8 +945,8 @@ namespace BansheeEngine
 		}	
 
 		template<class ObjectType, class DataType>
-		void addReflectableArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
-			boost::any setter, boost::any setSize, UINT64 flags)
+		void addReflectableArrayField(const String& name, UINT32 uniqueId, Any getter, Any getSize,
+			Any setter, Any setSize, UINT64 flags)
 		{
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
@@ -960,8 +958,8 @@ namespace BansheeEngine
 		}
 
 		template<class ObjectType, class DataType>
-		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, boost::any getter, boost::any getSize, 
-			boost::any setter, boost::any setSize, UINT64 flags)
+		void addReflectablePtrArrayField(const String& name, UINT32 uniqueId, Any getter, Any getSize,
+			Any setter, Any setSize, UINT64 flags)
 		{
 			static_assert((std::is_base_of<BansheeEngine::IReflectable, DataType>::value), 
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
@@ -976,7 +974,8 @@ namespace BansheeEngine
 		}
 
 		template<class ObjectType>
-		void addDataBlockField(const String& name, UINT32 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
+		void addDataBlockField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags, 
+			Any customAllocator = Any())
 		{
 			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = 
 				cm_new<RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>>();

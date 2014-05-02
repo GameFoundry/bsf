@@ -2,7 +2,7 @@
 
 namespace BansheeEngine
 {
-	void AsyncOp::_completeOperation(boost::any returnValue) 
+	void AsyncOp::_completeOperation(Any returnValue) 
 	{ 
 		mData->mReturnValue = returnValue; 
 		mData->mIsCompleted = true; 

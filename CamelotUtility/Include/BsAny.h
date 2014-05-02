@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
+#include "CmException.h"
 #include <algorithm>
 #include <typeinfo>
 
@@ -9,6 +10,10 @@ namespace BansheeEngine
 	/**
 	 * @brief	Class capable of storing any general type, and safely extracting 
 	 *			the proper type from the internal data.
+	 *
+	 * @note	Requires C++ RTTI to be active in the compiler. If you don't want to
+	 *			activate RTTI you may remove "typeid" type checks, in which case the
+	 *			container functionality will remain but casting will no longer be type safe.
 	 */
 	class Any
 	{
@@ -46,7 +51,7 @@ namespace BansheeEngine
 
 	public:
 		Any() 
-			:mData(0)
+			:mData(nullptr)
 		{ }
 
 		template <typename ValueType>
@@ -60,7 +65,8 @@ namespace BansheeEngine
 
 		~Any()
 		{
-			cm_delete(mData);
+			if (mData != nullptr)
+				cm_delete(mData);
 		}
 
 		/**

@@ -35,7 +35,7 @@ namespace BansheeEngine
 
 		ManagedSerializableObjectPtr getObjectData(ManagedComponent* obj)
 		{
-			return boost::any_cast<ManagedSerializableObjectPtr>(obj->mRTTIData);
+			return any_cast<ManagedSerializableObjectPtr>(obj->mRTTIData);
 		}
 
 		void setObjectData(ManagedComponent* obj, ManagedSerializableObjectPtr val)
@@ -67,7 +67,7 @@ namespace BansheeEngine
 
 		static void finalizeDeserialization(ManagedComponent* mc)
 		{
-			ManagedSerializableObjectPtr serializableObject = boost::any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
+			ManagedSerializableObjectPtr serializableObject = any_cast<ManagedSerializableObjectPtr>(mc->mRTTIData);
 
 			::MonoClass* monoClass = mono_object_get_class(serializableObject->getManagedInstance());
 			MonoType* monoType = mono_class_get_type(monoClass);

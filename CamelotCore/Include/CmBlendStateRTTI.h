@@ -68,7 +68,7 @@ namespace BansheeEngine
 			BlendState* blendState = static_cast<BlendState*>(obj);
 			if(!blendState->mRTTIData.empty())
 			{
-				BLEND_STATE_DESC desc = boost::any_cast<BLEND_STATE_DESC>(blendState->mRTTIData);
+				BLEND_STATE_DESC desc = any_cast<BLEND_STATE_DESC>(blendState->mRTTIData);
 
 				blendState->initialize(desc);
 			}

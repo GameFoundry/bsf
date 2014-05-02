@@ -15,7 +15,7 @@ namespace BansheeEngine
 	 */
 	struct RTTIManagedDataBlockFieldBase : public RTTIField
 	{
-		boost::any mCustomAllocator;
+		Any mCustomAllocator;
 
 		/**
 		 * @brief	Retrieves a managed data block from the specified instance.
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		 * @param	flags		Various flags you can use to specialize how systems handle this field. See "RTTIFieldFlag".
 		 * @param	customAllocator (optional) Custom allocator that will be used when de-serializing DataBlock memory.
 		 */
-		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags, boost::any customAllocator = boost::any())
+		void initSingle(const String& name, UINT16 uniqueId, Any getter, Any setter, UINT64 flags, Any customAllocator = Any())
 		{
 			initAll(getter, setter, nullptr, nullptr, name, uniqueId, false, SerializableFT_DataBlock, flags);
 			mCustomAllocator = customAllocator;
@@ -99,7 +99,7 @@ namespace BansheeEngine
 		virtual ManagedDataBlock getValue(void* object)
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
-			std::function<ManagedDataBlock(ObjectType*)> f = boost::any_cast<std::function<ManagedDataBlock(ObjectType*)>>(valueGetter);
+			std::function<ManagedDataBlock(ObjectType*)> f = any_cast<std::function<ManagedDataBlock(ObjectType*)>>(valueGetter);
 			return f(castObj);
 		}
 
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		virtual void setValue(void* object, ManagedDataBlock value)
 		{
 			ObjectType* castObj = static_cast<ObjectType*>(object);
-			std::function<void(ObjectType*, ManagedDataBlock)> f = boost::any_cast<std::function<void(ObjectType*, ManagedDataBlock)>>(valueSetter);
+			std::function<void(ObjectType*, ManagedDataBlock)> f = any_cast<std::function<void(ObjectType*, ManagedDataBlock)>>(valueSetter);
 			f(castObj, value);
 		}
 
@@ -123,7 +123,7 @@ namespace BansheeEngine
 			else
 			{
 				ObjectType* castObj = static_cast<ObjectType*>(object);
-				std::function<UINT8*(ObjectType*, UINT32)> f = boost::any_cast<std::function<UINT8*(ObjectType*, UINT32)>>(mCustomAllocator);
+				std::function<UINT8*(ObjectType*, UINT32)> f = any_cast<std::function<UINT8*(ObjectType*, UINT32)>>(mCustomAllocator);
 				return f(castObj, bytes);
 			}
 		}

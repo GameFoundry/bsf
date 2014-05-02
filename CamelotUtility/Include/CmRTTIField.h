@@ -2,13 +2,13 @@
 
 #include <string>
 
-#include <boost/any.hpp>
 #include <type_traits>
 
 #include "CmPrerequisitesUtil.h"
 #include "CmIReflectable.h"
 #include "CmManagedDataBlock.h"
 #include "CmException.h"
+#include "BsAny.h"
 
 namespace BansheeEngine
 {
@@ -73,11 +73,11 @@ namespace BansheeEngine
 	 */
 	struct CM_UTILITY_EXPORT RTTIField
 	{
-		boost::any valueGetter;
-		boost::any valueSetter;
+		Any valueGetter;
+		Any valueSetter;
 
-		boost::any arraySizeGetter;
-		boost::any arraySizeSetter;
+		Any arraySizeGetter;
+		Any arraySizeSetter;
 
 		String mName;
 		UINT16 mUniqueId;
@@ -162,7 +162,7 @@ namespace BansheeEngine
 		void checkIsDataBlock();
 
 	protected:
-		void initAll(boost::any valueGetter, boost::any valueSetter, boost::any arraySizeGetter, boost::any arraySizeSetter,
+		void initAll(Any valueGetter, Any valueSetter, Any arraySizeGetter, Any arraySizeSetter,
 			String mName, UINT16 mUniqueId, bool mIsVectorType, SerializableFieldType type, UINT64 flags)
 		{
 			this->valueGetter = valueGetter;

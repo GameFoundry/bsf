@@ -98,7 +98,7 @@ namespace BansheeEngine
 
 		void setFontData(Font* obj, UINT32 idx, FontData& value)
 		{
-			FontInitData* initData = boost::any_cast<FontInitData*>(obj->mRTTIData);
+			FontInitData* initData = any_cast<FontInitData*>(obj->mRTTIData);
 
 			initData->fontDataPerSize[idx] = value;
 		}
@@ -110,7 +110,7 @@ namespace BansheeEngine
 
 		void setNumFontData(Font* obj, UINT32 size)
 		{
-			FontInitData* initData = boost::any_cast<FontInitData*>(obj->mRTTIData);
+			FontInitData* initData = any_cast<FontInitData*>(obj->mRTTIData);
 
 			initData->fontDataPerSize.resize(size);
 		}
@@ -149,7 +149,7 @@ namespace BansheeEngine
 		virtual void onDeserializationEnded(IReflectable* obj)
 		{
 			Font* font = static_cast<Font*>(obj);
-			FontInitData* initData = boost::any_cast<FontInitData*>(font->mRTTIData);
+			FontInitData* initData = any_cast<FontInitData*>(font->mRTTIData);
 
 			font->initialize(initData->fontDataPerSize);
 

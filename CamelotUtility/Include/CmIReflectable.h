@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
-#include <boost/any.hpp>
+#include "BsAny.h"
 
 namespace BansheeEngine
 {
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		static bool _isTypeIdDuplicate(UINT32 typeId);
 
 	protected:
-		boost::any mRTTIData; // Temporary per-instance data storage used during various RTTI operations.
-							  // Needed since there is one RTTI class instance per type and sometimes we need per-instance data.
+		Any mRTTIData; // Temporary per-instance data storage used during various RTTI operations.
+					   // Needed since there is one RTTI class instance per type and sometimes we need per-instance data.
 	};
 }

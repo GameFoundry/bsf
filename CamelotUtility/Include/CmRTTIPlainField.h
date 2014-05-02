@@ -112,7 +112,7 @@ namespace BansheeEngine
 		 * @param	setter  	The setter method for the field. Must be a specific signature: void(ObjectType*, DataType)
 		 * @param	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
 		 */
-		void initSingle(const String& name, UINT16 uniqueId, boost::any getter, boost::any setter, UINT64 flags)
+		void initSingle(const String& name, UINT16 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
 			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
 
@@ -137,8 +137,8 @@ namespace BansheeEngine
 		 * @param	setSize 	Setter method that allows you to resize an array. Can be null. Must be a specific signature: void(ObjectType*, UINT32)
 		 * @param	flags		Various flags you can use to specialize how outside systems handle this field. See "RTTIFieldFlag".
 		 */
-		void initArray(const String& name, UINT16 uniqueId, boost::any getter, 
-			boost::any getSize, boost::any setter, boost::any setSize, UINT64 flags)
+		void initArray(const String& name, UINT16 uniqueId, Any getter,
+			Any getSize, Any setter, Any setSize, UINT64 flags)
 		{
 			int typeId = RTTIPlainType<DataType>::id; // Just making sure provided type has a type ID
 
@@ -183,7 +183,7 @@ namespace BansheeEngine
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			std::function<DataType&(ObjectType*)> f = boost::any_cast<std::function<DataType&(ObjectType*)>>(valueGetter);
+			std::function<DataType&(ObjectType*)> f = any_cast<std::function<DataType&(ObjectType*)>>(valueGetter);
 			DataType value = f(castObject);
 
 			return RTTIPlainType<DataType>::getDynamicSize(value);
@@ -199,7 +199,7 @@ namespace BansheeEngine
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			std::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<std::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
+			std::function<DataType&(ObjectType*, UINT32)> f = any_cast<std::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
 			DataType value = f(castObject, index);
 
 			return RTTIPlainType<DataType>::getDynamicSize(value);
@@ -212,7 +212,7 @@ namespace BansheeEngine
 		{
 			checkIsArray(true);
 
-			std::function<UINT32(ObjectType*)> f = boost::any_cast<std::function<UINT32(ObjectType*)>>(arraySizeGetter);
+			std::function<UINT32(ObjectType*)> f = any_cast<std::function<UINT32(ObjectType*)>>(arraySizeGetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			return f(castObject);
 		}
@@ -230,7 +230,7 @@ namespace BansheeEngine
 					"Specified field (" + mName + ") has no array size setter.");
 			}
 
-			std::function<void(ObjectType*, UINT32)> f = boost::any_cast<std::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
+			std::function<void(ObjectType*, UINT32)> f = any_cast<std::function<void(ObjectType*, UINT32)>>(arraySizeSetter);
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 			f(castObject, size);
 		}
@@ -245,7 +245,7 @@ namespace BansheeEngine
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			std::function<DataType&(ObjectType*)> f = boost::any_cast<std::function<DataType&(ObjectType*)>>(valueGetter);
+			std::function<DataType&(ObjectType*)> f = any_cast<std::function<DataType&(ObjectType*)>>(valueGetter);
 			DataType value = f(castObject);
 
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
@@ -261,7 +261,7 @@ namespace BansheeEngine
 
 			ObjectType* castObject = static_cast<ObjectType*>(object);
 
-			std::function<DataType&(ObjectType*, UINT32)> f = boost::any_cast<std::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
+			std::function<DataType&(ObjectType*, UINT32)> f = any_cast<std::function<DataType&(ObjectType*, UINT32)>>(valueGetter);
 			DataType value = f(castObject, index);
 
 			RTTIPlainType<DataType>::toMemory(value, (char*)buffer);
@@ -286,7 +286,7 @@ namespace BansheeEngine
 					"Specified field (" + mName + ") has no setter.");
 			}
 
-			std::function<void(ObjectType*, DataType&)> f = boost::any_cast<std::function<void(ObjectType*, DataType&)>>(valueSetter);
+			std::function<void(ObjectType*, DataType&)> f = any_cast<std::function<void(ObjectType*, DataType&)>>(valueSetter);
 			f(castObject, value);
 		}
 
@@ -309,7 +309,7 @@ namespace BansheeEngine
 					"Specified field (" + mName + ") has no setter.");
 			}
 
-			std::function<void(ObjectType*, UINT32, DataType&)> f = boost::any_cast<std::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
+			std::function<void(ObjectType*, UINT32, DataType&)> f = any_cast<std::function<void(ObjectType*, UINT32, DataType&)>>(valueSetter);
 			f(castObject, index, value);
 		}
 	};

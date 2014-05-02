@@ -556,7 +556,7 @@ namespace BansheeEngine
 			if(obj->mRTTIData.empty())
 				return nullptr;
 
-			return boost::any_cast<std::shared_ptr<MaterialParams>>(obj->mRTTIData);
+			return any_cast<std::shared_ptr<MaterialParams>>(obj->mRTTIData);
 		}
 
 		void setMaterialParams(Material* obj, std::shared_ptr<MaterialParams> value)

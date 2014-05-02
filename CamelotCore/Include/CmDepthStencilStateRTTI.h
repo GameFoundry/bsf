@@ -27,7 +27,7 @@ namespace BansheeEngine
 			DepthStencilState* depthStencilState = static_cast<DepthStencilState*>(obj);
 			if(!depthStencilState->mRTTIData.empty())
 			{
-				DEPTH_STENCIL_STATE_DESC desc = boost::any_cast<DEPTH_STENCIL_STATE_DESC>(depthStencilState->mRTTIData);
+				DEPTH_STENCIL_STATE_DESC desc = any_cast<DEPTH_STENCIL_STATE_DESC>(depthStencilState->mRTTIData);
 
 				depthStencilState->initialize(desc);
 			}

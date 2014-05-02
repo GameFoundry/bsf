@@ -29,7 +29,7 @@ namespace BansheeEngine
 			RasterizerState* rasterizerState = static_cast<RasterizerState*>(obj);
 			if(!rasterizerState->mRTTIData.empty())
 			{
-				RASTERIZER_STATE_DESC desc = boost::any_cast<RASTERIZER_STATE_DESC>(rasterizerState->mRTTIData);
+				RASTERIZER_STATE_DESC desc = any_cast<RASTERIZER_STATE_DESC>(rasterizerState->mRTTIData);
 
 				rasterizerState->initialize(desc);
 			}
