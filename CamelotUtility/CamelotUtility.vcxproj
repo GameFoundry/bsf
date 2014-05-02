@@ -265,6 +265,7 @@
     <ClCompile Include="Source\CmStringTable.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
+    <ClInclude Include="Include\BsAny.h" />
     <ClInclude Include="Include\BsEvent.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />
