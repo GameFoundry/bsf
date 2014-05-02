@@ -56,7 +56,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Render system pipeline state that allows you how an object is renderer. 
+	 * @brief	Render system pipeline state that allows you to modify how an object is rendered. 
 	 * 			More exactly this state allows to you to control how is a rendered
 	 * 			object blended with any previously renderer objects.
 	 * 			
@@ -139,7 +139,7 @@ namespace BansheeEngine
 		UINT8 getRenderTargetWriteMask(UINT32 renderTargetIdx) const;
 
 		/**
-		 * @brief	Creates a new blend states using the specified blend state description structure.
+		 * @brief	Creates a new blend state using the specified blend state description structure.
 		 */
 		static HBlendState create(const BLEND_STATE_DESC& desc);
 

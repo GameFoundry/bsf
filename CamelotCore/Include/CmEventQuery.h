@@ -33,13 +33,22 @@ namespace BansheeEngine
 		 */
 		virtual bool isReady() const = 0;
 
+		/**
+		 * @brief	Triggered when GPU starts processing the query.
+		 */
 		boost::signal<void()> onTriggered;
 
+		/**
+		 * @brief	Creates a new query, but does not schedule it on GPU.
+		 */
 		static EventQueryPtr create();
 
 	protected:
 		friend class QueryManager;
 
+		/**
+		 * @brief	Returns true if the query is still waiting for its "ready" callback to be triggered.
+		 */
 		bool isActive() const { return mActive; }
 		void setActive(bool active) { mActive = active; }
 

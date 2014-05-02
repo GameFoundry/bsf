@@ -4,6 +4,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Describes operation that will be used for rendering a certain
+	 *			set of vertices.
+	 */
 	enum DrawOperationType 
 	{
 		DOT_POINT_LIST = 1,
