@@ -12,6 +12,16 @@ namespace BansheeEngine
 	 *			to the GPU. These buffers may be bounds to GPU program binding slots and accessed from a GPU program,
 	 *			or may be used by fixed pipeline in some way.
 	 *
+	 *			Buffer types:
+	 *			  - Raw buffers containing a block of bytes that are up to the GPU program to interpret.
+	 *			  - Structured buffer containing an array of structures compliant to a certain layout. Similar to raw
+	 *				buffer but easier to interpret the data.
+	 *			  - Random read/write buffers that allow you to write to random parts of the buffer from within
+	 *				the GPU program, and then read it later. These can only be bound to pixel and compute stages.
+	 *			  - Append/Consume buffers also allow you to write to them, but in a stack-like fashion, usually where one set
+	 *				of programs produces data while other set consumes it from the same buffer. Append/Consume buffers are structured
+	 *				by default.
+	 *
 	 * @note	Core thread only.
 	 */
 	class CM_EXPORT GpuBuffer : public CoreObject

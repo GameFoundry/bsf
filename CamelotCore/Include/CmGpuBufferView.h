@@ -23,6 +23,11 @@ namespace BansheeEngine
 	/**
 	 * @brief	Holds information about a GPU buffer view. Views allow you to specify
 	 *			how is data in a buffer organized to make it easier for the pipeline to interpret.
+	 *			
+	 * @note	Buffers don't get bound to the pipeline directly, views do.
+	 *			Core thread only.
+	 *
+	 * @see		GpuBuffer
 	 */
 	class CM_EXPORT GpuBufferView
 	{
