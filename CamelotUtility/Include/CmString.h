@@ -484,6 +484,20 @@ namespace BansheeEngine
 		unsigned short width = 0, char fill = ' ', 
 		std::ios::fmtflags flags = std::ios::fmtflags(0) );
 
+	/**
+	* @brief	Converts an narrow char unsigned to a string.
+	*/
+	CM_UTILITY_EXPORT WString toWString(char val,
+		unsigned short width = 0, char fill = ' ',
+		std::ios::fmtflags flags = std::ios::fmtflags(0));
+
+	/**
+	* @brief	Converts an wide bit char unsigned to a string.
+	*/
+	CM_UTILITY_EXPORT WString toWString(wchar_t val,
+		unsigned short width = 0, char fill = ' ',
+		std::ios::fmtflags flags = std::ios::fmtflags(0));
+
     /**
      * @brief	Converts a boolean to a string.
      *

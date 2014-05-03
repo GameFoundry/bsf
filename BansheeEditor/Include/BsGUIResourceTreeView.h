@@ -11,7 +11,7 @@ namespace BansheeEngine
 	{
 		struct ResourceTreeElement : public GUITreeView::TreeElement
 		{
-			WString mFullPath;
+			Path mFullPath;
 			WString mElementName;
 		};
 
@@ -26,7 +26,7 @@ namespace BansheeEngine
 			~InternalDraggedResources();
 
 			UINT32 numObjects;
-			WString* resourcePaths;
+			Path* resourcePaths;
 		};
 
 	public:
@@ -79,14 +79,14 @@ namespace BansheeEngine
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const;
 
 		void updateFromProjectLibraryEntry(ResourceTreeElement* treeElement, const ProjectLibrary::LibraryEntry* libraryEntry);
-		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const WString& fullPath);
+		ResourceTreeElement* addTreeElement(ResourceTreeElement* parent, const Path& fullPath);
 		void deleteTreeElement(ResourceTreeElement* element);
 		void sortTreeElement(ResourceTreeElement* element);
 
-		ResourceTreeElement* findTreeElement(const WString& fullPath);
+		ResourceTreeElement* findTreeElement(const Path& fullPath);
 
-		void entryAdded(const WString& path);
-		void entryRemoved(const WString& path);
+		void entryAdded(const Path& path);
+		void entryRemoved(const Path& path);
 
 		void setDropTarget(RenderWindow* parentWindow, INT32 x, INT32 y, UINT32 width, UINT32 height);
 		void clearDropTarget();
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		void dropTargetDragLeave();
 		void dropTargetDragDropped(INT32 x, INT32 y);
 
-		WString findUniquePath(const WString& path);
+		Path findUniquePath(const Path& path);
 
 		void _changeParentWidget(GUIWidget* widget);
 	};

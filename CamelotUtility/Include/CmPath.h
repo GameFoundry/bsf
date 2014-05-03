@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
+#include "CmUtil.h"
 #include <boost/filesystem.hpp>
 
 namespace BansheeEngine
@@ -9,6 +10,10 @@ namespace BansheeEngine
 	 * @brief	Class for storing and manipulating file paths. Paths may be parsed
 	 *			from and to raw strings according to various platform specific path
 	 *			types.
+	 *
+	 * @note	In order to allow the system to easily distinguish between file and directory
+	 *			paths, try to ensure that all directory paths end with a separator (\ or / depending
+	 *			on platform). System won't fail if you don't but it will be easier to misuse.
 	 */
 	class CM_UTILITY_EXPORT Path
 	{
@@ -21,6 +26,8 @@ namespace BansheeEngine
 		};
 
 	public:
+		Path();
+
 		/**
 		 * @brief	Constructs a path by parsing the provided path string. 
 		 *			Throws exception if provided path is not valid.
@@ -230,7 +237,7 @@ namespace BansheeEngine
 		 *			Or if it contains a directory the parent will be the parent directory.
 		 *			If no parent exists, same path will be returned.
 		 */
-		void makeParent();
+		Path& makeParent();
 
 		/**
 		 * @brief	Makes the current path absolute by appending it to base.
@@ -239,7 +246,7 @@ namespace BansheeEngine
 		 *			If base is not absolute, then the returned path will be made relative to base,
 		 *			but will not be absolute.
 		 */
-		void makeAbsolute(const Path& base);
+		Path& makeAbsolute(const Path& base);
 
 		/**
 		 * @brief	Makes the current path relative to the provided base.
@@ -247,13 +254,12 @@ namespace BansheeEngine
 		 *			of the path no changes are made and a copy of the current path
 		 *			is returned.
 		 */
-		void makeRelative(const Path& base);
+		Path& makeRelative(const Path& base);
 
 		/**
 		 * @brief	Appends another path to the end of this path.
-		 *			If this path contains a filename, it is removed.
 		 */
-		void append(const Path& path);
+		Path& append(const Path& path);
 
 		/**
 		 * @brief	Checks if the current path contains the provided path.
@@ -360,13 +366,42 @@ namespace BansheeEngine
 		String getNode() const { return BansheeEngine::toString(mNode); }
 
 		/**
+		* @brief	Gets last element in the path, filename if it exists, otherwise the last directory.
+		*			If no directories exist returns device or node.
+		*
+		* @param	type	Determines format of node or device, in case they are returned. When default,
+		*					format for the active platform will be used, otherwise the format defined
+		*					by the parameter will be used.
+		*/
+		WString getWTail(PathType type = PathType::Default) const;
+
+		/**
+		 * @brief	Gets last element in the path, filename if it exists, otherwise the last directory.
+		 *			If no directories exist returns device or node.
+		 *
+		 * @param	type	Determines format of node or device, in case they are returned. When default,
+		 *					format for the active platform will be used, otherwise the format defined
+		 *					by the parameter will be used.
+		 */
+		String getTail(PathType type = PathType::Default) const;
+
+		/**
 		 * @brief	Clears the path to nothing.
 		 */
 		void clear();
 
-	private:
-		Path();
+		/**
+		 * @brief	Returns true if no path has been set.
+		 */
+		bool isEmpty() const { return mDirectories.empty() && mFilename.empty() && mDevice.empty() && mNode.empty(); }
 
+		/**
+		* @brief	Compares two path elements (i.e. filenames, directory names, etc.)
+		*/
+		static bool comparePathElem(const WString& left, const WString& right);
+
+		static const Path BLANK;
+	private:
 		/**
 		* @brief	Constructs a path by parsing the provided raw string data.
 		*			Throws exception if provided path is not valid.
@@ -415,6 +450,7 @@ namespace BansheeEngine
 				{
 					idx++;
 
+					tempStream.str(BasicString<T>::type());
 					tempStream.clear();
 					while (idx < numChars && pathStr[idx] != '\\' && pathStr[idx] != '/')
 						tempStream << pathStr[idx++];
@@ -439,7 +475,7 @@ namespace BansheeEngine
 
 						idx++;
 
-						if (idx < numChars || (pathStr[idx] != '\\' && pathStr[idx] != '/'))
+						if (idx >= numChars || (pathStr[idx] != '\\' && pathStr[idx] != '/'))
 							throwInvalidPathException(BasicString<T>::type(pathStr, numChars));
 
 						idx++;
@@ -450,6 +486,7 @@ namespace BansheeEngine
 
 				while (idx < numChars)
 				{
+					tempStream.str(BasicString<T>::type());
 					tempStream.clear();
 					while (idx < numChars && pathStr[idx] != '\\' && pathStr[idx] != '/')
 					{
@@ -500,6 +537,7 @@ namespace BansheeEngine
 
 				while (idx < numChars)
 				{
+					tempStream.str(BasicString<T>::type());
 					tempStream.clear();
 					while (idx < numChars && pathStr[idx] != '/')
 					{
@@ -564,11 +602,6 @@ namespace BansheeEngine
 		void pushDirectory(const String& dir);
 
 		/**
-		 * @brief	Compares two path elements (i.e. filenames, directory names, etc.)
-		 */
-		bool comparePathElem(const WString& left, const WString& right) const;
-
-		/**
 		 * @brief	Helper method that throws invalid path exception. 
 		 */
 		void throwInvalidPathException(const WString& path) const;
@@ -578,6 +611,9 @@ namespace BansheeEngine
 		*/
 		void throwInvalidPathException(const String& path) const;
 	private:
+		friend struct RTTIPlainType<Path>; // For serialization
+		friend struct ::std::hash<BansheeEngine::Path>;
+
 		Vector<WString>::type mDirectories;
 		WString mDevice;
 		WString mFilename;
@@ -586,215 +622,76 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Various string manipulations of file paths.
-	 */
-	class CM_UTILITY_EXPORT OldPath
+	* @brief	RTTIPlainType specialization for Path that allows paths be serialized as
+	* 			value types.
+	*
+	* @see		RTTIPlainType
+	*/
+	template<> struct RTTIPlainType<Path>
 	{
-	public:
-		/**
-		 * @brief	Returns file extension extracted from the provided
-		 * 			path, with a leading ".".
-		 */
-		static WString getExtension(const WString& path)
+		enum { id = TID_Path }; enum { hasDynamicSize = 1 };
+
+		static void toMemory(const Path& data, char* memory)
 		{
-			boost::filesystem3::wpath ext = boost::filesystem3::extension(boost::filesystem3::wpath(path.c_str()));
-			return ext.wstring().c_str();
+			UINT32 size = getDynamicSize(data);
+			memcpy(memory, &size, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			memory = rttiWriteElem(data.mDevice, memory);
+			memory = rttiWriteElem(data.mNode, memory);
+			memory = rttiWriteElem(data.mFilename, memory);
+			memory = rttiWriteElem(data.mIsAbsolute, memory);
+			memory = rttiWriteElem(data.mDirectories, memory);
 		}
 
-		/**
-		 * @brief	Query if a path has the specified extension. Provided
-		 * 			extension must contain the leading ".".
-		 */
-		static bool hasExtension(const WString& path, const WString& extension)
+		static UINT32 fromMemory(Path& data, char* memory)
 		{
-			return getExtension(path) == extension;
+			UINT32 size;
+			memcpy(&size, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			memory = rttiReadElem(data.mDevice, memory);
+			memory = rttiReadElem(data.mNode, memory);
+			memory = rttiReadElem(data.mFilename, memory);
+			memory = rttiReadElem(data.mIsAbsolute, memory);
+			memory = rttiReadElem(data.mDirectories, memory);
+
+			return size;
 		}
 
-		/**
-		 * @brief	Replaces or adds an extension on a file path. Provided
-		 * 			extension must contain the leading ".".
-		 */
-		static void replaceExtension(WString& path, const WString& newExtension)
+		static UINT32 getDynamicSize(const Path& data)
 		{
-			boost::filesystem3::path internalPath = path.c_str();
+			UINT64 dataSize = rttiGetElemSize(data.mDevice) + rttiGetElemSize(data.mNode) + rttiGetElemSize(data.mFilename) +
+				rttiGetElemSize(data.mIsAbsolute) + rttiGetElemSize(data.mDirectories) + sizeof(UINT32);
 
-			path = internalPath.replace_extension(newExtension.c_str()).c_str();
-		}
-
-		/**
-		 * @brief	Returns a path that is one level higher than the provided path, unless the path
-		 * 			is already at the root. Otherwise returns the initial path.
-		 */
-		static WString parentPath(const WString& path)
-		{
-			boost::filesystem3::path internalPath = path.c_str();
-
-			return internalPath.parent_path().c_str();
-		}
-
-		/**
-		 * @brief	Returns true if path child is included in path parent.
-		 * 			Both paths must be canonical.
-		 */
-		static bool includes(const WString& child, const WString& parent)
-		{
-			Vector<WString>::type childPathElems = split(child);
-			Vector<WString>::type parentPathElems = split(parent);
-
-			auto iterChild = childPathElems.begin();
-			auto iterParent = parentPathElems.begin();
-
-			for(; iterParent != parentPathElems.end(); ++iterChild, ++iterParent)
+#if CM_DEBUG_MODE
+			if (dataSize > std::numeric_limits<UINT32>::max())
 			{
-				if(iterChild == childPathElems.end())
-					return false;
-
-				if(!comparePathElements(*iterChild, *iterParent))
-					return false;
+				__string_throwDataOverflowException();
 			}
-
-			return true;
-		}
-
-		/**
-		 * @brief	Returns path relative to base.
-		 */
-		static WString relative(const WString& base, const WString& path)
-		{
-			Vector<WString>::type basePathElems = split(base);
-			Vector<WString>::type pathElems = split(path);
-
-			auto iterBase = basePathElems.begin();
-			auto iterPath = pathElems.begin();
-
-			for(; iterBase != basePathElems.end(); ++iterBase, ++iterPath)
-			{
-				if(!comparePathElements(*iterBase, *iterPath))
-					return L"";
-			}
-
-			WString relativePath;
-			for(; iterPath != pathElems.end(); ++iterPath)
-			{
-				relativePath = OldPath::combine(relativePath, *iterPath);
-			}
-
-			return relativePath;
-		}
-
-		/**
-		 * @brief	Splits a path into string entries. Path separator
-		 * 			may be "\" or "/". Path separator will not be included
-		 * 			in the returned strings.
-		 */
-		static Vector<WString>::type split(const WString& path)
-		{
-			Vector<WString>::type splitPath;
-
-			WString standardizedPath = standardizePath(path);
-			return StringUtil::split(standardizedPath, L"/");
-		}
-
-		/**
-		 * @brief	Combines two paths using the "/" path separator.
-		 */
-		static WString combine(const WString& base, const WString& name)
-		{
-			if (base.empty())
-				return name;
-			else
-				return base + L'/' + name;
-		}
-
-		/**
-		 * @brief	Compares two canonical paths and returns true if they are equal.
-		 */
-		static bool equals(const WString& left, const WString& right)
-		{
-			Vector<WString>::type leftElements = split(left);
-			Vector<WString>::type rightElements = split(right);
-
-			UINT32 idx = 0;
-			for(auto& leftElem : leftElements)
-			{
-				if(leftElem.empty())
-					continue;
-				
-				while(idx < (UINT32)rightElements.size() && rightElements[idx].empty())
-					idx++;
-
-				if(idx >= (UINT32)rightElements.size())
-					return false; // Right path is deeper than left path
-
-				if(!comparePathElements(leftElem, rightElements[idx]))
-					return false;
-
-				idx++;
-			}
-
-			while(idx < (UINT32)rightElements.size() && rightElements[idx].empty())
-				idx++;
-
-			if(idx < (UINT32)rightElements.size())
-				return false; // Left path is deeper than right path
-
-			return true;
-		}
-
-		/**
-		 * @brief	Compares two path elements for equality. 
-		 * 			
-		 * @note	Should not be used for comparing entire paths. First you need to split your
-		 * 			path into sub-elements using some other method and then send those sub-elements to
-		 * 			this method. 
-		 */
-		static bool comparePathElements(const WString& left, const WString& right)
-		{
-			if(left.size() != right.size())
-				return false;
-
-			for(UINT32 i = 0; i < (UINT32)left.size(); i++)
-			{
-#if CM_PLATFORM == CM_PLATFORM_WIN32 // Compare case insensitive
-				if(tolower(left[i]) != tolower(right[i]))
-					return false;
-#else
-				assert(false); // Implement case sensitive or insensitive comparison, depending on platform
 #endif
-			}
 
-			return true;
-		}
-
-		/**
-		 * @brief	Extracts filename from the provided path.
-		 *
-		 * @param	path				Path to the file.
-		 * @param	includeExtension	(optional) If true, filename extension will be included in the returned string.
-		 */
-		static WString getFilename(const WString& path, bool includeExtension = true)
-		{
-			boost::filesystem3::path internalPath = path.c_str();
-			
-			if(includeExtension)
-				return internalPath.filename().c_str();
-			else
-				return internalPath.stem().c_str();
-		}
-
-		/**
-		 * @brief	Method for standardizing paths - use forward slashes only, end without a slash.
-		 */
-		static WString standardizePath(const WString& inPath)
-		{
-			WString path = inPath;
-
-			std::replace(path.begin(), path.end(), L'\\', L'/');
-
-			while(path.length() > 0 && path.back() == L'/')
-				path.pop_back();
-
-			return path;
+			return (UINT32)dataSize;
 		}
 	};
 }
+
+/**
+* @brief	Hash value generator for Path.
+*/
+template<>
+struct std::hash<BansheeEngine::Path>
+{
+	size_t operator()(const BansheeEngine::Path& path) const
+	{
+		size_t hash = 0;
+		BansheeEngine::hash_combine(hash, path.mFilename);
+		BansheeEngine::hash_combine(hash, path.mDevice);
+		BansheeEngine::hash_combine(hash, path.mNode);
+
+		for (auto& dir : path.mDirectories)
+			BansheeEngine::hash_combine(hash, dir);
+
+		return hash;
+	}
+};

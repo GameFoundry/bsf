@@ -27,27 +27,24 @@ namespace BansheeEngine
 		return cm_shared_ptr<ResourceManifest>(ConstructPrivately());
 	}
 
-	void ResourceManifest::registerResource(const String& uuid, const WString& filePath)
+	void ResourceManifest::registerResource(const String& uuid, const Path& filePath)
 	{
 		auto iterFind = mUUIDToFilePath.find(uuid);
 
-		WString standardizedFilePath = OldPath::standardizePath(filePath);
-		StringUtil::toLowerCase(standardizedFilePath);
-
 		if(iterFind != mUUIDToFilePath.end())
 		{
-			if(iterFind->second != standardizedFilePath)
+			if (iterFind->second != filePath)
 			{
 				mFilePathToUUID.erase(iterFind->second);
 
-				mUUIDToFilePath[uuid] = standardizedFilePath;
-				mFilePathToUUID[standardizedFilePath] = uuid;
+				mUUIDToFilePath[uuid] = filePath;
+				mFilePathToUUID[filePath] = uuid;
 			}
 		}
 		else
 		{
-			mUUIDToFilePath[uuid] = standardizedFilePath;
-			mFilePathToUUID[standardizedFilePath] = uuid;
+			mUUIDToFilePath[uuid] = filePath;
+			mFilePathToUUID[filePath] = uuid;
 		}
 	}
 
@@ -62,7 +59,7 @@ namespace BansheeEngine
 		}
 	}
 
-	bool ResourceManifest::uuidToFilePath(const String& uuid, WString& filePath) const
+	bool ResourceManifest::uuidToFilePath(const String& uuid, Path& filePath) const
 	{
 		auto iterFind = mUUIDToFilePath.find(uuid);
 
@@ -73,17 +70,14 @@ namespace BansheeEngine
 		}
 		else
 		{
-			filePath = StringUtil::WBLANK;
+			filePath = Path::BLANK;
 			return false;
 		}
 	}
 
-	bool ResourceManifest::filePathToUUID(const WString& filePath, String& outUUID) const
+	bool ResourceManifest::filePathToUUID(const Path& filePath, String& outUUID) const
 	{
-		WString standardizedFilePath = OldPath::standardizePath(filePath);
-		StringUtil::toLowerCase(standardizedFilePath);
-
-		auto iterFind = mFilePathToUUID.find(standardizedFilePath);
+		auto iterFind = mFilePathToUUID.find(filePath);
 
 		if(iterFind != mFilePathToUUID.end())
 		{
@@ -104,58 +98,49 @@ namespace BansheeEngine
 		return iterFind != mUUIDToFilePath.end();
 	}
 
-	bool ResourceManifest::filePathExists(const WString& filePath) const
+	bool ResourceManifest::filePathExists(const Path& filePath) const
 	{
-		WString standardizedFilePath = OldPath::standardizePath(filePath);
-		StringUtil::toLowerCase(standardizedFilePath);
-
-		auto iterFind = mFilePathToUUID.find(standardizedFilePath);
+		auto iterFind = mFilePathToUUID.find(filePath);
 
 		return iterFind != mFilePathToUUID.end();
 	}
 
-	void ResourceManifest::save(const ResourceManifestPtr& manifest, const WString& path, const WString& relativePath)
+	void ResourceManifest::save(const ResourceManifestPtr& manifest, const Path& path, const Path& relativePath)
 	{
-		WString standRelativePath = OldPath::standardizePath(relativePath);
-		StringUtil::toLowerCase(standRelativePath);
-
 		ResourceManifestPtr copy = create(manifest->mName);
 
 		for(auto& elem : manifest->mFilePathToUUID)
 		{
-			if(!OldPath::includes(elem.first, standRelativePath))
+			if (!relativePath.includes(elem.first))
 			{
 				CM_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
-					toString(relativePath) + "\". Path: \"" + toString(elem.first) + "\"");
+					relativePath.toString() + "\". Path: \"" + elem.first.toString() + "\"");
 			}
 
-			WString relativePath = OldPath::relative(standRelativePath, elem.first);
+			Path elementRelativePath = elem.first.getRelative(relativePath);
 
-			copy->mFilePathToUUID[relativePath] = elem.second;
+			copy->mFilePathToUUID[elementRelativePath] = elem.second;
 		}
 
 		for(auto& elem : manifest->mUUIDToFilePath)
 		{
-			if(!OldPath::includes(elem.second, standRelativePath))
+			if(!relativePath.includes(elem.second))
 			{
 				CM_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
-					toString(relativePath) + "\". Path: \"" + toString(elem.second) + "\"");
+					relativePath.toString() + "\". Path: \"" + elem.second.toString() + "\"");
 			}
 
-			WString relativePath = OldPath::relative(standRelativePath, elem.second);
+			Path elementRelativePath = elem.second.getRelative(relativePath);
 
-			copy->mUUIDToFilePath[elem.first] = relativePath;
+			copy->mUUIDToFilePath[elem.first] = elementRelativePath;
 		}
 
 		FileSerializer fs;
 		fs.encode(copy.get(), path);
 	}
 
-	ResourceManifestPtr ResourceManifest::load(const WString& path, const WString& relativePath)
+	ResourceManifestPtr ResourceManifest::load(const Path& path, const Path& relativePath)
 	{
-		WString standRelativePath = OldPath::standardizePath(relativePath);
-		StringUtil::toLowerCase(standRelativePath);
-
 		FileSerializer fs;
 		ResourceManifestPtr manifest = std::static_pointer_cast<ResourceManifest>(fs.decode(path));
 
@@ -163,13 +148,13 @@ namespace BansheeEngine
 
 		for(auto& elem : manifest->mFilePathToUUID)
 		{
-			WString absPath = OldPath::combine(standRelativePath, elem.first);
+			Path absPath = elem.first.getAbsolute(relativePath);
 			copy->mFilePathToUUID[absPath] = elem.second;
 		}
 
 		for(auto& elem : manifest->mUUIDToFilePath)
 		{
-			WString absPath = OldPath::combine(standRelativePath, elem.second);
+			Path absPath = elem.second.getAbsolute(relativePath);
 			copy->mUUIDToFilePath[elem.first] = absPath;
 		}
 

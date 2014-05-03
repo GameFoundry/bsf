@@ -22,7 +22,7 @@ namespace BansheeEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
 		/** @copydoc SpecificImporter::import */
-		virtual ResourcePtr import(const WString& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
 	private:
 	};
 }

@@ -30,14 +30,14 @@ namespace BansheeEngine
 		return true; // Plain-text so I don't even check for magic number
 	}
 
-	ResourcePtr GpuProgIncludeImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr GpuProgIncludeImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
 		DataStreamPtr stream = FileSystem::openFile(filePath);
 		String includeString = stream->getAsString();
 
 		GpuProgIncludePtr gpuInclude = GpuProgInclude::_createPtr(includeString);
 
-		WString fileName = OldPath::getFilename(filePath, false);
+		WString fileName = filePath.getWFilename(false);
 		gpuInclude->setName(toString(fileName));
 
 		return gpuInclude;

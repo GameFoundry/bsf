@@ -49,7 +49,7 @@ namespace BansheeEngine
 		return cm_shared_ptr<FontImportOptions, ScratchAlloc>();
 	}
 
-	ResourcePtr FontImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr FontImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
 		const FontImportOptions* fontImportOptions = static_cast<const FontImportOptions*>(importOptions.get());
 
@@ -60,15 +60,15 @@ namespace BansheeEngine
 			CM_EXCEPT(InternalErrorException, "Error occurred during FreeType library initialization.");
 
 		FT_Face face;
-		error = FT_New_Face(library, toString(filePath).c_str(), 0, &face);
+		error = FT_New_Face(library, filePath.toString().c_str(), 0, &face);
 
 		if (error == FT_Err_Unknown_File_Format)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + toString(filePath) + ". Unsupported file format.");
+			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath.toString() + ". Unsupported file format.");
 		}
 		else if (error)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + toString(filePath) + ". Unknown error.");
+			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath.toString() + ". Unknown error.");
 		}
 
 		Vector<std::pair<UINT32, UINT32>>::type charIndexRanges = fontImportOptions->getCharIndexRanges();
@@ -319,7 +319,7 @@ namespace BansheeEngine
 
 		FT_Done_FreeType(library);
 
-		WString fileName = OldPath::getFilename(filePath, false);
+		WString fileName = filePath.getWFilename(false);
 		newFont->setName(toString(fileName));
 
 		return newFont;

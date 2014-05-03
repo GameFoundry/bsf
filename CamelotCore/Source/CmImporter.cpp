@@ -53,11 +53,11 @@ namespace BansheeEngine
 		return false;
 	}
 
-	HResource Importer::import(const WString& inputFilePath, ConstImportOptionsPtr importOptions)
+	HResource Importer::import(const Path& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
 		if(!FileSystem::isFile(inputFilePath))
 		{
-			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath.toString());
 			return HResource();
 		}
 
@@ -81,11 +81,11 @@ namespace BansheeEngine
 		return gResources().createResourceHandle(importedResource);
 	}
 
-	void Importer::reimport(HResource& existingResource, const WString& inputFilePath, ConstImportOptionsPtr importOptions)
+	void Importer::reimport(HResource& existingResource, const Path& inputFilePath, ConstImportOptionsPtr importOptions)
 	{
 		if(!FileSystem::isFile(inputFilePath))
 		{
-			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath.toString());
 			return;
 		}
 
@@ -109,11 +109,11 @@ namespace BansheeEngine
 		existingResource._setHandleData(importedResource, existingResource.getUUID());
 	}
 
-	ImportOptionsPtr Importer::createImportOptions(const WString& inputFilePath)
+	ImportOptionsPtr Importer::createImportOptions(const Path& inputFilePath)
 	{
 		if(!FileSystem::isFile(inputFilePath))
 		{
-			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + toString(inputFilePath));
+			LOGWRN("Trying to import asset that doesn't exists. Asset path: " + inputFilePath.toString());
 			return nullptr;
 		}
 
@@ -135,13 +135,13 @@ namespace BansheeEngine
 		mAssetImporters.push_back(importer);
 	}
 
-	SpecificImporter* Importer::getImporterForFile(const WString& inputFilePath) const
+	SpecificImporter* Importer::getImporterForFile(const Path& inputFilePath) const
 	{
-		WString ext = OldPath::getExtension(inputFilePath);
+		WString ext = inputFilePath.getWExtension();
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!supportsFileType(ext))
 		{
-			LOGWRN("There is no importer for the provided file type. (" + toString(inputFilePath) + ")");
+			LOGWRN("There is no importer for the provided file type. (" + inputFilePath.toString() + ")");
 			return nullptr;
 		}
 

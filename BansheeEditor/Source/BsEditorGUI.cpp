@@ -21,7 +21,7 @@ namespace BansheeEngine
 	const WString EditorGUI::DefaultFontPath = L"arial.ttf";
 	const UINT32 EditorGUI::DefaultFontSize = 10;
 
-	const WString EditorGUI::DefaultFolder = L"..\\..\\..\\..\\Data\\Editor\\Skin\\";
+	const Path EditorGUI::DefaultFolder = L"..\\..\\..\\..\\Data\\Editor\\Skin\\";
 
 	const WString EditorGUI::WindowBackgroundTexture = L"WindowBgTile.psd";
 
@@ -144,7 +144,9 @@ namespace BansheeEngine
 		HFont font;
 
 		{
-			WString fontPath = DefaultFolder + DefaultFontPath;
+			Path fontPath = DefaultFolder;
+			fontPath.append(DefaultFontPath);
+
 			ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
 			if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
 			{
@@ -816,6 +818,6 @@ namespace BansheeEngine
 
 	HSpriteTexture EditorGUI::getTexture(const WString& name)
 	{
-		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultFolder + name)));
+		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath().append(DefaultFolder).append(name))));
 	}
 }

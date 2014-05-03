@@ -34,7 +34,7 @@ namespace BansheeEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
 		/** Inherited from SpecificImporter */
-		virtual ResourcePtr import(const WString& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
 	private:
 		Vector<WString>::type mExtensions;
 		UnorderedMap<WString, int>::type mExtensionToFID;

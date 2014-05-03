@@ -39,7 +39,7 @@
 
 namespace BansheeEngine
 {
-	const WString EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
+	const Path EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
 
 	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
 		:mActiveRSPlugin(renderSystemPlugin)
@@ -408,9 +408,9 @@ namespace BansheeEngine
 		return true; // TODO - DEBUG ONLY
 	}
 
-	const WString& EditorApplication::getActiveProjectPath() const
+	const Path& EditorApplication::getActiveProjectPath() const
 	{
-		static WString dummyProjectPath = L"D:\\DummyBansheeProject";
+		static Path dummyProjectPath = L"D:\\DummyBansheeProject\\";
 
 		return dummyProjectPath;
 	}
@@ -436,7 +436,8 @@ namespace BansheeEngine
 
 	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()
 	{
-		WString layoutPath = OldPath::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
+		Path layoutPath = getActiveProjectPath();
+		layoutPath.append(WIDGET_LAYOUT_PATH);
 
 		if(FileSystem::exists(layoutPath))
 		{
@@ -449,7 +450,8 @@ namespace BansheeEngine
 
 	void EditorApplication::saveWidgetLayout(const EditorWidgetLayoutPtr& layout)
 	{
-		WString layoutPath = OldPath::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
+		Path layoutPath = getActiveProjectPath();
+		layoutPath.append(WIDGET_LAYOUT_PATH);
 
 		FileSerializer fs;
 		fs.encode(layout.get(), layoutPath);

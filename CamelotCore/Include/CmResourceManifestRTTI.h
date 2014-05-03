@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
 #include "CmResourceManifest.h"
+#include "CmPath.h"
 
 namespace BansheeEngine
 {
@@ -19,12 +20,12 @@ namespace BansheeEngine
 			obj->mName = val;
 		}
 
-		Map<String, WString>::type& getUUIDMap(ResourceManifest* obj) 
+		UnorderedMap<String, Path>::type& getUUIDMap(ResourceManifest* obj)
 		{ 
 			return obj->mUUIDToFilePath;
 		}
 
-		void setUUIDMap(ResourceManifest* obj, Map<String, WString>::type& val) 
+		void setUUIDMap(ResourceManifest* obj, UnorderedMap<String, Path>::type& val)
 		{ 
 			obj->mUUIDToFilePath = val; 
 

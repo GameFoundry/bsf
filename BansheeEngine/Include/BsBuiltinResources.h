@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUISkin.h"
 #include "CmModule.h"
+#include "CmPath.h"
 #include "CmVector2I.h"
 
 namespace BansheeEngine
@@ -45,8 +46,8 @@ namespace BansheeEngine
 
 		HSpriteTexture mWhiteSpriteTexture;
 
-		static const WString DefaultSkinFolder;
-		static const WString DefaultCursorFolder;
+		static const Path DefaultSkinFolder;
+		static const Path DefaultCursorFolder;
 
 		static const WString DefaultFontPath;
 		static const UINT32 DefaultFontSize;

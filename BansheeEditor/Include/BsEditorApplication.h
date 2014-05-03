@@ -2,6 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "CmModule.h"
+#include "CmPath.h"
 
 namespace BansheeEngine
 {
@@ -21,9 +22,9 @@ namespace BansheeEngine
 		void runMainLoop();
 
 		bool isProjectLoaded() const;
-		const WString& getActiveProjectPath() const;
+		const Path& getActiveProjectPath() const;
 	private:
-		static const WString WIDGET_LAYOUT_PATH;
+		static const Path WIDGET_LAYOUT_PATH;
 		RenderSystemPlugin mActiveRSPlugin;
 
 		static const String& getLibraryNameForRenderSystem(RenderSystemPlugin plugin);

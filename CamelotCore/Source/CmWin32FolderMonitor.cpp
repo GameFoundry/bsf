@@ -1,6 +1,7 @@
 #include "CmWin32FolderMonitor.h"
 #include "CmFileSystem.h"
 #include "CmException.h"
+#include "CmPath.h"
 
 #include "CmDebug.h"
 
@@ -30,7 +31,7 @@ namespace BansheeEngine
 
 	struct FolderMonitor::FolderWatchInfo
 	{
-		FolderWatchInfo(const WString& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags);
+		FolderWatchInfo(const Path& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags);
 		~FolderWatchInfo();
 
 		void startMonitor(HANDLE compPortHandle);
@@ -38,7 +39,7 @@ namespace BansheeEngine
 
 		static const UINT32 READ_BUFFER_SIZE = 65536;
 
-		WString mFolderToMonitor;
+		Path mFolderToMonitor;
 		HANDLE mDirHandle;
 		OVERLAPPED mOverlapped;
 		MonitorState mState;
@@ -54,13 +55,10 @@ namespace BansheeEngine
 		CM_THREAD_SYNCHRONISER(mStartStopEvent)
 	};
 
-	FolderMonitor::FolderWatchInfo::FolderWatchInfo(const WString& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags)
+	FolderMonitor::FolderWatchInfo::FolderWatchInfo(const Path& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags)
 		:mFolderToMonitor(folderToMonitor), mDirHandle(dirHandle), mState(MonitorState::Inactive), mBufferSize(0),
 		mMonitorSubdirectories(monitorSubdirectories), mMonitorFlags(monitorFlags), mReadError(0)
 	{
-		StringUtil::trim(mFolderToMonitor, L"\\", false, true);
-		StringUtil::toLowerCase(mFolderToMonitor);
-
 		memset(&mOverlapped, 0, sizeof(mOverlapped));
 	}
 
@@ -94,7 +92,7 @@ namespace BansheeEngine
 			}
 
 			CM_EXCEPT(InternalErrorException, "Failed to start folder monitor on folder \"" + 
-				toString(mFolderToMonitor) + "\" because ReadDirectoryChangesW failed.");
+				mFolderToMonitor.toString() + "\" because ReadDirectoryChangesW failed.");
 		}
 	}
 
@@ -131,7 +129,7 @@ namespace BansheeEngine
 	
 		DWORD	getAction() const;
 		WString getFileName() const;
-		WString getFileNameWithPath(const WString& rootPath) const;
+		WString getFileNameWithPath(const Path& rootPath) const;
 
 	
 	protected:
@@ -186,14 +184,10 @@ namespace BansheeEngine
 		return WString();
 	}		
 
-	WString FolderMonitor::FileNotifyInfo::getFileNameWithPath(const WString& rootPath) const
+	WString FolderMonitor::FileNotifyInfo::getFileNameWithPath(const Path& rootPath) const
 	{
-		WStringStream wss;
-		wss<<rootPath;
-		wss<<L"\\";
-		wss<<getFileName();
-
-		return wss.str();
+		Path fullPath = rootPath;
+		return fullPath.append(getFileName()).toWString();
 	}
 
 	enum class FileActionType
@@ -325,21 +319,21 @@ namespace BansheeEngine
 		cm_delete(mPimpl);
 	}
 
-	void FolderMonitor::startMonitor(const WString& folderPath, bool subdirectories, FolderChange changeFilter)
+	void FolderMonitor::startMonitor(const Path& folderPath, bool subdirectories, FolderChange changeFilter)
 	{
 		if(!FileSystem::isDirectory(folderPath))
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided path \"" + toString(folderPath) + "\" is not a directory");
+			CM_EXCEPT(InvalidParametersException, "Provided path \"" + folderPath.toString() + "\" is not a directory");
 		}
 
-		WString extendedFolderPath = L"\\\\?\\" + folderPath;
-		HANDLE dirHandle = CreateFileW(folderPath.c_str(), FILE_LIST_DIRECTORY, 
+		WString extendedFolderPath = L"\\\\?\\" + folderPath.toWString(Path::PathType::Windows);
+		HANDLE dirHandle = CreateFileW(extendedFolderPath.c_str(), FILE_LIST_DIRECTORY,
 			FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr, OPEN_EXISTING,
 			FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED, nullptr);
 
 		if(dirHandle == INVALID_HANDLE_VALUE)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to open folder \"" + toString(folderPath) + "\" for monitoring. Error code: " + toString((UINT64)GetLastError()));
+			CM_EXCEPT(InternalErrorException, "Failed to open folder \"" + folderPath.toString() + "\" for monitoring. Error code: " + toString((UINT64)GetLastError()));
 		}
 
 		DWORD filterFlags = 0;
@@ -414,14 +408,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void FolderMonitor::stopMonitor(const WString& folderPath)
+	void FolderMonitor::stopMonitor(const Path& folderPath)
 	{
-		WString folderPathForComparison = folderPath;
-		StringUtil::trim(folderPathForComparison, L"\\", false, true);
-		StringUtil::toLowerCase(folderPathForComparison);
-
 		auto findIter = std::find_if(mPimpl->mFoldersToWatch.begin(), mPimpl->mFoldersToWatch.end(), 
-			[&] (const FolderWatchInfo* x) { return x->mFolderToMonitor == folderPathForComparison; });
+			[&](const FolderWatchInfo* x) { return x->mFolderToMonitor == folderPath; });
 
 		if(findIter != mPimpl->mFoldersToWatch.end())
 		{
@@ -654,19 +644,19 @@ namespace BansheeEngine
 			{
 			case FileActionType::Added:
 				if(!onAdded.empty())
-					onAdded(WString(action->newName));
+					onAdded(Path(action->newName));
 				break;
 			case FileActionType::Removed:
 				if(!onRemoved.empty())
-					onRemoved(WString(action->newName));
+					onRemoved(Path(action->newName));
 				break;
 			case FileActionType::Modified:
 				if(!onModified.empty())
-					onModified(WString(action->newName));
+					onModified(Path(action->newName));
 				break;
 			case FileActionType::Renamed:
 				if(!onRenamed.empty())
-					onRenamed(WString(action->oldName), WString(action->newName));
+					onRenamed(Path(action->oldName), Path(action->newName));
 				break;
 			}
 

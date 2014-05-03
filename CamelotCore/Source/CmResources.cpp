@@ -22,19 +22,19 @@ namespace BansheeEngine
 
 	}
 
-	HResource Resources::load(const WString& filePath)
+	HResource Resources::load(const Path& filePath)
 	{
 		return loadInternal(filePath, true);
 	}
 
-	HResource Resources::loadAsync(const WString& filePath)
+	HResource Resources::loadAsync(const Path& filePath)
 	{
 		return loadInternal(filePath, false);
 	}
 
 	HResource Resources::loadFromUUID(const String& uuid)
 	{
-		WString filePath;
+		Path filePath;
 		bool foundPath = false;
 
 		// Default manifest is at 0th index but all other take priority since Default manifest could
@@ -59,7 +59,7 @@ namespace BansheeEngine
 
 	HResource Resources::loadFromUUIDAsync(const String& uuid)
 	{
-		WString filePath;
+		Path filePath;
 		bool foundPath = false;
 
 		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
@@ -80,7 +80,7 @@ namespace BansheeEngine
 		return loadAsync(filePath);
 	}
 
-	HResource Resources::loadInternal(const WString& filePath, bool synchronous)
+	HResource Resources::loadInternal(const Path& filePath, bool synchronous)
 	{
 		String uuid;
 		bool foundUUID = false;
@@ -133,7 +133,7 @@ namespace BansheeEngine
 
 		if(!FileSystem::isFile(filePath))
 		{
-			gDebug().logWarning("Specified file: " + toString(filePath) + " doesn't exist.");
+			gDebug().logWarning("Specified file: " + filePath.toString() + " doesn't exist.");
 			return HResource();
 		}
 
@@ -150,7 +150,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			String fileName = toString(OldPath::getFilename(filePath));
+			String fileName = filePath.getFilename();
 			String taskName = "Resource load: " + fileName;
 
 			TaskPtr task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, newResource));
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		return newResource;
 	}
 
-	ResourcePtr Resources::loadFromDiskAndDeserialize(const WString& filePath)
+	ResourcePtr Resources::loadFromDiskAndDeserialize(const Path& filePath)
 	{
 		FileSerializer fs;
 		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
@@ -207,7 +207,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void Resources::save(HResource resource, const WString& filePath, bool overwrite)
+	void Resources::save(HResource resource, const Path& filePath, bool overwrite)
 	{
 		if(!resource.isLoaded())
 			resource.synchronize();
@@ -264,7 +264,7 @@ namespace BansheeEngine
 		return newHandle;
 	}
 
-	bool Resources::getFilePathFromUUID(const String& uuid, WString& filePath) const
+	bool Resources::getFilePathFromUUID(const String& uuid, Path& filePath) const
 	{
 		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
 		{
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool Resources::getUUIDFromFilePath(const WString& path, String& uuid) const
+	bool Resources::getUUIDFromFilePath(const Path& path, String& uuid) const
 	{
 		for(auto iter = mResourceManifests.rbegin(); iter != mResourceManifests.rend(); ++iter) 
 		{
@@ -286,7 +286,7 @@ namespace BansheeEngine
 		return false;
 	}
 
-	void Resources::loadCallback(const WString& filePath, HResource& resource)
+	void Resources::loadCallback(const Path& filePath, HResource& resource)
 	{
 		ResourcePtr rawResource = loadFromDiskAndDeserialize(filePath);
 

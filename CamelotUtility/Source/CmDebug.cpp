@@ -4,6 +4,7 @@
 #include "CmBitmapWriter.h"
 #include "CmFileSystem.h"
 #include "CmDataStream.h"
+#include "CmPath.h"
 
 namespace BansheeEngine
 {
@@ -32,14 +33,14 @@ namespace BansheeEngine
 		mLog.logMsg(msg, channel);
 	}
 
-	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const WString& filePath, bool overwrite) const
+	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, bool overwrite) const
 	{
 		if(FileSystem::isFile(filePath))
 		{
 			if(overwrite)
 				FileSystem::remove(filePath);
 			else
-				CM_EXCEPT(FileNotFoundException, "File already exists at specified location: " + toString(filePath));
+				CM_EXCEPT(FileNotFoundException, "File already exists at specified location: " + filePath.toString());
 		}
 
 		DataStreamPtr ds = FileSystem::createAndOpenFile(filePath);

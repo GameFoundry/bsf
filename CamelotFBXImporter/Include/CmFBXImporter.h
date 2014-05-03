@@ -36,14 +36,14 @@ namespace BansheeEngine
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
 		/** Inherited from SpecificImporter */
-		virtual ResourcePtr import(const WString& filePath, ConstImportOptionsPtr importOptions);
+		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
 	private:
 		Vector<WString>::type mExtensions;
 
 		void startUpSdk(FbxManager*& manager, FbxScene*& scene);
 		void shutDownSdk(FbxManager* manager);
 
-		void loadScene(FbxManager* manager, FbxScene* scene, const WString& filePath);
+		void loadScene(FbxManager* manager, FbxScene* scene, const Path& filePath);
 		MeshDataPtr parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>::type& subMeshes);
 
 		MeshDataPtr parseMesh(FbxMesh* mesh, Vector<SubMesh>::type& subMeshes, bool createTangentsIfMissing = true);

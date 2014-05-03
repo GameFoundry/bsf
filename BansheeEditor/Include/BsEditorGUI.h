@@ -3,6 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUISkin.h"
 #include "CmModule.h"
+#include "CmPath.h"
 
 namespace BansheeEngine
 {
@@ -16,7 +17,7 @@ namespace BansheeEngine
 	private:
 		GUISkin mSkin;
 
-		static const WString DefaultFolder;
+		static const Path DefaultFolder;
 
 		static const WString DefaultFontPath;
 		static const UINT32 DefaultFontSize;

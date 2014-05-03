@@ -3,6 +3,8 @@
 
 namespace BansheeEngine
 {
+	const Path Path::BLANK = Path();
+
 	Path::Path()
 		:mIsAbsolute(false)
 	{ }
@@ -216,7 +218,7 @@ namespace BansheeEngine
 		return copy;
 	}
 
-	void Path::makeParent()
+	Path& Path::makeParent()
 	{
 		if (mFilename.empty())
 		{
@@ -237,31 +239,46 @@ namespace BansheeEngine
 		{
 			mFilename.clear();
 		}
+
+		return *this;
 	}
 
-	void Path::makeAbsolute(const Path& base)
+	Path& Path::makeAbsolute(const Path& base)
 	{
 		if (mIsAbsolute)
-			return;
+			return *this;
 
 		Path absDir = base.getDirectory();
+		if (base.isFile())
+			absDir.pushDirectory(base.mFilename);
+
 		for (auto& dir : mDirectories)
 			absDir.pushDirectory(dir);
 
 		*this = absDir;
+
+		return *this;
 	}
 
-	void Path::makeRelative(const Path& base)
+	Path& Path::makeRelative(const Path& base)
 	{
 		if (!base.includes(*this))
-			return;
+			return *this;
 
 		mDirectories.erase(mDirectories.begin(), mDirectories.begin() + base.mDirectories.size());
 		mIsAbsolute = false;
+
+		return *this;
 	}
 
 	bool Path::includes(const Path& child) const
 	{
+		if (mDevice != child.mDevice)
+			return false;
+
+		if (mNode != child.mNode)
+			return false;
+
 		auto iterParent = mDirectories.begin();
 		auto iterChild = child.mDirectories.begin();
 
@@ -273,6 +290,9 @@ namespace BansheeEngine
 			if (!comparePathElem(*iterChild, *iterParent))
 				return false;
 		}
+
+		if (mFilename != child.mFilename)
+			return false;
 
 		return true;
 	}
@@ -309,12 +329,17 @@ namespace BansheeEngine
 		return true;
 	}
 
-	void Path::append(const Path& path)
+	Path& Path::append(const Path& path)
 	{
+		if (!mFilename.empty())
+			pushDirectory(mFilename);
+
 		for (auto& dir : path.mDirectories)
 			pushDirectory(dir);
 
 		mFilename = path.mFilename;
+
+		return *this;
 	}
 
 	void Path::setBasename(const WString& basename)
@@ -390,13 +415,28 @@ namespace BansheeEngine
 		return BansheeEngine::toString(getWDirectory(idx));
 	}
 
+	WString Path::getWTail(PathType type) const
+	{
+		if (isFile())
+			return mFilename;
+		else if (mDirectories.size() > 0)
+			return mDirectories.back();
+		else
+			return toWString(type);
+	}
+
+	String Path::getTail(PathType type) const
+	{
+		return BansheeEngine::toString(getWTail(type));
+	}
+
 	void Path::clear()
 	{
 		mDirectories.clear();
 		mDevice.clear();
 		mFilename.clear();
 		mNode.clear();
-		mIsAbsolute = true;
+		mIsAbsolute = false;
 	}
 
 	void Path::throwInvalidPathException(const WString& path) const
@@ -470,7 +510,7 @@ namespace BansheeEngine
 		return result.str();
 	}
 
-	bool Path::comparePathElem(const WString& left, const WString& right) const
+	bool Path::comparePathElem(const WString& left, const WString& right)
 	{
 		if (left.size() != right.size())
 			return false;

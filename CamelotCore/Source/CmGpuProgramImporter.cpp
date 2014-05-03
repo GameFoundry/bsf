@@ -21,9 +21,9 @@ namespace BansheeEngine
 		return true;
 	}
 
-	ResourcePtr GpuProgramImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr GpuProgramImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
-		WString ext = OldPath::getExtension(filePath);
+		WString ext = filePath.getWExtension();
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 
 		DataStreamPtr stream = FileSystem::openFile(filePath);
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		HighLevelGpuProgramPtr gpuProgram = HighLevelGpuProgram::_createPtr(shaderSource, entryPoint, language, gptype, profile, &includes);
 		gpuProgram->synchronize();
 
-		WString fileName = OldPath::getFilename(filePath, false);
+		WString fileName = filePath.getWFilename(false);
 		gpuProgram->setName(toString(fileName));
 
 		return gpuProgram;

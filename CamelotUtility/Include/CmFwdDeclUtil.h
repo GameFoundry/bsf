@@ -50,6 +50,7 @@ namespace BansheeEngine
 	class HString;
 	class StringTable;
 	struct LocalizedStringData;
+	class Path;
 	// Reflection
 	class IReflectable;
 	class RTTITypeBase;
@@ -74,6 +75,10 @@ namespace BansheeEngine
 	{
 		TID_Abstract = 50, // Special type ID used for Abstract classes. Only type ID that may be used by more than one class.
 		TID_WString = 51,
-		TID_WPath = 52
+		TID_Path = 52,
+		TID_Vector = 53,
+		TID_Map = 54,
+		TID_UnorderedMap = 55,
+		TID_Pair = 56
 	};
 }

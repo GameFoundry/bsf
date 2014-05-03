@@ -20,13 +20,13 @@ namespace BansheeEngine
 		 * @brief	Parses the provided object, serializes all of its data as specified by its
 		 *			RTTIType and saves the serialized data to the provided file location.
 		 */
-		void encode(IReflectable* object, WString fileLocation);
+		void encode(IReflectable* object, const Path& fileLocation);
 
 		/**
 		 * @brief	Deserializes an IReflectable object by reading the binary data at
 		 *			the provided file location.
 		 */
-		std::shared_ptr<IReflectable> decode(WString fileLocation);
+		std::shared_ptr<IReflectable> decode(const Path& fileLocation);
 
 	private:
 		std::ofstream mOutputStream;

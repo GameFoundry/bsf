@@ -42,12 +42,12 @@ namespace BansheeEngine
 		 * @param	changeFilter	A set of flags you may OR together. Different notification events will
 		 *							trigger depending on which flags you set.
 		 */
-		void startMonitor(const WString& folderPath, bool subdirectories, FolderChange changeFilter);
+		void startMonitor(const Path& folderPath, bool subdirectories, FolderChange changeFilter);
 
 		/**
 		 * @brief	Stops monitoring the folder at the specified path.
 		 */
-		void stopMonitor(const WString& folderPath);
+		void stopMonitor(const Path& folderPath);
 
 		/**
 		 * @brief	Stops monitoring all folders that are currently being monitored.
@@ -65,25 +65,25 @@ namespace BansheeEngine
 		 * @brief	Triggers when a file is modified. Provides
 		 *			full path to the file.
 		 */
-		boost::signal<void(const WString&)> onModified;
+		boost::signal<void(const Path&)> onModified;
 
 		/**
 		 * @brief	Triggers when a file/folder is adeed. Provides
 		 *			full path to the file/folder.
 		 */
-		boost::signal<void(const WString&)> onAdded;
+		boost::signal<void(const Path&)> onAdded;
 
 		/**
 		 * @brief	Triggers when a file/folder is removed. Provides
 		 *			full path to the file/folder.
 		 */
-		boost::signal<void(const WString&)> onRemoved;
+		boost::signal<void(const Path&)> onRemoved;
 
 		/**
 		 * @brief	Triggers when a file/folder is renamed. Provides
 		 *			full path to the old and new name.
 		 */
-		boost::signal<void(const WString&, const WString&)> onRenamed;
+		boost::signal<void(const Path&, const Path&)> onRenamed;
 
 	private:
 		Pimpl* mPimpl;

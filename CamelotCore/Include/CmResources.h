@@ -29,7 +29,7 @@ namespace BansheeEngine
 		 *
 		 * @return	Loaded resource, or null if it cannot be found.
 		 */
-		HResource load(const WString& filePath);
+		HResource load(const Path& filePath);
 
 		/**
 		 * @brief	Loads the resource asynchronously. Initially returned resource should not be used
@@ -39,7 +39,7 @@ namespace BansheeEngine
 		 * 						
 		 * @return	Resource where the data will eventually be loaded, or null if the file cannot be found.
 		 */
-		HResource loadAsync(const WString& filePath);
+		HResource loadAsync(const Path& filePath);
 
 		/**
 		 * @brief	Loads the resource with the given uuid.
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		 * 			sure all those commands are submitted before you call this method. Otherwise an obsolete
 		 * 			version of the resource might get saved.
 		 */
-		void save(HResource resource, const WString& filePath, bool overwrite);
+		void save(HResource resource, const Path& filePath, bool overwrite);
 
 		/**
 		 * @brief	Creates a new resource handle from a resource pointer. 
@@ -118,8 +118,8 @@ namespace BansheeEngine
 		 */
 		ResourceManifestPtr getResourceManifest(const String& name) const;
 
-		bool getFilePathFromUUID(const String& uuid, WString& filePath) const;
-		bool getUUIDFromFilePath(const WString& path, String& uuid) const;
+		bool getFilePathFromUUID(const String& uuid, Path& filePath) const;
+		bool getUUIDFromFilePath(const Path& path, String& uuid) const;
 
 	private:
 		Vector<ResourceManifestPtr>::type mResourceManifests;
@@ -131,10 +131,10 @@ namespace BansheeEngine
 		UnorderedMap<String, HResource>::type mLoadedResources; 
 		UnorderedMap<String, HResource>::type mInProgressResources; // Resources that are being asynchronously loaded
 
-		HResource loadInternal(const WString& filePath, bool synchronous); 
-		ResourcePtr loadFromDiskAndDeserialize(const WString& filePath);
+		HResource loadInternal(const Path& filePath, bool synchronous);
+		ResourcePtr loadFromDiskAndDeserialize(const Path& filePath);
 
-		void loadCallback(const WString& filePath, HResource& resource);
+		void loadCallback(const Path& filePath, HResource& resource);
 	};
 
 	CM_EXPORT Resources& gResources();

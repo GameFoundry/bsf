@@ -237,6 +237,28 @@ namespace BansheeEngine
 		return stream.str();
 	}
 
+	WString toWString(char val, unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
+	WString toWString(wchar_t val, unsigned short width, char fill, std::ios::fmtflags flags)
+	{
+		WStringStream stream;
+		stream.width(width);
+		stream.fill(fill);
+		if (flags)
+			stream.setf(flags);
+		stream << val;
+		return stream.str();
+	}
+
 	WString toWString(const Vector2& val)
 	{
 		WStringStream stream;

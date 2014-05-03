@@ -46,7 +46,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Converts raw pixels into a BMP image. See "BitmapWriter" for more information.
 		 */
-		void writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const WString& filePath, bool overwrite = true) const;
+		void writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, bool overwrite = true) const;
 
 	private:
 		Log mLog;

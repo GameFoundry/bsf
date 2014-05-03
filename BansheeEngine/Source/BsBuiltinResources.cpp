@@ -21,8 +21,8 @@ namespace BansheeEngine
 	const WString BuiltinResources::DefaultFontPath = L"arial.ttf";
 	const UINT32 BuiltinResources::DefaultFontSize = 10;
 
-	const WString BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
-	const WString BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
+	const Path BuiltinResources::DefaultSkinFolder = L"..\\..\\..\\..\\Data\\Engine\\Skin\\";
+	const Path BuiltinResources::DefaultCursorFolder = L"..\\..\\..\\..\\Data\\Engine\\Cursors\\";
 
 	const WString BuiltinResources::WhiteTex = L"White.psd";
 
@@ -168,7 +168,9 @@ namespace BansheeEngine
 		HFont font;
 
 		{
-			WString fontPath = DefaultSkinFolder + DefaultFontPath;
+			Path fontPath = DefaultSkinFolder;
+			fontPath.append(DefaultFontPath);
+
 			ImportOptionsPtr fontImportOptions = Importer::instance().createImportOptions(fontPath);
 			if(rtti_is_of_type<FontImportOptions>(fontImportOptions))
 			{
@@ -541,12 +543,20 @@ namespace BansheeEngine
 
 	HSpriteTexture BuiltinResources::getSkinTexture(const WString& name)
 	{
-		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultSkinFolder + name)));
+		Path texturePath = FileSystem::getWorkingDirectoryPath();
+		texturePath.append(DefaultSkinFolder);
+		texturePath.append(name);
+
+		return SpriteTexture::create(static_resource_cast<Texture>(Importer::instance().import(texturePath)));
 	}
 
 	HTexture BuiltinResources::getCursorTexture(const WString& name)
 	{
-		return static_resource_cast<Texture>(Importer::instance().import(FileSystem::getWorkingDirectoryPath() + L"\\" + DefaultCursorFolder + name));
+		Path cursorPath = FileSystem::getWorkingDirectoryPath();
+		cursorPath.append(DefaultCursorFolder);
+		cursorPath.append(name);
+
+		return static_resource_cast<Texture>(Importer::instance().import(cursorPath));
 	}
 
 	const PixelData& BuiltinResources::getCursorArrow(Vector2I& hotSpot)

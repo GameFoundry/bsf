@@ -37,7 +37,7 @@ namespace BansheeEngine
 		return true; // FBX files can be plain-text so I don't even check for magic number
 	}
 
-	ResourcePtr FBXImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr FBXImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
 		FbxManager* fbxManager = nullptr;
 		FbxScene* fbxScene = nullptr;
@@ -53,7 +53,7 @@ namespace BansheeEngine
 		MeshPtr mesh = Mesh::_createPtr(meshData);
 		mesh->setSubMeshes(subMeshes);
 
-		WString fileName = OldPath::getFilename(filePath, false);
+		WString fileName = filePath.getWFilename(false);
 		mesh->setName(toString(fileName));
 
 		return mesh;
@@ -81,14 +81,14 @@ namespace BansheeEngine
 		manager->Destroy();
 	}
 
-	void FBXImporter::loadScene(FbxManager* manager, FbxScene* scene, const WString& filePath)
+	void FBXImporter::loadScene(FbxManager* manager, FbxScene* scene, const Path& filePath)
 	{
 		int lFileMajor, lFileMinor, lFileRevision;
 		int lSDKMajor,  lSDKMinor,  lSDKRevision;
 		FbxManager::GetFileFormatVersion(lSDKMajor, lSDKMinor, lSDKRevision);
 
 		FbxImporter* importer = FbxImporter::Create(manager, "");
-		bool importStatus = importer->Initialize(toString(filePath).c_str(), -1, manager->GetIOSettings());
+		bool importStatus = importer->Initialize(filePath.toString().c_str(), -1, manager->GetIOSettings());
 		
 		importer->GetFileVersion(lFileMajor, lFileMinor, lFileRevision);
 

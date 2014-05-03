@@ -18,8 +18,8 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	const WString ProjectLibrary::RESOURCES_DIR = L"Resources";
-	const WString ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal\\Resources";
+	const Path ProjectLibrary::RESOURCES_DIR = L"Resources\\";
+	const Path ProjectLibrary::INTERNAL_RESOURCES_DIR = L"Internal\\Resources\\";
 	const WString ProjectLibrary::LIBRARY_ENTRIES_FILENAME = L"ProjectLibrary.asset";
 	const WString ProjectLibrary::RESOURCE_MANIFEST_FILENAME = L"ResourceManifest.asset";
 
@@ -27,7 +27,7 @@ namespace BansheeEngine
 		:parent(nullptr), type(LibraryEntryType::Directory)
 	{ }
 
-	ProjectLibrary::LibraryEntry::LibraryEntry(const WString& path, const WString& name, DirectoryEntry* parent, LibraryEntryType type)
+	ProjectLibrary::LibraryEntry::LibraryEntry(const Path& path, const WString& name, DirectoryEntry* parent, LibraryEntryType type)
 		:path(path), parent(parent), type(type), elementName(name)
 	{ }
 
@@ -35,21 +35,22 @@ namespace BansheeEngine
 		:lastUpdateTime(0)
 	{ }
 
-	ProjectLibrary::ResourceEntry::ResourceEntry(const WString& path, const WString& name, DirectoryEntry* parent)
+	ProjectLibrary::ResourceEntry::ResourceEntry(const Path& path, const WString& name, DirectoryEntry* parent)
 		:LibraryEntry(path, name, parent, LibraryEntryType::File), lastUpdateTime(0)
 	{ }
 
 	ProjectLibrary::DirectoryEntry::DirectoryEntry()
 	{ }
 
-	ProjectLibrary::DirectoryEntry::DirectoryEntry(const WString& path, const WString& name, DirectoryEntry* parent)
+	ProjectLibrary::DirectoryEntry::DirectoryEntry(const Path& path, const WString& name, DirectoryEntry* parent)
 		:LibraryEntry(path, name, parent, LibraryEntryType::Directory)
 	{ }
 
-	ProjectLibrary::ProjectLibrary(const WString& projectFolder)
+	ProjectLibrary::ProjectLibrary(const Path& projectFolder)
 		:mRootEntry(nullptr), mProjectFolder(projectFolder)
 	{
-		mResourcesFolder = OldPath::combine(mProjectFolder, RESOURCES_DIR);
+		mResourcesFolder = mProjectFolder;
+		mResourcesFolder.append(RESOURCES_DIR);
 		mMonitor = cm_new<FolderMonitor>();
 
 		FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName | 
@@ -86,22 +87,21 @@ namespace BansheeEngine
 		mMonitor->_update();
 	}
 
-	void ProjectLibrary::checkForModifications(const WString& fullPath)
+	void ProjectLibrary::checkForModifications(const Path& fullPath)
 	{
-		if(!OldPath::includes(fullPath, mResourcesFolder))
+		if (!mResourcesFolder.includes(fullPath))
 			return; // Folder not part of our resources path, so no modifications
 
 		if(mRootEntry == nullptr)
 		{
-			WString resPath = mResourcesFolder;
-			mRootEntry = cm_new<DirectoryEntry>(resPath, OldPath::getFilename(resPath), nullptr);
+			mRootEntry = cm_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 		}
 
-		WString pathToSearch = fullPath;
+		Path pathToSearch = fullPath;
 		LibraryEntry* entry = findEntry(pathToSearch);
 		if(entry == nullptr) // File could be new, try to find parent directory entry
 		{
-			WString parentDirPath = OldPath::parentPath(pathToSearch);
+			Path parentDirPath = pathToSearch.getParent();
 			entry = findEntry(parentDirPath);
 
 			// Cannot find parent directory. Create the needed hierarchy.
@@ -149,8 +149,8 @@ namespace BansheeEngine
 				Stack<DirectoryEntry*>::type todo;
 				todo.push(static_cast<DirectoryEntry*>(entry));
 
-				Vector<WString>::type childFiles;
-				Vector<WString>::type childDirectories;
+				Vector<Path>::type childFiles;
+				Vector<Path>::type childDirectories;
 				Vector<bool>::type existingEntries;
 				Vector<LibraryEntry*>::type toDelete;
 
@@ -173,8 +173,8 @@ namespace BansheeEngine
 					{
 						if(isMeta(filePath))
 						{
-							WString sourceFilePath = filePath;
-							OldPath::replaceExtension(sourceFilePath, L"");
+							Path sourceFilePath = filePath;
+							sourceFilePath.setExtension(L"");
 
 							if(!FileSystem::isFile(sourceFilePath))
 							{
@@ -189,7 +189,7 @@ namespace BansheeEngine
 							UINT32 idx = 0;
 							for(auto& child : currentDir->mChildren)
 							{
-								if(child->type == LibraryEntryType::File && OldPath::equals(child->path, filePath))
+								if(child->type == LibraryEntryType::File && child->path == filePath)
 								{
 									existingEntries[idx] = true;
 									existingEntry = static_cast<ResourceEntry*>(child);
@@ -216,7 +216,7 @@ namespace BansheeEngine
 						UINT32 idx = 0;
 						for(auto& child : currentDir->mChildren)
 						{
-							if(child->type == LibraryEntryType::Directory && OldPath::equals(child->path, dirPath))
+							if(child->type == LibraryEntryType::Directory && child->path == dirPath)
 							{
 								existingEntries[idx] = true;
 								existingEntry = static_cast<DirectoryEntry*>(child);
@@ -258,9 +258,9 @@ namespace BansheeEngine
 		}
 	}
 
-	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const WString& filePath)
+	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const Path& filePath)
 	{
-		ResourceEntry* newResource = cm_new<ResourceEntry>(filePath, OldPath::getFilename(filePath), parent);
+		ResourceEntry* newResource = cm_new<ResourceEntry>(filePath, filePath.getWTail(), parent);
 		parent->mChildren.push_back(newResource);
 
 		reimportResourceInternal(newResource);
@@ -271,9 +271,9 @@ namespace BansheeEngine
 		return newResource;
 	}
 
-	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const WString& dirPath)
+	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const Path& dirPath)
 	{
-		DirectoryEntry* newEntry = cm_new<DirectoryEntry>(dirPath, OldPath::getFilename(dirPath), parent);
+		DirectoryEntry* newEntry = cm_new<DirectoryEntry>(dirPath, dirPath.getWTail(), parent);
 		parent->mChildren.push_back(newEntry);
 
 		if(!onEntryAdded.empty())
@@ -286,7 +286,7 @@ namespace BansheeEngine
 	{
 		if(resource->meta != nullptr)
 		{
-			WString path;
+			Path path;
 			if(mResourceManifest->uuidToFilePath(resource->meta->getUUID(), path))
 			{
 				if(FileSystem::isFile(path))
@@ -339,8 +339,9 @@ namespace BansheeEngine
 
 	void ProjectLibrary::reimportResourceInternal(ResourceEntry* resource)
 	{
-		WString ext = OldPath::getExtension(resource->path);
-		WString metaPath = resource->path + L".meta";
+		WString ext = resource->path.getWExtension();
+		Path metaPath = resource->path;
+		metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
 		ext = ext.substr(1, ext.size() - 1); // Remove the .
 		if(!Importer::instance().supportsFileType(ext))
@@ -386,11 +387,13 @@ namespace BansheeEngine
 				Importer::instance().reimport(importedResource, resource->path, importOptions);
 			}
 
-			WString internalResourcesPath = OldPath::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
+			Path internalResourcesPath = mProjectFolder;
+			internalResourcesPath.append(INTERNAL_RESOURCES_DIR);
+
 			if(!FileSystem::isDirectory(internalResourcesPath))
 				FileSystem::createDir(internalResourcesPath);
 
-			internalResourcesPath = OldPath::combine(internalResourcesPath, toWString(importedResource.getUUID()) + L".asset");
+			internalResourcesPath.setFilename(toWString(importedResource.getUUID()) + L".asset");
 
 			gResources().save(importedResource, internalResourcesPath, true);
 			gResources().unload(importedResource);
@@ -406,7 +409,7 @@ namespace BansheeEngine
 		if(resource->meta == nullptr)
 			return false;
 
-		WString path;
+		Path path;
 		if(!mResourceManifest->uuidToFilePath(resource->meta->getUUID(), path))
 			return false;
 
@@ -417,47 +420,39 @@ namespace BansheeEngine
 		return lastModifiedTime <= resource->lastUpdateTime;
 	}
 
-	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const WString& fullPath) const
+	ProjectLibrary::LibraryEntry* ProjectLibrary::findEntry(const Path& fullPath) const
 	{
-		Vector<WString>::type pathElems = OldPath::split(fullPath);
-		Vector<WString>::type rootElems = OldPath::split(mRootEntry->path);
-
-		auto pathIter = pathElems.begin();
-		auto rootIter = rootElems.begin();
-
-		while(pathIter != pathElems.end() && rootIter != rootElems.end() && OldPath::comparePathElements(*pathIter, *rootIter))
-		{
-			++pathIter;
-			++rootIter;
-		}
-
-		if(pathIter == pathElems.begin()) // Not a single entry matches Resources path
+		if (!mRootEntry->path.includes(fullPath))
 			return nullptr;
 
-		--pathIter;
-		Stack<LibraryEntry*>::type todo;
-		todo.push(mRootEntry);
+		Path relPath = fullPath.getRelative(mRootEntry->path);
+		UINT32 numElems = relPath.getNumDirectories() + (relPath.isFile() ? 1 : 0);
+		UINT32 idx = 0;
 
-		while(!todo.empty())
+		LibraryEntry* current = mRootEntry;
+		while (current != nullptr)
 		{
-			LibraryEntry* current = todo.top();
-			todo.pop();
+			if (idx == numElems)
+				return current;
 
-			if(OldPath::comparePathElements(*pathIter, current->elementName))
+			WString curElem;
+			if (relPath.isFile() && idx == (numElems - 1))
+				curElem = relPath.getWFilename();
+			else
+				curElem = relPath[idx];
+
+			current = nullptr;
+			if (current->type == LibraryEntryType::Directory)
 			{
-				++pathIter;
-
-				if(pathIter == pathElems.end())
-					return current;
-
-				while(!todo.empty())
-					todo.pop();
-
-				if(current->type == LibraryEntryType::Directory)
+				DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(current);
+				for (auto& child : dirEntry->mChildren)
 				{
-					DirectoryEntry* dirEntry = static_cast<DirectoryEntry*>(current);
-					for(auto& child : dirEntry->mChildren)
-						todo.push(child);
+					if (Path::comparePathElem(curElem, child->elementName))
+					{
+						idx++;
+						current = child;
+						break;
+					}
 				}
 			}
 		}
@@ -465,19 +460,19 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	void ProjectLibrary::moveEntry(const WString& oldPath, const WString& newPath)
+	void ProjectLibrary::moveEntry(const Path& oldPath, const Path& newPath)
 	{
 		if(FileSystem::isFile(oldPath) || FileSystem::isDirectory(oldPath))
 			FileSystem::move(oldPath, newPath);
 
-		WString oldMetaPath = getMetaPath(oldPath);
-		WString newMetaPath = getMetaPath(newPath);
+		Path oldMetaPath = getMetaPath(oldPath);
+		Path newMetaPath = getMetaPath(newPath);
 
 		LibraryEntry* oldEntry = findEntry(oldPath);
 		if(oldEntry != nullptr) // Moving from the Resources folder
 		{
 			// Moved outside of Resources, delete entry & meta file
-			if(!OldPath::includes(newPath, mResourcesFolder))
+			if (!mResourcesFolder.includes(newPath))
 			{
 				if(oldEntry->type == LibraryEntryType::File)
 				{
@@ -499,7 +494,7 @@ namespace BansheeEngine
 				if(findIter != parent->mChildren.end())
 					parent->mChildren.erase(findIter);
 
-				WString parentPath = OldPath::parentPath(newPath);
+				Path parentPath = newPath.getParent();
 
 				DirectoryEntry* newEntryParent = nullptr;
 				LibraryEntry* newEntryParentLib = findEntry(parentPath);
@@ -516,7 +511,7 @@ namespace BansheeEngine
 				newEntryParent->mChildren.push_back(oldEntry);
 				oldEntry->parent = newEntryParent;
 				oldEntry->path = newPath;
-				oldEntry->elementName = OldPath::getFilename(newPath);
+				oldEntry->elementName = newPath.getWTail();
 
 				if(oldEntry->type == LibraryEntryType::Directory) // Update child paths
 				{
@@ -531,7 +526,8 @@ namespace BansheeEngine
 						DirectoryEntry* curDirEntry = static_cast<DirectoryEntry*>(curEntry);
 						for(auto& child : curDirEntry->mChildren)
 						{
-							child->path = OldPath::combine(child->parent->path, child->elementName);
+							child->path = child->parent->path;
+							child->path.append(child->elementName);
 
 							if(child->type == LibraryEntryType::Directory)
 								todo.push(child);
@@ -555,7 +551,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void ProjectLibrary::deleteEntry(const WString& path)
+	void ProjectLibrary::deleteEntry(const Path& path)
 	{
 		if(FileSystem::exists(path))
 			FileSystem::remove(path);
@@ -567,7 +563,7 @@ namespace BansheeEngine
 			{
 				deleteResourceInternal(static_cast<ResourceEntry*>(entry));
 
-				WString metaPath = getMetaPath(path);
+				Path metaPath = getMetaPath(path);
 				if(FileSystem::isFile(metaPath))
 					FileSystem::remove(metaPath);
 			}
@@ -576,15 +572,15 @@ namespace BansheeEngine
 		}
 	}
 
-	void ProjectLibrary::createInternalParentHierarchy(const WString& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
+	void ProjectLibrary::createInternalParentHierarchy(const Path& fullPath, DirectoryEntry** newHierarchyRoot, DirectoryEntry** newHierarchyLeaf)
 	{
-		WString parentPath = fullPath;
+		Path parentPath = fullPath;
 
 		DirectoryEntry* newEntryParent = nullptr;
-		Stack<WString>::type parentPaths;
+		Stack<Path>::type parentPaths;
 		do 
 		{
-			WString newParentPath = OldPath::parentPath(parentPath);
+			Path newParentPath = parentPath.getParent();
 
 			if(newParentPath == parentPath)
 				break;
@@ -610,7 +606,7 @@ namespace BansheeEngine
 
 		while(!parentPaths.empty())
 		{
-			WString curPath = parentPaths.top();
+			Path curPath = parentPaths.top();
 			parentPaths.pop();
 
 			newEntryParent = addDirectoryInternal(newEntryParent, curPath);
@@ -620,26 +616,27 @@ namespace BansheeEngine
 			*newHierarchyLeaf = newEntryParent;
 	}
 
-	WString ProjectLibrary::getMetaPath(const WString& path) const
+	Path ProjectLibrary::getMetaPath(const Path& path) const
 	{
-		WString metaPath = path + L".meta";
+		Path metaPath = path;
+		metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
 		return metaPath;
 	}
 
-	bool ProjectLibrary::isMeta(const WString& fullPath) const
+	bool ProjectLibrary::isMeta(const Path& fullPath) const
 	{
-		return OldPath::getExtension(fullPath) == L".meta";
+		return fullPath.getWExtension() == L".meta";
 	}
 
-	void ProjectLibrary::onMonitorFileModified(const WString& path)
+	void ProjectLibrary::onMonitorFileModified(const Path& path)
 	{
 		if(!isMeta(path))
 			checkForModifications(path);
 		else
 		{
-			WString resourcePath = path;
-			OldPath::replaceExtension(resourcePath, L"");
+			Path resourcePath = path;
+			resourcePath.setExtension(L"");
 
 			checkForModifications(resourcePath);
 		}
@@ -649,14 +646,16 @@ namespace BansheeEngine
 	{
 		std::shared_ptr<ProjectLibraryEntries> libEntries = ProjectLibraryEntries::create(*mRootEntry);
 
-		WString libraryEntriesPath = OldPath::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
-		libraryEntriesPath = OldPath::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
+		Path libraryEntriesPath = mProjectFolder;
+		libraryEntriesPath.append(INTERNAL_RESOURCES_DIR);
+		libraryEntriesPath.append(LIBRARY_ENTRIES_FILENAME);
 
 		FileSerializer fs;
 		fs.encode(libEntries.get(), libraryEntriesPath);
 
-		WString resourceManifestPath = OldPath::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
-		resourceManifestPath = OldPath::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
+		Path resourceManifestPath = mProjectFolder;
+		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
+		resourceManifestPath.append(RESOURCE_MANIFEST_FILENAME);
 
 		ResourceManifest::save(mResourceManifest, resourceManifestPath, mProjectFolder);
 	}
@@ -669,11 +668,11 @@ namespace BansheeEngine
 			mRootEntry = nullptr;
 		}
 
-		WString resPath = mResourcesFolder;
-		mRootEntry = cm_new<DirectoryEntry>(resPath, OldPath::getFilename(resPath), nullptr);
+		mRootEntry = cm_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 
-		WString libraryEntriesPath = OldPath::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
-		libraryEntriesPath = OldPath::combine(libraryEntriesPath, LIBRARY_ENTRIES_FILENAME);
+		Path libraryEntriesPath = mProjectFolder;
+		libraryEntriesPath.append(INTERNAL_RESOURCES_DIR);
+		libraryEntriesPath.append(LIBRARY_ENTRIES_FILENAME);
 
 		if(FileSystem::exists(libraryEntriesPath))
 		{
@@ -704,7 +703,8 @@ namespace BansheeEngine
 
 					if(resEntry->meta == nullptr)
 					{
-						WString metaPath = resEntry->path + L".meta";
+						Path metaPath = resEntry->path;
+						metaPath.setFilename(metaPath.getWFilename() + L".meta");
 
 						FileSerializer fs;
 						if(FileSystem::isFile(metaPath))
@@ -727,8 +727,9 @@ namespace BansheeEngine
 		}
 
 		// Load resource manifest
-		WString resourceManifestPath = OldPath::combine(mProjectFolder, INTERNAL_RESOURCES_DIR);
-		resourceManifestPath = OldPath::combine(resourceManifestPath, RESOURCE_MANIFEST_FILENAME);
+		Path resourceManifestPath = mProjectFolder;
+		resourceManifestPath.append(INTERNAL_RESOURCES_DIR);
+		resourceManifestPath.append(RESOURCE_MANIFEST_FILENAME);
 
 		if(FileSystem::exists(resourceManifestPath))
 		{

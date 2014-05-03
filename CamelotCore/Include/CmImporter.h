@@ -25,7 +25,7 @@ namespace BansheeEngine
 		 *
 		 * @see		createImportOptions
 		 */
-		HResource import(const WString& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		HResource import(const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
 		/**
 		 * @brief	Imports a resource and replaces the contents of the provided existing resource with new imported data.
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		 *
 		 * @see		createImportOptions
 		 */
-		void reimport(HResource& existingResource, const WString& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
+		void reimport(HResource& existingResource, const Path& inputFilePath, ConstImportOptionsPtr importOptions = nullptr);
 
 		/**
 		 * @brief	Automatically detects the importer needed for the provided file and returns valid type of
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		 *			nullptr is returned if the file path is not valid, or if a valid importer cannot be found for
 		 *			the specified file.
 		 */
-		ImportOptionsPtr createImportOptions(const WString& inputFilePath);
+		ImportOptionsPtr createImportOptions(const Path& inputFilePath);
 
 		/**
 		 * @brief	Checks if we can import a file with the specified extension.
@@ -84,6 +84,6 @@ namespace BansheeEngine
 	private:
 		Vector<SpecificImporter*>::type mAssetImporters;
 
-		SpecificImporter* getImporterForFile(const WString& inputFilePath) const;
+		SpecificImporter* getImporterForFile(const Path& inputFilePath) const;
 	};
 }

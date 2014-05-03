@@ -169,7 +169,7 @@ namespace BansheeEngine
 	 */
 	template<class T> struct RTTIPlainType<std::vector<T, StdAlloc<T>>>
 	{	
-		enum { id = TID_STDVECTOR }; enum { hasDynamicSize = 1 };
+		enum { id = TID_Vector }; enum { hasDynamicSize = 1 };
 
 		/**
 		 * @copydoc		RTTIPlainType::toMemory
@@ -245,7 +245,7 @@ namespace BansheeEngine
 	 */
 	template<class Key, class Value> struct RTTIPlainType<std::map<Key, Value, std::less<Key>, StdAlloc<std::pair<const Key, Value>>>>
 	{	
-		enum { id = TID_STDMAP }; enum { hasDynamicSize = 1 };
+		enum { id = TID_Map }; enum { hasDynamicSize = 1 };
 
 		/**
 		 * @copydoc		RTTIPlainType::toMemory
@@ -328,13 +328,105 @@ namespace BansheeEngine
 	}; 
 
 	/**
+	* @brief	RTTIPlainType for std::unordered_map.
+	*
+	* @see		RTTIPlainType
+	*/
+	template<class Key, class Value> 
+	struct RTTIPlainType<std::unordered_map<Key, Value, std::hash<Key>, std::equal_to<Key>, StdAlloc<std::pair<const Key, Value>>>>
+	{
+		enum { id = TID_UnorderedMap }; enum { hasDynamicSize = 1 };
+
+		typedef std::unordered_map<Key, Value, std::hash<Key>, std::equal_to<Key>, StdAlloc<std::pair<const Key, Value>>> MapType;
+
+		/**
+		* @copydoc		RTTIPlainType::toMemory
+		*/
+		static void toMemory(MapType& data, char* memory)
+		{
+			UINT32 size = sizeof(UINT32);
+			char* memoryStart = memory;
+			memory += sizeof(UINT32);
+
+			UINT32 numElements = (UINT32)data.size();
+			memcpy(memory, &numElements, sizeof(UINT32));
+			memory += sizeof(UINT32);
+			size += sizeof(UINT32);
+
+			for (auto iter = data.begin(); iter != data.end(); ++iter)
+			{
+				UINT32 keySize = RTTIPlainType<Key>::getDynamicSize(iter->first);
+				RTTIPlainType<Key>::toMemory(iter->first, memory);
+
+				memory += keySize;
+				size += keySize;
+
+				UINT32 valueSize = RTTIPlainType<Value>::getDynamicSize(iter->second);
+				RTTIPlainType<Value>::toMemory(iter->second, memory);
+
+				memory += valueSize;
+				size += valueSize;
+			}
+
+			memcpy(memoryStart, &size, sizeof(UINT32));
+		}
+
+		/**
+		* @copydoc		RTTIPlainType::fromMemory
+		*/
+		static UINT32 fromMemory(MapType& data, char* memory)
+		{
+			UINT32 size = 0;
+			memcpy(&size, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			UINT32 numElements;
+			memcpy(&numElements, memory, sizeof(UINT32));
+			memory += sizeof(UINT32);
+
+			for (UINT32 i = 0; i < numElements; i++)
+			{
+				Key key;
+				UINT32 keySize = RTTIPlainType<Key>::fromMemory(key, memory);
+				memory += keySize;
+
+				Value value;
+				UINT32 valueSize = RTTIPlainType<Value>::fromMemory(value, memory);
+				memory += valueSize;
+
+				data[key] = value;
+			}
+
+			return size;
+		}
+
+		/**
+		* @copydoc		RTTIPlainType::getDynamicSize
+		*/
+		static UINT32 getDynamicSize(const MapType& data)
+		{
+			UINT64 dataSize = sizeof(UINT32)* 2;
+
+			for (auto iter = data.begin(); iter != data.end(); ++iter)
+			{
+				dataSize += RTTIPlainType<Key>::getDynamicSize(iter->first);
+				dataSize += RTTIPlainType<Value>::getDynamicSize(iter->second);
+			}
+
+			assert(dataSize <= std::numeric_limits<UINT32>::max());
+
+			return (UINT32)dataSize;
+		}
+	};
+
+	/**
 	 * @brief	RTTIPlainType for std::pair.
 	 * 			
 	 * @see		RTTIPlainType
 	 */
 	template<class A, class B> struct RTTIPlainType<std::pair<A, B>>
 	{	
-		enum { id = TID_STDPAIR }; enum { hasDynamicSize = 1 };
+		enum { id = TID_Pair }; enum { hasDynamicSize = 1 };
 
 		/**
 		 * @copydoc		RTTIPlainType::toMemory

@@ -271,8 +271,6 @@ namespace BansheeEngine
 		TID_Font = 1051,
 		TID_FONT_DESC = 1052,
 		TID_CHAR_DESC = 1053,
-		TID_STDVECTOR = 1054,
-		TID_STDMAP = 1055,
 		TID_FontImportOptions = 1056,
 		TID_FontData = 1057,
 		TID_SceneObject = 1059,
@@ -284,8 +282,7 @@ namespace BansheeEngine
 		TID_MeshBase = 1065,
 		TID_GameObjectHandleBase = 1066,
 		TID_ResourceManifest = 1067,
-		TID_ResourceManifestEntry = 1068,
-		TID_STDPAIR = 1069
+		TID_ResourceManifestEntry = 1068
 	};
 }
 

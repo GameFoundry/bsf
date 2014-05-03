@@ -120,7 +120,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ResourcePtr FreeImgImporter::import(const WString& filePath, ConstImportOptionsPtr importOptions)
+	ResourcePtr FreeImgImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
 		DataStreamPtr fileData = FileSystem::openFile(filePath, true);
 
@@ -146,7 +146,7 @@ namespace BansheeEngine
 
 		fileData->close();
 
-		WString fileName = OldPath::getFilename(filePath, false);
+		WString fileName = filePath.getWFilename(false);
 		newTexture->setName(toString(fileName));
 
 		return newTexture;

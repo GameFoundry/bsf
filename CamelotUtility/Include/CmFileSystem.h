@@ -16,7 +16,7 @@ namespace BansheeEngine
 		 * @param	fullPath	Full path to a file.
 		 * @param	readOnly	(optional) If true, returned stream will only be readable.
 		 */
-		static DataStreamPtr openFile(const WString& fullPath, bool readOnly = true);
+		static DataStreamPtr openFile(const Path& fullPath, bool readOnly = true);
 
 		/**
 		 * @brief	Opens a file and returns a data stream capable of reading and writing to that file.
@@ -24,14 +24,14 @@ namespace BansheeEngine
 		 *
 		 * @param	fullPath	Full path to a file.
 		 */
-		static DataStreamPtr createAndOpenFile(const WString& fullPath);
+		static DataStreamPtr createAndOpenFile(const Path& fullPath);
 
 		/**
 		 * @brief	Returns the size of a file in bytes.
 		 *
 		 * @param	fullPath	Full path to a file.
 		 */
-		static UINT64 getFileSize(const WString& fullPath);
+		static UINT64 getFileSize(const Path& fullPath);
 
 		/**
 		 * @brief	Deletes a file or a folder at the specified path.
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		 * 						deleted as well. Otherwise an exception will be
 		 * 						thrown for non-empty folders.
 		 */
-		static void remove(const WString& fullPath, bool recursively = true);
+		static void remove(const Path& fullPath, bool recursively = true);
 
 		/**
 		 * @brief	Moves a file or a folder from one to another path. This
@@ -52,35 +52,35 @@ namespace BansheeEngine
 		 * @param	overwriteExisting	(optional) If true, any existing file/folder at the new location will be overwritten,
 		 * 								otherwise an exception will be thrown if a file/folder already exists.
 		 */
-		static void move(const WString& oldPath, const WString& newPath, bool overwriteExisting = true);
+		static void move(const Path& oldPath, const Path& newPath, bool overwriteExisting = true);
 
 		/**
 		 * @brief	Creates a folder at the specified path.
 		 *
 		 * @param	fullPath	Full path to a full folder to create.
 		 */
-		static void createDir(const WString& fullPath);
+		static void createDir(const Path& fullPath);
 
 		/**
 		 * @brief	Returns true if a file or a folder exists at the specified path.
 		 *
 		 * @param	fullPath	Full path to a file or folder.
 		 */
-		static bool exists(const WString& fullPath);
+		static bool exists(const Path& fullPath);
 
 		/**
 		 * @brief	Returns true if a file exists at the specified path.
 		 *
 		 * @param	fullPath	Full path to a file or folder.
 		 */
-		static bool isFile(const WString& fullPath);
+		static bool isFile(const Path& fullPath);
 
 		/**
 		 * @brief	Returns true if a folder exists at the specified path.
 		 *
 		 * @param	fullPath	Full path to a file or folder.
 		 */
-		static bool isDirectory(const WString& fullPath);
+		static bool isDirectory(const Path& fullPath);
 
 		/**
 		 * @brief	Returns all files or folders located in the specified folder.
@@ -89,26 +89,18 @@ namespace BansheeEngine
 		 * @param [out]	files	   		Full paths to all files located directly in specified folder.
 		 * @param [out]	directories		Full paths to all folders located directly in specified folder.
 		 */
-		static void getChildren(const WString& dirPath, Vector<WString>::type& files, Vector<WString>::type& directories);
+		static void getChildren(const Path& dirPath, Vector<Path>::type& files, Vector<Path>::type& directories);
 
 		/**
 		 * @brief	Returns the last modified time of a file or a folder at the specified path.
 		 *
 		 * @param	fullPath	Full path to a file or a folder.
 		 */
-		static std::time_t getLastModifiedTime(const WString& fullPath);
+		static std::time_t getLastModifiedTime(const Path& fullPath);
 
 		/**
 		 * @brief	Returns the path to the currently working directory.
 		 */
-		static WString getWorkingDirectoryPath();
-
-		/**
-		 * @brief	Returns a parent path of the provided file path.
-		 * 			If path represents a directory, then that directory path is returned.
-		 * 			
-		 * @param	fullPath	Full path to a file.
-		 */
-		static WString getParentDirectory(const WString& fullPath);
+		static Path getWorkingDirectoryPath();
 	};
 }

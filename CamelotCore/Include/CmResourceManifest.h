@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmIReflectable.h"
+#include "CmPath.h"
 
 namespace BansheeEngine
 {
@@ -22,14 +23,14 @@ namespace BansheeEngine
 
 		const String& getName() const { return mName; }
 
-		void registerResource(const String& uuid, const WString& filePath);
+		void registerResource(const String& uuid, const Path& filePath);
 		void unregisterResource(const String& uuid);
 
-		bool uuidToFilePath(const String& uuid, WString& filePath) const;
-		bool filePathToUUID(const WString& filePath, String& outUUID) const;
+		bool uuidToFilePath(const String& uuid, Path& filePath) const;
+		bool filePathToUUID(const Path& filePath, String& outUUID) const;
 
 		bool uuidExists(const String& uuid) const;
-		bool filePathExists(const WString& filePath) const;
+		bool filePathExists(const Path& filePath) const;
 
 		/**
 		 * @brief	Saves the resource manifest to the specified location.
@@ -39,7 +40,7 @@ namespace BansheeEngine
 		 * @param	relativePath	If not empty, all pathnames in the manifest will be stored
 		 * 							as if relative to this path.
 		 */
-		static void save(const ResourceManifestPtr& manifest, const WString& path, const WString& relativePath);
+		static void save(const ResourceManifestPtr& manifest, const Path& path, const Path& relativePath);
 
 		/**
 		 * @brief	Loads the resource manifest from the specified location.
@@ -48,14 +49,14 @@ namespace BansheeEngine
 		 * @param	relativePath	If not empty, all loaded pathnames will have this
 		 * 							path prepended.
 		 */
-		static ResourceManifestPtr load(const WString& path, const WString& relativePath);
+		static ResourceManifestPtr load(const Path& path, const Path& relativePath);
 
 		static ResourceManifestPtr create(const String& name);
 
 	private:
 		String mName;
-		Map<String, WString>::type mUUIDToFilePath;
-		Map<WString, String>::type mFilePathToUUID;
+		UnorderedMap<String, Path>::type mUUIDToFilePath;
+		UnorderedMap<Path, String>::type mFilePathToUUID;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

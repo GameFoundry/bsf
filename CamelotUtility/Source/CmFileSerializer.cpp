@@ -3,6 +3,7 @@
 #include "CmException.h"
 #include "CmIReflectable.h"
 #include "CmBinarySerializer.h"
+#include "CmPath.h"
 
 #include <numeric>
 
@@ -20,9 +21,9 @@ namespace BansheeEngine
 		cm_free<ScratchAlloc>(mWriteBuffer);
 	}
 
-	void FileSerializer::encode(IReflectable* object, WString fileLocation)
+	void FileSerializer::encode(IReflectable* object, const Path& fileLocation)
 	{
-		mOutputStream.open(fileLocation.c_str(), std::ios::out | std::ios::binary);
+		mOutputStream.open(fileLocation.toString().c_str(), std::ios::out | std::ios::binary);
 
 		BinarySerializer bs;
 		int totalBytesWritten = 0;
@@ -32,9 +33,9 @@ namespace BansheeEngine
 		mOutputStream.clear();
 	}
 
-	std::shared_ptr<IReflectable> FileSerializer::decode(WString fileLocation)
+	std::shared_ptr<IReflectable> FileSerializer::decode(const Path& fileLocation)
 	{
-		mInputStream.open(fileLocation.c_str(), std::ios::in | std::ios::ate | std::ios::binary);
+		mInputStream.open(fileLocation.toString().c_str(), std::ios::in | std::ios::ate | std::ios::binary);
 		
 		std::streamoff fileSize = mInputStream.tellg();
 		if(fileSize > std::numeric_limits<UINT32>::max())
