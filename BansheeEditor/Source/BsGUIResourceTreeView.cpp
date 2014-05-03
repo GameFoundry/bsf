@@ -40,7 +40,7 @@ namespace BansheeEngine
 		const ProjectLibrary::LibraryEntry* rootEntry = ProjectLibrary::instance().getRootEntry();
 
 		mRootElement.mFullPath = rootEntry->path;
-		mRootElement.mElementName = Path::getFilename(mRootElement.mFullPath);
+		mRootElement.mElementName = OldPath::getFilename(mRootElement.mFullPath);
 		expandElement(&mRootElement);
 
 		updateFromProjectLibraryEntry(&mRootElement, rootEntry);
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		ResourceTreeElement* resourceTreeElement = static_cast<ResourceTreeElement*>(element);
 		
 		WString oldPath = resourceTreeElement->mFullPath;
-		WString newPath = Path::combine(Path::parentPath(oldPath), name);
+		WString newPath = OldPath::combine(OldPath::parentPath(oldPath), name);
 
 		ProjectLibrary::instance().moveEntry(oldPath, findUniquePath(newPath));
 	}
@@ -140,11 +140,11 @@ namespace BansheeEngine
 	{
 		ResourceTreeElement* newChild = cm_new<ResourceTreeElement>();
 		newChild->mParent = parent;
-		newChild->mName = toString(Path::getFilename(fullPath));
+		newChild->mName = toString(OldPath::getFilename(fullPath));
 		newChild->mFullPath = fullPath;
 		newChild->mSortedIdx = (UINT32)parent->mChildren.size();
 		newChild->mIsVisible = parent->mIsVisible && parent->mIsExpanded;
-		newChild->mElementName = Path::getFilename(fullPath);
+		newChild->mElementName = OldPath::getFilename(fullPath);
 
 		parent->mChildren.push_back(newChild);
 
@@ -194,13 +194,13 @@ namespace BansheeEngine
 
 	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::findTreeElement(const WString& fullPath)
 	{
-		Vector<WString>::type pathElems = Path::split(fullPath);
-		Vector<WString>::type rootElems = Path::split(mRootElement.mFullPath);
+		Vector<WString>::type pathElems = OldPath::split(fullPath);
+		Vector<WString>::type rootElems = OldPath::split(mRootElement.mFullPath);
 
 		auto pathIter = pathElems.begin();
 		auto rootIter = rootElems.begin();
 
-		while(pathIter != pathElems.end() && rootIter != rootElems.end() && Path::comparePathElements(*pathIter, *rootIter))
+		while(pathIter != pathElems.end() && rootIter != rootElems.end() && OldPath::comparePathElements(*pathIter, *rootIter))
 		{
 			++pathIter;
 			++rootIter;
@@ -219,7 +219,7 @@ namespace BansheeEngine
 			ResourceTreeElement* current = todo.top();
 			todo.pop();
 
-			if(Path::comparePathElements(*pathIter, current->mElementName))
+			if(OldPath::comparePathElements(*pathIter, current->mElementName))
 			{
 				++pathIter;
 
@@ -239,7 +239,7 @@ namespace BansheeEngine
 
 	void GUIResourceTreeView::entryAdded(const WString& path)
 	{
-		WString parentPath = Path::parentPath(path);
+		WString parentPath = OldPath::parentPath(path);
 
 		ResourceTreeElement* parentElement = findTreeElement(parentPath);
 		assert(parentElement != nullptr);
@@ -361,14 +361,14 @@ namespace BansheeEngine
 		if(FileSystem::exists(path))
 		{
 			WString noExtensionPath = path;
-			WString extension = Path::getExtension(path);
-			Path::replaceExtension(noExtensionPath, L"");
+			WString extension = OldPath::getExtension(path);
+			OldPath::replaceExtension(noExtensionPath, L"");
 
 			WString newPath;
 			UINT32 cnt = 1;
 			do 
 			{
-				newPath = Path::combine(Path::combine(noExtensionPath, L" " + toWString(cnt)), extension);
+				newPath = OldPath::combine(OldPath::combine(noExtensionPath, L" " + toWString(cnt)), extension);
 				cnt++;
 			} while (FileSystem::exists(newPath));
 
@@ -417,16 +417,16 @@ namespace BansheeEngine
 
 			WString destDir = resourceTreeElement->mFullPath;
 			if(FileSystem::isFile(destDir))
-				destDir = Path::parentPath(destDir);
+				destDir = OldPath::parentPath(destDir);
 
 			for(UINT32 i = 0; i < mDraggedResources->numObjects; i++)
 			{
-				WString filename = Path::getFilename(mDraggedResources->resourcePaths[i]);
-				WString currentParent = Path::parentPath(mDraggedResources->resourcePaths[i]);
+				WString filename = OldPath::getFilename(mDraggedResources->resourcePaths[i]);
+				WString currentParent = OldPath::parentPath(mDraggedResources->resourcePaths[i]);
 
-				if(!Path::equals(currentParent, destDir))
+				if(!OldPath::equals(currentParent, destDir))
 				{
-					WString newPath = Path::combine(destDir, filename);
+					WString newPath = OldPath::combine(destDir, filename);
 					ProjectLibrary::instance().moveEntry(mDraggedResources->resourcePaths[i], findUniquePath(newPath));
 				}
 			}

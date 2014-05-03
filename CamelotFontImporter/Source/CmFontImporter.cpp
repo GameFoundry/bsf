@@ -319,7 +319,7 @@ namespace BansheeEngine
 
 		FT_Done_FreeType(library);
 
-		WString fileName = Path::getFilename(filePath, false);
+		WString fileName = OldPath::getFilename(filePath, false);
 		newFont->setName(toString(fileName));
 
 		return newFont;

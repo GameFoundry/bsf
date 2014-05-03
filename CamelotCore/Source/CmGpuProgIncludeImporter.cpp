@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 		GpuProgIncludePtr gpuInclude = GpuProgInclude::_createPtr(includeString);
 
-		WString fileName = Path::getFilename(filePath, false);
+		WString fileName = OldPath::getFilename(filePath, false);
 		gpuInclude->setName(toString(fileName));
 
 		return gpuInclude;

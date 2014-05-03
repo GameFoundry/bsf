@@ -31,7 +31,7 @@ namespace BansheeEngine
 	{
 		auto iterFind = mUUIDToFilePath.find(uuid);
 
-		WString standardizedFilePath = Path::standardizePath(filePath);
+		WString standardizedFilePath = OldPath::standardizePath(filePath);
 		StringUtil::toLowerCase(standardizedFilePath);
 
 		if(iterFind != mUUIDToFilePath.end())
@@ -80,7 +80,7 @@ namespace BansheeEngine
 
 	bool ResourceManifest::filePathToUUID(const WString& filePath, String& outUUID) const
 	{
-		WString standardizedFilePath = Path::standardizePath(filePath);
+		WString standardizedFilePath = OldPath::standardizePath(filePath);
 		StringUtil::toLowerCase(standardizedFilePath);
 
 		auto iterFind = mFilePathToUUID.find(standardizedFilePath);
@@ -106,7 +106,7 @@ namespace BansheeEngine
 
 	bool ResourceManifest::filePathExists(const WString& filePath) const
 	{
-		WString standardizedFilePath = Path::standardizePath(filePath);
+		WString standardizedFilePath = OldPath::standardizePath(filePath);
 		StringUtil::toLowerCase(standardizedFilePath);
 
 		auto iterFind = mFilePathToUUID.find(standardizedFilePath);
@@ -116,33 +116,33 @@ namespace BansheeEngine
 
 	void ResourceManifest::save(const ResourceManifestPtr& manifest, const WString& path, const WString& relativePath)
 	{
-		WString standRelativePath = Path::standardizePath(relativePath);
+		WString standRelativePath = OldPath::standardizePath(relativePath);
 		StringUtil::toLowerCase(standRelativePath);
 
 		ResourceManifestPtr copy = create(manifest->mName);
 
 		for(auto& elem : manifest->mFilePathToUUID)
 		{
-			if(!Path::includes(elem.first, standRelativePath))
+			if(!OldPath::includes(elem.first, standRelativePath))
 			{
 				CM_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
 					toString(relativePath) + "\". Path: \"" + toString(elem.first) + "\"");
 			}
 
-			WString relativePath = Path::relative(standRelativePath, elem.first);
+			WString relativePath = OldPath::relative(standRelativePath, elem.first);
 
 			copy->mFilePathToUUID[relativePath] = elem.second;
 		}
 
 		for(auto& elem : manifest->mUUIDToFilePath)
 		{
-			if(!Path::includes(elem.second, standRelativePath))
+			if(!OldPath::includes(elem.second, standRelativePath))
 			{
 				CM_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
 					toString(relativePath) + "\". Path: \"" + toString(elem.second) + "\"");
 			}
 
-			WString relativePath = Path::relative(standRelativePath, elem.second);
+			WString relativePath = OldPath::relative(standRelativePath, elem.second);
 
 			copy->mUUIDToFilePath[elem.first] = relativePath;
 		}
@@ -153,7 +153,7 @@ namespace BansheeEngine
 
 	ResourceManifestPtr ResourceManifest::load(const WString& path, const WString& relativePath)
 	{
-		WString standRelativePath = Path::standardizePath(relativePath);
+		WString standRelativePath = OldPath::standardizePath(relativePath);
 		StringUtil::toLowerCase(standRelativePath);
 
 		FileSerializer fs;
@@ -163,13 +163,13 @@ namespace BansheeEngine
 
 		for(auto& elem : manifest->mFilePathToUUID)
 		{
-			WString absPath = Path::combine(standRelativePath, elem.first);
+			WString absPath = OldPath::combine(standRelativePath, elem.first);
 			copy->mFilePathToUUID[absPath] = elem.second;
 		}
 
 		for(auto& elem : manifest->mUUIDToFilePath)
 		{
-			WString absPath = Path::combine(standRelativePath, elem.second);
+			WString absPath = OldPath::combine(standRelativePath, elem.second);
 			copy->mUUIDToFilePath[elem.first] = absPath;
 		}
 

@@ -146,7 +146,7 @@ namespace BansheeEngine
 
 		fileData->close();
 
-		WString fileName = Path::getFilename(filePath, false);
+		WString fileName = OldPath::getFilename(filePath, false);
 		newTexture->setName(toString(fileName));
 
 		return newTexture;

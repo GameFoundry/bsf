@@ -436,7 +436,7 @@ namespace BansheeEngine
 
 	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()
 	{
-		WString layoutPath = Path::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
+		WString layoutPath = OldPath::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
 
 		if(FileSystem::exists(layoutPath))
 		{
@@ -449,7 +449,7 @@ namespace BansheeEngine
 
 	void EditorApplication::saveWidgetLayout(const EditorWidgetLayoutPtr& layout)
 	{
-		WString layoutPath = Path::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
+		WString layoutPath = OldPath::combine(getActiveProjectPath(), WIDGET_LAYOUT_PATH);
 
 		FileSerializer fs;
 		fs.encode(layout.get(), layoutPath);

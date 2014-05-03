@@ -150,7 +150,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			String fileName = toString(Path::getFilename(filePath));
+			String fileName = toString(OldPath::getFilename(filePath));
 			String taskName = "Resource load: " + fileName;
 
 			TaskPtr task = Task::create(taskName, std::bind(&Resources::loadCallback, this, filePath, newResource));
