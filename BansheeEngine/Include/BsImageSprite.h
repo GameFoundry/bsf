@@ -3,6 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsSprite.h"
 #include "CmVector2.h"
+#include "CmColor.h"
 
 namespace BansheeEngine
 {

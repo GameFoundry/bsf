@@ -41,9 +41,9 @@ namespace BansheeEngine {
 		// subclasses should unregister with resource group manager
 	}
     //---------------------------------------------------------------------------
-	GpuProgramPtr GpuProgramManager::createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
+	GpuProgramPtr GpuProgramManager::createProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile)
     {
-		GpuProgramPtr prg = create(source, entryPoint, language, gptype, profile);
+		GpuProgramPtr prg = create(source, entryPoint, gptype, profile);
 		prg->_setThisPtr(prg);
 
 		// TODO: Gpu programs get initialized by their parent HighLevelGpuProgram. I might handle that more intuitively later but

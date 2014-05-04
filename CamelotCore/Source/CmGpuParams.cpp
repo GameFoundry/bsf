@@ -114,31 +114,31 @@ namespace BansheeEngine
 	{
 		// Free params
 		for(auto& param : mFloatParams)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mVec2Params)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mVec3Params)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mVec4Params)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mMat3Params)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mMat4Params)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mStructParams)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mTextureParams)
-			param.second.destroy();
+			param.second._destroy();
 
 		for(auto& param : mSampStateParams)
-			param.second.destroy();
+			param.second._destroy();
 
 		// Ensure everything is destructed
 		for(UINT32 i = 0; i < mNumParamBlocks; i++)

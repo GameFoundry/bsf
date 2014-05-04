@@ -46,14 +46,12 @@ THE SOFTWARE.
 namespace BansheeEngine 
 {
 	//-----------------------------------------------------------------------
-	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint, const String& language, 
+	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint,
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
-		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired),
+		: HighLevelGpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
 		mInputOperationType(DOT_TRIANGLE_LIST),
 		mOutputOperationType(DOT_TRIANGLE_LIST), mMaxOutputVertices(3)
 	{
-		// Manually assign language now since we use it immediately
-		mSyntaxCode = "glsl";
 
 	}
 	//---------------------------------------------------------------------------
@@ -168,7 +166,7 @@ namespace BansheeEngine
 			checkForGLSLError( "GLSLProgram::loadFromSource", "Cannot load GLSL high-level shader source : ", mGLHandle, GLSLOT_PROGRAM, true);
 		}
 
-		mAssemblerProgram = GpuProgramManager::instance().createProgram(mSource, mEntryPoint, mSyntaxCode, mType, mProfile);
+		mAssemblerProgram = GpuProgramManager::instance().createProgram(mSource, mEntryPoint, mType, mProfile);
 		
 		std::shared_ptr<GLSLGpuProgram> glslGpuProgram = std::static_pointer_cast<GLSLGpuProgram>(mAssemblerProgram);
 		glslGpuProgram->setGLSLProgram(this);
@@ -196,6 +194,15 @@ namespace BansheeEngine
 
         return language;
     }
+
+	bool GLSLProgram::isSupported() const
+	{
+		if (!isRequiredCapabilitiesSupported())
+			return false;
+
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		return rs->getCapabilities()->isShaderProfileSupported("glsl");
+	}
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

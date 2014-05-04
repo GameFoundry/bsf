@@ -33,12 +33,13 @@ THE SOFTWARE.
 #include "CmD3D9ResourceManager.h"
 #include "CmGpuParams.h"
 #include "CmAsyncOp.h"
+#include "CmGpuProgramManager.h"
 
 namespace BansheeEngine {
     //-----------------------------------------------------------------------------
-    D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, 
+    D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile) 
-        : GpuProgram(source, entryPoint, language, gptype, profile, nullptr), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
+        : GpuProgram(source, entryPoint, gptype, profile, nullptr), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
     {
     }
 
@@ -140,9 +141,20 @@ namespace BansheeEngine {
 
 		return params;
 	}
+
+	bool D3D9GpuProgram::isSupported() const
+	{
+		if (!isRequiredCapabilitiesSupported())
+			return false;
+
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+
+		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
+	}
 	//-----------------------------------------------------------------------------
-	D3D9GpuVertexProgram::D3D9GpuVertexProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) 
-        : D3D9GpuProgram(source, entryPoint, language, gptype, profile)       
+	D3D9GpuVertexProgram::D3D9GpuVertexProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) 
+        : D3D9GpuProgram(source, entryPoint, gptype, profile)       
     {
         mType = GPT_VERTEX_PROGRAM;		
     }
@@ -236,8 +248,8 @@ namespace BansheeEngine {
 		return it->second;
 	}
 	//-----------------------------------------------------------------------------
-    D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) 
-		: D3D9GpuProgram(source, entryPoint, language, gptype, profile)       
+    D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) 
+		: D3D9GpuProgram(source, entryPoint, gptype, profile)       
     {
         mType = GPT_FRAGMENT_PROGRAM;
     }

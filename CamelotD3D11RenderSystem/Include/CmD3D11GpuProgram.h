@@ -10,8 +10,9 @@ namespace BansheeEngine
 	public:
 		virtual ~D3D11GpuProgram();
 
+		bool isSupported() const;
 	protected:
-		D3D11GpuProgram(GpuProgramType type, const String& profile);
+		D3D11GpuProgram(GpuProgramType type, GpuProgramProfile profile);
 
 		/**
 		 * @brief	Loads shader from microcode.
@@ -24,12 +25,12 @@ namespace BansheeEngine
 	public:
 		~D3D11GpuVertexProgram();
 
-		ID3D11VertexShader* getVertexShader(void) const;
+		ID3D11VertexShader* getVertexShader() const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		friend class D3D11GpuProgramManager;
 
-		D3D11GpuVertexProgram(const String& profile);
+		D3D11GpuVertexProgram(GpuProgramProfile profile);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -45,12 +46,12 @@ namespace BansheeEngine
 	public:
 		~D3D11GpuFragmentProgram();
 
-		ID3D11PixelShader* getPixelShader(void) const;
+		ID3D11PixelShader* getPixelShader() const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		friend class D3D11GpuProgramManager;
 
-		D3D11GpuFragmentProgram(const String& profile);
+		D3D11GpuFragmentProgram(GpuProgramProfile profile);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -65,12 +66,12 @@ namespace BansheeEngine
 	public:
 		~D3D11GpuDomainProgram();
 
-		ID3D11DomainShader* getDomainShader(void) const;
+		ID3D11DomainShader* getDomainShader() const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 	protected:
 		friend class D3D11GpuProgramManager;
 
-		D3D11GpuDomainProgram(const String& profile);
+		D3D11GpuDomainProgram(GpuProgramProfile profile);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -91,7 +92,7 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11GpuProgramManager;
 
-		D3D11GpuHullProgram(const String& profile);
+		D3D11GpuHullProgram(GpuProgramProfile profile);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -107,13 +108,13 @@ namespace BansheeEngine
 	public:
 		~D3D11GpuGeometryProgram();
 
-		ID3D11GeometryShader* getGeometryShader(void) const;
+		ID3D11GeometryShader* getGeometryShader() const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		friend class D3D11GpuProgramManager;
 
-		D3D11GpuGeometryProgram(const String& profile);
+		D3D11GpuGeometryProgram(GpuProgramProfile profile);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -129,13 +130,13 @@ namespace BansheeEngine
 	public:
 		~D3D11GpuComputeProgram();
 
-		ID3D11ComputeShader* getComputeShader(void) const;
+		ID3D11ComputeShader* getComputeShader() const;
 		void loadFromMicrocode(D3D11Device& device, ID3D10Blob* microcode);
 
 	protected:
 		friend class D3D11GpuProgramManager;
 
-		D3D11GpuComputeProgram(const String& profile);
+		D3D11GpuComputeProgram(GpuProgramProfile profile);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().

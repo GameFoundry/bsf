@@ -51,7 +51,7 @@ namespace BansheeEngine {
 		}
 	public:
 		NullProgram()
-			: HighLevelGpuProgram("", "", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr){}
+			: HighLevelGpuProgram("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr){}
 		~NullProgram() {}
 		/// Overridden from GpuProgram - never supported
 		bool isSupported(void) const { return false; }

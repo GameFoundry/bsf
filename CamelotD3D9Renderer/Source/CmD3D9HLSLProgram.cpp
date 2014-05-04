@@ -37,9 +37,9 @@ THE SOFTWARE.
 
 namespace BansheeEngine {
 	//-----------------------------------------------------------------------
-	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint, const String& language, 
+	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint,
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
-		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired)
+		: HighLevelGpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired)
 		, mPreprocessorDefines()
 		, mColumnMajorMatrices(true)
 		, mpMicroCode(NULL)
@@ -197,14 +197,11 @@ namespace BansheeEngine {
 				CM_EXCEPT(RenderingAPIException, message);
 			}
 
-			hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
-
 			// Create a low-level program, give it the same name as us
 			mAssemblerProgram = 
 				GpuProgramManager::instance().createProgram(
 				"",// dummy source, since we'll be using microcode
 				"",
-				hlslProfile,
 				mType, 
 				GPP_NONE);
 			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);

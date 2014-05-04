@@ -2,11 +2,13 @@
 #include "CmD3D11Device.h"
 #include "CmException.h"
 #include "CmDebug.h"
+#include "CmRenderSystem.h"
+#include "CmGpuProgramManager.h"
 
 namespace BansheeEngine
 {
-	D3D11GpuProgram::D3D11GpuProgram(GpuProgramType type, const String& profile) 
-		: GpuProgram("", "", profile, type, GPP_NONE, nullptr)
+	D3D11GpuProgram::D3D11GpuProgram(GpuProgramType type, GpuProgramProfile profile)
+		: GpuProgram("", "", type, profile, nullptr)
 	{
 
 	}
@@ -16,7 +18,18 @@ namespace BansheeEngine
 
 	}
 
-	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const String& profile) 
+	bool D3D11GpuProgram::isSupported() const
+	{
+		if (!isRequiredCapabilitiesSupported())
+			return false;
+
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+
+		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
+	}
+
+	D3D11GpuVertexProgram::D3D11GpuVertexProgram(GpuProgramProfile profile)
 		: D3D11GpuProgram(GPT_VERTEX_PROGRAM, profile)
 		, mVertexShader(nullptr)
 	{ }
@@ -61,7 +74,7 @@ namespace BansheeEngine
 		return mVertexShader;
 	}
 
-	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram(const String& profile) 
+	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram(GpuProgramProfile profile)
 		: D3D11GpuProgram(GPT_FRAGMENT_PROGRAM, profile)
 		, mPixelShader(nullptr)
 	{ }
@@ -105,7 +118,7 @@ namespace BansheeEngine
 		return mPixelShader;
 	}
 
-	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram(const String& profile) 
+	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram(GpuProgramProfile profile)
 		: D3D11GpuProgram(GPT_GEOMETRY_PROGRAM, profile)
 		, mGeometryShader(nullptr)
 	{ }
@@ -149,7 +162,7 @@ namespace BansheeEngine
 		return mGeometryShader;
 	}
 
-	D3D11GpuDomainProgram::D3D11GpuDomainProgram(const String& profile) 
+	D3D11GpuDomainProgram::D3D11GpuDomainProgram(GpuProgramProfile profile)
 		: D3D11GpuProgram(GPT_DOMAIN_PROGRAM, profile)
 		, mDomainShader(nullptr)
 	{ }
@@ -188,12 +201,12 @@ namespace BansheeEngine
 		D3D11GpuProgram::destroy_internal();
 	}
 
-	ID3D11DomainShader * D3D11GpuDomainProgram::getDomainShader(void) const
+	ID3D11DomainShader * D3D11GpuDomainProgram::getDomainShader() const
 	{
 		return mDomainShader;
 	}
 
-	D3D11GpuHullProgram::D3D11GpuHullProgram(const String& profile) 
+	D3D11GpuHullProgram::D3D11GpuHullProgram(GpuProgramProfile profile)
 		: D3D11GpuProgram(GPT_HULL_PROGRAM, profile)
 		, mHullShader(nullptr)
 	{ }
@@ -237,7 +250,7 @@ namespace BansheeEngine
 		return mHullShader;
 	}
 
-	D3D11GpuComputeProgram::D3D11GpuComputeProgram(const String& profile) 
+	D3D11GpuComputeProgram::D3D11GpuComputeProgram(GpuProgramProfile profile)
 		: D3D11GpuProgram(GPT_COMPUTE_PROGRAM, profile)
 		, mComputeShader(nullptr)
 	{ }

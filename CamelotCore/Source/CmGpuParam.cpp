@@ -94,7 +94,7 @@ namespace BansheeEngine
 		return paramDesc->elementSize * sizeof(UINT32);
 	}
 
-	void GpuParamStruct::destroy()
+	void GpuParamStruct::_destroy()
 	{
 		mData->isDestroyed = true;
 	}
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		return mData->textures[mData->paramDesc->slot];
 	}
 
-	void GpuParamTexture::destroy()
+	void GpuParamTexture::_destroy()
 	{
 		mData->isDestroyed = true;
 	}
@@ -182,7 +182,7 @@ namespace BansheeEngine
 		return mData->samplerStates[mData->paramDesc->slot];
 	}
 
-	void GpuParamSampState::destroy()
+	void GpuParamSampState::_destroy()
 	{
 		mData->isDestroyed = true;
 	}

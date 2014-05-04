@@ -56,10 +56,12 @@ namespace BansheeEngine {
         void setExternalMicrocode(ID3DXBuffer* pMicrocode);
         /** Gets the external microcode buffer, if any. */
         LPD3DXBUFFER getExternalMicrocode(void);
+
+		bool isSupported() const;
     protected:
 		friend class D3D9GpuProgramManager;
 
-		D3D9GpuProgram(const String& source, const String& entryPoint, const String& language, 
+		D3D9GpuProgram(const String& source, const String& entryPoint, 
 			GpuProgramType gptype, GpuProgramProfile profile);
 
 		void createInternalResources(IDirect3DDevice9* d3d9Device);
@@ -109,7 +111,7 @@ namespace BansheeEngine {
     protected:
 		friend class D3D9GpuProgramManager;
 
-		D3D9GpuVertexProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+		D3D9GpuVertexProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
 
 		/**
 		 * @copydoc D3D9GpuProgram::destroy_internal.
@@ -143,7 +145,7 @@ namespace BansheeEngine {
     protected:
 		friend class D3D9GpuProgramManager;
 
-		D3D9GpuFragmentProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+		D3D9GpuFragmentProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
 
 		/**
 		 * @copydoc D3D9GpuProgram::destroy_internal.

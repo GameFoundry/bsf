@@ -41,9 +41,9 @@ namespace BansheeEngine
 	{
 	}
 
-	GpuProgramPtr GLGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
+	GpuProgramPtr GLGpuProgramManager::create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile)
 	{
-		GLSLGpuProgram* prog = new (cm_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram(source, entryPoint, language, gptype, profile, nullptr);
+		GLSLGpuProgram* prog = new (cm_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram(source, entryPoint, gptype, profile, nullptr);
 
 		return cm_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
 	}

@@ -51,7 +51,7 @@ namespace BansheeEngine {
 	protected:
 		/** General create method
         */
-        virtual GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile) = 0;
+        virtual GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) = 0;
 
 	public:
 		GpuProgramManager();
@@ -85,7 +85,7 @@ namespace BansheeEngine {
 		@param gptype The type of program to create.
         @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
 		*/
-		GpuProgramPtr createProgram(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+		GpuProgramPtr createProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
 	};
 
 	/** @} */

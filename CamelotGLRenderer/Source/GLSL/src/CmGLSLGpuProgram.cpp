@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
+#include "CmRenderSystem.h"
 
 namespace BansheeEngine {
 
@@ -39,12 +40,10 @@ namespace BansheeEngine {
 	UINT32 GLSLGpuProgram::mDomainShaderCount = 0;
 	UINT32 GLSLGpuProgram::mHullShaderCount = 0;
     //-----------------------------------------------------------------------------
-	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint, const String& language, 
+	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint,
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes) 
-		:GpuProgram(source, entryPoint, language, gptype, profile, includes)
+		:GpuProgram(source, entryPoint, gptype, profile, includes)
     {
-        mSyntaxCode = "glsl";
-
 		switch(mType)
 		{
 		case GPT_VERTEX_PROGRAM:
@@ -70,5 +69,14 @@ namespace BansheeEngine {
     GLSLGpuProgram::~GLSLGpuProgram()
     {
     }
+
+	bool GLSLGpuProgram::isSupported() const
+	{
+		if (!isRequiredCapabilitiesSupported())
+			return false;
+
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		return rs->getCapabilities()->isShaderProfileSupported("glsl");
+	}
 }
 

@@ -15,9 +15,9 @@ namespace BansheeEngine
 {
 	UINT32 D3D11HLSLProgram::globalProgramId = 0;
 
-	D3D11HLSLProgram::D3D11HLSLProgram(const String& source, const String& entryPoint, const String& language, 
+	D3D11HLSLProgram::D3D11HLSLProgram(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
-		: HighLevelGpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired),
+		: HighLevelGpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
 		mColumnMajorMatrices(true), mEnableBackwardsCompatibility(false), mProgramId(0)
 	{
 	}
@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		populateParametersAndConstants(microcode);
 
-		mAssemblerProgram = GpuProgramManager::instance().createProgram("", "", hlslProfile, mType, GPP_NONE); // We load it from microcode, so none of this matters
+		mAssemblerProgram = GpuProgramManager::instance().createProgram("", "", mType, mProfile); // We load it from microcode, so none of this matters
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 
 		switch(mType)
@@ -103,7 +103,10 @@ namespace BansheeEngine
 	{
 		RenderSystem* rs = RenderSystem::instancePtr();
 
-		return rs->getCapabilities()->isShaderProfileSupported(getSyntaxCode()) && HighLevelGpuProgram::isSupported();
+		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
+
+		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile) && 
+			rs->getCapabilities()->isShaderProfileSupported(getLanguage()) && HighLevelGpuProgram::isSupported();
 	}
 
 	ID3DBlob* D3D11HLSLProgram::compileMicrocode(const String& profile)

@@ -2,6 +2,7 @@
 #include "CmMaterial.h"
 #include "CmDebug.h"
 #include "BsBuiltinMaterialManager.h"
+#include "CmColor.h"
 
 namespace BansheeEngine
 {

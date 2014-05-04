@@ -2,10 +2,12 @@
 
 #include "CmPrerequisites.h"
 #include "CmCommonEnums.h"
-#include "CmGpuProgramParams.h" // TODO - Only here because I need some type definitions (GpuConstantType) - Remove later
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Describes a single GPU program data (e.g. int, float, Vector2) parameter.
+	 */
 	struct GpuParamDataDesc
 	{
 		String name;
@@ -19,6 +21,9 @@ namespace BansheeEngine
 		UINT32 cpuMemOffset;
 	};
 
+	/**
+	 * @brief	Describes a single GPU program object (e.g. texture, sampler state) parameter.
+	 */
 	struct GpuParamObjectDesc
 	{
 		String name;
@@ -27,6 +32,9 @@ namespace BansheeEngine
 		UINT32 slot;
 	};
 
+	/**
+	 * @brief	Describes a GPU program parameter block (collection of GPU program data parameters).
+	 */
 	struct GpuParamBlockDesc
 	{
 		String name;
@@ -35,6 +43,10 @@ namespace BansheeEngine
 		bool isShareable;
 	};
 
+	/**
+	 * @brief	Contains all parameter information for a GPU program, including data and object parameters,
+	 *			plus parameter blocks.
+	 */
 	struct GpuParamDesc
 	{
 		Map<String, GpuParamBlockDesc>::type paramBlocks;

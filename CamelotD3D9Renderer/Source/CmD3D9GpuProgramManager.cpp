@@ -42,17 +42,17 @@ namespace BansheeEngine {
 
     }
     //-----------------------------------------------------------------------------
-    GpuProgramPtr D3D9GpuProgramManager::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile)
+    GpuProgramPtr D3D9GpuProgramManager::create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile)
     {
         if (gptype == GPT_VERTEX_PROGRAM)
         {
-            D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>()) D3D9GpuVertexProgram(source, entryPoint, language, gptype, profile);
+            D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>()) D3D9GpuVertexProgram(source, entryPoint, gptype, profile);
 
 			return cm_core_ptr<D3D9GpuVertexProgram, PoolAlloc>(prog);
         }
         else
         {
-            D3D9GpuFragmentProgram* prog = new (cm_alloc<D3D9GpuFragmentProgram, PoolAlloc>()) D3D9GpuFragmentProgram(source, entryPoint, language, gptype, profile);
+            D3D9GpuFragmentProgram* prog = new (cm_alloc<D3D9GpuFragmentProgram, PoolAlloc>()) D3D9GpuFragmentProgram(source, entryPoint, gptype, profile);
 
 			return cm_core_ptr<D3D9GpuFragmentProgram, PoolAlloc>(prog);
         }

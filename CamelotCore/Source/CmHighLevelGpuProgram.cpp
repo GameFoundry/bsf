@@ -34,9 +34,9 @@ THE SOFTWARE.
 
 namespace BansheeEngine
 {
-	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, const String& language, 
+	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
-        : GpuProgram(source, entryPoint, language, gptype, profile, includes, isAdjacencyInfoRequired), 
+        : GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired), 
         mAssemblerProgram(nullptr)
     {
     }

@@ -50,14 +50,14 @@ namespace BansheeEngine {
 	HighLevelGpuProgramPtr D3D9HLSLProgramFactory::create(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
     {
-		D3D9HLSLProgram* prog = new (cm_alloc<D3D9HLSLProgram, PoolAlloc>()) D3D9HLSLProgram(source, entryPoint, sLanguageName, gptype, profile, includes);
+		D3D9HLSLProgram* prog = new (cm_alloc<D3D9HLSLProgram, PoolAlloc>()) D3D9HLSLProgram(source, entryPoint, gptype, profile, includes);
 
         return cm_core_ptr<D3D9HLSLProgram, PoolAlloc>(prog);
     }
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramPtr D3D9HLSLProgramFactory::create()
 	{
-		D3D9HLSLProgram* prog = new (cm_alloc<D3D9HLSLProgram, PoolAlloc>()) D3D9HLSLProgram("", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
+		D3D9HLSLProgram* prog = new (cm_alloc<D3D9HLSLProgram, PoolAlloc>()) D3D9HLSLProgram("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
 
 		return cm_core_ptr<D3D9HLSLProgram, PoolAlloc>(prog);
 	}

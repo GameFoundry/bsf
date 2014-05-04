@@ -1,49 +1,16 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org
+#pragma once
 
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __GpuProgram_H_
-#define __GpuProgram_H_
-
-// Precompiler options
 #include "CmPrerequisites.h"
 #include "CmDrawOps.h"
 #include "CmGpuProgramParams.h"
 #include "CmResource.h"
 #include "CmGpuParamDesc.h"
 
-namespace BansheeEngine {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
-	/** Enumerates the types of programs which can run on the GPU. */
+namespace BansheeEngine 
+{
+	/**
+	 * @brief	Types of programs that may run on GPU.
+	 */
 	enum GpuProgramType
 	{
 		GPT_VERTEX_PROGRAM,
@@ -54,6 +21,10 @@ namespace BansheeEngine {
 		GPT_COMPUTE_PROGRAM
 	};
 
+	/**
+	 * @brief	GPU program profiles representing supported
+	 *			feature sets.
+	 */
 	enum GpuProgramProfile
 	{
 		GPP_NONE,
@@ -86,95 +57,106 @@ namespace BansheeEngine {
 		GPP_CS_5_0
 	};
 
-	/** Defines a program which runs on the GPU such as a vertex or fragment program. 
-	@remarks
-		This class defines the low-level program in assembler code, the sort used to
-		directly assemble into machine instructions for the GPU to execute. By nature,
-		this means that the assembler source is rendersystem specific, which is why this
-		is an abstract class - real instances are created through the RenderSystem. 
-		If you wish to use higher level shading languages like HLSL and Cg, you need to 
-		use the HighLevelGpuProgram class instead.
-	*/
+	/**
+	 * @brief	Contains a low level GPU program such as vertex or fragment program.
+	 *			Internal implementation of this class is render system specific,
+	 *			but will normally store a compiled program.
+	 *
+	 * @note	For higher level programs see HighLevelGpuProgram.
+	 *			Core thread only.
+	 */
 	class CM_EXPORT GpuProgram : public Resource
 	{
 	public:
 		virtual ~GpuProgram();
 
-        /** Gets the syntax code for this program e.g. arbvp1, fp20, vs_1_1 etc */
-        virtual const String& getSyntaxCode(void) const { return mSyntaxCode; }
+        /**
+         * @brief	Source used for creating this program.
+         */
+        virtual const String& getSource() const { return mSource; }
+        
+		/**
+		 * @brief	Type of GPU program (e.g. fragment, vertex)
+		 */
+        virtual GpuProgramType getType() const { return mType; }
 
-        /** Gets the assembler source for this program. */
-        virtual const String& getSource(void) const { return mSource; }
-        /// Get the program type
-        virtual GpuProgramType getType(void) const { return mType; }
+		/**
+		 * @brief	Profile of the GPU program (e.g. VS_4_0, VS_5_0)
+		 */
 		virtual GpuProgramProfile getProfile() const { return mProfile; }
+
+		/**
+		 * @brief	Name of the program entry method (e.g. "main")
+		 */
 		virtual const String& getEntryPoint() const { return mEntryPoint; }
 
-        /** Returns the GpuProgram which should be bound to the pipeline.
-        @remarks
-            This method is simply to allow some subclasses of GpuProgram to delegate
-            the program which is bound to the pipeline to a delegate, if required. */
-        virtual GpuProgramPtr getBindingDelegate(void) { return std::static_pointer_cast<GpuProgram>(getThisPtr()); }
+		/**
+		 * @brief	Returns a delegate that will be used for actually binding the program to the pipeline.
+		 */
+        virtual GpuProgramPtr getBindingDelegate() { return std::static_pointer_cast<GpuProgram>(getThisPtr()); }
 
-        /** Returns whether this program can be supported on the current renderer and hardware. */
-        virtual bool isSupported(void) const;
+		/**
+		 * @brief	Returns whether this program can be supported on the current renderer and hardware.
+		 */
+        virtual bool isSupported() const;
 
-		/** Sets whether this geometry program requires adjacency information
-			from the input primitives.
-		*/
-		virtual void setAdjacencyInfoRequired(bool r) { mNeedsAdjacencyInfo = r; }
-		/** Returns whether this geometry program requires adjacency information 
-			from the input primitives.
-		*/
+		/**
+		 * @brief	Sets whether this geometry program requires adjacency information
+		 *			from the input primitives.
+		 *
+		 * @note	Only relevant for geometry programs.
+		 */
+		virtual void setAdjacencyInfoRequired(bool required) { mNeedsAdjacencyInfo = required; }
+
+		/**
+		 * @brief	Returns whether this geometry program requires adjacency information
+		 *			from the input primitives.
+		 *
+		 * @note	Only relevant for geometry programs.
+		 */
 		virtual bool isAdjacencyInfoRequired(void) const { return mNeedsAdjacencyInfo; }
 
-        /** Creates a new parameters object compatible with this program definition. 
-        @remarks
-            It is recommended that you use this method of creating parameters objects
-            rather than going direct to GpuProgramManager, because this method will
-            populate any implementation-specific extras (like named parameters) where
-            they are appropriate.
-        */
+		/**
+		 * @brief	Creates a new parameters object compatible with this program definition. You
+		 *			may populate the returned object with actual parameter values and bind it
+		 *			to the pipeline to render an object using those values and this program.
+		 */
 		virtual GpuParamsPtr createParameters();
 
+		/**
+		 * @brief	Returns description of all parameters in this GPU program.
+		 */
 		const GpuParamDesc& getParamDesc() const { return mParametersDesc; }
 
-		/** Returns a string that specifies the language of the gpu programs as specified
-        in a material script. ie: asm, cg, hlsl, glsl
-        */
-        virtual const String& getLanguage(void) const;
+		/**
+		* @brief	Language this shader was created from (e.g. HLSL, GLSL).
+		*/
+        virtual const String& getLanguage() const;
 
 	protected:
 		friend class GpuProgramManager;
 
-		GpuProgram(const String& source, const String& entryPoint, const String& language, 
+		GpuProgram(const String& source, const String& entryPoint, 
 			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, 
 			bool isAdjacencyInfoRequired = false);
 
-        /** Internal method returns whether required capabilities for this program is supported.
-        */
+		/**
+		 * @brief	Returns whether required capabilities for this program is supported.
+		 */
         bool isRequiredCapabilitiesSupported(void) const;
 
-		/// @copydoc Resource::calculateSize
+		/**
+		 * @copydoc Resource::calculateSize
+		 */
 		size_t calculateSize(void) const { return 0; } // TODO 
 
 	protected:
-		/// The type of the program
 		GpuProgramType mType;
-		/// Does this (geometry) program require adjacency information?
 		bool mNeedsAdjacencyInfo;
-		/// Name of the shader entry method
 		String mEntryPoint;
-		/// Shader profiler that we are targeting (e.g. vs_1_1, etc.). Make sure profile matches the type.
 		GpuProgramProfile mProfile;
-        /// The assembler source of the program (may be blank until file loaded)
         String mSource;
-        /// Syntax code e.g. arbvp1, vs_2_0 etc
-        String mSyntaxCode;
 
-		/**
-		 * @brief	Contains information about all parameters in a shader.
-		 */
 		GpuParamDesc mParametersDesc;
 
 		/************************************************************************/
@@ -185,8 +167,4 @@ namespace BansheeEngine {
 		static RTTITypeBase* getRTTIStatic();
 		virtual RTTITypeBase* getRTTI() const;
 	};
-
-	/** @} */
 }
-
-#endif

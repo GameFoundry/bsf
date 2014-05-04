@@ -11,20 +11,20 @@ namespace BansheeEngine
 	{ }
 
 	GpuProgramPtr D3D11GpuProgramManager::create(const String& source, const String& entryPoint, 
-		const String& language, GpuProgramType gptype, GpuProgramProfile profile)
+		GpuProgramType gptype, GpuProgramProfile profile)
 	{
 		switch(gptype)
 		{
 		case GPT_VERTEX_PROGRAM:
-			return cm_core_ptr<D3D11GpuVertexProgram, PoolAlloc>(new (cm_alloc<D3D11GpuVertexProgram, PoolAlloc>()) D3D11GpuVertexProgram(language));
+			return cm_core_ptr<D3D11GpuVertexProgram, PoolAlloc>(new (cm_alloc<D3D11GpuVertexProgram, PoolAlloc>()) D3D11GpuVertexProgram(profile));
 		case GPT_FRAGMENT_PROGRAM:
-			return cm_core_ptr<D3D11GpuFragmentProgram, PoolAlloc>(new (cm_alloc<D3D11GpuFragmentProgram, PoolAlloc>()) D3D11GpuFragmentProgram(language));
+			return cm_core_ptr<D3D11GpuFragmentProgram, PoolAlloc>(new (cm_alloc<D3D11GpuFragmentProgram, PoolAlloc>()) D3D11GpuFragmentProgram(profile));
 		case GPT_HULL_PROGRAM:
-			return cm_core_ptr<D3D11GpuHullProgram, PoolAlloc>(new (cm_alloc<D3D11GpuHullProgram, PoolAlloc>()) D3D11GpuHullProgram(language));
+			return cm_core_ptr<D3D11GpuHullProgram, PoolAlloc>(new (cm_alloc<D3D11GpuHullProgram, PoolAlloc>()) D3D11GpuHullProgram(profile));
 		case GPT_DOMAIN_PROGRAM:
-			return cm_core_ptr<D3D11GpuDomainProgram, PoolAlloc>(new (cm_alloc<D3D11GpuDomainProgram, PoolAlloc>()) D3D11GpuDomainProgram(language));
+			return cm_core_ptr<D3D11GpuDomainProgram, PoolAlloc>(new (cm_alloc<D3D11GpuDomainProgram, PoolAlloc>()) D3D11GpuDomainProgram(profile));
 		case GPT_GEOMETRY_PROGRAM:
-			return cm_core_ptr<D3D11GpuGeometryProgram, PoolAlloc>(new (cm_alloc<D3D11GpuGeometryProgram, PoolAlloc>()) D3D11GpuGeometryProgram(language));
+			return cm_core_ptr<D3D11GpuGeometryProgram, PoolAlloc>(new (cm_alloc<D3D11GpuGeometryProgram, PoolAlloc>()) D3D11GpuGeometryProgram(profile));
 		}
 		
 		return nullptr;

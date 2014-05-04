@@ -98,10 +98,12 @@ namespace BansheeEngine {
 
 		const VertexDeclaration& getInputAttributes() const { return *mVertexDeclaration; }
 
+		bool isSupported() const;
+
 	protected:
 		friend class GLSLProgramFactory;
 
-		GLSLProgram(const String& source, const String& entryPoint, const String& language, 
+		GLSLProgram(const String& source, const String& entryPoint, 
 			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, 
 			bool isAdjacencyInfoRequired = false);
 

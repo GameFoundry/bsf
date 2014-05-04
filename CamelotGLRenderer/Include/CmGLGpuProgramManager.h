@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 		protected:
 			/// Specialised create method with specific parameters
-			GpuProgramPtr create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, GpuProgramProfile profile);
+			GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
 	};
 
 };

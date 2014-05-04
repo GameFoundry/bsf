@@ -11,12 +11,23 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	A handle that allows you to set a GpuProgram parameter.
+	 * @brief	A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the 
+	 *			GPU parameter buffer and the necessary offsets. You should specialize this type for specific 
+	 *			parameter types. 
+	 *
+	 *			Object of this type must be returned by a Material. Setting/Getting parameter values will internally
+	 *			access a GPU parameter buffer attached to the Material this parameter was created from. Anything
+	 *			rendered with that material will then use those set values.
 	 * 			
-	 * @note	This is primarily used an as optimization is performance critical bits of code
-	 * 			where it is important to locate and set parameters quickly without any lookups.
-	 * 			You just retrieve the handle once and then set the parameter value many times 
-	 * 			with minimal performance impact.
+	 * @note	Normally you can set a GpuProgram parameter by calling various set/get methods on a Material.
+	 *			This class primarily used an as optimization in performance critical bits of code
+	 * 			where it is important to locate and set parameters quickly without any lookups
+	 *			(Mentioned set/get methods expect a parameter name). You just retrieve the handle 
+	 *			once and then set the parameter value many times with minimal performance impact.
+	 * 
+	 * @see		Material
+	 *
+	 * @note	Sim thread only.
 	 */
 	template<class T>
 	class CM_EXPORT GpuDataParamBase
@@ -24,6 +35,9 @@ namespace BansheeEngine
 	private:
 		friend class GpuParams;
 
+		/**
+		 * @brief	Internal data that is shared between GpuDataParam instances.
+		 */
 		struct InternalData
 		{
 			InternalData(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
@@ -43,6 +57,11 @@ namespace BansheeEngine
 			bool isDestroyed;
 		};
 
+		/**
+		 * @brief	Policy class that allows us to re-use this template class for matrices which might
+		 *			need transposing, and other types which do not. Matrix needs to be transposed for
+		 *			certain render systems depending on how they store them in memory.
+		 */
 		template<class Type>
 		struct TransposePolicy
 		{
@@ -50,6 +69,9 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return false; }
 		};
 
+		/**
+		 * @brief	Transpose policy for 3x3 matrix.
+		 */
 		template<>
 		struct TransposePolicy<Matrix3>
 		{
@@ -57,6 +79,9 @@ namespace BansheeEngine
 			static bool transposeEnabled(bool enabled) { return enabled; }
 		};
 
+		/**
+		* @brief	Transpose policy for 4x4 matrix.
+		*/
 		template<>
 		struct TransposePolicy<Matrix4>
 		{
@@ -69,6 +94,13 @@ namespace BansheeEngine
 			:mData(cm_shared_ptr<InternalData>())
 		{ }
 
+		/**
+		 * @brief	Sets a parameter value at the specified array index. If parameter does not
+		 *			contain an array leave the index at 0.
+		 *
+		 * @note	Like with all GPU parameters, the actual GPU buffer will not be updated until rendering
+		 *			with material this parameter was created from starts on the core thread.
+		 */
 		void set(const T& value, UINT32 arrayIdx = 0)
 		{
 			if(mData->isDestroyed)
@@ -104,6 +136,12 @@ namespace BansheeEngine
 			}
 		}
 
+		/**
+		 * @brief	Returns a value of a parameter at the specified array index. If parameter does not
+		 *			contain an array leave the index at 0.
+		 *
+		 * @note	No GPU reads are done. Data returned was cached when it was written. 
+		 */
 		T get(UINT32 arrayIdx = 0)
 		{
 			if(mData->isDestroyed)
@@ -131,7 +169,11 @@ namespace BansheeEngine
 				return value;
 		}
 
-		void destroy()
+		/**
+		 * @brief	Called by the material when this handle is no longer valid (shader changed or material
+		 *			got destroyed).
+		 */
+		void _destroy()
 		{
 			mData->isDestroyed = true;
 		}
@@ -174,11 +216,25 @@ namespace BansheeEngine
 	public:
 		GpuParamStruct();
 
+		/**
+		 * @copydoc	GpuDataParamBase::set
+		 */
 		void set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+
+		/**
+		 * @copydoc	GpuDataParamBase::get
+		 */
 		void get(void* value, UINT32 sizeBytes, UINT32 arrayIdx = 0);
+
+		/**
+		 * @brief	Returns the size of the struct in bytes.
+		 */
 		UINT32 getElementSize() const;
 
-		void destroy();
+		/**
+		 * @copydoc	GpuDataParamBase::_destroy
+		 */
+		void _destroy();
 	private:
 		GpuParamStruct(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks);
 
@@ -208,10 +264,20 @@ namespace BansheeEngine
 	public:
 		GpuParamTexture();
 
+		/**
+		* @copydoc	GpuDataParamBase::set
+		*/
 		void set(const HTexture& texture);
-		HTexture get();
 
-		void destroy();
+		/**
+		* @copydoc	GpuDataParamBase::get
+		*/
+		HTexture get();
+		
+		/**
+		* @copydoc	GpuDataParamBase::_destroy
+		*/
+		void _destroy();
 	private:
 		GpuParamTexture(GpuParamObjectDesc* paramDesc, HTexture* textures);
 
@@ -241,10 +307,20 @@ namespace BansheeEngine
 	public:
 		GpuParamSampState();
 
+		/**
+		* @copydoc	GpuDataParamBase::set
+		*/
 		void set(const HSamplerState& texture);
+
+		/**
+		* @copydoc	GpuDataParamBase::get
+		*/
 		HSamplerState get();
 
-		void destroy();
+		/**
+		* @copydoc	GpuDataParamBase::_destroy
+		*/
+		void _destroy();
 	private:
 		GpuParamSampState(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates);
 

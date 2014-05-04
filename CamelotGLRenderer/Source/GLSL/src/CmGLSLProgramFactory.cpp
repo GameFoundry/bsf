@@ -41,14 +41,14 @@ namespace BansheeEngine {
     HighLevelGpuProgramPtr GLSLProgramFactory::create(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
     {
-		GLSLProgram* prog = new (cm_alloc<GLSLProgram, PoolAlloc>()) GLSLProgram(source, entryPoint, sLanguageName, gptype, profile, includes);
+		GLSLProgram* prog = new (cm_alloc<GLSLProgram, PoolAlloc>()) GLSLProgram(source, entryPoint, gptype, profile, includes);
 
 		return cm_core_ptr<GLSLProgram, PoolAlloc>(prog);
     }
 	//-----------------------------------------------------------------------
 	HighLevelGpuProgramPtr GLSLProgramFactory::create()
 	{
-		GLSLProgram* prog = new (cm_alloc<GLSLProgram, PoolAlloc>()) GLSLProgram("", "", sLanguageName, GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
+		GLSLProgram* prog = new (cm_alloc<GLSLProgram, PoolAlloc>()) GLSLProgram("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
 
 		return cm_core_ptr<GLSLProgram, PoolAlloc>(prog);
 	}
