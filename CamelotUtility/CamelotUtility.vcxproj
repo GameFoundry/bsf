@@ -264,6 +264,7 @@
     <ClCompile Include="Source\CmSphere.cpp" />
     <ClCompile Include="Source\CmStringTable.cpp" />
     <ClCompile Include="Source\CmTexAtlasGenerator.cpp" />
+    <ClCompile Include="Source\Win32\CmFileSystem.cpp" />
     <ClCompile Include="Source\Win32\CmTimer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
     <ClInclude Include="Include\BsEvent.h" />
@@ -329,7 +330,6 @@
     <ClInclude Include="Include\CmDataStream.h" />
     <ClCompile Include="Source\CmBinarySerializer.cpp" />
     <ClCompile Include="Source\CmFileSerializer.cpp" />
-    <ClCompile Include="Source\CmFileSystem.cpp" />
     <ClCompile Include="Source\CmIReflectable.cpp" />
     <ClCompile Include="Source\CmRTTIField.cpp" />
     <ClCompile Include="Source\CmRTTIType.cpp" />

@@ -305,9 +305,6 @@
     <ClCompile Include="Source\CmIReflectable.cpp">
       <Filter>Source Files\RTTI</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmFileSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmTime.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -375,6 +372,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsTaskScheduler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\CmFileSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
