@@ -1,74 +1,28 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+#pragma once
 
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __GpuProgramManager_H_
-#define __GpuProgramManager_H_
-
-// Precompiler options
 #include "CmPrerequisites.h"
 #include "CmException.h"
 #include "CmGpuProgram.h"
 #include "CmModule.h"
 
-namespace BansheeEngine {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Resources
-	*  @{
-	*/
+namespace BansheeEngine 
+{
+	/**
+	 * @brief	Handles creation of GPU programs for a specific language. Program source
+	 *			will be parses and a usable GPU program which you may bind to the pipeline
+	 *			will be returned.
+	 */
 	class CM_EXPORT GpuProgramManager : public Module<GpuProgramManager>
 	{
 	public:
-
-		typedef Set<String>::type SyntaxCodes;
-
-	protected:
-		/** General create method
-        */
-        virtual GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) = 0;
-
-	public:
 		GpuProgramManager();
 		virtual ~GpuProgramManager();
-
-		/** Returns the syntaxes that this manager supports. */
-		virtual const SyntaxCodes& getSupportedSyntax(void) const;
-		 
-
-        /** Returns whether a given syntax code (e.g. "ps_1_3", "fp20", "arbvp1") is supported. */
-        virtual bool isSyntaxSupported(const String& syntaxCode) const;
-		
-		
-		/** Converts a generic GpuProgramProfile identifier into a render-system specific one.  
-		* 
-		*  Returns an empty string if it can't convert it.
-		*/
+	
+		/**
+		 * @brief	Converts a generic GpuProgramProfile identifier into a render-system specific one.
+		 *			Obviously this depends on the currently set render system.
+		 *			Returns an empty string if conversion can't be done.
+		 */
 		virtual String gpuProgProfileToRSSpecificProfile(GpuProgramProfile gpuProgProfile) const;
         
 		/** Create a GPU program from a string of assembly code.
@@ -86,10 +40,11 @@ namespace BansheeEngine {
         @param syntaxCode The name of the syntax to be used for this program e.g. arbvp1, vs_1_1
 		*/
 		GpuProgramPtr createProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
+
+	protected:
+		/**
+		 * @brief	Internal create method that you should override in GpuProgramManager implementation for a specific language.
+		 */
+		virtual GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) = 0;
 	};
-
-	/** @} */
-	/** @} */
 }
-
-#endif

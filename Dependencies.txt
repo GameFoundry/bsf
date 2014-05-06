@@ -17,7 +17,7 @@ Place dependency files in:
 Banshee plug-in dependencies:
 
 CamelotFBXImporter (optional) relies on:
- - FBX SDK 2013.3
+ - FBX SDK 2015.1
    - http://usa.autodesk.com/fbx
 
 CamelotFreeImgImporter (optional) relies on:
