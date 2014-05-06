@@ -48,8 +48,7 @@ THE SOFTWARE.
 #include "CmVertexDeclaration.h"
 #include "CmPlane.h"
 #include "CmModule.h"
-
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {

@@ -20,13 +20,9 @@
 // Secure versions aren't multiplatform, so we won't be using them
 #define _CRT_SECURE_NO_WARNINGS
 
-// disable: "<type> needs to have dll-interface to be used by clients'
+// Disable: "<type> needs to have dll-interface to be used by clients'
 // Happens on STL member variables which are not public therefore is ok
 #   pragma warning (disable: 4251)
-
-// disable: 'X' Function call with parameters that may be unsafe
-// Gets triggered when I include boost UUID header, for no valid reason
-#	pragma warning(disable: 4996) 
 
 #endif
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CmPrerequisitesUtil.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -70,6 +70,6 @@ namespace BansheeEngine
 		 * 			
 		 * @note	
 		 */
-		boost::signal<void(const LogEntry&)> onEntryAdded;
+		Event<void(const LogEntry&)> onEntryAdded;
 	};
 }

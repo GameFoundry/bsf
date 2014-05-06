@@ -44,9 +44,9 @@ namespace BansheeEngine
 		String mName;
 		EditorWidgetBase* mEditorWidget;
 		Vector<ScriptGUIPanel*>::type mPanels;
-		boost::signals::connection mOnWidgetMovedConn;
-		boost::signals::connection mOnWidgetResizedConn;
-		boost::signals::connection mOnParentChangedConn;
+		HEvent mOnWidgetMovedConn;
+		HEvent mOnWidgetResizedConn;
+		HEvent mOnParentChangedConn;
 
 		static MonoMethod* onResizedMethod;
 

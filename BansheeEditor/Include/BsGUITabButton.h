@@ -4,7 +4,7 @@
 #include "BsGUIToggle.h"
 #include "BsGUIToggleGroup.h"
 #include "BsImageSprite.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -26,8 +26,8 @@ namespace BansheeEngine
 		UINT32 getIndex() const { return mIndex; }
 		void _setDraggedState(bool active);
 
-		boost::signal<void(UINT32, const Vector2I&)> onDragged;
-		boost::signal<void(UINT32, const Vector2I&)> onDragEnd;
+		Event<void(UINT32, const Vector2I&)> onDragged;
+		Event<void(UINT32, const Vector2I&)> onDragEnd;
 	protected:
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 

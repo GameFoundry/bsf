@@ -1,8 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-
-#include "boost/signals/connection.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -30,7 +29,7 @@ namespace BansheeEngine
 
 			const ViewportPtr& getPrimaryViewport() const;
 	private:
-		boost::signals::connection updateCallbackConn;
+		HEvent updateCallbackConn;
 		DynLib* mMonoPlugin;
 		DynLib* mSBansheeEnginePlugin;
 

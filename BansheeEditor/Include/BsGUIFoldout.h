@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		Vector2I _getOptimalSize() const;
 
-		boost::signal<void(bool)> onStateChanged;
+		Event<void(bool)> onStateChanged;
 	protected:
 		virtual ~GUIFoldout();
 

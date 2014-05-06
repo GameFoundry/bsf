@@ -3,7 +3,6 @@
 #undef min
 #undef max
 
-#include <boost/preprocessor.hpp>
 #include <atomic>
 
 namespace BansheeEngine
@@ -154,32 +153,13 @@ namespace BansheeEngine
 		return ptr;
 	}
 
-/**
- * @brief	Create a new object with the specified allocator and the specified parameters.
- */
-#define MAKE_CM_NEW(z, n, unused)                                     \
-	template<class Type, class Alloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) ) { \
-		return new (cm_alloc<Alloc>(sizeof(Type))) Type(std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~));     \
-	}
-
-#define FORWARD_T(z, i, unused) \
-	, std::forward<BOOST_PP_CAT(T, i)>(BOOST_PP_CAT(t, i))
-
-	BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_CM_NEW, ~)
-
-#undef FORWARD_T
-#undef MAKE_CM_NEW
-
 	/**
-	 * @brief	Create a new object with the specified allocator without any parameters
-	 *
-	 * @note	Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types.
+	 * @brief	Create a new object with the specified allocator and the specified parameters.
 	 */
-	template<class Type, class Alloc>
-	Type* cm_new() 
+	template<class Type, class Alloc, class... Args>
+	Type* cm_new(Args &&...args)
 	{
-		return new (cm_alloc<Alloc>(sizeof(Type))) Type;
+		return new (cm_alloc<Alloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
 	}
 
 	/**
@@ -252,29 +232,10 @@ namespace BansheeEngine
 	/**
 	 * @brief	Create a new object with the specified allocator and the specified parameters.
 	 */
-#define MAKE_CM_NEW(z, n, unused)                                     \
-	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-	Type* cm_new(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) ) { \
-	return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~));     \
-	}
-
-#define FORWARD_T(z, i, unused) \
-	, std::forward<BOOST_PP_CAT(T, i)>(BOOST_PP_CAT(t, i))
-
-	BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_CM_NEW, ~)
-
-#undef FORWARD_T
-#undef MAKE_CM_NEW
-
-	/**
-	 * @brief	Create a new object with the specified allocator without any parameters
-	 *
-	 * @note	Needs to be separate from parameter version so I don't unnecessarily zero-initialize POD types.
-	 */
-	template<class Type>
-	Type* cm_new() 
+	template<class Type, class... Args>
+	Type* cm_new(Args &&...args)
 	{
-		return new (cm_alloc<GenAlloc>(sizeof(Type))) Type;
+		return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
 	}
 
 	/**

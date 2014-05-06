@@ -2,7 +2,6 @@
 
 #include "CmPrerequisites.h"
 #include "CmAsyncOp.h"
-#include <boost/preprocessor.hpp>
 
 namespace BansheeEngine
 {
@@ -208,15 +207,12 @@ namespace BansheeEngine
 	 * @note	All core thread object shared pointers must be created using this method or its overloads
 	 * 			and you should not create them manually.
 	 */
-#define MAKE_CM_NEW_CORE(z, n, unused)                                     \
-	template<class Type, class MainAlloc, class PtrDataAlloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-	std::shared_ptr<Type> cm_core_ptr(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
-	return std::shared_ptr<Type>(cm_new<Type, MainAlloc>(BOOST_PP_ENUM_PARAMS (n, t)), &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<PtrDataAlloc>());     \
+	template<class Type, class MainAlloc, class PtrDataAlloc, class... Args>
+	std::shared_ptr<Type> cm_core_ptr(Args ...args)
+	{
+		return std::shared_ptr<Type>(cm_new<Type, MainAlloc>(args...),
+			&CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<PtrDataAlloc>());
 	}
-
-	BOOST_PP_REPEAT(15, MAKE_CM_NEW_CORE, ~)
-
-#undef MAKE_CM_NEW_CORE
 
 	/**
 	 * @brief	Creates a new core object using the specified allocator and returns a shared pointer to it.
@@ -224,15 +220,12 @@ namespace BansheeEngine
 	 * @note	All core thread object shared pointers must be created using this method or its overloads
 	 * 			and you should not create them manually.
 	 */
-#define MAKE_CM_NEW_CORE(z, n, unused)                                     \
-	template<class Type, class MainAlloc BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-	std::shared_ptr<Type> cm_core_ptr(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
-	return std::shared_ptr<Type>(cm_new<Type, MainAlloc>(BOOST_PP_ENUM_PARAMS (n, t)), &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<GenAlloc>());     \
+	template<class Type, class MainAlloc, class... Args>
+	std::shared_ptr<Type> cm_core_ptr(Args ...args)
+	{
+		return std::shared_ptr<Type>(cm_new<Type, MainAlloc>(args...),
+			&CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<GenAlloc>());
 	}
-
-	BOOST_PP_REPEAT(15, MAKE_CM_NEW_CORE, ~)
-
-#undef MAKE_CM_NEW_CORE
 
 	/**
 	 * @brief	Creates a new core object and returns a shared pointer to it.
@@ -240,15 +233,12 @@ namespace BansheeEngine
 	 * @note	All core thread object shared pointers must be created using this method or its overloads
 	 * 			and you should not create them manually.
 	 */
-#define MAKE_CM_NEW_CORE(z, n, unused)                                     \
-	template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>     \
-	std::shared_ptr<Type> cm_core_ptr(BOOST_PP_ENUM_BINARY_PARAMS(n, T, t) ) { \
-	return std::shared_ptr<Type>(cm_new<Type, GenAlloc>(BOOST_PP_ENUM_PARAMS (n, t)), &CoreObject::_deleteDelayed<Type, GenAlloc>, StdAlloc<GenAlloc>());     \
+	template<class Type, class... Args>
+	std::shared_ptr<Type> cm_core_ptr(Args ...args)
+	{
+		return std::shared_ptr<Type>(cm_new<Type, GenAlloc>(args...),
+			&CoreObject::_deleteDelayed<Type, GenAlloc>, StdAlloc<GenAlloc>());
 	}
-
-	BOOST_PP_REPEAT(15, MAKE_CM_NEW_CORE, ~)
-
-#undef MAKE_CM_NEW_CORE
 
 	/**
 	 * @brief	Creates a core object shared pointer using a previously constructed object.
@@ -257,7 +247,7 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc>
-	std::shared_ptr<Type> cm_core_ptr(Type* data) 
+	std::shared_ptr<Type> cm_core_ptr(Type* data)
 	{
 		return std::shared_ptr<Type>(data, &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<GenAlloc>());  
 	}
@@ -269,7 +259,7 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc, class PtrDataAlloc>
-	std::shared_ptr<Type> cm_core_ptr(Type* data) 
+	std::shared_ptr<Type> cm_core_ptr(Type* data)
 	{
 		return std::shared_ptr<Type>(data, &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<PtrDataAlloc>());  
 	}

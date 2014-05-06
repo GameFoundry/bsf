@@ -33,7 +33,7 @@ THE SOFTWARE.
 #include "CmPixelUtil.h"
 #include "CmViewport.h"
 #include "CmCoreObject.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine 
 {
@@ -98,7 +98,7 @@ namespace BansheeEngine
 		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
 		virtual bool requiresTextureFlipping() const = 0;
 
-		mutable boost::signal<void()> onResized;
+		mutable Event<void()> onResized;
     protected:
 		RenderTarget();
 

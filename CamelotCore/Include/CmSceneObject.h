@@ -213,50 +213,25 @@ namespace BansheeEngine
 		/* 								Component	                     		*/
 		/************************************************************************/
 	public:
-		template <typename T>
-		GameObjectHandle<T> addComponent()
+		template<class T, class... Args>
+		GameObjectHandle<T> addComponent(Args &&... args)
 		{
-			static_assert((std::is_base_of<BansheeEngine::Component, T>::value), "Specified type is not a valid Component.");
+			static_assert((std::is_base_of<BansheeEngine::Component, T>::value),
+				"Specified type is not a valid Component.");
 
-			std::shared_ptr<T> gameObject(new (cm_alloc<T, PoolAlloc>()) T(mThisHandle), &cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
+			std::shared_ptr<T> gameObject(new (cm_alloc<T, PoolAlloc>()) T(mThisHandle,
+				std::forward<Args>(args)...),
+				&cm_delete<PoolAlloc, T>, StdAlloc<PoolAlloc>());
 
-			GameObjectHandle<T> newComponent = GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
+			GameObjectHandle<T> newComponent =
+				GameObjectHandle<T>(GameObjectManager::instance().registerObject(gameObject));
+
 			mComponents.push_back(newComponent);
 
-			gSceneManager().notifyComponentAdded(newComponent);
+			gSceneManager().notifyComponentAdded(newComponent);	
 
 			return newComponent;
 		}
-
-		// addComponent that accepts an arbitrary number of parameters > 0
-#define MAKE_ADD_COMPONENT(z, n, unused)												\
-		template<class Type BOOST_PP_ENUM_TRAILING_PARAMS(n, class T)>					\
-		GameObjectHandle<Type> addComponent(BOOST_PP_ENUM_BINARY_PARAMS(n, T, &&t) )	\
-		{																				\
-			static_assert((std::is_base_of<BansheeEngine::Component, Type>::value),  \
-				"Specified type is not a valid Component.");										\
-																									\
-			std::shared_ptr<Type> gameObject(new (cm_alloc<Type, PoolAlloc>()) Type(mThisHandle,	\
-				std::forward<T0>(t0) BOOST_PP_REPEAT_FROM_TO(1, n, FORWARD_T, ~)),					\
-				&cm_delete<PoolAlloc, Type>, StdAlloc<PoolAlloc>());								\
-																									\
-			GameObjectHandle<Type> newComponent =													\
-				GameObjectHandle<Type>(GameObjectManager::instance().registerObject(gameObject));	\
-																									\
-			mComponents.push_back(newComponent);													\
-																									\
-			gSceneManager().notifyComponentAdded(newComponent);										\
-																									\
-			return newComponent;																	\
-		}
-
-#define FORWARD_T(z, i, unused) \
-		, std::forward<BOOST_PP_CAT(T, i)>(BOOST_PP_CAT(t, i))
-
-		BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_ADD_COMPONENT, ~)
-
-#undef FORWARD_T
-#undef MAKE_ADD_COMPONENT
 
 		/**
 		 * @brief	Searches for a component with the specific type and returns the first one

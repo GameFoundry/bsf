@@ -4,7 +4,7 @@
 #include "CmInputFwd.h"
 #include "CmVector2I.h"
 #include "CmRectI.h"
-#include <boost/signals.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -270,77 +270,77 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Sim thread only.
 		 */
-		static boost::signal<void(RenderWindow*)> onMouseLeftWindow;
+		static Event<void(RenderWindow*)> onMouseLeftWindow;
 
 		/**
 		 * @brief	Triggered whenever the pointer moves.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(const Vector2I&, OSPointerButtonStates)> onCursorMoved;
+		static Event<void(const Vector2I&, OSPointerButtonStates)> onCursorMoved;
 
 		/**
 		 * @brief	Triggered whenever a pointer button is pressed.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonPressed;
+		static Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonPressed;
 
 		/**
 		 * @brief	Triggered whenever pointer button is released.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonReleased;
+		static Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> onCursorButtonReleased;
 
 		/**
 		 * @brief	Triggered whenever a pointer button is double clicked.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(const Vector2I&, OSPointerButtonStates)> onCursorDoubleClick;
+		static Event<void(const Vector2I&, OSPointerButtonStates)> onCursorDoubleClick;
 
 		/**
 		 * @brief	Triggered whenever an input command is entered.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(InputCommandType)> onInputCommand;
+		static Event<void(InputCommandType)> onInputCommand;
 
 		/**
 		 * @brief	Triggered whenever the mouse wheel is scolled.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(float)> onMouseWheelScrolled;
+		static Event<void(float)> onMouseWheelScrolled;
 
 		/**
 		 * @brief	Triggered whenever a character is entered.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(UINT32)> onCharInput;
+		static Event<void(UINT32)> onCharInput;
 
 		/**
 		 * @brief	Triggered whenever a window receives focus.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(RenderWindow*)> onWindowFocusReceived;
+		static Event<void(RenderWindow*)> onWindowFocusReceived;
 
 		/**
 		 * @brief	Triggered whenever a window loses focus.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(RenderWindow*)> onWindowFocusLost;
+		static Event<void(RenderWindow*)> onWindowFocusLost;
 
 		/**
 		 * @brief	Triggered whenever a window gets moved or resized.
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void(RenderWindow*)> onWindowMovedOrResized;
+		static Event<void(RenderWindow*)> onWindowMovedOrResized;
 
 		/**
 		 * @brief	Triggered whenever mouse capture state for the window is changed
@@ -348,7 +348,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Core thread only.
 		 */
-		static boost::signal<void()> onMouseCaptureChanged;
+		static Event<void()> onMouseCaptureChanged;
 	protected:
 		static bool mIsCursorHidden;
 		static NativeCursorData mCursor;

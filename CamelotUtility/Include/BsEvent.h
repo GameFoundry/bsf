@@ -9,16 +9,32 @@ namespace BansheeEngine
 	/* 								EVENTS									*/
 	/************************************************************************/
 	
+	/**
+	 * @brief	Event handle. Allows you to track to which events you subscribed to and
+	 *			disconnect from them when needed.
+	 */
 	class HEvent
 	{
 	public:
+		HEvent()
+			:mDisconnectCallback(nullptr), mConnection(nullptr), mEvent(nullptr)
+		{ }
+
 		HEvent(void* connection, void* event, void (*disconnectCallback) (void*, void*))
 			:mConnection(connection), mEvent(event), mDisconnectCallback(disconnectCallback)
 		{ }
 
+		/**
+		 * @brief	Disconnect from the event you are subscribed to.
+		 *
+		 * @note	Caller must ensure the event is still valid.
+		 */
 		void disconnect()
 		{
-			mDisconnectCallback(mConnection, mEvent);
+			if (mDisconnectCallback != nullptr)
+				mDisconnectCallback(mConnection, mEvent);
+
+			mDisconnectCallback = nullptr;
 		}
 
 	private:
@@ -27,27 +43,26 @@ namespace BansheeEngine
 		void* mEvent;
 	};	
 
-	// 1 parameter
-	template <class P0, class RetType>
-	class Event1
+	template <class RetType, class... Args>
+	class TEvent
 	{
 		struct ConnectionData
 		{
 		public:
-			ConnectionData(std::function<RetType(P0)> func)
+			ConnectionData(std::function<RetType(Args...)> func)
 				:func(func)
 			{ }
 
-			std::function<RetType(P0)> func;
+			std::function<RetType(Args...)> func;
 		};
 
 	public:
-		~Event1()
+		~TEvent()
 		{
 			clear();
 		}
 
-		HEvent connect(std::function<RetType(P0)> func)
+		HEvent connect(std::function<RetType(Args...)> func)
 		{
 			ConnectionData* connData = cm_new<ConnectionData>(func);
 
@@ -56,18 +71,18 @@ namespace BansheeEngine
 				mConnections.push_back(connData);
 			}
 			
-			return HEvent(connData, this, &Event1::disconnectCallback);
+			return HEvent(connData, this, &TEvent::disconnectCallback);
 		}
 
-		void operator() (P0 args)
+		void operator() (Args... args)
 		{
 			CM_LOCK_MUTEX(mMutex);
 
 			for(auto& connection : mConnections)
 			{
-				std::function<RetType(P0)> func = connection->func;
+				std::function<RetType(Args...)> func = connection->func;
 
-				func(args);
+				func(args...);
 			}
 		}
 
@@ -91,16 +106,14 @@ namespace BansheeEngine
 		}
 
 	private:
-		friend class EventHandle1;
-
 		typename Vector<ConnectionData*>::type mConnections;
 		CM_MUTEX(mMutex);
 
 		static void disconnectCallback(void* connection, void* event)
 		{
-			Event1<P0, RetType>::ConnectionData* castConnection = 
-				reinterpret_cast<Event1<P0, RetType>::ConnectionData*>(connection);
-			Event1<P0, RetType>* castEvent = reinterpret_cast<Event1<P0, RetType>*>(event);
+			TEvent<RetType, Args...>::ConnectionData* castConnection =
+				reinterpret_cast<TEvent<RetType, Args...>::ConnectionData*>(connection);
+			TEvent<RetType, Args...>* castEvent = reinterpret_cast<TEvent<RetType, Args...>*>(event);
 
 			castEvent->disconnect(castConnection);
 		}
@@ -130,7 +143,7 @@ namespace BansheeEngine
 	class Event;
 
 	// 1 parameter
-	template <class P0, class RetType>
-	class Event<RetType(P0) > : public Event1 <P0, RetType>
+	template <class RetType, class... Args>
+	class Event<RetType(Args...) > : public TEvent <RetType, Args...>
 	{ };
 }

@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsEditorWidgetManager.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -27,9 +27,9 @@ namespace BansheeEngine
 
 		void close();
 
-		boost::signal<void(UINT32, UINT32)> onResized;
-		boost::signal<void(INT32, INT32)> onMoved;
-		boost::signal<void(EditorWidgetContainer*)> onParentChanged;
+		Event<void(UINT32, UINT32)> onResized;
+		Event<void(INT32, INT32)> onMoved;
+		Event<void(EditorWidgetContainer*)> onParentChanged;
 	protected:
 		friend class EditorWidgetManager;
 

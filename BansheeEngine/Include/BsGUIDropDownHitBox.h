@@ -16,8 +16,8 @@ namespace BansheeEngine
 		void setBounds(const RectI& bounds) { mBounds.clear(); mBounds.push_back(bounds); }
 		void setBounds(const Vector<RectI>::type& bounds) { mBounds = bounds; }
 
-		boost::signal<void()> onFocusLost;
-		boost::signal<void()> onFocusGained;
+		Event<void()> onFocusLost;
+		Event<void()> onFocusGained;
 
 	private:
 		GUIDropDownHitBox(bool captureMouse, const GUILayoutOptions& layoutOptions);

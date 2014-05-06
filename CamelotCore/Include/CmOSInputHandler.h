@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmPlatform.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 #include "CmVector2I.h"
 
 namespace BansheeEngine
@@ -45,39 +45,39 @@ namespace BansheeEngine
 		 * 			multiple keys, so character input will not necessarily correspond with button presses.
 		 * 			Provide character code of the input character.
 		 */
-		boost::signal<void(UINT32)> onCharInput;
+		Event<void(UINT32)> onCharInput;
 
 		/**
 		 * @brief	Triggers whenever user scrolls the mouse wheel. Returns the screen
 		 * 			position of the mouse cursor and delta amount of mouse scroll (can be negative or positive).
 		 */
-		boost::signal<void(const Vector2I&, float)> onMouseWheelScrolled;
+		Event<void(const Vector2I&, float)> onMouseWheelScrolled;
 
 		/**
 		 * @brief	Triggers whenever user moves the mouse cursor.
 		 */
-		boost::signal<void(const PointerEvent&)> onCursorMoved;
+		Event<void(const PointerEvent&)> onCursorMoved;
 
 		/**
 		 * @brief	Triggers whenever user presses one of the mouse buttons.
 		 */
-		boost::signal<void(const PointerEvent&)> onCursorPressed;
+		Event<void(const PointerEvent&)> onCursorPressed;
 
 		/**
 		 * @brief	Triggers whenever user releases one of the mouse buttons.
 		 */
-		boost::signal<void(const PointerEvent&)> onCursorReleased;
+		Event<void(const PointerEvent&)> onCursorReleased;
 
 		/**
 		 * @brief	Triggers when user clicks a mouse button quickly twice in a row.
 		 */
-		boost::signal<void(const PointerEvent&)> onDoubleClick;
+		Event<void(const PointerEvent&)> onDoubleClick;
 
 		/**
 		 * @brief	Triggers when user inputa a special input command, like commands user
 		 * 			for manipulating text input.
 		 */
-		boost::signal<void(InputCommandType)> onInputCommand;
+		Event<void(InputCommandType)> onInputCommand;
 
 		/**
 		 * @brief	Called once per frame. Capture input here if needed.
@@ -106,13 +106,13 @@ namespace BansheeEngine
 		Queue<InputCommandType>::type mInputCommands;
 		OSPointerButtonStates mMouseMoveBtnState;
 
-		boost::signals::connection mCharInputConn;
-		boost::signals::connection mCursorMovedConn;
-		boost::signals::connection mCursorPressedConn;
-		boost::signals::connection mCursorReleasedConn;
-		boost::signals::connection mCursorDoubleClickConn;
-		boost::signals::connection mInputCommandConn;
-		boost::signals::connection mMouseWheelScrolledConn;
+		HEvent mCharInputConn;
+		HEvent mCursorMovedConn;
+		HEvent mCursorPressedConn;
+		HEvent mCursorReleasedConn;
+		HEvent mCursorDoubleClickConn;
+		HEvent mInputCommandConn;
+		HEvent mMouseWheelScrolledConn;
 
 		/**
 		 * @brief	Called from the message loop to notify user has entered a character.

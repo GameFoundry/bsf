@@ -3,7 +3,7 @@
 #include "CmPrerequisites.h"
 #include "CmModule.h"
 #include "CmRenderWindow.h"
-#include <boost/signals.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -24,8 +24,8 @@ namespace BansheeEngine
 
 		Vector<RenderWindow*>::type getRenderWindows() const;
 
-		boost::signal<void(RenderWindow&)> onFocusGained;
-		boost::signal<void(RenderWindow&)> onFocusLost;
+		Event<void(RenderWindow&)> onFocusGained;
+		Event<void(RenderWindow&)> onFocusLost;
 	protected:
 		friend class RenderWindow;
 

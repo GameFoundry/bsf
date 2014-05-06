@@ -100,7 +100,7 @@ namespace BansheeEngine
 		mData->onStringModified();
 	}
 
-	boost::signals::connection HString::addOnStringModifiedCallback(std::function<void()> callback) const
+	HEvent HString::addOnStringModifiedCallback(std::function<void()> callback) const
 	{
 		return mData->onStringModified.connect(callback);
 	}

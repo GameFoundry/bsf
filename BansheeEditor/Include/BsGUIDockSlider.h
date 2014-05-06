@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIButtonBase.h"
 #include "BsDockManager.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -15,7 +15,7 @@ namespace BansheeEngine
 		static GUIDockSlider* create(bool horizontal, const String& styleName = StringUtil::BLANK);
 		static GUIDockSlider* create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		boost::signal<void(const Vector2I&)> onDragged;
+		Event<void(const Vector2I&)> onDragged;
 	protected:
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 

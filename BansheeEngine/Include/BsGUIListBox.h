@@ -4,7 +4,7 @@
 #include "BsGUIButtonBase.h"
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 		virtual ElementType getElementType() const { return ElementType::ListBox; }
 
-		boost::signal<void(UINT32)> onSelectionChanged;
+		Event<void(UINT32)> onSelectionChanged;
 	protected:
 		~GUIListBox();
 

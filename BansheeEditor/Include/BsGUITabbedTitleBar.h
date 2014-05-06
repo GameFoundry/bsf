@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIElementContainer.h"
 #include "CmRectI.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -29,10 +29,10 @@ namespace BansheeEngine
 
 		Vector<RectI>::type calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const;
 
-		boost::signal<void(UINT32)> onTabActivated;
-		boost::signal<void(UINT32)> onTabClosed;
-		boost::signal<void(UINT32)> onTabDraggedOff;
-		boost::signal<void(UINT32)> onTabDraggedOn;
+		Event<void(UINT32)> onTabActivated;
+		Event<void(UINT32)> onTabClosed;
+		Event<void(UINT32)> onTabDraggedOff;
+		Event<void(UINT32)> onTabDraggedOn;
 
 	protected:
 		virtual ~GUITabbedTitleBar();

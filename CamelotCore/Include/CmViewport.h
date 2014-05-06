@@ -5,7 +5,7 @@
 #include "CmColor.h"
 #include "CmRectI.h"
 #include "CmRectF.h"
-#include <boost/signals/connection.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine 
 {
@@ -102,7 +102,7 @@ namespace BansheeEngine
 		bool getRequiresStencilClear() const { return mRequiresStencilClear; }
 		void setRequiresStencilClear(bool requiresClear) { mRequiresStencilClear = requiresClear; }
 
-		boost::signal<void()> onResized;
+		Event<void()> onResized;
     protected:
         RenderTargetPtr mTarget;
 
@@ -117,7 +117,7 @@ namespace BansheeEngine
 		float mDepthClearValue;
 		UINT16 mStencilClearValue;
 
-		boost::signals::connection mTargetResizedConn;
+		HEvent mTargetResizedConn;
 
 		static const Color DEFAULT_CLEAR_COLOR;
 

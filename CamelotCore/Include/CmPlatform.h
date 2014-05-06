@@ -92,25 +92,25 @@ namespace BansheeEngine
 		 * @brief	Triggered when a pointer is being dragged over the drop area.
 		 *			Provides window coordinates of the pointer position.
 		 */
-		boost::signal<void(INT32 x, INT32 y)> onDragOver;
+		Event<void(INT32 x, INT32 y)> onDragOver;
 
 		/**
 		 * @brief	Triggered when the user completes a drop while pointer is over
 		 *			the drop area.
 		 *			Provides window coordinates of the pointer position.
 		 */
-		boost::signal<void(INT32 x, INT32 y)> onDrop;
+		Event<void(INT32 x, INT32 y)> onDrop;
 
 		/**
 		 * @brief	Triggered when a pointer enters the drop area.
 		 *			Provides window coordinates of the pointer position.
 		 */
-		boost::signal<void(INT32 x, INT32 y)> onEnter;
+		Event<void(INT32 x, INT32 y)> onEnter;
 
 		/**
 		 * @brief	Triggered when a pointer leaves the drop area.
 		 */
-		boost::signal<void()> onLeave;
+		Event<void()> onLeave;
 
 		/**
 		 * @brief	Sets the drop target area, in local window coordinates.

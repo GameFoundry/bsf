@@ -5,7 +5,7 @@
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
 #include "BsGUIContent.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -31,9 +31,9 @@ namespace BansheeEngine
 
 		virtual Vector2I _getOptimalSize() const;
 
-		boost::signal<void()> onClick;
-		boost::signal<void()> onHover;
-		boost::signal<void()> onOut;
+		Event<void()> onClick;
+		Event<void()> onHover;
+		Event<void()> onOut;
 	protected:
 		GUIButtonBase(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIButtonBase();
@@ -88,6 +88,6 @@ namespace BansheeEngine
 		IMAGE_SPRITE_DESC mImageDesc;
 		GUIContent mContent;
 
-		boost::signals::connection mLocStringUpdatedConn;
+		HEvent mLocStringUpdatedConn;
 	};
 }

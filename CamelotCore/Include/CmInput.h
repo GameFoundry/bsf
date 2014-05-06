@@ -36,43 +36,43 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggered whenever a button is first pressed.
 		 */
-		boost::signal<void(const ButtonEvent&)> onButtonDown;
+		Event<void(const ButtonEvent&)> onButtonDown;
 
 		/**
 		 * @brief	Triggered whenever a button is first released.
 		 */
-		boost::signal<void(const ButtonEvent&)> onButtonUp;
+		Event<void(const ButtonEvent&)> onButtonUp;
 
 		/**
 		 * @brief	Triggered whenever user inputs a text character. 
 		 */
-		boost::signal<void(const TextInputEvent&)> onCharInput;
+		Event<void(const TextInputEvent&)> onCharInput;
 
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) moves.
 		 */
-		boost::signal<void(const PointerEvent&)> onPointerMoved;
+		Event<void(const PointerEvent&)> onPointerMoved;
 
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is pressed.
 		 */
-		boost::signal<void(const PointerEvent&)> onPointerPressed;
+		Event<void(const PointerEvent&)> onPointerPressed;
 
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is released.
 		 */
-		boost::signal<void(const PointerEvent&)> onPointerReleased;
+		Event<void(const PointerEvent&)> onPointerReleased;
 
 		/**
 		 * @brief	Triggers when some pointing device (mouse cursor, touch) button is double clicked.
 		 */
-		boost::signal<void(const PointerEvent&)> onPointerDoubleClick;
+		Event<void(const PointerEvent&)> onPointerDoubleClick;
 
 		// TODO Low priority: Remove this, I can emulate it using virtual input
 		/**
 		 * @brief	Triggers on special input commands.
 		 */
-		boost::signal<void(InputCommandType)> onInputCommand;
+		Event<void(InputCommandType)> onInputCommand;
 
 		/**
 		 * @brief	Registers a new input handler. Replaces any previous input handler.

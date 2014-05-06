@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUIElementContainer.h"
 #include "BsVirtualInput.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {

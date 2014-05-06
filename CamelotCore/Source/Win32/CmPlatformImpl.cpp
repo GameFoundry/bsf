@@ -9,20 +9,20 @@
 
 namespace BansheeEngine
 {
-	boost::signal<void(RenderWindow*)> Platform::onMouseLeftWindow;
+	Event<void(RenderWindow*)> Platform::onMouseLeftWindow;
 
-	boost::signal<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorMoved;
-	boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonPressed;
-	boost::signal<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonReleased;
-	boost::signal<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorDoubleClick;
-	boost::signal<void(InputCommandType)> Platform::onInputCommand;
-	boost::signal<void(float)> Platform::onMouseWheelScrolled;
-	boost::signal<void(UINT32)> Platform::onCharInput;
+	Event<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorMoved;
+	Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonPressed;
+	Event<void(const Vector2I&, OSMouseButton button, OSPointerButtonStates)> Platform::onCursorButtonReleased;
+	Event<void(const Vector2I&, OSPointerButtonStates)> Platform::onCursorDoubleClick;
+	Event<void(InputCommandType)> Platform::onInputCommand;
+	Event<void(float)> Platform::onMouseWheelScrolled;
+	Event<void(UINT32)> Platform::onCharInput;
 
-	boost::signal<void(RenderWindow*)> Platform::onWindowFocusReceived;
-	boost::signal<void(RenderWindow*)> Platform::onWindowFocusLost;
-	boost::signal<void(RenderWindow*)> Platform::onWindowMovedOrResized;
-	boost::signal<void()> Platform::onMouseCaptureChanged;
+	Event<void(RenderWindow*)> Platform::onWindowFocusReceived;
+	Event<void(RenderWindow*)> Platform::onWindowFocusLost;
+	Event<void(RenderWindow*)> Platform::onWindowMovedOrResized;
+	Event<void()> Platform::onMouseCaptureChanged;
 
 	Map<const RenderWindow*, WindowNonClientAreaData>::type Platform::mNonClientAreas;
 	bool Platform::mIsTrackingMouse = false;

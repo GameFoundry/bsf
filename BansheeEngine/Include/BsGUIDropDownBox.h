@@ -3,7 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIWidget.h"
 #include "CmVector2I.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {

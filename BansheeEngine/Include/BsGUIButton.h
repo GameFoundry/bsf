@@ -5,7 +5,7 @@
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
 #include "BsGUIContent.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {

@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "CmModule.h"
-#include "boost/signals/connection.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -98,7 +98,7 @@ namespace BansheeEngine
 		Vector<BasicRow>::type mBasicRows;
 		Vector<PreciseRow>::type mPreciseRows;
 
-		boost::signals::connection mTargetResizedConn;
+		HEvent mTargetResizedConn;
 		bool mIsShown;
 
 		void targetResized();

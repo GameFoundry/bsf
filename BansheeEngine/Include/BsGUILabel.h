@@ -58,7 +58,7 @@ namespace BansheeEngine
 	private:
 		TextSprite* mTextSprite;
 		GUIContent mContent;
-		boost::signals::connection mLocStringUpdatedConn;
+		HEvent mLocStringUpdatedConn;
 
 		TEXT_SPRITE_DESC mDesc;
 		

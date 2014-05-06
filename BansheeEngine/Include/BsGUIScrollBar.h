@@ -2,15 +2,14 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
-
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
 	class BS_EXPORT GUIScrollBar : public GUIElement
 	{
 	public:
-		boost::signal<void(float newPosition)> onScrollPositionChanged;
+		Event<void(float newPosition)> onScrollPositionChanged;
 
 		void setHandleSize(UINT32 size);
 		void setScrollPos(float pct);

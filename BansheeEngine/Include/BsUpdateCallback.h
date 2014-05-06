@@ -1,7 +1,6 @@
 #include "BsPrerequisites.h"
 #include "CmComponent.h"
-
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -16,6 +15,6 @@ namespace BansheeEngine
 
 		virtual void update();
 
-		boost::signal<void()> onUpdate;
+		Event<void()> onUpdate;
 	};
 }

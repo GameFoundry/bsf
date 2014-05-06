@@ -3,7 +3,7 @@
 #include "BsPrerequisites.h"
 #include "CmModule.h"
 #include "CmInput.h"
-#include <boost/signals.hpp>
+#include "BsEvent.h"
 #include <atomic>
 
 namespace BansheeEngine
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		boost::signal<bool(const PointerEvent&)> onDragEnded;
+		Event<bool(const PointerEvent&)> onDragEnded;
 	private:
 		UINT32 mDragTypeId;
 		void* mData;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		void _notifyWidgetDestroyed(EditorWidgetBase* widget);
 
-		boost::signal<void()> onWidgetClosed;
+		Event<void()> onWidgetClosed;
 	private:
 		EditorWindow* mParentWindow;
 		GUITabbedTitleBar* mTitleBar;

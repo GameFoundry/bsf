@@ -9,7 +9,7 @@
 #include "CmModule.h"
 #include "CmColor.h"
 #include "CmInput.h"
-#include <boost/signals/connection.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -169,20 +169,20 @@ namespace BansheeEngine
 
 		Map<const RenderTexture*, const GUIElement*>::type mInputBridge;
 
-		boost::signals::connection mOnPointerMovedConn;
-		boost::signals::connection mOnPointerPressedConn;
-		boost::signals::connection mOnPointerReleasedConn;
-		boost::signals::connection mOnPointerDoubleClick;
-		boost::signals::connection mOnTextInputConn;
-		boost::signals::connection mOnInputCommandConn;
-		boost::signals::connection mOnVirtualButtonDown;
+		HEvent mOnPointerMovedConn;
+		HEvent mOnPointerPressedConn;
+		HEvent mOnPointerReleasedConn;
+		HEvent mOnPointerDoubleClick;
+		HEvent mOnTextInputConn;
+		HEvent mOnInputCommandConn;
+		HEvent mOnVirtualButtonDown;
 
-		boost::signals::connection mDragEndedConn;
+		HEvent mDragEndedConn;
 
-		boost::signals::connection mWindowGainedFocusConn;
-		boost::signals::connection mWindowLostFocusConn;
+		HEvent mWindowGainedFocusConn;
+		HEvent mWindowLostFocusConn;
 
-		boost::signals::connection mMouseLeftWindowConn;
+		HEvent mMouseLeftWindowConn;
 
 		void updateMeshes();
 		void updateCaretTexture();

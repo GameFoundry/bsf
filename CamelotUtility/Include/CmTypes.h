@@ -2,8 +2,9 @@
 
 #include "CmPlatformDefines.h"
 
-// Contains commonly used types
-
+/**
+ * @brief	Commonly used types.
+ */
 namespace BansheeEngine
 {
 	typedef char INT8;

@@ -3,7 +3,7 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
 #include "BsImageSprite.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 		virtual Vector2I _getOptimalSize() const;
 
-		boost::signal<void(float newPosition)> onHandleMoved;
+		Event<void(float newPosition)> onHandleMoved;
 	protected:
 		~GUIScrollBarHandle();
 

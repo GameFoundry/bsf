@@ -1,6 +1,5 @@
 #include "CmLog.h"
 #include "CmException.h"
-#include "boost/signal.hpp"
 
 namespace BansheeEngine
 {

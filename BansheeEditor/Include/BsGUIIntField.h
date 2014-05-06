@@ -16,7 +16,7 @@ namespace BansheeEngine
 		INT32 getValue() const { return mValue; }
 		void setValue(INT32 value);
 
-		boost::signal<void(INT32)> onValueChanged;
+		Event<void(INT32)> onValueChanged;
 
 	protected:
 		virtual ~GUIIntField();

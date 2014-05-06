@@ -65,25 +65,25 @@ namespace BansheeEngine
 		 * @brief	Triggers when a file is modified. Provides
 		 *			full path to the file.
 		 */
-		boost::signal<void(const Path&)> onModified;
+		Event<void(const Path&)> onModified;
 
 		/**
 		 * @brief	Triggers when a file/folder is adeed. Provides
 		 *			full path to the file/folder.
 		 */
-		boost::signal<void(const Path&)> onAdded;
+		Event<void(const Path&)> onAdded;
 
 		/**
 		 * @brief	Triggers when a file/folder is removed. Provides
 		 *			full path to the file/folder.
 		 */
-		boost::signal<void(const Path&)> onRemoved;
+		Event<void(const Path&)> onRemoved;
 
 		/**
 		 * @brief	Triggers when a file/folder is renamed. Provides
 		 *			full path to the old and new name.
 		 */
-		boost::signal<void(const Path&, const Path&)> onRenamed;
+		Event<void(const Path&, const Path&)> onRenamed;
 
 	private:
 		Pimpl* mPimpl;

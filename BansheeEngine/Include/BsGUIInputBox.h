@@ -33,9 +33,9 @@ namespace BansheeEngine
 
 		virtual Vector2I _getOptimalSize() const;
 
-		boost::signal<void(const WString&)> onValueChanged;
-		boost::signal<void()> onFocusGained;
-		boost::signal<void()> onFocusLost;
+		Event<void(const WString&)> onValueChanged;
+		Event<void()> onFocusGained;
+		Event<void()> onFocusLost;
 	protected:
 		GUIInputBox(const String& styleName, const GUILayoutOptions& layoutOptions, bool multiline);
 		virtual ~GUIInputBox();

@@ -61,8 +61,8 @@ namespace BansheeEngine
 		void moveEntry(const Path& oldPath, const Path& newPath);
 		void deleteEntry(const Path& path);
 
-		boost::signal<void(const Path&)> onEntryRemoved;
-		boost::signal<void(const Path&)> onEntryAdded;
+		Event<void(const Path&)> onEntryRemoved;
+		Event<void(const Path&)> onEntryAdded;
 	private:
 		static const Path RESOURCES_DIR;
 		static const Path INTERNAL_RESOURCES_DIR;

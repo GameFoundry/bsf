@@ -4,8 +4,7 @@
 #include "CmCoreThreadAccessor.h"
 #include "CmHighLevelGpuProgram.h"
 #include "CmRenderWindow.h"
-
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -78,7 +77,7 @@ namespace BansheeEngine
 			/**
 			 * @brief	Called every frame by the main loop, after scene update and before rendering.
 			 */
-			boost::signal<void()> mainLoopCallback;
+			Event<void()> mainLoopCallback;
 
 	private:
 		RenderWindowPtr mPrimaryWindow;

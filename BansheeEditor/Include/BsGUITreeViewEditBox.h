@@ -13,8 +13,8 @@ namespace BansheeEngine
 		static GUITreeViewEditBox* create(const String& styleName = StringUtil::BLANK);
 		static GUITreeViewEditBox* create(const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		boost::signal<void()> onInputConfirmed;
-		boost::signal<void()> onInputCanceled;
+		Event<void()> onInputConfirmed;
+		Event<void()> onInputCanceled;
 
 	private:
 		GUITreeViewEditBox(const String& styleName, const GUILayoutOptions& layoutOptions);

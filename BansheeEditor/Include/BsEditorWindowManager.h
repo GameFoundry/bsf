@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "CmModule.h"
-#include <boost/signals.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {

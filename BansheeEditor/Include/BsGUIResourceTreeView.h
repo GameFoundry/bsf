@@ -3,7 +3,7 @@
 #include "BsEditorPrerequisites.h"
 #include "BsGUITreeView.h"
 #include "BsProjectLibrary.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -55,10 +55,10 @@ namespace BansheeEngine
 		OSDropTarget* mDropTarget;
 		bool mDropTargetDragActive;
 
-		boost::signals::connection mDropTargetEnterConn;
-		boost::signals::connection mDropTargetMoveConn;
-		boost::signals::connection mDropTargetLeaveConn;
-		boost::signals::connection mDropTargetDroppedConn;
+		HEvent mDropTargetEnterConn;
+		HEvent mDropTargetMoveConn;
+		HEvent mDropTargetLeaveConn;
+		HEvent mDropTargetDroppedConn;
 
 		GUIResourceTreeView(const String& backgroundStyle, const String& elementBtnStyle, 
 			const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, 

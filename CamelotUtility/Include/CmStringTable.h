@@ -2,7 +2,7 @@
 
 #include "CmPrerequisitesUtil.h"
 #include "CmModule.h"
-#include "boost/signals.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -208,7 +208,7 @@ namespace BansheeEngine
 		struct Common
 		{
 			WString identifier;
-			boost::signal<void()> onStringDataModified;
+			Event<void()> onStringDataModified;
 		};
 
 		struct ParamOffset

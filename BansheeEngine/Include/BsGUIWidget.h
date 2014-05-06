@@ -5,7 +5,7 @@
 #include "CmRectI.h"
 #include "CmVector3.h"
 #include "CmQuaternion.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -94,7 +94,7 @@ namespace BansheeEngine
 		Quaternion mLastFrameRotation;
 		Vector3 mLastFrameScale;
 
-		boost::signals::connection mOwnerTargetResizedConn;
+		HEvent mOwnerTargetResizedConn;
 
 		mutable bool mWidgetIsDirty;
 		mutable RectI mBounds;

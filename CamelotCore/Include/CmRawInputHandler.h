@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmInputFwd.h"
-#include <boost/signal.hpp>
+#include "BsEvent.h"
 #include "CmVector2I.h"
 
 namespace BansheeEngine
@@ -62,19 +62,19 @@ namespace BansheeEngine
 		 * 			include button code of the pressed button, and a timestamp of
 		 * 			the button press event.
 		 */
-		boost::signal<void(ButtonCode, UINT64)> onButtonDown;
+		Event<void(ButtonCode, UINT64)> onButtonDown;
 
 		/**
 		 * @brief	Triggered when user releases a button. Parameters
 		 * 			include button code of the released button, and a timestamp of
 		 * 			the button release event.
 		 */
-		boost::signal<void(ButtonCode, UINT64)> onButtonUp;
+		Event<void(ButtonCode, UINT64)> onButtonUp;
 
 		/**
 		 * @brief	Triggered whenever the specified axis state changes.
 		 */
-		boost::signal<void(const RawAxisState&, RawInputAxis)> onAxisMoved;
+		Event<void(const RawAxisState&, RawInputAxis)> onAxisMoved;
 
 		/**
 		 * @brief	Called once per frame. Capture input here if needed.

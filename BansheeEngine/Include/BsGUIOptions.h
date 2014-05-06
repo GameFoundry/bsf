@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include <boost/preprocessor.hpp>
 
 namespace BansheeEngine
 {
@@ -36,21 +35,42 @@ namespace BansheeEngine
 	public:
 		GUIOptions() { }
 
-		// Constructor that accepts an arbitrary number of parameters > 0
-#define MAKE_GUIOPTION_CONSTRUCTOR(z, n, unused)											\
-	GUIOptions(BOOST_PP_ENUM_PARAMS(n, const GUIOption& e) )	\
-	{			\
-			mOptions.push_back(e0);					\
-			BOOST_PP_REPEAT_FROM_TO(1, n, ADD_OPTION, ~) 									\
-	}
+		GUIOptions(const GUIOption& e0)
+		{			
+			mOptions.push_back(e0);					
+		}
 
-#define ADD_OPTION(z, i, unused) \
-	mOptions.push_back(BOOST_PP_CAT(e, i));
+		GUIOptions(const GUIOption& e0, const GUIOption& e1)
+		{
+			mOptions.push_back(e0);
+			mOptions.push_back(e1);
+		}
 
-	BOOST_PP_REPEAT_FROM_TO(1, 15, MAKE_GUIOPTION_CONSTRUCTOR, ~)
+		GUIOptions(const GUIOption& e0, const GUIOption& e1, const GUIOption& e2)
+		{
+			mOptions.push_back(e0);
+			mOptions.push_back(e1);
+			mOptions.push_back(e2);
+		}
 
-#undef ADD_OPTION
-#undef MAKE_GUIOPTION_CONSTRUCTOR
+		GUIOptions(const GUIOption& e0, const GUIOption& e1, const GUIOption& e2,
+			const GUIOption& e3)
+		{
+			mOptions.push_back(e0);
+			mOptions.push_back(e1);
+			mOptions.push_back(e2);
+			mOptions.push_back(e3);
+		}
+
+		GUIOptions(const GUIOption& e0, const GUIOption& e1, const GUIOption& e2,
+			const GUIOption& e4)
+		{
+			mOptions.push_back(e0);
+			mOptions.push_back(e1);
+			mOptions.push_back(e2);
+			mOptions.push_back(e3);
+			mOptions.push_back(e4);
+		}
 
 		void addOption(const GUIOption& option)
 		{

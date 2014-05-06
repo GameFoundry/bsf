@@ -2,7 +2,6 @@
 
 #include "CmPrerequisitesUtil.h"
 #include "CmUtil.h"
-#include <boost/filesystem.hpp>
 
 namespace BansheeEngine
 {

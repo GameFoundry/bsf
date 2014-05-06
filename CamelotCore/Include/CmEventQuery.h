@@ -36,7 +36,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Triggered when GPU starts processing the query.
 		 */
-		boost::signal<void()> onTriggered;
+		Event<void()> onTriggered;
 
 		/**
 		 * @brief	Creates a new query, but does not schedule it on GPU.

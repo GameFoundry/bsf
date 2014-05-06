@@ -6,7 +6,7 @@
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
 #include "BsGUIContent.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -19,7 +19,7 @@ namespace BansheeEngine
 		static GUIDropButton* create(UINT32 dragType, const GUIOptions& layoutOptions, 
 			const String& styleName = StringUtil::BLANK);
 
-		boost::signal<void(void*)> onDataDropped;
+		Event<void(void*)> onDataDropped;
 	protected:
 		virtual ~GUIDropButton();
 

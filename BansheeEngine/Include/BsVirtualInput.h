@@ -44,9 +44,9 @@ namespace BansheeEngine
 
 		void update();
 
-		boost::signal<void(const VirtualButton&)> onButtonDown;
-		boost::signal<void(const VirtualButton&)> onButtonUp;
-		boost::signal<void(const VirtualButton&)> onButtonHeld;
+		Event<void(const VirtualButton&)> onButtonDown;
+		Event<void(const VirtualButton&)> onButtonUp;
+		Event<void(const VirtualButton&)> onButtonHeld;
 	private:
 		friend class VirtualButton;
 

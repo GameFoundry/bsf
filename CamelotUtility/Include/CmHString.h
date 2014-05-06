@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/signals.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -23,14 +23,14 @@ namespace BansheeEngine
 			StringData();
 			~StringData();
 
-			mutable boost::signal<void()> onStringModified;
+			mutable Event<void()> onStringModified;
 
 		private:
 			friend class HString;
 
 			LocalizedStringData* mStringData;
 			WString* mParameters;
-			boost::signals::connection mUpdateConn;
+			HEvent mUpdateConn;
 
 			mutable bool mIsDirty;
 			mutable WString mCachedString;
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		 * @brief	Registers a callback that gets triggered whenever string value changes. This may happen
 		 * 			when the string table is modified, or when the active language is changed.
 		 */
-		boost::signals::connection addOnStringModifiedCallback(std::function<void()> callback) const;
+		HEvent addOnStringModifiedCallback(std::function<void()> callback) const;
 
 		/**
 		 * @brief	Returns an empty string.

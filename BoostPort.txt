@@ -1,26 +1,20 @@
-Events:
- - Add support for variadic number of parameters. Initially just by using boost preprocessor like in other places.
-  - Note for events and its function style arguments: "class variadic_extended_signature<R (Args...)>"
-
-Temporarily make filesystem use VS filesystem header
-
---------------
-Once ported to VS:
- - Remove boost preprocessor macros and use variadic templates
  - Remove ::type extensions from vectors
- - Port filesystem from VS implementation to custom one
 
 --------------
 Other:
  - std::function allocates memory yet I'm not using a custom allocator for it. Replace std::function with custom Function method.
  - Ability to construct Module using startUp without having to do allocation outside of it
 
-
  REFACTOR GpuProgram
   - Get rid of HighLevelGpuProgram and merge everything into GpuProgram if possible
   - Right now HighLevelGpuProgram always creates just one instance of GpuProgram internally, and I don't see why they should be separate
   - Possibly also determine how to neatly handle compilation faliure. Error should be reported and dummy shader should be returned.
 
+cm_shared_ptr should use && for parameter forwarding?
+cm_core_ptr too
+
  FreeImaged.lib -> FreeImage.lib
 freetypeD -> freetype
 all fbx libs -> libfbxsdk-md.lib
+
+Update Dependencies doc

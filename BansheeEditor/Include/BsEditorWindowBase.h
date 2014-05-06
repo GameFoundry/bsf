@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include <boost/signals/connection.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -41,6 +41,6 @@ namespace BansheeEngine
 		virtual void initialize();
 		virtual void resized() { }
 	private:
-		boost::signals::connection mResizedConn;
+		HEvent mResizedConn;
 	};
 }

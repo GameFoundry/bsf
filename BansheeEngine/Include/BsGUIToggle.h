@@ -6,7 +6,7 @@
 #include "BsImageSprite.h"
 #include "BsTextSprite.h"
 #include "BsGUIContent.h"
-#include "boost/signal.hpp"
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -44,7 +44,7 @@ namespace BansheeEngine
 
 		void _setToggleGroup(std::shared_ptr<GUIToggleGroup> toggleGroup);
 
-		boost::signal<void(bool)> onToggled;
+		Event<void(bool)> onToggled;
 	protected:
 		virtual ~GUIToggle();
 

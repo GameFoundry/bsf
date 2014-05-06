@@ -41,7 +41,7 @@ namespace BansheeEngine
 		 */
 		virtual float getTimeMs() = 0;
 
-		boost::signal<void(float)> onTriggered;
+		Event<void(float)> onTriggered;
 
 		static TimerQueryPtr create();
 

@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUITexture.h"
-#include <boost/signals.hpp>
+#include "BsEvent.h"
 
 namespace BansheeEngine
 {
@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 		void setFocused(bool focused);
 
-		boost::signal<void()> onDraggedItemDropped;
+		Event<void()> onDraggedItemDropped;
 	protected:
 		~GUIWindowDropArea();
 		GUIWindowDropArea(const String& styleName, const GUILayoutOptions& layoutOptions);
