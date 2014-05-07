@@ -25,7 +25,7 @@ namespace BansheeEngine
 		EditorWindow* getParentWindow() const { return mParentWindow; }
 
 		RectI getContentBounds() const;
-		Vector<RectI>::type getDraggableAreas() const;
+		Vector<RectI> getDraggableAreas() const;
 
 		void _notifyWidgetDestroyed(EditorWidgetBase* widget);
 
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		GUIWidget* mParent;
 		INT32 mX, mY;
 		UINT32 mWidth, mHeight;
-		UnorderedMap<UINT32, EditorWidgetBase*>::type mWidgets;
+		UnorderedMap<UINT32, EditorWidgetBase*> mWidgets;
 		INT32 mActiveWidget;
 
 		static const UINT32 TitleBarHeight;

@@ -63,7 +63,7 @@ namespace BansheeEngine
 		}
 
 		GUIOptions(const GUIOption& e0, const GUIOption& e1, const GUIOption& e2,
-			const GUIOption& e4)
+			const GUIOption& e3, const GUIOption& e4)
 		{
 			mOptions.push_back(e0);
 			mOptions.push_back(e1);
@@ -80,6 +80,6 @@ namespace BansheeEngine
 	private:
 		friend struct GUILayoutOptions;
 
-		Vector<GUIOption>::type mOptions;
+		Vector<GUIOption> mOptions;
 	};
 }

@@ -22,7 +22,7 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		Vector<RenderWindow*>::type getRenderWindows() const;
+		Vector<RenderWindow*> getRenderWindows() const;
 
 		Event<void(RenderWindow&)> onFocusGained;
 		Event<void(RenderWindow&)> onFocusLost;
@@ -30,11 +30,11 @@ namespace BansheeEngine
 		friend class RenderWindow;
 
 		CM_MUTEX(mWindowMutex);
-		Vector<RenderWindow*>::type mCreatedWindows;
+		Vector<RenderWindow*> mCreatedWindows;
 
 		RenderWindow* mWindowInFocus;
 		RenderWindow* mNewWindowInFocus;
-		Vector<RenderWindow*>::type mMovedOrResizedWindows;
+		Vector<RenderWindow*> mMovedOrResizedWindows;
 
 		virtual RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
 

@@ -58,7 +58,7 @@ namespace BansheeEngine
 		};
 
 		TmpClass instance;
-		TEvent<void (int)> myEvent;
+		Event<void (int)> myEvent;
 		HEvent evSomeMethod = myEvent.connect(std::bind(&TmpClass::someMEthod, instance, std::placeholders::_1));
 
 		evSomeMethod.disconnect();

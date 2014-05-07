@@ -9,8 +9,8 @@ namespace BansheeEngine
 {
 	struct BS_EXPORT GUIDropDownData
 	{
-		Vector<GUIDropDownDataEntry>::type entries;
-		UnorderedMap<WString, HString>::type localizedNames;
+		Vector<GUIDropDownDataEntry> entries;
+		UnorderedMap<WString, HString> localizedNames;
 	};
 
 	class BS_EXPORT GUIDropDownDataEntry
@@ -126,9 +126,9 @@ namespace BansheeEngine
 			UINT32 mDepthOffset;
 			bool mOpenedUpward;
 
-			Vector<GUITexture*>::type mCachedSeparators;
-			Vector<GUIButton*>::type mCachedEntryBtns;
-			Vector<GUIButton*>::type mCachedExpEntryBtns;
+			Vector<GUITexture*> mCachedSeparators;
+			Vector<GUIButton*> mCachedEntryBtns;
+			Vector<GUIButton*> mCachedExpEntryBtns;
 			GUIButton* mScrollUpBtn;
 			GUIButton* mScrollDownBtn;
 			GUITexture* mBackgroundFrame;
@@ -177,7 +177,7 @@ namespace BansheeEngine
 		// the drop down to lose focus and close, but if the button still processes the mouse click it will be immediately opened again)
 		GUIDropDownHitBox* mCaptureHitBox; 
 
-		UnorderedMap<WString, HString>::type mLocalizedEntryNames;
+		UnorderedMap<WString, HString> mLocalizedEntryNames;
 
 		void notifySubMenuOpened(DropDownSubMenu* subMenu);
 		void notifySubMenuClosed(DropDownSubMenu* subMenu);

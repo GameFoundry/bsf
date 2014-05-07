@@ -14,7 +14,7 @@ namespace BansheeEngine
 			GUILayout* labelLayout;
 			GUILayout* contentLayout;
 
-			Vector<GUIElement*>::type elements;
+			Vector<GUIElement*> elements;
 
 			HString name;
 			HString pctOfParent;
@@ -32,7 +32,7 @@ namespace BansheeEngine
 			GUILayout* labelLayout;
 			GUILayout* contentLayout;
 
-			Vector<GUIElement*>::type elements;
+			Vector<GUIElement*> elements;
 
 			HString name;
 			HString pctOfParent;
@@ -95,8 +95,8 @@ namespace BansheeEngine
 		GUIElement* mTitlePreciseAvgCyclesSelf;
 		GUIElement* mTitlePreciseTotalCyclesSelf;
 
-		Vector<BasicRow>::type mBasicRows;
-		Vector<PreciseRow>::type mPreciseRows;
+		Vector<BasicRow> mBasicRows;
+		Vector<PreciseRow> mPreciseRows;
 
 		HEvent mTargetResizedConn;
 		bool mIsShown;

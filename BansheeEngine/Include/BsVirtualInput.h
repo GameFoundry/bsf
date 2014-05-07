@@ -51,8 +51,8 @@ namespace BansheeEngine
 		friend class VirtualButton;
 
 		std::shared_ptr<InputConfiguration> mInputConfiguration;
-		Map<UINT32, ButtonData>::type mCachedStates;
-		Queue<VirtualButtonEvent>::type mEvents;
+		Map<UINT32, ButtonData> mCachedStates;
+		Queue<VirtualButtonEvent> mEvents;
 		UINT32 mActiveModifiers;
 
 		void buttonDown(const ButtonEvent& event);

@@ -346,7 +346,7 @@ namespace BansheeEngine {
 	};
     
 	/// Name / value parameter pair (first = name, second = value)
-	typedef Map<String, String>::type NameValuePairList;
+	typedef Map<String, String> NameValuePairList;
 
 	/** @} */
 }

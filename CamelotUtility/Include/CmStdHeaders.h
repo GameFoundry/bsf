@@ -102,112 +102,73 @@ namespace BansheeEngine
 {
 	// Standard containers, for easier access in my own namespace
 	template <typename T, typename A = StdAlloc<T>> 
-	struct Deque 
-	{ 
-		typedef typename std::deque<T, A> type;    
-	}; 
+	using Deque = std::deque<T, A>;
 
 	template <typename T, typename A = StdAlloc<T>> 
-	struct Vector 
-	{ 
-		typedef typename std::vector<T, A> type;    
-	}; 
+	using Vector = std::vector<T, A>;
 
 	template <typename T, typename A = StdAlloc<T>> 
-	struct List 
-	{ 
-		typedef typename std::list<T, A> type;    
-	}; 
+	using List = std::list<T, A>;
 
 	template <typename T, typename A = StdAlloc<T>> 
-	struct Stack 
-	{ 
-		typedef typename std::stack<T, std::deque<T, A>> type;    
-	}; 
+	using Stack = std::stack<T, std::deque<T, A>>;
 
-	template <typename T, typename A = StdAlloc<T>> 
-	struct Queue
-	{ 
-		typedef typename std::queue<T, std::deque<T, A>> type;    
-	}; 	
+	template <typename T, typename A = StdAlloc<T>>
+	using Queue = std::queue<T, std::deque<T, A>>;
 
 	template <typename T, typename P = std::less<T>, typename A = StdAlloc<T>> 
-	struct Set 
-	{ 
-		typedef typename std::set<T, P, A> type;    
-	}; 
+	using Set = std::set<T, P, A>;
 
 	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct Map 
-	{ 
-		typedef typename std::map<K, V, P, A> type; 
-	}; 
+	using Map = std::map<K, V, P, A>;
 
 	template <typename K, typename V, typename P = std::less<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct Multimap 
-	{ 
-		typedef typename std::multimap<K, V, P, A> type; 
-	}; 
+	using MultiMap = std::multimap<K, V, P, A>;
 
 	template <typename T, typename H = std::hash<T>, typename C = std::equal_to<T>, typename A = StdAlloc<T>> 
-	struct UnorderedSet 
-	{ 
-		typedef typename std::unordered_set<T, H, C, A> type;    
-	}; 
+	using UnorderedSet = std::unordered_set<T, H, C, A>;
 
 	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct UnorderedMap 
-	{ 
-		typedef typename std::unordered_map<K, V, H, C, A> type; 
-	}; 
+	using UnorderedMap = std::unordered_map<K, V, H, C, A>;
 
 	template <typename K, typename V, typename H = std::hash<K>, typename C = std::equal_to<K>, typename A = StdAlloc<std::pair<const K, V>>> 
-	struct UnorderedMultimap 
-	{ 
-		typedef typename std::unordered_multimap<K, V, H, C, A> type; 
-	}; 
+	using UnorderedMultimap = std::unordered_multimap<K, V, H, C, A>;
 
-	//// Create a new shared pointer with a custom allocator category
+	/**
+	 * @brief	Create a new shared pointer using a custom allocator category.
+	 */
 	template<class Type, class AllocCategory, class... Args> 
 	std::shared_ptr<Type> cm_shared_ptr(Args... args) 
 	{
 		return std::allocate_shared<Type>(StdAlloc<AllocCategory>(), args...); 
 	}
 
+	/**
+	* @brief	Create a new shared pointer using the default allocator category.
+	*/
 	template<class Type, class... Args>
 	std::shared_ptr<Type> cm_shared_ptr(Args... args)
 	{
 		return std::allocate_shared<Type>(StdAlloc<GenAlloc>(), args...);
 	}
 
+	/**
+	 * @brief	Create a new shared pointer from a previously constructed object.
+	 *			Pointer specific data will be allocated using the provided allocator category.
+	 */
 	template<class Type, class MainAlloc>
 	std::shared_ptr<Type> cm_shared_ptr(Type* data) 
 	{
 		return std::shared_ptr<Type>(data, &cm_delete<MainAlloc, Type>, StdAlloc<GenAlloc>());  
 	}
 
+	/**
+	* @brief	Create a new shared pointer from a previously constructed object.
+	*			Pointer specific data will be allocated using the provided allocator category.
+	*/
 	template<class Type, class MainAlloc, class PtrDataAlloc>
 	std::shared_ptr<Type> cm_shared_ptr(Type* data) 
 	{
 		return std::shared_ptr<Type>(data, &cm_delete<MainAlloc, Type>, StdAlloc<PtrDataAlloc>());  
 	}
-
-	// TODO - Once VC2012 grows up and adds proper C++11 support, uncomment this
-	//template <typename T, typename A = char> 
-	//using deque = std::deque<T, A>;    
-
-	//template <typename T, typename A = char >
-	//using vector = std::vector<T, A>;
-
-	//template <typename T, typename A = char > 
-	//using list = std::list<T, A>;    
-
-	//template <typename T, typename P = std::less<T>, typename A = char > 
-	//using set = std::set<T, P, A>;    
-
-	//template <typename K, typename V, typename P = std::less<K>, typename A = char > 
-	//using map = std::map<K, V, P, A>; 
-
-	//template <typename K, typename V, typename P = std::less<K>, typename A = char > 
-	//using multimap = std::multimap<K, V, P, A>; 
 }

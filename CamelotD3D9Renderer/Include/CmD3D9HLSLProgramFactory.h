@@ -44,7 +44,7 @@ namespace BansheeEngine
 		/// Get the name of the language this factory creates programs for
 		const String& getLanguage(void) const;
         HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
 		HighLevelGpuProgramPtr create();
     };
 }

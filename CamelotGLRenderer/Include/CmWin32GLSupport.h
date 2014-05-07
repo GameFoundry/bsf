@@ -42,9 +42,9 @@ namespace BansheeEngine
 		virtual unsigned int getDisplayMonitorCount() const;
 	private:
 		// Allowed video modes
-		Vector<DEVMODE>::type mDevModes;
+		Vector<DEVMODE> mDevModes;
 		Win32Window *mInitialWindow;
-		Vector<int>::type mFSAALevels;
+		Vector<int> mFSAALevels;
 		bool mHasPixelFormatARB;
         bool mHasMultisample;
 		bool mHasHardwareGamma;
@@ -55,7 +55,7 @@ namespace BansheeEngine
 			MONITORINFOEX	monitorInfoEx;
 		};
 
-		typedef Vector<DisplayMonitorInfo>::type DisplayMonitorInfoList;
+		typedef Vector<DisplayMonitorInfo> DisplayMonitorInfoList;
 		typedef DisplayMonitorInfoList::iterator DisplayMonitorInfoIterator;
 
 		DisplayMonitorInfoList mMonitorInfoList;

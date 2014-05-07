@@ -31,7 +31,7 @@ namespace BansheeEngine
 		void unload(DynLib* lib);
 
 	protected:
-		Map<String, DynLib*>::type mLoadedLibraries;
+		Map<String, DynLib*> mLoadedLibraries;
     };
 
 	CM_UTILITY_EXPORT DynLibManager& gDynLibManager();

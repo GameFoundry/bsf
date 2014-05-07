@@ -42,12 +42,12 @@ namespace BansheeEngine
 		DrawHelperTemplate<Vector3>::line_AA(a, b, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::lineList_Pixel(const Vector<Vector3>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper3D::lineList_Pixel(const Vector<Vector3>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::lineList_Pixel(linePoints, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper3D::lineList_AA(const Vector<Vector3>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper3D::lineList_AA(const Vector<Vector3>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector3>::lineList_AA(linePoints, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
@@ -60,7 +60,7 @@ namespace BansheeEngine
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -84,7 +84,7 @@ namespace BansheeEngine
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -104,11 +104,11 @@ namespace BansheeEngine
 		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
-	void DrawHelper3D::drawLineList_Pixel(const HCamera& camera, const Vector<Vector3>::type& linePoints, const Color& color, float timeout)
+	void DrawHelper3D::drawLineList_Pixel(const HCamera& camera, const Vector<Vector3>& linePoints, const Color& color, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -129,12 +129,12 @@ namespace BansheeEngine
 		dbgCmd.matInfo3D = BuiltinMaterialManager::instance().createDebugDraw3DMaterial();
 	}
 
-	void DrawHelper3D::drawLineList_AA(const HCamera& camera, const Vector<Vector3>::type& linePoints, float width, float borderWidth, 
+	void DrawHelper3D::drawLineList_AA(const HCamera& camera, const Vector<Vector3>& linePoints, float width, float borderWidth, 
 		const Color& color, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -158,7 +158,7 @@ namespace BansheeEngine
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -305,7 +305,7 @@ namespace BansheeEngine
 		CM_EXCEPT(NotImplementedException, "3D AA line drawing not implemented.");
 	}
 
-	void DrawHelper3D::polygon_AA(const Vector<Vector3>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+	void DrawHelper3D::polygon_AA(const Vector<Vector3>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		CM_EXCEPT(NotImplementedException, "3D AA polygon drawing not implemented.");

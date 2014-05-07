@@ -249,7 +249,7 @@ namespace BansheeEngine
     {
     public:
 		/// Defines the list of vertex elements that makes up this declaration
-        typedef List<VertexElement>::type VertexElementList;
+        typedef List<VertexElement> VertexElementList;
         /// Sort routine for vertex elements
         static bool vertexElementLess(const VertexElement& e1, const VertexElement& e2);
 

@@ -431,7 +431,7 @@ namespace BansheeEngine
 			clear();
 
 			UINT32 idx = 0;
-			BasicStringStream<T>::type tempStream;
+			BasicStringStream<T> tempStream;
 
 			if (idx < numChars)
 			{
@@ -449,7 +449,7 @@ namespace BansheeEngine
 				{
 					idx++;
 
-					tempStream.str(BasicString<T>::type());
+					tempStream.str(BasicString<T>());
 					tempStream.clear();
 					while (idx < numChars && pathStr[idx] != '\\' && pathStr[idx] != '/')
 						tempStream << pathStr[idx++];
@@ -467,7 +467,7 @@ namespace BansheeEngine
 					if (idx < numChars && pathStr[idx] == ':')
 					{
 						if (mIsAbsolute || !((drive >= 'a' && drive <= 'z') || (drive >= 'A' && drive <= 'Z')))
-							throwInvalidPathException(BasicString<T>::type(pathStr, numChars));
+							throwInvalidPathException(BasicString<T>(pathStr, numChars));
 
 						mIsAbsolute = true;
 						setDevice(BansheeEngine::toWString(drive));
@@ -475,7 +475,7 @@ namespace BansheeEngine
 						idx++;
 
 						if (idx >= numChars || (pathStr[idx] != '\\' && pathStr[idx] != '/'))
-							throwInvalidPathException(BasicString<T>::type(pathStr, numChars));
+							throwInvalidPathException(BasicString<T>(pathStr, numChars));
 
 						idx++;
 					}
@@ -485,7 +485,7 @@ namespace BansheeEngine
 
 				while (idx < numChars)
 				{
-					tempStream.str(BasicString<T>::type());
+					tempStream.str(BasicString<T>());
 					tempStream.clear();
 					while (idx < numChars && pathStr[idx] != '\\' && pathStr[idx] != '/')
 					{
@@ -513,7 +513,7 @@ namespace BansheeEngine
 			clear();
 
 			UINT32 idx = 0;
-			BasicStringStream<T>::type tempStream;
+			BasicStringStream<T> tempStream;
 
 			if (idx < numChars)
 			{
@@ -536,7 +536,7 @@ namespace BansheeEngine
 
 				while (idx < numChars)
 				{
-					tempStream.str(BasicString<T>::type());
+					tempStream.str(BasicString<T>());
 					tempStream.clear();
 					while (idx < numChars && pathStr[idx] != '/')
 					{
@@ -548,7 +548,7 @@ namespace BansheeEngine
 					{
 						if (mDirectories.empty())
 						{
-							BasicString<T>::type deviceStr = tempStream.str();
+							BasicString<T> deviceStr = tempStream.str();
 							if (!deviceStr.empty() && *(deviceStr.rbegin()) == ':')
 							{
 								setDevice(deviceStr.substr(0, deviceStr.length() - 1));
@@ -613,7 +613,7 @@ namespace BansheeEngine
 		friend struct RTTIPlainType<Path>; // For serialization
 		friend struct ::std::hash<BansheeEngine::Path>;
 
-		Vector<WString>::type mDirectories;
+		Vector<WString> mDirectories;
 		WString mDevice;
 		WString mFilename;
 		WString mNode;

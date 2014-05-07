@@ -55,8 +55,8 @@ namespace BansheeEngine
 
 	private:
 		String mName;
-		UnorderedMap<String, Path>::type mUUIDToFilePath;
-		UnorderedMap<Path, String>::type mFilePathToUUID;
+		UnorderedMap<String, Path> mUUIDToFilePath;
+		UnorderedMap<Path, String> mFilePathToUUID;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

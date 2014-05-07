@@ -68,7 +68,7 @@ namespace BansheeEngine
 		if(parameterOffsets != nullptr)
 			cm_deleteN(parameterOffsets, numParameters);
 
-		Vector<ParamOffset>::type paramOffsets;
+		Vector<ParamOffset> paramOffsets;
 
 		INT32 lastBracket = -1;
 		WStringStream bracketChars;

@@ -88,7 +88,7 @@ namespace BansheeEngine
 	void RenderWindowManager::update()
 	{
 		RenderWindow* newWinInFocus = nullptr;
-		Vector<RenderWindow*>::type movedOrResizedWindows;
+		Vector<RenderWindow*> movedOrResizedWindows;
 
 		{
 			CM_LOCK_MUTEX(mWindowMutex);
@@ -122,7 +122,7 @@ namespace BansheeEngine
 		}
 	}
 
-	Vector<RenderWindow*>::type RenderWindowManager::getRenderWindows() const
+	Vector<RenderWindow*> RenderWindowManager::getRenderWindows() const
 	{
 		CM_LOCK_MUTEX(mWindowMutex);
 

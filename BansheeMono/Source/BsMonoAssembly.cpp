@@ -173,7 +173,7 @@ namespace BansheeEngine
 		return newClass;
 	}
 
-	const Vector<MonoClass*>::type& MonoAssembly::getAllClasses() const
+	const Vector<MonoClass*>& MonoAssembly::getAllClasses() const
 	{
 		if(mHaveCachedClassList)
 			return mCachedClassList;

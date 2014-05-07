@@ -65,7 +65,7 @@ namespace BansheeEngine
 			assembly->load(path, name);
 
 			// Fully initialize all types that use this assembly
-			Vector<ScriptMeta*>::type& mTypeMetas = getTypesToInitialize()[name];
+			Vector<ScriptMeta*>& mTypeMetas = getTypesToInitialize()[name];
 			for(auto& meta : mTypeMetas)
 			{
 				meta->scriptClass = assembly->getClass(meta->ns, meta->name);
@@ -121,7 +121,7 @@ namespace BansheeEngine
 
 	void MonoManager::registerScriptType(ScriptMeta* metaData)
 	{
-		Vector<ScriptMeta*>::type& mMetas = getTypesToInitialize()[metaData->assembly];
+		Vector<ScriptMeta*>& mMetas = getTypesToInitialize()[metaData->assembly];
 		mMetas.push_back(metaData);
 	}
 

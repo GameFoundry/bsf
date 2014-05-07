@@ -13,7 +13,7 @@ namespace BansheeEngine
 			size_t bufferDeclHash;
 			UINT32 vertexProgramId;
 
-			List<VertexElement>::type* bufferDeclElements;
+			List<VertexElement>* bufferDeclElements;
 		};
 
 		class HashFunc 
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		static const int DECLARATION_BUFFER_SIZE = 1024;
 		static const int NUM_ELEMENTS_TO_PRUNE = 64;
 
-		UnorderedMap<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc>::type mInputLayoutMap;
+		UnorderedMap<VertexDeclarationKey, InputLayoutEntry*, HashFunc, EqualFunc> mInputLayoutMap;
 
 		bool mWarningShown;
 		UINT32 mLastUsedCounter;

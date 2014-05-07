@@ -8,6 +8,15 @@
 
 namespace BansheeEngine
 {
+	struct BS_EXPORT DragCallbackInfo
+	{
+		DragCallbackInfo()
+		:processed(false)
+		{ }
+
+		bool processed;
+	};
+
 	class BS_EXPORT DragAndDropManager : public Module<DragAndDropManager>
 	{
 	public:
@@ -40,11 +49,11 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		Event<bool(const PointerEvent&)> onDragEnded;
+		Event<void(const PointerEvent&, DragCallbackInfo&)> onDragEnded;
 	private:
 		UINT32 mDragTypeId;
 		void* mData;
-		Vector<std::function<void(bool)>>::type mDropCallbacks;
+		Vector<std::function<void(bool)>> mDropCallbacks;
 		bool mIsDragInProgress;
 		bool mNeedsValidDropTarget;
 

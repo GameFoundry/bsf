@@ -115,7 +115,7 @@ namespace BansheeEngine {
 		std::shared_ptr<GLPixelBuffer> mLockedBuffer;
 		
 		/// Vector of pointers to subsurfaces
-		typedef Vector<std::shared_ptr<GLPixelBuffer>>::type SurfaceList;
+		typedef Vector<std::shared_ptr<GLPixelBuffer>> SurfaceList;
 		SurfaceList	mSurfaceList;
     };
 

@@ -13,7 +13,7 @@
 namespace BansheeEngine
 {
     GpuProgram::GpuProgram(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired) 
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired) 
         :mEntryPoint(entryPoint), mType(gptype),
 		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
     {

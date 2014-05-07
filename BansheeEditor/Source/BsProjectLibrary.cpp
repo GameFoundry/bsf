@@ -146,13 +146,13 @@ namespace BansheeEngine
 			}
 			else
 			{
-				Stack<DirectoryEntry*>::type todo;
+				Stack<DirectoryEntry*> todo;
 				todo.push(static_cast<DirectoryEntry*>(entry));
 
-				Vector<Path>::type childFiles;
-				Vector<Path>::type childDirectories;
-				Vector<bool>::type existingEntries;
-				Vector<LibraryEntry*>::type toDelete;
+				Vector<Path> childFiles;
+				Vector<Path> childDirectories;
+				Vector<bool> existingEntries;
+				Vector<LibraryEntry*> toDelete;
 
 				while(!todo.empty())
 				{
@@ -313,7 +313,7 @@ namespace BansheeEngine
 		if(directory == mRootEntry)
 			mRootEntry = nullptr;
 
-		Vector<LibraryEntry*>::type childrenToDestroy = directory->mChildren;
+		Vector<LibraryEntry*> childrenToDestroy = directory->mChildren;
 		for(auto& child : childrenToDestroy)
 		{
 			if(child->type == LibraryEntryType::Directory)
@@ -515,7 +515,7 @@ namespace BansheeEngine
 
 				if(oldEntry->type == LibraryEntryType::Directory) // Update child paths
 				{
-					Stack<LibraryEntry*>::type todo;
+					Stack<LibraryEntry*> todo;
 					todo.push(oldEntry);
 
 					while(!todo.empty())
@@ -577,7 +577,7 @@ namespace BansheeEngine
 		Path parentPath = fullPath;
 
 		DirectoryEntry* newEntryParent = nullptr;
-		Stack<Path>::type parentPaths;
+		Stack<Path> parentPaths;
 		do 
 		{
 			Path newParentPath = parentPath.getParent();
@@ -687,7 +687,7 @@ namespace BansheeEngine
 		}
 
 		// Load all meta files
-		Stack<DirectoryEntry*>::type todo;
+		Stack<DirectoryEntry*> todo;
 		todo.push(mRootEntry);
 
 		while(!todo.empty())

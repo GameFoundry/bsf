@@ -49,7 +49,7 @@ namespace BansheeEngine
 
 		void setPixelData(Texture* obj, UINT32 idx, PixelDataPtr data)
 		{
-			Vector<PixelDataPtr>::type* pixelData = any_cast<Vector<PixelDataPtr>::type*>(obj->mRTTIData);
+			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(obj->mRTTIData);
 
 			(*pixelData)[idx] = data;
 		}
@@ -61,7 +61,7 @@ namespace BansheeEngine
 
 		void setPixelDataArraySize(Texture* obj, UINT32 size)
 		{
-			Vector<PixelDataPtr>::type* pixelData = any_cast<Vector<PixelDataPtr>::type*>(obj->mRTTIData);
+			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(obj->mRTTIData);
 
 			pixelData->resize(size);
 		}
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
-			texture->mRTTIData = cm_new<Vector<PixelDataPtr>::type, PoolAlloc>();
+			texture->mRTTIData = cm_new<Vector<PixelDataPtr>, PoolAlloc>();
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)
@@ -105,7 +105,7 @@ namespace BansheeEngine
 				texture->getNumMipmaps(), texture->getFormat(), texture->getUsage(), texture->isHardwareGammaEnabled(), 
 				texture->getFSAA(), texture->getFSAAHint());
 
-			Vector<PixelDataPtr>::type* pixelData = any_cast<Vector<PixelDataPtr>::type*>(texture->mRTTIData);
+			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)
 			{
 				UINT32 face = (size_t)Math::floor(i / (float)(texture->getNumMipmaps() + 1));

@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	void SceneManagerBase::update()
 	{
-		Stack<HSceneObject>::type todo;
+		Stack<HSceneObject> todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())
@@ -25,7 +25,7 @@ namespace BansheeEngine
 			HSceneObject currentGO = todo.top();
 			todo.pop();
 			                  
-			const Vector<HComponent>::type& components = currentGO->getComponents();
+			const Vector<HComponent>& components = currentGO->getComponents();
 
 			for(auto iter = components.begin(); iter != components.end(); ++iter)
 			{

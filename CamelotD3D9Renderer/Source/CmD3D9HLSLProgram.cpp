@@ -38,7 +38,7 @@ THE SOFTWARE.
 namespace BansheeEngine {
 	//-----------------------------------------------------------------------
 	D3D9HLSLProgram::D3D9HLSLProgram(const String& source, const String& entryPoint,
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired)
 		, mPreprocessorDefines()
 		, mColumnMajorMatrices(true)
@@ -59,7 +59,7 @@ namespace BansheeEngine {
 			// Populate preprocessor defines
 			String stringBuffer;
 
-			Vector<D3DXMACRO>::type defines;
+			Vector<D3DXMACRO> defines;
 			const D3DXMACRO* pDefines = 0;
 			if (!mPreprocessorDefines.empty())
 			{

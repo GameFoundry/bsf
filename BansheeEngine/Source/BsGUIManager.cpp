@@ -58,7 +58,7 @@ namespace BansheeEngine
 		UINT32 numQuads;
 		UINT32 depth;
 		RectI bounds;
-		Vector<GUIGroupElement>::type elements;
+		Vector<GUIGroupElement> elements;
 	};
 
 	const UINT32 GUIManager::DRAG_DISTANCE = 3;
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
 
 		DragAndDropManager::startUp(cm_new<DragAndDropManager>());
-		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&GUIManager::onMouseDragEnded, this, _1));
+		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&GUIManager::onMouseDragEnded, this, _1, _2));
 
 		GUIDropDownBoxManager::startUp(cm_new<GUIDropDownBoxManager>());
 
@@ -110,7 +110,7 @@ namespace BansheeEngine
 
 		// Make a copy of widgets, since destroying them will remove them from mWidgets and
 		// we can't iterate over an array thats getting modified
-		Vector<WidgetInfo>::type widgetCopy = mWidgets;
+		Vector<WidgetInfo> widgetCopy = mWidgets;
 		for(auto& widget : widgetCopy)
 			widget.widget->destroy();
 
@@ -372,11 +372,11 @@ namespace BansheeEngine
 					(aDepth == bDepth && a.element == b.element && a.renderElement > b.renderElement); 
 			};
 
-			Set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>>::type allElements(elemComp);
+			Set<GUIGroupElement, std::function<bool(const GUIGroupElement&, const GUIGroupElement&)>> allElements(elemComp);
 
 			for(auto& widget : renderData.widgets)
 			{
-				const Vector<GUIElement*>::type& elements = widget->getElements();
+				const Vector<GUIElement*>& elements = widget->getElements();
 
 				for(auto& element : elements)
 				{
@@ -393,7 +393,7 @@ namespace BansheeEngine
 
 			// Group the elements in such a way so that we end up with a smallest amount of
 			// meshes, without breaking back to front rendering order
-			UnorderedMap<UINT64, Vector<GUIMaterialGroup>::type>::type materialGroups;
+			UnorderedMap<UINT64, Vector<GUIMaterialGroup>> materialGroups;
 			for(auto& elem : allElements)
 			{
 				GUIElement* guiElem = elem.element;
@@ -411,13 +411,13 @@ namespace BansheeEngine
 				// If this is a new material, add a new list of groups
 				auto findIterMaterial = materialGroups.find(materialId);
 				if(findIterMaterial == end(materialGroups))
-					materialGroups[materialId] = Vector<GUIMaterialGroup>::type();
+					materialGroups[materialId] = Vector<GUIMaterialGroup>();
 
 				// Try to find a group this material will fit in:
 				//  - Group that has a depth value same or one below elements depth will always be a match
 				//  - Otherwise, we search higher depth values as well, but we only use them if no elements in between those depth values
 				//    overlap the current elements bounds.
-				Vector<GUIMaterialGroup>::type& allGroups = materialGroups[materialId];
+				Vector<GUIMaterialGroup>& allGroups = materialGroups[materialId];
 				GUIMaterialGroup* foundGroup = nullptr;
 				for(auto groupIter = allGroups.rbegin(); groupIter != allGroups.rend(); ++groupIter)
 				{
@@ -502,7 +502,7 @@ namespace BansheeEngine
 				// requires all elements to be unique
 			};
 
-			Set<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>>::type sortedGroups(groupComp);
+			Set<GUIMaterialGroup*, std::function<bool(GUIMaterialGroup*, GUIMaterialGroup*)>> sortedGroups(groupComp);
 			for(auto& material : materialGroups)
 			{
 				for(auto& group : material.second)
@@ -616,7 +616,7 @@ namespace BansheeEngine
 		gCoreAccessor().writeSubresource(tex.getInternalPtr(), tex->mapToSubresourceIdx(0, 0), data);
 	}
 
-	bool GUIManager::onMouseDragEnded(const PointerEvent& event)
+	void GUIManager::onMouseDragEnded(const PointerEvent& event, DragCallbackInfo& dragInfo)
 	{
 		GUIMouseButton guiButton = buttonToGUIButton(event.button);
 
@@ -638,15 +638,15 @@ namespace BansheeEngine
 				if(acceptDrop)
 				{
 					mMouseEvent.setDragAndDropDroppedData(localPos, DragAndDropManager::instance().getDragTypeId(), DragAndDropManager::instance().getDragData());
-					bool processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
+					dragInfo.processed = sendMouseEvent(elementInfo.widget, elementInfo.element, mMouseEvent);
 
-					if(processed)
-						return true;
+					if(dragInfo.processed)
+						return;
 				}
 			}
 		}
 
-		return false;
+		dragInfo.processed = false;
 	}
 
 	void GUIManager::onPointerMoved(const PointerEvent& event)
@@ -1089,13 +1089,13 @@ namespace BansheeEngine
 
 	bool GUIManager::findElementUnderPointer(const Vector2I& pointerScreenPos, bool buttonStates[3], bool shift, bool control, bool alt)
 	{
-		Vector<const RenderWindow*>::type widgetWindows;
+		Vector<const RenderWindow*> widgetWindows;
 		for(auto& widgetInfo : mWidgets)
 			widgetWindows.push_back(getWidgetWindow(*widgetInfo.widget));
 
 #if CM_DEBUG_MODE
 		// Checks if all referenced windows actually exist
-		Vector<RenderWindow*>::type activeWindows = RenderWindowManager::instance().getRenderWindows();
+		Vector<RenderWindow*> activeWindows = RenderWindowManager::instance().getRenderWindows();
 		for(auto& window : widgetWindows)
 		{
 			if(window == nullptr)
@@ -1114,7 +1114,7 @@ namespace BansheeEngine
 		mNewElementsUnderPointer.clear();
 
 		const RenderWindow* windowUnderPointer = nullptr;
-		UnorderedSet<const RenderWindow*>::type uniqueWindows;
+		UnorderedSet<const RenderWindow*> uniqueWindows;
 
 		for(auto& window : widgetWindows)
 		{
@@ -1150,7 +1150,7 @@ namespace BansheeEngine
 				GUIWidget* widget = widgetInfo.widget;
 				if(widgetWindows[widgetIdx] == windowUnderPointer && widget->inBounds(windowToBridgedCoords(*widget, windowPos)))
 				{
-					const Vector<GUIElement*>::type& elements = widget->getElements();
+					const Vector<GUIElement*>& elements = widget->getElements();
 					Vector2I localPos = getWidgetRelativePos(*widget, pointerScreenPos);
 
 					// Elements with lowest depth (most to the front) get handled first
@@ -1351,8 +1351,8 @@ namespace BansheeEngine
 		// queue other elements for destruction
 		while(!mScheduledForDestruction.empty())
 		{
-			Stack<GUIElement*>::type toDestroy = mScheduledForDestruction;
-			mScheduledForDestruction = Stack<GUIElement*>::type();
+			Stack<GUIElement*> toDestroy = mScheduledForDestruction;
+			mScheduledForDestruction = Stack<GUIElement*>();
 
 			while(!toDestroy.empty())
 			{
@@ -1447,7 +1447,7 @@ namespace BansheeEngine
 		}
 
 		RenderTargetPtr renderTarget = widget.getTarget()->getTarget();
-		Vector<RenderWindow*>::type renderWindows = RenderWindowManager::instance().getRenderWindows();
+		Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
 
 		auto iterFindWin = std::find(renderWindows.begin(), renderWindows.end(), renderTarget.get());
 		if(iterFindWin != renderWindows.end())

@@ -377,8 +377,8 @@ namespace BansheeEngine
 
 		// Reorder chunks
 		UINT32 destOffset = 0;
-		Vector<ChunkData>::type newVertChunks;
-		List<UINT32>::type freeVertChunks;
+		Vector<ChunkData> newVertChunks;
+		List<UINT32> freeVertChunks;
 
 		for(auto& allocData : mMeshAllocData)
 		{
@@ -450,8 +450,8 @@ namespace BansheeEngine
 
 		// Reorder chunks
 		destOffset = 0;
-		Vector<ChunkData>::type newIdxChunks;
-		List<UINT32>::type freeIdxChunks;
+		Vector<ChunkData> newIdxChunks;
+		List<UINT32> freeIdxChunks;
 
 		for(auto& allocData : mMeshAllocData)
 		{
@@ -508,7 +508,7 @@ namespace BansheeEngine
 
 	void MeshHeap::freeEventQuery(UINT32 idx)
 	{
-		mEventQueries[idx].query->onTriggered.disconnect_all_slots();
+		mEventQueries[idx].query->onTriggered.clear();
 		mEventQueries[idx].queryId = 0;
 		mFreeEventQueries.push(idx);
 	}
@@ -554,7 +554,7 @@ namespace BansheeEngine
 
 		QueryData& queryData = mEventQueries[allocData.eventQueryIdx];
 		queryData.queryId = mNextQueryId++;
-		queryData.query->onTriggered.disconnect_all_slots();
+		queryData.query->onTriggered.clear();
 		queryData.query->onTriggered.connect(std::bind(&MeshHeap::queryTriggered, this, meshId, queryData.queryId));
 		queryData.query->begin();
 	}

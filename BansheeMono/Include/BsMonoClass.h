@@ -51,7 +51,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Be aware this will not include the fields of any base classes.
 		 */
-		const Vector<MonoField*>::type getAllFields() const;
+		const Vector<MonoField*> getAllFields() const;
 
 		bool hasAttribute(MonoClass* monoClass) const;
 		bool hasField(const String& name) const;
@@ -77,11 +77,11 @@ namespace BansheeEngine
 		String mTypeName;
 		String mFullName;
 
-		UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals>::type mMethods; 
-		mutable UnorderedMap<String, MonoField*>::type mFields; 
-		UnorderedMap<String, MonoProperty*>::type mProperties;
+		UnorderedMap<MethodId, MonoMethod*, MethodId::Hash, MethodId::Equals> mMethods; 
+		mutable UnorderedMap<String, MonoField*> mFields; 
+		UnorderedMap<String, MonoProperty*> mProperties;
 
 		mutable bool mHasCachedFields;
-		mutable Vector<MonoField*>::type mCachedFieldList;
+		mutable Vector<MonoField*> mCachedFieldList;
 	};
 }

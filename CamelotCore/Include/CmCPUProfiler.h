@@ -9,16 +9,10 @@ namespace BansheeEngine
 	typedef std::basic_string<char, std::char_traits<char>, StdAlloc<char, ProfilerAlloc>> ProfilerString; 
 
 	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>> 
-	struct ProfilerVector 
-	{ 
-		typedef typename std::vector<T, A> type;    
-	}; 
+	using ProfilerVector = std::vector<T, A>;
 
 	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>> 
-	struct ProfilerStack
-	{ 
-		typedef typename std::stack<T, std::deque<T, A>> type;    
-	}; 
+	using ProfilerStack = std::stack<T, std::deque<T, A>>;
 
 	/**
 	 * @brief	Provides various performance measuring methods
@@ -84,7 +78,7 @@ namespace BansheeEngine
 
 		struct ProfileData
 		{
-			ProfilerVector<ProfileSample>::type samples;
+			ProfilerVector<ProfileSample> samples;
 			Timer timer;
 
 			UINT64 memAllocs;
@@ -97,7 +91,7 @@ namespace BansheeEngine
 
 		struct PreciseProfileData
 		{
-			ProfilerVector<PreciseProfileSample>::type samples;
+			ProfilerVector<PreciseProfileSample> samples;
 			TimerPrecise timer;
 
 			UINT64 memAllocs;
@@ -121,7 +115,7 @@ namespace BansheeEngine
 			ProfileData basic;
 			PreciseProfileData precise;
 
-			ProfilerVector<ProfiledBlock*>::type children;
+			ProfilerVector<ProfiledBlock*> children;
 
 			ProfiledBlock* findChild(const ProfilerString& name) const;
 		};
@@ -155,7 +149,7 @@ namespace BansheeEngine
 
 			ProfiledBlock* rootBlock;
 
-			ProfilerStack<ActiveBlock>::type activeBlocks;
+			ProfilerStack<ActiveBlock> activeBlocks;
 			ActiveBlock activeBlock;
 
 			void begin(const ProfilerString& _name);
@@ -244,7 +238,7 @@ namespace BansheeEngine
 		UINT64 mBasicSamplingOverheadCycles;
 		UINT64 mPreciseSamplingOverheadCycles;
 
-		ProfilerVector<ThreadInfo*>::type mActiveThreads;
+		ProfilerVector<ThreadInfo*> mActiveThreads;
 		CM_MUTEX(mThreadSync);
 
 		void estimateTimerOverhead();
@@ -275,7 +269,7 @@ namespace BansheeEngine
 			float pctOfParent;
 		} data;
 
-		ProfilerVector<CPUProfilerBasicSamplingEntry>::type childEntries;
+		ProfilerVector<CPUProfilerBasicSamplingEntry> childEntries;
 	};
 
 	struct CM_EXPORT CPUProfilerPreciseSamplingEntry
@@ -303,7 +297,7 @@ namespace BansheeEngine
 			float pctOfParent;
 		} data;
 
-		ProfilerVector<CPUProfilerPreciseSamplingEntry>::type childEntries;
+		ProfilerVector<CPUProfilerPreciseSamplingEntry> childEntries;
 	};
 
 	class CM_EXPORT CPUProfilerReport

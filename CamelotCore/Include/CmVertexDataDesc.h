@@ -45,7 +45,7 @@ namespace BansheeEngine
 		friend class Mesh; // To avoid polluting the public interface with a bunch of nearly useless methods for outside world
 		friend class MeshHeap;
 
-		Vector<VertexElement>::type mVertexElements;
+		Vector<VertexElement> mVertexElements;
 
 		UINT32 getMaxStreamIdx() const;
 		bool hasStream(UINT32 streamIdx) const;

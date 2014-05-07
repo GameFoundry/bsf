@@ -130,15 +130,15 @@ namespace BansheeEngine
 	class CM_EXPORT MaterialParams : public IReflectable
 	{
 	public:
-		Vector<MaterialFloatParam>::type floatParams;
-		Vector<MaterialVec2Param>::type vec2Params;
-		Vector<MaterialVec3Param>::type vec3Params;
-		Vector<MaterialVec4Param>::type vec4Params;
-		Vector<MaterialMat3Param>::type mat3Params;
-		Vector<MaterialMat4Param>::type mat4Params;
-		Vector<MaterialStructParam>::type structParams;
-		Vector<MaterialTextureParam>::type textureParams;
-		Vector<MaterialSamplerStateParam>::type samplerStateParams;
+		Vector<MaterialFloatParam> floatParams;
+		Vector<MaterialVec2Param> vec2Params;
+		Vector<MaterialVec3Param> vec3Params;
+		Vector<MaterialVec4Param> vec4Params;
+		Vector<MaterialMat3Param> mat3Params;
+		Vector<MaterialMat4Param> mat4Params;
+		Vector<MaterialStructParam> structParams;
+		Vector<MaterialTextureParam> textureParams;
+		Vector<MaterialSamplerStateParam> samplerStateParams;
 
 		friend class MaterialParamsRTTI;
 		static RTTITypeBase* getRTTIStatic();

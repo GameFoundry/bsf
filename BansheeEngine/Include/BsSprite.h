@@ -96,7 +96,7 @@ namespace BansheeEngine
 		static Vector2I getAnchorOffset(SpriteAnchor anchor, UINT32 width, UINT32 height);
 	protected:
 		mutable RectI mBounds;
-		mutable Vector<SpriteRenderElement>::type mCachedRenderElements;
+		mutable Vector<SpriteRenderElement> mCachedRenderElements;
 
 		void updateBounds() const;
 		void clearMesh() const;

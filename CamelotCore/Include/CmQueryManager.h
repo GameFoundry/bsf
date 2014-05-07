@@ -25,8 +25,8 @@ namespace BansheeEngine
 		void update();
 
 	protected:
-		mutable Vector<EventQuery*>::type mEventQueries;
-		mutable Vector<TimerQuery*>::type mTimerQueries;
+		mutable Vector<EventQuery*> mEventQueries;
+		mutable Vector<TimerQuery*> mTimerQueries;
 
 	protected:
 		friend class EventQuery;

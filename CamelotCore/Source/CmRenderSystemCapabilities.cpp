@@ -73,7 +73,7 @@ namespace BansheeEngine {
 	{
 	}
 	//---------------------------------------------------------------------
-	Vector<BansheeEngine::String>::type RenderSystemCapabilities::msGPUVendorStrings;
+	Vector<BansheeEngine::String> RenderSystemCapabilities::msGPUVendorStrings;
 	//---------------------------------------------------------------------
 	GPUVendor RenderSystemCapabilities::vendorFromString(const String& vendorString)
 	{

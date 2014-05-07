@@ -94,7 +94,7 @@ namespace BansheeEngine {
 	
 	// Types.
 	protected:
-		typedef Vector<D3D9Resource*>::type		ResourceContainer;
+		typedef Vector<D3D9Resource*>		ResourceContainer;
 		typedef ResourceContainer::iterator		ResourceContainerIterator;
 
 	// Attributes.

@@ -108,7 +108,7 @@ namespace BansheeEngine
 		}
 	}
 
-	Vector<TexAtlasPageDesc>::type TexAtlasGenerator::createAtlasLayout(Vector<TexAtlasElementDesc>::type& elements) const
+	Vector<TexAtlasPageDesc> TexAtlasGenerator::createAtlasLayout(Vector<TexAtlasElementDesc>& elements) const
 	{
 		for(size_t i = 0; i < elements.size(); i++)
 			elements[i].output.page = -1;
@@ -119,11 +119,11 @@ namespace BansheeEngine
 		if(numPages == -1)
 		{
 			LOGWRN("Some of the provided elements don't fit in an atlas of provided size. Returning empty array of pages.");
-			return Vector<TexAtlasPageDesc>::type();
+			return Vector<TexAtlasPageDesc>();
 		}
 
 		if(numPages == 0)
-			return Vector<TexAtlasPageDesc>::type();
+			return Vector<TexAtlasPageDesc>();
 
 		UINT32 lastPageWidth = mMaxTexWidth;
 		UINT32 lastPageHeight = mMaxTexHeight;
@@ -194,7 +194,7 @@ namespace BansheeEngine
 		}
 
 		// Create page descriptors and return
-		Vector<TexAtlasPageDesc>::type pages;
+		Vector<TexAtlasPageDesc> pages;
 		for(int i = 0; i < numPages - 1; i++)
 		{
 			TexAtlasPageDesc pageDesc;
@@ -213,7 +213,7 @@ namespace BansheeEngine
 		return pages;
 	}
 
-	int TexAtlasGenerator::generatePagesForSize(Vector<TexAtlasElementDesc>::type& elements, UINT32 width, UINT32 height, UINT32 startPage) const
+	int TexAtlasGenerator::generatePagesForSize(Vector<TexAtlasElementDesc>& elements, UINT32 width, UINT32 height, UINT32 startPage) const
 	{
 		if(elements.size() == 0)
 			return 0;
@@ -252,7 +252,7 @@ namespace BansheeEngine
 		}
 	}
 
-	int TexAtlasGenerator::addLargestTextureWithoutPageThatFits(Vector<TexAtlasElementDesc>::type& elements, TexAtlasNode& node) const
+	int TexAtlasGenerator::addLargestTextureWithoutPageThatFits(Vector<TexAtlasElementDesc>& elements, TexAtlasNode& node) const
 	{
 		UINT32 sizeLimit = std::numeric_limits<UINT32>::max();
 		while (true)
@@ -283,7 +283,7 @@ namespace BansheeEngine
 		}
 	}
 
-	int TexAtlasGenerator::findLargestTextureWithoutPage(const Vector<TexAtlasElementDesc>::type& elements) const
+	int TexAtlasGenerator::findLargestTextureWithoutPage(const Vector<TexAtlasElementDesc>& elements) const
 	{
 		INT32 largestId = -1;
 		UINT32 largestSize = 0;
@@ -304,7 +304,7 @@ namespace BansheeEngine
 		return largestId;
 	}
 
-	void TexAtlasGenerator::sortBySize(Vector<TexAtlasElementDesc>::type& elements) const
+	void TexAtlasGenerator::sortBySize(Vector<TexAtlasElementDesc>& elements) const
 	{
 		for (size_t i = 0; i < elements.size(); i++)
 		{

@@ -94,12 +94,12 @@ namespace BansheeEngine
 			UINT32 typeId;
 		};
 
-		UnorderedMap<void*, UINT32>::type mObjectAddrToId;
+		UnorderedMap<void*, UINT32> mObjectAddrToId;
 		UINT32 mLastUsedObjectId;
-		Vector<ObjectToEncode>::type mObjectsToEncode;
+		Vector<ObjectToEncode> mObjectsToEncode;
 		int mTotalBytesWritten;
 
-		Map<UINT32, ObjectToDecode>::type mObjectMap;
+		Map<UINT32, ObjectToDecode> mObjectMap;
 
 		/**
 		 * @brief	Parses the entire object and calculates total size required for

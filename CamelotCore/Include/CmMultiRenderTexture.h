@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	struct CM_EXPORT MULTI_RENDER_TEXTURE_DESC
 	{
-		Vector<RENDER_SURFACE_DESC>::type colorSurfaces;
+		Vector<RENDER_SURFACE_DESC> colorSurfaces;
 		RENDER_SURFACE_DESC depthStencilSurface;
 	};
 
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		bool requiresTextureFlipping() const { return false; }
 
 	protected:
-		Vector<TextureViewPtr>::type mColorSurfaces;
+		Vector<TextureViewPtr> mColorSurfaces;
 		TextureViewPtr mDepthStencilSurface;
 
 		MultiRenderTexture();

@@ -7,13 +7,13 @@
 
 namespace BansheeEngine
 {
-	Vector<HRenderable>::type OctreeSceneManager::getVisibleRenderables(const HCamera& camera) const
+	Vector<HRenderable> OctreeSceneManager::getVisibleRenderables(const HCamera& camera) const
 	{
 		// TODO - Cull invisible objects
 
-		Vector<HRenderable>::type renderables;
+		Vector<HRenderable> renderables;
 
-		Stack<HSceneObject>::type todo;
+		Stack<HSceneObject> todo;
 		todo.push(mRootNode);
 
 		while(!todo.empty())

@@ -94,5 +94,5 @@ namespace BansheeEngine
 		float d;
     };
 
-    typedef Vector<Plane>::type PlaneList;
+    typedef Vector<Plane> PlaneList;
 }

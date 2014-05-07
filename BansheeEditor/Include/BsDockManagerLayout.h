@@ -16,11 +16,11 @@ namespace BansheeEngine
 			~Entry();
 
 			static Entry* createLeaf(Entry* parent, UINT32 childIdx, 
-				const Vector<String>::type& widgetNames);
+				const Vector<String>& widgetNames);
 			static Entry* createContainer(Entry* parent, UINT32 childIdx, float splitPosition, 
 				bool horizontalSplit);
 
-			Vector<String>::type widgetNames;
+			Vector<String> widgetNames;
 			bool isLeaf;
 			float splitPosition;
 			bool horizontalSplit;

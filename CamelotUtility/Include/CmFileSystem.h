@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 * @param [out]	files	   		Full paths to all files located directly in specified folder.
 		 * @param [out]	directories		Full paths to all folders located directly in specified folder.
 		 */
-		static void getChildren(const Path& dirPath, Vector<Path>::type& files, Vector<Path>::type& directories);
+		static void getChildren(const Path& dirPath, Vector<Path>& files, Vector<Path>& directories);
 
 		/**
 		 * @brief	Returns the last modified time of a file or a folder at the specified path.

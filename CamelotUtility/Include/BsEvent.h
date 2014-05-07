@@ -5,10 +5,15 @@
 
 namespace BansheeEngine
 {
-	/************************************************************************/
-	/* 								EVENTS									*/
-	/************************************************************************/
-	
+	/**
+	 * @brief	Data common to all event connections.
+	 */
+	class BaseConnectionData
+	{
+	public:
+		bool isValid;
+	};
+
 	/**
 	 * @brief	Event handle. Allows you to track to which events you subscribed to and
 	 *			disconnect from them when needed.
@@ -20,7 +25,7 @@ namespace BansheeEngine
 			:mDisconnectCallback(nullptr), mConnection(nullptr), mEvent(nullptr)
 		{ }
 
-		HEvent(void* connection, void* event, void (*disconnectCallback) (void*, void*))
+		HEvent(std::shared_ptr<BaseConnectionData> connection, void* event, void(*disconnectCallback) (const std::shared_ptr<BaseConnectionData>&, void*))
 			:mConnection(connection), mEvent(event), mDisconnectCallback(disconnectCallback)
 		{ }
 
@@ -31,22 +36,26 @@ namespace BansheeEngine
 		 */
 		void disconnect()
 		{
-			if (mDisconnectCallback != nullptr)
+			if (mConnection != nullptr && mConnection->isValid)
 				mDisconnectCallback(mConnection, mEvent);
-
-			mDisconnectCallback = nullptr;
 		}
 
 	private:
-		void (*mDisconnectCallback) (void*, void*);
-		void* mConnection;
+		void(*mDisconnectCallback) (const std::shared_ptr<BaseConnectionData>&, void*);
+		std::shared_ptr<BaseConnectionData> mConnection;
 		void* mEvent;
 	};	
 
+	/**
+	 * @brief	Events allows you to register method callbacks that get notified
+	 *			when the event is triggered.
+	 *
+	 * @note	Callback method return value is ignored.
+	 */
 	template <class RetType, class... Args>
 	class TEvent
 	{
-		struct ConnectionData
+		struct ConnectionData : BaseConnectionData
 		{
 		public:
 			ConnectionData(std::function<RetType(Args...)> func)
@@ -57,77 +66,117 @@ namespace BansheeEngine
 		};
 
 	public:
+		TEvent()
+			:mHasDisconnectedCallbacks(false)
+		{ }
+
 		~TEvent()
 		{
 			clear();
 		}
 
+		/**
+		 * @brief	Register a new callback that will get notified once
+		 *			the event is triggered.
+		 */
 		HEvent connect(std::function<RetType(Args...)> func)
 		{
-			ConnectionData* connData = cm_new<ConnectionData>(func);
+			std::shared_ptr<ConnectionData> connData = cm_shared_ptr<ConnectionData>(func);
+			connData->isValid = true;
 
 			{
-				CM_LOCK_MUTEX(mMutex);
+				CM_LOCK_RECURSIVE_MUTEX(mMutex);
 				mConnections.push_back(connData);
 			}
 			
 			return HEvent(connData, this, &TEvent::disconnectCallback);
 		}
 
+		/**
+		 * @brief	Trigger the event, notifying all register callback methods.
+		 */
 		void operator() (Args... args)
 		{
-			CM_LOCK_MUTEX(mMutex);
+			CM_LOCK_RECURSIVE_MUTEX(mMutex);
 
-			for(auto& connection : mConnections)
+			// Here is the only place we remove connections, in order to allow disconnect() and clear() to be called
+			// recursively from the notify callbacks
+			if (mHasDisconnectedCallbacks)
 			{
-				std::function<RetType(Args...)> func = connection->func;
+				for (UINT32 i = 0; i < mConnections.size(); i++)
+				{
+					if (!mConnections[i]->isValid)
+					{
+						mConnections.erase(mConnections.begin() + i);
+						i--;
+					}
+				}
 
-				func(args...);
+				mHasDisconnectedCallbacks = false;
 			}
+
+			// Do not use an iterator here, as new connections might be added during iteration from
+			// the notify callback
+			UINT32 numConnections = (UINT32)mConnections.size(); // Remember current num. connections as we don't want to notify new ones
+			for (UINT32 i = 0; i < numConnections; i++)
+				mConnections[i]->func(args...);
 		}
 
+		/**
+		 * @brief	Clear all callbacks from the event.
+		 */
 		void clear()
 		{
-			CM_LOCK_MUTEX(mMutex);
+			CM_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			for(auto& connection : mConnections)
-			{
-				cm_delete(connection);
-			}
+				connection->isValid = false;
 
-			mConnections.clear();
+			if (mConnections.size() > 0)
+				mHasDisconnectedCallbacks = true;
 		}
 
+		/**
+		 * @brief	Check if event has any callbacks registered.
+		 *
+		 * @note	It is safe to trigger an event even if no callbacks are registered.
+		 */
 		bool empty()
 		{
-			CM_LOCK_MUTEX(mMutex);
+			CM_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			return mConnections.size() == 0;
 		}
 
 	private:
-		typename Vector<ConnectionData*>::type mConnections;
-		CM_MUTEX(mMutex);
+		Vector<std::shared_ptr<ConnectionData>> mConnections;
+		bool mHasDisconnectedCallbacks;
+		CM_RECURSIVE_MUTEX(mMutex);
 
-		static void disconnectCallback(void* connection, void* event)
+		/**
+		 * @brief	Callback triggered by event handles when they want to disconnect from
+		 *			an event.
+		 */
+		static void disconnectCallback(const std::shared_ptr<BaseConnectionData>& connection, void* event)
 		{
-			TEvent<RetType, Args...>::ConnectionData* castConnection =
-				reinterpret_cast<TEvent<RetType, Args...>::ConnectionData*>(connection);
 			TEvent<RetType, Args...>* castEvent = reinterpret_cast<TEvent<RetType, Args...>*>(event);
 
-			castEvent->disconnect(castConnection);
+			castEvent->disconnect(connection);
 		}
 
-		void disconnect(ConnectionData* connData)
+		/**
+		 * @brief	Internal method that disconnects the callback described by the provided connection data.
+		 */
+		void disconnect(const std::shared_ptr<BaseConnectionData>& connData)
 		{
-			CM_LOCK_MUTEX(mMutex);
+			CM_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			for(auto& iter = mConnections.begin(); iter != mConnections.end(); ++iter)
 			{
 				if((*iter) == connData)
 				{
-					cm_delete(connData);
-					mConnections.erase(iter);
+					connData->isValid = false;
+					mHasDisconnectedCallbacks = true;
 					return;
 				}
 			}
@@ -139,10 +188,15 @@ namespace BansheeEngine
 	/* 	SO YOU MAY USE FUNCTION LIKE SYNTAX FOR DECLARING EVENT SIGNATURE   */
 	/************************************************************************/
 	
+	/**
+	 * @copydoc	TEvent
+	 */
 	template <typename Signature>
 	class Event;
 
-	// 1 parameter
+	/**
+	* @copydoc	TEvent
+	*/
 	template <class RetType, class... Args>
 	class Event<RetType(Args...) > : public TEvent <RetType, Args...>
 	{ };

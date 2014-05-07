@@ -86,7 +86,7 @@ namespace BansheeEngine
 
 		GUIWidget* mParentWidget;
 		GUIElementBase* mParentElement;
-		Vector<GUIElementBase*>::type mChildren;	
+		Vector<GUIElementBase*> mChildren;	
 		UINT8 mIsDirty;
 		bool mIsDisabled;
 	};

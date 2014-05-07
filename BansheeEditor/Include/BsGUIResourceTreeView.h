@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 		struct DraggedResources
 		{
-			Vector<String>::type resourceUUIDs;
+			Vector<String> resourceUUIDs;
 		};
 
 		struct InternalDraggedResources

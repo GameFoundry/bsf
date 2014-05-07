@@ -23,7 +23,7 @@ namespace BansheeEngine
 	protected:
 		ManagedSerializableObjectInfoPtr mObjInfo;
 		MonoObject* mManagedInstance;
-		Vector<ManagedSerializableFieldDataEntryPtr>::type mFieldEntries;
+		Vector<ManagedSerializableFieldDataEntryPtr> mFieldEntries;
 
 		/**
 		 * @brief	Populates internal field data based on currently active managed instance.

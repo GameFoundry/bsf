@@ -37,7 +37,7 @@ namespace BansheeEngine
 		GUIButton* mMaxBtn;
 		GUIButton* mCloseBtn;
 
-		Vector<GUIMenuBarData>::type mChildMenus;
+		Vector<GUIMenuBarData> mChildMenus;
 
 		GUIButton* mSubMenuButton;
 		bool mSubMenuOpen;

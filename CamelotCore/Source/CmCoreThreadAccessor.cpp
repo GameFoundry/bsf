@@ -267,7 +267,7 @@ namespace BansheeEngine
 
 	void CoreThreadAccessorBase::submitToCoreThread(bool blockUntilComplete)
 	{
-		Queue<QueuedCommand>::type* commands = mCommandQueue->flush();
+		Queue<QueuedCommand>* commands = mCommandQueue->flush();
 
 		gCoreThread().queueCommand(std::bind(&CommandQueueBase::playback, mCommandQueue, commands), blockUntilComplete);
 	}

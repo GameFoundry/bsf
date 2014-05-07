@@ -36,7 +36,7 @@ namespace BansheeEngine
 	class CM_D3D9_EXPORT D3D9DriverList
 	{
 	private:
-		Vector<D3D9Driver>::type mDriverList;
+		Vector<D3D9Driver> mDriverList;
 		
 	public:
 		D3D9DriverList();

@@ -221,14 +221,14 @@ namespace BansheeEngine
 		HTexture* mTextures;
 		HSamplerState* mSamplerStates;
 
-		mutable Map<String, GpuParamFloat>::type mFloatParams;
-		mutable Map<String, GpuParamVec2>::type mVec2Params;
-		mutable Map<String, GpuParamVec3>::type mVec3Params;
-		mutable Map<String, GpuParamVec4>::type mVec4Params;
-		mutable Map<String, GpuParamMat3>::type mMat3Params;
-		mutable Map<String, GpuParamMat4>::type mMat4Params;
-		mutable Map<String, GpuParamStruct>::type mStructParams;
-		mutable Map<String, GpuParamTexture>::type mTextureParams;
-		mutable Map<String, GpuParamSampState>::type mSampStateParams;
+		mutable Map<String, GpuParamFloat> mFloatParams;
+		mutable Map<String, GpuParamVec2> mVec2Params;
+		mutable Map<String, GpuParamVec3> mVec3Params;
+		mutable Map<String, GpuParamVec4> mVec4Params;
+		mutable Map<String, GpuParamMat3> mMat3Params;
+		mutable Map<String, GpuParamMat4> mMat4Params;
+		mutable Map<String, GpuParamStruct> mStructParams;
+		mutable Map<String, GpuParamTexture> mTextureParams;
+		mutable Map<String, GpuParamSampState> mSampStateParams;
 	};
 }

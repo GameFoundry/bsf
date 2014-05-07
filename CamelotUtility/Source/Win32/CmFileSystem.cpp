@@ -294,8 +294,8 @@ namespace BansheeEngine
 
 		if (recursively)
 		{
-			Vector<Path>::type files;
-			Vector<Path>::type directories;
+			Vector<Path> files;
+			Vector<Path> directories;
 
 			getChildren(fullPath, files, directories);
 
@@ -361,7 +361,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void FileSystem::getChildren(const Path& dirPath, Vector<Path>::type& files, Vector<Path>::type& directories)
+	void FileSystem::getChildren(const Path& dirPath, Vector<Path>& files, Vector<Path>& directories)
 	{
 		if (dirPath.isFile())
 			return;

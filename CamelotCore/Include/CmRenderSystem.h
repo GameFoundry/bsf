@@ -59,7 +59,7 @@ namespace BansheeEngine
 	*  @{
 	*/
 
-	typedef Multimap<UINT8, RenderTarget * >::type RenderTargetPriorityMap;
+	typedef MultiMap<UINT8, RenderTarget * > RenderTargetPriorityMap;
 
 	class TextureManager;
 

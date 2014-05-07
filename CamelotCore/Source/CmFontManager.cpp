@@ -3,7 +3,7 @@
 
 namespace BansheeEngine
 {
-	FontPtr FontManager::create(const Vector<FontData>::type& fontData) const
+	FontPtr FontManager::create(const Vector<FontData>& fontData) const
 	{
 		FontPtr newFont = cm_core_ptr<Font, PoolAlloc>(new (cm_alloc<Font, PoolAlloc>()) Font());
 		newFont->_setThisPtr(newFont);

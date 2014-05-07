@@ -170,7 +170,7 @@ namespace BansheeEngine
 		}
 
 		isActive = false;
-		activeBlocks = ProfilerStack<ActiveBlock>::type();
+		activeBlocks = ProfilerStack<ActiveBlock>();
 		activeBlock = ActiveBlock();
 	}
 
@@ -431,15 +431,15 @@ namespace BansheeEngine
 
 			ProfiledBlock* parentBlock;
 			UINT32 entryIdx;
-			ProfilerVector<UINT32>::type childIndexes;
+			ProfilerVector<UINT32> childIndexes;
 		};
 
-		ProfilerVector<CPUProfilerBasicSamplingEntry>::type basicEntries;
-		ProfilerVector<CPUProfilerPreciseSamplingEntry>::type preciseEntries;	
+		ProfilerVector<CPUProfilerBasicSamplingEntry> basicEntries;
+		ProfilerVector<CPUProfilerPreciseSamplingEntry> preciseEntries;	
 
 		// Fill up flatHierarchy array in a way so we always process children before parents
-		ProfilerStack<UINT32>::type todo;
-		ProfilerVector<TempEntry>::type flatHierarchy;
+		ProfilerStack<UINT32> todo;
+		ProfilerVector<TempEntry> flatHierarchy;
 
 		UINT32 entryIdx = 0;
 		todo.push(entryIdx);
@@ -558,9 +558,9 @@ namespace BansheeEngine
 		}
 
 		// Prune empty basic entries
-		ProfilerStack<UINT32>::type finalBasicHierarchyTodo;
-		ProfilerStack<UINT32>::type parentBasicEntryIndexes;
-		ProfilerVector<TempEntry>::type newBasicEntries;
+		ProfilerStack<UINT32> finalBasicHierarchyTodo;
+		ProfilerStack<UINT32> parentBasicEntryIndexes;
+		ProfilerVector<TempEntry> newBasicEntries;
 
 		finalBasicHierarchyTodo.push(0);
 
@@ -600,7 +600,7 @@ namespace BansheeEngine
 
 		if(newBasicEntries.size() > 0)
 		{
-			ProfilerVector<CPUProfilerBasicSamplingEntry*>::type finalBasicEntries;
+			ProfilerVector<CPUProfilerBasicSamplingEntry*> finalBasicEntries;
 
 			report.mBasicSamplingRootEntry = basicEntries[newBasicEntries[0].entryIdx];
 			finalBasicEntries.push_back(&report.mBasicSamplingRootEntry);
@@ -632,9 +632,9 @@ namespace BansheeEngine
 		}
 
 		// Prune empty precise entries
-		ProfilerStack<UINT32>::type finalPreciseHierarchyTodo;
-		ProfilerStack<UINT32>::type parentPreciseEntryIndexes;
-		ProfilerVector<TempEntry>::type newPreciseEntries;
+		ProfilerStack<UINT32> finalPreciseHierarchyTodo;
+		ProfilerStack<UINT32> parentPreciseEntryIndexes;
+		ProfilerVector<TempEntry> newPreciseEntries;
 
 		finalPreciseHierarchyTodo.push(0);
 
@@ -674,7 +674,7 @@ namespace BansheeEngine
 
 		if(newPreciseEntries.size() > 0)
 		{
-			ProfilerVector<CPUProfilerPreciseSamplingEntry*>::type finalPreciseEntries;
+			ProfilerVector<CPUProfilerPreciseSamplingEntry*> finalPreciseEntries;
 
 			report.mPreciseSamplingRootEntry = preciseEntries[newPreciseEntries[0].entryIdx];
 			finalPreciseEntries.push_back(&report.mPreciseSamplingRootEntry);

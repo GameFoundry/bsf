@@ -71,7 +71,7 @@ namespace BansheeEngine
 
 	void BsApplication::shutDown()
 	{
-		gApplication().mainLoopCallback.disconnect(updateCallbackConn);
+		updateCallbackConn.disconnect();
 
 		gApplication().unloadPlugin(mSBansheeEnginePlugin);
 		gApplication().unloadPlugin(mMonoPlugin);

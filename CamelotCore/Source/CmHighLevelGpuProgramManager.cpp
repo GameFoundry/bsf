@@ -78,7 +78,7 @@ namespace BansheeEngine {
 			return sNullLang;
 		}
 		HighLevelGpuProgramPtr create(const String& source, const String& entryPoint, 
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
 		{
 			return cm_core_ptr<NullProgram, PoolAlloc>();
 		}
@@ -137,7 +137,7 @@ namespace BansheeEngine {
 	}
     //---------------------------------------------------------------------------
     HighLevelGpuProgramPtr HighLevelGpuProgramManager::create(const String& source, const String& entryPoint, const String& language, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
     {
 		HighLevelGpuProgramFactory* factory = getFactory(language);
         HighLevelGpuProgramPtr ret = factory->create(source, entryPoint, gptype, profile, includes);

@@ -10,7 +10,7 @@
 
 namespace BansheeEngine
 {
-	Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>>::type EditorWidgetManager::QueuedCreateCallbacks;
+	Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>> EditorWidgetManager::QueuedCreateCallbacks;
 
 	EditorWidgetManager::EditorWidgetManager()
 	{
@@ -98,7 +98,7 @@ namespace BansheeEngine
 	{
 		auto GetWidgetNamesInContainer = [&] (const EditorWidgetContainer* container)
 		{
-			Vector<String>::type widgetNames;
+			Vector<String> widgetNames;
 			if(container != nullptr)
 			{
 				UINT32 numWidgets = container->getNumWidgets();
@@ -117,8 +117,8 @@ namespace BansheeEngine
 		DockManager& dockManager = mainWindow->getDockManager();
 		EditorWidgetLayoutPtr layout = cm_shared_ptr<EditorWidgetLayout>(dockManager.getLayout());
 
-		Vector<EditorWidgetLayout::Entry>::type& layoutEntries = layout->getEntries();
-		UnorderedSet<EditorWidgetContainer*>::type widgetContainers;
+		Vector<EditorWidgetLayout::Entry>& layoutEntries = layout->getEntries();
+		UnorderedSet<EditorWidgetContainer*> widgetContainers;
 
 		for(auto& widget : mActiveWidgets)
 		{
@@ -153,7 +153,7 @@ namespace BansheeEngine
 	void EditorWidgetManager::setLayout(const EditorWidgetLayoutPtr& layout)
 	{
 		// Unparent all widgets
-		Vector<EditorWidgetBase*>::type unparentedWidgets;
+		Vector<EditorWidgetBase*> unparentedWidgets;
 		for(auto& widget : mActiveWidgets)
 		{
 			if(widget.second->_getParent() != nullptr)

@@ -42,7 +42,7 @@ namespace BansheeEngine
 		mSubMeshes.push_back(SubMesh(indexOffset, indexCount, drawOp));
 	}
 
-	void MeshBase::setSubMeshes(const Vector<SubMesh>::type& subMeshes)
+	void MeshBase::setSubMeshes(const Vector<SubMesh>& subMeshes)
 	{
 		THROW_IF_CORE_THREAD;
 

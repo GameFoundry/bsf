@@ -71,15 +71,15 @@ namespace BansheeEngine
 			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath.toString() + ". Unknown error.");
 		}
 
-		Vector<std::pair<UINT32, UINT32>>::type charIndexRanges = fontImportOptions->getCharIndexRanges();
-		Vector<UINT32>::type fontSizes = fontImportOptions->getFontSizes();
+		Vector<std::pair<UINT32, UINT32>> charIndexRanges = fontImportOptions->getCharIndexRanges();
+		Vector<UINT32> fontSizes = fontImportOptions->getFontSizes();
 		UINT32 dpi = fontImportOptions->getDPI();
 
 		FT_Int32 loadFlags = FT_LOAD_RENDER;
 		if(!fontImportOptions->getAntialiasing())
 			loadFlags |= FT_LOAD_TARGET_MONO | FT_LOAD_NO_AUTOHINT;
 
-		Vector<FontData>::type dataPerSize;
+		Vector<FontData> dataPerSize;
 		for(size_t i = 0; i < fontSizes.size(); i++)
 		{
 			FT_F26Dot6 ftSize = (FT_F26Dot6)(fontSizes[i] * (1 << 6));
@@ -89,8 +89,8 @@ namespace BansheeEngine
 			FontData fontData;
 
 			// Get all char sizes so we can generate texture layout
-			Vector<TexAtlasElementDesc>::type atlasElements;
-			Map<UINT32, UINT32>::type seqIdxToCharIdx;
+			Vector<TexAtlasElementDesc> atlasElements;
+			Map<UINT32, UINT32> seqIdxToCharIdx;
 			for(auto iter = charIndexRanges.begin(); iter != charIndexRanges.end(); ++iter)
 			{
 				for(UINT32 charIdx = iter->first; charIdx <= iter->second; charIdx++)
@@ -129,7 +129,7 @@ namespace BansheeEngine
 
 			// Create an optimal layout for character bitmaps
 			TexAtlasGenerator texAtlasGen(false, MAXIMUM_TEXTURE_SIZE, MAXIMUM_TEXTURE_SIZE);
-			Vector<TexAtlasPageDesc>::type pages = texAtlasGen.createAtlasLayout(atlasElements);
+			Vector<TexAtlasPageDesc> pages = texAtlasGen.createAtlasLayout(atlasElements);
 
 			INT32 baselineOffset = 0;
 			UINT32 lineHeight = 0;

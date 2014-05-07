@@ -200,7 +200,7 @@ namespace BansheeEngine
 
 		void fromString(const String& versionString)
 		{
-			Vector<BansheeEngine::String>::type tokens = StringUtil::split(versionString, ".");
+			Vector<BansheeEngine::String> tokens = StringUtil::split(versionString, ".");
 			if(!tokens.empty())
 			{
 				major = parseInt(tokens[0]);
@@ -244,7 +244,7 @@ namespace BansheeEngine
 
 	public:
 
-		typedef Set<String>::type ShaderProfiles;
+		typedef Set<String> ShaderProfiles;
 	private:
 		/// This is used to build a database of RSC's
 		/// if a RSC with same name, but newer version is introduced, the older one 
@@ -253,17 +253,17 @@ namespace BansheeEngine
 		/// GPU Vendor
 		GPUVendor mVendor;
 
-		static Vector<BansheeEngine::String>::type msGPUVendorStrings;
+		static Vector<BansheeEngine::String> msGPUVendorStrings;
 		static void initVendorStrings();
 
 		/// The number of world matrices available
 		UINT16 mNumWorldMatrices;
 		/// The number of texture units available per stage
-		Map<GpuProgramType, UINT16>::type mNumTextureUnitsPerStage;
+		Map<GpuProgramType, UINT16> mNumTextureUnitsPerStage;
 		/// Total number of texture units available
 		UINT16 mNumCombinedTextureUnits;
 		/// The number of uniform blocks available per stage
-		Map<GpuProgramType, UINT16>::type mNumUniformBlocksPerStage;
+		Map<GpuProgramType, UINT16> mNumUniformBlocksPerStage;
 		/// Total number of uniform blocks available
 		UINT16 mNumCombinedUniformBlocks;
 		/// The stencil buffer bit depth
@@ -312,7 +312,7 @@ namespace BansheeEngine
 		ShaderProfiles mSupportedShaderProfiles;
 
 		// Allows us to convert a generic shader profile to a render-system specific one
-		UnorderedMap<GpuProgramProfile, String>::type mGenericToSpecificShaderProfileMap;
+		UnorderedMap<GpuProgramProfile, String> mGenericToSpecificShaderProfileMap;
 	public:	
 		RenderSystemCapabilities ();
 		virtual ~RenderSystemCapabilities ();

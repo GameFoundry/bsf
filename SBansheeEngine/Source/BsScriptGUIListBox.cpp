@@ -43,7 +43,7 @@ namespace BansheeEngine
 			options.addOption(mono_array_get(guiOptions, GUIOption, i));
 
 		UINT32 elementsArrayLen = (UINT32)mono_array_length(elements);
-		Vector<HString>::type nativeElements;
+		Vector<HString> nativeElements;
 		for(UINT32 i = 0; i < elementsArrayLen; i++)
 		{
 			MonoObject* stringManaged = (MonoObject*)mono_array_get(elements, MonoObject*, i);
@@ -66,7 +66,7 @@ namespace BansheeEngine
 	void ScriptGUIListBox::internal_setElements(ScriptGUIListBox* nativeInstance, MonoArray* elements)
 	{
 		UINT32 elementsArrayLen = (UINT32)mono_array_length(elements);
-		Vector<HString>::type nativeElements;
+		Vector<HString> nativeElements;
 		for(UINT32 i = 0; i < elementsArrayLen; i++)
 		{
 			MonoObject* stringManaged = (MonoObject*)mono_array_get(elements, MonoObject*, i);

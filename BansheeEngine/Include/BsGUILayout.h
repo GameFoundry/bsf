@@ -57,7 +57,7 @@ namespace BansheeEngine
 		 */
 		UINT32 _getActualHeight() const { return mActualHeight; }
 	protected:
-		Vector<Vector2I>::type mOptimalSizes;
+		Vector<Vector2I> mOptimalSizes;
 		UINT32 mOptimalWidth;
 		UINT32 mOptimalHeight;
 

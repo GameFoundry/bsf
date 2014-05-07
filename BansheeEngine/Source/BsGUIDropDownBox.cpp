@@ -136,7 +136,7 @@ namespace BansheeEngine
 
 	void GUIDropDownBox::notifySubMenuOpened(DropDownSubMenu* subMenu)
 	{
-		Vector<RectI>::type bounds;
+		Vector<RectI> bounds;
 
 		while(subMenu != nullptr)
 		{
@@ -150,7 +150,7 @@ namespace BansheeEngine
 
 	void GUIDropDownBox::notifySubMenuClosed(DropDownSubMenu* subMenu)
 	{
-		Vector<RectI>::type bounds;
+		Vector<RectI> bounds;
 
 		while(subMenu != nullptr)
 		{
@@ -388,9 +388,9 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector<GUITexture*>::type newSeparators;
-		Vector<GUIButton*>::type newEntryBtns;
-		Vector<GUIButton*>::type newExpEntryBtns;
+		Vector<GUITexture*> newSeparators;
+		Vector<GUIButton*> newEntryBtns;
+		Vector<GUIButton*> newExpEntryBtns;
 		for(UINT32 i = pageStart; i < pageEnd; i++)
 		{
 			GUIDropDownDataEntry& element = mData.entries[i];

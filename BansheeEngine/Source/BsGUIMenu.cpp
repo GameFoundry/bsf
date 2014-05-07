@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 	const GUIMenuItem* GUIMenu::addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator)
 	{
-		Vector<WString>::type pathElements = StringUtil::split(path, L"/");
+		Vector<WString> pathElements = StringUtil::split(path, L"/");
 
 		GUIMenuItem* curSubMenu = &mRootElement;
 		for(UINT32 i = 0; i < (UINT32)pathElements.size(); i++)
@@ -119,7 +119,7 @@ namespace BansheeEngine
 
 	const GUIMenuItem* GUIMenu::getMenuItem(const WString& path) const
 	{
-		Vector<WString>::type pathElements = StringUtil::split(path, L"/");
+		Vector<WString> pathElements = StringUtil::split(path, L"/");
 
 		const GUIMenuItem* curSubMenu = &mRootElement;
 		for(UINT32 i = 0; i < (UINT32)pathElements.size(); i++)

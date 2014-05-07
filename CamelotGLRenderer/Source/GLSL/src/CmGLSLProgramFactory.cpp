@@ -39,7 +39,7 @@ namespace BansheeEngine {
     }
     //-----------------------------------------------------------------------
     HighLevelGpuProgramPtr GLSLProgramFactory::create(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
     {
 		GLSLProgram* prog = new (cm_alloc<GLSLProgram, PoolAlloc>()) GLSLProgram(source, entryPoint, gptype, profile, includes);
 

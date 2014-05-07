@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 		TEXT_SPRITE_DESC mTextDesc;
 
-		Vector<GUIInputLineDesc>::type mLineDescs;
+		Vector<GUIInputLineDesc> mLineDescs;
 
 		Vector2I getTextOffset() const;
 

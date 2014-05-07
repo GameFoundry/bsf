@@ -26,11 +26,11 @@ THE SOFTWARE.
 -----------------------------------------------------------------------------
 */
 
-#include "CmException.h"
 #include "CmGLSLExtSupport.h"
 #include "CmGLSLGpuProgram.h"
 #include "CmGLSLProgram.h"
 #include "CmRenderSystem.h"
+#include "CmException.h"
 
 namespace BansheeEngine {
 
@@ -41,7 +41,7 @@ namespace BansheeEngine {
 	UINT32 GLSLGpuProgram::mHullShaderCount = 0;
     //-----------------------------------------------------------------------------
 	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint,
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes) 
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes) 
 		:GpuProgram(source, entryPoint, gptype, profile, includes)
     {
 		switch(mType)

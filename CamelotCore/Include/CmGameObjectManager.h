@@ -65,12 +65,12 @@ namespace BansheeEngine
 
 	private:
 		UINT64 mNextAvailableID; // 0 is not a valid ID
-		Map<UINT64, GameObjectHandleBase>::type mObjects;
+		Map<UINT64, GameObjectHandleBase> mObjects;
 
 		GameObject* mActiveDeserializedObject;
 		bool mIsDeserializationActive;
-		Map<UINT64, UINT64>::type mIdMapping;
-		Vector<GameObjectHandleBase>::type mUnresolvedHandles;
-		Vector<std::function<void()>>::type mEndCallbacks;
+		Map<UINT64, UINT64> mIdMapping;
+		Vector<GameObjectHandleBase> mUnresolvedHandles;
+		Vector<std::function<void()>> mEndCallbacks;
 	};
 }

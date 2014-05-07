@@ -82,7 +82,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 * 			  Enough space for (numLines * 2) vertices and (numLines * 2) indices
 		 */
-		void lineList_Pixel(const Vector<Vector3>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void lineList_Pixel(const Vector<Vector3>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Fills the mesh data with vertices representing anti-aliased lines of specific width. Antialiasing is done using alpha blending.
@@ -101,13 +101,13 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 *			  Enough space for (numLines * 8) vertices and (numLines * 30) indices
 		 */
-		void lineList_AA(const Vector<Vector3>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void lineList_AA(const Vector<Vector3>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		void drawLine_Pixel(const HCamera& camera, const Vector3& a, const Vector3& b, const Color& color = Color::White, float timeout = 0.0f);
 		void drawLine_AA(const HCamera& camera, const Vector3& a, const Vector3& b, float width, float borderWidth, 
 			const Color& color = Color::White, float timeout = 0.0f);
-		void drawLineList_Pixel(const HCamera& camera, const Vector<Vector3>::type& linePoints, const Color& color = Color::White, float timeout = 0.0f);
-		void drawLineList_AA(const HCamera& camera, const Vector<Vector3>::type& linePoints, float width, float borderWidth, 
+		void drawLineList_Pixel(const HCamera& camera, const Vector<Vector3>& linePoints, const Color& color = Color::White, float timeout = 0.0f);
+		void drawLineList_AA(const HCamera& camera, const Vector<Vector3>& linePoints, float width, float borderWidth, 
 			const Color& color = Color::White, float timeout = 0.0f);
 
 		void drawAABox(const HCamera& camera, const AABox& box, const Color& color = Color::White, float timeout = 0.0f);
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		void line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
-		void polygon_AA(const Vector<Vector3>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void polygon_AA(const Vector<Vector3>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
 		void aabox(const AABox& box, UINT8* outVertices, UINT32 vertexOffset, UINT32 vertexStride, 

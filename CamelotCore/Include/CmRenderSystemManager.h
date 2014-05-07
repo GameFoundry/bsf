@@ -18,7 +18,7 @@ namespace BansheeEngine
 
 		void registerRenderSystemFactory(RenderSystemFactoryPtr factory);
 	private:
-		Vector<RenderSystemFactoryPtr>::type mAvailableFactories;
+		Vector<RenderSystemFactoryPtr> mAvailableFactories;
 		bool mRenderSystemInitialized;
 	};
 }

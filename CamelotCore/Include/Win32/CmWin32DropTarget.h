@@ -50,7 +50,7 @@ namespace BansheeEngine
 			DropOpDataType dataType;
 			union 
 			{
-				Vector<WString>::type* mFileList;
+				Vector<WString>* mFileList;
 			};
 		};
 
@@ -352,12 +352,12 @@ namespace BansheeEngine
 		 * @brief	Gets a file list from data. Caller must ensure that the data actually
 		 * 			contains a file list.
 		 */
-		Vector<WString>::type* getFileListFromData(IDataObject* data)
+		Vector<WString>* getFileListFromData(IDataObject* data)
 		{
 			FORMATETC fmtetc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 			STGMEDIUM stgmed;
 
-			Vector<WString>::type* files = cm_new<Vector<WString>::type>();
+			Vector<WString>* files = cm_new<Vector<WString>>();
 			if(data->GetData(&fmtetc, &stgmed) == S_OK)
 			{
 				PVOID data = GlobalLock(stgmed.hGlobal);
@@ -386,14 +386,14 @@ namespace BansheeEngine
 		}
 
 	private:
-		Vector<OSDropTarget*>::type mDropTargets;
+		Vector<OSDropTarget*> mDropTargets;
 
 		LONG mRefCount;
 		HWND mHWnd;
 		bool mAcceptDrag;
 
-		Vector<DropTargetOp>::type mQueuedDropOps;
-		Vector<Vector<WString>::type*>::type mFileLists; 
+		Vector<DropTargetOp> mQueuedDropOps;
+		Vector<Vector<WString>*> mFileLists; 
 
 		CM_MUTEX(mSync);
 	};

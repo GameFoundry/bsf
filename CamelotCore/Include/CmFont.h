@@ -10,7 +10,7 @@ namespace BansheeEngine
 	{
 		UINT32 size;
 		FONT_DESC fontDesc;
-		Vector<HTexture>::type texturePages;
+		Vector<HTexture> texturePages;
 
 		const CHAR_DESC& getCharDesc(UINT32 charId) const;
 
@@ -33,7 +33,7 @@ namespace BansheeEngine
 	public:
 		virtual ~Font();
 
-		void initialize(const Vector<FontData>::type& fontData);
+		void initialize(const Vector<FontData>& fontData);
 
 		const FontData* getFontDataForSize(UINT32 size) const;
 		INT32 getClosestAvailableSize(UINT32 size) const;
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		Font();
 
 	private:
-		Map<UINT32, FontData>::type mFontDataPerSize;
+		Map<UINT32, FontData> mFontDataPerSize;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -59,7 +59,7 @@ namespace BansheeEngine
 		/************************************************************************/
 		
 	public:
-		static HFont create(const Vector<FontData>::type& fontInitData);
-		static FontPtr _createPtr(const Vector<FontData>::type& fontInitData);
+		static HFont create(const Vector<FontData>& fontInitData);
+		static FontPtr _createPtr(const Vector<FontData>& fontInitData);
 	};
 }

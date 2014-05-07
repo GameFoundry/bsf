@@ -45,7 +45,7 @@ namespace BansheeEngine
 		startUpSdk(fbxManager, fbxScene);
 		loadScene(fbxManager, fbxScene, filePath);
 
-		Vector<SubMesh>::type subMeshes;
+		Vector<SubMesh> subMeshes;
 		MeshDataPtr meshData = parseScene(fbxManager, fbxScene, subMeshes);	
 
 		shutDownSdk(fbxManager);
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		if(!importStatus)
 		{
 			CM_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
-				String("Error returned: %s\n\n") + String(importer->GetLastErrorString()));
+				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
 		}
 
 		manager->GetIOSettings()->SetBoolProp(IMP_FBX_ANIMATION, false);
@@ -112,21 +112,21 @@ namespace BansheeEngine
 		if(!importStatus)
 		{
 			importer->Destroy();
-
+			
 			CM_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
-				String("Error returned: %s\n\n") + String(importer->GetLastErrorString()));
+				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
 		}
 
 		importer->Destroy();
 	}
 
-	MeshDataPtr FBXImporter::parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>::type& subMeshes)
+	MeshDataPtr FBXImporter::parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>& subMeshes)
 	{
-		Stack<FbxNode*>::type todo;
+		Stack<FbxNode*> todo;
 		todo.push(scene->GetRootNode());
 
-		Vector<MeshDataPtr>::type allMeshes;
-		Vector<Vector<SubMesh>::type>::type allSubMeshes;
+		Vector<MeshDataPtr> allMeshes;
+		Vector<Vector<SubMesh>> allSubMeshes;
 
 		while(!todo.empty())
 		{
@@ -148,12 +148,12 @@ namespace BansheeEngine
 						if(!mesh->IsTriangleMesh())
 						{
 							FbxGeometryConverter geomConverter(manager);
-							geomConverter.TriangulateInPlace(curNode);
+							geomConverter.Triangulate(mesh, true);
 							attrib = curNode->GetNodeAttribute();
 							mesh = static_cast<FbxMesh*>(attrib);
 						}
 
-						allSubMeshes.push_back(Vector<SubMesh>::type());
+						allSubMeshes.push_back(Vector<SubMesh>());
 
 						MeshDataPtr meshData = parseMesh(mesh, allSubMeshes.back()); 
 						allMeshes.push_back(meshData);
@@ -182,7 +182,7 @@ namespace BansheeEngine
 			return MeshData::combine(allMeshes, allSubMeshes, subMeshes);
 	}
 
-	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, Vector<SubMesh>::type& subMeshes, bool createTangentsIfMissing)
+	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, Vector<SubMesh>& subMeshes, bool createTangentsIfMissing)
 	{
 		if (!mesh->GetNode())
 		{
@@ -558,10 +558,10 @@ namespace BansheeEngine
 			}
 		}
 
-		Vector<UINT32>::type indexOffsetPerSubmesh;
+		Vector<UINT32> indexOffsetPerSubmesh;
 		indexOffsetPerSubmesh.resize(subMeshes.size(), 0);
 
-		Vector<UINT32*>::type indices;
+		Vector<UINT32*> indices;
 		indices.resize(subMeshes.size());
 
 		for(UINT32 i = 0; i < (UINT32)indices.size(); i++)
@@ -667,7 +667,8 @@ namespace BansheeEngine
 
 					if (hasUV0)
 					{
-						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName0, lCurrentUV);
+						bool unmapped = false;
+						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName0, lCurrentUV, unmapped);
 
 						Vector2 curUV0Value;
 						curUV0Value[0] = static_cast<float>(lCurrentUV[0]);
@@ -678,7 +679,8 @@ namespace BansheeEngine
 
 					if (hasUV1)
 					{
-						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName1, lCurrentUV);
+						bool unmapped = false;
+						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName1, lCurrentUV, unmapped);
 
 						Vector2 curUV1Value;
 						curUV1Value[0] = static_cast<float>(lCurrentUV[0]);

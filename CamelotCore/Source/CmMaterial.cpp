@@ -50,7 +50,7 @@ namespace BansheeEngine
 			mValidShareableParamBlocks.clear();
 			mValidParams.clear();
 
-			Vector<const GpuParamDesc*>::type allParamDescs;
+			Vector<const GpuParamDesc*> allParamDescs;
 
 			// Make sure all gpu programs are fully loaded
 			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
@@ -101,15 +101,15 @@ namespace BansheeEngine
 			}
 
 			// Fill out various helper structures
-			Map<String, const GpuParamDataDesc*>::type validDataParameters = determineValidDataParameters(allParamDescs);
-			Set<String>::type validObjectParameters = determineValidObjectParameters(allParamDescs);
+			Map<String, const GpuParamDataDesc*> validDataParameters = determineValidDataParameters(allParamDescs);
+			Set<String> validObjectParameters = determineValidObjectParameters(allParamDescs);
 
-			Set<String>::type validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
-			Map<String, String>::type paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
-			Map<String, GpuParamBlockBufferPtr>::type paramBlockBuffers;
+			Set<String> validShareableParamBlocks = determineValidShareableParamBlocks(allParamDescs);
+			Map<String, String> paramToParamBlockMap = determineParameterToBlockMapping(allParamDescs);
+			Map<String, GpuParamBlockBufferPtr> paramBlockBuffers;
 
 			// Create param blocks
-			const Map<String, SHADER_PARAM_BLOCK_DESC>::type& shaderDesc = mShader->_getParamBlocks();
+			const Map<String, SHADER_PARAM_BLOCK_DESC>& shaderDesc = mShader->_getParamBlocks();
 			for(auto iter = validShareableParamBlocks.begin(); iter != validShareableParamBlocks.end(); ++iter)
 			{
 				bool isShared = false;
@@ -146,7 +146,7 @@ namespace BansheeEngine
 			}
 
 			// Create data param mappings
-			const Map<String, SHADER_DATA_PARAM_DESC>::type& dataParamDesc = mShader->_getDataParams();
+			const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDesc = mShader->_getDataParams();
 			for(auto iter = dataParamDesc.begin(); iter != dataParamDesc.end(); ++iter)
 			{
 				auto findIter = validDataParameters.find(iter->second.gpuVariableName);
@@ -179,7 +179,7 @@ namespace BansheeEngine
 			}
 
 			// Create object param mappings
-			const Map<String, SHADER_OBJECT_PARAM_DESC>::type& objectParamDesc = mShader->_getObjectParams();
+			const Map<String, SHADER_OBJECT_PARAM_DESC>& objectParamDesc = mShader->_getObjectParams();
 			for(auto iter = objectParamDesc.begin(); iter != objectParamDesc.end(); ++iter)
 			{
 				auto findIter = validObjectParameters.find(iter->second.gpuVariableName);
@@ -263,10 +263,10 @@ namespace BansheeEngine
 		}
 	}
 
-	Map<String, const GpuParamDataDesc*>::type Material::determineValidDataParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const
+	Map<String, const GpuParamDataDesc*> Material::determineValidDataParameters(const Vector<const GpuParamDesc*>& paramDescs) const
 	{
-		Map<String, const GpuParamDataDesc*>::type foundDataParams;
-		Map<String, bool>::type validParams;
+		Map<String, const GpuParamDataDesc*> foundDataParams;
+		Map<String, bool> validParams;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -305,9 +305,9 @@ namespace BansheeEngine
 	}
 
 	
-	Set<String>::type Material::determineValidObjectParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const
+	Set<String> Material::determineValidObjectParameters(const Vector<const GpuParamDesc*>& paramDescs) const
 	{
-		Set<String>::type validParams;
+		Set<String> validParams;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -338,11 +338,11 @@ namespace BansheeEngine
 		return validParams;
 	}
 
-	Set<String>::type Material::determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>::type& paramDescs) const
+	Set<String> Material::determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>& paramDescs) const
 	{
 		// Make sure param blocks with the same name actually are the same
-		Map<String, std::pair<String, const GpuParamDesc*>>::type uniqueParamBlocks;
-		Map<String, bool>::type validParamBlocks;
+		Map<String, std::pair<String, const GpuParamDesc*>> uniqueParamBlocks;
+		Map<String, bool> validParamBlocks;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{
@@ -402,7 +402,7 @@ namespace BansheeEngine
 			}
 		}
 
-		Set<String>::type validParamBlocksReturn;
+		Set<String> validParamBlocksReturn;
 		for(auto iter = validParamBlocks.begin(); iter != validParamBlocks.end(); ++iter)
 		{
 			if(iter->second)
@@ -412,9 +412,9 @@ namespace BansheeEngine
 		return validParamBlocksReturn;
 	}
 
-	Map<String, String>::type Material::determineParameterToBlockMapping(const Vector<const GpuParamDesc*>::type& paramDescs)
+	Map<String, String> Material::determineParameterToBlockMapping(const Vector<const GpuParamDesc*>& paramDescs)
 	{
-		Map<String, String>::type paramToParamBlock;
+		Map<String, String> paramToParamBlock;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
 		{

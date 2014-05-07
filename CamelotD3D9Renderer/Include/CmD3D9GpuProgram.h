@@ -121,7 +121,7 @@ namespace BansheeEngine {
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:
-		typedef Map<IDirect3DDevice9*, IDirect3DVertexShader9*>::type   DeviceToVertexShaderMap;
+		typedef Map<IDirect3DDevice9*, IDirect3DVertexShader9*>   DeviceToVertexShaderMap;
 		typedef DeviceToVertexShaderMap::iterator						DeviceToVertexShaderIterator;
 	
 		DeviceToVertexShaderMap		mMapDeviceToVertexShader;	
@@ -155,7 +155,7 @@ namespace BansheeEngine {
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:
-		typedef Map<IDirect3DDevice9*, IDirect3DPixelShader9*>::type	DeviceToPixelShaderMap;
+		typedef Map<IDirect3DDevice9*, IDirect3DPixelShader9*>	DeviceToPixelShaderMap;
 		typedef DeviceToPixelShaderMap::iterator						DeviceToPixelShaderIterator;
 
 		DeviceToPixelShaderMap		mMapDeviceToPixelShader;			

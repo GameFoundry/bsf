@@ -73,7 +73,7 @@ namespace BansheeEngine
 		while(true)
 		{
 			// Wait until we get some ready commands
-			Queue<QueuedCommand>::type* commands = nullptr;
+			Queue<QueuedCommand>* commands = nullptr;
 			{
 				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
 
@@ -138,7 +138,7 @@ namespace BansheeEngine
 
 	void CoreThread::submitAccessors(bool blockUntilComplete)
 	{
-		Vector<AccessorContainer*>::type accessorCopies;
+		Vector<AccessorContainer*> accessorCopies;
 
 		{
 			CM_LOCK_MUTEX(mAccessorMutex);

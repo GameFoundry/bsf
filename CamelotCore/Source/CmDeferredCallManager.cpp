@@ -17,7 +17,7 @@ namespace BansheeEngine
 		while(!mCallbacks.empty())
 		{
 			// Copy because callbacks can be queued within callbacks
-			Vector<std::function<void()>>::type callbackCopy = mCallbacks;
+			Vector<std::function<void()>> callbackCopy = mCallbacks;
 			mCallbacks.clear();
 
 			for(auto& call : callbackCopy)

@@ -27,7 +27,7 @@ namespace BansheeEngine
 		MonoProperty* mCountProp;
 
 		ManagedSerializableTypeInfoListPtr mListTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr>::type mListEntries;
+		Vector<ManagedSerializableFieldDataPtr> mListEntries;
 		
 		UINT32 mNumElements;
 

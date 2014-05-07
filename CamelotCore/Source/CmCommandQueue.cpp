@@ -10,7 +10,7 @@ namespace BansheeEngine
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId), mMaxDebugIdx(0)
 	{
-		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>::type, PoolAlloc>();
+		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
 
 		{
 			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
@@ -22,7 +22,7 @@ namespace BansheeEngine
 	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId)
 	{
-		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>::type, PoolAlloc>();
+		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
 	}
 #endif
 
@@ -51,7 +51,7 @@ namespace BansheeEngine
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		queue<QueuedCommand>::type* commands = flush();
+		Queue<QueuedCommand>* commands = flush();
 		playback(commands);
 #endif
 
@@ -71,14 +71,14 @@ namespace BansheeEngine
 		mCommands->push(newCommand);
 
 #if CM_FORCE_SINGLETHREADED_RENDERING
-		queue<QueuedCommand>::type* commands = flush();
+		Queue<QueuedCommand>* commands = flush();
 		playback(commands);
 #endif
 	}
 
-	BansheeEngine::Queue<QueuedCommand>::type* CommandQueueBase::flush()
+	BansheeEngine::Queue<QueuedCommand>* CommandQueueBase::flush()
 	{
-		BansheeEngine::Queue<QueuedCommand>::type* oldCommands = mCommands;
+		BansheeEngine::Queue<QueuedCommand>* oldCommands = mCommands;
 
 		if(!mEmptyCommandQueues.empty())
 		{
@@ -87,13 +87,13 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>::type, PoolAlloc>();
+			mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
 		}
 
 		return oldCommands;
 	}
 
-	void CommandQueueBase::playbackWithNotify(BansheeEngine::Queue<QueuedCommand>::type* commands, std::function<void(UINT32)> notifyCallback)
+	void CommandQueueBase::playbackWithNotify(BansheeEngine::Queue<QueuedCommand>* commands, std::function<void(UINT32)> notifyCallback)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -132,14 +132,14 @@ namespace BansheeEngine
 		mEmptyCommandQueues.push(commands);
 	}
 
-	void CommandQueueBase::playback(BansheeEngine::Queue<QueuedCommand>::type* commands)
+	void CommandQueueBase::playback(BansheeEngine::Queue<QueuedCommand>* commands)
 	{
 		playbackWithNotify(commands, std::function<void(UINT32)>());
 	}
 
 	void CommandQueueBase::cancelAll()
 	{
-		BansheeEngine::Queue<QueuedCommand>::type* commands = flush();
+		BansheeEngine::Queue<QueuedCommand>* commands = flush();
 
 		while(!commands->empty())
 			commands->pop();
@@ -166,7 +166,7 @@ namespace BansheeEngine
 	UINT32 CommandQueueBase::MaxCommandQueueIdx = 0;
 
 	UnorderedSet<CommandQueueBase::QueueBreakpoint, CommandQueueBase::QueueBreakpoint::HashFunction, 
-		CommandQueueBase::QueueBreakpoint::EqualFunction>::type CommandQueueBase::SetBreakpoints;
+		CommandQueueBase::QueueBreakpoint::EqualFunction> CommandQueueBase::SetBreakpoints;
 
 	inline size_t CommandQueueBase::QueueBreakpoint::HashFunction::operator()(const QueueBreakpoint& v) const
 	{

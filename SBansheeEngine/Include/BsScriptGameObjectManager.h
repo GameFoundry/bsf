@@ -21,7 +21,7 @@ namespace BansheeEngine
 		void destroyScriptGameObject(ScriptGameObject* gameObject);
 
 	private:
-		UnorderedMap<UINT64, ScriptGameObject*>::type mScriptGameObjects;
+		UnorderedMap<UINT64, ScriptGameObject*> mScriptGameObjects;
 
 		MonoClass* mSceneObjectClass;
 	};

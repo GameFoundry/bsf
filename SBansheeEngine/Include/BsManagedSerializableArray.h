@@ -24,9 +24,9 @@ namespace BansheeEngine
 		::MonoClass* mElementMonoClass;
 
 		ManagedSerializableTypeInfoArrayPtr mArrayTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr>::type mArrayEntries;
+		Vector<ManagedSerializableFieldDataPtr> mArrayEntries;
 		
-		Vector<UINT32>::type mNumElements;
+		Vector<UINT32> mNumElements;
 		UINT32 mElemSize;
 
 		void initMonoObjects();
@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 		void setValue(UINT32 arrayIdx, void* val);
 
-		UINT32 toSequentialIdx(const Vector<UINT32>::type& idx) const;
+		UINT32 toSequentialIdx(const Vector<UINT32>& idx) const;
 		UINT32 getLength(UINT32 dimension) const;
 
 		/************************************************************************/

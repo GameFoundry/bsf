@@ -26,7 +26,7 @@ namespace BansheeEngine
 		renderOp.submeshIdx = submeshIdx;
 	}
 
-	const Vector<SortedRenderOp>::type& RenderQueue::getSortedRenderOps() const
+	const Vector<SortedRenderOp>& RenderQueue::getSortedRenderOps() const
 	{
 		return mSortedRenderOps;
 	}

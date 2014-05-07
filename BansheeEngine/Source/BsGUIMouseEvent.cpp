@@ -9,7 +9,7 @@ namespace BansheeEngine
 
 	}
 
-	GUIMouseEvent::GUIMouseEvent(bool buttonStates[GUIMouseButton::Count], bool shift, bool ctrl, bool alt)
+	GUIMouseEvent::GUIMouseEvent(bool buttonStates[(int)GUIMouseButton::Count], bool shift, bool ctrl, bool alt)
 		:mType(GUIMouseEventType::MouseMove), mButton(GUIMouseButton::Left),
 		mShift(shift), mCtrl(ctrl), mAlt(alt)
 	{

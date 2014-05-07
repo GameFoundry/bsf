@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 		ManagedSerializableTypeInfoPtr determineType(MonoClass* monoClass);
 	private:
-		UnorderedMap<String, std::shared_ptr<ManagedSerializableAssemblyInfo>>::type mAssemblyInfos;
+		UnorderedMap<String, std::shared_ptr<ManagedSerializableAssemblyInfo>> mAssemblyInfos;
 		bool mBaseTypesInitialized;
 
 		MonoClass* mSystemArrayClass;

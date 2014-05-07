@@ -31,7 +31,7 @@ namespace BansheeEngine
 		assert((vertexOffset + 4) <= meshData->getNumVertices());
 		assert((indexOffset + 6) <= meshData->getNumIndices());
 
-		Vector<Vector2>::type points;
+		Vector<Vector2> points;
 		points.push_back(Vector2(area.x, area.y));
 		points.push_back(Vector2(area.x + area.width, area.y));
 		points.push_back(Vector2(area.x + area.width, area.y + area.height));
@@ -50,12 +50,12 @@ namespace BansheeEngine
 		DrawHelperTemplate<Vector2>::line_AA(a, b, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::lineList_Pixel(const Vector<Vector2>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::lineList_Pixel(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector2>::lineList_Pixel(linePoints, color, meshData, vertexOffset, indexOffset);
 	}
 
-	void DrawHelper2D::lineList_AA(const Vector<Vector2>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+	void DrawHelper2D::lineList_AA(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 	{
 		DrawHelperTemplate<Vector2>::lineList_AA(linePoints, width, borderWidth, color, meshData, vertexOffset, indexOffset);
 	}
@@ -68,7 +68,7 @@ namespace BansheeEngine
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -118,7 +118,7 @@ namespace BansheeEngine
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -157,7 +157,7 @@ namespace BansheeEngine
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -192,12 +192,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::drawLineList_Pixel(const HCamera& camera, const Vector<Vector2>::type& linePoints, const Color& color, 
+	void DrawHelper2D::drawLineList_Pixel(const HCamera& camera, const Vector<Vector2>& linePoints, const Color& color, 
 		DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -208,7 +208,7 @@ namespace BansheeEngine
 
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
-			Vector<Vector2>::type points;
+			Vector<Vector2> points;
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i++)
 				points.push_back(normalizedCoordToClipSpace(linePoints[i]));
@@ -237,12 +237,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void DrawHelper2D::drawLineList_AA(const HCamera& camera, const Vector<Vector2>::type& linePoints, float width, float borderWidth, 
+	void DrawHelper2D::drawLineList_AA(const HCamera& camera, const Vector<Vector2>& linePoints, float width, float borderWidth, 
 		const Color& color, DebugDrawCoordType coordType, float timeout)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		commands.push_back(DebugDrawCommand());
 		DebugDrawCommand& dbgCmd = commands.back();
@@ -252,7 +252,7 @@ namespace BansheeEngine
 
 		if(coordType == DebugDrawCoordType::Normalized)
 		{
-			Vector<Vector2>::type points;
+			Vector<Vector2> points;
 			UINT32 numPoints = (UINT32)linePoints.size();
 			for(UINT32 i = 0; i < numPoints; i++)
 				points.push_back(normalizedCoordToClipSpace(linePoints[i]));
@@ -289,7 +289,7 @@ namespace BansheeEngine
 
 		Vector2 nrm(dir.y, -dir.x);
 
-		Vector<Vector2>::type points(4);
+		Vector<Vector2> points(4);
 
 		float r = width - 1.0f;
 		r *= 0.5f;
@@ -312,13 +312,13 @@ namespace BansheeEngine
 		polygon_AA(points, borderWidth, color, outVertices, outColors, vertexOffset, vertexStride, outIndices, indexOffset);
 	}
 
-	void DrawHelper2D::polygon_AA(const Vector<Vector2>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+	void DrawHelper2D::polygon_AA(const Vector<Vector2>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
 		UINT32 numCoords = (UINT32)points.size();
 
 		outVertices += vertexOffset * vertexStride;
-		Vector<Vector2>::type tempNormals(numCoords);
+		Vector<Vector2> tempNormals(numCoords);
 
 		for(UINT32 i = 0, j = numCoords - 1; i < numCoords; j = i++)
 		{

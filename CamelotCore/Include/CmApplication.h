@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 		RENDER_WINDOW_DESC primaryWindowDesc;
 
-		Vector<String>::type importers;
+		Vector<String> importers;
 	};
 
 	class CM_EXPORT Application

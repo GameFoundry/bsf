@@ -457,7 +457,7 @@ namespace BansheeEngine
 
 				// Ensure we don't unnecessarily try to delete children if their
 				// parent is getting deleted anyway
-				Vector<TreeElement*>::type elementsToDelete;
+				Vector<TreeElement*> elementsToDelete;
 				for(UINT32 i = 0; i < (UINT32)mSelectedElements.size(); i++)
 				{
 					bool hasDeletedParent = false;
@@ -546,7 +546,7 @@ namespace BansheeEngine
 
 		if(element->mParent == nullptr || (element->mParent->mIsVisible && element->mParent->mIsExpanded))
 		{
-			Stack<TreeElement*>::type todo;
+			Stack<TreeElement*> todo;
 			todo.push(element);
 
 			while(!todo.empty())
@@ -576,7 +576,7 @@ namespace BansheeEngine
 
 		if(element->mParent == nullptr || (element->mParent->mIsVisible && element->mParent->mIsExpanded))
 		{
-			Stack<TreeElement*>::type todo;
+			Stack<TreeElement*> todo;
 
 			for(auto& child : element->mChildren)
 				todo.push(child);
@@ -729,7 +729,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			Stack<UpdateTreeElement>::type todo;
+			Stack<UpdateTreeElement> todo;
 			todo.push(UpdateTreeElement(&getRootElementConst(), 0));
 
 			while(!todo.empty())
@@ -808,13 +808,13 @@ namespace BansheeEngine
 
 		mVisibleElements.clear();
 
-		Stack<UpdateTreeElement>::type todo;
+		Stack<UpdateTreeElement> todo;
 		todo.push(UpdateTreeElement(&getRootElement(), 0));
 
 		// NOTE - Instead of iterating through all elements, try to find those within the clip rect
 		// and only iterate through those. Others should somehow be marked in-active (similar to GUIElement::isDisabled()?)
 
-		Vector<TreeElement*>::type tempOrderedElements;
+		Vector<TreeElement*> tempOrderedElements;
 
 		Vector2I offset(x, y);
 

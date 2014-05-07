@@ -48,8 +48,8 @@ namespace BansheeEngine
 	 */
 	struct CM_EXPORT WindowNonClientAreaData
 	{
-		Vector<NonClientResizeArea>::type resizeAreas;
-		Vector<RectI>::type moveAreas;
+		Vector<NonClientResizeArea> resizeAreas;
+		Vector<RectI> moveAreas;
 	};
 
 	/**
@@ -152,7 +152,7 @@ namespace BansheeEngine
 		 * 			All provided areas are relative to the specified window.
 		 * 			Mostly useful for frameless windows that don't have typical caption bar.
 		 */
-		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>::type& nonClientAreas);
+		static void setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>& nonClientAreas);
 
 		/**
 		 * @brief	Sets custom non client areas for the specified window. Using custom client
@@ -163,7 +163,7 @@ namespace BansheeEngine
 		 * 			All provided areas are relative to the specified window.
 		 * 			Mostly useful for frameless windows that don't have typical border.
 		 */
-		static void setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>::type& nonClientAreas);
+		static void setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas);
 
 		/**
 		 * @brief	Resets the non client areas for the specified windows and allows 
@@ -353,11 +353,11 @@ namespace BansheeEngine
 		static bool mIsCursorHidden;
 		static NativeCursorData mCursor;
 		static bool mUsingCustomCursor;
-		static Map<const RenderWindow*, WindowNonClientAreaData>::type mNonClientAreas;
+		static Map<const RenderWindow*, WindowNonClientAreaData> mNonClientAreas;
 
 		static bool mIsTrackingMouse;
-		static Vector<RenderWindow*>::type mMouseLeftWindows;
-		static Stack<RenderWindow*>::type mModalWindowStack;
+		static Vector<RenderWindow*> mMouseLeftWindows;
+		static Stack<RenderWindow*> mModalWindowStack;
 
 		static NativeDropTargetData mDropTargets;
 

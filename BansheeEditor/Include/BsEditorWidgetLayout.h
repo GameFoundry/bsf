@@ -14,7 +14,7 @@ namespace BansheeEngine
 			Entry();
 			~Entry();
 
-			Vector<String>::type widgetNames;
+			Vector<String> widgetNames;
 			bool isDocked;
 			INT32 x, y;
 			UINT32 width, height;
@@ -27,11 +27,11 @@ namespace BansheeEngine
 		EditorWidgetLayout(const DockManagerLayoutPtr& dockLayout);
 		EditorWidgetLayout(const PrivatelyConstruct& dummy) { }
 
-		Vector<Entry>::type& getEntries() { return mEntries; }
+		Vector<Entry>& getEntries() { return mEntries; }
 		const DockManagerLayoutPtr& getDockLayout() const { return mDockLayout; }
 
 	private:
-		Vector<Entry>::type mEntries;
+		Vector<Entry> mEntries;
 		DockManagerLayoutPtr mDockLayout;
 
 		/************************************************************************/

@@ -248,7 +248,7 @@ namespace BansheeEngine
 
 		struct LanguageData
 		{
-			UnorderedMap<WString, LocalizedStringData*>::type strings;
+			UnorderedMap<WString, LocalizedStringData*> strings;
 		};
 	public:
 		StringTable();
@@ -311,7 +311,7 @@ namespace BansheeEngine
 
 		LanguageData* mAllLanguages;
 
-		UnorderedMap<WString, LocalizedStringData::Common*>::type mCommonData;
+		UnorderedMap<WString, LocalizedStringData::Common*> mCommonData;
 
 		void notifyAllStringsChanged();
 	};

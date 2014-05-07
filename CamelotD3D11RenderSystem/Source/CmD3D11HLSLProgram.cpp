@@ -16,7 +16,7 @@ namespace BansheeEngine
 	UINT32 D3D11HLSLProgram::globalProgramId = 0;
 
 	D3D11HLSLProgram::D3D11HLSLProgram(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
 		mColumnMajorMatrices(true), mEnableBackwardsCompatibility(false), mProgramId(0)
 	{

@@ -46,16 +46,16 @@ namespace BansheeEngine
 		gBsSceneManager().updateRenderableBounds();
 
 		CoreAccessor& coreAccessor = gCoreAccessor();
-		const Vector<HCamera>::type& allCameras = gBsSceneManager().getAllCameras();
+		const Vector<HCamera>& allCameras = gBsSceneManager().getAllCameras();
 
 		struct RenderTargetRenderInfo
 		{
 			RenderTargetPtr target;
-			Vector<HCamera>::type cameras;
+			Vector<HCamera> cameras;
 		};
 
 		// Find all unique render targets
-		Vector<RenderTargetRenderInfo>::type camerasPerRenderTarget;
+		Vector<RenderTargetRenderInfo> camerasPerRenderTarget;
 		for(auto& camera : allCameras)
 		{
 			RenderTargetPtr target = camera->getViewport()->getTarget();
@@ -78,7 +78,7 @@ namespace BansheeEngine
 
 		for(auto& camerasPerTarget : camerasPerRenderTarget)
 		{
-			Vector<HCamera>::type& cameras = camerasPerTarget.cameras;
+			Vector<HCamera>& cameras = camerasPerTarget.cameras;
 
 			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
@@ -90,7 +90,7 @@ namespace BansheeEngine
 		for(auto& camerasPerTarget : camerasPerRenderTarget)
 		{
 			RenderTargetPtr target = camerasPerTarget.target;
-			const Vector<HCamera>::type& cameras = camerasPerTarget.cameras;
+			const Vector<HCamera>& cameras = camerasPerTarget.cameras;
 
 			coreAccessor.beginRender();
 
@@ -126,7 +126,7 @@ namespace BansheeEngine
 	{
 		gProfiler().beginSample("renderC");
 
-		Vector<HRenderable>::type allRenderables;
+		Vector<HRenderable> allRenderables;
 		
 		if(!camera->getIgnoreSceneRenderables())
 			allRenderables = gBsSceneManager().getVisibleRenderables(camera);
@@ -175,7 +175,7 @@ namespace BansheeEngine
 
 		// TODO - Material queue is completely ignored
 		mRenderQueue->sort();
-		const Vector<SortedRenderOp>::type& sortedROps =  mRenderQueue->getSortedRenderOps();
+		const Vector<SortedRenderOp>& sortedROps =  mRenderQueue->getSortedRenderOps();
 
 		gProfiler().endSample("renderF");
 

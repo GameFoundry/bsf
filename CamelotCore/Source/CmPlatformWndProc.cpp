@@ -29,7 +29,7 @@ namespace BansheeEngine
 				}
 				else
 				{
-					Vector<RenderWindow*>::type renderWindows = RenderWindowManager::instance().getRenderWindows();
+					Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
 					for(auto& renderWindow : renderWindows)
 					{
 						if(renderWindow == newWindow)
@@ -74,7 +74,7 @@ namespace BansheeEngine
 					}
 					else // Possibly some other window was closed somehow, see if it was modal and remove from stack if it is
 					{
-						Stack<RenderWindow*>::type newStack;
+						Stack<RenderWindow*> newStack;
 
 						while(!mModalWindowStack.empty())
 						{
@@ -104,7 +104,7 @@ namespace BansheeEngine
 
 				if(reenableWindows)
 				{
-					Vector<RenderWindow*>::type renderWindows = RenderWindowManager::instance().getRenderWindows();
+					Vector<RenderWindow*> renderWindows = RenderWindowManager::instance().getRenderWindows();
 					for(auto& renderWindow : renderWindows)
 					{
 						HWND curHwnd;
@@ -207,14 +207,14 @@ namespace BansheeEngine
 				mousePosInt.x = mousePos.x;
 				mousePosInt.y = mousePos.y;
 
-				Vector<NonClientResizeArea>::type& resizeAreasPerWindow = iterFind->second.resizeAreas;
+				Vector<NonClientResizeArea>& resizeAreasPerWindow = iterFind->second.resizeAreas;
 				for(auto area : resizeAreasPerWindow)
 				{
 					if(area.area.contains(mousePosInt))
 						return translateNonClientAreaType(area.type);
 				}
 
-				Vector<RectI>::type& moveAreasPerWindow = iterFind->second.moveAreas;
+				Vector<RectI>& moveAreasPerWindow = iterFind->second.moveAreas;
 				for(auto area : moveAreasPerWindow)
 				{
 					if(area.contains(mousePosInt))

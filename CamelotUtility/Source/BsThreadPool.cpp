@@ -144,9 +144,9 @@ namespace BansheeEngine
 		if(mThreads.size() <= mDefaultCapacity)
 			return;
 
-		Vector<PooledThread*>::type idleThreads;
-		Vector<PooledThread*>::type expiredThreads;
-		Vector<PooledThread*>::type activeThreads;
+		Vector<PooledThread*> idleThreads;
+		Vector<PooledThread*> expiredThreads;
+		Vector<PooledThread*> activeThreads;
 
 		idleThreads.reserve(mThreads.size());
 		expiredThreads.reserve(mThreads.size());

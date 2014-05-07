@@ -136,7 +136,7 @@ namespace BansheeEngine
 		 */
 		static bool taskCompare(const TaskPtr& lhs, const TaskPtr& rhs);
 
-		Set<TaskPtr, std::function<bool(const TaskPtr&, const TaskPtr&)>>::type mTaskQueue;
+		Set<TaskPtr, std::function<bool(const TaskPtr&, const TaskPtr&)>> mTaskQueue;
 		UINT32 mNumActiveTasks;
 		UINT32 mMaxActiveTasks;
 		UINT32 mNextTaskId;

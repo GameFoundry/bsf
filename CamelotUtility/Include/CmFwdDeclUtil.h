@@ -68,7 +68,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<MemoryDataStream> MemoryDataStreamPtr;
 	typedef std::shared_ptr<Task> TaskPtr;
 
-	typedef List<DataStreamPtr>::type DataStreamList;
+	typedef List<DataStreamPtr> DataStreamList;
 	typedef std::shared_ptr<DataStreamList> DataStreamListPtr;
 
 	enum TypeID_Utility

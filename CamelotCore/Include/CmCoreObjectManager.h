@@ -33,7 +33,7 @@ namespace BansheeEngine
 
 	private:
 		UINT64 mNextAvailableID;
-		Map<UINT64, CoreObject*>::type mObjects;
+		Map<UINT64, CoreObject*> mObjects;
 		CM_MUTEX(mObjectsMutex);
 	};
 }

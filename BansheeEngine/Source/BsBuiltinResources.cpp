@@ -176,7 +176,7 @@ namespace BansheeEngine
 			{
 				FontImportOptions* importOptions = static_cast<FontImportOptions*>(fontImportOptions.get());
 
-				Vector<BansheeEngine::UINT32>::type fontSizes;
+				Vector<BansheeEngine::UINT32> fontSizes;
 				fontSizes.push_back(DefaultFontSize);
 				importOptions->setFontSizes(fontSizes);
 				importOptions->setAntialiasing(false);

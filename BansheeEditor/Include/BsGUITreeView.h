@@ -25,7 +25,7 @@ namespace BansheeEngine
 			virtual ~TreeElement();
 
 			TreeElement* mParent;
-			Vector<TreeElement*>::type mChildren;
+			Vector<TreeElement*> mChildren;
 
 			GUIToggle* mFoldoutBtn;
 			GUILabel* mElement;
@@ -96,10 +96,10 @@ namespace BansheeEngine
 
 		GUITexture* mBackgroundImage;
 
-		Vector<InteractableElement>::type mVisibleElements;
+		Vector<InteractableElement> mVisibleElements;
 
 		bool mIsElementSelected;
-		Vector<SelectedElement>::type mSelectedElements;
+		Vector<SelectedElement> mSelectedElements;
 
 		TreeElement* mEditElement;
 		GUITreeViewEditBox* mNameEditBox;
@@ -115,7 +115,7 @@ namespace BansheeEngine
 		ScrollState mScrollState;
 		float mLastScrollTime;
 
-		Stack<TreeElement*>::type mAutoExpandedElements;
+		Stack<TreeElement*> mAutoExpandedElements;
 		TreeElement* mMouseOverDragElement;
 		float mMouseOverDragElementTime;
 

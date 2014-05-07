@@ -38,14 +38,14 @@ namespace BansheeEngine
 		/** Inherited from SpecificImporter */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
 	private:
-		Vector<WString>::type mExtensions;
+		Vector<WString> mExtensions;
 
 		void startUpSdk(FbxManager*& manager, FbxScene*& scene);
 		void shutDownSdk(FbxManager* manager);
 
 		void loadScene(FbxManager* manager, FbxScene* scene, const Path& filePath);
-		MeshDataPtr parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>::type& subMeshes);
+		MeshDataPtr parseScene(FbxManager* manager, FbxScene* scene, Vector<SubMesh>& subMeshes);
 
-		MeshDataPtr parseMesh(FbxMesh* mesh, Vector<SubMesh>::type& subMeshes, bool createTangentsIfMissing = true);
+		MeshDataPtr parseMesh(FbxMesh* mesh, Vector<SubMesh>& subMeshes, bool createTangentsIfMissing = true);
 	};
 }

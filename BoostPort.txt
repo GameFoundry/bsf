@@ -1,7 +1,3 @@
- - Remove ::type extensions from vectors
-
---------------
-Other:
  - std::function allocates memory yet I'm not using a custom allocator for it. Replace std::function with custom Function method.
  - Ability to construct Module using startUp without having to do allocation outside of it
 
@@ -13,8 +9,12 @@ Other:
 cm_shared_ptr should use && for parameter forwarding?
 cm_core_ptr too
 
- FreeImaged.lib -> FreeImage.lib
-freetypeD -> freetype
-all fbx libs -> libfbxsdk-md.lib
 
-Update Dependencies doc
+Figure out how to properly deal with events and recursion. e.g. when slot is disconnected during an event callback
+
+There was a crash in release mode - Maybe this was due to the event error, mabye not. Test.
+
+Test DX9 and OpenGL
+
+
+Create a proper git repo of dependencies folder

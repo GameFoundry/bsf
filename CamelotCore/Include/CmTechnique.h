@@ -52,7 +52,7 @@ namespace BansheeEngine
 		String mRenderSystem;
 		String mRenderer;
 
-		Vector<PassPtr>::type mPasses;
+		Vector<PassPtr> mPasses;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

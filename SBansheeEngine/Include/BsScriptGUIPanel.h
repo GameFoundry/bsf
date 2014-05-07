@@ -30,7 +30,7 @@ namespace BansheeEngine
 		void updateArea();
 
 		GUIWidget* mParentWidget;
-		Vector<ScriptGUIArea*>::type mAreas;
+		Vector<ScriptGUIArea*> mAreas;
 
 		RectI mParentArea;
 		RectI mMyArea;

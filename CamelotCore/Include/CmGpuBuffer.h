@@ -172,7 +172,7 @@ namespace BansheeEngine
 			UINT32 refCount;
 		};
 
-		UnorderedMap<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction>::type mBufferViews;
+		UnorderedMap<GPU_BUFFER_DESC, GpuBufferReference*, GpuBufferView::HashFunction, GpuBufferView::EqualFunction> mBufferViews;
 
 	protected:
 		GpuBufferType mType;

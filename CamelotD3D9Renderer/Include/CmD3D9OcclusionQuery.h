@@ -102,7 +102,7 @@ namespace BansheeEngine {
 		// private members
 		//--
 	private:					
-		typedef Map<IDirect3DDevice9*, IDirect3DQuery9*>::type DeviceToQueryMap;
+		typedef Map<IDirect3DDevice9*, IDirect3DQuery9*> DeviceToQueryMap;
 		typedef DeviceToQueryMap::iterator					   DeviceToQueryIterator;
 
 		DeviceToQueryMap				mMapDeviceToQuery;		

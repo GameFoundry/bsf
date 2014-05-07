@@ -47,7 +47,7 @@ namespace BansheeEngine
 		 */
 		void _registerFactory(RendererFactoryPtr factory);
 	private:
-		Vector<RendererFactoryPtr>::type mAvailableFactories;
+		Vector<RendererFactoryPtr> mAvailableFactories;
 
 		RendererPtr mActiveRenderer;
 	};

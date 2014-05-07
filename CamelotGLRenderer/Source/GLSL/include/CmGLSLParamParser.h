@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 	struct GLSLParamArrayData
 	{
-		Vector<UINT32>::type arrayIndices;
+		Vector<UINT32> arrayIndices;
 	};
 
 	class GLSLParamParser
@@ -168,8 +168,8 @@ namespace BansheeEngine
 		GLint uniformBlockCount = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_UNIFORM_BLOCKS, &uniformBlockCount);
 
-		Map<UINT32, String>::type blockSlotToName;
-		Set<String>::type blockNames;
+		Map<UINT32, String> blockSlotToName;
+		Set<String> blockNames;
 		for (GLuint index = 0; index < (GLuint)uniformBlockCount; index++)
 		{
 			GLsizei unusedSize = 0;
@@ -186,8 +186,8 @@ namespace BansheeEngine
 			blockNames.insert(newBlockDesc.name);
 		}
 
-		Map<String, UINT32>::type foundFirstArrayIndex; 
-		Map<String, GpuParamDataDesc>::type foundStructs;
+		Map<String, UINT32> foundFirstArrayIndex; 
+		Map<String, GpuParamDataDesc> foundStructs;
 
 		// get the number of active uniforms
 		GLint uniformCount = 0;
@@ -206,7 +206,7 @@ namespace BansheeEngine
 			// OpenGL Core Specification 2.11.4
 
 			// Check if parameter is a part of a struct
-			Vector<String>::type nameElements = StringUtil::tokenise(paramName, ".");
+			Vector<String> nameElements = StringUtil::tokenise(paramName, ".");
 
 			bool inStruct = false;
 			String structName;

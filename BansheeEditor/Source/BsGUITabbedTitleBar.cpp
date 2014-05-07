@@ -319,9 +319,9 @@ namespace BansheeEngine
 		}
 	}
 
-	Vector<RectI>::type GUITabbedTitleBar::calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const
+	Vector<RectI> GUITabbedTitleBar::calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const
 	{
-		Vector<RectI>::type draggableAreas;
+		Vector<RectI> draggableAreas;
 
 		UINT32 curX = x + 1;
 		UINT32 curY = y;

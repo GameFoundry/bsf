@@ -85,7 +85,7 @@ namespace BansheeEngine
 		// Number of pixel formats currently defined
         PF_COUNT = 30
     };
-	typedef Vector<PixelFormat>::type PixelFormatList;
+	typedef Vector<PixelFormat> PixelFormatList;
 
     /**
      * Flags defining some on/off properties of pixel formats

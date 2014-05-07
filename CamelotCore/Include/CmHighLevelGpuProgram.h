@@ -73,7 +73,7 @@ namespace BansheeEngine {
 
 		/** Constructor, should be used only by factory classes. */
 		HighLevelGpuProgram(const String& source, const String& entryPoint,
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes,
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
 			bool isAdjacencyInfoRequired = false);
 
 		/**
@@ -94,10 +94,10 @@ namespace BansheeEngine {
 		/************************************************************************/
 	public:
 		static HHighLevelGpuProgram create(const String& source, const String& entryPoint, 
-			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes = nullptr);
+			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes = nullptr);
 
 		static HighLevelGpuProgramPtr _createPtr(const String& source, const String& entryPoint, 
-			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes = nullptr);
+			const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes = nullptr);
     };
 
 	/** @} */

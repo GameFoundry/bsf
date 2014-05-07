@@ -30,6 +30,6 @@ namespace BansheeEngine
 	private:
 		friend class DeferredCall;
 
-		Vector<std::function<void()>>::type mCallbacks;
+		Vector<std::function<void()>> mCallbacks;
 	};
 }

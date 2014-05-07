@@ -15,7 +15,7 @@ namespace BansheeEngine
 	{ }
 
 	DockManagerLayout::Entry* DockManagerLayout::Entry::createLeaf(Entry* parent, UINT32 childIdx, 
-		const Vector<String>::type& widgetNames)
+		const Vector<String>& widgetNames)
 	{
 		Entry* newEntry = cm_new<Entry>();
 		newEntry->isLeaf = true;
@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	DockManagerLayout::~DockManagerLayout()
 	{
-		Stack<Entry*>::type todo;
+		Stack<Entry*> todo;
 		if(!mRootEntry.isLeaf)
 		{
 			todo.push(mRootEntry.children[0]);

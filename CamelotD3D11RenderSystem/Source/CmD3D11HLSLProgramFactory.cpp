@@ -19,7 +19,7 @@ namespace BansheeEngine
     }
 
 	HighLevelGpuProgramPtr D3D11HLSLProgramFactory::create(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
     {
 		D3D11HLSLProgram* prog = new (cm_alloc<D3D11HLSLProgram, PoolAlloc>()) D3D11HLSLProgram(source, entryPoint, gptype, profile, includes);
 

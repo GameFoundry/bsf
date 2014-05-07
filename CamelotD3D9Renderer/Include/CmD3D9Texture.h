@@ -111,14 +111,14 @@ namespace BansheeEngine {
 			IDirect3DSurface9* pDepthStencilSurface;	
 		};
 		
-		typedef Map<IDirect3DDevice9*, TextureResources*>::type	DeviceToTextureResourcesMap;
+		typedef Map<IDirect3DDevice9*, TextureResources*>	DeviceToTextureResourcesMap;
 		typedef DeviceToTextureResourcesMap::iterator			DeviceToTextureResourcesIterator;
 
 		/// Map between device to texture resources.
 		DeviceToTextureResourcesMap	mMapDeviceToTextureResources;
 
 		/// Vector of pointers to subsurfaces
-		typedef Vector<PixelBufferPtr>::type SurfaceList;
+		typedef Vector<PixelBufferPtr> SurfaceList;
 		SurfaceList	mSurfaceList;
 		/// The memory pool being used
 		D3DPOOL	mD3DPool;

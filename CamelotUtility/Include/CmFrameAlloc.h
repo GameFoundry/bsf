@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 	private:
 		UINT32 mBlockSize;
-		Vector<MemBlock*>::type mBlocks;
+		Vector<MemBlock*> mBlocks;
 		MemBlock* mFreeBlock;
 		std::atomic<UINT32> mTotalAllocBytes;
 

@@ -79,7 +79,7 @@ namespace BansheeEngine
 		bool needsUpdate = false;
 		if(!completeMatch)
 		{
-			Vector<TreeElement*>::type newChildren;
+			Vector<TreeElement*> newChildren;
 
 			bool* tempToDelete = (bool*)stackAlloc(sizeof(bool) * (UINT32)element->mChildren.size());
 			for(UINT32 i = 0; i < (UINT32)element->mChildren.size(); i++)
@@ -232,7 +232,7 @@ namespace BansheeEngine
 		{
 			DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
 
-			Vector<HSceneObject>::type sceneObjects;
+			Vector<HSceneObject> sceneObjects;
 			SceneTreeElement* sceneTreeElement = static_cast<SceneTreeElement*>(overTreeElement);
 			HSceneObject newParent = sceneTreeElement->mSceneObject;
 

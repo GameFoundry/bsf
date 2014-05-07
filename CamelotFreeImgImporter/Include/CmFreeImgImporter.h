@@ -36,8 +36,8 @@ namespace BansheeEngine
 		/** Inherited from SpecificImporter */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
 	private:
-		Vector<WString>::type mExtensions;
-		UnorderedMap<WString, int>::type mExtensionToFID;
+		Vector<WString> mExtensions;
+		UnorderedMap<WString, int> mExtensionToFID;
 
 		WString magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
 		TextureDataPtr importRawImage(DataStreamPtr fileData);

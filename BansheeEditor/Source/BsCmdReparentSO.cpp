@@ -3,7 +3,7 @@
 
 namespace BansheeEngine
 {
-	CmdReparentSO::CmdReparentSO(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent)
+	CmdReparentSO::CmdReparentSO(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent)
 		:mSceneObjects(sceneObjects), mNewParent(newParent)
 	{
 		for(auto& sceneObject : mSceneObjects)
@@ -12,7 +12,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void CmdReparentSO::execute(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent)
+	void CmdReparentSO::execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent)
 	{
 		// Register command and commit it
 		CmdReparentSO* command = new (cm_alloc<CmdReparentSO>()) CmdReparentSO(sceneObjects, newParent);

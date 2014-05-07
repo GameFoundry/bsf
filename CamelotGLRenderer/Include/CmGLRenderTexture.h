@@ -110,7 +110,7 @@ namespace BansheeEngine
                 UINT32 stencil;   // Stencil format (0=no stencil)
             };
             
-            Vector<Mode>::type modes;
+            Vector<Mode> modes;
         };
         /** Properties for all internal formats defined by the engine
         */

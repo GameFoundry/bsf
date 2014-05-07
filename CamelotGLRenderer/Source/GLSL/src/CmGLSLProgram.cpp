@@ -47,7 +47,7 @@ namespace BansheeEngine
 {
 	//-----------------------------------------------------------------------
 	GLSLProgram::GLSLProgram(const String& source, const String& entryPoint,
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
 		: HighLevelGpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
 		mInputOperationType(DOT_TRIANGLE_LIST),
 		mOutputOperationType(DOT_TRIANGLE_LIST), mMaxOutputVertices(3)

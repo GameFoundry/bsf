@@ -18,7 +18,7 @@ namespace BansheeEngine
 
 	private:
 		D3D11Driver* mDriver;
-		Vector<D3D11VideoMode>::type mModeList;
+		Vector<D3D11VideoMode> mModeList;
 
 		void enumerate(UINT32 adapterOutput);
 	};

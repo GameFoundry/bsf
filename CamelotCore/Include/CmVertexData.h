@@ -70,7 +70,7 @@ namespace BansheeEngine {
 		void setBuffer(UINT32 index, VertexBufferPtr buffer);
 		/// Gets the buffer bound to the given source index
 		VertexBufferPtr getBuffer(UINT32 index) const;
-		const UnorderedMap<UINT32, VertexBufferPtr>::type& getBuffers() const { return mVertexBuffers; }
+		const UnorderedMap<UINT32, VertexBufferPtr>& getBuffers() const { return mVertexBuffers; }
 		/// Gets whether a buffer is bound to the given source index
 		bool isBufferBound(UINT32 index) const;
 
@@ -98,7 +98,7 @@ namespace BansheeEngine {
 		/** The vertex buffer bindings to be used. 
 		@remarks Note that this is created for you on construction.
 		*/
-		UnorderedMap<UINT32, VertexBufferPtr>::type mVertexBuffers;
+		UnorderedMap<UINT32, VertexBufferPtr> mVertexBuffers;
 	};
 
 	/** Vertex cache profiler.

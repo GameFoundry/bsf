@@ -286,11 +286,11 @@ namespace BansheeEngine
 
 	struct FolderMonitor::Pimpl
 	{
-		Vector<FolderWatchInfo*>::type mFoldersToWatch;
+		Vector<FolderWatchInfo*> mFoldersToWatch;
 		HANDLE mCompPortHandle;
 
-		Queue<FileAction*>::type mFileActions;
-		Queue<FileAction*>::type mActiveFileActions;
+		Queue<FileAction*> mFileActions;
+		Queue<FileAction*> mActiveFileActions;
 
 		CM_MUTEX(mMainMutex);
 		CM_THREAD_TYPE* mWorkerThread;
@@ -578,7 +578,7 @@ namespace BansheeEngine
 
 	void FolderMonitor::handleNotifications(FileNotifyInfo& notifyInfo, FolderWatchInfo& watchInfo)
 	{
-		Vector<FileAction*>::type mActions;
+		Vector<FileAction*> mActions;
 
 		do
 		{

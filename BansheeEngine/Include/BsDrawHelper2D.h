@@ -81,7 +81,7 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 * 			  Enough space for (numLines * 2) vertices and (numLines * 2) indices
 		 */
-		void lineList_Pixel(const Vector<Vector2>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void lineList_Pixel(const Vector<Vector2>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		/**
 		 * @brief	Fills the mesh data with vertices representing anti-aliased lines of specific width. Antialiasing is done using alpha blending.
@@ -100,16 +100,16 @@ namespace BansheeEngine
 		 * 			  32bit index buffer
 		 *			  Enough space for (numLines * 8) vertices and (numLines * 30) indices
 		 */
-		void lineList_AA(const Vector<Vector2>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
+		void lineList_AA(const Vector<Vector2>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset);
 
 		void drawQuad(const HCamera& camera, const RectF& area, const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 		void drawLine_Pixel(const HCamera& camera, const Vector2& a, const Vector2& b, const Color& color = Color::White, 
 			DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 		void drawLine_AA(const HCamera& camera, const Vector2& a, const Vector2& b, float width, float borderWidth, 
 			const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
-		void drawLineList_Pixel(const HCamera& camera, const Vector<Vector2>::type& linePoints, const Color& color = Color::White, 
+		void drawLineList_Pixel(const HCamera& camera, const Vector<Vector2>& linePoints, const Color& color = Color::White, 
 			DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
-		void drawLineList_AA(const HCamera& camera, const Vector<Vector2>::type& linePoints, float width, float borderWidth, 
+		void drawLineList_AA(const HCamera& camera, const Vector<Vector2>& linePoints, float width, float borderWidth, 
 			const Color& color = Color::White, DebugDrawCoordType coordType = DebugDrawCoordType::Pixel, float timeout = 0.0f);
 
 	private:
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		void line_AA(const Vector2& a, const Vector2& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 
-		void polygon_AA(const Vector<Vector2>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void polygon_AA(const Vector<Vector2>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset);
 	};
 }

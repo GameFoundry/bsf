@@ -38,7 +38,7 @@ namespace BansheeEngine
 	{
 	private:
 		D3D9Driver* mpDriver;
-		Vector<D3D9VideoMode>::type mModeList;
+		Vector<D3D9VideoMode> mModeList;
 
 	public:
 		D3D9VideoModeList( D3D9Driver* pDriver );

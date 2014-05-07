@@ -40,27 +40,4 @@ namespace BansheeEngine
 	private:
 		std::atomic_flag mLock;
 	};
-
-	/**
-	 * @brief	Spin lock that is automatically locked upon creation and
-	 *			unlocked upon destruction.
-	 *
-	 * @see		SpinLock
-	 */
-	class ScopedSpinLock
-	{
-	public:
-		ScopedSpinLock()
-		{
-			mLock.lock();
-		}
-
-		~ScopedSpinLock()
-		{
-			mLock.unlock();
-		}
-
-	private:
-		SpinLock mLock;
-	};
 }

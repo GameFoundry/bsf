@@ -84,6 +84,16 @@ guint8 *stackBottom = (guint8*)tib->StackLimit;
   - Build "mono" project. 
   - You should end up with mono-2.0.dll, mono-2.0.lib, MonoPosixHelper.dll and mono.exe and we are done compiling
 
+--------------------------------------VS2013 specific changes--------------------------------------------
+
+If compiling for VS2013 you will also need to perform these modifications:
+ - Edit libmonoruntime project file and remove item "..\mono\metadata\sgen-bridge.c" as it is duplicate 
+  (just search for it and you'll see two copies). If you dont VS2013 will fail to load that project.
+
+ - In mono_compiler.h at line 192 rename "trunc" macro to "mono_trunc" and all its references too.
+   - (Should just be 4 references in jit-icalls.c at lines 888, 891, 904, 932.)
+   - This is needed because standard math.h now contains a trunc method which conflicts with the macro
+
 -------------------------------Special Banshee-specific changes--------------------------------------------
 
 Move & modify:

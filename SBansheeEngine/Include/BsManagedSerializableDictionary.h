@@ -46,8 +46,8 @@ namespace BansheeEngine
 		MonoProperty* mValueProp;
 
 		ManagedSerializableTypeInfoDictionaryPtr mDictionaryTypeInfo;
-		Vector<ManagedSerializableFieldDataPtr>::type mKeyEntries;
-		Vector<ManagedSerializableFieldDataPtr>::type mValueEntries;
+		Vector<ManagedSerializableFieldDataPtr> mKeyEntries;
+		Vector<ManagedSerializableFieldDataPtr> mValueEntries;
 
 		void initMonoObjects(MonoClass* dictionaryClass);
 

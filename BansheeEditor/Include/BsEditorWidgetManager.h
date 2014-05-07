@@ -67,9 +67,9 @@ namespace BansheeEngine
 		static void preRegisterWidget(const String& name, std::function<EditorWidgetBase*(EditorWidgetContainer&)> createCallback);
 
 	private:
-		Map<String, EditorWidgetBase*>::type mActiveWidgets;
-		Map<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>::type mCreateCallbacks;
+		Map<String, EditorWidgetBase*> mActiveWidgets;
+		Map<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>> mCreateCallbacks;
 
-		static Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>>::type QueuedCreateCallbacks;
+		static Stack<std::pair<String, std::function<EditorWidgetBase*(EditorWidgetContainer&)>>> QueuedCreateCallbacks;
 	};
 }

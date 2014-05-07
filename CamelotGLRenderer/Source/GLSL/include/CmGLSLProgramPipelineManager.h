@@ -37,7 +37,7 @@ namespace BansheeEngine
 			bool operator()(const ProgramPipelineKey &a, const ProgramPipelineKey &b) const;
 		};
 
-		typedef UnorderedMap<ProgramPipelineKey, GLSLProgramPipeline, ProgramPipelineKeyHashFunction, ProgramPipelineKeyEqual>::type ProgramPipelineMap;
+		typedef UnorderedMap<ProgramPipelineKey, GLSLProgramPipeline, ProgramPipelineKeyHashFunction, ProgramPipelineKeyEqual> ProgramPipelineMap;
 		ProgramPipelineMap mPipelines;
 	};
 }

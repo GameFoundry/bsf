@@ -101,9 +101,9 @@ namespace BansheeEngine
 		Vector2I mCursorPosition;
 		float mMouseScroll;
 		WString mInputString;
-		Queue<ButtonStateChange>::type mButtonStates;
-		Queue<DoubleClick>::type mDoubleClicks;
-		Queue<InputCommandType>::type mInputCommands;
+		Queue<ButtonStateChange> mButtonStates;
+		Queue<DoubleClick> mDoubleClicks;
+		Queue<InputCommandType> mInputCommands;
 		OSPointerButtonStates mMouseMoveBtnState;
 
 		HEvent mCharInputConn;

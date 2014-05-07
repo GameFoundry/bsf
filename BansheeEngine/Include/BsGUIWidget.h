@@ -33,7 +33,7 @@ namespace BansheeEngine
 		bool isDirty(bool cleanIfDirty);
 
 		Viewport* getTarget() const { return mTarget; }
-		const Vector<GUIElement*>::type& getElements() const { return mElements; }
+		const Vector<GUIElement*>& getElements() const { return mElements; }
 
 		void _updateLayout();
 
@@ -86,8 +86,8 @@ namespace BansheeEngine
 		void updateBounds() const;
 
 		Viewport* mTarget;
-		Vector<GUIElement*>::type mElements;
-		Vector<GUIArea*>::type mAreas;
+		Vector<GUIElement*> mElements;
+		Vector<GUIArea*> mAreas;
 		UINT8 mDepth;
 
 		Vector3 mLastFramePosition;
@@ -98,8 +98,8 @@ namespace BansheeEngine
 
 		mutable bool mWidgetIsDirty;
 		mutable RectI mBounds;
-		mutable Vector<HMesh>::type mCachedMeshes;
-		mutable Vector<HMaterial>::type mCachedMaterials;
+		mutable Vector<HMesh> mCachedMeshes;
+		mutable Vector<HMaterial> mCachedMaterials;
 
 		const GUISkin* mSkin;
 	};

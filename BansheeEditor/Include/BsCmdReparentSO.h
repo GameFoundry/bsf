@@ -9,7 +9,7 @@ namespace BansheeEngine
 	class CmdReparentSO : public EditorCommand
 	{
 	public:
-		static void execute(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent);
+		static void execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent);
 
 		void commit();
 		void revert();
@@ -17,10 +17,10 @@ namespace BansheeEngine
 	private:
 		friend class UndoRedo;
 
-		CmdReparentSO(const Vector<HSceneObject>::type& sceneObjects, const HSceneObject& newParent);
+		CmdReparentSO(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent);
 
-		Vector<HSceneObject>::type mSceneObjects;
-		Vector<HSceneObject>::type mOldParents;
+		Vector<HSceneObject> mSceneObjects;
+		Vector<HSceneObject> mOldParents;
 		HSceneObject mNewParent;
 	};
 }

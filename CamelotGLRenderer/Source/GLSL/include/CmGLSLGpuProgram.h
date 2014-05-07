@@ -63,7 +63,7 @@ namespace BansheeEngine {
 		friend class GLGpuProgramManager;
 
 		GLSLGpuProgram(const String& source, const String& entryPoint, 
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes);
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
 
 		/// GL Handle for the shader object
 		GLSLProgram* mGLSLProgram;

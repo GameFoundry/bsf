@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 * @brief	Sets optional GPU program include files which may be used
 		 * 			for sharing code across multiple programs.
 		 */
-		void setIncludes(const Vector<HGpuProgInclude>::type& includes) { mIncludes = includes; }
+		void setIncludes(const Vector<HGpuProgInclude>& includes) { mIncludes = includes; }
 
 		/**
 		 * @brief	Gets the name of the GPU program entry point method (e.g. "main").
@@ -67,7 +67,7 @@ namespace BansheeEngine
 		 * @brief	Gets optional GPU program include files which may be used
 		 * 			for sharing code across multiple programs.
 		 */
-		const Vector<HGpuProgInclude>::type& getIncludes() const { return mIncludes; }
+		const Vector<HGpuProgInclude>& getIncludes() const { return mIncludes; }
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -82,6 +82,6 @@ namespace BansheeEngine
 		String mLanguage;
 		GpuProgramProfile mProfile;
 		GpuProgramType mType;
-		Vector<HGpuProgInclude>::type mIncludes;
+		Vector<HGpuProgInclude> mIncludes;
 	};
 }

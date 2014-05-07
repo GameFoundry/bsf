@@ -37,9 +37,9 @@ namespace BansheeEngine
 		Vector2I mousePosition;
 		float mouseScroll;
 		OSPointerButtonStates mouseMoveBtnState;
-		Queue<ButtonStateChange>::type buttonStates;
-		Queue<DoubleClick>::type doubleClicks;
-		Queue<InputCommandType>::type inputCommands;
+		Queue<ButtonStateChange> buttonStates;
+		Queue<DoubleClick> doubleClicks;
+		Queue<InputCommandType> inputCommands;
 
 		{
 			CM_LOCK_MUTEX(mOSInputMutex);
@@ -53,13 +53,13 @@ namespace BansheeEngine
 			mouseMoveBtnState = mMouseMoveBtnState;
 
 			buttonStates = mButtonStates;
-			mButtonStates = Queue<ButtonStateChange>::type();
+			mButtonStates = Queue<ButtonStateChange>();
 
 			inputCommands = mInputCommands;
-			mInputCommands = Queue<InputCommandType>::type();
+			mInputCommands = Queue<InputCommandType>();
 
 			doubleClicks = mDoubleClicks;
-			mDoubleClicks = Queue<DoubleClick>::type();
+			mDoubleClicks = Queue<DoubleClick>();
 		}
 
 		if(mousePosition != mLastCursorPos || (Math::abs(mouseScroll) > 0.00001f))

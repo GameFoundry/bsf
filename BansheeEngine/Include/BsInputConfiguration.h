@@ -50,7 +50,7 @@ namespace BansheeEngine
 		}
 
 	private:
-		static Map<String, UINT32>::type UniqueButtonIds;
+		static Map<String, UINT32> UniqueButtonIds;
 		static UINT32 NextButtonId;
 	};
 
@@ -76,7 +76,7 @@ namespace BansheeEngine
 
 		// TODO - registerAxis
 	private:
-		Vector<VirtualButtonData>::type mButtons[BC_Count];
+		Vector<VirtualButtonData> mButtons[BC_Count];
 
 		UINT64 mRepeatInterval;
 	};

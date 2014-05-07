@@ -89,7 +89,7 @@ namespace BansheeEngine {
 		friend class D3D9HLSLProgramFactory;
 
 		D3D9HLSLProgram(const String& source, const String& entryPoint, 
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, 
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, 
 			bool isAdjacencyInfoRequired = false);
  
 		/**

@@ -43,7 +43,7 @@ namespace BansheeEngine
 		// Store cached line data
 		UINT32 curCharIdx = 0;
 		UINT32 curLineIdx = 0;
-		Vector<Vector2I>::type alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width, 
+		Vector<Vector2I> alignmentOffsets = TextSprite::getAlignmentOffsets(textData, mTextDesc.width, 
 			mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign);
 
 		for(UINT32 i = 0; i < numLines; i++)

@@ -58,10 +58,10 @@ namespace BansheeEngine {
 		~D3D9DeviceManager	();
 
 	protected:		
-		typedef Vector<D3D9Device*>::type		 DeviceList;
+		typedef Vector<D3D9Device*>		 DeviceList;
 		typedef DeviceList::iterator			 DeviceIterator;
 		typedef DeviceList::const_iterator		 ConstDeviceIterator;
-		typedef Vector<D3D9RenderWindow*>::type  D3D9RenderWindowList;
+		typedef Vector<D3D9RenderWindow*>  D3D9RenderWindowList;
 
 	protected:
 		D3D9Device*			selectDevice		(D3D9RenderWindow* renderWindow, D3D9RenderWindowList& renderWindowsGroup);

@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		if(libraryEntry->type == ProjectLibrary::LibraryEntryType::Directory)
 		{
-			Stack<StackElem>::type todo;
+			Stack<StackElem> todo;
 			todo.push(StackElem(libraryEntry, treeElement));
 
 			while(!todo.empty())
@@ -331,7 +331,7 @@ namespace BansheeEngine
 
 		if(mDropTarget->getDropType() == OSDropType::FileList)
 		{
-			Vector<WString>::type fileList = mDropTarget->getFileList();
+			Vector<WString> fileList = mDropTarget->getFileList();
 
 			mDraggedResources = cm_new<InternalDraggedResources>((UINT32)fileList.size());
 			for(UINT32 i = 0; i < (UINT32)fileList.size(); i++)

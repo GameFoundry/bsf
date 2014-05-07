@@ -429,11 +429,11 @@ namespace BansheeEngine
 		TechniquePtr mBestTechnique;
 		INT16 mRenderQueue;
 
-		Set<String>::type mValidShareableParamBlocks;
-		Map<String, String>::type mValidParams; // Also maps Shader param name -> gpu variable name
+		Set<String> mValidShareableParamBlocks;
+		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name
 
-		Vector<PassParametersPtr>::type mParametersPerPass;
-		Vector<GpuParamBlockBufferPtr>::type mParamBuffers;
+		Vector<PassParametersPtr> mParametersPerPass;
+		Vector<GpuParamBlockBufferPtr> mParamBuffers;
 
 		Material();
 
@@ -446,7 +446,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to.
 		 */
-		const Map<String, String>::type& getValidParamNames() const { return mValidParams; }
+		const Map<String, String>& getValidParamNames() const { return mValidParams; }
 
 		/**
 		 * @brief	Initializes the material by using the best technique from the currently set shader. Shader
@@ -458,23 +458,23 @@ namespace BansheeEngine
 		 * @brief	Constructs a map containing all data parameters (e.g. float, vector3, color).
 		 * 			Map contains parameter names and descriptions.
 		 */
-		Map<String, const GpuParamDataDesc*>::type determineValidDataParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const;
+		Map<String, const GpuParamDataDesc*> determineValidDataParameters(const Vector<const GpuParamDesc*>& paramDescs) const;
 
 		/**
 		 * @brief	Constructs a list containing all object parameter (e.g. texture, sampler state) names.
 		 */
-		Set<String>::type determineValidObjectParameters(const Vector<const GpuParamDesc*>::type& paramDescs) const;
+		Set<String> determineValidObjectParameters(const Vector<const GpuParamDesc*>& paramDescs) const;
 
 		/**
 		 * @brief	Constructs a list containing all shareable parameter block names. Shareable blocks may be shared between
 		 * 			different GPU programs, passes or even materials. 
 		 */
-		Set<String>::type determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>::type& paramDescs) const;
+		Set<String> determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>& paramDescs) const;
 
 		/**
 		 * @brief	Constructs a map that maps parameter names to a parameter block.
 		 */
-		Map<String, String>::type determineParameterToBlockMapping(const Vector<const GpuParamDesc*>::type& paramDescs);
+		Map<String, String> determineParameterToBlockMapping(const Vector<const GpuParamDesc*>& paramDescs);
 
 		/**
 		 * @brief	Checks are the specified two parameters equal

@@ -82,7 +82,7 @@ namespace BansheeEngine
 		 */
 		void _registerAssetImporter(SpecificImporter* importer);
 	private:
-		Vector<SpecificImporter*>::type mAssetImporters;
+		Vector<SpecificImporter*> mAssetImporters;
 
 		SpecificImporter* getImporterForFile(const Path& inputFilePath) const;
 	};

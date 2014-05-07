@@ -44,7 +44,7 @@ namespace BansheeEngine
 
 		void update(const TEXT_SPRITE_DESC& desc);
 
-		static Vector<Vector2I>::type getAlignmentOffsets(const TextData& textData, 
+		static Vector<Vector2I> getAlignmentOffsets(const TextData& textData, 
 			UINT32 width, UINT32 height, TextHorzAlign horzAlign, TextVertAlign vertAlign);
 
 		/**

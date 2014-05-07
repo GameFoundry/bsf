@@ -35,7 +35,7 @@ namespace BansheeEngine
 		std::shared_ptr<IReflectable> decode(UINT8* buffer, UINT32 bufferSize);
 
 	private:
-		Vector<BufferPiece>::type mBufferPieces;
+		Vector<BufferPiece> mBufferPieces;
 
 		/**
 		 * @brief	Called by the binary serializer whenever the buffer gets full.

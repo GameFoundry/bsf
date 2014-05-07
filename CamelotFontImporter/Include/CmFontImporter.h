@@ -39,7 +39,7 @@ namespace BansheeEngine
 		 */
 		virtual ImportOptionsPtr createImportOptions() const;
 	private:
-		Vector<WString>::type mExtensions;
+		Vector<WString> mExtensions;
 
 		const static int MAXIMUM_TEXTURE_SIZE = 2048;
 	};

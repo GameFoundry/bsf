@@ -70,7 +70,7 @@ namespace BansheeEngine
 		 * @return	One or more descriptors that determine the size of the final atlas textures. Texture elements
 		 * 			will reference these pages with their "output.page" parameter.
 		 */
-		Vector<TexAtlasPageDesc>::type createAtlasLayout(Vector<TexAtlasElementDesc>::type& elements) const;
+		Vector<TexAtlasPageDesc> createAtlasLayout(Vector<TexAtlasElementDesc>& elements) const;
 
 	private:
 		bool mSquare;
@@ -88,25 +88,25 @@ namespace BansheeEngine
 		 *
 		 * @return	Number of pages generated.
 		 */
-		int generatePagesForSize(Vector<TexAtlasElementDesc>::type& elements, UINT32 width, UINT32 height, UINT32 startPage = 0) const;
+		int generatePagesForSize(Vector<TexAtlasElementDesc>& elements, UINT32 width, UINT32 height, UINT32 startPage = 0) const;
 
 		/**
 		 * @brief	Finds the largest element without a page that fits within the provided node.
 		 *
 		 * @return	Array index of the found page, or -1 if all textures have a page.
 		 */
-		int addLargestTextureWithoutPageThatFits(Vector<TexAtlasElementDesc>::type& elements, TexAtlasNode& node) const;
+		int addLargestTextureWithoutPageThatFits(Vector<TexAtlasElementDesc>& elements, TexAtlasNode& node) const;
 
 		/**
 		 * @brief	Scan all of the provided elements and find the largest one that still doesn't have a page assigned.
 		 * 			
 		 * @return	Array index of the found page, or -1 if all textures have a page.
 		 */
-		int findLargestTextureWithoutPage(const Vector<TexAtlasElementDesc>::type& elements) const;
+		int findLargestTextureWithoutPage(const Vector<TexAtlasElementDesc>& elements) const;
 
 		/**
 		 * @brief	Sorts all the texture elements so that larget elements come first.
 		 */
-		void sortBySize(Vector<TexAtlasElementDesc>::type& elements) const;
+		void sortBySize(Vector<TexAtlasElementDesc>& elements) const;
 	};
 }

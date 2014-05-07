@@ -127,7 +127,7 @@ namespace BansheeEngine
 		 * @brief	Returns a list of files received by the drop target. Only valid
 		 *			after a drop of FileList type has been triggered.
 		 */
-		const Vector<WString>::type& getFileList() const { return *mFileList; }
+		const Vector<WString>& getFileList() const { return *mFileList; }
 
 		/**
 		 * @brief	Internal method. Clears all internal values.
@@ -137,7 +137,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Internal method. Sets the file list and marks the drop event as FileList.
 		 */
-		void _setFileList(const Vector<WString>::type& fileList);
+		void _setFileList(const Vector<WString>& fileList);
 
 		/**
 		 * @brief	Marks the drop area as inactive or active.
@@ -174,7 +174,7 @@ namespace BansheeEngine
 
 		union 
 		{
-			Vector<WString>::type* mFileList;
+			Vector<WString>* mFileList;
 		};
 	};
 }

@@ -53,7 +53,7 @@ namespace BansheeEngine
 		void saveToFile(const WString& path);
 
 	private:
-		Vector<LogEntry*>::type mEntries;
+		Vector<LogEntry*> mEntries;
 		CM_RECURSIVE_MUTEX(mMutex);
 
 		/**

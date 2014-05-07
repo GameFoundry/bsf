@@ -47,7 +47,7 @@ namespace BansheeEngine
 		void setActive(const String& renderSystemName);
 
 	private:
-		UnorderedMap<String, BuiltinMaterialFactory*>::type mAvailableFactories;
+		UnorderedMap<String, BuiltinMaterialFactory*> mAvailableFactories;
 		BuiltinMaterialFactory* mActiveFactory;
 	};
 }

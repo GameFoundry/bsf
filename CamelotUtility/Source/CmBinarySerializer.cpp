@@ -63,7 +63,7 @@ namespace BansheeEngine
 		}
 
 		// Encode pointed to objects and their value types
-		UnorderedSet<UINT32>::type serializedObjects;
+		UnorderedSet<UINT32> serializedObjects;
 		while(true)
 		{
 			auto iter = mObjectsToEncode.begin();
@@ -790,7 +790,7 @@ exit:
 		// Finish serialization (in reverse order then it was started)
 		if(object != nullptr)
 		{
-			Stack<RTTITypeBase*>::type typesToProcess;
+			Stack<RTTITypeBase*> typesToProcess;
 
 			RTTITypeBase* currentType = object->getRTTI();
 			while(currentType != nullptr)

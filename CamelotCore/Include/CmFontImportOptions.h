@@ -11,14 +11,14 @@ namespace BansheeEngine
 	public:
 		FontImportOptions();
 
-		void setFontSizes(const Vector<UINT32>::type& fontSizes) { mFontSizes = fontSizes; }
+		void setFontSizes(const Vector<UINT32>& fontSizes) { mFontSizes = fontSizes; }
 		void addCharIndexRange(UINT32 from, UINT32 to);
 		void clearCharIndexRanges();
 		void setDPI(UINT32 dpi) { mDPI = dpi; }
 		void setAntialiasing(bool enabled) { mAntialiasing = enabled; }
 
-		Vector<UINT32>::type getFontSizes() const { return mFontSizes; }
-		Vector<std::pair<UINT32, UINT32>>::type getCharIndexRanges() const { return mCharIndexRanges; }
+		Vector<UINT32> getFontSizes() const { return mFontSizes; }
+		Vector<std::pair<UINT32, UINT32>> getCharIndexRanges() const { return mCharIndexRanges; }
 		UINT32 getDPI() const { return mDPI; }
 		bool getAntialiasing() const { return mAntialiasing; }
 
@@ -31,8 +31,8 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const;
 
 	private:
-		Vector<UINT32>::type mFontSizes;
-		Vector<std::pair<UINT32, UINT32>>::type mCharIndexRanges;
+		Vector<UINT32> mFontSizes;
+		Vector<std::pair<UINT32, UINT32>> mCharIndexRanges;
 		UINT32 mDPI;
 		bool mAntialiasing;
 	};

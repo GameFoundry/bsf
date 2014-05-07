@@ -35,7 +35,7 @@ namespace BansheeEngine
 		GpuProgramProfile profile = gpuProgImportOptions->getProfile();
 		String language = gpuProgImportOptions->getLanguage();
 		GpuProgramType gptype = gpuProgImportOptions->getType();
-		Vector<HGpuProgInclude>::type includes = gpuProgImportOptions->getIncludes();
+		Vector<HGpuProgInclude> includes = gpuProgImportOptions->getIncludes();
 
 		HighLevelGpuProgramPtr gpuProgram = HighLevelGpuProgram::_createPtr(shaderSource, entryPoint, language, gptype, profile, &includes);
 		gpuProgram->synchronize();

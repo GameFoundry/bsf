@@ -33,7 +33,7 @@ namespace BansheeEngine
 	Font::~Font()
 	{ }
 
-	void Font::initialize(const Vector<FontData>::type& fontData)
+	void Font::initialize(const Vector<FontData>& fontData)
 	{
 		for(auto iter = fontData.begin(); iter != fontData.end(); ++iter)
 			mFontDataPerSize[iter->size] = *iter;
@@ -83,14 +83,14 @@ namespace BansheeEngine
 		return bestSize;
 	}
 
-	HFont Font::create(const Vector<FontData>::type& fontData)
+	HFont Font::create(const Vector<FontData>& fontData)
 	{
 		FontPtr newFont = _createPtr(fontData);
 
 		return gResources().createResourceHandle(newFont);
 	}
 
-	FontPtr Font::_createPtr(const Vector<FontData>::type& fontData)
+	FontPtr Font::_createPtr(const Vector<FontData>& fontData)
 	{
 		return FontManager::instance().create(fontData);
 	}

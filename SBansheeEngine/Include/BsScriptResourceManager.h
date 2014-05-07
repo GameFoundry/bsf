@@ -53,7 +53,7 @@ namespace BansheeEngine
 		void destroyScriptResource(ScriptResource* resource);
 
 	private:
-		UnorderedMap<String, ScriptResource*>::type mScriptResources;
+		UnorderedMap<String, ScriptResource*> mScriptResources;
 		MonoClass* mTextureClass;
 		MonoClass* mSpriteTextureClass;
 

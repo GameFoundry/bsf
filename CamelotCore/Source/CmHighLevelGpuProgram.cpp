@@ -35,7 +35,7 @@ THE SOFTWARE.
 namespace BansheeEngine
 {
 	HighLevelGpuProgram::HighLevelGpuProgram(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, bool isAdjacencyInfoRequired)
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
         : GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired), 
         mAssemblerProgram(nullptr)
     {
@@ -67,7 +67,7 @@ namespace BansheeEngine
     }
 
 	HHighLevelGpuProgram HighLevelGpuProgram::create(const String& source, const String& entryPoint, 
-		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
+		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
 	{
 		HighLevelGpuProgramPtr programPtr = _createPtr(source, entryPoint, language, gptype, profile, includes);
 
@@ -75,7 +75,7 @@ namespace BansheeEngine
 	}
 
 	HighLevelGpuProgramPtr HighLevelGpuProgram::_createPtr(const String& source, const String& entryPoint, 
-		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes)
+		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
 	{
 		return HighLevelGpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes);
 	}

@@ -22,7 +22,7 @@ namespace BansheeEngine
 	protected:
 		MainEditorWindow* mMainWindow;
 
-		Vector<EditorWindowBase*>::type mEditorWindows;
-		Vector<EditorWindowBase*>::type mScheduledForDestruction;
+		Vector<EditorWindowBase*> mEditorWindows;
+		Vector<EditorWindowBase*> mScheduledForDestruction;
 	};
 }

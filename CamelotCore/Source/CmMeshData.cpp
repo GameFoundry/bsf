@@ -56,8 +56,8 @@ namespace BansheeEngine
 
 	// TODO - This doesn't handle the case where multiple elements in same slot have different data types
 	//  - actually it will likely corrupt memory in that case
-	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>::type& meshes, const Vector<Vector<SubMesh>::type>::type& allSubMeshes, 
-		Vector<SubMesh>::type& subMeshes)
+	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>& meshes, const Vector<Vector<SubMesh>>& allSubMeshes, 
+		Vector<SubMesh>& subMeshes)
 	{
 		UINT32 totalVertexCount = 0;
 		UINT32 totalIndexCount = 0;
@@ -70,7 +70,7 @@ namespace BansheeEngine
 		VertexDataDescPtr combinedVertexData = cm_shared_ptr<VertexDataDesc, PoolAlloc>();
 		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, combinedVertexData);
 
-		Vector<VertexElement>::type combinedVertexElements;
+		Vector<VertexElement> combinedVertexElements;
 		for(auto& meshData : meshes)
 		{
 			for(UINT32 i = 0; i < meshData->getVertexDesc()->getNumElements(); i++)
@@ -132,7 +132,7 @@ namespace BansheeEngine
 		for(auto& meshData : meshes)
 		{
 			UINT32 numIndices = meshData->getNumIndices();
-			const Vector<SubMesh>::type curSubMeshes = allSubMeshes[meshIdx];
+			const Vector<SubMesh> curSubMeshes = allSubMeshes[meshIdx];
 
 			for(auto& subMesh : curSubMeshes)
 			{

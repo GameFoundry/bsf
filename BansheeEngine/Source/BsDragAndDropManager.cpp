@@ -71,9 +71,10 @@ namespace BansheeEngine
 
 		if(!onDragEnded.empty())
 		{
-			bool processed = onDragEnded(event);
+			DragCallbackInfo info;
+			onDragEnded(event, info);
 
-			endDrag(processed);
+			endDrag(info.processed);
 		}
 	}
 }

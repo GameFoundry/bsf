@@ -34,7 +34,7 @@ namespace BansheeEngine
 
 		MonoClass* getClass(const String& namespaceName, const String& name) const;
 		MonoClass* getClass(::MonoClass* rawMonoClass) const;
-		const Vector<MonoClass*>::type& getAllClasses() const;
+		const Vector<MonoClass*>& getAllClasses() const;
 
 		void invoke(const String& functionName);
 
@@ -55,10 +55,10 @@ namespace BansheeEngine
 		bool mIsLoaded;
 		bool mIsDependency;
 		
-		mutable UnorderedMap<ClassId, MonoClass*, ClassId::Hash, ClassId::Equals>::type mClasses;
-		mutable UnorderedMap<::MonoClass*, MonoClass*>::type mClassesByRaw;
+		mutable UnorderedMap<ClassId, MonoClass*, ClassId::Hash, ClassId::Equals> mClasses;
+		mutable UnorderedMap<::MonoClass*, MonoClass*> mClassesByRaw;
 
 		mutable bool mHaveCachedClassList;
-		mutable Vector<MonoClass*>::type mCachedClassList;
+		mutable Vector<MonoClass*> mCachedClassList;
 	};
 }

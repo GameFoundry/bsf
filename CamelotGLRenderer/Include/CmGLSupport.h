@@ -99,7 +99,7 @@ public:
 protected:
 
 	// This contains the complete list of supported extensions
-    Set<String>::type extensionList;
+    Set<String> extensionList;
 private:
     String mVersion;
     String mVendor;

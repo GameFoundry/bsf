@@ -43,7 +43,7 @@ namespace BansheeEngine
 
 		String mName;
 		EditorWidgetBase* mEditorWidget;
-		Vector<ScriptGUIPanel*>::type mPanels;
+		Vector<ScriptGUIPanel*> mPanels;
 		HEvent mOnWidgetMovedConn;
 		HEvent mOnWidgetResizedConn;
 		HEvent mOnParentChangedConn;
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		static void registerScriptEditorWindow(ScriptEditorWindow* editorWindow);
 		static void unregisterScriptEditorWindow(const String& windowTypeName);
 
-		static UnorderedMap<String, EditorWindowHandle>::type OpenScriptEditorWindows;
+		static UnorderedMap<String, EditorWindowHandle> OpenScriptEditorWindows;
 
 		static EditorWidgetBase* openEditorWidgetCallback(String ns, String type, EditorWidgetContainer& parentContainer);
 	};

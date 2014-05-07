@@ -47,7 +47,7 @@ namespace BansheeEngine
 		mAssemblyInfos[assemblyName] = assemblyInfo;
 
 		// Populate class data
-		const Vector<MonoClass*>::type& allClasses = curAssembly->getAllClasses();
+		const Vector<MonoClass*>& allClasses = curAssembly->getAllClasses();
 		for(auto& curClass : allClasses)
 		{
 			if((curClass->isSubClassOf(mComponentClass) || curClass->hasAttribute(mSerializeObjectAttribute)) && curClass != mComponentClass)
@@ -86,7 +86,7 @@ namespace BansheeEngine
 			assemblyInfo->mObjectInfos[objInfo->mTypeId] = objInfo;
 
 			UINT32 mUniqueFieldId = 1;
-			const Vector<MonoField*>::type& fields = objInfo->mMonoClass->getAllFields();
+			const Vector<MonoField*>& fields = objInfo->mMonoClass->getAllFields();
 
 			for(auto& field : fields)
 			{

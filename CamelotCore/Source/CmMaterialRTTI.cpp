@@ -42,7 +42,7 @@ namespace BansheeEngine
 		ShaderPtr shader = material->getShader();
 		if(shader != nullptr)
 		{
-			const Map<String, String>::type& validParamNames = material->getValidParamNames();
+			const Map<String, String>& validParamNames = material->getValidParamNames();
 
 			for(auto iter = validParamNames.begin(); iter != validParamNames.end(); ++iter)
 			{

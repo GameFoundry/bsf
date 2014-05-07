@@ -43,7 +43,7 @@ namespace BansheeEngine
 		 * @brief	Returns RTTI type information for all classes that derive from the class
 		 *			that owns this RTTI type.
 		 */
-		virtual Vector<RTTITypeBase*>::type& getDerivedClasses() = 0;
+		virtual Vector<RTTITypeBase*>& getDerivedClasses() = 0;
 
 		/**
 		 * @brief	Returns RTTI type information for the class that owns this RTTI type. 
@@ -476,7 +476,7 @@ namespace BansheeEngine
 		void throwCircularRefException(const String& myType, const String& otherType) const;
 
 	private:
-		Vector<RTTIField*>::type mFields;
+		Vector<RTTIField*> mFields;
 	};
 
 	/**
@@ -570,9 +570,9 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RTTITypeBase::getDerivedClasses
 		 */
-		virtual Vector<RTTITypeBase*>::type& getDerivedClasses()
+		virtual Vector<RTTITypeBase*>& getDerivedClasses()
 		{
-			static Vector<RTTITypeBase*>::type mRTTIDerivedClasses;
+			static Vector<RTTITypeBase*> mRTTIDerivedClasses;
 			return mRTTIDerivedClasses;
 		}
 

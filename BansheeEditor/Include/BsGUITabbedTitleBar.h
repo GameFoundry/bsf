@@ -27,7 +27,7 @@ namespace BansheeEngine
 		UINT32 getTabIdx(UINT32 position) const;
 		UINT32 getNumTabs() const { return (UINT32)mTabButtons.size(); }
 
-		Vector<RectI>::type calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const;
+		Vector<RectI> calcDraggableAreas(INT32 x, INT32 y, UINT32 width, UINT32 height) const;
 
 		Event<void(UINT32)> onTabActivated;
 		Event<void(UINT32)> onTabClosed;
@@ -45,7 +45,7 @@ namespace BansheeEngine
 		static const UINT32 TAB_SPACING;
 		static const UINT32 OPTION_BTN_SPACING;
 
-		Vector<GUITabButton*>::type mTabButtons;
+		Vector<GUITabButton*> mTabButtons;
 
 		UINT32 mUniqueTabIdx;
 		UINT32 mActiveTabIdx;

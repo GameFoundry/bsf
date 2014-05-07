@@ -137,7 +137,7 @@ namespace BansheeEngine
 		mElementMonoClass = mArrayTypeInfo->mElementType->getMonoClass();
 	}
 
-	UINT32 ManagedSerializableArray::toSequentialIdx(const Vector<UINT32>::type& idx) const
+	UINT32 ManagedSerializableArray::toSequentialIdx(const Vector<UINT32>& idx) const
 	{
 		UINT32 mNumDims = (UINT32)mNumElements.size();
 

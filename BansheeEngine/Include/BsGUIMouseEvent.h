@@ -30,7 +30,7 @@ namespace BansheeEngine
 	{
 	public:
 		GUIMouseEvent();
-		GUIMouseEvent(bool buttonStates[GUIMouseButton::Count], bool shift, bool ctrl, bool alt);
+		GUIMouseEvent(bool buttonStates[(int)GUIMouseButton::Count], bool shift, bool ctrl, bool alt);
 
 		const Vector2I& getPosition() const { return mPosition; }
 		GUIMouseEventType getType() const { return mType; }
@@ -47,7 +47,7 @@ namespace BansheeEngine
 	private:
 		friend class GUIManager;
 
-		bool mButtonStates[GUIMouseButton::Count];
+		bool mButtonStates[(int)GUIMouseButton::Count];
 		Vector2I mPosition;
 		Vector2I mDragAmount;
 		float mWheelScrollAmount;

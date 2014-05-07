@@ -26,6 +26,7 @@ namespace BansheeEngine
 	class VirtualButton;
 	class VirtualInput;
 	class InputConfiguration;
+	struct DragCallbackInfo;
 
 	// GUI
 	class GUIManager;

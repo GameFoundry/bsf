@@ -16,7 +16,7 @@ namespace BansheeEngine
 		void setStyle(const String& guiElemType, const GUIElementStyle& style);
 
 	private:
-		UnorderedMap<String, GUIElementStyle>::type mStyles;
+		UnorderedMap<String, GUIElementStyle> mStyles;
 
 		GUISkin(const GUISkin& skin) {} // Disable copying
 	};

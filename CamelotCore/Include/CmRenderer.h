@@ -32,6 +32,6 @@ namespace BansheeEngine
 		void addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, RenderQueue&)> callback);
 
 	protected:
-		UnorderedMap<const Viewport*, Vector<std::function<void(const Viewport*, RenderQueue&)>>::type>::type mRenderCallbacks;
+		UnorderedMap<const Viewport*, Vector<std::function<void(const Viewport*, RenderQueue&)>>> mRenderCallbacks;
 	};
 }

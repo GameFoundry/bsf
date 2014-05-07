@@ -9,11 +9,11 @@ namespace BansheeEngine
 	class CM_EXPORT FontImportOptionsRTTI : public RTTIType<FontImportOptions, IReflectable, FontImportOptionsRTTI>
 	{
 	private:
-		Vector<UINT32>::type& getFontSizes(FontImportOptions* obj) { return obj->mFontSizes; }
-		void setFontSizes(FontImportOptions* obj, Vector<UINT32>::type& value) { obj->mFontSizes = value; }
+		Vector<UINT32>& getFontSizes(FontImportOptions* obj) { return obj->mFontSizes; }
+		void setFontSizes(FontImportOptions* obj, Vector<UINT32>& value) { obj->mFontSizes = value; }
 
-		Vector<std::pair<UINT32, UINT32>>::type& getCharIndexRanges(FontImportOptions* obj) { return obj->mCharIndexRanges; }
-		void setCharIndexRanges(FontImportOptions* obj, Vector<std::pair<UINT32, UINT32>>::type& value) { obj->mCharIndexRanges = value; }
+		Vector<std::pair<UINT32, UINT32>>& getCharIndexRanges(FontImportOptions* obj) { return obj->mCharIndexRanges; }
+		void setCharIndexRanges(FontImportOptions* obj, Vector<std::pair<UINT32, UINT32>>& value) { obj->mCharIndexRanges = value; }
 
 		UINT32& getDPI(FontImportOptions* obj) { return obj->mDPI; }
 		void setDPI(FontImportOptions* obj, UINT32& value) { obj->mDPI = value; }

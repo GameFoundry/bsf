@@ -23,11 +23,11 @@ namespace BansheeEngine
 		void updateWorldBounds();
 	private:
 		HMesh mMesh;
-		Vector<HMaterial>::type mMaterials;
+		Vector<HMaterial> mMaterials;
 		UINT64 mLayer;
-		Vector<AABox>::type mWorldBounds;
+		Vector<AABox> mWorldBounds;
 
-		Vector<GpuParamMat4>::type mMatViewProjParam;
+		Vector<GpuParamMat4> mMatViewProjParam;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/

@@ -49,11 +49,11 @@ namespace BansheeEngine
 	 */
 	struct GpuParamDesc
 	{
-		Map<String, GpuParamBlockDesc>::type paramBlocks;
-		Map<String, GpuParamDataDesc>::type params;
+		Map<String, GpuParamBlockDesc> paramBlocks;
+		Map<String, GpuParamDataDesc> params;
 
-		Map<String, GpuParamObjectDesc>::type samplers;
-		Map<String, GpuParamObjectDesc>::type textures;
-		Map<String, GpuParamObjectDesc>::type buffers;
+		Map<String, GpuParamObjectDesc> samplers;
+		Map<String, GpuParamObjectDesc> textures;
+		Map<String, GpuParamObjectDesc> buffers;
 	};
 }

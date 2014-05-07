@@ -36,7 +36,7 @@ namespace BansheeEngine
 
 	String UUIDGenerator::generateRandom()
 	{
-		ScopedSpinLock lock;
+		mSpinLock.lock();
 
 		auto timestamp = system_clock::now().time_since_epoch().count();
 
@@ -71,6 +71,7 @@ namespace BansheeEngine
 				appendHex(result, (UINT8)(mRandomGenerator() % 255));
 		}
 
+		mSpinLock.unlock();
 		return result;
 	}
 };

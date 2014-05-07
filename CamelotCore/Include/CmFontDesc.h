@@ -20,12 +20,12 @@ namespace BansheeEngine
 		INT32 xOffset, yOffset;
 		INT32 xAdvance, yAdvance;
 
-		Vector<KerningPair>::type kerningPairs;
+		Vector<KerningPair> kerningPairs;
 	};
 
 	struct FONT_DESC
 	{
-		Map<UINT32, CHAR_DESC>::type characters;
+		Map<UINT32, CHAR_DESC> characters;
 		INT32 baselineOffset;
 		UINT32 lineHeight;
 		CHAR_DESC missingGlyph;
@@ -96,7 +96,7 @@ namespace BansheeEngine
 				+ sizeof(data.yOffset)
 				+ sizeof(data.xAdvance)
 				+ sizeof(data.yAdvance)
-				+ RTTIPlainType<Vector<KerningPair>::type>::getDynamicSize(data.kerningPairs);
+				+ RTTIPlainType<Vector<KerningPair>>::getDynamicSize(data.kerningPairs);
 
 			dataSize += sizeof(UINT32);
 
@@ -116,7 +116,7 @@ namespace BansheeEngine
 			memcpy(memory, &size, sizeof(UINT32));
 			memory += sizeof(UINT32);
 			
-			RTTIPlainType<Map<UINT32, CHAR_DESC>::type>::toMemory(data.characters, memory);
+			RTTIPlainType<Map<UINT32, CHAR_DESC>>::toMemory(data.characters, memory);
 			rttiWriteElem(data.baselineOffset, memory);
 			rttiWriteElem(data.lineHeight, memory);
 			rttiWriteElem(data.missingGlyph, memory);
@@ -129,7 +129,7 @@ namespace BansheeEngine
 			memcpy(&size, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
 
-			RTTIPlainType<Map<UINT32, CHAR_DESC>::type>::fromMemory(data.characters, memory);
+			RTTIPlainType<Map<UINT32, CHAR_DESC>>::fromMemory(data.characters, memory);
 			rttiReadElem(data.baselineOffset, memory);
 			rttiReadElem(data.lineHeight, memory);
 			rttiReadElem(data.missingGlyph, memory);
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const FONT_DESC& data)	
 		{ 
 			UINT64 dataSize = sizeof(UINT32);
-			dataSize += RTTIPlainType<Map<UINT32, CHAR_DESC>::type>::getDynamicSize(data.characters);
+			dataSize += RTTIPlainType<Map<UINT32, CHAR_DESC>>::getDynamicSize(data.characters);
 			dataSize += rttiGetElemSize(data.baselineOffset);
 			dataSize += rttiGetElemSize(data.lineHeight);
 			dataSize += rttiGetElemSize(data.missingGlyph);

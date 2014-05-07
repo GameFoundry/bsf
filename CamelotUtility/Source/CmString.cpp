@@ -42,22 +42,22 @@ namespace BansheeEngine
 			str.erase(0, str.find_first_not_of(delims)); // trim left
 	}
 
-    Vector<String>::type StringUtil::split(const String& str, const String& delims, unsigned int maxSplits)
+    Vector<String> StringUtil::split(const String& str, const String& delims, unsigned int maxSplits)
     {
         return splitInternal<char>(str, delims, maxSplits);
     }
 
-	Vector<WString>::type StringUtil::split(const WString& str, const WString& delims, unsigned int maxSplits)
+	Vector<WString> StringUtil::split(const WString& str, const WString& delims, unsigned int maxSplits)
 	{
 		return splitInternal<wchar_t>(str, delims, maxSplits);
 	}
 
-	Vector<String>::type StringUtil::tokenise(const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
+	Vector<String> StringUtil::tokenise(const String& str, const String& singleDelims, const String& doubleDelims, unsigned int maxSplits)
 	{
         return tokeniseInternal<char>(str, singleDelims, doubleDelims, maxSplits);
     }
 
-	Vector<WString>::type StringUtil::tokenise(const WString& str, const WString& singleDelims, const WString& doubleDelims, unsigned int maxSplits)
+	Vector<WString> StringUtil::tokenise(const WString& str, const WString& singleDelims, const WString& doubleDelims, unsigned int maxSplits)
 	{
 		return tokeniseInternal<wchar_t>(str, singleDelims, doubleDelims, maxSplits);
 	}
@@ -355,10 +355,10 @@ namespace BansheeEngine
 		return stream.str();
 	}
 
-	WString toWString(const Vector<BansheeEngine::WString>::type& val)
+	WString toWString(const Vector<BansheeEngine::WString>& val)
 	{
 		WStringStream stream;
-		Vector<BansheeEngine::WString>::type::const_iterator i, iend, ibegin;
+		Vector<BansheeEngine::WString>::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
 		for (i = ibegin; i != iend; ++i)
@@ -579,10 +579,10 @@ namespace BansheeEngine
 		return stream.str();
 	}
 
-	String toString(const Vector<BansheeEngine::String>::type& val)
+	String toString(const Vector<BansheeEngine::String>& val)
 	{
 		StringStream stream;
-		Vector<BansheeEngine::String>::type::const_iterator i, iend, ibegin;
+		Vector<BansheeEngine::String>::const_iterator i, iend, ibegin;
 		ibegin = val.begin();
 		iend = val.end();
 		for (i = ibegin; i != iend; ++i)

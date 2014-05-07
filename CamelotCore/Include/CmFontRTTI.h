@@ -80,7 +80,7 @@ namespace BansheeEngine
 	{
 		struct FontInitData
 		{
-			Vector<FontData>::type fontDataPerSize;
+			Vector<FontData> fontDataPerSize;
 		};
 
 	private:

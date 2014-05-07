@@ -292,7 +292,7 @@ namespace BansheeEngine
 			UINT32 refCount;
 		};
 
-		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction>::type mTextureViews;
+		UnorderedMap<TEXTURE_VIEW_DESC, TextureViewReference*, TextureView::HashFunction, TextureView::EqualFunction> mTextureViews;
 
     protected:
 		friend class TextureManager;

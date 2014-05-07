@@ -206,7 +206,7 @@ namespace BansheeEngine
 		mChildren[idxA] = cm_new<DockContainer>(this);
 		mChildren[idxB] = cm_new<DockContainer>(this);
 
-		mWidgets->onWidgetClosed.disconnect_all_slots();
+		mWidgets->onWidgetClosed.clear();
 
 		mChildren[idxA]->makeLeaf(widgetParent, parentWindow);
 		mChildren[idxB]->makeLeaf(mWidgets);
@@ -294,7 +294,7 @@ namespace BansheeEngine
 				else
 					sibling = mParent->mChildren[0];
 
-				sibling->mWidgets->onWidgetClosed.disconnect_all_slots();
+				sibling->mWidgets->onWidgetClosed.clear();
 
 				mParent->makeLeaf(sibling->mWidgets);
 				sibling->mWidgets = nullptr;
@@ -490,7 +490,7 @@ namespace BansheeEngine
 
 		auto GetWidgetNamesInContainer = [&] (const DockContainer* container)
 		{
-			Vector<String>::type widgetNames;
+			Vector<String> widgetNames;
 			if(container->mWidgets != nullptr)
 			{
 				UINT32 numWidgets = container->mWidgets->getNumWidgets();
@@ -521,7 +521,7 @@ namespace BansheeEngine
 			rootEntry->parent = nullptr;
 		}
 
-		Stack<StackElem>::type todo;
+		Stack<StackElem> todo;
 		todo.push(StackElem(rootEntry, &mRootContainer));
 
 		while(!todo.empty())
@@ -538,7 +538,7 @@ namespace BansheeEngine
 
 					if(currentElem.container->mChildren[i]->mIsLeaf)
 					{
-						Vector<String>::type widgetNames = GetWidgetNamesInContainer(currentElem.container->mChildren[i]);
+						Vector<String> widgetNames = GetWidgetNamesInContainer(currentElem.container->mChildren[i]);
 						currentElem.layoutEntry->children[i] = 
 							DockManagerLayout::Entry::createLeaf(currentElem.layoutEntry, i, widgetNames);
 					}
@@ -561,9 +561,9 @@ namespace BansheeEngine
 	void DockManager::setLayout(const DockManagerLayoutPtr& layout)
 	{
 		// Undock all currently docked widgets
-		Vector<EditorWidgetBase*>::type undockedWidgets;
+		Vector<EditorWidgetBase*> undockedWidgets;
 
-		Stack<DockContainer*>::type todo;
+		Stack<DockContainer*> todo;
 		todo.push(&mRootContainer);
 
 		while(!todo.empty())
@@ -617,7 +617,7 @@ namespace BansheeEngine
 			return nullptr;
 		};
 
-		auto OpenWidgets = [&] (DockContainer* parent, const Vector<String>::type& widgetNames)
+		auto OpenWidgets = [&] (DockContainer* parent, const Vector<String>& widgetNames)
 		{
 			for(auto& widgetName : widgetNames)
 			{
@@ -636,7 +636,7 @@ namespace BansheeEngine
 
 			if(!rootEntry->isLeaf)
 			{
-				Stack<StackEntry>::type layoutTodo;
+				Stack<StackEntry> layoutTodo;
 				layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
 
 				while(!layoutTodo.empty())
@@ -662,7 +662,7 @@ namespace BansheeEngine
 
 		// Set container sizes
 		{
-			Stack<StackEntry>::type layoutTodo;
+			Stack<StackEntry> layoutTodo;
 			layoutTodo.push(StackEntry(rootEntry, &mRootContainer));
 
 			while(!layoutTodo.empty())

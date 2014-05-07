@@ -8,41 +8,35 @@ namespace BansheeEngine
 	 * @brief	Basic string that uses Banshee memory allocators.
 	 */
 	template <typename T>
-	struct BasicString 
-	{ 
-		typedef typename std::basic_string<T, std::char_traits<T>, StdAlloc<T>> type; 
-	}; 
+	using BasicString = std::basic_string<T, std::char_traits<T>, StdAlloc<T>>;
 
 	/**
 	 * @brief	Basic string stream that uses Banshee memory allocators.
 	 */
 	template <typename T>
-	struct BasicStringStream
-	{ 
-		typedef typename std::basic_stringstream<T, std::char_traits<T>, StdAlloc<T>> type; 
-	}; 
+	using BasicStringStream = std::basic_stringstream<T, std::char_traits<T>, StdAlloc<T>>;
 
 	/**
 	 * @brief	Wide string used primarily for handling Unicode text.
 	 */
-	typedef BasicString<wchar_t>::type WString;
+	typedef BasicString<wchar_t> WString;
 
 	/**
 	 * @brief	Narrow string used primarily for handling ASCII text.
 	 */
-	typedef BasicString<char>::type String;
+	typedef BasicString<char> String;
 
 	/**
 	 * @brief	Wide string stream used for primarily for constructing
 	 * 			strings consisting of Unicode text.
 	 */
-	typedef BasicStringStream<wchar_t>::type WStringStream;
+	typedef BasicStringStream<wchar_t> WStringStream;
 
 	/**
 	 * @brief	Wide string stream used for primarily for constructing
 	 * 			strings consisting of ASCII text.
 	 */
-	typedef BasicStringStream<char>::type StringStream;
+	typedef BasicStringStream<char> StringStream;
 
     /**
      * @brief	Utility class for manipulating Strings.
@@ -80,12 +74,12 @@ namespace BansheeEngine
 		 * @param	maxSplits	(optional) The maximum number of splits to perform (0 for unlimited splits). If this
 		 *						parameters is > 0, the splitting process will stop after this many splits, left to right.
 		 */
-		static Vector<String>::type split(const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
+		static Vector<String> split(const String& str, const String& delims = "\t\n ", unsigned int maxSplits = 0);
 
 		/**
 		 * @copydoc	StringUtil::split(const String&, const String&, unsigned int)
 		 */
-		static Vector<WString>::type split(const WString& str, const WString& delims = L"\t\n ", unsigned int maxSplits = 0);
+		static Vector<WString> split(const WString& str, const WString& delims = L"\t\n ", unsigned int maxSplits = 0);
 
 		/**
 		 * @brief	Returns a vector of strings containing all the substrings delimited
@@ -100,12 +94,12 @@ namespace BansheeEngine
 		 * @param	maxSplits	(optional) The maximum number of splits to perform (0 for unlimited splits). If this
 		 *						parameters is > 0, the splitting process will stop after this many splits, left to right.
 		 */
-		static Vector<String>::type tokenise(const String& str, const String& delims = "\t\n ", const String& doubleDelims = "\"", unsigned int maxSplits = 0);
+		static Vector<String> tokenise(const String& str, const String& delims = "\t\n ", const String& doubleDelims = "\"", unsigned int maxSplits = 0);
 
 		/**
 		 * @copydoc	StringUtil::tokenise(const String&, const String&, const String&, unsigned int)
 		 */
-		static Vector<WString>::type tokenise(const WString& str, const WString& delims = L"\t\n ", const WString& doubleDelims = L"\"", unsigned int maxSplits = 0);
+		static Vector<WString> tokenise(const WString& str, const WString& delims = L"\t\n ", const WString& doubleDelims = L"\"", unsigned int maxSplits = 0);
 
         /**
          * @brief	Converts all the characters in the string to lower case.
@@ -200,9 +194,9 @@ namespace BansheeEngine
 
 	private:
 		template <class T>
-		static typename Vector<typename BasicString<T>::type>::type splitInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& delims, unsigned int maxSplits)
+		static typename Vector<typename BasicString<T>> splitInternal(const typename BasicString<T>& str, const typename BasicString<T>& delims, unsigned int maxSplits)
 		{
-			Vector<BasicString<T>::type>::type ret;
+			Vector<BasicString<T>> ret;
 			// Pre-allocate some space for performance
 			ret.reserve(maxSplits ? maxSplits+1 : 10);    // 10 is guessed capacity for most case
 
@@ -219,7 +213,7 @@ namespace BansheeEngine
 					// Do nothing
 					start = pos + 1;
 				}
-				else if (pos == BasicString<T>::type::npos || (maxSplits && numSplits == maxSplits))
+				else if (pos == BasicString<T>::npos || (maxSplits && numSplits == maxSplits))
 				{
 					// Copy the rest of the string
 					ret.push_back(str.substr(start));
@@ -235,21 +229,21 @@ namespace BansheeEngine
 				start = str.find_first_not_of(delims, start);
 				++numSplits;
 
-			} while (pos != BasicString<T>::type::npos);
+			} while (pos != BasicString<T>::npos);
 
 			return ret;
 		}
 
 		template <class T>
-		static typename Vector<typename BasicString<T>::type>::type tokeniseInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& singleDelims, 
-			const typename BasicString<T>::type& doubleDelims, unsigned int maxSplits)
+		static typename Vector<typename BasicString<T>> tokeniseInternal(const typename BasicString<T>& str, const typename BasicString<T>& singleDelims, 
+			const typename BasicString<T>& doubleDelims, unsigned int maxSplits)
 		{
-			Vector<BasicString<T>::type>::type ret;
+			Vector<BasicString<T>> ret;
 			// Pre-allocate some space for performance
 			ret.reserve(maxSplits ? maxSplits + 1 : 10);    // 10 is guessed capacity for most case
 
 			unsigned int numSplits = 0;
-			BasicString<T>::type delims = singleDelims + doubleDelims;
+			BasicString<T> delims = singleDelims + doubleDelims;
 
 			// Use STL methods 
 			size_t start, pos;
@@ -269,14 +263,14 @@ namespace BansheeEngine
 				if (pos == start)
 				{
 					T curDelim = str.at(pos);
-					if (doubleDelims.find_first_of(curDelim) != BasicString<T>::type::npos)
+					if (doubleDelims.find_first_of(curDelim) != BasicString<T>::npos)
 					{
 						curDoubleDelim = curDelim;
 					}
 					// Do nothing
 					start = pos + 1;
 				}
-				else if (pos == BasicString<T>::type::npos || (maxSplits && numSplits == maxSplits))
+				else if (pos == BasicString<T>::npos || (maxSplits && numSplits == maxSplits))
 				{
 					if (curDoubleDelim != 0)
 					{
@@ -305,20 +299,20 @@ namespace BansheeEngine
 
 				++numSplits;
 
-			} while (pos != BasicString<T>::type::npos);
+			} while (pos != BasicString<T>::npos);
 
 			return ret;
 		}
 
 		template <class T>
-		static bool startsWithInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& pattern, bool lowerCase)
+		static bool startsWithInternal(const typename BasicString<T>& str, const typename BasicString<T>& pattern, bool lowerCase)
 		{
 			size_t thisLen = str.length();
 			size_t patternLen = pattern.length();
 			if (thisLen < patternLen || patternLen == 0)
 				return false;
 
-			BasicString<T>::type startOfThis = str.substr(0, patternLen);
+			BasicString<T> startOfThis = str.substr(0, patternLen);
 			if (lowerCase)
 				StringUtil::toLowerCase(startOfThis);
 
@@ -326,14 +320,14 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static bool endsWithInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& pattern, bool lowerCase)
+		static bool endsWithInternal(const typename BasicString<T>& str, const typename BasicString<T>& pattern, bool lowerCase)
 		{
 			size_t thisLen = str.length();
 			size_t patternLen = pattern.length();
 			if (thisLen < patternLen || patternLen == 0)
 				return false;
 
-			BasicString<T>::type endOfThis = str.substr(thisLen - patternLen, patternLen);
+			BasicString<T> endOfThis = str.substr(thisLen - patternLen, patternLen);
 			if (lowerCase)
 				StringUtil::toLowerCase(endOfThis);
 
@@ -341,19 +335,19 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static bool matchInternal(const typename BasicString<T>::type& str, const typename BasicString<T>::type& pattern, bool caseSensitive)
+		static bool matchInternal(const typename BasicString<T>& str, const typename BasicString<T>& pattern, bool caseSensitive)
 		{
-			BasicString<T>::type tmpStr = str;
-			BasicString<T>::type tmpPattern = pattern;
+			BasicString<T> tmpStr = str;
+			BasicString<T> tmpPattern = pattern;
 			if (!caseSensitive)
 			{
 				StringUtil::toLowerCase(tmpStr);
 				StringUtil::toLowerCase(tmpPattern);
 			}
 
-			BasicString<T>::type::const_iterator strIt = tmpStr.begin();
-			BasicString<T>::type::const_iterator patIt = tmpPattern.begin();
-			BasicString<T>::type::const_iterator lastWildCardIt = tmpPattern.end();
+			BasicString<T>::const_iterator strIt = tmpStr.begin();
+			BasicString<T>::const_iterator patIt = tmpPattern.begin();
+			BasicString<T>::const_iterator lastWildCardIt = tmpPattern.end();
 			while (strIt != tmpStr.end() && patIt != tmpPattern.end())
 			{
 				if (*patIt == '*')
@@ -407,15 +401,15 @@ namespace BansheeEngine
 		}
 
 		template <class T>
-		static const typename BasicString<T>::type replaceAllInternal(const typename BasicString<T>::type& source, 
-			const typename BasicString<T>::type& replaceWhat, const typename BasicString<T>::type& replaceWithWhat)
+		static const typename BasicString<T> replaceAllInternal(const typename BasicString<T>& source, 
+			const typename BasicString<T>& replaceWhat, const typename BasicString<T>& replaceWithWhat)
 		{
-			BasicString<T>::type result = source;
-			BasicString<T>::type::size_type pos = 0;
+			BasicString<T> result = source;
+			BasicString<T>::size_type pos = 0;
 			while(1)
 			{
 				pos = result.find(replaceWhat,pos);
-				if (pos == BasicString<T>::type::npos) break;
+				if (pos == BasicString<T>::npos) break;
 				result.replace(pos,replaceWhat.size(), replaceWithWhat);
 				pos += replaceWithWhat.size();
 			}
@@ -559,7 +553,7 @@ namespace BansheeEngine
      * @brief	Converts a vector of strings into a single string where the substrings are
 	 *			delimited by spaces.
      */
-    CM_UTILITY_EXPORT WString toWString(const Vector<BansheeEngine::WString>::type& val);
+    CM_UTILITY_EXPORT WString toWString(const Vector<BansheeEngine::WString>& val);
 
 	/**
 	* @brief	Converts a wide string to a narrow string.
@@ -683,7 +677,7 @@ namespace BansheeEngine
      * @brief	Converts a vector of strings into a single string where the substrings are
 	 *			delimited by spaces.
      */
-    CM_UTILITY_EXPORT String toString(const Vector<BansheeEngine::String>::type& val);
+    CM_UTILITY_EXPORT String toString(const Vector<BansheeEngine::String>& val);
 
     /**
      * @brief	Converts a String to a float.

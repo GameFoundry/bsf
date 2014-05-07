@@ -19,9 +19,9 @@ namespace BansheeEngine
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
 		GUIWidget& widget;
-		Vector<ProfilerOverlay::BasicRow>::type& rows;
+		Vector<ProfilerOverlay::BasicRow>& rows;
 
-		BasicRowFiller(Vector<ProfilerOverlay::BasicRow>::type& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
+		BasicRowFiller(Vector<ProfilerOverlay::BasicRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -123,9 +123,9 @@ namespace BansheeEngine
 		GUILayout& labelLayout;
 		GUILayout& contentLayout;
 		GUIWidget& widget;
-		Vector<ProfilerOverlay::PreciseRow>::type& rows;
+		Vector<ProfilerOverlay::PreciseRow>& rows;
 
-		PreciseRowFiller(Vector<ProfilerOverlay::PreciseRow>::type& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
+		PreciseRowFiller(Vector<ProfilerOverlay::PreciseRow>& _rows, GUILayout& _labelLayout, GUILayout& _contentLayout, GUIWidget& _widget)
 			:rows(_rows), curIdx(0), labelLayout(_labelLayout), contentLayout(_contentLayout), widget(_widget)
 		{ }
 
@@ -419,7 +419,7 @@ namespace BansheeEngine
 		};
 
 		BasicRowFiller basicRowFiller(mBasicRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget);
-		Stack<TodoBasic>::type todoBasic;
+		Stack<TodoBasic> todoBasic;
 
 		const CPUProfilerBasicSamplingEntry* basicRootEntries[NUM_ROOT_ENTRIES];
 		basicRootEntries[0] = &simBasicRootEntry;
@@ -449,7 +449,7 @@ namespace BansheeEngine
 		}
 
 		PreciseRowFiller preciseRowFiller(mPreciseRows, *mBasicLayoutLabels, *mBasicLayoutContents, *mWidget);
-		Stack<TodoPrecise>::type todoPrecise;
+		Stack<TodoPrecise> todoPrecise;
 
 		const CPUProfilerPreciseSamplingEntry* preciseRootEntries[NUM_ROOT_ENTRIES];
 		preciseRootEntries[0] = &simPreciseRootEntry;

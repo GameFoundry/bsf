@@ -35,7 +35,7 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		D3D11HLSLProgram(const String& source, const String& entryPoint,
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>::type* includes, 
+			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, 
 			bool isAdjacencyInfoRequired = false);
 
         /**

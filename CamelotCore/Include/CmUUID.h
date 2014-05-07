@@ -2,6 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
+#include "BsSpinLock.h"
 #include <random>
 
 namespace BansheeEngine
@@ -29,6 +30,7 @@ namespace BansheeEngine
 	private:
 		std::mt19937 mRandomGenerator;
 		MACAddress mMACAddress;
+		SpinLock mSpinLock;
 		bool mHaveMacAddress;
 	};
 }

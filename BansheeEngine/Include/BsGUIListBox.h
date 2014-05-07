@@ -13,10 +13,10 @@ namespace BansheeEngine
 	public:
 		static const String& getGUITypeName();
 
-		static GUIListBox* create(const Vector<HString>::type& elements, const String& styleName = StringUtil::BLANK);
-		static GUIListBox* create(const Vector<HString>::type& elements, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
+		static GUIListBox* create(const Vector<HString>& elements, const String& styleName = StringUtil::BLANK);
+		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
-		void setElements(const Vector<HString>::type& elements);
+		void setElements(const Vector<HString>& elements);
 
 		virtual ElementType getElementType() const { return ElementType::ListBox; }
 
@@ -26,10 +26,10 @@ namespace BansheeEngine
 
 	private:
 		UINT32 mSelectedIdx;
-		Vector<HString>::type mElements;
+		Vector<HString> mElements;
 		bool mIsListBoxOpen;
 
-		GUIListBox(const String& styleName, const Vector<HString>::type& elements, const GUILayoutOptions& layoutOptions);
+		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUILayoutOptions& layoutOptions);
 
 		virtual bool mouseEvent(const GUIMouseEvent& ev);
 

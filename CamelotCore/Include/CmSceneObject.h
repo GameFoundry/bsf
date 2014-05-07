@@ -191,7 +191,7 @@ namespace BansheeEngine
 
 	private:
 		HSceneObject mParent;
-		Vector<HSceneObject>::type mChildren;
+		Vector<HSceneObject> mChildren;
 
 		/**
 		 * @brief	Adds a child to the child array. This method doesn't check for null or duplicate values.
@@ -301,7 +301,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns all components on this SceneObject.
 		 */
-		const Vector<HComponent>::type& getComponents() const { return mComponents; }
+		const Vector<HComponent>& getComponents() const { return mComponents; }
 
 	private:
 		template <typename T>
@@ -317,7 +317,7 @@ namespace BansheeEngine
 
 		void addComponentInternal(const std::shared_ptr<Component> component);
 
-		Vector<HComponent>::type mComponents;
+		Vector<HComponent> mComponents;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

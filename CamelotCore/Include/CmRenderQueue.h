@@ -56,10 +56,10 @@ namespace BansheeEngine
 		 * @brief	Returns a list of sorted render operations. Caller must ensure
 		 * 			"sort" is called before this method.
 		 */
-		const Vector<SortedRenderOp>::type& getSortedRenderOps() const;
+		const Vector<SortedRenderOp>& getSortedRenderOps() const;
 
 	protected:
-		Vector<RenderOperation>::type mRenderOperations;
-		Vector<SortedRenderOp>::type mSortedRenderOps;
+		Vector<RenderOperation> mRenderOperations;
+		Vector<SortedRenderOp> mSortedRenderOps;
 	};
 }

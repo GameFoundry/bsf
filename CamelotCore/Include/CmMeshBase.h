@@ -29,7 +29,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Sim thread only.
 		 */
-		void setSubMeshes(const Vector<SubMesh>::type& subMeshes);
+		void setSubMeshes(const Vector<SubMesh>& subMeshes);
 
 		/**
 		 * @brief	Retrieves a sub-mesh containing data used for rendering a
@@ -96,7 +96,7 @@ namespace BansheeEngine
 		virtual void notifyUsedOnGPU() { }
 
 	protected:
-		Vector<SubMesh>::type mSubMeshes; // Sim thread
+		Vector<SubMesh> mSubMeshes; // Sim thread
 		SubMesh mDefaultSubMesh; // Immutable
 
 		UINT32 mNumVertices; // Immutable

@@ -39,12 +39,12 @@ namespace BansheeEngine
 		return (pos.x >= mX && pos.x < right && pos.y >= mY && pos.y < bottom);
 	}
 
-	void OSDropTarget::_setFileList(const Vector<WString>::type& fileList)
+	void OSDropTarget::_setFileList(const Vector<WString>& fileList)
 	{
 		_clear();
 
 		mDropType = OSDropType::FileList;
-		mFileList = cm_new<Vector<WString>::type>();
+		mFileList = cm_new<Vector<WString>>();
 		*mFileList = fileList;
 	}
 }

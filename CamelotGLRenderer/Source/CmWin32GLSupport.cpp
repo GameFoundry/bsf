@@ -317,7 +317,7 @@ namespace BansheeEngine
 		{
 
 			// Use WGL to test extended caps (multisample, sRGB)
-			Vector<int>::type attribList;
+			Vector<int> attribList;
 			attribList.push_back(WGL_DRAW_TO_WINDOW_ARB); attribList.push_back(GL_TRUE);
 			attribList.push_back(WGL_SUPPORT_OPENGL_ARB); attribList.push_back(GL_TRUE);
 			attribList.push_back(WGL_DOUBLE_BUFFER_ARB); attribList.push_back(GL_TRUE);

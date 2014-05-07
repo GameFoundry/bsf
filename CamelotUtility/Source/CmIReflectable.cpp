@@ -27,8 +27,8 @@ namespace BansheeEngine
 
 	RTTITypeBase* IReflectable::_getRTTIfromTypeId(UINT32 rttiTypeId)
 	{
-		Stack<RTTITypeBase*>::type todo;
-		Vector<RTTITypeBase*>::type& rootClasses = getDerivedClasses();
+		Stack<RTTITypeBase*> todo;
+		Vector<RTTITypeBase*>& rootClasses = getDerivedClasses();
 
 		for(auto iter = rootClasses.begin(); iter != rootClasses.end(); ++iter)
 			todo.push(*iter);
@@ -41,7 +41,7 @@ namespace BansheeEngine
 			if(curType->getRTTIId() == rttiTypeId)
 				return curType;
 
-			Vector<RTTITypeBase*>::type& derivedClasses = curType->getDerivedClasses();
+			Vector<RTTITypeBase*>& derivedClasses = curType->getDerivedClasses();
 			for(auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
 				todo.push(*iter);
 		}
@@ -61,7 +61,7 @@ namespace BansheeEngine
 	{
 		assert(base != nullptr);
 
-		Stack<RTTITypeBase*>::type todo;
+		Stack<RTTITypeBase*> todo;
 		todo.push(base);
 
 		while (!todo.empty())
@@ -72,7 +72,7 @@ namespace BansheeEngine
 			if(currentType->getRTTIId() == getRTTI()->getRTTIId())
 				return true;
 
-			Vector<RTTITypeBase*>::type& derivedClasses = currentType->getDerivedClasses();
+			Vector<RTTITypeBase*>& derivedClasses = currentType->getDerivedClasses();
 			for(auto iter = derivedClasses.begin(); iter != derivedClasses.end(); ++iter)
 				todo.push(*iter);
 		}

@@ -20,12 +20,12 @@ namespace BansheeEngine
 			obj->mName = val;
 		}
 
-		UnorderedMap<String, Path>::type& getUUIDMap(ResourceManifest* obj)
+		UnorderedMap<String, Path>& getUUIDMap(ResourceManifest* obj)
 		{ 
 			return obj->mUUIDToFilePath;
 		}
 
-		void setUUIDMap(ResourceManifest* obj, UnorderedMap<String, Path>::type& val)
+		void setUUIDMap(ResourceManifest* obj, UnorderedMap<String, Path>& val)
 		{ 
 			obj->mUUIDToFilePath = val; 
 

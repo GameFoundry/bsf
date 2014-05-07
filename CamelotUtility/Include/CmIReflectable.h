@@ -28,9 +28,9 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns all classes deriving directly from IReflectable.
 		 */
-		static Vector<RTTITypeBase*>::type& getDerivedClasses()
+		static Vector<RTTITypeBase*>& getDerivedClasses()
 		{
-			static Vector<RTTITypeBase*>::type mRTTIDerivedClasses;
+			static Vector<RTTITypeBase*> mRTTIDerivedClasses;
 			return mRTTIDerivedClasses;
 		}
 

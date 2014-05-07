@@ -46,7 +46,7 @@ namespace BansheeEngine
 		void render(const HCamera& camera, RenderQueue& renderQueue);
 
 	protected:
-		UnorderedMap<const Viewport*, Vector<DebugDrawCommand>::type>::type mCommandsPerViewport;
+		UnorderedMap<const Viewport*, Vector<DebugDrawCommand>> mCommandsPerViewport;
 	};
 
 	template <class T>
@@ -77,7 +77,7 @@ namespace BansheeEngine
 			line_AA(a, b, width, borderWidth, color, positionData, colorData, vertexOffset, meshData->getVertexDesc()->getVertexStride(), indexData, indexOffset);
 		}
 
-		void lineList_Pixel(const typename Vector<T>::type& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void lineList_Pixel(const typename Vector<T>& linePoints, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -101,7 +101,7 @@ namespace BansheeEngine
 			}
 		}
 
-		void lineList_AA(const typename Vector<T>::type& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
+		void lineList_AA(const typename Vector<T>& linePoints, float width, float borderWidth, const Color& color, const MeshDataPtr& meshData, UINT32 vertexOffset, UINT32 indexOffset)
 		{
 			assert(linePoints.size() % 2 == 0);
 
@@ -151,10 +151,10 @@ namespace BansheeEngine
 		virtual void line_AA(const T& a, const T& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
-		virtual void polygon_AA(const typename Vector<T>::type& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		virtual void polygon_AA(const typename Vector<T>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset) = 0;
 
-		void polygonFill_Pixel(const typename Vector<T>::type& points, UINT8* outVertices, 
+		void polygonFill_Pixel(const typename Vector<T>& points, UINT8* outVertices, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			outVertices += (vertexOffset * vertexStride);
@@ -178,7 +178,7 @@ namespace BansheeEngine
 			}
 		}
 
-		void polygonBorder_Pixel(const typename Vector<T>::type& points, const Color& color, UINT8* outVertices, UINT8* outColors, 
+		void polygonBorder_Pixel(const typename Vector<T>& points, const Color& color, UINT8* outVertices, UINT8* outColors, 
 			UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 		{
 			INT32 numPoints = (INT32)points.size();

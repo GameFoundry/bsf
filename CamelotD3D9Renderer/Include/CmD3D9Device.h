@@ -114,7 +114,7 @@ namespace BansheeEngine {
 			D3DPRESENT_PARAMETERS	presentParameters;				// Present parameters of the render window.
 			bool					acquired;						// True if resources acquired.			
 		};		
-		typedef Map<const D3D9RenderWindow*, RenderWindowResources*>::type RenderWindowToResorucesMap;
+		typedef Map<const D3D9RenderWindow*, RenderWindowResources*> RenderWindowToResorucesMap;
 		typedef RenderWindowToResorucesMap::iterator				 RenderWindowToResorucesIterator;
 
 		RenderWindowToResorucesMap mMapRenderWindowToResoruces;		// Map between render window to resources.

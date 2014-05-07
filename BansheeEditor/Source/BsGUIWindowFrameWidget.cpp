@@ -67,7 +67,7 @@ namespace BansheeEngine
 		UINT32 width = mWindowFrameArea->width();
 		UINT32 height = mWindowFrameArea->height();
 
-		Vector<NonClientResizeArea>::type nonClientAreas(8);
+		Vector<NonClientResizeArea> nonClientAreas(8);
 
 		nonClientAreas[0].type = NonClientAreaBorderType::TopLeft;
 		nonClientAreas[0].area = RectI(x, y, 

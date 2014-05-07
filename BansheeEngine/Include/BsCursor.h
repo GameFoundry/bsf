@@ -111,8 +111,8 @@ namespace BansheeEngine
 		void clearCursorIcon(CursorType type);
 
 	private:
-		UnorderedMap<String, UINT32>::type mCustomIconNameToId;
-		UnorderedMap<UINT32, CustomIcon>::type mCustomIcons;
+		UnorderedMap<String, UINT32> mCustomIconNameToId;
+		UnorderedMap<UINT32, CustomIcon> mCustomIcons;
 		UINT32 mNextUniqueId;
 		UINT32 mActiveCursorId;
 

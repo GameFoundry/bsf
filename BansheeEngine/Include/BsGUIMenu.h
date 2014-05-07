@@ -30,7 +30,7 @@ namespace BansheeEngine
 		bool mIsSeparator;
 		WString mName;
 		std::function<void()> mCallback;
-		Vector<GUIMenuItem*>::type mChildren;
+		Vector<GUIMenuItem*> mChildren;
 
 		GUIMenuItem* findChild(const WString& name);
 	};
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		void setLocalizedName(const WString& menuItemLabel, const HString& localizedName);
 	protected:
 		GUIMenuItem mRootElement;
-		UnorderedMap<WString, HString>::type mLocalizedEntryNames;
+		UnorderedMap<WString, HString> mLocalizedEntryNames;
 
 		const GUIMenuItem* addMenuItemInternal(const WString& path, std::function<void()> callback, bool isSeparator);
 		GUIDropDownData getDropDownDataInternal(const GUIMenuItem& menu) const;

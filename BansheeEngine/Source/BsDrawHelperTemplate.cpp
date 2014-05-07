@@ -15,7 +15,7 @@ namespace BansheeEngine
 	void DrawHelperTemplateBase::render(const HCamera& camera, RenderQueue& renderQueue)
 	{
 		const Viewport* viewport = camera->getViewport().get();
-		Vector<DebugDrawCommand>::type& commands = mCommandsPerViewport[viewport];
+		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
 
 		Matrix4 projMatrixCstm = camera->getProjectionMatrix();
 		Matrix4 viewMatrixCstm = camera->getViewMatrix();
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		}
 
 		float curTime = gTime().getTime();
-		Vector<DebugDrawCommand>::type newCommands;
+		Vector<DebugDrawCommand> newCommands;
 		for(auto& cmd : commands)
 		{
 			if(cmd.endTime > curTime)

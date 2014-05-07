@@ -171,7 +171,7 @@ namespace BansheeEngine
 		UINT32 getNumAllocated() const;
 
 	protected:
-		Vector<PooledThread*>::type mThreads;
+		Vector<PooledThread*> mThreads;
 		
 		/**
 		 * @brief	Creates a new thread to be used by the pool.

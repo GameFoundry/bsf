@@ -185,11 +185,11 @@ namespace BansheeEngine
 
 		MonoClass* mMonoClass;
 
-		UnorderedMap<String, UINT32>::type mFieldNameToId;
-		UnorderedMap<UINT32, std::shared_ptr<ManagedSerializableFieldInfo>>::type mFields;
+		UnorderedMap<String, UINT32> mFieldNameToId;
+		UnorderedMap<UINT32, std::shared_ptr<ManagedSerializableFieldInfo>> mFields;
 
 		std::shared_ptr<ManagedSerializableObjectInfo> mBaseClass;
-		Vector<std::weak_ptr<ManagedSerializableObjectInfo>>::type mDerivedClasses;
+		Vector<std::weak_ptr<ManagedSerializableObjectInfo>> mDerivedClasses;
 
 		String getFullTypeName() const { return mTypeInfo->mTypeNamespace + "." + mTypeInfo->mTypeName; }
 
@@ -207,8 +207,8 @@ namespace BansheeEngine
 	public:
 		String mName;
 
-		UnorderedMap<String, UINT32>::type mTypeNameToId;
-		UnorderedMap<UINT32, std::shared_ptr<ManagedSerializableObjectInfo>>::type mObjectInfos;
+		UnorderedMap<String, UINT32> mTypeNameToId;
+		UnorderedMap<UINT32, std::shared_ptr<ManagedSerializableObjectInfo>> mObjectInfos;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

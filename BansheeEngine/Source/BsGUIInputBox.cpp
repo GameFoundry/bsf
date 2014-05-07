@@ -102,7 +102,7 @@ namespace BansheeEngine
 
 		if(mSelectionShown)
 		{
-			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
+			const Vector<ImageSprite*>& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				numElements += selectionSprite->getNumRenderElements();
@@ -205,7 +205,7 @@ namespace BansheeEngine
 
 		if(mSelectionShown)
 		{
-			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
+			const Vector<ImageSprite*>& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				oldNumElements = newNumElements;
@@ -248,7 +248,7 @@ namespace BansheeEngine
 		if(mSelectionShown)
 		{
 			UINT32 spriteIdx = 0;
-			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
+			const Vector<ImageSprite*>& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				oldNumElements = newNumElements;
@@ -291,7 +291,7 @@ namespace BansheeEngine
 		if(mSelectionShown)
 		{
 			UINT32 spriteIdx = 0;
-			const Vector<ImageSprite*>::type& sprites = gGUIManager().getInputSelectionTool()->getSprites();
+			const Vector<ImageSprite*>& sprites = gGUIManager().getInputSelectionTool()->getSprites();
 			for(auto& selectionSprite : sprites)
 			{
 				oldNumElements = newNumElements;

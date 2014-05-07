@@ -57,7 +57,7 @@ namespace BansheeEngine
 			strExt << exts;
 
 			// Pull off individual formats (separated by comma by FI)
-			Vector<WString>::type extsVector = StringUtil::split(exts, L",");
+			Vector<WString> extsVector = StringUtil::split(exts, L",");
 			for (auto v = extsVector.begin(); v != extsVector.end(); ++v)
 			{
 				auto findIter = std::find(mExtensions.begin(), mExtensions.end(), *v);

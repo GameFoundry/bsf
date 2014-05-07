@@ -24,11 +24,11 @@ namespace BansheeEngine
 	Event<void(RenderWindow*)> Platform::onWindowMovedOrResized;
 	Event<void()> Platform::onMouseCaptureChanged;
 
-	Map<const RenderWindow*, WindowNonClientAreaData>::type Platform::mNonClientAreas;
+	Map<const RenderWindow*, WindowNonClientAreaData> Platform::mNonClientAreas;
 	bool Platform::mIsTrackingMouse = false;
-	Vector<RenderWindow*>::type Platform::mMouseLeftWindows;
+	Vector<RenderWindow*> Platform::mMouseLeftWindows;
 
-	Stack<RenderWindow*>::type Platform::mModalWindowStack;
+	Stack<RenderWindow*> Platform::mModalWindowStack;
 
 	NativeDropTargetData Platform::mDropTargets;
 
@@ -54,9 +54,9 @@ namespace BansheeEngine
 
 	struct NativeDropTargetData::Pimpl
 	{
-		Map<const RenderWindow*, Win32DropTarget*>::type dropTargetsPerWindow;
-		Vector<Win32DropTarget*>::type dropTargetsToInitialize;
-		Vector<Win32DropTarget*>::type dropTargetsToDestroy;
+		Map<const RenderWindow*, Win32DropTarget*> dropTargetsPerWindow;
+		Vector<Win32DropTarget*> dropTargetsToInitialize;
+		Vector<Win32DropTarget*> dropTargetsToDestroy;
 	};
 
 	NativeDropTargetData::NativeDropTargetData()
@@ -259,14 +259,14 @@ namespace BansheeEngine
 		PostMessage(hwnd, WM_SETCURSOR, WPARAM(hwnd), (LPARAM)MAKELONG(HTCLIENT, WM_MOUSEMOVE));
 	}
 
-	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>::type& nonClientAreas)
+	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>& nonClientAreas)
 	{
 		CM_LOCK_MUTEX(mSync);
 
 		mNonClientAreas[&window].moveAreas = nonClientAreas;
 	}
 
-	void Platform::setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>::type& nonClientAreas)
+	void Platform::setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas)
 	{
 		CM_LOCK_MUTEX(mSync);
 
@@ -453,7 +453,7 @@ namespace BansheeEngine
 
 	void Platform::_update()
 	{
-		Vector<RenderWindow*>::type windowsCopy;
+		Vector<RenderWindow*> windowsCopy;
 		{
 			CM_LOCK_MUTEX(mSync);
 

@@ -243,7 +243,7 @@ namespace BansheeEngine
 		return RectI(mX, mY + TitleBarHeight, mWidth, (UINT32)std::max(0, (INT32)mHeight - (INT32)TitleBarHeight));
 	}
 
-	Vector<RectI>::type EditorWidgetContainer::getDraggableAreas() const
+	Vector<RectI> EditorWidgetContainer::getDraggableAreas() const
 	{
 		return mTitleBar->calcDraggableAreas(mX, mY, mWidth, TitleBarHeight);
 	}

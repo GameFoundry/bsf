@@ -122,14 +122,14 @@ namespace BansheeEngine
 		bool getUUIDFromFilePath(const Path& path, String& uuid) const;
 
 	private:
-		Vector<ResourceManifestPtr>::type mResourceManifests;
+		Vector<ResourceManifestPtr> mResourceManifests;
 		ResourceManifestPtr mDefaultResourceManifest;
 
 		CM_MUTEX(mInProgressResourcesMutex);
 		CM_MUTEX(mLoadedResourceMutex);
 
-		UnorderedMap<String, HResource>::type mLoadedResources; 
-		UnorderedMap<String, HResource>::type mInProgressResources; // Resources that are being asynchronously loaded
+		UnorderedMap<String, HResource> mLoadedResources; 
+		UnorderedMap<String, HResource> mInProgressResources; // Resources that are being asynchronously loaded
 
 		HResource loadInternal(const Path& filePath, bool synchronous);
 		ResourcePtr loadFromDiskAndDeserialize(const Path& filePath);

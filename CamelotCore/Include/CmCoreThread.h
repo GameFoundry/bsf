@@ -112,7 +112,7 @@ private:
 	UINT32 mActiveFrameAlloc;
 
 	static CM_THREADLOCAL AccessorContainer* mAccessor;
-	Vector<AccessorContainer*>::type mAccessors;
+	Vector<AccessorContainer*> mAccessors;
 
 	volatile bool mCoreThreadShutdown;
 
@@ -126,7 +126,7 @@ private:
 	CommandQueue<CommandQueueSync>* mCommandQueue;
 
 	UINT32 mMaxCommandNotifyId; /**< ID that will be assigned to the next command with a notifier callback. */
-	Vector<UINT32>::type mCommandsCompleted; /**< Completed commands that have notifier callbacks set up */
+	Vector<UINT32> mCommandsCompleted; /**< Completed commands that have notifier callbacks set up */
 
 	SyncedCoreAccessor* mSyncedCoreAccessor;
 

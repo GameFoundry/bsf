@@ -159,7 +159,7 @@ namespace BansheeEngine
 		return *newProperty;
 	}
 
-	const Vector<MonoField*>::type MonoClass::getAllFields() const
+	const Vector<MonoField*> MonoClass::getAllFields() const
 	{
 		if(mHasCachedFields)
 			return mCachedFieldList;

@@ -41,10 +41,10 @@ namespace BansheeEngine
 				:isDirty(true)
 			{ }
 
-			Vector<TransientMeshPtr>::type cachedMeshes;
-			Vector<GUIMaterialInfo>::type cachedMaterials;
-			Vector<GUIWidget*>::type cachedWidgetsPerMesh;
-			Vector<GUIWidget*>::type widgets;
+			Vector<TransientMeshPtr> cachedMeshes;
+			Vector<GUIMaterialInfo> cachedMaterials;
+			Vector<GUIWidget*> cachedWidgetsPerMesh;
+			Vector<GUIWidget*> widgets;
 			bool isDirty;
 		};
 
@@ -120,28 +120,28 @@ namespace BansheeEngine
 		static const UINT32 MESH_HEAP_INITIAL_NUM_VERTS;
 		static const UINT32 MESH_HEAP_INITIAL_NUM_INDICES;
 
-		Vector<WidgetInfo>::type mWidgets;
-		UnorderedMap<const Viewport*, GUIRenderData>::type mCachedGUIData;
+		Vector<WidgetInfo> mWidgets;
+		UnorderedMap<const Viewport*, GUIRenderData> mCachedGUIData;
 		MeshHeapPtr mMeshHeap;
 
 		VertexDataDescPtr mVertexDesc;
 
-		Stack<GUIElement*>::type mScheduledForDestruction;
+		Stack<GUIElement*> mScheduledForDestruction;
 
 		// Element and widget pointer is currently over
-		Vector<ElementInfo>::type mElementsUnderPointer;
-		Vector<ElementInfo>::type mNewElementsUnderPointer;
+		Vector<ElementInfo> mElementsUnderPointer;
+		Vector<ElementInfo> mNewElementsUnderPointer;
 
 		// Element and widget that's being clicked on
 		GUIMouseButton mActiveMouseButton;
-		Vector<ElementInfo>::type mActiveElements;
-		Vector<ElementInfo>::type mNewActiveElements;
+		Vector<ElementInfo> mActiveElements;
+		Vector<ElementInfo> mNewActiveElements;
 
 		// Element and widget that currently have the keyboard focus
-		Vector<ElementInfo>::type mElementsInFocus;
-		Vector<ElementInfo>::type mNewElementsInFocus;
+		Vector<ElementInfo> mElementsInFocus;
+		Vector<ElementInfo> mNewElementsInFocus;
 
-		Vector<ElementFocusInfo>::type mForcedFocusElements;
+		Vector<ElementFocusInfo> mForcedFocusElements;
 
 		GUIInputCaret* mInputCaret;
 		GUIInputSelection* mInputSelection;
@@ -167,7 +167,7 @@ namespace BansheeEngine
 		HSpriteTexture mTextSelectionTexture;
 		Color mTextSelectionColor;
 
-		Map<const RenderTexture*, const GUIElement*>::type mInputBridge;
+		Map<const RenderTexture*, const GUIElement*> mInputBridge;
 
 		HEvent mOnPointerMovedConn;
 		HEvent mOnPointerPressedConn;
@@ -199,7 +199,7 @@ namespace BansheeEngine
 		void onInputCommandEntered(InputCommandType commandType);
 		void onVirtualButtonDown(const VirtualButton& button);
 
-		bool onMouseDragEnded(const PointerEvent& event);
+		void onMouseDragEnded(const PointerEvent& event, DragCallbackInfo& dragInfo);
 
 		void onWindowFocusGained(RenderWindow& win);
 		void onWindowFocusLost(RenderWindow& win);

@@ -15,7 +15,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	UnorderedMap<String, ScriptEditorWindow::EditorWindowHandle>::type ScriptEditorWindow::OpenScriptEditorWindows;
+	UnorderedMap<String, ScriptEditorWindow::EditorWindowHandle> ScriptEditorWindow::OpenScriptEditorWindows;
 	MonoMethod* ScriptEditorWindow::onResizedMethod = nullptr;
 
 	ScriptEditorWindow::ScriptEditorWindow(MonoObject* instance, const String& windowName, const String& displayName, EditorWidgetBase* editorWidget)
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		{
 			MonoClass* editorWindowClass = assembly->getClass("BansheeEditor", "EditorWindow");
 
-			const Vector<MonoClass*>::type& allClasses = assembly->getAllClasses();
+			const Vector<MonoClass*>& allClasses = assembly->getAllClasses();
 			for(auto& curClass : allClasses)
 			{
 				if(curClass->isSubClassOf(editorWindowClass) && curClass != editorWindowClass)

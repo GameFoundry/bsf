@@ -19,7 +19,7 @@ namespace BansheeEngine
 
 		void initialize(const std::shared_ptr<GUIToggleGroup>& sharedPtr);
 
-		Vector<GUIToggle*>::type mButtons;
+		Vector<GUIToggle*> mButtons;
 		std::weak_ptr<GUIToggleGroup> mThis;
 	};
 }

@@ -20,9 +20,20 @@
 // Secure versions aren't multiplatform, so we won't be using them
 #define _CRT_SECURE_NO_WARNINGS
 
-// Disable: "<type> needs to have dll-interface to be used by clients'
+// disable: "<type> needs to have dll-interface to be used by clients'
 // Happens on STL member variables which are not public therefore is ok
 #   pragma warning (disable: 4251)
+
+// disable: 'X' Function call with parameters that may be unsafe
+#	pragma warning(disable: 4996) 
+
+// disable: decorated name length exceeded, name was truncated
+// Happens with really long type names. Even fairly standard use
+// of std::unordered_map with custom parameters, meaning I can't
+// really do much to avoid it. It shouldn't effect execution
+// but might cause problems if you compile library
+// with one compiler and use it in another.
+#	pragma warning(disable: 4503)
 
 #endif
 

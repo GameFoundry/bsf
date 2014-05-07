@@ -29,7 +29,7 @@ namespace BansheeEngine
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
 		// We only allow single component per type
-		const Vector<HComponent>::type& mComponents = so->getComponents();
+		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
 		{
 			if(component->getTypeId() == TID_ManagedComponent)
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
-		const Vector<HComponent>::type& mComponents = so->getComponents();
+		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
 		{
 			if(component->getTypeId() == TID_ManagedComponent)
@@ -77,8 +77,8 @@ namespace BansheeEngine
 		ScriptSceneObject* scriptSO = ScriptSceneObject::toNative(parentSceneObject);
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
-		const Vector<HComponent>::type& mComponents = so->getComponents();
-		Vector<MonoObject*>::type managedComponents;
+		const Vector<HComponent>& mComponents = so->getComponents();
+		Vector<MonoObject*> managedComponents;
 
 		for(auto& component : mComponents)
 		{
@@ -108,7 +108,7 @@ namespace BansheeEngine
 		HSceneObject so = static_object_cast<SceneObject>(scriptSO->getNativeHandle());
 
 		// We only allow single component per type
-		const Vector<HComponent>::type& mComponents = so->getComponents();
+		const Vector<HComponent>& mComponents = so->getComponents();
 		for(auto& component : mComponents)
 		{
 			if(component->getTypeId() == TID_ManagedComponent)

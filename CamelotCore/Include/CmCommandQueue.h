@@ -156,12 +156,12 @@ namespace BansheeEngine
 		 * @param	notifyCallback  	Callback that will be called if a command that has "notifyOnComplete" flag set.
 		 * 								The callback will receive "callbackId" of the command.
 		 */
-		void playbackWithNotify(Queue<QueuedCommand>::type* commands, std::function<void(UINT32)> notifyCallback);
+		void playbackWithNotify(Queue<QueuedCommand>* commands, std::function<void(UINT32)> notifyCallback);
 
 		/**
 		 * @brief	Executes all provided commands one by one in order. To get the commands you should call flush().
 		 */
-		void playback(Queue<QueuedCommand>::type* commands);
+		void playback(Queue<QueuedCommand>* commands);
 
 		/**
 		 * @brief	Allows you to set a breakpoint that will trigger when the specified command is executed.
@@ -213,7 +213,7 @@ namespace BansheeEngine
 		 * @brief	Returns a copy of all queued commands and makes room for new ones. Must be called from the thread
 		 * 			that created the command queue. Returned commands MUST be passed to "playback" method.
 		 */
-		BansheeEngine::Queue<QueuedCommand>::type* flush();
+		BansheeEngine::Queue<QueuedCommand>* flush();
 
 		/**
 		 * @brief	Cancels all currently queued commands.
@@ -233,8 +233,8 @@ namespace BansheeEngine
 		void throwInvalidThreadException(const String& message) const;
 
 	private:
-		BansheeEngine::Queue<QueuedCommand>::type* mCommands;
-		Stack<BansheeEngine::Queue<QueuedCommand>::type*>::type mEmptyCommandQueues; // List of empty queues for reuse
+		BansheeEngine::Queue<QueuedCommand>* mCommands;
+		Stack<BansheeEngine::Queue<QueuedCommand>*> mEmptyCommandQueues; // List of empty queues for reuse
 
 		CM_THREAD_ID_TYPE mMyThreadId;
 
@@ -269,7 +269,7 @@ namespace BansheeEngine
 		UINT32 mCommandQueueIdx;
 
 		static UINT32 MaxCommandQueueIdx;
-		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction>::type SetBreakpoints;
+		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
 		CM_STATIC_MUTEX(CommandQueueBreakpointMutex);
 
 		/**
@@ -345,7 +345,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc CommandQueueBase::flush
 		 */
-		BansheeEngine::Queue<QueuedCommand>::type* flush()
+		BansheeEngine::Queue<QueuedCommand>* flush()
 		{
 #if CM_DEBUG_MODE
 #if CM_THREAD_SUPPORT != 0
@@ -355,7 +355,7 @@ namespace BansheeEngine
 #endif
 
 			lock();
-			BansheeEngine::Queue<QueuedCommand>::type* commands = CommandQueueBase::flush();
+			BansheeEngine::Queue<QueuedCommand>* commands = CommandQueueBase::flush();
 			unlock();
 
 			return commands;

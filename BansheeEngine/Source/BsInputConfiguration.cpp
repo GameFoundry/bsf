@@ -2,7 +2,7 @@
 
 namespace BansheeEngine
 {
-	Map<String, UINT32>::type VirtualButton::UniqueButtonIds;
+	Map<String, UINT32> VirtualButton::UniqueButtonIds;
 	UINT32 VirtualButton::NextButtonId = 0;
 
 	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC()
@@ -36,7 +36,7 @@ namespace BansheeEngine
 
 	void InputConfiguration::registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
 	{
-		Vector<VirtualButtonData>::type& btnData = mButtons[buttonCode & 0x0000FFFF];
+		Vector<VirtualButtonData>& btnData = mButtons[buttonCode & 0x0000FFFF];
 
 		INT32 idx = -1;
 		for(UINT32 i = 0; i < (UINT32)btnData.size(); i++)
@@ -62,7 +62,7 @@ namespace BansheeEngine
 
 	void InputConfiguration::unregisterButton(const String& name)
 	{
-		Vector<UINT32>::type toRemove;
+		Vector<UINT32> toRemove;
 
 		for(UINT32 i = 0; i < BC_Count; i++)
 		{
@@ -86,7 +86,7 @@ namespace BansheeEngine
 
 	bool InputConfiguration::getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const
 	{
-		const Vector<VirtualButtonData>::type& btnData = mButtons[code & 0x0000FFFF];
+		const Vector<VirtualButtonData>& btnData = mButtons[code & 0x0000FFFF];
 
 		for(UINT32 i = 0; i < (UINT32)btnData.size(); i++)
 		{

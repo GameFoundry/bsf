@@ -58,13 +58,13 @@ namespace BansheeEngine
 		static const String MONO_LIB_DIR;
 		static const String MONO_ETC_DIR;
 
-		static UnorderedMap<String, Vector<ScriptMeta*>::type>::type& getTypesToInitialize()
+		static UnorderedMap<String, Vector<ScriptMeta*>>& getTypesToInitialize()
 		{
-			static UnorderedMap<String, Vector<ScriptMeta*>::type>::type mTypesToInitialize;
+			static UnorderedMap<String, Vector<ScriptMeta*>> mTypesToInitialize;
 			return mTypesToInitialize;
 		}
 
-		UnorderedMap<String, MonoAssembly*>::type mAssemblies;
+		UnorderedMap<String, MonoAssembly*> mAssemblies;
 		MonoDomain* mDomain;
 		bool mIsCoreLoaded;
 	};

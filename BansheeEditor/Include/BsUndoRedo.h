@@ -37,7 +37,7 @@ namespace BansheeEngine
 		UINT32 mRedoStackPtr;
 		UINT32 mRedoNumElements;
 
-		Stack<GroupData>::type mGroups;
+		Stack<GroupData> mGroups;
 
 		EditorCommand* removeLastFromUndoStack();
 		void addToUndoStack(EditorCommand* command);

@@ -165,8 +165,8 @@ namespace BansheeEngine
 
 		const VertexDataDescPtr& getVertexDesc() const { return mVertexData; }
 
-		static MeshDataPtr combine(const Vector<MeshDataPtr>::type& elements, const Vector<Vector<SubMesh>::type>::type& allSubMeshes,
-			Vector<SubMesh>::type& subMeshes);
+		static MeshDataPtr combine(const Vector<MeshDataPtr>& elements, const Vector<Vector<SubMesh>>& allSubMeshes,
+			Vector<SubMesh>& subMeshes);
 
 	protected:
 		UINT32 getInternalBufferSize();

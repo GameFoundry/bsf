@@ -351,7 +351,7 @@ namespace BansheeEngine
 
 		// Read all the buffer data so we can assign it. Not the most efficient way of accessing data
 		// but it is required in order to have standardized buffer interface.
-		UnorderedMap<UINT32, UINT8*>::type bufferData;
+		UnorderedMap<UINT32, UINT8*> bufferData;
 
 		for(auto& curParam : paramDesc.params)
 		{

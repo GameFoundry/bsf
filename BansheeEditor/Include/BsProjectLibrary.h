@@ -45,7 +45,7 @@ namespace BansheeEngine
 			DirectoryEntry();
 			DirectoryEntry(const Path& path, const WString& name, DirectoryEntry* parent);
 
-			Vector<LibraryEntry*>::type mChildren;
+			Vector<LibraryEntry*> mChildren;
 		};
 
 	public:

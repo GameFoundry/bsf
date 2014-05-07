@@ -152,7 +152,7 @@ namespace BansheeEngine
 
 		checkForErrors();
 
-		Vector<BansheeEngine::String>::type tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
+		Vector<BansheeEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
 		if (!tokens.empty())
 		{

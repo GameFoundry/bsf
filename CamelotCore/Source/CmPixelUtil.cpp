@@ -990,7 +990,7 @@ namespace BansheeEngine {
     {
         // Collect format names sorted by length, it's required by BNF compiler
         // that similar tokens need longer ones comes first.
-        typedef Multimap<String::size_type, String>::type FormatNameMap;
+        typedef MultiMap<String::size_type, String> FormatNameMap;
         FormatNameMap formatNames;
         for (size_t i = 0; i < PF_COUNT; ++i)
         {

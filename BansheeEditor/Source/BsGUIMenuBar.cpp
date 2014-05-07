@@ -215,7 +215,7 @@ namespace BansheeEngine
 
 	bool GUIMenuBar::stripPath(WString& path, WString& pathRoot) const
 	{
-		Vector<WString>::type pathElements = StringUtil::split(path, L"/");
+		Vector<WString> pathElements = StringUtil::split(path, L"/");
 		if(pathElements.size() == 0)
 			return false;
 
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		// so force the update right away so we get correct element bounds
 		mMainArea->_update();
 
-		Vector<RectI>::type nonClientAreas;
+		Vector<RectI> nonClientAreas;
 		nonClientAreas.push_back(mLogoTexture->getBounds());
 
 		if(mChildMenus.size() > 0)

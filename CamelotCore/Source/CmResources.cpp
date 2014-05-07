@@ -190,7 +190,7 @@ namespace BansheeEngine
 
 	void Resources::unloadAllUnused()
 	{
-		Vector<HResource>::type resourcesToUnload;
+		Vector<HResource> resourcesToUnload;
 
 		{
 			CM_LOCK_MUTEX(mLoadedResourceMutex);

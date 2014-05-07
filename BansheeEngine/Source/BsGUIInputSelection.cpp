@@ -78,9 +78,9 @@ namespace BansheeEngine
 		return clipRect;
 	}
 
-	Vector<RectI>::type GUIInputSelection::getSelectionRects() const
+	Vector<RectI> GUIInputSelection::getSelectionRects() const
 	{
-		Vector<RectI>::type selectionRects;
+		Vector<RectI> selectionRects;
 
 		if(mSelectionStart == mSelectionEnd)
 			return selectionRects;
