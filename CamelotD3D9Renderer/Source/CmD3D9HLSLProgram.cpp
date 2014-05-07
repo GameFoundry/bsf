@@ -203,7 +203,7 @@ namespace BansheeEngine {
 				"",// dummy source, since we'll be using microcode
 				"",
 				mType, 
-				GPP_NONE);
+				mProfile);
 			static_cast<D3D9GpuProgram*>(mAssemblerProgram.get())->setExternalMicrocode(mpMicroCode);
 
 			D3D9HLSLParamParser paramParser(constTable);

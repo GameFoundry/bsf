@@ -509,7 +509,7 @@ namespace BansheeEngine
 
 			if(curGenericField != nullptr)
 			{
-				if(curGenericField->getTypeSize() != fieldSize)
+				if(!hasDynamicSize && curGenericField->getTypeSize() != fieldSize)
 				{
 					CM_EXCEPT(InternalErrorException, 
 						"Data type mismatch. Type size stored in file and actual type size don't match. (" 

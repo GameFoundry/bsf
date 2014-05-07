@@ -9,12 +9,9 @@
 cm_shared_ptr should use && for parameter forwarding?
 cm_core_ptr too
 
-
-Figure out how to properly deal with events and recursion. e.g. when slot is disconnected during an event callback
-
-There was a crash in release mode - Maybe this was due to the event error, mabye not. Test.
-
-Test DX9 and OpenGL
+When creating an OpenGL context I need to create the basic one, then initialize it (currently done in GLRenderSystem::initializeContext which I'll 
+need to move), and then destroy window/DC/context and recreate them using the attrib version. Check out win32_window.c in glwf from SB source 
+code for example parameters when creating one.
 
 
 Create a proper git repo of dependencies folder

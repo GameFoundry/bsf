@@ -1350,13 +1350,12 @@ namespace BansheeEngine
 			}            
 		}
 
-		// TODO - Replace with OpenGL 4.3 built-in functionality (GL_DEBUG_OUTPUT_SYNCHRONOUS)
 #if CM_DEBUG_MODE
-		//if (mGLSupport->checkExtension("GL_ARB_debug_output"))
-		//{
-		//	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-		//	glDebugMessageCallbackARB(&openGlErrorCallback, 0);
-		//}
+		if (mGLSupport->checkExtension("GL_debug_output"))
+		{
+			glDebugMessageCallback(&openGlErrorCallback, 0);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		}
 #endif
 	}
 	//---------------------------------------------------------------------

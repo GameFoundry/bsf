@@ -13,7 +13,7 @@
   - Texture limitations: Only 1D, 2D, 3D and Cube textures (and their samplers) are supported. Support for multisampled textures
      is included where necessary to implement render targets. Support for texture arrays and is not included.
  - Multiple inheritance is not supported on any class that is serialized with the help of RTTI. If you use it you can expect
-   very weird issues.
+   weird issues because of casting issues throughout the RTTI and serializer code.
  - If you're creating a hierarchy of classes with RTTI support, ALL classes in the hierarchy must have RTTI implementations. You cannot just leave
    some out, even if they contain no data. This would create incomplete RTTI class hierarchy which can cause various issues.
  - If you are manually constructing a class and it has an "initialize()" method, then you need to call it before using the class. Most object creation is wrapped
@@ -30,9 +30,8 @@
 	  In such class it is assumed all methods are internal and generally aren't meant for normal day to day use.
 	- "Core method" notation in method documentation. This means the method is only meant to be called from the core thread. Calling it from another thread
 	  will cause an exception at best, or cause unpredictable behaviour at worst.
+  - If using Visual Studio make sure you enable throwing of C++ exceptions. They are automatically disabled for me in VS2012 and VS2013 which results in nasty
+    issues as the exception gets reported as "First chance exception" and the code attempts to be run again. Banshee does not perform cleanup upon exception throw as exceptions
+	are used for fatal errors. This means you will end up with memory corruption or some other issue, while you could have gotten a clean exception explaining the problem.
 
 
-
-Classes to document:
- - ThreadPool
- - TaskScheduler

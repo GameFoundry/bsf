@@ -169,7 +169,7 @@ namespace BansheeEngine
 		{ 
 			UINT64 dataSize = sizeof(UINT32) + rttiGetElemSize(data.type) + rttiGetElemSize(data.path) + rttiGetElemSize(data.elementName);
 
-			dataSize += rttiGetElemSize((UINT32)data.mChildren.size());
+			dataSize += sizeof(UINT32);
 
 			for(auto& child : data.mChildren)
 			{

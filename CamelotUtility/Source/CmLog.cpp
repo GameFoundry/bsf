@@ -1,6 +1,8 @@
 #include "CmLog.h"
 #include "CmException.h"
 
+void dbg_VSLog(const BansheeEngine::String& message);
+
 namespace BansheeEngine
 {
 	LogEntry::LogEntry(const String& msg, const String& level)
@@ -26,6 +28,8 @@ namespace BansheeEngine
 		LogEntry* newEntry = cm_new<LogEntry, PoolAlloc>(message, level);
 		mEntries.push_back(newEntry);
 
+		dbg_VSLog(message);
+
 		doOnEntryAdded(*newEntry);
 	}
 
@@ -49,4 +53,14 @@ namespace BansheeEngine
 	{
 		onEntryAdded(entry);
 	}
+}
+
+// TODO: Debug only - Remove later
+
+#include <windows.h>
+
+void dbg_VSLog(const BansheeEngine::String& message)
+{
+	OutputDebugString(message.c_str());
+	OutputDebugString("\n");
 }
