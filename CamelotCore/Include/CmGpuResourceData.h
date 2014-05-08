@@ -5,9 +5,17 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	You can use this class to read and write to various GPU resources. 
+	 * @brief	You can use this class as a storage for reading and writing from/to various GPU resources. 
+	 *			It is meant to be created on sim thread and used on the core thread. This class is abstract
+	 *			and specific resource types need to implement their own type of GpuResourceData.
 	 * 			
-	 * @note	If you allocate an internal buffer to store the resource data, the ownership of the buffer
+	 * @note	Normal use of this class involves requesting an instance of GpuResourceData from a GpuResource,
+	 *			then scheduling a read or write on that resource using the provided instance.
+	 *			Instance will be locked while it is used by the core thread and sim thread will be allowed to
+	 *			access it when the operation ends. Caller can track AsyncOps regarding the read/write operation
+	 *			to be notified when it is complete.
+	 *
+	 *			If you allocate an internal buffer to store the resource data, the ownership of the buffer
 	 * 			will always remain with the initial instance of the class. If that initial instance
 	 * 			is deleted, any potential copies will point to garbage data.
 	 */
@@ -18,12 +26,15 @@ namespace BansheeEngine
 		GpuResourceData(const GpuResourceData& copy);
 		virtual ~GpuResourceData();
 
+		/**
+		 * @brief	Returns pointer to the internal buffer.
+		 */
 		UINT8* getData() const;
 
 		/**
 		 * @brief	Allocates an internal buffer of a certain size. If there is another
 		 * 			buffer already allocated, it will be freed and new one will be allocated.
-		 * 			Buffer size is determine based on parameters used for initializing the class.
+		 * 			Buffer size is determined based on parameters used for initializing the class.
 		 */
 		void allocateInternalBuffer();
 
@@ -51,16 +62,24 @@ namespace BansheeEngine
 		void setExternalBuffer(UINT8* data);
 
 		/**
-		 * @brief	Locks the data and makes it available only to the core thread. Don't call manually.
+		 * @brief	Locks the data and makes it available only to the core thread. 
+		 *
+		 * @note	Internal method.
 		 */
 		void lock() const;
 
 		/**
-		 * @brief	Unlocks the data and makes it available to all threads. Don't call manually.
+		 * @brief	Unlocks the data and makes it available to all threads. 
+		 *
+		 * @note	Internal method.
 		 */
 		void unlock() const;
 
 	protected:
+		/**
+		 * @brief	Returns the size of the internal buffer in bytes. This is calculated based
+		 *			on parameters provided upon construction and specific implementation details.
+		 */
 		virtual UINT32 getInternalBufferSize() = 0;
 
 	private:
