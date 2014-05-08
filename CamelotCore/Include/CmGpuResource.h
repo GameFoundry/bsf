@@ -5,6 +5,12 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Represents a resource that in some way deals directly with the rendering
+	 *			API and the GPU.
+	 *
+	 * @note	e.g. texture, mesh, buffer, etc.
+	 */
 	class CM_EXPORT GpuResource : public Resource
 	{
 	public:

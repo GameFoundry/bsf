@@ -30,6 +30,8 @@ namespace BansheeEngine
 
 	void MeshBase::addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp)
 	{
+		THROW_IF_CORE_THREAD;
+
 		if((indexOffset + indexCount) > mNumIndices)
 		{
 			LOGWRN("Provided sub-mesh references indexes out of range. Sub-mesh range: " 

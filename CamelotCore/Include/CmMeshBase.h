@@ -7,20 +7,48 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Type of buffers used by a mesh. These options usually affect performance and 
+	 *			you should specify static if you don't plan on modifying the mesh often,
+	 *			otherwise specify dynamic.
+	 */
 	enum class MeshBufferType
 	{
 		Static,
 		Dynamic
 	};
 
+	/**
+	 * @brief	Base class all mesh implementations derive from. Meshes hold geometry information,
+	 *			normally in the form of one or serveral index or vertex buffers. Different mesh implementations
+	 *			might choose to manage those buffers differently.
+	 */
 	class CM_EXPORT MeshBase : public GpuResource
 	{
 	public:
+		/**
+		 * @brief	Constructs a new instance.
+		 * @param	numVertices		Number of vertices in the mesh.
+		 * @param	numIndices		Number of indices in the mesh. 
+		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option is triangles,
+		 *							where three indices represent a single triangle.
+		 */
 		MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 		virtual ~MeshBase();
 
+		/**
+		 * @brief	Removes all sub-meshes in the mesh. All indices in the mesh will be assumed to
+		 *			belong to a single mesh.
+		 *
+		 * @note	Sim thread only.
+		 */
 		void clearSubMeshes();
 
+		/**
+		 * @brief	Allows you to mark a part of the mesh as a sub-mesh so you may draw that part separately.
+		 *
+		 * @note	Sim thread only.
+		 */
 		void addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
@@ -33,7 +61,8 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Retrieves a sub-mesh containing data used for rendering a
-		 * 			certain portion of this mesh.
+		 * 			certain portion of this mesh. If no sub-meshes are specified manually
+		 *			a special sub-mesh containing all indices is returned.
 		 * 			
 		 * @note	Sim thread only.
 		 */
