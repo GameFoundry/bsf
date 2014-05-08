@@ -1,36 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-// RenderSystem implementation
-// Note that most of this class is abstract since
-//  we cannot know how to implement the behaviour without
-//  being aware of the 3D API. However there are a few
-//  simple functions which can have a base implementation
-
 #include "CmRenderSystem.h"
 
 #include "CmCoreThread.h"
@@ -57,6 +24,9 @@ namespace BansheeEngine {
         , mVertexProgramBound(false)
 		, mGeometryProgramBound(false)
         , mFragmentProgramBound(false)
+		, mDomainProgramBound(false)
+		, mHullProgramBound(false)
+		, mComputeProgramBound(false)
 		, mClipPlanesDirty(true)
 		, mCurrentCapabilities(nullptr)
     {
@@ -64,7 +34,7 @@ namespace BansheeEngine {
 
     RenderSystem::~RenderSystem()
     {
-		// Base classes need to call virtual destroy_internal method (queue it on core thread)
+		// Base classes need to call virtual destroy_internal method instead of a destructor
 
 		cm_delete(mCurrentCapabilities);
 		mCurrentCapabilities = nullptr;
@@ -86,6 +56,9 @@ namespace BansheeEngine {
 		mVertexProgramBound = false;
 		mGeometryProgramBound = false;
 		mFragmentProgramBound = false;
+		mDomainProgramBound = false;
+		mHullProgramBound = false;
+		mComputeProgramBound = false;
 	}
 
 	void RenderSystem::destroy()
@@ -155,7 +128,6 @@ namespace BansheeEngine {
 		switch(prg->getBindingDelegate()->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
-			// mark clip planes dirty if changed (programmable can change space)
 			if (!mVertexProgramBound && !mClipPlanes.empty())
 				mClipPlanesDirty = true;
 
@@ -167,6 +139,15 @@ namespace BansheeEngine {
 		case GPT_FRAGMENT_PROGRAM:
 			mFragmentProgramBound = true;
 			break;
+		case GPT_DOMAIN_PROGRAM:
+			mDomainProgramBound = true;
+			break;
+		case GPT_HULL_PROGRAM:
+			mHullProgramBound = true;
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			mComputeProgramBound = true;
+			break;
 		}
 	}
 
@@ -177,9 +158,9 @@ namespace BansheeEngine {
 		switch(gptype)
 		{
 		case GPT_VERTEX_PROGRAM:
-			// mark clip planes dirty if changed (programmable can change space)
 			if (mVertexProgramBound && !mClipPlanes.empty())
 				mClipPlanesDirty = true;
+
 			mVertexProgramBound = false;
 			break;
 		case GPT_GEOMETRY_PROGRAM:
@@ -187,6 +168,15 @@ namespace BansheeEngine {
 			break;
 		case GPT_FRAGMENT_PROGRAM:
 			mFragmentProgramBound = false;
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			mDomainProgramBound = false;
+			break;
+		case GPT_HULL_PROGRAM:
+			mHullProgramBound = false;
+			break;
+		case GPT_COMPUTE_PROGRAM:
+			mComputeProgramBound = false;
 			break;
 		}
 	}
@@ -203,6 +193,12 @@ namespace BansheeEngine {
             return mGeometryProgramBound;
         case GPT_FRAGMENT_PROGRAM:
             return mFragmentProgramBound;
+		case GPT_DOMAIN_PROGRAM:
+			return mDomainProgramBound;
+		case GPT_HULL_PROGRAM:
+			return mHullProgramBound;
+		case GPT_COMPUTE_PROGRAM:
+			return mComputeProgramBound;
 	    }
 
         return false;
@@ -214,8 +210,6 @@ namespace BansheeEngine {
 
 		gProfiler().beginSample("render");
 
-		// sort out clip planes
-		// have to do it here in case of matrix issues
 		if (mClipPlanesDirty)
 		{
 			setClipPlanesImpl(mClipPlanes);

@@ -1,32 +1,4 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __GLRenderSystem_H__
-#define __GLRenderSystem_H__
+#pragma once
 
 #include "CmGLPrerequisites.h"
 #include "CmRenderSystem.h"
@@ -35,10 +7,11 @@ THE SOFTWARE.
 #include "CmGLSLProgramFactory.h"
 #include "CmVector4.h"
 
-namespace BansheeEngine {
-    /**
-      Implementation of GL as a rendering system.
-     */
+namespace BansheeEngine 
+{
+	/**
+	 * @brief	Implementation of a render system using OpenGL.
+	 */
     class CM_RSGL_EXPORT GLRenderSystem : public RenderSystem
     {
     public:
@@ -200,100 +173,6 @@ namespace BansheeEngine {
 		GLContext* getMainContext() const { return mMainContext; } 
 		GLSupport* getGLSupport() const { return mGLSupport; }
 
-    private:
-		// Scissor test
-		UINT32 mScissorTop, mScissorBottom, mScissorLeft, mScissorRight;
-		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
-
-		UINT32 mStencilReadMask;
-		UINT32 mStencilWriteMask;
-		UINT32 mStencilRefValue;
-		CompareFunction mStencilCompareFront;
-		CompareFunction mStencilCompareBack;
-
-        /// View matrix to set world against
-        Matrix4 mViewMatrix;
-
-        /// Last min & mip filtering options, so we can combine them
-        FilterOptions mMinFilter;
-        FilterOptions mMipFilter;
-
-        /// Holds texture type settings for every stage
-        UINT32	mNumTextureTypes;
-        GLenum* mTextureTypes;
-
-        void initInputDevices(void);
-        void processInputDevices(void);
-
-        void makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m);
- 
-        GLint getBlendMode(BlendFactor ogreBlend) const;
-		GLint getTextureAddressingMode(TextureAddressingMode tam) const;
-		void initializeContext(GLContext* primary);
-
-		/** See
-          RenderSystem
-         */
-		virtual RenderSystemCapabilities* createRenderSystemCapabilities() const;
-        /** See
-          RenderSystem
-         */
-		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
-
-        /// Store last depth write state
-        bool mDepthWrite;
-		/// Store last colour write state
-		bool mColorWrite[4];
-
-        GLint convertCompareFunction(CompareFunction func) const;
-        GLint convertStencilOp(StencilOperation op, bool invert = false) const;
-
-		/// Internal method for anisotropy validation
-		GLfloat _getCurrentAnisotropy(UINT16 unit);
-		
-        /// GL support class, used for creating windows etc.
-        GLSupport* mGLSupport;
-
-        /// Check if the GL system has already been initialised
-        bool mGLInitialised;
-
-		GLSLProgramFactory* mGLSLProgramFactory;
-		GLSLProgramPipelineManager* mProgramPipelineManager;
-
-        GLuint getCombinedMinMipFilter(void) const;
-
-        GLSLGpuProgramPtr mCurrentVertexProgram;
-        GLSLGpuProgramPtr mCurrentFragmentProgram;
-		GLSLGpuProgramPtr mCurrentGeometryProgram;
-		GLSLGpuProgramPtr mCurrentHullProgram;
-		GLSLGpuProgramPtr mCurrentDomainProgram;
-
-		const GLSLProgramPipeline* mActivePipeline;
-
-		UINT32 mFragmentTexOffset;
-		UINT32 mVertexTexOffset;
-		UINT32 mGeometryTexOffset;
-
-		UINT32 mFragmentUBOffset;
-		UINT32 mVertexUBOffset;
-		UINT32 mGeometryUBOffset;
-		UINT32 mHullUBOffset;
-		UINT32 mDomainUBOffset;
-		UINT32 mComputeUBOffset;
-
-		UnorderedMap<UINT32, VertexBufferPtr> mBoundVertexBuffers;
-		VertexDeclarationPtr mBoundVertexDeclaration;
-		IndexBufferPtr mBoundIndexBuffer;
-		DrawOperationType mCurrentDrawOperation;
-
-        GLContext *mMainContext;
-        GLContext *mCurrentContext;
-
-		Vector<GLuint> mBoundAttributes; // Only full between begin/endDraw calls
-		bool mDrawCallInProgress;
-
-		UINT16 mActiveTextureUnit;
-
 	protected:
 		/**
 		 * @copydoc	RenderSystem::initialize_internal().
@@ -305,22 +184,62 @@ namespace BansheeEngine {
 		 */
         void destroy_internal(void);
 
+		/**
+		* @brief	Call before doing a draw operation, this method sets everything up.
+		*/
+		void beginDraw();
+
+		/**
+		* @brief	Needs to accompany every beginDraw after you are done with a single draw operation.
+		*/
+		void endDraw();
+
+		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const RectI& clearArea = RectI::EMPTY);
+
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 		bool activateGLTextureUnit(UINT16 unit);
 
-        /** See
-          RenderSystem
-         */
-        String getErrorDescription(long errorNumber) const;
-
-		/** See
-          RenderSystem
-         */
-        void setClipPlane (UINT16 index, float A, float B, float C, float D);
-        /** See
-          RenderSystem
-         */
+        void setClipPlane(UINT16 index, float A, float B, float C, float D);
         void enableClipPlane (UINT16 index, bool enable);
+
+		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
+		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;
+
+		GLint getBlendMode(BlendFactor ogreBlend) const;
+		GLint getTextureAddressingMode(TextureAddressingMode tam) const;
+		GLfloat getCurrentAnisotropy(UINT16 unit);
+		GLuint getCombinedMinMipFilter() const;
+
+		/**
+		* @brief	OpenGL shares all texture slots, but the engine prefers to keep textures
+		* 			separate per-stage. This will convert texture unit that is set per stage
+		* 			into a global texture unit usable by OpenGL.
+		*/
+		UINT32 getGLTextureUnit(GpuProgramType gptype, UINT32 unit);
+
+		/**
+		* @brief	OpenGL shares all buffer bindings, but the engine prefers to keep buffers
+		* 			separate per-stage. This will convert block buffer binding that is set per stage
+		* 			into a global block buffer binding usable by OpenGL.
+		*/
+		UINT32 getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding);
+
+		/**
+		* @brief	Returns the OpenGL specific mode used for drawing, depending on the
+		* 			currently set draw operation;
+		*/
+		GLint getGLDrawMode() const;
+
+		void initializeContext(GLContext* primary);
+		RenderSystemCapabilities* createRenderSystemCapabilities() const;
+		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
+		/** One time initialization for the RenderState of a context. Things that
+		only need to be set once, like the LightingModel can be defined here.
+		*/
+		void oneTimeContextInitialization();
+		/** Switch GL context, dealing with involved internal cached states too
+		*/
+		void switchContext(GLContext *context);
 
 		/************************************************************************/
 		/* 								Sampler states                     		*/
@@ -350,7 +269,7 @@ namespace BansheeEngine {
         void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
 
 		/** Sets the maximal anisotropy for the specified texture unit.*/
-		void setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy);
+		void setTextureAnisotropy(UINT16 unit, UINT32 maxAnisotropy);
 
 		/************************************************************************/
 		/* 								Blend states                      		*/
@@ -536,54 +455,80 @@ namespace BansheeEngine {
 		 */
 		void setStencilRefValue(UINT32 refValue);
 
-        /** One time initialization for the RenderState of a context. Things that
-            only need to be set once, like the LightingModel can be defined here.
-         */
-        void oneTimeContextInitialization();
-        /** Switch GL context, dealing with involved internal cached states too
-        */
-        void switchContext(GLContext *context);
+		/************************************************************************/
+		/* 							UTILITY METHODS                      		*/
+		/************************************************************************/
+
+		void makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m);
+
+		GLint convertCompareFunction(CompareFunction func) const;
+		GLint convertStencilOp(StencilOperation op, bool invert = false) const;
 
 		/**
-		 * @brief	Checks if there are any OpenGL errors and prints them to the log.
-		 */
+		* @brief	Checks if there are any OpenGL errors and prints them to the log.
+		*/
 		bool checkForErrors() const;
 
-		/**
-		 * @brief	OpenGL shares all texture slots, but the engine prefers to keep textures
-		 * 			separate per-stage. This will convert texture unit that is set per stage
-		 * 			into a global texture unit usable by OpenGL.
-		 */
-		UINT32 getGLTextureUnit(GpuProgramType gptype, UINT32 unit);
+	private:
+		UINT32 mScissorTop, mScissorBottom, mScissorLeft, mScissorRight;
+		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
 
-		/**
-		 * @brief	OpenGL shares all buffer bindings, but the engine prefers to keep buffers
-		 * 			separate per-stage. This will convert block buffer binding that is set per stage
-		 * 			into a global block buffer binding usable by OpenGL.
-		 */
-		UINT32 getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding);
+		UINT32 mStencilReadMask;
+		UINT32 mStencilWriteMask;
+		UINT32 mStencilRefValue;
+		CompareFunction mStencilCompareFront;
+		CompareFunction mStencilCompareBack;
 
-		/**
-		 * @brief	Returns the OpenGL specific mode used for drawing, depending on the
-		 * 			currently set draw operation;
-		 */
-		GLint getGLDrawMode() const;
+		// View matrix to set world against
+		Matrix4 mViewMatrix;
 
-		/**
-		 * @brief	Call before doing a draw operation, this method sets everything up.
-		 */
-		void beginDraw();
+		// Last min & mip filtering options, so we can combine them
+		FilterOptions mMinFilter;
+		FilterOptions mMipFilter;
 
-		/**
-		 * @brief	Needs to accompany every beginDraw after you are done with a single draw operation.
-		 */
-		void endDraw();
+		// Holds texture type settings for every stage
+		UINT32	mNumTextureTypes;
+		GLenum* mTextureTypes;
 
-		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const RectI& clearArea = RectI::EMPTY);
+		bool mDepthWrite;
+		bool mColorWrite[4];
 
-		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
-		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;
+		GLSupport* mGLSupport;
+		bool mGLInitialised;
+
+		GLSLProgramFactory* mGLSLProgramFactory;
+		GLSLProgramPipelineManager* mProgramPipelineManager;
+
+		GLSLGpuProgramPtr mCurrentVertexProgram;
+		GLSLGpuProgramPtr mCurrentFragmentProgram;
+		GLSLGpuProgramPtr mCurrentGeometryProgram;
+		GLSLGpuProgramPtr mCurrentHullProgram;
+		GLSLGpuProgramPtr mCurrentDomainProgram;
+
+		const GLSLProgramPipeline* mActivePipeline;
+
+		UINT32 mFragmentTexOffset;
+		UINT32 mVertexTexOffset;
+		UINT32 mGeometryTexOffset;
+
+		UINT32 mFragmentUBOffset;
+		UINT32 mVertexUBOffset;
+		UINT32 mGeometryUBOffset;
+		UINT32 mHullUBOffset;
+		UINT32 mDomainUBOffset;
+		UINT32 mComputeUBOffset;
+
+		UnorderedMap<UINT32, VertexBufferPtr> mBoundVertexBuffers;
+		VertexDeclarationPtr mBoundVertexDeclaration;
+		IndexBufferPtr mBoundIndexBuffer;
+		DrawOperationType mCurrentDrawOperation;
+
+		GLContext *mMainContext;
+		GLContext *mCurrentContext;
+
+		Vector<GLuint> mBoundAttributes; // Only full between begin/endDraw calls
+		bool mDrawCallInProgress;
+
+		UINT16 mActiveTextureUnit;
     };
 }
-#endif
-

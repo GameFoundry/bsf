@@ -30,7 +30,10 @@ THE SOFTWARE.
 
 #include "CmPrerequisites.h"
 
-namespace BansheeEngine {
+namespace BansheeEngine 
+{
+	extern String MODULE_NAME;
+
     // Forward declarations
     class GLSupport;
     class GLRenderSystem;
@@ -81,11 +84,9 @@ namespace BansheeEngine {
 #endif
 
 #if CM_THREAD_SUPPORT == 1
-	// implemented in OgreGLContext.cpp
 	GLEWContext * glewGetContext();
 
 #	if CM_PLATFORM == CM_PLATFORM_WIN32
-	// implemented in OgreWin32Context.cpp
 	WGLEWContext * wglewGetContext();
 #	endif
 

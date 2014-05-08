@@ -1,28 +1,16 @@
-#include "CmException.h"
-
-#include <algorithm>
-
 #include "CmWin32GLSupport.h"
 #include "CmGLTexture.h"
 #include "CmWin32Window.h"
+#include "CmGLRenderSystem.h"
+#include "CmWin32Context.h"
+#include "CmException.h"
+#include "GL/wglew.h"
+#include <algorithm>
 
-#if CM_THREAD_SUPPORT != 1
 GLenum __stdcall wglewContextInit (BansheeEngine::GLSupport *glSupport);
-#endif
 
 namespace BansheeEngine 
 {
-	Win32GLSupport::Win32GLSupport()
-        : mInitialWindow(0)
-        , mHasPixelFormatARB(false)
-        , mHasMultisample(false)
-		, mHasHardwareGamma(false)
-    {
-		// immediately test WGL_ARB_pixel_format and FSAA support
-		// so we can set configuration options appropriately
-		initialiseWGL();
-    } 
-
 	template<class C> void remove_duplicates(C& c)
 	{
 		std::sort(c.begin(), c.end());
@@ -30,28 +18,12 @@ namespace BansheeEngine
 		c.erase(p, c.end());
 	}
 
-	BOOL CALLBACK Win32GLSupport::sCreateMonitorsInfoEnumProc(
-		HMONITOR hMonitor,  // handle to display monitor
-		HDC hdcMonitor,     // handle to monitor DC
-		LPRECT lprcMonitor, // monitor intersection rectangle
-		LPARAM dwData       // data
-		)
-	{
-		DisplayMonitorInfoList* pArrMonitorsInfo = (DisplayMonitorInfoList*)dwData;
-
-		// Get monitor info
-		DisplayMonitorInfo displayMonitorInfo;
-
-		displayMonitorInfo.hMonitor = hMonitor;
-
-		memset(&displayMonitorInfo.monitorInfoEx, 0, sizeof(MONITORINFOEX));
-		displayMonitorInfo.monitorInfoEx.cbSize = sizeof(MONITORINFOEX);
-		GetMonitorInfo(hMonitor, &displayMonitorInfo.monitorInfoEx);
-
-		pArrMonitorsInfo->push_back(displayMonitorInfo);
-
-		return TRUE;
-	}
+	Win32GLSupport::Win32GLSupport()
+        : mInitialWindow(0), mHasPixelFormatARB(false), mHasMultisample(false), 
+		mHasHardwareGamma(false), mHasAdvancedContext(false)
+    {
+		initialiseWGL();
+    } 
 
 	RenderWindowPtr Win32GLSupport::newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow)
 	{		
@@ -64,41 +36,6 @@ namespace BansheeEngine
 
 		Win32Window* window = new (cm_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
 		
-		// TODO - Looking for monitors is disabled for now, as it should be done on the core thread and I need to port it but 
-		//  I don't feel like it at the moment. Plus I'll probably implemented a more streamlined approach to this anyway.
-
-		//HMONITOR hMonitor = NULL;
-		//int monitorIndex = desc.monitorIndex;
-		//
-		//// If monitor index found, try to assign the monitor handle based on it.
-		//if(monitorIndex >= 0)
-		//{
-		//	if (mMonitorInfoList.empty())		
-		//		EnumDisplayMonitors(NULL, NULL, sCreateMonitorsInfoEnumProc, (LPARAM)&mMonitorInfoList);			
-
-		//	if (monitorIndex < (int)mMonitorInfoList.size())					
-		//		hMonitor = mMonitorInfoList[monitorIndex].hMonitor;	
-		//}
-
-		//// If we didn't specified the monitor index, or if it didn't find it
-		//if (hMonitor == NULL)
-		//{
-		//	POINT windowAnchorPoint;
-		//
-		//	// Fill in anchor point.
-		//	windowAnchorPoint.x = desc.left;
-		//	windowAnchorPoint.y = desc.top;
-
-
-		//	// Get the nearest monitor to this window.
-		//	hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);				
-		//}
-
-		//RENDER_WINDOW_DESC newDesc = desc;
-		//newDesc.platformSpecific["monitorHandle"] = toString((size_t)hMonitor);
-
-		//window->initialize(newDesc);
-
 		if(!mInitialWindow)
 			mInitialWindow = window;
 
@@ -111,24 +48,22 @@ namespace BansheeEngine
 
 	void Win32GLSupport::stop()
 	{
-		mInitialWindow = 0; // Since there is no removeWindow, although there should be...
+		mInitialWindow = nullptr;
 	}
 
 	void Win32GLSupport::initialiseExtensions()
 	{
-		assert(mInitialWindow);
-		// First, initialise the normal extensions
+		assert(mInitialWindow != nullptr);
+		
 		GLSupport::initialiseExtensions();
-		// wglew init
-#if CM_THREAD_SUPPORT != 1
+
 		wglewContextInit(this);
-#endif
 
 		// Check for W32 specific extensions probe function
-		PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsString = 
-			(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsString");
-		if(!_wglGetExtensionsString)
+		PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsString = (PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsString");
+		if(_wglGetExtensionsString == nullptr)
 			return;
+
 		const char *wgl_extensions = _wglGetExtensionsString(mInitialWindow->_getHDC());
 
 		// Parse them, and add them to the main list
@@ -141,34 +76,71 @@ namespace BansheeEngine
         }
 	}
 
+	Win32Context* Win32GLSupport::createContext(HDC hdc, HGLRC externalGlrc)
+	{
+		GLRenderSystem* rs = static_cast<GLRenderSystem*>(RenderSystem::instancePtr());
+
+		// If RenderSystem has initialized a context use that, otherwise we create our own
+		HGLRC glrc = externalGlrc;
+		bool createdNew = false;
+		if (!rs->isContextInitialized())
+		{
+			if (externalGlrc == 0)
+			{
+				if (mHasAdvancedContext)
+				{
+					int attribs[40];
+					int i = 0;
+
+					attribs[i++] = WGL_CONTEXT_MAJOR_VERSION_ARB;
+					attribs[i++] = 4;
+					attribs[i++] = WGL_CONTEXT_MINOR_VERSION_ARB;
+					attribs[i++] = 3;
+					attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
+					attribs[i++] = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
+
+#if CM_DEBUG_MODE
+					attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
+					attribs[i++] = WGL_CONTEXT_DEBUG_BIT_ARB;				
+#endif
+
+					attribs[i++] = 0;
+					glrc = wglCreateContextAttribsARB(hdc, 0, attribs);
+				}
+				else
+					glrc = wglCreateContext(hdc);
+
+				if (glrc == 0)
+					CM_EXCEPT(RenderingAPIException, "wglCreateContext failed: " + translateWGLError());
+
+				createdNew = true;
+			}
+		}
+		else
+		{
+			rs->getMainContext()->setCurrent();
+			glrc = wglGetCurrentContext();
+		}
+
+		return cm_new<Win32Context>(hdc, glrc, createdNew);
+	}
 
 	void* Win32GLSupport::getProcAddress(const String& procname)
 	{
-        	return (void*)wglGetProcAddress( procname.c_str() );
+        return (void*)wglGetProcAddress(procname.c_str());
 	}
+
 	void Win32GLSupport::initialiseWGL()
 	{
-		// wglGetProcAddress does not work without an active OpenGL context,
-		// but we need wglChoosePixelFormatARB's address before we can
-		// create our main window.  Thank you very much, Microsoft!
-		//
-		// The solution is to create a dummy OpenGL window first, and then
-		// test for WGL_ARB_pixel_format support.  If it is not supported,
-		// we make sure to never call the ARB pixel format functions.
-		//
-		// If is is supported, we call the pixel format functions at least once
-		// to initialise them (pointers are stored by glprocs.h).  We can also
-		// take this opportunity to enumerate the valid FSAA modes.
+		// We need to create a dummy context in order to get functions
+		// that allow us to create a more advanced context. It seems
+		// hacky but that's the only way to do it.
 		
-		LPCSTR dummyText = "OgreWglDummy";
+		LPCSTR dummyText = "Dummy";
 #ifdef CM_STATIC_LIB
-		HINSTANCE hinst = GetModuleHandle( NULL );
+		HINSTANCE hinst = GetModuleHandle(NULL);
 #else
-#  if CM_DEBUG_MODE == 1
-		HINSTANCE hinst = GetModuleHandle("RenderSystem_GL_d.dll");
-#  else
-		HINSTANCE hinst = GetModuleHandle("RenderSystem_GL.dll");
-#  endif
+		HINSTANCE hinst = GetModuleHandle(MODULE_NAME.c_str());
 #endif
 		
 		WNDCLASS dummyClass;
@@ -179,19 +151,14 @@ namespace BansheeEngine
 		dummyClass.lpszClassName = dummyText;
 		RegisterClass(&dummyClass);
 
-		HWND hwnd = CreateWindow(dummyText, dummyText,
-			WS_POPUP | WS_CLIPCHILDREN,
+		HWND hwnd = CreateWindow(dummyText, dummyText, WS_POPUP | WS_CLIPCHILDREN,
 			0, 0, 32, 32, 0, 0, hinst, 0);
 
-		// if a simple CreateWindow fails, then boy are we in trouble...
-		if (hwnd == NULL)
+		if (hwnd == nullptr)
 			CM_EXCEPT(RenderingAPIException, "CreateWindow() failed");
 
-
-		// no chance of failure and no need to release thanks to CS_OWNDC
 		HDC hdc = GetDC(hwnd); 
 
-		// assign a simple OpenGL pixel format that everyone supports
 		PIXELFORMATDESCRIPTOR pfd;
 		memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
 		pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -201,7 +168,6 @@ namespace BansheeEngine
 		pfd.dwFlags = PFD_DRAW_TO_WINDOW|PFD_SUPPORT_OPENGL|PFD_DOUBLEBUFFER;
 		pfd.iPixelType = PFD_TYPE_RGBA;
 		
-		// if these fail, wglCreateContext will also quietly fail
 		int format;
 		if ((format = ChoosePixelFormat(hdc, &pfd)) != 0)
 			SetPixelFormat(hdc, format, &pfd);
@@ -215,11 +181,19 @@ namespace BansheeEngine
 			wglMakeCurrent(hdc, hrc);
 			
 			PFNWGLGETEXTENSIONSSTRINGARBPROC _wglGetExtensionsStringARB =
-				(PFNWGLGETEXTENSIONSSTRINGARBPROC)
-				wglGetProcAddress("wglGetExtensionsStringARB");
+				(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 			
-			// check for pixel format and multisampling support
-			if (_wglGetExtensionsStringARB)
+			PFNWGLCREATECONTEXTATTRIBSARBPROC _wglCreateContextAttribsARB = 
+				(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+
+			if (_wglCreateContextAttribsARB != nullptr)
+			{
+				WGLEW_GET_FUN(__wglewCreateContextAttribsARB) = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+				mHasAdvancedContext = true;
+			}
+
+			// Check for pixel format and multisampling support
+			if (_wglGetExtensionsStringARB != nullptr)
 			{
 				std::istringstream wglexts(_wglGetExtensionsStringARB(hdc));
 				String ext;
@@ -236,28 +210,20 @@ namespace BansheeEngine
 
 			if (mHasPixelFormatARB && mHasMultisample)
 			{
-				// enumerate all formats w/ multisampling
+				// Enumerate all formats w/ multisampling
 				static const int iattr[] = {
 					WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 					WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 					WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
 					WGL_SAMPLE_BUFFERS_ARB, GL_TRUE,
 					WGL_ACCELERATION_ARB, WGL_FULL_ACCELERATION_ARB,
-                    /* We are no matter about the colour, depth and stencil buffers here
-					WGL_COLOR_BITS_ARB, 24,
-					WGL_ALPHA_BITS_ARB, 8,
-					WGL_DEPTH_BITS_ARB, 24,
-					WGL_STENCIL_BITS_ARB, 8,
-                    */
 					WGL_SAMPLES_ARB, 2,
 					0
 				};
+
 				int formats[256];
 				unsigned int count;
-                // cheating here.  wglChoosePixelFormatARB procc address needed later on
-                // when a valid GL context does not exist and glew is not initialized yet.
-                WGLEW_GET_FUN(__wglewChoosePixelFormatARB) =
-                    (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+                WGLEW_GET_FUN(__wglewChoosePixelFormatARB) = (PFNWGLCHOOSEPIXELFORMATARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
                 if (WGLEW_GET_FUN(__wglewChoosePixelFormatARB)(hdc, iattr, 0, 256, formats, &count))
                 {
                     // determine what multisampling levels are offered
@@ -315,7 +281,6 @@ namespace BansheeEngine
 		
 		if ((multisample || hwGamma) && WGLEW_GET_FUN(__wglewChoosePixelFormatARB))
 		{
-
 			// Use WGL to test extended caps (multisample, sRGB)
 			Vector<int> attribList;
 			attribList.push_back(WGL_DRAW_TO_WINDOW_ARB); attribList.push_back(GL_TRUE);
@@ -332,13 +297,11 @@ namespace BansheeEngine
 			{
 				attribList.push_back(WGL_FRAMEBUFFER_SRGB_CAPABLE_EXT); attribList.push_back(GL_TRUE);
 			}
+
 			// terminator
 			attribList.push_back(0);
 
-
 			UINT nformats;
-			// ChoosePixelFormatARB proc address was obtained when setting up a dummy GL context in initialiseWGL()
-			// since glew hasn't been initialized yet, we have to cheat and use the previously obtained address
 			if (!WGLEW_GET_FUN(__wglewChoosePixelFormatARB)(hdc, &(attribList[0]), NULL, 1, &format, &nformats) || nformats <= 0)
 				return false;
 		}
@@ -347,21 +310,7 @@ namespace BansheeEngine
 			format = ChoosePixelFormat(hdc, &pfd);
 		}
 
-
 		return (format && SetPixelFormat(hdc, format, &pfd));
-	}
-
-	bool Win32GLSupport::supportsPBuffers()
-	{
-		return WGLEW_GET_FUN(__WGLEW_ARB_pbuffer) != GL_FALSE;
-	}
-
-	unsigned int Win32GLSupport::getDisplayMonitorCount() const
-	{
-		if (mMonitorInfoList.empty())		
-			EnumDisplayMonitors(NULL, NULL, sCreateMonitorsInfoEnumProc, (LPARAM)&mMonitorInfoList);
-
-		return (unsigned int)mMonitorInfoList.size();
 	}
 
 	String translateWGLError()
@@ -371,18 +320,10 @@ namespace BansheeEngine
 		int i;
 
 		// Try windows errors first
-		i = FormatMessage(
-			FORMAT_MESSAGE_FROM_SYSTEM |
-			FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL,
-			winError,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-			(LPTSTR) errDesc,
-			255,
-			NULL
-			);
+		i = FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+			NULL, winError, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
+			(LPTSTR) errDesc, 255, NULL);
 
 		return String(errDesc);
 	}
-
 }

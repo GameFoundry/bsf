@@ -864,11 +864,6 @@ namespace BansheeEngine
 		// Do nothing
 	}
 
-	String D3D11RenderSystem::getErrorDescription(long errorNumber) const
-	{
-		return mDevice->getErrorDescription();
-	}
-
 	void D3D11RenderSystem::determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings)
 	{
 		bool ok = false;

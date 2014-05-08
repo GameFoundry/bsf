@@ -1,32 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in*
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.s
------------------------------------------------------------------------------
-*/
-
-
 #include "CmGLRenderSystem.h"
 #include "CmRenderSystem.h"
 #include "CmGLTextureManager.h"
@@ -58,12 +29,12 @@ THE SOFTWARE.s
 // Convenience macro from ARB_vertex_buffer_object spec
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
-#if CM_THREAD_SUPPORT != 1
-GLenum __stdcall glewContextInit (BansheeEngine::GLSupport *glSupport);
-#endif
-
 namespace BansheeEngine 
 {
+	String MODULE_NAME = "CamelotGLRenderSystem.dll";
+
+	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam);
+
 	/************************************************************************/
 	/* 								PUBLIC INTERFACE                   		*/
 	/************************************************************************/
@@ -118,7 +89,7 @@ namespace BansheeEngine
 
 	}
 
-	const String& GLRenderSystem::getName(void) const
+	const String& GLRenderSystem::getName() const
 	{
 		static String strName("GLRenderSystem");
 		return strName;
@@ -163,8 +134,7 @@ namespace BansheeEngine
 				mDriverVersion.release = parseInt(tokens[2]); 
 		}
 		mDriverVersion.build = 0;
-		// Initialise GL after the first window has been created
-		// TODO: fire this from emulation options, and don't duplicate float and Current capabilities
+
 		mCurrentCapabilities = createRenderSystemCapabilities();
 		checkForErrors();
 
@@ -217,10 +187,7 @@ namespace BansheeEngine
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
 
-		// There will be a new initial window and so forth, thus any call to test
-		//  some params will access an invalid pointer, so it is best to reset
-		//  the whole state.
-		mGLInitialised = 0;
+		mGLInitialised = false;
 
 		if(mProgramPipelineManager != nullptr)
 			cm_delete(mProgramPipelineManager);
@@ -232,7 +199,6 @@ namespace BansheeEngine
 			cm_deleteN(mTextureTypes, mNumTextureTypes);
 	}
 
-	//---------------------------------------------------------------------
 	void GLRenderSystem::bindGpuProgram(HGpuProgram prg)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -282,7 +248,7 @@ namespace BansheeEngine
 
 		RenderSystem::bindGpuProgram(prg);
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::unbindGpuProgram(GpuProgramType gptype)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -291,7 +257,7 @@ namespace BansheeEngine
 
 		RenderSystem::unbindGpuProgram(gptype);
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -440,7 +406,7 @@ namespace BansheeEngine
 			cm_free<ScratchAlloc>(uniformBufferData);
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -464,13 +430,12 @@ namespace BansheeEngine
 			// TODO - This doesn't actually disable all textures set on this image unit, only the 2D ones
 			//      - If a non-2D sampler is used, the texture will still be displayed
 
-			// bind zero texture
 			glBindTexture(GL_TEXTURE_2D, 0); 
 		}
 
 		activateGLTextureUnit(0);
 	}
-	//-----------------------------------------------------------------------
+
 	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -495,7 +460,7 @@ namespace BansheeEngine
 		// Set border color
 		setTextureBorderColor(unit, state->getBorderColor());
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -504,11 +469,11 @@ namespace BansheeEngine
 		setAlphaToCoverage(blendState->getAlphaToCoverageEnabled());
 
 		// Blend states
-		// DirectX 9 doesn't allow us to specify blend state per render target, so we just use the first one.
+		// OpenGL doesn't allow us to specify blend state per render target, so we just use the first one.
 		if(blendState->getBlendEnabled(0))
 		{
-			setSceneBlending(blendState->getSrcBlend(0), blendState->getDstBlend(0), blendState->getAlphaSrcBlend(0), blendState->getAlphaDstBlend(0)
-				, blendState->getBlendOperation(0), blendState->getAlphaBlendOperation(0));
+			setSceneBlending(blendState->getSrcBlend(0), blendState->getDstBlend(0), blendState->getAlphaSrcBlend(0), 
+				blendState->getAlphaDstBlend(0), blendState->getBlendOperation(0), blendState->getAlphaBlendOperation(0));
 		}
 		else
 		{
@@ -519,7 +484,7 @@ namespace BansheeEngine
 		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 	}
-	//----------------------------------------------------------------------
+
 	void GLRenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -532,7 +497,7 @@ namespace BansheeEngine
 
 		setScissorTestEnable(rasterizerState->getScissorEnable());
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -556,7 +521,7 @@ namespace BansheeEngine
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setViewport(const ViewportPtr& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -578,12 +543,13 @@ namespace BansheeEngine
 			// Convert "upper-left" corner to "lower-left"
 			mViewportTop = target->getHeight() - mViewportHeight - mViewportTop;
 		}
+
 		glViewport(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 
 		// Configure the viewport clipping
 		glScissor(mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight);
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -623,8 +589,8 @@ namespace BansheeEngine
 			}
 		}
 	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::beginFrame(void)
+
+	void GLRenderSystem::beginFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -632,20 +598,14 @@ namespace BansheeEngine
 		glEnable(GL_SCISSOR_TEST);
 	}
 
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::endFrame(void)
+	void GLRenderSystem::endFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		// Deactivate the viewport clipping.
 		glDisable(GL_SCISSOR_TEST);
-		// unbind GPU programs at end of frame
-		// this is mostly to avoid holding bound programs that might get deleted
-		// outside via the resource manager
-		unbindGpuProgram(GPT_VERTEX_PROGRAM);
-		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -655,28 +615,28 @@ namespace BansheeEngine
 			mBoundVertexBuffers[index + i] = buffers[i];
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mBoundVertexDeclaration = vertexDeclaration;
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setDrawOperation(DrawOperationType op)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mCurrentDrawOperation = op;
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mBoundIndexBuffer = buffer;
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		// Find the correct type to render
@@ -687,7 +647,7 @@ namespace BansheeEngine
 
 		endDraw();
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		if(mBoundIndexBuffer == nullptr)
@@ -750,26 +710,27 @@ namespace BansheeEngine
 		if (buffers & FBT_COLOR)
 		{
 			flags |= GL_COLOR_BUFFER_BIT;
+
 			// Enable buffer for writing if it isn't
 			if (colorMask)
-			{
-				glColorMask(true, true, true, true);
-			}
+				glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
 			glClearColor(color.r, color.g, color.b, color.a);
 		}
 		if (buffers & FBT_DEPTH)
 		{
 			flags |= GL_DEPTH_BUFFER_BIT;
+
 			// Enable buffer for writing if it isn't
 			if (!mDepthWrite)
-			{
-				glDepthMask( GL_TRUE );
-			}
+				glDepthMask(GL_TRUE);
+
 			glClearDepth(depth);
 		}
 		if (buffers & FBT_STENCIL)
 		{
 			flags |= GL_STENCIL_BUFFER_BIT;
+
 			// Enable buffer for writing if it isn't
 			glStencilMask(0xFFFFFFFF);
 
@@ -835,7 +796,6 @@ namespace BansheeEngine
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/
 
-	//-----------------------------------------------------------------------------
 	void GLRenderSystem::setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw)
 	{
 		if (!activateGLTextureUnit(stage))
@@ -849,7 +809,7 @@ namespace BansheeEngine
 			getTextureAddressingMode(uvw.w));
 		activateGLTextureUnit(0);
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setTextureBorderColor(UINT16 stage, const Color& colour)
 	{
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
@@ -859,7 +819,7 @@ namespace BansheeEngine
 			activateGLTextureUnit(0);
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setTextureMipmapBias(UINT16 stage, float bias)
 	{
 		if (mCurrentCapabilities->hasCapability(RSC_MIPMAP_LOD_BIAS))
@@ -872,6 +832,7 @@ namespace BansheeEngine
 		}
 
 	}
+
 	void GLRenderSystem::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
@@ -915,11 +876,10 @@ namespace BansheeEngine
 			glBlendEquationEXT(func);
 		}
 	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::setSceneBlending(
-		BlendFactor sourceFactor, BlendFactor destFactor, 
-		BlendFactor sourceFactorAlpha, BlendFactor destFactorAlpha,
-		BlendOperation op, BlendOperation alphaOp )
+
+
+	void GLRenderSystem::setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, 
+		BlendFactor sourceFactorAlpha, BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp)
 	{
 		GLint sourceBlend = getBlendMode(sourceFactor);
 		GLint destBlend = getBlendMode(destFactor);
@@ -984,7 +944,7 @@ namespace BansheeEngine
 			glBlendEquationSeparateEXT(func, alphaFunc);
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
 	{
 		if(func == CMPF_ALWAYS_PASS)
@@ -997,7 +957,7 @@ namespace BansheeEngine
 			glAlphaFunc(convertCompareFunction(func), value / 255.0f);
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setAlphaToCoverage(bool enable)
 	{
 		static bool lasta2c = false;
@@ -1012,7 +972,7 @@ namespace BansheeEngine
 			lasta2c = enable;
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setScissorTestEnable(bool enable)
 	{
 		// If request texture flipping, use "upper-left", otherwise use "lower-left"
@@ -1050,7 +1010,7 @@ namespace BansheeEngine
 			glScissor(x, y, w, h);
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setCullingMode(CullingMode mode)
 	{
 		mCullingMode = mode;
@@ -1073,14 +1033,14 @@ namespace BansheeEngine
 		glEnable( GL_CULL_FACE );
 		glCullFace( cullMode );
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
 	{
 		setDepthBufferCheckEnabled(depthTest);
 		setDepthBufferWriteEnabled(depthWrite);
 		setDepthBufferFunction(depthFunction);
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
 	{
 		if (enabled)
@@ -1093,7 +1053,7 @@ namespace BansheeEngine
 			glDisable(GL_DEPTH_TEST);
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setDepthBufferWriteEnabled(bool enabled)
 	{
 		GLboolean flag = enabled ? GL_TRUE : GL_FALSE;
@@ -1101,12 +1061,12 @@ namespace BansheeEngine
 		// Store for reference in _beginFrame
 		mDepthWrite = enabled;
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setDepthBufferFunction(CompareFunction func)
 	{
 		glDepthFunc(convertCompareFunction(func));
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
 	{
 		if (constantBias != 0 || slopeScaleBias != 0)
@@ -1123,7 +1083,7 @@ namespace BansheeEngine
 			glDisable(GL_POLYGON_OFFSET_LINE);
 		}
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		glColorMask(red, green, blue, alpha);
@@ -1133,7 +1093,7 @@ namespace BansheeEngine
 		mColorWrite[2] = green;
 		mColorWrite[3] = alpha;
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setPolygonMode(PolygonMode level)
 	{
 		GLenum glmode;
@@ -1149,7 +1109,7 @@ namespace BansheeEngine
 		}
 		glPolygonMode(GL_FRONT_AND_BACK, glmode);
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setStencilCheckEnabled(bool enabled)
 	{
 		if (enabled)
@@ -1157,7 +1117,7 @@ namespace BansheeEngine
 		else
 			glDisable(GL_STENCIL_TEST);
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setStencilBufferOperations(StencilOperation stencilFailOp,
 		StencilOperation depthFailOp, StencilOperation passOp, bool front)
 	{
@@ -1176,7 +1136,7 @@ namespace BansheeEngine
 				convertStencilOp(passOp, true));
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setStencilBufferFunc(CompareFunction func, UINT32 mask, bool front)
 	{
 		mStencilReadMask = mask;
@@ -1192,13 +1152,13 @@ namespace BansheeEngine
 			glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setStencilBufferWriteMask(UINT32 mask)
 	{
 		mStencilWriteMask = mask;
 		glStencilMask(mask);
 	}
-	//---------------------------------------------------------------------
+
 	void GLRenderSystem::setStencilRefValue(UINT32 refValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1208,55 +1168,43 @@ namespace BansheeEngine
 		glStencilFuncSeparate(GL_FRONT, convertCompareFunction(mStencilCompareFront), mStencilRefValue, mStencilReadMask);
 		glStencilFuncSeparate(GL_BACK, convertCompareFunction(mStencilCompareBack), mStencilRefValue, mStencilReadMask);
 	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureFiltering(UINT16 unit, 
-		FilterType ftype, FilterOptions fo)
+
+	void GLRenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions fo)
 	{
 		if (!activateGLTextureUnit(unit))
 			return;
+
 		switch(ftype)
 		{
 		case FT_MIN:
 			mMinFilter = fo;
 			// Combine with existing mip filter
-			glTexParameteri(
-				mTextureTypes[unit],
-				GL_TEXTURE_MIN_FILTER, 
-				getCombinedMinMipFilter());
+			glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
 			break;
 		case FT_MAG:
 			switch (fo)
 			{
 			case FO_ANISOTROPIC: // GL treats linear and aniso the same
 			case FO_LINEAR:
-				glTexParameteri(
-					mTextureTypes[unit],
-					GL_TEXTURE_MAG_FILTER, 
-					GL_LINEAR);
+				glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
 			case FO_POINT:
 			case FO_NONE:
-				glTexParameteri(
-					mTextureTypes[unit],
-					GL_TEXTURE_MAG_FILTER, 
-					GL_NEAREST);
+				glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				break;
 			}
 			break;
 		case FT_MIP:
 			mMipFilter = fo;
 			// Combine with existing min filter
-			glTexParameteri(
-				mTextureTypes[unit],
-				GL_TEXTURE_MIN_FILTER, 
-				getCombinedMinMipFilter());
+			glTexParameteri(mTextureTypes[unit], GL_TEXTURE_MIN_FILTER, getCombinedMinMipFilter());
 			break;
 		}
 
 		activateGLTextureUnit(0);
 	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
+
+	void GLRenderSystem::setTextureAnisotropy(UINT16 unit, UINT32 maxAnisotropy)
 	{
 		if (!mCurrentCapabilities->hasCapability(RSC_ANISOTROPY))
 			return;
@@ -1273,22 +1221,14 @@ namespace BansheeEngine
 		if(maxAnisotropy < 1)
 			maxAnisotropy = 1;
 
-		if (_getCurrentAnisotropy(unit) != maxAnisotropy)
+		if (getCurrentAnisotropy(unit) != maxAnisotropy)
 			glTexParameterf(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, (float)maxAnisotropy);
 
 		activateGLTextureUnit(0);
 	}
-	//-----------------------------------------------------------------------------
+
 	void GLRenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
-		// A note on GL user clipping:
-		// When an ARB vertex program is enabled in GL, user clipping is completely
-		// disabled. There is no way around this, it's just turned off.
-		// When using GLSL, user clipping can work but you have to include a 
-		// glClipVertex command in your vertex shader. 
-		// Thus the planes set here may not actually be respected.
-
-
 		size_t i = 0;
 		size_t numClipPlanes;
 		GLdouble clipPlane[4];
@@ -1296,7 +1236,8 @@ namespace BansheeEngine
 		// Save previous modelview
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
-		// just load view matrix (identity world)
+
+		// Just load view matrix (identity world)
 		GLfloat mat[16];
 		makeGLMatrix(mat, mViewMatrix);
 		glLoadMatrixf(mat);
@@ -1307,7 +1248,7 @@ namespace BansheeEngine
 			GLenum clipPlaneId = static_cast<GLenum>(GL_CLIP_PLANE0 + i);
 			const Plane& plane = clipPlanes[i];
 
-			if (i >= 6/*GL_MAX_CLIP_PLANES*/)
+			if (i >= 6)
 			{
 				CM_EXCEPT(RenderingAPIException, "Unable to set clip plane");
 			}
@@ -1321,70 +1262,16 @@ namespace BansheeEngine
 			glEnable(clipPlaneId);
 		}
 
-		// disable remaining clip planes
-		for ( ; i < 6/*GL_MAX_CLIP_PLANES*/; ++i)
+		// Disable remaining clip planes
+		for (; i < 6; ++i)
 		{
 			glDisable(static_cast<GLenum>(GL_CLIP_PLANE0 + i));
 		}
 
-		// restore matrices
+		// Restore matrices
 		glPopMatrix();
 	}
-	//---------------------------------------------------------------------
-	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
-	{
-		// TODO - Actually hook this up to Log or something
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::oneTimeContextInitialization()
-	{
-		// Check for FSAA
-		// Enable the extension if it was enabled by the GLSupport
-		if (mGLSupport->checkExtension("GL_ARB_multisample"))
-		{
-			int fsaa_active = false;
-			glGetIntegerv(GL_SAMPLE_BUFFERS_ARB,(GLint*)&fsaa_active);
-			if(fsaa_active)
-			{
-				glEnable(GL_MULTISAMPLE_ARB);
-			}            
-		}
 
-#if CM_DEBUG_MODE
-		if (mGLSupport->checkExtension("GL_debug_output"))
-		{
-			glDebugMessageCallback(&openGlErrorCallback, 0);
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		}
-#endif
-	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::switchContext(GLContext *context)
-	{
-		// Unbind GPU programs and rebind to new context later, because
-		// scene manager treat render system as ONE 'context' ONLY, and it
-		// cached the GPU programs using state.
-		unbindGpuProgram(GPT_VERTEX_PROGRAM);
-		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
-		unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
-		unbindGpuProgram(GPT_HULL_PROGRAM);
-		unbindGpuProgram(GPT_DOMAIN_PROGRAM);
-
-		// It's ready for switching
-		if (mCurrentContext)
-			mCurrentContext->endCurrent();
-		mCurrentContext = context;
-		mCurrentContext->setCurrent();
-
-		// Must reset depth/colour write mask to according with user desired, otherwise,
-		// clearFrameBuffer would be wrong because the value we are recorded may be
-		// difference with the really state stored in GL context.
-		glDepthMask(mDepthWrite);
-		glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
-		glStencilMask(mStencilWriteMask);
-
-	}
-	//---------------------------------------------------------------------
 	bool GLRenderSystem::activateGLTextureUnit(UINT16 unit)
 	{
 		if (mActiveTextureUnit != unit)
@@ -1412,174 +1299,7 @@ namespace BansheeEngine
 			return true;
 		}
 	}
-	//---------------------------------------------------------------------
-	GLfloat GLRenderSystem::_getCurrentAnisotropy(UINT16 unit)
-	{
-		GLfloat curAniso = 0;
-		glGetTexParameterfv(mTextureTypes[unit], 
-			GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
-		return curAniso ? curAniso : 1;
-	}
-	//---------------------------------------------------------------------
-	GLuint GLRenderSystem::getCombinedMinMipFilter(void) const
-	{
-		switch(mMinFilter)
-		{
-		case FO_ANISOTROPIC:
-		case FO_LINEAR:
-			switch(mMipFilter)
-			{
-			case FO_ANISOTROPIC:
-			case FO_LINEAR:
-				// linear min, linear mip
-				return GL_LINEAR_MIPMAP_LINEAR;
-			case FO_POINT:
-				// linear min, point mip
-				return GL_LINEAR_MIPMAP_NEAREST;
-			case FO_NONE:
-				// linear min, no mip
-				return GL_LINEAR;
-			}
-			break;
-		case FO_POINT:
-		case FO_NONE:
-			switch(mMipFilter)
-			{
-			case FO_ANISOTROPIC:
-			case FO_LINEAR:
-				// nearest min, linear mip
-				return GL_NEAREST_MIPMAP_LINEAR;
-			case FO_POINT:
-				// nearest min, point mip
-				return GL_NEAREST_MIPMAP_NEAREST;
-			case FO_NONE:
-				// nearest min, no mip
-				return GL_NEAREST;
-			}
-			break;
-		}
 
-		// should never get here
-		return 0;
-
-	}
-	//---------------------------------------------------------------------
-	GLint GLRenderSystem::convertStencilOp(StencilOperation op, bool invert) const
-	{
-		switch(op)
-		{
-		case SOP_KEEP:
-			return GL_KEEP;
-		case SOP_ZERO:
-			return GL_ZERO;
-		case SOP_REPLACE:
-			return GL_REPLACE;
-		case SOP_INCREMENT:
-			return invert ? GL_DECR : GL_INCR;
-		case SOP_DECREMENT:
-			return invert ? GL_INCR : GL_DECR;
-		case SOP_INCREMENT_WRAP:
-			return invert ? GL_DECR_WRAP_EXT : GL_INCR_WRAP_EXT;
-		case SOP_DECREMENT_WRAP:
-			return invert ? GL_INCR_WRAP_EXT : GL_DECR_WRAP_EXT;
-		case SOP_INVERT:
-			return GL_INVERT;
-		};
-		// to keep compiler happy
-		return SOP_KEEP;
-	}
-	//---------------------------------------------------------------------
-	GLint GLRenderSystem::convertCompareFunction(CompareFunction func) const
-	{
-		switch(func)
-		{
-		case CMPF_ALWAYS_FAIL:
-			return GL_NEVER;
-		case CMPF_ALWAYS_PASS:
-			return GL_ALWAYS;
-		case CMPF_LESS:
-			return GL_LESS;
-		case CMPF_LESS_EQUAL:
-			return GL_LEQUAL;
-		case CMPF_EQUAL:
-			return GL_EQUAL;
-		case CMPF_NOT_EQUAL:
-			return GL_NOTEQUAL;
-		case CMPF_GREATER_EQUAL:
-			return GL_GEQUAL;
-		case CMPF_GREATER:
-			return GL_GREATER;
-		};
-		// to keep compiler happy
-		return GL_ALWAYS;
-	}
-	//-----------------------------------------------------------------------------
-	String GLRenderSystem::getErrorDescription(long errCode) const
-	{
-		const GLubyte *errString = gluErrorString (errCode);
-		return (errString != 0) ? String((const char*) errString) : StringUtil::BLANK;
-	}
-	//-----------------------------------------------------------------------------
-	GLint GLRenderSystem::getBlendMode(BlendFactor blendMode) const
-	{
-		switch(blendMode)
-		{
-		case BF_ONE:
-			return GL_ONE;
-		case BF_ZERO:
-			return GL_ZERO;
-		case BF_DEST_COLOR:
-			return GL_DST_COLOR;
-		case BF_SOURCE_COLOR:
-			return GL_SRC_COLOR;
-		case BF_INV_DEST_COLOR:
-			return GL_ONE_MINUS_DST_COLOR;
-		case BF_INV_SOURCE_COLOR:
-			return GL_ONE_MINUS_SRC_COLOR;
-		case BF_DEST_ALPHA:
-			return GL_DST_ALPHA;
-		case BF_SOURCE_ALPHA:
-			return GL_SRC_ALPHA;
-		case BF_INV_DEST_ALPHA:
-			return GL_ONE_MINUS_DST_ALPHA;
-		case BF_INV_SOURCE_ALPHA:
-			return GL_ONE_MINUS_SRC_ALPHA;
-		};
-		// to keep compiler happy
-		return GL_ONE;
-	}
-	//-----------------------------------------------------------------------------
-	GLint GLRenderSystem::getTextureAddressingMode(
-		TextureAddressingMode tam) const
-	{
-		switch(tam)
-		{
-		default:
-		case TAM_WRAP:
-			return GL_REPEAT;
-		case TAM_MIRROR:
-			return GL_MIRRORED_REPEAT;
-		case TAM_CLAMP:
-			return GL_CLAMP_TO_EDGE;
-		case TAM_BORDER:
-			return GL_CLAMP_TO_BORDER;
-		}
-
-	}
-	//-----------------------------------------------------------------------------
-	void GLRenderSystem::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
-	{
-		UINT32 x = 0;
-		for (UINT32 i = 0; i < 4; i++)
-		{
-			for (UINT32 j = 0; j < 4; j++)
-			{
-				gl_matrix[x] = m[j][i];
-				x++;
-			}
-		}
-	}
-	//-----------------------------------------------------------------------
 	void GLRenderSystem::beginDraw()
 	{
 		if(mDrawCallInProgress)
@@ -1674,7 +1394,7 @@ namespace BansheeEngine
 			mBoundAttributes.push_back(attribLocation);
 		}
 	}
-	//-----------------------------------------------------------------------
+
 	void GLRenderSystem::endDraw()
 	{
 		if(!mDrawCallInProgress)
@@ -1692,33 +1412,158 @@ namespace BansheeEngine
 
 		mBoundAttributes.clear();
 	}
-	//-----------------------------------------------------------------------
-	bool GLRenderSystem::checkForErrors() const
+
+	GLfloat GLRenderSystem::getCurrentAnisotropy(UINT16 unit)
 	{
-		GLenum glErr = glGetError();
-		bool errorsFound = false;
-		String msg;
-		while (glErr != GL_NO_ERROR)
+		GLfloat curAniso = 0;
+		glGetTexParameterfv(mTextureTypes[unit], GL_TEXTURE_MAX_ANISOTROPY_EXT, &curAniso);
+
+		return curAniso ? curAniso : 1;
+	}
+
+	GLint GLRenderSystem::convertStencilOp(StencilOperation op, bool invert) const
+	{
+		switch (op)
 		{
-			const char* glerrStr = (const char*)gluErrorString(glErr);
-			if (glerrStr)
+		case SOP_KEEP:
+			return GL_KEEP;
+		case SOP_ZERO:
+			return GL_ZERO;
+		case SOP_REPLACE:
+			return GL_REPLACE;
+		case SOP_INCREMENT:
+			return invert ? GL_DECR : GL_INCR;
+		case SOP_DECREMENT:
+			return invert ? GL_INCR : GL_DECR;
+		case SOP_INCREMENT_WRAP:
+			return invert ? GL_DECR_WRAP_EXT : GL_INCR_WRAP_EXT;
+		case SOP_DECREMENT_WRAP:
+			return invert ? GL_INCR_WRAP_EXT : GL_DECR_WRAP_EXT;
+		case SOP_INVERT:
+			return GL_INVERT;
+		};
+		// to keep compiler happy
+		return SOP_KEEP;
+	}
+
+	GLint GLRenderSystem::convertCompareFunction(CompareFunction func) const
+	{
+		switch (func)
+		{
+		case CMPF_ALWAYS_FAIL:
+			return GL_NEVER;
+		case CMPF_ALWAYS_PASS:
+			return GL_ALWAYS;
+		case CMPF_LESS:
+			return GL_LESS;
+		case CMPF_LESS_EQUAL:
+			return GL_LEQUAL;
+		case CMPF_EQUAL:
+			return GL_EQUAL;
+		case CMPF_NOT_EQUAL:
+			return GL_NOTEQUAL;
+		case CMPF_GREATER_EQUAL:
+			return GL_GEQUAL;
+		case CMPF_GREATER:
+			return GL_GREATER;
+		};
+
+		return GL_ALWAYS;
+	}
+
+	GLuint GLRenderSystem::getCombinedMinMipFilter() const
+	{
+		switch (mMinFilter)
+		{
+		case FO_ANISOTROPIC:
+		case FO_LINEAR:
+			switch (mMipFilter)
 			{
-				msg += String(glerrStr);
+			case FO_ANISOTROPIC:
+			case FO_LINEAR:
+				// Linear min, linear mip
+				return GL_LINEAR_MIPMAP_LINEAR;
+			case FO_POINT:
+				// Linear min, point mip
+				return GL_LINEAR_MIPMAP_NEAREST;
+			case FO_NONE:
+				// Linear min, no mip
+				return GL_LINEAR;
 			}
-			glErr = glGetError();
-			errorsFound = true;
+			break;
+		case FO_POINT:
+		case FO_NONE:
+			switch (mMipFilter)
+			{
+			case FO_ANISOTROPIC:
+			case FO_LINEAR:
+				// Nearest min, linear mip
+				return GL_NEAREST_MIPMAP_LINEAR;
+			case FO_POINT:
+				// Nearest min, point mip
+				return GL_NEAREST_MIPMAP_NEAREST;
+			case FO_NONE:
+				// Nearest min, no mip
+				return GL_NEAREST;
+			}
+			break;
 		}
 
-		if(errorsFound)
-			LOGWRN("OpenGL error: " + msg);
-
-		return errorsFound;
+		// Should never get here
+		return 0;
 	}
-	//-----------------------------------------------------------------------
+
+	GLint GLRenderSystem::getBlendMode(BlendFactor blendMode) const
+	{
+		switch (blendMode)
+		{
+		case BF_ONE:
+			return GL_ONE;
+		case BF_ZERO:
+			return GL_ZERO;
+		case BF_DEST_COLOR:
+			return GL_DST_COLOR;
+		case BF_SOURCE_COLOR:
+			return GL_SRC_COLOR;
+		case BF_INV_DEST_COLOR:
+			return GL_ONE_MINUS_DST_COLOR;
+		case BF_INV_SOURCE_COLOR:
+			return GL_ONE_MINUS_SRC_COLOR;
+		case BF_DEST_ALPHA:
+			return GL_DST_ALPHA;
+		case BF_SOURCE_ALPHA:
+			return GL_SRC_ALPHA;
+		case BF_INV_DEST_ALPHA:
+			return GL_ONE_MINUS_DST_ALPHA;
+		case BF_INV_SOURCE_ALPHA:
+			return GL_ONE_MINUS_SRC_ALPHA;
+		};
+
+		return GL_ONE;
+	}
+
+	GLint GLRenderSystem::getTextureAddressingMode(TextureAddressingMode tam) const
+	{
+		switch (tam)
+		{
+		default:
+		case TAM_WRAP:
+			return GL_REPEAT;
+		case TAM_MIRROR:
+			return GL_MIRRORED_REPEAT;
+		case TAM_CLAMP:
+			return GL_CLAMP_TO_EDGE;
+		case TAM_BORDER:
+			return GL_CLAMP_TO_BORDER;
+		}
+
+	}
+
 	GLint GLRenderSystem::getGLDrawMode() const
 	{
 		GLint primType;
-		//Use adjacency if there is a geometry program and it requested adjacency info
+
+		// Use adjacency if there is a geometry program and it requested adjacency info
 		bool useAdjacency = (mGeometryProgramBound && mCurrentGeometryProgram->isAdjacencyInfoRequired());
 		switch (mCurrentDrawOperation)
 		{
@@ -1745,7 +1590,108 @@ namespace BansheeEngine
 
 		return primType;
 	}
-	//-----------------------------------------------------------------------
+
+	UINT32 GLRenderSystem::getGLTextureUnit(GpuProgramType gptype, UINT32 unit)
+	{
+		if (gptype != GPT_VERTEX_PROGRAM && gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_GEOMETRY_PROGRAM)
+		{
+			CM_EXCEPT(InvalidParametersException, "OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
+		}
+
+		UINT32 numSupportedUnits = mCurrentCapabilities->getNumTextureUnits(gptype);
+		if (unit < 0 || unit >= numSupportedUnits)
+		{
+			CM_EXCEPT(InvalidParametersException, "Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " +
+				toString(gptype) + ". Supported range is 0 .. " + toString(numSupportedUnits - 1));
+		}
+
+		switch (gptype)
+		{
+		case GPT_FRAGMENT_PROGRAM:
+			return mFragmentTexOffset + unit;
+		case GPT_VERTEX_PROGRAM:
+			return mVertexTexOffset + unit;
+		case GPT_GEOMETRY_PROGRAM:
+			return mGeometryTexOffset + unit;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+		}
+	}
+
+	UINT32 GLRenderSystem::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
+	{
+		UINT32 maxNumBindings = mCurrentCapabilities->getNumUniformBlockBuffers(gptype);
+		if (binding < 0 || binding >= maxNumBindings)
+		{
+			CM_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " +
+				toString(gptype) + ". Supported range is 0 .. " + toString(maxNumBindings - 1));
+		}
+
+		switch (gptype)
+		{
+		case GPT_FRAGMENT_PROGRAM:
+			return mFragmentUBOffset + binding;
+		case GPT_VERTEX_PROGRAM:
+			return mVertexUBOffset + binding;
+		case GPT_GEOMETRY_PROGRAM:
+			return mGeometryUBOffset + binding;
+		case GPT_HULL_PROGRAM:
+			return mHullUBOffset + binding;
+		case GPT_DOMAIN_PROGRAM:
+			return mDomainUBOffset + binding;
+		case GPT_COMPUTE_PROGRAM:
+			return mComputeUBOffset + binding;
+		default:
+			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+		}
+	}
+
+	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program)
+	{
+		switch (gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			mCurrentVertexProgram = program;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			mCurrentFragmentProgram = program;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			mCurrentGeometryProgram = program;
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			mCurrentDomainProgram = program;
+			break;
+		case GPT_HULL_PROGRAM:
+			mCurrentHullProgram = program;
+			break;
+		}
+	}
+
+	GLSLGpuProgramPtr GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
+	{
+		switch (gptype)
+		{
+		case GPT_VERTEX_PROGRAM:
+			return mCurrentVertexProgram;
+			break;
+		case GPT_FRAGMENT_PROGRAM:
+			return mCurrentFragmentProgram;
+			break;
+		case GPT_GEOMETRY_PROGRAM:
+			return mCurrentGeometryProgram;
+			break;
+		case GPT_DOMAIN_PROGRAM:
+			return mCurrentDomainProgram;
+			break;
+		case GPT_HULL_PROGRAM:
+			return mCurrentHullProgram;
+			break;
+		default:
+			CM_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
+		}
+	}
+
 	void GLRenderSystem::initializeContext(GLContext* primary)
 	{
 		// Set main and current context
@@ -1760,10 +1706,9 @@ namespace BansheeEngine
 		mGLSupport->initialiseExtensions();
 
 		// Get extension function pointers
-#if CM_THREAD_SUPPORT != 1
-		glewContextInit(mGLSupport);
-#endif
+		//glewContextInit(mGLSupport);
 	}
+
 	void GLRenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
 	{
 		if(caps->getRenderSystemName() != getName())
@@ -1880,9 +1825,58 @@ namespace BansheeEngine
 		if(totalNumUniformBlocks > numCombinedUniformBlocks)
 			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
-		/// Create the texture manager   
 		TextureManager::startUp(cm_new<GLTextureManager>(std::ref(*mGLSupport))); 
 		checkForErrors();
+	}
+
+	void GLRenderSystem::oneTimeContextInitialization()
+	{
+		// Check for FSAA
+		// Enable the extension if it was enabled by the GLSupport
+		if (mGLSupport->checkExtension("GL_ARB_multisample"))
+		{
+			int fsaa_active = false;
+			glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, (GLint*)&fsaa_active);
+			if (fsaa_active)
+			{
+				glEnable(GL_MULTISAMPLE_ARB);
+			}
+		}
+
+#if CM_DEBUG_MODE
+		if (mGLSupport->checkExtension("GL_debug_output"))
+		{
+			glDebugMessageCallback(&openGlErrorCallback, 0);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		}
+#endif
+	}
+
+	void GLRenderSystem::switchContext(GLContext *context)
+	{
+		// Unbind GPU programs and rebind to new context later, because
+		// scene manager treat render system as ONE 'context' ONLY, and it
+		// cached the GPU programs using state.
+		unbindGpuProgram(GPT_VERTEX_PROGRAM);
+		unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
+		unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
+		unbindGpuProgram(GPT_HULL_PROGRAM);
+		unbindGpuProgram(GPT_DOMAIN_PROGRAM);
+
+		// It's ready for switching
+		if (mCurrentContext)
+			mCurrentContext->endCurrent();
+
+		mCurrentContext = context;
+		mCurrentContext->setCurrent();
+
+		// Must reset depth/colour write mask to according with user desired, otherwise,
+		// clearFrameBuffer would be wrong because the value we are recorded may be
+		// difference with the really state stored in GL context.
+		glDepthMask(mDepthWrite);
+		glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
+		glStencilMask(mStencilWriteMask);
+
 	}
 
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
@@ -1918,26 +1912,9 @@ namespace BansheeEngine
 		rsc->setCapability(RSC_FIXED_FUNCTION);
 
 		// Check for hardware mipmapping support.
-		if(GLEW_VERSION_1_4 || GLEW_SGIS_generate_mipmap)
+		if(GLEW_VERSION_1_4)
 		{
-			bool disableAutoMip = false;
-#if CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
-			// Apple & Linux ATI drivers have faults in hardware mipmap generation
-			if (rsc->getVendor() == GPU_ATI)
-				disableAutoMip = true;
-#endif
-			// The Intel 915G frequently corrupts textures when using hardware mip generation
-			// I'm not currently sure how many generations of hardware this affects, 
-			// so for now, be safe.
-			if (rsc->getVendor() == GPU_INTEL)
-				disableAutoMip = true;
-
-			// SiS chipsets also seem to have problems with this
-			if (rsc->getVendor() == GPU_SIS)
-				disableAutoMip = true;
-
-			if (!disableAutoMip)
-				rsc->setCapability(RSC_AUTOMIPMAP);
+			rsc->setCapability(RSC_AUTOMIPMAP);
 		}
 
 		// Check for blending support
@@ -2149,13 +2126,8 @@ namespace BansheeEngine
 			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
 		}
 
-		// Check GLSupport for PBuffer support
-		if(mGLSupport->supportsPBuffers())
-		{
-			// Use PBuffers
-			rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
-			rsc->setCapability(RSC_PBUFFER);
-		}
+		rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
+		rsc->setCapability(RSC_PBUFFER);
 
 		// Point size
 		float ps;
@@ -2204,16 +2176,16 @@ namespace BansheeEngine
 			rsc->setNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM, numUniformBlocks);
 		}
 
-		if (mGLSupport->checkExtension("GL_ARB_compute_shader")) // Enable once I include GL 4.3
+		if (mGLSupport->checkExtension("GL_ARB_compute_shader")) 
 		{
-			//rsc->setCapability(RSC_COMPUTE_PROGRAM);
+			rsc->setCapability(RSC_COMPUTE_PROGRAM);
 
-			//GLint computeUnits;
-			//glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS, &computeUnits);
-			//rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
-			
-			//glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &numUniformBlocks);
-			//rsc->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
+			GLint computeUnits;
+			glGetIntegerv(GL_MAX_COMPUTE_TEXTURE_IMAGE_UNITS, &computeUnits);
+			rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
+
+			glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &numUniformBlocks);
+			rsc->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
 		}
 
 		GLint combinedTexUnits;
@@ -2226,42 +2198,6 @@ namespace BansheeEngine
 
 		// Mipmap LOD biasing
 		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
-
-		// These are Cg supported profiles, not really used in OpenGL itself in any way
-		rsc->addShaderProfile("glslf");
-		rsc->addShaderProfile("glslv");
-		rsc->addShaderProfile("glslg");
-
-		rsc->addGpuProgramProfile(GPP_PS_1_1, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_1_2, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_1_3, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_1_4, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_2_0, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_2_x, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_2_a, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_2_b, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_3_0, "glslf");
-		rsc->addGpuProgramProfile(GPP_PS_3_x, "glslf");
-
-		rsc->addGpuProgramProfile(GPP_VS_1_1, "glslv");
-		rsc->addGpuProgramProfile(GPP_VS_2_0, "glslv");
-		rsc->addGpuProgramProfile(GPP_VS_2_x, "glslv");
-		rsc->addGpuProgramProfile(GPP_VS_2_a, "glslv");
-		rsc->addGpuProgramProfile(GPP_VS_3_0, "glslv");
-
-		rsc->addGpuProgramProfile(GPP_PS_4_0, "glslf");
-		rsc->addGpuProgramProfile(GPP_VS_4_0, "glslv");
-		rsc->addGpuProgramProfile(GPP_GS_4_0, "glslg");
-
-		rsc->addGpuProgramProfile(GPP_PS_4_0, "glslf");
-		rsc->addGpuProgramProfile(GPP_VS_4_0, "glslv");
-		rsc->addGpuProgramProfile(GPP_GS_4_0, "glslg");
-
-		rsc->addGpuProgramProfile(GPP_PS_4_1, "glslf");
-		rsc->addGpuProgramProfile(GPP_VS_4_1, "glslv");
-		rsc->addGpuProgramProfile(GPP_GS_4_1, "glslg");
-
-		// No SM5 support for Cg as right now it only supports NV extensions, which isn't very useful
 
 		// Alpha to coverage?
 		if (mGLSupport->checkExtension("GL_ARB_multisample"))
@@ -2279,142 +2215,77 @@ namespace BansheeEngine
 
 		return rsc;
 	}
-	//---------------------------------------------------------------------
-	UINT32 GLRenderSystem::getGLTextureUnit(GpuProgramType gptype, UINT32 unit)
+
+	bool GLRenderSystem::checkForErrors() const
 	{
-		if(gptype != GPT_VERTEX_PROGRAM && gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_GEOMETRY_PROGRAM)
+		GLenum glErr = glGetError();
+		bool errorsFound = false;
+		String msg;
+		while (glErr != GL_NO_ERROR)
 		{
-			CM_EXCEPT(InvalidParametersException, "OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
+			const char* glerrStr = (const char*)gluErrorString(glErr);
+			if (glerrStr)
+			{
+				msg += String(glerrStr);
+			}
+			glErr = glGetError();
+			errorsFound = true;
 		}
 
-		UINT32 numSupportedUnits = mCurrentCapabilities->getNumTextureUnits(gptype);
-		if(unit < 0 || unit >= numSupportedUnits)
-		{
-			CM_EXCEPT(InvalidParametersException, "Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " + 
-				toString(gptype) + ". Supported range is 0 .. " + toString(numSupportedUnits - 1));
-		}
+		if (errorsFound)
+			LOGWRN("OpenGL error: " + msg);
 
-		switch(gptype)
-		{
-		case GPT_FRAGMENT_PROGRAM:
-			return mFragmentTexOffset + unit;
-		case GPT_VERTEX_PROGRAM:
-			return mVertexTexOffset + unit;
-		case GPT_GEOMETRY_PROGRAM:
-			return mGeometryTexOffset + unit;
-		default:
-			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
-		}
+		return errorsFound;
 	}
-	//---------------------------------------------------------------------
-	UINT32 GLRenderSystem::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
-	{
-		UINT32 maxNumBindings = mCurrentCapabilities->getNumUniformBlockBuffers(gptype);
-		if(binding < 0 || binding >= maxNumBindings)
-		{
-			CM_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " + 
-				toString(gptype) + ". Supported range is 0 .. " + toString(maxNumBindings - 1));
-		}
 
-		switch(gptype)
+	void GLRenderSystem::makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m)
+	{
+		UINT32 x = 0;
+		for (UINT32 i = 0; i < 4; i++)
 		{
-		case GPT_FRAGMENT_PROGRAM:
-			return mFragmentUBOffset + binding;
-		case GPT_VERTEX_PROGRAM:
-			return mVertexUBOffset + binding;
-		case GPT_GEOMETRY_PROGRAM:
-			return mGeometryUBOffset + binding;
-		case GPT_HULL_PROGRAM:
-			return mHullUBOffset + binding;
-		case GPT_DOMAIN_PROGRAM:
-			return mDomainUBOffset + binding;
-		case GPT_COMPUTE_PROGRAM:
-			return mComputeUBOffset + binding;
-		default:
-			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+			for (UINT32 j = 0; j < 4; j++)
+			{
+				gl_matrix[x] = m[j][i];
+				x++;
+			}
 		}
 	}
 
-	void GLRenderSystem::setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program)
-	{
-		switch (gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-				mCurrentVertexProgram = program;
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-				mCurrentFragmentProgram = program;
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-				mCurrentGeometryProgram = program;
-			break;
-		case GPT_DOMAIN_PROGRAM:
-				mCurrentDomainProgram = program;
-			break;
-		case GPT_HULL_PROGRAM:
-				mCurrentHullProgram = program;
-			break;
-		}
-	}
-
-	GLSLGpuProgramPtr GLRenderSystem::getActiveProgram(GpuProgramType gptype) const
-	{
-		switch (gptype)
-		{
-		case GPT_VERTEX_PROGRAM:
-			return mCurrentVertexProgram;
-			break;
-		case GPT_FRAGMENT_PROGRAM:
-			return mCurrentFragmentProgram;
-			break;
-		case GPT_GEOMETRY_PROGRAM:
-			return mCurrentGeometryProgram;
-			break;
-		case GPT_DOMAIN_PROGRAM:
-			return mCurrentDomainProgram;
-			break;
-		case GPT_HULL_PROGRAM:
-			return mCurrentHullProgram;
-			break;
-		default:
-			CM_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
-		}
-	}
 	/************************************************************************/
 	/* 								UTILITY		                     		*/
 	/************************************************************************/
-	float GLRenderSystem::getMinimumDepthInputValue(void)
+	float GLRenderSystem::getMinimumDepthInputValue()
 	{
-		// Range [-1.0f, 1.0f]
 		return -1.0f;
 	}
-	//---------------------------------------------------------------------
-	float GLRenderSystem::getMaximumDepthInputValue(void)
+
+	float GLRenderSystem::getMaximumDepthInputValue()
 	{
-		// Range [-1.0f, 1.0f]
 		return 1.0f;
 	}
-	//---------------------------------------------------------------------
-	float GLRenderSystem::getHorizontalTexelOffset(void)
+
+	float GLRenderSystem::getHorizontalTexelOffset()
 	{
-		// No offset in GL
 		return 0.0f;
 	}
-	//---------------------------------------------------------------------
-	float GLRenderSystem::getVerticalTexelOffset(void)
+
+	float GLRenderSystem::getVerticalTexelOffset()
 	{
-		// No offset in GL
 		return 0.0f;
 	}
-	VertexElementType GLRenderSystem::getColorVertexElementType(void) const
+
+	VertexElementType GLRenderSystem::getColorVertexElementType() const
 	{
 		return VET_COLOR_ABGR;
 	}
-	//---------------------------------------------------------------------
-	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix,
-		Matrix4& dest, bool forGpuProgram)
+
+	void GLRenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram)
 	{
-		// no any conversion request for OpenGL
 		dest = matrix;
+	}
+
+	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
+	{
+		// TODO - Actually hook this up to Log or something
 	}
 }

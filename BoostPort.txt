@@ -9,9 +9,15 @@
 cm_shared_ptr should use && for parameter forwarding?
 cm_core_ptr too
 
-When creating an OpenGL context I need to create the basic one, then initialize it (currently done in GLRenderSystem::initializeContext which I'll 
-need to move), and then destroy window/DC/context and recreate them using the attrib version. Check out win32_window.c in glwf from SB source 
-code for example parameters when creating one.
+Refactor GLRenderSystem:
+createRenderSystemCapabilities
+initialiseFromRenderSystemCapabilities
+initializeContext
+switchContext
+oneTimeContextInitialization
 
+and update its docs
+
+Perform refactor mentioned in the documentation e-mail
 
 Create a proper git repo of dependencies folder

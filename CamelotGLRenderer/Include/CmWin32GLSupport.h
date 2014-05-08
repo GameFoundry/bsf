@@ -1,5 +1,4 @@
-#ifndef __OgreWin32GLSupport_H__
-#define __OgreWin32GLSupport_H__
+#pragma once
 
 #include "CmWin32Prerequisites.h"
 #include "CmGLSupport.h"
@@ -7,7 +6,6 @@
 
 namespace BansheeEngine
 {
-    
 	class CM_RSGL_EXPORT Win32GLSupport : public GLSupport
 	{
 	public:
@@ -20,6 +18,7 @@ namespace BansheeEngine
 		* Start anything special
 		*/
 		void start();
+
 		/**
 		* Stop anything special
 		*/
@@ -31,15 +30,13 @@ namespace BansheeEngine
 		void* getProcAddress(const String& procname);
 
 		/**
-		 * Initialise extensions
+		 * Initialize extensions
 		 */
 		virtual void initialiseExtensions();
 		
+		Win32Context* createContext(HDC hdc, HGLRC externalGlrc = 0);
 
 		bool selectPixelFormat(HDC hdc, int colourDepth, int multisample, bool hwGamma);
-
-		virtual bool supportsPBuffers();
-		virtual unsigned int getDisplayMonitorCount() const;
 	private:
 		// Allowed video modes
 		Vector<DEVMODE> mDevModes;
@@ -48,24 +45,9 @@ namespace BansheeEngine
 		bool mHasPixelFormatARB;
         bool mHasMultisample;
 		bool mHasHardwareGamma;
-
-		struct DisplayMonitorInfo
-		{
-			HMONITOR		hMonitor;
-			MONITORINFOEX	monitorInfoEx;
-		};
-
-		typedef Vector<DisplayMonitorInfo> DisplayMonitorInfoList;
-		typedef DisplayMonitorInfoList::iterator DisplayMonitorInfoIterator;
-
-		DisplayMonitorInfoList mMonitorInfoList;
+		bool mHasAdvancedContext;
 
 		void initialiseWGL();
 		static LRESULT CALLBACK dummyWndProc(HWND hwnd, UINT umsg, WPARAM wp, LPARAM lp);
-		static BOOL CALLBACK sCreateMonitorsInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, 
-			LPRECT lprcMonitor, LPARAM dwData);
 	};
-
 }
-
-#endif

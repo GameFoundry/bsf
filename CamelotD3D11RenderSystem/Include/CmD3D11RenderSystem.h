@@ -69,8 +69,6 @@ namespace BansheeEngine
 		RenderSystemCapabilities* createRenderSystemCapabilities() const;
 		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
 
-		String getErrorDescription(long errorNumber) const;
-
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
 		VertexElementType getColorVertexElementType() const;
 		float getHorizontalTexelOffset();

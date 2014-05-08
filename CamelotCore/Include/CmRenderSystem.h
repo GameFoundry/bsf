@@ -1,34 +1,4 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __RenderSystem_H_
-#define __RenderSystem_H_
-
-// Precompiler options
+#pragma once
 #include "CmPrerequisites.h"
 
 #include <memory>
@@ -52,111 +22,96 @@ THE SOFTWARE.
 
 namespace BansheeEngine
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-
-	typedef MultiMap<UINT8, RenderTarget * > RenderTargetPriorityMap;
-
-	class TextureManager;
-
-	/** Defines the functionality of a 3D API
-	@remarks
-	The RenderSystem class provides a base interface
-	which abstracts the general functionality of the 3D API
-	e.g. Direct3D or OpenGL. Whilst a few of the general
-	methods have implementations, most of this class is
-	abstract, requiring a subclass based on a specific API
-	to be constructed to provide the full functionality.
-	@author
-	Steven Streeting
-	@version
-	1.0
-	*/
+	/**
+	 * @brief	Render system provides base functionality for a rendering API like
+	 *			DirectX or OpenGL. Most of the class is abstract and specific
+	 *			subclass for each rendering API needs to be implemented.
+	 *
+	 * @note	Core thread only unless specifically noted otherwise on per-method basis.
+	 */
 	class CM_EXPORT RenderSystem : public Module<RenderSystem>
 	{
 	public:
-		/** Default Constructor.
-		*/
 		RenderSystem();
-
-		/** Destructor.
-		*/
 		virtual ~RenderSystem();
 
-		/** Returns the name of the rendering system.
-		*/
-		virtual const String& getName(void) const = 0;
+		/**
+		 * @brief	Returns the name of the rendering system. 
+		 *
+		 * @note	Thread safe.
+		 */
+		virtual const String& getName() const = 0;
 
 		/**
-		 * @brief	Gets the name of the primary shading language.
+		 * @brief	Gets the name of the primary shading language
+		 *			used by the rendering system.
+		 *
+		 * @note	Thread safe.
 		 */
 		virtual const String& getShadingLanguageName() const = 0;
 
 		/**
 		 * @brief	Sets a sampler state for the specified texture unit.
+		 *
 		 * @see		SamplerState
 		 */
 		virtual void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState) = 0;
-		/** Turns off a texture unit. */
-		virtual void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
 		/**
 		 * @brief	Sets a blend state used for all active render targets.
+		 *
 		 * @see		BlendState
 		 */
 		virtual void setBlendState(const BlendStatePtr& blendState) = 0;
 
 		/**
 		 * @brief	Sets a state that controls various rasterizer options. 
+		 *
 		 * @see		RasterizerState
 		 */
 		virtual void setRasterizerState(const RasterizerStatePtr& rasterizerState) = 0;
 
 		/**
 		 * @brief	Sets a state that controls depth & stencil buffer options.
+		 *
 		 * @see		DepthStencilState
 		 */
 		virtual void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue) = 0;
 
 		/**
-		Sets the texture to bind to a given texture unit.
-
-		User processes would not normally call this direct unless rendering
-		primitives themselves.
-
-		@param unit The index of the texture unit to modify. Multitexturing 
-		hardware can support multiple units (see 
-		RenderSystemCapabilites::getNumTextureUnits)
-		@param enabled Boolean to turn the unit on/off
-		@param texPtr Pointer to the texture to use.
-		*/
-		virtual void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr) = 0;
+		 * @brief	Binds a texture to the pipeline for the specified GPU program type at the specified slot.
+		 *			If the slot matches the one configured in the GPU program the program will be able to access
+		 *			this texture on the GPU.
+		 */
+		virtual void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& texPtr) = 0;
 
 		/**
-		* Signifies the beginning of a frame, i.e. the start of rendering on a single viewport. Will occur
-		* several times per complete frame if multiple viewports exist.
+		* @brief	Turns off a texture unit.
 		*/
-		virtual void beginFrame(void) = 0;
+		virtual void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
+
+		/**
+		 * @brief	Signals that rendering for a specific viewport has started. Any draw calls
+		 *			need to be called between beginFrame and endFrame. You may not switch render targets
+		 *			until you call endFrame.
+		 */
+		virtual void beginFrame() = 0;
 		
 		/**
-		* Ends rendering of a frame to the current viewport.
-		*/
-		virtual void endFrame(void) = 0;
-		/**
-		Sets the provided viewport as the active one for future
-		rendering operations. This viewport is aware of it's own
-		camera and render target. Must be implemented by subclass.
+		 * @brief	Ends that rendering to a specific viewport has ended.
+		 */
+		virtual void endFrame() = 0;
 
-		@param target Viewport to render to.
-		*/
+		/**
+		 * @brief	Sets the active viewport that will be used for all render operations.
+		 *			Viewport will change active render target if needed.
+		 */
 		virtual void setViewport(const ViewportPtr& vp) = 0;
 
-		/** Sets the provided vertex buffers starting at the specified source index.   
-		/** @note Set buffer to nullptr to clear the buffer at the specified index.*/
+		/**
+		 * @brief	Sets the provided vertex buffers starting at the specified source index.
+		 *			Set buffer to nullptr to clear the buffer at the specified index.
+		 */
 		virtual void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers) = 0;
 
 		/**
@@ -192,17 +147,14 @@ namespace BansheeEngine
 		virtual void render(const MeshBasePtr& mesh, UINT32 indexOffset = 0, UINT32 indexCount = 0, bool useIndices = true, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
 		/**
-		 * @brief	Draw an object based on currently set
-		 * 			shaders, vertex declaration index buffers.
+		 * @brief	Draw an object based on currently bound GPU programs, vertex declaration and vertex buffers.
 		 * 			
-		 *			Draws directly from the vertex buffer without using
-		 *			indices.
+		 *			Draws directly from the vertex buffer without using indices.
 		 */
 		virtual void draw(UINT32 vertexOffset, UINT32 vertexCount) = 0;
 
 		/**
-		 * @brief	Draw an object based on currently set
-		 * 			shaders, vertex declaration and vertex 
+		 * @brief	Draw an object based on currently bound GPU programs, vertex declaration, vertex 
 		 * 			and index buffers.
 		 */
 		virtual void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount) = 0;
@@ -219,52 +171,54 @@ namespace BansheeEngine
 		 */
 		const RenderSystemCapabilities* getCapabilities() const;
 
-		/** Returns the driver version.
-		*/
+		/**
+		 * @brief	Returns information about the driver version.
+		 */
 		virtual const DriverVersion& getDriverVersion() const;
 
-		/** Binds a given GpuProgram (but not the parameters). 
-		@remarks Only one GpuProgram of each type can be bound at once, binding another
-		one will simply replace the existing one.
-		*/
+		/**
+		 * @brief	Binds the provided GPU program to the pipeline. Any following
+		 *			draw operations will use this program. 
+		 *
+		 * @note	You need to bind at least a vertex and a fragment program in order to draw something.
+		 */
 		virtual void bindGpuProgram(HGpuProgram prg);
 
-		/** Bind Gpu program parameters.
-		@param gptype The type of program to bind the parameters to
-		@param params The parameters to bind
-		*/
+		/**
+		 * @brief	Binds GPU program parameters. Caller must ensure these match the previously
+		 *			bound GPU program.
+		 */
 		virtual void bindGpuParams(GpuProgramType gptype, BindableGpuParams& params) = 0;
 
-		/** Unbinds GpuPrograms of a given GpuProgramType.
-		@remarks
-		This returns the pipeline to fixed-function processing for this type.
-		*/
+		/**
+		 * @brief	Unbinds a program of a given type. 
+		 */
 		virtual void unbindGpuProgram(GpuProgramType gptype);
 
-		/** Returns whether or not a Gpu program of the given type is currently bound. */
+		/**
+		 * @brief	Query if a GPU program of a given type is currently bound.
+		 */
 		virtual bool isGpuProgramBound(GpuProgramType gptype);
 
-		/** Sets the user clipping region.
-		*/
+		/**
+		 * @brief	Sets up clip planes that will clip drawn geometry on the negative side of the planes.
+		 */
 		virtual void setClipPlanes(const PlaneList& clipPlanes);
 
-		/** Add a user clipping plane. */
-		virtual void addClipPlane (const Plane& p);
+		/**
+		 * @brief	Adds a new clip plane. All drawn geometry will be clipped to this plane.
+		 */
+		virtual void addClipPlane(const Plane& p);
 
-		/** Clears the user clipping region.
-		*/
+		/**
+		 * @brief	Clears all clip planes.
+		 */
 		virtual void resetClipPlanes();
 
-		/** Sets the 'scissor region' ie the region of the target in which rendering can take place.
-		@remarks
-		This method allows you to 'mask off' rendering in all but a given rectangular area
-		as identified by the parameters to this method.
-		@note
-		Not all systems support this method. Check the RenderSystemCapabilities for the
-		RSC_SCISSOR_TEST capability to see if it is supported.
-		@param left, top, right, bottom The location of the corners of the rectangle, expressed in
-		<i>pixels</i>.
-		*/
+		/**
+		 * @brief	Allows you to set up a region in which rendering can take place. Coordinates are in pixels.
+		 *			No rendering will be done to render target pixels outside of the provided region.
+		 */
 		virtual void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom) = 0;
 
 		/**
@@ -291,17 +245,23 @@ namespace BansheeEngine
 		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) = 0;
 
 		/**
-         * Set current render target to target, enabling its device context if needed
-         */
+		 * @brief	Change the render target into which we want to draw.
+		 */
         virtual void setRenderTarget(RenderTargetPtr target) = 0;
 
 		/**
 		 * @brief	Updates the resource with the specified data.
+		 *
+		 * @note	It is assumed GpuResourceData has been locked before being passed here. Data will be unlocked
+		 *			when this method finishes.
 		 */
 		void writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp);
 
 		/**
 		 * @brief	Reads data from a resource into a pre-allocated GpuResourceData instance.
+		 *
+		 * @note	It is assumed GpuResourceData has been locked before being passed here. Data will be unlocked
+		 *			when this method finishes.
 		 */
 		void readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp);
 
@@ -309,120 +269,116 @@ namespace BansheeEngine
 		/* 								UTILITY METHODS                    		*/
 		/************************************************************************/
 
-		/** Get the native VertexElementType for a compact 32-bit colour value
-		for this rendersystem.
-		*/
-		virtual VertexElementType getColorVertexElementType(void) const = 0;
+		/**
+		 * @brief	Gets the native type used for vertex colors.
+		 *
+		 * @note	Thread safe.
+		 */
+		virtual VertexElementType getColorVertexElementType() const = 0;
 
-		/** Converts a uniform projection matrix to suitable for this render system.
-		@remarks
-		Because different APIs have different requirements (some incompatible) for the
-		projection matrix, this method allows each to implement their own correctly and pass
-		back a generic Banshee matrix for storage in the engine.
-		*/
+		/**
+		 * @brief	Contains a default matrix into a matrix suitable for use
+		 *			by this specific render system.
+		 *
+		 * @note	Thread safe.
+		 */
 		virtual void convertProjectionMatrix(const Matrix4& matrix,
 			Matrix4& dest, bool forGpuProgram = false) = 0;
 
-		/** Returns the horizontal texel offset value required for mapping 
-		texel origins to pixel origins in this rendersystem.
-		@remarks
-		Since rendersystems sometimes disagree on the origin of a texel, 
-		mapping from texels to pixels can sometimes be problematic to 
-		implement generically. This method allows you to retrieve the offset
-		required to map the origin of a texel to the origin of a pixel in
-		the horizontal direction.
-		*/
-		virtual float getHorizontalTexelOffset(void) = 0;
+		/**
+		 * @brief	Gets horizontal texel offset used for mapping texels to pixels
+		 *			in this render system.
+		 *
+		 * @note	Thread safe.
+		 */
+		virtual float getHorizontalTexelOffset() = 0;
 
-		/** Returns the vertical texel offset value required for mapping 
-		texel origins to pixel origins in this rendersystem.
-		@remarks
-		Since rendersystems sometimes disagree on the origin of a texel, 
-		mapping from texels to pixels can sometimes be problematic to 
-		implement generically. This method allows you to retrieve the offset
-		required to map the origin of a texel to the origin of a pixel in
-		the vertical direction.
+		/**
+		* @brief	Gets vertical texel offset used for mapping texels to pixels
+		*			in this render system.
+		*
+		* @note		Thread safe.
 		*/
-		virtual float getVerticalTexelOffset(void) = 0;
+		virtual float getVerticalTexelOffset() = 0;
 
-		/** Gets the minimum (closest) depth value to be used when rendering
-		using identity transforms.
-		@remarks
-		When using identity transforms you can manually set the depth
-		of a vertex; however the input values required differ per
-		rendersystem. This method lets you retrieve the correct value.
-		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
-		*/
-		virtual float getMinimumDepthInputValue(void) = 0;
+		/**
+		 * @brief	Gets the minimum (closest) depth value used by this
+		 *			render system.
+		 *
+		 * @note	Thread safe.
+		 */
+		virtual float getMinimumDepthInputValue() = 0;
 
-		/** Gets the maximum (farthest) depth value to be used when rendering
-		using identity transforms.
-		@remarks
-		When using identity transforms you can manually set the depth
-		of a vertex; however the input values required differ per
-		rendersystem. This method lets you retrieve the correct value.
-		@see Renderable::getUseIdentityView, Renderable::getUseIdentityProjection
+		/**
+		* @brief	Gets the maximum (farthest) depth value used by this
+		*			render system.
+		*
+		* @note		Thread safe.
 		*/
 		virtual float getMaximumDepthInputValue(void) = 0;
 
 		/************************************************************************/
-		/* 						INTERNAL DATA & METHODS                      	*/
+		/* 							INTERNAL METHODS				        	*/
+		/************************************************************************/
+	protected:
+		/**
+		* @brief	Initializes the render system and creates a primary render window.
+		*
+		* @note		Although I'd like otherwise, due to the nature of some render system implementations,
+		* 			you cannot initialize the render system without a window.
+		*
+		*			Sim thread.
+		*/
+		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
+
+		/**
+		 * @brief	Performs second part of the initialization (on Core thread), first part
+		 *			being in initialize().
+		 */
+		virtual void initialize_internal(AsyncOp& asyncOp);
+
+		/**
+		 * @brief	Shuts down the render system and cleans up all resources.
+		 *
+		 * @note	Sim thread.
+		 */
+		void destroy();
+
+		/**
+		 * @brief	Performs second part of render system shutdown on the core thread.
+		 */
+		virtual void destroy_internal();
+
+		/**
+		 * @copydoc	setClipPlanes.
+		 */
+		virtual void setClipPlanesImpl(const PlaneList& clipPlanes) = 0;
+
+		/************************************************************************/
+		/* 								INTERNAL DATA					       	*/
 		/************************************************************************/
 	protected:
 		friend class RenderSystemManager;
 
-		/** The Active render target. */
 		RenderTargetPtr mActiveRenderTarget;
 
+		DriverVersion mDriverVersion;
 		CullingMode mCullingMode;
-
-		/// Texture units from this upwards are disabled
 		UINT16 mDisabledTexUnitsFrom;
 
 		bool mVertexProgramBound;
 		bool mGeometryProgramBound;
 		bool mFragmentProgramBound;
+		bool mDomainProgramBound;
+		bool mHullProgramBound;
+		bool mComputeProgramBound;
 
-		// Recording user clip planes
 		PlaneList mClipPlanes;
-		// Indicator that we need to re-set the clip planes on next render call
 		bool mClipPlanesDirty;
 
-		/// Used to store the capabilities of the graphics card
 		RenderSystemCapabilities* mCurrentCapabilities;
 
 		// TODO - Only used between initialize and initialize_internal. Handle it better?
 		RENDER_WINDOW_DESC mPrimaryWindowDesc;
-
-		/**
-		 * @brief	Initializes the render system and creates a primary render window.
-		 * 			
-		 * @note	Although I'd like otherwise, due to the nature of some render system implementations, 
-		 * 			you cannot initialize the render system without a window.
-		 */
-		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
-		virtual void initialize_internal(AsyncOp& asyncOp);
-
-		void destroy();
-		virtual void destroy_internal();
-
-		/// Internal method used to set the underlying clip planes when needed
-		virtual void setClipPlanesImpl(const PlaneList& clipPlanes) = 0;
-
-		/** Query the real capabilities of the GPU and driver in the RenderSystem*/
-		virtual RenderSystemCapabilities* createRenderSystemCapabilities() const = 0;
-
-		/** Initialize the render system from the capabilities*/
-		virtual void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps) = 0;
-
-		/** Returns a description of an error code.
-		*/
-		virtual String getErrorDescription(long errorNumber) const = 0;
-
-		DriverVersion mDriverVersion;
 	};
-	/** @} */
-	/** @} */
 }
-
-#endif

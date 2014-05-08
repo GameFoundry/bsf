@@ -1,34 +1,7 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0500
 #endif
+
 #include "CmWin32Window.h"
 #include "CmInput.h"
 #include "CmRenderSystem.h"
@@ -38,6 +11,8 @@ THE SOFTWARE.
 #include "CmWin32Context.h"
 #include "CmPlatformWndProc.h"
 #include "CmGLPixelFormat.h"
+
+GLenum GLEWAPIENTRY wglewContextInit(BansheeEngine::GLSupport *glSupport);
 
 namespace BansheeEngine 
 {
@@ -50,10 +25,8 @@ namespace BansheeEngine
 	{
 		mIsFullScreen = false;
 		mHWnd = 0;
-		mGlrc = 0;
 		mIsExternal = false;
 		mIsExternalGLControl = false;
-		mIsExternalGLContext = false;
 		mSizing = false;
 		mClosed = false;
 		mDisplayFrequency = 0;
@@ -69,9 +42,9 @@ namespace BansheeEngine
 	void Win32Window::initialize_internal()
 	{
 #ifdef CM_STATIC_LIB
-		HINSTANCE hInst = GetModuleHandle( NULL );
+		HINSTANCE hInst = GetModuleHandle(NULL);
 #else
-		HINSTANCE hInst = GetModuleHandle("CamelotGLRenderSystem.dll");
+		HINSTANCE hInst = GetModuleHandle(MODULE_NAME.c_str());
 #endif
 
 		mHWnd = 0;
@@ -103,11 +76,10 @@ namespace BansheeEngine
 			}
 		}
 
+		HGLRC glrc = 0;
 		if ((opt = mDesc.platformSpecific.find("externalGLContext")) != end)
 		{
-			mGlrc = (HGLRC)parseUnsignedLong(opt->second);
-			if( mGlrc )
-				mIsExternalGLContext = true;
+			glrc = (HGLRC)parseUnsignedLong(opt->second);
 		}
 
 		// incompatible with fullscreen
@@ -341,48 +313,7 @@ namespace BansheeEngine
 		}
 		
 		mActive = true;
-
-		GLRenderSystem* rs = static_cast<GLRenderSystem*>(RenderSystem::instancePtr());
-
-		// If RenderSystem has initialized a context use that, otherwise we create our own
-		if(!rs->isContextInitialized())
-		{
-			if (!mIsExternalGLContext)
-			{
-#if CM_DEBUG_MODE
-				if (wglewIsSupported("WGL_ARB_create_context"))
-				{
-					int contextAttribs[] =
-					{
-						WGL_CONTEXT_FLAGS_ARB,
-						WGL_CONTEXT_DEBUG_BIT_ARB,
-						0
-					};
-
-					mGlrc = wglCreateContextAttribsARB(mHDC, 0, contextAttribs);
-				}
-				else
-					mGlrc = wglCreateContext(mHDC);
-#else
-				mGlrc = wglCreateContext(mHDC);
-#endif
-
-
-				if (!mGlrc)
-				{
-					CM_EXCEPT(RenderingAPIException, 
-						"wglCreateContext failed: " + translateWGLError());
-				}
-			}
-		}
-		else
-		{
-			rs->getMainContext()->setCurrent();
-			mGlrc = wglGetCurrentContext();
-		}
-
-		// Create RenderSystem context
-		mContext = cm_new<Win32Context>(mHDC, mGlrc);
+		mContext = mGLSupport.createContext(mHDC, glrc);
 
 		RenderWindow::initialize_internal();
 	}
@@ -395,11 +326,6 @@ namespace BansheeEngine
 		// Unregister and destroy GLContext
 		cm_delete(mContext);
 
-		if (!mIsExternalGLContext && mGlrc)
-		{
-			wglDeleteContext(mGlrc);
-			mGlrc = 0;
-		}
 		if (!mIsExternal)
 		{
 			if (mIsFullScreen)
