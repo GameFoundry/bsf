@@ -699,6 +699,7 @@ namespace BansheeEngine
 
 		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
 
+		rsc->setCategoryRelevant(CAPS_CATEGORY_D3D11, true);
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
 		rsc->setRenderSystemName(getName());
@@ -816,20 +817,11 @@ namespace BansheeEngine
 			rsc->setVendor(GPU_NVIDIA);
 			break;
 		case 0x1002:
-			rsc->setVendor(GPU_ATI);
+			rsc->setVendor(GPU_AMD);
 			break;
 		case 0x163C:
 		case 0x8086:
 			rsc->setVendor(GPU_INTEL);
-			break;
-		case 0x5333:
-			rsc->setVendor(GPU_S3);
-			break;
-		case 0x3D3D:
-			rsc->setVendor(GPU_3DLABS);
-			break;
-		case 0x102B:
-			rsc->setVendor(GPU_MATROX);
 			break;
 		default:
 			rsc->setVendor(GPU_UNKNOWN);

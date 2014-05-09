@@ -136,27 +136,27 @@ namespace BansheeEngine
         /**
 		 * @copydoc RenderSystem::getColorVertexElementType()
 		 */
-        VertexElementType getColorVertexElementType(void) const;
+        VertexElementType getColorVertexElementType() const;
 
 		/**
 		 * @copydoc RenderSystem::getHorizontalTexelOffset()
 		 */
-        float getHorizontalTexelOffset(void);
+        float getHorizontalTexelOffset();
 
 		/**
 		 * @copydoc RenderSystem::getVerticalTexelOffset()
 		 */
-        float getVerticalTexelOffset(void);
+        float getVerticalTexelOffset();
 
 		/**
 		 * @copydoc RenderSystem::getMinimumDepthInputValue()
 		 */
-        float getMinimumDepthInputValue(void);
+        float getMinimumDepthInputValue();
 
 		 /**
 		 * @copydoc RenderSystem::getMaximumDepthInputValue()
 		 */
-        float getMaximumDepthInputValue(void);
+        float getMaximumDepthInputValue();
 
 		/**
 		 * @copydoc RenderSystem::convertProjectionMatrix()
@@ -168,9 +168,19 @@ namespace BansheeEngine
 		/* 				Internal use by OpenGL RenderSystem only                */
 		/************************************************************************/
 
-		bool isContextInitialized() const { return mGLInitialised; }
+		/**
+		 * @brief	Query has the main context been initialized.
+		 */
+		bool _isContextInitialized() const { return mGLInitialised; }
 
+		/**
+		 * @brief	Returns main context. Caller must ensure the context has been initialized.
+		 */
 		GLContext* getMainContext() const { return mMainContext; } 
+
+		/**
+		 * @brief	Returns a support object you may use for creating
+		 */
 		GLSupport* getGLSupport() const { return mGLSupport; }
 
 	protected:
@@ -194,20 +204,61 @@ namespace BansheeEngine
 		*/
 		void endDraw();
 
+		/**
+		 * @brief	Clear a part of a render target.
+		 */
 		void clearArea(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0, const RectI& clearArea = RectI::EMPTY);
 
+		/**
+		 * @brief	Set up clip planes against which all geometry will get clipped.
+		 */
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
-		bool activateGLTextureUnit(UINT16 unit);
 
+		/**
+		 * @brief	Set up a clip plane at a specific clip plane index. If enabled,
+		 *			geometry will be clipped against the positive side of the plane.
+		 *
+		 * @note	Valid index range is [0, 5].
+		 */
         void setClipPlane(UINT16 index, float A, float B, float C, float D);
+
+		/**
+		 * @brief	Enable or disable clipping against a clip plane at the specified index.
+		 *
+		 * @note	Valid index range is [0, 5].
+		 */
         void enableClipPlane (UINT16 index, bool enable);
 
+		/**
+		* @brief	Changes the currently active texture unit. Any texture related operations
+		*			will then be performed on this unit.
+		*/
+		bool activateGLTextureUnit(UINT16 unit);
+
+		/**
+		 * @brief	Changes the active GPU program.
+		 */
 		void setActiveProgram(GpuProgramType gptype, GLSLGpuProgramPtr program);
+
+		/**
+		 * @brief	Retrieves the active GPU program of the specified type.
+		 */
 		GLSLGpuProgramPtr getActiveProgram(GpuProgramType gptype) const;
 
-		GLint getBlendMode(BlendFactor ogreBlend) const;
+		/**
+		 * @brief	Converts Banshee blend mode to OpenGL blend mode.
+		 */
+		GLint getBlendMode(BlendFactor blendMode) const;
+
+		/**
+		* @brief	Converts Banshee texture addressing mode to OpenGL texture addressing mode.
+		*/
 		GLint getTextureAddressingMode(TextureAddressingMode tam) const;
-		GLfloat getCurrentAnisotropy(UINT16 unit);
+
+		/**
+		 * @brief	Gets a combined min/mip filter value usable by OpenGL from the currently
+		 *			set min and mip filters.
+		 */
 		GLuint getCombinedMinMipFilter() const;
 
 		/**
@@ -230,222 +281,189 @@ namespace BansheeEngine
 		*/
 		GLint getGLDrawMode() const;
 
-		void initializeContext(GLContext* primary);
+		/**
+		 * @brief	Creates render system capabilities that specify which features are
+		 *			or aren't supported.
+		 */
 		RenderSystemCapabilities* createRenderSystemCapabilities() const;
-		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
-		/** One time initialization for the RenderState of a context. Things that
-		only need to be set once, like the LightingModel can be defined here.
-		*/
-		void oneTimeContextInitialization();
-		/** Switch GL context, dealing with involved internal cached states too
-		*/
-		void switchContext(GLContext *context);
+
+		/**
+		 * @brief	Finish initialization by setting up any systems dependant on render system
+		 *			capabilities.
+		 */
+		void initFromCaps(RenderSystemCapabilities* caps);
+
+		/**
+		 * @brief	Switch the currently used OpenGL context. You will need to re-bind
+		 *			any previously bound values manually. (e.g. textures, gpu programs and such)
+		 */
+		void switchContext(GLContext* context);
 
 		/************************************************************************/
 		/* 								Sampler states                     		*/
 		/************************************************************************/
 
-		/** Sets the texture addressing mode for a texture unit.*/
+		/**
+		 * @brief	Sets the texture addressing mode for a texture unit. This determines
+		 *			how are UV address values outside of [0, 1] range handled when sampling
+		 *			from texture.
+		 */
         void setTextureAddressingMode(UINT16 stage, const UVWAddressingMode& uvw);
 
-		/** Sets the texture border color for a texture unit.*/
+		/**
+		 * @brief	Sets the texture border color for a texture unit. Border color
+		 *			determines color returned by the texture sampler when border addressing mode
+		 *			is used and texture address is outside of [0, 1] range.
+		 */
         void setTextureBorderColor(UINT16 stage, const Color& color);
 
-		/** Sets the mipmap bias value for a given texture unit.
-		@remarks
-		This allows you to adjust the mipmap calculation up or down for a
-		given texture unit. Negative values force a larger mipmap to be used, 
-		positive values force a smaller mipmap to be used. Units are in numbers
-		of levels, so +1 forces the mipmaps to one smaller level.
-		@note Only does something if render system has capability RSC_MIPMAP_LOD_BIAS.
-		*/
+		/**
+		 * @brief	Sets the mipmap bias value for a given texture unit. Bias allows
+		 *			you to adjust the mipmap selection calculation. Negative values force a
+		 *			larger mipmap to be used, and positive values smaller. Units are in values
+		 *			of mip levels, so -1 means use a mipmap one level higher than default.
+		 */
 		void setTextureMipmapBias(UINT16 unit, float bias);
 
-		/** Sets a single filter for a given texture unit.
-		@param unit The texture unit to set the filtering options for
-		@param ftype The filter type
-		@param filter The filter to be used
-		*/
+		/**
+		 * @brief	Allows you to specify how is the texture bound to the specified texture unit filtered.
+		 *			Different filter types are used for different situations like magnifying or minifying a texture.
+		 */
         void setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter);
 
-		/** Sets the maximal anisotropy for the specified texture unit.*/
+		/**
+		 * @brief	Sets anisotropy value for the specified texture unit.
+		 */
 		void setTextureAnisotropy(UINT16 unit, UINT32 maxAnisotropy);
+
+		/**
+		 * @brief	Gets anisotropy value for the specified texture unit.
+		 */
+		GLfloat getCurrentAnisotropy(UINT16 unit);
 
 		/************************************************************************/
 		/* 								Blend states                      		*/
 		/************************************************************************/
 
-		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
-		The result of the blending operation is:</p>
-		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
-		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
-		enumerated type.
-		By changing the operation you can change addition between the source and destination pixels to a different operator.
-		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
-		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
-		@param op The blend operation mode for combining pixels
-		*/
-		void setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op );
+		/**
+		 * @brief	Sets up blending mode that allows you to combine new pixels with pixels already in the render target.
+		 *			Final pixel value = (renderTargetPixel * sourceFactor) op (pixel * destFactor).
+		 */
+		void setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op);
 
-		/** Sets the global blending factors for combining subsequent renders with the existing frame contents.
-		The result of the blending operation is:</p>
-		<p align="center">final = (texture * sourceFactor) + (pixel * destFactor)</p>
-		Each of the factors is specified as one of a number of options, as specified in the SceneBlendFactor
-		enumerated type.
-		@param sourceFactor The source factor in the above calculation, i.e. multiplied by the texture colour components.
-		@param destFactor The destination factor in the above calculation, i.e. multiplied by the pixel colour components.
-		@param sourceFactorAlpha The source factor in the above calculation for the alpha channel, i.e. multiplied by the texture alpha components.
-		@param destFactorAlpha The destination factor in the above calculation for the alpha channel, i.e. multiplied by the pixel alpha components.
-		@param op The blend operation mode for combining pixels
-		@param alphaOp The blend operation mode for combining pixel alpha values
+		/**
+		* @brief	Sets up blending mode that allows you to combine new pixels with pixels already in the render target.
+		*			Allows you to set up separate blend operations for alpha values.
+		*	
+		*			Final pixel value = (renderTargetPixel * sourceFactor) op (pixel * destFactor). (And the same for alpha)
 		*/
-		void setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
-			BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp );
+		void setSceneBlending(BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
+			BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp);
 
-		/** Sets the global alpha rejection approach for future renders.
-		By default images are rendered regardless of texture alpha. This method lets you change that.
-		@param func The comparison function which must pass for a pixel to be written.
-		@param val The value to compare each pixels alpha value to (0-255)
-		*/
+		/**
+		 * @brief	Sets alpha test that allows you to reject pixels that fail the comparison function
+		 *			versus the provided reference value.
+		 */
 		void setAlphaTest(CompareFunction func, unsigned char value);
 
 		/**
-		 * @brief	Enable alpha coverage if supported.
+		 * @brief	Enable alpha to coverage. Alpha to coverage allows you to perform blending without needing 
+		 *			to worry about order of rendering like regular blending does. It requires multi-sampling to 
+		 *			be active in order to work, and you need to supply an alpha texture that determines object transparency.
 		 */
 		void setAlphaToCoverage(bool enabled);
 
-		/** Sets whether or not colour buffer writing is enabled, and for which channels. 
-		@remarks
-		For some advanced effects, you may wish to turn off the writing of certain colour
-		channels, or even all of the colour channels so that only the depth buffer is updated
-		in a rendering pass. However, the chances are that you really want to use this option
-		through the Material class.
-		@param red, green, blue, alpha Whether writing is enabled for each of the 4 colour channels. */
+		/**
+		 * @brief	Enables or disables writing to certain color channels of the render target.
+		 */
 		void setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha);
 
 		/************************************************************************/
 		/* 								Rasterizer states                  		*/
 		/************************************************************************/
 
-		/** Sets the culling mode for the render system based on the 'vertex winding'.
-		A typical way for the rendering engine to cull triangles is based on the
-		'vertex winding' of triangles. Vertex winding refers to the direction in
-		which the vertices are passed or indexed to in the rendering operation as viewed
-		from the camera, and will wither be clockwise or anticlockwise (that's 'counterclockwise' for
-		you Americans out there ;) The default is CULL_CLOCKWISE i.e. that only triangles whose vertices
-		are passed/indexed in anticlockwise order are rendered - this is a common approach and is used in 3D studio models
-		for example. You can alter this culling mode if you wish but it is not advised unless you know what you are doing.
-		You may wish to use the CULL_NONE option for mesh data that you cull yourself where the vertex
-		winding is uncertain.
-		*/
+		/**
+		 * @brief	Sets vertex winding order. Normally you would use this to cull back facing
+		 *			polygons.
+		 */
 		void setCullingMode(CullingMode mode);
 
-		/** Sets how to rasterise triangles, as points, wireframe or solid polys. */
+		/**
+		 * @brief	Sets the polygon rasterization mode. Determines how are polygons interpreted.
+		 */
 		void setPolygonMode(PolygonMode level);
 
-		/** Sets the depth bias, NB you should use the Material version of this. 
-		@remarks
-		When polygons are coplanar, you can get problems with 'depth fighting' where
-		the pixels from the two polys compete for the same screen pixel. This is particularly
-		a problem for decals (polys attached to another surface to represent details such as
-		bulletholes etc.).
-		@par
-		A way to combat this problem is to use a depth bias to adjust the depth buffer value
-		used for the decal such that it is slightly higher than the true value, ensuring that
-		the decal appears on top.
-		@note
-		The final bias value is a combination of a constant bias and a bias proportional
-		to the maximum depth slope of the polygon being rendered. The final bias
-		is constantBias + slopeScaleBias * maxslope. Slope scale biasing is
-		generally preferable but is not available on older hardware.
-		@param constantBias The constant bias value, expressed as a value in 
-		homogeneous depth coordinates.
-		@param slopeScaleBias The bias value which is factored by the maximum slope
-		of the polygon, see the description above. This is not supported by all
-		cards.
-
-		*/
+		/**
+		 * @brief	Sets a depth bias that will offset the depth values of new pixels by the specified amount.
+		 *			Final depth bias value is a combination of the constant depth bias and slope depth bias.
+		 *			Slope depth bias has more effect the higher the slope of the rendered polygon.
+		 *
+		 * @note	This is useful if you want to avoid z fighting for objects at the same or similar depth.
+		 */
 		void setDepthBias(float constantBias, float slopeScaleBias);
 
 		/**
-		* @brief	Scissor test allows you to 'mask off' rendering in all but a given rectangular area
-		* 			identified by the rectangle set by setScissorRect().
-		*/
+		 * @brief	Scissor test allows you to mask off rendering in all but a given rectangular area
+		 * 			identified by the rectangle set by setScissorRect().
+		 */
 		void setScissorTestEnable(bool enable);
 
 		/************************************************************************/
 		/* 						Depth stencil state                      		*/
 		/************************************************************************/
 		
-		/** Sets the mode of operation for depth buffer tests from this point onwards.
-		Sometimes you may wish to alter the behaviour of the depth buffer to achieve
-		special effects. Because it's unlikely that you'll set these options for an entire frame,
-		but rather use them to tweak settings between rendering objects, this is an internal
-		method (indicated by the '_' prefix) which will be used by a SceneManager implementation
-		rather than directly from the client application.
-		If this method is never called the settings are automatically the same as the default parameters.
-		@param depthTest If true, the depth buffer is tested for each pixel and the frame buffer is only updated
-		if the depth function test succeeds. If false, no test is performed and pixels are always written.
-		@param depthWrite If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
-		If false, the depth buffer is left unchanged even if a new pixel is written.
-		@param depthFunction Sets the function required for the depth test.
-		*/
-		void setDepthBufferParams(bool depthTest = true, bool depthWrite = true, CompareFunction depthFunction = CMPF_LESS_EQUAL);
-
-		/** Sets whether or not the depth buffer check is performed before a pixel write.
-		@param enabled If true, the depth buffer is tested for each pixel and the frame buffer is only updated
-		if the depth function test succeeds. If false, no test is performed and pixels are always written.
-		*/
+		/**
+		 * @brief	Should new pixels perform depth testing using the set depth comparison function before
+		 *			being written.
+		 */
 		void setDepthBufferCheckEnabled(bool enabled = true);
 
-		/** Sets whether or not the depth buffer is updated after a pixel write.
-		@param enabled If true, the depth buffer is updated with the depth of the new pixel if the depth test succeeds.
-		If false, the depth buffer is left unchanged even if a new pixel is written.
-		*/
+		/**
+		 * @brief	Should new pixels write to the depth buffer.
+		 */
 		void setDepthBufferWriteEnabled(bool enabled = true);
 
-		/** Sets the comparison function for the depth buffer check.
-		Advanced use only - allows you to choose the function applied to compare the depth values of
-		new and existing pixels in the depth buffer. Only an issue if the deoth buffer check is enabled
-		(see _setDepthBufferCheckEnabled)
-		@param  func The comparison between the new depth and the existing depth which must return true
-		for the new pixel to be written.
-		*/
+		/**
+		 * @brief	Sets comparison function used for depth testing. Determines how are new and existing
+		 *			pixel values compared - if comparison function returns true the new pixel is written.
+		 */
 		void setDepthBufferFunction(CompareFunction func = CMPF_LESS_EQUAL);
 
-		/** Turns stencil buffer checking on or off.
-		@remarks
-		Stencilling (masking off areas of the rendering target based on the stencil
-		buffer) can be turned on or off using this method. By default, stencilling is
-		disabled.
-		*/
+		/**
+		 * @brief	Turns stencil tests on or off. By default this is disabled.
+		 *			Stencil testing allow you to mask out a part of the rendered image by using
+		 *			various stencil operations provided.
+		 */
 		void setStencilCheckEnabled(bool enabled);
 
-		/** This method allows you to set stencil buffer operations in one call.
-		@param stencilFailOp The action to perform when the stencil check fails
-		@param depthFailOp The action to perform when the stencil check passes, but the
-		depth buffer check still fails
-		@param passOp The action to take when both the stencil and depth check pass.
-		@param ccw If set to true, the stencil operations will be applied to counterclockwise
-		faces. Otherwise they will be applied to clockwise faces.
-		*/
+		/**
+		 * @brief	Allows you to set stencil operations that are performed when stencil test passes or fails.
+		 *
+		 * @param	stencilFailOp	Operation executed when stencil test fails.
+		 * @param	depthFailOp		Operation executed when stencil test succeeds but depth test fails.
+		 * @param	passOp			Operation executed when stencil test succeeds and depth test succeeds.
+		 * @param	front			Should the stencil operations be applied to front or back facing polygons.
+		 */
 		void setStencilBufferOperations(StencilOperation stencilFailOp = SOP_KEEP,
 			StencilOperation depthFailOp = SOP_KEEP, StencilOperation passOp = SOP_KEEP,
 			bool front = true);
 
 		/**
-		* @brief	Sets a stencil buffer comparison function. The result of this will cause one of 3 actions depending on whether the test fails,
-		*		succeeds but with the depth buffer check still failing, or succeeds with the
-		*		depth buffer check passing too.
-		* @param mask The bitmask applied to both the stencil value and the reference value
-		*		before comparison
-		* @param ccw If set to true, the stencil operations will be applied to counterclockwise
-		*		faces. Otherwise they will be applied to clockwise faces.
+		 * @brief	Sets a stencil buffer comparison function. The result of this will cause one of 3 actions 
+		 *			depending on whether the test fails, succeeds but with the depth buffer check still failing, 
+		 *			or succeeds with the depth buffer check passing too.
+		 *
+		 * @param func	Comparison function that determines whether a stencil test fails or passes. Reference value
+		 *				gets compared to the value already in the buffer using this function.
+		 * @param mask	The bitmask applied to both the stencil value and the reference value
+		 *				before comparison
+		 * @param ccw	If set to true, the stencil operations will be applied to counterclockwise
+		 *				faces. Otherwise they will be applied to clockwise faces.
 		 */
 		void setStencilBufferFunc(CompareFunction func = CMPF_ALWAYS_PASS, UINT32 mask = 0xFFFFFFFF, bool front = true);
 
 		/**
-		* @brief	The bitmask applied to the stencil value before writing it to the stencil buffer.
+		 * @brief	The bitmask applied to the stencil value before writing it to the stencil buffer.
 		 */
 		void setStencilBufferWriteMask(UINT32 mask = 0xFFFFFFFF);
 
@@ -459,14 +477,25 @@ namespace BansheeEngine
 		/* 							UTILITY METHODS                      		*/
 		/************************************************************************/
 
+		/**
+		 * @brief	Converts the provided matrix m into a representation usable by OpenGL.
+		 */
 		void makeGLMatrix(GLfloat gl_matrix[16], const Matrix4& m);
 
+		/**
+		 * @brief	Converts the engine depth/stencil compare function into OpenGL representation.
+		 */
 		GLint convertCompareFunction(CompareFunction func) const;
+
+		/**
+		 * @brief	Convers the engine stencil operation in OpenGL representation. Optionally inverts
+		 *			the operation (increment becomes decrement, etc.).
+		 */
 		GLint convertStencilOp(StencilOperation op, bool invert = false) const;
 
 		/**
-		* @brief	Checks if there are any OpenGL errors and prints them to the log.
-		*/
+		 * @brief	Checks if there are any OpenGL errors and prints them to the log.
+		 */
 		bool checkForErrors() const;
 
 	private:

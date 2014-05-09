@@ -6,7 +6,7 @@ GLenum GLEWAPIENTRY glewContextInit(BansheeEngine::GLSupport *glSupport);
 
 namespace BansheeEngine
 {
-    void GLSupport::initialiseExtensions()
+    void GLSupport::initializeExtensions()
     {
 		glewContextInit(this);
 
@@ -24,18 +24,13 @@ namespace BansheeEngine
         mVendor = tmpStr.substr(0, tmpStr.find(" "));
 
         // Set extension list
-		StringStream ext;
-        String str;
+		int numExtensions = 0;
+		glGetIntegerv(GL_NUM_EXTENSIONS, &numExtensions);
 
-        const GLubyte* pcExt = glGetString(GL_EXTENSIONS);
-		assert(pcExt && "Problems getting GL extension string using glGetString");
-
-        ext << pcExt;
-
-        while(ext >> str)
-        {
-            extensionList.insert(str);
-        }
+		for (int i = 0; i < numExtensions; i++)
+		{
+			extensionList.insert(String((char*)glGetStringi(GL_EXTENSIONS, i)));
+		}
     }
 
     bool GLSupport::checkMinGLVersion(const String& v) const

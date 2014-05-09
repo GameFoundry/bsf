@@ -66,14 +66,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Internal method.
 		 */
-		void lock() const;
+		void _lock() const;
 
 		/**
 		 * @brief	Unlocks the data and makes it available to all threads. 
 		 *
 		 * @note	Internal method.
 		 */
-		void unlock() const;
+		void _unlock() const;
 
 	protected:
 		/**

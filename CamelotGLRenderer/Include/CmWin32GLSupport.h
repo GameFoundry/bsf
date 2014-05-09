@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * Initialize extensions
 		 */
-		virtual void initialiseExtensions();
+		virtual void initializeExtensions();
 		
 		Win32Context* createContext(HDC hdc, HGLRC externalGlrc = 0);
 

@@ -283,13 +283,13 @@ namespace BansheeEngine
 					PixelDataPtr temp = newTex->allocateSubresourceBuffer(subresourceIdx);
 					PixelUtil::bulkPixelConversion(*pixelData, *temp);
 
-					temp->lock();
+					temp->_lock();
 					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
 						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, temp, false, _1));
 				}
 				else
 				{
-					pixelData->lock();
+					pixelData->_lock();
 					gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, 
 						RenderSystem::instancePtr(), newTex.getInternalPtr(), subresourceIdx, pixelData, false, _1));
 				}

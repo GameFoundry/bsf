@@ -9,14 +9,7 @@
 cm_shared_ptr should use && for parameter forwarding?
 cm_core_ptr too
 
-Refactor GLRenderSystem:
-createRenderSystemCapabilities
-initialiseFromRenderSystemCapabilities
-initializeContext
-switchContext
-oneTimeContextInitialization
-
-and update its docs
+Update GLRenderSystem docs
 
 Perform refactor mentioned in the documentation e-mail
 

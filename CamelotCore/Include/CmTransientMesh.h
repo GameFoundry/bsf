@@ -23,27 +23,27 @@ namespace BansheeEngine
 		 /**
 		 * @copydoc MeshBase::getVertexData
 		 */
-		std::shared_ptr<VertexData> getVertexData() const;
+		std::shared_ptr<VertexData> _getVertexData() const;
 
 		 /**
 		 * @copydoc MeshBase::getIndexData
 		 */
-		std::shared_ptr<IndexData> getIndexData() const;
+		std::shared_ptr<IndexData> _getIndexData() const;
 
 		/**
 		 * @copydoc MeshBase::getVertexOffset
 		 */
-		virtual UINT32 getVertexOffset() const;
+		virtual UINT32 _getVertexOffset() const;
 
 		 /**
 		 * @copydoc MeshBase::getIndexOffset
 		 */
-		virtual UINT32 getIndexOffset() const;
+		virtual UINT32 _getIndexOffset() const;
 
 		 /**
 		 * @copydoc MeshBase::notifyUsedOnGPU
 		 */
-		virtual void notifyUsedOnGPU();
+		virtual void _notifyUsedOnGPU();
 
 	protected:
 		friend class MeshHeap;

@@ -140,7 +140,7 @@ namespace BansheeEngine
 
 			imgData->getPixels(mip, *src);
 
-			src->lock();
+			src->_lock();
 			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, src, false, _1));
 		}
 

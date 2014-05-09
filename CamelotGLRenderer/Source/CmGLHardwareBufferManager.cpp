@@ -67,7 +67,7 @@ namespace BansheeEngine {
 		// Win32 machines with ATI GPU are having issues glMapBuffer, looks like buffer corruption
 		// disable for now until we figure out where the problem lies			
 #	if CM_PLATFORM == CM_PLATFORM_WIN32
-		if (BansheeEngine::RenderSystem::instancePtr()->getCapabilities()->getVendor() == GPU_ATI) 
+		if (BansheeEngine::RenderSystem::instancePtr()->getCapabilities()->getVendor() == GPU_AMD) 
 		{
 			mMapBufferThreshold = 0xffffffffUL  /* maximum unsigned long value */;
 		}

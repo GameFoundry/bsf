@@ -804,7 +804,7 @@ namespace BansheeEngine
 				}
 
 			}
-			else if ((getCapabilities()->getVendor() == GPU_ATI))
+			else if ((getCapabilities()->getVendor() == GPU_AMD))
 			{
 				if (enable)
 				{
@@ -1862,23 +1862,11 @@ namespace BansheeEngine
 			rsc->setVendor(GPU_NVIDIA);
 			break;
 		case 0x1002:
-			rsc->setVendor(GPU_ATI);
+			rsc->setVendor(GPU_AMD);
 			break;
 		case 0x163C:
 		case 0x8086:
 			rsc->setVendor(GPU_INTEL);
-			break;
-		case 0x5333:
-			rsc->setVendor(GPU_S3);
-			break;
-		case 0x3D3D:
-			rsc->setVendor(GPU_3DLABS);
-			break;
-		case 0x102B:
-			rsc->setVendor(GPU_MATROX);
-			break;
-		case 0x1039:
-			rsc->setVendor(GPU_SIS);
 			break;
 		default:
 			rsc->setVendor(GPU_UNKNOWN);
@@ -1958,7 +1946,7 @@ namespace BansheeEngine
 				}
 
 			}
-			else if (rsc->getVendor() == GPU_ATI)
+			else if (rsc->getVendor() == GPU_AMD)
 			{
 				// There is no check on ATI, we have to assume SM3 == support
 				rsc->setCapability(RSC_ALPHA_TO_COVERAGE);

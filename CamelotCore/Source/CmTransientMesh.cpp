@@ -30,27 +30,27 @@ namespace BansheeEngine
 		CM_EXCEPT(InvalidStateException, "Reading is not supported on a transient mesh.");
 	}
 
-	std::shared_ptr<VertexData> TransientMesh::getVertexData() const
+	std::shared_ptr<VertexData> TransientMesh::_getVertexData() const
 	{
 		return mParentHeap->getVertexData();
 	}
 
-	std::shared_ptr<IndexData> TransientMesh::getIndexData() const
+	std::shared_ptr<IndexData> TransientMesh::_getIndexData() const
 	{
 		return mParentHeap->getIndexData();
 	}
 
-	UINT32 TransientMesh::getVertexOffset() const
+	UINT32 TransientMesh::_getVertexOffset() const
 	{
 		return mParentHeap->getVertexOffset(mId);
 	}
 
-	UINT32 TransientMesh::getIndexOffset() const
+	UINT32 TransientMesh::_getIndexOffset() const
 	{
 		return mParentHeap->getIndexOffset(mId);
 	}
 
-	void TransientMesh::notifyUsedOnGPU()
+	void TransientMesh::_notifyUsedOnGPU()
 	{
 		mParentHeap->notifyUsedOnGPU(mId);
 	}

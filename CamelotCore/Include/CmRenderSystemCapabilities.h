@@ -65,8 +65,9 @@ namespace BansheeEngine
 		CAPS_CATEGORY_D3D9 = 2,
 		CAPS_CATEGORY_GL = 3,
 		CAPS_CATEGORY_COMMON_3 = 4,
+		CAPS_CATEGORY_D3D11 = 5,
 		/// Placeholder for max value
-		CAPS_CATEGORY_COUNT = 5
+		CAPS_CATEGORY_COUNT = 6
 	};
 
 	/// Enum describing the different hardware capabilities we want to check for
@@ -220,18 +221,11 @@ namespace BansheeEngine
 	{
 		GPU_UNKNOWN = 0,
 		GPU_NVIDIA = 1,
-		GPU_ATI = 2, 
+		GPU_AMD = 2, 
 		GPU_INTEL = 3,
-		GPU_S3 = 4,
-		GPU_MATROX = 5,
-		GPU_3DLABS = 6,
-		GPU_SIS = 7,
-        GPU_IMAGINATION_TECHNOLOGIES = 8,
-        GPU_APPLE = 9,  // Apple Software Renderer
-        GPU_NOKIA = 10,
 
 		/// placeholder
-		GPU_VENDOR_COUNT = 11
+		GPU_VENDOR_COUNT = 4
 	};
 
 	/** singleton class for storing the capabilities of the graphics card. 

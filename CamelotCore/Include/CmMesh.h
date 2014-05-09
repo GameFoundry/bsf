@@ -63,12 +63,12 @@ namespace BansheeEngine
 		/**
 		 * @copydoc MeshBase::getVertexData
 		 */
-		virtual std::shared_ptr<VertexData> getVertexData() const;
+		virtual std::shared_ptr<VertexData> _getVertexData() const;
 
 		/**
 		 * @copydoc MeshBase::getIndexData
 		 */
-		virtual std::shared_ptr<IndexData> getIndexData() const;
+		virtual std::shared_ptr<IndexData> _getIndexData() const;
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.

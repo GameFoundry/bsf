@@ -221,7 +221,7 @@ namespace BansheeEngine
 
 	AsyncOp CoreThreadAccessorBase::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer)
 	{
-		data->lock();
+		data->_lock();
 
 		return mCommandQueue->queueReturn(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, 
 			subresourceIdx, data, discardEntireBuffer, std::placeholders::_1));
@@ -229,7 +229,7 @@ namespace BansheeEngine
 
 	AsyncOp CoreThreadAccessorBase::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data)
 	{
-		data->lock();
+		data->_lock();
 
 		return mCommandQueue->queueReturn(std::bind(&RenderSystem::readSubresource, RenderSystem::instancePtr(), 
 			resource, subresourceIdx, data, std::placeholders::_1));

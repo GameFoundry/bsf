@@ -59,7 +59,7 @@ namespace BansheeEngine
 
 		AsyncOp op;
 
-		data->lock();
+		data->_lock();
 		RenderSystem::instance().writeSubresource(mDummyTexture.getInternalPtr(), mDummyTexture->mapToSubresourceIdx(0, 0), data, false, op);
 	}
 

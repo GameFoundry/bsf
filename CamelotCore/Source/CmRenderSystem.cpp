@@ -216,7 +216,7 @@ namespace BansheeEngine {
 			mClipPlanesDirty = false;
 		}
 
-		std::shared_ptr<VertexData> vertexData = mesh->getVertexData();
+		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
 
 		setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();
@@ -248,18 +248,18 @@ namespace BansheeEngine {
 
 		if (useIndices)
 		{
-			std::shared_ptr<IndexData> indexData = mesh->getIndexData();
+			std::shared_ptr<IndexData> indexData = mesh->_getIndexData();
 
 			if(indexCount == 0)
 				indexCount = indexData->indexCount;
 
 			setIndexBuffer(indexData->indexBuffer);
-			drawIndexed(indexOffset + mesh->getIndexOffset(), indexCount, mesh->getVertexOffset(), vertexData->vertexCount);
+			drawIndexed(indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
 		}
 		else
-			draw(mesh->getVertexOffset(), vertexData->vertexCount);
+			draw(mesh->_getVertexOffset(), vertexData->vertexCount);
 
-		mesh->notifyUsedOnGPU();
+		mesh->_notifyUsedOnGPU();
 
 		gProfiler().endSample("render");
 	}
@@ -284,7 +284,7 @@ namespace BansheeEngine {
 
 		gProfiler().beginSample("writeSubresourceB");
 
-		data->unlock();
+		data->_unlock();
 		asyncOp._completeOperation();
 
 		gProfiler().endSample("writeSubresourceB");
@@ -297,7 +297,7 @@ namespace BansheeEngine {
 		gProfiler().beginSample("readSubresource");
 
 		resource->readSubresource(subresourceIdx, *data);
-		data->unlock();
+		data->_unlock();
 		asyncOp._completeOperation();
 
 		gProfiler().endSample("readSubresource");

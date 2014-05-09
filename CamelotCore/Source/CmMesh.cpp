@@ -264,14 +264,14 @@ namespace BansheeEngine
 		return AABox::BOX_EMPTY;
 	}
 
-	std::shared_ptr<VertexData> Mesh::getVertexData() const
+	std::shared_ptr<VertexData> Mesh::_getVertexData() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		return mVertexData;
 	}
 
-	std::shared_ptr<IndexData> Mesh::getIndexData() const
+	std::shared_ptr<IndexData> Mesh::_getIndexData() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

@@ -58,7 +58,7 @@ namespace BansheeEngine
 		/** Initialises GL extensions, must be done AFTER the GL context has been
 			established.
 		*/
-		virtual void initialiseExtensions();
+		virtual void initializeExtensions();
 
 	protected:
 		Set<String> extensionList;

@@ -108,7 +108,7 @@ namespace BansheeEngine {
         TAM_MIRROR,
         /// Texture clamps at 1.0
         TAM_CLAMP,
-        /// Texture coordinates outside the range [0.0, 1.0] are set to the border colour
+        /// Texture coordinates outside the range [0.0, 1.0] are set to the border color
         TAM_BORDER
     };
 

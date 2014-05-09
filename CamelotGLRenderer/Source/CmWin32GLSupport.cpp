@@ -51,11 +51,11 @@ namespace BansheeEngine
 		mInitialWindow = nullptr;
 	}
 
-	void Win32GLSupport::initialiseExtensions()
+	void Win32GLSupport::initializeExtensions()
 	{
 		assert(mInitialWindow != nullptr);
 		
-		GLSupport::initialiseExtensions();
+		GLSupport::initializeExtensions();
 
 		wglewContextInit(this);
 
@@ -83,7 +83,7 @@ namespace BansheeEngine
 		// If RenderSystem has initialized a context use that, otherwise we create our own
 		HGLRC glrc = externalGlrc;
 		bool createdNew = false;
-		if (!rs->isContextInitialized())
+		if (!rs->_isContextInitialized())
 		{
 			if (externalGlrc == 0)
 			{
@@ -188,7 +188,7 @@ namespace BansheeEngine
 
 			if (_wglCreateContextAttribsARB != nullptr)
 			{
-				WGLEW_GET_FUN(__wglewCreateContextAttribsARB) = (PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglChoosePixelFormatARB");
+				WGLEW_GET_FUN(__wglewCreateContextAttribsARB) = _wglCreateContextAttribsARB;
 				mHasAdvancedContext = true;
 			}
 

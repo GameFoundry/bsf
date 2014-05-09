@@ -119,9 +119,17 @@ namespace BansheeEngine
 		// Get the context from the window and finish initialization
 		GLContext *context = nullptr;
 		primaryWindow->getCustomAttribute("GLCONTEXT", &context);
-		initializeContext(context);
 
-		checkForErrors();
+		// Set main and current context
+		mMainContext = context;
+		mCurrentContext = mMainContext;
+
+		// Set primary context as active
+		if (mCurrentContext)
+			mCurrentContext->setCurrent();
+
+		// Setup GLSupport
+		mGLSupport->initializeExtensions();
 
 		Vector<BansheeEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
@@ -136,15 +144,7 @@ namespace BansheeEngine
 		mDriverVersion.build = 0;
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
-		checkForErrors();
-
-		initialiseFromRenderSystemCapabilities(mCurrentCapabilities);
-		checkForErrors();
-
-		// Initialise the main context
-		oneTimeContextInitialization();
-		checkForErrors();
-
+		initFromCaps(mCurrentCapabilities);
 		mGLInitialised = true;
 
 		RenderSystem::initialize_internal(asyncOp);
@@ -304,7 +304,7 @@ namespace BansheeEngine
 			if(iter->second.slot == 0)
 			{
 				// 0 means uniforms are not in block, in which case we handle it specially
-				if(uniformBufferData == nullptr)
+				if (uniformBufferData == nullptr && paramBlockBuffer->getSize() > 0)
 				{
 					uniformBufferData = (UINT8*)cm_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
 					paramBlockBuffer->readData(uniformBufferData);
@@ -815,7 +815,7 @@ namespace BansheeEngine
 		GLfloat border[4] = { colour.r, colour.g, colour.b, colour.a };
 		if (activateGLTextureUnit(stage))
 		{
-			glTexParameterfv( mTextureTypes[stage], GL_TEXTURE_BORDER_COLOR, border);
+			glTexParameterfv(mTextureTypes[stage], GL_TEXTURE_BORDER_COLOR, border);
 			activateGLTextureUnit(0);
 		}
 	}
@@ -826,7 +826,7 @@ namespace BansheeEngine
 		{
 			if (activateGLTextureUnit(stage))
 			{
-				glTexEnvf(GL_TEXTURE_FILTER_CONTROL_EXT, GL_TEXTURE_LOD_BIAS_EXT, bias);
+				glTexParameterf(mTextureTypes[stage], GL_TEXTURE_LOD_BIAS, bias);
 				activateGLTextureUnit(0);
 			}
 		}
@@ -1034,13 +1034,6 @@ namespace BansheeEngine
 		glCullFace( cullMode );
 	}
 
-	void GLRenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
-	{
-		setDepthBufferCheckEnabled(depthTest);
-		setDepthBufferWriteEnabled(depthWrite);
-		setDepthBufferFunction(depthFunction);
-	}
-
 	void GLRenderSystem::setDepthBufferCheckEnabled(bool enabled)
 	{
 		if (enabled)
@@ -1233,15 +1226,6 @@ namespace BansheeEngine
 		size_t numClipPlanes;
 		GLdouble clipPlane[4];
 
-		// Save previous modelview
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-
-		// Just load view matrix (identity world)
-		GLfloat mat[16];
-		makeGLMatrix(mat, mViewMatrix);
-		glLoadMatrixf(mat);
-
 		numClipPlanes = clipPlanes.size();
 		for (i = 0; i < numClipPlanes; ++i)
 		{
@@ -1267,9 +1251,6 @@ namespace BansheeEngine
 		{
 			glDisable(static_cast<GLenum>(GL_CLIP_PLANE0 + i));
 		}
-
-		// Restore matrices
-		glPopMatrix();
 	}
 
 	bool GLRenderSystem::activateGLTextureUnit(UINT16 unit)
@@ -1336,6 +1317,10 @@ namespace BansheeEngine
 
 		const VertexDeclaration::VertexElementList& inputAttributes = mCurrentVertexProgram->getGLSLProgram()->getInputAttributes().getElements();
 
+		GLuint VAOID[1];
+		glGenVertexArrays(1, &VAOID[0]);
+		glBindVertexArray(VAOID[0]);
+
 		for (elem = decl.begin(); elem != elemEnd; ++elem)
 		{
 			auto iterFind = mBoundVertexBuffers.find(elem->getStreamIdx());
@@ -1381,7 +1366,7 @@ namespace BansheeEngine
 				break;
 			};
 
-			glVertexAttribPointerARB(
+			glVertexAttribPointer(
 				attribLocation,
 				typeCount, 
 				GLHardwareBufferManager::getGLType(elem->getType()), 
@@ -1407,8 +1392,6 @@ namespace BansheeEngine
 		{
 			glDisableVertexAttribArray(*ai); 
 		}
-
-		glColor4f(1,1,1,1);
 
 		mBoundAttributes.clear();
 	}
@@ -1556,7 +1539,6 @@ namespace BansheeEngine
 		case TAM_BORDER:
 			return GL_CLAMP_TO_BORDER;
 		}
-
 	}
 
 	GLint GLRenderSystem::getGLDrawMode() const
@@ -1692,24 +1674,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void GLRenderSystem::initializeContext(GLContext* primary)
-	{
-		// Set main and current context
-		mMainContext = primary;
-		mCurrentContext = mMainContext;
-
-		// Set primary context as active
-		if(mCurrentContext)
-			mCurrentContext->setCurrent();
-
-		// Setup GLSupport
-		mGLSupport->initialiseExtensions();
-
-		// Get extension function pointers
-		//glewContextInit(mGLSupport);
-	}
-
-	void GLRenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
+	void GLRenderSystem::initFromCaps(RenderSystemCapabilities* caps)
 	{
 		if(caps->getRenderSystemName() != getName())
 		{
@@ -1826,11 +1791,7 @@ namespace BansheeEngine
 			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
 		TextureManager::startUp(cm_new<GLTextureManager>(std::ref(*mGLSupport))); 
-		checkForErrors();
-	}
 
-	void GLRenderSystem::oneTimeContextInitialization()
-	{
 		// Check for FSAA
 		// Enable the extension if it was enabled by the GLSupport
 		if (mGLSupport->checkExtension("GL_ARB_multisample"))
@@ -1844,12 +1805,14 @@ namespace BansheeEngine
 		}
 
 #if CM_DEBUG_MODE
-		if (mGLSupport->checkExtension("GL_debug_output"))
+		if (mGLSupport->checkExtension("GL_ARB_debug_output"))
 		{
 			glDebugMessageCallback(&openGlErrorCallback, 0);
 			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		}
 #endif
+
+		checkForErrors();
 	}
 
 	void GLRenderSystem::switchContext(GLContext *context)
@@ -1876,7 +1839,6 @@ namespace BansheeEngine
 		glDepthMask(mDepthWrite);
 		glColorMask(mColorWrite[0], mColorWrite[1], mColorWrite[2], mColorWrite[3]);
 		glStencilMask(mStencilWriteMask);
-
 	}
 
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
@@ -1894,22 +1856,13 @@ namespace BansheeEngine
 		if (strstr(vendorName, "NVIDIA"))
 			rsc->setVendor(GPU_NVIDIA);
 		else if (strstr(vendorName, "ATI"))
-			rsc->setVendor(GPU_ATI);
+			rsc->setVendor(GPU_AMD);
+		else if (strstr(vendorName, "AMD"))
+			rsc->setVendor(GPU_AMD);
 		else if (strstr(vendorName, "Intel"))
 			rsc->setVendor(GPU_INTEL);
-		else if (strstr(vendorName, "S3"))
-			rsc->setVendor(GPU_S3);
-		else if (strstr(vendorName, "Matrox"))
-			rsc->setVendor(GPU_MATROX);
-		else if (strstr(vendorName, "3DLabs"))
-			rsc->setVendor(GPU_3DLABS);
-		else if (strstr(vendorName, "SiS"))
-			rsc->setVendor(GPU_SIS);
 		else
 			rsc->setVendor(GPU_UNKNOWN);
-
-		// Supports fixed-function
-		rsc->setCapability(RSC_FIXED_FUNCTION);
 
 		// Check for hardware mipmapping support.
 		if(GLEW_VERSION_1_4)
@@ -1918,58 +1871,43 @@ namespace BansheeEngine
 		}
 
 		// Check for blending support
-		if(GLEW_VERSION_1_3 || 
-			GLEW_ARB_texture_env_combine || 
-			GLEW_EXT_texture_env_combine)
+		if(GLEW_VERSION_1_3 || getGLSupport()->checkExtension("GL_ARB_texture_env_combine") 
+			|| getGLSupport()->checkExtension("GL_EXT_texture_env_combine"))
 		{
 			rsc->setCapability(RSC_BLENDING);
 		}
 
 		// Check for Anisotropy support
-		if(GLEW_EXT_texture_filter_anisotropic)
+		if (getGLSupport()->checkExtension("GL_EXT_texture_filter_anisotropic"))
 		{
 			rsc->setCapability(RSC_ANISOTROPY);
 		}
 
 		// Check for DOT3 support
 		if(GLEW_VERSION_1_3 ||
-			GLEW_ARB_texture_env_dot3 ||
-			GLEW_EXT_texture_env_dot3)
+			getGLSupport()->checkExtension("GL_ARB_texture_env_dot3") ||
+			getGLSupport()->checkExtension("GL_EXT_texture_env_dot3"))
 		{
 			rsc->setCapability(RSC_DOT3);
 		}
 
 		// Check for cube mapping
 		if(GLEW_VERSION_1_3 || 
-			GLEW_ARB_texture_cube_map ||
-			GLEW_EXT_texture_cube_map)
+			getGLSupport()->checkExtension("GL_ARB_texture_cube_map") ||
+			getGLSupport()->checkExtension("GL_EXT_texture_cube_map"))
 		{
 			rsc->setCapability(RSC_CUBEMAPPING);
 		}
 
-
 		// Point sprites
-		if (GLEW_VERSION_2_0 ||	GLEW_ARB_point_sprite)
+		if (GLEW_VERSION_2_0 || getGLSupport()->checkExtension("GL_ARB_point_sprite"))
 		{
 			rsc->setCapability(RSC_POINT_SPRITES);
-		}
-		// Check for point parameters
-		if (GLEW_VERSION_1_4)
-		{
-			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS);
-		}
-		if (GLEW_ARB_point_parameters)
-		{
-			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS_ARB);
-		}
-		if (GLEW_EXT_point_parameters)
-		{
-			rsc->setCapability(RSC_POINT_EXTENDED_PARAMETERS_EXT);
 		}
 
 		// Check for hardware stencil support and set bit depth
 		GLint stencil;
-		glGetIntegerv(GL_STENCIL_BITS,&stencil);
+		glGetIntegerv(GL_STENCIL_BITS, &stencil);
 
 		if(stencil)
 		{
@@ -1977,33 +1915,26 @@ namespace BansheeEngine
 			rsc->setStencilBufferBitDepth(stencil);
 		}
 
-		if(GLEW_VERSION_1_5 || GLEW_ARB_vertex_buffer_object)
+		if (GLEW_VERSION_1_5 || getGLSupport()->checkExtension("GL_ARB_vertex_buffer_object"))
 		{
-			if (!GLEW_ARB_vertex_buffer_object)
-			{
-				rsc->setCapability(RSC_GL1_5_NOVBO);
-			}
 			rsc->setCapability(RSC_VBO);
 		}
 
 		rsc->setCapability(RSC_VERTEX_PROGRAM);
 		rsc->setCapability(RSC_FRAGMENT_PROGRAM);
 
-		rsc->addShaderProfile("cg");
-
-		// NFZ - Check if GLSL is supported
-		if ( GLEW_VERSION_2_0 || 
-			(GLEW_ARB_shading_language_100 &&
-			GLEW_ARB_shader_objects &&
-			GLEW_ARB_fragment_shader &&
-			GLEW_ARB_vertex_shader) )
+		if (GLEW_VERSION_2_0 || 
+			(getGLSupport()->checkExtension("GL_ARB_shading_language_100") &&
+			getGLSupport()->checkExtension("GL_ARB_shader_objects") &&
+			getGLSupport()->checkExtension("GL_ARB_fragment_shader") &&
+			getGLSupport()->checkExtension("GL_ARB_vertex_shader")))
 		{
 			rsc->addShaderProfile("glsl");
 		}
 
 		// Check if geometry shaders are supported
 		if (GLEW_VERSION_2_0 &&
-			GLEW_EXT_geometry_shader4)
+			getGLSupport()->checkExtension("GL_EXT_geometry_shader4"))
 		{
 			rsc->setCapability(RSC_GEOMETRY_PROGRAM);
 
@@ -2020,24 +1951,24 @@ namespace BansheeEngine
 		}
 
 		//Check if render to vertex buffer (transform feedback in OpenGL)
-		if (GLEW_VERSION_2_0 && 
-			GLEW_NV_transform_feedback)
+		if (GLEW_VERSION_2_0 && getGLSupport()->checkExtension("GL_EXT_transform_feedback"))
 		{
 			rsc->setCapability(RSC_HWRENDER_TO_VERTEX_BUFFER);
 		}
 
 		// Check for texture compression
-		if(GLEW_VERSION_1_3 || GLEW_ARB_texture_compression)
+		if (GLEW_VERSION_1_3 || getGLSupport()->checkExtension("GL_ARB_texture_compression"))
 		{   
 			rsc->setCapability(RSC_TEXTURE_COMPRESSION);
 
 			// Check for dxt compression
-			if(GLEW_EXT_texture_compression_s3tc)
+			if (getGLSupport()->checkExtension("GL_EXT_texture_compression_s3tc"))
 			{
 				rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
 			}
+
 			// Check for vtc compression
-			if(GLEW_NV_texture_compression_vtc)
+			if (getGLSupport()->checkExtension("GL_NV_texture_compression_vtc"))
 			{
 				rsc->setCapability(RSC_TEXTURE_COMPRESSION_VTC);
 			}
@@ -2049,31 +1980,20 @@ namespace BansheeEngine
 		rsc->setCapability(RSC_USER_CLIP_PLANES);
 
 		// 2-sided stencil?
-		if (GLEW_VERSION_2_0 || GLEW_EXT_stencil_two_side)
+		if (GLEW_VERSION_2_0 || getGLSupport()->checkExtension("GL_EXT_stencil_two_side"))
 		{
 			rsc->setCapability(RSC_TWO_SIDED_STENCIL);
 		}
+
 		// stencil wrapping?
-		if (GLEW_VERSION_1_4 || GLEW_EXT_stencil_wrap)
+		if (GLEW_VERSION_1_4 || getGLSupport()->checkExtension("GL_EXT_stencil_wrap"))
 		{
 			rsc->setCapability(RSC_STENCIL_WRAP);
 		}
 
 		// Check for hardware occlusion support
-		if(GLEW_VERSION_1_5 || GLEW_ARB_occlusion_query)
+		if (GLEW_VERSION_1_5 || getGLSupport()->checkExtension("GL_ARB_occlusion_query"))
 		{
-			// Some buggy driver claim that it is GL 1.5 compliant and
-			// not support ARB_occlusion_query
-			if (!GLEW_ARB_occlusion_query)
-			{
-				rsc->setCapability(RSC_GL1_5_NOHWOCCLUSION);
-			}
-
-			rsc->setCapability(RSC_HWOCCLUSION);
-		}
-		else if (GLEW_NV_occlusion_query)
-		{
-			// Support NV extension too for old hardware
 			rsc->setCapability(RSC_HWOCCLUSION);
 		}
 
@@ -2084,13 +2004,13 @@ namespace BansheeEngine
 		rsc->setCapability(RSC_INFINITE_FAR_PLANE);
 
 		// Check for non-power-of-2 texture support
-		if(GLEW_ARB_texture_non_power_of_two)
+		if (getGLSupport()->checkExtension("GL_ARB_texture_non_power_of_two"))
 		{
 			rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
 		}
 
 		// Check for Float textures
-		if(GLEW_ATI_texture_float || GLEW_ARB_texture_float)
+		if (getGLSupport()->checkExtension("GL_ATI_texture_float") || getGLSupport()->checkExtension("GL_ARB_texture_float"))
 		{
 			rsc->setCapability(RSC_TEXTURE_FLOAT);
 		}
@@ -2099,13 +2019,11 @@ namespace BansheeEngine
 		rsc->setCapability(RSC_TEXTURE_3D);
 
 		// Check for framebuffer object extension
-		if(GLEW_EXT_framebuffer_object)
+		if (getGLSupport()->checkExtension("GL_ARB_framebuffer_object"))
 		{
 			// Probe number of draw buffers
 			// Only makes sense with FBO support, so probe here
-			if(GLEW_VERSION_2_0 || 
-				GLEW_ARB_draw_buffers ||
-				GLEW_ATI_draw_buffers)
+			if (GLEW_VERSION_2_0 || getGLSupport()->checkExtension("GL_ARB_draw_buffers") || getGLSupport()->checkExtension("GL_ATI_draw_buffers"))
 			{
 				GLint buffers;
 				glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &buffers);
@@ -2114,9 +2032,9 @@ namespace BansheeEngine
 				if(!GLEW_VERSION_2_0)
 				{
 					// Before GL version 2.0, we need to get one of the extensions
-					if(GLEW_ARB_draw_buffers)
+					if (getGLSupport()->checkExtension("GL_ARB_draw_buffers"))
 						rsc->setCapability(RSC_FBO_ARB);
-					if(GLEW_ATI_draw_buffers)
+					if (getGLSupport()->checkExtension("GL_ATI_draw_buffers"))
 						rsc->setCapability(RSC_FBO_ATI);
 				}
 				// Set FBO flag for all 3 'subtypes'
@@ -2197,7 +2115,9 @@ namespace BansheeEngine
 		rsc->setNumCombinedUniformBlockBuffers(static_cast<UINT16>(combinedUniformBlockUnits));
 
 		// Mipmap LOD biasing
-		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
+
+		if (mGLSupport->checkExtension("GL_EXT_texture_lod_bias"))
+			rsc->setCapability(RSC_MIPMAP_LOD_BIAS);
 
 		// Alpha to coverage?
 		if (mGLSupport->checkExtension("GL_ARB_multisample"))
@@ -2286,6 +2206,6 @@ namespace BansheeEngine
 
 	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
 	{
-		// TODO - Actually hook this up to Log or something
+		CM_EXCEPT(RenderingAPIException, "OpenGL error: " + String(message));
 	}
 }

@@ -90,12 +90,12 @@ namespace BansheeEngine
 		mOwnsData = false;
 	}
 
-	void GpuResourceData::lock() const
+	void GpuResourceData::_lock() const
 	{
 		mLocked = true;
 	}
 
-	void GpuResourceData::unlock() const
+	void GpuResourceData::_unlock() const
 	{
 		mLocked = false;
 	}
