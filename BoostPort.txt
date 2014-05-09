@@ -1,4 +1,3 @@
- - std::function allocates memory yet I'm not using a custom allocator for it. Replace std::function with custom Function method.
  - Ability to construct Module using startUp without having to do allocation outside of it
 
  REFACTOR GpuProgram
@@ -6,11 +5,13 @@
   - Right now HighLevelGpuProgram always creates just one instance of GpuProgram internally, and I don't see why they should be separate
   - Possibly also determine how to neatly handle compilation faliure. Error should be reported and dummy shader should be returned.
 
-cm_shared_ptr should use && for parameter forwarding?
-cm_core_ptr too
+DEBUG CODE in GLRenderSystem::beginDraw()
 
-Update GLRenderSystem docs
+		GLuint VAOID[1];
+		glGenVertexArrays(1, &VAOID[0]);
+		glBindVertexArray(VAOID[0]);
 
-Perform refactor mentioned in the documentation e-mail
+I'll probably want a system like PipelineManager where it saves all VS and VB combinations and retuns vertex array for it.
+ - Those vertex arrays should probably be saved in the vertex shader
 
 Create a proper git repo of dependencies folder

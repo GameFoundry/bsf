@@ -138,18 +138,18 @@ namespace BansheeEngine
 	 * @brief	Create a new shared pointer using a custom allocator category.
 	 */
 	template<class Type, class AllocCategory, class... Args> 
-	std::shared_ptr<Type> cm_shared_ptr(Args... args) 
+	std::shared_ptr<Type> cm_shared_ptr(Args &&... args) 
 	{
-		return std::allocate_shared<Type>(StdAlloc<AllocCategory>(), args...); 
+		return std::allocate_shared<Type>(StdAlloc<AllocCategory>(), std::forward<Args>(args)...); 
 	}
 
 	/**
 	* @brief	Create a new shared pointer using the default allocator category.
 	*/
 	template<class Type, class... Args>
-	std::shared_ptr<Type> cm_shared_ptr(Args... args)
+	std::shared_ptr<Type> cm_shared_ptr(Args &&... args)
 	{
-		return std::allocate_shared<Type>(StdAlloc<GenAlloc>(), args...);
+		return std::allocate_shared<Type>(StdAlloc<GenAlloc>(), std::forward<Args>(args)...);
 	}
 
 	/**

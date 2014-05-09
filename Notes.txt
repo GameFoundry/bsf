@@ -60,7 +60,7 @@ Reminders:
 	- When showing a debug message, also provide a (clickable?) reference to Component it was triggered on (if applicable)
 	  - It really helps when you get an error on a Component that hundreds of SceneObjects use
 	- When displaying an error with a callstack, make each line of the callstack clickable where it opens the external editor
-
+  - std::function allocates memory but I have no got way of using custom allocators as I'd have to wrap std::bind and that seems non-trivial
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

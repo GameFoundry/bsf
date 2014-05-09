@@ -1319,7 +1319,7 @@ namespace BansheeEngine
 
 		GLuint VAOID[1];
 		glGenVertexArrays(1, &VAOID[0]);
-		glBindVertexArray(VAOID[0]);
+		glBindVertexArray(VAOID[0]); // DEBUG ONLY!!! - Store these somewhere and just rebind them when needed
 
 		for (elem = decl.begin(); elem != elemEnd; ++elem)
 		{
