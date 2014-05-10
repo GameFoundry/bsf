@@ -36,7 +36,7 @@ namespace BansheeEngine
 #if CM_DEBUG_MODE
 		if(sizeBytes > elementSizeBytes)
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided element size larger than maximum element size. Maximum size: " + 
+			LOGWRN("Provided element size larger than maximum element size. Maximum size: " + 
 				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
 		}
 
@@ -46,6 +46,8 @@ namespace BansheeEngine
 				toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 		}
 #endif
+
+		sizeBytes = std::min(elementSizeBytes, sizeBytes);
 
 		GpuParamBlock* paramBlock = mData->paramBlocks[paramDesc->paramBlockSlot];
 		paramBlock->write((paramDesc->cpuMemOffset + arrayIdx * paramDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
@@ -69,7 +71,7 @@ namespace BansheeEngine
 #if CM_DEBUG_MODE
 		if(sizeBytes > elementSizeBytes)
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided element size larger than maximum element size. Maximum size: " + 
+			LOGWRN("Provided element size larger than maximum element size. Maximum size: " + 
 				toString(elementSizeBytes) + ". Supplied size: " + toString(sizeBytes));
 		}
 
@@ -79,9 +81,9 @@ namespace BansheeEngine
 				toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 		}
 #endif
+		sizeBytes = std::min(elementSizeBytes, sizeBytes);
 
 		GpuParamBlock* paramBlock = mData->paramBlocks[paramDesc->paramBlockSlot];
-
 		paramBlock->read((paramDesc->cpuMemOffset + arrayIdx * paramDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
 	}
 

@@ -14,7 +14,7 @@ namespace BansheeEngine
 		/// create an instance of GLSLProgram
         GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requireAdjacency);
-		GpuProgramPtr create();
+		GpuProgramPtr create(GpuProgramType type);
 
 	protected:
 		static const String LANGUAGE_NAME;

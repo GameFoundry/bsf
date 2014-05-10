@@ -19,6 +19,8 @@ namespace BansheeEngine {
 	public:
 		~GLSLGpuProgram();
 
+		bool isSupported() const;
+
 		const GLuint getGLHandle() const { return mGLHandle; }
 
 		/** Sets the preprocessor defines use to compile the program. */

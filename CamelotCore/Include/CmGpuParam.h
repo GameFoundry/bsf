@@ -116,7 +116,8 @@ namespace BansheeEngine
 			}
 #endif
 
-			UINT32 sizeBytes = sizeof(T);
+			UINT32 elementSizeBytes = paramDesc->elementSize * sizeof(UINT32);
+			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
 			GpuParamBlock* paramBlock = mData->paramBlocks[paramDesc->paramBlockSlot];
 
 			if(TransposePolicy<T>::transposeEnabled(mData->transpose))
@@ -128,7 +129,6 @@ namespace BansheeEngine
 				paramBlock->write((paramDesc->cpuMemOffset + arrayIdx * paramDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
 
 			// Set unused bytes to 0
-			UINT32 elementSizeBytes = paramDesc->elementSize * sizeof(UINT32);
 			if(sizeBytes < elementSizeBytes)
 			{
 				UINT32 diffSize = elementSizeBytes - sizeBytes;
@@ -157,7 +157,8 @@ namespace BansheeEngine
 			}
 #endif
 
-			UINT32 sizeBytes = sizeof(T);
+			UINT32 elementSizeBytes = paramDesc->elementSize * sizeof(UINT32);
+			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T));
 			GpuParamBlock* paramBlock = mData->paramBlocks[paramDesc->paramBlockSlot];
 
 			T value;

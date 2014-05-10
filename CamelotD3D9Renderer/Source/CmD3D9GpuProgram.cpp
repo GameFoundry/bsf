@@ -13,8 +13,8 @@
 namespace BansheeEngine 
 {
     D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: GpuProgram(source, entryPoint, gptype, profile, includes, false),
 		mMicrocode(nullptr), mColumnMajorMatrices(false), mOptimisationLevel(OPT_DEFAULT)
     { }
 
@@ -28,6 +28,7 @@ namespace BansheeEngine
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
+			GpuProgram::initialize_internal();
 			return;
 		}
 
@@ -235,8 +236,8 @@ namespace BansheeEngine
 	}
 
 	D3D9GpuVertexProgram::D3D9GpuVertexProgram(const String& source, const String& entryPoint, 
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D9GpuProgram(source, entryPoint, GPT_VERTEX_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: D3D9GpuProgram(source, entryPoint, GPT_VERTEX_PROGRAM, profile, includes)
     {
 
     }
@@ -323,9 +324,22 @@ namespace BansheeEngine
 		return it->second;
 	}
 
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D9GpuVertexProgram::getRTTIStatic()
+	{
+		return D3D9GpuVertexProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D9GpuVertexProgram::getRTTI() const
+	{
+		return D3D9GpuVertexProgram::getRTTIStatic();
+	}
+
     D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, 
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D9GpuProgram(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: D3D9GpuProgram(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, includes)
     {
 
     }
@@ -406,6 +420,19 @@ namespace BansheeEngine
 		}
 
 		return it->second;
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D9GpuFragmentProgram::getRTTIStatic()
+	{
+		return D3D9GpuFragmentProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D9GpuFragmentProgram::getRTTI() const
+	{
+		return D3D9GpuFragmentProgram::getRTTIStatic();
 	}
 }
 

@@ -56,7 +56,13 @@ namespace BansheeEngine
 
 	enum TypeID_D3D11
 	{
-		TID_D3D11_GpuProgram = 12000
+		TID_D3D11_GpuProgram = 12000,
+		TID_D3D11_GpuVertexProgram = 12001,
+		TID_D3D11_GpuFragmentProgram = 12002,
+		TID_D3D11_GpuGeometryProgram = 12003,
+		TID_D3D11_GpuHullProgram = 12004,
+		TID_D3D11_GpuDomainProgram = 12005,
+		TID_D3D11_GpuComputeProgram = 12006
 	};
 
 	typedef Vector<char*> HLSLMicroCode;

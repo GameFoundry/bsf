@@ -17,7 +17,7 @@ namespace BansheeEngine
         GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency);
 
-		GpuProgramPtr create();
+		GpuProgramPtr create(GpuProgramType type);
 
 	protected:
 		static String LANGUAGE_NAME;

@@ -18,9 +18,9 @@ namespace BansheeEngine
 		return cm_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
     }
 
-	GpuProgramPtr GLSLProgramFactory::create()
+	GpuProgramPtr GLSLProgramFactory::create(GpuProgramType type)
 	{
-		GLSLGpuProgram* prog = new (cm_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr, false);
+		GLSLGpuProgram* prog = new (cm_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram("", "", type, GPP_NONE, nullptr, false);
 
 		return cm_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
 	}

@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 		D3D9GpuProgram(const String& source, const String& entryPoint, 
 			GpuProgramType gptype, GpuProgramProfile profile, 
-			const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired = false);
+			const Vector<HGpuProgInclude>* includes);
 
 		void createInternalResources(IDirect3DDevice9* d3d9Device);
 
@@ -101,7 +101,7 @@ namespace BansheeEngine
 		friend class D3D9HLSLProgramFactory;
 
 		D3D9GpuVertexProgram(const String& source, const String& entryPoint, GpuProgramProfile profile,
-			const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired = false);
+			const Vector<HGpuProgInclude>* includes);
 
 		/**
 		 * @copydoc D3D9GpuProgram::destroy_internal.
@@ -115,6 +115,14 @@ namespace BansheeEngine
 		typedef DeviceToVertexShaderMap::iterator						DeviceToVertexShaderIterator;
 	
 		DeviceToVertexShaderMap		mMapDeviceToVertexShader;	
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D9GpuVertexProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
     };
 
     /** Direct3D implementation of low-level fragment programs. */
@@ -136,7 +144,7 @@ namespace BansheeEngine
 		friend class D3D9HLSLProgramFactory;
 
 		D3D9GpuFragmentProgram(const String& source, const String& entryPoint, GpuProgramProfile profile,
-			const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired = false);
+			const Vector<HGpuProgInclude>* includes);
 
 		/**
 		 * @copydoc D3D9GpuProgram::destroy_internal.
@@ -149,7 +157,15 @@ namespace BansheeEngine
 		typedef Map<IDirect3DDevice9*, IDirect3DPixelShader9*>	DeviceToPixelShaderMap;
 		typedef DeviceToPixelShaderMap::iterator						DeviceToPixelShaderIterator;
 
-		DeviceToPixelShaderMap		mMapDeviceToPixelShader;			
+		DeviceToPixelShaderMap		mMapDeviceToPixelShader;	
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D9GpuFragmentProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
     };
 
 	typedef std::shared_ptr<D3D9GpuProgram> D3D9GpuProgramPtr;

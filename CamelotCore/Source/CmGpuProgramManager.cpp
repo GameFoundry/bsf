@@ -57,7 +57,7 @@ namespace BansheeEngine
 		{
 			return cm_core_ptr<NullProgram, PoolAlloc>();
 		}
-		GpuProgramPtr create()
+		GpuProgramPtr create(GpuProgramType type)
 		{
 			return cm_core_ptr<NullProgram, PoolAlloc>();
 		}
@@ -123,20 +123,10 @@ namespace BansheeEngine
         return ret;
     }
 
-	GpuProgramPtr GpuProgramManager::create(const String& language)
+	GpuProgramPtr GpuProgramManager::createEmpty(const String& language, GpuProgramType type)
 	{
 		GpuProgramFactory* factory = getFactory(language);
-		GpuProgramPtr ret = factory->create();
-		ret->_setThisPtr(ret);
-		ret->initialize();
-
-		return ret;
-	}
-
-	GpuProgramPtr GpuProgramManager::createEmpty(const String& language)
-	{
-		GpuProgramFactory* factory = getFactory(language);
-		GpuProgramPtr ret = factory->create();
+		GpuProgramPtr ret = factory->create(type);
 		ret->_setThisPtr(ret);
 
 		return ret;

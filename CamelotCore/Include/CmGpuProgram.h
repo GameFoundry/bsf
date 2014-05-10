@@ -153,7 +153,7 @@ namespace BansheeEngine
 		 * @param	requiresAdjacency	If true then adjacency information will be provided when rendering using this program.
 		 */
 		static HGpuProgram create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency = false);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes = nullptr, bool requiresAdjacency = false);
 
 		/**
 		 * @copydoc	create
@@ -161,7 +161,7 @@ namespace BansheeEngine
 		 * @note	Internal method. For normal use call "create".
 		 */
 		static GpuProgramPtr _createPtr(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, 
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency = false);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes = nullptr, bool requiresAdjacency = false);
 
 	protected:
 		friend class GpuProgramManager;

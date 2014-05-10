@@ -17,7 +17,7 @@ namespace BansheeEngine
 		virtual GpuProgramPtr create(const String& source, const String& entryPoint,
 			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
 			bool requiresAdjacencyInformation) = 0;
-		virtual GpuProgramPtr create() = 0;
+		virtual GpuProgramPtr create(GpuProgramType type) = 0;
 	};
 
 	class CM_EXPORT GpuProgramManager : public Module<GpuProgramManager>
@@ -57,19 +57,11 @@ namespace BansheeEngine
 			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
 			bool requiresAdjacencyInformation = false);
 
-		/** Create a new HighLevelGpuProgram. 
-		@par
-			This method creates a new program of the specified language. You need to set other 
-			properties like source, entry point, type, profile manually.
-		@param language Code of the language to use (e.g. "cg")
-		*/
-		GpuProgramPtr create(const String& language);
-
 		/**
 		 * @brief	Creates a completely empty and uninitialized HighLevelGpuProgram.
 		 * 			Should only be used for VERY specific purposes, like deserialization,
 		 * 			as it requires additional manual initialization that is not required normally.
 		 */
-		GpuProgramPtr createEmpty(const String& language);
+		GpuProgramPtr createEmpty(const String& language, GpuProgramType type);
 	};
 }

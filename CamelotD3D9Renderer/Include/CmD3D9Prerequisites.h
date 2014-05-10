@@ -82,7 +82,9 @@ namespace BansheeEngine
 
 	enum TypeID_D3D9
 	{
-		TID_D3D9_GpuProgram = 10000
+		TID_D3D9_GpuProgram = 10000,
+		TID_D3D9_GpuVertexProgram = 10001,
+		TID_D3D9_GpuFragmentProgram = 10002
 	};
 
     //-------------------------------------------

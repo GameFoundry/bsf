@@ -25,14 +25,14 @@ namespace BansheeEngine
 		if (gptype == GPT_VERTEX_PROGRAM)
 		{
 			D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>()) 
-				D3D9GpuVertexProgram(source, entryPoint, profile, includes, requiresAdjacency);
+				D3D9GpuVertexProgram(source, entryPoint, profile, includes);
 
 			return cm_core_ptr<D3D9GpuVertexProgram, PoolAlloc>(prog);
 		}
 		else if (gptype == GPT_FRAGMENT_PROGRAM)
 		{
 			D3D9GpuFragmentProgram* prog = new (cm_alloc<D3D9GpuFragmentProgram, PoolAlloc>())
-				D3D9GpuFragmentProgram(source, entryPoint, profile, includes, requiresAdjacency);
+				D3D9GpuFragmentProgram(source, entryPoint, profile, includes);
 
 			return cm_core_ptr<D3D9GpuFragmentProgram, PoolAlloc>(prog);
 		}
@@ -40,11 +40,23 @@ namespace BansheeEngine
 		return nullptr;
     }
 
-	GpuProgramPtr D3D9HLSLProgramFactory::create()
+	GpuProgramPtr D3D9HLSLProgramFactory::create(GpuProgramType type)
 	{
-		D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>())
-			D3D9GpuVertexProgram("", "", GPP_NONE, nullptr);
+		if (type == GPT_VERTEX_PROGRAM)
+		{
+			D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>())
+				D3D9GpuVertexProgram("", "", GPP_NONE, nullptr);
 
-		return cm_core_ptr<D3D9GpuVertexProgram, PoolAlloc>(prog);
+			return cm_core_ptr<D3D9GpuVertexProgram, PoolAlloc>(prog);
+		}
+		else if (type == GPT_FRAGMENT_PROGRAM)
+		{
+			D3D9GpuFragmentProgram* prog = new (cm_alloc<D3D9GpuFragmentProgram, PoolAlloc>())
+				D3D9GpuFragmentProgram("", "", GPP_NONE, nullptr);
+
+			return cm_core_ptr<D3D9GpuFragmentProgram, PoolAlloc>(prog);
+		}
+
+		return nullptr;
 	}
 }

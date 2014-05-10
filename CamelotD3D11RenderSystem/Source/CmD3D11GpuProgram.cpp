@@ -33,6 +33,7 @@ namespace BansheeEngine
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
+			GpuProgram::initialize_internal();
 			return;
 		}
 
@@ -160,8 +161,8 @@ namespace BansheeEngine
 	}
 
 	D3D11GpuVertexProgram::D3D11GpuVertexProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D11GpuProgram(source, entryPoint, GPT_VERTEX_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: D3D11GpuProgram(source, entryPoint, GPT_VERTEX_PROGRAM, profile, includes, false)
 		, mVertexShader(nullptr)
 	{ }
 
@@ -195,9 +196,22 @@ namespace BansheeEngine
 		return mVertexShader;
 	}
 
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D11GpuVertexProgram::getRTTIStatic()
+	{
+		return D3D11GpuVertexProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D11GpuVertexProgram::getRTTI() const
+	{
+		return D3D11GpuVertexProgram::getRTTIStatic();
+	}
+
 	D3D11GpuFragmentProgram::D3D11GpuFragmentProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D11GpuProgram(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: D3D11GpuProgram(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, includes, false)
 		, mPixelShader(nullptr)
 	{ }
 
@@ -228,6 +242,19 @@ namespace BansheeEngine
 	ID3D11PixelShader * D3D11GpuFragmentProgram::getPixelShader() const
 	{
 		return mPixelShader;
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D11GpuFragmentProgram::getRTTIStatic()
+	{
+		return D3D11GpuFragmentProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D11GpuFragmentProgram::getRTTI() const
+	{
+		return D3D11GpuFragmentProgram::getRTTIStatic();
 	}
 
 	D3D11GpuGeometryProgram::D3D11GpuGeometryProgram(const String& source, const String& entryPoint,
@@ -265,9 +292,22 @@ namespace BansheeEngine
 		return mGeometryShader;
 	}
 
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D11GpuGeometryProgram::getRTTIStatic()
+	{
+		return D3D11GpuGeometryProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D11GpuGeometryProgram::getRTTI() const
+	{
+		return D3D11GpuGeometryProgram::getRTTIStatic();
+	}
+
 	D3D11GpuDomainProgram::D3D11GpuDomainProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D11GpuProgram(source, entryPoint, GPT_DOMAIN_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: D3D11GpuProgram(source, entryPoint, GPT_DOMAIN_PROGRAM, profile, includes, false)
 		, mDomainShader(nullptr)
 	{ }
 
@@ -300,9 +340,22 @@ namespace BansheeEngine
 		return mDomainShader;
 	}
 
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D11GpuDomainProgram::getRTTIStatic()
+	{
+		return D3D11GpuDomainProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D11GpuDomainProgram::getRTTI() const
+	{
+		return D3D11GpuDomainProgram::getRTTIStatic();
+	}
+
 	D3D11GpuHullProgram::D3D11GpuHullProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D11GpuProgram(source, entryPoint, GPT_HULL_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: D3D11GpuProgram(source, entryPoint, GPT_HULL_PROGRAM, profile, includes, false)
 		, mHullShader(nullptr)
 	{ }
 
@@ -336,9 +389,22 @@ namespace BansheeEngine
 		return mHullShader;
 	}
 
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D11GpuHullProgram::getRTTIStatic()
+	{
+		return D3D11GpuHullProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D11GpuHullProgram::getRTTI() const
+	{
+		return D3D11GpuHullProgram::getRTTIStatic();
+	}
+
 	D3D11GpuComputeProgram::D3D11GpuComputeProgram(const String& source, const String& entryPoint,
-		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
-		: D3D11GpuProgram(source, entryPoint, GPT_COMPUTE_PROGRAM, profile, includes, isAdjacencyInfoRequired)
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
+		: D3D11GpuProgram(source, entryPoint, GPT_COMPUTE_PROGRAM, profile, includes, false)
 		, mComputeShader(nullptr)
 	{ }
 
@@ -369,5 +435,18 @@ namespace BansheeEngine
 	ID3D11ComputeShader* D3D11GpuComputeProgram::getComputeShader() const
 	{
 		return mComputeShader;
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D11GpuComputeProgram::getRTTIStatic()
+	{
+		return D3D11GpuComputeProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D11GpuComputeProgram::getRTTI() const
+	{
+		return D3D11GpuComputeProgram::getRTTIStatic();
 	}
 }

@@ -1,9 +1,9 @@
 #include "BsGLBuiltinMaterialFactory.h"
-#include "CmHighLevelGpuProgram.h"
 #include "CmShader.h"
 #include "CmTechnique.h"
 #include "CmPass.h"
 #include "CmMaterial.h"
+#include "CmGpuProgram.h"
 #include "CmBlendState.h"
 #include "CmDepthStencilState.h"
 #include "CmRendererManager.h"
@@ -116,8 +116,8 @@ namespace BansheeEngine
 						fragColor = color;									\
 						}";
 
-		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		HGpuProgram vsProgram = GpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HGpuProgram psProgram = GpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 		vsProgram.synchronize();
 		psProgram.synchronize();
@@ -190,8 +190,8 @@ namespace BansheeEngine
 						fragColor = color * tint;							\
 						}";
 
-		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		HGpuProgram vsProgram = GpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HGpuProgram psProgram = GpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 		vsProgram.synchronize();
 		psProgram.synchronize();
@@ -252,8 +252,8 @@ namespace BansheeEngine
 						fragColor = color0;					\
 						}";
 
-		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		HGpuProgram vsProgram = GpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HGpuProgram psProgram = GpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 		vsProgram.synchronize();
 		psProgram.synchronize();
@@ -312,8 +312,8 @@ namespace BansheeEngine
 						fragColor = color0;					\
 						}";
 
-		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		HGpuProgram vsProgram = GpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HGpuProgram psProgram = GpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 		vsProgram.synchronize();
 		psProgram.synchronize();
@@ -371,8 +371,8 @@ namespace BansheeEngine
 						fragColor = color0;					\
 						}";
 
-		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		HGpuProgram vsProgram = GpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HGpuProgram psProgram = GpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 		vsProgram.synchronize();
 		psProgram.synchronize();
@@ -436,8 +436,8 @@ namespace BansheeEngine
 						fragColor = color0;					\
 						}";
 
-		HHighLevelGpuProgram vsProgram = HighLevelGpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-		HHighLevelGpuProgram psProgram = HighLevelGpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		HGpuProgram vsProgram = GpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+		HGpuProgram psProgram = GpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 
 		vsProgram.synchronize();
 		psProgram.synchronize();

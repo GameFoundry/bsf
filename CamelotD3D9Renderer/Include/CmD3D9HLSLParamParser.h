@@ -185,77 +185,121 @@ namespace BansheeEngine
 			case D3DXPC_MATRIX_ROWS:
 				{
 					int firstDim, secondDim;
-					firstDim = d3dDesc.RegisterCount / d3dDesc.Elements;
+					int firstActualDim; // Actual size might be less than requested because of optimization, we need to know both
+					firstActualDim = d3dDesc.RegisterCount / d3dDesc.Elements;
 
 					if (d3dDesc.Class == D3DXPC_MATRIX_ROWS)
+					{
+						firstDim = d3dDesc.Rows;
 						secondDim = d3dDesc.Columns;
+					}
 					else
+					{
+						firstDim = d3dDesc.Columns;
 						secondDim = d3dDesc.Rows;
+					}
 
-					switch(firstDim)
+					switch (firstActualDim)
 					{
 					case 2:
 						switch(secondDim)
 						{
 						case 2:
-							memberDesc.type = GPDT_MATRIX_2X2;
 							memberDesc.elementSize = 8; // HLSL always packs
 							memberDesc.arrayElementStride = 8;
 							break;
 						case 3:
-							memberDesc.type = GPDT_MATRIX_2X3;
 							memberDesc.elementSize = 8; // HLSL always packs
 							memberDesc.arrayElementStride = 8;
 							break;
 						case 4:
-							memberDesc.type = GPDT_MATRIX_2X4;
 							memberDesc.elementSize = 8; 
 							memberDesc.arrayElementStride = 8;
 							break;
-						} // columns
+						}
 						break;
 					case 3:
 						switch(secondDim)
 						{
 						case 2:
-							memberDesc.type = GPDT_MATRIX_3X2;
 							memberDesc.elementSize = 12; // HLSL always packs
 							memberDesc.arrayElementStride = 12;
 							break;
 						case 3:
-							memberDesc.type = GPDT_MATRIX_3X3;
 							memberDesc.elementSize = 12; // HLSL always packs
 							memberDesc.arrayElementStride = 12;
 							break;
 						case 4:
-							memberDesc.type = GPDT_MATRIX_3X4;
 							memberDesc.elementSize = 12; 
 							memberDesc.arrayElementStride = 12;
 							break;
-						} // columns
+						}
 						break;
 					case 4:
 						switch(secondDim)
 						{
 						case 2:
-							memberDesc.type = GPDT_MATRIX_4X2;
 							memberDesc.elementSize = 16; // HLSL always packs
 							memberDesc.arrayElementStride = 16;
 							break;
 						case 3:
-							memberDesc.type = GPDT_MATRIX_4X3;
 							memberDesc.elementSize = 16; // HLSL always packs
 							memberDesc.arrayElementStride = 16;
 							break;
 						case 4:
-							memberDesc.type = GPDT_MATRIX_4X4;
 							memberDesc.elementSize = 16; 
 							memberDesc.arrayElementStride = 16;
 							break;
-						} // secondDim
+						}
 						break;
 
-					} // firstDim
+					}
+
+					switch (firstDim)
+					{
+					case 2:
+						switch (secondDim)
+						{
+						case 2:
+							memberDesc.type = GPDT_MATRIX_2X2;
+							break;
+						case 3:
+							memberDesc.type = GPDT_MATRIX_2X3;
+							break;
+						case 4:
+							memberDesc.type = GPDT_MATRIX_2X4;
+							break;
+						} 
+						break;
+					case 3:
+						switch (secondDim)
+						{
+						case 2:
+							memberDesc.type = GPDT_MATRIX_3X2;
+							break;
+						case 3:
+							memberDesc.type = GPDT_MATRIX_3X3;
+							break;
+						case 4:
+							memberDesc.type = GPDT_MATRIX_3X4;
+							break;
+						} 
+						break;
+					case 4:
+						switch (secondDim)
+						{
+						case 2:
+							memberDesc.type = GPDT_MATRIX_4X2;
+							break;
+						case 3:
+							memberDesc.type = GPDT_MATRIX_4X3;
+							break;
+						case 4:
+							memberDesc.type = GPDT_MATRIX_4X4;
+							break;
+						}
+						break;
+					}
 				}
 				break;
 			case D3DXPC_SCALAR:

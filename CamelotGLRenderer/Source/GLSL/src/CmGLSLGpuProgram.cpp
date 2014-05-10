@@ -83,6 +83,7 @@ namespace BansheeEngine {
 			mIsCompiled = false;
 			mCompileError = "Specified program is not supported by the current render system.";
 
+			GpuProgram::initialize_internal();
 			return;
 		}
 
@@ -210,6 +211,15 @@ namespace BansheeEngine {
 		}
 
 		GpuProgram::destroy_internal();
+	}
+
+	bool GLSLGpuProgram::isSupported() const
+	{
+		if (!isRequiredCapabilitiesSupported())
+			return false;
+
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		return rs->getCapabilities()->isShaderProfileSupported("glsl");
 	}
 
 	const String& GLSLGpuProgram::getLanguage() const

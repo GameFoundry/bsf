@@ -88,8 +88,7 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		D3D11GpuVertexProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool isAdjacencyInfoRequired);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -98,6 +97,14 @@ namespace BansheeEngine
 
 	protected:
 		ID3D11VertexShader* mVertexShader;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D11GpuVertexProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class CM_D3D11_EXPORT D3D11GpuFragmentProgram : public D3D11GpuProgram
@@ -111,8 +118,7 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		D3D11GpuFragmentProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool isAdjacencyInfoRequired);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -120,6 +126,14 @@ namespace BansheeEngine
 		void destroy_internal();
 	protected:
 		ID3D11PixelShader* mPixelShader;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D11GpuFragmentProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class CM_D3D11_EXPORT D3D11GpuDomainProgram : public D3D11GpuProgram
@@ -133,8 +147,7 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		D3D11GpuDomainProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool isAdjacencyInfoRequired);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -143,6 +156,14 @@ namespace BansheeEngine
 
 	protected:
 		ID3D11DomainShader* mDomainShader;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D11GpuDomainProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class CM_D3D11_EXPORT D3D11GpuHullProgram : public D3D11GpuProgram
@@ -156,8 +177,7 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		D3D11GpuHullProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool isAdjacencyInfoRequired);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -166,6 +186,14 @@ namespace BansheeEngine
 
 	protected:
 		ID3D11HullShader* mHullShader;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D11GpuHullProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class CM_D3D11_EXPORT D3D11GpuGeometryProgram : public D3D11GpuProgram
@@ -190,6 +218,14 @@ namespace BansheeEngine
 
 	protected:
 		ID3D11GeometryShader* mGeometryShader;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D11GpuGeometryProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 
 	class CM_D3D11_EXPORT D3D11GpuComputeProgram : public D3D11GpuProgram
@@ -204,8 +240,7 @@ namespace BansheeEngine
 		friend class D3D11HLSLProgramFactory;
 
 		D3D11GpuComputeProgram(const String& source, const String& entryPoint,
-			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes,
-			bool isAdjacencyInfoRequired);
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
 
 		/**
 		 * @copydoc GpuProgram::destroy_internal().
@@ -214,5 +249,13 @@ namespace BansheeEngine
 
 	protected:
 		ID3D11ComputeShader* mComputeShader;
+
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D11GpuComputeProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
 	};
 }
