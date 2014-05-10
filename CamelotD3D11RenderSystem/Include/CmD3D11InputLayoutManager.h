@@ -49,7 +49,7 @@ namespace BansheeEngine
 		 *			Error may be thrown if the vertex buffer doesn't provide all the necessary data.
 		 *			(TODO: Depends on how the driver handles missing data)
 		 */
-		ID3D11InputLayout* retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11HLSLProgram& vertexProgram);
+		ID3D11InputLayout* retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram);
 
 	private:
 		static const int DECLARATION_BUFFER_SIZE = 1024;
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		bool mWarningShown;
 		UINT32 mLastUsedCounter;
 
-		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11HLSLProgram& vertexProgram);
+		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram);
 		void removeLeastUsed();
 
 		bool areCompatible(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl);

@@ -129,12 +129,6 @@
     <ClInclude Include="Include\CmRenderSystemCapabilities.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmHighLevelGpuProgramManager.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmHighLevelGpuProgram.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmHardwareBuffer.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -142,9 +136,6 @@
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGpuProgramParams.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGpuProgramManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGpuProgram.h">
@@ -537,6 +528,9 @@
     <ClInclude Include="Include\CmUUID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGpuProgramManager.h">
+      <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
@@ -551,19 +545,10 @@
     <ClCompile Include="Source\CmGpuProgram.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmGpuProgramManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmGpuProgramParams.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmHardwareBufferManager.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmHighLevelGpuProgram.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmHighLevelGpuProgramManager.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmRenderSystem.cpp">
@@ -844,6 +829,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmUUID.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmGpuProgramManager.cpp">
+      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

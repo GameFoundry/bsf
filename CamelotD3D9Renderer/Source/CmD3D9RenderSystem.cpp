@@ -40,13 +40,12 @@ THE SOFTWARE.
 #include "CmD3D9VertexBuffer.h"
 #include "CmD3D9VertexDeclaration.h"
 #include "CmD3D9GpuProgram.h"
-#include "CmD3D9GpuProgramManager.h"
 #include "CmD3D9HLSLProgramFactory.h"
 #include "CmD3D9OcclusionQuery.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9ResourceManager.h"
 #include "CmD3D9RenderWindowManager.h"
-#include "CmHighLevelGpuProgramManager.h"
+#include "CmGpuProgramManager.h"
 #include "CmRenderStateManager.h"
 #include "CmAsyncOp.h"
 #include "CmBlendState.h"
@@ -152,9 +151,6 @@ namespace BansheeEngine
 		// Also create hardware buffer manager		
 		HardwareBufferManager::startUp(cm_new<D3D9HardwareBufferManager>());
 
-		// Create the GPU program manager		
-		GpuProgramManager::startUp(cm_new<D3D9GpuProgramManager>());
-
 		// Create & register HLSL factory		
 		mHLSLProgramFactory = cm_new<D3D9HLSLProgramFactory>();
 
@@ -206,14 +202,13 @@ namespace BansheeEngine
 		QueryManager::shutDown();
 		TextureManager::shutDown();
 		HardwareBufferManager::shutDown();
-		GpuProgramManager::shutDown();	
 		RenderWindowManager::shutDown();
 		RenderStateManager::shutDown();
 
 		// Deleting the HLSL program factory
 		if (mHLSLProgramFactory)
 		{
-			HighLevelGpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
+			GpuProgramManager::instance().removeFactory(mHLSLProgramFactory);
 			cm_delete(mHLSLProgramFactory);
 			mHLSLProgramFactory = 0;
 		}
@@ -262,7 +257,7 @@ namespace BansheeEngine
 		if(!prg.isLoaded())
 			return;
 
-		GpuProgramPtr bindingPrg = prg->getBindingDelegate();
+		GpuProgramPtr bindingPrg = std::static_pointer_cast<GpuProgram>(prg->getThisPtr());
 
 		HRESULT hr;
 		switch (bindingPrg->getType())
@@ -2235,7 +2230,7 @@ namespace BansheeEngine
 		}
 
 		if (caps->isShaderProfileSupported("hlsl"))
-			HighLevelGpuProgramManager::instance().addFactory(mHLSLProgramFactory);
+			GpuProgramManager::instance().addFactory(mHLSLProgramFactory);
 
 		mNumTexStages = caps->getNumCombinedTextureUnits();
 		mTexStageDesc = cm_newN<sD3DTextureStageDesc>(mNumTexStages);

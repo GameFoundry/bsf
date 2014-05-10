@@ -1,36 +1,6 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+#pragma once
 
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-
-#ifndef __GLSLGpuProgram_H__
-#define __GLSLGpuProgram_H__
-
-// Precompiler options
-#include "CmGLSLExtSupport.h"
+#include "CmGLPrerequisites.h"
 #include "CmGpuProgram.h"
 
 namespace BansheeEngine {
@@ -49,25 +19,86 @@ namespace BansheeEngine {
 	public:
 		~GLSLGpuProgram();
 
-		/// get the GLSLProgram for the shader object
-		GLSLProgram* getGLSLProgram(void) const { return mGLSLProgram; }
+		const GLuint getGLHandle() const { return mGLHandle; }
 
-		void setGLSLProgram(GLSLProgram* program) { mGLSLProgram = program; }
-		
+		/** Sets the preprocessor defines use to compile the program. */
+		void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
+		/** Sets the preprocessor defines use to compile the program. */
+		const String& getPreprocessorDefines() const { return mPreprocessorDefines; }
+
+		/// Overridden from GpuProgram
+		const String& getLanguage() const;
+
+		/** Returns the operation type that this geometry program expects to
+		receive as input
+		*/
+		virtual DrawOperationType getInputOperationType() const
+		{
+			return mInputOperationType;
+		}
+		/** Returns the operation type that this geometry program will emit
+		*/
+		virtual DrawOperationType getOutputOperationType() const
+		{
+			return mOutputOperationType;
+		}
+		/** Returns the maximum number of vertices that this geometry program can
+		output in a single run
+		*/
+		virtual int getMaxOutputVertices() const { return mMaxOutputVertices; }
+
+		/** Sets the operation type that this geometry program expects to receive
+		*/
+		virtual void setInputOperationType(DrawOperationType operationType)
+		{
+			mInputOperationType = operationType;
+		}
+		/** Set the operation type that this geometry program will emit
+		*/
+		virtual void setOutputOperationType(DrawOperationType operationType)
+		{
+			mOutputOperationType = operationType;
+		}
+		/** Set the maximum number of vertices that a single run of this geometry program
+		can emit.
+		*/
+		virtual void setMaxOutputVertices(int maxOutputVertices)
+		{
+			mMaxOutputVertices = maxOutputVertices;
+		}
+
+		const VertexDeclaration& getInputAttributes() const { return *mVertexDeclaration; }
+
 		/// Get the assigned GL program id
-		const UINT32 getProgramID(void) const { return mProgramID; }
-
-		bool isSupported() const;
+		const UINT32 getProgramID() const { return mProgramID; }
 
 	private:
-		friend class GLGpuProgramManager;
+		friend class GLSLProgramFactory;
 
-		GLSLGpuProgram(const String& source, const String& entryPoint, 
-			GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes);
+		GLSLGpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired);
 
-		/// GL Handle for the shader object
-		GLSLProgram* mGLSLProgram;
+		/**
+		* @copydoc GpuProgram::initialize_internal()
+		*/
+		void initialize_internal();
 
+		/**
+		* @copydoc GpuProgram::destroy_internal()
+		*/
+		void destroy_internal();
+
+	private:
+		UINT32 mProgramID;
+		GLuint mGLHandle;
+
+		DrawOperationType mInputOperationType;
+		DrawOperationType mOutputOperationType;
+		int mMaxOutputVertices;
+
+		String mPreprocessorDefines;
+		VertexDeclarationPtr mVertexDeclaration;
+		
 		/// keep track of the number of vertex shaders created
 		static UINT32 mVertexShaderCount;
 		/// keep track of the number of fragment shaders created
@@ -79,10 +110,12 @@ namespace BansheeEngine {
 		/// keep track of the number of domain shaders created
 		static UINT32 mDomainShaderCount;
 
-		UINT32 mProgramID;
-		GLenum mProgramType;
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class GLSLGpuProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
     };
 }
-
-
-#endif // __GLSLGpuProgram_H__

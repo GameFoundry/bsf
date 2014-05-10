@@ -3,7 +3,6 @@
 #include "CmGLPrerequisites.h"
 #include "CmRenderSystem.h"
 #include "CmGLHardwareBufferManager.h"
-#include "CmGLGpuProgramManager.h"
 #include "CmGLSLProgramFactory.h"
 #include "CmVector4.h"
 

@@ -56,7 +56,7 @@ namespace BansheeEngine
 
 	enum TypeID_D3D11
 	{
-		TID_D3D11_HLSLProgram = 12000
+		TID_D3D11_GpuProgram = 12000
 	};
 
 	typedef Vector<char*> HLSLMicroCode;
@@ -71,7 +71,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<D3D11SamplerState> D3D11SamplerStatePtr;
 	typedef std::shared_ptr<D3D11DepthStencilState> D3D11DepthStencilStatePtr;
 	typedef std::shared_ptr<D3D11RenderWindow> D3D11RenderWindowPtr;
-	typedef std::shared_ptr<D3D11HLSLProgram> D3D11HLSLProgramPtr;
+	typedef std::shared_ptr<D3D11GpuProgram> D3D11GpuProgramPtr;
 
     //-------------------------------------------
 	// Windows setttings

@@ -82,7 +82,7 @@ namespace BansheeEngine
 
 	enum TypeID_D3D9
 	{
-		TID_D3D9_HLSLProgram = 10000
+		TID_D3D9_GpuProgram = 10000
 	};
 
     //-------------------------------------------

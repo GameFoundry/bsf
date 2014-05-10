@@ -74,8 +74,8 @@ namespace BansheeEngine
 	class PixelBuffer;
 	class GpuBuffer;
 	class HighLevelGpuProgram;
-	class HighLevelGpuProgramManager;
-	class HighLevelGpuProgramFactory;
+	class GpuProgramManager;
+	class GpuProgramFactory;
     class IndexData;
     class Pass;
 	class Technique;
@@ -175,7 +175,6 @@ namespace BansheeEngine
 namespace BansheeEngine
 {
 	typedef std::shared_ptr<GpuProgram> GpuProgramPtr;
-	typedef std::shared_ptr<HighLevelGpuProgram> HighLevelGpuProgramPtr;
 	typedef std::shared_ptr<PixelBuffer> PixelBufferPtr;
 	typedef std::shared_ptr<VertexBuffer> VertexBufferPtr;
 	typedef std::shared_ptr<IndexBuffer> IndexBufferPtr;
@@ -299,7 +298,6 @@ namespace BansheeEngine
 	typedef ResourceHandle<Texture> HTexture;
 	typedef ResourceHandle<Mesh> HMesh;
 	typedef ResourceHandle<GpuProgram> HGpuProgram;
-	typedef ResourceHandle<HighLevelGpuProgram> HHighLevelGpuProgram;
 	typedef ResourceHandle<Material> HMaterial;
 	typedef ResourceHandle<SamplerState> HSamplerState;
 	typedef ResourceHandle<RasterizerState> HRasterizerState;

@@ -5,7 +5,6 @@
 #include "CmD3D11TextureManager.h"
 #include "CmD3D11Texture.h"
 #include "CmD3D11HardwareBufferManager.h"
-#include "CmD3D11GpuProgramManager.h"
 #include "CmD3D11RenderWindowManager.h"
 #include "CmD3D11HLSLProgramFactory.h"
 #include "CmD3D11BlendState.h"
@@ -19,7 +18,6 @@
 #include "CmD3D11RenderStateManager.h"
 #include "CmD3D11GpuParamBlockBuffer.h"
 #include "CmD3D11InputLayoutManager.h"
-#include "CmD3D11HLSLProgram.h"
 #include "CmD3D11RenderUtility.h"
 #include "CmBindableGpuParams.h"
 #include "CmCoreThread.h"
@@ -109,9 +107,6 @@ namespace BansheeEngine
 		// Also create hardware buffer manager		
 		HardwareBufferManager::startUp(cm_new<D3D11HardwareBufferManager>(std::ref(*mDevice)));
 
-		// Create the GPU program manager		
-		GpuProgramManager::startUp(cm_new<D3D11GpuProgramManager>(std::ref(*mDevice)));
-
 		// Create render window manager
 		RenderWindowManager::startUp(cm_new<D3D11RenderWindowManager>(this));
 
@@ -124,7 +119,7 @@ namespace BansheeEngine
 		mCurrentCapabilities = createRenderSystemCapabilities();
 
 		mCurrentCapabilities->addShaderProfile("hlsl");
-		HighLevelGpuProgramManager::instance().addFactory(mHLSLFactory);
+		GpuProgramManager::instance().addFactory(mHLSLFactory);
 
 		mIAManager = cm_new<D3D11InputLayoutManager>();
 
@@ -163,7 +158,6 @@ namespace BansheeEngine
 
 		RenderStateManager::shutDown();
 		RenderWindowManager::shutDown();
-		GpuProgramManager::shutDown();
 		HardwareBufferManager::shutDown();
 		TextureManager::shutDown();
 
@@ -400,38 +394,38 @@ namespace BansheeEngine
 		{
 		case GPT_VERTEX_PROGRAM:
 			{
-				D3D11GpuVertexProgram* d3d11GpuProgram = static_cast<D3D11GpuVertexProgram*>(prg->getBindingDelegate().get());
+				D3D11GpuVertexProgram* d3d11GpuProgram = static_cast<D3D11GpuVertexProgram*>(prg.get());
 				mDevice->getImmediateContext()->VSSetShader(d3d11GpuProgram->getVertexShader(), nullptr, 0);
-				mActiveVertexShader = std::static_pointer_cast<D3D11HLSLProgram>(prg.getInternalPtr());
+				mActiveVertexShader = std::static_pointer_cast<D3D11GpuProgram>(prg.getInternalPtr());
 				break;
 			}
 		case GPT_FRAGMENT_PROGRAM:
 			{
-				D3D11GpuFragmentProgram* d3d11GpuProgram = static_cast<D3D11GpuFragmentProgram*>(prg->getBindingDelegate().get());
+				D3D11GpuFragmentProgram* d3d11GpuProgram = static_cast<D3D11GpuFragmentProgram*>(prg.get());
 				mDevice->getImmediateContext()->PSSetShader(d3d11GpuProgram->getPixelShader(), nullptr, 0);
 				break;
 			}
 		case GPT_GEOMETRY_PROGRAM:
 			{
-				D3D11GpuGeometryProgram* d3d11GpuProgram = static_cast<D3D11GpuGeometryProgram*>(prg->getBindingDelegate().get());
+				D3D11GpuGeometryProgram* d3d11GpuProgram = static_cast<D3D11GpuGeometryProgram*>(prg.get());
 				mDevice->getImmediateContext()->GSSetShader(d3d11GpuProgram->getGeometryShader(), nullptr, 0);
 				break;
 			}
 		case GPT_DOMAIN_PROGRAM:
 			{
-				D3D11GpuDomainProgram* d3d11GpuProgram = static_cast<D3D11GpuDomainProgram*>(prg->getBindingDelegate().get());
+				D3D11GpuDomainProgram* d3d11GpuProgram = static_cast<D3D11GpuDomainProgram*>(prg.get());
 				mDevice->getImmediateContext()->DSSetShader(d3d11GpuProgram->getDomainShader(), nullptr, 0);
 				break;
 			}
 		case GPT_HULL_PROGRAM:
 			{
-				D3D11GpuHullProgram* d3d11GpuProgram = static_cast<D3D11GpuHullProgram*>(prg->getBindingDelegate().get());
+				D3D11GpuHullProgram* d3d11GpuProgram = static_cast<D3D11GpuHullProgram*>(prg.get());
 				mDevice->getImmediateContext()->HSSetShader(d3d11GpuProgram->getHullShader(), nullptr, 0);
 				break;
 			}
 		case GPT_COMPUTE_PROGRAM:
 			{
-				D3D11GpuComputeProgram* d3d11GpuProgram = static_cast<D3D11GpuComputeProgram*>(prg->getBindingDelegate().get());
+				D3D11GpuComputeProgram* d3d11GpuProgram = static_cast<D3D11GpuComputeProgram*>(prg.get());
 				mDevice->getImmediateContext()->CSSetShader(d3d11GpuProgram->getComputeShader(), nullptr, 0);
 				break;
 			}

@@ -1,39 +1,20 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+#pragma once
 
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __D3D9GpuProgram_H_
-#define __D3D9GpuProgram_H_
-
-// Precompiler options
 #include "CmD3D9Prerequisites.h"
 #include "CmGpuProgram.h"
 #include "CmD3D9Resource.h"
 
-namespace BansheeEngine {
+namespace BansheeEngine 
+{
+	enum OptimizationLevel
+	{
+		OPT_DEFAULT,
+		OPT_NONE,
+		OPT_0,
+		OPT_1,
+		OPT_2,
+		OPT_3
+	};
 
     /** Direct3D implementation of a few things common to low-level vertex & fragment programs. */
     class CM_D3D9_EXPORT D3D9GpuProgram : public GpuProgram, public D3D9Resource
@@ -41,28 +22,35 @@ namespace BansheeEngine {
     public:
         ~D3D9GpuProgram();
 
+		/** Sets the preprocessor defines use to compile the program. */
+		void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
+		/** Sets the preprocessor defines use to compile the program. */
+		const String& getPreprocessorDefines() const { return mPreprocessorDefines; }
+
         /** Sets whether matrix packing in column-major order. */ 
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
         /** Gets whether matrix packed in column-major order. */
-        bool getColumnMajorMatrices(void) const { return mColumnMajorMatrices; }
+        bool getColumnMajorMatrices() const { return mColumnMajorMatrices; }
 
-		/** Tells the program to load from some externally created microcode instead of a file or source. 
+		/** Sets the optimisation level to use.
+		@param opt Optimisation level
 		*/
-		void setExternalMicrocode(const void* pMicrocode, UINT32 size);
-        /** Tells the program to load from some externally created microcode instead of a file or source. 
-        @remarks
-            add ref count to pMicrocode when setting
-        */ 
-        void setExternalMicrocode(ID3DXBuffer* pMicrocode);
-        /** Gets the external microcode buffer, if any. */
-        LPD3DXBUFFER getExternalMicrocode(void);
+		void setOptimizationLevel(OptimizationLevel opt) { mOptimisationLevel = opt; }
 
-		bool isSupported() const;
+		/** Gets the optimisation level to use. */
+		OptimizationLevel getOptimizationLevel() const { return mOptimisationLevel; }
+
+		/// Overridden from GpuProgram
+		GpuParamsPtr createParameters();
+		/// Overridden from GpuProgram
+		const String& getLanguage() const;
+
     protected:
-		friend class D3D9GpuProgramManager;
+		friend class D3D9HLSLProgramFactory;
 
 		D3D9GpuProgram(const String& source, const String& entryPoint, 
-			GpuProgramType gptype, GpuProgramProfile profile);
+			GpuProgramType gptype, GpuProgramProfile profile, 
+			const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired = false);
 
 		void createInternalResources(IDirect3DDevice9* d3d9Device);
 
@@ -79,18 +67,19 @@ namespace BansheeEngine {
 		/** Loads this program from microcode, must be overridden by subclasses. */
         virtual void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) = 0;
 
-        /** Creates a new parameters object compatible with this program definition. 
-        @remarks
-            It is recommended that you use this method of creating parameters objects
-            rather than going direct to GpuProgramManager, because this method will
-            populate any implementation-specific extras (like named parameters) where
-            they are appropriate.
-        */
-        virtual GpuParamsPtr createParameters();
 	protected:    
+		OptimizationLevel mOptimisationLevel;
+		String mPreprocessorDefines;
 		bool mColumnMajorMatrices;
-		ID3DXBuffer* mpExternalMicrocode;
+		ID3DXBuffer* mMicrocode;
 
+		/************************************************************************/
+		/* 								SERIALIZATION                      		*/
+		/************************************************************************/
+	public:
+		friend class D3D9GpuProgramRTTI;
+		static RTTITypeBase* getRTTIStatic();
+		virtual RTTITypeBase* getRTTI() const;
     };
 
     /** Direct3D implementation of low-level vertex programs. */
@@ -100,7 +89,7 @@ namespace BansheeEngine {
 		~D3D9GpuVertexProgram();
         
 		/// Gets the vertex shader
-        IDirect3DVertexShader9* getVertexShader(void);
+        IDirect3DVertexShader9* getVertexShader();
 
 		// Called immediately after the Direct3D device has been created.
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
@@ -109,9 +98,10 @@ namespace BansheeEngine {
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
-		friend class D3D9GpuProgramManager;
+		friend class D3D9HLSLProgramFactory;
 
-		D3D9GpuVertexProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
+		D3D9GpuVertexProgram(const String& source, const String& entryPoint, GpuProgramProfile profile,
+			const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired = false);
 
 		/**
 		 * @copydoc D3D9GpuProgram::destroy_internal.
@@ -134,7 +124,7 @@ namespace BansheeEngine {
 		~D3D9GpuFragmentProgram();
 
         /// Gets the pixel shader
-        IDirect3DPixelShader9* getPixelShader(void);
+        IDirect3DPixelShader9* getPixelShader();
 
 		// Called immediately after the Direct3D device has been created.
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
@@ -143,9 +133,10 @@ namespace BansheeEngine {
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
-		friend class D3D9GpuProgramManager;
+		friend class D3D9HLSLProgramFactory;
 
-		D3D9GpuFragmentProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile);
+		D3D9GpuFragmentProgram(const String& source, const String& entryPoint, GpuProgramProfile profile,
+			const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired = false);
 
 		/**
 		 * @copydoc D3D9GpuProgram::destroy_internal.
@@ -163,6 +154,3 @@ namespace BansheeEngine {
 
 	typedef std::shared_ptr<D3D9GpuProgram> D3D9GpuProgramPtr;
 }
-
-
-#endif

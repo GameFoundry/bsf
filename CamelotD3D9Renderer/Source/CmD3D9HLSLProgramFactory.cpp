@@ -1,64 +1,50 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-
 #include "CmD3D9HLSLProgramFactory.h"
 #include "CmString.h"
-#include "CmD3D9HLSLProgram.h"
+#include "CmD3D9GpuProgram.h"
 
-namespace BansheeEngine {
-    //-----------------------------------------------------------------------
-    String D3D9HLSLProgramFactory::sLanguageName = "hlsl";
-    //-----------------------------------------------------------------------
+namespace BansheeEngine
+{
+    String D3D9HLSLProgramFactory::LANGUAGE_NAME = "hlsl";
+
     D3D9HLSLProgramFactory::D3D9HLSLProgramFactory()
     {
     }
-    //-----------------------------------------------------------------------
+
     D3D9HLSLProgramFactory::~D3D9HLSLProgramFactory()
     {
     }
-    //-----------------------------------------------------------------------
-    const String& D3D9HLSLProgramFactory::getLanguage(void) const
-    {
-        return sLanguageName;
-    }
-    //-----------------------------------------------------------------------
-	HighLevelGpuProgramPtr D3D9HLSLProgramFactory::create(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes)
-    {
-		D3D9HLSLProgram* prog = new (cm_alloc<D3D9HLSLProgram, PoolAlloc>()) D3D9HLSLProgram(source, entryPoint, gptype, profile, includes);
 
-        return cm_core_ptr<D3D9HLSLProgram, PoolAlloc>(prog);
+    const String& D3D9HLSLProgramFactory::getLanguage() const
+    {
+        return LANGUAGE_NAME;
     }
-	//-----------------------------------------------------------------------
-	HighLevelGpuProgramPtr D3D9HLSLProgramFactory::create()
+
+	GpuProgramPtr D3D9HLSLProgramFactory::create(const String& source, const String& entryPoint, 
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
+    {
+		if (gptype == GPT_VERTEX_PROGRAM)
+		{
+			D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>()) 
+				D3D9GpuVertexProgram(source, entryPoint, profile, includes, requiresAdjacency);
+
+			return cm_core_ptr<D3D9GpuVertexProgram, PoolAlloc>(prog);
+		}
+		else if (gptype == GPT_FRAGMENT_PROGRAM)
+		{
+			D3D9GpuFragmentProgram* prog = new (cm_alloc<D3D9GpuFragmentProgram, PoolAlloc>())
+				D3D9GpuFragmentProgram(source, entryPoint, profile, includes, requiresAdjacency);
+
+			return cm_core_ptr<D3D9GpuFragmentProgram, PoolAlloc>(prog);
+		}
+
+		return nullptr;
+    }
+
+	GpuProgramPtr D3D9HLSLProgramFactory::create()
 	{
-		D3D9HLSLProgram* prog = new (cm_alloc<D3D9HLSLProgram, PoolAlloc>()) D3D9HLSLProgram("", "", GPT_VERTEX_PROGRAM, GPP_NONE, nullptr);
+		D3D9GpuVertexProgram* prog = new (cm_alloc<D3D9GpuVertexProgram, PoolAlloc>())
+			D3D9GpuVertexProgram("", "", GPP_NONE, nullptr);
 
-		return cm_core_ptr<D3D9HLSLProgram, PoolAlloc>(prog);
+		return cm_core_ptr<D3D9GpuVertexProgram, PoolAlloc>(prog);
 	}
 }

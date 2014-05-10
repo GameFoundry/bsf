@@ -125,7 +125,7 @@ namespace BansheeEngine {
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		switch(prg->getBindingDelegate()->getType())
+		switch(prg->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
 			if (!mVertexProgramBound && !mClipPlanes.empty())

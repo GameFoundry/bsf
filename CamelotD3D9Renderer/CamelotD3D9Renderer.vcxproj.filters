@@ -33,13 +33,7 @@
     <ClInclude Include="Include\CmD3D9GpuProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D9GpuProgramManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmD3D9HardwareBufferManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmD3D9HLSLProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmD3D9HLSLProgramFactory.h">
@@ -81,9 +75,6 @@
     <ClInclude Include="Include\CmD3D9VideoModeList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D9HLSLProgramRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmD3D9RenderWindowManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -120,6 +111,9 @@
     <ClInclude Include="Include\CmD3D9TimerQuery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmD3D9GpuProgramRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmD3D9Device.cpp">
@@ -137,13 +131,7 @@
     <ClCompile Include="Source\CmD3D9GpuProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D9GpuProgramManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmD3D9HardwareBufferManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmD3D9HLSLProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmD3D9HLSLProgramFactory.cpp">

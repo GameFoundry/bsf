@@ -54,7 +54,7 @@ namespace BansheeEngine
 
 	enum TypeID_D3D9
 	{
-		TID_GL_GLSLProgram = 11000
+		TID_GL_GLSLGpuProgram = 11000
 	};
 }
 

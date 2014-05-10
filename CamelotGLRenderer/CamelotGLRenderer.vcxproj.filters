@@ -13,14 +13,20 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="GLSL">
-      <UniqueIdentifier>{23f5e949-4542-49d4-86f9-d24656b5de08}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Win32">
-      <UniqueIdentifier>{c85ecca8-4719-49f1-879b-93a27c8da4aa}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\RTTI">
       <UniqueIdentifier>{f65cdae4-61c9-4f4f-a4af-9fc39a49704d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\GLSL">
+      <UniqueIdentifier>{4a04e68e-bddd-41da-a32c-b50d628cd689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Win32">
+      <UniqueIdentifier>{e5ed7756-6562-4fda-b111-fbc35d54fb7c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Win32">
+      <UniqueIdentifier>{ba3de2cb-a789-41d9-918b-ecffa74967c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GLSL">
+      <UniqueIdentifier>{5a08232d-f612-44f5-b9f5-3bad262a935c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -28,9 +34,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGLFrameBufferObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGLGpuProgramManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGLHardwareBufferManager.h">
@@ -60,50 +63,11 @@
     <ClInclude Include="Include\CmGLTextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmWin32Context.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmWin32GLSupport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmWin32Prerequisites.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmWin32Window.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLExtSupport.h">
-      <Filter>GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h">
-      <Filter>GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h">
-      <Filter>GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLProgram.h">
-      <Filter>GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLProgramFactory.h">
-      <Filter>GLSL</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\win32\CmGLUtil.h">
-      <Filter>Win32</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmGLSLProgramRTTI.h">
-      <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmGLRenderWindowManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGLMultiRenderTexture.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLParamParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\GLSL\include\CmGLSLProgramPipelineManager.h">
-      <Filter>GLSL</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGLOcclusionQuery.h">
       <Filter>Header Files</Filter>
@@ -132,33 +96,45 @@
     <ClInclude Include="Include\CmGLTimerQuery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmGLSLGpuProgramRTTI.h">
+      <Filter>Header Files\RTTI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLParamParser.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgramFactory.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GLSL\include\CmGLSLProgramPipelineManager.h">
+      <Filter>Header Files\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32Context.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\win32\CmGLUtil.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32GLSupport.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32Prerequisites.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmWin32Window.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp">
-      <Filter>GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GLSL\src\CmGLSLGpuProgram.cpp">
-      <Filter>GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp">
-      <Filter>GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GLSL\src\CmGLSLProgram.cpp">
-      <Filter>GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GLSL\src\CmGLSLProgramFactory.cpp">
-      <Filter>GLSL</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\win32\CmWin32Context.cpp">
-      <Filter>Win32</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmGLContext.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGLGpuProgramManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLHardwareBufferManager.cpp">
@@ -185,12 +161,6 @@
     <ClCompile Include="Source\CmGLTextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmWin32GLSupport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmWin32Window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\glew.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -202,9 +172,6 @@
     </ClCompile>
     <ClCompile Include="Source\CmGLMultiRenderTexture.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\GLSL\src\CmGLSLProgramPipelineManager.cpp">
-      <Filter>GLSL</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGLIndexBuffer.cpp">
       <Filter>Source Files</Filter>
@@ -232,6 +199,27 @@
     </ClCompile>
     <ClCompile Include="Source\CmGLTimerQuery.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLGpuProgram.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgramFactory.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GLSL\src\CmGLSLProgramPipelineManager.cpp">
+      <Filter>Source Files\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\win32\CmWin32Context.cpp">
+      <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWin32GLSupport.cpp">
+      <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWin32Window.cpp">
+      <Filter>Source Files\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

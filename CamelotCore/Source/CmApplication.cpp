@@ -8,8 +8,7 @@
 #include "CmRenderWindow.h"
 #include "CmViewport.h"
 #include "CmVector2.h"
-#include "CmHighLevelGpuProgram.h"
-#include "CmHighLevelGpuProgramManager.h"
+#include "CmGpuProgram.h"
 #include "CmCoreObjectManager.h"
 #include "CmGameObjectManager.h"
 #include "CmDynLib.h"
@@ -22,6 +21,7 @@
 #include "CmTime.h"
 #include "CmInput.h"
 #include "CmRendererManager.h"
+#include "CmGpuProgramManager.h"
 #include "CmMeshManager.h"
 #include "CmMaterialManager.h"
 #include "CmFontManager.h"
@@ -71,7 +71,7 @@ namespace BansheeEngine
 		CoreObjectManager::startUp(cm_new<CoreObjectManager>());
 		GameObjectManager::startUp(cm_new<GameObjectManager>());
 		Resources::startUp(cm_new<Resources>());
-		HighLevelGpuProgramManager::startUp(cm_new<HighLevelGpuProgramManager>());
+		GpuProgramManager::startUp(cm_new<GpuProgramManager>());
 
 		CoreThread::startUp(cm_new<CoreThread>());
 		RenderSystemManager::startUp(cm_new<RenderSystemManager>());
@@ -193,7 +193,7 @@ namespace BansheeEngine
 		CoreThread::shutDown();
 		Input::shutDown();
 
-		HighLevelGpuProgramManager::shutDown();
+		GpuProgramManager::shutDown();
 		Resources::shutDown();
 		GameObjectManager::shutDown();
 		CoreObjectManager::shutDown(); // Must shut down before DynLibManager to ensure all objects are destroyed before unloading their libraries

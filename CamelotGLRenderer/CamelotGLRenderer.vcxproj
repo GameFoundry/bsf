@@ -239,7 +239,6 @@
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
     <ClInclude Include="Include\CmGLGpuBuffer.h" />
     <ClInclude Include="Include\CmGLGpuParamBlockBuffer.h" />
-    <ClInclude Include="Include\CmGLGpuProgramManager.h" />
     <ClInclude Include="Include\CmGLHardwareBufferManager.h" />
     <ClInclude Include="Include\CmGLIndexBuffer.h" />
     <ClInclude Include="Include\CmGLOcclusionQuery.h" />
@@ -254,7 +253,7 @@
     <ClInclude Include="Include\CmGLRenderSystemFactory.h" />
     <ClInclude Include="Include\CmGLRenderTexture.h" />
     <ClInclude Include="Include\CmGLRenderWindowManager.h" />
-    <ClInclude Include="Include\CmGLSLProgramRTTI.h" />
+    <ClInclude Include="Include\CmGLSLGpuProgramRTTI.h" />
     <ClInclude Include="Include\CmGLSupport.h" />
     <ClInclude Include="Include\CmGLTexture.h" />
     <ClInclude Include="Include\CmGLTextureManager.h" />
@@ -262,11 +261,9 @@
     <ClInclude Include="Include\CmWin32GLSupport.h" />
     <ClInclude Include="Include\CmWin32Prerequisites.h" />
     <ClInclude Include="Include\CmWin32Window.h" />
-    <ClInclude Include="Source\GLSL\include\CmGLSLExtSupport.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLGpuProgram.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLParamParser.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLPreprocessor.h" />
-    <ClInclude Include="Source\GLSL\include\CmGLSLProgram.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLProgramFactory.h" />
     <ClInclude Include="Source\GLSL\include\CmGLSLProgramPipelineManager.h" />
     <ClInclude Include="Source\win32\CmGLUtil.h" />
@@ -278,7 +275,6 @@
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />
     <ClCompile Include="Source\CmGLGpuBuffer.cpp" />
     <ClCompile Include="Source\CmGLGpuParamBlockBuffer.cpp" />
-    <ClCompile Include="Source\CmGLGpuProgramManager.cpp" />
     <ClCompile Include="Source\CmGLHardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmGLIndexBuffer.cpp" />
     <ClCompile Include="Source\CmGLOcclusionQuery.cpp" />
@@ -298,10 +294,8 @@
     <ClCompile Include="Source\CmWin32GLSupport.cpp" />
     <ClCompile Include="Source\CmWin32Window.cpp" />
     <ClCompile Include="Source\glew.cpp" />
-    <ClCompile Include="Source\GLSL\src\CmGLSLExtSupport.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLGpuProgram.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLPreprocessor.cpp" />
-    <ClCompile Include="Source\GLSL\src\CmGLSLProgram.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLProgramFactory.cpp" />
     <ClCompile Include="Source\GLSL\src\CmGLSLProgramPipelineManager.cpp" />
     <ClCompile Include="Source\win32\CmWin32Context.cpp" />

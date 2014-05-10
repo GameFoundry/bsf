@@ -3,7 +3,8 @@
 #include "CmDataStream.h"
 #include "CmFileSystem.h"
 #include "CmGpuProgramImportOptions.h"
-#include "CmHighLevelGpuProgram.h"
+#include "CmGpuProgram.h"
+#include "CmDebug.h"
 
 namespace BansheeEngine
 {
@@ -37,8 +38,14 @@ namespace BansheeEngine
 		GpuProgramType gptype = gpuProgImportOptions->getType();
 		Vector<HGpuProgInclude> includes = gpuProgImportOptions->getIncludes();
 
-		HighLevelGpuProgramPtr gpuProgram = HighLevelGpuProgram::_createPtr(shaderSource, entryPoint, language, gptype, profile, &includes);
+		GpuProgramPtr gpuProgram = GpuProgram::_createPtr(shaderSource, entryPoint, language, gptype, profile, &includes);
 		gpuProgram->synchronize();
+
+		if (!gpuProgram->isCompiled())
+		{
+			LOGERR("Failed compiling GPU program: " + filePath.toString() + ". Error: " + gpuProgram->getCompileErrorMessage());
+			// TODO - Return some dummy program here?
+		}
 
 		WString fileName = filePath.getWFilename(false);
 		gpuProgram->setName(toString(fileName));

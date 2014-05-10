@@ -2,7 +2,6 @@
 
 #include "CmPrerequisites.h"
 #include "CmCoreThreadAccessor.h"
-#include "CmHighLevelGpuProgram.h"
 #include "CmRenderWindow.h"
 #include "BsEvent.h"
 
@@ -10,7 +9,7 @@ namespace BansheeEngine
 {
 	class RenderWindow;
 	class Viewport;
-	class HighLevelGpuProgramManager;
+	class GpuProgramManager;
 }
 
 namespace BansheeEngine

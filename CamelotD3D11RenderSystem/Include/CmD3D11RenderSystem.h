@@ -122,7 +122,7 @@ namespace BansheeEngine
 		D3D11_RECT			mScissorRect;
 
 		VertexDeclarationPtr mActiveVertexDeclaration;
-		D3D11HLSLProgramPtr	 mActiveVertexShader;
+		D3D11GpuProgramPtr	 mActiveVertexShader;
 
 		/**
 		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader

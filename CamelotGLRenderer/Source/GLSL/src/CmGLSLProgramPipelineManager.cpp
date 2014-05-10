@@ -1,6 +1,5 @@
 #include "CmGLSLProgramPipelineManager.h"
 #include "CmGLSLGpuProgram.h"
-#include "CmGLSLProgram.h"
 
 namespace BansheeEngine
 {
@@ -51,27 +50,27 @@ namespace BansheeEngine
 
 			if(vertexProgram != nullptr)
 			{
-				glUseProgramStages(newPipeline.glHandle, GL_VERTEX_SHADER_BIT, vertexProgram->getGLSLProgram()->getGLHandle());
+				glUseProgramStages(newPipeline.glHandle, GL_VERTEX_SHADER_BIT, vertexProgram->getGLHandle());
 			}
 
 			if(fragmentProgram != nullptr)
 			{
-				glUseProgramStages(newPipeline.glHandle, GL_FRAGMENT_SHADER_BIT, fragmentProgram->getGLSLProgram()->getGLHandle());
+				glUseProgramStages(newPipeline.glHandle, GL_FRAGMENT_SHADER_BIT, fragmentProgram->getGLHandle());
 			}
 
 			if(geometryProgram != nullptr)
 			{
-				glUseProgramStages(newPipeline.glHandle, GL_GEOMETRY_SHADER_BIT, geometryProgram->getGLSLProgram()->getGLHandle());
+				glUseProgramStages(newPipeline.glHandle, GL_GEOMETRY_SHADER_BIT, geometryProgram->getGLHandle());
 			}
 
 			if(hullProgram != nullptr)
 			{
-				glUseProgramStages(newPipeline.glHandle, GL_TESS_CONTROL_SHADER_BIT, hullProgram->getGLSLProgram()->getGLHandle());
+				glUseProgramStages(newPipeline.glHandle, GL_TESS_CONTROL_SHADER_BIT, hullProgram->getGLHandle());
 			}
 
 			if(domainProgram != nullptr)
 			{
-				glUseProgramStages(newPipeline.glHandle, GL_TESS_EVALUATION_SHADER_BIT, domainProgram->getGLSLProgram()->getGLHandle());
+				glUseProgramStages(newPipeline.glHandle, GL_TESS_EVALUATION_SHADER_BIT, domainProgram->getGLHandle());
 			}
 
 			mPipelines[key] = newPipeline;

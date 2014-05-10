@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmD3D9GpuProgram.h"
 #include "CmMatrix4.h"
 #include "CmException.h"
@@ -34,107 +7,201 @@ THE SOFTWARE.
 #include "CmGpuParams.h"
 #include "CmAsyncOp.h"
 #include "CmGpuProgramManager.h"
+#include "CmD3D9HLSLParamParser.h"
+#include "CmD3D9GpuProgramRTTI.h"
 
-namespace BansheeEngine {
-    //-----------------------------------------------------------------------------
+namespace BansheeEngine 
+{
     D3D9GpuProgram::D3D9GpuProgram(const String& source, const String& entryPoint, 
-		GpuProgramType gptype, GpuProgramProfile profile) 
-        : GpuProgram(source, entryPoint, gptype, profile, nullptr), mpExternalMicrocode(NULL), mColumnMajorMatrices(false)
-    {
-    }
+		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
+		: GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
+		mMicrocode(nullptr), mColumnMajorMatrices(false), mOptimisationLevel(OPT_DEFAULT)
+    { }
 
-	//-----------------------------------------------------------------------------
 	D3D9GpuProgram::~D3D9GpuProgram()
-	{
+	{ }
 
-	}
-	//-----------------------------------------------------------------------------
 	void D3D9GpuProgram::initialize_internal()
 	{
-		for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
+		if (!isSupported())
 		{
-			IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+			mIsCompiled = false;
+			mCompileError = "Specified program is not supported by the current render system.";
 
-			createInternalResources(d3d9Device);
-		}		       
-
-		GpuProgram::initialize_internal();
-	}
-	//----------------------------------------------------------------------------
-	void D3D9GpuProgram::destroy_internal()
-	{
-		SAFE_RELEASE(mpExternalMicrocode);
-
-		GpuProgram::destroy_internal();
-	}
-	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::setExternalMicrocode(const void* pMicrocode, UINT32 size)
-	{
-		LPD3DXBUFFER pBuffer=0;
-		HRESULT hr = D3DXCreateBuffer(size, &pBuffer);
-		if(pBuffer)
-		{
-			memcpy(pBuffer->GetBufferPointer(), pMicrocode, size);
-			this->setExternalMicrocode(pBuffer);
-			SAFE_RELEASE(pBuffer);
+			return;
 		}
-	}
-	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::setExternalMicrocode(ID3DXBuffer* pMicrocode)
-	{ 
-		SAFE_RELEASE(mpExternalMicrocode);
-		mpExternalMicrocode = pMicrocode;
-		if(mpExternalMicrocode)
+
+		// Populate preprocessor defines
+		String stringBuffer;
+
+		Vector<D3DXMACRO> defines;
+		const D3DXMACRO* pDefines = 0;
+		if (!mPreprocessorDefines.empty())
 		{
-			mpExternalMicrocode->AddRef();	
+			stringBuffer = mPreprocessorDefines;
+
+			// Split preprocessor defines and build up macro array
+			D3DXMACRO macro;
+			String::size_type pos = 0;
+			while (pos != String::npos)
+			{
+				macro.Name = &stringBuffer[pos];
+				macro.Definition = 0;
+
+				String::size_type start_pos = pos;
+
+				// Find delims
+				pos = stringBuffer.find_first_of(";,=", pos);
+
+				if (start_pos == pos)
+				{
+					if (pos == stringBuffer.length())
+					{
+						break;
+					}
+					pos++;
+					continue;
+				}
+
+				if (pos != String::npos)
+				{
+					// Check definition part
+					if (stringBuffer[pos] == '=')
+					{
+						// Setup null character for macro name
+						stringBuffer[pos++] = '\0';
+						macro.Definition = &stringBuffer[pos];
+						pos = stringBuffer.find_first_of(";,", pos);
+					}
+					else
+					{
+						// No definition part, define as "1"
+						macro.Definition = "1";
+					}
+
+					if (pos != String::npos)
+					{
+						// Setup null character for macro name or definition
+						stringBuffer[pos++] = '\0';
+					}
+				}
+				else
+				{
+					macro.Definition = "1";
+				}
+				if (strlen(macro.Name) > 0)
+				{
+					defines.push_back(macro);
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			// Add NULL terminator
+			macro.Name = 0;
+			macro.Definition = 0;
+			defines.push_back(macro);
+
+			pDefines = &defines[0];
 		}
-	}
-    //-----------------------------------------------------------------------------
-	LPD3DXBUFFER D3D9GpuProgram::getExternalMicrocode(void)
-	{
-		return mpExternalMicrocode;
-	}
-	//-----------------------------------------------------------------------------
-	void D3D9GpuProgram::createInternalResources(IDirect3DDevice9* d3d9Device)
-	{
-		if (mpExternalMicrocode)
+
+		// Populate compile flags
+		DWORD compileFlags = 0;
+		if (mColumnMajorMatrices)
+			compileFlags |= D3DXSHADER_PACKMATRIX_COLUMNMAJOR;
+		else
+			compileFlags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
+
+#if CM_DEBUG_MODE
+		compileFlags |= D3DXSHADER_DEBUG;
+#endif
+		switch (mOptimisationLevel)
 		{
-			loadFromMicrocode(d3d9Device, mpExternalMicrocode);
+		case OPT_DEFAULT:
+			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL1;
+			break;
+		case OPT_NONE:
+			compileFlags |= D3DXSHADER_SKIPOPTIMIZATION;
+			break;
+		case OPT_0:
+			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL0;
+			break;
+		case OPT_1:
+			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL1;
+			break;
+		case OPT_2:
+			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL2;
+			break;
+		case OPT_3:
+			compileFlags |= D3DXSHADER_OPTIMIZATION_LEVEL3;
+			break;
+		}
+
+		LPD3DXBUFFER errors = 0;
+
+		// include handler
+		LPD3DXCONSTANTTABLE constTable;
+
+		String hlslProfile = D3D9RenderSystem::instance().getCapabilities()->gpuProgProfileToRSSpecificProfile(mProfile);
+
+		// Compile & assemble into microcode
+		HRESULT hr = D3DXCompileShader(
+			mSource.c_str(),
+			static_cast<UINT>(mSource.length()),
+			pDefines,
+			nullptr,
+			mEntryPoint.c_str(),
+			hlslProfile.c_str(),
+			compileFlags,
+			&mMicrocode,
+			&errors,
+			&constTable);
+
+		if (FAILED(hr))
+		{
+			String message = "Cannot compile D3D9 high-level shader ";
+
+			if (errors)
+			{
+				message += String(" Errors:\n") + static_cast<const char*>(errors->GetBufferPointer());
+				errors->Release();
+			}
+
+			mIsCompiled = false;
+			mCompileError = message;
+
+			SAFE_RELEASE(mMicrocode);
+			mMicrocode = nullptr;
 		}
 		else
 		{
-			// Populate compile flags
-			DWORD compileFlags = 0;
-
-			// Create the shader
-			// Assemble source into microcode
-			LPD3DXBUFFER microcode;
-			LPD3DXBUFFER errors;
-			HRESULT hr = D3DXAssembleShader(
-				mSource.c_str(),
-				static_cast<UINT>(mSource.length()),
-				NULL,               // no #define support
-				NULL,               // no #include support
-				compileFlags,       // standard compile options
-				&microcode,
-				&errors);
-
-			if (FAILED(hr))
+			for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 			{
-				String message = "Cannot assemble D3D9 shader. Errors:\n";
-				message += static_cast<const char*>(errors->GetBufferPointer());
-
-				errors->Release();
-				CM_EXCEPT(RenderingAPIException, message);
+				IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
+				createInternalResources(d3d9Device);
 			}
 
-			loadFromMicrocode(d3d9Device, microcode);		
+			D3D9HLSLParamParser paramParser(constTable);
+			mParametersDesc = paramParser.buildParameterDescriptions();
 
-			SAFE_RELEASE(microcode);
-			SAFE_RELEASE(errors);
+			mIsCompiled = true;
+			mCompileError = "";
+
+			SAFE_RELEASE(constTable);
 		}
+
+		GpuProgram::initialize_internal();
 	}
-    //-----------------------------------------------------------------------
+
+	void D3D9GpuProgram::destroy_internal()
+	{
+		SAFE_RELEASE(mMicrocode);
+
+		GpuProgram::destroy_internal();
+	}
+
 	GpuParamsPtr D3D9GpuProgram::createParameters()
 	{
 		GpuParamsPtr params = cm_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
@@ -142,27 +209,42 @@ namespace BansheeEngine {
 		return params;
 	}
 
-	bool D3D9GpuProgram::isSupported() const
+	void D3D9GpuProgram::createInternalResources(IDirect3DDevice9* d3d9Device)
 	{
-		if (!isRequiredCapabilitiesSupported())
-			return false;
-
-		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
-		String hlslProfile = GpuProgramManager::instance().gpuProgProfileToRSSpecificProfile(mProfile);
-
-		return rs->getCapabilities()->isShaderProfileSupported(hlslProfile);
+		loadFromMicrocode(d3d9Device, mMicrocode);
 	}
-	//-----------------------------------------------------------------------------
-	D3D9GpuVertexProgram::D3D9GpuVertexProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) 
-        : D3D9GpuProgram(source, entryPoint, gptype, profile)       
+
+	const String& D3D9GpuProgram::getLanguage() const
+	{
+		static const String language = "hlsl";
+
+		return language;
+	}
+
+	/************************************************************************/
+	/* 								SERIALIZATION                      		*/
+	/************************************************************************/
+	RTTITypeBase* D3D9GpuProgram::getRTTIStatic()
+	{
+		return D3D9GpuProgramRTTI::instance();
+	}
+
+	RTTITypeBase* D3D9GpuProgram::getRTTI() const
+	{
+		return D3D9GpuProgram::getRTTIStatic();
+	}
+
+	D3D9GpuVertexProgram::D3D9GpuVertexProgram(const String& source, const String& entryPoint, 
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
+		: D3D9GpuProgram(source, entryPoint, GPT_VERTEX_PROGRAM, profile, includes, isAdjacencyInfoRequired)
     {
-        mType = GPT_VERTEX_PROGRAM;		
+
     }
-	//-----------------------------------------------------------------------------
+
 	D3D9GpuVertexProgram::~D3D9GpuVertexProgram()
 	{	
 	}
-	//-----------------------------------------------------------------------------
+
 	void D3D9GpuVertexProgram::destroy_internal(void)
 	{
 		DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.begin();
@@ -176,7 +258,7 @@ namespace BansheeEngine {
 
 		D3D9GpuProgram::destroy_internal();
 	}
-	//-----------------------------------------------------------------------------
+
     void D3D9GpuVertexProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {		 
 		DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.find(d3d9Device);
@@ -184,36 +266,27 @@ namespace BansheeEngine {
 		if (it != mMapDeviceToVertexShader.end())
 			SAFE_RELEASE(it->second);
 
-		if (isSupported())
-		{
-			// Create the shader
-			IDirect3DVertexShader9* pVertexShader;
-			HRESULT hr;
+		// Create the shader
+		IDirect3DVertexShader9* pVertexShader;
+		HRESULT hr;
 			
-			hr = d3d9Device->CreateVertexShader( 
-				static_cast<DWORD*>(microcode->GetBufferPointer()), 
-				&pVertexShader);
+		hr = d3d9Device->CreateVertexShader( 
+			static_cast<DWORD*>(microcode->GetBufferPointer()), 
+			&pVertexShader);
 
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 vertex shader from microcode");
-			}
-
-			mMapDeviceToVertexShader[d3d9Device] = pVertexShader;
-		}
-		else
+		if (FAILED(hr))
 		{
-			CM_EXCEPT(RenderingAPIException, "Specified D3D9 vertex shader is not supported!");
-
-			mMapDeviceToVertexShader[d3d9Device] = NULL;
+			CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 vertex shader from microcode");
 		}
+
+		mMapDeviceToVertexShader[d3d9Device] = pVertexShader;
     }
-	//-----------------------------------------------------------------------------
+
 	void D3D9GpuVertexProgram::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
-	//-----------------------------------------------------------------------------
+
 	void D3D9GpuVertexProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
 		DeviceToVertexShaderIterator it;
@@ -229,9 +302,11 @@ namespace BansheeEngine {
 		}
 	}
 
-	//-----------------------------------------------------------------------------
-	IDirect3DVertexShader9* D3D9GpuVertexProgram::getVertexShader( void )
+	IDirect3DVertexShader9* D3D9GpuVertexProgram::getVertexShader()
 	{
+		if (!isCompiled())
+			return nullptr;
+
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		DeviceToVertexShaderIterator it;
 
@@ -247,17 +322,18 @@ namespace BansheeEngine {
 	
 		return it->second;
 	}
-	//-----------------------------------------------------------------------------
-    D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, GpuProgramType gptype, GpuProgramProfile profile) 
-		: D3D9GpuProgram(source, entryPoint, gptype, profile)       
+
+    D3D9GpuFragmentProgram::D3D9GpuFragmentProgram(const String& source, const String& entryPoint, 
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
+		: D3D9GpuProgram(source, entryPoint, GPT_FRAGMENT_PROGRAM, profile, includes, isAdjacencyInfoRequired)
     {
-        mType = GPT_FRAGMENT_PROGRAM;
+
     }
-	//-----------------------------------------------------------------------------
+
 	D3D9GpuFragmentProgram::~D3D9GpuFragmentProgram()
 	{
 	}
-	//-----------------------------------------------------------------------------
+
 	void D3D9GpuFragmentProgram::destroy_internal()
 	{
 		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.begin();
@@ -271,7 +347,7 @@ namespace BansheeEngine {
 
 		D3D9GpuProgram::destroy_internal();
 	}
-	//-----------------------------------------------------------------------------
+
     void D3D9GpuFragmentProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {
 		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.find(d3d9Device);
@@ -279,37 +355,23 @@ namespace BansheeEngine {
 		if (it != mMapDeviceToPixelShader.end())
 			SAFE_RELEASE(it->second);
 
-		if (isSupported())
-		{
-			// Create the shader
-			IDirect3DPixelShader9* pPixelShader;
-			HRESULT hr;
+		// Create the shader
+		IDirect3DPixelShader9* pPixelShader;
+		HRESULT hr;
 
-			hr = d3d9Device->CreatePixelShader(
-				static_cast<DWORD*>(microcode->GetBufferPointer()), 
-				&pPixelShader);
+		hr = d3d9Device->CreatePixelShader(static_cast<DWORD*>(microcode->GetBufferPointer()), &pPixelShader);
 
-			if (FAILED(hr))
-			{
-				CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 pixel shader from microcode.");
-			}
+		if (FAILED(hr))
+			CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 pixel shader from microcode.");
 
-			mMapDeviceToPixelShader[d3d9Device] = pPixelShader;
-		}
-		else
-		{
-			CM_EXCEPT(RenderingAPIException, "Specified D3D9 pixel shader is not supported!");
-
-			mMapDeviceToPixelShader[d3d9Device] = NULL;
-		}
+		mMapDeviceToPixelShader[d3d9Device] = pPixelShader;
     }
-	//-----------------------------------------------------------------------------
+
 	void D3D9GpuFragmentProgram::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
 
-	//-----------------------------------------------------------------------------
 	void D3D9GpuFragmentProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
 		DeviceToPixelShaderIterator it;
@@ -325,9 +387,11 @@ namespace BansheeEngine {
 		}
 	}
 
-	//-----------------------------------------------------------------------------
-	IDirect3DPixelShader9* D3D9GpuFragmentProgram::getPixelShader( void )
+	IDirect3DPixelShader9* D3D9GpuFragmentProgram::getPixelShader()
 	{
+		if (!isCompiled())
+			return nullptr;
+
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		DeviceToPixelShaderIterator it;
 
@@ -343,7 +407,5 @@ namespace BansheeEngine {
 
 		return it->second;
 	}
-	//-----------------------------------------------------------------------------
-
 }
 

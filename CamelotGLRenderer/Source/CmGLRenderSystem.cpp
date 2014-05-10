@@ -5,10 +5,7 @@
 #include "CmGLIndexBuffer.h"
 #include "CmGLUtil.h"
 #include "CmGLSLGpuProgram.h"
-#include "CmGLSLProgram.h"
-#include "CmGLGpuProgramManager.h"
 #include "CmException.h"
-#include "CmGLSLExtSupport.h"
 #include "CmGLOcclusionQuery.h"
 #include "CmGLContext.h"
 #include "CmGLSupport.h"
@@ -160,13 +157,12 @@ namespace BansheeEngine
 		if (mGLSLProgramFactory)
 		{
 			// Remove from manager safely
-			HighLevelGpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
+			GpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
 			cm_delete(mGLSLProgramFactory);
 			mGLSLProgramFactory = nullptr;
 		}
 
-		// Deleting the GPU program manager and hardware buffer manager.  Has to be done before the mGLSupport->stop().
-		GpuProgramManager::shutDown();
+		// Deleting the hardware buffer manager.  Has to be done before the mGLSupport->stop().
 		HardwareBufferManager::shutDown();
 		GLRTTManager::shutDown();
 
@@ -203,8 +199,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		GpuProgramPtr bindingPrg = prg->getBindingDelegate();
-		GLSLGpuProgramPtr glprg = std::static_pointer_cast<GLSLGpuProgram>(bindingPrg);
+		GLSLGpuProgramPtr glprg = std::static_pointer_cast<GLSLGpuProgram>(prg->getThisPtr());
 
 		switch (glprg->getType())
 		{
@@ -265,7 +260,7 @@ namespace BansheeEngine
 		bindableParams.updateHardwareBuffers();
 		const GpuParamDesc& paramDesc = bindableParams.getParamDesc();
 		GLSLGpuProgramPtr activeProgram = getActiveProgram(gptype);
-		GLuint glProgram = activeProgram->getGLSLProgram()->getGLHandle();
+		GLuint glProgram = activeProgram->getGLHandle();
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
@@ -1315,7 +1310,7 @@ namespace BansheeEngine
 		VertexDeclaration::VertexElementList::const_iterator elem, elemEnd;
 		elemEnd = decl.end();
 
-		const VertexDeclaration::VertexElementList& inputAttributes = mCurrentVertexProgram->getGLSLProgram()->getInputAttributes().getElements();
+		const VertexDeclaration::VertexElementList& inputAttributes = mCurrentVertexProgram->getInputAttributes().getElements();
 
 		GLuint VAOID[1];
 		glGenVertexArrays(1, &VAOID[0]);
@@ -1703,13 +1698,12 @@ namespace BansheeEngine
 		checkForErrors();
 
 		// GPU Program Manager setup
-		GpuProgramManager::startUp(cm_new<GLGpuProgramManager>());
 		checkForErrors();
 
 		if(caps->isShaderProfileSupported("glsl"))
 		{
 			mGLSLProgramFactory = cm_new<GLSLProgramFactory>();
-			HighLevelGpuProgramManager::instance().addFactory(mGLSLProgramFactory);
+			GpuProgramManager::instance().addFactory(mGLSLProgramFactory);
 			checkForErrors();
 		}
 

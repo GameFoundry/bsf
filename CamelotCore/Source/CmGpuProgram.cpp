@@ -1,5 +1,4 @@
 #include "CmGpuProgram.h"
-#include "CmHighLevelGpuProgram.h"
 #include "CmVector3.h"
 #include "CmVector4.h"
 #include "CmRenderSystemCapabilities.h"
@@ -8,13 +7,15 @@
 #include "CmAsyncOp.h"
 #include "CmGpuParams.h"
 #include "CmGpuProgInclude.h"
+#include "CmGpuProgramManager.h"
+#include "CmResources.h"
 #include "CmGpuProgramRTTI.h"
 
 namespace BansheeEngine
 {
     GpuProgram::GpuProgram(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired) 
-        :mEntryPoint(entryPoint), mType(gptype),
+		:mEntryPoint(entryPoint), mType(gptype), mIsCompiled(false),
 		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
     {
 		if(includes != nullptr)
@@ -44,25 +45,45 @@ namespace BansheeEngine
 
     bool GpuProgram::isSupported() const
     {
-		return false;
+		if (!isRequiredCapabilitiesSupported())
+			return false;
+
+		RenderSystem* rs = BansheeEngine::RenderSystem::instancePtr();
+		String profile = rs->getCapabilities()->gpuProgProfileToRSSpecificProfile(mProfile);
+
+		return rs->getCapabilities()->isShaderProfileSupported(profile);
     }
 
-	bool GpuProgram::isRequiredCapabilitiesSupported(void) const
+	bool GpuProgram::isRequiredCapabilitiesSupported() const
 	{
 		return true;
 	}
 
-	GpuParamsPtr GpuProgram::createParameters(void)
+	GpuParamsPtr GpuProgram::createParameters()
 	{
 		return cm_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), false);
 	}
 
-    const String& GpuProgram::getLanguage(void) const
+    const String& GpuProgram::getLanguage() const
     {
-        static const String language = "asm";
+        static const String language = "null";
 
         return language;
     }
+
+	HGpuProgram GpuProgram::create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
+	{
+		GpuProgramPtr programPtr = _createPtr(source, entryPoint, language, gptype, profile, includes);
+
+		return static_resource_cast<GpuProgram>(gResources().createResourceHandle(programPtr));
+	}
+
+	GpuProgramPtr GpuProgram::_createPtr(const String& source, const String& entryPoint,
+		const String& language, GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency)
+	{
+		return GpuProgramManager::instance().create(source, entryPoint, language, gptype, profile, includes);
+	}
 
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/

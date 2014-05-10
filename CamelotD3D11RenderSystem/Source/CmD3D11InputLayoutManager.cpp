@@ -2,7 +2,7 @@
 #include "CmD3D11Mappings.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
-#include "CmD3D11HLSLProgram.h"
+#include "CmD3D11GpuProgram.h"
 #include "CmHardwareBufferManager.h"
 #include "CmDebug.h"
 #include "CmUtil.h"
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		}
 	}
 
-	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11HLSLProgram& vertexProgram)
+	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram)
 	{
 		VertexDeclarationKey pair;
 		pair.bufferDeclHash = vertexBufferDecl->getHash();
@@ -88,7 +88,7 @@ namespace BansheeEngine
 		return iterFind->second->inputLayout;
 	}
 
-	void D3D11InputLayoutManager::addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11HLSLProgram& vertexProgram)
+	void D3D11InputLayoutManager::addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram)
 	{
 		if(!areCompatible(vertexShaderDecl, vertexBufferDecl))
 			return; // Error was already reported, so just quit here

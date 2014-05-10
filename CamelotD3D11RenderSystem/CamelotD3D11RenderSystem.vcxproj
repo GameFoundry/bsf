@@ -242,13 +242,11 @@
     <ClInclude Include="Include\CmD3D11Driver.h" />
     <ClInclude Include="Include\CmD3D11DriverList.h" />
     <ClInclude Include="Include\CmD3D11GpuProgram.h" />
-    <ClInclude Include="Include\CmD3D11GpuProgramManager.h" />
     <ClInclude Include="Include\CmD3D11HardwareBuffer.h" />
     <ClInclude Include="Include\CmD3D11HLSLParamParser.h" />
-    <ClInclude Include="Include\CmD3D11HLSLProgram.h" />
     <ClInclude Include="Include\CmD3D11IndexBuffer.h" />
     <ClInclude Include="Include\CmD3D11HLSLProgramFactory.h" />
-    <ClInclude Include="Include\CmD3D11HLSLProgramRTTI.h" />
+    <ClInclude Include="Include\CmD3D11GpuProgramRTTI.h" />
     <ClInclude Include="Include\CmD3D11Mappings.h" />
     <ClInclude Include="Include\CmD3D11MultiRenderTexture.h" />
     <ClInclude Include="Include\CmD3D11GpuParamBlockBuffer.h" />
@@ -283,11 +281,9 @@
     <ClCompile Include="Source\CmD3D11GpuBufferView.cpp" />
     <ClCompile Include="Source\CmD3D11GpuParamBlockBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11GpuProgram.cpp" />
-    <ClCompile Include="Source\CmD3D11GpuProgramManager.cpp" />
     <ClCompile Include="Source\CmD3D11HardwareBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11HardwareBufferManager.cpp" />
     <ClCompile Include="Source\CmD3D11HLSLParamParser.cpp" />
-    <ClCompile Include="Source\CmD3D11HLSLProgram.cpp" />
     <ClCompile Include="Source\CmD3D11IndexBuffer.cpp" />
     <ClCompile Include="Source\CmD3D11HLSLProgramFactory.cpp" />
     <ClCompile Include="Source\CmD3D11InputLayoutManager.cpp" />

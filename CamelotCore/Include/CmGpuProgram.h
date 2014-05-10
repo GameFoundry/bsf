@@ -58,12 +58,10 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Contains a low level GPU program such as vertex or fragment program.
-	 *			Internal implementation of this class is render system specific,
-	 *			but will normally store a compiled program.
+	 * @brief	Contains a GPU program such as vertex or fragment program which gets
+	 *			compiled from the provided source code.
 	 *
-	 * @note	For higher level programs see HighLevelGpuProgram.
-	 *			Core thread only.
+	 * @note	Core thread only.
 	 */
 	class CM_EXPORT GpuProgram : public Resource
 	{
@@ -91,14 +89,23 @@ namespace BansheeEngine
 		virtual const String& getEntryPoint() const { return mEntryPoint; }
 
 		/**
-		 * @brief	Returns a delegate that will be used for actually binding the program to the pipeline.
-		 */
-        virtual GpuProgramPtr getBindingDelegate() { return std::static_pointer_cast<GpuProgram>(getThisPtr()); }
-
-		/**
 		 * @brief	Returns whether this program can be supported on the current renderer and hardware.
 		 */
         virtual bool isSupported() const;
+
+		/**
+		 * @brief	Returns true if shader was successfully compiled. 
+		 *
+		 * @note	Thread safe. Only valid after core thread has initialized the program.
+		 */
+		virtual bool isCompiled() const { return mIsCompiled; }
+
+		/**
+		 * @brief	Returns an error message returned by the compiler, if the compilation failed.
+		 *
+		 * @note	Thread safe. Only valid after core thread has initialized the program.
+		 */
+		virtual String getCompileErrorMessage() const { return mCompileError; }
 
 		/**
 		 * @brief	Sets whether this geometry program requires adjacency information
@@ -133,6 +140,29 @@ namespace BansheeEngine
 		*/
         virtual const String& getLanguage() const;
 
+		/**
+		 * @brief	Creates a new GPU program using the provided source code. If compilation fails or program is not supported
+		 *			"isCompiled" with return false, and you will be able to retrieve the error message via "getCompileErrorMessage".
+		 *
+		 * @param	source		Source code to compile the shader from.
+		 * @param	entryPoint	Name of the entry point function, e.g. "main".
+		 * @param	language	Language the source is written in, e.g. "hlsl" or "glsl".
+		 * @param	gptype		Type of the program, e.g. vertex or fragment.
+		 * @param	profile		Program profile specifying supported feature-set. Must match the type.
+		 * @param	includes	Optional includes to append to the source before compiling.
+		 * @param	requiresAdjacency	If true then adjacency information will be provided when rendering using this program.
+		 */
+		static HGpuProgram create(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype,
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency = false);
+
+		/**
+		 * @copydoc	create
+		 *
+		 * @note	Internal method. For normal use call "create".
+		 */
+		static GpuProgramPtr _createPtr(const String& source, const String& entryPoint, const String& language, GpuProgramType gptype, 
+			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacency = false);
+
 	protected:
 		friend class GpuProgramManager;
 
@@ -156,6 +186,9 @@ namespace BansheeEngine
 		String mEntryPoint;
 		GpuProgramProfile mProfile;
         String mSource;
+
+		bool mIsCompiled;
+		String mCompileError;
 
 		GpuParamDesc mParametersDesc;
 

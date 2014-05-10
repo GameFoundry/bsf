@@ -172,7 +172,7 @@ namespace BansheeEngine
 			importOptions->setType(GPT_FRAGMENT_PROGRAM);
 		}
 
-		HHighLevelGpuProgram fragProgRef = Importer::instance().import(psLoc, gpuProgImportOptions);
+		HGpuProgram fragProgRef = Importer::instance().import(psLoc, gpuProgImportOptions);
 
 		gpuProgImportOptions = Importer::instance().createImportOptions(vsLoc);
 		if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
@@ -185,7 +185,7 @@ namespace BansheeEngine
 			importOptions->setType(GPT_VERTEX_PROGRAM);
 		}
 
-		HHighLevelGpuProgram vertProgRef = Importer::instance().import(vsLoc, gpuProgImportOptions);
+		HGpuProgram vertProgRef = Importer::instance().import(vsLoc, gpuProgImportOptions);
 
 		gResources().save(vertProgRef, L"C:\\vertProgCg.vprog", true);
 		gResources().unload(vertProgRef);
