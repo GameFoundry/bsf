@@ -13,7 +13,7 @@ namespace BansheeEngine
 		(const D3D11InputLayoutManager::VertexDeclarationKey &key) const
 	{
 		size_t hash = 0;
-		hash_combine(hash, key.bufferDeclHash);
+		hash_combine(hash, key.vertxDeclId);
 		hash_combine(hash, key.vertexProgramId);
 
 		return hash;
@@ -23,19 +23,8 @@ namespace BansheeEngine
 		(const D3D11InputLayoutManager::VertexDeclarationKey &a, const D3D11InputLayoutManager::VertexDeclarationKey &b) const
 		
 	{
-		if(a.bufferDeclElements->size() != b.bufferDeclElements->size())
+		if (a.vertxDeclId != b.vertxDeclId)
 			return false;
-
-		{
-			auto iter1 = a.bufferDeclElements->begin();
-			auto iter2 = b.bufferDeclElements->begin();
-
-			for(; iter1 != a.bufferDeclElements->end(); ++iter1, ++iter2)
-			{
-				if((*iter1) != (*iter2))
-					return false;
-			}
-		}
 
 		if(a.vertexProgramId != b.vertexProgramId)
 			return false;
@@ -55,7 +44,6 @@ namespace BansheeEngine
 		{
 			auto firstElem = mInputLayoutMap.begin();
 
-			cm_delete<PoolAlloc>(firstElem->first.bufferDeclElements);
 			SAFE_RELEASE(firstElem->second->inputLayout);
 			cm_delete<PoolAlloc>(firstElem->second);
 
@@ -66,8 +54,7 @@ namespace BansheeEngine
 	ID3D11InputLayout* D3D11InputLayoutManager::retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram)
 	{
 		VertexDeclarationKey pair;
-		pair.bufferDeclHash = vertexBufferDecl->getHash();
-		pair.bufferDeclElements = const_cast<List<VertexElement>*>(&vertexBufferDecl->getElements());
+		pair.vertxDeclId = vertexBufferDecl->getInternalID();
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		auto iterFind = mInputLayoutMap.find(pair);
@@ -133,14 +120,8 @@ namespace BansheeEngine
 
 		// Create key and add to the layout map
 		VertexDeclarationKey pair;
-		pair.bufferDeclHash = vertexBufferDecl->getHash();
-
-		List<VertexElement>* bufferDeclElements = cm_new<List<VertexElement>, PoolAlloc>(); 
-		pair.bufferDeclElements = bufferDeclElements;
+		pair.vertxDeclId = vertexBufferDecl->getInternalID();
 		pair.vertexProgramId = vertexProgram.getProgramId();
-
-		for(auto iter = vertexBufferDecl->getElements().begin(); iter != vertexBufferDecl->getElements().end(); ++iter)
-			bufferDeclElements->push_back(*iter);
 
 		mInputLayoutMap[pair] = newEntry;
 	}
@@ -160,13 +141,11 @@ namespace BansheeEngine
 		for(auto iter = mInputLayoutMap.begin(); iter != mInputLayoutMap.end(); ++iter)
 			leastFrequentlyUsedMap[iter->second->lastUsedIdx] = iter->first;
 
-
 		UINT32 elemsRemoved = 0;
 		for(auto iter = leastFrequentlyUsedMap.begin(); iter != leastFrequentlyUsedMap.end(); ++iter)
 		{
 			auto inputLayoutIter = mInputLayoutMap.find(iter->second);
 
-			cm_delete<PoolAlloc>(inputLayoutIter->first.bufferDeclElements);
 			SAFE_RELEASE(inputLayoutIter->second->inputLayout);
 			cm_delete<PoolAlloc>(inputLayoutIter->second);
 

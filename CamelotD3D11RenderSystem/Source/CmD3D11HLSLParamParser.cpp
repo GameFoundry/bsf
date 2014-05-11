@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, VertexDeclarationPtr& inputParams)
+	void D3D11HLSLParamParser::parse(ID3DBlob* microcode, GpuParamDesc& desc, VertexDeclaration::VertexElementList* inputParams)
 	{
 		const char* commentString = nullptr;
 		ID3DBlob* pIDisassembly = nullptr;
@@ -33,7 +33,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
 
-		if(inputParams != nullptr)
+		if (inputParams != nullptr)
 		{
 			D3D11_SIGNATURE_PARAMETER_DESC inputParamDesc;
 			for (UINT32 i = 0; i < shaderDesc.InputParameters; i++)
@@ -43,8 +43,8 @@ namespace BansheeEngine
 				if (FAILED(hr))
 					CM_EXCEPT(RenderingAPIException, "Cannot get input param desc with index: " + toString(i));
 
-				inputParams->addElement(inputParamDesc.Stream, inputParamDesc.Register, 
-					D3D11Mappings::getInputType(inputParamDesc.ComponentType), D3D11Mappings::get(inputParamDesc.SemanticName), inputParamDesc.SemanticIndex);
+				inputParams->push_back(VertexElement(inputParamDesc.Stream, inputParamDesc.Register,
+					D3D11Mappings::getInputType(inputParamDesc.ComponentType), D3D11Mappings::get(inputParamDesc.SemanticName), inputParamDesc.SemanticIndex));
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace BansheeEngine
 		}
 
 		// TODO - Parse:
-		//  - Tex arrays,  RW tex arrays and MS textures
+		//  - Tex arrays, RW tex arrays and MS textures
 		//	- UINT8, UINT and double values
 
 		shaderReflection->Release();

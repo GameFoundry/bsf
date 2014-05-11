@@ -1321,7 +1321,7 @@ namespace BansheeEngine
 			auto iterFind = mBoundVertexBuffers.find(elem->getStreamIdx());
 
 			if(iterFind == mBoundVertexBuffers.end() || iterFind->second == nullptr)
-				continue; // skip unbound elements
+				continue; // Skip unbound elements
 
 			VertexBufferPtr vertexBuffer = iterFind->second;
 

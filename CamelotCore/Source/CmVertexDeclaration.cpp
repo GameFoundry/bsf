@@ -6,18 +6,17 @@
 
 namespace BansheeEngine
 {
-	VertexElement::VertexElement(unsigned short source, UINT32 offset, 
-		VertexElementType theType, VertexElementSemantic semantic, unsigned short index)
-		: mSource(source), mOffset(offset), mType(theType), 
-		mSemantic(semantic), mIndex(index)
+	VertexElement::VertexElement(UINT16 source, UINT32 offset,
+		VertexElementType theType, VertexElementSemantic semantic, UINT16 index)
+		: mSource(source), mOffset(offset), mType(theType), mSemantic(semantic), mIndex(index)
 	{
 	}
-	//-----------------------------------------------------------------------------
+
 	UINT32 VertexElement::getSize(void) const
 	{
 		return getTypeSize(mType);
 	}
-	//-----------------------------------------------------------------------------
+
 	UINT32 VertexElement::getTypeSize(VertexElementType etype)
 	{
 		switch(etype)
@@ -45,9 +44,10 @@ namespace BansheeEngine
 		case VET_UBYTE4:
 			return sizeof(unsigned char)*4;
 		}
+
 		return 0;
 	}
-	//-----------------------------------------------------------------------------
+
 	unsigned short VertexElement::getTypeCount(VertexElementType etype)
 	{
 		switch (etype)
@@ -75,51 +75,11 @@ namespace BansheeEngine
 		case VET_UBYTE4:
 			return 4;
 		}
+
 		CM_EXCEPT(InvalidParametersException, "Invalid type");
 	}
-	//-----------------------------------------------------------------------------
-	VertexElementType VertexElement::multiplyTypeCount(VertexElementType baseType, 
-		unsigned short count)
-	{
-		switch (baseType)
-		{
-		case VET_FLOAT1:
-			switch(count)
-			{
-			case 1:
-				return VET_FLOAT1;
-			case 2:
-				return VET_FLOAT2;
-			case 3:
-				return VET_FLOAT3;
-			case 4:
-				return VET_FLOAT4;
-			default:
-				break;
-			}
-			break;
-		case VET_SHORT1:
-			switch(count)
-			{
-			case 1:
-				return VET_SHORT1;
-			case 2:
-				return VET_SHORT2;
-			case 3:
-				return VET_SHORT3;
-			case 4:
-				return VET_SHORT4;
-			default:
-				break;
-			}
-			break;
-		default:
-			break;
-		}
-		CM_EXCEPT(InvalidParametersException, "Invalid base type");
-	}
-	//--------------------------------------------------------------------------
-	VertexElementType VertexElement::getBestColourVertexElementType(void)
+
+	VertexElementType VertexElement::getBestColorVertexElementType()
 	{
 		// Use the current render system to determine if possible
 		if (BansheeEngine::RenderSystem::instancePtr())
@@ -138,338 +98,117 @@ namespace BansheeEngine
 
 		}
 	}
-	//--------------------------------------------------------------------------
-	void VertexElement::convertColourValue(VertexElementType srcType, 
-		VertexElementType dstType, UINT32* ptr)
-	{
-		if (srcType == dstType)
-			return;
 
-		// Conversion between ARGB and ABGR is always a case of flipping R/B
-		*ptr = 
-			((*ptr&0x00FF0000)>>16)|((*ptr&0x000000FF)<<16)|(*ptr&0xFF00FF00);				
-	}
-	//--------------------------------------------------------------------------
-	UINT32 VertexElement::convertColourValue(const Color& src, 
-		VertexElementType dst)
+	bool VertexElement::operator== (const VertexElement& rhs) const
 	{
-		switch(dst)
+		if (mType != rhs.mType || mIndex != rhs.mIndex || mOffset != rhs.mOffset ||
+			mSemantic != rhs.mSemantic || mSource != rhs.mSource)
 		{
-#if CM_PLATFORM == CM_PLATFORM_WIN32
-		default:
-#endif
-		case VET_COLOR_ARGB:
-			return src.getAsBGRA();
-#if CM_PLATFORM != CM_PLATFORM_WIN32
-		default:
-#endif
-		case VET_COLOR_ABGR: 
-			return src.getAsRGBA();
-		};
-
+			return false;
+		}
+		else
+			return true;
 	}
-	//-----------------------------------------------------------------------------
-	VertexElementType VertexElement::getBaseType(VertexElementType multiType)
+
+	bool VertexElement::operator!= (const VertexElement& rhs) const
 	{
-		switch (multiType)
+		return !(*this == rhs);
+	}
+
+	VertexDeclaration::VertexDeclaration(const VertexElementList& elements)
+	{
+		for (auto& elem : elements)
 		{
-		case VET_FLOAT1:
-		case VET_FLOAT2:
-		case VET_FLOAT3:
-		case VET_FLOAT4:
-			return VET_FLOAT1;
-		case VET_COLOR:
-			return VET_COLOR;
-		case VET_COLOR_ABGR:
-			return VET_COLOR_ABGR;
-		case VET_COLOR_ARGB:
-			return VET_COLOR_ARGB;
-		case VET_SHORT1:
-		case VET_SHORT2:
-		case VET_SHORT3:
-		case VET_SHORT4:
-			return VET_SHORT1;
-		case VET_UBYTE4:
-			return VET_UBYTE4;
-		};
-		// To keep compiler happy
-		return VET_FLOAT1;
-	}
-	//-----------------------------------------------------------------------------
-	size_t VertexElement::calculateHash() const
-	{
-		size_t hash = 0;
-		hash_combine(hash, mSource);
-		hash_combine(hash, mOffset);
-		hash_combine(hash, mType);
-		hash_combine(hash, mSemantic);
-		hash_combine(hash, mIndex);
+			VertexElementType type = elem.getType();
 
-		return hash;
+			if (elem.getType() == VET_COLOR)
+				type = VertexElement::getBestColorVertexElementType();
+
+			mElementList.push_back(VertexElement(elem.getStreamIdx(), elem.getOffset(), type, elem.getSemantic(), elem.getSemanticIdx()));
+		}
 	}
-	//-----------------------------------------------------------------------------
-	VertexDeclaration::VertexDeclaration()
-		:mHash(0)
-	{
-	}
-	//-----------------------------------------------------------------------------
+
 	VertexDeclaration::~VertexDeclaration()
 	{
 	}
-	//-----------------------------------------------------------------------------
-	const VertexDeclaration::VertexElementList& VertexDeclaration::getElements(void) const
-	{
-		return mElementList;
-	}
-	//-----------------------------------------------------------------------------
-	const VertexElement& VertexDeclaration::addElement(unsigned short source, 
-		UINT32 offset, VertexElementType theType,
-		VertexElementSemantic semantic, unsigned short index)
-	{
-		// Refine colour type to a specific type
-		if (theType == VET_COLOR)
-		{
-			theType = VertexElement::getBestColourVertexElementType();
-		}
-		mElementList.push_back(
-			VertexElement(source, offset, theType, semantic, index)
-			);
 
-		recalculateHash();
-
-		return mElementList.back();
-	}
-	//-----------------------------------------------------------------------------
-	const VertexElement& VertexDeclaration::insertElement(unsigned short atPosition,
-		unsigned short source, UINT32 offset, VertexElementType theType,
-		VertexElementSemantic semantic, unsigned short index)
+	bool VertexDeclaration::operator== (const VertexDeclaration& rhs) const
 	{
-		if (atPosition >= mElementList.size())
+		if (mElementList.size() != rhs.mElementList.size())
+			return false;
+
+		auto myIter = mElementList.begin();
+		auto theirIter = rhs.mElementList.begin();
+
+		for (; myIter != mElementList.end() && theirIter != rhs.mElementList.end(); ++myIter, ++theirIter)
 		{
-			return addElement(source, offset, theType, semantic, index);
+			if (!(*myIter == *theirIter))
+				return false;
 		}
 
-		VertexElementList::iterator i = mElementList.begin();
-		for (unsigned short n = 0; n < atPosition; ++n)
-			++i;
-
-		i = mElementList.insert(i, 
-			VertexElement(source, offset, theType, semantic, index));
-
-		recalculateHash();
-
-		return *i;
-
+		return true;
 	}
-	//-----------------------------------------------------------------------------
-	const VertexElement* VertexDeclaration::getElement(unsigned short index)
+
+	bool VertexDeclaration::operator!= (const VertexDeclaration& rhs) const
+	{
+		return !(*this == rhs);
+	}
+
+	const VertexElement* VertexDeclaration::getElement(UINT16 index)
 	{
 		assert(index < mElementList.size() && "Index out of bounds");
 
-		VertexElementList::iterator i = mElementList.begin();
-		for (unsigned short n = 0; n < index; ++n)
-			++i;
+		auto iter = mElementList.begin();
+		for (UINT16 i = 0; i < index; ++i)
+			++iter;
 
-		return &(*i);
+		return &(*iter);
 
 	}
-	//-----------------------------------------------------------------------------
-	void VertexDeclaration::removeElement(unsigned short elem_index)
+	
+	const VertexElement* VertexDeclaration::findElementBySemantic(VertexElementSemantic sem, UINT16 index)
 	{
-		assert(elem_index < mElementList.size() && "Index out of bounds");
-		VertexElementList::iterator i = mElementList.begin();
-		for (unsigned short n = 0; n < elem_index; ++n)
-			++i;
-		mElementList.erase(i);
-
-		recalculateHash();
-	}
-	//-----------------------------------------------------------------------------
-	void VertexDeclaration::removeElement(VertexElementSemantic semantic, unsigned short index)
-	{
-		VertexElementList::iterator ei, eiend;
-		eiend = mElementList.end();
-		for (ei = mElementList.begin(); ei != eiend; ++ei)
+		for (auto& elem : mElementList)
 		{
-			if (ei->getSemantic() == semantic && ei->getSemanticIdx() == index)
+			if (elem.getSemantic() == sem && elem.getSemanticIdx() == index)
 			{
-				mElementList.erase(ei);
-				break;
+				return &elem;
 			}
 		}
 
-		recalculateHash();
+		return nullptr;
 	}
-	//-----------------------------------------------------------------------------
-	void VertexDeclaration::removeAllElements(void)
-	{
-		mElementList.clear();
 
-		recalculateHash();
-	}
-	//-----------------------------------------------------------------------------
-	void VertexDeclaration::modifyElement(unsigned short elem_index, 
-		unsigned short source, UINT32 offset, VertexElementType theType,
-		VertexElementSemantic semantic, unsigned short index)
-	{
-		assert(elem_index < mElementList.size() && "Index out of bounds");
-		VertexElementList::iterator i = mElementList.begin();
-		std::advance(i, elem_index);
-		(*i) = VertexElement(source, offset, theType, semantic, index);
-
-		recalculateHash();
-	}
-	//-----------------------------------------------------------------------------
-	const VertexElement* VertexDeclaration::findElementBySemantic(
-		VertexElementSemantic sem, unsigned short index)
-	{
-		VertexElementList::const_iterator ei, eiend;
-		eiend = mElementList.end();
-		for (ei = mElementList.begin(); ei != eiend; ++ei)
-		{
-			if (ei->getSemantic() == sem && ei->getSemanticIdx() == index)
-			{
-				return &(*ei);
-			}
-		}
-
-		return NULL;
-	}
-	//-----------------------------------------------------------------------------
-	VertexDeclaration::VertexElementList VertexDeclaration::findElementsBySource(
-		unsigned short source)
+	VertexDeclaration::VertexElementList VertexDeclaration::findElementsBySource(UINT16 source)
 	{
 		VertexElementList retList;
-		VertexElementList::const_iterator ei, eiend;
-		eiend = mElementList.end();
-		for (ei = mElementList.begin(); ei != eiend; ++ei)
+
+		for (auto& elem : mElementList)
 		{
-			if (ei->getStreamIdx() == source)
+			if (elem.getStreamIdx() == source)
 			{
-				retList.push_back(*ei);
+				retList.push_back(elem);
 			}
 		}
+
 		return retList;
 	}
-	//-----------------------------------------------------------------------------
-	UINT32 VertexDeclaration::getVertexSize(unsigned short source)
+
+	UINT32 VertexDeclaration::getVertexSize(UINT16 source)
 	{
-		VertexElementList::const_iterator i, iend;
-		iend = mElementList.end();
-		UINT32 sz = 0;
+		UINT32 size = 0;
 
-		for (i = mElementList.begin(); i != iend; ++i)
+		for (auto& elem : mElementList)
 		{
-			if (i->getStreamIdx() == source)
+			if (elem.getStreamIdx() == source)
 			{
-				sz += i->getSize();
-
+				size += elem.getSize();
 			}
 		}
-		return sz;
-	}
-	//-----------------------------------------------------------------------------
-	VertexDeclarationPtr VertexDeclaration::clone(HardwareBufferManager* mgr)
-	{
-		HardwareBufferManager* pManager = mgr ? mgr : HardwareBufferManager::instancePtr(); 
-		VertexDeclarationPtr ret = pManager->createVertexDeclaration();
 
-		VertexElementList::const_iterator i, iend;
-		iend = mElementList.end();
-		for (i = mElementList.begin(); i != iend; ++i)
-		{
-			ret->addElement(i->getStreamIdx(), i->getOffset(), i->getType(), i->getSemantic(), i->getSemanticIdx());
-		}
+		return size;
+	}
 
-		ret->mHash = mHash;
-		return ret;
-	}
-	//-----------------------------------------------------------------------------
-	// Sort routine for VertexElement
-	bool VertexDeclaration::vertexElementLess(const VertexElement& e1, const VertexElement& e2)
-	{
-		// Sort by source first
-		if (e1.getStreamIdx() < e2.getStreamIdx())
-		{
-			return true;
-		}
-		else if (e1.getStreamIdx() == e2.getStreamIdx())
-		{
-			// Use ordering of semantics to sort
-			if (e1.getSemantic() < e2.getSemantic())
-			{
-				return true;
-			}
-			else if (e1.getSemantic() == e2.getSemantic())
-			{
-				// Use index to sort
-				if (e1.getSemanticIdx() < e2.getSemanticIdx())
-				{
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	void VertexDeclaration::sort(void)
-	{
-		mElementList.sort(VertexDeclaration::vertexElementLess);
-	}
-	//-----------------------------------------------------------------------------
-	void VertexDeclaration::closeGapsInSource(void)
-	{
-		if (mElementList.empty())
-			return;
-
-		// Sort first
-		sort();
-
-		VertexElementList::iterator i, iend;
-		iend = mElementList.end();
-		unsigned short targetIdx = 0;
-		unsigned short lastIdx = getElement(0)->getStreamIdx();
-		unsigned short c = 0;
-		for (i = mElementList.begin(); i != iend; ++i, ++c)
-		{
-			VertexElement& elem = *i;
-			if (lastIdx != elem.getStreamIdx())
-			{
-				targetIdx++;
-				lastIdx = elem.getStreamIdx();
-			}
-			if (targetIdx != elem.getStreamIdx())
-			{
-				modifyElement(c, targetIdx, elem.getOffset(), elem.getType(), 
-					elem.getSemantic(), elem.getSemanticIdx());
-			}
-
-		}
-	}
-	//-----------------------------------------------------------------------------
-	unsigned short VertexDeclaration::getMaxSource(void) const
-	{
-		VertexElementList::const_iterator i, iend;
-		iend = mElementList.end();
-		unsigned short ret = 0;
-		for (i = mElementList.begin(); i != iend; ++i)
-		{
-			if (i->getStreamIdx() > ret)
-			{
-				ret = i->getStreamIdx();
-			}
-
-		}
-		return ret;
-	}
-	//----------------------------------------------------------------------------
-	void VertexDeclaration::recalculateHash()
-	{
-		mHash = 0;
-		for(auto iter = mElementList.begin(); iter != mElementList.end(); ++iter)
-		{
-			hash_combine(mHash, iter->calculateHash());
-		}
-	}
 	/************************************************************************/
 	/* 								SERIALIZATION                      		*/
 	/************************************************************************/

@@ -400,10 +400,7 @@ namespace BansheeEngine
 			return D3DDECLUSAGE_BLENDWEIGHT;
 			break;
 		case VES_COLOR:
-			return D3DDECLUSAGE_COLOR; // NB index will differentiate
-			break;
-		case VES_SPECULAR:
-			return D3DDECLUSAGE_COLOR; // NB index will differentiate
+			return D3DDECLUSAGE_COLOR;
 			break;
 		case VES_NORMAL:
 			return D3DDECLUSAGE_NORMAL;

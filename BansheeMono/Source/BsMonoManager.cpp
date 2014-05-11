@@ -21,19 +21,19 @@ namespace BansheeEngine
 
 	MonoManager::~MonoManager()
 	{
-		//for(auto& entry : mAssemblies)
-		//{
-		//	unloadAssembly(*entry.second); 
-		//	cm_delete(entry.second);
-		//}
-
-		mAssemblies.clear();
-
 		if(mDomain != nullptr)
 		{
 			mono_jit_cleanup(mDomain);
 			mDomain = nullptr;
 		}
+
+		for (auto& entry : mAssemblies)
+		{
+			unloadAssembly(*entry.second);
+			cm_delete(entry.second);
+		}
+
+		mAssemblies.clear();
 	}
 
 	MonoAssembly& MonoManager::loadAssembly(const String& path, const String& name)

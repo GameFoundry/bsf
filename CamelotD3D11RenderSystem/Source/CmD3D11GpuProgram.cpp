@@ -127,11 +127,17 @@ namespace BansheeEngine
 		assert(microcode != nullptr);
 
 		D3D11HLSLParamParser parser;
-
 		if (mType == GPT_VERTEX_PROGRAM)
-			mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration();
+		{
+			VertexDeclaration::VertexElementList inputParams;
+			parser.parse(microcode, mParametersDesc, &inputParams);
 
-		parser.parse(microcode, mParametersDesc, mInputDeclaration);
+			mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration(inputParams);
+		}
+		else
+		{
+			parser.parse(microcode, mParametersDesc, nullptr);
+		}
 	}
 
 	GpuParamsPtr D3D11GpuProgram::createParameters()

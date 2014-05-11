@@ -9,4 +9,18 @@ DEBUG CODE in GLRenderSystem::beginDraw()
 I'll probably want a system like PipelineManager where it saves all VS and VB combinations and retuns vertex array for it.
  - Those vertex arrays should probably be saved in the vertex shader
 
+Each VertexDeclaration needs unique ID. 
+ - Attempt to make vertex declarations immutable. Once created they get a unique ID.
+ - Do the same for vertex buffers and vertex shaders
+ - Remove hash from vertex declaration and replace it with ID, also fix the comparison functions because
+   in DX11 finding input layout will involve going over every single element in the declaration since it's
+   stored in an unordered map.
+
 Create a proper git repo of dependencies folder
+
+Shutdown issues (can't repro atm but they're there):
+Destroying area sometimes fails
+ - I'm guessing that is because EditorWindows get closed and destroyed before scripts are unloaded. All areas and GUI elements are destroyed with them.
+  - I should try to manually destroy C# editor windows before main window is closed
+
+Native instance is sometimes null when delete is called

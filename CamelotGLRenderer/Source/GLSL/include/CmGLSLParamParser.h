@@ -45,7 +45,7 @@ namespace BansheeEngine
 	{
 	public:
 		void buildUniformDescriptions(GLuint glProgram, GpuParamDesc& returnParamDesc);
-		void buildVertexDeclaration(GLuint glProgram, VertexDeclaration& declaration);
+		VertexDeclaration::VertexElementList buildVertexDeclaration(GLuint glProgram);
 
 	private:
 		void determineParamInfo(GpuParamDataDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex);
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		VertexElementType glTypeToAttributeType(GLenum glType);
 	};
 
-	void GLSLParamParser::buildVertexDeclaration(GLuint glProgram, VertexDeclaration& declaration)
+	VertexDeclaration::VertexElementList GLSLParamParser::buildVertexDeclaration(GLuint glProgram)
 	{
 		GLint numAttributes = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTES, &numAttributes);
@@ -70,6 +70,7 @@ namespace BansheeEngine
 
 		GLchar* attributeName = (GLchar*)cm_alloc<ScratchAlloc>(sizeof(GLchar) * maxNameSize);
 
+		VertexDeclaration::VertexElementList elementList;
 		for(GLint i = 0; i < numAttributes; i++)
 		{
 			GLint attribSize = 0;
@@ -82,7 +83,7 @@ namespace BansheeEngine
 			{
 				VertexElementType type = glTypeToAttributeType(attribType);
 
-				declaration.addElement(0, i, type, semantic, index);
+				elementList.push_back(VertexElement(0, i, type, semantic, index));
 			}
 			else
 			{
@@ -91,6 +92,8 @@ namespace BansheeEngine
 		}
 
 		cm_free<ScratchAlloc>(attributeName);
+
+		return elementList;
 	}
 
 	VertexElementType GLSLParamParser::glTypeToAttributeType(GLenum glType)

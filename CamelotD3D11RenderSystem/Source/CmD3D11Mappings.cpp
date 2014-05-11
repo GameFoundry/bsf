@@ -361,10 +361,7 @@ namespace BansheeEngine
 			return "BLENDWEIGHT";
 			break;
 		case VES_COLOR:
-			return "COLOR"; // NB index will differentiate
-			break;
-		case VES_SPECULAR:
-			return "COLOR"; // NB index will differentiate
+			return "COLOR";
 			break;
 		case VES_NORMAL:
 			return "NORMAL";

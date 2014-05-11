@@ -10,10 +10,8 @@ namespace BansheeEngine
 	public:
 		struct VertexDeclarationKey
 		{
-			size_t bufferDeclHash;
+			UINT64 vertxDeclId;
 			UINT32 vertexProgramId;
-
-			List<VertexElement>* bufferDeclElements;
 		};
 
 		class HashFunc 

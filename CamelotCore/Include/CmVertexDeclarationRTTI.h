@@ -48,7 +48,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return HardwareBufferManager::instance().createVertexDeclaration();
+			return HardwareBufferManager::instance().createVertexDeclaration(VertexDeclaration::VertexElementList());
 		}
 
 		virtual const String& getRTTIName() 

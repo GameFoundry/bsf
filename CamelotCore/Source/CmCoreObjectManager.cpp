@@ -12,6 +12,7 @@ namespace BansheeEngine
 
 	CoreObjectManager::~CoreObjectManager()
 	{
+#if CM_DEBUG_MODE
 		CM_LOCK_MUTEX(mObjectsMutex);
 
 		if(mObjects.size() > 0)
@@ -20,9 +21,10 @@ namespace BansheeEngine
 			// (Reason: This is called on application shutdown and at that point we also unload any dynamic libraries, 
 			// which will invalidate any pointers to objects created from those libraries. Therefore we require of the user to 
 			// clean up all objects manually before shutting down the application).
-			CM_EXCEPT(InternalErrorException, "Core GPU object manager destroyed, but not all objects were released. User must release ALL " \
+			CM_EXCEPT(InternalErrorException, "Core object manager shut down, but not all objects were released. User must release ALL " \
 				"engine objects before application shutdown.");
 		}
+#endif
 	}
 
 	UINT64 CoreObjectManager::registerObject(CoreObject* object)

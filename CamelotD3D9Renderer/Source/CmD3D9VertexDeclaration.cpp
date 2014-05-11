@@ -31,73 +31,27 @@ THE SOFTWARE.
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9ResourceManager.h"
 
-namespace BansheeEngine {
+namespace BansheeEngine 
+{
+	D3D9VertexDeclaration::D3D9VertexDeclaration(const VertexDeclaration::VertexElementList& elements)
+		:VertexDeclaration(elements)
+    { }
 
-    //-----------------------------------------------------------------------
-    D3D9VertexDeclaration::D3D9VertexDeclaration()         
-    {
-
-    }
-    //-----------------------------------------------------------------------
     D3D9VertexDeclaration::~D3D9VertexDeclaration()
     {    }
-	//-----------------------------------------------------------------------
+
 	void D3D9VertexDeclaration::destroy_internal()
 	{
 		releaseDeclaration();
 
 		VertexDeclaration::destroy_internal();
 	}
-    //-----------------------------------------------------------------------
-    const VertexElement& D3D9VertexDeclaration::addElement(unsigned short source, 
-        UINT32 offset, VertexElementType theType,
-        VertexElementSemantic semantic, unsigned short index)
-    {
-        releaseDeclaration();   
-        return VertexDeclaration::addElement(source, offset, theType, semantic, index);
-    }
-    //-----------------------------------------------------------------------------
-    const VertexElement& D3D9VertexDeclaration::insertElement(unsigned short atPosition,
-        unsigned short source, UINT32 offset, VertexElementType theType,
-        VertexElementSemantic semantic, unsigned short index)
-    {
-        releaseDeclaration();   
-        return VertexDeclaration::insertElement(atPosition, source, offset, theType, semantic, index);
-    }
-    //-----------------------------------------------------------------------
-    void D3D9VertexDeclaration::removeElement(unsigned short elem_index)
-    {
-        VertexDeclaration::removeElement(elem_index);
-        releaseDeclaration();   
-    }
-	//-----------------------------------------------------------------------
-	void D3D9VertexDeclaration::removeElement(VertexElementSemantic semantic, unsigned short index)
-	{
-		VertexDeclaration::removeElement(semantic, index);
-		releaseDeclaration();   
-	}
-	//-----------------------------------------------------------------------
-	void D3D9VertexDeclaration::removeAllElements(void)
-	{
-		VertexDeclaration::removeAllElements();
-		releaseDeclaration();   
-	}
-    //-----------------------------------------------------------------------
-    void D3D9VertexDeclaration::modifyElement(unsigned short elem_index, 
-        unsigned short source, UINT32 offset, VertexElementType theType,
-        VertexElementSemantic semantic, unsigned short index)
-    {
-        VertexDeclaration::modifyElement(elem_index, source, offset, theType, semantic, index);
-		releaseDeclaration();       
-    }
 
-	 //-----------------------------------------------------------------------
 	void D3D9VertexDeclaration::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{
 		
 	}
 
-	 //-----------------------------------------------------------------------
 	void D3D9VertexDeclaration::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -111,8 +65,7 @@ namespace BansheeEngine {
 		}
 	}
 
-    //-----------------------------------------------------------------------
-    IDirect3DVertexDeclaration9* D3D9VertexDeclaration::getD3DVertexDeclaration(void)
+    IDirect3DVertexDeclaration9* D3D9VertexDeclaration::getD3DVertexDeclaration()
     {
 		IDirect3DDevice9* pCurDevice   = D3D9RenderSystem::getActiveD3D9Device();
 		DeviceToDeclarationIterator it = mMapDeviceToDeclaration.find(pCurDevice);
@@ -133,13 +86,8 @@ namespace BansheeEngine {
 				d3delems[idx].Stream = i->getStreamIdx();
 				d3delems[idx].Type = D3D9Mappings::get(i->getType());
 				d3delems[idx].Usage = D3D9Mappings::get(i->getSemantic());
-				// NB force index if colours since D3D uses the same usage for 
-				// diffuse & specular
-				if (i->getSemantic() == VES_SPECULAR)
-				{
-					d3delems[idx].UsageIndex = 1;
-				}
-				else if (i->getSemantic() == VES_COLOR)
+
+				if (i->getSemantic() == VES_COLOR)
 				{
 					d3delems[idx].UsageIndex = 0;
 				}
@@ -177,7 +125,7 @@ namespace BansheeEngine {
 		
         return lpVertDecl;
     }
-    //-----------------------------------------------------------------------
+
 	void D3D9VertexDeclaration::releaseDeclaration()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION

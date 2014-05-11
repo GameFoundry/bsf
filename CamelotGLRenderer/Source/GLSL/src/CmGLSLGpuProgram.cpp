@@ -87,8 +87,6 @@ namespace BansheeEngine {
 			return;
 		}
 
-		mVertexDeclaration = HardwareBufferManager::instance().createVertexDeclaration();
-
 		// only create a shader object if glsl is supported
 		GLenum shaderType = 0x0000;
 		switch (mType)
@@ -196,7 +194,12 @@ namespace BansheeEngine {
 		{
 			GLSLParamParser paramParser;
 			paramParser.buildUniformDescriptions(mGLHandle, mParametersDesc);
-			paramParser.buildVertexDeclaration(mGLHandle, *mVertexDeclaration);
+
+			if (mType == GPT_VERTEX_PROGRAM)
+			{
+				VertexDeclaration::VertexElementList elementList = paramParser.buildVertexDeclaration(mGLHandle);
+				mVertexDeclaration = HardwareBufferManager::instance().createVertexDeclaration(elementList);
+			}
 		}
 
 		GpuProgram::initialize_internal();
