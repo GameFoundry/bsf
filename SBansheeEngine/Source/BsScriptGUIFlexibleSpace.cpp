@@ -37,13 +37,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUIFlexibleSpace::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
-	}
-
 	void ScriptGUIFlexibleSpace::internal_createInstance(MonoObject* instance, MonoObject* parentLayout)
 	{
 		ScriptGUILayout* scriptLayout = ScriptGUILayout::toNative(parentLayout);

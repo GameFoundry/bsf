@@ -73,6 +73,7 @@ namespace BansheeEngine
 	{
 		updateCallbackConn.disconnect();
 
+		ScriptManager::instance().destroy();
 		gApplication().unloadPlugin(mSBansheeEnginePlugin);
 		gApplication().unloadPlugin(mMonoPlugin);
 

@@ -128,6 +128,7 @@ namespace BansheeEngine
 
 	void ScriptComponent::_onManagedInstanceDeleted()
 	{
+		mManagedInstance = nullptr;
 		ScriptGameObjectManager::instance().destroyScriptGameObject(this);
 	}
 

@@ -43,13 +43,6 @@ namespace BansheeEngine
 		}
 	}
 
-	void ScriptGUILayout::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
-	}
-
 	void ScriptGUILayout::internal_createInstanceXFromArea(MonoObject* instance, MonoObject* parentArea)
 	{
 		ScriptGUIArea* scriptArea = ScriptGUIArea::toNative(parentArea);

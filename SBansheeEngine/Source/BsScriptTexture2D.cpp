@@ -47,6 +47,7 @@ namespace BansheeEngine
 
 	void ScriptTexture2D::_onManagedInstanceDeleted()
 	{
+		mManagedInstance = nullptr;
 		ScriptResourceManager::instance().destroyScriptResource(this);
 	}
 

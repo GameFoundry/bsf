@@ -1,10 +1,11 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
+#include "BsScriptObject.h"
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptResource
+	class BS_SCR_BE_EXPORT ScriptResource : public ScriptObjectBase
 	{
 	public:
 		virtual HResource getNativeHandle() const = 0;
@@ -13,7 +14,9 @@ namespace BansheeEngine
 	protected:
 		friend class ScriptResourceManager;
 
-		ScriptResource() {}
+		ScriptResource(MonoObject* instance)
+			:ScriptObjectBase(instance)
+		{ }
 		virtual ~ScriptResource() {}
 	};
 }

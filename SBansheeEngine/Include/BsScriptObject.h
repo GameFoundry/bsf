@@ -9,13 +9,13 @@
 
 namespace BansheeEngine
 {
-	template <class Type>
+	template <class Type, class Base>
 	struct InitScriptObjectOnStart
 	{
 	public:
 		InitScriptObjectOnStart()
 		{
-			ScriptObject<Type>::_initMetaData();
+			ScriptObject<Type, Base>::_initMetaData();
 		}
 
 		void makeSureIAmInstantiated() { }
@@ -40,19 +40,19 @@ namespace BansheeEngine
 	/**
 	 * @brief	 Base class for objects that can be extended using Mono scripting
 	 */
-	template <class Type>
-	class ScriptObject : public ScriptObjectBase
+	template <class Type, class Base = ScriptObjectBase>
+	class ScriptObject : public Base
 	{
 	public:
 		ScriptObject(MonoObject* instance)
-			:ScriptObjectBase(instance)
+			:Base(instance)
 		{	
 			// Compiler will only generate code for stuff that is directly used, including static data members,
 			// so we fool it here like we're using the class directly. Otherwise compiler won't generate the code for the member
 			// and our type won't get initialized on start (Actual behavior is a bit more random)
 			initOnStart.makeSureIAmInstantiated();
 
-			Type* param = (Type*)(ScriptObjectBase*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
+			Type* param = (Type*)(Base*)this; // Needed due to multiple inheritance. Safe since Type must point to an class derived from this one.
 
 			if(metaData.thisPtrField != nullptr)
 				metaData.thisPtrField->setValue(instance, &param);
@@ -83,8 +83,8 @@ namespace BansheeEngine
 	protected:
 		static ScriptMeta metaData;
 
-		template <class Type2>
-		static void throwIfInstancesDontMatch(ScriptObject<Type2>* lhs, void* rhs)
+		template <class Type2, class Base2>
+		static void throwIfInstancesDontMatch(ScriptObject<Type2, Base2>* lhs, void* rhs)
 		{
 #if CM_DEBUG_MODE
 			if((lhs == nullptr && rhs != nullptr) || (rhs == nullptr && lhs != nullptr) || lhs->getNativeRaw() != rhs)
@@ -96,14 +96,14 @@ namespace BansheeEngine
 		}
 
 	private:
-		static InitScriptObjectOnStart<Type> initOnStart;
+		static InitScriptObjectOnStart<Type, Base> initOnStart;
 	};
 
-	template <typename Type>
-	InitScriptObjectOnStart<Type> ScriptObject<Type>::initOnStart;
+	template <typename Type, typename Base>
+	InitScriptObjectOnStart<Type, Base> ScriptObject<Type, Base>::initOnStart;
 
-	template <typename Type>
-	ScriptMeta ScriptObject<Type>::metaData;
+	template <typename Type, typename Base>
+	ScriptMeta ScriptObject<Type, Base>::metaData;
 
 #define SCRIPT_OBJ(assembly, namespace, name)		\
 	static String getAssemblyName() { return assembly; }	\

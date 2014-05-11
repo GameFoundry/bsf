@@ -20,7 +20,6 @@ namespace BansheeEngine
 		ScriptGUIFlexibleSpace(MonoObject* instance, GUIFlexibleSpace& flexibleSpace, GUILayout* parentLayout);
 
 		void destroy();
-		void _onManagedInstanceDeleted();
 
 		GUIFlexibleSpace& mFlexibleSpace;
 		GUILayout* mParentLayout;

@@ -6,7 +6,7 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptSpriteTexture : public ScriptResource, public ScriptObject<ScriptSpriteTexture>
+	class BS_SCR_BE_EXPORT ScriptSpriteTexture : public ScriptObject<ScriptSpriteTexture, ScriptResource>
 	{
 	public:
 		SCRIPT_OBJ(BansheeEngineAssemblyName, "BansheeEngine", "SpriteTexture")

@@ -8,6 +8,12 @@ namespace BansheeEngine
 		mScriptSystem->initialize();
 	}
 
+	void ScriptManager::destroy()
+	{
+		if (mScriptSystem != nullptr)
+			mScriptSystem->destroy();
+	}
+
 	void ScriptManager::onShutDown()
 	{
 		mScriptSystem = nullptr;

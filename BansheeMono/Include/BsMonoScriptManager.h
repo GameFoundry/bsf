@@ -13,6 +13,7 @@ namespace BansheeEngine
 		~MonoScriptSystem();
 
 		virtual void initialize();
+		virtual void destroy();
 
 	private:
 		bool mIsInitialized;

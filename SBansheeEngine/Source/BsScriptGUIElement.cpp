@@ -11,14 +11,19 @@
 
 namespace BansheeEngine
 {
-	ScriptGUIElementBase::ScriptGUIElementBase(GUIElement* element)
-		:mIsDestroyed(false), mElement(element)
+	ScriptGUIElementBase::ScriptGUIElementBase(MonoObject* instance)
+		:ScriptObjectBase(instance), mIsDestroyed(false), mElement(nullptr)
 	{ }
 
 	ScriptGUIElement::ScriptGUIElement(MonoObject* instance)
 		:ScriptObject(instance)
 	{
 
+	}
+
+	void ScriptGUIElementBase::initialize(GUIElement* element)
+	{
+		mElement = element;
 	}
 
 	void ScriptGUIElementBase::destroy()

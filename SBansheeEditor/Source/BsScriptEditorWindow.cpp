@@ -65,14 +65,7 @@ namespace BansheeEngine
 
 	void ScriptEditorWindow::_onManagedInstanceDeleted()
 	{
-#if CM_DEBUG_MODE
-		auto iterFind = OpenScriptEditorWindows.find(mName);
-
-		// It is assumed that this method will only be called after "unregisterScriptEditorWindow" is called,
-		// since that is the only place keeping a reference to the managed editor window. So if window was
-		// not removed from OpenScriptEditorWindows array, then something went wrong earlier.
-		assert(iterFind == OpenScriptEditorWindows.end());
-#endif
+		unregisterScriptEditorWindow(mName);
 
 		ScriptObject::_onManagedInstanceDeleted();
 	}

@@ -21,11 +21,11 @@ namespace BansheeEngine
 
 	MonoManager::~MonoManager()
 	{
-		for(auto& entry : mAssemblies)
-		{
-			unloadAssembly(*entry.second); 
-			cm_delete(entry.second);
-		}
+		//for(auto& entry : mAssemblies)
+		//{
+		//	unloadAssembly(*entry.second); 
+		//	cm_delete(entry.second);
+		//}
 
 		mAssemblies.clear();
 

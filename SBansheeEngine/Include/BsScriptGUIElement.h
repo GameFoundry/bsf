@@ -5,15 +5,18 @@
 
 namespace BansheeEngine
 {
-	class BS_SCR_BE_EXPORT ScriptGUIElementBase
+	class BS_SCR_BE_EXPORT ScriptGUIElementBase : public ScriptObjectBase
 	{
 	public:
-		ScriptGUIElementBase(GUIElement* element);
+		ScriptGUIElementBase(MonoObject* instance);
 		virtual ~ScriptGUIElementBase() {}
 
 		GUIElement* getGUIElement() const { return (GUIElement*)mElement; }
 
 		virtual void destroy();
+
+	protected:
+		void initialize(GUIElement* element);
 
 	private:
 		bool mIsDestroyed;
@@ -21,15 +24,17 @@ namespace BansheeEngine
 	};
 
 	template <class Type>
-	class TScriptGUIElement : public ScriptGUIElementBase, public ScriptObject<Type>
+	class TScriptGUIElement : public ScriptObject<Type, ScriptGUIElementBase>
 	{
 	public:
 		virtual ~TScriptGUIElement() {}
 
 	protected:
 		TScriptGUIElement(MonoObject* instance, GUIElement* element)
-			:ScriptGUIElementBase(element), ScriptObject(instance)
-		{ }
+			:ScriptObject(instance)
+		{ 
+			initialize(element);
+		}
 
 		void _onManagedInstanceDeleted()
 		{
@@ -51,6 +56,4 @@ namespace BansheeEngine
 
 		ScriptGUIElement(MonoObject* instance);
 	};
-
-
 }

@@ -11,6 +11,7 @@ namespace BansheeEngine
 		virtual ~ScriptSystem() { }
 
 		virtual void initialize() = 0;
+		virtual void destroy() = 0;
 	};
 
 	class BS_EXPORT ScriptManager : public Module<ScriptManager>
@@ -20,6 +21,7 @@ namespace BansheeEngine
 		~ScriptManager() { }
 
 		void initialize(const std::shared_ptr<ScriptSystem>& scriptSystem);
+		void destroy();
 
 	private:
 		std::shared_ptr<ScriptSystem> mScriptSystem;

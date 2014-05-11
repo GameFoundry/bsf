@@ -26,7 +26,6 @@ namespace BansheeEngine
 		ScriptGUILayout(MonoObject* instance, GUILayout* layout, GUILayout* parentLayout);
 
 		void destroy();
-		void _onManagedInstanceDeleted();
 
 		GUILayout* mLayout;
 		GUILayout* mParentLayout;

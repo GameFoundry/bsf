@@ -20,4 +20,13 @@ namespace BansheeEngine
 		MonoManager::startUp(cm_new<MonoManager>());
 		mIsInitialized = true;
 	}
+
+	void MonoScriptSystem::destroy()
+	{
+		if (mIsInitialized)
+		{
+			MonoManager::shutDown();
+			mIsInitialized = false;
+		}
+	}
 }
