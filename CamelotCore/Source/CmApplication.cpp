@@ -64,6 +64,7 @@ namespace BansheeEngine
 		ThreadPool::startUp(cm_new<TThreadPool<ThreadBansheePolicy>>(numWorkerThreads));
 		TaskScheduler::startUp(cm_new<TaskScheduler>());
 		TaskScheduler::instance().removeWorker();
+		CoreThread::startUp(cm_new<CoreThread>());
 		StringTable::startUp(cm_new<StringTable>());
 		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
 		Time::startUp(cm_new<Time>());
@@ -72,8 +73,6 @@ namespace BansheeEngine
 		GameObjectManager::startUp(cm_new<GameObjectManager>());
 		Resources::startUp(cm_new<Resources>());
 		GpuProgramManager::startUp(cm_new<GpuProgramManager>());
-
-		CoreThread::startUp(cm_new<CoreThread>());
 		RenderSystemManager::startUp(cm_new<RenderSystemManager>());
 
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
@@ -190,7 +189,6 @@ namespace BansheeEngine
 
 		RendererManager::shutDown();
 		RenderSystemManager::shutDown();
-		CoreThread::shutDown();
 		Input::shutDown();
 
 		GpuProgramManager::shutDown();
@@ -202,6 +200,7 @@ namespace BansheeEngine
 		DeferredCallManager::shutDown();
 		StringTable::shutDown();
 
+		CoreThread::shutDown();
 		TaskScheduler::shutDown();
 		ThreadPool::shutDown();
 		Profiler::shutDown();
