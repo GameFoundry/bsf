@@ -26,6 +26,8 @@ namespace BansheeEngine
 		GpuResourceData(const GpuResourceData& copy);
 		virtual ~GpuResourceData();
 
+		GpuResourceData& operator=(const GpuResourceData& rhs);
+
 		/**
 		 * @brief	Returns pointer to the internal buffer.
 		 */

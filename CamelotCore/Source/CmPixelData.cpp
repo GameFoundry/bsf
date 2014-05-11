@@ -13,6 +13,18 @@ namespace BansheeEngine
 		mExtents = copy.mExtents;
 	}
 
+	PixelData& PixelData::operator=(const PixelData& rhs)
+	{
+		GpuResourceData::operator= (rhs);
+
+		mFormat = rhs.mFormat;
+		mRowPitch = rhs.mRowPitch;
+		mSlicePitch = rhs.mSlicePitch;
+		mExtents = rhs.mExtents;
+
+		return *this;
+	}
+
 	UINT32 PixelData::getInternalBufferSize()
 	{
 		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), getFormat());

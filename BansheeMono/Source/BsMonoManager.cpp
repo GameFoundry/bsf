@@ -23,7 +23,7 @@ namespace BansheeEngine
 	{
 		for(auto& entry : mAssemblies)
 		{
-			unloadAssembly(*entry.second);
+			unloadAssembly(*entry.second); 
 			cm_delete(entry.second);
 		}
 
@@ -105,8 +105,10 @@ namespace BansheeEngine
 		::MonoAssembly* monoAssembly = assembly.mMonoAssembly;
 		assembly.unload();
 
-		if(monoAssembly)
-			mono_assembly_close(monoAssembly);
+		// TODO: Not calling this because it crashed if called before domain was unloaded. Try calling
+		// it after. I'm not sure if its even necessary to call it.
+		//if(monoAssembly)
+			//mono_assembly_close(monoAssembly);
 	}
 
 	MonoAssembly* MonoManager::getAssembly(const String& name) const

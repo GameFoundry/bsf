@@ -156,6 +156,7 @@ namespace BansheeEngine
     	}
 
 		PixelData(const PixelData& copy);
+		PixelData& operator=(const PixelData& rhs);
 
 		UINT32 getRowPitch() const { return mRowPitch; }
 		UINT32 getSlicePitch() const { return mSlicePitch; }

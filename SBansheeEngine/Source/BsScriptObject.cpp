@@ -18,6 +18,7 @@ namespace BansheeEngine
 
 	void ScriptObjectBase::_onManagedInstanceDeleted()
 	{
+		mManagedInstance = nullptr;
 		cm_delete(this);
 	}
 }

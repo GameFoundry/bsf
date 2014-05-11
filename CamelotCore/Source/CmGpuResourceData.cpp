@@ -23,6 +23,15 @@ namespace BansheeEngine
 		freeInternalBuffer();
 	}
 
+	GpuResourceData& GpuResourceData::operator=(const GpuResourceData& rhs)
+	{
+		mData = rhs.mData;
+		mLocked = rhs.mLocked; // TODO - This should be shared by all copies pointing to the same data?
+		mOwnsData = false;
+
+		return *this;
+	}
+
 	UINT8* GpuResourceData::getData() const
 	{
 #if !CM_FORCE_SINGLETHREADED_RENDERING

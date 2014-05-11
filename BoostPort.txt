@@ -1,10 +1,5 @@
  - Ability to construct Module using startUp without having to do allocation outside of it
 
- REFACTOR GpuProgram
-  - Get rid of HighLevelGpuProgram and merge everything into GpuProgram if possible
-  - Right now HighLevelGpuProgram always creates just one instance of GpuProgram internally, and I don't see why they should be separate
-  - Possibly also determine how to neatly handle compilation faliure. Error should be reported and dummy shader should be returned.
-
 DEBUG CODE in GLRenderSystem::beginDraw()
 
 		GLuint VAOID[1];

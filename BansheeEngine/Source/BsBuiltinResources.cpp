@@ -110,6 +110,20 @@ namespace BansheeEngine
 	const Vector2I BuiltinResources::CursorSizeNWSEHotspot = Vector2I(15, 15);
 	const Vector2I BuiltinResources::CursorSizeWEHotspot = Vector2I(15, 15);
 
+	BuiltinResources::~BuiltinResources()
+	{
+		mCursorArrow = nullptr;
+		mCursorArrowDrag = nullptr;
+		mCursorArrowLeftRight = nullptr;
+		mCursorIBeam = nullptr;
+		mCursorDeny = nullptr;
+		mCursorWait = nullptr;
+		mCursorSizeNESW = nullptr;
+		mCursorSizeNS = nullptr;
+		mCursorSizeNWSE = nullptr;
+		mCursorSizeWE = nullptr;
+	}
+
 	BuiltinResources::BuiltinResources()
 	{
 		// TODO - Normally I want to load this from some file

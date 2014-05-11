@@ -14,6 +14,7 @@ namespace BansheeEngine
 	{
 	public:
 		BuiltinResources();
+		~BuiltinResources();
 
 		const GUISkin& getSkin() const { return mSkin; }
 
