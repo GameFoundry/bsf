@@ -20,7 +20,7 @@ namespace BansheeEngine
     {
 		assert (numVerts > 0);
 
-        D3D9VertexBuffer* buffer = new (cm_alloc<D3D9VertexBuffer, PoolAlloc>()) D3D9VertexBuffer(this, vertexSize, numVerts, usage, false);
+        D3D9VertexBuffer* buffer = new (cm_alloc<D3D9VertexBuffer, PoolAlloc>()) D3D9VertexBuffer(vertexSize, numVerts, usage, false);
 		return cm_core_ptr<D3D9VertexBuffer, PoolAlloc>(buffer);
     }
 

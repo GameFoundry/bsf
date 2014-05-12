@@ -77,7 +77,7 @@ namespace BansheeEngine {
 
 		friend class D3D9HardwareBufferManager;
 
-		D3D9VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 
+		D3D9VertexBuffer(UINT32 vertexSize, 
 			UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
 	
 		/** See HardwareBuffer. */

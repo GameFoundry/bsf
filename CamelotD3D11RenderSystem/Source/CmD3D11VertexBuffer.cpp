@@ -3,9 +3,9 @@
 
 namespace BansheeEngine
 {
-	D3D11VertexBuffer::D3D11VertexBuffer(D3D11Device& device, HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, 
+	D3D11VertexBuffer::D3D11VertexBuffer(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices, 
 		GpuBufferUsage usage, bool useSystemMem, bool streamOut)
-		:VertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMem), mDevice(device), mStreamOut(streamOut)
+		:VertexBuffer(vertexSize, numVertices, usage, useSystemMem), mDevice(device), mStreamOut(streamOut)
 	{ }
 
 	D3D11VertexBuffer::~D3D11VertexBuffer()

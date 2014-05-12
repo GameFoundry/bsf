@@ -1,33 +1,4 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __Common_H__
-#define __Common_H__
-// Common stuff
+#pragma once
 
 #include "CmString.h"
 
@@ -42,199 +13,180 @@ THE SOFTWARE.
 #   pragma GCC visibility pop
 #endif
 
-namespace BansheeEngine {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup General
-	*  @{
-	*/
-
-	/** Blending factors for manually blending objects with the scene. If there isn't a predefined
-        SceneBlendType that you like, then you can specify the blending factors directly to affect the
-        combination of object and the existing scene. See Material::setSceneBlending for more details.
-    */
+namespace BansheeEngine 
+{
+	/**
+	 * @brief	Factors used when blending new pixels with existing pixels.
+	 */
     enum BlendFactor
     {
-        BF_ONE,
-        BF_ZERO,
-        BF_DEST_COLOR,
-        BF_SOURCE_COLOR,
-        BF_INV_DEST_COLOR,
-        BF_INV_SOURCE_COLOR,
-        BF_DEST_ALPHA,
-        BF_SOURCE_ALPHA,
-        BF_INV_DEST_ALPHA,
-        BF_INV_SOURCE_ALPHA
+		BF_ONE, /**< Use a value of one for all pixel components. */
+		BF_ZERO, /**< Use a value of zero for all pixel components. */
+		BF_DEST_COLOR, /**< Use the existing pixel value. */
+		BF_SOURCE_COLOR, /**< Use the newly generated pixel value. */
+		BF_INV_DEST_COLOR, /**< Use the inverse of the existing value. */
+		BF_INV_SOURCE_COLOR, /**< Use the inverse of the newly generated pixel value. */
+		BF_DEST_ALPHA, /**< Use the existing alpha value. */
+		BF_SOURCE_ALPHA, /**< Use the newly generated alpha value. */
+		BF_INV_DEST_ALPHA, /**< Use the inverse of the existing alpha value. */
+		BF_INV_SOURCE_ALPHA /**< Use the inverse of the newly generated alpha value. */
     };
 
-	/** Blending operations controls how objects are blended into the scene. The default operation
-		is add (+) but by changing this you can change how drawn objects are blended into the
-		existing scene.
-	*/
+	/**
+	 * @brief	Operations that determines how are blending factors combined.
+	 */
 	enum BlendOperation
 	{
-		BO_ADD,
-		BO_SUBTRACT,
-		BO_REVERSE_SUBTRACT,
-		BO_MIN,
-		BO_MAX
+		BO_ADD, /**< Blend factors are added together. */
+		BO_SUBTRACT, /**< Blend factors are subtracted in "srcFactor - dstFactor" order. */
+		BO_REVERSE_SUBTRACT, /**< Blend factors are subtracted in "dstFactor - srcFactor" order. */
+		BO_MIN, /**< Minimum of the two factors is chosen. */
+		BO_MAX /**< Maximum of the two factors is chosen. */
 	};
 
-    /** Comparison functions used for the depth/stencil buffer operations and 
-		others. */
+	/**
+	 * @brief	Comparison functions used for the depth/stencil buffer.
+	 */
     enum CompareFunction
     {
-        CMPF_ALWAYS_FAIL,
-        CMPF_ALWAYS_PASS,
-        CMPF_LESS,
-        CMPF_LESS_EQUAL,
-        CMPF_EQUAL,
-        CMPF_NOT_EQUAL,
-        CMPF_GREATER_EQUAL,
-        CMPF_GREATER
+		CMPF_ALWAYS_FAIL, /**< Operation will always fail. */
+		CMPF_ALWAYS_PASS, /**< Operation will always pass. */
+		CMPF_LESS, /**< Operation will pass if the new value is less than existing value. */
+        CMPF_LESS_EQUAL, /**< Operation will pass if the new value is less or equal than existing value. */
+        CMPF_EQUAL, /**< Operation will pass if the new value is equal to the existing value. */
+        CMPF_NOT_EQUAL, /**< Operation will pass if the new value is not equal to the existing value. */
+        CMPF_GREATER_EQUAL, /**< Operation will pass if the new value greater or equal than the existing value. */
+        CMPF_GREATER /**< Operation will pass if the new value greater than the existing value. */
     };
 
-    /** Texture addressing modes - default is TAM_WRAP.
-    @note
-        These settings are relevant in both the fixed-function and the
-        programmable pipeline.
-    */
+	/**
+	 * @brief	Types of texture addressing modes that determine what happens when texture
+	 *			coordinates are outside of the valid range.
+	 */
     enum TextureAddressingMode
     {
-        /// Texture wraps at values over 1.0
-        TAM_WRAP,
-        /// Texture mirrors (flips) at joins over 1.0
-        TAM_MIRROR,
-        /// Texture clamps at 1.0
-        TAM_CLAMP,
-        /// Texture coordinates outside the range [0.0, 1.0] are set to the border color
-        TAM_BORDER
+		TAM_WRAP, /**< Coordinates wrap back to the valid range. */
+		TAM_MIRROR, /**< Coordinates flip every time the size of the valid range is passed. */
+		TAM_CLAMP, /**< Coordinates are clamped within the valid range. */
+		TAM_BORDER /**< Coordinates outside of the valid range will return a separately set border color. */
     };
 
-    /** High-level filtering options providing shortcuts to settings the
-        minification, magnification and mip filters. */
-    enum TextureFilterOptions
-    {
-        /// Equal to: min=FO_POINT, mag=FO_POINT, mip=FO_NONE
-        TFO_NONE,
-        /// Equal to: min=FO_LINEAR, mag=FO_LINEAR, mip=FO_POINT
-        TFO_BILINEAR,
-        /// Equal to: min=FO_LINEAR, mag=FO_LINEAR, mip=FO_LINEAR
-        TFO_TRILINEAR,
-        /// Equal to: min=FO_ANISOTROPIC, max=FO_ANISOTROPIC, mip=FO_LINEAR
-		TFO_ANISOTROPIC
-    };
-
+	/**
+	 * @brief	Types of available filtering situations.
+	 */
     enum FilterType
     {
-        /// The filter used when shrinking a texture
-        FT_MIN,
-        /// The filter used when magnifying a texture
-        FT_MAG,
-        /// The filter used when determining the mipmap
-        FT_MIP
+		FT_MIN, /**< The filter used when shrinking a texture. */
+        FT_MAG, /**< The filter used when magnifying a texture. */
+        FT_MIP /**< The filter used when filtering between mipmaps. */
     };
-    /** Filtering options for textures / mipmaps. */
+
+	/**
+	 * @brief	Filtering options for textures.
+	 */
     enum FilterOptions
     {
-        /// No filtering, used for FILT_MIP to turn off mipmapping
-        FO_NONE = 0,
-        /// Use the closest pixel
-        FO_POINT = 1,
-        /// Average of a 2x2 pixel area, denotes bilinear for MIN and MAG, trilinear for MIP
-        FO_LINEAR = 2,
-        /// Similar to FO_LINEAR, but compensates for the angle of the texture plane
-        FO_ANISOTROPIC = 3,
-		/// Specifies that the sampled values will be compared against existing sampled data. 
-		/// Should be OR-ed with other filtering options.
-		FO_USE_COMPARISON = 4
+		FO_NONE = 0, /**< Use no filtering. Only relevant for mipmap filtering. */
+		FO_POINT = 1, /**< Filter using the nearest found pixel. Most basic filtering. */
+		FO_LINEAR = 2, /**< Average a 2x2 pixel area, signifies bilinear filtering for texture, trilinear for mipmaps. */
+		FO_ANISOTROPIC = 3, /**< More advanced filtering that improves quality when viewing textures at a steep angle */
+		FO_USE_COMPARISON = 4 /**< Specifies that the sampled values will be compared against existing sampled data. Should be OR-ed with other filtering options. */
     };
 
-    /** Hardware culling modes based on vertex winding.
-        This setting applies to how the hardware API culls triangles it is sent. */
-    enum CullingMode
-    {
-        /// Hardware never culls triangles and renders everything it receives.
-        CULL_NONE = 1,
-        /// Hardware culls triangles whose vertices are listed clockwise in the view (default).
-        CULL_CLOCKWISE = 2,
-        /// Hardware culls triangles whose vertices are listed anticlockwise in the view.
-        CULL_COUNTERCLOCKWISE = 3
-    };
-
-    /** The polygon mode to use when rasterising. */
-    enum PolygonMode
-    {
-		/// Wireframe models are rendered.
-        PM_WIREFRAME = 1,
-		/// Solid polygons are rendered.
-        PM_SOLID = 2
-    };
-
-    /** Defines the frame buffer types. */
-    enum FrameBufferType {
-        FBT_COLOR  = 0x1,
-        FBT_DEPTH   = 0x2,
-        FBT_STENCIL = 0x4
-    };
-
-	/// Enum describing the various actions which can be taken onthe stencil buffer
-	enum StencilOperation
+	/**
+	 * @brief	Types of frame buffers.
+	 */
+	enum FrameBufferType
 	{
-		/// Leave the stencil buffer unchanged
-		SOP_KEEP,
-		/// Set the stencil value to zero
-		SOP_ZERO,
-		/// Set the stencil value to the reference value
-		SOP_REPLACE,
-		/// Increase the stencil value by 1, clamping at the maximum value
-		SOP_INCREMENT,
-		/// Decrease the stencil value by 1, clamping at 0
-		SOP_DECREMENT,
-		/// Increase the stencil value by 1, wrapping back to 0 when incrementing the maximum value
-		SOP_INCREMENT_WRAP,
-		/// Decrease the stencil value by 1, wrapping when decrementing 0
-		SOP_DECREMENT_WRAP,
-		/// Invert the bits of the stencil buffer
-		SOP_INVERT
+		FBT_COLOR = 0x1,
+		FBT_DEPTH = 0x2,
+		FBT_STENCIL = 0x4
 	};
 
-	/// Locking options
+	/**
+	 * @brief	Types of culling that determine how (and if) hardware discards faces with certain
+	 *			winding order. Winding order can be used for determining front or back facing polygons by
+	 *			checking the order of its vertices from the render perspective.
+	 */
+    enum CullingMode
+    {
+		CULL_NONE = 1, /**< Hardware performs no culling and renders both sides. */
+		CULL_CLOCKWISE = 2, /**< Hardware culls faces that have a clockwise vertex ordering. */
+        CULL_COUNTERCLOCKWISE = 3 /**< Hardware culls faces that have a counter-clockwise vertex ordering. */
+    };
+
+	/**
+	 * @brief	Polygon mode to use when rasterizing.
+	 */
+    enum PolygonMode
+    {
+		PM_WIREFRAME = 1, /**< Render as wireframe showing only polygon outlines. */
+        PM_SOLID = 2 /**< Render as solid showing whole polygons. */
+    };
+
+	/**
+	 * @brief	Types of action that can happen on the stencil buffer.
+	 */
+	enum StencilOperation
+	{
+		SOP_KEEP, /**< Leave the stencil buffer unchanged. */
+		SOP_ZERO, /**< Set the stencil value to zero. */
+		SOP_REPLACE, /**< Replace the stencil value with the reference value. */
+		SOP_INCREMENT, /**< Increase the stencil value by 1, clamping at the maximum value. */
+		SOP_DECREMENT, /**< Decrease the stencil value by 1, clamping at 0. */
+		SOP_INCREMENT_WRAP, /**< Increase the stencil value by 1, wrapping back to 0 when incrementing past the maximum value. */
+		SOP_DECREMENT_WRAP, /**< Decrease the stencil value by 1, wrapping when decrementing 0. */
+		SOP_INVERT /**< Invert the bits of the stencil buffer. */
+	};
+
+	/**
+	* @brief	These values represent a hint to the driver when locking a hardware buffer.
+	*
+	*			GBL_WRITE_ONLY - Allows you to write to the buffer. Can cause a CPU-GPU sync point
+	*			so avoid using it often (i.e. every frame) as that might limit your performance significantly.
+	*			GBL_WRITE_ONLY_DISCARD - Allows you to write to the buffer. Tells the driver to completely discard the contents of the 
+	*			buffer you are writing to. The driver will (most likely) internally allocate another buffer with same specifications 
+	*			(which is fairly fast) and you will avoid CPU-GPU stalls.
+	*			GBL_WRITE_ONLY_NO_OVERWRITE - Allows you to write to the buffer. Guarantees the driver that you will not be updating any part of 
+	*			the buffer that is currently used. This will also avoid CPU-GPU stalls, without requiring you to discard the entire buffer. However 
+	*			it is hard to guarantee when GPU has finished using a buffer.
+	*			GBL_READ_ONLY - Allows you to read from a buffer. Be aware that reading is usually a very slow operation.
+	*			GBL_READ_WRITE - Allows you to both read and write to a buffer. 
+	*/
 	enum GpuLockOptions
 	{
-        /** Normal mode, ie allows read/write and contents are preserved. */
         GBL_READ_WRITE,
-		/** Discards the <em>entire</em> buffer while locking; this allows optimisation to be 
-		performed because synchronisation issues are relaxed. 
-		*/
 		GBL_WRITE_ONLY_DISCARD,
-		/** Lock the buffer for reading only. Not allowed in buffers which are created with HBU_WRITE_ONLY. 
-		*/ 
 		GBL_READ_ONLY,
-        /** As HBL_NORMAL, except the application guarantees not to overwrite any 
-        region of the buffer which has already been used in this frame, can allow
-        some optimisation on some APIs. */
         GBL_WRITE_ONLY_NO_OVERWRITE,
-		/** Lock for writing only */
 		GBL_WRITE_ONLY	
 	};
 
-	/// Enums describing buffer usage; not mutually exclusive
+	/**
+	 * @brief	Values that represent hardware buffer usage. These usually determine in what
+	 *			type of memory is buffer placed in, however that depends on rendering API.
+	 * 
+	 *			GBU_STATIC - Signifies that you don't plan on modifying the buffer often (or at all)
+	 *			after creation. Modifying such buffer will involve a larger performance hit.
+	 *			GBU_DYNAMIC - Signifies that you will modify this buffer fairly often.
+	 */
 	enum GpuBufferUsage 
 	{
-        /** Static buffer which the application rarely modifies once created. Modifying 
-        the contents of this buffer will involve a performance hit.
-        */
         GBU_STATIC = 1,
-		/** Indicates the application would like to modify this buffer with the CPU
-		fairly often. 
-		*/
 		GBU_DYNAMIC = 2
 	};
 
 	/**
 	 * @brief	Types of generic GPU buffers that may be attached to GPU programs.
+	 *
+	 *			GBT_STRUCTURED - Buffer containing an array of structures. Structure parameters
+	 *			can usually be easily accessed from within the GPU program.
+	 *			GBT_RAW - Buffer containing raw bytes. It is up to the user to interpret the data.
+	 *			GBT_INDIRECTARGUMENT - Special type of buffer allowing you to specify arguments for
+	 *			draw operations inside the buffer instead of providing them directly. Useful when you want
+	 *			to control drawing directly from GPU.
+	 *			GBT_APPENDCONSUME - A stack-like buffer that allows you to add or remove elements to/from the buffer
+	 *			from within the GPU program.
 	 */
 	enum GpuBufferType
 	{
@@ -245,7 +197,12 @@ namespace BansheeEngine {
 	};
 
 	/**
-	 * @brief	Different types of gpu views
+	 * @brief	Different types of GPU views that control how GPU sees a hardware buffer.
+	 *
+	 *			GVU_DEFAULT - Buffer is seen as a default shader resource, used primarily for reading. (e.g. a texture for sampling)
+	 *			GVU_RENDERTARGET - Buffer is seen as a render target that color pixels will be written to after pixel shader stage.
+	 *			GVU_DEPTHSTENCIL - Buffer is seen as a depth stencil target that depth and stencil information is written to.
+	 *			GVU_RANDOMWRITE - Buffer that allows you to write to any part of it from within a GPU program.
 	 */
 	enum GpuViewUsage
 	{
@@ -255,18 +212,33 @@ namespace BansheeEngine {
 		GVU_RANDOMWRITE = 0x08
 	};
 
+	/**
+	 * @brief	Type of parameter block usages. Signifies how often will parameter blocks be changed.
+	 *
+	 *			GPBU_STATIC - Buffer will be rarely, if ever, updated.
+	 *			GPBU_DYNAMIC - Buffer will be updated often (e.g. every frame).
+	 */
 	enum GpuParamBlockUsage
 	{
 		GPBU_STATIC,
 		GPBU_DYNAMIC
 	};
 
+	/**
+	 * @brief	Type of GPU parameter.
+	 *
+	 *			GPT_DATA - Raw data type like float, Vector3, Color, etc.
+	 *			GPT_OBJECT - Reference to some GPU object like Texture, Sampler, etc.
+	 */
 	enum GpuParamType
 	{
 		GPT_DATA,
 		GPT_OBJECT
 	};
 
+	/**
+	 * @brief	Type of GPU data parameters that can be used as inputs to a GPU program.
+	 */
 	enum GpuParamDataType
 	{
 		GPDT_FLOAT1 = 1,
@@ -291,6 +263,9 @@ namespace BansheeEngine {
 		GPDT_UNKNOWN = 0xffff
 	};
 
+	/**
+	 * @brief	Type of GPU object parameters that can be used as inputs to a GPU program.
+	 */
 	enum GpuParamObjectType
 	{
 		GPOT_SAMPLER1D = 1,
@@ -335,7 +310,9 @@ namespace BansheeEngine {
 		NoOverwrite
 	};
 
-	/** Texture addressing mode for each texture coordinate. */
+	/**
+	 * @brief	Texture addressing mode, per component.
+	 */
 	struct UVWAddressingMode
 	{
 		UVWAddressingMode()
@@ -345,10 +322,5 @@ namespace BansheeEngine {
 		TextureAddressingMode u, v, w;
 	};
     
-	/// Name / value parameter pair (first = name, second = value)
 	typedef Map<String, String> NameValuePairList;
-
-	/** @} */
 }
-
-#endif

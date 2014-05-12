@@ -1,71 +1,72 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmGLPrerequisites.h"
 #include "CmVertexBuffer.h"
+#include "BsGLVertexArrayObjectManager.h"
 
-namespace BansheeEngine {
-
-    /// Specialisation of HardwareVertexBuffer for OpenGL
+namespace BansheeEngine 
+{
+	/**
+	 * @copydoc	VertexBuffer
+	 */
     class CM_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
     {
     public:
         ~GLVertexBuffer();
-        /** See HardwareBuffer. */
-        void readData(UINT32 offset, UINT32 length, void* pDest);
-        /** See HardwareBuffer. */
-        void writeData(UINT32 offset, UINT32 length, 
-            const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 
-        GLuint getGLBufferId(void) const { return mBufferId; }
+		/**
+		 * @copydoc	HardwareBuffer::readData
+		 */
+        void readData(UINT32 offset, UINT32 length, void* pDest);
+
+		/**
+		* @copydoc	HardwareBuffer::writeData
+		*/
+        void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
+
+		/**
+		 * @brief	Returns internal OpenGL buffer ID.
+		 */
+        GLuint getGLBufferId() const { return mBufferId; }
+
+		/**
+		 * @brief	Registers a new VertexArrayObject that uses this vertex buffer.
+		 */
+		void registerVAO(const GLVertexArrayObject& vao);
+
+		/**
+		 * @brief	Unregisters a VAO from this vertex buffer. Does not destroy it.
+		 */
+		void unregisterVAO(const GLVertexArrayObject& vao);
 
 	protected:
 		friend class GLHardwareBufferManager;
 
-		GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
-
-		/** See HardwareBuffer. */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-		/** See HardwareBuffer. */
-		void unlockImpl(void);
+		GLVertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
 
 		/**
-		 * @copydoc VertexBuffer::initialize_internal()
-		 */
-		void initialize_internal();	
-		
+		* @copydoc VertexBuffer::initialize_internal()
+		*/
+		void initialize_internal();
+
 		/**
-		 * @copydoc VertexBuffer::destroy_internal()
-		 */
+		* @copydoc VertexBuffer::destroy_internal()
+		*/
 		void destroy_internal();
+
+		/**
+		* @copydoc	HardwareBuffer::lockImpl()
+		*/
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+
+		/**
+		* @copydoc	HardwareBuffer::unlockImpl()
+		*/
+		void unlockImpl();
 
 	private:
 		GLuint mBufferId;
+
+		Vector<GLVertexArrayObject> mVAObjects;
     };
 }

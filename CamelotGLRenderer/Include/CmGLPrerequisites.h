@@ -38,6 +38,7 @@ namespace BansheeEngine
     class GLSupport;
     class GLRenderSystem;
     class GLTexture;
+	class GLVertexBuffer;
     class GLTextureManager;
     class GLSLGpuProgram;
     class GLContext;
@@ -45,6 +46,7 @@ namespace BansheeEngine
     class GLPixelBuffer;
 	class GLGpuParamBlock;
 	class GLSLGpuProgram;
+	class GLVertexArrayObject;
 	struct GLSLProgramPipeline;
 	class GLSLProgramPipelineManager;
 

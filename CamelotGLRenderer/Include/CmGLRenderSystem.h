@@ -546,7 +546,7 @@ namespace BansheeEngine
 		UINT32 mDomainUBOffset;
 		UINT32 mComputeUBOffset;
 
-		UnorderedMap<UINT32, VertexBufferPtr> mBoundVertexBuffers;
+		Vector<VertexBufferPtr> mBoundVertexBuffers;
 		VertexDeclarationPtr mBoundVertexDeclaration;
 		IndexBufferPtr mBoundIndexBuffer;
 		DrawOperationType mCurrentDrawOperation;
@@ -554,7 +554,6 @@ namespace BansheeEngine
 		GLContext *mMainContext;
 		GLContext *mCurrentContext;
 
-		Vector<GLuint> mBoundAttributes; // Only full between begin/endDraw calls
 		bool mDrawCallInProgress;
 
 		UINT16 mActiveTextureUnit;

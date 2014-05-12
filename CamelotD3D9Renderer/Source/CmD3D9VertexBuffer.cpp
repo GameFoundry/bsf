@@ -36,10 +36,10 @@ THE SOFTWARE.
 namespace BansheeEngine {
 
 	//---------------------------------------------------------------------
-    D3D9VertexBuffer::D3D9VertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 
+    D3D9VertexBuffer::D3D9VertexBuffer(UINT32 vertexSize, 
         UINT32 numVertices, GpuBufferUsage usage, 
         bool useSystemMemory)
-		: VertexBuffer(mgr, vertexSize, numVertices, usage, useSystemMemory)
+		: VertexBuffer(vertexSize, numVertices, usage, useSystemMemory)
     {    }
 	//---------------------------------------------------------------------
     D3D9VertexBuffer::~D3D9VertexBuffer()

@@ -19,7 +19,7 @@ namespace BansheeEngine
 	VertexBufferPtr D3D11HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, 
 		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		D3D11VertexBuffer* buffer = new (cm_alloc<D3D11VertexBuffer, PoolAlloc>()) D3D11VertexBuffer(mDevice, this, vertexSize, numVerts, usage, false, streamOut);
+		D3D11VertexBuffer* buffer = new (cm_alloc<D3D11VertexBuffer, PoolAlloc>()) D3D11VertexBuffer(mDevice, vertexSize, numVerts, usage, false, streamOut);
 
 		return cm_core_ptr<D3D11VertexBuffer, PoolAlloc>(buffer);
 	}

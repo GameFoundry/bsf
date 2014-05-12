@@ -234,6 +234,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsGLVertexArrayObjectManager.h" />
     <ClInclude Include="Include\CmGLContext.h" />
     <ClInclude Include="Include\CmGLEventQuery.h" />
     <ClInclude Include="Include\CmGLFrameBufferObject.h" />
@@ -270,6 +271,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CmGLPlugin.cpp" />
+    <ClCompile Include="Source\BsGLVertexArrayObjectManager.cpp" />
     <ClCompile Include="Source\CmGLContext.cpp" />
     <ClCompile Include="Source\CmGLEventQuery.cpp" />
     <ClCompile Include="Source\CmGLFrameBufferObject.cpp" />

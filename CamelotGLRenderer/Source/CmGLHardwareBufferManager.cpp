@@ -83,7 +83,7 @@ namespace BansheeEngine {
     VertexBufferPtr GLHardwareBufferManager::createVertexBufferImpl(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
-		return cm_core_ptr<GLVertexBuffer, PoolAlloc>(new (cm_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(this, vertexSize, numVerts, usage));
+		return cm_core_ptr<GLVertexBuffer, PoolAlloc>(new (cm_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(vertexSize, numVerts, usage));
     }
     //-----------------------------------------------------------------------
     IndexBufferPtr 

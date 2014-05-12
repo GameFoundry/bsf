@@ -129,6 +129,9 @@
     <ClInclude Include="Include\CmWin32Window.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGLVertexArrayObjectManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmGLContext.cpp">
@@ -220,6 +223,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmWin32Window.cpp">
       <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGLVertexArrayObjectManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

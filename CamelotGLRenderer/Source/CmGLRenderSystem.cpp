@@ -16,15 +16,13 @@
 #include "CmGLRenderTexture.h"
 #include "CmGLRenderWindowManager.h"
 #include "CmGLSLProgramPipelineManager.h"
+#include "BsGLVertexArrayObjectManager.h"
 #include "CmRenderStateManager.h"
 #include "CmGpuParams.h"
 #include "CmGLGpuParamBlockBuffer.h"
 #include "CmCoreThread.h"
 #include "CmGLQueryManager.h"
 #include "CmDebug.h"
-
-// Convenience macro from ARB_vertex_buffer_object spec
-#define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
 namespace BansheeEngine 
 {
@@ -142,8 +140,10 @@ namespace BansheeEngine
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
 		initFromCaps(mCurrentCapabilities);
+		GLVertexArrayObjectManager::startUp(cm_new<GLVertexArrayObjectManager>());
+		
 		mGLInitialised = true;
-
+		
 		RenderSystem::initialize_internal(asyncOp);
 
 		asyncOp._completeOperation(primaryWindow);
@@ -152,6 +152,8 @@ namespace BansheeEngine
 	void GLRenderSystem::destroy_internal()
 	{
 		RenderSystem::destroy_internal();
+
+		GLVertexArrayObjectManager::shutDown();
 
 		// Deleting the GLSL program factory
 		if (mGLSLProgramFactory)
@@ -604,6 +606,9 @@ namespace BansheeEngine
 	void GLRenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
+
+		if ((index + numBuffers) > (UINT32)mBoundVertexBuffers.size())
+			mBoundVertexBuffers.resize(index + numBuffers);
 
 		for(UINT32 i = 0; i < numBuffers; i++)
 		{
@@ -1304,75 +1309,8 @@ namespace BansheeEngine
 			mActivePipeline = pipeline;
 		}
 
-		void* pBufferData = 0;
-
-		const VertexDeclaration::VertexElementList& decl = mBoundVertexDeclaration->getElements();
-		VertexDeclaration::VertexElementList::const_iterator elem, elemEnd;
-		elemEnd = decl.end();
-
-		const VertexDeclaration::VertexElementList& inputAttributes = mCurrentVertexProgram->getInputAttributes().getElements();
-
-		GLuint VAOID[1];
-		glGenVertexArrays(1, &VAOID[0]);
-		glBindVertexArray(VAOID[0]); // DEBUG ONLY!!! - Store these somewhere and just rebind them when needed
-
-		for (elem = decl.begin(); elem != elemEnd; ++elem)
-		{
-			auto iterFind = mBoundVertexBuffers.find(elem->getStreamIdx());
-
-			if(iterFind == mBoundVertexBuffers.end() || iterFind->second == nullptr)
-				continue; // Skip unbound elements
-
-			VertexBufferPtr vertexBuffer = iterFind->second;
-
-			bool foundSemantic = false; 
-			GLint attribLocation = 0;
-			for(auto iter = inputAttributes.begin(); iter != inputAttributes.end(); ++iter)
-			{
-				if(iter->getSemantic() == elem->getSemantic() && iter->getSemanticIdx() == elem->getSemanticIdx())
-				{
-					foundSemantic = true;
-					attribLocation = iter->getOffset();
-					break;
-				}
-			}
-
-			if(!foundSemantic) // Shader needs to have a matching input attribute, otherwise we skip it
-				continue;
-
-			// TODO - We might also want to check the size of input and buffer, and make sure they match? Or does OpenGL handle that internally?
-
-			glBindBuffer(GL_ARRAY_BUFFER, static_cast<const GLVertexBuffer*>(vertexBuffer.get())->getGLBufferId());
-			pBufferData = VBO_BUFFER_OFFSET(elem->getOffset());
-
-			unsigned int i = 0;
-			VertexElementSemantic sem = elem->getSemantic();
-
-			unsigned short typeCount = VertexElement::getTypeCount(elem->getType());
-			GLboolean normalised = GL_FALSE;
-			switch(elem->getType())
-			{
-			case VET_COLOR:
-			case VET_COLOR_ABGR:
-			case VET_COLOR_ARGB:
-				normalised = GL_TRUE;
-				break;
-			default:
-				break;
-			};
-
-			glVertexAttribPointer(
-				attribLocation,
-				typeCount, 
-				GLHardwareBufferManager::getGLType(elem->getType()), 
-				normalised, 
-				static_cast<GLsizei>(vertexBuffer->getVertexSize()), 
-				pBufferData);
-
-			glEnableVertexAttribArray(attribLocation);
-
-			mBoundAttributes.push_back(attribLocation);
-		}
+		const GLVertexArrayObject& vao = GLVertexArrayObjectManager::instance().getVAO(mCurrentVertexProgram, mBoundVertexDeclaration, mBoundVertexBuffers);
+		glBindVertexArray(vao.getGLHandle()); 
 	}
 
 	void GLRenderSystem::endDraw()
@@ -1381,14 +1319,6 @@ namespace BansheeEngine
 			return;
 
 		mDrawCallInProgress = false;
-
-		// unbind any custom attributes
-		for (auto ai = mBoundAttributes.begin(); ai != mBoundAttributes.end(); ++ai)
-		{
-			glDisableVertexAttribArray(*ai); 
-		}
-
-		mBoundAttributes.clear();
 	}
 
 	GLfloat GLRenderSystem::getCurrentAnisotropy(UINT16 unit)

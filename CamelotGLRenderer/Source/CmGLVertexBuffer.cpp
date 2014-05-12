@@ -1,39 +1,13 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmGLHardwareBufferManager.h"
 #include "CmGLVertexBuffer.h"
+#include "BsGLVertexArrayObjectManager.h"
 #include "CmException.h"
 
 namespace BansheeEngine 
 {
-    GLVertexBuffer::GLVertexBuffer(HardwareBufferManager* mgr, UINT32 vertexSize, 
+    GLVertexBuffer::GLVertexBuffer(UINT32 vertexSize, 
         UINT32 numVertices, GpuBufferUsage usage)
-        : VertexBuffer(mgr, vertexSize, numVertices, usage, false)
+        : VertexBuffer(vertexSize, numVertices, usage, false)
     {
     }
 
@@ -41,8 +15,48 @@ namespace BansheeEngine
     {
     }
 
-    void* GLVertexBuffer::lockImpl(UINT32 offset, 
-        UINT32 length, GpuLockOptions options)
+	void GLVertexBuffer::initialize_internal()
+	{
+		glGenBuffers(1, &mBufferId);
+
+		if (!mBufferId)
+		{
+			CM_EXCEPT(InternalErrorException,
+				"Cannot create GL vertex buffer");
+		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, mBufferId);
+
+		glBufferData(GL_ARRAY_BUFFER, mSizeInBytes, NULL,
+			GLHardwareBufferManager::getGLUsage(mUsage));
+
+		VertexBuffer::initialize_internal();
+	}
+
+	void GLVertexBuffer::destroy_internal()
+	{
+		glDeleteBuffers(1, &mBufferId);
+
+		while (mVAObjects.size() > 0)
+			GLVertexArrayObjectManager::instance().notifyBufferDestroyed(mVAObjects[0]);
+
+		VertexBuffer::destroy_internal();
+	}
+
+	void GLVertexBuffer::registerVAO(const GLVertexArrayObject& vao)
+	{
+		mVAObjects.push_back(vao);
+	}
+
+	void GLVertexBuffer::unregisterVAO(const GLVertexArrayObject& vao)
+	{
+		auto iterFind = std::find(mVAObjects.begin(), mVAObjects.end(), vao);
+
+		if (iterFind != mVAObjects.end())
+			mVAObjects.erase(iterFind);
+	}
+
+    void* GLVertexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
         GLenum access = 0;
 
@@ -68,14 +82,14 @@ namespace BansheeEngine
 		else
 			access = GL_MAP_READ_BIT | GL_MAP_WRITE_BIT;
 
-		void* pBuffer = glMapBufferRange(GL_ARRAY_BUFFER, offset, length, access);
+		void* buffer = glMapBufferRange(GL_ARRAY_BUFFER, offset, length, access);
 
-		if(pBuffer == 0)
+		if(buffer == nullptr)
 		{
-			CM_EXCEPT(InternalErrorException, "Vertex Buffer: Out of memory");
+			CM_EXCEPT(InternalErrorException, "Cannot map vertex buffer.");
 		}
 
-		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(pBuffer));
+		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(buffer));
 
 		mIsLocked = true;
 		return retPtr;
@@ -87,7 +101,7 @@ namespace BansheeEngine
 
 		if(!glUnmapBuffer(GL_ARRAY_BUFFER))
 		{
-			CM_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
+			CM_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload.");
 		}
 
         mIsLocked = false;
@@ -113,30 +127,4 @@ namespace BansheeEngine
 		memcpy(bufferData, pSource, length);
 		unlock();
     }
-
-	void GLVertexBuffer::initialize_internal()
-	{
-		glGenBuffers(1, &mBufferId);
-
-		if (!mBufferId)
-		{
-			CM_EXCEPT(InternalErrorException, 
-				"Cannot create GL vertex buffer");
-		}
-
-		glBindBuffer(GL_ARRAY_BUFFER, mBufferId);
-
-		// Initialise mapped buffer and set usage
-		glBufferData(GL_ARRAY_BUFFER, mSizeInBytes, NULL, 
-			GLHardwareBufferManager::getGLUsage(mUsage));
-
-		VertexBuffer::initialize_internal();
-	}
-
-	void GLVertexBuffer::destroy_internal()
-	{
-		glDeleteBuffers(1, &mBufferId);
-
-		VertexBuffer::destroy_internal();
-	}
 }
