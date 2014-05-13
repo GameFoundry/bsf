@@ -8,9 +8,6 @@ namespace BansheeEngine
 	/**
 	 * @brief	Represents one engine module. Essentially it is a specialized type of singleton.
 	 * 			Module must be manually started up and shut down before and after use.
-	 * 			
-	 * TODO Low priority - Use variadic templates to automatically pass parameters so I may construct the object instance internally.
-	 *			Right now I expect the caller to allocate the object using general memory allocator.
 	 */
 	template <class T>
 	class Module
@@ -22,19 +19,19 @@ namespace BansheeEngine
 		 */
 		static T& instance()
 		{
-			if(isShutDown)
+			if(isShutDown())
 			{
 				CM_EXCEPT(InternalErrorException, 
 					"Trying to access a module but it hasn't been started up yet.");
 			}
 
-			if(isDestroyed)
+			if (isDestroyed())
 			{
 				CM_EXCEPT(InternalErrorException, 
 					"Trying to access a destroyed module.");
 			}
 
-			return *_instance;
+			return *_instance();
 		}
 
 		/**
@@ -43,34 +40,52 @@ namespace BansheeEngine
 		 */
 		static T* instancePtr()
 		{
-			if(isShutDown)
+			if (isShutDown())
 			{
 				CM_EXCEPT(InternalErrorException, 
 					"Trying to access a module but it hasn't been started up yet.");
 			}
 
-			if(isDestroyed)
+			if (isDestroyed())
 			{
 				CM_EXCEPT(InternalErrorException, 
 					"Trying to access a destroyed module.");
 			}
 
-			return _instance;
+			return _instance();
 		}
 		
 		/**
-		 * @brief	Starts up the module. You must provide an initialized instance of the module,
-		 * 			allocated using the general memory allocator.
+		 * @brief	Constructs and starts the module using the specified parameters.
 		 */
-		static void startUp(T* inst)
+		template<class ...Args>
+		static void startUp(Args &&...args)
 		{
-			if(!isShutDown)
+			if (!isShutDown())
 				CM_EXCEPT(InternalErrorException, "Trying to start an already started module.");
 
-			_instance = inst;
-			isShutDown = false;
+			_instance() = cm_new<T>(std::forward<Args>(args)...);
+			isShutDown() = false;
 
-			((Module*)_instance)->onStartUp();
+			((Module*)_instance())->onStartUp();
+		}
+
+		/**
+		 * @brief	Constructs and starts a specialized type of the module. Provided type
+		 *			must derive from type the Module is initialized with.
+		 */
+		template<class SubType, class ...Args>
+		static void startUp(Args &&...args)
+		{
+			static_assert(std::is_base_of<T, SubType>::value, "Provided type is not derived from type the Module is initialized with.");
+
+			if (!isShutDown())
+				CM_EXCEPT(InternalErrorException, "Trying to start an already started module.");
+
+			_instance() = cm_new<SubType>(std::forward<Args>(args)...);
+			isShutDown() = false;
+
+			((Module*)_instance())->onStartUp();
 		}
 
 		/**
@@ -78,16 +93,16 @@ namespace BansheeEngine
 		 */
 		static void shutDown()
 		{
-			if(isShutDown)
+			if (isShutDown())
 			{
 				CM_EXCEPT(InternalErrorException, 
 					"Trying to shut down an already shut down module.");
 			}
 
-			((Module*)_instance)->onShutDown();
+			((Module*)_instance())->onShutDown();
 
-			cm_delete(_instance);
-			isShutDown = true;
+			cm_delete(_instance());
+			isShutDown() = true;
 		}
 
 		/**
@@ -95,7 +110,7 @@ namespace BansheeEngine
 		 */
 		static bool isStarted()
 		{
-			return !isShutDown && !isDestroyed;
+			return !isShutDown() && !isDestroyed();
 		}
 
 	protected:
@@ -105,8 +120,8 @@ namespace BansheeEngine
 
 		virtual ~Module()
 		{ 
-			_instance = nullptr;
-			isDestroyed = true;
+			_instance() = nullptr;
+			isDestroyed() = true;
 		}
 
 		Module(const Module&) { }
@@ -128,17 +143,22 @@ namespace BansheeEngine
 		 */
 		virtual void onShutDown() {}
 
-		static T* _instance;
-		static bool isShutDown;
-		static bool isDestroyed;
+		static T*& _instance()
+		{
+			static T* inst = nullptr;
+			return inst;
+		}
+
+		static bool& isDestroyed()
+		{
+			static bool inst = false;
+			return inst;
+		}
+
+		static bool& isShutDown()
+		{
+			static bool inst = true;
+			return inst;
+		}
 	};
-	
-	template <class T>
-	T* Module<T>::_instance = nullptr;
-
-	template <class T>
-	bool Module<T>::isShutDown = true;
-
-	template <class T>
-	bool Module<T>::isDestroyed = false;
 }

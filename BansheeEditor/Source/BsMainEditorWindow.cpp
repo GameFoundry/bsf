@@ -78,7 +78,7 @@ namespace BansheeEngine
 		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
 		//DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 
-		ProfilerOverlay::startUp(cm_new<ProfilerOverlay>(sceneCamera->getViewport()));
+		ProfilerOverlay::startUp(sceneCamera->getViewport());
 		ProfilerOverlay::instance().show();
 	}
 

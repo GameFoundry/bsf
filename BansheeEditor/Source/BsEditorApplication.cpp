@@ -75,7 +75,7 @@ namespace BansheeEngine
 
 		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
 		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer"); // TODO - Make renderer and resource cache dir customizable
-		EditorGUI::startUp(cm_new<EditorGUI>());
+		EditorGUI::startUp();
 
 		{
 			auto inputConfig = VirtualInput::instance().getConfiguration();
@@ -89,13 +89,13 @@ namespace BansheeEngine
 			inputConfig->registerButton("Delete", BC_DELETE);
 		}
 
-		ProjectLibrary::startUp(cm_new<ProjectLibrary>(getActiveProjectPath()));
+		ProjectLibrary::startUp(getActiveProjectPath());
 
-		UndoRedo::startUp(cm_new<UndoRedo>());
-		EditorWindowManager::startUp(cm_new<EditorWindowManager>());
+		UndoRedo::startUp();
+		EditorWindowManager::startUp();
 
 		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
-		EditorWidgetManager::startUp(cm_new<EditorWidgetManager>());
+		EditorWidgetManager::startUp();
 
 		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
 

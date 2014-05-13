@@ -102,11 +102,11 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		mGLSupport->start();
-		RenderWindowManager::startUp(cm_new<GLRenderWindowManager>(this));
+		RenderWindowManager::startUp<GLRenderWindowManager>(this);
 
-		RenderStateManager::startUp(cm_new<RenderStateManager>());
+		RenderStateManager::startUp();
 
-		QueryManager::startUp(cm_new<GLQueryManager>());
+		QueryManager::startUp<GLQueryManager>();
 
 		// Initialize a window so we have something to create a GL context with
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
@@ -140,7 +140,7 @@ namespace BansheeEngine
 
 		mCurrentCapabilities = createRenderSystemCapabilities();
 		initFromCaps(mCurrentCapabilities);
-		GLVertexArrayObjectManager::startUp(cm_new<GLVertexArrayObjectManager>());
+		GLVertexArrayObjectManager::startUp();
 		
 		mGLInitialised = true;
 		
@@ -1624,7 +1624,7 @@ namespace BansheeEngine
 			glUnmapBufferARB = glUnmapBuffer;
 		}
 
-		HardwareBufferManager::startUp(cm_new<GLHardwareBufferManager>());
+		HardwareBufferManager::startUp<GLHardwareBufferManager>();
 		checkForErrors();
 
 		// GPU Program Manager setup
@@ -1666,7 +1666,7 @@ namespace BansheeEngine
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
-				GLRTTManager::startUp(cm_new<GLRTTManager>());
+				GLRTTManager::startUp<GLRTTManager>();
 				checkForErrors();
 			}
 		}
@@ -1714,7 +1714,7 @@ namespace BansheeEngine
 		if(totalNumUniformBlocks > numCombinedUniformBlocks)
 			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
-		TextureManager::startUp(cm_new<GLTextureManager>(std::ref(*mGLSupport))); 
+		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));
 
 		// Check for FSAA
 		// Enable the extension if it was enabled by the GLSupport

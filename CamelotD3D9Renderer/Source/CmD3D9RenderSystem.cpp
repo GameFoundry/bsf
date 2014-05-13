@@ -149,16 +149,16 @@ namespace BansheeEngine
 		mDeviceManager = cm_new<D3D9DeviceManager>();
 
 		// Also create hardware buffer manager		
-		HardwareBufferManager::startUp(cm_new<D3D9HardwareBufferManager>());
+		HardwareBufferManager::startUp<D3D9HardwareBufferManager>();
 
 		// Create & register HLSL factory		
 		mHLSLProgramFactory = cm_new<D3D9HLSLProgramFactory>();
 
 		// Create render window manager
-		RenderWindowManager::startUp(cm_new<D3D9RenderWindowManager>(this));
+		RenderWindowManager::startUp<D3D9RenderWindowManager>(this);
 
 		// Create render state manager
-		RenderStateManager::startUp(cm_new<RenderStateManager>());
+		RenderStateManager::startUp();
 
 		// Create primary window and finalize initialization
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
@@ -166,9 +166,9 @@ namespace BansheeEngine
 		updateRenderSystemCapabilities(d3d9renderWindow);
 
 		// Create the texture manager for use by others		
-		TextureManager::startUp(cm_new<D3D9TextureManager>());
+		TextureManager::startUp<D3D9TextureManager>();
 
-		QueryManager::startUp(cm_new<D3D9QueryManager>());
+		QueryManager::startUp<D3D9QueryManager>();
 
 		// call superclass method
 		RenderSystem::initialize_internal(asyncOp);

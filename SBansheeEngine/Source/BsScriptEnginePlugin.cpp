@@ -48,9 +48,9 @@ namespace BansheeEngine
 		mono_add_internal_call("BansheeEngine.Program::dbgTestComponentClone", &dbgTestComponentClone);
 		mono_add_internal_call("BansheeEngine.Program::reportDbgValue", &reportDbgValue);
 
-		RuntimeScriptObjects::startUp(cm_new<RuntimeScriptObjects>());
-		ScriptResourceManager::startUp(cm_new<ScriptResourceManager>());
-		ScriptGameObjectManager::startUp(cm_new<ScriptGameObjectManager>());
+		RuntimeScriptObjects::startUp();
+		ScriptResourceManager::startUp();
+		ScriptGameObjectManager::startUp();
 
 		RuntimeScriptObjects::instance().refreshScriptObjects(BansheeEngineAssemblyName);
 

@@ -59,37 +59,37 @@ namespace BansheeEngine
 		Platform::_startUp();
 		MemStack::beginThread();
 
-		UUIDGenerator::startUp(cm_new<UUIDGenerator>());
-		Profiler::startUp(cm_new<Profiler>());
-		ThreadPool::startUp(cm_new<TThreadPool<ThreadBansheePolicy>>(numWorkerThreads));
-		TaskScheduler::startUp(cm_new<TaskScheduler>());
+		UUIDGenerator::startUp();
+		Profiler::startUp();
+		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));
+		TaskScheduler::startUp();
 		TaskScheduler::instance().removeWorker();
-		CoreThread::startUp(cm_new<CoreThread>());
-		StringTable::startUp(cm_new<StringTable>());
-		DeferredCallManager::startUp(cm_new<DeferredCallManager>());
-		Time::startUp(cm_new<Time>());
-		DynLibManager::startUp(cm_new<DynLibManager>());
-		CoreObjectManager::startUp(cm_new<CoreObjectManager>());
-		GameObjectManager::startUp(cm_new<GameObjectManager>());
-		Resources::startUp(cm_new<Resources>());
-		GpuProgramManager::startUp(cm_new<GpuProgramManager>());
-		RenderSystemManager::startUp(cm_new<RenderSystemManager>());
+		CoreThread::startUp();
+		StringTable::startUp();
+		DeferredCallManager::startUp();
+		Time::startUp();
+		DynLibManager::startUp();
+		CoreObjectManager::startUp();
+		GameObjectManager::startUp();
+		Resources::startUp();
+		GpuProgramManager::startUp();
+		RenderSystemManager::startUp();
 
 		mPrimaryWindow = RenderSystemManager::instance().initialize(desc.renderSystem, desc.primaryWindowDesc);
 
-		Input::startUp(cm_new<Input>());
-		RendererManager::startUp(cm_new<RendererManager>());
+		Input::startUp();
+		RendererManager::startUp();
 
 		loadPlugin(desc.renderer);
 		RendererManager::instance().setActive(desc.renderer);
 
 		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
 
-		MeshManager::startUp(cm_new<MeshManager>());
-		MaterialManager::startUp(cm_new<MaterialManager>());
-		FontManager::startUp(cm_new<FontManager>());
+		MeshManager::startUp();
+		MaterialManager::startUp();
+		FontManager::startUp();
 
-		Importer::startUp(cm_new<Importer>());
+		Importer::startUp();
 
 		for(auto& importerName : desc.importers)
 			loadPlugin(importerName);

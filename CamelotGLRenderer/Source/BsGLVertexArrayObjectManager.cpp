@@ -176,9 +176,9 @@ namespace BansheeEngine
 		stackDeallocLast(usedBuffers);
 		stackDeallocLast(streamToSeqIdx);
 
-		mVAObjects.insert(wantedVAO);
+		auto iter = mVAObjects.insert(wantedVAO);
 
-		return wantedVAO;
+		return *iter.first;
 	}
 
 	void GLVertexArrayObjectManager::notifyBufferDestroyed(const GLVertexArrayObject& vao)

@@ -12,7 +12,7 @@ namespace BansheeEngine
 	 *			
 	 * @note	Not thread safe.
      */
-    class CM_UTILITY_EXPORT DynLibManager: public Module<DynLibManager>
+    class CM_UTILITY_EXPORT DynLibManager : public Module<DynLibManager>
     {
     public:
         DynLibManager();

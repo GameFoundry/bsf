@@ -38,23 +38,23 @@ namespace BansheeEngine
 		
 		gApplication().startUp(desc);
 
-		VirtualInput::startUp(cm_new<VirtualInput>());
-		ScriptManager::startUp(cm_new<ScriptManager>());
-		GUIManager::startUp(cm_new<GUIManager>());
-		GUIMaterialManager::startUp(cm_new<GUIMaterialManager>());
-		OverlayManager::startUp(cm_new<OverlayManager>());
+		VirtualInput::startUp();
+		ScriptManager::startUp();
+		GUIManager::startUp();
+		GUIMaterialManager::startUp();
+		OverlayManager::startUp();
 
-		BuiltinMaterialManager::startUp(cm_new<BuiltinMaterialManager>());
+		BuiltinMaterialManager::startUp();
 		BuiltinMaterialManager::instance().addFactory(cm_new<D3D9BuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().addFactory(cm_new<D3D11BuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().addFactory(cm_new<GLBuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
 
-		DrawHelper2D::startUp(cm_new<DrawHelper2D>());
-		DrawHelper3D::startUp(cm_new<DrawHelper3D>());
+		DrawHelper2D::startUp();
+		DrawHelper3D::startUp();
 
-		BuiltinResources::startUp(cm_new<BuiltinResources>());
-		Cursor::startUp(cm_new<Cursor>());
+		BuiltinResources::startUp();
+		Cursor::startUp();
 
 		gApplication().loadPlugin("BansheeMono", &mMonoPlugin);
 		gApplication().loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
