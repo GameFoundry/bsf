@@ -9,91 +9,99 @@
 
 namespace BansheeEngine 
 {
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-
-	/** Base definition of a hardware buffer manager.
-	*/
+	/**
+	 * @brief	Handles creation of various hardware buffers.
+	 *
+	 * @note	Thread safe.
+	 */
 	class CM_EXPORT HardwareBufferManager : public Module<HardwareBufferManager>
 	{
     public:
         HardwareBufferManager();
         virtual ~HardwareBufferManager();
-		/** Create a hardware vertex buffer.
-        @remarks
-            This method creates a new vertex buffer; this will act as a source of geometry
-            data for rendering objects. Note that because the meaning of the contents of
-            the vertex buffer depends on the usage, this method does not specify a
-            vertex format; the user of this buffer can actually insert whatever data 
-            they wish, in any format. However, in order to use this with a RenderOperation,
-            the data in this vertex buffer will have to be associated with a semantic element
-            of the rendering pipeline, e.g. a position, or texture coordinates. This is done 
-            using the VertexDeclaration class, which itself contains VertexElement structures
-            referring to the source data.
-        @remarks Note that because vertex buffers can be shared, they are reference
-            counted so you do not need to worry about destroying themm this will be done
-            automatically.
-        @param vertexSize The size in bytes of each vertex in this buffer; you must calculate
-            this based on the kind of data you expect to populate this buffer with.
-        @param numVerts The number of vertices in this buffer.
-        @param usage One or more members of the HardwareBuffer::Usage enumeration; you are
-            strongly advised to use HBU_STATIC_WRITE_ONLY wherever possible, if you need to 
-            update regularly, consider HBU_DYNAMIC_WRITE_ONLY and useShadowBuffer=true.
-		@param streamOut Whether the vertex buffer will be used for steam out operations of the
-			geometry shader.
-        */
-		virtual VertexBufferPtr 
-            createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
-
-		/** Create a hardware index buffer.
-        @remarks Note that because buffers can be shared, they are reference
-            counted so you do not need to worry about destroying them this will be done
-            automatically.
-		@param itype The type in index, either 16- or 32-bit, depending on how many vertices
-			you need to be able to address
-		@param numIndexes The number of indexes in the buffer
-        @param usage One or more members of the HardwareBuffer::Usage enumeration.
-        */
-		virtual IndexBufferPtr 
-            createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
 		/**
-		 * @brief	Creates an GPU parameter block that you can use for setting parameters
-		 * 			for GPU programs.
+		 * @brief	Creates a new vertex buffer used for holding number of vertices and other
+		 *			per-vertex data. Buffer can be bound to the pipeline and its data can
+		 *			be passed to the active vertex GPU program.
 		 *
-		 * @return	The new GPU parameter block.
+		 * @param	vertexSize	Size of a single vertex in the buffer, in bytes.
+		 * @param	numVerts	Number of vertices the buffer can hold.
+		 * @param	usage		Usage that tells the hardware how will be buffer be used. 
+		 * @param	streamOut	If true the buffer will be usable for streaming out data from the GPU.
+		 */
+		virtual VertexBufferPtr createVertexBuffer(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false);
+
+		/**
+		 * @brief	Creates a new index buffer that holds indices referencing vertices in a vertex buffer.
+		 *			Indices are interpreted by the pipeline and vertices are drawn in the order specified in
+		 *			the index buffer.
+		 *
+		 * @param	itype		Index type, determines size of an index.
+		 * @param	numIndexes	Number of indexes can buffer can hold.
+		 * @param	usage		Usage that tells the hardware how will be buffer be used. 
+		 */
+		virtual IndexBufferPtr createIndexBuffer(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
+
+		/**
+		 * @brief	Creates an GPU parameter block that you can use for setting parameters for GPU programs.
+		 *			Parameter blocks may be used for sharing parameter data between multiple GPU programs, requiring
+		 *			you to update only one buffer for all of them, potentially improving performance.
+		 *
+		 * @param	size	Size of the parameter buffer in bytes.
+		 * @param	usage	Usage that tells the hardware how will be buffer be used. 
 		 */
 		virtual GpuParamBlockBufferPtr createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 		/**
-		 * @brief	Creates a generic buffer that can be passed as a parameter to a shader.
+		 * @brief	Creates a generic buffer that can be passed as a parameter to a shader. This type of buffer can hold
+		 *			various type of data and can be used for various purposes. See "GpuBufferType" for explanation of
+		 *			different buffer types.
 		 *
 		 * @param	elementCount  	Number of elements in the buffer. 
 		 * @param	elementSize   	Size of each individual element in the buffer, in bytes.
 		 * @param	type		  	Type of the buffer.
-		 * @param	usage		  	Determines how will the buffer be used.
+		 * @param	usage		  	Usage that tells the hardware how will be buffer be used. 
 		 * @param	randomGpuWrite	(optional) Allows the GPU to write to the resource.
-		 * @param	useCounter	  	(optional) Binds a counter that can be used from a shader to the buffer.
+		 * @param	useCounter	  	(optional) Binds a counter that can be used from a GPU program on the buffer.
 		 *
-		 * Be aware that some of these settings cannot be used together, and you will receive an assert if in debug mode.
+		 * @note	Be aware that due to some render API restrictions some of these settings cannot be used together, 
+		 *			and if so you will receive an assert in debug mode.
 		 */
 		virtual GpuBufferPtr createGpuBuffer(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
-        /** Creates a new vertex declaration. */
+		/**
+		 * @brief	Creates a new vertex declaration from a list of vertex elements.
+		 */
 		virtual VertexDeclarationPtr createVertexDeclaration(const VertexDeclaration::VertexElementList& elements);
 
 	protected:
-		virtual VertexDeclarationPtr createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements);
+		/**
+		 * @copydoc	createVertexBuffer
+		 */
 		virtual VertexBufferPtr createVertexBufferImpl(UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut = false) = 0;
+
+		/**
+		 * @copydoc	createIndexBuffer
+		 */
 		virtual IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage) = 0;
+
+		/**
+		 * @copydoc	createGpuParamBlockBuffer
+		 */
 		virtual GpuParamBlockBufferPtr createGpuParamBlockBufferImpl() = 0;
+
+		/**
+		 * @copydoc	createGpuBuffer
+		 */
 		virtual GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, 
 			bool randomGpuWrite = false, bool useCounter = false) = 0;
+
+		/**
+		 * @copydoc	createVertexDeclaration
+		 */
+		virtual VertexDeclarationPtr createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements);
 	};
 }
 

@@ -4,7 +4,6 @@
 #include "CmTechnique.h"
 #include "CmPass.h"
 #include "CmRenderSystem.h"
-#include "CmGpuProgramParams.h"
 #include "CmHardwareBufferManager.h"
 #include "CmGpuProgram.h"
 #include "CmGpuParamBlockBuffer.h"

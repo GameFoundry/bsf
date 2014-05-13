@@ -338,7 +338,6 @@
     <ClInclude Include="Include\CmGpuProgramImporter.h" />
     <ClInclude Include="Include\CmGpuProgramImportOptions.h" />
     <ClInclude Include="Include\CmGpuProgramImportOptionsRTTI.h" />
-    <ClInclude Include="Include\CmGpuProgramParams.h" />
     <ClInclude Include="Include\CmGpuProgramRTTI.h" />
     <ClInclude Include="Include\CmHardwareBuffer.h" />
     <ClInclude Include="Include\CmHardwareBufferManager.h" />
@@ -451,7 +450,6 @@
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramImporter.cpp" />
     <ClCompile Include="Source\CmGpuProgramImportOptions.cpp" />
-    <ClCompile Include="Source\CmGpuProgramParams.cpp" />
     <ClCompile Include="Source\CmGpuResource.cpp" />
     <ClCompile Include="Source\CmGpuResourceData.cpp" />
     <ClCompile Include="Source\CmHardwareBufferManager.cpp" />

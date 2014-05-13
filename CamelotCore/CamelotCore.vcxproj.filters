@@ -135,9 +135,6 @@
     <ClInclude Include="Include\CmHardwareBufferManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmGpuProgramParams.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmGpuProgram.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -543,9 +540,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGpuProgram.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmGpuProgramParams.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmHardwareBufferManager.cpp">

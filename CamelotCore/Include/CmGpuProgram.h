@@ -2,7 +2,6 @@
 
 #include "CmPrerequisites.h"
 #include "CmDrawOps.h"
-#include "CmGpuProgramParams.h"
 #include "CmResource.h"
 #include "CmGpuParamDesc.h"
 
@@ -121,7 +120,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Only relevant for geometry programs.
 		 */
-		virtual bool isAdjacencyInfoRequired(void) const { return mNeedsAdjacencyInfo; }
+		virtual bool isAdjacencyInfoRequired() const { return mNeedsAdjacencyInfo; }
 
 		/**
 		 * @brief	Creates a new parameters object compatible with this program definition. You
@@ -173,12 +172,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns whether required capabilities for this program is supported.
 		 */
-        bool isRequiredCapabilitiesSupported(void) const;
+        bool isRequiredCapabilitiesSupported() const;
 
 		/**
 		 * @copydoc Resource::calculateSize
 		 */
-		size_t calculateSize(void) const { return 0; } // TODO 
+		size_t calculateSize() const { return 0; } // TODO 
 
 	protected:
 		GpuProgramType mType;
