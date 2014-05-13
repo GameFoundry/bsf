@@ -28,7 +28,7 @@ namespace BansheeEngine
     {
 		assert (numIndexes > 0);
 
-		D3D9IndexBuffer* buffer = new (cm_alloc<D3D9IndexBuffer, PoolAlloc>()) D3D9IndexBuffer(this, itype, numIndexes, usage, false);
+		D3D9IndexBuffer* buffer = new (cm_alloc<D3D9IndexBuffer, PoolAlloc>()) D3D9IndexBuffer(itype, numIndexes, usage, false);
 		return cm_core_ptr<D3D9IndexBuffer, PoolAlloc>(buffer);
     }
 

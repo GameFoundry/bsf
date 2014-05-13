@@ -34,7 +34,7 @@ namespace BansheeEngine
 	protected:
 		friend class D3D11HardwareBufferManager;
 
-		D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
+		D3D11IndexBuffer(D3D11Device& device, IndexType idxType, UINT32 numIndexes, 
 			GpuBufferUsage usage, bool useSystemMem);
 
 		/**

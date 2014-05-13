@@ -34,9 +34,8 @@ THE SOFTWARE.
 #include "CmRenderSystem.h"
 #include "CmRenderSystemCapabilities.h"
 
-namespace BansheeEngine {
-    //-----------------------------------------------------------------------
-	// Scratch pool management (32 bit structure)
+namespace BansheeEngine 
+{
 	struct GLScratchBufferAlloc
 	{
 		/// Size in bytes
@@ -44,9 +43,10 @@ namespace BansheeEngine {
 		/// Free? (pack with size)
 		UINT32 free: 1;
 	};
+
 	#define SCRATCH_POOL_SIZE 1 * 1024 * 1024
 	#define SCRATCH_ALIGNMENT 32
-	//---------------------------------------------------------------------
+
     GLHardwareBufferManager::GLHardwareBufferManager() 
 		: mScratchBufferPool(NULL), mMapBufferThreshold(CM_GL_DEFAULT_MAP_BUFFER_THRESHOLD)
     {
@@ -74,37 +74,34 @@ namespace BansheeEngine {
 #	endif
 
     }
-    //-----------------------------------------------------------------------
+
     GLHardwareBufferManager::~GLHardwareBufferManager()
     {
 		_aligned_free(mScratchBufferPool);
     }
-    //-----------------------------------------------------------------------
+
     VertexBufferPtr GLHardwareBufferManager::createVertexBufferImpl(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
 		return cm_core_ptr<GLVertexBuffer, PoolAlloc>(new (cm_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(vertexSize, numVerts, usage));
     }
-    //-----------------------------------------------------------------------
-    IndexBufferPtr 
-    GLHardwareBufferManager::createIndexBufferImpl(
-        IndexBuffer::IndexType itype, UINT32 numIndexes, 
-        GpuBufferUsage usage)
+
+    IndexBufferPtr GLHardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
-		return cm_core_ptr<GLIndexBuffer, PoolAlloc>(new (cm_alloc<GLIndexBuffer, PoolAlloc>()) GLIndexBuffer(this, itype, numIndexes, usage));
+		return cm_core_ptr<GLIndexBuffer, PoolAlloc>(new (cm_alloc<GLIndexBuffer, PoolAlloc>()) GLIndexBuffer(itype, numIndexes, usage));
     }
-	//---------------------------------------------------------------------
+
 	GpuParamBlockBufferPtr GLHardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
 		return cm_core_ptr<GLGpuParamBlockBuffer, PoolAlloc>(new (cm_alloc<GLGpuParamBlockBuffer, PoolAlloc>()) GLGpuParamBlockBuffer());
 	}
-	//---------------------------------------------------------------------
+
 	GpuBufferPtr GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
 		return cm_core_ptr<GLGpuBuffer, PoolAlloc>(new (cm_alloc<GLGpuBuffer, PoolAlloc>()) GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
-    //---------------------------------------------------------------------
+
     GLenum GLHardwareBufferManager::getGLUsage(unsigned int usage)
     {
         switch(usage)
@@ -117,7 +114,7 @@ namespace BansheeEngine {
             return GL_DYNAMIC_DRAW;
         };
     }
-    //---------------------------------------------------------------------
+
     GLenum GLHardwareBufferManager::getGLType(unsigned int type)
     {
         switch(type)
@@ -141,7 +138,7 @@ namespace BansheeEngine {
                 return 0;
         };
     }
-	//---------------------------------------------------------------------
+
 	void* GLHardwareBufferManager::allocateScratch(UINT32 size)
 	{
 		// simple forward link search based on alloc sizes
@@ -194,7 +191,7 @@ namespace BansheeEngine {
 		return 0;
 
 	}
-	//---------------------------------------------------------------------
+
 	void GLHardwareBufferManager::deallocateScratch(void* ptr)
 	{
 		CM_LOCK_MUTEX(mScratchMutex)
@@ -246,15 +243,13 @@ namespace BansheeEngine {
 
 		// Should never get here unless there's a corruption
 		assert (false && "Memory deallocation error");
-
-
 	}
-	//---------------------------------------------------------------------
+
 	const UINT32 GLHardwareBufferManager::getGLMapBufferThreshold() const
 	{
 		return mMapBufferThreshold;
 	}
-	//---------------------------------------------------------------------
+
 	void GLHardwareBufferManager::setGLMapBufferThreshold(const UINT32 value)
 	{
 		mMapBufferThreshold = value;

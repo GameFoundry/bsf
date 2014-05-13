@@ -330,70 +330,70 @@ namespace BansheeEngine
 
 			switch(paramDesc.type)
 			{
-			case GCT_FLOAT1:
+			case GPDT_FLOAT1:
 				glProgramUniform1fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
 				break;
-			case GCT_FLOAT2:
+			case GPDT_FLOAT2:
 				glProgramUniform2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
 				break;
-			case GCT_FLOAT3:
+			case GPDT_FLOAT3:
 				glProgramUniform3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
 				break;
-			case GCT_FLOAT4:
+			case GPDT_FLOAT4:
 				glProgramUniform4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_2X2:
+			case GPDT_MATRIX_2X2:
 				glProgramUniformMatrix2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_2X3:
+			case GPDT_MATRIX_2X3:
 				glProgramUniformMatrix2x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_2X4:
+			case GPDT_MATRIX_2X4:
 				glProgramUniformMatrix2x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_3X2:
+			case GPDT_MATRIX_3X2:
 				glProgramUniformMatrix3x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_3X3:
+			case GPDT_MATRIX_3X3:
 				glProgramUniformMatrix3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_3X4:
+			case GPDT_MATRIX_3X4:
 				glProgramUniformMatrix3x4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_4X2:
+			case GPDT_MATRIX_4X2:
 				glProgramUniformMatrix4x2fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_4X3:
+			case GPDT_MATRIX_4X3:
 				glProgramUniformMatrix4x3fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_MATRIX_4X4:
+			case GPDT_MATRIX_4X4:
 				glProgramUniformMatrix4fv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, 
 					GL_FALSE, (GLfloat*)ptrData);
 				break;
-			case GCT_INT1:
+			case GPDT_INT1:
 				glProgramUniform1iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
 				break;
-			case GCT_INT2:
+			case GPDT_INT2:
 				glProgramUniform2iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
 				break;
-			case GCT_INT3:
+			case GPDT_INT3:
 				glProgramUniform3iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
 				break;
-			case GCT_INT4:
+			case GPDT_INT4:
 				glProgramUniform4iv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLint*)ptrData);
 				break;
 			case GPDT_BOOL:
 				glProgramUniform1uiv(glProgram, paramDesc.gpuMemOffset, paramDesc.arraySize, (GLuint*)ptrData);
 				break;
-			case GCT_UNKNOWN:
+			case GPDT_UNKNOWN:
 				break;
 			}
 		}

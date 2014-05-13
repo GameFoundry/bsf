@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-----------------------------------------------------------------------------
-*/
 #include "CmD3D9IndexBuffer.h"
 #include "CmD3D9Mappings.h"
 #include "CmException.h"
@@ -33,20 +6,17 @@ THE SOFTWARE.
 #include "CmD3D9Device.h"
 #include "CmD3D9ResourceManager.h"
 
-namespace BansheeEngine {
-
-	//---------------------------------------------------------------------
-    D3D9IndexBuffer::D3D9IndexBuffer(HardwareBufferManager* mgr, IndexBuffer::IndexType idxType, 
-        UINT32 numIndexes, GpuBufferUsage usage,
-        bool useSystemMemory)
-        : IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMemory)
+namespace BansheeEngine 
+{
+    D3D9IndexBuffer::D3D9IndexBuffer(IndexBuffer::IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMemory)
+        : IndexBuffer(idxType, numIndexes, usage, useSystemMemory)
     {
 			
     }
-	//---------------------------------------------------------------------
+
     D3D9IndexBuffer::~D3D9IndexBuffer()
     { }
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::initialize_internal()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -73,7 +43,7 @@ namespace BansheeEngine {
 
 		IndexBuffer::initialize_internal();
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::destroy_internal()
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -96,9 +66,8 @@ namespace BansheeEngine {
 
 		IndexBuffer::destroy_internal();
 	}
-	//---------------------------------------------------------------------
-    void* D3D9IndexBuffer::lockImpl(UINT32 offset, 
-        UINT32 length, GpuLockOptions options)
+
+    void* D3D9IndexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
@@ -136,7 +105,7 @@ namespace BansheeEngine {
 
 		return mSystemMemoryBuffer + offset;		
     }
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::unlockImpl(void)
     {	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -158,7 +127,7 @@ namespace BansheeEngine {
 			++it;
 		}			
     }
-	//---------------------------------------------------------------------
+
     void D3D9IndexBuffer::readData(UINT32 offset, UINT32 length, 
         void* pDest)
     {
@@ -169,9 +138,8 @@ namespace BansheeEngine {
         this->unlock();
 
     }
-	//---------------------------------------------------------------------
-    void D3D9IndexBuffer::writeData(UINT32 offset, UINT32 length, 
-            const void* pSource, BufferWriteType writeFlags)
+
+    void D3D9IndexBuffer::writeData(UINT32 offset, UINT32 length,  const void* pSource, BufferWriteType writeFlags)
     {
 		GpuLockOptions lockOption = GBL_WRITE_ONLY;
 		if(writeFlags == BufferWriteType::Discard)
@@ -185,7 +153,7 @@ namespace BansheeEngine {
         memcpy(pDst, pSource, length);
         this->unlock();    
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
 	{			
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -194,7 +162,7 @@ namespace BansheeEngine {
 			createBuffer(d3d9Device, mBufferDesc.Pool);	
 
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -211,7 +179,7 @@ namespace BansheeEngine {
 			mMapDeviceToBufferResources.erase(it);
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -226,7 +194,7 @@ namespace BansheeEngine {
 			}					
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -234,7 +202,7 @@ namespace BansheeEngine {
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
 			createBuffer(d3d9Device, mBufferDesc.Pool);		
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9IndexBuffer::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
@@ -290,8 +258,7 @@ namespace BansheeEngine {
 		}		
 	}
 
-	//---------------------------------------------------------------------
-	IDirect3DIndexBuffer9* D3D9IndexBuffer::getD3DIndexBuffer(void)
+	IDirect3DIndexBuffer9* D3D9IndexBuffer::getD3DIndexBuffer()
 	{		
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
 		DeviceToBufferResourcesIterator it;
@@ -315,9 +282,8 @@ namespace BansheeEngine {
 
 		return it->second->mBuffer;
 	}
-	//---------------------------------------------------------------------
-	bool D3D9IndexBuffer::updateBufferResources(const char* systemMemoryBuffer,
-		BufferResources* bufferResources)
+
+	bool D3D9IndexBuffer::updateBufferResources(const char* systemMemoryBuffer, BufferResources* bufferResources)
 	{
 		assert(bufferResources != NULL);
 		assert(bufferResources->mBuffer != NULL);

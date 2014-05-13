@@ -1,14 +1,5 @@
  - Ability to construct Module using startUp without having to do allocation outside of it
 
-DEBUG CODE in GLRenderSystem::beginDraw()
-
-		GLuint VAOID[1];
-		glGenVertexArrays(1, &VAOID[0]);
-		glBindVertexArray(VAOID[0]);
-
-I'll probably want a system like PipelineManager where it saves all VS and VB combinations and retuns vertex array for it.
- - Those vertex arrays should probably be saved in the vertex shader
-
 Create a proper git repo of dependencies folder
 
 Shutdown issues (can't repro atm but they're there):

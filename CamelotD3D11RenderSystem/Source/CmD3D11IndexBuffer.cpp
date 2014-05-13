@@ -3,9 +3,9 @@
 
 namespace BansheeEngine
 {
-	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, HardwareBufferManager* mgr, IndexType idxType, UINT32 numIndexes, 
+	D3D11IndexBuffer::D3D11IndexBuffer(D3D11Device& device, IndexType idxType, UINT32 numIndexes, 
 		GpuBufferUsage usage, bool useSystemMem)
-		:IndexBuffer(mgr, idxType, numIndexes, usage, useSystemMem), mDevice(device), mBuffer(nullptr)
+		:IndexBuffer(idxType, numIndexes, usage, useSystemMem), mDevice(device), mBuffer(nullptr)
 	{
 
 	}
