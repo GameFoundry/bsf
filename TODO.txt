@@ -119,6 +119,9 @@ Low priority TODO
     entire buffer. It would be better to handle this differently. Same thing happens in MeshHeap
  - OpenGL also supports texture views using glTextureView but so far I only use them in DX11
  - I don't have a way to set Texture filtering or wrap modes, default ones are always set on initialization
+ - Module does need to be fixed for multi-threading. If it is created on one thread and used on another, a race condition could occurr. But do I use modules on two different threads?
+   - I will with Debug, and probably others
+   - Making the shutdown/destroy variables atomic should be enough
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic

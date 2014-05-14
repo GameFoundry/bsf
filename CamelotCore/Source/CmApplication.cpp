@@ -114,7 +114,7 @@ namespace BansheeEngine
 			PROFILE_CALL(gSceneManager().update(), "SceneManager");
 
 			gCoreThread().queueCommand(std::bind(&Application::beginCoreProfiling, this));
-			gCoreThread().queueCommand(std::bind(&QueryManager::update, QueryManager::instancePtr()));
+			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));
 
 			if(!mainLoopCallback.empty())
 				mainLoopCallback();

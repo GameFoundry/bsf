@@ -43,6 +43,6 @@ namespace BansheeEngine
 		IDirect3DQuery9* mDisjointQuery;
 		IDirect3DQuery9* mFreqQuery;
 
-		virtual void finalize();
+		void finalize();
 	};
 }

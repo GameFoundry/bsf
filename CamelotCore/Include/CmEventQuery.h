@@ -47,7 +47,7 @@ namespace BansheeEngine
 		friend class QueryManager;
 
 		/**
-		 * @brief	Returns true if the query is still waiting for its "ready" callback to be triggered.
+		 * @brief	Returns true if the has still not been completed by the GPU.
 		 */
 		bool isActive() const { return mActive; }
 		void setActive(bool active) { mActive = active; }

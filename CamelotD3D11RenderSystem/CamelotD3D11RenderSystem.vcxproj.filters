@@ -129,6 +129,9 @@
     <ClInclude Include="Include\CmD3D11GpuProgramRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmD3D11OcclusionQuery.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmD3D11GpuProgram.cpp">
@@ -237,6 +240,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmD3D11TimerQuery.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmD3D11OcclusionQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

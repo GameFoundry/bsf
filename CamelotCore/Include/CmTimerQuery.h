@@ -41,15 +41,23 @@ namespace BansheeEngine
 		 */
 		virtual float getTimeMs() = 0;
 
+		/**
+		* @brief	Triggered when GPU processes the query. As a parameter
+		*			it provides query duration in milliseconds.
+		*/
 		Event<void(float)> onTriggered;
 
+		/**
+		 * @brief	Creates a new query, but does not schedule it on GPU.
+		 */
 		static TimerQueryPtr create();
 
 	protected:
 		friend class QueryManager;
 
-		virtual void finalize() = 0;
-
+		/**
+		* @brief	Returns true if the has still not been completed by the GPU.
+		*/
 		bool isActive() const { return mActive; }
 		void setActive(bool active) { mActive = active; }
 

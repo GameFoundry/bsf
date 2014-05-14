@@ -250,6 +250,7 @@
     <ClInclude Include="Include\CmD3D11Mappings.h" />
     <ClInclude Include="Include\CmD3D11MultiRenderTexture.h" />
     <ClInclude Include="Include\CmD3D11GpuParamBlockBuffer.h" />
+    <ClInclude Include="Include\CmD3D11OcclusionQuery.h" />
     <ClInclude Include="Include\CmD3D11Prerequisites.h" />
     <ClInclude Include="Include\CmD3D11QueryManager.h" />
     <ClInclude Include="Include\CmD3D11RenderUtility.h" />
@@ -288,6 +289,7 @@
     <ClCompile Include="Source\CmD3D11HLSLProgramFactory.cpp" />
     <ClCompile Include="Source\CmD3D11InputLayoutManager.cpp" />
     <ClCompile Include="Source\CmD3D11Mappings.cpp" />
+    <ClCompile Include="Source\CmD3D11OcclusionQuery.cpp" />
     <ClCompile Include="Source\CmD3D11Plugin.cpp" />
     <ClCompile Include="Source\CmD3D11QueryManager.cpp" />
     <ClCompile Include="Source\CmD3D11RenderUtility.cpp" />

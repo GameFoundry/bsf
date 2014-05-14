@@ -130,6 +130,7 @@ namespace BansheeEngine
 	class VertexDataDesc;
 	class EventQuery;
 	class TimerQuery;
+	class OcclusionQuery;
 	class FrameAlloc;
 	class FolderMonitor;
 	// Asset import
@@ -220,6 +221,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<CoreThreadAccessor<CommandQueueSync>> SyncedCoreAccessorPtr;
 	typedef std::shared_ptr<EventQuery> EventQueryPtr;
 	typedef std::shared_ptr<TimerQuery> TimerQueryPtr;
+	typedef std::shared_ptr<OcclusionQuery> OcclusionQueryPtr;
 	typedef std::shared_ptr<ResourceManifest> ResourceManifestPtr;
 }
 

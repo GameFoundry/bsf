@@ -43,6 +43,6 @@ namespace BansheeEngine
 		ID3D11Query* mDisjointQuery;
 		ID3D11DeviceContext* mContext;
 
-		virtual void finalize();
+		void finalize();
 	};
 }

@@ -37,7 +37,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		RenderOperation.txt = RenderOperation.txt
 		ResourceBundles.txt = ResourceBundles.txt
 		SpriteTexture.txt = SpriteTexture.txt
-		TaskScheduler.txt = TaskScheduler.txt
 		TODO.txt = TODO.txt
 		TODODoc.txt = TODODoc.txt
 		TransformUpdatesAndRenderer.txt = TransformUpdatesAndRenderer.txt

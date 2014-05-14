@@ -1,253 +1,63 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmD3D9OcclusionQuery.h"
-#include "CmRenderSystemCapabilities.h"
-#include "CmException.h"
 #include "CmD3D9RenderSystem.h"
+#include "CmMath.h"
 
-namespace BansheeEngine {
+namespace BansheeEngine
+{
+	D3D9OcclusionQuery::D3D9OcclusionQuery(bool binary)
+		:OcclusionQuery(binary), mQuery(nullptr), mNumFragments(0), mFinalized(false)
+	{
+		IDirect3DDevice9* device = D3D9RenderSystem::getActiveD3D9Device();
 
-	/**
-	* This is a class that is the DirectX9 implementation of 
-	* hardware occlusion testing.
-	*
-	* @author Lee Sandberg
-	*
-	* Updated on 12/7/2004 by Chris McGuirk
-	* Updated on 4/8/2005 by Tuan Kuranes email: tuan.kuranes@free.fr
-	*/
-
-	/**
-	* Default object constructor
-	*/
-    D3D9OcclusionQuery::D3D9OcclusionQuery()
-	{ 
-		
+		HRESULT hr = device->CreateQuery(D3DQUERYTYPE_OCCLUSION, &mQuery);
+		if (hr != S_OK)
+		{
+			CM_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
+		}
 	}
 
-	/**
-	* Object destructor
-	*/
-	D3D9OcclusionQuery::~D3D9OcclusionQuery() 
-	{ 
-		DeviceToQueryIterator it = mMapDeviceToQuery.begin();
-
-		while (it != mMapDeviceToQuery.end())
-		{
-			SAFE_RELEASE(it->second);
-			++it;
-		}	
-		mMapDeviceToQuery.clear();
+	D3D9OcclusionQuery::~D3D9OcclusionQuery()
+	{
+		if (mQuery != nullptr)
+			mQuery->Release();
 	}
 
-	//------------------------------------------------------------------
-	// Occlusion query functions (see base class documentation for this)
-	//--
-	void D3D9OcclusionQuery::beginOcclusionQuery() 
-	{	
-		IDirect3DDevice9* pCurDevice  = D3D9RenderSystem::getActiveD3D9Device();				
-		DeviceToQueryIterator it      = mMapDeviceToQuery.find(pCurDevice);
+	void D3D9OcclusionQuery::begin()
+	{
+		mQuery->Issue(D3DISSUE_BEGIN);
 
-		// No resource exits for current device -> create it.
-		if (it == mMapDeviceToQuery.end() || it->second == NULL)		
-			createQuery(pCurDevice);			
-		
-
-		// Grab the query of the current device.
-		IDirect3DQuery9* pOccQuery = mMapDeviceToQuery[pCurDevice];
-
-		
-		if (pOccQuery != NULL)
-		{
-			pOccQuery->Issue(D3DISSUE_BEGIN); 
-			mIsQueryResultStillOutstanding = true;
-			mPixelCount = 0;
-		}		
+		mNumFragments = 0;
+		setActive(true);
 	}
 
-	void D3D9OcclusionQuery::endOcclusionQuery() 
-	{ 
-		IDirect3DDevice9* pCurDevice  = D3D9RenderSystem::getActiveD3D9Device();				
-		DeviceToQueryIterator it      = mMapDeviceToQuery.find(pCurDevice);
-		
-		if (it == mMapDeviceToQuery.end())
+	void D3D9OcclusionQuery::end()
+	{
+		mQuery->Issue(D3DISSUE_END);
+	}
+
+	bool D3D9OcclusionQuery::isReady() const
+	{
+		BOOL queryData;
+		return mQuery->GetData(&queryData, sizeof(BOOL), 0) == S_OK;
+	}
+
+	UINT32 D3D9OcclusionQuery::getNumFragments()
+	{
+		if (!mFinalized && isReady())
 		{
-			CM_EXCEPT(RenderingAPIException, "End occlusion called without matching begin call !!" );
+			finalize();
 		}
 
-		IDirect3DQuery9* pOccQuery = mMapDeviceToQuery[pCurDevice];
+		return mNumFragments;
+	}
 
-		if (pOccQuery != NULL)
-			pOccQuery->Issue(D3DISSUE_END); 
-	}	
-
-	//------------------------------------------------------------------
-	bool D3D9OcclusionQuery::pullOcclusionQuery( unsigned int* NumOfFragments ) 
+	void D3D9OcclusionQuery::finalize()
 	{
-		IDirect3DDevice9* pCurDevice = D3D9RenderSystem::getActiveD3D9Device();
-		DeviceToQueryIterator it     = mMapDeviceToQuery.find(pCurDevice);
+		mFinalized = true;
 
-		if (it == mMapDeviceToQuery.end())		
-			return false;
+		DWORD numFragments;
+		mQuery->GetData(&numFragments, sizeof(DWORD), 0);
 
-		if (it->second == NULL)
-			return false;
-
-        // in case you didn't check if query arrived and want the result now.
-        if (mIsQueryResultStillOutstanding)
-        {
-            // Loop until the data becomes available
-            DWORD pixels;
-            const size_t dataSize = sizeof( DWORD );
-			while (1)
-            {
-                const HRESULT hr = it->second->GetData((void *)&pixels, dataSize, D3DGETDATA_FLUSH);
-
-                if  (hr == S_FALSE)
-                    continue;
-                if  (hr == S_OK)
-                {
-                    mPixelCount = pixels;
-                    *NumOfFragments = pixels;
-                    break;
-                }
-                if (hr == D3DERR_DEVICELOST)
-                {
-                    *NumOfFragments = 0;
-                    mPixelCount = 0;
-                    SAFE_RELEASE(it->second);
-                    break;
-                }
-            } 
-            mIsQueryResultStillOutstanding = false;
-        }
-        else
-        {
-            // we already stored result from last frames.
-            *NumOfFragments = mPixelCount;
-        }		
-		return true;
-	}
-
-	//------------------------------------------------------------------
-	unsigned int D3D9OcclusionQuery::getLastQuerysPixelcount()
-	{
-		return mPixelCount;
-	}
-
-    //------------------------------------------------------------------
-    bool D3D9OcclusionQuery::isStillOutstanding(void)
-    {       
-        // in case you already asked for this query
-        if (!mIsQueryResultStillOutstanding)
-            return false;
-
-		IDirect3DDevice9* pCurDevice = D3D9RenderSystem::getActiveD3D9Device();
-		DeviceToQueryIterator it     = mMapDeviceToQuery.find(pCurDevice);
-
-		if (it == mMapDeviceToQuery.end())		
-			return false;
-
-		if (it->second == NULL)
-			return false;
-
-
-        DWORD pixels;
-        const HRESULT hr = it->second->GetData( (void *) &pixels, sizeof( DWORD ), 0);
-
-        if (hr  == S_FALSE)
-            return true;
-
-        if (hr == D3DERR_DEVICELOST)
-        {
-            mPixelCount = 100000;  
-			SAFE_RELEASE(it->second);
-        }
-
-        mPixelCount = pixels;
-        mIsQueryResultStillOutstanding = false;
-        return false;
-	}
-
-	//------------------------------------------------------------------
-	void D3D9OcclusionQuery::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
-	{
-		
-	}
-
-	//------------------------------------------------------------------
-	void D3D9OcclusionQuery::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
-	{		
-		releaseQuery(d3d9Device);
-	}
-
-	//------------------------------------------------------------------
-	void D3D9OcclusionQuery::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
-	{		
-		releaseQuery(d3d9Device);		
-	}
-
-	//------------------------------------------------------------------
-	void D3D9OcclusionQuery::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
-	{		
-		
-	}
-
-	//------------------------------------------------------------------
-	void D3D9OcclusionQuery::createQuery(IDirect3DDevice9* d3d9Device)
-	{
-		HRESULT hr;
-
-		// Check if query supported.
-		hr = d3d9Device->CreateQuery(D3DQUERYTYPE_OCCLUSION, NULL);
-		if (FAILED(hr))
-		{
-			mMapDeviceToQuery[d3d9Device] = NULL;
-			return;
-		}
-
-		// create the occlusion query.
-		IDirect3DQuery9*  pCurQuery;
-		hr = d3d9Device->CreateQuery(D3DQUERYTYPE_OCCLUSION, &pCurQuery);
-				
-		mMapDeviceToQuery[d3d9Device] = pCurQuery;	
-	}
-
-	//------------------------------------------------------------------
-	void D3D9OcclusionQuery::releaseQuery(IDirect3DDevice9* d3d9Device)
-	{
-		DeviceToQueryIterator it     = mMapDeviceToQuery.find(d3d9Device);
-
-		// Remove from query resource map.
-		if (it != mMapDeviceToQuery.end())		
-		{
-			SAFE_RELEASE(it->second);
-			mMapDeviceToQuery.erase(it);
-		}
+		mNumFragments = (UINT32)numFragments;
 	}
 }

@@ -1,6 +1,7 @@
 #include "CmD3D11QueryManager.h"
 #include "CmD3D11EventQuery.h"
 #include "CmD3D11TimerQuery.h"
+#include "CmD3D11OcclusionQuery.h"
 
 namespace BansheeEngine
 {
@@ -16,6 +17,14 @@ namespace BansheeEngine
 	{
 		TimerQueryPtr query = std::shared_ptr<D3D11TimerQuery>(cm_new<D3D11TimerQuery>(), &QueryManager::deleteTimerQuery, StdAlloc<GenAlloc>());  
 		mTimerQueries.push_back(query.get());
+
+		return query;
+	}
+
+	OcclusionQueryPtr D3D11QueryManager::createOcclusionQuery(bool binary) const
+	{
+		OcclusionQueryPtr query = std::shared_ptr<D3D11OcclusionQuery>(cm_new<D3D11OcclusionQuery>(binary), &QueryManager::deleteOcclusionQuery, StdAlloc<GenAlloc>());
+		mOcclusionQueries.push_back(query.get());
 
 		return query;
 	}

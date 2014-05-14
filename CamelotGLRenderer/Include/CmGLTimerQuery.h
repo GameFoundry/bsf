@@ -43,6 +43,6 @@ namespace BansheeEngine
 
 		float mTimeDelta;
 
-		virtual void finalize();
+		void finalize();
 	};
 }

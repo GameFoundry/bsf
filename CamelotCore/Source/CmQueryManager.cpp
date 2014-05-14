@@ -1,6 +1,7 @@
 #include "CmQueryManager.h"
 #include "CmEventQuery.h"
 #include "CmTimerQuery.h"
+#include "CmOcclusionQuery.h"
 
 namespace BansheeEngine
 {
@@ -9,7 +10,7 @@ namespace BansheeEngine
 
 	}
 
-	void QueryManager::update()
+	void QueryManager::_update()
 	{
 		for(auto& query : mEventQueries)
 		{
@@ -25,6 +26,15 @@ namespace BansheeEngine
 			if(query->isActive() && query->isReady())
 			{
 				query->onTriggered(query->getTimeMs());
+				query->setActive(false);
+			}
+		}
+
+		for (auto& query : mOcclusionQueries)
+		{
+			if (query->isActive() && query->isReady())
+			{
+				query->onComplete(query->getNumFragments());
 				query->setActive(false);
 			}
 		}
@@ -46,6 +56,16 @@ namespace BansheeEngine
 
 		if(iterFind != instance().mTimerQueries.end())
 			instance().mTimerQueries.erase(iterFind);
+
+		cm_delete(query);
+	}
+
+	void QueryManager::deleteOcclusionQuery(OcclusionQuery* query)
+	{
+		auto iterFind = std::find(instance().mOcclusionQueries.begin(), instance().mOcclusionQueries.end(), query);
+
+		if (iterFind != instance().mOcclusionQueries.end())
+			instance().mOcclusionQueries.erase(iterFind);
 
 		cm_delete(query);
 	}
