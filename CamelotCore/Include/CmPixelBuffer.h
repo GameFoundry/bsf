@@ -1,117 +1,93 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
+#pragma once
 
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __HardwarePixelBuffer__
-#define __HardwarePixelBuffer__
-
-// Precompiler options
 #include "CmPrerequisites.h"
 #include "CmHardwareBuffer.h"
 #include "CmPixelUtil.h"
 
-namespace BansheeEngine {
-
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup RenderSystem
-	*  @{
-	*/
-	/** Specialisation of HardwareBuffer for a pixel buffer. The
-    	HardwarePixelbuffer abstracts an 1D, 2D or 3D quantity of pixels
-    	stored by the rendering API. The buffer can be located on the card
-    	or in main memory depending on its usage. One mipmap level of a
-    	texture is an example of a HardwarePixelBuffer.
-    */
+namespace BansheeEngine 
+{
+	/**
+	 * @brief	Represents a hardware buffer that stores a single pixel surface.
+	 *			This may be a 1D, 2D or 3D surface, but unlike a texture it consists
+	 *			only of a single surface (no mip maps, cube map faces or similar).
+	 *
+	 * @note	Core thread only
+	 */
     class CM_EXPORT PixelBuffer : public HardwareBuffer
     {
-    protected: 
-        // Extents
-        UINT32 mWidth, mHeight, mDepth;
-        // Pitches (offsets between rows and slices)
-        UINT32 mRowPitch, mSlicePitch;
-        // Internal format
-        PixelFormat mFormat;
-        // Currently locked region (local coords)
-        PixelData mCurrentLock;
-		// The current locked box of this surface (entire surface coords)
-		PixelVolume mLockedBox;
-        
-        /// Internal implementation of lock(), must be overridden in subclasses
-        virtual PixelData lockImpl(const PixelVolume lockBox,  GpuLockOptions options) = 0;
-
-        /// Internal implementation of lock(), do not OVERRIDE or CALL this
-        /// for HardwarePixelBuffer implementations, but override the previous method
-        virtual void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-
-		friend class RenderTexture;
     public:
-        /// Should be called by HardwareBufferManager
-        PixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth,
-                PixelFormat mFormat, GpuBufferUsage usage, bool useSystemMemory);
+        PixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth, PixelFormat mFormat, 
+			GpuBufferUsage usage, bool useSystemMemory);
         ~PixelBuffer();
 
-        /** make every lock method from HardwareBuffer available.
-        See http://www.research.att.com/~bs/bs_faq2.html#overloadderived
-        */
+		// Make the other lock overloads visible.
         using HardwareBuffer::lock;	
 
-        /** Lock the buffer for (potentially) reading / writing.
-		    @param lockBox Region of the buffer to lock
-		    @param options Locking options
-		    @returns PixelBox containing the locked region, the pitches and
-		    	the pixel format
-		*/
+		/**
+		 * @brief	Locks a certain region of the pixel buffer for reading and returns a pointer
+		 *			to the locked region.
+		 *
+		 * @param	lockBox		Region of the surface to lock.
+		 * @param	options		Lock options that hint the hardware on what you intend to do with the locked data.
+		 *
+		 * @note	Returned object is only valid while the lock is active.
+		 */
 		virtual const PixelData& lock(const PixelVolume& lockBox, GpuLockOptions options);
-		/// @copydoc HardwareBuffer::lock
-        virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
-
-		/** Get the current locked region. This is the same value as returned
-		    by lock(const Image::Box, LockOptions)
-		    @returns PixelBox containing the locked region
-		*/        
-        const PixelData& getCurrentLock();
 		
-		/// @copydoc HardwareBuffer::readData
+		/**
+		 * @copydoc	HardwareBuffer::lock
+		 */
+        virtual void* lock(UINT32 offset, UINT32 length, GpuLockOptions options);
+		
+		/**
+		 * @copydoc	HardwareBuffer::readData
+		 */
 		virtual void readData(UINT32 offset, UINT32 length, void* pDest);
-		/// @copydoc HardwareBuffer::writeData
+
+		/**
+		 * @copydoc	HardwareBuffer::writeData
+		 */
 		virtual void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
 
-        /// Gets the width of this buffer
+		/**
+		 * @brief	Returns width of the surface in pixels.
+		 */
         UINT32 getWidth() const { return mWidth; }
-        /// Gets the height of this buffer
+
+		/**
+		 * @brief	Returns height of the surface in pixels.
+		 */
         UINT32 getHeight() const { return mHeight; }
-        /// Gets the depth of this buffer
+
+		/**
+		 * @brief	Returns depth of the surface in pixels.
+		 */
         UINT32 getDepth() const { return mDepth; }
-        /// Gets the native pixel format of this buffer
+
+		/**
+		 * @brief	Returns format of the pixels in the surface.
+		 */
         PixelFormat getFormat() const { return mFormat; }
+
+	protected:
+		friend class RenderTexture;
+
+		/**
+		 * @brief	Internal implementation of the "lock" method.
+		 */
+		virtual PixelData lockImpl(const PixelVolume lockBox, GpuLockOptions options) = 0;
+
+		/**
+		 * @copydoc	HardwareBuffer::lockImpl
+		 */
+		virtual void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+
+	protected:
+		UINT32 mWidth, mHeight, mDepth;
+		UINT32 mRowPitch, mSlicePitch;
+		PixelFormat mFormat;
+
+		PixelData mCurrentLock;
+		PixelVolume mLockedBox;
     };
-
-	/** @} */
 }
-#endif
-

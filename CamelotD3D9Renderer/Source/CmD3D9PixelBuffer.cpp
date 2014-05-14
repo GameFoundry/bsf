@@ -303,7 +303,7 @@ namespace BansheeEngine
 	}
 
 	//-----------------------------------------------------------------------------  
-	BansheeEngine::PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
+	PixelData D3D9PixelBuffer::lockBuffer(BufferResources* bufferResources, 
 													   const PixelVolume &lockBox, 
 													   DWORD flags)
 	{
