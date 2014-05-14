@@ -15,6 +15,7 @@ namespace BansheeEngine
 	{
 		mParentPanel->registerArea(this);
 	}
+
 	void ScriptGUIArea::initRuntimeData()
 	{
 		metaData.scriptClass->addInternalCall("Internal_CreateInstance", &ScriptGUIArea::internal_createInstance);
@@ -34,13 +35,6 @@ namespace BansheeEngine
 
 			mIsDestroyed = true;
 		}
-	}
-
-	void ScriptGUIArea::_onManagedInstanceDeleted()
-	{
-		destroy();
-
-		ScriptObject::_onManagedInstanceDeleted();
 	}
 
 	void ScriptGUIArea::internal_createInstance(MonoObject* instance, MonoObject* panel, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)

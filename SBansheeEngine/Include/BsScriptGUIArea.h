@@ -26,7 +26,6 @@ namespace BansheeEngine
 		ScriptGUIArea(MonoObject* instance, GUIArea* area, ScriptGUIPanel* panel);
 
 		void destroy();
-		void _onManagedInstanceDeleted();
 
 		GUIArea* mGUIArea;
 		RectI mArea;
