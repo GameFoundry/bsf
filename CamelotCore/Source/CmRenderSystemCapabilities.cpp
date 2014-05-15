@@ -7,27 +7,11 @@ namespace BansheeEngine
 	Vector<BansheeEngine::String> RenderSystemCapabilities::msGPUVendorStrings;
 
 	RenderSystemCapabilities::RenderSystemCapabilities()
-		: mVendor(GPU_UNKNOWN)
-		, mNumWorldMatrices(0)
-		, mNumCombinedTextureUnits(0)
-		, mNumCombinedUniformBlocks(0)
-		, mStencilBufferBitDepth(0)
-		, mNumVertexBlendMatrices(0)
-		, mNumMultiRenderTargets(1)
-		, mMaxBoundVertexBuffers(1)
-		, mNonPOW2TexturesLimited(false)
 	{
-
 		for(int i = 0; i < CAPS_CATEGORY_COUNT; i++)
 		{
 			mCapabilities[i] = 0;
 		}
-		mCategoryRelevant[CAPS_CATEGORY_COMMON] = true;
-		mCategoryRelevant[CAPS_CATEGORY_COMMON_2] = true;
-
-		mCategoryRelevant[CAPS_CATEGORY_D3D11] = false;
-		mCategoryRelevant[CAPS_CATEGORY_D3D9] = false;
-		mCategoryRelevant[CAPS_CATEGORY_GL] = false;
 
 		mNumTextureUnitsPerStage[GPT_VERTEX_PROGRAM] = 0;
 		mNumTextureUnitsPerStage[GPT_FRAGMENT_PROGRAM] = 0;
@@ -36,12 +20,12 @@ namespace BansheeEngine
 		mNumTextureUnitsPerStage[GPT_DOMAIN_PROGRAM] = 0;
 		mNumTextureUnitsPerStage[GPT_COMPUTE_PROGRAM] = 0;
 
-		mNumUniformBlocksPerStage[GPT_VERTEX_PROGRAM] = 0;
-		mNumUniformBlocksPerStage[GPT_FRAGMENT_PROGRAM] = 0;
-		mNumUniformBlocksPerStage[GPT_GEOMETRY_PROGRAM] = 0;
-		mNumUniformBlocksPerStage[GPT_HULL_PROGRAM] = 0;
-		mNumUniformBlocksPerStage[GPT_DOMAIN_PROGRAM] = 0;
-		mNumUniformBlocksPerStage[GPT_COMPUTE_PROGRAM] = 0;
+		mNumGpuParamBlocksPerStage[GPT_VERTEX_PROGRAM] = 0;
+		mNumGpuParamBlocksPerStage[GPT_FRAGMENT_PROGRAM] = 0;
+		mNumGpuParamBlocksPerStage[GPT_GEOMETRY_PROGRAM] = 0;
+		mNumGpuParamBlocksPerStage[GPT_HULL_PROGRAM] = 0;
+		mNumGpuParamBlocksPerStage[GPT_DOMAIN_PROGRAM] = 0;
+		mNumGpuParamBlocksPerStage[GPT_COMPUTE_PROGRAM] = 0;
 	}
 
 	RenderSystemCapabilities::~RenderSystemCapabilities()
@@ -65,7 +49,6 @@ namespace BansheeEngine
 		}
 
 		return ret;
-		
 	}
 
 	String RenderSystemCapabilities::vendorToString(GPUVendor v)

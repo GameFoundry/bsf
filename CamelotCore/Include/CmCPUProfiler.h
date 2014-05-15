@@ -1,18 +1,11 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "BsProfilerFwd.h"
 
 namespace BansheeEngine
 {
 	class CPUProfilerReport;
-
-	typedef std::basic_string<char, std::char_traits<char>, StdAlloc<char, ProfilerAlloc>> ProfilerString; 
-
-	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>> 
-	using ProfilerVector = std::vector<T, A>;
-
-	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>> 
-	using ProfilerStack = std::stack<T, std::deque<T, A>>;
 
 	/**
 	 * @brief	Provides various performance measuring methods
@@ -185,7 +178,7 @@ namespace BansheeEngine
 		void beginSample(const ProfilerString& name);
 
 		/**
-		 * @brief	Ends sample measurement and returns measured data.
+		 * @brief	Ends sample measurement.
 		 *
 		 * @param	name	Unique name for the sample. 
 		 * 					
@@ -207,7 +200,7 @@ namespace BansheeEngine
 		void beginSamplePrecise(const ProfilerString& name);
 
 		/**
-		 * @brief	Ends precise sample measurement and returns measured data.
+		 * @brief	Ends precise sample measurement.
 		 *
 		 * @param	name	Unique name for the sample. 
 		 * 					

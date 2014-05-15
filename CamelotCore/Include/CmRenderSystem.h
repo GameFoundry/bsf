@@ -7,7 +7,7 @@
 
 #include "CmSamplerState.h"
 #include "CmCommonEnums.h"
-
+#include "BsRenderStats.h"
 #include "CmCommandQueue.h"
 #include "CmDrawOps.h"
 #include "CmRenderSystemCapabilities.h"
@@ -294,11 +294,11 @@ namespace BansheeEngine
 		virtual float getHorizontalTexelOffset() = 0;
 
 		/**
-		* @brief	Gets vertical texel offset used for mapping texels to pixels
-		*			in this render system.
-		*
-		* @note		Thread safe.
-		*/
+		 * @brief	Gets vertical texel offset used for mapping texels to pixels
+		 *			in this render system.
+		 *
+		 * @note		Thread safe.
+		 */
 		virtual float getVerticalTexelOffset() = 0;
 
 		/**
@@ -310,25 +310,33 @@ namespace BansheeEngine
 		virtual float getMinimumDepthInputValue() = 0;
 
 		/**
-		* @brief	Gets the maximum (farthest) depth value used by this
-		*			render system.
-		*
-		* @note		Thread safe.
-		*/
-		virtual float getMaximumDepthInputValue(void) = 0;
+		 * @brief	Gets the maximum (farthest) depth value used by this
+		 *			render system.
+		 *
+		 * @note		Thread safe.
+		 */
+		virtual float getMaximumDepthInputValue() = 0;
+
+		/**
+		 * @brief	Returns an object containing various rendering statistics.
+		 *			
+		 * @note	Do not modify the returned state unless you know what you are doing, it will
+		 *			change the actual internal object.
+		 */
+		RenderStats& getRenderStats() { return mRenderStats; }
 
 		/************************************************************************/
 		/* 							INTERNAL METHODS				        	*/
 		/************************************************************************/
 	protected:
 		/**
-		* @brief	Initializes the render system and creates a primary render window.
-		*
-		* @note		Although I'd like otherwise, due to the nature of some render system implementations,
-		* 			you cannot initialize the render system without a window.
-		*
-		*			Sim thread.
-		*/
+		 * @brief	Initializes the render system and creates a primary render window.
+		 *
+		 * @note		Although I'd like otherwise, due to the nature of some render system implementations,
+		 * 			you cannot initialize the render system without a window.
+		 *
+		 *			Sim thread.
+		 */
 		RenderWindowPtr initialize(const RENDER_WINDOW_DESC& primaryWindowDesc);
 
 		/**
@@ -362,6 +370,7 @@ namespace BansheeEngine
 
 		RenderTargetPtr mActiveRenderTarget;
 
+		RenderStats mRenderStats;
 		DriverVersion mDriverVersion;
 		CullingMode mCullingMode;
 		UINT16 mDisabledTexUnitsFrom;

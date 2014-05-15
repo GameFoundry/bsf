@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmD3D9RenderSystem.h"
 #include "CmD3D9Prerequisites.h"
 #include "CmD3D9DriverList.h"
@@ -175,7 +148,7 @@ namespace BansheeEngine
 
 		asyncOp._completeOperation(primaryWindow);
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::destroy_internal()
 	{
 		if(mTexStageDesc != nullptr)
@@ -213,7 +186,7 @@ namespace BansheeEngine
 			mHLSLProgramFactory = 0;
 		}
 
-		SAFE_RELEASE( mpD3D );
+		SAFE_RELEASE(mpD3D);
 
 		if(mResourceManager != nullptr)
 		{
@@ -223,7 +196,7 @@ namespace BansheeEngine
 
 		msD3D9RenderSystem = NULL;
 	}
-	//--------------------------------------------------------------------
+
 	void D3D9RenderSystem::registerWindow(RenderWindow& renderWindow)
 	{		
 		THROW_IF_NOT_CORE_THREAD;
@@ -287,8 +260,9 @@ namespace BansheeEngine
 		for (unsigned int nStage=0; nStage < 8; ++nStage)
 			__SetTextureStageState(nStage, D3DTSS_TEXCOORDINDEX, nStage);
 
-		RenderSystem::bindGpuProgram(prg);
+		mRenderStats.numGpuProgramBinds++;
 
+		RenderSystem::bindGpuProgram(prg);
 	}
 
 	void D3D9RenderSystem::unbindGpuProgram(GpuProgramType gptype)
@@ -314,9 +288,11 @@ namespace BansheeEngine
 			break;
 		};
 
+		mRenderStats.numGpuProgramBinds++;
+
 		RenderSystem::unbindGpuProgram(gptype);
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -476,8 +452,10 @@ namespace BansheeEngine
 		{
 			cm_free<ScratchAlloc>(curBufferData.second);
 		}
+
+		mRenderStats.numGpuParamBufferBinds++;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -523,6 +501,9 @@ namespace BansheeEngine
 				{
 					__SetSamplerState(static_cast<DWORD>(unit), D3DSAMP_SRGBTEXTURE, FALSE);
 				}
+
+				mRenderStats.numTextureBinds++;
+				mRenderStats.numSamplerBinds++;
 			}
 		}
 		else
@@ -535,6 +516,8 @@ namespace BansheeEngine
 					String str = "Unable to disable texture '" + toString(unit) + "' in D3D9";
 					CM_EXCEPT(RenderingAPIException, str);
 				}
+
+				mRenderStats.numTextureBinds++;
 			}
 
 			hr = __SetTextureStageState(static_cast<DWORD>(unit), D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -550,7 +533,7 @@ namespace BansheeEngine
 			mTexStageDesc[unit].texType = D3D9Mappings::D3D_TEX_TYPE_NORMAL;
 		}
 	}
-	//-----------------------------------------------------------------------
+
 	void D3D9RenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -583,8 +566,10 @@ namespace BansheeEngine
 
 		// Set border color
 		setTextureBorderColor(unit, state->getBorderColor());
+
+		mRenderStats.numSamplerBinds++;
 	}
-	//-----------------------------------------------------------------------
+
 	void D3D9RenderSystem::setBlendState(const BlendStatePtr& blendState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -607,8 +592,10 @@ namespace BansheeEngine
 		// Color write mask
 		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
+
+		mRenderStats.numBlendStateChanges++;
 	}
-	//----------------------------------------------------------------------
+
 	void D3D9RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -624,8 +611,10 @@ namespace BansheeEngine
 		setMultisampleAntialiasEnable(rasterizerState->getMultisampleEnable());
 
 		setAntialiasedLineEnable(rasterizerState->getAntialiasedLineEnable());
+
+		mRenderStats.numRasterizerStateChanges++;
 	}
-	//----------------------------------------------------------------------
+
 	void D3D9RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -649,8 +638,10 @@ namespace BansheeEngine
 
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);
+
+		mRenderStats.numDepthStencilStateChanges++;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -664,7 +655,7 @@ namespace BansheeEngine
 				CM_EXCEPT(RenderingAPIException, "Unable to set texture mipmap bias");
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setTextureAddressingMode( UINT16 stage, 
 		const UVWAddressingMode& uvw )
 	{
@@ -678,9 +669,8 @@ namespace BansheeEngine
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_ADDRESSW, D3D9Mappings::get(uvw.w, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps()) ) ) )
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture addressing mode for W");
 	}
-	//-----------------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureBorderColor(UINT16 stage,
-		const Color& colour)
+
+	void D3D9RenderSystem::setTextureBorderColor(UINT16 stage, const Color& colour)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -688,7 +678,7 @@ namespace BansheeEngine
 		if( FAILED( hr = __SetSamplerState( static_cast<DWORD>(stage), D3DSAMP_BORDERCOLOR, colour.getAsBGRA()) ) )
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture border colour");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendOperation op )
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -716,7 +706,7 @@ namespace BansheeEngine
 		if (FAILED(hr = __SetRenderState(D3DRS_BLENDOPALPHA, D3D9Mappings::get(op))))
 			CM_EXCEPT(RenderingAPIException, "Failed to set scene blending operation option");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setSceneBlending( BlendFactor sourceFactor, BlendFactor destFactor, BlendFactor sourceFactorAlpha, 
 		BlendFactor destFactorAlpha, BlendOperation op, BlendOperation alphaOp )
 	{
@@ -750,7 +740,7 @@ namespace BansheeEngine
 		if (FAILED(hr = __SetRenderState(D3DRS_BLENDOPALPHA, D3D9Mappings::get(alphaOp))))
 			CM_EXCEPT(RenderingAPIException, "Failed to set alpha scene blending operation option");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setAlphaTest(CompareFunction func, unsigned char value)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -773,7 +763,7 @@ namespace BansheeEngine
 		if( FAILED( hr = __SetRenderState( D3DRS_ALPHAREF, value ) ) )
 			CM_EXCEPT(RenderingAPIException, "Failed to set render state D3DRS_ALPHAREF");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setAlphaToCoverage(bool enable)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -817,8 +807,8 @@ namespace BansheeEngine
 			lasta2c = enable;
 		}
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setCullingMode( CullingMode mode )
+
+	void D3D9RenderSystem::setCullingMode(CullingMode mode)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -829,8 +819,8 @@ namespace BansheeEngine
 			D3D9Mappings::get(mode, false))) )
 			CM_EXCEPT(RenderingAPIException, "Failed to set culling mode");
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setDepthBufferParams( bool depthTest, bool depthWrite, CompareFunction depthFunction )
+
+	void D3D9RenderSystem::setDepthBufferParams(bool depthTest, bool depthWrite, CompareFunction depthFunction)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -838,23 +828,23 @@ namespace BansheeEngine
 		setDepthBufferWriteEnabled( depthWrite );
 		setDepthBufferFunction( depthFunction );
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setDepthBufferCheckEnabled( bool enabled )
+
+	void D3D9RenderSystem::setDepthBufferCheckEnabled(bool enabled)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
 
 		if( enabled )
-			hr = __SetRenderState( D3DRS_ZENABLE, D3DZB_TRUE );
+			hr = __SetRenderState(D3DRS_ZENABLE, D3DZB_TRUE);
 		else
-			hr = __SetRenderState( D3DRS_ZENABLE, D3DZB_FALSE );
+			hr = __SetRenderState(D3DRS_ZENABLE, D3DZB_FALSE);
 
-		if( FAILED( hr ) )
+		if(FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer test state");
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setDepthBufferWriteEnabled( bool enabled )
+
+	void D3D9RenderSystem::setDepthBufferWriteEnabled(bool enabled)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -863,8 +853,8 @@ namespace BansheeEngine
 		if( FAILED( hr = __SetRenderState( D3DRS_ZWRITEENABLE, enabled ) ) )
 			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer write state");
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setDepthBufferFunction( CompareFunction func )
+
+	void D3D9RenderSystem::setDepthBufferFunction(CompareFunction func)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -872,7 +862,7 @@ namespace BansheeEngine
 		if( FAILED( hr = __SetRenderState( D3DRS_ZFUNC, D3D9Mappings::get(func) ) ) )
 			CM_EXCEPT(RenderingAPIException, "Error setting depth buffer test function");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setDepthBias(float constantBias, float slopeScaleBias)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -899,9 +889,8 @@ namespace BansheeEngine
 
 
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setColorBufferWriteEnabled(bool red, bool green, 
-		bool blue, bool alpha)
+
+	void D3D9RenderSystem::setColorBufferWriteEnabled(bool red, bool green, bool blue, bool alpha)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -914,11 +903,12 @@ namespace BansheeEngine
 			val |= D3DCOLORWRITEENABLE_BLUE;
 		if (alpha)
 			val |= D3DCOLORWRITEENABLE_ALPHA;
+
 		HRESULT hr = __SetRenderState(D3DRS_COLORWRITEENABLE, val); 
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting colour write enable flags");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setPolygonMode(PolygonMode level)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -927,7 +917,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting polygon mode.");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setStencilCheckEnabled(bool enabled)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -952,7 +942,7 @@ namespace BansheeEngine
 				CM_EXCEPT(RenderingAPIException, "Error setting 1-sided stencil mode.");
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setStencilBufferOperations(StencilOperation stencilFailOp, StencilOperation depthFailOp, StencilOperation passOp, bool ccw)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -995,7 +985,7 @@ namespace BansheeEngine
 				CM_EXCEPT(RenderingAPIException, "Error setting stencil pass operation (cw).");
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setStencilBufferFunc(CompareFunction func, bool ccw)
 	{
 		HRESULT hr;
@@ -1008,7 +998,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer test function.");
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setStencilBufferReadMask(UINT32 mask)
 	{
 		HRESULT hr = __SetRenderState(D3DRS_STENCILMASK, mask);
@@ -1016,7 +1006,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer mask.");
 	}
-	//--------------------------------------------------------------------
+
 	void D3D9RenderSystem::setStencilBufferWriteMask(UINT32 mask)
 	{
 		HRESULT hr = __SetRenderState(D3DRS_STENCILWRITEMASK, mask);
@@ -1024,7 +1014,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer write mask.");
 	}
-	//----------------------------------------------------------------------
+
 	void D3D9RenderSystem::setStencilRefValue(UINT32 refValue)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1033,9 +1023,8 @@ namespace BansheeEngine
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Error setting stencil buffer reference value.");
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, 
-		FilterOptions filter)
+
+	void D3D9RenderSystem::setTextureFiltering(UINT16 unit, FilterType ftype, FilterOptions filter)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -1043,11 +1032,12 @@ namespace BansheeEngine
 		D3D9Mappings::eD3DTexType texType = mTexStageDesc[unit].texType;
 		hr = __SetSamplerState( static_cast<DWORD>(unit), D3D9Mappings::get(ftype), 
 			D3D9Mappings::get(ftype, filter, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps(), texType));
+
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Failed to set texture filter ");
 	}
 
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setTextureAnisotropy(UINT16 unit, unsigned int maxAnisotropy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1058,7 +1048,7 @@ namespace BansheeEngine
 		if (_getCurrentAnisotropy(unit) != maxAnisotropy)
 			__SetSamplerState( static_cast<DWORD>(unit), D3DSAMP_MAXANISOTROPY, maxAnisotropy );
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setRenderTarget(RenderTargetPtr target)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1110,8 +1100,10 @@ namespace BansheeEngine
 			String msg = DXGetErrorDescription(hr);
 			CM_EXCEPT(RenderingAPIException, "Failed to setDepthStencil : " + msg);
 		}
+
+		mRenderStats.numRenderTargetChanges++;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setViewport(const ViewportPtr& vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1154,7 +1146,7 @@ namespace BansheeEngine
 		// Set sRGB write mode
 		__SetRenderState(D3DRS_SRGBWRITEENABLE, target->isHwGammaEnabled());
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::beginFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1169,7 +1161,7 @@ namespace BansheeEngine
 
  		mDeviceManager->getActiveDevice()->clearDeviceStreams();
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::endFrame()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1180,7 +1172,7 @@ namespace BansheeEngine
 
 		mDeviceManager->destroyInactiveRenderDevices();
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1196,7 +1188,7 @@ namespace BansheeEngine
 		}
 
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1227,9 +1219,11 @@ namespace BansheeEngine
 
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 stream source for buffer binding");
+
+			mRenderStats.numVertexBufferBinds++;
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1239,31 +1233,37 @@ namespace BansheeEngine
 		HRESULT hr = getActiveD3D9Device()->SetIndices( d3dIdxBuf->getD3DIndexBuffer() );
 		if (FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Failed to set index buffer");
+
+		mRenderStats.numIndexBufferBinds++;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setDrawOperation(DrawOperationType op)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		mCurrentDrawOperation = op;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
 	{
-		UINT32 primCount = pointCountToPrimCount(mCurrentDrawOperation, vertexCount);
+		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
 
 		HRESULT hr = getActiveD3D9Device()->DrawPrimitive(getD3D9PrimitiveType(), static_cast<UINT>(vertexOffset), static_cast<UINT>(primCount)); 
 
-		if( FAILED( hr ) )
+		if(FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
 			CM_EXCEPT(RenderingAPIException, "Failed to DrawPrimitive : " + msg);
 		}
+
+		mRenderStats.numDrawCalls++;
+		mRenderStats.numVertices += vertexCount;
+		mRenderStats.numPrimitives += primCount;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
-		UINT32 primCount = pointCountToPrimCount(mCurrentDrawOperation, indexCount);
+		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, indexCount);
 
 		// do indexed draw operation
 		HRESULT hr = getActiveD3D9Device()->DrawIndexedPrimitive(
@@ -1275,13 +1275,17 @@ namespace BansheeEngine
 			static_cast<UINT>(primCount)
 			);
 
-		if( FAILED( hr ) )
+		if(FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
 			CM_EXCEPT(RenderingAPIException, "Failed to DrawIndexedPrimitive : " + msg);
 		}
+
+		mRenderStats.numDrawCalls++;
+		mRenderStats.numVertices += vertexCount;
+		mRenderStats.numPrimitives += primCount;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1291,7 +1295,7 @@ namespace BansheeEngine
 		mScissorRect.bottom = static_cast<LONG>(bottom);
 		mScissorRect.right = static_cast<LONG>(right);
 	}
-	//--------------------------------------------------------------------
+
 	void D3D9RenderSystem::setScissorTestEnable(bool enable)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1317,7 +1321,7 @@ namespace BansheeEngine
 			}
 		}
 	}
-	//--------------------------------------------------------------------
+
 	void D3D9RenderSystem::setMultisampleAntialiasEnable(bool enable)
 	{
 		HRESULT hr;
@@ -1336,7 +1340,7 @@ namespace BansheeEngine
 			}
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setAntialiasedLineEnable(bool enable)
 	{
 		HRESULT hr;
@@ -1391,7 +1395,7 @@ namespace BansheeEngine
 		}
 
 		// Only try to clear the stencil buffer if supported
-		if (buffers & FBT_STENCIL && mCurrentCapabilities->hasCapability(RSC_HWSTENCIL))
+		if (buffers & FBT_STENCIL)
 		{
 			flags |= D3DCLEAR_STENCIL;
 		}
@@ -1424,8 +1428,10 @@ namespace BansheeEngine
 				CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
 			}
 		}
+
+		mRenderStats.numClears++;
 	}
-	//---------------------------------------------------------------------
+
 	IDirect3D9*	D3D9RenderSystem::getDirect3D9()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1440,7 +1446,6 @@ namespace BansheeEngine
 		return pDirect3D9;
 	}
 
-	//---------------------------------------------------------------------
 	UINT D3D9RenderSystem::getResourceCreationDeviceCount()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1460,7 +1465,7 @@ namespace BansheeEngine
 
 		return 0;
 	}
-	//---------------------------------------------------------------------
+
 	IDirect3DDevice9* D3D9RenderSystem::getResourceCreationDevice(UINT index)
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1484,7 +1489,6 @@ namespace BansheeEngine
 		return d3d9Device;
 	}
 
-	//---------------------------------------------------------------------
 	IDirect3DDevice9* D3D9RenderSystem::getActiveD3D9Device()
 	{	
 		THROW_IF_NOT_CORE_THREAD;
@@ -1501,7 +1505,7 @@ namespace BansheeEngine
 
 		return d3d9Device;
 	}	
-	//---------------------------------------------------------------------
+
 	D3D9ResourceManager* D3D9RenderSystem::getResourceManager()
 	{
 		// No need to check if we're on core thread as this is synced up internally
@@ -1509,7 +1513,6 @@ namespace BansheeEngine
 		return msD3D9RenderSystem->mResourceManager;
 	}
 
-	//---------------------------------------------------------------------
 	D3D9DeviceManager* D3D9RenderSystem::getDeviceManager()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -1521,39 +1524,37 @@ namespace BansheeEngine
 	/* 								UTILITY METHODS                    		*/
 	/************************************************************************/
 
-	//---------------------------------------------------------------------
 	float D3D9RenderSystem::getHorizontalTexelOffset()
 	{
 		// D3D considers the origin to be in the center of a pixel
 		return -0.5f;
 	}
-	//---------------------------------------------------------------------
+
 	float D3D9RenderSystem::getVerticalTexelOffset()
 	{
 		// D3D considers the origin to be in the center of a pixel
 		return -0.5f;
 	}
-	//---------------------------------------------------------------------
+
 	float D3D9RenderSystem::getMinimumDepthInputValue()
 	{
 		// Range [0.0f, 1.0f]
 		return 0.0f;
 	}
-	//---------------------------------------------------------------------
+
 	float D3D9RenderSystem::getMaximumDepthInputValue()
 	{
 		// Range [0.0f, 1.0f]
 		// D3D inverts even identity view matrices, so maximum INPUT is -1.0
 		return -1.0f;
 	}
-	//---------------------------------------------------------------------
+
 	VertexElementType D3D9RenderSystem::getColorVertexElementType() const
 	{
 		return VET_COLOR_ARGB;
 	}
-	//---------------------------------------------------------------------
-	void D3D9RenderSystem::convertProjectionMatrix(const Matrix4& matrix,
-		Matrix4& dest, bool forGpuProgram)
+
+	void D3D9RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram)
 	{
 		dest = matrix;
 
@@ -1577,7 +1578,6 @@ namespace BansheeEngine
 	/* 								PRIVATE		                     		*/
 	/************************************************************************/
 
-	//---------------------------------------------------------------------
 	D3D9DriverList* D3D9RenderSystem::getDirect3DDrivers() const
 	{
 		if( !mDriverList )
@@ -1585,7 +1585,7 @@ namespace BansheeEngine
 
 		return mDriverList;
 	}
-	//---------------------------------------------------------------------
+
 	D3DPRIMITIVETYPE D3D9RenderSystem::getD3D9PrimitiveType() const
 	{
 		switch(mCurrentDrawOperation)
@@ -1606,41 +1606,9 @@ namespace BansheeEngine
 
 		return D3DPT_TRIANGLELIST;
 	}
-	//---------------------------------------------------------------------
-	UINT32 D3D9RenderSystem::pointCountToPrimCount(DrawOperationType type, UINT32 elementCount) const
-	{
-		DWORD primCount = 0;
-		switch(type)
-		{
-		case DOT_POINT_LIST:
-			primCount = elementCount;
-			break;
 
-		case DOT_LINE_LIST:
-			primCount = elementCount / 2;
-			break;
-
-		case DOT_LINE_STRIP:
-			primCount = elementCount - 1;
-			break;
-
-		case DOT_TRIANGLE_LIST:
-			primCount = elementCount / 3;
-			break;
-
-		case DOT_TRIANGLE_STRIP:
-			primCount = elementCount - 2;
-			break;
-
-		case DOT_TRIANGLE_FAN:
-			primCount = elementCount - 2;
-			break;
-		}
-
-		return primCount;
-	}
-	//---------------------------------------------------------------------
-	bool D3D9RenderSystem::_checkMultiSampleQuality(D3DMULTISAMPLE_TYPE type, DWORD *outQuality, D3DFORMAT format, UINT adapterNum, D3DDEVTYPE deviceType, BOOL fullScreen)
+	bool D3D9RenderSystem::_checkMultiSampleQuality(D3DMULTISAMPLE_TYPE type, DWORD *outQuality, D3DFORMAT format, 
+		UINT adapterNum, D3DDEVTYPE deviceType, BOOL fullScreen)
 	{
 		HRESULT hr;
 		hr = mpD3D->CheckDeviceMultiSampleType( 
@@ -1656,28 +1624,21 @@ namespace BansheeEngine
 		else
 			return false;
 	}
-	//---------------------------------------------------------------------
+
 	RenderSystemCapabilities* D3D9RenderSystem::updateRenderSystemCapabilities(D3D9RenderWindow* renderWindow)
 	{			
 		RenderSystemCapabilities* rsc = mCurrentCapabilities;
 		if (rsc == NULL)
 			rsc = cm_new<RenderSystemCapabilities>();
 
-		rsc->setCategoryRelevant(CAPS_CATEGORY_D3D9, true);
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->DriverDescription());
 		rsc->setRenderSystemName(getName());
 
-		// Supports fixed-function
-		rsc->setCapability(RSC_FIXED_FUNCTION);
-
-
 		// Init caps to maximum.		
 		rsc->setCapability(RSC_ANISOTROPY);
 		rsc->setCapability(RSC_AUTOMIPMAP);
-		rsc->setCapability(RSC_DOT3);
-		rsc->setCapability(RSC_CUBEMAPPING);		
-		rsc->setCapability(RSC_SCISSOR_TEST);		
+		rsc->setCapability(RSC_CUBEMAPPING);			
 		rsc->setCapability(RSC_TWO_SIDED_STENCIL);		
 		rsc->setCapability(RSC_STENCIL_WRAP);
 		rsc->setCapability(RSC_HWOCCLUSION);		
@@ -1685,7 +1646,6 @@ namespace BansheeEngine
 		rsc->setCapability(RSC_VERTEX_FORMAT_UBYTE4);			
 		rsc->setCapability(RSC_TEXTURE_3D);			
 		rsc->setCapability(RSC_NON_POWER_OF_2_TEXTURES);
-		rsc->setNonPOW2TexturesLimited(false);
 		rsc->setNumMultiRenderTargets(CM_MAX_MULTIPLE_RENDER_TARGETS);
 		rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);		
 		rsc->setCapability(RSC_POINT_SPRITES);			
@@ -1693,7 +1653,6 @@ namespace BansheeEngine
 		rsc->setMaxPointSize(10.0);
 		rsc->setCapability(RSC_MIPMAP_LOD_BIAS);				
 		rsc->setCapability(RSC_PERSTAGECONSTANT);
-		rsc->setCapability(RSC_HWSTENCIL);
 		rsc->setStencilBufferBitDepth(8);
 		rsc->setCapability(RSC_ADVANCED_BLEND_OPERATIONS);
 
@@ -1714,12 +1673,6 @@ namespace BansheeEngine
 
 				pSurf->GetDesc(&surfDesc);
 				pSurf->Release();
-
-				if (surfDesc.Format != D3DFMT_D15S1 &&
-					surfDesc.Format != D3DFMT_D24S8 && 				
-					surfDesc.Format != D3DFMT_D24X4S4 && 
-					surfDesc.Format != D3DFMT_D24FS8)			
-					rsc->unsetCapability(RSC_HWSTENCIL);	
 			}																	
 
 			// Check for hardware occlusion support
@@ -1746,15 +1699,6 @@ namespace BansheeEngine
 			// Check automatic mipmap generation.
 			if ((rkCurCaps.Caps2 & D3DCAPS2_CANAUTOGENMIPMAP) == 0)
 				rsc->unsetCapability(RSC_AUTOMIPMAP);
-
-			// Check Dot product 3.
-			if ((rkCurCaps.TextureOpCaps & D3DTEXOPCAPS_DOTPRODUCT3) == 0)
-				rsc->unsetCapability(RSC_DOT3);
-
-			// Scissor test
-			if ((rkCurCaps.RasterCaps & D3DPRASTERCAPS_SCISSORTEST) == 0)
-				rsc->unsetCapability(RSC_SCISSOR_TEST);
-
 
 			// Two-sided stencil
 			if ((rkCurCaps.StencilCaps & D3DSTENCILCAPS_TWOSIDED) == 0)
@@ -1784,11 +1728,7 @@ namespace BansheeEngine
 			if (rkCurCaps.TextureCaps & D3DPTEXTURECAPS_POW2)
 			{
 				// Conditional support for non POW2
-				if (rkCurCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL)				
-					rsc->setNonPOW2TexturesLimited(true);				
-
-				// Only power of 2 supported.
-				else					
+				if (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_NONPOW2CONDITIONAL))							
 					rsc->unsetCapability(RSC_NON_POWER_OF_2_TEXTURES);				
 			}	
 
@@ -1831,17 +1771,9 @@ namespace BansheeEngine
 				rsc->unsetCapability(RSC_ADVANCED_BLEND_OPERATIONS);
 		}				
 
-		// Blending between stages supported
-		rsc->setCapability(RSC_BLENDING);
-
-
 		// We always support compression, D3DX will decompress if device does not support
 		rsc->setCapability(RSC_TEXTURE_COMPRESSION);
 		rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
-
-		// We always support VBOs
-		rsc->setCapability(RSC_VBO);
-
 
 		convertVertexShaderCaps(rsc);
 		convertPixelShaderCaps(rsc);
@@ -1868,26 +1800,7 @@ namespace BansheeEngine
 			break;
 		};
 
-		// Infinite projection?
-		// We have no capability for this, so we have to base this on our
-		// experience and reports from users
-		// Non-vertex program capable hardware does not appear to support it
-		if (rsc->hasCapability(RSC_VERTEX_PROGRAM))
-		{
-			// GeForce4 Ti (and presumably GeForce3) does not
-			// render infinite projection properly, even though it does in GL
-			// So exclude all cards prior to the FX range from doing infinite
-			if (rsc->getVendor() != GPU_NVIDIA || // not nVidia
-				!((adapterID.DeviceId >= 0x200 && adapterID.DeviceId <= 0x20F) || //gf3
-				(adapterID.DeviceId >= 0x250 && adapterID.DeviceId <= 0x25F) || //gf4ti
-				(adapterID.DeviceId >= 0x280 && adapterID.DeviceId <= 0x28F) || //gf4ti
-				(adapterID.DeviceId >= 0x170 && adapterID.DeviceId <= 0x18F) || //gf4 go
-				(adapterID.DeviceId >= 0x280 && adapterID.DeviceId <= 0x28F)))  //gf4ti go
-			{
-				rsc->setCapability(RSC_INFINITE_FAR_PLANE);
-			}
-
-		}
+		rsc->setCapability(RSC_INFINITE_FAR_PLANE);
 
 		// We always support rendertextures bigger than the frame buffer
 		rsc->setCapability(RSC_HWRENDER_TO_TEXTURE);
@@ -1962,7 +1875,7 @@ namespace BansheeEngine
 
 		return rsc;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::convertVertexShaderCaps(RenderSystemCapabilities* rsc) const
 	{
 		UINT16 major = 0xFF;
@@ -2076,10 +1989,9 @@ namespace BansheeEngine
 		case 1:
 			rsc->addShaderProfile("vs_1_1");
 			rsc->addGpuProgramProfile(GPP_VS_1_1, "vs_1_1");
-			rsc->setCapability(RSC_VERTEX_PROGRAM);
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::convertPixelShaderCaps(RenderSystemCapabilities* rsc) const
 	{
 		UINT16 major = 0xFF;
@@ -2217,10 +2129,9 @@ namespace BansheeEngine
 
 			rsc->addShaderProfile("ps_1_1");
 			rsc->addGpuProgramProfile(GPP_PS_1_1, "ps_1_1");
-			rsc->setCapability(RSC_FRAGMENT_PROGRAM);
 		}
 	}
-	//-----------------------------------------------------------------------
+
 	void D3D9RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
 	{
 		if (caps->getRenderSystemName() != getName())
@@ -2245,7 +2156,6 @@ namespace BansheeEngine
 		}
 	}
 
-	//-----------------------------------------------------------------------
 	bool D3D9RenderSystem::checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage)
 	{
 		// Gets D3D format
@@ -2305,19 +2215,19 @@ namespace BansheeEngine
 
 		return true;		
 	}
-	//---------------------------------------------------------------------
-	String D3D9RenderSystem::getErrorDescription( long errorNumber ) const
+
+	String D3D9RenderSystem::getErrorDescription(long errorNumber) const
 	{
-		const String errMsg = DXGetErrorDescription( errorNumber );
+		const String errMsg = DXGetErrorDescription(errorNumber);
 		return errMsg;
 	}
-	// ------------------------------------------------------------------
+
 	void D3D9RenderSystem::setClipPlane (UINT16 index, float A, float B, float C, float D)
 	{
 		float plane[4] = { A, B, C, D };
 		getActiveD3D9Device()->SetClipPlane (index, plane);
 	}
-	// ------------------------------------------------------------------
+
 	void D3D9RenderSystem::enableClipPlane (UINT16 index, bool enable)
 	{
 		DWORD prev;
@@ -2325,19 +2235,19 @@ namespace BansheeEngine
 		__SetRenderState(D3DRS_CLIPPLANEENABLE, enable?
 			(prev | (1 << index)) : (prev & ~(1 << index)));
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::notifyOnDeviceLost(D3D9Device* device)
 	{	
 
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::notifyOnDeviceReset(D3D9Device* device)
 	{		
 		// Reset state attributes.	
 		mVertexProgramBound = false;
 		mFragmentProgramBound = false;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,
 		UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
 		bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality) const
@@ -2463,12 +2373,12 @@ namespace BansheeEngine
 
 		} // while !ok
 	}
-	//---------------------------------------------------------------------
+
 	RenderSystemCapabilities* D3D9RenderSystem::createRenderSystemCapabilities() const
 	{
 		return mCurrentCapabilities;
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
 	{
 		size_t i;
@@ -2504,7 +2414,7 @@ namespace BansheeEngine
 			CM_EXCEPT(RenderingAPIException, "Unable to set render state for clip planes");
 		}
 	}
-	//---------------------------------------------------------------------
+
 	HRESULT D3D9RenderSystem::__SetRenderState(D3DRENDERSTATETYPE state, DWORD value)
 	{
 		HRESULT hr;
@@ -2517,7 +2427,7 @@ namespace BansheeEngine
 		else
 			return getActiveD3D9Device()->SetRenderState(state, value);
 	}
-	//---------------------------------------------------------------------
+
 	HRESULT D3D9RenderSystem::__SetSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value)
 	{
 		HRESULT hr;
@@ -2530,7 +2440,7 @@ namespace BansheeEngine
 		else
 			return getActiveD3D9Device()->SetSamplerState(sampler, type, value);
 	}
-	//---------------------------------------------------------------------
+
 	HRESULT D3D9RenderSystem::__SetTextureStageState(DWORD stage, D3DTEXTURESTAGESTATETYPE type, DWORD value)
 	{
 		HRESULT hr;
@@ -2551,7 +2461,7 @@ namespace BansheeEngine
 			return D3D_OK;
 		}
 	}
-	//---------------------------------------------------------------------
+
 	DWORD D3D9RenderSystem::_getCurrentAnisotropy(UINT32 unit)
 	{
 		DWORD oldVal;

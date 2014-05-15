@@ -348,9 +348,6 @@
     <ClInclude Include="Include\CmFontImportOptionsRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmMemAllocCategories.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmGameObjectHandle.h">
       <Filter>Header Files\Scene</Filter>
     </ClInclude>
@@ -527,6 +524,15 @@
     </ClInclude>
     <ClInclude Include="Include\CmGpuProgramManager.h">
       <Filter>Header Files\RenderSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsProfilerFwd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGPUProfiler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsRenderStats.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -826,6 +832,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmGpuProgramManager.cpp">
       <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGPUProfiler.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

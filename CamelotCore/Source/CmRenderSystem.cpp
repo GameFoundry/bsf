@@ -268,8 +268,12 @@ namespace BansheeEngine {
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if(target->isInitialized())
+		if (target->isInitialized())
+		{
 			target->swapBuffers();
+
+			mRenderStats.numPresents++;
+		}
 	}
 
 	void RenderSystem::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer, AsyncOp& asyncOp)

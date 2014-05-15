@@ -124,6 +124,8 @@ namespace BansheeEngine
 		VertexDeclarationPtr mActiveVertexDeclaration;
 		D3D11GpuProgramPtr	 mActiveVertexShader;
 
+		DrawOperationType	mActiveDrawOp;
+
 		/**
 		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader
 		 * 			and vertex buffer. 

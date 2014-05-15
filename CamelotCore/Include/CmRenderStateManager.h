@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Handles creation of various render states.
+	 */
 	class CM_EXPORT RenderStateManager : public Module<RenderStateManager>
 	{
 	public:
@@ -56,15 +59,45 @@ namespace BansheeEngine
 		 */
 		BlendStatePtr createEmptyBlendState() const;
 
+		/**
+		 * @brief	Gets a sampler state initialized with default options.
+		 */
 		const SamplerStatePtr& getDefaultSamplerState() const;
+		
+		/**
+		 * @brief	Gets a blend state initialized with default options.
+		 */
 		const BlendStatePtr& getDefaultBlendState() const;
+
+		/**
+		 * @brief	Gets a rasterizer state initialized with default options.
+		 */
 		const RasterizerStatePtr& getDefaultRasterizerState() const;
+
+		/**
+		 * @brief	Gets a depth stencil state initialized with default options.
+		 */
 		const DepthStencilStatePtr& getDefaultDepthStencilState() const;
 
 	protected:
+		/**
+		 * @copydoc	createSamplerState
+		 */
 		virtual SamplerStatePtr createSamplerStateImpl() const;
+
+		/**
+		 * @copydoc	createBlendState
+		 */
 		virtual BlendStatePtr createBlendStateImpl() const;
+
+		/**
+		 * @copydoc	createRasterizerState
+		 */
 		virtual RasterizerStatePtr createRasterizerStateImpl() const;
+
+		/**
+		 * @copydoc	createDepthStencilState
+		 */
 		virtual DepthStencilStatePtr createDepthStencilStateImpl() const;
 
 	private:

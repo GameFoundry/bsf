@@ -58,8 +58,6 @@
 
 #endif
 
-#include "CmMemAllocCategories.h"
-
 namespace BansheeEngine 
 {
 // Pre-declare classes

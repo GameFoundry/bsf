@@ -206,40 +206,20 @@ namespace BansheeEngine
 		switch (glprg->getType())
 		{
 		case GPT_VERTEX_PROGRAM:
-			if (mCurrentVertexProgram != glprg)
-			{
-				unbindGpuProgram(glprg->getType());
-				mCurrentVertexProgram = glprg;
-			}
+			mCurrentVertexProgram = glprg;
 			break;
 
 		case GPT_FRAGMENT_PROGRAM:
-			if (mCurrentFragmentProgram != glprg)
-			{
-				unbindGpuProgram(glprg->getType());
-				mCurrentFragmentProgram = glprg;
-			}
+			mCurrentFragmentProgram = glprg;
 			break;
 		case GPT_GEOMETRY_PROGRAM:
-			if (mCurrentGeometryProgram != glprg)
-			{
-				unbindGpuProgram(glprg->getType());
-				mCurrentGeometryProgram = glprg;
-			}
+			mCurrentGeometryProgram = glprg;
 			break;
 		case GPT_DOMAIN_PROGRAM:
-			if (mCurrentDomainProgram != glprg)
-			{
-				unbindGpuProgram(glprg->getType());
-				mCurrentDomainProgram = glprg;
-			}
+			mCurrentDomainProgram = glprg;
 			break;
 		case GPT_HULL_PROGRAM:
-			if (mCurrentHullProgram != glprg)
-			{
-				unbindGpuProgram(glprg->getType());
-				mCurrentHullProgram = glprg;
-			}
+			mCurrentHullProgram = glprg;
 			break;
 		}
 
@@ -317,8 +297,11 @@ namespace BansheeEngine
 			glBindBufferRange(GL_UNIFORM_BUFFER, globalBlockBinding, glParamBlockBuffer->getGLHandle(), 0, glParamBlockBuffer->getSize());
 
 			blockBinding++;
+
+			mRenderStats.numGpuParamBufferBinds++;
 		}
 
+		bool hasBoundAtLeastOne = false;
 		for(auto iter = paramDesc.params.begin(); iter != paramDesc.params.end(); ++iter)
 		{
 			const GpuParamDataDesc& paramDesc = iter->second;
@@ -327,6 +310,7 @@ namespace BansheeEngine
 				continue;
 
 			const UINT8* ptrData = uniformBufferData + paramDesc.cpuMemOffset * sizeof(UINT32);
+			hasBoundAtLeastOne = true;
 
 			switch(paramDesc.type)
 			{
@@ -398,6 +382,9 @@ namespace BansheeEngine
 			}
 		}
 
+		if (hasBoundAtLeastOne)
+			mRenderStats.numGpuParamBufferBinds++;
+
 		if(uniformBufferData != nullptr)
 		{
 			cm_free<ScratchAlloc>(uniformBufferData);
@@ -431,6 +418,8 @@ namespace BansheeEngine
 		}
 
 		activateGLTextureUnit(0);
+
+		mRenderStats.numTextureBinds++;
 	}
 
 	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
@@ -456,6 +445,8 @@ namespace BansheeEngine
 
 		// Set border color
 		setTextureBorderColor(unit, state->getBorderColor());
+
+		mRenderStats.numSamplerBinds++;
 	}
 
 	void GLRenderSystem::setBlendState(const BlendStatePtr& blendState)
@@ -480,6 +471,8 @@ namespace BansheeEngine
 		// Color write mask
 		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
+
+		mRenderStats.numBlendStateChanges++;
 	}
 
 	void GLRenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
@@ -493,6 +486,8 @@ namespace BansheeEngine
 		setPolygonMode(rasterizerState->getPolygonMode());
 
 		setScissorTestEnable(rasterizerState->getScissorEnable());
+
+		mRenderStats.numRasterizerStateChanges++;
 	}
 
 	void GLRenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
@@ -517,6 +512,8 @@ namespace BansheeEngine
 
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);
+
+		mRenderStats.numDepthStencilStateChanges++;
 	}
 
 	void GLRenderSystem::setViewport(const ViewportPtr& vp)
@@ -585,6 +582,8 @@ namespace BansheeEngine
 				glDisable(GL_FRAMEBUFFER_SRGB_EXT);
 			}
 		}
+
+		mRenderStats.numRenderTargetChanges++;
 	}
 
 	void GLRenderSystem::beginFrame()
@@ -646,6 +645,10 @@ namespace BansheeEngine
 		glDrawArrays(primType, vertexOffset, vertexCount);
 
 		endDraw();
+
+		mRenderStats.numDrawCalls++;
+		mRenderStats.numVertices += vertexCount;
+		mRenderStats.numPrimitives += vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
 	}
 
 	void GLRenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
@@ -667,6 +670,11 @@ namespace BansheeEngine
 		glDrawElementsBaseVertex(primType, indexCount, indexType, (GLvoid*)(mBoundIndexBuffer->getIndexSize() * startIndex), vertexOffset);
 
 		endDraw();
+
+		mRenderStats.numDrawCalls++;
+		mRenderStats.numVertices += vertexCount;
+		mRenderStats.numPrimitives += vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
+		mRenderStats.numIndexBufferBinds++;
 	}
 
 	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -790,6 +798,8 @@ namespace BansheeEngine
 		{
 			glStencilMask(mStencilWriteMask);
 		}
+
+		mRenderStats.numClears++;
 	}
 
 	/************************************************************************/
@@ -1311,6 +1321,9 @@ namespace BansheeEngine
 
 		const GLVertexArrayObject& vao = GLVertexArrayObjectManager::instance().getVAO(mCurrentVertexProgram, mBoundVertexDeclaration, mBoundVertexBuffers);
 		glBindVertexArray(vao.getGLHandle()); 
+
+		mRenderStats.numVertexBufferBinds++;
+		mRenderStats.numGpuProgramBinds++;
 	}
 
 	void GLRenderSystem::endDraw()
@@ -1527,7 +1540,7 @@ namespace BansheeEngine
 
 	UINT32 GLRenderSystem::getGLUniformBlockBinding(GpuProgramType gptype, UINT32 binding)
 	{
-		UINT32 maxNumBindings = mCurrentCapabilities->getNumUniformBlockBuffers(gptype);
+		UINT32 maxNumBindings = mCurrentCapabilities->getNumGpuParamBlockBuffers(gptype);
 		if (binding < 0 || binding >= maxNumBindings)
 		{
 			CM_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " +
@@ -1607,23 +1620,6 @@ namespace BansheeEngine
 				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
 		}
 
-		if(caps->hasCapability(RSC_GL1_5_NOVBO))
-		{
-			// Assign ARB functions same to GL 1.5 version since
-			// interface identical
-			glBindBufferARB = glBindBuffer;
-			glBufferDataARB = glBufferData;
-			glBufferSubDataARB = glBufferSubData;
-			glDeleteBuffersARB = glDeleteBuffers;
-			glGenBuffersARB = glGenBuffers;
-			glGetBufferParameterivARB = glGetBufferParameteriv;
-			glGetBufferPointervARB = glGetBufferPointerv;
-			glGetBufferSubDataARB = glGetBufferSubData;
-			glIsBufferARB = glIsBuffer;
-			glMapBufferARB = glMapBuffer;
-			glUnmapBufferARB = glUnmapBuffer;
-		}
-
 		HardwareBufferManager::startUp<GLHardwareBufferManager>();
 		checkForErrors();
 
@@ -1637,32 +1633,9 @@ namespace BansheeEngine
 			checkForErrors();
 		}
 
-		if(caps->hasCapability(RSC_HWOCCLUSION))
-		{
-			if(caps->hasCapability(RSC_GL1_5_NOHWOCCLUSION))
-			{
-				// Assign ARB functions same to GL 1.5 version since
-				// interface identical
-				glBeginQueryARB = glBeginQuery;
-				glDeleteQueriesARB = glDeleteQueries;
-				glEndQueryARB = glEndQuery;
-				glGenQueriesARB = glGenQueries;
-				glGetQueryObjectivARB = glGetQueryObjectiv;
-				glGetQueryObjectuivARB = glGetQueryObjectuiv;
-				glGetQueryivARB = glGetQueryiv;
-				glIsQueryARB = glIsQuery;
-			}
-		}
-
 		// Check for framebuffer object extension
 		if(caps->hasCapability(RSC_FBO))
 		{
-			// Before GL version 2.0, we need to get one of the extensions
-			if(caps->hasCapability(RSC_FBO_ARB))
-				GLEW_GET_FUN(__glewDrawBuffers) = glDrawBuffersARB;
-			else if(caps->hasCapability(RSC_FBO_ATI))
-				GLEW_GET_FUN(__glewDrawBuffers) = glDrawBuffersATI;
-
 			if(caps->hasCapability(RSC_HWRENDER_TO_TEXTURE))
 			{
 				// Create FBO manager
@@ -1697,19 +1670,19 @@ namespace BansheeEngine
 			mTextureTypes[i] = 0;
 
 		mVertexUBOffset = 0;
-		UINT32 totalNumUniformBlocks = caps->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM);
+		UINT32 totalNumUniformBlocks = caps->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM);
 		mFragmentUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM);
+		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM);
 		mGeometryUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM);
+		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM);
 		mHullUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_HULL_PROGRAM);
+		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM);
 		mDomainUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM);
+		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM);
 		mComputeUBOffset = totalNumUniformBlocks;
-		totalNumUniformBlocks += caps->getNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM);
+		totalNumUniformBlocks += caps->getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM);
 
-		UINT16 numCombinedUniformBlocks = caps->getNumCombinedUniformBlockBuffers();
+		UINT16 numCombinedUniformBlocks = caps->getNumCombinedGpuParamBlockBuffers();
 
 		if(totalNumUniformBlocks > numCombinedUniformBlocks)
 			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
@@ -1769,7 +1742,6 @@ namespace BansheeEngine
 	{
 		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
 
-		rsc->setCategoryRelevant(CAPS_CATEGORY_GL, true);
 		rsc->setDriverVersion(mDriverVersion);
 		const char* deviceName = (const char*)glGetString(GL_RENDERER);
 		const char* vendorName = (const char*)glGetString(GL_VENDOR);
@@ -1794,25 +1766,10 @@ namespace BansheeEngine
 			rsc->setCapability(RSC_AUTOMIPMAP);
 		}
 
-		// Check for blending support
-		if(GLEW_VERSION_1_3 || getGLSupport()->checkExtension("GL_ARB_texture_env_combine") 
-			|| getGLSupport()->checkExtension("GL_EXT_texture_env_combine"))
-		{
-			rsc->setCapability(RSC_BLENDING);
-		}
-
 		// Check for Anisotropy support
 		if (getGLSupport()->checkExtension("GL_EXT_texture_filter_anisotropic"))
 		{
 			rsc->setCapability(RSC_ANISOTROPY);
-		}
-
-		// Check for DOT3 support
-		if(GLEW_VERSION_1_3 ||
-			getGLSupport()->checkExtension("GL_ARB_texture_env_dot3") ||
-			getGLSupport()->checkExtension("GL_EXT_texture_env_dot3"))
-		{
-			rsc->setCapability(RSC_DOT3);
 		}
 
 		// Check for cube mapping
@@ -1835,17 +1792,8 @@ namespace BansheeEngine
 
 		if(stencil)
 		{
-			rsc->setCapability(RSC_HWSTENCIL);
 			rsc->setStencilBufferBitDepth(stencil);
 		}
-
-		if (GLEW_VERSION_1_5 || getGLSupport()->checkExtension("GL_ARB_vertex_buffer_object"))
-		{
-			rsc->setCapability(RSC_VBO);
-		}
-
-		rsc->setCapability(RSC_VERTEX_PROGRAM);
-		rsc->setCapability(RSC_FRAGMENT_PROGRAM);
 
 		if (GLEW_VERSION_2_0 || 
 			(getGLSupport()->checkExtension("GL_ARB_shading_language_100") &&
@@ -1898,8 +1846,6 @@ namespace BansheeEngine
 			}
 		}
 
-		// Scissor test is standard in GL 1.2 (is it emulated on some cards though?)
-		rsc->setCapability(RSC_SCISSOR_TEST);
 		// As are user clipping planes
 		rsc->setCapability(RSC_USER_CLIP_PLANES);
 
@@ -1953,15 +1899,7 @@ namespace BansheeEngine
 				glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &buffers);
 				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)CM_MAX_MULTIPLE_RENDER_TARGETS));
 				rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
-				if(!GLEW_VERSION_2_0)
-				{
-					// Before GL version 2.0, we need to get one of the extensions
-					if (getGLSupport()->checkExtension("GL_ARB_draw_buffers"))
-						rsc->setCapability(RSC_FBO_ARB);
-					if (getGLSupport()->checkExtension("GL_ATI_draw_buffers"))
-						rsc->setCapability(RSC_FBO_ATI);
-				}
-				// Set FBO flag for all 3 'subtypes'
+
 				rsc->setCapability(RSC_FBO);
 
 			}
@@ -1992,10 +1930,10 @@ namespace BansheeEngine
 
 		GLint numUniformBlocks;
 		glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &numUniformBlocks);
-		rsc->setNumUniformBlockBuffers(GPT_VERTEX_PROGRAM, numUniformBlocks);
+		rsc->setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, numUniformBlocks);
 
 		glGetIntegerv(GL_MAX_FRAGMENT_UNIFORM_BLOCKS, &numUniformBlocks);
-		rsc->setNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM, numUniformBlocks);
+		rsc->setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, numUniformBlocks);
 
 		if (mGLSupport->checkExtension("GL_ARB_geometry_shader4"))
 		{
@@ -2004,7 +1942,7 @@ namespace BansheeEngine
 			rsc->setNumTextureUnits(GPT_GEOMETRY_PROGRAM, static_cast<UINT16>(geomUnits));
 
 			glGetIntegerv(GL_MAX_GEOMETRY_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM, numUniformBlocks);
+			rsc->setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, numUniformBlocks);
 		}
 
 		if (mGLSupport->checkExtension("GL_ARB_tessellation_shader"))
@@ -2012,10 +1950,10 @@ namespace BansheeEngine
 			rsc->setCapability(RSC_TESSELLATION_PROGRAM);
 
 			glGetIntegerv(GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumUniformBlockBuffers(GPT_HULL_PROGRAM, numUniformBlocks);
+			rsc->setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, numUniformBlocks);
 
 			glGetIntegerv(GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM, numUniformBlocks);
+			rsc->setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, numUniformBlocks);
 		}
 
 		if (mGLSupport->checkExtension("GL_ARB_compute_shader")) 
@@ -2027,7 +1965,7 @@ namespace BansheeEngine
 			rsc->setNumTextureUnits(GPT_COMPUTE_PROGRAM, static_cast<UINT16>(computeUnits));
 
 			glGetIntegerv(GL_MAX_COMPUTE_UNIFORM_BLOCKS, &numUniformBlocks);
-			rsc->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
+			rsc->setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, numUniformBlocks);
 		}
 
 		GLint combinedTexUnits;
@@ -2036,7 +1974,7 @@ namespace BansheeEngine
 
 		GLint combinedUniformBlockUnits;
 		glGetIntegerv(GL_MAX_COMBINED_UNIFORM_BLOCKS, &combinedUniformBlockUnits);
-		rsc->setNumCombinedUniformBlockBuffers(static_cast<UINT16>(combinedUniformBlockUnits));
+		rsc->setNumCombinedGpuParamBlockBuffers(static_cast<UINT16>(combinedUniformBlockUnits));
 
 		// Mipmap LOD biasing
 

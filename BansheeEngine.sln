@@ -33,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		MonoIntegrationGuide.txt = MonoIntegrationGuide.txt
 		Notes.txt = Notes.txt
 		Opts.txt = Opts.txt
+		Polish.txt = Polish.txt
 		ProjectLibrary.txt = ProjectLibrary.txt
 		RenderOperation.txt = RenderOperation.txt
 		ResourceBundles.txt = ResourceBundles.txt

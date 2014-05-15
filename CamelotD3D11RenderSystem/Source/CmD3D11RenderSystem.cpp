@@ -29,9 +29,9 @@ namespace BansheeEngine
 {
 	D3D11RenderSystem::D3D11RenderSystem()
 		: mDXGIFactory(nullptr), mDevice(nullptr), mDriverList(nullptr)
-		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_9_1)
+		, mActiveD3DDriver(nullptr), mFeatureLevel(D3D_FEATURE_LEVEL_11_0)
 		, mHLSLFactory(nullptr), mIAManager(nullptr)
-		, mStencilRef(0)
+		, mStencilRef(0), mActiveDrawOp(DOT_TRIANGLE_LIST)
 	{
 		mClipPlanesDirty = false; // DX11 handles clip planes through shaders
 	}
@@ -214,6 +214,8 @@ namespace BansheeEngine
 		default:
 			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
+
+		mRenderStats.numSamplerBinds++;
 	}
 
 	void D3D11RenderSystem::setBlendState(const BlendStatePtr& blendState)
@@ -222,6 +224,8 @@ namespace BansheeEngine
 
 		D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(blendState.get()));
 		mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
+
+		mRenderStats.numBlendStateChanges++;
 	}
 
 	void D3D11RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
@@ -230,6 +234,8 @@ namespace BansheeEngine
 
 		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(rasterizerState.get()));
 		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
+
+		mRenderStats.numRasterizerStateChanges++;
 	}
 
 	void D3D11RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
@@ -238,6 +244,8 @@ namespace BansheeEngine
 
 		D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(depthStencilState.get()));
 		mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencilRefValue);
+
+		mRenderStats.numDepthStencilStateChanges++;
 	}
 
 	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
@@ -280,6 +288,8 @@ namespace BansheeEngine
 		default:
 			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
+
+		mRenderStats.numTextureBinds++;
 	}
 
 	void D3D11RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
@@ -350,6 +360,8 @@ namespace BansheeEngine
 		}
 
 		mDevice->getImmediateContext()->IASetVertexBuffers(index, numBuffers, dx11buffers, strides, offsets);
+
+		mRenderStats.numVertexBufferBinds++;
 	}
 
 	void D3D11RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
@@ -367,6 +379,8 @@ namespace BansheeEngine
 			CM_EXCEPT(InternalErrorException, "Unsupported index format: " + toString(indexBuffer->getType()));
 
 		mDevice->getImmediateContext()->IASetIndexBuffer(indexBuffer->getD3DIndexBuffer(), indexFormat, 0);
+
+		mRenderStats.numIndexBufferBinds++;
 	}
 
 	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
@@ -435,6 +449,8 @@ namespace BansheeEngine
 
 		if (mDevice->hasError())
 			CM_EXCEPT(RenderingAPIException, "Failed to bindGpuProgram : " + mDevice->getErrorDescription());
+
+		mRenderStats.numGpuProgramBinds++;
 	}
 
 	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
@@ -465,6 +481,8 @@ namespace BansheeEngine
 		default:
 			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
+
+		mRenderStats.numGpuProgramBinds++;
 	}
 
 	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
@@ -532,6 +550,8 @@ namespace BansheeEngine
 				mDevice->getImmediateContext()->CSSetConstantBuffers(iter->second.slot, 1, bufferArray);
 				break;
 			};
+
+			mRenderStats.numGpuParamBufferBinds++;
 		}
 
 		if (mDevice->hasError())
@@ -550,6 +570,10 @@ namespace BansheeEngine
 		if(mDevice->hasError())
 			LOGWRN(mDevice->getErrorDescription());
 #endif
+
+		mRenderStats.numDrawCalls++;
+		mRenderStats.numVertices += vertexCount;
+		mRenderStats.numPrimitives += vertexCountToPrimCount(mActiveDrawOp, vertexCount);
 	}
 
 	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
@@ -564,6 +588,10 @@ namespace BansheeEngine
 		if(mDevice->hasError())
 			LOGWRN(mDevice->getErrorDescription());
 #endif
+
+		mRenderStats.numDrawCalls++;
+		mRenderStats.numVertices += vertexCount;
+		mRenderStats.numPrimitives += vertexCountToPrimCount(mActiveDrawOp, indexCount);
 	}
 
 	void D3D11RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -590,8 +618,11 @@ namespace BansheeEngine
 		bool clearEntireTarget = clearArea.width == 0 || clearArea.height == 0;
 		clearEntireTarget |= (clearArea.x == 0 && clearArea.y == 0 && clearArea.width == mActiveRenderTarget->getWidth() && clearArea.height == mActiveRenderTarget->getHeight());
 
-		if(!clearEntireTarget)
+		if (!clearEntireTarget)
+		{
 			D3D11RenderUtility::instance().drawClearQuad(buffers, color, depth, stencil);
+			mRenderStats.numClears++;
+		}
 		else
 			clearRenderTarget(buffers, color, depth, stencil);
 	}
@@ -651,6 +682,8 @@ namespace BansheeEngine
 			if(depthStencilView != nullptr)
 				mDevice->getImmediateContext()->ClearDepthStencilView(depthStencilView, clearFlag, depth, (UINT8)stencil);
 		}
+
+		mRenderStats.numClears++;
 	}
 
 	void D3D11RenderSystem::setRenderTarget(RenderTargetPtr target)
@@ -680,6 +713,8 @@ namespace BansheeEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
 
 		cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
+
+		mRenderStats.numRenderTargetChanges++;
 	}
 
 	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)
@@ -693,18 +728,14 @@ namespace BansheeEngine
 
 		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
 
-		rsc->setCategoryRelevant(CAPS_CATEGORY_D3D11, true);
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
 		rsc->setRenderSystemName(getName());
 
-		rsc->setCapability(RSC_HWSTENCIL);
 		rsc->setStencilBufferBitDepth(8);
 
 		rsc->setCapability(RSC_ANISOTROPY);
 		rsc->setCapability(RSC_AUTOMIPMAP);
-		rsc->setCapability(RSC_BLENDING);
-		rsc->setCapability(RSC_DOT3);
 
 		// Cube map
 		rsc->setCapability(RSC_CUBEMAPPING);
@@ -712,8 +743,6 @@ namespace BansheeEngine
 		// We always support compression, D3DX will decompress if device does not support
 		rsc->setCapability(RSC_TEXTURE_COMPRESSION);
 		rsc->setCapability(RSC_TEXTURE_COMPRESSION_DXT);
-		rsc->setCapability(RSC_VBO);
-		rsc->setCapability(RSC_SCISSOR_TEST);
 		rsc->setCapability(RSC_TWO_SIDED_STENCIL);
 		rsc->setCapability(RSC_STENCIL_WRAP);
 		rsc->setCapability(RSC_HWOCCLUSION);
@@ -741,12 +770,12 @@ namespace BansheeEngine
 			rsc->setNumCombinedTextureUnits(rsc->getNumTextureUnits(GPT_FRAGMENT_PROGRAM)
 				+ rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM) + rsc->getNumTextureUnits(GPT_VERTEX_PROGRAM));
 
-			rsc->setNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumUniformBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumUniformBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumGpuParamBlockBuffers(GPT_GEOMETRY_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
 
-			rsc->setNumCombinedUniformBlockBuffers(rsc->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM));
+			rsc->setNumCombinedGpuParamBlockBuffers(rsc->getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM));
 		}
 
 		if(mFeatureLevel >= D3D_FEATURE_LEVEL_10_1)
@@ -785,14 +814,14 @@ namespace BansheeEngine
 				+ rsc->getNumTextureUnits(GPT_HULL_PROGRAM) + rsc->getNumTextureUnits(GPT_DOMAIN_PROGRAM)
 				+ rsc->getNumTextureUnits(GPT_COMPUTE_PROGRAM));
 
-			rsc->setNumUniformBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
-			rsc->setNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumGpuParamBlockBuffers(GPT_HULL_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
+			rsc->setNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM, D3D11_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT);
 
-			rsc->setNumCombinedUniformBlockBuffers(rsc->getNumUniformBlockBuffers(GPT_FRAGMENT_PROGRAM)
-				+ rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumUniformBlockBuffers(GPT_VERTEX_PROGRAM)
-				+ rsc->getNumUniformBlockBuffers(GPT_HULL_PROGRAM) + rsc->getNumUniformBlockBuffers(GPT_DOMAIN_PROGRAM)
-				+ rsc->getNumUniformBlockBuffers(GPT_COMPUTE_PROGRAM));
+			rsc->setNumCombinedGpuParamBlockBuffers(rsc->getNumGpuParamBlockBuffers(GPT_FRAGMENT_PROGRAM)
+				+ rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_VERTEX_PROGRAM)
+				+ rsc->getNumGpuParamBlockBuffers(GPT_HULL_PROGRAM) + rsc->getNumGpuParamBlockBuffers(GPT_DOMAIN_PROGRAM)
+				+ rsc->getNumGpuParamBlockBuffers(GPT_COMPUTE_PROGRAM));
 
 			rsc->setCapability(RSC_SHADER_SUBROUTINE);
 		}

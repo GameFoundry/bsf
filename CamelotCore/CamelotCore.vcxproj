@@ -273,6 +273,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\BsCommonStructs.h" />
+    <ClInclude Include="Include\BsProfilerFwd.h" />
+    <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsThreadPolicy.h" />
     <ClInclude Include="Include\CmBindableGpuParamBlock.h" />
     <ClInclude Include="Include\CmBindableGpuParams.h" />
@@ -288,6 +290,7 @@
     <ClInclude Include="Include\CmGameObjectHandleRTTI.h" />
     <ClInclude Include="Include\CmGameObjectManager.h" />
     <ClInclude Include="Include\CmGameObjectRTTI.h" />
+    <ClInclude Include="Include\BsGPUProfiler.h" />
     <ClInclude Include="Include\CmGpuResourceData.h" />
     <ClInclude Include="Include\CmGpuParamBlockBuffer.h" />
     <ClInclude Include="Include\CmGpuResource.h" />
@@ -311,7 +314,6 @@
     <ClInclude Include="Include\CmResourceManifest.h" />
     <ClInclude Include="Include\CmResourceManifestRTTI.h" />
     <ClInclude Include="Include\CmSceneObjectRTTI.h" />
-    <ClInclude Include="Include\CmMemAllocCategories.h" />
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmBlendStateRTTI.h" />
     <ClInclude Include="Include\CmCommandQueue.h" />
@@ -446,6 +448,7 @@
     <ClCompile Include="Source\CmGpuParamBlock.cpp" />
     <ClCompile Include="Source\CmGpuParamBlockBuffer.cpp" />
     <ClCompile Include="Source\CmGpuParams.cpp" />
+    <ClCompile Include="Source\BsGPUProfiler.cpp" />
     <ClCompile Include="Source\CmGpuProgInclude.cpp" />
     <ClCompile Include="Source\CmGpuProgram.cpp" />
     <ClCompile Include="Source\CmGpuProgramImporter.cpp" />

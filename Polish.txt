@@ -1,0 +1,8 @@
+
+
+There's still a crash regarding an uninitialized mCachedPtr on a C# class when shutting down. Attempt to find consistent repro steps.
+
+Finish GPUProfiler:
+ - Actually implement sampling and report generation
+ - Add timer and occlusion queries
+ - Resource writes/reads/creation/destruction is not currently increased in RenderStats
