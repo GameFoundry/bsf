@@ -6,6 +6,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Data describing a texture view.
+	 */
 	struct CM_EXPORT TEXTURE_VIEW_DESC
 	{
 		UINT32 mostDetailMip;

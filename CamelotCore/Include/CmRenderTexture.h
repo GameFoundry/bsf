@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisites.h"
@@ -33,22 +6,42 @@ THE SOFTWARE.
 
 namespace BansheeEngine
 {    
+	/**
+	 * @brief	Structure that describes a render texture color and depth/stencil surfaces.
+	 */
 	struct CM_EXPORT RENDER_TEXTURE_DESC
 	{
 		RENDER_SURFACE_DESC colorSurface;
 		RENDER_SURFACE_DESC depthStencilSurface;
 	};
 
+	/**
+	 * @brief	Render target specialization that allows you to render into a texture you may
+	 *			later bind in further render operations.
+	 *
+	 * @note	Thread safe, except where noted otherwise.
+	 */
     class CM_EXPORT RenderTexture : public RenderTarget
     {
 	public:
 		virtual ~RenderTexture();
 
+		/**
+		 * @brief	Creates a new render texture with color and optionally depth/stencil surfaces.
+		 *
+		 * @param	textureType			Type of texture to render to.
+		 * @param	width				Width of the render texture, in pixels.
+		 * @param	height				Height of the render texture, in pixels.
+		 * @param	format				Pixel format used by the texture color surface.
+		 * @param	hwGamma				Should the written pixels be gamma corrected.
+		 * @param	fsaa				Amount of full screen anti-aliasing the render texture supports.
+		 * @param	fsaaHint			Hint about what type of anti-aliasing the render texture supports.
+		 * @param	createDepth			Should a depth/stencil surface be created along with the color surface.
+		 * @param	depthStencilFormat	Format used by the depth stencil surface, if one is created.
+		 */
 		static RenderTexturePtr create(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 fsaa = 0, const String& fsaaHint = "", 
 			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
-
-		void initialize(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @copydoc RenderTarget::isWindow.
@@ -60,24 +53,50 @@ namespace BansheeEngine
 		 */
 		bool requiresTextureFlipping() const { return false; }
 
+		/**
+		 * @brief	Returns a color surface texture you may bind as an input to an GPU program.
+		 *
+		 * @note	Be aware that you cannot bind a render texture for reading and writing at the same time.
+		 */
 		const HTexture& getBindableColorTexture() const { return mBindableColorTex; }
-		const HTexture& getBindableDepthStencilTexture() const { return mBindableDepthStencilTex; }
-	protected:
-		TextureViewPtr mColorSurface;
-		TextureViewPtr mDepthStencilSurface;
 
-		HTexture mBindableColorTex;
-		HTexture mBindableDepthStencilTex;
+		/**
+		* @brief	Returns a depth/stencil surface texture you may bind as an input to an GPU program.
+		*
+		* @note		Be aware that you cannot bind a render texture for reading and writing at the same time.
+		*/
+		const HTexture& getBindableDepthStencilTexture() const { return mBindableDepthStencilTex; }
+
+	protected:
+		friend class TextureManager;
 
 		RenderTexture();
+
+		/**
+		 * @copydoc	RenderTarget::initialize
+		 */
+		void initialize(const RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @copydoc RenderTarget::destroy_internal()
 		 */
 		virtual void destroy_internal();
 	private:
+		/**
+		 * @brief	Throws an exception of the color and depth/stencil buffers aren't compatible.
+		 */
 		void throwIfBuffersDontMatch() const;
 
+		/**
+		 * @copydoc	RenderTarget::copyToMemory
+		 */
 		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO);
+
+	protected:
+		TextureViewPtr mColorSurface;
+		TextureViewPtr mDepthStencilSurface;
+
+		HTexture mBindableColorTex;
+		HTexture mBindableDepthStencilTex;
 	};
 }

@@ -5,6 +5,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Contains a data about sub-mesh range and the type of
+	 *			primitives contained in the range.
+	 */
 	struct CM_EXPORT SubMesh
 	{
 		SubMesh()

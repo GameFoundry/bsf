@@ -1,28 +1,3 @@
-/*-------------------------------------------------------------------------
-This source file is a part of OGRE
-(Object-oriented Graphics Rendering Engine)
-
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE
--------------------------------------------------------------------------*/
 #pragma once
 
 #include "CmPrerequisites.h"
@@ -32,6 +7,9 @@ THE SOFTWARE
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Enum that defines possible window border styles.
+	 */
 	enum class WindowBorder
 	{
 		Normal,
@@ -39,6 +17,9 @@ namespace BansheeEngine
 		Fixed
 	};
 
+	/**
+	 * @brief	Structure that is used for initializing a render window.
+	 */
 	struct CM_EXPORT RENDER_WINDOW_DESC
 	{
 		RENDER_WINDOW_DESC()
@@ -50,54 +31,68 @@ namespace BansheeEngine
 			, monitorIndex(-1), toolWindow(false), modal(false)
 		{ }
 
-		UINT32 width;
-		UINT32 height;
-		bool fullscreen;
-		bool vsync;
-		UINT32 vsyncInterval;
-		bool hidden;
-		UINT32 displayFrequency;
-		UINT32 colorDepth;
-		bool depthBuffer;
-		UINT32 FSAA;
-		String FSAAHint;
-		bool gamma;
-		INT32 left; // -1 == screen center
-		INT32 top; // -1 == screen center
-		String title;
-		WindowBorder border;
-		bool outerDimensions;
-		bool enableDoubleClick;
-		bool toolWindow;
-		bool modal;
-		INT32 monitorIndex; // -1 == select based on coordinates
+		UINT32 width; /**< Width of the window in pixels. */
+		UINT32 height; /**< Height of the window in pixels. */
+		bool fullscreen; /**< Should the window be created in full-screen mode. */
+		bool vsync; /**< Should the window wait for vertical sync before swapping buffers. */
+		UINT32 vsyncInterval; /**< Determines how many vsync intervals occur per frame. FPS = refreshRate/interval. Usually 1 when vsync active. */
+		bool hidden; /**< Should the window be hidden. */
+		UINT32 displayFrequency; /**< Display frequency of the screen to use in hertz. */
+		UINT32 colorDepth; /**< Depth of the color buffer in bits. This is the size of a single pixel in color buffer. */
+		bool depthBuffer; /**< Should the window be created with a depth/stencil buffer. */
+		UINT32 FSAA; /**< Amount of full-screen anti-aliasing. Usually means number of samples per pixel. */
+		String FSAAHint; /**< Hint to the render system as to which anti-aliasing method to use. */
+		bool gamma; /**< Should the written color pixels be gamma corrected before write. */
+		INT32 left; /**< Window origin on X axis in pixels. -1 == screen center. */
+		INT32 top; /**< Window origin on Y axis in pixels. -1 == screen center. */
+		String title; /**< Title of the window. */
+		WindowBorder border; /**< Type of border to create the window with. */
+		bool outerDimensions; /**< Do our dimensions include space for things like title-bar and border. */
+		bool enableDoubleClick; /**< Does window accept double-clicks. */
+		bool toolWindow; /**< Tool windows don't include standard window controls. */
+		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
+		INT32 monitorIndex; /**< Index of the monitor to create the window on. -1 == select based on coordinates */
 
-		NameValuePairList platformSpecific;
+		NameValuePairList platformSpecific; /**< Platform-specific creation options. */
 	};
 
+	/**
+	 * @brief	Render target specialization that allows you to render into window
+	 *			frame buffer(s).
+	 *
+	 * @note	Thread safe, except where noted otherwise.
+	 */
     class CM_EXPORT RenderWindow : public RenderTarget
     {
     public:
 		virtual ~RenderWindow();
 
 		/** 
-		 *	@brief Core method. Alter fullscreen mode options.
+		 * @brief	Toggle between full-screen and windowed mode, and optionally
+		 *			change resolution.
+		 *
+		 * @note	Core thread.
 		 */
-		virtual void setFullscreen(bool fullScreen, UINT32 width, UINT32 height)
-                { (void)fullScreen; (void)width; (void)height; }
+		virtual void setFullscreen(bool fullScreen, UINT32 width, UINT32 height) { }
 
         /**
-         * @brief	Core method. Set the visibility state.
+         * @brief	Hide or show the window.
+		 *
+		 * @note	Core thread.
          */
         virtual void setHidden(bool hidden);
 
         /**
-         * @brief	Core method. Alter the size of the window.
+         * @brief	Change the size of the window.
+		 *
+		 * @note	Core thread.
          */
         virtual void resize(UINT32 width, UINT32 height) = 0;
 
         /**
-         * @brief	Core method. Reposition the window.
+         * @brief	Reposition the window.
+		 *
+		 * @note	Core thread.
          */
         virtual void move(INT32 left, INT32 top) = 0;
 
@@ -117,12 +112,12 @@ namespace BansheeEngine
         virtual bool isActive() const { return mActive && isVisible(); }
 
         /** 
-        * @brief Indicates whether the window has been closed by the user.
+        * @brief	Indicates whether the window has been closed by the user.
 		*/
         virtual bool isClosed() const = 0;
         
         /** 
-        * @brief Returns true if window is running in fullscreen mode.
+        * @brief	Returns true if window is running in fullscreen mode.
 		*/
         virtual bool isFullScreen() const;
 
@@ -131,7 +126,14 @@ namespace BansheeEngine
 		 */
 		bool isModal() const { return mDesc.modal; }
 
+		/**
+		 * @brief	Gets the horizontal origin of the window in pixels.
+		 */
 		INT32 getLeft() const { return mLeft; }
+
+		/**
+		 * @brief	Gets the vertical origin of the window in pixels.
+		 */
 		INT32 getTop() const { return mTop; }
 
 		/**
@@ -139,11 +141,25 @@ namespace BansheeEngine
 		 */
 		bool hasFocus() const { return mHasFocus; }
 
+		/**
+		 * @brief	Converts screen position into window local position.
+		 */
 		virtual Vector2I screenToWindowPos(const Vector2I& screenPos) const = 0;
+
+		/**
+		 * @brief	Converts window local position to screen position.
+		 */
 		virtual Vector2I windowToScreenPos(const Vector2I& windowPos) const = 0;
 
+		/**
+		 * @copydoc	RenderTarget::destroy
+		 */
 		virtual void destroy();
 
+		/**
+		 * @brief	Creates a new render window using the specified options. Optionally
+		 *			makes the created window a child of another window.
+		 */
 		static RenderWindowPtr create(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow = nullptr);
 
     protected:
@@ -152,17 +168,23 @@ namespace BansheeEngine
         RenderWindow(const RENDER_WINDOW_DESC& desc);
 
 		/**
-         * @brief	Internal method. Core method. Called when window is moved or resized.
+         * @brief	Called when window is moved or resized.
+		 *
+		 * @note	Core thread.
          */
         virtual void _windowMovedOrResized();
 
 		/**
-         * @brief	Internal method. Core method. Called when window has received focus.
+         * @brief	Called when window has received focus.
+		 *
+		 * @note	Core thread.
          */
 		virtual void _windowFocusReceived();
 
 		/**
-         * @brief	Internal method. Core method. Called when window has lost focus.
+         * @brief	Called when window has lost focus.
+		 *
+		 * @note	Core thread.
          */
 		virtual void _windowFocusLost();
         

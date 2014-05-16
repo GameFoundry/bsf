@@ -4,17 +4,17 @@
 #include "CmString.h"
 #include "CmGpuProgram.h"
 
-#define CAPS_CATEGORY_SIZE 8
-#define CM_CAPS_BITSHIFT (64 - CAPS_CATEGORY_SIZE)
-#define CAPS_CATEGORY_MASK (((1 << CAPS_CATEGORY_SIZE) - 1) << CM_CAPS_BITSHIFT)
-#define CM_CAPS_VALUE(cat, val) ((cat << CM_CAPS_BITSHIFT) | (1 << val))
+#define CAPS_CATEGORY_SIZE 8i64
+#define CM_CAPS_BITSHIFT (64i64 - CAPS_CATEGORY_SIZE)
+#define CAPS_CATEGORY_MASK (((1i64 << CAPS_CATEGORY_SIZE) - 1i64) << CM_CAPS_BITSHIFT)
+#define CM_CAPS_VALUE(cat, val) ((cat << CM_CAPS_BITSHIFT) | (1i64 << val))
 
 #define MAX_BOUND_VERTEX_BUFFERS 32
 
 namespace BansheeEngine 
 {
 	/// Enumerates the categories of capabilities
-	enum CapabilitiesCategory
+	enum CapabilitiesCategory : UINT64
 	{
 		CAPS_CATEGORY_COMMON = 0,
 		CAPS_CATEGORY_D3D9 = 1,
@@ -311,7 +311,7 @@ namespace BansheeEngine
 		 */
 		void setCapability(const Capabilities c) 
 		{ 
-			int index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
+			UINT64 index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
 			mCapabilities[index] |= (c & ~CAPS_CATEGORY_MASK);
 		}
 
@@ -321,7 +321,7 @@ namespace BansheeEngine
 		 */
 		void unsetCapability(const Capabilities c) 
 		{ 
-			int index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
+			UINT64 index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
 			mCapabilities[index] &= (~c | CAPS_CATEGORY_MASK);
 		}
 
@@ -330,9 +330,9 @@ namespace BansheeEngine
 		 */
 		bool hasCapability(const Capabilities c) const
 		{
-			int index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
+			UINT64 index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
 
-			return (mCapabilities[index] & (c & ~CAPS_CATEGORY_MASK));
+			return (mCapabilities[index] & (c & ~CAPS_CATEGORY_MASK)) != 0;
 		}
 
 		/**

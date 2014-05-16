@@ -16,9 +16,6 @@
     <Filter Include="Header Files\Utility">
       <UniqueIdentifier>{2c09857e-4a4a-480f-8ebb-1661a9ce78dd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Utility">
-      <UniqueIdentifier>{48d2fcc6-cfa6-4d2f-a83c-d16ec65eb96b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\RenderSystem">
       <UniqueIdentifier>{3480589d-111c-44b8-b0f1-a178cd00f31e}</UniqueIdentifier>
     </Filter>
@@ -477,9 +474,6 @@
     <ClInclude Include="Include\CmQueryManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmTimerQuery.h">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmMeshHeap.h">
       <Filter>Header Files\Resources</Filter>
     </ClInclude>
@@ -533,6 +527,9 @@
     </ClInclude>
     <ClInclude Include="Include\BsRenderStats.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmTimerQuery.h">
+      <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -834,6 +831,9 @@
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGPUProfiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmDrawOps.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

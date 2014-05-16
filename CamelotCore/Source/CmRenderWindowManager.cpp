@@ -85,7 +85,7 @@ namespace BansheeEngine
 			mMovedOrResizedWindows.push_back(window);
 	}
 
-	void RenderWindowManager::update()
+	void RenderWindowManager::_update()
 	{
 		RenderWindow* newWinInFocus = nullptr;
 		Vector<RenderWindow*> movedOrResizedWindows;

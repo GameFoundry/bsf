@@ -1,34 +1,6 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisites.h"
-
 #include "CmString.h"
 #include "CmPixelUtil.h"
 #include "CmViewport.h"
@@ -37,6 +9,10 @@ THE SOFTWARE.
 
 namespace BansheeEngine 
 {
+	/**
+	 * @brief	Structure that contains information about
+	 *			what part of the texture represents the render surface.
+	 */
 	struct CM_EXPORT RENDER_SURFACE_DESC
 	{
 		TexturePtr texture;
@@ -45,9 +21,18 @@ namespace BansheeEngine
 		UINT32 mipLevel;
 	};
 
+	/**
+	 * @brief	Render target is a frame buffer or a texture that the render
+	 *			system renders to.
+	 *
+	 * @note	Thread safe, except where noted otherwise.
+	 */
     class CM_EXPORT RenderTarget : public CoreObject
     {
     public:
+		/**
+		 * @brief	Frame buffer type when double-buffering is used.
+		 */
 		enum FrameBuffer
 		{
 			FB_FRONT,
@@ -57,35 +42,88 @@ namespace BansheeEngine
 
         virtual ~RenderTarget();
 
+		/**
+		 * @brief	Returns a name of the render target, used for easier identification.
+		 */
         const String& getName() const { return mName; }
+
+		/**
+		 * @brief	Returns width of the render target, in pixels.
+		 */
         UINT32 getWidth() const { return mWidth; }
+
+		/**
+		 * @brief	Returns height of the render target, in pixels.
+		 */
         UINT32 getHeight() const { return mHeight; }
+
+		/**
+		 * @brief	Returns the number of bits a single color value of the 
+		 *			render target format takes.
+		 */
 		UINT32 getColorDepth() const { return mColorDepth; }
+
+		/**
+		 * @brief	Returns full screen antialiasing amount. Meaning of this value
+		 *			depends on anti-aliasing type used.
+		 */
 		UINT32 getFSAA() const { return mFSAA; }
+
+		/**
+		 * @brief	Returns a hint used for telling render system what type of 
+		 *			antialiasing to use.
+		 */
 		const String& getFSAAHint() const { return mFSAAHint; }
 
 		/**
-		 * @brief	Returns true if the render target will wait for vertical sync before swapping buffers.
+		 * @brief	Returns true if the render target will wait for vertical sync 
+		 *			before swapping buffers. This will eliminate tearing but may increase
+		 *			input latency.
 		 */
 		bool getVSync() const { return mVSync; }
 
+		/**
+		 * @brief	Queries the render target for a custom attribute. This may be anything and is
+		 *			implementation specific.
+		 *
+		 * @note	Core thread only.
+		 */
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
 		/**
 		 * @brief	Returns true if the render target is a render window.
 		 */
 		virtual bool isWindow() const = 0;
+
+		/**
+		 * @brief	Returns true if the render target can be used for rendering.
+		 *
+		 * @note	Core thread only.
+		 */
 		bool isActive() const { return mActive; }
+
+		/**
+		 * @brief	Returns true if pixels written to the render target will be gamma corrected.
+		 */
 		bool isHwGammaEnabled() const { return mHwGamma; }
 
+		/**
+		 * @brief	Makes the render target active or inactive. (e.g. for a window, it will hide or restore the window).
+		 *
+		 * @note	Core thread only.
+		 */
 		virtual void setActive(bool state) { mActive = state; }
 
+		/**
+		 * @brief	Returns render target priority. Targets with higher priority will be 
+		 *			rendered before ones with lower priority.
+		 */
 		INT32 getPriority() const { return mPriority; }
 
 		/**
 		 * @brief	Sets a priority that determines in which orders the render targets the processed.
 		 * 			
-		 * @param	priority	The priority. Higher value means the target will be rendered to sooner.
+		 * @param	priority	The priority. Higher value means the target will be rendered sooner.
 		 */
 		void setPriority(INT32 priority) { mPriority = priority; }
 
@@ -95,9 +133,28 @@ namespace BansheeEngine
 		 * @note	Core thread only.
          */
 		virtual void swapBuffers() {};
+
+		/**
+		 * @brief	Copy data from the render target into the provided pixel buffer. 
+		 *
+		 * @param	dst		Destination buffer to copy the data to. Caller must ensure the buffer is of adequate size.
+		 * @param	buffer	Which buffer is data taken from. This is irrelevant for single buffer render targets.
+		 *
+		 * @note	Core thread only.
+		 */
 		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
+
+		/**
+		 * @brief	Does the texture need to be vertically flipped because of different screen space coordinate systems.
+		 *			(i.e. is origin top left or bottom left. Engine default is top left.)
+		 */
 		virtual bool requiresTextureFlipping() const = 0;
 
+		/**
+		 * @brief	Event that gets triggered whenever the render target is resized.
+		 *
+		 * @note	Sim thread only.
+		 */
 		mutable Event<void()> onResized;
     protected:
 		RenderTarget();
