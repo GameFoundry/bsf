@@ -21,6 +21,8 @@ namespace BansheeEngine
 	void VertexData::setBuffer(UINT32 index, VertexBufferPtr buffer)
 	{
 		mVertexBuffers[index] = buffer;
+
+		recalculateMaxIndex();
 	}
 
 	VertexBufferPtr VertexData::getBuffer(UINT32 index) const
@@ -44,5 +46,12 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	void VertexData::recalculateMaxIndex()
+	{
+		mMaxBufferIdx = 0;
+		for (auto& bufferData : mVertexBuffers)
+			mMaxBufferIdx = std::max(bufferData.first, mMaxBufferIdx);
 	}
 }
