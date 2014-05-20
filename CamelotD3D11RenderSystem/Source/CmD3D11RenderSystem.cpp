@@ -63,6 +63,7 @@ namespace BansheeEngine
 
 		mDriverList = cm_new<D3D11DriverList>(mDXGIFactory);
 		mActiveD3DDriver = mDriverList->item(0); // TODO: Always get first driver, for now
+		mVideoModeInfo = mActiveD3DDriver->getVideoModeInfo();
 
 		IDXGIAdapter* selectedAdapter = mActiveD3DDriver->getDeviceAdapter();
 
@@ -91,9 +92,9 @@ namespace BansheeEngine
 			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 object. D3D11CreateDeviceN returned this error code: " + toString(hr));
 
 		mDevice = cm_new<D3D11Device>(device);
-
-		LARGE_INTEGER driverVersion;
-		if(SUCCEEDED(selectedAdapter->CheckInterfaceSupport(IID_ID3D10Device /* intentionally D3D10, not D3D11 */, &driverVersion)))
+		
+		LARGE_INTEGER driverVersion; 
+		if(SUCCEEDED(selectedAdapter->CheckInterfaceSupport(IID_ID3D11Device, &driverVersion)))
 		{
 			mDriverVersion.major = HIWORD(driverVersion.HighPart);
 			mDriverVersion.minor = LOWORD(driverVersion.HighPart);

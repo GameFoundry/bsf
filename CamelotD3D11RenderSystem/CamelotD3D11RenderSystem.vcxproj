@@ -267,8 +267,7 @@
     <ClInclude Include="Include\CmD3D11SamplerState.h" />
     <ClInclude Include="Include\CmD3D11Texture.h" />
     <ClInclude Include="Include\CmD3D11TextureManager.h" />
-    <ClInclude Include="Include\CmD3D11VideoMode.h" />
-    <ClInclude Include="Include\CmD3D11VideoModeList.h" />
+    <ClInclude Include="Include\CmD3D11VideoModeInfo.h" />
     <ClInclude Include="Include\CmD3D11InputLayoutManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -307,8 +306,7 @@
     <ClCompile Include="Source\CmD3D11SamplerState.cpp" />
     <ClCompile Include="Source\CmD3D11Texture.cpp" />
     <ClCompile Include="Source\CmD3D11TextureManager.cpp" />
-    <ClCompile Include="Source\CmD3D11VideoMode.cpp" />
-    <ClCompile Include="Source\CmD3D11VideoModeList.cpp" />
+    <ClCompile Include="Source\CmD3D11VideoModeInfo.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

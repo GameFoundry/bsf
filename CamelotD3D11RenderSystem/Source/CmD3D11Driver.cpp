@@ -1,5 +1,4 @@
 #include "CmD3D11Driver.h"
-#include "CmD3D11VideoModeList.h"
 #include "CmException.h"
 
 namespace BansheeEngine
@@ -8,8 +7,6 @@ namespace BansheeEngine
 	{
 		mAdapterNumber = ob.mAdapterNumber;
 		mAdapterIdentifier = ob.mAdapterIdentifier;
-		mDesktopDisplayMode = ob.mDesktopDisplayMode;
-		mVideoModeList = nullptr;
 		mDXGIAdapter = ob.mDXGIAdapter;
 
 		if(mDXGIAdapter)
@@ -21,7 +18,6 @@ namespace BansheeEngine
 	D3D11Driver::D3D11Driver(unsigned int adapterNumber, IDXGIAdapter* pDXGIAdapter)
 	{
 		mAdapterNumber = adapterNumber;
-		mVideoModeList = nullptr;
 		mDXGIAdapter = pDXGIAdapter;
 
 		if(mDXGIAdapter)
@@ -35,15 +31,6 @@ namespace BansheeEngine
 
 	D3D11Driver::~D3D11Driver()
 	{
-		for(UINT32 i = 0; i < mNumOutputs; i++)
-		{
-			if(mVideoModeList[i] != nullptr)
-				cm_delete(mVideoModeList[i]);
-		}
-
-		if(mVideoModeList != nullptr)
-			cm_deleteN(mVideoModeList, mNumOutputs);
-
 		SAFE_RELEASE(mDXGIAdapter);
 	}
 
@@ -60,18 +47,12 @@ namespace BansheeEngine
 		}
 
 		mNumOutputs = outputIdx;
-
-		mVideoModeList = cm_newN<D3D11VideoModeList*>(mNumOutputs);
-		for(UINT32 i = 0; i < mNumOutputs; i++)
-			mVideoModeList[i] = cm_new<D3D11VideoModeList>(this, i);
 	}
 
 	D3D11Driver& D3D11Driver::operator=(const D3D11Driver& ob)
 	{
 		mAdapterNumber = ob.mAdapterNumber;
 		mAdapterIdentifier = ob.mAdapterIdentifier;
-		mDesktopDisplayMode = ob.mDesktopDisplayMode;
-		mVideoModeList = nullptr;
 
 		if(ob.mDXGIAdapter)
 			ob.mDXGIAdapter->AddRef();
@@ -108,13 +89,6 @@ namespace BansheeEngine
 		StringUtil::trim(driverDescription);
 
 		return driverDescription;
-	}
-
-	const D3D11VideoModeList* D3D11Driver::getVideoModeList(UINT32 adapterOutputIdx) const
-	{
-		assert(adapterOutputIdx >= 0 && adapterOutputIdx < mNumOutputs);
-
-		return mVideoModeList[adapterOutputIdx];
 	}
 
 	DXGI_OUTPUT_DESC D3D11Driver::getOutputDesc(UINT32 adapterOutputIdx) const

@@ -16,7 +16,7 @@ namespace BansheeEngine
 		BuiltinResources();
 		~BuiltinResources();
 
-		const GUISkin& getSkin() const { return mSkin; }
+		const GUISkin& getGUISkin() const { return mSkin; }
 
 		const HSpriteTexture getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
 

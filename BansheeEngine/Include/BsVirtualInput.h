@@ -36,7 +36,7 @@ namespace BansheeEngine
 		static std::shared_ptr<InputConfiguration> createConfiguration();
 
 		void setConfiguration(const std::shared_ptr<InputConfiguration>& input);
-		const std::shared_ptr<InputConfiguration>& getConfiguration() const { return mInputConfiguration; }
+		std::shared_ptr<InputConfiguration> getConfiguration() const { return mInputConfiguration; }
 
 		bool isButtonDown(const VirtualButton& button) const;
 		bool isButtonUp(const VirtualButton& button) const;

@@ -8,6 +8,7 @@
 #include "CmTextureManager.h"
 #include "CmD3D11DriverList.h"
 #include "CmD3D11Driver.h"
+#include "CmD3D11VideoModeInfo.h"
 #include "CmInput.h"
 #include "CmException.h"
 
@@ -20,13 +21,14 @@ namespace BansheeEngine
 		, mIsExternal(false)
 		, mSizing(false)
 		, mClosed(false)
-		, mSwitchingFullscreen(false)
-		, mDisplayFrequency(0)
+		, mRefreshRateNumerator(0)
+		, mRefreshRateDenominator(0)
 		, mRenderTargetView(nullptr)
 		, mBackBuffer(nullptr)
 		, mSwapChain(nullptr)
 		, mHWnd(0)
 		, mDepthStencilView(nullptr)
+		, mIsChild(false)
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 	}
@@ -64,7 +66,8 @@ namespace BansheeEngine
 			hMonitor = (HMONITOR)parseInt(opt->second);		
 
 		mName = mDesc.title;
-		mIsFullScreen = mDesc.fullscreen;
+		mIsChild = parentHWnd != 0;
+		mIsFullScreen = mDesc.fullscreen && !mIsChild;
 		mColorDepth = mDesc.colorDepth;
 		mWidth = mHeight = mLeft = mTop = 0;
 
@@ -363,66 +366,82 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11RenderWindow::setFullscreen(bool fullScreen, unsigned int width, unsigned int height)
+	void D3D11RenderWindow::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (fullScreen != mIsFullScreen || width != mWidth || height != mHeight)
-		{
-			if (fullScreen != mIsFullScreen)
-				mSwitchingFullscreen = true;
+		if (mIsChild)
+			return;
 
-			DWORD dwStyle = WS_VISIBLE | WS_CLIPCHILDREN;
+		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		UINT32 numOutputs = videoModeInfo.getNumOutputs();
+		if (numOutputs == 0)
+			return;
 
-			bool oldFullscreen = mIsFullScreen;
-			mIsFullScreen = fullScreen;
+		UINT32 actualMonitorIdx = std::min(monitorIdx, numOutputs - 1);
+		const D3D11VideoOutputInfo& outputInfo = static_cast<const D3D11VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
 
-			if (fullScreen)
-			{
-				dwStyle |= WS_POPUP;
-				mTop = mLeft = 0;
-				mWidth = width;
-				mHeight = height;
-				// need different ordering here
+		DXGI_MODE_DESC modeDesc;
+		ZeroMemory(&modeDesc, sizeof(modeDesc));
 
-				if (oldFullscreen)
-				{
-					// was previously fullscreen, just changing the resolution
-					SetWindowPos(mHWnd, HWND_TOPMOST, 0, 0, width, height, SWP_NOACTIVATE);
-				}
-				else
-				{
-					SetWindowPos(mHWnd, HWND_TOPMOST, 0, 0, width, height, SWP_NOACTIVATE);
-					//MoveWindow(mHWnd, mLeft, mTop, mWidth, mHeight, FALSE);
-					SetWindowLong(mHWnd, GWL_STYLE, dwStyle);
-					SetWindowPos(mHWnd, 0, 0,0, 0,0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER);
-				}
-			}
-			else
-			{
-				dwStyle |= WS_OVERLAPPEDWINDOW;
-				// Calculate window dimensions required
-				// to get the requested client area
-				RECT rc;
-				SetRect(&rc, 0, 0, width, height);
-				AdjustWindowRect(&rc, dwStyle, false);
-				unsigned int winWidth = rc.right - rc.left;
-				unsigned int winHeight = rc.bottom - rc.top;
+		modeDesc.Width = width;
+		modeDesc.Height = height;
+		modeDesc.RefreshRate.Numerator = Math::roundToInt(refreshRate);
+		modeDesc.RefreshRate.Denominator = 1;
+		modeDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		modeDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+		modeDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 
-				SetWindowLong(mHWnd, GWL_STYLE, dwStyle);
-				SetWindowPos(mHWnd, HWND_NOTOPMOST, 0, 0, winWidth, winHeight,
-					SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOACTIVATE);
-				// Note that we also set the position in the restoreLostDevice method
-				// via _finishSwitchingFullScreen
-			}
+		DXGI_MODE_DESC nearestMode;
+		ZeroMemory(&nearestMode, sizeof(nearestMode));
 
-			mSwapChainDesc.Windowed = !fullScreen;
-			mSwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
-			mSwapChainDesc.BufferDesc.RefreshRate.Denominator=0;
-			mSwapChainDesc.BufferDesc.Height = height;
-			mSwapChainDesc.BufferDesc.Width = width;
-		}
-	} 
+		outputInfo.getDXGIOutput()->FindClosestMatchingMode(&modeDesc, &nearestMode, nullptr);
+
+		mIsFullScreen = true;
+
+		mSwapChain->ResizeTarget(&nearestMode);
+		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput()); 
+	}
+
+	void D3D11RenderWindow::setFullscreen(const VideoMode& mode)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (mIsChild)
+			return;
+
+		const D3D11VideoMode& videoMode = static_cast<const D3D11VideoMode&>(mode);
+		const D3D11VideoOutputInfo& outputInfo = static_cast<const D3D11VideoOutputInfo&>(mode.getParentOutput());
+
+		mIsFullScreen = true;
+
+		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc());
+		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput());
+	}
+
+	void D3D11RenderWindow::setWindowed()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		mIsFullScreen = false;
+		mSwapChainDesc.Windowed = false;
+		mSwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
+		mSwapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
+		mSwapChainDesc.BufferDesc.Width = mWidth;
+		mSwapChainDesc.BufferDesc.Height = mHeight;
+
+		DXGI_MODE_DESC modeDesc;
+		ZeroMemory(&modeDesc, sizeof(modeDesc));
+
+		modeDesc.Width = mWidth;
+		modeDesc.Height = mHeight;
+		modeDesc.RefreshRate.Numerator = 0;
+		modeDesc.RefreshRate.Denominator = 0;
+		modeDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+		mSwapChain->ResizeTarget(&modeDesc);
+		mSwapChain->SetFullscreenState(false, nullptr);
+	}
 
 	void D3D11RenderWindow::getCustomAttribute( const String& name, void* pData ) const
 	{
@@ -593,9 +612,8 @@ namespace BansheeEngine
 		mSwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		mSwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ;
 
-		// triple buffer if VSync is on
 		mSwapChainDesc.BufferUsage			= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		mSwapChainDesc.BufferCount			= mVSync ? 2 : 1;
+		mSwapChainDesc.BufferCount			= 1;
 		mSwapChainDesc.SwapEffect			= DXGI_SWAP_EFFECT_DISCARD ;
 
 		mSwapChainDesc.OutputWindow 		= mHWnd;
@@ -629,7 +647,7 @@ namespace BansheeEngine
 		// obtain back buffer
 		SAFE_RELEASE(mBackBuffer);
 
-		HRESULT hr = mSwapChain->GetBuffer(0,  __uuidof( ID3D11Texture2D ), (LPVOID*)&mBackBuffer);
+		HRESULT hr = mSwapChain->GetBuffer(0,  __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBuffer);
 		if( FAILED(hr) )
 			CM_EXCEPT(RenderingAPIException, "Unable to Get Back Buffer for swap chain");
 
@@ -675,7 +693,7 @@ namespace BansheeEngine
 		mDepthStencilBuffer = nullptr;
 	}
 
-	void D3D11RenderWindow::resizeSwapChainBuffers(unsigned width, unsigned height)
+	void D3D11RenderWindow::resizeSwapChainBuffers(UINT32 width, UINT32 height)
 	{
 		destroySizeDependedD3DResources();
 
@@ -709,36 +727,6 @@ namespace BansheeEngine
 			CM_EXCEPT(RenderingAPIException, "Unable to query a DXGIDevice");
 
 		return pDXGIDevice;
-	}
-
-	void D3D11RenderWindow::finishSwitchingFullscreen()
-	{
-		if(mIsFullScreen)
-		{
-			// Need to reset the region on the window sometimes, when the 
-			// windowed mode was constrained by desktop 
-			HRGN hRgn = CreateRectRgn(0, 0, mSwapChainDesc.BufferDesc.Width, mSwapChainDesc.BufferDesc.Height);
-			SetWindowRgn(mHWnd, hRgn, FALSE);
-		}
-		else
-		{
-			// When switching back to windowed mode, need to reset window size 
-			// after device has been restored
-			RECT rc;
-			SetRect(&rc, 0, 0, mSwapChainDesc.BufferDesc.Width, mSwapChainDesc.BufferDesc.Height);
-			AdjustWindowRect(&rc, GetWindowLong(mHWnd, GWL_STYLE), false);
-			unsigned int winWidth = rc.right - rc.left;
-			unsigned int winHeight = rc.bottom - rc.top;
-			int screenw = GetSystemMetrics(SM_CXSCREEN);
-			int screenh = GetSystemMetrics(SM_CYSCREEN);
-			int left = (screenw - winWidth) / 2;
-			int top = (screenh - winHeight) / 2;
-			SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
-				SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
-		}
-
-		mSwapChain->SetFullscreenState(mIsFullScreen, NULL);
-		mSwitchingFullscreen = false;
 	}
 
 	bool D3D11RenderWindow::checkMultiSampleQuality(UINT32 SampleCount, UINT32 *outQuality, DXGI_FORMAT format)

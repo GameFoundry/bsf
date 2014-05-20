@@ -68,12 +68,31 @@ namespace BansheeEngine
 		virtual ~RenderWindow();
 
 		/** 
-		 * @brief	Toggle between full-screen and windowed mode, and optionally
-		 *			change resolution.
+		 * @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
+		 *
+		 * @param	width		Width of the window back buffer in pixels.
+		 * @param	height		Height of the window back buffer in pixels.
+		 * @param	refreshRate	Refresh rate of the window in Hertz. This is ignored in windowed mode.
+		 * @param	monitorIdx	Index of the monitor to go fullscreen on. This is ignored in windowed mode.
 		 *
 		 * @note	Core thread.
+		 *			If the exact provided mode isn't available, closest one is used instead.
 		 */
-		virtual void setFullscreen(bool fullScreen, UINT32 width, UINT32 height) { }
+		virtual void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0) { }
+
+		/**
+		* @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
+		*
+		* @param	videoMode	Mode retrieved from VideoModeInfo in RenderSystem.
+		*
+		* @note		Core thread.
+		*/
+		virtual void setFullscreen(const VideoMode& mode) { }
+
+		/**
+		 * @brief	Switches the window to windowed mode.
+		 */
+		virtual void setWindowed();
 
         /**
          * @brief	Hide or show the window.

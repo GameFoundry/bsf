@@ -28,6 +28,11 @@ namespace BansheeEngine
 		mMatViewProjParam[idx] = material->getParamMat4("matViewProjection");
 	}
 
+	void Renderable::setMaterial(HMaterial material)
+	{
+		setMaterial(0, material);
+	}
+
 	void Renderable::render(RenderQueue& renderQueue, const Matrix4& viewProjMatrix)
 	{
 		if(mMesh == nullptr || !mMesh.isLoaded())

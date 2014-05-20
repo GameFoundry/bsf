@@ -131,6 +131,9 @@ namespace BansheeEngine
 	class OcclusionQuery;
 	class FrameAlloc;
 	class FolderMonitor;
+	class VideoMode;
+	class VideoOutputInfo;
+	class VideoModeInfo;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -222,6 +225,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<TimerQuery> TimerQueryPtr;
 	typedef std::shared_ptr<OcclusionQuery> OcclusionQueryPtr;
 	typedef std::shared_ptr<ResourceManifest> ResourceManifestPtr;
+	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
 }
 
 /************************************************************************/

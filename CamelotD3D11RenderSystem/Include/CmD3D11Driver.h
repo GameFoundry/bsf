@@ -18,19 +18,17 @@ namespace BansheeEngine
 		UINT32 getAdapterNumber() const { return mAdapterNumber; }
 		UINT32 getNumAdapterOutputs() const { return mNumOutputs; }
 		const DXGI_ADAPTER_DESC& getAdapterIdentifier() const { return mAdapterIdentifier; }
-		const DXGI_MODE_DESC& getDesktopMode() const { return mDesktopDisplayMode; }
 		IDXGIAdapter* getDeviceAdapter() { return mDXGIAdapter; }
 		DXGI_OUTPUT_DESC getOutputDesc(UINT32 adapterOutputIdx) const;
-		const D3D11VideoModeList* getVideoModeList(UINT32 adapterOutputIdx) const;
+
+		VideoModeInfoPtr getVideoModeInfo() const { return mVideoModeInfo; }
 
 	private:
-		// D3D only allows one device per adapter, so it can safely be stored here as well.
 		UINT32					mAdapterNumber;
 		UINT32					mNumOutputs;
 		DXGI_ADAPTER_DESC		mAdapterIdentifier;
-		DXGI_MODE_DESC			mDesktopDisplayMode;
-		D3D11VideoModeList**	mVideoModeList;
 		IDXGIAdapter*			mDXGIAdapter;
+		VideoModeInfoPtr		mVideoModeInfo;
 
 		void init();
 	};

@@ -404,6 +404,7 @@
     <ClInclude Include="Include\CmVertexDataDescRTTI.h" />
     <ClInclude Include="Include\CmVertexDeclaration.h" />
     <ClInclude Include="Include\CmVertexData.h" />
+    <ClInclude Include="Include\CmVideoModeInfo.h" />
     <ClInclude Include="Include\CmViewport.h" />
     <ClInclude Include="Include\CmResourceRTTI.h" />
     <ClInclude Include="Include\CmSceneObject.h" />
@@ -516,6 +517,7 @@
     <ClCompile Include="Source\CmVertexDataDesc.cpp" />
     <ClCompile Include="Source\CmVertexDeclaration.cpp" />
     <ClCompile Include="Source\CmVertexData.cpp" />
+    <ClCompile Include="Source\CmVideoModeInfo.cpp" />
     <ClCompile Include="Source\CmViewport.cpp" />
     <ClCompile Include="Source\CmSceneObject.cpp" />
     <ClCompile Include="Source\CmComponent.cpp" />

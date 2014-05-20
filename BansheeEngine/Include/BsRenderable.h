@@ -13,6 +13,7 @@ namespace BansheeEngine
 		void setMesh(HMesh mesh) { mMesh = mesh; }
 		void setNumMaterials(UINT32 numMaterials);
 		void setMaterial(UINT32 idx, HMaterial material);
+		void setMaterial(HMaterial material);
 		void setLayer(UINT64 layer);
 
 		UINT64 getLayer() const { return mLayer; }

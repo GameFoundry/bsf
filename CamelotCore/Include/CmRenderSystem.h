@@ -265,6 +265,13 @@ namespace BansheeEngine
 		 */
 		void readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp);
 
+		/**
+		 * @brief	Returns information about available output devices and their video modes.
+		 *
+		 * @note	Thread safe.
+		 */
+		const VideoModeInfo& getVideoModeInfo() const { return *mVideoModeInfo; }
+
 		/************************************************************************/
 		/* 								UTILITY METHODS                    		*/
 		/************************************************************************/
@@ -386,6 +393,7 @@ namespace BansheeEngine
 		bool mClipPlanesDirty;
 
 		RenderSystemCapabilities* mCurrentCapabilities;
+		VideoModeInfoPtr mVideoModeInfo;
 
 		// TODO - Only used between initialize and initialize_internal. Handle it better?
 		RENDER_WINDOW_DESC mPrimaryWindowDesc;

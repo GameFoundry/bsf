@@ -261,7 +261,7 @@ namespace BansheeEngine
 		mWidgetSO = SceneObject::create("ProfilerOverlay");
 		mWidget = mWidgetSO->addComponent<GUIWidget>(mTarget.get());
 		mWidget->setDepth(127);
-		mWidget->setSkin(BuiltinResources::instance().getSkin());
+		mWidget->setSkin(BuiltinResources::instance().getGUISkin());
 
 		mBasicAreaLabels = GUIArea::create(*mWidget, 0, 0);
 		mPreciseAreaLabels = GUIArea::create(*mWidget, 0, 0);

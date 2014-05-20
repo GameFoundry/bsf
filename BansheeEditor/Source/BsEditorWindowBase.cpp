@@ -64,8 +64,7 @@ namespace BansheeEngine
 		mRenderWindow = renderWindow;
 		mSceneObject = SceneObject::create("EditorWindow");
 
-		mCamera = mSceneObject->addComponent<Camera>();
-		mCamera->initialize(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
+		mCamera = mSceneObject->addComponent<Camera>(renderWindow, 0.0f, 0.0f, 1.0f, 1.0f);
 		mCamera->setNearClipDistance(5);
 		mCamera->setAspectRatio(1.0f);
 		mCamera->setIgnoreSceneRenderables(true);

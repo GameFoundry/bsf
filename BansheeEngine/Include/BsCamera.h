@@ -514,13 +514,15 @@ namespace BansheeEngine {
 		mutable Vector3 mWorldSpaceCorners[8];
 
     public:
+		/** Standard constructor.
+        */
+		Camera(const HSceneObject& parent, RenderTargetPtr target = nullptr,
+			float left = 0.0f, float top = 0.0f,
+			float width = 1.0f, float height = 1.0f);
+
         /** Standard destructor.
         */
         virtual ~Camera();
-
-		void initialize(RenderTargetPtr target = nullptr,
-			float left = 0.0f, float top = 0.0f,
-			float width = 1.0f, float height = 1.0f);
 
 		ViewportPtr getViewport() const { return mViewport; }
 
@@ -529,10 +531,6 @@ namespace BansheeEngine {
 		/************************************************************************/
 	protected:
 		friend class SceneObject;
-
-		/** Standard constructor.
-        */
-		Camera(const HSceneObject& parent);
 
 	public:
 		virtual void update() {}

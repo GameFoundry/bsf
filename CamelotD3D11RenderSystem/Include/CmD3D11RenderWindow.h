@@ -31,9 +31,19 @@ namespace BansheeEngine
 		void setActive(bool state);
 
 		/**
-		 * @copydoc RenderWindow::setFullscreen
-		 */
-		void setFullscreen(bool fullScreen, UINT32 width, UINT32 height);
+		* @copydoc RenderWindow::setFullscreen
+		*/
+		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
+
+		/**
+		* @copydoc RenderWindow::setFullscreen
+		*/
+		void setFullscreen(const VideoMode& mode);
+
+		/**
+		* @copydoc RenderWindow::setWindowed
+		*/
+		void setWindowed();
 
 		/**
 		 * @copydoc RenderWindow::copyContentsToMemory
@@ -77,7 +87,7 @@ namespace BansheeEngine
 
 		void _windowMovedOrResized();
 
-		DXGI_SWAP_CHAIN_DESC* _getPresentationParameters(void) { return &mSwapChainDesc; }
+		DXGI_SWAP_CHAIN_DESC* _getPresentationParameters() { return &mSwapChainDesc; }
 		HWND _getWindowHandle() const { return mHWnd; }
 
 	protected:
@@ -92,10 +102,7 @@ namespace BansheeEngine
 		bool checkMultiSampleQuality(UINT32 SampleCount, UINT32 *outQuality, DXGI_FORMAT format);
 
 		void createSwapChain();
-		void resizeSwapChainBuffers(unsigned width, unsigned height);
-
-		bool getSwitchingFullscreen() const	{ return mSwitchingFullscreen; }
-		void finishSwitchingFullscreen();
+		void resizeSwapChainBuffers(UINT32 width, UINT32 height);
 		
 		/**
 		 * @copydoc RenderWindow::initialize_internal().
@@ -107,30 +114,27 @@ namespace BansheeEngine
 		 */
 		void destroy_internal();
 	protected:
-		D3D11Device&	mDevice;			// D3D11 driver
-		IDXGIFactory*	mDXGIFactory;
-		bool	mIsExternal;
-		bool	mSizing;
-		bool	mClosed;
+		D3D11Device& mDevice;
+		IDXGIFactory* mDXGIFactory;
+		bool mIsExternal;
+		bool mSizing;
+		bool mClosed;
+		bool mIsChild;
 
-		// -------------------------------------------------------
-		// DirectX-specific
-		// -------------------------------------------------------
 		DXGI_SAMPLE_DESC mFSAAType;
-		UINT mDisplayFrequency;
+		UINT32 mRefreshRateNumerator;
+		UINT32 mRefreshRateDenominator;
 		bool mVSync;
-		unsigned int mVSyncInterval;
+		UINT32 mVSyncInterval;
 
-		// Window size depended resources - must be released before swapchain resize and recreated later
-		ID3D11Texture2D*			mBackBuffer;
-		ID3D11RenderTargetView*		mRenderTargetView;
-		TextureViewPtr				mDepthStencilView;
-		TexturePtr					mDepthStencilBuffer;
+		ID3D11Texture2D* mBackBuffer;
+		ID3D11RenderTargetView*	mRenderTargetView;
+		TextureViewPtr mDepthStencilView;
+		TexturePtr mDepthStencilBuffer;
 
-		IDXGISwapChain*				mSwapChain;
-		DXGI_SWAP_CHAIN_DESC		mSwapChainDesc;
+		IDXGISwapChain*	mSwapChain;
+		DXGI_SWAP_CHAIN_DESC mSwapChainDesc;
 
-		HWND	mHWnd;					// Win32 window handle
-		bool	mSwitchingFullscreen;	// Are we switching from fullscreen to windowed or vice versa
+		HWND mHWnd;
 	};
 }
