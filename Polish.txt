@@ -11,6 +11,13 @@ Finish GPUProfiler:
 
  Fullscreen stuff:
 
+Add VideoModeInfo to OpenGL and DX9. Remove any existing functionality.
+ - Don't forget desktop mode
+ - Don't forget child window check
+
+Test if it all works. Especially going fullscreen on another monitor.
+When initializing a render window I don't have an option to use exact refresh rate (i.e. in RENDER_WINDOW_DESC)
+
  EnumDisplayMonitors - Get all available monitors
  - http://msdn.microsoft.com/en-us/library/windows/desktop/dd162617(v=vs.85).aspx
 GetMonitorInfo - Get display name for monitor

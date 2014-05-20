@@ -92,7 +92,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Switches the window to windowed mode.
 		 */
-		virtual void setWindowed();
+		virtual void setWindowed() { }
 
         /**
          * @brief	Hide or show the window.

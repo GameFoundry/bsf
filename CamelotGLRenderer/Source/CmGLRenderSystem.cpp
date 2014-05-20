@@ -1624,8 +1624,6 @@ namespace BansheeEngine
 		checkForErrors();
 
 		// GPU Program Manager setup
-		checkForErrors();
-
 		if(caps->isShaderProfileSupported("glsl"))
 		{
 			mGLSLProgramFactory = cm_new<GLSLProgramFactory>();

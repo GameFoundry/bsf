@@ -22,5 +22,5 @@ namespace BansheeEngine
 	* @brief	Converts the number of vertices to number of primitives
 	* 			based on the specified draw operation.
 	*/
-	UINT32 CM_UTILITY_EXPORT vertexCountToPrimCount(DrawOperationType type, UINT32 elementCount);
+	UINT32 CM_EXPORT vertexCountToPrimCount(DrawOperationType type, UINT32 elementCount);
 }
