@@ -15,7 +15,7 @@ namespace BansheeEngine
 			mRootNode->destroy();
 	}
 
-	void SceneManagerBase::update()
+	void SceneManagerBase::_update()
 	{
 		Stack<HSceneObject> todo;
 		todo.push(mRootNode);
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void SceneManagerBase::registerNewGO(const HSceneObject& node) 
+	void SceneManagerBase::registerNewSO(const HSceneObject& node) 
 	{ 
 		if(mRootNode) // If root node is null, then this new node is the root node
 			node->setParent(mRootNode);

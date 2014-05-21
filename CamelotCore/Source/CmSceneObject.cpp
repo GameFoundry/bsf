@@ -13,8 +13,7 @@ namespace BansheeEngine
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
-		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false),
-		mCustomWorldTfrm(Matrix4::IDENTITY), mIsCustomTfrmModeActive(false)
+		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false)
 	{
 		setName(name);
 	}
@@ -32,7 +31,7 @@ namespace BansheeEngine
 	{
 		HSceneObject newObject = createInternal(name);
 
-		gSceneManager().registerNewGO(newObject);
+		gSceneManager().registerNewSO(newObject);
 
 		return newObject;
 	}
@@ -132,7 +131,6 @@ namespace BansheeEngine
 		Vector3 forward = location - mPosition;
 		forward.normalize();
 
-		// TODO - I'm ignoring "up" direction
 		setForward(forward);
 
 		Quaternion upRot = Quaternion::getRotationFromTo(getUp(), up);
@@ -308,12 +306,11 @@ namespace BansheeEngine
 		}
 	}
 
-	HSceneObject SceneObject::getChild(unsigned int idx) const
+	HSceneObject SceneObject::getChild(UINT32 idx) const
 	{
 		if(idx < 0 || idx >= mChildren.size())
 		{
-			CM_EXCEPT(InternalErrorException, 
-				"Child index out of range.");
+			CM_EXCEPT(InternalErrorException, "Child index out of range.");
 		}
 
 		return mChildren[idx];
@@ -405,7 +402,7 @@ namespace BansheeEngine
 			if(x.isDestroyed())
 				return false;
 
-			return x.getHandleData()->mPtr->object.get() == component; }
+			return x._getHandleData()->mPtr->object.get() == component; }
 		);
 
 		if(iterFind != mComponents.end())

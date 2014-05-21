@@ -5,6 +5,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Components represent primarily logic elements in the scene. 
+	 *			They are attached to scene objects.
+	 */
 	class CM_EXPORT Component : public GameObject
 	{
 	public:
@@ -14,7 +18,7 @@ namespace BansheeEngine
 		HSceneObject sceneObject() const { return mParent; }
 
 		/**
-		 * @brief	Same as sceneObject(), just a shorter name.
+		 * @copydoc	sceneObject
 		 */
 		HSceneObject SO() const { return sceneObject(); }
 
@@ -23,7 +27,7 @@ namespace BansheeEngine
 		 * 			
 		 * @note	Internal method.
 		 */
-		virtual void update() = 0;
+		virtual void update() { }
 
 		/**
 		 * @brief	Removes the component from parent SceneObject and deletes it. All
@@ -38,11 +42,15 @@ namespace BansheeEngine
 		Component(const HSceneObject& parent);
 		virtual ~Component();
 
+		/**
+		 * @brief	Called just before the component is destroyed.
+		 */
 		virtual void onDestroyed() {}
-
-		HSceneObject mParent;
 	private:
 		Component(const Component& other) { }
+
+	protected:
+		HSceneObject mParent;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

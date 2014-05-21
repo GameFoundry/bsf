@@ -4,6 +4,9 @@ namespace BansheeEngine
 {
 	class GameObjectManager;
 
+	/**
+	 * @brief	Internal data shared between GameObject handles.
+	 */
 	struct CM_EXPORT GameObjectHandleData
 	{
 		GameObjectHandleData()
@@ -28,7 +31,7 @@ namespace BansheeEngine
 	 * 			It primarily keeps track if the object is still alive, so anything
 	 * 			still referencing it doesn't accidentally use it.
 	 * 			
-	 * @note	This class exists because I want the references between game objects be quite loose.
+	 * @note	This class exists because references between game objects should be quite loose.
 	 * 			For example one game object should be able to reference another one without the other
 	 * 			one knowing. But if that is the case I also need to handle the case when the other
 	 * 			object we're referencing has been deleted, and that is the main purpose of this class.
@@ -40,19 +43,20 @@ namespace BansheeEngine
 		GameObjectHandleBase();
 
 		/**
-		 * @brief	Checks if the object has been destroyed
+		 * @brief	Returns true if the object the handle is pointing to has been destroyed.
 		 */
 		bool isDestroyed() const { return mData->mPtr == nullptr || mData->mPtr->object == nullptr; }
 
 		/**
-		 * @brief	Internal method only. Not meant to be called directly.
+		 * @brief	Returns the instance ID of the object the handle is referencing.
 		 */
-		std::shared_ptr<GameObjectHandleData> getHandleData() const { return mData; }
-
 		UINT64 getInstanceId() const { return mData->mInstanceId; }
 
-		void resolve(const GameObjectHandleBase& object);
-
+		/**
+		 * @brief	Returns pointer to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		GameObject* get() const 
 		{ 
 			throwIfDestroyed();
@@ -60,6 +64,11 @@ namespace BansheeEngine
 			return mData->mPtr->object.get(); 
 		}
 
+		/**
+		 * @brief	Returns a smart pointer to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		std::shared_ptr<GameObject> getInternalPtr() const
 		{
 			throwIfDestroyed();
@@ -67,8 +76,33 @@ namespace BansheeEngine
 			return mData->mPtr->object;
 		}
 
+		/**
+		 * @brief	Returns pointer to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		GameObject* operator->() const { return get(); }
+
+		/**
+		 * @brief	Returns reference to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		GameObject& operator*() const { return *get(); }
+
+		/**
+		 * @brief	Returns internal handle data.
+		 *
+		 * @note	Internal method.
+		 */
+		std::shared_ptr<GameObjectHandleData> _getHandleData() const { return mData; }
+
+		/**
+		 * @brief	Resolves a handle to a proper GameObject in case it was created uninitialized.
+		 *
+		 * @note	Internal method.
+		 */
+		void _resolve(const GameObjectHandleBase& object);
 
 	protected:
 		friend class SceneObject;
@@ -79,8 +113,14 @@ namespace BansheeEngine
 		GameObjectHandleBase(const std::shared_ptr<GameObjectHandleData>& data);
 		GameObjectHandleBase(std::nullptr_t ptr);
 
+		/**
+		 * @brief	Throws an exception if the referenced GameObject has been destroyed.
+		 */
 		inline void throwIfDestroyed() const;
 		
+		/**
+		 * @brief	Invalidates the handle signifiying the referenced object was destroyed.
+		 */
 		void destroy()
 		{
 			// We need to clear mData->mPtr before we clear mData->mPtr->object,
@@ -104,31 +144,47 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const;
 	};
 
-	// NOTE: It is important this class contains no data since we often value 
-	// cast it to its base 
+	/**
+	 * @copydoc	GameObjectHandleBase
+	 *
+	 * @note	It is important this class contains no data since we often 
+	 *			value cast it to its base.
+	 */
 	template <typename T>
 	class GameObjectHandle : public GameObjectHandleBase
 	{
 	public:
+		/**
+		 * @brief	Constructs a new empty handle.
+		 */
 		GameObjectHandle()
 			:GameObjectHandleBase()
 		{	
 			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>();
 		}
 
+		/**
+		 * @brief	Copy constructor from another handle of the same type.
+		 */
 		template <typename T1>
 		GameObjectHandle(const GameObjectHandle<T1>& ptr)
 			:GameObjectHandleBase()
 		{ 	
-			mData = ptr.getHandleData();
+			mData = ptr._getHandleData();
 		}
 
+		/**
+		 * @brief	Copy constructor from another handle of the base type.
+		 */
 		GameObjectHandle(const GameObjectHandleBase& ptr)
 			:GameObjectHandleBase()
 		{ 	
-			mData = ptr.getHandleData();
+			mData = ptr._getHandleData();
 		}
 
+		/**
+		 * @brief	Invalidates the handle.
+		 */
 		inline GameObjectHandle<T>& operator=(std::nullptr_t ptr)
 		{ 	
 			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>();
@@ -136,6 +192,9 @@ namespace BansheeEngine
 			return *this;
 		}
 
+		/**
+		 * @brief	Casts a specific handle to the base handle.
+		 */
 		inline operator GameObjectHandleBase()
 		{
 			GameObjectHandleBase base(mData);
@@ -143,6 +202,11 @@ namespace BansheeEngine
 			return base;
 		}
 
+		/**
+		 * @brief	Returns a pointer to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		T* get() const 
 		{ 
 			throwIfDestroyed();
@@ -150,6 +214,11 @@ namespace BansheeEngine
 			return reinterpret_cast<T*>(mData->mPtr->object.get()); 
 		}
 
+		/**
+		 * @brief	Returns a smart pointer to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		std::shared_ptr<T> getInternalPtr() const
 		{
 			throwIfDestroyed();
@@ -157,20 +226,35 @@ namespace BansheeEngine
 			return std::static_pointer_cast<T>(mData->mPtr->object);
 		}
 
+		/**
+		 * @brief	Returns pointer to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		T* operator->() const { return get(); }
+
+		/**
+		 * @brief	Returns reference to the referenced GameObject.
+		 *
+		 * @note	Throws exception if the GameObject was destroyed.
+		 */
 		T& operator*() const { return *get(); }
 
 		template<class _Ty>
-		struct CM_Bool_struct
+		struct Bool_struct
 		{
 			int _Member;
 		};
 
-		// Conversion to bool
-		// (Why not just directly convert to bool? Because then we can assign pointer to bool and that's weird)
-		operator int CM_Bool_struct<T>::*() const
+		/**
+		 * @brief	Allows direct conversion of handle to bool.
+		 *
+		 * @note	This is needed because we can't directly convert to bool
+		 *			since then we can assign pointer to bool and that's weird.
+		 */
+		operator int Bool_struct<T>::*() const
 		{
-			return (((mData->mPtr != nullptr) && (mData->mPtr->object != nullptr)) ? &CM_Bool_struct<T>::_Member : 0);
+			return (((mData->mPtr != nullptr) && (mData->mPtr->object != nullptr)) ? &Bool_struct<T>::_Member : 0);
 		}
 
 	private:
@@ -178,23 +262,35 @@ namespace BansheeEngine
 		friend class SceneObjectRTTI;
 		friend class GameObjectManager;
 
+		/**
+		 * @brief	Creates a handle from a smart pointer.
+		 */
 		explicit GameObjectHandle(const std::shared_ptr<T> ptr)
 			:GameObjectHandleBase(ptr)
 		{ }
 	};
 
+	/**
+	 * @brief	Casts one handle type to another.
+	 */
 	template<class _Ty1, class _Ty2>
 		GameObjectHandle<_Ty1> static_object_cast(const GameObjectHandle<_Ty2>& other)
 	{	
 		return GameObjectHandle<_Ty1>(other);
 	}
 
+	/**
+	 * @brief	Compares if two handles point to the same GameObject.
+	 */
 	template<class _Ty1, class _Ty2>
 	bool operator==(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	
 		return (_Left == nullptr && _Right == nullptr) || (_Left != nullptr && _Right != nullptr && _Left.get() == _Right.get());
 	}
 
+	/**
+	 * @brief	Compares if two handles point to different GameObjects.
+	 */
 	template<class _Ty1, class _Ty2>
 	bool operator!=(const GameObjectHandle<_Ty1>& _Left, const GameObjectHandle<_Ty2>& _Right)
 	{	

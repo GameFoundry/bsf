@@ -11,50 +11,118 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	SceneObject represents an object in the scene graph. It has a world position,
+	 *			place in the hierarchy and optionally a number of attached components.
+	 */
 	class CM_EXPORT SceneObject : public GameObject
 	{
 		friend class SceneManagerBase;
 	public:
 		~SceneObject();
 
+		/**
+		 * @brief	Creates a new SceneObject with the specified name. Object will be placed in the top
+		 *			of the scene hierarchy.
+		 */
 		static HSceneObject create(const String& name);
+
+		/**
+		 * @brief	Destroys this object and any of its held components.
+		 */
 		void destroy();
 
 	private:
-		HSceneObject mThisHandle;
-
 		SceneObject(const String& name);
 
 		static HSceneObject createInternal(const String& name);
 		void destroyInternal();
 
+	private:
+		HSceneObject mThisHandle;
+
 		/************************************************************************/
 		/* 								Transform	                     		*/
 		/************************************************************************/
 	public:
+		/**
+		 * @brief	Sets local position of the object.
+		 */
 		void setPosition(const Vector3& position);
+
+		/**
+		 * @brief	Gets local position of the object.
+		 */
 		const Vector3& getPosition() const { return mPosition; }
+
+		/**
+		 * @brief	Gets world position of the object.
+		 *
+		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
+		 */
 		const Vector3& getWorldPosition() const;
 
+		/**
+		 * @brief	Sets the local rotation of the object.
+		 */
 		void setRotation(const Quaternion& rotation);
+
+		/**
+		 * @brief	Gets the local rotation of the object.
+		 */
 		const Quaternion& getRotation() const { return mRotation; }
+
+		/**
+		 * @brief	Gets world rotation of the object.
+		 *
+		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
+		 */
 		const Quaternion& getWorldRotation() const;
 
+		/**
+		 * @brief	Sets the local scale of the object.
+		 */
 		void setScale(const Vector3& scale);
+
+		/**
+		 * @brief	Gets the local scale of the object.
+		 */
 		const Vector3& getScale() const { return mScale; }
+
+		/**
+		 * @brief	Gets world scale of the object.
+		 *
+		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
+		 */
 		const Vector3& getWorldScale() const;
 
+		/**
+		 * @brief	Orients the object so it is looking at the provided "location" (local space)
+		 *			where "up" is used for determining the location of the objects Y axis.
+		 *
+		 */
 		void lookAt(const Vector3& location, const Vector3& up = Vector3::UNIT_Y);
 
+		/**
+		 * @brief	Gets the objects world transform matrix.
+		 *
+		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
+		 */
 		const Matrix4& getWorldTfrm() const;
+
+		/**
+		 * @brief	Gets the objects local transform matrix.
+		 */
 		const Matrix4& getLocalTfrm() const;
 
-		/** Moves the object's position by the vector offset provided along world axes.
-        */
+		/**
+		 * @brief	Moves the object's position by the vector offset provided along world axes.
+		 */
         void move(const Vector3& vec);
 
-        /** Moves the object's position by the vector offset provided along it's own axes (relative to orientation).
-        */
+		/**
+		 * @brief	Moves the object's position by the vector offset provided along it's own axes (relative to orientation).
+		 */
         void moveRelative(const Vector3& vec);
 
 		/**
@@ -88,12 +156,14 @@ namespace BansheeEngine
 		 */
 		void setForward(const Vector3& forwardDir);
 
-		/** Rotate the object around an arbitrary axis.
-        */
+		/**
+		 * @brief	Rotate the object around an arbitrary axis.
+		 */
         void rotate(const Vector3& axis, const Radian& angle);
 
-        /** Rotate the object around an arbitrary axis using a Quaternion.
-        */
+		/**
+		 * @brief	Rotate the object around an arbitrary axis using a Quaternion.
+		 */
         void rotate(const Quaternion& q);
 
 		/**
@@ -132,11 +202,24 @@ namespace BansheeEngine
 		mutable Matrix4 mCachedWorldTfrm;
 		mutable bool mIsCachedWorldTfrmUpToDate;
 
-		Matrix4 mCustomWorldTfrm; // TODO
-		bool mIsCustomTfrmModeActive; // TODO
-
+		/**
+		 * @brief	Marks the transform as dirty so that we know to update
+		 *			it when the transform is requested.
+		 */
 		void markTfrmDirty() const;
+
+		/**
+		 * @brief	Updates the local transform. Normally just reconstructs the 
+		 *			transform matrix from the position/rotation/scale.
+		 */
 		void updateLocalTfrm() const;
+
+		/**
+		 * @brief	Updates the world transform. Reconstructs the local transform
+		 *			matrix and multiplies it with any parent transforms.
+		 *
+		 * @note	If parent transforms are dirty they will be updated.
+		 */
 		void updateWorldTfrm() const;
 
 		/************************************************************************/
@@ -164,10 +247,8 @@ namespace BansheeEngine
 		 * @param	idx	The zero based index of the child.
 		 *
 		 * @return	SceneObject of the child.
-		 * 			
-		 * @throws ERR_INVALIDPARAMS If the index is out of range.
 		 */
-		HSceneObject getChild(unsigned int idx) const;
+		HSceneObject getChild(UINT32 idx) const;
 
 		/**
 		 * @brief	Find the index of the specified child. Don't persist this value as
@@ -213,6 +294,10 @@ namespace BansheeEngine
 		/* 								Component	                     		*/
 		/************************************************************************/
 	public:
+		/**
+		 * @brief	Constructs a new component of the specified type and adds it to 
+		 *			the internal component list.
+		 */
 		template<class T, class... Args>
 		GameObjectHandle<T> addComponent(Args &&... args)
 		{
@@ -285,25 +370,28 @@ namespace BansheeEngine
 		HComponent getComponent(UINT32 typeId) const;
 
 		/**
-		 * @brief	Removes the component from this SceneObject, and deallocates it.
+		 * @brief	Removes the component from this object, and deallocates it.
 		 *
 		 * @param [in]	component	The component to destroy.
 		 */
 		void destroyComponent(const HComponent& component);
 
 		/**
-		 * @brief	Removes the component from this SceneObject, and deallocates it.
+		 * @brief	Removes the component from this object, and deallocates it.
 		 *
 		 * @param [in]	component	The component to destroy.
 		 */
 		void destroyComponent(Component* component);
 
 		/**
-		 * @brief	Returns all components on this SceneObject.
+		 * @brief	Returns all components on this object.
 		 */
 		const Vector<HComponent>& getComponents() const { return mComponents; }
 
 	private:
+		/**
+		 * @brief	Creates an empty component with the default constructor.
+		 */
 		template <typename T>
 		static std::shared_ptr<T> createEmptyComponent()
 		{
@@ -315,6 +403,9 @@ namespace BansheeEngine
 			return gameObject;
 		}
 
+		/**
+		 * @brief	Adds the component to the internal component array.
+		 */
 		void addComponentInternal(const std::shared_ptr<Component> component);
 
 		Vector<HComponent> mComponents;

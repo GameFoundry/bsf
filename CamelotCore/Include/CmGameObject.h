@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Contains instance data that is held by all GameObject handles.
+	 */
 	struct GameObjectInstanceData
 	{
 		GameObjectInstanceData()
@@ -15,27 +18,45 @@ namespace BansheeEngine
 		UINT64 mInstanceId;
 	};
 
+	/**
+	 * @brief	Type of object that can be referenced by a GameObject handle.
+	 *			Each object has an unique ID and is registered with the GameObjectManager.
+	 */
 	class CM_EXPORT GameObject : public IReflectable
 	{
 	public:
 		GameObject();
 		virtual ~GameObject();
 
+		/**
+		 * @brief	Returns the unique instance ID of the GameObject.
+		 */
 		UINT64 getInstanceId() const { return mInstanceData->mInstanceId; }
 
+		/**
+		 * @brief	Gets the name of the object.
+		 */
 		const String& getName() const { return mName; }
+
+		/**
+		 * @brief	Sets the name of the object.
+		 */
 		void setName(const String& name) { mName = name; }
 
-	private:
+	protected:
 		friend class GameObjectHandleBase;
 		friend class GameObjectManager;
 
-		std::shared_ptr<GameObjectInstanceData> mInstanceData;
+		/**
+		 * @brief	Initializes the GameObject after construction.
+		 */
+		void initialize(const std::shared_ptr<GameObject>& object, UINT64 instanceId);
 
 	protected:
 		String mName;
 
-		void initialize(const std::shared_ptr<GameObject>& object, UINT64 instanceId);
+	private:
+		std::shared_ptr<GameObjectInstanceData> mInstanceData;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -80,9 +80,9 @@ namespace BansheeEngine
 			auto findIterObj = mObjects.find(instanceId);
 
 			if(findIterObj != mObjects.end())
-				unresolvedHandle.resolve(findIterObj->second);	
+				unresolvedHandle._resolve(findIterObj->second);	
 			else
-				unresolvedHandle.resolve(nullptr);
+				unresolvedHandle._resolve(nullptr);
 		}
 
 		for(auto iter = mEndCallbacks.rbegin(); iter != mEndCallbacks.rend(); ++iter)

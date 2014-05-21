@@ -6,17 +6,43 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Tracks GameObject creation and destructions. Also resolves
+	 *			GameObject references from GameObject handles.
+	 *
+	 * @note	Sim thread only.
+	 */
 	class CM_EXPORT GameObjectManager : public Module<GameObjectManager>
 	{
 	public:
 		GameObjectManager();
 		~GameObjectManager();
 
+		/**
+		 * @brief	Registers a new GameObject and returns the handle to the object.
+		 */
 		GameObjectHandleBase registerObject(const std::shared_ptr<GameObject>& object);
+
+		/**
+		 * @brief	Unregisters a GameObject.
+		 */
 		void unregisterObject(const GameObjectHandleBase& object);
 
+		/**
+		 * @brief	Attempts to find a GameObject handle based on the GameObject instance ID.
+		 *			Returns empty handle if ID cannot be found.
+		 */
 		GameObjectHandleBase getObject(UINT64 id) const;
+
+		/**
+		 * @brief	Attempts to find a GameObject handle based on the GameObject instance ID.
+		 *			Returns true if object with the specified ID is found, false otherwise.
+		 */
 		bool tryGetObject(UINT64 id, GameObjectHandleBase& object) const;
+
+		/**
+		 * @brief	Checks if the GameObject with the specified instance ID exists.
+		 */
 		bool objectExists(UINT64 id) const;
 
 		/************************************************************************/
