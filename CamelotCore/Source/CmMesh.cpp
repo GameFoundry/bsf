@@ -355,7 +355,7 @@ namespace BansheeEngine
 	{
 		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
 
-		return static_resource_cast<Mesh>(gResources().createResourceHandle(meshPtr));
+		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
 	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
@@ -364,14 +364,14 @@ namespace BansheeEngine
 		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, 
 			initialMeshData, bufferType, drawOp, indexType);
 
-		return static_resource_cast<Mesh>(gResources().createResourceHandle(meshPtr));
+		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
 	HMesh Mesh::create(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
 	{
 		MeshPtr meshPtr = _createPtr(initialMeshData, bufferType, drawOp);
 
-		return static_resource_cast<Mesh>(gResources().createResourceHandle(meshPtr));
+		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
 	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 

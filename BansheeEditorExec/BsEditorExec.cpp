@@ -12,7 +12,7 @@ int CALLBACK WinMain(
 	_In_  int nCmdShow
 	)
 {
-	EditorApplication::startUp(RenderSystemPlugin::DX11);
+	EditorApplication::startUp(RenderSystemPlugin::DX9);
 	EditorApplication::instance().runMainLoop();
 	EditorApplication::shutDown();
 

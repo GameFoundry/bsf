@@ -5,6 +5,16 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Represents a single mesh entry in the MeshHeap. This can be used as a normal mesh
+	 *			but due to the nature of the mesh-heap it is not the type of mesh you should use
+	 *			for storing static data.
+	 *
+	 *			Transient meshes don't keep internal index/vertex buffers but instead use the ones
+	 *			provided by their parent mesh heap.
+	 *
+	 * @see		MeshHeap
+	 */
 	class CM_EXPORT TransientMesh : public MeshBase
 	{
 	public:
@@ -48,9 +58,17 @@ namespace BansheeEngine
 	protected:
 		friend class MeshHeap;
 
+		/**
+		 * @brief	Constructs a new transient mesh.
+		 *
+		 * @see		MeshHeap::alloc
+		 */
 		TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numIndices, 
 			UINT32 numVertices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
 
+		/**
+		 * @brief	Marks the mesh as destroyed so we know that we don't need to destroy it ourselves.
+		 */
 		void markAsDestroyed() { mIsDestroyed = true; }
 
 	protected:

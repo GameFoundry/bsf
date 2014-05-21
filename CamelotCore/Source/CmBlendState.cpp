@@ -78,7 +78,7 @@ namespace BansheeEngine
 	{
 		BlendStatePtr blendStatePtr = RenderStateManager::instance().createBlendState(desc);
 
-		return static_resource_cast<BlendState>(gResources().createResourceHandle(blendStatePtr));
+		return static_resource_cast<BlendState>(gResources()._createResourceHandle(blendStatePtr));
 	}
 
 	/************************************************************************/

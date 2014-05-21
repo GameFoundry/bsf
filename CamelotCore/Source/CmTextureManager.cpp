@@ -47,7 +47,7 @@ namespace BansheeEngine
 		return ret;
     }
 
-	TexturePtr TextureManager::createEmpty()
+	TexturePtr TextureManager::_createEmpty()
 	{
 		TexturePtr texture = createTextureImpl();
 		texture->_setThisPtr(texture);
@@ -92,16 +92,12 @@ namespace BansheeEngine
 		return newRT;
 	}
 
-	MultiRenderTexturePtr TextureManager::createEmptyMultiRenderTexture()
+	MultiRenderTexturePtr TextureManager::createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc)
 	{
 		MultiRenderTexturePtr newRT = createMultiRenderTextureImpl();
 		newRT->_setThisPtr(newRT);
+		newRT->initialize(desc);
 
 		return newRT;
-	}
-
-	bool TextureManager::isFormatSupported(TextureType ttype, PixelFormat format, int usage)
-	{
-		return getNativeFormat(ttype, format, usage) == format;
 	}
 }

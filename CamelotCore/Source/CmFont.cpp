@@ -87,7 +87,7 @@ namespace BansheeEngine
 	{
 		FontPtr newFont = _createPtr(fontData);
 
-		return gResources().createResourceHandle(newFont);
+		return gResources()._createResourceHandle(newFont);
 	}
 
 	FontPtr Font::_createPtr(const Vector<FontData>& fontData)

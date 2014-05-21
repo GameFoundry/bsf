@@ -44,7 +44,7 @@ namespace BansheeEngine {
 		/**
 		 * @copydoc Texture::isBindableAsShaderResource
 		 */
-		bool isBindableAsShaderResource() const { return mIsBindableAsShaderResource; }
+		bool _isBindableAsShaderResource() const { return mIsBindableAsShaderResource; }
 
 		/// retrieves a pointer to the actual texture
 		IDirect3DBaseTexture9 *getTexture_internal();		

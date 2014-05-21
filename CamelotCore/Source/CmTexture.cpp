@@ -11,16 +11,9 @@
 namespace BansheeEngine 
 {
     Texture::Texture()
-        : 
-            mHeight(32),
-            mWidth(32),
-            mDepth(1),
-            mNumMipmaps(0),
-			mHwGamma(false),
-			mFSAA(0),
-            mTextureType(TEX_TYPE_2D),            
-            mFormat(PF_UNKNOWN),
-            mUsage(TU_DEFAULT)
+        :mHeight(32), mWidth(32), mDepth(1), mNumMipmaps(0),
+		 mHwGamma(false), mFSAA(0), mTextureType(TEX_TYPE_2D), 
+		 mFormat(PF_UNKNOWN), mUsage(TU_DEFAULT)
     {
         
     }
@@ -55,7 +48,7 @@ namespace BansheeEngine
         return getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 	}
 
-	UINT32 Texture::getNumFaces(void) const
+	UINT32 Texture::getNumFaces() const
 	{
 		return getTextureType() == TEX_TYPE_CUBE_MAP ? 6 : 1;
 	}
@@ -305,7 +298,7 @@ namespace BansheeEngine
 		TexturePtr texturePtr = _createPtr(texType, 
 			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 
-		return static_resource_cast<Texture>(gResources().createResourceHandle(texturePtr));
+		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 	
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, 
@@ -314,7 +307,7 @@ namespace BansheeEngine
 		TexturePtr texturePtr = _createPtr(texType, 
 			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 
-		return static_resource_cast<Texture>(gResources().createResourceHandle(texturePtr));
+		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 
 	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 

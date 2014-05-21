@@ -7,56 +7,58 @@
 
 namespace BansheeEngine
 {
-	/** The pixel format used for images, textures, and render surfaces */
+	/**
+	 * @brief	The pixel format used for images, textures, and render surfaces
+	 */
     enum PixelFormat
     {
-        /// Unknown pixel format.
+        // Unknown pixel format.
         PF_UNKNOWN = 0,
-        /// 8-bit pixel format, all bits red
+        // 8-bit pixel format, all bits red.
         PF_R8 = 1,
-		/// 2 byte pixel format, 1 byte red, 1 byte green
+		// 2 byte pixel format, 1 byte red, 1 byte green.
 		PF_R8G8 = 2,
-        /// 24-bit pixel format, 8 bits for red, green and blue.
+        // 24-bit pixel format, 8 bits for red, green and blue.
         PF_R8G8B8 = 3,
-        /// 24-bit pixel format, 8 bits for blue, green and red.
+        // 24-bit pixel format, 8 bits for blue, green and red.
         PF_B8G8R8 = 4,
-        /// 32-bit pixel format, 8 bits for alpha, red, green and blue.
+        // 32-bit pixel format, 8 bits for alpha, red, green and blue.
         PF_A8R8G8B8 = 5,
-        /// 32-bit pixel format, 8 bits for blue, green, red and alpha.
+        // 32-bit pixel format, 8 bits for blue, green, red and alpha.
         PF_A8B8G8R8 = 6,
-        /// 32-bit pixel format, 8 bits for blue, green, red and alpha.
+        // 32-bit pixel format, 8 bits for blue, green, red and alpha.
         PF_B8G8R8A8 = 7,
-		/// 32-bit pixel format, 8 bits for red, green, blue and alpha.
+		// 32-bit pixel format, 8 bits for red, green, blue and alpha.
 		PF_R8G8B8A8 = 8,
-        /// 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue
-        /// like PF_A8R8G8B8, but alpha will get discarded
+        // 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue.
+        // Like PF_A8R8G8B8, but alpha will get discarded
         PF_X8R8G8B8 = 9,
-        /// 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red
-        /// like PF_A8B8G8R8, but alpha will get discarded
+        // 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red.
+        // Like PF_A8B8G8R8, but alpha will get discarded.
         PF_X8B8G8R8 = 10,
-		/// 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue
-		/// like PF_R8G8B8A8, but alpha will get discarded
+		// 32-bit pixel format, 8 bits for red, 8 bits for green, 8 bits for blue.
+		// Like PF_R8G8B8A8, but alpha will get discarded.
 		PF_R8G8B8X8 = 11,
-		/// 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red
-		/// like PF_B8G8R8A8, but alpha will get discarded
+		// 32-bit pixel format, 8 bits for blue, 8 bits for green, 8 bits for red.
+		// Like PF_B8G8R8A8, but alpha will get discarded.
 		PF_B8G8R8X8 = 12,
-		/// 3 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue
+		// 24-bit pixel format, 8 bits for red, green and blue.
 		PF_BYTE_RGB = PF_R8G8B8,
-		/// 3 byte pixel format, 1 byte for blue, 1 byte for green, 1 byte for red
+		// 24-bit pixel format, 8 bits for blue, green and red.
 		PF_BYTE_BGR = PF_B8G8R8,
-		/// 4 byte pixel format, 1 byte for blue, 1 byte for green, 1 byte for red and one byte for alpha
+		// 32-bit pixel format, 8 bits for blue, green, red and alpha.
 		PF_BYTE_BGRA = PF_B8G8R8A8,
-		/// 4 byte pixel format, 1 byte for red, 1 byte for green, 1 byte for blue, and one byte for alpha
+		// 32-bit pixel format, 8 bits for red, green, blue and alpha.
 		PF_BYTE_RGBA = PF_R8G8B8A8,      
-        /// DDS (DirectDraw Surface) DXT1 format
+        // DXT1/BC1 format containing opaque RGB or 1-bit alpha RGB. 4 bits per pixel.
         PF_DXT1 = 13,
-        /// DDS (DirectDraw Surface) DXT2 format
+        // DXT2/BC2 format with premultiplied alpha. 6 bits per pixel.
         PF_DXT2 = 14,
-        /// DDS (DirectDraw Surface) DXT3 format
+        // DXT3/BC2 format with explicit alpha. 6 bits per pixel.
         PF_DXT3 = 15,
-        /// DDS (DirectDraw Surface) DXT4 format
+        // DXT4/BC3 format with premultiplied alpha. 6 bits per pixel. Better alpha gradients than DXT2.
         PF_DXT4 = 16,
-        /// DDS (DirectDraw Surface) DXT5 format
+        // DXT5/BC3 format with explicit alpha. 6 bits per pixel. Better alpha gradients than DXT3.
         PF_DXT5 = 17,
 		// 16-bit pixel format, 16 bits (float) for red
         PF_FLOAT16_R = 18,
@@ -74,22 +76,22 @@ namespace BansheeEngine
         PF_FLOAT32_RGB = 24,
         // 128-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue, 32 bits (float) for alpha
         PF_FLOAT32_RGBA = 25,
-		// Depth stencil, 32bit depth, 8bit stencil + 24 unused
+		// Depth stencil format, 32bit depth, 8bit stencil + 24 unused
 		PF_D32_S8X24 = 26,
-		// Depth stencil, 24bit depth + 8bit stencil
+		// Depth stencil fomrat, 24bit depth + 8bit stencil
 		PF_D24S8 = 27,
-		// Depth, 32bits
+		// Depth format, 32bits
 		PF_D32 = 28,
-		// Depth, 16bits
+		// Depth format, 16bits
 		PF_D16 = 29,
 		// Number of pixel formats currently defined
         PF_COUNT = 30
     };
 	typedef Vector<PixelFormat> PixelFormatList;
 
-    /**
-     * Flags defining some on/off properties of pixel formats
-     */
+	/**
+	 * @brief	Flags defining some properties of pixel formats.
+	 */
     enum PixelFormatFlags {
         // This format has an alpha channel
         PFF_HASALPHA        = 0x00000001,      
@@ -105,50 +107,53 @@ namespace BansheeEngine
         PFF_NATIVEENDIAN    = 0x00000010
     };
     
-    /** Pixel component format */
+	/**
+	 * @brief	Types of pixel components
+	 */
     enum PixelComponentType
     {
-        PCT_BYTE = 0,    /// Byte per component (8 bit fixed 0.0..1.0)
-        PCT_SHORT = 1,   /// Short per component (16 bit fixed 0.0..1.0))
-        PCT_FLOAT16 = 2, /// 16 bit float per component
-        PCT_FLOAT32 = 3, /// 32 bit float per component
-        PCT_COUNT = 4    /// Number of pixel types
+        PCT_BYTE = 0,    /**< Byte per component */
+        PCT_SHORT = 1,   /**< Short per component */
+        PCT_FLOAT16 = 2, /**< 16 bit float per component */
+        PCT_FLOAT32 = 3, /**< 32 bit float per component */
+        PCT_COUNT = 4    /**< Number of pixel types */
     };
     
-	/** A primitive describing a volume (3D), image (2D) or line (1D) of pixels in memory.
-     	In case of a rectangle, depth must be 1. 
-     	Pixels are stored as a succession of "depth" slices, each containing "height" rows of 
-     	"width" pixels.
-    */
+	/**
+	 * @brief	A buffer describing a volume (3D), image (2D) or line (1D) of pixels in memory.
+	 *			Pixels are stored as a succession of "depth" slices, each containing "height" rows of
+	 *			"width" pixels.
+	 *
+	 *			As any GpuResourceData this is used primarily for reading and writing from/to a GPU resource,
+	 *			and is normally constructed by the resource itself. However you may still construct it manually
+	 *			and use it for other purposes if needed.
+	 *
+	 * @note	You must call allocateInternalBuffer or set the buffer in some other way before reading/writing
+	 *			from this object.
+	 *
+	 * @see		GpuResourceData
+	 */
     class CM_EXPORT PixelData : public GpuResourceData
 	{
     public:
-    	/// Parameter constructor for setting the members manually
     	PixelData() {}
 		~PixelData() {}
 
-		/** Constructor providing extents in the form of a Box object. This constructor
-    		assumes the pixel data is laid out consecutively in memory. (this
-    		means row after row, slice after slice, with no space in between)
-    		@param extents	    Extents of the region defined by data
-    		@param pixelFormat	Format of this buffer
-    		@param pixelData	Pointer to the actual data
-    	*/
+		/**
+		 * @brief	Constructs a new object with an internal buffer capable of holding "extents" volume of pixels, 
+		 *			where each pixel is of the specified pixel format. Extent offsets are also stored, but are not used
+		 *			internally.
+		 */
 		PixelData(const PixelVolume &extents, PixelFormat pixelFormat)
 			:mExtents(extents), mFormat(pixelFormat)
 		{
 			setConsecutive();
 		}
 
-    	/** Constructor providing width, height and depth. This constructor
-    		assumes the pixel data is laid out consecutively in memory. (this
-    		means row after row, slice after slice, with no space in between)
-    		@param width	    Width of the region
-    		@param height	    Height of the region
-    		@param depth	    Depth of the region
-    		@param pixelFormat	Format of this buffer
-    		@param pixelData    Pointer to the actual data
-    	*/
+		/**
+		 * @brief	Constructs a new object with an internal buffer capable of holding volume of pixels described by
+		 *			provided width, height and depth, where each pixel is of the specified pixel format.
+		 */
     	PixelData(UINT32 width, UINT32 height, UINT32 depth, PixelFormat pixelFormat)
 			: mExtents(0, 0, 0, width, height, depth), mFormat(pixelFormat)
     	{
@@ -158,100 +163,156 @@ namespace BansheeEngine
 		PixelData(const PixelData& copy);
 		PixelData& operator=(const PixelData& rhs);
 
+		/**
+		 * @brief	Returns the number of pixels that offsets one row from another. This can be
+		 *			"width", but doesn't have to be as some buffers require padding.
+		 */
 		UINT32 getRowPitch() const { return mRowPitch; }
+
+		/**
+		 * @brief	Returns the number of pixels that offsets one depth slice from another. This can be
+		 *			"width * height", but doesn't have to be as some buffers require padding.
+		 */
 		UINT32 getSlicePitch() const { return mSlicePitch; }
 
+		/**
+		 * @brief	Sets the pitch (in pixels) that determines offset between rows of the pixel buffer.
+		 *			Call this before allocating the buffer.
+		 */
 		void setRowPitch(UINT32 rowPitch) { mRowPitch = rowPitch; }
+
+		/**
+		 * @brief	Sets the pitch (in pixels) that determines offset between depth slices of the pixel buffer.
+		 *			Call this before allocating the buffer.
+		 */
         void setSlicePitch(UINT32 slicePitch) { mSlicePitch = slicePitch; }
 
-        /**	Get the number of elements between one past the rightmost pixel of 
-         	one row and the leftmost pixel of the next row. (IE this is zero if rows
-         	are consecutive).
-        */
+		/**
+		 * @brief	Returns the number of extra pixels in a row (non-zero only if rows are not
+		 *			consecutive (row pitch is larger than width)).
+		 */
         UINT32 getRowSkip() const { return mRowPitch - getWidth(); }
-        /** Get the number of elements between one past the right bottom pixel of
-         	one slice and the left top pixel of the next slice. (IE this is zero if slices
-         	are consecutive).
-        */
+
+		/**
+		 * @brief	Returns the number of extra pixels in a depth slice (non-zero only if
+		 *			slices aren't consecutive (slice pitch is larger than width*height).
+		 */
         UINT32 getSliceSkip() const { return mSlicePitch - (getHeight() * mRowPitch); }
 
+		/**
+		 * @brief	Returns the pixel format used by the internal buffer for storing the pixels.
+		 */
 		PixelFormat getFormat() const { return mFormat; }
 
+		/**
+		 * @brief	Returns width of the buffer in pixels.
+		 */
 		UINT32 getWidth() const { return mExtents.getWidth(); }
+
+		/**
+		 * @brief	Returns height of the buffer in pixels.
+		 */
 		UINT32 getHeight() const { return mExtents.getHeight(); }
+
+		/**
+		 * @brief	Returns depth of the buffer in pixels.
+		 */
 		UINT32 getDepth() const { return mExtents.getDepth(); }
 
+		/**
+		 * @brief	Returns left-most start of the pixel volume. This value is not used internally in any way.
+		 *			It is just passed through from the constructor.
+		 */
 		UINT32 getLeft() const { return mExtents.left; }
+
+		/**
+		 * @brief	Returns right-most end of the pixel volume. This value is not used internally in any way.
+		 *			It is just passed through from the constructor.
+		 */
 		UINT32 getRight() const { return mExtents.right; }
+
+		/**
+		 * @brief	Returns top-most start of the pixel volume. This value is not used internally in any way.
+		 *			It is just passed through from the constructor.
+		 */
 		UINT32 getTop() const { return mExtents.top; }
+
+		/**
+		 * @brief	Returns bottom-most end of the pixel volume. This value is not used internally in any way.
+		 *			It is just passed through from the constructor.
+		 */
 		UINT32 getBottom() const { return mExtents.bottom; }
+
+		/**
+		 * @brief	Returns front-most start of the pixel volume. This value is not used internally in any way.
+		 *			It is just passed through from the constructor.
+		 */
 		UINT32 getFront() const { return mExtents.front; }
+
+		/**
+		 * @brief	Returns back-most end of the pixel volume. This value is not used internally in any way.
+		 *			It is just passed through from the constructor.
+		 */
 		UINT32 getBack() const { return mExtents.back; }
 
+		/**
+		 * @brief	Returns extents of the pixel volume this object is capable of holding.
+		 */
 		PixelVolume getExtents() const { return mExtents; }
 
-        /** Return whether this buffer is laid out consecutive in memory (ie the pitches
-         	are equal to the dimensions)
-        */        
+		/**
+		 * @brief	Return whether this buffer is laid out consecutive in memory 
+		 *			(i.e. the pitches are equal to the dimensions).
+		 */
         bool isConsecutive() const 
 		{ 
 			return mRowPitch == getWidth() && mSlicePitch == getWidth()*getHeight(); 
 		}
-        /** Return the size (in bytes) this image would take if it was
-        	laid out consecutive in memory
-      	*/
+
+		/**
+		 * @brief	Return the size (in bytes) this image would take if it was
+		 *			laid out consecutive in memory.
+		 */
       	UINT32 getConsecutiveSize() const;
-      	/** Return a subvolume of this PixelBox.
-      		@param def	Defines the bounds of the subregion to return
-      		@returns	A pixel box describing the region and the data in it
-      		@remarks	This function does not copy any data, it just returns
-      			a PixelBox object with a data pointer pointing somewhere inside 
-      			the data of object.
-      		@throws	Exception(ERR_INVALIDPARAMS) if def is not fully contained
-      	*/
+
+		/**
+		 * @brief	Returns pixel data containing a sub-volume of this object. Returned
+		 *			data will not have its own buffer, but will instead point to this one.
+		 *			It is up to the caller to ensure this object outlives any sub-volume objects.
+		 */
       	PixelData getSubVolume(const PixelVolume &def) const;
         
-        /**
-         * Get colour value from a certain location in the PixelBox. The z coordinate
-         * is only valid for cubemaps and volume textures. This uses the first (largest)
-         * mipmap.
-         */
+		/**
+		 * @brief	Returns pixel color at the specified coordinates.
+		 */
         Color getColorAt(UINT32 x, UINT32 y, UINT32 z = 0);
 
-        /**
-         * Set colour value at a certain location in the PixelBox. The z coordinate
-         * is only valid for cubemaps and volume textures. This uses the first (largest)
-         * mipmap.
-         */
+		/**
+		 * @brief	Sets the pixel color at the specified coordinates.
+		 */
         void setColorAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z = 0);
 
 	private:
-		PixelVolume mExtents;
+		/**
+		 * @brief	Set the rowPitch and slicePitch so that the buffer is laid out consecutive
+		 *			in memory. Does not actually modify the buffer itself.
+		 */
+		void setConsecutive()
+		{
+			mRowPitch = getWidth();
+			mSlicePitch = getWidth()*getHeight();
+		}
 
-        /// The pixel format 
-        PixelFormat mFormat;
-        /** Number of elements between the leftmost pixel of one row and the left
-         	pixel of the next. This value must always be equal to getWidth() (consecutive) 
-			for compressed formats.
-        */
-        UINT32 mRowPitch;
-        /** Number of elements between the top left pixel of one (depth) slice and 
-         	the top left pixel of the next. This can be a negative value. Must be a multiple of
-         	rowPitch. This value must always be equal to getWidth()*getHeight() (consecutive) 
-			for compressed formats.
-        */
-        UINT32 mSlicePitch;
-
-		/** Set the rowPitch and slicePitch so that the buffer is laid out consecutive 
-         	in memory.
-        */        
-        void setConsecutive()
-        {
-            mRowPitch = getWidth();
-            mSlicePitch = getWidth()*getHeight();
-        }
-
+		/**
+		 * @brief	Returns the needed size of the internal buffer, in bytes.
+		 */
 		UINT32 getInternalBufferSize();
+
+	private:
+		PixelVolume mExtents;
+        PixelFormat mFormat;
+        UINT32 mRowPitch;
+        UINT32 mSlicePitch;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

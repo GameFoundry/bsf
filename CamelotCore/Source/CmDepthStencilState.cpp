@@ -23,7 +23,7 @@ namespace BansheeEngine
 	{
 		DepthStencilStatePtr depthStencilPtr = RenderStateManager::instance().createDepthStencilState(desc);
 
-		return static_resource_cast<DepthStencilState>(gResources().createResourceHandle(depthStencilPtr));
+		return static_resource_cast<DepthStencilState>(gResources()._createResourceHandle(depthStencilPtr));
 	}
 
 	/************************************************************************/

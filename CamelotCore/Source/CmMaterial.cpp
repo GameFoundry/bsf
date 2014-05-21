@@ -713,14 +713,14 @@ namespace BansheeEngine
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create();
 
-		return static_resource_cast<Material>(gResources().createResourceHandle(materialPtr));
+		return static_resource_cast<Material>(gResources()._createResourceHandle(materialPtr));
 	}
 
 	HMaterial Material::create(ShaderPtr shader)
 	{
 		MaterialPtr materialPtr = MaterialManager::instance().create(shader);
 
-		return static_resource_cast<Material>(gResources().createResourceHandle(materialPtr));
+		return static_resource_cast<Material>(gResources()._createResourceHandle(materialPtr));
 	}
 
 	RTTITypeBase* Material::getRTTIStatic()

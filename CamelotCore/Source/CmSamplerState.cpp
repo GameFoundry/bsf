@@ -43,7 +43,7 @@ namespace BansheeEngine
 	{
 		SamplerStatePtr samplerPtr = RenderStateManager::instance().createSamplerState(desc);
 
-		return static_resource_cast<SamplerState>(gResources().createResourceHandle(samplerPtr));
+		return static_resource_cast<SamplerState>(gResources()._createResourceHandle(samplerPtr));
 	}
 
 	/************************************************************************/

@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Base class for all resources used in the engine.
+	 * @brief	Base class for all resources.
 	 */
 	class CM_EXPORT Resource : public IReflectable, public CoreObject
 	{
@@ -15,7 +15,14 @@ namespace BansheeEngine
 		Resource(bool requiresGpuInitialization = true);
 		virtual ~Resource() {};
 
+		/**
+		 * @brief	Returns the name of the resource.
+		 */
 		const String& getName() const { return mName; }
+
+		/**
+		 * @brief	Sets the name of the resource. 
+		 */
 		void setName(const String& name) { mName = name; }
 
 	protected:

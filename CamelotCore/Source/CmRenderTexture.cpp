@@ -94,10 +94,10 @@ namespace BansheeEngine
 		// Create non-persistent resource handles for the used textures (we only need them because a lot of the code accepts only handles,
 		// since they're non persistent they don't really have any benefit over shared pointers)
 		if(mColorSurface != nullptr)
-			mBindableColorTex = gResources().createResourceHandle(mColorSurface->getTexture());
+			mBindableColorTex = gResources()._createResourceHandle(mColorSurface->getTexture());
 
 		if(mDepthStencilSurface != nullptr)
-			mBindableDepthStencilTex = gResources().createResourceHandle(mDepthStencilSurface->getTexture());
+			mBindableDepthStencilTex = gResources()._createResourceHandle(mDepthStencilSurface->getTexture());
 	}
 
 	void RenderTexture::throwIfBuffersDontMatch() const

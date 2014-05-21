@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #pragma once
 
 #include "CmPrerequisites.h"
@@ -35,9 +8,10 @@ THE SOFTWARE.
 namespace BansheeEngine 
 {
     /**
-     * @brief	Class for loading and managing textures.
-     *
-     * @note	Must be initialized when RenderSystem is first started.
+     * @brief	Defines interface for creation of textures. Render systems
+	 *			provide their own implementations.
+	 *
+	 * @note	Thread safe.
      */
     class CM_EXPORT TextureManager : public Module<TextureManager>
     {
@@ -46,112 +20,47 @@ namespace BansheeEngine
         TextureManager();
         virtual ~TextureManager();
 
-		/** Create a manual texture with specified width, height and depth (not loaded from a file).
-            @param
-                name The name to give the resulting texture
-            @param
-                group The name of the resource group to assign the texture to
-            @param
-                texType The type of texture to load/create, defaults to normal 2D textures
-            @param
-                width, height, depth The dimensions of the texture
-            @param
-                numMipmaps The number of pre-filtered mipmaps to generate. If left to MIP_DEFAULT then
-                the TextureManager's default number of mipmaps will be used (see setDefaultNumMipmaps())
-				If set to MIP_UNLIMITED mipmaps will be generated until the lowest possible
-				level, 1x1x1.
-            @param
-                format The internal format you wish to request; the manager reserves
-                the right to create a different format if the one you select is
-                not available in this context.
-			@param 
-				usage The kind of usage this texture is intended for. It 
-				is a combination of TU_STATIC, TU_DYNAMIC, TU_WRITE_ONLY, 
-				TU_AUTOMIPMAP and TU_RENDERTARGET (see TextureUsage enum). You are
-            	strongly advised to use HBU_STATIC_WRITE_ONLY wherever possible, if you need to 
-            	update regularly, consider HBU_DYNAMIC_WRITE_ONLY.
-            @param
-                loader If you intend the contents of the manual texture to be 
-                regularly updated, to the extent that you don't need to recover 
-                the contents if the texture content is lost somehow, you can leave
-                this parameter as 0. However, if you intend to populate the
-                texture only once, then you should implement ManualResourceLoader
-                and pass a pointer to it in this parameter; this means that if the
-                manual texture ever needs to be reloaded, the ManualResourceLoader
-                will be called to do it.
-			@param hwGammaCorrection Pass 'true' to enable hardware gamma correction
-				(sRGB) on this texture. The hardware will convert from gamma space
-				to linear space when reading from this texture. Only applicable for 
-				8-bits per channel textures, will be ignored for other types. Has the advantage
-				over pre-applied gamma that the texture precision is maintained.
-			@param fsaa The level of multisampling to use if this is a render target. Ignored
-				if usage does not include TU_RENDERTARGET or if the device does
-				not support it.
-        */
+		/**
+		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
+		 */
         TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-			int num_mips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
+			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
 			UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
 			
-        /** Create a manual texture with a depth of 1 (not loaded from a file).
-            @param
-                name The name to give the resulting texture
-            @param
-                group The name of the resource group to assign the texture to
-            @param
-                texType The type of texture to load/create, defaults to normal 2D textures
-            @param
-                width, height The dimensions of the texture
-            @param
-                numMipmaps The number of pre-filtered mipmaps to generate. If left to MIP_DEFAULT then
-                the TextureManager's default number of mipmaps will be used (see setDefaultNumMipmaps()).
-				If set to MIP_UNLIMITED mipmaps will be generated until the lowest possible
-				level, 1x1x1.
-            @param
-                format The internal format you wish to request; the manager reserves
-                the right to create a different format if the one you select is
-                not available in this context.
-			@param 
-				usage The kind of usage this texture is intended for. It 
-				is a combination of TU_STATIC, TU_DYNAMIC, TU_WRITE_ONLY, 
-				TU_AUTOMIPMAP and TU_RENDERTARGET (see TextureUsage enum). You are
-            	strongly advised to use HBU_STATIC_WRITE_ONLY wherever possible, if you need to 
-            	update regularly, consider HBU_DYNAMIC_WRITE_ONLY.
-            @param
-                loader If you intend the contents of the manual texture to be 
-                regularly updated, to the extent that you don't need to recover 
-                the contents if the texture content is lost somehow, you can leave
-                this parameter as 0. However, if you intend to populate the
-                texture only once, then you should implement ManualResourceLoader
-                and pass a pointer to it in this parameter; this means that if the
-                manual texture ever needs to be reloaded, the ManualResourceLoader
-                will be called to do it.
-			 @param hwGammaCorrection Pass 'true' to enable hardware gamma correction
-				 (sRGB) on this texture. The hardware will convert from gamma space
-				 to linear space when reading from this texture. Only applicable for 
-				 8-bits per channel textures, will be ignored for other types. Has the advantage
-				 over pre-applied gamma that the texture precision is maintained.
-			@param fsaa The level of multisampling to use if this is a render target. Ignored
-				if usage does not include TU_RENDERTARGET or if the device does
-				not support it.
-        */
-        TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int num_mips,
+		/**
+		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
+		 */
+		TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int numMips,
             PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 fsaa = 0, 
 			const String& fsaaHint = StringUtil::BLANK)
 		{
 			return createTexture(texType, width, height, 1, 
-				num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+				numMips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
 		}
 
 		/**
 		 * @brief	Creates a completely empty and uninitialized Texture.
-		 * 			Should only be used for VERY specific purposes, like deserialization,
+		 *
+		 * @note	Internal method. Should only be used for very specific purposes, like deserialization,
 		 * 			as it requires additional manual initialization that is not required normally.
 		 */
-		TexturePtr createEmpty();
+		TexturePtr _createEmpty();
 
 		/**
 		 * @brief	Creates a new RenderTexture and automatically generates a color surface
-		 * 			and (optionally) a depth/stencil surface
+		 * 			and (optionally) a depth/stencil surface.
+		 *
+		 * @param	texType				Type of the texture.
+		 * @param	width				Width of the texture in pixels.
+		 * @param	height				Height of the texture in pixels.
+		 * @param	format				Format of the pixels.
+		 * @param	hwGamma				If true, any color data will be gamma corrected before being written
+		 *								into the texture.
+		 * @param	fsaa				If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param	fsaaHint			Hint about what kind of multisampling to use. Render system specific.
+		 * @param	createDepth			Determines will a depth/stencil buffer of the same size as the color buffer be created
+		 *								for the render texture.
+		 * @param	depthStencilFormat	Format of the depth/stencil buffer if enabled.
 		 */
 		virtual RenderTexturePtr createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
 			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 fsaa = 0, const String& fsaaHint = "", 
@@ -166,25 +75,7 @@ namespace BansheeEngine
 		 * @brief	Creates a new multi render texture. You may use this type of texture
 		 * 			to render to multiple output textures at once.
 		 */
-		virtual MultiRenderTexturePtr createEmptyMultiRenderTexture();
-
-		/** Returns whether this render system can natively support the precise texture 
-			format requested with the given usage options.
-		@remarks
-			You can still create textures with this format even if this method returns
-			false; the texture format will just be altered to one which the device does
-			support.
-		@note
-			Sometimes the device may just slightly change the format, such as reordering the 
-			channels or packing the channels differently, without it making and qualitative 
-			differences to the texture. If you want to just detect whether the quality of a
-			given texture will be reduced, use isEquivalentFormatSupport instead.
-		@param format The pixel format requested
-		@param usage The kind of usage this texture is intended for, a combination of 
-			the TextureUsage flags.
-		@returns true if the format is natively supported, false if a fallback would be used.
-		*/
-		virtual bool isFormatSupported(TextureType ttype, PixelFormat format, int usage);
+		virtual MultiRenderTexturePtr createMultiRenderTexture(const MULTI_RENDER_TEXTURE_DESC& desc);
 
 		/**
 		 * @brief	Gets the format which will be natively used for a requested format given the
@@ -197,12 +88,30 @@ namespace BansheeEngine
 		const HTexture& getDummyTexture() const { return mDummyTexture; }
 
 	protected:
-		HTexture mDummyTexture;
-
+		/**
+		 * @brief	Creates an empty and uninitialized texture of a specific type. This is to be implemented
+		 *			by render systems with their own implementations.
+		 */
 		virtual TexturePtr createTextureImpl() = 0;
+
+		/**
+		 * @brief	Creates an empty and uninitialized render texture of a specific type. This 
+		 *			is to be implemented by render systems with their own implementations.
+		 */
 		virtual RenderTexturePtr createRenderTextureImpl() = 0;
+
+		/**
+		 * @brief	Creates an empty and uninitialized multi render texture of a specific type. This is 
+		 *			to be implemented by render systems with their own implementations.
+		 */
 		virtual MultiRenderTexturePtr createMultiRenderTextureImpl() = 0;
 
+		/**
+		 * @copydoc	Module::onStartUp
+		 */
 		virtual void onStartUp();
+
+	protected:
+		HTexture mDummyTexture;
     };
 }

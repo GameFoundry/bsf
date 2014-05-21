@@ -78,7 +78,7 @@ namespace BansheeEngine
 		}
 
 		ResourcePtr importedResource = importer->import(inputFilePath, importOptions);
-		return gResources().createResourceHandle(importedResource);
+		return gResources()._createResourceHandle(importedResource);
 	}
 
 	void Importer::reimport(HResource& existingResource, const Path& inputFilePath, ConstImportOptionsPtr importOptions)

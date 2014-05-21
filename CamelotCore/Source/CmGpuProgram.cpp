@@ -76,7 +76,7 @@ namespace BansheeEngine
 	{
 		GpuProgramPtr programPtr = _createPtr(source, entryPoint, language, gptype, profile, includes);
 
-		return static_resource_cast<GpuProgram>(gResources().createResourceHandle(programPtr));
+		return static_resource_cast<GpuProgram>(gResources()._createResourceHandle(programPtr));
 	}
 
 	GpuProgramPtr GpuProgram::_createPtr(const String& source, const String& entryPoint,

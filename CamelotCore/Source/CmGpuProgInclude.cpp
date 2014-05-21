@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	HGpuProgInclude GpuProgInclude::create(const String& includeString)
 	{
-		return static_resource_cast<GpuProgInclude>(gResources().createResourceHandle(_createPtr(includeString)));
+		return static_resource_cast<GpuProgInclude>(gResources()._createResourceHandle(_createPtr(includeString)));
 	}
 
 	GpuProgIncludePtr GpuProgInclude::_createPtr(const String& includeString)

@@ -250,7 +250,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	HResource Resources::createResourceHandle(const ResourcePtr& obj)
+	HResource Resources::_createResourceHandle(const ResourcePtr& obj)
 	{
 		String uuid = UUIDGenerator::instance().generateRandom();
 		HResource newHandle(obj, uuid);

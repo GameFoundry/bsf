@@ -747,44 +747,6 @@ namespace BansheeEngine {
 		}, 
     };
     //-----------------------------------------------------------------------
-	UINT32 PixelData::getConsecutiveSize() const
-	{
-		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), mFormat);
-	}
-	PixelData PixelData::getSubVolume(const PixelVolume &def) const
-	{
-		if(PixelUtil::isCompressed(mFormat))
-		{
-			if(def.left == getLeft() && def.top == getTop() && def.front == getFront() &&
-			   def.right == getRight() && def.bottom == getBottom() && def.back == getBack())
-			{
-				// Entire buffer is being queried
-				return *this;
-			}
-			CM_EXCEPT(InvalidParametersException, "Cannot return subvolume of compressed PixelBuffer");
-		}
-		if(!mExtents.contains(def))
-		{
-			CM_EXCEPT(InvalidParametersException, "Bounds out of range");
-		}
-
-		const size_t elemSize = PixelUtil::getNumElemBytes(mFormat);
-		// Calculate new data origin
-		// Notice how we do not propagate left/top/front from the incoming box, since
-		// the returned pointer is already offset
-		PixelData rval(def.getWidth(), def.getHeight(), def.getDepth(), mFormat);
-
-		rval.setExternalBuffer(((UINT8*)getData()) + ((def.left-getLeft())*elemSize)
-			+ ((def.top-getTop())*mRowPitch*elemSize)
-			+ ((def.front-getFront())*mSlicePitch*elemSize));
-
-		rval.mRowPitch = mRowPitch;
-		rval.mSlicePitch = mSlicePitch;
-		rval.mFormat = mFormat;
-
-		return rval;
-	}
-    //-----------------------------------------------------------------------
     /**
     * Directly get the description record for provided pixel format. For debug builds,
     * this checks the bounds of fmt with an assertion.
@@ -1484,22 +1446,4 @@ namespace BansheeEngine {
 			buffer[2] = (UINT8)b;
 		}
 	}
-
-    Color PixelData::getColorAt(UINT32 x, UINT32 y, UINT32 z)
-    {
-        Color cv;
-
-        UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
-        UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-        PixelUtil::unpackColour(&cv, mFormat, (unsigned char *)getData() + pixelOffset);
-
-        return cv;
-    }
-
-    void PixelData::setColorAt(Color const &cv, UINT32 x, UINT32 y, UINT32 z)
-    {
-        UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
-        UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-        PixelUtil::packColour(cv, mFormat, (unsigned char *)getData() + pixelOffset);
-    }
 }

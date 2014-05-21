@@ -137,7 +137,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return TextureManager::instance().createEmpty();
+			return TextureManager::instance()._createEmpty();
 		}
 	};
 }
