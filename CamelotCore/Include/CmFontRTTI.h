@@ -134,7 +134,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return FontManager::instance().createEmpty();
+			return FontManager::instance()._createEmpty();
 		}
 
 	protected:

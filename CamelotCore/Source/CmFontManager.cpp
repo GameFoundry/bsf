@@ -12,7 +12,7 @@ namespace BansheeEngine
 		return newFont;
 	}
 
-	FontPtr FontManager::createEmpty() const
+	FontPtr FontManager::_createEmpty() const
 	{
 		FontPtr newFont = cm_core_ptr<Font, PoolAlloc>(new (cm_alloc<Font, PoolAlloc>()) Font());
 		newFont->_setThisPtr(newFont);
