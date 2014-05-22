@@ -3,6 +3,7 @@
 #include "CmWin32Window.h"
 #include "CmGLRenderSystem.h"
 #include "CmWin32Context.h"
+#include "CmWin32VideoModeInfo.h"
 #include "CmException.h"
 #include "GL/wglew.h"
 #include <algorithm>
@@ -311,6 +312,11 @@ namespace BansheeEngine
 		}
 
 		return (format && SetPixelFormat(hdc, format, &pfd));
+	}
+
+	VideoModeInfoPtr Win32GLSupport::getVideoModeInfo() const
+	{
+		return cm_shared_ptr<Win32VideoModeInfo>();
 	}
 
 	String translateWGLError()

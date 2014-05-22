@@ -37,6 +37,12 @@ namespace BansheeEngine
 		Win32Context* createContext(HDC hdc, HGLRC externalGlrc = 0);
 
 		bool selectPixelFormat(HDC hdc, int colourDepth, int multisample, bool hwGamma);
+
+		/**
+		 * @copydoc	GLSupport::getVideoModeInfo
+		 */
+		VideoModeInfoPtr getVideoModeInfo() const;
+
 	private:
 		// Allowed video modes
 		Vector<DEVMODE> mDevModes;

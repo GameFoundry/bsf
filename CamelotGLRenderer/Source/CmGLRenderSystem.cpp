@@ -102,6 +102,8 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		mGLSupport->start();
+		mVideoModeInfo = mGLSupport->getVideoModeInfo();
+
 		RenderWindowManager::startUp<GLRenderWindowManager>(this);
 
 		RenderStateManager::startUp();

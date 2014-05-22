@@ -2,8 +2,6 @@
 #include "CmD3D9Prerequisites.h"
 #include "CmD3D9DriverList.h"
 #include "CmD3D9Driver.h"
-#include "CmD3D9VideoModeList.h"
-#include "CmD3D9VideoMode.h"
 #include "CmD3D9RenderWindow.h"
 #include "CmD3D9TextureManager.h"
 #include "CmD3D9Texture.h"
@@ -117,6 +115,8 @@ namespace BansheeEngine
 		mDriverVersion.minor = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.HighPart);
 		mDriverVersion.release = HIWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
 		mDriverVersion.build = LOWORD(mActiveD3DDriver->getAdapterIdentifier().DriverVersion.LowPart);
+
+		mVideoModeInfo = getDirect3DDrivers()->getVideoModeInfo();
 
 		// Create the device manager.
 		mDeviceManager = cm_new<D3D9DeviceManager>();
@@ -1632,7 +1632,7 @@ namespace BansheeEngine
 			rsc = cm_new<RenderSystemCapabilities>();
 
 		rsc->setDriverVersion(mDriverVersion);
-		rsc->setDeviceName(mActiveD3DDriver->DriverDescription());
+		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());
 		rsc->setRenderSystemName(getName());
 
 		// Init caps to maximum.		

@@ -1,31 +1,5 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmD3D9DriverList.h"
+#include "CmD3D9VideoModeInfo.h"
 #include "CmException.h"
 #include "CmD3D9RenderSystem.h"
 
@@ -33,56 +7,49 @@ namespace BansheeEngine
 {
 	D3D9DriverList::D3D9DriverList()
 	{
-		enumerate();
+		IDirect3D9* lpD3D9 = D3D9RenderSystem::getDirect3D9();
+
+		for (UINT32 i = 0; i < lpD3D9->GetAdapterCount(); i++)
+		{
+			D3DADAPTER_IDENTIFIER9 adapterIdentifier;
+			D3DCAPS9 d3dcaps9;
+
+			lpD3D9->GetAdapterIdentifier(i, 0, &adapterIdentifier);
+			lpD3D9->GetDeviceCaps(i, D3DDEVTYPE_HAL, &d3dcaps9);
+
+			mDriverList.push_back(D3D9Driver(i, d3dcaps9, adapterIdentifier));
+		}
+
+		mVideoModeInfo = cm_shared_ptr<D3D9VideoModeInfo>(lpD3D9);
 	}
 
-	D3D9DriverList::~D3D9DriverList(void)
+	D3D9DriverList::~D3D9DriverList()
 	{
 		mDriverList.clear();
 	}
 
-	BOOL D3D9DriverList::enumerate()
+	UINT32 D3D9DriverList::count() const
 	{
-		IDirect3D9* lpD3D9 = D3D9RenderSystem::getDirect3D9();
-
-		for( UINT iAdapter=0; iAdapter < lpD3D9->GetAdapterCount(); ++iAdapter )
-		{
-			D3DADAPTER_IDENTIFIER9 adapterIdentifier;
-			D3DDISPLAYMODE d3ddm;
-			D3DCAPS9 d3dcaps9;
-			
-			lpD3D9->GetAdapterIdentifier( iAdapter, 0, &adapterIdentifier );
-			lpD3D9->GetAdapterDisplayMode( iAdapter, &d3ddm );
-			lpD3D9->GetDeviceCaps( iAdapter, D3DDEVTYPE_HAL, &d3dcaps9 );
-
-			mDriverList.push_back( D3D9Driver( iAdapter, d3dcaps9, adapterIdentifier, d3ddm ) );
-		}
-
-		return TRUE;
+		return (UINT32)mDriverList.size();
 	}
 
-	size_t D3D9DriverList::count() const 
+	D3D9Driver* D3D9DriverList::item(UINT32 index)
 	{
-		return mDriverList.size();
+		return &mDriverList.at(index);
 	}
 
-	D3D9Driver* D3D9DriverList::item( size_t index )
-	{
-		return &mDriverList.at( index );
-	}
-
-	D3D9Driver* D3D9DriverList::item( const String &name )
+	D3D9Driver* D3D9DriverList::item(const String &name)
 	{
 		Vector<D3D9Driver>::iterator it = mDriverList.begin();
 		if (it == mDriverList.end())
-			return NULL;
+			return nullptr;
 
 		for (;it != mDriverList.end(); ++it)
 		{
-			if (it->DriverDescription() == name)
+			if (it->getDriverDescription() == name)
 				return &(*it);
 		}
 
-		return NULL;
+		return nullptr;
 	}
 }

@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 
 #include "CmTexture.h"
+#include "CmMultiRenderTexture.h"
 #include "CmModule.h"
 
 namespace BansheeEngine 

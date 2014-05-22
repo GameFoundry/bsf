@@ -132,6 +132,9 @@
     <ClInclude Include="Include\BsGLVertexArrayObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\CmWin32VideoModeInfo.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmGLContext.cpp">
@@ -226,6 +229,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsGLVertexArrayObjectManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmWin32VideoModeInfo.cpp">
+      <Filter>Source Files\Win32</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

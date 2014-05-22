@@ -60,6 +60,11 @@ namespace BansheeEngine
 		*/
 		virtual void initializeExtensions();
 
+		/**
+		 * @brief	Gets a structure describing all available video modes.
+		 */
+		virtual VideoModeInfoPtr getVideoModeInfo() const = 0;
+
 	protected:
 		Set<String> extensionList;
 

@@ -55,8 +55,8 @@ namespace BansheeEngine
 					bool foundRefreshRate = false;
 					for (auto refreshRate : d3d11videoMode->mD3D11RefreshRates)
 					{
-						if (refreshRate.numerator != displayMode.RefreshRate.Numerator ||
-							refreshRate.denominator != displayMode.RefreshRate.Denominator)
+						if (refreshRate.numerator == displayMode.RefreshRate.Numerator &&
+							refreshRate.denominator == displayMode.RefreshRate.Denominator)
 						{
 							foundRefreshRate = true;
 							break;
@@ -121,7 +121,18 @@ namespace BansheeEngine
 
 		output->FindClosestMatchingMode(&currentMode, &nearestMode, nullptr);
 
-		mDesktopVideoMode = cm_new<D3D11VideoMode>(nearestMode.Width, nearestMode.Height, this, nearestMode);
+		D3D11VideoMode* desktopVideoMode = cm_new<D3D11VideoMode>(nearestMode.Width, nearestMode.Height, this, nearestMode);;
+		
+		{
+			D3D11VideoMode::RefreshRate refreshRate;
+			refreshRate.numerator = nearestMode.RefreshRate.Numerator;
+			refreshRate.denominator = nearestMode.RefreshRate.Denominator;
+
+			desktopVideoMode->mD3D11RefreshRates.push_back(refreshRate);
+			desktopVideoMode->mRefreshRates.push_back(refreshRate.numerator / (float)refreshRate.denominator);
+		}
+
+		mDesktopVideoMode = desktopVideoMode;
 	}
 
 	D3D11VideoOutputInfo::~D3D11VideoOutputInfo()

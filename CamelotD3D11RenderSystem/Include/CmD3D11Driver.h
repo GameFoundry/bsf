@@ -24,12 +24,13 @@ namespace BansheeEngine
 		VideoModeInfoPtr getVideoModeInfo() const { return mVideoModeInfo; }
 
 	private:
-		UINT32					mAdapterNumber;
-		UINT32					mNumOutputs;
-		DXGI_ADAPTER_DESC		mAdapterIdentifier;
-		IDXGIAdapter*			mDXGIAdapter;
-		VideoModeInfoPtr		mVideoModeInfo;
-
 		void init();
+
+	private:
+		UINT32 mAdapterNumber;
+		UINT32 mNumOutputs;
+		DXGI_ADAPTER_DESC mAdapterIdentifier;
+		IDXGIAdapter* mDXGIAdapter;
+		VideoModeInfoPtr mVideoModeInfo;
 	};
 }

@@ -9,6 +9,10 @@ Finish GPUProfiler:
 
  ---------------------------
 
+ Make hierarchical documentation. Organize stuff based on type. Once I actually generate the documentation add Doxygen grouping tags (or whatever they're called)
+
+ ---------------------------
+
  Fullscreen stuff:
 
 Add VideoModeInfo to OpenGL and DX9. Remove any existing functionality.

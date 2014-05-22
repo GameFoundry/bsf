@@ -25,7 +25,7 @@ namespace BansheeEngine
 		mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
 	}
 
-	void GameObjectHandleBase::resolve(const GameObjectHandleBase& object) 
+	void GameObjectHandleBase::_resolve(const GameObjectHandleBase& object) 
 	{ 
 		mData->mPtr = object.mData->mPtr;
 		mData->mInstanceId = object.mData->mInstanceId;

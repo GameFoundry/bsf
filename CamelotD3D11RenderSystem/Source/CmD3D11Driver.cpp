@@ -1,9 +1,10 @@
 #include "CmD3D11Driver.h"
+#include "CmD3D11VideoModeInfo.h"
 #include "CmException.h"
 
 namespace BansheeEngine
 {
-	D3D11Driver::D3D11Driver( const D3D11Driver &ob ) 
+	D3D11Driver::D3D11Driver(const D3D11Driver &ob) 
 	{
 		mAdapterNumber = ob.mAdapterNumber;
 		mAdapterIdentifier = ob.mAdapterIdentifier;
@@ -15,7 +16,7 @@ namespace BansheeEngine
 		init();
 	}
 
-	D3D11Driver::D3D11Driver(unsigned int adapterNumber, IDXGIAdapter* pDXGIAdapter)
+	D3D11Driver::D3D11Driver(UINT32 adapterNumber, IDXGIAdapter* pDXGIAdapter)
 	{
 		mAdapterNumber = adapterNumber;
 		mDXGIAdapter = pDXGIAdapter;
@@ -23,7 +24,6 @@ namespace BansheeEngine
 		if(mDXGIAdapter)
 			mDXGIAdapter->AddRef();
 
-		// get the description of the adapter
 		pDXGIAdapter->GetDesc(&mAdapterIdentifier);
 
 		init();
@@ -47,6 +47,8 @@ namespace BansheeEngine
 		}
 
 		mNumOutputs = outputIdx;
+
+		mVideoModeInfo = cm_shared_ptr<D3D11VideoModeInfo>(mDXGIAdapter);
 	}
 
 	D3D11Driver& D3D11Driver::operator=(const D3D11Driver& ob)

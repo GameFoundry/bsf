@@ -10,32 +10,22 @@ namespace BansheeEngine
 
 	class CM_D3D9_EXPORT D3D9Driver
 	{
-	
 	public:
-		// Constructors
-		D3D9Driver();						// Default
-		D3D9Driver( const D3D9Driver &ob );	// Copy
-		D3D9Driver( unsigned int adapterNumber, 
-			const D3DCAPS9& deviceCaps,
-			const D3DADAPTER_IDENTIFIER9& adapterIdentifer, 
-			const D3DDISPLAYMODE& desktopDisplayMode);
+		D3D9Driver();
+		D3D9Driver(const D3D9Driver &ob);
+		D3D9Driver(UINT32 adapterNumber, const D3DCAPS9& deviceCaps, const D3DADAPTER_IDENTIFIER9& adapterIdentifer);
 		~D3D9Driver();
 
+		const D3DCAPS9&	getD3D9DeviceCaps() const { return mD3D9DeviceCaps; }
+		String getDriverName() const;
+		String getDriverDescription() const;
 				
-		const D3DCAPS9&		getD3D9DeviceCaps	() const { return mD3D9DeviceCaps; }
-		String				DriverName			() const;
-		String				DriverDescription	() const;
-				
-		unsigned int					getAdapterNumber	() const { return mAdapterNumber; }
-		const D3DADAPTER_IDENTIFIER9&	getAdapterIdentifier() const { return mAdapterIdentifier; }
-		const D3DDISPLAYMODE&			getDesktopMode		() const { return mDesktopDisplayMode; }
-		D3D9VideoModeList*				getVideoModeList	();
-			
+		UINT32 getAdapterNumber() const { return mAdapterNumber; }
+		const D3DADAPTER_IDENTIFIER9& getAdapterIdentifier() const { return mAdapterIdentifier; }
+
 	private:				
-		unsigned int mAdapterNumber;
+		UINT32 mAdapterNumber;
 		D3DCAPS9 mD3D9DeviceCaps;		
 		D3DADAPTER_IDENTIFIER9 mAdapterIdentifier;
-		D3DDISPLAYMODE mDesktopDisplayMode;
-		D3D9VideoModeList* mpVideoModeList;	
 	};
 }
