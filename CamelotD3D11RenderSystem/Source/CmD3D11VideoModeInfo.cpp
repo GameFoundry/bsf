@@ -53,10 +53,10 @@ namespace BansheeEngine
 				if (d3d11videoMode->mWidth == displayMode.Width && d3d11videoMode->mHeight == displayMode.Height)
 				{
 					bool foundRefreshRate = false;
-					for (auto refreshRate : d3d11videoMode->mD3D11RefreshRates)
+					for (auto refreshRate : d3d11videoMode->mD3D11Modes)
 					{
-						if (refreshRate.numerator == displayMode.RefreshRate.Numerator &&
-							refreshRate.denominator == displayMode.RefreshRate.Denominator)
+						if (refreshRate.refreshRateNumerator == displayMode.RefreshRate.Numerator &&
+							refreshRate.refreshRateDenominator == displayMode.RefreshRate.Denominator)
 						{
 							foundRefreshRate = true;
 							break;
@@ -65,12 +65,12 @@ namespace BansheeEngine
 
 					if (!foundRefreshRate)
 					{
-						D3D11VideoMode::RefreshRate refreshRate;
-						refreshRate.numerator = displayMode.RefreshRate.Numerator;
-						refreshRate.denominator = displayMode.RefreshRate.Denominator;
+						D3D11VideoMode::DX11Data refreshRate;
+						refreshRate.refreshRateNumerator = displayMode.RefreshRate.Numerator;
+						refreshRate.refreshRateDenominator = displayMode.RefreshRate.Denominator;
 
-						d3d11videoMode->mD3D11RefreshRates.push_back(refreshRate);
-						d3d11videoMode->mRefreshRates.push_back(refreshRate.numerator / (float)refreshRate.denominator);
+						d3d11videoMode->mD3D11Modes.push_back(refreshRate);
+						d3d11videoMode->mRefreshRates.push_back(refreshRate.refreshRateNumerator / (float)refreshRate.refreshRateDenominator);
 					}
 
 					foundVideoMode = true;
@@ -80,14 +80,15 @@ namespace BansheeEngine
 
 			if (!foundVideoMode)
 			{
-				D3D11VideoMode* videoMode = cm_new<D3D11VideoMode>(displayMode.Width, displayMode.Height, this, displayMode);
+				D3D11VideoMode* videoMode = cm_new<D3D11VideoMode>(displayMode.Width, displayMode.Height, this);
 
-				D3D11VideoMode::RefreshRate refreshRate;
-				refreshRate.numerator = displayMode.RefreshRate.Numerator;
-				refreshRate.denominator = displayMode.RefreshRate.Denominator;
+				D3D11VideoMode::DX11Data d3d11data;
+				d3d11data.refreshRateNumerator = displayMode.RefreshRate.Numerator;
+				d3d11data.refreshRateDenominator = displayMode.RefreshRate.Denominator;
+				d3d11data.mode = displayMode;
 
-				videoMode->mD3D11RefreshRates.push_back(refreshRate);
-				videoMode->mRefreshRates.push_back(refreshRate.numerator / (float)refreshRate.denominator);
+				videoMode->mD3D11Modes.push_back(d3d11data);
+				videoMode->mRefreshRates.push_back(d3d11data.refreshRateNumerator / (float)d3d11data.refreshRateDenominator);
 
 				mVideoModes.push_back(videoMode);
 			}
@@ -121,15 +122,16 @@ namespace BansheeEngine
 
 		output->FindClosestMatchingMode(&currentMode, &nearestMode, nullptr);
 
-		D3D11VideoMode* desktopVideoMode = cm_new<D3D11VideoMode>(nearestMode.Width, nearestMode.Height, this, nearestMode);;
+		D3D11VideoMode* desktopVideoMode = cm_new<D3D11VideoMode>(nearestMode.Width, nearestMode.Height, this);;
 		
 		{
-			D3D11VideoMode::RefreshRate refreshRate;
-			refreshRate.numerator = nearestMode.RefreshRate.Numerator;
-			refreshRate.denominator = nearestMode.RefreshRate.Denominator;
+			D3D11VideoMode::DX11Data d3d11data;
+			d3d11data.refreshRateNumerator = nearestMode.RefreshRate.Numerator;
+			d3d11data.refreshRateDenominator = nearestMode.RefreshRate.Denominator;
+			d3d11data.mode = nearestMode;
 
-			desktopVideoMode->mD3D11RefreshRates.push_back(refreshRate);
-			desktopVideoMode->mRefreshRates.push_back(refreshRate.numerator / (float)refreshRate.denominator);
+			desktopVideoMode->mD3D11Modes.push_back(d3d11data);
+			desktopVideoMode->mRefreshRates.push_back(d3d11data.refreshRateNumerator / (float)d3d11data.refreshRateDenominator);
 		}
 
 		mDesktopVideoMode = desktopVideoMode;
@@ -140,7 +142,7 @@ namespace BansheeEngine
 		SAFE_RELEASE(mDXGIOutput);
 	}
 
-	D3D11VideoMode::D3D11VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo, DXGI_MODE_DESC dxgiMode)
-		:VideoMode(width, height, outputInfo), mDXGIMode(dxgiMode)
+	D3D11VideoMode::D3D11VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo)
+		:VideoMode(width, height, outputInfo)
 	{ }
 }

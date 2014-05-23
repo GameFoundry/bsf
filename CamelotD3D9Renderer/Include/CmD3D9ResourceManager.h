@@ -1,37 +1,9 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __D3D9ResourceManager_H__
-#define __D3D9ResourceManager_H__
+#pragma once
 
 #include "CmD3D9Prerequisites.h"
 
-namespace BansheeEngine {
-
+namespace BansheeEngine 
+{
 	enum D3D9ResourceCreationPolicy
 	{
 		// Creates the rendering resource on the current active device that needs it.
@@ -52,58 +24,45 @@ namespace BansheeEngine {
 	
 	class CM_D3D9_EXPORT D3D9ResourceManager
 	{
-
-	// Interface.
 	public:
+		D3D9ResourceManager();
+		~D3D9ResourceManager();
 
 		// Called immediately after the Direct3D device has been created.
-		void notifyOnDeviceCreate	(IDirect3DDevice9* d3d9Device);
+		void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
 
 		// Called before the Direct3D device is going to be destroyed.
-		void notifyOnDeviceDestroy	(IDirect3DDevice9* d3d9Device);
+		void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
 		// Called immediately after the Direct3D device has entered a lost state.
-		void notifyOnDeviceLost		(IDirect3DDevice9* d3d9Device);
+		void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
 
 		// Called immediately after the Direct3D device has been reset.
-		void notifyOnDeviceReset	(IDirect3DDevice9* d3d9Device);
+		void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
 		// Called when device state is changing. Access to any device should be locked.
 		// Relevant for multi thread application.
-		void lockDeviceAccess		();
+		void lockDeviceAccess();
 
 		// Called when device state change completed. Access to any device is allowed.
 		// Relevant for multi thread application.
-		void unlockDeviceAccess		();
+		void unlockDeviceAccess();
 		
 		// Called when new resource created.
-		void _notifyResourceCreated		(D3D9Resource* pResource);
+		void _notifyResourceCreated(D3D9Resource* pResource);
 
 		// Called when resource is about to be destroyed.
-		void _notifyResourceDestroyed	(D3D9Resource* pResource);
+		void _notifyResourceDestroyed(D3D9Resource* pResource);
 
-		D3D9ResourceManager			();
-		~D3D9ResourceManager		();		
-
-		void						setCreationPolicy	(D3D9ResourceCreationPolicy creationPolicy);
-		D3D9ResourceCreationPolicy	getCreationPolicy	() const;
+		void setCreationPolicy(D3D9ResourceCreationPolicy creationPolicy);
+		D3D9ResourceCreationPolicy getCreationPolicy() const;
 		
-	// Friends.
 	protected:
 		friend class D3D9Resource;
-	
-	// Types.
-	protected:
-		typedef Vector<D3D9Resource*>		ResourceContainer;
-		typedef ResourceContainer::iterator		ResourceContainerIterator;
-
-	// Attributes.
-	protected:		
+		
 		CM_MUTEX(mResourcesMutex)
-		ResourceContainer			mResources;
-		D3D9ResourceCreationPolicy	mResourceCreationPolicy;
-		long						mDeviceAccessLockCount;		
+		Vector<D3D9Resource*> mResources;
+		D3D9ResourceCreationPolicy mResourceCreationPolicy;
+		long mDeviceAccessLockCount;		
 	};
 }
-
-#endif

@@ -21,8 +21,6 @@ namespace BansheeEngine
 		, mIsExternal(false)
 		, mSizing(false)
 		, mClosed(false)
-		, mRefreshRateNumerator(0)
-		, mRefreshRateDenominator(0)
 		, mRenderTargetView(nullptr)
 		, mBackBuffer(nullptr)
 		, mSwapChain(nullptr)
@@ -398,12 +396,14 @@ namespace BansheeEngine
 		outputInfo.getDXGIOutput()->FindClosestMatchingMode(&modeDesc, &nearestMode, nullptr);
 
 		mIsFullScreen = true;
+		mWidth = width;
+		mHeight = height;
 
 		mSwapChain->ResizeTarget(&nearestMode);
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput()); 
 	}
 
-	void D3D11RenderWindow::setFullscreen(const VideoMode& mode)
+	void D3D11RenderWindow::setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -414,8 +414,10 @@ namespace BansheeEngine
 		const D3D11VideoOutputInfo& outputInfo = static_cast<const D3D11VideoOutputInfo&>(mode.getParentOutput());
 
 		mIsFullScreen = true;
+		mWidth = mode.getWidth();
+		mHeight = mode.getHeight();
 
-		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc());
+		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc(refreshRateIdx));
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput());
 	}
 

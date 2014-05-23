@@ -15,25 +15,19 @@ Finish GPUProfiler:
 
  Fullscreen stuff:
 
-Add VideoModeInfo to OpenGL and DX9. Remove any existing functionality.
- - Don't forget desktop mode
- - Don't forget child window check
+ In DX9 RenderWindow delete _finishSwitchingFullscreen method if possible after I test fullscreen switching
+ Update OpenGL render window set fullscreen methods.
 
 Test if it all works. Especially going fullscreen on another monitor.
 When initializing a render window I don't have an option to use exact refresh rate (i.e. in RENDER_WINDOW_DESC)
 
- EnumDisplayMonitors - Get all available monitors
- - http://msdn.microsoft.com/en-us/library/windows/desktop/dd162617(v=vs.85).aspx
-GetMonitorInfo - Get display name for monitor
- - http://msdn.microsoft.com/en-us/library/windows/desktop/dd144901(v=vs.85).aspx
 ChangeDisplaySettingEx - For actually changing resolution and refresh rate
  - http://msdn.microsoft.com/en-us/library/windows/desktop/dd183413(v=vs.85).aspx
-EnumDisplaySettings  - To query all available resolutions and refresh rates
- - http://msdn.microsoft.com/en-us/library/windows/desktop/dd162611(v=vs.85).aspx
 
-RenderSystem
- - Allow for querying multiple monitors
- - Allow querying for all possible resolutions and refresh rates (for each monitor specifically)
- - Allow querying for desktop resolution and refresh rate
 
-in window setFullscreen add a refresh rate setting, and a monitor index
+
+ -----------------------------
+
+ Refactor:
+ - Make CmApplication a base of BsApplication
+ - If I merge CmApp and BsApp consider refactoring CmApplication::mainLoopCallback

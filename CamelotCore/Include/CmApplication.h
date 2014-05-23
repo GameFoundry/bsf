@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CmPrerequisites.h"
+#include "CmModule.h"
 #include "CmCoreThreadAccessor.h"
 #include "CmRenderWindow.h"
 #include "BsEvent.h"

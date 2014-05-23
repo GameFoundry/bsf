@@ -1,76 +1,81 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __D3D9DeviceManager_H__
-#define __D3D9DeviceManager_H__
+#pragma once
 
 #include "CmD3D9Prerequisites.h"
 
-namespace BansheeEngine {
-
-	class D3D9Device;
-	class D3D9RenderWindow;
-
-	/** Device manager interface.
-	*/
+namespace BansheeEngine 
+{
+	/**
+	 * @brief	Handles creation of DirectX 9 devices. Also links the devices
+	 *			with created render targets.
+	 */
 	class CM_D3D9_EXPORT D3D9DeviceManager
 	{	
-
-	// Interface.
-	public:		
-		void				setActiveDevice					(D3D9Device* device);
-		D3D9Device*			getActiveDevice					();
-		void				setActiveRenderTargetDevice		(D3D9Device* device);
-		D3D9Device*			getActiveRenderTargetDevice		();		
-		UINT				getDeviceCount					();
-		D3D9Device*			getDevice						(UINT index);			
-		void				linkRenderWindow				(D3D9RenderWindow* renderWindow);
-		void				destroyInactiveRenderDevices	();
-		void				notifyOnDeviceDestroy			(D3D9Device* device);
-		D3D9Device*			getDeviceFromD3D9Device			(IDirect3DDevice9* d3d9Device);
-		
 	public:
-		D3D9DeviceManager	();
-		~D3D9DeviceManager	();
+		D3D9DeviceManager();
+		~D3D9DeviceManager();
 
-	protected:		
-		typedef Vector<D3D9Device*>		 DeviceList;
-		typedef DeviceList::iterator			 DeviceIterator;
-		typedef DeviceList::const_iterator		 ConstDeviceIterator;
-		typedef Vector<D3D9RenderWindow*>  D3D9RenderWindowList;
+		/**
+		 * @brief	Changes the active device to the provided device. Must be not null.
+		 */
+		void setActiveDevice(D3D9Device* device);
+
+		/**
+		 * @brief	Retrieves the currently active device.
+		 */
+		D3D9Device*	getActiveDevice();
+
+		/**
+		 * @brief	Sets the device used by the currently active render target.
+		 */
+		void setActiveRenderTargetDevice(D3D9Device* device);
+
+		/**
+		 * @brief	Retrieves the device used by the currently active render target.
+		 */
+		D3D9Device*	getActiveRenderTargetDevice();		
+
+		/**
+		 * @brief	Returns the total number of devices available.
+		 */
+		UINT getDeviceCount();
+
+		/**
+		 * @brief	Returns the device under the specified index.
+		 */
+		D3D9Device*	getDevice(UINT index);
+
+		/**
+		 * @brief	Links the provided render window with a device. The window will be 
+		 *			assigned an existing device if a match one can be found, otherwise
+		 *			a new device will be created.
+		 */
+		void linkRenderWindow(D3D9RenderWindow* renderWindow);
+
+		/**
+		 * @brief	Called by the devices when they're are being destroyed.
+		 */
+		void notifyOnDeviceDestroy(D3D9Device* device);
+
+		/**
+		 * @brief	Retrieves engine device from DX9 device.
+		 */
+		D3D9Device*	getDeviceFromD3D9Device(IDirect3DDevice9* d3d9Device);
 
 	protected:
-		D3D9Device*			selectDevice		(D3D9RenderWindow* renderWindow, D3D9RenderWindowList& renderWindowsGroup);
-		D3D9Driver*			findDriver			(D3D9RenderWindow* renderWindow);
+		/**
+		 * @brief	Attempts to find a matching device for the provided render window. If one cannot be found a
+		 *			new device is created. Found/created device is returned, as well as a list of all render windows
+		 *			using that device.
+		 */
+		D3D9Device*	selectDevice(D3D9RenderWindow* renderWindow, Vector<D3D9RenderWindow*>& renderWindowsGroup);
 
-		
-		DeviceList								mRenderDevices;		
-		D3D9Device*								mActiveDevice;
-		D3D9Device*								mActiveRenderWindowDevice;		
+		/**
+		 * @brief	Finds the driver the render window belongs to.
+		 */
+		D3D9Driver*	findDriver(D3D9RenderWindow* renderWindow);
+
+		Vector<D3D9Device*> mRenderDevices;
+		D3D9Device*	mActiveDevice;
+		D3D9Device*	mActiveRenderWindowDevice;		
 	};
 }
-#endif

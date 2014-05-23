@@ -308,7 +308,7 @@ namespace BansheeEngine {
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		D3DPOOL eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;    		
+		D3DPOOL eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;    		
 
 		// Set the desired memory pool.
 		mBufferDesc.Pool = eResourcePool;

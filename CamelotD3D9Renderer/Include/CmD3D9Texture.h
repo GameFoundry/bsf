@@ -208,9 +208,6 @@ namespace BansheeEngine {
 		/// allocates new texture resources structure attached to the given device.
 		TextureResources* allocateTextureResources(IDirect3DDevice9* d3d9Device);
 
-		/// creates this texture resources according to the current settings.
-		void createTextureResources(IDirect3DDevice9* d3d9Device);
-
 		/// frees the given texture resources.
 		void freeTextureResources(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
 

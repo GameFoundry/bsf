@@ -83,11 +83,12 @@ namespace BansheeEngine
 		/**
 		* @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
 		*
-		* @param	videoMode	Mode retrieved from VideoModeInfo in RenderSystem.
+		* @param	videoMode		Mode retrieved from VideoModeInfo in RenderSystem.
+		* @param	refreshRateIdx	Index of the refresh rate entry in the video mode object.
 		*
 		* @note		Core thread.
 		*/
-		virtual void setFullscreen(const VideoMode& mode) { }
+		virtual void setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx = 0) { }
 
 		/**
 		 * @brief	Switches the window to windowed mode.

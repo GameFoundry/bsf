@@ -7,12 +7,13 @@
 #include "CmRenderSystem.h"
 #include "CmBitwise.h"
 #include "Win32/CmPlatformWndProc.h"
+#include "CmD3D9VideoModeInfo.h"
 #include "CmD3D9DeviceManager.h"
 
 namespace BansheeEngine
 {
 	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
-        : RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true)  
+		: RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true), mIsChild(false)
 	{
 		mDevice = NULL;
 		mIsFullScreen = false;		
@@ -50,6 +51,8 @@ namespace BansheeEngine
 		opt = mDesc.platformSpecific.find("externalWindowHandle");
 		if(opt != mDesc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
+
+		mIsChild = parentHWnd != 0;
 
 		if (!externalHandle)
 		{
@@ -131,7 +134,7 @@ namespace BansheeEngine
 			mTop = top;
 			mLeft = left;
 
-			if (mDesc.fullscreen)
+			if (mDesc.fullscreen && !mIsChild)
 			{
 				dwStyleEx |= WS_EX_TOPMOST;
 				dwStyle |= WS_POPUP;
@@ -218,7 +221,7 @@ namespace BansheeEngine
 
 		mName = mDesc.title;
 		mIsDepthBuffered = mDesc.depthBuffer;
-		mIsFullScreen = mDesc.fullscreen;
+		mIsFullScreen = mDesc.fullscreen && !mIsChild;
 		mColorDepth = mDesc.colorDepth;
 
 		mActive = true;
@@ -250,77 +253,93 @@ namespace BansheeEngine
 		RenderWindow::destroy_internal();
 	}
 
-	void D3D9RenderWindow::setFullscreen(bool fullScreen, UINT32 width, UINT32 height)
+	void D3D9RenderWindow::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (fullScreen != mIsFullScreen || width != mWidth || height != mHeight)
+		if (mIsChild)
+			return;
+
+		const D3D9VideoModeInfo& videoModeInfo = static_cast<const D3D9VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		UINT32 numOutputs = videoModeInfo.getNumOutputs();
+		if (numOutputs == 0)
+			return;
+
+		UINT32 actualMonitorIdx = std::min(monitorIdx, numOutputs - 1);
+		const D3D9VideoOutputInfo& outputInfo = static_cast<const D3D9VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
+
+		bool oldFullscreen = mIsFullScreen;
+
+		mStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
+		mWidth = width;
+		mHeight = height;
+		mDisplayFrequency = Math::roundToInt(refreshRate);
+
+		mIsFullScreen = true;
+		mSwitchingFullscreen = true;
+
+		HMONITOR hMonitor = outputInfo.getMonitorHandle();
+		MONITORINFO monitorInfo;
+
+		memset(&monitorInfo, 0, sizeof(MONITORINFO));
+		monitorInfo.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &monitorInfo);
+
+		mTop = monitorInfo.rcMonitor.top;
+		mLeft = monitorInfo.rcMonitor.left;
+
+		if (oldFullscreen) // Was previously fullscreen, just changing the resolution
 		{
-			if (fullScreen != mIsFullScreen)
-				mSwitchingFullscreen = true;
-
-			mStyle = WS_VISIBLE | WS_CLIPCHILDREN;
-
-			bool oldFullscreen = mIsFullScreen;
-			mIsFullScreen = fullScreen;
-			mWidth = mDesiredWidth = width;
-			mHeight = mDesiredHeight = height;
-
-			if (fullScreen)
-			{
-				mStyle |= WS_POPUP;
-				
-				// Get the nearest monitor to this window.
-				HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
-
-				// Get monitor info	
-				MONITORINFO monitorInfo;
-
-				memset(&monitorInfo, 0, sizeof(MONITORINFO));
-				monitorInfo.cbSize = sizeof(MONITORINFO);
-				GetMonitorInfo(hMonitor, &monitorInfo);
-
-				mTop = monitorInfo.rcMonitor.top;
-				mLeft = monitorInfo.rcMonitor.left;				
-				
-				// need different ordering here
-
-				if (oldFullscreen)
-				{
-					// was previously fullscreen, just changing the resolution
-					SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, width, height, SWP_NOACTIVATE);
-				}
-				else
-				{
-					SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, width, height, SWP_NOACTIVATE);
-					//MoveWindow(mHWnd, mLeft, mTop, mWidth, mHeight, FALSE);
-					SetWindowLong(mHWnd, GWL_STYLE, mStyle);
-					SetWindowPos(mHWnd, 0, 0,0, 0,0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-				}
-			}
-			else
-			{
-				mStyle |= WS_OVERLAPPEDWINDOW;
-				// Calculate window dimensions required
-				// to get the requested client area
-				unsigned int winWidth, winHeight;
-				_adjustWindow(mWidth, mHeight, mStyle, &winWidth, &winHeight);
-
-				SetWindowLong(mHWnd, GWL_STYLE, mStyle);
-				SetWindowPos(mHWnd, HWND_NOTOPMOST, 0, 0, winWidth, winHeight,
-					SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOACTIVATE);
-				// Note that we also set the position in the restoreLostDevice method
-				// via _finishSwitchingFullScreen
-			}
-						
-			// Have to release & trigger device reset
-			// NB don't use windowMovedOrResized since Win32 doesn't know
-			// about the size change yet				
-			mDevice->invalidate(this);
-
-			// TODO - Notify viewports of resize
+			SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
 		}
-	} 
+		else
+		{
+			SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
+			SetWindowLong(mHWnd, GWL_STYLE, mStyle);
+			SetWindowPos(mHWnd, 0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+		}
+
+		// Invalidate device, which resets it
+		mDevice->invalidate(this);
+	}
+
+	void D3D9RenderWindow::setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx)
+	{
+		const VideoOutputInfo& outputInfo = mode.getParentOutput();
+		UINT32 monitorIdx = 0;
+		for (UINT32 i = 0; i < outputInfo.getNumVideoModes(); i++)
+		{
+			if (&outputInfo.getVideoMode(i) == &mode)
+			{
+				monitorIdx = i;
+				break;
+			}
+		}
+
+		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(refreshRateIdx), monitorIdx);
+	}
+
+	void D3D9RenderWindow::setWindowed()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (!mIsFullScreen)
+			return;
+
+		mIsFullScreen = false;
+		mSwitchingFullscreen = true;
+
+		mStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW;
+
+		unsigned int winWidth, winHeight;
+		_adjustWindow(mWidth, mHeight, mStyle, &winWidth, &winHeight);
+
+		SetWindowLong(mHWnd, GWL_STYLE, mStyle);
+		SetWindowPos(mHWnd, HWND_NOTOPMOST, 0, 0, winWidth, winHeight,
+			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOACTIVATE);
+
+		mDevice->invalidate(this);
+	}
 
 	void D3D9RenderWindow::setHidden(bool hidden)
 	{
@@ -382,7 +401,7 @@ namespace BansheeEngine
 
 	void D3D9RenderWindow::getCustomAttribute( const String& name, void* pData ) const
 	{
-		// Valid attributes and their equvalent native functions:
+		// Valid attributes and their equivalent native functions:
 		// D3DDEVICE			: getD3DDevice
 		// WINDOW				: getWindowHandle
 
@@ -616,17 +635,6 @@ namespace BansheeEngine
 		}
 		else
 		{
-			// NB not using vsync in windowed mode in D3D9 can cause jerking at low 
-			// frame rates no matter what buffering modes are used (odd - perhaps a
-			// timer issue in D3D9 since GL doesn't suffer from this) 
-			// low is < 200fps in this context
-			if (!mIsFullScreen)
-			{
-				// TODO LOG PORT - Enable this warning later?
-				//LogManager::getSingleton().logMessage("D3D9 : WARNING - "
-				//	"disabling VSync in windowed mode can cause timing issues at lower "
-				//	"frame rates, turn VSync on if you observe this problem.");
-			}
 			presentParams->PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 		}
 
@@ -679,21 +687,6 @@ namespace BansheeEngine
 
 		presentParams->MultiSampleType = fsaaType;
 		presentParams->MultiSampleQuality = (fsaaQuality == 0) ? 0 : fsaaQuality;
-
-		// Check sRGB
-		if (mHwGamma)
-		{
-			/* hmm, this never succeeds even when device does support??
-			if(FAILED(pD3D->CheckDeviceFormat(mDriver->getAdapterNumber(),
-				devType, presentParams->BackBufferFormat, D3DUSAGE_QUERY_SRGBWRITE, 
-				D3DRTYPE_SURFACE, presentParams->BackBufferFormat )))
-			{
-				// disable - not supported
-				mHwGamma = false;
-			}
-			*/
-
-		}
 	}
 
 	IDirect3DDevice9* D3D9RenderWindow::_getD3D9Device() const
@@ -704,11 +697,6 @@ namespace BansheeEngine
 	IDirect3DSurface9* D3D9RenderWindow::_getRenderSurface() const 
 	{
 		return mDevice->getBackBuffer(this);
-	}
-
-	bool D3D9RenderWindow::_getSwitchingFullscreen() const
-	{
-		return mSwitchingFullscreen;
 	}
 
 	D3D9Device* D3D9RenderWindow::_getDevice() const

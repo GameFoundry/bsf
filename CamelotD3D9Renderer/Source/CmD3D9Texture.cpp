@@ -300,19 +300,6 @@ namespace BansheeEngine
 
 		return textureResources;
 	}
-
-	
-	void D3D9Texture::createTextureResources(IDirect3DDevice9* d3d9Device)
-	{				
-		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
-			
-			/*		prepareImpl();		
-
-			loadImpl(d3d9Device);
-
-			postLoadImpl();	*/			
-	}
-
 	
 	void D3D9Texture::freeTextureResources(IDirect3DDevice9* d3d9Device, D3D9Texture::TextureResources* textureResources)
 	{		
@@ -352,18 +339,10 @@ namespace BansheeEngine
 		{
 			mD3DPool = D3DPOOL_MANAGED;
 		}
-
 	}
 	
 	void D3D9Texture::createInternalResources(IDirect3DDevice9* d3d9Device)
 	{		
-		TextureResources* textureResources;			
-
-		// Check if resources already exist.
-		textureResources = getTextureResources(d3d9Device);
-		if (textureResources != NULL && textureResources->pBaseTex != NULL)
-			return;
-		
 		// load based on tex.type
 		switch (getTextureType())
 		{
@@ -1128,7 +1107,7 @@ namespace BansheeEngine
 		TextureResources* textureResources = getTextureResources(d3d9Device);
 		if (textureResources == NULL || textureResources->pBaseTex == NULL)
 		{				
-			createTextureResources(d3d9Device);
+			createInternalResources(d3d9Device);
 			textureResources = getTextureResources(d3d9Device);			
 		}
 	
@@ -1152,7 +1131,7 @@ namespace BansheeEngine
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
-			createTextureResources(d3d9Device);
+			createInternalResources(d3d9Device);
 	}
 
 	//---------------------------------------------------------------------
@@ -1214,7 +1193,7 @@ namespace BansheeEngine
 
 		if(mD3DPool == D3DPOOL_DEFAULT)
 		{			
-			createTextureResources(d3d9Device);
+			createInternalResources(d3d9Device);
 		}
 	}
 
@@ -1229,7 +1208,7 @@ namespace BansheeEngine
 		textureResources = getTextureResources(d3d9Device);		
 		if (textureResources == NULL || textureResources->pBaseTex == NULL)
 		{			
-			createTextureResources(d3d9Device);
+			createInternalResources(d3d9Device);
 			textureResources = getTextureResources(d3d9Device);			
 		}
 		assert(textureResources); 
@@ -1249,7 +1228,7 @@ namespace BansheeEngine
 		textureResources = getTextureResources(d3d9Device);		
 		if (textureResources == NULL || textureResources->pNormTex == NULL)
 		{
-			createTextureResources(d3d9Device);
+			createInternalResources(d3d9Device);
 			textureResources = getTextureResources(d3d9Device);			
 		}
 		assert(textureResources); 
@@ -1269,7 +1248,7 @@ namespace BansheeEngine
 		textureResources = getTextureResources(d3d9Device);		
 		if (textureResources == NULL || textureResources->pCubeTex)
 		{
-			createTextureResources(d3d9Device);
+			createInternalResources(d3d9Device);
 			textureResources = getTextureResources(d3d9Device);			
 		}
 		assert(textureResources); 

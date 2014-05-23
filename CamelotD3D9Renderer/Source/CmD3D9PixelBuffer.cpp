@@ -424,7 +424,7 @@ namespace BansheeEngine
 
 		if (bufferResources	== NULL)
 		{
-			mOwnerTexture->createTextureResources(d3d9Device);
+			mOwnerTexture->createInternalResources(d3d9Device);
 			bufferResources = getBufferResources(d3d9Device);
 		}
 

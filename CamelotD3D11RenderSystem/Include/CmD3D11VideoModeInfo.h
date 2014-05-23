@@ -10,25 +10,27 @@ namespace BansheeEngine
 	 */
 	class CM_D3D11_EXPORT D3D11VideoMode : public VideoMode
 	{
-		struct RefreshRate
+		struct DX11Data
 		{
-			UINT32 numerator;
-			UINT32 denominator;
+			UINT32 refreshRateNumerator;
+			UINT32 refreshRateDenominator;
+			DXGI_MODE_DESC mode;
 		};
 
 	public:
-		D3D11VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo, DXGI_MODE_DESC dxgiMode);
+		D3D11VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo);
 
 		/**
 		 * @brief	Returns an internal DXGI representation of this video mode.
+		 *
+		 * @param	idx		Index referencing which refresh rate to use.
 		 */
-		const DXGI_MODE_DESC& getDXGIModeDesc() const { return mDXGIMode; }
+		const DXGI_MODE_DESC& getDXGIModeDesc(UINT32 idx) const { return mD3D11Modes[idx].mode; }
 
 	private:
 		friend class D3D11VideoOutputInfo;
 
-		Vector<RefreshRate> mD3D11RefreshRates; /**< DXGI stores refresh rates as rational numbers so we need a special storage for them. */
-		DXGI_MODE_DESC mDXGIMode;
+		Vector<DX11Data> mD3D11Modes; 
 	};
 
 	/**

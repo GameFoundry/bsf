@@ -12,9 +12,19 @@ namespace BansheeEngine
 		~D3D9RenderWindow();
 		
 		/**
-		 * @copydoc RenderWindow::setFullscreen
-		 */
-		void setFullscreen(bool fullScreen, UINT32 width, UINT32 height);
+		* @copydoc RenderWindow::setFullscreen
+		*/
+		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
+
+		/**
+		* @copydoc RenderWindow::setFullscreen
+		*/
+		void setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx);
+
+		/**
+		* @copydoc RenderWindow::setWindowed
+		*/
+		void setWindowed();
 
 		/**
 		 * @copydoc RenderWindow::setHidden
@@ -84,27 +94,22 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindow::_windowMovedOrResized
 		 */
-		void				_windowMovedOrResized	();
+		void _windowMovedOrResized();
 
-		HWND 				_getWindowHandle		() const { return mHWnd; }				
-		IDirect3DDevice9*	_getD3D9Device		() const;
-		D3D9Device*			_getDevice			() const;
-		void				_setDevice			(D3D9Device* device);
+		HWND _getWindowHandle() const { return mHWnd; }				
+		IDirect3DDevice9* _getD3D9Device() const;
+		D3D9Device* _getDevice() const;
+		void _setDevice(D3D9Device* device);
 
 		/**
 		 * @brief	Build the presentation parameters used with this window.
 		 */
-		void				_buildPresentParameters	(D3DPRESENT_PARAMETERS* presentParams) const;
+		void _buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const;
 
 		/**
 		 * @brief	Accessor for render surface.
 		 */
 		IDirect3DSurface9* _getRenderSurface() const;
-
-		/**
-		 * @brief	Are we in the middle of switching between fullscreen and windowed.
-		 */
-		bool _getSwitchingFullscreen() const;
 
 		/**
 		 * @brief	Indicate that fullscreen / windowed switching has finished.
@@ -156,6 +161,7 @@ namespace BansheeEngine
 		unsigned int				mVSyncInterval;		
 		DWORD						mStyle;					// Window style currently used for this window.
 		bool						mIsDepthBuffered;
+		bool						mIsChild;
 		// Desired width / height after resizing
 		unsigned int mDesiredWidth;
 		unsigned int mDesiredHeight;

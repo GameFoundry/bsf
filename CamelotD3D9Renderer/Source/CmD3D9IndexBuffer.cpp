@@ -21,7 +21,7 @@ namespace BansheeEngine
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		D3DPOOL eResourcePool = mSystemMemory? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
+		D3DPOOL eResourcePool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_MANAGED;
 
 		// Set the desired memory pool.
 		mBufferDesc.Pool = eResourcePool;
@@ -48,7 +48,7 @@ namespace BansheeEngine
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-			DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
+		DeviceToBufferResourcesIterator it = mMapDeviceToBufferResources.begin();
 
 		while (it != mMapDeviceToBufferResources.end())
 		{
@@ -199,8 +199,11 @@ namespace BansheeEngine
 	{		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
-		if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
-			createBuffer(d3d9Device, mBufferDesc.Pool);		
+		if (mBufferDesc.Pool == D3DPOOL_DEFAULT)
+		{
+			if (D3D9RenderSystem::getResourceManager()->getCreationPolicy() == RCP_CREATE_ON_ALL_DEVICES)
+				createBuffer(d3d9Device, mBufferDesc.Pool);
+		}
 	}
 
 	void D3D9IndexBuffer::createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool)

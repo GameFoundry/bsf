@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-(Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "CmD3D9Device.h"
 #include "CmD3D9DeviceManager.h"
 #include "CmD3D9Driver.h"
@@ -36,65 +9,58 @@ THE SOFTWARE.
 
 namespace BansheeEngine
 {
-	HWND D3D9Device::msSharedFocusWindow = NULL;
+	HWND D3D9Device::msSharedFocusWindow = 0;
 
-	//---------------------------------------------------------------------
-	D3D9Device::D3D9Device(D3D9DeviceManager* deviceManager,
-		UINT adapterNumber, 
-		HMONITOR hMonitor, 
-		D3DDEVTYPE devType, 
-		DWORD behaviorFlags)
+	D3D9Device::D3D9Device(D3D9DeviceManager* deviceManager, UINT adapterNumber, HMONITOR hMonitor, 
+		D3DDEVTYPE devType, DWORD behaviorFlags)
 	{
-		mpDeviceManager				= deviceManager;
-		mpDevice					= NULL;		
-		mAdapterNumber				= adapterNumber;
-		mMonitor					= hMonitor;
-		mDeviceType					= devType;
-		mFocusWindow				= NULL;
-		mBehaviorFlags				= behaviorFlags;	
-		mD3D9DeviceCapsValid		= false;
-		mDeviceLost					= false;
-		mPresentationParamsCount 	= 0;
-		mPresentationParams		 	= NULL;
+		mpDeviceManager	= deviceManager;
+		mpDevice = nullptr;		
+		mAdapterNumber = adapterNumber;
+		mMonitor = hMonitor;
+		mDeviceType = devType;
+		mFocusWindow = 0;
+		mBehaviorFlags = behaviorFlags;	
+		mD3D9DeviceCapsValid = false;
+		mDeviceLost = false;
+		mPresentationParamsCount = 0;
+		mPresentationParams	= nullptr;
 		memset(&mD3D9DeviceCaps, 0, sizeof(mD3D9DeviceCaps));
 		memset(&mCreationParams, 0, sizeof(mCreationParams));		
 	}
 
-	//---------------------------------------------------------------------
 	D3D9Device::~D3D9Device()
 	{
 
 	}
 
-	//---------------------------------------------------------------------
 	D3D9Device::RenderWindowToResorucesIterator D3D9Device::getRenderWindowIterator(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
 		if (it == mMapRenderWindowToResoruces.end())
-			CM_EXCEPT(RenderingAPIException, "Render window was not attached to this device !!");
+			CM_EXCEPT(RenderingAPIException, "Render window was not attached to this device.");
 
 		return it;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::attachRenderWindow(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
 		if (it == mMapRenderWindowToResoruces.end())
 		{
-			RenderWindowResources* renderWindowResources = cm_new<RenderWindowResources, PoolAlloc>();
+			RenderWindowResources* renderWindowResources = cm_new<RenderWindowResources>();
 
 			memset(renderWindowResources, 0, sizeof(RenderWindowResources));						
 			renderWindowResources->adapterOrdinalInGroupIndex = 0;					
 			renderWindowResources->acquired = false;
 			mMapRenderWindowToResoruces[renderWindow] = renderWindowResources;			
 		}
+
 		updateRenderWindowsIndices();
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::detachRenderWindow(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
@@ -105,26 +71,26 @@ namespace BansheeEngine
 			// resources must be acquired again.
 			if (mFocusWindow == renderWindow->_getWindowHandle())
 			{
-				mFocusWindow = NULL;				
+				mFocusWindow = 0;				
 			}
 
 			// Case this is the shared focus window.
 			if (renderWindow->_getWindowHandle() == msSharedFocusWindow)			
-				setSharedWindowHandle(NULL);		
+				setSharedWindowHandle(0);		
 			
 			RenderWindowResources* renderWindowResources = it->second;
 
 			releaseRenderWindowResources(renderWindowResources);
 
 			if(renderWindowResources != nullptr)
-				cm_delete<PoolAlloc>(renderWindowResources);
+				cm_delete(renderWindowResources);
 			
 			mMapRenderWindowToResoruces.erase(it);		
 		}
+
 		updateRenderWindowsIndices();
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::acquire()
 	{	
 		updatePresentationParameters();
@@ -132,17 +98,15 @@ namespace BansheeEngine
 		bool resetDevice = false;
 			
 		// Create device if need to.
-		if (mpDevice == NULL)
+		if (mpDevice == nullptr)
 		{			
 			createD3D9Device();
 		}
-
-		// Case device already exists.
 		else
 		{
 			RenderWindowToResorucesIterator itPrimary = getRenderWindowIterator(getPrimaryWindow());
 
-			if (itPrimary->second->swapChain != NULL)
+			if (itPrimary->second->swapChain != nullptr)
 			{
 				D3DPRESENT_PARAMETERS currentPresentParams;
 				HRESULT hr;
@@ -176,9 +140,7 @@ namespace BansheeEngine
 		{
 			reset();
 		}
-
-		// No need to reset -> just acquire resources.
-		else
+		else // No need to reset -> just acquire resources.
 		{
 			// Update resources of each window.
 			RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
@@ -193,15 +155,11 @@ namespace BansheeEngine
 		return true;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::release()
 	{
-		if (mpDevice != NULL)
+		if (mpDevice != nullptr)
 		{
 			D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
-
-			//// Clean up depth stencil surfaces
-			//renderSystem->_cleanupDepthStencils(mpDevice);	
 
 			RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 
@@ -217,7 +175,6 @@ namespace BansheeEngine
 		}				
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::acquire(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
@@ -227,7 +184,6 @@ namespace BansheeEngine
 		return true;
 	}
 
-	//---------------------------------------------------------------------	
 	void D3D9Device::notifyDeviceLost()
 	{
 		// Case this device is already in lost state.
@@ -238,11 +194,9 @@ namespace BansheeEngine
 		mDeviceLost = true;	
 
 		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
-
 		renderSystem->notifyOnDeviceLost(this);
 	}	
 
-	//---------------------------------------------------------------------
 	IDirect3DSurface9* D3D9Device::getDepthBuffer(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);		
@@ -250,14 +204,13 @@ namespace BansheeEngine
 		return it->second->depthBuffer;
 	}
 
-	//---------------------------------------------------------------------
 	IDirect3DSurface9* D3D9Device::getBackBuffer(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 	
 		return it->second->backBuffer;		
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9Device::setAdapterOrdinalIndex(const D3D9RenderWindow* renderWindow, UINT32 adapterOrdinalInGroupIndex)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
@@ -267,7 +220,6 @@ namespace BansheeEngine
 		updateRenderWindowsIndices();
 	}
 	
-	//---------------------------------------------------------------------
 	void D3D9Device::destroy()
 	{	
 		// Lock access to rendering device.
@@ -280,21 +232,21 @@ namespace BansheeEngine
 		if (it != mMapRenderWindowToResoruces.end())
 		{	
 			if (it->first->_getWindowHandle() == msSharedFocusWindow)
-				setSharedWindowHandle(NULL);
+				setSharedWindowHandle(0);
 
 			if(it->second != nullptr)
-				cm_delete<PoolAlloc>(it->second);
+				cm_delete(it->second);
 
 			++it;
 		}
 		mMapRenderWindowToResoruces.clear();
 		
 		// Reset dynamic attributes.		
-		mFocusWindow			= NULL;		
-		mD3D9DeviceCapsValid	= false;
+		mFocusWindow = 0;		
+		mD3D9DeviceCapsValid = false;
 
 		if(mPresentationParams != nullptr)
-			cm_deleteN<PoolAlloc>(mPresentationParams, mPresentationParamsCount);
+			cm_deleteN(mPresentationParams, mPresentationParamsCount);
 
 		mPresentationParamsCount = 0;
 
@@ -304,8 +256,7 @@ namespace BansheeEngine
 		// UnLock access to rendering device.
 		D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
 	}	
-	
-	//---------------------------------------------------------------------
+
 	bool D3D9Device::isDeviceLost()
 	{		
 		HRESULT hr;
@@ -321,7 +272,6 @@ namespace BansheeEngine
 		return false;
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::reset()
 	{
 		HRESULT hr;
@@ -358,7 +308,6 @@ namespace BansheeEngine
 		}
 
 		clearDeviceStreams();
-
 
 		// Reset the device using the presentation parameters.
 		hr = mpDevice->Reset(mPresentationParams);
@@ -404,7 +353,6 @@ namespace BansheeEngine
 		return true;
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::isAutoDepthStencil() const
 	{
 		const D3DPRESENT_PARAMETERS& primaryPresentationParams = mPresentationParams[0];
@@ -427,7 +375,6 @@ namespace BansheeEngine
 		return true;
 	}
 
-	//---------------------------------------------------------------------
 	const D3DCAPS9& D3D9Device::getD3D9DeviceCaps() const
 	{
 		if (mD3D9DeviceCapsValid == false)
@@ -438,7 +385,6 @@ namespace BansheeEngine
 		return mD3D9DeviceCaps;
 	}
 
-	//---------------------------------------------------------------------
 	D3DFORMAT D3D9Device::getBackBufferFormat() const
 	{		
 		if (mPresentationParams == NULL || mPresentationParamsCount == 0)
@@ -449,7 +395,6 @@ namespace BansheeEngine
 		return mPresentationParams[0].BackBufferFormat;
 	}
 
-	//---------------------------------------------------------------------
 	D3DFORMAT D3D9Device::getDepthStencilFormat() const
 	{		
 		if (mPresentationParams == NULL || mPresentationParamsCount == 0)
@@ -460,24 +405,22 @@ namespace BansheeEngine
 		return mPresentationParams[0].AutoDepthStencilFormat;
 	}
 
-	//---------------------------------------------------------------------
 	IDirect3DDevice9* D3D9Device::getD3D9Device() const
 	{
 		return mpDevice;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::updatePresentationParameters()
 	{		
 		// Clear old presentation parameters.
 		if(mPresentationParams != nullptr)
-			cm_deleteN<PoolAlloc>(mPresentationParams, mPresentationParamsCount);
+			cm_deleteN(mPresentationParams, mPresentationParamsCount);
 
 		mPresentationParamsCount = 0;		
 
 		if (mMapRenderWindowToResoruces.size() > 0)
 		{
-			mPresentationParams = cm_newN<D3DPRESENT_PARAMETERS, PoolAlloc>((UINT32)mMapRenderWindowToResoruces.size());
+			mPresentationParams = cm_newN<D3DPRESENT_PARAMETERS>((UINT32)mMapRenderWindowToResoruces.size());
 
 			RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 
@@ -518,19 +461,16 @@ namespace BansheeEngine
 		}
 	}	
 
-	//---------------------------------------------------------------------
 	UINT D3D9Device::getAdapterNumber() const
 	{
 		return mAdapterNumber;
 	}
 
-	//---------------------------------------------------------------------
 	D3DDEVTYPE D3D9Device::getDeviceType() const
 	{
 		return mDeviceType;
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::isMultihead() const
 	{
 		RenderWindowToResorucesMap::const_iterator it = mMapRenderWindowToResoruces.begin();
@@ -539,8 +479,7 @@ namespace BansheeEngine
 		{
 			RenderWindowResources* renderWindowResources = it->second;
 			
-			if (renderWindowResources->adapterOrdinalInGroupIndex > 0 &&
-				it->first->isFullScreen())
+			if (renderWindowResources->adapterOrdinalInGroupIndex > 0 && it->first->isFullScreen())
 			{
 				return true;
 			}
@@ -551,7 +490,6 @@ namespace BansheeEngine
 		return false;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::clearDeviceStreams()
 	{
 		D3D9RenderSystem* renderSystem = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
@@ -559,10 +497,10 @@ namespace BansheeEngine
 		// Set all texture units to nothing to release texture surfaces
 		for (DWORD stage = 0; stage < mD3D9DeviceCaps.MaxSimultaneousTextures; ++stage)
 		{
-			DWORD   dwCurValue = D3DTOP_FORCE_DWORD;
+			DWORD dwCurValue = D3DTOP_FORCE_DWORD;
 			HRESULT hr;
 
-			hr = mpDevice->SetTexture(stage, NULL);
+			hr = mpDevice->SetTexture(stage, nullptr);
 			if( hr != S_OK )
 			{
 				String str = "Unable to disable texture '" + toString((unsigned int)stage) + "' in D3D9";
@@ -590,11 +528,10 @@ namespace BansheeEngine
 		// Unbind any vertex streams to avoid memory leaks				
 		for (unsigned int i = 0; i < mD3D9DeviceCaps.MaxStreams; ++i)
 		{
-			mpDevice->SetStreamSource(i, NULL, 0, 0);
+			mpDevice->SetStreamSource(i, nullptr, 0, 0);
 		}
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::createD3D9Device()
 	{		
 		// Update focus window.
@@ -607,8 +544,7 @@ namespace BansheeEngine
 			mFocusWindow = primaryRenderWindow->_getWindowHandle();		
 
 		IDirect3D9* pD3D9 = D3D9RenderSystem::getDirect3D9();
-		HRESULT     hr;
-
+		HRESULT hr;
 
 		if (isMultihead())
 		{
@@ -633,7 +569,7 @@ namespace BansheeEngine
 		}
 
 		// Case hardware vertex processing failed.
-		if( FAILED( hr ) )
+		if (FAILED(hr))
 		{
 			// Try to create the device with mixed vertex processing.
 			mBehaviorFlags &= ~D3DCREATE_HARDWARE_VERTEXPROCESSING;
@@ -643,7 +579,7 @@ namespace BansheeEngine
 				mBehaviorFlags, mPresentationParams, &mpDevice);
 		}
 
-		if( FAILED( hr ) )
+		if (FAILED(hr))
 		{
 			// try to create the device with software vertex processing.
 			mBehaviorFlags &= ~D3DCREATE_MIXED_VERTEXPROCESSING;
@@ -652,14 +588,14 @@ namespace BansheeEngine
 				mBehaviorFlags, mPresentationParams, &mpDevice);
 		}
 
-		if ( FAILED( hr ) )
+		if (FAILED(hr))
 		{
 			// try reference device
 			mDeviceType = D3DDEVTYPE_REF;
 			hr = pD3D9->CreateDevice(mAdapterNumber, mDeviceType, mFocusWindow,
 				mBehaviorFlags, mPresentationParams, &mpDevice);
 
-			if ( FAILED( hr ) )
+			if (FAILED(hr))
 			{
 				CM_EXCEPT(RenderingAPIException, "Cannot create device!");
 			}
@@ -667,14 +603,14 @@ namespace BansheeEngine
 
 		// Get current device caps.
 		hr = mpDevice->GetDeviceCaps(&mD3D9DeviceCaps);
-		if( FAILED( hr ) )
+		if (FAILED(hr))
 		{
 			CM_EXCEPT(RenderingAPIException, "Cannot get device caps!");
 		}
 
 		// Get current creation parameters caps.
 		hr = mpDevice->GetCreationParameters(&mCreationParams);
-		if ( FAILED(hr) )
+		if (FAILED(hr) )
 		{
 			CM_EXCEPT(RenderingAPIException, "Error Get Creation Parameters");
 		}
@@ -697,10 +633,9 @@ namespace BansheeEngine
 		D3D9RenderSystem::getResourceManager()->unlockDeviceAccess();
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::releaseD3D9Device()
 	{
-		if (mpDevice != NULL)
+		if (mpDevice != nullptr)
 		{
 			// Lock access to rendering device.
 			D3D9RenderSystem::getResourceManager()->lockDeviceAccess();
@@ -722,7 +657,6 @@ namespace BansheeEngine
 		}
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::releaseRenderWindowResources(RenderWindowResources* renderWindowResources)
 	{
 		SAFE_RELEASE(renderWindowResources->backBuffer);
@@ -731,7 +665,6 @@ namespace BansheeEngine
 		renderWindowResources->acquired = false;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::invalidate(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
@@ -739,11 +672,10 @@ namespace BansheeEngine
 		it->second->acquired = false;		
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::validate(D3D9RenderWindow* renderWindow)
 	{
 		// Validate that the render window should run on this device.
-		if (false == validateDisplayMonitor(renderWindow))
+		if (!validateDisplayMonitor(renderWindow))
 			return false;
 		
 		// Validate that this device created on the correct target focus window handle		
@@ -753,13 +685,12 @@ namespace BansheeEngine
 		validateBackBufferSize(renderWindow);
 
 		// Validate that this device is in valid rendering state.
-		if (false == validateDeviceState(renderWindow))
+		if (!validateDeviceState(renderWindow))
 			return false;
 
 		return true;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::validateFocusWindow()
 	{
 		// Focus window changed -> device should be re-acquired.
@@ -777,7 +708,6 @@ namespace BansheeEngine
 		}
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::validateDeviceState(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);		
@@ -839,8 +769,6 @@ namespace BansheeEngine
 		return true;
 	}
 		
-
-	//---------------------------------------------------------------------
 	void D3D9Device::validateBackBufferSize(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
@@ -861,7 +789,6 @@ namespace BansheeEngine
 		}				
 	}
 
-	//---------------------------------------------------------------------
 	bool D3D9Device::validateDisplayMonitor(D3D9RenderWindow* renderWindow)
 	{
 		// Ignore full screen since it doesn't really move and it is possible 
@@ -897,12 +824,10 @@ namespace BansheeEngine
 		return true;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::present(const D3D9RenderWindow* renderWindow)
 	{		
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources*	renderWindowResources = it->second;				
-
 
 		// Skip present while current device state is invalid.
 		if (mDeviceLost || 
@@ -928,7 +853,7 @@ namespace BansheeEngine
 		}
 
 
-		if( D3DERR_DEVICELOST == hr)
+		if(D3DERR_DEVICELOST == hr)
 		{
 			releaseRenderWindowResources(renderWindowResources);
 			notifyDeviceLost();
@@ -937,15 +862,8 @@ namespace BansheeEngine
 		{
 			CM_EXCEPT(RenderingAPIException, "Error Presenting surfaces");
 		}
-		else
-		{
-			// TODO PORT - What is this used for? In any case I don't have Root so just set it to 0
-			//mLastPresentFrame = Root::getSingleton().getNextFrameNumber();
-			mLastPresentFrame = 0;
-		}
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::acquireRenderWindowResources(RenderWindowToResorucesIterator it)
 	{
 		RenderWindowResources*	renderWindowResources = it->second;
@@ -1034,7 +952,7 @@ namespace BansheeEngine
 
 		renderWindowResources->acquired = true; 
 	}
-	//---------------------------------------------------------------------
+
 	bool D3D9Device::isSwapChainWindow(const D3D9RenderWindow* renderWindow)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
@@ -1045,7 +963,6 @@ namespace BansheeEngine
 		return true;
 	}
 
-	//---------------------------------------------------------------------
 	const D3D9RenderWindow* D3D9Device::getPrimaryWindow()
 	{		
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
@@ -1058,14 +975,12 @@ namespace BansheeEngine
 		return it->first;
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::setSharedWindowHandle(HWND hSharedHWND)
 	{
 		if (hSharedHWND != msSharedFocusWindow)					
 			msSharedFocusWindow = hSharedHWND;					
 	}
 
-	//---------------------------------------------------------------------
 	void D3D9Device::updateRenderWindowsIndices()
 	{
 		// Update present parameters index attribute per render window.
@@ -1127,7 +1042,7 @@ namespace BansheeEngine
 			}
 		}
 	}
-	//---------------------------------------------------------------------
+
 	void D3D9Device::copyContentsToMemory(const D3D9RenderWindow* renderWindow, 
 		const PixelData &dst, RenderTarget::FrameBuffer buffer)
 	{
@@ -1334,7 +1249,5 @@ namespace BansheeEngine
 
 		SAFE_RELEASE(pTempSurf);
 		SAFE_RELEASE(pSurf);
-
-
 	}
 }

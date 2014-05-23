@@ -1167,26 +1167,21 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
-		if( FAILED( hr = getActiveD3D9Device()->EndScene() ) )
+		if(FAILED(hr = getActiveD3D9Device()->EndScene()))
 			CM_EXCEPT(RenderingAPIException, "Error ending frame");
-
-		mDeviceManager->destroyInactiveRenderDevices();
 	}
 
 	void D3D9RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		std::shared_ptr<D3D9VertexDeclaration> d3ddecl = std::static_pointer_cast<D3D9VertexDeclaration>(decl);
+
 		HRESULT hr;
-
-		std::shared_ptr<D3D9VertexDeclaration> d3ddecl = 
-			std::static_pointer_cast<D3D9VertexDeclaration>(decl);
-
 		if (FAILED(hr = getActiveD3D9Device()->SetVertexDeclaration(d3ddecl->getD3DVertexDeclaration())))
 		{
 			CM_EXCEPT(RenderingAPIException, "Unable to set D3D9 vertex declaration");
 		}
-
 	}
 
 	void D3D9RenderSystem::setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers)

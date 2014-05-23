@@ -38,7 +38,7 @@ namespace BansheeEngine
 		/**
 		* @copydoc RenderWindow::setFullscreen
 		*/
-		void setFullscreen(const VideoMode& mode);
+		void setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx = 0);
 
 		/**
 		* @copydoc RenderWindow::setWindowed
@@ -122,8 +122,6 @@ namespace BansheeEngine
 		bool mIsChild;
 
 		DXGI_SAMPLE_DESC mFSAAType;
-		UINT32 mRefreshRateNumerator;
-		UINT32 mRefreshRateDenominator;
 		bool mVSync;
 		UINT32 mVSyncInterval;
 
