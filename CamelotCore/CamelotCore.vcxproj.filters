@@ -680,9 +680,6 @@
     <ClCompile Include="Source\CmMeshManager.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Include\CmMaterialManager.cpp">
-      <Filter>Source Files\Material</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmGpuProgIncludeImporter.cpp">
       <Filter>Source Files\Importer</Filter>
     </ClCompile>
@@ -841,6 +838,9 @@
     </ClCompile>
     <ClCompile Include="Source\CmVideoModeInfo.cpp">
       <Filter>Source Files\RenderSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CmMaterialManager.cpp">
+      <Filter>Source Files\Material</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

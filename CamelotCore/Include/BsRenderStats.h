@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Object that keeps track of various render statistics.
+	 * @brief	Object that stores various render statistics.
 	 */
 	struct RenderStats
 	{

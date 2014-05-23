@@ -422,7 +422,6 @@
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Include\CmMaterialManager.cpp" />
     <ClCompile Include="Source\BsThreadPolicy.cpp" />
     <ClCompile Include="Source\CmBindableGpuParamBlock.cpp" />
     <ClCompile Include="Source\CmBindableGpuParams.cpp" />
@@ -462,6 +461,7 @@
     <ClCompile Include="Source\CmImportOptions.cpp" />
     <ClCompile Include="Source\CmIndexBuffer.cpp" />
     <ClCompile Include="Source\CmIndexData.cpp" />
+    <ClCompile Include="Source\CmMaterialManager.cpp" />
     <ClCompile Include="Source\CmMeshBase.cpp" />
     <ClCompile Include="Source\CmMeshHeap.cpp" />
     <ClCompile Include="Source\CmMeshManager.cpp" />

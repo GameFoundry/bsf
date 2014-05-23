@@ -6,8 +6,15 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Profiler report containing information about GPU sampling data 
+	 *			from a single frame.
+	 */
 	struct GPUProfilerReport
 	{
+		/**
+		 * @brief	Contains various profiler statistics about a single GPU profiling sample
+		 */
 		struct Sample
 		{
 			String name; /**< Name of the sample for easier identification. */
