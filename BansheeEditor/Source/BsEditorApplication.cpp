@@ -28,7 +28,7 @@
 #include "BsRenderable.h"
 #include "BsDbgTestGameObjectRef.h"
 #include "BsVirtualInput.h"
-#include "CmWin32FolderMonitor.h"
+#include "CmFolderMonitor.h"
 #include "BsProjectLibrary.h"
 #include "BsCamera.h"
 #include "BsGUIWidget.h"

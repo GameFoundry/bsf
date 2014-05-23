@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmCommonEnums.h"
 #include "CmMatrix4.h"
 #include "CmString.h"
 #include "CmPixelUtil.h"

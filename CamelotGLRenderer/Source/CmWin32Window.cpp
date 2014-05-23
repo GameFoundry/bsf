@@ -9,7 +9,7 @@
 #include "CmException.h"
 #include "CmWin32GLSupport.h"
 #include "CmWin32Context.h"
-#include "CmPlatformWndProc.h"
+#include "Win32/CmPlatformWndProc.h"
 #include "CmGLPixelFormat.h"
 
 GLenum GLEWAPIENTRY wglewContextInit(BansheeEngine::GLSupport *glSupport);

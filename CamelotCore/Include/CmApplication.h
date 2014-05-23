@@ -59,9 +59,6 @@ namespace BansheeEngine
 			 */
 			void shutDown();
 
-			// DEPRECATED
-			UINT64 getAppWindowId();
-
 			/**
 			 * @brief	
 			 */

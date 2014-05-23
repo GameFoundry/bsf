@@ -1,6 +1,6 @@
 #include "CmD3D11RenderWindow.h"
 #include "CmCoreThread.h"
-#include "CmPlatformWndProc.h"
+#include "Win32/CmPlatformWndProc.h"
 #include "CmD3D11RenderSystem.h"
 #include "CmD3D11Device.h"
 #include "CmD3D11RenderTexture.h"

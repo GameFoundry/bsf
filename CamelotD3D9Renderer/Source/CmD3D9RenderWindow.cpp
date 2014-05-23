@@ -6,7 +6,7 @@
 #include "CmD3D9RenderSystem.h"
 #include "CmRenderSystem.h"
 #include "CmBitwise.h"
-#include "CmPlatformWndProc.h"
+#include "Win32/CmPlatformWndProc.h"
 #include "CmD3D9DeviceManager.h"
 
 namespace BansheeEngine

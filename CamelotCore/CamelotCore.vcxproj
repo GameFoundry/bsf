@@ -272,10 +272,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\BsCommonStructs.h" />
-    <ClInclude Include="Include\BsProfilerFwd.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
-    <ClInclude Include="Include\BsThreadPolicy.h" />
     <ClInclude Include="Include\CmBindableGpuParamBlock.h" />
     <ClInclude Include="Include\CmBindableGpuParams.h" />
     <ClInclude Include="Include\CmCoreThread.h" />
@@ -306,6 +303,7 @@
     <ClInclude Include="Include\CmPixelDataRTTI.h" />
     <ClInclude Include="Include\CmPixelUtil.h" />
     <ClInclude Include="Include\CmPixelVolume.h" />
+    <ClInclude Include="Include\CmPlatform.h" />
     <ClInclude Include="Include\CmPlatformWndProc.h" />
     <ClInclude Include="Include\CmProfiler.h" />
     <ClInclude Include="Include\CmQueryManager.h" />
@@ -317,7 +315,7 @@
     <ClInclude Include="Include\CmApplication.h" />
     <ClInclude Include="Include\CmBlendStateRTTI.h" />
     <ClInclude Include="Include\CmCommandQueue.h" />
-    <ClInclude Include="Include\CmCommonEnums.h" />
+    <ClInclude Include="Include\BsCommonTypes.h" />
     <ClInclude Include="Include\CmComponentRTTI.h" />
     <ClInclude Include="Include\CmCoreObject.h" />
     <ClInclude Include="Include\CmCoreObjectManager.h" />
@@ -368,7 +366,6 @@
     <ClInclude Include="Include\CmMeshData.h" />
     <ClInclude Include="Include\CmMeshDataRTTI.h" />
     <ClInclude Include="Include\CmMultiRenderTexture.h" />
-    <ClInclude Include="Include\CmPlatform.h" />
     <ClInclude Include="Include\CmPass.h" />
     <ClInclude Include="Include\CmPassRTTI.h" />
     <ClInclude Include="Include\CmPrerequisites.h" />
@@ -411,18 +408,15 @@
     <ClInclude Include="Include\CmComponent.h" />
     <ClInclude Include="Include\CmShader.h" />
     <ClInclude Include="Include\CmBlendState.h" />
-    <ClInclude Include="Include\CmWin32Defs.h" />
-    <ClInclude Include="Include\CmWin32FolderMonitor.h" />
-    <ClInclude Include="Include\stdafx.h" />
-    <ClInclude Include="Include\targetver.h" />
     <ClInclude Include="Include\CmVertexDeclarationRTTI.h" />
     <ClInclude Include="Include\CmTechnique.h" />
     <ClInclude Include="Include\Win32\CmPlatformImpl.h" />
+    <ClInclude Include="Include\Win32\CmWin32Defs.h" />
     <ClInclude Include="Include\Win32\CmWin32DropTarget.h" />
+    <ClInclude Include="Include\Win32\CmWin32FolderMonitor.h" />
     <ClInclude Include="Source\CmMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsThreadPolicy.cpp" />
     <ClCompile Include="Source\CmBindableGpuParamBlock.cpp" />
     <ClCompile Include="Source\CmBindableGpuParams.cpp" />
     <ClCompile Include="Source\CmCoreThread.cpp" />
@@ -473,7 +467,6 @@
     <ClCompile Include="Source\CmPixelUtil.cpp" />
     <ClCompile Include="Source\CmPixelVolume.cpp" />
     <ClCompile Include="Source\CmPlatform.cpp" />
-    <ClCompile Include="Source\CmPlatformWndProc.cpp" />
     <ClCompile Include="Source\CmProfiler.cpp" />
     <ClCompile Include="Source\CmQueryManager.cpp" />
     <ClCompile Include="Source\CmRenderer.cpp" />
@@ -521,9 +514,9 @@
     <ClCompile Include="Source\CmViewport.cpp" />
     <ClCompile Include="Source\CmSceneObject.cpp" />
     <ClCompile Include="Source\CmComponent.cpp" />
-    <ClCompile Include="Source\CmWin32FolderMonitor.cpp" />
-    <ClCompile Include="Source\stdafx.cpp" />
     <ClCompile Include="Source\Win32\CmPlatformImpl.cpp" />
+    <ClCompile Include="Source\Win32\CmPlatformWndProc.cpp" />
+    <ClCompile Include="Source\Win32\CmWin32FolderMonitor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

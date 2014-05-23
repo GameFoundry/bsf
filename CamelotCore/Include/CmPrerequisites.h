@@ -5,7 +5,6 @@
 #define CM_MAX_MULTIPLE_RENDER_TARGETS 8
 #define CM_FORCE_SINGLETHREADED_RENDERING 0
 
-//----------------------------------------------------------------------------
 // Windows Settings
 #if CM_PLATFORM == CM_PLATFORM_WIN32
 
@@ -33,7 +32,7 @@
 #       define CM_DEBUG_MODE 0
 #   endif
 
-#endif // CM_PLATFORM == CM_PLATFORM_WIN32
+#endif
 
 // Linux/Apple Settings
 #if CM_PLATFORM == CM_PLATFORM_LINUX || CM_PLATFORM == CM_PLATFORM_APPLE
@@ -60,9 +59,6 @@
 
 namespace BansheeEngine 
 {
-// Pre-declare classes
-// Allows use of pointers in header files without including individual .h
-// so decreases dependencies between files
     class Color;
     class GpuProgram;
     class GpuProgramManager;
@@ -331,6 +327,33 @@ namespace BansheeEngine
 	 * @param	callback	The callback.
 	 */
 	void CM_EXPORT deferredCall(std::function<void()> callback);
+
+	// Special types for use by profilers
+	typedef std::basic_string<char, std::char_traits<char>, StdAlloc<char, ProfilerAlloc>> ProfilerString;
+
+	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>>
+	using ProfilerVector = std::vector<T, A>;
+
+	template <typename T, typename A = StdAlloc<T, ProfilerAlloc>>
+	using ProfilerStack = std::stack<T, std::deque<T, A>>;
+
+	/**
+	* @brief	Banshee thread policy that performs special startup/shutdown on threads
+	*			managed by thread pool.
+	*/
+	class CM_EXPORT ThreadBansheePolicy
+	{
+	public:
+		static void onThreadStarted(const String& name)
+		{
+			MemStack::beginThread();
+		}
+
+		static void onThreadEnded(const String& name)
+		{
+			MemStack::endThread();
+		}
+	};
 }
 
-#include "BsCommonStructs.h"
+#include "BsCommonTypes.h"

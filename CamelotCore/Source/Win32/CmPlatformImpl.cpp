@@ -2,8 +2,8 @@
 #include "CmRenderWindow.h"
 #include "CmPixelUtil.h"
 #include "CmApplication.h"
-#include "CmWin32Defs.h"
 #include "CmDebug.h"
+#include "Win32/CmWin32Defs.h"
 #include "Win32/CmWin32DropTarget.h"
 #include <iphlpapi.h>
 

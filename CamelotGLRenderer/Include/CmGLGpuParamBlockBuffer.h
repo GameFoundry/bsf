@@ -2,7 +2,6 @@
 
 #include "CmGLPrerequisites.h"
 #include "CmGpuParamBlockBuffer.h"
-#include "CmCommonEnums.h"
 
 namespace BansheeEngine
 {

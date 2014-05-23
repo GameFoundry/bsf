@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "CmCommonEnums.h"
 #include "CmCoreThreadAccessor.h"
 #include "CmColor.h"
 #include "CmIReflectable.h"

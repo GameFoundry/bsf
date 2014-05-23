@@ -8,7 +8,6 @@
 #include "CmVector4.h"
 #include "CmMatrix3.h"
 #include "CmMatrix4.h"
-#include "CmCommonEnums.h"
 
 namespace BansheeEngine
 {

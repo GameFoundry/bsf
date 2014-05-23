@@ -2,7 +2,6 @@
 
 #include "CmPrerequisites.h"
 #include "CmResource.h"
-#include "CmCommonEnums.h"
 
 namespace BansheeEngine
 {

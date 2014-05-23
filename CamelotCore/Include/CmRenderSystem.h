@@ -6,7 +6,6 @@
 #include "CmString.h"
 
 #include "CmSamplerState.h"
-#include "CmCommonEnums.h"
 #include "BsRenderStats.h"
 #include "CmCommandQueue.h"
 #include "CmDrawOps.h"

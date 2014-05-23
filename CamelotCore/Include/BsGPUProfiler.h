@@ -2,7 +2,6 @@
 
 #include "CmPrerequisites.h"
 #include "CmModule.h"
-#include "BsProfilerFwd.h"
 
 namespace BansheeEngine
 {

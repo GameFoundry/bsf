@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <windows.h>
 
 #include "BsEditorApplication.h"

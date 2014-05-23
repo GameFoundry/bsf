@@ -1,5 +1,6 @@
 #include "CmOISPrerequisites.h"
 #include "CmInputHandlerOIS.h"
+#include "CmRenderWindow.h"
 #include "CmApplication.h"
 #include "CmInput.h"
 
@@ -13,10 +14,16 @@ namespace BansheeEngine
 
 	extern "C" CM_OIS_EXPORT void* loadPlugin()
 	{
-		// TODO - Window handles in Windows are 64 bits when compiled as x64, but OIS only accepts a 32bit value. Is this okay?
-		UINT32 windowId = (UINT32)gApplication().getAppWindowId();
+		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
 
-		std::shared_ptr<RawInputHandler> inputHandler = cm_shared_ptr<InputHandlerOIS>(windowId);
+		if (primaryWindow == nullptr)
+			assert(false && "Unable to get window handle. No active window exists!");
+
+		UINT64 windowId = 0;
+		primaryWindow->getCustomAttribute("WINDOW", &windowId);
+
+		// TODO - Window handles in Windows are 64 bits when compiled as x64, but OIS only accepts a 32bit value. Is this okay?
+		std::shared_ptr<RawInputHandler> inputHandler = cm_shared_ptr<InputHandlerOIS>((UINT32)windowId);
 
 		gInput()._registerRawInputHandler(inputHandler);
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmPrerequisites.h"
-#include "BsProfilerFwd.h"
 
 namespace BansheeEngine
 {

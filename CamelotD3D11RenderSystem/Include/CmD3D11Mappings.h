@@ -1,7 +1,6 @@
 #pragma once
 
 #include "CmD3D11Prerequisites.h"
-#include "CmCommonEnums.h"
 #include "CmTexture.h"
 #include "CmPixelData.h"
 #include "CmIndexBuffer.h"

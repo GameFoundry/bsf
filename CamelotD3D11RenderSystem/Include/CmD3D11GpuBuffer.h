@@ -2,7 +2,6 @@
 
 #include "CmD3D11Prerequisites.h"
 #include "CmGpuBuffer.h"
-#include "CmCommonEnums.h"
 
 namespace BansheeEngine 
 {

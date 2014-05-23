@@ -33,7 +33,6 @@
 #include "CmProfiler.h"
 #include "CmQueryManager.h"
 #include "BsThreadPool.h"
-#include "BsThreadPolicy.h"
 #include "BsTaskScheduler.h"
 #include "CmUUID.h"
 
@@ -255,19 +254,6 @@ namespace BansheeEngine
 			unloadPluginFunc();
 
 		gDynLibManager().unload(library);
-	}
-
-	UINT64 Application::getAppWindowId()
-	{
-		if(!mPrimaryWindow)
-		{
-			CM_EXCEPT(InternalErrorException, "Unable to get window handle. No active window exists!");
-		}
-
-		UINT64 windowId = 0;
-		mPrimaryWindow->getCustomAttribute("WINDOW", &windowId);
-
-		return windowId;
 	}
 
 	Application& gApplication()

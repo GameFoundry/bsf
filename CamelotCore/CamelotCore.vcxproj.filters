@@ -96,12 +96,6 @@
     <ClInclude Include="Include\CmViewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -267,9 +261,6 @@
     <ClInclude Include="Include\CmVertexDeclaration.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmCommonEnums.h">
-      <Filter>Header Files\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmIndexBuffer.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -426,17 +417,11 @@
     <ClInclude Include="Include\CmPlatformWndProc.h">
       <Filter>Header Files\Win32</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmWin32Defs.h">
-      <Filter>Header Files\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmProfiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmCPUProfiler.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmPlatform.h">
-      <Filter>Header Files\Platform</Filter>
     </ClInclude>
     <ClInclude Include="Include\Win32\CmWin32DropTarget.h">
       <Filter>Header Files\Platform</Filter>
@@ -501,26 +486,14 @@
     <ClInclude Include="Include\CmResourceManifestRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmWin32FolderMonitor.h">
-      <Filter>Header Files\Platform</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmFolderMonitor.h">
       <Filter>Header Files\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsThreadPolicy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsCommonStructs.h">
-      <Filter>Header Files\Utility</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmUUID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\CmGpuProgramManager.h">
       <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsProfilerFwd.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsGPUProfiler.h">
       <Filter>Header Files</Filter>
@@ -534,15 +507,24 @@
     <ClInclude Include="Include\CmVideoModeInfo.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Include\Win32\CmWin32Defs.h">
+      <Filter>Header Files\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Win32\CmWin32FolderMonitor.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\CmPlatform.h">
+      <Filter>Header Files\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCommonTypes.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\CmApplication.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmViewport.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\CmGpuProgram.cpp">
@@ -761,9 +743,6 @@
     <ClCompile Include="Source\Win32\CmPlatformImpl.cpp">
       <Filter>Source Files\Win32</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmPlatformWndProc.cpp">
-      <Filter>Source Files\Win32</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmProfiler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -818,12 +797,6 @@
     <ClCompile Include="Source\CmResourceManifest.cpp">
       <Filter>Source Files\Resources</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmWin32FolderMonitor.cpp">
-      <Filter>Source Files\Platform</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsThreadPolicy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmUUID.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -841,6 +814,12 @@
     </ClCompile>
     <ClCompile Include="Source\CmMaterialManager.cpp">
       <Filter>Source Files\Material</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\CmPlatformWndProc.cpp">
+      <Filter>Source Files\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Win32\CmWin32FolderMonitor.cpp">
+      <Filter>Source Files\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
