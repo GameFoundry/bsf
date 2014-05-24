@@ -67,9 +67,8 @@ namespace BansheeEngine
 			totalIndexCount += meshData->getNumIndices();
 		}
 
-		VertexDataDescPtr combinedVertexData = cm_shared_ptr<VertexDataDesc, PoolAlloc>();
-		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, combinedVertexData);
-
+		VertexDataDescPtr vertexData = cm_shared_ptr<VertexDataDesc, PoolAlloc>();
+		
 		Vector<VertexElement> combinedVertexElements;
 		for(auto& meshData : meshes)
 		{
@@ -100,12 +99,12 @@ namespace BansheeEngine
 				if(alreadyExistsIdx == -1)
 				{
 					combinedVertexElements.push_back(newElement);
-					combinedVertexData->addVertElem(newElement.getType(), newElement.getSemantic(), newElement.getSemanticIdx(), newElement.getStreamIdx());
+					vertexData->addVertElem(newElement.getType(), newElement.getSemantic(), newElement.getSemanticIdx(), newElement.getStreamIdx());
 				}
 			}
 		}
 
-		VertexDataDescPtr vertexData = combinedMeshData->getVertexDesc();
+		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, vertexData);
 
 		// Copy indices
 		UINT32 vertexOffset = 0;
