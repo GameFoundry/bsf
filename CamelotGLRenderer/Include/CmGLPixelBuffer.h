@@ -48,7 +48,7 @@ namespace BansheeEngine
 
 	protected:  
 		/// Lock a box
-		PixelData lockImpl(const PixelVolume lockBox,  GpuLockOptions options);
+		PixelData lockImpl(PixelVolume lockBox,  GpuLockOptions options);
 
 		/// Unlock a box
 		void unlockImpl(void);

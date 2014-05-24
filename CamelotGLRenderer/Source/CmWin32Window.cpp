@@ -10,6 +10,7 @@
 #include "CmWin32GLSupport.h"
 #include "CmWin32Context.h"
 #include "Win32/CmPlatformWndProc.h"
+#include "CmWin32VideoModeInfo.h"
 #include "CmGLPixelFormat.h"
 
 GLenum GLEWAPIENTRY wglewContextInit(BansheeEngine::GLSupport *glSupport);
@@ -68,6 +69,7 @@ namespace BansheeEngine
 			if (mHWnd)
 			{
 				mIsExternal = true;
+				mIsChild = true;
 				mIsFullScreen = false;
 			}
 
@@ -352,120 +354,115 @@ namespace BansheeEngine
 		RenderWindow::destroy_internal();
 	}
 
-	void Win32Window::setFullscreen(bool fullScreen, UINT32 width, UINT32 height)
+	void Win32Window::setFullscreen(UINT32 width, UINT32 height, float refreshRate, UINT32 monitorIdx)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		if (mIsFullScreen != fullScreen || width != mWidth || height != mHeight)
+		if (mIsChild)
+			return;
+
+		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		UINT32 numOutputs = videoModeInfo.getNumOutputs();
+		if (numOutputs == 0)
+			return;
+
+		UINT32 actualMonitorIdx = std::min(monitorIdx, numOutputs - 1);
+		const Win32VideoOutputInfo& outputInfo = static_cast<const Win32VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
+
+		bool oldFullscreen = mIsFullScreen;
+
+		DWORD style = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
+		mDisplayFrequency = Math::roundToInt(refreshRate);
+		mIsFullScreen = true;
+
+		DEVMODE displayDeviceMode;
+
+		memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
+		displayDeviceMode.dmSize = sizeof(DEVMODE);
+		displayDeviceMode.dmBitsPerPel = mColorDepth;
+		displayDeviceMode.dmPelsWidth = width;
+		displayDeviceMode.dmPelsHeight = height;
+		displayDeviceMode.dmDisplayFrequency = mDisplayFrequency;
+		displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+
+		// Move window to 0,0 before display switch
+		SetWindowPos(mHWnd, HWND_TOPMOST, 0, 0, mWidth, mHeight, SWP_NOACTIVATE);
+
+		if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 		{
-			mIsFullScreen = fullScreen;
-			DWORD dwStyle = WS_VISIBLE | WS_CLIPCHILDREN;
+			CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed");
+		}
 
-			if (mIsFullScreen)
+		HMONITOR hMonitor = outputInfo.getMonitorHandle();
+		MONITORINFO monitorInfo;
+
+		memset(&monitorInfo, 0, sizeof(MONITORINFO));
+		monitorInfo.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &monitorInfo);
+
+		mTop = monitorInfo.rcMonitor.top;
+		mLeft = monitorInfo.rcMonitor.left;
+		mWidth = width;
+		mHeight = height;
+
+		SetWindowLong(mHWnd, GWL_STYLE, style);
+		SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, width, height, SWP_NOACTIVATE);
+	}
+
+	void Win32Window::setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		const VideoOutputInfo& outputInfo = mode.getParentOutput();
+		UINT32 monitorIdx = 0;
+		for (UINT32 i = 0; i < outputInfo.getNumVideoModes(); i++)
+		{
+			if (&outputInfo.getVideoMode(i) == &mode)
 			{
-				dwStyle |= WS_POPUP;
-
-				DEVMODE displayDeviceMode;
-
-				memset(&displayDeviceMode, 0, sizeof(displayDeviceMode));
-				displayDeviceMode.dmSize = sizeof(DEVMODE);
-				displayDeviceMode.dmBitsPerPel = mColorDepth;
-				displayDeviceMode.dmPelsWidth = width;
-				displayDeviceMode.dmPelsHeight = height;
-				displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-				if (mDisplayFrequency)
-				{
-					displayDeviceMode.dmDisplayFrequency = mDisplayFrequency;
-					displayDeviceMode.dmFields |= DM_DISPLAYFREQUENCY;
-
-					if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, 
-						CDS_FULLSCREEN | CDS_TEST, NULL) != DISP_CHANGE_SUCCESSFUL)					
-					{
-						// TODO LOG PORT - Log this somewhere
-						//LogManager::getSingleton().logMessage(LML_NORMAL, "ChangeDisplaySettings with user display frequency failed");
-						displayDeviceMode.dmFields ^= DM_DISPLAYFREQUENCY;
-					}
-				}
-				else
-				{
-					// try a few
-					displayDeviceMode.dmDisplayFrequency = 100;
-					displayDeviceMode.dmFields |= DM_DISPLAYFREQUENCY;
-					if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, 
-						CDS_FULLSCREEN | CDS_TEST, NULL) != DISP_CHANGE_SUCCESSFUL)		
-					{
-						displayDeviceMode.dmDisplayFrequency = 75;
-						if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, 
-							CDS_FULLSCREEN | CDS_TEST, NULL) != DISP_CHANGE_SUCCESSFUL)		
-						{
-							displayDeviceMode.dmFields ^= DM_DISPLAYFREQUENCY;
-						}
-					}
-
-				}
-				// move window to 0,0 before display switch
-				SetWindowPos(mHWnd, HWND_TOPMOST, 0, 0, mWidth, mHeight, SWP_NOACTIVATE);
-
-				if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)				
-				{
-					// TODO LOG PORT - Log this somewhere
-					//LogManager::getSingleton().logMessage(LML_CRITICAL, "ChangeDisplaySettings failed");
-				}
-
-				// Get the nearest monitor to this window.
-				HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
-
-				// Get monitor info	
-				MONITORINFO monitorInfo;
-
-				memset(&monitorInfo, 0, sizeof(MONITORINFO));
-				monitorInfo.cbSize = sizeof(MONITORINFO);
-				GetMonitorInfo(hMonitor, &monitorInfo);
-
-				mTop = monitorInfo.rcMonitor.top;
-				mLeft = monitorInfo.rcMonitor.left;
-
-				SetWindowLong(mHWnd, GWL_STYLE, dwStyle);
-				SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, width, height,
-					SWP_NOACTIVATE);
-				mWidth = width;
-				mHeight = height;
-			}
-			else
-			{
-				dwStyle |= WS_OVERLAPPEDWINDOW;
-
-				// drop out of fullscreen
-				ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
-
-				// calculate overall dimensions for requested client area
-				unsigned int winWidth, winHeight;
-				_adjustWindow(width, height, &winWidth, &winHeight);
-
-				// deal with centreing when switching down to smaller resolution
-
-				HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
-				MONITORINFO monitorInfo;
-				memset(&monitorInfo, 0, sizeof(MONITORINFO));
-				monitorInfo.cbSize = sizeof(MONITORINFO);
-				GetMonitorInfo(hMonitor, &monitorInfo);
-
-				LONG screenw = monitorInfo.rcWork.right  - monitorInfo.rcWork.left;
-				LONG screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
-
-
-				int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
-				int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
-
-				SetWindowLong(mHWnd, GWL_STYLE, dwStyle);
-				SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
-					SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
-				mWidth = width;
-				mHeight = height;
-
-				_windowMovedOrResized();
+				monitorIdx = i;
+				break;
 			}
 		}
+
+		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(refreshRateIdx), monitorIdx);
+	}
+
+	void Win32Window::setWindowed()
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		if (!mIsFullScreen)
+			return;
+
+		mIsFullScreen = false;
+
+		DWORD style = WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW;
+
+		// Drop out of fullscreen
+		ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
+
+		// Calculate overall dimensions for requested client area
+		unsigned int winWidth, winHeight;
+		_adjustWindow(mWidth, mHeight, &winWidth, &winHeight);
+
+		// Deal with centering when switching down to smaller resolution
+		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO monitorInfo;
+		memset(&monitorInfo, 0, sizeof(MONITORINFO));
+		monitorInfo.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &monitorInfo);
+
+		LONG screenw = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
+		LONG screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
+
+		int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
+		int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
+
+		SetWindowLong(mHWnd, GWL_STYLE, style);
+		SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
+			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
+
+		_windowMovedOrResized();
 	}
 
 	bool Win32Window::isActive(void) const

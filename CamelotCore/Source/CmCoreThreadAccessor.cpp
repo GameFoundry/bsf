@@ -5,6 +5,7 @@
 #include "CmRasterizerState.h"
 #include "CmDepthStencilState.h"
 #include "CmGpuResourceData.h"
+#include "CmVideoModeInfo.h"
 #include "CmGpuParams.h"
 #include "CmPass.h"
 #include "CmMaterial.h"
@@ -253,6 +254,27 @@ namespace BansheeEngine
 	void CoreThreadAccessorBase::showWindow(RenderWindowPtr& renderWindow)
 	{
 		mCommandQueue->queue(std::bind(&RenderWindow::setHidden, renderWindow.get(), false));
+	}
+
+	void CoreThreadAccessorBase::setFullscreen(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height, 
+		float refreshRate, UINT32 monitorIdx)
+	{
+		void(RenderWindow::*funcPtr)(UINT32, UINT32, float, UINT32) = &RenderWindow::setFullscreen;
+
+		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), width, height, refreshRate, monitorIdx));
+	}
+
+	void CoreThreadAccessorBase::setFullscreen(RenderWindowPtr& renderWindow, const VideoMode& mode, 
+		UINT32 refreshRateIdx)
+	{
+		void(RenderWindow::*funcPtr)(const VideoMode&, UINT32) = &RenderWindow::setFullscreen;
+
+		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), std::cref(mode), refreshRateIdx));
+	}
+
+	void CoreThreadAccessorBase::setWindowed(RenderWindowPtr& renderWindow)
+	{
+		mCommandQueue->queue(std::bind(&RenderWindow::setWindowed, renderWindow.get()));
 	}
 
 	AsyncOp CoreThreadAccessorBase::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback)

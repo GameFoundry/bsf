@@ -142,6 +142,21 @@ namespace BansheeEngine
 		void showWindow(RenderWindowPtr& renderWindow);
 
 		/**
+		 * @copydoc RenderWindow::setFullscreen(UINT32, UINT32, float, UINT32)
+		 */
+		void setFullscreen(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
+
+		/**
+		 * @copydoc RenderWindow::setFullscreen(const VideoMode&, UINT32)
+		 */
+		void setFullscreen(RenderWindowPtr& renderWindow, const VideoMode& mode, UINT32 refreshRateIdx = 0);
+
+		/**
+		 * @copydoc RenderWindow::setWindowed
+		 */
+		void setWindowed(RenderWindowPtr& renderWindow);
+
+		/**
 		* @brief	Queues a new generic command that will be added to the command queue.
 		*/
 		AsyncOp queueReturnCommand(std::function<void(AsyncOp&)> commandCallback);

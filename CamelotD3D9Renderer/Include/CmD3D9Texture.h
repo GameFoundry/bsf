@@ -1,32 +1,4 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
-#ifndef __D3D9TEXTURE_H__
-#define __D3D9TEXTURE_H__
+#pragma once
 
 #include "CmD3D9Prerequisites.h"
 #include "CmTexture.h"
@@ -35,16 +7,34 @@ THE SOFTWARE.
 #include "CmD3D9PixelBuffer.h"
 #include "CmD3D9Resource.h"
 
-namespace BansheeEngine {
+namespace BansheeEngine 
+{
 	class CM_D3D9_EXPORT D3D9Texture : public Texture, public D3D9Resource
 	{
+	protected:
+		struct TextureResources
+		{
+			/// 1D/2D normal texture pointer
+			IDirect3DTexture9* pNormTex;
+			/// cubic texture pointer
+			IDirect3DCubeTexture9* pCubeTex;
+			/// Volume texture
+			IDirect3DVolumeTexture9* pVolumeTex;
+			/// actual texture pointer
+			IDirect3DBaseTexture9* pBaseTex;
+			/// Optional FSAA surface
+			IDirect3DSurface9* pFSAASurface;
+			/// Optional depth stencil surface
+			IDirect3DSurface9* pDepthStencilSurface;
+		};
+
 	public:
 		~D3D9Texture();
 
 		/**
 		 * @copydoc Texture::isBindableAsShaderResource
 		 */
-		bool _isBindableAsShaderResource() const { return mIsBindableAsShaderResource; }
+		bool isBindableAsShaderResource() const { return mIsBindableAsShaderResource; }
 
 		/// retrieves a pointer to the actual texture
 		IDirect3DBaseTexture9 *getTexture_internal();		
@@ -95,46 +85,6 @@ namespace BansheeEngine {
 		friend class D3D9TextureManager;
 		friend class D3D9PixelBuffer;
 
-		struct TextureResources
-		{
-			/// 1D/2D normal texture pointer
-			IDirect3DTexture9* pNormTex;	
-			/// cubic texture pointer
-			IDirect3DCubeTexture9* pCubeTex;	
-			/// Volume texture
-			IDirect3DVolumeTexture9* pVolumeTex;
-			/// actual texture pointer
-			IDirect3DBaseTexture9* pBaseTex;
-			/// Optional FSAA surface
-			IDirect3DSurface9* pFSAASurface;	
-			/// Optional depth stencil surface
-			IDirect3DSurface9* pDepthStencilSurface;	
-		};
-		
-		typedef Map<IDirect3DDevice9*, TextureResources*>	DeviceToTextureResourcesMap;
-		typedef DeviceToTextureResourcesMap::iterator			DeviceToTextureResourcesIterator;
-
-		/// Map between device to texture resources.
-		DeviceToTextureResourcesMap	mMapDeviceToTextureResources;
-
-		/// Vector of pointers to subsurfaces
-		typedef Vector<PixelBufferPtr> SurfaceList;
-		SurfaceList	mSurfaceList;
-		/// The memory pool being used
-		D3DPOOL	mD3DPool;
-		// Dynamic textures?
-		bool mDynamicTextures;
-		bool mIsBindableAsShaderResource;
-
-		PixelBufferPtr	mLockedBuffer;
-
-		/// Is hardware gamma supported (read)?
-		bool mHwGammaReadSupported;
-		/// Is hardware gamma supported (write)?
-		bool mHwGammaWriteSupported;
-		D3DMULTISAMPLE_TYPE mFSAAType;
-		DWORD mFSAAQuality;
-
 		D3D9Texture();
 
 		/**
@@ -173,34 +123,34 @@ namespace BansheeEngine {
 		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
 
 		/// internal method, create a blank normal 1D/2D texture		
-		void _createNormTex(IDirect3DDevice9* d3d9Device);
+		void createNormTex(IDirect3DDevice9* d3d9Device);
 		/// internal method, create a blank cube texture		
-		void _createCubeTex(IDirect3DDevice9* d3d9Device);
+		void createCubeTex(IDirect3DDevice9* d3d9Device);
 		/// internal method, create a blank cube texture		
-		void _createVolumeTex(IDirect3DDevice9* d3d9Device);
+		void createVolumeTex(IDirect3DDevice9* d3d9Device);
 
 		/// internal method, return a D3D pixel format for texture creation
-		D3DFORMAT _chooseD3DFormat(IDirect3DDevice9* d3d9Device);
+		D3DFORMAT chooseD3DFormat(IDirect3DDevice9* d3d9Device);
 
 		/// @copydoc Resource::calculateSize
-		UINT32 calculateSize(void) const;
+		UINT32 calculateSize() const;
 		/// Creates this texture resources on the specified device.
 		void createInternalResources(IDirect3DDevice9* d3d9Device);
 		/// internal method, set Texture class final texture protected attributes
-		void _setFinalAttributes(IDirect3DDevice9* d3d9Device, TextureResources* textureResources, 
+		void setFinalAttributes(IDirect3DDevice9* d3d9Device, TextureResources* textureResources, 
 			UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
 		/// internal method, return the best by hardware supported filter method
-		D3DTEXTUREFILTERTYPE _getBestFilterMethod(IDirect3DDevice9* d3d9Device);
+		D3DTEXTUREFILTERTYPE getBestFilterMethod(IDirect3DDevice9* d3d9Device);
 		/// internal method, return true if the device/texture combination can use dynamic textures
-		bool _canUseDynamicTextures(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat);
+		bool canUseDynamicTextures(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat);
 		/// internal method, return true if the device/texture combination can auto gen. mip maps
-		bool _canAutoGenMipmaps(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat);
+		bool canAutoGenMipmaps(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat);
 		/// internal method, return true if the device/texture combination can use hardware gamma
-		bool _canUseHardwareGammaCorrection(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat, bool forwriting);
+		bool canUseHardwareGammaCorrection(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat, bool forwriting);
 
 		/// internal method, create D3D9HardwarePixelBuffers for every face and
 		/// mipmap level. This method must be called after the D3D texture object was created
-		void _createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
+		void createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
 	 
 		/// gets the texture resources attached to the given device.
 		TextureResources* getTextureResources(IDirect3DDevice9* d3d9Device);
@@ -212,7 +162,26 @@ namespace BansheeEngine {
 		void freeTextureResources(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
 
 		void determinePool();
+
+	protected:
+		/// Map between device to texture resources.
+		Map<IDirect3DDevice9*, TextureResources*> mMapDeviceToTextureResources;
+
+		/// Vector of pointers to subsurfaces
+		Vector<PixelBufferPtr>	mSurfaceList;
+		/// The memory pool being used
+		D3DPOOL	mD3DPool;
+		// Dynamic textures?
+		bool mDynamicTextures;
+		bool mIsBindableAsShaderResource;
+
+		PixelBufferPtr mLockedBuffer;
+
+		/// Is hardware gamma supported (read)?
+		bool mHwGammaReadSupported;
+		/// Is hardware gamma supported (write)?
+		bool mHwGammaWriteSupported;
+		D3DMULTISAMPLE_TYPE mFSAAType;
+		DWORD mFSAAQuality;
     };
 }
-
-#endif

@@ -1,4 +1,3 @@
-#include "stdafx.h"
 #include <windows.h>
 
 #include "CmApplication.h"
@@ -25,6 +24,7 @@
 #include "CmHString.h"
 #include "CmRenderWindow.h"
 #include "CmSceneObject.h"
+#include "CmCoreThread.h"
 
 using namespace BansheeEngine;
 
@@ -36,6 +36,8 @@ Path exampleVertexShaderPath = "..\\..\\..\\..\\Data\\Examples\\example_vs.gpupr
 GUIButton* toggleFullscreenButton = nullptr;
 UINT32 resolutionWidth = 1280;
 UINT32 resolutionHeight = 720;
+bool fullscreen = false;
+const VideoMode* videoMode = nullptr;
 
 HMesh exampleModel;
 HTexture exampleTexture;
@@ -72,9 +74,17 @@ void toggleFullscreen()
 {
 	RenderWindowPtr window = gApplication().getPrimaryWindow();
 
+	if (fullscreen)
+	{
+		gCoreAccessor().setWindowed(window);
+	}
+	else
+	{
+		//gCoreAccessor().setFullscreen(window, *videoMode);
+		gCoreAccessor().setFullscreen(window, 1920, 1200);
+	}
 
-
-	//window->setFullscreen(!window->isFullScreen(), resolutionWidth, resolutionHeight);
+	fullscreen = !fullscreen;
 }
 
 void setUpExample()

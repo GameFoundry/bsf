@@ -70,7 +70,7 @@ namespace BansheeEngine
 		}
 	}
 
-	PixelData GLPixelBuffer::lockImpl(const PixelVolume lockBox,  GpuLockOptions options)
+	PixelData GLPixelBuffer::lockImpl(PixelVolume lockBox,  GpuLockOptions options)
 	{
 		allocateBuffer();
 		if(options != GBL_WRITE_ONLY_DISCARD) 

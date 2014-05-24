@@ -75,7 +75,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Internal implementation of the "lock" method.
 		 */
-		virtual PixelData lockImpl(const PixelVolume lockBox, GpuLockOptions options) = 0;
+		virtual PixelData lockImpl(PixelVolume lockBox, GpuLockOptions options) = 0;
 
 		/**
 		 * @copydoc	HardwareBuffer::lockImpl

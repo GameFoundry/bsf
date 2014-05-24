@@ -13,6 +13,9 @@ namespace BansheeEngine
 		VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* parentOutputInfo);
 		virtual ~VideoMode();
 
+		VideoMode(const VideoMode&) = delete; // Make non-copyable
+		VideoMode& operator=(const VideoMode&) = delete; // Make non-copyable
+
 		/**
 		 * @brief	Width of the front/back buffer in pixels.
 		 */
@@ -52,7 +55,11 @@ namespace BansheeEngine
 	class CM_EXPORT VideoOutputInfo
 	{
 	public:
+		VideoOutputInfo() { }
 		virtual ~VideoOutputInfo();
+
+		VideoOutputInfo(const VideoOutputInfo&) = delete; // Make non-copyable
+		VideoOutputInfo& operator=(const VideoOutputInfo&) = delete; // Make non-copyable
 
 		/**
 		 * @brief	Name of the output device.
@@ -87,7 +94,11 @@ namespace BansheeEngine
 	class CM_EXPORT VideoModeInfo
 	{
 	public:
+		VideoModeInfo() { }
 		virtual ~VideoModeInfo();
+
+		VideoModeInfo(const VideoModeInfo&) = delete; // Make non-copyable
+		VideoModeInfo& operator=(const VideoModeInfo&) = delete; // Make non-copyable
 
 		/**
 		 * @brief	Returns the number of available output devices.

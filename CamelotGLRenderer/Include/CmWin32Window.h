@@ -11,9 +11,19 @@ namespace BansheeEngine
         ~Win32Window();
 
 		/**
-		 * @copydoc RenderWindow::setFullscreen
+		 * @copydoc RenderWindow::setFullscreen(UINT32, UINT32, float, UINT32)
 		 */
-		void setFullscreen(bool fullScreen, UINT32 width, UINT32 height);
+		void setFullscreen(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
+
+		/**
+		 * @copydoc RenderWindow::setFullscreen(const VideoMode&, UINT32)
+		 */
+		void setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx = 0);
+
+		/**
+		 * @copydoc RenderWindow::setWindowed
+		 */
+		void setWindowed();
 
 		/**
 		 * @copydoc RenderWindow::setHidden
@@ -109,14 +119,15 @@ namespace BansheeEngine
 
 		protected:
 			Win32GLSupport &mGLSupport;
-			HWND	mHWnd;					// Win32 Window handle
-			HDC		mHDC;
-			bool    mIsExternal;
-			char*   mDeviceName;
-			bool    mIsExternalGLControl;
-			bool    mSizing;
-			bool	mClosed;
-			int     mDisplayFrequency;      // fullscreen only, to restore display
+			HWND mHWnd;					// Win32 Window handle
+			HDC	mHDC;
+			bool mIsExternal;
+			bool mIsChild;
+			char* mDeviceName;
+			bool mIsExternalGLControl;
+			bool mSizing;
+			bool mClosed;
+			int mDisplayFrequency;      // fullscreen only, to restore display
 			Win32Context *mContext;
     };
 }

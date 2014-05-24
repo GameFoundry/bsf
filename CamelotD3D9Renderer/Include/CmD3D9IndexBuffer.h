@@ -8,13 +8,23 @@ namespace BansheeEngine
 { 
     class CM_D3D9_EXPORT D3D9IndexBuffer : public IndexBuffer, public D3D9Resource
     {
-  
+	protected:
+		struct BufferResources
+		{
+			IDirect3DIndexBuffer9* mBuffer;
+			bool mOutOfDate;
+			UINT32 mLockOffset;
+			UINT32 mLockLength;
+			GpuLockOptions mLockOptions;
+		};
+
     public:
         ~D3D9IndexBuffer();
+
         /** See HardwareBuffer. */
-        void readData(UINT32 offset, UINT32 length, void* pDest);
+        void readData(UINT32 offset, UINT32 length, void* dest);
         /** See HardwareBuffer. */
-		void writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags = BufferWriteType::Normal);
+		void writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		// Called immediately after the Direct3D device has been created.
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
@@ -35,17 +45,6 @@ namespace BansheeEngine
         IDirect3DIndexBuffer9* getD3DIndexBuffer();		
 
 	protected:
-		struct BufferResources
-		{
-			IDirect3DIndexBuffer9*		mBuffer;
-			bool						mOutOfDate;
-			UINT32						mLockOffset;
-			UINT32						mLockLength;
-			GpuLockOptions					mLockOptions;
-			UINT32						mLastUsedFrame;
-		};
-
-	protected:
 		friend class D3D9HardwareBufferManager;
 
 		D3D9IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMem);
@@ -55,7 +54,7 @@ namespace BansheeEngine
 		/** See HardwareBuffer. */
 		void unlockImpl();
 		// updates buffer resources from system memory buffer.
-		bool updateBufferResources(const char* systemMemoryBuffer, BufferResources* bufferResources);
+		bool updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources);
 
 		/**
 		 * @copydoc IndexBuffer::initialize_internal()
@@ -68,11 +67,8 @@ namespace BansheeEngine
 		void destroy_internal();
 
 	protected:		
-		typedef Map<IDirect3DDevice9*, BufferResources*>	DeviceToBufferResourcesMap;
-		typedef DeviceToBufferResourcesMap::iterator			DeviceToBufferResourcesIterator;
-
-		DeviceToBufferResourcesMap	mMapDeviceToBufferResources;	// Map between device to buffer resources.	
-		D3DINDEXBUFFER_DESC			mBufferDesc;					// Buffer description.		
-		char*						mSystemMemoryBuffer;			// Consistent system memory buffer for multiple devices support.
+		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;	// Map between device to buffer resources.	
+		D3DINDEXBUFFER_DESC	mBufferDesc;					// Buffer description.		
+		UINT8* mSystemMemoryBuffer;			// Consistent system memory buffer for multiple devices support.
     };
 }

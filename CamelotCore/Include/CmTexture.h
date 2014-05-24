@@ -246,7 +246,7 @@ namespace BansheeEngine
 		 * @note	This is only false for some rare special cases. (e.g. AA render texture in DX9)
 		 *			Internal method.
 		 */
-		virtual bool _isBindableAsShaderResource() const { return true; }
+		virtual bool isBindableAsShaderResource() const { return true; }
 
 		/************************************************************************/
 		/* 								TEXTURE VIEW                      		*/
