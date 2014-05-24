@@ -20,8 +20,29 @@
 #include "BsGUISpace.h"
 #include "CmHString.h"
 
+#include "CmCoreThread.h"
+#include "CmApplication.h"
+
 namespace BansheeEngine
 {
+	bool cm_dbg_fullscreen = false;
+
+	void toggleFullscreen()
+	{
+		if (cm_dbg_fullscreen)
+		{
+			gCoreAccessor().setWindowed(gApplication().getPrimaryWindow());
+		}
+		else
+		{
+			//gCoreAccessor().setFullscreen(window, *videoMode);
+			gCoreAccessor().setFullscreen(gApplication().getPrimaryWindow(), 1680, 1050, 60, 0);
+		}
+
+		cm_dbg_fullscreen = !cm_dbg_fullscreen;
+	}
+
+
 	DbgEditorWidget2* DbgEditorWidget2::Instance = nullptr;
 
 	DbgEditorWidget2::DbgEditorWidget2(const ConstructPrivately& dummy, EditorWidgetContainer& parentContainer)
@@ -42,6 +63,7 @@ namespace BansheeEngine
 		colorField->setValue(Color::Red);
 
 		GUIButton* button = GUIButton::create(HString(L"Testing"), GUIOptions(GUIOption::fixedWidth(100)));
+		button->onClick.connect(&toggleFullscreen);
 
 		layout.addElement(intField);
 		layout.addElement(floatField);

@@ -23,7 +23,7 @@ namespace BansheeEngine
 	class CM_RSGL_EXPORT Win32VideoOutputInfo : public VideoOutputInfo
 	{
 	public:
-		Win32VideoOutputInfo(char* deviceName);
+		Win32VideoOutputInfo(HMONITOR monitorHandle);
 		~Win32VideoOutputInfo();
 
 		/**

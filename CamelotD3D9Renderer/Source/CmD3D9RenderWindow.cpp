@@ -586,8 +586,7 @@ namespace BansheeEngine
 		ZeroMemory( presentParams, sizeof(D3DPRESENT_PARAMETERS) );
 		presentParams->Windowed					= !mIsFullScreen;
 		presentParams->SwapEffect				= D3DSWAPEFFECT_DISCARD;
-		// triple buffer if VSync is on
-		presentParams->BackBufferCount			= mVSync ? 2 : 1;
+		presentParams->BackBufferCount			= 1;
 		presentParams->EnableAutoDepthStencil	= mIsDepthBuffered;
 		presentParams->hDeviceWindow			= mHWnd;
 		presentParams->BackBufferWidth			= mWidth;
@@ -640,43 +639,42 @@ namespace BansheeEngine
 			presentParams->PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 		}
 
-		presentParams->BackBufferFormat		= D3DFMT_R5G6B5;
-		if( mColorDepth > 16 )
+		presentParams->BackBufferFormat	= D3DFMT_R5G6B5;
+		if(mColorDepth > 16)
 			presentParams->BackBufferFormat = D3DFMT_X8R8G8B8;
 
-		if (mColorDepth > 16 )
+		if (mColorDepth > 16)
 		{
-			// Try to create a 32-bit depth, 8-bit stencil
-			if( FAILED( pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
+			if(FAILED( pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
 				devType,  presentParams->BackBufferFormat,  D3DUSAGE_DEPTHSTENCIL, 
-				D3DRTYPE_SURFACE, D3DFMT_D24S8 )))
+				D3DRTYPE_SURFACE, D3DFMT_D24S8)))
 			{
-				// Bugger, no 8-bit hardware stencil, just try 32-bit zbuffer 
-				if( FAILED( pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
+				if(FAILED( pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
 					devType,  presentParams->BackBufferFormat,  D3DUSAGE_DEPTHSTENCIL, 
-					D3DRTYPE_SURFACE, D3DFMT_D32 )))
+					D3DRTYPE_SURFACE, D3DFMT_D32)))
 				{
-					// Jeez, what a naff card. Fall back on 16-bit depth buffering
 					presentParams->AutoDepthStencilFormat = D3DFMT_D16;
 				}
 				else
+				{
 					presentParams->AutoDepthStencilFormat = D3DFMT_D32;
+				}
 			}
 			else
 			{
-				// Woohoo!
-				if( SUCCEEDED( pD3D->CheckDepthStencilMatch( mDevice->getAdapterNumber(), devType,
-					presentParams->BackBufferFormat, presentParams->BackBufferFormat, D3DFMT_D24S8 ) ) )
+				if(SUCCEEDED( pD3D->CheckDepthStencilMatch( mDevice->getAdapterNumber(), devType,
+				presentParams->BackBufferFormat, presentParams->BackBufferFormat, D3DFMT_D24S8)))
 				{
 					presentParams->AutoDepthStencilFormat = D3DFMT_D24S8; 
 				} 
-				else 
-					presentParams->AutoDepthStencilFormat = D3DFMT_D24X8; 
+				else
+				{
+					presentParams->AutoDepthStencilFormat = D3DFMT_D24X8;
+				}
 			}
 		}
 		else
-			// 16-bit depth, software stencil
-			presentParams->AutoDepthStencilFormat	= D3DFMT_D16;
+			presentParams->AutoDepthStencilFormat = D3DFMT_D16;
 
 		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 

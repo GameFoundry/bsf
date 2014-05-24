@@ -24,7 +24,16 @@ When initializing a render window I don't have an option to use exact refresh ra
 ChangeDisplaySettingEx - For actually changing resolution and refresh rate
  - http://msdn.microsoft.com/en-us/library/windows/desktop/dd183413(v=vs.85).aspx
 
+ Add ability to change FSAA on RenderWindow.
+  - Maybe later. OpenGL requires window to be re-created for it to change I think. As SetPixelFormat is allowed to be called just once per window
 
+Add a better way of specifying FSAA (and don't call it FSAA because it's multisampling)
+ - fsaaHint is useless in most cases. Add an Enum instead.
+
+I should be able to specify resolution when going to windowed mode
+ - Maybe just store the windowed and fullscreen resolutions separately and restore automatically?
+
+OpenGL going back from windowed mode doesn't restore window style properly.
 
  -----------------------------
 

@@ -51,7 +51,8 @@ namespace BansheeEngine
 		mHWnd = 0;
 		mName = mDesc.title;
 		mIsFullScreen = mDesc.fullscreen;
-		mClosed = false;		
+		mClosed = false;
+		mIsChild = false;
 		mDisplayFrequency = mDesc.displayFrequency;
 		mColorDepth = mDesc.colorDepth;
 		HWND parent = 0;
@@ -385,20 +386,20 @@ namespace BansheeEngine
 		displayDeviceMode.dmDisplayFrequency = mDisplayFrequency;
 		displayDeviceMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
+		HMONITOR hMonitor = outputInfo.getMonitorHandle();
+		MONITORINFOEX monitorInfo;
+
+		memset(&monitorInfo, 0, sizeof(MONITORINFOEX));
+		monitorInfo.cbSize = sizeof(MONITORINFOEX);
+		GetMonitorInfo(hMonitor, &monitorInfo);
+
 		// Move window to 0,0 before display switch
 		SetWindowPos(mHWnd, HWND_TOPMOST, 0, 0, mWidth, mHeight, SWP_NOACTIVATE);
 
-		if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
+		if (ChangeDisplaySettingsEx(monitorInfo.szDevice, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 		{
 			CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed");
 		}
-
-		HMONITOR hMonitor = outputInfo.getMonitorHandle();
-		MONITORINFO monitorInfo;
-
-		memset(&monitorInfo, 0, sizeof(MONITORINFO));
-		monitorInfo.cbSize = sizeof(MONITORINFO);
-		GetMonitorInfo(hMonitor, &monitorInfo);
 
 		mTop = monitorInfo.rcMonitor.top;
 		mLeft = monitorInfo.rcMonitor.left;
