@@ -104,34 +104,33 @@ namespace BansheeEngine
 		 */
         void destroy_internal();
 
+		/**
+		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader
+		 * 			and vertex buffer.
+		 *
+		 *			Applies the input layout to the pipeline.
+		 */
+		void applyInputLayout();
+
 	private:
-		IDXGIFactory*		mDXGIFactory;
-		D3D11Device*		mDevice;
+		IDXGIFactory* mDXGIFactory;
+		D3D11Device* mDevice;
 
-		D3D11DriverList*	mDriverList;
-		D3D11Driver*		mActiveD3DDriver;
+		D3D11DriverList* mDriverList;
+		D3D11Driver* mActiveD3DDriver;
 
-		D3D_FEATURE_LEVEL	mFeatureLevel;
+		D3D_FEATURE_LEVEL mFeatureLevel;
 
 		D3D11HLSLProgramFactory* mHLSLFactory;
 		D3D11InputLayoutManager* mIAManager;
 
-		// State variables
-		UINT32				mStencilRef;
-		D3D11_VIEWPORT		mViewport;
-		D3D11_RECT			mScissorRect;
+		UINT32 mStencilRef;
+		D3D11_VIEWPORT mViewport;
+		D3D11_RECT mScissorRect;
 
 		VertexDeclarationPtr mActiveVertexDeclaration;
-		D3D11GpuProgramPtr	 mActiveVertexShader;
+		D3D11GpuProgramPtr mActiveVertexShader;
 
-		DrawOperationType	mActiveDrawOp;
-
-		/**
-		 * @brief	Creates or retrieves a proper input layout depending on the currently set vertex shader
-		 * 			and vertex buffer. 
-		 * 			
-		 *			Applies the input layout to the pipeline.
-		 */
-		void applyInputLayout();
+		DrawOperationType mActiveDrawOp;
 	};
 }

@@ -60,11 +60,11 @@ namespace BansheeEngine
 			ob.mDXGIAdapter->AddRef();
 
 		SAFE_RELEASE(mDXGIAdapter);
-		mDXGIAdapter=ob.mDXGIAdapter;
+		mDXGIAdapter = ob.mDXGIAdapter;
 
 		return *this;
 	}
-	
+
 	String D3D11Driver::getDriverName() const
 	{
 		size_t size = wcslen(mAdapterIdentifier.Description);

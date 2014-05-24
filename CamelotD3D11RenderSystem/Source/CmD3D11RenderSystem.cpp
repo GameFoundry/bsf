@@ -93,10 +93,11 @@ namespace BansheeEngine
 
 		mDevice = cm_new<D3D11Device>(device);
 		
+		// This must query for DirectX 10 interface as this is unsupported for DX11
 		LARGE_INTEGER driverVersion; 
-		if(SUCCEEDED(selectedAdapter->CheckInterfaceSupport(IID_ID3D11Device, &driverVersion)))
+		if(SUCCEEDED(selectedAdapter->CheckInterfaceSupport(IID_ID3D10Device, &driverVersion)))
 		{
-			mDriverVersion.major = HIWORD(driverVersion.HighPart);
+			mDriverVersion.major =  HIWORD(driverVersion.HighPart);
 			mDriverVersion.minor = LOWORD(driverVersion.HighPart);
 			mDriverVersion.release = HIWORD(driverVersion.LowPart);
 			mDriverVersion.build = LOWORD(driverVersion.LowPart);
