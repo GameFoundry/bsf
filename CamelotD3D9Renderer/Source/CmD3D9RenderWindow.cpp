@@ -21,7 +21,6 @@ namespace BansheeEngine
 		mHWnd = 0;
 		mActive = false;		
 		mClosed = false;
-		mSwitchingFullscreen = false;
 		mDisplayFrequency = 0;
 		mDeviceValid = false;
 	}
@@ -276,7 +275,6 @@ namespace BansheeEngine
 		mDisplayFrequency = Math::roundToInt(refreshRate);
 
 		mIsFullScreen = true;
-		mSwitchingFullscreen = true;
 
 		HMONITOR hMonitor = outputInfo.getMonitorHandle();
 		MONITORINFO monitorInfo;
@@ -290,17 +288,18 @@ namespace BansheeEngine
 
 		if (oldFullscreen) // Was previously fullscreen, just changing the resolution
 		{
-			SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
+			//SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
 		}
 		else
 		{
-			SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
+			//SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
 			SetWindowLong(mHWnd, GWL_STYLE, mStyle);
 			SetWindowPos(mHWnd, 0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
 		}
 
 		// Invalidate device, which resets it
 		mDevice->invalidate(this);
+		mDevice->acquire();
 	}
 
 	void D3D9RenderWindow::setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx)
@@ -329,7 +328,6 @@ namespace BansheeEngine
 			return;
 
 		mIsFullScreen = false;
-		mSwitchingFullscreen = true;
 
 		mStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW;
 
@@ -341,6 +339,7 @@ namespace BansheeEngine
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOACTIVATE);
 
 		mDevice->invalidate(this);
+		mDevice->acquire();
 	}
 
 	void D3D9RenderWindow::setHidden(bool hidden)
@@ -525,52 +524,6 @@ namespace BansheeEngine
 		if (*winHeight > (unsigned int)maxH)
 			*winHeight = maxH;
 
-	}
-
-	void D3D9RenderWindow::_finishSwitchingFullscreen()
-	{		
-		if(mIsFullScreen)
-		{
-			// Need to reset the region on the window sometimes, when the 
-			// windowed mode was constrained by desktop 
-			HRGN hRgn = CreateRectRgn(0,0,mWidth, mHeight);
-			SetWindowRgn(mHWnd, hRgn, FALSE);
-		}
-		else
-		{
-			// When switching back to windowed mode, need to reset window size 
-			// after device has been restored
-			// We may have had a resize event which polluted our desired sizes
-			unsigned int winWidth, winHeight;
-			_adjustWindow(mDesiredWidth, mDesiredHeight, mStyle, &winWidth, &winHeight);
-
-			// deal with centreing when switching down to smaller resolution
-
-			HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
-			MONITORINFO monitorInfo;
-			memset(&monitorInfo, 0, sizeof(MONITORINFO));
-			monitorInfo.cbSize = sizeof(MONITORINFO);
-			GetMonitorInfo(hMonitor, &monitorInfo);
-
-			LONG screenw = monitorInfo.rcWork.right  - monitorInfo.rcWork.left;
-			LONG screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
-
-
-			int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
-			int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
-			SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
-				SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
-
-			if (mWidth != mDesiredWidth ||
-				mHeight != mDesiredHeight)
-			{
-				mWidth = mDesiredWidth;
-				mHeight = mDesiredHeight;
-
-				// TODO - Notify viewports of resize		
-			}
-		}
-		mSwitchingFullscreen = false;
 	}
 	
 	void D3D9RenderWindow::_buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const

@@ -110,11 +110,6 @@ namespace BansheeEngine
 		 * @brief	Accessor for render surface.
 		 */
 		IDirect3DSurface9* _getRenderSurface() const;
-
-		/**
-		 * @brief	Indicate that fullscreen / windowed switching has finished.
-		 */
-		void _finishSwitchingFullscreen();
 	
 		/**
 		 * @brief	Returns true if this window use depth buffer.
@@ -152,8 +147,7 @@ namespace BansheeEngine
 		bool						mDeviceValid;			// Device was validation succeeded.
 		HWND						mHWnd;					// Win32 Window handle		
 		bool						mIsExternal;			// window not created by Ogre
-		bool						mClosed;				// Is this window destroyed.		
-		bool						mSwitchingFullscreen;	// Are we switching from fullscreen to windowed or vice versa		
+		bool						mClosed;				// Is this window destroyed.			
 		D3DMULTISAMPLE_TYPE			mFSAAType;				// AA type.
 		DWORD						mFSAAQuality;			// AA quality.
 		UINT						mDisplayFrequency;		// Display frequency.

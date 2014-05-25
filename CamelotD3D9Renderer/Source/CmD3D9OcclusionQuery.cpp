@@ -5,38 +5,57 @@
 namespace BansheeEngine
 {
 	D3D9OcclusionQuery::D3D9OcclusionQuery(bool binary)
-		:OcclusionQuery(binary), mQuery(nullptr), mNumFragments(0), mFinalized(false)
+		:OcclusionQuery(binary), mQuery(nullptr), mNumFragments(0), 
+		mFinalized(false), mDevice(nullptr), mQueryIssued(false)
 	{
-		IDirect3DDevice9* device = D3D9RenderSystem::getActiveD3D9Device();
+		createQuery();
+	}
 
-		HRESULT hr = device->CreateQuery(D3DQUERYTYPE_OCCLUSION, &mQuery);
+	D3D9OcclusionQuery::~D3D9OcclusionQuery()
+	{
+		releaseQuery();
+	}
+
+	void D3D9OcclusionQuery::createQuery()
+	{
+		mDevice = D3D9RenderSystem::getActiveD3D9Device();
+
+		HRESULT hr = mDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, &mQuery);
 		if (hr != S_OK)
 		{
 			CM_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
 		}
 	}
 
-	D3D9OcclusionQuery::~D3D9OcclusionQuery()
+	void D3D9OcclusionQuery::releaseQuery()
 	{
-		if (mQuery != nullptr)
-			mQuery->Release();
+		SAFE_RELEASE(mQuery);
 	}
 
 	void D3D9OcclusionQuery::begin()
 	{
-		mQuery->Issue(D3DISSUE_BEGIN);
+		if (mQuery != nullptr)
+			mQuery->Issue(D3DISSUE_BEGIN);
 
 		mNumFragments = 0;
+		mQueryIssued = false;
 		setActive(true);
 	}
 
 	void D3D9OcclusionQuery::end()
 	{
-		mQuery->Issue(D3DISSUE_END);
+		if (mQuery != nullptr)
+			mQuery->Issue(D3DISSUE_END);
+
+		mQueryIssued = true;
+		mFinalized = false;
 	}
 
 	bool D3D9OcclusionQuery::isReady() const
 	{
+		if (mQuery == nullptr)
+			return mQueryIssued; // If we lost the query, return as ready if it was ever issued
+
 		BOOL queryData;
 		return mQuery->GetData(&queryData, sizeof(BOOL), 0) == S_OK;
 	}
@@ -55,9 +74,39 @@ namespace BansheeEngine
 	{
 		mFinalized = true;
 
+		if (mQuery == nullptr)
+		{
+			mNumFragments = 0;
+			return;
+		}
+
 		DWORD numFragments;
 		mQuery->GetData(&numFragments, sizeof(DWORD), 0);
 
 		mNumFragments = (UINT32)numFragments;
+	}
+
+	void D3D9OcclusionQuery::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			createQuery();
+	}
+
+	void D3D9OcclusionQuery::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			releaseQuery();
+	}
+
+	void D3D9OcclusionQuery::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			releaseQuery();
+	}
+
+	void D3D9OcclusionQuery::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			createQuery();
 	}
 }

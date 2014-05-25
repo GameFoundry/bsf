@@ -555,7 +555,8 @@ namespace BansheeEngine
 		setTextureFiltering(unit, FT_MIP, state->getTextureFiltering(FT_MIP));
 
 		// Set texture layer filtering
-		setTextureAnisotropy(unit, state->getTextureAnisotropy());
+		if (state->getTextureAnisotropy() > 0)
+			setTextureAnisotropy(unit, state->getTextureAnisotropy());
 
 		// Set mipmap biasing
 		setTextureMipmapBias(unit, state->getTextureMipmapBias());
@@ -1401,14 +1402,14 @@ namespace BansheeEngine
 		if(!clearEntireTarget)
 		{
 			D3DRECT clearD3DRect;
-			clearD3DRect.x1 = clearRect.x;
-			clearD3DRect.x2 = clearD3DRect.x1 + clearRect.width;
+			clearD3DRect.x1 = (LONG)Math::clamp(clearRect.x, 0, (INT32)mActiveRenderTarget->getWidth() - 1);
+			clearD3DRect.x2 = (LONG)Math::clamp((INT32)clearD3DRect.x1 + clearRect.width, 0, (INT32)mActiveRenderTarget->getWidth() - 1);
 
-			clearD3DRect.y1 = clearRect.y;
-			clearD3DRect.y2 = clearD3DRect.y1 + clearRect.height;
+			clearD3DRect.y1 = (LONG)Math::clamp(clearRect.y, 0, (INT32)mActiveRenderTarget->getHeight() - 1);
+			clearD3DRect.y2 = (LONG)Math::clamp((INT32)clearD3DRect.y1 + clearRect.height, 0, (INT32)mActiveRenderTarget->getHeight() - 1);
 
 			HRESULT hr;
-			if(FAILED( hr = getActiveD3D9Device()->Clear(1, &clearD3DRect, flags, color.getAsBGRA(), depth, stencil)))
+			if(FAILED(hr = getActiveD3D9Device()->Clear(1, &clearD3DRect, flags, color.getAsBGRA(), depth, stencil)))
 			{
 				String msg = DXGetErrorDescription(hr);
 				CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);
@@ -1417,7 +1418,7 @@ namespace BansheeEngine
 		else
 		{
 			HRESULT hr;
-			if(FAILED( hr = getActiveD3D9Device()->Clear(0, nullptr, flags, color.getAsBGRA(), depth, stencil)))
+			if(FAILED(hr = getActiveD3D9Device()->Clear(0, nullptr, flags, color.getAsBGRA(), depth, stencil)))
 			{
 				String msg = DXGetErrorDescription(hr);
 				CM_EXCEPT(RenderingAPIException, "Error clearing frame buffer : " + msg);

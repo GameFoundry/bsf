@@ -15,17 +15,7 @@ Finish GPUProfiler:
 
  Fullscreen stuff:
 
- In DX9 RenderWindow delete _finishSwitchingFullscreen method if possible after I test fullscreen switching
- Update OpenGL render window set fullscreen methods.
-
-Test if it all works. Especially going fullscreen on another monitor.
 When initializing a render window I don't have an option to use exact refresh rate (i.e. in RENDER_WINDOW_DESC)
-
-ChangeDisplaySettingEx - For actually changing resolution and refresh rate
- - http://msdn.microsoft.com/en-us/library/windows/desktop/dd183413(v=vs.85).aspx
-
- Add ability to change FSAA on RenderWindow.
-  - Maybe later. OpenGL requires window to be re-created for it to change I think. As SetPixelFormat is allowed to be called just once per window
 
 Add a better way of specifying FSAA (and don't call it FSAA because it's multisampling)
  - fsaaHint is useless in most cases. Add an Enum instead.
@@ -34,6 +24,17 @@ I should be able to specify resolution when going to windowed mode
  - Maybe just store the windowed and fullscreen resolutions separately and restore automatically?
 
 OpenGL going back from windowed mode doesn't restore window style properly.
+OpenGL doesn't list windows in the same order as DirectX
+
+DirectX 9 still crashes when going to fullscreen (presumably only when using retail DX9 runtime)
+Switching from higher to lower resoltuion in DX9 causes an issue where viewport is larger than the render target. 
+Test DirectX 9 full-screen on another monitor
+In DX9 render window I have disabled top most style.
+  - If needed re-enable it, if not remove it from OpenGL as well as I think it disables alt+tab
+
+LATER:
+ Add ability to change FSAA on RenderWindow.
+  - Maybe later. OpenGL requires window to be re-created for it to change I think. As SetPixelFormat is allowed to be called just once per window
 
  -----------------------------
 

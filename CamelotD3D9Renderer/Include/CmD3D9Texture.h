@@ -69,17 +69,25 @@ namespace BansheeEngine
 		*/
 		PixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
-		// Called immediately after the Direct3D device has been created.
+		/**
+		 * @copydoc	D3D9Resource::notifyOnDeviceCreate
+		 */
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
 
-		// Called before the Direct3D device is going to be destroyed.
+		/**
+		 * @copydoc	D3D9Resource::notifyOnDeviceDestroy
+		 */
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
-		// Called immediately after the Direct3D device has entered a lost state.
+		/**
+		 * @copydoc	D3D9Resource::notifyOnDeviceLost
+		 */
 		virtual void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
 
-		// Called immediately after the Direct3D device has been reset
-		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);	
+		/**
+		 * @copydoc	D3D9Resource::notifyOnDeviceReset
+		 */
+		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
 	protected:	
 		friend class D3D9TextureManager;

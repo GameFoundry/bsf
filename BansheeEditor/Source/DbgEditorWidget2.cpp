@@ -36,7 +36,7 @@ namespace BansheeEngine
 		else
 		{
 			//gCoreAccessor().setFullscreen(window, *videoMode);
-			gCoreAccessor().setFullscreen(gApplication().getPrimaryWindow(), 1680, 1050, 60, 0);
+			gCoreAccessor().setFullscreen(gApplication().getPrimaryWindow(), 1920, 1200, 60, 0);
 		}
 
 		cm_dbg_fullscreen = !cm_dbg_fullscreen;

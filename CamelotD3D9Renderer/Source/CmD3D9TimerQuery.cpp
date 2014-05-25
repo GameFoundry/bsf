@@ -5,67 +5,91 @@
 namespace BansheeEngine
 {
 	D3D9TimerQuery::D3D9TimerQuery()
-		:mFinalized(false), mBeginQuery(nullptr), mFreqQuery(nullptr),
-		mEndQuery(nullptr), mDisjointQuery(nullptr), mTimeDelta(0.0f)
+		:mFinalized(false), mBeginQuery(nullptr), mFreqQuery(nullptr), mQueryIssued(false),
+		mEndQuery(nullptr), mDisjointQuery(nullptr), mTimeDelta(0.0f), mDevice(nullptr)
 	{
-		IDirect3DDevice9* device = D3D9RenderSystem::getActiveD3D9Device();
-
-		HRESULT hr = device->CreateQuery(D3DQUERYTYPE_TIMESTAMPDISJOINT, &mDisjointQuery);
-		if(hr != S_OK)
-		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
-		}
-
-		hr = device->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &mFreqQuery);
-		if(hr != S_OK)
-		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
-		}
-
-		hr = device->CreateQuery(D3DQUERYTYPE_TIMESTAMP, &mBeginQuery);
-		if(hr != S_OK)
-		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
-		}
-
-		hr = device->CreateQuery(D3DQUERYTYPE_TIMESTAMP, &mEndQuery);
-		if(hr != S_OK)
-		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
-		}
+		createQuery();
 	}
 
 	D3D9TimerQuery::~D3D9TimerQuery()
 	{
-		if(mBeginQuery != nullptr)
-			mBeginQuery->Release();
+		releaseQuery();
+	}
 
-		if(mEndQuery != nullptr)
-			mEndQuery->Release();
+	void D3D9TimerQuery::createQuery()
+	{
+		mDevice = D3D9RenderSystem::getActiveD3D9Device();
 
-		if(mDisjointQuery != nullptr)
-			mDisjointQuery->Release();
+		HRESULT hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMPDISJOINT, &mDisjointQuery);
+		if (hr != S_OK)
+		{
+			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+		}
 
-		if(mFreqQuery != nullptr)
-			mFreqQuery->Release();
+		hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &mFreqQuery);
+		if (hr != S_OK)
+		{
+			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+		}
+
+		hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMP, &mBeginQuery);
+		if (hr != S_OK)
+		{
+			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+		}
+
+		hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMP, &mEndQuery);
+		if (hr != S_OK)
+		{
+			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+		}
+	}
+
+	void D3D9TimerQuery::releaseQuery()
+	{
+		SAFE_RELEASE(mBeginQuery);
+		SAFE_RELEASE(mEndQuery);
+		SAFE_RELEASE(mDisjointQuery);
+		SAFE_RELEASE(mFreqQuery);
+	}
+
+	bool D3D9TimerQuery::isQueryValid() const
+	{
+		return mDisjointQuery != nullptr && mBeginQuery != nullptr && 
+			mEndQuery != nullptr && mFreqQuery != nullptr;
 	}
 
 	void D3D9TimerQuery::begin()
 	{
-		mDisjointQuery->Issue(D3DISSUE_BEGIN);
-		mFreqQuery->Issue(D3DISSUE_END);
-		mBeginQuery->Issue(D3DISSUE_END);
+		mQueryIssued = false;
+
+		if (isQueryValid())
+		{
+			mDisjointQuery->Issue(D3DISSUE_BEGIN);
+			mFreqQuery->Issue(D3DISSUE_END);
+			mBeginQuery->Issue(D3DISSUE_END);
+		}
+
 		setActive(true);
 	}
 
 	void D3D9TimerQuery::end()
 	{
-		mEndQuery->Issue(D3DISSUE_END);
-		mDisjointQuery->Issue(D3DISSUE_END);
+		if (isQueryValid())
+		{
+			mEndQuery->Issue(D3DISSUE_END);
+			mDisjointQuery->Issue(D3DISSUE_END);
+		}
+
+		mQueryIssued = true;
+		mFinalized = false;
 	}
 
 	bool D3D9TimerQuery::isReady() const
 	{
+		if (!isQueryValid()) // Possibly device reset, in which case query is considered done if issued
+			return mQueryIssued;
+
 		BOOL queryData;
 		return mDisjointQuery->GetData(&queryData, sizeof(BOOL), 0) == S_OK;
 	}
@@ -82,6 +106,14 @@ namespace BansheeEngine
 
 	void D3D9TimerQuery::finalize()
 	{
+		mFinalized = true;
+
+		if (!isQueryValid())
+		{
+			mTimeDelta = 0.0f;
+			return;
+		}
+
 		BOOL disjoint;
 		mDisjointQuery->GetData(&disjoint, sizeof(BOOL), 0);
 
@@ -101,5 +133,29 @@ namespace BansheeEngine
 		{
 			LOGWRN("Unrealiable GPU timer query detected.");
 		}
+	}
+
+	void D3D9TimerQuery::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			createQuery();
+	}
+
+	void D3D9TimerQuery::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			releaseQuery();
+	}
+
+	void D3D9TimerQuery::notifyOnDeviceLost(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			releaseQuery();
+	}
+
+	void D3D9TimerQuery::notifyOnDeviceReset(IDirect3DDevice9* d3d9Device)
+	{
+		if (d3d9Device == mDevice)
+			createQuery();
 	}
 }
