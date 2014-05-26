@@ -264,12 +264,11 @@ namespace BansheeEngine
 		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), width, height, refreshRate, monitorIdx));
 	}
 
-	void CoreThreadAccessorBase::setFullscreen(RenderWindowPtr& renderWindow, const VideoMode& mode, 
-		UINT32 refreshRateIdx)
+	void CoreThreadAccessorBase::setFullscreen(RenderWindowPtr& renderWindow, const VideoMode& mode)
 	{
-		void(RenderWindow::*funcPtr)(const VideoMode&, UINT32) = &RenderWindow::setFullscreen;
+		void(RenderWindow::*funcPtr)(const VideoMode&) = &RenderWindow::setFullscreen;
 
-		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), std::cref(mode), refreshRateIdx));
+		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), std::cref(mode)));
 	}
 
 	void CoreThreadAccessorBase::setWindowed(RenderWindowPtr& renderWindow)

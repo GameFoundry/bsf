@@ -37,16 +37,16 @@ namespace BansheeEngine
 		mMultisampleCount = mDesc.multisampleCount;
 		mVSync = mDesc.vsync;
 		mVSyncInterval = mDesc.vsyncInterval;
+		mDisplayFrequency = Math::roundToInt(mDesc.videoMode.getRefreshRate());
 
 		HWND parentHWnd = 0;
 		HWND externalHandle = 0;
 
 		NameValuePairList::const_iterator opt;
-		// parentWindowHandle		-> parentHWnd
 		opt = mDesc.platformSpecific.find("parentWindowHandle");
 		if(opt != mDesc.platformSpecific.end())
 			parentHWnd = (HWND)parseUnsignedInt(opt->second);
-		// externalWindowHandle		-> externalHandle
+
 		opt = mDesc.platformSpecific.find("externalWindowHandle");
 		if(opt != mDesc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
@@ -55,25 +55,19 @@ namespace BansheeEngine
 
 		if (!externalHandle)
 		{
-			DWORD		dwStyle = WS_VISIBLE | WS_CLIPCHILDREN;
-			DWORD		dwStyleEx = 0;
-			HMONITOR    hMonitor = NULL;		
+			DWORD dwStyle = WS_VISIBLE | WS_CLIPCHILDREN;
+			DWORD dwStyleEx = 0;	
 			MONITORINFO monitorInfo;
-			RECT		rc;
+			RECT rc;
 
-			// If we specified which adapter we want to use - find it's monitor.
-			if (mDesc.monitorIndex != -1)
+			HMONITOR hMonitor = NULL;
+			const D3D9VideoModeInfo& videoModeInfo = static_cast<const D3D9VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+			UINT32 numOutputs = videoModeInfo.getNumOutputs();
+			if (numOutputs > 0)
 			{
-				IDirect3D9* direct3D9 = D3D9RenderSystem::getDirect3D9();
-
-				for (UINT32 i=0; i < direct3D9->GetAdapterCount(); ++i)
-				{
-					if (i == mDesc.monitorIndex)
-					{
-						hMonitor = direct3D9->GetAdapterMonitor(i);
-						break;
-					}
-				}				
+				UINT32 actualMonitorIdx = std::min(mDesc.videoMode.getOutputIdx(), numOutputs - 1);
+				const D3D9VideoOutputInfo& outputInfo = static_cast<const D3D9VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
+				hMonitor = outputInfo.getMonitorHandle();
 			}
 
 			// If we didn't specified the adapter index, or if it didn't find it
@@ -94,10 +88,9 @@ namespace BansheeEngine
 			monitorInfo.cbSize = sizeof(MONITORINFO);
 			GetMonitorInfo(hMonitor, &monitorInfo);
 
-
 			unsigned int winWidth, winHeight;
-			winWidth = mDesc.width;
-			winHeight = mDesc.height;
+			winWidth = mDesc.videoMode.getWidth();
+			winHeight = mDesc.videoMode.getHeight();
 
 			UINT32 left = mDesc.left;
 			UINT32 top = mDesc.top;
@@ -114,22 +107,22 @@ namespace BansheeEngine
 
 				if (left == -1)
 					left = monitorInfo.rcWork.left + (screenw - outerw) / 2;
-				else if (mDesc.monitorIndex != -1)
+				else if (hMonitor != NULL)
 					left += monitorInfo.rcWork.left;
 
 				if (top == -1)
 					top = monitorInfo.rcWork.top + (screenh - outerh) / 2;
-				else if (mDesc.monitorIndex != -1)
+				else if (hMonitor != NULL)
 					top += monitorInfo.rcWork.top;
 			}
-			else if (mDesc.monitorIndex != -1)
+			else if (hMonitor != NULL)
 			{
 				left += monitorInfo.rcWork.left;
 				top += monitorInfo.rcWork.top;
 			}
 
-			mWidth = mDesiredWidth = mDesc.width;
-			mHeight = mDesiredHeight = mDesc.height;
+			mWidth = mDesiredWidth = mDesc.videoMode.getWidth();
+			mHeight = mDesiredHeight = mDesc.videoMode.getHeight();
 			mTop = top;
 			mLeft = left;
 
@@ -161,7 +154,7 @@ namespace BansheeEngine
 						dwStyle |= WS_OVERLAPPEDWINDOW;
 				}
 
-				_adjustWindow(mDesc.width, mDesc.height, dwStyle, &winWidth, &winHeight);
+				_adjustWindow(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), dwStyle, &winWidth, &winHeight);
 
 				if (!mDesc.outerDimensions)
 				{
@@ -209,11 +202,10 @@ namespace BansheeEngine
 		}
 
 		RECT rc;
-		// top and left represent outer window coordinates
 		GetWindowRect(mHWnd, &rc);
 		mTop = rc.top;
 		mLeft = rc.left;
-		// width and height represent interior drawable area
+
 		GetClientRect(mHWnd, &rc);
 		mWidth = rc.right;
 		mHeight = rc.bottom;
@@ -221,7 +213,7 @@ namespace BansheeEngine
 		mName = mDesc.title;
 		mIsDepthBuffered = mDesc.depthBuffer;
 		mIsFullScreen = mDesc.fullscreen && !mIsChild;
-		mColorDepth = mDesc.colorDepth;
+		mColorDepth = 32;
 
 		mActive = true;
 		mClosed = false;
@@ -516,23 +508,21 @@ namespace BansheeEngine
 	}
 	
 	void D3D9RenderWindow::_buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const
-	{		
-		// Set up the presentation parameters		
+	{			
 		IDirect3D9* pD3D = D3D9RenderSystem::getDirect3D9();
 		D3DDEVTYPE devType = D3DDEVTYPE_HAL;
 
 		if (mDevice != NULL)		
 			devType = mDevice->getDeviceType();		
 	
-
 		ZeroMemory( presentParams, sizeof(D3DPRESENT_PARAMETERS) );
-		presentParams->Windowed					= !mIsFullScreen;
-		presentParams->SwapEffect				= D3DSWAPEFFECT_DISCARD;
-		presentParams->BackBufferCount			= 1;
-		presentParams->EnableAutoDepthStencil	= mIsDepthBuffered;
-		presentParams->hDeviceWindow			= mHWnd;
-		presentParams->BackBufferWidth			= mWidth;
-		presentParams->BackBufferHeight			= mHeight;
+		presentParams->Windowed = !mIsFullScreen;
+		presentParams->SwapEffect = D3DSWAPEFFECT_DISCARD;
+		presentParams->BackBufferCount = 1;
+		presentParams->EnableAutoDepthStencil = mIsDepthBuffered;
+		presentParams->hDeviceWindow = mHWnd;
+		presentParams->BackBufferWidth = mWidth;
+		presentParams->BackBufferHeight	= mHeight;
 		presentParams->FullScreen_RefreshRateInHz = mIsFullScreen ? mDisplayFrequency : 0;
 		
 		if (presentParams->BackBufferWidth == 0)		
@@ -541,10 +531,8 @@ namespace BansheeEngine
 		if (presentParams->BackBufferHeight == 0)	
 			presentParams->BackBufferHeight = 1;					
 
-
 		if (mVSync)
 		{
-			// D3D9 only seems to support 2-4 presentation intervals in fullscreen
 			if (mIsFullScreen)
 			{
 				switch(mVSyncInterval)
@@ -563,11 +551,13 @@ namespace BansheeEngine
 					presentParams->PresentationInterval = D3DPRESENT_INTERVAL_FOUR;
 					break;
 				};
-				// check that the interval was supported, revert to 1 to be safe otherwise
+
 				D3DCAPS9 caps;
 				pD3D->GetDeviceCaps(mDevice->getAdapterNumber(), devType, &caps);
 				if (!(caps.PresentationIntervals & presentParams->PresentationInterval))
+				{
 					presentParams->PresentationInterval = D3DPRESENT_INTERVAL_ONE;
+				}
 
 			}
 			else
@@ -580,51 +570,43 @@ namespace BansheeEngine
 			presentParams->PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 		}
 
-		presentParams->BackBufferFormat	= D3DFMT_R5G6B5;
-		if(mColorDepth > 16)
-			presentParams->BackBufferFormat = D3DFMT_X8R8G8B8;
+		presentParams->BackBufferFormat = D3DFMT_X8R8G8B8;
 
-		if (mColorDepth > 16)
+		if (FAILED(pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
+			devType, presentParams->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
+			D3DRTYPE_SURFACE, D3DFMT_D24S8)))
 		{
-			if(FAILED( pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
-				devType,  presentParams->BackBufferFormat,  D3DUSAGE_DEPTHSTENCIL, 
-				D3DRTYPE_SURFACE, D3DFMT_D24S8)))
+			if (FAILED(pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
+				devType, presentParams->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL,
+				D3DRTYPE_SURFACE, D3DFMT_D32)))
 			{
-				if(FAILED( pD3D->CheckDeviceFormat(mDevice->getAdapterNumber(),
-					devType,  presentParams->BackBufferFormat,  D3DUSAGE_DEPTHSTENCIL, 
-					D3DRTYPE_SURFACE, D3DFMT_D32)))
-				{
-					presentParams->AutoDepthStencilFormat = D3DFMT_D16;
-				}
-				else
-				{
-					presentParams->AutoDepthStencilFormat = D3DFMT_D32;
-				}
+				presentParams->AutoDepthStencilFormat = D3DFMT_D16;
 			}
 			else
 			{
-				if(SUCCEEDED( pD3D->CheckDepthStencilMatch( mDevice->getAdapterNumber(), devType,
-				presentParams->BackBufferFormat, presentParams->BackBufferFormat, D3DFMT_D24S8)))
-				{
-					presentParams->AutoDepthStencilFormat = D3DFMT_D24S8; 
-				} 
-				else
-				{
-					presentParams->AutoDepthStencilFormat = D3DFMT_D24X8;
-				}
+				presentParams->AutoDepthStencilFormat = D3DFMT_D32;
 			}
 		}
 		else
-			presentParams->AutoDepthStencilFormat = D3DFMT_D16;
+		{
+			if (SUCCEEDED(pD3D->CheckDepthStencilMatch(mDevice->getAdapterNumber(), devType,
+				presentParams->BackBufferFormat, presentParams->BackBufferFormat, D3DFMT_D24S8)))
+			{
+				presentParams->AutoDepthStencilFormat = D3DFMT_D24S8;
+			}
+			else
+			{
+				presentParams->AutoDepthStencilFormat = D3DFMT_D24X8;
+			}
+		}
 
-		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
+		D3D9RenderSystem* rs = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 
 		D3DMULTISAMPLE_TYPE multisampleType;
 		DWORD multisampleQuality;
 
-		rsys->determineMultisampleSettings(mDevice->getD3D9Device(),
-			mMultisampleCount, mMultisampleHint, presentParams->BackBufferFormat, mIsFullScreen, 
-			&multisampleType, &multisampleQuality);
+		rs->determineMultisampleSettings(mDevice->getD3D9Device(), mMultisampleCount, mMultisampleHint, 
+			presentParams->BackBufferFormat, mIsFullScreen, &multisampleType, &multisampleQuality);
 
 		presentParams->MultiSampleType = multisampleType;
 		presentParams->MultiSampleQuality = (multisampleQuality == 0) ? 0 : multisampleQuality;
@@ -675,7 +657,7 @@ namespace BansheeEngine
 		mTop = rc.top;
 		mLeft = rc.left;
 
-		// width and height represent drawable area only
+		// Width and height represent drawable area only
 		result = GetClientRect(mHWnd, &rc);
 		if (result == FALSE)
 		{

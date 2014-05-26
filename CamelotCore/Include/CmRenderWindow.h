@@ -3,6 +3,7 @@
 #include "CmPrerequisites.h"
 
 #include "CmRenderTarget.h"
+#include "CmVideoModeInfo.h"
 #include "CmVector2I.h"
 
 namespace BansheeEngine
@@ -23,35 +24,29 @@ namespace BansheeEngine
 	struct CM_EXPORT RENDER_WINDOW_DESC
 	{
 		RENDER_WINDOW_DESC()
-			:width(0), height(0), fullscreen(false)
-			, vsync(false), vsyncInterval(1), hidden(false)
-			, displayFrequency(60), colorDepth(32), depthBuffer(true)
+		: vsync(false), vsyncInterval(1), fullscreen(false), hidden(false), depthBuffer(true)
 			, multisampleCount(0), multisampleHint(""), gamma(false), left(-1), top(-1)
 			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
-			, monitorIndex(-1), toolWindow(false), modal(false)
+			, toolWindow(false), modal(false)
 		{ }
 
-		UINT32 width; /**< Width of the window in pixels. */
-		UINT32 height; /**< Height of the window in pixels. */
-		bool fullscreen; /**< Should the window be created in full-screen mode. */
+		VideoMode videoMode; /**< A set of frame buffer options. */
+		bool fullscreen; /**< Should the window be opened in fullscreen mode. */
 		bool vsync; /**< Should the window wait for vertical sync before swapping buffers. */
 		UINT32 vsyncInterval; /**< Determines how many vsync intervals occur per frame. FPS = refreshRate/interval. Usually 1 when vsync active. */
 		bool hidden; /**< Should the window be hidden. */
-		UINT32 displayFrequency; /**< Display frequency of the screen to use in hertz. */
-		UINT32 colorDepth; /**< Depth of the color buffer in bits. This is the size of a single pixel in color buffer. */
 		bool depthBuffer; /**< Should the window be created with a depth/stencil buffer. */
 		UINT32 multisampleCount; /**< If higher than 1, texture containing multiple samples per pixel is created. */
 		String multisampleHint; /**< Hint about what kind of multisampling to use. Render system specific. */
 		bool gamma; /**< Should the written color pixels be gamma corrected before write. */
-		INT32 left; /**< Window origin on X axis in pixels. -1 == screen center. */
-		INT32 top; /**< Window origin on Y axis in pixels. -1 == screen center. */
+		INT32 left; /**< Window origin on X axis in pixels. -1 == screen center. Relative to monitor provided in videoMode. */
+		INT32 top; /**< Window origin on Y axis in pixels. -1 == screen center. Relative to monitor provided in videoMode. */
 		String title; /**< Title of the window. */
 		WindowBorder border; /**< Type of border to create the window with. */
 		bool outerDimensions; /**< Do our dimensions include space for things like title-bar and border. */
 		bool enableDoubleClick; /**< Does window accept double-clicks. */
 		bool toolWindow; /**< Tool windows don't include standard window controls. */
 		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
-		INT32 monitorIndex; /**< Index of the monitor to create the window on. -1 == select based on coordinates */
 
 		NameValuePairList platformSpecific; /**< Platform-specific creation options. */
 	};
@@ -83,7 +78,7 @@ namespace BansheeEngine
 		/**
 		* @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
 		*
-		* @param	videoMode		Mode retrieved from VideoModeInfo in RenderSystem.
+		* @param	videoMode	Mode retrieved from VideoModeInfo in RenderSystem.
 		*
 		* @note		Core thread.
 		*/

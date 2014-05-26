@@ -58,12 +58,6 @@ namespace BansheeEngine
         UINT32 getHeight() const { return mHeight; }
 
 		/**
-		 * @brief	Returns the number of bits a single color value of the 
-		 *			render target format takes.
-		 */
-		UINT32 getColorDepth() const { return mColorDepth; }
-
-		/**
 		 * @brief	Gets the number of samples used for multisampling.
 		 *			(0 if multisampling is not used).
 		 */

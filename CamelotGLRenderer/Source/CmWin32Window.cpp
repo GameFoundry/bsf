@@ -53,14 +53,10 @@ namespace BansheeEngine
 		mIsFullScreen = mDesc.fullscreen;
 		mClosed = false;
 		mIsChild = false;
-		mDisplayFrequency = mDesc.displayFrequency;
-		mColorDepth = mDesc.colorDepth;
+		mDisplayFrequency = Math::roundToInt(mDesc.videoMode.getRefreshRate());
+		mColorDepth = 32;
 		HWND parent = 0;
-		HMONITOR hMonitor = NULL;
 
-		int monitorIndex = mDesc.monitorIndex;
-
-		// Get variable-length params
 		NameValuePairList::const_iterator opt;
 		NameValuePairList::const_iterator end = mDesc.platformSpecific.end();
 
@@ -70,8 +66,6 @@ namespace BansheeEngine
 			if (mHWnd)
 			{
 				mIsExternal = true;
-				mIsChild = true;
-				mIsFullScreen = false;
 			}
 
 			if ((opt = mDesc.platformSpecific.find("externalGLControl")) != end) {
@@ -85,17 +79,26 @@ namespace BansheeEngine
 			glrc = (HGLRC)parseUnsignedLong(opt->second);
 		}
 
-		// incompatible with fullscreen
 		if ((opt = mDesc.platformSpecific.find("parentWindowHandle")) != end)
+		{
 			parent = (HWND)parseUnsignedInt(opt->second);
+			mIsChild = true;
+			mIsFullScreen = false;
+		}
 
-		// monitor handle
-		if ((opt = mDesc.platformSpecific.find("monitorHandle")) != end)
-			hMonitor = (HMONITOR)parseInt(opt->second);			
+		HMONITOR hMonitor = NULL;
+		const Win32VideoModeInfo& videoModeInfo = static_cast<const Win32VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		UINT32 numOutputs = videoModeInfo.getNumOutputs();
+		if (numOutputs > 0)
+		{
+			UINT32 actualMonitorIdx = std::min(mDesc.videoMode.getOutputIdx(), numOutputs - 1);
+			const Win32VideoOutputInfo& outputInfo = static_cast<const Win32VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
+			hMonitor = outputInfo.getMonitorHandle();
+		}
 
 		if (!mIsFullScreen)
 		{
-			// make sure we don't exceed desktop colour depth
+			// Make sure we don't exceed desktop color depth
 			if ((int)mColorDepth > GetDeviceCaps(GetDC(0), BITSPIXEL))
 				mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
 		}
@@ -115,7 +118,6 @@ namespace BansheeEngine
 				// Fill in anchor point.
 				windowAnchorPoint.x = mDesc.left;
 				windowAnchorPoint.y = mDesc.top;
-
 
 				// Get the nearest monitor to this window.
 				hMonitor = MonitorFromPoint(windowAnchorPoint, MONITOR_DEFAULTTONEAREST);
@@ -141,7 +143,7 @@ namespace BansheeEngine
 				int screenh = monitorInfoEx.rcWork.bottom - monitorInfoEx.rcWork.top;
 
 				unsigned int winWidth, winHeight;
-				_adjustWindow(mDesc.width, mDesc.height, &winWidth, &winHeight);
+				_adjustWindow(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), &winWidth, &winHeight);
 
 				// clamp window dimensions to screen size
 				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
@@ -149,22 +151,22 @@ namespace BansheeEngine
 
 				if (left == -1)
 					left = monitorInfoEx.rcWork.left + (screenw - outerw) / 2;
-				else if (mDesc.monitorIndex != -1)
+				else if (hMonitor != NULL)
 					left += monitorInfoEx.rcWork.left;
 
 				if (top == -1)
 					top = monitorInfoEx.rcWork.top + (screenh - outerh) / 2;
-				else if (mDesc.monitorIndex != -1)
+				else if (hMonitor != NULL)
 					top += monitorInfoEx.rcWork.top;
 			}
-			else if (mDesc.monitorIndex != -1)
+			else if (hMonitor != NULL)
 			{
 				left += monitorInfoEx.rcWork.left;
 				top += monitorInfoEx.rcWork.top;
 			}
 
-			mWidth = mDesc.width;
-			mHeight = mDesc.height;
+			mWidth = mDesc.videoMode.getWidth();
+			mHeight = mDesc.videoMode.getHeight();
 			mTop = top;
 			mLeft = left;
 
@@ -244,17 +246,16 @@ namespace BansheeEngine
 				{
 					displayDeviceMode.dmDisplayFrequency = mDisplayFrequency;
 					displayDeviceMode.dmFields |= DM_DISPLAYFREQUENCY;
+
 					if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN | CDS_TEST, NULL) != DISP_CHANGE_SUCCESSFUL)
 					{
-						// TODO LOG PORT - Log this somewhere
-						//LogManager::getSingleton().logMessage(LML_NORMAL, "ChangeDisplaySettings with user display frequency failed");
-						//displayDeviceMode.dmFields ^= DM_DISPLAYFREQUENCY;
+						CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings with user display frequency failed.");
 					}
 				}
+
 				if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 				{
-					// TODO LOG PORT - Log this somewhere
-					//LogManager::getSingleton().logMessage(LML_CRITICAL, "ChangeDisplaySettings failed");
+					CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed.");
 				}
 			}
 
@@ -264,11 +265,11 @@ namespace BansheeEngine
 		}
 
 		RECT rc;
-		// top and left represent outer window position
+
 		GetWindowRect(mHWnd, &rc);
 		mTop = rc.top;
 		mLeft = rc.left;
-		// width and height represent drawable area only
+
 		GetClientRect(mHWnd, &rc);
 		mWidth = rc.right;
 		mHeight = rc.bottom;
@@ -284,14 +285,14 @@ namespace BansheeEngine
 			{
 				if (mMultisampleCount > 0)
 				{
-					// try without multisampling
+					// Try without multisampling
 					testMultisample = 0;
 					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
 				}
 
 				if (!formatOk && mDesc.gamma)
 				{
-					// try without sRGB
+					// Try without sRGB
 					testHwGamma = false;
 					testMultisample = mMultisampleCount;
 					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
@@ -299,17 +300,18 @@ namespace BansheeEngine
 
 				if (!formatOk && mDesc.gamma && (mMultisampleCount > 0))
 				{
-					// try without both
+					// Try without both
 					testHwGamma = false;
 					testMultisample = 0;
 					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
 				}
 
 				if (!formatOk)
-					CM_EXCEPT(RenderingAPIException, "selectPixelFormat failed");
+					CM_EXCEPT(RenderingAPIException, "Failed selecting pixel format.");
 
 			}
-			// record what gamma option we used in the end
+
+			// Record what gamma option we used in the end
 			// this will control enabling of sRGB state flags when used
 			mHwGamma = testHwGamma;
 			mMultisampleCount = testMultisample;
@@ -393,7 +395,7 @@ namespace BansheeEngine
 		monitorInfo.cbSize = sizeof(MONITORINFOEX);
 		GetMonitorInfo(hMonitor, &monitorInfo);
 
-		// Move window to 0,0 before display switch
+		// Move window to 0, 0 before display switch
 		SetWindowPos(mHWnd, HWND_TOPMOST, 0, 0, mWidth, mHeight, SWP_NOACTIVATE);
 
 		if (ChangeDisplaySettingsEx(monitorInfo.szDevice, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
@@ -588,12 +590,14 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}	
 
-	void Win32Window::getCustomAttribute( const String& name, void* pData ) const
+	void Win32Window::getCustomAttribute(const String& name, void* pData) const
 	{
-		if( name == "GLCONTEXT" ) {
+		if(name == "GLCONTEXT") 
+		{
 			*static_cast<GLContext**>(pData) = mContext;
 			return;
-		} else if( name == "WINDOW" )
+		} 
+		else if(name == "WINDOW")
 		{
 			HWND *pHwnd = (HWND*)pData;
 			*pHwnd = _getWindowHandle();
@@ -601,7 +605,7 @@ namespace BansheeEngine
 		} 
 	}
 
-	void Win32Window::setActive( bool state )
+	void Win32Window::setActive(bool state)
 	{	
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -671,13 +675,12 @@ namespace BansheeEngine
 			return;
 
 		RECT rc;
-		// top and left represent outer window position
+
 		GetWindowRect(mHWnd, &rc);
 		mTop = rc.top;
 		mLeft = rc.left;
-		// width and height represent drawable area only
-		GetClientRect(mHWnd, &rc);
 
+		GetClientRect(mHWnd, &rc);
 		mWidth = rc.right - rc.left;
 		mHeight = rc.bottom - rc.top;
 
@@ -711,6 +714,5 @@ namespace BansheeEngine
 			*winWidth = maxW;
 		if (*winHeight > (unsigned int)maxH)
 			*winHeight = maxH;
-
 	}
 }

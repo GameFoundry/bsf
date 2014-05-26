@@ -15,8 +15,7 @@ namespace BansheeEngine
 		:mOwnsRenderWindow(true)
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
-		renderWindowDesc.width = 200;
-		renderWindowDesc.height = 200;
+		renderWindowDesc.videoMode = VideoMode(200, 200);
 		renderWindowDesc.title = "EditorWindow";
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;

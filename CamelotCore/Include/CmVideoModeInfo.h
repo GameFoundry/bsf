@@ -11,6 +11,8 @@ namespace BansheeEngine
 	class CM_EXPORT VideoMode
 	{
 	public:
+		VideoMode() {}
+
 		/**
 		 * @brief	Creates a new video mode.
 		 *
@@ -23,9 +25,6 @@ namespace BansheeEngine
 		 */
 		VideoMode(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 outputIdx = 0);
 		virtual ~VideoMode();
-
-		VideoMode(const VideoMode&) = delete; // Make non-copyable
-		VideoMode& operator=(const VideoMode&) = delete; // Make non-copyable
 
 		/**
 		 * @brief	Width of the front/back buffer in pixels.

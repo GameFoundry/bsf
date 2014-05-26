@@ -147,9 +147,9 @@ namespace BansheeEngine
 		void setFullscreen(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 monitorIdx = 0);
 
 		/**
-		 * @copydoc RenderWindow::setFullscreen(const VideoMode&, UINT32)
+		 * @copydoc RenderWindow::setFullscreen(const VideoMode&)
 		 */
-		void setFullscreen(RenderWindowPtr& renderWindow, const VideoMode& mode, UINT32 refreshRateIdx = 0);
+		void setFullscreen(RenderWindowPtr& renderWindow, const VideoMode& mode);
 
 		/**
 		 * @copydoc RenderWindow::setWindowed

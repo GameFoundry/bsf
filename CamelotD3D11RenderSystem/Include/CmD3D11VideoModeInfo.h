@@ -19,11 +19,21 @@ namespace BansheeEngine
 		 */
 		const DXGI_MODE_DESC& getDXGIModeDesc() const { return mD3D11Mode; }
 
+		/**
+		 * @brief	Gets internal DX11 refresh rate numerator.
+		 */
+		UINT32 getRefreshRateNumerator() const { return mRefreshRateNumerator; }
+
+		/**
+		 * @brief	Gets internal DX11 refresh rate denominator.
+		 */
+		UINT32 getRefreshRateDenominator() const { return mRefreshRateDenominator; }
+
 	private:
 		friend class D3D11VideoOutputInfo;
 
-		UINT32 refreshRateNumerator;
-		UINT32 refreshRateDenominator;
+		UINT32 mRefreshRateNumerator;
+		UINT32 mRefreshRateDenominator;
 		DXGI_MODE_DESC mD3D11Mode;
 	};
 

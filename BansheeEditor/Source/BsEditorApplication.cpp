@@ -45,8 +45,7 @@ namespace BansheeEngine
 		:mActiveRSPlugin(renderSystemPlugin)
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
-		renderWindowDesc.width = 1280;
-		renderWindowDesc.height = 720;
+		renderWindowDesc.videoMode = VideoMode(1280, 720);
 		renderWindowDesc.title = "BansheeEditor";
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;

@@ -51,8 +51,8 @@ namespace BansheeEngine
 				D3D11VideoMode* d3d11videoMode = static_cast<D3D11VideoMode*>(videoMode);
 
 				if (d3d11videoMode->mWidth == displayMode.Width && d3d11videoMode->mHeight == displayMode.Height &&
-					d3d11videoMode->refreshRateNumerator == displayMode.RefreshRate.Numerator &&
-					d3d11videoMode->refreshRateDenominator == displayMode.RefreshRate.Denominator)
+					d3d11videoMode->mRefreshRateNumerator == displayMode.RefreshRate.Numerator &&
+					d3d11videoMode->mRefreshRateDenominator == displayMode.RefreshRate.Denominator)
 				{
 					foundVideoMode = true;
 					break;
@@ -63,7 +63,7 @@ namespace BansheeEngine
 			{
 				float refreshRate = displayMode.RefreshRate.Numerator / (float)displayMode.RefreshRate.Denominator;
 				D3D11VideoMode* videoMode = cm_new<D3D11VideoMode>(displayMode.Width, displayMode.Height, refreshRate,
-					displayMode.RefreshRate.Numerator, displayMode.RefreshRate.Denominator, displayMode, this);
+					outputIdx, displayMode.RefreshRate.Numerator, displayMode.RefreshRate.Denominator, displayMode);
 
 				mVideoModes.push_back(videoMode);
 			}
@@ -109,7 +109,7 @@ namespace BansheeEngine
 
 	D3D11VideoMode::D3D11VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx, 
 		UINT32 refreshRateNumerator, UINT32 refreshRateDenominator, DXGI_MODE_DESC mode)
-		:VideoMode(width, height, refreshRate, outputIdx), refreshRateNumerator(refreshRateNumerator),
-		refreshRateDenominator(refreshRateDenominator), mD3D11Mode(mode)
+		:VideoMode(width, height, refreshRate, outputIdx), mRefreshRateNumerator(refreshRateNumerator),
+		mRefreshRateDenominator(refreshRateDenominator), mD3D11Mode(mode)
 	{ }
 }

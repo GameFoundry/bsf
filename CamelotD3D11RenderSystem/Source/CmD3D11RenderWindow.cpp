@@ -15,18 +15,9 @@
 namespace BansheeEngine
 {
 	D3D11RenderWindow::D3D11RenderWindow(const RENDER_WINDOW_DESC& desc,D3D11Device& device, IDXGIFactory* DXGIFactory)
-		: RenderWindow(desc)
-		, mDevice(device)
-		, mDXGIFactory(DXGIFactory)
-		, mIsExternal(false)
-		, mSizing(false)
-		, mClosed(false)
-		, mRenderTargetView(nullptr)
-		, mBackBuffer(nullptr)
-		, mSwapChain(nullptr)
-		, mHWnd(0)
-		, mDepthStencilView(nullptr)
-		, mIsChild(false)
+		: RenderWindow(desc), mDevice(device), mDXGIFactory(DXGIFactory), mIsExternal(false), mSizing(false), 
+		mClosed(false), mRenderTargetView(nullptr), mBackBuffer(nullptr), mSwapChain(nullptr), mHWnd(0), 
+		mDepthStencilView(nullptr), mIsChild(false), mRefreshRateNumerator(0), mRefreshRateDenominator(0)
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 	}
@@ -45,32 +36,53 @@ namespace BansheeEngine
 		mVSyncInterval = 1;
 		HWND parentHWnd = 0;
 		HWND externalHandle = 0;
-		HMONITOR hMonitor = NULL;
+		
 
-		// Get variable-length params
 		NameValuePairList::const_iterator opt;
-
-		// parentWindowHandle		-> parentHWnd
 		opt = mDesc.platformSpecific.find("parentWindowHandle");
 		if(opt != mDesc.platformSpecific.end())
 			parentHWnd = (HWND)parseUnsignedInt(opt->second);
-		// externalWindowHandle		-> externalHandle
+
 		opt = mDesc.platformSpecific.find("externalWindowHandle");
 		if(opt != mDesc.platformSpecific.end())
 			externalHandle = (HWND)parseUnsignedInt(opt->second);
-		// monitor handle
-		opt = mDesc.platformSpecific.find("monitorHandle");
-		if (opt != mDesc.platformSpecific.end())
-			hMonitor = (HMONITOR)parseInt(opt->second);		
 
 		mName = mDesc.title;
 		mIsChild = parentHWnd != 0;
 		mIsFullScreen = mDesc.fullscreen && !mIsChild;
-		mColorDepth = mDesc.colorDepth;
+		mColorDepth = 32;
 		mWidth = mHeight = mLeft = mTop = 0;
 
 		mActive = true;
 		mClosed = false;
+
+		if (mDesc.videoMode.isCustom())
+		{
+			mRefreshRateNumerator = Math::roundToInt(mDesc.videoMode.getRefreshRate());
+			mRefreshRateDenominator = 1;
+		}
+		else
+		{
+			const D3D11VideoMode& d3d11videoMode = static_cast<const D3D11VideoMode&>(mDesc.videoMode);
+			mRefreshRateNumerator = d3d11videoMode.getRefreshRateNumerator();
+			mRefreshRateDenominator = d3d11videoMode.getRefreshRateDenominator();
+		}
+
+		HMONITOR hMonitor = NULL;
+		const D3D11VideoOutputInfo* outputInfo = nullptr;
+
+		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		UINT32 numOutputs = videoModeInfo.getNumOutputs();
+		if (numOutputs > 0)
+		{
+			UINT32 actualMonitorIdx = std::min(mDesc.videoMode.getOutputIdx(), numOutputs - 1);
+			outputInfo = static_cast<const D3D11VideoOutputInfo*>(&videoModeInfo.getOutputInfo(actualMonitorIdx));
+
+			DXGI_OUTPUT_DESC desc;
+			outputInfo->getDXGIOutput()->GetDesc(&desc);
+
+			hMonitor = desc.Monitor;
+		}
 
 		if (!externalHandle)
 		{
@@ -78,36 +90,6 @@ namespace BansheeEngine
 			DWORD dwStyleEx = 0;
 			RECT rc;
 			MONITORINFO monitorInfo;
-
-			// If we specified which adapter we want to use - find it's monitor.
-			if (mDesc.monitorIndex != -1)
-			{
-				RenderSystem* rs = RenderSystem::instancePtr();
-				D3D11RenderSystem* d3d11rs = static_cast<D3D11RenderSystem*>(rs);
-
-				D3D11DriverList* driverList = d3d11rs->getDriverList();
-
-				UINT32 curOutput = 0;
-				for(UINT32 i = 0; i < driverList->count(); i++)
-				{
-					D3D11Driver* driver = driverList->item(i);
-					UINT32 numOutputs = driver->getNumAdapterOutputs();
-
-					for(UINT32 j = 0; j < numOutputs; j++)
-					{
-						if(curOutput == mDesc.monitorIndex)
-						{
-							hMonitor = driver->getOutputDesc(j).Monitor;
-							break;
-						}
-
-						curOutput++;
-					}
-
-					if(curOutput == mDesc.monitorIndex)
-						break;
-				}			
-			}
 
 			// If we didn't specified the adapter index, or if it didn't find it
 			if (hMonitor == NULL)
@@ -129,8 +111,8 @@ namespace BansheeEngine
 
 
 			unsigned int winWidth, winHeight;
-			winWidth = mDesc.width;
-			winHeight = mDesc.height;
+			winWidth = mDesc.videoMode.getWidth();
+			winHeight = mDesc.videoMode.getHeight();
 
 			UINT32 left = mDesc.left;
 			UINT32 top = mDesc.top;
@@ -147,22 +129,22 @@ namespace BansheeEngine
 
 				if (left == -1)
 					left = monitorInfo.rcWork.left + (screenw - outerw) / 2;
-				else if (mDesc.monitorIndex != -1)
+				else if (hMonitor != NULL)
 					left += monitorInfo.rcWork.left;
 
 				if (top == -1)
 					top = monitorInfo.rcWork.top + (screenh - outerh) / 2;
-				else if (mDesc.monitorIndex != -1)
+				else if (hMonitor != NULL)
 					top += monitorInfo.rcWork.top;
 			}
-			else if (mDesc.monitorIndex != -1)
+			else if (hMonitor != NULL)
 			{
 				left += monitorInfo.rcWork.left;
 				top += monitorInfo.rcWork.top;
 			}
 
-			mWidth = mDesc.width;
-			mHeight = mDesc.height;
+			mWidth = mDesc.videoMode.getWidth();
+			mHeight = mDesc.videoMode.getHeight();
 			mTop = top;
 			mLeft = left;
 
@@ -242,16 +224,24 @@ namespace BansheeEngine
 		}
 
 		RECT rc;
-		// top and left represent outer window coordinates
 		GetWindowRect(mHWnd, &rc);
 		mTop = rc.top;
 		mLeft = rc.left;
-		// width and height represent interior drawable area
+
 		GetClientRect(mHWnd, &rc);
 		mWidth = rc.right;
 		mHeight = rc.bottom;
 
 		createSwapChain();
+
+		if (mIsFullScreen)
+		{
+			if (outputInfo != nullptr)
+				mSwapChain->SetFullscreenState(true, outputInfo->getDXGIOutput());
+			else
+				mSwapChain->SetFullscreenState(true, nullptr);
+		}
+
 		createSizeDependedD3DResources();
 		mDXGIFactory->MakeWindowAssociation(mHWnd, NULL);
 		setHidden(mHidden);
@@ -489,11 +479,11 @@ namespace BansheeEngine
 		if(mBackBuffer == nullptr)
 			return;
 
-		// get the backbuffer desc
+		// Get the backbuffer desc
 		D3D11_TEXTURE2D_DESC BBDesc;
 		mBackBuffer->GetDesc(&BBDesc);
 
-		ID3D11Texture2D *backbuffer = nullptr;
+		ID3D11Texture2D* backbuffer = nullptr;
 
 		if(BBDesc.SampleDesc.Quality > 0)
 		{
@@ -504,59 +494,51 @@ namespace BansheeEngine
 			desc.SampleDesc.Quality = 0;
 			desc.SampleDesc.Count = 1;
 
-			HRESULT hr = mDevice.getD3D11Device()->CreateTexture2D(
-				&desc,
-				NULL,
-				&backbuffer);
+			HRESULT hr = mDevice.getD3D11Device()->CreateTexture2D(&desc, nullptr, &backbuffer);
 
 			if (FAILED(hr) || mDevice.hasError())
 			{
 				String errorDescription = mDevice.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException,
-					"Error creating texture\nError Description:" + errorDescription);
+				CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 			}
 
 			mDevice.getImmediateContext()->ResolveSubresource(backbuffer, D3D11CalcSubresource(0, 0, 1), mBackBuffer, D3D11CalcSubresource(0, 0, 1), desc.Format);
 		}
 
-
-		// change the parameters of the texture so we can read it
+		// Change the parameters of the texture so we can read it
 		BBDesc.Usage = D3D11_USAGE_STAGING;
 		BBDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
 		BBDesc.BindFlags = 0;
 		BBDesc.SampleDesc.Quality = 0;
 		BBDesc.SampleDesc.Count = 1;
 
-		// create a temp buffer to copy to
-		ID3D11Texture2D * pTempTexture2D;
-		HRESULT hr = mDevice.getD3D11Device()->CreateTexture2D(
-			&BBDesc,
-			NULL,
-			&pTempTexture2D);
+		// Create a temp buffer to copy to
+		ID3D11Texture2D* tempTexture;
+		HRESULT hr = mDevice.getD3D11Device()->CreateTexture2D(&BBDesc, nullptr, &tempTexture);
 
 		if (FAILED(hr) || mDevice.hasError())
 		{
 			String errorDescription = mDevice.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException,
-				"Error creating texture\nError Description:" + errorDescription);
+			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
-		// copy the back buffer
-		mDevice.getImmediateContext()->CopyResource(pTempTexture2D, backbuffer != NULL ? backbuffer : mBackBuffer);
 
-		// map the copied texture
+		// Copy the back buffer
+		mDevice.getImmediateContext()->CopyResource(tempTexture, backbuffer != NULL ? backbuffer : mBackBuffer);
+
+		// Map the copied texture
 		D3D11_MAPPED_SUBRESOURCE mappedTex2D;
-		mDevice.getImmediateContext()->Map(pTempTexture2D, 0,D3D11_MAP_READ, 0, &mappedTex2D);
+		mDevice.getImmediateContext()->Map(tempTexture, 0,D3D11_MAP_READ, 0, &mappedTex2D);
 
-		// copy the the texture to the dest
+		// Copy the the texture to the dest
 		PixelData src(mWidth, mHeight, 1, PF_A8B8G8R8);
 		src.setExternalBuffer((UINT8*)mappedTex2D.pData);
 		PixelUtil::bulkPixelConversion(src, dst);
 
-		// unmap the temp buffer
-		mDevice.getImmediateContext()->Unmap(pTempTexture2D, 0);
+		// Unmap the temp buffer
+		mDevice.getImmediateContext()->Unmap(tempTexture, 0);
 
 		// Release the temp buffer
-		SAFE_RELEASE(pTempTexture2D);
+		SAFE_RELEASE(tempTexture);
 		SAFE_RELEASE(backbuffer);
 	}
 
@@ -588,17 +570,17 @@ namespace BansheeEngine
 			return;
 
 		RECT rc;
-		// top and left represent outer window position
 		GetWindowRect(mHWnd, &rc);
 		mTop = rc.top;
 		mLeft = rc.left;
-		// width and height represent drawable area only
+
 		GetClientRect(mHWnd, &rc);
 		unsigned int width = rc.right - rc.left;
 		unsigned int height = rc.bottom - rc.top;
 
 		if (width == 0) 
 			width = 1;
+
 		if (height == 0)
 			height = 1;
 
@@ -611,34 +593,41 @@ namespace BansheeEngine
 	{
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 
-		// get the dxgi device
 		IDXGIDevice* pDXGIDevice = queryDxgiDevice();
 
 		ZeroMemory(&mSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC));
 		DXGI_FORMAT format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		mSwapChainDesc.OutputWindow			= mHWnd;
-		mSwapChainDesc.BufferDesc.Width		= mWidth;
-		mSwapChainDesc.BufferDesc.Height	= mHeight;
-		mSwapChainDesc.BufferDesc.Format	= format;
-		mSwapChainDesc.BufferDesc.RefreshRate.Numerator=0;
-		mSwapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
+		mSwapChainDesc.OutputWindow	= mHWnd;
+		mSwapChainDesc.BufferDesc.Width = mWidth;
+		mSwapChainDesc.BufferDesc.Height = mHeight;
+		mSwapChainDesc.BufferDesc.Format = format;
+
+		if (mIsFullScreen)
+		{
+			mSwapChainDesc.BufferDesc.RefreshRate.Numerator = mRefreshRateNumerator;
+			mSwapChainDesc.BufferDesc.RefreshRate.Denominator = mRefreshRateDenominator;
+		}
+		else
+		{
+			mSwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
+			mSwapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
+		}
 
 		mSwapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
 		mSwapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
 		mSwapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH ;
 
-		mSwapChainDesc.BufferUsage			= DXGI_USAGE_RENDER_TARGET_OUTPUT;
-		mSwapChainDesc.BufferCount			= 1;
-		mSwapChainDesc.SwapEffect			= DXGI_SWAP_EFFECT_DISCARD ;
+		mSwapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+		mSwapChainDesc.BufferCount = 1;
+		mSwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD ;
 
-		mSwapChainDesc.OutputWindow 		= mHWnd;
-		mSwapChainDesc.Windowed				= !mIsFullScreen;
+		mSwapChainDesc.Windowed	= false;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		rs->determineMultisampleSettings(mMultisampleCount, mMultisampleHint, format, &mMultisampleType);
 		mSwapChainDesc.SampleDesc.Count = mMultisampleType.Count;
 		mSwapChainDesc.SampleDesc.Quality = mMultisampleType.Quality;
-
+		
 		HRESULT hr;
 
 		// Create swap chain			
@@ -659,21 +648,17 @@ namespace BansheeEngine
 
 	void D3D11RenderWindow::createSizeDependedD3DResources()
 	{
-		// obtain back buffer
 		SAFE_RELEASE(mBackBuffer);
 
 		HRESULT hr = mSwapChain->GetBuffer(0,  __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBuffer);
-		if( FAILED(hr) )
+		if(FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Unable to Get Back Buffer for swap chain");
 
-		// create all other size depended resources
 		assert(mBackBuffer && !mRenderTargetView);
 
-		// get the backbuffer desc
 		D3D11_TEXTURE2D_DESC BBDesc;
 		mBackBuffer->GetDesc(&BBDesc);
 
-		// create the render target view
 		D3D11_RENDER_TARGET_VIEW_DESC RTVDesc;
 		ZeroMemory( &RTVDesc, sizeof(RTVDesc) );
 
@@ -682,7 +667,7 @@ namespace BansheeEngine
 		RTVDesc.Texture2D.MipSlice = 0;
 		hr = mDevice.getD3D11Device()->CreateRenderTargetView(mBackBuffer, &RTVDesc, &mRenderTargetView);
 
-		if( FAILED(hr) )
+		if(FAILED(hr))
 		{
 			String errorDescription = mDevice.getErrorDescription();
 			CM_EXCEPT(RenderingAPIException, "Unable to create rendertagert view\nError Description:" + errorDescription);
@@ -712,7 +697,6 @@ namespace BansheeEngine
 	{
 		destroySizeDependedD3DResources();
 
-		// width and height can be zero to autodetect size, therefore do not rely on them
 		UINT Flags = mIsFullScreen ? DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH : 0;
 		HRESULT hr = mSwapChain->ResizeBuffers(mSwapChainDesc.BufferCount, width, height, mSwapChainDesc.BufferDesc.Format, Flags);
 
@@ -738,6 +722,7 @@ namespace BansheeEngine
 
 		IDXGIDevice* pDXGIDevice = nullptr;
 		HRESULT hr = mDevice.getD3D11Device()->QueryInterface(__uuidof(IDXGIDevice), (void**)&pDXGIDevice);
+
 		if(FAILED(hr))
 			CM_EXCEPT(RenderingAPIException, "Unable to query a DXGIDevice");
 

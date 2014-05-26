@@ -432,16 +432,12 @@ namespace BansheeEngine
 				// Ask the render window to build it's own parameters.
 				renderWindow->_buildPresentParameters(&renderWindowResources->presentParameters);
 				
-
 				// Update shared focus window handle.
-				if (renderWindow->isFullScreen() && 
-					renderWindowResources->presentParametersIndex == 0 &&
-					msSharedFocusWindow == NULL)
+				if (renderWindow->isFullScreen() && renderWindowResources->presentParametersIndex == 0 && msSharedFocusWindow == NULL)
 					setSharedWindowHandle(renderWindow->_getWindowHandle());					
 
 				// This is the primary window or a full screen window that is part of multi head device.
-				if (renderWindowResources->presentParametersIndex == 0 ||
-					renderWindow->isFullScreen())
+				if (renderWindowResources->presentParametersIndex == 0 || renderWindow->isFullScreen())
 				{
 					mPresentationParams[renderWindowResources->presentParametersIndex] = renderWindowResources->presentParameters;
 					mPresentationParamsCount++;
@@ -473,18 +469,12 @@ namespace BansheeEngine
 
 	bool D3D9Device::isMultihead() const
 	{
-		RenderWindowToResorucesMap::const_iterator it = mMapRenderWindowToResoruces.begin();
-
-		while (it != mMapRenderWindowToResoruces.end())				
+		for (auto& resourceData : mMapRenderWindowToResoruces)
 		{
-			RenderWindowResources* renderWindowResources = it->second;
-			
-			if (renderWindowResources->adapterOrdinalInGroupIndex > 0 && it->first->isFullScreen())
-			{
+			RenderWindowResources* renderWindowResources = resourceData.second;
+
+			if (renderWindowResources->adapterOrdinalInGroupIndex > 0 && resourceData.first->isFullScreen())
 				return true;
-			}
-			
-			++it;		
 		}
 
 		return false;
@@ -581,7 +571,7 @@ namespace BansheeEngine
 
 		if (FAILED(hr))
 		{
-			// try to create the device with software vertex processing.
+			// Try to create the device with software vertex processing.
 			mBehaviorFlags &= ~D3DCREATE_MIXED_VERTEXPROCESSING;
 			mBehaviorFlags |= D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 			hr = pD3D9->CreateDevice(mAdapterNumber, mDeviceType, mFocusWindow,
@@ -590,7 +580,7 @@ namespace BansheeEngine
 
 		if (FAILED(hr))
 		{
-			// try reference device
+			// Try reference device
 			mDeviceType = D3DDEVTYPE_REF;
 			hr = pD3D9->CreateDevice(mAdapterNumber, mDeviceType, mFocusWindow,
 				mBehaviorFlags, mPresentationParams, &mpDevice);

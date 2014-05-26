@@ -124,6 +124,8 @@ namespace BansheeEngine
 		DXGI_SAMPLE_DESC mMultisampleType;
 		bool mVSync;
 		UINT32 mVSyncInterval;
+		UINT32 mRefreshRateNumerator;
+		UINT32 mRefreshRateDenominator;
 
 		ID3D11Texture2D* mBackBuffer;
 		ID3D11RenderTargetView*	mRenderTargetView;
