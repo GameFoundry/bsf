@@ -121,6 +121,8 @@ namespace BansheeEngine
 			Win32GLSupport &mGLSupport;
 			HWND mHWnd;					// Win32 Window handle
 			HDC	mHDC;
+			DWORD mWindowedStyle;
+			DWORD mWindowedStyleEx;
 			bool mIsExternal;
 			bool mIsChild;
 			char* mDeviceName;

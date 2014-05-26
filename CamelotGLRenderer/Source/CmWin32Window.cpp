@@ -19,10 +19,8 @@ namespace BansheeEngine
 {
 	#define _MAX_CLASS_NAME_ 128
 
-	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport):
-		RenderWindow(desc),
-		mGLSupport(glsupport),
-		mContext(0)
+	Win32Window::Win32Window(const RENDER_WINDOW_DESC& desc, Win32GLSupport &glsupport)
+		:RenderWindow(desc), mGLSupport(glsupport), mContext(0), mWindowedStyle(0), mWindowedStyleEx(0)
 	{
 		mIsFullScreen = false;
 		mHWnd = 0;
@@ -103,12 +101,34 @@ namespace BansheeEngine
 				mColorDepth = GetDeviceCaps(GetDC(0), BITSPIXEL);
 		}
 
+		mWindowedStyle = WS_VISIBLE | WS_CLIPCHILDREN;
+		mWindowedStyleEx = 0;
+
+		if (!mIsFullScreen)
+		{
+			if (parent)
+			{
+				if (mDesc.toolWindow)
+					mWindowedStyleEx = WS_EX_TOOLWINDOW;
+				else
+					mWindowedStyle |= WS_CHILD;
+			}
+
+			if (!parent || mDesc.toolWindow)
+			{
+				if (mDesc.border == WindowBorder::None)
+					mWindowedStyle |= WS_POPUP;
+				else if (mDesc.border == WindowBorder::Fixed)
+					mWindowedStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
+					WS_SYSMENU | WS_MINIMIZEBOX;
+				else
+					mWindowedStyle |= WS_OVERLAPPEDWINDOW;
+			}
+		}
+
 		if (!mIsExternal)
 		{
-			DWORD		  dwStyle = WS_VISIBLE | WS_CLIPCHILDREN;
-			DWORD		  dwStyleEx = 0;					
-			MONITORINFOEX monitorInfoEx;
-			RECT		  rc;
+			RECT rc;
 
 			// If we didn't specified the adapter index, or if it didn't find it
 			if (hMonitor == NULL)
@@ -124,8 +144,10 @@ namespace BansheeEngine
 			}
 
 			// Get the target monitor info		
+			MONITORINFOEX monitorInfoEx;
 			memset(&monitorInfoEx, 0, sizeof(MONITORINFOEX));
 			monitorInfoEx.cbSize = sizeof(MONITORINFOEX);
+
 			GetMonitorInfo(hMonitor, &monitorInfoEx);
 
 			size_t devNameLen = strlen(monitorInfoEx.szDevice);
@@ -170,33 +192,18 @@ namespace BansheeEngine
 			mTop = top;
 			mLeft = left;
 
+			DWORD dwStyle = 0;
+			DWORD dwStyleEx = 0;
 			if (mIsFullScreen)
 			{
-				dwStyle |= WS_POPUP;
-				dwStyleEx |= WS_EX_TOPMOST;
+				dwStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
 				mTop = monitorInfoEx.rcMonitor.top;
 				mLeft = monitorInfoEx.rcMonitor.left;											
 			}
 			else
-			{				
-				if (parent)
-				{
-					if(mDesc.toolWindow)
-						dwStyleEx = WS_EX_TOOLWINDOW;
-					else
-						dwStyle |= WS_CHILD;
-				}
-
-				if (!parent || mDesc.toolWindow)
-				{
-					if (mDesc.border == WindowBorder::None)
-						dwStyle |= WS_POPUP;
-					else if (mDesc.border == WindowBorder::Fixed)
-						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
-						WS_SYSMENU | WS_MINIMIZEBOX;
-					else
-						dwStyle |= WS_OVERLAPPEDWINDOW;
-				}
+			{			
+				dwStyle = mWindowedStyle;
+				dwStyleEx = mWindowedStyleEx;
 
 				int screenw = GetSystemMetrics(SM_CXSCREEN);
 				int screenh = GetSystemMetrics(SM_CYSCREEN);
@@ -374,7 +381,6 @@ namespace BansheeEngine
 
 		bool oldFullscreen = mIsFullScreen;
 
-		DWORD style = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
 		mDisplayFrequency = Math::roundToInt(refreshRate);
 		mIsFullScreen = true;
 
@@ -395,9 +401,6 @@ namespace BansheeEngine
 		monitorInfo.cbSize = sizeof(MONITORINFOEX);
 		GetMonitorInfo(hMonitor, &monitorInfo);
 
-		// Move window to 0, 0 before display switch
-		SetWindowPos(mHWnd, HWND_TOPMOST, 0, 0, mWidth, mHeight, SWP_NOACTIVATE);
-
 		if (ChangeDisplaySettingsEx(monitorInfo.szDevice, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 		{
 			CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed");
@@ -408,8 +411,7 @@ namespace BansheeEngine
 		mWidth = width;
 		mHeight = height;
 
-		SetWindowLong(mHWnd, GWL_STYLE, style);
-		SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, width, height, SWP_NOACTIVATE);
+		SetWindowPos(mHWnd, HWND_TOP, mLeft, mTop, width, height, SWP_NOACTIVATE);
 	}
 
 	void Win32Window::setFullscreen(const VideoMode& mode)
@@ -427,8 +429,6 @@ namespace BansheeEngine
 			return;
 
 		mIsFullScreen = false;
-
-		DWORD style = WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW;
 
 		// Drop out of fullscreen
 		ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
@@ -450,7 +450,8 @@ namespace BansheeEngine
 		int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
 		int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
 
-		SetWindowLong(mHWnd, GWL_STYLE, style);
+		SetWindowLong(mHWnd, GWL_STYLE, mWindowedStyle);
+		SetWindowLong(mHWnd, GWL_EXSTYLE, mWindowedStyleEx);
 		SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
 			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 

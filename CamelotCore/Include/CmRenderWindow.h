@@ -45,7 +45,7 @@ namespace BansheeEngine
 		WindowBorder border; /**< Type of border to create the window with. */
 		bool outerDimensions; /**< Do our dimensions include space for things like title-bar and border. */
 		bool enableDoubleClick; /**< Does window accept double-clicks. */
-		bool toolWindow; /**< Tool windows don't include standard window controls. */
+		bool toolWindow; /**< Tool windows have a different style than normal windows and can be created with no border or title bar. */
 		bool modal; /**< When a modal window is open all other windows will be locked until modal window is closed. */
 
 		NameValuePairList platformSpecific; /**< Platform-specific creation options. */

@@ -15,14 +15,10 @@ Finish GPUProfiler:
 
  Fullscreen stuff:
 
-When initializing a render window I don't have an option to use exact refresh rate (i.e. in RENDER_WINDOW_DESC)
- - Likely use a VideoMode you can create manually
-
 I should be able to specify resolution when going to windowed mode
  - Maybe just store the windowed and fullscreen resolutions separately and restore automatically?
 
 OpenGL going back from windowed mode doesn't restore window style properly.
-OpenGL doesn't list windows in the same order as DirectX
 
 Switching from higher to lower resoltuion in DX9 causes an issue where viewport is larger than the render target. (Only with debug runtime - Can probably ignore)
 When toggling fullscreen two times device reset fails
@@ -31,6 +27,7 @@ In DX9 render window I have disabled top most style.
 
 DISREGARD MONITOR INDEX ON DX9
  - It's not trivial and its not worth wasting time on a deprecated system
+ - Seems I would need to destroy the device and then recreate it using the new adapter index
 
  -----------------------------
 
