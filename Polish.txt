@@ -17,13 +17,7 @@ Finish GPUProfiler:
 
 I should be able to specify resolution when going to windowed mode
  - Maybe just store the windowed and fullscreen resolutions separately and restore automatically?
-
-OpenGL going back from windowed mode doesn't restore window style properly.
-
-Switching from higher to lower resoltuion in DX9 causes an issue where viewport is larger than the render target. (Only with debug runtime - Can probably ignore)
-When toggling fullscreen two times device reset fails
-In DX9 render window I have disabled top most style.
-  - If needed re-enable it, if not remove it from OpenGL as well as I think it disables alt+tab
+ - I have a feeling DX9 might start crashing once I resize to sub-fullscreen res and go back to FS - test it
 
 DISREGARD MONITOR INDEX ON DX9
  - It's not trivial and its not worth wasting time on a deprecated system

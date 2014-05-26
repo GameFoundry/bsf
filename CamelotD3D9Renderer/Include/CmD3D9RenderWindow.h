@@ -142,22 +142,21 @@ namespace BansheeEngine
 		void destroy_internal();
 
 	protected:
-		HINSTANCE					mInstance;				// Process instance
-		D3D9Device* 				mDevice;				// D3D9 device wrapper class.
-		bool						mDeviceValid;			// Device was validation succeeded.
-		HWND						mHWnd;					// Win32 Window handle		
-		bool						mIsExternal;			// window not created by Ogre
-		bool						mClosed;				// Is this window destroyed.			
-		D3DMULTISAMPLE_TYPE			mMultisampleType;		// AA type.
-		DWORD						mMultisampleQuality;	// AA quality.
-		UINT						mDisplayFrequency;		// Display frequency.
-		bool						mVSync;					// Use vertical sync or not.
-		unsigned int				mVSyncInterval;		
-		DWORD						mStyle;					// Window style currently used for this window.
-		bool						mIsDepthBuffered;
-		bool						mIsChild;
-		// Desired width / height after resizing
-		unsigned int mDesiredWidth;
-		unsigned int mDesiredHeight;
+		HINSTANCE mInstance;
+		D3D9Device* mDevice;
+		bool mDeviceValid;
+		HWND mHWnd;
+		bool mIsExternal;
+		bool mClosed;		
+		D3DMULTISAMPLE_TYPE	mMultisampleType;
+		DWORD mMultisampleQuality;
+		UINT mDisplayFrequency;
+		bool mVSync;
+		unsigned int mVSyncInterval;		
+		DWORD mStyle;	
+		DWORD mWindowedStyle;
+		DWORD mWindowedStyleEx;
+		bool mIsDepthBuffered;
+		bool mIsChild;
 	};
 }

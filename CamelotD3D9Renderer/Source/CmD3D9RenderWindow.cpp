@@ -13,7 +13,8 @@
 namespace BansheeEngine
 {
 	D3D9RenderWindow::D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance)
-		: RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true), mIsChild(false)
+		: RenderWindow(desc), mInstance(instance), mIsDepthBuffered(true), mIsChild(false),
+		mStyle(0), mWindowedStyle(0), mWindowedStyleEx(0)
 	{
 		mDevice = NULL;
 		mIsFullScreen = false;		
@@ -53,10 +54,33 @@ namespace BansheeEngine
 
 		mIsChild = parentHWnd != 0;
 
+		mWindowedStyle = WS_VISIBLE | WS_CLIPCHILDREN;
+		mWindowedStyleEx = 0;
+
+		if (!mDesc.fullscreen || mIsChild)
+		{
+			if (parentHWnd)
+			{
+				if (mDesc.toolWindow)
+					mWindowedStyleEx = WS_EX_TOOLWINDOW;
+				else
+					mWindowedStyle |= WS_CHILD;
+			}
+
+			if (!parentHWnd || mDesc.toolWindow)
+			{
+				if (mDesc.border == WindowBorder::None)
+					mWindowedStyle |= WS_POPUP;
+				else if (mDesc.border == WindowBorder::Fixed)
+					mWindowedStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
+					WS_SYSMENU | WS_MINIMIZEBOX;
+				else
+					mWindowedStyle |= WS_OVERLAPPEDWINDOW;
+			}
+		}
+
 		if (!externalHandle)
 		{
-			DWORD dwStyle = WS_VISIBLE | WS_CLIPCHILDREN;
-			DWORD dwStyleEx = 0;	
 			MONITORINFO monitorInfo;
 			RECT rc;
 
@@ -121,38 +145,23 @@ namespace BansheeEngine
 				top += monitorInfo.rcWork.top;
 			}
 
-			mWidth = mDesiredWidth = mDesc.videoMode.getWidth();
-			mHeight = mDesiredHeight = mDesc.videoMode.getHeight();
+			mWidth = mDesc.videoMode.getWidth();
+			mHeight =  mDesc.videoMode.getHeight();
 			mTop = top;
 			mLeft = left;
 
+			DWORD dwStyle = 0;
+			DWORD dwStyleEx = 0;
 			if (mDesc.fullscreen && !mIsChild)
 			{
-				dwStyleEx |= WS_EX_TOPMOST;
-				dwStyle |= WS_POPUP;
+				dwStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
 				mTop = monitorInfo.rcMonitor.top;
 				mLeft = monitorInfo.rcMonitor.left;		
 			}
 			else
 			{
-				if (parentHWnd)
-				{
-					if(mDesc.toolWindow)
-						dwStyleEx = WS_EX_TOOLWINDOW;
-					else
-						dwStyle |= WS_CHILD;
-				}
-
-				if (!parentHWnd || mDesc.toolWindow)
-				{
-					if (mDesc.border == WindowBorder::None)
-						dwStyle |= WS_POPUP;
-					else if (mDesc.border == WindowBorder::Fixed)
-						dwStyle |= WS_OVERLAPPED | WS_BORDER | WS_CAPTION |
-						WS_SYSMENU | WS_MINIMIZEBOX;
-					else
-						dwStyle |= WS_OVERLAPPEDWINDOW;
-				}
+				dwStyle = mWindowedStyle;
+				dwStyleEx = mWindowedStyleEx;
 
 				_adjustWindow(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), dwStyle, &winWidth, &winHeight);
 
@@ -261,7 +270,6 @@ namespace BansheeEngine
 
 		bool oldFullscreen = mIsFullScreen;
 
-		mStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_POPUP;
 		mWidth = width;
 		mHeight = height;
 		mDisplayFrequency = Math::roundToInt(refreshRate);
@@ -277,17 +285,6 @@ namespace BansheeEngine
 
 		mTop = monitorInfo.rcMonitor.top;
 		mLeft = monitorInfo.rcMonitor.left;
-
-		if (oldFullscreen) // Was previously fullscreen, just changing the resolution
-		{
-			//SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
-		}
-		else
-		{
-			//SetWindowPos(mHWnd, HWND_TOPMOST, mLeft, mTop, mWidth, mHeight, SWP_NOACTIVATE);
-			SetWindowLong(mHWnd, GWL_STYLE, mStyle);
-			SetWindowPos(mHWnd, 0, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-		}
 
 		// Invalidate device, which resets it
 		mDevice->invalidate(this);
@@ -310,14 +307,28 @@ namespace BansheeEngine
 
 		mIsFullScreen = false;
 
-		mStyle = WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW;
+		mStyle = mWindowedStyle;
 
 		unsigned int winWidth, winHeight;
 		_adjustWindow(mWidth, mHeight, mStyle, &winWidth, &winHeight);
 
+		// Deal with centering when switching down to smaller resolution
+		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
+		MONITORINFO monitorInfo;
+		memset(&monitorInfo, 0, sizeof(MONITORINFO));
+		monitorInfo.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(hMonitor, &monitorInfo);
+
+		LONG screenw = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
+		LONG screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
+
+		int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
+		int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
+
 		SetWindowLong(mHWnd, GWL_STYLE, mStyle);
-		SetWindowPos(mHWnd, HWND_NOTOPMOST, 0, 0, winWidth, winHeight,
-			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOACTIVATE);
+		SetWindowLong(mHWnd, GWL_EXSTYLE, mWindowedStyleEx);
+		SetWindowPos(mHWnd, HWND_NOTOPMOST, left, top, winWidth, winHeight,
+			SWP_DRAWFRAME | SWP_FRAMECHANGED | SWP_NOACTIVATE);
 
 		mDevice->invalidate(this);
 		mDevice->acquire();
