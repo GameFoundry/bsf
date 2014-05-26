@@ -48,10 +48,9 @@ namespace BansheeEngine
 	D3D9RenderSystem* D3D9RenderSystem::msD3D9RenderSystem = NULL;
 
 	D3D9RenderSystem::D3D9RenderSystem( HINSTANCE hInstance )
-		: mTexStageDesc(nullptr)
-		, mNumTexStages(0)
-		, mCurrentDrawOperation(DOT_TRIANGLE_LIST)
-		, mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0)
+		: mTexStageDesc(nullptr), mNumTexStages(0), mCurrentDrawOperation(DOT_TRIANGLE_LIST), 
+		mViewportLeft(0), mViewportTop(0), mViewportWidth(0), mViewportHeight(0),
+		mIsFrameInProgress(false), mRestoreFrameOnReset(false)
 	{
 		// update singleton access pointer.
 		msD3D9RenderSystem = this;
@@ -63,7 +62,6 @@ namespace BansheeEngine
 		mpD3D = NULL;		
 		mDriverList = NULL;
 		mActiveD3DDriver = NULL;	
-		mUseNVPerfHUD = false;
 		mHLSLProgramFactory = NULL;		
 		mDeviceManager = NULL;	
 		mResourceManager = nullptr;	
@@ -1153,14 +1151,14 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
-
-		if( FAILED( hr = getActiveD3D9Device()->BeginScene() ) )
+		if(FAILED(hr = getActiveD3D9Device()->BeginScene()))
 		{
 			String msg = DXGetErrorDescription(hr);
 			CM_EXCEPT(RenderingAPIException, "Error beginning frame :" + msg);
 		}
 
  		mDeviceManager->getActiveDevice()->clearDeviceStreams();
+		mIsFrameInProgress = true;
 	}
 
 	void D3D9RenderSystem::endFrame()
@@ -1170,6 +1168,8 @@ namespace BansheeEngine
 		HRESULT hr;
 		if(FAILED(hr = getActiveD3D9Device()->EndScene()))
 			CM_EXCEPT(RenderingAPIException, "Error ending frame");
+
+		mIsFrameInProgress = false;
 	}
 
 	void D3D9RenderSystem::setVertexDeclaration(VertexDeclarationPtr decl)
@@ -2234,7 +2234,11 @@ namespace BansheeEngine
 
 	void D3D9RenderSystem::notifyOnDeviceLost(D3D9Device* device)
 	{	
-
+		if (mIsFrameInProgress)
+		{
+			endFrame();
+			mRestoreFrameOnReset = true;
+		}
 	}
 
 	void D3D9RenderSystem::notifyOnDeviceReset(D3D9Device* device)
@@ -2242,6 +2246,12 @@ namespace BansheeEngine
 		// Reset state attributes.	
 		mVertexProgramBound = false;
 		mFragmentProgramBound = false;
+
+		if (mRestoreFrameOnReset)
+		{
+			beginFrame();
+			mRestoreFrameOnReset = false;
+		}
 	}
 
 	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,

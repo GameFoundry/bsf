@@ -157,23 +157,19 @@ namespace BansheeEngine
 		void registerWindow(RenderWindow& renderWindow);
 
 	private:
-		/// Direct3D
-		IDirect3D9*	 mpD3D;		
+		static D3D9RenderSystem* msD3D9RenderSystem;
 
-		/// instance
+		IDirect3D9*	mpD3D;
+		bool mIsFrameInProgress;
+		bool mRestoreFrameOnReset;
+
+		mutable D3D9DriverList* mDriverList;
+		D3D9Driver* mActiveD3DDriver;
+
 		HINSTANCE mhInstance;
 
 		UINT32 mViewportLeft, mViewportTop, mViewportWidth, mViewportHeight;
-		// Scissor test rectangle
 		RECT mScissorRect;
-		/// List of D3D drivers installed (video cards)
-		mutable D3D9DriverList* mDriverList; // TODO - Mutable because it gets constructed in getDirect3DDrivers(). Change that.
-		/// Currently active driver
-		D3D9Driver* mActiveD3DDriver;
-		/// NVPerfHUD allowed?
-		bool mUseNVPerfHUD;
-		/// Fast singleton access.
-		static D3D9RenderSystem* msD3D9RenderSystem;
 
 		DrawOperationType mCurrentDrawOperation;
 

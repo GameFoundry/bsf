@@ -585,7 +585,6 @@ namespace BansheeEngine
 			{
 				presentParams->PresentationInterval = D3DPRESENT_INTERVAL_ONE;
 			}
-
 		}
 		else
 		{
