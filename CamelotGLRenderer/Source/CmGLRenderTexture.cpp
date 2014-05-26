@@ -55,10 +55,10 @@ namespace BansheeEngine
 		if(mFB != nullptr)
 			cm_delete<PoolAlloc>(mFB);
 
-		mFB = cm_new<GLFrameBufferObject, PoolAlloc>(mFSAA);
+		mFB = cm_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
 
 		GLSurfaceDesc surfaceDesc;
-		surfaceDesc.numSamples = mFSAA;
+		surfaceDesc.numSamples = mMultisampleCount;
 		surfaceDesc.zoffset = 0;
 
 		GLTexture* glTexture = static_cast<GLTexture*>(mColorSurface->getTexture().get());

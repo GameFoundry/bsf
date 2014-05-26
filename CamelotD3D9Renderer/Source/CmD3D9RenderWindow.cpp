@@ -32,9 +32,9 @@ namespace BansheeEngine
 	{
 		HINSTANCE hInst = mInstance;
 
-		mFSAAType = D3DMULTISAMPLE_NONE;
-		mFSAAQuality = 0;
-		mFSAA = mDesc.FSAA;
+		mMultisampleType = D3DMULTISAMPLE_NONE;
+		mMultisampleQuality = 0;
+		mMultisampleCount = mDesc.multisampleCount;
 		mVSync = mDesc.vsync;
 		mVSyncInterval = mDesc.vsyncInterval;
 
@@ -630,15 +630,15 @@ namespace BansheeEngine
 
 		D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
 
-		D3DMULTISAMPLE_TYPE fsaaType;
-		DWORD fsaaQuality;
+		D3DMULTISAMPLE_TYPE multisampleType;
+		DWORD multisampleQuality;
 
-		rsys->determineFSAASettings(mDevice->getD3D9Device(),
-			mFSAA, mFSAAHint, presentParams->BackBufferFormat, mIsFullScreen, 
-			&fsaaType, &fsaaQuality);
+		rsys->determineMultisampleSettings(mDevice->getD3D9Device(),
+			mMultisampleCount, mMultisampleHint, presentParams->BackBufferFormat, mIsFullScreen, 
+			&multisampleType, &multisampleQuality);
 
-		presentParams->MultiSampleType = fsaaType;
-		presentParams->MultiSampleQuality = (fsaaQuality == 0) ? 0 : fsaaQuality;
+		presentParams->MultiSampleType = multisampleType;
+		presentParams->MultiSampleQuality = (multisampleQuality == 0) ? 0 : multisampleQuality;
 	}
 
 	IDirect3DDevice9* D3D9RenderWindow::_getD3D9Device() const

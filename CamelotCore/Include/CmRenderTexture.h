@@ -34,14 +34,14 @@ namespace BansheeEngine
 		 * @param	height				Height of the render texture, in pixels.
 		 * @param	format				Pixel format used by the texture color surface.
 		 * @param	hwGamma				Should the written pixels be gamma corrected.
-		 * @param	fsaa				Amount of full screen anti-aliasing the render texture supports.
-		 * @param	fsaaHint			Hint about what type of anti-aliasing the render texture supports.
+		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
 		 * @param	createDepth			Should a depth/stencil surface be created along with the color surface.
 		 * @param	depthStencilFormat	Format used by the depth stencil surface, if one is created.
 		 */
 		static RenderTexturePtr create(TextureType textureType, UINT32 width, UINT32 height, 
-			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 fsaa = 0, const String& fsaaHint = "", 
-			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
+			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 multisampleCount = 0, 
+			const String& multisampleHint = "", bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**
 		 * @copydoc RenderTarget::isWindow.

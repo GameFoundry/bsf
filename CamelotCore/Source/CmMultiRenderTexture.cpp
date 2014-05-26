@@ -45,8 +45,8 @@ namespace BansheeEngine
 					mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
 					mActive = true;
 					mHwGamma = texture->isHardwareGammaEnabled();
-					mFSAA = texture->getFSAA();
-					mFSAAHint = texture->getFSAAHint();
+					mMultisampleCount = texture->getMultisampleCount();
+					mMultisampleHint = texture->getMultisampleHint();
 
 					colorSurfacePropertiesSet = true;
 				}
@@ -99,13 +99,13 @@ namespace BansheeEngine
 
 			if(mColorSurfaces[i]->getTexture()->getWidth() != firstSurfaceDesc->getTexture()->getWidth() ||
 				mColorSurfaces[i]->getTexture()->getHeight() != firstSurfaceDesc->getTexture()->getHeight() ||
-				mColorSurfaces[i]->getTexture()->getFSAA() != firstSurfaceDesc->getTexture()->getFSAA() ||
-				mColorSurfaces[i]->getTexture()->getFSAAHint() != firstSurfaceDesc->getTexture()->getFSAAHint())
+				mColorSurfaces[i]->getTexture()->getMultisampleCount() != firstSurfaceDesc->getTexture()->getMultisampleCount() ||
+				mColorSurfaces[i]->getTexture()->getMultisampleHint() != firstSurfaceDesc->getTexture()->getMultisampleHint())
 			{
 				String errorInfo = "\nWidth: " + toString(mColorSurfaces[i]->getTexture()->getWidth()) + "/" + toString(firstSurfaceDesc->getTexture()->getWidth());
 				errorInfo += "\nHeight: " + toString(mColorSurfaces[i]->getTexture()->getHeight()) + "/" + toString(firstSurfaceDesc->getTexture()->getHeight());
-				errorInfo += "\nFSAA: " + toString(mColorSurfaces[i]->getTexture()->getFSAA()) + "/" + toString(firstSurfaceDesc->getTexture()->getFSAA());
-				errorInfo += "\nFSAAHint: " + mColorSurfaces[i]->getTexture()->getFSAAHint() + "/" + firstSurfaceDesc->getTexture()->getFSAAHint();
+				errorInfo += "\nMultisample Count: " + toString(mColorSurfaces[i]->getTexture()->getMultisampleCount()) + "/" + toString(firstSurfaceDesc->getTexture()->getMultisampleCount());
+				errorInfo += "\nMultisample Hint: " + mColorSurfaces[i]->getTexture()->getMultisampleHint() + "/" + firstSurfaceDesc->getTexture()->getMultisampleHint();
 
 				CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 			}
@@ -134,13 +134,13 @@ namespace BansheeEngine
 
 		if(mDepthStencilSurface->getTexture()->getWidth() != firstSurfaceDesc->getTexture()->getWidth() ||
 			mDepthStencilSurface->getTexture()->getHeight() != firstSurfaceDesc->getTexture()->getHeight() ||
-			mDepthStencilSurface->getTexture()->getFSAA() != firstSurfaceDesc->getTexture()->getFSAA() ||
-			mDepthStencilSurface->getTexture()->getFSAAHint() != firstSurfaceDesc->getTexture()->getFSAAHint())
+			mDepthStencilSurface->getTexture()->getMultisampleCount() != firstSurfaceDesc->getTexture()->getMultisampleCount() ||
+			mDepthStencilSurface->getTexture()->getMultisampleHint() != firstSurfaceDesc->getTexture()->getMultisampleHint())
 		{
 			String errorInfo = "\nWidth: " + toString(mDepthStencilSurface->getTexture()->getWidth()) + "/" + toString(firstSurfaceDesc->getTexture()->getWidth());
 			errorInfo += "\nHeight: " + toString(mDepthStencilSurface->getTexture()->getHeight()) + "/" + toString(firstSurfaceDesc->getTexture()->getHeight());
-			errorInfo += "\nFSAA: " + toString(mDepthStencilSurface->getTexture()->getFSAA()) + "/" + toString(firstSurfaceDesc->getTexture()->getFSAA());
-			errorInfo += "\nFSAAHint: " + mDepthStencilSurface->getTexture()->getFSAAHint() + "/" + firstSurfaceDesc->getTexture()->getFSAAHint();
+			errorInfo += "\nMultisample Count: " + toString(mDepthStencilSurface->getTexture()->getMultisampleCount()) + "/" + toString(firstSurfaceDesc->getTexture()->getMultisampleCount());
+			errorInfo += "\nMultisample Hint: " + mDepthStencilSurface->getTexture()->getMultisampleHint() + "/" + firstSurfaceDesc->getTexture()->getMultisampleHint();
 
 			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}

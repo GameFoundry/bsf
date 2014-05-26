@@ -1689,13 +1689,13 @@ namespace BansheeEngine
 
 		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));
 
-		// Check for FSAA
+		// Check for multisample support
 		// Enable the extension if it was enabled by the GLSupport
 		if (mGLSupport->checkExtension("GL_ARB_multisample"))
 		{
-			int fsaa_active = false;
-			glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, (GLint*)&fsaa_active);
-			if (fsaa_active)
+			int multisampleActive = false;
+			glGetIntegerv(GL_SAMPLE_BUFFERS_ARB, (GLint*)&multisampleActive);
+			if (multisampleActive)
 			{
 				glEnable(GL_MULTISAMPLE_ARB);
 			}

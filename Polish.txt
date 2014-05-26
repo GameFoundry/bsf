@@ -18,9 +18,6 @@ Finish GPUProfiler:
 When initializing a render window I don't have an option to use exact refresh rate (i.e. in RENDER_WINDOW_DESC)
  - Likely use a VideoMode you can create manually
 
-Add a better way of specifying FSAA (and don't call it FSAA because it's multisampling)
- - fsaaHint is useless in most cases. Add an Enum instead.
-
 I should be able to specify resolution when going to windowed mode
  - Maybe just store the windowed and fullscreen resolutions separately and restore automatically?
 
@@ -34,10 +31,6 @@ In DX9 render window I have disabled top most style.
 
 DISREGARD MONITOR INDEX ON DX9
  - It's not trivial and its not worth wasting time on a deprecated system
-
-LATER:
- Add ability to change FSAA on RenderWindow.
-  - Maybe later. OpenGL requires window to be re-created for it to change I think. As SetPixelFormat is allowed to be called just once per window
 
  -----------------------------
 

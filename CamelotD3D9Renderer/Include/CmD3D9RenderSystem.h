@@ -150,8 +150,7 @@ namespace BansheeEngine
 		static IDirect3DDevice9* getResourceCreationDevice(UINT index);
 		static IDirect3DDevice9* getActiveD3D9Device();
 
-		/// Take in some requested FSAA settings and output supported D3D settings
-		void determineFSAASettings(IDirect3DDevice9* d3d9Device, UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
+		void determineMultisampleSettings(IDirect3DDevice9* d3d9Device, UINT32 multisampleCount, const String& multisampleHint, D3DFORMAT d3dPixelFormat,
 			bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality) const;
 
 		void registerWindow(RenderWindow& renderWindow);
@@ -203,7 +202,6 @@ namespace BansheeEngine
 
 		/// return anisotropy level
 		DWORD _getCurrentAnisotropy(UINT32 unit);
-		/// check if a FSAA is supported
 		bool _checkMultiSampleQuality(D3DMULTISAMPLE_TYPE type, DWORD *outQuality, D3DFORMAT format, UINT adapterNum, D3DDEVTYPE deviceType, BOOL fullScreen);
 		
         D3D9HLSLProgramFactory* mHLSLProgramFactory;

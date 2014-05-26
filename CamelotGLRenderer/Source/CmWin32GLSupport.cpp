@@ -236,10 +236,10 @@ namespace BansheeEngine
                             wglGetProcAddress("wglGetPixelFormatAttribivARB");
                         if (_wglGetPixelFormatAttribivARB(hdc, formats[i], 0, 1, &query, &samples))
                         {
-                            mFSAALevels.push_back(samples);
+                            mMultisampleLevels.push_back(samples);
                         }
                     }
-                    remove_duplicates(mFSAALevels);
+                    remove_duplicates(mMultisampleLevels);
                 }
 			}
 			

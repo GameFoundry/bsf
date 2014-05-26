@@ -19,10 +19,11 @@ namespace BansheeEngine
 	}
 
 	RenderTexturePtr RenderTexture::create(TextureType textureType, UINT32 width, UINT32 height, 
-		PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+		PixelFormat format, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint, 
 		bool createDepth, PixelFormat depthStencilFormat)
 	{
-		return TextureManager::instance().createRenderTexture(textureType, width, height, format, hwGamma, fsaa, fsaaHint, createDepth, depthStencilFormat);
+		return TextureManager::instance().createRenderTexture(textureType, width, height, format, hwGamma, 
+			multisampleCount, multisampleHint, createDepth, depthStencilFormat);
 	}
 
 	void RenderTexture::destroy_internal()
@@ -53,8 +54,8 @@ namespace BansheeEngine
 			mColorDepth = BansheeEngine::PixelUtil::getNumElemBits(texture->getFormat());
 			mActive = true;
 			mHwGamma = texture->isHardwareGammaEnabled();
-			mFSAA = texture->getFSAA();
-			mFSAAHint = texture->getFSAAHint();
+			mMultisampleCount = texture->getMultisampleCount();
+			mMultisampleHint = texture->getMultisampleHint();
 		}
 
 		if(desc.depthStencilSurface.texture != nullptr)
@@ -107,13 +108,13 @@ namespace BansheeEngine
 
 		if(mColorSurface->getTexture()->getWidth() != mDepthStencilSurface->getTexture()->getWidth() ||
 			mColorSurface->getTexture()->getHeight() != mDepthStencilSurface->getTexture()->getHeight() ||
-			mColorSurface->getTexture()->getFSAA() != mDepthStencilSurface->getTexture()->getFSAA() ||
-			mColorSurface->getTexture()->getFSAAHint() != mDepthStencilSurface->getTexture()->getFSAAHint())
+			mColorSurface->getTexture()->getMultisampleCount() != mDepthStencilSurface->getTexture()->getMultisampleCount() ||
+			mColorSurface->getTexture()->getMultisampleHint() != mDepthStencilSurface->getTexture()->getMultisampleHint())
 		{
 			String errorInfo = "\nWidth: " + toString(mColorSurface->getTexture()->getWidth()) + "/" + toString(mDepthStencilSurface->getTexture()->getWidth());
 			errorInfo += "\nHeight: " + toString(mColorSurface->getTexture()->getHeight()) + "/" + toString(mDepthStencilSurface->getTexture()->getHeight());
-			errorInfo += "\nFSAA: " + toString(mColorSurface->getTexture()->getFSAA()) + "/" + toString(mDepthStencilSurface->getTexture()->getFSAA());
-			errorInfo += "\nFSAAHint: " + mColorSurface->getTexture()->getFSAAHint() + "/" + mDepthStencilSurface->getTexture()->getFSAAHint();
+			errorInfo += "\nMultisample Count: " + toString(mColorSurface->getTexture()->getMultisampleCount()) + "/" + toString(mDepthStencilSurface->getTexture()->getMultisampleCount());
+			errorInfo += "\nMultisample Hint: " + mColorSurface->getTexture()->getMultisampleHint() + "/" + mDepthStencilSurface->getTexture()->getMultisampleHint();
 
 			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}

@@ -881,18 +881,18 @@ namespace BansheeEngine
 		// Do nothing
 	}
 
-	void D3D11RenderSystem::determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings)
+	void D3D11RenderSystem::determineMultisampleSettings(UINT32 multisampleCount, const String& multisampleHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
 	{
 		bool ok = false;
-		bool qualityHint = fsaaHint.find("Quality") != String::npos;
-		size_t origFSAA = fsaa;
+		bool qualityHint = multisampleHint.find("Quality") != String::npos;
+		size_t origCount = multisampleCount;
 		bool tryCSAA = false;
 		// NVIDIA, prefer CSAA if available for 8+
 		// it would be tempting to use getCapabilities()->getVendor() == GPU_NVIDIA but
 		// if this is the first window, caps will not be initialised yet
 		
 		if (mActiveD3DDriver->getAdapterIdentifier().VendorId == 0x10DE && 
-			fsaa >= 8)
+			multisampleCount >= 8)
 		{
 			tryCSAA	 = true;
 		}
@@ -903,53 +903,53 @@ namespace BansheeEngine
 			if (tryCSAA)
 			{
 				// see http://developer.nvidia.com/object/coverage-sampled-aa.html
-				switch(fsaa)
+				switch(multisampleCount)
 				{
 				case 8:
 					if (qualityHint)
 					{
-						outFSAASettings->Count = 8;
-						outFSAASettings->Quality = 8;
+						outputSampleDesc->Count = 8;
+						outputSampleDesc->Quality = 8;
 					}
 					else
 					{
-						outFSAASettings->Count = 4;
-						outFSAASettings->Quality = 8;
+						outputSampleDesc->Count = 4;
+						outputSampleDesc->Quality = 8;
 					}
 					break;
 				case 16:
 					if (qualityHint)
 					{
-						outFSAASettings->Count = 8;
-						outFSAASettings->Quality = 16;
+						outputSampleDesc->Count = 8;
+						outputSampleDesc->Quality = 16;
 					}
 					else
 					{
-						outFSAASettings->Count = 4;
-						outFSAASettings->Quality = 16;
+						outputSampleDesc->Count = 4;
+						outputSampleDesc->Quality = 16;
 					}
 					break;
 				}
 			}
 			else // !CSAA
 			{
-				outFSAASettings->Count = fsaa == 0 ? 1 : fsaa;
-				outFSAASettings->Quality = 0;
+				outputSampleDesc->Count = multisampleCount == 0 ? 1 : multisampleCount;
+				outputSampleDesc->Quality = 0;
 			}
 
 
 			HRESULT hr;
 			UINT outQuality;
-			hr = mDevice->getD3D11Device()->CheckMultisampleQualityLevels(format, outFSAASettings->Count, &outQuality);
+			hr = mDevice->getD3D11Device()->CheckMultisampleQualityLevels(format, outputSampleDesc->Count, &outQuality);
 
-			if (SUCCEEDED(hr) && (!tryCSAA || outQuality > outFSAASettings->Quality))
+			if (SUCCEEDED(hr) && (!tryCSAA || outQuality > outputSampleDesc->Quality))
 			{
 				ok = true;
 			}
 			else
 			{
 				// downgrade
-				if (tryCSAA && fsaa == 8)
+				if (tryCSAA && multisampleCount == 8)
 				{
 					// for CSAA, we'll try downgrading with quality mode at all samples.
 					// then try without quality, then drop CSAA
@@ -964,17 +964,17 @@ namespace BansheeEngine
 						tryCSAA = false;
 					}
 					// return to original requested samples
-					fsaa = static_cast<UINT32>(origFSAA);
+					multisampleCount = static_cast<UINT32>(origCount);
 				}
 				else
 				{
 					// drop samples
-					--fsaa;
+					--multisampleCount;
 
-					if (fsaa == 1)
+					if (multisampleCount == 1)
 					{
-						// ran out of options, no FSAA
-						fsaa = 0;
+						// ran out of options, no multisampling
+						multisampleCount = 0;
 						ok = true;
 					}
 				}

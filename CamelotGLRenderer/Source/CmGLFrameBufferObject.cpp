@@ -33,8 +33,8 @@ THE SOFTWARE.
 
 namespace BansheeEngine 
 {
-    GLFrameBufferObject::GLFrameBufferObject(UINT32 fsaa)
-		:mNumSamples(fsaa)
+    GLFrameBufferObject::GLFrameBufferObject(UINT32 multisampleCount)
+		:mNumSamples(multisampleCount)
     {
         /// Generate framebuffer object
         glGenFramebuffersEXT(1, &mFB);

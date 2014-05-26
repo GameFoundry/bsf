@@ -12,14 +12,14 @@ namespace BansheeEngine
 {
     Texture::Texture()
         :mHeight(32), mWidth(32), mDepth(1), mNumMipmaps(0),
-		 mHwGamma(false), mFSAA(0), mTextureType(TEX_TYPE_2D), 
+		 mHwGamma(false), mMultisampleCount(0), mTextureType(TEX_TYPE_2D), 
 		 mFormat(PF_UNKNOWN), mUsage(TU_DEFAULT)
     {
         
     }
 
 	void Texture::initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-		PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint)
+		PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint)
 	{
 		mTextureType = textureType;
 		mWidth = width;
@@ -28,8 +28,8 @@ namespace BansheeEngine
 		mNumMipmaps = numMipmaps;
 		mUsage = usage;
 		mHwGamma = hwGamma;
-		mFSAA = fsaa;
-		mFSAAHint = fsaaHint;
+		mMultisampleCount = multisampleCount;
+		mMultisampleHint = multisampleHint;
 
 		// Adjust format if required
 		mFormat = TextureManager::instance().getNativeFormat(mTextureType, format, mUsage);
@@ -293,35 +293,35 @@ namespace BansheeEngine
 	/* 								STATICS	                      			*/
 	/************************************************************************/
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
 	{
 		TexturePtr texturePtr = _createPtr(texType, 
-			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 	
 	HTexture Texture::create(TextureType texType, UINT32 width, UINT32 height, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
 	{
 		TexturePtr texturePtr = _createPtr(texType, 
-			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
 
 		return static_resource_cast<Texture>(gResources()._createResourceHandle(texturePtr));
 	}
 
 	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
 	{
 		return TextureManager::instance().createTexture(texType, 
-			width, height, depth, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+			width, height, depth, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
 	}
 
 	TexturePtr Texture::_createPtr(TextureType texType, UINT32 width, UINT32 height, 
-		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 fsaa, const String& fsaaHint)
+		int num_mips, PixelFormat format, int usage, bool hwGammaCorrection, UINT32 multisampleCount, const String& multisampleHint)
 	{
 		return TextureManager::instance().createTexture(texType, 
-			width, height, num_mips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+			width, height, num_mips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
 	}
 
 	const HTexture& Texture::dummy()

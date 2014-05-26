@@ -313,7 +313,7 @@ namespace BansheeEngine
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-			rs->determineFSAASettings(mFSAA, mFSAAHint, d3dPF, &sampleDesc);
+			rs->determineMultisampleSettings(mMultisampleCount, mMultisampleHint, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
 			if(getTextureType() == TEX_TYPE_CUBE_MAP)
@@ -330,7 +330,7 @@ namespace BansheeEngine
 
 			DXGI_SAMPLE_DESC sampleDesc;
 			D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-			rs->determineFSAASettings(mFSAA, mFSAAHint, d3dPF, &sampleDesc);
+			rs->determineMultisampleSettings(mMultisampleCount, mMultisampleHint, d3dPF, &sampleDesc);
 			desc.SampleDesc		= sampleDesc;
 
 			if(getTextureType() == TEX_TYPE_CUBE_MAP)
@@ -400,7 +400,7 @@ namespace BansheeEngine
 
 			if((mUsage & TU_RENDERTARGET) != 0)
 			{
-				if(mFSAA > 0)
+				if(mMultisampleCount > 0)
 				{
 					mSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 					mSRVDesc.Texture2D.MostDetailedMip = 0;
@@ -442,7 +442,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mFSAA > 0)
+			if(mMultisampleCount > 0)
 				mDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 			else
 				mDimension = D3D11_SRV_DIMENSION_TEXTURE2D;

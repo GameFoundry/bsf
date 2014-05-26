@@ -26,17 +26,17 @@ namespace BansheeEngine
 		 */
         TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, 
 			int numMips, PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, 
-			UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
 			
 		/**
 		 * @copydoc	Texture::create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
 		 */
 		TexturePtr createTexture(TextureType texType, UINT32 width, UINT32 height, int numMips,
-            PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 fsaa = 0, 
-			const String& fsaaHint = StringUtil::BLANK)
+			PixelFormat format, int usage = TU_DEFAULT, bool hwGammaCorrection = false, UINT32 multisampleCount = 0,
+			const String& multisampleHint = StringUtil::BLANK)
 		{
 			return createTexture(texType, width, height, 1, 
-				numMips, format, usage, hwGammaCorrection, fsaa, fsaaHint);
+				numMips, format, usage, hwGammaCorrection, multisampleCount, multisampleHint);
 		}
 
 		/**
@@ -57,15 +57,15 @@ namespace BansheeEngine
 		 * @param	format				Format of the pixels.
 		 * @param	hwGamma				If true, any color data will be gamma corrected before being written
 		 *								into the texture.
-		 * @param	fsaa				If higher than 1, texture containing multiple samples per pixel is created.
-		 * @param	fsaaHint			Hint about what kind of multisampling to use. Render system specific.
+		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
 		 * @param	createDepth			Determines will a depth/stencil buffer of the same size as the color buffer be created
 		 *								for the render texture.
 		 * @param	depthStencilFormat	Format of the depth/stencil buffer if enabled.
 		 */
 		virtual RenderTexturePtr createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
-			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 fsaa = 0, const String& fsaaHint = "", 
-			bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
+			PixelFormat format = PF_R8G8B8A8, bool hwGamma = false, UINT32 multisampleCount = 0, 
+			const String& multisampleHint = "", bool createDepth = true, PixelFormat depthStencilFormat = PF_D24S8);
 
 		/**
 		 * @brief	Creates a RenderTexture using the description struct.

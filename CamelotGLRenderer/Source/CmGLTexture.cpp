@@ -116,16 +116,16 @@ namespace BansheeEngine {
 				CM_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a depth stencil target.");
 		}
 
-		if((mUsage & TU_RENDERTARGET) != 0 && mTextureType == TEX_TYPE_2D && mFSAA > 0)
+		if((mUsage & TU_RENDERTARGET) != 0 && mTextureType == TEX_TYPE_2D && mMultisampleCount > 0)
 		{
-			glTexImage2DMultisample(GL_TEXTURE_2D, mFSAA, format,
+			glTexImage2DMultisample(GL_TEXTURE_2D, mMultisampleCount, format,
 				width, height, GL_FALSE);
 		}
 		else if((mUsage & TU_DEPTHSTENCIL) != 0)
 		{
-			if(mFSAA > 0)
+			if(mMultisampleCount > 0)
 			{
-				glTexImage2DMultisample(GL_TEXTURE_2D, mFSAA, format,
+				glTexImage2DMultisample(GL_TEXTURE_2D, mMultisampleCount, format,
 					width, height, GL_FALSE);
 			}
 			else
@@ -208,7 +208,7 @@ namespace BansheeEngine {
             case TEX_TYPE_1D:
                 return GL_TEXTURE_1D;
             case TEX_TYPE_2D:
-				if(mFSAA > 0)
+				if(mMultisampleCount > 0)
 					return GL_TEXTURE_2D_MULTISAMPLE;
 				else
 					return GL_TEXTURE_2D;
@@ -290,7 +290,7 @@ namespace BansheeEngine {
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
                 GLPixelBuffer *buf = cm_new<GLTextureBuffer, PoolAlloc>("", getGLTextureTarget(), mTextureID, face, mip,
-						static_cast<GpuBufferUsage>(mUsage), false, mHwGamma, mFSAA);
+						static_cast<GpuBufferUsage>(mUsage), false, mHwGamma, mMultisampleCount);
 				mSurfaceList.push_back(cm_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
                 
                 /// Check for error

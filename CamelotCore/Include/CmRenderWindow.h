@@ -26,7 +26,7 @@ namespace BansheeEngine
 			:width(0), height(0), fullscreen(false)
 			, vsync(false), vsyncInterval(1), hidden(false)
 			, displayFrequency(60), colorDepth(32), depthBuffer(true)
-			, FSAA(0), FSAAHint(""), gamma(false), left(-1), top(-1)
+			, multisampleCount(0), multisampleHint(""), gamma(false), left(-1), top(-1)
 			, title(""), border(WindowBorder::Normal), outerDimensions(false), enableDoubleClick(true)
 			, monitorIndex(-1), toolWindow(false), modal(false)
 		{ }
@@ -40,8 +40,8 @@ namespace BansheeEngine
 		UINT32 displayFrequency; /**< Display frequency of the screen to use in hertz. */
 		UINT32 colorDepth; /**< Depth of the color buffer in bits. This is the size of a single pixel in color buffer. */
 		bool depthBuffer; /**< Should the window be created with a depth/stencil buffer. */
-		UINT32 FSAA; /**< Amount of full-screen anti-aliasing. Usually means number of samples per pixel. */
-		String FSAAHint; /**< Hint to the render system as to which anti-aliasing method to use. */
+		UINT32 multisampleCount; /**< If higher than 1, texture containing multiple samples per pixel is created. */
+		String multisampleHint; /**< Hint about what kind of multisampling to use. Render system specific. */
 		bool gamma; /**< Should the written color pixels be gamma corrected before write. */
 		INT32 left; /**< Window origin on X axis in pixels. -1 == screen center. */
 		INT32 top; /**< Window origin on Y axis in pixels. -1 == screen center. */

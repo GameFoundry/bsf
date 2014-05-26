@@ -19,7 +19,7 @@ namespace BansheeEngine
 		if(mFB != nullptr)
 			cm_delete(mFB);
 
-		mFB = cm_new<GLFrameBufferObject, PoolAlloc>(mFSAA);
+		mFB = cm_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
 
 		for(size_t i = 0; i < mColorSurfaces.size(); i++)
 		{
@@ -31,7 +31,7 @@ namespace BansheeEngine
 					mColorSurfaces[i]->getDesc().mostDetailMip);
 
 				GLSurfaceDesc surfaceDesc;
-				surfaceDesc.numSamples = mFSAA;
+				surfaceDesc.numSamples = mMultisampleCount;
 				surfaceDesc.zoffset = 0;
 				surfaceDesc.buffer = colorBuffer;
 

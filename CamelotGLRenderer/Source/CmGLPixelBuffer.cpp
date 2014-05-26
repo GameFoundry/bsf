@@ -36,8 +36,7 @@ THE SOFTWARE.
 namespace BansheeEngine 
 {
 	GLPixelBuffer::GLPixelBuffer(UINT32 inWidth, UINT32 inHeight, UINT32 inDepth,
-					PixelFormat inFormat,
-					GpuBufferUsage usage):
+					PixelFormat inFormat, GpuBufferUsage usage):
 		  PixelBuffer(inWidth, inHeight, inDepth, inFormat, usage, false),
 		  mBuffer(inWidth, inHeight, inDepth, inFormat),
 		  mGLInternalFormat(GL_NONE)
@@ -125,7 +124,7 @@ namespace BansheeEngine
 
 	GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint id, 
 									 GLint face, GLint level, GpuBufferUsage usage, bool crappyCard, 
-									 bool writeGamma, UINT32 fsaa):
+									 bool writeGamma, UINT32 multisampleCount):
 		GLPixelBuffer(0, 0, 0, PF_UNKNOWN, usage),
 		mTarget(target), mFaceTarget(0), mTextureID(id), mFace(face), mLevel(level),
 		mSoftwareMipmap(crappyCard)

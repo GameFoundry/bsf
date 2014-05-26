@@ -37,12 +37,11 @@ namespace BansheeEngine
 	}
 
     TexturePtr TextureManager::createTexture(TextureType texType, UINT32 width, UINT32 height, UINT32 depth, int numMipmaps,
-        PixelFormat format, int usage, bool hwGamma, 
-		UINT32 fsaa, const String& fsaaHint)
+        PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint)
     {
         TexturePtr ret = createTextureImpl();
 		ret->_setThisPtr(ret);
-		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, fsaa, fsaaHint);
+		ret->initialize(texType, width, height, depth, static_cast<size_t>(numMipmaps), format, usage, hwGamma, multisampleCount, multisampleHint);
 
 		return ret;
     }
@@ -56,15 +55,15 @@ namespace BansheeEngine
 	}
 
 	RenderTexturePtr TextureManager::createRenderTexture(TextureType textureType, UINT32 width, UINT32 height, 
-			PixelFormat format, bool hwGamma, UINT32 fsaa, const String& fsaaHint, 
+			PixelFormat format, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint, 
 			bool createDepth, PixelFormat depthStencilFormat)
 	{
-		TexturePtr texture = createTexture(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, fsaa, fsaaHint);
+		TexturePtr texture = createTexture(textureType, width, height, 0, format, TU_RENDERTARGET, hwGamma, multisampleCount, multisampleHint);
 
 		TexturePtr depthStencil = nullptr;
 		if(createDepth)
 		{
-			depthStencil = createTexture(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, fsaa, fsaaHint);
+			depthStencil = createTexture(TEX_TYPE_2D, width, height, 0, depthStencilFormat, TU_DEPTHSTENCIL, false, multisampleCount, multisampleHint);
 		}
 
 		RENDER_TEXTURE_DESC desc;

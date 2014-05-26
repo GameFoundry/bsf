@@ -22,8 +22,8 @@ namespace BansheeEngine
 			IDirect3DVolumeTexture9* pVolumeTex;
 			/// actual texture pointer
 			IDirect3DBaseTexture9* pBaseTex;
-			/// Optional FSAA surface
-			IDirect3DSurface9* pFSAASurface;
+			/// Optional multisample surface
+			IDirect3DSurface9* pMultisampleSurface;
 			/// Optional depth stencil surface
 			IDirect3DSurface9* pDepthStencilSurface;
 		};
@@ -189,7 +189,7 @@ namespace BansheeEngine
 		bool mHwGammaReadSupported;
 		/// Is hardware gamma supported (write)?
 		bool mHwGammaWriteSupported;
-		D3DMULTISAMPLE_TYPE mFSAAType;
-		DWORD mFSAAQuality;
+		D3DMULTISAMPLE_TYPE mMultisampleType;
+		DWORD mMultisampleQuality;
     };
 }

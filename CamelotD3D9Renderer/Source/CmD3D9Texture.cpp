@@ -15,8 +15,8 @@ namespace BansheeEngine
 	
     D3D9Texture::D3D9Texture()
         :Texture(), mD3DPool(D3DPOOL_MANAGED), mDynamicTextures(false),
-		mHwGammaReadSupported(false), mHwGammaWriteSupported(false), mFSAAType(D3DMULTISAMPLE_NONE),
-		mFSAAQuality(0), mIsBindableAsShaderResource(true)
+		mHwGammaReadSupported(false), mHwGammaWriteSupported(false), mMultisampleType(D3DMULTISAMPLE_NONE),
+		mMultisampleQuality(0), mIsBindableAsShaderResource(true)
 	{ }
 	
 	D3D9Texture::~D3D9Texture()
@@ -231,7 +231,7 @@ namespace BansheeEngine
 		textureResources->pCubeTex = nullptr;
 		textureResources->pVolumeTex = nullptr;
 		textureResources->pBaseTex = nullptr;
-		textureResources->pFSAASurface = nullptr;
+		textureResources->pMultisampleSurface = nullptr;
 		textureResources->pDepthStencilSurface = nullptr;
 
 		mMapDeviceToTextureResources[d3d9Device] = textureResources;
@@ -256,7 +256,7 @@ namespace BansheeEngine
 		SAFE_RELEASE(textureResources->pNormTex);
 		SAFE_RELEASE(textureResources->pCubeTex);
 		SAFE_RELEASE(textureResources->pVolumeTex);
-		SAFE_RELEASE(textureResources->pFSAASurface);
+		SAFE_RELEASE(textureResources->pMultisampleSurface);
 		SAFE_RELEASE(textureResources->pDepthStencilSurface);
 	}
 	
@@ -336,16 +336,16 @@ namespace BansheeEngine
 				mHwGammaWriteSupported = canUseHardwareGammaCorrection(d3d9Device, usage, D3DRTYPE_TEXTURE, d3dPF, true);
 		}
 
-		// Check FSAA level
+		// Check multisample level
 		if ((mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0)
 		{
 			D3D9RenderSystem* rsys = static_cast<D3D9RenderSystem*>(BansheeEngine::RenderSystem::instancePtr());
-			rsys->determineFSAASettings(d3d9Device, mFSAA, mFSAAHint, d3dPF, false, &mFSAAType, &mFSAAQuality);
+			rsys->determineMultisampleSettings(d3d9Device, mMultisampleCount, mMultisampleHint, d3dPF, false, &mMultisampleType, &mMultisampleQuality);
 		}
 		else
 		{
-			mFSAAType = D3DMULTISAMPLE_NONE;
-			mFSAAQuality = 0;
+			mMultisampleType = D3DMULTISAMPLE_NONE;
+			mMultisampleQuality = 0;
 		}
 
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
@@ -367,19 +367,19 @@ namespace BansheeEngine
 		else
 			textureResources = allocateTextureResources(d3d9Device);
 
-		if ((mUsage & TU_RENDERTARGET) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
+		if ((mUsage & TU_RENDERTARGET) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
 			// Create AA surface
 			HRESULT hr = d3d9Device->CreateRenderTarget(mWidth, mHeight, d3dPF, 
-				mFSAAType, mFSAAQuality,
+				mMultisampleType, mMultisampleQuality,
 				TRUE, // TODO - Possible performance issues? Need to check
-				&textureResources->pFSAASurface, NULL);
+				&textureResources->pMultisampleSurface, NULL);
 
 			if (FAILED(hr))
 				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
 
 			D3DSURFACE_DESC desc;
-			hr = textureResources->pFSAASurface->GetDesc(&desc);
+			hr = textureResources->pMultisampleSurface->GetDesc(&desc);
 			if (FAILED(hr))
 			{
 				destroy_internal();
@@ -390,11 +390,11 @@ namespace BansheeEngine
 
 			mIsBindableAsShaderResource = true; // Cannot bind AA surfaces
 		}
-		else if ((mUsage & TU_DEPTHSTENCIL) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
+		else if ((mUsage & TU_DEPTHSTENCIL) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
 			// Create AA depth stencil surface
 			HRESULT hr = d3d9Device->CreateDepthStencilSurface(mWidth, mHeight, d3dPF, 
-				mFSAAType, mFSAAQuality,
+				mMultisampleType, mMultisampleQuality,
 				TRUE, // TODO - Possible performance issues? Need to check
 				&textureResources->pDepthStencilSurface, NULL);
 
@@ -489,8 +489,8 @@ namespace BansheeEngine
 		}
 
 		// No multisampling on cube textures
-		mFSAAType = D3DMULTISAMPLE_NONE;
-		mFSAAQuality = 0;
+		mMultisampleType = D3DMULTISAMPLE_NONE;
+		mMultisampleQuality = 0;
 
 		D3D9Device* device = D3D9RenderSystem::getDeviceManager()->getDeviceFromD3D9Device(d3d9Device);
 		const D3DCAPS9& deviceCaps = device->getD3D9DeviceCaps();			
@@ -826,17 +826,17 @@ namespace BansheeEngine
 		IDirect3DSurface9* surface = nullptr;
 		IDirect3DVolume9* volume = nullptr;
 
-		if((mUsage & TU_RENDERTARGET) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
+		if((mUsage & TU_RENDERTARGET) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
-			assert(textureResources->pFSAASurface);
+			assert(textureResources->pMultisampleSurface);
 			assert(getTextureType() == TEX_TYPE_2D);
 
 			D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[0].get());
 
-			currPixelBuffer->bind(d3d9Device, textureResources->pFSAASurface,
-				mHwGammaWriteSupported, mFSAA, "", textureResources->pBaseTex);
+			currPixelBuffer->bind(d3d9Device, textureResources->pMultisampleSurface,
+				mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
 		}
-		else if((mUsage & TU_DEPTHSTENCIL) != 0 && (mFSAAType != D3DMULTISAMPLE_NONE))
+		else if((mUsage & TU_DEPTHSTENCIL) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
 			assert(textureResources->pDepthStencilSurface);
 			assert(getTextureType() == TEX_TYPE_2D);
@@ -844,7 +844,7 @@ namespace BansheeEngine
 			D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[0].get());
 
 			currPixelBuffer->bind(d3d9Device, textureResources->pDepthStencilSurface,
-				mHwGammaWriteSupported, mFSAA, "", textureResources->pBaseTex);
+				mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
 		}
 		else
 		{
@@ -871,7 +871,7 @@ namespace BansheeEngine
 					D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[mip].get());
 
 					currPixelBuffer->bind(d3d9Device, surface,
-						mHwGammaWriteSupported, mFSAA, "", textureResources->pBaseTex);
+						mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
 
 					surface->Release();			
 				}
@@ -891,7 +891,7 @@ namespace BansheeEngine
 						D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[idx].get());
 
 						currPixelBuffer->bind(d3d9Device, surface,
-							mHwGammaWriteSupported, mFSAA, "", textureResources->pBaseTex);
+							mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
 
 						surface->Release();				
 					}				

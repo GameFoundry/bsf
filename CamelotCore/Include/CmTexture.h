@@ -72,18 +72,20 @@ namespace BansheeEngine
 		virtual bool isHardwareGammaEnabled() const { return mHwGamma; }
 
 		/**
-		 * @brief	Get the level of multisample AA to be used.
+		 * @brief	Gets the number of samples used for multisampling.
+		 *			(0 if multisampling is not used).
 		 *
 		 * @note	Thread safe.
 		 */
-		virtual UINT32 getFSAA() const { return mFSAA; }
+		virtual UINT32 getMultisampleCount() const { return mMultisampleCount; }
 
 		/**
-		 * @brief	Get the multisample AA hint.
+		 * @brief	Get a render-system specific hint used for determining
+		 *			multisampling type.
 		 *
 		 * @note	Thread safe.
 		 */
-		virtual const String& getFSAAHint() const { return mFSAAHint; }
+		virtual const String& getMultisampleHint() const { return mMultisampleHint; }
 
         /**
          * @brief	Returns the height of the texture.
@@ -280,12 +282,12 @@ namespace BansheeEngine
 		 * @param	usage				Describes how we plan on using the texture in the pipeline.
 		 * @param	hwGammaCorrection	If true the texture data is assumed to have been gamma corrected and will be
 		 *								converted back to linear space when sampled on GPU.
-		 * @param	fsaa				If higher than 1, texture containing multiple samples per pixel is created.
-		 * @param	fsaaHint			Hint about what kind of multisampling to use. Render system specific.
+		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
 		 */
 		static HTexture create(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int numMips, PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
 
 
 		/**
@@ -299,12 +301,12 @@ namespace BansheeEngine
 		 * @param	usage				Describes how we plan on using the texture in the pipeline.
 		 * @param	hwGammaCorrection	If true the texture data is assumed to have been gamma corrected and will be
 		 *								converted back to linear space when sampled on GPU.
-		 * @param	fsaa				If higher than 1, texture containing multiple samples per pixel is created.
-		 * @param	fsaaHint			Hint about what kind of multisampling to use. Render system specific.
+		 * @param	multisampleCount	If higher than 1, texture containing multiple samples per pixel is created.
+		 * @param	multisampleHint		Hint about what kind of multisampling to use. Render system specific.
 		 */
 		static HTexture create(TextureType texType, UINT32 width, UINT32 height, int numMips,
 			PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
 
 		/**
 		 * @copydoc	create
@@ -313,7 +315,7 @@ namespace BansheeEngine
 		 */
 		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, UINT32 depth,
 			int num_mips, PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
 
 		/**
 		 * @copydoc	create
@@ -322,7 +324,7 @@ namespace BansheeEngine
 		 */
 		static TexturePtr _createPtr(TextureType texType, UINT32 width, UINT32 height, int num_mips,
 			PixelFormat format, int usage = TU_DEFAULT,
-			bool hwGammaCorrection = false, UINT32 fsaa = 0, const String& fsaaHint = StringUtil::BLANK);
+			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
 
 	protected:
 		/************************************************************************/
@@ -363,7 +365,7 @@ namespace BansheeEngine
 		 * @copydoc	GpuResource::initialize
 		 */
 		void initialize(TextureType textureType, UINT32 width, UINT32 height, UINT32 depth, UINT32 numMipmaps, 
-			PixelFormat format, int usage, bool hwGamma, UINT32 fsaa, const String& fsaaHint);
+			PixelFormat format, int usage, bool hwGamma, UINT32 multisampleCount, const String& multisampleHint);
 
 		/**
 		 * @copydoc	lock
@@ -392,8 +394,8 @@ namespace BansheeEngine
 
 		UINT32 mNumMipmaps; // Immutable
 		bool mHwGamma; // Immutable
-		UINT32 mFSAA; // Immutable
-		String mFSAAHint; // Immutable
+		UINT32 mMultisampleCount; // Immutable
+		String mMultisampleHint; // Immutable
 
 		TextureType mTextureType; // Immutable
 		PixelFormat mFormat; // Immutable

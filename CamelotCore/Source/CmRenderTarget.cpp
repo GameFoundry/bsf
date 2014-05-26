@@ -6,7 +6,7 @@
 namespace BansheeEngine 
 {
     RenderTarget::RenderTarget()
-		:mActive(true), mHwGamma(false), mVSync(false), mFSAA(0),
+		:mActive(true), mHwGamma(false), mVSync(false), mMultisampleCount(0),
 		mWidth(0), mHeight(0), mColorDepth(0), mPriority(0)
     {
     }

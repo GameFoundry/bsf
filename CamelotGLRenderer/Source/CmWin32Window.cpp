@@ -277,32 +277,32 @@ namespace BansheeEngine
 
 		if (!mIsExternalGLControl)
 		{
-			int testFsaa = mFSAA;
+			int testMultisample = mMultisampleCount;
 			bool testHwGamma = mDesc.gamma;
-			bool formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
+			bool formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
 			if (!formatOk)
 			{
-				if (mFSAA > 0)
+				if (mMultisampleCount > 0)
 				{
-					// try without FSAA
-					testFsaa = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
+					// try without multisampling
+					testMultisample = 0;
+					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
 				}
 
 				if (!formatOk && mDesc.gamma)
 				{
 					// try without sRGB
 					testHwGamma = false;
-					testFsaa = mFSAA;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
+					testMultisample = mMultisampleCount;
+					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
 				}
 
-				if (!formatOk && mDesc.gamma && (mFSAA > 0))
+				if (!formatOk && mDesc.gamma && (mMultisampleCount > 0))
 				{
 					// try without both
 					testHwGamma = false;
-					testFsaa = 0;
-					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testFsaa, testHwGamma);
+					testMultisample = 0;
+					formatOk = mGLSupport.selectPixelFormat(mHDC, mColorDepth, testMultisample, testHwGamma);
 				}
 
 				if (!formatOk)
@@ -312,7 +312,7 @@ namespace BansheeEngine
 			// record what gamma option we used in the end
 			// this will control enabling of sRGB state flags when used
 			mHwGamma = testHwGamma;
-			mFSAA = testFsaa;
+			mMultisampleCount = testMultisample;
 		}
 		
 		mActive = true;

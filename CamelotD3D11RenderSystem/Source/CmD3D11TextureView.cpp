@@ -55,7 +55,7 @@ namespace BansheeEngine
 		case TEX_TYPE_2D:
 			desc.Texture2D.MipLevels = numMips;
 			desc.Texture2D.MostDetailedMip = mostDetailMip;
-			if(texture->getFSAA() > 0)
+			if(texture->getMultisampleCount() > 0)
 				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 			else
 				desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
@@ -104,7 +104,7 @@ namespace BansheeEngine
 			break;
 		case TEX_TYPE_2D:
 			desc.Texture2D.MipSlice = mostDetailMip;
-			if(texture->getFSAA() > 0)
+			if(texture->getMultisampleCount() > 0)
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 			else
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
@@ -191,7 +191,7 @@ namespace BansheeEngine
 			break;
 		case TEX_TYPE_2D:
 			desc.Texture2D.MipSlice = mostDetailMip;
-			if(texture->getFSAA() > 0)
+			if(texture->getMultisampleCount() > 0)
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 			else
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;

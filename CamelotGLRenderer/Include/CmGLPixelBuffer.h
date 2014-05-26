@@ -83,7 +83,7 @@ namespace BansheeEngine
     public:
         /** Texture constructor */
 		GLTextureBuffer(const String &baseName, GLenum target, GLuint id, GLint face, 
-			GLint level, GpuBufferUsage usage, bool softwareMipmap, bool writeGamma, UINT32 fsaa);
+			GLint level, GpuBufferUsage usage, bool softwareMipmap, bool writeGamma, UINT32 multisampleCount);
         ~GLTextureBuffer();
         
         /// @copydoc HardwarePixelBuffer::bindToFramebuffer

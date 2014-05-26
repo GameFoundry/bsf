@@ -80,7 +80,7 @@ namespace BansheeEngine
 		/* 				Internal use by DX11 RenderSystem only                  */
 		/************************************************************************/
 
-		void determineFSAASettings(UINT32 fsaa, const String& fsaaHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outFSAASettings);
+		void determineMultisampleSettings(UINT32 multisampleCount, const String& multisampleHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc);
 		bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
 
 		IDXGIFactory* getDXGIFactory() const { return mDXGIFactory; }

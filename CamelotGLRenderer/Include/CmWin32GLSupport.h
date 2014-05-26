@@ -47,7 +47,7 @@ namespace BansheeEngine
 		// Allowed video modes
 		Vector<DEVMODE> mDevModes;
 		Win32Window *mInitialWindow;
-		Vector<int> mFSAALevels;
+		Vector<int> mMultisampleLevels;
 		bool mHasPixelFormatARB;
         bool mHasMultisample;
 		bool mHasHardwareGamma;

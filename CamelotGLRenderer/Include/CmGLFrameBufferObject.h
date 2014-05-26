@@ -52,7 +52,7 @@ namespace BansheeEngine
     class CM_RSGL_EXPORT GLFrameBufferObject
     {
     public:
-        GLFrameBufferObject(UINT32 fsaa);
+        GLFrameBufferObject(UINT32 multisampleCount);
         ~GLFrameBufferObject();
 
         /** Bind a surface to a certain attachment point.

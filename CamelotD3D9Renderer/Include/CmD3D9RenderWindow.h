@@ -148,8 +148,8 @@ namespace BansheeEngine
 		HWND						mHWnd;					// Win32 Window handle		
 		bool						mIsExternal;			// window not created by Ogre
 		bool						mClosed;				// Is this window destroyed.			
-		D3DMULTISAMPLE_TYPE			mFSAAType;				// AA type.
-		DWORD						mFSAAQuality;			// AA quality.
+		D3DMULTISAMPLE_TYPE			mMultisampleType;		// AA type.
+		DWORD						mMultisampleQuality;	// AA quality.
 		UINT						mDisplayFrequency;		// Display frequency.
 		bool						mVSync;					// Use vertical sync or not.
 		unsigned int				mVSyncInterval;		

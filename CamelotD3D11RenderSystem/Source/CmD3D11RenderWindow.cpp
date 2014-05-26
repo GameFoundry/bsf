@@ -37,10 +37,10 @@ namespace BansheeEngine
 
 	void D3D11RenderWindow::initialize_internal()
 	{
-		mFSAAType.Count = 1;
-		mFSAAType.Quality = 0;
-		mFSAA = 0;
-		mFSAAHint = "";
+		mMultisampleType.Count = 1;
+		mMultisampleType.Quality = 0;
+		mMultisampleCount = 0;
+		mMultisampleHint = "";
 		mVSync = false;
 		mVSyncInterval = 1;
 		HWND parentHWnd = 0;
@@ -622,9 +622,9 @@ namespace BansheeEngine
 		mSwapChainDesc.Windowed				= !mIsFullScreen;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
-		rs->determineFSAASettings(mFSAA, mFSAAHint, format, &mFSAAType);
-		mSwapChainDesc.SampleDesc.Count = mFSAAType.Count;
-		mSwapChainDesc.SampleDesc.Quality = mFSAAType.Quality;
+		rs->determineMultisampleSettings(mMultisampleCount, mMultisampleHint, format, &mMultisampleType);
+		mSwapChainDesc.SampleDesc.Count = mMultisampleType.Count;
+		mSwapChainDesc.SampleDesc.Quality = mMultisampleType.Quality;
 
 		HRESULT hr;
 
@@ -665,7 +665,7 @@ namespace BansheeEngine
 		ZeroMemory( &RTVDesc, sizeof(RTVDesc) );
 
 		RTVDesc.Format = BBDesc.Format;
-		RTVDesc.ViewDimension = mFSAA ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
+		RTVDesc.ViewDimension = mMultisampleCount ? D3D11_RTV_DIMENSION_TEXTURE2DMS : D3D11_RTV_DIMENSION_TEXTURE2D;
 		RTVDesc.Texture2D.MipSlice = 0;
 		hr = mDevice.getD3D11Device()->CreateRenderTargetView(mBackBuffer, &RTVDesc, &mRenderTargetView);
 
@@ -676,7 +676,7 @@ namespace BansheeEngine
 		}
 
 		mDepthStencilBuffer = TextureManager::instance().createTexture(TEX_TYPE_2D, 
-			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, mFSAA, mFSAAHint);
+			BBDesc.Width, BBDesc.Height, 0, PF_D24S8, TU_DEPTHSTENCIL, false, mMultisampleCount, mMultisampleHint);
 
 		if(mDepthStencilView != nullptr)
 		{

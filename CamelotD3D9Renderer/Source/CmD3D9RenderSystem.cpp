@@ -2254,13 +2254,13 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9RenderSystem::determineFSAASettings(IDirect3DDevice9* d3d9Device,
-		UINT32 fsaa, const String& fsaaHint, D3DFORMAT d3dPixelFormat, 
+	void D3D9RenderSystem::determineMultisampleSettings(IDirect3DDevice9* d3d9Device,
+		UINT32 multisampleCount, const String& multisampleHint, D3DFORMAT d3dPixelFormat, 
 		bool fullScreen, D3DMULTISAMPLE_TYPE *outMultisampleType, DWORD *outMultisampleQuality) const
 	{
 		bool ok = false;
-		bool qualityHint = fsaaHint.find("Quality") != String::npos;
-		UINT32 origFSAA = fsaa;
+		bool qualityHint = multisampleHint.find("Quality") != String::npos;
+		UINT32 origCount = multisampleCount;
 
 		D3D9DriverList* driverList = getDirect3DDrivers();
 		D3D9Driver* deviceDriver = mActiveD3DDriver;
@@ -2282,7 +2282,7 @@ namespace BansheeEngine
 		// it would be tempting to use getCapabilities()->getVendor() == GPU_NVIDIA but
 		// if this is the first window, caps will not be initialised yet
 		if (deviceDriver->getAdapterIdentifier().VendorId == 0x10DE && 
-			fsaa >= 8)
+			multisampleCount >= 8)
 		{
 			tryCSAA	 = true;
 		}
@@ -2293,7 +2293,7 @@ namespace BansheeEngine
 			if (tryCSAA)
 			{
 				// see http://developer.nvidia.com/object/coverage-sampled-aa.html
-				switch(fsaa)
+				switch(multisampleCount)
 				{
 				case 8:
 					if (qualityHint)
@@ -2323,7 +2323,7 @@ namespace BansheeEngine
 			}
 			else // !CSAA
 			{
-				*outMultisampleType = (D3DMULTISAMPLE_TYPE)fsaa;
+				*outMultisampleType = (D3DMULTISAMPLE_TYPE)multisampleCount;
 				*outMultisampleQuality = 0;
 			}
 
@@ -2346,7 +2346,7 @@ namespace BansheeEngine
 			else
 			{
 				// downgrade
-				if (tryCSAA && fsaa == 8)
+				if (tryCSAA && multisampleCount == 8)
 				{
 					// for CSAA, we'll try downgrading with quality mode at all samples.
 					// then try without quality, then drop CSAA
@@ -2361,17 +2361,17 @@ namespace BansheeEngine
 						tryCSAA = false;
 					}
 					// return to original requested samples
-					fsaa = origFSAA;
+					multisampleCount = origCount;
 				}
 				else
 				{
 					// drop samples
-					--fsaa;
+					--multisampleCount;
 
-					if (fsaa == 1)
+					if (multisampleCount == 1)
 					{
-						// ran out of options, no FSAA
-						fsaa = 0;
+						// ran out of options, no multisampling
+						multisampleCount = 0;
 						ok = true;
 					}
 				}

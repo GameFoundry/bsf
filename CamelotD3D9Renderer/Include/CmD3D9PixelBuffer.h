@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 		/// Call this to associate a D3D surface or volume with this pixel buffer
 		void bind(IDirect3DDevice9* dev, IDirect3DSurface9* mSurface,
-			bool writeGamma, UINT32 fsaa, const String& srcName, IDirect3DBaseTexture9* mipTex);
+			bool writeGamma, UINT32 multisampleCount, const String& srcName, IDirect3DBaseTexture9* mipTex);
 		void bind(IDirect3DDevice9* dev, IDirect3DVolume9* mVolume, IDirect3DBaseTexture9* mipTex);
 		/// Internal function to update mipmaps on update of level 0
 		void genMipmaps(IDirect3DBaseTexture9* mipTex);

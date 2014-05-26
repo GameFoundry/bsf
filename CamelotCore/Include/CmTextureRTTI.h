@@ -22,8 +22,8 @@ namespace BansheeEngine
 		CM_SETGET_MEMBER(mDepth, UINT32, Texture)
 		CM_SETGET_MEMBER(mNumMipmaps, UINT32, Texture)
 		CM_SETGET_MEMBER(mHwGamma, bool, Texture)
-		CM_SETGET_MEMBER(mFSAA, UINT32, Texture)
-		CM_SETGET_MEMBER(mFSAAHint, String, Texture)
+		CM_SETGET_MEMBER(mMultisampleCount, UINT32, Texture)
+		CM_SETGET_MEMBER(mMultisampleHint, String, Texture)
 		CM_SETGET_MEMBER(mTextureType, TextureType, Texture)
 		CM_SETGET_MEMBER(mFormat, PixelFormat, Texture)
 		CM_SETGET_MEMBER(mUsage, INT32, Texture)
@@ -75,8 +75,8 @@ namespace BansheeEngine
 			CM_ADD_PLAINFIELD(mDepth, 4, TextureRTTI)
 			CM_ADD_PLAINFIELD(mNumMipmaps, 5, TextureRTTI)
 			CM_ADD_PLAINFIELD(mHwGamma, 6, TextureRTTI)
-			CM_ADD_PLAINFIELD(mFSAA, 7, TextureRTTI)
-			CM_ADD_PLAINFIELD(mFSAAHint, 8, TextureRTTI)
+			CM_ADD_PLAINFIELD(mMultisampleCount, 7, TextureRTTI)
+			CM_ADD_PLAINFIELD(mMultisampleHint, 8, TextureRTTI)
 			CM_ADD_PLAINFIELD(mTextureType, 9, TextureRTTI)
 			CM_ADD_PLAINFIELD(mFormat, 10, TextureRTTI)
 			CM_ADD_PLAINFIELD(mUsage, 11, TextureRTTI)
@@ -103,7 +103,7 @@ namespace BansheeEngine
 			// in mRTTIData.
 			texture->initialize(texture->getTextureType(), texture->getWidth(), texture->getHeight(), texture->getDepth(), 
 				texture->getNumMipmaps(), texture->getFormat(), texture->getUsage(), texture->isHardwareGammaEnabled(), 
-				texture->getFSAA(), texture->getFSAAHint());
+				texture->getMultisampleCount(), texture->getMultisampleHint());
 
 			Vector<PixelDataPtr>* pixelData = any_cast<Vector<PixelDataPtr>*>(texture->mRTTIData);
 			for(size_t i = 0; i < pixelData->size(); i++)

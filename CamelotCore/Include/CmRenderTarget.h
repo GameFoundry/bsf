@@ -64,16 +64,16 @@ namespace BansheeEngine
 		UINT32 getColorDepth() const { return mColorDepth; }
 
 		/**
-		 * @brief	Returns full screen antialiasing amount. Meaning of this value
-		 *			depends on anti-aliasing type used.
+		 * @brief	Gets the number of samples used for multisampling.
+		 *			(0 if multisampling is not used).
 		 */
-		UINT32 getFSAA() const { return mFSAA; }
+		UINT32 getMultisampleCount() const { return mMultisampleCount; }
 
 		/**
-		 * @brief	Returns a hint used for telling render system what type of 
-		 *			antialiasing to use.
+		 * @brief	Get a render-system specific hint used for determining
+		 *			multisampling type.
 		 */
-		const String& getFSAAHint() const { return mFSAAHint; }
+		const String& getMultisampleHint() const { return mMultisampleHint; }
 
 		/**
 		 * @brief	Returns true if the render target will wait for vertical sync 
@@ -170,7 +170,7 @@ namespace BansheeEngine
         bool mActive;
 		bool mHwGamma;
 		bool mVSync;
-		UINT32 mFSAA;
-		String mFSAAHint;
+		UINT32 mMultisampleCount;
+		String mMultisampleHint;
     };
 }

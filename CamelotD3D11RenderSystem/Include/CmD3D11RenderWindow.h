@@ -121,7 +121,7 @@ namespace BansheeEngine
 		bool mClosed;
 		bool mIsChild;
 
-		DXGI_SAMPLE_DESC mFSAAType;
+		DXGI_SAMPLE_DESC mMultisampleType;
 		bool mVSync;
 		UINT32 mVSyncInterval;
 
