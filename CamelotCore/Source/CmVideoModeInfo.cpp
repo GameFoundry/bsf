@@ -2,8 +2,8 @@
 
 namespace BansheeEngine
 {
-	VideoMode::VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* parentOutputInfo)
-		:mWidth(width), mHeight(height), mParentOutputInfo(parentOutputInfo)
+	VideoMode::VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx)
+		:mWidth(width), mHeight(height), mRefreshRate(refreshRate), mOutputIdx(outputIdx), mIsCustom(true)
 	{
 
 	}

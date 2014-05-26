@@ -5,12 +5,23 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Represents a video mode usable in full-screen windows.
+	 * @brief	Video mode contains information about how a render window
+	 *			presents its information to an output device like a monitor.
 	 */
 	class CM_EXPORT VideoMode
 	{
 	public:
-		VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* parentOutputInfo);
+		/**
+		 * @brief	Creates a new video mode.
+		 *
+		 * @param	width		Width of the frame buffer in pixels.
+		 * @param	height		Height of the frame buffer in pixels.
+		 * @param	refreshRate	How often should the output device refresh the output image in Hertz.
+		 * @param	outputIdx	Output index of the output device. Normally this means
+		 *						output monitor. 0th index always represents the primary device
+		 *						while order of others is undefined.
+		 */
+		VideoMode(UINT32 width, UINT32 height, float refreshRate = 60.0f, UINT32 outputIdx = 0);
 		virtual ~VideoMode();
 
 		VideoMode(const VideoMode&) = delete; // Make non-copyable
@@ -27,25 +38,27 @@ namespace BansheeEngine
 		UINT32 getHeight() const { return mHeight; }
 
 		/**
-		 * @brief	Returns the number of available refresh rates for this mode.
+		 * @brief	Returns a refresh rate in Hertz.
 		 */
-		UINT32 getNumRefreshRates() const { return (UINT32)mRefreshRates.size(); }
-
-		/**
-		 * @brief	Returns a refresh rate in Hertz for the specified index.
-		 */
-		virtual float getRefreshRate(UINT32 idx) const { return mRefreshRates.at(idx); }
+		virtual float getRefreshRate() const { return mRefreshRate; }
 
 		/**
 		 * @brief	Returns information about the parent output.
 		 */
-		const VideoOutputInfo& getParentOutput() const { return *mParentOutputInfo; }
+		UINT32 getOutputIdx() const { return mOutputIdx; }
+
+		/**
+		 * @brief	Determines was video mode user created or provided by the API/OS.
+		 *			API/OS created video modes can contain additional information that allows
+		 *			the video mode to be used more accurately and you should use them when possible.
+		 */
+		bool isCustom() const { return mIsCustom;  }
 	protected:
 		UINT32 mWidth = 1280;
 		UINT32 mHeight = 720;
-		VideoOutputInfo* mParentOutputInfo = nullptr;
-
-		Vector<float> mRefreshRates;
+		float mRefreshRate = 60.0f;
+		UINT32 mOutputIdx = 0;
+		bool mIsCustom = true;
 	};
 
 	/**

@@ -302,22 +302,11 @@ namespace BansheeEngine
 		mDevice->acquire();
 	}
 
-	void D3D9RenderWindow::setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx)
+	void D3D9RenderWindow::setFullscreen(const VideoMode& mode)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		const VideoOutputInfo& outputInfo = mode.getParentOutput();
-		UINT32 monitorIdx = 0;
-		for (UINT32 i = 0; i < outputInfo.getNumVideoModes(); i++)
-		{
-			if (&outputInfo.getVideoMode(i) == &mode)
-			{
-				monitorIdx = i;
-				break;
-			}
-		}
-
-		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(refreshRateIdx), monitorIdx);
+		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(), mode.getOutputIdx());
 	}
 
 	void D3D9RenderWindow::setWindowed()

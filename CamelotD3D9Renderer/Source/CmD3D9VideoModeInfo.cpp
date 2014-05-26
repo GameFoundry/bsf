@@ -38,25 +38,9 @@ namespace BansheeEngine
 			{
 				D3D9VideoMode* d3d9videoMode = static_cast<D3D9VideoMode*>(videoMode);
 
-				if (d3d9videoMode->mWidth == displayMode.Width && d3d9videoMode->mHeight == displayMode.Height)
+				UINT32 intRefresh = Math::roundToInt(d3d9videoMode->mRefreshRate);
+				if (d3d9videoMode->mWidth == displayMode.Width && d3d9videoMode->mHeight == displayMode.Height && intRefresh == displayMode.RefreshRate)
 				{
-					bool foundRefreshRate = false;
-					for (auto refreshRate : d3d9videoMode->mRefreshRates)
-					{
-						UINT32 intRefresh = Math::roundToInt(refreshRate);
-
-						if (refreshRate == displayMode.RefreshRate)
-						{
-							foundRefreshRate = true;
-							break;
-						}
-					}
-
-					if (!foundRefreshRate)
-					{
-						d3d9videoMode->mRefreshRates.push_back((float)displayMode.RefreshRate);
-					}
-
 					foundVideoMode = true;
 					break;
 				}
@@ -64,8 +48,7 @@ namespace BansheeEngine
 
 			if (!foundVideoMode)
 			{
-				D3D9VideoMode* videoMode = cm_new<D3D9VideoMode>(displayMode.Width, displayMode.Height, this);
-				videoMode->mRefreshRates.push_back((float)displayMode.RefreshRate);
+				D3D9VideoMode* videoMode = cm_new<D3D9VideoMode>(displayMode.Width, displayMode.Height, (float)displayMode.RefreshRate, adapterIdx);
 
 				mVideoModes.push_back(videoMode);
 			}
@@ -82,13 +65,12 @@ namespace BansheeEngine
 		devMode.dmDriverExtra = 0;
 		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-		D3D9VideoMode* desktopVideoMode = cm_new<D3D9VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, this);
-		desktopVideoMode->mRefreshRates.push_back((float)devMode.dmDisplayFrequency);
+		D3D9VideoMode* desktopVideoMode = cm_new<D3D9VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, (float)devMode.dmDisplayFrequency, adapterIdx);
 
 		mDesktopVideoMode = desktopVideoMode;
 	}
 
-	D3D9VideoMode::D3D9VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo)
-		:VideoMode(width, height, outputInfo)
+	D3D9VideoMode::D3D9VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx)
+		:VideoMode(width, height, refreshRate, outputIdx)
 	{ }
 }

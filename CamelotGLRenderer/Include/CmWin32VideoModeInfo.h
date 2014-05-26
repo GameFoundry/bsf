@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class CM_RSGL_EXPORT Win32VideoMode : public VideoMode
 	{
 	public:
-		Win32VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo);
+		Win32VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx);
 
 	private:
 		friend class Win32VideoOutputInfo;
@@ -23,7 +23,7 @@ namespace BansheeEngine
 	class CM_RSGL_EXPORT Win32VideoOutputInfo : public VideoOutputInfo
 	{
 	public:
-		Win32VideoOutputInfo(HMONITOR monitorHandle);
+		Win32VideoOutputInfo(HMONITOR monitorHandle, UINT32 outputIdx);
 		~Win32VideoOutputInfo();
 
 		/**

@@ -6,18 +6,47 @@ namespace BansheeEngine
 {
 	BOOL CALLBACK monitorEnumCallback(HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam)
 	{
-		Vector<VideoOutputInfo*>* outputInfos = (Vector<VideoOutputInfo*>*)lParam;
-		outputInfos->push_back(cm_new<Win32VideoOutputInfo>(hMonitor));
+		Vector<HMONITOR>* outputInfos = (Vector<HMONITOR>*)lParam;
+		outputInfos->push_back(hMonitor);
 
 		return TRUE;
 	};
 
 	Win32VideoModeInfo::Win32VideoModeInfo()
 	{
-		EnumDisplayMonitors(0, nullptr, &monitorEnumCallback, (LPARAM)&mOutputs);
+		Vector<HMONITOR> handles;
+		EnumDisplayMonitors(0, nullptr, &monitorEnumCallback, (LPARAM)&handles);
+
+		// Sort so that primary is the first output
+		for (auto iter = handles.begin(); iter != handles.end(); ++iter)
+		{
+			MONITORINFOEX monitorInfo;
+
+			memset(&monitorInfo, 0, sizeof(MONITORINFOEX));
+			monitorInfo.cbSize = sizeof(MONITORINFOEX);
+			GetMonitorInfo(*iter, &monitorInfo);
+
+			if ((monitorInfo.dwFlags & MONITORINFOF_PRIMARY) != 0)
+			{
+				if (iter != handles.begin())
+				{
+					HMONITOR temp = handles[0];
+					handles[0] = *iter;
+					*iter = temp;
+				}
+
+				break;
+			}
+		}
+
+		UINT32 idx = 0;
+		for (auto& handle : handles)
+		{
+			mOutputs.push_back(cm_new<Win32VideoOutputInfo>(handle, idx++));
+		}
 	}
 
-	Win32VideoOutputInfo::Win32VideoOutputInfo(HMONITOR monitorHandle)
+	Win32VideoOutputInfo::Win32VideoOutputInfo(HMONITOR monitorHandle, UINT32 outputIdx)
 		:mMonitorHandle(monitorHandle)
 	{
 		MONITORINFOEX monitorInfo;
@@ -40,25 +69,10 @@ namespace BansheeEngine
 			{
 				Win32VideoMode* win32VideoMode = static_cast<Win32VideoMode*>(videoMode);
 
-				if (win32VideoMode->mWidth == devMode.dmPelsWidth && win32VideoMode->mHeight == devMode.dmPelsHeight)
+				UINT32 intRefresh = Math::roundToInt(win32VideoMode->mRefreshRate);
+				if (win32VideoMode->mWidth == devMode.dmPelsWidth && win32VideoMode->mHeight == devMode.dmPelsHeight
+					&& intRefresh == devMode.dmDisplayFrequency)
 				{
-					bool foundRefreshRate = false;
-					for (auto refreshRate : win32VideoMode->mRefreshRates)
-					{
-						UINT32 intRefresh = Math::roundToInt(refreshRate);
-
-						if (refreshRate == devMode.dmDisplayFrequency)
-						{
-							foundRefreshRate = true;
-							break;
-						}
-					}
-
-					if (!foundRefreshRate)
-					{
-						win32VideoMode->mRefreshRates.push_back((float)devMode.dmDisplayFrequency);
-					}
-
 					foundVideoMode = true;
 					break;
 				}
@@ -66,8 +80,9 @@ namespace BansheeEngine
 
 			if (!foundVideoMode)
 			{
-				Win32VideoMode* videoMode = cm_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, this);
-				videoMode->mRefreshRates.push_back((float)devMode.dmDisplayFrequency);
+				Win32VideoMode* videoMode = cm_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
+					(float)devMode.dmDisplayFrequency, outputIdx);
+				videoMode->mIsCustom = false;
 
 				mVideoModes.push_back(videoMode);
 			}
@@ -76,8 +91,9 @@ namespace BansheeEngine
 		// Get desktop display mode
 		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-		Win32VideoMode* desktopVideoMode = cm_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, this);
-		desktopVideoMode->mRefreshRates.push_back((float)devMode.dmDisplayFrequency);
+		Win32VideoMode* desktopVideoMode = cm_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
+			(float)devMode.dmDisplayFrequency, outputIdx);
+		desktopVideoMode->mIsCustom = false;
 
 		mDesktopVideoMode = desktopVideoMode;
 	}
@@ -87,7 +103,7 @@ namespace BansheeEngine
 		CloseHandle(mMonitorHandle);
 	}
 
-	Win32VideoMode::Win32VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo)
-		:VideoMode(width, height, outputInfo)
+	Win32VideoMode::Win32VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx)
+		:VideoMode(width, height, refreshRate, outputIdx)
 	{ }
 }

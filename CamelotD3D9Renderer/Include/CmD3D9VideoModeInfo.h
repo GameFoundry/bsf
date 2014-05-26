@@ -11,7 +11,7 @@ namespace BansheeEngine
 	class CM_D3D9_EXPORT D3D9VideoMode : public VideoMode
 	{
 	public:
-		D3D9VideoMode(UINT32 width, UINT32 height, VideoOutputInfo* outputInfo);
+		D3D9VideoMode(UINT32 width, UINT32 height, float refreshRate, UINT32 outputIdx);
 
 	private:
 		friend class D3D9VideoOutputInfo;

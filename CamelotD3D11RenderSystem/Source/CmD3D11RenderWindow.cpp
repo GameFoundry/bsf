@@ -403,21 +403,34 @@ namespace BansheeEngine
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput()); 
 	}
 
-	void D3D11RenderWindow::setFullscreen(const VideoMode& mode, UINT32 refreshRateIdx)
+	void D3D11RenderWindow::setFullscreen(const VideoMode& mode)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		if (mIsChild)
 			return;
 
+		if (mode.isCustom())
+		{
+			setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(), mode.getOutputIdx());
+			return;
+		}
+
+		const D3D11VideoModeInfo& videoModeInfo = static_cast<const D3D11VideoModeInfo&>(RenderSystem::instance().getVideoModeInfo());
+		UINT32 numOutputs = videoModeInfo.getNumOutputs();
+		if (numOutputs == 0)
+			return;
+
+		UINT32 actualMonitorIdx = std::min(mode.getOutputIdx(), numOutputs - 1);
+		const D3D11VideoOutputInfo& outputInfo = static_cast<const D3D11VideoOutputInfo&>(videoModeInfo.getOutputInfo(actualMonitorIdx));
+
 		const D3D11VideoMode& videoMode = static_cast<const D3D11VideoMode&>(mode);
-		const D3D11VideoOutputInfo& outputInfo = static_cast<const D3D11VideoOutputInfo&>(mode.getParentOutput());
 
 		mIsFullScreen = true;
 		mWidth = mode.getWidth();
 		mHeight = mode.getHeight();
 
-		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc(refreshRateIdx));
+		mSwapChain->ResizeTarget(&videoMode.getDXGIModeDesc());
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput());
 	}
 
