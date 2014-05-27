@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	D3D11OcclusionQuery::D3D11OcclusionQuery(bool binary)
-		:OcclusionQuery(binary), mContext(nullptr), mQuery(nullptr), mNumFragments(0), mFinalized(false)
+		:OcclusionQuery(binary), mContext(nullptr), mQuery(nullptr), mNumSamples(0), mFinalized(false)
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -32,7 +32,7 @@ namespace BansheeEngine
 	{
 		mContext->Begin(mQuery);
 
-		mNumFragments = 0;
+		mNumSamples = 0;
 		setActive(true);
 	}
 
@@ -45,24 +45,24 @@ namespace BansheeEngine
 	{
 		if (mBinary)
 		{
-			BOOL anyFragments = FALSE;
-			return mContext->GetData(mQuery, &anyFragments, sizeof(anyFragments), 0) == S_OK;
+			BOOL anySamples = FALSE;
+			return mContext->GetData(mQuery, &anySamples, sizeof(anySamples), 0) == S_OK;
 		}
 		else
 		{
-			UINT64 numFragments = 0;
-			return mContext->GetData(mQuery, &numFragments, sizeof(numFragments), 0) == S_OK;
+			UINT64 numSamples = 0;
+			return mContext->GetData(mQuery, &numSamples, sizeof(numSamples), 0) == S_OK;
 		}
 	}
 
-	UINT32 D3D11OcclusionQuery::getNumFragments()
+	UINT32 D3D11OcclusionQuery::getNumSamples()
 	{
 		if (!mFinalized && isReady())
 		{
 			finalize();
 		}
 
-		return mNumFragments;
+		return mNumSamples;
 	}
 
 	void D3D11OcclusionQuery::finalize()
@@ -71,17 +71,17 @@ namespace BansheeEngine
 
 		if (mBinary)
 		{
-			BOOL anyFragments = FALSE;
-			mContext->GetData(mQuery, &anyFragments, sizeof(anyFragments), 0);
+			BOOL anySamples = FALSE;
+			mContext->GetData(mQuery, &anySamples, sizeof(anySamples), 0);
 
-			mNumFragments = anyFragments == TRUE ? 1 : 0;
+			mNumSamples = anySamples == TRUE ? 1 : 0;
 		}
 		else
 		{
-			UINT64 numFragments = 0;
-			mContext->GetData(mQuery, &numFragments, sizeof(numFragments), 0);
+			UINT64 numSamples = 0;
+			mContext->GetData(mQuery, &numSamples, sizeof(numSamples), 0);
 
-			mNumFragments = (UINT32)numFragments;
+			mNumSamples = (UINT32)numSamples;
 		}
 	}
 }

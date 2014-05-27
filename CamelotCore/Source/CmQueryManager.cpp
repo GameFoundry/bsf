@@ -34,7 +34,7 @@ namespace BansheeEngine
 		{
 			if (query->isActive() && query->isReady())
 			{
-				query->onComplete(query->getNumFragments());
+				query->onComplete(query->getNumSamples());
 				query->setActive(false);
 			}
 		}

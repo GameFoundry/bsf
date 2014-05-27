@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		* @copydoc OcclusionQuery::getNumFragments
 		*/
-		virtual UINT32 getNumFragments();
+		virtual UINT32 getNumSamples();
 
 	private:
 		friend class QueryManager;
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		ID3D11DeviceContext* mContext;
 		bool mFinalized;
 
-		UINT32 mNumFragments;
+		UINT32 mNumSamples;
 
 		void finalize();
 	};

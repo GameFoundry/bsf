@@ -19,6 +19,9 @@ I should be able to specify resolution when going to windowed mode
  - Maybe just store the windowed and fullscreen resolutions separately and restore automatically?
  - I have a feeling DX9 might start crashing once I resize to sub-fullscreen res and go back to FS - test it
 
+ Add VSync toggle to RenderWindow if it doesn't already exist.
+ Test creating a fullscreen window on window creation.
+
 DISREGARD MONITOR INDEX ON DX9
  - It's not trivial and its not worth wasting time on a deprecated system
  - Seems I would need to destroy the device and then recreate it using the new adapter index

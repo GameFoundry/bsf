@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc OcclusionQuery::getNumFragments
 		 */
-		virtual UINT32 getNumFragments();
+		virtual UINT32 getNumSamples();
 
 	private:
 		friend class QueryManager;
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		GLuint mQueryObj;
 		bool mFinalized;
 
-		UINT32 mNumFragments;
+		UINT32 mNumSamples;
 
 		void finalize();
 	};

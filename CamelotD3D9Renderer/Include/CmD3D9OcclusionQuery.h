@@ -33,7 +33,7 @@ namespace BansheeEngine
 		/**
 		* @copydoc OcclusionQuery::getNumFragments
 		*/
-		virtual UINT32 getNumFragments();
+		virtual UINT32 getNumSamples();
 
 		/**
 		* @copydoc	D3D9Resource::notifyOnDeviceCreate
@@ -78,6 +78,6 @@ namespace BansheeEngine
 		bool mQueryIssued;
 		bool mFinalized;
 
-		UINT32 mNumFragments;
+		UINT32 mNumSamples;
 	};
 }

@@ -12,10 +12,9 @@ namespace BansheeEngine
 	{
 		RenderStats()
 		: numDrawCalls(0), numRenderTargetChanges(0), numPresents(0), numClears(0),
-		  numVertices(0), numPrimitives(0), numDrawnSamples(0), numBlendStateChanges(0),
-		  numRasterizerStateChanges(0), numDepthStencilStateChanges(0), numTextureBinds(0),
-		  numSamplerBinds(0), numVertexBufferBinds(0), numIndexBufferBinds(0), numGpuParamBufferBinds(0),
-		  numGpuProgramBinds(0)
+		  numVertices(0), numPrimitives(0), numBlendStateChanges(0), numRasterizerStateChanges(0), 
+		  numDepthStencilStateChanges(0), numTextureBinds(0), numSamplerBinds(0), numVertexBufferBinds(0), 
+		  numIndexBufferBinds(0), numGpuParamBufferBinds(0), numGpuProgramBinds(0)
 		{ }
 
 		UINT64 numDrawCalls;
@@ -25,7 +24,6 @@ namespace BansheeEngine
 
 		UINT64 numVertices;
 		UINT64 numPrimitives;
-		UINT64 numDrawnSamples; 
 
 		UINT64 numBlendStateChanges; 
 		UINT64 numRasterizerStateChanges; 

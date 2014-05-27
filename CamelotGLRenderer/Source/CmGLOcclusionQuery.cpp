@@ -4,7 +4,7 @@
 namespace BansheeEngine
 {
 	GLOcclusionQuery::GLOcclusionQuery(bool binary)
-		:OcclusionQuery(binary), mQueryObj(0), mNumFragments(0), mFinalized(false)
+		:OcclusionQuery(binary), mQueryObj(0), mNumSamples(0), mFinalized(false)
 	{
 		glGenQueries(1, &mQueryObj);
 	}
@@ -18,7 +18,7 @@ namespace BansheeEngine
 	{
 		glBeginQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED, mQueryObj);
 
-		mNumFragments = 0;
+		mNumSamples = 0;
 		setActive(true);
 	}
 
@@ -35,14 +35,14 @@ namespace BansheeEngine
 		return done == GL_TRUE;
 	}
 
-	UINT32 GLOcclusionQuery::getNumFragments()
+	UINT32 GLOcclusionQuery::getNumSamples()
 	{
 		if (!mFinalized && isReady())
 		{
 			finalize();
 		}
 
-		return mNumFragments;
+		return mNumSamples;
 	}
 
 	void GLOcclusionQuery::finalize()
@@ -54,14 +54,14 @@ namespace BansheeEngine
 			GLboolean anyPassed = GL_FALSE;
 			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT_ARB, (GLuint*)&anyPassed);
 
-			mNumFragments = anyPassed == GL_TRUE ? 1 : 0;
+			mNumSamples = anyPassed == GL_TRUE ? 1 : 0;
 		}
 		else
 		{
-			GLuint numFragments = 0;
-			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT_ARB, (GLuint*)&numFragments);
+			GLuint numSamples = 0;
+			glGetQueryObjectuiv(mQueryObj, GL_QUERY_RESULT_ARB, (GLuint*)&numSamples);
 
-			mNumFragments = (UINT32)numFragments;
+			mNumSamples = (UINT32)numSamples;
 		}
 	}
 }

@@ -5,7 +5,7 @@
 namespace BansheeEngine
 {
 	D3D9OcclusionQuery::D3D9OcclusionQuery(bool binary)
-		:OcclusionQuery(binary), mQuery(nullptr), mNumFragments(0), 
+		:OcclusionQuery(binary), mQuery(nullptr), mNumSamples(0), 
 		mFinalized(false), mDevice(nullptr), mQueryIssued(false)
 	{
 		createQuery();
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		if (mQuery != nullptr)
 			mQuery->Issue(D3DISSUE_BEGIN);
 
-		mNumFragments = 0;
+		mNumSamples = 0;
 		mQueryIssued = false;
 		setActive(true);
 	}
@@ -60,14 +60,14 @@ namespace BansheeEngine
 		return mQuery->GetData(&queryData, sizeof(BOOL), 0) == S_OK;
 	}
 
-	UINT32 D3D9OcclusionQuery::getNumFragments()
+	UINT32 D3D9OcclusionQuery::getNumSamples()
 	{
 		if (!mFinalized && isReady())
 		{
 			finalize();
 		}
 
-		return mNumFragments;
+		return mNumSamples;
 	}
 
 	void D3D9OcclusionQuery::finalize()
@@ -76,14 +76,14 @@ namespace BansheeEngine
 
 		if (mQuery == nullptr)
 		{
-			mNumFragments = 0;
+			mNumSamples = 0;
 			return;
 		}
 
-		DWORD numFragments;
-		mQuery->GetData(&numFragments, sizeof(DWORD), 0);
+		DWORD numSamples;
+		mQuery->GetData(&numSamples, sizeof(DWORD), 0);
 
-		mNumFragments = (UINT32)numFragments;
+		mNumSamples = (UINT32)numSamples;
 	}
 
 	void D3D9OcclusionQuery::notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device)
