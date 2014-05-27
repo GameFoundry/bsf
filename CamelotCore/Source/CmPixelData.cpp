@@ -70,7 +70,7 @@ namespace BansheeEngine
 
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-		PixelUtil::unpackColour(&cv, mFormat, (unsigned char *)getData() + pixelOffset);
+		PixelUtil::unpackColor(&cv, mFormat, (unsigned char *)getData() + pixelOffset);
 
 		return cv;
 	}
@@ -79,7 +79,7 @@ namespace BansheeEngine
 	{
 		UINT32 pixelSize = PixelUtil::getNumElemBytes(mFormat);
 		UINT32 pixelOffset = pixelSize * (z * mSlicePitch + y * mRowPitch + x);
-		PixelUtil::packColour(cv, mFormat, (unsigned char *)getData() + pixelOffset);
+		PixelUtil::packColor(cv, mFormat, (unsigned char *)getData() + pixelOffset);
 	}
 
 	UINT32 PixelData::getInternalBufferSize()

@@ -29,7 +29,7 @@ namespace BansheeEngine
 			cm_deleteN<ProfilerAlloc>(mSavedCoreReports, NUM_SAVED_FRAMES);
 	}
 
-	void Profiler::update()
+	void Profiler::_update()
 	{
 #if CM_PROFILING_ENABLED
 		mSavedSimReports[mNextSimReportIdx].cpuReport = mCPUProfiler->generateReport();
@@ -40,7 +40,7 @@ namespace BansheeEngine
 #endif
 	}
 
-	void Profiler::updateCore()
+	void Profiler::_updateCore()
 	{
 #if CM_PROFILING_ENABLED
 		CM_LOCK_MUTEX(mSync);

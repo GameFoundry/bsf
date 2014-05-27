@@ -12,7 +12,7 @@ namespace BansheeEngine
 		mCallbacks.push_back(func);
 	}
 
-	void DeferredCallManager::update()
+	void DeferredCallManager::_update()
 	{
 		while(!mCallbacks.empty())
 		{

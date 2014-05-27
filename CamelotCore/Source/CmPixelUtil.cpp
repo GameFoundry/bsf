@@ -3,9 +3,8 @@
 #include "CmColor.h"
 #include "CmException.h"
 
-
-namespace BansheeEngine {
-
+namespace BansheeEngine 
+{
 	//-----------------------------------------------------------------------
     /**
     * Resamplers
@@ -131,7 +130,7 @@ namespace BansheeEngine {
 							x1y2z2 * ((1.0f - sxf)*        syf *        szf ) +
 							x2y2z2 * (        sxf *        syf *        szf );
 
-						PixelUtil::packColour(accum, dst.getFormat(), pdst);
+						PixelUtil::packColor(accum, dst.getFormat(), pdst);
 
 						pdst += dstelemsize;
 					}
@@ -313,37 +312,27 @@ namespace BansheeEngine {
 		}
 	};
 
-    //-----------------------------------------------------------------------
-    /**
-    * A record that describes a pixel format in detail.
-    */
-    struct PixelFormatDescription {
-        /* Name of the format, as in the enum */
-        const char *name;
-        /* Number of bytes one element (colour value) takes. */
-        unsigned char elemBytes;
-        /* Pixel format flags, see enum PixelFormatFlags for the bit field
-        * definitions
-        */
-        UINT32 flags;
-        /** Component type
-         */
-        PixelComponentType componentType;
-        /** Component count
-         */
-        unsigned char componentCount;
-        /* Number of bits for red(or luminance), green, blue, alpha
-        */
-        unsigned char rbits,gbits,bbits,abits; /*, ibits, dbits, ... */
+	/**
+	 * @brief	Data describing a pixel format.
+	 */
+    struct PixelFormatDescription 
+	{
+		const char* name; /**< Name of the format. */
+		UINT8 elemBytes; /**< Number of bytes one element (color value) uses. */
+		UINT32 flags; /**< PixelFormatFlags set by the pixel format. */
+        PixelComponentType componentType; /**< Data type of a single element of the format. */
+		UINT8 componentCount; /**< Number of elements in the format. */
 
-        /* Masks and shifts as used by packers/unpackers */
-        UINT32 rmask, gmask, bmask, amask;
-        unsigned char rshift, gshift, bshift, ashift;
+		UINT8 rbits, gbits, bbits, abits; /**< Number of bits per element in the format. */
+
+        UINT32 rmask, gmask, bmask, amask; /**< Masks used by packers/unpackers. */
+		UINT8 rshift, gshift, bshift, ashift; /**< Shifts used by packers/unpackers. */
     };
-    //-----------------------------------------------------------------------
-    /** Pixel format database */
+
+	/**
+	 * @brief	A list of all available pixel formats.
+	 */
     PixelFormatDescription _pixelFormats[PF_COUNT] = {
-	//-----------------------------------------------------------------------
         {"PF_UNKNOWN",
         /* Bytes per element */
         0,
@@ -746,11 +735,7 @@ namespace BansheeEngine {
 		0, 0, 0, 0, 0, 0, 0, 0
 		}, 
     };
-    //-----------------------------------------------------------------------
-    /**
-    * Directly get the description record for provided pixel format. For debug builds,
-    * this checks the bounds of fmt with an assertion.
-    */
+
     static inline const PixelFormatDescription &getDescriptionFor(const PixelFormat fmt)
     {
         const int ord = (int)fmt;
@@ -758,12 +743,12 @@ namespace BansheeEngine {
 
         return _pixelFormats[ord];
     }
-    //-----------------------------------------------------------------------
-    UINT32 PixelUtil::getNumElemBytes( PixelFormat format )
+
+    UINT32 PixelUtil::getNumElemBytes(PixelFormat format)
     {
         return getDescriptionFor(format).elemBytes;
     }
-	//-----------------------------------------------------------------------
+
 	UINT32 PixelUtil::getMemorySize(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)
 	{
 		if(isCompressed(format))
@@ -789,43 +774,43 @@ namespace BansheeEngine {
 			return width*height*depth*getNumElemBytes(format);
 		}
 	}
-    //-----------------------------------------------------------------------
-    UINT32 PixelUtil::getNumElemBits( PixelFormat format )
+
+    UINT32 PixelUtil::getNumElemBits(PixelFormat format)
     {
         return getDescriptionFor(format).elemBytes * 8;
     }
-    //-----------------------------------------------------------------------
-    unsigned int PixelUtil::getFlags( PixelFormat format )
+
+    UINT32 PixelUtil::getFlags(PixelFormat format)
     {
         return getDescriptionFor(format).flags;
     }
-    //-----------------------------------------------------------------------
+
     bool PixelUtil::hasAlpha(PixelFormat format)
     {
         return (PixelUtil::getFlags(format) & PFF_HASALPHA) > 0;
     }
-    //-----------------------------------------------------------------------
+
     bool PixelUtil::isFloatingPoint(PixelFormat format)
     {
         return (PixelUtil::getFlags(format) & PFF_FLOAT) > 0;
     }
-    //-----------------------------------------------------------------------
+
     bool PixelUtil::isCompressed(PixelFormat format)
     {
         return (PixelUtil::getFlags(format) & PFF_COMPRESSED) > 0;
     }
-    //-----------------------------------------------------------------------
+
     bool PixelUtil::isDepth(PixelFormat format)
     {
         return (PixelUtil::getFlags(format) & PFF_DEPTH) > 0;
     }
-    //-----------------------------------------------------------------------
+
     bool PixelUtil::isNativeEndian(PixelFormat format)
     {
         return (PixelUtil::getFlags(format) & PFF_NATIVEENDIAN) > 0;
     }
-    //-----------------------------------------------------------------------
-	bool PixelUtil::isValidExtent(size_t width, size_t height, size_t depth, PixelFormat format)
+
+	bool PixelUtil::isValidExtent(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)
 	{
 		if(isCompressed(format))
 		{
@@ -836,7 +821,7 @@ namespace BansheeEngine {
 				case PF_DXT3:
 				case PF_DXT4:
 				case PF_DXT5:
-					return ((width&3)==0 && (height&3)==0 && depth==1);
+					return ((width & 3) == 0 && (height & 3) == 0 && depth == 1);
 				default:
 					return true;
 			}
@@ -846,107 +831,58 @@ namespace BansheeEngine {
 			return true;
 		}
 	}
-	//-----------------------------------------------------------------------
+
     void PixelUtil::getBitDepths(PixelFormat format, int rgba[4])
     {
-        const PixelFormatDescription &des = getDescriptionFor(format);
+        const PixelFormatDescription& des = getDescriptionFor(format);
         rgba[0] = des.rbits;
         rgba[1] = des.gbits;
         rgba[2] = des.bbits;
         rgba[3] = des.abits;
     }
-	//-----------------------------------------------------------------------
+
 	void PixelUtil::getBitMasks(PixelFormat format, UINT32 rgba[4])
     {
-        const PixelFormatDescription &des = getDescriptionFor(format);
+        const PixelFormatDescription& des = getDescriptionFor(format);
         rgba[0] = des.rmask;
         rgba[1] = des.gmask;
         rgba[2] = des.bmask;
         rgba[3] = des.amask;
     }
-	//---------------------------------------------------------------------
-	void PixelUtil::getBitShifts(PixelFormat format, unsigned char rgba[4])
+
+	void PixelUtil::getBitShifts(PixelFormat format, UINT8 rgba[4])
 	{
-		const PixelFormatDescription &des = getDescriptionFor(format);
+		const PixelFormatDescription& des = getDescriptionFor(format);
 		rgba[0] = des.rshift;
 		rgba[1] = des.gshift;
 		rgba[2] = des.bshift;
 		rgba[3] = des.ashift;
 	}
-    //-----------------------------------------------------------------------
+
     String PixelUtil::getFormatName(PixelFormat srcformat)
     {
         return getDescriptionFor(srcformat).name;
     }
-    //-----------------------------------------------------------------------
+
     bool PixelUtil::isAccessible(PixelFormat srcformat)
     {
         if (srcformat == PF_UNKNOWN)
             return false;
-        unsigned int flags = getFlags(srcformat);
+
+        UINT32 flags = getFlags(srcformat);
         return !((flags & PFF_COMPRESSED) || (flags & PFF_DEPTH));
     }
-    //-----------------------------------------------------------------------
-    PixelComponentType PixelUtil::getComponentType(PixelFormat fmt)
+
+    PixelComponentType PixelUtil::getElementType(PixelFormat format)
     {
-        const PixelFormatDescription &des = getDescriptionFor(fmt);
+		const PixelFormatDescription& des = getDescriptionFor(format);
         return des.componentType;
     }
-    //-----------------------------------------------------------------------
-    UINT32 PixelUtil::getComponentCount(PixelFormat fmt)
+
+	UINT32 PixelUtil::getNumElements(PixelFormat format)
     {
-        const PixelFormatDescription &des = getDescriptionFor(fmt);
+		const PixelFormatDescription& des = getDescriptionFor(format);
         return des.componentCount;
-    }
-    //-----------------------------------------------------------------------
-    PixelFormat PixelUtil::getFormatFromName(const String& name, bool accessibleOnly, bool caseSensitive)
-    {
-        String tmp = name;
-        if (!caseSensitive)
-        {
-            // We are stored upper-case format names.
-            StringUtil::toUpperCase(tmp);
-        }
-
-        for (int i = 0; i < PF_COUNT; ++i)
-        {
-            PixelFormat pf = static_cast<PixelFormat>(i);
-            if (!accessibleOnly || isAccessible(pf))
-            {
-                if (tmp == getFormatName(pf))
-                    return pf;
-            }
-        }
-        return PF_UNKNOWN;
-    }
-    //-----------------------------------------------------------------------
-    String PixelUtil::getBNFExpressionOfPixelFormats(bool accessibleOnly)
-    {
-        // Collect format names sorted by length, it's required by BNF compiler
-        // that similar tokens need longer ones comes first.
-        typedef MultiMap<String::size_type, String> FormatNameMap;
-        FormatNameMap formatNames;
-        for (size_t i = 0; i < PF_COUNT; ++i)
-        {
-            PixelFormat pf = static_cast<PixelFormat>(i);
-            if (!accessibleOnly || isAccessible(pf))
-            {
-                String formatName = getFormatName(pf);
-                formatNames.insert(std::make_pair(formatName.length(), formatName));
-            }
-        }
-
-        // Populate the BNF expression in reverse order
-        String result;
-        // Note: Stupid M$ VC7.1 can't dealing operator!= with FormatNameMap::const_reverse_iterator.
-        for (FormatNameMap::reverse_iterator j = formatNames.rbegin(); j != formatNames.rend(); ++j)
-        {
-            if (!result.empty())
-                result += " | ";
-            result += "'" + j->second + "'";
-        }
-
-        return result;
     }
 
 	UINT32 PixelUtil::getMaxMipmaps(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format)
@@ -958,60 +894,59 @@ namespace BansheeEngine {
                 if(width>1)		width = width/2;
                 if(height>1)	height = height/2;
                 if(depth>1)		depth = depth/2;
-                /*
-                NOT needed, compressed formats will have mipmaps up to 1x1
-                if(PixelUtil::isValidExtent(width, height, depth, format))
-                    count ++;
-                else
-                    break;
-                */
                     
                 count ++;
             } while(!(width == 1 && height == 1 && depth == 1));
-        }		
+        }
+
 		return count;
 	}
-    //-----------------------------------------------------------------------
-    /*************************************************************************
-    * Pixel packing/unpacking utilities
-    */
-    void PixelUtil::packColour(const Color &colour, const PixelFormat pf,  void* dest)
+
+    void PixelUtil::packColor(const Color& color, PixelFormat format, void* dest)
     {
-        packColour(colour.r, colour.g, colour.b, colour.a, pf, dest);
+        packColor(color.r, color.g, color.b, color.a, format, dest);
     }
-    //-----------------------------------------------------------------------
-    void PixelUtil::packColour(const UINT8 r, const UINT8 g, const UINT8 b, const UINT8 a, const PixelFormat pf,  void* dest)
+
+    void PixelUtil::packColor(UINT8 r, UINT8 g, UINT8 b, UINT8 a, PixelFormat format,  void* dest)
     {
-        const PixelFormatDescription &des = getDescriptionFor(pf);
-        if(des.flags & PFF_NATIVEENDIAN) {
+        const PixelFormatDescription &des = getDescriptionFor(format);
+
+        if(des.flags & PFF_NATIVEENDIAN) 
+		{
             // Shortcut for integer formats packing
-            unsigned int value = ((Bitwise::fixedToFixed(r, 8, des.rbits)<<des.rshift) & des.rmask) |
+            UINT32 value = ((Bitwise::fixedToFixed(r, 8, des.rbits)<<des.rshift) & des.rmask) |
                 ((Bitwise::fixedToFixed(g, 8, des.gbits)<<des.gshift) & des.gmask) |
                 ((Bitwise::fixedToFixed(b, 8, des.bbits)<<des.bshift) & des.bmask) |
                 ((Bitwise::fixedToFixed(a, 8, des.abits)<<des.ashift) & des.amask);
+
             // And write to memory
             Bitwise::intWrite(dest, des.elemBytes, value);
-        } else {
+        } 
+		else 
+		{
             // Convert to float
-            packColour((float)r/255.0f,(float)g/255.0f,(float)b/255.0f,(float)a/255.0f, pf, dest);
+            packColor((float)r/255.0f,(float)g/255.0f,(float)b/255.0f,(float)a/255.0f, format, dest);
         }
     }
-    //-----------------------------------------------------------------------
-    void PixelUtil::packColour(const float r, const float g, const float b, const float a, const PixelFormat pf,  void* dest)
+
+    void PixelUtil::packColor(float r, float g, float b, float a, const PixelFormat format, void* dest)
     {
-        // Catch-it-all here
-        const PixelFormatDescription &des = getDescriptionFor(pf);
-        if(des.flags & PFF_NATIVEENDIAN) {
+        const PixelFormatDescription& des = getDescriptionFor(format);
+
+        if(des.flags & PFF_NATIVEENDIAN) 
+		{
             // Do the packing
-            //std::cerr << dest << " " << r << " " << g <<  " " << b << " " << a << std::endl;
             const unsigned int value = ((Bitwise::floatToFixed(r, des.rbits)<<des.rshift) & des.rmask) |
                 ((Bitwise::floatToFixed(g, des.gbits)<<des.gshift) & des.gmask) |
                 ((Bitwise::floatToFixed(b, des.bbits)<<des.bshift) & des.bmask) |
                 ((Bitwise::floatToFixed(a, des.abits)<<des.ashift) & des.amask);
+
             // And write to memory
             Bitwise::intWrite(dest, des.elemBytes, value);
-        } else {
-            switch(pf)
+        }
+		else 
+		{
+            switch(format)
             {
             case PF_FLOAT32_R:
                 ((float*)dest)[0] = r;
@@ -1057,25 +992,24 @@ namespace BansheeEngine {
 				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
 				break;
             default:
-                // Not yet supported
-                CM_EXCEPT(NotImplementedException,
-                    "pack to "+getFormatName(pf)+" not implemented");
+                CM_EXCEPT(NotImplementedException, "Pack to " + getFormatName(format) + " not implemented");
                 break;
             }
         }
     }
-    //-----------------------------------------------------------------------
-    void PixelUtil::unpackColour(Color *colour, PixelFormat pf,  const void* src)
+    void PixelUtil::unpackColor(Color* color, PixelFormat format, const void* src)
     {
-        unpackColour(&colour->r, &colour->g, &colour->b, &colour->a, pf, src);
+		unpackColor(&color->r, &color->g, &color->b, &color->a, format, src);
     }
-    //-----------------------------------------------------------------------
-    void PixelUtil::unpackColour(UINT8 *r, UINT8 *g, UINT8 *b, UINT8 *a, PixelFormat pf,  const void* src)
+
+    void PixelUtil::unpackColor(UINT8* r, UINT8* g, UINT8* b, UINT8* a, PixelFormat format, const void* src)
     {
-        const PixelFormatDescription &des = getDescriptionFor(pf);
-        if(des.flags & PFF_NATIVEENDIAN) {
+        const PixelFormatDescription &des = getDescriptionFor(format);
+
+        if(des.flags & PFF_NATIVEENDIAN) 
+		{
             // Shortcut for integer formats unpacking
-            const unsigned int value = Bitwise::intRead(src, des.elemBytes);
+            const UINT32 value = Bitwise::intRead(src, des.elemBytes);
 
             *r = (UINT8)Bitwise::fixedToFixed((value & des.rmask)>>des.rshift, des.rbits, 8);
             *g = (UINT8)Bitwise::fixedToFixed((value & des.gmask)>>des.gshift, des.gbits, 8);
@@ -1089,22 +1023,26 @@ namespace BansheeEngine {
             {
                 *a = 255; // No alpha, default a component to full
             }
-        } else {
+        } 
+		else 
+		{
             // Do the operation with the more generic floating point
             float rr, gg, bb, aa;
-            unpackColour(&rr,&gg,&bb,&aa, pf, src);
+            unpackColor(&rr,&gg,&bb,&aa, format, src);
+
             *r = (UINT8)Bitwise::floatToFixed(rr, 8);
             *g = (UINT8)Bitwise::floatToFixed(gg, 8);
             *b = (UINT8)Bitwise::floatToFixed(bb, 8);
             *a = (UINT8)Bitwise::floatToFixed(aa, 8);
         }
     }
-    //-----------------------------------------------------------------------
-    void PixelUtil::unpackColour(float *r, float *g, float *b, float *a,
-        PixelFormat pf,  const void* src)
+
+    void PixelUtil::unpackColor(float* r, float* g, float* b, float* a, PixelFormat format, const void* src)
     {
-        const PixelFormatDescription &des = getDescriptionFor(pf);
-        if(des.flags & PFF_NATIVEENDIAN) {
+        const PixelFormatDescription &des = getDescriptionFor(format);
+
+        if(des.flags & PFF_NATIVEENDIAN) 
+		{
             // Shortcut for integer formats unpacking
             const unsigned int value = Bitwise::intRead(src, des.elemBytes);
 
@@ -1120,8 +1058,10 @@ namespace BansheeEngine {
             {
                 *a = 1.0f; // No alpha, default a component to full
             }
-        } else {
-            switch(pf)
+        } 
+		else 
+		{
+            switch(format)
             {
             case PF_FLOAT32_R:
                 *r = *g = *b = ((float*)src)[0];
@@ -1178,14 +1118,12 @@ namespace BansheeEngine {
 				*a = 1.0f;
 				break;
             default:
-                // Not yet supported
-                CM_EXCEPT(NotImplementedException,
-                    "unpack from "+getFormatName(pf)+" not implemented");
+                CM_EXCEPT(NotImplementedException, "Unpack from " + getFormatName(format) + " not implemented");
                 break;
             }
         }
     }
-    //-----------------------------------------------------------------------
+
     void PixelUtil::bulkPixelConversion(const PixelData &src, const PixelData &dst)
     {
         assert(src.getWidth() == dst.getWidth() &&
@@ -1207,7 +1145,8 @@ namespace BansheeEngine {
 		}
 
         // The easy case
-        if(src.getFormat() == dst.getFormat()) {
+        if(src.getFormat() == dst.getFormat()) 
+		{
             // Everything consecutive?
             if(src.isConsecutive() && dst.isConsecutive())
             {
@@ -1215,51 +1154,54 @@ namespace BansheeEngine {
                 return;
             }
 
-            const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.getFormat());
-            const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.getFormat());
+			const UINT32 srcPixelSize = PixelUtil::getNumElemBytes(src.getFormat());
+			const UINT32 dstPixelSize = PixelUtil::getNumElemBytes(dst.getFormat());
             UINT8 *srcptr = static_cast<UINT8*>(src.getData())
                 + (src.getLeft() + src.getTop() * src.getRowPitch() + src.getFront() * src.getSlicePitch()) * srcPixelSize;
             UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
 				+ (dst.getLeft() + dst.getTop() * dst.getRowPitch() + dst.getFront() * dst.getSlicePitch()) * dstPixelSize;
 
             // Calculate pitches+skips in bytes
-            const size_t srcRowPitchBytes = src.getRowPitch()*srcPixelSize;
-            //const size_t srcRowSkipBytes = src.getRowSkip()*srcPixelSize;
-            const size_t srcSliceSkipBytes = src.getSliceSkip()*srcPixelSize;
+			const UINT32 srcRowPitchBytes = src.getRowPitch()*srcPixelSize;
+			const UINT32 srcSliceSkipBytes = src.getSliceSkip()*srcPixelSize;
 
-            const size_t dstRowPitchBytes = dst.getRowPitch()*dstPixelSize;
-            //const size_t dstRowSkipBytes = dst.getRowSkip()*dstPixelSize;
-            const size_t dstSliceSkipBytes = dst.getSliceSkip()*dstPixelSize;
+			const UINT32 dstRowPitchBytes = dst.getRowPitch()*dstPixelSize;
+			const UINT32 dstSliceSkipBytes = dst.getSliceSkip()*dstPixelSize;
 
             // Otherwise, copy per row
-            const size_t rowSize = src.getWidth()*srcPixelSize;
-            for(size_t z=src.getFront(); z<src.getBack(); z++)
+			const UINT32 rowSize = src.getWidth()*srcPixelSize;
+			for (UINT32 z = src.getFront(); z < src.getBack(); z++)
             {
-                for(size_t y=src.getTop(); y<src.getBottom(); y++)
+                for(UINT32 y = src.getTop(); y < src.getBottom(); y++)
                 {
 					memcpy(dstptr, srcptr, rowSize);
+
                     srcptr += srcRowPitchBytes;
                     dstptr += dstRowPitchBytes;
                 }
+
                 srcptr += srcSliceSkipBytes;
                 dstptr += dstSliceSkipBytes;
             }
+
             return;
         }
+
 		// Converting to PF_X8R8G8B8 is exactly the same as converting to
 		// PF_A8R8G8B8. (same with PF_X8B8G8R8 and PF_A8B8G8R8)
 		if(dst.getFormat() == PF_X8R8G8B8 || dst.getFormat() == PF_X8B8G8R8)
 		{
 			// Do the same conversion, with PF_A8R8G8B8, which has a lot of
 			// optimized conversions
-			PixelFormat tempFormat = dst.getFormat()==PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
+			PixelFormat tempFormat = dst.getFormat() == PF_X8R8G8B8?PF_A8R8G8B8:PF_A8B8G8R8;
 			PixelData tempdst(dst.getWidth(), dst.getHeight(), dst.getDepth(), tempFormat);
 			bulkPixelConversion(src, tempdst);
 			return;
 		}
+
 		// Converting from PF_X8R8G8B8 is exactly the same as converting from
 		// PF_A8R8G8B8, given that the destination format does not have alpha.
-		if((src.getFormat() == PF_X8R8G8B8||src.getFormat() == PF_X8B8G8R8) && !hasAlpha(dst.getFormat()))
+		if((src.getFormat() == PF_X8R8G8B8 || src.getFormat() == PF_X8B8G8R8) && !hasAlpha(dst.getFormat()))
 		{
 			// Do the same conversion, with PF_A8R8G8B8, which has a lot of
 			// optimized conversions
@@ -1270,44 +1212,44 @@ namespace BansheeEngine {
 			return;
 		}
 
-        const size_t srcPixelSize = PixelUtil::getNumElemBytes(src.getFormat());
-        const size_t dstPixelSize = PixelUtil::getNumElemBytes(dst.getFormat());
+		const UINT32 srcPixelSize = PixelUtil::getNumElemBytes(src.getFormat());
+		const UINT32 dstPixelSize = PixelUtil::getNumElemBytes(dst.getFormat());
         UINT8 *srcptr = static_cast<UINT8*>(src.getData())
             + (src.getLeft() + src.getTop() * src.getRowPitch() + src.getFront() * src.getSlicePitch()) * srcPixelSize;
         UINT8 *dstptr = static_cast<UINT8*>(dst.getData())
             + (dst.getLeft() + dst.getTop() * dst.getRowPitch() + dst.getFront() * dst.getSlicePitch()) * dstPixelSize;
 		
-		// Old way, not taking into account box dimensions
-		//UINT8 *srcptr = static_cast<UINT8*>(src.data), *dstptr = static_cast<UINT8*>(dst.data);
-
         // Calculate pitches+skips in bytes
-        const size_t srcRowSkipBytes = src.getRowSkip()*srcPixelSize;
-        const size_t srcSliceSkipBytes = src.getSliceSkip()*srcPixelSize;
-        const size_t dstRowSkipBytes = dst.getRowSkip()*dstPixelSize;
-        const size_t dstSliceSkipBytes = dst.getSliceSkip()*dstPixelSize;
+		const UINT32 srcRowSkipBytes = src.getRowSkip()*srcPixelSize;
+		const UINT32 srcSliceSkipBytes = src.getSliceSkip()*srcPixelSize;
+		const UINT32 dstRowSkipBytes = dst.getRowSkip()*dstPixelSize;
+		const UINT32 dstSliceSkipBytes = dst.getSliceSkip()*dstPixelSize;
 
         // The brute force fallback
         float r,g,b,a;
-        for(size_t z=src.getFront(); z<src.getBack(); z++)
-        {
-            for(size_t y=src.getTop(); y<src.getBottom(); y++)
+		for (UINT32 z = src.getFront(); z<src.getBack(); z++)
+		{
+			for (UINT32 y = src.getTop(); y < src.getBottom(); y++)
             {
-                for(size_t x=src.getLeft(); x<src.getRight(); x++)
+				for (UINT32 x = src.getLeft(); x<src.getRight(); x++)
                 {
-                    unpackColour(&r, &g, &b, &a, src.getFormat(), srcptr);
-                    packColour(r, g, b, a, dst.getFormat(), dstptr);
+                    unpackColor(&r, &g, &b, &a, src.getFormat(), srcptr);
+                    packColor(r, g, b, a, dst.getFormat(), dstptr);
+
                     srcptr += srcPixelSize;
                     dstptr += dstPixelSize;
                 }
+
                 srcptr += srcRowSkipBytes;
                 dstptr += dstRowSkipBytes;
             }
+
             srcptr += srcSliceSkipBytes;
             dstptr += dstSliceSkipBytes;
         }
     }
 
-	void PixelUtil::scale(const PixelData &src, const PixelData &scaled, Filter filter)
+	void PixelUtil::scale(const PixelData& src, const PixelData& scaled, Filter filter)
 	{
 		assert(PixelUtil::isAccessible(src.getFormat()));
 		assert(PixelUtil::isAccessible(scaled.getFormat()));
@@ -1328,7 +1270,8 @@ namespace BansheeEngine {
 				temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
 				temp.allocateInternalBuffer();
 			}
-			// super-optimized: no conversion
+
+			// No conversion
 			switch (PixelUtil::getNumElemBytes(src.getFormat())) 
 			{
 			case 1: NearestResampler<1>::scale(src, temp); break;
@@ -1340,9 +1283,10 @@ namespace BansheeEngine {
 			case 12: NearestResampler<12>::scale(src, temp); break;
 			case 16: NearestResampler<16>::scale(src, temp); break;
 			default:
-				// never reached
+				// Never reached
 				assert(false);
 			}
+
 			if(temp.getData() != scaled.getData())
 			{
 				// Blit temp buffer
@@ -1350,6 +1294,7 @@ namespace BansheeEngine {
 
 				temp.freeInternalBuffer();
 			}
+
 			break;
 
 		case FILTER_LINEAR:
@@ -1372,7 +1317,8 @@ namespace BansheeEngine {
 					temp = PixelData(scaled.getWidth(), scaled.getHeight(), scaled.getDepth(), src.getFormat());
 					temp.allocateInternalBuffer();
 				}
-				// super-optimized: byte-oriented math, no conversion
+
+				// No conversion
 				switch (PixelUtil::getNumElemBytes(src.getFormat())) 
 				{
 				case 1: LinearResampler_Byte<1>::scale(src, temp); break;
@@ -1380,15 +1326,17 @@ namespace BansheeEngine {
 				case 3: LinearResampler_Byte<3>::scale(src, temp); break;
 				case 4: LinearResampler_Byte<4>::scale(src, temp); break;
 				default:
-					// never reached
+					// Never reached
 					assert(false);
 				}
+
 				if(temp.getData() != scaled.getData())
 				{
 					// Blit temp buffer
 					PixelUtil::bulkPixelConversion(temp, scaled);
 					temp.freeInternalBuffer();
 				}
+
 				break;
 			case PF_FLOAT32_RGB:
 			case PF_FLOAT32_RGBA:
@@ -1398,48 +1346,47 @@ namespace BansheeEngine {
 					LinearResampler_Float32::scale(src, scaled);
 					break;
 				}
-				// else, fall through
+				// Else, fall through
 			default:
-				// non-optimized: floating-point math, performs conversion but always works
+				// Fallback case, slow but works
 				LinearResampler::scale(src, scaled);
 			}
 			break;
 		}
 	}
 
-	//-----------------------------------------------------------------------------
-	void PixelUtil::applyGamma(UINT8 *buffer, float gamma, size_t size, UINT8 bpp)
+	void PixelUtil::applyGamma(UINT8* buffer, float gamma, UINT32 size, UINT8 bpp)
 	{
-		if( gamma == 1.0f )
+		if(gamma == 1.0f)
 			return;
-
-		//NB only 24/32-bit supported
-		if( bpp != 24 && bpp != 32 ) return;
 
 		UINT32 stride = bpp >> 3;
 
-		for( size_t i = 0, j = size / stride; i < j; i++, buffer += stride )
+		for(size_t i = 0, j = size / stride; i < j; i++, buffer += stride)
 		{
-			float r, g, b;
-
-			r = (float)buffer[0];
-			g = (float)buffer[1];
-			b = (float)buffer[2];
+			float r = (float)buffer[0];
+			float g = (float)buffer[1];
+			float b = (float)buffer[2];
 
 			r = r * gamma;
 			g = g * gamma;
 			b = b * gamma;
 
-			float scale = 1.0f, tmp;
+			float scale = 1.0f;
+			float tmp = 0.0f;
 
-			if( r > 255.0f && (tmp=(255.0f/r)) < scale )
-				scale = tmp;
-			if( g > 255.0f && (tmp=(255.0f/g)) < scale )
-				scale = tmp;
-			if( b > 255.0f && (tmp=(255.0f/b)) < scale )
+			if(r > 255.0f && (tmp=(255.0f/r)) < scale)
 				scale = tmp;
 
-			r *= scale; g *= scale; b *= scale;
+			if(g > 255.0f && (tmp=(255.0f/g)) < scale)
+				scale = tmp;
+
+			if(b > 255.0f && (tmp=(255.0f/b)) < scale)
+				scale = tmp;
+
+			r *= scale; 
+			g *= scale; 
+			b *= scale;
 
 			buffer[0] = (UINT8)r;
 			buffer[1] = (UINT8)g;

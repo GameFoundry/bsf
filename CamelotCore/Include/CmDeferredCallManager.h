@@ -23,9 +23,11 @@ namespace BansheeEngine
 		void queueDeferredCall(std::function<void()> func);
 
 		/**
-		 * @brief	Executes all the scheduled calls.
+		 * @brief	Executes all the scheduled calls. To be called once per frame.
+		 *
+		 * @note	Internal method.
 		 */
-		void update();
+		void _update();
 
 	private:
 		friend class DeferredCall;

@@ -106,7 +106,7 @@ namespace BansheeEngine
 
 			gCoreThread().update();
 			Platform::_update();
-			DeferredCallManager::instance().update();
+			DeferredCallManager::instance()._update();
 			RenderWindowManager::instance()._update();
 			gInput()._update();
 
@@ -145,7 +145,7 @@ namespace BansheeEngine
 			gTime().update();
 
 			gProfiler().endThread();
-			gProfiler().update();
+			gProfiler()._update();
 		}
 	}
 
@@ -171,7 +171,7 @@ namespace BansheeEngine
 	void Application::endCoreProfiling()
 	{
 		gProfiler().endThread();
-		gProfiler().updateCore();
+		gProfiler()._updateCore();
 	}
 
 	void Application::shutDown()

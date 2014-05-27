@@ -6,22 +6,34 @@
 
 namespace BansheeEngine
 {
-#define PROFILE_CALL(call, name) \
-	BansheeEngine::gProfiler().beginSample(##name##); \
-	call; \
+/**
+ * @brief	Shortcut for profiling a single function call.
+ */
+#define PROFILE_CALL(call, name)						\
+	BansheeEngine::gProfiler().beginSample(##name##);	\
+	call;												\
 	BansheeEngine::gProfiler().endSample(##name##);
 
+	/**
+	 * @brief	Contains data about a profiling session.
+	 */
 	struct ProfilerReport
 	{
 		CPUProfilerReport cpuReport;
 	};
 
+	/**
+	 * @brief	Type of thread used by the profiler.
+	 */
 	enum class ProfiledThread
 	{
 		Sim,
 		Core
 	};
 
+	/**
+	 * @brief	Provides performance measuring methods for the CPU.
+	 */
 	class CM_EXPORT Profiler : public Module<Profiler>
 	{
 	public:
@@ -89,16 +101,18 @@ namespace BansheeEngine
 		}
 
 		/**
-		 * @brief	Called every frame. Internal method.
+		 * @brief	Called every frame.
+		 *
+		 * @note	Internal method.
 		 */
-		void update();
+		void _update();
 
 		/**
-		 * @brief	Called every frame from the core thread. Internal method.
+		 * @brief	Called every frame from the core thread.
 		 * 			
-		 * @note	Only call from core thread.
+		 * @note	Internal method. Only call from core thread.
 		 */
-		void updateCore();
+		void _updateCore();
 
 		/**
 		 * @brief	Returns a profiler report for the specified frame, for the specified thread.
@@ -125,5 +139,8 @@ namespace BansheeEngine
 		CM_MUTEX(mSync);
 	};
 
+	/**
+	 * @brief	Quick way to access the profiler.
+	 */
 	CM_EXPORT Profiler& gProfiler();
 }

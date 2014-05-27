@@ -334,7 +334,7 @@ static const UINT32 depthBits[] =
         if(checkFormat(format))
             return format;
         /// Find first alternative
-        PixelComponentType pct = PixelUtil::getComponentType(format);
+        PixelComponentType pct = PixelUtil::getElementType(format);
         switch(pct)
         {
         case PCT_BYTE: format = PF_A8R8G8B8; break;

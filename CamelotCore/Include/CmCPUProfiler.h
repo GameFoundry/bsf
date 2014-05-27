@@ -7,45 +7,89 @@ namespace BansheeEngine
 	class CPUProfilerReport;
 
 	/**
-	 * @brief	Provides various performance measuring methods
+	 * @brief	Provides various performance measuring methods.
 	 * 			
 	 * @note	This class is thread safe. Matching begin*\end* calls
 	 * 			must belong to the same thread though.
 	 */
 	class CM_EXPORT CPUProfiler
 	{
+		/**
+		 * @brief	Timer class responsible for tracking elapsed time.
+		 */
 		class Timer
 		{
 		public:
 			Timer();
 
+			/**
+			 * @brief	Sets the start time for the timer.
+			 */
 			void start();
+
+			/**
+			 * @brief	Stops the timer and calculates the elapsed time
+			 *			from start time to now.
+			 */
 			void stop();
+
+			/**
+			 * @brief	Resets the elapsed time to zero.
+			 */
 			void reset();
 
 			double time;
 		private:
 			double startTime;
 
+			/**
+			 * @brief	Returns time elapsed since CPU was started in millseconds.
+			 */
 			static inline double getCurrentTime();
 		};
 
+		/**
+		 * @brief	Timer class responsible for tracking number of elapsed CPU cycles.
+		 */
 		class TimerPrecise
 		{
 		public:
 			TimerPrecise();
 
+			/**
+			 * @brief	Starts the counter marking the current number of executed
+			 *			CPU cycles since CPU was started.
+			 */
 			void start();
+
+			/**
+			 * @brief	Ends the counter and calculates the number of CPU cycles between
+			 *			now and the start time.
+			 */
 			void stop();
+
+			/**
+			 * @brief	Resets the cycle count to zero.
+			 */
 			void reset();
 
 			UINT64 cycles;
 		private:
 			UINT64 startCycles;
 
+			/**
+			 * @brief	Queries the CPU for the current number of CPU cycles executed since the
+			 *			program was started.
+			 */
 			static inline UINT64 getNumCycles();
 		};
 
+		/**
+		 * @brief	Contains data about a single profiler sample (counting time in milliseconds).
+		 *	
+		 * @note	A sample is created whenever a named profile block is entered. e.g. if you have a function
+		 *			you are profiling, and it gets called 10 times, there will be 10 samples.
+		 */
 		struct ProfileSample
 		{
 			ProfileSample(double _time, UINT64 _numAllocs, UINT64 _numFrees)
@@ -57,6 +101,12 @@ namespace BansheeEngine
 			UINT64 numFrees;
 		};
 
+		/**
+		 * @brief	Contains data about a single precise profiler sample (counting CPU cycles).
+		 *
+		 * @note	A sample is created whenever a named profile block is entered. e.g. if you have a function
+		 *			you are profiling, and it gets called 10 times, there will be 10 samples.
+		 */
 		struct PreciseProfileSample
 		{
 			PreciseProfileSample(UINT64 _cycles, UINT64 _numAllocs, UINT64 _numFrees)
@@ -68,39 +118,80 @@ namespace BansheeEngine
 			UINT64 numFrees;
 		};
 
+		/**
+		 * @brief	Contains basic (time based) profiling data contained in a profiling block.
+		 */
 		struct ProfileData
 		{
+			/**
+			 * @brief	Begins a new sample and records current sample state. Previous sample must
+			 *			not be active.
+			 */
+			void beginSample();
+
+			/**
+			 * @brief	Records current sample state and creates a new sample based on start and end state.
+			 *			Adds the sample to the sample list.
+			 */
+			void endSample();
+
+			/**
+			 * @brief	Removes the last added sample from the sample list and makes it active again. You must
+			 *			call endSample when done as if you called beginSample.
+			 */
+			void resumeLastSample();
+
 			ProfilerVector<ProfileSample> samples;
 			Timer timer;
 
 			UINT64 memAllocs;
 			UINT64 memFrees;
-
-			void beginSample();
-			void endSample();
-			void resumeLastSample();
 		};
 
+		/**
+		 * @brief	Contains precise (CPU cycle based) profiling data contained in a profiling block.
+		 */
 		struct PreciseProfileData
 		{
+			/**
+			 * @brief	Begins a new sample and records current sample state. Previous sample must
+			 *			not be active.
+			 */
+			void beginSample();
+
+			/**
+			 * @brief	Records current sample state and creates a new sample based on start and end state.
+			 *			Adds the sample to the sample list.
+			 */
+			void endSample();
+
+			/**
+			 * @brief	Removes the last added sample from the sample list and makes it active again. You must
+			 *			call endSample when done as if you called beginSample.
+			 */
+			void resumeLastSample();
+
 			ProfilerVector<PreciseProfileSample> samples;
 			TimerPrecise timer;
 
 			UINT64 memAllocs;
 			UINT64 memFrees;
-
-			void beginSample();
-			void endSample();
-			void resumeLastSample();
 		};
 
-		struct PreciseProfiledBlock;
-		struct ProfiledBlock;
-
+		/**
+		 * @brief	Contains all sampling information about a single named profiling block.
+		 *			Each block has its own sampling information and optionally child blocks.
+		 */
 		struct ProfiledBlock
 		{
 			ProfiledBlock();
 			~ProfiledBlock();
+
+			/**
+			 * @brief	Attempts to find a child block with the specified name. Returns
+			 *			null if not found.
+			 */
+			ProfiledBlock* findChild(const ProfilerString& name) const;
 
 			ProfilerString name;
 			
@@ -108,16 +199,20 @@ namespace BansheeEngine
 			PreciseProfileData precise;
 
 			ProfilerVector<ProfiledBlock*> children;
-
-			ProfiledBlock* findChild(const ProfilerString& name) const;
 		};
 
+		/**
+		 * @brief	CPU sampling type.
+		 */
 		enum class ActiveSamplingType
 		{
-			Basic,
-			Precise
+			Basic, /**< Sample using milliseconds. */
+			Precise /**< Sample using CPU cycles. */
 		};
 
+		/**
+		 * @brief	Contains data about the currently active profiling block.
+		 */
 		struct ActiveBlock
 		{
 			ActiveBlock()
@@ -132,9 +227,40 @@ namespace BansheeEngine
 			ProfiledBlock* block;
 		};
 
+		/**
+		 * @brief	Contains data about an active profiling thread.
+		 */
 		struct ThreadInfo
 		{
 			ThreadInfo();
+
+			/**
+			 * @brief	Starts profiling on the thread. New primary profiling block
+			 *			is created with the given name.
+			 */
+			void begin(const ProfilerString& _name);
+
+			/**
+			 * @brief	Ends profiling on the thread. You should end all samples before calling this,
+			 *			but if you don't they will be terminated automatically.
+			 */
+			void end();
+
+			/**
+			 * @brief	Deletes all internal profiling data and makes the object ready for another
+			 *			iteration. Should be called after end in order to delete any existing data.
+			 */
+			void reset();
+
+			/**
+			 * @brief	Gets the primary profiling block used by the thread.
+			 */
+			ProfiledBlock* getBlock();
+			
+			/**
+			 * @brief	Deletes the provided block.
+			 */
+			void releaseBlock(ProfiledBlock* block);
 
 			static CM_THREADLOCAL ThreadInfo* activeThread;
 			bool isActive;
@@ -143,13 +269,6 @@ namespace BansheeEngine
 
 			ProfilerStack<ActiveBlock> activeBlocks;
 			ActiveBlock activeBlock;
-
-			void begin(const ProfilerString& _name);
-			void end();
-			void reset();
-
-			ProfiledBlock* getBlock();
-			void releaseBlock(ProfiledBlock* block);
 		};
 
 	public:
@@ -222,6 +341,13 @@ namespace BansheeEngine
 		CPUProfilerReport generateReport();
 
 	private:
+		/**
+		 * @brief	Calculates overhead that the timing and sampling methods themselves introduce
+		 *			so we might get more accurate measurements when creating reports.
+		 */
+		void estimateTimerOverhead();
+
+	private:
 		double mBasicTimerOverhead;
 		UINT64 mPreciseTimerOverhead;
 
@@ -232,72 +358,90 @@ namespace BansheeEngine
 
 		ProfilerVector<ThreadInfo*> mActiveThreads;
 		CM_MUTEX(mThreadSync);
-
-		void estimateTimerOverhead();
 	};
 
+	/**
+	 * @brief	Profiling entry containing information about a single CPU profiling block
+	 *			containing timing information.
+	 */
 	struct CM_EXPORT CPUProfilerBasicSamplingEntry
 	{
 		struct CM_EXPORT Data
 		{
 			Data();
 
-			String name;
-			UINT32 numCalls;
+			String name; /**< Name of the profiling block. */
+			UINT32 numCalls; /**< Number of times the block was entered. */
 
-			UINT64 memAllocs;
-			UINT64 memFrees;
+			UINT64 memAllocs; /**< Number of memory allocations that happened within the block. */
+			UINT64 memFrees; /**< Number of memory deallocations that happened within the block. */
 
-			double avgTimeMs;
-			double maxTimeMs;
-			double totalTimeMs;
+			double avgTimeMs; /**< Average time it took to execute the block, per call. In milliseconds. */
+			double maxTimeMs; /**< Maximum time of a single call in the block. In milliseconds. */
+			double totalTimeMs; /**< Total time the block took, across all calls. In milliseconds. */
 
-			double avgSelfTimeMs;
-			double totalSelfTimeMs;
+			double avgSelfTimeMs; /**< Average time it took to execute the block, per call. Ignores time used by child blocks. In milliseconds. */
+			double totalSelfTimeMs; /**< Total time the block took, across all calls. Ignores time used by child blocks. In milliseconds. */
 
-			double estimatedSelfOverheadMs;
-			double estimatedOverheadMs;
+			double estimatedSelfOverheadMs; /**< Estimated overhead of profiling methods, only for this exact block. In milliseconds. */
+			double estimatedOverheadMs; /**< Estimated overhead of profiling methods for this block and all children. In milliseconds. */
 
-			float pctOfParent;
+			float pctOfParent; /**< Percent of parent block time this block took to execute. Ranging [0.0, 1.0]. */
 		} data;
 
 		ProfilerVector<CPUProfilerBasicSamplingEntry> childEntries;
 	};
 
+	/**
+	* @brief	Profiling entry containing information about a single CPU profiling block
+	*			containing CPU cycle count based information.
+	*/
 	struct CM_EXPORT CPUProfilerPreciseSamplingEntry
 	{
 		struct CM_EXPORT Data
 		{
 			Data();
 
-			String name;
-			UINT32 numCalls;
+			String name; /**< Name of the profiling block. */
+			UINT32 numCalls; /**< Number of times the block was entered. */
 
-			UINT64 memAllocs;
-			UINT64 memFrees;
+			UINT64 memAllocs; /**< Number of memory allocations that happened within the block. */
+			UINT64 memFrees; /**< Number of memory deallocations that happened within the block. */
 
-			UINT64 avgCycles;
-			UINT64 maxCycles;
-			UINT64 totalCycles;
+			UINT64 avgCycles; /**< Average number of cycles it took to execute the block, per call. */
+			UINT64 maxCycles; /**< Maximum number of cycles of a single call in the block. */
+			UINT64 totalCycles; /**< Total number of cycles across all calls in the block. */
 
-			UINT64 avgSelfCycles;
-			UINT64 totalSelfCycles;
+			UINT64 avgSelfCycles; /**< Average number of cycles it took to execute the block, per call. Ignores cycles used by child blocks. */
+			UINT64 totalSelfCycles; /**< Total number of cycles across all calls in the block. Ignores time used by child blocks. */
 
-			UINT64 estimatedSelfOverhead;
-			UINT64 estimatedOverhead;
+			UINT64 estimatedSelfOverhead; /**< Estimated overhead of profiling methods, only for this exact block. In cycles. */
+			UINT64 estimatedOverhead; /**< Estimated overhead of profiling methods for this block and all children. In cycles. */
 
-			float pctOfParent;
+			float pctOfParent; /**< Percent of parent block cycles used by this block. Ranging [0.0, 1.0]. */
 		} data;
 
 		ProfilerVector<CPUProfilerPreciseSamplingEntry> childEntries;
 	};
 
+	/**
+	 * @brief	CPU profiling report containing all profiling information for a single profiling session.
+	 */
 	class CM_EXPORT CPUProfilerReport
 	{
 	public:
 		CPUProfilerReport();
 
+		/**
+		 * @brief	Returns root entry for the basic (time based) sampling data. Root entry always contains the
+		 *			profiling block associated with the entire thread.
+		 */
 		const CPUProfilerBasicSamplingEntry& getBasicSamplingData() const { return mBasicSamplingRootEntry; }
+
+		/**
+		 * @brief	Returns root entry for the precise (CPU cycle based) sampling data. Root entry always contains the
+		 *			profiling block associated with the entire thread.
+		 */
 		const CPUProfilerPreciseSamplingEntry& getPreciseSamplingData() const { return mPreciseSamplingRootEntry; }
 
 	private:
