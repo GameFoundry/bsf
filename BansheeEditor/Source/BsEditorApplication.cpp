@@ -51,7 +51,7 @@ namespace BansheeEngine
 		renderWindowDesc.border = WindowBorder::None;
 
 		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
-		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeForwardRenderer"); // TODO - Make renderer and resource cache dir customizable
+		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeRenderer"); // TODO - Make renderer and resource cache dir customizable
 		EditorGUI::startUp();
 
 		{
@@ -181,7 +181,7 @@ namespace BansheeEngine
 
 		testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 		testShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
-		TechniquePtr newTechniqueGL = testShader->addTechnique("GLRenderSystem", "ForwardRenderer");
+		TechniquePtr newTechniqueGL = testShader->addTechnique("GLRenderSystem", "BansheeRenderer");
 		PassPtr newPassGL = newTechniqueGL->addPass();
 		newPassGL->setVertexProgram(vertProgRef);
 		newPassGL->setFragmentProgram(fragProgRef);
@@ -189,12 +189,12 @@ namespace BansheeEngine
 		// TODO - I need to create different techniques for different render systems (and renderers, if there were any),
 		// which is redundant as some techniques can be reused. I should add a functionality that supports multiple
 		// render systems/renderers per technique
-		TechniquePtr newTechniqueDX = testShader->addTechnique("D3D9RenderSystem", "ForwardRenderer");
+		TechniquePtr newTechniqueDX = testShader->addTechnique("D3D9RenderSystem", "BansheeRenderer");
 		PassPtr newPassDX = newTechniqueDX->addPass();
 		newPassDX->setVertexProgram(vertProgRef);
 		newPassDX->setFragmentProgram(fragProgRef);
 
-		TechniquePtr newTechniqueDX11 = testShader->addTechnique("D3D11RenderSystem", "ForwardRenderer");
+		TechniquePtr newTechniqueDX11 = testShader->addTechnique("D3D11RenderSystem", "BansheeRenderer");
 		PassPtr newPassDX11 = newTechniqueDX11->addPass();
 		newPassDX11->setVertexProgram(vertProgRef);
 		newPassDX11->setFragmentProgram(fragProgRef);
@@ -394,9 +394,9 @@ namespace BansheeEngine
 
 	const String& EditorApplication::getLibraryNameForRenderSystem(RenderSystemPlugin plugin)
 	{
-		static String DX11Name = "CamelotD3D11RenderSystem";
-		static String DX9Name = "CamelotD3D9RenderSystem";
-		static String OpenGLName = "CamelotGLRenderSystem";
+		static String DX11Name = "BansheeD3D11RenderSystem";
+		static String DX9Name = "BansheeD3D9RenderSystem";
+		static String OpenGLName = "BansheeGLRenderSystem";
 
 		switch(plugin)
 		{

@@ -30,11 +30,11 @@ namespace BansheeEngine
 		desc.renderer= renderer;
 		desc.primaryWindowDesc = primaryWindowDesc;
 
-		desc.input = "CamelotOISInput";
-		desc.sceneManager = "BansheeOctreeSM";
-		desc.importers.push_back("CamelotFreeImgImporter");
-		desc.importers.push_back("CamelotFBXImporter");
-		desc.importers.push_back("CamelotFontImporter");
+		desc.input = "BansheeOISInput";
+		desc.sceneManager = "BansheeSceneManager";
+		desc.importers.push_back("BansheeFreeImgImporter");
+		desc.importers.push_back("BansheeFBXImporter");
+		desc.importers.push_back("BansheeFontImporter");
 		
 		gApplication().startUp(desc);
 

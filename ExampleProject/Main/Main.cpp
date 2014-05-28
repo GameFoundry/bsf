@@ -105,7 +105,7 @@ namespace BansheeEngine
 		exampleShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 		exampleShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
 
-		TechniquePtr technique = exampleShader->addTechnique("D3D11RenderSystem", "ForwardRenderer"); // TODO - This render system and forward renderer names should at least match the above names used for initialization
+		TechniquePtr technique = exampleShader->addTechnique("D3D11RenderSystem", "BansheeRenderer"); // TODO - This render system and forward renderer names should at least match the above names used for initialization
 		PassPtr pass = technique->addPass();
 		pass->setVertexProgram(exampleVertexGPUProg);
 		pass->setFragmentProgram(exampleFragmentGPUProg);
@@ -189,12 +189,11 @@ int CALLBACK WinMain(
 	)
 {
 	RENDER_WINDOW_DESC renderWindowDesc;
-	renderWindowDesc.width = resolutionWidth;
-	renderWindowDesc.height = resolutionHeight;
+	renderWindowDesc.videoMode = VideoMode(resolutionWidth, resolutionHeight);
 	renderWindowDesc.title = "Banshee Example App";
 	renderWindowDesc.fullscreen = false;
 
-	gBansheeApp().startUp(renderWindowDesc, "CamelotD3D11RenderSystem", "BansheeForwardRenderer"); // TODO - Use enums instead of names. BansheeApp is a high level system that doesn't need to be as customizable.
+	gBansheeApp().startUp(renderWindowDesc, "BansheeD3D11RenderSystem", "BansheeRenderer"); // TODO - Use enums instead of names. BansheeApp is a high level system that doesn't need to be as customizable.
 	setUpExample();
 	
 	gBansheeApp().runMainLoop();

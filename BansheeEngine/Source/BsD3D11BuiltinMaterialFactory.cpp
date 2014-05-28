@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	const String& D3D11BuiltinMaterialFactory::getSupportedRenderSystem() const
 	{
-		static String renderSystem = "CamelotD3D11RenderSystem";
+		static String renderSystem = "BansheeD3D11RenderSystem";
 
 		return renderSystem;
 	}

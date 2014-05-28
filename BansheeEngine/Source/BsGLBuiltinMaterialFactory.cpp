@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	const String& GLBuiltinMaterialFactory::getSupportedRenderSystem() const
 	{
-		static String renderSystem = "CamelotGLRenderSystem";
+		static String renderSystem = "BansheeGLRenderSystem";
 
 		return renderSystem;
 	}
