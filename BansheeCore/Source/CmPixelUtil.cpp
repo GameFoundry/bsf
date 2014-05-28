@@ -5,242 +5,251 @@
 
 namespace BansheeEngine 
 {
-	//-----------------------------------------------------------------------
-    /**
-    * Resamplers
-    */
+	/**
+	 * @brief	Performs pixel data resampling using the point filter (nearest neighbor).
+	 *			Does not perform format conversions.
+	 *
+	 * @tparam elementSize	Size of a single pixel in bytes.
+	 */
+	template<UINT32 elementSize> struct NearestResampler 
+	{
+		static void scale(const PixelData& source, const PixelData& dest) 
+		{
+			UINT8* sourceData = source.getData();
+			UINT8* destPtr = dest.getData();
 
-	// variable name hints:
-	// sx_48 = 16/48-bit fixed-point x-position in source
-	// stepx = difference between adjacent sx_48 values
-	// sx1 = lower-bound integer x-position in source
-	// sx2 = upper-bound integer x-position in source
-	// sxf = fractional weight beween sx1 and sx2
-	// x,y,z = location of output pixel in destination
+			// Get steps for traversing source data in 16/48 fixed point format
+			UINT64 stepX = ((UINT64)source.getWidth() << 48) / dest.getWidth();
+			UINT64 stepY = ((UINT64)source.getHeight() << 48) / dest.getHeight();
+			UINT64 stepZ = ((UINT64)source.getDepth() << 48) / dest.getDepth();
 
-	// nearest-neighbor resampler, does not convert formats.
-	// templated on bytes-per-pixel to allow compiler optimizations, such
-	// as simplifying memcpy() and replacing multiplies with bitshifts
-	template<unsigned int elemsize> struct NearestResampler {
-		static void scale(const PixelData& src, const PixelData& dst) {
-			// assert(src.format == dst.format);
+			UINT64 curZ = (stepZ >> 1) - 1; // Offset half a pixel to start at pixel center
+			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ) 
+			{
+				UINT32 offsetZ = (UINT32)(curZ >> 48) * source.getSlicePitch();
 
-			// srcdata stays at beginning, pdst is a moving pointer
-			UINT8* srcdata = (UINT8*)src.getData();
-			UINT8* pdst = (UINT8*)dst.getData();
+				UINT64 curY = (stepY >> 1) - 1; // Offset half a pixel to start at pixel center
+				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY) 
+				{
+					UINT32 offsetY = (UINT32)(curY >> 48) * source.getRowPitch();
 
-			// sx_48,sy_48,sz_48 represent current position in source
-			// using 16/48-bit fixed precision, incremented by steps
-			UINT64 stepx = ((UINT64)src.getWidth() << 48) / dst.getWidth();
-			UINT64 stepy = ((UINT64)src.getHeight() << 48) / dst.getHeight();
-			UINT64 stepz = ((UINT64)src.getDepth() << 48) / dst.getDepth();
+					UINT64 curX = (stepX >> 1) - 1; // Offset half a pixel to start at pixel center
+					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX) 
+					{
+						UINT32 offsetX = (UINT32)(curX >> 48);
+						UINT32 offsetBytes = elementSize*(offsetX + offsetY + offsetZ);
 
-			// note: ((stepz>>1) - 1) is an extra half-step increment to adjust
-			// for the center of the destination pixel, not the top-left corner
-			UINT64 sz_48 = (stepz >> 1) - 1;
-			for (size_t z = dst.getFront(); z < dst.getBack(); z++, sz_48 += stepz) {
-				size_t srczoff = (size_t)(sz_48 >> 48) * src.getSlicePitch();
-
-				UINT64 sy_48 = (stepy >> 1) - 1;
-				for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48 += stepy) {
-					size_t srcyoff = (size_t)(sy_48 >> 48) * src.getRowPitch();
-
-					UINT64 sx_48 = (stepx >> 1) - 1;
-					for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48 += stepx) {
-						UINT8* psrc = srcdata +
-							elemsize*((size_t)(sx_48 >> 48) + srcyoff + srczoff);
-						memcpy(pdst, psrc, elemsize);
-						pdst += elemsize;
+						UINT8* curSourcePtr = sourceData + offsetBytes;
+							
+						memcpy(destPtr, curSourcePtr, elementSize);
+						destPtr += elementSize;
 					}
-					pdst += elemsize*dst.getRowSkip();
+
+					destPtr += elementSize*dest.getRowSkip();
 				}
-				pdst += elemsize*dst.getSliceSkip();
+
+				destPtr += elementSize*dest.getSliceSkip();
 			}
 		}
 	};
 
+	/**
+	 * @brief	Performs pixel data resampling using the box filter (linear).
+	 *			Performs format conversions.
+	 */
+	struct LinearResampler 
+	{
+		static void scale(const PixelData& source, const PixelData& dest) 
+		{
+			UINT32 sourceElemSize = PixelUtil::getNumElemBytes(source.getFormat());
+			UINT32 destElemSize = PixelUtil::getNumElemBytes(dest.getFormat());
 
-	// default floating-point linear resampler, does format conversion
-	struct LinearResampler {
-		static void scale(const PixelData& src, const PixelData& dst) {
-			size_t srcelemsize = PixelUtil::getNumElemBytes(src.getFormat());
-			size_t dstelemsize = PixelUtil::getNumElemBytes(dst.getFormat());
+			UINT8* sourceData = source.getData();
+			UINT8* destPtr = dest.getData();
 
-			// srcdata stays at beginning, pdst is a moving pointer
-			UINT8* srcdata = (UINT8*)src.getData();
-			UINT8* pdst = (UINT8*)dst.getData();
+			// Get steps for traversing source data in 16/48 fixed point precision format
+			UINT64 stepX = ((UINT64)source.getWidth() << 48) / dest.getWidth();
+			UINT64 stepY = ((UINT64)source.getHeight() << 48) / dest.getHeight();
+			UINT64 stepZ = ((UINT64)source.getDepth() << 48) / dest.getDepth();
 
-			// sx_48,sy_48,sz_48 represent current position in source
-			// using 16/48-bit fixed precision, incremented by steps
-			UINT64 stepx = ((UINT64)src.getWidth() << 48) / dst.getWidth();
-			UINT64 stepy = ((UINT64)src.getHeight() << 48) / dst.getHeight();
-			UINT64 stepz = ((UINT64)src.getDepth() << 48) / dst.getDepth();
+			// Contains 16/16 fixed point precision format. Most significant
+			// 16 bits will contain the coordinate in the source image, and the
+			// least significant 16 bits will contain the fractional part of the coordinate
+			// that will be used for determining the blend amount.
+			UINT32 temp = 0;
 
-			// temp is 16/16 bit fixed precision, used to adjust a source
-			// coordinate (x, y, or z) backwards by half a pixel so that the
-			// integer bits represent the first sample (eg, sx1) and the
-			// fractional bits are the blend weight of the second sample
-			unsigned int temp;
-
-			// note: ((stepz>>1) - 1) is an extra half-step increment to adjust
-			// for the center of the destination pixel, not the top-left corner
-			UINT64 sz_48 = (stepz >> 1) - 1;
-			for (size_t z = dst.getFront(); z < dst.getBack(); z++, sz_48+=stepz) {
-				temp = static_cast<unsigned int>(sz_48 >> 32);
+			UINT64 curZ = (stepZ >> 1) - 1; // Offset half a pixel to start at pixel center
+			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ) 
+			{
+				temp = UINT32(curZ >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
-				size_t sz1 = temp >> 16;				 // src z, sample #1
-				size_t sz2 = std::min(sz1+1,(size_t)src.getDepth()-1);// src z, sample #2
-				float szf = (temp & 0xFFFF) / 65536.f; // weight of sample #2
+				UINT32 sampleCoordZ1 = temp >> 16;
+				UINT32 sampleCoordZ2 = std::min(sampleCoordZ1 + 1, (UINT32)source.getDepth() - 1);
+				float sampleWeightZ = (temp & 0xFFFF) / 65536.0f; 
 
-				UINT64 sy_48 = (stepy >> 1) - 1;
-				for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48+=stepy) {
-					temp = static_cast<unsigned int>(sy_48 >> 32);
+				UINT64 curY = (stepY >> 1) - 1; // Offset half a pixel to start at pixel center
+				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY) 
+				{
+					temp = (UINT32)(curY >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
-					size_t sy1 = temp >> 16;					// src y #1
-					size_t sy2 = std::min(sy1+1,(size_t)src.getHeight()-1);// src y #2
-					float syf = (temp & 0xFFFF) / 65536.f; // weight of #2
+					UINT32 sampleCoordY1 = temp >> 16;
+					UINT32 sampleCoordY2 = std::min(sampleCoordY1 + 1, (UINT32)source.getHeight() - 1);
+					float sampleWeightY = (temp & 0xFFFF) / 65536.0f;
 
-					UINT64 sx_48 = (stepx >> 1) - 1;
-					for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48+=stepx) {
-						temp = static_cast<unsigned int>(sx_48 >> 32);
+					UINT64 curX = (stepX >> 1) - 1; // Offset half a pixel to start at pixel center
+					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX) 
+					{
+						temp = (UINT32)(curX >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
-						size_t sx1 = temp >> 16;					// src x #1
-						size_t sx2 = std::min(sx1+1,(size_t)src.getWidth()-1);// src x #2
-						float sxf = (temp & 0xFFFF) / 65536.f; // weight of #2
+						UINT32 sampleCoordX1 = temp >> 16;
+						UINT32 sampleCoordX2 = std::min(sampleCoordX1 + 1, (UINT32)source.getWidth() - 1);
+						float sampleWeightX = (temp & 0xFFFF) / 65536.0f;
 
 						Color x1y1z1, x2y1z1, x1y2z1, x2y2z1;
 						Color x1y1z2, x2y1z2, x1y2z2, x2y2z2;
 
-#define UNPACK(dst,x,y,z) PixelUtil::unpackColor(&dst, src.getFormat(), \
-	srcdata + srcelemsize*((x)+(y)*src.getRowPitch()+(z)*src.getSlicePitch()))
+#define GETSOURCEDATA(x, y, z) sourceData + sourceElemSize*((x)+(y)*source.getRowPitch() + (z)*source.getSlicePitch())
 
-						UNPACK(x1y1z1,sx1,sy1,sz1); UNPACK(x2y1z1,sx2,sy1,sz1);
-						UNPACK(x1y2z1,sx1,sy2,sz1); UNPACK(x2y2z1,sx2,sy2,sz1);
-						UNPACK(x1y1z2,sx1,sy1,sz2); UNPACK(x2y1z2,sx2,sy1,sz2);
-						UNPACK(x1y2z2,sx1,sy2,sz2); UNPACK(x2y2z2,sx2,sy2,sz2);
-#undef UNPACK
+						PixelUtil::unpackColor(&x1y1z1, source.getFormat(), GETSOURCEDATA(sampleCoordX1, sampleCoordY1, sampleCoordZ1));
+						PixelUtil::unpackColor(&x2y1z1, source.getFormat(), GETSOURCEDATA(sampleCoordX2, sampleCoordY1, sampleCoordZ1));
+						PixelUtil::unpackColor(&x1y2z1, source.getFormat(), GETSOURCEDATA(sampleCoordX1, sampleCoordY2, sampleCoordZ1));
+						PixelUtil::unpackColor(&x2y2z1, source.getFormat(), GETSOURCEDATA(sampleCoordX2, sampleCoordY2, sampleCoordZ1));
+						PixelUtil::unpackColor(&x1y1z2, source.getFormat(), GETSOURCEDATA(sampleCoordX1, sampleCoordY1, sampleCoordZ2));
+						PixelUtil::unpackColor(&x2y1z2, source.getFormat(), GETSOURCEDATA(sampleCoordX2, sampleCoordY1, sampleCoordZ2));
+						PixelUtil::unpackColor(&x1y2z2, source.getFormat(), GETSOURCEDATA(sampleCoordX1, sampleCoordY2, sampleCoordZ2));
+						PixelUtil::unpackColor(&x2y2z2, source.getFormat(), GETSOURCEDATA(sampleCoordX2, sampleCoordY2, sampleCoordZ2));
+#undef GETSOURCEDATA
 
 						Color accum =
-							x1y1z1 * ((1.0f - sxf)*(1.0f - syf)*(1.0f - szf)) +
-							x2y1z1 * (        sxf *(1.0f - syf)*(1.0f - szf)) +
-							x1y2z1 * ((1.0f - sxf)*        syf *(1.0f - szf)) +
-							x2y2z1 * (        sxf *        syf *(1.0f - szf)) +
-							x1y1z2 * ((1.0f - sxf)*(1.0f - syf)*        szf ) +
-							x2y1z2 * (        sxf *(1.0f - syf)*        szf ) +
-							x1y2z2 * ((1.0f - sxf)*        syf *        szf ) +
-							x2y2z2 * (        sxf *        syf *        szf );
+							x1y1z1 * ((1.0f - sampleWeightX)*(1.0f - sampleWeightY)*(1.0f - sampleWeightZ)) +
+							x2y1z1 * (        sampleWeightX *(1.0f - sampleWeightY)*(1.0f - sampleWeightZ)) +
+							x1y2z1 * ((1.0f - sampleWeightX)*        sampleWeightY *(1.0f - sampleWeightZ)) +
+							x2y2z1 * (        sampleWeightX *        sampleWeightY *(1.0f - sampleWeightZ)) +
+							x1y1z2 * ((1.0f - sampleWeightX)*(1.0f - sampleWeightY)*        sampleWeightZ ) +
+							x2y1z2 * (        sampleWeightX *(1.0f - sampleWeightY)*        sampleWeightZ ) +
+							x1y2z2 * ((1.0f - sampleWeightX)*        sampleWeightY *        sampleWeightZ ) +
+							x2y2z2 * (        sampleWeightX *        sampleWeightY *        sampleWeightZ );
 
-						PixelUtil::packColor(accum, dst.getFormat(), pdst);
+						PixelUtil::packColor(accum, dest.getFormat(), destPtr);
 
-						pdst += dstelemsize;
+						destPtr += destElemSize;
 					}
-					pdst += dstelemsize*dst.getRowSkip();
+
+					destPtr += destElemSize * dest.getRowSkip();
 				}
-				pdst += dstelemsize*dst.getSliceSkip();
+
+				destPtr += destElemSize * dest.getSliceSkip();
 			}
 		}
 	};
 
 
-	// float32 linear resampler, converts FLOAT32_RGB/FLOAT32_RGBA only.
-	// avoids overhead of pixel unpack/repack function calls
-	struct LinearResampler_Float32 {
-		static void scale(const PixelData& src, const PixelData& dst) {
-			size_t srcchannels = PixelUtil::getNumElemBytes(src.getFormat()) / sizeof(float);
-			size_t dstchannels = PixelUtil::getNumElemBytes(dst.getFormat()) / sizeof(float);
-			// assert(srcchannels == 3 || srcchannels == 4);
-			// assert(dstchannels == 3 || dstchannels == 4);
+	/**
+	 * @brief	Performs pixel data resampling using the box filter (linear).
+	 *			Only handles float RGB or RGBA pixel data (32 bits per channel).
+	 */
+	struct LinearResampler_Float32 
+	{
+		static void scale(const PixelData& source, const PixelData& dest) 
+		{
+			UINT32 numSourceChannels = PixelUtil::getNumElemBytes(source.getFormat()) / sizeof(float);
+			UINT32 numDestChannels = PixelUtil::getNumElemBytes(dest.getFormat()) / sizeof(float);
 
-			// srcdata stays at beginning, pdst is a moving pointer
-			float* srcdata = (float*)src.getData();
-			float* pdst = (float*)dst.getData();
+			float* sourceData = (float*)source.getData();
+			float* destPtr = (float*)dest.getData();
 
-			// sx_48,sy_48,sz_48 represent current position in source
-			// using 16/48-bit fixed precision, incremented by steps
-			UINT64 stepx = ((UINT64)src.getWidth() << 48) / dst.getWidth();
-			UINT64 stepy = ((UINT64)src.getHeight() << 48) / dst.getHeight();
-			UINT64 stepz = ((UINT64)src.getDepth() << 48) / dst.getDepth();
+			// Get steps for traversing source data in 16/48 fixed point precision format
+			UINT64 stepX = ((UINT64)source.getWidth() << 48) / dest.getWidth();
+			UINT64 stepY = ((UINT64)source.getHeight() << 48) / dest.getHeight();
+			UINT64 stepZ = ((UINT64)source.getDepth() << 48) / dest.getDepth();
 
-			// temp is 16/16 bit fixed precision, used to adjust a source
-			// coordinate (x, y, or z) backwards by half a pixel so that the
-			// integer bits represent the first sample (eg, sx1) and the
-			// fractional bits are the blend weight of the second sample
-			unsigned int temp;
+			// Contains 16/16 fixed point precision format. Most significant
+			// 16 bits will contain the coordinate in the source image, and the
+			// least significant 16 bits will contain the fractional part of the coordinate
+			// that will be used for determining the blend amount.
+			UINT32 temp = 0;
 
-			// note: ((stepz>>1) - 1) is an extra half-step increment to adjust
-			// for the center of the destination pixel, not the top-left corner
-			UINT64 sz_48 = (stepz >> 1) - 1;
-			for (size_t z = dst.getFront(); z < dst.getBack(); z++, sz_48+=stepz) {
-				temp = static_cast<unsigned int>(sz_48 >> 32);
+			UINT64 curZ = (stepZ >> 1) - 1; // Offset half a pixel to start at pixel center
+			for (UINT32 z = dest.getFront(); z < dest.getBack(); z++, curZ += stepZ) 
+			{
+				temp = (UINT32)(curZ >> 32);
 				temp = (temp > 0x8000)? temp - 0x8000 : 0;
-				size_t sz1 = temp >> 16;				 // src z, sample #1
-				size_t sz2 = std::min(sz1+1,(size_t)src.getDepth()-1);// src z, sample #2
-				float szf = (temp & 0xFFFF) / 65536.f; // weight of sample #2
+				UINT32 sampleCoordZ1 = temp >> 16;
+				UINT32 sampleCoordZ2 = std::min(sampleCoordZ1 + 1, (UINT32)source.getDepth() - 1);
+				float sampleWeightZ = (temp & 0xFFFF) / 65536.0f;
 
-				UINT64 sy_48 = (stepy >> 1) - 1;
-				for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48+=stepy) {
-					temp = static_cast<unsigned int>(sy_48 >> 32);
+				UINT64 curY = (stepY >> 1) - 1; // Offset half a pixel to start at pixel center
+				for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY) 
+				{
+					temp = (UINT32)(curY >> 32);
 					temp = (temp > 0x8000)? temp - 0x8000 : 0;
-					size_t sy1 = temp >> 16;					// src y #1
-					size_t sy2 = std::min(sy1+1,(size_t)src.getHeight()-1);// src y #2
-					float syf = (temp & 0xFFFF) / 65536.f; // weight of #2
+					UINT32 sampleCoordY1 = temp >> 16;
+					UINT32 sampleCoordY2 = std::min(sampleCoordY1 + 1, (UINT32)source.getHeight() - 1);
+					float sampleWeightY = (temp & 0xFFFF) / 65536.0f;
 
-					UINT64 sx_48 = (stepx >> 1) - 1;
-					for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48+=stepx) {
-						temp = static_cast<unsigned int>(sx_48 >> 32);
+					UINT64 curX = (stepX >> 1) - 1; // Offset half a pixel to start at pixel center
+					for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX) 
+					{
+						temp = (UINT32)(curX >> 32);
 						temp = (temp > 0x8000)? temp - 0x8000 : 0;
-						size_t sx1 = temp >> 16;					// src x #1
-						size_t sx2 = std::min(sx1+1,(size_t)src.getWidth()-1);// src x #2
-						float sxf = (temp & 0xFFFF) / 65536.f; // weight of #2
+						UINT32 sampleCoordX1 = temp >> 16;
+						UINT32 sampleCoordX2 = std::min(sampleCoordX1 + 1, (UINT32)source.getWidth() - 1);
+						float sampleWeightX = (temp & 0xFFFF) / 65536.0f;
 
 						// process R,G,B,A simultaneously for cache coherence?
 						float accum[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
+
 #define ACCUM3(x,y,z,factor) \
 						{ float f = factor; \
-						size_t off = (x+y*src.getRowPitch()+z*src.getSlicePitch())*srcchannels; \
-						accum[0]+=srcdata[off+0]*f; accum[1]+=srcdata[off+1]*f; \
-						accum[2]+=srcdata[off+2]*f; }
+						UINT32 offset = (x + y*source.getRowPitch() + z*source.getSlicePitch())*numSourceChannels; \
+						accum[0] += sourceData[offset + 0] * f; accum[1] += sourceData[offset + 1] * f; \
+						accum[2] += sourceData[offset + 2] * f; }
 
 #define ACCUM4(x,y,z,factor) \
 						{ float f = factor; \
-						size_t off = (x+y*src.getRowPitch()+z*src.getSlicePitch())*srcchannels; \
-						accum[0]+=srcdata[off+0]*f; accum[1]+=srcdata[off+1]*f; \
-						accum[2]+=srcdata[off+2]*f; accum[3]+=srcdata[off+3]*f; }
+						UINT32 offset = (x + y*source.getRowPitch() + z*source.getSlicePitch())*numSourceChannels; \
+						accum[0] += sourceData[offset + 0] * f; accum[1] += sourceData[offset + 1] * f; \
+						accum[2] += sourceData[offset + 2] * f; accum[3] += sourceData[offset + 3] * f; }
 
-						if (srcchannels == 3 || dstchannels == 3) {
-							// RGB, no alpha
-							ACCUM3(sx1,sy1,sz1,(1.0f-sxf)*(1.0f-syf)*(1.0f-szf));
-							ACCUM3(sx2,sy1,sz1,      sxf *(1.0f-syf)*(1.0f-szf));
-							ACCUM3(sx1,sy2,sz1,(1.0f-sxf)*      syf *(1.0f-szf));
-							ACCUM3(sx2,sy2,sz1,      sxf *      syf *(1.0f-szf));
-							ACCUM3(sx1,sy1,sz2,(1.0f-sxf)*(1.0f-syf)*      szf );
-							ACCUM3(sx2,sy1,sz2,      sxf *(1.0f-syf)*      szf );
-							ACCUM3(sx1,sy2,sz2,(1.0f-sxf)*      syf *      szf );
-							ACCUM3(sx2,sy2,sz2,      sxf *      syf *      szf );
+						if (numSourceChannels == 3 || numDestChannels == 3)
+						{
+							// RGB
+							ACCUM3(sampleCoordX1, sampleCoordY1, sampleCoordZ1, (1.0f - sampleWeightX) * (1.0f - sampleWeightY) * (1.0f - sampleWeightZ));
+							ACCUM3(sampleCoordX2, sampleCoordY1, sampleCoordZ1, sampleWeightX		   * (1.0f - sampleWeightY) * (1.0f - sampleWeightZ));
+							ACCUM3(sampleCoordX1, sampleCoordY2, sampleCoordZ1, (1.0f - sampleWeightX) * sampleWeightY			* (1.0f - sampleWeightZ));
+							ACCUM3(sampleCoordX2, sampleCoordY2, sampleCoordZ1, sampleWeightX		   * sampleWeightY		    * (1.0f - sampleWeightZ));
+							ACCUM3(sampleCoordX1, sampleCoordY1, sampleCoordZ2, (1.0f - sampleWeightX) * (1.0f - sampleWeightY) * sampleWeightZ);
+							ACCUM3(sampleCoordX2, sampleCoordY1, sampleCoordZ2, sampleWeightX		   * (1.0f - sampleWeightY) * sampleWeightZ);
+							ACCUM3(sampleCoordX1, sampleCoordY2, sampleCoordZ2, (1.0f - sampleWeightX) * sampleWeightY			* sampleWeightZ);
+							ACCUM3(sampleCoordX2, sampleCoordY2, sampleCoordZ2, sampleWeightX		   * sampleWeightY			* sampleWeightZ);
 							accum[3] = 1.0f;
-						} else {
+						}
+						else 
+						{
 							// RGBA
-							ACCUM4(sx1,sy1,sz1,(1.0f-sxf)*(1.0f-syf)*(1.0f-szf));
-							ACCUM4(sx2,sy1,sz1,      sxf *(1.0f-syf)*(1.0f-szf));
-							ACCUM4(sx1,sy2,sz1,(1.0f-sxf)*      syf *(1.0f-szf));
-							ACCUM4(sx2,sy2,sz1,      sxf *      syf *(1.0f-szf));
-							ACCUM4(sx1,sy1,sz2,(1.0f-sxf)*(1.0f-syf)*      szf );
-							ACCUM4(sx2,sy1,sz2,      sxf *(1.0f-syf)*      szf );
-							ACCUM4(sx1,sy2,sz2,(1.0f-sxf)*      syf *      szf );
-							ACCUM4(sx2,sy2,sz2,      sxf *      syf *      szf );
+							ACCUM4(sampleCoordX1, sampleCoordY1, sampleCoordZ1, (1.0f - sampleWeightX) * (1.0f - sampleWeightY) * (1.0f - sampleWeightZ));
+							ACCUM4(sampleCoordX2, sampleCoordY1, sampleCoordZ1, sampleWeightX		   * (1.0f - sampleWeightY) * (1.0f - sampleWeightZ));
+							ACCUM4(sampleCoordX1, sampleCoordY2, sampleCoordZ1, (1.0f - sampleWeightX) * sampleWeightY			* (1.0f - sampleWeightZ));
+							ACCUM4(sampleCoordX2, sampleCoordY2, sampleCoordZ1, sampleWeightX		   * sampleWeightY			* (1.0f - sampleWeightZ));
+							ACCUM4(sampleCoordX1, sampleCoordY1, sampleCoordZ2, (1.0f - sampleWeightX) * (1.0f - sampleWeightY) * sampleWeightZ);
+							ACCUM4(sampleCoordX2, sampleCoordY1, sampleCoordZ2, sampleWeightX		   * (1.0f - sampleWeightY) * sampleWeightZ);
+							ACCUM4(sampleCoordX1, sampleCoordY2, sampleCoordZ2, (1.0f - sampleWeightX) * sampleWeightY			* sampleWeightZ);
+							ACCUM4(sampleCoordX2, sampleCoordY2, sampleCoordZ2, sampleWeightX		   * sampleWeightY			* sampleWeightZ);
 						}
 
-						memcpy(pdst, accum, sizeof(float)*dstchannels);
+						memcpy(destPtr, accum, sizeof(float)*numDestChannels);
 
 #undef ACCUM3
 #undef ACCUM4
 
-						pdst += dstchannels;
+						destPtr += numDestChannels;
 					}
-					pdst += dstchannels*dst.getRowSkip();
+
+					destPtr += numDestChannels*dest.getRowSkip();
 				}
-				pdst += dstchannels*dst.getSliceSkip();
+
+				destPtr += numDestChannels*dest.getSliceSkip();
 			}
 		}
 	};
@@ -252,62 +261,74 @@ namespace BansheeEngine
 	// 2D only; punts 3D pixelboxes to default LinearResampler (slow).
 	// templated on bytes-per-pixel to allow compiler optimizations, such
 	// as unrolling loops and replacing multiplies with bitshifts
-	template<unsigned int channels> struct LinearResampler_Byte {
-		static void scale(const PixelData& src, const PixelData& dst) {
-			// assert(src.format == dst.format);
 
-			// only optimized for 2D
-			if (src.getDepth() > 1 || dst.getDepth() > 1) {
-				LinearResampler::scale(src, dst);
+	/**
+	 * @brief	Performs pixel data resampling using the box filter (linear).
+	 *			Only handles pixel formats with one byte per channel. Does
+	 *			not perform format conversion.
+	 *
+	 * @tparam	channels	Number of channels in the pixel format.
+	 */
+	template<UINT32 channels> struct LinearResampler_Byte 
+	{
+		static void scale(const PixelData& source, const PixelData& dest) 
+		{
+			// Only optimized for 2D
+			if (source.getDepth() > 1 || dest.getDepth() > 1) 
+			{
+				LinearResampler::scale(source, dest);
 				return;
 			}
 
-			// srcdata stays at beginning of slice, pdst is a moving pointer
-			UINT8* srcdata = (UINT8*)src.getData();
-			UINT8* pdst = (UINT8*)dst.getData();
+			UINT8* sourceData = (UINT8*)source.getData();
+			UINT8* destPtr = (UINT8*)dest.getData();
 
-			// sx_48,sy_48 represent current position in source
-			// using 16/48-bit fixed precision, incremented by steps
-			UINT64 stepx = ((UINT64)src.getWidth() << 48) / dst.getWidth();
-			UINT64 stepy = ((UINT64)src.getHeight() << 48) / dst.getHeight();
+			// Get steps for traversing source data in 16/48 fixed point precision format
+			UINT64 stepX = ((UINT64)source.getWidth() << 48) / dest.getWidth();
+			UINT64 stepY = ((UINT64)source.getHeight() << 48) / dest.getHeight();
 
-			// bottom 28 bits of temp are 16/12 bit fixed precision, used to
-			// adjust a source coordinate backwards by half a pixel so that the
-			// integer bits represent the first sample (eg, sx1) and the
-			// fractional bits are the blend weight of the second sample
-			unsigned int temp;
+			// Contains 16/16 fixed point precision format. Most significant
+			// 16 bits will contain the coordinate in the source image, and the
+			// least significant 16 bits will contain the fractional part of the coordinate
+			// that will be used for determining the blend amount.
+			UINT32 temp;
 
-			UINT64 sy_48 = (stepy >> 1) - 1;
-			for (size_t y = dst.getTop(); y < dst.getBottom(); y++, sy_48+=stepy) {
-				temp = static_cast<unsigned int>(sy_48 >> 36);
+			UINT64 curY = (stepY >> 1) - 1; // Offset half a pixel to start at pixel center
+			for (UINT32 y = dest.getTop(); y < dest.getBottom(); y++, curY += stepY)
+			{
+				temp = (UINT32)(curY >> 36);
 				temp = (temp > 0x800)? temp - 0x800: 0;
-				unsigned int syf = temp & 0xFFF;
-				size_t sy1 = temp >> 12;
-				size_t sy2 = std::min(sy1+1, (size_t)src.getBottom()-src.getTop()-1);
-				size_t syoff1 = sy1 * src.getRowPitch();
-				size_t syoff2 = sy2 * src.getRowPitch();
+				UINT32 sampleWeightY = temp & 0xFFF;
+				UINT32 sampleCoordY1 = temp >> 12;
+				UINT32 sampleCoordY2 = std::min(sampleCoordY1 + 1, (UINT32)source.getBottom() - source.getTop() - 1);
 
-				UINT64 sx_48 = (stepx >> 1) - 1;
-				for (size_t x = dst.getLeft(); x < dst.getRight(); x++, sx_48+=stepx) {
-					temp = static_cast<unsigned int>(sx_48 >> 36);
+				UINT32 sampleY1Offset = sampleCoordY1 * source.getRowPitch();
+				UINT32 sampleY2Offset = sampleCoordY2 * source.getRowPitch();
+
+				UINT64 curX = (stepX >> 1) - 1; // Offset half a pixel to start at pixel center
+				for (UINT32 x = dest.getLeft(); x < dest.getRight(); x++, curX += stepX)
+				{
+					temp = (UINT32)(curX >> 36);
 					temp = (temp > 0x800)? temp - 0x800 : 0;
-					unsigned int sxf = temp & 0xFFF;
-					size_t sx1 = temp >> 12;
-					size_t sx2 = std::min(sx1+1, (size_t)src.getRight()-src.getLeft()-1);
+					UINT32 sampleWeightX = temp & 0xFFF;
+					UINT32 sampleCoordX1 = temp >> 12;
+					UINT32 sampleCoordX2 = std::min(sampleCoordX1 + 1, (UINT32)source.getRight() - source.getLeft() - 1);
 
-					unsigned int sxfsyf = sxf*syf;
-					for (unsigned int k = 0; k < channels; k++) {
-						unsigned int accum =
-							srcdata[(sx1 + syoff1)*channels+k]*(0x1000000-(sxf<<12)-(syf<<12)+sxfsyf) +
-							srcdata[(sx2 + syoff1)*channels+k]*((sxf<<12)-sxfsyf) +
-							srcdata[(sx1 + syoff2)*channels+k]*((syf<<12)-sxfsyf) +
-							srcdata[(sx2 + syoff2)*channels+k]*sxfsyf;
-						// accum is computed using 8/24-bit fixed-point math
-						// (maximum is 0xFF000000; rounding will not cause overflow)
-						*pdst++ = static_cast<UINT8>((accum + 0x800000) >> 24);
+					UINT32 sxfsyf = sampleWeightX*sampleWeightY;
+					for (UINT32 k = 0; k < channels; k++) 
+					{
+						UINT32 accum =
+							sourceData[(sampleCoordX1 + sampleY1Offset)*channels+k]*(0x1000000-(sampleWeightX<<12)-(sampleWeightY<<12)+sxfsyf) +
+							sourceData[(sampleCoordX2 + sampleY1Offset)*channels+k]*((sampleWeightX<<12)-sxfsyf) +
+							sourceData[(sampleCoordX1 + sampleY2Offset)*channels+k]*((sampleWeightY<<12)-sxfsyf) +
+							sourceData[(sampleCoordX2 + sampleY2Offset)*channels+k]*sxfsyf;
+
+						// Round up to byte size
+						*destPtr = (UINT8)((accum + 0x800000) >> 24);
+						destPtr++;
 					}
 				}
-				pdst += channels*dst.getRowSkip();
+				destPtr += channels*dest.getRowSkip();
 			}
 		}
 	};
@@ -1297,7 +1318,6 @@ namespace BansheeEngine
 
 			break;
 
-		case FILTER_LINEAR:
 		case FILTER_BILINEAR:
 			switch (src.getFormat()) 
 			{

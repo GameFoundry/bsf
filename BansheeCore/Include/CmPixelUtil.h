@@ -17,11 +17,7 @@ namespace BansheeEngine
 		enum Filter
 		{
 			FILTER_NEAREST,
-			FILTER_LINEAR,
-			FILTER_BILINEAR,
-			FILTER_BOX,
-			FILTER_TRIANGLE,
-			FILTER_BICUBIC
+			FILTER_BILINEAR
 		};
 
 		/**
