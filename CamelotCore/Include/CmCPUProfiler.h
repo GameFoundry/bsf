@@ -9,7 +9,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Provides various performance measuring methods.
 	 * 			
-	 * @note	This class is thread safe. Matching begin*\end* calls
+	 * @note	Thread safe. Matching begin*\end* calls
 	 * 			must belong to the same thread though.
 	 */
 	class CM_EXPORT CPUProfiler
