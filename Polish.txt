@@ -31,3 +31,8 @@ DISREGARD MONITOR INDEX ON DX9
  Refactor:
  - Make CmApplication a base of BsApplication
  - If I merge CmApp and BsApp consider refactoring CmApplication::mainLoopCallback
+
+ Rename BansheeOctreeSM -> BansheeSceneManager
+Rename BansheForwardRenderer -> BansheeRenderer
+
+Both project and classes in the project.

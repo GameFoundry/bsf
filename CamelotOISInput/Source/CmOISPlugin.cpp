@@ -6,12 +6,18 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Returns a name of the plugin.
+	 */
 	extern "C" CM_OIS_EXPORT const String& getPluginName()
 	{
 		static String pluginName = "OISInput";
 		return pluginName;
 	}
 
+	/**
+	 * @brief	Entry point to the plugin. Called by the engine when the plugin is loaded.
+	 */
 	extern "C" CM_OIS_EXPORT void* loadPlugin()
 	{
 		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();

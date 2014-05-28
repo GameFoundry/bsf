@@ -7,8 +7,11 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Allows you to customize how are objects rendered. You need to
-	 * 			provide your own implementation of your class.
+	 * @brief	Primarily rendering class that allows you to specify how to render objects that exist
+	 *			in the scene graph. You need to provide your own implementation of your class.
+	 *
+	 * @note	Normally you would iterate over all cameras, find visible objects for each camera and render
+	 *			those objects in some way.
 	 */
 	class CM_EXPORT Renderer
 	{
@@ -20,7 +23,7 @@ namespace BansheeEngine
 		virtual const String& getName() const = 0;
 
 		/**
-		 * @brief	Called in order to render all currentlx active cameras.
+		 * @brief	Called in order to render all currently active cameras.
 		 */
 		virtual void renderAll() = 0;
 

@@ -6,6 +6,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Importer implementation that handles font import 
+	 *			by using the FreeType library.
+	 */
 	class CM_FONT_EXPORT FontImporter : public SpecificImporter
 	{
 	public:
@@ -13,29 +17,22 @@ namespace BansheeEngine
 		virtual ~FontImporter();
 
 		/**
-		 * @brief	Should only be called by the plugin when its being loaded.
+		 * @copydoc	SpecificImporter::isExtensionSupported
 		 */
-		static void startUp()
-		{
-			static FontImporter* importer = nullptr;
-			if(importer == nullptr)
-			{
-				importer = cm_new<FontImporter>();
-				Importer::instance()._registerAssetImporter(importer);
-			}
-		}
-
-		/** Inherited from SpecificImporter */
 		virtual bool isExtensionSupported(const WString& ext) const;
 
-		/** Inherited from SpecificImporter */
+		/**
+		 * @copydoc	SpecificImporter::isMagicNumberSupported
+		 */
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
-		/** Inherited from SpecificImporter */
+		/**
+		 * @copydoc	SpecificImporter::import
+		 */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
 
 		/**
-		 * @copydoc SpecificImporter::createImportOptions().
+		 * @copydoc SpecificImporter::createImportOptions
 		 */
 		virtual ImportOptionsPtr createImportOptions() const;
 	private:

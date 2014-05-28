@@ -17,7 +17,7 @@ namespace BansheeEngine
 	{
 	public:
 		/**
-		 * @brief	Creates a new renderer.
+		 * @brief	Creates a new instance of the renderer.
 		 */
 		virtual RendererPtr create() = 0;
 
