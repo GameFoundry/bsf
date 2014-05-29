@@ -7,9 +7,16 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Utility class containing methods for various common Mono/Script related
+	 *			operations.
+	 */
 	class BS_MONO_EXPORT MonoUtil
 	{
 	public:
+		/**
+		 * @brief	Converts a Mono (i.e. managed) string to a native wide string.
+		 */
 		static WString monoToWString(MonoString* str)
 		{
 			if(str == nullptr)
@@ -25,6 +32,9 @@ namespace BansheeEngine
 			return ret;
 		}
 
+		/**
+		 * @brief	Converts a Mono (i.e. managed) string to a native narrow string.
+		 */
 		static String monoToString(MonoString* str)
 		{
 			if(str == nullptr)
@@ -40,21 +50,33 @@ namespace BansheeEngine
 			return ret;
 		}
 
+		/**
+		 * @brief	Converts a native wide string to a Mono (i.e. managed) string.
+		 */
 		static MonoString* wstringToMono(MonoDomain* domain, const WString& str)
 		{
 			return mono_string_from_utf16((mono_unichar2*)str.c_str());
 		}
 
+		/**
+		 * @brief	Converts a native narrow string to a Mono (i.e. managed) string.
+		 */
 		static MonoString* stringToMono(MonoDomain* domain, const String& str)
 		{
 			return wstringToMono(domain, toWString(str));
 		}
 
+		/**
+		 * @copydoc	throwIfException
+		 */
 		static void throwIfException(MonoException* exception)
 		{
 			throwIfException(reinterpret_cast<MonoObject*>(exception));
 		}
 
+		/**
+		 * @brief	Throws a native exception if the provided object is a valid managed exception.
+		 */
 		static void throwIfException(MonoObject* exception)
 		{
 			if(exception != nullptr)
