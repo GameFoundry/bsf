@@ -16,7 +16,19 @@ namespace BansheeEngine
 		MonoManager();
 		~MonoManager();
 
+		/**
+		 * @brief	Loads a new assembly from the provided path.
+		 *
+		 * @param	path	Absolute path to the assembly .dll.
+		 * @param	name	Unique name for the assembly.
+		 */
 		MonoAssembly& loadAssembly(const String& path, const String& name);
+
+		/**
+		 * @brief	Unloads a previously loaded assembly.
+		 *
+		 * @note	You must perform JIT cleanup before unloading assemblies.
+		 */
 		void unloadAssembly(MonoAssembly& assembly);
 
 		/**
@@ -50,14 +62,30 @@ namespace BansheeEngine
 		 */
 		String getTypeName(MonoObject* obj);
 
+		/**
+		 * @brief	Returns the current Mono domains.
+		 */
 		MonoDomain* getDomain() const { return mDomain; }
+
+		/**
+		 * @brief	Attempts to find a previously loaded assembly with the specified name.
+		 *			Returns null if assembly cannot be found.
+		 */
 		MonoAssembly* getAssembly(const String& name) const;
 
+		/**
+		 * @brief	Registers a new script type. This should be done before any assembly loading is done.
+		 *			Upon assembly load these script types will be initialized with necessary information about their
+		 *			managed counterparts.
+		 */
 		static void registerScriptType(ScriptMeta* metaData);
 	private:
 		static const String MONO_LIB_DIR;
 		static const String MONO_ETC_DIR;
 
+		/**
+		 * @brief	Returns a list of all types that will be initializes with their assembly gets loaded.
+		 */
 		static UnorderedMap<String, Vector<ScriptMeta*>>& getTypesToInitialize()
 		{
 			static UnorderedMap<String, Vector<ScriptMeta*>> mTypesToInitialize;

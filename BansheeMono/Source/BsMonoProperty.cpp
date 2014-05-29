@@ -23,17 +23,17 @@ namespace BansheeEngine
 		mono_runtime_invoke(mSetMethod, instance, args, nullptr);
 	}	
 
-	MonoObject* MonoProperty::getIndexed(MonoObject* instance, void* index) const
+	MonoObject* MonoProperty::getIndexed(MonoObject* instance, UINT32 index) const
 	{
 		void* args[1];
-		args[0] = index;
+		args[0] = &index;
 		return mono_runtime_invoke(mGetMethod, instance, args, nullptr);
 	}
 
-	void MonoProperty::setIndexed(MonoObject* instance, void* index, void* value) const
+	void MonoProperty::setIndexed(MonoObject* instance, UINT32 index, void* value) const
 	{
 		void* args[2];
-		args[0] = index;
+		args[0] = &index;
 		args[1] = value;
 		mono_runtime_invoke(mSetMethod, instance, args, nullptr);
 	}	

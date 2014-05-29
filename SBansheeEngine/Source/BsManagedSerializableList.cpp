@@ -81,7 +81,7 @@ namespace BansheeEngine
 
 	void ManagedSerializableList::setFieldData(UINT32 arrayIdx, const ManagedSerializableFieldDataPtr& val)
 	{
-		mItemProp->setIndexed(mManagedInstance, &arrayIdx, val->getValue(mListTypeInfo->mElementType));
+		mItemProp->setIndexed(mManagedInstance, arrayIdx, val->getValue(mListTypeInfo->mElementType));
 	}
 
 
@@ -94,7 +94,7 @@ namespace BansheeEngine
 
 	ManagedSerializableFieldDataPtr ManagedSerializableList::getFieldData(UINT32 arrayIdx)
 	{
-		MonoObject* obj = mItemProp->getIndexed(mManagedInstance, &arrayIdx);
+		MonoObject* obj = mItemProp->getIndexed(mManagedInstance, arrayIdx);
 
 		return ManagedSerializableFieldData::create(mListTypeInfo->mElementType, obj);
 	}
