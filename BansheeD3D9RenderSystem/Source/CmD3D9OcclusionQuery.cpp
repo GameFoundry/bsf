@@ -23,7 +23,7 @@ namespace BansheeEngine
 		HRESULT hr = mDevice->CreateQuery(D3DQUERYTYPE_OCCLUSION, &mQuery);
 		if (hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
 		}
 	}
 

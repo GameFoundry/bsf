@@ -33,8 +33,8 @@ namespace BansheeEngine
 	MeshHeapPtr MeshHeap::create(UINT32 numVertices, UINT32 numIndices, 
 		const VertexDataDescPtr& vertexDesc, IndexBuffer::IndexType indexType)
 	{
-		MeshHeap* meshHeap = new (cm_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
-		MeshHeapPtr meshHeapPtr = cm_core_ptr<MeshHeap, GenAlloc>(meshHeap);
+		MeshHeap* meshHeap = new (bs_alloc<MeshHeap>()) MeshHeap(numVertices, numIndices, vertexDesc, indexType); 
+		MeshHeapPtr meshHeapPtr = bs_core_ptr<MeshHeap, GenAlloc>(meshHeap);
 
 		meshHeapPtr->_setThisPtr(meshHeapPtr);
 		meshHeapPtr->initialize();
@@ -55,10 +55,10 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		for(auto& cpuVertBuffer : mCPUVertexData)
-			cm_free(cpuVertBuffer);
+			bs_free(cpuVertBuffer);
 
 		if(mCPUIndexData != nullptr)
-			cm_free(mCPUIndexData);
+			bs_free(mCPUIndexData);
 
 		CoreObject::destroy_internal();
 	}
@@ -68,8 +68,8 @@ namespace BansheeEngine
 		UINT32 meshIdx = mNextFreeId++;
 
 		MeshHeapPtr thisPtr = std::static_pointer_cast<MeshHeap>(getThisPtr());
-		TransientMesh* transientMesh = new (cm_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
-		TransientMeshPtr transientMeshPtr = cm_core_ptr<TransientMesh, GenAlloc>(transientMesh);
+		TransientMesh* transientMesh = new (bs_alloc<TransientMesh>()) TransientMesh(thisPtr, meshIdx, meshData->getNumVertices(), meshData->getNumIndices(), drawOp); 
+		TransientMeshPtr transientMeshPtr = bs_core_ptr<TransientMesh, GenAlloc>(transientMesh);
 
 		transientMeshPtr->_setThisPtr(transientMeshPtr);
 		transientMeshPtr->initialize();
@@ -260,7 +260,7 @@ namespace BansheeEngine
 			UINT32 otherVertSize = meshData->getVertexDesc()->getVertexStride(i);
 			if(otherVertSize != vertSize)
 			{
-				CM_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " + 
+				BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " + 
 					toString(vertSize) + ". Got: " + toString(otherVertSize));
 			}
 
@@ -298,7 +298,7 @@ namespace BansheeEngine
 		// Ensure index sizes match
 		if(meshData->getIndexElementSize() != idxSize)
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
+			BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
 				toString(idxSize) + ". Got: " + toString(meshData->getIndexElementSize()));
 		}
 
@@ -332,7 +332,7 @@ namespace BansheeEngine
 	void MeshHeap::growVertexBuffer(UINT32 numVertices)
 	{
 		mNumVertices = numVertices;
-		mVertexData = std::shared_ptr<VertexData>(cm_new<VertexData, PoolAlloc>());
+		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
 
 		mVertexData->vertexCount = mNumVertices;
 		mVertexData->vertexDeclaration = mVertexDesc->createDeclaration();
@@ -351,7 +351,7 @@ namespace BansheeEngine
 
 			// Copy all data to the new buffer
 			UINT8* oldBuffer = mCPUVertexData[i];
-			UINT8* buffer = (UINT8*)cm_alloc(vertSize * numVertices);
+			UINT8* buffer = (UINT8*)bs_alloc(vertSize * numVertices);
 
 			UINT32 destOffset = 0;
 			if(oldBuffer != nullptr)
@@ -366,7 +366,7 @@ namespace BansheeEngine
 					destOffset += oldChunk.size;
 				}
 
-				cm_free(oldBuffer);
+				bs_free(oldBuffer);
 			}
 
 			if(destOffset > 0)
@@ -416,7 +416,7 @@ namespace BansheeEngine
 	{
 		mNumIndices = numIndices;
 
-		mIndexData = std::shared_ptr<IndexData>(cm_new<IndexData, PoolAlloc>());
+		mIndexData = std::shared_ptr<IndexData>(bs_new<IndexData, PoolAlloc>());
 		mIndexData->indexCount = mNumIndices;
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
 			mIndexType, mIndexData->indexCount, GBU_DYNAMIC);
@@ -425,7 +425,7 @@ namespace BansheeEngine
 		UINT32 idxSize = mIndexData->indexBuffer->getIndexSize();
 
 		UINT8* oldBuffer = mCPUIndexData;
-		UINT8* buffer = (UINT8*)cm_alloc(idxSize * numIndices);
+		UINT8* buffer = (UINT8*)bs_alloc(idxSize * numIndices);
 
 		UINT32 destOffset = 0;
 		if(oldBuffer != nullptr)
@@ -440,7 +440,7 @@ namespace BansheeEngine
 				destOffset += oldChunk.size;
 			}
 
-			cm_free(oldBuffer);
+			bs_free(oldBuffer);
 		}
 
 		if(destOffset > 0)

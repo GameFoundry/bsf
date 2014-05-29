@@ -7,7 +7,7 @@ using namespace std::placeholders;
 
 namespace BansheeEngine
 {
-	CM_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
+	BS_THREADLOCAL CoreThread::AccessorContainer* CoreThread::mAccessor = nullptr;
 
 	CoreThread::CoreThread()
 		: mCoreThreadShutdown(false)
@@ -16,11 +16,11 @@ namespace BansheeEngine
 		, mSyncedCoreAccessor(nullptr)
 		, mActiveFrameAlloc(0)
 	{
-		mFrameAllocs[0] = cm_new<FrameAlloc>();
-		mFrameAllocs[1] = cm_new<FrameAlloc>();
+		mFrameAllocs[0] = bs_new<FrameAlloc>();
+		mFrameAllocs[1] = bs_new<FrameAlloc>();
 
-		mCoreThreadId = CM_THREAD_CURRENT_ID;
-		mCommandQueue = cm_new<CommandQueue<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
+		mCoreThreadId = BS_THREAD_CURRENT_ID;
+		mCommandQueue = bs_new<CommandQueue<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
 
 		initCoreThread();
 	}
@@ -31,11 +31,11 @@ namespace BansheeEngine
 		shutdownCoreThread();
 
 		{
-			CM_LOCK_MUTEX(mAccessorMutex);
+			BS_LOCK_MUTEX(mAccessorMutex);
 
 			for(auto& accessor : mAccessors)
 			{
-				cm_delete(accessor);
+				bs_delete(accessor);
 			}
 
 			mAccessors.clear();
@@ -43,51 +43,51 @@ namespace BansheeEngine
 
 		if(mCommandQueue != nullptr)
 		{
-			cm_delete(mCommandQueue);
+			bs_delete(mCommandQueue);
 			mCommandQueue = nullptr;
 		}
 
-		cm_delete(mFrameAllocs[0]);
-		cm_delete(mFrameAllocs[1]);
+		bs_delete(mFrameAllocs[0]);
+		bs_delete(mFrameAllocs[1]);
 	}
 
 	void CoreThread::initCoreThread()
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-#if CM_THREAD_SUPPORT
+#if !BS_FORCE_SINGLETHREADED_RENDERING
+#if BS_THREAD_SUPPORT
 		ThreadPool::instance().run("Core", std::bind(&CoreThread::runCoreThread, this));
 #else
-		CM_EXCEPT(InternalErrorException, "Attempting to start a core thread but application isn't compiled with thread support.");
+		BS_EXCEPT(InternalErrorException, "Attempting to start a core thread but application isn't compiled with thread support.");
 #endif
 #endif
 	}
 
 	void CoreThread::runCoreThread()
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		TaskScheduler::instance().removeWorker(); // One less worker because we are reserving one core for this thread
 
-		mCoreThreadId = CM_THREAD_CURRENT_ID;
-		mSyncedCoreAccessor = cm_new<CoreThreadAccessor<CommandQueueSync>>(CM_THREAD_CURRENT_ID);
+		mCoreThreadId = BS_THREAD_CURRENT_ID;
+		mSyncedCoreAccessor = bs_new<CoreThreadAccessor<CommandQueueSync>>(BS_THREAD_CURRENT_ID);
 
 		while(true)
 		{
 			// Wait until we get some ready commands
 			Queue<QueuedCommand>* commands = nullptr;
 			{
-				CM_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
+				BS_LOCK_MUTEX_NAMED(mCommandQueueMutex, lock)
 
 				while(mCommandQueue->isEmpty())
 				{
 					if(mCoreThreadShutdown)
 					{
-						cm_delete(mSyncedCoreAccessor);
+						bs_delete(mSyncedCoreAccessor);
 						TaskScheduler::instance().addWorker();
 						return;
 					}
 
 					TaskScheduler::instance().addWorker(); // Do something else while we wait, otherwise this core will be unused
-					CM_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock);
+					BS_THREAD_WAIT(mCommandReadyCondition, mCommandQueueMutex, lock);
 					TaskScheduler::instance().removeWorker();
 				}
 
@@ -102,17 +102,17 @@ namespace BansheeEngine
 
 	void CoreThread::shutdownCoreThread()
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 
 		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
+			BS_LOCK_MUTEX(mCommandQueueMutex);
 			mCoreThreadShutdown = true;
 		}
 
 		// Wake all threads. They will quit after they see the shutdown flag
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+		BS_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
-		mCoreThreadId = CM_THREAD_CURRENT_ID;
+		mCoreThreadId = BS_THREAD_CURRENT_ID;
 #endif
 	}
 
@@ -120,11 +120,11 @@ namespace BansheeEngine
 	{
 		if(mAccessor == nullptr)
 		{
-			CoreAccessorPtr newAccessor = cm_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(CM_THREAD_CURRENT_ID);
-			mAccessor = cm_new<AccessorContainer>();
+			CoreAccessorPtr newAccessor = bs_shared_ptr<CoreThreadAccessor<CommandQueueNoSync>>(BS_THREAD_CURRENT_ID);
+			mAccessor = bs_new<AccessorContainer>();
 			mAccessor->accessor = newAccessor;
 
-			CM_LOCK_MUTEX(mAccessorMutex);
+			BS_LOCK_MUTEX(mAccessorMutex);
 			mAccessors.push_back(mAccessor);
 		}
 
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		Vector<AccessorContainer*> accessorCopies;
 
 		{
-			CM_LOCK_MUTEX(mAccessorMutex);
+			BS_LOCK_MUTEX(mAccessorMutex);
 
 			accessorCopies = mAccessors;
 		}
@@ -156,7 +156,7 @@ namespace BansheeEngine
 	{
 		AsyncOp op;
 
-		if(CM_THREAD_CURRENT_ID == getCoreThreadId())
+		if(BS_THREAD_CURRENT_ID == getCoreThreadId())
 		{
 			commandCallback(op); // Execute immediately
 			return op;
@@ -164,7 +164,7 @@ namespace BansheeEngine
 
 		UINT32 commandId = -1;
 		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
+			BS_LOCK_MUTEX(mCommandQueueMutex);
 
 			if(blockUntilComplete)
 			{
@@ -175,7 +175,7 @@ namespace BansheeEngine
 				op = mCommandQueue->queueReturn(commandCallback);
 		}
 
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+		BS_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
 		if(blockUntilComplete)
 			blockUntilCommandCompleted(commandId);
@@ -185,7 +185,7 @@ namespace BansheeEngine
 
 	void CoreThread::queueCommand(std::function<void()> commandCallback, bool blockUntilComplete)
 	{
-		if(CM_THREAD_CURRENT_ID == getCoreThreadId())
+		if(BS_THREAD_CURRENT_ID == getCoreThreadId())
 		{
 			commandCallback(); // Execute immediately
 			return;
@@ -193,7 +193,7 @@ namespace BansheeEngine
 
 		UINT32 commandId = -1;
 		{
-			CM_LOCK_MUTEX(mCommandQueueMutex);
+			BS_LOCK_MUTEX(mCommandQueueMutex);
 
 			if(blockUntilComplete)
 			{
@@ -204,7 +204,7 @@ namespace BansheeEngine
 				mCommandQueue->queue(commandCallback);
 		}
 
-		CM_THREAD_NOTIFY_ALL(mCommandReadyCondition);
+		BS_THREAD_NOTIFY_ALL(mCommandReadyCondition);
 
 		if(blockUntilComplete)
 			blockUntilCommandCompleted(commandId);
@@ -223,8 +223,8 @@ namespace BansheeEngine
 
 	void CoreThread::blockUntilCommandCompleted(UINT32 commandId)
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-		CM_LOCK_MUTEX_NAMED(mCommandNotifyMutex, lock);
+#if !BS_FORCE_SINGLETHREADED_RENDERING
+		BS_LOCK_MUTEX_NAMED(mCommandNotifyMutex, lock);
 
 		while(true)
 		{
@@ -244,7 +244,7 @@ namespace BansheeEngine
 				break;
 			}
 
-			CM_THREAD_WAIT(mCommandCompleteCondition, mCommandNotifyMutex, lock);
+			BS_THREAD_WAIT(mCommandCompleteCondition, mCommandNotifyMutex, lock);
 		}
 #endif
 	}
@@ -252,12 +252,12 @@ namespace BansheeEngine
 	void CoreThread::commandCompletedNotify(UINT32 commandId)
 	{
 		{
-			CM_LOCK_MUTEX(mCommandNotifyMutex);
+			BS_LOCK_MUTEX(mCommandNotifyMutex);
 
 			mCommandsCompleted.push_back(commandId);
 		}
 
-		CM_THREAD_NOTIFY_ALL(mCommandCompleteCondition);
+		BS_THREAD_NOTIFY_ALL(mCommandCompleteCondition);
 	}
 
 	CoreThread& gCoreThread()
@@ -272,17 +272,17 @@ namespace BansheeEngine
 
 	void throwIfNotCoreThread()
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-		if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
-			CM_EXCEPT(InternalErrorException, "This method can only be accessed from the core thread.");
+#if !BS_FORCE_SINGLETHREADED_RENDERING
+		if(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+			BS_EXCEPT(InternalErrorException, "This method can only be accessed from the core thread.");
 #endif
 	}
 
 	void throwIfCoreThread()
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
-		if(CM_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
-			CM_EXCEPT(InternalErrorException, "This method cannot be accessed from the core thread.");
+#if !BS_FORCE_SINGLETHREADED_RENDERING
+		if(BS_THREAD_CURRENT_ID == CoreThread::instance().getCoreThreadId())
+			BS_EXCEPT(InternalErrorException, "This method cannot be accessed from the core thread.");
 #endif
 	}
 }

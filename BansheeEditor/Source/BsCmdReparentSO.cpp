@@ -15,7 +15,7 @@ namespace BansheeEngine
 	void CmdReparentSO::execute(const Vector<HSceneObject>& sceneObjects, const HSceneObject& newParent)
 	{
 		// Register command and commit it
-		CmdReparentSO* command = new (cm_alloc<CmdReparentSO>()) CmdReparentSO(sceneObjects, newParent);
+		CmdReparentSO* command = new (bs_alloc<CmdReparentSO>()) CmdReparentSO(sceneObjects, newParent);
 		UndoRedo::instance().registerCommand(command);
 		command->commit();
 	}

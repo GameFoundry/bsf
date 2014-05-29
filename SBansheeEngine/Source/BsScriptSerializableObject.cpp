@@ -54,7 +54,7 @@ namespace BansheeEngine
 		if(objInfo != nullptr)
 			typeInfo = objInfo->mTypeInfo;
 
-		ScriptSerializableObject* nativeInstance = new (cm_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, typeInfo);
+		ScriptSerializableObject* nativeInstance = new (bs_alloc<ScriptSerializableObject>()) ScriptSerializableObject(instance, typeInfo);
 
 		if(objInfo != nullptr)
 		{

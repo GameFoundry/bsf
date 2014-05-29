@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	UINT8* FrameAlloc::alloc(UINT32 amount)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		amount += sizeof(UINT32);
 #endif
 
@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 		UINT8* data = mFreeBlock->alloc(amount);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		mTotalAllocBytes += amount;
 
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		// Dealloc is only used for debug and can be removed if needed. All the actual deallocation
 		// happens in "clear"
 			
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		data -= sizeof(UINT32);
 		UINT32* storedSize = reinterpret_cast<UINT32*>(data);
 		mTotalAllocBytes -= *storedSize;
@@ -73,9 +73,9 @@ namespace BansheeEngine
 
 	void FrameAlloc::clear()
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(mTotalAllocBytes.load() > 0)
-			CM_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
+			BS_EXCEPT(InvalidStateException, "Not all frame allocated bytes were properly released.");
 #endif
 
 		// Merge all blocks into one
@@ -97,7 +97,7 @@ namespace BansheeEngine
 		if(wantedSize > blockSize)
 			blockSize = wantedSize;
 
-		UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(cm_alloc(blockSize + sizeof(MemBlock)));
+		UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc(blockSize + sizeof(MemBlock)));
 		MemBlock* newBlock = new (data) MemBlock(blockSize);
 		data += sizeof(MemBlock);
 		newBlock->mData = data;
@@ -111,6 +111,6 @@ namespace BansheeEngine
 	void FrameAlloc::deallocBlock(MemBlock* block)
 	{
 		block->~MemBlock();
-		cm_free(block);
+		bs_free(block);
 	}
 }

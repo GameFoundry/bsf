@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 		if (!mBufferId)
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Cannot create GL index buffer");
 		}
 
@@ -42,7 +42,7 @@ namespace BansheeEngine
         GLenum access = 0;
         if(mIsLocked)
         {
-            CM_EXCEPT(InternalErrorException, 
+            BS_EXCEPT(InternalErrorException, 
                 "Invalid attempt to lock an index buffer that has already been locked");
         }
 
@@ -66,7 +66,7 @@ namespace BansheeEngine
 
 		if(pBuffer == 0)
 		{
-			CM_EXCEPT(InternalErrorException, "Index Buffer: Out of memory");
+			BS_EXCEPT(InternalErrorException, "Index Buffer: Out of memory");
 		}
 
 		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(pBuffer));
@@ -81,7 +81,7 @@ namespace BansheeEngine
 
 		if(!glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER))
 		{
-			CM_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
+			BS_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload");
 		}
 
 		mIsLocked = false;

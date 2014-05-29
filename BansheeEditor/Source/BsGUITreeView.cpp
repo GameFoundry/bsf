@@ -39,7 +39,7 @@ namespace BansheeEngine
 	GUITreeView::TreeElement::~TreeElement()
 	{
 		for(auto& child : mChildren)
-			cm_delete(child);
+			bs_delete(child);
 
 		if(mFoldoutBtn != nullptr)
 			GUIElement::destroy(mFoldoutBtn);

@@ -38,7 +38,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return cm_shared_ptr<VertexDataDesc, PoolAlloc>(new (cm_alloc<VertexDataDesc, PoolAlloc>()) VertexDataDesc());
+			return bs_shared_ptr<VertexDataDesc, PoolAlloc>(new (bs_alloc<VertexDataDesc, PoolAlloc>()) VertexDataDesc());
 		}
 
 		virtual const String& getRTTIName() 

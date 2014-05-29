@@ -53,7 +53,7 @@ namespace BansheeEngine
 			TextureResources* textureResource = resPair.second;
 
 			if (textureResource != nullptr)
-				cm_delete(textureResource);
+				bs_delete(textureResource);
 		}
 
 		mMapDeviceToTextureResources.clear();
@@ -67,10 +67,10 @@ namespace BansheeEngine
 	PixelData D3D9Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		if(mLockedBuffer != nullptr)
-			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
+			BS_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
 
 		if(getUsage() == TU_DEPTHSTENCIL)
-			CM_EXCEPT(InternalErrorException, "Cannot lock a depth stencil texture.");
+			BS_EXCEPT(InternalErrorException, "Cannot lock a depth stencil texture.");
 
 		UINT32 mipWidth = mWidth >> mipLevel;
 		UINT32 mipHeight = mHeight >> mipLevel;
@@ -87,7 +87,7 @@ namespace BansheeEngine
 	void D3D9Texture::unlockImpl()
 	{
 		if(mLockedBuffer == nullptr)
-			CM_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
+			BS_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
 
 		mLockedBuffer->unlock();
 		mLockedBuffer = nullptr;
@@ -97,11 +97,11 @@ namespace BansheeEngine
 	{
 		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(dest.getConsecutiveSize() != myData.getConsecutiveSize())
 		{
 			unlock();
-			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match.");
 		}
 #endif
 
@@ -120,7 +120,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			CM_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
+			BS_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
 		}
 	}
 	
@@ -130,7 +130,7 @@ namespace BansheeEngine
 
 		if (target->getUsage() != getUsage() || target->getTextureType() != getTextureType())
 		{
-			CM_EXCEPT(InvalidParametersException, "Src. and dest. textures must be of same type and must have the same usage.");
+			BS_EXCEPT(InvalidParametersException, "Src. and dest. textures must be of same type and must have the same usage.");
 		}
 
         HRESULT hr;
@@ -150,7 +150,7 @@ namespace BansheeEngine
 				if(FAILED(hr = srcTextureResource->pNormTex->GetSurfaceLevel(0, &sourceSurface)))
 				{
 					String msg = DXGetErrorDescription(hr);
-					CM_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+					BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
 				}
 
 				IDirect3DSurface9 *destSurface = 0;			
@@ -158,7 +158,7 @@ namespace BansheeEngine
 				{
 					String msg = DXGetErrorDescription(hr);
 					SAFE_RELEASE(sourceSurface);
-					CM_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+					BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
 				}
 
 				if (FAILED(hr = resPair.first->StretchRect(sourceSurface, NULL, destSurface, &dstRC, D3DTEXF_NONE)))
@@ -166,7 +166,7 @@ namespace BansheeEngine
 					String msg = DXGetErrorDescription(hr);
 					SAFE_RELEASE(sourceSurface);
 					SAFE_RELEASE(destSurface);
-					CM_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+					BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
 				}
 
 				SAFE_RELEASE(sourceSurface);
@@ -181,7 +181,7 @@ namespace BansheeEngine
 					if( FAILED(hr = srcTextureResource->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, 0, &sourceSurface)))
 					{
 						String msg = DXGetErrorDescription(hr);
-						CM_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+						BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
 					}
 
 					IDirect3DSurface9 *destSurface = 0;
@@ -189,7 +189,7 @@ namespace BansheeEngine
 					{
 						String msg = DXGetErrorDescription(hr);
 						SAFE_RELEASE(sourceSurface);
-						CM_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+						BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
 					}
 
 					if (FAILED(hr = resPair.first->StretchRect(sourceSurface, NULL, destSurface, &dstRC, D3DTEXF_NONE)))
@@ -197,7 +197,7 @@ namespace BansheeEngine
 						String msg = DXGetErrorDescription(hr);
 						SAFE_RELEASE(sourceSurface);
 						SAFE_RELEASE(destSurface);
-						CM_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
+						BS_EXCEPT(RenderingAPIException, "Couldn't blit: " + msg);
 					}
 
 					SAFE_RELEASE(sourceSurface);
@@ -206,7 +206,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				CM_EXCEPT(NotImplementedException, "Copy to texture is implemented only for 2D and cube textures.");
+				BS_EXCEPT(NotImplementedException, "Copy to texture is implemented only for 2D and cube textures.");
 			}
 		}		
 	}
@@ -225,7 +225,7 @@ namespace BansheeEngine
 	{
 		assert(mMapDeviceToTextureResources.find(d3d9Device) == mMapDeviceToTextureResources.end());
 
-		TextureResources* textureResources = cm_new<TextureResources>();
+		TextureResources* textureResources = bs_new<TextureResources>();
 
 		textureResources->pNormTex = nullptr;
 		textureResources->pCubeTex = nullptr;
@@ -291,7 +291,7 @@ namespace BansheeEngine
 			break;
 		default:
 			destroy_internal();
-			CM_EXCEPT(InternalErrorException, "Unknown texture type.");
+			BS_EXCEPT(InternalErrorException, "Unknown texture type.");
 		}
 	}
 
@@ -302,7 +302,7 @@ namespace BansheeEngine
 		D3DFORMAT d3dPF = chooseD3DFormat(d3d9Device);
 		if(mFormat != D3D9Mappings::_getPF(d3dPF))
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
@@ -354,7 +354,7 @@ namespace BansheeEngine
 		// Check if mip maps are supported on hardware
 		if (numMips > 1 && (!(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPMAP) || (mUsage & TU_RENDERTARGET) != 0 || (mUsage & TU_DEPTHSTENCIL) != 0))
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
+			BS_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 		}
 
 		determinePool();
@@ -376,14 +376,14 @@ namespace BansheeEngine
 				&textureResources->pMultisampleSurface, NULL);
 
 			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
+				BS_EXCEPT(RenderingAPIException, "Unable to create AA render target: " + String(DXGetErrorDescription(hr)));
 
 			D3DSURFACE_DESC desc;
 			hr = textureResources->pMultisampleSurface->GetDesc(&desc);
 			if (FAILED(hr))
 			{
 				destroy_internal();
-				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+				BS_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 			}
 
 			setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
@@ -399,7 +399,7 @@ namespace BansheeEngine
 				&textureResources->pDepthStencilSurface, NULL);
 
 			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Unable to create AA depth stencil render target: " + String(DXGetErrorDescription(hr)));
+				BS_EXCEPT(RenderingAPIException, "Unable to create AA depth stencil render target: " + String(DXGetErrorDescription(hr)));
 
 			// Update final parameters as they may differ from requested ones
 			D3DSURFACE_DESC desc;
@@ -407,7 +407,7 @@ namespace BansheeEngine
 			if (FAILED(hr))
 			{
 				destroy_internal();
-				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+				BS_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 			}
 
 			setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
@@ -423,14 +423,14 @@ namespace BansheeEngine
 			if (FAILED(hr))
 			{
 				destroy_internal();
-				CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
+				BS_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 			}
 
 			hr = textureResources->pNormTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
 			if (FAILED(hr))
 			{
 				destroy_internal();
-				CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
+				BS_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 			}
 
 			// Update final parameters as they may differ from requested ones
@@ -439,7 +439,7 @@ namespace BansheeEngine
 			if (FAILED(hr))
 			{
 				destroy_internal();
-				CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+				BS_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 			}
 
 			setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));
@@ -451,15 +451,15 @@ namespace BansheeEngine
 		assert(mWidth > 0 || mHeight > 0);
 
 		if (mUsage & TU_RENDERTARGET)
-			CM_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as render target !!");
+			BS_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as render target !!");
 
 		if (mUsage & TU_DEPTHSTENCIL)
-			CM_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as a depth stencil target !!");
+			BS_EXCEPT(RenderingAPIException, "D3D9 Cube texture can not be created as a depth stencil target !!");
 
 		D3DFORMAT d3dPF = chooseD3DFormat(d3d9Device);
 		if(mFormat != D3D9Mappings::_getPF(d3dPF))
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
@@ -498,7 +498,7 @@ namespace BansheeEngine
 		// Check if mip map cube textures are supported
 		if (numMips > 1 && !(deviceCaps.TextureCaps & D3DPTEXTURECAPS_MIPCUBEMAP))
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
+			BS_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 		}
 
 		determinePool();
@@ -518,14 +518,14 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			destroy_internal();
-			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
+			BS_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 		}
 
 		hr = textureResources->pCubeTex->QueryInterface(IID_IDirect3DBaseTexture9, (void **)&textureResources->pBaseTex);
 		if (FAILED(hr))
 		{
 			destroy_internal();
-			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
+			BS_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
 		// Update final parameters as they may differ from requested ones
@@ -534,7 +534,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			destroy_internal();
-			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+			BS_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
 		setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, 1, D3D9Mappings::_getPF(desc.Format));		
@@ -545,15 +545,15 @@ namespace BansheeEngine
 		assert(mWidth > 0 && mHeight > 0 && mDepth>0);
 
 		if (mUsage & TU_RENDERTARGET)
-			CM_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as render target !!");
+			BS_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as render target !!");
 
 		if (mUsage & TU_DEPTHSTENCIL)
-			CM_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as a depth stencil target !!");
+			BS_EXCEPT(RenderingAPIException, "D3D9 Volume texture can not be created as a depth stencil target !!");
 
 		D3DFORMAT d3dPF = chooseD3DFormat(d3d9Device);
 		if(mFormat != D3D9Mappings::_getPF(d3dPF))
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
 
 		// Use D3DX to help us create the texture, this way it can adjust any relevant sizes
@@ -588,7 +588,7 @@ namespace BansheeEngine
 		// Check if mip map volume textures are supported
 		if (numMips > 1 && !(rkCurCaps.TextureCaps & D3DPTEXTURECAPS_MIPVOLUMEMAP))
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
+			BS_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: 0");
 		}
 
 		determinePool();
@@ -608,14 +608,14 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			destroy_internal();
-			CM_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
+			BS_EXCEPT(RenderingAPIException, "Error creating texture: " + String(DXGetErrorDescription(hr)));
 		}
 
 		hr = textureResources->pVolumeTex->QueryInterface(IID_IDirect3DBaseTexture9, (void**)&textureResources->pBaseTex);
 		if (FAILED(hr))
 		{
 			destroy_internal();
-			CM_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
+			BS_EXCEPT(RenderingAPIException, "Can't get base texture: " + String(DXGetErrorDescription(hr)));
 		}
 		
 		// Update final parameters as they may differ from requested ones
@@ -624,7 +624,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			destroy_internal();
-			CM_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
+			BS_EXCEPT(RenderingAPIException, "Can't get texture description: " + String(DXGetErrorDescription(hr)));
 		}
 
 		setFinalAttributes(d3d9Device, textureResources, desc.Width, desc.Height, desc.Depth, D3D9Mappings::_getPF(desc.Format));
@@ -635,7 +635,7 @@ namespace BansheeEngine
 	{ 
 		if(width != mWidth || height != mHeight || depth != mDepth)
 		{
-			CM_EXCEPT(InternalErrorException, "Wanted and created textures sizes don't match!" \
+			BS_EXCEPT(InternalErrorException, "Wanted and created textures sizes don't match!" \
 				"Width: " + toString(width) + "/" + toString(mWidth) +
 				"Height: " + toString(height) + "/" + toString(mHeight) +
 				"Depth: " + toString(depth) + "/" + toString(mDepth));
@@ -643,7 +643,7 @@ namespace BansheeEngine
 
 		if(format != mFormat)
 		{
-			CM_EXCEPT(InternalErrorException, "Wanted and created texture formats don't match! " + toString(format) + "/" + toString(mFormat));
+			BS_EXCEPT(InternalErrorException, "Wanted and created texture formats don't match! " + toString(format) + "/" + toString(mFormat));
 		}
 		
 		createSurfaceList(d3d9Device, textureResources);
@@ -696,7 +696,7 @@ namespace BansheeEngine
 
 		HRESULT hr = d3d9Device->GetDirect3D(&pD3D);
 		if (FAILED(hr))
-			CM_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!");
+			BS_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!");
 
 		if (pD3D != nullptr)
 			pD3D->Release();
@@ -719,7 +719,7 @@ namespace BansheeEngine
 		HRESULT hr = d3d9Device->GetDirect3D(&pD3D);
 		if (FAILED(hr))
 		{
-			CM_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!" );
+			BS_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!" );
 		}
 
 		if (pD3D != nullptr)
@@ -747,7 +747,7 @@ namespace BansheeEngine
 		HRESULT hr = d3d9Device->GetDirect3D(&pD3D);
 		if (FAILED(hr))
 		{
-			CM_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!");
+			BS_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!");
 		}
 
 		if (pD3D != nullptr)
@@ -818,7 +818,7 @@ namespace BansheeEngine
 			{
 				for(UINT32 mip = 0; mip <= mNumMipmaps; mip++)
 				{
-					mSurfaceList.push_back(cm_shared_ptr<D3D9PixelBuffer>((GpuBufferUsage)usage, this));
+					mSurfaceList.push_back(bs_shared_ptr<D3D9PixelBuffer>((GpuBufferUsage)usage, this));
 				}
 			}
 		}
@@ -853,7 +853,7 @@ namespace BansheeEngine
 			UINT32 numCreatedMips = textureResources->pBaseTex->GetLevelCount() - 1;
 			if(numCreatedMips != mNumMipmaps)
 			{
-				CM_EXCEPT(InternalErrorException, "Number of created and wanted mip map levels doesn't match: " + 
+				BS_EXCEPT(InternalErrorException, "Number of created and wanted mip map levels doesn't match: " + 
 					toString(numCreatedMips) + "/" + toString(mNumMipmaps));
 			}
 
@@ -866,7 +866,7 @@ namespace BansheeEngine
 				for(UINT32 mip = 0; mip <= mNumMipmaps; mip++)
 				{
 					if(textureResources->pNormTex->GetSurfaceLevel(static_cast<UINT>(mip), &surface) != D3D_OK)
-						CM_EXCEPT(RenderingAPIException, "Get surface level failed");
+						BS_EXCEPT(RenderingAPIException, "Get surface level failed");
 
 					D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[mip].get());
 
@@ -885,7 +885,7 @@ namespace BansheeEngine
 					for(UINT32 mip = 0; mip <= mNumMipmaps; mip++)
 					{
 						if(textureResources->pCubeTex->GetCubeMapSurface((D3DCUBEMAP_FACES)face, static_cast<UINT>(mip), &surface) != D3D_OK)
-							CM_EXCEPT(RenderingAPIException, "Get cubemap surface failed");
+							BS_EXCEPT(RenderingAPIException, "Get cubemap surface failed");
 
 						UINT32 idx = face*(mNumMipmaps + 1) + mip;
 						D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[idx].get());
@@ -903,7 +903,7 @@ namespace BansheeEngine
 				for(UINT32 mip = 0; mip <= mNumMipmaps; mip++)
 				{
 					if(textureResources->pVolumeTex->GetVolumeLevel(static_cast<UINT>(mip), &volume) != D3D_OK)
-						CM_EXCEPT(RenderingAPIException, "Get volume level failed");	
+						BS_EXCEPT(RenderingAPIException, "Get volume level failed");	
 
 					D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[mip].get());
 					currPixelBuffer->bind(d3d9Device, volume, textureResources->pBaseTex);
@@ -920,9 +920,9 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(face >= getNumFaces())
-			CM_EXCEPT(InvalidParametersException, "A three dimensional cube has six faces");
+			BS_EXCEPT(InvalidParametersException, "A three dimensional cube has six faces");
 		if(mipmap > mNumMipmaps)
-			CM_EXCEPT(InvalidParametersException, "Mipmap index out of range");
+			BS_EXCEPT(InvalidParametersException, "Mipmap index out of range");
 
 		UINT32 idx = face*(mNumMipmaps+1) + mipmap;
 
@@ -972,7 +972,7 @@ namespace BansheeEngine
 			freeTextureResources(d3d9Device, textureResource);
 
 			if(textureResource != nullptr)
-				cm_delete(textureResource);
+				bs_delete(textureResource);
 
 			mMapDeviceToTextureResources.erase(iterFind);
 		}	

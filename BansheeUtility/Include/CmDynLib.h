@@ -3,7 +3,7 @@
 #include "CmPrerequisitesUtil.h"
 #include "CmString.h"
 
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 #    define DYNLIB_HANDLE hInstance
 #    define DYNLIB_LOAD( a ) LoadLibraryEx( a, NULL, LOAD_WITH_ALTERED_SEARCH_PATH )
 #    define DYNLIB_GETSYM( a, b ) GetProcAddress( a, b )
@@ -12,13 +12,13 @@
 struct HINSTANCE__;
 typedef struct HINSTANCE__* hInstance;
 
-#elif CM_PLATFORM == CM_PLATFORM_LINUX
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
 #    define DYNLIB_HANDLE void*
 #    define DYNLIB_LOAD( a ) dlopen( a, RTLD_LAZY | RTLD_GLOBAL)
 #    define DYNLIB_GETSYM( a, b ) dlsym( a, b )
 #    define DYNLIB_UNLOAD( a ) dlclose( a )
 
-#elif CM_PLATFORM == CM_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_APPLE
 #    define DYNLIB_HANDLE void*
 #    define DYNLIB_LOAD( a ) mac_loadDylib( a )
 #    define DYNLIB_GETSYM( a, b ) dlsym( a, b )

@@ -312,19 +312,19 @@ namespace BansheeEngine
 
 		// Static buffers used to reduce runtime memory allocation
 	private:
-		static CM_THREADLOCAL bool BuffersInitialized;
+		static BS_THREADLOCAL bool BuffersInitialized;
 
-		static CM_THREADLOCAL TextWord* WordBuffer;
-		static CM_THREADLOCAL UINT32 WordBufferSize;
-		static CM_THREADLOCAL UINT32 NextFreeWord;
+		static BS_THREADLOCAL TextWord* WordBuffer;
+		static BS_THREADLOCAL UINT32 WordBufferSize;
+		static BS_THREADLOCAL UINT32 NextFreeWord;
 
-		static CM_THREADLOCAL TextLine* LineBuffer;
-		static CM_THREADLOCAL UINT32 LineBufferSize;
-		static CM_THREADLOCAL UINT32 NextFreeLine;
+		static BS_THREADLOCAL TextLine* LineBuffer;
+		static BS_THREADLOCAL UINT32 LineBufferSize;
+		static BS_THREADLOCAL UINT32 NextFreeLine;
 
-		static CM_THREADLOCAL PageInfo* PageBuffer;
-		static CM_THREADLOCAL UINT32 PageBufferSize;
-		static CM_THREADLOCAL UINT32 NextFreePageInfo;
+		static BS_THREADLOCAL PageInfo* PageBuffer;
+		static BS_THREADLOCAL UINT32 PageBufferSize;
+		static BS_THREADLOCAL UINT32 NextFreePageInfo;
 
 		/**
 		 * @brief	Allocates an initial set of buffers that will be reused while parsing

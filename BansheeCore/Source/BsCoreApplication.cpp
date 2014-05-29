@@ -48,7 +48,7 @@ namespace BansheeEngine
 	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), mSceneManagerPlugin(nullptr)
 	{
-		UINT32 numWorkerThreads = CM_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
+		UINT32 numWorkerThreads = BS_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 
 		Platform::_startUp();
 		MemStack::beginThread();
@@ -155,12 +155,12 @@ namespace BansheeEngine
 			// thread, in which case sim thread needs to wait. Optimal solution would be to get an average 
 			// difference between sim/core thread and start the sim thread a bit later so they finish at nearly the same time.
 			{
-				CM_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
+				BS_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
 
 				while(!mIsFrameRenderingFinished)
 				{
 					TaskScheduler::instance().addWorker();
-					CM_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+					BS_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
 					TaskScheduler::instance().removeWorker();
 				}
 
@@ -190,10 +190,10 @@ namespace BansheeEngine
 
 	void CoreApplication::frameRenderingFinishedCallback()
 	{
-		CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
+		BS_LOCK_MUTEX(mFrameRenderingFinishedMutex);
 
 		mIsFrameRenderingFinished = true;
-		CM_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
+		BS_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
 	}
 
 	void CoreApplication::beginCoreProfiling()
@@ -210,15 +210,15 @@ namespace BansheeEngine
 	void* CoreApplication::loadPlugin(const String& pluginName, DynLib** library, void* passThrough)
 	{
 		String name = pluginName;
-#if CM_PLATFORM == CM_PLATFORM_LINUX
+#if BS_PLATFORM == BS_PLATFORM_LINUX
 		// dlopen() does not add .so to the filename, like windows does for .dll
 		if (name.substr(name.length() - 3, 3) != ".so")
 			name += ".so";
-#elif CM_PLATFORM == CM_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_APPLE
 		// dlopen() does not add .dylib to the filename, like windows does for .dll
 		if (name.substr(name.length() - 6, 6) != ".dylib")
 			name += ".dylib";
-#elif CM_PLATFORM == CM_PLATFORM_WIN32
+#elif BS_PLATFORM == BS_PLATFORM_WIN32
 		// Although LoadLibraryEx will add .dll itself when you only specify the library name,
 		// if you include a relative path then it does not. So, add it to be sure.
 		if (name.substr(name.length() - 4, 4) != ".dll")

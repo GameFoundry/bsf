@@ -37,7 +37,7 @@ namespace BansheeEngine {
 // Limit max number of macro arguments to this
 #define MAX_MACRO_ARGS 16
 
-#if CM_PLATFORM == CM_PLATFORM_WIN32 && !defined( __MINGW32__ )
+#if BS_PLATFORM == BS_PLATFORM_WIN32 && !defined( __MINGW32__ )
 	#define snprintf _snprintf
 #endif
 
@@ -245,10 +245,10 @@ CPreprocessor::ErrorHandlerFunc CPreprocessor::ErrorHandler = DefaultError;
 
 CPreprocessor::Macro::~Macro()
 { 
-	cm_deleteN<ScratchAlloc>(Args, NumArgs);
+	bs_deleteN<ScratchAlloc>(Args, NumArgs);
 
 	if(Next != nullptr)
-		cm_delete<ScratchAlloc>(Next); 
+		bs_delete<ScratchAlloc>(Next); 
 }
 
 CPreprocessor::CPreprocessor (const Token &iToken, int iLine) : MacroList (NULL)
@@ -263,7 +263,7 @@ CPreprocessor::CPreprocessor (const Token &iToken, int iLine) : MacroList (NULL)
 CPreprocessor::~CPreprocessor ()
 {
 	if(MacroList != nullptr)
-		cm_delete<ScratchAlloc>(MacroList);
+		bs_delete<ScratchAlloc>(MacroList);
 }
 
 void CPreprocessor::Error (int iLine, const char *iError, const Token *iToken)
@@ -429,7 +429,7 @@ CPreprocessor::Token CPreprocessor::ExpandMacro (const Token &iToken)
             Token t = GetArguments (nargs, args, cur->ExpandFunc ? false : true);
             if (t.Type == Token::TK_ERROR)
             {
-                cm_deleteN<ScratchAlloc>(args, nargs);
+                bs_deleteN<ScratchAlloc>(args, nargs);
                 return t;
             }
 
@@ -458,7 +458,7 @@ CPreprocessor::Token CPreprocessor::ExpandMacro (const Token &iToken)
             cur->Expand (nargs, args, MacroList);
         t.AppendNL (Line - old_line);
 
-		cm_deleteN<ScratchAlloc>(args, nargs);
+		bs_deleteN<ScratchAlloc>(args, nargs);
 
         return t;
     }
@@ -869,7 +869,7 @@ CPreprocessor::Token CPreprocessor::GetArguments (int &oNumArgs, Token *&oArgs,
 
 Done:
     oNumArgs = nargs;
-    oArgs = cm_newN<Token, ScratchAlloc>(nargs);
+    oArgs = bs_newN<Token, ScratchAlloc>(nargs);
     for (int i = 0; i < nargs; i++)
         oArgs [i] = args [i];
     return t;
@@ -887,7 +887,7 @@ bool CPreprocessor::HandleDefine (Token &iBody, int iLine)
         return false;
     }
 
-    Macro *m = cm_new<Macro, ScratchAlloc>(t);
+    Macro *m = bs_new<Macro, ScratchAlloc>(t);
     m->Body = iBody;
     t = cpp.GetArguments (m->NumArgs, m->Args, false);
     while (t.Type == Token::TK_WHITESPACE)
@@ -902,7 +902,7 @@ bool CPreprocessor::HandleDefine (Token &iBody, int iLine)
             break;
 
         case Token::TK_ERROR:
-            cm_delete<ScratchAlloc>(m);
+            bs_delete<ScratchAlloc>(m);
             return false;
 
         default:
@@ -1155,7 +1155,7 @@ Done:
 void CPreprocessor::Define (const char *iMacroName, size_t iMacroNameLen,
                             const char *iMacroValue, size_t iMacroValueLen)
 {
-    Macro *m = cm_new<Macro, ScratchAlloc>(Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
+    Macro *m = bs_new<Macro, ScratchAlloc>(Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
     m->Value = Token (Token::TK_TEXT, iMacroValue, iMacroValueLen);
     m->Next = MacroList;
     MacroList = m;
@@ -1164,7 +1164,7 @@ void CPreprocessor::Define (const char *iMacroName, size_t iMacroNameLen,
 void CPreprocessor::Define (const char *iMacroName, size_t iMacroNameLen,
                             long iMacroValue)
 {
-    Macro *m = cm_new<Macro, ScratchAlloc>(Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
+    Macro *m = bs_new<Macro, ScratchAlloc>(Token (Token::TK_KEYWORD, iMacroName, iMacroNameLen));
     m->Value.SetValue (iMacroValue);
     m->Next = MacroList;
     MacroList = m;
@@ -1180,7 +1180,7 @@ bool CPreprocessor::Undef (const char *iMacroName, size_t iMacroNameLen)
         {
             Macro *next = (*cur)->Next;
             (*cur)->Next = NULL;
-            cm_delete<ScratchAlloc>(*cur);
+            bs_delete<ScratchAlloc>(*cur);
             *cur = next;
             return true;
         }

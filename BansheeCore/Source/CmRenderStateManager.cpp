@@ -108,21 +108,21 @@ namespace BansheeEngine
 
 	SamplerStatePtr RenderStateManager::createSamplerStateImpl() const
 	{
-		return cm_core_ptr<SamplerState, PoolAlloc>();
+		return bs_core_ptr<SamplerState, PoolAlloc>();
 	}
 
 	BlendStatePtr RenderStateManager::createBlendStateImpl() const
 	{
-		return cm_core_ptr<BlendState, PoolAlloc>();
+		return bs_core_ptr<BlendState, PoolAlloc>();
 	}
 
 	RasterizerStatePtr RenderStateManager::createRasterizerStateImpl() const
 	{
-		return cm_core_ptr<RasterizerState, PoolAlloc>();
+		return bs_core_ptr<RasterizerState, PoolAlloc>();
 	}
 
 	DepthStencilStatePtr RenderStateManager::createDepthStencilStateImpl() const
 	{
-		return cm_core_ptr<DepthStencilState, PoolAlloc>();
+		return bs_core_ptr<DepthStencilState, PoolAlloc>();
 	}
 }

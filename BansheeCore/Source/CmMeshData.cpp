@@ -32,7 +32,7 @@ namespace BansheeEngine
 	UINT16* MeshData::getIndices16() const
 	{
 		if(mIndexType != IndexBuffer::IT_16BIT)
-			CM_EXCEPT(InternalErrorException, "Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit.");
+			BS_EXCEPT(InternalErrorException, "Attempting to get 16bit index buffer, but internally allocated buffer is 32 bit.");
 
 		UINT32 indexBufferOffset = getIndexBufferOffset();
 
@@ -42,7 +42,7 @@ namespace BansheeEngine
 	UINT32* MeshData::getIndices32() const
 	{
 		if(mIndexType != IndexBuffer::IT_32BIT)
-			CM_EXCEPT(InternalErrorException, "Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit.");
+			BS_EXCEPT(InternalErrorException, "Attempting to get 32bit index buffer, but internally allocated buffer is 16 bit.");
 
 		UINT32 indexBufferOffset = getIndexBufferOffset();
 
@@ -67,7 +67,7 @@ namespace BansheeEngine
 			totalIndexCount += meshData->getNumIndices();
 		}
 
-		VertexDataDescPtr vertexData = cm_shared_ptr<VertexDataDesc, PoolAlloc>();
+		VertexDataDescPtr vertexData = bs_shared_ptr<VertexDataDesc, PoolAlloc>();
 		
 		Vector<VertexElement> combinedVertexElements;
 		for(auto& meshData : meshes)
@@ -86,7 +86,7 @@ namespace BansheeEngine
 					{
 						if(newElement.getType() != existingElement.getType())
 						{
-							CM_EXCEPT(NotImplementedException, "Two elements have same semantics but different types. This is not supported yet.");
+							BS_EXCEPT(NotImplementedException, "Two elements have same semantics but different types. This is not supported yet.");
 						}
 
 						alreadyExistsIdx = idx;
@@ -104,7 +104,7 @@ namespace BansheeEngine
 			}
 		}
 
-		MeshDataPtr combinedMeshData = cm_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, vertexData);
+		MeshDataPtr combinedMeshData = bs_shared_ptr<MeshData, PoolAlloc>(totalVertexCount, totalIndexCount, vertexData);
 
 		// Copy indices
 		UINT32 vertexOffset = 0;
@@ -189,7 +189,7 @@ namespace BansheeEngine
 
 		if(!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
 		{
-			CM_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+			BS_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
 				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
 		}
 
@@ -198,7 +198,7 @@ namespace BansheeEngine
 
 		if(totalSize != size)
 		{
-			CM_EXCEPT(InvalidParametersException, "Buffer sizes don't match. Expected: " + toString(totalSize) + ". Got: " + toString(size));
+			BS_EXCEPT(InvalidParametersException, "Buffer sizes don't match. Expected: " + toString(totalSize) + ". Got: " + toString(size));
 		}
 
 		UINT32 indexBufferOffset = getIndexBufferSize();
@@ -256,7 +256,7 @@ namespace BansheeEngine
 	{
 		if(!mVertexData->hasElement(semantic, semanticIdx, streamIdx))
 		{
-			CM_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
+			BS_EXCEPT(InvalidParametersException, "MeshData doesn't contain an element of specified type: Semantic: " + toString(semantic) + ", Semantic index: "
 				+ toString(semanticIdx) + ", Stream index: " + toString(streamIdx));
 		}
 

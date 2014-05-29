@@ -163,8 +163,8 @@ namespace BansheeEngine
 		String windowFullTypeName = MonoManager::instance().getFullTypeName(editorWindowInstance);
 		String displayName = MonoManager::instance().getTypeName(editorWindowInstance);
 
-		ScriptEditorWidget* editorWidget = cm_new<ScriptEditorWidget>(windowFullTypeName, HString(toWString(displayName)), parentContainer);
-		ScriptEditorWindow* nativeInstance = new (cm_alloc<ScriptEditorWindow>()) ScriptEditorWindow(editorWindowInstance, windowFullTypeName, displayName, editorWidget);
+		ScriptEditorWidget* editorWidget = bs_new<ScriptEditorWidget>(windowFullTypeName, HString(toWString(displayName)), parentContainer);
+		ScriptEditorWindow* nativeInstance = new (bs_alloc<ScriptEditorWindow>()) ScriptEditorWindow(editorWindowInstance, windowFullTypeName, displayName, editorWidget);
 
 		ScriptEditorWindow::registerScriptEditorWindow(nativeInstance);
 

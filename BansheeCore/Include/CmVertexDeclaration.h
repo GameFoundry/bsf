@@ -114,7 +114,7 @@ namespace BansheeEngine
 		UINT16 mIndex;
     };
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
+	BS_ALLOW_MEMCPY_SERIALIZATION(VertexElement);
 
 	/**
 	 * @brief	Describes a set of vertex elements, used for describing contents of

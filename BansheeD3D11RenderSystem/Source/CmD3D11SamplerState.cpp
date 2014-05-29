@@ -93,7 +93,7 @@ namespace BansheeEngine
 		if(FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create sampler state.\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Cannot create sampler state.\nError Description:" + errorDescription);
 		}
 
 		SamplerState::initialize_internal();

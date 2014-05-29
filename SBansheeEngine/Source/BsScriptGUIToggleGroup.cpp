@@ -24,6 +24,6 @@ namespace BansheeEngine
 	{
 		std::shared_ptr<GUIToggleGroup> toggleGroup = GUIToggle::createToggleGroup();
 
-		ScriptGUIToggleGroup* nativeInstance = new (cm_alloc<ScriptGUIToggleGroup>()) ScriptGUIToggleGroup(instance, toggleGroup);
+		ScriptGUIToggleGroup* nativeInstance = new (bs_alloc<ScriptGUIToggleGroup>()) ScriptGUIToggleGroup(instance, toggleGroup);
 	}
 }

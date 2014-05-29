@@ -32,7 +32,7 @@ namespace BansheeEngine
 		if(allocator != nullptr)
 			resultBuffer = (UINT8*)allocator(bytesWritten);
 		else
-			resultBuffer = (UINT8*)cm_alloc(bytesWritten);
+			resultBuffer = (UINT8*)bs_alloc(bytesWritten);
 
 		UINT32 offset = 0;
 		for(auto iter = mBufferPieces.begin(); iter != mBufferPieces.end(); ++iter)

@@ -195,7 +195,7 @@ namespace BansheeEngine
 					numQuads++;
 
 					if(offset > size)
-						CM_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
+						BS_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
 				}
 
 				penX += mTextData->getSpaceWidth();
@@ -259,7 +259,7 @@ namespace BansheeEngine
 					numQuads++;
 
 					if(offset > size)
-						CM_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
+						BS_EXCEPT(InternalErrorException, "Out of buffer bounds. Buffer size: " + toString(size));
 				}
 			}
 		}
@@ -405,7 +405,7 @@ namespace BansheeEngine
 		UINT32 pageInfoArraySize = mNumPageInfos * sizeof(PageInfo);
 
 		UINT32 totalBufferSize = charArraySize + wordArraySize + lineArraySize + pageInfoArraySize;
-		mData = cm_alloc(totalBufferSize);
+		mData = bs_alloc(totalBufferSize);
 
 		UINT8* dataPtr = (UINT8*)mData;
 		mChars = (const CHAR_DESC**)dataPtr;
@@ -436,7 +436,7 @@ namespace BansheeEngine
 	TextData::~TextData()
 	{
 		if(mData != nullptr)
-			cm_free(mData);
+			bs_free(mData);
 	}
 
 	const HTexture& TextData::getTextureForPage(UINT32 page) const 
@@ -481,9 +481,9 @@ namespace BansheeEngine
 			LineBufferSize = 500;
 			PageBufferSize = 20;
 
-			WordBuffer = cm_newN<TextWord>(WordBufferSize);
-			LineBuffer = cm_newN<TextLine>(LineBufferSize);
-			PageBuffer = cm_newN<PageInfo>(PageBufferSize);
+			WordBuffer = bs_newN<TextWord>(WordBufferSize);
+			LineBuffer = bs_newN<TextLine>(LineBufferSize);
+			PageBuffer = bs_newN<PageInfo>(PageBufferSize);
 
 			BuffersInitialized = true;
 		}
@@ -494,10 +494,10 @@ namespace BansheeEngine
 		if(NextFreeWord >= WordBufferSize)
 		{
 			UINT32 newBufferSize = WordBufferSize * 2;
-			TextWord* newBuffer = cm_newN<TextWord>(newBufferSize);
+			TextWord* newBuffer = bs_newN<TextWord>(newBufferSize);
 			memcpy(WordBuffer, newBuffer, WordBufferSize);
 
-			cm_deleteN(WordBuffer, WordBufferSize);
+			bs_deleteN(WordBuffer, WordBufferSize);
 			WordBuffer = newBuffer;
 			WordBufferSize = newBufferSize;
 		}
@@ -512,10 +512,10 @@ namespace BansheeEngine
 		if(NextFreeLine >= LineBufferSize)
 		{
 			UINT32 newBufferSize = LineBufferSize * 2;
-			TextLine* newBuffer = cm_newN<TextLine>(newBufferSize);
+			TextLine* newBuffer = bs_newN<TextLine>(newBufferSize);
 			memcpy(LineBuffer, newBuffer, LineBufferSize);
 
-			cm_deleteN(LineBuffer, LineBufferSize);
+			bs_deleteN(LineBuffer, LineBufferSize);
 			LineBuffer = newBuffer;
 			LineBufferSize = newBufferSize;
 		}
@@ -537,10 +537,10 @@ namespace BansheeEngine
 		if(NextFreePageInfo >= PageBufferSize)
 		{
 			UINT32 newBufferSize = PageBufferSize * 2;
-			PageInfo* newBuffer = cm_newN<PageInfo>(newBufferSize);
+			PageInfo* newBuffer = bs_newN<PageInfo>(newBufferSize);
 			memcpy(PageBuffer, newBuffer, PageBufferSize);
 
-			cm_deleteN(PageBuffer, PageBufferSize);
+			bs_deleteN(PageBuffer, PageBufferSize);
 			PageBuffer = newBuffer;
 			PageBufferSize = newBufferSize;
 		}

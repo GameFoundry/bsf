@@ -249,13 +249,13 @@ namespace BansheeEngine
 			UINT32 indexCount = renderElem.numQuads * 6;
 
 			if(renderElem.vertices != nullptr)
-				cm_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
+				bs_deleteN<ScratchAlloc>(renderElem.vertices, vertexCount);
 
 			if(renderElem.uvs != nullptr)
-				cm_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
+				bs_deleteN<ScratchAlloc>(renderElem.uvs, vertexCount);
 
 			if(renderElem.indexes != nullptr)
-				cm_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
+				bs_deleteN<ScratchAlloc>(renderElem.indexes, indexCount);
 
 			if(renderElem.matInfo.material != nullptr)
 			{

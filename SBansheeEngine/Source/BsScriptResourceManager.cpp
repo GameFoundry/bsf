@@ -12,16 +12,16 @@ namespace BansheeEngine
 	{
 		MonoAssembly* assembly = MonoManager::instance().getAssembly(BansheeEngineAssemblyName);
 		if(assembly == nullptr)
-			CM_EXCEPT(InternalErrorException, "Cannot find \"" + String(BansheeEngineAssemblyName) + "\" assembly.");
+			BS_EXCEPT(InternalErrorException, "Cannot find \"" + String(BansheeEngineAssemblyName) + "\" assembly.");
 
 		mTextureClass = assembly->getClass("BansheeEngine", "Texture2D");
 		mSpriteTextureClass = assembly->getClass("BansheeEngine", "SpriteTexture");
 
 		if(mTextureClass == nullptr)
-			CM_EXCEPT(InternalErrorException, "Cannot find managed Texture2D class.");
+			BS_EXCEPT(InternalErrorException, "Cannot find managed Texture2D class.");
 
 		if(mSpriteTextureClass == nullptr)
-			CM_EXCEPT(InternalErrorException, "Cannot find managed SpriteTexture class.");
+			BS_EXCEPT(InternalErrorException, "Cannot find managed SpriteTexture class.");
 	}
 
 	ScriptTexture2D* ScriptResourceManager::createScriptTexture(const HTexture& resourceHandle)
@@ -36,7 +36,7 @@ namespace BansheeEngine
 		const String& uuid = resourceHandle.getUUID();
 		throwExceptionIfInvalidOrDuplicate(uuid);
 
-		ScriptTexture2D* scriptResource = new (cm_alloc<ScriptTexture2D>()) ScriptTexture2D(instance, resourceHandle);
+		ScriptTexture2D* scriptResource = new (bs_alloc<ScriptTexture2D>()) ScriptTexture2D(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
 
 		return scriptResource;
@@ -54,7 +54,7 @@ namespace BansheeEngine
 		const String& uuid = resourceHandle.getUUID();
 		throwExceptionIfInvalidOrDuplicate(uuid);
 
-		ScriptSpriteTexture* scriptResource = new (cm_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(instance, resourceHandle);
+		ScriptSpriteTexture* scriptResource = new (bs_alloc<ScriptSpriteTexture>()) ScriptSpriteTexture(instance, resourceHandle);
 		mScriptResources[uuid] = scriptResource;
 
 		return scriptResource;
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		const String& uuid = resourceHandle.getUUID();
 
 		if(uuid == "")
-			CM_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
+			BS_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
 
 		auto findIter = mScriptResources.find(uuid);
 		if(findIter != mScriptResources.end())
@@ -90,7 +90,7 @@ namespace BansheeEngine
 		const String& uuid = resourceHandle.getUUID();
 
 		if(uuid == "")
-			CM_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
+			BS_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
 
 		auto findIter = mScriptResources.find(uuid);
 		if(findIter != mScriptResources.end())
@@ -105,12 +105,12 @@ namespace BansheeEngine
 	void ScriptResourceManager::throwExceptionIfInvalidOrDuplicate(const String& uuid) const
 	{
 		if(uuid == "")
-			CM_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
+			BS_EXCEPT(InvalidParametersException, "Provided resource handle has an undefined resource UUID.");
 
 		auto findIter = mScriptResources.find(uuid);
 		if(findIter != mScriptResources.end())
 		{
-			CM_EXCEPT(InvalidStateException, "Provided resource handle already has a script resource. \
+			BS_EXCEPT(InvalidStateException, "Provided resource handle already has a script resource. \
 											 Retrieve the existing instance instead of creating a new one.");
 		}
 	}

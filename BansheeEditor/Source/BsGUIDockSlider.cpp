@@ -24,13 +24,13 @@ namespace BansheeEngine
 
 	GUIDockSlider* GUIDockSlider::create(bool horizontal, const String& styleName)
 	{
-		return new (cm_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
+		return new (bs_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
 			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create());
 	}
 
 	GUIDockSlider* GUIDockSlider::create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
+		return new (bs_alloc<GUIDockSlider, PoolAlloc>()) GUIDockSlider(horizontal, 
 			getStyleName<GUIDockSlider>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 

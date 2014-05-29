@@ -24,7 +24,7 @@ namespace BansheeEngine
 				static RenderSystemFactoryPtr newFactory;
 				if(newFactory == nullptr)
 				{
-					newFactory = cm_shared_ptr<D3D11RenderSystemFactory>();
+					newFactory = bs_shared_ptr<D3D11RenderSystemFactory>();
 					RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
 				}
 			}

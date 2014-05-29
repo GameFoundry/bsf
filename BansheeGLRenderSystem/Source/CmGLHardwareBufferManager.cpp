@@ -48,7 +48,7 @@ namespace BansheeEngine
 	#define SCRATCH_ALIGNMENT 32
 
     GLHardwareBufferManager::GLHardwareBufferManager() 
-		: mScratchBufferPool(NULL), mMapBufferThreshold(CM_GL_DEFAULT_MAP_BUFFER_THRESHOLD)
+		: mScratchBufferPool(NULL), mMapBufferThreshold(BS_GL_DEFAULT_MAP_BUFFER_THRESHOLD)
     {
 		// Init scratch pool
 		// TODO make it a configurable size?
@@ -60,13 +60,13 @@ namespace BansheeEngine
 
 		// non-Win32 machines are having issues glBufferSubData, looks like buffer corruption
 		// disable for now until we figure out where the problem lies			
-#	if CM_PLATFORM != CM_PLATFORM_WIN32
+#	if BS_PLATFORM != BS_PLATFORM_WIN32
 		mMapBufferThreshold = 0;
 #	endif
 
 		// Win32 machines with ATI GPU are having issues glMapBuffer, looks like buffer corruption
 		// disable for now until we figure out where the problem lies			
-#	if CM_PLATFORM == CM_PLATFORM_WIN32
+#	if BS_PLATFORM == BS_PLATFORM_WIN32
 		if (BansheeEngine::RenderSystem::instancePtr()->getCapabilities()->getVendor() == GPU_AMD) 
 		{
 			mMapBufferThreshold = 0xffffffffUL  /* maximum unsigned long value */;
@@ -83,23 +83,23 @@ namespace BansheeEngine
     VertexBufferPtr GLHardwareBufferManager::createVertexBufferImpl(
         UINT32 vertexSize, UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
     {
-		return cm_core_ptr<GLVertexBuffer, PoolAlloc>(new (cm_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(vertexSize, numVerts, usage));
+		return bs_core_ptr<GLVertexBuffer, PoolAlloc>(new (bs_alloc<GLVertexBuffer, PoolAlloc>()) GLVertexBuffer(vertexSize, numVerts, usage));
     }
 
     IndexBufferPtr GLHardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage)
     {
-		return cm_core_ptr<GLIndexBuffer, PoolAlloc>(new (cm_alloc<GLIndexBuffer, PoolAlloc>()) GLIndexBuffer(itype, numIndexes, usage));
+		return bs_core_ptr<GLIndexBuffer, PoolAlloc>(new (bs_alloc<GLIndexBuffer, PoolAlloc>()) GLIndexBuffer(itype, numIndexes, usage));
     }
 
 	GpuParamBlockBufferPtr GLHardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
-		return cm_core_ptr<GLGpuParamBlockBuffer, PoolAlloc>(new (cm_alloc<GLGpuParamBlockBuffer, PoolAlloc>()) GLGpuParamBlockBuffer());
+		return bs_core_ptr<GLGpuParamBlockBuffer, PoolAlloc>(new (bs_alloc<GLGpuParamBlockBuffer, PoolAlloc>()) GLGpuParamBlockBuffer());
 	}
 
 	GpuBufferPtr GLHardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		return cm_core_ptr<GLGpuBuffer, PoolAlloc>(new (cm_alloc<GLGpuBuffer, PoolAlloc>()) GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
+		return bs_core_ptr<GLGpuBuffer, PoolAlloc>(new (bs_alloc<GLGpuBuffer, PoolAlloc>()) GLGpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter));
 	}
 
     GLenum GLHardwareBufferManager::getGLUsage(unsigned int usage)
@@ -144,7 +144,7 @@ namespace BansheeEngine
 		// simple forward link search based on alloc sizes
 		// not that fast but the list should never get that long since not many
 		// locks at once (hopefully)
-		CM_LOCK_MUTEX(mScratchMutex)
+		BS_LOCK_MUTEX(mScratchMutex)
 
 
 		// Alignment - round up the size to 32 bits
@@ -194,7 +194,7 @@ namespace BansheeEngine
 
 	void GLHardwareBufferManager::deallocateScratch(void* ptr)
 	{
-		CM_LOCK_MUTEX(mScratchMutex)
+		BS_LOCK_MUTEX(mScratchMutex)
 
 		// Simple linear search dealloc
 		UINT32 bufferPos = 0;

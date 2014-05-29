@@ -13,7 +13,7 @@ namespace BansheeEngine
 	GUIInputSelection::~GUIInputSelection()
 	{
 		for(auto& sprite : mSprites)
-			cm_delete<PoolAlloc>(sprite);
+			bs_delete<PoolAlloc>(sprite);
 	}
 
 	void GUIInputSelection::updateSprite()
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		if(diff > 0)
 		{
 			for(UINT32 i = (UINT32)mSelectionRects.size(); i < (UINT32)mSprites.size(); i++)
-				cm_delete(mSprites[i]);
+				bs_delete(mSprites[i]);
 
 			mSprites.erase(mSprites.begin() + mSelectionRects.size(), mSprites.end());
 		}
@@ -33,7 +33,7 @@ namespace BansheeEngine
 		{
 			for(INT32 i = diff; i < 0; i++)
 			{
-				ImageSprite* newSprite = cm_new<ImageSprite>();
+				ImageSprite* newSprite = bs_new<ImageSprite>();
 				mSprites.push_back(newSprite);
 			}
 		}
@@ -180,7 +180,7 @@ namespace BansheeEngine
 	void GUIInputSelection::clearSelection()
 	{
 		for(auto& sprite : mSprites)
-			cm_delete(sprite);
+			bs_delete(sprite);
 
 		mSprites.clear();
 	}

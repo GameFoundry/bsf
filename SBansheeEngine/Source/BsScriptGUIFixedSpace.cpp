@@ -43,7 +43,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUIFixedSpace& space = nativeLayout->addSpace(size);
 
-		ScriptGUIFixedSpace* nativeInstance = new (cm_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
+		ScriptGUIFixedSpace* nativeInstance = new (bs_alloc<ScriptGUIFixedSpace>()) ScriptGUIFixedSpace(instance, space, nativeLayout);
 	}
 
 	void ScriptGUIFixedSpace::internal_destroy(ScriptGUIFixedSpace* nativeInstance)

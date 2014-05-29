@@ -26,7 +26,7 @@ namespace BansheeEngine
 	{
 		if(mFileList != nullptr)
 		{
-			cm_delete(mFileList);
+			bs_delete(mFileList);
 			mFileList = nullptr;
 		}
 	}
@@ -44,7 +44,7 @@ namespace BansheeEngine
 		_clear();
 
 		mDropType = OSDropType::FileList;
-		mFileList = cm_new<Vector<WString>>();
+		mFileList = bs_new<Vector<WString>>();
 		*mFileList = fileList;
 	}
 }

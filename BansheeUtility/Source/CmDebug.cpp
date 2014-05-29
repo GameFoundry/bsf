@@ -40,20 +40,20 @@ namespace BansheeEngine
 			if(overwrite)
 				FileSystem::remove(filePath);
 			else
-				CM_EXCEPT(FileNotFoundException, "File already exists at specified location: " + filePath.toString());
+				BS_EXCEPT(FileNotFoundException, "File already exists at specified location: " + filePath.toString());
 		}
 
 		DataStreamPtr ds = FileSystem::createAndOpenFile(filePath);
 
 		UINT32 bmpDataSize = BitmapWriter::getBMPSize(width, height, bytesPerPixel);
-		UINT8* bmpBuffer = cm_newN<UINT8, ScratchAlloc>(bmpDataSize);
+		UINT8* bmpBuffer = bs_newN<UINT8, ScratchAlloc>(bmpDataSize);
 
 		BitmapWriter::rawPixelsToBMP(rawPixels, bmpBuffer, width, height, bytesPerPixel);
 
 		ds->write(bmpBuffer, bmpDataSize);
 		ds->close();
 
-		cm_deleteN<ScratchAlloc>(bmpBuffer, bmpDataSize);
+		bs_deleteN<ScratchAlloc>(bmpBuffer, bmpDataSize);
 	}
 
 	BS_UTILITY_EXPORT Debug& gDebug()

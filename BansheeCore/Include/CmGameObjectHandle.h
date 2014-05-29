@@ -160,7 +160,7 @@ namespace BansheeEngine
 		GameObjectHandle()
 			:GameObjectHandleBase()
 		{	
-			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>();
+			mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>();
 		}
 
 		/**
@@ -187,7 +187,7 @@ namespace BansheeEngine
 		 */
 		inline GameObjectHandle<T>& operator=(std::nullptr_t ptr)
 		{ 	
-			mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>();
+			mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>();
 
 			return *this;
 		}

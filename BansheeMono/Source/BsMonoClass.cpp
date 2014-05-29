@@ -39,21 +39,21 @@ namespace BansheeEngine
 	{
 		for(auto& mapEntry : mMethods)
 		{
-			cm_delete(mapEntry.second);
+			bs_delete(mapEntry.second);
 		}
 
 		mMethods.clear();
 
 		for(auto& mapEntry : mFields)
 		{
-			cm_delete(mapEntry.second);
+			bs_delete(mapEntry.second);
 		}
 
 		mFields.clear();
 
 		for(auto& mapEntry : mProperties)
 		{
-			cm_delete(mapEntry.second);
+			bs_delete(mapEntry.second);
 		}
 
 		mProperties.clear();
@@ -70,10 +70,10 @@ namespace BansheeEngine
 		if(method == nullptr)
 		{
 			String fullMethodName = mFullName + "::" + name;
-			CM_EXCEPT(InvalidParametersException, "Cannot get Mono method: " + fullMethodName);
+			BS_EXCEPT(InvalidParametersException, "Cannot get Mono method: " + fullMethodName);
 		}
 
-		MonoMethod* newMethod = new (cm_alloc<MonoMethod>()) MonoMethod(method);
+		MonoMethod* newMethod = new (bs_alloc<MonoMethod>()) MonoMethod(method);
 		mMethods[mehodId] = newMethod;
 
 		return *newMethod;
@@ -98,7 +98,7 @@ namespace BansheeEngine
 				const char* curSig = mono_signature_get_desc(mono_method_signature(method), false);
 				if(strcmp(rawSig, curSig) == 0)
 				{
-					MonoMethod* newMethod = new (cm_alloc<MonoMethod>()) MonoMethod(method);
+					MonoMethod* newMethod = new (bs_alloc<MonoMethod>()) MonoMethod(method);
 					mMethods[mehodId] = newMethod;
 
 					return newMethod;
@@ -134,7 +134,7 @@ namespace BansheeEngine
 		if(field == nullptr)
 			return nullptr;
 
-		MonoField* newField = new (cm_alloc<MonoField>()) MonoField(field);
+		MonoField* newField = new (bs_alloc<MonoField>()) MonoField(field);
 		mFields[name] = newField;
 
 		return newField;
@@ -150,10 +150,10 @@ namespace BansheeEngine
 		if(property == nullptr)
 		{
 			String fullPropertyName = mFullName + "." + name;
-			CM_EXCEPT(InvalidParametersException, "Cannot get Mono property: " + fullPropertyName);
+			BS_EXCEPT(InvalidParametersException, "Cannot get Mono property: " + fullPropertyName);
 		}
 
-		MonoProperty* newProperty = new (cm_alloc<MonoProperty>()) MonoProperty(property);
+		MonoProperty* newProperty = new (bs_alloc<MonoProperty>()) MonoProperty(property);
 		mProperties[name] = newProperty;
 
 		return *newProperty;

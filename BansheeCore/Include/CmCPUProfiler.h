@@ -262,7 +262,7 @@ namespace BansheeEngine
 			 */
 			void releaseBlock(ProfiledBlock* block);
 
-			static CM_THREADLOCAL ThreadInfo* activeThread;
+			static BS_THREADLOCAL ThreadInfo* activeThread;
 			bool isActive;
 
 			ProfiledBlock* rootBlock;
@@ -357,7 +357,7 @@ namespace BansheeEngine
 		UINT64 mPreciseSamplingOverheadCycles;
 
 		ProfilerVector<ThreadInfo*> mActiveThreads;
-		CM_MUTEX(mThreadSync);
+		BS_MUTEX(mThreadSync);
 	};
 
 	/**

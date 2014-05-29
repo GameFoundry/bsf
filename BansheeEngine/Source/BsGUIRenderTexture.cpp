@@ -33,12 +33,12 @@ namespace BansheeEngine
 
 	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const String& styleName)
 	{
-		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create());
+		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create());
 	}
 
 	GUIRenderTexture* GUIRenderTexture::create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIRenderTexture, PoolAlloc>()) GUIRenderTexture(getStyleName<GUIRenderTexture>(styleName), texture, GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUIRenderTexture::updateRenderElementsInternal()

@@ -19,12 +19,12 @@ namespace BansheeEngine
 	GUIResourceTreeView::InternalDraggedResources::InternalDraggedResources(UINT32 numObjects)
 		:numObjects(numObjects)
 	{
-		resourcePaths = cm_newN<Path>(numObjects);
+		resourcePaths = bs_newN<Path>(numObjects);
 	}
 
 	GUIResourceTreeView::InternalDraggedResources::~InternalDraggedResources()
 	{
-		cm_deleteN(resourcePaths, numObjects);
+		bs_deleteN(resourcePaths, numObjects);
 		resourcePaths = nullptr;
 	}
 
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle, 
 		const String& dragSepHighlightStyle)
 	{
-		return new (cm_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
+		return new (bs_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
 			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create());
 	}
 
@@ -64,7 +64,7 @@ namespace BansheeEngine
 		const String& elementBtnStyle, const String& foldoutBtnStyle, const String& selectionBackgroundStyle, 
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
-		return new (cm_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, 
+		return new (bs_alloc<GUIResourceTreeView, PoolAlloc>()) GUIResourceTreeView(backgroundStyle, elementBtnStyle, 
 			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options));
 	}
 
@@ -140,7 +140,7 @@ namespace BansheeEngine
 
 	GUIResourceTreeView::ResourceTreeElement* GUIResourceTreeView::addTreeElement(ResourceTreeElement* parent, const Path& fullPath)
 	{
-		ResourceTreeElement* newChild = cm_new<ResourceTreeElement>();
+		ResourceTreeElement* newChild = bs_new<ResourceTreeElement>();
 		newChild->mParent = parent;
 		newChild->mName = fullPath.getFilename();
 		newChild->mFullPath = fullPath;
@@ -174,7 +174,7 @@ namespace BansheeEngine
 		}
 
 		if(&mRootElement != element)
-			cm_delete(element);
+			bs_delete(element);
 	}
 
 	void GUIResourceTreeView::sortTreeElement(ResourceTreeElement* element)
@@ -333,13 +333,13 @@ namespace BansheeEngine
 		{
 			Vector<WString> fileList = mDropTarget->getFileList();
 
-			mDraggedResources = cm_new<InternalDraggedResources>((UINT32)fileList.size());
+			mDraggedResources = bs_new<InternalDraggedResources>((UINT32)fileList.size());
 			for(UINT32 i = 0; i < (UINT32)fileList.size(); i++)
 				mDraggedResources->resourcePaths[i] = fileList[i];
 
 			dragAndDropEnded(treeElement);
 
-			cm_delete(mDraggedResources);
+			bs_delete(mDraggedResources);
 			mDraggedResources = nullptr;
 
 			unselectAll();
@@ -378,8 +378,8 @@ namespace BansheeEngine
 	{
 		assert(mDraggedResources == nullptr);
 
-		DraggedResources* draggedResources = cm_new<DraggedResources>();
-		InternalDraggedResources* internalDraggedResources = cm_new<InternalDraggedResources>((UINT32)mSelectedElements.size());
+		DraggedResources* draggedResources = bs_new<DraggedResources>();
+		InternalDraggedResources* internalDraggedResources = bs_new<InternalDraggedResources>((UINT32)mSelectedElements.size());
 
 		UINT32 cnt = 0;
 		for(auto& selectedElement : mSelectedElements)
@@ -432,11 +432,11 @@ namespace BansheeEngine
 		markContentAsDirty();
 
 		DraggedResources* draggedResources = reinterpret_cast<DraggedResources*>(DragAndDropManager::instance().getDragData());
-		cm_delete(draggedResources);
+		bs_delete(draggedResources);
 
 		if(mDraggedResources != nullptr)
 		{
-			cm_delete(mDraggedResources);
+			bs_delete(mDraggedResources);
 			mDraggedResources = nullptr;
 		}
 	}

@@ -42,7 +42,7 @@ namespace BansheeEngine
 		UINT32 idx = 0;
 		for (auto& handle : handles)
 		{
-			mOutputs.push_back(cm_new<Win32VideoOutputInfo>(handle, idx++));
+			mOutputs.push_back(bs_new<Win32VideoOutputInfo>(handle, idx++));
 		}
 	}
 
@@ -80,7 +80,7 @@ namespace BansheeEngine
 
 			if (!foundVideoMode)
 			{
-				Win32VideoMode* videoMode = cm_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
+				Win32VideoMode* videoMode = bs_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
 					(float)devMode.dmDisplayFrequency, outputIdx);
 				videoMode->mIsCustom = false;
 
@@ -91,7 +91,7 @@ namespace BansheeEngine
 		// Get desktop display mode
 		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-		Win32VideoMode* desktopVideoMode = cm_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
+		Win32VideoMode* desktopVideoMode = bs_new<Win32VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, 
 			(float)devMode.dmDisplayFrequency, outputIdx);
 		desktopVideoMode->mIsCustom = false;
 

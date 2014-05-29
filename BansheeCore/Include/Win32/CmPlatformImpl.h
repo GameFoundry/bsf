@@ -364,7 +364,7 @@ namespace BansheeEngine
 		static bool mRequiresStartUp;
 		static bool mRequiresShutDown;
 
-		CM_STATIC_MUTEX(mSync);
+		BS_STATIC_MUTEX(mSync);
 
 		static void win32ShowCursor();
 		static void win32HideCursor();

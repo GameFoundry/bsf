@@ -14,7 +14,7 @@ namespace BansheeEngine
 			d3d9device->GetAdapterIdentifier(i, 0, &adapterIdentifier);
 			d3d9device->GetDeviceCaps(i, D3DDEVTYPE_HAL, &d3dcaps9);
 
-			mOutputs.push_back(cm_new<D3D9VideoOutputInfo>(d3d9device, i));
+			mOutputs.push_back(bs_new<D3D9VideoOutputInfo>(d3d9device, i));
 		}
 	}
 
@@ -48,7 +48,7 @@ namespace BansheeEngine
 
 			if (!foundVideoMode)
 			{
-				D3D9VideoMode* videoMode = cm_new<D3D9VideoMode>(displayMode.Width, displayMode.Height, (float)displayMode.RefreshRate, adapterIdx);
+				D3D9VideoMode* videoMode = bs_new<D3D9VideoMode>(displayMode.Width, displayMode.Height, (float)displayMode.RefreshRate, adapterIdx);
 
 				mVideoModes.push_back(videoMode);
 			}
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		devMode.dmDriverExtra = 0;
 		EnumDisplaySettings(monitorInfo.szDevice, ENUM_CURRENT_SETTINGS, &devMode);
 
-		D3D9VideoMode* desktopVideoMode = cm_new<D3D9VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, (float)devMode.dmDisplayFrequency, adapterIdx);
+		D3D9VideoMode* desktopVideoMode = bs_new<D3D9VideoMode>(devMode.dmPelsWidth, devMode.dmPelsHeight, (float)devMode.dmDisplayFrequency, adapterIdx);
 
 		mDesktopVideoMode = desktopVideoMode;
 	}

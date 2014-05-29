@@ -37,7 +37,7 @@ namespace BansheeEngine
 	void MaterialRTTI::onSerializationStarted(IReflectable* obj)
 	{
 		Material* material = static_cast<Material*>(obj);
-		std::shared_ptr<MaterialParams> params = cm_shared_ptr<MaterialParams, ScratchAlloc>();
+		std::shared_ptr<MaterialParams> params = bs_shared_ptr<MaterialParams, ScratchAlloc>();
 
 		ShaderPtr shader = material->getShader();
 		if(shader != nullptr)
@@ -147,7 +147,7 @@ namespace BansheeEngine
 						}
 						break;
 					default:
-						CM_EXCEPT(InternalErrorException, "Cannot serialize this paramater type: " + toString(paramDesc.type));
+						BS_EXCEPT(InternalErrorException, "Cannot serialize this paramater type: " + toString(paramDesc.type));
 					}
 				}
 				else if(type == GPT_OBJECT)
@@ -172,15 +172,15 @@ namespace BansheeEngine
 					}
 					else if(Shader::isBuffer(paramDesc.type))
 					{
-						CM_EXCEPT(NotImplementedException, "Buffers can't be serialized yet."); // TODO
+						BS_EXCEPT(NotImplementedException, "Buffers can't be serialized yet."); // TODO
 					}
 					else
 					{
-						CM_EXCEPT(InternalErrorException, "Cannot serialize this paramater type: " + toString(paramDesc.type));
+						BS_EXCEPT(InternalErrorException, "Cannot serialize this paramater type: " + toString(paramDesc.type));
 					}
 				}
 				else
-					CM_EXCEPT(InternalErrorException, "Invalid parameter type.");
+					BS_EXCEPT(InternalErrorException, "Invalid parameter type.");
 
 			}
 		}

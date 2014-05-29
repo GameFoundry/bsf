@@ -737,6 +737,6 @@ namespace BansheeEngine
 
 	void __string_throwDataOverflowException()
 	{
-		CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+		BS_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
 	}
 }

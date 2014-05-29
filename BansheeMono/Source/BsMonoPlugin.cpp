@@ -11,7 +11,7 @@ namespace BansheeEngine
 
 	extern "C" BS_MONO_EXPORT void* loadPlugin()
 	{
-		std::shared_ptr<MonoScriptSystem> mono = cm_shared_ptr<MonoScriptSystem>();
+		std::shared_ptr<MonoScriptSystem> mono = bs_shared_ptr<MonoScriptSystem>();
 		ScriptManager::instance().initialize(mono);
 
 		return nullptr;

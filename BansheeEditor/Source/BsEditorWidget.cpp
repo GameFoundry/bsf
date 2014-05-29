@@ -30,7 +30,7 @@ namespace BansheeEngine
 	void EditorWidgetBase::destroy(EditorWidgetBase* widget)
 	{
 		widget->~EditorWidgetBase();
-		cm_free(widget);
+		bs_free(widget);
 	}
 
 	void EditorWidgetBase::_setPosition(INT32 x, INT32 y)

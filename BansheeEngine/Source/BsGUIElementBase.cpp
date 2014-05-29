@@ -19,7 +19,7 @@ namespace BansheeEngine
 		{
 			// Non-GUIElement are owned by us
 			if(child->_getType() != GUIElementBase::Type::Element)
-				cm_delete<PoolAlloc>(child);
+				bs_delete<PoolAlloc>(child);
 			else
 			{
 				GUIElement* element = static_cast<GUIElement*>(child);
@@ -124,7 +124,7 @@ namespace BansheeEngine
 
 	GUILayout& GUIElementBase::addLayoutXInternal(GUIElementBase* parent)
 	{
-		GUILayoutX* entry = cm_new<GUILayoutX, PoolAlloc>();
+		GUILayoutX* entry = bs_new<GUILayoutX, PoolAlloc>();
 		entry->_setParent(parent);
 
 		mChildren.push_back(entry);
@@ -135,7 +135,7 @@ namespace BansheeEngine
 
 	GUILayout& GUIElementBase::addLayoutYInternal(GUIElementBase* parent)
 	{
-		GUILayoutY* entry = cm_new<GUILayoutY, PoolAlloc>();
+		GUILayoutY* entry = bs_new<GUILayoutY, PoolAlloc>();
 		entry->_setParent(parent);
 
 		mChildren.push_back(entry);
@@ -153,7 +153,7 @@ namespace BansheeEngine
 
 			if(child->_getType() == GUIElementBase::Type::Layout && child == &layout)
 			{
-				cm_delete<PoolAlloc>(child);
+				bs_delete<PoolAlloc>(child);
 
 				mChildren.erase(iter);
 				foundElem = true;
@@ -163,15 +163,15 @@ namespace BansheeEngine
 		}
 
 		if(!foundElem)
-			CM_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
+			BS_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
 	}
 
 	GUILayout& GUIElementBase::insertLayoutXInternal(GUIElementBase* parent, UINT32 idx)
 	{
 		if(idx < 0 || idx > (UINT32)mChildren.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUILayoutX* entry = cm_new<GUILayoutX, PoolAlloc>();
+		GUILayoutX* entry = bs_new<GUILayoutX, PoolAlloc>();
 		entry->_setParent(parent);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
@@ -183,9 +183,9 @@ namespace BansheeEngine
 	GUILayout& GUIElementBase::insertLayoutYInternal(GUIElementBase* parent, UINT32 idx)
 	{
 		if(idx < 0 || idx > (UINT32)mChildren.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUILayoutY* entry = cm_new<GUILayoutY, PoolAlloc>();
+		GUILayoutY* entry = bs_new<GUILayoutY, PoolAlloc>();
 		entry->_setParent(parent);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
@@ -227,7 +227,7 @@ namespace BansheeEngine
 		}
 
 		if(!foundElem)
-			CM_EXCEPT(InvalidParametersException, "Provided element is not a part of this element.");
+			BS_EXCEPT(InvalidParametersException, "Provided element is not a part of this element.");
 	}
 
 	void GUIElementBase::_changeParentWidget(GUIWidget* widget)

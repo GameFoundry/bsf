@@ -24,7 +24,7 @@ namespace BansheeEngine
 				static RenderSystemFactoryPtr newFactory;
 				if(newFactory == nullptr)
 				{
-					newFactory = cm_shared_ptr<GLRenderSystemFactory>();
+					newFactory = bs_shared_ptr<GLRenderSystemFactory>();
 					RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
 				}
 			}

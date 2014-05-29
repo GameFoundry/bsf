@@ -17,7 +17,7 @@ namespace BansheeEngine
 	DockManagerLayout::Entry* DockManagerLayout::Entry::createLeaf(Entry* parent, UINT32 childIdx, 
 		const Vector<String>& widgetNames)
 	{
-		Entry* newEntry = cm_new<Entry>();
+		Entry* newEntry = bs_new<Entry>();
 		newEntry->isLeaf = true;
 		newEntry->parent = parent;
 
@@ -32,7 +32,7 @@ namespace BansheeEngine
 	DockManagerLayout::Entry* DockManagerLayout::Entry::createContainer(Entry* parent, UINT32 childIdx, 
 		float splitPosition, bool horizontalSplit)
 	{
-		Entry* newEntry = cm_new<Entry>();
+		Entry* newEntry = bs_new<Entry>();
 		newEntry->isLeaf = false;
 		newEntry->parent = parent;
 
@@ -65,7 +65,7 @@ namespace BansheeEngine
 				todo.push(current->children[1]);
 			}
 
-			cm_delete(current);
+			bs_delete(current);
 		}
 	}
 

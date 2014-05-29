@@ -44,13 +44,13 @@ namespace BansheeEngine
 				UINT32 oldVertexCount = renderElem.numQuads * 4;
 				UINT32 oldIndexCount = renderElem.numQuads * 6;
 
-				if(renderElem.vertices != nullptr) cm_deleteN<ScratchAlloc>(renderElem.vertices, oldVertexCount);
-				if(renderElem.uvs != nullptr) cm_deleteN<ScratchAlloc>(renderElem.uvs, oldVertexCount);
-				if(renderElem.indexes != nullptr) cm_deleteN<ScratchAlloc>(renderElem.indexes, oldIndexCount);
+				if(renderElem.vertices != nullptr) bs_deleteN<ScratchAlloc>(renderElem.vertices, oldVertexCount);
+				if(renderElem.uvs != nullptr) bs_deleteN<ScratchAlloc>(renderElem.uvs, oldVertexCount);
+				if(renderElem.indexes != nullptr) bs_deleteN<ScratchAlloc>(renderElem.indexes, oldIndexCount);
 
-				renderElem.vertices = cm_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
-				renderElem.uvs = cm_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
-				renderElem.indexes = cm_newN<UINT32, ScratchAlloc>(newNumQuads * 6);
+				renderElem.vertices = bs_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
+				renderElem.uvs = bs_newN<Vector2, ScratchAlloc>(newNumQuads * 4);
+				renderElem.indexes = bs_newN<UINT32, ScratchAlloc>(newNumQuads * 6);
 				renderElem.numQuads = newNumQuads;
 			}
 

@@ -18,7 +18,7 @@ namespace BansheeEngine
 		GUIImageScaleMode scale, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mScaleMode(scale), mUsingStyleTexture(false)
 	{
-		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
 
 		if(texture != nullptr)
 		{
@@ -31,57 +31,57 @@ namespace BansheeEngine
 
 	GUITexture::~GUITexture()
 	{
-		cm_delete<PoolAlloc>(mImageSprite);
+		bs_delete<PoolAlloc>(mImageSprite);
 	}
 
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
 		const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
 			texture, scale, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, GUIImageScaleMode scale, 
 		const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
 			texture, scale, GUILayoutOptions::create());
 	}
 
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, 
 		const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
 			texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(const HSpriteTexture& texture, const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName),
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName),
 			texture, GUIImageScaleMode::StretchToFit, GUILayoutOptions::create());
 	}
 
 	GUITexture* GUITexture::create(GUIImageScaleMode scale, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
 			HTexture(), scale, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(GUIImageScaleMode scale, const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
 			HSpriteTexture(), scale, GUILayoutOptions::create());
 	}
 
 	GUITexture* GUITexture::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
 			HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITexture* GUITexture::create(const String& styleName)
 	{
-		return new (cm_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
+		return new (bs_alloc<GUITexture, PoolAlloc>()) GUITexture(getStyleName<GUITexture>(styleName), 
 			HTexture(), GUIImageScaleMode::StretchToFit, GUILayoutOptions::create());
 	}
 

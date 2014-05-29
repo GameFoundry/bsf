@@ -5,7 +5,7 @@ namespace BansheeEngine
 {
 	void D3D9RenderSystemFactory::create()
 	{
-	#ifdef CM_STATIC_LIB
+	#ifdef BS_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle(NULL);
 	#else
 		HINSTANCE hInst = GetModuleHandle("BansheeD3D9RenderSystem.dll");

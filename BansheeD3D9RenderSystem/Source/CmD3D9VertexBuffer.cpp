@@ -23,7 +23,7 @@ namespace BansheeEngine
 		mBufferDesc.Pool = mSystemMemory ? D3DPOOL_SYSTEMMEM : D3DPOOL_DEFAULT;
 
 		// Allocate the system memory buffer.
-		mSystemMemoryBuffer = (UINT8*)cm_alloc(getSizeInBytes());
+		mSystemMemoryBuffer = (UINT8*)bs_alloc(getSizeInBytes());
 		memset(mSystemMemoryBuffer, 0, getSizeInBytes());
 
 		// Case we have to create this buffer resource on loading.
@@ -51,13 +51,13 @@ namespace BansheeEngine
 			SAFE_RELEASE(bufferResources->mBuffer);
 
 			if (bufferResources != nullptr)
-				cm_delete(bufferResources);
+				bs_delete(bufferResources);
 		}
 
 		mMapDeviceToBufferResources.clear();
 
 		if (mSystemMemoryBuffer != nullptr)
-			cm_free(mSystemMemoryBuffer);
+			bs_free(mSystemMemoryBuffer);
 
 		VertexBuffer::destroy_internal();
 	}
@@ -150,7 +150,7 @@ namespace BansheeEngine
 			SAFE_RELEASE(iterFind->second->mBuffer);
 
 			if(iterFind->second != nullptr)
-				cm_delete(iterFind->second);
+				bs_delete(iterFind->second);
 
 			mMapDeviceToBufferResources.erase(iterFind);
 		}	
@@ -195,7 +195,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			bufferResources = cm_new<BufferResources>();			
+			bufferResources = bs_new<BufferResources>();			
 			mMapDeviceToBufferResources[d3d9Device] = bufferResources;
 		}
 
@@ -217,14 +217,14 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			CM_EXCEPT(RenderingAPIException, "Cannot restore D3D9 vertex buffer: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot restore D3D9 vertex buffer: " + msg);
 		}
 
 		hr = bufferResources->mBuffer->GetDesc(&mBufferDesc);
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			CM_EXCEPT(RenderingAPIException, "Cannot get D3D9 Vertex buffer desc: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot get D3D9 Vertex buffer desc: " + msg);
 		}		
 	}
 
@@ -265,7 +265,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			CM_EXCEPT(RenderingAPIException, "Cannot lock D3D9 vertex buffer: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot lock D3D9 vertex buffer: " + msg);
 		}
 
 		memcpy(dstBytes, systemMemoryBuffer + bufferResources->mLockOffset, bufferResources->mLockLength);
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			String msg = DXGetErrorDescription(hr);
-			CM_EXCEPT(RenderingAPIException, "Cannot unlock D3D9 vertex buffer: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot unlock D3D9 vertex buffer: " + msg);
 		}
 
 		bufferResources->mOutOfDate = false;

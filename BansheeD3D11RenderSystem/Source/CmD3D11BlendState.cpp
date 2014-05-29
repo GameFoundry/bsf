@@ -21,7 +21,7 @@ namespace BansheeEngine
 		blendStateDesc.AlphaToCoverageEnable = mData.alphaToCoverageEnable;
 		blendStateDesc.IndependentBlendEnable = mData.independantBlendEnable;
 		
-		for(UINT32 i = 0; i < CM_MAX_MULTIPLE_RENDER_TARGETS; i++)
+		for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 		{
 			blendStateDesc.RenderTarget[i].BlendEnable = mData.renderTargetDesc[i].blendEnable;
 			blendStateDesc.RenderTarget[i].BlendOp = D3D11Mappings::get(mData.renderTargetDesc[i].blendOp);
@@ -40,7 +40,7 @@ namespace BansheeEngine
 		if(FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create blend state.\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Cannot create blend state.\nError Description:" + errorDescription);
 		}
 
 		BlendState::initialize_internal();

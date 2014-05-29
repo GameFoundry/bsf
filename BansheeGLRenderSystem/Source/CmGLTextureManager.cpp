@@ -47,23 +47,23 @@ namespace BansheeEngine
 
     TexturePtr GLTextureManager::createTextureImpl()
     {
-        GLTexture* tex = new (cm_alloc<GLTexture, PoolAlloc>()) GLTexture(mGLSupport);
+        GLTexture* tex = new (bs_alloc<GLTexture, PoolAlloc>()) GLTexture(mGLSupport);
 
-		return cm_core_ptr<GLTexture, PoolAlloc>(tex);
+		return bs_core_ptr<GLTexture, PoolAlloc>(tex);
     }
 
 	RenderTexturePtr GLTextureManager::createRenderTextureImpl()
 	{
-		GLRenderTexture* tex = new (cm_alloc<GLRenderTexture, PoolAlloc>()) GLRenderTexture();
+		GLRenderTexture* tex = new (bs_alloc<GLRenderTexture, PoolAlloc>()) GLRenderTexture();
 
-		return cm_core_ptr<GLRenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<GLRenderTexture, PoolAlloc>(tex);
 	}
 
 	MultiRenderTexturePtr GLTextureManager::createMultiRenderTextureImpl()
 	{
-		GLMultiRenderTexture* tex = new (cm_alloc<GLMultiRenderTexture, PoolAlloc>()) GLMultiRenderTexture();
+		GLMultiRenderTexture* tex = new (bs_alloc<GLMultiRenderTexture, PoolAlloc>()) GLMultiRenderTexture();
 
-		return cm_core_ptr<GLMultiRenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<GLMultiRenderTexture, PoolAlloc>(tex);
 	}
 
 	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

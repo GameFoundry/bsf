@@ -31,9 +31,9 @@ namespace BansheeEngine
 
 	public:
 		AsyncOp()
-			:mData(cm_shared_ptr<AsyncOpData, ScratchAlloc>())
+			:mData(bs_shared_ptr<AsyncOpData, ScratchAlloc>())
 		{
-#if CM_ARCH_TYPE != CM_ARCHITECTURE_x86_32 && CM_ARCH_TYPE != CM_ARCHITECTURE_x86_64
+#if BS_ARCH_TYPE != BS_ARCHITECTURE_x86_32 && BS_ARCH_TYPE != BS_ARCHITECTURE_x86_64
 			static_assert(false, "You will likely need to add locks for mIsCompleted on architectures other than x86.");
 #endif
 		}
@@ -60,9 +60,9 @@ namespace BansheeEngine
 		template <typename T>
 		T getReturnValue() const 
 		{ 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(!hasCompleted())
-				CM_EXCEPT(InternalErrorException, "Trying to get AsyncOp return value but the operation hasn't completed.");
+				BS_EXCEPT(InternalErrorException, "Trying to get AsyncOp return value but the operation hasn't completed.");
 #endif
 			// Be careful if cast throws an exception. It doesn't support casting of polymorphic types. Provided and returned
 			// types must be EXACT. (You'll have to cast the data yourself when completing the operation)

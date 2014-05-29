@@ -16,8 +16,8 @@ namespace BansheeEngine
 
 	GpuProgIncludePtr GpuProgInclude::_createPtr(const String& includeString)
 	{
-		GpuProgIncludePtr gpuProgIncludePtr = cm_core_ptr<GpuProgInclude, PoolAlloc>(
-			new (cm_alloc<GpuProgInclude, PoolAlloc>()) GpuProgInclude(includeString));
+		GpuProgIncludePtr gpuProgIncludePtr = bs_core_ptr<GpuProgInclude, PoolAlloc>(
+			new (bs_alloc<GpuProgInclude, PoolAlloc>()) GpuProgInclude(includeString));
 		gpuProgIncludePtr->_setThisPtr(gpuProgIncludePtr);
 		gpuProgIncludePtr->initialize();
 

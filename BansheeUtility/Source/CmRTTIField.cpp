@@ -7,7 +7,7 @@ namespace BansheeEngine
 	{
 		if(!isPlainType())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Plain type. Got: " + toString(mIsVectorType) + ", " + 
 				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
@@ -19,7 +19,7 @@ namespace BansheeEngine
 	{
 		if(!isDataBlockType())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Data block. Got: " + toString(mIsVectorType) + ", " + 
 				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
@@ -29,7 +29,7 @@ namespace BansheeEngine
 	{
 		if(!isReflectableType())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Complex type. Got: " + toString(mIsVectorType) + ", " + 
 				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
@@ -41,7 +41,7 @@ namespace BansheeEngine
 	{
 		if(!isReflectablePtrType())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed: Complex ptr type. Got: " + toString(mIsVectorType) + ", " + 
 				toString(isPlainType()) + ", " + toString(isReflectableType()) + ", " + toString(isDataBlockType()) + ", " + toString(isReflectablePtrType()));
 		}
@@ -53,13 +53,13 @@ namespace BansheeEngine
 	{
 		if(array && !mIsVectorType)
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed an array type but got a single type.");
 		}
 
 		if(!array && mIsVectorType)
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Invalid field type. Needed a single type but got an array type.");
 		}
 	}

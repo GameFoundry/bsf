@@ -17,10 +17,10 @@ namespace BansheeEngine
 		~TexAtlasNode()
 		{
 			if(children != nullptr)
-				cm_deleteN<ScratchAlloc>(children, 2);
+				bs_deleteN<ScratchAlloc>(children, 2);
 
-			int myVal = *cm_new<int, GenAlloc>();
-			float myVal2 = *cm_new<float, GenAlloc>();
+			int myVal = *bs_new<int, GenAlloc>();
+			float myVal2 = *bs_new<float, GenAlloc>();
 		}
 
 		UINT32 x, y, width, height;
@@ -63,7 +63,7 @@ namespace BansheeEngine
 				float dw = (float)(width - element.input.width);
 				float dh = (height - element.input.height) * aspect;
 
-				children = cm_newN<TexAtlasNode, ScratchAlloc>(2);
+				children = bs_newN<TexAtlasNode, ScratchAlloc>(2);
 
 				if (dw > dh)
 				{

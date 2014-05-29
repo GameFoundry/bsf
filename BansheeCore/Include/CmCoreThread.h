@@ -38,7 +38,7 @@ public:
 	/**
 		* @brief	Returns the id of the core thread. 
 		*/
-	BS_CORE_EXPORT CM_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
+	BS_CORE_EXPORT BS_THREAD_ID_TYPE getCoreThreadId() { return mCoreThreadId; }
 
 	/**
 		* @brief	Creates or retrieves an accessor that you can use for executing commands on the core thread from 
@@ -111,17 +111,17 @@ private:
 	FrameAlloc* mFrameAllocs[2]; 
 	UINT32 mActiveFrameAlloc;
 
-	static CM_THREADLOCAL AccessorContainer* mAccessor;
+	static BS_THREADLOCAL AccessorContainer* mAccessor;
 	Vector<AccessorContainer*> mAccessors;
 
 	volatile bool mCoreThreadShutdown;
 
-	CM_THREAD_ID_TYPE mCoreThreadId;
-	CM_MUTEX(mCommandQueueMutex)
-	CM_MUTEX(mAccessorMutex)
-	CM_THREAD_SYNCHRONISER(mCommandReadyCondition)
-	CM_MUTEX(mCommandNotifyMutex)
-	CM_THREAD_SYNCHRONISER(mCommandCompleteCondition)
+	BS_THREAD_ID_TYPE mCoreThreadId;
+	BS_MUTEX(mCommandQueueMutex)
+	BS_MUTEX(mAccessorMutex)
+	BS_THREAD_SYNCHRONISER(mCommandReadyCondition)
+	BS_MUTEX(mCommandNotifyMutex)
+	BS_THREAD_SYNCHRONISER(mCommandCompleteCondition)
 
 	CommandQueue<CommandQueueSync>* mCommandQueue;
 
@@ -194,7 +194,7 @@ private:
 	  */
 	BS_CORE_EXPORT void throwIfCoreThread();
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 #define THROW_IF_NOT_CORE_THREAD throwIfNotCoreThread();
 #define THROW_IF_CORE_THREAD throwIfCoreThread();
 #else

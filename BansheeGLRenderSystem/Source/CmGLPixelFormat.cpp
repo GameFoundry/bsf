@@ -234,7 +234,7 @@ namespace BansheeEngine  {
 			return GL_UNSIGNED_SHORT;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Invalid depth stencil format");
+		BS_EXCEPT(InvalidParametersException, "Invalid depth stencil format");
 	}
 	
 	//----------------------------------------------------------------------------- 	

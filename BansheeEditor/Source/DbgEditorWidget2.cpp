@@ -25,11 +25,11 @@
 
 namespace BansheeEngine
 {
-	bool cm_dbg_fullscreen = false;
+	bool bs_dbg_fullscreen = false;
 
 	void toggleFullscreen()
 	{
-		if (cm_dbg_fullscreen)
+		if (bs_dbg_fullscreen)
 		{
 			gCoreAccessor().setWindowed(gCoreApplication().getPrimaryWindow(), 1280, 720);
 		}
@@ -39,7 +39,7 @@ namespace BansheeEngine
 			gCoreAccessor().setFullscreen(gCoreApplication().getPrimaryWindow(), 1920, 1200, 60, 0);
 		}
 
-		cm_dbg_fullscreen = !cm_dbg_fullscreen;
+		bs_dbg_fullscreen = !bs_dbg_fullscreen;
 	}
 
 

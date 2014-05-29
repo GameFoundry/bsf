@@ -97,7 +97,7 @@ namespace BansheeEngine
 			uuid = UUIDGenerator::instance().generateRandom();
 
 		{
-			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			auto iterFind = mLoadedResources.find(uuid);
 			if(iterFind != mLoadedResources.end()) // Resource is already loaded
 			{
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		HResource existingResource;
 
 		{
-			CM_LOCK_MUTEX(mInProgressResourcesMutex);
+			BS_LOCK_MUTEX(mInProgressResourcesMutex);
 			auto iterFind2 = mInProgressResources.find(uuid);
 			if(iterFind2 != mInProgressResources.end()) 
 			{
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		HResource newResource(uuid);
 
 		{
-			CM_LOCK_MUTEX(mInProgressResourcesMutex);
+			BS_LOCK_MUTEX(mInProgressResourcesMutex);
 			mInProgressResources[uuid] = newResource;
 		}
 
@@ -166,10 +166,10 @@ namespace BansheeEngine
 		std::shared_ptr<IReflectable> loadedData = fs.decode(filePath);
 
 		if(loadedData == nullptr)
-			CM_EXCEPT(InternalErrorException, "Unable to load resource.");
+			BS_EXCEPT(InternalErrorException, "Unable to load resource.");
 
 		if(!loadedData->isDerivedFrom(Resource::getRTTIStatic()))
-			CM_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
+			BS_EXCEPT(InternalErrorException, "Loaded class doesn't derive from Resource.");
 
 		ResourcePtr resource = std::static_pointer_cast<Resource>(loadedData);
 		return resource;
@@ -183,7 +183,7 @@ namespace BansheeEngine
 		resource->destroy();
 
 		{
-			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			mLoadedResources.erase(resource.getUUID());
 		}
 	}
@@ -193,7 +193,7 @@ namespace BansheeEngine
 		Vector<HResource> resourcesToUnload;
 
 		{
-			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			for(auto iter = mLoadedResources.begin(); iter != mLoadedResources.end(); ++iter)
 			{
 				if(iter->second.getInternalPtr().unique()) // We just have this one reference, meaning nothing is using this resource
@@ -218,7 +218,7 @@ namespace BansheeEngine
 			if(overwrite)
 				FileSystem::remove(filePath);
 			else
-				CM_EXCEPT(InvalidParametersException, "Another file exists at the specified location.");
+				BS_EXCEPT(InvalidParametersException, "Another file exists at the specified location.");
 		}
 
 		mDefaultResourceManifest->registerResource(resource.getUUID(), filePath);
@@ -256,7 +256,7 @@ namespace BansheeEngine
 		HResource newHandle(obj, uuid);
 
 		{
-			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
 
 			mLoadedResources[uuid] = newHandle;
 		}
@@ -291,14 +291,14 @@ namespace BansheeEngine
 		ResourcePtr rawResource = loadFromDiskAndDeserialize(filePath);
 
 		{
-			CM_LOCK_MUTEX(mInProgressResourcesMutex);
+			BS_LOCK_MUTEX(mInProgressResourcesMutex);
 			mInProgressResources.erase(resource.getUUID());
 		}
 
 		resource._setHandleData(rawResource, resource.getUUID());
 
 		{
-			CM_LOCK_MUTEX(mLoadedResourceMutex);
+			BS_LOCK_MUTEX(mLoadedResourceMutex);
 			mLoadedResources[resource.getUUID()] = resource;
 		}
 	}

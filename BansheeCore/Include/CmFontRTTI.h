@@ -72,7 +72,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<FontData, PoolAlloc>();
+			return bs_shared_ptr<FontData, PoolAlloc>();
 		}
 	};
 
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		FontData& getFontData(Font* obj, UINT32 idx)
 		{
 			if(idx >= obj->mFontDataPerSize.size())
-				CM_EXCEPT(InternalErrorException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((int)obj->mFontDataPerSize.size()));
+				BS_EXCEPT(InternalErrorException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((int)obj->mFontDataPerSize.size()));
 
 			auto iter = obj->mFontDataPerSize.begin();
 			for(UINT32 i = 0; i < idx; i++, ++iter)
@@ -140,7 +140,7 @@ namespace BansheeEngine
 	protected:
 		virtual void onDeserializationStarted(IReflectable* obj)
 		{
-			FontInitData* initData = cm_new<FontInitData, PoolAlloc>();
+			FontInitData* initData = bs_new<FontInitData, PoolAlloc>();
 
 			Font* font = static_cast<Font*>(obj);
 			font->mRTTIData = initData;
@@ -153,7 +153,7 @@ namespace BansheeEngine
 
 			font->initialize(initData->fontDataPerSize);
 
-			cm_delete<PoolAlloc>(initData);
+			bs_delete<PoolAlloc>(initData);
 		}
 	};
 }

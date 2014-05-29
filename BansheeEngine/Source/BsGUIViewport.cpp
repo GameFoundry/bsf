@@ -31,13 +31,13 @@ namespace BansheeEngine
 
 	GUIViewport* GUIViewport::create(const HCamera& camera, float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create());
+		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create());
 	}
 
 	GUIViewport* GUIViewport::create(const GUIOptions& layoutOptions, const HCamera& camera, 
 		float aspectRatio, Degree fieldOfView, const String& styleName)
 	{
-		return new (cm_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIViewport, PoolAlloc>()) GUIViewport(getStyleName<GUIViewport>(styleName), camera, aspectRatio, fieldOfView, GUILayoutOptions::create(layoutOptions));
 	}
 
 	UINT32 GUIViewport::getNumRenderElements() const
@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	const GUIMaterialInfo& GUIViewport::getMaterial(UINT32 renderElementIdx) const
 	{
-		CM_EXCEPT(InternalErrorException, "This element has no render element so no material can be retrieved.");
+		BS_EXCEPT(InternalErrorException, "This element has no render element so no material can be retrieved.");
 	}
 
 	UINT32 GUIViewport::getNumQuads(UINT32 renderElementIdx) const
@@ -103,7 +103,7 @@ namespace BansheeEngine
 			RenderTargetPtr cameraRenderTarget = mCamera->getViewport()->getTarget();
 
 			if(guiRenderTarget != cameraRenderTarget)
-				CM_EXCEPT(InvalidParametersException, "Camera provided to GUIViewport must use the same render target as the GUIWidget this element is located on.")
+				BS_EXCEPT(InvalidParametersException, "Camera provided to GUIViewport must use the same render target as the GUIWidget this element is located on.")
 		}
 	}
 }

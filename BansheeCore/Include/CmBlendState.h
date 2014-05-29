@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 		bool alphaToCoverageEnable;
 		bool independantBlendEnable;
-		RENDER_TARGET_BLEND_STATE_DESC renderTargetDesc[CM_MAX_MULTIPLE_RENDER_TARGETS];
+		RENDER_TARGET_BLEND_STATE_DESC renderTargetDesc[BS_MAX_MULTIPLE_RENDER_TARGETS];
 	};
 
 	/**

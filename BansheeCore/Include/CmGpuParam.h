@@ -91,7 +91,7 @@ namespace BansheeEngine
 
 	public:
 		GpuDataParamBase()
-			:mData(cm_shared_ptr<InternalData>())
+			:mData(bs_shared_ptr<InternalData>())
 		{ }
 
 		/**
@@ -104,14 +104,14 @@ namespace BansheeEngine
 		void set(const T& value, UINT32 arrayIdx = 0)
 		{
 			if(mData->isDestroyed)
-				CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 			GpuParamDataDesc* paramDesc = mData->paramDesc;
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(arrayIdx >= paramDesc->arraySize)
 			{
-				CM_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
+				BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
 					toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 			}
 #endif
@@ -145,14 +145,14 @@ namespace BansheeEngine
 		T get(UINT32 arrayIdx = 0)
 		{
 			if(mData->isDestroyed)
-				CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 			GpuParamDataDesc* paramDesc = mData->paramDesc;
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(arrayIdx >= paramDesc->arraySize)
 			{
-				CM_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
+				BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
 					toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 			}
 #endif
@@ -181,7 +181,7 @@ namespace BansheeEngine
 
 	private:
 		GpuDataParamBase(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
-			:mData(cm_shared_ptr<InternalData>(paramDesc, paramBlocks, transpose))
+			:mData(bs_shared_ptr<InternalData>(paramDesc, paramBlocks, transpose))
 		{ }
 
 	private:

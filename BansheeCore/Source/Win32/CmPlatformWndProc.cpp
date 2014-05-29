@@ -229,7 +229,7 @@ namespace BansheeEngine
 				// to trigger, while the mouse is still in the non-client area of the window.
 				mIsTrackingMouse = false; // TrackMouseEvent ends when this message is received and needs to be re-applied
 
-				CM_LOCK_MUTEX(mSync);
+				BS_LOCK_MUTEX(mSync);
 
 				mMouseLeftWindows.push_back(win);
 			}
@@ -442,10 +442,10 @@ namespace BansheeEngine
 
 				break;
 			}
-		case WM_CM_SETCAPTURE:
+		case WM_BS_SETCAPTURE:
 			SetCapture(hWnd);
 			break;
-		case WM_CM_RELEASECAPTURE:
+		case WM_BS_RELEASECAPTURE:
 			ReleaseCapture();
 			break;
 		case WM_CAPTURECHANGED:

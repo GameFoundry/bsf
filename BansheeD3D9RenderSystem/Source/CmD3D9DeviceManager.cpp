@@ -48,7 +48,7 @@ namespace BansheeEngine
 	D3D9Device* D3D9DeviceManager::getActiveDevice()
 	{	
 		if (mActiveDevice == nullptr)
-			CM_EXCEPT(InvalidParametersException, "Current active device is null." );
+			BS_EXCEPT(InvalidParametersException, "Current active device is null." );
 
 		return mActiveDevice;		
 	}
@@ -155,7 +155,7 @@ namespace BansheeEngine
 		// No matching device found -> create new one.
 		if (renderDevice == nullptr)
 		{
-			renderDevice = cm_new<D3D9Device>(this, adapterOrdinal, direct3D9->GetAdapterMonitor(adapterOrdinal), devType, extraFlags);
+			renderDevice = bs_new<D3D9Device>(this, adapterOrdinal, direct3D9->GetAdapterMonitor(adapterOrdinal), devType, extraFlags);
 			mRenderDevices.push_back(renderDevice);
 
 			if (mActiveDevice == nullptr)
@@ -203,7 +203,7 @@ namespace BansheeEngine
 				if (*iter == device)
 				{					
 					if(device != nullptr)
-						cm_delete(device);
+						bs_delete(device);
 
 					mRenderDevices.erase(iter);
 					break;

@@ -64,6 +64,6 @@ namespace BansheeEngine
 
 	VertexDeclarationPtr HardwareBufferManager::createVertexDeclarationImpl(const VertexDeclaration::VertexElementList& elements)
 	{
-		return cm_core_ptr<VertexDeclaration, PoolAlloc>(new (cm_alloc<VertexDeclaration, PoolAlloc>()) VertexDeclaration(elements));
+		return bs_core_ptr<VertexDeclaration, PoolAlloc>(new (bs_alloc<VertexDeclaration, PoolAlloc>()) VertexDeclaration(elements));
 	}
 }

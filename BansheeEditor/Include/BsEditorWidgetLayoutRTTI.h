@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
+			return bs_shared_ptr<EditorWidgetLayout>(EditorWidgetLayout::PrivatelyConstruct());
 		}
 	};
 }
@@ -89,7 +89,7 @@ namespace BansheeEngine
 			UINT64 dataSize = sizeof(UINT32) + rttiGetElemSize(data.widgetNames) + rttiGetElemSize(data.isDocked) + 
 				rttiGetElemSize(data.x) + rttiGetElemSize(data.y) + rttiGetElemSize(data.width) + rttiGetElemSize(data.height);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
 				__string_throwDataOverflowException();

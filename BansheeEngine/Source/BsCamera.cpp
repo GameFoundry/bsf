@@ -62,7 +62,7 @@ namespace BansheeEngine
         mProjMatrixRS = Matrix4::ZERO;
 
 		target->synchronize();
-		mViewport = cm_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height);
+		mViewport = bs_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height);
     }
 
     //-----------------------------------------------------------------------
@@ -101,7 +101,7 @@ namespace BansheeEngine
 	{
 		if (nearPlane <= 0)
 		{
-			CM_EXCEPT(InvalidParametersException, "Near clip distance must be greater than zero.");
+			BS_EXCEPT(InvalidParametersException, "Near clip distance must be greater than zero.");
 		}
 		mNearDist = nearPlane;
 		invalidateFrustum();
@@ -134,7 +134,7 @@ namespace BansheeEngine
 	{
 		if (focalLength <= 0)
 		{
-			CM_EXCEPT(InvalidParametersException,
+			BS_EXCEPT(InvalidParametersException,
 				"Focal length must be greater than zero.");
 		}
 

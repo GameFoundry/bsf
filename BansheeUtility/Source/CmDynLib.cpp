@@ -1,7 +1,7 @@
 #include "CmDynLib.h"
 #include "CmException.h"
 
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN
 #  if !defined(NOMINMAX) && defined(_MSC_VER)
 #	define NOMINMAX // required to stop windows.h messing up std::min
@@ -9,7 +9,7 @@
 #  include <windows.h>
 #endif
 
-#if CM_PLATFORM == CM_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_APPLE
 #   include "macUtils.h"
 #   include <dlfcn.h>
 #endif
@@ -32,15 +32,15 @@ namespace BansheeEngine
 			return;
 
 		String name = mName;
-#if CM_PLATFORM == CM_PLATFORM_LINUX
+#if BS_PLATFORM == BS_PLATFORM_LINUX
         // dlopen() does not add .so to the filename, like windows does for .dll
         if (name.substr(name.length() - 3, 3) != ".so")
            name += ".so";
-#elif CM_PLATFORM == CM_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_APPLE
         // dlopen() does not add .dylib to the filename, like windows does for .dll
         if (name.substr(name.length() - 6, 6) != ".dylib")
 			name += ".dylib";
-#elif CM_PLATFORM == CM_PLATFORM_WIN32
+#elif BS_PLATFORM == BS_PLATFORM_WIN32
 		// Although LoadLibraryEx will add .dll itself when you only specify the library name,
 		// if you include a relative path then it does not. So, add it to be sure.
 		if (name.substr(name.length() - 4, 4) != ".dll")
@@ -50,7 +50,7 @@ namespace BansheeEngine
 
         if(!m_hInst)
 		{
-            CM_EXCEPT(InternalErrorException,  
+            BS_EXCEPT(InternalErrorException,  
 				"Could not load dynamic library " + mName + 
                 ".  System Error: " + dynlibError());
 		}
@@ -63,7 +63,7 @@ namespace BansheeEngine
 
         if(DYNLIB_UNLOAD(m_hInst))
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
                 "Could not unload dynamic library " + mName +
                 ".  System Error: " + dynlibError());
 		}
@@ -79,7 +79,7 @@ namespace BansheeEngine
 
     String DynLib::dynlibError() 
     {
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
         LPVOID lpMsgBuf; 
         FormatMessage( 
             FORMAT_MESSAGE_ALLOCATE_BUFFER | 
@@ -96,7 +96,7 @@ namespace BansheeEngine
         // Free the buffer.
         LocalFree(lpMsgBuf);
         return ret;
-#elif CM_PLATFORM == CM_PLATFORM_LINUX || CM_PLATFORM == CM_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_APPLE
         return String(dlerror());
 #else
         return String("");

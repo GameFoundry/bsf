@@ -10,7 +10,7 @@ namespace BansheeEngine
 	ManagedDataBlock::ManagedDataBlock(UINT32 size)
 		:mSize(size), mManaged(true), mIsDataOwner(true), mDeallocator(nullptr)
 	{
-		mData = (UINT8*)cm_alloc<ScratchAlloc>(size);
+		mData = (UINT8*)bs_alloc<ScratchAlloc>(size);
 	}
 
 	ManagedDataBlock::ManagedDataBlock(const ManagedDataBlock& source)
@@ -31,7 +31,7 @@ namespace BansheeEngine
 			if(mDeallocator != nullptr)
 				mDeallocator(mData);
 			else
-				cm_free<ScratchAlloc>(mData);
+				bs_free<ScratchAlloc>(mData);
 		}
 	}
 }

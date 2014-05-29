@@ -45,7 +45,7 @@ namespace BansheeEngine
 			auto firstElem = mInputLayoutMap.begin();
 
 			SAFE_RELEASE(firstElem->second->inputLayout);
-			cm_delete<PoolAlloc>(firstElem->second);
+			bs_delete<PoolAlloc>(firstElem->second);
 
 			mInputLayoutMap.erase(firstElem);
 		}
@@ -81,7 +81,7 @@ namespace BansheeEngine
 			return; // Error was already reported, so just quit here
 
 		UINT32 numElements = vertexBufferDecl->getElementCount();
-		D3D11_INPUT_ELEMENT_DESC* declElements = cm_newN<D3D11_INPUT_ELEMENT_DESC, ScratchAlloc>(numElements);
+		D3D11_INPUT_ELEMENT_DESC* declElements = bs_newN<D3D11_INPUT_ELEMENT_DESC, ScratchAlloc>(numElements);
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * numElements);
 
 		unsigned int idx = 0;
@@ -103,7 +103,7 @@ namespace BansheeEngine
 
 		const HLSLMicroCode& microcode = vertexProgram.getMicroCode();
 
-		InputLayoutEntry* newEntry = cm_new<InputLayoutEntry, PoolAlloc>();
+		InputLayoutEntry* newEntry = bs_new<InputLayoutEntry, PoolAlloc>();
 		newEntry->lastUsedIdx = ++mLastUsedCounter;
 		newEntry->inputLayout = nullptr; 
 		HRESULT hr = device.getD3D11Device()->CreateInputLayout( 
@@ -113,10 +113,10 @@ namespace BansheeEngine
 			microcode.size(),
 			&newEntry->inputLayout);
 
-		cm_deleteN<ScratchAlloc>(declElements, numElements);
+		bs_deleteN<ScratchAlloc>(declElements, numElements);
 
 		if (FAILED(hr)|| device.hasError())
-			CM_EXCEPT(RenderingAPIException, "Unable to set D3D11 vertex declaration" + device.getErrorDescription());
+			BS_EXCEPT(RenderingAPIException, "Unable to set D3D11 vertex declaration" + device.getErrorDescription());
 
 		// Create key and add to the layout map
 		VertexDeclarationKey pair;
@@ -147,7 +147,7 @@ namespace BansheeEngine
 			auto inputLayoutIter = mInputLayoutMap.find(iter->second);
 
 			SAFE_RELEASE(inputLayoutIter->second->inputLayout);
-			cm_delete<PoolAlloc>(inputLayoutIter->second);
+			bs_delete<PoolAlloc>(inputLayoutIter->second);
 
 			mInputLayoutMap.erase(inputLayoutIter);
 

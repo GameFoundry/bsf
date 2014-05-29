@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 		if (!mBufferId)
 		{
-			CM_EXCEPT(InternalErrorException,
+			BS_EXCEPT(InternalErrorException,
 				"Cannot create GL vertex buffer");
 		}
 
@@ -62,7 +62,7 @@ namespace BansheeEngine
 
         if(mIsLocked)
         {
-			CM_EXCEPT(InternalErrorException,
+			BS_EXCEPT(InternalErrorException,
                 "Invalid attempt to lock a vertex buffer that has already been locked");
         }
 
@@ -86,7 +86,7 @@ namespace BansheeEngine
 
 		if(buffer == nullptr)
 		{
-			CM_EXCEPT(InternalErrorException, "Cannot map vertex buffer.");
+			BS_EXCEPT(InternalErrorException, "Cannot map vertex buffer.");
 		}
 
 		void* retPtr = static_cast<void*>(static_cast<unsigned char*>(buffer));
@@ -101,7 +101,7 @@ namespace BansheeEngine
 
 		if(!glUnmapBuffer(GL_ARRAY_BUFFER))
 		{
-			CM_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload.");
+			BS_EXCEPT(InternalErrorException, "Buffer data corrupted, please reload.");
 		}
 
         mIsLocked = false;

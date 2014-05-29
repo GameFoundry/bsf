@@ -72,7 +72,7 @@ namespace BansheeEngine
 		// TODO - Preprocessor defines aren't supported
 
 		UINT compileFlags = 0;
-#if defined(CM_DEBUG_MODE)
+#if defined(BS_DEBUG_MODE)
 		compileFlags |= D3DCOMPILE_DEBUG;
 		compileFlags |= D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
@@ -142,7 +142,7 @@ namespace BansheeEngine
 
 	GpuParamsPtr D3D11GpuProgram::createParameters()
 	{
-		GpuParamsPtr params = cm_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
+		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
 		return params;
 	}
 
@@ -184,7 +184,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException, 
 				"Cannot create D3D11 vertex shader from microcode\nError Description:" + errorDescription);
 
 		}
@@ -233,7 +233,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException, 
 				"Cannot create D3D11 pixel shader from microcode.\nError Description:" + errorDescription);
 		}
 	}
@@ -281,7 +281,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException, 
 				"Cannot create D3D11 geometry shader from microcode.\nError Description:" + errorDescription);
 		}
 	}
@@ -329,7 +329,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException, 
 				"Cannot create D3D11 domain shader from microcode.\nError Description:" + errorDescription);
 		}
 	}
@@ -378,7 +378,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, 
+			BS_EXCEPT(RenderingAPIException, 
 				"Cannot create D3D11 hull shader from microcode.\nError Description:" + errorDescription);
 		}
 	}
@@ -426,7 +426,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException,
+			BS_EXCEPT(RenderingAPIException,
 				"Cannot create D3D11 compute shader from microcode.\nError Description:" + errorDescription);
 		}
 	}

@@ -6,5 +6,5 @@
 #include <windowsx.h>
 #include <oleidl.h>
 
-#define WM_CM_SETCAPTURE WM_USER + 101
-#define WM_CM_RELEASECAPTURE WM_USER + 102
+#define WM_BS_SETCAPTURE WM_USER + 101
+#define WM_BS_RELEASECAPTURE WM_USER + 102

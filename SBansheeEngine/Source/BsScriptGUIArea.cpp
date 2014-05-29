@@ -42,7 +42,7 @@ namespace BansheeEngine
 		ScriptGUIPanel* scriptGUIPanel = ScriptGUIPanel::toNative(panel);
 		GUIArea* nativeArea = GUIArea::create(scriptGUIPanel->getWidget(), x, y, width, height, depth);
 
-		ScriptGUIArea* nativeInstance = new (cm_alloc<ScriptGUIArea>()) ScriptGUIArea(instance, nativeArea, scriptGUIPanel);
+		ScriptGUIArea* nativeInstance = new (bs_alloc<ScriptGUIArea>()) ScriptGUIArea(instance, nativeArea, scriptGUIPanel);
 	}
 
 	void ScriptGUIArea::internal_destroy(ScriptGUIArea* thisPtr)

@@ -52,8 +52,8 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			std::shared_ptr<ResourceHandleBase> obj = cm_shared_ptr<ResourceHandleBase, PoolAlloc>(new (cm_alloc<ResourceHandleBase, PoolAlloc>()) ResourceHandleBase());
-			obj->mData = cm_shared_ptr<ResourceHandleData>();
+			std::shared_ptr<ResourceHandleBase> obj = bs_shared_ptr<ResourceHandleBase, PoolAlloc>(new (bs_alloc<ResourceHandleBase, PoolAlloc>()) ResourceHandleBase());
+			obj->mData = bs_shared_ptr<ResourceHandleData>();
 
 			return obj;
 		}

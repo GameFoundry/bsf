@@ -52,7 +52,7 @@ namespace BansheeEngine
 
 			if(findIter != mCachedCameras.end())
 			{
-				CM_EXCEPT(InternalErrorException, "Trying to add an already existing camera!");
+				BS_EXCEPT(InternalErrorException, "Trying to add an already existing camera!");
 			}
 
 			mCachedCameras.push_back(camera);
@@ -73,7 +73,7 @@ namespace BansheeEngine
 
 			if(findIter == mCachedCameras.end())
 			{
-				CM_EXCEPT(InternalErrorException, "Cannot find specified camera!");
+				BS_EXCEPT(InternalErrorException, "Cannot find specified camera!");
 			}
 
 			mCachedCameras.erase(findIter);

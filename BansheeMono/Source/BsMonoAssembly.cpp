@@ -49,7 +49,7 @@ namespace BansheeEngine
 		::MonoAssembly* monoAssembly = mono_domain_assembly_open (MonoManager::instance().getDomain(), path.c_str());
 		if(monoAssembly == nullptr)
 		{
-			CM_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);
+			BS_EXCEPT(InvalidParametersException, "Cannot load Mono assembly: " + path);
 		}
 
 		mName = name;
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		mMonoImage = mono_assembly_get_image(mMonoAssembly);
 		if(mMonoImage == nullptr)
 		{
-			CM_EXCEPT(InvalidParametersException, "Cannot get script assembly image.");
+			BS_EXCEPT(InvalidParametersException, "Cannot get script assembly image.");
 		}
 
 		mIsLoaded = true;
@@ -69,7 +69,7 @@ namespace BansheeEngine
 		::MonoAssembly* monoAssembly = mono_image_get_assembly(image);
 		if(monoAssembly == nullptr)
 		{
-			CM_EXCEPT(InvalidParametersException, "Cannot get assembly from image.");
+			BS_EXCEPT(InvalidParametersException, "Cannot get assembly from image.");
 		}
 
 		mName = name;
@@ -86,7 +86,7 @@ namespace BansheeEngine
 			return;
 
 		for(auto& entry : mClassesByRaw)
-			cm_delete(entry.second);
+			bs_delete(entry.second);
 
 		mClasses.clear();
 		mClassesByRaw.clear();
@@ -123,7 +123,7 @@ namespace BansheeEngine
 	MonoClass* MonoAssembly::getClass(const String& namespaceName, const String& name) const
 	{
 		if(!mIsLoaded)
-			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
+			BS_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
 
 
 
@@ -137,7 +137,7 @@ namespace BansheeEngine
 		if(monoClass == nullptr)
 			return nullptr;
 
-		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(namespaceName, name, monoClass, this);
+		MonoClass* newClass = new (bs_alloc<MonoClass>()) MonoClass(namespaceName, name, monoClass, this);
 		mClasses[classId] = newClass;
 		mClassesByRaw[monoClass] = newClass;
 
@@ -147,7 +147,7 @@ namespace BansheeEngine
 	MonoClass* MonoAssembly::getClass(::MonoClass* rawMonoClass) const
 	{
 		if(!mIsLoaded)
-			CM_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
+			BS_EXCEPT(InvalidStateException, "Trying to use an unloaded assembly.");
 
 		if(rawMonoClass == nullptr)
 			return nullptr;
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		String ns = mono_class_get_namespace(rawMonoClass);
 		String typeName = mono_class_get_name(rawMonoClass);
 
-		MonoClass* newClass = new (cm_alloc<MonoClass>()) MonoClass(ns, typeName, rawMonoClass, this);
+		MonoClass* newClass = new (bs_alloc<MonoClass>()) MonoClass(ns, typeName, rawMonoClass, this);
 		
 		mClassesByRaw[rawMonoClass] = newClass;
 

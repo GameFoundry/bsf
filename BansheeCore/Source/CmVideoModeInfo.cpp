@@ -14,15 +14,15 @@ namespace BansheeEngine
 	VideoOutputInfo::~VideoOutputInfo()
 	{ 
 		for (auto& videoMode : mVideoModes)
-			cm_delete(videoMode);
+			bs_delete(videoMode);
 
 		if (mDesktopVideoMode != nullptr)
-			cm_delete(mDesktopVideoMode);
+			bs_delete(mDesktopVideoMode);
 	}
 
 	VideoModeInfo::~VideoModeInfo()
 	{ 
 		for (auto& output : mOutputs)
-			cm_delete(output);
+			bs_delete(output);
 	}
 }

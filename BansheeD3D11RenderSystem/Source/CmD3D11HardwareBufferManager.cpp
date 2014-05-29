@@ -19,31 +19,31 @@ namespace BansheeEngine
 	VertexBufferPtr D3D11HardwareBufferManager::createVertexBufferImpl(UINT32 vertexSize, 
 		UINT32 numVerts, GpuBufferUsage usage, bool streamOut)
 	{
-		D3D11VertexBuffer* buffer = new (cm_alloc<D3D11VertexBuffer, PoolAlloc>()) D3D11VertexBuffer(mDevice, vertexSize, numVerts, usage, false, streamOut);
+		D3D11VertexBuffer* buffer = new (bs_alloc<D3D11VertexBuffer, PoolAlloc>()) D3D11VertexBuffer(mDevice, vertexSize, numVerts, usage, false, streamOut);
 
-		return cm_core_ptr<D3D11VertexBuffer, PoolAlloc>(buffer);
+		return bs_core_ptr<D3D11VertexBuffer, PoolAlloc>(buffer);
 	}
 
 	IndexBufferPtr D3D11HardwareBufferManager::createIndexBufferImpl(IndexBuffer::IndexType itype, 
 		UINT32 numIndexes, GpuBufferUsage usage)
 	{
-		D3D11IndexBuffer* buffer = new (cm_alloc<D3D11IndexBuffer, PoolAlloc>()) D3D11IndexBuffer(mDevice, itype, numIndexes, usage, false);
+		D3D11IndexBuffer* buffer = new (bs_alloc<D3D11IndexBuffer, PoolAlloc>()) D3D11IndexBuffer(mDevice, itype, numIndexes, usage, false);
 
-		return cm_core_ptr<D3D11IndexBuffer, PoolAlloc>(buffer);
+		return bs_core_ptr<D3D11IndexBuffer, PoolAlloc>(buffer);
 	}
 
 	GpuParamBlockBufferPtr D3D11HardwareBufferManager::createGpuParamBlockBufferImpl()
 	{
-		D3D11GpuParamBlockBuffer* paramBlockBuffer = new (cm_alloc<D3D11GpuParamBlockBuffer, PoolAlloc>()) D3D11GpuParamBlockBuffer();
+		D3D11GpuParamBlockBuffer* paramBlockBuffer = new (bs_alloc<D3D11GpuParamBlockBuffer, PoolAlloc>()) D3D11GpuParamBlockBuffer();
 
-		return cm_core_ptr<D3D11GpuParamBlockBuffer, PoolAlloc>(paramBlockBuffer);
+		return bs_core_ptr<D3D11GpuParamBlockBuffer, PoolAlloc>(paramBlockBuffer);
 	}
 
 	GpuBufferPtr D3D11HardwareBufferManager::createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 		GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite, bool useCounter)
 	{
-		D3D11GpuBuffer* buffer = new (cm_alloc<D3D11GpuBuffer, PoolAlloc>()) D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
+		D3D11GpuBuffer* buffer = new (bs_alloc<D3D11GpuBuffer, PoolAlloc>()) D3D11GpuBuffer(elementCount, elementSize, type, usage, randomGpuWrite, useCounter);
 
-		return cm_core_ptr<D3D11GpuBuffer, PoolAlloc>(buffer);
+		return bs_core_ptr<D3D11GpuBuffer, PoolAlloc>(buffer);
 	}
 }

@@ -14,12 +14,12 @@ namespace BansheeEngine
 	GUIButtonBase::GUIButtonBase(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mContent(content), mContentImageSprite(nullptr), mActiveState(GUIButtonState::Normal)
 	{
-		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
-		mTextSprite = cm_new<TextSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
+		mTextSprite = bs_new<TextSprite, PoolAlloc>();
 
 		HSpriteTexture contentTex = content.getImage();
 		if(SpriteTexture::checkIsLoaded(contentTex))
-			mContentImageSprite = cm_new<ImageSprite, PoolAlloc>();
+			mContentImageSprite = bs_new<ImageSprite, PoolAlloc>();
 
 		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUIButtonBase::markContentAsDirty, this));
 	}
@@ -28,11 +28,11 @@ namespace BansheeEngine
 	{
 		mLocStringUpdatedConn.disconnect();
 
-		cm_delete<PoolAlloc>(mTextSprite);
-		cm_delete<PoolAlloc>(mImageSprite);
+		bs_delete<PoolAlloc>(mTextSprite);
+		bs_delete<PoolAlloc>(mImageSprite);
 
 		if(mContentImageSprite != nullptr)
-			cm_delete<PoolAlloc>(mContentImageSprite);
+			bs_delete<PoolAlloc>(mContentImageSprite);
 	}
 
 	void GUIButtonBase::setContent(const GUIContent& content)

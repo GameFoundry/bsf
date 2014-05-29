@@ -85,7 +85,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || mDevice.hasError())
 		{
 			String msg = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D11 buffer: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D11 buffer: " + msg);
 		}
 	}
 
@@ -94,14 +94,14 @@ namespace BansheeEngine
 		SAFE_RELEASE(mD3DBuffer);
 
 		if(mpTempStagingBuffer != nullptr)
-			cm_delete<PoolAlloc>(mpTempStagingBuffer);
+			bs_delete<PoolAlloc>(mpTempStagingBuffer);
 	}
 
 	void* D3D11HardwareBuffer::lockImpl(UINT32 offset, 
 		UINT32 length, GpuLockOptions options)
 	{
 		if (length > mSizeInBytes)
-			CM_EXCEPT(RenderingAPIException, "Provided length " + toString(length) + " larger than the buffer " + toString(mSizeInBytes) + ".");		
+			BS_EXCEPT(RenderingAPIException, "Provided length " + toString(length) + " larger than the buffer " + toString(mSizeInBytes) + ".");		
 
 		// Use direct (and faster) Map/Unmap if dynamic write, or a staging read/write
 		if((mDesc.Usage == D3D11_USAGE_DYNAMIC && options != GBL_READ_ONLY) || mDesc.Usage == D3D11_USAGE_STAGING)
@@ -160,10 +160,10 @@ namespace BansheeEngine
 			}
 
 			if(D3D11Mappings::isMappingRead(mapType) && (mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_READ) == 0)
-				CM_EXCEPT(RenderingAPIException, "Trying to read a buffer, but buffer wasn't created with a read access flag.");
+				BS_EXCEPT(RenderingAPIException, "Trying to read a buffer, but buffer wasn't created with a read access flag.");
 
 			if(D3D11Mappings::isMappingWrite(mapType) && (mDesc.CPUAccessFlags & D3D11_CPU_ACCESS_WRITE) == 0)
-				CM_EXCEPT(RenderingAPIException, "Trying to write to a buffer, but buffer wasn't created with a write access flag.");
+				BS_EXCEPT(RenderingAPIException, "Trying to write to a buffer, but buffer wasn't created with a write access flag.");
 
 			void * pRet = NULL;
 			D3D11_MAPPED_SUBRESOURCE mappedSubResource;
@@ -174,7 +174,7 @@ namespace BansheeEngine
 			if (FAILED(hr) || mDevice.hasError())
 			{
 				String msg = mDevice.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "Error calling Map: " + msg);
+				BS_EXCEPT(RenderingAPIException, "Error calling Map: " + msg);
 			}
 			gProfiler().endSample("Map");
 
@@ -188,7 +188,7 @@ namespace BansheeEngine
 			if (!mpTempStagingBuffer)
 			{
 				// create another buffer instance but use system memory
-				mpTempStagingBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(mBufferType, mUsage, 1, mSizeInBytes, std::ref(mDevice), true);
+				mpTempStagingBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(mBufferType, mUsage, 1, mSizeInBytes, std::ref(mDevice), true);
 			}
 
 			// schedule a copy to the staging
@@ -220,7 +220,7 @@ namespace BansheeEngine
 			// not that efficient, but we should not be locking often
 			if(mpTempStagingBuffer != nullptr)
 			{
-				cm_delete<PoolAlloc>(mpTempStagingBuffer);
+				bs_delete<PoolAlloc>(mpTempStagingBuffer);
 				mpTempStagingBuffer = nullptr;
 			}
 		}
@@ -243,7 +243,7 @@ namespace BansheeEngine
 			if (mDevice.hasError())
 			{
 				String errorDescription = mDevice.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "Cannot copy D3D11 resource\nError Description:" + errorDescription);
+				BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 resource\nError Description:" + errorDescription);
 			}
 		}
 		else
@@ -262,7 +262,7 @@ namespace BansheeEngine
 			if (mDevice.hasError())
 			{
 				String errorDescription = mDevice.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "Cannot copy D3D11 subresource region\nError Description:" + errorDescription);
+				BS_EXCEPT(RenderingAPIException, "Cannot copy D3D11 subresource region\nError Description:" + errorDescription);
 			}
 		}
 	}
@@ -296,7 +296,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			CM_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mDesc.Usage));
+			BS_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mDesc.Usage));
 		}
 	}
 }

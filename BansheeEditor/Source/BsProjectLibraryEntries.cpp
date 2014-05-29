@@ -12,12 +12,12 @@ namespace BansheeEngine
 
 	std::shared_ptr<ProjectLibraryEntries> ProjectLibraryEntries::create(const ProjectLibrary::DirectoryEntry& rootEntry)
 	{
-		return cm_shared_ptr<ProjectLibraryEntries>(rootEntry);
+		return bs_shared_ptr<ProjectLibraryEntries>(rootEntry);
 	}
 
 	std::shared_ptr<ProjectLibraryEntries> ProjectLibraryEntries::createEmpty()
 	{
-		return cm_shared_ptr<ProjectLibraryEntries>(ConstructPrivately());
+		return bs_shared_ptr<ProjectLibraryEntries>(ConstructPrivately());
 	}
 
 	RTTITypeBase* ProjectLibraryEntries::getRTTIStatic()

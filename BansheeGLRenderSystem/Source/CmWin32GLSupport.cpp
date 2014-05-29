@@ -35,7 +35,7 @@ namespace BansheeEngine
 			desc.platformSpecific["parentWindowHandle"] = toString((UINT64)hWnd);
 		}
 
-		Win32Window* window = new (cm_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
+		Win32Window* window = new (bs_alloc<Win32Window, PoolAlloc>()) Win32Window(desc, *this);
 		
 		if(!mInitialWindow)
 			mInitialWindow = window;
@@ -100,7 +100,7 @@ namespace BansheeEngine
 					attribs[i++] = WGL_CONTEXT_PROFILE_MASK_ARB;
 					attribs[i++] = WGL_CONTEXT_CORE_PROFILE_BIT_ARB;
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 					attribs[i++] = WGL_CONTEXT_FLAGS_ARB;
 					attribs[i++] = WGL_CONTEXT_DEBUG_BIT_ARB;				
 #endif
@@ -112,7 +112,7 @@ namespace BansheeEngine
 					glrc = wglCreateContext(hdc);
 
 				if (glrc == 0)
-					CM_EXCEPT(RenderingAPIException, "wglCreateContext failed: " + translateWGLError());
+					BS_EXCEPT(RenderingAPIException, "wglCreateContext failed: " + translateWGLError());
 
 				createdNew = true;
 			}
@@ -123,7 +123,7 @@ namespace BansheeEngine
 			glrc = wglGetCurrentContext();
 		}
 
-		return cm_new<Win32Context>(hdc, glrc, createdNew);
+		return bs_new<Win32Context>(hdc, glrc, createdNew);
 	}
 
 	void* Win32GLSupport::getProcAddress(const String& procname)
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		// hacky but that's the only way to do it.
 		
 		LPCSTR dummyText = "Dummy";
-#ifdef CM_STATIC_LIB
+#ifdef BS_STATIC_LIB
 		HINSTANCE hinst = GetModuleHandle(NULL);
 #else
 		HINSTANCE hinst = GetModuleHandle(MODULE_NAME.c_str());
@@ -156,7 +156,7 @@ namespace BansheeEngine
 			0, 0, 32, 32, 0, 0, hinst, 0);
 
 		if (hwnd == nullptr)
-			CM_EXCEPT(RenderingAPIException, "CreateWindow() failed");
+			BS_EXCEPT(RenderingAPIException, "CreateWindow() failed");
 
 		HDC hdc = GetDC(hwnd); 
 
@@ -316,7 +316,7 @@ namespace BansheeEngine
 
 	VideoModeInfoPtr Win32GLSupport::getVideoModeInfo() const
 	{
-		return cm_shared_ptr<Win32VideoModeInfo>();
+		return bs_shared_ptr<Win32VideoModeInfo>();
 	}
 
 	String translateWGLError()

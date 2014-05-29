@@ -13,7 +13,7 @@ namespace BansheeEngine
 		mUpdateConn.disconnect();
 
 		if(mParameters != nullptr)
-			cm_deleteN(mParameters, mStringData->numParameters);
+			bs_deleteN(mParameters, mStringData->numParameters);
 	}
 
 	void HString::StringData::updateString()
@@ -35,24 +35,24 @@ namespace BansheeEngine
 
 	HString::HString()
 	{
-		mData = cm_shared_ptr<StringData>();
+		mData = bs_shared_ptr<StringData>();
 
 		mData->mStringData = &StringTable::instance().getStringData(L"");
 
 		if(mData->mStringData->numParameters > 0)
-			mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+			mData->mParameters = bs_newN<WString>(mData->mStringData->numParameters);
 
 		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
 	}
 
 	HString::HString(const WString& identifierString)
 	{
-		mData = cm_shared_ptr<StringData>();
+		mData = bs_shared_ptr<StringData>();
 
 		mData->mStringData = &StringTable::instance().getStringData(identifierString);
 
 		if(mData->mStringData->numParameters > 0)
-			mData->mParameters = cm_newN<WString>(mData->mStringData->numParameters);
+			mData->mParameters = bs_newN<WString>(mData->mStringData->numParameters);
 
 		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
 	}

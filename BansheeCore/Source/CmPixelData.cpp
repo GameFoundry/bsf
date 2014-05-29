@@ -42,12 +42,12 @@ namespace BansheeEngine
 				return *this;
 			}
 
-			CM_EXCEPT(InvalidParametersException, "Cannot return subvolume of compressed PixelBuffer");
+			BS_EXCEPT(InvalidParametersException, "Cannot return subvolume of compressed PixelBuffer");
 		}
 
 		if (!mExtents.contains(def))
 		{
-			CM_EXCEPT(InvalidParametersException, "Bounds out of range");
+			BS_EXCEPT(InvalidParametersException, "Bounds out of range");
 		}
 
 		const size_t elemSize = PixelUtil::getNumElemBytes(mFormat);

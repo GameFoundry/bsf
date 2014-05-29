@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	CM_ALLOW_MEMCPY_SERIALIZATION(SubMesh);
+	BS_ALLOW_MEMCPY_SERIALIZATION(SubMesh);
 
 	class MeshBaseRTTI : public RTTIType<MeshBase, GpuResource, MeshBaseRTTI>
 	{
@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			CM_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
+			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 		}
 
 		virtual const String& getRTTIName() 

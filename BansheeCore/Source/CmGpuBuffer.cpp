@@ -27,7 +27,7 @@ namespace BansheeEngine
 		for(auto iter = mBufferViews.begin(); iter != mBufferViews.end(); ++iter)
 		{
 			destroyView(iter->second->view);
-			cm_delete<PoolAlloc>(iter->second);
+			bs_delete<PoolAlloc>(iter->second);
 		}
 
 		mBufferViews.clear();
@@ -47,7 +47,7 @@ namespace BansheeEngine
 		{
 			GpuBufferView* newView = buffer->createView();
 			newView->initialize(buffer, key);
-			buffer->mBufferViews[key] = cm_new<GpuBufferReference, PoolAlloc>(newView);
+			buffer->mBufferViews[key] = bs_new<GpuBufferReference, PoolAlloc>(newView);
 
 			iterFind = buffer->mBufferViews.find(key);
 		}
@@ -63,7 +63,7 @@ namespace BansheeEngine
 		auto iterFind = buffer->mBufferViews.find(view->getDesc());
 		if(iterFind == buffer->mBufferViews.end())
 		{
-			CM_EXCEPT(InternalErrorException, "Trying to release a buffer view that doesn't exist!");
+			BS_EXCEPT(InternalErrorException, "Trying to release a buffer view that doesn't exist!");
 		}
 
 		iterFind->second->refCount--;
@@ -75,7 +75,7 @@ namespace BansheeEngine
 			buffer->mBufferViews.erase(iterFind);
 
 			buffer->destroyView(toRemove->view);
-			cm_delete<PoolAlloc>(toRemove);
+			bs_delete<PoolAlloc>(toRemove);
 		}
 	}
 }

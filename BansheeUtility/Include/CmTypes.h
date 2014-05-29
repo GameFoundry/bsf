@@ -15,7 +15,7 @@ namespace BansheeEngine
 	typedef unsigned int UINT32;
 	typedef unsigned short WCHAR;
 
-#if CM_COMPILER == CM_COMPILER_MSVC
+#if BS_COMPILER == BS_COMPILER_MSVC
 	typedef unsigned __int64 UINT64;
 	typedef __int64 INT64;
 #else

@@ -58,7 +58,7 @@ namespace BansheeEngine
 		buffer = encodeInternal(object, objectId, buffer, bufferLength, bytesWritten, flushBufferCallback);
 		if(buffer == nullptr)
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Destination buffer is null or not large enough.");
 		}
 
@@ -82,7 +82,7 @@ namespace BansheeEngine
 				buffer = encodeInternal(curObject.get(), curObjectid, buffer, bufferLength, bytesWritten, flushBufferCallback);
 				if(buffer == nullptr)
 				{
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Destination buffer is null or not large enough.");
 				}
 
@@ -121,7 +121,7 @@ namespace BansheeEngine
 
 			if(sizeof(UINT32) > dataLength)
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Error decoding data.");
 			}
 
@@ -137,7 +137,7 @@ namespace BansheeEngine
 
 			if(isBaseClass)
 			{
-				CM_EXCEPT(InternalErrorException, "Encountered a base-class object while looking for a new object. " \
+				BS_EXCEPT(InternalErrorException, "Encountered a base-class object while looking for a new object. " \
 					"Base class objects are only supposed to be parts of a larger object.");
 			}
 
@@ -269,7 +269,7 @@ namespace BansheeEngine
 							break;
 						}
 					default:
-						CM_EXCEPT(InternalErrorException, 
+						BS_EXCEPT(InternalErrorException, 
 							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
 							", Is array: " + toString(curGenericField->mIsVectorType));
 					}
@@ -374,7 +374,7 @@ namespace BansheeEngine
 							break;
 						}
 					default:
-						CM_EXCEPT(InternalErrorException, 
+						BS_EXCEPT(InternalErrorException, 
 							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
 							", Is array: " + toString(curGenericField->mIsVectorType));
 					}
@@ -411,7 +411,7 @@ namespace BansheeEngine
 
 		if((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Error decoding data.");
 		}
 
@@ -433,7 +433,7 @@ namespace BansheeEngine
 
 			if((bytesRead + META_SIZE) > dataLength)
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Error decoding data.");
 			}
 
@@ -443,7 +443,7 @@ namespace BansheeEngine
 			{
 				if((bytesRead + sizeof(ObjectMetaData)) > dataLength)
 				{
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Error decoding data.");
 				}
 
@@ -488,7 +488,7 @@ namespace BansheeEngine
 
 					// Objects with ID == 0 represent complex types serialized by value, but they should only get serialized
 					// if we encounter a field with one, not by just iterating through the file.
-					CM_EXCEPT(InternalErrorException, "Object with ID 0 encountered. Cannot proceed with serialization.");
+					BS_EXCEPT(InternalErrorException, "Object with ID 0 encountered. Cannot proceed with serialization.");
 				}
 			}
 
@@ -511,20 +511,20 @@ namespace BansheeEngine
 			{
 				if(!hasDynamicSize && curGenericField->getTypeSize() != fieldSize)
 				{
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Data type mismatch. Type size stored in file and actual type size don't match. (" 
 						+ toString(curGenericField->getTypeSize()) + " vs. " + toString(fieldSize) + ")");
 				}
 
 				if(curGenericField->mIsVectorType != isArray)
 				{
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Data type mismatch. One is array, other is a single type.");
 				}
 
 				if(curGenericField->mType != fieldType) 
 				{
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Data type mismatch. Field types don't match. " + toString(UINT32(curGenericField->mType)) + " vs. " + toString(UINT32(fieldType)));
 				}
 			}
@@ -534,7 +534,7 @@ namespace BansheeEngine
 			{
 				if((bytesRead + NUM_ELEM_FIELD_SIZE) > dataLength)
 				{
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Error decoding data.");
 				}
 
@@ -555,7 +555,7 @@ namespace BansheeEngine
 						{
 							if((bytesRead + COMPLEX_TYPE_FIELD_SIZE) > dataLength)
 							{
-								CM_EXCEPT(InternalErrorException, 
+								BS_EXCEPT(InternalErrorException, 
 									"Error decoding data.");
 							}
 
@@ -603,7 +603,7 @@ namespace BansheeEngine
 						{
 							if((bytesRead + COMPLEX_TYPE_FIELD_SIZE) > dataLength)
 							{
-								CM_EXCEPT(InternalErrorException, 
+								BS_EXCEPT(InternalErrorException, 
 									"Error decoding data.");
 							}
 
@@ -643,7 +643,7 @@ namespace BansheeEngine
 						break;
 					}
 				default:
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Error decoding data. Encountered a type I don't know how to decode. Type: " + toString(UINT32(fieldType)) + 
 						", Is array: " + toString(isArray));
 				}
@@ -658,7 +658,7 @@ namespace BansheeEngine
 
 						if((bytesRead + COMPLEX_TYPE_FIELD_SIZE) > dataLength)
 						{
-							CM_EXCEPT(InternalErrorException, 
+							BS_EXCEPT(InternalErrorException, 
 								"Error decoding data.");
 						}
 
@@ -703,7 +703,7 @@ namespace BansheeEngine
 
 						if((bytesRead + COMPLEX_TYPE_FIELD_SIZE) > dataLength)
 						{
-							CM_EXCEPT(InternalErrorException, 
+							BS_EXCEPT(InternalErrorException, 
 								"Error decoding data.");
 						}
 
@@ -745,7 +745,7 @@ namespace BansheeEngine
 
 						if((bytesRead + DATA_BLOCK_TYPE_FIELD_SIZE) > dataLength)
 						{
-							CM_EXCEPT(InternalErrorException, 
+							BS_EXCEPT(InternalErrorException, 
 								"Error decoding data.");
 						}
 
@@ -757,7 +757,7 @@ namespace BansheeEngine
 
 						if((bytesRead + dataBlockSize) > dataLength)
 						{
-							CM_EXCEPT(InternalErrorException, 
+							BS_EXCEPT(InternalErrorException, 
 								"Error decoding data.");
 						}
 
@@ -777,7 +777,7 @@ namespace BansheeEngine
 						break;
 					}
 				default:
-					CM_EXCEPT(InternalErrorException, 
+					BS_EXCEPT(InternalErrorException, 
 						"Error decoding data. Encountered a type I don't know how to decode. Type: " + toString(UINT32(fieldType)) + 
 						", Is array: " + toString(isArray));
 				}
@@ -877,7 +877,7 @@ exit:
 								break;
 							}
 						default:
-							CM_EXCEPT(InternalErrorException, 
+							BS_EXCEPT(InternalErrorException, 
 								"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
 								", Is array: " + toString(curGenericField->mIsVectorType));
 					}
@@ -927,7 +927,7 @@ exit:
 							break;
 						}
 					default:
-						CM_EXCEPT(InternalErrorException, 
+						BS_EXCEPT(InternalErrorException, 
 							"Error encoding data. Encountered a type I don't know how to encode. Type: " + toString(UINT32(curGenericField->mType)) + 
 							", Is array: " + toString(curGenericField->mIsVectorType));
 					}
@@ -966,7 +966,7 @@ exit:
 	{
 		if(isObjectMetaData(encodedData))
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Meta data represents an object description but is trying to be decoded as a field descriptor.");
 		}
 
@@ -996,7 +996,7 @@ exit:
 		
 		if(objId > 1073741823)
 		{
-			CM_EXCEPT(InvalidParametersException, "Object ID is larger than we can store (max 30 bits): " + toString(objId));
+			BS_EXCEPT(InvalidParametersException, "Object ID is larger than we can store (max 30 bits): " + toString(objId));
 		}
 
 		ObjectMetaData metaData;
@@ -1009,7 +1009,7 @@ exit:
 	{
 		if(!isObjectMetaData(encodedData.objectMeta))
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Meta data represents a field description but is trying to be decoded as an object descriptor.");
 		}
 

@@ -51,7 +51,7 @@ namespace BansheeEngine
 	{
 		mResourcesFolder = mProjectFolder;
 		mResourcesFolder.append(RESOURCES_DIR);
-		mMonitor = cm_new<FolderMonitor>();
+		mMonitor = bs_new<FolderMonitor>();
 
 		FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName | 
 				(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);
@@ -76,7 +76,7 @@ namespace BansheeEngine
 		save();
 
 		mMonitor->stopMonitorAll();
-		cm_delete(mMonitor);
+		bs_delete(mMonitor);
 
 		if(mRootEntry != nullptr)
 			deleteDirectoryInternal(mRootEntry);
@@ -94,7 +94,7 @@ namespace BansheeEngine
 
 		if(mRootEntry == nullptr)
 		{
-			mRootEntry = cm_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
+			mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 		}
 
 		Path pathToSearch = fullPath;
@@ -260,7 +260,7 @@ namespace BansheeEngine
 
 	ProjectLibrary::ResourceEntry* ProjectLibrary::addResourceInternal(DirectoryEntry* parent, const Path& filePath)
 	{
-		ResourceEntry* newResource = cm_new<ResourceEntry>(filePath, filePath.getWTail(), parent);
+		ResourceEntry* newResource = bs_new<ResourceEntry>(filePath, filePath.getWTail(), parent);
 		parent->mChildren.push_back(newResource);
 
 		reimportResourceInternal(newResource);
@@ -273,7 +273,7 @@ namespace BansheeEngine
 
 	ProjectLibrary::DirectoryEntry* ProjectLibrary::addDirectoryInternal(DirectoryEntry* parent, const Path& dirPath)
 	{
-		DirectoryEntry* newEntry = cm_new<DirectoryEntry>(dirPath, dirPath.getWTail(), parent);
+		DirectoryEntry* newEntry = bs_new<DirectoryEntry>(dirPath, dirPath.getWTail(), parent);
 		parent->mChildren.push_back(newEntry);
 
 		if(!onEntryAdded.empty())
@@ -305,7 +305,7 @@ namespace BansheeEngine
 		if(!onEntryRemoved.empty())
 			onEntryRemoved(resource->path);
 
-		cm_delete(resource);
+		bs_delete(resource);
 	}
 
 	void ProjectLibrary::deleteDirectoryInternal(DirectoryEntry* directory)
@@ -334,7 +334,7 @@ namespace BansheeEngine
 		if(!onEntryRemoved.empty())
 			onEntryRemoved(directory->path);
 
-		cm_delete(directory);
+		bs_delete(directory);
 	}
 
 	void ProjectLibrary::reimportResourceInternal(ResourceEntry* resource)
@@ -668,7 +668,7 @@ namespace BansheeEngine
 			mRootEntry = nullptr;
 		}
 
-		mRootEntry = cm_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
+		mRootEntry = bs_new<DirectoryEntry>(mResourcesFolder, mResourcesFolder.getWTail(), nullptr);
 
 		Path libraryEntriesPath = mProjectFolder;
 		libraryEntriesPath.append(INTERNAL_RESOURCES_DIR);

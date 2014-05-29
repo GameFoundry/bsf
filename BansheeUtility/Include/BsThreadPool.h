@@ -77,10 +77,10 @@ namespace BansheeEngine
 
 		time_t mIdleTime;
 
-		CM_THREAD_TYPE* mThread;
-		CM_MUTEX(mMutex);
-		CM_THREAD_SYNCHRONISER(mStartedCond);
-		CM_THREAD_SYNCHRONISER(mReadyCond);
+		BS_THREAD_TYPE* mThread;
+		BS_MUTEX(mMutex);
+		BS_THREAD_SYNCHRONISER(mStartedCond);
+		BS_THREAD_SYNCHRONISER(mReadyCond);
 	};
 
 	/**
@@ -199,7 +199,7 @@ namespace BansheeEngine
 		UINT32 mIdleTimeout;
 		UINT32 mAge;
 		
-		CM_MUTEX(mMutex);
+		BS_MUTEX(mMutex);
 	};
 
 	/**
@@ -234,7 +234,7 @@ namespace BansheeEngine
 		 */
 		PooledThread* createThread(const String& name)
 		{
-			PooledThread* newThread = cm_new<TPooledThread<ThreadPolicy>>(name);
+			PooledThread* newThread = bs_new<TPooledThread<ThreadPolicy>>(name);
 			newThread->initialize();
 
 			return newThread;

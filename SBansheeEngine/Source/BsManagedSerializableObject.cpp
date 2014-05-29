@@ -32,12 +32,12 @@ namespace BansheeEngine
 		if(!RuntimeScriptObjects::instance().getSerializableObjectInfo(elementNs, elementTypeName, objInfo))
 			return nullptr;
 
-		return cm_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
+		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately(), objInfo, managedInstance);
 	}
 
 	ManagedSerializableObjectPtr ManagedSerializableObject::createEmpty()
 	{
-		return cm_shared_ptr<ManagedSerializableObject>(ConstructPrivately());
+		return bs_shared_ptr<ManagedSerializableObject>(ConstructPrivately());
 	}
 
 	void ManagedSerializableObject::serializeManagedInstance()

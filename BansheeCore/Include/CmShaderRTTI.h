@@ -48,10 +48,10 @@ namespace BansheeEngine
 			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
 				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + sizeof(UINT32);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
-				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+				BS_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
 			}
 #endif
 
@@ -96,10 +96,10 @@ namespace BansheeEngine
 			UINT64 dataSize = rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
 				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
-				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+				BS_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
 			}
 #endif
 
@@ -142,10 +142,10 @@ namespace BansheeEngine
 			UINT64 dataSize = rttiGetElemSize(data.shared) + rttiGetElemSize(data.usage) + 
 				rttiGetElemSize(data.name) + sizeof(UINT32);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
-				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+				BS_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
 			}
 #endif
 

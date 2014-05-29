@@ -9,20 +9,20 @@ namespace BansheeEngine
 		mFlags(flags), mNumMipmaps(numMipmaps)
 	{
 		mBPP = static_cast<UINT8>(PixelUtil::getNumElemBytes(mFormat)) * 8;
-		mData = (UINT8*)cm_alloc<ScratchAlloc>(size);
+		mData = (UINT8*)bs_alloc<ScratchAlloc>(size);
 	}
 
 	TextureData::~TextureData()
 	{
 		if(mData != nullptr)
-			cm_free<ScratchAlloc>(mData);
+			bs_free<ScratchAlloc>(mData);
 	}
 
 	void TextureData::getPixels(UINT32 mip, PixelData& output)
 	{
 		if(mip < 0 || mip > mNumMipmaps)
 		{
-			CM_EXCEPT(InvalidParametersException, "Mip out of range: " + toString(mip) + ". While maximum available mip is: " + toString((mNumMipmaps)));
+			BS_EXCEPT(InvalidParametersException, "Mip out of range: " + toString(mip) + ". While maximum available mip is: " + toString((mNumMipmaps)));
 		}
 
 		// Calculate mipmap offset and size

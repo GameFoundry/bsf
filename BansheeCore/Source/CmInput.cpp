@@ -15,9 +15,9 @@ namespace BansheeEngine
 	Input::Input()
 		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0), mRawInputHandler(nullptr)
 	{ 
-		mHorizontalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
-		mVerticalHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
-		mTimesHistoryBuffer = cm_newN<float>(HISTORY_BUFFER_SIZE);
+		mHorizontalHistoryBuffer = bs_newN<float>(HISTORY_BUFFER_SIZE);
+		mVerticalHistoryBuffer = bs_newN<float>(HISTORY_BUFFER_SIZE);
+		mTimesHistoryBuffer = bs_newN<float>(HISTORY_BUFFER_SIZE);
 
 		for(int i = 0; i < HISTORY_BUFFER_SIZE; i++)
 		{
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		for(int i = 0; i < BC_Count; i++)
 			mKeyState[i] = ButtonState::Off;
 
-		mOSInputHandler = cm_shared_ptr<OSInputHandler>();
+		mOSInputHandler = bs_shared_ptr<OSInputHandler>();
 
 		mOSInputHandler->onCharInput.connect(std::bind(&Input::charInput, this, _1));
 		mOSInputHandler->onCursorMoved.connect(std::bind(&Input::cursorMoved, this, _1));
@@ -43,9 +43,9 @@ namespace BansheeEngine
 
 	Input::~Input()
 	{
-		cm_deleteN(mHorizontalHistoryBuffer, HISTORY_BUFFER_SIZE);
-		cm_deleteN(mVerticalHistoryBuffer, HISTORY_BUFFER_SIZE);
-		cm_deleteN(mTimesHistoryBuffer, HISTORY_BUFFER_SIZE);
+		bs_deleteN(mHorizontalHistoryBuffer, HISTORY_BUFFER_SIZE);
+		bs_deleteN(mVerticalHistoryBuffer, HISTORY_BUFFER_SIZE);
+		bs_deleteN(mTimesHistoryBuffer, HISTORY_BUFFER_SIZE);
 	}
 
 	void Input::_registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler)

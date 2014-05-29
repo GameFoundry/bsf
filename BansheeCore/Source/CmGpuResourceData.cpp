@@ -34,11 +34,11 @@ namespace BansheeEngine
 
 	UINT8* GpuResourceData::getData() const
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
+			if(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				BS_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 
@@ -52,17 +52,17 @@ namespace BansheeEngine
 
 	void GpuResourceData::allocateInternalBuffer(UINT32 size)
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
+			if(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				BS_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 
 		freeInternalBuffer();
 
-		mData = (UINT8*)cm_alloc<ScratchAlloc>(size);
+		mData = (UINT8*)bs_alloc<ScratchAlloc>(size);
 		mOwnsData = true;
 	}
 
@@ -71,25 +71,25 @@ namespace BansheeEngine
 		if(mData == nullptr || !mOwnsData)
 			return;
 
-#if !CM_FORCE_SINGLETHREADED_RENDERING
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
+			if(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				BS_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 
-		cm_free<ScratchAlloc>(mData);
+		bs_free<ScratchAlloc>(mData);
 		mData = nullptr;
 	}
 
 	void GpuResourceData::setExternalBuffer(UINT8* data)
 	{
-#if !CM_FORCE_SINGLETHREADED_RENDERING
+#if !BS_FORCE_SINGLETHREADED_RENDERING
 		if(mLocked)
 		{
-			if(CM_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
-				CM_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
+			if(BS_THREAD_CURRENT_ID != CoreThread::instance().getCoreThreadId())
+				BS_EXCEPT(InternalErrorException, "You are not allowed to access buffer data from non-core thread when the buffer is locked.");
 		}
 #endif
 

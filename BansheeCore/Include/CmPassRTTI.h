@@ -63,7 +63,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<Pass, PoolAlloc>();
+			return bs_shared_ptr<Pass, PoolAlloc>();
 		}
 	};
 }

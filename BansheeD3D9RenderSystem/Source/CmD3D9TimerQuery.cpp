@@ -23,25 +23,25 @@ namespace BansheeEngine
 		HRESULT hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMPDISJOINT, &mDisjointQuery);
 		if (hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
 		}
 
 		hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMPFREQ, &mFreqQuery);
 		if (hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
 		}
 
 		hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMP, &mBeginQuery);
 		if (hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
 		}
 
 		hr = mDevice->CreateQuery(D3DQUERYTYPE_TIMESTAMP, &mEndQuery);
 		if (hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
 		}
 	}
 

@@ -7,7 +7,7 @@
 
 namespace BansheeEngine
 {
-	CM_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
+	BS_ALLOW_MEMCPY_SERIALIZATION(RASTERIZER_STATE_DESC);
 
 	class BS_CORE_EXPORT RasterizerStateRTTI : public RTTIType<RasterizerState, IReflectable, RasterizerStateRTTI>
 	{

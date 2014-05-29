@@ -30,7 +30,7 @@ namespace BansheeEngine
 		for (auto& entry : mAssemblies)
 		{
 			unloadAssembly(*entry.second);
-			cm_delete(entry.second);
+			bs_delete(entry.second);
 		}
 
 		mAssemblies.clear();
@@ -45,7 +45,7 @@ namespace BansheeEngine
 			mDomain = mono_jit_init (path.c_str());
 			if(mDomain == nullptr)
 			{
-				CM_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
+				BS_EXCEPT(InternalErrorException, "Cannot initialize Mono runtime.");
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			assembly = new (cm_alloc<MonoAssembly>()) MonoAssembly();
+			assembly = new (bs_alloc<MonoAssembly>()) MonoAssembly();
 			mAssemblies[name] = assembly;
 		}
 		
@@ -70,7 +70,7 @@ namespace BansheeEngine
 			{
 				meta->scriptClass = assembly->getClass(meta->ns, meta->name);
 				if(meta->scriptClass == nullptr)
-					CM_EXCEPT(InvalidParametersException, "Unable to find class of type: \"" + meta->ns + "::" + meta->name + "\"");
+					BS_EXCEPT(InvalidParametersException, "Unable to find class of type: \"" + meta->ns + "::" + meta->name + "\"");
 
 				if(meta->scriptClass->hasField("mCachedPtr"))
 					meta->thisPtrField = meta->scriptClass->getField("mCachedPtr");
@@ -88,7 +88,7 @@ namespace BansheeEngine
 			MonoImage* existingImage = mono_image_loaded("mscorlib");
 			if(existingImage != nullptr)
 			{
-				MonoAssembly* mscorlib = new (cm_alloc<MonoAssembly>()) MonoAssembly();
+				MonoAssembly* mscorlib = new (bs_alloc<MonoAssembly>()) MonoAssembly();
 				mAssemblies["mscorlib"] = mscorlib;
 
 				mscorlib->loadAsDependency(existingImage, "mscorlib");
@@ -156,7 +156,7 @@ namespace BansheeEngine
 	String MonoManager::getFullTypeName(MonoObject* obj)
 	{
 		if(obj == nullptr)
-			CM_EXCEPT(InvalidParametersException, "Object cannot be null.");
+			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
 
 		::MonoClass* monoClass = mono_object_get_class(obj);
 
@@ -176,7 +176,7 @@ namespace BansheeEngine
 	String MonoManager::getNamespace(MonoObject* obj)
 	{
 		if(obj == nullptr)
-			CM_EXCEPT(InvalidParametersException, "Object cannot be null.");
+			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
 
 		::MonoClass* monoClass = mono_object_get_class(obj);
 
@@ -191,7 +191,7 @@ namespace BansheeEngine
 	String MonoManager::getTypeName(MonoObject* obj)
 	{
 		if(obj == nullptr)
-			CM_EXCEPT(InvalidParametersException, "Object cannot be null.");
+			BS_EXCEPT(InvalidParametersException, "Object cannot be null.");
 
 		::MonoClass* monoClass = mono_object_get_class(obj);
 

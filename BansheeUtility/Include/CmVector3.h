@@ -455,5 +455,5 @@ namespace BansheeEngine
         static const Vector3 UNIT_Z;
     };
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(Vector3);
+	BS_ALLOW_MEMCPY_SERIALIZATION(Vector3);
 }

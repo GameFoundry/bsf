@@ -21,13 +21,13 @@ namespace BansheeEngine
 		{
 			if(isShutDown())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Trying to access a module but it hasn't been started up yet.");
 			}
 
 			if (isDestroyed())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Trying to access a destroyed module.");
 			}
 
@@ -42,13 +42,13 @@ namespace BansheeEngine
 		{
 			if (isShutDown())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Trying to access a module but it hasn't been started up yet.");
 			}
 
 			if (isDestroyed())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Trying to access a destroyed module.");
 			}
 
@@ -62,9 +62,9 @@ namespace BansheeEngine
 		static void startUp(Args &&...args)
 		{
 			if (!isShutDown())
-				CM_EXCEPT(InternalErrorException, "Trying to start an already started module.");
+				BS_EXCEPT(InternalErrorException, "Trying to start an already started module.");
 
-			_instance() = cm_new<T>(std::forward<Args>(args)...);
+			_instance() = bs_new<T>(std::forward<Args>(args)...);
 			isShutDown() = false;
 
 			((Module*)_instance())->onStartUp();
@@ -80,9 +80,9 @@ namespace BansheeEngine
 			static_assert(std::is_base_of<T, SubType>::value, "Provided type is not derived from type the Module is initialized with.");
 
 			if (!isShutDown())
-				CM_EXCEPT(InternalErrorException, "Trying to start an already started module.");
+				BS_EXCEPT(InternalErrorException, "Trying to start an already started module.");
 
-			_instance() = cm_new<SubType>(std::forward<Args>(args)...);
+			_instance() = bs_new<SubType>(std::forward<Args>(args)...);
 			isShutDown() = false;
 
 			((Module*)_instance())->onStartUp();
@@ -95,13 +95,13 @@ namespace BansheeEngine
 		{
 			if (isShutDown())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Trying to shut down an already shut down module.");
 			}
 
 			((Module*)_instance())->onShutDown();
 
-			cm_delete(_instance());
+			bs_delete(_instance());
 			isShutDown() = true;
 		}
 

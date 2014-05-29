@@ -45,7 +45,7 @@ namespace BansheeEngine
 	void GLRenderTexture::destroy_internal()
 	{
 		if(mFB != nullptr)
-			cm_delete<PoolAlloc>(mFB);
+			bs_delete<PoolAlloc>(mFB);
 
 		RenderTexture::destroy_internal();
 	}
@@ -53,9 +53,9 @@ namespace BansheeEngine
 	void GLRenderTexture::initialize_internal()
 	{
 		if(mFB != nullptr)
-			cm_delete<PoolAlloc>(mFB);
+			bs_delete<PoolAlloc>(mFB);
 
-		mFB = cm_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
+		mFB = bs_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
 
 		GLSurfaceDesc surfaceDesc;
 		surfaceDesc.numSamples = mMultisampleCount;

@@ -161,7 +161,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Invalid cursor type: " + toString((UINT32)type));
+		BS_EXCEPT(InvalidParametersException, "Invalid cursor type: " + toString((UINT32)type));
 	}
 
 	void Cursor::updateCursorImage()

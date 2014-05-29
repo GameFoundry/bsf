@@ -48,7 +48,7 @@ namespace BansheeEngine
 		ScriptGUIArea* scriptArea = ScriptGUIArea::toNative(parentArea);
 		GUIArea* nativeArea = scriptArea->getInternalValue();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
 			ScriptGUILayout(instance, &nativeArea->getLayout(), nullptr);
 	}
 
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->addLayoutX();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
 			ScriptGUILayout(instance, &layout, nativeLayout);
 	}
 
@@ -68,7 +68,7 @@ namespace BansheeEngine
 		GUILayout* nativeLayout = scriptLayout->getInternalValue();
 		GUILayout& layout = nativeLayout->addLayoutY();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
 			ScriptGUILayout(instance, &layout, nativeLayout);
 	}
 
@@ -79,7 +79,7 @@ namespace BansheeEngine
 
 		GUILayout* nativeLayout = &scrollArea->getLayout();
 
-		ScriptGUILayout* nativeInstance = new (cm_alloc<ScriptGUILayout>()) 
+		ScriptGUILayout* nativeInstance = new (bs_alloc<ScriptGUILayout>()) 
 			ScriptGUILayout(instance, nativeLayout, nativeLayout);
 	}
 

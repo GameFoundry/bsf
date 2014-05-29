@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 		HRESULT hr = device.getD3D11Device()->CreateQuery(&queryDesc, &mQuery);
 		if (hr != S_OK)
-			CM_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
 
 		mContext = device.getImmediateContext();
 	}

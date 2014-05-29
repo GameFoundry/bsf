@@ -54,7 +54,7 @@ namespace BansheeEngine
 
 	private:
 		Vector<LogEntry*> mEntries;
-		CM_RECURSIVE_MUTEX(mMutex);
+		BS_RECURSIVE_MUTEX(mMutex);
 
 		/**
 		 * @brief	Called whenever a new entry is added.

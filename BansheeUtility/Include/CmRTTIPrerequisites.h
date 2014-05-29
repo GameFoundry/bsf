@@ -108,7 +108,7 @@ namespace BansheeEngine
 	{ 
 		static_assert(std::is_pod<T>::value, 
 			"Provided type isn't plain-old-data. You need to specialize RTTIPlainType template in order to serialize this type. "\
-			" (Or call CM_ALLOW_MEMCPY_SERIALIZATION(type) macro if you are sure the type can be properly serialized using just memcpy.)");
+			" (Or call BS_ALLOW_MEMCPY_SERIALIZATION(type) macro if you are sure the type can be properly serialized using just memcpy.)");
 
 		enum { id = 0 /**< Unique id for the serializable type. */ }; 
 		enum { hasDynamicSize = 0 /**< 0 (Object has static size less than 255 bytes, e.g. int) or 1 (Dynamic size with no size restriction, e.g. string) */ };
@@ -151,7 +151,7 @@ namespace BansheeEngine
 	 * 
 	 * @see		RTTIPlainType
 	 */
-#define CM_ALLOW_MEMCPY_SERIALIZATION(type)				\
+#define BS_ALLOW_MEMCPY_SERIALIZATION(type)				\
 	template<> struct RTTIPlainType<##type##>			\
 	{	enum { id=0 }; enum { hasDynamicSize = 0 };		\
 	static void toMemory(const type& data, char* memory)	\

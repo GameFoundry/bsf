@@ -48,7 +48,7 @@ namespace BansheeEngine
 		CompareFunction backStencilComparisonFunc;
 	};
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(DEPTH_STENCIL_STATE_DESC);
+	BS_ALLOW_MEMCPY_SERIALIZATION(DEPTH_STENCIL_STATE_DESC);
 
 	/**
 	* @brief	Render system pipeline state that allows you to modify how an object is rendered.

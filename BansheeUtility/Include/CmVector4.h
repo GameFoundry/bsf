@@ -278,6 +278,6 @@ namespace BansheeEngine
         static const Vector4 ZERO;
     };
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(Vector4);
+	BS_ALLOW_MEMCPY_SERIALIZATION(Vector4);
 }
 

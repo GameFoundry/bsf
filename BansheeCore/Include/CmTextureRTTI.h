@@ -16,17 +16,17 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT TextureRTTI : public RTTIType<Texture, Resource, TextureRTTI>
 	{
 	private:
-		CM_SETGET_MEMBER(mSize, UINT32, Texture)
-		CM_SETGET_MEMBER(mHeight, UINT32, Texture)
-		CM_SETGET_MEMBER(mWidth, UINT32, Texture)
-		CM_SETGET_MEMBER(mDepth, UINT32, Texture)
-		CM_SETGET_MEMBER(mNumMipmaps, UINT32, Texture)
-		CM_SETGET_MEMBER(mHwGamma, bool, Texture)
-		CM_SETGET_MEMBER(mMultisampleCount, UINT32, Texture)
-		CM_SETGET_MEMBER(mMultisampleHint, String, Texture)
-		CM_SETGET_MEMBER(mTextureType, TextureType, Texture)
-		CM_SETGET_MEMBER(mFormat, PixelFormat, Texture)
-		CM_SETGET_MEMBER(mUsage, INT32, Texture)
+		BS_SETGET_MEMBER(mSize, UINT32, Texture)
+		BS_SETGET_MEMBER(mHeight, UINT32, Texture)
+		BS_SETGET_MEMBER(mWidth, UINT32, Texture)
+		BS_SETGET_MEMBER(mDepth, UINT32, Texture)
+		BS_SETGET_MEMBER(mNumMipmaps, UINT32, Texture)
+		BS_SETGET_MEMBER(mHwGamma, bool, Texture)
+		BS_SETGET_MEMBER(mMultisampleCount, UINT32, Texture)
+		BS_SETGET_MEMBER(mMultisampleHint, String, Texture)
+		BS_SETGET_MEMBER(mTextureType, TextureType, Texture)
+		BS_SETGET_MEMBER(mFormat, PixelFormat, Texture)
+		BS_SETGET_MEMBER(mUsage, INT32, Texture)
 
 		PixelDataPtr getPixelData(Texture* obj, UINT32 idx)
 		{
@@ -69,17 +69,17 @@ namespace BansheeEngine
 	public:
 		TextureRTTI()
 		{
-			CM_ADD_PLAINFIELD(mSize, 0, TextureRTTI)
-			CM_ADD_PLAINFIELD(mHeight, 2, TextureRTTI)
-			CM_ADD_PLAINFIELD(mWidth, 3, TextureRTTI)
-			CM_ADD_PLAINFIELD(mDepth, 4, TextureRTTI)
-			CM_ADD_PLAINFIELD(mNumMipmaps, 5, TextureRTTI)
-			CM_ADD_PLAINFIELD(mHwGamma, 6, TextureRTTI)
-			CM_ADD_PLAINFIELD(mMultisampleCount, 7, TextureRTTI)
-			CM_ADD_PLAINFIELD(mMultisampleHint, 8, TextureRTTI)
-			CM_ADD_PLAINFIELD(mTextureType, 9, TextureRTTI)
-			CM_ADD_PLAINFIELD(mFormat, 10, TextureRTTI)
-			CM_ADD_PLAINFIELD(mUsage, 11, TextureRTTI)
+			BS_ADD_PLAINFIELD(mSize, 0, TextureRTTI)
+			BS_ADD_PLAINFIELD(mHeight, 2, TextureRTTI)
+			BS_ADD_PLAINFIELD(mWidth, 3, TextureRTTI)
+			BS_ADD_PLAINFIELD(mDepth, 4, TextureRTTI)
+			BS_ADD_PLAINFIELD(mNumMipmaps, 5, TextureRTTI)
+			BS_ADD_PLAINFIELD(mHwGamma, 6, TextureRTTI)
+			BS_ADD_PLAINFIELD(mMultisampleCount, 7, TextureRTTI)
+			BS_ADD_PLAINFIELD(mMultisampleHint, 8, TextureRTTI)
+			BS_ADD_PLAINFIELD(mTextureType, 9, TextureRTTI)
+			BS_ADD_PLAINFIELD(mFormat, 10, TextureRTTI)
+			BS_ADD_PLAINFIELD(mUsage, 11, TextureRTTI)
 
 			addReflectablePtrArrayField("mPixelData", 12, &TextureRTTI::getPixelData, &TextureRTTI::getPixelDataArraySize, 
 				&TextureRTTI::setPixelData, &TextureRTTI::setPixelDataArraySize);
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		{
 			Texture* texture = static_cast<Texture*>(obj);
 
-			texture->mRTTIData = cm_new<Vector<PixelDataPtr>, PoolAlloc>();
+			texture->mRTTIData = bs_new<Vector<PixelDataPtr>, PoolAlloc>();
 		}
 
 		virtual void onDeserializationEnded(IReflectable* obj)
@@ -120,7 +120,7 @@ namespace BansheeEngine
 					sharedTexPtr, subresourceIdx, pixelData->at(i), false, std::placeholders::_1));
 			}
 
-			cm_delete<PoolAlloc>(pixelData);
+			bs_delete<PoolAlloc>(pixelData);
 			texture->mRTTIData = nullptr;	
 		}
 

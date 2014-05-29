@@ -35,13 +35,13 @@ namespace BansheeEngine
 	{
 		if(layoutOptions.maxWidth < layoutOptions.minWidth)
 		{
-			CM_EXCEPT(InvalidParametersException, "Maximum width is less than minimum width! Max width: " + 
+			BS_EXCEPT(InvalidParametersException, "Maximum width is less than minimum width! Max width: " + 
 			toString(layoutOptions.maxWidth) + ". Min width: " + toString(layoutOptions.minWidth));
 		}
 
 		if(layoutOptions.maxHeight < layoutOptions.minHeight)
 		{
-			CM_EXCEPT(InvalidParametersException, "Maximum height is less than minimum height! Max height: " + 
+			BS_EXCEPT(InvalidParametersException, "Maximum height is less than minimum height! Max height: " + 
 			toString(layoutOptions.maxHeight) + ". Min height: " + toString(layoutOptions.minHeight));
 		}
 

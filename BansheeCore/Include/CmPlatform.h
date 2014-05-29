@@ -180,10 +180,10 @@ namespace BansheeEngine
 }
 
 // Bring in the specific platform's header file
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 # include "Win32/CmPlatformImpl.h"
-#elif (CM_PLATFORM == CM_PLATFORM_LINUX)
+#elif (BS_PLATFORM == BS_PLATFORM_LINUX)
 # include "GLX/CmPlatformImpl.h"
-#elif CM_PLATFORM == CM_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_APPLE
 # include "OSX/CmPlatformImpl.h"
 #endif

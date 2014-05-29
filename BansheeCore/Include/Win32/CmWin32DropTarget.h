@@ -61,11 +61,11 @@ namespace BansheeEngine
 
 		~Win32DropTarget()
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 
 			for(auto& fileList : mFileLists)
 			{
-				cm_delete(fileList);
+				bs_delete(fileList);
 			}
 
 			mFileLists.clear();
@@ -131,7 +131,7 @@ namespace BansheeEngine
 
 			if(count == 0)
 			{
-				cm_delete(this);
+				bs_delete(this);
 				return 0;
 			}
 			else
@@ -154,7 +154,7 @@ namespace BansheeEngine
 				return S_OK;
 
 			{
-				CM_LOCK_MUTEX(mSync);
+				BS_LOCK_MUTEX(mSync);
 
 				mFileLists.push_back(getFileListFromData(pDataObj));
 
@@ -182,7 +182,7 @@ namespace BansheeEngine
 				return S_OK;
 
 			{
-				CM_LOCK_MUTEX(mSync);
+				BS_LOCK_MUTEX(mSync);
 
 				ScreenToClient(mHWnd, (POINT *)&pt);
 				mQueuedDropOps.push_back(DropTargetOp(DropOpType::DragOver, Vector2I((int)pt.x, (int)pt.y)));
@@ -203,7 +203,7 @@ namespace BansheeEngine
 		HRESULT __stdcall DragLeave()
 		{
 			{
-				CM_LOCK_MUTEX(mSync);
+				BS_LOCK_MUTEX(mSync);
 
 				mQueuedDropOps.push_back(DropTargetOp(DropOpType::Leave, Vector2I()));
 
@@ -230,7 +230,7 @@ namespace BansheeEngine
 				return S_OK;
 
 			{
-				CM_LOCK_MUTEX(mSync);
+				BS_LOCK_MUTEX(mSync);
 
 				mFileLists.push_back(getFileListFromData(pDataObj));
 
@@ -282,7 +282,7 @@ namespace BansheeEngine
 		 */
 		void update()
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 
 			for(auto& op: mQueuedDropOps)
 			{
@@ -329,7 +329,7 @@ namespace BansheeEngine
 
 				if(op.type == DropOpType::Leave || op.type == DropOpType::Drop)
 				{
-					cm_delete(op.mFileList);
+					bs_delete(op.mFileList);
 					mFileLists.erase(mFileLists.begin());
 				}
 			}
@@ -357,7 +357,7 @@ namespace BansheeEngine
 			FORMATETC fmtetc = { CF_HDROP, 0, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
 			STGMEDIUM stgmed;
 
-			Vector<WString>* files = cm_new<Vector<WString>>();
+			Vector<WString>* files = bs_new<Vector<WString>>();
 			if(data->GetData(&fmtetc, &stgmed) == S_OK)
 			{
 				PVOID data = GlobalLock(stgmed.hGlobal);
@@ -369,13 +369,13 @@ namespace BansheeEngine
 				for(UINT i = 0; i < numFiles; i++)
 				{
 					UINT numChars = DragQueryFileW(hDrop, i, nullptr, 0) + 1;
-					wchar_t* buffer = (wchar_t*)cm_alloc((UINT32)numChars * sizeof(wchar_t));
+					wchar_t* buffer = (wchar_t*)bs_alloc((UINT32)numChars * sizeof(wchar_t));
 
 					DragQueryFileW(hDrop, i, buffer, numChars);
 
 					(*files)[i] = WString(buffer);
 
-					cm_free(buffer);
+					bs_free(buffer);
 				}
 
 				GlobalUnlock(stgmed.hGlobal);
@@ -395,6 +395,6 @@ namespace BansheeEngine
 		Vector<DropTargetOp> mQueuedDropOps;
 		Vector<Vector<WString>*> mFileLists; 
 
-		CM_MUTEX(mSync);
+		BS_MUTEX(mSync);
 	};
 }

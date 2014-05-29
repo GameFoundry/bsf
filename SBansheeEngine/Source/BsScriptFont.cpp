@@ -25,6 +25,6 @@ namespace BansheeEngine
 
 	void ScriptFont::internal_createInstanceExternal(MonoObject* instance, const HFont& font)
 	{
-		ScriptFont* nativeInstance = new (cm_alloc<ScriptFont>()) ScriptFont(instance, font);
+		ScriptFont* nativeInstance = new (bs_alloc<ScriptFont>()) ScriptFont(instance, font);
 	}
 }

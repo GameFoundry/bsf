@@ -33,7 +33,7 @@ namespace BansheeEngine
 			texFormat = PF_R8G8B8A8;
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Unsupported texture format");
+			BS_EXCEPT(InvalidParametersException, "Unsupported texture format");
 		}
 
 		int numMips = 0;

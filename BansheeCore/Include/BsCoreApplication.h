@@ -100,8 +100,8 @@ namespace BansheeEngine
 		DynLib* mSceneManagerPlugin;
 
 		bool mIsFrameRenderingFinished;
-		CM_MUTEX(mFrameRenderingFinishedMutex);
-		CM_THREAD_SYNCHRONISER(mFrameRenderingFinishedCondition);
+		BS_MUTEX(mFrameRenderingFinishedMutex);
+		BS_THREAD_SYNCHRONISER(mFrameRenderingFinishedCondition);
 
 		volatile bool mRunMainLoop;
 	};

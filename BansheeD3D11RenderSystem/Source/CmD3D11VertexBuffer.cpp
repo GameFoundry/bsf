@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 	void D3D11VertexBuffer::initialize_internal()
 	{
-		mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_VERTEX, 
+		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_VERTEX, 
 			mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory, mStreamOut);
 
 		VertexBuffer::initialize_internal();
@@ -48,7 +48,7 @@ namespace BansheeEngine
 	void D3D11VertexBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			cm_delete<PoolAlloc>(mBuffer);
+			bs_delete<PoolAlloc>(mBuffer);
 
 		VertexBuffer::destroy_internal();
 	}

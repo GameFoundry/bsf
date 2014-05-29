@@ -49,7 +49,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			CM_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
+			BS_EXCEPT(InternalErrorException, "Cannot instantiate an abstract class.");
 		}
 	};
 }

@@ -6,8 +6,8 @@
 
 namespace BansheeEngine
 {
-	CM_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mResourceCreatedCondition, ResourceHandleBase)
-	CM_STATIC_MUTEX_CLASS_INSTANCE(mResourceCreatedMutex, ResourceHandleBase)
+	BS_STATIC_THREAD_SYNCHRONISER_CLASS_INSTANCE(mResourceCreatedCondition, ResourceHandleBase)
+	BS_STATIC_MUTEX_CLASS_INSTANCE(mResourceCreatedMutex, ResourceHandleBase)
 
 	ResourceHandleBase::ResourceHandleBase()
 	{
@@ -26,10 +26,10 @@ namespace BansheeEngine
 
 		if(!mData->mIsCreated)
 		{
-			CM_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
+			BS_LOCK_MUTEX_NAMED(mResourceCreatedMutex, lock);
 			while(!mData->mIsCreated)
 			{
-				CM_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
+				BS_THREAD_WAIT(mResourceCreatedCondition, mResourceCreatedMutex, lock);
 			}
 		}
 
@@ -46,12 +46,12 @@ namespace BansheeEngine
 		
 			if(!mData->mIsCreated)
 			{
-				CM_LOCK_MUTEX(mResourceCreatedMutex);
+				BS_LOCK_MUTEX(mResourceCreatedMutex);
 				{
 					mData->mIsCreated = true; 
 				}
 				
-				CM_THREAD_NOTIFY_ALL(mResourceCreatedCondition);
+				BS_THREAD_NOTIFY_ALL(mResourceCreatedCondition);
 			}
 		}
 	}
@@ -60,7 +60,7 @@ namespace BansheeEngine
 	{
 		if(!isLoaded()) 
 		{
-			CM_EXCEPT(InternalErrorException, "Trying to access a resource that hasn't been loaded yet.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a resource that hasn't been loaded yet.");
 		}
 	}
 

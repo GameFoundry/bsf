@@ -9,7 +9,7 @@ namespace BansheeEngine
 	RTTITypeBase::~RTTITypeBase() 
 	{
 		for(auto iter = mFields.begin(); iter != mFields.end(); ++iter)
-			cm_delete(*iter);
+			bs_delete(*iter);
 
 		mFields.clear();
 	}
@@ -20,7 +20,7 @@ namespace BansheeEngine
 
 		if(foundElement == mFields.end())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Cannot find a field with the specified name: " + name);
 		}
 
@@ -41,7 +41,7 @@ namespace BansheeEngine
 	{
 		if(field == nullptr)
 		{
-			CM_EXCEPT(InvalidParametersException, 
+			BS_EXCEPT(InvalidParametersException, 
 				"Field argument can't be null.");
 		}
 
@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 		if(foundElementById != mFields.end())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Field with the same ID already exists.");
 		}
 
@@ -59,7 +59,7 @@ namespace BansheeEngine
 
 		if(foundElementByName != mFields.end())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Field with the same name already exists.");
 		}
 
@@ -68,7 +68,7 @@ namespace BansheeEngine
 
 	void RTTITypeBase::throwCircularRefException(const String& myType, const String& otherType) const
 	{
-		CM_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType + " to type: " + otherType + "."
+		BS_EXCEPT(InternalErrorException, "Found circular reference on RTTI type: " + myType + " to type: " + otherType + "."
 			+ " Either remove one of the references or mark it as a weak reference when defining the RTTI field.");
 	}
 }

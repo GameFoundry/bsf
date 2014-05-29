@@ -58,7 +58,7 @@ namespace BansheeEngine
 
 		for(auto& menu : mChildMenus)
 		{
-			cm_delete<PoolAlloc>(menu.menu);
+			bs_delete<PoolAlloc>(menu.menu);
 			GUIElement::destroy(menu.button);
 		}
 
@@ -128,7 +128,7 @@ namespace BansheeEngine
 
 		GUIMenuBarData& newSubMenu = mChildMenus.back();
 		newSubMenu.name = name;
-		newSubMenu.menu = cm_new<GUIMenu>();
+		newSubMenu.menu = bs_new<GUIMenu>();
 
 		GUIButton* newButton = GUIButton::create(HString(name), "MenuBarBtn");
 		newButton->onClick.connect(std::bind(&GUIMenuBar::openSubMenu, this, name));
@@ -183,7 +183,7 @@ namespace BansheeEngine
 
 			mMainArea->getLayout().removeElement(subMenuToRemove->button);
 			GUIElement::destroy(subMenuToRemove->button);
-			cm_delete<PoolAlloc>(subMenuToRemove->menu);
+			bs_delete<PoolAlloc>(subMenuToRemove->menu);
 
 			mChildMenus.erase(mChildMenus.begin() + curIdx);
 

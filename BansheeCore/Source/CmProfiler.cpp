@@ -9,29 +9,29 @@ namespace BansheeEngine
 		:mSavedSimReports(nullptr), mCPUProfiler(nullptr), mNextSimReportIdx(0),
 		mSavedCoreReports(nullptr), mNextCoreReportIdx(0)
 	{
-#if CM_PROFILING_ENABLED
-		mCPUProfiler = cm_new<CPUProfiler, ProfilerAlloc>();
+#if BS_PROFILING_ENABLED
+		mCPUProfiler = bs_new<CPUProfiler, ProfilerAlloc>();
 #endif
 
-		mSavedSimReports = cm_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
-		mSavedCoreReports = cm_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
+		mSavedSimReports = bs_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
+		mSavedCoreReports = bs_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
 	}
 
 	Profiler::~Profiler()
 	{
 		if(mCPUProfiler != nullptr)
-			cm_delete<ProfilerAlloc>(mCPUProfiler);
+			bs_delete<ProfilerAlloc>(mCPUProfiler);
 
 		if(mSavedSimReports != nullptr)
-			cm_deleteN<ProfilerAlloc>(mSavedSimReports, NUM_SAVED_FRAMES);
+			bs_deleteN<ProfilerAlloc>(mSavedSimReports, NUM_SAVED_FRAMES);
 
 		if(mSavedCoreReports != nullptr)
-			cm_deleteN<ProfilerAlloc>(mSavedCoreReports, NUM_SAVED_FRAMES);
+			bs_deleteN<ProfilerAlloc>(mSavedCoreReports, NUM_SAVED_FRAMES);
 	}
 
 	void Profiler::_update()
 	{
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 		mSavedSimReports[mNextSimReportIdx].cpuReport = mCPUProfiler->generateReport();
 
 		mCPUProfiler->reset();
@@ -42,8 +42,8 @@ namespace BansheeEngine
 
 	void Profiler::_updateCore()
 	{
-#if CM_PROFILING_ENABLED
-		CM_LOCK_MUTEX(mSync);
+#if BS_PROFILING_ENABLED
+		BS_LOCK_MUTEX(mSync);
 		mSavedCoreReports[mNextCoreReportIdx].cpuReport = mCPUProfiler->generateReport();
 
 		mCPUProfiler->reset();
@@ -58,7 +58,7 @@ namespace BansheeEngine
 
 		if(thread == ProfiledThread::Core)
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 
 			UINT32 reportIdx = mNextCoreReportIdx + (UINT32)((INT32)NUM_SAVED_FRAMES - ((INT32)idx + 1));
 			reportIdx = (reportIdx) % NUM_SAVED_FRAMES;

@@ -33,8 +33,8 @@ namespace BansheeEngine
 		static BS_UTILITY_EXPORT void incAllocCount() { Allocs++; }
 		static BS_UTILITY_EXPORT void incFreeCount() { Frees++; }
 
-		static CM_THREADLOCAL UINT64 Allocs;
-		static CM_THREADLOCAL UINT64 Frees;
+		static BS_THREADLOCAL UINT64 Allocs;
+		static BS_THREADLOCAL UINT64 Frees;
 	};
 
 	/**
@@ -61,7 +61,7 @@ namespace BansheeEngine
 	public:
 		static inline void* allocate(size_t bytes)
 		{
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			incAllocCount();
 #endif
 
@@ -70,7 +70,7 @@ namespace BansheeEngine
 
 		static inline void* allocateArray(size_t bytes, UINT32 count)
 		{
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			incAllocCount();
 #endif
 
@@ -79,7 +79,7 @@ namespace BansheeEngine
 
 		static inline void free(void* ptr)
 		{
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			incFreeCount();
 #endif
 
@@ -88,7 +88,7 @@ namespace BansheeEngine
 
 		static inline void freeArray(void* ptr, UINT32 count)
 		{
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			incFreeCount();
 #endif
 
@@ -125,7 +125,7 @@ namespace BansheeEngine
 	 * @brief	Allocates the specified number of bytes.
 	 */
 	template<class Alloc> 
-	inline void* cm_alloc(size_t count)
+	inline void* bs_alloc(size_t count)
 	{
 		return MemoryAllocator<Alloc>::allocate(count);
 	}
@@ -134,7 +134,7 @@ namespace BansheeEngine
 	 * @brief	Allocates enough bytes to hold the specified type, but doesn't construct it.
 	 */
 	template<class T, class Alloc> 
-	inline T* cm_alloc()
+	inline T* bs_alloc()
 	{
 		return (T*)MemoryAllocator<Alloc>::allocate(sizeof(T));
 	}
@@ -143,7 +143,7 @@ namespace BansheeEngine
 	 * @brief	Creates and constructs an array of "count" elements.
 	 */
 	template<class T, class Alloc> 
-	inline T* cm_newN(UINT32 count)
+	inline T* bs_newN(UINT32 count)
 	{
 		T* ptr = (T*)MemoryAllocator<Alloc>::allocateArray(sizeof(T), count);
 
@@ -157,16 +157,16 @@ namespace BansheeEngine
 	 * @brief	Create a new object with the specified allocator and the specified parameters.
 	 */
 	template<class Type, class Alloc, class... Args>
-	Type* cm_new(Args &&...args)
+	Type* bs_new(Args &&...args)
 	{
-		return new (cm_alloc<Alloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
+		return new (bs_alloc<Alloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
 	}
 
 	/**
 	 * @brief	Frees all the bytes allocated at the specified location.
 	 */
 	template<class Alloc> 
-	inline void cm_free(void* ptr)
+	inline void bs_free(void* ptr)
 	{
 		MemoryAllocator<Alloc>::free(ptr);
 	}
@@ -175,7 +175,7 @@ namespace BansheeEngine
 	 * @brief	Destructs and frees the specified object.
 	 */
 	template<class Alloc, class T> 
-	inline void cm_delete(T* ptr)
+	inline void bs_delete(T* ptr)
 	{
 		(ptr)->~T();
 
@@ -186,7 +186,7 @@ namespace BansheeEngine
 	 * @brief	Destructs and frees the specified array of objects.
 	 */
 	template<class Alloc, class T> 
-	inline void cm_deleteN(T* ptr, UINT32 count)
+	inline void bs_deleteN(T* ptr, UINT32 count)
 	{
 		for(unsigned int i = 0; i < count; i++)
 			ptr[i].~T();
@@ -201,7 +201,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Allocates the specified number of bytes.
 	 */
-	inline void* cm_alloc(size_t count)
+	inline void* bs_alloc(size_t count)
 	{
 		return MemoryAllocator<GenAlloc>::allocate(count);
 	}
@@ -210,7 +210,7 @@ namespace BansheeEngine
 	 * @brief	Allocates enough bytes to hold the specified type, but doesn't construct it.
 	 */
 	template<class T> 
-	inline T* cm_alloc()
+	inline T* bs_alloc()
 	{
 		return (T*)MemoryAllocator<GenAlloc>::allocate(sizeof(T));
 	}
@@ -219,7 +219,7 @@ namespace BansheeEngine
 	 * @brief	Creates and constructs an array of "count" elements.
 	 */
 	template<class T> 
-	inline T* cm_newN(UINT32 count)
+	inline T* bs_newN(UINT32 count)
 	{
 		T* ptr = (T*)MemoryAllocator<GenAlloc>::allocateArray(sizeof(T), count);
 
@@ -233,15 +233,15 @@ namespace BansheeEngine
 	 * @brief	Create a new object with the specified allocator and the specified parameters.
 	 */
 	template<class Type, class... Args>
-	Type* cm_new(Args &&...args)
+	Type* bs_new(Args &&...args)
 	{
-		return new (cm_alloc<GenAlloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
+		return new (bs_alloc<GenAlloc>(sizeof(Type))) Type(std::forward<Args>(args)...);
 	}
 
 	/**
 	 * @brief	Frees all the bytes allocated at the specified location.
 	 */
-	inline void cm_free(void* ptr)
+	inline void bs_free(void* ptr)
 	{
 		MemoryAllocator<GenAlloc>::free(ptr);
 	}
@@ -250,7 +250,7 @@ namespace BansheeEngine
 	 * @brief	Destructs and frees the specified object.
 	 */
 	template<class T> 
-	inline void cm_delete(T* ptr)
+	inline void bs_delete(T* ptr)
 	{
 		(ptr)->~T();
 
@@ -261,7 +261,7 @@ namespace BansheeEngine
 	 * @brief	Destructs and frees the specified array of objects.
 	 */
 	template<class T> 
-	inline void cm_deleteN(T* ptr, UINT32 count)
+	inline void bs_deleteN(T* ptr, UINT32 count)
 	{
 		for(unsigned int i = 0; i < count; i++)
 			ptr[i].~T();
@@ -276,11 +276,11 @@ namespace BansheeEngine
 /* cases (private destructor) it is not possible. In which case you may	*/
 /* use these instead.												    */
 /************************************************************************/
-#define CM_PVT_DELETE(T, ptr) \
+#define BS_PVT_DELETE(T, ptr) \
 	(ptr)->~T(); \
 	MemoryAllocator<GenAlloc>::free(ptr);
 
-#define CM_PVT_DELETE_A(T, ptr, Alloc) \
+#define BS_PVT_DELETE_A(T, ptr, Alloc) \
 	(ptr)->~T(); \
 	MemoryAllocator<Alloc>::free(ptr);
 }
@@ -355,7 +355,7 @@ namespace BansheeEngine
 		 */
 		pointer allocate (size_type num, const void* = 0) 
 		{
-			pointer ret = (pointer)(cm_alloc<Alloc>((size_t)num*sizeof(T)));
+			pointer ret = (pointer)(bs_alloc<Alloc>((size_t)num*sizeof(T)));
 			return ret;
 		}
 
@@ -380,7 +380,7 @@ namespace BansheeEngine
 		 */
 		void deallocate (pointer p, size_type num) 
 		{
-			cm_free<Alloc>((void*)p);
+			bs_free<Alloc>((void*)p);
 		}
 	};
 

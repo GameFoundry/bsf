@@ -28,7 +28,7 @@ namespace BansheeEngine
 		primaryWindow->getCustomAttribute("WINDOW", &windowId);
 
 		// TODO - Window handles in Windows are 64 bits when compiled as x64, but OIS only accepts a 32bit value. Is this okay?
-		std::shared_ptr<RawInputHandler> inputHandler = cm_shared_ptr<InputHandlerOIS>((UINT32)windowId);
+		std::shared_ptr<RawInputHandler> inputHandler = bs_shared_ptr<InputHandlerOIS>((UINT32)windowId);
 
 		gInput()._registerRawInputHandler(inputHandler);
 

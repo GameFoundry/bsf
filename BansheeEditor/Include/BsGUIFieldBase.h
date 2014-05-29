@@ -35,68 +35,68 @@ namespace BansheeEngine
 		static T* create(const GUIContent& labelContent, UINT32 labelWidth, const GUIOptions& layoutOptions, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
 		static T* create(const GUIContent& labelContent, const GUIOptions& layoutOptions, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
 		static T* create(const HString& labelText, UINT32 labelWidth, const GUIOptions& layoutOptions, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
 		static T* create(const HString& labelText, const GUIOptions& layoutOptions, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(layoutOptions), true);
 		}
 
 		static T* create(const GUIOptions& layoutOptions, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), GUIContent(), 0, nullptr, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, nullptr, entryElementStyle, 
 				GUILayoutOptions::create(layoutOptions), false);
 		}
 
 		static T* create(const GUIContent& labelContent, UINT32 labelWidth, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), labelContent, labelWidth, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(), true);
 		}
 
 		static T* create(const GUIContent& labelContent, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), labelContent, DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(), true);
 		}
 
 		static T* create(const HString& labelText, UINT32 labelWidth, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), labelWidth, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(), true);
 		}
 
 		static T* create(const HString& labelText, 
 			const String& labelStyle = StringUtil::BLANK, const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(labelText), DEFAULT_LABEL_WIDTH, labelStyle, entryElementStyle, 
 				GUILayoutOptions::create(), true);
 		}
 
 		static T* create(const String& entryElementStyle = StringUtil::BLANK)
 		{
-			return cm_new<T>(PrivatelyConstruct(), GUIContent(), 0, nullptr, entryElementStyle, 
+			return bs_new<T>(PrivatelyConstruct(), GUIContent(), 0, nullptr, entryElementStyle, 
 				GUILayoutOptions::create(), false);
 		}
 

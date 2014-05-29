@@ -14,7 +14,7 @@ namespace BansheeEngine
 	LocalizedStringData::~LocalizedStringData()
 	{
 		if(parameterOffsets != nullptr)
-			cm_deleteN(parameterOffsets, numParameters);
+			bs_deleteN(parameterOffsets, numParameters);
 	}
 
 	void LocalizedStringData::concatenateString(WString& outputString, WString* parameters, UINT32 numParameterValues) const
@@ -66,7 +66,7 @@ namespace BansheeEngine
 	void LocalizedStringData::updateString(const WString& _string)
 	{
 		if(parameterOffsets != nullptr)
-			cm_deleteN(parameterOffsets, numParameters);
+			bs_deleteN(parameterOffsets, numParameters);
 
 		Vector<ParamOffset> paramOffsets;
 
@@ -152,7 +152,7 @@ namespace BansheeEngine
 		std::sort(begin(paramOffsets), end(paramOffsets), 
 			[&] (const ParamOffset& a, const ParamOffset& b) { return a.location < b.location; } );
 
-		parameterOffsets = cm_newN<ParamOffset>(numParameters);
+		parameterOffsets = bs_newN<ParamOffset>(numParameters);
 		for(UINT32 i = 0; i < numParameters; i++)
 			parameterOffsets[i] = paramOffsets[i];
 	}
@@ -160,7 +160,7 @@ namespace BansheeEngine
 	StringTable::StringTable()
 		:mActiveLanguageData(nullptr), mDefaultLanguageData(nullptr), mAllLanguages(nullptr)
 	{
-		mAllLanguages = cm_newN<LanguageData>((UINT32)Language::Count);
+		mAllLanguages = bs_newN<LanguageData>((UINT32)Language::Count);
 
 		mDefaultLanguageData = &(mAllLanguages[(UINT32)DEFAULT_LANGUAGE]);
 		mActiveLanguageData = mDefaultLanguageData;
@@ -172,13 +172,13 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < (UINT32)Language::Count; i++)
 		{
 			for(auto& iter : mAllLanguages[i].strings)
-				cm_delete(iter.second);
+				bs_delete(iter.second);
 		}
 
-		cm_deleteN(mAllLanguages, (UINT32)Language::Count);
+		bs_deleteN(mAllLanguages, (UINT32)Language::Count);
 
 		for(auto& common : mCommonData)
-			cm_delete(common.second);
+			bs_delete(common.second);
 	}
 
 	void StringTable::setActiveLanguage(Language language)
@@ -206,14 +206,14 @@ namespace BansheeEngine
 			LocalizedStringData::Common* common = nullptr;
 			if(iterFindCommon == mCommonData.end())
 			{
-				common = cm_new<LocalizedStringData::Common>();
+				common = bs_new<LocalizedStringData::Common>();
 				common->identifier = identifier;
 				mCommonData[identifier] = common;
 			}
 			else
 				common = iterFindCommon->second;
 
-			stringData = cm_new<LocalizedStringData>();
+			stringData = bs_new<LocalizedStringData>();
 			curLanguage->strings[identifier] = stringData;
 			stringData->commonData = common;
 		}
@@ -246,7 +246,7 @@ namespace BansheeEngine
 				if(mActiveLanguage == (Language)i)
 					stringData = findIter->second;
 				else
-					cm_delete(findIter->second);
+					bs_delete(findIter->second);
 
 				mAllLanguages[i].strings.erase(findIter);
 			}
@@ -265,10 +265,10 @@ namespace BansheeEngine
 		}
 
 		if(stringData != nullptr)
-			cm_delete(stringData);
+			bs_delete(stringData);
 
 		if(common != nullptr)
-			cm_delete(common);
+			bs_delete(common);
 	}
 
 	LocalizedStringData& StringTable::getStringData(const WString& identifier, bool insertIfNonExisting)
@@ -297,7 +297,7 @@ namespace BansheeEngine
 				return *defaultIterFind->second;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "There is no string data for the provided identifier.");
+		BS_EXCEPT(InvalidParametersException, "There is no string data for the provided identifier.");
 	}
 
 	void StringTable::notifyAllStringsChanged()

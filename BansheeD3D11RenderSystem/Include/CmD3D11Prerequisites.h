@@ -6,7 +6,7 @@
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 
 // enable extended d3d debug 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 #	define D3D_DEBUG_INFO
 #endif
 
@@ -82,7 +82,7 @@ namespace BansheeEngine
     //-------------------------------------------
 	// Windows setttings
 	//-------------------------------------------
-#if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(CM_STATIC_LIB)
+#if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(BS_STATIC_LIB)
 #	ifdef BS_RSD3D11_EXPORTS
 #		define BS_D3D11_EXPORT __declspec(dllexport)
 #	else
@@ -94,5 +94,5 @@ namespace BansheeEngine
 #	endif
 #else
 #	define BS_D3D11_EXPORT
-#endif	// CM_PLATFORM_WIN32
+#endif	// BS_PLATFORM_WIN32
 }

@@ -404,5 +404,5 @@ namespace BansheeEngine
 		static const Matrix4 IDENTITY;
     };
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(Matrix4);
+	BS_ALLOW_MEMCPY_SERIALIZATION(Matrix4);
 }

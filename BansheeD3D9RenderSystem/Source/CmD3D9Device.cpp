@@ -39,7 +39,7 @@ namespace BansheeEngine
 		RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.find(renderWindow);
 
 		if (it == mMapRenderWindowToResoruces.end())
-			CM_EXCEPT(RenderingAPIException, "Render window was not attached to this device.");
+			BS_EXCEPT(RenderingAPIException, "Render window was not attached to this device.");
 
 		return it;
 	}
@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 		if (it == mMapRenderWindowToResoruces.end())
 		{
-			RenderWindowResources* renderWindowResources = cm_new<RenderWindowResources>();
+			RenderWindowResources* renderWindowResources = bs_new<RenderWindowResources>();
 
 			memset(renderWindowResources, 0, sizeof(RenderWindowResources));						
 			renderWindowResources->adapterOrdinalInGroupIndex = 0;					
@@ -83,7 +83,7 @@ namespace BansheeEngine
 			releaseRenderWindowResources(renderWindowResources);
 
 			if(renderWindowResources != nullptr)
-				cm_delete(renderWindowResources);
+				bs_delete(renderWindowResources);
 			
 			mMapRenderWindowToResoruces.erase(it);		
 		}
@@ -114,7 +114,7 @@ namespace BansheeEngine
 				hr = itPrimary->second->swapChain->GetPresentParameters(&currentPresentParams);
 				if (FAILED(hr))
 				{
-					CM_EXCEPT(RenderingAPIException, "GetPresentParameters failed");
+					BS_EXCEPT(RenderingAPIException, "GetPresentParameters failed");
 				}
 				
 				// Desired parameters are different then current parameters.
@@ -235,7 +235,7 @@ namespace BansheeEngine
 				setSharedWindowHandle(0);
 
 			if(it->second != nullptr)
-				cm_delete(it->second);
+				bs_delete(it->second);
 
 			++it;
 		}
@@ -246,7 +246,7 @@ namespace BansheeEngine
 		mD3D9DeviceCapsValid = false;
 
 		if(mPresentationParams != nullptr)
-			cm_deleteN(mPresentationParams, mPresentationParamsCount);
+			bs_deleteN(mPresentationParams, mPresentationParamsCount);
 
 		mPresentationParamsCount = 0;
 
@@ -322,7 +322,7 @@ namespace BansheeEngine
 		}
 		else if (FAILED(hr))
 		{
-			CM_EXCEPT(RenderingAPIException, "Cannot reset device!");
+			BS_EXCEPT(RenderingAPIException, "Cannot reset device!");
 		}
 
 		mDeviceLost = false;
@@ -379,7 +379,7 @@ namespace BansheeEngine
 	{
 		if (mD3D9DeviceCapsValid == false)
 		{
-			CM_EXCEPT(RenderingAPIException, "Device caps are invalid!");
+			BS_EXCEPT(RenderingAPIException, "Device caps are invalid!");
 		}
 
 		return mD3D9DeviceCaps;
@@ -389,7 +389,7 @@ namespace BansheeEngine
 	{		
 		if (mPresentationParams == NULL || mPresentationParamsCount == 0)
 		{
-			CM_EXCEPT(RenderingAPIException, "Presentation parameters are invalid!");
+			BS_EXCEPT(RenderingAPIException, "Presentation parameters are invalid!");
 		}
 
 		return mPresentationParams[0].BackBufferFormat;
@@ -399,7 +399,7 @@ namespace BansheeEngine
 	{		
 		if (mPresentationParams == NULL || mPresentationParamsCount == 0)
 		{
-			CM_EXCEPT(RenderingAPIException, "Presentation parameters are invalid!");
+			BS_EXCEPT(RenderingAPIException, "Presentation parameters are invalid!");
 		}
 
 		return mPresentationParams[0].AutoDepthStencilFormat;
@@ -414,13 +414,13 @@ namespace BansheeEngine
 	{		
 		// Clear old presentation parameters.
 		if(mPresentationParams != nullptr)
-			cm_deleteN(mPresentationParams, mPresentationParamsCount);
+			bs_deleteN(mPresentationParams, mPresentationParamsCount);
 
 		mPresentationParamsCount = 0;		
 
 		if (mMapRenderWindowToResoruces.size() > 0)
 		{
-			mPresentationParams = cm_newN<D3DPRESENT_PARAMETERS>((UINT32)mMapRenderWindowToResoruces.size());
+			mPresentationParams = bs_newN<D3DPRESENT_PARAMETERS>((UINT32)mMapRenderWindowToResoruces.size());
 
 			RenderWindowToResorucesIterator it = mMapRenderWindowToResoruces.begin();
 
@@ -494,7 +494,7 @@ namespace BansheeEngine
 			if( hr != S_OK )
 			{
 				String str = "Unable to disable texture '" + toString((unsigned int)stage) + "' in D3D9";
-				CM_EXCEPT(RenderingAPIException, str);
+				BS_EXCEPT(RenderingAPIException, str);
 			}
 		
 			mpDevice->GetTextureStageState(static_cast<DWORD>(stage), D3DTSS_COLOROP, &dwCurValue);
@@ -505,7 +505,7 @@ namespace BansheeEngine
 				if( hr != S_OK )
 				{
 					String str = "Unable to disable texture '" + toString((unsigned)stage) + "' in D3D9";
-					CM_EXCEPT(RenderingAPIException, str);
+					BS_EXCEPT(RenderingAPIException, str);
 				}
 			}			
 		
@@ -587,7 +587,7 @@ namespace BansheeEngine
 
 			if (FAILED(hr))
 			{
-				CM_EXCEPT(RenderingAPIException, "Cannot create device!");
+				BS_EXCEPT(RenderingAPIException, "Cannot create device!");
 			}
 		}
 
@@ -595,14 +595,14 @@ namespace BansheeEngine
 		hr = mpDevice->GetDeviceCaps(&mD3D9DeviceCaps);
 		if (FAILED(hr))
 		{
-			CM_EXCEPT(RenderingAPIException, "Cannot get device caps!");
+			BS_EXCEPT(RenderingAPIException, "Cannot get device caps!");
 		}
 
 		// Get current creation parameters caps.
 		hr = mpDevice->GetCreationParameters(&mCreationParams);
 		if (FAILED(hr) )
 		{
-			CM_EXCEPT(RenderingAPIException, "Error Get Creation Parameters");
+			BS_EXCEPT(RenderingAPIException, "Error Get Creation Parameters");
 		}
 
 		mD3D9DeviceCapsValid = true;
@@ -850,7 +850,7 @@ namespace BansheeEngine
 		}
 		else if( FAILED(hr) )
 		{
-			CM_EXCEPT(RenderingAPIException, "Error Presenting surfaces");
+			BS_EXCEPT(RenderingAPIException, "Error Presenting surfaces");
 		}
 	}
 
@@ -878,7 +878,7 @@ namespace BansheeEngine
 
 			if (FAILED(hr))
 			{
-				CM_EXCEPT(RenderingAPIException, "Unable to create an additional swap chain");
+				BS_EXCEPT(RenderingAPIException, "Unable to create an additional swap chain");
 			}
 		}
 		else
@@ -888,7 +888,7 @@ namespace BansheeEngine
 				&renderWindowResources->swapChain);
 			if (FAILED(hr)) 
 			{
-				CM_EXCEPT(RenderingAPIException, "Unable to get the swap chain");
+				BS_EXCEPT(RenderingAPIException, "Unable to get the swap chain");
 			}
 		}
 
@@ -930,7 +930,7 @@ namespace BansheeEngine
 
 				if (FAILED(hr)) 
 				{
-					CM_EXCEPT(RenderingAPIException, "Unable to create a depth buffer for the swap chain");
+					BS_EXCEPT(RenderingAPIException, "Unable to create a depth buffer for the swap chain");
 				}
 
 				if (isSwapChainWindow(renderWindow) == false)
@@ -1044,7 +1044,7 @@ namespace BansheeEngine
 			(dst.getTop() < 0) || (dst.getBottom() > renderWindow->getHeight()) ||
 			(dst.getFront() != 0) || (dst.getBack() != 1))
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid box.");
+			BS_EXCEPT(InvalidParametersException, "Invalid box.");
 		}
 
 		HRESULT hr;
@@ -1066,7 +1066,7 @@ namespace BansheeEngine
 
 			if (FAILED(hr = mpDevice->GetDisplayMode(0, &dm)))
 			{
-				CM_EXCEPT(RenderingAPIException, "Can't get display mode: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+				BS_EXCEPT(RenderingAPIException, "Can't get display mode: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			desc.Width = dm.Width;
@@ -1078,14 +1078,14 @@ namespace BansheeEngine
 				&pTempSurf,
 				0)))
 			{
-				CM_EXCEPT(RenderingAPIException, "Can't create offscreen buffer: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+				BS_EXCEPT(RenderingAPIException, "Can't create offscreen buffer: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if (FAILED(hr = swapChain ? resources->swapChain->GetFrontBufferData(pTempSurf) :
 				mpDevice->GetFrontBufferData(0, pTempSurf)))
 			{
 				SAFE_RELEASE(pTempSurf);
-				CM_EXCEPT(RenderingAPIException, "Can't get front buffer: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+				BS_EXCEPT(RenderingAPIException, "Can't get front buffer: TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if(renderWindow->isFullScreen())
@@ -1108,7 +1108,7 @@ namespace BansheeEngine
 				if (FAILED(hr))
 				{
 					SAFE_RELEASE(pTempSurf);
-					CM_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+					BS_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				} 
 			}
 			else
@@ -1134,7 +1134,7 @@ namespace BansheeEngine
 				if (FAILED(hr = pTempSurf->LockRect(&lockedRect, &srcRect, D3DLOCK_READONLY | D3DLOCK_NOSYSLOCK)))
 				{
 					SAFE_RELEASE(pTempSurf);
-					CM_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+					BS_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				} 
 			}
 		}
@@ -1144,12 +1144,12 @@ namespace BansheeEngine
 			if(FAILED(hr = swapChain? resources->swapChain->GetBackBuffer(0, D3DBACKBUFFER_TYPE_MONO, &pSurf) :
 				mpDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pSurf)))
 			{
-				CM_EXCEPT(RenderingAPIException, "Can't get back buffer:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+				BS_EXCEPT(RenderingAPIException, "Can't get back buffer:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if(FAILED(hr = pSurf->GetDesc(&desc)))
 			{
-				CM_EXCEPT(RenderingAPIException, "Can't get description:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+				BS_EXCEPT(RenderingAPIException, "Can't get description:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if (FAILED(hr = mpDevice->CreateOffscreenPlainSurface(desc.Width, desc.Height,
@@ -1158,7 +1158,7 @@ namespace BansheeEngine
 				&pTempSurf,
 				0)))
 			{
-				CM_EXCEPT(RenderingAPIException, "Can't create offscreen surface:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+				BS_EXCEPT(RenderingAPIException, "Can't create offscreen surface:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 
 			if (desc.MultiSampleType == D3DMULTISAMPLE_NONE)
@@ -1166,7 +1166,7 @@ namespace BansheeEngine
 				if (FAILED(hr = mpDevice->GetRenderTargetData(pSurf, pTempSurf)))
 				{
 					SAFE_RELEASE(pTempSurf);
-					CM_EXCEPT(RenderingAPIException, "Can't get render target data:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+					BS_EXCEPT(RenderingAPIException, "Can't get render target data:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 			}
 			else
@@ -1182,20 +1182,20 @@ namespace BansheeEngine
 					0)))
 				{
 					SAFE_RELEASE(pTempSurf);
-					CM_EXCEPT(RenderingAPIException, "Can't create render target:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+					BS_EXCEPT(RenderingAPIException, "Can't create render target:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 
 				if (FAILED(hr = mpDevice->StretchRect(pSurf, 0, pStretchSurf, 0, D3DTEXF_NONE)))
 				{
 					SAFE_RELEASE(pTempSurf);
 					SAFE_RELEASE(pStretchSurf);
-					CM_EXCEPT(RenderingAPIException, "Can't stretch rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+					BS_EXCEPT(RenderingAPIException, "Can't stretch rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 				if (FAILED(hr = mpDevice->GetRenderTargetData(pStretchSurf, pTempSurf)))
 				{
 					SAFE_RELEASE(pTempSurf);
 					SAFE_RELEASE(pStretchSurf);
-					CM_EXCEPT(RenderingAPIException, "Can't get render target data:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+					BS_EXCEPT(RenderingAPIException, "Can't get render target data:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 				}
 				SAFE_RELEASE(pStretchSurf);
 			}
@@ -1218,7 +1218,7 @@ namespace BansheeEngine
 			if (FAILED(hr))
 			{
 				SAFE_RELEASE(pTempSurf);
-				CM_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
+				BS_EXCEPT(RenderingAPIException, "Can't lock rect:  TODO PORT NO ERROR"); // TODO PORT - Translate HR to error
 			}
 		}
 
@@ -1227,7 +1227,7 @@ namespace BansheeEngine
 		if (format == PF_UNKNOWN)
 		{
 			SAFE_RELEASE(pTempSurf);
-			CM_EXCEPT(RenderingAPIException, "Unsupported format");
+			BS_EXCEPT(RenderingAPIException, "Unsupported format");
 		}
 
 		PixelData src(dst.getWidth(), dst.getHeight(), 1, format);

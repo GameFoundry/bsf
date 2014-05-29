@@ -32,7 +32,7 @@ namespace BansheeEngine
 		void* params[4] = { parentObject, monoStrName, &fieldFlags, internalType };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 4);
 
-		ScriptSerializableField* nativeInstance = new (cm_alloc<ScriptSerializableField>()) ScriptSerializableField(managedInstance, fieldInfo);
+		ScriptSerializableField* nativeInstance = new (bs_alloc<ScriptSerializableField>()) ScriptSerializableField(managedInstance, fieldInfo);
 
 		return nativeInstance;
 	}

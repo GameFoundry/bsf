@@ -40,18 +40,18 @@ namespace BansheeEngine
     
     void* PixelBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {
-		CM_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
+		BS_EXCEPT(InternalErrorException, "lockImpl(offset,length) is not valid for PixelBuffers and should never be called");
     }
 
 	void PixelBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
 		// TODO
-		CM_EXCEPT(NotImplementedException, "Reading a byte range is not implemented. Use blitToMemory.");
+		BS_EXCEPT(NotImplementedException, "Reading a byte range is not implemented. Use blitToMemory.");
 	}
 
 	void PixelBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags)
 	{
 		// TODO
-		CM_EXCEPT(NotImplementedException, "Writing a byte range is not implemented. Use blitFromMemory.");
+		BS_EXCEPT(NotImplementedException, "Writing a byte range is not implemented. Use blitFromMemory.");
 	}
 }

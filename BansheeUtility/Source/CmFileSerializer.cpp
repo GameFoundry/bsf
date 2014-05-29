@@ -13,12 +13,12 @@ namespace BansheeEngine
 {
 	FileSerializer::FileSerializer()
 	{
-		mWriteBuffer = (UINT8*)cm_alloc<ScratchAlloc>(WRITE_BUFFER_SIZE);
+		mWriteBuffer = (UINT8*)bs_alloc<ScratchAlloc>(WRITE_BUFFER_SIZE);
 	}
 
 	FileSerializer::~FileSerializer()
 	{
-		cm_free<ScratchAlloc>(mWriteBuffer);
+		bs_free<ScratchAlloc>(mWriteBuffer);
 	}
 
 	void FileSerializer::encode(IReflectable* object, const Path& fileLocation)
@@ -40,11 +40,11 @@ namespace BansheeEngine
 		std::streamoff fileSize = mInputStream.tellg();
 		if(fileSize > std::numeric_limits<UINT32>::max())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"File size is larger that UINT32 can hold. Ask a programmer to use a bigger data type.");
 		}
 
-		UINT8* readBuffer = (UINT8*)cm_alloc<ScratchAlloc>((UINT32)fileSize); // TODO - Low priority. Consider upgrading BinarySerializer so we don't have to read everything at once
+		UINT8* readBuffer = (UINT8*)bs_alloc<ScratchAlloc>((UINT32)fileSize); // TODO - Low priority. Consider upgrading BinarySerializer so we don't have to read everything at once
 
 		mInputStream.seekg(0, std::ios::beg);
 		mInputStream.read((char*)readBuffer, fileSize);
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		mInputStream.close();
 		mInputStream.clear();
 
-		cm_free<ScratchAlloc>(readBuffer);
+		bs_free<ScratchAlloc>(readBuffer);
 
 		return object;
 	}

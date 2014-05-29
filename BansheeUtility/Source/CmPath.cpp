@@ -113,9 +113,9 @@ namespace BansheeEngine
 			parseUnix(pathStr, numChars);
 			break;
 		default:
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 			parseWindows(pathStr, numChars);
-#elif CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
+#elif BS_PLATFORM == BS_PLATFORM_APPLE || BS_PLATFORM == BS_PLATFORM_LINUX
 			parseUnix(pathStr, numChars);
 #else
 			static_assert(false, "Unsupported platform for path.");
@@ -135,9 +135,9 @@ namespace BansheeEngine
 			parseUnix(pathStr, numChars);
 			break;
 		default:
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 			parseWindows(pathStr, numChars);
-#elif CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
+#elif BS_PLATFORM == BS_PLATFORM_APPLE || BS_PLATFORM == BS_PLATFORM_LINUX
 			parseUnix(pathStr, numChars);
 #else
 			static_assert(false, "Unsupported platform for path.");
@@ -155,9 +155,9 @@ namespace BansheeEngine
 		case PathType::Unix:
 			return buildUnix();
 		default:
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 			return buildWindows();
-#elif CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
+#elif BS_PLATFORM == BS_PLATFORM_APPLE || BS_PLATFORM == BS_PLATFORM_LINUX
 			return buildUnix();
 #else
 			static_assert(false, "Unsupported platform for path.");
@@ -175,9 +175,9 @@ namespace BansheeEngine
 		case PathType::Unix:
 			return BansheeEngine::toString(buildUnix());
 		default:
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 			return BansheeEngine::toString(buildWindows());
-#elif CM_PLATFORM == CM_PLATFORM_APPLE || CM_PLATFORM == CM_PLATFORM_LINUX
+#elif BS_PLATFORM == BS_PLATFORM_APPLE || BS_PLATFORM == BS_PLATFORM_LINUX
 			return BansheeEngine::toString(buildUnix());
 #else
 			static_assert(false, "Unsupported platform for path.");
@@ -403,7 +403,7 @@ namespace BansheeEngine
 	{
 		if (idx >= (UINT32)mDirectories.size())
 		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + BansheeEngine::toString(idx) + 
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + BansheeEngine::toString(idx) + 
 				". Valid range: [0, " + BansheeEngine::toString((UINT32)mDirectories.size() - 1) + "]");
 		}
 
@@ -441,12 +441,12 @@ namespace BansheeEngine
 
 	void Path::throwInvalidPathException(const WString& path) const
 	{
-		CM_EXCEPT(InvalidParametersException, "Incorrectly formatted path provided: " + BansheeEngine::toString(path));
+		BS_EXCEPT(InvalidParametersException, "Incorrectly formatted path provided: " + BansheeEngine::toString(path));
 	}
 
 	void Path::throwInvalidPathException(const String& path) const
 	{
-		CM_EXCEPT(InvalidParametersException, "Incorrectly formatted path provided: " + path);
+		BS_EXCEPT(InvalidParametersException, "Incorrectly formatted path provided: " + path);
 	}
 
 	WString Path::buildWindows() const

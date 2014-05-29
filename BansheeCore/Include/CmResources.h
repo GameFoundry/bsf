@@ -148,8 +148,8 @@ namespace BansheeEngine
 		Vector<ResourceManifestPtr> mResourceManifests;
 		ResourceManifestPtr mDefaultResourceManifest;
 
-		CM_MUTEX(mInProgressResourcesMutex);
-		CM_MUTEX(mLoadedResourceMutex);
+		BS_MUTEX(mInProgressResourcesMutex);
+		BS_MUTEX(mLoadedResourceMutex);
 
 		UnorderedMap<String, HResource> mLoadedResources;
 		UnorderedMap<String, HResource> mInProgressResources; // Resources that are being asynchronously loaded

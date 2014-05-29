@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	std::shared_ptr<InputConfiguration> VirtualInput::createConfiguration()
 	{
-		return cm_shared_ptr<InputConfiguration>();
+		return bs_shared_ptr<InputConfiguration>();
 	}
 
 	void VirtualInput::setConfiguration(const std::shared_ptr<InputConfiguration>& input)

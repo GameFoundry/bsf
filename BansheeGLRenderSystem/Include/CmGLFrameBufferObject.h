@@ -56,7 +56,7 @@ namespace BansheeEngine
         ~GLFrameBufferObject();
 
         /** Bind a surface to a certain attachment point.
-            attachment: 0..CM_MAX_MULTIPLE_RENDER_TARGETS-1
+            attachment: 0..BS_MAX_MULTIPLE_RENDER_TARGETS-1
         */
         void bindSurface(UINT32 attachment, const GLSurfaceDesc &target);
 
@@ -93,7 +93,7 @@ namespace BansheeEngine
 
         GLPixelBufferPtr mDepthStencilBuffer;
         // Arbitrary number of texture surfaces
-        GLSurfaceDesc mColor[CM_MAX_MULTIPLE_RENDER_TARGETS];
+        GLSurfaceDesc mColor[BS_MAX_MULTIPLE_RENDER_TARGETS];
 
 		/** Initialise object (find suitable depth and stencil format).
             Must be called every time the bindings change.

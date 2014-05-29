@@ -115,7 +115,7 @@ namespace BansheeEngine
 		else
 			compileFlags |= D3DXSHADER_PACKMATRIX_ROWMAJOR;
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		compileFlags |= D3DXSHADER_DEBUG;
 #endif
 		switch (mOptimisationLevel)
@@ -205,7 +205,7 @@ namespace BansheeEngine
 
 	GpuParamsPtr D3D9GpuProgram::createParameters()
 	{
-		GpuParamsPtr params = cm_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
+		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
 
 		return params;
 	}
@@ -277,7 +277,7 @@ namespace BansheeEngine
 
 		if (FAILED(hr))
 		{
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 vertex shader from microcode");
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D9 vertex shader from microcode");
 		}
 
 		mMapDeviceToVertexShader[d3d9Device] = pVertexShader;
@@ -376,7 +376,7 @@ namespace BansheeEngine
 		hr = d3d9Device->CreatePixelShader(static_cast<DWORD*>(microcode->GetBufferPointer()), &pPixelShader);
 
 		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D9 pixel shader from microcode.");
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D9 pixel shader from microcode.");
 
 		mMapDeviceToPixelShader[d3d9Device] = pPixelShader;
     }

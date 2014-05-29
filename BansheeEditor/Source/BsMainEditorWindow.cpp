@@ -28,7 +28,7 @@ namespace BansheeEngine
 
 	MainEditorWindow::MainEditorWindow(const RenderWindowPtr& renderWindow)
 		:EditorWindowBase(renderWindow), mDockManager(nullptr), 
-		mMenuBar(cm_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
+		mMenuBar(bs_new<GUIMenuBar>(mGUI.get(), mRenderWindow.get()))
 	{
 		mDockManager = DockManager::create(mRenderWindow.get());
 
@@ -86,7 +86,7 @@ namespace BansheeEngine
 		ProfilerOverlay::shutDown();
 
 		GUIElement::destroy(mDockManager);
-		cm_delete(mMenuBar);
+		bs_delete(mMenuBar);
 	}
 
 	void MainEditorWindow::resized()

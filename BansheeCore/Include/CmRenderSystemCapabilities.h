@@ -5,9 +5,9 @@
 #include "CmGpuProgram.h"
 
 #define CAPS_CATEGORY_SIZE 8i64
-#define CM_CAPS_BITSHIFT (64i64 - CAPS_CATEGORY_SIZE)
-#define CAPS_CATEGORY_MASK (((1i64 << CAPS_CATEGORY_SIZE) - 1i64) << CM_CAPS_BITSHIFT)
-#define CM_CAPS_VALUE(cat, val) ((cat << CM_CAPS_BITSHIFT) | (1i64 << val))
+#define BS_CAPS_BITSHIFT (64i64 - CAPS_CATEGORY_SIZE)
+#define CAPS_CATEGORY_MASK (((1i64 << CAPS_CATEGORY_SIZE) - 1i64) << BS_CAPS_BITSHIFT)
+#define BS_CAPS_VALUE(cat, val) ((cat << BS_CAPS_BITSHIFT) | (1i64 << val))
 
 #define MAX_BOUND_VERTEX_BUFFERS 32
 
@@ -28,45 +28,45 @@ namespace BansheeEngine
 	 */
 	enum Capabilities : UINT64
 	{
-		RSC_AUTOMIPMAP				= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0), /**< Supports generating mipmaps in hardware. */
-		RSC_ANISOTROPY				= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 1), /**< Supports anisotropic texture filtering. */
-		RSC_CUBEMAPPING				= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 2), /**< Supports cube mapping. */
-		RSC_TWO_SIDED_STENCIL		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 3), /**< Supports separate stencil updates for both front and back faces. */
-		RSC_STENCIL_WRAP			= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4), /**< Supports wrapping the stencil value at the range extremes. */
-		RSC_HWOCCLUSION				= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5), /**< Supports hardware occlusion queries. */
-		RSC_USER_CLIP_PLANES		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 6), /**< Supports user clipping planes. */
-		RSC_VERTEX_FORMAT_UBYTE4	= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7), /**< Supports the VET_UBYTE4 vertex element type. */
-		RSC_INFINITE_FAR_PLANE		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 8), /**< Supports infinite far plane projection. */
-		RSC_HWRENDER_TO_TEXTURE		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 9), /**< Supports hardware render-to-texture. */
-		RSC_TEXTURE_FLOAT			= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10), /**< Supports float textures and render targets. */
-		RSC_NON_POWER_OF_2_TEXTURES = CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11), /**< Supports non-power of two textures. */
-		RSC_TEXTURE_3D				= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 12), /**< Supports 3d (volume) textures. */
-		RSC_POINT_SPRITES			= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 13), /**< Supports basic point sprite rendering. */
+		RSC_AUTOMIPMAP				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 0), /**< Supports generating mipmaps in hardware. */
+		RSC_ANISOTROPY				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 1), /**< Supports anisotropic texture filtering. */
+		RSC_CUBEMAPPING				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 2), /**< Supports cube mapping. */
+		RSC_TWO_SIDED_STENCIL		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 3), /**< Supports separate stencil updates for both front and back faces. */
+		RSC_STENCIL_WRAP			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 4), /**< Supports wrapping the stencil value at the range extremes. */
+		RSC_HWOCCLUSION				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 5), /**< Supports hardware occlusion queries. */
+		RSC_USER_CLIP_PLANES		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 6), /**< Supports user clipping planes. */
+		RSC_VERTEX_FORMAT_UBYTE4	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 7), /**< Supports the VET_UBYTE4 vertex element type. */
+		RSC_INFINITE_FAR_PLANE		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 8), /**< Supports infinite far plane projection. */
+		RSC_HWRENDER_TO_TEXTURE		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 9), /**< Supports hardware render-to-texture. */
+		RSC_TEXTURE_FLOAT			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 10), /**< Supports float textures and render targets. */
+		RSC_NON_POWER_OF_2_TEXTURES = BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 11), /**< Supports non-power of two textures. */
+		RSC_TEXTURE_3D				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 12), /**< Supports 3d (volume) textures. */
+		RSC_POINT_SPRITES			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 13), /**< Supports basic point sprite rendering. */
 
-		RSC_POINT_EXTENDED_PARAMETERS	= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 14), /**< Supports extra point parameters (minsize, maxsize, attenuation). */
-		RSC_VERTEX_TEXTURE_FETCH		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 15), /**< Supports vertex texture fetch. */
-		RSC_MIPMAP_LOD_BIAS				= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 16), /**< Supports mipmap LOD biasing. */
-		RSC_GEOMETRY_PROGRAM			= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 17), /**< Supports hardware geometry programs. */
+		RSC_POINT_EXTENDED_PARAMETERS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 14), /**< Supports extra point parameters (minsize, maxsize, attenuation). */
+		RSC_VERTEX_TEXTURE_FETCH		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 15), /**< Supports vertex texture fetch. */
+		RSC_MIPMAP_LOD_BIAS				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 16), /**< Supports mipmap LOD biasing. */
+		RSC_GEOMETRY_PROGRAM			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 17), /**< Supports hardware geometry programs. */
 
-		RSC_TEXTURE_COMPRESSION			= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 18), /**< Supports compressed textures. */
-		RSC_TEXTURE_COMPRESSION_DXT		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 19), /**< Supports compressed textures in the DXT/ST3C formats. */
-		RSC_TEXTURE_COMPRESSION_VTC		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 20), /**< Supports compressed textures in the VTC format. */
-		RSC_TEXTURE_COMPRESSION_PVRTC	= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 21), /**< Supports compressed textures in the PVRTC format. */
-		RSC_MRT_DIFFERENT_BIT_DEPTHS	= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 22), /**< Supports multiple render targets with different bit depths. */
-		RSC_ALPHA_TO_COVERAGE			= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 23), /**< Supports Alpha to Coverage. */
-		RSC_ADVANCED_BLEND_OPERATIONS	= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 24), /**< Supports blend operations like subtract, min, max. */
-		RSC_SHADER_SUBROUTINE			= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 25), /**< Supports dynamic shader linking. */
-		RSC_HWOCCLUSION_ASYNCHRONOUS	= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 26), /**< Support for async occlusion queries. */
-		RSC_HWRENDER_TO_VERTEX_BUFFER	= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 27), /**< Supports rendering to vertex buffers. */
-		RSC_TESSELLATION_PROGRAM		= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 28), /**< Supports hardware tessellation programs. */
-		RSC_COMPUTE_PROGRAM				= CM_CAPS_VALUE(CAPS_CATEGORY_COMMON, 29), /**< Supports hardware compute programs. */
+		RSC_TEXTURE_COMPRESSION			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 18), /**< Supports compressed textures. */
+		RSC_TEXTURE_COMPRESSION_DXT		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 19), /**< Supports compressed textures in the DXT/ST3C formats. */
+		RSC_TEXTURE_COMPRESSION_VTC		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 20), /**< Supports compressed textures in the VTC format. */
+		RSC_TEXTURE_COMPRESSION_PVRTC	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 21), /**< Supports compressed textures in the PVRTC format. */
+		RSC_MRT_DIFFERENT_BIT_DEPTHS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 22), /**< Supports multiple render targets with different bit depths. */
+		RSC_ALPHA_TO_COVERAGE			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 23), /**< Supports Alpha to Coverage. */
+		RSC_ADVANCED_BLEND_OPERATIONS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 24), /**< Supports blend operations like subtract, min, max. */
+		RSC_SHADER_SUBROUTINE			= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 25), /**< Supports dynamic shader linking. */
+		RSC_HWOCCLUSION_ASYNCHRONOUS	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 26), /**< Support for async occlusion queries. */
+		RSC_HWRENDER_TO_VERTEX_BUFFER	= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 27), /**< Supports rendering to vertex buffers. */
+		RSC_TESSELLATION_PROGRAM		= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 28), /**< Supports hardware tessellation programs. */
+		RSC_COMPUTE_PROGRAM				= BS_CAPS_VALUE(CAPS_CATEGORY_COMMON, 29), /**< Supports hardware compute programs. */
 
 		// ***** DirectX 9 specific caps *****
-		RSC_PERSTAGECONSTANT = CM_CAPS_VALUE(CAPS_CATEGORY_D3D9, 0), /**< Are per stage constants supported. */
+		RSC_PERSTAGECONSTANT = BS_CAPS_VALUE(CAPS_CATEGORY_D3D9, 0), /**< Are per stage constants supported. */
 
 		// ***** GL Specific caps *****
-		RSC_FBO              = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 0), /**< Support for Frame Buffer Objects. */
-		RSC_PBUFFER			 = CM_CAPS_VALUE(CAPS_CATEGORY_GL, 1), /**< Support for PBuffers. */
+		RSC_FBO              = BS_CAPS_VALUE(CAPS_CATEGORY_GL, 0), /**< Support for Frame Buffer Objects. */
+		RSC_PBUFFER			 = BS_CAPS_VALUE(CAPS_CATEGORY_GL, 1), /**< Support for PBuffers. */
 	};
 
 	/**
@@ -311,7 +311,7 @@ namespace BansheeEngine
 		 */
 		void setCapability(const Capabilities c) 
 		{ 
-			UINT64 index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
+			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
 			mCapabilities[index] |= (c & ~CAPS_CATEGORY_MASK);
 		}
 
@@ -321,7 +321,7 @@ namespace BansheeEngine
 		 */
 		void unsetCapability(const Capabilities c) 
 		{ 
-			UINT64 index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
+			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
 			mCapabilities[index] &= (~c | CAPS_CATEGORY_MASK);
 		}
 
@@ -330,7 +330,7 @@ namespace BansheeEngine
 		 */
 		bool hasCapability(const Capabilities c) const
 		{
-			UINT64 index = (CAPS_CATEGORY_MASK & c) >> CM_CAPS_BITSHIFT;
+			UINT64 index = (CAPS_CATEGORY_MASK & c) >> BS_CAPS_BITSHIFT;
 
 			return (mCapabilities[index] & (c & ~CAPS_CATEGORY_MASK)) != 0;
 		}

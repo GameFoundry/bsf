@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			CM_EXCEPT(InvalidStateException, "Cannot create an instance of an abstract class.");
+			BS_EXCEPT(InvalidStateException, "Cannot create an instance of an abstract class.");
 		}
 	};
 

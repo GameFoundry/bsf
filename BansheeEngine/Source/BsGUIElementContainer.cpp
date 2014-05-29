@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	const GUIMaterialInfo& GUIElementContainer::getMaterial(UINT32 renderElementIdx) const
 	{
-		CM_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
+		BS_EXCEPT(InvalidStateException, "Trying to retrieve a material from an element with no render elements.");
 	}
 
 	UINT32 GUIElementContainer::getNumQuads(UINT32 renderElementIdx) const

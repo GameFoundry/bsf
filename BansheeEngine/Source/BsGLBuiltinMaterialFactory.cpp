@@ -88,18 +88,18 @@ namespace BansheeEngine
 						uniform float invViewportHeight;		\
 						uniform mat4 worldTransform;			\
 						\
-						in vec3 cm_position;					\
-						in vec2 cm_texcoord0;					\
+						in vec3 bs_position;					\
+						in vec2 bs_texcoord0;					\
 						out vec2 texcoord0;						\
 						void main()							\
 						{																	\
-						vec4 tfrmdPos = worldTransform * vec4(cm_position.xy, 0, 1);		\
+						vec4 tfrmdPos = worldTransform * vec4(bs_position.xy, 0, 1);		\
 						\
 						float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);				\
 						float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);				\
 						\
 						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);							\
-						texcoord0 = cm_texcoord0;											\
+						texcoord0 = bs_texcoord0;											\
 						}																	\
 						";
 
@@ -162,18 +162,18 @@ namespace BansheeEngine
 						uniform float invViewportHeight;		\
 						uniform mat4 worldTransform;			\
 						\
-						in vec3 cm_position;					\
-						in vec2 cm_texcoord0;					\
+						in vec3 bs_position;					\
+						in vec2 bs_texcoord0;					\
 						out vec2 texcoord0;						\
 						void main()							\
 						{																	\
-						vec4 tfrmdPos = worldTransform * vec4(cm_position.xy, 0, 1);		\
+						vec4 tfrmdPos = worldTransform * vec4(bs_position.xy, 0, 1);		\
 						\
 						float tfrmdX = -1.0f + (tfrmdPos.x * invViewportWidth);				\
 						float tfrmdY = 1.0f - (tfrmdPos.y * invViewportHeight);				\
 						\
 						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);							\
-						texcoord0 = cm_texcoord0;											\
+						texcoord0 = bs_texcoord0;											\
 						}																	\
 						";
 
@@ -232,14 +232,14 @@ namespace BansheeEngine
 	{
 		String vsCode = "#version 400\n								\
 																	\
-						in vec2 cm_position;						\
-						in vec4 cm_color0;							\
+						in vec2 bs_position;						\
+						in vec4 bs_color0;							\
 						out vec4 color0;							\
 																	\
 						void main()									\
 						{											\
-						gl_Position = vec4(cm_position.xy, 0, 1);	\
-						color0 = cm_color0;							\
+						gl_Position = vec4(bs_position.xy, 0, 1);	\
+						color0 = bs_color0;							\
 						}";
 
 		String psCode = "#version 400\n						\
@@ -289,17 +289,17 @@ namespace BansheeEngine
 						uniform float invViewportWidth;				\
 						uniform float invViewportHeight;			\
 																	\
-						in vec2 cm_position;						\
-						in vec4 cm_color0;							\
+						in vec2 bs_position;						\
+						in vec4 bs_color0;							\
 						out vec4 color0;							\
 																	\
 						void main()									\
 						{											\
-						float tfrmdX = -1.0f + (cm_position.x * invViewportWidth);				\
-						float tfrmdY = 1.0f - (cm_position.y * invViewportHeight);				\
+						float tfrmdX = -1.0f + (bs_position.x * invViewportWidth);				\
+						float tfrmdY = 1.0f - (bs_position.y * invViewportHeight);				\
 																	\
 						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);	\
-						color0 = cm_color0;							\
+						color0 = bs_color0;							\
 						}";
 
 		String psCode = "#version 400\n						\
@@ -351,14 +351,14 @@ namespace BansheeEngine
 																	\
 						uniform mat4 matViewProj;						\
 																	\
-						in vec3 cm_position;						\
-						in vec4 cm_color0;							\
+						in vec3 bs_position;						\
+						in vec4 bs_color0;							\
 						out vec4 color0;							\
 																	\
 						void main()									\
 						{											\
-						gl_Position = matViewProj * vec4(cm_position.xyz, 1);		\
-						color0 = cm_color0;							\
+						gl_Position = matViewProj * vec4(bs_position.xyz, 1);		\
+						color0 = bs_color0;							\
 						}";
 
 		String psCode = "#version 400\n						\
@@ -407,18 +407,18 @@ namespace BansheeEngine
 						uniform vec4 highlightColor;				\
 						uniform vec4 highlightActive;				\
 						\
-						in vec2 cm_position;						\
-						in vec4 cm_color0;							\
+						in vec2 bs_position;						\
+						in vec4 bs_color0;							\
 						out vec4 color0;							\
 						\
 						void main()									\
 						{											\
-						float tfrmdX = -1.0f + (cm_position.x * invViewportWidth);				\
-						float tfrmdY = 1.0f - (cm_position.y * invViewportHeight);				\
+						float tfrmdX = -1.0f + (bs_position.x * invViewportWidth);				\
+						float tfrmdY = 1.0f - (bs_position.y * invViewportHeight);				\
 						\
 						gl_Position = vec4(tfrmdX, tfrmdY, 0, 1);	\
 						\
-						vec4 highlight = highlightActive * cm_color0;			\
+						vec4 highlight = highlightActive * bs_color0;			\
 						float highlightSum = highlight.x + highlight.y +		\
 						highlight.z + highlight.w;								\
 						\

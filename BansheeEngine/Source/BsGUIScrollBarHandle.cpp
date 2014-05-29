@@ -21,22 +21,22 @@ namespace BansheeEngine
 		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal), mHandleSize(2), mMouseOverHandle(false), mHandlePos(0), mDragStartPos(0),
 		mHandleDragged(false), mState(State::Normal)
 	{
-		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
 	}
 
 	GUIScrollBarHandle::~GUIScrollBarHandle()
 	{
-		cm_delete<PoolAlloc>(mImageSprite);
+		bs_delete<PoolAlloc>(mImageSprite);
 	}
 
 	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create());
 	}
 
 	GUIScrollBarHandle* GUIScrollBarHandle::create(bool horizontal, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIScrollBarHandle, PoolAlloc>()) GUIScrollBarHandle(horizontal, getStyleName<GUIScrollBarHandle>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUIScrollBarHandle::setHandleSize(UINT32 size)

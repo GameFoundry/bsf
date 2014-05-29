@@ -63,14 +63,14 @@ namespace BansheeEngine
 	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const String& backgroundStyle, 
 		const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
 	{
-		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
+		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, GUILayoutOptions::create());
 	}
 
 	GUITabbedTitleBar* GUITabbedTitleBar::create(RenderWindow* parentWindow, const GUILayoutOptions& layoutOptions, 
 		const String& backgroundStyle, const String& tabBtnStyle, const String& minBtnStyle, const String& closeBtnStyle)
 	{
-		return new (cm_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
+		return new (bs_alloc<GUITabbedTitleBar, PoolAlloc>()) GUITabbedTitleBar(parentWindow, backgroundStyle, tabBtnStyle, 
 			minBtnStyle, closeBtnStyle, layoutOptions);
 	}
 

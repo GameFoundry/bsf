@@ -35,12 +35,12 @@ namespace BansheeEngine
 		if(!RuntimeScriptObjects::instance().getSystemArrayClass()->isInstanceOfType(managedInstance))
 			return nullptr;
 
-		return cm_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
+		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
 	ManagedSerializableArrayPtr ManagedSerializableArray::createEmpty()
 	{
-		return cm_shared_ptr<ManagedSerializableArray>(ConstructPrivately());
+		return bs_shared_ptr<ManagedSerializableArray>(ConstructPrivately());
 	}
 
 	void ManagedSerializableArray::serializeManagedInstance()
@@ -142,7 +142,7 @@ namespace BansheeEngine
 		UINT32 mNumDims = (UINT32)mNumElements.size();
 
 		if(idx.size() != mNumDims)
-			CM_EXCEPT(InvalidParametersException, "Provided index doesn't have the correct number of dimensions");
+			BS_EXCEPT(InvalidParametersException, "Provided index doesn't have the correct number of dimensions");
 
 		if(mNumElements.size() == 0)
 			return 0;

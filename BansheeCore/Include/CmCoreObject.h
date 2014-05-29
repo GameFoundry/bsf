@@ -105,7 +105,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				cm_delete<MemAlloc, T>((T*)obj);
+				bs_delete<MemAlloc, T>((T*)obj);
 			}
 		}
 
@@ -172,8 +172,8 @@ namespace BansheeEngine
 		UINT64 mInternalID; // ID == 0 is not a valid ID
 		std::weak_ptr<CoreObject> mThis;
 
-		CM_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
-		CM_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
+		BS_STATIC_THREAD_SYNCHRONISER(mCoreGpuObjectLoadedCondition)
+		BS_STATIC_MUTEX(mCoreGpuObjectLoadedMutex)
 
 		/**
 		 * @brief	Queues object initialization command on the core thread. The command is added to the
@@ -208,9 +208,9 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc, class PtrDataAlloc, class... Args>
-	std::shared_ptr<Type> cm_core_ptr(Args &&...args)
+	std::shared_ptr<Type> bs_core_ptr(Args &&...args)
 	{
-		return std::shared_ptr<Type>(cm_new<Type, MainAlloc>(std::forward<Args>(args)...),
+		return std::shared_ptr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<PtrDataAlloc>());
 	}
 
@@ -221,9 +221,9 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc, class... Args>
-	std::shared_ptr<Type> cm_core_ptr(Args &&...args)
+	std::shared_ptr<Type> bs_core_ptr(Args &&...args)
 	{
-		return std::shared_ptr<Type>(cm_new<Type, MainAlloc>(std::forward<Args>(args)...),
+		return std::shared_ptr<Type>(bs_new<Type, MainAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<GenAlloc>());
 	}
 
@@ -234,9 +234,9 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class... Args>
-	std::shared_ptr<Type> cm_core_ptr(Args &&...args)
+	std::shared_ptr<Type> bs_core_ptr(Args &&...args)
 	{
-		return std::shared_ptr<Type>(cm_new<Type, GenAlloc>(std::forward<Args>(args)...),
+		return std::shared_ptr<Type>(bs_new<Type, GenAlloc>(std::forward<Args>(args)...),
 			&CoreObject::_deleteDelayed<Type, GenAlloc>, StdAlloc<GenAlloc>());
 	}
 
@@ -247,7 +247,7 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc>
-	std::shared_ptr<Type> cm_core_ptr(Type* data)
+	std::shared_ptr<Type> bs_core_ptr(Type* data)
 	{
 		return std::shared_ptr<Type>(data, &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<GenAlloc>());  
 	}
@@ -259,7 +259,7 @@ namespace BansheeEngine
 	 * 			and you should not create them manually.
 	 */
 	template<class Type, class MainAlloc, class PtrDataAlloc>
-	std::shared_ptr<Type> cm_core_ptr(Type* data)
+	std::shared_ptr<Type> bs_core_ptr(Type* data)
 	{
 		return std::shared_ptr<Type>(data, &CoreObject::_deleteDelayed<Type, MainAlloc>, StdAlloc<PtrDataAlloc>());  
 	}

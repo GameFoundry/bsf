@@ -69,8 +69,8 @@ namespace BansheeEngine
 	private:
 		friend class Resources;
 
-		CM_STATIC_THREAD_SYNCHRONISER(mResourceCreatedCondition)
-		CM_STATIC_MUTEX(mResourceCreatedMutex)
+		BS_STATIC_THREAD_SYNCHRONISER(mResourceCreatedCondition)
+		BS_STATIC_MUTEX(mResourceCreatedMutex)
 
 	protected:
 		inline void throwIfNotLoaded() const;
@@ -107,7 +107,7 @@ namespace BansheeEngine
 		ResourceHandle(const String& uuid)
 			:ResourceHandleBase()
 		{
-			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
+			mData = bs_shared_ptr<ResourceHandleData, PoolAlloc>();
 			mData->mUUID = uuid;
 		}
 
@@ -206,7 +206,7 @@ namespace BansheeEngine
 		explicit ResourceHandle(T* ptr, const String& uuid)
 			:ResourceHandleBase()
 		{
-			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
+			mData = bs_shared_ptr<ResourceHandleData, PoolAlloc>();
 			_setHandleData(std::shared_ptr<Resource>(ptr, uuid));
 		}
 
@@ -216,7 +216,7 @@ namespace BansheeEngine
 		ResourceHandle(std::shared_ptr<T> ptr, const String& uuid)
 			:ResourceHandleBase()
 		{
-			mData = cm_shared_ptr<ResourceHandleData, PoolAlloc>();
+			mData = bs_shared_ptr<ResourceHandleData, PoolAlloc>();
 			_setHandleData(ptr, uuid);
 		}
 	};

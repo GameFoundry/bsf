@@ -21,7 +21,7 @@ namespace BansheeEngine
 
 	CoreThreadAccessorBase::~CoreThreadAccessorBase()
 	{
-		cm_delete(mCommandQueue);
+		bs_delete(mCommandQueue);
 	}
 
 	void CoreThreadAccessorBase::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)

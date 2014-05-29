@@ -16,7 +16,7 @@ namespace BansheeEngine
 
 	PassPtr Technique::addPass()
 	{
-		PassPtr newPass = cm_shared_ptr<Pass, PoolAlloc>();
+		PassPtr newPass = bs_shared_ptr<Pass, PoolAlloc>();
 
 		mPasses.push_back(newPass);
 		return newPass;
@@ -25,7 +25,7 @@ namespace BansheeEngine
 	void Technique::removePass(UINT32 idx)
 	{
 		if(idx < 0 || idx >= mPasses.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
 
 		int count = 0;
 		auto iter = mPasses.begin();
@@ -41,7 +41,7 @@ namespace BansheeEngine
 	PassPtr Technique::getPass(UINT32 idx) const
 	{
 		if(idx < 0 || idx >= mPasses.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
 
 		return mPasses[idx];
 	}

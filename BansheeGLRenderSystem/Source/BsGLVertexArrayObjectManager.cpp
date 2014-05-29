@@ -166,7 +166,7 @@ namespace BansheeEngine
 			glEnableVertexAttribArray(attribLocation);
 		}
 
-		wantedVAO.mAttachedBuffers = (GLVertexBuffer**)cm_alloc<GLVertexBuffer*>(numUsedBuffers);
+		wantedVAO.mAttachedBuffers = (GLVertexBuffer**)bs_alloc<GLVertexBuffer*>(numUsedBuffers);
 		for (UINT32 i = 0; i < numUsedBuffers; i++)
 		{
 			wantedVAO.mAttachedBuffers[i] = usedBuffers[i];
@@ -191,6 +191,6 @@ namespace BansheeEngine
 		}
 
 		glDeleteVertexArrays(1, &vao.mHandle);
-		cm_free(vao.mAttachedBuffers);
+		bs_free(vao.mAttachedBuffers);
 	}
 }

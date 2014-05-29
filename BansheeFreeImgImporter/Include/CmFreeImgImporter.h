@@ -22,7 +22,7 @@ namespace BansheeEngine
 			static FreeImgImporter* importer = nullptr;
 			if(importer == nullptr)
 			{
-				importer = cm_new<FreeImgImporter>();
+				importer = bs_new<FreeImgImporter>();
 				Importer::instance()._registerAssetImporter(importer);
 			}
 		}

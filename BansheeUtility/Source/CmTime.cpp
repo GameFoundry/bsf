@@ -8,14 +8,14 @@ namespace BansheeEngine
 	Time::Time()
 		:mAppStartTime(0), mLastFrameTime(0), mFrameDelta(0.0f), mTimeSinceStart(0.0f), mCurrentFrame(0)
 	{
-		mTimer = cm_new<Timer>();
+		mTimer = bs_new<Timer>();
 		mAppStartTime = (UINT64)mTimer->getStartMs();
 		mLastFrameTime = mTimer->getMicroseconds();
 	}
 
 	Time::~Time()
 	{
-		cm_delete(mTimer);
+		bs_delete(mTimer);
 	}
 
 	void Time::update()

@@ -15,11 +15,11 @@
 
 namespace BansheeEngine
 {
-#define CM_SETGET_MEMBER(name, type, parentType)								\
+#define BS_SETGET_MEMBER(name, type, parentType)								\
 	type##& get##name(parentType##* obj) { return obj->##name; }				\
 	void Set##name(parentType##* obj, type##& val) { obj->##name = val; } 
 
-#define CM_ADD_PLAINFIELD(name, id, parentType) \
+#define BS_ADD_PLAINFIELD(name, id, parentType) \
 	addPlainField(#name, id##, &##parentType##::get##name, &##parentType##::Set##name);
 
 	/**
@@ -591,7 +591,7 @@ namespace BansheeEngine
 		{
 			if(IReflectable::_isTypeIdDuplicate(derivedClass->getRTTIId()))
 			{
-				CM_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
+				BS_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
 					"\" has a duplicate ID: " + toString(derivedClass->getRTTIId()));
 			}
 
@@ -902,7 +902,7 @@ namespace BansheeEngine
 		void addPlainField(const String& name, UINT32 uniqueId, Any getter, Any setter, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = 
-				cm_new<RTTIPlainField<DataType, ObjectType>>();
+				bs_new<RTTIPlainField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
@@ -914,7 +914,7 @@ namespace BansheeEngine
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = 
-				cm_new<RTTIReflectableField<DataType, ObjectType>>();
+				bs_new<RTTIReflectableField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
@@ -929,7 +929,7 @@ namespace BansheeEngine
 				checkForCircularReferences<DataType>();
 
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
-				cm_new<RTTIReflectablePtrField<DataType, ObjectType>>();
+				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter, setter, flags);
 			addNewField(newField);
 		}
@@ -939,7 +939,7 @@ namespace BansheeEngine
 			Any setter, Any setSize, UINT64 flags)
 		{
 			RTTIPlainField<DataType, ObjectType>* newField = 
-				cm_new<RTTIPlainField<DataType, ObjectType>>();
+				bs_new<RTTIPlainField<DataType, ObjectType>>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}	
@@ -952,7 +952,7 @@ namespace BansheeEngine
 				"Invalid data type for complex field. It needs to derive from BansheeEngine::IReflectable.");
 
 			RTTIReflectableField<DataType, ObjectType>* newField = 
-				cm_new<RTTIReflectableField<DataType, ObjectType>>();
+				bs_new<RTTIReflectableField<DataType, ObjectType>>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}
@@ -968,7 +968,7 @@ namespace BansheeEngine
 				checkForCircularReferences<DataType>();
 
 			RTTIReflectablePtrField<DataType, ObjectType>* newField = 
-				cm_new<RTTIReflectablePtrField<DataType, ObjectType>>();
+				bs_new<RTTIReflectablePtrField<DataType, ObjectType>>();
 			newField->initArray(name, uniqueId, getter, getSize, setter, setSize, flags);
 			addNewField(newField);
 		}
@@ -978,7 +978,7 @@ namespace BansheeEngine
 			Any customAllocator = Any())
 		{
 			RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>* newField = 
-				cm_new<RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>>();
+				bs_new<RTTIManagedDataBlockField<ManagedDataBlock, ObjectType>>();
 			newField->initSingle(name, uniqueId, getter,  setter, flags, customAllocator);
 			addNewField(newField);
 		}	

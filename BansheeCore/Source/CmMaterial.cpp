@@ -171,7 +171,7 @@ namespace BansheeEngine
 				auto findBlockIter = paramToParamBlockMap.find(iter->second.gpuVariableName);
 
 				if(findBlockIter == paramToParamBlockMap.end())
-					CM_EXCEPT(InternalErrorException, "Parameter doesn't exist in param to param block map but exists in valid param map.");
+					BS_EXCEPT(InternalErrorException, "Parameter doesn't exist in param to param block map but exists in valid param map.");
 
 				String& paramBlockName = findBlockIter->second;
 				mValidParams[iter->first] = iter->second.gpuVariableName;
@@ -455,12 +455,12 @@ namespace BansheeEngine
 	{
 		if(mShader == nullptr)
 		{
-			CM_EXCEPT(InternalErrorException, "Material does not have shader set.");
+			BS_EXCEPT(InternalErrorException, "Material does not have shader set.");
 		}
 
 		if(mBestTechnique == nullptr)
 		{
-			CM_EXCEPT(InternalErrorException, "Shader does not contain a supported technique.");
+			BS_EXCEPT(InternalErrorException, "Shader does not contain a supported technique.");
 		}
 	}
 
@@ -504,7 +504,7 @@ namespace BansheeEngine
 	PassPtr Material::getPass(UINT32 passIdx) const
 	{
 		if(passIdx < 0 || passIdx >= mShader->getBestTechnique()->getNumPasses())
-			CM_EXCEPT(InvalidParametersException, "Invalid pass index.");
+			BS_EXCEPT(InvalidParametersException, "Invalid pass index.");
 
 		return mShader->getBestTechnique()->getPass(passIdx);
 	}
@@ -512,7 +512,7 @@ namespace BansheeEngine
 	PassParametersPtr Material::getPassParameters(UINT32 passIdx) const
 	{
 		if(passIdx < 0 || passIdx >= mParametersPerPass.size())
-			CM_EXCEPT(InvalidParametersException, "Invalid pass index.");
+			BS_EXCEPT(InvalidParametersException, "Invalid pass index.");
 
 		PassParametersPtr params = mParametersPerPass[passIdx];
 
@@ -654,7 +654,7 @@ namespace BansheeEngine
 			}
 		}
 
-		CM_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
+		BS_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
 	}
 
 	GpuParamsPtr Material::findTexWithName(const String& name) const
@@ -674,7 +674,7 @@ namespace BansheeEngine
 			}
 		}
 
-		CM_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
+		BS_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
 	}
 
 	GpuParamsPtr Material::findSamplerStateWithName(const String& name) const
@@ -694,7 +694,7 @@ namespace BansheeEngine
 			}
 		}
 
-		CM_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
+		BS_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
 	}
 
 	void Material::destroy_internal()

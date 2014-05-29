@@ -33,11 +33,11 @@ namespace BansheeEngine
 
 	GUIButton* GUIButton::create(const GUIContent& content, const String& styleName)
 	{
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create());
+		return new (bs_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create());
 	}
 
 	GUIButton* GUIButton::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIButton, PoolAlloc>()) GUIButton(getStyleName<GUIButton>(styleName), content, GUILayoutOptions::create(layoutOptions));
 	}
 }

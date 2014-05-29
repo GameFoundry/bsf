@@ -23,7 +23,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid pixel format.");
+			BS_EXCEPT(InvalidParametersException, "Invalid pixel format.");
 		}
 
 		rval.setExternalBuffer((UINT8*)lrect.pBits);
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid pixel format.");
+			BS_EXCEPT(InvalidParametersException, "Invalid pixel format.");
 		}
 
 		rval.setExternalBuffer((UINT8*)lbox.pBits);
@@ -95,7 +95,7 @@ namespace BansheeEngine
 			SAFE_RELEASE(iter->second->volume);
 
 			if(iter->second != nullptr)
-				cm_delete(iter->second);
+				bs_delete(iter->second);
 
 			auto toRemove = iter++;
 			mMapDeviceToBufferResources.erase(toRemove);
@@ -123,7 +123,7 @@ namespace BansheeEngine
 
 		D3DSURFACE_DESC desc;
 		if(surface->GetDesc(&desc) != D3D_OK)
-			CM_EXCEPT(RenderingAPIException, "Could not get surface information");
+			BS_EXCEPT(RenderingAPIException, "Could not get surface information");
 
 		mWidth = desc.Width;
 		mHeight = desc.Height;
@@ -155,7 +155,7 @@ namespace BansheeEngine
 	
 		D3DVOLUME_DESC desc;
 		if(volume->GetDesc(&desc) != D3D_OK)
-			CM_EXCEPT(RenderingAPIException, "Could not get volume information");
+			BS_EXCEPT(RenderingAPIException, "Could not get volume information");
 
 		mWidth = desc.Width;
 		mHeight = desc.Height;
@@ -179,7 +179,7 @@ namespace BansheeEngine
 
 	D3D9PixelBuffer::BufferResources* D3D9PixelBuffer::createBufferResources()
 	{
-		BufferResources* newResources = cm_new<BufferResources>();
+		BufferResources* newResources = bs_new<BufferResources>();
 		memset(newResources, 0, sizeof(BufferResources));
 
 		return newResources;
@@ -197,7 +197,7 @@ namespace BansheeEngine
 			SAFE_RELEASE(iterFind->second->volume);	
 
 			if(iterFind->second != nullptr)
-				cm_delete(iterFind->second);
+				bs_delete(iterFind->second);
 
 			mMapDeviceToBufferResources.erase(iterFind);
 		}
@@ -233,7 +233,7 @@ namespace BansheeEngine
 
 		if (mMapDeviceToBufferResources.size() == 0)
 		{
-			CM_EXCEPT(RenderingAPIException, "There are no resources attached to this pixel buffer !!");	
+			BS_EXCEPT(RenderingAPIException, "There are no resources attached to this pixel buffer !!");	
 		}
 	
 		mLockedBox = lockBox;
@@ -264,7 +264,7 @@ namespace BansheeEngine
 			}
 
 			if (FAILED(hr))		
-				CM_EXCEPT(RenderingAPIException, "Surface locking failed");
+				BS_EXCEPT(RenderingAPIException, "Surface locking failed");
 
 			fromD3DLock(rval, lrect);
 		} 
@@ -274,7 +274,7 @@ namespace BansheeEngine
 			D3DLOCKED_BOX lbox;
 
 			if(bufferResources->volume->LockBox(&lbox, &pbox, flags) != D3D_OK)
-				CM_EXCEPT(RenderingAPIException, "Volume locking failed");
+				BS_EXCEPT(RenderingAPIException, "Volume locking failed");
 
 			fromD3DLock(rval, lbox);
 		}
@@ -287,7 +287,7 @@ namespace BansheeEngine
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 
 		if (mMapDeviceToBufferResources.size() == 0)
-			CM_EXCEPT(RenderingAPIException, "There are no resources attached to this pixel buffer.");	
+			BS_EXCEPT(RenderingAPIException, "There are no resources attached to this pixel buffer.");	
 
 		auto it = mMapDeviceToBufferResources.begin();							
 		unlockBuffer(it->second);	
@@ -320,7 +320,7 @@ namespace BansheeEngine
 		{
 			if(D3DXFilterTexture(mipTex, nullptr, D3DX_DEFAULT, D3DX_DEFAULT) != D3D_OK)
 			{
-				CM_EXCEPT(RenderingAPIException, "Failed to generate mipmaps.");
+				BS_EXCEPT(RenderingAPIException, "Failed to generate mipmaps.");
 			}
 		}
 	}

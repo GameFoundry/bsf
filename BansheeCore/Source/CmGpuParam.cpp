@@ -18,22 +18,22 @@ namespace BansheeEngine
 	{ }
 
 	GpuParamStruct::GpuParamStruct()
-		:mData(cm_shared_ptr<InternalData>())
+		:mData(bs_shared_ptr<InternalData>())
 	{ }
 
 	GpuParamStruct::GpuParamStruct(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks)
-		:mData(cm_shared_ptr<InternalData>(paramDesc, paramBlocks))
+		:mData(bs_shared_ptr<InternalData>(paramDesc, paramBlocks))
 	{ }
 
 	void GpuParamStruct::set(const void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
 		if(mData->isDestroyed)
-			CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		GpuParamDataDesc* paramDesc = mData->paramDesc;
 		UINT32 elementSizeBytes = paramDesc->elementSize * sizeof(UINT32);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(sizeBytes > elementSizeBytes)
 		{
 			LOGWRN("Provided element size larger than maximum element size. Maximum size: " + 
@@ -42,7 +42,7 @@ namespace BansheeEngine
 
 		if(arrayIdx >= paramDesc->arraySize)
 		{
-			CM_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
+			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
 				toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 		}
 #endif
@@ -63,12 +63,12 @@ namespace BansheeEngine
 	void GpuParamStruct::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
 	{
 		if(mData->isDestroyed)
-			CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		GpuParamDataDesc* paramDesc = mData->paramDesc;
 		UINT32 elementSizeBytes = paramDesc->elementSize * sizeof(UINT32);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(sizeBytes > elementSizeBytes)
 		{
 			LOGWRN("Provided element size larger than maximum element size. Maximum size: " + 
@@ -77,7 +77,7 @@ namespace BansheeEngine
 
 		if(arrayIdx >= paramDesc->arraySize)
 		{
-			CM_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
+			BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
 				toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 		}
 #endif
@@ -90,7 +90,7 @@ namespace BansheeEngine
 	UINT32 GpuParamStruct::getElementSize() const
 	{
 		if(mData->isDestroyed)
-			CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		GpuParamDataDesc* paramDesc = mData->paramDesc;
 		return paramDesc->elementSize * sizeof(UINT32);
@@ -117,17 +117,17 @@ namespace BansheeEngine
 	{ }
 
 	GpuParamTexture::GpuParamTexture()
-		:mData(cm_shared_ptr<InternalData>())
+		:mData(bs_shared_ptr<InternalData>())
 	{ }
 
 	GpuParamTexture::GpuParamTexture(GpuParamObjectDesc* paramDesc, HTexture* textures)
-		:mData(cm_shared_ptr<InternalData>(paramDesc, textures))
+		:mData(bs_shared_ptr<InternalData>(paramDesc, textures))
 	{ }
 
 	void GpuParamTexture::set(const HTexture& texture)
 	{
 		if(mData->isDestroyed)
-			CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		mData->textures[mData->paramDesc->slot] = texture;
 	}
@@ -135,7 +135,7 @@ namespace BansheeEngine
 	HTexture GpuParamTexture::get()
 	{
 		if(mData->isDestroyed)
-			CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		return mData->textures[mData->paramDesc->slot];
 	}
@@ -161,17 +161,17 @@ namespace BansheeEngine
 	{ }
 
 	GpuParamSampState::GpuParamSampState()
-		:mData(cm_shared_ptr<InternalData>())
+		:mData(bs_shared_ptr<InternalData>())
 	{ }
 
 	GpuParamSampState::GpuParamSampState(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates)
-		:mData(cm_shared_ptr<InternalData>(paramDesc, samplerStates))
+		:mData(bs_shared_ptr<InternalData>(paramDesc, samplerStates))
 	{ }
 
 	void GpuParamSampState::set(const HSamplerState& samplerState)
 	{
 		if(mData->isDestroyed)
-			CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		mData->samplerStates[mData->paramDesc->slot] = samplerState;
 	}
@@ -179,7 +179,7 @@ namespace BansheeEngine
 	HSamplerState GpuParamSampState::get()
 	{
 		if(mData->isDestroyed)
-			CM_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
+			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		return mData->samplerStates[mData->paramDesc->slot];
 	}

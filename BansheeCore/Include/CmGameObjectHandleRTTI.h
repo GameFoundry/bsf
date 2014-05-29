@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			std::shared_ptr<GameObjectHandleBase> obj = cm_shared_ptr<GameObjectHandleBase, PoolAlloc>(new (cm_alloc<GameObjectHandleBase, PoolAlloc>()) GameObjectHandleBase());
+			std::shared_ptr<GameObjectHandleBase> obj = bs_shared_ptr<GameObjectHandleBase, PoolAlloc>(new (bs_alloc<GameObjectHandleBase, PoolAlloc>()) GameObjectHandleBase());
 
 			return obj;
 		}

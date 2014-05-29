@@ -95,13 +95,13 @@ namespace BansheeEngine
 
 	void GLPixelBuffer::upload(const PixelData &data, const PixelVolume &dest)
 	{
-		CM_EXCEPT(RenderingAPIException, 
+		BS_EXCEPT(RenderingAPIException, 
 			"Upload not possible for this pixelbuffer type");
 	}
 
 	void GLPixelBuffer::download(const PixelData &data)
 	{
-		CM_EXCEPT(RenderingAPIException, "Download not possible for this pixelbuffer type");
+		BS_EXCEPT(RenderingAPIException, "Download not possible for this pixelbuffer type");
 	}
 
 	void GLPixelBuffer::blitFromTexture(GLTextureBuffer *src)
@@ -114,12 +114,12 @@ namespace BansheeEngine
 
 	void GLPixelBuffer::blitFromTexture(GLTextureBuffer *src, const PixelVolume &srcBox, const PixelVolume &dstBox)
 	{
-		CM_EXCEPT(RenderingAPIException, "BlitFromTexture not possible for this pixelbuffer type");
+		BS_EXCEPT(RenderingAPIException, "BlitFromTexture not possible for this pixelbuffer type");
 	}
 
 	void GLPixelBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)
 	{
-		CM_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixelbuffer type");
+		BS_EXCEPT(RenderingAPIException, "Framebuffer bind not possible for this pixelbuffer type");
 	}
 
 	GLTextureBuffer::GLTextureBuffer(const String &baseName, GLenum target, GLuint id, 
@@ -181,13 +181,13 @@ namespace BansheeEngine
 	void GLTextureBuffer::upload(const PixelData &data, const PixelVolume &dest)
 	{
 		if((mUsage & TU_RENDERTARGET) != 0)
-			CM_EXCEPT(NotImplementedException, "Writing to render texture from CPU not supported.");
+			BS_EXCEPT(NotImplementedException, "Writing to render texture from CPU not supported.");
 
 		glBindTexture( mTarget, mTextureID );
 		if(PixelUtil::isCompressed(data.getFormat()))
 		{
 			if(data.getFormat() != mFormat || !data.isConsecutive())
-				CM_EXCEPT(InvalidParametersException, 
+				BS_EXCEPT(InvalidParametersException, 
 				"Compressed images must be consecutive, in the source format");
 			GLenum format = GLPixelUtil::getClosestGLInternalFormat(mFormat);
 			// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
@@ -312,20 +312,20 @@ namespace BansheeEngine
 	void GLTextureBuffer::download(const PixelData &data)
 	{
 		if((mUsage & TU_RENDERTARGET) != 0)
-			CM_EXCEPT(NotImplementedException, "Reading from render texture to CPU not supported."); // TODO: This needs to be implemented
+			BS_EXCEPT(NotImplementedException, "Reading from render texture to CPU not supported."); // TODO: This needs to be implemented
 
 		if((mUsage & TU_DEPTHSTENCIL) != 0)
-			CM_EXCEPT(NotImplementedException, "Reading from depth stencil texture to CPU not supported."); // TODO: This needs to be implemented
+			BS_EXCEPT(NotImplementedException, "Reading from depth stencil texture to CPU not supported."); // TODO: This needs to be implemented
 
 		if(data.getWidth() != getWidth() ||
 			data.getHeight() != getHeight() ||
 			data.getDepth() != getDepth())
-			CM_EXCEPT(InvalidParametersException, "only download of entire buffer is supported by GL");
+			BS_EXCEPT(InvalidParametersException, "only download of entire buffer is supported by GL");
 		glBindTexture( mTarget, mTextureID );
 		if(PixelUtil::isCompressed(data.getFormat()))
 		{
 			if(data.getFormat() != mFormat || !data.isConsecutive())
-				CM_EXCEPT(InvalidParametersException, 
+				BS_EXCEPT(InvalidParametersException, 
 				"Compressed images must be consecutive, in the source format");
 			// Data must be consecutive and at beginning of buffer as PixelStorei not allowed
 			// for compressed formate

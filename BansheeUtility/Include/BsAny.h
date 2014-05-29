@@ -56,7 +56,7 @@ namespace BansheeEngine
 
 		template <typename ValueType>
 		Any(const ValueType& value) 
-			:mData(cm_new<Data<ValueType>>(value))
+			:mData(bs_new<Data<ValueType>>(value))
 		{ }
 
 		Any(const Any& other) 
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		~Any()
 		{
 			if (mData != nullptr)
-				cm_delete(mData);
+				bs_delete(mData);
 		}
 
 		/**
@@ -154,7 +154,7 @@ namespace BansheeEngine
 		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
 
 		if (result == nullptr)
-			CM_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
 
 		return *result;
 	}
@@ -170,7 +170,7 @@ namespace BansheeEngine
 		ValueType* result = any_cast<ValueType>(&operand);
 
 		if (result == nullptr)
-			CM_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
 
 		return *result;
 	}
@@ -186,7 +186,7 @@ namespace BansheeEngine
 		ValueType* result = any_cast<ValueType>(const_cast<Any*>(&operand));
 
 		if (result == nullptr)
-			CM_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
 
 		return *result;
 	}
@@ -202,7 +202,7 @@ namespace BansheeEngine
 		ValueType* result = anyCast<ValueType>(&operand);
 
 		if (result == nullptr)
-			CM_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
+			BS_EXCEPT(InvalidStateException, "Failed to cast between Any types.");
 
 		return *result;
 	}

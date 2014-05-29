@@ -37,10 +37,10 @@ namespace BansheeEngine
 		{ 
 			UINT64 dataSize = sizeof(data) + sizeof(UINT32);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
-				CM_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
+				BS_EXCEPT(InternalErrorException, "Data overflow! Size doesn't fit into 32 bits.");
 			}
 #endif
 

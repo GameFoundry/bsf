@@ -99,10 +99,10 @@ namespace BansheeEngine
 
 	void GameObjectManager::registerDeserializedId(UINT64 serializedId, UINT64 actualId)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(!mIsDeserializationActive)
 		{
-			CM_EXCEPT(InvalidStateException, "ID mapping may only be modified while deserialization is active.");
+			BS_EXCEPT(InvalidStateException, "ID mapping may only be modified while deserialization is active.");
 		}
 #endif
 
@@ -111,10 +111,10 @@ namespace BansheeEngine
 
 	void GameObjectManager::registerUnresolvedHandle(const GameObjectHandleBase& object)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(!mIsDeserializationActive)
 		{
-			CM_EXCEPT(InvalidStateException, "Unresolved handle queue only be modified while deserialization is active.");
+			BS_EXCEPT(InvalidStateException, "Unresolved handle queue only be modified while deserialization is active.");
 		}
 #endif
 
@@ -123,10 +123,10 @@ namespace BansheeEngine
 
 	void GameObjectManager::registerOnDeserializationEndCallback(std::function<void()> callback)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(!mIsDeserializationActive)
 		{
-			CM_EXCEPT(InvalidStateException, "Callback queue only be modified while deserialization is active.");
+			BS_EXCEPT(InvalidStateException, "Callback queue only be modified while deserialization is active.");
 		}
 #endif
 

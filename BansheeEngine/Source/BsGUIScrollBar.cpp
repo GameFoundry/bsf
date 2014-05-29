@@ -20,7 +20,7 @@ namespace BansheeEngine
 	GUIScrollBar::GUIScrollBar(bool horizontal, const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mHorizontal(horizontal)
 	{
-		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
 
 		if(mHorizontal)
 		{
@@ -59,7 +59,7 @@ namespace BansheeEngine
 
 	GUIScrollBar::~GUIScrollBar()
 	{
-		cm_delete<PoolAlloc>(mImageSprite);
+		bs_delete<PoolAlloc>(mImageSprite);
 
 		GUIElement::destroy(mUpBtn);
 		GUIElement::destroy(mDownBtn);

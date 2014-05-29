@@ -260,5 +260,5 @@ namespace BansheeEngine
 		float r, g, b, a;
     };
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(Color);
+	BS_ALLOW_MEMCPY_SERIALIZATION(Color);
 }

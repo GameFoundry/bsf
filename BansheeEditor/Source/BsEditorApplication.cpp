@@ -299,7 +299,7 @@ namespace BansheeEngine
 
 		testModelGO->destroy();
 
-		//Win32FolderMonitor* folderMonitor = cm_new<Win32FolderMonitor>();
+		//Win32FolderMonitor* folderMonitor = bs_new<Win32FolderMonitor>();
 
 		//FolderChange folderChanges = (FolderChange)((UINT32)FolderChange::FileName | (UINT32)FolderChange::DirName | 
 		//	(UINT32)FolderChange::Creation | (UINT32)FolderChange::LastWrite);

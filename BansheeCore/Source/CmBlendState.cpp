@@ -20,56 +20,56 @@ namespace BansheeEngine
 
 	bool BlendState::getBlendEnabled(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].blendEnable;
 	}
 
 	BlendFactor BlendState::getSrcBlend(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].srcBlend;
 	}
 
 	BlendFactor BlendState::getDstBlend(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].dstBlend;
 	}
 
 	BlendOperation BlendState::getBlendOperation(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].blendOp;
 	}
 
 	BlendFactor BlendState::getAlphaSrcBlend(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].srcBlendAlpha;
 	}
 
 	BlendFactor BlendState::getAlphaDstBlend(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 		
 		return mData.renderTargetDesc[renderTargetIdx].dstBlendAlpha;
 	}
 
 	BlendOperation BlendState::getAlphaBlendOperation(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].blendOpAlpha;
 	}
 
 	UINT8 BlendState::getRenderTargetWriteMask(UINT32 renderTargetIdx) const
 	{
-		assert(renderTargetIdx >= 0 && renderTargetIdx < CM_MAX_MULTIPLE_RENDER_TARGETS);
+		assert(renderTargetIdx >= 0 && renderTargetIdx < BS_MAX_MULTIPLE_RENDER_TARGETS);
 
 		return mData.renderTargetDesc[renderTargetIdx].renderTargetWriteMask;
 	}

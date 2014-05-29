@@ -25,12 +25,12 @@ namespace BansheeEngine
 {
 	BansheeRenderer::BansheeRenderer()
 	{
-		mRenderQueue = cm_new<DefaultRenderQueue>();
+		mRenderQueue = bs_new<DefaultRenderQueue>();
 	}
 
 	BansheeRenderer::~BansheeRenderer()
 	{
-		cm_delete(mRenderQueue);
+		bs_delete(mRenderQueue);
 	}
 
 	const String& BansheeRenderer::getName() const

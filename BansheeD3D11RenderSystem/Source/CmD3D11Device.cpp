@@ -20,12 +20,12 @@ namespace BansheeEngine
 		{
 			device->GetImmediateContext(&mImmediateContext);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			// This interface is not available unless we created the device with debug layer
 			HRESULT hr = mD3D11Device->QueryInterface(__uuidof(ID3D11InfoQueue), (LPVOID*)&mInfoQueue);
 
 			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Unable to query D3D11InfoQueue");
+				BS_EXCEPT(RenderingAPIException, "Unable to query D3D11InfoQueue");
 
 			setExceptionsErrorLevel(D3D11ERR_ERROR);
 #endif
@@ -37,7 +37,7 @@ namespace BansheeEngine
 				HRESULT hr = mD3D11Device->CreateClassLinkage(&mClassLinkage);
 
 				if (FAILED(hr))
-					CM_EXCEPT(RenderingAPIException, "Unable to create class linkage.");
+					BS_EXCEPT(RenderingAPIException, "Unable to create class linkage.");
 			}
 		}	
 	}
@@ -116,7 +116,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11Device::setExceptionsErrorLevel(const CM_D3D11_ERROR_LEVEL exceptionsErrorLevel)
+	void D3D11Device::setExceptionsErrorLevel(const BS_D3D11_ERROR_LEVEL exceptionsErrorLevel)
 	{
 		if(mInfoQueue == nullptr)
 			return;

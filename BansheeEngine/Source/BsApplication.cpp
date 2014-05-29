@@ -42,9 +42,9 @@ namespace BansheeEngine
 		OverlayManager::startUp();
 
 		BuiltinMaterialManager::startUp();
-		BuiltinMaterialManager::instance().addFactory(cm_new<D3D9BuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().addFactory(cm_new<D3D11BuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().addFactory(cm_new<GLBuiltinMaterialFactory>());
+		BuiltinMaterialManager::instance().addFactory(bs_new<D3D9BuiltinMaterialFactory>());
+		BuiltinMaterialManager::instance().addFactory(bs_new<D3D11BuiltinMaterialFactory>());
+		BuiltinMaterialManager::instance().addFactory(bs_new<GLBuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().setActive(renderSystem);
 
 		DrawHelper2D::startUp();

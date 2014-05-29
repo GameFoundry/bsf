@@ -22,8 +22,8 @@ namespace BansheeEngine
 		static void internal_createInstance(MonoObject* instance);
 		static void internal_createInstanceExternal(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStateStyle);
 
-		CM_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStateStyle, ScriptSpriteTexture, Texture, mElementStateStyle->texture, mSpriteTexture);
-		CM_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStateStyle, Color, TextColor, mElementStateStyle->textColor);
+		BS_SCRIPT_GETSET_OBJECT_SHRDPTR(ScriptGUIElementStateStyle, ScriptSpriteTexture, Texture, mElementStateStyle->texture, mSpriteTexture);
+		BS_SCRIPT_GETSET_VALUE_REF(ScriptGUIElementStateStyle, Color, TextColor, mElementStateStyle->textColor);
 
 		ScriptGUIElementStateStyle(MonoObject* instance);
 		ScriptGUIElementStateStyle(MonoObject* instance, GUIElementStyle::GUIElementStateStyle* externalStyle);

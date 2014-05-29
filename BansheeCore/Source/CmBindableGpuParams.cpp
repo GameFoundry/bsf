@@ -99,7 +99,7 @@ namespace BansheeEngine
 	{
 		if(slot < 0 || slot >= mNumParamBlocks)
 		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
 				toString(mNumParamBlocks - 1) + ". Requested: " + toString(slot));
 		}
 
@@ -123,7 +123,7 @@ namespace BansheeEngine
 	{
 		if(slot < 0 || slot >= mNumTextures)
 		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
 				toString(mNumTextures - 1) + ". Requested: " + toString(slot));
 		}
 
@@ -134,7 +134,7 @@ namespace BansheeEngine
 	{
 		if(slot < 0 || slot >= mNumSamplerStates)
 		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
 				toString(mNumSamplerStates - 1) + ". Requested: " + toString(slot));
 		}
 

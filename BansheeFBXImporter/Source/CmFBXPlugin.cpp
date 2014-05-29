@@ -18,7 +18,7 @@ namespace BansheeEngine
 	 */
 	extern "C" BS_FBX_EXPORT void* loadPlugin()
 	{
-		FBXImporter* importer = cm_new<FBXImporter>();
+		FBXImporter* importer = bs_new<FBXImporter>();
 		Importer::instance()._registerAssetImporter(importer);
 
 		return nullptr;

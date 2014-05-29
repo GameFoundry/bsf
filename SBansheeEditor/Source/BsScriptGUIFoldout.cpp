@@ -49,7 +49,7 @@ namespace BansheeEngine
 
 		guiFoldout->onStateChanged.connect(std::bind(&ScriptGUIFoldout::onToggled, instance, _1));
 
-		ScriptGUIFoldout* nativeInstance = new (cm_alloc<ScriptGUIFoldout>()) ScriptGUIFoldout(instance, guiFoldout);
+		ScriptGUIFoldout* nativeInstance = new (bs_alloc<ScriptGUIFoldout>()) ScriptGUIFoldout(instance, guiFoldout);
 	}
 
 	void ScriptGUIFoldout::internal_setContent(ScriptGUIFoldout* nativeInstance, MonoObject* content)

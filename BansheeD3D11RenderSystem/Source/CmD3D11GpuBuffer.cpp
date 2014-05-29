@@ -36,10 +36,10 @@ namespace BansheeEngine
 			bufferType = D3D11HardwareBuffer::BT_APPENDCONSUME;
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Unsupported buffer type " + toString(mType));
+			BS_EXCEPT(InvalidParametersException, "Unsupported buffer type " + toString(mType));
 		}
 
-		mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(bufferType, mUsage, mElementCount, mElementSize, 
+		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(bufferType, mUsage, mElementCount, mElementSize, 
 			d3d11rs->getPrimaryDevice(), false, false, mRandomGpuWrite, mUseCounter);
 
 		GpuBuffer::initialize_internal();
@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 	void D3D11GpuBuffer::destroy_internal()
 	{
-		cm_delete<PoolAlloc>(mBuffer);
+		bs_delete<PoolAlloc>(mBuffer);
 
 		GpuBuffer::destroy_internal();
 	}
@@ -87,12 +87,12 @@ namespace BansheeEngine
 
 	GpuBufferView* D3D11GpuBuffer::createView()
 	{
-		return cm_new<D3D11GpuBufferView, PoolAlloc>();
+		return bs_new<D3D11GpuBufferView, PoolAlloc>();
 	}
 
 	void D3D11GpuBuffer::destroyView(GpuBufferView* view)
 	{
 		if(view != nullptr)
-			cm_delete<PoolAlloc>(view);
+			bs_delete<PoolAlloc>(view);
 	}
 }

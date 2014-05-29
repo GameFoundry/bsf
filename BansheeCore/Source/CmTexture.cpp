@@ -58,7 +58,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_PixelData)
-			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
+			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 
 		if(discardEntireBuffer)
 		{
@@ -82,7 +82,7 @@ namespace BansheeEngine
 		if(pixelData.getWidth() != getWidth() ||pixelData.getHeight() != getHeight() || 
 			pixelData.getDepth() != getDepth() || pixelData.getFormat() != getFormat())
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to write to this texture.");
+			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to write to this texture.");
 		}
 
 		UINT32 face = 0;
@@ -97,14 +97,14 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_PixelData)
-			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
+			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only PixelData is supported.");
 
 		PixelData& pixelData = static_cast<PixelData&>(data);
 
 		if(pixelData.getWidth() != getWidth() ||pixelData.getHeight() != getHeight() || 
 			pixelData.getDepth() != getDepth() || pixelData.getFormat() != getFormat())
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to read from this texture.");
+			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to read from this texture.");
 		}
 
 		UINT32 face = 0;
@@ -136,7 +136,7 @@ namespace BansheeEngine
 			if(depth != 1) depth /= 2;
 		}
 
-		PixelDataPtr dst = cm_shared_ptr<PixelData, PoolAlloc>(width, height, depth, getFormat());
+		PixelDataPtr dst = bs_shared_ptr<PixelData, PoolAlloc>(width, height, depth, getFormat());
 
 		dst->allocateInternalBuffer();
 
@@ -161,10 +161,10 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(mipLevel < 0 || mipLevel > mNumMipmaps)
-			CM_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mipLevel) + ". Min is 0, max is " + toString(getNumMipmaps()));
+			BS_EXCEPT(InvalidParametersException, "Invalid mip level: " + toString(mipLevel) + ". Min is 0, max is " + toString(getNumMipmaps()));
 
 		if(face < 0 || face >= getNumFaces())
-			CM_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
+			BS_EXCEPT(InvalidParametersException, "Invalid face index: " + toString(face) + ". Min is 0, max is " + toString(getNumFaces()));
 
 		return lockImpl(options, mipLevel, face);
 	}
@@ -183,12 +183,12 @@ namespace BansheeEngine
 		if (target->getUsage() != this->getUsage() ||
 			target->getTextureType() != this->getTextureType())
 		{
-			CM_EXCEPT(InvalidParametersException, "Source and destination textures must be of same type and must have the same usage and type.");
+			BS_EXCEPT(InvalidParametersException, "Source and destination textures must be of same type and must have the same usage and type.");
 		}
 
 		if(getWidth() != target->getWidth() || getHeight() != target->getHeight() || getDepth() != target->getDepth())
 		{
-			CM_EXCEPT(InvalidParametersException, "Texture sizes don't match." \
+			BS_EXCEPT(InvalidParametersException, "Texture sizes don't match." \
 				" Width: " + toString(getWidth()) + "/" + toString(target->getWidth()) + 
 				" Height: " + toString(getHeight()) + "/" + toString(target->getHeight()) + 
 				" Depth: " + toString(getDepth()) + "/" + toString(target->getDepth()));
@@ -196,13 +196,13 @@ namespace BansheeEngine
 
 		if(getNumFaces() != target->getNumFaces())
 		{
-			CM_EXCEPT(InvalidParametersException, "Number of texture faces doesn't match." \
+			BS_EXCEPT(InvalidParametersException, "Number of texture faces doesn't match." \
 				" Num faces: " + toString(getNumFaces()) + "/" + toString(target->getNumFaces()));
 		}
 
 		if(getNumMipmaps() != target->getNumMipmaps())
 		{
-			CM_EXCEPT(InvalidParametersException, "Number of mipmaps doesn't match." \
+			BS_EXCEPT(InvalidParametersException, "Number of mipmaps doesn't match." \
 				" Num mipmaps: " + toString(getNumMipmaps()) + "/" + toString(target->getNumMipmaps()));
 		}
 
@@ -215,7 +215,7 @@ namespace BansheeEngine
 
 	TextureViewPtr Texture::createView()
 	{
-		TextureViewPtr viewPtr = cm_core_ptr<TextureView, PoolAlloc>(new (cm_alloc<TextureView, PoolAlloc>()) TextureView());
+		TextureViewPtr viewPtr = bs_core_ptr<TextureView, PoolAlloc>(new (bs_alloc<TextureView, PoolAlloc>()) TextureView());
 		viewPtr->_setThisPtr(viewPtr);
 
 		return viewPtr;
@@ -242,7 +242,7 @@ namespace BansheeEngine
 		{
 			TextureViewPtr newView = texture->createView();
 			newView->initialize(texture, key);
-			texture->mTextureViews[key] = new (cm_alloc<TextureViewReference, PoolAlloc>()) TextureViewReference(newView);
+			texture->mTextureViews[key] = new (bs_alloc<TextureViewReference, PoolAlloc>()) TextureViewReference(newView);
 
 			iterFind = texture->mTextureViews.find(key);
 		}
@@ -260,7 +260,7 @@ namespace BansheeEngine
 		auto iterFind = texture->mTextureViews.find(view->getDesc());
 		if(iterFind == texture->mTextureViews.end())
 		{
-			CM_EXCEPT(InternalErrorException, "Trying to release a texture view that doesn't exist!");
+			BS_EXCEPT(InternalErrorException, "Trying to release a texture view that doesn't exist!");
 		}
 
 		iterFind->second->refCount--;
@@ -271,7 +271,7 @@ namespace BansheeEngine
 
 			texture->mTextureViews.erase(iterFind);
 
-			cm_delete<PoolAlloc>(toRemove);
+			bs_delete<PoolAlloc>(toRemove);
 		}
 	}
 

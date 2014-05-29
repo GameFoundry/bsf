@@ -84,7 +84,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			PixelDataPtr newPixelData = cm_shared_ptr<PixelData, PoolAlloc>();
+			PixelDataPtr newPixelData = bs_shared_ptr<PixelData, PoolAlloc>();
 
 			return newPixelData;
 		}

@@ -80,7 +80,7 @@ namespace BansheeEngine
 		 */
 		virtual UINT32 getArraySize(void* object)
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Data block types don't support arrays.");
 		}
 
@@ -89,7 +89,7 @@ namespace BansheeEngine
 		 */
 		virtual void setArraySize(void* object, UINT32 size)
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Data block types don't support arrays.");
 		}
 
@@ -119,7 +119,7 @@ namespace BansheeEngine
 		virtual UINT8* allocate(void* object, UINT32 bytes)
 		{
 			if(mCustomAllocator.empty())
-				return (UINT8*)cm_alloc<ScratchAlloc>(bytes);
+				return (UINT8*)bs_alloc<ScratchAlloc>(bytes);
 			else
 			{
 				ObjectType* castObj = static_cast<ObjectType*>(object);

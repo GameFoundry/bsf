@@ -31,7 +31,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<DockManagerLayout>();
+			return bs_shared_ptr<DockManagerLayout>();
 		}
 	};
 }
@@ -76,8 +76,8 @@ namespace BansheeEngine
 
 			if(!data.isLeaf)
 			{
-				data.children[0] = cm_new<BansheeEngine::DockManagerLayout::Entry>();
-				data.children[1] = cm_new<BansheeEngine::DockManagerLayout::Entry>();
+				data.children[0] = bs_new<BansheeEngine::DockManagerLayout::Entry>();
+				data.children[1] = bs_new<BansheeEngine::DockManagerLayout::Entry>();
 
 				memory = rttiReadElem(*data.children[0], memory);
 				memory = rttiReadElem(*data.children[1], memory);
@@ -100,7 +100,7 @@ namespace BansheeEngine
 				dataSize += rttiGetElemSize(*data.children[1]);
 			}
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
 				__string_throwDataOverflowException();

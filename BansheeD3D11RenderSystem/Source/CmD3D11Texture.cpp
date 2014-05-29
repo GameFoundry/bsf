@@ -41,7 +41,7 @@ namespace BansheeEngine
 		if (device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "D3D11 device cannot copy resource\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "D3D11 device cannot copy resource\nError Description:" + errorDescription);
 		}
 	}
 
@@ -100,11 +100,11 @@ namespace BansheeEngine
 	{
 		PixelData myData = lock(GBL_READ_ONLY, mipLevel, face);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(dest.getConsecutiveSize() != myData.getConsecutiveSize())
 		{
 			unlock();
-			CM_EXCEPT(InternalErrorException, "Buffer sizes don't match");
+			BS_EXCEPT(InternalErrorException, "Buffer sizes don't match");
 		}
 #endif
 
@@ -141,12 +141,12 @@ namespace BansheeEngine
 			if (device.hasError())
 			{
 				String errorDescription = device.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
+				BS_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 			}
 		}
 		else
 		{
-			CM_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
+			BS_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
 		}
 	}
 
@@ -169,7 +169,7 @@ namespace BansheeEngine
 				break;
 			default:
 				destroy_internal();
-				CM_EXCEPT(RenderingAPIException, "Unknown texture type");
+				BS_EXCEPT(RenderingAPIException, "Unknown texture type");
 		}
 
 		Texture::initialize_internal();
@@ -200,7 +200,7 @@ namespace BansheeEngine
 
 		if(mFormat != D3D11Mappings::_getPF(d3dPF))
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
 
 		D3D11_TEXTURE1D_DESC desc;
@@ -244,7 +244,7 @@ namespace BansheeEngine
 		{
 			destroy_internal();
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
 		hr = m1DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)&mTex);
@@ -253,14 +253,14 @@ namespace BansheeEngine
 		{
 			destroy_internal();
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
 
 		m1DTex->GetDesc(&desc);
 
 		if(mNumMipmaps != (desc.MipLevels - 1))
 		{
-			CM_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
+			BS_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
 				"Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
@@ -278,7 +278,7 @@ namespace BansheeEngine
 			if (FAILED(hr) || device.hasError())
 			{
 				String errorDescription = device.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+				BS_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
 			}
 		}
 	}
@@ -294,7 +294,7 @@ namespace BansheeEngine
 
 		if(mFormat != D3D11Mappings::_getPF(d3dPF))
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
 
 		D3D11_TEXTURE2D_DESC desc;
@@ -318,7 +318,7 @@ namespace BansheeEngine
 
 			if(getTextureType() == TEX_TYPE_CUBE_MAP)
 			{
-				CM_EXCEPT(NotImplementedException, "Cube map not yet supported as a render target."); // TODO: Will be once I add proper texture array support
+				BS_EXCEPT(NotImplementedException, "Cube map not yet supported as a render target."); // TODO: Will be once I add proper texture array support
 			}
 		}
 		else if((mUsage & TU_DEPTHSTENCIL) != 0)
@@ -335,7 +335,7 @@ namespace BansheeEngine
 
 			if(getTextureType() == TEX_TYPE_CUBE_MAP)
 			{
-				CM_EXCEPT(NotImplementedException, "Cube map not yet supported as a depth stencil target."); // TODO: Will be once I add proper texture array support
+				BS_EXCEPT(NotImplementedException, "Cube map not yet supported as a depth stencil target."); // TODO: Will be once I add proper texture array support
 			}
 		}
 		else
@@ -370,7 +370,7 @@ namespace BansheeEngine
 		{
 			destroy_internal();
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
 		hr = m2DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)&mTex);
@@ -379,14 +379,14 @@ namespace BansheeEngine
 		{
 			destroy_internal();
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
 
 		m2DTex->GetDesc(&desc);
 
 		if(mNumMipmaps != (desc.MipLevels - 1))
 		{
-			CM_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
+			BS_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
 				"Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
@@ -437,7 +437,7 @@ namespace BansheeEngine
 			if (FAILED(hr) || device.hasError())
 			{
 				String errorDescription = device.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+				BS_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
 			}
 		}
 		else
@@ -460,7 +460,7 @@ namespace BansheeEngine
 		
 		if(mFormat != D3D11Mappings::_getPF(d3dPF))
 		{
-			CM_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
+			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
 
 		D3D11_TEXTURE3D_DESC desc;
@@ -505,7 +505,7 @@ namespace BansheeEngine
 		{
 			destroy_internal();
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
 		hr = m3DTex->QueryInterface(__uuidof(ID3D11Resource), (void **)&mTex);
@@ -514,7 +514,7 @@ namespace BansheeEngine
 		{
 			destroy_internal();
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Can't get base texture\nError Description:" + errorDescription);
 		}
 
 		// Create texture view
@@ -522,7 +522,7 @@ namespace BansheeEngine
 
 		if(mNumMipmaps != (desc.MipLevels - 1))
 		{
-			CM_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
+			BS_EXCEPT(RenderingAPIException, "Driver returned different number of mip maps than requested. " \
                "Requested: " + toString(mNumMipmaps) + ". Got: " + toString(desc.MipLevels - 1) + ".");
 		}
 
@@ -541,7 +541,7 @@ namespace BansheeEngine
 			if (FAILED(hr) || device.hasError())
 			{
 				String errorDescription = device.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
+				BS_EXCEPT(RenderingAPIException, "D3D11 device can't create shader resource view.\nError Description:" + errorDescription);
 			}
 		}
 	}
@@ -566,7 +566,7 @@ namespace BansheeEngine
 		if (device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 		}
 
 		UINT32 bytesPerPixel = PixelUtil::getNumElemBytes(getFormat());
@@ -585,7 +585,7 @@ namespace BansheeEngine
 		if (device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "D3D11 device unmap resource\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "D3D11 device unmap resource\nError Description:" + errorDescription);
 		}
 	}
 
@@ -611,7 +611,7 @@ namespace BansheeEngine
 		UINT32 sizeOfImage = lock.getConsecutiveSize();
 		mLockedSubresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
 
-		mStaticBuffer = cm_new<PixelData, PoolAlloc>(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
+		mStaticBuffer = bs_new<PixelData, PoolAlloc>(lock.getWidth(), lock.getHeight(), lock.getDepth(), lock.getFormat());
 		mStaticBuffer->allocateInternalBuffer();
 
 		return mStaticBuffer->getData();
@@ -629,11 +629,11 @@ namespace BansheeEngine
 		if (device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 		}
 
 		if(mStaticBuffer != nullptr)
-			cm_delete<PoolAlloc>(mStaticBuffer);
+			bs_delete<PoolAlloc>(mStaticBuffer);
 	}
 
 	void D3D11Texture::createStagingBuffer()
@@ -687,7 +687,7 @@ namespace BansheeEngine
 
 	TextureViewPtr D3D11Texture::createView()
 	{
-		TextureViewPtr viewPtr = cm_core_ptr<D3D11TextureView, PoolAlloc>(new (cm_alloc<D3D11TextureView, PoolAlloc>()) D3D11TextureView());
+		TextureViewPtr viewPtr = bs_core_ptr<D3D11TextureView, PoolAlloc>(new (bs_alloc<D3D11TextureView, PoolAlloc>()) D3D11TextureView());
 		viewPtr->_setThisPtr(viewPtr);
 
 		return viewPtr;

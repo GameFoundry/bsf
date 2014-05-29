@@ -143,10 +143,10 @@ namespace BansheeEngine
 	/**
 	 * @brief Macro for throwing exceptions that will automatically fill out function name, file name and line number of the exception.
 	 */
-#ifndef CM_EXCEPT
-#define CM_EXCEPT(type, desc)	\
+#ifndef BS_EXCEPT
+#define BS_EXCEPT(type, desc)	\
 	{                           \
-	static_assert((std::is_base_of<BansheeEngine::Exception, type##>::value), "Invalid exception type (" #type ") for CM_EXCEPT macro. It needs to derive from BansheeEngine::Exception."); \
+	static_assert((std::is_base_of<BansheeEngine::Exception, type##>::value), "Invalid exception type (" #type ") for BS_EXCEPT macro. It needs to derive from BansheeEngine::Exception."); \
 	throw type##(desc, __PRETTY_FUNCTION__, __FILE__, __LINE__); \
 	}
 #endif

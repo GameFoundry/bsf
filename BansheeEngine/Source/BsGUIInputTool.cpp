@@ -31,9 +31,9 @@ namespace BansheeEngine
 			mNumQuads += textData.getNumQuadsForPage(i);
 
 		if(mQuads != nullptr)
-			cm_delete<ScratchAlloc>(mQuads);
+			bs_delete<ScratchAlloc>(mQuads);
 
-		mQuads = cm_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
+		mQuads = bs_newN<Vector2, ScratchAlloc>(mNumQuads * 4);
 
 		TextSprite::genTextQuads(textData, mTextDesc.width, mTextDesc.height, mTextDesc.horzAlign, mTextDesc.vertAlign, mTextDesc.anchor, 
 			mQuads, nullptr, nullptr, mNumQuads);
@@ -109,7 +109,7 @@ namespace BansheeEngine
 			return charRect;
 		}
 
-		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+		BS_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
 	}
 
 	INT32 GUIInputTool::getCharIdxAtPos(const Vector2I& pos) const
@@ -184,7 +184,7 @@ namespace BansheeEngine
 			idx++;
 		}
 
-		CM_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
+		BS_EXCEPT(InternalErrorException, "Invalid character index: " + toString(charIdx));
 	}
 
 	UINT32 GUIInputTool::getCharIdxAtInputIdx(UINT32 inputIdx) const

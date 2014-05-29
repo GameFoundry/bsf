@@ -144,7 +144,7 @@ namespace BansheeEngine
 
 			if(valueSetter.empty())
 			{
-				CM_EXCEPT(InternalErrorException,
+				BS_EXCEPT(InternalErrorException,
 					"Specified field (" + mName + ") has no setter.");
 			}
 
@@ -163,7 +163,7 @@ namespace BansheeEngine
 
 			if(valueSetter.empty())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Specified field (" + mName + ") has no setter.");
 			}
 
@@ -194,7 +194,7 @@ namespace BansheeEngine
 
 			if(arraySizeSetter.empty())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Specified field (" + mName + ") has no array size setter.");
 			}
 

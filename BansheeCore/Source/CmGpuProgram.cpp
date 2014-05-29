@@ -61,7 +61,7 @@ namespace BansheeEngine
 
 	GpuParamsPtr GpuProgram::createParameters()
 	{
-		return cm_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), false);
+		return bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), false);
 	}
 
     const String& GpuProgram::getLanguage() const

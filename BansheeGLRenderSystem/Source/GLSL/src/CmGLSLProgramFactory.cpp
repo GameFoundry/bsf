@@ -13,15 +13,15 @@ namespace BansheeEngine
     GpuProgramPtr GLSLProgramFactory::create(const String& source, const String& entryPoint, 
 		GpuProgramType gptype, GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requireAdjacency)
     {
-		GLSLGpuProgram* prog = new (cm_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram(source, entryPoint, gptype, profile, includes, requireAdjacency);
+		GLSLGpuProgram* prog = new (bs_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram(source, entryPoint, gptype, profile, includes, requireAdjacency);
 
-		return cm_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
+		return bs_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
     }
 
 	GpuProgramPtr GLSLProgramFactory::create(GpuProgramType type)
 	{
-		GLSLGpuProgram* prog = new (cm_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram("", "", type, GPP_NONE, nullptr, false);
+		GLSLGpuProgram* prog = new (bs_alloc<GLSLGpuProgram, PoolAlloc>()) GLSLGpuProgram("", "", type, GPP_NONE, nullptr, false);
 
-		return cm_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
+		return bs_core_ptr<GLSLGpuProgram, PoolAlloc>(prog);
 	}
 }

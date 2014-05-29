@@ -32,7 +32,7 @@ namespace BansheeEngine
 		UINT32 maxStreamIdx = getMaxStreamIdx();
 
 		UINT32 numStreams = maxStreamIdx + 1;
-		UINT32* streamOffsets = cm_newN<UINT32, ScratchAlloc>(numStreams);
+		UINT32* streamOffsets = bs_newN<UINT32, ScratchAlloc>(numStreams);
 		for(UINT32 i = 0; i < numStreams; i++)
 			streamOffsets[i] = 0;
 
@@ -47,7 +47,7 @@ namespace BansheeEngine
 			streamOffsets[streamIdx] += vertElem.getSize();
 		}
 
-		cm_deleteN<ScratchAlloc>(streamOffsets, numStreams);
+		bs_deleteN<ScratchAlloc>(streamOffsets, numStreams);
 
 		VertexDeclarationPtr declaration = HardwareBufferManager::instance().createVertexDeclaration(declarationElements);
 		return declaration;

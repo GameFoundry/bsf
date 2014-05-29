@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	MultiRenderTexture::MultiRenderTexture()
 	{
-		mColorSurfaces.resize(CM_MAX_MULTIPLE_RENDER_TARGETS);
+		mColorSurfaces.resize(BS_MAX_MULTIPLE_RENDER_TARGETS);
 	}
 
 	MultiRenderTexture::~MultiRenderTexture()
@@ -22,10 +22,10 @@ namespace BansheeEngine
 		{
 			if(desc.colorSurfaces[i].texture != nullptr)
 			{
-				if(i >= CM_MAX_MULTIPLE_RENDER_TARGETS)
+				if(i >= BS_MAX_MULTIPLE_RENDER_TARGETS)
 				{
 					LOGWRN("Render texture index is larger than the maximum number of supported render targets. Index: " + toString((int)i) + 
-						". Max. number of render targets: " + toString(CM_MAX_MULTIPLE_RENDER_TARGETS));
+						". Max. number of render targets: " + toString(BS_MAX_MULTIPLE_RENDER_TARGETS));
 
 					continue;
 				}
@@ -33,7 +33,7 @@ namespace BansheeEngine
 				TexturePtr texture = desc.colorSurfaces[i].texture;
 
 				if(texture->getUsage() != TU_RENDERTARGET)
-					CM_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
+					BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
 				mColorSurfaces[i] = Texture::requestView(texture, desc.colorSurfaces[i].mipLevel, 1, 
 					desc.colorSurfaces[i].face, desc.colorSurfaces[i].numFaces, GVU_RENDERTARGET);
@@ -58,7 +58,7 @@ namespace BansheeEngine
 			TexturePtr texture = desc.depthStencilSurface.texture;
 
 			if(texture->getUsage() != TU_DEPTHSTENCIL)
-				CM_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
+				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
 			mDepthStencilSurface = Texture::requestView(texture, desc.depthStencilSurface.mipLevel, 1, 
 				desc.depthStencilSurface.face, desc.depthStencilSurface.numFaces, GVU_DEPTHSTENCIL);
@@ -107,7 +107,7 @@ namespace BansheeEngine
 				errorInfo += "\nMultisample Count: " + toString(mColorSurfaces[i]->getTexture()->getMultisampleCount()) + "/" + toString(firstSurfaceDesc->getTexture()->getMultisampleCount());
 				errorInfo += "\nMultisample Hint: " + mColorSurfaces[i]->getTexture()->getMultisampleHint() + "/" + firstSurfaceDesc->getTexture()->getMultisampleHint();
 
-				CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
+				BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 			}
 		}
 
@@ -115,17 +115,17 @@ namespace BansheeEngine
 			return;
 
 		if(firstSurfaceDesc->getTexture()->getTextureType() != TEX_TYPE_2D)
-			CM_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
+			BS_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
 		if((firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) >= firstSurfaceDesc->getTexture()->getNumFaces())
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
+			BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
 				toString(firstSurfaceDesc->getFirstArraySlice() + firstSurfaceDesc->getNumArraySlices()) + ". Max num faces: " + toString(firstSurfaceDesc->getTexture()->getNumFaces()));
 		}
 
 		if(firstSurfaceDesc->getMostDetailedMip() >= firstSurfaceDesc->getTexture()->getNumMipmaps())
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
+			BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
 				toString(firstSurfaceDesc->getMostDetailedMip()) + ". Max num mipmaps: " + toString(firstSurfaceDesc->getTexture()->getNumMipmaps()));
 		}
 
@@ -142,7 +142,7 @@ namespace BansheeEngine
 			errorInfo += "\nMultisample Count: " + toString(mDepthStencilSurface->getTexture()->getMultisampleCount()) + "/" + toString(firstSurfaceDesc->getTexture()->getMultisampleCount());
 			errorInfo += "\nMultisample Hint: " + mDepthStencilSurface->getTexture()->getMultisampleHint() + "/" + firstSurfaceDesc->getTexture()->getMultisampleHint();
 
-			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
+			BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}
 	}
 

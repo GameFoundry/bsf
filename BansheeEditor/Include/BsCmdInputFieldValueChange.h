@@ -12,7 +12,7 @@ namespace BansheeEngine
 	public:
 		static void execute(InputFieldType* inputField, const ValueType& value)
 		{
-			CmdInputFieldValueChange* command = new (cm_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(inputField, value);
+			CmdInputFieldValueChange* command = new (bs_alloc<CmdInputFieldValueChange>()) CmdInputFieldValueChange(inputField, value);
 			UndoRedo::instance().registerCommand(command);
 			command->commit();
 		}

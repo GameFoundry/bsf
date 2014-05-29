@@ -59,7 +59,7 @@ namespace BansheeEngine
 
 		static EditorWidgetBase* create(EditorWidgetContainer& parentContainer)
 		{
-			return cm_new<Type>(EditorWidget<Type>::ConstructPrivately(), parentContainer);
+			return bs_new<Type>(EditorWidget<Type>::ConstructPrivately(), parentContainer);
 		}
 
 		void makeSureIAmInstantiated() { }

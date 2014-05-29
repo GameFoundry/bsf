@@ -9,14 +9,14 @@ namespace BansheeEngine
 	GpuParamBlock::GpuParamBlock(UINT32 size)
 		:mDirty(true), mData(nullptr), mSize(size)
 	{
-		mData = (UINT8*)cm_alloc<ScratchAlloc>(mSize);
+		mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
 		memset(mData, 0, mSize);
 	}
 
 	GpuParamBlock::GpuParamBlock(GpuParamBlock* otherBlock)
 	{
 		mSize = otherBlock->mSize;
-		mData = (UINT8*)cm_alloc<ScratchAlloc>(mSize);
+		mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
 		write(0, otherBlock->getData(), otherBlock->getSize());
 		mDirty = otherBlock->mDirty;
 	}
@@ -24,15 +24,15 @@ namespace BansheeEngine
 	GpuParamBlock::~GpuParamBlock()
 	{
 		if(mData != nullptr)
-			cm_free<ScratchAlloc>(mData);
+			bs_free<ScratchAlloc>(mData);
 	}
 
 	void GpuParamBlock::write(UINT32 offset, const void* data, UINT32 size)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(offset < 0 || (offset + size) > mSize)
 		{
-			CM_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
+			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
 				"Wanted range: " + toString(offset) + " .. " + toString(offset + size) + ".");
 		}
@@ -45,10 +45,10 @@ namespace BansheeEngine
 
 	void GpuParamBlock::read(UINT32 offset, void* data, UINT32 size)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(offset < 0 || (offset + size) > mSize)
 		{
-			CM_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
+			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
 				"Wanted range: " + toString(offset) + " .. " + toString(offset + size) + ".");
 		}
@@ -59,10 +59,10 @@ namespace BansheeEngine
 
 	void GpuParamBlock::zeroOut(UINT32 offset, UINT32 size)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(offset < 0 || (offset + size) > mSize)
 		{
-			CM_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
+			BS_EXCEPT(InvalidParametersException, "Wanted range is out of buffer bounds. " \
 				"Available range: 0 .. " + toString(mSize) + ". " \
 				"Wanted range: " + toString(offset) + " .. " + toString(offset + size) + ".");
 		}

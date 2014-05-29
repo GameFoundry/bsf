@@ -18,7 +18,7 @@ namespace BansheeEngine
 	 */
 	extern "C" BS_FONT_EXPORT void* loadPlugin()
 	{
-		FontImporter* importer = cm_new<FontImporter>();
+		FontImporter* importer = bs_new<FontImporter>();
 		Importer::instance()._registerAssetImporter(importer);
 
 		return nullptr;

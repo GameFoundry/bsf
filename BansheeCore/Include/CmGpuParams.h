@@ -97,7 +97,7 @@ namespace BansheeEngine
 		 */
 		template<class T> void getParam(const String& name, GpuDataParamBase<T>& output) const
 		{
-			CM_EXCEPT(InvalidParametersException, "Unsupported parameter type");
+			BS_EXCEPT(InvalidParametersException, "Unsupported parameter type");
 		}
 
 		/**
@@ -109,7 +109,7 @@ namespace BansheeEngine
 			auto iterFind = mFloatParams.find(name);
 
 			if(iterFind == mFloatParams.end())
-				CM_EXCEPT(InvalidParametersException, "Cannot find float parameter with the name '" + name + "'");
+				BS_EXCEPT(InvalidParametersException, "Cannot find float parameter with the name '" + name + "'");
 
 			output = iterFind->second;
 		}
@@ -123,7 +123,7 @@ namespace BansheeEngine
 			auto iterFind = mVec2Params.find(name);
 
 			if(iterFind == mVec2Params.end())
-				CM_EXCEPT(InvalidParametersException, "Cannot find vector(2) parameter with the name '" + name + "'");
+				BS_EXCEPT(InvalidParametersException, "Cannot find vector(2) parameter with the name '" + name + "'");
 
 			output = iterFind->second;
 		}
@@ -137,7 +137,7 @@ namespace BansheeEngine
 			auto iterFind = mVec3Params.find(name);
 
 			if(iterFind == mVec3Params.end())
-				CM_EXCEPT(InvalidParametersException, "Cannot find vector(3) parameter with the name '" + name + "'");
+				BS_EXCEPT(InvalidParametersException, "Cannot find vector(3) parameter with the name '" + name + "'");
 
 			output = iterFind->second;
 		}
@@ -151,7 +151,7 @@ namespace BansheeEngine
 			auto iterFind = mVec4Params.find(name);
 
 			if(iterFind == mVec4Params.end())
-				CM_EXCEPT(InvalidParametersException, "Cannot find vector(4) parameter with the name '" + name + "'");
+				BS_EXCEPT(InvalidParametersException, "Cannot find vector(4) parameter with the name '" + name + "'");
 
 			output = iterFind->second;
 		}
@@ -165,7 +165,7 @@ namespace BansheeEngine
 			auto iterFind = mMat3Params.find(name);
 
 			if(iterFind == mMat3Params.end())
-				CM_EXCEPT(InvalidParametersException, "Cannot find matrix(3x3) parameter with the name '" + name + "'");
+				BS_EXCEPT(InvalidParametersException, "Cannot find matrix(3x3) parameter with the name '" + name + "'");
 
 			output = iterFind->second;
 		}
@@ -179,7 +179,7 @@ namespace BansheeEngine
 			auto iterFind = mMat4Params.find(name);
 
 			if(iterFind == mMat4Params.end())
-				CM_EXCEPT(InvalidParametersException, "Cannot find matrix(4x4) parameter with the name '" + name + "'");
+				BS_EXCEPT(InvalidParametersException, "Cannot find matrix(4x4) parameter with the name '" + name + "'");
 
 			output = iterFind->second;
 		}

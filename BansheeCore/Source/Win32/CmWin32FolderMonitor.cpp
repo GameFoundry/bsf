@@ -51,8 +51,8 @@ namespace BansheeEngine
 
 		WString mCachedOldFileName; // Used during rename notifications as they are handled in two steps
 
-		CM_MUTEX(mStatusMutex)
-		CM_THREAD_SYNCHRONISER(mStartStopEvent)
+		BS_MUTEX(mStatusMutex)
+		BS_THREAD_SYNCHRONISER(mStartStopEvent)
 	};
 
 	FolderMonitor::FolderWatchInfo::FolderWatchInfo(const Path& folderToMonitor, HANDLE dirHandle, bool monitorSubdirectories, DWORD monitorFlags)
@@ -75,23 +75,23 @@ namespace BansheeEngine
 			return; // Already monitoring
 
 		{
-			CM_LOCK_MUTEX_NAMED(mStatusMutex, lock);
+			BS_LOCK_MUTEX_NAMED(mStatusMutex, lock);
 
 			mState = MonitorState::Starting;
 			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (DWORD)this, &mOverlapped);
 
 			while(mState != MonitorState::Monitoring)
-				CM_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
+				BS_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
 		}
 
 		if(mReadError != ERROR_SUCCESS)
 		{
 			{
-				CM_LOCK_MUTEX(mStatusMutex);
+				BS_LOCK_MUTEX(mStatusMutex);
 				mState = MonitorState::Inactive;
 			}
 
-			CM_EXCEPT(InternalErrorException, "Failed to start folder monitor on folder \"" + 
+			BS_EXCEPT(InternalErrorException, "Failed to start folder monitor on folder \"" + 
 				mFolderToMonitor.toString() + "\" because ReadDirectoryChangesW failed.");
 		}
 	}
@@ -100,13 +100,13 @@ namespace BansheeEngine
 	{
 		if(mState != MonitorState::Inactive)
 		{
-			CM_LOCK_MUTEX_NAMED(mStatusMutex, lock);
+			BS_LOCK_MUTEX_NAMED(mStatusMutex, lock);
 
 			mState = MonitorState::Shutdown;
 			PostQueuedCompletionStatus(compPortHandle, sizeof(this), (DWORD)this, &mOverlapped);
 
 			while(mState != MonitorState::Inactive)
-				CM_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
+				BS_THREAD_WAIT(mStartStopEvent, mStatusMutex, lock);
 		}
 
 		if(mDirHandle != INVALID_HANDLE_VALUE)
@@ -202,7 +202,7 @@ namespace BansheeEngine
 	{
 		static FileAction* createAdded(const WString& fileName)
 		{
-			UINT8* bytes = (UINT8*)cm_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
 			bytes += sizeof(FileAction);
@@ -219,7 +219,7 @@ namespace BansheeEngine
 
 		static FileAction* createRemoved(const WString& fileName)
 		{
-			UINT8* bytes = (UINT8*)cm_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
 			bytes += sizeof(FileAction);
@@ -236,7 +236,7 @@ namespace BansheeEngine
 
 		static FileAction* createModified(const WString& fileName)
 		{
-			UINT8* bytes = (UINT8*)cm_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + (fileName.size() + 1) * sizeof(WString::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
 			bytes += sizeof(FileAction);
@@ -253,7 +253,7 @@ namespace BansheeEngine
 
 		static FileAction* createRenamed(const WString& oldFilename, const WString& newfileName)
 		{
-			UINT8* bytes = (UINT8*)cm_alloc((UINT32)(sizeof(FileAction) + 
+			UINT8* bytes = (UINT8*)bs_alloc((UINT32)(sizeof(FileAction) + 
 				(oldFilename.size() + newfileName.size() + 2) * sizeof(WString::value_type)));
 
 			FileAction* action = (FileAction*)bytes;
@@ -276,7 +276,7 @@ namespace BansheeEngine
 
 		static void destroy(FileAction* action)
 		{
-			cm_free(action);
+			bs_free(action);
 		}
 
 		WString::value_type* oldName;
@@ -292,13 +292,13 @@ namespace BansheeEngine
 		Queue<FileAction*> mFileActions;
 		Queue<FileAction*> mActiveFileActions;
 
-		CM_MUTEX(mMainMutex);
-		CM_THREAD_TYPE* mWorkerThread;
+		BS_MUTEX(mMainMutex);
+		BS_THREAD_TYPE* mWorkerThread;
 	};
 
 	FolderMonitor::FolderMonitor()
 	{
-		mPimpl = cm_new<Pimpl>();
+		mPimpl = bs_new<Pimpl>();
 		mPimpl->mWorkerThread = nullptr;
 		mPimpl->mCompPortHandle = nullptr;
 	}
@@ -316,14 +316,14 @@ namespace BansheeEngine
 			FileAction::destroy(action);
 		}
 
-		cm_delete(mPimpl);
+		bs_delete(mPimpl);
 	}
 
 	void FolderMonitor::startMonitor(const Path& folderPath, bool subdirectories, FolderChange changeFilter)
 	{
 		if(!FileSystem::isDirectory(folderPath))
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided path \"" + folderPath.toString() + "\" is not a directory");
+			BS_EXCEPT(InvalidParametersException, "Provided path \"" + folderPath.toString() + "\" is not a directory");
 		}
 
 		WString extendedFolderPath = L"\\\\?\\" + folderPath.toWString(Path::PathType::Windows);
@@ -333,7 +333,7 @@ namespace BansheeEngine
 
 		if(dirHandle == INVALID_HANDLE_VALUE)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to open folder \"" + folderPath.toString() + "\" for monitoring. Error code: " + toString((UINT64)GetLastError()));
+			BS_EXCEPT(InternalErrorException, "Failed to open folder \"" + folderPath.toString() + "\" for monitoring. Error code: " + toString((UINT64)GetLastError()));
 		}
 
 		DWORD filterFlags = 0;
@@ -362,7 +362,7 @@ namespace BansheeEngine
 		if((((UINT32)changeFilter) & (UINT32)BansheeEngine::FolderChange::Security) != 0)
 			filterFlags |= FILE_NOTIFY_CHANGE_SECURITY;
 
-		mPimpl->mFoldersToWatch.push_back(cm_new<FolderWatchInfo>(folderPath, dirHandle, subdirectories, filterFlags));
+		mPimpl->mFoldersToWatch.push_back(bs_new<FolderWatchInfo>(folderPath, dirHandle, subdirectories, filterFlags));
 		FolderWatchInfo* watchInfo = mPimpl->mFoldersToWatch.back();
 
 		mPimpl->mCompPortHandle = CreateIoCompletionPort(dirHandle, mPimpl->mCompPortHandle, (DWORD)watchInfo, 0);
@@ -370,20 +370,20 @@ namespace BansheeEngine
 		if(mPimpl->mCompPortHandle == nullptr)
 		{
 			mPimpl->mFoldersToWatch.erase(mPimpl->mFoldersToWatch.end() - 1);
-			cm_delete(watchInfo);
-			CM_EXCEPT(InternalErrorException, "Failed to open completition port for folder monitoring. Error code: " + toString((UINT64)GetLastError()));
+			bs_delete(watchInfo);
+			BS_EXCEPT(InternalErrorException, "Failed to open completition port for folder monitoring. Error code: " + toString((UINT64)GetLastError()));
 		}
 
 		if(mPimpl->mWorkerThread == nullptr)
 		{
-			CM_THREAD_CREATE(t, (std::bind(&FolderMonitor::workerThreadMain, this)));
+			BS_THREAD_CREATE(t, (std::bind(&FolderMonitor::workerThreadMain, this)));
 			mPimpl->mWorkerThread = t;
 
 			if(mPimpl->mWorkerThread == nullptr)
 			{
 				mPimpl->mFoldersToWatch.erase(mPimpl->mFoldersToWatch.end() - 1);
-				cm_delete(watchInfo);
-				CM_EXCEPT(InternalErrorException, "Failed to create a new worker thread for folder monitoring");
+				bs_delete(watchInfo);
+				BS_EXCEPT(InternalErrorException, "Failed to create a new worker thread for folder monitoring");
 			}
 		}
 
@@ -396,15 +396,15 @@ namespace BansheeEngine
 			catch (Exception* e)
 			{
 				mPimpl->mFoldersToWatch.erase(mPimpl->mFoldersToWatch.end() - 1);
-				cm_delete(watchInfo);
+				bs_delete(watchInfo);
 				throw(e);
 			}
 		}
 		else
 		{
 			mPimpl->mFoldersToWatch.erase(mPimpl->mFoldersToWatch.end() - 1);
-			cm_delete(watchInfo);
-			CM_EXCEPT(InternalErrorException, "Failed to create a new worker thread for folder monitoring");
+			bs_delete(watchInfo);
+			BS_EXCEPT(InternalErrorException, "Failed to create a new worker thread for folder monitoring");
 		}
 	}
 
@@ -418,7 +418,7 @@ namespace BansheeEngine
 			FolderWatchInfo* watchInfo = *findIter;
 
 			watchInfo->stopMonitor(mPimpl->mCompPortHandle);
-			cm_delete(watchInfo);
+			bs_delete(watchInfo);
 
 			mPimpl->mFoldersToWatch.erase(findIter);
 		}
@@ -438,8 +438,8 @@ namespace BansheeEngine
 				// Even though we wait for a condition variable from the worker thread in stopMonitor,
 				// that doesn't mean the worker thread is done with the condition variable
 				// (which is stored inside watchInfo)
-				CM_LOCK_MUTEX(mPimpl->mMainMutex); 
-				cm_delete(watchInfo);
+				BS_LOCK_MUTEX(mPimpl->mMainMutex); 
+				bs_delete(watchInfo);
 			}
 		}
 
@@ -450,7 +450,7 @@ namespace BansheeEngine
 			PostQueuedCompletionStatus(mPimpl->mCompPortHandle, 0, 0, nullptr);
 
 			mPimpl->mWorkerThread->join();
-			CM_THREAD_DESTROY(mPimpl->mWorkerThread);
+			BS_THREAD_DESTROY(mPimpl->mWorkerThread);
 			mPimpl->mWorkerThread = nullptr;
 		}
 
@@ -481,7 +481,7 @@ namespace BansheeEngine
 				MonitorState state;
 
 				{
-					CM_LOCK_MUTEX(watchInfo->mStatusMutex);
+					BS_LOCK_MUTEX(watchInfo->mStatusMutex);
 					state = watchInfo->mState;
 				}
 
@@ -499,12 +499,12 @@ namespace BansheeEngine
 						watchInfo->mReadError = ERROR_SUCCESS;
 
 						{
-							CM_LOCK_MUTEX(watchInfo->mStatusMutex);
+							BS_LOCK_MUTEX(watchInfo->mStatusMutex);
 							watchInfo->mState = MonitorState::Monitoring;
 						}
 					}
 
-					CM_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
+					BS_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
 
 					break;
 				case MonitorState::Monitoring:
@@ -531,20 +531,20 @@ namespace BansheeEngine
 						watchInfo->mDirHandle = INVALID_HANDLE_VALUE;
 
 						{
-							CM_LOCK_MUTEX(watchInfo->mStatusMutex);
+							BS_LOCK_MUTEX(watchInfo->mStatusMutex);
 							watchInfo->mState = MonitorState::Shutdown2;
 						}
 					}
 					else
 					{
 						{
-							CM_LOCK_MUTEX(watchInfo->mStatusMutex);
+							BS_LOCK_MUTEX(watchInfo->mStatusMutex);
 							watchInfo->mState = MonitorState::Inactive;
 						}
 
 						{
-							CM_LOCK_MUTEX(mPimpl->mMainMutex); // Ensures that we don't delete "watchInfo" before this thread is done with mStartStopEvent
-							CM_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
+							BS_LOCK_MUTEX(mPimpl->mMainMutex); // Ensures that we don't delete "watchInfo" before this thread is done with mStartStopEvent
+							BS_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
 						}
 					}
 
@@ -559,13 +559,13 @@ namespace BansheeEngine
 					else
 					{
 						{
-							CM_LOCK_MUTEX(watchInfo->mStatusMutex);
+							BS_LOCK_MUTEX(watchInfo->mStatusMutex);
 							watchInfo->mState = MonitorState::Inactive;
 						}
 
 						{
-							CM_LOCK_MUTEX(mPimpl->mMainMutex); // Ensures that we don't delete "watchInfo" before this thread is done with mStartStopEvent
-							CM_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
+							BS_LOCK_MUTEX(mPimpl->mMainMutex); // Ensures that we don't delete "watchInfo" before this thread is done with mStartStopEvent
+							BS_THREAD_NOTIFY_ONE(watchInfo->mStartStopEvent);
 						}
 					}
 
@@ -620,7 +620,7 @@ namespace BansheeEngine
 		} while(notifyInfo.getNext());
 
 		{
-			CM_LOCK_MUTEX(mPimpl->mMainMutex);
+			BS_LOCK_MUTEX(mPimpl->mMainMutex);
 
 			for(auto& action : mActions)
 				mPimpl->mFileActions.push(action);
@@ -630,7 +630,7 @@ namespace BansheeEngine
 	void FolderMonitor::_update()
 	{
 		{
-			CM_LOCK_MUTEX(mPimpl->mMainMutex);
+			BS_LOCK_MUTEX(mPimpl->mMainMutex);
 
 			mPimpl->mActiveFileActions.swap(mPimpl->mFileActions);
 		}

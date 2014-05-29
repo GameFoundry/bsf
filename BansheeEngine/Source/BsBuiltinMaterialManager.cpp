@@ -14,7 +14,7 @@ namespace BansheeEngine
 		for(auto& iter : mAvailableFactories)
 		{
 			iter.second->shutDown();
-			cm_delete(iter.second);
+			bs_delete(iter.second);
 		}
 	}
 
@@ -101,7 +101,7 @@ namespace BansheeEngine
 
 		if(iterFind == mAvailableFactories.end())
 		{
-			CM_EXCEPT(InvalidParametersException, "Cannot find a factory for the specified render system: " + renderSystemName);
+			BS_EXCEPT(InvalidParametersException, "Cannot find a factory for the specified render system: " + renderSystemName);
 		}
 
 		mActiveFactory = iterFind->second;

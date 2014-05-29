@@ -147,7 +147,7 @@ namespace BansheeEngine
                     ((UINT16*)dest)[0] = (UINT16)value;
                     break;
                 case 3:
-#if CM_ENDIAN == CM_ENDIAN_BIG      
+#if BS_ENDIAN == BS_ENDIAN_BIG      
                     ((UINT8*)dest)[0] = (UINT8)((value >> 16) & 0xFF);
                     ((UINT8*)dest)[1] = (UINT8)((value >> 8) & 0xFF);
                     ((UINT8*)dest)[2] = (UINT8)(value & 0xFF);
@@ -173,7 +173,7 @@ namespace BansheeEngine
                 case 2:
                     return ((UINT16*)src)[0];
                 case 3:
-#if CM_ENDIAN == CM_ENDIAN_BIG      
+#if BS_ENDIAN == BS_ENDIAN_BIG      
                     return ((UINT32)((UINT8*)src)[0]<<16)|
                             ((UINT32)((UINT8*)src)[1]<<8)|
                             ((UINT32)((UINT8*)src)[2]);

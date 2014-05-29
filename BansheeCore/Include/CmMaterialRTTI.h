@@ -176,7 +176,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamFloat; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialFloatParam, ScratchAlloc>(); 
+			return bs_shared_ptr<MaterialFloatParam, ScratchAlloc>(); 
 		}
 	};
 
@@ -208,7 +208,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec2; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialVec2Param, ScratchAlloc>(); 
+			return bs_shared_ptr<MaterialVec2Param, ScratchAlloc>(); 
 		}
 	};
 
@@ -240,7 +240,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec3; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialVec3Param, ScratchAlloc>(); 
+			return bs_shared_ptr<MaterialVec3Param, ScratchAlloc>(); 
 		}
 	};
 
@@ -272,7 +272,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamVec4; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return cm_shared_ptr<MaterialVec4Param, ScratchAlloc>();
+			return bs_shared_ptr<MaterialVec4Param, ScratchAlloc>();
 		}
 	};
 
@@ -304,7 +304,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamMat3; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialMat3Param, ScratchAlloc>();
+			return bs_shared_ptr<MaterialMat3Param, ScratchAlloc>();
 		}
 	};
 
@@ -336,7 +336,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamMat4; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialMat4Param, ScratchAlloc>();
+			return bs_shared_ptr<MaterialMat4Param, ScratchAlloc>();
 		}
 	};
 
@@ -386,7 +386,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamStruct; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialStructParam, ScratchAlloc>();
+			return bs_shared_ptr<MaterialStructParam, ScratchAlloc>();
 		}
 	};
 
@@ -414,7 +414,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamTexture; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialTextureParam, ScratchAlloc>();
+			return bs_shared_ptr<MaterialTextureParam, ScratchAlloc>();
 		}
 	};
 
@@ -442,7 +442,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParamSamplerState; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialSamplerStateParam, ScratchAlloc>();
+			return bs_shared_ptr<MaterialSamplerStateParam, ScratchAlloc>();
 		}
 	};
 
@@ -533,7 +533,7 @@ namespace BansheeEngine
 		virtual UINT32 getRTTIId() { return TID_MaterialParams; }
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{ 
-			return cm_shared_ptr<MaterialParams, ScratchAlloc>();
+			return bs_shared_ptr<MaterialParams, ScratchAlloc>();
 		}
 	};
 

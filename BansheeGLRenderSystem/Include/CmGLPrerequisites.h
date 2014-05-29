@@ -60,11 +60,11 @@ namespace BansheeEngine
 	};
 }
 
-#if CM_THREAD_SUPPORT == 1
+#if BS_THREAD_SUPPORT == 1
 #	define GLEW_MX
 #endif
 
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 #if !defined( __MINGW32__ )
 #   define WIN32_LEAN_AND_MEAN
 #  ifndef NOMINMAX
@@ -76,19 +76,19 @@ namespace BansheeEngine
 #   include <GL/glew.h>
 #   include <GL/wglew.h>
 #   include <GL/glu.h>
-#elif CM_PLATFORM == CM_PLATFORM_LINUX
+#elif BS_PLATFORM == BS_PLATFORM_LINUX
 #   include <GL/glew.h>
 #   include <GL/glu.h>
 #   define GL_GLEXT_PROTOTYPES
-#elif CM_PLATFORM == CM_PLATFORM_APPLE
+#elif BS_PLATFORM == BS_PLATFORM_APPLE
 #   include <GL/glew.h>
 #   include <OpenGL/glu.h>
 #endif
 
-#if CM_THREAD_SUPPORT == 1
+#if BS_THREAD_SUPPORT == 1
 	GLEWContext * glewGetContext();
 
-#	if CM_PLATFORM == CM_PLATFORM_WIN32
+#	if BS_PLATFORM == BS_PLATFORM_WIN32
 	WGLEWContext * wglewGetContext();
 #	endif
 
@@ -99,7 +99,7 @@ namespace BansheeEngine
 #define _CRT_SECURE_NO_DEPRECATE
 #endif
 
-#if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(__MINGW32__) && !defined(CM_STATIC_LIB)
+#if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__) && !defined(BS_STATIC_LIB)
 #	ifdef BS_RSGL_EXPORTS
 #		define BS_RSGL_EXPORT __declspec(dllexport)
 #	else
@@ -109,7 +109,7 @@ namespace BansheeEngine
 #    		define BS_RSGL_EXPORT __declspec(dllimport)
 #       endif
 #	endif
-#elif defined ( CM_GCC_VISIBILITY )
+#elif defined ( BS_GCC_VISIBILITY )
 #    define BS_RSGL_EXPORT  __attribute__ ((visibility("default")))
 #else
 #    define BS_RSGL_EXPORT

@@ -24,7 +24,7 @@ namespace BansheeEngine
 		HRESULT hr = mDevice->CreateQuery(D3DQUERYTYPE_EVENT, &mQuery);
 		if (hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create an Event query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create an Event query.");
 		}
 	}
 

@@ -28,7 +28,7 @@ namespace BansheeEngine
 		void* params[2] = { object, internalElementType };
 		MonoObject* managedInstance = metaData.scriptClass->createInstance(params, 2);
 
-		ScriptSerializableArray* nativeInstance = new (cm_alloc<ScriptSerializableArray>()) ScriptSerializableArray(managedInstance, typeInfo);
+		ScriptSerializableArray* nativeInstance = new (bs_alloc<ScriptSerializableArray>()) ScriptSerializableArray(managedInstance, typeInfo);
 
 		return nativeInstance;
 	}

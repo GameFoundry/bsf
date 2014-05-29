@@ -47,7 +47,7 @@ namespace BansheeEngine
 		if(iterFind != instance().mEventQueries.end())
 			instance().mEventQueries.erase(iterFind);
 
-		cm_delete(query);
+		bs_delete(query);
 	}
 
 	void QueryManager::deleteTimerQuery(TimerQuery* query)
@@ -57,7 +57,7 @@ namespace BansheeEngine
 		if(iterFind != instance().mTimerQueries.end())
 			instance().mTimerQueries.erase(iterFind);
 
-		cm_delete(query);
+		bs_delete(query);
 	}
 
 	void QueryManager::deleteOcclusionQuery(OcclusionQuery* query)
@@ -67,6 +67,6 @@ namespace BansheeEngine
 		if (iterFind != instance().mOcclusionQueries.end())
 			instance().mOcclusionQueries.erase(iterFind);
 
-		cm_delete(query);
+		bs_delete(query);
 	}
 }

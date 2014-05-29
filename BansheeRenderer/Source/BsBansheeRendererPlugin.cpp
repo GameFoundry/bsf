@@ -17,7 +17,7 @@ namespace BansheeEngine
 	 */
 	extern "C" BS_BSRND_EXPORT void* loadPlugin()
 	{
-		RendererManager::instance()._registerFactory(cm_shared_ptr<BansheeRendererFactory>());
+		RendererManager::instance()._registerFactory(bs_shared_ptr<BansheeRendererFactory>());
 
 		return nullptr;
 	}

@@ -65,12 +65,12 @@ namespace BansheeEngine
 		if(RuntimeScriptObjects::instance().getSystemGenericDictionaryClass()->getFullName() != fullName)
 			return nullptr;
 
-		return cm_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
+		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
 	ManagedSerializableDictionaryPtr ManagedSerializableDictionary::createEmpty()
 	{
-		return cm_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately());
+		return bs_shared_ptr<ManagedSerializableDictionary>(ConstructPrivately());
 	}
 
 	void ManagedSerializableDictionary::serializeManagedInstance()

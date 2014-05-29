@@ -29,7 +29,7 @@ namespace BansheeEngine
 			mUAV = createUAV(d3d11GpuBuffer, desc.firstElement, desc.numElements, desc.useCounter);
 		else if((desc.usage & GVU_RENDERTARGET) != 0)
 		{
-			CM_EXCEPT(NotImplementedException, "Cannot create a render target view for buffers yet.");
+			BS_EXCEPT(NotImplementedException, "Cannot create a render target view for buffers yet.");
 		}
 		else
 			mSRV = createSRV(d3d11GpuBuffer, desc.firstElement, desc.elementWidth, desc.numElements);
@@ -38,7 +38,7 @@ namespace BansheeEngine
 	ID3D11ShaderResourceView* D3D11GpuBufferView::createSRV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)
 	{
 		if(buffer->getType() == GBT_APPENDCONSUME)
-			CM_EXCEPT(InvalidParametersException, "Cannot create ShaderResourceView for an append/consume buffer.");
+			BS_EXCEPT(InvalidParametersException, "Cannot create ShaderResourceView for an append/consume buffer.");
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
 		{
 			String msg = d3d11rs->getPrimaryDevice().getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create ShaderResourceView: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create ShaderResourceView: " + msg);
 		}
 
 		return srv;
@@ -128,7 +128,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
 		{
 			String msg = d3d11rs->getPrimaryDevice().getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create UnorderedAccessView: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create UnorderedAccessView: " + msg);
 		}
 
 		return uav;

@@ -22,12 +22,12 @@ namespace BansheeEngine
 
 	void TransientMesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
 	{
-		CM_EXCEPT(InvalidStateException, "Updating is not supported on a transient mesh.");
+		BS_EXCEPT(InvalidStateException, "Updating is not supported on a transient mesh.");
 	}
 
 	void TransientMesh::readSubresource(UINT32 subresourceIdx, GpuResourceData& data)
 	{
-		CM_EXCEPT(InvalidStateException, "Reading is not supported on a transient mesh.");
+		BS_EXCEPT(InvalidStateException, "Reading is not supported on a transient mesh.");
 	}
 
 	std::shared_ptr<VertexData> TransientMesh::_getVertexData() const

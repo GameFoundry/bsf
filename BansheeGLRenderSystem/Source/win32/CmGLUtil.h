@@ -7,6 +7,6 @@ namespace BansheeEngine
 {
 	GLSupport* getGLSupport()
 	{
-		return cm_new<Win32GLSupport>();
+		return bs_new<Win32GLSupport>();
 	}
 };

@@ -11,12 +11,12 @@ namespace BansheeEngine
 	DraggedSceneObjects::DraggedSceneObjects(UINT32 numObjects)
 		:numObjects(numObjects)
 	{
-		objects = cm_newN<HSceneObject>(numObjects);
+		objects = bs_newN<HSceneObject>(numObjects);
 	}
 
 	DraggedSceneObjects::~DraggedSceneObjects()
 	{
-		cm_deleteN(objects, numObjects);
+		bs_deleteN(objects, numObjects);
 		objects = nullptr;
 	}
 
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		const String& foldoutBtnStyle, const String& selectionBackgroundStyle, const String& editBoxStyle, const String& dragHighlightStyle, 
 		const String& dragSepHighlightStyle)
 	{
-		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
+		return new (bs_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, foldoutBtnStyle, 
 			selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create());
 	}
 
@@ -46,7 +46,7 @@ namespace BansheeEngine
 		const String& elementBtnStyle, const String& foldoutBtnStyle, const String& selectionBackgroundStyle, 
 		const String& editBoxStyle, const String& dragHighlightStyle, const String& dragSepHighlightStyle)
 	{
-		return new (cm_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, 
+		return new (bs_alloc<GUISceneTreeView, PoolAlloc>()) GUISceneTreeView(backgroundStyle, elementBtnStyle, 
 			foldoutBtnStyle, selectionBackgroundStyle, editBoxStyle, dragHighlightStyle, dragSepHighlightStyle, GUILayoutOptions::create(options));
 	}
 
@@ -107,7 +107,7 @@ namespace BansheeEngine
 
 				if(!found)
 				{
-					SceneTreeElement* newChild = cm_new<SceneTreeElement>();
+					SceneTreeElement* newChild = bs_new<SceneTreeElement>();
 					newChild->mParent = element;
 					newChild->mSceneObject = currentSOChild;
 					newChild->mId = currentSOChild->getInstanceId();
@@ -202,7 +202,7 @@ namespace BansheeEngine
 		if(element->mIsSelected)
 			unselectElement(element);
 
-		cm_delete(element);
+		bs_delete(element);
 	}
 
 	bool GUISceneTreeView::acceptDragAndDrop() const
@@ -212,7 +212,7 @@ namespace BansheeEngine
 
 	void GUISceneTreeView::dragAndDropStart()
 	{
-		DraggedSceneObjects* draggedSceneObjects = cm_new<DraggedSceneObjects>((UINT32)mSelectedElements.size());
+		DraggedSceneObjects* draggedSceneObjects = bs_new<DraggedSceneObjects>((UINT32)mSelectedElements.size());
 
 		UINT32 cnt = 0;
 		for(auto& selectedElement : mSelectedElements)
@@ -252,7 +252,7 @@ namespace BansheeEngine
 		markContentAsDirty();
 
 		DraggedSceneObjects* draggedSceneObjects = reinterpret_cast<DraggedSceneObjects*>(DragAndDropManager::instance().getDragData());
-		cm_delete(draggedSceneObjects);
+		bs_delete(draggedSceneObjects);
 	}
 
 	bool GUISceneTreeView::_acceptDragAndDrop(const Vector2I position, UINT32 typeId) const

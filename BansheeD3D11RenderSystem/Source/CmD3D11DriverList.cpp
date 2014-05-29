@@ -13,7 +13,7 @@ namespace BansheeEngine
 	{
 		for(size_t i = 0; i < mDriverList.size(); i++)
 		{
-			cm_delete(mDriverList[i]);
+			bs_delete(mDriverList[i]);
 		}
 
 		mDriverList.clear();
@@ -30,10 +30,10 @@ namespace BansheeEngine
 			if( FAILED(hr) )
 			{
 				SAFE_RELEASE(dxgiAdapter);
-				CM_EXCEPT(InternalErrorException, "Enumerating adapters failed.");
+				BS_EXCEPT(InternalErrorException, "Enumerating adapters failed.");
 			}
 
-			mDriverList.push_back(cm_new<D3D11Driver>(adapterIdx, dxgiAdapter));
+			mDriverList.push_back(bs_new<D3D11Driver>(adapterIdx, dxgiAdapter));
 
 			SAFE_RELEASE(dxgiAdapter);
 			adapterIdx++;
@@ -58,6 +58,6 @@ namespace BansheeEngine
 				return (*it);
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Cannot find video mode with the specified name.");
+		BS_EXCEPT(InvalidParametersException, "Cannot find video mode with the specified name.");
 	}
 }

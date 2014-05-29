@@ -76,7 +76,7 @@ namespace BansheeEngine
 		mMinFilter = FO_LINEAR;
 		mMipFilter = FO_POINT;
 
-		mProgramPipelineManager = cm_new<GLSLProgramPipelineManager>();
+		mProgramPipelineManager = bs_new<GLSLProgramPipelineManager>();
 	}
 
 	GLRenderSystem::~GLRenderSystem()
@@ -162,7 +162,7 @@ namespace BansheeEngine
 		{
 			// Remove from manager safely
 			GpuProgramManager::instance().removeFactory(mGLSLProgramFactory);
-			cm_delete(mGLSLProgramFactory);
+			bs_delete(mGLSLProgramFactory);
 			mGLSLProgramFactory = nullptr;
 		}
 
@@ -190,13 +190,13 @@ namespace BansheeEngine
 		mGLInitialised = false;
 
 		if(mProgramPipelineManager != nullptr)
-			cm_delete(mProgramPipelineManager);
+			bs_delete(mProgramPipelineManager);
 
 		if(mGLSupport)
-			cm_delete(mGLSupport);
+			bs_delete(mGLSupport);
 
 		if(mTextureTypes != nullptr)
-			cm_deleteN(mTextureTypes, mNumTextureTypes);
+			bs_deleteN(mTextureTypes, mNumTextureTypes);
 	}
 
 	void GLRenderSystem::bindGpuProgram(HGpuProgram prg)
@@ -285,7 +285,7 @@ namespace BansheeEngine
 				// 0 means uniforms are not in block, in which case we handle it specially
 				if (uniformBufferData == nullptr && paramBlockBuffer->getSize() > 0)
 				{
-					uniformBufferData = (UINT8*)cm_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
+					uniformBufferData = (UINT8*)bs_alloc<ScratchAlloc>(paramBlockBuffer->getSize());
 					paramBlockBuffer->readData(uniformBufferData);
 				}
 
@@ -389,7 +389,7 @@ namespace BansheeEngine
 
 		if(uniformBufferData != nullptr)
 		{
-			cm_free<ScratchAlloc>(uniformBufferData);
+			bs_free<ScratchAlloc>(uniformBufferData);
 		}
 	}
 
@@ -1246,7 +1246,7 @@ namespace BansheeEngine
 
 			if (i >= 6)
 			{
-				CM_EXCEPT(RenderingAPIException, "Unable to set clip plane");
+				BS_EXCEPT(RenderingAPIException, "Unable to set clip plane");
 			}
 
 			clipPlane[0] = plane.normal.x;
@@ -1296,7 +1296,7 @@ namespace BansheeEngine
 	void GLRenderSystem::beginDraw()
 	{
 		if(mDrawCallInProgress)
-			CM_EXCEPT(InternalErrorException, "Calling beginDraw without finishing previous draw call. Please call endDraw().");
+			BS_EXCEPT(InternalErrorException, "Calling beginDraw without finishing previous draw call. Please call endDraw().");
 
 		mDrawCallInProgress = true;
 
@@ -1517,13 +1517,13 @@ namespace BansheeEngine
 	{
 		if (gptype != GPT_VERTEX_PROGRAM && gptype != GPT_FRAGMENT_PROGRAM && gptype != GPT_GEOMETRY_PROGRAM)
 		{
-			CM_EXCEPT(InvalidParametersException, "OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
+			BS_EXCEPT(InvalidParametersException, "OpenGL cannot assign textures to this gpu program type: " + toString(gptype));
 		}
 
 		UINT32 numSupportedUnits = mCurrentCapabilities->getNumTextureUnits(gptype);
 		if (unit < 0 || unit >= numSupportedUnits)
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " +
+			BS_EXCEPT(InvalidParametersException, "Invalid texture unit index for the provided stage. Unit index: " + toString(unit) + ". Stage: " +
 				toString(gptype) + ". Supported range is 0 .. " + toString(numSupportedUnits - 1));
 		}
 
@@ -1536,7 +1536,7 @@ namespace BansheeEngine
 		case GPT_GEOMETRY_PROGRAM:
 			return mGeometryTexOffset + unit;
 		default:
-			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+			BS_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
 		}
 	}
 
@@ -1545,7 +1545,7 @@ namespace BansheeEngine
 		UINT32 maxNumBindings = mCurrentCapabilities->getNumGpuParamBlockBuffers(gptype);
 		if (binding < 0 || binding >= maxNumBindings)
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " +
+			BS_EXCEPT(InvalidParametersException, "Invalid buffer binding for the provided stage. Buffer binding: " + toString(binding) + ". Stage: " +
 				toString(gptype) + ". Supported range is 0 .. " + toString(maxNumBindings - 1));
 		}
 
@@ -1564,7 +1564,7 @@ namespace BansheeEngine
 		case GPT_COMPUTE_PROGRAM:
 			return mComputeUBOffset + binding;
 		default:
-			CM_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
+			BS_EXCEPT(InternalErrorException, "Invalid program type: " + toString(gptype));
 		}
 	}
 
@@ -1610,7 +1610,7 @@ namespace BansheeEngine
 			return mCurrentHullProgram;
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
+			BS_EXCEPT(InvalidParametersException, "Insupported gpu program type: " + toString(gptype));
 		}
 	}
 
@@ -1618,7 +1618,7 @@ namespace BansheeEngine
 	{
 		if(caps->getRenderSystemName() != getName())
 		{
-			CM_EXCEPT(InvalidParametersException, 
+			BS_EXCEPT(InvalidParametersException, 
 				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
 		}
 
@@ -1628,7 +1628,7 @@ namespace BansheeEngine
 		// GPU Program Manager setup
 		if(caps->isShaderProfileSupported("glsl"))
 		{
-			mGLSLProgramFactory = cm_new<GLSLProgramFactory>();
+			mGLSLProgramFactory = bs_new<GLSLProgramFactory>();
 			GpuProgramManager::instance().addFactory(mGLSLProgramFactory);
 			checkForErrors();
 		}
@@ -1645,7 +1645,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			CM_EXCEPT(RenderingAPIException, "GPU doesn't support frame buffer objects. OpenGL versions lower than 3.0 are not supported.");
+			BS_EXCEPT(RenderingAPIException, "GPU doesn't support frame buffer objects. OpenGL versions lower than 3.0 are not supported.");
 		}
 
 		mFragmentTexOffset = 0;
@@ -1662,10 +1662,10 @@ namespace BansheeEngine
 		totalNumTexUnits += caps->getNumTextureUnits(GPT_COMPUTE_PROGRAM);
 
 		if(totalNumTexUnits > numCombinedTexUnits)
-			CM_EXCEPT(InternalErrorException, "Number of combined texture units less than the number of individual units!?");
+			BS_EXCEPT(InternalErrorException, "Number of combined texture units less than the number of individual units!?");
 
 		mNumTextureTypes = numCombinedTexUnits;
-		mTextureTypes = cm_newN<GLenum>(mNumTextureTypes);
+		mTextureTypes = bs_newN<GLenum>(mNumTextureTypes);
 		for(UINT16 i = 0; i < numCombinedTexUnits; i++)
 			mTextureTypes[i] = 0;
 
@@ -1685,7 +1685,7 @@ namespace BansheeEngine
 		UINT16 numCombinedUniformBlocks = caps->getNumCombinedGpuParamBlockBuffers();
 
 		if(totalNumUniformBlocks > numCombinedUniformBlocks)
-			CM_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
+			BS_EXCEPT(InternalErrorException, "Number of combined uniform block buffers less than the number of individual per-stage buffers!?");
 
 		TextureManager::startUp<GLTextureManager>(std::ref(*mGLSupport));
 
@@ -1701,7 +1701,7 @@ namespace BansheeEngine
 			}
 		}
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if (mGLSupport->checkExtension("GL_ARB_debug_output"))
 		{
 			glDebugMessageCallback(&openGlErrorCallback, 0);
@@ -1740,7 +1740,7 @@ namespace BansheeEngine
 
 	RenderSystemCapabilities* GLRenderSystem::createRenderSystemCapabilities() const
 	{
-		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
+		RenderSystemCapabilities* rsc = bs_new<RenderSystemCapabilities>();
 
 		rsc->setDriverVersion(mDriverVersion);
 		const char* deviceName = (const char*)glGetString(GL_RENDERER);
@@ -1897,7 +1897,7 @@ namespace BansheeEngine
 			{
 				GLint buffers;
 				glGetIntegerv(GL_MAX_DRAW_BUFFERS_ARB, &buffers);
-				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)CM_MAX_MULTIPLE_RENDER_TARGETS));
+				rsc->setNumMultiRenderTargets(std::min<int>(buffers, (GLint)BS_MAX_MULTIPLE_RENDER_TARGETS));
 				rsc->setCapability(RSC_MRT_DIFFERENT_BIT_DEPTHS);
 
 				rsc->setCapability(RSC_FBO);
@@ -2068,6 +2068,6 @@ namespace BansheeEngine
 
 	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam)
 	{
-		CM_EXCEPT(RenderingAPIException, "OpenGL error: " + String(message));
+		BS_EXCEPT(RenderingAPIException, "OpenGL error: " + String(message));
 	}
 }

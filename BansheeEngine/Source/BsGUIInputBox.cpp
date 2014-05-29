@@ -37,29 +37,29 @@ namespace BansheeEngine
 		mCaretShown(false), mSelectionShown(false), mIsMultiline(multiline), mHasFocus(false), mIsMouseOver(false),
 		mState(State::Normal)
 	{
-		mImageSprite = cm_new<ImageSprite, PoolAlloc>();
-		mTextSprite = cm_new<TextSprite, PoolAlloc>();
+		mImageSprite = bs_new<ImageSprite, PoolAlloc>();
+		mTextSprite = bs_new<TextSprite, PoolAlloc>();
 	}
 
 	GUIInputBox::~GUIInputBox()
 	{
-		cm_delete<PoolAlloc>(mTextSprite);
-		cm_delete<PoolAlloc>(mImageSprite);
+		bs_delete<PoolAlloc>(mTextSprite);
+		bs_delete<PoolAlloc>(mImageSprite);
 	}
 
 	GUIInputBox* GUIInputBox::create(bool multiline, const String& styleName)
 	{
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(), multiline);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(), multiline);
 	}
 
 	GUIInputBox* GUIInputBox::create(bool multiline, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), multiline);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), multiline);
 	}
 
 	GUIInputBox* GUIInputBox::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), false);
+		return new (bs_alloc<GUIInputBox, PoolAlloc>()) GUIInputBox(getStyleName<GUIInputBox>(styleName), GUILayoutOptions::create(layoutOptions), false);
 	}
 
 	void GUIInputBox::setText(const WString& text)

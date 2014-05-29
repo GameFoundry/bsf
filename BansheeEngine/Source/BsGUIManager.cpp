@@ -84,15 +84,15 @@ namespace BansheeEngine
 
 		mMouseLeftWindowConn = Platform::onMouseLeftWindow.connect(std::bind(&GUIManager::onMouseLeftWindow, this, _1));
 
-		mInputCaret = cm_new<GUIInputCaret, PoolAlloc>();
-		mInputSelection = cm_new<GUIInputSelection, PoolAlloc>();
+		mInputCaret = bs_new<GUIInputCaret, PoolAlloc>();
+		mInputSelection = bs_new<GUIInputSelection, PoolAlloc>();
 
 		DragAndDropManager::startUp();
 		mDragEndedConn = DragAndDropManager::instance().onDragEnded.connect(std::bind(&GUIManager::onMouseDragEnded, this, _1, _2));
 
 		GUIDropDownBoxManager::startUp();
 
-		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
+		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD);
 
@@ -129,8 +129,8 @@ namespace BansheeEngine
 
 		mMouseLeftWindowConn.disconnect();
 
-		cm_delete<PoolAlloc>(mInputCaret);
-		cm_delete<PoolAlloc>(mInputSelection);
+		bs_delete<PoolAlloc>(mInputCaret);
+		bs_delete<PoolAlloc>(mInputSelection);
 	}
 
 	void GUIManager::registerWidget(GUIWidget* widget)
@@ -330,7 +330,7 @@ namespace BansheeEngine
 			// and render elements using multiple different transforms with a single call.
 			// Separating meshes can then be used as a compatibility mode for DX9
 
-			CM_EXCEPT(NotImplementedException, "Not implemented");
+			BS_EXCEPT(NotImplementedException, "Not implemented");
 		}
 	}
 
@@ -541,7 +541,7 @@ namespace BansheeEngine
 					}
 				}
 
-				MeshDataPtr meshData = cm_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
+				MeshDataPtr meshData = bs_shared_ptr<MeshData, PoolAlloc>(group->numQuads * 4, group->numQuads * 6, mVertexDesc);
 
 				UINT8* vertices = meshData->getElementData(VES_POSITION);
 				UINT8* uvs = meshData->getElementData(VES_TEXCOORD);
@@ -1093,7 +1093,7 @@ namespace BansheeEngine
 		for(auto& widgetInfo : mWidgets)
 			widgetWindows.push_back(getWidgetWindow(*widgetInfo.widget));
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		// Checks if all referenced windows actually exist
 		Vector<RenderWindow*> activeWindows = RenderWindowManager::instance().getRenderWindows();
 		for(auto& window : widgetWindows)
@@ -1105,7 +1105,7 @@ namespace BansheeEngine
 
 			if(iterFind == activeWindows.end())
 			{
-				CM_EXCEPT(InternalErrorException, "GUI manager has a reference to a window that doesn't exist. \
+				BS_EXCEPT(InternalErrorException, "GUI manager has a reference to a window that doesn't exist. \
 												  Please detach all GUIWidgets from windows before destroying a window.");
 			}
 		}
@@ -1356,7 +1356,7 @@ namespace BansheeEngine
 
 			while(!toDestroy.empty())
 			{
-				cm_delete<PoolAlloc>(toDestroy.top());
+				bs_delete<PoolAlloc>(toDestroy.top());
 				toDestroy.pop();
 			}
 		}
@@ -1379,7 +1379,7 @@ namespace BansheeEngine
 		else if(pointerButton == PointerEventButton::Right)
 			return GUIMouseButton::Right;
 
-		CM_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
+		BS_EXCEPT(InvalidParametersException, "Provided button is not a GUI supported mouse button.");
 	}
 
 	Vector2I GUIManager::getWidgetRelativePos(const GUIWidget& widget, const Vector2I& screenPos) const

@@ -418,7 +418,7 @@ namespace BansheeEngine
 			return D3DDECLUSAGE_TANGENT;
 			break;
 		default:
-			CM_EXCEPT(RenderingAPIException, "Invalid semantic for D3D9 render system: " + toString(sem));
+			BS_EXCEPT(RenderingAPIException, "Invalid semantic for D3D9 render system: " + toString(sem));
 		}
 		// to keep compiler happy
 		return D3DDECLUSAGE_POSITION;

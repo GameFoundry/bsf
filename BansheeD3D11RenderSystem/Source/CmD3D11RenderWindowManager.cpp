@@ -24,7 +24,7 @@ namespace BansheeEngine
 		}
 
 		// Create the window
-		D3D11RenderWindow* renderWindow = new (cm_alloc<D3D11RenderWindow, PoolAlloc>()) D3D11RenderWindow(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
-		return cm_core_ptr<D3D11RenderWindow, PoolAlloc>(renderWindow);
+		D3D11RenderWindow* renderWindow = new (bs_alloc<D3D11RenderWindow, PoolAlloc>()) D3D11RenderWindow(desc, d3d11rs->getPrimaryDevice(), d3d11rs->getDXGIFactory());
+		return bs_core_ptr<D3D11RenderWindow, PoolAlloc>(renderWindow);
 	}
 }

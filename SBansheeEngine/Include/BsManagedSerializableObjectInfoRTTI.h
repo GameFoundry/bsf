@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ManagedSerializableAssemblyInfo>();
+			return bs_shared_ptr<ManagedSerializableAssemblyInfo>();
 		}
 	};
 
@@ -140,7 +140,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ManagedSerializableObjectInfo>();
+			return bs_shared_ptr<ManagedSerializableObjectInfo>();
 		}
 	};
 
@@ -208,7 +208,7 @@ namespace BansheeEngine
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
-		{return cm_shared_ptr<ManagedSerializableFieldInfo>();
+		{return bs_shared_ptr<ManagedSerializableFieldInfo>();
 		}
 	};
 
@@ -235,7 +235,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			CM_EXCEPT(InvalidStateException, "Cannot instantiate an abstract class");
+			BS_EXCEPT(InvalidStateException, "Cannot instantiate an abstract class");
 		}
 	};
 
@@ -271,7 +271,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
+			return bs_shared_ptr<ManagedSerializableTypeInfoPrimitive>();
 		}
 	};
 
@@ -329,7 +329,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ManagedSerializableTypeInfoObject>();
+			return bs_shared_ptr<ManagedSerializableTypeInfoObject>();
 		}
 	};
 
@@ -376,7 +376,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ManagedSerializableTypeInfoArray>();
+			return bs_shared_ptr<ManagedSerializableTypeInfoArray>();
 		}
 	};
 
@@ -412,7 +412,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ManagedSerializableTypeInfoList>();
+			return bs_shared_ptr<ManagedSerializableTypeInfoList>();
 		}
 	};
 
@@ -459,7 +459,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<ManagedSerializableTypeInfoDictionary>();
+			return bs_shared_ptr<ManagedSerializableTypeInfoDictionary>();
 		}
 	};
 }

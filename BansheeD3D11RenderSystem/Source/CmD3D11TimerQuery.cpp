@@ -19,7 +19,7 @@ namespace BansheeEngine
 		HRESULT hr = device.getD3D11Device()->CreateQuery(&queryDesc, &mDisjointQuery);
 		if(hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
 		}
 
 		queryDesc.Query = D3D11_QUERY_TIMESTAMP;
@@ -27,13 +27,13 @@ namespace BansheeEngine
 		hr = device.getD3D11Device()->CreateQuery(&queryDesc, &mBeginQuery);
 		if(hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
 		}
 
 		hr = device.getD3D11Device()->CreateQuery(&queryDesc, &mEndQuery);
 		if(hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create a timer query.");
 		}
 
 		mContext = device.getImmediateContext();

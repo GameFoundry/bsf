@@ -44,7 +44,7 @@ namespace BansheeEngine
 			TexturePtr texture = desc.colorSurface.texture;
 
 			if(texture->getUsage() != TU_RENDERTARGET)
-				CM_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
+				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with render target usage.");
 
 			mColorSurface = Texture::requestView(texture, desc.colorSurface.mipLevel, 1, 
 				desc.colorSurface.face, desc.colorSurface.numFaces, GVU_RENDERTARGET);
@@ -63,7 +63,7 @@ namespace BansheeEngine
 			TexturePtr texture = desc.depthStencilSurface.texture;
 
 			if(texture->getUsage() != TU_DEPTHSTENCIL)
-				CM_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
+				BS_EXCEPT(InvalidParametersException, "Provided texture is not created with depth stencil usage.");
 
 			mDepthStencilSurface = Texture::requestView(texture, desc.depthStencilSurface.mipLevel, 1, 
 				desc.depthStencilSurface.face, desc.depthStencilSurface.numFaces, GVU_DEPTHSTENCIL);
@@ -75,18 +75,18 @@ namespace BansheeEngine
 		assert(mColorSurface->getTexture() != nullptr);
 
 		if(mColorSurface->getTexture()->getTextureType() != TEX_TYPE_2D)
-			CM_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
+			BS_EXCEPT(NotImplementedException, "Render textures are currently only implemented for 2D surfaces.");
 
 		if((mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) > mColorSurface->getTexture()->getNumFaces())
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
+			BS_EXCEPT(InvalidParametersException, "Provided number of faces is out of range. Face: " + 
 				toString(mColorSurface->getFirstArraySlice() + mColorSurface->getNumArraySlices()) + 
 				". Max num faces: " + toString(mColorSurface->getTexture()->getNumFaces()));
 		}
 
 		if(mColorSurface->getMostDetailedMip() > mColorSurface->getTexture()->getNumMipmaps())
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
+			BS_EXCEPT(InvalidParametersException, "Provided number of mip maps is out of range. Mip level: " + 
 				toString(mColorSurface->getMostDetailedMip()) + ". Max num mipmaps: " + toString(mColorSurface->getTexture()->getNumMipmaps()));
 		}
 
@@ -116,7 +116,7 @@ namespace BansheeEngine
 			errorInfo += "\nMultisample Count: " + toString(mColorSurface->getTexture()->getMultisampleCount()) + "/" + toString(mDepthStencilSurface->getTexture()->getMultisampleCount());
 			errorInfo += "\nMultisample Hint: " + mColorSurface->getTexture()->getMultisampleHint() + "/" + mDepthStencilSurface->getTexture()->getMultisampleHint();
 
-			CM_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
+			BS_EXCEPT(InvalidParametersException, "Provided texture and depth stencil buffer don't match!" + errorInfo);
 		}
 	}
 

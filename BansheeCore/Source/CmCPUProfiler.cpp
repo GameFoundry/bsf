@@ -51,7 +51,7 @@ namespace BansheeEngine
 
 	inline UINT64 CPUProfiler::TimerPrecise::getNumCycles() 
 	{
-#if CM_COMPILER == CM_COMPILER_GNUC
+#if BS_COMPILER == BS_COMPILER_GNUC
 		asm volatile("cpuid" : : : "%eax", "%ebx", "%ecx", "%edx" );
 		UINT32 __a,__d;
 		asm volatile("rdtsc" : "=a" (__a), "=d" (__d));
@@ -114,7 +114,7 @@ namespace BansheeEngine
 		samples.erase(samples.end() - 1);
 	}
 
-	CM_THREADLOCAL CPUProfiler::ThreadInfo* CPUProfiler::ThreadInfo::activeThread = nullptr;
+	BS_THREADLOCAL CPUProfiler::ThreadInfo* CPUProfiler::ThreadInfo::activeThread = nullptr;
 
 	CPUProfiler::ThreadInfo::ThreadInfo()
 		:isActive(false), rootBlock(nullptr)
@@ -189,12 +189,12 @@ namespace BansheeEngine
 	{
 		// TODO - Pool this, if possible using the memory allocator stuff
 		// TODO - Also consider moving all samples in ThreadInfo, and also pool them (otherwise I can't pool ProfiledBlock since it will be variable size)
-		return cm_new<ProfiledBlock, ProfilerAlloc>();
+		return bs_new<ProfiledBlock, ProfilerAlloc>();
 	}
 
 	void CPUProfiler::ThreadInfo::releaseBlock(CPUProfiler::ProfiledBlock* block)
 	{
-		cm_delete<ProfilerAlloc>(block);
+		bs_delete<ProfilerAlloc>(block);
 	}
 
 	CPUProfiler::ProfiledBlock::ProfiledBlock()
@@ -234,10 +234,10 @@ namespace BansheeEngine
 	{
 		reset();
 
-		CM_LOCK_MUTEX(mThreadSync);
+		BS_LOCK_MUTEX(mThreadSync);
 
 		for(auto& threadInfo : mActiveThreads)
-			cm_delete<ProfilerAlloc>(threadInfo);
+			bs_delete<ProfilerAlloc>(threadInfo);
 	}
 
 	void CPUProfiler::beginThread(const ProfilerString& name)
@@ -245,11 +245,11 @@ namespace BansheeEngine
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr)
 		{
-			ThreadInfo::activeThread = cm_new<ThreadInfo, ProfilerAlloc>();
+			ThreadInfo::activeThread = bs_new<ThreadInfo, ProfilerAlloc>();
 			thread = ThreadInfo::activeThread;
 
 			{
-				CM_LOCK_MUTEX(mThreadSync);
+				BS_LOCK_MUTEX(mThreadSync);
 
 				mActiveThreads.push_back(thread);
 			}
@@ -301,7 +301,7 @@ namespace BansheeEngine
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(block == nullptr)
 		{
 			LOGWRN("Mismatched CPUProfiler::endSample. No beginSample was called.");
@@ -369,7 +369,7 @@ namespace BansheeEngine
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(block == nullptr)
 		{
 			LOGWRN("Mismatched Profiler::endSamplePrecise. No beginSamplePrecise was called.");

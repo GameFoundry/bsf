@@ -17,7 +17,7 @@ namespace BansheeEngine
 
 	void D3D11IndexBuffer::initialize_internal()
 	{
-		mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory);
+		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_INDEX, mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory);
 
 		IndexBuffer::initialize_internal();
 	}
@@ -25,7 +25,7 @@ namespace BansheeEngine
 	void D3D11IndexBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			cm_delete<PoolAlloc>(mBuffer) ;
+			bs_delete<PoolAlloc>(mBuffer) ;
 
 		IndexBuffer::destroy_internal();
 	}

@@ -28,7 +28,7 @@ namespace BansheeEngine
 		auto iterFind = mCreateCallbacks.find(name);
 
 		if(iterFind != mCreateCallbacks.end())
-			CM_EXCEPT(InvalidParametersException, "Widget with the same name is already registered. Name: \"" + name + "\"");
+			BS_EXCEPT(InvalidParametersException, "Widget with the same name is already registered. Name: \"" + name + "\"");
 
 		mCreateCallbacks[name] = createCallback;
 	}
@@ -115,7 +115,7 @@ namespace BansheeEngine
 
 		MainEditorWindow* mainWindow = EditorWindowManager::instance().getMainWindow();
 		DockManager& dockManager = mainWindow->getDockManager();
-		EditorWidgetLayoutPtr layout = cm_shared_ptr<EditorWidgetLayout>(dockManager.getLayout());
+		EditorWidgetLayoutPtr layout = bs_shared_ptr<EditorWidgetLayout>(dockManager.getLayout());
 
 		Vector<EditorWidgetLayout::Entry>& layoutEntries = layout->getEntries();
 		UnorderedSet<EditorWidgetContainer*> widgetContainers;

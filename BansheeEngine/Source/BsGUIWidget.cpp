@@ -148,7 +148,7 @@ namespace BansheeEngine
 		auto iterFind = std::find(begin(mElements), end(mElements), elem);
 
 		if(iterFind == mElements.end())
-			CM_EXCEPT(InvalidParametersException, "Cannot unregister an element that is not registered on this widget.");
+			BS_EXCEPT(InvalidParametersException, "Cannot unregister an element that is not registered on this widget.");
 
 		mElements.erase(iterFind);
 		mWidgetIsDirty = true;
@@ -170,7 +170,7 @@ namespace BansheeEngine
 		auto iterFind = std::find(begin(mAreas), end(mAreas), area);
 
 		if(iterFind == mAreas.end())
-			CM_EXCEPT(InvalidParametersException, "Cannot unregister an area that is not registered on this widget.");
+			BS_EXCEPT(InvalidParametersException, "Cannot unregister an area that is not registered on this widget.");
 
 		mAreas.erase(iterFind);
 		mWidgetIsDirty = true;

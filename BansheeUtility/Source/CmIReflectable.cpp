@@ -8,7 +8,7 @@ namespace BansheeEngine
 	{
 		if(_isTypeIdDuplicate(derivedClass->getRTTIId()))
 		{
-			CM_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
+			BS_EXCEPT(InternalErrorException, "RTTI type \"" + derivedClass->getRTTIName() + 
 				"\" has a duplicate ID: " + toString(derivedClass->getRTTIId()));
 		}
 

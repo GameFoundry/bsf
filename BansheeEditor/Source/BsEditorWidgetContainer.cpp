@@ -207,12 +207,12 @@ namespace BansheeEngine
 
 	void EditorWidgetContainer::tabDraggedOn(UINT32 seqIdx)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(!DragAndDropManager::instance().isDragInProgress())
-			CM_EXCEPT(InternalErrorException, "Tab drag and drop reported but no drag in progress.");
+			BS_EXCEPT(InternalErrorException, "Tab drag and drop reported but no drag in progress.");
 
 		if(DragAndDropManager::instance().getDragTypeId() != (UINT32)DragAndDropType::EditorWidget)
-			CM_EXCEPT(InternalErrorException, "Tab drag and drop reported but drag type is invalid.");
+			BS_EXCEPT(InternalErrorException, "Tab drag and drop reported but drag type is invalid.");
 #endif
 
 		EditorWidgetBase* draggedWidget = static_cast<EditorWidgetBase*>(DragAndDropManager::instance().getDragData());

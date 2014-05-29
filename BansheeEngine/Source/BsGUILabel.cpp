@@ -12,7 +12,7 @@ namespace BansheeEngine
 	GUILabel::GUILabel(const String& styleName, const GUIContent& content, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mContent(content)
 	{
-		mTextSprite = cm_new<TextSprite, PoolAlloc>();
+		mTextSprite = bs_new<TextSprite, PoolAlloc>();
 
 		mLocStringUpdatedConn = mContent.getText().addOnStringModifiedCallback(std::bind(&GUILabel::markContentAsDirty, this));
 	}
@@ -20,7 +20,7 @@ namespace BansheeEngine
 	GUILabel::~GUILabel()
 	{
 		mLocStringUpdatedConn.disconnect();
-		cm_delete<PoolAlloc>(mTextSprite);
+		bs_delete<PoolAlloc>(mTextSprite);
 	}
 
 	UINT32 GUILabel::getNumRenderElements() const
@@ -92,12 +92,12 @@ namespace BansheeEngine
 
 	GUILabel* GUILabel::create(const GUIContent& content, const String& styleName)
 	{
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create());
+		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create());
 	}
 
 	GUILabel* GUILabel::create(const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUILabel, PoolAlloc>()) GUILabel(getStyleName<GUILabel>(styleName), content, GUILayoutOptions::create(layoutOptions));
 	}
 
 	const String& GUILabel::getGUITypeName()

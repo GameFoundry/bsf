@@ -2,15 +2,15 @@
 
 #include "CmPrerequisitesUtil.h"
 
-#define CM_MAX_MULTIPLE_RENDER_TARGETS 8
-#define CM_FORCE_SINGLETHREADED_RENDERING 0
+#define BS_MAX_MULTIPLE_RENDER_TARGETS 8
+#define BS_FORCE_SINGLETHREADED_RENDERING 0
 
 // Windows Settings
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 
 // If we're not including this from a client build, specify that the stuff
 // should get exported. Otherwise, import it.
-#	if defined(CM_STATIC_LIB)
+#	if defined(BS_STATIC_LIB)
 // Linux compilers don't have symbol import/export directives.
 #   	define BS_CORE_EXPORT
 #   else
@@ -27,32 +27,32 @@
 // Win32 compilers use _DEBUG for specifying debug builds.
 // for MinGW, we set DEBUG
 #   if defined(_DEBUG) || defined(DEBUG)
-#       define CM_DEBUG_MODE 1
+#       define BS_DEBUG_MODE 1
 #   else
-#       define CM_DEBUG_MODE 0
+#       define BS_DEBUG_MODE 0
 #   endif
 
 #endif
 
 // Linux/Apple Settings
-#if CM_PLATFORM == CM_PLATFORM_LINUX || CM_PLATFORM == CM_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_APPLE
 
 // Enable GCC symbol visibility
-#   if defined( CM_GCC_VISIBILITY )
+#   if defined( BS_GCC_VISIBILITY )
 #       define BS_CORE_EXPORT  __attribute__ ((visibility("default")))
-#       define CM_HIDDEN __attribute__ ((visibility("hidden")))
+#       define BS_HIDDEN __attribute__ ((visibility("hidden")))
 #   else
 #       define BS_CORE_EXPORT
-#       define CM_HIDDEN
+#       define BS_HIDDEN
 #   endif
 
 // A quick define to overcome different names for the same function
 #   define stricmp strcasecmp
 
 #   ifdef DEBUG
-#       define CM_DEBUG_MODE 1
+#       define BS_DEBUG_MODE 1
 #   else
-#       define CM_DEBUG_MODE 0
+#       define BS_DEBUG_MODE 0
 #   endif
 
 #endif

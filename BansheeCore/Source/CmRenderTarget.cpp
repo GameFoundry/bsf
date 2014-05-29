@@ -17,6 +17,6 @@ namespace BansheeEngine
 
 	void RenderTarget::getCustomAttribute(const String& name, void* pData) const
     {
-        CM_EXCEPT(InvalidParametersException, "Attribute not found.");
+        BS_EXCEPT(InvalidParametersException, "Attribute not found.");
     }
 }        

@@ -663,7 +663,7 @@ namespace BansheeEngine
 			UINT64 dataSize = rttiGetElemSize(data.mDevice) + rttiGetElemSize(data.mNode) + rttiGetElemSize(data.mFilename) +
 				rttiGetElemSize(data.mIsAbsolute) + rttiGetElemSize(data.mDirectories) + sizeof(UINT32);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if (dataSize > std::numeric_limits<UINT32>::max())
 			{
 				__string_throwDataOverflowException();

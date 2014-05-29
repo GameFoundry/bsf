@@ -42,7 +42,7 @@ namespace BansheeEngine
 		Queue<InputCommandType> inputCommands;
 
 		{
-			CM_LOCK_MUTEX(mOSInputMutex);
+			BS_LOCK_MUTEX(mOSInputMutex);
 			inputString = mInputString;
 			mInputString.clear();
 
@@ -171,14 +171,14 @@ namespace BansheeEngine
 
 	void OSInputHandler::charInput(UINT32 character)
 	{
-		CM_LOCK_MUTEX(mOSInputMutex);
+		BS_LOCK_MUTEX(mOSInputMutex);
 
 		mInputString += character;
 	}
 
 	void OSInputHandler::cursorMoved(const Vector2I& cursorPos, OSPointerButtonStates& btnStates)
 	{
-		CM_LOCK_MUTEX(mOSInputMutex);
+		BS_LOCK_MUTEX(mOSInputMutex);
 
 		mCursorPosition = cursorPos;
 		mMouseMoveBtnState = btnStates;
@@ -187,7 +187,7 @@ namespace BansheeEngine
 	void OSInputHandler::cursorPressed(const Vector2I& cursorPos, 
 		OSMouseButton button, OSPointerButtonStates& btnStates)
 	{
-		CM_LOCK_MUTEX(mOSInputMutex);
+		BS_LOCK_MUTEX(mOSInputMutex);
 
 		mButtonStates.push(ButtonStateChange());
 		ButtonStateChange& btnState = mButtonStates.back();
@@ -201,7 +201,7 @@ namespace BansheeEngine
 	void OSInputHandler::cursorReleased(const Vector2I& cursorPos, 
 		OSMouseButton button, OSPointerButtonStates& btnStates)
 	{
-		CM_LOCK_MUTEX(mOSInputMutex);
+		BS_LOCK_MUTEX(mOSInputMutex);
 
 		mButtonStates.push(ButtonStateChange());
 		ButtonStateChange& btnState = mButtonStates.back();
@@ -214,7 +214,7 @@ namespace BansheeEngine
 
 	void OSInputHandler::cursorDoubleClick(const Vector2I& cursorPos, OSPointerButtonStates& btnStates)
 	{
-		CM_LOCK_MUTEX(mOSInputMutex);
+		BS_LOCK_MUTEX(mOSInputMutex);
 
 		mDoubleClicks.push(DoubleClick());
 		DoubleClick& btnState = mDoubleClicks.back();
@@ -225,14 +225,14 @@ namespace BansheeEngine
 
 	void OSInputHandler::inputCommandEntered(InputCommandType commandType)
 	{
-		CM_LOCK_MUTEX(mOSInputMutex);
+		BS_LOCK_MUTEX(mOSInputMutex);
 
 		mInputCommands.push(commandType);
 	}
 
 	void OSInputHandler::mouseWheelScrolled(float scrollPos)
 	{
-		CM_LOCK_MUTEX(mOSInputMutex);
+		BS_LOCK_MUTEX(mOSInputMutex);
 
 		mMouseScroll = scrollPos;
 	}

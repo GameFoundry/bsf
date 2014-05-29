@@ -10,12 +10,12 @@ namespace BansheeEngine
 	GUIInputCaret::GUIInputCaret()
 		:mCaretPos(0)
 	{
-		mCaretSprite = cm_new<ImageSprite, PoolAlloc>();
+		mCaretSprite = bs_new<ImageSprite, PoolAlloc>();
 	}
 
 	GUIInputCaret::~GUIInputCaret()
 	{
-		cm_delete<PoolAlloc>(mCaretSprite);
+		bs_delete<PoolAlloc>(mCaretSprite);
 	}
 
 	Vector2I GUIInputCaret::getSpriteOffset() const

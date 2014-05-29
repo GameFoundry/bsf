@@ -41,12 +41,12 @@ namespace BansheeEngine
 		if(RuntimeScriptObjects::instance().getSystemGenericListClass()->getFullName() != fullName)
 			return nullptr;
 
-		return cm_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
+		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately(), typeInfo, managedInstance);
 	}
 
 	ManagedSerializableListPtr ManagedSerializableList::createEmpty()
 	{
-		return cm_shared_ptr<ManagedSerializableList>(ConstructPrivately());
+		return bs_shared_ptr<ManagedSerializableList>(ConstructPrivately());
 	}
 
 	void ManagedSerializableList::serializeManagedInstance()

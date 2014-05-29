@@ -41,7 +41,7 @@ namespace BansheeEngine
 		if(FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create depth stencil state.\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Cannot create depth stencil state.\nError Description:" + errorDescription);
 		}
 
 		DepthStencilState::initialize_internal();

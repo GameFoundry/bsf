@@ -10,14 +10,14 @@ namespace BansheeEngine
 		if(ThreadMemStack != nullptr)
 			endThread();
 
-		ThreadMemStack = cm_new<MemStackInternal<1024 * 1024>>();
+		ThreadMemStack = bs_new<MemStackInternal<1024 * 1024>>();
 	}
 
 	void MemStack::endThread()
 	{
 		if(ThreadMemStack != nullptr)
 		{
-			cm_delete(ThreadMemStack);
+			bs_delete(ThreadMemStack);
 			ThreadMemStack = nullptr;
 		}
 	}

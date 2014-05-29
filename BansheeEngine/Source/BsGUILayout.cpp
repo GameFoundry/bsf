@@ -31,7 +31,7 @@ namespace BansheeEngine
 	void GUILayout::insertElement(UINT32 idx, GUIElement* element)
 	{
 		if(idx < 0 || idx > (UINT32)mChildren.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUIElementBase* parentElement = element->_getParent();
 		if(parentElement != nullptr)
@@ -48,7 +48,7 @@ namespace BansheeEngine
 	void GUILayout::removeChildAt(UINT32 idx)
 	{
 		if(idx < 0 || idx >= (UINT32)mChildren.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
 		GUIElementBase* child = mChildren[idx];
 		mChildren.erase(mChildren.begin() + idx);
@@ -56,14 +56,14 @@ namespace BansheeEngine
 		if(child->_getType() == GUIElementBase::Type::Element)
 			child->_setParent(nullptr);
 		else
-			cm_delete<PoolAlloc>(child);
+			bs_delete<PoolAlloc>(child);
 
 		markContentAsDirty();
 	}
 
 	GUIFixedSpace& GUILayout::addSpace(UINT32 size)
 	{
-		GUIFixedSpace* entry = cm_new<GUIFixedSpace, PoolAlloc>(size);
+		GUIFixedSpace* entry = bs_new<GUIFixedSpace, PoolAlloc>(size);
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
@@ -80,7 +80,7 @@ namespace BansheeEngine
 
 			if(child->_getType() == GUIElementBase::Type::FixedSpace && child == &space)
 			{
-				cm_delete<PoolAlloc>(child);
+				bs_delete<PoolAlloc>(child);
 
 				mChildren.erase(iter);
 				foundElem = true;
@@ -90,15 +90,15 @@ namespace BansheeEngine
 		}
 
 		if(!foundElem)
-			CM_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
+			BS_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
 	}
 
 	GUIFixedSpace& GUILayout::insertSpace(UINT32 idx, UINT32 size)
 	{
 		if(idx < 0 || idx > (UINT32)mChildren.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUIFixedSpace* entry = cm_new<GUIFixedSpace, PoolAlloc>(size);
+		GUIFixedSpace* entry = bs_new<GUIFixedSpace, PoolAlloc>(size);
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();
@@ -108,7 +108,7 @@ namespace BansheeEngine
 
 	GUIFlexibleSpace& GUILayout::addFlexibleSpace()
 	{
-		GUIFlexibleSpace* entry = cm_new<GUIFlexibleSpace, PoolAlloc>();
+		GUIFlexibleSpace* entry = bs_new<GUIFlexibleSpace, PoolAlloc>();
 
 		mChildren.push_back(entry);
 		markContentAsDirty();
@@ -125,7 +125,7 @@ namespace BansheeEngine
 
 			if(child->_getType() == GUIElementBase::Type::FlexibleSpace && child == &space)
 			{
-				cm_delete<PoolAlloc>(child);
+				bs_delete<PoolAlloc>(child);
 
 				mChildren.erase(iter);
 				foundElem = true;
@@ -135,15 +135,15 @@ namespace BansheeEngine
 		}
 
 		if(!foundElem)
-			CM_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
+			BS_EXCEPT(InvalidParametersException, "Provided element is not a part of this layout.");
 	}
 
 	GUIFlexibleSpace& GUILayout::insertFlexibleSpace(UINT32 idx)
 	{
 		if(idx < 0 || idx > (UINT32)mChildren.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx) + ". Valid range: 0 .. " + toString((UINT32)mChildren.size()));
 
-		GUIFlexibleSpace* entry = cm_new<GUIFlexibleSpace, PoolAlloc>();
+		GUIFlexibleSpace* entry = bs_new<GUIFlexibleSpace, PoolAlloc>();
 
 		mChildren.insert(mChildren.begin() + idx, entry);
 		markContentAsDirty();

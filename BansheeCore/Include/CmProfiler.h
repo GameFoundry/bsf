@@ -45,7 +45,7 @@ namespace BansheeEngine
 		 */
 		void beginThread(const ProfilerString& name) 
 		{ 
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			mCPUProfiler->beginThread(name); 
 #endif
 		}
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		 */
 		void endThread() 
 		{ 
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			mCPUProfiler->endThread(); 
 #endif
 		}
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		 */
 		void beginSample(const ProfilerString& name) 
 		{ 
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			mCPUProfiler->beginSample(name); 
 #endif
 		}
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		 */
 		void endSample(const ProfilerString& name) 
 		{ 
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			mCPUProfiler->endSample(name); 
 #endif
 		}
@@ -85,7 +85,7 @@ namespace BansheeEngine
 		 */
 		void beginSamplePrecise(const ProfilerString& name) 
 		{ 
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			mCPUProfiler->beginSamplePrecise(name); 
 #endif
 		}
@@ -95,7 +95,7 @@ namespace BansheeEngine
 		 */
 		void endSamplePrecise(const ProfilerString& name) 
 		{ 
-#if CM_PROFILING_ENABLED
+#if BS_PROFILING_ENABLED
 			mCPUProfiler->endSamplePrecise(name); 
 #endif
 		}
@@ -136,7 +136,7 @@ namespace BansheeEngine
 
 		CPUProfiler* mCPUProfiler;
 
-		CM_MUTEX(mSync);
+		BS_MUTEX(mSync);
 	};
 
 	/**

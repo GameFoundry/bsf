@@ -22,7 +22,7 @@ namespace BansheeEngine
 	{
 		HString string(MonoUtil::monoToWString(identifier));
 		
-		ScriptHString* nativeInstance = new (cm_alloc<ScriptHString>()) ScriptHString(instance, string);
+		ScriptHString* nativeInstance = new (bs_alloc<ScriptHString>()) ScriptHString(instance, string);
 	}
 
 	void ScriptHString::internal_setParameter(HString* nativeInstance, UINT32 idx, MonoString* value)

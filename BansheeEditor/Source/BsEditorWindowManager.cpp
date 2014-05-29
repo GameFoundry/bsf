@@ -16,20 +16,20 @@ namespace BansheeEngine
 			destroy(mEditorWindows[0]);
 
 		if(mMainWindow != nullptr)
-			cm_delete(mMainWindow);
+			bs_delete(mMainWindow);
 	}
 
 	MainEditorWindow* EditorWindowManager::createMain(const RenderWindowPtr& parentRenderWindow)
 	{
 		if(mMainWindow == nullptr)
-			mMainWindow = new (cm_alloc<MainEditorWindow>()) MainEditorWindow(parentRenderWindow);
+			mMainWindow = new (bs_alloc<MainEditorWindow>()) MainEditorWindow(parentRenderWindow);
 
 		return mMainWindow;
 	}
 
 	EditorWindow* EditorWindowManager::create()
 	{
-		EditorWindow* newWindow = new (cm_alloc<EditorWindow>()) EditorWindow();
+		EditorWindow* newWindow = new (bs_alloc<EditorWindow>()) EditorWindow();
 		mEditorWindows.push_back(newWindow);
 
 		newWindow->initialize();
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		
 		for(auto& windowToDestroy : mScheduledForDestruction)
 		{
-			cm_delete(windowToDestroy);
+			bs_delete(windowToDestroy);
 		}
 
 		mScheduledForDestruction.clear();

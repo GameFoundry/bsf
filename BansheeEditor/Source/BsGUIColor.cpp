@@ -16,8 +16,8 @@ namespace BansheeEngine
 	GUIColor::GUIColor(const String& styleName, const GUILayoutOptions& layoutOptions)
 		:GUIElement(styleName, layoutOptions), mColorSprite(nullptr), mAlphaSprite(nullptr)
 	{
-		mColorSprite = cm_new<ImageSprite, PoolAlloc>();
-		mAlphaSprite = cm_new<ImageSprite, PoolAlloc>();
+		mColorSprite = bs_new<ImageSprite, PoolAlloc>();
+		mAlphaSprite = bs_new<ImageSprite, PoolAlloc>();
 
 		mColorImageDesc.texture = BuiltinResources::instance().getWhiteSpriteTexture().getInternalPtr();
 		mAlphaImageDesc.texture = BuiltinResources::instance().getWhiteSpriteTexture().getInternalPtr();
@@ -25,8 +25,8 @@ namespace BansheeEngine
 
 	GUIColor::~GUIColor()
 	{
-		cm_delete<PoolAlloc>(mColorSprite);
-		cm_delete<PoolAlloc>(mAlphaSprite);
+		bs_delete<PoolAlloc>(mColorSprite);
+		bs_delete<PoolAlloc>(mAlphaSprite);
 	}
 
 	const String& GUIColor::getGUITypeName()
@@ -37,12 +37,12 @@ namespace BansheeEngine
 
 	GUIColor* GUIColor::create(const String& styleName)
 	{
-		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create());
 	}
 
 	GUIColor* GUIColor::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIColor, PoolAlloc>()) GUIColor(getStyleName<GUIColor>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	void GUIColor::setColor(const Color& color)

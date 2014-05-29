@@ -46,7 +46,7 @@ namespace BansheeEngine
 
 	ImportOptionsPtr FontImporter::createImportOptions() const
 	{
-		return cm_shared_ptr<FontImportOptions, ScratchAlloc>();
+		return bs_shared_ptr<FontImportOptions, ScratchAlloc>();
 	}
 
 	ResourcePtr FontImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
@@ -57,18 +57,18 @@ namespace BansheeEngine
 
 		FT_Error error = FT_Init_FreeType(&library);
 		if (error)
-			CM_EXCEPT(InternalErrorException, "Error occurred during FreeType library initialization.");
+			BS_EXCEPT(InternalErrorException, "Error occurred during FreeType library initialization.");
 
 		FT_Face face;
 		error = FT_New_Face(library, filePath.toString().c_str(), 0, &face);
 
 		if (error == FT_Err_Unknown_File_Format)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath.toString() + ". Unsupported file format.");
+			BS_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath.toString() + ". Unsupported file format.");
 		}
 		else if (error)
 		{
-			CM_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath.toString() + ". Unknown error.");
+			BS_EXCEPT(InternalErrorException, "Failed to load font file: " + filePath.toString() + ". Unknown error.");
 		}
 
 		Vector<std::pair<UINT32, UINT32>> charIndexRanges = fontImportOptions->getCharIndexRanges();
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		{
 			FT_F26Dot6 ftSize = (FT_F26Dot6)(fontSizes[i] * (1 << 6));
 			if(FT_Set_Char_Size( face, ftSize, 0, dpi, dpi))
-				CM_EXCEPT(InternalErrorException, "Could not set character size." );
+				BS_EXCEPT(InternalErrorException, "Could not set character size." );
 
 			FontData fontData;
 
@@ -98,7 +98,7 @@ namespace BansheeEngine
 					error = FT_Load_Char(face, (FT_ULong)charIdx, loadFlags);
 
 					if(error)
-						CM_EXCEPT(InternalErrorException, "Failed to load a character");
+						BS_EXCEPT(InternalErrorException, "Failed to load a character");
 
 					FT_GlyphSlot slot = face->glyph;
 
@@ -116,7 +116,7 @@ namespace BansheeEngine
 				error = FT_Load_Glyph(face, (FT_ULong)0, loadFlags);
 
 				if(error)
-					CM_EXCEPT(InternalErrorException, "Failed to load a character");
+					BS_EXCEPT(InternalErrorException, "Failed to load a character");
 
 				FT_GlyphSlot slot = face->glyph;
 
@@ -141,7 +141,7 @@ namespace BansheeEngine
 				UINT32 bufferSize = pageIter->width * pageIter->height * 2;
 
 				// TODO - I don't actually need a 2 channel texture
-				PixelDataPtr pixelData = cm_shared_ptr<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
+				PixelDataPtr pixelData = bs_shared_ptr<PixelData>(pageIter->width, pageIter->height, 1, PF_R8G8);
 
 				pixelData->allocateInternalBuffer();
 				UINT8* pixelBuffer = pixelData->getData();
@@ -169,12 +169,12 @@ namespace BansheeEngine
 					}
 
 					if(error)
-						CM_EXCEPT(InternalErrorException, "Failed to load a character");
+						BS_EXCEPT(InternalErrorException, "Failed to load a character");
 
 					FT_GlyphSlot slot = face->glyph;
 
 					if(slot->bitmap.buffer == nullptr && slot->bitmap.rows > 0 && slot->bitmap.width > 0)
-						CM_EXCEPT(InternalErrorException, "Failed to render glyph bitmap");
+						BS_EXCEPT(InternalErrorException, "Failed to render glyph bitmap");
 
 					UINT8* sourceBuffer = slot->bitmap.buffer;
 					UINT8* dstBuffer = pixelBuffer + (curElement.output.y * pageIter->width * 2) + curElement.output.x * 2;
@@ -212,7 +212,7 @@ namespace BansheeEngine
 						}
 					}
 					else
-						CM_EXCEPT(InternalErrorException, "Unsupported pixel mode for a FreeType bitmap.");
+						BS_EXCEPT(InternalErrorException, "Unsupported pixel mode for a FreeType bitmap.");
 
 					// Store character information
 					CHAR_DESC charDesc;
@@ -250,7 +250,7 @@ namespace BansheeEngine
 								error = FT_Get_Kerning(face, charIdx, kerningCharIdx, FT_KERNING_DEFAULT, &resultKerning);
 
 								if(error)
-									CM_EXCEPT(InternalErrorException, "Failed to get kerning information for character: " + toString(charIdx));
+									BS_EXCEPT(InternalErrorException, "Failed to get kerning information for character: " + toString(charIdx));
 
 								INT32 kerningX = (INT32)(resultKerning.x >> 6); // Y kerning is ignored because it is so rare
 								if(kerningX == 0) // We don't store 0 kerning, this is assumed default
@@ -308,7 +308,7 @@ namespace BansheeEngine
 			error = FT_Load_Char(face, 32, loadFlags);
 
 			if(error)
-				CM_EXCEPT(InternalErrorException, "Failed to load a character");
+				BS_EXCEPT(InternalErrorException, "Failed to load a character");
 
 			fontData.fontDesc.spaceWidth = face->glyph->advance.x >> 6;
 

@@ -61,7 +61,7 @@ namespace BansheeEngine
 
 		guiIntField->onValueChanged.connect(std::bind(&ScriptGUIIntField::onChanged, instance, _1));
 
-		ScriptGUIIntField* nativeInstance = new (cm_alloc<ScriptGUIIntField>()) ScriptGUIIntField(instance, guiIntField);
+		ScriptGUIIntField* nativeInstance = new (bs_alloc<ScriptGUIIntField>()) ScriptGUIIntField(instance, guiIntField);
 	}
 
 	INT32 ScriptGUIIntField::internal_getValue(ScriptGUIIntField* nativeInstance)

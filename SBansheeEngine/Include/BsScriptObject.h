@@ -86,10 +86,10 @@ namespace BansheeEngine
 		template <class Type2, class Base2>
 		static void throwIfInstancesDontMatch(ScriptObject<Type2, Base2>* lhs, void* rhs)
 		{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if((lhs == nullptr && rhs != nullptr) || (rhs == nullptr && lhs != nullptr) || lhs->getNativeRaw() != rhs)
 			{
-				CM_EXCEPT(InvalidStateException, "Native and script instance do not match. This usually happens when you modify a native object " \
+				BS_EXCEPT(InvalidStateException, "Native and script instance do not match. This usually happens when you modify a native object " \
 					" that is also being referenced from script code. You should only modify such objects directly from script code.");
 			}
 #endif

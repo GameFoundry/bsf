@@ -16,7 +16,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-	        DynLib* newLib = new (cm_alloc<DynLib>()) DynLib(filename);
+	        DynLib* newLib = new (bs_alloc<DynLib>()) DynLib(filename);
 
 			newLib->load();       
         	mLoadedLibraries[filename] = newLib;
@@ -34,7 +34,7 @@ namespace BansheeEngine
 		}
 
 		lib->unload();
-		cm_delete(lib);
+		bs_delete(lib);
 	}
 
 	DynLibManager::~DynLibManager()
@@ -43,7 +43,7 @@ namespace BansheeEngine
         for(auto& entry : mLoadedLibraries)
         {
             entry.second->unload();
-			cm_delete(entry.second);
+			bs_delete(entry.second);
         }
 
         // Empty the list

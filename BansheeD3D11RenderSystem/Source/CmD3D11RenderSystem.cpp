@@ -59,9 +59,9 @@ namespace BansheeEngine
 
 		HRESULT hr = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&mDXGIFactory);
 		if(FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 DXGIFactory");
+			BS_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 DXGIFactory");
 
-		mDriverList = cm_new<D3D11DriverList>(mDXGIFactory);
+		mDriverList = bs_new<D3D11DriverList>(mDXGIFactory);
 		mActiveD3DDriver = mDriverList->item(0); // TODO: Always get first driver, for now
 		mVideoModeInfo = mActiveD3DDriver->getVideoModeInfo();
 
@@ -80,7 +80,7 @@ namespace BansheeEngine
 
 		UINT32 deviceFlags = 0;
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		deviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
@@ -89,9 +89,9 @@ namespace BansheeEngine
 			requestedLevels, numRequestedLevel, D3D11_SDK_VERSION, &device, &mFeatureLevel, nullptr);
 
 		if(FAILED(hr))         
-			CM_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 object. D3D11CreateDeviceN returned this error code: " + toString(hr));
+			BS_EXCEPT(RenderingAPIException, "Failed to create Direct3D11 object. D3D11CreateDeviceN returned this error code: " + toString(hr));
 
-		mDevice = cm_new<D3D11Device>(device);
+		mDevice = bs_new<D3D11Device>(device);
 		
 		// This must query for DirectX 10 interface as this is unsupported for DX11
 		LARGE_INTEGER driverVersion; 
@@ -113,7 +113,7 @@ namespace BansheeEngine
 		RenderWindowManager::startUp<D3D11RenderWindowManager>(this);
 
 		// Create & register HLSL factory		
-		mHLSLFactory = cm_new<D3D11HLSLProgramFactory>();
+		mHLSLFactory = bs_new<D3D11HLSLProgramFactory>();
 
 		// Create render state manager
 		RenderStateManager::startUp<D3D11RenderStateManager>();
@@ -123,7 +123,7 @@ namespace BansheeEngine
 		mCurrentCapabilities->addShaderProfile("hlsl");
 		GpuProgramManager::instance().addFactory(mHLSLFactory);
 
-		mIAManager = cm_new<D3D11InputLayoutManager>();
+		mIAManager = bs_new<D3D11InputLayoutManager>();
 
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
 
@@ -145,13 +145,13 @@ namespace BansheeEngine
 
 		if(mIAManager != nullptr)
 		{
-			cm_delete(mIAManager);
+			bs_delete(mIAManager);
 			mIAManager = nullptr;
 		}
 
 		if(mHLSLFactory != nullptr)
 		{
-			cm_delete(mHLSLFactory);
+			bs_delete(mHLSLFactory);
 			mHLSLFactory = nullptr;
 		}
 
@@ -167,13 +167,13 @@ namespace BansheeEngine
 
 		if(mDevice != nullptr)
 		{
-			cm_delete(mDevice);
+			bs_delete(mDevice);
 			mDevice = nullptr;
 		}
 
 		if(mDriverList != nullptr)
 		{
-			cm_delete(mDriverList);
+			bs_delete(mDriverList);
 			mDriverList = nullptr;
 		}
 
@@ -214,7 +214,7 @@ namespace BansheeEngine
 			mDevice->getImmediateContext()->CSSetSamplers(texUnit, 1, samplerArray);
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
+			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
 
 		mRenderStats.numSamplerBinds++;
@@ -288,7 +288,7 @@ namespace BansheeEngine
 			mDevice->getImmediateContext()->CSSetShaderResources(unit, 1, viewArray);
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
+			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
 
 		mRenderStats.numTextureBinds++;
@@ -346,7 +346,7 @@ namespace BansheeEngine
 
 		UINT32 maxBoundVertexBuffers = mCurrentCapabilities->getMaxBoundVertexBuffers();
 		if(index < 0 || (index + numBuffers) >= maxBoundVertexBuffers)
-			CM_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) + ". Valid range is 0 .. " + toString(maxBoundVertexBuffers - 1));
+			BS_EXCEPT(InvalidParametersException, "Invalid vertex index: " + toString(index) + ". Valid range is 0 .. " + toString(maxBoundVertexBuffers - 1));
 
 		ID3D11Buffer* dx11buffers[MAX_BOUND_VERTEX_BUFFERS];
 		UINT32 strides[MAX_BOUND_VERTEX_BUFFERS];
@@ -378,7 +378,7 @@ namespace BansheeEngine
 		else if(indexBuffer->getType() == IndexBuffer::IT_32BIT)
 			indexFormat = DXGI_FORMAT_R32_UINT;
 		else
-			CM_EXCEPT(InternalErrorException, "Unsupported index format: " + toString(indexBuffer->getType()));
+			BS_EXCEPT(InternalErrorException, "Unsupported index format: " + toString(indexBuffer->getType()));
 
 		mDevice->getImmediateContext()->IASetIndexBuffer(indexBuffer->getD3DIndexBuffer(), indexFormat, 0);
 
@@ -446,11 +446,11 @@ namespace BansheeEngine
 				break;
 			}
 		default:
-			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(prg->getType()));
+			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(prg->getType()));
 		}
 
 		if (mDevice->hasError())
-			CM_EXCEPT(RenderingAPIException, "Failed to bindGpuProgram : " + mDevice->getErrorDescription());
+			BS_EXCEPT(RenderingAPIException, "Failed to bindGpuProgram : " + mDevice->getErrorDescription());
 
 		mRenderStats.numGpuProgramBinds++;
 	}
@@ -481,7 +481,7 @@ namespace BansheeEngine
 			mDevice->getImmediateContext()->CSSetShader(nullptr, nullptr, 0);
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
+			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
 
 		mRenderStats.numGpuProgramBinds++;
@@ -557,7 +557,7 @@ namespace BansheeEngine
 		}
 
 		if (mDevice->hasError())
-			CM_EXCEPT(RenderingAPIException, "Failed to bindGpuParams : " + mDevice->getErrorDescription());
+			BS_EXCEPT(RenderingAPIException, "Failed to bindGpuParams : " + mDevice->getErrorDescription());
 	}
 
 	void D3D11RenderSystem::draw(UINT32 vertexOffset, UINT32 vertexCount)
@@ -568,7 +568,7 @@ namespace BansheeEngine
 
 		mDevice->getImmediateContext()->Draw(vertexCount, vertexOffset);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(mDevice->hasError())
 			LOGWRN(mDevice->getErrorDescription());
 #endif
@@ -586,7 +586,7 @@ namespace BansheeEngine
 
 		mDevice->getImmediateContext()->DrawIndexed(indexCount, startIndex, vertexOffset);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(mDevice->hasError())
 			LOGWRN(mDevice->getErrorDescription());
 #endif
@@ -641,13 +641,13 @@ namespace BansheeEngine
 		{
 			UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
 
-			ID3D11RenderTargetView** views = cm_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
+			ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 			memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 
 			mActiveRenderTarget->getCustomAttribute("RTV", views);
 			if (!views[0])
 			{
-				cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
+				bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
 				return;
 			}
 
@@ -663,7 +663,7 @@ namespace BansheeEngine
 					mDevice->getImmediateContext()->ClearRenderTargetView(views[i], clearColor);
 			}
 
-			cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
+			bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
 		}
 
 		// Clear depth stencil
@@ -696,12 +696,12 @@ namespace BansheeEngine
 
 		// Retrieve render surfaces
 		UINT32 maxRenderTargets = mCurrentCapabilities->getNumMultiRenderTargets();
-		ID3D11RenderTargetView** views = cm_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
+		ID3D11RenderTargetView** views = bs_newN<ID3D11RenderTargetView*, ScratchAlloc>(maxRenderTargets);
 		memset(views, 0, sizeof(ID3D11RenderTargetView*) * maxRenderTargets);
 		target->getCustomAttribute("RTV", views);
 		if (!views[0])
 		{
-			cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
+			bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
 			return;
 		}
 
@@ -712,9 +712,9 @@ namespace BansheeEngine
 		// Bind render targets
 		mDevice->getImmediateContext()->OMSetRenderTargets(maxRenderTargets, views, depthStencilView);
 		if (mDevice->hasError())
-			CM_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
+			BS_EXCEPT(RenderingAPIException, "Failed to setRenderTarget : " + mDevice->getErrorDescription());
 
-		cm_deleteN<ScratchAlloc>(views, maxRenderTargets);
+		bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
 
 		mRenderStats.numRenderTargetChanges++;
 	}
@@ -728,7 +728,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		RenderSystemCapabilities* rsc = cm_new<RenderSystemCapabilities>();
+		RenderSystemCapabilities* rsc = bs_new<RenderSystemCapabilities>();
 
 		rsc->setDriverVersion(mDriverVersion);
 		rsc->setDeviceName(mActiveD3DDriver->getDriverDescription());

@@ -29,7 +29,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject()
 		{
-			return cm_shared_ptr<Camera, PoolAlloc>(new (cm_alloc<Camera, PoolAlloc>()) Camera());
+			return bs_shared_ptr<Camera, PoolAlloc>(new (bs_alloc<Camera, PoolAlloc>()) Camera());
 		}
 	};
 }

@@ -14,16 +14,16 @@ namespace BansheeEngine
 		~CmdEditPlainFieldGO() 
 		{
 			if(mNewData != nullptr)
-				cm_free(mNewData);
+				bs_free(mNewData);
 
 			if(mOldData != nullptr)
-				cm_free(mOldData);
+				bs_free(mOldData);
 		}
 
 		static void execute(const GameObjectHandleBase& gameObject, const String& fieldName, const T& fieldValue)
 		{
 			// Register command and commit it
-			CmdEditPlainFieldGO* command = new (cm_alloc<CmdEditPlainFieldGO>()) CmdEditPlainFieldGO(gameObject, fieldName, fieldValue);
+			CmdEditPlainFieldGO* command = new (bs_alloc<CmdEditPlainFieldGO>()) CmdEditPlainFieldGO(gameObject, fieldName, fieldValue);
 			UndoRedo::instance().registerCommand(command);
 			command->commit();
 		}
@@ -60,7 +60,7 @@ namespace BansheeEngine
 		{
 			// Convert new value to bytes
 			UINT32 newDataNumBytes = RTTIPlainType<T>::getDynamicSize(fieldValue);
-			mNewData = cm_alloc(newDataNumBytes);
+			mNewData = bs_alloc(newDataNumBytes);
 
 			RTTIPlainType<T>::toMemory(fieldValue, (char*)mNewData);
 
@@ -69,7 +69,7 @@ namespace BansheeEngine
 			gameObject->getRTTI()->getPlainValue(gameObject.get(), fieldName, oldFieldValue);
 
 			UINT32 oldDataNumBytes = RTTIPlainType<T>::getDynamicSize(oldFieldValue);
-			mOldData = cm_alloc(oldDataNumBytes);
+			mOldData = bs_alloc(oldDataNumBytes);
 
 			RTTIPlainType<T>::toMemory(oldFieldValue, (char*)mOldData);
 		}

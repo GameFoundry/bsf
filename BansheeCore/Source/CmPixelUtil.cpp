@@ -787,7 +787,7 @@ namespace BansheeEngine
 					return ((width+3)/4)*((height+3)/4)*16 * depth;
 
 				default:
-				CM_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
+				BS_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
 			}
 		}
 		else
@@ -1013,7 +1013,7 @@ namespace BansheeEngine
 				((UINT8*)dest)[0] = (UINT8)Bitwise::floatToFixed(r, 8);
 				break;
             default:
-                CM_EXCEPT(NotImplementedException, "Pack to " + getFormatName(format) + " not implemented");
+                BS_EXCEPT(NotImplementedException, "Pack to " + getFormatName(format) + " not implemented");
                 break;
             }
         }
@@ -1139,7 +1139,7 @@ namespace BansheeEngine
 				*a = 1.0f;
 				break;
             default:
-                CM_EXCEPT(NotImplementedException, "Unpack from " + getFormatName(format) + " not implemented");
+                BS_EXCEPT(NotImplementedException, "Unpack from " + getFormatName(format) + " not implemented");
                 break;
             }
         }
@@ -1161,7 +1161,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				CM_EXCEPT(NotImplementedException, "This method can not be used to compress or decompress images");
+				BS_EXCEPT(NotImplementedException, "This method can not be used to compress or decompress images");
 			}
 		}
 

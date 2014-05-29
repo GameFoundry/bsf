@@ -57,7 +57,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_MeshData)
-			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
+			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
 
 		if(discardEntireBuffer)
 		{
@@ -85,12 +85,12 @@ namespace BansheeEngine
 
 		if(meshData.getIndexElementSize() != mIndexData->indexBuffer->getIndexSize())
 		{
-			CM_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
+			BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
 				toString(mIndexData->indexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
 		}
 
 		if((indexOffset + indicesSize) > mIndexData->indexBuffer->getSizeInBytes())
-			CM_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
+			BS_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
 
 		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
@@ -108,7 +108,7 @@ namespace BansheeEngine
 			UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(i);
 			if(myVertSize != otherVertSize)
 			{
-				CM_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " + 
+				BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " + 
 					toString(myVertSize) + ". Got: " + toString(otherVertSize));
 			}
 
@@ -119,11 +119,11 @@ namespace BansheeEngine
 			UINT8* srcVertBufferData = meshData.getStreamData(i);
 
 			if((bufferOffset + bufferSize) > vertexBuffer->getSizeInBytes())
-				CM_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
+				BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
 
 			if(vertexBuffer->vertexColorReqRGBFlip())
 			{
-				UINT8* bufferCopy = (UINT8*)cm_alloc(bufferSize);
+				UINT8* bufferCopy = (UINT8*)bs_alloc(bufferSize);
 				memcpy(bufferCopy, srcVertBufferData, bufferSize); // TODO Low priority - Attempt to avoid this copy
 
 				UINT32 vertexStride = meshData.getVertexDesc()->getVertexStride(i);
@@ -145,7 +145,7 @@ namespace BansheeEngine
 
 				vertexBuffer->writeData(bufferOffset, bufferSize, bufferCopy, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
-				cm_free(bufferCopy);
+				bs_free(bufferCopy);
 			}
 			else
 			{
@@ -159,7 +159,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(data.getTypeId() != TID_MeshData)
-			CM_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
+			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
 
 		IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT;
 		if(mIndexData)
@@ -171,7 +171,7 @@ namespace BansheeEngine
 		{
 			if(meshData.getIndexElementSize() != mIndexData->indexBuffer->getIndexSize())
 			{
-				CM_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
+				BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
 					toString(mIndexData->indexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
 			}
 
@@ -191,7 +191,7 @@ namespace BansheeEngine
 
 			UINT32 indicesSize = numIndicesToCopy * idxElemSize;
 			if(indicesSize > meshData.getIndexBufferSize())
-				CM_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
+				BS_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
 
 			idxData += indexResourceOffset * idxElemSize;
 			memcpy(indices, idxData, numIndicesToCopy * idxElemSize);
@@ -214,7 +214,7 @@ namespace BansheeEngine
 				UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(streamIdx);
 				if(myVertSize != otherVertSize)
 				{
-					CM_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " + 
+					BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(streamIdx) + " doesn't match meshes vertex size. Needed: " + 
 						toString(myVertSize) + ". Got: " + toString(otherVertSize));
 				}
 
@@ -227,7 +227,7 @@ namespace BansheeEngine
 				UINT32 bufferSize = vertexBuffer->getVertexSize() * numVerticesToCopy;
 				
 				if((bufferOffset + bufferSize) > vertexBuffer->getSizeInBytes())
-					CM_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
+					BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
 
 				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY)) + vertexResourceOffset * meshData.getVertexDesc()->getVertexStride(streamIdx);
 
@@ -247,7 +247,7 @@ namespace BansheeEngine
 		if(mIndexData)
 			indexType = mIndexData->indexBuffer->getType();
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData>(mVertexData->vertexCount, mNumIndices, mVertexDesc, indexType);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData>(mVertexData->vertexCount, mNumIndices, mVertexDesc, indexType);
 
 		return meshData;
 	}
@@ -282,7 +282,7 @@ namespace BansheeEngine
 	{
 		THROW_IF_NOT_CORE_THREAD;
 		
-		mIndexData = std::shared_ptr<IndexData>(cm_new<IndexData, PoolAlloc>());
+		mIndexData = std::shared_ptr<IndexData>(bs_new<IndexData, PoolAlloc>());
 
 		mIndexData->indexCount = mNumIndices;
 		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
@@ -290,7 +290,7 @@ namespace BansheeEngine
 			mIndexData->indexCount, 
 			mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
 
-		mVertexData = std::shared_ptr<VertexData>(cm_new<VertexData, PoolAlloc>());
+		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
 
 		mVertexData->vertexCount = mNumVertices;
 		mVertexData->vertexDeclaration = mVertexDesc->createDeclaration();

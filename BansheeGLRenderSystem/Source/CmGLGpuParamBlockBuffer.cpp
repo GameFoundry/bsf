@@ -17,7 +17,7 @@ namespace BansheeEngine
 		else if(mUsage == GPBU_DYNAMIC)
 			glBufferData(GL_UNIFORM_BUFFER, mSize, nullptr, GL_DYNAMIC_DRAW);
 		else
-			CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
+			BS_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
 
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 

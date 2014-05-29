@@ -118,14 +118,14 @@ namespace BansheeEngine
 		mCaptureHitBox->_changeParentWidget(this);
 
 		RectI availableBounds(target->getX(), target->getY(), target->getWidth(), target->getHeight());
-		mRootMenu = cm_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
+		mRootMenu = bs_new<DropDownSubMenu>(this, placement, availableBounds, dropDownData, type, 0);
 	}
 
 	GUIDropDownBox::~GUIDropDownBox()
 	{
 		GUIElement::destroy(mHitBox);
 		GUIElement::destroy(mCaptureHitBox);
-		cm_delete(mRootMenu);
+		bs_delete(mRootMenu);
 	}
 
 	void GUIDropDownBox::dropDownFocusLost()
@@ -543,7 +543,7 @@ namespace BansheeEngine
 	{
 		if(mSubMenu != nullptr)
 		{
-			cm_delete(mSubMenu);
+			bs_delete(mSubMenu);
 			mSubMenu = nullptr;
 		}
 	}
@@ -563,7 +563,7 @@ namespace BansheeEngine
 	{
 		closeSubMenu();
 
-		mSubMenu = cm_new<DropDownSubMenu>(mOwner, GUIDropDownAreaPlacement::aroundBoundsVert(source->getBounds()), 
+		mSubMenu = bs_new<DropDownSubMenu>(mOwner, GUIDropDownAreaPlacement::aroundBoundsVert(source->getBounds()), 
 			mAvailableBounds, mData.entries[idx].getSubMenuData(), mType, mDepthOffset + 1);
 	}
 }

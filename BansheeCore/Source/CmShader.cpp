@@ -14,7 +14,7 @@ namespace BansheeEngine
 
 	TechniquePtr Shader::addTechnique(const String& renderSystem, const String& renderer)
 	{
-		TechniquePtr technique = cm_shared_ptr<Technique, PoolAlloc>(renderSystem, renderer);
+		TechniquePtr technique = bs_shared_ptr<Technique, PoolAlloc>(renderSystem, renderer);
 		mTechniques.push_back(technique);
 
 		return technique;
@@ -23,7 +23,7 @@ namespace BansheeEngine
 	void Shader::removeTechnique(UINT32 idx)
 	{
 		if(idx < 0 || idx >= mTechniques.size())
-			CM_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
+			BS_EXCEPT(InvalidParametersException, "Index out of range: " + toString(idx));
 
 		int count = 0;
 		auto iter = mTechniques.begin();
@@ -41,7 +41,7 @@ namespace BansheeEngine
 		auto iterFind = std::find(mTechniques.begin(), mTechniques.end(), technique);
 
 		if(iterFind == mTechniques.end())
-			CM_EXCEPT(InvalidParametersException, "Cannot remove specified technique because it wasn't found in this shader.");
+			BS_EXCEPT(InvalidParametersException, "Cannot remove specified technique because it wasn't found in this shader.");
 
 		mTechniques.erase(iterFind);
 	}
@@ -64,7 +64,7 @@ namespace BansheeEngine
 	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, UINT32 elementSize, bool hidden)
 	{
 		if(type == GPDT_STRUCT && elementSize <= 0)
-			CM_EXCEPT(InvalidParametersException, "You need to provide a non-zero element size for a struct parameter.")
+			BS_EXCEPT(InvalidParametersException, "You need to provide a non-zero element size for a struct parameter.")
 
 		SHADER_DATA_PARAM_DESC desc;
 		desc.name = name;
@@ -100,7 +100,7 @@ namespace BansheeEngine
 		if(findIterObject != mObjectParams.end())
 			return GPT_OBJECT;
 
-		CM_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
 	}
 
 	const SHADER_DATA_PARAM_DESC& Shader::getDataParamDesc(const String& name) const
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		if(findIterData != mDataParams.end())
 			return findIterData->second;
 
-		CM_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
 	}
 
 	const SHADER_OBJECT_PARAM_DESC& Shader::getObjectParamDesc(const String& name) const
@@ -118,7 +118,7 @@ namespace BansheeEngine
 		if(findIterObject != mObjectParams.end())
 			return findIterObject->second;
 
-		CM_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
+		BS_EXCEPT(InternalErrorException, "Cannot find the parameter with the name: " + name);
 	}
 
 	bool Shader::hasDataParam(const String& name) const
@@ -206,7 +206,7 @@ namespace BansheeEngine
 
 	ShaderPtr Shader::create(const String& name)
 	{
-		ShaderPtr newShader = cm_core_ptr<Shader, PoolAlloc>(new (cm_alloc<Shader, PoolAlloc>()) Shader(name));
+		ShaderPtr newShader = bs_core_ptr<Shader, PoolAlloc>(new (bs_alloc<Shader, PoolAlloc>()) Shader(name));
 		newShader->_setThisPtr(newShader);
 		newShader->initialize();
 

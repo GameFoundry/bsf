@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 	void ScriptGUIPanel::internal_createInstance(MonoObject* instance)
 	{
-		ScriptGUIPanel* nativeInstance = new (cm_alloc<ScriptGUIPanel>()) ScriptGUIPanel(instance);
+		ScriptGUIPanel* nativeInstance = new (bs_alloc<ScriptGUIPanel>()) ScriptGUIPanel(instance);
 	}
 
 	void ScriptGUIPanel::internal_setArea(ScriptGUIPanel* thisPtr, INT32 x, INT32 y, UINT32 width, UINT32 height, UINT16 depth)

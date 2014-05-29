@@ -18,7 +18,7 @@ namespace BansheeEngine
 {
 	ManagedSerializableFieldKeyPtr ManagedSerializableFieldKey::create(UINT16 typeId, UINT16 fieldId)
 	{
-		ManagedSerializableFieldKeyPtr fieldKey = cm_shared_ptr<ManagedSerializableFieldKey>();
+		ManagedSerializableFieldKeyPtr fieldKey = bs_shared_ptr<ManagedSerializableFieldKey>();
 		fieldKey->mTypeId = typeId;
 		fieldKey->mFieldId = fieldId;
 
@@ -27,7 +27,7 @@ namespace BansheeEngine
 
 	ManagedSerializableFieldDataEntryPtr ManagedSerializableFieldDataEntry::create(const ManagedSerializableFieldKeyPtr& key, const ManagedSerializableFieldDataPtr& value)
 	{
-		ManagedSerializableFieldDataEntryPtr fieldDataEntry = cm_shared_ptr<ManagedSerializableFieldDataEntry>();
+		ManagedSerializableFieldDataEntryPtr fieldDataEntry = bs_shared_ptr<ManagedSerializableFieldDataEntry>();
 		fieldDataEntry->mKey = key;
 		fieldDataEntry->mValue = value;
 
@@ -43,7 +43,7 @@ namespace BansheeEngine
 			{
 			case ScriptPrimitiveType::Bool:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataBool>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataBool>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 
@@ -51,77 +51,77 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::Char:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataChar>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataChar>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I8:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI8>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI8>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U8:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU8>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU8>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I16:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI16>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI16>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U16:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU16>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU16>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I32:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI32>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI32>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U32:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU32>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU32>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::I64:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataI64>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataI64>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::U64:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataU64>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataU64>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Float:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataFloat>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataFloat>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
 				}
 			case ScriptPrimitiveType::Double:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataDouble>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataDouble>();
 					if(value != nullptr)
 						memcpy(&fieldData->value, mono_object_unbox(value), sizeof(fieldData->value));
 					return fieldData;
@@ -130,14 +130,14 @@ namespace BansheeEngine
 				{
 					MonoString* strVal = (MonoString*)(value);
 
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataString>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataString>();
 					if(strVal != nullptr)
 						fieldData->value = MonoUtil::monoToWString(strVal);
 					return fieldData;
 				}
 			case ScriptPrimitiveType::TextureRef:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
 
 					if(value != nullptr)
 					{
@@ -149,7 +149,7 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::SpriteTextureRef:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataResourceRef>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataResourceRef>();
 					
 					if(value != nullptr)
 					{
@@ -161,7 +161,7 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::SceneObjectRef:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
 
 					if(value != nullptr)
 					{
@@ -173,7 +173,7 @@ namespace BansheeEngine
 				}
 			case ScriptPrimitiveType::ComponentRef:
 				{
-					auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
+					auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataGameObjectRef>();
 
 					if(value != nullptr)
 					{
@@ -187,7 +187,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoObject)
 		{
-			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataObject>();
+			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataObject>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableObject::create(value);
@@ -197,7 +197,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoArray)
 		{
-			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataArray>();
+			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataArray>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableArray::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoArray>(typeInfo));
@@ -207,7 +207,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoList)
 		{
-			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataList>();
+			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataList>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableList::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoList>(typeInfo));
@@ -217,7 +217,7 @@ namespace BansheeEngine
 		}
 		else if(typeInfo->getTypeId() == TID_SerializableTypeInfoDictionary)
 		{
-			auto fieldData = cm_shared_ptr<ManagedSerializableFieldDataDictionary>();
+			auto fieldData = bs_shared_ptr<ManagedSerializableFieldDataDictionary>();
 			if(value != nullptr)
 			{
 				fieldData->value = ManagedSerializableDictionary::create(value, std::static_pointer_cast<ManagedSerializableTypeInfoDictionary>(typeInfo));
@@ -238,7 +238,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataChar::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -250,7 +250,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataI8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -262,7 +262,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataU8::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -274,7 +274,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataI16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -286,7 +286,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataU16::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -298,7 +298,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataI32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -310,7 +310,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataU32::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -322,7 +322,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataI64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -334,7 +334,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataU64::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -346,7 +346,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataFloat::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -358,7 +358,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataDouble::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -370,7 +370,7 @@ namespace BansheeEngine
 				return &value;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataString::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -384,7 +384,7 @@ namespace BansheeEngine
 			}
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataResourceRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -422,7 +422,7 @@ namespace BansheeEngine
 			}
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataGameObjectRef::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -459,7 +459,7 @@ namespace BansheeEngine
 			}
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataObject::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -484,7 +484,7 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataArray::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -499,7 +499,7 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataList::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -514,7 +514,7 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	void* ManagedSerializableFieldDataDictionary::getValue(const ManagedSerializableTypeInfoPtr& typeInfo)
@@ -529,7 +529,7 @@ namespace BansheeEngine
 			return nullptr;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
+		BS_EXCEPT(InvalidParametersException, "Requesting an invalid type in serializable field.");
 	}
 
 	RTTITypeBase* ManagedSerializableFieldKey::getRTTIStatic()

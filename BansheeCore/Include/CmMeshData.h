@@ -62,10 +62,10 @@ namespace BansheeEngine
 		 */
 		bool moveNext()
 		{
-#ifdef CM_DEBUG_MODE
+#ifdef BS_DEBUG_MODE
 			if(mData >= mEnd)
 			{
-				CM_EXCEPT(InternalErrorException, "Vertex element iterator out of buffer bounds.");
+				BS_EXCEPT(InternalErrorException, "Vertex element iterator out of buffer bounds.");
 			}
 #endif
 

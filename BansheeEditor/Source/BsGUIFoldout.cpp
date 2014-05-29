@@ -40,7 +40,7 @@ namespace BansheeEngine
 		if(*curBackgroundStyle == StringUtil::BLANK)
 			curBackgroundStyle = &FOLDOUT_BG_STYLE;
 
-		return cm_new<GUIFoldout>(PrivatelyConstruct(), *curToggleStyle, *curBackgroundStyle, 
+		return bs_new<GUIFoldout>(PrivatelyConstruct(), *curToggleStyle, *curBackgroundStyle, 
 			GUILayoutOptions::create(layoutOptions));
 	}
 
@@ -55,7 +55,7 @@ namespace BansheeEngine
 		if(*curBackgroundStyle == StringUtil::BLANK)
 			curBackgroundStyle = &FOLDOUT_BG_STYLE;
 
-		return cm_new<GUIFoldout>(PrivatelyConstruct(), *curToggleStyle, *curBackgroundStyle, 
+		return bs_new<GUIFoldout>(PrivatelyConstruct(), *curToggleStyle, *curBackgroundStyle, 
 			GUILayoutOptions::create());
 	}
 

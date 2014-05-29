@@ -71,7 +71,7 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
+			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
 		desc.Format = texture->getDXGIFormat();
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
 		{
 			String msg = d3d11rs->getPrimaryDevice().getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create ShaderResourceView: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create ShaderResourceView: " + msg);
 		}
 
 		return srv;
@@ -116,7 +116,7 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
+			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
 		desc.Format = texture->getDXGIFormat();
@@ -129,7 +129,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
 		{
 			String msg = d3d11rs->getPrimaryDevice().getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create RenderTargetView: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create RenderTargetView: " + msg);
 		}
 
 		return rtv;
@@ -158,7 +158,7 @@ namespace BansheeEngine
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
+			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
 		desc.Format = texture->getDXGIFormat();
@@ -171,7 +171,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
 		{
 			String msg = d3d11rs->getPrimaryDevice().getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create UnorderedAccessView: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create UnorderedAccessView: " + msg);
 		}
 
 		return uav;
@@ -197,7 +197,7 @@ namespace BansheeEngine
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
 			break;
 		default:
-			CM_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
+			BS_EXCEPT(InvalidParametersException, "Invalid texture type for this view type.");
 		}
 
 		desc.Format = texture->getDXGIFormat();
@@ -210,7 +210,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || d3d11rs->getPrimaryDevice().hasError())
 		{
 			String msg = d3d11rs->getPrimaryDevice().getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create DepthStencilView: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create DepthStencilView: " + msg);
 		}
 
 		return dsv;

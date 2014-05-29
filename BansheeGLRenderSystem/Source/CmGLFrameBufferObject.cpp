@@ -54,7 +54,7 @@ namespace BansheeEngine
 		}
 
         /// Initialise state
-        for(UINT32 x = 0; x < CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+        for(UINT32 x = 0; x < BS_MAX_MULTIPLE_RENDER_TARGETS; ++x)
             mColor[x].buffer = nullptr;
     }
 
@@ -66,7 +66,7 @@ namespace BansheeEngine
 
     void GLFrameBufferObject::bindSurface(UINT32 attachment, const GLSurfaceDesc &target)
     {
-        assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
+        assert(attachment < BS_MAX_MULTIPLE_RENDER_TARGETS);
         mColor[attachment] = target;
 
 		// Re-initialise
@@ -76,7 +76,7 @@ namespace BansheeEngine
 
     void GLFrameBufferObject::unbindSurface(UINT32 attachment)
     {
-        assert(attachment < CM_MAX_MULTIPLE_RENDER_TARGETS);
+        assert(attachment < BS_MAX_MULTIPLE_RENDER_TARGETS);
         mColor[attachment].buffer = nullptr;
 
 		// Re-initialise if buffer 0 still bound
@@ -100,7 +100,7 @@ namespace BansheeEngine
     {
         /// First buffer must be bound
         if(!mColor[0].buffer)
-			CM_EXCEPT(InvalidParametersException, "Attachment 0 must have surface attached");
+			BS_EXCEPT(InvalidParametersException, "Attachment 0 must have surface attached");
 
         /// Store basic stats
         UINT32 width = mColor[0].buffer->getWidth();
@@ -125,14 +125,14 @@ namespace BansheeEngine
                     ss << ". It must be of the same as the size of surface 0, ";
                     ss << width << "x" << height;
                     ss << ".";
-                    CM_EXCEPT(InvalidParametersException, ss.str());
+                    BS_EXCEPT(InvalidParametersException, ss.str());
                 }
 
                 if(mColor[x].buffer->getGLFormat() != glformat)
                 {
                     StringStream ss;
                     ss << "Attachment " << x << " has incompatible format.";
-                    CM_EXCEPT(InvalidParametersException, ss.str());
+                    BS_EXCEPT(InvalidParametersException, ss.str());
                 }
 
 	            mColor[x].buffer->bindToFramebuffer(GL_COLOR_ATTACHMENT0_EXT+x, mColor[x].zoffset);
@@ -149,9 +149,9 @@ namespace BansheeEngine
 			mDepthStencilBuffer->bindToFramebuffer(GL_DEPTH_STENCIL_ATTACHMENT, 0);
 
 		/// Do glDrawBuffer calls
-		GLenum bufs[CM_MAX_MULTIPLE_RENDER_TARGETS];
+		GLenum bufs[BS_MAX_MULTIPLE_RENDER_TARGETS];
 		GLsizei n=0;
-		for(UINT32 x=0; x<CM_MAX_MULTIPLE_RENDER_TARGETS; ++x)
+		for(UINT32 x=0; x<BS_MAX_MULTIPLE_RENDER_TARGETS; ++x)
 		{
 			// Fill attached colour buffers
 			if(mColor[x].buffer)
@@ -193,10 +193,10 @@ namespace BansheeEngine
             // All is good
             break;
         case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-            CM_EXCEPT(InvalidParametersException, 
+            BS_EXCEPT(InvalidParametersException, 
             "All framebuffer formats with this texture internal format unsupported");
         default:
-            CM_EXCEPT(InvalidParametersException, 
+            BS_EXCEPT(InvalidParametersException, 
             "Framebuffer incomplete or other FBO status error");
         }
     }

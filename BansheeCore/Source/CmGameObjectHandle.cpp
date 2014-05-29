@@ -12,17 +12,17 @@ namespace BansheeEngine
 
 	GameObjectHandleBase::GameObjectHandleBase(const std::shared_ptr<GameObject> ptr)
 	{
-		mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(ptr->mInstanceData);
+		mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>(ptr->mInstanceData);
 	}
 
 	GameObjectHandleBase::GameObjectHandleBase(std::nullptr_t ptr)
 	{
-		mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
+		mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
 	}
 
 	GameObjectHandleBase::GameObjectHandleBase()
 	{
-		mData = cm_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
+		mData = bs_shared_ptr<GameObjectHandleData, PoolAlloc>(nullptr);
 	}
 
 	void GameObjectHandleBase::_resolve(const GameObjectHandleBase& object) 
@@ -35,7 +35,7 @@ namespace BansheeEngine
 	{
 		if(isDestroyed()) 
 		{
-			CM_EXCEPT(InternalErrorException, "Trying to access an object that has been destroyed.");
+			BS_EXCEPT(InternalErrorException, "Trying to access an object that has been destroyed.");
 		}
 	}
 

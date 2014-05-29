@@ -55,15 +55,15 @@ namespace BansheeEngine
 	DockManager::DockContainer::~DockContainer()
 	{
 		if(mIsLeaf && mWidgets != nullptr)
-			cm_delete(mWidgets);
+			bs_delete(mWidgets);
 
 		if(!mIsLeaf)
 		{
 			if(mChildren[0] != nullptr)
-				cm_delete(mChildren[0]);
+				bs_delete(mChildren[0]);
 
 			if(mChildren[1] != nullptr)
-				cm_delete(mChildren[1]);
+				bs_delete(mChildren[1]);
 		}
 
 		if(mSlider != nullptr)
@@ -135,7 +135,7 @@ namespace BansheeEngine
 	void DockManager::DockContainer::makeLeaf(GUIWidget* widgetParent, RenderWindow* parentWindow)
 	{
 		mIsLeaf = true;
-		mWidgets = cm_new<EditorWidgetContainer>(widgetParent, parentWindow, nullptr);
+		mWidgets = bs_new<EditorWidgetContainer>(widgetParent, parentWindow, nullptr);
 
 		mWidgets->onWidgetClosed.connect(std::bind(&DockManager::DockContainer::widgetRemoved, this));
 
@@ -203,8 +203,8 @@ namespace BansheeEngine
 		UINT32 idxA = newChildIsFirst ? 0 : 1;
 		UINT32 idxB = (idxA + 1) % 2;
 
-		mChildren[idxA] = cm_new<DockContainer>(this);
-		mChildren[idxB] = cm_new<DockContainer>(this);
+		mChildren[idxA] = bs_new<DockContainer>(this);
+		mChildren[idxB] = bs_new<DockContainer>(this);
 
 		mWidgets->onWidgetClosed.clear();
 
@@ -278,7 +278,7 @@ namespace BansheeEngine
 		{
 			if(mParent == nullptr) // We're root so we just reset ourselves, can't delete root
 			{
-				cm_delete(mWidgets);
+				bs_delete(mWidgets);
 				mWidgets = nullptr;
 
 				mIsLeaf = false;
@@ -299,8 +299,8 @@ namespace BansheeEngine
 				mParent->makeLeaf(sibling->mWidgets);
 				sibling->mWidgets = nullptr;
 
-				cm_delete(sibling);
-				cm_delete(this);
+				bs_delete(sibling);
+				bs_delete(this);
 			}
 		}
 	}
@@ -359,25 +359,25 @@ namespace BansheeEngine
 		:GUIElementContainer(layoutOptions), mParentWindow(parentWindow), mMouseOverContainer(nullptr), mHighlightedDropLoc(DockLocation::None),
 		mShowOverlay(false), mAddedRenderCallback(false)
 	{
-		mTopDropPolygon = cm_newN<Vector2>(4);
-		mBotDropPolygon = cm_newN<Vector2>(4);
-		mLeftDropPolygon = cm_newN<Vector2>(4);
-		mRightDropPolygon = cm_newN<Vector2>(4);
+		mTopDropPolygon = bs_newN<Vector2>(4);
+		mBotDropPolygon = bs_newN<Vector2>(4);
+		mLeftDropPolygon = bs_newN<Vector2>(4);
+		mRightDropPolygon = bs_newN<Vector2>(4);
 
 		mDropOverlayMat = BuiltinMaterialManager::instance().createDockDropOverlayMaterial();
 	}
 
 	DockManager::~DockManager()
 	{
-		cm_deleteN(mTopDropPolygon, 4);
-		cm_deleteN(mBotDropPolygon, 4);
-		cm_deleteN(mLeftDropPolygon, 4);
-		cm_deleteN(mRightDropPolygon, 4);
+		bs_deleteN(mTopDropPolygon, 4);
+		bs_deleteN(mBotDropPolygon, 4);
+		bs_deleteN(mLeftDropPolygon, 4);
+		bs_deleteN(mRightDropPolygon, 4);
 	}
 
 	DockManager* DockManager::create(RenderWindow* parentWindow)
 	{
-		return new (cm_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUILayoutOptions::create());
+		return new (bs_alloc<DockManager, PoolAlloc>()) DockManager(parentWindow, GUILayoutOptions::create());
 	}
 
 	void DockManager::update()
@@ -440,7 +440,7 @@ namespace BansheeEngine
 		{
 			DockContainer* container = mRootContainer.find(relativeTo);
 			if(container == nullptr)
-				CM_EXCEPT(InternalErrorException, "Cannot find the wanted widget container relative to which the widget should be inserted.");
+				BS_EXCEPT(InternalErrorException, "Cannot find the wanted widget container relative to which the widget should be inserted.");
 
 			switch(location)
 			{
@@ -461,7 +461,7 @@ namespace BansheeEngine
 		else
 		{
 			if(mRootContainer.mWidgets != nullptr)
-				CM_EXCEPT(InternalErrorException, "Trying to insert a widget into dock manager root container but one already exists.");
+				BS_EXCEPT(InternalErrorException, "Trying to insert a widget into dock manager root container but one already exists.");
 
 			mRootContainer.makeLeaf(_getParentWidget(), mParentWindow);
 			mRootContainer.addWidget(widgetToInsert);
@@ -505,7 +505,7 @@ namespace BansheeEngine
 			return widgetNames;
 		};
 
-		DockManagerLayoutPtr layout = cm_shared_ptr<DockManagerLayout>();
+		DockManagerLayoutPtr layout = bs_shared_ptr<DockManagerLayout>();
 		DockManagerLayout::Entry* rootEntry = &layout->getRootEntry();
 
 		if(mRootContainer.mIsLeaf)
@@ -716,12 +716,12 @@ namespace BansheeEngine
 		Vector2 inBotLeft((float)(x + inXOffset), (float)(y + inYOffset + inHeight));
 		Vector2 inBotRight((float)(x + inXOffset + inWidth), (float)(y + inYOffset + inHeight));
 
-		VertexDataDescPtr vertexDesc = cm_shared_ptr<VertexDataDesc>();
+		VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
 		
 		vertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		vertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(16, 24, vertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(16, 24, vertexDesc);
 
 		auto vertIter = meshData->getVec2DataIter(VES_POSITION);
 		auto colIter = meshData->getDWORDDataIter(VES_COLOR);
@@ -958,7 +958,7 @@ namespace BansheeEngine
 			{
 				// Note: Adding support for this should be fairly simple though, I just didn't bother with it. You could
 				// remove the current render callback and register a new one. Will likely need to make other minor fixes.
-				CM_EXCEPT(InvalidStateException, "Attempting to change parent widget of a DockManager. This is not supported");
+				BS_EXCEPT(InvalidStateException, "Attempting to change parent widget of a DockManager. This is not supported");
 			}
 
 			RendererManager::instance().getActive()->addRenderCallback(widget->getTarget(), std::bind(&DockManager::render, this, _1, _2));

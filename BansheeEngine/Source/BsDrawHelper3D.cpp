@@ -16,7 +16,7 @@ namespace BansheeEngine
 {
 	DrawHelper3D::DrawHelper3D()
 	{
-		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
+		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 	}
@@ -66,7 +66,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc);
 
 		line_Pixel(a, b, color, meshData, 0, 0);
 
@@ -90,7 +90,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8, 30, mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(8, 30, mVertexDesc);
 
 		line_AA(a, b, width, borderWidth, color, meshData, 0, 0);
 
@@ -114,7 +114,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(
 			(UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc);
 
 		lineList_Pixel(linePoints, color, meshData, 0, 0);
@@ -140,7 +140,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4), (UINT32)(linePoints.size() * 15), mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4), (UINT32)(linePoints.size() * 15), mVertexDesc);
 
 		lineList_AA(linePoints, width, borderWidth, color, meshData, 0, 0);	
 
@@ -164,7 +164,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8, 36, mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(8, 36, mVertexDesc);
 
 		aabox(box, meshData, 0, 0);	
 
@@ -302,12 +302,12 @@ namespace BansheeEngine
 	void DrawHelper3D::line_AA(const Vector3& a, const Vector3& b, float width, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
-		CM_EXCEPT(NotImplementedException, "3D AA line drawing not implemented.");
+		BS_EXCEPT(NotImplementedException, "3D AA line drawing not implemented.");
 	}
 
 	void DrawHelper3D::polygon_AA(const Vector<Vector3>& points, float borderWidth, const Color& color, UINT8* outVertices, UINT8* outColors, 
 		UINT32 vertexOffset, UINT32 vertexStride, UINT32* outIndices, UINT32 indexOffset)
 	{
-		CM_EXCEPT(NotImplementedException, "3D AA polygon drawing not implemented.");
+		BS_EXCEPT(NotImplementedException, "3D AA polygon drawing not implemented.");
 	}
 }

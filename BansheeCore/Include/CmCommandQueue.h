@@ -16,9 +16,9 @@ namespace BansheeEngine
 		CommandQueueNoSync() {}
 		virtual ~CommandQueueNoSync() {}
 
-		bool isValidThread(CM_THREAD_ID_TYPE ownerThread) const
+		bool isValidThread(BS_THREAD_ID_TYPE ownerThread) const
 		{
-			return CM_THREAD_CURRENT_ID == ownerThread;
+			return BS_THREAD_CURRENT_ID == ownerThread;
 		}
 
 		void lock() { };
@@ -33,11 +33,11 @@ namespace BansheeEngine
 	{
 	public:
 		CommandQueueSync()
-			:mLock(mCommandQueueMutex, CM_DEFER_LOCK)
+			:mLock(mCommandQueueMutex, BS_DEFER_LOCK)
 		{ }
 		virtual ~CommandQueueSync() {}
 
-		bool isValidThread(CM_THREAD_ID_TYPE ownerThread) const
+		bool isValidThread(BS_THREAD_ID_TYPE ownerThread) const
 		{
 			return true;
 		}
@@ -53,8 +53,8 @@ namespace BansheeEngine
 		}
 
 	private:
-		CM_MUTEX(mCommandQueueMutex);
-		CM_LOCK_TYPE mLock;
+		BS_MUTEX(mCommandQueueMutex);
+		BS_LOCK_TYPE mLock;
 	};
 
 	/**
@@ -63,9 +63,9 @@ namespace BansheeEngine
 	 */
 	struct QueuedCommand
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		QueuedCommand(std::function<void(AsyncOp&)> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(cm_new<AsyncOp>()), ownsData(true)
+			:callbackWithReturnValue(_callback), debugId(_debugId), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(bs_new<AsyncOp>()), ownsData(true)
 		{ }
 
 		QueuedCommand(std::function<void()> _callback, UINT32 _debugId, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		UINT32 debugId;
 #else
 		QueuedCommand(std::function<void(AsyncOp&)> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
-			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(cm_new<AsyncOp>()), ownsData(true)
+			:callbackWithReturnValue(_callback), returnsValue(true), notifyWhenComplete(_notifyWhenComplete), callbackId(_callbackId), asyncOp(bs_new<AsyncOp>()), ownsData(true)
 		{ }
 
 		QueuedCommand(std::function<void()> _callback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
@@ -86,7 +86,7 @@ namespace BansheeEngine
 		~QueuedCommand()
 		{
 			if(ownsData && asyncOp != nullptr)
-				cm_delete(asyncOp);
+				bs_delete(asyncOp);
 		}
 
 		QueuedCommand(const QueuedCommand& source)
@@ -138,7 +138,7 @@ namespace BansheeEngine
 		 *
 		 * @param	threadId	   	Identifier for the thread the command queue will be getting commands from.					
 		 */
-		CommandQueueBase(CM_THREAD_ID_TYPE threadId);
+		CommandQueueBase(BS_THREAD_ID_TYPE threadId);
 		virtual ~CommandQueueBase();
 
 		/**
@@ -147,7 +147,7 @@ namespace BansheeEngine
 		 * @note	If the command queue is using a synchonized access policy generally this
 		 * 			is not relevant as it may be used on multiple threads.
 		 */
-		CM_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
+		BS_THREAD_ID_TYPE getThreadId() const { return mMyThreadId; }
 
 		/**
 		 * @brief	Executes all provided commands one by one in order. To get the commands you should call flush().
@@ -235,11 +235,11 @@ namespace BansheeEngine
 		BansheeEngine::Queue<QueuedCommand>* mCommands;
 		Stack<BansheeEngine::Queue<QueuedCommand>*> mEmptyCommandQueues; // List of empty queues for reuse
 
-		CM_THREAD_ID_TYPE mMyThreadId;
+		BS_THREAD_ID_TYPE mMyThreadId;
 
 		// Various variables that allow for easier debugging by allowing us to trigger breakpoints
 		// when a certain command was queued.
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		struct QueueBreakpoint
 		{
 			class HashFunction
@@ -269,7 +269,7 @@ namespace BansheeEngine
 
 		static UINT32 MaxCommandQueueIdx;
 		static UnorderedSet<QueueBreakpoint, QueueBreakpoint::HashFunction, QueueBreakpoint::EqualFunction> SetBreakpoints;
-		CM_STATIC_MUTEX(CommandQueueBreakpointMutex);
+		BS_STATIC_MUTEX(CommandQueueBreakpointMutex);
 
 		/**
 		 * @brief	Checks if the specified command has a breakpoint and throw an assert if it does.
@@ -291,14 +291,14 @@ namespace BansheeEngine
 		/**
 		 * @copydoc CommandQueueBase::CommandQueueBase
 		 */
-		CommandQueue(CM_THREAD_ID_TYPE threadId)
+		CommandQueue(BS_THREAD_ID_TYPE threadId)
 			:CommandQueueBase(threadId)
 		{ }
 
 		~CommandQueue() 
 		{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
+#if BS_DEBUG_MODE
+#if BS_THREAD_SUPPORT != 0
 			if(!isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
@@ -310,8 +310,8 @@ namespace BansheeEngine
 		 */
 		AsyncOp queueReturn(std::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
+#if BS_DEBUG_MODE
+#if BS_THREAD_SUPPORT != 0
 			if(!isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
@@ -329,8 +329,8 @@ namespace BansheeEngine
 		 */
 		void queue(std::function<void()> commandCallback, bool _notifyWhenComplete = false, UINT32 _callbackId = 0)
 		{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
+#if BS_DEBUG_MODE
+#if BS_THREAD_SUPPORT != 0
 			if(!isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
@@ -346,8 +346,8 @@ namespace BansheeEngine
 		 */
 		BansheeEngine::Queue<QueuedCommand>* flush()
 		{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
+#if BS_DEBUG_MODE
+#if BS_THREAD_SUPPORT != 0
 			if(!isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
@@ -365,8 +365,8 @@ namespace BansheeEngine
 		 */
 		void cancelAll()
 		{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
+#if BS_DEBUG_MODE
+#if BS_THREAD_SUPPORT != 0
 			if(!isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif
@@ -382,8 +382,8 @@ namespace BansheeEngine
 		 */
 		bool isEmpty()
 		{
-#if CM_DEBUG_MODE
-#if CM_THREAD_SUPPORT != 0
+#if BS_DEBUG_MODE
+#if BS_THREAD_SUPPORT != 0
 			if(!isValidThread(getThreadId()))
 				throwInvalidThreadException("Command queue accessed outside of its creation thread.");
 #endif

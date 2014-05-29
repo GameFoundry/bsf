@@ -112,7 +112,7 @@ namespace BansheeEngine
 		mClearQuadBlendStateYesC = BlendState::create(blendStateDescYesC);
 
 		BLEND_STATE_DESC blendStateDescNoC;
-		for(int i = 0; i < CM_MAX_MULTIPLE_RENDER_TARGETS; i++)
+		for(int i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 			blendStateDescNoC.renderTargetDesc[i].renderTargetWriteMask = 0;
 
 		mClearQuadBlendStateNoC = BlendState::create(blendStateDescNoC);
@@ -178,7 +178,7 @@ namespace BansheeEngine
 				String(static_cast<const char*>(errors->GetBufferPointer()));
 
 			SAFE_RELEASE(errors);
-			CM_EXCEPT(RenderingAPIException, message);
+			BS_EXCEPT(RenderingAPIException, message);
 		}
 
 		SAFE_RELEASE(errors);
@@ -189,7 +189,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			SAFE_RELEASE(microcode);
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D11 high-level shader.");
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D11 high-level shader.");
 		}
 
 		// Compile vertex shader
@@ -202,7 +202,7 @@ namespace BansheeEngine
 				String(static_cast<const char*>(errors->GetBufferPointer()));
 
 			SAFE_RELEASE(errors);
-			CM_EXCEPT(RenderingAPIException, message);
+			BS_EXCEPT(RenderingAPIException, message);
 		}
 
 		SAFE_RELEASE(errors);
@@ -213,11 +213,11 @@ namespace BansheeEngine
 		if (FAILED(hr))
 		{
 			SAFE_RELEASE(microcode);
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D11 high-level shader.");
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D11 high-level shader.");
 		}
 
 		// Create input layout
-		D3D11_INPUT_ELEMENT_DESC* declElements = cm_newN<D3D11_INPUT_ELEMENT_DESC, ScratchAlloc>(2);
+		D3D11_INPUT_ELEMENT_DESC* declElements = bs_newN<D3D11_INPUT_ELEMENT_DESC, ScratchAlloc>(2);
 		ZeroMemory(declElements, sizeof(D3D11_INPUT_ELEMENT_DESC) * 2);
 
 		declElements[0].SemanticName			= "POSITION";
@@ -239,11 +239,11 @@ namespace BansheeEngine
 		hr = mDevice->getD3D11Device()->CreateInputLayout(declElements, 2, microcode->GetBufferPointer(), 
 			microcode->GetBufferSize(), &mClearQuadIL);
 
-		cm_deleteN<ScratchAlloc>(declElements, 2);
+		bs_deleteN<ScratchAlloc>(declElements, 2);
 
 		if (FAILED(hr))
 		{
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D11 input layout.");
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D11 input layout.");
 		}
 
 		// Create vertex buffer
@@ -275,7 +275,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || mDevice->hasError())
 		{
 			String msg = mDevice->getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D11 buffer: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D11 buffer: " + msg);
 		}
 
 		// Create index buffer
@@ -304,7 +304,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || mDevice->hasError())
 		{
 			String msg = mDevice->getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create D3D11 buffer: " + msg);
+			BS_EXCEPT(RenderingAPIException, "Cannot create D3D11 buffer: " + msg);
 		}
 	}
 }

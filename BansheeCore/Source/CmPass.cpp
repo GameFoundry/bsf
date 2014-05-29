@@ -47,7 +47,7 @@ namespace BansheeEngine
 
 		if(mBlendState != nullptr)
 		{
-			for(UINT32 i = 0; i < CM_MAX_MULTIPLE_RENDER_TARGETS; i++)
+			for(UINT32 i = 0; i < BS_MAX_MULTIPLE_RENDER_TARGETS; i++)
 			{
 				// Transparent if destination color is taken into account
 				if (mBlendState->getDstBlend(i) != BF_ZERO ||

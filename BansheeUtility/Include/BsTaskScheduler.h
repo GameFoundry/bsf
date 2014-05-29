@@ -142,9 +142,9 @@ namespace BansheeEngine
 		UINT32 mNextTaskId;
 		bool mShutdown;
 
-		CM_MUTEX(mReadyMutex);
-		CM_MUTEX(mCompleteMutex);
-		CM_THREAD_SYNCHRONISER(mTaskReadyCond);
-		CM_THREAD_SYNCHRONISER(mTaskCompleteCond);
+		BS_MUTEX(mReadyMutex);
+		BS_MUTEX(mCompleteMutex);
+		BS_THREAD_SYNCHRONISER(mTaskReadyCond);
+		BS_THREAD_SYNCHRONISER(mTaskCompleteCond);
 	};
 }

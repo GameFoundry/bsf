@@ -39,7 +39,7 @@ namespace BansheeEngine
 
 		UINT32 bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
 
-		mData = (UINT8*)cm_alloc(bufferSize);
+		mData = (UINT8*)bs_alloc(bufferSize);
 		
 		UINT8* dataIter = mData;
 		mParamBlocks = (GpuParamBlock**)dataIter;
@@ -152,14 +152,14 @@ namespace BansheeEngine
 		for(UINT32 i = 0; i < mNumSamplerStates; i++)
 			mSamplerStates[i].~ResourceHandle();
 
-		cm_free(mData);
+		bs_free(mData);
 	}
 
 	void GpuParams::setParamBlockBuffer(UINT32 slot, const GpuParamBlockBufferPtr& paramBlockBuffer)
 	{
 		if(slot < 0 || slot >= mNumParamBlocks)
 		{
-			CM_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
+			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
 				toString(mNumParamBlocks - 1) + ". Requested: " + toString(slot));
 		}
 
@@ -227,7 +227,7 @@ namespace BansheeEngine
 		auto iterFind = mStructParams.find(name);
 
 		if(iterFind == mStructParams.end())
-			CM_EXCEPT(InvalidParametersException, "Cannot find struct parameter with the name '" + name + "'");
+			BS_EXCEPT(InvalidParametersException, "Cannot find struct parameter with the name '" + name + "'");
 
 		output = iterFind->second;
 	}
@@ -237,7 +237,7 @@ namespace BansheeEngine
 		auto iterFind = mTextureParams.find(name);
 
 		if(iterFind == mTextureParams.end())
-			CM_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
+			BS_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
 
 		output = iterFind->second;
 	}
@@ -247,7 +247,7 @@ namespace BansheeEngine
 		auto iterFind = mSampStateParams.find(name);
 
 		if(iterFind == mSampStateParams.end())
-			CM_EXCEPT(InvalidParametersException, "Cannot find sampler state parameter with the name '" + name + "'");
+			BS_EXCEPT(InvalidParametersException, "Cannot find sampler state parameter with the name '" + name + "'");
 
 		output = iterFind->second;
 	}

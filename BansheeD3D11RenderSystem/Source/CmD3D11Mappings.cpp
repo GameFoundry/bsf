@@ -344,7 +344,7 @@ namespace BansheeEngine
 		if( strcmp(sem, "PSIZE") == 0 ) 
 			return VES_PSIZE;
 
-		CM_EXCEPT(RenderingAPIException, "Invalid shader semantic: " + String(sem));
+		BS_EXCEPT(RenderingAPIException, "Invalid shader semantic: " + String(sem));
 
 		// to keep compiler happy
 		return VES_POSITION;
@@ -804,7 +804,7 @@ namespace BansheeEngine
 		case DOT_TRIANGLE_STRIP:
 			return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP;
 		case DOT_TRIANGLE_FAN:
-			CM_EXCEPT(InvalidParametersException, "D3D11 doesn't support triangle fan primitive type.");
+			BS_EXCEPT(InvalidParametersException, "D3D11 doesn't support triangle fan primitive type.");
 		}
 
 		return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -859,6 +859,6 @@ namespace BansheeEngine
 			break;
 		};
 
-		CM_EXCEPT(RenderingAPIException, "Invalid lock option. No DX11 equivalent of: " + toString(lockOptions));
+		BS_EXCEPT(RenderingAPIException, "Invalid lock option. No DX11 equivalent of: " + toString(lockOptions));
 	}
 }

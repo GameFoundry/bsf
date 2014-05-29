@@ -6,41 +6,41 @@
 
 namespace BansheeEngine
 {
-#if CM_DEBUG_MODE
-	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
+#if BS_DEBUG_MODE
+	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId), mMaxDebugIdx(0)
 	{
-		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
 
 		{
-			CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
+			BS_LOCK_MUTEX(CommandQueueBreakpointMutex);
 
 			mCommandQueueIdx = MaxCommandQueueIdx++;
 		}
 	}
 #else
-	CommandQueueBase::CommandQueueBase(CM_THREAD_ID_TYPE threadId)
+	CommandQueueBase::CommandQueueBase(BS_THREAD_ID_TYPE threadId)
 		:mMyThreadId(threadId)
 	{
-		mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+		mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
 	}
 #endif
 
 	CommandQueueBase::~CommandQueueBase()
 	{
 		if(mCommands != nullptr)
-			cm_delete(mCommands);
+			bs_delete(mCommands);
 
 		while(!mEmptyCommandQueues.empty())
 		{
-			cm_delete(mEmptyCommandQueues.top());
+			bs_delete(mEmptyCommandQueues.top());
 			mEmptyCommandQueues.pop();
 		}
 	}
 
 	AsyncOp CommandQueueBase::queueReturn(std::function<void(AsyncOp&)> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
 
 		QueuedCommand newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
@@ -50,7 +50,7 @@ namespace BansheeEngine
 
 		mCommands->push(newCommand);
 
-#if CM_FORCE_SINGLETHREADED_RENDERING
+#if BS_FORCE_SINGLETHREADED_RENDERING
 		Queue<QueuedCommand>* commands = flush();
 		playback(commands);
 #endif
@@ -60,7 +60,7 @@ namespace BansheeEngine
 
 	void CommandQueueBase::queue(std::function<void()> commandCallback, bool _notifyWhenComplete, UINT32 _callbackId)
 	{
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		breakIfNeeded(mCommandQueueIdx, mMaxDebugIdx);
 
 		QueuedCommand newCommand(commandCallback, mMaxDebugIdx++, _notifyWhenComplete, _callbackId);
@@ -70,7 +70,7 @@ namespace BansheeEngine
 
 		mCommands->push(newCommand);
 
-#if CM_FORCE_SINGLETHREADED_RENDERING
+#if BS_FORCE_SINGLETHREADED_RENDERING
 		Queue<QueuedCommand>* commands = flush();
 		playback(commands);
 #endif
@@ -87,7 +87,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mCommands = cm_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
+			mCommands = bs_new<BansheeEngine::Queue<QueuedCommand>, PoolAlloc>();
 		}
 
 		return oldCommands;
@@ -157,11 +157,11 @@ namespace BansheeEngine
 
 	void CommandQueueBase::throwInvalidThreadException(const String& message) const
 	{
-		CM_EXCEPT(InternalErrorException, message);
+		BS_EXCEPT(InternalErrorException, message);
 	}
 
-#if CM_DEBUG_MODE
-	CM_STATIC_MUTEX_CLASS_INSTANCE(CommandQueueBreakpointMutex, CommandQueueBase);
+#if BS_DEBUG_MODE
+	BS_STATIC_MUTEX_CLASS_INSTANCE(CommandQueueBreakpointMutex, CommandQueueBase);
 
 	UINT32 CommandQueueBase::MaxCommandQueueIdx = 0;
 
@@ -183,7 +183,7 @@ namespace BansheeEngine
 
 	void CommandQueueBase::addBreakpoint(UINT32 queueIdx, UINT32 commandIdx)
 	{
-		CM_LOCK_MUTEX(CommandQueueBreakpointMutex);
+		BS_LOCK_MUTEX(CommandQueueBreakpointMutex);
 
 		SetBreakpoints.insert(QueueBreakpoint(queueIdx, commandIdx));
 	}

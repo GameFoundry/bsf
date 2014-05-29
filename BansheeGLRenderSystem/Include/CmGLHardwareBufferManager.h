@@ -6,7 +6,7 @@
 namespace BansheeEngine {
 
 // Default threshold at which glMapBuffer becomes more efficient than glBufferSubData (32k?)
-#	define CM_GL_DEFAULT_MAP_BUFFER_THRESHOLD (1024 * 32)
+#	define BS_GL_DEFAULT_MAP_BUFFER_THRESHOLD (1024 * 32)
 
 
     /** Implementation of HardwareBufferManager for OpenGL. */
@@ -41,7 +41,7 @@ namespace BansheeEngine {
 
 	protected:
 		char* mScratchBufferPool;
-		CM_MUTEX(mScratchMutex);
+		BS_MUTEX(mScratchMutex);
 		UINT32 mMapBufferThreshold;
 
 		/**

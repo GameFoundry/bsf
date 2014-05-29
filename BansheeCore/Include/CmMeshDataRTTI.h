@@ -8,7 +8,7 @@
 
 namespace BansheeEngine
 {
-	CM_ALLOW_MEMCPY_SERIALIZATION(IndexBuffer::IndexType);
+	BS_ALLOW_MEMCPY_SERIALIZATION(IndexBuffer::IndexType);
 
 	class BS_CORE_EXPORT MeshDataRTTI : public RTTIType<MeshData, GpuResourceData, MeshDataRTTI>
 	{
@@ -58,7 +58,7 @@ namespace BansheeEngine
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 
 		{
-			return cm_shared_ptr<MeshData, PoolAlloc>(new (cm_alloc<MeshData, PoolAlloc>()) MeshData());
+			return bs_shared_ptr<MeshData, PoolAlloc>(new (bs_alloc<MeshData, PoolAlloc>()) MeshData());
 		}
 
 		virtual const String& getRTTIName() 

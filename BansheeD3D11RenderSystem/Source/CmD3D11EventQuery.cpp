@@ -18,7 +18,7 @@ namespace BansheeEngine
 		HRESULT hr = device.getD3D11Device()->CreateQuery(&queryDesc, &mQuery);
 		if(hr != S_OK)
 		{
-			CM_EXCEPT(RenderingAPIException, "Failed to create an Event query.");
+			BS_EXCEPT(RenderingAPIException, "Failed to create an Event query.");
 		}
 
 		mContext = device.getImmediateContext();

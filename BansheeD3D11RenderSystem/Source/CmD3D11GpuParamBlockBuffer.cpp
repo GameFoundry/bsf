@@ -17,11 +17,11 @@ namespace BansheeEngine
 		D3D11Device& device = d3d11rs->getPrimaryDevice();
 
 		if(mUsage == GPBU_STATIC)
-			mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, std::ref(device));
+			mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_CONSTANT, GBU_STATIC, 1, mSize, std::ref(device));
 		else if(mUsage == GPBU_DYNAMIC)
-			mBuffer = cm_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, std::ref(device));
+			mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_CONSTANT, GBU_DYNAMIC, 1, mSize, std::ref(device));
 		else
-			CM_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
+			BS_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
 
 		GpuParamBlockBuffer::initialize_internal();
 	}
@@ -29,7 +29,7 @@ namespace BansheeEngine
 	void D3D11GpuParamBlockBuffer::destroy_internal()
 	{
 		if(mBuffer != nullptr)
-			cm_delete<PoolAlloc>(mBuffer);
+			bs_delete<PoolAlloc>(mBuffer);
 
 		GpuParamBlockBuffer::destroy_internal();
 	}

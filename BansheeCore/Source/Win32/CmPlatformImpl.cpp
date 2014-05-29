@@ -35,7 +35,7 @@ namespace BansheeEngine
 	bool Platform::mRequiresStartUp = false;
 	bool Platform::mRequiresShutDown = false;
 
-	CM_STATIC_MUTEX_CLASS_INSTANCE(mSync, Platform);
+	BS_STATIC_MUTEX_CLASS_INSTANCE(mSync, Platform);
 
 	struct NativeCursorData::Pimpl
 	{
@@ -44,12 +44,12 @@ namespace BansheeEngine
 
 	NativeCursorData::NativeCursorData()
 	{
-		data = cm_new<Pimpl>();
+		data = bs_new<Pimpl>();
 	}
 
 	NativeCursorData::~NativeCursorData()
 	{
-		cm_delete(data);
+		bs_delete(data);
 	}
 
 	struct NativeDropTargetData::Pimpl
@@ -61,12 +61,12 @@ namespace BansheeEngine
 
 	NativeDropTargetData::NativeDropTargetData()
 	{
-		data = cm_new<Pimpl>();
+		data = bs_new<Pimpl>();
 	}
 
 	NativeDropTargetData::~NativeDropTargetData()
 	{
-		cm_delete(data);
+		bs_delete(data);
 	}
 
 	bool Platform::mIsCursorHidden = false;
@@ -97,7 +97,7 @@ namespace BansheeEngine
 		HWND hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 		
-		PostMessage(hwnd, WM_CM_SETCAPTURE, WPARAM(hwnd), 0);
+		PostMessage(hwnd, WM_BS_SETCAPTURE, WPARAM(hwnd), 0);
 	}
 
 	void Platform::releaseMouseCapture()
@@ -106,7 +106,7 @@ namespace BansheeEngine
 		HWND hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
-		PostMessage(hwnd, WM_CM_RELEASECAPTURE, WPARAM(hwnd), 0);
+		PostMessage(hwnd, WM_BS_RELEASECAPTURE, WPARAM(hwnd), 0);
 	}
 
 	bool Platform::isPointOverWindow(const RenderWindow& window, const Vector2I& screenPos)
@@ -261,21 +261,21 @@ namespace BansheeEngine
 
 	void Platform::setCaptionNonClientAreas(const RenderWindow& window, const Vector<RectI>& nonClientAreas)
 	{
-		CM_LOCK_MUTEX(mSync);
+		BS_LOCK_MUTEX(mSync);
 
 		mNonClientAreas[&window].moveAreas = nonClientAreas;
 	}
 
 	void Platform::setResizeNonClientAreas(const RenderWindow& window, const Vector<NonClientResizeArea>& nonClientAreas)
 	{
-		CM_LOCK_MUTEX(mSync);
+		BS_LOCK_MUTEX(mSync);
 
 		mNonClientAreas[&window].resizeAreas = nonClientAreas;
 	}
 
 	void Platform::resetNonClientAreas(const RenderWindow& window)
 	{
-		CM_LOCK_MUTEX(mSync);
+		BS_LOCK_MUTEX(mSync);
 
 		auto iterFind = mNonClientAreas.find(&window);
 
@@ -334,19 +334,19 @@ namespace BansheeEngine
 	{
 		std::memset(&address, 0, sizeof(address));
 
-		PIP_ADAPTER_INFO adapterInfo = cm_alloc<IP_ADAPTER_INFO>();
+		PIP_ADAPTER_INFO adapterInfo = bs_alloc<IP_ADAPTER_INFO>();
 		
 		ULONG len = sizeof(IP_ADAPTER_INFO);
 		DWORD rc = GetAdaptersInfo(adapterInfo, &len);
 
 		if (rc == ERROR_BUFFER_OVERFLOW)
 		{
-			cm_free(adapterInfo);
-			adapterInfo = reinterpret_cast<IP_ADAPTER_INFO*>(cm_alloc(len));
+			bs_free(adapterInfo);
+			adapterInfo = reinterpret_cast<IP_ADAPTER_INFO*>(bs_alloc(len));
 		}
 		else if (rc != ERROR_SUCCESS)
 		{
-			cm_free(adapterInfo);
+			bs_free(adapterInfo);
 			return false;
 		}
 
@@ -367,7 +367,7 @@ namespace BansheeEngine
 			}
 		}
 
-		cm_free(adapterInfo);
+		bs_free(adapterInfo);
 		return false;
 	}
 
@@ -391,18 +391,18 @@ namespace BansheeEngine
 			HWND hwnd;
 			window->getCustomAttribute("WINDOW", &hwnd);
 
-			win32DropTarget = cm_new<Win32DropTarget>(hwnd);
+			win32DropTarget = bs_new<Win32DropTarget>(hwnd);
 			mDropTargets.data->dropTargetsPerWindow[window] = win32DropTarget;
 
 			{
-				CM_LOCK_MUTEX(mSync);
+				BS_LOCK_MUTEX(mSync);
 				mDropTargets.data->dropTargetsToInitialize.push_back(win32DropTarget);
 			}
 		}
 		else
 			win32DropTarget = iterFind->second;
 
-		OSDropTarget* newDropTarget = new (cm_alloc<OSDropTarget>()) OSDropTarget(window, x, y, width, height);
+		OSDropTarget* newDropTarget = new (bs_alloc<OSDropTarget>()) OSDropTarget(window, x, y, width, height);
 		win32DropTarget->registerDropTarget(newDropTarget);
 
 		return *newDropTarget;
@@ -425,13 +425,13 @@ namespace BansheeEngine
 				mDropTargets.data->dropTargetsPerWindow.erase(iterFind);
 
 				{
-					CM_LOCK_MUTEX(mSync);
+					BS_LOCK_MUTEX(mSync);
 					mDropTargets.data->dropTargetsToDestroy.push_back(win32DropTarget);
 				}
 			}
 		}
 		
-		CM_PVT_DELETE(OSDropTarget, &target);
+		BS_PVT_DELETE(OSDropTarget, &target);
 	}
 
 	void Platform::_messagePump()
@@ -446,7 +446,7 @@ namespace BansheeEngine
 
 	void Platform::_startUp()
 	{
-		CM_LOCK_MUTEX(mSync);
+		BS_LOCK_MUTEX(mSync);
 
 		mRequiresStartUp = true;
 	}
@@ -455,7 +455,7 @@ namespace BansheeEngine
 	{
 		Vector<RenderWindow*> windowsCopy;
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 
 			windowsCopy = mMouseLeftWindows;
 			mMouseLeftWindows.clear();
@@ -476,7 +476,7 @@ namespace BansheeEngine
 	void Platform::_coreUpdate()
 	{
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 			if(mRequiresStartUp)
 			{
 				OleInitialize(nullptr);
@@ -486,7 +486,7 @@ namespace BansheeEngine
 		}
 
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 			for(auto& dropTargetToInit : mDropTargets.data->dropTargetsToInitialize)
 			{
 				dropTargetToInit->registerWithOS();
@@ -496,7 +496,7 @@ namespace BansheeEngine
 		}
 
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 			for(auto& dropTargetToDestroy : mDropTargets.data->dropTargetsToDestroy)
 			{
 				dropTargetToDestroy->unregisterWithOS();
@@ -509,7 +509,7 @@ namespace BansheeEngine
 		_messagePump();
 
 		{
-			CM_LOCK_MUTEX(mSync);
+			BS_LOCK_MUTEX(mSync);
 			if(mRequiresShutDown)
 			{
 				OleUninitialize();
@@ -520,7 +520,7 @@ namespace BansheeEngine
 
 	void Platform::_shutDown()
 	{
-		CM_LOCK_MUTEX(mSync);
+		BS_LOCK_MUTEX(mSync);
 
 		mRequiresShutDown = true;
 	}

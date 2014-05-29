@@ -38,7 +38,7 @@ THE SOFTWARE.
 
 #include "CmGLRenderTexture.h"
 
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 #  define WIN32_LEAN_AND_MEAN
 #  if !defined(NOMINMAX) && defined(_MSC_VER)
 #	define NOMINMAX // required to stop windows.h messing up std::min
@@ -65,21 +65,21 @@ namespace BansheeEngine {
 		// Check requested number of mipmaps
 		UINT32 maxMips = PixelUtil::getMaxMipmaps(mWidth, mHeight, mDepth, mFormat);
 		if(mNumMipmaps > maxMips)
-			CM_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
+			BS_EXCEPT(InvalidParametersException, "Invalid number of mipmaps. Maximum allowed is: " + toString(maxMips));
 
 		if((mUsage & TU_RENDERTARGET) != 0)
 		{
 			if(mTextureType != TEX_TYPE_2D)
-				CM_EXCEPT(NotImplementedException, "Only 2D render targets are supported at the moment");
+				BS_EXCEPT(NotImplementedException, "Only 2D render targets are supported at the moment");
 		}
 
 		if((mUsage & TU_DEPTHSTENCIL) != 0)
 		{
 			if(mTextureType != TEX_TYPE_2D)
-				CM_EXCEPT(NotImplementedException, "Only 2D depth stencil targets are supported at the moment");
+				BS_EXCEPT(NotImplementedException, "Only 2D depth stencil targets are supported at the moment");
 
 			if(!PixelUtil::isDepth(mFormat))
-				CM_EXCEPT(NotImplementedException, "Supplied format is not a depth stencil format. Format: " + toString(mFormat));
+				BS_EXCEPT(NotImplementedException, "Supplied format is not a depth stencil format. Format: " + toString(mFormat));
 		}
 
 		// Generate texture name
@@ -110,10 +110,10 @@ namespace BansheeEngine {
 		if(PixelUtil::isCompressed(mFormat))
 		{
 			if((mUsage & TU_RENDERTARGET) != 0)
-				CM_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a render target.");
+				BS_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a render target.");
 
 			if((mUsage & TU_DEPTHSTENCIL) != 0)
-				CM_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a depth stencil target.");
+				BS_EXCEPT(InvalidParametersException, "Cannot use a compressed format for a depth stencil target.");
 		}
 
 		if((mUsage & TU_RENDERTARGET) != 0 && mTextureType == TEX_TYPE_2D && mMultisampleCount > 0)
@@ -178,12 +178,12 @@ namespace BansheeEngine {
 
 		PixelBufferPtr buffer = getBuffer(0, 0);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		if(buffer != nullptr)
 		{
 			if(mFormat != buffer->getFormat())
 			{
-				CM_EXCEPT(InternalErrorException, "Could not create a texture buffer with wanted format: " + toString(mFormat));
+				BS_EXCEPT(InternalErrorException, "Could not create a texture buffer with wanted format: " + toString(mFormat));
 			}
 		}
 #endif
@@ -231,7 +231,7 @@ namespace BansheeEngine {
 	PixelData GLTexture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
 		if(mLockedBuffer != nullptr)
-			CM_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
+			BS_EXCEPT(InternalErrorException, "Trying to lock a buffer that's already locked.");
 
 		UINT32 mipWidth = mWidth >> mipLevel;
 		UINT32 mipHeight = mHeight >> mipLevel;
@@ -248,7 +248,7 @@ namespace BansheeEngine {
 	void GLTexture::unlockImpl()
 	{
 		if(mLockedBuffer == nullptr)
-			CM_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
+			BS_EXCEPT(InternalErrorException, "Trying to unlock a buffer that's not locked.");
 
 		mLockedBuffer->unlock();
 		mLockedBuffer = nullptr;
@@ -289,14 +289,14 @@ namespace BansheeEngine {
 		{
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
-                GLPixelBuffer *buf = cm_new<GLTextureBuffer, PoolAlloc>("", getGLTextureTarget(), mTextureID, face, mip,
+                GLPixelBuffer *buf = bs_new<GLTextureBuffer, PoolAlloc>("", getGLTextureTarget(), mTextureID, face, mip,
 						static_cast<GpuBufferUsage>(mUsage), false, mHwGamma, mMultisampleCount);
-				mSurfaceList.push_back(cm_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
+				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
                 
                 /// Check for error
                 if(buf->getWidth()==0 || buf->getHeight()==0 || buf->getDepth()==0)
                 {
-					CM_EXCEPT(RenderingAPIException, 
+					BS_EXCEPT(RenderingAPIException, 
                         "Zero sized texture surface on texture face "
 						+ toString(face) 
 						+ " mipmap "+toString(mip)
@@ -311,9 +311,9 @@ namespace BansheeEngine {
 		THROW_IF_NOT_CORE_THREAD;
 
 		if(face >= getNumFaces())
-			CM_EXCEPT(InvalidParametersException, "Face index out of range");
+			BS_EXCEPT(InvalidParametersException, "Face index out of range");
 		if(mipmap > mNumMipmaps)
-			CM_EXCEPT(InvalidParametersException, "Mipmap index out of range");
+			BS_EXCEPT(InvalidParametersException, "Mipmap index out of range");
 		unsigned int idx = face*(mNumMipmaps+1) + mipmap;
 		assert(idx < mSurfaceList.size());
 		return mSurfaceList[idx];

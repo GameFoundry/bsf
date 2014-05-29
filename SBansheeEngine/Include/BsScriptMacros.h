@@ -1,6 +1,6 @@
 #pragma once
 
-#define CM_SCRIPT_GETSET_VALUE(ParentType, Type, Name, Field)									\
+#define BS_SCRIPT_GETSET_VALUE(ParentType, Type, Name, Field)									\
 	static void internal_Get##Name##(##ParentType##* nativeInstance, Type##* value)				\
 	{																							\
 		*value = nativeInstance->##Field;														\
@@ -11,7 +11,7 @@
 		nativeInstance->##Field = value;															\
 	}																							\
 
-#define CM_SCRIPT_GETSET_VALUE_REF(ParentType, Type, Name, Field)								\
+#define BS_SCRIPT_GETSET_VALUE_REF(ParentType, Type, Name, Field)								\
 	static void internal_Get##Name##(##ParentType##* nativeInstance, Type##* value)				\
 	{																							\
 		*value = nativeInstance->##Field;														\
@@ -22,7 +22,7 @@
 		nativeInstance->##Field = *value;														\
 	}																							\
 
-#define CM_SCRIPT_GETSET_OBJECT(ParentType, Type, Name, FieldNative, FieldManaged)									\
+#define BS_SCRIPT_GETSET_OBJECT(ParentType, Type, Name, FieldNative, FieldManaged)									\
 	static void internal_Get##Name##(##ParentType##* nativeInstance, MonoObject** value)							\
 	{																												\
 		throwIfInstancesDontMatch(nativeInstance->##FieldManaged##, &nativeInstance->##FieldNative##);				\
@@ -43,7 +43,7 @@
 		nativeInstance->##FieldManaged = nativeValue;																\
 	}
 
-#define CM_SCRIPT_GETSET_OBJECT_SHRDPTR(ParentType, Type, Name, FieldNative, FieldManaged)							\
+#define BS_SCRIPT_GETSET_OBJECT_SHRDPTR(ParentType, Type, Name, FieldNative, FieldManaged)							\
 	static void internal_Get##Name##(##ParentType##* nativeInstance, MonoObject** value)							\
 	{																												\
 		throwIfInstancesDontMatch(nativeInstance->##FieldManaged##, nativeInstance->##FieldNative##.get());			\
@@ -64,6 +64,6 @@
 		nativeInstance->##FieldManaged = nativeValue;																\
 	}
 
-#define CM_SCRIPT_SETGET_META(Type, Name)																			\
+#define BS_SCRIPT_SETGET_META(Type, Name)																			\
 	metaData.scriptClass->addInternalCall("Internal_Get" #Name, &##Type##::internal_Get##Name##);					\
 	metaData.scriptClass->addInternalCall("Internal_Set" #Name, &##Type##::internal_Set##Name##);

@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 
-#if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(__MINGW32__)
+#if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)
 #	ifdef BS_MONO_EXPORTS
 #		define BS_MONO_EXPORT __declspec(dllexport)
 #	else
@@ -12,7 +12,7 @@
 #    		define BS_MONO_EXPORT __declspec(dllimport)
 #       endif
 #	endif
-#elif defined ( CM_GCC_VISIBILITY )
+#elif defined ( BS_GCC_VISIBILITY )
 #    define BS_MONO_EXPORT  __attribute__ ((visibility("default")))
 #else
 #    define BS_MONO_EXPORT

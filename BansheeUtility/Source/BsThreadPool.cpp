@@ -12,19 +12,19 @@ namespace BansheeEngine
 
 	void PooledThread::initialize()
 	{
-		CM_THREAD_CREATE(t, std::bind(&PooledThread::run, this));
+		BS_THREAD_CREATE(t, std::bind(&PooledThread::run, this));
 		mThread = t;
 
-		CM_LOCK_MUTEX_NAMED(mMutex, lock);
+		BS_LOCK_MUTEX_NAMED(mMutex, lock);
 
 		while(!mThreadStarted)
-			CM_THREAD_WAIT(mStartedCond, mMutex, lock);
+			BS_THREAD_WAIT(mStartedCond, mMutex, lock);
 	}
 
 	void PooledThread::start(std::function<void()> workerMethod)
 	{
 		{
-			CM_LOCK_MUTEX(mMutex);
+			BS_LOCK_MUTEX(mMutex);
 
 			mWorkerMethod = workerMethod;
 			mIdle = false;
@@ -32,7 +32,7 @@ namespace BansheeEngine
 			mThreadReady = true;
 		}
 
-		CM_THREAD_NOTIFY_ONE(mReadyCond);
+		BS_THREAD_NOTIFY_ONE(mReadyCond);
 	}
 
 	void PooledThread::run()
@@ -40,21 +40,21 @@ namespace BansheeEngine
 		onThreadStarted(mName);
 
 		{
-			CM_LOCK_MUTEX(mMutex);
+			BS_LOCK_MUTEX(mMutex);
 			mThreadStarted = true;
 		}
 
-		CM_THREAD_NOTIFY_ONE(mStartedCond);
+		BS_THREAD_NOTIFY_ONE(mStartedCond);
 
 		while(true)
 		{
 			std::function<void()> worker = nullptr;
 
 			{
-				CM_LOCK_MUTEX_NAMED(mMutex, lock);
+				BS_LOCK_MUTEX_NAMED(mMutex, lock);
 
 				while(!mThreadReady)
-					CM_THREAD_WAIT(mReadyCond, mMutex, lock);
+					BS_THREAD_WAIT(mReadyCond, mMutex, lock);
 
 				if(mWorkerMethod == nullptr)
 				{
@@ -68,7 +68,7 @@ namespace BansheeEngine
 			worker();
 
 			{
-				CM_LOCK_MUTEX(mMutex);
+				BS_LOCK_MUTEX(mMutex);
 
 				mIdle = true;
 				mIdleTime = std::time(nullptr);
@@ -80,26 +80,26 @@ namespace BansheeEngine
 	void PooledThread::destroy()
 	{
 		{
-			CM_LOCK_MUTEX(mMutex);
+			BS_LOCK_MUTEX(mMutex);
 			mWorkerMethod = nullptr;
 			mThreadReady = true;
 		}
 
-		CM_THREAD_NOTIFY_ONE(mReadyCond);
-		CM_THREAD_JOIN((*mThread));
-		CM_THREAD_DESTROY(mThread);
+		BS_THREAD_NOTIFY_ONE(mReadyCond);
+		BS_THREAD_JOIN((*mThread));
+		BS_THREAD_DESTROY(mThread);
 	}
 
 	bool PooledThread::isIdle()
 	{
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 
 		return mIdle;
 	}
 
 	time_t PooledThread::idleTime()
 	{
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 
 		return (time(nullptr) - mIdleTime);
 	}
@@ -127,7 +127,7 @@ namespace BansheeEngine
 
 	void ThreadPool::stopAll()
 	{
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 		for(auto& thread : mThreads)
 		{
 			destroyThread(thread);
@@ -138,7 +138,7 @@ namespace BansheeEngine
 
 	void ThreadPool::clearUnused()
 	{
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 		mAge = 0;
 
 		if(mThreads.size() <= mDefaultCapacity)
@@ -185,14 +185,14 @@ namespace BansheeEngine
 	void ThreadPool::destroyThread(PooledThread* thread)
 	{
 		thread->destroy();
-		cm_delete(thread);
+		bs_delete(thread);
 	}
 
 	PooledThread* ThreadPool::getThread(const String& name)
 	{
 		UINT32 age = 0;
 		{
-			CM_LOCK_MUTEX(mMutex);
+			BS_LOCK_MUTEX(mMutex);
 			age = ++mAge;
 		}
 
@@ -200,7 +200,7 @@ namespace BansheeEngine
 			clearUnused();
 
 		PooledThread* newThread = nullptr;
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 
 		for(auto& thread : mThreads)
 		{
@@ -214,7 +214,7 @@ namespace BansheeEngine
 		if(newThread == nullptr)
 		{
 			if(mThreads.size() >= mMaxCapacity)
-				CM_EXCEPT(InvalidStateException, "Unable to create a new thread in the pool because maximum capacity has been reached.");
+				BS_EXCEPT(InvalidStateException, "Unable to create a new thread in the pool because maximum capacity has been reached.");
 
 			newThread = createThread(name);
 			mThreads.push_back(newThread);
@@ -227,7 +227,7 @@ namespace BansheeEngine
 	{
 		UINT32 numAvailable = 0;
 
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 		for(auto& thread : mThreads)
 		{
 			if(thread->isIdle())
@@ -241,7 +241,7 @@ namespace BansheeEngine
 	{
 		UINT32 numActive = 0;
 
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 		for(auto& thread : mThreads)
 		{
 			if(!thread->isIdle())
@@ -253,7 +253,7 @@ namespace BansheeEngine
 
 	UINT32 ThreadPool::getNumAllocated() const
 	{
-		CM_LOCK_MUTEX(mMutex);
+		BS_LOCK_MUTEX(mMutex);
 
 		return (UINT32)mThreads.size();
 	}

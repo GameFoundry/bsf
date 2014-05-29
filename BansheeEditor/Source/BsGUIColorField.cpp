@@ -38,41 +38,41 @@ namespace BansheeEngine
 	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const GUIOptions& layoutOptions, 
 		const String& labelStyle, const String& toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
+		return bs_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
 			GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUIColorField* GUIColorField::create(const GUIContent& labelContent, const String& labelStyle, 
 		const String& toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
+		return bs_new<GUIColorField>(PrivatelyConstruct(), labelContent, labelStyle, toggleStyle, 
 			GUILayoutOptions::create());
 	}
 
 	GUIColorField* GUIColorField::create(const HString& labelContent, const GUIOptions& layoutOptions, 
 		const String& labelStyle, const String& toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, 
+		return bs_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, 
 			toggleStyle, GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUIColorField* GUIColorField::create( const HString& labelContent, const String& labelStyle, 
 		const String& toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, toggleStyle, 
+		return bs_new<GUIColorField>(PrivatelyConstruct(), GUIContent(labelContent), labelStyle, toggleStyle, 
 			GUILayoutOptions::create());
 	}
 
 	GUIColorField* GUIColorField::create(const GUIOptions& layoutOptions, const String& labelStyle, 
 		const String& toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, 
+		return bs_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, 
 			GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUIColorField* GUIColorField::create(const String& labelStyle, const String& toggleStyle)
 	{
-		return cm_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, GUILayoutOptions::create());
+		return bs_new<GUIColorField>(PrivatelyConstruct(), labelStyle, toggleStyle, GUILayoutOptions::create());
 	}
 
 	Color GUIColorField::getValue() const

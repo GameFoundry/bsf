@@ -45,24 +45,24 @@ namespace BansheeEngine
 		GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacencyInformation)
 		{
-			return cm_core_ptr<NullProgram, PoolAlloc>();
+			return bs_core_ptr<NullProgram, PoolAlloc>();
 		}
 
 		GpuProgramPtr create(GpuProgramType type)
 		{
-			return cm_core_ptr<NullProgram, PoolAlloc>();
+			return bs_core_ptr<NullProgram, PoolAlloc>();
 		}
 	};
 
 	GpuProgramManager::GpuProgramManager()
 	{
-		mNullFactory = cm_new<NullProgramFactory>();
+		mNullFactory = bs_new<NullProgramFactory>();
 		addFactory(mNullFactory);
 	}
 
 	GpuProgramManager::~GpuProgramManager()
 	{
-		cm_delete((NullProgramFactory*)mNullFactory);
+		bs_delete((NullProgramFactory*)mNullFactory);
 	}
 
 	void GpuProgramManager::addFactory(GpuProgramFactory* factory)

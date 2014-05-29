@@ -49,14 +49,14 @@ namespace BansheeEngine {
 			{
 				GLint charsWritten = 0;
 
-				GLchar* infoLog = (GLchar*)cm_alloc<ScratchAlloc>(sizeof(GLchar)* infologLength);
+				GLchar* infoLog = (GLchar*)bs_alloc<ScratchAlloc>(sizeof(GLchar)* infologLength);
 
 				glGetProgramInfoLog(programObj, infologLength, &charsWritten, infoLog);
 
 				stream << "Compile and linker info log: \n";
 				stream << String(infoLog);
 
-				cm_free<ScratchAlloc>(infoLog);
+				bs_free<ScratchAlloc>(infoLog);
 			}
 		}
 
@@ -173,7 +173,7 @@ namespace BansheeEngine {
 		if (!out || !out_size)
 		{
 			// Failed to preprocess, break out
-			CM_EXCEPT(RenderingAPIException, "Failed to preprocess shader.");
+			BS_EXCEPT(RenderingAPIException, "Failed to preprocess shader.");
 		}
 
 		mSource = String(out, out_size);

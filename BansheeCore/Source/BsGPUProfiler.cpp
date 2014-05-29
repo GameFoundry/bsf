@@ -13,7 +13,7 @@ namespace BansheeEngine
 	void GPUProfiler::beginFrame()
 	{
 		if (mIsFrameActive)
-			CM_EXCEPT(InvalidStateException, "Cannot begin a frame because another frame is active.");
+			BS_EXCEPT(InvalidStateException, "Cannot begin a frame because another frame is active.");
 
 		mActiveFrame = ActiveFrame();
 
@@ -26,7 +26,7 @@ namespace BansheeEngine
 	void GPUProfiler::endFrame()
 	{
 		if (mNumActiveSamples > 0)
-			CM_EXCEPT(InvalidStateException, "Attempting to end a frame while a sample is active.");
+			BS_EXCEPT(InvalidStateException, "Attempting to end a frame while a sample is active.");
 
 		if (!mIsFrameActive)
 			return;
@@ -40,7 +40,7 @@ namespace BansheeEngine
 	void GPUProfiler::beginSample(const ProfilerString& name)
 	{
 		if (!mIsFrameActive)
-			CM_EXCEPT(InvalidStateException, "Cannot begin a sample because no frame is active.");
+			BS_EXCEPT(InvalidStateException, "Cannot begin a sample because no frame is active.");
 
 		mActiveFrame.samples.push_back(ActiveSample());
 		ActiveSample& sample = mActiveFrame.samples.back();
@@ -61,7 +61,7 @@ namespace BansheeEngine
 			String errorStr = "Attempting to end a sample that doesn't match. Got: " + 
 				String(name.c_str()) + ". Expected: " + String(sample.sampleName.c_str());
 
-			CM_EXCEPT(InvalidStateException, errorStr);
+			BS_EXCEPT(InvalidStateException, errorStr);
 		}
 
 		endSampleInternal(sample);
@@ -76,7 +76,7 @@ namespace BansheeEngine
 	GPUProfilerReport GPUProfiler::getNextReport()
 	{
 		if (mReadyReports.empty())
-			CM_EXCEPT(InvalidStateException, "No reports are available.")
+			BS_EXCEPT(InvalidStateException, "No reports are available.")
 
 		GPUProfilerReport report = mReadyReports.front();
 		mReadyReports.pop();

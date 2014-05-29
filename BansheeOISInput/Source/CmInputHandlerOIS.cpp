@@ -14,12 +14,12 @@ namespace BansheeEngine
 		windowHndStr << hWnd;
 		pl.insert(std::make_pair(std::string("WINDOW"), windowHndStr.str()));
 
-#if defined CM_PLATFORM == CM_PLATFORM_WIN32
+#if defined BS_PLATFORM == BS_PLATFORM_WIN32
 		pl.insert(std::make_pair(std::string("w32_mouse"), std::string("DISCL_FOREGROUND" )));
 		pl.insert(std::make_pair(std::string("w32_mouse"), std::string("DISCL_NONEXCLUSIVE")));
 		pl.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_FOREGROUND")));
 		pl.insert(std::make_pair(std::string("w32_keyboard"), std::string("DISCL_NONEXCLUSIVE")));
-#elif defined CM_PLATFORM == CM_PLATFORM_LINUX || CM_PLATFORM == CM_PLATFORM_APPLE
+#elif defined BS_PLATFORM == BS_PLATFORM_LINUX || BS_PLATFORM == BS_PLATFORM_APPLE
 		pl.insert(std::make_pair(std::string("x11_mouse_grab"), std::string("false")));
 		pl.insert(std::make_pair(std::string("x11_mouse_hide"), std::string("false")));
 		pl.insert(std::make_pair(std::string("x11_keyboard_grab"), std::string("false")));

@@ -44,23 +44,23 @@ namespace BansheeEngine
 
     TexturePtr D3D9TextureManager::createTextureImpl()
     {
-		D3D9Texture* tex = new (cm_alloc<D3D9Texture, PoolAlloc>()) D3D9Texture();
+		D3D9Texture* tex = new (bs_alloc<D3D9Texture, PoolAlloc>()) D3D9Texture();
 
-		return cm_core_ptr<D3D9Texture, PoolAlloc>(tex);
+		return bs_core_ptr<D3D9Texture, PoolAlloc>(tex);
     }
 
 	RenderTexturePtr D3D9TextureManager::createRenderTextureImpl()
 	{
-		D3D9RenderTexture* tex = new (cm_alloc<D3D9RenderTexture, PoolAlloc>()) D3D9RenderTexture();
+		D3D9RenderTexture* tex = new (bs_alloc<D3D9RenderTexture, PoolAlloc>()) D3D9RenderTexture();
 
-		return cm_core_ptr<D3D9RenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<D3D9RenderTexture, PoolAlloc>(tex);
 	}
 
 	MultiRenderTexturePtr D3D9TextureManager::createMultiRenderTextureImpl()
 	{
-		D3D9MultiRenderTexture* tex = new (cm_alloc<D3D9MultiRenderTexture, PoolAlloc>()) D3D9MultiRenderTexture();
+		D3D9MultiRenderTexture* tex = new (bs_alloc<D3D9MultiRenderTexture, PoolAlloc>()) D3D9MultiRenderTexture();
 
-		return cm_core_ptr<D3D9MultiRenderTexture, PoolAlloc>(tex);
+		return bs_core_ptr<D3D9MultiRenderTexture, PoolAlloc>(tex);
 	}
 
 	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)

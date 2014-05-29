@@ -68,7 +68,7 @@ namespace BansheeEngine
 		GLint maxNameSize = 0;
 		glGetProgramiv(glProgram, GL_ACTIVE_ATTRIBUTE_MAX_LENGTH, &maxNameSize);
 
-		GLchar* attributeName = (GLchar*)cm_alloc<ScratchAlloc>(sizeof(GLchar) * maxNameSize);
+		GLchar* attributeName = (GLchar*)bs_alloc<ScratchAlloc>(sizeof(GLchar) * maxNameSize);
 
 		VertexDeclaration::VertexElementList elementList;
 		for(GLint i = 0; i < numAttributes; i++)
@@ -91,7 +91,7 @@ namespace BansheeEngine
 			}
 		}
 
-		cm_free<ScratchAlloc>(attributeName);
+		bs_free<ScratchAlloc>(attributeName);
 
 		return elementList;
 	}
@@ -109,7 +109,7 @@ namespace BansheeEngine
 		case GL_FLOAT_VEC4:
 			return VET_FLOAT4;
 		default:
-			CM_EXCEPT(NotImplementedException, "OpenGL render system currently only supports float parameters.");
+			BS_EXCEPT(NotImplementedException, "OpenGL render system currently only supports float parameters.");
 		}
 	}
 
@@ -117,14 +117,14 @@ namespace BansheeEngine
 	{
 		static GLSLAttribute attributes[] = 
 		{
-			GLSLAttribute("cm_position", VES_POSITION),
-			GLSLAttribute("cm_normal", VES_NORMAL),
-			GLSLAttribute("cm_tangent", VES_TANGENT),
-			GLSLAttribute("cm_bitangent", VES_BITANGENT),
-			GLSLAttribute("cm_texcoord", VES_TEXCOORD),
-			GLSLAttribute("cm_color", VES_COLOR),
-			GLSLAttribute("cm_blendweights", VES_BLEND_WEIGHTS),
-			GLSLAttribute("cm_blendindices", VES_BLEND_INDICES)
+			GLSLAttribute("bs_position", VES_POSITION),
+			GLSLAttribute("bs_normal", VES_NORMAL),
+			GLSLAttribute("bs_tangent", VES_TANGENT),
+			GLSLAttribute("bs_bitangent", VES_BITANGENT),
+			GLSLAttribute("bs_texcoord", VES_TEXCOORD),
+			GLSLAttribute("bs_color", VES_COLOR),
+			GLSLAttribute("bs_blendweights", VES_BLEND_WEIGHTS),
+			GLSLAttribute("bs_blendindices", VES_BLEND_INDICES)
 		};
 
 		static const UINT32 numAttribs = sizeof(attributes) / sizeof(attributes[0]);
@@ -155,11 +155,11 @@ namespace BansheeEngine
 		if(maxBlockNameBufferSize > maxBufferSize)
 			maxBufferSize = maxBlockNameBufferSize;
 
-		GLchar* uniformName = (GLchar*)cm_alloc<ScratchAlloc>(sizeof(GLchar) * maxBufferSize);
+		GLchar* uniformName = (GLchar*)bs_alloc<ScratchAlloc>(sizeof(GLchar) * maxBufferSize);
 
 		GpuParamBlockDesc newGlobalBlockDesc;
 		newGlobalBlockDesc.slot = 0;
-		newGlobalBlockDesc.name = "CM_INTERNAL_Globals";
+		newGlobalBlockDesc.name = "BS_INTERNAL_Globals";
 		newGlobalBlockDesc.blockSize = 0;
 		newGlobalBlockDesc.isShareable = false;
 
@@ -279,7 +279,7 @@ namespace BansheeEngine
 				//       actual array size (e.g. suppose OpenGL optimized out few last elements)
 				//        - Normal arrays work fine as OpenGL has utilities for reporting their actual size, but those do not work with structs
 
-				CM_EXCEPT(NotImplementedException, "Structs are not supported.")
+				BS_EXCEPT(NotImplementedException, "Structs are not supported.")
 			}
 
 			// GLSL will optimize out unused array indexes, so there's no guarantee that 0 is the first,
@@ -449,7 +449,7 @@ namespace BansheeEngine
 				blockDesc.blockSize += (4 - (blockDesc.blockSize % 4));
 		}
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 		// Check if manually calculated and OpenGL buffer sizes match
 		for(auto iter = returnParamDesc.paramBlocks.begin(); iter != returnParamDesc.paramBlocks.end(); ++iter)
 		{
@@ -463,11 +463,11 @@ namespace BansheeEngine
 			blockSize = blockSize / 4;
 
 			if(iter->second.blockSize != blockSize)
-				CM_EXCEPT(InternalErrorException, "OpenGL specified and manual uniform block buffer sizes don't match!");
+				BS_EXCEPT(InternalErrorException, "OpenGL specified and manual uniform block buffer sizes don't match!");
 		}
 #endif
 
-		cm_free<ScratchAlloc>(uniformName);
+		bs_free<ScratchAlloc>(uniformName);
 	}
 
 	void GLSLParamParser::determineParamInfo(GpuParamDataDesc& desc, const String& paramName, GLuint programHandle, GLuint uniformIndex)
@@ -554,7 +554,7 @@ namespace BansheeEngine
 			desc.elementSize = 12;
 			break;
 		default:
-			CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(uniformType) + " for parameter " + paramName);
+			BS_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(uniformType) + " for parameter " + paramName);
 		}
 
 		if(arraySize > 1)

@@ -55,6 +55,6 @@ namespace BansheeEngine
 
 	ImportOptionsPtr GpuProgramImporter::createImportOptions() const
 	{
-		return cm_shared_ptr<GpuProgramImportOptions, PoolAlloc>();
+		return bs_shared_ptr<GpuProgramImportOptions, PoolAlloc>();
 	}
 }

@@ -13,12 +13,12 @@ namespace BansheeEngine
 	ScriptObjectBase::~ScriptObjectBase() 
 	{
 		if(mManagedInstance != nullptr)
-			CM_EXCEPT(InvalidStateException, "Script object is being destroyed without its instance previously being released.");
+			BS_EXCEPT(InvalidStateException, "Script object is being destroyed without its instance previously being released.");
 	}
 
 	void ScriptObjectBase::_onManagedInstanceDeleted()
 	{
 		mManagedInstance = nullptr;
-		cm_delete(this);
+		bs_delete(this);
 	}
 }

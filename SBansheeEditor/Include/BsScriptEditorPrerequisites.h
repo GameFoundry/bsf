@@ -3,7 +3,7 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsEditorPrerequisites.h"
 
-#if (CM_PLATFORM == CM_PLATFORM_WIN32) && !defined(__MINGW32__)
+#if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)
 #	ifdef BS_SCR_BED_EXPORTS
 #		define BS_SCR_BED_EXPORT __declspec(dllexport)
 #	else
@@ -13,7 +13,7 @@
 #    		define BS_SCR_BED_EXPORT __declspec(dllimport)
 #       endif
 #	endif
-#elif defined ( CM_GCC_VISIBILITY )
+#elif defined ( BS_GCC_VISIBILITY )
 #    define BS_SCR_BED_EXPORT  __attribute__ ((visibility("default")))
 #else
 #    define BS_SCR_BED_EXPORT

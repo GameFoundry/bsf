@@ -403,5 +403,5 @@ namespace BansheeEngine
 		static const Vector2 UNIT_Y;
     };
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(Vector2);
+	BS_ALLOW_MEMCPY_SERIALIZATION(Vector2);
 }

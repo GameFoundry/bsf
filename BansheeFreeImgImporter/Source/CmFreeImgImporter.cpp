@@ -156,7 +156,7 @@ namespace BansheeEngine
 	{
 		if(fileData->size() > std::numeric_limits<UINT32>::max())
 		{
-			CM_EXCEPT(InternalErrorException, "File size larger than supported!");
+			BS_EXCEPT(InternalErrorException, "File size larger than supported!");
 		}
 
 		UINT32 magicLen = std::min((UINT32)fileData->size(), 32u);
@@ -169,7 +169,7 @@ namespace BansheeEngine
 		auto findFormat = mExtensionToFID.find(fileExtension);
 		if(findFormat == mExtensionToFID.end())
 		{
-			CM_EXCEPT(InvalidParametersException, "Type of the file provided is not supported by this importer. File type: " + toString(fileExtension));
+			BS_EXCEPT(InvalidParametersException, "Type of the file provided is not supported by this importer. File type: " + toString(fileExtension));
 		}
 
 		FREE_IMAGE_FORMAT imageFormat = (FREE_IMAGE_FORMAT)findFormat->second;
@@ -187,7 +187,7 @@ namespace BansheeEngine
 			(FREE_IMAGE_FORMAT)imageFormat, fiMem);
 		if (!fiBitmap)
 		{
-			CM_EXCEPT(InternalErrorException, "Error decoding image");
+			BS_EXCEPT(InternalErrorException, "Error decoding image");
 		}
 
 		UINT32 width = FreeImage_GetWidth(fiBitmap);
@@ -208,7 +208,7 @@ namespace BansheeEngine
 		case FIT_INT32:
 		case FIT_DOUBLE:
 		default:
-			CM_EXCEPT(InternalErrorException, "Unknown or unsupported image format");
+			BS_EXCEPT(InternalErrorException, "Unknown or unsupported image format");
 
 			break;
 		case FIT_BITMAP:
@@ -310,7 +310,7 @@ namespace BansheeEngine
 		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
-		TextureDataPtr texData = cm_shared_ptr<TextureData, ScratchAlloc>(width, height, size, format, 1, 0, 0);
+		TextureDataPtr texData = bs_shared_ptr<TextureData, ScratchAlloc>(width, height, size, format, 1, 0, 0);
 		UINT8* output = texData->getData();
 
 		UINT8* pSrc;

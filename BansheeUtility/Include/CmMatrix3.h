@@ -322,5 +322,5 @@ namespace BansheeEngine
         float m[3][3];
     };
 
-	CM_ALLOW_MEMCPY_SERIALIZATION(Matrix3);
+	BS_ALLOW_MEMCPY_SERIALIZATION(Matrix3);
 }

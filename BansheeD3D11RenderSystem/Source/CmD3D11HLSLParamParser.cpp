@@ -18,20 +18,20 @@ namespace BansheeEngine
 		const char* assemblyCode =  static_cast<const char*>(pIDisassembly->GetBufferPointer());
 
 		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Unable to disassemble shader.");
+			BS_EXCEPT(RenderingAPIException, "Unable to disassemble shader.");
 
 		ID3D11ShaderReflection* shaderReflection;
 		hr = D3DReflect((void*)microcode->GetBufferPointer(), microcode->GetBufferSize(),
 			IID_ID3D11ShaderReflection, (void**)&shaderReflection);
 
 		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
+			BS_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
 
 		D3D11_SHADER_DESC shaderDesc;
 		hr = shaderReflection->GetDesc(&shaderDesc);
 
 		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
+			BS_EXCEPT(RenderingAPIException, "Cannot reflect D3D11 high-level shader.");
 
 		if (inputParams != nullptr)
 		{
@@ -41,7 +41,7 @@ namespace BansheeEngine
 				hr = shaderReflection->GetInputParameterDesc(i, &inputParamDesc);
 
 				if (FAILED(hr))
-					CM_EXCEPT(RenderingAPIException, "Cannot get input param desc with index: " + toString(i));
+					BS_EXCEPT(RenderingAPIException, "Cannot get input param desc with index: " + toString(i));
 
 				inputParams->push_back(VertexElement(inputParamDesc.Stream, inputParamDesc.Register,
 					D3D11Mappings::getInputType(inputParamDesc.ComponentType), D3D11Mappings::get(inputParamDesc.SemanticName), inputParamDesc.SemanticIndex));
@@ -54,7 +54,7 @@ namespace BansheeEngine
 			hr = shaderReflection->GetResourceBindingDesc(i, &bindingDesc);
 
 			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Cannot get resource binding desc with index: " + toString(i));
+				BS_EXCEPT(RenderingAPIException, "Cannot get resource binding desc with index: " + toString(i));
 
 			parseResource(bindingDesc, desc);
 		}
@@ -172,7 +172,7 @@ namespace BansheeEngine
 		D3D11_SHADER_BUFFER_DESC constantBufferDesc;
 		HRESULT hr = bufferReflection->GetDesc(&constantBufferDesc);
 		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer description.");
+			BS_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer description.");
 
 		if(constantBufferDesc.Type != D3D_CT_CBUFFER && constantBufferDesc.Type != D3D_CT_TBUFFER)
 		{
@@ -190,7 +190,7 @@ namespace BansheeEngine
 			HRESULT hr = varRef->GetDesc(&varDesc);
 
 			if (FAILED(hr))
-				CM_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer variable description.");
+				BS_EXCEPT(RenderingAPIException, "Failed to retrieve HLSL constant buffer variable description.");
 
 			ID3D11ShaderReflectionType* varRefType;
 			varRefType = varRef->GetType();

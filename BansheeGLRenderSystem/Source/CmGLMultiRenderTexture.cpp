@@ -17,9 +17,9 @@ namespace BansheeEngine
 	void GLMultiRenderTexture::initialize_internal()
 	{
 		if(mFB != nullptr)
-			cm_delete(mFB);
+			bs_delete(mFB);
 
-		mFB = cm_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
+		mFB = bs_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
 
 		for(size_t i = 0; i < mColorSurfaces.size(); i++)
 		{
@@ -63,7 +63,7 @@ namespace BansheeEngine
 	void GLMultiRenderTexture::destroy_internal()
 	{
 		if(mFB != nullptr)
-			cm_delete(mFB);
+			bs_delete(mFB);
 
 		MultiRenderTexture::destroy_internal();
 	}

@@ -7,7 +7,7 @@
 
 namespace BansheeEngine
 {
-	CM_ALLOW_MEMCPY_SERIALIZATION(SAMPLER_STATE_DESC);
+	BS_ALLOW_MEMCPY_SERIALIZATION(SAMPLER_STATE_DESC);
 
 	class BS_CORE_EXPORT SamplerStateRTTI : public RTTIType<SamplerState, IReflectable, SamplerStateRTTI>
 	{

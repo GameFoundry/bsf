@@ -10,8 +10,8 @@ namespace BansheeEngine
 		mRedoStackPtr(0), mRedoNumElements(0),
 		mUndoStack(nullptr), mRedoStack(nullptr)
 	{
-		mUndoStack = cm_newN<EditorCommand*>(MAX_STACK_ELEMENTS);
-		mRedoStack = cm_newN<EditorCommand*>(MAX_STACK_ELEMENTS);
+		mUndoStack = bs_newN<EditorCommand*>(MAX_STACK_ELEMENTS);
+		mRedoStack = bs_newN<EditorCommand*>(MAX_STACK_ELEMENTS);
 	}
 
 	UndoRedo::~UndoRedo()
@@ -19,8 +19,8 @@ namespace BansheeEngine
 		clearUndoStack();
 		clearRedoStack();
 
-		cm_deleteN(mUndoStack, MAX_STACK_ELEMENTS);
-		cm_deleteN(mRedoStack, MAX_STACK_ELEMENTS);
+		bs_deleteN(mUndoStack, MAX_STACK_ELEMENTS);
+		bs_deleteN(mRedoStack, MAX_STACK_ELEMENTS);
 	}
 
 	void UndoRedo::undo()
@@ -65,11 +65,11 @@ namespace BansheeEngine
 	void UndoRedo::popGroup(const String& name)
 	{
 		if(mGroups.empty())
-			CM_EXCEPT(InvalidStateException, "Attempting to pop an UndoRedo group that doesn't exist: " + name);
+			BS_EXCEPT(InvalidStateException, "Attempting to pop an UndoRedo group that doesn't exist: " + name);
 
 		GroupData& topGroup = mGroups.top();
 		if(topGroup.name != name)
-			CM_EXCEPT(InvalidStateException, "Attempting to pop invalid UndoRedo group. Got: " + name + ". Expected: " + topGroup.name);
+			BS_EXCEPT(InvalidStateException, "Attempting to pop invalid UndoRedo group. Got: " + name + ". Expected: " + topGroup.name);
 
 		for(UINT32 i = 0; i < topGroup.numEntries; i++)
 		{
@@ -103,7 +103,7 @@ namespace BansheeEngine
 
 			if(topGroup.numEntries == 0)
 			{
-				CM_EXCEPT(InvalidStateException, "Removing an element from UndoRedo stack while in an " \
+				BS_EXCEPT(InvalidStateException, "Removing an element from UndoRedo stack while in an " \
 					"invalid UndoRedo group. Current group: " + topGroup.name);
 			}
 

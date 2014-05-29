@@ -12,7 +12,7 @@ namespace BansheeEngine
 	GpuParamBlockBuffer::~GpuParamBlockBuffer()
 	{
 		if(mParamBlock != nullptr)
-			cm_delete(mParamBlock);
+			bs_delete(mParamBlock);
 	}
 
 	void GpuParamBlockBuffer::initialize(UINT32 size, GpuParamBlockUsage usage)
@@ -20,7 +20,7 @@ namespace BansheeEngine
 		mSize = size;
 		mUsage = usage;
 
-		mParamBlock = cm_new<GpuParamBlock, PoolAlloc>(size);
+		mParamBlock = bs_new<GpuParamBlock, PoolAlloc>(size);
 
 		CoreObject::initialize();
 	}
@@ -37,7 +37,7 @@ namespace BansheeEngine
 
 	void GenericGpuParamBlockBuffer::initialize_internal()
 	{
-		mData = (UINT8*)cm_alloc<ScratchAlloc>(mSize);
+		mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
 		memset(mData, 0, mSize);
 
 		GpuParamBlockBuffer::initialize_internal();
@@ -46,7 +46,7 @@ namespace BansheeEngine
 	void GenericGpuParamBlockBuffer::destroy_internal()
 	{
 		if(mData != nullptr)
-			cm_free<ScratchAlloc>(mData);
+			bs_free<ScratchAlloc>(mData);
 
 		GpuParamBlockBuffer::destroy_internal();
 	}

@@ -19,12 +19,12 @@ namespace BansheeEngine
 
 	ResourceManifestPtr ResourceManifest::create(const String& name)
 	{
-		return cm_shared_ptr<ResourceManifest>(name);
+		return bs_shared_ptr<ResourceManifest>(name);
 	}
 
 	ResourceManifestPtr ResourceManifest::createEmpty()
 	{
-		return cm_shared_ptr<ResourceManifest>(ConstructPrivately());
+		return bs_shared_ptr<ResourceManifest>(ConstructPrivately());
 	}
 
 	void ResourceManifest::registerResource(const String& uuid, const Path& filePath)
@@ -113,7 +113,7 @@ namespace BansheeEngine
 		{
 			if (!relativePath.includes(elem.first))
 			{
-				CM_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
+				BS_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
 					relativePath.toString() + "\". Path: \"" + elem.first.toString() + "\"");
 			}
 
@@ -126,7 +126,7 @@ namespace BansheeEngine
 		{
 			if(!relativePath.includes(elem.second))
 			{
-				CM_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
+				BS_EXCEPT(InvalidStateException, "Path in resource manifest cannot be made relative to: \"" + 
 					relativePath.toString() + "\". Path: \"" + elem.second.toString() + "\"");
 			}
 

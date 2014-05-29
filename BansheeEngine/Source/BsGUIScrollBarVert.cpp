@@ -25,12 +25,12 @@ namespace BansheeEngine
 
 	GUIScrollBarVert* GUIScrollBarVert::create(const String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(getStyleName<GUIScrollBarVert>(styleName), GUILayoutOptions::create());
+		return new (bs_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(getStyleName<GUIScrollBarVert>(styleName), GUILayoutOptions::create());
 	}
 
 	GUIScrollBarVert* GUIScrollBarVert::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(getStyleName<GUIScrollBarVert>(styleName), GUILayoutOptions::create(layoutOptions));
+		return new (bs_alloc<GUIScrollBarVert, PoolAlloc>()) GUIScrollBarVert(getStyleName<GUIScrollBarVert>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 
 	const String& GUIScrollBarVert::getGUITypeName()

@@ -25,28 +25,28 @@ namespace BansheeEngine
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const HString& text, const String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create());
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const HString& text, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, GUIContent(text), GUILayoutOptions::create(layoutOptions));
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const GUIContent& content, const String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create());
 	}
 
 	GUITabButton* GUITabButton::create(const GUIToggleGroupPtr& toggleGroup, UINT32 index, 
 		const GUIContent& content, const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
+		return new (bs_alloc<GUITabButton, PoolAlloc>()) GUITabButton(
 			getStyleName<GUITabButton>(styleName), toggleGroup, index, content, GUILayoutOptions::create(layoutOptions));
 	}
 

@@ -58,6 +58,4 @@ namespace BansheeEngine
 #define LOGINFO(x) BansheeEngine::gDebug().logInfo((x));
 #define LOGWRN(x) BansheeEngine::gDebug().logWarning((x));
 #define LOGERR(x) BansheeEngine::gDebug().logError((x));
-
-#define CM_ASSERT(x) assert(x)
 }

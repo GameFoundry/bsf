@@ -16,8 +16,8 @@ namespace BansheeEngine
 {
 	Importer::Importer()
 	{
-		_registerAssetImporter(cm_new<GpuProgIncludeImporter>());
-		_registerAssetImporter(cm_new<GpuProgramImporter>());
+		_registerAssetImporter(bs_new<GpuProgIncludeImporter>());
+		_registerAssetImporter(bs_new<GpuProgramImporter>());
 	}
 
 	Importer::~Importer()
@@ -25,7 +25,7 @@ namespace BansheeEngine
 		for(auto i = mAssetImporters.begin(); i != mAssetImporters.end(); ++i)
 		{
 			if((*i) != nullptr)
-				cm_delete(*i);
+				bs_delete(*i);
 		}
 
 		mAssetImporters.clear();
@@ -72,7 +72,7 @@ namespace BansheeEngine
 			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
 			if(importOptions->getTypeId() != defaultImportOptions->getTypeId())
 			{
-				CM_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
+				BS_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
 					"Expected: " + defaultImportOptions->getTypeName() + ". Got: " + importOptions->getTypeName() + ".");
 			}
 		}
@@ -100,7 +100,7 @@ namespace BansheeEngine
 			ConstImportOptionsPtr defaultImportOptions = importer->getDefaultImportOptions();
 			if(importOptions->getTypeId() != defaultImportOptions->getTypeId())
 			{
-				CM_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
+				BS_EXCEPT(InvalidParametersException, "Provided import options is not of valid type. " \
 					"Expected: " + defaultImportOptions->getTypeName() + ". Got: " + importOptions->getTypeName() + ".");
 			}
 		}

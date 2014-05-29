@@ -73,7 +73,7 @@ namespace BansheeEngine
 		void windowMovedOrResized(RenderWindow* window);
 
 	protected:
-		CM_MUTEX(mWindowMutex);
+		BS_MUTEX(mWindowMutex);
 		Vector<RenderWindow*> mCreatedWindows;
 
 		RenderWindow* mWindowInFocus;

@@ -38,8 +38,8 @@ namespace BansheeEngine
 
 	HSceneObject SceneObject::createInternal(const String& name)
 	{
-		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (cm_alloc<SceneObject, PoolAlloc>()) SceneObject(name), 
-			&cm_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
+		std::shared_ptr<SceneObject> sceneObjectPtr = std::shared_ptr<SceneObject>(new (bs_alloc<SceneObject, PoolAlloc>()) SceneObject(name), 
+			&bs_delete<PoolAlloc, SceneObject>, StdAlloc<PoolAlloc>());
 		
 		HSceneObject sceneObject = GameObjectManager::instance().registerObject(sceneObjectPtr);
 		sceneObject->mThisHandle = sceneObject;
@@ -289,7 +289,7 @@ namespace BansheeEngine
 	{
 		if(parent.isDestroyed())
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Trying to assign a SceneObject parent that is destroyed.");
 		}
 
@@ -310,7 +310,7 @@ namespace BansheeEngine
 	{
 		if(idx < 0 || idx >= mChildren.size())
 		{
-			CM_EXCEPT(InternalErrorException, "Child index out of range.");
+			BS_EXCEPT(InternalErrorException, "Child index out of range.");
 		}
 
 		return mChildren[idx];
@@ -340,7 +340,7 @@ namespace BansheeEngine
 			mChildren.erase(result);
 		else
 		{
-			CM_EXCEPT(InternalErrorException, 
+			BS_EXCEPT(InternalErrorException, 
 				"Trying to remove a child but it's not a child of the transform.");
 		}
 	}
@@ -350,11 +350,11 @@ namespace BansheeEngine
 		UINT32 bufferSize = 0;
 
 		MemorySerializer serializer;
-		UINT8* buffer = serializer.encode(this, bufferSize, &cm_alloc);
+		UINT8* buffer = serializer.encode(this, bufferSize, &bs_alloc);
 
 		GameObjectManager::instance().startDeserialization();
 		std::shared_ptr<SceneObject> cloneObj = std::static_pointer_cast<SceneObject>(serializer.decode(buffer, bufferSize));
-		cm_free(buffer);
+		bs_free(buffer);
 		GameObjectManager::instance().endDeserialization();
 
 		return cloneObj->mThisHandle;

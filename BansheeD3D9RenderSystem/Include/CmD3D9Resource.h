@@ -47,6 +47,6 @@ namespace BansheeEngine
 		static void unlockDeviceAccess();
 
 	protected:
-		CM_STATIC_MUTEX(msDeviceAccessMutex)		
+		BS_STATIC_MUTEX(msDeviceAccessMutex)		
 	};
 }

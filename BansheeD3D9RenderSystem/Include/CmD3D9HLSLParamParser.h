@@ -32,10 +32,10 @@ namespace BansheeEngine
 		HRESULT hr = mpConstTable->GetDesc(&desc);
 
 		if (FAILED(hr))
-			CM_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
+			BS_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
 
 		// DX9 has no concept of parameter blocks so we just put all members in one global block
-		String name = "CM_INTERNAL_Globals";
+		String name = "BS_INTERNAL_Globals";
 		mParamDesc.paramBlocks.insert(std::make_pair(name, GpuParamBlockDesc()));
 		GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[name];
 		blockDesc.name = name;
@@ -65,7 +65,7 @@ namespace BansheeEngine
 		HRESULT hr = mpConstTable->GetConstantDesc(hConstant, &desc, &numParams);
 		if (FAILED(hr))
 		{
-			CM_EXCEPT(InternalErrorException, "Cannot retrieve constant description from HLSL program.");
+			BS_EXCEPT(InternalErrorException, "Cannot retrieve constant description from HLSL program.");
 		}
 
 		String paramName = desc.Name;
@@ -135,7 +135,7 @@ namespace BansheeEngine
 					textureDesc.type = GPOT_TEXTURECUBE;
 					break;
 				default:
-					CM_EXCEPT(InternalErrorException, "Invalid sampler type: " + toString(desc.Type) + " for parameter " + paramName);
+					BS_EXCEPT(InternalErrorException, "Invalid sampler type: " + toString(desc.Type) + " for parameter " + paramName);
 				}
 
 				mParamDesc.samplers.insert(std::make_pair(paramName, samplerDesc));
@@ -143,7 +143,7 @@ namespace BansheeEngine
 			}
 			else
 			{
-				CM_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(desc.Type) + " for parameter " + paramName);
+				BS_EXCEPT(InternalErrorException, "Invalid shader parameter type: " + toString(desc.Type) + " for parameter " + paramName);
 			}
 		}
 	}

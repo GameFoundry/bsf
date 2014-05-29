@@ -81,11 +81,11 @@ namespace BansheeEngine
 		 */
 		HEvent connect(std::function<RetType(Args...)> func)
 		{
-			std::shared_ptr<ConnectionData> connData = cm_shared_ptr<ConnectionData>(func);
+			std::shared_ptr<ConnectionData> connData = bs_shared_ptr<ConnectionData>(func);
 			connData->isValid = true;
 
 			{
-				CM_LOCK_RECURSIVE_MUTEX(mMutex);
+				BS_LOCK_RECURSIVE_MUTEX(mMutex);
 				mConnections.push_back(connData);
 			}
 			
@@ -97,7 +97,7 @@ namespace BansheeEngine
 		 */
 		void operator() (Args... args)
 		{
-			CM_LOCK_RECURSIVE_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			// Here is the only place we remove connections, in order to allow disconnect() and clear() to be called
 			// recursively from the notify callbacks
@@ -127,7 +127,7 @@ namespace BansheeEngine
 		 */
 		void clear()
 		{
-			CM_LOCK_RECURSIVE_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			for(auto& connection : mConnections)
 				connection->isValid = false;
@@ -143,7 +143,7 @@ namespace BansheeEngine
 		 */
 		bool empty()
 		{
-			CM_LOCK_RECURSIVE_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			return mConnections.size() == 0;
 		}
@@ -151,7 +151,7 @@ namespace BansheeEngine
 	private:
 		Vector<std::shared_ptr<ConnectionData>> mConnections;
 		bool mHasDisconnectedCallbacks;
-		CM_RECURSIVE_MUTEX(mMutex);
+		BS_RECURSIVE_MUTEX(mMutex);
 
 		/**
 		 * @brief	Callback triggered by event handles when they want to disconnect from
@@ -169,7 +169,7 @@ namespace BansheeEngine
 		 */
 		void disconnect(const std::shared_ptr<BaseConnectionData>& connData)
 		{
-			CM_LOCK_RECURSIVE_MUTEX(mMutex);
+			BS_LOCK_RECURSIVE_MUTEX(mMutex);
 
 			for(auto& iter = mConnections.begin(); iter != mConnections.end(); ++iter)
 			{

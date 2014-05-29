@@ -80,7 +80,7 @@ namespace BansheeEngine
 			UINT64 dataSize = sizeof(UINT32) + rttiGetElemSize(data.type) + rttiGetElemSize(data.path) + rttiGetElemSize(data.elementName) +
 				rttiGetElemSize(data.lastUpdateTime);
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
 				__string_throwDataOverflowException();
@@ -146,7 +146,7 @@ namespace BansheeEngine
 
 				if(childType == BansheeEngine::ProjectLibrary::LibraryEntryType::File)
 				{
-					BansheeEngine::ProjectLibrary::ResourceEntry* childResEntry = cm_new<BansheeEngine::ProjectLibrary::ResourceEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
+					BansheeEngine::ProjectLibrary::ResourceEntry* childResEntry = bs_new<BansheeEngine::ProjectLibrary::ResourceEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
 					memory = rttiReadElem(*childResEntry, memory);
 
 					childResEntry->parent = &data;
@@ -154,7 +154,7 @@ namespace BansheeEngine
 				}
 				else if(childType == BansheeEngine::ProjectLibrary::LibraryEntryType::Directory)
 				{
-					BansheeEngine::ProjectLibrary::DirectoryEntry* childDirEntry = cm_new<BansheeEngine::ProjectLibrary::DirectoryEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
+					BansheeEngine::ProjectLibrary::DirectoryEntry* childDirEntry = bs_new<BansheeEngine::ProjectLibrary::DirectoryEntry>(); // Note: Assumes that ProjectLibrary takes care of the cleanup
 					memory = rttiReadElem(*childDirEntry, memory);
 
 					childDirEntry->parent = &data;
@@ -185,7 +185,7 @@ namespace BansheeEngine
 				}
 			}
 
-#if CM_DEBUG_MODE
+#if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
 			{
 				__string_throwDataOverflowException();

@@ -151,7 +151,7 @@ namespace BansheeEngine
 			if(wantedSize > blockSize)
 				blockSize = wantedSize;
 
-			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(cm_alloc(blockSize + sizeof(MemBlock)));
+			UINT8* data = (UINT8*)reinterpret_cast<UINT8*>(bs_alloc(blockSize + sizeof(MemBlock)));
 			MemBlock* newBlock = new (data) MemBlock(blockSize);
 			data += sizeof(MemBlock);
 			newBlock->mData = data;
@@ -167,7 +167,7 @@ namespace BansheeEngine
 		void deallocBlock(MemBlock* block)
 		{
 			block->~MemBlock();
-			cm_free(block);
+			bs_free(block);
 		}
 	};
 
@@ -209,7 +209,7 @@ namespace BansheeEngine
 		static BS_UTILITY_EXPORT void deallocLast(UINT8* data);
 
 	private:
-		static CM_THREADLOCAL MemStackInternal<1024 * 1024>* ThreadMemStack;
+		static BS_THREADLOCAL MemStackInternal<1024 * 1024>* ThreadMemStack;
 	};
 
 	/**

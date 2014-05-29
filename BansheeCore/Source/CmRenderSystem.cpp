@@ -36,7 +36,7 @@ namespace BansheeEngine {
     {
 		// Base classes need to call virtual destroy_internal method instead of a destructor
 
-		cm_delete(mCurrentCapabilities);
+		bs_delete(mCurrentCapabilities);
 		mCurrentCapabilities = nullptr;
     }
 
@@ -230,7 +230,7 @@ namespace BansheeEngine {
 			for(auto iter = vertexBuffers.begin(); iter != vertexBuffers.end() ; ++iter)
 			{
 				if(iter->first >= MAX_BOUND_VERTEX_BUFFERS)
-					CM_EXCEPT(InvalidParametersException, "Buffer index out of range");
+					BS_EXCEPT(InvalidParametersException, "Buffer index out of range");
 
 				startSlot = std::min(iter->first, startSlot);
 				endSlot = std::max(iter->first, endSlot);

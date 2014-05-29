@@ -64,7 +64,7 @@ namespace BansheeEngine
 			StructData(UINT32 _size)
 				:size(_size)
 			{
-				data = std::shared_ptr<void>(cm_alloc<ScratchAlloc>(_size), &cm_free<ScratchAlloc>);
+				data = std::shared_ptr<void>(bs_alloc<ScratchAlloc>(_size), &bs_free<ScratchAlloc>);
 			}
 
 			/**

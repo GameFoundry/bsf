@@ -24,13 +24,13 @@ namespace BansheeEngine
 
 	GUIWindowDropArea* GUIWindowDropArea::create(const String& styleName)
 	{
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) 
+		return new (bs_alloc<GUIWindowDropArea, PoolAlloc>()) 
 			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create());
 	}
 
 	GUIWindowDropArea* GUIWindowDropArea::create(const GUIOptions& layoutOptions, const String& styleName)
 	{
-		return new (cm_alloc<GUIWindowDropArea, PoolAlloc>()) 
+		return new (bs_alloc<GUIWindowDropArea, PoolAlloc>()) 
 			GUIWindowDropArea(getStyleName<GUIWindowDropArea>(styleName), GUILayoutOptions::create(layoutOptions));
 	}
 

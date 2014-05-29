@@ -27,8 +27,8 @@
 
 // Note - not in the original STL, but exists in SGI STL and STLport
 // For gcc 4.3 see http://gcc.gnu.org/gcc-4.3/changes.html
-#if (CM_COMPILER == CM_COMPILER_GNUC)
-#   if CM_COMP_VER >= 430
+#if (BS_COMPILER == BS_COMPILER_GNUC)
+#   if BS_COMP_VER >= 430
 #       include <tr1/unordered_map>
 #       include <tr1/unordered_set> 
 #   else
@@ -36,7 +36,7 @@
 #       include <ext/hash_set>
 #   endif
 #else
-#   if (CM_COMPILER == CM_COMPILER_MSVC) && CM_COMP_VER >= 1600 // VC++ 10.0
+#   if (BS_COMPILER == BS_COMPILER_MSVC) && BS_COMP_VER >= 1600 // VC++ 10.0
 #    	include <unordered_map>
 #    	include <unordered_set>
 #	else
@@ -70,7 +70,7 @@ extern "C" {
 
 }
 
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 #  undef min
 #  undef max
 #	if !defined(NOMINMAX) && defined(_MSC_VER)
@@ -81,7 +81,7 @@ extern "C" {
 #  endif
 #endif
 
-#if CM_PLATFORM == CM_PLATFORM_LINUX
+#if BS_PLATFORM == BS_PLATFORM_LINUX
 extern "C" {
 
 #   include <unistd.h>
@@ -90,7 +90,7 @@ extern "C" {
 }
 #endif
 
-#if CM_PLATFORM == CM_PLATFORM_APPLE
+#if BS_PLATFORM == BS_PLATFORM_APPLE
 extern "C" {
 #   include <unistd.h>
 #   include <sys/param.h>
@@ -138,7 +138,7 @@ namespace BansheeEngine
 	 * @brief	Create a new shared pointer using a custom allocator category.
 	 */
 	template<class Type, class AllocCategory, class... Args> 
-	std::shared_ptr<Type> cm_shared_ptr(Args &&... args) 
+	std::shared_ptr<Type> bs_shared_ptr(Args &&... args) 
 	{
 		return std::allocate_shared<Type>(StdAlloc<AllocCategory>(), std::forward<Args>(args)...); 
 	}
@@ -147,7 +147,7 @@ namespace BansheeEngine
 	* @brief	Create a new shared pointer using the default allocator category.
 	*/
 	template<class Type, class... Args>
-	std::shared_ptr<Type> cm_shared_ptr(Args &&... args)
+	std::shared_ptr<Type> bs_shared_ptr(Args &&... args)
 	{
 		return std::allocate_shared<Type>(StdAlloc<GenAlloc>(), std::forward<Args>(args)...);
 	}
@@ -157,9 +157,9 @@ namespace BansheeEngine
 	 *			Pointer specific data will be allocated using the provided allocator category.
 	 */
 	template<class Type, class MainAlloc>
-	std::shared_ptr<Type> cm_shared_ptr(Type* data) 
+	std::shared_ptr<Type> bs_shared_ptr(Type* data) 
 	{
-		return std::shared_ptr<Type>(data, &cm_delete<MainAlloc, Type>, StdAlloc<GenAlloc>());  
+		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<GenAlloc>());  
 	}
 
 	/**
@@ -167,8 +167,8 @@ namespace BansheeEngine
 	*			Pointer specific data will be allocated using the provided allocator category.
 	*/
 	template<class Type, class MainAlloc, class PtrDataAlloc>
-	std::shared_ptr<Type> cm_shared_ptr(Type* data) 
+	std::shared_ptr<Type> bs_shared_ptr(Type* data) 
 	{
-		return std::shared_ptr<Type>(data, &cm_delete<MainAlloc, Type>, StdAlloc<PtrDataAlloc>());  
+		return std::shared_ptr<Type>(data, &bs_delete<MainAlloc, Type>, StdAlloc<PtrDataAlloc>());  
 	}
 }

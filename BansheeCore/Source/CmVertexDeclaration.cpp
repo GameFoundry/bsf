@@ -76,7 +76,7 @@ namespace BansheeEngine
 			return 4;
 		}
 
-		CM_EXCEPT(InvalidParametersException, "Invalid type");
+		BS_EXCEPT(InvalidParametersException, "Invalid type");
 	}
 
 	VertexElementType VertexElement::getBestColorVertexElementType()
@@ -90,7 +90,7 @@ namespace BansheeEngine
 		{
 			// We can't know the specific type right now, so pick a type
 			// based on platform
-#if CM_PLATFORM == CM_PLATFORM_WIN32
+#if BS_PLATFORM == BS_PLATFORM_WIN32
 			return VET_COLOR_ARGB; // prefer D3D format on windows
 #else
 			return VET_COLOR_ABGR; // prefer GL format on everything else

@@ -20,7 +20,7 @@ namespace BansheeEngine
 			mDriverList.push_back(D3D9Driver(i, d3dcaps9, adapterIdentifier));
 		}
 
-		mVideoModeInfo = cm_shared_ptr<D3D9VideoModeInfo>(lpD3D9);
+		mVideoModeInfo = bs_shared_ptr<D3D9VideoModeInfo>(lpD3D9);
 	}
 
 	D3D9DriverList::~D3D9DriverList()

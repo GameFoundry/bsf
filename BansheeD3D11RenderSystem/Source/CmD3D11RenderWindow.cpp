@@ -283,7 +283,7 @@ namespace BansheeEngine
 			HRESULT hr = mSwapChain->Present(mVSync ? mVSyncInterval : 0, 0);
 
 			if( FAILED(hr) )
-				CM_EXCEPT(RenderingAPIException, "Error Presenting surfaces");
+				BS_EXCEPT(RenderingAPIException, "Error Presenting surfaces");
 		}
 	}
 
@@ -502,7 +502,7 @@ namespace BansheeEngine
 			if (FAILED(hr) || mDevice.hasError())
 			{
 				String errorDescription = mDevice.getErrorDescription();
-				CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
+				BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 			}
 
 			mDevice.getImmediateContext()->ResolveSubresource(backbuffer, D3D11CalcSubresource(0, 0, 1), mBackBuffer, D3D11CalcSubresource(0, 0, 1), desc.Format);
@@ -522,7 +522,7 @@ namespace BansheeEngine
 		if (FAILED(hr) || mDevice.hasError())
 		{
 			String errorDescription = mDevice.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Error creating texture\nError Description:" + errorDescription);
 		}
 
 		// Copy the back buffer
@@ -646,7 +646,7 @@ namespace BansheeEngine
 		SAFE_RELEASE(pDXGIDevice);
 
 		if (FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Unable to create swap chain");
+			BS_EXCEPT(RenderingAPIException, "Unable to create swap chain");
 	}
 
 	void D3D11RenderWindow::createSizeDependedD3DResources()
@@ -655,7 +655,7 @@ namespace BansheeEngine
 
 		HRESULT hr = mSwapChain->GetBuffer(0,  __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBuffer);
 		if(FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Unable to Get Back Buffer for swap chain");
+			BS_EXCEPT(RenderingAPIException, "Unable to Get Back Buffer for swap chain");
 
 		assert(mBackBuffer && !mRenderTargetView);
 
@@ -673,7 +673,7 @@ namespace BansheeEngine
 		if(FAILED(hr))
 		{
 			String errorDescription = mDevice.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Unable to create rendertagert view\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Unable to create rendertagert view\nError Description:" + errorDescription);
 		}
 
 		mDepthStencilBuffer = TextureManager::instance().createTexture(TEX_TYPE_2D, 
@@ -704,7 +704,7 @@ namespace BansheeEngine
 		HRESULT hr = mSwapChain->ResizeBuffers(mSwapChainDesc.BufferCount, width, height, mSwapChainDesc.BufferDesc.Format, Flags);
 
 		if(hr != S_OK)
-			CM_EXCEPT(InternalErrorException, "Call to ResizeBuffers failed.");
+			BS_EXCEPT(InternalErrorException, "Call to ResizeBuffers failed.");
 
 		mSwapChain->GetDesc(&mSwapChainDesc);
 		mWidth = mSwapChainDesc.BufferDesc.Width;
@@ -720,14 +720,14 @@ namespace BansheeEngine
 	{
 		if (mDevice.getD3D11Device() == nullptr)
 		{
-			CM_EXCEPT(RenderingAPIException, "D3D11Device is NULL!");
+			BS_EXCEPT(RenderingAPIException, "D3D11Device is NULL!");
 		}
 
 		IDXGIDevice* pDXGIDevice = nullptr;
 		HRESULT hr = mDevice.getD3D11Device()->QueryInterface(__uuidof(IDXGIDevice), (void**)&pDXGIDevice);
 
 		if(FAILED(hr))
-			CM_EXCEPT(RenderingAPIException, "Unable to query a DXGIDevice");
+			BS_EXCEPT(RenderingAPIException, "Unable to query a DXGIDevice");
 
 		return pDXGIDevice;
 	}

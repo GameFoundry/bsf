@@ -40,7 +40,7 @@ namespace BansheeEngine
 
 	void Win32Window::initialize_internal()
 	{
-#ifdef CM_STATIC_LIB
+#ifdef BS_STATIC_LIB
 		HINSTANCE hInst = GetModuleHandle(NULL);
 #else
 		HINSTANCE hInst = GetModuleHandle(MODULE_NAME.c_str());
@@ -151,7 +151,7 @@ namespace BansheeEngine
 			GetMonitorInfo(hMonitor, &monitorInfoEx);
 
 			size_t devNameLen = strlen(monitorInfoEx.szDevice);
-			mDeviceName = (char*)cm_alloc<ScratchAlloc>((UINT32)(devNameLen + 1));
+			mDeviceName = (char*)bs_alloc<ScratchAlloc>((UINT32)(devNameLen + 1));
 
 			strcpy_s(mDeviceName, devNameLen + 1, monitorInfoEx.szDevice);
 
@@ -256,13 +256,13 @@ namespace BansheeEngine
 
 					if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN | CDS_TEST, NULL) != DISP_CHANGE_SUCCESSFUL)
 					{
-						CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings with user display frequency failed.");
+						BS_EXCEPT(RenderingAPIException, "ChangeDisplaySettings with user display frequency failed.");
 					}
 				}
 
 				if (ChangeDisplaySettingsEx(mDeviceName, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 				{
-					CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed.");
+					BS_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed.");
 				}
 			}
 
@@ -314,7 +314,7 @@ namespace BansheeEngine
 				}
 
 				if (!formatOk)
-					CM_EXCEPT(RenderingAPIException, "Failed selecting pixel format.");
+					BS_EXCEPT(RenderingAPIException, "Failed selecting pixel format.");
 
 			}
 
@@ -336,7 +336,7 @@ namespace BansheeEngine
 			return;
 
 		// Unregister and destroy GLContext
-		cm_delete(mContext);
+		bs_delete(mContext);
 
 		if (!mIsExternal)
 		{
@@ -357,7 +357,7 @@ namespace BansheeEngine
 
 		if (mDeviceName != NULL)
 		{
-			cm_free<ScratchAlloc>(mDeviceName);
+			bs_free<ScratchAlloc>(mDeviceName);
 			mDeviceName = NULL;
 		}
 
@@ -403,7 +403,7 @@ namespace BansheeEngine
 
 		if (ChangeDisplaySettingsEx(monitorInfo.szDevice, &displayDeviceMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
 		{
-			CM_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed");
+			BS_EXCEPT(RenderingAPIException, "ChangeDisplaySettings failed");
 		}
 
 		mTop = monitorInfo.rcMonitor.top;
@@ -527,7 +527,7 @@ namespace BansheeEngine
 			(dst.getTop() < 0) || (dst.getBottom() > mHeight) ||
 			(dst.getFront() != 0) || (dst.getBack() != 1))
 		{
-			CM_EXCEPT(InvalidParametersException, "Invalid box.");
+			BS_EXCEPT(InvalidParametersException, "Invalid box.");
 		}
 
 		if (buffer == FB_AUTO)
@@ -540,7 +540,7 @@ namespace BansheeEngine
 
 		if ((format == GL_NONE) || (type == 0))
 		{
-			CM_EXCEPT(InvalidParametersException, "Unsupported format.");
+			BS_EXCEPT(InvalidParametersException, "Unsupported format.");
 		}
 
 		// Must change the packing to ensure no overruns!
@@ -558,7 +558,7 @@ namespace BansheeEngine
 		{
 			size_t rowSpan = dst.getWidth() * PixelUtil::getNumElemBytes(dst.getFormat());
 			size_t height = dst.getHeight();
-			UINT8 *tmpData = (UINT8*)cm_alloc<ScratchAlloc>((UINT32)(rowSpan * height));
+			UINT8 *tmpData = (UINT8*)bs_alloc<ScratchAlloc>((UINT32)(rowSpan * height));
 			UINT8 *srcRow = (UINT8 *)dst.getData(), *tmpRow = tmpData + (height - 1) * rowSpan;
 
 			while (tmpRow >= tmpData)
@@ -569,7 +569,7 @@ namespace BansheeEngine
 			}
 			memcpy(dst.getData(), tmpData, rowSpan * height);
 
-			cm_free<ScratchAlloc>(tmpData);
+			bs_free<ScratchAlloc>(tmpData);
 		}
 	}
 

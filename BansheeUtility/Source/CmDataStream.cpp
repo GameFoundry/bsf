@@ -18,7 +18,7 @@ namespace BansheeEngine
 		// Read the entire buffer - ideally in one read, but if the size of
 		// the buffer is unknown, do multiple fixed size reads.
 		size_t bufSize = (mSize > 0 ? mSize : 4096);
-		StringStream::char_type* tempBuffer = (StringStream::char_type*)cm_alloc(bufSize);
+		StringStream::char_type* tempBuffer = (StringStream::char_type*)bs_alloc(bufSize);
 
 		// Ensure read from begin of stream
 		seek(0);
@@ -38,7 +38,7 @@ namespace BansheeEngine
 		// Read the entire buffer - ideally in one read, but if the size of
 		// the buffer is unknown, do multiple fixed size reads.
 		size_t bufSize = (mSize > 0 ? mSize : 4096);
-		WStringStream::char_type* tempBuffer = (WStringStream::char_type*)cm_alloc(bufSize);
+		WStringStream::char_type* tempBuffer = (WStringStream::char_type*)bs_alloc(bufSize);
 
 		// Ensure read from begin of stream
 		seek(0);
@@ -69,7 +69,7 @@ namespace BansheeEngine
         // Copy data from incoming stream
         mSize = sourceStream.size();
 
-		mData = (UINT8*)cm_alloc(sizeof(UINT8) * mSize);
+		mData = (UINT8*)bs_alloc(sizeof(UINT8) * mSize);
 		mPos = mData;
 		mEnd = mData + sourceStream.read(mData, mSize);
 
@@ -82,7 +82,7 @@ namespace BansheeEngine
         // Copy data from incoming stream
         mSize = sourceStream->size();
 
-		mData = (UINT8*)cm_alloc(sizeof(UINT8) * mSize);
+		mData = (UINT8*)bs_alloc(sizeof(UINT8) * mSize);
 		mPos = mData;
 		mEnd = mData + sourceStream->read(mData, mSize);
 
@@ -158,7 +158,7 @@ namespace BansheeEngine
     {
         if (mData != nullptr)
         {
-            cm_free(mData);
+            bs_free(mData);
             mData = nullptr;
         }
     }

@@ -36,7 +36,7 @@ namespace BansheeEngine
 		if(FAILED(hr) || device.hasError())
 		{
 			String errorDescription = device.getErrorDescription();
-			CM_EXCEPT(RenderingAPIException, "Cannot create rasterizer state.\nError Description:" + errorDescription);
+			BS_EXCEPT(RenderingAPIException, "Cannot create rasterizer state.\nError Description:" + errorDescription);
 		}
 
 		RasterizerState::initialize_internal();

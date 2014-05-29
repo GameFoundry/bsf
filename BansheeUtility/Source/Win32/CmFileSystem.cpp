@@ -11,45 +11,45 @@ namespace BansheeEngine
 		switch (error)
 		{
 		case ERROR_FILE_NOT_FOUND:
-			CM_EXCEPT(FileNotFoundException, "File at path: \"" + toString(path) + "\" not found.");
+			BS_EXCEPT(FileNotFoundException, "File at path: \"" + toString(path) + "\" not found.");
 		case ERROR_PATH_NOT_FOUND:
 		case ERROR_BAD_NETPATH:
 		case ERROR_CANT_RESOLVE_FILENAME:
 		case ERROR_INVALID_DRIVE:
-			CM_EXCEPT(FileNotFoundException, "Path \"" + toString(path) + "\" not found.");
+			BS_EXCEPT(FileNotFoundException, "Path \"" + toString(path) + "\" not found.");
 		case ERROR_ACCESS_DENIED:
-			CM_EXCEPT(IOException, "Access to path \"" + toString(path) + "\" denied.");
+			BS_EXCEPT(IOException, "Access to path \"" + toString(path) + "\" denied.");
 		case ERROR_ALREADY_EXISTS:
 		case ERROR_FILE_EXISTS:
-			CM_EXCEPT(IOException, "File/folder at path \"" + toString(path) + "\" already exists.");
+			BS_EXCEPT(IOException, "File/folder at path \"" + toString(path) + "\" already exists.");
 		case ERROR_INVALID_NAME:
 		case ERROR_DIRECTORY:
 		case ERROR_FILENAME_EXCED_RANGE:
 		case ERROR_BAD_PATHNAME:
-			CM_EXCEPT(IOException, "Invalid path string: \"" + toString(path) + "\".");
+			BS_EXCEPT(IOException, "Invalid path string: \"" + toString(path) + "\".");
 		case ERROR_FILE_READ_ONLY:
-			CM_EXCEPT(IOException, "File at path \"" + toString(path) + "\" is read only.");
+			BS_EXCEPT(IOException, "File at path \"" + toString(path) + "\" is read only.");
 		case ERROR_CANNOT_MAKE:
-			CM_EXCEPT(IOException, "Cannot create file/folder at path: \"" + toString(path) + "\".");
+			BS_EXCEPT(IOException, "Cannot create file/folder at path: \"" + toString(path) + "\".");
 		case ERROR_DIR_NOT_EMPTY:
-			CM_EXCEPT(IOException, "Directory at path \"" + toString(path) + "\" not empty.");
+			BS_EXCEPT(IOException, "Directory at path \"" + toString(path) + "\" not empty.");
 		case ERROR_WRITE_FAULT:
-			CM_EXCEPT(IOException, "Error while writing a file at path \"" + toString(path) + "\".");
+			BS_EXCEPT(IOException, "Error while writing a file at path \"" + toString(path) + "\".");
 		case ERROR_READ_FAULT:
-			CM_EXCEPT(IOException, "Error while reading a file at path \"" + toString(path) + "\".");
+			BS_EXCEPT(IOException, "Error while reading a file at path \"" + toString(path) + "\".");
 		case ERROR_SHARING_VIOLATION:
-			CM_EXCEPT(IOException, "Sharing violation at path \"" + toString(path) + "\".");
+			BS_EXCEPT(IOException, "Sharing violation at path \"" + toString(path) + "\".");
 		case ERROR_LOCK_VIOLATION:
-			CM_EXCEPT(IOException, "Lock violation at path \"" + toString(path) + "\".");
+			BS_EXCEPT(IOException, "Lock violation at path \"" + toString(path) + "\".");
 		case ERROR_HANDLE_EOF:
-			CM_EXCEPT(IOException, "End of file reached for file at path \"" + toString(path) + "\".");
+			BS_EXCEPT(IOException, "End of file reached for file at path \"" + toString(path) + "\".");
 		case ERROR_HANDLE_DISK_FULL:
 		case ERROR_DISK_FULL:
-			CM_EXCEPT(IOException, "Disk full.");
+			BS_EXCEPT(IOException, "Disk full.");
 		case ERROR_NEGATIVE_SEEK:
-			CM_EXCEPT(IOException, "Negative seek.");
+			BS_EXCEPT(IOException, "Negative seek.");
 		default:
-			CM_EXCEPT(IOException, "Undefined file system exception.");
+			BS_EXCEPT(IOException, "Undefined file system exception.");
 		}
 	}
 
@@ -58,7 +58,7 @@ namespace BansheeEngine
 		DWORD len = GetCurrentDirectoryW(0, NULL);
 		if (len > 0)
 		{
-			wchar_t* buffer = (wchar_t*)cm_alloc(len * sizeof(wchar_t));
+			wchar_t* buffer = (wchar_t*)bs_alloc(len * sizeof(wchar_t));
 
 			DWORD n = GetCurrentDirectoryW(len, buffer);
 			if (n > 0 && n <= len)
@@ -67,11 +67,11 @@ namespace BansheeEngine
 				if (result[result.size() - 1] != '\\')
 					result.append(L"\\");
 
-				cm_free(buffer);
+				bs_free(buffer);
 				return result;
 			}
 
-			cm_free(buffer);
+			bs_free(buffer);
 		}
 
 		return StringUtil::WBLANK;
@@ -236,35 +236,35 @@ namespace BansheeEngine
 		if (!readOnly)
 		{
 			mode |= std::ios::out;
-			rwStream = cm_shared_ptr<std::fstream, ScratchAlloc>();
+			rwStream = bs_shared_ptr<std::fstream, ScratchAlloc>();
 			rwStream->open(fullPath.toWString().c_str(), mode);
 			baseStream = rwStream;
 		}
 		else
 		{
-			roStream = cm_shared_ptr<std::ifstream, ScratchAlloc>();
+			roStream = bs_shared_ptr<std::ifstream, ScratchAlloc>();
 			roStream->open(fullPath.toWString().c_str(), mode);
 			baseStream = roStream;
 		}
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (baseStream->fail())
-			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath.toString());
+			BS_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath.toString());
 
 		/// Construct return stream, tell it to delete on destroy
 		FileDataStream* stream = 0;
 		if (rwStream)
 		{
 			// use the writeable stream 
-			stream = cm_new<FileDataStream, ScratchAlloc>(rwStream, (size_t)fileSize, true);
+			stream = bs_new<FileDataStream, ScratchAlloc>(rwStream, (size_t)fileSize, true);
 		}
 		else
 		{
 			// read-only stream
-			stream = cm_new<FileDataStream, ScratchAlloc>(roStream, (size_t)fileSize, true);
+			stream = bs_new<FileDataStream, ScratchAlloc>(roStream, (size_t)fileSize, true);
 		}
 
-		return cm_shared_ptr<FileDataStream, ScratchAlloc>(stream);
+		return bs_shared_ptr<FileDataStream, ScratchAlloc>(stream);
 	}
 
 	DataStreamPtr FileSystem::createAndOpenFile(const Path& fullPath)
@@ -272,15 +272,15 @@ namespace BansheeEngine
 		// Always open in binary mode
 		// Also, always include reading
 		std::ios::openmode mode = std::ios::out | std::ios::binary;
-		std::shared_ptr<std::fstream> rwStream = cm_shared_ptr<std::fstream, ScratchAlloc>();
+		std::shared_ptr<std::fstream> rwStream = bs_shared_ptr<std::fstream, ScratchAlloc>();
 		rwStream->open(fullPath.toWString().c_str(), mode);
 
 		// Should check ensure open succeeded, in case fail for some reason.
 		if (rwStream->fail())
-			CM_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath.toString());
+			BS_EXCEPT(FileNotFoundException, "Cannot open file: " + fullPath.toString());
 
 		/// Construct return stream, tell it to delete on destroy
-		return cm_shared_ptr<FileDataStream, ScratchAlloc>(rwStream, 0, true);
+		return bs_shared_ptr<FileDataStream, ScratchAlloc>(rwStream, 0, true);
 	}
 
 	UINT64 FileSystem::getFileSize(const Path& fullPath)
@@ -320,7 +320,7 @@ namespace BansheeEngine
 				win32_remove(newPathStr);
 			else
 			{
-				CM_EXCEPT(InvalidStateException, "Move operation failed because another file already exists at the new path: \"" + toString(newPathStr) + "\"");
+				BS_EXCEPT(InvalidStateException, "Move operation failed because another file already exists at the new path: \"" + toString(newPathStr) + "\"");
 			}
 		}
 

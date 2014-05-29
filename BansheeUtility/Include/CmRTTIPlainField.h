@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 			/*if(mType.id != SerializableType<DataType>().id)
 			{
-				CM_EXCEPT(InternalErrorException,
+				BS_EXCEPT(InternalErrorException,
 					"Invalid field type.",
 					"SerializableSimpleTypeFieldBase::checkType()");
 			}*/
@@ -226,7 +226,7 @@ namespace BansheeEngine
 
 			if(arraySizeSetter.empty())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Specified field (" + mName + ") has no array size setter.");
 			}
 
@@ -282,7 +282,7 @@ namespace BansheeEngine
 
 			if(valueSetter.empty())
 			{
-				CM_EXCEPT(InternalErrorException,
+				BS_EXCEPT(InternalErrorException,
 					"Specified field (" + mName + ") has no setter.");
 			}
 
@@ -305,7 +305,7 @@ namespace BansheeEngine
 
 			if(valueSetter.empty())
 			{
-				CM_EXCEPT(InternalErrorException, 
+				BS_EXCEPT(InternalErrorException, 
 					"Specified field (" + mName + ") has no setter.");
 			}
 

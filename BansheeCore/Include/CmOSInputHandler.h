@@ -96,7 +96,7 @@ namespace BansheeEngine
 		virtual void _inputWindowChanged(const RenderWindow& win) {}
 
 	private:
-		CM_MUTEX(mOSInputMutex);
+		BS_MUTEX(mOSInputMutex);
 		Vector2I mLastCursorPos;
 		Vector2I mCursorPosition;
 		float mMouseScroll;

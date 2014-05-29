@@ -66,14 +66,14 @@ namespace BansheeEngine
 
 		manager = FbxManager::Create();
 		if(manager == nullptr)
-			CM_EXCEPT(InternalErrorException, "FBX SDK failed to initialize. FbxManager::Create() failed.");
+			BS_EXCEPT(InternalErrorException, "FBX SDK failed to initialize. FbxManager::Create() failed.");
 
 		FbxIOSettings* ios = FbxIOSettings::Create(manager, IOSROOT);
 		manager->SetIOSettings(ios);
 
 		scene = FbxScene::Create(manager, "Import Scene");
 		if(scene == nullptr)
-			CM_EXCEPT(InternalErrorException, "Failed to create FBX scene.");
+			BS_EXCEPT(InternalErrorException, "Failed to create FBX scene.");
 	}
 
 	void FBXImporter::shutDownSdk(FbxManager* manager)
@@ -94,7 +94,7 @@ namespace BansheeEngine
 
 		if(!importStatus)
 		{
-			CM_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
+			BS_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
 				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
 		}
 
@@ -113,7 +113,7 @@ namespace BansheeEngine
 		{
 			importer->Destroy();
 			
-			CM_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
+			BS_EXCEPT(InternalErrorException, "Call to FbxImporter::Initialize() failed.\n" +
 				String("Error returned: %s\n\n") + String(importer->GetStatus().GetErrorString()));
 		}
 
@@ -186,8 +186,8 @@ namespace BansheeEngine
 	{
 		if (!mesh->GetNode())
 		{
-			VertexDataDescPtr tmpVertDesc = cm_shared_ptr<VertexDataDesc>();
-			return cm_shared_ptr<MeshData, ScratchAlloc>(0, 0, tmpVertDesc);
+			VertexDataDescPtr tmpVertDesc = bs_shared_ptr<VertexDataDesc>();
+			return bs_shared_ptr<MeshData, ScratchAlloc>(0, 0, tmpVertDesc);
 		}
 
 		// Find out which vertex attributes exist
@@ -294,7 +294,7 @@ namespace BansheeEngine
 
 		UINT32 vertexCount = lPolygonVertexCount;
 
-		VertexDataDescPtr vertexDesc = cm_shared_ptr<VertexDataDesc>();
+		VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
 
 		vertexDesc->addVertElem(VET_FLOAT3, VES_POSITION);
 
@@ -376,7 +376,7 @@ namespace BansheeEngine
 			subMeshes[0].indexCount = lPolygonCount * 3;
 		}
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(vertexCount, numIndices, vertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(vertexCount, numIndices, vertexDesc);
 
 		// Allocate the array memory, by control point or by polygon vertex.
 		VertexElemIter<Vector3> positions = meshData->getVec3DataIter(VES_POSITION);

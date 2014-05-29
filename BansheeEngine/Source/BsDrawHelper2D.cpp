@@ -18,7 +18,7 @@ namespace BansheeEngine
 	{
 		mMaterial2DClipSpace = BuiltinMaterialManager::instance().createDebugDraw2DClipSpaceMaterial();
 
-		mVertexDesc = cm_shared_ptr<VertexDataDesc>();
+		mVertexDesc = bs_shared_ptr<VertexDataDesc>();
 		mVertexDesc->addVertElem(VET_FLOAT2, VES_POSITION);
 		mVertexDesc->addVertElem(VET_COLOR, VES_COLOR);
 	}
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(4, 6, mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(4, 6, mVertexDesc);
 
 		RectF actualArea = area;
 		if(coordType == DebugDrawCoordType::Normalized)
@@ -124,7 +124,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(2, 2, mVertexDesc);
 
 		Vector2 actualA = a;
 		Vector2 actualB = b;
@@ -163,7 +163,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(8, 30, mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(8, 30, mVertexDesc);
 
 		Vector2 actualA = a;
 		Vector2 actualB = b;
@@ -203,7 +203,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>(
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(
 			(UINT32)(linePoints.size() * 2), (UINT32)(linePoints.size() * 2), mVertexDesc);
 
 		if(coordType == DebugDrawCoordType::Normalized)
@@ -248,7 +248,7 @@ namespace BansheeEngine
 		DebugDrawCommand& dbgCmd = commands.back();
 		dbgCmd.endTime = gTime().getTime() + timeout;
 
-		MeshDataPtr meshData = cm_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4), (UINT32)(linePoints.size() * 15), mVertexDesc);
+		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>((UINT32)(linePoints.size() * 4), (UINT32)(linePoints.size() * 15), mVertexDesc);
 
 		if(coordType == DebugDrawCoordType::Normalized)
 		{

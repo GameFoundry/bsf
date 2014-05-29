@@ -39,7 +39,7 @@ namespace BansheeEngine
 		GUIContent nativeContent(ScriptGUIContent::getText(content), ScriptGUIContent::getImage(content), ScriptGUIContent::getTooltip(content));
 		GUILabel* guiLabel = GUILabel::create(nativeContent, options, toString(MonoUtil::monoToWString(style)));
 
-		ScriptGUILabel* nativeInstance = new (cm_alloc<ScriptGUILabel>()) ScriptGUILabel(instance, guiLabel);
+		ScriptGUILabel* nativeInstance = new (bs_alloc<ScriptGUILabel>()) ScriptGUILabel(instance, guiLabel);
 	}
 
 	void ScriptGUILabel::internal_setContent(ScriptGUILabel* nativeInstance, MonoObject* content)

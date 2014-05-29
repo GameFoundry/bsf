@@ -13,7 +13,7 @@ namespace BansheeEngine
 
 	TaskPtr Task::create(const String& name, std::function<void()> taskWorker, TaskPriority priority, TaskPtr dependency)
 	{
-		return cm_shared_ptr<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
+		return bs_shared_ptr<Task>(PrivatelyConstruct(), name, taskWorker, priority, dependency);
 	}
 
 	bool Task::isComplete() const
@@ -40,22 +40,22 @@ namespace BansheeEngine
 		:mMaxActiveTasks(0), mNumActiveTasks(0), mNextTaskId(0), mShutdown(false),
 		mTaskQueue(&TaskScheduler::taskCompare)
 	{
-		mMaxActiveTasks = CM_THREAD_HARDWARE_CONCURRENCY;
+		mMaxActiveTasks = BS_THREAD_HARDWARE_CONCURRENCY;
 
 		ThreadPool::instance().run("TaskScheduler", std::bind(&TaskScheduler::runMain, this));
 	}
 
 	TaskScheduler::~TaskScheduler()
 	{
-		CM_LOCK_MUTEX(mReadyMutex);
+		BS_LOCK_MUTEX(mReadyMutex);
 
 		mShutdown = true;
-		CM_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
 	}
 
 	void TaskScheduler::addTask(const TaskPtr& task)
 	{
-		CM_LOCK_MUTEX(mReadyMutex);
+		BS_LOCK_MUTEX(mReadyMutex);
 
 		task->mParent = this;
 		task->mTaskId = mNextTaskId++;
@@ -63,22 +63,22 @@ namespace BansheeEngine
 		mTaskQueue.insert(task);
 
 		// Wake main scheduler thread
-		CM_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
 	}
 
 	void TaskScheduler::addWorker()
 	{
-		CM_LOCK_MUTEX(mReadyMutex);
+		BS_LOCK_MUTEX(mReadyMutex);
 
 		mMaxActiveTasks++;
 
 		// A spot freed up, queue new tasks on main scheduler thread if they exist
-		CM_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
 	}
 
 	void TaskScheduler::removeWorker()
 	{
-		CM_LOCK_MUTEX(mReadyMutex);
+		BS_LOCK_MUTEX(mReadyMutex);
 
 		if(mMaxActiveTasks > 0)
 			mMaxActiveTasks--;
@@ -88,10 +88,10 @@ namespace BansheeEngine
 	{
 		while(true)
 		{
-			CM_LOCK_MUTEX_NAMED(mReadyMutex, lock);
+			BS_LOCK_MUTEX_NAMED(mReadyMutex, lock);
 
 			while((mTaskQueue.size() == 0 || mNumActiveTasks == mMaxActiveTasks) && !mShutdown)
-				CM_THREAD_WAIT(mTaskReadyCond, mReadyMutex, lock);
+				BS_THREAD_WAIT(mTaskReadyCond, mReadyMutex, lock);
 
 			if(mShutdown)
 				break;
@@ -120,14 +120,14 @@ namespace BansheeEngine
 		task->mTaskWorker();
 
 		{
-			CM_LOCK_MUTEX(mCompleteMutex);
+			BS_LOCK_MUTEX(mCompleteMutex);
 			task->mState.store(2);
 
-			CM_THREAD_NOTIFY_ALL(mTaskCompleteCond);
+			BS_THREAD_NOTIFY_ALL(mTaskCompleteCond);
 		}
 
 		// Possibly this task was someones dependency, so wake the main scheduler thread
-		CM_THREAD_NOTIFY_ONE(mTaskReadyCond);
+		BS_THREAD_NOTIFY_ONE(mTaskReadyCond);
 	}
 
 	void TaskScheduler::waitUntilComplete(const Task* task)
@@ -136,12 +136,12 @@ namespace BansheeEngine
 			return;
 
 		{
-			CM_LOCK_MUTEX_NAMED(mCompleteMutex, lock);
+			BS_LOCK_MUTEX_NAMED(mCompleteMutex, lock);
 			
 			while(!task->isComplete())
 			{
 				addWorker();
-				CM_THREAD_WAIT(mTaskCompleteCond, mCompleteMutex, lock);
+				BS_THREAD_WAIT(mTaskCompleteCond, mCompleteMutex, lock);
 				removeWorker();
 			}
 		}
@@ -157,6 +157,6 @@ namespace BansheeEngine
 		if(lhs->mTaskId < rhs->mTaskId)
 			return true;
 
-		CM_EXCEPT(InternalErrorException, "Found two identical tasks.");
+		BS_EXCEPT(InternalErrorException, "Found two identical tasks.");
 	}
 }

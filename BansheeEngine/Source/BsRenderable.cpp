@@ -109,7 +109,7 @@ namespace BansheeEngine
 		bool isPow2 = layer && !( (layer-1) & layer);
 
 		if(!isPow2)
-			CM_EXCEPT(InvalidParametersException, "Invalid layer provided. Only one layer bit may be set.");
+			BS_EXCEPT(InvalidParametersException, "Invalid layer provided. Only one layer bit may be set.");
 
 		mLayer = layer;
 	}

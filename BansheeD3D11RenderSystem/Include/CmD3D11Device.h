@@ -32,7 +32,7 @@ namespace BansheeEngine
 		 */
 		String getErrorDescription(bool clearErrors = true);
 		
-		enum CM_D3D11_ERROR_LEVEL
+		enum BS_D3D11_ERROR_LEVEL
 		{
 			D3D11ERR_NO_EXCEPTION,
 			D3D11ERR_CORRUPTION,
@@ -41,7 +41,7 @@ namespace BansheeEngine
 			D3D11ERR_INFO
 		};
 
-		void setExceptionsErrorLevel(const CM_D3D11_ERROR_LEVEL exceptionsErrorLevel);
+		void setExceptionsErrorLevel(const BS_D3D11_ERROR_LEVEL exceptionsErrorLevel);
 
 	private:
 		ID3D11Device*			mD3D11Device;
