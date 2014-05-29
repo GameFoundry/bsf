@@ -1,6 +1,6 @@
 #include "BsDragAndDropManager.h"
 #include "CmPlatform.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 
 using namespace std::placeholders;
 
@@ -29,7 +29,7 @@ namespace BansheeEngine
 		mCaptureActive.store(false);
 		mCaptureChanged.store(false);
 
-		Platform::captureMouse(*gApplication().getPrimaryWindow());
+		Platform::captureMouse(*gCoreApplication().getPrimaryWindow());
 	}
 
 	void DragAndDropManager::update()

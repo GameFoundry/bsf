@@ -10,6 +10,7 @@ namespace BansheeEngine
 	{
 		mTimer = cm_new<Timer>();
 		mAppStartTime = (UINT64)mTimer->getStartMs();
+		mLastFrameTime = mTimer->getMicroseconds();
 	}
 
 	Time::~Time()

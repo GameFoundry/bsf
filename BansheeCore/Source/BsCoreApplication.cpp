@@ -1,4 +1,4 @@
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 
 #include "CmRenderSystem.h"
 #include "CmRenderSystemManager.h"
@@ -45,13 +45,8 @@
 
 namespace BansheeEngine
 {
-	Application::Application()
+	CoreApplication::CoreApplication(START_UP_DESC& desc)
 		:mPrimaryWindow(nullptr), mIsFrameRenderingFinished(true), mRunMainLoop(false), mSceneManagerPlugin(nullptr)
-	{
-		
-	}
-
-	void Application::startUp(START_UP_DESC& desc)
 	{
 		UINT32 numWorkerThreads = CM_THREAD_HARDWARE_CONCURRENCY - 1; // Number of cores while excluding current thread.
 
@@ -90,91 +85,13 @@ namespace BansheeEngine
 
 		Importer::startUp();
 
-		for(auto& importerName : desc.importers)
+		for (auto& importerName : desc.importers)
 			loadPlugin(importerName);
 
-		loadPlugin(desc.input);
+		loadPlugin(desc.input, nullptr, mPrimaryWindow.get());
 	}
 
-	void Application::runMainLoop()
-	{
-		mRunMainLoop = true;
-
-		while(mRunMainLoop)
-		{
-			gProfiler().beginThread("Sim");
-
-			gCoreThread().update();
-			Platform::_update();
-			DeferredCallManager::instance()._update();
-			RenderWindowManager::instance()._update();
-			gInput()._update();
-
-			PROFILE_CALL(gSceneManager()._update(), "SceneManager");
-
-			gCoreThread().queueCommand(std::bind(&Application::beginCoreProfiling, this));
-			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));
-
-			if(!mainLoopCallback.empty())
-				mainLoopCallback();
-
-			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
-
-			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
-			// running just a single thread. Latency becomes worse if the core thread takes longer than sim 
-			// thread, in which case sim thread needs to wait. Optimal solution would be to get an average 
-			// difference between sim/core thread and start the sim thread a bit later so they finish at nearly the same time.
-			{
-				CM_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
-
-				while(!mIsFrameRenderingFinished)
-				{
-					TaskScheduler::instance().addWorker();
-					CM_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
-					TaskScheduler::instance().removeWorker();
-				}
-
-				mIsFrameRenderingFinished = false;
-			}
-
-			gCoreThread().queueCommand(&Platform::_coreUpdate);
-			gCoreThread().submitAccessors();
-			gCoreThread().queueCommand(std::bind(&Application::endCoreProfiling, this));
-			gCoreThread().queueCommand(std::bind(&Application::frameRenderingFinishedCallback, this));
-
-			gTime().update();
-
-			gProfiler().endThread();
-			gProfiler()._update();
-		}
-	}
-
-	void Application::stopMainLoop()
-	{
-		mRunMainLoop = false; // No sync primitives needed, in that rare case of 
-		// a race condition we might run the loop one extra iteration which is acceptable
-	}
-
-	void Application::frameRenderingFinishedCallback()
-	{
-		CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
-
-		mIsFrameRenderingFinished = true;
-		CM_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
-	}
-
-	void Application::beginCoreProfiling()
-	{
-		gProfiler().beginThread("Core");
-	}
-
-	void Application::endCoreProfiling()
-	{
-		gProfiler().endThread();
-		gProfiler()._updateCore();
-	}
-
-	void Application::shutDown()
+	CoreApplication::~CoreApplication()
 	{
 		mPrimaryWindow->destroy();
 		mPrimaryWindow = nullptr;
@@ -209,7 +126,88 @@ namespace BansheeEngine
 		Platform::_shutDown();
 	}
 
-	void* Application::loadPlugin(const String& pluginName, DynLib** library)
+	void CoreApplication::runMainLoop()
+	{
+		mRunMainLoop = true;
+
+		while(mRunMainLoop)
+		{
+			gProfiler().beginThread("Sim");
+
+			gCoreThread().update();
+			Platform::_update();
+			DeferredCallManager::instance()._update();
+			RenderWindowManager::instance()._update();
+			gInput()._update();
+			gTime().update();
+
+			PROFILE_CALL(gSceneManager()._update(), "SceneManager");
+
+			gCoreThread().queueCommand(std::bind(&CoreApplication::beginCoreProfiling, this));
+			gCoreThread().queueCommand(std::bind(&QueryManager::_update, QueryManager::instancePtr()));
+
+			update();
+
+			PROFILE_CALL(RendererManager::instance().getActive()->renderAll(), "Render");
+
+			// Core and sim thread run in lockstep. This will result in a larger input latency than if I was 
+			// running just a single thread. Latency becomes worse if the core thread takes longer than sim 
+			// thread, in which case sim thread needs to wait. Optimal solution would be to get an average 
+			// difference between sim/core thread and start the sim thread a bit later so they finish at nearly the same time.
+			{
+				CM_LOCK_MUTEX_NAMED(mFrameRenderingFinishedMutex, lock);
+
+				while(!mIsFrameRenderingFinished)
+				{
+					TaskScheduler::instance().addWorker();
+					CM_THREAD_WAIT(mFrameRenderingFinishedCondition, mFrameRenderingFinishedMutex, lock);
+					TaskScheduler::instance().removeWorker();
+				}
+
+				mIsFrameRenderingFinished = false;
+			}
+
+			gCoreThread().queueCommand(&Platform::_coreUpdate);
+			gCoreThread().submitAccessors();
+			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
+			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
+
+			gProfiler().endThread();
+			gProfiler()._update();
+		}
+	}
+
+	void CoreApplication::update()
+	{
+		// Do nothing
+	}
+
+	void CoreApplication::stopMainLoop()
+	{
+		mRunMainLoop = false; // No sync primitives needed, in that rare case of 
+		// a race condition we might run the loop one extra iteration which is acceptable
+	}
+
+	void CoreApplication::frameRenderingFinishedCallback()
+	{
+		CM_LOCK_MUTEX(mFrameRenderingFinishedMutex);
+
+		mIsFrameRenderingFinished = true;
+		CM_THREAD_NOTIFY_ONE(mFrameRenderingFinishedCondition);
+	}
+
+	void CoreApplication::beginCoreProfiling()
+	{
+		gProfiler().beginThread("Core");
+	}
+
+	void CoreApplication::endCoreProfiling()
+	{
+		gProfiler().endThread();
+		gProfiler()._updateCore();
+	}
+
+	void* CoreApplication::loadPlugin(const String& pluginName, DynLib** library, void* passThrough)
 	{
 		String name = pluginName;
 #if CM_PLATFORM == CM_PLATFORM_LINUX
@@ -233,18 +231,30 @@ namespace BansheeEngine
 
 		if(loadedLibrary != nullptr)
 		{
-			typedef void* (*LoadPluginFunc)();
+			if (passThrough == nullptr)
+			{
+				typedef void* (*LoadPluginFunc)();
 
-			LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
+				LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
 
-			if(loadPluginFunc != nullptr)
-				return loadPluginFunc();
+				if (loadPluginFunc != nullptr)
+					return loadPluginFunc();
+			}
+			else
+			{
+				typedef void* (*LoadPluginFunc)(void*);
+
+				LoadPluginFunc loadPluginFunc = (LoadPluginFunc)loadedLibrary->getSymbol("loadPlugin");
+
+				if (loadPluginFunc != nullptr)
+					return loadPluginFunc(passThrough);
+			}
 		}
 
 		return nullptr;
 	}
 
-	void Application::unloadPlugin(DynLib* library)
+	void CoreApplication::unloadPlugin(DynLib* library)
 	{
 		typedef void (*UnloadPluginFunc)();
 
@@ -256,9 +266,8 @@ namespace BansheeEngine
 		gDynLibManager().unload(library);
 	}
 
-	Application& gApplication()
+	CoreApplication& gCoreApplication()
 	{
-		static Application application;
-		return application;
+		return CoreApplication::instance();
 	}
 }

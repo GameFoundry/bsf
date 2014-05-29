@@ -5,7 +5,7 @@
 #include "BsSpriteTexture.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmPlatform.h"
 #include "CmTexture.h"
 #include "CmRenderWindow.h"

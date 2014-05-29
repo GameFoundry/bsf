@@ -8,7 +8,7 @@
 #include "CmMaterial.h"
 #include "CmVector2.h"
 #include "CmRenderQueue.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmRendererManager.h"
 #include "CmRenderer.h"
 #include "CmSceneObject.h"

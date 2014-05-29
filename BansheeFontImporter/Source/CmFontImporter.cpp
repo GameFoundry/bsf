@@ -6,7 +6,7 @@
 #include "CmDebug.h"
 #include "CmPath.h"
 #include "CmTexAtlasGenerator.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmCoreThread.h"
 #include "CmCoreThreadAccessor.h"
 

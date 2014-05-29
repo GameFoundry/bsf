@@ -1,6 +1,6 @@
 #include "CmMeshManager.h"
 #include "CmCoreThreadAccessor.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmVector3.h"
 #include "CmMesh.h"
 #include "CmVertexDataDesc.h"

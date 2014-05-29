@@ -90,9 +90,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmApplication.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\CmViewport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -519,11 +516,11 @@
     <ClInclude Include="Include\BsCommonTypes.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsCoreApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmApplication.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Source\CmViewport.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -820,6 +817,9 @@
     </ClCompile>
     <ClCompile Include="Source\Win32\CmWin32FolderMonitor.cpp">
       <Filter>Source Files\Platform</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCoreApplication.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

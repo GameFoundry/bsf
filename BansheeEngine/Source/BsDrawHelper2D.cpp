@@ -5,7 +5,7 @@
 #include "CmVector2.h"
 #include "CmMaterial.h"
 #include "CmPass.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmRenderQueue.h"
 #include "BsCamera.h"
 #include "CmCoreThreadAccessor.h"

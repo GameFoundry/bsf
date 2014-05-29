@@ -7,7 +7,7 @@
 #include "CmTextureManager.h"
 #include "CmTexture.h"
 #include "CmFileSystem.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmCoreThread.h"
 #include "CmCoreThreadAccessor.h"
 

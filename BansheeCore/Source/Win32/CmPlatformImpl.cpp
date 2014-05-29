@@ -1,7 +1,7 @@
 #include "CmPlatform.h"
 #include "CmRenderWindow.h"
 #include "CmPixelUtil.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmDebug.h"
 #include "Win32/CmWin32Defs.h"
 #include "Win32/CmWin32DropTarget.h"
@@ -93,7 +93,7 @@ namespace BansheeEngine
 
 	void Platform::captureMouse(const RenderWindow& window)
 	{
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 		
@@ -102,7 +102,7 @@ namespace BansheeEngine
 
 	void Platform::releaseMouseCapture()
 	{
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
@@ -111,7 +111,7 @@ namespace BansheeEngine
 
 	bool Platform::isPointOverWindow(const RenderWindow& window, const Vector2I& screenPos)
 	{
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
 
 		POINT point;
 		point.x = screenPos.x;
@@ -131,7 +131,7 @@ namespace BansheeEngine
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
 
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
@@ -145,7 +145,7 @@ namespace BansheeEngine
 		// ShowCursor(FALSE) doesn't work. Presumably because we're in the wrong thread, and using
 		// WM_SETCURSOR in message loop to hide the cursor is smarter solution anyway.
 
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 
@@ -252,7 +252,7 @@ namespace BansheeEngine
 		DeleteObject(hMonoBitmap);
 
 		// Make sure we notify the message loop to perform the actual cursor update
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		RenderWindowPtr primaryWindow = gCoreApplication().getPrimaryWindow();
 		HWND hwnd;
 		primaryWindow->getCustomAttribute("WINDOW", &hwnd);
 

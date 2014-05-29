@@ -25,22 +25,17 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Represents the primary entry point to the engine. Handles
+	 * @brief	Represents the primary entry point for the core systems. Handles
 	 *			start-up, shutdown, primary loop and allows you to load and unload
 	 *			plugins.
 	 *
 	 * @note	Sim thread only.
 	 */
-	class BS_CORE_EXPORT Application
+	class BS_CORE_EXPORT CoreApplication : public Module<CoreApplication>
 	{
 		public:
-			Application();
-
-			/**
-			 * @brief	Starts the application using the specified options. 
-			 * 			This is how you start the engine. Must be called before any other engine method.
-			 */
-			void startUp(START_UP_DESC& desc);
+			CoreApplication(START_UP_DESC& desc);
+			virtual ~CoreApplication();
 
 			/**
 			 * @brief	Executes the main loop. This will update your components and modules, queue objects 
@@ -56,11 +51,6 @@ namespace BansheeEngine
 			void stopMainLoop();
 
 			/**
-			 * @brief	Frees up all resources allocated during startUp, and while the application was running.
-			 */
-			void shutDown();
-
-			/**
 			 * @brief	
 			 */
 			RenderWindowPtr getPrimaryWindow() const { return mPrimaryWindow; }
@@ -71,20 +61,22 @@ namespace BansheeEngine
 			 * @param	pluginName		Name of the plugin to load, without extension.
 			 * @param	[out] library	Specify as not null to receive a reference to 
 			 *							the loaded library.
+			 * @param	passThrough		Optional parameter that will be passed to the loadPlugin function.
 			 * 
 			 * @returns	Value returned from the plugin start-up method.
 			 */
-			void* loadPlugin(const String& pluginName, DynLib** library = nullptr);
+			void* loadPlugin(const String& pluginName, DynLib** library = nullptr, void* passThrough = nullptr);
 
 			/**
 			 * @brief	Unloads a previously loaded plugin. 
 			 */
 			void unloadPlugin(DynLib* library);
 
-			/**
-			 * @brief	Called every frame by the main loop, after scene update and before rendering.
-			 */
-			Event<void()> mainLoopCallback;
+	protected:
+		/**
+		 * @brief	Called for each iteration of the main loop.
+		 */
+		virtual void update();
 
 	private:
 		/**
@@ -117,5 +109,5 @@ namespace BansheeEngine
 	/**
 	 * @brief	Provides easy access to primary entry point for the engine.
 	 */
-	BS_CORE_EXPORT Application& gApplication();
+	BS_CORE_EXPORT CoreApplication& gCoreApplication();
 }

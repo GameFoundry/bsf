@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include "CmModule.h"
+#include "BsApplication.h"
 #include "CmPath.h"
 
 namespace BansheeEngine
@@ -13,27 +13,46 @@ namespace BansheeEngine
 		OpenGL
 	};
 
-	class BS_ED_EXPORT EditorApplication : public Module<EditorApplication>
+	class BS_ED_EXPORT EditorApplication : public Application
 	{
 	public:
 		EditorApplication(RenderSystemPlugin renderSystemPlugin);
-		~EditorApplication();
+		virtual ~EditorApplication();
 
-		void runMainLoop();
+		static void startUp(RenderSystemPlugin renderSystemPlugin);
 
 		bool isProjectLoaded() const;
 		const Path& getActiveProjectPath() const;
 	private:
-		static const Path WIDGET_LAYOUT_PATH;
-		RenderSystemPlugin mActiveRSPlugin;
-
 		static const String& getLibraryNameForRenderSystem(RenderSystemPlugin plugin);
 
-		void update();
+		virtual void onStartUp();
+		virtual void update();
 
 		EditorWidgetLayoutPtr loadWidgetLayout();
 		void saveWidgetLayout(const EditorWidgetLayoutPtr& layout);
 
 		static void closeModalWindow(RenderWindowPtr window, HSceneObject sceneObject);
+
+	private:
+		static const Path WIDGET_LAYOUT_PATH;
+		RenderSystemPlugin mActiveRSPlugin;
+
+		// DEBUG ONLY
+
+		HGpuProgram mFragProgRef;
+		HGpuProgram mVertProgRef;
+
+		ShaderPtr mTestShader;
+		TechniquePtr mNewTechniqueGL;
+		PassPtr mNewPassGL;
+		TechniquePtr mNewTechniqueDX;
+		PassPtr mNewPassDX;
+		TechniquePtr mNewTechniqueDX11;
+		PassPtr mNewPassDX11;
+
+		HMaterial mTestMaterial;
+		HTexture mTestTexRef;
+		HMesh mDbgMeshRef;
 	};
 }

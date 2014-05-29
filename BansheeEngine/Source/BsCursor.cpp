@@ -6,13 +6,10 @@
 namespace BansheeEngine
 {
 	Cursor::Cursor()
-		:mActiveCursorId(0), mNextUniqueId((UINT32)CursorType::Count)
+		:mActiveCursorId(-1), mNextUniqueId((UINT32)CursorType::Count)
 	{
 		for(UINT32 i = 0; i < (UINT32)CursorType::Count; i++)
 			restoreCursorIcon((CursorType)i);
-
-		setCursor(CursorType::Arrow);
-		updateCursorImage();
 	}
 
 	void Cursor::setScreenPosition(const Vector2I& screenPos)
@@ -169,6 +166,9 @@ namespace BansheeEngine
 
 	void Cursor::updateCursorImage()
 	{
+		if (mActiveCursorId < 0)
+			return;
+
 		CustomIcon& customIcon = mCustomIcons[mActiveCursorId];
 		Platform::setCursor(customIcon.pixelData, customIcon.hotSpot);
 	}

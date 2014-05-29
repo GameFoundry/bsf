@@ -122,7 +122,7 @@ namespace BansheeEngine
 		// Set up scene camera
 		HSceneObject sceneCameraGO = SceneObject::create("SceneCamera");
 
-		RenderWindowPtr window = gApplication().getPrimaryWindow(); // TODO - Up until now I'm using gBansheeApp and now I'm using gApplication. It's confusing. BansheeApp should derive from application
+		RenderWindowPtr window = gApplication().getPrimaryWindow();
 		sceneCamera = sceneCameraGO->addComponent<Camera>(window, 0.0f, 0.0f, 1.0f, 1.0f);
 
 		sceneCamera->setPriority(1);
@@ -193,11 +193,11 @@ int CALLBACK WinMain(
 	renderWindowDesc.title = "Banshee Example App";
 	renderWindowDesc.fullscreen = false;
 
-	gBansheeApp().startUp(renderWindowDesc, "BansheeD3D11RenderSystem", "BansheeRenderer"); // TODO - Use enums instead of names. BansheeApp is a high level system that doesn't need to be as customizable.
+	Application::startUp(renderWindowDesc, "BansheeD3D11RenderSystem", "BansheeRenderer"); // TODO - Use enums instead of names. BansheeApp is a high level system that doesn't need to be as customizable.
 	setUpExample();
 	
-	gBansheeApp().runMainLoop();
-	gBansheeApp().shutDown();
+	Application::instance().runMainLoop();
+	Application::shutDown();
 
 	return 0;
 }

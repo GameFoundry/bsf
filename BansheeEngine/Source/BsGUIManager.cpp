@@ -13,7 +13,7 @@
 #include "CmRenderWindowManager.h"
 #include "CmPlatform.h"
 #include "CmRectI.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmException.h"
 #include "CmInput.h"
 #include "CmPass.h"

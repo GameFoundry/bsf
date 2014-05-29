@@ -10,24 +10,17 @@
 #include "BsGLBuiltinMaterialFactory.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptManager.h"
-#include "CmApplication.h"
 #include "CmProfiler.h"
 #include "BsVirtualInput.h"
 #include "BsCursor.h"
 
 namespace BansheeEngine
 {
-	BsApplication::BsApplication()
-		:mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
-	{
-
-	}
-
-	void BsApplication::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
+	START_UP_DESC createStartUpDesc(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
 	{
 		START_UP_DESC desc;
 		desc.renderSystem = renderSystem;
-		desc.renderer= renderer;
+		desc.renderer = renderer;
 		desc.primaryWindowDesc = primaryWindowDesc;
 
 		desc.input = "BansheeOISInput";
@@ -35,9 +28,13 @@ namespace BansheeEngine
 		desc.importers.push_back("BansheeFreeImgImporter");
 		desc.importers.push_back("BansheeFBXImporter");
 		desc.importers.push_back("BansheeFontImporter");
-		
-		gApplication().startUp(desc);
 
+		return desc;
+	}
+
+	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
+		:CoreApplication(createStartUpDesc(primaryWindowDesc, renderSystem, renderer)), mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
+	{
 		VirtualInput::startUp();
 		ScriptManager::startUp();
 		GUIManager::startUp();
@@ -48,7 +45,7 @@ namespace BansheeEngine
 		BuiltinMaterialManager::instance().addFactory(cm_new<D3D9BuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().addFactory(cm_new<D3D11BuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().addFactory(cm_new<GLBuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().setActive(desc.renderSystem);
+		BuiltinMaterialManager::instance().setActive(renderSystem);
 
 		DrawHelper2D::startUp();
 		DrawHelper3D::startUp();
@@ -56,26 +53,15 @@ namespace BansheeEngine
 		BuiltinResources::startUp();
 		Cursor::startUp();
 
-		gApplication().loadPlugin("BansheeMono", &mMonoPlugin);
-		gApplication().loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
-		
-		updateCallbackConn = gApplication().mainLoopCallback.connect(std::bind(&BsApplication::update, this));
-
-		Cursor::instance().setCursor(CursorType::Arrow);
+		loadPlugin("BansheeMono", &mMonoPlugin);
+		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
 	}
 
-	void BsApplication::runMainLoop()
+	Application::~Application()
 	{
-		gApplication().runMainLoop();
-	}
-
-	void BsApplication::shutDown()
-	{
-		updateCallbackConn.disconnect();
-
 		ScriptManager::instance().destroy();
-		gApplication().unloadPlugin(mSBansheeEnginePlugin);
-		gApplication().unloadPlugin(mMonoPlugin);
+		unloadPlugin(mSBansheeEnginePlugin);
+		unloadPlugin(mMonoPlugin);
 
 		Cursor::shutDown();
 		BuiltinResources::shutDown();
@@ -92,25 +78,36 @@ namespace BansheeEngine
 		GUIMaterialManager::shutDown();
 		ScriptManager::shutDown();
 		VirtualInput::shutDown();
-		
-		gApplication().shutDown();
 	}
 
-	void BsApplication::update()
+	void Application::onStartUp()
 	{
+		CoreApplication::onStartUp();
+
+		Cursor::instance().setCursor(CursorType::Arrow);
+	}
+
+	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
+	{
+		CoreApplication::startUp<Application>(primaryWindowDesc, renderSystem, renderer);
+	}
+
+	void Application::update()
+	{
+		CoreApplication::update();
+
 		VirtualInput::instance().update();
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 
-	const ViewportPtr& BsApplication::getPrimaryViewport() const
+	const ViewportPtr& Application::getPrimaryViewport() const
 	{
 		// TODO - Need a way to determine primary viewport!
 		return nullptr;
 	}
 
-	BsApplication& gBansheeApp()
+	Application& gApplication()
 	{
-		static BsApplication application;
-		return application;
+		return static_cast<Application&>(Application::instance());
 	}
 }

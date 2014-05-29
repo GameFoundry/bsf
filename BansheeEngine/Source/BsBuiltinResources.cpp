@@ -13,7 +13,7 @@
 #include "CmImporter.h"
 #include "CmRTTIType.h"
 #include "CmFileSystem.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmCoreThread.h"
 
 namespace BansheeEngine

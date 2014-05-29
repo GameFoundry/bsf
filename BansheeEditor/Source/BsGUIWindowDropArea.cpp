@@ -1,5 +1,5 @@
 #include "BsGUIWindowDropArea.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmTexture.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"

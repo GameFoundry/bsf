@@ -1318,7 +1318,7 @@ namespace BansheeEngine
 
 			break;
 
-		case FILTER_BILINEAR:
+		case FILTER_LINEAR:
 			switch (src.getFormat()) 
 			{
 			case PF_R8G8:

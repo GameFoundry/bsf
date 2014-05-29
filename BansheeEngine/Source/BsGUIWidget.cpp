@@ -4,7 +4,7 @@
 #include "BsGUILabel.h"
 #include "BsGUIMouseEvent.h"
 #include "BsGUIArea.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmCoreThreadAccessor.h"
 #include "CmMaterial.h"
 #include "CmPass.h"

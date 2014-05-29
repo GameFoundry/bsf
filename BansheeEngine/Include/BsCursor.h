@@ -114,7 +114,7 @@ namespace BansheeEngine
 		UnorderedMap<String, UINT32> mCustomIconNameToId;
 		UnorderedMap<UINT32, CustomIcon> mCustomIcons;
 		UINT32 mNextUniqueId;
-		UINT32 mActiveCursorId;
+		INT32 mActiveCursorId;
 
 		void restoreCursorIcon(CursorType type);
 		void updateCursorImage();

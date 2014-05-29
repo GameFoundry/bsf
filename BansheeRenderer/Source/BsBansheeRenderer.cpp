@@ -8,7 +8,7 @@
 #include "CmBlendState.h"
 #include "CmRasterizerState.h"
 #include "CmDepthStencilState.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmViewport.h"
 #include "CmRenderTarget.h"
 #include "CmRenderOperation.h"

@@ -1,6 +1,6 @@
 #include "CmFBXImporter.h"
 #include "CmResource.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmDebug.h"
 #include "CmDataStream.h"
 #include "CmPath.h"

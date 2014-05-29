@@ -5,7 +5,7 @@
 #include "CmTexture.h"
 #include "CmManagedDataBlock.h"
 #include "CmMath.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmCoreThread.h"
 #include "CmRenderSystem.h"
 #include "CmTextureManager.h"

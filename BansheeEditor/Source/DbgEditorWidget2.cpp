@@ -21,7 +21,7 @@
 #include "CmHString.h"
 
 #include "CmCoreThread.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 
 namespace BansheeEngine
 {
@@ -31,12 +31,12 @@ namespace BansheeEngine
 	{
 		if (cm_dbg_fullscreen)
 		{
-			gCoreAccessor().setWindowed(gApplication().getPrimaryWindow());
+			gCoreAccessor().setWindowed(gCoreApplication().getPrimaryWindow());
 		}
 		else
 		{
 			//gCoreAccessor().setFullscreen(window, *videoMode);
-			gCoreAccessor().setFullscreen(gApplication().getPrimaryWindow(), 1920, 1200, 60, 0);
+			gCoreAccessor().setFullscreen(gCoreApplication().getPrimaryWindow(), 1920, 1200, 60, 0);
 		}
 
 		cm_dbg_fullscreen = !cm_dbg_fullscreen;

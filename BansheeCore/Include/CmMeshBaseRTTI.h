@@ -2,7 +2,7 @@
 
 #include "CmPrerequisites.h"
 #include "CmRTTIType.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmMeshBase.h"
 #include "CmException.h"
 

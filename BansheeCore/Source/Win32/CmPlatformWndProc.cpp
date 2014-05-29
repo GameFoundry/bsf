@@ -1,6 +1,6 @@
 #include "Win32/CmPlatformWndProc.h"
 #include "CmRenderWindow.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmInput.h"
 #include "CmDebug.h"
 #include "CmRenderWindowManager.h"
@@ -187,7 +187,7 @@ namespace BansheeEngine
 		case WM_CLOSE:
 			{
 				// TODO - Only stop main loop if primary window is closed!!
-				gApplication().stopMainLoop();
+				gCoreApplication().stopMainLoop();
 
 				return 0;
 			}

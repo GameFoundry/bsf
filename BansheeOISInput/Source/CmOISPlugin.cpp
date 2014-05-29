@@ -1,7 +1,6 @@
 #include "CmOISPrerequisites.h"
 #include "CmInputHandlerOIS.h"
 #include "CmRenderWindow.h"
-#include "CmApplication.h"
 #include "CmInput.h"
 
 namespace BansheeEngine
@@ -18,9 +17,9 @@ namespace BansheeEngine
 	/**
 	 * @brief	Entry point to the plugin. Called by the engine when the plugin is loaded.
 	 */
-	extern "C" BS_OIS_EXPORT void* loadPlugin()
+	extern "C" BS_OIS_EXPORT void* loadPlugin(void* primaryWindowPtr)
 	{
-		RenderWindowPtr primaryWindow = gApplication().getPrimaryWindow();
+		RenderWindow* primaryWindow = (RenderWindow*)primaryWindowPtr;
 
 		if (primaryWindow == nullptr)
 			assert(false && "Unable to get window handle. No active window exists!");

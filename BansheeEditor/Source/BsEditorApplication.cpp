@@ -2,8 +2,6 @@
 #include "BsEditorWindowManager.h"
 #include "BsEditorWidgetManager.h"
 #include "BsMainEditorWindow.h"
-#include "BsApplication.h"
-#include "CmApplication.h"
 #include "CmRenderWindow.h"
 #include "BsEditorGUI.h"
 #include "BsUndoRedo.h"
@@ -41,8 +39,7 @@ namespace BansheeEngine
 {
 	const Path EditorApplication::WIDGET_LAYOUT_PATH = L"Internal\\Layout.asset";
 
-	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
-		:mActiveRSPlugin(renderSystemPlugin)
+	RENDER_WINDOW_DESC createRenderWindowDesc()
 	{
 		RENDER_WINDOW_DESC renderWindowDesc;
 		renderWindowDesc.videoMode = VideoMode(1280, 720);
@@ -50,8 +47,13 @@ namespace BansheeEngine
 		renderWindowDesc.fullscreen = false;
 		renderWindowDesc.border = WindowBorder::None;
 
-		const String& renderSystemLibraryName = getLibraryNameForRenderSystem(renderSystemPlugin);
-		gBansheeApp().startUp(renderWindowDesc, renderSystemLibraryName, "BansheeRenderer"); // TODO - Make renderer and resource cache dir customizable
+		return renderWindowDesc;
+	}
+
+	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
+		:Application(createRenderWindowDesc(), getLibraryNameForRenderSystem(renderSystemPlugin), "BansheeRenderer"), 
+		mActiveRSPlugin(renderSystemPlugin)
+	{
 		EditorGUI::startUp();
 
 		{
@@ -70,14 +72,62 @@ namespace BansheeEngine
 
 		UndoRedo::startUp();
 		EditorWindowManager::startUp();
-
-		MainEditorWindow* mainWindow = MainEditorWindow::create(gApplication().getPrimaryWindow());
 		EditorWidgetManager::startUp();
+	}
 
-		gApplication().loadPlugin("SBansheeEditor"); // Managed part of the editor
+	EditorApplication::~EditorApplication()
+	{
+		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
+
+		EditorWidgetManager::shutDown();
+		EditorWindowManager::shutDown();
+		UndoRedo::shutDown();
+
+
+		/************************************************************************/
+		/* 								DEBUG CODE                      		*/
+		/************************************************************************/
+
+		gResources().unload(mTestTexRef);
+		gResources().unload(mDbgMeshRef);
+		gResources().unload(mFragProgRef);
+		gResources().unload(mVertProgRef);
+		gResources().unload(mTestMaterial);
+
+		mTestMaterial = nullptr;
+		mTestTexRef = nullptr;
+		mDbgMeshRef = nullptr;
+		mFragProgRef = nullptr;
+		mVertProgRef = nullptr;
+
+		mNewPassGL = nullptr;
+		mNewTechniqueGL = nullptr;
+
+		mNewPassDX = nullptr;
+		mNewTechniqueDX = nullptr;
+
+		mNewPassDX11 = nullptr;
+		mNewTechniqueDX11 = nullptr;
+
+		mTestShader = nullptr;
+
+		/************************************************************************/
+		/* 							END DEBUG CODE                      		*/
+		/************************************************************************/
+
+		ProjectLibrary::shutDown();
+		EditorGUI::shutDown();
+	}
+
+	void EditorApplication::onStartUp()
+	{
+		Application::onStartUp();
+
+		MainEditorWindow* mainWindow = MainEditorWindow::create(getPrimaryWindow());
+		loadPlugin("SBansheeEditor"); // Managed part of the editor
 
 		EditorWidgetLayoutPtr layout = loadWidgetLayout();
-		if(layout != nullptr)
+		if (layout != nullptr)
 			EditorWidgetManager::instance().setLayout(layout);
 
 		/************************************************************************/
@@ -85,7 +135,6 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		RenderSystem* renderSystem = RenderSystem::instancePtr();
-		RenderWindowPtr renderWindow = gApplication().getPrimaryWindow();
 
 		HSceneObject testModelGO = SceneObject::create("TestMesh");
 		HRenderable testRenderable = testModelGO->addComponent<Renderable>();
@@ -101,45 +150,45 @@ namespace BansheeEngine
 
 		String language;
 
-		switch (renderSystemPlugin)
+		switch (mActiveRSPlugin)
 		{
 		case RenderSystemPlugin::DX11:
-			{
-				psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_ps.gpuprog";
-				vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_vs.gpuprog";
-				language = "hlsl";
-				psProfile = GPP_PS_4_0;
-				vsProfile = GPP_VS_4_0;
-				psEntry = "ps_main";
-				vsEntry = "vs_main";
-				break;
-			}
+		{
+										 psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_ps.gpuprog";
+										 vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl11_vs.gpuprog";
+										 language = "hlsl";
+										 psProfile = GPP_PS_4_0;
+										 vsProfile = GPP_VS_4_0;
+										 psEntry = "ps_main";
+										 vsEntry = "vs_main";
+										 break;
+		}
 		case RenderSystemPlugin::DX9:
-			{
-				psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_ps.gpuprog";
-				vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_vs.gpuprog";
-				language = "hlsl";
-				psProfile = GPP_PS_2_0;
-				vsProfile = GPP_VS_2_0;
-				psEntry = "ps_main";
-				vsEntry = "vs_main";
-				break;
-			}
+		{
+										psLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_ps.gpuprog";
+										vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\hlsl9_vs.gpuprog";
+										language = "hlsl";
+										psProfile = GPP_PS_2_0;
+										vsProfile = GPP_VS_2_0;
+										psEntry = "ps_main";
+										vsEntry = "vs_main";
+										break;
+		}
 		case RenderSystemPlugin::OpenGL:
-			{
-				psLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_ps.gpuprog";
-				vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_vs.gpuprog";
-				language = "glsl";
-				psProfile = GPP_PS_2_0;
-				vsProfile = GPP_VS_2_0;
-				psEntry = "main";
-				vsEntry = "main";
-				break;
-			}
+		{
+										   psLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_ps.gpuprog";
+										   vsLoc = L"C:\\Projects\\BansheeEngine\\Data\\glsl_vs.gpuprog";
+										   language = "glsl";
+										   psProfile = GPP_PS_2_0;
+										   vsProfile = GPP_VS_2_0;
+										   psEntry = "main";
+										   vsEntry = "main";
+										   break;
+		}
 		}
 
 		ImportOptionsPtr gpuProgImportOptions = Importer::instance().createImportOptions(psLoc);
-		if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+		if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
 		{
 			GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
 
@@ -149,10 +198,10 @@ namespace BansheeEngine
 			importOptions->setType(GPT_FRAGMENT_PROGRAM);
 		}
 
-		HGpuProgram fragProgRef = Importer::instance().import(psLoc, gpuProgImportOptions);
+		mFragProgRef = Importer::instance().import(psLoc, gpuProgImportOptions);
 
 		gpuProgImportOptions = Importer::instance().createImportOptions(vsLoc);
-		if(rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
+		if (rtti_is_of_type<GpuProgramImportOptions>(gpuProgImportOptions))
 		{
 			GpuProgramImportOptions* importOptions = static_cast<GpuProgramImportOptions*>(gpuProgImportOptions.get());
 
@@ -162,49 +211,48 @@ namespace BansheeEngine
 			importOptions->setType(GPT_VERTEX_PROGRAM);
 		}
 
-		HGpuProgram vertProgRef = Importer::instance().import(vsLoc, gpuProgImportOptions);
+		mVertProgRef = Importer::instance().import(vsLoc, gpuProgImportOptions);
 
-		gResources().save(vertProgRef, L"C:\\vertProgCg.vprog", true);
-		gResources().unload(vertProgRef);
-		vertProgRef = gResources().load(L"C:\\vertProgCg.vprog");
+		gResources().save(mVertProgRef, L"C:\\vertProgCg.vprog", true);
+		gResources().unload(mVertProgRef);
+		mVertProgRef = gResources().load(L"C:\\vertProgCg.vprog");
 
-		gResources().save(fragProgRef, L"C:\\fragProgCg.vprog", true);
-		gResources().unload(fragProgRef);
-		fragProgRef = gResources().load(L"C:\\fragProgCg.vprog");
+		gResources().save(mFragProgRef, L"C:\\fragProgCg.vprog", true);
+		gResources().unload(mFragProgRef);
+		mFragProgRef = gResources().load(L"C:\\fragProgCg.vprog");
 
-		ShaderPtr testShader = Shader::create("TestShader");
+		mTestShader = Shader::create("TestShader");
+		mTestShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
 
-		testShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
+		if (mActiveRSPlugin == RenderSystemPlugin::DX11)
+			mTestShader->addParameter("input", "input", GPDT_STRUCT, 2, 8);
 
-		if(renderSystemPlugin == RenderSystemPlugin::DX11)
-				testShader->addParameter("input", "input", GPDT_STRUCT, 2, 8);
-
-		testShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
-		testShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
-		TechniquePtr newTechniqueGL = testShader->addTechnique("GLRenderSystem", "BansheeRenderer");
-		PassPtr newPassGL = newTechniqueGL->addPass();
-		newPassGL->setVertexProgram(vertProgRef);
-		newPassGL->setFragmentProgram(fragProgRef);
+		mTestShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
+		mTestShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
+		mNewTechniqueGL = mTestShader->addTechnique("GLRenderSystem", "BansheeRenderer");
+		mNewPassGL = mNewTechniqueGL->addPass();
+		mNewPassGL->setVertexProgram(mVertProgRef);
+		mNewPassGL->setFragmentProgram(mFragProgRef);
 
 		// TODO - I need to create different techniques for different render systems (and renderers, if there were any),
 		// which is redundant as some techniques can be reused. I should add a functionality that supports multiple
 		// render systems/renderers per technique
-		TechniquePtr newTechniqueDX = testShader->addTechnique("D3D9RenderSystem", "BansheeRenderer");
-		PassPtr newPassDX = newTechniqueDX->addPass();
-		newPassDX->setVertexProgram(vertProgRef);
-		newPassDX->setFragmentProgram(fragProgRef);
+		mNewTechniqueDX = mTestShader->addTechnique("D3D9RenderSystem", "BansheeRenderer");
+		mNewPassDX = mNewTechniqueDX->addPass();
+		mNewPassDX->setVertexProgram(mVertProgRef);
+		mNewPassDX->setFragmentProgram(mFragProgRef);
 
-		TechniquePtr newTechniqueDX11 = testShader->addTechnique("D3D11RenderSystem", "BansheeRenderer");
-		PassPtr newPassDX11 = newTechniqueDX11->addPass();
-		newPassDX11->setVertexProgram(vertProgRef);
-		newPassDX11->setFragmentProgram(fragProgRef);
+		mNewTechniqueDX11 = mTestShader->addTechnique("D3D11RenderSystem", "BansheeRenderer");
+		mNewPassDX11 = mNewTechniqueDX11->addPass();
+		mNewPassDX11->setVertexProgram(mVertProgRef);
+		mNewPassDX11->setFragmentProgram(mFragProgRef);
 
-		HMaterial testMaterial = Material::create();
-		testMaterial->setShader(testShader);
+		mTestMaterial = Material::create();
+		mTestMaterial->setShader(mTestShader);
 
-		testMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
+		mTestMaterial->setMat4("matViewProjection", Matrix4::IDENTITY);
 
-		if(renderSystemPlugin == RenderSystemPlugin::DX11)
+		if (mActiveRSPlugin == RenderSystemPlugin::DX11)
 		{
 			float dbgMultipliers1[2];
 			dbgMultipliers1[0] = 0.0f;
@@ -214,41 +262,41 @@ namespace BansheeEngine
 			dbgMultipliers2[0] = 1.0f;
 			dbgMultipliers2[1] = 1.0f;
 
-			testMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
-			testMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
+			mTestMaterial->setStructData("input", dbgMultipliers1, sizeof(dbgMultipliers1), 0);
+			mTestMaterial->setStructData("input", dbgMultipliers2, sizeof(dbgMultipliers2), 1);
 		}
 
-		HTexture testTexRef = static_resource_cast<Texture>(Importer::instance().import(L"C:\\ArenaTowerDFS.psd"));
-		HMesh dbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"C:\\X_Arena_Tower.FBX"));
+		mTestTexRef = static_resource_cast<Texture>(Importer::instance().import(L"C:\\ArenaTowerDFS.psd"));
+		mDbgMeshRef = static_resource_cast<Mesh>(Importer::instance().import(L"C:\\X_Arena_Tower.FBX"));
 
-		gResources().save(testTexRef, L"C:\\ExportTest.tex", true);
-		gResources().save(dbgMeshRef, L"C:\\ExportMesh.mesh", true);
+		gResources().save(mTestTexRef, L"C:\\ExportTest.tex", true);
+		gResources().save(mDbgMeshRef, L"C:\\ExportMesh.mesh", true);
 
-		gResources().unload(testTexRef);
-		gResources().unload(dbgMeshRef);
+		gResources().unload(mTestTexRef);
+		gResources().unload(mDbgMeshRef);
 
-		testTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"C:\\ExportTest.tex"));
-		dbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"C:\\ExportMesh.mesh"));
+		mTestTexRef = static_resource_cast<Texture>(gResources().loadAsync(L"C:\\ExportTest.tex"));
+		mDbgMeshRef = static_resource_cast<Mesh>(gResources().loadAsync(L"C:\\ExportMesh.mesh"));
 
-		dbgMeshRef.synchronize();
-		testTexRef.synchronize();
+		mDbgMeshRef.synchronize();
+		mTestTexRef.synchronize();
 
-		testMaterial->setTexture("tex", testTexRef);
-		gResources().save(testMaterial, L"C:\\ExportMaterial.mat", true);
+		mTestMaterial->setTexture("tex", mTestTexRef);
+		gResources().save(mTestMaterial, L"C:\\ExportMaterial.mat", true);
 
-		gResources().unload(testMaterial);
+		gResources().unload(mTestMaterial);
 
-		testMaterial = gResources().load(L"C:\\ExportMaterial.mat");
+		mTestMaterial = gResources().load(L"C:\\ExportMaterial.mat");
 
-		testRenderable->setMesh(dbgMeshRef);
-		testRenderable->setMaterial(0, testMaterial);
+		testRenderable->setMesh(mDbgMeshRef);
+		testRenderable->setMaterial(0, mTestMaterial);
 
 		GameObjectHandle<DbgTestGameObjectRef> dbgTestGameObjectRef = testModelGO->addComponent<DbgTestGameObjectRef>();
 		dbgTestGameObjectRef->mRenderable = testRenderable;
 
 		HSceneObject clone = testModelGO->clone();
 		GameObjectHandle<DbgTestGameObjectRef> clonedDbgTestGameObjectRef = clone->getComponent<DbgTestGameObjectRef>();
-		
+
 		testModelGO->destroy();
 
 		//Win32FolderMonitor* folderMonitor = cm_new<Win32FolderMonitor>();
@@ -303,57 +351,13 @@ namespace BansheeEngine
 		/* 							END DEBUG CODE                      		*/
 		/************************************************************************/
 
-		gApplication().mainLoopCallback.connect(std::bind(&EditorApplication::update, this));
-
 		DbgEditorWidget1::open(); // DEBUG ONLY
 		DbgEditorWidget2::open(); // DEBUG ONLY
+	}
 
-		gBansheeApp().runMainLoop();
-
-		saveWidgetLayout(EditorWidgetManager::instance().getLayout());
-
-		EditorWidgetManager::shutDown();
-		EditorWindowManager::shutDown();
-		UndoRedo::shutDown();
-
-
-		/************************************************************************/
-		/* 								DEBUG CODE                      		*/
-		/************************************************************************/
-
-		gResources().unload(testTexRef);
-		gResources().unload(dbgMeshRef);
-		gResources().unload(fragProgRef);
-		gResources().unload(vertProgRef);
-		gResources().unload(testMaterial);
-
-		testMaterial = nullptr;
-		testTexRef = nullptr;
-		dbgMeshRef = nullptr;
-		fragProgRef = nullptr;
-		vertProgRef = nullptr;
-
-		newPassGL = nullptr;
-		newTechniqueGL = nullptr;
-
-		newPassDX = nullptr;
-		newTechniqueDX = nullptr;
-
-		newPassDX11 = nullptr;
-		newTechniqueDX11 = nullptr;
-
-		testShader = nullptr;
-
-		renderWindow = nullptr;
-
-		/************************************************************************/
-		/* 							END DEBUG CODE                      		*/
-		/************************************************************************/
-
-		ProjectLibrary::shutDown();
-		EditorGUI::shutDown();
-		gBansheeApp().shutDown();
-
+	void EditorApplication::startUp(RenderSystemPlugin renderSystemPlugin)
+	{
+		CoreApplication::startUp<EditorApplication>(renderSystemPlugin);
 	}
 
 	void EditorApplication::closeModalWindow(RenderWindowPtr window, HSceneObject sceneObject)
@@ -362,20 +366,10 @@ namespace BansheeEngine
 		window->destroy();
 	}
 
-	EditorApplication::~EditorApplication()
-	{
-		// TODO - Move shutdown code from constructor to here. Right now I don't care because cleanup 
-		// isn't working as intended and if I move stuff I will probably break it even more
-	}
-
-	void EditorApplication::runMainLoop()
-	{
-		// TODO - Move "runMainLoop" code from constructor to here. Right now I don't care because cleanup 
-		// isn't working as intended and if I move stuff I will probably break it even more
-	}
-
 	void EditorApplication::update()
 	{
+		Application::update();
+
 		ProjectLibrary::instance().update();
 		EditorWindowManager::instance().update();	
 	}

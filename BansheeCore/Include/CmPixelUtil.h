@@ -17,7 +17,7 @@ namespace BansheeEngine
 		enum Filter
 		{
 			FILTER_NEAREST,
-			FILTER_BILINEAR
+			FILTER_LINEAR
 		};
 
 		/**
@@ -176,7 +176,7 @@ namespace BansheeEngine
 		 *			Provided pixel data objects must have previously allocated buffers of adequate size. You may
 		 *			also provided a filtering method to use when scaling.
 		 */
-		static void scale(const PixelData& src, const PixelData& dst, Filter filter = FILTER_BILINEAR);
+		static void scale(const PixelData& src, const PixelData& dst, Filter filter = FILTER_LINEAR);
 
 		/**
 		 * @brief	Applies gamma correction to the pixels in the provided buffer.

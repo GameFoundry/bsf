@@ -1,5 +1,5 @@
 #include "BsEditorWindowBase.h"
-#include "CmApplication.h"
+#include "BsCoreApplication.h"
 #include "CmCoreThread.h"
 #include "CmSceneObject.h"
 #include "CmRenderWindow.h"
@@ -21,7 +21,7 @@ namespace BansheeEngine
 		renderWindowDesc.border = WindowBorder::None;
 		renderWindowDesc.toolWindow = true;
 
-		mRenderWindow = RenderWindow::create(renderWindowDesc, gApplication().getPrimaryWindow());
+		mRenderWindow = RenderWindow::create(renderWindowDesc, gCoreApplication().getPrimaryWindow());
 
 		construct(mRenderWindow);
 	}

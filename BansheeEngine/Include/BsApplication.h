@@ -1,40 +1,29 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsCoreApplication.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine
 {
-	class BS_EXPORT BsApplication
+	class BS_EXPORT Application : public CoreApplication
 	{
 	public:
-			BsApplication();
+		Application(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer);
+		virtual ~Application();
 
-			/**
-			 * @brief	Starts the application using the specified options. 
-			 * 			This is how you start the engine.
-			 */
-			void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer);
+		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer);
 
-			/**
-			 * @brief	Executes the main loop. This will cause actually rendering to be performed
-			 * 			and simulation to be run. Usually called immediately after startUp().
-			 */
-			void runMainLoop();
+		const ViewportPtr& getPrimaryViewport() const;
+	protected:
+		virtual void onStartUp();
 
-			/**
-			 * @brief	Frees up all resources allocated during startUp, and while the application was running.
-			 */
-			void shutDown();
+		virtual void update();
 
-			const ViewportPtr& getPrimaryViewport() const;
 	private:
-		HEvent updateCallbackConn;
 		DynLib* mMonoPlugin;
 		DynLib* mSBansheeEnginePlugin;
-
-		void update();
 	};
 
-	BS_EXPORT BsApplication& gBansheeApp();
+	BS_EXPORT Application& gApplication();
 }
