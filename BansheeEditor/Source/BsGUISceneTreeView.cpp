@@ -1,6 +1,6 @@
 #include "BsGUISceneTreeView.h"
-#include "CmSceneObject.h"
-#include "CmSceneManager.h"
+#include "BsSceneObject.h"
+#include "BsSceneManager.h"
 #include "BsGUISkin.h"
 #include "BsCmdEditPlainFieldGO.h"
 #include "BsDragAndDropManager.h"

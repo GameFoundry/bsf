@@ -3,7 +3,7 @@
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptResource.h"
 #include "BsScriptObject.h"
-#include "CmTexture.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {

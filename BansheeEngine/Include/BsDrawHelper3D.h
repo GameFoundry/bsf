@@ -2,9 +2,9 @@
 
 #include "BsPrerequisites.h"
 #include "BsDrawHelperTemplate.h"
-#include "CmModule.h"
-#include "CmColor.h"
-#include "CmAABox.h"
+#include "BsModule.h"
+#include "BsColor.h"
+#include "BsAABox.h"
 
 namespace BansheeEngine
 {

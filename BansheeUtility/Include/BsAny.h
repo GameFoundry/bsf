@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CmPrerequisitesUtil.h"
-#include "CmException.h"
+#include "BsPrerequisitesUtil.h"
+#include "BsException.h"
 #include <algorithm>
 #include <typeinfo>
 

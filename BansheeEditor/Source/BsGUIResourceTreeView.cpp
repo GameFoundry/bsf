@@ -2,15 +2,15 @@
 #include "BsGUISkin.h"
 #include "BsProjectLibrary.h"
 #include "BsDragAndDropManager.h"
-#include "CmResources.h"
-#include "CmResourceManifest.h"
+#include "BsResources.h"
+#include "BsResourceManifest.h"
 #include "BsProjectLibrary.h"
-#include "CmFileSystem.h"
+#include "BsFileSystem.h"
 #include "BsGUIWidget.h"
-#include "CmViewport.h"
-#include "CmRenderWindow.h"
-#include "CmPlatform.h"
-#include "CmPath.h"
+#include "BsViewport.h"
+#include "BsRenderWindow.h"
+#include "BsPlatform.h"
+#include "BsPath.h"
 
 using namespace std::placeholders;
 

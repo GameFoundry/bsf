@@ -4,9 +4,9 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "CmTexture.h"
-#include "CmPixelUtil.h"
-#include "CmException.h"
+#include "BsTexture.h"
+#include "BsPixelUtil.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {

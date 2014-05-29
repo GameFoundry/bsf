@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIMaterialInfo.h"
-#include "CmModule.h"
+#include "BsModule.h"
 
 namespace BansheeEngine
 {

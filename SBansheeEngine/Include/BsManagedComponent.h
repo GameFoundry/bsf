@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "CmComponent.h"
+#include "BsComponent.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine

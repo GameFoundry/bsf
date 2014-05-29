@@ -1,8 +1,8 @@
 #include "BsGUILayoutX.h"
 #include "BsGUIElement.h"
 #include "BsGUISpace.h"
-#include "CmMath.h"
-#include "CmVector2I.h"
+#include "BsMath.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {

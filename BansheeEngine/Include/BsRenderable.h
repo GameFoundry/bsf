@@ -1,9 +1,9 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmComponent.h"
-#include "CmAABox.h"
-#include "CmGpuParam.h"
+#include "BsComponent.h"
+#include "BsAABox.h"
+#include "BsGpuParam.h"
 
 namespace BansheeEngine
 {

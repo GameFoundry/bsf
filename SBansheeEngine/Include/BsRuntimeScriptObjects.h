@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsManagedSerializableObjectInfo.h"
-#include "CmModule.h"
+#include "BsModule.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine

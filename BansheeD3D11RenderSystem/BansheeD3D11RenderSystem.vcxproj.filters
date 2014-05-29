@@ -18,225 +18,225 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmD3D11Prerequisites.h">
+    <ClInclude Include="Include\BsD3D11VideoModeInfo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11GpuProgram.h">
+    <ClInclude Include="Include\BsD3D11VertexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11Mappings.h">
+    <ClInclude Include="Include\BsD3D11TimerQuery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11Device.h">
+    <ClInclude Include="Include\BsD3D11TextureView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11Driver.h">
+    <ClInclude Include="Include\BsD3D11TextureManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11DriverList.h">
+    <ClInclude Include="Include\BsD3D11Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11HardwareBuffer.h">
+    <ClInclude Include="Include\BsD3D11SamplerState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11HardwareBufferManager.h">
+    <ClInclude Include="Include\BsD3D11RenderWindowManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RenderSystem.h">
+    <ClInclude Include="Include\BsD3D11RenderWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RenderWindow.h">
+    <ClInclude Include="Include\BsD3D11RenderUtility.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11Texture.h">
+    <ClInclude Include="Include\BsD3D11RenderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RenderTexture.h">
+    <ClInclude Include="Include\BsD3D11RenderSystemFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11TextureManager.h">
+    <ClInclude Include="Include\BsD3D11RenderSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11HLSLProgramFactory.h">
+    <ClInclude Include="Include\BsD3D11RenderStateManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RenderSystemFactory.h">
+    <ClInclude Include="Include\BsD3D11RasterizerState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RenderStateManager.h">
+    <ClInclude Include="Include\BsD3D11QueryManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11SamplerState.h">
+    <ClInclude Include="Include\BsD3D11Prerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11DepthStencilState.h">
+    <ClInclude Include="Include\BsD3D11OcclusionQuery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RasterizerState.h">
+    <ClInclude Include="Include\BsD3D11MultiRenderTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11BlendState.h">
+    <ClInclude Include="Include\BsD3D11Mappings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11MultiRenderTexture.h">
+    <ClInclude Include="Include\BsD3D11InputLayoutManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RenderWindowManager.h">
+    <ClInclude Include="Include\BsD3D11IndexBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11IndexBuffer.h">
+    <ClInclude Include="Include\BsD3D11HLSLProgramFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11VertexBuffer.h">
+    <ClInclude Include="Include\BsD3D11HLSLParamParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11InputLayoutManager.h">
+    <ClInclude Include="Include\BsD3D11HardwareBufferManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11HLSLParamParser.h">
+    <ClInclude Include="Include\BsD3D11HardwareBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11GpuBuffer.h">
+    <ClInclude Include="Include\BsD3D11GpuProgram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11GpuBufferView.h">
+    <ClInclude Include="Include\BsD3D11GpuParamBlockBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11TextureView.h">
+    <ClInclude Include="Include\BsD3D11GpuBufferView.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11GpuParamBlockBuffer.h">
+    <ClInclude Include="Include\BsD3D11GpuBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11RenderUtility.h">
+    <ClInclude Include="Include\BsD3D11EventQuery.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11EventQuery.h">
+    <ClInclude Include="Include\BsD3D11DriverList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11QueryManager.h">
+    <ClInclude Include="Include\BsD3D11Driver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11TimerQuery.h">
+    <ClInclude Include="Include\BsD3D11Device.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmD3D11GpuProgramRTTI.h">
+    <ClInclude Include="Include\BsD3D11DepthStencilState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsD3D11BlendState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsD3D11GpuProgramRTTI.h">
       <Filter>Header Files\RTTI</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmD3D11OcclusionQuery.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmD3D11VideoModeInfo.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmD3D11GpuProgram.cpp">
+    <ClCompile Include="Source\BsD3D11VideoModeInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11Mappings.cpp">
+    <ClCompile Include="Source\BsD3D11VertexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11Device.cpp">
+    <ClCompile Include="Source\BsD3D11TimerQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11Driver.cpp">
+    <ClCompile Include="Source\BsD3D11TextureView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11DriverList.cpp">
+    <ClCompile Include="Source\BsD3D11TextureManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11HardwareBuffer.cpp">
+    <ClCompile Include="Source\BsD3D11Texture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11HardwareBufferManager.cpp">
+    <ClCompile Include="Source\BsD3D11SamplerState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RenderSystem.cpp">
+    <ClCompile Include="Source\BsD3D11RenderWindowManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RenderWindow.cpp">
+    <ClCompile Include="Source\BsD3D11RenderWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11Texture.cpp">
+    <ClCompile Include="Source\BsD3D11RenderUtility.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RenderTexture.cpp">
+    <ClCompile Include="Source\BsD3D11RenderTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11TextureManager.cpp">
+    <ClCompile Include="Source\BsD3D11RenderSystemFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11HLSLProgramFactory.cpp">
+    <ClCompile Include="Source\BsD3D11RenderSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RenderSystemFactory.cpp">
+    <ClCompile Include="Source\BsD3D11RenderStateManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RenderStateManager.cpp">
+    <ClCompile Include="Source\BsD3D11RasterizerState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11SamplerState.cpp">
+    <ClCompile Include="Source\BsD3D11QueryManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11BlendState.cpp">
+    <ClCompile Include="Source\BsD3D11Plugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RasterizerState.cpp">
+    <ClCompile Include="Source\BsD3D11OcclusionQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11DepthStencilState.cpp">
+    <ClCompile Include="Source\BsD3D11MultiRenderTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11MultiRenderTexture.cpp">
+    <ClCompile Include="Source\BsD3D11Mappings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RenderWindowManager.cpp">
+    <ClCompile Include="Source\BsD3D11InputLayoutManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11VertexBuffer.cpp">
+    <ClCompile Include="Source\BsD3D11IndexBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11IndexBuffer.cpp">
+    <ClCompile Include="Source\BsD3D11HLSLProgramFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11Plugin.cpp">
+    <ClCompile Include="Source\BsD3D11HLSLParamParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11InputLayoutManager.cpp">
+    <ClCompile Include="Source\BsD3D11HardwareBufferManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11HLSLParamParser.cpp">
+    <ClCompile Include="Source\BsD3D11HardwareBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11GpuBuffer.cpp">
+    <ClCompile Include="Source\BsD3D11GpuProgram.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11GpuBufferView.cpp">
+    <ClCompile Include="Source\BsD3D11GpuParamBlockBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11TextureView.cpp">
+    <ClCompile Include="Source\BsD3D11GpuBufferView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11GpuParamBlockBuffer.cpp">
+    <ClCompile Include="Source\BsD3D11GpuBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11RenderUtility.cpp">
+    <ClCompile Include="Source\BsD3D11EventQuery.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11EventQuery.cpp">
+    <ClCompile Include="Source\BsD3D11DriverList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11QueryManager.cpp">
+    <ClCompile Include="Source\BsD3D11Driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11TimerQuery.cpp">
+    <ClCompile Include="Source\BsD3D11Device.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11OcclusionQuery.cpp">
+    <ClCompile Include="Source\BsD3D11DepthStencilState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmD3D11VideoModeInfo.cpp">
+    <ClCompile Include="Source\BsD3D11BlendState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CmPrerequisitesUtil.h"
-#include "CmModule.h"
+#include "BsPrerequisitesUtil.h"
+#include "BsModule.h"
 
 namespace BansheeEngine
 {

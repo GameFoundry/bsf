@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "CmIReflectable.h"
+#include "BsIReflectable.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine

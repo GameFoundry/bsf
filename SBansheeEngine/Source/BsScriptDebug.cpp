@@ -2,7 +2,7 @@
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
 #include "BsMonoUtil.h"
-#include "CmDebug.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {

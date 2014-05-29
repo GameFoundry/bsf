@@ -1,8 +1,8 @@
 #include "BsGUIInputTool.h"
 #include "BsGUIElement.h"
-#include "CmMath.h"
-#include "CmVector2.h"
-#include "CmFont.h"
+#include "BsMath.h"
+#include "BsVector2.h"
+#include "BsFont.h"
 
 namespace BansheeEngine
 {

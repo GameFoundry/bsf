@@ -1,9 +1,9 @@
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "CmUtil.h"
+#include "BsUtil.h"
 #include "BsMonoUtil.h"
-#include "CmException.h"
+#include "BsException.h"
 
 #include <mono/metadata/debug-helpers.h>
 #include <mono/metadata/tokentype.h>

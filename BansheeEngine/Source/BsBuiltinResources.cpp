@@ -8,13 +8,13 @@
 #include "BsTextSprite.h"
 #include "BsSpriteTexture.h"
 
-#include "CmFont.h"
-#include "CmFontImportOptions.h"
-#include "CmImporter.h"
-#include "CmRTTIType.h"
-#include "CmFileSystem.h"
+#include "BsFont.h"
+#include "BsFontImportOptions.h"
+#include "BsImporter.h"
+#include "BsRTTIType.h"
+#include "BsFileSystem.h"
 #include "BsCoreApplication.h"
-#include "CmCoreThread.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {

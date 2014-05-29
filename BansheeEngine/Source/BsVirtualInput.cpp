@@ -1,6 +1,6 @@
 #include "BsVirtualInput.h"
-#include "CmInput.h"
-#include "CmTime.h"
+#include "BsInput.h"
+#include "BsTime.h"
 
 using namespace std::placeholders;
 

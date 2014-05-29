@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsDockManagerLayout.h"
-#include "CmRTTIType.h"
+#include "BsRTTIType.h"
 
 namespace BansheeEngine
 {

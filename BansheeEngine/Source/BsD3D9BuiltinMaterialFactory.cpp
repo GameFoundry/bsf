@@ -1,12 +1,12 @@
 #include "BsD3D9BuiltinMaterialFactory.h"
-#include "CmGpuProgram.h"
-#include "CmShader.h"
-#include "CmTechnique.h"
-#include "CmPass.h"
-#include "CmMaterial.h"
-#include "CmBlendState.h"
-#include "CmDepthStencilState.h"
-#include "CmRendererManager.h"
+#include "BsGpuProgram.h"
+#include "BsShader.h"
+#include "BsTechnique.h"
+#include "BsPass.h"
+#include "BsMaterial.h"
+#include "BsBlendState.h"
+#include "BsDepthStencilState.h"
+#include "BsRendererManager.h"
 
 namespace BansheeEngine
 {

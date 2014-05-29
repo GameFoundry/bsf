@@ -1,6 +1,6 @@
 #include "BsDbgTestGameObjectRef.h"
 #include "BsDbgTestGameObjectRefRTTI.h"
-#include "CmSceneObject.h"
+#include "BsSceneObject.h"
 #include "BsRenderable.h"
 
 namespace BansheeEngine

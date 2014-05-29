@@ -7,7 +7,7 @@
 
 // DEBUG ONLY
 #include "BsScriptSceneObject.h"
-#include "CmSceneObject.h"
+#include "BsSceneObject.h"
 #include "BsMonoUtil.h"
 
 namespace BansheeEngine

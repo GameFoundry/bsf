@@ -2,8 +2,8 @@
 
 #include "BsPrerequisites.h"
 #include "BsDebugDrawMaterialInfo.h"
-#include "CmColor.h"
-#include "CmAABox.h"
+#include "BsColor.h"
+#include "BsAABox.h"
 
 namespace BansheeEngine
 {

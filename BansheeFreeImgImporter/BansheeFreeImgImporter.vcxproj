@@ -27,14 +27,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmFreeImgImporter.h" />
-    <ClInclude Include="Include\CmFreeImgPrerequisites.h" />
-    <ClInclude Include="Include\CmTextureData.h" />
+    <ClInclude Include="Include\BsFreeImgImporter.h" />
+    <ClInclude Include="Include\BsFreeImgPrerequisites.h" />
+    <ClInclude Include="Include\BsTextureData.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmFreeImgImporter.cpp" />
-    <ClCompile Include="Source\CmFreeImgPlugin.cpp" />
-    <ClCompile Include="Source\CmTextureData.cpp" />
+    <ClCompile Include="Source\BsFreeImgImporter.cpp" />
+    <ClCompile Include="Source\BsFreeImgPlugin.cpp" />
+    <ClCompile Include="Source\BsTextureData.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{122B7A22-0C62-4B35-B661-EBF3F394EA79}</ProjectGuid>

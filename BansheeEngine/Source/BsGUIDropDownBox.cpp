@@ -5,10 +5,10 @@
 #include "BsGUIButton.h"
 #include "BsGUIContent.h"
 #include "BsGUISkin.h"
-#include "CmViewport.h"
+#include "BsViewport.h"
 #include "BsGUIListBox.h"
 #include "BsGUIDropDownBoxManager.h"
-#include "CmSceneObject.h"
+#include "BsSceneObject.h"
 #include "BsGUIDropDownHitBox.h"
 
 namespace BansheeEngine

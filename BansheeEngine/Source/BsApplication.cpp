@@ -10,7 +10,7 @@
 #include "BsGLBuiltinMaterialFactory.h"
 #include "BsBuiltinResources.h"
 #include "BsScriptManager.h"
-#include "CmProfiler.h"
+#include "BsProfiler.h"
 #include "BsVirtualInput.h"
 #include "BsCursor.h"
 

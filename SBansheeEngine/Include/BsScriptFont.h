@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "CmFont.h"
+#include "BsFont.h"
 
 namespace BansheeEngine
 {

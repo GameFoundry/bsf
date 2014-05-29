@@ -1,8 +1,8 @@
 #include "BsGPUProfiler.h"
-#include "CmRenderSystem.h"
-#include "CmTimerQuery.h"
-#include "CmOcclusionQuery.h"
-#include "CmException.h"
+#include "BsRenderSystem.h"
+#include "BsTimerQuery.h"
+#include "BsOcclusionQuery.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {

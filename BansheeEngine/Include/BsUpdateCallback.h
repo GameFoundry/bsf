@@ -1,5 +1,5 @@
 #include "BsPrerequisites.h"
-#include "CmComponent.h"
+#include "BsComponent.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine

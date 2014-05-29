@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmGpuParam.h"
+#include "BsGpuParam.h"
 
 namespace BansheeEngine
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmResource.h"
-#include "CmVector2.h"
+#include "BsResource.h"
+#include "BsVector2.h"
 
 namespace BansheeEngine
 {

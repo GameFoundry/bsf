@@ -5,9 +5,9 @@
 #include "BsGUIWindowFrame.h"
 #include "BsBuiltinResources.h"
 #include "BsGUIMouseEvent.h"
-#include "CmRenderWindow.h"
-#include "CmMath.h"
-#include "CmPlatform.h"
+#include "BsRenderWindow.h"
+#include "BsMath.h"
+#include "BsPlatform.h"
 
 namespace BansheeEngine
 {

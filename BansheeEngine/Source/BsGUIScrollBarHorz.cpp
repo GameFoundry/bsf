@@ -8,7 +8,7 @@
 #include "BsGUIButton.h"
 #include "BsGUIScrollBarHandle.h"
 #include "BsGUISpace.h"
-#include "CmException.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {

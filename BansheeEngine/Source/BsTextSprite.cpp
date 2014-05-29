@@ -1,10 +1,10 @@
 #include "BsTextSprite.h"
 #include "BsGUIMaterialManager.h"
-#include "CmTextData.h"
-#include "CmFont.h"
-#include "CmVector2.h"
+#include "BsTextData.h"
+#include "BsFont.h"
+#include "BsVector2.h"
 
-#include "CmProfiler.h" // PROFILING ONLY
+#include "BsProfiler.h" // PROFILING ONLY
 
 namespace BansheeEngine
 {

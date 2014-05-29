@@ -4,8 +4,8 @@
 #include "BsMonoProperty.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoManager.h"
-#include "CmUtil.h"
-#include "CmException.h"
+#include "BsUtil.h"
+#include "BsException.h"
 #include <mono/metadata/debug-helpers.h>
 
 namespace BansheeEngine

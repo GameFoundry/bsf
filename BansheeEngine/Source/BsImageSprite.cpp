@@ -2,9 +2,9 @@
 #include "BsSpriteTexture.h"
 #include "BsGUIMaterialManager.h"
 #include "BsSpriteTexture.h"
-#include "CmTexture.h"
+#include "BsTexture.h"
 
-#include "CmProfiler.h"
+#include "BsProfiler.h"
 
 namespace BansheeEngine
 {

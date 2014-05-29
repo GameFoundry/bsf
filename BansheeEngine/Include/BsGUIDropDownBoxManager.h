@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIDropDownBox.h"
-#include "CmModule.h"
+#include "BsModule.h"
 
 namespace BansheeEngine
 {

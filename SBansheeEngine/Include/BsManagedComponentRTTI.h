@@ -1,12 +1,12 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "CmRTTIType.h"
-#include "CmGameObjectRTTI.h"
+#include "BsRTTIType.h"
+#include "BsGameObjectRTTI.h"
 #include "BsManagedComponent.h"
 #include "BsMonoManager.h"
 #include "BsManagedSerializableObject.h"
-#include "CmGameObjectManager.h"
+#include "BsGameObjectManager.h"
 
 namespace BansheeEngine
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmModule.h"
-#include "CmInput.h"
+#include "BsModule.h"
+#include "BsInput.h"
 #include "BsEvent.h"
 #include <atomic>
 

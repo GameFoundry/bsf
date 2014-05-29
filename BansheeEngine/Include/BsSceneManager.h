@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmSceneManager.h"
+#include "BsCoreSceneManager.h"
 
 namespace BansheeEngine
 {
-	class BS_EXPORT SceneManager : public SceneManagerBase
+	class BS_EXPORT SceneManager : public CoreSceneManager
 	{
 	public:
 		SceneManager() {}

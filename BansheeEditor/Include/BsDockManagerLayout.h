@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include "CmIReflectable.h"
-#include "CmRectI.h"
+#include "BsIReflectable.h"
+#include "BsRectI.h"
 
 namespace BansheeEngine
 {

@@ -5,7 +5,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUITabbedTitleBar.h"
 #include "BsCursor.h"
-#include "CmPlatform.h"
+#include "BsPlatform.h"
 
 namespace BansheeEngine
 {

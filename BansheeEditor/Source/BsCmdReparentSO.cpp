@@ -1,5 +1,5 @@
 #include "BsCmdReparentSO.h"
-#include "CmSceneObject.h"
+#include "BsSceneObject.h"
 
 namespace BansheeEngine
 {

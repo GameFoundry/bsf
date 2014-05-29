@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CmPrerequisites.h"
-#include "CmRTTIType.h"
+#include "BsPrerequisites.h"
+#include "BsRTTIType.h"
 #include "BsResourceMeta.h"
-#include "CmImportOptions.h"
+#include "BsImportOptions.h"
 
 namespace BansheeEngine
 {

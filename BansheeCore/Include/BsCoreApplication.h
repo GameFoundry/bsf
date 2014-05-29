@@ -1,9 +1,9 @@
 #pragma once
 
-#include "CmPrerequisites.h"
-#include "CmModule.h"
-#include "CmCoreThreadAccessor.h"
-#include "CmRenderWindow.h"
+#include "BsCorePrerequisites.h"
+#include "BsModule.h"
+#include "BsCoreThreadAccessor.h"
+#include "BsRenderWindow.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine

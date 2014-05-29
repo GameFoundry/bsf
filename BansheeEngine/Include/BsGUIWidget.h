@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmComponent.h"
-#include "CmRectI.h"
-#include "CmVector3.h"
-#include "CmQuaternion.h"
+#include "BsComponent.h"
+#include "BsRectI.h"
+#include "BsVector3.h"
+#include "BsQuaternion.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine

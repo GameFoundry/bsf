@@ -1,5 +1,5 @@
 #include "BsMonoManager.h"
-#include "CmException.h"
+#include "BsException.h"
 #include "BsScriptMeta.h"
 #include "BsMonoAssembly.h"
 #include "BsMonoClass.h"

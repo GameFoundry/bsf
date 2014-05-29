@@ -2,7 +2,7 @@
 #include "BsSpriteTexture.h"
 #include "BsGUIElementStyle.h"
 #include "BsGUILayoutOptions.h"
-#include "CmTexture.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {

@@ -4,7 +4,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsScriptSpriteTexture.h"
-#include "CmException.h"
+#include "BsException.h"
 #include "BsGUIElementStyle.h"
 
 namespace BansheeEngine

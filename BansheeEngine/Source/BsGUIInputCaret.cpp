@@ -3,7 +3,7 @@
 #include "BsGUIManager.h"
 #include "BsImageSprite.h"
 #include "BsGUIElement.h"
-#include "CmFont.h"
+#include "BsFont.h"
 
 namespace BansheeEngine
 {

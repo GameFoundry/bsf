@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmFontImporter.h">
+    <ClInclude Include="Include\BsFontPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmFontPrerequisites.h">
+    <ClInclude Include="Include\BsFontImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmFontImporter.cpp">
+    <ClCompile Include="Source\BsFontPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmFontPlugin.cpp">
+    <ClCompile Include="Source\BsFontImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

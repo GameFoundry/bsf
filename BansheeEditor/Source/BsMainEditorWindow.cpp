@@ -3,21 +3,21 @@
 #include "BsDockManager.h"
 #include "BsGUIMenuBar.h"
 #include "BsCamera.h"
-#include "CmSceneObject.h"
-#include "CmRenderTexture.h"
+#include "BsSceneObject.h"
+#include "BsRenderTexture.h"
 #include "BsApplication.h"
-#include "CmProfiler.h"
+#include "BsProfiler.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
 
 // DEBUG ONLY
-#include "CmTestTextSprite.h"
-#include "CmDebugCamera.h"
+#include "BsTestTextSprite.h"
+#include "BsDebugCamera.h"
 #include "BsDrawHelper2D.h"
 #include "BsDrawHelper3D.h"
-#include "CmRectF.h"
+#include "BsRectF.h"
 #include "BsProfilerOverlay.h"
-#include "CmPlatform.h"
+#include "BsPlatform.h"
 
 namespace BansheeEngine
 {

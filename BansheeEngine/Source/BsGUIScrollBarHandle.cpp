@@ -6,8 +6,8 @@
 #include "BsTextSprite.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
-#include "CmDebug.h"
-#include "CmTexture.h"
+#include "BsDebug.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {

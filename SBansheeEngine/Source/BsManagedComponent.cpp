@@ -2,7 +2,7 @@
 #include "BsManagedComponentRTTI.h"
 #include "BsMonoManager.h"
 #include "BsMonoClass.h"
-#include "CmDebug.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {

@@ -1,9 +1,9 @@
 #include "BsGLVertexArrayObjectManager.h"
-#include "CmGLVertexBuffer.h"
-#include "CmVertexDeclaration.h"
-#include "CmGLSLGpuProgram.h"
-#include "CmGLHardwareBufferManager.h"
-#include "CmUtil.h"
+#include "BsGLVertexBuffer.h"
+#include "BsVertexDeclaration.h"
+#include "BsGLSLGpuProgram.h"
+#include "BsGLHardwareBufferManager.h"
+#include "BsUtil.h"
 
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 

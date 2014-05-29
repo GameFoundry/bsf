@@ -228,12 +228,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmFontImporter.h" />
-    <ClInclude Include="Include\CmFontPrerequisites.h" />
+    <ClInclude Include="Include\BsFontImporter.h" />
+    <ClInclude Include="Include\BsFontPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmFontImporter.cpp" />
-    <ClCompile Include="Source\CmFontPlugin.cpp" />
+    <ClCompile Include="Source\BsFontImporter.cpp" />
+    <ClCompile Include="Source\BsFontPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

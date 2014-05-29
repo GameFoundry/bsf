@@ -2,8 +2,8 @@
 
 #include "BsPrerequisites.h"
 #include "BsSprite.h"
-#include "CmTextData.h"
-#include "CmColor.h"
+#include "BsTextData.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {

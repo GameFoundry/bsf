@@ -6,7 +6,7 @@
 #include "BsMainEditorWindow.h"
 #include "BsEditorWidgetLayout.h"
 #include "BsDockManager.h"
-#include "CmException.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {

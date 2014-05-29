@@ -1,9 +1,9 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmRTTIType.h"
+#include "BsRTTIType.h"
 #include "BsRenderable.h"
-#include "CmGameObjectRTTI.h"
+#include "BsGameObjectRTTI.h"
 
 namespace BansheeEngine
 {

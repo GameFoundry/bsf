@@ -2,8 +2,8 @@
 #include "BsGUIWidget.h"
 #include "BsGUILayoutX.h"
 #include "BsGUIWidget.h"
-#include "CmRenderWindow.h"
-#include "CmViewport.h"
+#include "BsRenderWindow.h"
+#include "BsViewport.h"
 
 namespace BansheeEngine
 {

@@ -1,8 +1,8 @@
 #include "BsEditorWindowBase.h"
 #include "BsCoreApplication.h"
-#include "CmCoreThread.h"
-#include "CmSceneObject.h"
-#include "CmRenderWindow.h"
+#include "BsCoreThread.h"
+#include "BsSceneObject.h"
+#include "BsRenderWindow.h"
 
 #include "BsEditorWindowManager.h"
 #include "BsCamera.h"

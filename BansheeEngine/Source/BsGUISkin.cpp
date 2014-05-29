@@ -1,6 +1,6 @@
 #include "BsGUISkin.h"
 #include "BsGUIElementStyle.h"
-#include "CmDebug.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {

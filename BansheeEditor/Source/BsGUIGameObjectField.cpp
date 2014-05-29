@@ -9,7 +9,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUISceneTreeView.h"
 #include "BsGUIWidget.h"
-#include "CmGameObjectManager.h"
+#include "BsGameObjectManager.h"
 
 using namespace std::placeholders;
 

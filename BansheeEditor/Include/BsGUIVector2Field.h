@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUIFieldBase.h"
-#include "CmVector2.h"
+#include "BsVector2.h"
 
 namespace BansheeEngine
 {

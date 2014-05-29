@@ -1,5 +1,5 @@
 #include "BsBuiltinMaterialManager.h"
-#include "CmMaterial.h"
+#include "BsMaterial.h"
 
 namespace BansheeEngine
 {

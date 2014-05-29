@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIWidget.h"
-#include "CmVector2I.h"
+#include "BsVector2I.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmModule.h"
+#include "BsModule.h"
 #include "BsInputConfiguration.h"
 
 namespace BansheeEngine

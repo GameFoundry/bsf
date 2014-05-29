@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmRTTIType.h"
+#include "BsRTTIType.h"
 #include "BsCamera.h"
 
 namespace BansheeEngine

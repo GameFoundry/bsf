@@ -18,9 +18,9 @@
 #include "BsGUIButton.h"
 #include "BsGUIFoldout.h"
 #include "BsGUISpace.h"
-#include "CmHString.h"
+#include "BsHString.h"
 
-#include "CmCoreThread.h"
+#include "BsCoreThread.h"
 #include "BsCoreApplication.h"
 
 namespace BansheeEngine

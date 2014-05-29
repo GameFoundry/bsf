@@ -3,8 +3,8 @@
 #include "BsPrerequisites.h"
 #include "BsGUIMaterialInfo.h"
 #include "BsGUILayoutOptions.h"
-#include "CmRectI.h"
-#include "CmVector2I.h"
+#include "BsRectI.h"
+#include "BsVector2I.h"
 #include "BsRectOffset.h"
 
 namespace BansheeEngine

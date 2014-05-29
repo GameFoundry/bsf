@@ -1,5 +1,5 @@
 #include "BsSceneManager.h"
-#include "CmSceneManager.h"
+#include "BsSceneManager.h"
 
 namespace BansheeEngine
 {

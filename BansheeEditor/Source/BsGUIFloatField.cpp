@@ -9,7 +9,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsCursor.h"
 #include "BsGUIWidget.h"
-#include "CmViewport.h"
+#include "BsViewport.h"
 #include <regex>
 
 namespace BansheeEngine

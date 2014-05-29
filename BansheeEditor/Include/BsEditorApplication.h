@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsApplication.h"
-#include "CmPath.h"
+#include "BsPath.h"
 
 namespace BansheeEngine
 {

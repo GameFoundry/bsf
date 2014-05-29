@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmOISPrerequisites.h">
+    <ClInclude Include="Include\BsInputHandlerOIS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmInputHandlerOIS.h">
+    <ClInclude Include="Include\BsOISPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmOISPlugin.cpp">
+    <ClCompile Include="Source\BsInputHandlerOIS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmInputHandlerOIS.cpp">
+    <ClCompile Include="Source\BsOISPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

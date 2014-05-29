@@ -2,8 +2,8 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUISkin.h"
-#include "CmModule.h"
-#include "CmPath.h"
+#include "BsModule.h"
+#include "BsPath.h"
 
 namespace BansheeEngine
 {

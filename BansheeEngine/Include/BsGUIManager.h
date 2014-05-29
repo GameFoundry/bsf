@@ -6,9 +6,9 @@
 #include "BsGUICommandEvent.h"
 #include "BsGUIVirtualButtonEvent.h"
 #include "BsGUIMaterialInfo.h"
-#include "CmModule.h"
-#include "CmColor.h"
-#include "CmInput.h"
+#include "BsModule.h"
+#include "BsColor.h"
+#include "BsInput.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine

@@ -4,7 +4,7 @@
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"
 #include "BsGUILayoutOptions.h"
-#include "CmTexture.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {

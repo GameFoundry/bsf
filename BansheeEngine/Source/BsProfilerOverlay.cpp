@@ -1,5 +1,5 @@
 #include "BsProfilerOverlay.h"
-#include "CmSceneObject.h"
+#include "BsSceneObject.h"
 #include "BsGUIWidget.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
@@ -7,8 +7,8 @@
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
 #include "BsBuiltinResources.h"
-#include "CmProfiler.h"
-#include "CmViewport.h"
+#include "BsProfiler.h"
+#include "BsViewport.h"
 
 namespace BansheeEngine
 {

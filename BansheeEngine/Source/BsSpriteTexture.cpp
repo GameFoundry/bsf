@@ -1,7 +1,7 @@
 #include "BsSpriteTexture.h"
 #include "BsSpriteTextureRTTI.h"
-#include "CmTexture.h"
-#include "CmResources.h"
+#include "BsTexture.h"
+#include "BsResources.h"
 
 namespace BansheeEngine
 {

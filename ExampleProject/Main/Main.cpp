@@ -1,13 +1,13 @@
 #include <windows.h>
 
-#include "CmApplication.h"
-#include "CmImporter.h"
-#include "CmGpuProgramImportOptions.h"
-#include "CmMaterial.h"
-#include "CmShader.h"
-#include "CmTechnique.h"
-#include "CmPass.h"
-#include "CmCoreThreadAccessor.h"
+#include "BsApplication.h"
+#include "BsImporter.h"
+#include "BsGpuProgramImportOptions.h"
+#include "BsMaterial.h"
+#include "BsShader.h"
+#include "BsTechnique.h"
+#include "BsPass.h"
+#include "BsCoreThreadAccessor.h"
 #include "BsApplication.h"
 #include "BsVirtualInput.h"
 #include "BsCamera.h"
@@ -21,11 +21,11 @@
 #include "BsGUIButton.h"
 #include "BsGUIListBox.h"
 #include "BsBuiltinResources.h"
-#include "CmRTTIType.h"
-#include "CmHString.h"
-#include "CmRenderWindow.h"
-#include "CmSceneObject.h"
-#include "CmCoreThread.h"
+#include "BsRTTIType.h"
+#include "BsHString.h"
+#include "BsRenderWindow.h"
+#include "BsSceneObject.h"
+#include "BsCoreThread.h"
 
 namespace BansheeEngine
 {

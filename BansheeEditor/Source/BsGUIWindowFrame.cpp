@@ -6,9 +6,9 @@
 #include "BsGUILayoutOptions.h"
 #include "BsGUIMouseEvent.h"
 #include "BsCoreApplication.h"
-#include "CmPlatform.h"
-#include "CmTexture.h"
-#include "CmRenderWindow.h"
+#include "BsPlatform.h"
+#include "BsTexture.h"
+#include "BsRenderWindow.h"
 
 namespace BansheeEngine
 {

@@ -5,7 +5,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUILayoutOptions.h"
 #include "BsGUIHelper.h"
-#include "CmTextData.h"
+#include "BsTextData.h"
 
 namespace BansheeEngine
 {

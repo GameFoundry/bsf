@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptMeta.h"
-#include "CmException.h"
+#include "BsException.h"
 #include "BsMonoManager.h"
 #include "BsMonoField.h"
 #include <mono/jit/jit.h>

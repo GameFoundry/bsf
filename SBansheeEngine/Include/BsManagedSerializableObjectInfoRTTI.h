@@ -1,9 +1,9 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "CmRTTIType.h"
+#include "BsRTTIType.h"
 #include "BsManagedSerializableObjectInfo.h"
-#include "CmException.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {

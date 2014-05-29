@@ -1,17 +1,17 @@
 #include "BsCamera.h"
 #include "BsCameraRTTI.h"
 
-#include "CmMath.h"
-#include "CmMatrix3.h"
-#include "CmVector2.h"
-#include "CmAABox.h"
-#include "CmSphere.h"
-#include "CmHardwareBufferManager.h"
-#include "CmVertexBuffer.h"
-#include "CmIndexBuffer.h"
-#include "CmException.h"
-#include "CmRenderSystem.h"
-#include "CmSceneObject.h"
+#include "BsMath.h"
+#include "BsMatrix3.h"
+#include "BsVector2.h"
+#include "BsAABox.h"
+#include "BsSphere.h"
+#include "BsHardwareBufferManager.h"
+#include "BsVertexBuffer.h"
+#include "BsIndexBuffer.h"
+#include "BsException.h"
+#include "BsRenderSystem.h"
+#include "BsSceneObject.h"
 
 namespace BansheeEngine 
 {

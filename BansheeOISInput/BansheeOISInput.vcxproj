@@ -233,14 +233,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmOISPrerequisites.h" />
+    <ClInclude Include="Include\BsOISPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmInputHandlerOIS.h">
+    <ClInclude Include="Include\BsInputHandlerOIS.h">
       <FileType>CppCode</FileType>
     </ClInclude>
-    <ClCompile Include="Source\CmOISPlugin.cpp" />
-    <ClCompile Include="Source\CmInputHandlerOIS.cpp" />
+    <ClCompile Include="Source\BsOISPlugin.cpp" />
+    <ClCompile Include="Source\BsInputHandlerOIS.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

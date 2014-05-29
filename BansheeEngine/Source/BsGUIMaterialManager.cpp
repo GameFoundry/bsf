@@ -1,8 +1,8 @@
 #include "BsGUIMaterialManager.h"
-#include "CmMaterial.h"
-#include "CmDebug.h"
+#include "BsMaterial.h"
+#include "BsDebug.h"
 #include "BsBuiltinMaterialManager.h"
-#include "CmColor.h"
+#include "BsColor.h"
 
 namespace BansheeEngine
 {

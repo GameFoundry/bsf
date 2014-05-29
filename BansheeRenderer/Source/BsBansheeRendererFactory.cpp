@@ -1,5 +1,5 @@
 #include "BsBansheeRendererFactory.h"
-#include "CmRenderer.h"
+#include "BsRenderer.h"
 #include "BsBansheeRenderer.h"
 
 namespace BansheeEngine

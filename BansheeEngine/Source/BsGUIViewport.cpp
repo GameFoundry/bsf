@@ -4,9 +4,9 @@
 #include "BsSpriteTexture.h"
 #include "BsGUILayoutOptions.h"
 #include "BsCamera.h"
-#include "CmViewport.h"
-#include "CmRenderTarget.h"
-#include "CmException.h"
+#include "BsViewport.h"
+#include "BsRenderTarget.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {

@@ -30,7 +30,7 @@
 */
 
 // BANSHEE SPECIFIC START
-#include "CmGLSupport.h"
+#include "BsGLSupport.h"
 // BANSHEE SPECIFIC END
 
 #include <GL/glew.h>

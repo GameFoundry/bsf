@@ -9,8 +9,8 @@
 #include "BsGUIManager.h"
 #include "BsBuiltinResources.h"
 #include "BsGUIDropDownBoxManager.h"
-#include "CmSceneObject.h"
-#include "CmPlatform.h"
+#include "BsSceneObject.h"
+#include "BsPlatform.h"
 
 namespace BansheeEngine
 {

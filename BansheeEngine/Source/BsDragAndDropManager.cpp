@@ -1,5 +1,5 @@
 #include "BsDragAndDropManager.h"
-#include "CmPlatform.h"
+#include "BsPlatform.h"
 #include "BsCoreApplication.h"
 
 using namespace std::placeholders;

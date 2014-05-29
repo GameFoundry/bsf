@@ -2,9 +2,9 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUISkin.h"
-#include "CmModule.h"
-#include "CmPath.h"
-#include "CmVector2I.h"
+#include "BsModule.h"
+#include "BsPath.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {

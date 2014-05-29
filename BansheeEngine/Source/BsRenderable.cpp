@@ -1,9 +1,9 @@
 #include "BsRenderable.h"
 #include "BsRenderableRTTI.h"
-#include "CmSceneObject.h"
-#include "CmMesh.h"
-#include "CmMaterial.h"
-#include "CmRenderQueue.h"
+#include "BsSceneObject.h"
+#include "BsMesh.h"
+#include "BsMaterial.h"
+#include "BsRenderQueue.h"
 
 namespace BansheeEngine
 {

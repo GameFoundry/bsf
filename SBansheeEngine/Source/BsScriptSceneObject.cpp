@@ -4,7 +4,7 @@
 #include "BsMonoField.h"
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
-#include "CmSceneObject.h"
+#include "BsSceneObject.h"
 #include "BsMonoUtil.h"
 
 namespace BansheeEngine

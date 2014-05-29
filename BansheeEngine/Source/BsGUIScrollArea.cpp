@@ -8,7 +8,7 @@
 #include "BsGUIScrollBarVert.h"
 #include "BsGUIScrollBarHorz.h"
 #include "BsGUIMouseEvent.h"
-#include "CmException.h"
+#include "BsException.h"
 
 using namespace std::placeholders;
 

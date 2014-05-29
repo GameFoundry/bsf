@@ -1,6 +1,6 @@
 #include "BsCursor.h"
-#include "CmPlatform.h"
-#include "CmException.h"
+#include "BsPlatform.h"
+#include "BsException.h"
 #include "BsBuiltinResources.h"
 
 namespace BansheeEngine

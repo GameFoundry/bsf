@@ -66,12 +66,6 @@
     <ClInclude Include="Include\BsMainEditorWindow.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmTestTextSprite.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\CmDebugCamera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsGUITabButton.h">
       <Filter>Header Files\Editor</Filter>
     </ClInclude>
@@ -195,6 +189,12 @@
     <ClInclude Include="Include\BsCmdInputFieldValueChange.h">
       <Filter>Header Files\Editor\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsTestTextSprite.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDebugCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsEditorWidgetContainer.cpp">
@@ -229,12 +229,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsMainEditorWindow.cpp">
       <Filter>Source Files\Editor</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmTestTextSprite.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\CmDebugCamera.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsGUITabButton.cpp">
       <Filter>Source Files\Editor</Filter>
@@ -337,6 +331,12 @@
     </ClCompile>
     <ClCompile Include="Source\BsGUIFieldBase.cpp">
       <Filter>Source Files\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDebugCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsTestTextSprite.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

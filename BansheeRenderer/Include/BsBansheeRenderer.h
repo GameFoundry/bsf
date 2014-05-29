@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsBansheeRendererPrerequisites.h"
-#include "CmRenderer.h"
+#include "BsRenderer.h"
 
 namespace BansheeEngine
 {

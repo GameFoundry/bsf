@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsGUIElementContainer.h"
-#include "CmRectI.h"
+#include "BsRectI.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine

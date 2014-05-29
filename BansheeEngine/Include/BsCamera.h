@@ -3,19 +3,19 @@
 // Default options
 #include "BsPrerequisites.h"
 
-#include "CmString.h"
+#include "BsString.h"
 
 // Matrices & Vectors
-#include "CmMatrix4.h"
-#include "CmVector3.h"
-#include "CmVector2.h"
-#include "CmAABox.h"
-#include "CmVertexData.h"
-#include "CmIndexData.h"
-#include "CmPlane.h"
-#include "CmQuaternion.h"
-#include "CmRay.h"
-#include "CmComponent.h"
+#include "BsMatrix4.h"
+#include "BsVector3.h"
+#include "BsVector2.h"
+#include "BsAABox.h"
+#include "BsVertexData.h"
+#include "BsIndexData.h"
+#include "BsPlane.h"
+#include "BsQuaternion.h"
+#include "BsRay.h"
+#include "BsComponent.h"
 
 namespace BansheeEngine {
 

@@ -1,9 +1,9 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmModule.h"
-#include "CmPixelData.h"
-#include "CmVector2I.h"
+#include "BsModule.h"
+#include "BsPixelData.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {

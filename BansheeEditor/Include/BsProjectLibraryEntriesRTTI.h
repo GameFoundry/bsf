@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include "CmRTTIType.h"
+#include "BsRTTIType.h"
 #include "BsProjectLibraryEntries.h"
 
 namespace BansheeEngine

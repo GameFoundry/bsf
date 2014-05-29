@@ -2,7 +2,7 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIElement.h"
-#include "CmMath.h"
+#include "BsMath.h"
 
 namespace BansheeEngine
 {

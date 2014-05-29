@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BsScriptEnginePrerequisites.h"
-#include "CmRTTIType.h"
-#include "CmGameObjectManager.h"
+#include "BsRTTIType.h"
+#include "BsGameObjectManager.h"
 #include "BsManagedSerializableArray.h"
 #include "BsRuntimeScriptObjects.h"
 #include "BsMonoManager.h"

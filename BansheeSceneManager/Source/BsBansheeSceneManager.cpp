@@ -1,7 +1,7 @@
 #include "BsBansheeSceneManager.h"
-#include "CmComponent.h"
-#include "CmException.h"
-#include "CmSceneObject.h"
+#include "BsComponent.h"
+#include "BsException.h"
+#include "BsSceneObject.h"
 #include "BsRenderable.h"
 #include "BsCamera.h"
 

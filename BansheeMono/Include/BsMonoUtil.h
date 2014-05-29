@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BsMonoPrerequisites.h"
-#include "CmException.h"
-#include "CmDebug.h"
+#include "BsException.h"
+#include "BsDebug.h"
 #include <mono/jit/jit.h>
 
 namespace BansheeEngine

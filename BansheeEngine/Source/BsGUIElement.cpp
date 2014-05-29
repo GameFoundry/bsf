@@ -3,7 +3,7 @@
 #include "BsGUISkin.h"
 #include "BsGUILayout.h"
 #include "BsGUIManager.h"
-#include "CmException.h"
+#include "BsException.h"
 
 namespace BansheeEngine
 {

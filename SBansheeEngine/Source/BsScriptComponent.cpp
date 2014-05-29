@@ -7,7 +7,7 @@
 #include "BsMonoUtil.h"
 #include "BsScriptSceneObject.h"
 #include "BsManagedComponent.h"
-#include "CmSceneObject.h"
+#include "BsSceneObject.h"
 
 namespace BansheeEngine
 {

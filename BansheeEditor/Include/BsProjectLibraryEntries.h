@@ -2,7 +2,7 @@
 
 #include "BsEditorPrerequisites.h"
 #include "BsProjectLibrary.h"
-#include "CmIReflectable.h"
+#include "BsIReflectable.h"
 
 namespace BansheeEngine
 {

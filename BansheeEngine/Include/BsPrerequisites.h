@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CmPrerequisites.h"
+#include "BsCorePrerequisites.h"
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(__MINGW32__)
 #	ifdef BS_EXPORTS
@@ -18,7 +18,7 @@
 #    define BS_EXPORT
 #endif
 
-#include "CmGameObject.h"
+#include "BsGameObject.h"
 #include "BsEnums.h"
 
 namespace BansheeEngine

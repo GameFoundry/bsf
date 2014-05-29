@@ -3,8 +3,8 @@
 #include "BsPrerequisites.h"
 #include "BsRectOffset.h"
 #include "BsTextSprite.h"
-#include "CmColor.h"
-#include "CmVector2I.h"
+#include "BsColor.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {

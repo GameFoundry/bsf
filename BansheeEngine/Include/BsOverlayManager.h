@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BsPrerequisites.h"
-#include "CmCoreThreadAccessor.h"
-#include "CmModule.h"
+#include "BsCoreThreadAccessor.h"
+#include "BsModule.h"
 
 namespace BansheeEngine
 {

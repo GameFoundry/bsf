@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BsEditorPrerequisites.h"
-#include "CmModule.h"
-#include "CmPath.h"
+#include "BsModule.h"
+#include "BsPath.h"
 
 namespace BansheeEngine
 {

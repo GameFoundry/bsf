@@ -4,7 +4,7 @@
 #include "BsMonoClass.h"
 #include "BsMonoManager.h"
 #include "BsScriptFont.h"
-#include "CmException.h"
+#include "BsException.h"
 #include "BsGUIElementStyle.h"
 #include "BsScriptGUIElementStateStyle.h"
 

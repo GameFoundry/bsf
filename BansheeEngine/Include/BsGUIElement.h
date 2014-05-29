@@ -3,8 +3,8 @@
 #include "BsPrerequisites.h"
 #include "BsGUIElementBase.h"
 #include "BsGUIOptions.h"
-#include "CmRectI.h"
-#include "CmVector2I.h"
+#include "BsRectI.h"
+#include "BsVector2I.h"
 
 namespace BansheeEngine
 {

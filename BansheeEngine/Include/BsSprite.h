@@ -2,8 +2,8 @@
 
 #include "BsPrerequisites.h"
 #include "BsGUIMaterialInfo.h"
-#include "CmVector2I.h"
-#include "CmRectI.h"
+#include "BsVector2I.h"
+#include "BsRectI.h"
 
 namespace BansheeEngine
 {

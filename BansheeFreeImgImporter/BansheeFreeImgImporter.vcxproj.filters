@@ -15,24 +15,24 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmFreeImgPrerequisites.h">
+    <ClInclude Include="Include\BsTextureData.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmFreeImgImporter.h">
+    <ClInclude Include="Include\BsFreeImgPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmTextureData.h">
+    <ClInclude Include="Include\BsFreeImgImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmFreeImgPlugin.cpp">
+    <ClCompile Include="Source\BsTextureData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmFreeImgImporter.cpp">
+    <ClCompile Include="Source\BsFreeImgPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmTextureData.cpp">
+    <ClCompile Include="Source\BsFreeImgImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

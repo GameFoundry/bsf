@@ -233,12 +233,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmFBXImporter.h" />
-    <ClInclude Include="Include\CmFBXPrerequisites.h" />
+    <ClInclude Include="Include\BsFBXImporter.h" />
+    <ClInclude Include="Include\BsFBXPrerequisites.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmFBXImporter.cpp" />
-    <ClCompile Include="Source\CmFBXPlugin.cpp" />
+    <ClCompile Include="Source\BsFBXImporter.cpp" />
+    <ClCompile Include="Source\BsFBXPlugin.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

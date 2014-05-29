@@ -1,6 +1,6 @@
 #include "BsGUIWindowDropArea.h"
 #include "BsCoreApplication.h"
-#include "CmTexture.h"
+#include "BsTexture.h"
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsSpriteTexture.h"

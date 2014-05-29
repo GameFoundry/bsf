@@ -11,8 +11,8 @@
 #include "BsGUIMouseEvent.h"
 #include "BsDragAndDropManager.h"
 #include "BsEditorWidget.h"
-#include "CmMath.h"
-#include "CmPlatform.h"
+#include "BsMath.h"
+#include "BsPlatform.h"
 
 using namespace std::placeholders;
 

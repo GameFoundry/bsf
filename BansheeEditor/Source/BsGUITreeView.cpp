@@ -14,7 +14,7 @@
 #include "BsGUIVirtualButtonEvent.h"
 #include "BsGUIScrollArea.h"
 #include "BsDragAndDropManager.h"
-#include "CmTime.h"
+#include "BsTime.h"
 
 using namespace std::placeholders;
 

@@ -9,7 +9,7 @@
 #include "BsGUIManager.h"
 #include "BsGUIHelper.h"
 #include "BsGUIDropDownBoxManager.h"
-#include "CmTexture.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {

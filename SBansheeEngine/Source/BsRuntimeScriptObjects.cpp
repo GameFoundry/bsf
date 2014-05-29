@@ -9,7 +9,7 @@
 #include "BsMonoMethod.h"
 #include "BsMonoProperty.h"
 #include "BsMonoUtil.h"
-#include "CmRTTIType.h"
+#include "BsRTTIType.h"
 
 namespace BansheeEngine
 {

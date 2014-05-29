@@ -1,6 +1,6 @@
 #include "BsBansheeRendererPrerequisites.h"
 #include "BsBansheeRendererFactory.h"
-#include "CmRendererManager.h"
+#include "BsRendererManager.h"
 
 namespace BansheeEngine
 {

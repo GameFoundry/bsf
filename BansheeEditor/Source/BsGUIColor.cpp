@@ -7,7 +7,7 @@
 #include "BsGUIMouseEvent.h"
 #include "BsGUIHelper.h"
 #include "BsBuiltinResources.h"
-#include "CmTexture.h"
+#include "BsTexture.h"
 
 namespace BansheeEngine
 {

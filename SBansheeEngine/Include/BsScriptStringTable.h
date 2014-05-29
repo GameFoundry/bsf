@@ -2,7 +2,7 @@
 
 #include "BsScriptEnginePrerequisites.h"
 #include "BsScriptObject.h"
-#include "CmStringTable.h"
+#include "BsStringTable.h"
 
 namespace BansheeEngine
 {

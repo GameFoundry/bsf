@@ -2,7 +2,7 @@
 
 #include "BsMonoPrerequisites.h"
 #include "BsScriptManager.h"
-#include "CmModule.h"
+#include "BsModule.h"
 
 namespace BansheeEngine 
 {

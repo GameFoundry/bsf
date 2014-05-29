@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Include\CmFBXPrerequisites.h">
+    <ClInclude Include="Include\BsFBXPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\CmFBXImporter.h">
+    <ClInclude Include="Include\BsFBXImporter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\CmFBXImporter.cpp">
+    <ClCompile Include="Source\BsFBXPlugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source\CmFBXPlugin.cpp">
+    <ClCompile Include="Source\BsFBXImporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

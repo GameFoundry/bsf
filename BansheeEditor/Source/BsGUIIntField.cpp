@@ -10,7 +10,7 @@
 #include "BsGUIWidget.h"
 #include "BsCursor.h"
 #include "BsUndoRedo.h"
-#include "CmViewport.h"
+#include "BsViewport.h"
 #include "BsCmdInputFieldValueChange.h"
 #include <regex>
 

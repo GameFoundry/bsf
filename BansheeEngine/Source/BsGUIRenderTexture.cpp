@@ -2,7 +2,7 @@
 #include "BsGUIWidget.h"
 #include "BsGUISkin.h"
 #include "BsGUIManager.h"
-#include "CmRenderTexture.h"
+#include "BsRenderTexture.h"
 #include "BsSpriteTexture.h"
 
 namespace BansheeEngine

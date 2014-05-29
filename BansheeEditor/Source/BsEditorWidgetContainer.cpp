@@ -4,8 +4,8 @@
 #include "BsDragAndDropManager.h"
 #include "BsEditorWindow.h"
 #include "BsGUIArea.h"
-#include "CmMath.h"
-#include "CmInput.h"
+#include "BsMath.h"
+#include "BsInput.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayout.h"
 
