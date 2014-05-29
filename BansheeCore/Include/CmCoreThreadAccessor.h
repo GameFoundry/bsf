@@ -154,7 +154,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindow::setWindowed
 		 */
-		void setWindowed(RenderWindowPtr& renderWindow);
+		void setWindowed(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height);
 
 		/**
 		* @brief	Queues a new generic command that will be added to the command queue.

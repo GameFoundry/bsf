@@ -424,11 +424,14 @@ namespace BansheeEngine
 		mSwapChain->SetFullscreenState(true, outputInfo.getDXGIOutput());
 	}
 
-	void D3D11RenderWindow::setWindowed()
+	void D3D11RenderWindow::setWindowed(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
+		mWidth = width;
+		mHeight = height;
 		mIsFullScreen = false;
+
 		mSwapChainDesc.Windowed = false;
 		mSwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 		mSwapChainDesc.BufferDesc.RefreshRate.Denominator = 0;

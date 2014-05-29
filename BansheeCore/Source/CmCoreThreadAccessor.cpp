@@ -271,9 +271,9 @@ namespace BansheeEngine
 		mCommandQueue->queue(std::bind(funcPtr, renderWindow.get(), std::cref(mode)));
 	}
 
-	void CoreThreadAccessorBase::setWindowed(RenderWindowPtr& renderWindow)
+	void CoreThreadAccessorBase::setWindowed(RenderWindowPtr& renderWindow, UINT32 width, UINT32 height)
 	{
-		mCommandQueue->queue(std::bind(&RenderWindow::setWindowed, renderWindow.get()));
+		mCommandQueue->queue(std::bind(&RenderWindow::setWindowed, renderWindow.get(), width, height));
 	}
 
 	AsyncOp CoreThreadAccessorBase::queueReturnCommand(std::function<void(AsyncOp&)> commandCallback)

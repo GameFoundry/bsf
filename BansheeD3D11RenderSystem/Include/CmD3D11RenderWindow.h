@@ -43,7 +43,7 @@ namespace BansheeEngine
 		/**
 		* @copydoc RenderWindow::setWindowed
 		*/
-		void setWindowed();
+		void setWindowed(UINT32 width, UINT32 height);
 
 		/**
 		 * @copydoc RenderWindow::copyContentsToMemory

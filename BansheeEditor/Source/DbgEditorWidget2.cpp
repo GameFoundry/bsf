@@ -31,7 +31,7 @@ namespace BansheeEngine
 	{
 		if (cm_dbg_fullscreen)
 		{
-			gCoreAccessor().setWindowed(gCoreApplication().getPrimaryWindow());
+			gCoreAccessor().setWindowed(gCoreApplication().getPrimaryWindow(), 1280, 720);
 		}
 		else
 		{

@@ -298,7 +298,7 @@ namespace BansheeEngine
 		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(), mode.getOutputIdx());
 	}
 
-	void D3D9RenderWindow::setWindowed()
+	void D3D9RenderWindow::setWindowed(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -306,8 +306,9 @@ namespace BansheeEngine
 			return;
 
 		mIsFullScreen = false;
-
 		mStyle = mWindowedStyle;
+		mWidth = width;
+		mHeight = height;
 
 		unsigned int winWidth, winHeight;
 		_adjustWindow(mWidth, mHeight, mStyle, &winWidth, &winHeight);

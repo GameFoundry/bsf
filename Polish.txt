@@ -28,10 +28,6 @@ DISREGARD MONITOR INDEX ON DX9
 
  -----------------------------
 
- Refactor:
- - Make CmApplication a base of BsApplication
- - If I merge CmApp and BsApp consider refactoring CmApplication::mainLoopCallback
-
 Consider renaming Profiler to CPUProfiler and CPUProfiler to something else. Since now I have GPUProfiler it's confusing to have one named just Profiler.
 Profiler can only be called from sim/core thread which is also a bit weird.
 

@@ -421,7 +421,7 @@ namespace BansheeEngine
 		setFullscreen(mode.getWidth(), mode.getHeight(), mode.getRefreshRate(), mode.getOutputIdx());
 	}
 
-	void Win32Window::setWindowed()
+	void Win32Window::setWindowed(UINT32 width, UINT32 height)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -429,6 +429,8 @@ namespace BansheeEngine
 			return;
 
 		mIsFullScreen = false;
+		mWidth = width;
+		mHeight = height;
 
 		// Drop out of fullscreen
 		ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);

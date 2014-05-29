@@ -65,10 +65,10 @@ namespace BansheeEngine
 		/** 
 		 * @brief	Switches the window to fullscreen mode. Child windows cannot go into fullscreen mode.
 		 *
-		 * @param	width		Width of the window back buffer in pixels.
-		 * @param	height		Height of the window back buffer in pixels.
-		 * @param	refreshRate	Refresh rate of the window in Hertz. This is ignored in windowed mode.
-		 * @param	monitorIdx	Index of the monitor to go fullscreen on. This is ignored in windowed mode.
+		 * @param	width		Width of the window frame buffer in pixels.
+		 * @param	height		Height of the window frame buffer in pixels.
+		 * @param	refreshRate	Refresh rate of the window in Hertz.
+		 * @param	monitorIdx	Index of the monitor to go fullscreen on.
 		 *
 		 * @note	Core thread.
 		 *			If the exact provided mode isn't available, closest one is used instead.
@@ -86,8 +86,13 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Switches the window to windowed mode.
+		 *
+		 * @param	Window width in pixels.
+		 * @param	Window height in pixels.
+		 *
+		 * @note	Core thread.
 		 */
-		virtual void setWindowed() { }
+		virtual void setWindowed(UINT32 width, UINT32 height) { }
 
         /**
          * @brief	Hide or show the window.
