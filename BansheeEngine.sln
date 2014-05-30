@@ -1,14 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E5A-615A-4C06-B2DF-0D8D9390DE02}"
 	ProjectSection(SolutionItems) = preProject
 		CSharpWrap.txt = CSharpWrap.txt
 		Dependencies.txt = Dependencies.txt
 		DrawHelper.txt = DrawHelper.txt
 		EditorWindowDock.txt = EditorWindowDock.txt
+		GameGUI.txt = GameGUI.txt
 		GameObjectSerialization.txt = GameObjectSerialization.txt
 		Inspector.txt = Inspector.txt
 		MonoIntegrationGuide.txt = MonoIntegrationGuide.txt
