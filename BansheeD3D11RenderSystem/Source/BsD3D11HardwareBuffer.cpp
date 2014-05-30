@@ -4,7 +4,7 @@
 #include "BsException.h"
 #include "BsDebug.h"
 
-#include "BsProfiler.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -169,14 +169,14 @@ namespace BansheeEngine
 			D3D11_MAPPED_SUBRESOURCE mappedSubResource;
 			mappedSubResource.pData = NULL;
 			mDevice.clearErrors();
-			gProfiler().beginSample("Map");
+			gProfilerCPU().beginSample("Map");
 			HRESULT hr = mDevice.getImmediateContext()->Map(mD3DBuffer, 0, mapType, 0, &mappedSubResource);
 			if (FAILED(hr) || mDevice.hasError())
 			{
 				String msg = mDevice.getErrorDescription();
 				BS_EXCEPT(RenderingAPIException, "Error calling Map: " + msg);
 			}
-			gProfiler().endSample("Map");
+			gProfilerCPU().endSample("Map");
 
 			pRet = static_cast<void*>(static_cast<char*>(mappedSubResource.pData) + offset);
 

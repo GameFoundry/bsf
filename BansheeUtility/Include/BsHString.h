@@ -42,9 +42,16 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates a new localized string with the specified identifier. If the identifier
 		 * 			doesn't previously exist in the string table, identifier value will also be used 
-		 * 			for initializing the English version of the string.
+		 * 			for initializing the default language version of the string.
 		 */
 		explicit HString(const WString& identifierString);
+
+		/**
+		* @brief	Creates a new localized string with the specified identifier and sets the default language version
+		*			of the string. If a string with that identifier already exists default language string will be updated.
+		*/
+		explicit HString(const WString& identifierString, const WString& englishString);
+
 		HString();
 		HString(const HString& copy);
 		~HString();

@@ -30,7 +30,9 @@
 #include "BsDeferredCallManager.h"
 #include "BsCoreThread.h"
 #include "BsStringTable.h"
-#include "BsProfiler.h"
+#include "BsProfilingManager.h"
+#include "BsProfilerCPU.h"
+#include "BsProfilerGPU.h"
 #include "BsQueryManager.h"
 #include "BsThreadPool.h"
 #include "BsTaskScheduler.h"
@@ -54,7 +56,8 @@ namespace BansheeEngine
 		MemStack::beginThread();
 
 		UUIDGenerator::startUp();
-		Profiler::startUp();
+		ProfilerCPU::startUp();
+		ProfilingManager::startUp();
 		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));
 		TaskScheduler::startUp();
 		TaskScheduler::instance().removeWorker();
@@ -79,6 +82,7 @@ namespace BansheeEngine
 
 		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
 
+		ProfilerGPU::startUp();
 		MeshManager::startUp();
 		MaterialManager::startUp();
 		FontManager::startUp();
@@ -100,6 +104,7 @@ namespace BansheeEngine
 		FontManager::shutDown();
 		MaterialManager::shutDown();
 		MeshManager::shutDown();
+		ProfilerGPU::shutDown();
 
 		unloadPlugin(mSceneManagerPlugin);
 
@@ -119,7 +124,8 @@ namespace BansheeEngine
 		CoreThread::shutDown();
 		TaskScheduler::shutDown();
 		ThreadPool::shutDown();
-		Profiler::shutDown();
+		ProfilingManager::shutDown();
+		ProfilerCPU::shutDown();
 		UUIDGenerator::shutDown();
 
 		MemStack::endThread();
@@ -132,7 +138,7 @@ namespace BansheeEngine
 
 		while(mRunMainLoop)
 		{
-			gProfiler().beginThread("Sim");
+			gProfilerCPU().beginThread("Sim");
 
 			gCoreThread().update();
 			Platform::_update();
@@ -169,10 +175,11 @@ namespace BansheeEngine
 
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
 			gCoreThread().submitAccessors();
+			gCoreThread().queueCommand(std::bind(&ProfilerGPU::_update, ProfilerGPU::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 
-			gProfiler().endThread();
+			gProfilerCPU().endThread();
 			gProfiler()._update();
 		}
 	}
@@ -198,12 +205,12 @@ namespace BansheeEngine
 
 	void CoreApplication::beginCoreProfiling()
 	{
-		gProfiler().beginThread("Core");
+		gProfilerCPU().beginThread("Core");
 	}
 
 	void CoreApplication::endCoreProfiling()
 	{
-		gProfiler().endThread();
+		gProfilerCPU().endThread();
 		gProfiler()._updateCore();
 	}
 

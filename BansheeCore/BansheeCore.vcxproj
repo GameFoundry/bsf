@@ -276,7 +276,7 @@
     <ClInclude Include="Include\BsBindableGpuParamBlock.h" />
     <ClInclude Include="Include\BsBindableGpuParams.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
-    <ClInclude Include="Include\BsCPUProfiler.h" />
+    <ClInclude Include="Include\BsProfilerCPU.h" />
     <ClInclude Include="Include\BsDefaultRenderQueue.h" />
     <ClInclude Include="Include\BsDeferredCallManager.h" />
     <ClInclude Include="Include\BsDrawOps.h" />
@@ -287,7 +287,7 @@
     <ClInclude Include="Include\BsGameObjectHandleRTTI.h" />
     <ClInclude Include="Include\BsGameObjectManager.h" />
     <ClInclude Include="Include\BsGameObjectRTTI.h" />
-    <ClInclude Include="Include\BsGPUProfiler.h" />
+    <ClInclude Include="Include\BsProfilerGPU.h" />
     <ClInclude Include="Include\BsGpuResourceData.h" />
     <ClInclude Include="Include\BsGpuParamBlockBuffer.h" />
     <ClInclude Include="Include\BsGpuResource.h" />
@@ -304,7 +304,7 @@
     <ClInclude Include="Include\BsPixelUtil.h" />
     <ClInclude Include="Include\BsPixelVolume.h" />
     <ClInclude Include="Include\BsPlatform.h" />
-    <ClInclude Include="Include\BsProfiler.h" />
+    <ClInclude Include="Include\BsProfilingManager.h" />
     <ClInclude Include="Include\BsQueryManager.h" />
     <ClInclude Include="Include\BsRenderOperation.h" />
     <ClInclude Include="Include\BsRenderQueue.h" />
@@ -420,7 +420,7 @@
     <ClCompile Include="Source\BsBindableGpuParamBlock.cpp" />
     <ClCompile Include="Source\BsBindableGpuParams.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
-    <ClCompile Include="Source\BsCPUProfiler.cpp" />
+    <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDefaultRenderQueue.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
     <ClCompile Include="Source\BsDrawOps.cpp" />
@@ -443,7 +443,7 @@
     <ClCompile Include="Source\BsGpuParamBlock.cpp" />
     <ClCompile Include="Source\BsGpuParamBlockBuffer.cpp" />
     <ClCompile Include="Source\BsGpuParams.cpp" />
-    <ClCompile Include="Source\BsGPUProfiler.cpp" />
+    <ClCompile Include="Source\BsProfilerGPU.cpp" />
     <ClCompile Include="Source\BsGpuProgInclude.cpp" />
     <ClCompile Include="Source\BsGpuProgram.cpp" />
     <ClCompile Include="Source\BsGpuProgramImporter.cpp" />
@@ -467,7 +467,7 @@
     <ClCompile Include="Source\BsPixelUtil.cpp" />
     <ClCompile Include="Source\BsPixelVolume.cpp" />
     <ClCompile Include="Source\BsPlatform.cpp" />
-    <ClCompile Include="Source\BsProfiler.cpp" />
+    <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />

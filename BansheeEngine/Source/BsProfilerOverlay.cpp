@@ -6,8 +6,9 @@
 #include "BsGUIElement.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
+#include "BsTime.h"
 #include "BsBuiltinResources.h"
-#include "BsProfiler.h"
+#include "BsProfilingManager.h"
 #include "BsViewport.h"
 
 namespace BansheeEngine
@@ -220,16 +221,68 @@ namespace BansheeEngine
 		}
 	};
 
+	class GPUSampleRowFiller
+	{
+	public:
+		UINT32 curIdx;
+		GUILayout& layout;
+		GUIWidget& widget;
+		Vector<ProfilerOverlay::GPUSampleRow>& rows;
+
+		GPUSampleRowFiller(Vector<ProfilerOverlay::GPUSampleRow>& _rows, GUILayout& _layout, GUIWidget& _widget)
+			:rows(_rows), curIdx(0), layout(_layout), widget(_widget)
+		{ }
+
+		~GPUSampleRowFiller()
+		{
+			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
+			for (UINT32 i = 0; i < excessEntries; i++)
+			{
+				layout.removeChildAt(layout.getNumChildren() - i - 1); // -1 because last element is flexible space and we want to skip it
+
+				ProfilerOverlay::GPUSampleRow& row = rows[curIdx + i];
+
+				for (auto& element : row.elements)
+					GUIElement::destroy(element);
+			}
+
+			rows.resize(curIdx);
+		}
+
+		void addData(const String& name, float timeMs)
+		{
+			if (curIdx >= rows.size())
+			{
+				rows.push_back(ProfilerOverlay::GPUSampleRow());
+
+				ProfilerOverlay::GPUSampleRow& newRow = rows.back();
+
+				newRow.name = HString(L"Name");
+				newRow.time = HString(L"{0}");
+
+				newRow.layout = &layout.insertLayoutX(layout.getNumChildren() - 1); // Insert before flexible space
+
+				GUILabel* nameLabel = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(100)));
+				GUILabel* timeLabel = GUILabel::create(newRow.time, GUIOptions(GUIOption::fixedWidth(100)));
+
+				newRow.layout->addElement(nameLabel);
+				newRow.layout->addElement(timeLabel);
+
+				newRow.elements.push_back(nameLabel);
+				newRow.elements.push_back(timeLabel);
+			}
+
+			ProfilerOverlay::GPUSampleRow& row = rows[curIdx];
+			row.time.setParameter(0, toWString(timeMs));
+
+			curIdx++;
+		}
+	};
+
 	const UINT32 ProfilerOverlay::MAX_DEPTH = 4;
 
 	ProfilerOverlay::ProfilerOverlay(const ViewportPtr& target)
-		:mIsShown(false), mBasicAreaLabels(nullptr), mPreciseAreaLabels(nullptr), mBasicAreaContents(nullptr), mPreciseAreaContents(nullptr),
-		mBasicLayoutLabels(nullptr), mPreciseLayoutLabels(nullptr), mBasicLayoutContents(nullptr), mPreciseLayoutContents(nullptr),
-		mTitleBasicName(nullptr), mTitleBasicPctOfParent(nullptr), mTitleBasicNumCalls(nullptr), mTitleBasicNumAllocs(nullptr), mTitleBasicNumFrees(nullptr),
-		mTitleBasicAvgTime(nullptr), mTitleBasicTotalTime(nullptr), mTitleBasicAvgTitleSelf(nullptr), mTitleBasicTotalTimeSelf(nullptr), 
-		mTitlePreciseName(nullptr), mTitlePrecisePctOfParent(nullptr), mTitlePreciseNumCalls(nullptr), mTitlePreciseNumAllocs(nullptr), 
-		mTitlePreciseNumFrees(nullptr), mTitlePreciseAvgCycles(nullptr), mTitlePreciseTotalCycles(nullptr), mTitlePreciseAvgCyclesSelf(nullptr), 
-		mTitlePreciseTotalCyclesSelf(nullptr)
+		:mIsShown(false), mType(ProfilerOverlayType::CPUSamples)
 	{
 		setTarget(target);
 	}
@@ -263,17 +316,18 @@ namespace BansheeEngine
 		mWidget->setDepth(127);
 		mWidget->setSkin(BuiltinResources::instance().getGUISkin());
 
-		mBasicAreaLabels = GUIArea::create(*mWidget, 0, 0);
-		mPreciseAreaLabels = GUIArea::create(*mWidget, 0, 0);
-		mBasicAreaContents = GUIArea::create(*mWidget, 0, 0);
-		mPreciseAreaContents = GUIArea::create(*mWidget, 0, 0);
+		// Set up CPU sample areas
+		mCPUBasicAreaLabels = GUIArea::create(*mWidget, 0, 0);
+		mCPUPreciseAreaLabels = GUIArea::create(*mWidget, 0, 0);
+		mCPUBasicAreaContents = GUIArea::create(*mWidget, 0, 0);
+		mCPUPreciseAreaContents = GUIArea::create(*mWidget, 0, 0);
 
-		mBasicLayoutLabels = &mBasicAreaLabels->getLayout().addLayoutY();
-		mPreciseLayoutLabels = &mPreciseAreaLabels->getLayout().addLayoutY();
-		mBasicLayoutContents = &mBasicAreaContents->getLayout().addLayoutY();
-		mPreciseLayoutContents = &mPreciseAreaContents->getLayout().addLayoutY();
+		mBasicLayoutLabels = &mCPUBasicAreaLabels->getLayout().addLayoutY();
+		mPreciseLayoutLabels = &mCPUPreciseAreaLabels->getLayout().addLayoutY();
+		mBasicLayoutContents = &mCPUBasicAreaContents->getLayout().addLayoutY();
+		mPreciseLayoutContents = &mCPUPreciseAreaContents->getLayout().addLayoutY();
 
-		// Set up title bars
+		// Set up CPU sample title bars
 		mTitleBasicName = GUILabel::create(HString(L"Name"), GUIOptions(GUIOption::fixedWidth(200)));
 		mTitleBasicPctOfParent = GUILabel::create(HString(L"% parent"), GUIOptions(GUIOption::fixedWidth(50)));
 		mTitleBasicNumCalls = GUILabel::create(HString(L"# calls"), GUIOptions(GUIOption::fixedWidth(50)));
@@ -324,18 +378,86 @@ namespace BansheeEngine
 		mBasicLayoutContents->addFlexibleSpace();
 		mPreciseLayoutContents->addFlexibleSpace();
 
-		updateAreaSizes();
+		// Set up GPU sample areas
+		mGPUAreaFrameContents = GUIArea::create(*mWidget, 0, 0);
+		mGPUAreaFrameSamples = GUIArea::create(*mWidget, 0, 0);
+		mGPULayoutFrameContentsLeft = &mGPUAreaFrameContents->getLayout().addLayoutY();
+		mGPULayoutFrameContentsRight = &mGPUAreaFrameContents->getLayout().addLayoutY();
+		mGPULayoutSamples = &mGPUAreaFrameSamples->getLayout().addLayoutY();
+
+		mGPUFrameNumStr = HString(L"__ProfOvFrame", L"Frame #{0}");
+		mGPUTimeStr = HString(L"__ProfOvTime", L"Time: {0}ms");
+		mGPUDrawCallsStr = HString(L"__ProfOvDrawCalls", L"Draw calls: {0}");
+		mGPURenTargetChangesStr = HString(L"__ProfOvRTChanges", L"Render target changes: {0}");
+		mGPUPresentsStr = HString(L"__ProfOvPresents", L"Presents: {0}");
+		mGPUClearsStr = HString(L"__ProfOvClears", L"Clears: {0}");
+		mGPUVerticesStr = HString(L"__ProfOvVertices", L"Num. vertices: {0}");
+		mGPUPrimitivesStr = HString(L"__ProfOvPrimitives", L"Num. primitives: {0}");
+		mGPUSamplesStr = HString(L"__ProfOvSamples", L"Samples: {0}");
+		mGPUBlendStateChangesStr = HString(L"__ProfOvBSChanges", L"Blend state changes: {0}");
+		mGPURasterStateChangesStr = HString(L"__ProfOvRSChanges", L"Rasterizer state changes: {0}");
+		mGPUDepthStencilStateChangesStr = HString(L"__ProfOvDSSChanges", L"Depth/stencil state changes: {0}");
+
+		mGPUObjectsCreatedStr = HString(L"__ProfOvObjsCreated", L"Objects created: {0}");
+		mGPUObjectsDestroyedStr = HString(L"__ProfOvObjsDestroyed", L"Objects destroyed: {0}");
+		mGPUResourceWritesStr = HString(L"__ProfOvResWrites", L"Resource writes: {0}");
+		mGPUResourceReadsStr = HString(L"__ProfOvResReads", L"Resource reads: {0}");
+		mGPUTextureBindsStr = HString(L"__ProfOvTexBinds", L"Texture binds: {0}");
+		mGPUSamplerBindsStr = HString(L"__ProfOvSampBinds", L"Sampler binds: {0}");
+		mGPUVertexBufferBindsStr = HString(L"__ProfOvVBBinds", L"VB binds: {0}");
+		mGPUIndexBufferBindsStr = HString(L"__ProfOvIBBinds", L"IB binds: {0}");
+		mGPUGPUProgramBufferBindsStr = HString(L"__ProfOvProgBuffBinds", L"GPU program buffer binds: {0}");
+		mGPUGPUProgramBindsStr = HString(L"__ProfOvProgBinds", L"GPU program binds: {0}");
+
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUFrameNumStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUTimeStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUDrawCallsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPURenTargetChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUPresentsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUClearsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUVerticesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUPrimitivesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUSamplesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUBlendStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPURasterStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addElement(GUILabel::create(mGPUDepthStencilStateChangesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsLeft->addFlexibleSpace();
+
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUObjectsCreatedStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUObjectsDestroyedStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUResourceWritesStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUResourceReadsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUTextureBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUSamplerBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUVertexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUIndexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addFlexibleSpace();
+
+		updateCPUSampleAreaSizes();
+		updateGPUSampleAreaSizes();
 	}
 
-	void ProfilerOverlay::show()
+	void ProfilerOverlay::show(ProfilerOverlayType type)
 	{
-		if(mIsShown)
+		if(mIsShown && mType == type)
 			return;
 
-		mBasicAreaLabels->enable();
-		mPreciseAreaLabels->enable();
-		mBasicAreaContents->enable();
-		mPreciseAreaContents->enable();
+		if (type == ProfilerOverlayType::CPUSamples)
+		{
+			mCPUBasicAreaLabels->enable();
+			mCPUPreciseAreaLabels->enable();
+			mCPUBasicAreaContents->enable();
+			mCPUPreciseAreaContents->enable();
+		}
+		else
+		{
+			mGPUAreaFrameContents->enable();
+			mGPUAreaFrameSamples->enable();
+		}
+
+		mType = type;
 		mIsShown = true;
 	}
 
@@ -344,27 +466,38 @@ namespace BansheeEngine
 		if(!mIsShown)
 			return;
 
-		mBasicAreaLabels->disable();
-		mPreciseAreaLabels->disable();
-		mBasicAreaContents->disable();
-		mPreciseAreaContents->disable();
+		mCPUBasicAreaLabels->disable();
+		mCPUPreciseAreaLabels->disable();
+		mCPUBasicAreaContents->disable();
+		mCPUPreciseAreaContents->disable();
+		mGPUAreaFrameContents->disable();
+		mGPUAreaFrameSamples->disable();
 		mIsShown = false;
 	}
 
 	void ProfilerOverlay::update()
 	{
-		const ProfilerReport& latestSimReport = Profiler::instance().getReport(ProfiledThread::Sim);
-		const ProfilerReport& latestCoreReport = Profiler::instance().getReport(ProfiledThread::Core);
+		const ProfilerReport& latestSimReport = ProfilingManager::instance().getReport(ProfiledThread::Sim);
+		const ProfilerReport& latestCoreReport = ProfilingManager::instance().getReport(ProfiledThread::Core);
 
-		updateContents(latestSimReport, latestCoreReport);
+		updateCPUSampleContents(latestSimReport, latestCoreReport);
+
+		while (ProfilerGPU::instance().getNumAvailableReports() > 1)
+			ProfilerGPU::instance().getNextReport(); // Drop any extra reports, we only want the latest
+
+		if (ProfilerGPU::instance().getNumAvailableReports() > 0)
+		{
+			updateGPUSampleContents(ProfilerGPU::instance().getNextReport());
+		}
 	}
 
 	void ProfilerOverlay::targetResized()
 	{
-		updateAreaSizes();
+		updateCPUSampleAreaSizes();
+		updateGPUSampleAreaSizes();
 	}
 
-	void ProfilerOverlay::updateAreaSizes()
+	void ProfilerOverlay::updateCPUSampleAreaSizes()
 	{
 		static const INT32 PADDING = 10;
 		static const float LABELS_CONTENT_RATIO = 0.3f;
@@ -375,20 +508,38 @@ namespace BansheeEngine
 		UINT32 labelsWidth = Math::ceilToInt(width * LABELS_CONTENT_RATIO);
 		UINT32 contentWidth = width - labelsWidth;
 
-		mBasicAreaLabels->setPosition(PADDING, PADDING);
-		mBasicAreaLabels->setSize(labelsWidth, height);
+		mCPUBasicAreaLabels->setPosition(PADDING, PADDING);
+		mCPUBasicAreaLabels->setSize(labelsWidth, height);
 
-		mPreciseAreaLabels->setPosition(PADDING, height + PADDING * 2);
-		mPreciseAreaLabels->setSize(labelsWidth, height);
+		mCPUPreciseAreaLabels->setPosition(PADDING, height + PADDING * 2);
+		mCPUPreciseAreaLabels->setSize(labelsWidth, height);
 
-		mBasicAreaContents->setPosition(PADDING + labelsWidth, PADDING);
-		mBasicAreaContents->setSize(contentWidth, height);
+		mCPUBasicAreaContents->setPosition(PADDING + labelsWidth, PADDING);
+		mCPUBasicAreaContents->setSize(contentWidth, height);
 
-		mPreciseAreaContents->setPosition(PADDING + labelsWidth, height + PADDING * 2);
-		mPreciseAreaContents->setSize(contentWidth, height);
+		mCPUPreciseAreaContents->setPosition(PADDING + labelsWidth, height + PADDING * 2);
+		mCPUPreciseAreaContents->setSize(contentWidth, height);
 	}
 
-	void ProfilerOverlay::updateContents(const ProfilerReport& simReport, const ProfilerReport& coreReport)
+	void ProfilerOverlay::updateGPUSampleAreaSizes()
+	{
+		static const INT32 PADDING = 10;
+		static const float SAMPLES_FRAME_RATIO = 0.5f;
+
+		UINT32 width = (UINT32)std::max(0, (INT32)mTarget->getWidth() - PADDING * 2);
+		UINT32 height = (UINT32)std::max(0, (INT32)(mTarget->getHeight() - PADDING * 3));
+
+		UINT32 frameHeight = Math::ceilToInt(height * SAMPLES_FRAME_RATIO);
+		UINT32 samplesHeight = height - frameHeight;
+
+		mGPUAreaFrameContents->setPosition(PADDING, PADDING);
+		mGPUAreaFrameContents->setSize(width, frameHeight);
+
+		mGPUAreaFrameSamples->setPosition(PADDING, PADDING + frameHeight + PADDING);
+		mGPUAreaFrameSamples->setSize(width, samplesHeight);
+	}
+
+	void ProfilerOverlay::updateCPUSampleContents(const ProfilerReport& simReport, const ProfilerReport& coreReport)
 	{
 		static const UINT32 NUM_ROOT_ENTRIES = 2;
 
@@ -476,6 +627,39 @@ namespace BansheeEngine
 					}
 				}
 			}
+		}
+	}
+
+	void ProfilerOverlay::updateGPUSampleContents(const GPUProfilerReport& gpuReport)
+	{
+		mGPUFrameNumStr.setParameter(0, toWString((UINT64)gTime().getCurrentFrameNumber()));
+		mGPUTimeStr.setParameter(0, toWString(gpuReport.frameSample.timeMs));
+		mGPUDrawCallsStr.setParameter(0, toWString(gpuReport.frameSample.numDrawCalls));
+		mGPURenTargetChangesStr.setParameter(0, toWString(gpuReport.frameSample.numRenderTargetChanges));
+		mGPUPresentsStr.setParameter(0, toWString(gpuReport.frameSample.numPresents));
+		mGPUClearsStr.setParameter(0, toWString(gpuReport.frameSample.numClears));
+		mGPUVerticesStr.setParameter(0, toWString(gpuReport.frameSample.numVertices));
+		mGPUPrimitivesStr.setParameter(0, toWString(gpuReport.frameSample.numPrimitives));
+		mGPUSamplesStr.setParameter(0, toWString(gpuReport.frameSample.numDrawnSamples));
+		mGPUBlendStateChangesStr.setParameter(0, toWString(gpuReport.frameSample.numBlendStateChanges));
+		mGPURasterStateChangesStr.setParameter(0, toWString(gpuReport.frameSample.numRasterizerStateChanges));
+		mGPUDepthStencilStateChangesStr.setParameter(0, toWString(gpuReport.frameSample.numDepthStencilStateChanges));
+
+		mGPUObjectsCreatedStr.setParameter(0, toWString(gpuReport.frameSample.numObjectsCreated));
+		mGPUObjectsDestroyedStr.setParameter(0, toWString(gpuReport.frameSample.numObjectsDestroyed));
+		mGPUResourceWritesStr.setParameter(0, toWString(gpuReport.frameSample.numResourceWrites));
+		mGPUResourceReadsStr.setParameter(0, toWString(gpuReport.frameSample.numResourceReads));
+		mGPUTextureBindsStr.setParameter(0, toWString(gpuReport.frameSample.numTextureBinds));
+		mGPUSamplerBindsStr.setParameter(0, toWString(gpuReport.frameSample.numSamplerBinds));
+		mGPUVertexBufferBindsStr.setParameter(0, toWString(gpuReport.frameSample.numVertexBufferBinds));
+		mGPUIndexBufferBindsStr.setParameter(0, toWString(gpuReport.frameSample.numIndexBufferBinds));
+		mGPUGPUProgramBufferBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuParamBufferBinds));
+		mGPUGPUProgramBindsStr.setParameter(0, toWString(gpuReport.frameSample.numGpuProgramBinds));
+
+		GPUSampleRowFiller sampleRowFiller(mGPUSampleRows, *mGPULayoutSamples, *mWidget);
+		for (auto& sample : gpuReport.samples)
+		{
+			sampleRowFiller.addData(sample.name, sample.timeMs);
 		}
 	}
 }

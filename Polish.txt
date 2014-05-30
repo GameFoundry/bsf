@@ -3,9 +3,8 @@
 There's still a crash regarding an uninitialized mCachedPtr on a C# class when shutting down. Attempt to find consistent repro steps.
 
 Finish GPUProfiler:
- - Actually implement sampling and report generation
- - Add timer and occlusion queries
  - Resource writes/reads/creation/destruction is not currently increased in RenderStats
+ - Test overlay and add title labels for samples
 
  ---------------------------
 
@@ -16,7 +15,6 @@ Finish GPUProfiler:
  Fullscreen stuff:
 
 I should be able to specify resolution when going to windowed mode
- - Maybe just store the windowed and fullscreen resolutions separately and restore automatically?
  - I have a feeling DX9 might start crashing once I resize to sub-fullscreen res and go back to FS - test it
 
  Add VSync toggle to RenderWindow if it doesn't already exist.
@@ -28,9 +26,4 @@ DISREGARD MONITOR INDEX ON DX9
 
  -----------------------------
 
-Consider renaming Profiler to CPUProfiler and CPUProfiler to something else. Since now I have GPUProfiler it's confusing to have one named just Profiler.
-Profiler can only be called from sim/core thread which is also a bit weird.
-
-Find and rename any other CM_ defines
-
-Rename CamelotOIS external library
+Rename CamelotOIS external library to BansheeOIS

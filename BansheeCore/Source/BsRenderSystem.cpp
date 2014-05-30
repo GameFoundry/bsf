@@ -10,7 +10,7 @@
 #include "BsGpuResource.h"
 #include "BsCoreThread.h"
 #include "BsMesh.h"
-#include "BsProfiler.h"
+#include "BsProfilerCPU.h"
 
 using namespace std::placeholders;
 
@@ -208,7 +208,7 @@ namespace BansheeEngine {
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		gProfiler().beginSample("render");
+		gProfilerCPU().beginSample("render");
 
 		if (mClipPlanesDirty)
 		{
@@ -261,7 +261,7 @@ namespace BansheeEngine {
 
 		mesh->_notifyUsedOnGPU();
 
-		gProfiler().endSample("render");
+		gProfilerCPU().endSample("render");
 	}
 
 	void RenderSystem::swapBuffers(RenderTargetPtr target)
@@ -280,30 +280,30 @@ namespace BansheeEngine {
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		gProfiler().beginSample("writeSubresource");
+		gProfilerCPU().beginSample("writeSubresource");
 
 		resource->writeSubresource(subresourceIdx, *data, discardEntireBuffer);
 
-		gProfiler().endSample("writeSubresource");
+		gProfilerCPU().endSample("writeSubresource");
 
-		gProfiler().beginSample("writeSubresourceB");
+		gProfilerCPU().beginSample("writeSubresourceB");
 
 		data->_unlock();
 		asyncOp._completeOperation();
 
-		gProfiler().endSample("writeSubresourceB");
+		gProfilerCPU().endSample("writeSubresourceB");
 	}
 
 	void RenderSystem::readSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, GpuResourceDataPtr& data, AsyncOp& asyncOp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		gProfiler().beginSample("readSubresource");
+		gProfilerCPU().beginSample("readSubresource");
 
 		resource->readSubresource(subresourceIdx, *data);
 		data->_unlock();
 		asyncOp._completeOperation();
 
-		gProfiler().endSample("readSubresource");
+		gProfilerCPU().endSample("readSubresource");
 	}
 }

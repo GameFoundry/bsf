@@ -1,55 +1,55 @@
-#include "BsCPUProfiler.h"
+#include "BsProfilerCPU.h"
 #include "BsDebug.h"
 #include "BsPlatform.h"
 
 namespace BansheeEngine
 {
-	CPUProfiler::Timer::Timer()
+	ProfilerCPU::Timer::Timer()
 	{
 		time = 0.0f;
 	}
 
-	void CPUProfiler::Timer::start()
+	void ProfilerCPU::Timer::start()
 	{
 		startTime = getCurrentTime();
 	}
 
-	void CPUProfiler::Timer::stop()
+	void ProfilerCPU::Timer::stop()
 	{
 		time += getCurrentTime() - startTime;
 	}
 
-	void CPUProfiler::Timer::reset()
+	void ProfilerCPU::Timer::reset()
 	{
 		time = 0.0f;
 	}
 
-	inline double CPUProfiler::Timer::getCurrentTime() 
+	inline double ProfilerCPU::Timer::getCurrentTime() 
 	{
 		return Platform::queryPerformanceTimerMs();
 	}
 
-	CPUProfiler::TimerPrecise::TimerPrecise()
+	ProfilerCPU::TimerPrecise::TimerPrecise()
 	{
 		cycles = 0;
 	}
 
-	void CPUProfiler::TimerPrecise::start()
+	void ProfilerCPU::TimerPrecise::start()
 	{
 		startCycles = getNumCycles();
 	}
 
-	void CPUProfiler::TimerPrecise::stop()
+	void ProfilerCPU::TimerPrecise::stop()
 	{
 		cycles += getNumCycles() - startCycles;
 	}
 
-	void CPUProfiler::TimerPrecise::reset()
+	void ProfilerCPU::TimerPrecise::reset()
 	{
 		cycles = 0;
 	}
 
-	inline UINT64 CPUProfiler::TimerPrecise::getNumCycles() 
+	inline UINT64 ProfilerCPU::TimerPrecise::getNumCycles() 
 	{
 #if BS_COMPILER == BS_COMPILER_GNUC
 		asm volatile("cpuid" : : : "%eax", "%ebx", "%ecx", "%edx" );
@@ -64,7 +64,7 @@ namespace BansheeEngine
 #endif		
 	}
 
-	void CPUProfiler::ProfileData::beginSample()
+	void ProfilerCPU::ProfileData::beginSample()
 	{
 		memAllocs = MemoryCounter::getNumAllocs();
 		memFrees = MemoryCounter::getNumFrees();
@@ -73,7 +73,7 @@ namespace BansheeEngine
 		timer.start();
 	}
 
-	void CPUProfiler::ProfileData::endSample()
+	void ProfilerCPU::ProfileData::endSample()
 	{
 		timer.stop();
 
@@ -83,13 +83,13 @@ namespace BansheeEngine
 		samples.push_back(ProfileSample(timer.time, numAllocs, numFrees));
 	}
 
-	void CPUProfiler::ProfileData::resumeLastSample()
+	void ProfilerCPU::ProfileData::resumeLastSample()
 	{
 		timer.start();
 		samples.erase(samples.end() - 1);
 	}
 
-	void CPUProfiler::PreciseProfileData::beginSample()
+	void ProfilerCPU::PreciseProfileData::beginSample()
 	{
 		memAllocs = MemoryCounter::getNumAllocs();
 		memFrees = MemoryCounter::getNumFrees();
@@ -98,7 +98,7 @@ namespace BansheeEngine
 		timer.start();
 	}
 
-	void CPUProfiler::PreciseProfileData::endSample()
+	void ProfilerCPU::PreciseProfileData::endSample()
 	{
 		timer.stop();
 
@@ -108,21 +108,21 @@ namespace BansheeEngine
 		samples.push_back(PreciseProfileSample(timer.cycles, numAllocs, numFrees));
 	}
 
-	void CPUProfiler::PreciseProfileData::resumeLastSample()
+	void ProfilerCPU::PreciseProfileData::resumeLastSample()
 	{
 		timer.start();
 		samples.erase(samples.end() - 1);
 	}
 
-	BS_THREADLOCAL CPUProfiler::ThreadInfo* CPUProfiler::ThreadInfo::activeThread = nullptr;
+	BS_THREADLOCAL ProfilerCPU::ThreadInfo* ProfilerCPU::ThreadInfo::activeThread = nullptr;
 
-	CPUProfiler::ThreadInfo::ThreadInfo()
+	ProfilerCPU::ThreadInfo::ThreadInfo()
 		:isActive(false), rootBlock(nullptr)
 	{
 
 	}
 
-	void CPUProfiler::ThreadInfo::begin(const ProfilerString& _name)
+	void ProfilerCPU::ThreadInfo::begin(const ProfilerString& _name)
 	{
 		if(isActive)
 		{
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		isActive = true;
 	}
 
-	void CPUProfiler::ThreadInfo::end()
+	void ProfilerCPU::ThreadInfo::end()
 	{
 		if(activeBlock.type == ActiveSamplingType::Basic)
 			activeBlock.block->basic.endSample();
@@ -174,7 +174,7 @@ namespace BansheeEngine
 		activeBlock = ActiveBlock();
 	}
 
-	void CPUProfiler::ThreadInfo::reset()
+	void ProfilerCPU::ThreadInfo::reset()
 	{
 		if(isActive)
 			end();
@@ -185,22 +185,22 @@ namespace BansheeEngine
 		rootBlock = nullptr;
 	}
 
-	CPUProfiler::ProfiledBlock* CPUProfiler::ThreadInfo::getBlock()
+	ProfilerCPU::ProfiledBlock* ProfilerCPU::ThreadInfo::getBlock()
 	{
 		// TODO - Pool this, if possible using the memory allocator stuff
 		// TODO - Also consider moving all samples in ThreadInfo, and also pool them (otherwise I can't pool ProfiledBlock since it will be variable size)
 		return bs_new<ProfiledBlock, ProfilerAlloc>();
 	}
 
-	void CPUProfiler::ThreadInfo::releaseBlock(CPUProfiler::ProfiledBlock* block)
+	void ProfilerCPU::ThreadInfo::releaseBlock(ProfilerCPU::ProfiledBlock* block)
 	{
 		bs_delete<ProfilerAlloc>(block);
 	}
 
-	CPUProfiler::ProfiledBlock::ProfiledBlock()
+	ProfilerCPU::ProfiledBlock::ProfiledBlock()
 	{ }
 
-	CPUProfiler::ProfiledBlock::~ProfiledBlock()
+	ProfilerCPU::ProfiledBlock::~ProfiledBlock()
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 
@@ -210,7 +210,7 @@ namespace BansheeEngine
 		children.clear();
 	}
 
-	CPUProfiler::ProfiledBlock* CPUProfiler::ProfiledBlock::findChild(const ProfilerString& name) const
+	ProfilerCPU::ProfiledBlock* ProfilerCPU::ProfiledBlock::findChild(const ProfilerString& name) const
 	{
 		for(auto& child : children)
 		{
@@ -221,7 +221,7 @@ namespace BansheeEngine
 		return nullptr;
 	}
 
-	CPUProfiler::CPUProfiler()
+	ProfilerCPU::ProfilerCPU()
 		:mBasicTimerOverhead(0.0), mPreciseTimerOverhead(0), mBasicSamplingOverheadMs(0.0), mPreciseSamplingOverheadCycles(0),
 		mBasicSamplingOverheadCycles(0), mPreciseSamplingOverheadMs(0.0)
 	{
@@ -230,7 +230,7 @@ namespace BansheeEngine
 		estimateTimerOverhead();
 	}
 
-	CPUProfiler::~CPUProfiler()
+	ProfilerCPU::~ProfilerCPU()
 	{
 		reset();
 
@@ -240,7 +240,7 @@ namespace BansheeEngine
 			bs_delete<ProfilerAlloc>(threadInfo);
 	}
 
-	void CPUProfiler::beginThread(const ProfilerString& name)
+	void ProfilerCPU::beginThread(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr)
@@ -258,13 +258,13 @@ namespace BansheeEngine
 		thread->begin(name);
 	}
 
-	void CPUProfiler::endThread()
+	void ProfilerCPU::endThread()
 	{
 		// I don't do a nullcheck where on purpose, so endSample can be called ASAP
 		ThreadInfo::activeThread->end();
 	}
 
-	void CPUProfiler::beginSample(const ProfilerString& name)
+	void ProfilerCPU::beginSample(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		if(thread == nullptr || !thread->isActive)
@@ -296,7 +296,7 @@ namespace BansheeEngine
 		block->basic.beginSample();
 	}
 
-	void CPUProfiler::endSample(const ProfilerString& name)
+	void ProfilerCPU::endSample(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
@@ -332,7 +332,7 @@ namespace BansheeEngine
 			thread->activeBlock = ActiveBlock();
 	}
 
-	void CPUProfiler::beginSamplePrecise(const ProfilerString& name)
+	void ProfilerCPU::beginSamplePrecise(const ProfilerString& name)
 	{
 		// Note: There is a (small) possibility a context switch will happen during this measurement in which case result will be skewed. 
 		// Increasing thread priority might help. This is generally only a problem with code that executes a long time (10-15+ ms - depending on OS quant length)
@@ -364,7 +364,7 @@ namespace BansheeEngine
 		block->precise.beginSample();
 	}
 
-	void CPUProfiler::endSamplePrecise(const ProfilerString& name)
+	void ProfilerCPU::endSamplePrecise(const ProfilerString& name)
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 		ProfiledBlock* block = thread->activeBlock.block;
@@ -400,7 +400,7 @@ namespace BansheeEngine
 			thread->activeBlock = ActiveBlock();
 	}
 
-	void CPUProfiler::reset()
+	void ProfilerCPU::reset()
 	{
 		ThreadInfo* thread = ThreadInfo::activeThread;
 
@@ -408,7 +408,7 @@ namespace BansheeEngine
 			thread->reset();
 	}
 
-	CPUProfilerReport CPUProfiler::generateReport()
+	CPUProfilerReport ProfilerCPU::generateReport()
 	{
 		CPUProfilerReport report;
 
@@ -708,7 +708,7 @@ namespace BansheeEngine
 		return report;
 	}
 
-	void CPUProfiler::estimateTimerOverhead()
+	void ProfilerCPU::estimateTimerOverhead()
 	{
 		// Get an idea of how long timer calls and RDTSC takes
 		const UINT32 reps = 1000, sampleReps = 100;
@@ -962,5 +962,10 @@ namespace BansheeEngine
 	CPUProfilerReport::CPUProfilerReport()
 	{
 
+	}
+
+	ProfilerCPU& gProfilerCPU()
+	{
+		return ProfilerCPU::instance();
 	}
 }

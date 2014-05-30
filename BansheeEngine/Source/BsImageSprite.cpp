@@ -4,7 +4,7 @@
 #include "BsSpriteTexture.h"
 #include "BsTexture.h"
 
-#include "BsProfiler.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -22,7 +22,7 @@ namespace BansheeEngine
 			return;
 		}
 
-		gProfiler().beginSample("UpdateImageSprite");
+		gProfilerCPU().beginSample("UpdateImageSprite");
 
 		// Actually generate a mesh
 		if(mCachedRenderElements.size() < 1)
@@ -252,6 +252,6 @@ namespace BansheeEngine
 
 		updateBounds();
 
-		gProfiler().endSample("UpdateImageSprite");
+		gProfilerCPU().endSample("UpdateImageSprite");
 	}
 }

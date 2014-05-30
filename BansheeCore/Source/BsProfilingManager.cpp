@@ -1,27 +1,20 @@
-#include "BsProfiler.h"
+#include "BsProfilingManager.h"
 #include "BsMath.h"
 
 namespace BansheeEngine
 {
-	const UINT32 Profiler::NUM_SAVED_FRAMES = 200;
+	const UINT32 ProfilingManager::NUM_SAVED_FRAMES = 200;
 
-	Profiler::Profiler()
-		:mSavedSimReports(nullptr), mCPUProfiler(nullptr), mNextSimReportIdx(0),
+	ProfilingManager::ProfilingManager()
+		:mSavedSimReports(nullptr), mNextSimReportIdx(0),
 		mSavedCoreReports(nullptr), mNextCoreReportIdx(0)
 	{
-#if BS_PROFILING_ENABLED
-		mCPUProfiler = bs_new<CPUProfiler, ProfilerAlloc>();
-#endif
-
 		mSavedSimReports = bs_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
 		mSavedCoreReports = bs_newN<ProfilerReport, ProfilerAlloc>(NUM_SAVED_FRAMES);
 	}
 
-	Profiler::~Profiler()
+	ProfilingManager::~ProfilingManager()
 	{
-		if(mCPUProfiler != nullptr)
-			bs_delete<ProfilerAlloc>(mCPUProfiler);
-
 		if(mSavedSimReports != nullptr)
 			bs_deleteN<ProfilerAlloc>(mSavedSimReports, NUM_SAVED_FRAMES);
 
@@ -29,30 +22,30 @@ namespace BansheeEngine
 			bs_deleteN<ProfilerAlloc>(mSavedCoreReports, NUM_SAVED_FRAMES);
 	}
 
-	void Profiler::_update()
+	void ProfilingManager::_update()
 	{
 #if BS_PROFILING_ENABLED
-		mSavedSimReports[mNextSimReportIdx].cpuReport = mCPUProfiler->generateReport();
+		mSavedSimReports[mNextSimReportIdx].cpuReport = gProfilerCPU().generateReport();
 
-		mCPUProfiler->reset();
+		gProfilerCPU().reset();
 
 		mNextSimReportIdx = (mNextSimReportIdx + 1) % NUM_SAVED_FRAMES;
 #endif
 	}
 
-	void Profiler::_updateCore()
+	void ProfilingManager::_updateCore()
 	{
 #if BS_PROFILING_ENABLED
 		BS_LOCK_MUTEX(mSync);
-		mSavedCoreReports[mNextCoreReportIdx].cpuReport = mCPUProfiler->generateReport();
+		mSavedCoreReports[mNextCoreReportIdx].cpuReport = gProfilerCPU().generateReport();
 
-		mCPUProfiler->reset();
+		gProfilerCPU().reset();
 
 		mNextCoreReportIdx = (mNextCoreReportIdx + 1) % NUM_SAVED_FRAMES;
 #endif
 	}
 
-	const ProfilerReport& Profiler::getReport(ProfiledThread thread, UINT32 idx) const
+	const ProfilerReport& ProfilingManager::getReport(ProfiledThread thread, UINT32 idx) const
 	{
 		idx = Math::clamp(idx, 0U, (UINT32)(NUM_SAVED_FRAMES - 1));
 
@@ -74,8 +67,8 @@ namespace BansheeEngine
 		}
 	}
 
-	Profiler& gProfiler()
+	ProfilingManager& gProfiler()
 	{
-		return Profiler::instance();
+		return ProfilingManager::instance();
 	}
 }

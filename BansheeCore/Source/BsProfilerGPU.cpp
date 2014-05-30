@@ -1,4 +1,4 @@
-#include "BsGPUProfiler.h"
+#include "BsProfilerGPU.h"
 #include "BsRenderSystem.h"
 #include "BsTimerQuery.h"
 #include "BsOcclusionQuery.h"
@@ -6,11 +6,11 @@
 
 namespace BansheeEngine
 {
-	GPUProfiler::GPUProfiler()
+	ProfilerGPU::ProfilerGPU()
 		:mNumActiveSamples(0), mIsFrameActive(false)
 	{ }
 
-	void GPUProfiler::beginFrame()
+	void ProfilerGPU::beginFrame()
 	{
 		if (mIsFrameActive)
 			BS_EXCEPT(InvalidStateException, "Cannot begin a frame because another frame is active.");
@@ -23,7 +23,7 @@ namespace BansheeEngine
 		mIsFrameActive = true;
 	}
 
-	void GPUProfiler::endFrame()
+	void ProfilerGPU::endFrame()
 	{
 		if (mNumActiveSamples > 0)
 			BS_EXCEPT(InvalidStateException, "Attempting to end a frame while a sample is active.");
@@ -37,7 +37,7 @@ namespace BansheeEngine
 		mIsFrameActive = false;
 	}
 
-	void GPUProfiler::beginSample(const ProfilerString& name)
+	void ProfilerGPU::beginSample(const ProfilerString& name)
 	{
 		if (!mIsFrameActive)
 			BS_EXCEPT(InvalidStateException, "Cannot begin a sample because no frame is active.");
@@ -50,7 +50,7 @@ namespace BansheeEngine
 		mNumActiveSamples++;
 	}
 
-	void GPUProfiler::endSample(const ProfilerString& name)
+	void ProfilerGPU::endSample(const ProfilerString& name)
 	{
 		if (mNumActiveSamples == 0)
 			return;
@@ -68,12 +68,12 @@ namespace BansheeEngine
 		mNumActiveSamples--;
 	}
 
-	UINT32 GPUProfiler::getNumAvailableReports()
+	UINT32 ProfilerGPU::getNumAvailableReports()
 	{
 		return (UINT32)mReadyReports.size();
 	}
 
-	GPUProfilerReport GPUProfiler::getNextReport()
+	GPUProfilerReport ProfilerGPU::getNextReport()
 	{
 		if (mReadyReports.empty())
 			BS_EXCEPT(InvalidStateException, "No reports are available.")
@@ -84,7 +84,7 @@ namespace BansheeEngine
 		return report;
 	}
 
-	void GPUProfiler::_update()
+	void ProfilerGPU::_update()
 	{
 		while (!mUnresolvedFrames.empty())
 		{
@@ -104,7 +104,7 @@ namespace BansheeEngine
 		}
 	}
 
-	GPUProfilerReport GPUProfiler::resolveFrame(ActiveFrame& frame)
+	GPUProfilerReport ProfilerGPU::resolveFrame(ActiveFrame& frame)
 	{
 		GPUProfilerReport report;
 		
@@ -121,7 +121,7 @@ namespace BansheeEngine
 		return report;
 	}
 
-	void GPUProfiler::resolveSample(const ActiveSample& sample, GPUProfileSample& reportSample)
+	void ProfilerGPU::resolveSample(const ActiveSample& sample, GPUProfileSample& reportSample)
 	{
 		reportSample.name = String(sample.sampleName.c_str());
 		reportSample.timeMs = sample.activeTimeQuery->getTimeMs();
@@ -156,7 +156,7 @@ namespace BansheeEngine
 		mFreeOcclusionQueries.push(sample.activeOcclusionQuery);
 	}
 
-	void GPUProfiler::beginSampleInternal(ActiveSample& sample)
+	void ProfilerGPU::beginSampleInternal(ActiveSample& sample)
 	{
 		sample.startStats = RenderSystem::instance().getRenderStats();
 		sample.activeTimeQuery = getTimerQuery();
@@ -166,14 +166,14 @@ namespace BansheeEngine
 		sample.activeOcclusionQuery->begin();
 	}
 
-	void GPUProfiler::endSampleInternal(ActiveSample& sample)
+	void ProfilerGPU::endSampleInternal(ActiveSample& sample)
 	{
 		sample.endStats = RenderSystem::instance().getRenderStats();
 		sample.activeOcclusionQuery->end();
 		sample.activeTimeQuery->end();
 	}
 
-	TimerQueryPtr GPUProfiler::getTimerQuery() const
+	TimerQueryPtr ProfilerGPU::getTimerQuery() const
 	{
 		if (!mFreeTimerQueries.empty())
 		{
@@ -186,7 +186,7 @@ namespace BansheeEngine
 		return TimerQuery::create();
 	}
 
-	OcclusionQueryPtr GPUProfiler::getOcclusionQuery() const
+	OcclusionQueryPtr ProfilerGPU::getOcclusionQuery() const
 	{
 		if (!mFreeOcclusionQueries.empty())
 		{
