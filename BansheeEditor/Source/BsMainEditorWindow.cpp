@@ -6,7 +6,7 @@
 #include "BsSceneObject.h"
 #include "BsRenderTexture.h"
 #include "BsApplication.h"
-#include "BsProfiler.h"
+#include "BsProfilingManager.h"
 #include "BsGUIArea.h"
 #include "BsGUILayout.h"
 
@@ -78,7 +78,7 @@ namespace BansheeEngine
 		//DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 
 		ProfilerOverlay::startUp(sceneCamera->getViewport());
-		ProfilerOverlay::instance().show();
+		ProfilerOverlay::instance().show(ProfilerOverlayType::CPUSamples);
 	}
 
 	MainEditorWindow::~MainEditorWindow()

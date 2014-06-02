@@ -57,6 +57,20 @@ namespace BansheeEngine
 		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
 	}
 
+	HString::HString(const WString& identifierString, const WString& defaultString)
+	{
+		mData = bs_shared_ptr<StringData>();
+
+		StringTable::instance().setString(identifierString, StringTable::DEFAULT_LANGUAGE, defaultString);
+
+		mData->mStringData = &StringTable::instance().getStringData(identifierString);
+
+		if (mData->mStringData->numParameters > 0)
+			mData->mParameters = bs_newN<WString>(mData->mStringData->numParameters);
+
+		mData->mUpdateConn = mData->mStringData->commonData->onStringDataModified.connect(std::bind(&HString::StringData::updateString, mData.get()));
+	}
+
 	HString::HString(const HString& copy)
 	{
 		mData = copy.mData;

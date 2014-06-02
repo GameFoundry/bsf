@@ -12,8 +12,6 @@
 #include "BsVertexDataDesc.h"
 #include "BsResources.h"
 
-#include "BsProfiler.h"
-
 namespace BansheeEngine
 {
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 

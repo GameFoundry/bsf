@@ -19,7 +19,7 @@
 #include "BsGUIManager.h"
 #include "BsCoreThread.h"
 
-#include "BsProfiler.h"
+#include "BsProfilerCPU.h"
 
 namespace BansheeEngine
 {
@@ -41,7 +41,7 @@ namespace BansheeEngine
 
 	void BansheeRenderer::renderAll() 
 	{
-		gProfiler().beginSample("renderA");
+		gProfilerCPU().beginSample("renderA");
 
 		gBsSceneManager().updateRenderableBounds();
 
@@ -83,8 +83,8 @@ namespace BansheeEngine
 			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
 
-		gProfiler().endSample("renderA");
-		gProfiler().beginSample("renderB");
+		gProfilerCPU().endSample("renderA");
+		gProfilerCPU().beginSample("renderB");
 
 		// Render everything, target by target
 		for(auto& camerasPerTarget : camerasPerRenderTarget)
@@ -119,12 +119,12 @@ namespace BansheeEngine
 			coreAccessor.swapBuffers(target);
 		}
 
-		gProfiler().endSample("renderB");
+		gProfilerCPU().endSample("renderB");
 	}
 
 	void BansheeRenderer::render(const HCamera& camera) 
 	{
-		gProfiler().beginSample("renderC");
+		gProfilerCPU().beginSample("renderC");
 
 		Vector<HRenderable> allRenderables;
 		
@@ -141,8 +141,8 @@ namespace BansheeEngine
 
 		mRenderQueue->clear();
 
-		gProfiler().endSample("renderC");
-		gProfiler().beginSample("renderD");
+		gProfilerCPU().endSample("renderC");
+		gProfilerCPU().beginSample("renderD");
 
 		// Get scene render operations
 		for(auto iter = allRenderables.begin(); iter != allRenderables.end(); ++iter)
@@ -150,8 +150,8 @@ namespace BansheeEngine
 			(*iter)->render(*mRenderQueue, viewProjMatrix);
 		}
 
-		gProfiler().endSample("renderD");
-		gProfiler().beginSample("renderE");
+		gProfilerCPU().endSample("renderD");
+		gProfilerCPU().beginSample("renderE");
 
 		// Get GUI render operations
 		GUIManager::instance().render(camera->getViewport(), *mRenderQueue);
@@ -163,8 +163,8 @@ namespace BansheeEngine
 		DrawHelper3D::instance().render(camera, *mRenderQueue);
 		DrawHelper2D::instance().render(camera, *mRenderQueue);
 
-		gProfiler().endSample("renderE");
-		gProfiler().beginSample("renderF");
+		gProfilerCPU().endSample("renderE");
+		gProfilerCPU().beginSample("renderF");
 
 		// Get any operations from hooked up callbacks
 		const Viewport* viewportRawPtr = camera->getViewport().get();
@@ -177,30 +177,30 @@ namespace BansheeEngine
 		mRenderQueue->sort();
 		const Vector<SortedRenderOp>& sortedROps =  mRenderQueue->getSortedRenderOps();
 
-		gProfiler().endSample("renderF");
+		gProfilerCPU().endSample("renderF");
 
 		for(auto iter = sortedROps.begin(); iter != sortedROps.end(); ++iter)
 		{
-			gProfiler().beginSample("renderG");
+			gProfilerCPU().beginSample("renderG");
 
 			const RenderOperation& renderOp = *iter->baseOperation;
 			MaterialPtr material = renderOp.material;
 
-			gProfiler().endSample("renderG");
-			gProfiler().beginSample("renderH");
+			gProfilerCPU().endSample("renderG");
+			gProfilerCPU().beginSample("renderH");
 
 			PassPtr pass = material->getPass(iter->passIdx);
 			PassParametersPtr paramsPtr = material->getPassParameters(iter->passIdx);
 
 			coreAccessor.setPass(pass, paramsPtr);
 
-			gProfiler().endSample("renderH");
-			gProfiler().beginSample("renderI");
+			gProfilerCPU().endSample("renderH");
+			gProfilerCPU().beginSample("renderI");
 
 			const SubMesh& subMesh = renderOp.mesh->getSubMesh(renderOp.submeshIdx);
 			coreAccessor.render(renderOp.mesh, subMesh.indexOffset, subMesh.indexCount, true, subMesh.drawOp);
 
-			gProfiler().endSample("renderI");
+			gProfilerCPU().endSample("renderI");
 		}
 	}
 }

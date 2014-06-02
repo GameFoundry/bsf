@@ -56,7 +56,7 @@ namespace BansheeEngine
 	 *
 	 * @note	Core thread only.
 	 */
-	class BS_CORE_EXPORT GPUProfiler : public Module<GPUProfiler>
+	class BS_CORE_EXPORT ProfilerGPU : public Module<ProfilerGPU>
 	{
 	private:
 		struct ActiveSample
@@ -75,7 +75,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		GPUProfiler();
+		ProfilerGPU();
 
 		/**
 		 * @brief	Signals a start of a new frame. Every frame will generate a separate profiling report.

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsModule.h"
 
 namespace BansheeEngine
 {
@@ -12,7 +13,7 @@ namespace BansheeEngine
 	 * @note	Thread safe. Matching begin*\end* calls
 	 * 			must belong to the same thread though.
 	 */
-	class BS_CORE_EXPORT CPUProfiler
+	class BS_CORE_EXPORT ProfilerCPU : public Module<ProfilerCPU>
 	{
 		/**
 		 * @brief	Timer class responsible for tracking elapsed time.
@@ -272,8 +273,8 @@ namespace BansheeEngine
 		};
 
 	public:
-		CPUProfiler();
-		~CPUProfiler();
+		ProfilerCPU();
+		~ProfilerCPU();
 
 		/**
 		 * @brief	Registers a new thread we will be doing sampling in. This needs to be called before any beginSample*\endSample* calls
@@ -445,9 +446,22 @@ namespace BansheeEngine
 		const CPUProfilerPreciseSamplingEntry& getPreciseSamplingData() const { return mPreciseSamplingRootEntry; }
 
 	private:
-		friend class CPUProfiler;
+		friend class ProfilerCPU;
 
 		CPUProfilerBasicSamplingEntry mBasicSamplingRootEntry;
 		CPUProfilerPreciseSamplingEntry mPreciseSamplingRootEntry;
 	};
+
+	/**
+	* @brief	Quick way to access the CPU profiler.
+	*/
+	BS_CORE_EXPORT ProfilerCPU& gProfilerCPU();
+
+	/**
+	* @brief	Shortcut for profiling a single function call.
+	*/
+#define PROFILE_CALL(call, name)							\
+	BansheeEngine::gProfilerCPU().beginSample(##name##);	\
+	call;													\
+	BansheeEngine::gProfilerCPU().endSample(##name##);
 }

@@ -4,7 +4,7 @@
 #include "BsFont.h"
 #include "BsVector2.h"
 
-#include "BsProfiler.h" // PROFILING ONLY
+#include "BsProfilerCPU.h" // PROFILING ONLY
 
 namespace BansheeEngine
 {
@@ -15,11 +15,11 @@ namespace BansheeEngine
 
 	void TextSprite::update(const TEXT_SPRITE_DESC& desc)
 	{
-		gProfiler().beginSample("textUpdateA");
+		gProfilerCPU().beginSample("textUpdateA");
 		TextData textData(desc.text, desc.font, desc.fontSize, desc.width, desc.height, desc.wordWrap);
-		gProfiler().endSample("textUpdateA");
+		gProfilerCPU().endSample("textUpdateA");
 
-		gProfiler().beginSample("textUpdateB");
+		gProfilerCPU().beginSample("textUpdateB");
 
 		UINT32 numLines = textData.getNumLines();
 		UINT32 numPages = textData.getNumPages();
@@ -53,8 +53,8 @@ namespace BansheeEngine
 		if(mCachedRenderElements.size() != numPages)
 			mCachedRenderElements.resize(numPages);
 
-		gProfiler().endSample("textUpdateB");
-		gProfiler().beginSample("textUpdateC");
+		gProfilerCPU().endSample("textUpdateB");
+		gProfilerCPU().beginSample("textUpdateC");
 
 		// Actually generate a mesh
 		UINT32 texPage = 0;
@@ -104,8 +104,8 @@ namespace BansheeEngine
 			texPage++;
 		}
 
-		gProfiler().instance().endSample("textUpdateC");
-		gProfiler().instance().beginSample("textUpdateD");
+		gProfilerCPU().instance().endSample("textUpdateC");
+		gProfilerCPU().instance().beginSample("textUpdateD");
 
 		// Calc alignment and anchor offsets and set final line positions
 		for(UINT32 j = 0; j < numPages; j++)
@@ -116,12 +116,12 @@ namespace BansheeEngine
 				renderElem.vertices, renderElem.uvs, renderElem.indexes, renderElem.numQuads);
 		}
 
-		gProfiler().instance().endSample("textUpdateD");
-		gProfiler().instance().beginSample("textUpdateE");
+		gProfilerCPU().instance().endSample("textUpdateD");
+		gProfilerCPU().instance().beginSample("textUpdateE");
 
 		updateBounds();
 
-		gProfiler().instance().endSample("textUpdateE");
+		gProfilerCPU().instance().endSample("textUpdateE");
 	}
 
 	UINT32 TextSprite::genTextQuads(UINT32 page, const TextData& textData, UINT32 width, UINT32 height, 

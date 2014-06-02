@@ -28,7 +28,7 @@
 #include "BsDragAndDropManager.h"
 #include "BsGUIDropDownBoxManager.h"
 #include "BsGUIContextMenu.h"
-#include "BsProfiler.h"
+#include "BsProfilerCPU.h"
 #include "BsMeshHeap.h"
 #include "BsTransientMesh.h"
 #include "BsVirtualInput.h"
@@ -181,12 +181,12 @@ namespace BansheeEngine
 		DragAndDropManager::instance().update();
 
 		// Update layouts
-		gProfiler().beginSample("UpdateLayout");
+		gProfilerCPU().beginSample("UpdateLayout");
 		for(auto& widgetInfo : mWidgets)
 		{
 			widgetInfo.widget->_updateLayout();
 		}
-		gProfiler().endSample("UpdateLayout");
+		gProfilerCPU().endSample("UpdateLayout");
 
 		// Blink caret
 		float curTime = gTime().getTime();
@@ -340,7 +340,7 @@ namespace BansheeEngine
 		{
 			GUIRenderData& renderData = cachedMeshData.second;
 
-			gProfiler().beginSample("UM_A");
+			gProfilerCPU().beginSample("UM_A");
 
 			// Check if anything is dirty. If nothing is we can skip the update
 			bool isDirty = renderData.isDirty;
@@ -354,7 +354,7 @@ namespace BansheeEngine
 				}
 			}
 
-			gProfiler().endSample("UM_A");
+			gProfilerCPU().endSample("UM_A");
 
 			if(!isDirty)
 				continue;
