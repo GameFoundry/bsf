@@ -8,18 +8,29 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Overlay components are a special type of components that can be attached directly
-	 * 			to a Camera and used for rendering 2D graphics. Camera will render any of its overlay
-	 * 			components after it has rendered the rest of the scene, so these components are usually 
-	 * 			used for GUI elements and full screen effects.
+	 * 			to a Viewport and used for rendering 2D graphics. Any overlay components will be 
+	 *			rendered after any other scene objects, so these components are usually used for 
+	 *			GUI elements and full screen effects.
 	 */
 	class BS_EXPORT Overlay : public Component
 	{
 	public:
 		virtual ~Overlay();
 
+		/**
+		 * @brief	Called by the renderer when rendering is in progress. Allows the overlay
+		 *			to queue itself for rendering.
+		 */
 		virtual void render(RenderQueue& renderQueue) const = 0;
+
+		/**
+		 * @copydoc	Component::update
+		 */
 		virtual void update() {}
 
+		/**
+		 * @brief	Returns the viewport onto which this overlay will be overlaid on.
+		 */
 		Viewport* getTarget() const { return mRenderTarget; }
 
 		/**

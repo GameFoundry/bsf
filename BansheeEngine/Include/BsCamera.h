@@ -1,11 +1,7 @@
 #pragma once
 
-// Default options
 #include "BsPrerequisites.h"
-
 #include "BsString.h"
-
-// Matrices & Vectors
 #include "BsMatrix4.h"
 #include "BsVector3.h"
 #include "BsVector2.h"
@@ -17,485 +13,362 @@
 #include "BsRay.h"
 #include "BsComponent.h"
 
-namespace BansheeEngine {
-
-	/** Specifies perspective (realistic) or orthographic (architectural) projection.
-    */
+namespace BansheeEngine 
+{
+	/**
+	 * @brief	Specified projection type to use by the camera.
+	 */
     enum ProjectionType
     {
         PT_ORTHOGRAPHIC,
         PT_PERSPECTIVE
     };
 
-    /** Worldspace clipping planes.
-    */
+	/**
+	 * @brief	Clip planes that form the camera frustum (visible area).
+	 */
     enum FrustumPlane
     {
-        FRUSTUM_PLANE_NEAR   = 0,
-        FRUSTUM_PLANE_FAR    = 1,
-        FRUSTUM_PLANE_LEFT   = 2,
-        FRUSTUM_PLANE_RIGHT  = 3,
-        FRUSTUM_PLANE_TOP    = 4,
+        FRUSTUM_PLANE_NEAR = 0,
+        FRUSTUM_PLANE_FAR = 1,
+        FRUSTUM_PLANE_LEFT = 2,
+        FRUSTUM_PLANE_RIGHT = 3,
+        FRUSTUM_PLANE_TOP = 4,
         FRUSTUM_PLANE_BOTTOM = 5
     };
 
-	/** \addtogroup Core
-	*  @{
-	*/
-	/** \addtogroup Scene
-	*  @{
-	*/
-
-    /** A viewpoint from which the scene will be rendered.
-        @remarks
-            OGRE renders scenes from a camera viewpoint into a buffer of
-            some sort, normally a window or a texture (a subclass of
-            RenderTarget). OGRE cameras support both perspective projection (the default,
-            meaning objects get smaller the further away they are) and
-            orthographic projection (blueprint-style, no decrease in size
-            with distance). Each camera carries with it a style of rendering,
-            e.g. full textured, flat shaded, wireframe), field of view,
-            rendering distances etc, allowing you to use OGRE to create
-            complex multi-window views if required. In addition, more than
-            one camera can point at a single render target if required,
-            each rendering to a subset of the target, allowing split screen
-            and picture-in-picture views.
-        @par
-            Cameras maintain their own aspect ratios, field of view, and frustum,
-            and project co-ordinates into a space measured from -1 to 1 in x and y,
-            and 0 to 1 in z. At render time, the camera will be rendering to a
-            Viewport which will translate these parametric co-ordinates into real screen
-            co-ordinates. Obviously it is advisable that the viewport has the same
-            aspect ratio as the camera to avoid distortion (unless you want it!).
-        @par
-            Note that a Camera can be attached to a SceneNode, using the method
-            SceneNode::attachObject. If this is done the Camera will combine it's own
-            position/orientation settings with it's parent SceneNode. 
-            This is useful for implementing more complex Camera / object
-            relationships i.e. having a camera attached to a world object.
-    */
+	/**
+	 * @brief	Camera determines how is world geometry projected onto a 2D surface. You may
+	 *			position and orient it in space, and set other options like aspect ratio and field or view.
+	 */
     class BS_EXPORT Camera : public Component
     {
     public:
-        /** Sets the Y-dimension Field Of View (FOV) of the frustum.
-            @remarks
-                Field Of View (FOV) is the angle made between the frustum's position, and the edges
-                of the 'screen' onto which the scene is projected. High values (90+ degrees) result in a wide-angle,
-                fish-eye kind of view, low values (30- degrees) in a stretched, telescopic kind of view. Typical values
-                are between 45 and 60 degrees.
-            @par
-                This value represents the VERTICAL field-of-view. The horizontal field of view is calculated from
-                this depending on the dimensions of the viewport (they will only be the same if the viewport is square).
-            @note
-                Setting the FOV overrides the value supplied for frustum::setNearClipPlane.
-         */
+		Camera(const HSceneObject& parent, RenderTargetPtr target = nullptr,
+			float left = 0.0f, float top = 0.0f, float width = 1.0f, float height = 1.0f);
+
+        virtual ~Camera();
+
+		/**
+		 * @brief	Returns the viewport used by the camera.
+		 */	
+		ViewportPtr getViewport() const { return mViewport; }
+
+		/**
+		 * @brief	Sets the camera horizontal field of view. This determines how wide the camera
+		 *			viewing angle is along the horizontal axis. Vertical FOV is calculated from the
+		 *			horizontal FOV and the aspect.
+		 */
         virtual void setHorzFOV(const Radian& fovy);
 
-        /** Retrieves the frustums Y-dimension Field Of View (FOV).
-        */
-        virtual const Radian& getHorzFOV(void) const;
+		/**
+		 * @brief	Retrieves the camera horizontal field of view.
+		 */
+        virtual const Radian& getHorzFOV() const;
 
-        /** Sets the position of the near clipping plane.
-            @remarks
-                The position of the near clipping plane is the distance from the frustums position to the screen
-                on which the world is projected. The near plane distance, combined with the field-of-view and the
-                aspect ratio, determines the size of the viewport through which the world is viewed (in world
-                co-ordinates). Note that this world viewport is different to a screen viewport, which has it's
-                dimensions expressed in pixels. The frustums viewport should have the same aspect ratio as the
-                screen viewport it renders into to avoid distortion.
-            @param
-                near The distance to the near clipping plane from the frustum in world coordinates.
-         */
+		/**
+		 * @brief	Sets the distance from the frustum to the near clipping plane. Anything
+		 *			closer than the near clipping plane will not be rendered. Decreasing this value
+		 *			decreases depth buffer precision.
+		 */
         virtual void setNearClipDistance(float nearDist);
 
-        /** Sets the position of the near clipping plane.
-        */
-        virtual float getNearClipDistance(void) const;
+		/**
+		 * @brief	Retrieves the distance from the frustum to the near clipping plane. Anything
+		 *			closer than the near clipping plane will not be rendered. Decreasing this value
+		 *			decreases depth buffer precision.
+		 */
+        virtual float getNearClipDistance() const;
 
-        /** Sets the distance to the far clipping plane.
-            @remarks
-                The view frustum is a pyramid created from the frustum position and the edges of the viewport.
-                This method sets the distance for the far end of that pyramid. 
-                Different applications need different values: e.g. a flight sim
-                needs a much further far clipping plane than a first-person 
-                shooter. An important point here is that the larger the ratio 
-                between near and far clipping planes, the lower the accuracy of
-                the Z-buffer used to depth-cue pixels. This is because the
-                Z-range is limited to the size of the Z buffer (16 or 32-bit) 
-                and the max values must be spread over the gap between near and
-                far clip planes. As it happens, you can affect the accuracy far 
-                more by altering the near distance rather than the far distance, 
-                but keep this in mind.
-            @param
-                far The distance to the far clipping plane from the frustum in 
-                world coordinates.If you specify 0, this means an infinite view
-                distance which is useful especially when projecting shadows; but
-                be careful not to use a near distance too close.
-        */
+		/**
+		 * @brief	Sets the distance from the frustum to the far clipping plane. Anything
+		 *			farther than the far clipping plane will not be rendered. Increasing this value
+		 *			decreases depth buffer precision.
+		 */
         virtual void setFarClipDistance(float farDist);
 
-        /** Retrieves the distance from the frustum to the far clipping plane.
-        */
-        virtual float getFarClipDistance(void) const;
+		/**
+		 * @brief	Retrieves the distance from the frustum to the far clipping plane. Anything
+		 *			farther than the far clipping plane will not be rendered. Increasing this value
+		 *			decreases depth buffer precision.
+		 */
+        virtual float getFarClipDistance() const;
 
-        /** Sets the aspect ratio for the frustum viewport.
-            @remarks
-                The ratio between the x and y dimensions of the rectangular area visible through the frustum
-                is known as aspect ratio: aspect = width / height .
-            @par
-                The default for most fullscreen windows is 1.3333 - this is also assumed by Ogre unless you
-                use this method to state otherwise.
-        */
+		/**
+		 * @brief	Sets the current viewport aspect ratio (width / height).
+		 */
         virtual void setAspectRatio(float ratio);
 
-        /** Retreives the current aspect ratio.
-        */
-        virtual float getAspectRatio(void) const;
+		/**
+		 * @brief	Returns current viewport aspect ratio (width / height).
+		 */
+        virtual float getAspectRatio() const;
 
-        /** Sets frustum offsets, used in stereo rendering.
-            @remarks
-                You can set both horizontal and vertical plane offsets of "eye"; in
-                stereo rendering frustum is moved in horizontal plane. To be able to
-                render from two "eyes" you'll need two cameras rendering on two
-                RenderTargets.
-            @par
-                The frustum offsets is in world coordinates, and default to (0, 0) - no offsets.
-            @param
-                offset The horizontal and vertical plane offsets.
-        */
-        virtual void setFrustumOffset(const Vector2& offset);
-
-        /** Sets frustum offsets, used in stereo rendering.
-            @remarks
-                You can set both horizontal and vertical plane offsets of "eye"; in
-                stereo rendering frustum is moved in horizontal plane. To be able to
-                render from two "eyes" you'll need two cameras rendering on two
-                RenderTargets.
-            @par
-                The frustum offsets is in world coordinates, and default to (0, 0) - no offsets.
-            @param
-                horizontal The horizontal plane offset.
-            @param
-                vertical The vertical plane offset.
-        */
-        virtual void setFrustumOffset(float horizontal = 0.0, float vertical = 0.0);
-
-        /** Retrieves the frustum offsets.
-        */
-        virtual const Vector2& getFrustumOffset() const;
-
-        /** Sets frustum focal length (used in stereo rendering).
-            @param
-                focalLength The distance to the focal plane from the frustum in world coordinates.
-        */
-        virtual void setFocalLength(float focalLength = 1.0);
-
-        /** Returns focal length of frustum.
-        */
-        virtual float getFocalLength() const;
-
-		/** Manually set the extents of the frustum.
-		@param left, right, top, bottom The position where the side clip planes intersect
-			the near clip plane, in eye space
+		/** @brief	Manually set the extents of the frustum that will be used when calculating the
+		 *			projection matrix. This will prevents extents for being automatically calculated
+		 *			from aspect and near plane so it is up to the caller to keep these values
+		 *			accurate.
+		 *
+		 *	@param left		The position where the left clip plane intersect the near clip plane, in view space.
+		 *  @param right	The position where the right clip plane intersect the near clip plane, in view space.
+		 *  @param top		The position where the top clip plane intersect the near clip plane, in view space.
+		 *  @param bottom	The position where the bottom clip plane intersect the near clip plane, in view space.
 		*/
 		virtual void setFrustumExtents(float left, float right, float top, float bottom);
-		/** Reset the frustum extents to be automatically derived from other params. */
+
+		/** 
+		 * @brief	Resets frustum extents so they are automatically derived from other values.
+		 *			This is only relevant if you have previously set custom extents.
+		 */
 		virtual void resetFrustumExtents(); 
-		/** Get the extents of the frustum in view space. */
+
+		/** 
+		 * @brief	Returns the extents of the frustum in view space at the near plane.
+		 */
 		virtual void getFrustumExtents(float& outleft, float& outright, float& outtop, float& outbottom) const;
 
+		/** 
+		 * @brief	Returns the standard projection matrix that determines how are 3D points
+		 *			projected to two dimensions. The layout of this matrix depends on currently
+		 *			used render system.
+		 *
+		 * @note	You should use this matrix when sending the matrix to the render system to remain
+		 *			everything works consistently when other render systems are used.
+		 */
+        virtual const Matrix4& getProjectionMatrixRS() const;
 
-        /** Gets the projection matrix for this frustum adjusted for the current
-			rendersystem specifics (may be right or left-handed, depth range
-			may vary).
-        @remarks
-            This method retrieves the rendering-API dependent version of the projection
-            matrix. If you want a 'typical' projection matrix then use 
-            getProjectionMatrix.
+		/** 
+		 * @brief	Returns the standard projection matrix that determines how are 3D points
+		 *			projected to two dimensions. Returned matrix is standard following right-hand
+		 *			rules and depth range of [-1, 1]. 
+		 *
+		 * @note	Different render systems will expect different projection matrix layouts, in which
+		 *			case use getProjectionMatrixRS.
+         */
+        virtual const Matrix4& getProjectionMatrix() const;
 
-        */
-        virtual const Matrix4& getProjectionMatrixRS(void) const;
-        /** Gets the depth-adjusted projection matrix for the current rendersystem,
-			but one which still conforms to right-hand rules.
-        @remarks
-            This differs from the rendering-API dependent getProjectionMatrix
-            in that it always returns a right-handed projection matrix result 
-            no matter what rendering API is being used - this is required for
-            vertex and fragment programs for example. However, the resulting depth
-            range may still vary between render systems since D3D uses [0,1] and 
-            GL uses [-1,1], and the range must be kept the same between programmable
-            and fixed-function pipelines.
-        */
-        virtual const Matrix4& getProjectionMatrixWithRSDepth(void) const;
-        /** Gets the normal projection matrix for this frustum, ie the 
-        projection matrix which conforms to standard right-handed rules and
-        uses depth range [-1,+1].
-        @remarks
-            This differs from the rendering-API dependent getProjectionMatrixRS
-            in that it always returns a right-handed projection matrix with depth
-            range [-1,+1], result no matter what rendering API is being used - this
-            is required for some uniform algebra for example.
-        */
-        virtual const Matrix4& getProjectionMatrix(void) const;
+		/** 
+		 * @brief	Gets the camera view matrix. Used for positioning/orienting the camera.
+         */
+        virtual const Matrix4& getViewMatrix() const;
 
-        /** Gets the view matrix for this frustum. Mainly for use by OGRE internally.
-        */
-        virtual const Matrix4& getViewMatrix(void) const;
+		/** 
+		 * @brief	Sets whether the camera should use the custom view matrix.
+		 *			When this is enabled camera will no longer calculate its view matrix
+		 *			based on position/orientation and caller will be resonsible to keep 
+		 *			the view matrix up to date.
+         */
+		virtual void setCustomViewMatrix(bool enable, const Matrix4& viewMatrix = Matrix4::IDENTITY);
 
-		/** Set whether to use a custom view matrix on this frustum.
-		@remarks
-			This is an advanced method which allows you to manually set
-			the view matrix on this frustum, rather than having it calculate
-			itself based on it's position and orientation. 
-		@note
-			After enabling a custom view matrix, the frustum will no longer
-			update on its own based on position / orientation changes. You 
-			are completely responsible for keeping the view matrix up to date.
-			The custom matrix will be returned from getViewMatrix.
-		@param enable If true, the custom view matrix passed as the second 
-			parameter will be used in preference to an auto calculated one. If
-			false, the frustum will revert to auto calculating the view matrix.
-		@param viewMatrix The custom view matrix to use, the matrix must be an
-            affine matrix.
-		@see Frustum::setCustomProjectionMatrix, Matrix4::isAffine
-		*/
-		virtual void setCustomViewMatrix(bool enable, 
-			const Matrix4& viewMatrix = Matrix4::IDENTITY);
-		/// Returns whether a custom view matrix is in use
-		virtual bool isCustomViewMatrixEnabled(void) const 
-		{ return mCustomViewMatrix; }
+		/** 
+		 * @brief	Returns true if a custom view matrix is used.
+         */
+		virtual bool isCustomViewMatrixEnabled() const { return mCustomViewMatrix; }
 		
-		/** Set whether to use a custom projection matrix on this frustum.
-		@remarks
-			This is an advanced method which allows you to manually set
-			the projection matrix on this frustum, rather than having it 
-			calculate itself based on it's position and orientation. 
-		@note
-			After enabling a custom projection matrix, the frustum will no 
-			longer update on its own based on field of view and near / far
-			distance changes. You are completely responsible for keeping the 
-			projection matrix up to date if those values change. The custom 
-			matrix will be returned from getProjectionMatrix and derivative
-			functions.
-		@param enable If true, the custom projection matrix passed as the 
-			second parameter will be used in preference to an auto calculated 
-			one. If	false, the frustum will revert to auto calculating the 
-			projection matrix.
-		@param projectionMatrix The custom view matrix to use
-		@see Frustum::setCustomViewMatrix
-		*/
-		virtual void setCustomProjectionMatrix(bool enable, 
-			const Matrix4& projectionMatrix = Matrix4::IDENTITY);
-		/// Returns whether a custom projection matrix is in use
-		virtual bool isCustomProjectionMatrixEnabled(void) const
-		{ return mCustomProjMatrix; }
+		/** 
+		 * @brief	Sets whether the camera should use the custom projection matrix.
+		 *			When this is enabled camera will no longer calculate its projection matrix
+		 *			based on field of view, aspect and other parameters and caller will be
+		 *			resonsible to keep the projection matrix up to date.
+         */
+		virtual void setCustomProjectionMatrix(bool enable, const Matrix4& projectionMatrix = Matrix4::IDENTITY);
 
-		/** Retrieves the clipping planes of the frustum (world space).
-        @remarks
-            The clipping planes are ordered as declared in enumerate constants FrustumPlane.
-        */
-        virtual const Plane* getFrustumPlanes(void) const;
+		/** 
+		 * @brief	Returns true if a custom projection matrix is used.
+         */
+		virtual bool isCustomProjectionMatrixEnabled() const { return mCustomProjMatrix; }
 
-        /** Retrieves a specified plane of the frustum (world space).
-            @remarks
-                Gets a reference to one of the planes which make up the frustum frustum, e.g. for clipping purposes.
-        */
-        virtual const Plane& getFrustumPlane( unsigned short plane ) const;
+		/** 
+		 * @brief	Returns all frustum planes in an array.
+		 *
+		 * @note	Planes will be in order as specified by FrustumPlane enum.
+         */
+        virtual const Plane* getFrustumPlanes() const;
 
-        /** Tests whether the given container is visible in the Frustum.
-            @param
-                bound Bounding box to be checked (world space)
-            @param
-                culledBy Optional pointer to an int which will be filled by the plane number which culled
-                the box if the result was false;
-            @returns
-                If the box was visible, true is returned.
-            @par
-                Otherwise, false is returned.
-        */
+		/** 
+		 * @brief	Returns one of the planes forming the camera frustum in world space.
+		 *
+		 * @param	plane	Index of the plane to retrieve from FrustumPlane enum.
+         */
+        virtual const Plane& getFrustumPlane(UINT16 plane) const;
+
+        /** 
+		 * @brief	Tests whether the given bounding box is visible in the frustum.
+		 *
+		 * @param	bound		Bounding box to check in world space.
+		 * @param	culledBy	(optional)	Exact frustum plane which culled the bounding box.
+         */
         virtual bool isVisible(const AABox& bound, FrustumPlane* culledBy = 0) const;
 
-        /** Tests whether the given container is visible in the Frustum.
-            @param
-                bound Bounding sphere to be checked (world space)
-            @param
-                culledBy Optional pointer to an int which will be filled by the plane number which culled
-                the box if the result was false;
-            @returns
-                If the sphere was visible, true is returned.
-            @par
-                Otherwise, false is returned.
-        */
+        /** 
+		 * @brief	Tests whether the given sphere is visible in the frustum.
+		 *
+		 * @param	bound		Sphere to check in world space.
+		 * @param	culledBy	(optional)	Exact frustum plane which culled the sphere.
+         */
         virtual bool isVisible(const Sphere& bound, FrustumPlane* culledBy = 0) const;
 
-        /** Tests whether the given vertex is visible in the Frustum.
-            @param
-                vert Vertex to be checked (world space)
-            @param
-                culledBy Optional pointer to an int which will be filled by the plane number which culled
-                the box if the result was false;
-            @returns
-                If the box was visible, true is returned.
-            @par
-                Otherwise, false is returned.
-        */
-        virtual bool isVisible(const Vector3& vert, FrustumPlane* culledBy = 0) const;
+        /** 
+		 * @brief	Tests whether the given vertex is visible in the frustum.
+		 *
+		 * @param	vert		Vertex to check in world space.
+		 * @param	culledBy	(optional)	Exact frustum plane which culled the vertex.
+         */
+        virtual bool isVisible(const Vector3& vert, FrustumPlane* culledBy = nullptr) const;
 
-        /** Overridden from MovableObject */
-        const AABox& getBoundingBox(void) const;
+		/**
+		 * @brief	Returns the bounding of the frustum.
+		 */
+        const AABox& getBoundingBox() const;
 
-        /** Overridden from MovableObject */
-		float getBoundingRadius(void) const;
-
-        /** Gets the world space corners of the frustum.
-        @remarks
-            The corners are ordered as follows: top-right near, 
-            top-left near, bottom-left near, bottom-right near, 
-            top-right far, top-left far, bottom-left far, bottom-right far.
-        */
-        virtual const Vector3* getWorldSpaceCorners(void) const;
-
-        /** Sets the type of projection to use (orthographic or perspective). Default is perspective.
-        */
+		/**
+		 * @brief	Sets the type of projection used by the camera.
+		 */
         virtual void setProjectionType(ProjectionType pt);
 
-        /** Retrieves info on the type of projection used (orthographic or perspective).
-        */
-        virtual ProjectionType getProjectionType(void) const;
+		/**
+		 * @brief	Returns the type of projection used by the camera.
+		 */
+        virtual ProjectionType getProjectionType() const;
 
-		/** Sets the orthographic window settings, for use with orthographic rendering only. 
-		@note Calling this method will recalculate the aspect ratio, use 
-			setOrthoWindowHeight or setOrthoWindowWidth alone if you wish to 
-			preserve the aspect ratio but just fit one or other dimension to a 
-			particular size.
-		@param w, h The dimensions of the view window in world units
-		*/
+		/**
+		 * @brief	Sets the orthographic window height, for use with orthographic rendering only. 
+		 *
+		 * @param	w	Width of the window in world units.
+		 * @param	h	Height of the window in world units.
+		 *
+		 * @note	Calling this method will recalculate the aspect ratio, use setOrthoWindowHeight or 
+		 *			setOrthoWindowWidth alone if you wish to preserve the aspect ratio but just fit one 
+		 *			or other dimension to a particular size.
+		 */
 		virtual void setOrthoWindow(float w, float h);
-		/** Sets the orthographic window height, for use with orthographic rendering only. 
-		@note The width of the window will be calculated from the aspect ratio. 
-		@param h The height of the view window in world units
-		*/
+
+		/**
+		 * @brief	Sets the orthographic window height, for use with orthographic rendering only. 
+		 *
+		 * @param	h	Height of the window in world units.
+		 *
+		 * @note	The width of the window will be calculated from the aspect ratio. 
+		 */
 		virtual void setOrthoWindowHeight(float h);
-		/** Sets the orthographic window width, for use with orthographic rendering only. 
-		@note The height of the window will be calculated from the aspect ratio. 
-		@param w The width of the view window in world units
-		*/
+
+		/**
+		 * @brief	Sets the orthographic window width, for use with orthographic rendering only. 
+		 *
+		 * @param	w	Width of the window in world units.
+		 *
+		 * @note	The height of the window will be calculated from the aspect ratio. 
+		 */
 		virtual void setOrthoWindowWidth(float w);
-		/** Gets the orthographic window height, for use with orthographic rendering only. 
-		*/
+
+		/**
+		 * @brief	Gets the orthographic window width in world units, for use with orthographic rendering only. 
+		 */
 		virtual float getOrthoWindowHeight() const;
-		/** Gets the orthographic window width, for use with orthographic rendering only. 
-		@note This is calculated from the orthographic height and the aspect ratio
-		*/
+
+		/**
+		 * @brief	Gets the orthographic window width in world units, for use with orthographic rendering only. 
+		 *
+		 * @note	This is calculated from the orthographic height and the aspect ratio.
+		 */
 		virtual float getOrthoWindowWidth() const;
 
+		/**
+		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
+		 */
 		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; }
+
+		/**
+		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
+		 */
 		bool getIgnoreSceneRenderables() const { return mIgnoreSceneRenderables; }
 
+		/**
+		 * @brief	Gets a priority that determines in which orders the cameras are rendered.
+		 *			This only applies to cameras rendering to the same render target. 
+		 */
 		INT32 getPriority() const { return mPriority; }
 
 		/**
-		 * @brief	Sets a priority that determines in which orders the cameras are rendered to.
+		 * @brief	Sets a priority that determines in which orders the cameras are rendered.
 		 * 			This only applies to cameras rendering to the same render target. 
 		 *
 		 * @param	priority	The priority. Higher value means the camera will be rendered sooner.
 		 */
 		void setPriority(INT32 priority) { mPriority = priority; }
 
+		/**
+		 * @brief	Retrieves layer bitfield that is used when determining which object should the camera render.
+		 */
 		UINT64 getLayers() const { return mLayers; }
+
+		/**
+		 * @brief	Sets layer bitfield that is used when determining which object should the camera render.
+		 */
 		void setLayers(UINT64 layers) { mLayers = layers; }
 
-        /// Small constant used to reduce far plane projection to avoid inaccuracies
-        static const float INFINITE_FAR_PLANE_ADJUST;
-    protected:
-		ViewportPtr mViewport;
-		UINT64 mLayers;
+        static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
 
-		/// Orthographic or perspective?
-		ProjectionType mProjType;
-
-		/// y-direction field-of-view (default 45)
-		Radian mHorzFOV;
-		/// Far clip distance - default 10000
-		float mFarDist;
-		/// Near clip distance - default 100
-		float mNearDist;
-		/// x/y viewport ratio - default 1.3333
-		float mAspect;
-		/// Ortho height size (world units)
-		float mOrthoHeight;
-		/// Off-axis frustum center offset - default (0.0, 0.0)
-		Vector2 mFrustumOffset;
-		/// Focal length of frustum (for stereo rendering, defaults to 1.0)
-		float mFocalLength;
-		INT32 mPriority;
-
-		/// The 6 main clipping planes
-		mutable Plane mFrustumPlanes[6];
-
-		/// Stored versions of parent orientation / position
-		mutable Quaternion mLastParentOrientation;
-		mutable Vector3 mLastParentPosition;
-
-		/// Pre-calced projection matrix for the specific render system
-		mutable Matrix4 mProjMatrixRS;
-		/// Pre-calced standard projection matrix but with render system depth range
-		mutable Matrix4 mProjMatrixRSDepth;
-		/// Pre-calced standard projection matrix
-		mutable Matrix4 mProjMatrix;
-		/// Pre-calced view matrix
-		mutable Matrix4 mViewMatrix;
-		/// Something's changed in the frustum shape?
-		mutable bool mRecalcFrustum;
-		/// Something re the frustum planes has changed
-		mutable bool mRecalcFrustumPlanes;
-		/// Something re the world space corners has changed
-		mutable bool mRecalcWorldSpaceCorners;
-		/// Something re the vertex data has changed
-		mutable bool mRecalcVertexData;
-		/// Are we using a custom view matrix?
-		bool mCustomViewMatrix;
-		/// Are we using a custom projection matrix?
-		bool mCustomProjMatrix;
-		/// Have the frustum extents been manually set?
-		bool mFrustumExtentsManuallySet;
-		bool mIgnoreSceneRenderables;
-		/// Frustum extents
-		mutable float mLeft, mRight, mTop, mBottom;
-
-		// Internal functions for calcs
+	protected:
+		/**
+		 * @brief	Calculate projection parameters that are used when constructing the projection matrix.
+		 */
 		virtual void calcProjectionParameters(float& left, float& right, float& bottom, float& top) const;
-		/// Update frustum if out of date
-		virtual void updateFrustum(void) const;
-		/// Implementation of updateFrustum (called if out of date)
-		virtual void updateFrustumImpl(void) const;
-		virtual void updateFrustumPlanes(void) const;
-		/// Implementation of updateFrustumPlanes (called if out of date)
-		virtual void updateFrustumPlanesImpl(void) const;
-		virtual void updateWorldSpaceCorners(void) const;
-		/// Implementation of updateWorldSpaceCorners (called if out of date)
-		virtual void updateWorldSpaceCornersImpl(void) const;
-		virtual void updateView(void) const;
-		virtual bool isFrustumOutOfDate(void) const;
-		/// Signal to update frustum information.
-		virtual void invalidateFrustum(void) const;
 
-		mutable AABox mBoundingBox;
+		/**
+		 * @brief	Recalculate frustum if dirty.
+		 */
+		virtual void updateFrustum() const;
 
-		mutable Vector3 mWorldSpaceCorners[8];
+		/**
+		 * @brief	Recalculate frustum planes if dirty.
+		 */
+		virtual void updateFrustumPlanes() const;
 
-    public:
-		/** Standard constructor.
-        */
-		Camera(const HSceneObject& parent, RenderTargetPtr target = nullptr,
-			float left = 0.0f, float top = 0.0f,
-			float width = 1.0f, float height = 1.0f);
+		/**
+		 * @brief	Update view matrix from parent position/orientation.
+		 *
+		 * @note	Does nothing when custom view matrix is set.
+		 */
+		virtual void updateView() const;
 
-        /** Standard destructor.
-        */
-        virtual ~Camera();
+		/**
+		 * @brief	Checks if the frustum requires updating.
+		 */
+		virtual bool isFrustumOutOfDate() const;
 
-		ViewportPtr getViewport() const { return mViewport; }
+		/**
+		 * @brief	Notify camera that the frustum requires to be updated.
+		 */
+		virtual void invalidateFrustum() const;
+
+    protected:
+		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
+		UINT64 mLayers; /**< Bitfield that can be used for filtering what objects the camera sees. */
+
+		ProjectionType mProjType; /**< Type of camera projection. */
+		Radian mHorzFOV; /**< Horizontal field of view represents how wide is the camera angle. */
+		float mFarDist; /**< Clip any objects further than this. Larger value decreases depth precision at smaller depths. */
+		float mNearDist; /**< Clip any objects close than this. Smaller value decreases depth precision at larger depths. */
+		float mAspect; /**< Width/height viewport ratio. */
+		float mOrthoHeight; /**< Height in world units used for orthographic cameras. */
+		INT32 mPriority; /**< Determines in what order will the camera be rendered. Higher priority means the camera will be rendered sooner. */
+
+		bool mCustomViewMatrix; /**< Is custom view matrix set. */
+		bool mCustomProjMatrix; /**< Is custom projection matrix set. */
+
+		bool mFrustumExtentsManuallySet; /**< Are frustum extents manually set. */
+		bool mIgnoreSceneRenderables; /**< Should the camera ignore renderable components. */
+
+		mutable Matrix4 mProjMatrixRS; /**< Cached render-system specific projection matrix. */
+		mutable Matrix4 mProjMatrix; /**< Cached projection matrix that determines how are 3D points projected to a 2D viewport. */
+		mutable Matrix4 mViewMatrix; /**< Cached view matrix that determines camera position/orientation. */
+
+		mutable Plane mFrustumPlanes[6]; /**< Main clipping planes describing cameras visible area. */
+		mutable bool mRecalcFrustum; /**< Should frustum be recalculated. */
+		mutable bool mRecalcFrustumPlanes; /**< Should frustum planes be recalculated. */
+		mutable float mLeft, mRight, mTop, mBottom; /**< Frustum extents. */
+		mutable AABox mBoundingBox; /**< Frustum bounding box. */
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
@@ -504,6 +377,9 @@ namespace BansheeEngine {
 		friend class SceneObject;
 
 	public:
+		/**
+		 * @copydoc	Component::update
+		 */
 		virtual void update() {}
 
 		/************************************************************************/
@@ -517,7 +393,4 @@ namespace BansheeEngine {
 	protected:
 		Camera() {} // Serialization only
      };
-	 /** @} */
-	 /** @} */
-
 }

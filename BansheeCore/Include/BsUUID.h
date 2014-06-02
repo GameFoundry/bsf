@@ -14,6 +14,9 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT UUIDGenerator : public Module<UUIDGenerator>
 	{
+		/**
+		 * @brief	Type of UUID generation to use.
+		 */
 		enum UUIDVersion
 		{
 			UUIDV_TimeBased = 0x01

@@ -34,3 +34,5 @@ Profiler can only be called from sim/core thread which is also a bit weird.
 Find and rename any other CM_ defines
 
 Rename CamelotOIS external library
+
+Refactor Viewport as it is used on both core and sim threads and it has no locking of any kind.
