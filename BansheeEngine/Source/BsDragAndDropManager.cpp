@@ -32,7 +32,7 @@ namespace BansheeEngine
 		Platform::captureMouse(*gCoreApplication().getPrimaryWindow());
 	}
 
-	void DragAndDropManager::update()
+	void DragAndDropManager::_update()
 	{
 		if(!mIsDragInProgress)
 			return;
@@ -76,5 +76,7 @@ namespace BansheeEngine
 
 			endDrag(info.processed);
 		}
+		else
+			endDrag(false);
 	}
 }

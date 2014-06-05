@@ -26,4 +26,6 @@ DISREGARD MONITOR INDEX ON DX9
 
  -----------------------------
 
-Rename CamelotOIS external library to BansheeOIS
+Rename CamelotOIS external library
+
+Refactor Viewport as it is used on both core and sim threads and it has no locking of any kind.
