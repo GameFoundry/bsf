@@ -17,9 +17,6 @@ namespace BansheeEngine
 		UINT32 getNumSubmeshes(MeshBase* obj) { return (UINT32)obj->mSubMeshes.size(); }
 		void setNumSubmeshes(MeshBase* obj, UINT32 numElements) { obj->mSubMeshes.resize(numElements); }
 
-		SubMesh& getDefaultSubMesh(MeshBase* obj) { return obj->mDefaultSubMesh; }
-		void setDefaultSubMesh(MeshBase* obj, SubMesh& value) { obj->mDefaultSubMesh = value; }
-
 		UINT32& getNumVertices(MeshBase* obj) { return obj->mNumVertices; }
 		void setNumVertices(MeshBase* obj, UINT32& value) { obj->mNumVertices = value; }
 
@@ -34,8 +31,6 @@ namespace BansheeEngine
 
 			addPlainArrayField("mSubMeshes", 2, &MeshBaseRTTI::getSubMesh, 
 				&MeshBaseRTTI::getNumSubmeshes, &MeshBaseRTTI::setSubMesh, &MeshBaseRTTI::setNumSubmeshes);
-
-			addPlainField("mDefaultSubMesh", 3, &MeshBaseRTTI::getDefaultSubMesh, &MeshBaseRTTI::setDefaultSubMesh);
 		}
 
 		virtual std::shared_ptr<IReflectable> newRTTIObject() 

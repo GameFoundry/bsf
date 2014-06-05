@@ -7,7 +7,7 @@
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsVector2.h"
-#include "BsRenderQueue.h"
+#include "BsDrawList.h"
 #include "BsCoreApplication.h"
 #include "BsRendererManager.h"
 #include "BsRenderer.h"
@@ -389,7 +389,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void DockManager::render(const Viewport* viewport, RenderQueue& renderQueue)
+	void DockManager::render(const Viewport* viewport, DrawList& drawList)
 	{
 		if(!mShowOverlay)
 			return;
@@ -431,7 +431,7 @@ namespace BansheeEngine
 
 		mDropOverlayMat->setColor("highlightActive", highlightColor);
 
-		renderQueue.add(mDropOverlayMat.getInternalPtr(), mDropOverlayMesh.getInternalPtr(), 0, Vector3::ZERO);
+		drawList.add(mDropOverlayMat.getInternalPtr(), mDropOverlayMesh.getInternalPtr(), 0, Vector3::ZERO);
 	}
 
 	void DockManager::insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location)

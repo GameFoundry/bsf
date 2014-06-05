@@ -2,8 +2,8 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsCoreObject.h"
-#include "BsIndexData.h"
 #include "BsDrawOps.h"
+#include "BsIndexBuffer.h"
 
 namespace BansheeEngine
 {
@@ -54,6 +54,7 @@ namespace BansheeEngine
 
 			UseFlags useFlags;
 			UINT32 eventQueryIdx;
+			TransientMeshPtr mesh;
 		};
 
 		/**
@@ -104,32 +105,32 @@ namespace BansheeEngine
 			const VertexDataDescPtr& vertexDesc, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 
 		/**
-		 * @copydoc Resource::initialize_internal()
+		 * @copydoc CoreObject::initialize_internal()
 		 */
 		virtual void initialize_internal();
 
 		/**
-		 * @copydoc Resource::destroy_internal()
+		 * @copydoc CoreObject::destroy_internal()
 		 */
 		virtual void destroy_internal();
 
 		/**
 		 * @brief	Allocates a new mesh in the heap, expanding the heap if needed. 
 		 *
-		 * @param	meshId		Unique mesh ID.
+		 * @param	meshId		Mesh for which we are allocating the data.
 		 * @param	meshData	Data to initialize the new mesh with.
 		 *
 		 * @note	Core thread.
 		 */
-		void allocInternal(UINT32 meshId, const MeshDataPtr& meshData);
+		void allocInternal(TransientMeshPtr mesh, const MeshDataPtr& meshData);
 
 		/**
-		 * @brief	Deallocates the mesh with the provided ID. Freed memory
+		 * @brief	Deallocates the provided mesh Freed memory
 		 *			will be re-used as soon as the GPU is done with the mesh
 		 *
 		 * @note	Core thread.
 		 */
-		void deallocInternal(UINT32 meshId);
+		void deallocInternal(TransientMeshPtr mesh);
 
 		/**
 		 * @brief	Resizes the vertex buffers so they max contain the provided
@@ -166,12 +167,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets internal vertex data for all the meshes.
 		 */
-		std::shared_ptr<VertexData> getVertexData() const;
+		std::shared_ptr<VertexData> _getVertexData() const;
 
 		/**
 		 * @brief	Gets internal index data for all the meshes.
 		 */
-		std::shared_ptr<IndexData> getIndexData() const;
+		IndexBufferPtr _getIndexBuffer() const;
 
 		/**
 		 * @brief	Returns the offset in vertices from the start of the buffer
@@ -210,7 +211,7 @@ namespace BansheeEngine
 		UINT32 mNumIndices; // Core thread
 
 		std::shared_ptr<VertexData> mVertexData; // Core thread
-		std::shared_ptr<IndexData> mIndexData; // Core thread
+		IndexBufferPtr mIndexBuffer; // Core thread
 
 		Vector<UINT8*> mCPUVertexData; // Core thread
 		UINT8* mCPUIndexData; // Core thread

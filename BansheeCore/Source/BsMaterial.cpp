@@ -10,6 +10,7 @@
 #include "BsGpuParamDesc.h"
 #include "BsMaterialRTTI.h"
 #include "BsMaterialManager.h"
+#include "BsBindableGpuParams.h"
 #include "BsDebug.h"
 #include "BsResources.h"
 
@@ -695,6 +696,66 @@ namespace BansheeEngine
 		}
 
 		BS_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
+	}
+
+	MaterialProxy Material::_createProxy(FrameAlloc* allocator)
+	{
+		throwIfNotInitialized();
+
+		MaterialProxy proxy;
+
+		UINT32 numPasses = mShader->getBestTechnique()->getNumPasses();
+		for (UINT32 i = 0; i < numPasses; i++)
+		{
+			PassParametersPtr params = mParametersPerPass[i];
+			PassPtr pass = mShader->getBestTechnique()->getPass(i);
+
+			proxy.passes.push_back(MaterialProxy::PassData());
+			MaterialProxy::PassData& passData = proxy.passes.back();
+
+			if (pass->hasVertexProgram())
+			{
+				passData.vertexProg = pass->getVertexProgram();
+				passData.vertexProgParams = bs_shared_ptr<BindableGpuParams>(params->mVertParams, allocator);
+			}
+
+			if (pass->hasFragmentProgram())
+			{
+				passData.fragmentProg = pass->getFragmentProgram();
+				passData.fragmentProgParams = bs_shared_ptr<BindableGpuParams>(params->mFragParams, allocator);
+			}
+
+			if (pass->hasGeometryProgram())
+			{
+				passData.geometryProg = pass->getGeometryProgram();
+				passData.geometryProgParams = bs_shared_ptr<BindableGpuParams>(params->mGeomParams, allocator);
+			}
+
+			if (pass->hasHullProgram())
+			{
+				passData.hullProg = pass->getHullProgram();
+				passData.hullProgParams = bs_shared_ptr<BindableGpuParams>(params->mHullParams, allocator);
+			}
+
+			if (pass->hasDomainProgram())
+			{
+				passData.domainProg = pass->getDomainProgram();
+				passData.domainProgParams = bs_shared_ptr<BindableGpuParams>(params->mDomainParams, allocator);
+			}
+
+			if (pass->hasComputeProgram())
+			{
+				passData.computeProg = pass->getComputeProgram();
+				passData.computeProgParams = bs_shared_ptr<BindableGpuParams>(params->mComputeParams, allocator);
+			}
+
+			passData.blendState = pass->getBlendState();
+			passData.rasterizerState = pass->getRasterizerState();
+			passData.depthStencilState = pass->getDepthStencilState();
+			passData.stencilRefValue = pass->getStencilRefValue();
+		}
+
+		return proxy;
 	}
 
 	void Material::destroy_internal()

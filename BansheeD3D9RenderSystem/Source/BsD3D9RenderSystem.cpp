@@ -1103,32 +1103,30 @@ namespace BansheeEngine
 		mRenderStats.numRenderTargetChanges++;
 	}
 
-	void D3D9RenderSystem::setViewport(const ViewportPtr& vp)
+	void D3D9RenderSystem::setViewport(Viewport vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
-
-		assert(vp != nullptr);
 
 		// ok, it's different, time to set render target and viewport params
 		D3DVIEWPORT9 d3dvp;
 		HRESULT hr;
 
 		// Set render target
-		RenderTargetPtr target = vp->getTarget();
+		RenderTargetPtr target = vp.getTarget();
 		setRenderTarget(target);
 
 		setCullingMode( mCullingMode );
 
 		// set viewport dimensions
-		mViewportWidth = vp->getWidth();
-		mViewportHeight = vp->getHeight();
-		mViewportLeft = vp->getX();
-		mViewportTop = vp->getY();
+		mViewportWidth = vp.getWidth();
+		mViewportHeight = vp.getHeight();
+		mViewportLeft = vp.getX();
+		mViewportTop = vp.getY();
 
-		d3dvp.X = vp->getX();
-		d3dvp.Y = vp->getY();
-		d3dvp.Width = vp->getWidth();
-		d3dvp.Height = vp->getHeight();
+		d3dvp.X = vp.getX();
+		d3dvp.Y = vp.getY();
+		d3dvp.Width = vp.getWidth();
+		d3dvp.Height = vp.getHeight();
 		if (target->requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"

@@ -357,9 +357,6 @@
     <ClInclude Include="Include\BsMeshManager.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsIndexData.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsIndexBuffer.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
@@ -519,6 +516,21 @@
     <ClInclude Include="Include\BsProfilingManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsRenderableProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsCameraProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMaterialProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsDrawList.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMeshProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -674,9 +686,6 @@
     <ClCompile Include="Source\BsIndexBuffer.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsIndexData.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsMeshManager.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
@@ -820,6 +829,18 @@
     </ClCompile>
     <ClCompile Include="Source\BsProfilingManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderableProxy.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsDrawList.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsMeshProxy.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsCameraProxy.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

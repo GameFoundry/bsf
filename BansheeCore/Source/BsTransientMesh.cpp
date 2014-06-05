@@ -1,6 +1,5 @@
 #include "BsTransientMesh.h"
 #include "BsVertexData.h"
-#include "BsIndexData.h"
 #include "BsMeshHeap.h"
 
 namespace BansheeEngine
@@ -32,12 +31,12 @@ namespace BansheeEngine
 
 	std::shared_ptr<VertexData> TransientMesh::_getVertexData() const
 	{
-		return mParentHeap->getVertexData();
+		return mParentHeap->_getVertexData();
 	}
 
-	std::shared_ptr<IndexData> TransientMesh::_getIndexData() const
+	IndexBufferPtr TransientMesh::_getIndexBuffer() const
 	{
-		return mParentHeap->getIndexData();
+		return mParentHeap->_getIndexBuffer();
 	}
 
 	UINT32 TransientMesh::_getVertexOffset() const
@@ -53,5 +52,11 @@ namespace BansheeEngine
 	void TransientMesh::_notifyUsedOnGPU()
 	{
 		mParentHeap->notifyUsedOnGPU(mId);
+	}
+
+	void TransientMesh::_updateProxy()
+	{
+		mMeshProxy.updateData(mParentHeap->_getVertexData(), mParentHeap->_getIndexBuffer(),
+			SubMesh(mParentHeap->getIndexOffset(mId), getNumIndices(), getSubMesh(0).drawOp));
 	}
 }

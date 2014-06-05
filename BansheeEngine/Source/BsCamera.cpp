@@ -751,6 +751,19 @@ namespace BansheeEngine
 
     }
 
+	CameraProxy Camera::_createProxy() const
+	{
+		CameraProxy proxy;
+		proxy.layer = mLayers;
+		proxy.priority = mPriority;
+		proxy.projMatrix = getProjectionMatrixRS();
+		proxy.viewMatrix = getViewMatrix();
+		proxy.viewport = mViewport->clone();
+		proxy.ignoreSceneRenderables = mIgnoreSceneRenderables;
+
+		return proxy;
+	}
+
 	RTTITypeBase* Camera::getRTTIStatic()
 	{
 		return CameraRTTI::instance();

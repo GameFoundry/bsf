@@ -240,6 +240,9 @@
     <ClInclude Include="Include\BsBitmapWriter.h">
       <Filter>Header Files\Debug</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsBounds.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsThreadPool.cpp">
@@ -376,6 +379,9 @@
     </ClCompile>
     <ClCompile Include="Source\BsBitmapWriter.cpp">
       <Filter>Source Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsBounds.cpp">
+      <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

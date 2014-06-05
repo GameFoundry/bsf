@@ -88,6 +88,13 @@ namespace BansheeEngine
 		return mActiveFactory->createDockDropOverlayMaterial();
 	}
 
+	HMaterial BuiltinMaterialManager::createDummyMaterial() const
+	{
+		assert(mActiveFactory != nullptr);
+
+		return mActiveFactory->createDummyMaterial();
+	}
+
 	void BuiltinMaterialManager::addFactory(BuiltinMaterialFactory* factory)
 	{
 		assert(factory != nullptr);

@@ -311,29 +311,26 @@ namespace BansheeEngine
 		// Not used
 	}
 
-	void D3D11RenderSystem::setViewport(const ViewportPtr& vp)
+	void D3D11RenderSystem::setViewport(Viewport vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		assert(vp != nullptr);
-
 		// Set render target
-		RenderTargetPtr target = vp->getTarget();
+		RenderTargetPtr target = vp.getTarget();
 		setRenderTarget(target);
 
-		// set viewport dimensions
-		mViewport.TopLeftX = (FLOAT)vp->getX();
-		mViewport.TopLeftY = (FLOAT)vp->getY();
-		mViewport.Width = (FLOAT)vp->getWidth();
-		mViewport.Height = (FLOAT)vp->getHeight();
+		// Set viewport dimensions
+		mViewport.TopLeftX = (FLOAT)vp.getX();
+		mViewport.TopLeftY = (FLOAT)vp.getY();
+		mViewport.Width = (FLOAT)vp.getWidth();
+		mViewport.Height = (FLOAT)vp.getHeight();
 
-		if (vp->getTarget()->requiresTextureFlipping())
+		if (target->requiresTextureFlipping())
 		{
 			// Convert "top-left" to "bottom-left"
-			mViewport.TopLeftY = vp->getTarget()->getHeight() - mViewport.Height - mViewport.TopLeftY;
+			mViewport.TopLeftY = target->getHeight() - mViewport.Height - mViewport.TopLeftY;
 		}
 
-		// Z-values from 0.0 to 1.0 (TODO: standardise with OpenGL)
 		mViewport.MinDepth = 0.0f;
 		mViewport.MaxDepth = 1.0f;
 

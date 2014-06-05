@@ -248,12 +248,12 @@ namespace BansheeEngine {
 
 		if (useIndices)
 		{
-			std::shared_ptr<IndexData> indexData = mesh->_getIndexData();
+			IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
 
 			if(indexCount == 0)
-				indexCount = indexData->indexCount;
+				indexCount = indexBuffer->getNumIndices();
 
-			setIndexBuffer(indexData->indexBuffer);
+			setIndexBuffer(indexBuffer);
 			drawIndexed(indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
 		}
 		else

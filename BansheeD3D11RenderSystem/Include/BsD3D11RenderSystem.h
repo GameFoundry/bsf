@@ -43,7 +43,7 @@ namespace BansheeEngine
 		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		void setRenderTarget(RenderTargetPtr target);
-		void setViewport(const ViewportPtr& vp);
+		void setViewport(Viewport vp);
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
 
 		void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers);

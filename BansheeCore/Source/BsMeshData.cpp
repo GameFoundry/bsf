@@ -1,6 +1,8 @@
 #include "BsMeshData.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
+#include "BsSphere.h"
+#include "BsAABox.h"
 #include "BsHardwareBufferManager.h"
 #include "BsMeshDataRTTI.h"
 #include "BsVertexDeclaration.h"
@@ -10,15 +12,13 @@
 namespace BansheeEngine
 {
 	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType)
-	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mData(nullptr), mResourceIndexOffset(0),
-	   mResourceVertexOffset(0)
+	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mData(nullptr)
 	{
 		allocateInternalBuffer();
 	}
 
 	MeshData::MeshData()
-		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT), mData(nullptr), 
-		mResourceIndexOffset(0), mResourceVertexOffset(0)
+		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT), mData(nullptr)
 	{ }
 
 	MeshData::~MeshData()
@@ -55,7 +55,6 @@ namespace BansheeEngine
 	}
 
 	// TODO - This doesn't handle the case where multiple elements in same slot have different data types
-	//  - actually it will likely corrupt memory in that case
 	MeshDataPtr MeshData::combine(const Vector<MeshDataPtr>& meshes, const Vector<Vector<SubMesh>>& allSubMeshes, 
 		Vector<SubMesh>& subMeshes)
 	{
@@ -86,7 +85,7 @@ namespace BansheeEngine
 					{
 						if(newElement.getType() != existingElement.getType())
 						{
-							BS_EXCEPT(NotImplementedException, "Two elements have same semantics but different types. This is not supported yet.");
+							BS_EXCEPT(NotImplementedException, "Two elements have same semantics but different types. This is not supported.");
 						}
 
 						alreadyExistsIdx = idx;

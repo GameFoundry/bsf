@@ -76,7 +76,7 @@ namespace BansheeEngine
 		mWindowFrame = mSceneObject->addComponent<WindowFrameWidget>(mCamera->getViewport().get(), renderWindow.get(), EditorGUI::instance().getSkin());
 		mWindowFrame->setDepth(129);
 
-		mResizedConn = mCamera->getViewport()->onResized.connect(std::bind(&EditorWindowBase::resized, this));
+		mResizedConn = renderWindow->onResized.connect(std::bind(&EditorWindowBase::resized, this));
 	}
 
 	void EditorWindowBase::setPosition(INT32 x, INT32 y)

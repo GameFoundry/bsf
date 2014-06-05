@@ -6,13 +6,13 @@
 #include "BsMaterial.h"
 #include "BsPass.h"
 #include "BsCoreApplication.h"
-#include "BsRenderQueue.h"
+#include "BsDrawList.h"
 #include "BsCamera.h"
 #include "BsBuiltinMaterialManager.h"
 
 namespace BansheeEngine
 {
-	void DrawHelperTemplateBase::render(const HCamera& camera, RenderQueue& renderQueue)
+	void DrawHelperTemplateBase::render(const HCamera& camera, DrawList& drawList)
 	{
 		const Viewport* viewport = camera->getViewport().get();
 		Vector<DebugDrawCommand>& commands = mCommandsPerViewport[viewport];
@@ -36,7 +36,7 @@ namespace BansheeEngine
 				if(mat == nullptr || !mat.isLoaded() || !mat->isInitialized())
 					continue;
 
-				renderQueue.add(mat.getInternalPtr(), cmd.mesh.getInternalPtr(), 0, cmd.worldCenter);
+				drawList.add(mat.getInternalPtr(), cmd.mesh.getInternalPtr(), 0, cmd.worldCenter);
 			}
 			else if(cmd.type == DebugDrawType::ScreenSpace)
 			{
@@ -48,7 +48,7 @@ namespace BansheeEngine
 				cmd.matInfo2DScreenSpace.invViewportWidth.set(invViewportWidth);
 				cmd.matInfo2DScreenSpace.invViewportHeight.set(invViewportHeight);
 
-				renderQueue.add(mat.getInternalPtr(), cmd.mesh.getInternalPtr(), 0, cmd.worldCenter);
+				drawList.add(mat.getInternalPtr(), cmd.mesh.getInternalPtr(), 0, cmd.worldCenter);
 			}
 			else if(cmd.type == DebugDrawType::WorldSpace)
 			{
@@ -59,7 +59,7 @@ namespace BansheeEngine
 
 				cmd.matInfo3D.matViewProj.set(viewProjMatrix);
 
-				renderQueue.add(mat.getInternalPtr(), cmd.mesh.getInternalPtr(), 0, cmd.worldCenter);
+				drawList.add(mat.getInternalPtr(), cmd.mesh.getInternalPtr(), 0, cmd.worldCenter);
 			}
 		}
 

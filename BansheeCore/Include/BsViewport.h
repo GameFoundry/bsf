@@ -101,7 +101,10 @@ namespace BansheeEngine
 		bool getRequiresStencilClear() const { return mRequiresStencilClear; }
 		void setRequiresStencilClear(bool requiresClear) { mRequiresStencilClear = requiresClear; }
 
-		Event<void()> onResized;
+		/**
+		 * @brief	Makes an exact copy of this viewport.
+		 */
+		Viewport clone();
     protected:
         RenderTargetPtr mTarget;
 
@@ -115,8 +118,6 @@ namespace BansheeEngine
 		Color mClearColor;
 		float mDepthClearValue;
 		UINT16 mStencilClearValue;
-
-		HEvent mTargetResizedConn;
 
 		static const Color DEFAULT_CLEAR_COLOR;
 

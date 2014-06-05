@@ -85,7 +85,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::setViewport()
 		 */
-        void setViewport(const ViewportPtr& vp);
+		void setViewport(Viewport vp);
 
 		/**
 		 * @copydoc RenderSystem::bindGpuProgram()

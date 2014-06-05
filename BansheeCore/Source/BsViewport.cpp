@@ -20,26 +20,15 @@ namespace BansheeEngine
          :mTarget(target), mNormArea(x, y, width, height), mClearColor(DEFAULT_CLEAR_COLOR), mRequiresColorClear(true), 
 		 mRequiresDepthClear(true), mRequiresStencilClear(false), mStencilClearValue(0), mDepthClearValue(1.0f)
     {
-		if(target != nullptr)
-		{
-			// Note: RenderTarget resize will only get triggered for RenderWindows, RenderTextures are immutable
-			mTargetResizedConn = target->onResized.connect(std::bind(&Viewport::targetResized, this));
-		}
-
         updateArea();
     }
 
     Viewport::~Viewport()
-    {
-		mTargetResizedConn.disconnect();
-    }
+    { }
 
 	void Viewport::targetResized()
 	{
 		updateArea();
-
-		if(!onResized.empty())
-			onResized();
 	}
 
     void Viewport::updateArea()
@@ -65,4 +54,9 @@ namespace BansheeEngine
 
         updateArea();
     }
+
+	Viewport Viewport::clone()
+	{
+		return *this;
+	}
 }

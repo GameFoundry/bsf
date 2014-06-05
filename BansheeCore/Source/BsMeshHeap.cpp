@@ -4,7 +4,6 @@
 #include "BsHardwareBufferManager.h"
 #include "BsVertexDataDesc.h"
 #include "BsVertexData.h"
-#include "BsIndexData.h"
 #include "BsMeshData.h"
 #include "BsMath.h"
 #include "BsEventQuery.h"
@@ -76,7 +75,7 @@ namespace BansheeEngine
 
 		mMeshes[meshIdx] = transientMeshPtr;
 
-		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::allocInternal, this, meshIdx, meshData));
+		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::allocInternal, this, transientMeshPtr, meshData));
 
 		return transientMeshPtr;
 	}
@@ -90,15 +89,16 @@ namespace BansheeEngine
 		mesh->markAsDestroyed();
 		mMeshes.erase(iterFind);
 
-		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::deallocInternal, this, mesh->mId));
+		queueGpuCommand(getThisPtr(), std::bind(&MeshHeap::deallocInternal, this, mesh));
 	}
 
-	void MeshHeap::allocInternal(UINT32 meshId, const MeshDataPtr& meshData)
+	void MeshHeap::allocInternal(TransientMeshPtr mesh, const MeshDataPtr& meshData)
 	{
 		// Find free vertex chunk and grow if needed
 		UINT32 smallestVertFit = 0;
 		UINT32 smallestVertFitIdx = 0;
 
+		bool buffersModified = false;
 		while(smallestVertFit == 0)
 		{
 			UINT32 curIdx = 0;
@@ -125,6 +125,7 @@ namespace BansheeEngine
 			}
 
 			growVertexBuffer(newNumVertices);
+			buffersModified = true;
 		}
 
 		// Find free index chunk and grow if needed
@@ -157,6 +158,16 @@ namespace BansheeEngine
 			}
 
 			growIndexBuffer(newNumIndices);
+			buffersModified = true;
+		}
+
+		if (buffersModified)
+		{
+			for (auto& allocData : mMeshAllocData)
+			{
+				if (allocData.second.useFlags != UseFlags::CPUFree && allocData.second.useFlags != UseFlags::Free)
+					allocData.second.mesh->_updateProxy();
+			}
 		}
 
 		UINT32 freeVertChunkIdx = 0;
@@ -243,8 +254,9 @@ namespace BansheeEngine
 		newAllocData.idxChunkIdx = freeIdxChunkIdx;
 		newAllocData.useFlags = UseFlags::GPUFree;
 		newAllocData.eventQueryIdx = createEventQuery();
+		newAllocData.mesh = mesh;
 
-		mMeshAllocData[meshId] = newAllocData;
+		mMeshAllocData[mesh->getMeshHeapId()] = newAllocData;
 
 		// Actually copy data
 		for(UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
@@ -292,8 +304,7 @@ namespace BansheeEngine
 			vertexBuffer->writeData(vertChunkStart * vertSize, meshData->getNumVertices() * vertSize, vertDest, BufferWriteType::NoOverwrite);
 		}
 
-		IndexBufferPtr indexBuffer = mIndexData->indexBuffer;
-		UINT32 idxSize = indexBuffer->getIndexSize();
+		UINT32 idxSize = mIndexBuffer->getIndexSize();
 
 		// Ensure index sizes match
 		if(meshData->getIndexElementSize() != idxSize)
@@ -304,12 +315,14 @@ namespace BansheeEngine
 
 		UINT8* idxDest = mCPUIndexData + idxChunkStart * idxSize;
 		memcpy(idxDest, meshData->getIndexData(), meshData->getNumIndices() * idxSize);
-		indexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
+		mIndexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
+
+		mesh->_updateProxy();
 	}
 
-	void MeshHeap::deallocInternal(UINT32 meshId)
+	void MeshHeap::deallocInternal(TransientMeshPtr mesh)
 	{
-		auto findIter = mMeshAllocData.find(meshId);
+		auto findIter = mMeshAllocData.find(mesh->getMeshHeapId());
 		assert(findIter != mMeshAllocData.end());
 
 		AllocatedData& allocData = findIter->second;
@@ -416,13 +429,10 @@ namespace BansheeEngine
 	{
 		mNumIndices = numIndices;
 
-		mIndexData = std::shared_ptr<IndexData>(bs_new<IndexData, PoolAlloc>());
-		mIndexData->indexCount = mNumIndices;
-		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			mIndexType, mIndexData->indexCount, GBU_DYNAMIC);
+		mIndexBuffer = HardwareBufferManager::instance().createIndexBuffer(mIndexType, mNumIndices, GBU_DYNAMIC);
 
 		// Copy all data to the new buffer
-		UINT32 idxSize = mIndexData->indexBuffer->getIndexSize();
+		UINT32 idxSize = mIndexBuffer->getIndexSize();
 
 		UINT8* oldBuffer = mCPUIndexData;
 		UINT8* buffer = (UINT8*)bs_alloc(idxSize * numIndices);
@@ -444,7 +454,7 @@ namespace BansheeEngine
 		}
 
 		if(destOffset > 0)
-			mIndexData->indexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
+			mIndexBuffer->writeData(0, destOffset * idxSize, buffer, BufferWriteType::NoOverwrite);
 
 		mCPUIndexData = buffer;
 
@@ -513,14 +523,14 @@ namespace BansheeEngine
 		mFreeEventQueries.push(idx);
 	}
 
-	std::shared_ptr<VertexData> MeshHeap::getVertexData() const
+	std::shared_ptr<VertexData> MeshHeap::_getVertexData() const
 	{
 		return mVertexData;
 	}
 
-	std::shared_ptr<IndexData> MeshHeap::getIndexData() const
+	IndexBufferPtr MeshHeap::_getIndexBuffer() const
 	{
-		return mIndexData;
+		return mIndexBuffer;
 	}
 
 	UINT32 MeshHeap::getVertexOffset(UINT32 meshId) const

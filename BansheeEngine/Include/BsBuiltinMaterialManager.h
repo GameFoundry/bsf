@@ -23,6 +23,7 @@ namespace BansheeEngine
 		virtual HMaterial createDebugDraw2DScreenSpaceMaterial() const = 0;
 		virtual HMaterial createDebugDraw3DMaterial() const = 0;
 		virtual HMaterial createDockDropOverlayMaterial() const = 0;
+		virtual HMaterial createDummyMaterial() const = 0;
 	};
 
 	/**
@@ -41,7 +42,8 @@ namespace BansheeEngine
 		DebugDraw2DClipSpaceMatInfo createDebugDraw2DClipSpaceMaterial() const;
 		DebugDraw2DScreenSpaceMatInfo createDebugDraw2DScreenSpaceMaterial() const;
 		DebugDraw3DMatInfo createDebugDraw3DMaterial() const;
-		HMaterial createDockDropOverlayMaterial() const;
+		HMaterial createDockDropOverlayMaterial() const; // TODO - This belongs in editor
+		HMaterial createDummyMaterial() const;
 
 		void addFactory(BuiltinMaterialFactory* factory);
 		void setActive(const String& renderSystemName);

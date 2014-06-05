@@ -11,11 +11,11 @@
 #include "BsVector2.h"
 #include "BsAABox.h"
 #include "BsVertexData.h"
-#include "BsIndexData.h"
 #include "BsPlane.h"
 #include "BsQuaternion.h"
 #include "BsRay.h"
 #include "BsComponent.h"
+#include "BsCameraProxy.h"
 
 namespace BansheeEngine {
 
@@ -496,6 +496,8 @@ namespace BansheeEngine {
         virtual ~Camera();
 
 		ViewportPtr getViewport() const { return mViewport; }
+
+		CameraProxy _createProxy() const;
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/

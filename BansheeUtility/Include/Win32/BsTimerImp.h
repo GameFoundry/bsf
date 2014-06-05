@@ -14,6 +14,8 @@ namespace BansheeEngine
 {
 	/**
 	 * @brief	Timer class used for querying high precision timers.
+	 *
+	 * @note	Not thread safe.
 	 */
 	class BS_UTILITY_EXPORT Timer
     {

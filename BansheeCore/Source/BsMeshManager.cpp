@@ -29,10 +29,10 @@ namespace BansheeEngine
 	}
 
 	MeshPtr MeshManager::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		const MeshDataPtr& initialData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
+		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) 
-			Mesh(numVertices, numIndices, vertexDesc, initialData, bufferType, drawOp, indexType));
+		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>())
+			Mesh(numVertices, numIndices, vertexDesc, subMeshes, bufferType, indexType));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 
@@ -42,6 +42,15 @@ namespace BansheeEngine
 	MeshPtr MeshManager::create(const MeshDataPtr& initialData, MeshBufferType bufferType, DrawOperationType drawOp)
 	{
 		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) Mesh(initialData, bufferType, drawOp));
+		mesh->_setThisPtr(mesh);
+		mesh->initialize();
+
+		return mesh;
+	}
+
+	MeshPtr MeshManager::create(const MeshDataPtr& initialData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+	{
+		MeshPtr mesh = bs_core_ptr<Mesh, PoolAlloc>(new (bs_alloc<Mesh, PoolAlloc>()) Mesh(initialData, subMeshes, bufferType));
 		mesh->_setThisPtr(mesh);
 		mesh->initialize();
 

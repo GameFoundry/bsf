@@ -298,6 +298,28 @@ namespace BansheeEngine
 	};
 
 	/**
+	 * @brief	Suggested queue priority numbers used for sorting objects in
+	 *			the render queue. Objects with higher priority will be renderer sooner.
+	 */
+	enum class QueuePriority
+	{
+		Opaque = 100000,
+		Transparent = 90000,
+		Skybox = 80000,
+		Overlay = 70000
+	};
+
+	/**
+	 * @brief	Type of sorting to perform on an object when added to a render queue.
+	 */
+	enum class QueueSortType
+	{
+		FrontToBack, /**< All objects with the same priority will be rendered front to back based on their center. */
+		BackToFront, /**< All objects with the same priority will be rendered back to front based on their center. */
+		None /**< Objects will not be sorted and will be processed in the order they were added to the queue. */
+	};
+
+	/**
 	 * @brief	Texture addressing mode, per component.
 	 */
 	struct UVWAddressingMode

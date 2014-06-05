@@ -16,31 +16,38 @@ namespace BansheeEngine
 {
 	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
-		:MeshBase(numVertices, numIndices, drawOp), mVertexData(nullptr), mIndexData(nullptr),
+		:MeshBase(numVertices, numIndices, drawOp), mVertexData(nullptr), mIndexBuffer(nullptr),
 		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
 	{
 
 	}
 
-	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
-		:MeshBase(numVertices, numIndices, drawOp), mVertexData(nullptr), mIndexData(nullptr),
-		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType), 
-		mTempInitialMeshData(initialMeshData)
+	Mesh::Mesh(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
+		:MeshBase(numVertices, numIndices, subMeshes), mVertexData(nullptr), mIndexBuffer(nullptr),
+		mVertexDesc(vertexDesc), mBufferType(bufferType), mIndexType(indexType)
 	{
 
 	}
 
 	Mesh::Mesh(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
 		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), drawOp), 
-		mVertexData(nullptr), mIndexData(nullptr), mIndexType(initialMeshData->getIndexType()),
+		mVertexData(nullptr), mIndexBuffer(nullptr), mIndexType(initialMeshData->getIndexType()),
+		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData)
+	{
+
+	}
+
+	Mesh::Mesh(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+		:MeshBase(initialMeshData->getNumVertices(), initialMeshData->getNumIndices(), subMeshes),
+		mVertexData(nullptr), mIndexBuffer(nullptr), mIndexType(initialMeshData->getIndexType()),
 		mVertexDesc(initialMeshData->getVertexDesc()), mTempInitialMeshData(initialMeshData)
 	{
 
 	}
 
 	Mesh::Mesh()
-		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mVertexData(nullptr), mIndexData(nullptr), 
+		:MeshBase(0, 0, DOT_TRIANGLE_LIST), mVertexData(nullptr), mIndexBuffer(nullptr), 
 		mBufferType(MeshBufferType::Static), mIndexType(IndexBuffer::IT_32BIT)
 	{
 
@@ -48,6 +55,7 @@ namespace BansheeEngine
 
 	Mesh::~Mesh()
 	{
+
 	}
 
 	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
@@ -57,9 +65,11 @@ namespace BansheeEngine
 		if(data.getTypeId() != TID_MeshData)
 			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
 
-		if(discardEntireBuffer)
+		const MeshData& meshData = static_cast<const MeshData&>(data);
+
+		if (discardEntireBuffer)
 		{
-			if(mBufferType == MeshBufferType::Static)
+			if (mBufferType == MeshBufferType::Static)
 			{
 				LOGWRN("Buffer discard is enabled but buffer was not created as dynamic. Disabling discard.");
 				discardEntireBuffer = false;
@@ -67,71 +77,67 @@ namespace BansheeEngine
 		}
 		else
 		{
-			if(mBufferType == MeshBufferType::Dynamic)
+			if (mBufferType == MeshBufferType::Dynamic)
 			{
 				LOGWRN("Buffer discard is not enabled but buffer was created as dynamic. Enabling discard.");
 				discardEntireBuffer = true;
 			}
 		}
 
-		const MeshData& meshData = static_cast<const MeshData&>(data);
-
 		// Indices
-		UINT32 indexOffset = meshData.getResourceIndexOffset() * meshData.getIndexElementSize();
 		UINT32 indicesSize = meshData.getIndexBufferSize();
-		UINT8* srcIdxData = meshData.getIndexData(); 
+		UINT8* srcIdxData = meshData.getIndexData();
 
-		if(meshData.getIndexElementSize() != mIndexData->indexBuffer->getIndexSize())
+		if (meshData.getIndexElementSize() != mIndexBuffer->getIndexSize())
 		{
-			BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
-				toString(mIndexData->indexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+			BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " +
+				toString(mIndexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
 		}
 
-		if((indexOffset + indicesSize) > mIndexData->indexBuffer->getSizeInBytes())
+		if (indicesSize > mIndexBuffer->getSizeInBytes())
 			BS_EXCEPT(InvalidParametersException, "Index buffer values are being written out of valid range.");
 
-		mIndexData->indexBuffer->writeData(indexOffset, indicesSize, srcIdxData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
+		mIndexBuffer->writeData(0, indicesSize, srcIdxData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
 		// Vertices
-		for(UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
+		for (UINT32 i = 0; i <= mVertexDesc->getMaxStreamIdx(); i++)
 		{
-			if(!mVertexDesc->hasStream(i))
+			if (!mVertexDesc->hasStream(i))
 				continue;
 
-			if(!meshData.getVertexDesc()->hasStream(i))
+			if (!meshData.getVertexDesc()->hasStream(i))
 				continue;
 
 			// Ensure both have the same sized vertices
 			UINT32 myVertSize = mVertexDesc->getVertexStride(i);
 			UINT32 otherVertSize = meshData.getVertexDesc()->getVertexStride(i);
-			if(myVertSize != otherVertSize)
+			if (myVertSize != otherVertSize)
 			{
-				BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " + 
+				BS_EXCEPT(InvalidParametersException, "Provided vertex size for stream " + toString(i) + " doesn't match meshes vertex size. Needed: " +
 					toString(myVertSize) + ". Got: " + toString(otherVertSize));
 			}
 
 			VertexBufferPtr vertexBuffer = mVertexData->getBuffer(i);
 
-			UINT32 bufferOffset = meshData.getResourceVertexOffset() * meshData.getVertexDesc()->getVertexStride(i);
 			UINT32 bufferSize = meshData.getStreamSize(i);
 			UINT8* srcVertBufferData = meshData.getStreamData(i);
 
-			if((bufferOffset + bufferSize) > vertexBuffer->getSizeInBytes())
+			if (bufferSize > vertexBuffer->getSizeInBytes())
 				BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(i) + "\" are being written out of valid range.");
 
-			if(vertexBuffer->vertexColorReqRGBFlip())
+			if (vertexBuffer->vertexColorReqRGBFlip())
 			{
 				UINT8* bufferCopy = (UINT8*)bs_alloc(bufferSize);
 				memcpy(bufferCopy, srcVertBufferData, bufferSize); // TODO Low priority - Attempt to avoid this copy
 
 				UINT32 vertexStride = meshData.getVertexDesc()->getVertexStride(i);
-				for(INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
+				for (INT32 semanticIdx = 0; semanticIdx < VertexBuffer::MAX_SEMANTIC_IDX; semanticIdx++)
 				{
-					if(!meshData.getVertexDesc()->hasElement(VES_COLOR, semanticIdx, i))
+					if (!meshData.getVertexDesc()->hasElement(VES_COLOR, semanticIdx, i))
 						continue;
 
 					UINT8* colorData = bufferCopy + mVertexDesc->getElementOffsetFromStream(VES_COLOR, semanticIdx, i);
-					for(UINT32 j = 0; j < mVertexData->vertexCount; j++)
+					for (UINT32 j = 0; j < mVertexData->vertexCount; j++)
 					{
 						UINT32* curColor = (UINT32*)colorData;
 
@@ -141,14 +147,34 @@ namespace BansheeEngine
 					}
 				}
 
-				vertexBuffer->writeData(bufferOffset, bufferSize, bufferCopy, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
+				vertexBuffer->writeData(0, bufferSize, bufferCopy, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 
 				bs_free(bufferCopy);
 			}
 			else
 			{
-				vertexBuffer->writeData(bufferOffset, bufferSize, srcVertBufferData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
+				vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 			}
+		}
+
+		// Update bounds
+		VertexDataDescPtr vertexDesc = meshData.getVertexDesc();
+		for (UINT32 i = 0; i < vertexDesc->getNumElements(); i++)
+		{
+			const VertexElement& curElement = vertexDesc->getElement(i);
+
+			if (curElement.getSemantic() != VES_POSITION || (curElement.getType() != VET_FLOAT3 && curElement.getType() != VET_FLOAT4))
+				continue;
+
+			UINT8* data = meshData.getElementData(curElement.getSemantic(), curElement.getSemanticIdx(), curElement.getStreamIdx());
+			UINT32 stride = vertexDesc->getVertexStride(curElement.getStreamIdx());
+
+			mBounds = calculateBounds((UINT8*)data, mTempInitialMeshData->getNumVertices(), stride);
+
+			for (auto& proxy : mMeshProxies)
+				proxy.updateBounds(mBounds);
+
+			break;
 		}
 	}
 
@@ -160,22 +186,21 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Invalid GpuResourceData type. Only MeshData is supported.");
 
 		IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT;
-		if(mIndexData)
-			indexType = mIndexData->indexBuffer->getType();
+		if(mIndexBuffer)
+			indexType = mIndexBuffer->getType();
 
 		MeshData& meshData = static_cast<MeshData&>(data);
 
-		if(mIndexData)
+		if(mIndexBuffer)
 		{
-			if(meshData.getIndexElementSize() != mIndexData->indexBuffer->getIndexSize())
+			if(meshData.getIndexElementSize() != mIndexBuffer->getIndexSize())
 			{
 				BS_EXCEPT(InvalidParametersException, "Provided index size doesn't match meshes index size. Needed: " + 
-					toString(mIndexData->indexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
+					toString(mIndexBuffer->getIndexSize()) + ". Got: " + toString(meshData.getIndexElementSize()));
 			}
 
-			UINT8* idxData = static_cast<UINT8*>(mIndexData->indexBuffer->lock(GBL_READ_ONLY));
-			UINT32 idxElemSize = mIndexData->indexBuffer->getIndexSize();
-			UINT32 indexResourceOffset = meshData.getResourceIndexOffset();
+			UINT8* idxData = static_cast<UINT8*>(mIndexBuffer->lock(GBL_READ_ONLY));
+			UINT32 idxElemSize = mIndexBuffer->getIndexSize();
 
 			UINT8* indices = nullptr;
 
@@ -184,17 +209,15 @@ namespace BansheeEngine
 			else
 				indices = (UINT8*)meshData.getIndices32();
 
-			UINT32 remainingNumIndices = (UINT32)std::max(0, (INT32)(mNumIndices - indexResourceOffset));
-			UINT32 numIndicesToCopy = std::min(remainingNumIndices, meshData.getNumIndices());
+			UINT32 numIndicesToCopy = std::min(mNumIndices, meshData.getNumIndices());
 
 			UINT32 indicesSize = numIndicesToCopy * idxElemSize;
 			if(indicesSize > meshData.getIndexBufferSize())
 				BS_EXCEPT(InvalidParametersException, "Provided buffer doesn't have enough space to store mesh indices.");
 
-			idxData += indexResourceOffset * idxElemSize;
 			memcpy(indices, idxData, numIndicesToCopy * idxElemSize);
 
-			mIndexData->indexBuffer->unlock();
+			mIndexBuffer->unlock();
 		}
 
 		if(mVertexData)
@@ -216,18 +239,15 @@ namespace BansheeEngine
 						toString(myVertSize) + ". Got: " + toString(otherVertSize));
 				}
 
-				UINT32 vertexResourceOffset = meshData.getResourceVertexOffset();
-				UINT32 bufferOffset = vertexResourceOffset * meshData.getVertexDesc()->getVertexStride(streamIdx);
-
 				UINT32 numVerticesToCopy = meshData.getNumVertices();
 
 				VertexBufferPtr vertexBuffer = iter->second;
 				UINT32 bufferSize = vertexBuffer->getVertexSize() * numVerticesToCopy;
 				
-				if((bufferOffset + bufferSize) > vertexBuffer->getSizeInBytes())
+				if(bufferSize > vertexBuffer->getSizeInBytes())
 					BS_EXCEPT(InvalidParametersException, "Vertex buffer values for stream \"" + toString(streamIdx) + "\" are being read out of valid range.");
 
-				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY)) + vertexResourceOffset * meshData.getVertexDesc()->getVertexStride(streamIdx);
+				UINT8* vertDataPtr = static_cast<UINT8*>(vertexBuffer->lock(GBL_READ_ONLY));
 
 				UINT8* dest = meshData.getStreamData(streamIdx);
 				memcpy(dest, vertDataPtr, bufferSize);
@@ -242,24 +262,12 @@ namespace BansheeEngine
 	MeshDataPtr Mesh::allocateSubresourceBuffer(UINT32 subresourceIdx) const
 	{
 		IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT;
-		if(mIndexData)
-			indexType = mIndexData->indexBuffer->getType();
+		if(mIndexBuffer)
+			indexType = mIndexBuffer->getType();
 
 		MeshDataPtr meshData = bs_shared_ptr<MeshData>(mVertexData->vertexCount, mNumIndices, mVertexDesc, indexType);
 
 		return meshData;
-	}
-
-	const AABox& Mesh::getBounds() const
-	{
-		// TODO - Retrieve bounds for entire mesh (need to calculate them during creation)
-		return AABox::BOX_EMPTY;
-	}
-
-	const AABox& Mesh::getBounds(UINT32 submeshIdx) const
-	{
-		// TODO - Retrieve bounds a specific sub-mesh (need to calculate them during creation)
-		return AABox::BOX_EMPTY;
 	}
 
 	std::shared_ptr<VertexData> Mesh::_getVertexData() const
@@ -269,24 +277,19 @@ namespace BansheeEngine
 		return mVertexData;
 	}
 
-	std::shared_ptr<IndexData> Mesh::_getIndexData() const
+	IndexBufferPtr Mesh::_getIndexBuffer() const
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		return mIndexData;
+		return mIndexBuffer;
 	}
 
 	void Mesh::initialize_internal()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 		
-		mIndexData = std::shared_ptr<IndexData>(bs_new<IndexData, PoolAlloc>());
-
-		mIndexData->indexCount = mNumIndices;
-		mIndexData->indexBuffer = HardwareBufferManager::instance().createIndexBuffer(
-			mIndexType,
-			mIndexData->indexCount, 
-			mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
+		mIndexBuffer = HardwareBufferManager::instance().createIndexBuffer(mIndexType,
+			mNumIndices, mBufferType == MeshBufferType::Dynamic ? GBU_DYNAMIC : GBU_STATIC);
 
 		mVertexData = std::shared_ptr<VertexData>(bs_new<VertexData, PoolAlloc>());
 
@@ -311,8 +314,13 @@ namespace BansheeEngine
 		if(mTempInitialMeshData != nullptr)
 		{
 			writeSubresource(0, *mTempInitialMeshData, mBufferType == MeshBufferType::Dynamic);
-
 			mTempInitialMeshData = nullptr;
+		}
+
+		for (auto& subMesh : mSubMeshes)
+		{
+			mMeshProxies.push_back(MeshProxy(mVertexData, mIndexBuffer, subMesh));
+
 		}
 
 		Resource::initialize_internal();
@@ -323,6 +331,27 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Resource::destroy_internal();
+	}
+
+	Bounds Mesh::calculateBounds(UINT8* verticesPtr, UINT32 numVertices, UINT32 stride) const
+	{
+		Bounds bounds;
+
+		if (mNumVertices > 0)
+		{
+			Vector3 curPosition = *(Vector3*)verticesPtr;
+			Sphere initialSphere(curPosition, 0.0f);
+			AABox initialBox(curPosition, curPosition);
+
+			bounds.setBounds(initialBox, initialSphere);
+			for (UINT32 i = 1; i < mNumVertices; i++)
+			{
+				Vector3 curPosition = *(Vector3*)(verticesPtr + stride * i);
+				bounds.merge(curPosition);
+			}
+		}
+
+		return bounds;
 	}
 
 	HMesh Mesh::dummy()
@@ -356,11 +385,10 @@ namespace BansheeEngine
 		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
-	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
+	HMesh Mesh::create(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 	{
-		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, 
-			initialMeshData, bufferType, drawOp, indexType);
+		MeshPtr meshPtr = _createPtr(numVertices, numIndices, vertexDesc, subMeshes, bufferType, indexType);
 
 		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
@@ -372,21 +400,32 @@ namespace BansheeEngine
 		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
 	}
 
+	HMesh Mesh::create(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+	{
+		MeshPtr meshPtr = _createPtr(initialMeshData, subMeshes, bufferType);
+
+		return static_resource_cast<Mesh>(gResources()._createResourceHandle(meshPtr));
+	}
+
 	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
 		MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
 	{
 		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, bufferType, drawOp, indexType);
 	}
 
-	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc, 
-		const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp, IndexBuffer::IndexType indexType)
+	MeshPtr Mesh::_createPtr(UINT32 numVertices, UINT32 numIndices, const VertexDataDescPtr& vertexDesc,
+		const Vector<SubMesh>& subMeshes, MeshBufferType bufferType, IndexBuffer::IndexType indexType)
 	{
-		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, 
-			initialMeshData, bufferType, drawOp, indexType);
+		return MeshManager::instance().create(numVertices, numIndices, vertexDesc, subMeshes, bufferType, indexType);
 	}
 
 	MeshPtr Mesh::_createPtr(const MeshDataPtr& initialMeshData, MeshBufferType bufferType, DrawOperationType drawOp)
 	{
 		return MeshManager::instance().create(initialMeshData, bufferType, drawOp);
+	}
+
+	MeshPtr Mesh::_createPtr(const MeshDataPtr& initialMeshData, const Vector<SubMesh>& subMeshes, MeshBufferType bufferType)
+	{
+		return MeshManager::instance().create(initialMeshData, subMeshes, bufferType);
 	}
 }

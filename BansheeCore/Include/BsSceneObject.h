@@ -187,6 +187,24 @@ namespace BansheeEngine
 		 */
 		void pitch(const Radian& angle);
 
+		/**
+		 * @brief	Forces any dirty transform matrices on this object to be updated.
+		 *
+		 * @note	Normally this is done internally when retrieving a transform, but sometimes
+		 *			it is useful to update transforms manually.
+		 */
+		void updateTransformsIfDirty();
+
+		/**
+		 * @brief	Called by the renderer to check if the transform changed in any way.
+		 */
+		bool _isRenderDataUpToDate() const { return mIsRenderDataUpToDate; }
+
+		/**
+		 * @brief	Called by the renderer to notify the scene object that render data has been updated.
+		 */
+		void _markRenderDataUpToDate() { mIsRenderDataUpToDate = true; }
+
 	private:
 		Vector3 mPosition;
 		Quaternion mRotation;
@@ -201,6 +219,8 @@ namespace BansheeEngine
 
 		mutable Matrix4 mCachedWorldTfrm;
 		mutable bool mIsCachedWorldTfrmUpToDate;
+
+		mutable bool mIsRenderDataUpToDate;
 
 		/**
 		 * @brief	Marks the transform as dirty so that we know to update

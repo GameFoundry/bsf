@@ -1,6 +1,5 @@
 #include "BsHardwareBufferManager.h"
 #include "BsVertexData.h"
-#include "BsIndexData.h"
 #include "BsGpuBuffer.h"
 #include "BsVertexDeclaration.h"
 #include "BsGpuParamBlockBuffer.h"

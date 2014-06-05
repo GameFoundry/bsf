@@ -130,6 +130,12 @@ namespace BansheeEngine
 	class VideoMode;
 	class VideoOutputInfo;
 	class VideoModeInfo;
+	class RenderableProxy;
+	class RenderableSubProxy;
+	class MeshProxy;
+	class CameraProxy;
+	class MaterialProxy;
+	class DrawList;
 	// Asset import
 	class SpecificImporter;
 	class Importer;
@@ -189,6 +195,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Pass> PassPtr;
 	typedef std::shared_ptr<Shader> ShaderPtr;
 	typedef std::shared_ptr<Material> MaterialPtr;
+	typedef std::shared_ptr<BindableGpuParams> BindableGpuParamsPtr;
 	typedef std::shared_ptr<Renderer> RendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
@@ -222,6 +229,8 @@ namespace BansheeEngine
 	typedef std::shared_ptr<OcclusionQuery> OcclusionQueryPtr;
 	typedef std::shared_ptr<ResourceManifest> ResourceManifestPtr;
 	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
+	typedef std::shared_ptr<DrawList> DrawListPtr;
+	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
 }
 
 /************************************************************************/

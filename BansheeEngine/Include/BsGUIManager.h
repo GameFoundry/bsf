@@ -81,7 +81,7 @@ namespace BansheeEngine
 		void unregisterWidget(GUIWidget* widget);
 
 		void update();
-		void render(ViewportPtr& target, RenderQueue& renderQueue) const;
+		void render(ViewportPtr& target, DrawList& drawList) const;
 
 		void queueForDestroy(GUIElement* element);
 

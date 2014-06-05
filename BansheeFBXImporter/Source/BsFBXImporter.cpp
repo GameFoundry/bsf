@@ -50,8 +50,7 @@ namespace BansheeEngine
 
 		shutDownSdk(fbxManager);
 
-		MeshPtr mesh = Mesh::_createPtr(meshData);
-		mesh->setSubMeshes(subMeshes);
+		MeshPtr mesh = Mesh::_createPtr(meshData, subMeshes);
 
 		WString fileName = filePath.getWFilename(false);
 		mesh->setName(toString(fileName));
@@ -176,10 +175,15 @@ namespace BansheeEngine
 		else if(allMeshes.size() == 1)
 		{
 			subMeshes = allSubMeshes[0];
+
 			return allMeshes[0];
 		}
 		else
-			return MeshData::combine(allMeshes, allSubMeshes, subMeshes);
+		{
+			MeshDataPtr combinedMeshData = MeshData::combine(allMeshes, allSubMeshes, subMeshes);
+
+			return combinedMeshData;
+		}
 	}
 
 	MeshDataPtr FBXImporter::parseMesh(FbxMesh* mesh, Vector<SubMesh>& subMeshes, bool createTangentsIfMissing)

@@ -105,7 +105,7 @@ namespace BansheeEngine
 		 * @brief	Sets the active viewport that will be used for all render operations.
 		 *			Viewport will change active render target if needed.
 		 */
-		virtual void setViewport(const ViewportPtr& vp) = 0;
+		virtual void setViewport(Viewport vp) = 0;
 
 		/**
 		 * @brief	Sets the provided vertex buffers starting at the specified source index.

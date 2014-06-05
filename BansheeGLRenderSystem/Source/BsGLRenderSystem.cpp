@@ -518,21 +518,19 @@ namespace BansheeEngine
 		mRenderStats.numDepthStencilStateChanges++;
 	}
 
-	void GLRenderSystem::setViewport(const ViewportPtr& vp)
+	void GLRenderSystem::setViewport(Viewport vp)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		assert(vp != nullptr);
-
 		RenderTargetPtr target;
-		target = vp->getTarget();
+		target = vp.getTarget();
 		setRenderTarget(target);
 
 		// Calculate the "lower-left" corner of the viewport
-		mViewportWidth = vp->getWidth();
-		mViewportHeight = vp->getHeight();
-		mViewportLeft = vp->getX();
-		mViewportTop = vp->getY();
+		mViewportWidth = vp.getWidth();
+		mViewportHeight = vp.getHeight();
+		mViewportLeft = vp.getX();
+		mViewportTop = vp.getY();
 
 		if (!target->requiresTextureFlipping())
 		{

@@ -17,7 +17,7 @@ namespace BansheeEngine
 	public:
 		virtual ~Overlay();
 
-		virtual void render(RenderQueue& renderQueue) const = 0;
+		virtual void render(DrawList& drawList) const = 0;
 		virtual void update() {}
 
 		Viewport* getTarget() const { return mRenderTarget; }

@@ -31,7 +31,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns the number of indices this buffer can hold.
 		 */
-		UINT32 getNumIndexes() const { return mNumIndexes; }
+		UINT32 getNumIndices() const { return mNumIndexes; }
 
 		/**
 		 * @brief	Returns the size of a single index in bytes.

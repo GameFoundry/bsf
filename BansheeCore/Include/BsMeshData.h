@@ -7,6 +7,7 @@
 #include "BsVertexDeclaration.h"
 #include "BsDrawOps.h"
 #include "BsSubMesh.h"
+#include "BsBounds.h"
 
 namespace BansheeEngine
 {
@@ -98,35 +99,6 @@ namespace BansheeEngine
 		 */
 		MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType = IndexBuffer::IT_32BIT);
 		~MeshData();
-
-		/**
-		 * @brief	Determines at which position in the mesh will the vertex data be written into or read from.
-		 *
-		 * @param	bytes	Offset in number of vertices.
-		 */
-		void setResourceVertexOffset(UINT32 vertices) { mResourceVertexOffset = vertices; }
-
-		/**
-		 * @brief	Determines at which position in the mesh will the index data be written into or read from.
-		 *
-		 * @param	bytes	Offset in number of indices.
-		 */
-		void setResourceIndexOffset(UINT32 indices) { mResourceIndexOffset = indices; }
-
-		/**
-		 * @brief	Determines at which position in the mesh will the vertex data be written into or read
-		 * 			from.
-		 *
-		 * @return	Offset in number of vertices.
-		 */
-		UINT32 getResourceVertexOffset() const { return mResourceVertexOffset; }
-
-		/**
-		 * @brief	Determines at which position in the mesh will the index data be written into or read from.
-		 *
-		 * @return	Offset in number of indices.
-		 */
-		UINT32 getResourceIndexOffset() const { return mResourceIndexOffset; }
 
 		/**
 		 * @brief	Copies data from "data" parameter into the internal buffer for the specified semantic.
@@ -306,9 +278,6 @@ namespace BansheeEngine
 		UINT32 mDescBuilding;
 
 		UINT8* mData;
-
-		UINT32 mResourceVertexOffset;
-		UINT32 mResourceIndexOffset;
 
 		UINT32 mNumVertices;
 		UINT32 mNumIndices;

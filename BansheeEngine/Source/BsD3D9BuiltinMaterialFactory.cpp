@@ -18,6 +18,7 @@ namespace BansheeEngine
 		initDebugDraw2DScreenSpaceShader();
 		initDebugDraw3DShader();
 		initDockDropOverlayShader();
+		initDummyShader();
 
 		SAMPLER_STATE_DESC ssDesc;
 		ssDesc.magFilter = FO_POINT;
@@ -35,6 +36,7 @@ namespace BansheeEngine
 		mDebugDraw2DScreenSpaceShader = nullptr;
 		mDebugDraw3DShader = nullptr;
 		mDockDropOverlayShader = nullptr;
+		mDummyShader = nullptr;
 	}
 
 	const String& D3D9BuiltinMaterialFactory::getSupportedRenderSystem() const
@@ -78,6 +80,11 @@ namespace BansheeEngine
 	HMaterial D3D9BuiltinMaterialFactory::createDockDropOverlayMaterial() const
 	{
 		return Material::create(mDockDropOverlayShader);
+	}
+
+	HMaterial D3D9BuiltinMaterialFactory::createDummyMaterial() const
+	{
+		return Material::create(mDummyShader);
 	}
 
 	void D3D9BuiltinMaterialFactory::initSpriteTextShader()
@@ -448,5 +455,37 @@ namespace BansheeEngine
 
 		HDepthStencilState depthState = DepthStencilState::create(depthStateDesc);
 		newPass->setDepthStencilState(depthState);
+	}
+
+	void D3D9BuiltinMaterialFactory::initDummyShader()
+	{
+		String vsCode = "float4x4 matWorldViewProj;			\
+															\
+						 void vs_main(						\
+						 in float3 inPos : POSITION,		\
+						 out float4 oPosition : POSITION)	\
+						 {									\
+							 oPosition = mul(matWorldViewProj, float4(inPos.xyz, 1));	\
+						 }";
+
+		String psCode = "float4 ps_main() : COLOR0					\
+						 {											\
+						 	return float4(0.5f, 0.5f, 0.5f, 0.5f);	\
+						 }";
+
+		HGpuProgram vsProgram = GpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+		HGpuProgram psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+
+		vsProgram.synchronize();
+		psProgram.synchronize();
+
+		mDummyShader = Shader::create("DummyShader");
+
+		mDummyShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4);
+
+		TechniquePtr newTechnique = mDummyShader->addTechnique("D3D9RenderSystem", RendererManager::getCoreRendererName());
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
 	}
 }

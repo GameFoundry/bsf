@@ -22,60 +22,62 @@ namespace BansheeEngine
 	 * @brief	Base class all mesh implementations derive from. Meshes hold geometry information,
 	 *			normally in the form of one or serveral index or vertex buffers. Different mesh implementations
 	 *			might choose to manage those buffers differently.
+	 *
+	 * @note	Core thread only unless noted otherwise.
 	 */
 	class BS_CORE_EXPORT MeshBase : public GpuResource
 	{
 	public:
 		/**
-		 * @brief	Constructs a new instance.
+		 * @brief	Constructs a new mesh with no sub-meshes.
+		 *
 		 * @param	numVertices		Number of vertices in the mesh.
 		 * @param	numIndices		Number of indices in the mesh. 
 		 * @param	drawOp			Determines how should the provided indices be interpreted by the pipeline. Default option is triangles,
 		 *							where three indices represent a single triangle.
 		 */
 		MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
+
+		/**
+		 * @brief	Constructs a new mesh with one or multiple sub-meshes. (When using just one sub-mesh it is equivalent
+		 *			to using the other overload).
+		 *
+		 * @param	numVertices		Number of vertices in the mesh.
+		 * @param	numIndices		Number of indices in the mesh.
+		 * @param	subMeshes		Defines how are indices separated into sub-meshes, and how are those sub-meshes rendered.
+		 */
+		MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes);
+
 		virtual ~MeshBase();
-
-		/**
-		 * @brief	Removes all sub-meshes in the mesh. All indices in the mesh will be assumed to
-		 *			belong to a single mesh.
-		 *
-		 * @note	Sim thread only.
-		 */
-		void clearSubMeshes();
-
-		/**
-		 * @brief	Allows you to mark a part of the mesh as a sub-mesh so you may draw that part separately.
-		 *
-		 * @note	Sim thread only.
-		 */
-		void addSubMesh(UINT32 indexOffset, UINT32 indexCount, DrawOperationType drawOp = DOT_TRIANGLE_LIST);
-
-		/**
-		 * @brief	Sets a set of sub-meshes containing data used for rendering a 
-		 * 			certain portion of this mesh. Overwrites any previous sub-meshes.
-		 * 			
-		 * @note	Sim thread only.
-		 */
-		void setSubMeshes(const Vector<SubMesh>& subMeshes);
 
 		/**
 		 * @brief	Retrieves a sub-mesh containing data used for rendering a
 		 * 			certain portion of this mesh. If no sub-meshes are specified manually
 		 *			a special sub-mesh containing all indices is returned.
-		 * 			
-		 * @note	Sim thread only.
+		 *
+		 * @note	Thread safe.
 		 */
 		const SubMesh& getSubMesh(UINT32 subMeshIdx = 0) const;
 
 		/**
 		 * @brief	Retrieves a total number of sub-meshes in this mesh.
-		 * 			
-		 * @note	Sim thread only.
+		 *
+		 * @note	Thread safe.
 		 */
 		UINT32 getNumSubMeshes() const;
 
+		/**
+		 * @brief	Returns maximum number of vertices the mesh may store.
+		 *
+		 * @note	Thread safe.
+		 */
 		UINT32 getNumVertices() const { return mNumVertices; }
+
+		/**
+		 * @brief	Returns maximum number of indices the mesh may store.
+		 *
+		 * @note	Thread safe.
+		 */
 		UINT32 getNumIndices() const { return mNumIndices; }
 
 		/**
@@ -90,7 +92,7 @@ namespace BansheeEngine
 		 *  
 		 * @note	Core thread only. Internal method.
 		 */
-		virtual std::shared_ptr<IndexData> _getIndexData() const = 0;
+		virtual IndexBufferPtr _getIndexBuffer() const = 0;
 
 		/**
 		 * @brief	Returns an offset into the vertex buffers that is returned
@@ -124,10 +126,18 @@ namespace BansheeEngine
 		 */
 		virtual void _notifyUsedOnGPU() { }
 
-	protected:
-		Vector<SubMesh> mSubMeshes; // Sim thread
-		SubMesh mDefaultSubMesh; // Immutable
+		/************************************************************************/
+		/* 								PROXIES		                     		*/
+		/************************************************************************/
 
+		/**
+		 * @brief	Gets mesh proxy object unique to this mesh. Each Mesh
+		 *			has one proxy. Mesh will update the proxy as changes to Mesh occur.
+		 */
+		virtual MeshProxy& _getMeshProxy(UINT32 subMeshIdx) = 0;
+
+	protected:
+		Vector<SubMesh> mSubMeshes; // Immutable
 		UINT32 mNumVertices; // Immutable
 		UINT32 mNumIndices; // Immutable
 

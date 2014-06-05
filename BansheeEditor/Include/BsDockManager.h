@@ -81,7 +81,7 @@ namespace BansheeEngine
 		 */
 		void update();
 
-		void render(const Viewport* viewport, RenderQueue& renderQueue);
+		void render(const Viewport* viewport, DrawList& renderQueue);
 		void insert(EditorWidgetContainer* relativeTo, EditorWidgetBase* widgetToInsert, DockLocation location);
 
 		DockManagerLayoutPtr getLayout() const;

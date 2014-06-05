@@ -2,7 +2,7 @@
 
 namespace BansheeEngine
 {
-	void Renderer::addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, RenderQueue&)> callback)
+	void Renderer::addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, DrawList&)> callback)
 	{
 		mRenderCallbacks[viewport].push_back(callback);
 	}

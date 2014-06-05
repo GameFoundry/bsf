@@ -272,6 +272,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsCameraProxy.h" />
+    <ClInclude Include="Include\BsDrawList.h" />
+    <ClInclude Include="Include\BsMaterialProxy.h" />
+    <ClInclude Include="Include\BsMeshProxy.h" />
+    <ClInclude Include="Include\BsRenderableProxy.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsBindableGpuParamBlock.h" />
     <ClInclude Include="Include\BsBindableGpuParams.h" />
@@ -395,7 +400,6 @@
     <ClInclude Include="Include\BsTextureManager.h" />
     <ClInclude Include="Include\BsTextureRTTI.h" />
     <ClInclude Include="Include\BsSamplerState.h" />
-    <ClInclude Include="Include\BsIndexData.h" />
     <ClInclude Include="Include\BsVertexDataDesc.h" />
     <ClInclude Include="Include\BsVertexDataDescRTTI.h" />
     <ClInclude Include="Include\BsVertexDeclaration.h" />
@@ -419,7 +423,10 @@
   <ItemGroup>
     <ClCompile Include="Source\BsBindableGpuParamBlock.cpp" />
     <ClCompile Include="Source\BsBindableGpuParams.cpp" />
+    <ClCompile Include="Source\BsCameraProxy.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
+    <ClCompile Include="Source\BsDrawList.cpp" />
+    <ClCompile Include="Source\BsMeshProxy.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDefaultRenderQueue.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
@@ -454,7 +461,6 @@
     <ClCompile Include="Source\BsGpuParam.cpp" />
     <ClCompile Include="Source\BsImportOptions.cpp" />
     <ClCompile Include="Source\BsIndexBuffer.cpp" />
-    <ClCompile Include="Source\BsIndexData.cpp" />
     <ClCompile Include="Source\BsMaterialManager.cpp" />
     <ClCompile Include="Source\BsMeshBase.cpp" />
     <ClCompile Include="Source\BsMeshHeap.cpp" />
@@ -469,6 +475,7 @@
     <ClCompile Include="Source\BsPlatform.cpp" />
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
+    <ClCompile Include="Source\BsRenderableProxy.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />

@@ -7,39 +7,17 @@
 
 namespace BansheeEngine
 {
-	Vector<HRenderable> BansheeSceneManager::getVisibleRenderables(const HCamera& camera) const
+	void BansheeSceneManager::updateRenderableTransforms()
 	{
-		// TODO - Cull invisible objects
+		// TODO - Consider a way to make the update faster. Either do it concurrently or
+		// consider organizing renderable matrices in an array for quicker updates
+		//   - I could keep everything in a sequential array but deal with dynamic elements
+		//     but putting them in a slow, normal array. Once the number of dynamic elements
+		//	   goes over some number the hierarchy is re-optimized.
 
-		Vector<HRenderable> renderables;
-
-		Stack<HSceneObject> todo;
-		todo.push(mRootNode);
-
-		while(!todo.empty())
-		{
-			HSceneObject currentGO = todo.top();
-			todo.pop();
-
-			HRenderable curRenderable = currentGO->getComponent<Renderable>();
-			if(curRenderable != nullptr)
-			{
-				if((curRenderable->getLayer() & camera->getLayers()) != 0)
-					renderables.push_back(curRenderable);
-			}
-
-			for(UINT32 i = 0; i < currentGO->getNumChildren(); i++)
-				todo.push(currentGO->getChild(i));
-		}
-
-		return renderables;
-	}
-
-	void BansheeSceneManager::updateRenderableBounds()
-	{
 		for(auto& iter : mRenderables)
 		{
-			iter->updateWorldBounds();
+			iter->SO()->updateTransformsIfDirty();
 		}
 	}
 
@@ -86,6 +64,8 @@ namespace BansheeEngine
 			auto findIter = std::find(mRenderables.begin(), mRenderables.end(), renderable);
 			if(findIter != mRenderables.end())
 				mRenderables.erase(findIter);
+
+			onRenderableRemoved(renderable);
 		}
 	}
 }

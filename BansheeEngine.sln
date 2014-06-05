@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E5A-615A-4C06-B2DF-0D8D9390DE02}"
 	ProjectSection(SolutionItems) = preProject
 		CSharpWrap.txt = CSharpWrap.txt
@@ -15,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E
 		Opts.txt = Opts.txt
 		Polish.txt = Polish.txt
 		ProjectLibrary.txt = ProjectLibrary.txt
-		RenderOperation.txt = RenderOperation.txt
+		Renderer.txt = Renderer.txt
 		ResourceBundles.txt = ResourceBundles.txt
 		SpriteTexture.txt = SpriteTexture.txt
 		TODO.txt = TODO.txt

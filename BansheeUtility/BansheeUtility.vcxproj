@@ -245,6 +245,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Source\BsBounds.cpp" />
     <ClCompile Include="Source\BsTaskScheduler.cpp" />
     <ClCompile Include="Source\BsThreadPool.cpp" />
     <ClCompile Include="Source\BsAABox.cpp" />
@@ -268,6 +269,7 @@
     <ClCompile Include="Source\Win32\BsFileSystem.cpp" />
     <ClCompile Include="Source\Win32\BsTimer.cpp" />
     <ClInclude Include="Include\BsAny.h" />
+    <ClInclude Include="Include\BsBounds.h" />
     <ClInclude Include="Include\BsEvent.h" />
     <ClInclude Include="Include\BsSpinLock.h" />
     <ClInclude Include="Include\BsTaskScheduler.h" />

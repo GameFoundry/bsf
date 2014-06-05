@@ -43,7 +43,7 @@ namespace BansheeEngine
 	class BS_EXPORT DrawHelperTemplateBase
 	{
 	public:
-		void render(const HCamera& camera, RenderQueue& renderQueue);
+		void render(const HCamera& camera, DrawList& drawList);
 
 	protected:
 		UnorderedMap<const Viewport*, Vector<DebugDrawCommand>> mCommandsPerViewport;

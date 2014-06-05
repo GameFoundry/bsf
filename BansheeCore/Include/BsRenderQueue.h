@@ -26,21 +26,13 @@ namespace BansheeEngine
 	 *			You need to provide your own implementation of the render queue sorting method. Likely the sorting method
 	 *			will need to be closely tied to the renderer used.
 	 */
+	// TODO UNDOCUMENTED
 	class BS_CORE_EXPORT RenderQueue
 	{
 	public:
 		RenderQueue();
 
-		/**
-		 * @brief	Adds a new render operation to the rendering queue. These operations will be sorted
-		 * 			and rendered by the Renderer in sorted order.
-		 *
-		 * @param	material	   	The material to use for rendering the object.
-		 * @param	mesh		   	The mesh to render.
-		 * @param	submeshIdx	   	Sub-mesh index in "mesh" to render.
-		 * @param	worldPosForSort	The world position used for sorting.
-		 */
-		void add(const MaterialPtr& material, const MeshBasePtr& mesh, UINT32 submeshIdx, const Vector3& worldPosForSort);
+		void add(const MaterialProxy& material, MeshProxy* mesh, const Vector3& worldPosForSort);
 
 		/**
 		 * @brief	Clears all render operations from the queue.

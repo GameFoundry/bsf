@@ -5,7 +5,6 @@
 #include "BsPixelData.h"
 #include "BsIndexBuffer.h"
 #include "BsVertexData.h"
-#include "BsIndexData.h"
 #include "BsSamplerState.h"
 #include "BsDrawOps.h"
 

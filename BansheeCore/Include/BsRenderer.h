@@ -32,9 +32,9 @@ namespace BansheeEngine
 		 * 			will be called before rendering and you will be able to populate the
 		 * 			render queue with render commands that will be executed when rendering.
 		 */
-		void addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, RenderQueue&)> callback);
+		void addRenderCallback(const Viewport* viewport, std::function<void(const Viewport*, DrawList&)> callback);
 
 	protected:
-		UnorderedMap<const Viewport*, Vector<std::function<void(const Viewport*, RenderQueue&)>>> mRenderCallbacks;
+		UnorderedMap<const Viewport*, Vector<std::function<void(const Viewport*, DrawList&)>>> mRenderCallbacks;
 	};
 }

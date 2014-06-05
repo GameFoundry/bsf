@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
+#include "BsMaterialProxy.h"
 #include "BsGpuParam.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
@@ -377,6 +378,9 @@ namespace BansheeEngine
 		 * 			in the specified shader pass.
 		 */
 		PassParametersPtr getPassParameters(UINT32 passIdx) const;
+
+		// TODO UNDOCUMENTED
+		MaterialProxy _createProxy(FrameAlloc* allocator);
 
 		/**
 		 * @brief	Creates a new empty material.

@@ -18,7 +18,7 @@
 #include "BsInput.h"
 #include "BsPass.h"
 #include "BsDebug.h"
-#include "BsRenderQueue.h"
+#include "BsDrawList.h"
 #include "BsGUIInputCaret.h"
 #include "BsGUIInputSelection.h"
 #include "BsGUIListBox.h"
@@ -279,7 +279,7 @@ namespace BansheeEngine
 		processDestroyQueue();
 	}
 
-	void GUIManager::render(ViewportPtr& target, RenderQueue& renderQueue) const
+	void GUIManager::render(ViewportPtr& target, DrawList& drawList) const
 	{
 		auto findIter = mCachedGUIData.find(target.get());
 
@@ -318,7 +318,7 @@ namespace BansheeEngine
 				materialInfo.invViewportHeight.set(invViewportHeight);
 				materialInfo.worldTransform.set(widget->SO()->getWorldTfrm());
 
-				renderQueue.add(materialInfo.material.getInternalPtr(), mesh, 0, Vector3::ZERO);
+				drawList.add(materialInfo.material.getInternalPtr(), mesh, 0, Vector3::ZERO);
 
 				meshIdx++;
 			}

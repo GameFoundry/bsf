@@ -8,7 +8,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Manages all time related functionality.
 	 * 			
-	 * @note	Not thread safe.
+	 * @note	Sim thread only 
 	 */
 	class BS_UTILITY_EXPORT Time : public Module<Time>
 	{

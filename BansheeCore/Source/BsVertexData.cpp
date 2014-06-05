@@ -1,4 +1,3 @@
-#include "BsIndexData.h"
 #include "BsVertexData.h"
 #include "BsHardwareBufferManager.h"
 #include "BsVertexBuffer.h"

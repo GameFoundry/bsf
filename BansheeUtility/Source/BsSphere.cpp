@@ -5,6 +5,37 @@
 
 namespace BansheeEngine
 {
+	void Sphere::merge(const Sphere& rhs)
+	{
+		Vector3 newCenter = (mCenter + rhs.mCenter) * 0.5f;
+
+		float newRadiusA = newCenter.distance(mCenter) + getRadius();
+		float newRadiusB = newCenter.distance(rhs.mCenter) + rhs.getRadius();
+		
+		mCenter = newCenter;
+		mRadius = std::max(newRadiusA, newRadiusB);
+	}
+
+	void Sphere::merge(const Vector3& point)
+	{
+		Vector3 newCenter = (mCenter + point) * 0.5f;
+
+		float newRadiusA = newCenter.distance(mCenter) + getRadius();
+		float newRadiusB = newCenter.distance(point);
+
+		mCenter = newCenter;
+		mRadius = std::max(newRadiusA, newRadiusB);
+	}
+
+	void Sphere::transform(const Matrix4& matrix)
+	{
+		Vector3 edge = mCenter + Vector3::UNIT_X * mRadius;
+		mCenter = matrix.multiply3x4(mCenter);
+		edge = matrix.multiply3x4(edge);
+
+		mRadius = mCenter.distance(edge);
+	}
+
 	std::pair<bool, float> Sphere::intersects(const Ray& ray, bool discardInside) const
 	{
 		const Vector3& raydir = ray.getDirection();

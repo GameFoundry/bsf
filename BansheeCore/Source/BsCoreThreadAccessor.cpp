@@ -54,7 +54,7 @@ namespace BansheeEngine
 		mCommandQueue->queue(std::bind(&RenderSystem::setDepthStencilState, RenderSystem::instancePtr(), depthStencilState, stencilRefValue));
 	}
 
-	void CoreThreadAccessorBase::setViewport(const ViewportPtr& vp)
+	void CoreThreadAccessorBase::setViewport(Viewport vp)
 	{
 		mCommandQueue->queue(std::bind(&RenderSystem::setViewport, RenderSystem::instancePtr(), vp));
 	}
@@ -142,82 +142,6 @@ namespace BansheeEngine
 	void CoreThreadAccessorBase::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
 	{
 		mCommandQueue->queue(std::bind(&RenderSystem::drawIndexed, RenderSystem::instancePtr(), startIndex, indexCount, vertexOffset, vertexCount));
-	}
-
-	void CoreThreadAccessorBase::setPass(const PassPtr& pass, const PassParametersPtr& params)
-	{
-		HGpuProgram vertProgram = pass->getVertexProgram();
-		if(vertProgram)
-			bindGpuProgram(vertProgram);
-		else
-			unbindGpuProgram(GPT_VERTEX_PROGRAM);
-
-		HGpuProgram fragProgram = pass->getFragmentProgram();
-		if(fragProgram)
-			bindGpuProgram(fragProgram);
-		else
-			unbindGpuProgram(GPT_FRAGMENT_PROGRAM);
-
-		HGpuProgram geomProgram = pass->getGeometryProgram();
-		if(geomProgram)
-			bindGpuProgram(geomProgram);
-		else
-			unbindGpuProgram(GPT_GEOMETRY_PROGRAM);
-
-		HGpuProgram hullProgram = pass->getHullProgram();
-		if(hullProgram)
-			bindGpuProgram(hullProgram);
-		else
-			unbindGpuProgram(GPT_HULL_PROGRAM);
-
-		HGpuProgram domainProgram = pass->getDomainProgram();
-		if(domainProgram)
-			bindGpuProgram(domainProgram);
-		else
-			unbindGpuProgram(GPT_DOMAIN_PROGRAM);
-
-		// TODO - Try to limit amount of state changes, if previous state is already the same (especially with textures)
-
-		// TODO: Disable remaining texture units
-		//renderSystem->_disableTextureUnitsFrom(pass->getNumTextures());
-
-		// Set up non-texture related pass settings
-		HBlendState blendState = pass->getBlendState();
-		if(blendState != nullptr)
-			setBlendState(blendState.getInternalPtr());
-		else
-			setBlendState(BlendState::getDefault());
-
-		HDepthStencilState depthStancilState = pass->getDepthStencilState();
-		if(depthStancilState != nullptr)
-			setDepthStencilState(depthStancilState.getInternalPtr(), pass->getStencilRefValue());
-		else
-			setDepthStencilState(DepthStencilState::getDefault(), pass->getStencilRefValue());
-
-		HRasterizerState rasterizerState = pass->getRasterizerState();
-		if(rasterizerState != nullptr)
-			setRasterizerState(rasterizerState.getInternalPtr());
-		else
-			setRasterizerState(RasterizerState::getDefault());
-
-		if(vertProgram)
-			bindGpuParams(GPT_VERTEX_PROGRAM, params->mVertParams);
-
-		if(fragProgram)
-			bindGpuParams(GPT_FRAGMENT_PROGRAM, params->mFragParams);
-
-		if(geomProgram)
-			bindGpuParams(GPT_GEOMETRY_PROGRAM, params->mGeomParams);
-
-		if(hullProgram)
-			bindGpuParams(GPT_HULL_PROGRAM, params->mHullParams);
-
-		if(domainProgram)
-			bindGpuParams(GPT_DOMAIN_PROGRAM, params->mDomainParams);
-
-		HGpuProgram computeProgram = pass->getComputeProgram();
-		if(computeProgram)
-			bindGpuParams(GPT_COMPUTE_PROGRAM, params->mComputeParams);
 	}
 
 	AsyncOp CoreThreadAccessorBase::writeSubresource(GpuResourcePtr resource, UINT32 subresourceIdx, const GpuResourceDataPtr& data, bool discardEntireBuffer)

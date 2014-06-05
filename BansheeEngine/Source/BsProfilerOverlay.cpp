@@ -6,10 +6,11 @@
 #include "BsGUIElement.h"
 #include "BsGUILabel.h"
 #include "BsGUISpace.h"
+#include "BsViewport.h"
 #include "BsTime.h"
 #include "BsBuiltinResources.h"
 #include "BsProfilingManager.h"
-#include "BsViewport.h"
+#include "BsRenderTarget.h"
 
 namespace BansheeEngine
 {
@@ -306,7 +307,7 @@ namespace BansheeEngine
 
 		mTarget = target;
 
-		mTargetResizedConn = target->onResized.connect(std::bind(&ProfilerOverlay::targetResized, this));
+		mTargetResizedConn = target->getTarget()->onResized.connect(std::bind(&ProfilerOverlay::targetResized, this));
 
 		if(mWidgetSO)
 			mWidgetSO->destroy();

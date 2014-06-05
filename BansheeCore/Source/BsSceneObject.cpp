@@ -13,7 +13,7 @@ namespace BansheeEngine
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
-		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false)
+		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false), mIsRenderDataUpToDate(false)
 	{
 		setName(name);
 	}
@@ -229,10 +229,20 @@ namespace BansheeEngine
 		setRotation(targetRotation);
 	}
 
+	void SceneObject::updateTransformsIfDirty()
+	{
+		if (!mIsCachedLocalTfrmUpToDate)
+			updateLocalTfrm();
+
+		if (!mIsCachedWorldTfrmUpToDate)
+			updateWorldTfrm();
+	}
+
 	void SceneObject::markTfrmDirty() const
 	{
 		mIsCachedLocalTfrmUpToDate = false;
 		mIsCachedWorldTfrmUpToDate = false;
+		mIsRenderDataUpToDate = false;
 
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{

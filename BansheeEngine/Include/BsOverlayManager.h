@@ -30,7 +30,7 @@ namespace BansheeEngine
 		 * @brief	Schedules any overlays for the specified viewport to be rendered.
 		 *			(adds them to the render queue).
 		 */
-		void render(ViewportPtr& target, RenderQueue& renderQueue) const;
+		void render(ViewportPtr& target, DrawList& drawList) const;
 
 	private:
 		friend class Overlay;

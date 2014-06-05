@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsMeshBase.h"
+#include "BsMeshProxy.h"
 
 namespace BansheeEngine
 {
@@ -38,7 +39,17 @@ namespace BansheeEngine
 		 /**
 		 * @copydoc MeshBase::getIndexData
 		 */
-		std::shared_ptr<IndexData> _getIndexData() const;
+		IndexBufferPtr _getIndexBuffer() const;
+
+		/**
+		 * @copydoc	MeshBase::_getMeshProxy
+		 */
+		MeshProxy& _getMeshProxy(UINT32 subMeshIdx) { return mMeshProxy; }
+
+		/**
+		 * @brief	Returns the ID that uniquely identifies this mesh in the parent heap.
+		 */
+		UINT32 getMeshHeapId() const { return mId; }
 
 		/**
 		 * @copydoc MeshBase::getVertexOffset
@@ -54,6 +65,12 @@ namespace BansheeEngine
 		 * @copydoc MeshBase::notifyUsedOnGPU
 		 */
 		virtual void _notifyUsedOnGPU();
+
+		/**
+		 * @brief	Called by parent MeshHeap when notable changes that invalidate
+		 *			the mesh proxy happen.
+		 */
+		void _updateProxy();
 
 	protected:
 		friend class MeshHeap;
@@ -75,5 +92,7 @@ namespace BansheeEngine
 		bool mIsDestroyed;
 		MeshHeapPtr mParentHeap;
 		UINT32 mId;
+
+		MeshProxy mMeshProxy;
 	};
 }

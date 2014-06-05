@@ -18,21 +18,20 @@ namespace BansheeEngine
 		~BansheeSceneManager() {}
 
 		/**
-		 * @brief	Returns a list of all cameras in the scene.
+		 * @copydoc	SceneManager::getAllCameras
 		 */
 		const Vector<HCamera>& getAllCameras() const { return mCachedCameras; }
 
 		/**
-		 * @brief	Returns a list of all renderables visible by the provided camera.
+		 * @copydoc	SceneManager::getAllRenderables
 		 */
-		Vector<HRenderable> getVisibleRenderables(const HCamera& camera) const;
+		const Vector<HRenderable>& getAllRenderables() const { return mRenderables; }
 
 		/**
-		 * @brief	Update world bounds of all renderables. This should be called
-		 *			at the end or beginning of every frame to ensure bounds are kept
-		 *			up to date.
+		 * @copydoc	SceneManager
 		 */
-		void updateRenderableBounds();
+		void updateRenderableTransforms();
+
 	private:
 		/**
 		 * @brief	Called by scene objects whenever a new component is added to the scene.

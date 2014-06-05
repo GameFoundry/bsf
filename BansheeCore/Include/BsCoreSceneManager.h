@@ -29,6 +29,7 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		virtual void _update();
+
 	protected:
 		friend class SceneObject;
 

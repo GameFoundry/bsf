@@ -17,11 +17,19 @@ namespace BansheeEngine
 		virtual const Vector<HCamera>& getAllCameras() const = 0;
 
 		/**
-		 * @brief	Returns all renderables visible to the specified camera.
+		 * @brief	Returns all renderables in the scene.
 		 */
-		virtual Vector<HRenderable> getVisibleRenderables(const HCamera& camera) const = 0;
+		virtual const Vector<HRenderable>& getAllRenderables() const = 0;
 
-		virtual void updateRenderableBounds() = 0;
+		/**
+		 * @brief	Updates dirty transforms on any scene objects with a Renderable component.
+		 */
+		virtual void updateRenderableTransforms() = 0;
+
+		/**
+		 * @brief	Triggered whenever a renderable is removed from a SceneObject.
+		 */
+		Event<void(const HRenderable&)> onRenderableRemoved;
 	};
 
 	BS_EXPORT SceneManager& gBsSceneManager();

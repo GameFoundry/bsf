@@ -4,6 +4,7 @@
 #include "BsRenderSystem.h"
 #include "BsCommandQueue.h"
 #include "BsAsyncOp.h"
+#include "BsViewport.h"
 #include "BsColor.h"
 
 namespace BansheeEngine
@@ -38,7 +39,7 @@ namespace BansheeEngine
 		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
 		/** @copydoc RenderSystem::setViewport() */
-		void setViewport(const ViewportPtr& vp);
+		void setViewport(Viewport vp);
 
 		/** @copydoc RenderSystem::setDrawOperation() */
 		void setDrawOperation(DrawOperationType op);
@@ -90,12 +91,6 @@ namespace BansheeEngine
 
 		/** @copydoc RenderSystem::drawIndexed() */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
-
-		/**
-		 * @brief	Binds the specified parameters to the pass GPU programs and activates the pass and its
-		 * 			states for any further rendering.
-		 */
-		void setPass(const PassPtr& pass, const PassParametersPtr& params);
 
 		/**
 		 * @copydoc RenderSystem::writeSubresource()

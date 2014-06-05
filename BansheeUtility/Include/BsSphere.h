@@ -42,6 +42,23 @@ namespace BansheeEngine
         void setCenter(const Vector3& center) { mCenter = center; }
 
 		/**
+		 * @brief	Merges the two spheres, creating a new
+		 * 			sphere that encapsulates them both.
+		 */
+		void merge(const Sphere& rhs);
+
+		/**
+		 * @brief	Expands the sphere so it includes
+		 * 			the provided point.
+		 */
+		void merge(const Vector3& point);
+
+		/**
+		 * @brief	Transforms the sphere by the given matrix.
+		 */
+		void transform(const Matrix4& matrix);
+
+		/**
 		 * @brief	Returns whether or not this sphere contains the provided point.
 		 */
 		bool contains(const Vector3& v) const

@@ -9,7 +9,7 @@ namespace BansheeEngine
 		// Just pass-through for now
 		for(auto& renderOp : mRenderOperations)
 		{
-			UINT32 numPasses = renderOp.material->getNumPasses();
+			UINT32 numPasses = (UINT32)renderOp.material.passes.size();
 			for(UINT32 i = 0; i < numPasses; i++)
 			{
 				mSortedRenderOps.push_back(SortedRenderOp());
