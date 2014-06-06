@@ -7,12 +7,18 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Contains items used for initializing one level in a drop down box hierarchy.
+	 */
 	struct BS_EXPORT GUIDropDownData
 	{
 		Vector<GUIDropDownDataEntry> entries;
 		UnorderedMap<WString, HString> localizedNames;
 	};
 
+	/**
+	 * @brief	Represents a single entry in a drop down box.
+	 */
 	class BS_EXPORT GUIDropDownDataEntry
 	{
 		enum class Type
@@ -23,15 +29,46 @@ namespace BansheeEngine
 		};
 
 	public:
+		/**
+		 * @brief	Creates a new separator entry.
+		 */
 		static GUIDropDownDataEntry separator();
+
+		/**
+		 * @brief	Creates a new button entry with the specified callback that is triggered
+		 *			when button is selected.
+		 */
 		static GUIDropDownDataEntry button(const WString& label, std::function<void()> callback);
+
+		/**
+		 * @brief	Creates a new sub-menu entry that will open the provided drop down data
+		 *			sub-menu when activated.
+		 */
 		static GUIDropDownDataEntry subMenu(const WString& label, const GUIDropDownData& data);
 
+		/**
+		 * @brief	Check is the entry a separator.
+		 */
 		bool isSeparator() const { return mType == Type::Separator; }
+
+		/**
+		 * @brief	Check is the entry a sub menu.
+		 */
 		bool isSubMenu() const { return mType == Type::SubMenu; }
 
+		/**
+		 * @brief	Returns display label of the entry (if an entry is a button or a sub-menu).
+		 */
 		const WString& getLabel() const { return mLabel; }
+
+		/**
+		 * @brief	Returns a button callback if the entry (if an entry is a button).
+		 */
 		std::function<void()> getCallback() const { return mCallback; }
+
+		/**
+		 * @brief	Returns sub-menu data that is used for creating a sub-menu (if an entry is a sub-menu).
+		 */
 		const GUIDropDownData& getSubMenuData() const { return mChildData; }
 	private:
 		GUIDropDownDataEntry() { }
@@ -43,7 +80,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Determines how will the drop down box be placed. Usually the system will attempt to position
+	 * @brief	Determines how will the drop down box be positioned. Usually the system will attempt to position
 	 * 			the drop box in a way so all elements can fit, and this class allows you to specify some limitations
 	 * 			on how that works. 
 	 * 			
@@ -53,6 +90,9 @@ namespace BansheeEngine
 	class BS_EXPORT GUIDropDownAreaPlacement
 	{
 	public:
+		/**
+		 * @brief	Determines how will the drop down box be positioned.
+		 */
 		enum class Type
 		{
 			Position,
@@ -81,8 +121,21 @@ namespace BansheeEngine
 		 */
 		static GUIDropDownAreaPlacement aroundBoundsHorz(const RectI& bounds);
 
+		/**
+		 * @brief	Returns drop down box positioning type.
+		 */
 		Type getType() const { return mType; }
+
+		/**
+		 * @brief	Returns bounds around which to position the drop down box
+		 *			if one of the bounds positioning types is used.
+		 */
 		const RectI& getBounds() const { return mBounds; }
+
+		/**
+		 * @brief	Returns position around which to position the drop down box
+		 *			if position positioning type is used.
+		 */
 		const Vector2I& getPosition() const { return mPosition; }
 
 	private:
@@ -93,6 +146,9 @@ namespace BansheeEngine
 		Vector2I mPosition;
 	};
 
+	/**
+	 * @brief	Type of drop down box types.
+	 */
 	enum class GUIDropDownType
 	{
 		ListBox,
@@ -107,13 +163,89 @@ namespace BansheeEngine
 	class BS_EXPORT GUIDropDownBox : public GUIWidget
 	{
 	public:
+		/**
+		 * @brief	Creates a new drop down box widget.
+		 *
+		 * @param	parent			Parent scene object to attach the drop down box to.
+		 * @param	target			Viewport on which to open the drop down box.
+		 * @param	placement		Determines how is the drop down box positioned in the visible area.
+		 * @param	dropDownData	Data to use for initializing menu items of the drop down box.
+		 * @param	skin			Skin to use for drop down box GUI elements.
+		 * @param	type			Specific type of drop down box to display.
+		 */
 		GUIDropDownBox(const HSceneObject& parent, Viewport* target, const GUIDropDownAreaPlacement& placement,
 			const GUIDropDownData& dropDownData, const GUISkin& skin, GUIDropDownType type);
 		~GUIDropDownBox();
 
 	private:
+		/**
+		 * @brief	Contains data about a single drop down box sub-menu
+		 */
 		struct DropDownSubMenu
 		{
+		public:
+			/**
+			 * @brief	Creates a new drop down box sub-menu
+			 *
+			 * @param	owner			Owner drop down box this sub menu belongs to.
+			 * @param	placement		Determines how is the sub-menu positioned in the visible area.
+			 * @param	availableBounds	Available bounds (in pixels) in which the sub-menu may be opened.
+			 * @param	dropDownData	Data to use for initializing menu items of the sub-menu.
+			 * @param	skin			Skin to use for sub-menu GUI elements.
+			 * @param	depthOffset		How much to offset the sub-menu depth. We want deeper levels of the
+			 *							sub-menu hierarchy to be in front of lower levels, so you should
+			 *							increase this value for each level of the sub-menu hierarchy.
+			 */
+			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
+				const RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset);
+			~DropDownSubMenu();
+
+			/**
+			 * @brief	Recreates all internal GUI elements for the entries of the current sub-menu page.
+			 */
+			void updateGUIElements();
+
+			/**
+			 * @brief	Moves the sub-menu to the previous page and displays its elements, if available.
+			 */
+			void scrollDown();
+
+			/**
+			 * @brief	Moves the sub-menu to the next page and displays its elements, if available.
+			 */
+			void scrollUp();
+
+			/**
+			 * @brief	Returns height of a menu element at the specified index, in pixels.
+			 */
+			UINT32 getElementHeight(UINT32 idx) const;
+
+			/**
+			 * @brief	Called when the user clicks an element with the specified index.
+			 */
+			void elementClicked(UINT32 idx);
+
+			/**
+			 * @brief	Called when the user wants to open a sub-menu with the specified index.
+			 */
+			void openSubMenu(GUIButton* source, UINT32 elementIdx);
+
+			/**
+			 * @brief	Called when the user wants to close the currently open sub-menu.
+			 */
+			void closeSubMenu();
+
+			/**
+			 * @brief	Returns actual visible bounds of the sub-menu.
+			 */
+			RectI getVisibleBounds() const { return mVisibleBounds; }
+
+			/**
+			 * @brief	Get localized name of a menu item element with the specified index.
+			 */
+			HString getElementLocalizedName(UINT32 idx) const;
+
+		public:
 			GUIDropDownBox* mOwner;
 
 			GUIDropDownType mType;
@@ -138,27 +270,25 @@ namespace BansheeEngine
 			GUILayout* mContentLayout;
 
 			DropDownSubMenu* mSubMenu;
-
-			DropDownSubMenu(GUIDropDownBox* owner, const GUIDropDownAreaPlacement& placement, 
-				const RectI& availableBounds, const GUIDropDownData& dropDownData, GUIDropDownType type, UINT32 depthOffset);
-			~DropDownSubMenu();
-
-			void updateGUIElements();
-
-			void scrollDown();
-			void scrollUp();
-
-			UINT32 getElementHeight(UINT32 idx) const;
-
-			void elementClicked(UINT32 idx);
-			void openSubMenu(GUIButton* source, UINT32 elementIdx);
-			void closeSubMenu();
-
-			RectI getVisibleBounds() const { return mVisibleBounds; }
-
-			HString getElementLocalizedName(UINT32 idx) const;
 		};
 
+	private:
+		/**
+		 * @brief	Called when the specified sub-menu is opened.
+		 */
+		void notifySubMenuOpened(DropDownSubMenu* subMenu);
+
+		/**
+		 * @brief	Called when the specified sub-menu is opened.
+		 */
+		void notifySubMenuClosed(DropDownSubMenu* subMenu);
+
+		/**
+		 * @brief	Called when the drop down box loses focus (and should be closed).
+		 */
+		void dropDownFocusLost();
+
+	private:
 		static const UINT32 DROP_DOWN_BOX_WIDTH;
 
 		String mScrollUpStyle;
@@ -179,9 +309,5 @@ namespace BansheeEngine
 
 		UnorderedMap<WString, HString> mLocalizedEntryNames;
 
-		void notifySubMenuOpened(DropDownSubMenu* subMenu);
-		void notifySubMenuClosed(DropDownSubMenu* subMenu);
-
-		void dropDownFocusLost();
 	};
 }
