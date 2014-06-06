@@ -104,7 +104,7 @@ namespace BansheeEngine
 			RenderableSubProxy* subProxy = bs_new<RenderableSubProxy>();
 			subProxy->layer = mLayer;
 			subProxy->worldTransform = SO()->getWorldTfrm();
-			subProxy->mesh = &mMeshData.mesh->_getMeshProxy(i);
+			subProxy->mesh = &mMeshData.mesh->_getRenderData(i);
 
 			HMaterial material;
 			if (i < mMaterialData.size())

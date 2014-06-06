@@ -14,7 +14,7 @@ namespace BansheeEngine
 		mSortedRenderOps.clear();
 	}
 
-	void RenderQueue::add(const MaterialProxy& material, MeshProxy* mesh, const Vector3& worldPosForSort)
+	void RenderQueue::add(const MaterialProxy& material, MeshRenderData* mesh, const Vector3& worldPosForSort)
 	{
 		// TODO - Make sure RenderOperations are cached so we dont allocate memory for them every frame
 		mRenderOperations.push_back(RenderOperation());

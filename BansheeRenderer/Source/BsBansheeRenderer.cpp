@@ -225,7 +225,7 @@ namespace BansheeEngine
 				// TODO - Will I need to check if materials match renderer?
 
 				renderQueue->add(drawOp.material->_createProxy(gCoreThread().getFrameAlloc()),
-					&drawOp.mesh->_getMeshProxy(drawOp.submeshIdx), drawOp.worldPosition);
+					&drawOp.mesh->_getRenderData(drawOp.submeshIdx), drawOp.worldPosition);
 			}
 
 			idx++;
@@ -236,6 +236,8 @@ namespace BansheeEngine
 
 	void BansheeRenderer::renderAllCore(std::shared_ptr<FrameData> frameData)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		// Render everything, target by target
 		for (auto& renderTargetData : frameData->renderTargets)
 		{
@@ -272,6 +274,8 @@ namespace BansheeEngine
 
 	void BansheeRenderer::render(const CameraProxy& cameraProxy, const RenderQueuePtr& renderQueue) 
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		RenderSystem& rs = RenderSystem::instance();
 
 		if (!cameraProxy.ignoreSceneRenderables)
@@ -300,17 +304,14 @@ namespace BansheeEngine
 			const MaterialProxy& materialProxy = renderOp.material;
 
 			setPass(materialProxy.passes[iter->passIdx]);
-
-			// TODO - Call rs.render() - I need to refactor it so it accepts vertex and index data instead of mesh,
-			// but I need to find a way to notify mesh when it is used on GPU. (Notify the proxy?)
-
-			SubMesh subMesh = renderOp.mesh->getSubMesh();
-			//rs.render(renderOp.mesh->getVertexData(), renderOp.mesh->getIndexBuffer(), subMesh.indexOffset, subMesh.indexCount, true, subMesh.drawOp);
+			draw(*renderOp.mesh);
 		}
 	}
 
 	void BansheeRenderer::setPass(const MaterialProxy::PassData& pass)
 	{
+		THROW_IF_NOT_CORE_THREAD;
+
 		RenderSystem& rs = RenderSystem::instance();
 
 		if (pass.vertexProg)
@@ -378,5 +379,53 @@ namespace BansheeEngine
 			rs.setRasterizerState(pass.rasterizerState.getInternalPtr());
 		else
 			rs.setRasterizerState(RasterizerState::getDefault());
+	}
+
+	void BansheeRenderer::draw(const MeshRenderData& mesh)
+	{
+		THROW_IF_NOT_CORE_THREAD;
+
+		RenderSystem& rs = RenderSystem::instance();
+		std::shared_ptr<VertexData> vertexData = mesh.getVertexData();
+
+		rs.setVertexDeclaration(vertexData->vertexDeclaration);
+		auto vertexBuffers = vertexData->getBuffers();
+
+		if (vertexBuffers.size() > 0)
+		{
+			VertexBufferPtr buffers[MAX_BOUND_VERTEX_BUFFERS];
+
+			UINT32 endSlot = 0;
+			UINT32 startSlot = MAX_BOUND_VERTEX_BUFFERS;
+			for (auto iter = vertexBuffers.begin(); iter != vertexBuffers.end(); ++iter)
+			{
+				if (iter->first >= MAX_BOUND_VERTEX_BUFFERS)
+					BS_EXCEPT(InvalidParametersException, "Buffer index out of range");
+
+				startSlot = std::min(iter->first, startSlot);
+				endSlot = std::max(iter->first, endSlot);
+			}
+
+			for (auto iter = vertexBuffers.begin(); iter != vertexBuffers.end(); ++iter)
+			{
+				buffers[iter->first - startSlot] = iter->second;
+			}
+
+			rs.setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
+		}
+
+		SubMesh subMesh = mesh.getSubMesh();
+		rs.setDrawOperation(subMesh.drawOp);
+
+		IndexBufferPtr indexBuffer = mesh.getIndexBuffer();
+
+		UINT32 indexCount = subMesh.indexCount;
+		if (indexCount == 0)
+			indexCount = indexBuffer->getNumIndices();
+
+		rs.setIndexBuffer(indexBuffer);
+		rs.drawIndexed(subMesh.indexOffset, indexCount, mesh.getVertexOffset(), vertexData->vertexCount);
+
+		mesh.notifyUsedOnGPU();
 	}
 }

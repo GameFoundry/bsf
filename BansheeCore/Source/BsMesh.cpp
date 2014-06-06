@@ -171,8 +171,8 @@ namespace BansheeEngine
 
 			mBounds = calculateBounds((UINT8*)data, mTempInitialMeshData->getNumVertices(), stride);
 
-			for (auto& proxy : mMeshProxies)
-				proxy.updateBounds(mBounds);
+			for (auto& renderData : mRenderData)
+				renderData.updateBounds(mBounds);
 
 			break;
 		}
@@ -319,7 +319,7 @@ namespace BansheeEngine
 
 		for (auto& subMesh : mSubMeshes)
 		{
-			mMeshProxies.push_back(MeshProxy(mVertexData, mIndexBuffer, subMesh));
+			mRenderData.push_back(MeshRenderData(mVertexData, mIndexBuffer, subMesh, 0, nullptr));
 
 		}
 

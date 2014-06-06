@@ -126,15 +126,12 @@ namespace BansheeEngine
 		 */
 		virtual void _notifyUsedOnGPU() { }
 
-		/************************************************************************/
-		/* 								PROXIES		                     		*/
-		/************************************************************************/
-
 		/**
-		 * @brief	Gets mesh proxy object unique to this mesh. Each Mesh
-		 *			has one proxy. Mesh will update the proxy as changes to Mesh occur.
+		 * @brief	Gets sub-mesh render data. Render data provides a link between a mesh and
+		 *			the renderer and it will be modified by both. It may be modified as mesh 
+		 *			changes occur and as renderer uses the mesh.
 		 */
-		virtual MeshProxy& _getMeshProxy(UINT32 subMeshIdx) = 0;
+		virtual MeshRenderData& _getRenderData(UINT32 subMeshIdx) = 0;
 
 	protected:
 		Vector<SubMesh> mSubMeshes; // Immutable

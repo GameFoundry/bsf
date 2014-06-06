@@ -44,15 +44,15 @@ namespace BansheeEngine
 		void setParamBlockBuffer(UINT32 slot, const GpuParamBlockBufferPtr& paramBlockBuffer);
 
 		/**
-		* @brief	Replaces the parameter buffer with the specified name. Any following parameter reads or
-		*			writes that are referencing that buffer will use the new buffer.
-		*
-		* @note		This is useful if you want to share a parameter buffer among multiple GPU programs.
-		*			You would only set the values once and then share the buffer among all other GpuParams.
-		*
-		*			It is up to the caller to guarantee the provided buffer matches parameter block
-		*			descriptor for this slot.
-		*/
+		 * @brief	Replaces the parameter buffer with the specified name. Any following parameter reads or
+		 *			writes that are referencing that buffer will use the new buffer.
+		 *
+		 * @note		This is useful if you want to share a parameter buffer among multiple GPU programs.
+		 *			You would only set the values once and then share the buffer among all other GpuParams.
+		 *
+		 *			It is up to the caller to guarantee the provided buffer matches parameter block
+		 *			descriptor for this slot.
+		 */
 		void setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlockBuffer);
 
 		/**

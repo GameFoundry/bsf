@@ -166,7 +166,7 @@ namespace BansheeEngine
 			for (auto& allocData : mMeshAllocData)
 			{
 				if (allocData.second.useFlags != UseFlags::CPUFree && allocData.second.useFlags != UseFlags::Free)
-					allocData.second.mesh->_updateProxy();
+					allocData.second.mesh->_updateRenderData();
 			}
 		}
 
@@ -317,7 +317,7 @@ namespace BansheeEngine
 		memcpy(idxDest, meshData->getIndexData(), meshData->getNumIndices() * idxSize);
 		mIndexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
 
-		mesh->_updateProxy();
+		mesh->_updateRenderData();
 	}
 
 	void MeshHeap::deallocInternal(TransientMeshPtr mesh)

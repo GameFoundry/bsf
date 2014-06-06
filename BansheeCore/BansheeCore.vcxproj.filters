@@ -528,7 +528,7 @@
     <ClInclude Include="Include\BsDrawList.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsMeshProxy.h">
+    <ClInclude Include="Include\BsMeshRenderData.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -836,10 +836,10 @@
     <ClCompile Include="Source\BsDrawList.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsMeshProxy.cpp">
+    <ClCompile Include="Source\BsCameraProxy.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsCameraProxy.cpp">
+    <ClCompile Include="Source\BsMeshRenderData.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>

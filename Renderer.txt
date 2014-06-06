@@ -1,7 +1,21 @@
-To get it to compile:
- - Add dummy material that will be used when material is not loaded
- - Actually implement core render methods in Renderer
- - Go through all changes on commit and see if anything else needs doing
+Get renderer to run
+ - Go through TODOs on BansheeRenderer
+ - What happens to MeshRenderData when mesh is destroyed? It contains a callback to Mesh, so I must ensure it outlives it.
+ - How to clean up RenderableProxies in Renderer?
+ - Even though I allocate material proxies with frame alloc I think I still need to free them for debug purposes
+
+What happens when technique/shader changes?
+ - Have isProxyDirty flag in Material. Renderable checks that flag and returns dirty for the Renderable when toggled (and cleans the flag).
+   Then we just create a new Material proxy. When new material proxy is created a copy of all current GpuParams is created.
+
+What happens when gpu prog param buffer changes?
+ - Material has another flag areParamsDirty (actally GpuParams should have that flag). If true I call
+   updateMaterialProxy() with wanted pass, gpu prog idx and BindableGpuParams. BindableGpuParams are then used
+   for copying new data to core thread GpuParams.
+
+What happens when a parameter is updated?
+ - Same as above. Make sure not to send updates if shared or renderer param block was updated.
+
 
 Next stage:
  - Track material changes
@@ -20,6 +34,13 @@ Finally
  - Get rid of Camera::getIgnoreSceneRenderables it can be doing using layers
  - Delete RenderOperation as I don't think I use it anymore
 
+Semantic/design issues:
+ - DrawList is too similar to RenderQueue - Their names need to be more distinct
+ - MeshProxy is very different that material/camera/renderable proxy. Rename it to something else?
+ - Material and camera proxy is returned by value while renderable by pointer. Also material proxy seems a bit heavy weight to be passed by value.
+ - Consider removing SceneManager from Core? I two scene manager base classes.
+ - Consider moving RenderOperation in RenderQueue and removing its header/source. Maybe also renaming it to something more render queue specific. 
+ - Remove DefaultRenderQueue. Instead make RenderQueue non-abstract and have it provide default implementation.
 
 -----------------------------------------
 
@@ -42,6 +63,20 @@ When a Material is hooked up to a Renderable is will check if the Material has t
    them in all materials. If no parameter block is detected the parameters will be updated on all objects whenever it is changed.
  - I will potentially need to add parameter block semantic to Shader in order to make the user able to specify which blocks
    are for the renderer. (And so that Material knows not to create those buffers manually)
+
+
+when calling addParameter add an argument "rendererSemantic" - 0 means its a custom parameter, and the rest are enum values 
+provided by the renderer. (Actually an UINT32 so it may be extended). When render proxy is being created I compare those parameters 
+and ensure they match. If they don't match I use a dummy material.
+
+you can so something similar to parameter blocks - also provide a semantic to determine if its renderer one time, per frame,
+ per object, etc. If shader has such a block AND the gpu program desc actually has a parameter block then this will also be 
+ checked for validity when when creating a proxy (actually it might be better to check validity any time material or renderable options 
+ change and then just cache it). Param block and its members must exactly match (type AND order).
+
+Material DOES NOT automatically create param blocks with renderer semantic
+
+
 
 
    ---------------------------

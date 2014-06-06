@@ -73,13 +73,13 @@ namespace BansheeEngine
 		 * @brief	Return the number of materials used by the renderable. Each material
 		 *			will be used for rendering a sub-mesh in the provided Mesh.
 		 */
-		UINT32 getNumMaterials() const { return (UINT32)mMaterials.size(); }
+		UINT32 getNumMaterials() const { return (UINT32)mMaterialData.size(); }
 
 		/**
 		 * @brief	Returns the material used for rendering a sub-mesh with
 		 *			the specified index.
 		 */
-		HMaterial& getMaterial(UINT32 idx) { return mMaterials[idx]; }
+		HMaterial& getMaterial(UINT32 idx) { return mMaterialData[idx].material; }
 
 		// TODO UNDOCUMENTED
 		bool _isRenderDataDirty() const;

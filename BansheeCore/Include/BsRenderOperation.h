@@ -17,7 +17,7 @@ namespace BansheeEngine
 		{ }
 
 		MaterialProxy material;
-		MeshProxy* mesh;
+		MeshRenderData* mesh;
 		Vector3 worldPosition;
 	};
 }

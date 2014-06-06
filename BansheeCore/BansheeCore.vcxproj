@@ -275,7 +275,7 @@
     <ClInclude Include="Include\BsCameraProxy.h" />
     <ClInclude Include="Include\BsDrawList.h" />
     <ClInclude Include="Include\BsMaterialProxy.h" />
-    <ClInclude Include="Include\BsMeshProxy.h" />
+    <ClInclude Include="Include\BsMeshRenderData.h" />
     <ClInclude Include="Include\BsRenderableProxy.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsBindableGpuParamBlock.h" />
@@ -426,7 +426,7 @@
     <ClCompile Include="Source\BsCameraProxy.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />
-    <ClCompile Include="Source\BsMeshProxy.cpp" />
+    <ClCompile Include="Source\BsMeshRenderData.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
     <ClCompile Include="Source\BsDefaultRenderQueue.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />

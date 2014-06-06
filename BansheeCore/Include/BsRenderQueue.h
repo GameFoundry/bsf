@@ -32,7 +32,7 @@ namespace BansheeEngine
 	public:
 		RenderQueue();
 
-		void add(const MaterialProxy& material, MeshProxy* mesh, const Vector3& worldPosForSort);
+		void add(const MaterialProxy& material, MeshRenderData* mesh, const Vector3& worldPosForSort);
 
 		/**
 		 * @brief	Clears all render operations from the queue.

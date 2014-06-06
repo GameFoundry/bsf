@@ -60,6 +60,7 @@ namespace BansheeEngine
 		virtual void render(const CameraProxy& cameraProxy, const RenderQueuePtr& renderQueue);
 
 		void setPass(const MaterialProxy::PassData& pass);
+		void draw(const MeshRenderData& mesh);
 
 		void renderableRemoved(const HRenderable& renderable);
 

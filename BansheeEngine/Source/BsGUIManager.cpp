@@ -178,7 +178,7 @@ namespace BansheeEngine
 
 	void GUIManager::update()
 	{
-		DragAndDropManager::instance().update();
+		DragAndDropManager::instance()._update();
 
 		// Update layouts
 		gProfilerCPU().beginSample("UpdateLayout");

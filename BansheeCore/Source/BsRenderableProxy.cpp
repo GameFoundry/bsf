@@ -1,5 +1,5 @@
 #include "BsRenderableProxy.h"
-#include "BsMeshProxy.h"
+#include "BsMeshRenderData.h"
 
 namespace BansheeEngine
 {

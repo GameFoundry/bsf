@@ -2,7 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsMeshBase.h"
-#include "BsMeshProxy.h"
+#include "BsMeshRenderData.h"
 #include "BsMeshData.h"
 #include "BsVertexData.h"
 #include "BsDrawOps.h"
@@ -57,9 +57,9 @@ namespace BansheeEngine
 		virtual IndexBufferPtr _getIndexBuffer() const;
 
 		/**
-		 * @copydoc	MeshBase::_getMeshProxy
+		 * @copydoc	MeshBase::_getRenderData
 		 */
-		MeshProxy& _getMeshProxy(UINT32 subMeshIdx) { return mMeshProxies[subMeshIdx]; }
+		MeshRenderData& _getRenderData(UINT32 subMeshIdx) { return mRenderData[subMeshIdx]; }
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
@@ -86,7 +86,7 @@ namespace BansheeEngine
 		IndexBufferPtr mIndexBuffer; // Core thread
 
 		Bounds mBounds; // Core thread
-		Vector<MeshProxy> mMeshProxies; // Core thread
+		Vector<MeshRenderData> mRenderData; // Core thread
 
 		VertexDataDescPtr mVertexDesc; // Immutable
 		MeshBufferType mBufferType; // Immutable

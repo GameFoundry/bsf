@@ -21,7 +21,7 @@ namespace BansheeEngine
 		UINT32 id;
 		Matrix4 worldTransform;
 
-		MeshProxy* mesh;
+		MeshRenderData* mesh;
 		MaterialProxy material;
 
 		UINT64 layer;

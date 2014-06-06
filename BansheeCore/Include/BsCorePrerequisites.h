@@ -132,7 +132,7 @@ namespace BansheeEngine
 	class VideoModeInfo;
 	class RenderableProxy;
 	class RenderableSubProxy;
-	class MeshProxy;
+	class MeshRenderData;
 	class CameraProxy;
 	class MaterialProxy;
 	class DrawList;

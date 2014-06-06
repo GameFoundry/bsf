@@ -307,6 +307,9 @@ namespace BansheeEngine
 		 */
 		void setLayers(UINT64 layers) { mLayers = layers; }
 
+		// TODO UNDOCUMENTED
+		CameraProxy _createProxy() const;
+
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
 
 	protected:
@@ -369,8 +372,6 @@ namespace BansheeEngine
 		mutable bool mRecalcFrustumPlanes; /**< Should frustum planes be recalculated. */
 		mutable float mLeft, mRight, mTop, mBottom; /**< Frustum extents. */
 		mutable AABox mBoundingBox; /**< Frustum bounding box. */
-
-		CameraProxy _createProxy() const;
 
 		/************************************************************************/
 		/* 						COMPONENT OVERRIDES                      		*/
