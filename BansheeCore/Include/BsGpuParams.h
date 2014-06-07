@@ -20,6 +20,7 @@ namespace BansheeEngine
 	 */
 	class BS_CORE_EXPORT GpuParams
 	{
+		struct PrivatelyConstruct {};
 	public:
 		/**
 		 * @brief	Creates new GpuParams object using the specified parameter descriptions.
@@ -31,6 +32,12 @@ namespace BansheeEngine
 		 * @note	You normally do not want to call this manually. Instead use GpuProgram::createParameters.
 		 */
 		GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices);
+
+		/**
+		 * @brief	Private constructor for internal use. Performs no initialization.
+		 */
+		GpuParams(GpuParamDesc& paramDesc, PrivatelyConstruct& dummy);
+
 		~GpuParams();
 
 		/**
@@ -74,13 +81,13 @@ namespace BansheeEngine
 		bool hasParam(const String& name) const;
 
 		/**
-		* @brief	Checks if texture parameter with the specified name exists.
-		*/
+		 * @brief	Checks if texture parameter with the specified name exists.
+		 */
 		bool hasTexture(const String& name) const;
 
 		/**
-		* @brief	Checks if sampler state parameter with the specified name exists.
-		*/
+		 * @brief	Checks if sampler state parameter with the specified name exists.
+		 */
 		bool hasSamplerState(const String& name) const;
 
 		/**
@@ -117,8 +124,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		template<>
 		void getParam<Vector2>(const String& name, TGpuDataParam<Vector2>& output) const
 		{
@@ -131,8 +138,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		template<>
 		void getParam<Vector3>(const String& name, TGpuDataParam<Vector3>& output) const
 		{
@@ -145,8 +152,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		template<>
 		void getParam<Vector4>(const String& name, TGpuDataParam<Vector4>& output) const
 		{
@@ -159,8 +166,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		template<>
 		void getParam<Matrix3>(const String& name, TGpuDataParam<Matrix3>& output) const
 		{
@@ -173,8 +180,8 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		template<>
 		void getParam<Matrix4>(const String& name, TGpuDataParam<Matrix4>& output) const
 		{
@@ -187,19 +194,24 @@ namespace BansheeEngine
 		}
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		void getStructParam(const String& name, GpuParamStruct& output) const;
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		void getTextureParam(const String& name, GpuParamTexture& output) const;
 
 		/**
-		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
-		*/
+		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
+		 */
 		void getSamplerStateParam(const String& name, GpuParamSampState& output) const;
+
+		/**
+		 * @brief	Returns an exact copy of this object.
+		 */
+		GpuParamsPtr clone() const;
 
 	private:
 		friend class BindableGpuParams;
@@ -212,6 +224,13 @@ namespace BansheeEngine
 		 * @brief	Gets a descriptor for a data parameter with the specified name.
 		 */
 		GpuParamDataDesc* getParamDesc(const String& name) const;
+
+		/**
+		 * @brief	Calculates size and offsets used when splitting a large memory chunk into separate buffers.
+		 *			Parameter counts must have been previously assigned.
+		 */
+		void getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockOffset, UINT32& paramBlockBufferOffset,
+			UINT32& textureOffset, UINT32& samplerStateOffset) const;
 	};
 
 	/**
