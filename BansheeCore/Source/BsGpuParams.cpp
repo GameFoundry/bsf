@@ -9,162 +9,108 @@
 
 namespace BansheeEngine
 {
-	GpuParams::GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices)
-		:mParamDesc(paramDesc), mTransposeMatrices(transposeMatrices), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0),
+	GpuParamsInternalData::GpuParamsInternalData()
+		:mTransposeMatrices(false), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0),
 		mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr)
+	{ }
+
+	GpuParams::GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices)
+		:mParamDesc(paramDesc)
 	{
+		mInternalData = bs_shared_ptr<GpuParamsInternalData>();
+		mInternalData->mTransposeMatrices = transposeMatrices;
+
 		for(auto& paramBlock : mParamDesc.paramBlocks)
 		{
-			if((paramBlock.second.slot + 1) > mNumParamBlocks)
-				mNumParamBlocks = paramBlock.second.slot + 1;
+			if ((paramBlock.second.slot + 1) > mInternalData->mNumParamBlocks)
+				mInternalData->mNumParamBlocks = paramBlock.second.slot + 1;
 		}
 
 		for(auto& texture : mParamDesc.textures)
 		{
-			if((texture.second.slot + 1) > mNumTextures)
-				mNumTextures = texture.second.slot + 1;
+			if ((texture.second.slot + 1) > mInternalData->mNumTextures)
+				mInternalData->mNumTextures = texture.second.slot + 1;
 		}
 
 		for(auto& sampler : mParamDesc.samplers)
 		{
-			if((sampler.second.slot + 1) > mNumSamplerStates)
-				mNumSamplerStates = sampler.second.slot + 1;
+			if ((sampler.second.slot + 1) > mInternalData->mNumSamplerStates)
+				mInternalData->mNumSamplerStates = sampler.second.slot + 1;
 		}
 
 		// Allocate everything in a single block of memory to get rid of extra memory allocations
-		UINT32 paramBlockBufferSize = mNumParamBlocks * sizeof(GpuParamBlock*);
-		UINT32 paramBlockBuffersBufferSize = mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
-		UINT32 textureBufferSize = mNumTextures * sizeof(HTexture);
-		UINT32 samplerStateBufferSize = mNumSamplerStates * sizeof(HSamplerState);
+		UINT32 paramBlockBufferSize = mInternalData->mNumParamBlocks * sizeof(GpuParamBlock*);
+		UINT32 paramBlockBuffersBufferSize = mInternalData->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
+		UINT32 textureBufferSize = mInternalData->mNumTextures * sizeof(HTexture);
+		UINT32 samplerStateBufferSize = mInternalData->mNumSamplerStates * sizeof(HSamplerState);
 
 		UINT32 bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
 
-		mData = (UINT8*)bs_alloc(bufferSize);
+		mInternalData->mData = (UINT8*)bs_alloc(bufferSize);
 		
-		UINT8* dataIter = mData;
-		mParamBlocks = (GpuParamBlock**)dataIter;
+		UINT8* dataIter = mInternalData->mData;
+		mInternalData->mParamBlocks = (GpuParamBlock**)dataIter;
 		dataIter += paramBlockBufferSize;
 
-		mParamBlockBuffers = (GpuParamBlockBufferPtr*)dataIter;
+		mInternalData->mParamBlockBuffers = (GpuParamBlockBufferPtr*)dataIter;
 		dataIter += paramBlockBuffersBufferSize;
 
-		mTextures = (HTexture*)dataIter;
+		mInternalData->mTextures = (HTexture*)dataIter;
 		dataIter += textureBufferSize;
 
-		mSamplerStates = (HSamplerState*)dataIter;
+		mInternalData->mSamplerStates = (HSamplerState*)dataIter;
 
 		// Ensure everything is constructed
-		for(UINT32 i = 0; i < mNumParamBlocks; i++)
+		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
-			mParamBlocks[i] = nullptr;
+			mInternalData->mParamBlocks[i] = nullptr;
 
-			GpuParamBlockBufferPtr* ptrToIdx = (&mParamBlockBuffers[i]);
-			ptrToIdx = new (&mParamBlockBuffers[i]) GpuParamBlockBufferPtr(nullptr);
+			GpuParamBlockBufferPtr* ptrToIdx = (&mInternalData->mParamBlockBuffers[i]);
+			ptrToIdx = new (&mInternalData->mParamBlockBuffers[i]) GpuParamBlockBufferPtr(nullptr);
 		}
 
-		for(UINT32 i = 0; i < mNumTextures; i++)
+		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
 		{
-			HTexture* ptrToIdx = (&mTextures[i]);
-			ptrToIdx = new (&mTextures[i]) HTexture();
+			HTexture* ptrToIdx = (&mInternalData->mTextures[i]);
+			ptrToIdx = new (&mInternalData->mTextures[i]) HTexture();
 		}
 
-		for(UINT32 i = 0; i < mNumSamplerStates; i++)
+		for (UINT32 i = 0; i < mInternalData->mNumSamplerStates; i++)
 		{
-			HSamplerState* ptrToIdx = (&mSamplerStates[i]);
-			ptrToIdx = new (&mSamplerStates[i]) HSamplerState();
+			HSamplerState* ptrToIdx = (&mInternalData->mSamplerStates[i]);
+			ptrToIdx = new (&mInternalData->mSamplerStates[i]) HSamplerState();
 		}
-
-		// Create parameter handles
-		for(auto& param : mParamDesc.params)
-		{
-			switch(param.second.type)
-			{
-			case GPDT_FLOAT1:
-				mFloatParams[param.second.name] = GpuParamFloat(&param.second, mParamBlocks, mTransposeMatrices);
-				break;
-			case GPDT_FLOAT2:
-				mVec2Params[param.second.name] = GpuParamVec2(&param.second, mParamBlocks, mTransposeMatrices);
-				break;
-			case GPDT_FLOAT3:
-				mVec3Params[param.second.name] = GpuParamVec3(&param.second, mParamBlocks, mTransposeMatrices);
-				break;
-			case GPDT_FLOAT4:
-				mVec4Params[param.second.name] = GpuParamVec4(&param.second, mParamBlocks, mTransposeMatrices);
-				break;
-			case GPDT_MATRIX_3X3:
-				mMat3Params[param.second.name] = GpuParamMat3(&param.second, mParamBlocks, mTransposeMatrices);
-				break;
-			case GPDT_MATRIX_4X4:
-				mMat4Params[param.second.name] = GpuParamMat4(&param.second, mParamBlocks, mTransposeMatrices);
-				break;
-			case GPDT_STRUCT:
-				mStructParams[param.second.name] = GpuParamStruct(&param.second, mParamBlocks);
-				break;
-			}
-		}
-
-		for(auto& texture : mParamDesc.textures)
-			mTextureParams[texture.second.name] = GpuParamTexture(&texture.second, mTextures);
-
-		for(auto& sampler : mParamDesc.samplers)
-			mSampStateParams[sampler.second.name] = GpuParamSampState(&sampler.second, mSamplerStates);
 	}
 
 	GpuParams::~GpuParams()
 	{
-		// Free params
-		for(auto& param : mFloatParams)
-			param.second._destroy();
-
-		for(auto& param : mVec2Params)
-			param.second._destroy();
-
-		for(auto& param : mVec3Params)
-			param.second._destroy();
-
-		for(auto& param : mVec4Params)
-			param.second._destroy();
-
-		for(auto& param : mMat3Params)
-			param.second._destroy();
-
-		for(auto& param : mMat4Params)
-			param.second._destroy();
-
-		for(auto& param : mStructParams)
-			param.second._destroy();
-
-		for(auto& param : mTextureParams)
-			param.second._destroy();
-
-		for(auto& param : mSampStateParams)
-			param.second._destroy();
+		mInternalData->mIsDestroyed = true;
 
 		// Ensure everything is destructed
-		for(UINT32 i = 0; i < mNumParamBlocks; i++)
+		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
-			mParamBlockBuffers[i].~shared_ptr();
+			mInternalData->mParamBlockBuffers[i].~shared_ptr();
 		}
 
-		for(UINT32 i = 0; i < mNumTextures; i++)
-			mTextures[i].~ResourceHandle();
+		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
+			mInternalData->mTextures[i].~ResourceHandle();
 
-		for(UINT32 i = 0; i < mNumSamplerStates; i++)
-			mSamplerStates[i].~ResourceHandle();
+		for (UINT32 i = 0; i < mInternalData->mNumSamplerStates; i++)
+			mInternalData->mSamplerStates[i].~ResourceHandle();
 
-		bs_free(mData);
+		bs_free(mInternalData->mData);
 	}
 
 	void GpuParams::setParamBlockBuffer(UINT32 slot, const GpuParamBlockBufferPtr& paramBlockBuffer)
 	{
-		if(slot < 0 || slot >= mNumParamBlocks)
+		if (slot < 0 || slot >= mInternalData->mNumParamBlocks)
 		{
 			BS_EXCEPT(InvalidParametersException, "Index out of range: Valid range: 0 .. " + 
-				toString(mNumParamBlocks - 1) + ". Requested: " + toString(slot));
+				toString(mInternalData->mNumParamBlocks - 1) + ". Requested: " + toString(slot));
 		}
 
-		mParamBlockBuffers[slot] = paramBlockBuffer;
-		mParamBlocks[slot] = paramBlockBuffer->getParamBlock();
+		mInternalData->mParamBlockBuffers[slot] = paramBlockBuffer;
+		mInternalData->mParamBlocks[slot] = paramBlockBuffer->getParamBlock();
 	}
 
 	void GpuParams::setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlockBuffer)
@@ -177,8 +123,8 @@ namespace BansheeEngine
 			return;
 		}
 
-		mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
-		mParamBlocks[iterFind->second.slot] = paramBlockBuffer->getParamBlock();
+		mInternalData->mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
+		mInternalData->mParamBlocks[iterFind->second.slot] = paramBlockBuffer->getParamBlock();
 	}
 
 	UINT32 GpuParams::getDataParamSize(const String& name) const
@@ -224,32 +170,32 @@ namespace BansheeEngine
 
 	void GpuParams::getStructParam(const String& name, GpuParamStruct& output) const
 	{
-		auto iterFind = mStructParams.find(name);
+		auto iterFind = mParamDesc.params.find(name);
 
-		if(iterFind == mStructParams.end())
+		if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_STRUCT)
 			BS_EXCEPT(InvalidParametersException, "Cannot find struct parameter with the name '" + name + "'");
 
-		output = iterFind->second;
+		output = GpuParamStruct(&iterFind->second, mInternalData);
 	}
 
 	void GpuParams::getTextureParam(const String& name, GpuParamTexture& output) const
 	{
-		auto iterFind = mTextureParams.find(name);
+		auto iterFind = mParamDesc.textures.find(name);
 
-		if(iterFind == mTextureParams.end())
+		if (iterFind == mParamDesc.textures.end())
 			BS_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
 
-		output = iterFind->second;
+		output = GpuParamTexture(&iterFind->second, mInternalData);
 	}
 
 	void GpuParams::getSamplerStateParam(const String& name, GpuParamSampState& output) const
 	{
-		auto iterFind = mSampStateParams.find(name);
+		auto iterFind = mParamDesc.samplers.find(name);
 
-		if(iterFind == mSampStateParams.end())
+		if (iterFind == mParamDesc.samplers.end())
 			BS_EXCEPT(InvalidParametersException, "Cannot find sampler state parameter with the name '" + name + "'");
 
-		output = iterFind->second;
+		output = GpuParamSampState(&iterFind->second, mInternalData);
 	}
 
 	GpuParamDataDesc* GpuParams::getParamDesc(const String& name) const

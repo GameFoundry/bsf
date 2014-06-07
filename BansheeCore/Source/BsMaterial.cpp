@@ -112,13 +112,13 @@ namespace BansheeEngine
 			const Map<String, SHADER_PARAM_BLOCK_DESC>& shaderDesc = mShader->_getParamBlocks();
 			for(auto iter = validShareableParamBlocks.begin(); iter != validShareableParamBlocks.end(); ++iter)
 			{
-				bool isShared = false;
+				bool createBlockBuffer = true;
 				GpuParamBlockUsage usage = GPBU_STATIC;
 
 				auto iterFind = shaderDesc.find(*iter);
 				if(iterFind != shaderDesc.end())
 				{
-					isShared = iterFind->second.shared;
+					createBlockBuffer = !iterFind->second.shared && iterFind->second.rendererSemantic == 0;
 					usage = iterFind->second.usage;
 				}
 
@@ -135,7 +135,7 @@ namespace BansheeEngine
 				}
 
 				GpuParamBlockBufferPtr newParamBlockBuffer;
-				if(!isShared)
+				if(createBlockBuffer)
 				{
 					newParamBlockBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(blockDesc.blockSize * sizeof(UINT32), usage);
 					mParamBuffers.push_back(newParamBlockBuffer);
@@ -532,7 +532,7 @@ namespace BansheeEngine
 
 	GpuParamFloat Material::getParamFloat(const String& name) const
 	{
-		GpuDataParamBase<float> gpuParam;
+		TGpuDataParam<float> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -540,7 +540,7 @@ namespace BansheeEngine
 
 	GpuParamVec2 Material::getParamVec2(const String& name) const
 	{
-		GpuDataParamBase<Vector2> gpuParam;
+		TGpuDataParam<Vector2> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -548,7 +548,7 @@ namespace BansheeEngine
 
 	GpuParamVec3 Material::getParamVec3(const String& name) const
 	{
-		GpuDataParamBase<Vector3> gpuParam;
+		TGpuDataParam<Vector3> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -556,7 +556,7 @@ namespace BansheeEngine
 
 	GpuParamVec4 Material::getParamVec4(const String& name) const
 	{
-		GpuDataParamBase<Vector4> gpuParam;
+		TGpuDataParam<Vector4> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -564,7 +564,7 @@ namespace BansheeEngine
 
 	GpuParamMat3 Material::getParamMat3(const String& name) const
 	{
-		GpuDataParamBase<Matrix3> gpuParam;
+		TGpuDataParam<Matrix3> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;
@@ -572,7 +572,7 @@ namespace BansheeEngine
 
 	GpuParamMat4 Material::getParamMat4(const String& name) const
 	{
-		GpuDataParamBase<Matrix4> gpuParam;
+		TGpuDataParam<Matrix4> gpuParam;
 		getParam(name, gpuParam);
 
 		return gpuParam;

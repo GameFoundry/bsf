@@ -6,6 +6,8 @@
 
 namespace BansheeEngine
 {
+	struct GpuParamsInternalData;
+
 	/**
 	 * @brief	Contains descriptions for all parameters in a GPU program and also
 	 *			allows you to write and read those parameters. All parameter values
@@ -47,7 +49,7 @@ namespace BansheeEngine
 		 * @brief	Replaces the parameter buffer with the specified name. Any following parameter reads or
 		 *			writes that are referencing that buffer will use the new buffer.
 		 *
-		 * @note		This is useful if you want to share a parameter buffer among multiple GPU programs.
+		 * @note	This is useful if you want to share a parameter buffer among multiple GPU programs.
 		 *			You would only set the values once and then share the buffer among all other GpuParams.
 		 *
 		 *			It is up to the caller to guarantee the provided buffer matches parameter block
@@ -95,7 +97,7 @@ namespace BansheeEngine
 		 *
 		 *			Parameter handles will be invalidated when their parent GpuParams object changes.
 		 */
-		template<class T> void getParam(const String& name, GpuDataParamBase<T>& output) const
+		template<class T> void getParam(const String& name, TGpuDataParam<T>& output) const
 		{
 			BS_EXCEPT(InvalidParametersException, "Unsupported parameter type");
 		}
@@ -104,84 +106,84 @@ namespace BansheeEngine
 		 * @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		 */
 		template<>
-		void getParam<float>(const String& name, GpuDataParamBase<float>& output) const
+		void getParam<float>(const String& name, TGpuDataParam<float>& output) const
 		{
-			auto iterFind = mFloatParams.find(name);
+			auto iterFind = mParamDesc.params.find(name);
 
-			if(iterFind == mFloatParams.end())
+			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT1)
 				BS_EXCEPT(InvalidParametersException, "Cannot find float parameter with the name '" + name + "'");
 
-			output = iterFind->second;
+			output = GpuParamFloat(&iterFind->second, mInternalData);
 		}
 
 		/**
 		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		*/
 		template<>
-		void getParam<Vector2>(const String& name, GpuDataParamBase<Vector2>& output) const
+		void getParam<Vector2>(const String& name, TGpuDataParam<Vector2>& output) const
 		{
-			auto iterFind = mVec2Params.find(name);
+			auto iterFind = mParamDesc.params.find(name);
 
-			if(iterFind == mVec2Params.end())
-				BS_EXCEPT(InvalidParametersException, "Cannot find vector(2) parameter with the name '" + name + "'");
+			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT2)
+				BS_EXCEPT(InvalidParametersException, "Cannot find vector (2) parameter with the name '" + name + "'");
 
-			output = iterFind->second;
+			output = GpuParamVec2(&iterFind->second, mInternalData);
 		}
 
 		/**
 		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		*/
 		template<>
-		void getParam<Vector3>(const String& name, GpuDataParamBase<Vector3>& output) const
+		void getParam<Vector3>(const String& name, TGpuDataParam<Vector3>& output) const
 		{
-			auto iterFind = mVec3Params.find(name);
+			auto iterFind = mParamDesc.params.find(name);
 
-			if(iterFind == mVec3Params.end())
-				BS_EXCEPT(InvalidParametersException, "Cannot find vector(3) parameter with the name '" + name + "'");
+			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT3)
+				BS_EXCEPT(InvalidParametersException, "Cannot find vector (3) parameter with the name '" + name + "'");
 
-			output = iterFind->second;
+			output = GpuParamVec3(&iterFind->second, mInternalData);
 		}
 
 		/**
 		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		*/
 		template<>
-		void getParam<Vector4>(const String& name, GpuDataParamBase<Vector4>& output) const
+		void getParam<Vector4>(const String& name, TGpuDataParam<Vector4>& output) const
 		{
-			auto iterFind = mVec4Params.find(name);
+			auto iterFind = mParamDesc.params.find(name);
 
-			if(iterFind == mVec4Params.end())
-				BS_EXCEPT(InvalidParametersException, "Cannot find vector(4) parameter with the name '" + name + "'");
+			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT4)
+				BS_EXCEPT(InvalidParametersException, "Cannot find vector (4) parameter with the name '" + name + "'");
 
-			output = iterFind->second;
+			output = GpuParamVec4(&iterFind->second, mInternalData);
 		}
 
 		/**
 		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		*/
 		template<>
-		void getParam<Matrix3>(const String& name, GpuDataParamBase<Matrix3>& output) const
+		void getParam<Matrix3>(const String& name, TGpuDataParam<Matrix3>& output) const
 		{
-			auto iterFind = mMat3Params.find(name);
+			auto iterFind = mParamDesc.params.find(name);
 
-			if(iterFind == mMat3Params.end())
-				BS_EXCEPT(InvalidParametersException, "Cannot find matrix(3x3) parameter with the name '" + name + "'");
+			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_MATRIX_3X3)
+				BS_EXCEPT(InvalidParametersException, "Cannot find matrix (3x3) parameter with the name '" + name + "'");
 
-			output = iterFind->second;
+			output = GpuParamMat3(&iterFind->second, mInternalData);
 		}
 
 		/**
 		* @copydoc	getParam(const String&, GpuDataParamBase<T>&)
 		*/
 		template<>
-		void getParam<Matrix4>(const String& name, GpuDataParamBase<Matrix4>& output) const
+		void getParam<Matrix4>(const String& name, TGpuDataParam<Matrix4>& output) const
 		{
-			auto iterFind = mMat4Params.find(name);
+			auto iterFind = mParamDesc.params.find(name);
 
-			if(iterFind == mMat4Params.end())
-				BS_EXCEPT(InvalidParametersException, "Cannot find matrix(4x4) parameter with the name '" + name + "'");
+			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_MATRIX_4X4)
+				BS_EXCEPT(InvalidParametersException, "Cannot find matrix (4x4) parameter with the name '" + name + "'");
 
-			output = iterFind->second;
+			output = GpuParamMat4(&iterFind->second, mInternalData);
 		}
 
 		/**
@@ -202,13 +204,22 @@ namespace BansheeEngine
 	private:
 		friend class BindableGpuParams;
 
+	private:
 		GpuParamDesc& mParamDesc;
-		bool mTransposeMatrices;
+		std::shared_ptr<GpuParamsInternalData> mInternalData;
 
 		/**
 		 * @brief	Gets a descriptor for a data parameter with the specified name.
 		 */
 		GpuParamDataDesc* getParamDesc(const String& name) const;
+	};
+
+	/**
+	 * @brief	Structure used for storing GpuParams internal data.
+	 */
+	struct GpuParamsInternalData
+	{
+		GpuParamsInternalData();
 
 		UINT8* mData;
 
@@ -221,14 +232,7 @@ namespace BansheeEngine
 		HTexture* mTextures;
 		HSamplerState* mSamplerStates;
 
-		mutable Map<String, GpuParamFloat> mFloatParams;
-		mutable Map<String, GpuParamVec2> mVec2Params;
-		mutable Map<String, GpuParamVec3> mVec3Params;
-		mutable Map<String, GpuParamVec4> mVec4Params;
-		mutable Map<String, GpuParamMat3> mMat3Params;
-		mutable Map<String, GpuParamMat4> mMat4Params;
-		mutable Map<String, GpuParamStruct> mStructParams;
-		mutable Map<String, GpuParamTexture> mTextureParams;
-		mutable Map<String, GpuParamSampState> mSampStateParams;
+		bool mTransposeMatrices;
+		bool mIsDestroyed;
 	};
 }

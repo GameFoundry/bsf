@@ -10,6 +10,40 @@
 
 namespace BansheeEngine
 {
+	struct GpuParamsInternalData;
+
+	/**
+	 * @brief	Base class containing some non-templated methods for
+	 *			GpuDataParam.
+	 *
+	 * @see		TGpuDataParam
+	 */
+	class BS_CORE_EXPORT GpuDataParamBase
+	{
+	protected:
+		GpuDataParamBase();
+		GpuDataParamBase(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
+
+		/**
+		 * @brief	Checks if the gpu param is still valid or were the parent GpuParams destroyed.
+		 */
+		bool getIsDestroyed() const;
+
+		/**
+		 * @brief	Gets a parameter block at the specified slot index.
+		 */
+		GpuParamBlock* getParamBlock(UINT32 slotIdx) const;
+
+		/**
+		 * @brief	Returns true if matrices need to be transposed when reading/writing them.
+		 */
+		bool getTransposeMatrices() const;
+
+	protected:
+		GpuParamDataDesc* mParamDesc;
+		std::shared_ptr<GpuParamsInternalData> mInternalData;
+	};
+
 	/**
 	 * @brief	A handle that allows you to set a GpuProgram parameter. Internally keeps a reference to the 
 	 *			GPU parameter buffer and the necessary offsets. You should specialize this type for specific 
@@ -30,32 +64,10 @@ namespace BansheeEngine
 	 * @note	Sim thread only.
 	 */
 	template<class T>
-	class BS_CORE_EXPORT GpuDataParamBase
+	class BS_CORE_EXPORT TGpuDataParam : public GpuDataParamBase
 	{
 	private:
 		friend class GpuParams;
-
-		/**
-		 * @brief	Internal data that is shared between GpuDataParam instances.
-		 */
-		struct InternalData
-		{
-			InternalData(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
-				:paramDesc(paramDesc), paramBlocks(paramBlocks), transpose(transpose), isDestroyed(false)
-			{ }
-
-			InternalData()
-				:paramDesc(nullptr), paramBlocks(nullptr), transpose(false), isDestroyed(true)
-			{ }
-
-			~InternalData()
-			{ }
-
-			GpuParamDataDesc* paramDesc;
-			GpuParamBlock** paramBlocks;
-			bool transpose;
-			bool isDestroyed;
-		};
 
 		/**
 		 * @brief	Policy class that allows us to re-use this template class for matrices which might
@@ -90,8 +102,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		GpuDataParamBase()
-			:mData(bs_shared_ptr<InternalData>())
+		TGpuDataParam()
 		{ }
 
 		/**
@@ -103,36 +114,34 @@ namespace BansheeEngine
 		 */
 		void set(const T& value, UINT32 arrayIdx = 0)
 		{
-			if(mData->isDestroyed)
+			if (getIsDestroyed())
 				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
-			GpuParamDataDesc* paramDesc = mData->paramDesc;
-
 #if BS_DEBUG_MODE
-			if(arrayIdx >= paramDesc->arraySize)
+			if (arrayIdx >= mParamDesc->arraySize)
 			{
 				BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
-					toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
+					toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 			}
 #endif
 
-			UINT32 elementSizeBytes = paramDesc->elementSize * sizeof(UINT32);
+			UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
 			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
-			GpuParamBlock* paramBlock = mData->paramBlocks[paramDesc->paramBlockSlot];
+			GpuParamBlock* paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
 
-			if(TransposePolicy<T>::transposeEnabled(mData->transpose))
+			if (TransposePolicy<T>::transposeEnabled(getTransposeMatrices()))
 			{
 				T transposed = TransposePolicy<T>::transpose(value);
-				paramBlock->write((paramDesc->cpuMemOffset + arrayIdx * paramDesc->arrayElementStride) * sizeof(UINT32), &transposed, sizeBytes);
+				paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &transposed, sizeBytes);
 			}
 			else
-				paramBlock->write((paramDesc->cpuMemOffset + arrayIdx * paramDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
+				paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
 
 			// Set unused bytes to 0
 			if(sizeBytes < elementSizeBytes)
 			{
 				UINT32 diffSize = elementSizeBytes - sizeBytes;
-				paramBlock->zeroOut((paramDesc->cpuMemOffset + arrayIdx * paramDesc->arrayElementStride)  * sizeof(UINT32) + sizeBytes, diffSize);
+				paramBlock->zeroOut((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride)  * sizeof(UINT32)+sizeBytes, diffSize);
 			}
 		}
 
@@ -144,56 +153,42 @@ namespace BansheeEngine
 		 */
 		T get(UINT32 arrayIdx = 0)
 		{
-			if(mData->isDestroyed)
+			if (getIsDestroyed())
 				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
-			GpuParamDataDesc* paramDesc = mData->paramDesc;
-
 #if BS_DEBUG_MODE
-			if(arrayIdx >= paramDesc->arraySize)
+			if (arrayIdx >= mParamDesc->arraySize)
 			{
 				BS_EXCEPT(InvalidParametersException, "Array index out of range. Array size: " + 
-					toString(paramDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
+					toString(mParamDesc->arraySize) + ". Requested size: " + toString(arrayIdx));
 			}
 #endif
 
-			UINT32 elementSizeBytes = paramDesc->elementSize * sizeof(UINT32);
+			UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
 			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T));
-			GpuParamBlock* paramBlock = mData->paramBlocks[paramDesc->paramBlockSlot];
+			GpuParamBlock* paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
 
 			T value;
-			paramBlock->read((paramDesc->cpuMemOffset + arrayIdx * paramDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
+			paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);
 
-			if(TransposePolicy<T>::transposeEnabled(mData->transpose))
+			if (TransposePolicy<T>::transposeEnabled(getTransposeMatrices()))
 				return TransposePolicy<T>::transpose(value);
 			else
 				return value;
 		}
 
-		/**
-		 * @brief	Called by the material when this handle is no longer valid (shader changed or material
-		 *			got destroyed).
-		 */
-		void _destroy()
-		{
-			mData->isDestroyed = true;
-		}
-
 	private:
-		GpuDataParamBase(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks, bool transpose)
-			:mData(bs_shared_ptr<InternalData>(paramDesc, paramBlocks, transpose))
+		TGpuDataParam(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
+			:GpuDataParamBase(paramDesc, internalData)
 		{ }
-
-	private:
-		std::shared_ptr<InternalData> mData;
 	};
 
-	typedef GpuDataParamBase<float> GpuParamFloat;
-	typedef GpuDataParamBase<Vector2> GpuParamVec2;
-	typedef GpuDataParamBase<Vector3> GpuParamVec3;
-	typedef GpuDataParamBase<Vector4> GpuParamVec4;
-	typedef GpuDataParamBase<Matrix3> GpuParamMat3;
-	typedef GpuDataParamBase<Matrix4> GpuParamMat4;
+	typedef TGpuDataParam<float> GpuParamFloat;
+	typedef TGpuDataParam<Vector2> GpuParamVec2;
+	typedef TGpuDataParam<Vector3> GpuParamVec3;
+	typedef TGpuDataParam<Vector4> GpuParamVec4;
+	typedef TGpuDataParam<Matrix3> GpuParamMat3;
+	typedef TGpuDataParam<Matrix4> GpuParamMat4;
 
 	/**
 	 * @copydoc GpuDataParamBase
@@ -202,17 +197,6 @@ namespace BansheeEngine
 	{
 	private:
 		friend class GpuParams;
-
-		struct InternalData
-		{
-			InternalData(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks);
-			InternalData();
-			~InternalData();
-
-			GpuParamDataDesc* paramDesc;
-			GpuParamBlock** paramBlocks;
-			bool isDestroyed;
-		};
 
 	public:
 		GpuParamStruct();
@@ -232,15 +216,12 @@ namespace BansheeEngine
 		 */
 		UINT32 getElementSize() const;
 
-		/**
-		 * @copydoc	GpuDataParamBase::_destroy
-		 */
-		void _destroy();
 	private:
-		GpuParamStruct(GpuParamDataDesc* paramDesc, GpuParamBlock** paramBlocks);
+		GpuParamStruct(GpuParamDataDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
 
 	private:
-		std::shared_ptr<InternalData> mData;
+		GpuParamDataDesc* mParamDesc;
+		std::shared_ptr<GpuParamsInternalData> mInternalData;
 	};
 
 	/**
@@ -251,39 +232,25 @@ namespace BansheeEngine
 	private:
 		friend class GpuParams;
 
-		struct InternalData
-		{
-			InternalData(GpuParamObjectDesc* paramDesc, HTexture* textures);
-			InternalData();
-			~InternalData();
-
-			GpuParamObjectDesc* paramDesc;
-			HTexture* textures;
-			bool isDestroyed;
-		};
-
 	public:
 		GpuParamTexture();
 
 		/**
-		* @copydoc	GpuDataParamBase::set
-		*/
+		 * @copydoc	GpuDataParamBase::set
+		 */
 		void set(const HTexture& texture);
 
 		/**
-		* @copydoc	GpuDataParamBase::get
-		*/
+		 * @copydoc	GpuDataParamBase::get
+		 */
 		HTexture get();
 		
-		/**
-		* @copydoc	GpuDataParamBase::_destroy
-		*/
-		void _destroy();
 	private:
-		GpuParamTexture(GpuParamObjectDesc* paramDesc, HTexture* textures);
+		GpuParamTexture(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
 
 	private:
-		std::shared_ptr<InternalData> mData;
+		GpuParamObjectDesc* mParamDesc;
+		std::shared_ptr<GpuParamsInternalData> mInternalData;
 	};
 
 	/**
@@ -294,38 +261,24 @@ namespace BansheeEngine
 	private:
 		friend class GpuParams;
 
-		struct InternalData
-		{
-			InternalData(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates);
-			InternalData();
-			~InternalData();
-
-			GpuParamObjectDesc* paramDesc;
-			HSamplerState* samplerStates;
-			bool isDestroyed;
-		};
-
 	public:
 		GpuParamSampState();
 
 		/**
-		* @copydoc	GpuDataParamBase::set
-		*/
+		 * @copydoc	GpuDataParamBase::set
+		 */
 		void set(const HSamplerState& texture);
 
 		/**
-		* @copydoc	GpuDataParamBase::get
-		*/
+		 * @copydoc	GpuDataParamBase::get
+		 */
 		HSamplerState get();
 
-		/**
-		* @copydoc	GpuDataParamBase::_destroy
-		*/
-		void _destroy();
 	private:
-		GpuParamSampState(GpuParamObjectDesc* paramDesc, HSamplerState* samplerStates);
+		GpuParamSampState(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData);
 
 	private:
-		std::shared_ptr<InternalData> mData;
+		GpuParamObjectDesc* mParamDesc;
+		std::shared_ptr<GpuParamsInternalData> mInternalData;
 	};
 }

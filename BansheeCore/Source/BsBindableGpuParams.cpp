@@ -13,22 +13,22 @@ namespace BansheeEngine
 		mNumTextures(0), mNumSamplerStates(0),mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr)
 	{
 		// Allocate everything in a single block of memory to get rid of extra memory allocations
-		UINT32 paramBlockBufferSize = params->mNumParamBlocks * sizeof(BindableGpuParamBlock*);
-		UINT32 paramBlockBuffersBufferSize = params->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
-		UINT32 textureBufferSize = params->mNumTextures * sizeof(HTexture);
-		UINT32 samplerStateBufferSize = params->mNumSamplerStates * sizeof(HSamplerState);
+		UINT32 paramBlockBufferSize = params->mInternalData->mNumParamBlocks * sizeof(BindableGpuParamBlock*);
+		UINT32 paramBlockBuffersBufferSize = params->mInternalData->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
+		UINT32 textureBufferSize = params->mInternalData->mNumTextures * sizeof(HTexture);
+		UINT32 samplerStateBufferSize = params->mInternalData->mNumSamplerStates * sizeof(HSamplerState);
 
 		UINT32 bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
-		for(UINT32 i = 0; i < params->mNumParamBlocks; i++)
+		for (UINT32 i = 0; i < params->mInternalData->mNumParamBlocks; i++)
 		{
-			if(params->mParamBlockBuffers[i] != nullptr)
-				bufferSize += sizeof(BindableGpuParamBlock) + params->mParamBlockBuffers[i]->getSize();
+			if (params->mInternalData->mParamBlockBuffers[i] != nullptr)
+				bufferSize += sizeof(BindableGpuParamBlock)+params->mInternalData->mParamBlockBuffers[i]->getSize();
 		}
 
 		mData = (UINT8*)allocator->alloc(bufferSize);
-		mNumParamBlocks = params->mNumParamBlocks;
-		mNumTextures = params->mNumTextures;
-		mNumSamplerStates = params->mNumSamplerStates;
+		mNumParamBlocks = params->mInternalData->mNumParamBlocks;
+		mNumTextures = params->mInternalData->mNumTextures;
+		mNumSamplerStates = params->mInternalData->mNumSamplerStates;
 
 		UINT8* dataIter = mData;
 		mParamBlocks = (BindableGpuParamBlock**)dataIter;
@@ -44,15 +44,15 @@ namespace BansheeEngine
 		dataIter += samplerStateBufferSize;
 
 		// Copy data
-		memcpy(mParamBlockBuffers, params->mParamBlockBuffers, paramBlockBuffersBufferSize);
-		memcpy(mTextures, params->mTextures, textureBufferSize);
-		memcpy(mSamplerStates, params->mSamplerStates, samplerStateBufferSize);
+		memcpy(mParamBlockBuffers, params->mInternalData->mParamBlockBuffers, paramBlockBuffersBufferSize);
+		memcpy(mTextures, params->mInternalData->mTextures, textureBufferSize);
+		memcpy(mSamplerStates, params->mInternalData->mSamplerStates, samplerStateBufferSize);
 
-		for(UINT32 i = 0; i < params->mNumParamBlocks; i++)
+		for (UINT32 i = 0; i < params->mInternalData->mNumParamBlocks; i++)
 		{
-			if(params->mParamBlockBuffers[i] != nullptr)
+			if (params->mInternalData->mParamBlockBuffers[i] != nullptr)
 			{
-				GpuParamBlock* paramBlock = params->mParamBlockBuffers[i]->getParamBlock();
+				GpuParamBlock* paramBlock = params->mInternalData->mParamBlockBuffers[i]->getParamBlock();
 
 				UINT32 bufferSize = paramBlock->getSize();
 				mParamBlocks[i] = (BindableGpuParamBlock*)dataIter;

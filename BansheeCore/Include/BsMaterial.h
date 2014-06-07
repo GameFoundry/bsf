@@ -408,7 +408,7 @@ namespace BansheeEngine
 		 * 			caller to keep track of that.
 		 */
 		template <typename T>
-		void getParam(const String& name, GpuDataParamBase<T>& output) const
+		void getParam(const String& name, TGpuDataParam<T>& output) const
 		{
 			throwIfNotInitialized();
 

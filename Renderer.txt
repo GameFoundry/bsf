@@ -1,6 +1,8 @@
 Get renderer to run
  - Go through TODOs on BansheeRenderer
  - What happens to MeshRenderData when mesh is destroyed? It contains a callback to Mesh, so I must ensure it outlives it.
+   - Just keep a reference to the MeshPtr instead of that notify callback.
+   - OR just notify MeshRenderData on Mesh destruction (And make it use a shared ptr)
  - How to clean up RenderableProxies in Renderer?
  - Even though I allocate material proxies with frame alloc I think I still need to free them for debug purposes
 
