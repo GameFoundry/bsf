@@ -15,8 +15,8 @@ namespace BansheeEngine
 		String name;
 		String gpuVariableName;
 		GpuParamDataType type;
+		UINT32 rendererSemantic;
 		UINT32 arraySize;
-		bool hidden;
 		UINT32 elementSize;
 	};
 
@@ -29,8 +29,8 @@ namespace BansheeEngine
 	{
 		String name;
 		String gpuVariableName;
+		UINT32 rendererSemantic;
 		GpuParamObjectType type;
-		bool hidden;
 	};
 
 	/**
@@ -40,6 +40,7 @@ namespace BansheeEngine
 	{
 		String name;
 		bool shared;
+		UINT32 rendererSemantic;
 		GpuParamBlockUsage usage;
 	};
 
@@ -84,20 +85,76 @@ namespace BansheeEngine
 		TechniquePtr getBestTechnique() const;
 
 		/**
+		 * @brief	Sets sorting type to use when performing sort in the render queue. Default value is sort front to back
+		 *			which causes least overdraw and is preferable. Transparent objects need to be sorted back to front.
+		 *			You may also specify no sorting and the elements will be rendered in the order they were added to the
+		 *			render queue.
+		 */
+		void setQueueSortType(QueueSortType sortType) { mQueueSortType = sortType; }
+
+		/**
+		 * @brief	Sets a priority that allows you to control in what order are your shaders rendered.
+		 *			See "QueuePriority" for a list of initial values. Shaders with higher priority will be
+		 *			rendered before shaders with lower priority, and additionally render queue will only sort
+		 *			elements within the same priority group.
+		 *
+		 * @note	This is useful when you want all your opaque objects to be rendered before you start
+		 *			drawing your transparent ones. Or to render your overlays after everything else. Values
+		 *			provided in "QueuePriority" are just for general guidance and feel free to increase them
+		 *			or decrease them for finer tuning. (e.g. "QueuePriority::Opaque + 1").
+		 */
+		void setQueuePriority(UINT32 priority) { mQueuePriority = priority; }
+
+		/**
+		 * @brief	Enables or disables separable passes. When separable passes are disabled
+		 *			all shader passes will be executed in a sequence one after another. If it is disabled
+		 *			the renderer is free to mix and match passes from different objects to achieve best
+		 *			performance. (They will still be executed in sequence, but some other object may
+		 *			be rendered in-between passes)
+		 *
+		 * @note	Shaders with transparency generally can't be separable, while opaque can.
+		 */
+		void setAllowSeparablePasses(bool enable) { mSeparablePasses = enable; }
+
+		/**
+		 * @brief	Returns currently active queue sort type.
+		 *
+		 * @see		setQueueSortType
+		 */
+		QueueSortType getQueueSortType() const { return mQueueSortType; }
+
+		/**
+		 * @brief	Returns currently active queue priority.
+		 *
+		 * @see		setQueuePriority
+		 */
+		UINT32 getQueuePriority() const { return mQueuePriority; }
+
+		/**
+		 * @brief	Returns if separable passes are allowed.
+		 *
+		 * @see		setAllowSeparablePasses
+		 */
+		bool getAllowSeparablePasses() const { return mSeparablePasses; }
+
+		/**
 		 * @brief	Registers a new data (int, Vector2, etc.) parameter you that you may then use 
 		 *			via Material by providing the parameter name. All parameters internally map to 
 		 *			variables defined in GPU programs.
 		 *
-		 * @param	name		   	The name of the parameter. Name must be unique between all data and object parameters.
-		 * @param	gpuVariableName	Name of the GPU variable in the GpuProgram that the parameter corresponds with.
-		 * @param	type		   	The type of the parameter, must be the same as the type in GpuProgram.
-		 * @param	arraySize	   	(optional) If the parameter is an array, the number of elements in the array. Size of 1 means its not an array.
-		 * @param	elementSize	   	(optional) Size of an individual element in the array, in bytes. You only need to set this if you are setting variable
-		 * 							length parameters, like structs.
-		 * @param	hidden		   	(optional) Property that is not directly used by the material system, but can be useful if you need to mark certain parameters
-		 * 							as hidden to some system. (e.g. hiding internal engine-managed parameters from the user in the Editor)
+		 * @param	name		   	 The name of the parameter. Name must be unique between all data and object parameters.
+		 * @param	gpuVariableName	 Name of the GPU variable in the GpuProgram that the parameter corresponds with.
+		 * @param	type		   	 The type of the parameter, must be the same as the type in GpuProgram.
+		 * @param	arraySize	   	 (optional) If the parameter is an array, the number of elements in the array. Size of 1 means its not an array.
+		 * @param	elementSize	   	 (optional) Size of an individual element in the array, in bytes. You only need to set this if you are setting variable
+		 * 							 length parameters, like structs.
+		 * @param	rendererSemantic (optional) Semantic that allows you to specify the use of this parameter in the renderer. The actual value of the semantic
+		 *							 depends on the current Renderer and its supported list of semantics. Elements with renderer semantics should not be updated
+		 *							 by the user, and will be updated by the renderer. These semantics will also be used to determine if a shader is compatible
+		 *							 with a specific renderer or not. Value of 0 signifies the parameter is not used by the renderer.
 		 */
-		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize = 1, UINT32 elementSize = 0, bool hidden = false);
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize = 1, 
+			UINT32 elementSize = 0, UINT32 rendererSemantic = 0);
 
 		/**
 		 * @brief	Registers a new object (texture, sampler state, etc.) parameter you that you may then use 
@@ -106,10 +163,12 @@ namespace BansheeEngine
 		 * @param	name		   	The name of the parameter. Name must be unique between all data and object parameters.
 		 * @param	gpuVariableName	Name of the GPU variable in the GpuProgram that the parameter corresponds with.
 		 * @param	type		   	The type of the parameter, must be the same as the type in GpuProgram.
-		 * @param	hidden		   	(optional) Property that is not directly used by the material system, but can be useful if you need to mark certain parameters
-		 * 							as hidden to some system. (e.g. hiding internal engine-managed parameters from the user in the Editor)
+		 * @param	rendererSemantic (optional) Semantic that allows you to specify the use of this parameter in the renderer. The actual value of the semantic
+		 *							 depends on the current Renderer and its supported list of semantics. Elements with renderer semantics should not be updated
+		 *							 by the user, and will be updated by the renderer. These semantics will also be used to determine if a shader is compatible
+		 *							 with a specific renderer or not. Value of 0 signifies the parameter is not used by the renderer.
 		 */
-		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, bool hidden = false);
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic = 0);
 
 		/**
 		 * @brief	Unregister a parameter with the specified name.
@@ -118,8 +177,20 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Changes parameters of a parameter block with the specified name.
+		 *
+		 * @param	name	Name of the parameter block. This should correspond with the name specified in the GPU program code.
+		 * @param	shared	If parameter block is marked as shared it will not be automatically created by the Material. You will need
+		 *					to create it elsewhere and then assign it manually.
+		 * @param	usage	Specified how often do we plan on modifying the buffer, which determines how is the buffer internally stored
+		 *					for best performance.
+		 * @param	rendererSemantic (optional) Semantic that allows you to specify the use of this parameter block in the renderer. The actual value of the 
+		 *							 semantic depends on the current Renderer and its supported list of semantics. Elements with a renderer semantic
+		 *							 will not have their parameter block automatically created (similar to "shared" argument), but instead a Renderer will
+		 *							 create an assign it instead. Be aware that renderers have strict policies on what and how are parameters stored in the 
+		 *							 buffer and you will need to respect them. If you don't respect them your shader will be deemed incompatible and won't be used. 
+		 *							 Value of 0 signifies the parameter block is not used by the renderer.
 		 */
-		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage);
+		void setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, UINT32 rendererSemantic = 0);
 
 		/**
 		 * @brief	Returns type of the parameter with the specified name. Throws exception if
@@ -181,6 +252,9 @@ namespace BansheeEngine
 		static ShaderPtr create(const String& name);
 	private:
 		String mName;
+		QueueSortType mQueueSortType;
+		UINT32 mQueuePriority;
+		bool mSeparablePasses;
 		Vector<TechniquePtr> mTechniques;
 
 		Map<String, SHADER_DATA_PARAM_DESC> mDataParams;

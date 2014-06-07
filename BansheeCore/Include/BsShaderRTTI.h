@@ -20,7 +20,7 @@ namespace BansheeEngine
 			memory += curSize;
 
 			memory = rttiWriteElem(data.arraySize, memory);
-			memory = rttiWriteElem(data.hidden, memory);
+			memory = rttiWriteElem(data.rendererSemantic, memory);
 			memory = rttiWriteElem(data.type, memory);
 			memory = rttiWriteElem(data.name, memory);
 			memory = rttiWriteElem(data.gpuVariableName, memory);
@@ -34,7 +34,7 @@ namespace BansheeEngine
 			memory += sizeof(UINT32);
 
 			memory = rttiReadElem(data.arraySize, memory);
-			memory = rttiReadElem(data.hidden, memory);
+			memory = rttiReadElem(data.rendererSemantic, memory);
 			memory = rttiReadElem(data.type, memory);
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableName, memory);
@@ -45,7 +45,7 @@ namespace BansheeEngine
 
 		static UINT32 getDynamicSize(const SHADER_DATA_PARAM_DESC& data)	
 		{ 
-			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
+			UINT64 dataSize = rttiGetElemSize(data.arraySize) + rttiGetElemSize(data.rendererSemantic) + rttiGetElemSize(data.type) +
 				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + rttiGetElemSize(data.elementSize) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
@@ -71,7 +71,7 @@ namespace BansheeEngine
 			memcpy(memory, &size, curSize);
 			memory += curSize;
 
-			memory = rttiWriteElem(data.hidden, memory);
+			memory = rttiWriteElem(data.rendererSemantic, memory);
 			memory = rttiWriteElem(data.type, memory);
 			memory = rttiWriteElem(data.name, memory);
 			memory = rttiWriteElem(data.gpuVariableName, memory);
@@ -83,7 +83,7 @@ namespace BansheeEngine
 			memcpy(&size, memory, sizeof(UINT32)); 
 			memory += sizeof(UINT32);
 
-			memory = rttiReadElem(data.hidden, memory);
+			memory = rttiReadElem(data.rendererSemantic, memory);
 			memory = rttiReadElem(data.type, memory);
 			memory = rttiReadElem(data.name, memory);
 			memory = rttiReadElem(data.gpuVariableName, memory);
@@ -93,7 +93,7 @@ namespace BansheeEngine
 
 		static UINT32 getDynamicSize(const SHADER_OBJECT_PARAM_DESC& data)	
 		{ 
-			UINT64 dataSize = rttiGetElemSize(data.hidden) + rttiGetElemSize(data.type) + 
+			UINT64 dataSize = rttiGetElemSize(data.rendererSemantic) + rttiGetElemSize(data.type) +
 				rttiGetElemSize(data.name) + rttiGetElemSize(data.gpuVariableName) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
@@ -122,6 +122,7 @@ namespace BansheeEngine
 			memory = rttiWriteElem(data.shared, memory);
 			memory = rttiWriteElem(data.usage, memory);
 			memory = rttiWriteElem(data.name, memory);
+			memory = rttiWriteElem(data.rendererSemantic, memory);
 		}
 
 		static UINT32 fromMemory(SHADER_PARAM_BLOCK_DESC& data, char* memory)
@@ -133,6 +134,7 @@ namespace BansheeEngine
 			memory = rttiReadElem(data.shared, memory);
 			memory = rttiReadElem(data.usage, memory);
 			memory = rttiReadElem(data.name, memory);
+			memory = rttiReadElem(data.rendererSemantic, memory);
 
 			return size;
 		}
@@ -140,7 +142,7 @@ namespace BansheeEngine
 		static UINT32 getDynamicSize(const SHADER_PARAM_BLOCK_DESC& data)	
 		{ 
 			UINT64 dataSize = rttiGetElemSize(data.shared) + rttiGetElemSize(data.usage) + 
-				rttiGetElemSize(data.name) + sizeof(UINT32);
+				rttiGetElemSize(data.name) + rttiGetElemSize(data.rendererSemantic) + sizeof(UINT32);
 
 #if BS_DEBUG_MODE
 			if(dataSize > std::numeric_limits<UINT32>::max())
@@ -200,6 +202,16 @@ namespace BansheeEngine
 		UINT32 getParamBlocksArraySize(Shader* obj) { return (UINT32)obj->mParamBlocks.size(); }
 		void setParamBlocksArraySize(Shader* obj, UINT32 size) {  } // Do nothing
 
+		UINT32& getQueueSortType(Shader* obj) { return (UINT32&)obj->mQueueSortType; }
+		void setQueueSortType(Shader* obj, UINT32& value) { obj->mQueueSortType = (QueueSortType)value; }
+
+		UINT32& getQueuePriority(Shader* obj) { return obj->mQueuePriority; }
+		void setQueuePriority(Shader* obj, UINT32& value) { obj->mQueuePriority = value; }
+
+		bool& getAllowSeparablePasses(Shader* obj) { return obj->mSeparablePasses; }
+		void setAllowSeparablePasses(Shader* obj, bool& value) { obj->mSeparablePasses = value; }
+
+
 	public:
 		ShaderRTTI()
 		{
@@ -213,6 +225,10 @@ namespace BansheeEngine
 				&ShaderRTTI::setObjectParam, &ShaderRTTI::setObjectParamsArraySize);
 			addPlainArrayField("mParamBlocks", 4, &ShaderRTTI::getParamBlock, &ShaderRTTI::getParamBlocksArraySize, 
 				&ShaderRTTI::setParamBlock, &ShaderRTTI::setParamBlocksArraySize);
+
+			addPlainField("mQueueSortType", 5, &ShaderRTTI::getQueueSortType, &ShaderRTTI::setQueueSortType);
+			addPlainField("mQueuePriority", 6, &ShaderRTTI::getQueuePriority, &ShaderRTTI::setQueuePriority);
+			addPlainField("mSeparablePasses", 7, &ShaderRTTI::getAllowSeparablePasses, &ShaderRTTI::setAllowSeparablePasses);
 		}
 
 		virtual const String& getRTTIName()

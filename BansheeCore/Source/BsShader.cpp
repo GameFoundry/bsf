@@ -7,7 +7,8 @@
 namespace BansheeEngine
 {
 	Shader::Shader(const String& name)
-		:mName(name)
+		:mName(name), mQueueSortType(QueueSortType::FrontToBack),
+		mQueuePriority((UINT32)QueuePriority::Opaque), mSeparablePasses(true)
 	{
 
 	}
@@ -61,7 +62,7 @@ namespace BansheeEngine
 		// TODO - Low priority. Instead of returning null use an extremely simple technique that will be supported almost everywhere as a fallback.
 	}
 
-	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, UINT32 elementSize, bool hidden)
+	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, UINT32 elementSize, UINT32 rendererSemantic)
 	{
 		if(type == GPDT_STRUCT && elementSize <= 0)
 			BS_EXCEPT(InvalidParametersException, "You need to provide a non-zero element size for a struct parameter.")
@@ -71,20 +72,20 @@ namespace BansheeEngine
 		desc.gpuVariableName = gpuVariableName;
 		desc.type = type;
 		desc.arraySize = arraySize;
-		desc.hidden = hidden;
+		desc.rendererSemantic = rendererSemantic;
 		desc.elementSize = elementSize;
 
 		mDataParams[name] = desc;
 		mObjectParams.erase(name);
 	}
 
-	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, bool hidden)
+	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic)
 	{
 		SHADER_OBJECT_PARAM_DESC desc;
 		desc.name = name;
 		desc.gpuVariableName = gpuVariableName;
 		desc.type = type;
-		desc.hidden = hidden;
+		desc.rendererSemantic = rendererSemantic;
 
 		mObjectParams[name] = desc;
 		mDataParams.erase(name);
@@ -145,12 +146,13 @@ namespace BansheeEngine
 		mObjectParams.erase(name);
 	}
 
-	void Shader::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage)
+	void Shader::setParamBlockAttribs(const String& name, bool shared, GpuParamBlockUsage usage, UINT32 rendererSemantic)
 	{
 		SHADER_PARAM_BLOCK_DESC desc;
 		desc.name = name;
 		desc.shared = shared;
 		desc.usage = usage;
+		desc.rendererSemantic = rendererSemantic;
 
 		mParamBlocks[name] = desc;
 	}
