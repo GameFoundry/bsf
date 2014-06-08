@@ -2,6 +2,7 @@
 #include "BsRenderableRTTI.h"
 #include "BsSceneObject.h"
 #include "BsBuiltinMaterialManager.h"
+#include "BsMeshRenderData.h"
 #include "BsMesh.h"
 #include "BsMaterial.h"
 #include "BsRenderQueue.h"
@@ -21,7 +22,7 @@ namespace BansheeEngine
 	}
 
 	Renderable::Renderable(const HSceneObject& parent)
-		:Component(parent), mLayer(1), mIsRenderDataDirty(true), mActiveProxy(nullptr)
+		:Component(parent), mLayer(1), mCoreDirtyFlags(0xFFFFFFFF), mActiveProxy(nullptr)
 	{
 		setName("Renderable");
 
@@ -32,7 +33,7 @@ namespace BansheeEngine
 	{
 		mMeshData = mesh;
 
-		mIsRenderDataDirty = true;
+		markCoreDirty();
 	}
 
 	void Renderable::setNumMaterials(UINT32 numMaterials)
@@ -41,14 +42,14 @@ namespace BansheeEngine
 
 		mMaterialData.resize(numMaterials);
 
-		mIsRenderDataDirty = true;
+		markCoreDirty();
 	}
 
 	void Renderable::setMaterial(UINT32 idx, HMaterial material)
 	{
 		mMaterialData[idx] = material;
 
-		mIsRenderDataDirty = true;
+		markCoreDirty();
 	}
 
 	void Renderable::setMaterial(HMaterial material)
@@ -64,47 +65,66 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Invalid layer provided. Only one layer bit may be set.");
 
 		mLayer = layer;
-		mIsRenderDataDirty = true;
+		markCoreDirty();
 	}
 
-	bool Renderable::_isRenderDataDirty() const
+	bool Renderable::_isCoreDirty() const
 	{ 
 		updateResourceLoadStates();
 
-		return mIsRenderDataDirty; 
+		for (auto& materialData : mMaterialData)
+		{
+			if (materialData.material.isLoaded() && materialData.material->_isCoreDirty())
+				return true;
+		}
+
+		return mCoreDirtyFlags; 
+	}
+
+	void Renderable::_markCoreClean()
+	{
+		for (auto& materialData : mMaterialData)
+		{
+			if (materialData.material.isLoaded())
+				materialData.material->_markCoreClean();
+		}
+
+		mCoreDirtyFlags = 0;
 	}
 
 	void Renderable::updateResourceLoadStates() const
 	{
 		if (!mMeshData.isLoaded && mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded())
 		{
-			mIsRenderDataDirty = true;
 			mMeshData.isLoaded = true;
+
+			markCoreDirty();
 		}
 
 		for (auto& materialData : mMaterialData)
 		{
 			if (!materialData.isLoaded && materialData.material != nullptr && materialData.material.isLoaded())
 			{
-				mIsRenderDataDirty = true;
 				materialData.isLoaded = true;
+
+				markCoreDirty();
 			}
 		}
 	}
 
-	RenderableProxy* Renderable::_createProxy(FrameAlloc* allocator) const
+	RenderableProxyPtr Renderable::_createProxy() const
 	{
 		if (mMeshData.mesh == nullptr || !mMeshData.mesh.isLoaded())
 			return nullptr;
 
-		RenderableProxy* proxy = bs_new<RenderableProxy>();
+		RenderableProxyPtr proxy = bs_shared_ptr<RenderableProxy>();
 
 		for (UINT32 i = 0; i < mMeshData.mesh->getNumSubMeshes(); i++)
 		{
-			RenderableSubProxy* subProxy = bs_new<RenderableSubProxy>();
-			subProxy->layer = mLayer;
-			subProxy->worldTransform = SO()->getWorldTfrm();
-			subProxy->mesh = &mMeshData.mesh->_getRenderData(i);
+			RenderableElement* renElement = bs_new<RenderableElement>();
+			renElement->layer = mLayer;
+			renElement->worldTransform = SO()->getWorldTfrm();
+			renElement->mesh = mMeshData.mesh->_getRenderData(i);
 
 			HMaterial material;
 			if (i < mMaterialData.size())
@@ -115,9 +135,9 @@ namespace BansheeEngine
 			if (material == nullptr || !material.isLoaded())
 				material = BuiltinMaterialManager::instance().createDummyMaterial();
 
-			subProxy->material = material->_createProxy(allocator);
+			renElement->material = material->_createProxy();
 
-			proxy->subProxies.push_back(subProxy);
+			proxy->renderableElements.push_back(renElement);
 		}
 
 		return proxy;

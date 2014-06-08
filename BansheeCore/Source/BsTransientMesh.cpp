@@ -7,7 +7,7 @@ namespace BansheeEngine
 	TransientMesh::TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
 		:MeshBase(numVertices, numIndices, drawOp), mParentHeap(parentHeap), mId(id), mIsDestroyed(false)
 	{
-		mRenderData = MeshRenderData(nullptr, nullptr, SubMesh(), 0, std::bind(&TransientMesh::_notifyUsedOnGPU, this));
+		mRenderData = bs_shared_ptr<MeshRenderData>(nullptr, nullptr, SubMesh(), 0, std::bind(&TransientMesh::_notifyUsedOnGPU, this));
 	}
 
 	TransientMesh::~TransientMesh()
@@ -17,6 +17,8 @@ namespace BansheeEngine
 			TransientMeshPtr meshPtr = std::static_pointer_cast<TransientMesh>(getThisPtr());
 			mParentHeap->dealloc(meshPtr);
 		}
+
+		mRenderData->_markAsInvalid();
 	}
 
 	void TransientMesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
@@ -56,7 +58,7 @@ namespace BansheeEngine
 
 	void TransientMesh::_updateRenderData()
 	{
-		mRenderData.updateData(mParentHeap->_getVertexData(), mParentHeap->_getIndexBuffer(),
+		mRenderData->updateData(mParentHeap->_getVertexData(), mParentHeap->_getIndexBuffer(),
 			SubMesh(mParentHeap->getIndexOffset(mId), getNumIndices(), getSubMesh(0).drawOp),
 			mParentHeap->getVertexOffset(mId));
 	}

@@ -29,12 +29,19 @@ namespace BansheeEngine
 	BansheeRenderer::BansheeRenderer()
 	{
 		mRenderableRemovedConn = gBsSceneManager().onRenderableRemoved.connect(std::bind(&BansheeRenderer::renderableRemoved, this, _1));
+
+		// Init compatibile material params
+		RendererMaterialParams dx9params("BansheeD3D9RenderSystem", RenType_UnlitUntextured);
+
+		// TODO - In a perfect world I would get element size and offsets by creating a dummy version of the param block
+		// and reading the values.
+		dx9params.addDataParam(RPS_WorldViewProjTfrm, GPT_VERTEX_PROGRAM, GPDT_MATRIX_4X4, sizeof(Matrix4), 0, 0, RP_AnyPass, RBS_PerObject);
+
+		mRenderableMaterialParams.insert(dx9params);
 	}
 
 	BansheeRenderer::~BansheeRenderer()
 	{
-		assert(false); // TODO - Delete all renderable proxies
-
 		mRenderableRemovedConn.disconnect();
 	}
 
@@ -44,52 +51,49 @@ namespace BansheeEngine
 		return name;
 	}
 
-	void BansheeRenderer::addRenderableProxy(RenderableProxy* proxy)
+	void BansheeRenderer::addRenderableProxy(RenderableProxyPtr proxy)
 	{
-		for (auto& subProxy : proxy->subProxies)
+		for (auto& element : proxy->renderableElements)
 		{
-			mRenderableProxies.push_back(subProxy);
-			mWorldTransforms.push_back(subProxy->worldTransform);
-			mWorldBounds.push_back(subProxy->calculateWorldBounds());
-			subProxy->markBoundsClean();
+			mRenderableProxies.push_back(element);
+			mWorldTransforms.push_back(element->worldTransform);
+			mWorldBounds.push_back(element->calculateWorldBounds());
+			element->markBoundsClean();
 
-			subProxy->id = (UINT32)(mRenderableProxies.size() - 1);
-			subProxy->mesh->addRenderableProxy(subProxy);
+			element->id = (UINT32)(mRenderableProxies.size() - 1);
+			element->mesh->addRenderableProxy(element);
 		}
 	}
 
-	void BansheeRenderer::removeRenderableProxy(RenderableProxy* proxy)
+	void BansheeRenderer::removeRenderableProxy(RenderableProxyPtr proxy)
 	{
-		for (auto& subProxy : proxy->subProxies)
+		for (auto& element : proxy->renderableElements)
 		{
-			assert(mRenderableProxies.size() > subProxy->id && subProxy->id >= 0);
+			assert(mRenderableProxies.size() > element->id && element->id >= 0);
 
 			if (mRenderableProxies.size() == 0)
 				mRenderableProxies.erase(mRenderableProxies.begin());
 			else
 			{
-				std::swap(mRenderableProxies[subProxy->id], mRenderableProxies.back());
+				std::swap(mRenderableProxies[element->id], mRenderableProxies.back());
 				mRenderableProxies.erase(mRenderableProxies.end() - 1);
 
-				mRenderableProxies[subProxy->id]->id = subProxy->id;
+				mRenderableProxies[element->id]->id = element->id;
 			}
 
-			subProxy->mesh->removeRenderableProxy(subProxy);
-			bs_delete(subProxy);
+			element->mesh->removeRenderableProxy(element);
 		}
-
-		bs_delete(proxy);
 	}
 
-	void BansheeRenderer::updateRenderableProxy(RenderableProxy* proxy, Matrix4 localToWorld)
+	void BansheeRenderer::updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld)
 	{
-		for (auto& subProxy : proxy->subProxies)
+		for (auto& element : proxy->renderableElements)
 		{
-			subProxy->worldTransform = localToWorld;
+			element->worldTransform = localToWorld;
 
-			mWorldTransforms[subProxy->id] = localToWorld;
-			mWorldBounds[subProxy->id] = subProxy->calculateWorldBounds();
-			subProxy->markBoundsClean();
+			mWorldTransforms[element->id] = localToWorld;
+			mWorldBounds[element->id] = element->calculateWorldBounds();
+			element->markBoundsClean();
 		}
 	}
 
@@ -118,24 +122,24 @@ namespace BansheeEngine
 		const Vector<HRenderable>& allRenderables = gBsSceneManager().getAllRenderables();
 		for (auto& renderable : allRenderables)
 		{
-			if (!renderable->_isRenderDataDirty())
+			if (!renderable->_isCoreDirty())
 			{
-				RenderableProxy* proxy = renderable->_getActiveProxy();
+				RenderableProxyPtr proxy = renderable->_getActiveProxy();
 
 				if (proxy != nullptr)
 					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
 
-				proxy = renderable->_createProxy(gCoreThread().getFrameAlloc());
+				proxy = renderable->_createProxy();
 				renderable->_setActiveProxy(proxy);
 
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
 
-				renderable->_markRenderDataClean();
+				renderable->_markCoreClean();
 				renderable->SO()->_markRenderDataUpToDate();
 			}
 			else if (!renderable->SO()->_isRenderDataUpToDate())
 			{
-				RenderableProxy* proxy = renderable->_getActiveProxy();
+				RenderableProxyPtr proxy = renderable->_getActiveProxy();
 				assert(proxy != nullptr);
 
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderable->SO()->getWorldTfrm()));
@@ -224,8 +228,8 @@ namespace BansheeEngine
 			{
 				// TODO - Will I need to check if materials match renderer?
 
-				renderQueue->add(drawOp.material->_createProxy(gCoreThread().getFrameAlloc()),
-					&drawOp.mesh->_getRenderData(drawOp.submeshIdx), drawOp.worldPosition);
+				renderQueue->add(drawOp.material->_createProxy(),
+					drawOp.mesh->_getRenderData(drawOp.submeshIdx), drawOp.worldPosition);
 			}
 
 			idx++;
@@ -301,14 +305,14 @@ namespace BansheeEngine
 		for(auto iter = sortedROps.begin(); iter != sortedROps.end(); ++iter)
 		{
 			const RenderOperation& renderOp = *iter->baseOperation;
-			const MaterialProxy& materialProxy = renderOp.material;
+			Material::CoreProxyPtr materialProxy = renderOp.material;
 
-			setPass(materialProxy.passes[iter->passIdx]);
+			setPass(materialProxy->passes[iter->passIdx]);
 			draw(*renderOp.mesh);
 		}
 	}
 
-	void BansheeRenderer::setPass(const MaterialProxy::PassData& pass)
+	void BansheeRenderer::setPass(const Material::CoreProxy::PassData& pass)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

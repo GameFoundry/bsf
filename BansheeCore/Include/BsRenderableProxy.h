@@ -1,17 +1,17 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsMaterialProxy.h"
+#include "BsMaterial.h"
 #include "BsBounds.h"
 #include "BsMatrix4.h"
 
 namespace BansheeEngine
 {
 	// TODO UNDOCUMENTED
-	class BS_CORE_EXPORT RenderableSubProxy
+	class BS_CORE_EXPORT RenderableElement
 	{
 	public:
-		RenderableSubProxy();
+		RenderableElement();
 
 		void markBoundsDirty() { mBoundsDirty = true; }
 		void markBoundsClean() { mBoundsDirty = false; }
@@ -21,8 +21,8 @@ namespace BansheeEngine
 		UINT32 id;
 		Matrix4 worldTransform;
 
-		MeshRenderData* mesh;
-		MaterialProxy material;
+		MeshRenderDataPtr mesh;
+		Material::CoreProxyPtr material;
 
 		UINT64 layer;
 
@@ -33,6 +33,10 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RenderableProxy
 	{
 	public:
-		Vector<RenderableSubProxy*> subProxies;
+		~RenderableProxy();
+
+		Vector<RenderableElement*> renderableElements;
 	};
+
+	typedef std::shared_ptr<RenderableProxy> RenderableProxyPtr;
 }

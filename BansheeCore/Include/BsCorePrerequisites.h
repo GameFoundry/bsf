@@ -131,7 +131,7 @@ namespace BansheeEngine
 	class VideoOutputInfo;
 	class VideoModeInfo;
 	class RenderableProxy;
-	class RenderableSubProxy;
+	class RenderableElement;
 	class MeshRenderData;
 	class CameraProxy;
 	class MaterialProxy;
@@ -231,6 +231,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
 	typedef std::shared_ptr<DrawList> DrawListPtr;
 	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
+	typedef std::shared_ptr<MeshRenderData> MeshRenderDataPtr;
 }
 
 /************************************************************************/

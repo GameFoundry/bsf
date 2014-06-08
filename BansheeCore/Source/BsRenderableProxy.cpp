@@ -3,11 +3,11 @@
 
 namespace BansheeEngine
 {
-	RenderableSubProxy::RenderableSubProxy()
+	RenderableElement::RenderableElement()
 		:mBoundsDirty(false), id(0), mesh(nullptr)
 	{ }
 
-	Bounds RenderableSubProxy::calculateWorldBounds()
+	Bounds RenderableElement::calculateWorldBounds()
 	{
 		if (mesh == nullptr)
 			return Bounds();
@@ -16,5 +16,11 @@ namespace BansheeEngine
 		worldBounds.transformAffine(worldTransform);
 
 		return worldBounds;
+	}
+
+	RenderableProxy::~RenderableProxy()
+	{
+		for (auto& renderableElement : renderableElements)
+			bs_delete(renderableElement);
 	}
 }

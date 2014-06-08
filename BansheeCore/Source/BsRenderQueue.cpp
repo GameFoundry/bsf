@@ -1,5 +1,6 @@
 #include "BsRenderQueue.h"
 #include "BsRenderOperation.h"
+#include "BsMeshRenderData.h"
 
 namespace BansheeEngine
 {
@@ -14,7 +15,7 @@ namespace BansheeEngine
 		mSortedRenderOps.clear();
 	}
 
-	void RenderQueue::add(const MaterialProxy& material, MeshRenderData* mesh, const Vector3& worldPosForSort)
+	void RenderQueue::add(const Material::CoreProxyPtr& material, const MeshRenderDataPtr& mesh, const Vector3& worldPosForSort)
 	{
 		// TODO - Make sure RenderOperations are cached so we dont allocate memory for them every frame
 		mRenderOperations.push_back(RenderOperation());

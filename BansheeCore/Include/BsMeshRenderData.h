@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsRenderableProxy.h"
 #include "BsBounds.h"
 #include "BsSubMesh.h"
 
@@ -29,12 +30,12 @@ namespace BansheeEngine
 		/**
 		 * Registers a new renderable proxy that references this mesh.
 		 */
-		void addRenderableProxy(RenderableSubProxy* proxy);
+		void addRenderableProxy(RenderableElement* proxy);
 
 		/**
 		 * Unregisters a renderable proxy that references this mesh.
 		 */
-		void removeRenderableProxy(RenderableSubProxy* proxy);
+		void removeRenderableProxy(RenderableElement* proxy);
 
 		/**
 		 * Update mesh local bounds with the new provided bounds.
@@ -77,6 +78,11 @@ namespace BansheeEngine
 		 */
 		void notifyUsedOnGPU() const;
 
+		/**
+		 * Marks the render data as invalid, usually when the parent mesh was destroyed.
+		 */
+		void _markAsInvalid();
+
 	private:
 		friend class Mesh;
 
@@ -85,8 +91,9 @@ namespace BansheeEngine
 		SubMesh mSubMesh;
 		UINT32 mVertexOffset;
 
-		Vector<RenderableSubProxy*> mRenderableProxies;
+		Vector<RenderableElement*> mRenderableProxies;
 		Bounds mBounds;
 		std::function<void()> mUsedOnGPUCallback;
+		bool mIsMeshValid;
 	};
 }

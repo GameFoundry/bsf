@@ -55,7 +55,8 @@ namespace BansheeEngine
 
 	Mesh::~Mesh()
 	{
-
+		for (auto& renderData : mRenderData)
+			renderData->_markAsInvalid();
 	}
 
 	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
@@ -172,7 +173,7 @@ namespace BansheeEngine
 			mBounds = calculateBounds((UINT8*)data, mTempInitialMeshData->getNumVertices(), stride);
 
 			for (auto& renderData : mRenderData)
-				renderData.updateBounds(mBounds);
+				renderData->updateBounds(mBounds);
 
 			break;
 		}
@@ -319,7 +320,7 @@ namespace BansheeEngine
 
 		for (auto& subMesh : mSubMeshes)
 		{
-			mRenderData.push_back(MeshRenderData(mVertexData, mIndexBuffer, subMesh, 0, nullptr));
+			mRenderData.push_back(bs_shared_ptr<MeshRenderData>(mVertexData, mIndexBuffer, subMesh, 0, nullptr));
 
 		}
 

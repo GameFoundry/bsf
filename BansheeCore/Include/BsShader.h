@@ -90,7 +90,7 @@ namespace BansheeEngine
 		 *			You may also specify no sorting and the elements will be rendered in the order they were added to the
 		 *			render queue.
 		 */
-		void setQueueSortType(QueueSortType sortType) { mQueueSortType = sortType; }
+		void setQueueSortType(QueueSortType sortType);
 
 		/**
 		 * @brief	Sets a priority that allows you to control in what order are your shaders rendered.
@@ -103,7 +103,7 @@ namespace BansheeEngine
 		 *			provided in "QueuePriority" are just for general guidance and feel free to increase them
 		 *			or decrease them for finer tuning. (e.g. "QueuePriority::Opaque + 1").
 		 */
-		void setQueuePriority(UINT32 priority) { mQueuePriority = priority; }
+		void setQueuePriority(UINT32 priority);
 
 		/**
 		 * @brief	Enables or disables separable passes. When separable passes are disabled
@@ -114,7 +114,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Shaders with transparency generally can't be separable, while opaque can.
 		 */
-		void setAllowSeparablePasses(bool enable) { mSeparablePasses = enable; }
+		void setAllowSeparablePasses(bool enable);
 
 		/**
 		 * @brief	Returns currently active queue sort type.
@@ -241,6 +241,17 @@ namespace BansheeEngine
 		 */
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& _getParamBlocks() const { return mParamBlocks; }
 
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know  when internal data has changed;
+		 */
+		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 */
+		void _markCoreClean() { mCoreDirtyFlags = 0; }
+
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);
 		static bool isBuffer(GpuParamObjectType type);
@@ -250,18 +261,26 @@ namespace BansheeEngine
 		 *			techniques with the shader before using it in a Material.
 		 */
 		static ShaderPtr create(const String& name);
+
+	private:
+		Shader(const String& name);
+
+		/**
+		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
+		 */
+		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+
 	private:
 		String mName;
 		QueueSortType mQueueSortType;
 		UINT32 mQueuePriority;
 		bool mSeparablePasses;
 		Vector<TechniquePtr> mTechniques;
+		UINT32 mCoreDirtyFlags;
 
 		Map<String, SHADER_DATA_PARAM_DESC> mDataParams;
 		Map<String, SHADER_OBJECT_PARAM_DESC> mObjectParams;
 		Map<String, SHADER_PARAM_BLOCK_DESC> mParamBlocks;
-
-		Shader(const String& name);
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

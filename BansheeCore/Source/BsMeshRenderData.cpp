@@ -6,17 +6,17 @@ namespace BansheeEngine
 	MeshRenderData::MeshRenderData(const std::shared_ptr<VertexData>& vertexData, 
 		const IndexBufferPtr& indexBuffer, const SubMesh& subMesh, UINT32 vertexOffset, std::function<void()> usedOnGPUcallback)
 		:mVertexData(vertexData), mIndexBuffer(indexBuffer), mSubMesh(subMesh), 
-		mUsedOnGPUCallback(usedOnGPUcallback), mVertexOffset(vertexOffset)
+		mUsedOnGPUCallback(usedOnGPUcallback), mVertexOffset(vertexOffset), mIsMeshValid(true)
 	{
 
 	}
 
-	void MeshRenderData::addRenderableProxy(RenderableSubProxy* proxy)
+	void MeshRenderData::addRenderableProxy(RenderableElement* proxy)
 	{
 		mRenderableProxies.push_back(proxy);
 	}
 
-	void MeshRenderData::removeRenderableProxy(RenderableSubProxy* proxy)
+	void MeshRenderData::removeRenderableProxy(RenderableElement* proxy)
 	{
 		auto iterFind = std::find(mRenderableProxies.begin(), mRenderableProxies.end(), proxy);
 
@@ -44,7 +44,12 @@ namespace BansheeEngine
 
 	void MeshRenderData::notifyUsedOnGPU() const
 	{
-		if (mUsedOnGPUCallback != nullptr)
+		if (mIsMeshValid && mUsedOnGPUCallback != nullptr)
 			mUsedOnGPUCallback();
+	}
+
+	void MeshRenderData::_markAsInvalid()
+	{
+		mIsMeshValid = false;
 	}
 }

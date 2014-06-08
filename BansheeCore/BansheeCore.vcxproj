@@ -274,9 +274,9 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCameraProxy.h" />
     <ClInclude Include="Include\BsDrawList.h" />
-    <ClInclude Include="Include\BsMaterialProxy.h" />
     <ClInclude Include="Include\BsMeshRenderData.h" />
     <ClInclude Include="Include\BsRenderableProxy.h" />
+    <ClInclude Include="Include\BsRendererParams.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsBindableGpuParamBlock.h" />
     <ClInclude Include="Include\BsBindableGpuParams.h" />
@@ -477,6 +477,7 @@
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsRenderableProxy.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
+    <ClCompile Include="Source\BsRendererParams.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsTextureView.cpp" />

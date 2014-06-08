@@ -213,6 +213,21 @@ namespace BansheeEngine
 		 */
 		GpuParamsPtr clone() const;
 
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know  when internal data has changed and core proxy potentially needs to be updated.
+		 *
+		 * @note	Sim thread only.
+		 */
+		bool _isCoreDirty() const;
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 *
+		 * @note	Sim thread only.
+		 */
+		void _markCoreClean();
+
 	private:
 		friend class BindableGpuParams;
 
@@ -231,6 +246,11 @@ namespace BansheeEngine
 		 */
 		void getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockOffset, UINT32& paramBlockBufferOffset,
 			UINT32& textureOffset, UINT32& samplerStateOffset) const;
+
+		/**
+		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
+		 */
+		void markCoreDirty();
 	};
 
 	/**
@@ -253,5 +273,6 @@ namespace BansheeEngine
 
 		bool mTransposeMatrices;
 		bool mIsDestroyed;
+		UINT32 mCoreDirtyFlags;
 	};
 }

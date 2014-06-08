@@ -81,23 +81,45 @@ namespace BansheeEngine
 		 */
 		HMaterial& getMaterial(UINT32 idx) { return mMaterialData[idx].material; }
 
+		/************************************************************************/
+		/* 								CORE PROXY                      		*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know  when internal data has changed and core proxy potentially needs to be updated.
+		 */
+		bool _isCoreDirty() const;
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 */
+		void _markCoreClean();
+
 		// TODO UNDOCUMENTED
-		bool _isRenderDataDirty() const;
-		void _markRenderDataClean() { mIsRenderDataDirty = false; }
-		RenderableProxy* _createProxy(FrameAlloc* allocator) const;
-		RenderableProxy* _getActiveProxy() const { return mActiveProxy; }
-		void _setActiveProxy(RenderableProxy* proxy) { mActiveProxy = proxy; }
+		RenderableProxyPtr _createProxy() const;
+		RenderableProxyPtr _getActiveProxy() const { return mActiveProxy; }
+		void _setActiveProxy(const RenderableProxyPtr& proxy) { mActiveProxy = proxy; }
 
 	private:
+		/**
+		 * @brief	Checks if any resources were loaded since last time. Marks the core data as dirty
+		 *			if they have (does nothing if all resources are already loaded).
+		 */
 		void updateResourceLoadStates() const;
+
+		/**
+		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
+		 */
+		void markCoreDirty() const { mCoreDirtyFlags = 0xFFFFFFFF; }
 	private:
 		MeshData mMeshData;
 		Vector<MaterialData> mMaterialData;
 		UINT64 mLayer;
 		Vector<AABox> mWorldBounds;
 
-		RenderableProxy* mActiveProxy;
-		mutable bool mIsRenderDataDirty;
+		RenderableProxyPtr mActiveProxy;
+		mutable UINT32 mCoreDirtyFlags;
 
 		/************************************************************************/
 		/* 							COMPONENT OVERRIDES                    		*/

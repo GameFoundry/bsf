@@ -44,7 +44,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	MeshBase::_getRenderData
 		 */
-		MeshRenderData& _getRenderData(UINT32 subMeshIdx) { return mRenderData; }
+		MeshRenderDataPtr _getRenderData(UINT32 subMeshIdx) { return mRenderData; }
 
 		/**
 		 * @brief	Returns the ID that uniquely identifies this mesh in the parent heap.
@@ -93,6 +93,6 @@ namespace BansheeEngine
 		MeshHeapPtr mParentHeap;
 		UINT32 mId;
 
-		MeshRenderData mRenderData;
+		MeshRenderDataPtr mRenderData;
 	};
 }

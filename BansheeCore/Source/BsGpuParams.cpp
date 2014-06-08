@@ -11,7 +11,7 @@ namespace BansheeEngine
 {
 	GpuParamsInternalData::GpuParamsInternalData()
 		:mTransposeMatrices(false), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0),
-		mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr)
+		mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr), mCoreDirtyFlags(0xFFFFFFFF)
 	{ }
 
 	GpuParams::GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices)
@@ -110,6 +110,8 @@ namespace BansheeEngine
 
 		mInternalData->mParamBlockBuffers[slot] = paramBlockBuffer;
 		mInternalData->mParamBlocks[slot] = paramBlockBuffer->getParamBlock();
+
+		markCoreDirty();
 	}
 
 	void GpuParams::setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlockBuffer)
@@ -124,6 +126,8 @@ namespace BansheeEngine
 
 		mInternalData->mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
 		mInternalData->mParamBlocks[iterFind->second.slot] = paramBlockBuffer->getParamBlock();
+
+		markCoreDirty();
 	}
 
 	UINT32 GpuParams::getDataParamSize(const String& name) const
@@ -247,5 +251,10 @@ namespace BansheeEngine
 		paramBlockBufferOffset = paramBlockOffset + paramBlockBufferSize;
 		textureOffset = paramBlockBufferOffset + paramBlockBuffersBufferSize;
 		samplerStateOffset = textureOffset + textureBufferSize;
+	}
+
+	void GpuParams::markCoreDirty() 
+	{ 
+		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF; 
 	}
 }

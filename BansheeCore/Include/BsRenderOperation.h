@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsMaterialProxy.h"
+#include "BsMaterial.h"
 #include "BsDrawOps.h"
 #include "BsVector3.h"
 
@@ -16,8 +16,8 @@ namespace BansheeEngine
 		RenderOperation()
 		{ }
 
-		MaterialProxy material;
-		MeshRenderData* mesh;
+		Material::CoreProxyPtr material;
+		MeshRenderDataPtr mesh;
 		Vector3 worldPosition;
 	};
 }

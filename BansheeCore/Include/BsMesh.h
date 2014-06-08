@@ -59,7 +59,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	MeshBase::_getRenderData
 		 */
-		MeshRenderData& _getRenderData(UINT32 subMeshIdx) { return mRenderData[subMeshIdx]; }
+		MeshRenderDataPtr _getRenderData(UINT32 subMeshIdx) { return mRenderData[subMeshIdx]; }
 
 		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
@@ -86,7 +86,7 @@ namespace BansheeEngine
 		IndexBufferPtr mIndexBuffer; // Core thread
 
 		Bounds mBounds; // Core thread
-		Vector<MeshRenderData> mRenderData; // Core thread
+		Vector<MeshRenderDataPtr> mRenderData; // Core thread
 
 		VertexDataDescPtr mVertexDesc; // Immutable
 		MeshBufferType mBufferType; // Immutable

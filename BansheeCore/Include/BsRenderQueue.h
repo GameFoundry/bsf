@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
+#include "BsMaterial.h"
 
 namespace BansheeEngine 
 {
@@ -32,7 +33,7 @@ namespace BansheeEngine
 	public:
 		RenderQueue();
 
-		void add(const MaterialProxy& material, MeshRenderData* mesh, const Vector3& worldPosForSort);
+		void add(const Material::CoreProxyPtr& material, const MeshRenderDataPtr& mesh, const Vector3& worldPosForSort);
 
 		/**
 		 * @brief	Clears all render operations from the queue.

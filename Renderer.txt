@@ -1,37 +1,26 @@
-Get renderer to run
- - Go through TODOs on BansheeRenderer
- - What happens to MeshRenderData when mesh is destroyed? It contains a callback to Mesh, so I must ensure it outlives it.
-   - Just keep a reference to the MeshPtr instead of that notify callback.
-   - OR just notify MeshRenderData on Mesh destruction (And make it use a shared ptr)
- - How to clean up RenderableProxies in Renderer?
- - Even though I allocate material proxies with frame alloc I think I still need to free them for debug purposes
+Make MeshProxy also be CPU based?
+ - Signal when bounds change from CoreThreadAccessor
+    - add preWriteCallback that's called on CPU to GpuResource
+ - Remove a list of RenderableProxies from MeshRenderData
+ - Renderable can check if it is dirty
 
-What happens when technique/shader changes?
- - Have isProxyDirty flag in Material. Renderable checks that flag and returns dirty for the Renderable when toggled (and cleans the flag).
-   Then we just create a new Material proxy. When new material proxy is created a copy of all current GpuParams is created.
+Make RenderableProxy -> CoreProxy, move it to Renderable and make it a shared pointer (maybe an unique pointer?)
+ - This solves the issue with not knowing when to delete RenderableProxies
 
-What happens when gpu prog param buffer changes?
- - Material has another flag areParamsDirty (actally GpuParams should have that flag). If true I call
-   updateMaterialProxy() with wanted pass, gpu prog idx and BindableGpuParams. BindableGpuParams are then used
-   for copying new data to core thread GpuParams.
+Need a way to update existing material proxies when params change
+ - Create bindable GPu params, pass them to core and update GpuParams
 
-What happens when a parameter is updated?
- - Same as above. Make sure not to send updates if shared or renderer param block was updated.
+Apply world view proj matrix in renderer
 
-
-Next stage:
- - Track material changes
-   - Figure out how to update material data buffers only when material actually changes (shader or parameters)
-   - Should each object have their own set of buffers instead of just updating material ones per frame? Probably.
-     - Although I should still have an option to use a shared block that isn't per object.
- - Add sort type, priority and separable pass options to Shader (and its RTTI)
- - Implement RenderQueue sorting with support for sort type, priority and separable pass
- - Document elements marked with TODO UNDOCUMENTED
- - Add Renderer <-> Material interface matching
-   - Allow parameter blocks to be specified as one-time, per-frame, per-object, etc.
+Stage 2:
+Add material <-> renderer interface matching
+ - Ensure renderer creates and updates parameters and parameter blocks it owns
  - Actually add frustum culling
+ - Implement RenderQueue sorting with support for sort type, priority and separable pass
+   - Use a hash list(containing type, queue, layer, etc.) for faster sorting
 
 Finally
+ - Document elements marked with TODO UNDOCUMENTED
  - Refactor/rename everything so it makes more sense. Possibly lay out a design diagram.
  - Get rid of Camera::getIgnoreSceneRenderables it can be doing using layers
  - Delete RenderOperation as I don't think I use it anymore
@@ -44,109 +33,24 @@ Semantic/design issues:
  - Consider moving RenderOperation in RenderQueue and removing its header/source. Maybe also renaming it to something more render queue specific. 
  - Remove DefaultRenderQueue. Instead make RenderQueue non-abstract and have it provide default implementation.
 
------------------------------------------
 
-While I am  on this also consider working on how will parameter matching between Renderer and Material work (e.g. when rendering with 
-shadows or lighting the renderer will expect materials to have certain parameters used for those effects)
- - Make it a separate GPU param buffer? RendererOneTime, RendererPerFrame, RendererPerObject
+-------------------------------------------------------
+ENSURING MATERIAL COMPATIBILITY:
 
+When renderer is first created we create a list of default materials, each corresponding to a single valid renderable type.
+When checking for material compatibility we compare parameter and param block descriptions between example
+and material we're comparing. This way I don't even have to check if shader has param block or not, I already
+know from the example material.
 
-Each renderer can specify which Renderable types it supports.
- - Renderable can have various options like shadow, no shadow, animation, etc.
- - Together those options result in an Enum describing the type of Renderable
+When material proxy is bound to the renderer matching parameters are found, and the renderer will take care of filling them out.
+ - If example material uses a param block but current material doesn't, even if parameters match we won't update them from renderer.
+ - Material proxy will be updated with a helper structure describing the renderable type the material is created with
+    - It will contain values representing which semantics are active
+	- And pointers to those semantics buffers and param handles
 
-Each renderer can specify a set of parameters it needs from a material, per Renderable type
- - e.g. "Matrix4 viewProjTfrm" for BasicRenderable type
-
-When a Material is hooked up to a Renderable is will check if the Material has the required parameters.
- - If not that object will be drawn using a dummy (most basic) shader.
- - Optionally the parameters are grouped into parameter blocks e.g. RendererOneTime, RendererPerFrame, RendererPerObject.
- - If a parameter block is detected by the renderer it will only update those parameters once when they are needed, and reuse
-   them in all materials. If no parameter block is detected the parameters will be updated on all objects whenever it is changed.
- - I will potentially need to add parameter block semantic to Shader in order to make the user able to specify which blocks
-   are for the renderer. (And so that Material knows not to create those buffers manually)
-
-
-when calling addParameter add an argument "rendererSemantic" - 0 means its a custom parameter, and the rest are enum values 
-provided by the renderer. (Actually an UINT32 so it may be extended). When render proxy is being created I compare those parameters 
-and ensure they match. If they don't match I use a dummy material.
-
-you can so something similar to parameter blocks - also provide a semantic to determine if its renderer one time, per frame,
- per object, etc. If shader has such a block AND the gpu program desc actually has a parameter block then this will also be 
- checked for validity when when creating a proxy (actually it might be better to check validity any time material or renderable options 
- change and then just cache it). Param block and its members must exactly match (type AND order).
-
-Material DOES NOT automatically create param blocks with renderer semantic
-
-
-
-
-   ---------------------------
+---------------------------
 
 Just notes for later potentially:
  - I can only update entire Mesh at once. 
  - I keep bounds for the entire mesh and not per-submesh
  - I don't serialize bounds and they are recalculated whenever a mesh is loaded
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-OLD:
-
-
-
-Since DrawHelper needs to queue render commands together with scene objects (in order for transparency to work okay), I will need to implement the RenderOperation approach I thought about earlier.
- Rename current RenderOperation to SubMeshData
- Real render operations contains SubMeshData + layer (can be filtered per-camera) + queue (each mesh has a queue and another queue by camera) + Pass
- (Remove Camera->rendersSceneObjects and replace it with layer)
- (Make sure to set up preset queues, like opaque, transparent, etc)
-
- Then I can hook up GUIManager, OverlayManager and DrawHelper with a callback that is used by Renderer to retrieve their operations
- Attempt to move all sorting (including by render target) out of forward renderer and into an overridable sorter class
-  - Create a hash list with key(containing type, queue, layer, etc.) used for sorting
-
-  Add "materialGroup" to material. It can be used for sorting similar materials together, instead of using some automatic way of determining it.
-
-  Issues with my render operation system:
- Sorting by depth is impossible because I don't provide any position info with my RenderOperation
-
- For each frame I will need to calculate world bounds and world position. I cannot do it each time I retrieve a RenderOperation so it should be cached somewhere and reused throughout the frame.
- - Unity keeps it with Renderable
-   - What happens when the Mesh resource is updated?
- - How do I do it for non-renerables though?
-
- ---------------------
-
- RenderOpSorter:
- - (Before we send RenderOps to the sorter we first filter them by camera)
- - Accepts parameters whether to sort back-to-front, front-to-back or ignore depth (depth ignored with skybox and overlay)
- - Another parameter is whether to sort by pass (transparent ops can't be sorted by pass)
- - Then we sort:
-  - If back to front
-    - We sort by depth and that's it. We could also sort by material by that only makes sense if two elements have exact same depth which will almost never happen
-  - If front to back
-    - Sort by material first. We call materialSimilarity() method which returns lesser value depending how similar two materials are. We do a pass over all unsorted materials and if similarity is below some threshold we add it to the current bucket. If there are no more similar materials we create a new bucket.
-    - Within bucket we sort by similarity as well (as the elements are added)
-    - Then finally we sort the buckets by depth front to back
-  - No depth
-   - Same as front to back, without the depth sort
-
- - Sorter should operate directly on provided render op array

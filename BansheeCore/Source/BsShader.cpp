@@ -7,8 +7,8 @@
 namespace BansheeEngine
 {
 	Shader::Shader(const String& name)
-		:mName(name), mQueueSortType(QueueSortType::FrontToBack),
-		mQueuePriority((UINT32)QueuePriority::Opaque), mSeparablePasses(true)
+		:mName(name), mQueueSortType(QueueSortType::FrontToBack), mQueuePriority((UINT32)QueuePriority::Opaque), 
+		mSeparablePasses(true), mCoreDirtyFlags(0xFFFFFFFF)
 	{
 
 	}
@@ -62,6 +62,27 @@ namespace BansheeEngine
 		// TODO - Low priority. Instead of returning null use an extremely simple technique that will be supported almost everywhere as a fallback.
 	}
 
+	void Shader::setQueueSortType(QueueSortType sortType) 
+	{ 
+		mQueueSortType = sortType;
+
+		markCoreDirty();
+	}
+
+	void Shader::setQueuePriority(UINT32 priority) 
+	{ 
+		mQueuePriority = priority;
+
+		markCoreDirty();
+	}
+
+	void Shader::setAllowSeparablePasses(bool enable) 
+	{ 
+		mSeparablePasses = enable;
+
+		markCoreDirty();
+	}
+
 	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize, UINT32 elementSize, UINT32 rendererSemantic)
 	{
 		if(type == GPDT_STRUCT && elementSize <= 0)
@@ -77,6 +98,8 @@ namespace BansheeEngine
 
 		mDataParams[name] = desc;
 		mObjectParams.erase(name);
+
+		markCoreDirty();
 	}
 
 	void Shader::addParameter(const String& name, const String& gpuVariableName, GpuParamObjectType type, UINT32 rendererSemantic)
@@ -89,6 +112,8 @@ namespace BansheeEngine
 
 		mObjectParams[name] = desc;
 		mDataParams.erase(name);
+
+		markCoreDirty();
 	}
 
 	GpuParamType Shader::getParamType(const String& name) const
@@ -155,6 +180,8 @@ namespace BansheeEngine
 		desc.rendererSemantic = rendererSemantic;
 
 		mParamBlocks[name] = desc;
+
+		markCoreDirty();
 	}
 
 	bool Shader::isSampler(GpuParamObjectType type)

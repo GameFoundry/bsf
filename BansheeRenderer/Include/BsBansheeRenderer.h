@@ -48,9 +48,9 @@ namespace BansheeEngine
 		virtual void renderAll();
 
 	private:
-		void addRenderableProxy(RenderableProxy* proxy);
-		void removeRenderableProxy(RenderableProxy* proxy);
-		void updateRenderableProxy(RenderableProxy* proxy, Matrix4 localToWorld);
+		void addRenderableProxy(RenderableProxyPtr proxy);
+		void removeRenderableProxy(RenderableProxyPtr proxy);
+		void updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld);
 
 		void renderAllCore(std::shared_ptr<FrameData> frameData);
 
@@ -59,14 +59,14 @@ namespace BansheeEngine
 		 */
 		virtual void render(const CameraProxy& cameraProxy, const RenderQueuePtr& renderQueue);
 
-		void setPass(const MaterialProxy::PassData& pass);
+		void setPass(const Material::CoreProxy::PassData& pass);
 		void draw(const MeshRenderData& mesh);
 
 		void renderableRemoved(const HRenderable& renderable);
 
-		Vector<RenderableProxy*> mDeletedProxies;
+		Vector<RenderableProxyPtr> mDeletedProxies;
 
-		Vector<RenderableSubProxy*> mRenderableProxies;
+		Vector<RenderableElement*> mRenderableProxies;
 		Vector<Matrix4> mWorldTransforms;
 		Vector<Bounds> mWorldBounds;
 

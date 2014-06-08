@@ -131,7 +131,7 @@ namespace BansheeEngine
 		 *			the renderer and it will be modified by both. It may be modified as mesh 
 		 *			changes occur and as renderer uses the mesh.
 		 */
-		virtual MeshRenderData& _getRenderData(UINT32 subMeshIdx) = 0;
+		virtual MeshRenderDataPtr _getRenderData(UINT32 subMeshIdx) = 0;
 
 	protected:
 		Vector<SubMesh> mSubMeshes; // Immutable

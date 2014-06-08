@@ -26,6 +26,11 @@ namespace BansheeEngine
 		return mInternalData->mTransposeMatrices;
 	}
 
+	void GpuDataParamBase::markCoreDirty() 
+	{ 
+		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF; 
+	}
+
 	/************************************************************************/
 	/* 									STRUCT	                     		*/
 	/************************************************************************/
@@ -70,6 +75,8 @@ namespace BansheeEngine
 			UINT32 diffSize = elementSizeBytes - sizeBytes;
 			paramBlock->zeroOut((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride)  * sizeof(UINT32)+sizeBytes, diffSize);
 		}
+
+		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
 	}
 
 	void GpuParamStruct::get(void* value, UINT32 sizeBytes, UINT32 arrayIdx)
@@ -124,6 +131,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		mInternalData->mTextures[mParamDesc->slot] = texture;
+		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
 	}
 
 	HTexture GpuParamTexture::get()
@@ -152,6 +160,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 		mInternalData->mSamplerStates[mParamDesc->slot] = samplerState;
+		mInternalData->mCoreDirtyFlags = 0xFFFFFFFF;
 	}
 
 	HSamplerState GpuParamSampState::get()

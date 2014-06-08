@@ -2,7 +2,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
-#include "BsMaterialProxy.h"
 #include "BsGpuParam.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
@@ -164,15 +163,6 @@ namespace BansheeEngine
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
 		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0)	{ return getParamStruct(name).set(value, size, arrayIdx); }
-
-		/**
-		* @brief	Sets a render queue in which will objects with this material be rendered in. Objects
-		* 			with smaller render queue number will get rendered before objects with a large one.
-		 * 			
-		 * @note	This flag can be differently interpreted by renderers but normally you want to separate out
-		 * 			opaque and transparent objects as they usually require slightly different render ordering. 
-		 */
-		void setRenderQueue(INT16 renderQueue) { mRenderQueue = renderQueue; }
 
 		/**
 		 * @brief	Assign a parameter block buffer with the specified name.
@@ -356,13 +346,6 @@ namespace BansheeEngine
 		GpuParamSampState getParamSamplerState(const String& name) const;
 
 		/**
-		 * @brief	Returns the currently set render queue.
-		 *
-		 * @see		Material::setRenderQueue
-		 */
-		INT16 getRenderQueue() const { return mRenderQueue; }
-
-		/**
 		 * @brief	Returns the number of passes that are used
 		 * 			by the shader contained in the material.
 		 */
@@ -379,9 +362,6 @@ namespace BansheeEngine
 		 */
 		PassParametersPtr getPassParameters(UINT32 passIdx) const;
 
-		// TODO UNDOCUMENTED
-		MaterialProxy _createProxy(FrameAlloc* allocator);
-
 		/**
 		 * @brief	Creates a new empty material.
 		 * 			
@@ -393,6 +373,72 @@ namespace BansheeEngine
 		 * @brief	Creates a new material with the specified shader.
 		 */
 		static HMaterial create(ShaderPtr shader);
+
+		/************************************************************************/
+		/* 								CORE PROXY                      		*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Contains material information as seen by the core thread.
+		 *			(Used for rendering and such.)
+		 */
+		struct BS_CORE_EXPORT CoreProxy
+		{
+			struct BS_CORE_EXPORT PassData
+			{
+				HGpuProgram vertexProg;
+				HGpuProgram fragmentProg;
+				HGpuProgram geometryProg;
+				HGpuProgram hullProg;
+				HGpuProgram domainProg;
+				HGpuProgram computeProg;
+
+				GpuParamsPtr vertexProgParams;
+				GpuParamsPtr fragmentProgParams;
+				GpuParamsPtr geometryProgParams;
+				GpuParamsPtr hullProgParams;
+				GpuParamsPtr domainProgParams;
+				GpuParamsPtr computeProgParams;
+
+				HBlendState blendState;
+				HRasterizerState rasterizerState;
+				HDepthStencilState depthStencilState;
+				UINT32 stencilRefValue;
+			};
+
+			Vector<PassData> passes;
+			bool separablePasses;
+			UINT32 queuePriority;
+			QueueSortType queueSortType;
+		};
+
+		typedef std::shared_ptr<CoreProxy> CoreProxyPtr;
+
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know  when internal data has changed and core proxy potentially needs to be updated.
+		 *
+		 * @note	Sim thread only.
+		 */
+		bool _isCoreDirty() const;
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 *
+		 * @note	Sim thread only.
+		 */
+		void _markCoreClean();
+
+		/**
+		 * @brief	Creates a new core proxy from the currently set material data. Core proxies ensure
+		 *			that the core thread has all the necessary material data, while avoiding the need
+		 *			to manage Material itself on the core thread.
+		 *
+		 * @note	Sim thread only. 
+		 *			You generally need to update the core thread with a new proxy whenever core 
+		 *			dirty flag is set.
+		 */
+		CoreProxyPtr _createProxy();
 	protected:
 		/**
 		 * @copydoc	Resource::destroy_internal
@@ -430,7 +476,7 @@ namespace BansheeEngine
 
 		ShaderPtr mShader;
 		TechniquePtr mBestTechnique;
-		INT16 mRenderQueue;
+		INT32 mCoreDirtyFlags;
 
 		Set<String> mValidShareableParamBlocks;
 		Map<String, String> mValidParams; // Also maps Shader param name -> gpu variable name
@@ -445,6 +491,11 @@ namespace BansheeEngine
 		 * 			technique was found.
 		 */
 		void throwIfNotInitialized() const;
+
+		/**
+		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
+		 */
+		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
 
 		/**
 		 * @brief	Retrieves a list of all shader GPU parameters, and the GPU program variable names they map to.

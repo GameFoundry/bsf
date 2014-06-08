@@ -39,6 +39,11 @@ namespace BansheeEngine
 		 */
 		bool getTransposeMatrices() const;
 
+		/**
+		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
+		 */
+		void markCoreDirty();
+
 	protected:
 		GpuParamDataDesc* mParamDesc;
 		std::shared_ptr<GpuParamsInternalData> mInternalData;
@@ -143,6 +148,8 @@ namespace BansheeEngine
 				UINT32 diffSize = elementSizeBytes - sizeBytes;
 				paramBlock->zeroOut((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride)  * sizeof(UINT32)+sizeBytes, diffSize);
 			}
+
+			markCoreDirty();
 		}
 
 		/**
