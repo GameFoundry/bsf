@@ -20,7 +20,7 @@ namespace BansheeEngine
         : Component(parent), mProjType(PT_PERSPECTIVE), mHorzFOV(Radian(Math::PI/4.0f)), mFarDist(100000.0f), 
 		mNearDist(100.0f), mAspect(1.33333333333333f), mOrthoHeight(1000), mRecalcFrustum(true), mRecalcFrustumPlanes(true), 
 		mCustomViewMatrix(false), mCustomProjMatrix(false), mFrustumExtentsManuallySet(false), mIgnoreSceneRenderables(false), 
-		mPriority(0), mLayers(0xFFFFFFFFFFFFFFFF)
+		mPriority(0), mLayers(0xFFFFFFFFFFFFFFFF), mCoreDirtyFlags(0xFFFFFFFF)
     {
 		setName("Camera");
 
@@ -43,6 +43,7 @@ namespace BansheeEngine
 	{
 		mHorzFOV = fov;
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	const Radian& Camera::getHorzFOV() const
@@ -54,6 +55,7 @@ namespace BansheeEngine
 	{
 		mFarDist = farPlane;
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	float Camera::getFarClipDistance() const
@@ -70,6 +72,7 @@ namespace BansheeEngine
 
 		mNearDist = nearPlane;
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	float Camera::getNearClipDistance() const
@@ -444,6 +447,7 @@ namespace BansheeEngine
 	{
 		mAspect = r;
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	const AABox& Camera::getBoundingBox() const
@@ -457,6 +461,7 @@ namespace BansheeEngine
 	{
 		mProjType = pt;
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	ProjectionType Camera::getProjectionType() const
@@ -472,6 +477,8 @@ namespace BansheeEngine
 			assert(viewMatrix.isAffine());
 			mViewMatrix = viewMatrix;
 		}
+
+		markCoreDirty();
 	}
 
 	void Camera::setCustomProjectionMatrix(bool enable, const Matrix4& projMatrix)
@@ -482,25 +489,32 @@ namespace BansheeEngine
 			mProjMatrix = projMatrix;
 
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	void Camera::setOrthoWindow(float w, float h)
 	{
 		mOrthoHeight = h;
 		mAspect = w / h;
+
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	void Camera::setOrthoWindowHeight(float h)
 	{
 		mOrthoHeight = h;
+
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	void Camera::setOrthoWindowWidth(float w)
 	{
 		mOrthoHeight = w / mAspect;
+
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	float Camera::getOrthoWindowHeight() const
@@ -522,12 +536,15 @@ namespace BansheeEngine
 		mBottom = bottom;
 
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	void Camera::resetFrustumExtents()
 	{
 		mFrustumExtentsManuallySet = false;
+
 		invalidateFrustum();
+		markCoreDirty();
 	}
 
 	void Camera::getFrustumExtents(float& outleft, float& outright, float& outtop, float& outbottom) const
@@ -545,15 +562,15 @@ namespace BansheeEngine
 		mRecalcFrustumPlanes = true;
     }
 
-	CameraProxy Camera::_createProxy() const
+	CameraProxyPtr Camera::_createProxy() const
 	{
-		CameraProxy proxy;
-		proxy.layer = mLayers;
-		proxy.priority = mPriority;
-		proxy.projMatrix = getProjectionMatrixRS();
-		proxy.viewMatrix = getViewMatrix();
-		proxy.viewport = mViewport->clone();
-		proxy.ignoreSceneRenderables = mIgnoreSceneRenderables;
+		CameraProxyPtr proxy = bs_shared_ptr<CameraProxy>();
+		proxy->layer = mLayers;
+		proxy->priority = mPriority;
+		proxy->projMatrix = getProjectionMatrixRS();
+		proxy->viewMatrix = getViewMatrix();
+		proxy->viewport = mViewport->clone();
+		proxy->ignoreSceneRenderables = mIgnoreSceneRenderables;
 
 		return proxy;
 	}

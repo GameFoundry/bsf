@@ -13,7 +13,7 @@ namespace BansheeEngine
 		:GameObject(), mPosition(Vector3::ZERO), mRotation(Quaternion::IDENTITY), mScale(Vector3::ONE),
 		mWorldPosition(Vector3::ZERO), mWorldRotation(Quaternion::IDENTITY), mWorldScale(Vector3::ONE),
 		mCachedLocalTfrm(Matrix4::IDENTITY), mIsCachedLocalTfrmUpToDate(false),
-		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false), mIsRenderDataUpToDate(false)
+		mCachedWorldTfrm(Matrix4::IDENTITY), mIsCachedWorldTfrmUpToDate(false), mIsCoreDirtyFlags(0xFFFFFFFF)
 	{
 		setName(name);
 	}
@@ -242,7 +242,7 @@ namespace BansheeEngine
 	{
 		mIsCachedLocalTfrmUpToDate = false;
 		mIsCachedWorldTfrmUpToDate = false;
-		mIsRenderDataUpToDate = false;
+		mIsCoreDirtyFlags = 0xFFFFFFFF;
 
 		for(auto iter = mChildren.begin(); iter != mChildren.end(); ++iter)
 		{

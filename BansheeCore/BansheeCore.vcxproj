@@ -274,7 +274,8 @@
   <ItemGroup>
     <ClInclude Include="Include\BsCameraProxy.h" />
     <ClInclude Include="Include\BsDrawList.h" />
-    <ClInclude Include="Include\BsMeshRenderData.h" />
+    <ClInclude Include="Include\BsMaterialProxy.h" />
+    <ClInclude Include="Include\BsMeshProxy.h" />
     <ClInclude Include="Include\BsRenderableProxy.h" />
     <ClInclude Include="Include\BsRendererParams.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
@@ -282,7 +283,6 @@
     <ClInclude Include="Include\BsBindableGpuParams.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
     <ClInclude Include="Include\BsProfilerCPU.h" />
-    <ClInclude Include="Include\BsDefaultRenderQueue.h" />
     <ClInclude Include="Include\BsDeferredCallManager.h" />
     <ClInclude Include="Include\BsDrawOps.h" />
     <ClInclude Include="Include\BsEventQuery.h" />
@@ -311,7 +311,6 @@
     <ClInclude Include="Include\BsPlatform.h" />
     <ClInclude Include="Include\BsProfilingManager.h" />
     <ClInclude Include="Include\BsQueryManager.h" />
-    <ClInclude Include="Include\BsRenderOperation.h" />
     <ClInclude Include="Include\BsRenderQueue.h" />
     <ClInclude Include="Include\BsResourceManifest.h" />
     <ClInclude Include="Include\BsResourceManifestRTTI.h" />
@@ -426,9 +425,7 @@
     <ClCompile Include="Source\BsCameraProxy.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />
-    <ClCompile Include="Source\BsMeshRenderData.cpp" />
     <ClCompile Include="Source\BsProfilerCPU.cpp" />
-    <ClCompile Include="Source\BsDefaultRenderQueue.cpp" />
     <ClCompile Include="Source\BsDeferredCallManager.cpp" />
     <ClCompile Include="Source\BsDrawOps.cpp" />
     <ClCompile Include="Source\BsEventQuery.cpp" />

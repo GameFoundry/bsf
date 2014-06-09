@@ -3,6 +3,7 @@
 #include "BsCorePrerequisites.h"
 #include "BsResource.h"
 #include "BsGpuParam.h"
+#include "BsMaterialProxy.h"
 #include "BsVector2.h"
 #include "BsVector3.h"
 #include "BsVector4.h"
@@ -379,44 +380,8 @@ namespace BansheeEngine
 		/************************************************************************/
 
 		/**
-		 * @brief	Contains material information as seen by the core thread.
-		 *			(Used for rendering and such.)
-		 */
-		struct BS_CORE_EXPORT CoreProxy
-		{
-			struct BS_CORE_EXPORT PassData
-			{
-				HGpuProgram vertexProg;
-				HGpuProgram fragmentProg;
-				HGpuProgram geometryProg;
-				HGpuProgram hullProg;
-				HGpuProgram domainProg;
-				HGpuProgram computeProg;
-
-				GpuParamsPtr vertexProgParams;
-				GpuParamsPtr fragmentProgParams;
-				GpuParamsPtr geometryProgParams;
-				GpuParamsPtr hullProgParams;
-				GpuParamsPtr domainProgParams;
-				GpuParamsPtr computeProgParams;
-
-				HBlendState blendState;
-				HRasterizerState rasterizerState;
-				HDepthStencilState depthStencilState;
-				UINT32 stencilRefValue;
-			};
-
-			Vector<PassData> passes;
-			bool separablePasses;
-			UINT32 queuePriority;
-			QueueSortType queueSortType;
-		};
-
-		typedef std::shared_ptr<CoreProxy> CoreProxyPtr;
-
-		/**
 		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know  when internal data has changed and core proxy potentially needs to be updated.
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
 		 *
 		 * @note	Sim thread only.
 		 */
@@ -438,7 +403,7 @@ namespace BansheeEngine
 		 *			You generally need to update the core thread with a new proxy whenever core 
 		 *			dirty flag is set.
 		 */
-		CoreProxyPtr _createProxy();
+		MaterialProxyPtr _createProxy();
 	protected:
 		/**
 		 * @copydoc	Resource::destroy_internal
@@ -493,7 +458,7 @@ namespace BansheeEngine
 		void throwIfNotInitialized() const;
 
 		/**
-		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
+		 * @brief	Marks the core data as dirty.
 		 */
 		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
 

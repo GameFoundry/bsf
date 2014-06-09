@@ -148,6 +148,7 @@ namespace BansheeEngine
 	{
 		data->_lock();
 
+		resource->_writeSubresourceSim(subresourceIdx, *data, discardEntireBuffer);
 		return mCommandQueue->queueReturn(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), resource, 
 			subresourceIdx, data, discardEntireBuffer, std::placeholders::_1));
 	}

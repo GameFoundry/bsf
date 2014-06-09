@@ -132,9 +132,10 @@ namespace BansheeEngine
 	class VideoModeInfo;
 	class RenderableProxy;
 	class RenderableElement;
-	class MeshRenderData;
 	class CameraProxy;
 	class MaterialProxy;
+	class MaterialProxyPass;
+	class MeshProxy;
 	class DrawList;
 	// Asset import
 	class SpecificImporter;
@@ -231,7 +232,9 @@ namespace BansheeEngine
 	typedef std::shared_ptr<VideoModeInfo> VideoModeInfoPtr;
 	typedef std::shared_ptr<DrawList> DrawListPtr;
 	typedef std::shared_ptr<RenderQueue> RenderQueuePtr;
-	typedef std::shared_ptr<MeshRenderData> MeshRenderDataPtr;
+	typedef std::shared_ptr<CameraProxy> CameraProxyPtr;
+	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
+	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
 }
 
 /************************************************************************/

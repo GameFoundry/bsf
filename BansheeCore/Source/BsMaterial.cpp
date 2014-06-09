@@ -713,11 +713,11 @@ namespace BansheeEngine
 			mShader->_markCoreClean();
 	}
 
-	Material::CoreProxyPtr Material::_createProxy()
+	MaterialProxyPtr Material::_createProxy()
 	{
 		throwIfNotInitialized();
 
-		CoreProxyPtr proxy = bs_shared_ptr<CoreProxy>();
+		MaterialProxyPtr proxy = bs_shared_ptr<MaterialProxy>();
 
 		UINT32 numPasses = mShader->getBestTechnique()->getNumPasses();
 		for (UINT32 i = 0; i < numPasses; i++)
@@ -725,8 +725,8 @@ namespace BansheeEngine
 			PassParametersPtr params = mParametersPerPass[i];
 			PassPtr pass = mShader->getBestTechnique()->getPass(i);
 
-			proxy->passes.push_back(CoreProxy::PassData());
-			CoreProxy::PassData& passData = proxy->passes.back();
+			proxy->passes.push_back(MaterialProxyPass());
+			MaterialProxyPass& passData = proxy->passes.back();
 
 			if (pass->hasVertexProgram())
 			{

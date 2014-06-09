@@ -1,23 +1,28 @@
-Make MeshProxy also be CPU based?
- - Signal when bounds change from CoreThreadAccessor
-    - add preWriteCallback that's called on CPU to GpuResource
- - Remove a list of RenderableProxies from MeshRenderData
- - Renderable can check if it is dirty
+1. Refactor proxies
 
-Make RenderableProxy -> CoreProxy, move it to Renderable and make it a shared pointer (maybe an unique pointer?)
- - This solves the issue with not knowing when to delete RenderableProxies
+Finish refactoring draw lists
 
-Need a way to update existing material proxies when params change
- - Create bindable GPu params, pass them to core and update GpuParams
+2. Gpu params update 
+   - Way to update sim -> core gpu params (send BindableGpuParams and update core buffers using it)
+   - Add a way to bind gpu params by using GpuParams directly
+   - And a way to update hardware buffers without using BindableGpuParams
 
-Apply world view proj matrix in renderer
+3. Renderer parameters and buffers
+   - Will likely need to finalize material <-> renderer interface matching first
+   - Add a way to create renderer gpu buffers
+   - Add a way to create handles to renderer gpu parameters (and store them in RenderableProxy)
+   - Update renderable parameters each frame
+      - Apply world view proj matrix in renderer
 
-Stage 2:
-Add material <-> renderer interface matching
- - Ensure renderer creates and updates parameters and parameter blocks it owns
- - Actually add frustum culling
- - Implement RenderQueue sorting with support for sort type, priority and separable pass
-   - Use a hash list(containing type, queue, layer, etc.) for faster sorting
+-----------------------------------------------------------
+NON TRIVIAL BUT SIMPLE
+
+Actually add frustum culling
+Implement RenderQueue sorting with support for sort type, priority and separable pass
+ - Use a hash list(containing type, queue, layer, etc.) for faster sorting
+
+-----------------------------------------------------------
+REFACTORING, NOTES AND OTHER TRIVIAL STUFF
 
 Finally
  - Document elements marked with TODO UNDOCUMENTED
@@ -27,15 +32,11 @@ Finally
 
 Semantic/design issues:
  - DrawList is too similar to RenderQueue - Their names need to be more distinct
- - MeshProxy is very different that material/camera/renderable proxy. Rename it to something else?
- - Material and camera proxy is returned by value while renderable by pointer. Also material proxy seems a bit heavy weight to be passed by value.
  - Consider removing SceneManager from Core? I two scene manager base classes.
- - Consider moving RenderOperation in RenderQueue and removing its header/source. Maybe also renaming it to something more render queue specific. 
- - Remove DefaultRenderQueue. Instead make RenderQueue non-abstract and have it provide default implementation.
-
 
 -------------------------------------------------------
-ENSURING MATERIAL COMPATIBILITY:
+
+Material compatibility:
 
 When renderer is first created we create a list of default materials, each corresponding to a single valid renderable type.
 When checking for material compatibility we compare parameter and param block descriptions between example

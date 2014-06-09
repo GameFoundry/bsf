@@ -74,9 +74,12 @@ namespace BansheeEngine
 
 		for (auto& materialData : mMaterialData)
 		{
-			if (materialData.material.isLoaded() && materialData.material->_isCoreDirty())
+			if (materialData.material != nullptr && materialData.material.isLoaded() && materialData.material->_isCoreDirty())
 				return true;
 		}
+
+		if (mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded() && mMeshData.mesh->_isCoreDirty())
+			return true;
 
 		return mCoreDirtyFlags; 
 	}
@@ -85,9 +88,12 @@ namespace BansheeEngine
 	{
 		for (auto& materialData : mMaterialData)
 		{
-			if (materialData.material.isLoaded())
+			if (materialData.material != nullptr && materialData.material.isLoaded())
 				materialData.material->_markCoreClean();
 		}
+
+		if (mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded())
+			mMeshData.mesh->_markCoreClean();
 
 		mCoreDirtyFlags = 0;
 	}
@@ -124,7 +130,7 @@ namespace BansheeEngine
 			RenderableElement* renElement = bs_new<RenderableElement>();
 			renElement->layer = mLayer;
 			renElement->worldTransform = SO()->getWorldTfrm();
-			renElement->mesh = mMeshData.mesh->_getRenderData(i);
+			renElement->mesh = mMeshData.mesh->_createProxy(i);
 
 			HMaterial material;
 			if (i < mMaterialData.size())

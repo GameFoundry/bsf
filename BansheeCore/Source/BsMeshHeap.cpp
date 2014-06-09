@@ -98,7 +98,6 @@ namespace BansheeEngine
 		UINT32 smallestVertFit = 0;
 		UINT32 smallestVertFitIdx = 0;
 
-		bool buffersModified = false;
 		while(smallestVertFit == 0)
 		{
 			UINT32 curIdx = 0;
@@ -125,7 +124,6 @@ namespace BansheeEngine
 			}
 
 			growVertexBuffer(newNumVertices);
-			buffersModified = true;
 		}
 
 		// Find free index chunk and grow if needed
@@ -158,16 +156,6 @@ namespace BansheeEngine
 			}
 
 			growIndexBuffer(newNumIndices);
-			buffersModified = true;
-		}
-
-		if (buffersModified)
-		{
-			for (auto& allocData : mMeshAllocData)
-			{
-				if (allocData.second.useFlags != UseFlags::CPUFree && allocData.second.useFlags != UseFlags::Free)
-					allocData.second.mesh->_updateRenderData();
-			}
 		}
 
 		UINT32 freeVertChunkIdx = 0;
@@ -316,8 +304,6 @@ namespace BansheeEngine
 		UINT8* idxDest = mCPUIndexData + idxChunkStart * idxSize;
 		memcpy(idxDest, meshData->getIndexData(), meshData->getNumIndices() * idxSize);
 		mIndexBuffer->writeData(idxChunkStart * idxSize, meshData->getNumIndices() * idxSize, idxDest, BufferWriteType::NoOverwrite);
-
-		mesh->_updateRenderData();
 	}
 
 	void MeshHeap::deallocInternal(TransientMeshPtr mesh)

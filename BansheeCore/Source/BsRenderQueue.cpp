@@ -1,6 +1,4 @@
 #include "BsRenderQueue.h"
-#include "BsRenderOperation.h"
-#include "BsMeshRenderData.h"
 
 namespace BansheeEngine
 {
@@ -11,23 +9,45 @@ namespace BansheeEngine
 
 	void RenderQueue::clear()
 	{
-		mRenderOperations.clear();
-		mSortedRenderOps.clear();
+		mRenderElements.clear();
+		mSortedRenderElements.clear();
 	}
 
-	void RenderQueue::add(const Material::CoreProxyPtr& material, const MeshRenderDataPtr& mesh, const Vector3& worldPosForSort)
+	void RenderQueue::add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, const Vector3& worldPosForSort)
 	{
-		// TODO - Make sure RenderOperations are cached so we dont allocate memory for them every frame
-		mRenderOperations.push_back(RenderOperation());
+		// TODO - Make sure RenderQueueElements are cached so we dont allocate memory for them every frame
+		mRenderElements.push_back(RenderQueueElement());
 
-		RenderOperation& renderOp = mRenderOperations.back();
+		RenderQueueElement& renderOp = mRenderElements.back();
 		renderOp.material = material;
 		renderOp.mesh = mesh;
 		renderOp.worldPosition = worldPosForSort;
 	}
 
-	const Vector<SortedRenderOp>& RenderQueue::getSortedRenderOps() const
+	void RenderQueue::sort()
 	{
-		return mSortedRenderOps;
+		// Just pass-through for now
+		for (auto& renderElem : mRenderElements)
+		{
+			UINT32 numPasses = (UINT32)renderElem.material->passes.size();
+			for (UINT32 i = 0; i < numPasses; i++)
+			{
+				mSortedRenderElements.push_back(RenderQueueElement());
+
+				RenderQueueElement& sortedElem = mSortedRenderElements.back();
+				sortedElem.material = renderElem.material;
+				sortedElem.mesh = renderElem.mesh;
+				sortedElem.worldPosition = renderElem.worldPosition;
+				sortedElem.passIdx = i;
+			}
+		}
+
+		// TODO - Actually do some sorting. Use material options to sort (isTransparent, isOverlay(need to add this), etc.)
+		// Note: When sorting make sure not to change order of unsorted elements. Some outside managers (like overlay and GUI) will provide render ops which are already sorted
+	}
+
+	const Vector<RenderQueueElement>& RenderQueue::getSortedElements() const
+	{
+		return mSortedRenderElements;
 	}
 }

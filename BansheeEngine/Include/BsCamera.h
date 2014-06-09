@@ -276,7 +276,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
 		 */
-		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; }
+		void setIgnoreSceneRenderables(bool value) { mIgnoreSceneRenderables = true; markCoreDirty(); }
 
 		/**
 		 * @brief	This option tells the renderer that this camera should ignore any renderable components.
@@ -295,7 +295,7 @@ namespace BansheeEngine
 		 *
 		 * @param	priority	The priority. Higher value means the camera will be rendered sooner.
 		 */
-		void setPriority(INT32 priority) { mPriority = priority; }
+		void setPriority(INT32 priority) { mPriority = priority; markCoreDirty(); }
 
 		/**
 		 * @brief	Retrieves layer bitfield that is used when determining which object should the camera render.
@@ -305,12 +305,39 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets layer bitfield that is used when determining which object should the camera render.
 		 */
-		void setLayers(UINT64 layers) { mLayers = layers; }
-
-		// TODO UNDOCUMENTED
-		CameraProxy _createProxy() const;
+		void setLayers(UINT64 layers) { mLayers = layers; markCoreDirty(); }
 
         static const float INFINITE_FAR_PLANE_ADJUST; /**< Small constant used to reduce far plane projection to avoid inaccuracies. */
+
+		/************************************************************************/
+		/* 								CORE PROXY                      		*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
+		 */
+		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 */
+		void _markCoreClean() { mCoreDirtyFlags = 0; }
+
+		/**
+		 * @brief	Creates a new core proxy from the currently set options. Core proxies ensure
+		 *			that the core thread has all the necessary data, while avoiding the need
+		 *			to manage Camera itself on the core thread.
+		 *
+		 * @note	Sim thread only. 
+		 *			You generally need to update the core thread with a new proxy whenever core 
+		 *			dirty flag is set.
+		 */
+		CameraProxyPtr _createProxy() const;
+
+		// TODO UNDOCUMENTED
+		CameraProxyPtr _getActiveProxy() const { return mActiveProxy; }
+		void _setActiveProxy(const CameraProxyPtr& proxy) { mActiveProxy = proxy; }
 
 	protected:
 		/**
@@ -345,6 +372,11 @@ namespace BansheeEngine
 		 */
 		virtual void invalidateFrustum() const;
 
+		/**
+		 * @brief	Marks the core data as dirty.
+		 */
+		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
+
     protected:
 		ViewportPtr mViewport; /**< Viewport that describes 2D rendering surface. */
 		UINT64 mLayers; /**< Bitfield that can be used for filtering what objects the camera sees. */
@@ -362,6 +394,9 @@ namespace BansheeEngine
 
 		bool mFrustumExtentsManuallySet; /**< Are frustum extents manually set. */
 		bool mIgnoreSceneRenderables; /**< Should the camera ignore renderable components. */
+
+		UINT32 mCoreDirtyFlags; /**< True when internal data has changed and core thread wasn't yet informed. */
+		CameraProxyPtr mActiveProxy; /**< Active core proxy if any. */
 
 		mutable Matrix4 mProjMatrixRS; /**< Cached render-system specific projection matrix. */
 		mutable Matrix4 mProjMatrix; /**< Cached projection matrix that determines how are 3D points projected to a 2D viewport. */

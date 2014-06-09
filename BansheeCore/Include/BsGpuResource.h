@@ -15,6 +15,13 @@ namespace BansheeEngine
 	{
 	public:
 		/**
+		 * @brief	Called just before writeSubresource is queued. Called from sim thread.
+		 *
+		 * @note	Sim thread only.
+		 */
+		virtual void _writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
+
+		/**
 		 * @brief	Updates a part of the current resource with the provided data. Specific resource
 		 * 			implementations provide a way to retrieve a subresource index.
 		 * 			

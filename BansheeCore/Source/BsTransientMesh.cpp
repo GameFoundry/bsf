@@ -1,5 +1,6 @@
 #include "BsTransientMesh.h"
 #include "BsVertexData.h"
+#include "BsBounds.h"
 #include "BsMeshHeap.h"
 
 namespace BansheeEngine
@@ -7,7 +8,7 @@ namespace BansheeEngine
 	TransientMesh::TransientMesh(const MeshHeapPtr& parentHeap, UINT32 id, UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
 		:MeshBase(numVertices, numIndices, drawOp), mParentHeap(parentHeap), mId(id), mIsDestroyed(false)
 	{
-		mRenderData = bs_shared_ptr<MeshRenderData>(nullptr, nullptr, SubMesh(), 0, std::bind(&TransientMesh::_notifyUsedOnGPU, this));
+
 	}
 
 	TransientMesh::~TransientMesh()
@@ -17,8 +18,6 @@ namespace BansheeEngine
 			TransientMeshPtr meshPtr = std::static_pointer_cast<TransientMesh>(getThisPtr());
 			mParentHeap->dealloc(meshPtr);
 		}
-
-		mRenderData->_markAsInvalid();
 	}
 
 	void TransientMesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
@@ -56,10 +55,16 @@ namespace BansheeEngine
 		mParentHeap->notifyUsedOnGPU(mId);
 	}
 
-	void TransientMesh::_updateRenderData()
+	MeshProxyPtr TransientMesh::_createProxy(UINT32 subMeshIdx)
 	{
-		mRenderData->updateData(mParentHeap->_getVertexData(), mParentHeap->_getIndexBuffer(),
-			SubMesh(mParentHeap->getIndexOffset(mId), getNumIndices(), getSubMesh(0).drawOp),
-			mParentHeap->getVertexOffset(mId));
+		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();
+		coreProxy->mesh = getThisPtr();
+		coreProxy->subMesh = mSubMeshes[0];
+
+		// Note: Not calculating bounds for transient meshes yet
+		// (No particular reason, I just didn't bother)
+		coreProxy->bounds = Bounds(); 
+
+		return coreProxy;
 	}
 }

@@ -2,7 +2,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsMeshBase.h"
-#include "BsMeshRenderData.h"
 
 namespace BansheeEngine
 {
@@ -42,11 +41,6 @@ namespace BansheeEngine
 		IndexBufferPtr _getIndexBuffer() const;
 
 		/**
-		 * @copydoc	MeshBase::_getRenderData
-		 */
-		MeshRenderDataPtr _getRenderData(UINT32 subMeshIdx) { return mRenderData; }
-
-		/**
 		 * @brief	Returns the ID that uniquely identifies this mesh in the parent heap.
 		 */
 		UINT32 getMeshHeapId() const { return mId; }
@@ -66,11 +60,14 @@ namespace BansheeEngine
 		 */
 		virtual void _notifyUsedOnGPU();
 
+		/************************************************************************/
+		/* 								CORE PROXY                      		*/
+		/************************************************************************/
+
 		/**
-		 * @brief	Called by parent MeshHeap when notable changes that invalidate
-		 *			the render data happen.
+		 * @copydoc	MeshBase::_createProxy
 		 */
-		void _updateRenderData();
+		MeshProxyPtr _createProxy(UINT32 subMeshIdx);
 
 	protected:
 		friend class MeshHeap;
@@ -92,7 +89,5 @@ namespace BansheeEngine
 		bool mIsDestroyed;
 		MeshHeapPtr mParentHeap;
 		UINT32 mId;
-
-		MeshRenderDataPtr mRenderData;
 	};
 }

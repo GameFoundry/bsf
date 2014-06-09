@@ -12,8 +12,7 @@
 #include "BsCoreApplication.h"
 #include "BsViewport.h"
 #include "BsRenderTarget.h"
-#include "BsRenderOperation.h"
-#include "BsDefaultRenderQueue.h"
+#include "BsRenderQueue.h"
 #include "BsOverlayManager.h"
 #include "BsDrawHelper2D.h"
 #include "BsDrawHelper3D.h"
@@ -29,6 +28,7 @@ namespace BansheeEngine
 	BansheeRenderer::BansheeRenderer()
 	{
 		mRenderableRemovedConn = gBsSceneManager().onRenderableRemoved.connect(std::bind(&BansheeRenderer::renderableRemoved, this, _1));
+		mCameraRemovedConn = gBsSceneManager().onCameraRemoved.connect(std::bind(&BansheeRenderer::cameraRemoved, this, _1));
 
 		// Init compatibile material params
 		RendererMaterialParams dx9params("BansheeD3D9RenderSystem", RenType_UnlitUntextured);
@@ -43,6 +43,7 @@ namespace BansheeEngine
 	BansheeRenderer::~BansheeRenderer()
 	{
 		mRenderableRemovedConn.disconnect();
+		mCameraRemovedConn.disconnect();
 	}
 
 	const String& BansheeRenderer::getName() const
@@ -55,13 +56,11 @@ namespace BansheeEngine
 	{
 		for (auto& element : proxy->renderableElements)
 		{
-			mRenderableProxies.push_back(element);
+			mRenderableElements.push_back(element);
 			mWorldTransforms.push_back(element->worldTransform);
 			mWorldBounds.push_back(element->calculateWorldBounds());
-			element->markBoundsClean();
 
-			element->id = (UINT32)(mRenderableProxies.size() - 1);
-			element->mesh->addRenderableProxy(element);
+			element->id = (UINT32)(mRenderableElements.size() - 1);
 		}
 	}
 
@@ -69,19 +68,17 @@ namespace BansheeEngine
 	{
 		for (auto& element : proxy->renderableElements)
 		{
-			assert(mRenderableProxies.size() > element->id && element->id >= 0);
+			assert(mRenderableElements.size() > element->id && element->id >= 0);
 
-			if (mRenderableProxies.size() == 0)
-				mRenderableProxies.erase(mRenderableProxies.begin());
+			if (mRenderableElements.size() == 0)
+				mRenderableElements.erase(mRenderableElements.begin());
 			else
 			{
-				std::swap(mRenderableProxies[element->id], mRenderableProxies.back());
-				mRenderableProxies.erase(mRenderableProxies.end() - 1);
+				std::swap(mRenderableElements[element->id], mRenderableElements.back());
+				mRenderableElements.erase(mRenderableElements.end() - 1);
 
-				mRenderableProxies[element->id]->id = element->id;
+				mRenderableElements[element->id]->id = element->id;
 			}
-
-			element->mesh->removeRenderableProxy(element);
 		}
 	}
 
@@ -93,15 +90,84 @@ namespace BansheeEngine
 
 			mWorldTransforms[element->id] = localToWorld;
 			mWorldBounds[element->id] = element->calculateWorldBounds();
-			element->markBoundsClean();
 		}
+	}
+
+	void BansheeRenderer::addCameraProxy(CameraProxyPtr proxy)
+	{
+		RenderTargetPtr renderTarget = proxy->viewport.getTarget();
+		auto findIter = std::find(mRenderTargets.begin(), mRenderTargets.end(), renderTarget);
+
+		if (findIter != mRenderTargets.end())
+		{
+			findIter->cameras.push_back(CameraData());
+			CameraData& camData = findIter->cameras.back();
+
+			camData.cameraProxy = proxy;
+			camData.renderQueue = bs_shared_ptr<RenderQueue>();
+		}
+		else
+		{
+			mRenderTargets.push_back(RenderTargetData());
+			RenderTargetData& renderTargetData = mRenderTargets.back();
+
+			renderTargetData.cameras.push_back(CameraData());
+			CameraData& camData = renderTargetData.cameras.back();
+
+			camData.cameraProxy = proxy;
+			camData.renderQueue = bs_shared_ptr<RenderQueue>();
+		}
+
+		// Sort everything based on priority
+		auto cameraComparer = [&](const CameraData& a, const CameraData& b) { return a.cameraProxy->priority > b.cameraProxy->priority; };
+		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b) { return a.target->getPriority() > b.target->getPriority(); };
+		std::sort(begin(mRenderTargets), end(mRenderTargets), renderTargetInfoComparer);
+
+		for (auto& camerasPerTarget : mRenderTargets)
+		{
+			Vector<CameraData>& cameras = camerasPerTarget.cameras;
+
+			std::sort(begin(cameras), end(cameras), cameraComparer);
+		}
+	}
+
+	void BansheeRenderer::removeCameraProxy(CameraProxyPtr proxy)
+	{
+		RenderTargetPtr renderTarget = proxy->viewport.getTarget();
+		auto findIter = std::find(mRenderTargets.begin(), mRenderTargets.end(), renderTarget);
+
+		if (findIter != mRenderTargets.end())
+		{
+			auto findIter2 = std::find(findIter->cameras.begin(), findIter->cameras.end(), proxy);
+
+			if (findIter2 != findIter->cameras.end())
+			{
+				findIter->cameras.erase(findIter2);
+			}
+
+			if (findIter->cameras.size() == 0)
+				mRenderTargets.erase(findIter);
+		}
+	}
+
+	void BansheeRenderer::updateCameraProxy(CameraProxyPtr proxy, Matrix4 viewMatrix)
+	{
+		proxy->viewMatrix = viewMatrix;
 	}
 
 	void BansheeRenderer::renderableRemoved(const HRenderable& renderable)
 	{
 		if (renderable->_getActiveProxy() != nullptr)
 		{
-			mDeletedProxies.push_back(renderable->_getActiveProxy());
+			mDeletedRenderableProxies.push_back(renderable->_getActiveProxy());
+		}
+	}
+
+	void BansheeRenderer::cameraRemoved(const HCamera& camera)
+	{
+		if (camera->_getActiveProxy() != nullptr)
+		{
+			mDeletedCameraProxies.push_back(camera->_getActiveProxy());
 		}
 	}
 
@@ -111,8 +177,8 @@ namespace BansheeEngine
 
 		gBsSceneManager().updateRenderableTransforms();
 
-		// Remove proxies from deleted Renderable
-		for (auto& proxy : mDeletedProxies)
+		// Remove proxies from deleted Renderables
+		for (auto& proxy : mDeletedRenderableProxies)
 		{
 			if (proxy != nullptr)
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
@@ -120,6 +186,7 @@ namespace BansheeEngine
 
 		// Add or update Renderable proxies
 		const Vector<HRenderable>& allRenderables = gBsSceneManager().getAllRenderables();
+		Vector<HSceneObject> dirtySceneObjects;
 		for (auto& renderable : allRenderables)
 		{
 			if (!renderable->_isCoreDirty())
@@ -135,67 +202,61 @@ namespace BansheeEngine
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addRenderableProxy, this, proxy));
 
 				renderable->_markCoreClean();
-				renderable->SO()->_markRenderDataUpToDate();
+
+				dirtySceneObjects.push_back(renderable->SO());
 			}
-			else if (!renderable->SO()->_isRenderDataUpToDate())
+			else if (!renderable->SO()->_isCoreDirty())
 			{
 				RenderableProxyPtr proxy = renderable->_getActiveProxy();
 				assert(proxy != nullptr);
 
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderable->SO()->getWorldTfrm()));
 
-				renderable->SO()->_markRenderDataUpToDate();
+				dirtySceneObjects.push_back(renderable->SO());
 			}
 		}
 
-		// Create frame data
+		// Remove proxies from deleted Cameras
+		for (auto& proxy : mDeletedCameraProxies)
+		{
+			if (proxy != nullptr)
+				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeCameraProxy, this, proxy));
+		}
+
+		// Add or update Camera proxies
 		const Vector<HCamera>& allCameras = gBsSceneManager().getAllCameras();
-		Vector<RenderQueuePtr> renderQueues;
-
-		std::shared_ptr<FrameData> frameData = bs_shared_ptr<FrameData>();
-
 		for (auto& camera : allCameras)
 		{
-			RenderTargetPtr target = camera->getViewport()->getTarget();
-			auto findIter = std::find_if(begin(frameData->renderTargets), end(frameData->renderTargets), 
-				[&target](const RenderTargetData& x) { return x.target == target; });
-
-			if (findIter == frameData->renderTargets.end())
+			if (!camera->_isCoreDirty())
 			{
-				frameData->renderTargets.push_back(RenderTargetData());
-				RenderTargetData& renderTargetData = frameData->renderTargets.back();
+				CameraProxyPtr proxy = camera->_getActiveProxy();
 
-				renderTargetData.target = target;
-				renderTargetData.cameras.push_back(CameraData());
+				if (proxy != nullptr)
+					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeCameraProxy, this, proxy));
 
-				CameraData& camData = renderTargetData.cameras.back();
-				camData.cameraProxy = camera->_createProxy();
-				camData.renderQueue = bs_shared_ptr<DefaultRenderQueue>();
+				proxy = camera->_createProxy();
+				camera->_setActiveProxy(proxy);
 
-				renderQueues.push_back(camData.renderQueue);
+				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addCameraProxy, this, proxy));
+
+				camera->_markCoreClean();
+				dirtySceneObjects.push_back(camera->SO());
 			}
-			else
+			else if (!camera->SO()->_isCoreDirty())
 			{
-				findIter->cameras.push_back(CameraData());
+				CameraProxyPtr proxy = camera->_getActiveProxy();
+				assert(proxy != nullptr);
 
-				CameraData& camData = findIter->cameras.back();
-				camData.cameraProxy = camera->_createProxy();
-				camData.renderQueue = bs_shared_ptr<DefaultRenderQueue>();
+				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateCameraProxy, this, proxy, camera->getViewMatrix()));
 
-				renderQueues.push_back(camData.renderQueue);
+				dirtySceneObjects.push_back(camera->SO());
 			}
 		}
 
-		// Sort everything based on priority
-		auto cameraComparer = [&](const CameraData& a, const CameraData& b) { return a.cameraProxy.priority > b.cameraProxy.priority; };
-		auto renderTargetInfoComparer = [&](const RenderTargetData& a, const RenderTargetData& b) { return a.target->getPriority() > b.target->getPriority(); };
-		std::sort(begin(frameData->renderTargets), end(frameData->renderTargets), renderTargetInfoComparer);
-
-		for (auto& camerasPerTarget : frameData->renderTargets)
+		// Mark everything clean
+		for (auto& dirtySO : dirtySceneObjects)
 		{
-			Vector<CameraData>& cameras = camerasPerTarget.cameras;
-
-			std::sort(begin(cameras), end(cameras), cameraComparer);
+			dirtySO->_markCoreClean();
 		}
 
 		// Populate direct draw lists
@@ -229,21 +290,21 @@ namespace BansheeEngine
 				// TODO - Will I need to check if materials match renderer?
 
 				renderQueue->add(drawOp.material->_createProxy(),
-					drawOp.mesh->_getRenderData(drawOp.submeshIdx), drawOp.worldPosition);
+					drawOp.mesh->_createProxy(drawOp.submeshIdx), drawOp.worldPosition);
 			}
 
 			idx++;
 		}
 
-		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::renderAllCore, this, frameData));
+		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::renderAllCore, this));
 	}
 
-	void BansheeRenderer::renderAllCore(std::shared_ptr<FrameData> frameData)
+	void BansheeRenderer::renderAllCore()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		// Render everything, target by target
-		for (auto& renderTargetData : frameData->renderTargets)
+		for (auto& renderTargetData : mRenderTargets)
 		{
 			RenderTargetPtr target = renderTargetData.target;
 			Vector<CameraData>& cameraData = renderTargetData.cameras;
@@ -252,7 +313,7 @@ namespace BansheeEngine
 
 			for(auto& data : cameraData)
 			{
-				Viewport& viewport = data.cameraProxy.viewport;
+				Viewport& viewport = data.cameraProxy->viewport;
 				RenderSystem::instance().setViewport(viewport);
 
 				UINT32 clearBuffers = 0;
@@ -268,7 +329,7 @@ namespace BansheeEngine
 				if(clearBuffers != 0)
 					RenderSystem::instance().clearViewport(clearBuffers, viewport.getClearColor(), viewport.getClearDepthValue(), viewport.getClearStencilValue());
 
-				render(data.cameraProxy, data.renderQueue);
+				render(*data.cameraProxy, data.renderQueue);
 			}
 
 			RenderSystem::instance().endFrame();
@@ -285,7 +346,7 @@ namespace BansheeEngine
 		if (!cameraProxy.ignoreSceneRenderables)
 		{
 			// TODO - Do frustum culling
-			for (auto& renderableProxy : mRenderableProxies)
+			for (auto& renderableProxy : mRenderableElements)
 			{
 				// TODO - Apply world-view-proj matrix
 
@@ -300,19 +361,18 @@ namespace BansheeEngine
 		Matrix4 viewProjMatrix = projMatrixCstm * viewMatrixCstm;
 
 		renderQueue->sort();
-		const Vector<SortedRenderOp>& sortedROps = renderQueue->getSortedRenderOps();
+		const Vector<RenderQueueElement>& sortedRenderElements = renderQueue->getSortedElements();
 
-		for(auto iter = sortedROps.begin(); iter != sortedROps.end(); ++iter)
+		for(auto iter = sortedRenderElements.begin(); iter != sortedRenderElements.end(); ++iter)
 		{
-			const RenderOperation& renderOp = *iter->baseOperation;
-			Material::CoreProxyPtr materialProxy = renderOp.material;
+			MaterialProxyPtr materialProxy = iter->material;
 
 			setPass(materialProxy->passes[iter->passIdx]);
-			draw(*renderOp.mesh);
+			draw(*iter->mesh);
 		}
 	}
 
-	void BansheeRenderer::setPass(const Material::CoreProxy::PassData& pass)
+	void BansheeRenderer::setPass(const MaterialProxyPass& pass)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
@@ -385,12 +445,13 @@ namespace BansheeEngine
 			rs.setRasterizerState(RasterizerState::getDefault());
 	}
 
-	void BansheeRenderer::draw(const MeshRenderData& mesh)
+	void BansheeRenderer::draw(const MeshProxy& meshProxy)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
 		RenderSystem& rs = RenderSystem::instance();
-		std::shared_ptr<VertexData> vertexData = mesh.getVertexData();
+		MeshPtr mesh = meshProxy.mesh;
+		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);
 		auto vertexBuffers = vertexData->getBuffers();
@@ -418,18 +479,18 @@ namespace BansheeEngine
 			rs.setVertexBuffers(startSlot, buffers, endSlot - startSlot + 1);
 		}
 
-		SubMesh subMesh = mesh.getSubMesh();
+		SubMesh subMesh = meshProxy.subMesh;
 		rs.setDrawOperation(subMesh.drawOp);
 
-		IndexBufferPtr indexBuffer = mesh.getIndexBuffer();
+		IndexBufferPtr indexBuffer = mesh->_getIndexBuffer();
 
 		UINT32 indexCount = subMesh.indexCount;
 		if (indexCount == 0)
 			indexCount = indexBuffer->getNumIndices();
 
 		rs.setIndexBuffer(indexBuffer);
-		rs.drawIndexed(subMesh.indexOffset, indexCount, mesh.getVertexOffset(), vertexData->vertexCount);
+		rs.drawIndexed(subMesh.indexOffset, indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
 
-		mesh.notifyUsedOnGPU();
+		mesh->_notifyUsedOnGPU();
 	}
 }

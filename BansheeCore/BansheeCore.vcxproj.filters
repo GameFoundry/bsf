@@ -414,9 +414,6 @@
     <ClInclude Include="Include\BsRenderQueue.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRenderOperation.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsRendererManager.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
@@ -424,9 +421,6 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsRenderer.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsDefaultRenderQueue.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\Win32\BsWin32FolderMonitor.h">
@@ -525,10 +519,13 @@
     <ClInclude Include="Include\BsDrawList.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsMeshRenderData.h">
+    <ClInclude Include="Include\BsRendererParams.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRendererParams.h">
+    <ClInclude Include="Include\BsMeshProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsMaterialProxy.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -749,9 +746,6 @@
     <ClCompile Include="Source\BsVideoModeInfo.cpp">
       <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsDefaultRenderQueue.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Source\BsRenderer.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
@@ -837,9 +831,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCameraProxy.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsMeshRenderData.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRendererParams.cpp">

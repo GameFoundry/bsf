@@ -2,8 +2,10 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsGpuResource.h"
+#include "BsBounds.h"
 #include "BsDrawOps.h"
 #include "BsSubMesh.h"
+#include "BsMeshProxy.h"
 
 namespace BansheeEngine
 {
@@ -126,17 +128,47 @@ namespace BansheeEngine
 		 */
 		virtual void _notifyUsedOnGPU() { }
 
+		/************************************************************************/
+		/* 								CORE PROXY                      		*/
+		/************************************************************************/
+
 		/**
-		 * @brief	Gets sub-mesh render data. Render data provides a link between a mesh and
-		 *			the renderer and it will be modified by both. It may be modified as mesh 
-		 *			changes occur and as renderer uses the mesh.
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
+		 *
+		 * @note	Sim thread only.
 		 */
-		virtual MeshRenderDataPtr _getRenderData(UINT32 subMeshIdx) = 0;
+		bool _isCoreDirty() const { mCoreDirtyFlags != 0; }
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 *
+		 * @note	Sim thread only.
+		 */
+		void _markCoreClean() { mCoreDirtyFlags = 0; }
+
+		/**
+		 * @brief	Creates a new core proxy from the current mesh data. Core proxy contains a snapshot of 
+		 *			mesh data normally managed on the sim thread (e.g. bounds).
+		 *
+		 * @note	Sim thread only. 
+		 *			You generally need to update the core thread with a new proxy whenever core 
+		 *			dirty flag is set.
+		 */
+		virtual MeshProxyPtr _createProxy(UINT32 subMeshIdx) = 0;
+
+	protected:
+		/**
+		 * @brief	Marks the core data as dirty.
+		 */
+		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
 
 	protected:
 		Vector<SubMesh> mSubMeshes; // Immutable
 		UINT32 mNumVertices; // Immutable
 		UINT32 mNumIndices; // Immutable
+
+		UINT32 mCoreDirtyFlags;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

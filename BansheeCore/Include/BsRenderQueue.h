@@ -1,21 +1,23 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsMaterial.h"
+#include "BsMaterialProxy.h"
+#include "BsMeshProxy.h"
 
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Slightly more fine grained version of RenderOperation, as each pass
-	 * 			is specified as an individual operation. Used for sorting within the RenderQueue.
+	 * @brief	Contains data needed for performing a single rendering pass.
 	 */
-	struct BS_CORE_EXPORT SortedRenderOp
+	struct BS_CORE_EXPORT RenderQueueElement
 	{
-		SortedRenderOp()
-			:baseOperation(nullptr), passIdx(0)
+		RenderQueueElement()
+			:passIdx(0)
 		{ }
 
-		const RenderOperation* baseOperation;
+		MaterialProxyPtr material;
+		MeshProxyPtr mesh;
+		Vector3 worldPosition;
 		UINT32 passIdx;
 	};
 
@@ -33,7 +35,7 @@ namespace BansheeEngine
 	public:
 		RenderQueue();
 
-		void add(const Material::CoreProxyPtr& material, const MeshRenderDataPtr& mesh, const Vector3& worldPosForSort);
+		void add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, const Vector3& worldPosForSort);
 
 		/**
 		 * @brief	Clears all render operations from the queue.
@@ -43,16 +45,16 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sorts all the render operations using user-defined rules.
 		 */
-		virtual void sort() = 0;
+		virtual void sort();
 
 		/**
-		 * @brief	Returns a list of sorted render operations. Caller must ensure
+		 * @brief	Returns a list of sorted render elements. Caller must ensure
 		 * 			"sort" is called before this method.
 		 */
-		const Vector<SortedRenderOp>& getSortedRenderOps() const;
+		const Vector<RenderQueueElement>& getSortedElements() const;
 
 	protected:
-		Vector<RenderOperation> mRenderOperations;
-		Vector<SortedRenderOp> mSortedRenderOps;
+		Vector<RenderQueueElement> mRenderElements;
+		Vector<RenderQueueElement> mSortedRenderElements;
 	};
 }

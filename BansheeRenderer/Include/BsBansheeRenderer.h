@@ -4,7 +4,6 @@
 #include "BsRenderer.h"
 #include "BsBounds.h"
 #include "BsCameraProxy.h"
-#include "BsMaterialProxy.h"
 
 namespace BansheeEngine
 {
@@ -18,7 +17,7 @@ namespace BansheeEngine
 	{
 		struct CameraData
 		{
-			CameraProxy cameraProxy;
+			CameraProxyPtr cameraProxy;
 			RenderQueuePtr renderQueue;
 		};
 
@@ -26,11 +25,6 @@ namespace BansheeEngine
 		{
 			RenderTargetPtr target;
 			Vector<CameraData> cameras;
-		};
-
-		struct FrameData
-		{
-			Vector<RenderTargetData> renderTargets;
 		};
 
 	public:
@@ -52,24 +46,36 @@ namespace BansheeEngine
 		void removeRenderableProxy(RenderableProxyPtr proxy);
 		void updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld);
 
-		void renderAllCore(std::shared_ptr<FrameData> frameData);
+		void addCameraProxy(CameraProxyPtr proxy);
+		void removeCameraProxy(CameraProxyPtr proxy);
+		void updateCameraProxy(CameraProxyPtr proxy, Matrix4 viewMatrix);
+
+		void renderAllCore();
 
 		/**
 		 * @brief	Renders all objects visible by the provided camera.
 		 */
 		virtual void render(const CameraProxy& cameraProxy, const RenderQueuePtr& renderQueue);
 
-		void setPass(const Material::CoreProxy::PassData& pass);
-		void draw(const MeshRenderData& mesh);
+		void setPass(const MaterialProxyPass& pass);
+		void draw(const MeshProxy& mesh);
 
 		void renderableRemoved(const HRenderable& renderable);
+		void cameraRemoved(const HCamera& camera);
 
-		Vector<RenderableProxyPtr> mDeletedProxies;
+		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
+		Vector<CameraProxyPtr> mDeletedCameraProxies;
 
-		Vector<RenderableElement*> mRenderableProxies;
+		UnorderedMap<UINT64, RenderableProxyPtr> mRenderableProxies;
+		UnorderedMap<UINT64, CameraProxyPtr> mCameraProxies;
+
+		Vector<RenderTargetData> mRenderTargets;
+
+		Vector<RenderableElement*> mRenderableElements;
 		Vector<Matrix4> mWorldTransforms;
 		Vector<Bounds> mWorldBounds;
 
 		HEvent mRenderableRemovedConn;
+		HEvent mCameraRemovedConn;
 	};
 }

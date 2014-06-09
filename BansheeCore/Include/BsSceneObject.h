@@ -196,14 +196,15 @@ namespace BansheeEngine
 		void updateTransformsIfDirty();
 
 		/**
-		 * @brief	Called by the renderer to check if the transform changed in any way.
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
 		 */
-		bool _isRenderDataUpToDate() const { return mIsRenderDataUpToDate; }
+		bool _isCoreDirty() const { mIsCoreDirtyFlags != 0; }
 
 		/**
-		 * @brief	Called by the renderer to notify the scene object that render data has been updated.
+		 * @brief	Marks the core dirty flag as clean.
 		 */
-		void _markRenderDataUpToDate() { mIsRenderDataUpToDate = true; }
+		void _markCoreClean() { mIsCoreDirtyFlags = 0; }
 
 	private:
 		Vector3 mPosition;
@@ -220,7 +221,7 @@ namespace BansheeEngine
 		mutable Matrix4 mCachedWorldTfrm;
 		mutable bool mIsCachedWorldTfrmUpToDate;
 
-		mutable bool mIsRenderDataUpToDate;
+		mutable UINT32 mIsCoreDirtyFlags;
 
 		/**
 		 * @brief	Marks the transform as dirty so that we know to update

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsMaterial.h"
+#include "BsMaterialProxy.h"
+#include "BsMeshProxy.h"
 #include "BsBounds.h"
 #include "BsMatrix4.h"
 
@@ -13,16 +14,13 @@ namespace BansheeEngine
 	public:
 		RenderableElement();
 
-		void markBoundsDirty() { mBoundsDirty = true; }
-		void markBoundsClean() { mBoundsDirty = false; }
-		bool getBoundsDirty() const { return mBoundsDirty; }
 		Bounds calculateWorldBounds();
 
 		UINT32 id;
 		Matrix4 worldTransform;
 
-		MeshRenderDataPtr mesh;
-		Material::CoreProxyPtr material;
+		MeshProxyPtr mesh;
+		MaterialProxyPtr material;
 
 		UINT64 layer;
 

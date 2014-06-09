@@ -243,7 +243,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know  when internal data has changed;
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
 		 */
 		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
 
@@ -266,7 +266,7 @@ namespace BansheeEngine
 		Shader(const String& name);
 
 		/**
-		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.
+		 * @brief	Marks the core data as dirty.
 		 */
 		void markCoreDirty() { mCoreDirtyFlags = 0xFFFFFFFF; }
 

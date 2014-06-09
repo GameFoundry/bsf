@@ -1,5 +1,4 @@
 #include "BsRenderableProxy.h"
-#include "BsMeshRenderData.h"
 
 namespace BansheeEngine
 {
@@ -12,7 +11,7 @@ namespace BansheeEngine
 		if (mesh == nullptr)
 			return Bounds();
 
-		Bounds worldBounds = mesh->getBounds();
+		Bounds worldBounds = mesh->bounds;
 		worldBounds.transformAffine(worldTransform);
 
 		return worldBounds;

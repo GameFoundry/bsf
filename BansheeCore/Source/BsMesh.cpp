@@ -55,8 +55,13 @@ namespace BansheeEngine
 
 	Mesh::~Mesh()
 	{
-		for (auto& renderData : mRenderData)
-			renderData->_markAsInvalid();
+
+	}
+
+	void Mesh::_writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
+	{
+		const MeshData& meshData = static_cast<const MeshData&>(data);
+		updateBounds(meshData);
 	}
 
 	void Mesh::writeSubresource(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer)
@@ -156,26 +161,6 @@ namespace BansheeEngine
 			{
 				vertexBuffer->writeData(0, bufferSize, srcVertBufferData, discardEntireBuffer ? BufferWriteType::Discard : BufferWriteType::Normal);
 			}
-		}
-
-		// Update bounds
-		VertexDataDescPtr vertexDesc = meshData.getVertexDesc();
-		for (UINT32 i = 0; i < vertexDesc->getNumElements(); i++)
-		{
-			const VertexElement& curElement = vertexDesc->getElement(i);
-
-			if (curElement.getSemantic() != VES_POSITION || (curElement.getType() != VET_FLOAT3 && curElement.getType() != VET_FLOAT4))
-				continue;
-
-			UINT8* data = meshData.getElementData(curElement.getSemantic(), curElement.getSemanticIdx(), curElement.getStreamIdx());
-			UINT32 stride = vertexDesc->getVertexStride(curElement.getStreamIdx());
-
-			mBounds = calculateBounds((UINT8*)data, mTempInitialMeshData->getNumVertices(), stride);
-
-			for (auto& renderData : mRenderData)
-				renderData->updateBounds(mBounds);
-
-			break;
 		}
 	}
 
@@ -285,6 +270,14 @@ namespace BansheeEngine
 		return mIndexBuffer;
 	}
 
+	void Mesh::initialize()
+	{
+		if (mTempInitialMeshData != nullptr)
+		{
+			updateBounds(*mTempInitialMeshData);
+		}
+	}
+
 	void Mesh::initialize_internal()
 	{
 		THROW_IF_NOT_CORE_THREAD;
@@ -318,12 +311,6 @@ namespace BansheeEngine
 			mTempInitialMeshData = nullptr;
 		}
 
-		for (auto& subMesh : mSubMeshes)
-		{
-			mRenderData.push_back(bs_shared_ptr<MeshRenderData>(mVertexData, mIndexBuffer, subMesh, 0, nullptr));
-
-		}
-
 		Resource::initialize_internal();
 	}
 
@@ -332,6 +319,26 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		Resource::destroy_internal();
+	}
+
+	void Mesh::updateBounds(const MeshData& meshData)
+	{
+		VertexDataDescPtr vertexDesc = meshData.getVertexDesc();
+		for (UINT32 i = 0; i < vertexDesc->getNumElements(); i++)
+		{
+			const VertexElement& curElement = vertexDesc->getElement(i);
+
+			if (curElement.getSemantic() != VES_POSITION || (curElement.getType() != VET_FLOAT3 && curElement.getType() != VET_FLOAT4))
+				continue;
+
+			UINT8* data = meshData.getElementData(curElement.getSemantic(), curElement.getSemanticIdx(), curElement.getStreamIdx());
+			UINT32 stride = vertexDesc->getVertexStride(curElement.getStreamIdx());
+
+			mBounds = calculateBounds((UINT8*)data, mTempInitialMeshData->getNumVertices(), stride);
+			markCoreDirty();
+
+			break;
+		}
 	}
 
 	Bounds Mesh::calculateBounds(UINT8* verticesPtr, UINT32 numVertices, UINT32 stride) const
@@ -353,6 +360,16 @@ namespace BansheeEngine
 		}
 
 		return bounds;
+	}
+
+	MeshProxyPtr Mesh::_createProxy(UINT32 subMeshIdx)
+	{
+		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();
+		coreProxy->mesh = getThisPtr();
+		coreProxy->bounds = mBounds;
+		coreProxy->subMesh = getSubMesh(subMeshIdx);
+
+		return coreProxy;
 	}
 
 	HMesh Mesh::dummy()

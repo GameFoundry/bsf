@@ -6,13 +6,13 @@
 namespace BansheeEngine
 {
 	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, DrawOperationType drawOp)
-		:mNumIndices(numIndices), mNumVertices(numVertices)
+		:mNumIndices(numIndices), mNumVertices(numVertices), mCoreDirtyFlags(0xFFFFFF)
 	{
 		mSubMeshes.push_back(SubMesh(0, numIndices, drawOp));
 	}
 
 	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
-		: mNumIndices(numIndices), mNumVertices(numVertices)
+		: mNumIndices(numIndices), mNumVertices(numVertices), mCoreDirtyFlags(0xFFFFFF)
 	{
 		mSubMeshes = subMeshes;
 	}

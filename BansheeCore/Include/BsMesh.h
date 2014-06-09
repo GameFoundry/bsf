@@ -2,7 +2,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsMeshBase.h"
-#include "BsMeshRenderData.h"
 #include "BsMeshData.h"
 #include "BsVertexData.h"
 #include "BsDrawOps.h"
@@ -20,6 +19,16 @@ namespace BansheeEngine
 	{
 	public:
 		virtual ~Mesh();
+
+		/**
+		 * @copydoc	MeshBase::initialize
+		 */
+		virtual void initialize();
+
+		/**
+		 * @copydoc GpuResource::_writeSubresourceSim
+		 */
+		virtual void _writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
 
 		/**
 		 * @copydoc GpuResource::writeSubresource
@@ -57,14 +66,18 @@ namespace BansheeEngine
 		virtual IndexBufferPtr _getIndexBuffer() const;
 
 		/**
-		 * @copydoc	MeshBase::_getRenderData
-		 */
-		MeshRenderDataPtr _getRenderData(UINT32 subMeshIdx) { return mRenderData[subMeshIdx]; }
-
-		/**
 		 * @brief	Returns a dummy mesh, containing just one triangle. Don't modify the returned mesh.
 		 */
 		static HMesh dummy();
+
+		/************************************************************************/
+		/* 								CORE PROXY                      		*/
+		/************************************************************************/
+
+		/**
+		 * @copydoc	MeshBase::_createProxy
+		 */
+		MeshProxyPtr _createProxy(UINT32 subMeshIdx);
 
 	protected:
 		friend class MeshManager;
@@ -86,8 +99,6 @@ namespace BansheeEngine
 		IndexBufferPtr mIndexBuffer; // Core thread
 
 		Bounds mBounds; // Core thread
-		Vector<MeshRenderDataPtr> mRenderData; // Core thread
-
 		VertexDataDescPtr mVertexDesc; // Immutable
 		MeshBufferType mBufferType; // Immutable
 		IndexBuffer::IndexType mIndexType; // Immutable
@@ -103,6 +114,11 @@ namespace BansheeEngine
 		 * @copydoc Resource::destroy_internal()
 		 */
 		virtual void destroy_internal();
+
+		/**
+		 * @brief	Updates bounds by calculating them from the vertices in the provided mesh data object.
+		 */
+		void updateBounds(const MeshData& meshData);
 
 		/**
 		 * @brief	Calculates bounds surrounding the vertices in the provided buffer.
