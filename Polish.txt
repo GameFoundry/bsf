@@ -28,7 +28,8 @@ DISREGARD MONITOR INDEX ON DX9
 
 Rename CamelotOIS external library
 
-Refactor GUIElement 
+Refactor GUIElement & GUIElementBase
  - Sprite rendering methods should probably be marked as internal (possibly others too)
+  - A lot could be made private
  - Has two methods for retrieveing ElementType
  - getVisibleBounds doesn't make sense

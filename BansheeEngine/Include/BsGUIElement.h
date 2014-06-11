@@ -185,35 +185,42 @@ namespace BansheeEngine
 		/**
 		 * @brief	Sets a clip rectangle that GUI element sprite will be clipped to. 
 		 *			Rectangle is in local coordinates. (Relative to GUIElement position)
+		 *
+		 * @note	Internal method.
 		 */
 		void _setClipRect(const RectI& clipRect);
 
 		/**
-		 * @brief	Changes the active GUI element widget. This allows you to move an element
-		 *			to a different viewport, or change element style by using a widget with a different skin.
-		 *			You are allowed to pass null here, but elements with no parent will be unmanaged. You will be
-		 *			responsible for deleting them manually, and they will not render anywhere.
+		 * @copydoc	GUIElementBase::_changeParentWidget
 		 */
 		virtual void _changeParentWidget(GUIWidget* widget);
 
 		/**
 		 * @brief	Returns width of the element in pixels.
+		 *
+		 * @note	Internal method.
 		 */
 		UINT32 _getWidth() const { return mWidth; }
 
 		/**
 		 * @brief	Returns height of the element in pixels.
+		 *
+		 * @note	Internal method.
 		 */
 		UINT32 _getHeight() const { return mHeight; }
 
 		/**
 		 * @brief	Returns position of the element, relative to parent GUI widget origin.
+		 *
+		 * @note	Internal method.
 		 */
 		Vector2I _getOffset() const { return mOffset; }
 
 		/**
 		 * @brief	Returns depth for a specific render element. This contains a combination
 		 *			of widget depth (8 bit(, area depth (16 bit) and render element depth (8 bit)
+		 *
+		 * @note	Internal method.
 		 *
 		 * @see		getNumRenderElements
 		 */
@@ -222,82 +229,112 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets internal element style representing the exact type of GUI element
 		 *			in this object.
+		 *
+		 * @note	Internal method.
 		 */
 		Type _getType() const { return GUIElementBase::Type::Element; }
 
 		/**
 		 * @brief	Checks if element has been destroyed and is queued for deletion.
+		 *
+		 * @note	Internal method.
 		 */
 		bool _isDestroyed() const { return mIsDestroyed; }
 
 		/**
 		 * @brief	Update element style based on active GUI skin and style name.
+		 *
+		 * @note	Internal method.
 		 */
 		void _refreshStyle();
 
 		/**
 		 * @brief	Gets the currently active element style.
+		 *
+		 * @note	Internal method.
 		 */
 		const GUIElementStyle* _getStyle() const { return mStyle; }
 
 		/**
 		 * @brief	Gets GUI element bounds relative to parent widget, clipped by specified clip rect.
+		 *
+		 * @note	Internal method.
 		 */
 		const RectI& _getClippedBounds() const { return mClippedBounds; }
 
 		/**
 		 * @brief	Returns clip rect used for clipping the GUI element and related sprites
 		 *			to a specific region. Clip rect is relative to GUI element origin.
+		 *
+		 * @note	Internal method.
 		 */
 		const RectI& _getClipRect() const { return mClipRect; }
 
 		/**
 		 * @brief	Returns GUI element padding. Padding is modified by changing element style and determines
 		 *			minimum distance between different GUI elements.
+		 *
+		 * @note	Internal method.
 		 */
 		const RectOffset& _getPadding() const;
 
 		/**
 		 * @brief	Returns GUI element depth. This includes widget and area depth, but does not
 		 *			include specific per-render-element depth.
+		 *
+		 * @note	Internal method.
 		 */
 		UINT32 _getDepth() const { return mDepth; }
 
 		/**
 		 * @brief	Checks is the specified position within GUI element bounds. Position is relative to
 		 *			parent GUI widget.
+		 *
+		 * @note	Internal method.
 		 */
 		virtual bool _isInBounds(const Vector2I position) const;
 
 		/**
 		 * @brief	Checks if the GUI element has a custom cursor and outputs the cursor type if it does.
+		 *
+		 * @note	Internal method.
 		 */
 		virtual bool _hasCustomCursor(const Vector2I position, CursorType& type) const { return false; }
 
 		/**
 		 * @brief	Checks if the GUI element accepts a drag and drop operation of the specified type.
+		 *
+		 * @note	Internal method.
 		 */
 		virtual bool _acceptDragAndDrop(const Vector2I position, UINT32 typeId) const { return false; }
 
 		/**
 		 * @brief	Returns a context menu if a GUI element has one. Otherwise returns nullptr.
+		 *
+		 * @note	Internal method.
 		 */
 		virtual GUIContextMenu* getContextMenu() const { return nullptr; }
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for offsetting
 		 * 			the input text.
+		 *
+		 * @note	Internal method.
 		 */
 		virtual Vector2I _getTextInputOffset() const { return Vector2I(); }
 
 		/**
 		 * @brief	Returns a clip rectangle relative to the element, used for clipping
 		 * 			the input text.
+		 *
+		 * @note	Internal method.
 		 */
 		virtual RectI _getTextInputRect() const { return RectI(); }
 
 		/**
 		 * @brief	Returns layout options that determine how is the element positioned within a GUILayout.
+		 *
+		 * @note	Internal method.
 		 */
 		const GUILayoutOptions& _getLayoutOptions() const { return mLayoutOptions; }
 	protected:
