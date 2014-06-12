@@ -5,25 +5,15 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Specialized class for binding GPU parameters to the render system. This is a temporary class that
-	 * 			is used for temporarily saving parameter data while parameters are scheduled to be bound to the GPU.
-	 * 			This allows us to freely modify base GpuParams without worrying about changing scheduled by still 
-	 * 			not executed parameter binds.
-	 * 			
-	 * @note	Upon assignment this class transfers ownership of its internal data. Internal data
-	 * 			is destroyed when last assigned instance goes out of scope.
-	 * 			(In short, you should never have more than one active copy of an instance of this class)
-	 * 			
-	 *			Created on the sim thread and used exclusively on the core thread.
-	 *			
-	 * @see		CoreThreadAccessorBase::bindGpuParams
+	 * @brief	Contains a snapshot of GpuParams data. It can be used for
+	 *			creating a temporary or permanent copy of GpuParams data for use
+	 *			on another thread.
 	**/
-	class BS_CORE_EXPORT BindableGpuParams
+	class BS_CORE_EXPORT GpuParamsProxy
 	{
 	public:
-		BindableGpuParams(const GpuParamsPtr& sourceParams, FrameAlloc* allocator);
-		BindableGpuParams(const BindableGpuParams& source);
-		~BindableGpuParams();
+		GpuParamsProxy(const GpuParamsPtr& sourceParams, FrameAlloc* allocator);
+		~GpuParamsProxy();
 
 		/**
 		 * @brief	Uploads all CPU stored parameter buffer data to the GPU buffers.
@@ -56,7 +46,6 @@ namespace BansheeEngine
 		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
 
 	private:
-		mutable bool mOwnsData;
 		const GpuParamDesc& mParamDesc;
 		UINT8* mData;
 
@@ -65,7 +54,7 @@ namespace BansheeEngine
 		UINT32 mNumSamplerStates;
 
 		FrameAlloc* mAllocator;
-		BindableGpuParamBlock** mParamBlocks;
+		GpuParamsBlockProxy** mParamBlocks;
 		GpuParamBlockBufferPtr* mParamBlockBuffers;
 		HTexture* mTextures;
 		HSamplerState* mSamplerStates;

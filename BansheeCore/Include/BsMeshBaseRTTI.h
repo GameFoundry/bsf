@@ -15,7 +15,7 @@ namespace BansheeEngine
 		SubMesh& getSubMesh(MeshBase* obj, UINT32 arrayIdx) { return obj->mSubMeshes[arrayIdx]; }
 		void setSubMesh(MeshBase* obj, UINT32 arrayIdx, SubMesh& value) { obj->mSubMeshes[arrayIdx] = value; }
 		UINT32 getNumSubmeshes(MeshBase* obj) { return (UINT32)obj->mSubMeshes.size(); }
-		void setNumSubmeshes(MeshBase* obj, UINT32 numElements) { obj->mSubMeshes.resize(numElements); }
+		void setNumSubmeshes(MeshBase* obj, UINT32 numElements) { obj->mSubMeshes.resize(numElements); obj->mActiveProxies.resize(numElements); }
 
 		UINT32& getNumVertices(MeshBase* obj) { return obj->mNumVertices; }
 		void setNumVertices(MeshBase* obj, UINT32& value) { obj->mNumVertices = value; }

@@ -272,6 +272,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Include\BsGpuParamBlockBufferProxy.h" />
+    <ClInclude Include="Include\BsGpuParamsProxy.h" />
     <ClInclude Include="Include\BsCameraProxy.h" />
     <ClInclude Include="Include\BsDrawList.h" />
     <ClInclude Include="Include\BsMaterialProxy.h" />
@@ -279,8 +281,6 @@
     <ClInclude Include="Include\BsRenderableProxy.h" />
     <ClInclude Include="Include\BsRendererParams.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
-    <ClInclude Include="Include\BsBindableGpuParamBlock.h" />
-    <ClInclude Include="Include\BsBindableGpuParams.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
     <ClInclude Include="Include\BsProfilerCPU.h" />
     <ClInclude Include="Include\BsDeferredCallManager.h" />
@@ -420,8 +420,8 @@
     <ClInclude Include="Source\BsMeshRTTI.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Source\BsBindableGpuParamBlock.cpp" />
-    <ClCompile Include="Source\BsBindableGpuParams.cpp" />
+    <ClCompile Include="Source\BsGpuParamBlockBufferProxy.cpp" />
+    <ClCompile Include="Source\BsGpuParamsProxy.cpp" />
     <ClCompile Include="Source\BsCameraProxy.cpp" />
     <ClCompile Include="Source\BsCoreThread.cpp" />
     <ClCompile Include="Source\BsDrawList.cpp" />

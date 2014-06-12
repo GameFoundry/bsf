@@ -2,11 +2,35 @@
 
 #include "BsBansheeRendererPrerequisites.h"
 #include "BsRenderer.h"
+#include "BsMaterial.h"
+#include "BsGpuParamDesc.h"
 #include "BsBounds.h"
 #include "BsCameraProxy.h"
 
 namespace BansheeEngine
 {
+	enum BansheeRendererParamSemantic
+	{
+		BRPS_Time = 1000,
+		BRPS_LightDir = 1001
+	};
+
+	struct RenderableLitTexturedData
+	{
+		ShaderPtr defaultShader;
+
+		GpuParamBlockDesc staticParamBlockDesc;
+		GpuParamBlockDesc perFrameParamBlockDesc;
+		GpuParamBlockDesc perObjectParamBlockDesc;
+
+		GpuParamDataDesc timeParamDesc;
+		GpuParamDataDesc lightDirParamDesc;
+		GpuParamDataDesc wvpParamDesc;
+
+		GpuParamBlockBufferPtr staticParamBuffer;
+		GpuParamBlockBufferPtr perFrameParamBuffer;
+	};
+
 	/**
 	 * @brief	Default renderer for Banshee. Performs frustum culling, sorting and renders
 	 *			objects plainly according to their shaders with no fancy effects.
@@ -15,16 +39,10 @@ namespace BansheeEngine
 	// TODO UNDOCUMENTED
 	class BS_BSRND_EXPORT BansheeRenderer : public Renderer
 	{
-		struct CameraData
-		{
-			CameraProxyPtr cameraProxy;
-			RenderQueuePtr renderQueue;
-		};
-
 		struct RenderTargetData
 		{
 			RenderTargetPtr target;
-			Vector<CameraData> cameras;
+			Vector<CameraProxyPtr> cameras;
 		};
 
 	public:
@@ -50,6 +68,9 @@ namespace BansheeEngine
 		void removeCameraProxy(CameraProxyPtr proxy);
 		void updateCameraProxy(CameraProxyPtr proxy, Matrix4 viewMatrix);
 
+		void setDrawList(CameraProxyPtr proxy, DrawListPtr drawList);
+		void updateMaterialProxy(MaterialProxyPtr proxy, Vector<PassParameters> dirtyPassParams);
+
 		void renderAllCore();
 
 		/**
@@ -63,6 +84,8 @@ namespace BansheeEngine
 		void renderableRemoved(const HRenderable& renderable);
 		void cameraRemoved(const HCamera& camera);
 
+		ShaderPtr getDefaultShader(RenderableType type) const;
+
 		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
 		Vector<CameraProxyPtr> mDeletedCameraProxies;
 
@@ -74,6 +97,8 @@ namespace BansheeEngine
 		Vector<RenderableElement*> mRenderableElements;
 		Vector<Matrix4> mWorldTransforms;
 		Vector<Bounds> mWorldBounds;
+
+		RenderableLitTexturedData mLitTexturedData;
 
 		HEvent mRenderableRemovedConn;
 		HEvent mCameraRemovedConn;

@@ -405,12 +405,6 @@
     <ClInclude Include="Include\BsBlendState.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsBindableGpuParams.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="Include\BsBindableGpuParamBlock.h">
-      <Filter>Header Files\RenderSystem</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsRenderQueue.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
@@ -528,6 +522,12 @@
     <ClInclude Include="Include\BsMaterialProxy.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsGpuParamsProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsGpuParamBlockBufferProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsCoreApplication.cpp">
@@ -637,12 +637,6 @@
     </ClCompile>
     <ClCompile Include="Source\BsVertexDataDesc.cpp">
       <Filter>Source Files\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsBindableGpuParamBlock.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsBindableGpuParams.cpp">
-      <Filter>Source Files\RenderSystem</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsBlendState.cpp">
       <Filter>Source Files\RenderSystem</Filter>
@@ -834,6 +828,12 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRendererParams.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGpuParamsProxy.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsGpuParamBlockBufferProxy.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>

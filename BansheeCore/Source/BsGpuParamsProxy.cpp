@@ -1,4 +1,4 @@
-#include "BsBindableGpuParams.h"
+#include "BsGpuParamsProxy.h"
 #include "BsGpuParams.h"
 #include "BsGpuParamDesc.h"
 #include "BsBindableGpuParamBlock.h"
@@ -8,12 +8,54 @@
 
 namespace BansheeEngine
 {
-	BindableGpuParams::BindableGpuParams(const GpuParamsPtr& params, FrameAlloc* allocator)
-		:mOwnsData(true), mParamDesc(params->getParamDesc()), mData(nullptr), mNumParamBlocks(0), mAllocator(allocator),
+	/**
+	* @brief	Specialized class for send GPU parameters to the core thread. Represents a single
+	* 			parameter block buffer and is used for temporary storage of GPU parameters.
+	*
+	* @note		Due to the way allocation is handled, this class is not allowed to have a destructor.
+	*
+	* @see		BindableGpuParams
+	*/
+	class BS_CORE_EXPORT GpuParamsBlockProxy
+	{
+	public:
+		GpuParamsBlockProxy()
+			:mDirty(true), mData(nullptr), mSize(0)
+		{ }
+
+		/**
+		* @brief	Uploads the current data to the specified buffer, and marks the block a non-dirty.
+		*
+		* @note	Core thread only.
+		*/
+		void uploadToBuffer(GpuParamBlockBufferPtr buffer)
+		{
+			buffer->writeData(mData);
+			mDirty = false;
+		}
+
+		/**
+		* @brief	Query if this object is dirty. If dirty the data of this block
+		* 			will need to be uploaded to a GPU buffer.
+		*
+		* @note	Core thread only.
+		*/
+		bool isDirty() const { return mDirty; }
+	protected:
+		friend class GpuParams;
+		friend class GpuParamsProxy;
+
+		UINT8* mData;
+		UINT32 mSize;
+		bool mDirty;
+	};
+
+	GpuParamsProxy::GpuParamsProxy(const GpuParamsPtr& params, FrameAlloc* allocator)
+		:mParamDesc(params->getParamDesc()), mData(nullptr), mNumParamBlocks(0), mAllocator(allocator),
 		mNumTextures(0), mNumSamplerStates(0),mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr)
 	{
 		// Allocate everything in a single block of memory to get rid of extra memory allocations
-		UINT32 paramBlockBufferSize = params->mInternalData->mNumParamBlocks * sizeof(BindableGpuParamBlock*);
+		UINT32 paramBlockBufferSize = params->mInternalData->mNumParamBlocks * sizeof(GpuParamsBlockProxy*);
 		UINT32 paramBlockBuffersBufferSize = params->mInternalData->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
 		UINT32 textureBufferSize = params->mInternalData->mNumTextures * sizeof(HTexture);
 		UINT32 samplerStateBufferSize = params->mInternalData->mNumSamplerStates * sizeof(HSamplerState);
@@ -22,7 +64,7 @@ namespace BansheeEngine
 		for (UINT32 i = 0; i < params->mInternalData->mNumParamBlocks; i++)
 		{
 			if (params->mInternalData->mParamBlockBuffers[i] != nullptr)
-				bufferSize += sizeof(BindableGpuParamBlock)+params->mInternalData->mParamBlockBuffers[i]->getSize();
+				bufferSize += sizeof(GpuParamsBlockProxy)+params->mInternalData->mParamBlockBuffers[i]->getSize();
 		}
 
 		mData = (UINT8*)allocator->alloc(bufferSize);
@@ -31,7 +73,7 @@ namespace BansheeEngine
 		mNumSamplerStates = params->mInternalData->mNumSamplerStates;
 
 		UINT8* dataIter = mData;
-		mParamBlocks = (BindableGpuParamBlock**)dataIter;
+		mParamBlocks = (GpuParamsBlockProxy**)dataIter;
 		dataIter += paramBlockBufferSize;
 
 		mParamBlockBuffers = (GpuParamBlockBufferPtr*)dataIter;
@@ -55,9 +97,9 @@ namespace BansheeEngine
 				GpuParamBlock* paramBlock = params->mInternalData->mParamBlockBuffers[i]->getParamBlock();
 
 				UINT32 bufferSize = paramBlock->getSize();
-				mParamBlocks[i] = (BindableGpuParamBlock*)dataIter;
+				mParamBlocks[i] = (GpuParamsBlockProxy*)dataIter;
 
-				dataIter += sizeof(BindableGpuParamBlock);
+				dataIter += sizeof(GpuParamsBlockProxy);
 				mParamBlocks[i]->mData = dataIter;
 
 				dataIter += bufferSize;
@@ -69,33 +111,15 @@ namespace BansheeEngine
 		}
 	}
 
-	BindableGpuParams::BindableGpuParams(const BindableGpuParams& source)
-		:mParamDesc(source.mParamDesc)
+	GpuParamsProxy::~GpuParamsProxy()
 	{
-		mOwnsData = true;
-		source.mOwnsData = false;
-
-		mAllocator = source.mAllocator;
-		mData = source.mData;
-		mNumParamBlocks = source.mNumParamBlocks;
-		mNumTextures = source.mNumTextures;
-		mNumSamplerStates = source.mNumSamplerStates;
-
-		mParamBlocks = source.mParamBlocks;
-		mParamBlockBuffers = source.mParamBlockBuffers;
-		mTextures = source.mTextures;
-		mSamplerStates = source.mSamplerStates;
-	}
-
-	BindableGpuParams::~BindableGpuParams()
-	{
-		if(mOwnsData && mData != nullptr)
+		if(mData != nullptr)
 		{
 			mAllocator->dealloc(mData);
 		}
 	}
 
-	GpuParamBlockBufferPtr BindableGpuParams::getParamBlockBuffer(UINT32 slot) const
+	GpuParamBlockBufferPtr GpuParamsProxy::getParamBlockBuffer(UINT32 slot) const
 	{
 		if(slot < 0 || slot >= mNumParamBlocks)
 		{
@@ -106,7 +130,7 @@ namespace BansheeEngine
 		return mParamBlockBuffers[slot];
 	}
 
-	GpuParamBlockBufferPtr BindableGpuParams::getParamBlockBuffer(const String& name) const
+	GpuParamBlockBufferPtr GpuParamsProxy::getParamBlockBuffer(const String& name) const
 	{
 		auto iterFind = mParamDesc.paramBlocks.find(name);
 
@@ -119,7 +143,7 @@ namespace BansheeEngine
 		return mParamBlockBuffers[iterFind->second.slot];
 	}
 
-	HTexture BindableGpuParams::getTexture(UINT32 slot)
+	HTexture GpuParamsProxy::getTexture(UINT32 slot)
 	{
 		if(slot < 0 || slot >= mNumTextures)
 		{
@@ -130,7 +154,7 @@ namespace BansheeEngine
 		return mTextures[slot];
 	}
 
-	HSamplerState BindableGpuParams::getSamplerState(UINT32 slot)
+	HSamplerState GpuParamsProxy::getSamplerState(UINT32 slot)
 	{
 		if(slot < 0 || slot >= mNumSamplerStates)
 		{
@@ -141,7 +165,7 @@ namespace BansheeEngine
 		return mSamplerStates[slot];
 	}
 
-	void BindableGpuParams::updateHardwareBuffers()
+	void GpuParamsProxy::updateHardwareBuffers()
 	{
 		for(size_t i = 0; i < mNumParamBlocks; i++)
 		{

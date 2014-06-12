@@ -57,12 +57,20 @@ namespace BansheeEngine
 		/** @copydoc RenderSystem::drawIndexed() */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
 
-		/** @copydoc RenderSystem::bindGpuProgram() */
+		/** 
+		 * @copydoc RenderSystem::bindGpuProgram
+		 */
 		void bindGpuProgram(HGpuProgram prg);
-		/** @copydoc RenderSystem::unbindGpuProgram() */
+
+		/** 
+		 * @copydoc RenderSystem::unbindGpuProgram
+		 */
 		void unbindGpuProgram(GpuProgramType gptype);
-		/** @copydoc RenderSystem::bindGpuParams() */
-		void bindGpuParams(GpuProgramType gptype, BindableGpuParams& params);
+
+		/** 
+		 * @copydoc RenderSystem::bindGpuParams
+		 */
+		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 		
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 

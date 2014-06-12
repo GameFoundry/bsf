@@ -10,7 +10,6 @@
 #include "BsGpuParamDesc.h"
 #include "BsMaterialRTTI.h"
 #include "BsMaterialManager.h"
-#include "BsBindableGpuParams.h"
 #include "BsDebug.h"
 #include "BsResources.h"
 
@@ -700,17 +699,49 @@ namespace BansheeEngine
 		BS_EXCEPT(InternalErrorException, "Shader has no parameter with the name: " + name);
 	}
 
-	bool Material::_isCoreDirty() const 
+	bool Material::_isCoreDirty(MaterialDirtyFlag flag) const
 	{ 
-		return mCoreDirtyFlags != 0 || (mShader != nullptr && mShader->_isCoreDirty()); 
+		if (flag == MaterialDirtyFlag::Params)
+		{
+			for (auto& paramsPerPass : mParametersPerPass)
+			{
+				for (UINT32 i = 0; i < paramsPerPass->getNumParams(); i++)
+				{
+					GpuParamsPtr params = paramsPerPass->getParamByIdx(i);
+					if (params != nullptr && params->_isCoreDirty())
+						return true;
+				}
+			}
+
+			return false;
+		}
+		else
+			return (mCoreDirtyFlags & flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty());
 	}
 
-	void Material::_markCoreClean() 
+	void Material::_markCoreClean(MaterialDirtyFlag flag)
 	{ 
-		mCoreDirtyFlags = 0; 
+		mCoreDirtyFlags &= ~flag;
 
-		if (mShader != nullptr)
-			mShader->_markCoreClean();
+		if (flag == MaterialDirtyFlag::Material)
+		{
+			if (mShader != nullptr)
+				mShader->_markCoreClean();
+		}
+		
+		if (flag == MaterialDirtyFlag::Material || flag == MaterialDirtyFlag::Params)
+		{
+			for (auto& paramsPerPass : mParametersPerPass)
+			{
+				for (UINT32 i = 0; i < paramsPerPass->getNumParams(); i++)
+				{
+					GpuParamsPtr params = paramsPerPass->getParamByIdx(i);
+
+					if (params != nullptr)
+						params->_markCoreClean();
+				}
+			}
+		}
 	}
 
 	MaterialProxyPtr Material::_createProxy()

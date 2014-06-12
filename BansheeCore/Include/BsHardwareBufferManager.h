@@ -54,7 +54,7 @@ namespace BansheeEngine
 		virtual GpuParamBlockBufferPtr createGpuParamBlockBuffer(UINT32 size, GpuParamBlockUsage usage = GPBU_DYNAMIC);
 
 		/**
-		 * @brief	Creates a generic buffer that can be passed as a parameter to a shader. This type of buffer can hold
+		 * @brief	Creates a generic buffer that can be passed as a parameter to a GPU program. This type of buffer can hold
 		 *			various type of data and can be used for various purposes. See "GpuBufferType" for explanation of
 		 *			different buffer types.
 		 *

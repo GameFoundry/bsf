@@ -10,7 +10,7 @@ namespace BansheeEngine
 	// TODO UNDOCUMENTED
 	enum RendererBlockSemantic
 	{
-		RBS_Once,
+		RBS_Occassional,
 		RBS_PerFrame,
 		RBS_PerObject
 	};

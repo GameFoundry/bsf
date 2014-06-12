@@ -19,7 +19,7 @@ namespace BansheeEngine
 		HMaterial& getMaterial(Renderable* obj, UINT32 idx) { return obj->mMaterialData[idx].material; }
 		void setMaterial(Renderable* obj, UINT32 idx, HMaterial& val) { obj->setMaterial(idx, val); }
 		UINT32 getNumMaterials(Renderable* obj) { return (UINT32)obj->mMaterialData.size(); }
-		void setNumMaterials(Renderable* obj, UINT32 num) { obj->setNumMaterials(num); }
+		void setNumMaterials(Renderable* obj, UINT32 num) { obj->mMaterialData.resize(num); }
 
 	public:
 		RenderableRTTI()

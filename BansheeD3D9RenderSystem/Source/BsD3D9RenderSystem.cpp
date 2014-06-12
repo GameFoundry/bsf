@@ -291,16 +291,16 @@ namespace BansheeEngine
 		RenderSystem::unbindGpuProgram(gptype);
 	}
 
-	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
+	void D3D9RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		bindableParams.updateHardwareBuffers();
-		const GpuParamDesc& paramDesc = bindableParams.getParamDesc();
+		bindableParams->updateHardwareBuffers();
+		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
 
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = bindableParams.getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -310,7 +310,7 @@ namespace BansheeEngine
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = bindableParams.getTexture(iter->second.slot);
+			HTexture texture = bindableParams->getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
@@ -329,7 +329,7 @@ namespace BansheeEngine
 
 			if(iterFind == bufferData.end())
 			{
-				GpuParamBlockBufferPtr paramBlock = bindableParams.getParamBlockBuffer(paramBlockSlot);
+				GpuParamBlockBufferPtr paramBlock = bindableParams->getParamBlockBuffer(paramBlockSlot);
 
 				UINT8* data = (UINT8*)bs_alloc<ScratchAlloc>(paramBlock->getSize());
 				paramBlock->readData(data);

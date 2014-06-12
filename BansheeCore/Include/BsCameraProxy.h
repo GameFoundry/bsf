@@ -16,5 +16,7 @@ namespace BansheeEngine
 		INT32 priority;
 		UINT64 layer;
 		bool ignoreSceneRenderables;
+
+		RenderQueuePtr renderQueue;
 	};
 }

@@ -13,6 +13,16 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Type of material dirty flags
+	 */
+	enum MaterialDirtyFlag
+	{
+		Material = 0x01, /**< Internal material data is dirty. */
+		Proxy = 0x02, /**< Active proxy needs to be updated. */
+		Params = 0x04 /**< Parameters are dirty. */
+	};
+
+	/**
 	 * @brief	Helper class containing parameters for all types
 	 * 			of GPU programs used in a pass.
 	 */
@@ -36,6 +46,18 @@ namespace BansheeEngine
 			GpuParamsPtr* paramArray[] = {&mVertParams, &mFragParams, &mGeomParams, &mHullParams, &mDomainParams, &mComputeParams};
 
 			return *paramArray[idx];
+		}
+
+		/**
+		 * @brief	Sets GPU parameters based on an index.
+		 *
+		 * @note	Useful when needing to iterate over all sets of GPU parameters.
+		 */
+		void setParamByIdx(UINT32 idx, const GpuParamsPtr& params)
+		{
+			GpuParamsPtr* paramArray[] = {&mVertParams, &mFragParams, &mGeomParams, &mHullParams, &mDomainParams, &mComputeParams};
+
+			(*paramArray[idx]) = params;
 		}
 
 		/**
@@ -101,17 +123,17 @@ namespace BansheeEngine
 		ShaderPtr getShader() const { return mShader; }
 
 		/** @brief	Assigns a texture to the shader parameter with the specified name. */
-		void setTexture(const String& name, const HTexture& value)								{ return getParamTexture(name).set(value); }
+		void setTexture(const String& name, const HTexture& value) { return getParamTexture(name).set(value); }
 
 		/** @brief	Assigns a sampler state to the shader parameter with the specified name. */
-		void setSamplerState(const String& name, const HSamplerState& value)					{ return getParamSamplerState(name).set(value); }
+		void setSamplerState(const String& name, const HSamplerState& value) { return getParamSamplerState(name).set(value); }
 
 		/**   
 		 *  @brief	Assigns a float value to the shader parameter with the specified name. 
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setFloat(const String& name, float value, UINT32 arrayIdx = 0)						{ return getParamFloat(name).set(value, arrayIdx); }
+		void setFloat(const String& name, float value, UINT32 arrayIdx = 0)	{ return getParamFloat(name).set(value, arrayIdx); }
 
 		/**   
 		 *  @brief	Assigns a color to the shader parameter with the specified name. 
@@ -125,35 +147,35 @@ namespace BansheeEngine
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setVec2(const String& name, const Vector2& value, UINT32 arrayIdx = 0)				{ return getParamVec2(name).set(value, arrayIdx); }
+		void setVec2(const String& name, const Vector2& value, UINT32 arrayIdx = 0)	{ return getParamVec2(name).set(value, arrayIdx); }
 
 		/**   
 		 *  @brief	Assigns a 3D vector to the shader parameter with the specified name. 
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setVec3(const String& name, const Vector3& value, UINT32 arrayIdx = 0)				{ return getParamVec3(name).set(value, arrayIdx); }
+		void setVec3(const String& name, const Vector3& value, UINT32 arrayIdx = 0)	{ return getParamVec3(name).set(value, arrayIdx); }
 
 		/**   
 		 *  @brief	Assigns a 4D vector to the shader parameter with the specified name. 
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setVec4(const String& name, const Vector4& value, UINT32 arrayIdx = 0)				{ return getParamVec4(name).set(value, arrayIdx); }
+		void setVec4(const String& name, const Vector4& value, UINT32 arrayIdx = 0)	{ return getParamVec4(name).set(value, arrayIdx); }
 
 		/**   
 		 *  @brief	Assigns a 3x3 matrix to the shader parameter with the specified name. 
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx = 0)				{ return getParamMat3(name).set(value, arrayIdx); }
+		void setMat3(const String& name, const Matrix3& value, UINT32 arrayIdx = 0)	{ return getParamMat3(name).set(value, arrayIdx); }
 
 		/**   
 		 *  @brief	Assigns a 4x4 matrix to the shader parameter with the specified name. 
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0)				{ return getParamMat4(name).set(value, arrayIdx); }
+		void setMat4(const String& name, const Matrix4& value, UINT32 arrayIdx = 0)	{ return getParamMat4(name).set(value, arrayIdx); }
 
 		/**   
 		 *  @brief	Assigns a structure to the shader parameter with the specified name.
@@ -163,7 +185,7 @@ namespace BansheeEngine
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index to assign the value to.
 		 */
-		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0)	{ return getParamStruct(name).set(value, size, arrayIdx); }
+		void setStructData(const String& name, void* value, UINT32 size, UINT32 arrayIdx = 0) { return getParamStruct(name).set(value, size, arrayIdx); }
 
 		/**
 		 * @brief	Assign a parameter block buffer with the specified name.
@@ -175,52 +197,52 @@ namespace BansheeEngine
 		void setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlock);
 
 		/** @brief	Returns a texture assigned with the parameter with the specified name. */
-		HTexture getTexture(const String& name) const										{ return getParamTexture(name).get(); }
+		HTexture getTexture(const String& name) const { return getParamTexture(name).get(); }
 
 		/** @brief	Returns a sampler state assigned with the parameter with the specified name. */
-		HSamplerState getSamplerState(const String& name) const								{ return getParamSamplerState(name).get(); }
+		HSamplerState getSamplerState(const String& name) const	{ return getParamSamplerState(name).get(); }
 
 		/**
 		 * @brief	Returns a float value assigned with the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
-		float getFloat(const String& name, UINT32 arrayIdx = 0) const						{ return getParamFloat(name).get(arrayIdx); }
+		float getFloat(const String& name, UINT32 arrayIdx = 0) const { return getParamFloat(name).get(arrayIdx); }
 
 		/**
 		 * @brief	Returns a 2D vector assigned with the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
-		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const						{ return getParamVec2(name).get(arrayIdx); }
+		Vector2 getVec2(const String& name, UINT32 arrayIdx = 0) const { return getParamVec2(name).get(arrayIdx); }
 
 		/**
 		 * @brief	Returns a 3D vector assigned with the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
-		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const						{ return getParamVec3(name).get(arrayIdx); }
+		Vector3 getVec3(const String& name, UINT32 arrayIdx = 0) const { return getParamVec3(name).get(arrayIdx); }
 
 		/**
 		 * @brief	Returns a 4D vector assigned with the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
-		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const						{ return getParamVec4(name).get(arrayIdx); }
+		Vector4 getVec4(const String& name, UINT32 arrayIdx = 0) const { return getParamVec4(name).get(arrayIdx); }
 
 		/**
 		 * @brief	Returns a 3x3 matrix assigned with the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
-		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const						{ return getParamMat3(name).get(arrayIdx); }
+		Matrix3 getMat3(const String& name, UINT32 arrayIdx = 0) const { return getParamMat3(name).get(arrayIdx); }
 
 		/**
 		 * @brief	Returns a 4x4 matrix assigned with the parameter with the specified name.
 		 *
 		 *			Optionally if the parameter is an array you may provide an array index you which to retrieve.
 		 */
-		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const						{ return getParamMat4(name).get(arrayIdx); }
+		Matrix4 getMat4(const String& name, UINT32 arrayIdx = 0) const { return getParamMat4(name).get(arrayIdx); }
 
 		/**
 		 * @brief	Returns a buffer representing a structure assigned to the parameter with the specified name.
@@ -385,14 +407,24 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread only.
 		 */
-		bool _isCoreDirty() const;
+		bool _isCoreDirty(MaterialDirtyFlag flag) const;
 
 		/**
 		 * @brief	Marks the core dirty flag as clean.
 		 *
 		 * @note	Sim thread only.
 		 */
-		void _markCoreClean();
+		void _markCoreClean(MaterialDirtyFlag flag);
+
+		/**
+		 * @brief	Gets the currently active proxy of this material.
+		 */
+		MaterialProxyPtr _getActiveProxy() const { return mActiveProxy; }
+
+		/**
+		 * @brief	Sets an active proxy for this material.
+		 */
+		void _setActiveProxy(const MaterialProxyPtr& proxy) { mActiveProxy = proxy; }
 
 		/**
 		 * @brief	Creates a new core proxy from the currently set material data. Core proxies ensure
@@ -448,6 +480,8 @@ namespace BansheeEngine
 
 		Vector<PassParametersPtr> mParametersPerPass;
 		Vector<GpuParamBlockBufferPtr> mParamBuffers;
+
+		MaterialProxyPtr mActiveProxy;
 
 		Material();
 

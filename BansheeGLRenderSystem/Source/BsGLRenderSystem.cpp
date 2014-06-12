@@ -237,18 +237,18 @@ namespace BansheeEngine
 		RenderSystem::unbindGpuProgram(gptype);
 	}
 
-	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
+	void GLRenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		bindableParams.updateHardwareBuffers();
-		const GpuParamDesc& paramDesc = bindableParams.getParamDesc();
+		bindableParams->updateHardwareBuffers();
+		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
 		GLSLGpuProgramPtr activeProgram = getActiveProgram(gptype);
 		GLuint glProgram = activeProgram->getGLHandle();
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = bindableParams.getTexture(iter->second.slot);
+			HTexture texture = bindableParams->getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
@@ -259,7 +259,7 @@ namespace BansheeEngine
 		UINT32 texUnit = 0;
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = bindableParams.getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -276,7 +276,7 @@ namespace BansheeEngine
 		UINT32 blockBinding = 0;
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockBufferPtr paramBlockBuffer = bindableParams.getParamBlockBuffer(iter->second.slot);
+			GpuParamBlockBufferPtr paramBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
 			if(paramBlockBuffer == nullptr)
 				continue;
 

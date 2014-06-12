@@ -116,8 +116,6 @@ namespace BansheeEngine
 	class GameObject;
 	class GpuResource;
 	class GpuResourceData;
-	class BindableGpuParams;
-	class BindableGpuParamBlock;
 	struct RenderOperation;
 	class RenderQueue;
 	struct ProfilerReport;
@@ -136,6 +134,8 @@ namespace BansheeEngine
 	class MaterialProxy;
 	class MaterialProxyPass;
 	class MeshProxy;
+	class GpuParamBlockBufferProxy;
+	class GpuParamsProxy;
 	class DrawList;
 	// Asset import
 	class SpecificImporter;
@@ -196,7 +196,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<Pass> PassPtr;
 	typedef std::shared_ptr<Shader> ShaderPtr;
 	typedef std::shared_ptr<Material> MaterialPtr;
-	typedef std::shared_ptr<BindableGpuParams> BindableGpuParamsPtr;
 	typedef std::shared_ptr<Renderer> RendererPtr;
 	typedef std::shared_ptr<RendererFactory> RendererFactoryPtr;
 	typedef std::shared_ptr<PassParameters> PassParametersPtr;
@@ -235,6 +234,8 @@ namespace BansheeEngine
 	typedef std::shared_ptr<CameraProxy> CameraProxyPtr;
 	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
 	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
+	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
+	typedef std::shared_ptr<GpuParamBlockBufferProxy> GpuParamBlockBufferProxyPtr;
 }
 
 /************************************************************************/

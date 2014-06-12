@@ -48,6 +48,13 @@ namespace BansheeEngine
 		UINT8* getData() const { return mData; }
 
 		/**
+		 * @brief	Uploads the current data to the specified buffer, and marks the block a non-dirty.
+		 * 			
+		 * @note	Core thread only.			
+		 */
+		void uploadToBuffer(const GpuParamBlockBufferPtr& buffer);
+
+		/**
 		 * @brief	Checks if something has been written to the buffer
 		 *			since the last time object was clean.
 		 */
@@ -57,7 +64,7 @@ namespace BansheeEngine
 		 * @brief	Marks the object as dirty or clean. Signifies
 		 *			whether or not some new data has been written in the buffer.
 		 */
-		void setDirty() { mDirty = true; }
+		void setDirty(bool dirty) { mDirty = dirty; }
 	protected:
 		UINT8* mData;
 		UINT32 mSize;

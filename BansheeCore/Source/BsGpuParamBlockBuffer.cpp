@@ -1,5 +1,6 @@
 #include "BsGpuParamBlockBuffer.h"
 #include "BsGpuParamBlock.h"
+#include "BsGpuParamBlockBufferProxy.h"
 
 namespace BansheeEngine
 {
@@ -23,6 +24,14 @@ namespace BansheeEngine
 		mParamBlock = bs_new<GpuParamBlock, PoolAlloc>(size);
 
 		CoreObject::initialize();
+	}
+
+	GpuParamBlockBufferProxyPtr GpuParamBlockBuffer::_createProxy() const
+	{
+		GpuParamBlockBufferProxyPtr proxy = bs_shared_ptr<GpuParamBlockBufferProxy>(mSize);
+		memcpy(proxy->block->getData(), mParamBlock->getData(), mSize);
+		
+		return proxy;
 	}
 
 	void GenericGpuParamBlockBuffer::writeData(const UINT8* data)

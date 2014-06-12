@@ -8,17 +8,6 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	Contains a basic sent of renderable types that may be supported by a renderer.
-	 *			These can be used as a guide and renderer plugins can use their own types as needed.
-	 */
-	enum RenderableType
-	{
-		RenType_UnlitUntextured,
-		RenType_UnlitTextured
-		// TODO - Add more types as I improve the Renderer with advanced techniques
-	};
-
-	/**
 	 * @brief	Primarily rendering class that allows you to specify how to render objects that exist
 	 *			in the scene graph. You need to provide your own implementation of your class.
 	 *

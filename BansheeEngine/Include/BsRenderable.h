@@ -34,13 +34,11 @@ namespace BansheeEngine
 		};
 
 	public:
-		void setMesh(HMesh mesh);
-
 		/**
-		 * @brief	Sets the number of materials used by the renderable. Each material
-		 *			will be used for rendering a sub-mesh in the provided Mesh.
+		 * @brief	Sets the mesh to render. All sub-meshes of the mesh will be rendered,
+		 *			and you may set individual materials for each sub-mesh.
 		 */
-		void setNumMaterials(UINT32 numMaterials);
+		void setMesh(HMesh mesh);
 
 		/**
 		 * @brief	Sets a material that will be used for rendering a sub-mesh with
@@ -70,16 +68,10 @@ namespace BansheeEngine
 		UINT64 getLayer() const { return mLayer; }
 
 		/**
-		 * @brief	Return the number of materials used by the renderable. Each material
-		 *			will be used for rendering a sub-mesh in the provided Mesh.
-		 */
-		UINT32 getNumMaterials() const { return (UINT32)mMaterialData.size(); }
-
-		/**
 		 * @brief	Returns the material used for rendering a sub-mesh with
 		 *			the specified index.
 		 */
-		HMaterial& getMaterial(UINT32 idx) { return mMaterialData[idx].material; }
+		HMaterial getMaterial(UINT32 idx) const;
 
 		/************************************************************************/
 		/* 								CORE PROXY                      		*/

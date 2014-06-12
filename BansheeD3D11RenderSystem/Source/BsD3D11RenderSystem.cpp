@@ -19,7 +19,7 @@
 #include "BsD3D11GpuParamBlockBuffer.h"
 #include "BsD3D11InputLayoutManager.h"
 #include "BsD3D11RenderUtility.h"
-#include "BsBindableGpuParams.h"
+#include "BsGpuParams.h"
 #include "BsCoreThread.h"
 #include "BsD3D11QueryManager.h"
 #include "BsDebug.h"
@@ -484,17 +484,17 @@ namespace BansheeEngine
 		mRenderStats.numGpuProgramBinds++;
 	}
 
-	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, BindableGpuParams& bindableParams)
+	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr bindableParams)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		bindableParams.updateHardwareBuffers();
+		bindableParams->updateHardwareBuffers();
 
-		const GpuParamDesc& paramDesc = bindableParams.getParamDesc();
+		const GpuParamDesc& paramDesc = bindableParams->getParamDesc();
 		
 		for(auto iter = paramDesc.samplers.begin(); iter != paramDesc.samplers.end(); ++iter)
 		{
-			HSamplerState& samplerState = bindableParams.getSamplerState(iter->second.slot);
+			HSamplerState& samplerState = bindableParams->getSamplerState(iter->second.slot);
 
 			if(samplerState == nullptr)
 				setSamplerState(gptype, iter->second.slot, SamplerState::getDefault());
@@ -504,7 +504,7 @@ namespace BansheeEngine
 
 		for(auto iter = paramDesc.textures.begin(); iter != paramDesc.textures.end(); ++iter)
 		{
-			HTexture texture = bindableParams.getTexture(iter->second.slot);
+			HTexture texture = bindableParams->getTexture(iter->second.slot);
 
 			if(!texture.isLoaded())
 				setTexture(gptype, iter->second.slot, false, nullptr);
@@ -518,7 +518,7 @@ namespace BansheeEngine
 
 		for(auto iter = paramDesc.paramBlocks.begin(); iter != paramDesc.paramBlocks.end(); ++iter)
 		{
-			GpuParamBlockBufferPtr currentBlockBuffer = bindableParams.getParamBlockBuffer(iter->second.slot);
+			GpuParamBlockBufferPtr currentBlockBuffer = bindableParams->getParamBlockBuffer(iter->second.slot);
 
 			if(currentBlockBuffer != nullptr)
 			{

@@ -9,12 +9,14 @@ namespace BansheeEngine
 		:mNumIndices(numIndices), mNumVertices(numVertices), mCoreDirtyFlags(0xFFFFFF)
 	{
 		mSubMeshes.push_back(SubMesh(0, numIndices, drawOp));
+		mActiveProxies.resize(mSubMeshes.size());
 	}
 
 	MeshBase::MeshBase(UINT32 numVertices, UINT32 numIndices, const Vector<SubMesh>& subMeshes)
 		: mNumIndices(numIndices), mNumVertices(numVertices), mCoreDirtyFlags(0xFFFFFF)
 	{
 		mSubMeshes = subMeshes;
+		mActiveProxies.resize(mSubMeshes.size());
 	}
 
 	MeshBase::MeshBase()

@@ -1,11 +1,8 @@
-1. Refactor proxies
-
-Finish refactoring draw lists
-
 2. Gpu params update 
-   - Way to update sim -> core gpu params (send BindableGpuParams and update core buffers using it)
-   - Add a way to bind gpu params by using GpuParams directly
-   - And a way to update hardware buffers without using BindableGpuParams
+
+ISSUE - GpuParamBlock is tied to the hardware buffer. But I need separate param blocks for CPU and GPU. I need to break that tie
+ and also ensure these blocks are marked as dirty/clean when needed.
+  - I guess I could write these directly to the GPU buffer
 
 3. Renderer parameters and buffers
    - Will likely need to finalize material <-> renderer interface matching first
@@ -13,6 +10,14 @@ Finish refactoring draw lists
    - Add a way to create handles to renderer gpu parameters (and store them in RenderableProxy)
    - Update renderable parameters each frame
       - Apply world view proj matrix in renderer
+
+IMPORTANT - Renderer now requires GpuparamBuffers to exist. Separate for each renderer semantic. Add
+GpuParamBlockBuffer emulation to DX9 (they can be user-specified via import settings or something).
+
+Make sure to update param buffers in bulk before doing any rendering:
+ - They're updated when material proxies are first created
+ - When material proxies are updated
+ - And when renderer updates its own parameters
 
 -----------------------------------------------------------
 NON TRIVIAL BUT SIMPLE

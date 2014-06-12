@@ -10,6 +10,16 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Type of mesh dirty flags
+	 */
+	enum MeshDirtyFlag
+	{
+		Mesh = 0x01, /**< Internal mesh data is dirty. */
+		Proxy = 0x02 /**< Active proxy needs to be updated. */
+	};
+
+
+	/**
 	 * @brief	Type of buffers used by a mesh. These options usually affect performance and 
 	 *			you should specify static if you don't plan on modifying the mesh often,
 	 *			otherwise specify dynamic.
@@ -138,14 +148,24 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread only.
 		 */
-		bool _isCoreDirty() const { mCoreDirtyFlags != 0; }
+		bool _isCoreDirty(MeshDirtyFlag flag) const { (mCoreDirtyFlags & flag) != 0; }
 
 		/**
 		 * @brief	Marks the core dirty flag as clean.
 		 *
 		 * @note	Sim thread only.
 		 */
-		void _markCoreClean() { mCoreDirtyFlags = 0; }
+		void _markCoreClean(MeshDirtyFlag flag) { mCoreDirtyFlags &= ~flag; }
+
+		/**
+		 * @brief	Gets the currently active proxy of this material.
+		 */
+		MeshProxyPtr _getActiveProxy(UINT32 i) const { return mActiveProxies[i]; }
+
+		/**
+		 * @brief	Sets an active proxy for this material.
+		 */
+		void _setActiveProxy(UINT32 i, const MeshProxyPtr& proxy) { mActiveProxies[i] = proxy; }
 
 		/**
 		 * @brief	Creates a new core proxy from the current mesh data. Core proxy contains a snapshot of 
@@ -167,6 +187,7 @@ namespace BansheeEngine
 		Vector<SubMesh> mSubMeshes; // Immutable
 		UINT32 mNumVertices; // Immutable
 		UINT32 mNumIndices; // Immutable
+		Vector<MeshProxyPtr> mActiveProxies;
 
 		UINT32 mCoreDirtyFlags;
 

@@ -34,6 +34,7 @@ namespace BansheeEngine
 		~RenderableProxy();
 
 		Vector<RenderableElement*> renderableElements;
+		RenderableType renderableType;
 	};
 
 	typedef std::shared_ptr<RenderableProxy> RenderableProxyPtr;

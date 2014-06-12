@@ -61,11 +61,17 @@ namespace BansheeEngine
 		 */
 		GpuParamBlock* getParamBlock() const { return mParamBlock; }
 
+		// TODO UNDOCUMENTED
+		GpuParamBlockBufferProxyPtr _createProxy() const;
+		void _setActiveProxy(const GpuParamBlockBufferProxyPtr& activeProxy) { mActiveProxy = activeProxy; }
+		GpuParamBlockBufferProxyPtr _getActiveProxy() const { return mActiveProxy; }
+
 	protected:
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
 
 		GpuParamBlock* mParamBlock;
+		GpuParamBlockBufferProxyPtr mActiveProxy;
 	};
 
 	/**

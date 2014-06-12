@@ -2,7 +2,6 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsGpuParam.h"
-#include "BsBindableGpuParams.h"
 
 namespace BansheeEngine
 {
@@ -209,9 +208,34 @@ namespace BansheeEngine
 		void getSamplerStateParam(const String& name, GpuParamSampState& output) const;
 
 		/**
-		 * @brief	Returns an exact copy of this object.
+		 * @brief	Uploads all CPU stored parameter buffer data to the GPU buffers.
+		 *
+		 * @note	Core thread only.
 		 */
-		GpuParamsPtr clone() const;
+		void updateHardwareBuffers();
+
+		/**
+		 * @brief	Gets a parameter block buffer from the specified slot.
+		 */
+		GpuParamBlockBufferPtr getParamBlockBuffer(UINT32 slot) const;
+
+		/**
+		 * @brief	Gets a texture bound to the specified slot.
+		 */
+		HTexture getTexture(UINT32 slot);
+
+		/**
+		 * @brief	Gets a sampler state bound to the specified slot.
+		 */
+		HSamplerState getSamplerState(UINT32 slot);
+
+		/**
+		 * @brief	Returns an exact copy of this object.
+		 *
+		 * @note	Optional frame allocator to allocate the returned data with. If not specified
+		 *			allocation will be done using normal means.
+		 */
+		GpuParamsPtr clone(FrameAlloc* frameAlloc = nullptr) const;
 
 		/**
 		 * @brief	Checks is the core dirty flag set. This is used by external systems 
@@ -229,9 +253,8 @@ namespace BansheeEngine
 		void _markCoreClean();
 
 	private:
-		friend class BindableGpuParams;
+		friend class GpuParamsProxy;
 
-	private:
 		GpuParamDesc& mParamDesc;
 		std::shared_ptr<GpuParamsInternalData> mInternalData;
 
@@ -244,7 +267,7 @@ namespace BansheeEngine
 		 * @brief	Calculates size and offsets used when splitting a large memory chunk into separate buffers.
 		 *			Parameter counts must have been previously assigned.
 		 */
-		void getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockOffset, UINT32& paramBlockBufferOffset,
+		void getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockBufferOffset,
 			UINT32& textureOffset, UINT32& samplerStateOffset) const;
 
 		/**
@@ -266,7 +289,6 @@ namespace BansheeEngine
 		UINT32 mNumTextures;
 		UINT32 mNumSamplerStates;
 
-		GpuParamBlock** mParamBlocks;
 		GpuParamBlockBufferPtr* mParamBlockBuffers;
 		HTexture* mTextures;
 		HSamplerState* mSamplerStates;
@@ -274,5 +296,7 @@ namespace BansheeEngine
 		bool mTransposeMatrices;
 		bool mIsDestroyed;
 		UINT32 mCoreDirtyFlags;
+
+		FrameAlloc* mFrameAlloc;
 	};
 }

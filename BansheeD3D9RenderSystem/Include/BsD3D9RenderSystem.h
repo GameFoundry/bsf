@@ -47,7 +47,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::bindGpuParams()
 		 */
-		void bindGpuParams(GpuProgramType gptype, BindableGpuParams& params);
+		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 
 		/**
 		 * @copydoc RenderSystem::setVertexBuffers()
