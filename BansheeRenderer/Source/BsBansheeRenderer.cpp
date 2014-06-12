@@ -170,7 +170,7 @@ namespace BansheeEngine
 	void BansheeRenderer::addCameraProxy(CameraProxyPtr proxy)
 	{
 		RenderTargetPtr renderTarget = proxy->viewport.getTarget();
-		auto findIter = std::find(mRenderTargets.begin(), mRenderTargets.end(), renderTarget);
+		auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), [&](const RenderTargetData& x) { return x.target == renderTarget; });
 
 		if (findIter != mRenderTargets.end())
 		{
@@ -203,7 +203,7 @@ namespace BansheeEngine
 	void BansheeRenderer::removeCameraProxy(CameraProxyPtr proxy)
 	{
 		RenderTargetPtr renderTarget = proxy->viewport.getTarget();
-		auto findIter = std::find(mRenderTargets.begin(), mRenderTargets.end(), renderTarget);
+		auto findIter = std::find_if(mRenderTargets.begin(), mRenderTargets.end(), [&](const RenderTargetData& x) { return x.target == renderTarget; });
 
 		if (findIter != mRenderTargets.end())
 		{
@@ -307,7 +307,7 @@ namespace BansheeEngine
 								GpuParamsPtr params = passParams->getParamByIdx(k);
 								if (params != nullptr && params->_isCoreDirty())
 								{
-									dirtyParams.setParamByIdx(k, params->clone());
+									dirtyParams.setParamByIdx(k, params->cloneForCore());
 
 									params->_markCoreClean();
 								}
@@ -395,7 +395,7 @@ namespace BansheeEngine
 			for (auto& callback : callbacksForViewport)
 				callback(viewportRawPtr, *drawList);
 
-			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::setDrawList, camera->_getActiveProxy(), drawList));
+			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::setDrawList, this, camera->_getActiveProxy(), drawList));
 		}
 
 		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::renderAllCore, this));
@@ -604,7 +604,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		RenderSystem& rs = RenderSystem::instance();
-		MeshPtr mesh = meshProxy.mesh;
+		MeshBasePtr mesh = meshProxy.mesh;
 		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);

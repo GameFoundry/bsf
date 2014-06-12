@@ -1,6 +1,6 @@
 #pragma once
 
-#include "BsCorePrerequisites.h"
+#include "BsPrerequisites.h"
 #include "BsMaterialProxy.h"
 #include "BsMeshProxy.h"
 #include "BsBounds.h"
@@ -9,7 +9,7 @@
 namespace BansheeEngine
 {
 	// TODO UNDOCUMENTED
-	class BS_CORE_EXPORT RenderableElement
+	class BS_EXPORT RenderableElement
 	{
 	public:
 		RenderableElement();
@@ -28,7 +28,7 @@ namespace BansheeEngine
 		bool mBoundsDirty;
 	};
 
-	class BS_CORE_EXPORT RenderableProxy
+	class BS_EXPORT RenderableProxy
 	{
 	public:
 		~RenderableProxy();
@@ -36,6 +36,4 @@ namespace BansheeEngine
 		Vector<RenderableElement*> renderableElements;
 		RenderableType renderableType;
 	};
-
-	typedef std::shared_ptr<RenderableProxy> RenderableProxyPtr;
 }

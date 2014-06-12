@@ -716,12 +716,12 @@ namespace BansheeEngine
 			return false;
 		}
 		else
-			return (mCoreDirtyFlags & flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty());
+			return (mCoreDirtyFlags & (UINT32)flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty());
 	}
 
 	void Material::_markCoreClean(MaterialDirtyFlag flag)
 	{ 
-		mCoreDirtyFlags &= ~flag;
+		mCoreDirtyFlags &= ~(UINT32)flag;
 
 		if (flag == MaterialDirtyFlag::Material)
 		{
@@ -762,37 +762,37 @@ namespace BansheeEngine
 			if (pass->hasVertexProgram())
 			{
 				passData.vertexProg = pass->getVertexProgram();
-				passData.vertexProgParams = params->mVertParams->clone();
+				passData.vertexProgParams = params->mVertParams->cloneForCore();
 			}
 
 			if (pass->hasFragmentProgram())
 			{
 				passData.fragmentProg = pass->getFragmentProgram();
-				passData.fragmentProgParams = params->mFragParams->clone();
+				passData.fragmentProgParams = params->mFragParams->cloneForCore();
 			}
 
 			if (pass->hasGeometryProgram())
 			{
 				passData.geometryProg = pass->getGeometryProgram();
-				passData.geometryProgParams = params->mGeomParams->clone();
+				passData.geometryProgParams = params->mGeomParams->cloneForCore();
 			}
 
 			if (pass->hasHullProgram())
 			{
 				passData.hullProg = pass->getHullProgram();
-				passData.hullProgParams = params->mHullParams->clone();
+				passData.hullProgParams = params->mHullParams->cloneForCore();
 			}
 
 			if (pass->hasDomainProgram())
 			{
 				passData.domainProg = pass->getDomainProgram();
-				passData.domainProgParams = params->mDomainParams->clone();
+				passData.domainProgParams = params->mDomainParams->cloneForCore();
 			}
 
 			if (pass->hasComputeProgram())
 			{
 				passData.computeProg = pass->getComputeProgram();
-				passData.computeProgParams = params->mComputeParams->clone();
+				passData.computeProgParams = params->mComputeParams->cloneForCore();
 			}
 
 			passData.blendState = pass->getBlendState();

@@ -16,7 +16,7 @@ namespace BansheeEngine
 		return mInternalData->mIsDestroyed;
 	}
 
-	GpuParamBlock* GpuDataParamBase::getParamBlock(UINT32 slotIdx) const
+	GpuParamBlockPtr GpuDataParamBase::getParamBlock(UINT32 slotIdx) const
 	{
 		return mInternalData->mParamBlocks[slotIdx];
 	}
@@ -66,7 +66,7 @@ namespace BansheeEngine
 
 		sizeBytes = std::min(elementSizeBytes, sizeBytes);
 
-		GpuParamBlock* paramBlock = mInternalData->mParamBlocks[mParamDesc->paramBlockSlot];
+		GpuParamBlockPtr paramBlock = mInternalData->mParamBlocks[mParamDesc->paramBlockSlot];
 		paramBlock->write((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
 
 		// Set unused bytes to 0
@@ -101,7 +101,7 @@ namespace BansheeEngine
 #endif
 		sizeBytes = std::min(elementSizeBytes, sizeBytes);
 
-		GpuParamBlock* paramBlock = mInternalData->mParamBlocks[mParamDesc->paramBlockSlot];
+		GpuParamBlockPtr paramBlock = mInternalData->mParamBlocks[mParamDesc->paramBlockSlot];
 		paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), value, sizeBytes);
 	}
 

@@ -72,7 +72,7 @@ namespace BansheeEngine
 	 * @brief	Allocator for the standard library that internally uses a
 	 * 			frame allocator.
 	 */
-	template <class Tc>
+	template <class T>
 	class StdFrameAlloc
 	{
 	public:
@@ -141,7 +141,7 @@ namespace BansheeEngine
 		 */
 		pointer allocate(size_type num, const void* = 0)
 		{
-			pointer ret = (pointer)(mFrameAlloc->alloc((size_t)num*sizeof(T)));
+			pointer ret = (pointer)(mFrameAlloc->alloc((UINT32)num*sizeof(T)));
 			return ret;
 		}
 

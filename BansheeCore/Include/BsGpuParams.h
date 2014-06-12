@@ -230,12 +230,13 @@ namespace BansheeEngine
 		HSamplerState getSamplerState(UINT32 slot);
 
 		/**
-		 * @brief	Returns an exact copy of this object.
+		 * @brief	Returns an exact copy of this object. Cloned object will have a core copy of the GPU
+		 *			param blocks, so it should only be used on the core thread.
 		 *
 		 * @note	Optional frame allocator to allocate the returned data with. If not specified
 		 *			allocation will be done using normal means.
 		 */
-		GpuParamsPtr clone(FrameAlloc* frameAlloc = nullptr) const;
+		GpuParamsPtr cloneForCore(FrameAlloc* frameAlloc = nullptr) const;
 
 		/**
 		 * @brief	Checks is the core dirty flag set. This is used by external systems 
@@ -253,8 +254,6 @@ namespace BansheeEngine
 		void _markCoreClean();
 
 	private:
-		friend class GpuParamsProxy;
-
 		GpuParamDesc& mParamDesc;
 		std::shared_ptr<GpuParamsInternalData> mInternalData;
 
@@ -267,7 +266,7 @@ namespace BansheeEngine
 		 * @brief	Calculates size and offsets used when splitting a large memory chunk into separate buffers.
 		 *			Parameter counts must have been previously assigned.
 		 */
-		void getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockBufferOffset,
+		void getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockOffset, UINT32& paramBlockBufferOffset,
 			UINT32& textureOffset, UINT32& samplerStateOffset) const;
 
 		/**
@@ -289,6 +288,7 @@ namespace BansheeEngine
 		UINT32 mNumTextures;
 		UINT32 mNumSamplerStates;
 
+		GpuParamBlockPtr* mParamBlocks;
 		GpuParamBlockBufferPtr* mParamBlockBuffers;
 		HTexture* mTextures;
 		HSamplerState* mSamplerStates;

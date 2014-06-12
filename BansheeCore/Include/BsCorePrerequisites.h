@@ -128,12 +128,11 @@ namespace BansheeEngine
 	class VideoMode;
 	class VideoOutputInfo;
 	class VideoModeInfo;
-	class RenderableProxy;
 	class RenderableElement;
 	class CameraProxy;
-	class MaterialProxy;
-	class MaterialProxyPass;
-	class MeshProxy;
+	struct MaterialProxy;
+	struct MaterialProxyPass;
+	struct MeshProxy;
 	class GpuParamBlockBufferProxy;
 	class GpuParamsProxy;
 	class DrawList;
@@ -234,7 +233,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<CameraProxy> CameraProxyPtr;
 	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
 	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
-	typedef std::shared_ptr<GpuParams> GpuParamsPtr;
+	typedef std::shared_ptr<GpuParamsProxy> GpuParamsProxyPtr;
 	typedef std::shared_ptr<GpuParamBlockBufferProxy> GpuParamBlockBufferProxyPtr;
 }
 

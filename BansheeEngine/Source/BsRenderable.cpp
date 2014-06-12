@@ -80,7 +80,7 @@ namespace BansheeEngine
 		if (mMeshData.mesh != nullptr && mMeshData.mesh.isLoaded() && mMeshData.mesh->_isCoreDirty(MeshDirtyFlag::Mesh))
 			return true;
 
-		return mCoreDirtyFlags; 
+		return mCoreDirtyFlags != 0; 
 	}
 
 	void Renderable::_markCoreClean()

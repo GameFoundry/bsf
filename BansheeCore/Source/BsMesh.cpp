@@ -365,7 +365,7 @@ namespace BansheeEngine
 	MeshProxyPtr Mesh::_createProxy(UINT32 subMeshIdx)
 	{
 		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();
-		coreProxy->mesh = getThisPtr();
+		coreProxy->mesh = std::static_pointer_cast<MeshBase>(getThisPtr());
 		coreProxy->bounds = mBounds;
 		coreProxy->subMesh = getSubMesh(subMeshIdx);
 

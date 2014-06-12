@@ -59,19 +59,20 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread only.
 		 */
-		GpuParamBlock* getParamBlock() const { return mParamBlock; }
+		GpuParamBlockPtr getParamBlock() const { return mParamBlock; }
 
 		// TODO UNDOCUMENTED
-		GpuParamBlockBufferProxyPtr _createProxy() const;
-		void _setActiveProxy(const GpuParamBlockBufferProxyPtr& activeProxy) { mActiveProxy = activeProxy; }
-		GpuParamBlockBufferProxyPtr _getActiveProxy() const { return mActiveProxy; }
+		// TODO - Keeping a core param block along with a sim param block is redundant in some cases,
+		// as it might not be used (e.g. if gpu param block buffer is only accessed from core thread)
+		GpuParamBlockPtr getCoreParamBlock() const { return mCoreParamBlock; }
+		void setCoreParamBlock(const GpuParamBlockPtr& paramBlock) { mCoreParamBlock = paramBlock; }
 
 	protected:
 		GpuParamBlockUsage mUsage;
 		UINT32 mSize;
 
-		GpuParamBlock* mParamBlock;
-		GpuParamBlockBufferProxyPtr mActiveProxy;
+		GpuParamBlockPtr mParamBlock;
+		GpuParamBlockPtr mCoreParamBlock;
 	};
 
 	/**

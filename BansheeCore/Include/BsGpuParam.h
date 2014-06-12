@@ -32,7 +32,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Gets a parameter block at the specified slot index.
 		 */
-		GpuParamBlock* getParamBlock(UINT32 slotIdx) const;
+		GpuParamBlockPtr getParamBlock(UINT32 slotIdx) const;
 
 		/**
 		 * @brief	Returns true if matrices need to be transposed when reading/writing them.
@@ -132,7 +132,7 @@ namespace BansheeEngine
 
 			UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
 			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T)); // Truncate if it doesn't fit within parameter size
-			GpuParamBlock* paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
+			GpuParamBlockPtr paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
 
 			if (TransposePolicy<T>::transposeEnabled(getTransposeMatrices()))
 			{
@@ -173,7 +173,7 @@ namespace BansheeEngine
 
 			UINT32 elementSizeBytes = mParamDesc->elementSize * sizeof(UINT32);
 			UINT32 sizeBytes = std::min(elementSizeBytes, (UINT32)sizeof(T));
-			GpuParamBlock* paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
+			GpuParamBlockPtr paramBlock = getParamBlock(mParamDesc->paramBlockSlot);
 
 			T value;
 			paramBlock->read((mParamDesc->cpuMemOffset + arrayIdx * mParamDesc->arrayElementStride) * sizeof(UINT32), &value, sizeBytes);

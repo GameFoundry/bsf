@@ -19,7 +19,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread only.
 		 */
-		virtual void _writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer);
+		virtual void _writeSubresourceSim(UINT32 subresourceIdx, const GpuResourceData& data, bool discardEntireBuffer) { }
 
 		/**
 		 * @brief	Updates a part of the current resource with the provided data. Specific resource

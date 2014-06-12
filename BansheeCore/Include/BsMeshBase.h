@@ -12,7 +12,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Type of mesh dirty flags
 	 */
-	enum MeshDirtyFlag
+	enum class MeshDirtyFlag
 	{
 		Mesh = 0x01, /**< Internal mesh data is dirty. */
 		Proxy = 0x02 /**< Active proxy needs to be updated. */
@@ -148,14 +148,14 @@ namespace BansheeEngine
 		 *
 		 * @note	Sim thread only.
 		 */
-		bool _isCoreDirty(MeshDirtyFlag flag) const { (mCoreDirtyFlags & flag) != 0; }
+		bool _isCoreDirty(MeshDirtyFlag flag) const { return (mCoreDirtyFlags & (UINT32)flag) != 0; }
 
 		/**
 		 * @brief	Marks the core dirty flag as clean.
 		 *
 		 * @note	Sim thread only.
 		 */
-		void _markCoreClean(MeshDirtyFlag flag) { mCoreDirtyFlags &= ~flag; }
+		void _markCoreClean(MeshDirtyFlag flag) { mCoreDirtyFlags &= ~(UINT32)flag; }
 
 		/**
 		 * @brief	Gets the currently active proxy of this material.

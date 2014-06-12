@@ -11,7 +11,7 @@ namespace BansheeEngine
 {
 	GpuParamsInternalData::GpuParamsInternalData()
 		:mTransposeMatrices(false), mData(nullptr), mNumParamBlocks(0), mNumTextures(0), mNumSamplerStates(0), mFrameAlloc(nullptr),
-		mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr), mCoreDirtyFlags(0xFFFFFFFF)
+		mParamBlocks(nullptr), mParamBlockBuffers(nullptr), mTextures(nullptr), mSamplerStates(nullptr), mCoreDirtyFlags(0xFFFFFFFF)
 	{ }
 
 	GpuParams::GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices)
@@ -40,13 +40,15 @@ namespace BansheeEngine
 
 		// Allocate everything in a single block of memory to get rid of extra memory allocations
 		UINT32 bufferSize = 0;
+		UINT32 paramBlockOffset = 0;
 		UINT32 paramBlockBufferOffset = 0;
 		UINT32 textureOffset = 0;
 		UINT32 samplerStateOffset = 0;
 
-		getInternalBufferData(bufferSize, paramBlockBufferOffset, textureOffset, samplerStateOffset);
+		getInternalBufferData(bufferSize, paramBlockOffset, paramBlockBufferOffset, textureOffset, samplerStateOffset);
 
 		mInternalData->mData = (UINT8*)bs_alloc(bufferSize);
+		mInternalData->mParamBlocks = (GpuParamBlockPtr*)(mInternalData->mData + paramBlockOffset);
 		mInternalData->mParamBlockBuffers = (GpuParamBlockBufferPtr*)(mInternalData->mData + paramBlockBufferOffset);
 		mInternalData->mTextures = (HTexture*)(mInternalData->mData + textureOffset);
 		mInternalData->mSamplerStates = (HSamplerState*)(mInternalData->mData + samplerStateOffset);
@@ -54,8 +56,15 @@ namespace BansheeEngine
 		// Ensure everything is constructed
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
-			GpuParamBlockBufferPtr* ptrToIdx = (&mInternalData->mParamBlockBuffers[i]);
-			ptrToIdx = new (&mInternalData->mParamBlockBuffers[i]) GpuParamBlockBufferPtr(nullptr);
+			{
+				GpuParamBlockPtr* ptrToIdx = (&mInternalData->mParamBlocks[i]);
+				ptrToIdx = new (&mInternalData->mParamBlocks[i]) GpuParamBlockPtr(nullptr);
+			}
+
+			{
+				GpuParamBlockBufferPtr* ptrToIdx = (&mInternalData->mParamBlockBuffers[i]);
+				ptrToIdx = new (&mInternalData->mParamBlockBuffers[i]) GpuParamBlockBufferPtr(nullptr);
+			}
 		}
 
 		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
@@ -84,6 +93,7 @@ namespace BansheeEngine
 		// Ensure everything is destructed
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
+			mInternalData->mParamBlocks[i].~shared_ptr();
 			mInternalData->mParamBlockBuffers[i].~shared_ptr();
 		}
 
@@ -108,6 +118,7 @@ namespace BansheeEngine
 		}
 
 		mInternalData->mParamBlockBuffers[slot] = paramBlockBuffer;
+		mInternalData->mParamBlocks[slot] = paramBlockBuffer->getParamBlock();
 
 		markCoreDirty();
 	}
@@ -123,6 +134,7 @@ namespace BansheeEngine
 		}
 
 		mInternalData->mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
+		mInternalData->mParamBlocks[iterFind->second.slot] = paramBlockBuffer->getParamBlock();
 
 		markCoreDirty();
 	}
@@ -244,23 +256,23 @@ namespace BansheeEngine
 	{
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
-			if (mInternalData->mParamBlockBuffers[i] != nullptr)
+			if (mInternalData->mParamBlocks[i] != nullptr && mInternalData->mParamBlockBuffers[i] != nullptr)
 			{
-				GpuParamBlock* block = mInternalData->mParamBlockBuffers[i]->getParamBlock();
-				if (block->isDirty())
-					block->uploadToBuffer(mInternalData->mParamBlockBuffers[i]);
+				if (mInternalData->mParamBlocks[i]->isDirty())
+					mInternalData->mParamBlocks[i]->uploadToBuffer(mInternalData->mParamBlockBuffers[i]);
 			}
 		}
 	}
 
-	GpuParamsPtr GpuParams::clone(FrameAlloc* frameAlloc) const
+	GpuParamsPtr GpuParams::cloneForCore(FrameAlloc* frameAlloc) const
 	{
 		UINT32 bufferSize = 0;
+		UINT32 paramBlockOffset = 0;
 		UINT32 paramBlockBufferOffset = 0;
 		UINT32 textureOffset = 0;
 		UINT32 samplerStateOffset = 0;
 
-		getInternalBufferData(bufferSize, paramBlockBufferOffset, textureOffset, samplerStateOffset);
+		getInternalBufferData(bufferSize, paramBlockOffset, paramBlockBufferOffset, textureOffset, samplerStateOffset);
 
 		GpuParamsPtr myClone = nullptr;
 		
@@ -285,13 +297,30 @@ namespace BansheeEngine
 		myClone->mInternalData->mNumTextures = mInternalData->mNumTextures;
 		myClone->mInternalData->mNumSamplerStates = mInternalData->mNumSamplerStates;
 
+		myClone->mInternalData->mParamBlocks = (GpuParamBlockPtr*)(myClone->mInternalData->mData + paramBlockOffset);
 		myClone->mInternalData->mParamBlockBuffers = (GpuParamBlockBufferPtr*)(myClone->mInternalData->mData + paramBlockBufferOffset);
 		myClone->mInternalData->mTextures = (HTexture*)(myClone->mInternalData->mData + textureOffset);
 		myClone->mInternalData->mSamplerStates = (HSamplerState*)(myClone->mInternalData->mData + samplerStateOffset);
 
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
-			myClone->mInternalData->mParamBlockBuffers[i] = mInternalData->mParamBlockBuffers[i];
+			GpuParamBlockBufferPtr buffer = mInternalData->mParamBlockBuffers[i];
+			if (buffer != nullptr)
+			{
+				if (buffer->getParamBlock()->isDirty())
+				{
+					GpuParamBlockPtr newBlock = bs_shared_ptr<GpuParamBlock>(buffer->getSize());
+					memcpy(newBlock->getData(), buffer->getParamBlock()->getData(), buffer->getSize());
+					buffer->setCoreParamBlock(newBlock);
+					buffer->getParamBlock()->setDirty(false);
+				}
+
+				myClone->mInternalData->mParamBlocks[i] = buffer->getCoreParamBlock();
+			}
+			else
+				myClone->mInternalData->mParamBlocks[i] = nullptr;
+
+			myClone->mInternalData->mParamBlockBuffers[i] = buffer;
 		}
 
 		for (UINT32 i = 0; i < mInternalData->mNumTextures; i++)
@@ -307,15 +336,17 @@ namespace BansheeEngine
 		return myClone;
 	}
 
-	void GpuParams::getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockBufferOffset,
+	void GpuParams::getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockOffset, UINT32& paramBlockBufferOffset,
 		UINT32& textureOffset, UINT32& samplerStateOffset) const
 	{
+		UINT32 paramBlockBufferSize = mInternalData->mNumParamBlocks * sizeof(GpuParamBlock*);
 		UINT32 paramBlockBuffersBufferSize = mInternalData->mNumParamBlocks * sizeof(GpuParamBlockBufferPtr);
 		UINT32 textureBufferSize = mInternalData->mNumTextures * sizeof(HTexture);
 		UINT32 samplerStateBufferSize = mInternalData->mNumSamplerStates * sizeof(HSamplerState);
 
-		bufferSize = paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
-		paramBlockBufferOffset = 0;
+		bufferSize = paramBlockBufferSize + paramBlockBuffersBufferSize + textureBufferSize + samplerStateBufferSize;
+		paramBlockOffset = 0;
+		paramBlockBufferOffset = paramBlockOffset + paramBlockBufferSize;
 		textureOffset = paramBlockBufferOffset + paramBlockBuffersBufferSize;
 		samplerStateOffset = textureOffset + textureBufferSize;
 	}
@@ -331,8 +362,8 @@ namespace BansheeEngine
 
 		for (UINT32 i = 0; i < mInternalData->mNumParamBlocks; i++)
 		{
-			if (mInternalData->mParamBlockBuffers[i] != nullptr)
-				mInternalData->mParamBlockBuffers[i]->getParamBlock()->setDirty(false);
+			if (mInternalData->mParamBlocks[i] != nullptr)
+				mInternalData->mParamBlocks[i]->setDirty(false);
 		}
 	}
 

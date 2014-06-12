@@ -1,19 +1,17 @@
 #include "BsGpuParamBlockBuffer.h"
 #include "BsGpuParamBlock.h"
-#include "BsGpuParamBlockBufferProxy.h"
 
 namespace BansheeEngine
 {
 	GpuParamBlockBuffer::GpuParamBlockBuffer()
-		:mSize(0), mUsage(GPBU_DYNAMIC), mParamBlock(nullptr)
+		:mSize(0), mUsage(GPBU_DYNAMIC), mParamBlock(nullptr), mCoreParamBlock(nullptr)
 	{
 
 	}
 
 	GpuParamBlockBuffer::~GpuParamBlockBuffer()
 	{
-		if(mParamBlock != nullptr)
-			bs_delete(mParamBlock);
+
 	}
 
 	void GpuParamBlockBuffer::initialize(UINT32 size, GpuParamBlockUsage usage)
@@ -21,17 +19,9 @@ namespace BansheeEngine
 		mSize = size;
 		mUsage = usage;
 
-		mParamBlock = bs_new<GpuParamBlock, PoolAlloc>(size);
+		mParamBlock = bs_shared_ptr<GpuParamBlock>(size);
 
 		CoreObject::initialize();
-	}
-
-	GpuParamBlockBufferProxyPtr GpuParamBlockBuffer::_createProxy() const
-	{
-		GpuParamBlockBufferProxyPtr proxy = bs_shared_ptr<GpuParamBlockBufferProxy>(mSize);
-		memcpy(proxy->block->getData(), mParamBlock->getData(), mSize);
-		
-		return proxy;
 	}
 
 	void GenericGpuParamBlockBuffer::writeData(const UINT8* data)

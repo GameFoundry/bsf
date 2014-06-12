@@ -15,7 +15,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Type of material dirty flags
 	 */
-	enum MaterialDirtyFlag
+	enum class MaterialDirtyFlag
 	{
 		Material = 0x01, /**< Internal material data is dirty. */
 		Proxy = 0x02, /**< Active proxy needs to be updated. */

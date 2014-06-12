@@ -14,6 +14,8 @@ ISSUE - GpuParamBlock is tied to the hardware buffer. But I need separate param 
 IMPORTANT - Renderer now requires GpuparamBuffers to exist. Separate for each renderer semantic. Add
 GpuParamBlockBuffer emulation to DX9 (they can be user-specified via import settings or something).
 
+GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.
+
 Make sure to update param buffers in bulk before doing any rendering:
  - They're updated when material proxies are first created
  - When material proxies are updated

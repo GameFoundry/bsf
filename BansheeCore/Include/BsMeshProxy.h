@@ -11,7 +11,7 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT MeshProxy
 	{
-		MeshPtr mesh;
+		MeshBasePtr mesh;
 		SubMesh subMesh;
 		Bounds bounds;
 	};
