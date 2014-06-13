@@ -9,11 +9,22 @@ namespace BansheeEngine
 	 */
 	struct BS_EXPORT GUILayoutOptions
 	{
+		/**
+		 * @brief	Creates new default layout options.
+		 */
 		static GUILayoutOptions create();
+
+		/**
+		 * @brief	Creates layout options with user defined options.
+		 */
 		static GUILayoutOptions create(const GUIOptions& options);
 
 		GUILayoutOptions();
 
+		/**
+		 * @brief	Updates layout options from the provided style. If user has not manually
+		 *			set a specific layout property, that property will be inherited from style.
+		 */
 		void updateWithStyle(const GUIElementStyle* style);
 
 		UINT32 width, height;
