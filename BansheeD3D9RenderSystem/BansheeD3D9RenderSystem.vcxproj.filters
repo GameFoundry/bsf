@@ -111,6 +111,9 @@
     <ClInclude Include="Include\BsD3D9GpuProgramRTTI.h">
       <Filter>Header Files\RTTI</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsD3D9EmulatedParamBlocks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsD3D9VideoModeInfo.cpp">
@@ -198,6 +201,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsD3D9Device.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsD3D9EmulatedParamBlocks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,68 +1,37 @@
 #pragma once
 
 #include "BsD3D9Prerequisites.h"
+#include "BsD3D9GpuProgram.h"
 
 namespace BansheeEngine
 {
 	class D3D9HLSLParamParser
 	{
 	public:
-		D3D9HLSLParamParser(LPD3DXCONSTANTTABLE constTable)
-			:mpConstTable(constTable)
+		D3D9HLSLParamParser(LPD3DXCONSTANTTABLE constTable, const Vector<D3D9EmulatedParamBlock>& blocks)
+			:mpConstTable(constTable), mBlocks(blocks)
 		{ }
 
 		GpuParamDesc buildParameterDescriptions();
 
 	private:
-		void processParameter(GpuParamBlockDesc& blockDesc, D3DXHANDLE parent, String prefix, UINT32 index);
+		void processParameter(GpuParamBlockDesc& blockDesc, const String& paramName, D3DXHANDLE constant,
+			String prefix, UINT32 index);
 		void populateParamMemberDesc(GpuParamDataDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc);
+
+		String getParamName(D3DXHANDLE constant);
 
 	private:
 		LPD3DXCONSTANTTABLE mpConstTable;
+		Vector<D3D9EmulatedParamBlock> mBlocks;
 		GpuParamDesc mParamDesc;
 	};
 
-	GpuParamDesc D3D9HLSLParamParser::buildParameterDescriptions()
+	String D3D9HLSLParamParser::getParamName(D3DXHANDLE constant)
 	{
-		// Derive parameter names from const table
-		assert(mpConstTable && "Program not loaded!");
-
-		// Get contents of the constant table
-		D3DXCONSTANTTABLE_DESC desc;
-		HRESULT hr = mpConstTable->GetDesc(&desc);
-
-		if (FAILED(hr))
-			BS_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
-
-		// DX9 has no concept of parameter blocks so we just put all members in one global block
-		String name = "BS_INTERNAL_Globals";
-		mParamDesc.paramBlocks.insert(std::make_pair(name, GpuParamBlockDesc()));
-		GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[name];
-		blockDesc.name = name;
-		blockDesc.slot = 0;
-		blockDesc.blockSize = 0;
-		blockDesc.isShareable = false;
-
-		// Iterate over the constants
-		for (UINT32 i = 0; i < desc.Constants; ++i)
-		{
-			// Recursively descend through the structure levels
-			processParameter(blockDesc, NULL, "", i);
-		}
-
-		return mParamDesc;
-	}
-
-	void D3D9HLSLParamParser::processParameter(GpuParamBlockDesc& blockDesc, D3DXHANDLE parent, String prefix, UINT32 index)
-	{
-		D3DXHANDLE hConstant = mpConstTable->GetConstant(parent, index);
-
-		// Since D3D HLSL doesn't deal with naming of array and struct parameters
-		// automatically, we have to do it by hand
-
 		D3DXCONSTANT_DESC desc;
 		UINT32 numParams = 1;
-		HRESULT hr = mpConstTable->GetConstantDesc(hConstant, &desc, &numParams);
+		HRESULT hr = mpConstTable->GetConstantDesc(constant, &desc, &numParams);
 		if (FAILED(hr))
 		{
 			BS_EXCEPT(InternalErrorException, "Cannot retrieve constant description from HLSL program.");
@@ -77,6 +46,77 @@ namespace BansheeEngine
 		if (StringUtil::endsWith(paramName, "[0]", false))
 			paramName.erase(paramName.size() - 3);
 
+		return paramName;
+	}
+
+	GpuParamDesc D3D9HLSLParamParser::buildParameterDescriptions()
+	{
+		// Derive parameter names from const table
+		assert(mpConstTable && "Program not loaded!");
+
+		// Get contents of the constant table
+		D3DXCONSTANTTABLE_DESC desc;
+		HRESULT hr = mpConstTable->GetDesc(&desc);
+
+		if (FAILED(hr))
+			BS_EXCEPT(InternalErrorException, "Cannot retrieve constant descriptions from HLSL program.");
+
+		// DX9 has no concept of parameter blocks so we emulate them if needed
+		String name = "BS_INTERNAL_Globals";
+		mParamDesc.paramBlocks.insert(std::make_pair(name, GpuParamBlockDesc()));
+		GpuParamBlockDesc& globalBlockDesc = mParamDesc.paramBlocks[name];
+		globalBlockDesc.name = name;
+		globalBlockDesc.slot = 0;
+		globalBlockDesc.blockSize = 0;
+		globalBlockDesc.isShareable = false;
+
+		UnorderedMap<String, String> nonGlobalBlocks;
+		UINT32 curSlot = 1;
+		for (auto& block : mBlocks)
+		{
+			mParamDesc.paramBlocks.insert(std::make_pair(block.blockName, GpuParamBlockDesc()));
+			GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[block.blockName];
+			globalBlockDesc.name = block.blockName;
+			globalBlockDesc.slot = curSlot++;
+			globalBlockDesc.blockSize = 0;
+			globalBlockDesc.isShareable = true;
+
+			for (auto& fieldName : block.paramNames)
+			{
+				nonGlobalBlocks.insert(std::make_pair(fieldName, block.blockName));
+			}
+		}
+
+		// Iterate over the constants
+		for (UINT32 i = 0; i < desc.Constants; ++i)
+		{
+			D3DXHANDLE constantHandle = mpConstTable->GetConstant(NULL, i);
+			String paramName = getParamName(constantHandle);
+
+			// Recursively descend through the structure levels
+			auto findIter = nonGlobalBlocks.find(paramName);
+			if (findIter == nonGlobalBlocks.end())
+				processParameter(globalBlockDesc, paramName, constantHandle, "", i);
+			else
+				processParameter(mParamDesc.paramBlocks[findIter->second], paramName, constantHandle, "", i);
+		}
+
+		return mParamDesc;
+	}
+
+	void D3D9HLSLParamParser::processParameter(GpuParamBlockDesc& blockDesc, const String& paramName, D3DXHANDLE constant, String prefix, UINT32 index)
+	{
+		// Since D3D HLSL doesn't deal with naming of array and struct parameters
+		// automatically, we have to do it by hand
+
+		D3DXCONSTANT_DESC desc;
+		UINT32 numParams = 1;
+		HRESULT hr = mpConstTable->GetConstantDesc(constant, &desc, &numParams);
+		if (FAILED(hr))
+		{
+			BS_EXCEPT(InternalErrorException, "Cannot retrieve constant description from HLSL program.");
+		}
+
 		if (desc.Class == D3DXPC_STRUCT)
 		{
 			// work out a new prefix for nested members, if it's an array, we need an index
@@ -84,7 +124,10 @@ namespace BansheeEngine
 			// Cascade into struct
 			for (UINT32 i = 0; i < desc.StructMembers; ++i)
 			{
-				processParameter(blockDesc, hConstant, prefix, i);
+				D3DXHANDLE childHandle = mpConstTable->GetConstant(constant, i);
+				String childParamName = getParamName(childHandle);
+
+				processParameter(blockDesc, childParamName, childHandle, prefix, i);
 			}
 		}
 		else

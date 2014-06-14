@@ -3,6 +3,7 @@
 #include "BsD3D9Prerequisites.h"
 #include "BsGpuProgram.h"
 #include "BsD3D9Resource.h"
+#include "BsD3D9EmulatedParamBlocks.h"
 
 namespace BansheeEngine 
 {
@@ -70,6 +71,7 @@ namespace BansheeEngine
 	protected:    
 		OptimizationLevel mOptimisationLevel;
 		String mPreprocessorDefines;
+		Vector<D3D9EmulatedParamBlock> mBlocks;
 		bool mColumnMajorMatrices;
 		ID3DXBuffer* mMicrocode;
 

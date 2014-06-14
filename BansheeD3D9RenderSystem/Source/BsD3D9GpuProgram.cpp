@@ -147,6 +147,8 @@ namespace BansheeEngine
 
 		String hlslProfile = D3D9RenderSystem::instance().getCapabilities()->gpuProgProfileToRSSpecificProfile(mProfile);
 
+		mSource = D3D9EmulatedParamBlockParser::parse(mSource, mBlocks);
+
 		// Compile & assemble into microcode
 		HRESULT hr = D3DXCompileShader(
 			mSource.c_str(),
@@ -184,7 +186,7 @@ namespace BansheeEngine
 				createInternalResources(d3d9Device);
 			}
 
-			D3D9HLSLParamParser paramParser(constTable);
+			D3D9HLSLParamParser paramParser(constTable, mBlocks);
 			mParametersDesc = paramParser.buildParameterDescriptions();
 
 			mIsCompiled = true;

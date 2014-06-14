@@ -237,6 +237,7 @@
     <ClInclude Include="Include\BsD3D9DeviceManager.h" />
     <ClInclude Include="Include\BsD3D9Driver.h" />
     <ClInclude Include="Include\BsD3D9DriverList.h" />
+    <ClInclude Include="Include\BsD3D9EmulatedParamBlocks.h" />
     <ClInclude Include="Include\BsD3D9EventQuery.h" />
     <ClInclude Include="Include\BsD3D9GpuBuffer.h" />
     <ClInclude Include="Include\BsD3D9GpuProgram.h" />
@@ -271,6 +272,7 @@
     <ClCompile Include="Source\BsD3D9DeviceManager.cpp" />
     <ClCompile Include="Source\BsD3D9Driver.cpp" />
     <ClCompile Include="Source\BsD3D9DriverList.cpp" />
+    <ClCompile Include="Source\BsD3D9EmulatedParamBlocks.cpp" />
     <ClCompile Include="Source\BsD3D9EventQuery.cpp" />
     <ClCompile Include="Source\BsD3D9GpuBuffer.cpp" />
     <ClCompile Include="Source\BsD3D9GpuProgram.cpp" />
