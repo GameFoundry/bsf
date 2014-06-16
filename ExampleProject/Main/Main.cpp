@@ -120,14 +120,14 @@ namespace BansheeEngine
 		renderable->setMaterial(exampleMaterial);
 
 		// Set up scene camera
-		HSceneObject sceneCameraGO = SceneObject::create("SceneCamera");
+		HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
 
 		RenderWindowPtr window = gApplication().getPrimaryWindow();
-		sceneCamera = sceneCameraGO->addComponent<Camera>(window, 0.0f, 0.0f, 1.0f, 1.0f);
+		sceneCamera = sceneCameraSO->addComponent<Camera>(window, 0.0f, 0.0f, 1.0f, 1.0f);
 
 		sceneCamera->setPriority(1);
-		sceneCameraGO->setPosition(Vector3(0, 50, 1240));
-		sceneCameraGO->lookAt(Vector3(0, 50, -300));
+		sceneCameraSO->setPosition(Vector3(0, 50, 1240));
+		sceneCameraSO->lookAt(Vector3(0, 50, -300));
 		sceneCamera->setNearClipDistance(5);
 		sceneCamera->setAspectRatio(resolutionWidth / (float)resolutionHeight); // TODO - This needs to get called whenever resolution changes
 

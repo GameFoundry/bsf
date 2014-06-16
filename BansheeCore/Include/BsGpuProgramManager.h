@@ -21,6 +21,18 @@ namespace BansheeEngine
 		 */
 		virtual const String& getLanguage() const = 0;
 
+		/**
+		 * @brief	Creates a new GPU program using the provided source code. If compilation fails or program is not supported
+		 *			"isCompiled" method on the returned program will return false, and you will be able to retrieve the error message 
+		 *			via "getCompileErrorMessage".
+		 *
+		 * @param	source		Source code to compile the shader from.
+		 * @param	entryPoint	Name of the entry point function, e.g. "main".
+		 * @param	gptype		Type of the program, e.g. vertex or fragment.
+		 * @param	profile		Program profile specifying supported feature-set. Must match the type.
+		 * @param	includes	Optional includes to append to the source before compiling.
+		 * @param	requiresAdjacency	If true then adjacency information will be provided when rendering using this program.
+		 */
 		virtual GpuProgramPtr create(const String& source, const String& entryPoint, GpuProgramType gptype, 
 			GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool requiresAdjacencyInformation) = 0;
 

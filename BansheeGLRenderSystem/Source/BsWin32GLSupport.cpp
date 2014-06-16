@@ -247,7 +247,7 @@ namespace BansheeEngine
 			wglDeleteContext(hrc);
 		}
 
-		// clean up our dummy window and class
+		// Clean up our dummy window and class
 		DestroyWindow(hwnd);
 		UnregisterClass(dummyText, hinst);
 	}
@@ -257,7 +257,7 @@ namespace BansheeEngine
 		return DefWindowProc(hwnd, umsg, wp, lp);
 	}
 
-	bool Win32GLSupport::selectPixelFormat(HDC hdc, int colourDepth, int multisample, bool hwGamma)
+	bool Win32GLSupport::selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma)
 	{
 		PIXELFORMATDESCRIPTOR pfd;
 		memset(&pfd, 0, sizeof(pfd));
@@ -265,8 +265,8 @@ namespace BansheeEngine
 		pfd.nVersion = 1;
 		pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
 		pfd.iPixelType = PFD_TYPE_RGBA;
-		pfd.cColorBits = (colourDepth > 16)? 24 : colourDepth;
-		pfd.cAlphaBits = (colourDepth > 16)? 8 : 0;
+		pfd.cColorBits = (colorDepth > 16)? 24 : colorDepth;
+		pfd.cAlphaBits = (colorDepth > 16)? 8 : 0;
 		pfd.cDepthBits = 24;
 		pfd.cStencilBits = 8;
 

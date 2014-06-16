@@ -3,13 +3,12 @@
 #include "BsGLSLGpuProgram.h"
 #include "BsRenderSystem.h"
 #include "BsException.h"
-#include "BsGLSLPreprocessor.h"
 #include "BsGLSLParamParser.h"
 #include "BsHardwareBufferManager.h"
 #include "BsGLSLGpuProgramRTTI.h"
 
-namespace BansheeEngine {
-
+namespace BansheeEngine 
+{
 	UINT32 GLSLGpuProgram::mVertexShaderCount = 0;
 	UINT32 GLSLGpuProgram::mFragmentShaderCount = 0;
 	UINT32 GLSLGpuProgram::mGeometryShaderCount = 0;
@@ -68,13 +67,11 @@ namespace BansheeEngine {
 	GLSLGpuProgram::GLSLGpuProgram(const String& source, const String& entryPoint, GpuProgramType gptype, 
 		GpuProgramProfile profile, const Vector<HGpuProgInclude>* includes, bool isAdjacencyInfoRequired)
 		:GpuProgram(source, entryPoint, gptype, profile, includes, isAdjacencyInfoRequired),
-		mInputOperationType(DOT_TRIANGLE_LIST), mOutputOperationType(DOT_TRIANGLE_LIST), mMaxOutputVertices(3),
 		mProgramID(0), mGLHandle(0)
     { }
 
     GLSLGpuProgram::~GLSLGpuProgram()
-    {
-    }
+    { }
 
 	void GLSLGpuProgram::initialize_internal()
 	{
@@ -87,7 +84,6 @@ namespace BansheeEngine {
 			return;
 		}
 
-		// only create a shader object if glsl is supported
 		GLenum shaderType = 0x0000;
 		switch (mType)
 		{
@@ -112,73 +108,6 @@ namespace BansheeEngine {
 			mProgramID = ++mHullShaderCount;
 			break;
 		}
-
-		// Preprocess the GLSL shader in order to get a clean source
-		CPreprocessor cpp;
-
-		// Pass all user-defined macros to preprocessor
-		if (!mPreprocessorDefines.empty())
-		{
-			String::size_type pos = 0;
-			while (pos != String::npos)
-			{
-				// Find delims
-				String::size_type endPos = mPreprocessorDefines.find_first_of(";,=", pos);
-				if (endPos != String::npos)
-				{
-					String::size_type macro_name_start = pos;
-					size_t macro_name_len = endPos - pos;
-					pos = endPos;
-
-					// Check definition part
-					if (mPreprocessorDefines[pos] == '=')
-					{
-						// set up a definition, skip delim
-						++pos;
-						String::size_type macro_val_start = pos;
-						size_t macro_val_len;
-
-						endPos = mPreprocessorDefines.find_first_of(";,", pos);
-						if (endPos == String::npos)
-						{
-							macro_val_len = mPreprocessorDefines.size() - pos;
-							pos = endPos;
-						}
-						else
-						{
-							macro_val_len = endPos - pos;
-							pos = endPos + 1;
-						}
-						cpp.Define(
-							mPreprocessorDefines.c_str() + macro_name_start, macro_name_len,
-							mPreprocessorDefines.c_str() + macro_val_start, macro_val_len);
-					}
-					else
-					{
-						// No definition part, define as "1"
-						++pos;
-						cpp.Define(
-							mPreprocessorDefines.c_str() + macro_name_start, macro_name_len, 1);
-					}
-				}
-				else
-					pos = endPos;
-			}
-		}
-
-		size_t out_size = 0;
-		const char *src = mSource.c_str();
-		size_t src_len = mSource.size();
-		char *out = cpp.Parse(src, src_len, out_size);
-		if (!out || !out_size)
-		{
-			// Failed to preprocess, break out
-			BS_EXCEPT(RenderingAPIException, "Failed to preprocess shader.");
-		}
-
-		mSource = String(out, out_size);
-		if (out < src || out > src + src_len)
-			free(out);
 
 		// Add preprocessor extras and main source
 		if (!mSource.empty())

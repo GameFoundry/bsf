@@ -6,58 +6,67 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Helper class dealing mostly with platform specific OpenGL functionality,
+	 *			initialization, extensions and window creation.
+	 */
 	class BS_RSGL_EXPORT GLSupport
 	{
 	public:
 		GLSupport() { }
 		virtual ~GLSupport() { }
 
+		/**
+		 * @brief	Creates a new render window using the specified descriptor.
+		 *
+		 * @param	desc			Description of a render window to create.
+		 * @param	parentWindow	Optional parent window if the window shouldn't be a main window. First
+		 *							created window cannot have a parent.
+		 *
+		 * @param	Returns newly created window.
+		 */
 		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow) = 0;
 
 		/**
-		* Start anything special
-		*/
+		 * @brief	Called when OpenGL is being initialized.
+		 */
 		virtual void start() = 0;
 
 		/**
-		* Stop anything special
-		*/
+		 * @brief	Called when OpenGL is being shut down.
+		 */
 		virtual void stop() = 0;
 
 		/**
-		* Get vendor information
-		*/
+		 * @brief	Gets OpenGL vendor name.
+		 */
 		const String& getGLVendor() const
 		{
 			return mVendor;
 		}
 
 		/**
-		* Get version information
-		*/
+		 * @brief	Gets OpenGL version string.
+		 */
 		const String& getGLVersion() const
 		{
 			return mVersion;
 		}
 
 		/**
-		* Compare GL version numbers
-		*/
-		bool checkMinGLVersion(const String& v) const;
-
-		/**
-		* Check if an extension is available
-		*/
+		 * @brief	Checks is the specified extension available.
+		 */
 		virtual bool checkExtension(const String& ext) const;
 
 		/**
-		* Get the address of a function
-		*/
+		 * @brief	Gets an address of an OpenGL procedure with the specified name.
+		 */
 		virtual void* getProcAddress(const String& procname) = 0;
 
-		/** Initialises GL extensions, must be done AFTER the GL context has been
-			established.
-		*/
+		/**
+		 * @brief	Initializes OpenGL extensions. Must be called after we have a valid and active
+		 *			OpenGL context.
+		 */
 		virtual void initializeExtensions();
 
 		/**

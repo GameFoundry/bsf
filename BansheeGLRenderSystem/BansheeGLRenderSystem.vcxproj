@@ -265,13 +265,13 @@
     <ClInclude Include="Include\BsWin32Window.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLGpuProgram.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLParamParser.h" />
-    <ClInclude Include="Source\GLSL\include\BsGLSLPreprocessor.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLProgramFactory.h" />
     <ClInclude Include="Source\GLSL\include\BsGLSLProgramPipelineManager.h" />
     <ClInclude Include="Source\win32\BsGLUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BsGLPlugin.cpp" />
+    <ClCompile Include="Source\BsGLSLParamParser.cpp" />
     <ClCompile Include="Source\BsGLVertexArrayObjectManager.cpp" />
     <ClCompile Include="Source\BsGLContext.cpp" />
     <ClCompile Include="Source\BsGLEventQuery.cpp" />
@@ -299,7 +299,6 @@
     <ClCompile Include="Source\BsWin32Window.cpp" />
     <ClCompile Include="Source\glew.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLGpuProgram.cpp" />
-    <ClCompile Include="Source\GLSL\src\BsGLSLPreprocessor.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLProgramFactory.cpp" />
     <ClCompile Include="Source\GLSL\src\BsGLSLProgramPipelineManager.cpp" />
     <ClCompile Include="Source\win32\BsWin32Context.cpp" />

@@ -1,6 +1,5 @@
 Param matching missing:
- - // TODO - Find parameter gpu name and hook up its handle and "hasWVP"
- - Implement getDefaultShader in BansheeRenderer
+ - Add default DX9/DX11/OpenGL shaders
 
 -----------------------------------------------------------
 NON TRIVIAL BUT SIMPLE

@@ -165,7 +165,7 @@ namespace BansheeEngine
 				int screenh = monitorInfoEx.rcWork.bottom - monitorInfoEx.rcWork.top;
 
 				unsigned int winWidth, winHeight;
-				_adjustWindow(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), &winWidth, &winHeight);
+				getAdjustedWindowSize(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), &winWidth, &winHeight);
 
 				// clamp window dimensions to screen size
 				int outerw = (int(winWidth) < screenw)? int(winWidth) : screenw;
@@ -436,8 +436,8 @@ namespace BansheeEngine
 		ChangeDisplaySettingsEx(mDeviceName, NULL, NULL, 0, NULL);
 
 		// Calculate overall dimensions for requested client area
-		unsigned int winWidth, winHeight;
-		_adjustWindow(mWidth, mHeight, &winWidth, &winHeight);
+		UINT32 winWidth, winHeight;
+		getAdjustedWindowSize(mWidth, mHeight, &winWidth, &winHeight);
 
 		// Deal with centering when switching down to smaller resolution
 		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
@@ -449,8 +449,8 @@ namespace BansheeEngine
 		LONG screenw = monitorInfo.rcWork.right - monitorInfo.rcWork.left;
 		LONG screenh = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
 
-		int left = screenw > int(winWidth) ? ((screenw - int(winWidth)) / 2) : 0;
-		int top = screenh > int(winHeight) ? ((screenh - int(winHeight)) / 2) : 0;
+		INT32 left = screenw > INT32(winWidth) ? ((screenw - INT32(winWidth)) / 2) : 0;
+		INT32 top = screenh > INT32(winHeight) ? ((screenh - INT32(winHeight)) / 2) : 0;
 
 		SetWindowLong(mHWnd, GWL_STYLE, mWindowedStyle);
 		SetWindowLong(mHWnd, GWL_EXSTYLE, mWindowedStyleEx);
@@ -603,7 +603,7 @@ namespace BansheeEngine
 		else if(name == "WINDOW")
 		{
 			HWND *pHwnd = (HWND*)pData;
-			*pHwnd = _getWindowHandle();
+			*pHwnd = mHWnd;
 			return;
 		} 
 	}
@@ -690,17 +690,15 @@ namespace BansheeEngine
 		RenderWindow::_windowMovedOrResized();
 	}
 
-	void Win32Window::_adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
-		unsigned int* winWidth, unsigned int* winHeight)
+	void Win32Window::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight)
 	{
-		// NB only call this for non full screen
 		RECT rc;
 		SetRect(&rc, 0, 0, clientWidth, clientHeight);
-		AdjustWindowRect(&rc, WS_VISIBLE | WS_CLIPCHILDREN | WS_OVERLAPPEDWINDOW, false);
+		AdjustWindowRectEx(&rc, mWindowedStyle, false, mWindowedStyleEx);
 		*winWidth = rc.right - rc.left;
 		*winHeight = rc.bottom - rc.top;
 
-		// adjust to monitor
+		// Adjust to monitor
 		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
 
 		// Get monitor info	
@@ -713,9 +711,10 @@ namespace BansheeEngine
 		LONG maxW = monitorInfo.rcWork.right  - monitorInfo.rcWork.left;
 		LONG maxH = monitorInfo.rcWork.bottom - monitorInfo.rcWork.top;
 
-		if (*winWidth > (unsigned int)maxW)
+		if (*winWidth > (UINT32)maxW)
 			*winWidth = maxW;
-		if (*winHeight > (unsigned int)maxH)
+
+		if (*winHeight > (UINT32)maxH)
 			*winHeight = maxH;
 	}
 }

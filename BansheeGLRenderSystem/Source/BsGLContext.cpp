@@ -2,7 +2,6 @@
 
 namespace BansheeEngine 
 {
-    // Empty base class
     GLContext::GLContext()
 	{ }
     

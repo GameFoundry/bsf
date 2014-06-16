@@ -9,5 +9,8 @@ namespace BansheeEngine
     class Win32Window;
     class Win32Context;
 
+	/**
+	 * @brief	Retrieves last Windows API error and returns a description of it.
+	 */
 	String translateWGLError();
 }

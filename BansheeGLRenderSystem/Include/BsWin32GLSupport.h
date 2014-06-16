@@ -6,37 +6,62 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Handles OpenGL initialization, window creation and extensions
+	 *			on Windows.
+	 */
 	class BS_RSGL_EXPORT Win32GLSupport : public GLSupport
 	{
 	public:
         Win32GLSupport();
 
-		/// @copydoc RenderSystem::_createRenderWindow
+		/**
+		 * @copydoc	GLSupport::newWindow
+		 */
 		virtual RenderWindowPtr newWindow(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 
 		/**
-		* Start anything special
-		*/
+		 * @copydoc	GLSupport::start
+		 */
 		void start();
 
 		/**
-		* Stop anything special
-		*/
+		 * @copydoc	GLSupport::stop
+		 */
 		void stop();
 
 		/**
-		* Get the address of a function
-		*/
+		 * @copydoc	GLSupport::getProcAddress
+		 */
 		void* getProcAddress(const String& procname);
 
 		/**
-		 * Initialize extensions
+		 * @copydoc	GLSupport::initializeExtensions
 		 */
 		virtual void initializeExtensions();
 		
+		/**
+		 * @brief	Creates a new OpenGL context.
+		 *
+		 * @param	hdc				Handle to device context to create the context from.
+		 * @param	externalGlrc	(Optional) Handle to external OpenGL context. If not provided
+		 *							new context will be created.
+		 *
+		 * @returns	Newly created GLContext class referencing the created or external context handle.
+		 */
 		Win32Context* createContext(HDC hdc, HGLRC externalGlrc = 0);
 
-		bool selectPixelFormat(HDC hdc, int colourDepth, int multisample, bool hwGamma);
+		/**
+		 * @brief	Selects and sets an appropriate pixel format based on the provided parameters.
+		 *
+		 * @param	hdc			Handle to device context to create the context from.
+		 * @param	colorDepth	Wanted color depth of the pixel format, in bits.
+		 * @param	multisample	Amount of multisampling wanted, if any.
+		 * @param	hwGamma		Should the format support automatic gamma conversion on write/read.
+		 *
+		 * @returns	True if a pixel format was successfully set.
+		 */
+		bool selectPixelFormat(HDC hdc, int colorDepth, int multisample, bool hwGamma);
 
 		/**
 		 * @copydoc	GLSupport::getVideoModeInfo
@@ -44,7 +69,16 @@ namespace BansheeEngine
 		VideoModeInfoPtr getVideoModeInfo() const;
 
 	private:
-		// Allowed video modes
+		/**
+		 * @brief	Initializes windows specific OpenGL extensions needed for advanced context creation.
+		 */
+		void initialiseWGL();
+
+		/**
+		 * @brief	Dummy window procedure used when creating the initial dummy OpenGL context.
+		 */
+		static LRESULT CALLBACK dummyWndProc(HWND hwnd, UINT umsg, WPARAM wp, LPARAM lp);
+
 		Vector<DEVMODE> mDevModes;
 		Win32Window *mInitialWindow;
 		Vector<int> mMultisampleLevels;
@@ -52,8 +86,5 @@ namespace BansheeEngine
         bool mHasMultisample;
 		bool mHasHardwareGamma;
 		bool mHasAdvancedContext;
-
-		void initialiseWGL();
-		static LRESULT CALLBACK dummyWndProc(HWND hwnd, UINT umsg, WPARAM wp, LPARAM lp);
 	};
 }

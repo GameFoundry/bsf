@@ -5,6 +5,9 @@
 
 namespace BansheeEngine 
 {
+	/**
+	 * @brief	Render window implementation for Windows.
+	 */
     class BS_RSGL_EXPORT Win32Window : public RenderWindow
     {
     public:
@@ -88,18 +91,17 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindow::setActive
 		 */
-		virtual void setActive( bool state );
+		virtual void setActive(bool state);
 
 		/**
 		 * @copydoc RenderWindow::_windowMovedOrResized
 		 */
-		void _windowMovedOrResized(void);
+		void _windowMovedOrResized();
 
-		HWND _getWindowHandle() const { return mHWnd; }
+		/**
+		 * @brief	Returns handle to device context associated with the window.
+		 */
 		HDC _getHDC() const { return mHDC; }
-		
-		void _adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
-			unsigned int* winWidth, unsigned int* winHeight);
 
 	protected:
 		friend class GLRenderWindowManager;
@@ -117,19 +119,24 @@ namespace BansheeEngine
 		 */
 		void destroy_internal();
 
-		protected:
-			Win32GLSupport &mGLSupport;
-			HWND mHWnd;					// Win32 Window handle
-			HDC	mHDC;
-			DWORD mWindowedStyle;
-			DWORD mWindowedStyleEx;
-			bool mIsExternal;
-			bool mIsChild;
-			char* mDeviceName;
-			bool mIsExternalGLControl;
-			bool mSizing;
-			bool mClosed;
-			int mDisplayFrequency;      // fullscreen only, to restore display
-			Win32Context *mContext;
+		/**
+		 * @brief	Calculates window size based on provided client area size and currently set window style. 
+		 */
+		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight, UINT32* winWidth, UINT32* winHeight);
+
+	protected:
+		Win32GLSupport &mGLSupport;
+		HWND mHWnd;
+		HDC	mHDC;
+		DWORD mWindowedStyle;
+		DWORD mWindowedStyleEx;
+		bool mIsExternal;
+		bool mIsChild;
+		char* mDeviceName;
+		bool mIsExternalGLControl;
+		bool mSizing;
+		bool mClosed;
+		int mDisplayFrequency;
+		Win32Context *mContext;
     };
 }

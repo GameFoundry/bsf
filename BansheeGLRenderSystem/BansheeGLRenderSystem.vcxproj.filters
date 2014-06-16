@@ -126,9 +126,6 @@
     <ClInclude Include="Source\GLSL\include\BsGLSLProgramFactory.h">
       <Filter>Header Files\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="Source\GLSL\include\BsGLSLPreprocessor.h">
-      <Filter>Header Files\GLSL</Filter>
-    </ClInclude>
     <ClInclude Include="Source\GLSL\include\BsGLSLParamParser.h">
       <Filter>Header Files\GLSL</Filter>
     </ClInclude>
@@ -227,10 +224,10 @@
     <ClCompile Include="Source\GLSL\src\BsGLSLProgramFactory.cpp">
       <Filter>Source Files\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GLSL\src\BsGLSLPreprocessor.cpp">
+    <ClCompile Include="Source\GLSL\src\BsGLSLGpuProgram.cpp">
       <Filter>Source Files\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="Source\GLSL\src\BsGLSLGpuProgram.cpp">
+    <ClCompile Include="Source\BsGLSLParamParser.cpp">
       <Filter>Source Files\GLSL</Filter>
     </ClCompile>
   </ItemGroup>
