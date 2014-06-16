@@ -230,26 +230,27 @@ namespace BansheeEngine
 		HSamplerState getSamplerState(UINT32 slot);
 
 		/**
-		 * @brief	Returns an exact copy of this object. Cloned object will have a core copy of the GPU
-		 *			param blocks, so it should only be used on the core thread.
+		 * @brief	Returns an exact copy of this object. Internal parameter buffers will also be cloned,
+		 *			but should only be used on the core thread.
 		 *
 		 * @note	Optional frame allocator to allocate the returned data with. If not specified
 		 *			allocation will be done using normal means.
+		 *			Internal method.
 		 */
-		GpuParamsPtr cloneForCore(FrameAlloc* frameAlloc = nullptr) const;
+		GpuParamsPtr _cloneForCore(FrameAlloc* frameAlloc = nullptr) const;
 
 		/**
 		 * @brief	Checks is the core dirty flag set. This is used by external systems 
 		 *			to know  when internal data has changed and core proxy potentially needs to be updated.
 		 *
-		 * @note	Sim thread only.
+		 * @note	Internal method. Sim thread only.
 		 */
 		bool _isCoreDirty() const;
 
 		/**
 		 * @brief	Marks the core dirty flag as clean.
 		 *
-		 * @note	Sim thread only.
+		 * @note	Internal method. Sim thread only.
 		 */
 		void _markCoreClean();
 

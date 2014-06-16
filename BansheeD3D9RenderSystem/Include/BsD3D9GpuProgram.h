@@ -23,6 +23,11 @@ namespace BansheeEngine
     public:
         ~D3D9GpuProgram();
 
+		/**
+		 * @copydoc	GpuProgram::requiresMatrixTranspose
+		 */
+		virtual bool requiresMatrixTranspose() const { return mColumnMajorMatrices; }
+
 		/** Sets the preprocessor defines use to compile the program. */
 		void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
 		/** Sets the preprocessor defines use to compile the program. */

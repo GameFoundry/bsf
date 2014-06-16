@@ -276,7 +276,6 @@
     <ClInclude Include="Include\BsDrawList.h" />
     <ClInclude Include="Include\BsMaterialProxy.h" />
     <ClInclude Include="Include\BsMeshProxy.h" />
-    <ClInclude Include="Include\BsRendererParams.h" />
     <ClInclude Include="Include\BsRenderStats.h" />
     <ClInclude Include="Include\BsCoreThread.h" />
     <ClInclude Include="Include\BsProfilerCPU.h" />
@@ -308,7 +307,6 @@
     <ClInclude Include="Include\BsPlatform.h" />
     <ClInclude Include="Include\BsProfilingManager.h" />
     <ClInclude Include="Include\BsQueryManager.h" />
-    <ClInclude Include="Include\BsRenderQueue.h" />
     <ClInclude Include="Include\BsResourceManifest.h" />
     <ClInclude Include="Include\BsResourceManifestRTTI.h" />
     <ClInclude Include="Include\BsSceneObjectRTTI.h" />
@@ -349,6 +347,7 @@
     <ClInclude Include="Include\BsOcclusionQuery.h" />
     <ClInclude Include="Include\BsPixelBuffer.h" />
     <ClInclude Include="Include\BsGpuProgIncludeImporter.h" />
+    <ClInclude Include="Include\BsShaderProxy.h" />
     <ClInclude Include="Include\BsSubMesh.h" />
     <ClInclude Include="Include\BsTextureView.h" />
     <ClInclude Include="Include\BsTextData.h" />
@@ -468,8 +467,6 @@
     <ClCompile Include="Source\BsProfilingManager.cpp" />
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
-    <ClCompile Include="Source\BsRendererParams.cpp" />
-    <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
     <ClCompile Include="Source\BsTextureView.cpp" />
     <ClCompile Include="Source\BsTextData.cpp" />

@@ -716,7 +716,7 @@ namespace BansheeEngine
 			return false;
 		}
 		else
-			return (mCoreDirtyFlags & (UINT32)flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty());
+			return (mCoreDirtyFlags & (UINT32)flag) != 0 || (mShader != nullptr && mShader->_isCoreDirty(ShaderDirtyFlag::Shader));
 	}
 
 	void Material::_markCoreClean(MaterialDirtyFlag flag)
@@ -726,7 +726,7 @@ namespace BansheeEngine
 		if (flag == MaterialDirtyFlag::Material)
 		{
 			if (mShader != nullptr)
-				mShader->_markCoreClean();
+				mShader->_markCoreClean(ShaderDirtyFlag::Shader);
 		}
 		
 		if (flag == MaterialDirtyFlag::Material || flag == MaterialDirtyFlag::Params)
@@ -741,6 +741,69 @@ namespace BansheeEngine
 						params->_markCoreClean();
 				}
 			}
+		}
+	}
+
+	Vector<MaterialProxy::ParamsBindInfo> Material::_getDirtyProxyParams()
+	{
+		Vector<MaterialProxy::ParamsBindInfo> dirtyParams;
+		UINT32 idx = 0;
+
+		UINT32 numPasses = mShader->getBestTechnique()->getNumPasses();
+		for (UINT32 i = 0; i < numPasses; i++)
+		{
+			PassParametersPtr params = mParametersPerPass[i];
+			PassPtr pass = mShader->getBestTechnique()->getPass(i);
+
+			if (pass->hasVertexProgram())
+			{
+				if (params->mVertParams->_isCoreDirty())
+					dirtyParams.push_back(MaterialProxy::ParamsBindInfo(idx, params->mVertParams));
+
+				idx++;
+			}
+
+			if (pass->hasFragmentProgram())
+			{
+				if (params->mFragParams->_isCoreDirty())
+					dirtyParams.push_back(MaterialProxy::ParamsBindInfo(idx, params->mFragParams));
+
+				idx++;
+			}
+
+			if (pass->hasGeometryProgram())
+			{
+				if (params->mGeomParams->_isCoreDirty())
+					dirtyParams.push_back(MaterialProxy::ParamsBindInfo(idx, params->mGeomParams));
+
+				idx++;
+			}
+
+			if (pass->hasHullProgram())
+			{
+				if (params->mHullParams->_isCoreDirty())
+					dirtyParams.push_back(MaterialProxy::ParamsBindInfo(idx, params->mHullParams));
+
+				idx++;
+			}
+
+			if (pass->hasDomainProgram())
+			{
+				if (params->mDomainParams->_isCoreDirty())
+					dirtyParams.push_back(MaterialProxy::ParamsBindInfo(idx, params->mDomainParams));
+
+				idx++;
+			}
+
+			if (pass->hasComputeProgram())
+			{
+				if (params->mComputeParams->_isCoreDirty())
+					dirtyParams.push_back(MaterialProxy::ParamsBindInfo(idx, params->mComputeParams));
+
+				idx++;
+			}
+
+			return dirtyParams;
 		}
 	}
 
@@ -762,38 +825,56 @@ namespace BansheeEngine
 			if (pass->hasVertexProgram())
 			{
 				passData.vertexProg = pass->getVertexProgram();
-				passData.vertexProgParams = params->mVertParams->cloneForCore();
+				passData.vertexProgParamsIdx = proxy->params.size();
+				proxy->params.push_back(params->mVertParams->_cloneForCore());
 			}
+			else
+				passData.vertexProgParamsIdx = 0;
 
 			if (pass->hasFragmentProgram())
 			{
 				passData.fragmentProg = pass->getFragmentProgram();
-				passData.fragmentProgParams = params->mFragParams->cloneForCore();
+				passData.fragmentProgParamsIdx = proxy->params.size();
+				proxy->params.push_back(params->mFragParams->_cloneForCore());
 			}
+			else
+				passData.fragmentProgParamsIdx = 0;
 
 			if (pass->hasGeometryProgram())
 			{
 				passData.geometryProg = pass->getGeometryProgram();
-				passData.geometryProgParams = params->mGeomParams->cloneForCore();
+				passData.geometryProgParamsIdx = proxy->params.size();
+				proxy->params.push_back(params->mGeomParams->_cloneForCore());
 			}
+			else
+				passData.geometryProgParamsIdx = 0;
 
 			if (pass->hasHullProgram())
 			{
 				passData.hullProg = pass->getHullProgram();
-				passData.hullProgParams = params->mHullParams->cloneForCore();
+				passData.hullProgParamsIdx = proxy->params.size();
+				proxy->params.push_back(params->mHullParams->_cloneForCore());
 			}
+			else
+				passData.hullProgParamsIdx = 0;
 
 			if (pass->hasDomainProgram())
 			{
 				passData.domainProg = pass->getDomainProgram();
-				passData.domainProgParams = params->mDomainParams->cloneForCore();
+				passData.domainProgParamsIdx = proxy->params.size();
+				proxy->params.push_back(params->mDomainParams->_cloneForCore());
 			}
+			else
+				passData.domainProgParamsIdx = 0;
 
 			if (pass->hasComputeProgram())
 			{
 				passData.computeProg = pass->getComputeProgram();
-				passData.computeProgParams = params->mComputeParams->cloneForCore();
+				passData.computeProgParamsIdx = proxy->params.size();
+				proxy->params.push_back(params->mComputeParams->_cloneForCore());
 			}
+			else
+				passData.computeProgParamsIdx = 0;
 
 			passData.blendState = pass->getBlendState();
 			passData.rasterizerState = pass->getRasterizerState();
@@ -801,9 +882,13 @@ namespace BansheeEngine
 			passData.stencilRefValue = pass->getStencilRefValue();
 		}
 
-		proxy->queuePriority = mShader->getQueuePriority();
-		proxy->queueSortType = mShader->getQueueSortType();
-		proxy->separablePasses = mShader->getAllowSeparablePasses();
+		if (mShader->_isCoreDirty(ShaderDirtyFlag::Proxy))
+		{
+			mShader->_setActiveProxy(mShader->_createProxy());
+			mShader->_markCoreClean(ShaderDirtyFlag::Proxy);
+		}
+
+		proxy->shader = mShader->_getActiveProxy();
 
 		return proxy;
 	}

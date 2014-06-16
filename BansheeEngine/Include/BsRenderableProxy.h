@@ -24,6 +24,8 @@ namespace BansheeEngine
 
 		UINT64 layer;
 
+		Any rendererData;
+
 	private:
 		bool mBoundsDirty;
 	};

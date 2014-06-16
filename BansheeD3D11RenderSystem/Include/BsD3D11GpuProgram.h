@@ -16,6 +16,11 @@ namespace BansheeEngine
 
 		GpuParamsPtr createParameters();
 
+		/**
+		 * @copydoc	GpuProgram::requiresMatrixTranspose
+		 */
+		virtual bool requiresMatrixTranspose() const { return mColumnMajorMatrices; }
+
 		/** Sets whether matrix packing in column-major order. */
 		void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
 		/** Gets whether matrix packed in column-major order. */

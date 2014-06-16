@@ -276,6 +276,9 @@
     <ClInclude Include="Include\BsRenderableProxy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsRenderQueue.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsGUIElement.cpp">
@@ -474,6 +477,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsRenderableProxy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsRenderQueue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

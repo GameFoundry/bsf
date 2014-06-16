@@ -6,6 +6,15 @@
 namespace BansheeEngine
 {
 	/**
+	 * @brief	Type of shader dirty flags
+	 */
+	enum class ShaderDirtyFlag
+	{
+		Shader = 0x01, /**< Internal shader data is dirty. */
+		Proxy = 0x02 /**< Active proxy needs to be updated. */
+	};
+
+	/**
 	 * @brief Describes a single data (int, Vector2, etc.) shader parameter.
 	 *
 	 * @see	Shader::addParameter.
@@ -241,17 +250,6 @@ namespace BansheeEngine
 		 */
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& _getParamBlocks() const { return mParamBlocks; }
 
-		/**
-		 * @brief	Checks is the core dirty flag set. This is used by external systems 
-		 *			to know when internal data has changed and core thread potentially needs to be notified.
-		 */
-		bool _isCoreDirty() const { return mCoreDirtyFlags != 0; }
-
-		/**
-		 * @brief	Marks the core dirty flag as clean.
-		 */
-		void _markCoreClean() { mCoreDirtyFlags = 0; }
-
 		static bool isSampler(GpuParamObjectType type);
 		static bool isTexture(GpuParamObjectType type);
 		static bool isBuffer(GpuParamObjectType type);
@@ -261,6 +259,42 @@ namespace BansheeEngine
 		 *			techniques with the shader before using it in a Material.
 		 */
 		static ShaderPtr create(const String& name);
+
+		/************************************************************************/
+		/* 								CORE PROXY                      		*/
+		/************************************************************************/
+
+		/**
+		 * @brief	Checks is the core dirty flag set. This is used by external systems 
+		 *			to know when internal data has changed and core thread potentially needs to be notified.
+		 */
+		bool _isCoreDirty(ShaderDirtyFlag flag) const { return (mCoreDirtyFlags & (UINT32)flag) != 0; }
+
+		/**
+		 * @brief	Marks the core dirty flag as clean.
+		 */
+		void _markCoreClean(ShaderDirtyFlag flag) { mCoreDirtyFlags &= ~(UINT32)flag; }
+
+		/**
+		 * @brief	Gets the currently active proxy of this material.
+		 */
+		ShaderProxyPtr _getActiveProxy() const { return mActiveProxy; }
+
+		/**
+		 * @brief	Sets an active proxy for this material.
+		 */
+		void _setActiveProxy(const ShaderProxyPtr& proxy) { mActiveProxy = proxy; }
+
+		/**
+		 * @brief	Creates a new core proxy from the currently set shader data. Core proxies ensure
+		 *			that the core thread has all the necessary data, while avoiding the need
+		 *			to manage Shader itself on the core thread.
+		 *
+		 * @note	Sim thread only. 
+		 *			You generally need to update the core thread with a new proxy whenever core 
+		 *			dirty flag is set.
+		 */
+		ShaderProxyPtr _createProxy();
 
 	private:
 		Shader(const String& name);
@@ -281,6 +315,8 @@ namespace BansheeEngine
 		Map<String, SHADER_DATA_PARAM_DESC> mDataParams;
 		Map<String, SHADER_OBJECT_PARAM_DESC> mObjectParams;
 		Map<String, SHADER_PARAM_BLOCK_DESC> mParamBlocks;
+
+		ShaderProxyPtr mActiveProxy;
 
 		/************************************************************************/
 		/* 								RTTI		                     		*/

@@ -405,9 +405,6 @@
     <ClInclude Include="Include\BsBlendState.h">
       <Filter>Header Files\RenderSystem</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRenderQueue.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsRendererManager.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
@@ -510,13 +507,13 @@
     <ClInclude Include="Include\BsDrawList.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="Include\BsRendererParams.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Include\BsMeshProxy.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Include\BsMaterialProxy.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\BsShaderProxy.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -737,9 +734,6 @@
     <ClCompile Include="Source\BsRendererManager.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
-    <ClCompile Include="Source\BsRenderQueue.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Win32\BsWin32FolderMonitor.cpp">
       <Filter>Source Files\Platform</Filter>
     </ClCompile>
@@ -813,9 +807,6 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsCameraProxy.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\BsRendererParams.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>

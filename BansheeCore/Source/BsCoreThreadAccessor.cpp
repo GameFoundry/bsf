@@ -101,7 +101,7 @@ namespace BansheeEngine
 
 	void CoreThreadAccessorBase::bindGpuParams(GpuProgramType gptype, const GpuParamsPtr& params)
 	{
-		mCommandQueue->queue(std::bind(&RenderSystem::bindGpuParams, RenderSystem::instancePtr(), gptype, params->cloneForCore(gCoreThread().getFrameAlloc())));
+		mCommandQueue->queue(std::bind(&RenderSystem::bindGpuParams, RenderSystem::instancePtr(), gptype, params->_cloneForCore(gCoreThread().getFrameAlloc())));
 	}
 
 	void CoreThreadAccessorBase::beginRender()

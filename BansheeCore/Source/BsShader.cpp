@@ -2,6 +2,7 @@
 #include "BsTechnique.h"
 #include "BsException.h"
 #include "BsDebug.h"
+#include "BsShaderProxy.h"
 #include "BsShaderRTTI.h"
 
 namespace BansheeEngine
@@ -240,6 +241,19 @@ namespace BansheeEngine
 		newShader->initialize();
 
 		return newShader;
+	}
+
+	ShaderProxyPtr Shader::_createProxy()
+	{
+		ShaderProxyPtr proxy = bs_shared_ptr<ShaderProxy>();
+		proxy->dataParams = mDataParams;
+		proxy->objectParams = mObjectParams;
+		proxy->paramBlocks = mParamBlocks;
+		proxy->queuePriority = mQueuePriority;
+		proxy->queueSortType = mQueueSortType;
+		proxy->separablePasses = mSeparablePasses;
+
+		return proxy;
 	}
 
 	RTTITypeBase* Shader::getRTTIStatic()

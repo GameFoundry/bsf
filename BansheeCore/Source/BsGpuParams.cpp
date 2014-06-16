@@ -264,7 +264,7 @@ namespace BansheeEngine
 		}
 	}
 
-	GpuParamsPtr GpuParams::cloneForCore(FrameAlloc* frameAlloc) const
+	GpuParamsPtr GpuParams::_cloneForCore(FrameAlloc* frameAlloc) const
 	{
 		UINT32 bufferSize = 0;
 		UINT32 paramBlockOffset = 0;

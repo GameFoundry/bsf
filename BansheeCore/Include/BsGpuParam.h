@@ -27,7 +27,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Checks if the gpu param is still valid or were the parent GpuParams destroyed.
 		 */
-		bool getIsDestroyed() const;
+		bool isDestroyed() const;
 
 		/**
 		 * @brief	Gets a parameter block at the specified slot index.
@@ -119,7 +119,7 @@ namespace BansheeEngine
 		 */
 		void set(const T& value, UINT32 arrayIdx = 0)
 		{
-			if (getIsDestroyed())
+			if (isDestroyed())
 				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 #if BS_DEBUG_MODE
@@ -160,7 +160,7 @@ namespace BansheeEngine
 		 */
 		T get(UINT32 arrayIdx = 0)
 		{
-			if (getIsDestroyed())
+			if (isDestroyed())
 				BS_EXCEPT(InternalErrorException, "Trying to access a destroyed gpu parameter.");
 
 #if BS_DEBUG_MODE

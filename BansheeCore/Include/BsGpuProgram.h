@@ -123,6 +123,12 @@ namespace BansheeEngine
 		virtual bool isAdjacencyInfoRequired() const { return mNeedsAdjacencyInfo; }
 
 		/**
+		 * @brief	Returns true if matrices need to be transposed before sent to the GPU
+		 *			program as GPU program parameters.
+		 */
+		virtual bool requiresMatrixTranspose() const { return false; }
+
+		/**
 		 * @brief	Creates a new parameters object compatible with this program definition. You
 		 *			may populate the returned object with actual parameter values and bind it
 		 *			to the pipeline to render an object using those values and this program.

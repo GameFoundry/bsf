@@ -10,16 +10,9 @@ namespace BansheeEngine
 {
 	D3D11HardwareBuffer::D3D11HardwareBuffer(BufferType btype, GpuBufferUsage usage, UINT32 elementCount, UINT32 elementSize, 
 		D3D11Device& device, bool useSystemMem, bool streamOut, bool randomGpuWrite, bool useCounter)
-		: HardwareBuffer(usage, useSystemMem),
-		mD3DBuffer(0),
-		mpTempStagingBuffer(0),
-		mUseTempStagingBuffer(false),
-		mBufferType(btype),
-		mDevice(device),
-		mElementCount(elementCount),
-		mElementSize(elementSize),
-		mRandomGpuWrite(randomGpuWrite),
-		mUseCounter(useCounter)
+		: HardwareBuffer(usage, useSystemMem), mD3DBuffer(nullptr), mpTempStagingBuffer(nullptr), mUseTempStagingBuffer(false),
+		 mBufferType(btype), mDevice(device), mElementCount(elementCount), mElementSize(elementSize), mRandomGpuWrite(randomGpuWrite),
+		 mUseCounter(useCounter)
 	{
 		assert((!streamOut || btype == BT_VERTEX) && "Stream out flag is only supported on vertex buffers");
 		assert(!randomGpuWrite || (btype & BT_GROUP_GENERIC) != 0 && "randomGpuWrite flag can only be enabled with append/consume, indirect argument, structured or raw buffers");

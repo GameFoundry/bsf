@@ -1,4 +1,7 @@
 #include "BsRenderQueue.h"
+#include "BsMaterialProxy.h"
+#include "BsMeshProxy.h"
+#include "BsRenderableProxy.h"
 
 namespace BansheeEngine
 {
@@ -13,12 +16,27 @@ namespace BansheeEngine
 		mSortedRenderElements.clear();
 	}
 
+	void RenderQueue::add(const RenderableProxyPtr& renderable, RenderableElement* element, const Vector3& worldPosForSort)
+	{
+		// TODO - Make sure RenderQueueElements are cached so we dont allocate memory for them every frame
+		mRenderElements.push_back(RenderQueueElement());
+
+		RenderQueueElement& renderOp = mRenderElements.back();
+		renderOp.renderable = renderable;
+		renderOp.renderElem = element;
+		renderOp.material = element->material;
+		renderOp.mesh = element->mesh;
+		renderOp.worldPosition = worldPosForSort;
+	}
+
 	void RenderQueue::add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, const Vector3& worldPosForSort)
 	{
 		// TODO - Make sure RenderQueueElements are cached so we dont allocate memory for them every frame
 		mRenderElements.push_back(RenderQueueElement());
 
 		RenderQueueElement& renderOp = mRenderElements.back();
+		renderOp.renderable = nullptr;
+		renderOp.renderElem = nullptr;
 		renderOp.material = material;
 		renderOp.mesh = mesh;
 		renderOp.worldPosition = worldPosForSort;
@@ -29,12 +47,14 @@ namespace BansheeEngine
 		// Just pass-through for now
 		for (auto& renderElem : mRenderElements)
 		{
-			UINT32 numPasses = (UINT32)renderElem.material->passes.size();
+			UINT32 numPasses = (UINT32)renderElem.renderElem->material->passes.size();
 			for (UINT32 i = 0; i < numPasses; i++)
 			{
 				mSortedRenderElements.push_back(RenderQueueElement());
 
 				RenderQueueElement& sortedElem = mSortedRenderElements.back();
+				sortedElem.renderable = renderElem.renderable;
+				sortedElem.renderElem = renderElem.renderElem;
 				sortedElem.material = renderElem.material;
 				sortedElem.mesh = renderElem.mesh;
 				sortedElem.worldPosition = renderElem.worldPosition;

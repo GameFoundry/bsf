@@ -427,6 +427,11 @@ namespace BansheeEngine
 		void _setActiveProxy(const MaterialProxyPtr& proxy) { mActiveProxy = proxy; }
 
 		/**
+		 * @brief	Returns updated GPU parameters since the last time the parameters were marked clean.
+		 */
+		Vector<MaterialProxy::ParamsBindInfo> _getDirtyProxyParams();
+
+		/**
 		 * @brief	Creates a new core proxy from the currently set material data. Core proxies ensure
 		 *			that the core thread has all the necessary material data, while avoiding the need
 		 *			to manage Material itself on the core thread.

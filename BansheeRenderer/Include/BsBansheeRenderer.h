@@ -11,11 +11,11 @@ namespace BansheeEngine
 {
 	enum BansheeRendererParamSemantic
 	{
-		BRPS_Time = 1000,
-		BRPS_LightDir = 1001
+		RPS_Time = 1000,
+		RPS_LightDir = 1001
 	};
 
-	struct RenderableLitTexturedData
+	struct RenderLitTexturedGlobalData
 	{
 		ShaderPtr defaultShader;
 
@@ -29,6 +29,22 @@ namespace BansheeEngine
 
 		GpuParamBlockBufferPtr staticParamBuffer;
 		GpuParamBlockBufferPtr perFrameParamBuffer;
+
+		GpuParamsPtr staticParams;
+		GpuParamsPtr perFrameParams;
+
+		GpuParamVec4 lightDirParam;
+		GpuParamFloat timeParam;
+	};
+
+	struct RenderLitTexturedPerObjectData
+	{
+		GpuParamBlockBufferPtr perObjectParamBuffer;
+
+		bool hasWVPParam;
+		GpuParamMat4 wvpParam;
+
+		Vector<MaterialProxy::BufferBindInfo> perObjectBuffers;
 	};
 
 	/**
@@ -60,6 +76,8 @@ namespace BansheeEngine
 		virtual void renderAll();
 
 	private:
+		void initRenderableLitTexturedData();
+
 		void addRenderableProxy(RenderableProxyPtr proxy);
 		void removeRenderableProxy(RenderableProxyPtr proxy);
 		void updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld);
@@ -68,21 +86,24 @@ namespace BansheeEngine
 		void removeCameraProxy(CameraProxyPtr proxy);
 		void updateCameraProxy(CameraProxyPtr proxy, Matrix4 viewMatrix);
 
-		void setDrawList(CameraProxyPtr proxy, DrawListPtr drawList);
-		void updateMaterialProxy(MaterialProxyPtr proxy, Vector<PassParameters> dirtyPassParams);
+		void addToRenderQueue(CameraProxyPtr proxy, RenderQueuePtr renderQueue);
+		void updateMaterialProxy(MaterialProxyPtr proxy, Vector<MaterialProxy::ParamsBindInfo> dirtyParams);
 
-		void renderAllCore();
+		void renderAllCore(float time);
 
 		/**
 		 * @brief	Renders all objects visible by the provided camera.
 		 */
 		virtual void render(const CameraProxy& cameraProxy, const RenderQueuePtr& renderQueue);
 
-		void setPass(const MaterialProxyPass& pass);
+		void setPass(const MaterialProxyPtr& material, UINT32 passIdx);
 		void draw(const MeshProxy& mesh);
 
 		void renderableRemoved(const HRenderable& renderable);
 		void cameraRemoved(const HCamera& camera);
+
+		void bindGlobalBuffers(const RenderableElement* element);
+		void bindPerObjectBuffers(const RenderableProxyPtr& renderable, const RenderableElement* element);
 
 		ShaderPtr getDefaultShader(RenderableType type) const;
 
@@ -98,7 +119,7 @@ namespace BansheeEngine
 		Vector<Matrix4> mWorldTransforms;
 		Vector<Bounds> mWorldBounds;
 
-		RenderableLitTexturedData mLitTexturedData;
+		RenderLitTexturedGlobalData mLitTexturedData;
 
 		HEvent mRenderableRemovedConn;
 		HEvent mCameraRemovedConn;

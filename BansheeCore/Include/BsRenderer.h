@@ -1,12 +1,34 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsRendererParams.h"
 #include "BsGameObject.h"
 #include "BsEvent.h"
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Available parameter block semantics that allow the renderer to identify
+	 *			the use of a GPU program parameter block specified in a shader.
+	 */
+	enum RendererBlockSemantic
+	{
+		RBS_Static,
+		RBS_PerCamera,
+		RBS_PerFrame,
+		RBS_PerObject
+	};
+
+	/**
+	 * @brief	Available parameter semantics that allow the renderer to identify
+	 *			the use of a GPU parameter specified in a shader.
+	 */
+	enum RendererParamSemantic
+	{
+		RPS_WorldViewProjTfrm,
+		RPS_ViewProjTfrm,
+		RPS_WorldTfrm
+	};
+
 	/**
 	 * @brief	Primarily rendering class that allows you to specify how to render objects that exist
 	 *			in the scene graph. You need to provide your own implementation of your class.
@@ -37,6 +59,5 @@ namespace BansheeEngine
 
 	protected:
 		UnorderedMap<const Viewport*, Vector<std::function<void(const Viewport*, DrawList&)>>> mRenderCallbacks;
-		UnorderedSet<RendererMaterialParams> mRenderableMaterialParams;
 	};
 }

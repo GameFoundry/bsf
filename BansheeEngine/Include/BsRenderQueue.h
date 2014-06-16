@@ -1,8 +1,6 @@
 #pragma once
 
 #include "BsCorePrerequisites.h"
-#include "BsMaterialProxy.h"
-#include "BsMeshProxy.h"
 
 namespace BansheeEngine 
 {
@@ -15,6 +13,8 @@ namespace BansheeEngine
 			:passIdx(0)
 		{ }
 
+		RenderableProxyPtr renderable;
+		RenderableElement* renderElem;
 		MaterialProxyPtr material;
 		MeshProxyPtr mesh;
 		Vector3 worldPosition;
@@ -34,6 +34,8 @@ namespace BansheeEngine
 	{
 	public:
 		RenderQueue();
+
+		void add(const RenderableProxyPtr& renderable, RenderableElement* element, const Vector3& worldPosForSort);
 
 		void add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, const Vector3& worldPosForSort);
 

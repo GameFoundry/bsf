@@ -1,25 +1,6 @@
-2. Gpu params update 
-
-ISSUE - GpuParamBlock is tied to the hardware buffer. But I need separate param blocks for CPU and GPU. I need to break that tie
- and also ensure these blocks are marked as dirty/clean when needed.
-  - I guess I could write these directly to the GPU buffer
-
-3. Renderer parameters and buffers
-   - Will likely need to finalize material <-> renderer interface matching first
-   - Add a way to create renderer gpu buffers
-   - Add a way to create handles to renderer gpu parameters (and store them in RenderableProxy)
-   - Update renderable parameters each frame
-      - Apply world view proj matrix in renderer
-
-IMPORTANT - Renderer now requires GpuparamBuffers to exist. Separate for each renderer semantic. Add
-GpuParamBlockBuffer emulation to DX9 (they can be user-specified via import settings or something).
-
-GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.
-
-Make sure to update param buffers in bulk before doing any rendering:
- - They're updated when material proxies are first created
- - When material proxies are updated
- - And when renderer updates its own parameters
+Param matching missing:
+ - // TODO - Find parameter gpu name and hook up its handle and "hasWVP"
+ - Implement getDefaultShader in BansheeRenderer
 
 -----------------------------------------------------------
 NON TRIVIAL BUT SIMPLE
@@ -35,26 +16,11 @@ Finally
  - Document elements marked with TODO UNDOCUMENTED
  - Refactor/rename everything so it makes more sense. Possibly lay out a design diagram.
  - Get rid of Camera::getIgnoreSceneRenderables it can be doing using layers
- - Delete RenderOperation as I don't think I use it anymore
 
 Semantic/design issues:
  - DrawList is too similar to RenderQueue - Their names need to be more distinct
  - Consider removing SceneManager from Core? I two scene manager base classes.
-
--------------------------------------------------------
-
-Material compatibility:
-
-When renderer is first created we create a list of default materials, each corresponding to a single valid renderable type.
-When checking for material compatibility we compare parameter and param block descriptions between example
-and material we're comparing. This way I don't even have to check if shader has param block or not, I already
-know from the example material.
-
-When material proxy is bound to the renderer matching parameters are found, and the renderer will take care of filling them out.
- - If example material uses a param block but current material doesn't, even if parameters match we won't update them from renderer.
- - Material proxy will be updated with a helper structure describing the renderable type the material is created with
-    - It will contain values representing which semantics are active
-	- And pointers to those semantics buffers and param handles
+ - GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.
 
 ---------------------------
 

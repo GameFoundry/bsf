@@ -135,6 +135,7 @@ namespace BansheeEngine
 	struct MeshProxy;
 	class GpuParamBlockBufferProxy;
 	class GpuParamsProxy;
+	class ShaderProxy;
 	class DrawList;
 	// Asset import
 	class SpecificImporter;
@@ -235,6 +236,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
 	typedef std::shared_ptr<GpuParamsProxy> GpuParamsProxyPtr;
 	typedef std::shared_ptr<GpuParamBlockBufferProxy> GpuParamBlockBufferProxyPtr;
+	typedef std::shared_ptr<ShaderProxy> ShaderProxyPtr;
 }
 
 /************************************************************************/

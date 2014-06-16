@@ -11,7 +11,7 @@ namespace BansheeEngine
 		:mParamDesc(paramDesc), mInternalData(internalData)
 	{ }
 
-	bool GpuDataParamBase::getIsDestroyed() const
+	bool GpuDataParamBase::isDestroyed() const
 	{
 		return mInternalData->mIsDestroyed;
 	}
