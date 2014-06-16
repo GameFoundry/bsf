@@ -69,6 +69,7 @@ namespace BansheeEngine
 	class GUIContextMenu;
 	class GUIDropDownHitBox;
 	class RenderableProxy;
+	class RenderableHandler;
 
 	// 2D
 	class TextSprite;

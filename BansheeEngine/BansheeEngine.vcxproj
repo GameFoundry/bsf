@@ -228,6 +228,7 @@
   <ItemGroup>
     <ClCompile Include="Source\BsCursor.cpp" />
     <ClCompile Include="Source\BsInputConfiguration.cpp" />
+    <ClCompile Include="Source\BsRenderableHandler.cpp" />
     <ClCompile Include="Source\BsRenderableProxy.cpp" />
     <ClCompile Include="Source\BsRenderQueue.cpp" />
     <ClCompile Include="Source\BsVirtualInput.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="Include\BsImageSprite.h" />
     <ClInclude Include="Include\BsProfilerOverlay.h" />
     <ClInclude Include="Include\BsRectOffset.h" />
+    <ClInclude Include="Include\BsRenderableHandler.h" />
     <ClInclude Include="Include\BsRenderableProxy.h" />
     <ClInclude Include="Include\BsRenderQueue.h" />
     <ClInclude Include="Include\BsSceneManager.h" />

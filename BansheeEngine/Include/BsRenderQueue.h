@@ -1,13 +1,14 @@
 #pragma once
 
-#include "BsCorePrerequisites.h"
+#include "BsPrerequisites.h"
+#include "BsVector3.h"
 
 namespace BansheeEngine 
 {
 	/**
 	 * @brief	Contains data needed for performing a single rendering pass.
 	 */
-	struct BS_CORE_EXPORT RenderQueueElement
+	struct BS_EXPORT RenderQueueElement
 	{
 		RenderQueueElement()
 			:passIdx(0)
@@ -30,7 +31,7 @@ namespace BansheeEngine
 	 *			will need to be closely tied to the renderer used.
 	 */
 	// TODO UNDOCUMENTED
-	class BS_CORE_EXPORT RenderQueue
+	class BS_EXPORT RenderQueue
 	{
 	public:
 		RenderQueue();

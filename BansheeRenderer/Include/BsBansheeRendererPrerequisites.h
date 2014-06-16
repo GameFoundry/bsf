@@ -17,3 +17,8 @@
 #else
 #    define BS_BSRND_EXPORT
 #endif
+
+namespace BansheeEngine
+{
+	class LitTexRenderableHandler;
+}

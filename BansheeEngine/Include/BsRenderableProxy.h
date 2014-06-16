@@ -36,6 +36,8 @@ namespace BansheeEngine
 		~RenderableProxy();
 
 		Vector<RenderableElement*> renderableElements;
+
+		RenderableHandler* handler;
 		RenderableType renderableType;
 	};
 }

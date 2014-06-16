@@ -2,10 +2,8 @@
 
 #include "BsBansheeRendererPrerequisites.h"
 #include "BsRenderer.h"
-#include "BsMaterial.h"
-#include "BsGpuParamDesc.h"
+#include "BsMaterialProxy.h"
 #include "BsBounds.h"
-#include "BsCameraProxy.h"
 
 namespace BansheeEngine
 {
@@ -13,38 +11,6 @@ namespace BansheeEngine
 	{
 		RPS_Time = 1000,
 		RPS_LightDir = 1001
-	};
-
-	struct RenderLitTexturedGlobalData
-	{
-		ShaderPtr defaultShader;
-
-		GpuParamBlockDesc staticParamBlockDesc;
-		GpuParamBlockDesc perFrameParamBlockDesc;
-		GpuParamBlockDesc perObjectParamBlockDesc;
-
-		GpuParamDataDesc timeParamDesc;
-		GpuParamDataDesc lightDirParamDesc;
-		GpuParamDataDesc wvpParamDesc;
-
-		GpuParamBlockBufferPtr staticParamBuffer;
-		GpuParamBlockBufferPtr perFrameParamBuffer;
-
-		GpuParamsPtr staticParams;
-		GpuParamsPtr perFrameParams;
-
-		GpuParamVec4 lightDirParam;
-		GpuParamFloat timeParam;
-	};
-
-	struct RenderLitTexturedPerObjectData
-	{
-		GpuParamBlockBufferPtr perObjectParamBuffer;
-
-		bool hasWVPParam;
-		GpuParamMat4 wvpParam;
-
-		Vector<MaterialProxy::BufferBindInfo> perObjectBuffers;
 	};
 
 	/**
@@ -76,8 +42,6 @@ namespace BansheeEngine
 		virtual void renderAll();
 
 	private:
-		void initRenderableLitTexturedData();
-
 		void addRenderableProxy(RenderableProxyPtr proxy);
 		void removeRenderableProxy(RenderableProxyPtr proxy);
 		void updateRenderableProxy(RenderableProxyPtr proxy, Matrix4 localToWorld);
@@ -102,11 +66,6 @@ namespace BansheeEngine
 		void renderableRemoved(const HRenderable& renderable);
 		void cameraRemoved(const HCamera& camera);
 
-		void bindGlobalBuffers(const RenderableElement* element);
-		void bindPerObjectBuffers(const RenderableProxyPtr& renderable, const RenderableElement* element);
-
-		ShaderPtr getDefaultShader(RenderableType type) const;
-
 		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
 		Vector<CameraProxyPtr> mDeletedCameraProxies;
 
@@ -119,7 +78,7 @@ namespace BansheeEngine
 		Vector<Matrix4> mWorldTransforms;
 		Vector<Bounds> mWorldBounds;
 
-		RenderLitTexturedGlobalData mLitTexturedData;
+		LitTexRenderableHandler* mLitTexHandler;
 
 		HEvent mRenderableRemovedConn;
 		HEvent mCameraRemovedConn;

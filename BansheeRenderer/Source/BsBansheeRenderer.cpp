@@ -27,6 +27,7 @@
 #include "BsGpuParamBlockBuffer.h"
 #include "BsShader.h"
 #include "BsShaderProxy.h"
+#include "BsBansheeLitTexRenderableHandler.h"
 #include "BsTime.h"
 
 using namespace std::placeholders;
@@ -38,12 +39,13 @@ namespace BansheeEngine
 		mRenderableRemovedConn = gBsSceneManager().onRenderableRemoved.connect(std::bind(&BansheeRenderer::renderableRemoved, this, _1));
 		mCameraRemovedConn = gBsSceneManager().onCameraRemoved.connect(std::bind(&BansheeRenderer::cameraRemoved, this, _1));
 
-		// Init default shaders
-		initRenderableLitTexturedData();
+		mLitTexHandler = bs_new<LitTexRenderableHandler>();
 	}
 
 	BansheeRenderer::~BansheeRenderer()
 	{
+		bs_delete(mLitTexHandler);
+
 		mRenderableRemovedConn.disconnect();
 		mCameraRemovedConn.disconnect();
 	}
@@ -52,105 +54,6 @@ namespace BansheeEngine
 	{
 		static String name = "BansheeRenderer";
 		return name;
-	}
-
-	void BansheeRenderer::initRenderableLitTexturedData()
-	{
-		mLitTexturedData.defaultShader = getDefaultShader(RenType_LitTextured);
-		TechniquePtr defaultTechnique = mLitTexturedData.defaultShader->getBestTechnique();
-		PassPtr defaultPass = defaultTechnique->getPass(0);
-
-		bool matrixTranspose = defaultPass->getVertexProgram()->requiresMatrixTranspose(); // This is a static setting across all GPU programs
-		const GpuParamDesc& vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
-		const GpuParamDesc& fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
-
-		GpuParamDesc staticParamsDesc;
-		GpuParamDesc perFrameParamsDesc;
-		GpuParamDesc perObjectParamsDesc;
-
-		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams = mLitTexturedData.defaultShader->_getDataParams();
-		for (auto& param : dataParams)
-		{
-			if (param.second.rendererSemantic == RPS_LightDir)
-			{
-				auto iterFind = fragParamDesc.params.find(param.second.gpuVariableName);
-				if (iterFind == fragParamDesc.params.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
-
-				mLitTexturedData.lightDirParamDesc = iterFind->second;
-				staticParamsDesc.params[iterFind->first] = iterFind->second;
-			}
-			else if (param.second.rendererSemantic == RPS_Time)
-			{
-				auto iterFind = vertParamDesc.params.find(param.second.gpuVariableName);
-				if (iterFind == vertParamDesc.params.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
-
-				mLitTexturedData.timeParamDesc = iterFind->second;
-				perFrameParamsDesc.params[iterFind->first] = iterFind->second;
-			}
-			else if (param.second.rendererSemantic == RPS_WorldViewProjTfrm)
-			{
-				auto iterFind = vertParamDesc.params.find(param.second.gpuVariableName);
-				if (iterFind == vertParamDesc.params.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
-
-				mLitTexturedData.wvpParamDesc = iterFind->second;
-				perObjectParamsDesc.params[iterFind->first] = iterFind->second;
-			}
-		}
-
-		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlocks = mLitTexturedData.defaultShader->_getParamBlocks();
-		for (auto& block : paramBlocks)
-		{
-			if (block.second.rendererSemantic == RBS_Static)
-			{
-				auto iterFind = vertParamDesc.paramBlocks.find(block.second.name);
-				if (iterFind == vertParamDesc.paramBlocks.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
-
-				mLitTexturedData.staticParamBlockDesc = iterFind->second;
-				staticParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
-			}
-			else if (block.second.rendererSemantic == RBS_PerFrame)
-			{
-				auto iterFind = fragParamDesc.paramBlocks.find(block.second.name);
-				if (iterFind == fragParamDesc.paramBlocks.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
-
-				mLitTexturedData.perFrameParamBlockDesc = iterFind->second;
-				perFrameParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
-			}
-			else if (block.second.rendererSemantic == RBS_PerObject)
-			{
-				auto iterFind = vertParamDesc.paramBlocks.find(block.second.name);
-				if (iterFind == vertParamDesc.paramBlocks.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
-
-				mLitTexturedData.perObjectParamBlockDesc = iterFind->second;
-				perObjectParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
-			}
-		}
-
-		// Create global GPU param buffers and get parameter handles
-		mLitTexturedData.staticParams = bs_shared_ptr<GpuParams>(staticParamsDesc, matrixTranspose);
-		mLitTexturedData.perFrameParams = bs_shared_ptr<GpuParams>(perFrameParamsDesc, matrixTranspose);
-
-		mLitTexturedData.staticParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(mLitTexturedData.staticParamBlockDesc.blockSize);
-		mLitTexturedData.perFrameParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(mLitTexturedData.perFrameParamBlockDesc.blockSize);
-
-		mLitTexturedData.staticParams->setParamBlockBuffer(mLitTexturedData.staticParamBlockDesc.slot, mLitTexturedData.staticParamBuffer);
-		mLitTexturedData.perFrameParams->setParamBlockBuffer(mLitTexturedData.perFrameParamBlockDesc.slot, mLitTexturedData.perFrameParamBuffer);
-
-		mLitTexturedData.staticParams->getParam(mLitTexturedData.lightDirParamDesc.name, mLitTexturedData.lightDirParam);
-		mLitTexturedData.staticParams->getParam(mLitTexturedData.timeParamDesc.name, mLitTexturedData.timeParam);
-
-		mLitTexturedData.lightDirParam.set(Vector4(0.707f, 0.707f, 0.707f, 0.0f));
-	}
-
-	ShaderPtr BansheeRenderer::getDefaultShader(RenderableType type) const
-	{
-		return nullptr;
 	}
 
 	void BansheeRenderer::addRenderableProxy(RenderableProxyPtr proxy)
@@ -172,111 +75,12 @@ namespace BansheeEngine
 		};
 
 		if (proxy->renderableType == RenType_LitTextured)
-		{
-			for (auto& element : proxy->renderableElements)
-			{
-				element->rendererData = RenderLitTexturedPerObjectData();
-				RenderLitTexturedPerObjectData* rendererData = any_cast_unsafe<RenderLitTexturedPerObjectData>(&element->rendererData);
+			proxy->handler = mLitTexHandler;
+		else
+			proxy->handler = nullptr;
 
-				ShaderProxyPtr shader = element->material->shader;
-
-				const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlockDescs = shader->paramBlocks;
-				const Map<String, SHADER_DATA_PARAM_DESC>& dataParamDescs = shader->dataParams;
-				String staticBlockName;
-				String perFrameBlockName;
-				String perObjectBlockName;
-
-				String wvpParamName;
-
-				for (auto& paramBlockDesc : paramBlockDescs)
-				{
-					switch (paramBlockDesc.second.rendererSemantic)
-					{
-					case RBS_Static:
-						staticBlockName = paramBlockDesc.second.name;
-						break;
-					case RBS_PerFrame:
-						perFrameBlockName = paramBlockDesc.second.name;
-						break;
-					case RBS_PerObject:
-						perObjectBlockName = paramBlockDesc.second.name;
-						break;
-					}
-				}
-
-				for (auto& paramDesc : dataParamDescs)
-				{
-					if (paramDesc.second.rendererSemantic == RPS_WorldViewProjTfrm)
-						wvpParamName = paramDesc.second.gpuVariableName;
-				}
-
-				UINT32 idx = 0;
-				for (auto& gpuParams : element->material->params)
-				{
-					const GpuParamDesc& paramsDesc = gpuParams->getParamDesc();
-
-					if (staticBlockName != "")
-					{
-						auto findIter = paramsDesc.paramBlocks.find(staticBlockName);
-						if (findIter != paramsDesc.paramBlocks.end())
-						{
-							// TODO - We only compare block sizes but not actual contents. Should I check them too?
-							//        Probably shouldn't concern myself with that here, instead check that on a higher level.
-							if (findIter->second.blockSize == mLitTexturedData.staticParamBlockDesc.blockSize)
-							{
-								UINT32 slotIdx = findIter->second.slot;
-								element->material->rendererBuffers.push_back(MaterialProxy::BufferBindInfo(idx, slotIdx, mLitTexturedData.staticParamBuffer));
-							}
-						}
-					}
-					
-					if (perFrameBlockName != "")
-					{
-						auto findIter = paramsDesc.paramBlocks.find(perFrameBlockName);
-						if (findIter != paramsDesc.paramBlocks.end())
-						{
-							if (findIter->second.blockSize == mLitTexturedData.perFrameParamBlockDesc.blockSize)
-							{
-								UINT32 slotIdx = findIter->second.slot;
-								element->material->rendererBuffers.push_back(MaterialProxy::BufferBindInfo(idx, slotIdx, mLitTexturedData.perFrameParamBuffer));
-							}
-						}
-					}
-
-					if (perObjectBlockName != "")
-					{
-						auto findIter = paramsDesc.paramBlocks.find(perObjectBlockName);
-						if (findIter != paramsDesc.paramBlocks.end())
-						{
-							if (findIter->second.blockSize == mLitTexturedData.perObjectParamBlockDesc.blockSize)
-							{
-								if (rendererData->perObjectParamBuffer == nullptr)
-									rendererData->perObjectParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(mLitTexturedData.perObjectParamBlockDesc.blockSize);
-
-								rendererData->perObjectBuffers.push_back(MaterialProxy::BufferBindInfo(idx, findIter->second.slot, rendererData->perObjectParamBuffer));
-
-								if (!rendererData->hasWVPParam && wvpParamName != "")
-								{
-									auto findIter2 = paramsDesc.params.find(wvpParamName);
-									if (findIter2 != paramsDesc.params.end())
-									{
-										if (paramsMatch(findIter2->second, mLitTexturedData.wvpParamDesc))
-										{
-											gpuParams->getParam(wvpParamName, rendererData->wvpParam);
-											rendererData->hasWVPParam = true;
-										}
-									}
-								}
-							}
-						}
-					}
-
-					idx++;
-				}
-
-				bindGlobalBuffers(element);
-			}
-		}
+		if (proxy->handler != nullptr)
+			proxy->handler->initializeProxy(proxy);
 	}
 
 	void BansheeRenderer::removeRenderableProxy(RenderableProxyPtr proxy)
@@ -531,7 +335,7 @@ namespace BansheeEngine
 				renderQueue->add(materialProxy, meshProxy, drawOp.worldPosition);
 			}
 
-			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addToRenderQueue, this, camera->_getActiveProxy(), drawList));
+			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addToRenderQueue, this, camera->_getActiveProxy(), renderQueue));
 		}
 
 		gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::renderAllCore, this, gTime().getTime()));
@@ -562,10 +366,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		// Update global hardware buffers
-		mLitTexturedData.timeParam.set(time);
-
-		mLitTexturedData.staticParams->updateHardwareBuffers();
-		mLitTexturedData.perFrameParams->updateHardwareBuffers();
+		mLitTexHandler->updateGlobalBuffers(time);
 
 		// Render everything, target by target
 		for (auto& renderTargetData : mRenderTargets)
@@ -621,20 +422,8 @@ namespace BansheeEngine
 				{
 					if (proxy.second->renderableType == RenType_LitTextured)
 					{
-						RenderLitTexturedPerObjectData* rendererData = any_cast_unsafe<RenderLitTexturedPerObjectData>(&renderElem->rendererData);
-
-						if (rendererData->hasWVPParam)
-						{
-							Matrix4 worldViewProjMatrix = viewProjMatrix * renderElem->worldTransform;
-							rendererData->wvpParam.set(worldViewProjMatrix);
-						}
-
-						if (rendererData->perObjectParamBuffer != nullptr)
-						{
-							GpuParamBlockPtr paramBlock = rendererData->perObjectParamBuffer->getParamBlock();
-							if (paramBlock->isDirty())
-								paramBlock->uploadToBuffer(rendererData->perObjectParamBuffer);
-						}
+						Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[renderElem->id];;
+						mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
 					}
 
 					for (auto& param : renderElem->material->params)
@@ -655,33 +444,11 @@ namespace BansheeEngine
 		{
 			MaterialProxyPtr materialProxy = iter->renderElem->material;
 
-			if (iter->renderable != nullptr)
-				bindPerObjectBuffers(iter->renderable, iter->renderElem);
+			if (iter->renderable != nullptr && iter->renderable->handler != nullptr)
+				iter->renderable->handler->bindPerObjectBuffers(iter->renderable, iter->renderElem);
 
 			setPass(materialProxy, iter->passIdx);
 			draw(*iter->renderElem->mesh);
-		}
-	}
-
-	void BansheeRenderer::bindGlobalBuffers(const RenderableElement* element)
-	{
-		for (auto& rendererBuffer : element->material->rendererBuffers)
-		{
-			element->material->params[rendererBuffer.paramsIdx]->setParamBlockBuffer(rendererBuffer.slotIdx, rendererBuffer.buffer);
-		}
-	}
-
-	void BansheeRenderer::bindPerObjectBuffers(const RenderableProxyPtr& renderable, const RenderableElement* element)
-	{
-		if (renderable->renderableType != RenType_LitTextured)
-			return;
-
-		const RenderLitTexturedPerObjectData* rendererData = any_cast_unsafe<RenderLitTexturedPerObjectData>(&element->rendererData);
-		for (auto& perObjectBuffer : rendererData->perObjectBuffers)
-		{
-			GpuParamsPtr params = element->material->params[perObjectBuffer.paramsIdx];
-
-			params->setParamBlockBuffer(perObjectBuffer.slotIdx, rendererData->perObjectParamBuffer);
 		}
 	}
 

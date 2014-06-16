@@ -24,6 +24,9 @@
     <ClInclude Include="Include\BsBansheeRendererPrerequisites.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsBansheeLitTexRenderableHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsBansheeRenderer.cpp">
@@ -33,6 +36,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsBansheeRendererPlugin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsBansheeLitTexRenderableHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -802,9 +802,9 @@ namespace BansheeEngine
 
 				idx++;
 			}
-
-			return dirtyParams;
 		}
+
+		return dirtyParams;
 	}
 
 	MaterialProxyPtr Material::_createProxy()
@@ -825,7 +825,7 @@ namespace BansheeEngine
 			if (pass->hasVertexProgram())
 			{
 				passData.vertexProg = pass->getVertexProgram();
-				passData.vertexProgParamsIdx = proxy->params.size();
+				passData.vertexProgParamsIdx = (UINT32)proxy->params.size();
 				proxy->params.push_back(params->mVertParams->_cloneForCore());
 			}
 			else
@@ -834,7 +834,7 @@ namespace BansheeEngine
 			if (pass->hasFragmentProgram())
 			{
 				passData.fragmentProg = pass->getFragmentProgram();
-				passData.fragmentProgParamsIdx = proxy->params.size();
+				passData.fragmentProgParamsIdx = (UINT32)proxy->params.size();
 				proxy->params.push_back(params->mFragParams->_cloneForCore());
 			}
 			else
@@ -843,7 +843,7 @@ namespace BansheeEngine
 			if (pass->hasGeometryProgram())
 			{
 				passData.geometryProg = pass->getGeometryProgram();
-				passData.geometryProgParamsIdx = proxy->params.size();
+				passData.geometryProgParamsIdx = (UINT32)proxy->params.size();
 				proxy->params.push_back(params->mGeomParams->_cloneForCore());
 			}
 			else
@@ -852,7 +852,7 @@ namespace BansheeEngine
 			if (pass->hasHullProgram())
 			{
 				passData.hullProg = pass->getHullProgram();
-				passData.hullProgParamsIdx = proxy->params.size();
+				passData.hullProgParamsIdx = (UINT32)proxy->params.size();
 				proxy->params.push_back(params->mHullParams->_cloneForCore());
 			}
 			else
@@ -861,7 +861,7 @@ namespace BansheeEngine
 			if (pass->hasDomainProgram())
 			{
 				passData.domainProg = pass->getDomainProgram();
-				passData.domainProgParamsIdx = proxy->params.size();
+				passData.domainProgParamsIdx = (UINT32)proxy->params.size();
 				proxy->params.push_back(params->mDomainParams->_cloneForCore());
 			}
 			else
@@ -870,7 +870,7 @@ namespace BansheeEngine
 			if (pass->hasComputeProgram())
 			{
 				passData.computeProg = pass->getComputeProgram();
-				passData.computeProgParamsIdx = proxy->params.size();
+				passData.computeProgParamsIdx = (UINT32)proxy->params.size();
 				proxy->params.push_back(params->mComputeParams->_cloneForCore());
 			}
 			else
