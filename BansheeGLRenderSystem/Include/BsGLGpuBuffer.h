@@ -21,19 +21,19 @@ namespace BansheeEngine
 		virtual void unlock();
 
 		/**
-		* @copydoc GenericBuffer::readData
-		*/
+		 * @copydoc GenericBuffer::readData
+		 */
         virtual void readData(UINT32 offset, UINT32 length, void* pDest);
 
 		/**
-		* @copydoc GenericBuffer::writeData
-		*/
+		 * @copydoc GenericBuffer::writeData
+		 */
         virtual void writeData(UINT32 offset, UINT32 length, const void* pSource,
 				BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**
-		* @copydoc GenericBuffer::copyData
-		*/
+		 * @copydoc GenericBuffer::copyData
+		 */
 		void copyData(GpuBuffer& srcBuffer, UINT32 srcOffset, 
 			UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 

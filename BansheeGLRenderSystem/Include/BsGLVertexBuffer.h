@@ -45,23 +45,23 @@ namespace BansheeEngine
 		GLVertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage); 
 
 		/**
-		* @copydoc VertexBuffer::initialize_internal()
-		*/
+		 * @copydoc VertexBuffer::initialize_internal()
+		 */
 		void initialize_internal();
 
 		/**
-		* @copydoc VertexBuffer::destroy_internal()
-		*/
+		 * @copydoc VertexBuffer::destroy_internal()
+		 */
 		void destroy_internal();
 
 		/**
-		* @copydoc	HardwareBuffer::lockImpl()
-		*/
+		 * @copydoc	HardwareBuffer::lockImpl()
+		 */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 
 		/**
-		* @copydoc	HardwareBuffer::unlockImpl()
-		*/
+		 * @copydoc	HardwareBuffer::unlockImpl()
+		 */
 		void unlockImpl();
 
 	private:

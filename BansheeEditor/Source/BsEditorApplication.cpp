@@ -51,7 +51,7 @@ namespace BansheeEngine
 	}
 
 	EditorApplication::EditorApplication(RenderSystemPlugin renderSystemPlugin)
-		:Application(createRenderWindowDesc(), getLibraryNameForRenderSystem(renderSystemPlugin), "BansheeRenderer"), 
+		:Application(createRenderWindowDesc(), renderSystemPlugin, RendererPlugin::Default), 
 		mActiveRSPlugin(renderSystemPlugin)
 	{
 		EditorGUI::startUp();
@@ -384,25 +384,6 @@ namespace BansheeEngine
 		static Path dummyProjectPath = L"D:\\DummyBansheeProject\\";
 
 		return dummyProjectPath;
-	}
-
-	const String& EditorApplication::getLibraryNameForRenderSystem(RenderSystemPlugin plugin)
-	{
-		static String DX11Name = "BansheeD3D11RenderSystem";
-		static String DX9Name = "BansheeD3D9RenderSystem";
-		static String OpenGLName = "BansheeGLRenderSystem";
-
-		switch(plugin)
-		{
-		case RenderSystemPlugin::DX11:
-			return DX11Name;
-		case RenderSystemPlugin::DX9:
-			return DX9Name;
-		case RenderSystemPlugin::OpenGL:
-			return OpenGLName;
-		}
-
-		return StringUtil::BLANK;
 	}
 
 	EditorWidgetLayoutPtr EditorApplication::loadWidgetLayout()

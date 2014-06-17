@@ -20,7 +20,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderSystem::getName()
 		 */
-        const String& getName(void) const;
+        const String& getName() const;
 
 		/**
 		 * @copydoc RenderSystem::getShadingLanguageName()

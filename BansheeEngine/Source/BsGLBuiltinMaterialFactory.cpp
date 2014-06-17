@@ -499,7 +499,7 @@ void GLBuiltinMaterialFactory::initDummyShader()
 															\
 						void main()							\
 						{									\
-							fragColor = vec4(0.5f, 0.5f, 0.5f, 0.5f; \
+							fragColor = vec4(0.5f, 0.5f, 0.5f, 0.5f); \
 						}";
 
 		HGpuProgram vsProgram = GpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);

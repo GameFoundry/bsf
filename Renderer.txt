@@ -1,7 +1,3 @@
-Param matching missing:
- - Add default DX9/DX11/OpenGL shaders
-
------------------------------------------------------------
 NON TRIVIAL BUT SIMPLE
 
 Actually add frustum culling

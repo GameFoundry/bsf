@@ -15,7 +15,7 @@ namespace BansheeEngine
 	{
 	public:
 		// constructor
-		D3D9RenderSystem( HINSTANCE hInstance );
+		D3D9RenderSystem(HINSTANCE hInstance);
 		// destructor
 		~D3D9RenderSystem();
 

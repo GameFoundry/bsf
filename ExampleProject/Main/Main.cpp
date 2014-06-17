@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 		if (fullscreen)
 		{
-			gCoreAccessor().setWindowed(window);
+			gCoreAccessor().setWindowed(window, resolutionWidth, resolutionHeight);
 		}
 		else
 		{
@@ -105,7 +105,7 @@ namespace BansheeEngine
 		exampleShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 		exampleShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
 
-		TechniquePtr technique = exampleShader->addTechnique("D3D11RenderSystem", "BansheeRenderer"); // TODO - This render system and forward renderer names should at least match the above names used for initialization
+		TechniquePtr technique = exampleShader->addTechnique(RenderSystemDX11, RendererDefault); // TODO - This render system and forward renderer names should at least match the above names used for initialization
 		PassPtr pass = technique->addPass();
 		pass->setVertexProgram(exampleVertexGPUProg);
 		pass->setFragmentProgram(exampleFragmentGPUProg);
@@ -193,7 +193,7 @@ int CALLBACK WinMain(
 	renderWindowDesc.title = "Banshee Example App";
 	renderWindowDesc.fullscreen = false;
 
-	Application::startUp(renderWindowDesc, "BansheeD3D11RenderSystem", "BansheeRenderer"); // TODO - Use enums instead of names. BansheeApp is a high level system that doesn't need to be as customizable.
+	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11, RendererPlugin::Default);
 	setUpExample();
 	
 	Application::instance().runMainLoop();

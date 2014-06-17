@@ -6,13 +6,6 @@
 
 namespace BansheeEngine
 {
-	enum class RenderSystemPlugin
-	{
-		DX11,
-		DX9,
-		OpenGL
-	};
-
 	class BS_ED_EXPORT EditorApplication : public Application
 	{
 	public:
@@ -24,8 +17,6 @@ namespace BansheeEngine
 		bool isProjectLoaded() const;
 		const Path& getActiveProjectPath() const;
 	private:
-		static const String& getLibraryNameForRenderSystem(RenderSystemPlugin plugin);
-
 		virtual void onStartUp();
 		virtual void update();
 

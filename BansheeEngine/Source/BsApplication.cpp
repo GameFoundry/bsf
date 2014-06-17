@@ -32,8 +32,9 @@ namespace BansheeEngine
 		return desc;
 	}
 
-	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
-		:CoreApplication(createStartUpDesc(primaryWindowDesc, renderSystem, renderer)), mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
+	Application::Application(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer)
+		:CoreApplication(createStartUpDesc(primaryWindowDesc, getLibNameForRenderSystem(renderSystem), getLibNameForRenderer(renderer))),
+		mMonoPlugin(nullptr), mSBansheeEnginePlugin(nullptr)
 	{
 		VirtualInput::startUp();
 		ScriptManager::startUp();
@@ -45,7 +46,7 @@ namespace BansheeEngine
 		BuiltinMaterialManager::instance().addFactory(bs_new<D3D9BuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().addFactory(bs_new<D3D11BuiltinMaterialFactory>());
 		BuiltinMaterialManager::instance().addFactory(bs_new<GLBuiltinMaterialFactory>());
-		BuiltinMaterialManager::instance().setActive(renderSystem);
+		BuiltinMaterialManager::instance().setActive(getLibNameForRenderSystem(renderSystem));
 
 		DrawHelper2D::startUp();
 		DrawHelper3D::startUp();
@@ -87,7 +88,7 @@ namespace BansheeEngine
 		Cursor::instance().setCursor(CursorType::Arrow);
 	}
 
-	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, const String& renderSystem, const String& renderer)
+	void Application::startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer)
 	{
 		CoreApplication::startUp<Application>(primaryWindowDesc, renderSystem, renderer);
 	}
@@ -104,6 +105,38 @@ namespace BansheeEngine
 	{
 		// TODO - Need a way to determine primary viewport!
 		return nullptr;
+	}
+
+	const String& Application::getLibNameForRenderSystem(RenderSystemPlugin plugin)
+	{
+		static String DX11Name = "BansheeD3D11RenderSystem";
+		static String DX9Name = "BansheeD3D9RenderSystem";
+		static String OpenGLName = "BansheeGLRenderSystem";
+
+		switch (plugin)
+		{
+		case RenderSystemPlugin::DX11:
+			return DX11Name;
+		case RenderSystemPlugin::DX9:
+			return DX9Name;
+		case RenderSystemPlugin::OpenGL:
+			return OpenGLName;
+		}
+
+		return StringUtil::BLANK;
+	}
+
+	const String& Application::getLibNameForRenderer(RendererPlugin plugin)
+	{
+		static String DefaultName = "BansheeRenderer";
+
+		switch (plugin)
+		{
+		case RendererPlugin::Default:
+			return DefaultName;
+		}
+	
+		return StringUtil::BLANK;
 	}
 
 	Application& gApplication()

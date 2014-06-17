@@ -32,6 +32,8 @@ namespace BansheeEngine
 		void updatePerObjectBuffers(RenderableElement* element, const Matrix4& wvpMatrix);
 
 	protected:
+		ShaderPtr createDefaultShader();
+
 		ShaderPtr defaultShader;
 
 		GpuParamBlockDesc staticParamBlockDesc;

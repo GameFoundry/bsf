@@ -8,12 +8,13 @@
 #include "BsGpuParamBlockBuffer.h"
 #include "BsTechnique.h"
 #include "BsPass.h"
+#include "BsRenderSystem.h"
 
 namespace BansheeEngine
 {
 	LitTexRenderableHandler::LitTexRenderableHandler()
 	{
-		defaultShader = nullptr; // TODO - Get proper shader
+		defaultShader = createDefaultShader();
 
 		TechniquePtr defaultTechnique = defaultShader->getBestTechnique();
 		PassPtr defaultPass = defaultTechnique->getPass(0);
@@ -254,5 +255,134 @@ namespace BansheeEngine
 			if (paramBlock->isDirty())
 				paramBlock->uploadToBuffer(rendererData->perObjectParamBuffer);
 		}
+	}
+
+	ShaderPtr LitTexRenderableHandler::createDefaultShader()
+	{
+		String rsName = RenderSystem::instance().getName();
+
+		HGpuProgram vsProgram;
+		HGpuProgram psProgram;
+
+		if (rsName == RenderSystemDX11)
+		{
+			String vsCode = R"(
+			cbuffer PerFrame
+			{
+				float time;
+			}
+				
+			cbuffer PerObject
+			{
+				float4x4 matWorldViewProj;
+			}
+
+			void vs_main(in float3 inPos : POSITION,
+					     out float4 oPosition : SV_Position)
+			{
+				 oPosition = mul(matWorldViewProj, float4(inPos.xyz + float3(sin(time), 0, 0), 1));
+			})";
+
+			String psCode = R"(
+			cbuffer Static
+			{
+				float4 lightDir;
+			}
+			
+			float4 ps_main() : SV_Target
+			{
+				return dot(lightDir, float4(0.5f, 0.5f, 0.5f, 0.5f));
+			})";	
+
+			vsProgram = GpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		}
+		else if (rsName == RenderSystemDX9)
+		{
+			String vsCode = R"(
+			BS_PARAM_BLOCK PerFrame { time }
+			BS_PARAM_BLOCK PerObject { matWorldViewProj }
+
+			float time;
+			float4x4 matWorldViewProj;
+
+			void vs_main(in float3 inPos : POSITION,
+						out float4 oPosition : POSITION)
+			{
+				oPosition = mul(matWorldViewProj, float4(inPos.xyz + float3(sin(time), 0, 0), 1));
+			})";
+
+			String psCode = R"(
+			BS_PARAM_BLOCK Static { lightDir }
+
+			float4 lightDir;
+
+			float4 ps_main() : COLOR0
+			{
+				return dot(lightDir, float4(0.5f, 0.5f, 0.5f, 0.5f));
+			})";
+
+			vsProgram = GpuProgram::create(vsCode, "vs_main", "hlsl", GPT_VERTEX_PROGRAM, GPP_VS_2_0);
+			psProgram = GpuProgram::create(psCode, "ps_main", "hlsl", GPT_FRAGMENT_PROGRAM, GPP_PS_2_0);
+		}
+		else if (rsName == RenderSystemOpenGL)
+		{
+			String vsCode = R"(
+			#version 400\n
+
+			uniform PerFrame
+			{
+				float time;
+			}
+
+			uniform PerObject
+			{
+				mat4 matWorldViewProj;
+			}
+
+			in vec3 bs_position;
+
+			void main()
+			{
+				gl_Position = matWorldViewProj * vec4(bs_position.xyz + vec3(sin(time), 0, 0), 1);
+			})";
+
+			String psCode = R"(
+			#version 400\n
+
+			uniform Static
+			{
+				vec4 lightDir;
+			}
+
+			out vec4 fragColor;
+
+			void main()
+			{
+				fragColor = dot(lightDir, vec4(0.5f, 0.5f, 0.5f, 0.5f));
+			})";
+
+			vsProgram = GpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+			psProgram = GpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+		}
+
+		vsProgram.synchronize();
+		psProgram.synchronize();
+
+		ShaderPtr defaultShader = Shader::create("LitTexDefault");
+		defaultShader->setParamBlockAttribs("Static", true, GPBU_DYNAMIC, RBS_Static);
+		defaultShader->setParamBlockAttribs("PerFrame", true, GPBU_DYNAMIC, RBS_PerFrame);
+		defaultShader->setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+
+		defaultShader->addParameter("lightDir", "lightDir", GPDT_FLOAT4, RPS_LightDir);
+		defaultShader->addParameter("time", "time", GPDT_FLOAT1, RPS_Time);
+		defaultShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
+
+		TechniquePtr newTechnique = defaultShader->addTechnique(rsName, RendererDefault);
+		PassPtr newPass = newTechnique->addPass();
+		newPass->setVertexProgram(vsProgram);
+		newPass->setFragmentProgram(psProgram);
+
+		return defaultShader;
 	}
 }

@@ -23,6 +23,11 @@
 
 namespace BansheeEngine
 {
+	static const String RenderSystemDX9 = "D3D9RenderSystem";
+	static const String RenderSystemDX11 = "D3D11RenderSystem";
+	static const String RenderSystemOpenGL = "GLRenderSystem";
+	static const String RendererDefault = "BansheeRenderer";
+
 	class VirtualButton;
 	class VirtualInput;
 	class InputConfiguration;

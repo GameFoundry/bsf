@@ -26,7 +26,7 @@
 
 namespace BansheeEngine 
 {
-	String MODULE_NAME = "CamelotGLRenderSystem.dll";
+	String MODULE_NAME = "BansheeGLRenderSystem.dll";
 
 	void openGlErrorCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, GLvoid *userParam);
 
