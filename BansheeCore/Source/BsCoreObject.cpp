@@ -189,14 +189,14 @@ namespace BansheeEngine
 		gCoreAccessor().queueCommand(std::bind(&CoreObject::executeGpuCommand, obj, func));
 	}
 
-	void CoreObject::executeGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void()> func)
+	void CoreObject::executeGpuCommand(std::shared_ptr<CoreObject> obj, std::function<void()> func)
 	{
 		volatile std::shared_ptr<CoreObject> objParam = obj; // Makes sure obj isn't optimized out?
 
 		func();
 	}
 
-	void CoreObject::executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void(AsyncOp&)> func, AsyncOp& op)
+	void CoreObject::executeReturnGpuCommand(std::shared_ptr<CoreObject> obj, std::function<void(AsyncOp&)> func, AsyncOp& op)
 	{
 		volatile std::shared_ptr<CoreObject> objParam = obj; // Makes sure obj isn't optimized out?
 

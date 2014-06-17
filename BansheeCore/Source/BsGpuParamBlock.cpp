@@ -9,14 +9,21 @@ namespace BansheeEngine
 	GpuParamBlock::GpuParamBlock(UINT32 size)
 		:mDirty(true), mData(nullptr), mSize(size)
 	{
-		mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+		if (mSize > 0)
+			mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+
 		memset(mData, 0, mSize);
 	}
 
 	GpuParamBlock::GpuParamBlock(GpuParamBlock* otherBlock)
 	{
 		mSize = otherBlock->mSize;
-		mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+
+		if (mSize > 0)
+			mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+		else
+			mData = nullptr;
+
 		write(0, otherBlock->getData(), otherBlock->getSize());
 		mDirty = otherBlock->mDirty;
 	}

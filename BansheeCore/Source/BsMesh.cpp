@@ -276,6 +276,8 @@ namespace BansheeEngine
 		{
 			updateBounds(*mTempInitialMeshData);
 		}
+
+		MeshBase::initialize();
 	}
 
 	void Mesh::initialize_internal()
@@ -311,14 +313,14 @@ namespace BansheeEngine
 			mTempInitialMeshData = nullptr;
 		}
 
-		Resource::initialize_internal();
+		MeshBase::initialize_internal();
 	}
 
 	void Mesh::destroy_internal()
 	{
 		THROW_IF_NOT_CORE_THREAD;
 
-		Resource::destroy_internal();
+		MeshBase::destroy_internal();
 	}
 
 	void Mesh::updateBounds(const MeshData& meshData)

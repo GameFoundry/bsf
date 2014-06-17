@@ -193,12 +193,12 @@ namespace BansheeEngine
 		/**
 		 * @brief	Helper wrapper method used for queuing commands with no return value on the core thread.
 		 */
-		static void executeGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void()> func);
+		static void executeGpuCommand(std::shared_ptr<CoreObject> obj, std::function<void()> func);
 
 		/**
 		 * @brief	Helper wrapper method used for queuing commands with a return value on the core thread.
 		 */
-		static void executeReturnGpuCommand(std::shared_ptr<CoreObject>& obj, std::function<void(AsyncOp&)> func, AsyncOp& op); 
+		static void executeReturnGpuCommand(std::shared_ptr<CoreObject> obj, std::function<void(AsyncOp&)> func, AsyncOp& op); 
 	};
 
 	/**

@@ -19,7 +19,7 @@ namespace BansheeEngine
 		TechniquePtr defaultTechnique = defaultShader->getBestTechnique();
 		PassPtr defaultPass = defaultTechnique->getPass(0);
 
-		bool matrixTranspose = defaultPass->getVertexProgram()->requiresMatrixTranspose(); // This is a static setting across all GPU programs
+		bool matrixTranspose = defaultPass->getVertexProgram()->requiresMatrixTranspose(); // Only need this from first vertex program as this is a static setting across all GPU programs
 		const GpuParamDesc& vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
 		const GpuParamDesc& fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
 
@@ -27,82 +27,98 @@ namespace BansheeEngine
 		GpuParamDesc perFrameParamsDesc;
 		GpuParamDesc perObjectParamsDesc;
 
+		bool foundLightDir = false;
+		bool foundTime = false;
+		bool foundWVP = false;
+		bool foundStatic = false;
+		bool foundPerFrame = false;
+		bool foundPerObject = false;
+
 		const Map<String, SHADER_DATA_PARAM_DESC>& dataParams = defaultShader->_getDataParams();
 		for (auto& param : dataParams)
 		{
-			if (param.second.rendererSemantic == RPS_LightDir)
+			if (!foundLightDir && param.second.rendererSemantic == RPS_LightDir)
 			{
 				auto iterFind = fragParamDesc.params.find(param.second.gpuVariableName);
 				if (iterFind == fragParamDesc.params.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
+					continue;
 
 				lightDirParamDesc = iterFind->second;
 				staticParamsDesc.params[iterFind->first] = iterFind->second;
+				foundLightDir = true;
 			}
-			else if (param.second.rendererSemantic == RPS_Time)
+			else if (!foundTime && param.second.rendererSemantic == RPS_Time)
 			{
 				auto iterFind = vertParamDesc.params.find(param.second.gpuVariableName);
 				if (iterFind == vertParamDesc.params.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
+					continue;
 
 				timeParamDesc = iterFind->second;
 				perFrameParamsDesc.params[iterFind->first] = iterFind->second;
+				foundTime = true;
 			}
-			else if (param.second.rendererSemantic == RPS_WorldViewProjTfrm)
+			else if (!foundWVP && param.second.rendererSemantic == RPS_WorldViewProjTfrm)
 			{
 				auto iterFind = vertParamDesc.params.find(param.second.gpuVariableName);
 				if (iterFind == vertParamDesc.params.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
+					continue;
 
 				wvpParamDesc = iterFind->second;
 				perObjectParamsDesc.params[iterFind->first] = iterFind->second;
+				foundWVP = true;
 			}
 		}
 
 		const Map<String, SHADER_PARAM_BLOCK_DESC>& paramBlocks = defaultShader->_getParamBlocks();
 		for (auto& block : paramBlocks)
 		{
-			if (block.second.rendererSemantic == RBS_Static)
-			{
-				auto iterFind = vertParamDesc.paramBlocks.find(block.second.name);
-				if (iterFind == vertParamDesc.paramBlocks.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
-
-				staticParamBlockDesc = iterFind->second;
-				staticParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
-			}
-			else if (block.second.rendererSemantic == RBS_PerFrame)
+			if (!foundStatic && block.second.rendererSemantic == RBS_Static)
 			{
 				auto iterFind = fragParamDesc.paramBlocks.find(block.second.name);
 				if (iterFind == fragParamDesc.paramBlocks.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
+					continue;
 
-				perFrameParamBlockDesc = iterFind->second;
-				perFrameParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
+				staticParamBlockDesc = iterFind->second;
+				staticParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
+				foundStatic = true;
 			}
-			else if (block.second.rendererSemantic == RBS_PerObject)
+			else if (!foundPerFrame && block.second.rendererSemantic == RBS_PerFrame)
 			{
 				auto iterFind = vertParamDesc.paramBlocks.find(block.second.name);
 				if (iterFind == vertParamDesc.paramBlocks.end())
-					BS_EXCEPT(InternalErrorException, "Invalid default shader.");
+					continue;
+
+				perFrameParamBlockDesc = iterFind->second;
+				perFrameParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
+				foundPerFrame = true;
+			}
+			else if (!foundPerObject && block.second.rendererSemantic == RBS_PerObject)
+			{
+				auto iterFind = vertParamDesc.paramBlocks.find(block.second.name);
+				if (iterFind == vertParamDesc.paramBlocks.end())
+					continue;
 
 				perObjectParamBlockDesc = iterFind->second;
 				perObjectParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
+				foundPerObject = true;
 			}
 		}
+
+		if (!foundLightDir || !foundLightDir || !foundWVP || !foundStatic || !foundPerFrame || !foundPerObject)
+			BS_EXCEPT(InternalErrorException, "Invalid default shader.");
 
 		// Create global GPU param buffers and get parameter handles
 		staticParams = bs_shared_ptr<GpuParams>(staticParamsDesc, matrixTranspose);
 		perFrameParams = bs_shared_ptr<GpuParams>(perFrameParamsDesc, matrixTranspose);
 
-		staticParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(staticParamBlockDesc.blockSize);
-		perFrameParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(perFrameParamBlockDesc.blockSize);
+		staticParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(staticParamBlockDesc.blockSize * sizeof(UINT32));
+		perFrameParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(perFrameParamBlockDesc.blockSize * sizeof(UINT32));
 
 		staticParams->setParamBlockBuffer(staticParamBlockDesc.slot, staticParamBuffer);
 		perFrameParams->setParamBlockBuffer(perFrameParamBlockDesc.slot, perFrameParamBuffer);
 
 		staticParams->getParam(lightDirParamDesc.name, lightDirParam);
-		staticParams->getParam(timeParamDesc.name, timeParam);
+		perFrameParams->getParam(timeParamDesc.name, timeParam);
 
 		lightDirParam.set(Vector4(0.707f, 0.707f, 0.707f, 0.0f));
 	}
@@ -193,7 +209,7 @@ namespace BansheeEngine
 						if (findIter->second.blockSize == perObjectParamBlockDesc.blockSize)
 						{
 							if (rendererData->perObjectParamBuffer == nullptr)
-								rendererData->perObjectParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize);
+								rendererData->perObjectParamBuffer = HardwareBufferManager::instance().createGpuParamBlockBuffer(perObjectParamBlockDesc.blockSize * sizeof(UINT32));
 
 							rendererData->perObjectBuffers.push_back(MaterialProxy::BufferBindInfo(idx, findIter->second.slot, rendererData->perObjectParamBuffer));
 

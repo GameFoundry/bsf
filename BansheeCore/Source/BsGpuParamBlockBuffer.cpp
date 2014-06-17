@@ -24,6 +24,10 @@ namespace BansheeEngine
 		CoreObject::initialize();
 	}
 
+	GenericGpuParamBlockBuffer::GenericGpuParamBlockBuffer()
+		:mData(nullptr)
+	{ }
+
 	void GenericGpuParamBlockBuffer::writeData(const UINT8* data)
 	{
 		memcpy(mData, data, mSize);
@@ -36,7 +40,11 @@ namespace BansheeEngine
 
 	void GenericGpuParamBlockBuffer::initialize_internal()
 	{
-		mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+		if (mSize > 0)
+			mData = (UINT8*)bs_alloc<ScratchAlloc>(mSize);
+		else
+			mData = nullptr;
+
 		memset(mData, 0, mSize);
 
 		GpuParamBlockBuffer::initialize_internal();

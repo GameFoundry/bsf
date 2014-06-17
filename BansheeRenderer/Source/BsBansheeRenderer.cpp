@@ -38,14 +38,10 @@ namespace BansheeEngine
 	{
 		mRenderableRemovedConn = gBsSceneManager().onRenderableRemoved.connect(std::bind(&BansheeRenderer::renderableRemoved, this, _1));
 		mCameraRemovedConn = gBsSceneManager().onCameraRemoved.connect(std::bind(&BansheeRenderer::cameraRemoved, this, _1));
-
-		mLitTexHandler = bs_new<LitTexRenderableHandler>();
 	}
 
 	BansheeRenderer::~BansheeRenderer()
 	{
-		bs_delete(mLitTexHandler);
-
 		mRenderableRemovedConn.disconnect();
 		mCameraRemovedConn.disconnect();
 	}
@@ -54,6 +50,22 @@ namespace BansheeEngine
 	{
 		static String name = "BansheeRenderer";
 		return name;
+	}
+
+	void BansheeRenderer::_onActivated()
+	{
+		Renderer::_onActivated();
+
+		mLitTexHandler = bs_new<LitTexRenderableHandler>();
+		mLitTexHandler = nullptr;
+	}
+
+	void BansheeRenderer::_onDeactivated()
+	{
+		Renderer::_onDeactivated();
+
+		if (mLitTexHandler != nullptr)
+			bs_delete(mLitTexHandler);
 	}
 
 	void BansheeRenderer::addRenderableProxy(RenderableProxyPtr proxy)
@@ -204,12 +216,10 @@ namespace BansheeEngine
 		for (auto& renderable : allRenderables)
 		{
 			bool addedNewProxy = false;
-			RenderableProxyPtr proxy;
+			RenderableProxyPtr proxy = renderable->_getActiveProxy();
 
-			if (!renderable->_isCoreDirty())
+			if (renderable->_isCoreDirty())
 			{
-				proxy = renderable->_getActiveProxy();
-
 				if (proxy != nullptr)
 					gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::removeRenderableProxy, this, proxy));
 
@@ -222,9 +232,8 @@ namespace BansheeEngine
 				dirtySceneObjects.push_back(renderable->SO());
 				addedNewProxy = true;
 			}
-			else if (!renderable->SO()->_isCoreDirty())
+			else if (renderable->SO()->_isCoreDirty())
 			{
-				proxy = renderable->_getActiveProxy();
 				assert(proxy != nullptr);
 
 				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateRenderableProxy, this, proxy, renderable->SO()->getWorldTfrm()));

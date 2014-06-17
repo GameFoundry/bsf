@@ -39,6 +39,11 @@ namespace BansheeEngine
 
 		~GpuParams();
 
+		// Note: Disallow copy/assign because it would require some care when copying (copy internal data shared_ptr and
+		// all the internal buffers too). Trivial to implement but not needed at this time. Un-delete and implement if necessary.
+		GpuParams(const GpuParams& other) = delete;
+		GpuParams& operator=(const GpuParams& rhs) = delete;
+
 		/**
 		 * @brief	Binds a new parameter buffer to the specified slot. Any following parameter reads or
 		 *			writes that are referencing that buffer slot will use the new buffer.
@@ -264,11 +269,11 @@ namespace BansheeEngine
 		GpuParamDataDesc* getParamDesc(const String& name) const;
 
 		/**
-		 * @brief	Calculates size and offsets used when splitting a large memory chunk into separate buffers.
-		 *			Parameter counts must have been previously assigned.
+		 * @brief	Allocates and constructs internal buffers. Parameter counts must have been previously assigned.
+		 *			If provided, internal data will be allocated using the frame allocator, otherwise using
+		 *			the normal allocator.
 		 */
-		void getInternalBufferData(UINT32& bufferSize, UINT32& paramBlockOffset, UINT32& paramBlockBufferOffset,
-			UINT32& textureOffset, UINT32& samplerStateOffset) const;
+		void constructInternalBuffers(FrameAlloc* frameAlloc = nullptr);
 
 		/**
 		 * @brief	Marks the core data as dirty, signifying the core thread it should update it.

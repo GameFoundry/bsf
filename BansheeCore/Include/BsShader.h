@@ -154,16 +154,16 @@ namespace BansheeEngine
 		 * @param	name		   	 The name of the parameter. Name must be unique between all data and object parameters.
 		 * @param	gpuVariableName	 Name of the GPU variable in the GpuProgram that the parameter corresponds with.
 		 * @param	type		   	 The type of the parameter, must be the same as the type in GpuProgram.
-		 * @param	arraySize	   	 (optional) If the parameter is an array, the number of elements in the array. Size of 1 means its not an array.
-		 * @param	elementSize	   	 (optional) Size of an individual element in the array, in bytes. You only need to set this if you are setting variable
-		 * 							 length parameters, like structs.
 		 * @param	rendererSemantic (optional) Semantic that allows you to specify the use of this parameter in the renderer. The actual value of the semantic
 		 *							 depends on the current Renderer and its supported list of semantics. Elements with renderer semantics should not be updated
 		 *							 by the user, and will be updated by the renderer. These semantics will also be used to determine if a shader is compatible
 		 *							 with a specific renderer or not. Value of 0 signifies the parameter is not used by the renderer.
+		 * @param	arraySize	   	 (optional) If the parameter is an array, the number of elements in the array. Size of 1 means its not an array.
+		 * @param	elementSize	   	 (optional) Size of an individual element in the array, in bytes. You only need to set this if you are setting variable
+		 * 							 length parameters, like structs.
 		 */
-		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 arraySize = 1, 
-			UINT32 elementSize = 0, UINT32 rendererSemantic = 0);
+		void addParameter(const String& name, const String& gpuVariableName, GpuParamDataType type, UINT32 rendererSemantic = 0,
+			UINT32 arraySize = 1, UINT32 elementSize = 0);
 
 		/**
 		 * @brief	Registers a new object (texture, sampler state, etc.) parameter you that you may then use 

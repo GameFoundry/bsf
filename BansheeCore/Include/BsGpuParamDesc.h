@@ -10,9 +10,9 @@ namespace BansheeEngine
 	struct GpuParamDataDesc
 	{
 		String name;
-		UINT32 elementSize; // Multiple of 4 bytes
+		UINT32 elementSize; /**< In multiples of 4 bytes. */
 		UINT32 arraySize;
-		UINT32 arrayElementStride; // Multiple of 4 bytes
+		UINT32 arrayElementStride; /**< In multiples of 4 bytes. */
 		GpuParamDataType type;
 
 		UINT32 paramBlockSlot;
@@ -38,7 +38,7 @@ namespace BansheeEngine
 	{
 		String name;
 		UINT32 slot;
-		UINT32 blockSize;
+		UINT32 blockSize; /**< In multiples of 4 bytes. */
 		bool isShareable;
 	};
 

@@ -151,7 +151,7 @@ namespace BansheeEngine
 	{ }
 
 	GpuParamSampState::GpuParamSampState(GpuParamObjectDesc* paramDesc, const std::shared_ptr<GpuParamsInternalData>& internalData)
-		: mParamDesc(nullptr), mInternalData(internalData)
+		: mParamDesc(paramDesc), mInternalData(internalData)
 	{ }
 
 	void GpuParamSampState::set(const HSamplerState& samplerState)

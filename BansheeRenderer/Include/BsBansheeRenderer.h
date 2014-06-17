@@ -41,6 +41,16 @@ namespace BansheeEngine
 		 */
 		virtual void renderAll();
 
+		/**
+		 * @copydoc	Renderer::_onActivated
+		 */
+		virtual void _onActivated();
+
+		/**
+		 * @copydoc	Renderer::_onDeactivated
+		 */
+		virtual void _onDeactivated();
+
 	private:
 		void addRenderableProxy(RenderableProxyPtr proxy);
 		void removeRenderableProxy(RenderableProxyPtr proxy);

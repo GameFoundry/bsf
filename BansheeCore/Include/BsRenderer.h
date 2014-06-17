@@ -12,10 +12,11 @@ namespace BansheeEngine
 	 */
 	enum RendererBlockSemantic
 	{
-		RBS_Static,
-		RBS_PerCamera,
-		RBS_PerFrame,
-		RBS_PerObject
+		// 0 - Reserved
+		RBS_Static = 1,
+		RBS_PerCamera = 2,
+		RBS_PerFrame = 3,
+		RBS_PerObject = 4
 	};
 
 	/**
@@ -24,9 +25,10 @@ namespace BansheeEngine
 	 */
 	enum RendererParamSemantic
 	{
-		RPS_WorldViewProjTfrm,
-		RPS_ViewProjTfrm,
-		RPS_WorldTfrm
+		// 0 - Reserved
+		RPS_WorldViewProjTfrm = 1,
+		RPS_ViewProjTfrm = 2,
+		RPS_WorldTfrm = 3
 	};
 
 	/**
@@ -39,6 +41,20 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT Renderer
 	{
 	public:
+		/**
+		 * @brief	Called after the renderer has been activated.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _onActivated() { }
+
+		/**
+		 * @brief	Called just before the renderer is deactivated.
+		 *
+		 * @note	Internal method.
+		 */
+		virtual void _onDeactivated() { }
+
 		/**
 		 * @brief	Name of the renderer. Used by materials to find 
 		 * 			an appropriate technique for this renderer.

@@ -82,6 +82,8 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT GenericGpuParamBlockBuffer : public GpuParamBlockBuffer
 	{
 	public:
+		GenericGpuParamBlockBuffer();
+
 		/**
 		 * @copydoc	GpuParamBlockBuffer::writeData
 		 */

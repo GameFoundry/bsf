@@ -13,7 +13,11 @@ namespace BansheeEngine
 				RendererPtr newRenderer = (*iter)->create();
 				if(newRenderer != nullptr)
 				{
+					if (mActiveRenderer != nullptr)
+						mActiveRenderer->_onDeactivated();
+
 					mActiveRenderer = newRenderer;
+					mActiveRenderer->_onActivated();
 				}				
 			}
 		}
