@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @copydoc OcclusionQuery
+	 * @brief	OpenGL implementation of an occlusion query.
 	 */
 	class BS_RSGL_EXPORT GLOcclusionQuery : public OcclusionQuery
 	{
@@ -37,11 +37,16 @@ namespace BansheeEngine
 	private:
 		friend class QueryManager;
 
+		/**
+		 * @brief	Processes query results and saves them for later use. To be called
+		 *			when query has completed.
+		 */
+		void finalize();
+
+	private:
 		GLuint mQueryObj;
 		bool mFinalized;
 
 		UINT32 mNumSamples;
-
-		void finalize();
 	};
 }

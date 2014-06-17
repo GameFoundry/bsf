@@ -28,7 +28,7 @@ namespace BansheeEngine
 		if(mFB != nullptr)
 			bs_delete<PoolAlloc>(mFB);
 
-		mFB = bs_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
+		mFB = bs_new<GLFrameBufferObject, PoolAlloc>();
 
 		GLSurfaceDesc surfaceDesc;
 		surfaceDesc.numSamples = mMultisampleCount;

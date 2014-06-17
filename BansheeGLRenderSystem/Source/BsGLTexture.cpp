@@ -251,8 +251,8 @@ namespace BansheeEngine
 		{
 			for(UINT32 mip=0; mip<=getNumMipmaps(); mip++)
 			{
-                GLPixelBuffer *buf = bs_new<GLTextureBuffer, PoolAlloc>("", getGLTextureTarget(), mTextureID, face, mip,
-						static_cast<GpuBufferUsage>(mUsage), false, mHwGamma, mMultisampleCount);
+                GLPixelBuffer *buf = bs_new<GLTextureBuffer, PoolAlloc>(getGLTextureTarget(), mTextureID, face, mip,
+						static_cast<GpuBufferUsage>(mUsage), mHwGamma, mMultisampleCount);
 				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
                 
                 /// Check for error

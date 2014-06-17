@@ -19,7 +19,7 @@ namespace BansheeEngine
 		if(mFB != nullptr)
 			bs_delete(mFB);
 
-		mFB = bs_new<GLFrameBufferObject, PoolAlloc>(mMultisampleCount);
+		mFB = bs_new<GLFrameBufferObject, PoolAlloc>();
 
 		for(size_t i = 0; i < mColorSurfaces.size(); i++)
 		{

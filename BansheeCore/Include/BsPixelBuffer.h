@@ -16,7 +16,17 @@ namespace BansheeEngine
     class BS_CORE_EXPORT PixelBuffer : public HardwareBuffer
     {
     public:
-        PixelBuffer(UINT32 mWidth, UINT32 mHeight, UINT32 mDepth, PixelFormat mFormat, 
+		/**
+		 * @brief	Constructs a new pixel buffer with the provided settings.
+		 *
+		 * @param	width			Width of the pixel buffer in pixels.
+		 * @param	height			Height of the pixel buffer in pixels.
+		 * @param	depth			Depth of the pixel buffer in pixels (number of 2D slices).
+		 * @param	format			Format of each pixel in the buffer.
+		 * @param	usage			Usage signaling the render system how we plan on using the buffer.
+		 * @param	useSystemMemory	True if buffer should be allocated in system memory.
+		 */
+        PixelBuffer(UINT32 width, UINT32 height, UINT32 depth, PixelFormat format, 
 			GpuBufferUsage usage, bool useSystemMemory);
         ~PixelBuffer();
 

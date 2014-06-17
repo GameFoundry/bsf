@@ -23,7 +23,6 @@ namespace BansheeEngine
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBufferId);
 
-		// Initialise buffer and set usage
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSizeInBytes, NULL, 
 			GLHardwareBufferManager::getGLUsage(mUsage));
 

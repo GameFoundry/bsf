@@ -7,73 +7,85 @@
 
 namespace BansheeEngine 
 {
-	/** GL surface descriptor. Points to a 2D surface that can be rendered to. 
-    */
+	/**
+	 * @brief	Describes OpenGL frame buffer surface.
+	 */
     struct BS_RSGL_EXPORT GLSurfaceDesc
     {
     public:
-        GLPixelBufferPtr buffer;
-        UINT32 zoffset;
-		UINT32 numSamples;
+		GLSurfaceDesc() 
+			:zoffset(0), numSamples(0) 
+		{ }
 
-		GLSurfaceDesc() :buffer(0), zoffset(0), numSamples(0) {}
+		GLPixelBufferPtr buffer;
+		UINT32 zoffset;
+		UINT32 numSamples;
     };
 
-    /** Frame Buffer Object abstraction.
-    */
+	/**
+	 * @brief	Manages an OpenGL frame-buffer object. Frame buffer object
+	 *			is used as a rendering destination in the render system pipeline,
+	 *			and it may consist out of one or multiple color surfaces and an optional
+	 *			depth/stencil surface.
+	 */
     class BS_RSGL_EXPORT GLFrameBufferObject
     {
     public:
-        GLFrameBufferObject(UINT32 multisampleCount);
+        GLFrameBufferObject();
         ~GLFrameBufferObject();
 
-        /** Bind a surface to a certain attachment point.
-            attachment: 0..BS_MAX_MULTIPLE_RENDER_TARGETS-1
-        */
-        void bindSurface(UINT32 attachment, const GLSurfaceDesc &target);
+		/**
+		 * @brief	Binds a color surface to the specific attachment point.
+		 *
+		 * @param	attachment	Attachment point index in the range [0, BS_MAX_MULTIPLE_RENDER_TARGETS).
+		 * @param	target		Description of the color surface to attach.
+		 *
+		 * @note	Multisample counts of all surfaces must match.
+		 *			0th attachment must be bound in order for the object to be usable, rest are optional.
+		 */
+        void bindSurface(UINT32 attachment, const GLSurfaceDesc& target);
 
-        /** Unbind attachment
-        */
+		/**
+		 * @brief	Unbinds the attachment at the specified attachment index.
+		 *
+		 * @param	attachment	Attachment point index in the range [0, BS_MAX_MULTIPLE_RENDER_TARGETS).
+		 */
         void unbindSurface(UINT32 attachment);
 
 		/**
-		 * @brief	Bind depth stencil buffer.
+		 * @brief	Binds a depth/stencil buffer.
+		 *
+		 * @note	Multisample counts of depth/stencil and color surfaces must match.
+		 *			Binding a depth/stencil buffer is optional.
 		 */
 		void bindDepthStencil(GLPixelBufferPtr depthStencilBuffer);
 
 		/**
-		 * @brief	Unbinds depth stencil buffer.
+		 * @brief	Unbinds a depth stencil buffer.
 		 */
 		void unbindDepthStencil();
         
-        /** Bind FrameBufferObject
-        */
+		/**
+		 * @brief	Binds the frame buffer object to the OpenGL pipeline, making it used
+		 *			for any further rendering operations.
+		 */
         void bind();
 
-		/// Get the GL id for the FBO
+		/**
+		 * @brief	Returns internal OpenGL frame buffer id.
+		 */
 		GLuint getGLFBOID() const { return mFB; }
 
-        /// Accessors
-        UINT32 getWidth();
-        UINT32 getHeight();
-        PixelFormat getFormat();
-        
-		const GLSurfaceDesc &getSurface(UINT32 attachment) { return mColor[attachment]; }
     private:
-		GLsizei mNumSamples;
+		/**
+		 * @brief	Rebuilds internal frame buffer object. Should be called whenever surfaces change.
+		 */
+        void rebuild();
+
+	private:
         GLuint mFB;
 
-        GLPixelBufferPtr mDepthStencilBuffer;
-        // Arbitrary number of texture surfaces
         GLSurfaceDesc mColor[BS_MAX_MULTIPLE_RENDER_TARGETS];
-
-		/** Initialise object (find suitable depth and stencil format).
-            Must be called every time the bindings change.
-            It fails with an exception (ERR_INVALIDPARAMS) if:
-            - Attachment point 0 has no binding
-            - Not all bound surfaces have the same size
-            - Not all bound surfaces have the same internal format
-        */
-        void initialize();
+		GLPixelBufferPtr mDepthStencilBuffer;
     };
 }

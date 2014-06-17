@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	OpenGL implementation of a GPU parameter buffer (Uniform buffer).
+	 */
 	class BS_RSGL_EXPORT GLGpuParamBlockBuffer : public GpuParamBlockBuffer
 	{
 	public:
@@ -20,6 +23,9 @@ namespace BansheeEngine
 		 */
 		void readData(UINT8* data) const;
 
+		/**
+		 * @brief	Returns internal OpenGL uniform buffer handle.
+		 */
 		GLuint getGLHandle() const { return mGLHandle; }
 	protected:
 		/**
