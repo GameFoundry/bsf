@@ -78,9 +78,9 @@ namespace BansheeEngine
 		RendererManager::startUp();
 
 		loadPlugin(desc.renderer);
-		RendererManager::instance().setActive(desc.renderer);
-
 		loadPlugin(desc.sceneManager, &mSceneManagerPlugin);
+
+		RendererManager::instance().setActive(desc.renderer);
 
 		ProfilerGPU::startUp();
 		MeshManager::startUp();

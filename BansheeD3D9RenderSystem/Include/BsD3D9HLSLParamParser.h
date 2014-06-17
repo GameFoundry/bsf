@@ -76,10 +76,10 @@ namespace BansheeEngine
 		{
 			mParamDesc.paramBlocks.insert(std::make_pair(block.blockName, GpuParamBlockDesc()));
 			GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[block.blockName];
-			globalBlockDesc.name = block.blockName;
-			globalBlockDesc.slot = curSlot++;
-			globalBlockDesc.blockSize = 0;
-			globalBlockDesc.isShareable = true;
+			blockDesc.name = block.blockName;
+			blockDesc.slot = curSlot++;
+			blockDesc.blockSize = 0;
+			blockDesc.isShareable = true;
 
 			for (auto& fieldName : block.paramNames)
 			{
