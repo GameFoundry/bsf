@@ -5,6 +5,25 @@
 
 namespace BansheeEngine 
 {
+#define PROBE_SIZE 16
+
+	static const GLenum depthFormats[] =
+	{
+		GL_NONE,
+		GL_DEPTH_COMPONENT16,
+		GL_DEPTH_COMPONENT32,
+		GL_DEPTH24_STENCIL8,
+		GL_DEPTH32F_STENCIL8
+	};
+
+	static const UINT32 depthBits[] =
+	{
+		0, 16, 32, 24, 32
+	};
+
+#define DEPTHFORMAT_COUNT (sizeof(depthFormats)/sizeof(GLenum))
+
+
 	GLRenderTexture::GLRenderTexture()
 		:mFB(nullptr)
 	{
@@ -60,23 +79,6 @@ namespace BansheeEngine
 		}
 	}
 
-/// Size of probe texture
-#define PROBE_SIZE 16
-
-static const GLenum depthFormats[] =
-{
-    GL_NONE,
-    GL_DEPTH_COMPONENT16,
-    GL_DEPTH_COMPONENT32,
-    GL_DEPTH24_STENCIL8, // packed depth / stencil
-	GL_DEPTH32F_STENCIL8
-};
-static const UINT32 depthBits[] =
-{
-    0,16,32,24,32
-};
-#define DEPTHFORMAT_COUNT (sizeof(depthFormats)/sizeof(GLenum))
-
 	GLRTTManager::GLRTTManager()
     {
 		detectFBOFormats();
@@ -89,97 +91,99 @@ static const UINT32 depthBits[] =
         glDeleteFramebuffersEXT(1, &mTempFBO);      
 	}
 
-    /** Try a certain FBO format, and return the status. Also sets mDepthRB and mStencilRB.
-        @returns true    if this combo is supported
-                 false   if this combo is not supported
-    */
-    GLuint GLRTTManager::_tryFormat(GLenum depthFormat, GLenum stencilFormat)
+	bool GLRTTManager::_tryFormat(GLenum depthFormat, GLenum stencilFormat)
     {
         GLuint status, depthRB = 0, stencilRB = 0;
-        bool failed = false; // flag on GL errors
+        bool failed = false;
 
         if(depthFormat != GL_NONE)
         {
-            /// Generate depth renderbuffer
+            // Generate depth renderbuffer
             glGenRenderbuffersEXT(1, &depthRB);
-            /// Bind it to FBO
+
+            // Bind it to FBO
             glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, depthRB);
             
-            /// Allocate storage for depth buffer
+            // Allocate storage for depth buffer
             glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, depthFormat,
                                 PROBE_SIZE, PROBE_SIZE);
             
-            /// Attach depth
+            // Attach depth
             glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
                                     GL_RENDERBUFFER_EXT, depthRB);
         }
 
         if(stencilFormat != GL_NONE)
         {
-            /// Generate stencil renderbuffer
+            // Generate stencil renderbuffer
             glGenRenderbuffersEXT(1, &stencilRB);
-            /// Bind it to FBO
+
+            // Bind it to FBO
             glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, stencilRB);
-            glGetError(); // NV hack
-            /// Allocate storage for stencil buffer
+            glGetError(); 
+
+            // Allocate storage for stencil buffer
             glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, stencilFormat,
                                 PROBE_SIZE, PROBE_SIZE); 
-            if(glGetError() != GL_NO_ERROR) // NV hack
+
+            if(glGetError() != GL_NO_ERROR)
                 failed = true;
-            /// Attach stencil
+
+            // Attach stencil
             glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
                             GL_RENDERBUFFER_EXT, stencilRB);
-            if(glGetError() != GL_NO_ERROR) // NV hack
+
+            if(glGetError() != GL_NO_ERROR)
                 failed = true;
         }
         
         status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-        /// If status is negative, clean up
+
         // Detach and destroy
         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
+
         if (depthRB)
             glDeleteRenderbuffersEXT(1, &depthRB);
+
         if (stencilRB)
             glDeleteRenderbuffersEXT(1, &stencilRB);
         
         return status == GL_FRAMEBUFFER_COMPLETE_EXT && !failed;
     }
     
-    /** Try a certain packed depth/stencil format, and return the status.
-        @returns true    if this combo is supported
-                 false   if this combo is not supported
-    */
     bool GLRTTManager::_tryPackedFormat(GLenum packedFormat)
     {
         GLuint packedRB = 0;
         bool failed = false; // flag on GL errors
 
-        /// Generate renderbuffer
+        // Generate renderbuffer
         glGenRenderbuffersEXT(1, &packedRB);
 
-        /// Bind it to FBO
+        // Bind it to FBO
         glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, packedRB);
 
-        /// Allocate storage for buffer
+        // Allocate storage for buffer
         glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, packedFormat, PROBE_SIZE, PROBE_SIZE);
-        glGetError(); // NV hack
+        glGetError();
 
-        /// Attach depth
+        // Attach depth
         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
             GL_RENDERBUFFER_EXT, packedRB);
-        if(glGetError() != GL_NO_ERROR) // NV hack
+
+        if(glGetError() != GL_NO_ERROR)
             failed = true;
 
-        /// Attach stencil
+        // Attach stencil
         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT,
             GL_RENDERBUFFER_EXT, packedRB);
-        if(glGetError() != GL_NO_ERROR) // NV hack
+
+        if(glGetError() != GL_NO_ERROR)
             failed = true;
 
         GLuint status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
-        /// Detach and destroy
+        // Detach and destroy
         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
         glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, 0);
         glDeleteRenderbuffersEXT(1, &packedRB);
@@ -187,10 +191,6 @@ static const UINT32 depthBits[] =
         return status == GL_FRAMEBUFFER_COMPLETE_EXT && !failed;
     }
 
-    /** Detect which internal formats are allowed as RTT
-        Also detect what combinations of stencil and depth are allowed with this internal
-        format.
-    */
     void GLRTTManager::detectFBOFormats()
     {
         // Try all formats, and report which ones work as target
@@ -241,6 +241,7 @@ static const UINT32 depthBits[] =
 				glDrawBuffer(GL_NONE);
 				glReadBuffer(GL_NONE);
 			}
+
             // Check status
             GLuint status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 
@@ -279,6 +280,7 @@ static const UINT32 depthBits[] =
                     }
                 }
             }
+
             // Delete texture and framebuffer
             glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
             glDeleteFramebuffersEXT(1, &fb);
@@ -306,7 +308,8 @@ static const UINT32 depthBits[] =
     {
         if(checkFormat(format))
             return format;
-        /// Find first alternative
+
+        // Find first alternative
         PixelComponentType pct = PixelUtil::getElementType(format);
         switch(pct)
         {
@@ -315,9 +318,11 @@ static const UINT32 depthBits[] =
         case PCT_FLOAT32: format = PF_FLOAT32_RGBA; break;
         case PCT_COUNT: break;
         }
+
         if(checkFormat(format))
             return format;
-        /// If none at all, return to default
+
+        // If none at all, return to default
         return PF_A8R8G8B8;
     }
 }

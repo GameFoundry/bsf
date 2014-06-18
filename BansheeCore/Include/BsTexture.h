@@ -41,7 +41,8 @@ namespace BansheeEngine
 
 	/**
 	 * @brief	Abstract class representing a texture. Specific render systems have their
-	 *			own Texture implementations.
+	 *			own Texture implementations. Internally represented as one or more surfaces
+	 *			with pixels in a certain number of dimensions, backed by a hardware buffer.
 	 *
 	 * @note	Core thread unless specified otherwise.
 	 */

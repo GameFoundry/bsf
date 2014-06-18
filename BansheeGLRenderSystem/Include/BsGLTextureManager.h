@@ -7,19 +7,35 @@
 
 namespace BansheeEngine 
 {
-    /** GL-specific implementation of a TextureManager */
+	/**
+	 * @brief	Handles creation of OpenGL textures.
+	 */
     class BS_RSGL_EXPORT GLTextureManager : public TextureManager
     {
     public:
         GLTextureManager(GLSupport& support);
         virtual ~GLTextureManager();
 
-		/// @copydoc TextureManager::getNativeFormat
+		/**
+		 * @brief	Converts the provided format for the specified texture type and usage
+		 *			into a format that is supported by OpenGL.
+		 */
 		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
 
-	protected:		
+	protected:
+		/**
+		 * @copydoc	TextureManager::createTextureImpl
+		 */
 		TexturePtr createTextureImpl();
+
+		/**
+		 * @copydoc	TextureManager::createRenderTextureImpl
+		 */
 		RenderTexturePtr createRenderTextureImpl();
+
+		/**
+		 * @copydoc	TextureManager::createMultiRenderTextureImpl
+		 */
 		MultiRenderTexturePtr createMultiRenderTextureImpl();
 
         GLSupport& mGLSupport;

@@ -313,13 +313,4 @@ namespace BansheeEngine
 			return PF_UNKNOWN;
 		}
 	}
-
-    UINT32 GLPixelUtil::optionalPO2(UINT32 value)
-    {
-        const RenderSystemCapabilities *caps = BansheeEngine::RenderSystem::instancePtr()->getCapabilities();
-        if(caps->hasCapability(RSC_NON_POWER_OF_2_TEXTURES))
-            return value;
-        else
-            return Bitwise::firstPO2From((UINT32)value);
-    }
 };

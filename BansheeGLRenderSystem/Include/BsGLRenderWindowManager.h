@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Manager that handles window creation for OpenGL.
+	 */
 	class BS_RSGL_EXPORT GLRenderWindowManager : public RenderWindowManager
 	{
 	public:

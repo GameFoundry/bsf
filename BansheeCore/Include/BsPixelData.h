@@ -8,7 +8,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	The pixel format used for images, textures, and render surfaces
+	 * @brief	The pixel format usable by images, textures and render surfaces.
 	 */
     enum PixelFormat
     {
@@ -94,17 +94,17 @@ namespace BansheeEngine
 	 */
     enum PixelFormatFlags {
         // This format has an alpha channel
-        PFF_HASALPHA        = 0x00000001,      
+        PFF_HASALPHA = 0x00000001,      
         // This format is compressed. This invalidates the values in elemBytes,
         // elemBits and the bit counts as these might not be fixed in a compressed format.
-        PFF_COMPRESSED    = 0x00000002,
+        PFF_COMPRESSED = 0x00000002,
         // This is a floating point format
-        PFF_FLOAT           = 0x00000004,         
+        PFF_FLOAT = 0x00000004,         
         // This is a depth format (for depth textures)
-        PFF_DEPTH           = 0x00000008,
+        PFF_DEPTH = 0x00000008,
         // Format is in native endian. Generally true for the 16, 24 and 32 bits
         // formats which can be represented as machine integers.
-        PFF_NATIVEENDIAN    = 0x00000010
+        PFF_NATIVEENDIAN = 0x00000010
     };
     
 	/**

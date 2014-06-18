@@ -12,12 +12,18 @@ namespace BansheeEngine
 	class BS_RSGL_EXPORT GLVertexArrayObject
 	{
 	private:
+		/**
+		 * @brief	Generates hash value for the VAO object.
+		 */
 		class Hash
 		{
 		public:
-			::std::size_t operator()(const GLVertexArrayObject &vao) const;
+			::std::size_t operator()(const GLVertexArrayObject& vao) const;
 		};
 
+		/**
+		 * @brief	Checks if two VAO objects are equal.
+		 */
 		class Equal
 		{
 		public:

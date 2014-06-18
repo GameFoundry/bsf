@@ -9,7 +9,8 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Implementation of a render system using OpenGL.
+	 * @brief	Implementation of a render system using OpenGL. Provides abstracted
+	 *			access to various low level OpenGL methods.
 	 */
     class BS_RSGL_EXPORT GLRenderSystem : public RenderSystem
     {

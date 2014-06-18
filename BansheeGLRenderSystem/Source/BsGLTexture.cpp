@@ -7,20 +7,16 @@
 #include "BsBitwise.h"
 #include "BsCoreThread.h"
 #include "BsTextureManager.h"
-
 #include "BsGLRenderTexture.h"
 
 namespace BansheeEngine 
 {
     GLTexture::GLTexture(GLSupport& support) 
-        : Texture(),
-        mTextureID(0), mGLSupport(support)
-    {
-    }
+        : Texture(), mTextureID(0), mGLSupport(support)
+    { }
 
     GLTexture::~GLTexture()
-    {
-    }
+    { }
 
 	void GLTexture::initialize_internal()
 	{
@@ -44,14 +40,14 @@ namespace BansheeEngine
 				BS_EXCEPT(NotImplementedException, "Supplied format is not a depth stencil format. Format: " + toString(mFormat));
 		}
 
-		// Generate texture name
-		glGenTextures( 1, &mTextureID );
+		// Generate texture handle
+		glGenTextures(1, &mTextureID);
 
 		// Set texture type
-		glBindTexture( getGLTextureTarget(), mTextureID );
+		glBindTexture(getGLTextureTarget(), mTextureID);
 
 		// This needs to be set otherwise the texture doesn't get rendered
-		glTexParameteri( getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps );
+		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MAX_LEVEL, mNumMipmaps);
 
 		// Set some misc default parameters so NVidia won't complain, these can of course be changed later
 		glTexParameteri(getGLTextureTarget(), GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -63,7 +59,6 @@ namespace BansheeEngine
 		}
 
 		// Allocate internal buffer so that glTexSubImageXD can be used
-		// Internal format
 		GLenum format = GLPixelUtil::getClosestGLInternalFormat(mFormat, mHwGamma);
 		UINT32 width = mWidth;
 		UINT32 height = mHeight;
@@ -80,8 +75,7 @@ namespace BansheeEngine
 
 		if((mUsage & TU_RENDERTARGET) != 0 && mTextureType == TEX_TYPE_2D && mMultisampleCount > 0)
 		{
-			glTexImage2DMultisample(GL_TEXTURE_2D, mMultisampleCount, format,
-				width, height, GL_FALSE);
+			glTexImage2DMultisample(GL_TEXTURE_2D, mMultisampleCount, format, width, height, GL_FALSE);
 		}
 		else if((mUsage & TU_DEPTHSTENCIL) != 0)
 		{
@@ -101,38 +95,41 @@ namespace BansheeEngine
 		}
 		else
 		{
-			// Run through this process to pregenerate mipmap piramid
-			for(UINT32 mip=0; mip<=mNumMipmaps; mip++)
+			// Run through this process to pre-generate mipmap pyramid
+			for(UINT32 mip = 0; mip <= mNumMipmaps; mip++)
 			{
-				// Normal formats
 				switch(mTextureType)
 				{
 				case TEX_TYPE_1D:
-					glTexImage1D(GL_TEXTURE_1D, mip, format,
-						width, 0, 
+					glTexImage1D(GL_TEXTURE_1D, mip, format, width, 0, 
 						GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 
 					break;
 				case TEX_TYPE_2D:
 					glTexImage2D(GL_TEXTURE_2D, mip, format,
-						width, height, 0, 
-						GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+						width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 					break;
 				case TEX_TYPE_3D:
-					glTexImage3D(GL_TEXTURE_3D, mip, format,
-						width, height, depth, 0, 
-						GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+					glTexImage3D(GL_TEXTURE_3D, mip, format, width, height, 
+						depth, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 					break;
 				case TEX_TYPE_CUBE_MAP:
-					for(int face=0; face<6; face++) {
+					for(UINT32 face = 0; face < 6; face++) 
+					{
 						glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, mip, format,
 							width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 					}
 					break;
 				};
-				if(width>1)		width = width/2;
-				if(height>1)	height = height/2;
-				if(depth>1)		depth = depth/2;
+
+				if(width > 1)
+					width = width/2;
+
+				if(height > 1)
+					height = height/2;
+
+				if(depth > 1)	
+					depth = depth/2;
 			}
 		}
 
@@ -156,7 +153,7 @@ namespace BansheeEngine
 	void GLTexture::destroy_internal()
 	{
 		mSurfaceList.clear();
-		glDeleteTextures( 1, &mTextureID );
+		glDeleteTextures(1, &mTextureID);
 
 		clearBufferViews();
 
@@ -232,9 +229,9 @@ namespace BansheeEngine
 		size_t numMips = std::min(getNumMipmaps(), target->getNumMipmaps());
 
 		GLTexture* glTexture = static_cast<GLTexture*>(target.get());
-		for(unsigned int face=0; face<getNumFaces(); face++)
+		for (UINT32 face = 0; face < getNumFaces(); face++)
 		{
-			for(unsigned int mip=0; mip<=numMips; mip++)
+			for(UINT32 mip = 0; mip <= numMips; mip++)
 			{
 				GLTextureBuffer *src = static_cast<GLTextureBuffer*>(getBuffer(face, mip).get());
 
@@ -255,8 +252,7 @@ namespace BansheeEngine
 						static_cast<GpuBufferUsage>(mUsage), mHwGamma, mMultisampleCount);
 				mSurfaceList.push_back(bs_shared_ptr<GLPixelBuffer, PoolAlloc>(buf));
                 
-                /// Check for error
-                if(buf->getWidth()==0 || buf->getHeight()==0 || buf->getDepth()==0)
+                if(buf->getWidth() == 0 || buf->getHeight() == 0 || buf->getDepth() == 0)
                 {
 					BS_EXCEPT(RenderingAPIException, 
                         "Zero sized texture surface on texture face "
@@ -274,8 +270,10 @@ namespace BansheeEngine
 
 		if(face >= getNumFaces())
 			BS_EXCEPT(InvalidParametersException, "Face index out of range");
+
 		if(mipmap > mNumMipmaps)
 			BS_EXCEPT(InvalidParametersException, "Mipmap index out of range");
+
 		unsigned int idx = face*(mNumMipmaps+1) + mipmap;
 		assert(idx < mSurfaceList.size());
 		return mSurfaceList[idx];

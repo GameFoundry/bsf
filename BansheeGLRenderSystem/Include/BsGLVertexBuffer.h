@@ -7,7 +7,7 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @copydoc	VertexBuffer
+	 * @brief	OpenGL implementation of a vertex buffer.
 	 */
     class BS_RSGL_EXPORT GLVertexBuffer : public VertexBuffer 
     {

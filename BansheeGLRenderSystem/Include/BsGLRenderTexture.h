@@ -5,19 +5,26 @@
 #include "BsGLFrameBufferObject.h"
 #include "BsModule.h"
 
-// Extra GL constants
 #define GL_DEPTH24_STENCIL8_EXT 0x88F0
 
 namespace BansheeEngine 
 {  
-    /** Base class for GL Render Textures
-    */
+	/**
+	 * @brief	OpenGL implementation of a render texture.
+	 */
     class BS_RSGL_EXPORT GLRenderTexture: public RenderTexture
     {
 	public:
 		virtual ~GLRenderTexture();
 
+		/**
+		 * @copydoc	RenderTexture::requiresTextureFlipping
+		 */
 		bool requiresTextureFlipping() const { return true; }
+
+		/**
+		 * @copydoc	RenderTexture::getCustomAttribute
+		 */
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
 	protected:
@@ -26,12 +33,12 @@ namespace BansheeEngine
 		GLRenderTexture();
 
 		/**
-		 * @copydoc RenderTexture::initialize_internal().
+		 * @copydoc RenderTexture::initialize_internal
 		 */
 		void initialize_internal();
 
 		/**
-		 * @copydoc RenderTexture::destroy_internal().
+		 * @copydoc RenderTexture::destroy_internal
 		 */
 		void destroy_internal();
 
@@ -39,7 +46,7 @@ namespace BansheeEngine
     };
 
     /**
-     * @brief	Manager/factory for RenderTextures.
+     * @brief	Manager that handles valid render texture formats.
      * 			
 	 * @note	Must be initialized when RenderSystem is first started.
      */
@@ -50,50 +57,55 @@ namespace BansheeEngine
 		~GLRTTManager();
         
         /**
-         * @brief	Check if a certain format is usable as FBO rendertarget format.
+         * @brief	Check if a certain format is usable as a render target format.
          *
          * @note	Thread safe.
          */
         bool checkFormat(PixelFormat format) { return mProps[format].valid; }
         
-        /** Get a FBO without depth/stencil for temporary use, like blitting between textures.
-        */
-        GLuint getTemporaryFBO() { return mTempFBO; }
-
         /**
          * @brief	Get the closest supported alternative format. If format is supported, returns format.
          *
-         * @note	Thread safe
+         * @note	Thread safe.
          */
         virtual PixelFormat getSupportedAlternative(PixelFormat format);
     private:
-        /** Frame Buffer Object properties for a certain texture format.
-        */
+        /** 
+		 * Frame buffer object properties for a certain texture format.
+         */
         struct FormatProperties
         {
-            bool valid; // This format can be used as RTT (FBO)
-            
-            /** Allowed modes/properties for this pixel format
-            */
+            /** 
+			 * Allowed modes/properties for this pixel format
+             */
             struct Mode
             {
-                UINT32 depth;     // Depth format (0=no depth)
-                UINT32 stencil;   // Stencil format (0=no stencil)
+                UINT32 depth;     /**< Depth format (0 = no depth). */
+                UINT32 stencil;   /**< Stencil format (0 = no stencil). */
             };
             
             Vector<Mode> modes;
+			bool valid;
         };
-        /** Properties for all internal formats defined by the engine
-        */
-        FormatProperties mProps[PF_COUNT];
 
-        /** Temporary FBO identifier
-         */
+        FormatProperties mProps[PF_COUNT];
         GLuint mTempFBO;
         
-        /** Detect allowed FBO formats */
+		/**
+		 * @brief	Detect which internal formats are allowed to be used on render target 
+		 *			color or depth/stencil surfaces.
+		 */
         void detectFBOFormats();
-        GLuint _tryFormat(GLenum depthFormat, GLenum stencilFormat);
+
+		/**
+		 * @brief	Checks are the specified depth & stencil formats compatible.
+		 */
+		bool _tryFormat(GLenum depthFormat, GLenum stencilFormat);
+
+		/**
+		 * @brief	Checks is the specified packed format valid for using
+		 *			in the render target.
+		 */
         bool _tryPackedFormat(GLenum packedFormat);
     };
 }

@@ -6,7 +6,6 @@ namespace BansheeEngine
 {
 	extern String MODULE_NAME;
 
-    // Forward declarations
     class GLSupport;
     class GLRenderSystem;
     class GLTexture;
@@ -66,7 +65,7 @@ namespace BansheeEngine
 
 #endif
 
-/// Lots of generated code in here which triggers the new VC CRT security warnings
+// Lots of generated code in here which triggers the new VC CRT security warnings
 #if !defined( _CRT_SECURE_NO_DEPRECATE )
 #define _CRT_SECURE_NO_DEPRECATE
 #endif

@@ -9,13 +9,26 @@ namespace BansheeEngine
 {
 	const String SystemName = "BansheeGLRenderSystem";
 
+	/**
+	 * @brief Handles creation of the OpenGL render system.
+	 */
 	class GLRenderSystemFactory : public RenderSystemFactory
 	{
 	public:
+		/**
+		 * @copydoc	RenderSystemFactory::create
+		 */
 		virtual void create();
+
+		/**
+		 * @copydoc	RenderSystemFactory::name
+		 */
 		virtual const String& name() const { return SystemName; }
 
 	private:
+		/**
+		 * @brief	Registers the factory with the render system manager when constructed.
+		 */
 		class InitOnStart
 		{
 		public:
@@ -30,6 +43,6 @@ namespace BansheeEngine
 			}
 		};
 
-		static InitOnStart initOnStart; // Makes sure factory is registered on program start
+		static InitOnStart initOnStart; // Makes sure factory is registered on library load
 	};
 }

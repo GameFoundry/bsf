@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @copydoc TimerQuery
+	 * @brief	OpenGL implementation of a timer query.
 	 */
 	class BS_RSGL_EXPORT GLTimerQuery : public TimerQuery
 	{
@@ -37,12 +37,17 @@ namespace BansheeEngine
 	private:
 		friend class QueryManager;
 
+		/**
+		 * @brief	Processes query results and saves them for later use. To be called
+		 *			when query has completed.
+		 */
+		void finalize();
+
+	private:
 		GLuint mQueryStartObj;
 		GLuint mQueryEndObj;
 		bool mFinalized;
 
 		float mTimeDelta;
-
-		void finalize();
 	};
 }
