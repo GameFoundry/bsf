@@ -112,7 +112,7 @@ namespace BansheeEngine
 
 		// Initialize a window so we have something to create a GL context with
 		RenderWindowPtr primaryWindow = RenderWindow::create(mPrimaryWindowDesc);
-		             
+		      
 		// Get the context from the window and finish initialization
 		GLContext *context = nullptr;
 		primaryWindow->getCustomAttribute("GLCONTEXT", &context);
@@ -125,8 +125,11 @@ namespace BansheeEngine
 		if (mCurrentContext)
 			mCurrentContext->setCurrent();
 
+		checkForErrors();
+
 		// Setup GLSupport
 		mGLSupport->initializeExtensions();
+		checkForErrors();
 
 		Vector<BansheeEngine::String> tokens = StringUtil::split(mGLSupport->getGLVersion(), ".");
 
@@ -1620,15 +1623,21 @@ namespace BansheeEngine
 				"Trying to initialize GLRenderSystem from RenderSystemCapabilities that do not support OpenGL");
 		}
 
+#if BS_DEBUG_MODE
+		if (mGLSupport->checkExtension("GL_ARB_debug_output"))
+		{
+			glDebugMessageCallback(&openGlErrorCallback, 0);
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		}
+#endif
+
 		HardwareBufferManager::startUp<GLHardwareBufferManager>();
-		checkForErrors();
 
 		// GPU Program Manager setup
 		if(caps->isShaderProfileSupported("glsl"))
 		{
 			mGLSLProgramFactory = bs_new<GLSLProgramFactory>();
 			GpuProgramManager::instance().addFactory(mGLSLProgramFactory);
-			checkForErrors();
 		}
 
 		// Check for framebuffer object extension
@@ -1638,7 +1647,6 @@ namespace BansheeEngine
 			{
 				// Create FBO manager
 				GLRTTManager::startUp<GLRTTManager>();
-				checkForErrors();
 			}
 		}
 		else
@@ -1698,16 +1706,6 @@ namespace BansheeEngine
 				glEnable(GL_MULTISAMPLE_ARB);
 			}
 		}
-
-#if BS_DEBUG_MODE
-		if (mGLSupport->checkExtension("GL_ARB_debug_output"))
-		{
-			glDebugMessageCallback(&openGlErrorCallback, 0);
-			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		}
-#endif
-
-		checkForErrors();
 	}
 
 	void GLRenderSystem::switchContext(GLContext *context)

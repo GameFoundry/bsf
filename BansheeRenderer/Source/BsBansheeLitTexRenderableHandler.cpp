@@ -104,7 +104,7 @@ namespace BansheeEngine
 			}
 		}
 
-		if (!foundLightDir || !foundLightDir || !foundWVP || !foundStatic || !foundPerFrame || !foundPerObject)
+		if (!foundLightDir || !foundTime || !foundWVP || !foundStatic || !foundPerFrame || !foundPerObject)
 			BS_EXCEPT(InternalErrorException, "Invalid default shader.");
 
 		// Create global GPU param buffers and get parameter handles
@@ -343,18 +343,17 @@ namespace BansheeEngine
 		}
 		else if (rsName == RenderSystemOpenGL)
 		{
-			String vsCode = R"(
-			#version 400\n
+			String vsCode = R"(#version 400
 
 			uniform PerFrame
 			{
 				float time;
-			}
+			};
 
 			uniform PerObject
 			{
 				mat4 matWorldViewProj;
-			}
+			};
 
 			in vec3 bs_position;
 
@@ -363,23 +362,22 @@ namespace BansheeEngine
 				gl_Position = matWorldViewProj * vec4(bs_position.xyz + vec3(sin(time), 0, 0), 1);
 			})";
 
-			String psCode = R"(
-			#version 400\n
+			String psCode = R"(#version 400
 
 			uniform Static
 			{
 				vec4 lightDir;
-			}
+			};
 
 			out vec4 fragColor;
 
 			void main()
 			{
-				fragColor = dot(lightDir, vec4(0.5f, 0.5f, 0.5f, 0.5f));
+				fragColor = lightDir * vec4(0.5f, 0.5f, 0.5f, 0.5f);
 			})";
 
-			vsProgram = GpuProgram::create(vsCode, "vs_main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
-			psProgram = GpuProgram::create(psCode, "ps_main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
+			vsProgram = GpuProgram::create(vsCode, "main", "glsl", GPT_VERTEX_PROGRAM, GPP_VS_4_0);
+			psProgram = GpuProgram::create(psCode, "main", "glsl", GPT_FRAGMENT_PROGRAM, GPP_PS_4_0);
 		}
 
 		vsProgram.synchronize();

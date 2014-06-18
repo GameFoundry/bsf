@@ -587,7 +587,7 @@ namespace BansheeEngine
 			indexCount = indexBuffer->getNumIndices();
 
 		rs.setIndexBuffer(indexBuffer);
-		rs.drawIndexed(subMesh.indexOffset, indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
+		rs.drawIndexed(subMesh.indexOffset + mesh->_getIndexOffset(), indexCount, mesh->_getVertexOffset(), vertexData->vertexCount);
 
 		mesh->_notifyUsedOnGPU();
 	}

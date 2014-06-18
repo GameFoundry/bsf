@@ -9,10 +9,10 @@ namespace BansheeEngine
     void GLSupport::initializeExtensions()
     {
 		glewContextInit(this);
+		glGetError();
 
         // Set version string
         const GLubyte* pcVer = glGetString(GL_VERSION);
-
         assert(pcVer && "Problems getting GL version string using glGetString");
        
         String tmpStr = (const char*)pcVer;
