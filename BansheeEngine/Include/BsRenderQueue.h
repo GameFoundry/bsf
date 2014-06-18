@@ -51,6 +51,11 @@ namespace BansheeEngine
 		virtual void sort();
 
 		/**
+		 * @brief	Returns internal list of render elements (unsorted).
+		 */
+		const Vector<RenderQueueElement>& getElements() const { return mRenderElements; }
+
+		/**
 		 * @brief	Returns a list of sorted render elements. Caller must ensure
 		 * 			"sort" is called before this method.
 		 */

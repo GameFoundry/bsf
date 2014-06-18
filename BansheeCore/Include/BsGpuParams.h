@@ -24,18 +24,20 @@ namespace BansheeEngine
 		/**
 		 * @brief	Creates new GpuParams object using the specified parameter descriptions.
 		 *
+		 * @param	paramDesc			Reference to parameter descriptions that will be used for
+		 *								finding needed parameters.
 		 * @param	transposeMatrices	If true the stored matrices will be transposed before
 		 *								submitted to the GPU (some APIs require different
 		 *								matrix layout).
 		 *
 		 * @note	You normally do not want to call this manually. Instead use GpuProgram::createParameters.
 		 */
-		GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices);
+		GpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices);
 
 		/**
 		 * @brief	Private constructor for internal use. Performs no initialization.
 		 */
-		GpuParams(GpuParamDesc& paramDesc, PrivatelyConstruct& dummy);
+		GpuParams(const GpuParamDescPtr& paramDesc, PrivatelyConstruct& dummy);
 
 		~GpuParams();
 
@@ -71,7 +73,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns a description of all stored parameters.
 		 */
-		const GpuParamDesc& getParamDesc() const { return mParamDesc; }
+		const GpuParamDesc& getParamDesc() const { return *mParamDesc; }
 
 		/**
 		 * @brief	Returns the size of a data parameter with the specified name, in bytes.
@@ -119,9 +121,9 @@ namespace BansheeEngine
 		template<>
 		void getParam<float>(const String& name, TGpuDataParam<float>& output) const
 		{
-			auto iterFind = mParamDesc.params.find(name);
+			auto iterFind = mParamDesc->params.find(name);
 
-			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT1)
+			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT1)
 				BS_EXCEPT(InvalidParametersException, "Cannot find float parameter with the name '" + name + "'");
 
 			output = GpuParamFloat(&iterFind->second, mInternalData);
@@ -133,9 +135,9 @@ namespace BansheeEngine
 		template<>
 		void getParam<Vector2>(const String& name, TGpuDataParam<Vector2>& output) const
 		{
-			auto iterFind = mParamDesc.params.find(name);
+			auto iterFind = mParamDesc->params.find(name);
 
-			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT2)
+			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT2)
 				BS_EXCEPT(InvalidParametersException, "Cannot find vector (2) parameter with the name '" + name + "'");
 
 			output = GpuParamVec2(&iterFind->second, mInternalData);
@@ -147,9 +149,9 @@ namespace BansheeEngine
 		template<>
 		void getParam<Vector3>(const String& name, TGpuDataParam<Vector3>& output) const
 		{
-			auto iterFind = mParamDesc.params.find(name);
+			auto iterFind = mParamDesc->params.find(name);
 
-			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT3)
+			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT3)
 				BS_EXCEPT(InvalidParametersException, "Cannot find vector (3) parameter with the name '" + name + "'");
 
 			output = GpuParamVec3(&iterFind->second, mInternalData);
@@ -161,9 +163,9 @@ namespace BansheeEngine
 		template<>
 		void getParam<Vector4>(const String& name, TGpuDataParam<Vector4>& output) const
 		{
-			auto iterFind = mParamDesc.params.find(name);
+			auto iterFind = mParamDesc->params.find(name);
 
-			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_FLOAT4)
+			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_FLOAT4)
 				BS_EXCEPT(InvalidParametersException, "Cannot find vector (4) parameter with the name '" + name + "'");
 
 			output = GpuParamVec4(&iterFind->second, mInternalData);
@@ -175,9 +177,9 @@ namespace BansheeEngine
 		template<>
 		void getParam<Matrix3>(const String& name, TGpuDataParam<Matrix3>& output) const
 		{
-			auto iterFind = mParamDesc.params.find(name);
+			auto iterFind = mParamDesc->params.find(name);
 
-			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_MATRIX_3X3)
+			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_MATRIX_3X3)
 				BS_EXCEPT(InvalidParametersException, "Cannot find matrix (3x3) parameter with the name '" + name + "'");
 
 			output = GpuParamMat3(&iterFind->second, mInternalData);
@@ -189,9 +191,9 @@ namespace BansheeEngine
 		template<>
 		void getParam<Matrix4>(const String& name, TGpuDataParam<Matrix4>& output) const
 		{
-			auto iterFind = mParamDesc.params.find(name);
+			auto iterFind = mParamDesc->params.find(name);
 
-			if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_MATRIX_4X4)
+			if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_MATRIX_4X4)
 				BS_EXCEPT(InvalidParametersException, "Cannot find matrix (4x4) parameter with the name '" + name + "'");
 
 			output = GpuParamMat4(&iterFind->second, mInternalData);
@@ -260,7 +262,7 @@ namespace BansheeEngine
 		void _markCoreClean();
 
 	private:
-		GpuParamDesc& mParamDesc;
+		GpuParamDescPtr mParamDesc;
 		std::shared_ptr<GpuParamsInternalData> mInternalData;
 
 		/**

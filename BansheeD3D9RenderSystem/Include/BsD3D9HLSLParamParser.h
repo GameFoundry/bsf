@@ -12,7 +12,7 @@ namespace BansheeEngine
 			:mpConstTable(constTable), mBlocks(blocks)
 		{ }
 
-		GpuParamDesc buildParameterDescriptions();
+		GpuParamDescPtr buildParameterDescriptions();
 
 	private:
 		void processParameter(GpuParamBlockDesc& blockDesc, const String& paramName, D3DXHANDLE constant,
@@ -24,7 +24,7 @@ namespace BansheeEngine
 	private:
 		LPD3DXCONSTANTTABLE mpConstTable;
 		Vector<D3D9EmulatedParamBlock> mBlocks;
-		GpuParamDesc mParamDesc;
+		GpuParamDescPtr mParamDesc;
 	};
 
 	String D3D9HLSLParamParser::getParamName(D3DXHANDLE constant)
@@ -49,10 +49,12 @@ namespace BansheeEngine
 		return paramName;
 	}
 
-	GpuParamDesc D3D9HLSLParamParser::buildParameterDescriptions()
+	GpuParamDescPtr D3D9HLSLParamParser::buildParameterDescriptions()
 	{
 		// Derive parameter names from const table
 		assert(mpConstTable && "Program not loaded!");
+
+		mParamDesc = bs_shared_ptr<GpuParamDesc>();
 
 		// Get contents of the constant table
 		D3DXCONSTANTTABLE_DESC desc;
@@ -63,8 +65,8 @@ namespace BansheeEngine
 
 		// DX9 has no concept of parameter blocks so we emulate them if needed
 		String name = "BS_INTERNAL_Globals";
-		mParamDesc.paramBlocks.insert(std::make_pair(name, GpuParamBlockDesc()));
-		GpuParamBlockDesc& globalBlockDesc = mParamDesc.paramBlocks[name];
+		mParamDesc->paramBlocks.insert(std::make_pair(name, GpuParamBlockDesc()));
+		GpuParamBlockDesc& globalBlockDesc = mParamDesc->paramBlocks[name];
 		globalBlockDesc.name = name;
 		globalBlockDesc.slot = 0;
 		globalBlockDesc.blockSize = 0;
@@ -74,8 +76,8 @@ namespace BansheeEngine
 		UINT32 curSlot = 1;
 		for (auto& block : mBlocks)
 		{
-			mParamDesc.paramBlocks.insert(std::make_pair(block.blockName, GpuParamBlockDesc()));
-			GpuParamBlockDesc& blockDesc = mParamDesc.paramBlocks[block.blockName];
+			mParamDesc->paramBlocks.insert(std::make_pair(block.blockName, GpuParamBlockDesc()));
+			GpuParamBlockDesc& blockDesc = mParamDesc->paramBlocks[block.blockName];
 			blockDesc.name = block.blockName;
 			blockDesc.slot = curSlot++;
 			blockDesc.blockSize = 0;
@@ -98,7 +100,7 @@ namespace BansheeEngine
 			if (findIter == nonGlobalBlocks.end())
 				processParameter(globalBlockDesc, paramName, constantHandle, "", i);
 			else
-				processParameter(mParamDesc.paramBlocks[findIter->second], paramName, constantHandle, "", i);
+				processParameter(mParamDesc->paramBlocks[findIter->second], paramName, constantHandle, "", i);
 		}
 
 		return mParamDesc;
@@ -145,7 +147,7 @@ namespace BansheeEngine
 				memberDesc.name = name;
 
 				populateParamMemberDesc(memberDesc, desc);
-				mParamDesc.params.insert(std::make_pair(name, memberDesc));
+				mParamDesc->params.insert(std::make_pair(name, memberDesc));
 
 				blockDesc.blockSize += memberDesc.arrayElementStride * memberDesc.arraySize;
 			}
@@ -181,8 +183,8 @@ namespace BansheeEngine
 					BS_EXCEPT(InternalErrorException, "Invalid sampler type: " + toString(desc.Type) + " for parameter " + paramName);
 				}
 
-				mParamDesc.samplers.insert(std::make_pair(paramName, samplerDesc));
-				mParamDesc.textures.insert(std::make_pair(paramName, textureDesc));
+				mParamDesc->samplers.insert(std::make_pair(paramName, samplerDesc));
+				mParamDesc->textures.insert(std::make_pair(paramName, textureDesc));
 			}
 			else
 			{

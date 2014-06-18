@@ -18,6 +18,8 @@ namespace BansheeEngine
 		:mEntryPoint(entryPoint), mType(gptype), mIsCompiled(false),
 		mProfile(profile), mNeedsAdjacencyInfo(isAdjacencyInfoRequired)
     {
+		mParametersDesc = bs_shared_ptr<GpuParamDesc>();
+
 		if(includes != nullptr)
 		{
 			StringStream stringStream;
@@ -61,7 +63,7 @@ namespace BansheeEngine
 
 	GpuParamsPtr GpuProgram::createParameters()
 	{
-		return bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), false);
+		return bs_shared_ptr<GpuParams, PoolAlloc>(mParametersDesc, false);
 	}
 
     const String& GpuProgram::getLanguage() const

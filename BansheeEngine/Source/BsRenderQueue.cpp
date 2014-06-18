@@ -47,7 +47,7 @@ namespace BansheeEngine
 		// Just pass-through for now
 		for (auto& renderElem : mRenderElements)
 		{
-			UINT32 numPasses = (UINT32)renderElem.renderElem->material->passes.size();
+			UINT32 numPasses = (UINT32)renderElem.material->passes.size();
 			for (UINT32 i = 0; i < numPasses; i++)
 			{
 				mSortedRenderElements.push_back(RenderQueueElement());

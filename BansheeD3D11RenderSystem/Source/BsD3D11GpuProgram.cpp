@@ -130,19 +130,19 @@ namespace BansheeEngine
 		if (mType == GPT_VERTEX_PROGRAM)
 		{
 			VertexDeclaration::VertexElementList inputParams;
-			parser.parse(microcode, mParametersDesc, &inputParams);
+			parser.parse(microcode, *mParametersDesc, &inputParams);
 
 			mInputDeclaration = HardwareBufferManager::instance().createVertexDeclaration(inputParams);
 		}
 		else
 		{
-			parser.parse(microcode, mParametersDesc, nullptr);
+			parser.parse(microcode, *mParametersDesc, nullptr);
 		}
 	}
 
 	GpuParamsPtr D3D11GpuProgram::createParameters()
 	{
-		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
+		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(mParametersDesc, mColumnMajorMatrices);
 		return params;
 	}
 

@@ -138,7 +138,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Returns description of all parameters in this GPU program.
 		 */
-		const GpuParamDesc& getParamDesc() const { return mParametersDesc; }
+		GpuParamDescPtr getParamDesc() const { return mParametersDesc; }
 
 		/**
 		* @brief	Language this shader was created from (e.g. HLSL, GLSL).
@@ -195,7 +195,7 @@ namespace BansheeEngine
 		bool mIsCompiled;
 		String mCompileError;
 
-		GpuParamDesc mParametersDesc;
+		GpuParamDescPtr mParametersDesc;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

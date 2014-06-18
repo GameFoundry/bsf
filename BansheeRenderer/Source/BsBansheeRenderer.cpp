@@ -57,7 +57,6 @@ namespace BansheeEngine
 		Renderer::_onActivated();
 
 		mLitTexHandler = bs_new<LitTexRenderableHandler>();
-		mLitTexHandler = nullptr;
 	}
 
 	void BansheeRenderer::_onDeactivated()
@@ -141,6 +140,7 @@ namespace BansheeEngine
 			RenderTargetData& renderTargetData = mRenderTargets.back();
 
 			proxy->renderQueue = bs_shared_ptr<RenderQueue>();
+			renderTargetData.target = renderTarget;
 			renderTargetData.cameras.push_back(proxy);
 		}
 
@@ -274,7 +274,7 @@ namespace BansheeEngine
 		const Vector<HCamera>& allCameras = gBsSceneManager().getAllCameras();
 		for (auto& camera : allCameras)
 		{
-			if (!camera->_isCoreDirty())
+			if (camera->_isCoreDirty())
 			{
 				CameraProxyPtr proxy = camera->_getActiveProxy();
 
@@ -289,7 +289,7 @@ namespace BansheeEngine
 				camera->_markCoreClean();
 				dirtySceneObjects.push_back(camera->SO());
 			}
-			else if (!camera->SO()->_isCoreDirty())
+			else if (camera->SO()->_isCoreDirty())
 			{
 				CameraProxyPtr proxy = camera->_getActiveProxy();
 				assert(proxy != nullptr);
@@ -333,10 +333,16 @@ namespace BansheeEngine
 			for (auto& drawOp : drawOps)
 			{
 				if (drawOp.material->_isCoreDirty(MaterialDirtyFlag::Proxy))
+				{
 					drawOp.material->_setActiveProxy(drawOp.material->_createProxy());
+					drawOp.material->_markCoreClean(MaterialDirtyFlag::Proxy);
+				}
 
 				if (drawOp.mesh->_isCoreDirty(MeshDirtyFlag::Proxy))
+				{
 					drawOp.mesh->_setActiveProxy(drawOp.submeshIdx, drawOp.mesh->_createProxy(drawOp.submeshIdx));
+					drawOp.mesh->_markCoreClean(MeshDirtyFlag::Proxy);
+				}
 
 				MaterialProxyPtr materialProxy = drawOp.material->_getActiveProxy();
 				MeshProxyPtr meshProxy = drawOp.mesh->_getActiveProxy(drawOp.submeshIdx);
@@ -354,7 +360,7 @@ namespace BansheeEngine
 	{
 		RenderQueuePtr cameraRenderQueue = proxy->renderQueue;
 
-		const Vector<RenderQueueElement>& queueElements = renderQueue->getSortedElements();
+		const Vector<RenderQueueElement>& queueElements = renderQueue->getElements();
 		for (auto& queueElement : queueElements)
 		{
 			cameraRenderQueue->add(queueElement.material, queueElement.mesh, queueElement.worldPosition);
@@ -451,14 +457,16 @@ namespace BansheeEngine
 
 		for(auto iter = sortedRenderElements.begin(); iter != sortedRenderElements.end(); ++iter)
 		{
-			MaterialProxyPtr materialProxy = iter->renderElem->material;
+			MaterialProxyPtr materialProxy = iter->material;
 
 			if (iter->renderable != nullptr && iter->renderable->handler != nullptr)
 				iter->renderable->handler->bindPerObjectBuffers(iter->renderable, iter->renderElem);
 
 			setPass(materialProxy, iter->passIdx);
-			draw(*iter->renderElem->mesh);
+			draw(*iter->mesh);
 		}
+
+		renderQueue->clear();
 	}
 
 	void BansheeRenderer::setPass(const MaterialProxyPtr& material, UINT32 passIdx)
@@ -479,7 +487,7 @@ namespace BansheeEngine
 		if (pass.fragmentProg)
 		{
 			rs.bindGpuProgram(pass.fragmentProg);
-			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, material->params[pass.geometryProgParamsIdx]);
+			rs.bindGpuParams(GPT_FRAGMENT_PROGRAM, material->params[pass.fragmentProgParamsIdx]);
 		}
 		else
 			rs.unbindGpuProgram(GPT_FRAGMENT_PROGRAM);

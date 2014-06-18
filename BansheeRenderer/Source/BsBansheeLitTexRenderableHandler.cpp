@@ -20,12 +20,12 @@ namespace BansheeEngine
 		PassPtr defaultPass = defaultTechnique->getPass(0);
 
 		bool matrixTranspose = defaultPass->getVertexProgram()->requiresMatrixTranspose(); // Only need this from first vertex program as this is a static setting across all GPU programs
-		const GpuParamDesc& vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
-		const GpuParamDesc& fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
+		GpuParamDescPtr vertParamDesc = defaultPass->getVertexProgram()->getParamDesc();
+		GpuParamDescPtr fragParamDesc = defaultPass->getFragmentProgram()->getParamDesc();
 
-		GpuParamDesc staticParamsDesc;
-		GpuParamDesc perFrameParamsDesc;
-		GpuParamDesc perObjectParamsDesc;
+		GpuParamDescPtr staticParamsDesc = bs_shared_ptr<GpuParamDesc>();
+		GpuParamDescPtr perFrameParamsDesc = bs_shared_ptr<GpuParamDesc>();
+		GpuParamDescPtr perObjectParamsDesc = bs_shared_ptr<GpuParamDesc>();
 
 		bool foundLightDir = false;
 		bool foundTime = false;
@@ -39,32 +39,32 @@ namespace BansheeEngine
 		{
 			if (!foundLightDir && param.second.rendererSemantic == RPS_LightDir)
 			{
-				auto iterFind = fragParamDesc.params.find(param.second.gpuVariableName);
-				if (iterFind == fragParamDesc.params.end())
+				auto iterFind = fragParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == fragParamDesc->params.end())
 					continue;
 
 				lightDirParamDesc = iterFind->second;
-				staticParamsDesc.params[iterFind->first] = iterFind->second;
+				staticParamsDesc->params[iterFind->first] = iterFind->second;
 				foundLightDir = true;
 			}
 			else if (!foundTime && param.second.rendererSemantic == RPS_Time)
 			{
-				auto iterFind = vertParamDesc.params.find(param.second.gpuVariableName);
-				if (iterFind == vertParamDesc.params.end())
+				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == vertParamDesc->params.end())
 					continue;
 
 				timeParamDesc = iterFind->second;
-				perFrameParamsDesc.params[iterFind->first] = iterFind->second;
+				perFrameParamsDesc->params[iterFind->first] = iterFind->second;
 				foundTime = true;
 			}
 			else if (!foundWVP && param.second.rendererSemantic == RPS_WorldViewProjTfrm)
 			{
-				auto iterFind = vertParamDesc.params.find(param.second.gpuVariableName);
-				if (iterFind == vertParamDesc.params.end())
+				auto iterFind = vertParamDesc->params.find(param.second.gpuVariableName);
+				if (iterFind == vertParamDesc->params.end())
 					continue;
 
 				wvpParamDesc = iterFind->second;
-				perObjectParamsDesc.params[iterFind->first] = iterFind->second;
+				perObjectParamsDesc->params[iterFind->first] = iterFind->second;
 				foundWVP = true;
 			}
 		}
@@ -74,32 +74,32 @@ namespace BansheeEngine
 		{
 			if (!foundStatic && block.second.rendererSemantic == RBS_Static)
 			{
-				auto iterFind = fragParamDesc.paramBlocks.find(block.second.name);
-				if (iterFind == fragParamDesc.paramBlocks.end())
+				auto iterFind = fragParamDesc->paramBlocks.find(block.second.name);
+				if (iterFind == fragParamDesc->paramBlocks.end())
 					continue;
 
 				staticParamBlockDesc = iterFind->second;
-				staticParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
+				staticParamsDesc->paramBlocks[iterFind->first] = iterFind->second;
 				foundStatic = true;
 			}
 			else if (!foundPerFrame && block.second.rendererSemantic == RBS_PerFrame)
 			{
-				auto iterFind = vertParamDesc.paramBlocks.find(block.second.name);
-				if (iterFind == vertParamDesc.paramBlocks.end())
+				auto iterFind = vertParamDesc->paramBlocks.find(block.second.name);
+				if (iterFind == vertParamDesc->paramBlocks.end())
 					continue;
 
 				perFrameParamBlockDesc = iterFind->second;
-				perFrameParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
+				perFrameParamsDesc->paramBlocks[iterFind->first] = iterFind->second;
 				foundPerFrame = true;
 			}
 			else if (!foundPerObject && block.second.rendererSemantic == RBS_PerObject)
 			{
-				auto iterFind = vertParamDesc.paramBlocks.find(block.second.name);
-				if (iterFind == vertParamDesc.paramBlocks.end())
+				auto iterFind = vertParamDesc->paramBlocks.find(block.second.name);
+				if (iterFind == vertParamDesc->paramBlocks.end())
 					continue;
 
 				perObjectParamBlockDesc = iterFind->second;
-				perObjectParamsDesc.paramBlocks[iterFind->first] = iterFind->second;
+				perObjectParamsDesc->paramBlocks[iterFind->first] = iterFind->second;
 				foundPerObject = true;
 			}
 		}

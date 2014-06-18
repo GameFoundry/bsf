@@ -49,7 +49,7 @@ namespace BansheeEngine
 			mValidShareableParamBlocks.clear();
 			mValidParams.clear();
 
-			Vector<const GpuParamDesc*> allParamDescs;
+			Vector<GpuParamDescPtr> allParamDescs;
 
 			// Make sure all gpu programs are fully loaded
 			for(UINT32 i = 0; i < mBestTechnique->getNumPasses(); i++)
@@ -60,42 +60,42 @@ namespace BansheeEngine
 				if(vertProgram)
 				{
 					vertProgram.synchronize();
-					allParamDescs.push_back(&vertProgram->getParamDesc());
+					allParamDescs.push_back(vertProgram->getParamDesc());
 				}
 
 				HGpuProgram fragProgram = curPass->getFragmentProgram();
 				if(fragProgram)
 				{
 					fragProgram.synchronize();
-					allParamDescs.push_back(&fragProgram->getParamDesc());
+					allParamDescs.push_back(fragProgram->getParamDesc());
 				}
 
 				HGpuProgram geomProgram = curPass->getGeometryProgram();
 				if(geomProgram)
 				{
 					geomProgram.synchronize();
-					allParamDescs.push_back(&geomProgram->getParamDesc());
+					allParamDescs.push_back(geomProgram->getParamDesc());
 				}
 
 				HGpuProgram hullProgram = curPass->getHullProgram();
 				if(hullProgram)
 				{
 					hullProgram.synchronize();
-					allParamDescs.push_back(&hullProgram->getParamDesc());
+					allParamDescs.push_back(hullProgram->getParamDesc());
 				}
 
 				HGpuProgram domainProgram = curPass->getDomainProgram();
 				if(domainProgram)
 				{
 					domainProgram.synchronize();
-					allParamDescs.push_back(&domainProgram->getParamDesc());
+					allParamDescs.push_back(domainProgram->getParamDesc());
 				}
 
 				HGpuProgram computeProgram = curPass->getComputeProgram();
 				if(computeProgram)
 				{
 					computeProgram.synchronize();
-					allParamDescs.push_back(&computeProgram->getParamDesc());
+					allParamDescs.push_back(computeProgram->getParamDesc());
 				}
 			}
 
@@ -264,7 +264,7 @@ namespace BansheeEngine
 		mCoreDirtyFlags = 0xFFFFFFFF;
 	}
 
-	Map<String, const GpuParamDataDesc*> Material::determineValidDataParameters(const Vector<const GpuParamDesc*>& paramDescs) const
+	Map<String, const GpuParamDataDesc*> Material::determineValidDataParameters(const Vector<GpuParamDescPtr>& paramDescs) const
 	{
 		Map<String, const GpuParamDataDesc*> foundDataParams;
 		Map<String, bool> validParams;
@@ -305,8 +305,7 @@ namespace BansheeEngine
 		return foundDataParams;
 	}
 
-	
-	Set<String> Material::determineValidObjectParameters(const Vector<const GpuParamDesc*>& paramDescs) const
+	Set<String> Material::determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs) const
 	{
 		Set<String> validParams;
 
@@ -339,10 +338,10 @@ namespace BansheeEngine
 		return validParams;
 	}
 
-	Set<String> Material::determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>& paramDescs) const
+	Set<String> Material::determineValidShareableParamBlocks(const Vector<GpuParamDescPtr>& paramDescs) const
 	{
 		// Make sure param blocks with the same name actually are the same
-		Map<String, std::pair<String, const GpuParamDesc*>> uniqueParamBlocks;
+		Map<String, std::pair<String, GpuParamDescPtr>> uniqueParamBlocks;
 		Map<String, bool> validParamBlocks;
 
 		for(auto iter = paramDescs.begin(); iter != paramDescs.end(); ++iter)
@@ -365,7 +364,7 @@ namespace BansheeEngine
 				}
 
 				String otherBlockName = iterFind->second.first;
-				const GpuParamDesc* otherDesc = iterFind->second.second;
+				GpuParamDescPtr otherDesc = iterFind->second.second;
 
 				for(auto myParamIter = curDesc.params.begin(); myParamIter != curDesc.params.end(); ++myParamIter)
 				{
@@ -413,7 +412,7 @@ namespace BansheeEngine
 		return validParamBlocksReturn;
 	}
 
-	Map<String, String> Material::determineParameterToBlockMapping(const Vector<const GpuParamDesc*>& paramDescs)
+	Map<String, String> Material::determineParameterToBlockMapping(const Vector<GpuParamDescPtr>& paramDescs)
 	{
 		Map<String, String> paramToParamBlock;
 

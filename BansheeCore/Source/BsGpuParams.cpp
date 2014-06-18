@@ -15,25 +15,25 @@ namespace BansheeEngine
 		mIsDestroyed(false)
 	{ }
 
-	GpuParams::GpuParams(GpuParamDesc& paramDesc, bool transposeMatrices)
+	GpuParams::GpuParams(const GpuParamDescPtr& paramDesc, bool transposeMatrices)
 		:mParamDesc(paramDesc)
 	{
 		mInternalData = bs_shared_ptr<GpuParamsInternalData>();
 		mInternalData->mTransposeMatrices = transposeMatrices;
 
-		for(auto& paramBlock : mParamDesc.paramBlocks)
+		for(auto& paramBlock : mParamDesc->paramBlocks)
 		{
 			if ((paramBlock.second.slot + 1) > mInternalData->mNumParamBlocks)
 				mInternalData->mNumParamBlocks = paramBlock.second.slot + 1;
 		}
 
-		for(auto& texture : mParamDesc.textures)
+		for(auto& texture : mParamDesc->textures)
 		{
 			if ((texture.second.slot + 1) > mInternalData->mNumTextures)
 				mInternalData->mNumTextures = texture.second.slot + 1;
 		}
 
-		for(auto& sampler : mParamDesc.samplers)
+		for(auto& sampler : mParamDesc->samplers)
 		{
 			if ((sampler.second.slot + 1) > mInternalData->mNumSamplerStates)
 				mInternalData->mNumSamplerStates = sampler.second.slot + 1;
@@ -42,7 +42,7 @@ namespace BansheeEngine
 		constructInternalBuffers();
 	}
 
-	GpuParams::GpuParams(GpuParamDesc& paramDesc, PrivatelyConstruct& dummy)
+	GpuParams::GpuParams(const GpuParamDescPtr& paramDesc, PrivatelyConstruct& dummy)
 		:mParamDesc(paramDesc)
 	{
 		
@@ -87,9 +87,9 @@ namespace BansheeEngine
 
 	void GpuParams::setParamBlockBuffer(const String& name, const GpuParamBlockBufferPtr& paramBlockBuffer)
 	{
-		auto iterFind = mParamDesc.paramBlocks.find(name);
+		auto iterFind = mParamDesc->paramBlocks.find(name);
 
-		if(iterFind == mParamDesc.paramBlocks.end())
+		if(iterFind == mParamDesc->paramBlocks.end())
 		{
 			LOGWRN("Cannot find parameter block with the name: " + name);
 			return;
@@ -117,8 +117,8 @@ namespace BansheeEngine
 
 	bool GpuParams::hasTexture(const String& name) const
 	{
-		auto paramIter = mParamDesc.textures.find(name);
-		if(paramIter != mParamDesc.textures.end())
+		auto paramIter = mParamDesc->textures.find(name);
+		if(paramIter != mParamDesc->textures.end())
 			return true;
 
 		return false;
@@ -126,8 +126,8 @@ namespace BansheeEngine
 
 	bool GpuParams::hasSamplerState(const String& name) const
 	{
-		auto paramIter = mParamDesc.samplers.find(name);
-		if(paramIter != mParamDesc.samplers.end())
+		auto paramIter = mParamDesc->samplers.find(name);
+		if(paramIter != mParamDesc->samplers.end())
 			return true;
 
 		return false;
@@ -135,8 +135,8 @@ namespace BansheeEngine
 
 	bool GpuParams::hasParamBlock(const String& name) const
 	{
-		auto paramBlockIter = mParamDesc.paramBlocks.find(name);
-		if(paramBlockIter != mParamDesc.paramBlocks.end())
+		auto paramBlockIter = mParamDesc->paramBlocks.find(name);
+		if(paramBlockIter != mParamDesc->paramBlocks.end())
 			return true;
 
 		return false;
@@ -144,9 +144,9 @@ namespace BansheeEngine
 
 	void GpuParams::getStructParam(const String& name, GpuParamStruct& output) const
 	{
-		auto iterFind = mParamDesc.params.find(name);
+		auto iterFind = mParamDesc->params.find(name);
 
-		if (iterFind == mParamDesc.params.end() || iterFind->second.type != GPDT_STRUCT)
+		if (iterFind == mParamDesc->params.end() || iterFind->second.type != GPDT_STRUCT)
 			BS_EXCEPT(InvalidParametersException, "Cannot find struct parameter with the name '" + name + "'");
 
 		output = GpuParamStruct(&iterFind->second, mInternalData);
@@ -154,9 +154,9 @@ namespace BansheeEngine
 
 	void GpuParams::getTextureParam(const String& name, GpuParamTexture& output) const
 	{
-		auto iterFind = mParamDesc.textures.find(name);
+		auto iterFind = mParamDesc->textures.find(name);
 
-		if (iterFind == mParamDesc.textures.end())
+		if (iterFind == mParamDesc->textures.end())
 			BS_EXCEPT(InvalidParametersException, "Cannot find texture parameter with the name '" + name + "'");
 
 		output = GpuParamTexture(&iterFind->second, mInternalData);
@@ -164,9 +164,9 @@ namespace BansheeEngine
 
 	void GpuParams::getSamplerStateParam(const String& name, GpuParamSampState& output) const
 	{
-		auto iterFind = mParamDesc.samplers.find(name);
+		auto iterFind = mParamDesc->samplers.find(name);
 
-		if (iterFind == mParamDesc.samplers.end())
+		if (iterFind == mParamDesc->samplers.end())
 			BS_EXCEPT(InvalidParametersException, "Cannot find sampler state parameter with the name '" + name + "'");
 
 		output = GpuParamSampState(&iterFind->second, mInternalData);
@@ -174,8 +174,8 @@ namespace BansheeEngine
 
 	GpuParamDataDesc* GpuParams::getParamDesc(const String& name) const
 	{
-		auto paramIter = mParamDesc.params.find(name);
-		if(paramIter != mParamDesc.params.end())
+		auto paramIter = mParamDesc->params.find(name);
+		if(paramIter != mParamDesc->params.end())
 			return &paramIter->second;
 
 		return nullptr;

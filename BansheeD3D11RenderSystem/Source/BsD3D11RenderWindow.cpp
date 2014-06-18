@@ -624,7 +624,7 @@ namespace BansheeEngine
 		mSwapChainDesc.BufferCount = 1;
 		mSwapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD ;
 
-		mSwapChainDesc.Windowed	= false;
+		mSwapChainDesc.Windowed	= true;
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		rs->determineMultisampleSettings(mMultisampleCount, mMultisampleHint, format, &mMultisampleType);

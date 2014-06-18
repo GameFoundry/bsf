@@ -516,23 +516,23 @@ namespace BansheeEngine
 		 * @brief	Constructs a map containing all data parameters (e.g. float, vector3, color).
 		 * 			Map contains parameter names and descriptions.
 		 */
-		Map<String, const GpuParamDataDesc*> determineValidDataParameters(const Vector<const GpuParamDesc*>& paramDescs) const;
+		Map<String, const GpuParamDataDesc*> determineValidDataParameters(const Vector<GpuParamDescPtr>& paramDescs) const;
 
 		/**
 		 * @brief	Constructs a list containing all object parameter (e.g. texture, sampler state) names.
 		 */
-		Set<String> determineValidObjectParameters(const Vector<const GpuParamDesc*>& paramDescs) const;
+		Set<String> determineValidObjectParameters(const Vector<GpuParamDescPtr>& paramDescs) const;
 
 		/**
 		 * @brief	Constructs a list containing all shareable parameter block names. Shareable blocks may be shared between
 		 * 			different GPU programs, passes or even materials. 
 		 */
-		Set<String> determineValidShareableParamBlocks(const Vector<const GpuParamDesc*>& paramDescs) const;
+		Set<String> determineValidShareableParamBlocks(const Vector<GpuParamDescPtr>& paramDescs) const;
 
 		/**
 		 * @brief	Constructs a map that maps parameter names to a parameter block.
 		 */
-		Map<String, String> determineParameterToBlockMapping(const Vector<const GpuParamDesc*>& paramDescs);
+		Map<String, String> determineParameterToBlockMapping(const Vector<GpuParamDescPtr>& paramDescs);
 
 		/**
 		 * @brief	Checks are the specified two parameters equal

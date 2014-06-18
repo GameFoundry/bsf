@@ -122,7 +122,7 @@ namespace BansheeEngine
 		if (mIsCompiled)
 		{
 			GLSLParamParser paramParser;
-			paramParser.buildUniformDescriptions(mGLHandle, mParametersDesc);
+			paramParser.buildUniformDescriptions(mGLHandle, *mParametersDesc);
 
 			if (mType == GPT_VERTEX_PROGRAM)
 			{

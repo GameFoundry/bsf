@@ -225,7 +225,7 @@ namespace BansheeEngine
 		mTestShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
 
 		if (mActiveRSPlugin == RenderSystemPlugin::DX11)
-			mTestShader->addParameter("input", "input", GPDT_STRUCT, 2, 8);
+			mTestShader->addParameter("input", "input", GPDT_STRUCT, 0, 2, 8);
 
 		mTestShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 		mTestShader->addParameter("tex", "tex", GPOT_TEXTURE2D);

@@ -233,6 +233,7 @@ namespace BansheeEngine
 	typedef std::shared_ptr<MaterialProxy> MaterialProxyPtr;
 	typedef std::shared_ptr<MeshProxy> MeshProxyPtr;
 	typedef std::shared_ptr<ShaderProxy> ShaderProxyPtr;
+	typedef std::shared_ptr<GpuParamDesc> GpuParamDescPtr;
 }
 
 /************************************************************************/
