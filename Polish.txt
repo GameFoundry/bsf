@@ -4,6 +4,7 @@ There's still a crash regarding an uninitialized mCachedPtr on a C# class when s
 
 Finish GPUProfiler:
  - Resource writes/reads/creation/destruction is not currently increased in RenderStats
+   - Make RenderStats global so resources can more easily access those methods.
  - Test overlay and add title labels for samples
 
  ---------------------------
@@ -33,3 +34,9 @@ Refactor GUIElement & GUIElementBase
   - A lot could be made private
  - Has two methods for retrieveing ElementType
  - getVisibleBounds doesn't make sense
+
+ To document:
+  - Finish up BansheeEngine
+  - DX11, DX9
+
+Editor and script stuff should be removed from release version

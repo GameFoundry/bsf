@@ -1,30 +1,3 @@
-/*
------------------------------------------------------------------------------
-This source file is part of OGRE
-    (Object-oriented Graphics Rendering Engine)
-For the latest info, see http://www.ogre3d.org/
-
-Copyright (c) 2000-2011 Torus Knot Software Ltd
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
------------------------------------------------------------------------------
-*/
 #include "BsD3D9Mappings.h"
 #include "BsString.h"
 #include "BsException.h"
@@ -32,7 +5,6 @@ THE SOFTWARE.
 
 namespace BansheeEngine 
 {
-	//---------------------------------------------------------------------
 	D3DTEXTUREADDRESS D3D9Mappings::get(TextureAddressingMode tam, const D3DCAPS9& devCaps)
 	{
 		switch( tam )
@@ -51,7 +23,7 @@ namespace BansheeEngine
 		}
 		return D3DTADDRESS_FORCE_DWORD;
 	}
-	//---------------------------------------------------------------------
+
 	D3DBLEND D3D9Mappings::get(BlendFactor sbf)
 	{
 		switch( sbf )
@@ -79,7 +51,7 @@ namespace BansheeEngine
 		}
 		return D3DBLEND_FORCE_DWORD;
 	}
-	//---------------------------------------------------------------------
+
 	D3DBLENDOP D3D9Mappings::get(BansheeEngine::BlendOperation sbo)
 	{
 		switch(sbo)
@@ -98,7 +70,7 @@ namespace BansheeEngine
 
 		return D3DBLENDOP_FORCE_DWORD;
 	}
-	//---------------------------------------------------------------------
+
 	DWORD D3D9Mappings::get(CompareFunction cf)
 	{
 		switch( cf )
@@ -122,7 +94,7 @@ namespace BansheeEngine
 		};
 		return 0;
 	}
-	//---------------------------------------------------------------------
+
 	DWORD D3D9Mappings::get(CullingMode cm, bool flip)
 	{
 		switch( cm )
@@ -142,7 +114,7 @@ namespace BansheeEngine
 		}
 		return 0;
 	}
-	//---------------------------------------------------------------------
+
 	D3DFILLMODE D3D9Mappings::get(PolygonMode level)
 	{
 		switch(level)
@@ -154,7 +126,7 @@ namespace BansheeEngine
 		}
 		return D3DFILL_FORCE_DWORD;
 	}
-	//---------------------------------------------------------------------
+
 	DWORD D3D9Mappings::get(StencilOperation op, bool invert)
 	{
 		switch(op)
@@ -178,7 +150,7 @@ namespace BansheeEngine
 		}
 		return 0;
 	}
-	//---------------------------------------------------------------------
+
 	D3DSAMPLERSTATETYPE D3D9Mappings::get(FilterType ft)
     {
         switch (ft)
@@ -197,7 +169,7 @@ namespace BansheeEngine
         // to keep compiler happy
         return D3DSAMP_MINFILTER;
     }
-	//---------------------------------------------------------------------
+
 	DWORD D3D9Mappings::get(FilterType ft, FilterOptions fo, const D3DCAPS9& devCaps, 
         eD3DTexType texType)
 	{
@@ -290,10 +262,10 @@ namespace BansheeEngine
         return 0;
 
 	}
-	//---------------------------------------------------------------------
-	D3D9Mappings::eD3DTexType D3D9Mappings::get(TextureType ogreTexType)
+
+	D3D9Mappings::eD3DTexType D3D9Mappings::get(TextureType texType)
 	{
-		switch( ogreTexType )
+		switch( texType )
 		{
 		case TEX_TYPE_1D :
 		case TEX_TYPE_2D :
@@ -305,7 +277,7 @@ namespace BansheeEngine
 		}
 		return D3D9Mappings::D3D_TEX_TYPE_NONE;
 	}
-	//---------------------------------------------------------------------
+
     DWORD D3D9Mappings::get(GpuBufferUsage usage)
     {
         DWORD ret = 0;
@@ -316,7 +288,7 @@ namespace BansheeEngine
 
         return ret;
     }
-	//---------------------------------------------------------------------
+
     DWORD D3D9Mappings::get(GpuLockOptions options, GpuBufferUsage usage)
     {
         DWORD ret = 0;
@@ -341,7 +313,7 @@ namespace BansheeEngine
 
         return ret;
     }
-	//---------------------------------------------------------------------
+
     D3DFORMAT D3D9Mappings::get(IndexBuffer::IndexType itype)
     {
         if (itype == IndexBuffer::IT_32BIT)
@@ -353,7 +325,7 @@ namespace BansheeEngine
             return D3DFMT_INDEX16;
         }
     }
-	//---------------------------------------------------------------------
+
 	D3DDECLTYPE D3D9Mappings::get(VertexElementType vType)
 	{
 		switch (vType)
@@ -385,10 +357,10 @@ namespace BansheeEngine
             return D3DDECLTYPE_UBYTE4;
             break;
 		}
-		// to keep compiler happy
+
 		return D3DDECLTYPE_FLOAT3;
 	}
-	//---------------------------------------------------------------------
+
 	D3DDECLUSAGE D3D9Mappings::get(VertexElementSemantic sem)
 	{
 		switch (sem)
@@ -420,11 +392,11 @@ namespace BansheeEngine
 		default:
 			BS_EXCEPT(RenderingAPIException, "Invalid semantic for D3D9 render system: " + toString(sem));
 		}
-		// to keep compiler happy
+
 		return D3DDECLUSAGE_POSITION;
 	}
-	//---------------------------------------------------------------------
-	D3DXMATRIX D3D9Mappings::makeD3DXMatrix( const Matrix4& mat )
+
+	D3DXMATRIX D3D9Mappings::makeD3DXMatrix(const Matrix4& mat)
 	{
 		// Transpose matrix
 		// D3D9 uses row vectors i.e. V*M
@@ -435,8 +407,8 @@ namespace BansheeEngine
             mat[0][2], mat[1][2], mat[2][2], mat[3][2],
             mat[0][3], mat[1][3], mat[2][3], mat[3][3]);
 	}
-	//---------------------------------------------------------------------
-	Matrix4 D3D9Mappings::convertD3DXMatrix( const D3DXMATRIX& mat )
+
+	Matrix4 D3D9Mappings::convertD3DXMatrix(const D3DXMATRIX& mat)
 	{
 		return Matrix4(
             mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],
@@ -444,7 +416,7 @@ namespace BansheeEngine
             mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2],
             mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]);
 	}
-	/****************************************************************************************/
+
 	PixelFormat D3D9Mappings::_getPF(D3DFORMAT d3dPF)
 	{
 		switch(d3dPF)
@@ -472,15 +444,13 @@ namespace BansheeEngine
 		case D3DFMT_G16R16F: // TODO - For some reason G and R are flipped in DX9 which might not be compatible with other render systems directly
 			return PF_FLOAT16_RG;
 		case D3DFMT_DXT1:
-			return PF_DXT1;
+			return PF_BC1;
 		case D3DFMT_DXT2:
-			return PF_DXT2;
+			return PF_BC2;
 		case D3DFMT_DXT3:
-			return PF_DXT3;
-		case D3DFMT_DXT4:
-			return PF_DXT4;
+			return PF_BC2a;
 		case D3DFMT_DXT5:
-			return PF_DXT5;
+			return PF_BC3;
 		case D3DFMT_D24S8:
 			return PF_D24S8;
 		case D3DFMT_D32F_LOCKABLE:
@@ -491,7 +461,7 @@ namespace BansheeEngine
 			return PF_UNKNOWN;
 		}
 	}
-	/****************************************************************************************/
+
 	D3DFORMAT D3D9Mappings::_getPF(PixelFormat pf)
 	{
 		// DX9 uses different format semantics than most render systems, where most significant bit is signified by the
@@ -518,15 +488,13 @@ namespace BansheeEngine
 			return D3DFMT_G32R32F;
 		case PF_FLOAT32_RGBA:
 			return D3DFMT_A32B32G32R32F;
-		case PF_DXT1:
+		case PF_BC1:
 			return D3DFMT_DXT1;
-		case PF_DXT2:
+		case PF_BC2:
 			return D3DFMT_DXT2;
-		case PF_DXT3:
+		case PF_BC2a:
 			return D3DFMT_DXT3;
-		case PF_DXT4:
-			return D3DFMT_DXT4;
-		case PF_DXT5:
+		case PF_BC3:
 			return D3DFMT_DXT5;
 		case PF_D24S8:
 			return D3DFMT_D24S8;
@@ -539,7 +507,7 @@ namespace BansheeEngine
 			return D3DFMT_UNKNOWN;
 		}
 	}
-	/****************************************************************************************/
+
 	PixelFormat D3D9Mappings::_getClosestSupportedPF(PixelFormat enginePF)
 	{
 		if (_getPF(enginePF) != D3DFMT_UNKNOWN)

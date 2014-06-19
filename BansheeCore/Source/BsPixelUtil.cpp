@@ -535,7 +535,7 @@ namespace BansheeEngine
 		16, 8, 0, 0
 		},
 	//-----------------------------------------------------------------------
-        {"PF_DXT1",
+        {"PF_BC1",
         /* Bytes per element */
         0,
         /* Flags */
@@ -548,7 +548,7 @@ namespace BansheeEngine
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_DXT2",
+        {"PF_BC2",
         /* Bytes per element */
         0,
         /* Flags */
@@ -561,7 +561,7 @@ namespace BansheeEngine
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_DXT3",
+        {"PF_BC2a",
         /* Bytes per element */
         0,
         /* Flags */
@@ -574,7 +574,7 @@ namespace BansheeEngine
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_DXT4",
+        {"PF_BC3",
         /* Bytes per element */
         0,
         /* Flags */
@@ -587,7 +587,46 @@ namespace BansheeEngine
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_DXT5",
+        {"PF_BC4",
+        /* Bytes per element */
+        0,
+        /* Flags */
+        PFF_COMPRESSED,
+        /* Component type and count */
+        PCT_BYTE, 1,
+        /* rbits, gbits, bbits, abits */
+        0, 0, 0, 0,
+        /* Masks and shifts */
+        0, 0, 0, 0, 0, 0, 0, 0
+        },
+	//-----------------------------------------------------------------------
+        {"PF_BC5",
+        /* Bytes per element */
+        0,
+        /* Flags */
+        PFF_COMPRESSED,
+        /* Component type and count */
+        PCT_BYTE, 2,
+        /* rbits, gbits, bbits, abits */
+        0, 0, 0, 0,
+        /* Masks and shifts */
+        0, 0, 0, 0, 0, 0, 0, 0
+        },
+	//-----------------------------------------------------------------------
+        {"PF_BC6H",
+        /* Bytes per element */
+        0,
+        /* Flags */
+        PFF_COMPRESSED,
+        /* Component type and count */
+        PCT_FLOAT16, 3,
+        /* rbits, gbits, bbits, abits */
+        0, 0, 0, 0,
+        /* Masks and shifts */
+        0, 0, 0, 0, 0, 0, 0, 0
+        },
+	//-----------------------------------------------------------------------
+        {"PF_BC7",
         /* Bytes per element */
         0,
         /* Flags */
@@ -776,18 +815,21 @@ namespace BansheeEngine
 		{
 			switch(format)
 			{
-				// DXT formats work by dividing the image into 4x4 blocks, then encoding each
+				// BC formats work by dividing the image into 4x4 blocks, then encoding each
 				// 4x4 block with a certain number of bytes. 
-				case PF_DXT1:
+				case PF_BC1:
+				case PF_BC4:
 					return ((width+3)/4)*((height+3)/4)*8 * depth;
-				case PF_DXT2:
-				case PF_DXT3:
-				case PF_DXT4:
-				case PF_DXT5:
+				case PF_BC2:
+				case PF_BC2a:
+				case PF_BC3:
+				case PF_BC5:
+				case PF_BC6H:
+				case PF_BC7:
 					return ((width+3)/4)*((height+3)/4)*16 * depth;
 
 				default:
-				BS_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
+					BS_EXCEPT(InvalidParametersException, "Invalid compressed pixel format");
 			}
 		}
 		else
@@ -837,11 +879,14 @@ namespace BansheeEngine
 		{
 			switch(format)
 			{
-				case PF_DXT1:
-				case PF_DXT2:
-				case PF_DXT3:
-				case PF_DXT4:
-				case PF_DXT5:
+				case PF_BC1:
+				case PF_BC2:
+				case PF_BC2a:
+				case PF_BC3:
+				case PF_BC4:
+				case PF_BC5:
+				case PF_BC6H:
+				case PF_BC7:
 					return ((width & 3) == 0 && (height & 3) == 0 && depth == 1);
 				default:
 					return true;

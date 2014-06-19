@@ -1,5 +1,3 @@
-NON TRIVIAL BUT SIMPLE
-
 Actually add frustum culling
 Implement RenderQueue sorting with support for sort type, priority and separable pass
  - Use a hash list(containing type, queue, layer, etc.) for faster sorting
@@ -9,11 +7,8 @@ REFACTORING, NOTES AND OTHER TRIVIAL STUFF
 
 Finally
  - Document elements marked with TODO UNDOCUMENTED
- - Refactor/rename everything so it makes more sense. Possibly lay out a design diagram.
- - Get rid of Camera::getIgnoreSceneRenderables it can be doing using layers
 
 Semantic/design issues:
- - DrawList is too similar to RenderQueue - Their names need to be more distinct
  - Consider removing SceneManager from Core? I two scene manager base classes.
  - GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.
 
@@ -23,3 +18,41 @@ Just notes for later potentially:
  - I can only update entire Mesh at once. 
  - I keep bounds for the entire mesh and not per-submesh
  - I don't serialize bounds and they are recalculated whenever a mesh is loaded
+
+
+ -------------------------
+
+ Texture compression/mipmaps:
+
+Remove DXT2, DXT4 formats. Add BC4, 5, 6, 7 formats, including their conversion formats.
+Compile nvtt as a library. Add include files. Add library to Dependencies repo, and info about it to Dependencies.txt. Add it to list of licences.
+Add compress(format) functionality to PixelUtil. Optionally also uncompress(). 
+Add calculateMips functionality to PixelUtil. It takes PixelData as parameter, and returns a set of PixelData mips.
+Add Texture import options that allow you to choose format of the texture when loading. Not just compressed/uncompressed but all formats.
+ - PixelUtil can convert all normal formats. compress can deal with others.
+Add support for DDS import (also use nvtt?)
+
+IMPLEMENTATION:
+Will likely need CompressionOptions struct since there are so many.
+There are other conversion methods that don't support compression. That's fine, we can do that manually.
+Only 2D and cube input images are supported.
+I won't support BC6 and BC7 initially. Add this to notes.txt
+
+NVTT support:
+ - Ensure I disable cuda compression as its enabled by default - compressor.enableCudaAcceleration(false);
+ - Create an OutputHandler that can accept multiple calls to writeData
+ - Call outputOptions.setOutputHeader(false); to disable header generation since I don't generate dds
+ - CompressionOptions needs to have:
+    - Format
+    - Quality
+    - IsTextureSRGB - inputOptions.setGamma(1.0f, 1.0f);
+    - AlphaMode - InputOptions::setAlphaMode(AlphaMode alphaMode);
+
+Mip map options
+    - InputOptions::setMipmapGeneration(bool enabled, int maxLevel);
+    - Mipmaps can only be generated from uncompressed textures
+    - Set if its a normal map and should the mips be renormalized - InputOptions::setNormalMap(bool isNormalMap);, InputOptions::setNormalizeMipmaps(bool normalizeMipmaps);
+    - Rounding modes? Probably not for now
+    - AlphaMode - InputOptions::setAlphaMode(AlphaMode alphaMode);
+
+Check out estimateSize

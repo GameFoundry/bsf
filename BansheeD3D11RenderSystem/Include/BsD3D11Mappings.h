@@ -63,7 +63,7 @@ namespace BansheeEngine
 		/// utility method, convert D3D11 pixel format to engine pixel format
 		static PixelFormat _getPF(DXGI_FORMAT d3dPF);
 		/// utility method, convert engine pixel format to D3D11 pixel format
-		static DXGI_FORMAT _getPF(PixelFormat ogrePF);
+		static DXGI_FORMAT _getPF(PixelFormat format, bool hwGamma);
 		//
 		static D3D11_USAGE _getUsage(GpuBufferUsage mUsage);
 		static D3D11_USAGE _getUsage(int mUsage);
@@ -74,7 +74,7 @@ namespace BansheeEngine
 		static bool _isDynamic(int mUsage);
 
 		/// utility method, find closest engine pixel format that D3D11 can support
-		static PixelFormat _getClosestSupportedPF(PixelFormat ogrePF);
+		static PixelFormat _getClosestSupportedPF(PixelFormat format, bool hwGamma);
 
 		static TextureType _getTexType(D3D11_SRV_DIMENSION type);
 

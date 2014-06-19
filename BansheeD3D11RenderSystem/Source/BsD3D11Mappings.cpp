@@ -404,12 +404,12 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11Mappings::get(const Color& inColour, float * outColour )
+	void D3D11Mappings::get(const Color& inColor, float * outColor)
 	{
-		outColour[0] = inColour.r;
-		outColour[1] = inColour.g;
-		outColour[2] = inColour.b;
-		outColour[3] = inColour.a;	
+		outColor[0] = inColor.r;
+		outColor[1] = inColor.g;
+		outColor[2] = inColor.b;
+		outColor[3] = inColor.a;	
 	}
 
 	D3D11_BOX D3D11Mappings::toDx11Box(const PixelVolume &inBox)
@@ -429,191 +429,202 @@ namespace BansheeEngine
 	{
 		switch(d3dPF)
 		{
-
-		case DXGI_FORMAT_UNKNOWN	:
+		case DXGI_FORMAT_UNKNOWN:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32B32A32_TYPELESS	:
+		case DXGI_FORMAT_R32G32B32A32_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32B32A32_FLOAT	:
+		case DXGI_FORMAT_R32G32B32A32_FLOAT:
 			return PF_FLOAT32_RGBA;
-		case DXGI_FORMAT_R32G32B32A32_UINT	:
+		case DXGI_FORMAT_R32G32B32A32_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32B32A32_SINT	:
+		case DXGI_FORMAT_R32G32B32A32_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32B32_TYPELESS	:
+		case DXGI_FORMAT_R32G32B32_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32B32_FLOAT	:
+		case DXGI_FORMAT_R32G32B32_FLOAT:
 			return PF_FLOAT32_RGB;
-		case DXGI_FORMAT_R32G32B32_UINT	:
+		case DXGI_FORMAT_R32G32B32_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32B32_SINT	:
+		case DXGI_FORMAT_R32G32B32_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16B16A16_TYPELESS	:
+		case DXGI_FORMAT_R16G16B16A16_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16B16A16_FLOAT	:
+		case DXGI_FORMAT_R16G16B16A16_FLOAT:
 			return PF_FLOAT16_RGBA;
-		case DXGI_FORMAT_R16G16B16A16_UNORM	:
+		case DXGI_FORMAT_R16G16B16A16_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16B16A16_UINT	:
+		case DXGI_FORMAT_R16G16B16A16_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16B16A16_SNORM	:
+		case DXGI_FORMAT_R16G16B16A16_SNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16B16A16_SINT	:
+		case DXGI_FORMAT_R16G16B16A16_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32_TYPELESS	:
+		case DXGI_FORMAT_R32G32_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32_FLOAT	:
+		case DXGI_FORMAT_R32G32_FLOAT:
 			return PF_FLOAT32_RG;
-		case DXGI_FORMAT_R32G32_UINT	:
+		case DXGI_FORMAT_R32G32_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G32_SINT	:
+		case DXGI_FORMAT_R32G32_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32G8X24_TYPELESS	:
+		case DXGI_FORMAT_R32G8X24_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT	:
+		case DXGI_FORMAT_D32_FLOAT_S8X24_UINT:
 			return PF_D32_S8X24;
-		case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS	:
+		case DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT	:
+		case DXGI_FORMAT_X32_TYPELESS_G8X24_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R10G10B10A2_TYPELESS	:
+		case DXGI_FORMAT_R10G10B10A2_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R10G10B10A2_UNORM	:
+		case DXGI_FORMAT_R10G10B10A2_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R10G10B10A2_UINT	:
+		case DXGI_FORMAT_R10G10B10A2_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R11G11B10_FLOAT	:
+		case DXGI_FORMAT_R11G11B10_FLOAT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8B8A8_TYPELESS	:
+		case DXGI_FORMAT_R8G8B8A8_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8B8A8_UNORM	:
+		case DXGI_FORMAT_R8G8B8A8_UNORM:
 			return PF_R8G8B8A8;
-		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB	:
+		case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8B8A8_UINT	:
+		case DXGI_FORMAT_R8G8B8A8_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8B8A8_SNORM	:
+		case DXGI_FORMAT_R8G8B8A8_SNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8B8A8_SINT	:
+		case DXGI_FORMAT_R8G8B8A8_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16_TYPELESS	:
+		case DXGI_FORMAT_R16G16_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16_FLOAT	:
+		case DXGI_FORMAT_R16G16_FLOAT:
 			return PF_FLOAT16_RG;
-		case DXGI_FORMAT_R16G16_UNORM	:
+		case DXGI_FORMAT_R16G16_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16_UINT	:
+		case DXGI_FORMAT_R16G16_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16_SNORM	:
+		case DXGI_FORMAT_R16G16_SNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16G16_SINT	:
+		case DXGI_FORMAT_R16G16_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32_TYPELESS	:
+		case DXGI_FORMAT_R32_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_D32_FLOAT	:
+		case DXGI_FORMAT_D32_FLOAT:
 			return PF_D32;
-		case DXGI_FORMAT_R32_FLOAT	:
+		case DXGI_FORMAT_R32_FLOAT:
 			return PF_FLOAT32_R;
-		case DXGI_FORMAT_R32_UINT	:
+		case DXGI_FORMAT_R32_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R32_SINT	:
+		case DXGI_FORMAT_R32_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R24G8_TYPELESS	:
+		case DXGI_FORMAT_R24G8_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_D24_UNORM_S8_UINT	:
+		case DXGI_FORMAT_D24_UNORM_S8_UINT:
 			return PF_D24S8;
-		case DXGI_FORMAT_R24_UNORM_X8_TYPELESS	:
+		case DXGI_FORMAT_R24_UNORM_X8_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_X24_TYPELESS_G8_UINT	:
+		case DXGI_FORMAT_X24_TYPELESS_G8_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8_TYPELESS	:
+		case DXGI_FORMAT_R8G8_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8_UNORM	:
+		case DXGI_FORMAT_R8G8_UNORM:
 			return PF_R8G8;
-		case DXGI_FORMAT_R8G8_UINT	:
+		case DXGI_FORMAT_R8G8_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8_SNORM	:
+		case DXGI_FORMAT_R8G8_SNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8_SINT	:
+		case DXGI_FORMAT_R8G8_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16_TYPELESS	:
+		case DXGI_FORMAT_R16_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16_FLOAT	:
+		case DXGI_FORMAT_R16_FLOAT:
 			return PF_FLOAT16_R;
-		case DXGI_FORMAT_D16_UNORM	:
+		case DXGI_FORMAT_D16_UNORM:
 			return PF_D16;
-		case DXGI_FORMAT_R16_UNORM	:
+		case DXGI_FORMAT_R16_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16_UINT	:
+		case DXGI_FORMAT_R16_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16_SNORM	:
+		case DXGI_FORMAT_R16_SNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R16_SINT	:
+		case DXGI_FORMAT_R16_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8_TYPELESS	:
+		case DXGI_FORMAT_R8_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8_UNORM	:
+		case DXGI_FORMAT_R8_UNORM:
 			return PF_R8;
-		case DXGI_FORMAT_R8_UINT	:
+		case DXGI_FORMAT_R8_UINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8_SNORM	:
+		case DXGI_FORMAT_R8_SNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8_SINT	:
+		case DXGI_FORMAT_R8_SINT:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_A8_UNORM	:
+		case DXGI_FORMAT_A8_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R1_UNORM	:
+		case DXGI_FORMAT_R1_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R9G9B9E5_SHAREDEXP	:
+		case DXGI_FORMAT_R9G9B9E5_SHAREDEXP:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_R8G8_B8G8_UNORM	:
+		case DXGI_FORMAT_R8G8_B8G8_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_G8R8_G8B8_UNORM	:
+		case DXGI_FORMAT_G8R8_G8B8_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_BC1_TYPELESS	:
+		case DXGI_FORMAT_BC1_TYPELESS:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_BC1_UNORM	:
-			return PF_DXT1;
-		case DXGI_FORMAT_BC1_UNORM_SRGB	:
-			return PF_DXT1;
-		case DXGI_FORMAT_BC2_TYPELESS	:
-			return PF_DXT2;
-		case DXGI_FORMAT_BC2_UNORM	:
-			return PF_DXT2;
-		case DXGI_FORMAT_BC2_UNORM_SRGB	:
-			return PF_DXT2;
-		case DXGI_FORMAT_BC3_TYPELESS	:
-			return PF_DXT3;
-		case DXGI_FORMAT_BC3_UNORM	:
-			return PF_DXT3;
-		case DXGI_FORMAT_BC3_UNORM_SRGB	:
-			return PF_DXT3;
-		case DXGI_FORMAT_BC4_TYPELESS	:
-			return PF_DXT4;
-		case DXGI_FORMAT_BC4_UNORM	:
-			return PF_DXT4;
-		case DXGI_FORMAT_BC4_SNORM	:
-			return PF_DXT4;
-		case DXGI_FORMAT_BC5_TYPELESS	:
-			return PF_DXT5;
-		case DXGI_FORMAT_BC5_UNORM	:
-			return PF_DXT5;
-		case DXGI_FORMAT_BC5_SNORM	:
-			return PF_DXT5;
-		case DXGI_FORMAT_B5G6R5_UNORM	:
+		case DXGI_FORMAT_BC1_UNORM:
+			return PF_BC1;
+		case DXGI_FORMAT_BC1_UNORM_SRGB:
+			return PF_BC1;
+		case DXGI_FORMAT_BC2_TYPELESS:
+			return PF_BC2;
+		case DXGI_FORMAT_BC2_UNORM:
+			return PF_BC2;
+		case DXGI_FORMAT_BC2_UNORM_SRGB:
+			return PF_BC2;
+		case DXGI_FORMAT_BC3_TYPELESS:
+			return PF_BC3;
+		case DXGI_FORMAT_BC3_UNORM:
+			return PF_BC3;
+		case DXGI_FORMAT_BC3_UNORM_SRGB:
+			return PF_BC3;
+		case DXGI_FORMAT_BC4_TYPELESS:
+			return PF_BC4;
+		case DXGI_FORMAT_BC4_UNORM:
+			return PF_BC4;
+		case DXGI_FORMAT_BC4_SNORM:
+			return PF_BC4;
+		case DXGI_FORMAT_BC5_TYPELESS:
+			return PF_BC5;
+		case DXGI_FORMAT_BC5_UNORM:
+			return PF_BC5;
+		case DXGI_FORMAT_BC5_SNORM:
+			return PF_BC5;
+		case DXGI_FORMAT_BC6H_UF16:
+			return PF_BC6H;
+		case DXGI_FORMAT_BC6H_SF16:
+			return PF_BC6H;
+		case DXGI_FORMAT_BC6H_TYPELESS:
+			return PF_BC6H;
+		case DXGI_FORMAT_BC7_UNORM:
+			return PF_BC7;
+		case DXGI_FORMAT_BC7_UNORM_SRGB:
+			return PF_BC7;
+		case DXGI_FORMAT_BC7_TYPELESS:
+			return PF_BC7;
+		case DXGI_FORMAT_B5G6R5_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_B5G5R5A1_UNORM	:
+		case DXGI_FORMAT_B5G5R5A1_UNORM:
 			return PF_UNKNOWN;
-		case DXGI_FORMAT_B8G8R8A8_UNORM	:
+		case DXGI_FORMAT_B8G8R8A8_UNORM:
 			return PF_B8G8R8A8;
-		case DXGI_FORMAT_B8G8R8X8_UNORM	:
+		case DXGI_FORMAT_B8G8R8X8_UNORM:
 			return PF_B8G8R8X8;
 		default:
 			return PF_UNKNOWN;
 		}
 	}
 
-	DXGI_FORMAT D3D11Mappings::_getPF(PixelFormat enginePF)
+	DXGI_FORMAT D3D11Mappings::_getPF(PixelFormat enginePF, bool gamma)
 	{
 		switch(enginePF)
 		{
@@ -653,16 +664,25 @@ namespace BansheeEngine
 			return DXGI_FORMAT_R32G32B32_FLOAT;
 		case PF_FLOAT32_RGBA:
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case PF_DXT1:
+		case PF_BC1:
 			return DXGI_FORMAT_BC1_UNORM;
-		case PF_DXT2:
+		case PF_BC2:
 			return DXGI_FORMAT_BC2_UNORM;
-		case PF_DXT3:
+		case PF_BC2a:
+			return DXGI_FORMAT_BC2_UNORM;
+		case PF_BC3:
 			return DXGI_FORMAT_BC3_UNORM;
-		case PF_DXT4:
+		case PF_BC4:
 			return DXGI_FORMAT_BC4_UNORM;
-		case PF_DXT5:
+		case PF_BC5:
 			return DXGI_FORMAT_BC5_UNORM;
+		case PF_BC6H:
+			return DXGI_FORMAT_BC6H_UF16;
+		case PF_BC7:
+			if (gamma)
+				return DXGI_FORMAT_BC7_UNORM_SRGB;
+			else
+				return DXGI_FORMAT_BC7_UNORM;
 		case PF_D32_S8X24:
 			return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
 		case PF_D24S8:
@@ -677,9 +697,9 @@ namespace BansheeEngine
 		}
 	}
 
-	PixelFormat D3D11Mappings::_getClosestSupportedPF(PixelFormat enginePF)
+	PixelFormat D3D11Mappings::_getClosestSupportedPF(PixelFormat enginePF, bool hwGamma)
 	{
-		if (_getPF(enginePF) != DXGI_FORMAT_UNKNOWN)
+		if (_getPF(enginePF, hwGamma) != DXGI_FORMAT_UNKNOWN)
 		{
 			return enginePF;
 		}
@@ -819,7 +839,7 @@ namespace BansheeEngine
 		if(PixelUtil::isCompressed(pf))
 		{
 			// D3D wants the width of one row of cells in bytes
-			if (pf == PF_DXT1)
+			if (pf == PF_BC1 || pf == PF_BC4)
 			{
 				// 64 bits (8 bytes) per 4x4 block
 				return std::max<UINT32>(1, xcount / 4) * std::max<UINT32>(1, ycount / 4) * 8;

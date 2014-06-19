@@ -32,7 +32,7 @@ namespace BansheeEngine
 		mMultisampleHint = multisampleHint;
 
 		// Adjust format if required
-		mFormat = TextureManager::instance().getNativeFormat(mTextureType, format, mUsage);
+		mFormat = TextureManager::instance().getNativeFormat(mTextureType, format, mUsage, hwGamma);
 		mSize = getNumFaces() * PixelUtil::getMemorySize(mWidth, mHeight, mDepth, mFormat);
 
 		Resource::initialize();
@@ -79,7 +79,7 @@ namespace BansheeEngine
 
 		const PixelData& pixelData = static_cast<const PixelData&>(data);
 
-		if(pixelData.getWidth() != getWidth() ||pixelData.getHeight() != getHeight() || 
+		if(pixelData.getWidth() != getWidth() || pixelData.getHeight() != getHeight() || 
 			pixelData.getDepth() != getDepth() || pixelData.getFormat() != getFormat())
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to write to this texture.");

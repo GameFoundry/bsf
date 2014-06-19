@@ -51,41 +51,47 @@ namespace BansheeEngine
 		// 32-bit pixel format, 8 bits for red, green, blue and alpha.
 		PF_BYTE_RGBA = PF_R8G8B8A8,      
         // DXT1/BC1 format containing opaque RGB or 1-bit alpha RGB. 4 bits per pixel.
-        PF_DXT1 = 13,
-        // DXT2/BC2 format with premultiplied alpha. 6 bits per pixel.
-        PF_DXT2 = 14,
-        // DXT3/BC2 format with explicit alpha. 6 bits per pixel.
-        PF_DXT3 = 15,
-        // DXT4/BC3 format with premultiplied alpha. 6 bits per pixel. Better alpha gradients than DXT2.
-        PF_DXT4 = 16,
-        // DXT5/BC3 format with explicit alpha. 6 bits per pixel. Better alpha gradients than DXT3.
-        PF_DXT5 = 17,
+        PF_BC1 = 13,
+        // DXT2/BC2 format containing RGB with premultiplied alpha. 8 bits per pixel.
+        PF_BC2 = 14,
+        // DXT3/BC2 format containing RGB with explicit alpha. 8 bits per pixel.
+        PF_BC2a = 15,
+        // DXT5/BC3 format containing RGB with explicit alpha. 8 bits per pixel. Better alpha gradients than BC2.
+        PF_BC3 = 16,
+		// One channel compressed format. 4 bits per pixel.
+		PF_BC4 = 17,
+		// Two channel compressed format. 8 bits per pixel.
+		PF_BC5 = 18,
+		// Format storing RGB in half (16-bit) floating point format usable for HDR. 8 bits per pixel.
+		PF_BC6H = 19,
+		// Format storing RGB with optional alpha channel. Similar to BC1/BC2/BC3 formats but with higher quality and higher decompress overhead. 8 bits per pixel.
+		PF_BC7 = 20,
 		// 16-bit pixel format, 16 bits (float) for red
-        PF_FLOAT16_R = 18,
+        PF_FLOAT16_R = 21,
 		// 32-bit, 2-channel s10e5 floating point pixel format, 16-bit red, 16-bit green
-		PF_FLOAT16_RG = 19,
+		PF_FLOAT16_RG = 22,
         // 48-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue
-        PF_FLOAT16_RGB = 20,
+        PF_FLOAT16_RGB = 23,
         // 64-bit pixel format, 16 bits (float) for red, 16 bits (float) for green, 16 bits (float) for blue, 16 bits (float) for alpha
-        PF_FLOAT16_RGBA = 21,
+        PF_FLOAT16_RGBA = 24,
 		// 32-bit pixel format, 32 bits (float) for red
-        PF_FLOAT32_R = 22,
+        PF_FLOAT32_R = 25,
 		// 64-bit, 2-channel floating point pixel format, 32-bit red, 32-bit green
-		PF_FLOAT32_RG = 23,
+		PF_FLOAT32_RG = 26,
         // 96-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue
-        PF_FLOAT32_RGB = 24,
+        PF_FLOAT32_RGB = 27,
         // 128-bit pixel format, 32 bits (float) for red, 32 bits (float) for green, 32 bits (float) for blue, 32 bits (float) for alpha
-        PF_FLOAT32_RGBA = 25,
+        PF_FLOAT32_RGBA = 28,
 		// Depth stencil format, 32bit depth, 8bit stencil + 24 unused
-		PF_D32_S8X24 = 26,
+		PF_D32_S8X24 = 29,
 		// Depth stencil fomrat, 24bit depth + 8bit stencil
-		PF_D24S8 = 27,
+		PF_D24S8 = 30,
 		// Depth format, 32bits
-		PF_D32 = 28,
+		PF_D32 = 31,
 		// Depth format, 16bits
-		PF_D16 = 29,
+		PF_D16 = 32,
 		// Number of pixel formats currently defined
-        PF_COUNT = 30
+        PF_COUNT = 33
     };
 	typedef Vector<PixelFormat> PixelFormatList;
 

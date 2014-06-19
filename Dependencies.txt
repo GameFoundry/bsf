@@ -1,7 +1,16 @@
-Banshee relies on the following 3rd party libraries:
+This document lists all Banshee 3rd party libraries and provides information on how to compile
+and include them in your own project. It is meant to be used as a guide to create your own Banshee
+project file, potentially for compiler/IDE other than Visual Studio.
+
+BansheeEngine relies on the following 3rd party libraries:
  - Mono 3.2.3
     - http://www.mono-project.com
 	- See MonoIntegrationGuide.txt on how to compile & integrate Mono
+
+BansheeCore relies on the following 3rd party libraries:
+ - NVIDIA Texture Tools 2.0.8
+    - https://code.google.com/p/nvidia-texture-tools/
+	- See BansheeCompilationGuide.txt on how to compile it for Banshee (included with BansheeDependencies)
 
 Place dependency files in:
  - Library include files in (BansheeRootDir)/Dependencies/Include
@@ -42,8 +51,3 @@ Place plug-in specific dependency files in:
 
 Other notes:
  - Some dependencies might not come with DebugRelease binaries, in which case use Release binaries (copy them to DebugRelease folder)
-
-Listed dependencies have not been provided with the engine source code. 
-You will need to grab them manually from the specified links, 
-(compile them, depending if library comes pre-compiled or not), 
-and place them in the above specified folders. 

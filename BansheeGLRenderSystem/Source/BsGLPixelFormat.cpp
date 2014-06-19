@@ -43,12 +43,17 @@ namespace BansheeEngine
                 return GL_RGB;
             case PF_FLOAT32_RGBA:
                 return GL_RGBA;
-            case PF_DXT1:
-                return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            case PF_DXT3:
-                 return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-            case PF_DXT5:
-                 return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+            case PF_BC1:
+            case PF_BC2a:
+            case PF_BC3:
+			case PF_BC7:
+				return GL_RGBA;
+			case PF_BC4:
+				return GL_RED;
+			case PF_BC5:
+				return GL_RG;
+			case PF_BC6H:
+				return GL_RGB;
             default:
                 return 0;
         }
@@ -98,9 +103,13 @@ namespace BansheeEngine
 		 case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
 		 case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
 		 case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+		 case GL_COMPRESSED_RGBA_BPTC_UNORM:
+		 case GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM:
 			 return GL_RGBA;
 		 case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
 		 case GL_COMPRESSED_SRGB_S3TC_DXT1_EXT:
+		 case GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT:
+		 case GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT:
 			 return GL_RGB;
 		 case GL_COMPRESSED_RED_RGTC1:
 		 case GL_COMPRESSED_SIGNED_RED_RGTC1:
@@ -150,21 +159,32 @@ namespace BansheeEngine
                 return GL_RGB32F;
             case PF_FLOAT32_RGBA:
                 return GL_RGBA32F;
-			case PF_DXT1:
+			case PF_BC1:
 				if (hwGamma)
 					return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
 				else
 					return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            case PF_DXT3:
+            case PF_BC2a:
 				if (hwGamma)
 					return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
 				else
 	                return GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
-            case PF_DXT5:
+            case PF_BC3:
 				if (hwGamma)
 					return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT;
 				else
 	                return GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+			case PF_BC4:
+				return GL_COMPRESSED_RED_RGTC1;
+			case PF_BC5:
+				return GL_COMPRESSED_RG_RGTC2;
+			case PF_BC6H:
+				return GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT;
+			case PF_BC7:
+				if (hwGamma)
+					return GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM;
+				else
+					return GL_COMPRESSED_RGBA_BPTC_UNORM;
 			case PF_D16:
 				return GL_DEPTH_COMPONENT16;
 			case PF_D32:
@@ -181,7 +201,7 @@ namespace BansheeEngine
     GLenum GLPixelUtil::getClosestGLInternalFormat(PixelFormat mFormat, bool hwGamma)
     {
         GLenum format = getGLInternalFormat(mFormat, hwGamma);
-        if(format==GL_NONE)
+        if(format == GL_NONE)
 		{
 			if (hwGamma)
 				return GL_SRGB8;
@@ -243,13 +263,25 @@ namespace BansheeEngine
 		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_SRGB_S3TC_DXT1_EXT:
 		case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT:
-			return PF_DXT1;
+			return PF_BC1;
 		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
 		case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT:
-			return PF_DXT3;
+			return PF_BC2;
 		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 		case GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT:
-			return PF_DXT5;
+			return PF_BC3;
+		case GL_COMPRESSED_RED_RGTC1:
+		case GL_COMPRESSED_SIGNED_RED_RGTC1:
+			return PF_BC4;
+		case GL_COMPRESSED_RG_RGTC2:
+		case GL_COMPRESSED_SIGNED_RG_RGTC2:
+			return PF_BC5;
+		case GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT:
+		case GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT:
+			return PF_BC6H;
+		case GL_COMPRESSED_RGBA_BPTC_UNORM:
+		case GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM:
+			return PF_BC7;
 		case GL_DEPTH_COMPONENT16:
 			return PF_D16;
 		case GL_DEPTH_COMPONENT32F:
@@ -295,12 +327,20 @@ namespace BansheeEngine
 			return PF_FLOAT32_RGB;
 		case PF_FLOAT32_RGBA:
 			return PF_FLOAT32_RGBA;
-		case PF_DXT1:
-			return PF_DXT1;
-		case PF_DXT3:
-			return PF_DXT3;
-		case PF_DXT5:
-			return PF_DXT5;
+		case PF_BC1:
+			return PF_BC1;
+		case PF_BC2a:
+			return PF_BC2a;
+		case PF_BC3:
+			return PF_BC3;
+		case PF_BC4:
+			return PF_BC4;
+		case PF_BC5:
+			return PF_BC5;
+		case PF_BC6H:
+			return PF_BC6H;
+		case PF_BC7:
+			return PF_BC7;
 		case PF_D16:
 			return PF_D16;
 		case PF_D32:

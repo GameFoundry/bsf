@@ -35,11 +35,11 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D11MultiRenderTexture, PoolAlloc>(tex);
 	}
 
-	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
+	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
 		// Basic filtering
-		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(format));
+		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(format, hwGamma), hwGamma);
 
-		return D3D11Mappings::_getPF(d3dPF);
+		return D3D11Mappings::_getPF(d3dPF, hwGamma);
 	}
 }

@@ -12,7 +12,7 @@ namespace BansheeEngine
 		~D3D11TextureManager();
 
 		/// @copydoc TextureManager::getNativeFormat
-		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
+		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma);
 
 	protected:		
 		TexturePtr createTextureImpl();
