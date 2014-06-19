@@ -20,7 +20,7 @@ namespace BansheeEngine
 		 * @brief	Converts the provided format for the specified texture type and usage
 		 *			into a format that is supported by OpenGL.
 		 */
-		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage);
+		PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma);
 
 	protected:
 		/**

@@ -198,7 +198,7 @@ namespace BansheeEngine
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
 
-		if (mFormat != D3D11Mappings::_getPF(d3dPF, mHwGamma))
+		if (mFormat != D3D11Mappings::_getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
@@ -292,7 +292,7 @@ namespace BansheeEngine
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
 
-		if (mFormat != D3D11Mappings::_getPF(d3dPF, mHwGamma))
+		if (mFormat != D3D11Mappings::_getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
@@ -458,7 +458,7 @@ namespace BansheeEngine
 		HRESULT hr;
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
 		
-		if (mFormat != D3D11Mappings::_getPF(d3dPF, mHwGamma))
+		if (mFormat != D3D11Mappings::_getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}

@@ -84,7 +84,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Thread safe.
 		 */
-		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage) = 0;
+		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma) = 0;
 
 		const HTexture& getDummyTexture() const { return mDummyTexture; }
 

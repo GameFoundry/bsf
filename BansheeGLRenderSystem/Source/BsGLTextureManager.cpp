@@ -38,7 +38,7 @@ namespace BansheeEngine
 		return bs_core_ptr<GLMultiRenderTexture, PoolAlloc>(tex);
 	}
 
-	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
+	PixelFormat GLTextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
 		// Adjust requested parameters to capabilities
         const RenderSystemCapabilities *caps = RenderSystem::instancePtr()->getCapabilities();

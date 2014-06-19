@@ -40,6 +40,6 @@ namespace BansheeEngine
 		// Basic filtering
 		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(format, hwGamma), hwGamma);
 
-		return D3D11Mappings::_getPF(d3dPF, hwGamma);
+		return D3D11Mappings::_getPF(d3dPF);
 	}
 }

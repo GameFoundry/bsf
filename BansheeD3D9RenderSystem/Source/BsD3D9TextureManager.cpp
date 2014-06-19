@@ -63,7 +63,7 @@ namespace BansheeEngine
 		return bs_core_ptr<D3D9MultiRenderTexture, PoolAlloc>(tex);
 	}
 
-	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage)
+	PixelFormat D3D9TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
 		if((usage & TU_RENDERTARGET) != 0)
 		{
