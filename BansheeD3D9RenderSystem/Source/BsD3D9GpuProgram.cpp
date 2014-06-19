@@ -183,7 +183,7 @@ namespace BansheeEngine
 			for (UINT32 i = 0; i < D3D9RenderSystem::getResourceCreationDeviceCount(); ++i)
 			{
 				IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getResourceCreationDevice(i);
-				createInternalResources(d3d9Device);
+				loadFromMicrocode(d3d9Device, mMicrocode);
 			}
 
 			D3D9HLSLParamParser paramParser(constTable, mBlocks);
@@ -210,11 +210,6 @@ namespace BansheeEngine
 		GpuParamsPtr params = bs_shared_ptr<GpuParams, PoolAlloc>(std::ref(mParametersDesc), mColumnMajorMatrices);
 
 		return params;
-	}
-
-	void D3D9GpuProgram::createInternalResources(IDirect3DDevice9* d3d9Device)
-	{
-		loadFromMicrocode(d3d9Device, mMicrocode);
 	}
 
 	const String& D3D9GpuProgram::getLanguage() const
@@ -250,7 +245,7 @@ namespace BansheeEngine
 
 	void D3D9GpuVertexProgram::destroy_internal(void)
 	{
-		DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.begin();
+		auto it = mMapDeviceToVertexShader.begin();
 
 		while (it != mMapDeviceToVertexShader.end())
 		{
@@ -264,7 +259,7 @@ namespace BansheeEngine
 
     void D3D9GpuVertexProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {		 
-		DeviceToVertexShaderIterator it = mMapDeviceToVertexShader.find(d3d9Device);
+		auto it = mMapDeviceToVertexShader.find(d3d9Device);
 
 		if (it != mMapDeviceToVertexShader.end())
 			SAFE_RELEASE(it->second);
@@ -292,7 +287,7 @@ namespace BansheeEngine
 
 	void D3D9GpuVertexProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		DeviceToVertexShaderIterator it;
+		auto it;
 
 		// Find the shader of this device.
 		it = mMapDeviceToVertexShader.find(d3d9Device);
@@ -311,7 +306,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
-		DeviceToVertexShaderIterator it;
+		auto it;
 
 		// Find the shader of this device.
 		it = mMapDeviceToVertexShader.find(d3d9Device);
@@ -319,7 +314,7 @@ namespace BansheeEngine
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToVertexShader.end())		
 		{
-			createInternalResources(d3d9Device);		
+			loadFromMicrocode(d3d9Device, mMicrocode);
 			it = mMapDeviceToVertexShader.find(d3d9Device);
 		}
 	
@@ -352,7 +347,7 @@ namespace BansheeEngine
 
 	void D3D9GpuFragmentProgram::destroy_internal()
 	{
-		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.begin();
+		auto it = mMapDeviceToPixelShader.begin();
 
 		while (it != mMapDeviceToPixelShader.end())
 		{
@@ -366,7 +361,7 @@ namespace BansheeEngine
 
     void D3D9GpuFragmentProgram::loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode)
     {
-		DeviceToPixelShaderIterator it = mMapDeviceToPixelShader.find(d3d9Device);
+		auto it = mMapDeviceToPixelShader.find(d3d9Device);
 
 		if (it != mMapDeviceToPixelShader.end())
 			SAFE_RELEASE(it->second);
@@ -390,7 +385,7 @@ namespace BansheeEngine
 
 	void D3D9GpuFragmentProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		DeviceToPixelShaderIterator it;
+		auto it;
 
 		// Find the shader of this device.
 		it = mMapDeviceToPixelShader.find(d3d9Device);
@@ -409,7 +404,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
-		DeviceToPixelShaderIterator it;
+		auto it;
 
 		// Find the shader of this device.
 		it = mMapDeviceToPixelShader.find(d3d9Device);
@@ -417,7 +412,7 @@ namespace BansheeEngine
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToPixelShader.end())		
 		{
-			createInternalResources(d3d9Device);			
+			loadFromMicrocode(d3d9Device, mMicrocode);
 			it = mMapDeviceToPixelShader.find(d3d9Device);
 		}
 

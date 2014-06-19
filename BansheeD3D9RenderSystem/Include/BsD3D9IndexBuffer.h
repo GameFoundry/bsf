@@ -6,9 +6,15 @@
 
 namespace BansheeEngine 
 { 
+	/**
+	 * @brief	DirectX 9 implementation of an index buffer.
+	 */
     class BS_D3D9_EXPORT D3D9IndexBuffer : public IndexBuffer, public D3D9Resource
     {
 	protected:
+		/**
+		 * @brief	Container for internal buffer resources.
+		 */
 		struct BufferResources
 		{
 			IDirect3DIndexBuffer9* mBuffer;
@@ -21,9 +27,14 @@ namespace BansheeEngine
     public:
         ~D3D9IndexBuffer();
 
-        /** See HardwareBuffer. */
+		/**
+		 * @copydoc	IndexBuffer::readData
+		 */
         void readData(UINT32 offset, UINT32 length, void* dest);
-        /** See HardwareBuffer. */
+
+		/**
+		 * @copydoc	IndexBuffer::writeData
+		 */
 		void writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags = BufferWriteType::Normal);
 
 		/**
@@ -46,37 +57,49 @@ namespace BansheeEngine
 		 */
 		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
-		// Create the actual index buffer.
+		/**
+		 * @brief	Creates a DX9 index buffer object in the provided memory pool.
+		 */
 		void createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL ePool);
 	
-		/// Get the D3D-specific index buffer
+		/**
+		 * @brief	Returns the DX9 index buffer object.
+		 */
         IDirect3DIndexBuffer9* getD3DIndexBuffer();		
 
 	protected:
 		friend class D3D9HardwareBufferManager;
 
 		D3D9IndexBuffer(IndexType idxType, UINT32 numIndexes, GpuBufferUsage usage, bool useSystemMem);
-
-		/** See HardwareBuffer. */
+		
+		/**
+		 * @copydoc	IndexBuffer::lockImpl
+		 */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
-		/** See HardwareBuffer. */
+
+		/**
+		 * @copydoc	IndexBuffer::unlockImpl
+		 */
 		void unlockImpl();
-		// updates buffer resources from system memory buffer.
+
+		/**
+		 * @brief	Updates buffer resources from cached system memory buffer.
+		 */
 		bool updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources);
 
 		/**
-		 * @copydoc IndexBuffer::initialize_internal()
+		 * @copydoc IndexBuffer::initialize_internal
 		 */
 		void initialize_internal();	
 		
 		/**
-		 * @copydoc IndexBuffer::destroy_internal()
+		 * @copydoc IndexBuffer::destroy_internal
 		 */
 		void destroy_internal();
 
 	protected:		
-		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;	// Map between device to buffer resources.	
-		D3DINDEXBUFFER_DESC	mBufferDesc;					// Buffer description.		
-		UINT8* mSystemMemoryBuffer;			// Consistent system memory buffer for multiple devices support.
+		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
+		D3DINDEXBUFFER_DESC	mBufferDesc;	
+		UINT8* mSystemMemoryBuffer;
     };
 }

@@ -1028,7 +1028,7 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		HRESULT hr;
-		D3D9Mappings::eD3DTexType texType = mTexStageDesc[unit].texType;
+		D3D9Mappings::D3DTexType texType = mTexStageDesc[unit].texType;
 		hr = __SetSamplerState( static_cast<DWORD>(unit), D3D9Mappings::get(ftype), 
 			D3D9Mappings::get(ftype, filter, mDeviceManager->getActiveDevice()->getD3D9DeviceCaps(), texType));
 

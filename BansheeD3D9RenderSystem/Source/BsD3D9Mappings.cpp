@@ -7,7 +7,7 @@ namespace BansheeEngine
 {
 	D3DTEXTUREADDRESS D3D9Mappings::get(TextureAddressingMode tam, const D3DCAPS9& devCaps)
 	{
-		switch( tam )
+		switch(tam)
 		{
 		case TAM_WRAP:
 			return D3DTADDRESS_WRAP;
@@ -21,12 +21,13 @@ namespace BansheeEngine
             else
                 return D3DTADDRESS_CLAMP;
 		}
+
 		return D3DTADDRESS_FORCE_DWORD;
 	}
 
 	D3DBLEND D3D9Mappings::get(BlendFactor sbf)
 	{
-		switch( sbf )
+		switch(sbf)
 		{
 		case BF_ONE:
 			return D3DBLEND_ONE;
@@ -49,10 +50,11 @@ namespace BansheeEngine
 		case BF_INV_SOURCE_ALPHA:
 			return D3DBLEND_INVSRCALPHA;
 		}
+
 		return D3DBLEND_FORCE_DWORD;
 	}
 
-	D3DBLENDOP D3D9Mappings::get(BansheeEngine::BlendOperation sbo)
+	D3DBLENDOP D3D9Mappings::get(BlendOperation sbo)
 	{
 		switch(sbo)
 		{
@@ -73,7 +75,7 @@ namespace BansheeEngine
 
 	DWORD D3D9Mappings::get(CompareFunction cf)
 	{
-		switch( cf )
+		switch(cf)
 		{
 		case CMPF_ALWAYS_FAIL:
 			return D3DCMP_NEVER;
@@ -92,26 +94,28 @@ namespace BansheeEngine
 		case CMPF_GREATER:
 			return D3DCMP_GREATER;
 		};
+
 		return 0;
 	}
 
 	DWORD D3D9Mappings::get(CullingMode cm, bool flip)
 	{
-		switch( cm )
+		switch(cm)
 		{
 		case CULL_NONE:
 			return D3DCULL_NONE;
 		case CULL_CLOCKWISE:
-			if( flip )
+			if(flip)
 				return D3DCULL_CCW;
 			else
 				return D3DCULL_CW;
 		case CULL_COUNTERCLOCKWISE:
-			if( flip )
+			if(flip)
 				return D3DCULL_CW;
 			else
 				return D3DCULL_CCW;
 		}
+
 		return 0;
 	}
 
@@ -124,6 +128,7 @@ namespace BansheeEngine
 		case PM_SOLID:
 			return D3DFILL_SOLID;
 		}
+
 		return D3DFILL_FORCE_DWORD;
 	}
 
@@ -138,16 +143,17 @@ namespace BansheeEngine
 		case SOP_REPLACE:
 			return D3DSTENCILOP_REPLACE;
 		case SOP_INCREMENT:
-            return invert? D3DSTENCILOP_DECRSAT : D3DSTENCILOP_INCRSAT;
+            return invert ? D3DSTENCILOP_DECRSAT : D3DSTENCILOP_INCRSAT;
 		case SOP_DECREMENT:
-            return invert? D3DSTENCILOP_INCRSAT : D3DSTENCILOP_DECRSAT;
+            return invert ? D3DSTENCILOP_INCRSAT : D3DSTENCILOP_DECRSAT;
 		case SOP_INCREMENT_WRAP:
-            return invert? D3DSTENCILOP_DECR : D3DSTENCILOP_INCR;
+            return invert ? D3DSTENCILOP_DECR : D3DSTENCILOP_INCR;
 		case SOP_DECREMENT_WRAP:
-            return invert? D3DSTENCILOP_INCR : D3DSTENCILOP_DECR;
+            return invert ? D3DSTENCILOP_INCR : D3DSTENCILOP_DECR;
 		case SOP_INVERT:
 			return D3DSTENCILOP_INVERT;
 		}
+
 		return 0;
 	}
 
@@ -166,12 +172,10 @@ namespace BansheeEngine
             break;
         }
 
-        // to keep compiler happy
         return D3DSAMP_MINFILTER;
     }
 
-	DWORD D3D9Mappings::get(FilterType ft, FilterOptions fo, const D3DCAPS9& devCaps, 
-        eD3DTexType texType)
+	DWORD D3D9Mappings::get(FilterType ft, FilterOptions fo, const D3DCAPS9& devCaps, D3DTexType texType)
 	{
 		// Assume normal
 		DWORD capsType = devCaps.TextureFilterCaps;
@@ -192,17 +196,17 @@ namespace BansheeEngine
         switch (ft)
         {
         case FT_MIN:
-            switch( fo )
+            switch(fo)
             {
                 // NOTE: Fall through if device doesn't support requested type
             case FO_ANISOTROPIC:
-                if( capsType & D3DPTFILTERCAPS_MINFANISOTROPIC )
+                if(capsType & D3DPTFILTERCAPS_MINFANISOTROPIC)
                 {
                     return D3DTEXF_ANISOTROPIC;
                     break;
                 }
             case FO_LINEAR:
-                if( capsType & D3DPTFILTERCAPS_MINFLINEAR )
+                if(capsType & D3DPTFILTERCAPS_MINFLINEAR)
                 {
                     return D3DTEXF_LINEAR;
                     break;
@@ -218,13 +222,13 @@ namespace BansheeEngine
             {
             // NOTE: Fall through if device doesn't support requested type
             case FO_ANISOTROPIC:
-                if( capsType & D3DPTFILTERCAPS_MAGFANISOTROPIC )
+                if(capsType & D3DPTFILTERCAPS_MAGFANISOTROPIC)
                 {
                     return D3DTEXF_ANISOTROPIC;
                     break;
                 }
             case FO_LINEAR:
-                if( capsType & D3DPTFILTERCAPS_MAGFLINEAR )
+                if(capsType & D3DPTFILTERCAPS_MAGFLINEAR)
                 {
                     return D3DTEXF_LINEAR;
                     break;
@@ -240,13 +244,13 @@ namespace BansheeEngine
             {
             case FO_ANISOTROPIC:
             case FO_LINEAR:
-                if( capsType & D3DPTFILTERCAPS_MIPFLINEAR )
+                if(capsType & D3DPTFILTERCAPS_MIPFLINEAR)
                 {
                     return D3DTEXF_LINEAR;
                     break;
                 }
             case FO_POINT:
-                if( capsType & D3DPTFILTERCAPS_MIPFPOINT )
+                if(capsType & D3DPTFILTERCAPS_MIPFPOINT)
                 {
                     return D3DTEXF_POINT;
                     break;
@@ -258,12 +262,10 @@ namespace BansheeEngine
             break;
         }
 
-        // should never get here
         return 0;
-
 	}
 
-	D3D9Mappings::eD3DTexType D3D9Mappings::get(TextureType texType)
+	D3D9Mappings::D3DTexType D3D9Mappings::get(TextureType texType)
 	{
 		switch( texType )
 		{
@@ -400,7 +402,6 @@ namespace BansheeEngine
 	{
 		// Transpose matrix
 		// D3D9 uses row vectors i.e. V*M
-		// Ogre, OpenGL and everything else uses column vectors i.e. M*V
 		return D3DXMATRIX(
             mat[0][0], mat[1][0], mat[2][0], mat[3][0],
             mat[0][1], mat[1][1], mat[2][1], mat[3][1],
@@ -511,9 +512,7 @@ namespace BansheeEngine
 	PixelFormat D3D9Mappings::_getClosestSupportedPF(PixelFormat enginePF)
 	{
 		if (_getPF(enginePF) != D3DFMT_UNKNOWN)
-		{
 			return enginePF;
-		}
 
 		switch(enginePF)
 		{

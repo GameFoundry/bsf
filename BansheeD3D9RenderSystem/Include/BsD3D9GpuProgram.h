@@ -7,6 +7,9 @@
 
 namespace BansheeEngine 
 {
+	/**
+	 * @brief	Available optimization levels when compiling a GPU program.
+	 */
 	enum OptimizationLevel
 	{
 		OPT_DEFAULT,
@@ -17,38 +20,42 @@ namespace BansheeEngine
 		OPT_3
 	};
 
-    /** Direct3D implementation of a few things common to low-level vertex & fragment programs. */
+	/**
+	 * @brief	DirectX 9 implementation of a GPU program.
+	 */
     class BS_D3D9_EXPORT D3D9GpuProgram : public GpuProgram, public D3D9Resource
     {   
     public:
-        ~D3D9GpuProgram();
+        virtual ~D3D9GpuProgram();
 
 		/**
 		 * @copydoc	GpuProgram::requiresMatrixTranspose
 		 */
 		virtual bool requiresMatrixTranspose() const { return mColumnMajorMatrices; }
 
-		/** Sets the preprocessor defines use to compile the program. */
+		/**
+		 * @brief	Sets the preprocessor defines use to compile the program.
+		 */
 		void setPreprocessorDefines(const String& defines) { mPreprocessorDefines = defines; }
-		/** Sets the preprocessor defines use to compile the program. */
-		const String& getPreprocessorDefines() const { return mPreprocessorDefines; }
 
-        /** Sets whether matrix packing in column-major order. */ 
+		/**
+		 * @brief	Sets whether matrix packing in column-major order.
+		 */
         void setColumnMajorMatrices(bool columnMajor) { mColumnMajorMatrices = columnMajor; }
-        /** Gets whether matrix packed in column-major order. */
-        bool getColumnMajorMatrices() const { return mColumnMajorMatrices; }
 
-		/** Sets the optimisation level to use.
-		@param opt Optimisation level
-		*/
+		/**
+		 * @brief	Sets optimization level to use when compiling the shader.
+		 */
 		void setOptimizationLevel(OptimizationLevel opt) { mOptimisationLevel = opt; }
 
-		/** Gets the optimisation level to use. */
-		OptimizationLevel getOptimizationLevel() const { return mOptimisationLevel; }
-
-		/// Overridden from GpuProgram
+		/**
+		 * @copydoc	GpuProgram::createParameters
+		 */
 		GpuParamsPtr createParameters();
-		/// Overridden from GpuProgram
+
+		/**
+		 * @copydoc	GpuProgram::getLanguage
+		 */
 		const String& getLanguage() const;
 
     protected:
@@ -58,19 +65,19 @@ namespace BansheeEngine
 			GpuProgramType gptype, GpuProgramProfile profile, 
 			const Vector<HGpuProgInclude>* includes);
 
-		void createInternalResources(IDirect3DDevice9* d3d9Device);
-
 		/**
-		 * @copydoc GpuProgram::initialize_internal().
+		 * @copydoc GpuProgram::initialize_internal
 		 */
 		void initialize_internal();
 
 		/**
-		 * @copydoc GpuProgram::destroy_internal().
+		 * @copydoc GpuProgram::destroy_internal
 		 */
 		void destroy_internal();
       
-		/** Loads this program from microcode, must be overridden by subclasses. */
+		/**
+		 * @brief	Loads the GPU program from compiled microcode.
+		 */
         virtual void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode) = 0;
 
 	protected:    
@@ -89,19 +96,27 @@ namespace BansheeEngine
 		virtual RTTITypeBase* getRTTI() const;
     };
 
-    /** Direct3D implementation of low-level vertex programs. */
+	/**
+	 * @brief	DirectX 9 implementation of a vertex GPU program.
+	 */
     class BS_D3D9_EXPORT D3D9GpuVertexProgram : public D3D9GpuProgram
     {  
     public:
 		~D3D9GpuVertexProgram();
         
-		/// Gets the vertex shader
+		/**
+		 * @brief	Returns internal DX9 vertex shader object.
+		 */
         IDirect3DVertexShader9* getVertexShader();
 
-		// Called immediately after the Direct3D device has been created.
+		/**
+		 * @copydoc D3D9Resource::notifyOnDeviceCreate
+		 */
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
 
-		// Called before the Direct3D device is going to be destroyed.
+		/**
+		 * @copydoc D3D9Resource::notifyOnDeviceDestroy
+		 */
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
@@ -115,13 +130,13 @@ namespace BansheeEngine
 		 */
 		void destroy_internal();
 
+		/**
+		 * @copydoc	D3D9GpuProgram::loadFromMicrocode
+		 */
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:
-		typedef Map<IDirect3DDevice9*, IDirect3DVertexShader9*>   DeviceToVertexShaderMap;
-		typedef DeviceToVertexShaderMap::iterator						DeviceToVertexShaderIterator;
-	
-		DeviceToVertexShaderMap		mMapDeviceToVertexShader;	
+		Map<IDirect3DDevice9*, IDirect3DVertexShader9*>	mMapDeviceToVertexShader;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/
@@ -138,13 +153,19 @@ namespace BansheeEngine
     public:
 		~D3D9GpuFragmentProgram();
 
-        /// Gets the pixel shader
+		/**
+		 * @brief	Returns internal DX9 pixel shader object.
+		 */
         IDirect3DPixelShader9* getPixelShader();
 
-		// Called immediately after the Direct3D device has been created.
+		/**
+		 * @copydoc D3D9Resource::notifyOnDeviceCreate
+		 */
 		virtual void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
 
-		// Called before the Direct3D device is going to be destroyed.
+		/**
+		 * @copydoc D3D9Resource::notifyOnDeviceDestroy
+		 */
 		virtual void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
     protected:
@@ -158,13 +179,13 @@ namespace BansheeEngine
 		 */
 		void destroy_internal();
 
+		/**
+		 * @copydoc	D3D9GpuProgram::loadFromMicrocode
+		 */
         void loadFromMicrocode(IDirect3DDevice9* d3d9Device, ID3DXBuffer* microcode);
 
 	protected:
-		typedef Map<IDirect3DDevice9*, IDirect3DPixelShader9*>	DeviceToPixelShaderMap;
-		typedef DeviceToPixelShaderMap::iterator						DeviceToPixelShaderIterator;
-
-		DeviceToPixelShaderMap		mMapDeviceToPixelShader;	
+		Map<IDirect3DDevice9*, IDirect3DPixelShader9*> mMapDeviceToPixelShader;
 
 		/************************************************************************/
 		/* 								SERIALIZATION                      		*/

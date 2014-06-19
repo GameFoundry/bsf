@@ -5,20 +5,49 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Helper class that parses GPU program constant table and returns parameters used 
+	 *			by the program, as well as their type, size and other information.
+	 */
 	class D3D9HLSLParamParser
 	{
 	public:
+		/**
+		 * @brief	Initializes the parameter parser with the specified constant table, and an optional list
+		 *			of parameter blocks. DirectX 9 does not support parameter blocks internally, but
+		 *			we can emulate the functionality by providing a list of user-defined blocks and
+		 *			the parameters they contain.
+		 */
 		D3D9HLSLParamParser(LPD3DXCONSTANTTABLE constTable, const Vector<D3D9EmulatedParamBlock>& blocks)
 			:mpConstTable(constTable), mBlocks(blocks)
 		{ }
 
+		/**
+		 * @brief	Builds parameter descriptions and returns an object containing all relevant information.
+		 */
 		GpuParamDescPtr buildParameterDescriptions();
 
 	private:
-		void processParameter(GpuParamBlockDesc& blockDesc, const String& paramName, D3DXHANDLE constant,
-			String prefix, UINT32 index);
+		/**
+		 * @brief	Determines information about the specified parameter and places it in the provided 
+		 *			parameter block, as well as any children of the parameter.
+		 *
+		 * @param	blockDesc	Parent block into which to add the new parameter.
+		 * @param	paramName	Name of the parameter.
+		 * @param	constant	Parameter handle in the constant table.
+		 * @param	prefix		Prefix to append to the parameter and any child parameters.	
+		 */
+		void processParameter(GpuParamBlockDesc& blockDesc, const String& paramName, D3DXHANDLE constant, String prefix);
+
+		/**
+		 * @brief	Populates information about the parameter in "memberDesc" from the data in d3dDesc. Esentially converts
+		 *			DX9 parameter data to engine data.
+		 */
 		void populateParamMemberDesc(GpuParamDataDesc& memberDesc, D3DXCONSTANT_DESC& d3dDesc);
 
+		/**
+		 * @brief	Returns the name of the parameter with the specified constant table handle.
+		 */
 		String getParamName(D3DXHANDLE constant);
 
 	private:
@@ -106,7 +135,7 @@ namespace BansheeEngine
 		return mParamDesc;
 	}
 
-	void D3D9HLSLParamParser::processParameter(GpuParamBlockDesc& blockDesc, const String& paramName, D3DXHANDLE constant, String prefix, UINT32 index)
+	void D3D9HLSLParamParser::processParameter(GpuParamBlockDesc& blockDesc, const String& paramName, D3DXHANDLE constant, String prefix)
 	{
 		// Since D3D HLSL doesn't deal with naming of array and struct parameters
 		// automatically, we have to do it by hand

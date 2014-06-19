@@ -176,7 +176,7 @@ namespace BansheeEngine
 		struct sD3DTextureStageDesc
 		{
 			/// the type of the texture
-			D3D9Mappings::eD3DTexType texType;
+			D3D9Mappings::D3DTexType texType;
 			/// which texCoordIndex to use
 			size_t coordIndex;
 			/// texture 

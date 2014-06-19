@@ -5,6 +5,11 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Represents a generic GPU buffer in DX9. This class
+	 *			is just a dummy in order to conform to the interface
+	 *			as DX9 supports no such buffers.
+	 */
 	class BS_D3D9_EXPORT D3D9GpuBuffer : public GpuBuffer
 	{
 	public:
@@ -42,7 +47,14 @@ namespace BansheeEngine
 
 		D3D9GpuBuffer(UINT32 elementCount, UINT32 elementSize, GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
 
+		/**
+		 * @copydoc	GpuBuffer::createView
+		 */
 		virtual GpuBufferView* createView();
+
+		/**
+		 * @copydoc	GpuBuffer::destroyView
+		 */
 		virtual void destroyView(GpuBufferView* view);
 
 		/**

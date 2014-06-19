@@ -764,7 +764,6 @@ namespace BansheeEngine
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources*	renderWindowResources = it->second;
 	
-
 		// Case size has been changed.
 		if (renderWindow->getWidth() != renderWindowResources->presentParameters.BackBufferWidth ||
 			renderWindow->getHeight() != renderWindowResources->presentParameters.BackBufferHeight)
