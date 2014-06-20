@@ -1703,7 +1703,7 @@ namespace BansheeEngine
 
 		nvtt::CompressionOptions co;
 		co.setFormat(nvtt::Format_RGBA);
-
+		
 		UINT32 numMips = getMaxMipmaps(src.getWidth(), src.getHeight(), 1, src.getFormat());
 
 		Vector<PixelDataPtr> argbMipBuffers;

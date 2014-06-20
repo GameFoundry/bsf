@@ -747,7 +747,7 @@ namespace BansheeEngine
 		HRESULT hr = d3d9Device->GetDirect3D(&pD3D);
 		if (FAILED(hr))
 		{
-			BS_EXCEPT(InvalidParametersException, "GetDirect3D failed !!!");
+			BS_EXCEPT(InvalidParametersException, "GetDirect3D failed.");
 		}
 
 		if (pD3D != nullptr)
@@ -833,8 +833,7 @@ namespace BansheeEngine
 
 			D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[0].get());
 
-			currPixelBuffer->bind(d3d9Device, textureResources->pMultisampleSurface,
-				mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
+			currPixelBuffer->bind(d3d9Device, textureResources->pMultisampleSurface, textureResources->pBaseTex);
 		}
 		else if((mUsage & TU_DEPTHSTENCIL) != 0 && (mMultisampleType != D3DMULTISAMPLE_NONE))
 		{
@@ -843,8 +842,7 @@ namespace BansheeEngine
 
 			D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[0].get());
 
-			currPixelBuffer->bind(d3d9Device, textureResources->pDepthStencilSurface,
-				mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
+			currPixelBuffer->bind(d3d9Device, textureResources->pDepthStencilSurface, textureResources->pBaseTex);
 		}
 		else
 		{
@@ -870,8 +868,7 @@ namespace BansheeEngine
 
 					D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[mip].get());
 
-					currPixelBuffer->bind(d3d9Device, surface,
-						mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
+					currPixelBuffer->bind(d3d9Device, surface, textureResources->pBaseTex);
 
 					surface->Release();			
 				}
@@ -890,8 +887,7 @@ namespace BansheeEngine
 						UINT32 idx = face*(mNumMipmaps + 1) + mip;
 						D3D9PixelBuffer* currPixelBuffer = static_cast<D3D9PixelBuffer*>(mSurfaceList[idx].get());
 
-						currPixelBuffer->bind(d3d9Device, surface,
-							mHwGammaWriteSupported, mMultisampleCount, "", textureResources->pBaseTex);
+						currPixelBuffer->bind(d3d9Device, surface, textureResources->pBaseTex);
 
 						surface->Release();				
 					}				

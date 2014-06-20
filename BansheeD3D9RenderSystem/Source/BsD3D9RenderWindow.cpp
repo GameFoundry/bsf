@@ -163,7 +163,7 @@ namespace BansheeEngine
 				dwStyle = mWindowedStyle;
 				dwStyleEx = mWindowedStyleEx;
 
-				_adjustWindow(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), dwStyle, &winWidth, &winHeight);
+				getAdjustedWindowSize(mDesc.videoMode.getWidth(), mDesc.videoMode.getHeight(), dwStyle, &winWidth, &winHeight);
 
 				if (!mDesc.outerDimensions)
 				{
@@ -311,7 +311,7 @@ namespace BansheeEngine
 		mHeight = height;
 
 		unsigned int winWidth, winHeight;
-		_adjustWindow(mWidth, mHeight, mStyle, &winWidth, &winHeight);
+		getAdjustedWindowSize(mWidth, mHeight, mStyle, &winWidth, &winHeight);
 
 		// Deal with centering when switching down to smaller resolution
 		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
@@ -386,7 +386,7 @@ namespace BansheeEngine
 			mHeight = height;
 
 			unsigned int winWidth, winHeight;
-			_adjustWindow(width, height, mStyle, &winWidth, &winHeight);
+			getAdjustedWindowSize(width, height, mStyle, &winWidth, &winHeight);
 
 			SetWindowPos(mHWnd, 0, 0, 0, winWidth, winHeight,
 				SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
@@ -489,20 +489,17 @@ namespace BansheeEngine
 	/* 						D3D9 IMPLEMENTATION SPECIFIC                    */
 	/************************************************************************/
 
-	void D3D9RenderWindow::_adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
-		DWORD style, unsigned int* winWidth, unsigned int* winHeight)
+	void D3D9RenderWindow::getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight,
+		DWORD style, UINT32* winWidth, UINT32* winHeight)
 	{
-		// NB only call this for non full screen
 		RECT rc;
 		SetRect(&rc, 0, 0, clientWidth, clientHeight);
 		AdjustWindowRect(&rc, style, false);
 		*winWidth = rc.right - rc.left;
 		*winHeight = rc.bottom - rc.top;
 
-		// adjust to monitor
 		HMONITOR hMonitor = MonitorFromWindow(mHWnd, MONITOR_DEFAULTTONEAREST);
 
-		// Get monitor info	
 		MONITORINFO monitorInfo;
 
 		memset(&monitorInfo, 0, sizeof(MONITORINFO));
@@ -516,7 +513,6 @@ namespace BansheeEngine
 			*winWidth = maxW;
 		if (*winHeight > (unsigned int)maxH)
 			*winHeight = maxH;
-
 	}
 	
 	void D3D9RenderWindow::_buildPresentParameters(D3DPRESENT_PARAMETERS* presentParams) const

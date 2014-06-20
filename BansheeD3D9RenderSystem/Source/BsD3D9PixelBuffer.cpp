@@ -102,8 +102,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D9PixelBuffer::bind(IDirect3DDevice9* dev, IDirect3DSurface9* surface, bool writeGamma, 
-		UINT32 multisampleCount, const String& srcName, IDirect3DBaseTexture9* mipTex)
+	void D3D9PixelBuffer::bind(IDirect3DDevice9* dev, IDirect3DSurface9* surface, IDirect3DBaseTexture9* mipTex)
 	{
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
 

@@ -4,57 +4,81 @@
 
 namespace BansheeEngine 
 {
+	/**
+	 * @brief	Types of resource creation policies.
+	 */
 	enum D3D9ResourceCreationPolicy
 	{
-		// Creates the rendering resource on the current active device that needs it.
-		// This policy should be used when video memory consumption should be minimized but
-		// it might cause some performance issues when using loader resource thread since
-		// a resource that was not created on specified device will be created on demand during
-		// the rendering process and might cause the FPS to drop down. 
+		/**
+		 *	Creates resources only on active device. Meaning those resources will be unavailable
+		 *	for other devices.
+		 */
 		RCP_CREATE_ON_ACTIVE_DEVICE,
 
-		// Create the rendering resource on every existing device. 		
-		// This policy should be used when working intensively with a background loader thread.
-		// In that case when multiple devices exist, the resource will be created on each device
-		// and will be ready to use in the core thread. 
-		// The draw back can be some video memory waste in case that each device render different
-		// scene and doesn't really need all the resources.
+		/**
+		 *	Creates resources on all devices making them available to all of them.
+		 */
 		RCP_CREATE_ON_ALL_DEVICES
 	};
 	
+	/**
+	 * @brief	Handles DirectX 9 resource life, notifying them
+	 *			about relevant device changes.
+	 */
 	class BS_D3D9_EXPORT D3D9ResourceManager
 	{
 	public:
 		D3D9ResourceManager();
 		~D3D9ResourceManager();
 
-		// Called immediately after the Direct3D device has been created.
+		/**
+		 * @brief	Called after the device has been created.
+		 */
 		void notifyOnDeviceCreate(IDirect3DDevice9* d3d9Device);
 
-		// Called before the Direct3D device is going to be destroyed.
+		/**
+		 * @brief	Called before the device is destroyed.
+		 */
 		void notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device);
 
-		// Called immediately after the Direct3D device has entered a lost state.
+		/**
+		 * @brief	Called after the device has entered the lost state.
+		 */
 		void notifyOnDeviceLost(IDirect3DDevice9* d3d9Device);
 
-		// Called immediately after the Direct3D device has been reset.
+		/**
+		 * @brief	Called after the device has been reset.
+		 */
 		void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
-		// Called when device state is changing. Access to any device should be locked.
-		// Relevant for multi thread application.
+		/**
+		 * @brief	Called when device state is changing. Access to any device should be locked.
+		 */
 		void lockDeviceAccess();
 
-		// Called when device state change completed. Access to any device is allowed.
-		// Relevant for multi thread application.
+		/**
+		 * @brief	Called when device state change completed. Access to any device is allowed.
+		 */
 		void unlockDeviceAccess();
 		
-		// Called when new resource created.
+		/**
+		 * @brief	Called when new resource is created.
+		 */
 		void _notifyResourceCreated(D3D9Resource* pResource);
 
-		// Called when resource is about to be destroyed.
+		/**
+		 * @brief	Called before resource is destroyed.
+		 */
 		void _notifyResourceDestroyed(D3D9Resource* pResource);
 
+		/**
+		 * @brief	Sets creation policy that specifies on what devices will resources be created on.
+		 */
 		void setCreationPolicy(D3D9ResourceCreationPolicy creationPolicy);
+
+		/**
+		 * @brief	Returns creation policy that specifies on what devices will resources be created on.
+		 */
 		D3D9ResourceCreationPolicy getCreationPolicy() const;
 		
 	protected:

@@ -9,22 +9,22 @@
 
 namespace BansheeEngine 
 {
+	/**
+	 * @brief	DirectX 9 implementation of a texture.
+	 */
 	class BS_D3D9_EXPORT D3D9Texture : public Texture, public D3D9Resource
 	{
 	protected:
+		/**
+		 * @brief	Container for internal resources.
+		 */
 		struct TextureResources
 		{
-			/// 1D/2D normal texture pointer
 			IDirect3DTexture9* pNormTex;
-			/// cubic texture pointer
 			IDirect3DCubeTexture9* pCubeTex;
-			/// Volume texture
 			IDirect3DVolumeTexture9* pVolumeTex;
-			/// actual texture pointer
 			IDirect3DBaseTexture9* pBaseTex;
-			/// Optional multisample surface
 			IDirect3DSurface9* pMultisampleSurface;
-			/// Optional depth stencil surface
 			IDirect3DSurface9* pDepthStencilSurface;
 		};
 
@@ -36,37 +36,35 @@ namespace BansheeEngine
 		 */
 		bool isBindableAsShaderResource() const { return mIsBindableAsShaderResource; }
 
-		/// retrieves a pointer to the actual texture
-		IDirect3DBaseTexture9 *getTexture_internal();		
-		/// retrieves a pointer to the normal 1D/2D texture
-		IDirect3DTexture9 *getNormTexture_internal();
-		/// retrieves a pointer to the cube texture
-		IDirect3DCubeTexture9 *getCubeTexture_internal();
+		/**
+		 * @brief	Returns internal DirectX 9 texture object.
+		 */
+		IDirect3DBaseTexture9* getTexture_internal();	
 
-		/** Indicates whether the hardware gamma is actually enabled and supported. 
-		@remarks
-			Because hardware gamma might not actually be supported, we need to 
-			ignore it sometimes. Because D3D doesn't encode sRGB in the format but
-			as a sampler state, and we don't want to change the original requested
-			hardware gamma flag (e.g. serialisation) we need another indicator.
-		*/
+		/**
+		 * @brief	Returns internal DirectX 9 texture object pointing to a 1D or 2D texture.
+		 */
+		IDirect3DTexture9* getNormTexture_internal();
+
+		/**
+		 * @brief	Returns internal DirectX 9 texture object pointing to a cube texture.
+		 */
+		IDirect3DCubeTexture9* getCubeTexture_internal();
+
+		/**
+		 * @brief	Indicates whether the hardware gamma is enabled and supported.
+		 */
 		bool isHardwareGammaReadToBeUsed() const { return mHwGamma && mHwGammaReadSupported; }
 					
-		/// Will this texture need to be in the default pool?
-		bool useDefaultPool();
-
-		/** Return hardware pixel buffer for a surface. This buffer can then
-			be used to copy data from and to a particular level of the texture.
-			@param face 	Face number, in case of a cubemap texture. Must be 0
-							for other types of textures.
-                            For cubemaps, this is one of 
-                            +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
-			@param mipmap	Mipmap level. This goes from 0 for the first, largest
-							mipmap level to getNumMipmaps()-1 for the smallest.
-			@returns	A shared pointer to a hardware pixel buffer
-			@remarks	The buffer is invalidated when the resource is unloaded or destroyed.
-						Do not use it after the lifetime of the containing texture.
-		*/
+		/**
+		 * @brief	Returns a hardware pixel buffer for a certain face and level of the texture.
+		 * 
+		 * @param	face	Index of the texture face, if texture has more than one. Array index for
+		 *					texture arrays and a cube face for cube textures.
+		 * @param	mipmap	Index of the mip level. 0 being the largest mip level.
+		 *
+		 * @note	Cube face indices: +X (0), -X (1), +Y (2), -Y (3), +Z (4), -Z (5)
+		 */
 		PixelBufferPtr getBuffer(UINT32 face, UINT32 mipmap);
 
 		/**
@@ -130,64 +128,107 @@ namespace BansheeEngine
 		 */
 		void writeData(const PixelData& src, UINT32 mipLevel = 0, UINT32 face = 0, bool discardWholeBuffer = false);
 
-		/// internal method, create a blank normal 1D/2D texture		
+		/**
+		 * @brief	Returns true if the texture should be allocated in the default pool.
+		 */
+		bool useDefaultPool();
+
+		/**
+		 * @brief	Creates a DirectX object for blank normal 1D/2D texture.
+		 */
 		void createNormTex(IDirect3DDevice9* d3d9Device);
-		/// internal method, create a blank cube texture		
+
+		/**
+		 * @brief	Creates a DirectX object for blank cube texture.
+		 */
 		void createCubeTex(IDirect3DDevice9* d3d9Device);
-		/// internal method, create a blank cube texture		
+
+		/**
+		 * @brief	Creates a DirectX object for blank volume (3D) texture.
+		 */	
 		void createVolumeTex(IDirect3DDevice9* d3d9Device);
 
-		/// internal method, return a D3D pixel format for texture creation
+		/**
+		 * @brief	Selects a DirectX 9 pixel format depending on requested format
+		 *			and device capabilities.
+		 */
 		D3DFORMAT chooseD3DFormat(IDirect3DDevice9* d3d9Device);
 
-		/// @copydoc Resource::calculateSize
+		/**
+		 * @copydoc	Texture::calculateSize
+		 */
 		UINT32 calculateSize() const;
-		/// Creates this texture resources on the specified device.
+
+		/**
+		 * @brief	Creates internal resources for the texture for the specified device.
+		 */
 		void createInternalResources(IDirect3DDevice9* d3d9Device);
-		/// internal method, set Texture class final texture protected attributes
+
+		/**
+		 * @brief	Updates texture attributes with final attributes provided by the API after
+		 *			the texture has been created.
+		 */
 		void setFinalAttributes(IDirect3DDevice9* d3d9Device, TextureResources* textureResources, 
 			UINT32 width, UINT32 height, UINT32 depth, PixelFormat format);
-		/// internal method, return the best by hardware supported filter method
+
+		/**
+		 * @brief	Returns best texture filtering method.
+		 */
 		D3DTEXTUREFILTERTYPE getBestFilterMethod(IDirect3DDevice9* d3d9Device);
-		/// internal method, return true if the device/texture combination can use dynamic textures
+
+		/**
+		 * @brief	Returns if the specified combination of texture type, format and usage supports dynamic texture usage.
+		 */
 		bool canUseDynamicTextures(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat);
-		/// internal method, return true if the device/texture combination can auto gen. mip maps
+
+		/**
+		 * @brief	Returns if the specified combination of texture type, format and usage supports automatic mipmap generation.
+		 */
 		bool canAutoGenMipmaps(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat);
-		/// internal method, return true if the device/texture combination can use hardware gamma
+
+		/**
+		 * @brief	Returns if the specified combination of texture type, format and usage supports hardware gamma.
+		 */
 		bool canUseHardwareGammaCorrection(IDirect3DDevice9* d3d9Device, DWORD srcUsage, D3DRESOURCETYPE srcType, D3DFORMAT srcFormat, bool forwriting);
 
-		/// internal method, create D3D9HardwarePixelBuffers for every face and
-		/// mipmap level. This method must be called after the D3D texture object was created
+		/**
+		 * @brief	Creates a list of pixel buffers for all surfaces in the texture. This must be called after the texture
+		 *			has been created.
+		 */
 		void createSurfaceList(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
 	 
-		/// gets the texture resources attached to the given device.
+		/**
+		 * @brief	Retrieves texture resources for the device, or null if they don't exist.
+		 */
 		TextureResources* getTextureResources(IDirect3DDevice9* d3d9Device);
 
-		/// allocates new texture resources structure attached to the given device.
+		/**
+		 * @brief	Allocates a new set of texture resources for the device.
+		 */
 		TextureResources* allocateTextureResources(IDirect3DDevice9* d3d9Device);
 
-		/// frees the given texture resources.
+		/**
+		 * @brief	Frees all the given texture resources.
+		 */
 		void freeTextureResources(IDirect3DDevice9* d3d9Device, TextureResources* textureResources);
 
+		/**
+		 * @brief	Determines the pool in which to create the texture in.
+		 */
 		void determinePool();
 
 	protected:
-		/// Map between device to texture resources.
 		Map<IDirect3DDevice9*, TextureResources*> mMapDeviceToTextureResources;
 
-		/// Vector of pointers to subsurfaces
-		Vector<PixelBufferPtr>	mSurfaceList;
-		/// The memory pool being used
+		Vector<PixelBufferPtr> mSurfaceList;
+
 		D3DPOOL	mD3DPool;
-		// Dynamic textures?
 		bool mDynamicTextures;
 		bool mIsBindableAsShaderResource;
 
 		PixelBufferPtr mLockedBuffer;
 
-		/// Is hardware gamma supported (read)?
 		bool mHwGammaReadSupported;
-		/// Is hardware gamma supported (write)?
 		bool mHwGammaWriteSupported;
 		D3DMULTISAMPLE_TYPE mMultisampleType;
 		DWORD mMultisampleQuality;

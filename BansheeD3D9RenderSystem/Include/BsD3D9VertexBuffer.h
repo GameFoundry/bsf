@@ -6,10 +6,15 @@
 
 namespace BansheeEngine 
 {
-    /// Specialisation of HardwareVertexBuffer for D3D9
+	/**
+	 * @brief	DirectX 9 implementation of a vertex buffer.
+	 */
     class BS_D3D9_EXPORT D3D9VertexBuffer : public VertexBuffer, public D3D9Resource
     {   
 	protected:
+		/**
+		 * @brief	Container for internal buffer resources.
+		 */
 		struct BufferResources
 		{
 			IDirect3DVertexBuffer9*	mBuffer;
@@ -21,9 +26,15 @@ namespace BansheeEngine
 
     public:
         ~D3D9VertexBuffer();
-        /** See HardwareBuffer. */
+
+		/**
+		 * @copydoc	VertexBuffer::readData
+		 */
         void readData(UINT32 offset, UINT32 length, void* dest);
-        /** See HardwareBuffer. */
+
+		/**
+		 * @copydoc	VertexBuffer::writeData
+		 */
         void writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags = BufferWriteType::Normal);
 	
 		/**
@@ -46,12 +57,19 @@ namespace BansheeEngine
 		 */
 		virtual void notifyOnDeviceReset(IDirect3DDevice9* d3d9Device);
 
-		// Create the actual vertex buffer.
+		/**
+		 * @brief	Creates a DX9 vertex buffer object in the provided memory pool.
+		 */
 		void createBuffer(IDirect3DDevice9* d3d9Device, D3DPOOL pool);
 		
-        /// Get D3D9-specific vertex buffer
+		/**
+		 * @brief	Returns the DX9 vertex buffer object.
+		 */
         IDirect3DVertexBuffer9* getD3D9VertexBuffer();
 
+		/**
+		 * @copydoc	VertexBuffer::vertexColorReqRGBFlip
+		 */
 		virtual bool vertexColorReqRGBFlip() { return true; }
 
 	protected:	
@@ -59,26 +77,34 @@ namespace BansheeEngine
 
 		D3D9VertexBuffer(UINT32 vertexSize, UINT32 numVertices, GpuBufferUsage usage, bool useSystemMem);
 	
-		/** See HardwareBuffer. */
-		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);		
-		/** See HardwareBuffer. */
-		void unlockImpl();			
-		// updates buffer resources from system memory buffer.
-		bool updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources);		
-
 		/**
-		 * @copydoc VertexBuffer::initialize_internal()
+		 * @copydoc VertexBuffer::initialize_internal
 		 */
 		void initialize_internal();	
 		
 		/**
-		 * @copydoc VertexBuffer::destroy_internal()
+		 * @copydoc VertexBuffer::destroy_internal
 		 */
 		void destroy_internal();
 
+		/**
+		 * @copydoc	VertexBuffer::lockImpl
+		 */
+		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
+
+		/**
+		 * @copydoc	VertexBuffer::unlockImpl
+		 */
+		void unlockImpl();
+
+		/**
+		 * @brief	Updates buffer resources from cached system memory buffer.
+		 */
+		bool updateBufferResources(const UINT8* systemMemoryBuffer, BufferResources* bufferResources);		
+
 	protected:
-		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources; // Map between device to buffer resources.
-		D3DVERTEXBUFFER_DESC mBufferDesc; // Buffer description.		
-		UINT8* mSystemMemoryBuffer; // Consistent system memory buffer for multiple devices support.
+		Map<IDirect3DDevice9*, BufferResources*> mMapDeviceToBufferResources;
+		D3DVERTEXBUFFER_DESC mBufferDesc;	
+		UINT8* mSystemMemoryBuffer;
     };
 }

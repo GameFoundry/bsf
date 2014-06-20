@@ -6,13 +6,22 @@
 
 namespace BansheeEngine
 {
-	/// RenderTexture implementation for D3D9
+	/**
+	 * @brief	DirectX 9 implementation of a render texture.
+	 */
 	class BS_D3D9_EXPORT D3D9RenderTexture : public RenderTexture, public D3D9Resource
 	{
 	public:
 		virtual ~D3D9RenderTexture();
 
-		bool requiresTextureFlipping() const { return false; }
+		/**
+		 * @copydoc	RenderTexture::requiresTextureFlipping
+		 */
+		virtual bool requiresTextureFlipping() const { return false; }
+
+		/**
+		 * @copydoc	RenderTexture::getCustomAttribute
+		 */
 		virtual void getCustomAttribute(const String& name, void* pData) const;
 
 		/**

@@ -8,10 +8,8 @@
 
 #define DIRECT3D_VERSION 0x0900
 
-// some D3D commonly used macros
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 
-// enable extended d3d debug 
 #if BS_DEBUG_MODE
 #	define D3D_DEBUG_INFO
 #endif
@@ -20,10 +18,10 @@
 #if !defined(NOMINMAX) && defined(_MSC_VER)
 #	define NOMINMAX // required to stop windows.h messing up std::min
 #endif
+
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <DxErr.h>
-
 
 namespace BansheeEngine
 {
@@ -57,7 +55,6 @@ namespace BansheeEngine
 		TID_D3D9_GpuVertexProgram = 10001,
 		TID_D3D9_GpuFragmentProgram = 10002
 	};
-
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(BS_STATIC_LIB)
 #	ifdef BS_RSD3D9_EXPORTS

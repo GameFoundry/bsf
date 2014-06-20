@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Handles creation of windows for DirectX 9.
+	 */
 	class BS_D3D9_EXPORT D3D9RenderWindowManager : public RenderWindowManager
 	{
 	public:

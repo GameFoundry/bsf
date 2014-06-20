@@ -226,8 +226,8 @@ namespace BansheeEngine
 		 * @param	buffers			Combination of one or more elements of FrameBufferType
 		 *							denoting which buffers are to be cleared.
 		 * @param	color			(optional) The color to clear the color buffer with, if enabled.
-		 * @param	depth			(optional) The value to initialise the depth buffer with, if enabled.
-		 * @param	stencil			(optional) The value to initialise the stencil buffer with, if enabled.
+		 * @param	depth			(optional) The value to initialize the depth buffer with, if enabled.
+		 * @param	stencil			(optional) The value to initialize the stencil buffer with, if enabled.
 		 */
 		virtual void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) = 0;
 
@@ -238,8 +238,8 @@ namespace BansheeEngine
 		 * @param	buffers			Combination of one or more elements of FrameBufferType
 		 *							denoting which buffers are to be cleared.
 		 * @param	color			(optional) The color to clear the color buffer with, if enabled.
-		 * @param	depth			(optional) The value to initialise the depth buffer with, if enabled.
-		 * @param	stencil			(optional) The value to initialise the stencil buffer with, if enabled.
+		 * @param	depth			(optional) The value to initialize the depth buffer with, if enabled.
+		 * @param	stencil			(optional) The value to initialize the stencil buffer with, if enabled.
 		 */
 		virtual void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0) = 0;
 
@@ -319,7 +319,7 @@ namespace BansheeEngine
 		 * @brief	Gets the maximum (farthest) depth value used by this
 		 *			render system.
 		 *
-		 * @note		Thread safe.
+		 * @note	Thread safe.
 		 */
 		virtual float getMaximumDepthInputValue() = 0;
 

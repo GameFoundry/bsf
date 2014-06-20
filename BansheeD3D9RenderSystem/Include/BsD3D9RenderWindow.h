@@ -6,6 +6,9 @@
 
 namespace BansheeEngine 
 {
+	/**
+	 * @brief	Render window implementation for Windows.
+	 */
 	class BS_D3D9_EXPORT D3D9RenderWindow : public RenderWindow
 	{
 	public:
@@ -96,9 +99,24 @@ namespace BansheeEngine
 		 */
 		void _windowMovedOrResized();
 
-		HWND _getWindowHandle() const { return mHWnd; }				
+		/**
+		 * @brief	Gets internal Win32 window handle.
+		 */
+		HWND _getWindowHandle() const { return mHWnd; }
+
+		/**
+		 * @brief	Gets the DirectX 9 device object that manages this window.
+		 */
 		IDirect3DDevice9* _getD3D9Device() const;
+
+		/**
+		 * @brief	Gets the device that manages this window.
+		 */
 		D3D9Device* _getDevice() const;
+
+		/**
+		 * @brief	Sets the device that manages this window.
+		 */
 		void _setDevice(D3D9Device* device);
 
 		/**
@@ -121,14 +139,15 @@ namespace BansheeEngine
 		 */
 		bool _validateDevice();
 
-		void _adjustWindow(unsigned int clientWidth, unsigned int clientHeight, 
-			DWORD style, unsigned int* winWidth, unsigned int* winHeight);
-
+		
 	protected:
 		friend class D3D9RenderWindowManager;
 
-		D3D9RenderWindow (const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
+		D3D9RenderWindow(const RENDER_WINDOW_DESC& desc, HINSTANCE instance);
 
+		/**
+		 * @brief	Updates window coordinates and size from actual values provided by Windows.
+		 */
 		void updateWindowRect();
 
 		/**
@@ -140,6 +159,12 @@ namespace BansheeEngine
 		 * @copydoc RenderWindow::destroy_internal().
 		 */
 		void destroy_internal();
+
+		/**
+		 * @brief	Calculates window size based on provided client area size and currently set window style. 
+		 */	
+		void getAdjustedWindowSize(UINT32 clientWidth, UINT32 clientHeight,
+			DWORD style, UINT32* winWidth, UINT32* winHeight);
 
 	protected:
 		HINSTANCE mInstance;

@@ -17,7 +17,6 @@ namespace BansheeEngine
     class BS_CORE_EXPORT TextureManager : public Module<TextureManager>
     {
     public:
-
         TextureManager();
         virtual ~TextureManager();
 
@@ -86,6 +85,9 @@ namespace BansheeEngine
 		 */
 		virtual PixelFormat getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma) = 0;
 
+		/**
+		 * @brief	Returns tiny dummy texture for use when no other is available.
+		 */
 		const HTexture& getDummyTexture() const { return mDummyTexture; }
 
 	protected:

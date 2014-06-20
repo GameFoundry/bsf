@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Handles creation of DirectX 9 queries.
+	 */
 	class BS_D3D9_EXPORT D3D9QueryManager : public QueryManager
 	{
 	public:
