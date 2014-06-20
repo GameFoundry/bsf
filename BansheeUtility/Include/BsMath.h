@@ -76,6 +76,15 @@ namespace BansheeEngine
 			return std::max(std::min(val, (T)1), (T)0);
 		}
 
+		/**
+		 * @brief	Checks is the specified value a power of two. Only works on integer values.
+		 */
+		template <typename T>
+		static bool isPow2(T val)
+		{
+			return (val & (val - 1)) == 0;
+		}
+
 		static bool isNaN(float f)
 		{
 			return f != f;

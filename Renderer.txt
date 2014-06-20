@@ -23,10 +23,9 @@ Just notes for later potentially:
  -------------------------
 
  Texture compression/mipmaps:
+  - Test it out. Especially pontential problems with textures not divisible by 4 for compression, or non-pow2 textures for mipmaps
 
-Remove DXT2, DXT4 formats. Add BC4, 5, 6, 7 formats, including their conversion formats.
-Compile nvtt as a library. Add include files. Add library to Dependencies repo, and info about it to Dependencies.txt. Add it to list of licences.
-Add compress(format) functionality to PixelUtil. Optionally also uncompress(). 
+Add compress(format) functionality to PixelUtil.
 Add calculateMips functionality to PixelUtil. It takes PixelData as parameter, and returns a set of PixelData mips.
 Add Texture import options that allow you to choose format of the texture when loading. Not just compressed/uncompressed but all formats.
  - PixelUtil can convert all normal formats. compress can deal with others.

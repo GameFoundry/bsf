@@ -665,10 +665,9 @@ namespace BansheeEngine
 		case PF_FLOAT32_RGBA:
 			return DXGI_FORMAT_R32G32B32A32_FLOAT;
 		case PF_BC1:
+		case PF_BC1a:
 			return DXGI_FORMAT_BC1_UNORM;
 		case PF_BC2:
-			return DXGI_FORMAT_BC2_UNORM;
-		case PF_BC2a:
 			return DXGI_FORMAT_BC2_UNORM;
 		case PF_BC3:
 			return DXGI_FORMAT_BC3_UNORM;

@@ -127,9 +127,9 @@ namespace BansheeEngine
 			// Recursively descend through the structure levels
 			auto findIter = nonGlobalBlocks.find(paramName);
 			if (findIter == nonGlobalBlocks.end())
-				processParameter(globalBlockDesc, paramName, constantHandle, "", i);
+				processParameter(globalBlockDesc, paramName, constantHandle, "");
 			else
-				processParameter(mParamDesc->paramBlocks[findIter->second], paramName, constantHandle, "", i);
+				processParameter(mParamDesc->paramBlocks[findIter->second], paramName, constantHandle, "");
 		}
 
 		return mParamDesc;
@@ -158,7 +158,7 @@ namespace BansheeEngine
 				D3DXHANDLE childHandle = mpConstTable->GetConstant(constant, i);
 				String childParamName = getParamName(childHandle);
 
-				processParameter(blockDesc, childParamName, childHandle, prefix, i);
+				processParameter(blockDesc, childParamName, childHandle, prefix);
 			}
 		}
 		else

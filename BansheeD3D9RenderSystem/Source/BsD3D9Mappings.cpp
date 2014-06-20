@@ -446,10 +446,8 @@ namespace BansheeEngine
 			return PF_FLOAT16_RG;
 		case D3DFMT_DXT1:
 			return PF_BC1;
-		case D3DFMT_DXT2:
-			return PF_BC2;
 		case D3DFMT_DXT3:
-			return PF_BC2a;
+			return PF_BC2;
 		case D3DFMT_DXT5:
 			return PF_BC3;
 		case D3DFMT_D24S8:
@@ -490,10 +488,9 @@ namespace BansheeEngine
 		case PF_FLOAT32_RGBA:
 			return D3DFMT_A32B32G32R32F;
 		case PF_BC1:
+		case PF_BC1a:
 			return D3DFMT_DXT1;
 		case PF_BC2:
-			return D3DFMT_DXT2;
-		case PF_BC2a:
 			return D3DFMT_DXT3;
 		case PF_BC3:
 			return D3DFMT_DXT5;

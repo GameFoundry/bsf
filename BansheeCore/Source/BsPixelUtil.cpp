@@ -1,7 +1,9 @@
 #include "BsPixelUtil.h"
 #include "BsBitwise.h"
 #include "BsColor.h"
+#include "BsMath.h"
 #include "BsException.h"
+#include "nvtt/nvtt.h"
 
 namespace BansheeEngine 
 {
@@ -548,20 +550,20 @@ namespace BansheeEngine
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_BC2",
+        {"PF_BC1a",
         /* Bytes per element */
         0,
         /* Flags */
-        PFF_COMPRESSED | PFF_HASALPHA,
+        PFF_COMPRESSED,
         /* Component type and count */
-        PCT_BYTE, 4,
+        PCT_BYTE, 3,
         /* rbits, gbits, bbits, abits */
         0, 0, 0, 0,
         /* Masks and shifts */
         0, 0, 0, 0, 0, 0, 0, 0
         },
 	//-----------------------------------------------------------------------
-        {"PF_BC2a",
+        {"PF_BC2",
         /* Bytes per element */
         0,
         /* Flags */
@@ -804,6 +806,167 @@ namespace BansheeEngine
         return _pixelFormats[ord];
     }
 
+	/**
+	 * @brief	Handles compression output from NVTT library for a single image.
+	 */
+	struct NVTTCompressOutputHandler : public nvtt::OutputHandler
+	{
+		NVTTCompressOutputHandler(UINT8* buffer, UINT32 sizeBytes)
+			:buffer(buffer), bufferWritePos(buffer), bufferEnd(buffer + sizeBytes)
+		{ }
+
+		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel)
+		{ }
+
+		virtual bool writeData(const void* data, int size)
+		{
+			assert((bufferWritePos + size) <= bufferEnd);
+			memcpy(bufferWritePos, data, size);
+			bufferWritePos += size;
+
+			return true;
+		}
+
+		UINT8* buffer;
+		UINT8* bufferWritePos;
+		UINT8* bufferEnd;
+	};
+
+	/**
+	 * @brief	Handles output from NVTT library for a mip-map chain.
+	 */
+	struct NVTTMipmapOutputHandler : public nvtt::OutputHandler
+	{
+		NVTTMipmapOutputHandler(const Vector<PixelDataPtr>& buffers)
+			:buffers(buffers), bufferWritePos(nullptr), bufferEnd(nullptr)
+		{ }
+
+		virtual void beginImage(int size, int width, int height, int depth, int face, int miplevel)
+		{ 
+			assert(miplevel >= 0 && miplevel < buffers.size());
+			assert(size == buffers[miplevel]->getConsecutiveSize());
+
+			activeBuffer = buffers[miplevel];
+
+			bufferWritePos = activeBuffer->getData();
+			bufferEnd = bufferWritePos + activeBuffer->getConsecutiveSize();
+		}
+
+		virtual bool writeData(const void* data, int size)
+		{
+			assert((bufferWritePos + size) <= bufferEnd);
+			memcpy(bufferWritePos, data, size);
+			bufferWritePos += size;
+
+			return true;
+		}
+
+		Vector<PixelDataPtr> buffers;
+		PixelDataPtr activeBuffer;
+
+		UINT8* bufferWritePos;
+		UINT8* bufferEnd;
+	};
+
+	nvtt::Format toNVTTFormat(CompressedFormat format)
+	{
+		switch (format)
+		{
+		case CompressedFormat::BC1:
+			return nvtt::Format_BC1;
+		case CompressedFormat::BC1a:
+			return nvtt::Format_BC1a;
+		case CompressedFormat::BC2:
+			return nvtt::Format_BC2;
+		case CompressedFormat::BC3:
+			return nvtt::Format_BC3;
+		case CompressedFormat::BC4:
+			return nvtt::Format_BC4;
+		case CompressedFormat::BC5:
+			return nvtt::Format_BC5;
+		}
+
+		// Unsupported format
+		return nvtt::Format_BC3;
+	}
+
+	nvtt::Quality toNVTTQuality(CompressionQuality quality)
+	{
+		switch (quality)
+		{
+		case CompressionQuality::Fastest:
+			return nvtt::Quality_Fastest;
+		case CompressionQuality::Highest:
+			return nvtt::Quality_Highest;
+		case CompressionQuality::Normal:
+			return nvtt::Quality_Normal;
+		case CompressionQuality::Production:
+			return nvtt::Quality_Normal;
+		}
+
+		// Unknown quality level
+		return nvtt::Quality_Normal;
+	}
+
+	nvtt::AlphaMode toNVTTAlphaMode(AlphaMode alphaMode)
+	{
+		switch (alphaMode)
+		{
+		case AlphaMode::None:
+			return nvtt::AlphaMode_None;
+		case AlphaMode::Premultiplied:
+			return nvtt::AlphaMode_Premultiplied;
+		case AlphaMode::Transparency:
+			return nvtt::AlphaMode_Transparency;
+		}
+
+		// Unknown alpha mode
+		return nvtt::AlphaMode_None;
+	}
+
+	nvtt::WrapMode toNVTTWrapMode(MipMapWrapMode wrapMode)
+	{
+		switch (wrapMode)
+		{
+		case MipMapWrapMode::Clamp:
+			return nvtt::WrapMode_Clamp;
+		case MipMapWrapMode::Mirror:
+			return nvtt::WrapMode_Mirror;
+		case MipMapWrapMode::Repeat:
+			return nvtt::WrapMode_Repeat;
+		}
+
+		// Unknown alpha mode
+		return nvtt::WrapMode_Mirror;
+	}
+
+
+	PixelFormat toPixelFormat(CompressedFormat format)
+	{
+		switch (format)
+		{
+		case CompressedFormat::BC1:
+			return PF_BC1;
+		case CompressedFormat::BC1a:
+			return PF_BC1a;
+		case CompressedFormat::BC2:
+			return PF_BC2;
+		case CompressedFormat::BC3:
+			return PF_BC3;
+		case CompressedFormat::BC4:
+			return PF_BC4;
+		case CompressedFormat::BC5:
+			return PF_BC5;
+		case CompressedFormat::BC6H:
+			return PF_BC6H;
+		case CompressedFormat::BC7:
+			return PF_BC7;
+		}
+
+		// Unknown format
+		return PF_BC3;
+	}
+
     UINT32 PixelUtil::getNumElemBytes(PixelFormat format)
     {
         return getDescriptionFor(format).elemBytes;
@@ -818,10 +981,10 @@ namespace BansheeEngine
 				// BC formats work by dividing the image into 4x4 blocks, then encoding each
 				// 4x4 block with a certain number of bytes. 
 				case PF_BC1:
+				case PF_BC1a:
 				case PF_BC4:
 					return ((width+3)/4)*((height+3)/4)*8 * depth;
 				case PF_BC2:
-				case PF_BC2a:
 				case PF_BC3:
 				case PF_BC5:
 				case PF_BC6H:
@@ -881,7 +1044,7 @@ namespace BansheeEngine
 			{
 				case PF_BC1:
 				case PF_BC2:
-				case PF_BC2a:
+				case PF_BC1a:
 				case PF_BC3:
 				case PF_BC4:
 				case PF_BC5:
@@ -1457,5 +1620,134 @@ namespace BansheeEngine
 			buffer[1] = (UINT8)g;
 			buffer[2] = (UINT8)b;
 		}
+	}
+
+	PixelDataPtr PixelUtil::compress(const PixelData& src, const CompressionOptions& options)
+	{
+		// Note: NVTT site has implementations for these two formats for when I decide to add them
+		if (options.format == CompressedFormat::BC6H || options.format == CompressedFormat::BC7)
+			BS_EXCEPT(InvalidParametersException, "Specified formats are not yet supported.");
+
+		if (src.getDepth() != 1)
+			BS_EXCEPT(InvalidParametersException, "3D textures are not supported.");
+
+		PixelFormat pf = toPixelFormat(options.format);
+
+		// TODO - Get rid of this limitation? Maybe it works without it with no additional changes.
+		if (!isValidExtent(src.getWidth(), src.getHeight(), 1, pf))
+			BS_EXCEPT(InvalidParametersException, "Source texture dimensions must be divisible by 4.");
+
+		if (isCompressed(src.getFormat()))
+			BS_EXCEPT(InvalidParametersException, "Source data cannot be compressed.");
+
+		PixelData argbData(src.getWidth(), src.getHeight(), 1, PF_A8R8G8B8);
+		argbData.allocateInternalBuffer();
+		bulkPixelConversion(src, argbData);
+
+		nvtt::InputOptions io;
+		io.setTextureLayout(nvtt::TextureType_2D, src.getWidth(), src.getHeight());
+		io.setMipmapData(argbData.getData(), src.getWidth(), src.getHeight());
+		io.setMipmapGeneration(false);
+		io.setAlphaMode(toNVTTAlphaMode(options.alphaMode));
+		io.setNormalMap(options.isNormalMap);
+
+		if (options.isSRGB)
+			io.setGamma(2.2f, 2.2f);
+		else
+			io.setGamma(1.0f, 1.0f);
+
+		nvtt::CompressionOptions co;
+		co.setFormat(toNVTTFormat(options.format));
+		co.setQuality(toNVTTQuality(options.quality));
+		
+		PixelDataPtr outputPixelData = bs_shared_ptr<PixelData>(src.getWidth(), src.getHeight(), 1, pf);
+		outputPixelData->allocateInternalBuffer();
+
+		NVTTCompressOutputHandler outputHandler(outputPixelData->getData(), outputPixelData->getConsecutiveSize());
+
+		nvtt::OutputOptions oo;
+		oo.setOutputHeader(false);
+		oo.setOutputHandler(&outputHandler);
+		
+		nvtt::Compressor compressor;
+		if (!compressor.process(io, co, oo))
+			BS_EXCEPT(InternalErrorException, "Compressing failed.");
+
+		return outputPixelData;
+	}
+
+	Vector<PixelDataPtr> PixelUtil::genMipmaps(const PixelData& src, const MipMapGenOptions& options)
+	{
+		if (src.getDepth() != 1)
+			BS_EXCEPT(InvalidParametersException, "3D textures are not supported.");
+
+		// Note: Add support for floating point mips, no reason they shouldn't be supported other than
+		// nvtt doesn't support them natively
+		if (isCompressed(src.getFormat()) || isFloatingPoint(src.getFormat()))
+			BS_EXCEPT(InvalidParametersException, "Source data cannot be compressed or in floating point format.");
+
+		if (!Math::isPow2(src.getWidth()) || !Math::isPow2(src.getHeight()))
+			BS_EXCEPT(InvalidParametersException, "Texture width & height must be powers of 2.");
+
+		PixelData argbData(src.getWidth(), src.getHeight(), 1, PF_A8R8G8B8);
+		argbData.allocateInternalBuffer();
+		bulkPixelConversion(src, argbData);
+
+		nvtt::InputOptions io;
+		io.setTextureLayout(nvtt::TextureType_2D, src.getWidth(), src.getHeight());
+		io.setMipmapData(argbData.getData(), src.getWidth(), src.getHeight());
+		io.setMipmapGeneration(true);
+		io.setNormalMap(options.isNormalMap);
+		io.setNormalizeMipmaps(options.normalizeMipmaps);
+		io.setWrapMode(toNVTTWrapMode(options.wrapMode));
+
+		nvtt::CompressionOptions co;
+		co.setFormat(nvtt::Format_RGBA);
+
+		UINT32 numMips = getMaxMipmaps(src.getWidth(), src.getHeight(), 1, src.getFormat());
+
+		Vector<PixelDataPtr> argbMipBuffers;
+
+		// Note: This can be done more effectively without creating so many temp buffers
+		// and working with the original formats directly, but it would complicate the code
+		// too much at the moment.
+		UINT32 curWidth = src.getWidth();
+		UINT32 curHeight = src.getHeight();
+		for (UINT32 i = 0; i < numMips; i++)
+		{
+			if (curWidth > 1) 
+				curWidth = curWidth / 2;
+
+			if (curHeight > 1)
+				curHeight = curHeight / 2;
+
+			argbMipBuffers.push_back(bs_shared_ptr<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
+			argbMipBuffers.back()->allocateInternalBuffer();
+		}
+
+		NVTTMipmapOutputHandler outputHandler(argbMipBuffers);
+
+		nvtt::OutputOptions oo;
+		oo.setOutputHeader(false);
+		oo.setOutputHandler(&outputHandler);
+
+		nvtt::Compressor compressor;
+		if (!compressor.process(io, co, oo))
+			BS_EXCEPT(InternalErrorException, "Mipmap generation failed.");
+
+		argbData.freeInternalBuffer();
+
+		Vector<PixelDataPtr> outputMipBuffers;
+		for (UINT32 i = 0; i < (UINT32)argbMipBuffers.size(); i++)
+		{
+			PixelDataPtr argbBuffer = argbMipBuffers[i];
+			PixelDataPtr outputBuffer = bs_shared_ptr<PixelData>(argbBuffer->getWidth(), argbBuffer->getHeight(), 1, src.getFormat());
+			outputBuffer->allocateInternalBuffer();
+
+			bulkPixelConversion(*argbBuffer, *outputBuffer);
+			argbBuffer->freeInternalBuffer();
+		}
+
+		return outputMipBuffers;
 	}
 }

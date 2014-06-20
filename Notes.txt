@@ -61,6 +61,7 @@ Reminders:
 	- When displaying an error with a callstack, make each line of the callstack clickable where it opens the external editor
   - std::function allocates memory but I have no got way of using custom allocators as I'd have to wrap std::bind and that seems non-trivial
   - Add a TaskScheduler profiler that neatly shows time slices of each task and on which thread they are run on
+  - Add support for BC6H and BC7 file format compression
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

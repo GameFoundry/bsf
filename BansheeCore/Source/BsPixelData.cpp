@@ -31,6 +31,11 @@ namespace BansheeEngine
 		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), mFormat);
 	}
 
+	UINT32 PixelData::getSize() const
+	{
+		return PixelUtil::getMemorySize(mRowPitch, mSlicePitch / mRowPitch, getDepth(), getFormat());
+	}
+
 	PixelData PixelData::getSubVolume(const PixelVolume &def) const
 	{
 		if (PixelUtil::isCompressed(mFormat))
@@ -84,7 +89,7 @@ namespace BansheeEngine
 
 	UINT32 PixelData::getInternalBufferSize()
 	{
-		return PixelUtil::getMemorySize(getWidth(), getHeight(), getDepth(), getFormat());
+		return getSize();
 	}
 
 	/************************************************************************/

@@ -44,7 +44,7 @@ namespace BansheeEngine
             case PF_FLOAT32_RGBA:
                 return GL_RGBA;
             case PF_BC1:
-            case PF_BC2a:
+            case PF_BC1a:
             case PF_BC3:
 			case PF_BC7:
 				return GL_RGBA;
@@ -159,12 +159,13 @@ namespace BansheeEngine
                 return GL_RGB32F;
             case PF_FLOAT32_RGBA:
                 return GL_RGBA32F;
+			case PF_BC1a:
 			case PF_BC1:
 				if (hwGamma)
 					return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT;
 				else
 					return GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-            case PF_BC2a:
+            case PF_BC2:
 				if (hwGamma)
 					return GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT;
 				else
@@ -329,8 +330,8 @@ namespace BansheeEngine
 			return PF_FLOAT32_RGBA;
 		case PF_BC1:
 			return PF_BC1;
-		case PF_BC2a:
-			return PF_BC2a;
+		case PF_BC1a:
+			return PF_BC1;
 		case PF_BC3:
 			return PF_BC3;
 		case PF_BC4:

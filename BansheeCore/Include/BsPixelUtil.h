@@ -6,6 +6,85 @@
 namespace BansheeEngine 
 {
 	/**
+	 * @brief	Available compression formats.
+	 */
+	enum class CompressedFormat
+	{
+		BC1, /**< PF_BC1 */
+		BC1a, /**< PF_BC1a */
+		BC2, /**< PF_BC2 */
+		BC3, /**< PF_BC3 */
+		BC4, /**< PF_BC4 */
+		BC5, /**< PF_BC5 */
+		BC6H, /**< PF_BC6H */
+		BC7 /**< PF_BC7 */
+	};
+
+	/**
+	 * @brief	Available types of texture compression quality.
+	 */
+	enum class CompressionQuality
+	{
+		Fastest,
+		Normal,
+		Production,
+		Highest
+	};
+
+	/**
+	 * @brief	Specifies what is alpha channel used for in the texture.
+	 */
+	enum class AlphaMode
+	{
+		None,
+		Transparency,
+		Premultiplied
+	};
+
+	/**
+	 * @brief	Wrap mode to use when generating mip maps.
+	 */
+	enum class MipMapWrapMode
+	{
+		Mirror,
+		Repeat,
+		Clamp
+	};
+
+	/**
+	 * @brief	Filter to use when generating mip maps.
+	 */
+	enum class MipMapFilter
+	{
+		Box,
+		Triangle,
+		Kaiser
+	};
+
+	/**
+	 * @brief	Options used to control texture compression.
+	 */
+	struct CompressionOptions
+	{
+		CompressedFormat format = CompressedFormat::BC1;
+		AlphaMode alphaMode = AlphaMode::None;
+		bool isNormalMap = false;
+		bool isSRGB = false;
+		CompressionQuality quality = CompressionQuality::Normal;
+	};
+
+	/**
+	 * @brief	Options used to control texture mip map generation.
+	 */
+	struct MipMapGenOptions
+	{
+		MipMapFilter filter = MipMapFilter::Box;
+		MipMapWrapMode wrapMode = MipMapWrapMode::Mirror;
+		bool isNormalMap = false;
+		bool normalizeMipmaps = false;
+	};
+
+	/**
 	 * @brief	Utility methods for converting and managing pixel data and formats.
 	 */
     class BS_CORE_EXPORT PixelUtil 
@@ -170,6 +249,19 @@ namespace BansheeEngine
 		 *			must have previously allocated buffers of adequate size and their sizes must match.
 		 */
         static void bulkPixelConversion(const PixelData& src, const PixelData& dst);
+
+		/**
+		 * @brief	Compresses the provided data using the specified compression options. 
+		 */
+		static PixelDataPtr compress(const PixelData& src, const CompressionOptions& options);
+
+		/**
+		 * @brief	Generates mip-maps from the provided source data using the specified compression options.
+		 *
+		 * @returns	A list of calculated mip-map data. First entry is the largest mip and other follow in
+		 *			order from largest to smallest.
+		 */
+		static Vector<PixelDataPtr> genMipmaps(const PixelData& src, const MipMapGenOptions& options);
 
 		/**
 		 * @brief	Scales pixel data in the source buffer and stores the scaled data in the destination buffer.

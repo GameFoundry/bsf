@@ -52,11 +52,11 @@ namespace BansheeEngine
 		PF_BYTE_RGBA = PF_R8G8B8A8,      
         // DXT1/BC1 format containing opaque RGB or 1-bit alpha RGB. 4 bits per pixel.
         PF_BC1 = 13,
-        // DXT2/BC2 format containing RGB with premultiplied alpha. 8 bits per pixel.
-        PF_BC2 = 14,
+		// DXT3/BC2 format containing RGB with premultiplied alpha. 4 bits per pixel.
+		PF_BC1a = 14,
         // DXT3/BC2 format containing RGB with explicit alpha. 8 bits per pixel.
-        PF_BC2a = 15,
-        // DXT5/BC3 format containing RGB with explicit alpha. 8 bits per pixel. Better alpha gradients than BC2.
+        PF_BC2 = 15,
+        // DXT5/BC2 format containing RGB with explicit alpha. 8 bits per pixel. Better alpha gradients than BC2.
         PF_BC3 = 16,
 		// One channel compressed format. 4 bits per pixel.
 		PF_BC4 = 17,
@@ -280,6 +280,11 @@ namespace BansheeEngine
 		 *			laid out consecutive in memory.
 		 */
       	UINT32 getConsecutiveSize() const;
+
+		/**
+		 * @brief	Return the size (in bytes) of the buffer this image requires.
+		 */
+      	UINT32 getSize() const;
 
 		/**
 		 * @brief	Returns pixel data containing a sub-volume of this object. Returned

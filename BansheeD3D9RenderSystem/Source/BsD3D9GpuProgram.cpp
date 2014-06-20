@@ -287,10 +287,7 @@ namespace BansheeEngine
 
 	void D3D9GpuVertexProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		auto it;
-
-		// Find the shader of this device.
-		it = mMapDeviceToVertexShader.find(d3d9Device);
+		auto it = mMapDeviceToVertexShader.find(d3d9Device);
 
 		// Case shader found -> release it and erase from map.
 		if (it != mMapDeviceToVertexShader.end())
@@ -306,11 +303,8 @@ namespace BansheeEngine
 			return nullptr;
 
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
-		auto it;
+		auto it = mMapDeviceToVertexShader.find(d3d9Device);
 
-		// Find the shader of this device.
-		it = mMapDeviceToVertexShader.find(d3d9Device);
-		
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToVertexShader.end())		
 		{
@@ -385,10 +379,7 @@ namespace BansheeEngine
 
 	void D3D9GpuFragmentProgram::notifyOnDeviceDestroy(IDirect3DDevice9* d3d9Device)
 	{
-		auto it;
-
-		// Find the shader of this device.
-		it = mMapDeviceToPixelShader.find(d3d9Device);
+		auto it = mMapDeviceToPixelShader.find(d3d9Device);
 
 		// Case shader found -> release it and erase from map.
 		if (it != mMapDeviceToPixelShader.end())
@@ -404,10 +395,7 @@ namespace BansheeEngine
 			return nullptr;
 
 		IDirect3DDevice9* d3d9Device = D3D9RenderSystem::getActiveD3D9Device();
-		auto it;
-
-		// Find the shader of this device.
-		it = mMapDeviceToPixelShader.find(d3d9Device);
+		auto it = mMapDeviceToPixelShader.find(d3d9Device);
 
 		// Shader was not found -> load it.
 		if (it == mMapDeviceToPixelShader.end())		
