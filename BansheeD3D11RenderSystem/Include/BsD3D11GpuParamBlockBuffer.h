@@ -5,22 +5,27 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	DirectX 11 implementation of a parameter block buffer (constant buffer in DX11 lingo).
+	 */
 	class BS_D3D11_EXPORT D3D11GpuParamBlockBuffer : public GpuParamBlockBuffer
 	{
 	public:
 		D3D11GpuParamBlockBuffer();
 
 		/**
-		 * @brief	Writes all of the data to the buffer.
-		 * 			Data size must be the same size as the buffer;
+		 * @copydoc GpuParamBlockBuffer::writeData.
 		 */
 		void writeData(const UINT8* data);
 
 		/**
-		 * @copydoc GpuParamBlockBuffer::readAll.
+		 * @copydoc GpuParamBlockBuffer::readData.
 		 */
 		void readData(UINT8* data) const;
 
+		/**
+		 * @brief	Returns internal DX11 buffer object.
+		 */
 		ID3D11Buffer* getD3D11Buffer() const;
 	protected:
 		/**

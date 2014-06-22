@@ -133,8 +133,8 @@ namespace BansheeEngine
 			D3D11Device& device = rs->getPrimaryDevice();
 
 			UINT subresourceIdx = D3D11CalcSubresource(mipLevel, face, getNumMipmaps()+1);
-			UINT32 rowWidth = D3D11Mappings::_getSizeInBytes(mFormat, src.getWidth());
-			UINT32 sliceWidth = D3D11Mappings::_getSizeInBytes(mFormat, src.getWidth(), src.getHeight());
+			UINT32 rowWidth = D3D11Mappings::getSizeInBytes(mFormat, src.getWidth());
+			UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(mFormat, src.getWidth(), src.getHeight());
 
 			device.getImmediateContext()->UpdateSubresource(mTex, subresourceIdx, nullptr, src.getData(), rowWidth, sliceWidth);
 
@@ -196,9 +196,9 @@ namespace BansheeEngine
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
 
-		if (mFormat != D3D11Mappings::_getPF(d3dPF))
+		if (mFormat != D3D11Mappings::getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
@@ -225,9 +225,9 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::_getUsage(mUsage);
+			desc.Usage			= D3D11Mappings::getUsage(mUsage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags(mUsage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
 			UINT32 numMips		= (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
@@ -290,9 +290,9 @@ namespace BansheeEngine
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
 
-		if (mFormat != D3D11Mappings::_getPF(d3dPF))
+		if (mFormat != D3D11Mappings::getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
@@ -340,9 +340,9 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::_getUsage(mUsage);
+			desc.Usage			= D3D11Mappings::getUsage(mUsage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags(mUsage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
 			UINT32 numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
@@ -456,9 +456,9 @@ namespace BansheeEngine
 
 		// Determine which D3D11 pixel format we'll use
 		HRESULT hr;
-		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(mFormat, mHwGamma), mHwGamma);
 		
-		if (mFormat != D3D11Mappings::_getPF(d3dPF))
+		if (mFormat != D3D11Mappings::getPF(d3dPF))
 		{
 			BS_EXCEPT(RenderingAPIException, "Provided pixel format is not supported by the driver: " + toString(mFormat));
 		}
@@ -486,9 +486,9 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::_getUsage(mUsage);
+			desc.Usage			= D3D11Mappings::getUsage(mUsage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags(mUsage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
 			UINT numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > std::max(std::max(mWidth, mHeight), mDepth)) ? 0 : mNumMipmaps + 1;
@@ -619,8 +619,8 @@ namespace BansheeEngine
 
 	void D3D11Texture::unmapstaticbuffer()
 	{
-		UINT32 rowWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
-		UINT32 sliceWidth = D3D11Mappings::_getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
+		UINT32 rowWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth());
+		UINT32 sliceWidth = D3D11Mappings::getSizeInBytes(mStaticBuffer->getFormat(), mStaticBuffer->getWidth(), mStaticBuffer->getHeight());
 
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();

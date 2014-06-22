@@ -38,8 +38,8 @@ namespace BansheeEngine
 	PixelFormat D3D11TextureManager::getNativeFormat(TextureType ttype, PixelFormat format, int usage, bool hwGamma)
 	{
 		// Basic filtering
-		DXGI_FORMAT d3dPF = D3D11Mappings::_getPF(D3D11Mappings::_getClosestSupportedPF(format, hwGamma), hwGamma);
+		DXGI_FORMAT d3dPF = D3D11Mappings::getPF(D3D11Mappings::getClosestSupportedPF(format, hwGamma), hwGamma);
 
-		return D3D11Mappings::_getPF(d3dPF);
+		return D3D11Mappings::getPF(d3dPF);
 	}
 }

@@ -41,8 +41,8 @@ namespace BansheeEngine
 		}
 		else
 		{
-			mDesc.Usage = D3D11Mappings::_getUsage(mUsage);
-			mDesc.CPUAccessFlags = D3D11Mappings::_getAccessFlags(mUsage); 
+			mDesc.Usage = D3D11Mappings::getUsage(mUsage);
+			mDesc.CPUAccessFlags = D3D11Mappings::getAccessFlags(mUsage); 
 
 			switch(btype)
 			{
@@ -90,8 +90,7 @@ namespace BansheeEngine
 			bs_delete<PoolAlloc>(mpTempStagingBuffer);
 	}
 
-	void* D3D11HardwareBuffer::lockImpl(UINT32 offset, 
-		UINT32 length, GpuLockOptions options)
+	void* D3D11HardwareBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
 		if (length > mSizeInBytes)
 			BS_EXCEPT(RenderingAPIException, "Provided length " + toString(length) + " larger than the buffer " + toString(mSizeInBytes) + ".");		
@@ -180,15 +179,15 @@ namespace BansheeEngine
 			mUseTempStagingBuffer = true;
 			if (!mpTempStagingBuffer)
 			{
-				// create another buffer instance but use system memory
+				// Create another buffer instance but use system memory
 				mpTempStagingBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(mBufferType, mUsage, 1, mSizeInBytes, std::ref(mDevice), true);
 			}
 
-			// schedule a copy to the staging
+			// Schedule a copy to the staging
 			if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
 				mpTempStagingBuffer->copyData(*this, 0, 0, mSizeInBytes, true);
 
-			// register whether we'll need to upload on unlock
+			// Register whether we'll need to upload on unlock
 			mStagingUploadNeeded = (options != GBL_READ_ONLY);
 
 			return mpTempStagingBuffer->lock(offset, length, options);
@@ -201,16 +200,11 @@ namespace BansheeEngine
 		{
 			mUseTempStagingBuffer = false;
 
-			// ok, we locked the staging buffer
 			mpTempStagingBuffer->unlock();
 
-			// copy data if needed
-			// this is async but driver should keep reference
 			if (mStagingUploadNeeded)
 				copyData(*mpTempStagingBuffer, 0, 0, mSizeInBytes, true);
 
-			// delete
-			// not that efficient, but we should not be locking often
 			if(mpTempStagingBuffer != nullptr)
 			{
 				bs_delete<PoolAlloc>(mpTempStagingBuffer);
@@ -219,7 +213,6 @@ namespace BansheeEngine
 		}
 		else
 		{
-			// unmap
 			mDevice.getImmediateContext()->Unmap(mD3DBuffer, 0);
 		}
 	}
@@ -227,11 +220,10 @@ namespace BansheeEngine
 	void D3D11HardwareBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
 		UINT32 dstOffset, UINT32 length, bool discardWholeBuffer)
 	{
-		// If we're copying same-size buffers in their entirety...
+		// If we're copying same-size buffers in their entirety
 		if (srcOffset == 0 && dstOffset == 0 &&
 			length == mSizeInBytes && mSizeInBytes == srcBuffer.getSizeInBytes())
 		{
-			// schedule hardware buffer copy
 			mDevice.getImmediateContext()->CopyResource(mD3DBuffer, static_cast<D3D11HardwareBuffer&>(srcBuffer).getD3DBuffer());
 			if (mDevice.hasError())
 			{
@@ -241,7 +233,7 @@ namespace BansheeEngine
 		}
 		else
 		{
-			// copy subregion
+			// Copy subregion
 			D3D11_BOX srcBox;
 			srcBox.left = (UINT)srcOffset;
 			srcBox.right = (UINT)srcOffset + length;
@@ -262,8 +254,7 @@ namespace BansheeEngine
 
 	void D3D11HardwareBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
-		// There is no functional interface in D3D, just do via manual 
-		// lock, copy & unlock
+		// There is no functional interface in D3D, just do via manual lock, copy & unlock
 		void* pSrc = this->lock(offset, length, GBL_READ_ONLY);
 		memcpy(pDest, pSrc, length);
 		this->unlock();

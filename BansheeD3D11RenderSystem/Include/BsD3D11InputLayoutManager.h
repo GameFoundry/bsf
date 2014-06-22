@@ -5,27 +5,42 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Handles creation and caching of DirectX 11 input layout objects.
+	 */
 	class D3D11InputLayoutManager
 	{
 	public:
+		/**
+		 * @brief	Key uniquely identifying vertex declaration and vertex shader combination.
+		 */
 		struct VertexDeclarationKey
 		{
 			UINT64 vertxDeclId;
 			UINT32 vertexProgramId;
 		};
 
+		/**
+		 * @brief	Creates a hash from vertex declaration key.
+		 */
 		class HashFunc 
 		{
 		public:
 			::std::size_t operator()(const VertexDeclarationKey &key) const;
 		};
 
+		/**
+		 * @brief	Compares two vertex declaration keys.
+		 */
 		class EqualFunc
 		{
 		public:
 			bool operator()(const VertexDeclarationKey &a, const VertexDeclarationKey &b) const;
 		};
 
+		/**
+		 * @brief	Contains data about a single instance of DX11 input layout object.
+		 */
 		struct InputLayoutEntry
 		{
 			InputLayoutEntry() {}
@@ -39,15 +54,35 @@ namespace BansheeEngine
 		~D3D11InputLayoutManager();
 
 		/**
-		 * @brief	Finds an existing one or creates a new D3D11 input layout.
-		 * 			
-		 *			The created declaration will try to match the input to the provided shader with the
-		 *			data provided in the vertex buffer (described by the vertex buffer declaration).
-		 *			
-		 *			Error may be thrown if the vertex buffer doesn't provide all the necessary data.
-		 *			(TODO: Depends on how the driver handles missing data)
+		 * Finds an existing or creates a new D3D11 input layout. Input layout maps a vertex declaration
+		 * from a vertex buffer to vertex program input declaration
+		 *
+		 * @param	vertexShaderDecl	Vertex declaration describing vertex program input parameters.
+		 * @param	vertexBufferDecl	Vertex declaration describing structure of a vertex buffer to be bound as input
+		 *								to the GPU program.
+		 * @param	vertexProgram		Instance of the vertex program we are creating input layout for.
+		 *
+		 * @note	Error will be thrown if the vertex buffer doesn't provide all the necessary data that the shader expects.
 		 */
 		ID3D11InputLayout* retrieveInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram);
+
+	private:
+		/**
+		 * @brief	Creates a new input layout using the specified parameters and stores it in the input layout map.
+		 */
+		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram);
+
+		/**
+		 * @brief	Destroys least used input layout.
+		 */
+		void removeLeastUsed();
+
+		/**
+		 * @brief	Checks are the specified vertex shader input and vertex buffer declarations compatible.
+		 *			Vertex buffer must provide all inputs to the shader in order for them to be compatible
+		 *			(extra data is allowed).
+		 */
+		bool areCompatible(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl);
 
 	private:
 		static const int DECLARATION_BUFFER_SIZE = 1024;
@@ -57,10 +92,5 @@ namespace BansheeEngine
 
 		bool mWarningShown;
 		UINT32 mLastUsedCounter;
-
-		void addNewInputLayout(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl, D3D11GpuProgram& vertexProgram);
-		void removeLeastUsed();
-
-		bool areCompatible(VertexDeclarationPtr vertexShaderDecl, VertexDeclarationPtr vertexBufferDecl);
 	};
 }

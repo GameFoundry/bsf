@@ -6,7 +6,7 @@ namespace BansheeEngine
 {
 	D3D11_TEXTURE_ADDRESS_MODE D3D11Mappings::get(TextureAddressingMode tam)
 	{
-		switch( tam )
+		switch(tam)
 		{
 		case TAM_WRAP:
 			return D3D11_TEXTURE_ADDRESS_WRAP;
@@ -17,12 +17,13 @@ namespace BansheeEngine
 		case TAM_BORDER:
 			return D3D11_TEXTURE_ADDRESS_BORDER;
 		}
+
 		return D3D11_TEXTURE_ADDRESS_MIRROR_ONCE;
 	}
 
-	D3D11_BLEND D3D11Mappings::get(BlendFactor sbf)
+	D3D11_BLEND D3D11Mappings::get(BlendFactor bf)
 	{
-		switch( sbf )
+		switch(bf)
 		{
 		case BF_ONE:
 			return D3D11_BLEND_ONE;
@@ -45,12 +46,14 @@ namespace BansheeEngine
 		case BF_INV_SOURCE_ALPHA:
 			return D3D11_BLEND_INV_SRC_ALPHA;
 		}
+
+		// Unsupported type
 		return D3D11_BLEND_ZERO;
 	}
 
-	D3D11_BLEND_OP D3D11Mappings::get(BlendOperation sbo)
+	D3D11_BLEND_OP D3D11Mappings::get(BlendOperation bo)
 	{
-		switch( sbo )
+		switch(bo)
 		{
 		case BO_ADD:
 			return D3D11_BLEND_OP_ADD;
@@ -63,12 +66,14 @@ namespace BansheeEngine
 		case BO_MAX:
 			return D3D11_BLEND_OP_MAX;
 		}
+
+		// Unsupported type
 		return D3D11_BLEND_OP_ADD;
 	}
 
 	D3D11_COMPARISON_FUNC D3D11Mappings::get(CompareFunction cf)
 	{
-		switch( cf )
+		switch(cf)
 		{
 		case CMPF_ALWAYS_FAIL:
 			return D3D11_COMPARISON_NEVER;
@@ -87,12 +92,14 @@ namespace BansheeEngine
 		case CMPF_GREATER:
 			return D3D11_COMPARISON_GREATER;
 		};
+
+		// Unsupported type
 		return D3D11_COMPARISON_ALWAYS;
 	}
 
 	D3D11_CULL_MODE D3D11Mappings::get(CullingMode cm)
 	{
-		switch( cm )
+		switch(cm)
 		{
 		case CULL_NONE:
 			return D3D11_CULL_NONE;
@@ -101,18 +108,21 @@ namespace BansheeEngine
 		case CULL_COUNTERCLOCKWISE:
 			return D3D11_CULL_BACK;
 		}
+
+		// Unsupported type
 		return D3D11_CULL_NONE;
 	}
 
-	D3D11_FILL_MODE D3D11Mappings::get(PolygonMode level)
+	D3D11_FILL_MODE D3D11Mappings::get(PolygonMode mode)
 	{
-		switch(level)
+		switch(mode)
 		{
 		case PM_WIREFRAME:
 			return D3D11_FILL_WIREFRAME;
 		case PM_SOLID:
 			return D3D11_FILL_SOLID;
 		}
+
 		return D3D11_FILL_SOLID;
 	}
 
@@ -127,16 +137,18 @@ namespace BansheeEngine
 		case SOP_REPLACE:
 			return D3D11_STENCIL_OP_REPLACE;
 		case SOP_INCREMENT:
-			return invert? D3D11_STENCIL_OP_DECR_SAT : D3D11_STENCIL_OP_INCR_SAT;
+			return invert ? D3D11_STENCIL_OP_DECR_SAT : D3D11_STENCIL_OP_INCR_SAT;
 		case SOP_DECREMENT:
-			return invert? D3D11_STENCIL_OP_INCR_SAT : D3D11_STENCIL_OP_DECR_SAT;
+			return invert ? D3D11_STENCIL_OP_INCR_SAT : D3D11_STENCIL_OP_DECR_SAT;
 		case SOP_INCREMENT_WRAP:
-			return invert? D3D11_STENCIL_OP_DECR : D3D11_STENCIL_OP_INCR;
+			return invert ? D3D11_STENCIL_OP_DECR : D3D11_STENCIL_OP_INCR;
 		case SOP_DECREMENT_WRAP:
-			return invert? D3D11_STENCIL_OP_INCR : D3D11_STENCIL_OP_DECR;
+			return invert ? D3D11_STENCIL_OP_INCR : D3D11_STENCIL_OP_DECR;
 		case SOP_INVERT:
 			return D3D11_STENCIL_OP_INVERT;
 		}
+
+		// Unsupported type
 		return D3D11_STENCIL_OP_KEEP;
 	}
 
@@ -155,13 +167,12 @@ namespace BansheeEngine
 			break;
 		}
 
-		// to keep compiler happy
+		// Unsupported type
 		return D3D11_MIP_FILTER_SHIFT;
 	}
-	//---------------------------------------------------------------------
+
 	D3D11_FILTER D3D11Mappings::get(const FilterOptions min, const FilterOptions mag, const FilterOptions mip, const bool comparison)
 	{
-
 		D3D11_FILTER res;
 #define MERGE_FOR_SWITCH(_comparison_, _min_ , _mag_, _mip_ ) ((_comparison_ << 16) | (_min_ << 8) | (_mag_ << 4) | (_mip_))
 
@@ -194,7 +205,6 @@ namespace BansheeEngine
 		case MERGE_FOR_SWITCH(true, FO_ANISOTROPIC, FO_ANISOTROPIC, FO_ANISOTROPIC):
 			res = D3D11_FILTER_COMPARISON_ANISOTROPIC;
 			break;
-
 		case MERGE_FOR_SWITCH(false, FO_POINT, FO_POINT, FO_POINT):
 			res = D3D11_FILTER_MIN_MAG_MIP_POINT;
 			break;
@@ -226,8 +236,6 @@ namespace BansheeEngine
 			res = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
 		}	
 
-#undef MERGE_FOR_SWITCH
-		
 		return res;
 	}
 
@@ -236,9 +244,7 @@ namespace BansheeEngine
 		DWORD ret = D3D11_USAGE_DEFAULT;
 
 		if (usage & GBU_DYNAMIC)
-		{
 			ret = D3D11_USAGE_DYNAMIC;
-		}
 
 		return ret;
 	}
@@ -266,21 +272,9 @@ namespace BansheeEngine
 		return ret;
 	}
 
-	UINT D3D11Mappings::getByteWidth(IndexBuffer::IndexType itype)
+	DXGI_FORMAT D3D11Mappings::get(VertexElementType type)
 	{
-		if (itype == IndexBuffer::IT_32BIT)
-		{
-			return sizeof(UINT32);
-		}
-		else
-		{
-			return sizeof(UINT16);
-		}
-	}
-
-	DXGI_FORMAT D3D11Mappings::get(VertexElementType vType)
-	{
-		switch (vType)
+		switch (type)
 		{
 		case VET_COLOR:
 		case VET_COLOR_ABGR:
@@ -315,38 +309,37 @@ namespace BansheeEngine
 			return DXGI_FORMAT_R32G32B32A32_SINT;
 			break;
 		}
-		// to keep compiler happy
+
+		// Unsupported type
 		return DXGI_FORMAT_R32G32B32A32_FLOAT;
 	}
 
 	VertexElementSemantic D3D11Mappings::get(LPCSTR sem)
 	{
-		// todo - add to ogre - POSITIONT and PSIZE ("Transformed vertex position" and "Point size")
-
-		if( strcmp(sem, "BLENDINDICES") == 0 )
+		if(strcmp(sem, "BLENDINDICES") == 0)
 			return VES_BLEND_INDICES;
-		if( strcmp(sem, "BLENDWEIGHT") == 0 )
+		if(strcmp(sem, "BLENDWEIGHT") == 0)
 			return VES_BLEND_WEIGHTS;
-		if( strcmp(sem, "COLOR") == 0 )
+		if(strcmp(sem, "COLOR") == 0)
 			return VES_COLOR;
-		if( strcmp(sem, "NORMAL") == 0 )
+		if(strcmp(sem, "NORMAL") == 0)
 			return VES_NORMAL;
-		if( strcmp(sem, "POSITION") == 0 )
+		if(strcmp(sem, "POSITION") == 0)
 			return VES_POSITION;
-		if( strcmp(sem, "TEXCOORD") == 0 )
+		if(strcmp(sem, "TEXCOORD") == 0)
 			return VES_TEXCOORD;
-		if( strcmp(sem, "BINORMAL") == 0 )
+		if(strcmp(sem, "BINORMAL") == 0)
 			return VES_BITANGENT;
-		if( strcmp(sem, "TANGENT") == 0 )
+		if(strcmp(sem, "TANGENT") == 0)
 			return VES_TANGENT;
-		if( strcmp(sem, "POSITIONT") == 0 )
+		if(strcmp(sem, "POSITIONT") == 0)
 			return VES_POSITIONT;
-		if( strcmp(sem, "PSIZE") == 0 ) 
+		if(strcmp(sem, "PSIZE") == 0) 
 			return VES_PSIZE;
 
 		BS_EXCEPT(RenderingAPIException, "Invalid shader semantic: " + String(sem));
 
-		// to keep compiler happy
+		// Unsupported type
 		return VES_POSITION;
 	}
 
@@ -385,7 +378,8 @@ namespace BansheeEngine
 			return "PSIZE";
 			break;
 		}
-		// to keep compiler happy
+
+		// Unsupported type
 		return "";
 	}
 
@@ -404,7 +398,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void D3D11Mappings::get(const Color& inColor, float * outColor)
+	void D3D11Mappings::get(const Color& inColor, float* outColor)
 	{
 		outColor[0] = inColor.r;
 		outColor[1] = inColor.g;
@@ -412,22 +406,9 @@ namespace BansheeEngine
 		outColor[3] = inColor.a;	
 	}
 
-	D3D11_BOX D3D11Mappings::toDx11Box(const PixelVolume &inBox)
+	PixelFormat D3D11Mappings::getPF(DXGI_FORMAT pf)
 	{
-		D3D11_BOX res;
-		res.left	= static_cast<UINT>(inBox.left);
-		res.top		= static_cast<UINT>(inBox.top);
-		res.front	= static_cast<UINT>(inBox.front);
-		res.right	= static_cast<UINT>(inBox.right);
-		res.bottom	= static_cast<UINT>(inBox.bottom);
-		res.back	= static_cast<UINT>(inBox.back);
-
-		return res;
-	}
-
-	PixelFormat D3D11Mappings::_getPF(DXGI_FORMAT d3dPF)
-	{
-		switch(d3dPF)
+		switch(pf)
 		{
 		case DXGI_FORMAT_UNKNOWN:
 			return PF_UNKNOWN;
@@ -624,9 +605,9 @@ namespace BansheeEngine
 		}
 	}
 
-	DXGI_FORMAT D3D11Mappings::_getPF(PixelFormat enginePF, bool gamma)
+	DXGI_FORMAT D3D11Mappings::getPF(PixelFormat pf, bool gamma)
 	{
-		switch(enginePF)
+		switch(pf)
 		{
 		case PF_R8:
 			return DXGI_FORMAT_R8_UNORM;
@@ -696,13 +677,13 @@ namespace BansheeEngine
 		}
 	}
 
-	PixelFormat D3D11Mappings::_getClosestSupportedPF(PixelFormat enginePF, bool hwGamma)
+	PixelFormat D3D11Mappings::getClosestSupportedPF(PixelFormat pf, bool hwGamma)
 	{
-		if (_getPF(enginePF, hwGamma) != DXGI_FORMAT_UNKNOWN)
+		if (getPF(pf, hwGamma) != DXGI_FORMAT_UNKNOWN)
 		{
-			return enginePF;
+			return pf;
 		}
-		switch(enginePF)
+		switch(pf)
 		{
 		case PF_FLOAT16_RGB:
 			return PF_FLOAT16_RGBA;
@@ -726,21 +707,17 @@ namespace BansheeEngine
 		}
 	}
 
-	D3D11_USAGE D3D11Mappings::_getUsage(GpuBufferUsage mUsage)
+	D3D11_USAGE D3D11Mappings::getUsage(GpuBufferUsage usage)
 	{
-		if (_isDynamic(mUsage))
-		{
+		if (isDynamic(usage))
 			return D3D11_USAGE_DYNAMIC;
-		}
 		else
-		{
 			return D3D11_USAGE_DEFAULT;
-		}
 	}
 
-	bool D3D11Mappings::_isDynamic(GpuBufferUsage mUsage)
+	bool D3D11Mappings::isDynamic(GpuBufferUsage usage)
 	{
-		switch ( mUsage)
+		switch (usage)
 		{
 		case GBU_DYNAMIC:
 			return true;
@@ -749,18 +726,12 @@ namespace BansheeEngine
 		return false;
 	}
 
-	bool D3D11Mappings::_isDynamic(int mUsage)
-	{
-		return _isDynamic(static_cast<GpuBufferUsage>(mUsage));
-	}
-
 	bool D3D11Mappings::isMappingWrite(D3D11_MAP map)
 	{
 		if(map == D3D11_MAP_READ)
 			return false;
 
 		return true;
-
 	}
 
 	bool D3D11Mappings::isMappingRead(D3D11_MAP map)
@@ -771,41 +742,12 @@ namespace BansheeEngine
 		return false;
 	}
 
-	D3D11_USAGE D3D11Mappings::_getUsage(int mUsage)
+	UINT D3D11Mappings::getAccessFlags(GpuBufferUsage usage)
 	{
-		return _getUsage(static_cast<GpuBufferUsage>(mUsage));
-	}
-
-	UINT D3D11Mappings::_getAccessFlags(int mUsage)
-	{
-		return _getAccessFlags(static_cast<GpuBufferUsage>(mUsage));
-	}
-
-	UINT D3D11Mappings::_getAccessFlags(GpuBufferUsage mUsage)
-	{
-		if(_isDynamic(mUsage))
+		if(isDynamic(usage))
 			return D3D11_CPU_ACCESS_WRITE;
 		else
 			return 0;
-	}
-
-	TextureType D3D11Mappings::_getTexType(D3D11_SRV_DIMENSION type)
-	{
-		switch(type)
-		{
-		case D3D_SRV_DIMENSION_TEXTURE1D:
-			return TEX_TYPE_1D;
-		case D3D_SRV_DIMENSION_TEXTURE2D:
-		case D3D_SRV_DIMENSION_TEXTURE2DMS:
-			return TEX_TYPE_2D;
-		case D3D_SRV_DIMENSION_TEXTURE3D:
-			return TEX_TYPE_3D;
-		case D3D_SRV_DIMENSION_TEXTURECUBE:
-			return TEX_TYPE_CUBE_MAP;
-		default:
-			// unknown
-			return static_cast<TextureType>(0);
-		}
 	}
 
 	D3D11_PRIMITIVE_TOPOLOGY D3D11Mappings::getPrimitiveType(DrawOperationType type)
@@ -829,10 +771,9 @@ namespace BansheeEngine
 		return D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	}
 
-	//---------------------------------------------------------------------
-	UINT32 D3D11Mappings::_getSizeInBytes(PixelFormat pf, UINT32 xcount, UINT32 ycount)
+	UINT32 D3D11Mappings::getSizeInBytes(PixelFormat pf, UINT32 width, UINT32 height)
 	{
-		if(xcount == 0 || ycount == 0)
+		if(width == 0 || height == 0)
 			return 0;
 
 		if(PixelUtil::isCompressed(pf))
@@ -841,17 +782,17 @@ namespace BansheeEngine
 			if (pf == PF_BC1 || pf == PF_BC4)
 			{
 				// 64 bits (8 bytes) per 4x4 block
-				return std::max<UINT32>(1, xcount / 4) * std::max<UINT32>(1, ycount / 4) * 8;
+				return std::max<UINT32>(1, width / 4) * std::max<UINT32>(1, height / 4) * 8;
 			}
 			else
 			{
 				// 128 bits (16 bytes) per 4x4 block
-				return std::max<UINT32>(1, xcount / 4) * std::max<UINT32>(1, ycount / 4) * 16;
+				return std::max<UINT32>(1, width / 4) * std::max<UINT32>(1, height / 4) * 16;
 			}
 		}
 		else
 		{
-			return xcount * ycount * PixelUtil::getNumElemBytes(pf);
+			return width * height * PixelUtil::getNumElemBytes(pf);
 		}
 	}
 

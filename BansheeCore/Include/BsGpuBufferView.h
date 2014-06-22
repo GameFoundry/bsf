@@ -47,8 +47,9 @@ namespace BansheeEngine
 		virtual ~GpuBufferView();
 
 		/**
-		 * @brief	Initializes the GPU buffer view. Must be called right after
-		 *			construction.
+		 * @brief	Initializes the view with the specified buffer and 
+		 *			a set of parameters describing the view to create.
+		 *			Must be called right after construction.
 		 */
 		virtual void initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc);
 

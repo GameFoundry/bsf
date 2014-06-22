@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Handles creation of DirectX 11 hardware buffers.
+	 */
 	class BS_D3D11_EXPORT D3D11HardwareBufferManager : public HardwareBufferManager
 	{
 	public:
@@ -12,8 +15,6 @@ namespace BansheeEngine
 		~D3D11HardwareBufferManager();
 
 	protected:     
-		D3D11Device& mDevice;
-
 		/**
 		 * @copydoc HardwareBufferManager::createVertexBufferImpl
 		 */
@@ -24,15 +25,17 @@ namespace BansheeEngine
 		 */
 		IndexBufferPtr createIndexBufferImpl(IndexBuffer::IndexType itype, UINT32 numIndexes, GpuBufferUsage usage);
 
-		/** @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl */
+		/** 
+		 * @copydoc HardwareBufferManager::createGpuParamBlockBufferImpl 
+		 */
 		GpuParamBlockBufferPtr createGpuParamBlockBufferImpl();
 
 		/**
 		 * @copydoc HardwareBufferManager::createGenericBufferImpl
-		 *
-		 * DirectX 9 does not support generic buffers so this method will return a dummy instance.
 		 */
 		GpuBufferPtr createGpuBufferImpl(UINT32 elementCount, UINT32 elementSize, 
 			GpuBufferType type, GpuBufferUsage usage, bool randomGpuWrite = false, bool useCounter = false);
+
+		D3D11Device& mDevice;
 	};
 }

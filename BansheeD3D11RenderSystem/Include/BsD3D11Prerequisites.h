@@ -2,17 +2,15 @@
 
 #include "BsCorePrerequisites.h"
 
-// some D3D commonly used macros
 #define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
 
-// enable extended d3d debug 
 #if BS_DEBUG_MODE
 #	define D3D_DEBUG_INFO
 #endif
 
 #define WIN32_LEAN_AND_MEAN
 #if !defined(NOMINMAX) && defined(_MSC_VER)
-#	define NOMINMAX // required to stop windows.h messing up std::min
+#	define NOMINMAX // Required to stop windows.h messing up std::min
 #endif
 
 #include <d3d11.h>
@@ -21,7 +19,6 @@
 
 namespace BansheeEngine
 {
-	// Predefine classes
 	class D3D11RenderSystem;
 	class D3D11RenderWindow;
 	class D3D11Texture;
@@ -79,9 +76,6 @@ namespace BansheeEngine
 	typedef std::shared_ptr<D3D11RenderWindow> D3D11RenderWindowPtr;
 	typedef std::shared_ptr<D3D11GpuProgram> D3D11GpuProgramPtr;
 
-    //-------------------------------------------
-	// Windows setttings
-	//-------------------------------------------
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(BS_STATIC_LIB)
 #	ifdef BS_RSD3D11_EXPORTS
 #		define BS_D3D11_EXPORT __declspec(dllexport)
@@ -94,5 +88,5 @@ namespace BansheeEngine
 #	endif
 #else
 #	define BS_D3D11_EXPORT
-#endif	// BS_PLATFORM_WIN32
+#endif
 }

@@ -49,7 +49,6 @@ namespace BansheeEngine
 
 	void D3D11Device::shutdown()
 	{
-		// Clear state
 		if (mImmediateContext)
 		{
 			mImmediateContext->Flush();
@@ -65,7 +64,7 @@ namespace BansheeEngine
 	String D3D11Device::getErrorDescription(bool doClearErrors)
 	{
 		if (mD3D11Device == nullptr)
-			return "NULL device";
+			return "Null device.";
 
 		String res;
 

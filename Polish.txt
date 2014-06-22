@@ -1,4 +1,19 @@
+Polish TODO:
+ - Finish basic example, get a model rendering on screen
+ - Fix FBX importer so proper number of vertices show
+ - Finish and test GPU profiler
+ - Test and fix full-screen transitions
+ - Add virtual input axes
+ - Compress and generate mips for texture on input (testing NVTT stuff)
+ - Add frustum culling and sorting code
+ - Finalize example
+ - Perform optimizations as needed to get reasonable performance
 
+ - Add license text to all files
+ - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
+ - (HIGHLY OPTIONAL) Make a Getting Started guide, along with the example project. Or just finish up the manual.
+
+-----------------
 
 There's still a crash regarding an uninitialized mCachedPtr on a C# class when shutting down. Attempt to find consistent repro steps.
 

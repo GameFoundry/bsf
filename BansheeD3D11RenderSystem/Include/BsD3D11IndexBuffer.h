@@ -6,6 +6,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	DirectX 11 implementation of an index buffer.
+	 */
 	class BS_D3D11_EXPORT D3D11IndexBuffer : public IndexBuffer
 	{
 	public:
@@ -27,18 +30,21 @@ namespace BansheeEngine
 		void copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, UINT32 dstOffset, UINT32 length, bool discardWholeBuffer = false);
 
 		/**
-		 * @brief	Get the D3D-specific index buffer
+		 * @brief	Gets the internal DX11 index buffer object.
 		 */
 		ID3D11Buffer* getD3DIndexBuffer() const { return mBuffer->getD3DBuffer(); }		
 
 	protected:
 		friend class D3D11HardwareBufferManager;
 
+		/**
+		 * @copydoc	IndexBuffer::IndexBuffer.
+		 */
 		D3D11IndexBuffer(D3D11Device& device, IndexType idxType, UINT32 numIndexes, 
 			GpuBufferUsage usage, bool useSystemMem);
 
 		/**
-		* @copydoc HardwareBuffer::lockImpl
+		 * @copydoc HardwareBuffer::lockImpl
 		 */
 		void* lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options);
 

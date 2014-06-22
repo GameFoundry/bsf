@@ -13,7 +13,7 @@ namespace BansheeEngine
 		if(mDXGIAdapter)
 			mDXGIAdapter->AddRef();
 
-		init();
+		construct();
 	}
 
 	D3D11Driver::D3D11Driver(UINT32 adapterNumber, IDXGIAdapter* pDXGIAdapter)
@@ -26,7 +26,7 @@ namespace BansheeEngine
 
 		pDXGIAdapter->GetDesc(&mAdapterIdentifier);
 
-		init();
+		construct();
 	}
 
 	D3D11Driver::~D3D11Driver()
@@ -34,7 +34,7 @@ namespace BansheeEngine
 		SAFE_RELEASE(mDXGIAdapter);
 	}
 
-	void D3D11Driver::init()
+	void D3D11Driver::construct()
 	{
 		assert(mDXGIAdapter != nullptr);
 
