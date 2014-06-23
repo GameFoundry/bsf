@@ -26,6 +26,7 @@
 #include "BsRenderWindow.h"
 #include "BsSceneObject.h"
 #include "BsCoreThread.h"
+#include "BsProfilerOverlay.h"
 
 namespace BansheeEngine
 {
@@ -46,6 +47,13 @@ namespace BansheeEngine
 	HGpuProgram exampleVertexGPUProg;
 
 	HCamera sceneCamera;
+	HProfilerOverlay profilerOverlay;
+
+	VirtualButton toggleCPUProfilerBtn;
+	VirtualButton toggleGPUProfilerBtn;
+
+	bool cpuProfilerActive = false;
+	bool gpuProfilerActive = false;
 
 	void toggleFullscreen()
 	{
@@ -62,6 +70,38 @@ namespace BansheeEngine
 		}
 
 		fullscreen = !fullscreen;
+	}
+
+	void buttonUp(const VirtualButton& button)
+	{
+		if (button == toggleCPUProfilerBtn)
+		{
+			if (cpuProfilerActive)
+			{
+				profilerOverlay->hide();
+				cpuProfilerActive = false;
+			}
+			else
+			{
+				profilerOverlay->show(ProfilerOverlayType::CPUSamples);
+				cpuProfilerActive = true;
+				gpuProfilerActive = false;
+			}
+		}
+		else if (button == toggleGPUProfilerBtn)
+		{
+			if (gpuProfilerActive)
+			{
+				profilerOverlay->hide();
+				gpuProfilerActive = false;
+			}
+			else
+			{
+				profilerOverlay->show(ProfilerOverlayType::GPUSamples);
+				gpuProfilerActive = true;
+				cpuProfilerActive = false;
+			}
+		}
 	}
 
 	void setUpExample()
@@ -139,9 +179,13 @@ namespace BansheeEngine
 		inputConfig->registerButton("Right", BC_D);
 		inputConfig->registerButton("Back", BC_S);
 
-		inputConfig->registerButton("SimThreadProfilerOverlay", BC_F1);
-		inputConfig->registerButton("CoreThreadProfilerOverlay", BC_F2);
-		inputConfig->registerButton("GPUProfilerOverlay", BC_F3);
+		inputConfig->registerButton("CPUProfilerOverlay", BC_F1);
+		inputConfig->registerButton("GPUProfilerOverlay", BC_F2);
+
+		toggleCPUProfilerBtn = VirtualButton("CPUProfilerOverlay");
+		toggleGPUProfilerBtn = VirtualButton("GPUProfilerOverlay");
+
+		VirtualInput::instance().onButtonUp.connect(&buttonUp);
 
 		// TODO - Add vertical/horizontal axes here
 
@@ -160,9 +204,8 @@ namespace BansheeEngine
 		GUIArea* topArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
 		GUILayout& topLayout = topArea->getLayout().addLayoutY();
 
-		topLayout.addElement(GUILabel::create(HString(L"Press F1 to toggle Sim thread profiler overlay")));
-		topLayout.addElement(GUILabel::create(HString(L"Press F2 to toggle Core thread profiler overlay")));
-		topLayout.addElement(GUILabel::create(HString(L"Press F3 to toggle GPU profiler overlay")));
+		topLayout.addElement(GUILabel::create(HString(L"Press F1 to toggle CPU profiler overlay")));
+		topLayout.addElement(GUILabel::create(HString(L"Press F2 to toggle GPU profiler overlay")));
 		topLayout.addFlexibleSpace();
 
 		// Resolution/Camera options GUI
@@ -174,6 +217,9 @@ namespace BansheeEngine
 		toggleFullscreenButton = GUIButton::create(HString(L"Toggle fullscreen"));
 		toggleFullscreenButton->onClick.connect(&toggleFullscreen);
 		rightLayout.addElement(toggleFullscreenButton);
+
+		// Initialize profiler overlay
+		profilerOverlay = exampleSO->addComponent<ProfilerOverlay>(guiCamera->getViewport());
 
 		// TODO - add ExampleGUI component
 	}

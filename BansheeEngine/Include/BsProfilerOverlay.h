@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BsPrerequisites.h"
+#include "BsComponent.h"
 #include "BsProfilerGPU.h"
 #include "BsModule.h"
 #include "BsEvent.h"
@@ -13,7 +14,7 @@ namespace BansheeEngine
 		GPUSamples
 	};
 
-	class BS_EXPORT ProfilerOverlay : public Module<ProfilerOverlay>
+	class BS_EXPORT ProfilerOverlay : public Component
 	{
 	public:
 		struct BasicRow
@@ -63,7 +64,7 @@ namespace BansheeEngine
 		};
 
 	public:
-		ProfilerOverlay(const ViewportPtr& target);
+		ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target);
 		~ProfilerOverlay();
 
 		void setTarget(const ViewportPtr& target);
@@ -72,7 +73,7 @@ namespace BansheeEngine
 		void hide();
 
 		/**
-		 * @brief	Called every frame. Internal method.
+		 * @copydoc	Component::update
 		 */
 		void update();
 	private:

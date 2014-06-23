@@ -54,7 +54,7 @@ namespace BansheeEngine
 	/**
 	 * @brief	Profiler that measures time and amount of various GPU operations.
 	 *
-	 * @note	Core thread only.
+	 * @note	Core thread only except where noted otherwise.
 	 */
 	class BS_CORE_EXPORT ProfilerGPU : public Module<ProfilerGPU>
 	{
@@ -62,8 +62,8 @@ namespace BansheeEngine
 		struct ActiveSample
 		{
 			ProfilerString sampleName;
-			RenderStats startStats;
-			RenderStats endStats;
+			RenderStatsData startStats;
+			RenderStatsData endStats;
 			TimerQueryPtr activeTimeQuery;
 			OcclusionQueryPtr activeOcclusionQuery;
 		};
@@ -117,12 +117,16 @@ namespace BansheeEngine
 		 *
 		 * @note	There is an internal limit of maximum number of available reports, where oldest ones will
 		 *			get deleted so make sure to call this often if you don't want to miss some.
+		 *
+		 *			Thread safe.
 		 */
 		UINT32 getNumAvailableReports();
 
 		/**
 		 * @brief	Gets the oldest report available and removes it from the internal list.
 		 *			Throws an exception if no reports are available.
+		 *
+		 * @note	Thread safe.
 		 */
 		GPUProfilerReport getNextReport();
 
@@ -175,5 +179,7 @@ namespace BansheeEngine
 
 		mutable Stack<TimerQueryPtr> mFreeTimerQueries;
 		mutable Stack<OcclusionQueryPtr> mFreeOcclusionQueries;
+
+		BS_MUTEX(mMutex);
 	};
 }

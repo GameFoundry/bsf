@@ -1,6 +1,7 @@
 #include "BsGLHardwareBufferManager.h"
 #include "BsGLVertexBuffer.h"
 #include "BsGLVertexArrayObjectManager.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine 
@@ -30,6 +31,7 @@ namespace BansheeEngine
 		glBufferData(GL_ARRAY_BUFFER, mSizeInBytes, NULL,
 			GLHardwareBufferManager::getGLUsage(mUsage));
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBuffer::initialize_internal();
 	}
 
@@ -40,6 +42,7 @@ namespace BansheeEngine
 		while (mVAObjects.size() > 0)
 			GLVertexArrayObjectManager::instance().notifyBufferDestroyed(mVAObjects[0]);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
 		VertexBuffer::destroy_internal();
 	}
 
@@ -65,6 +68,18 @@ namespace BansheeEngine
 			BS_EXCEPT(InternalErrorException,
                 "Invalid attempt to lock a vertex buffer that has already been locked");
         }
+
+#if BS_PROFILING_ENABLED
+		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_VertexBuffer);
+		}
+
+		if (options == GBL_READ_WRITE || options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_DISCARD || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_VertexBuffer);
+		}
+#endif
 
 		glBindBuffer(GL_ARRAY_BUFFER, mBufferId);
 

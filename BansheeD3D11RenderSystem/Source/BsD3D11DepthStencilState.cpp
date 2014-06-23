@@ -2,6 +2,7 @@
 #include "BsD3D11Device.h"
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Mappings.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -44,12 +45,16 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Cannot create depth stencil state.\nError Description:" + errorDescription);
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_DepthStencilState);
+
 		DepthStencilState::initialize_internal();
 	}
 
 	void D3D11DepthStencilState::destroy_internal()
 	{
 		SAFE_RELEASE(mDepthStencilState);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_DepthStencilState);
 
 		DepthStencilState::destroy_internal();
 	}

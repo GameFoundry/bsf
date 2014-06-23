@@ -1,17 +1,20 @@
 #include "BsGLTimerQuery.h"
 #include "BsMath.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
 	GLTimerQuery::GLTimerQuery()
 		:mQueryStartObj(0), mQueryEndObj(0), 
-		mTimeDelta(0.0f), mFinalized(false)
+		mTimeDelta(0.0f), mFinalized(false), mEndIssued(false)
 	{
 		GLuint queries[2];
 		glGenQueries(2, queries);
 
 		mQueryStartObj = queries[0];
 		mQueryEndObj = queries[1];
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	GLTimerQuery::~GLTimerQuery()
@@ -21,6 +24,8 @@ namespace BansheeEngine
 		queries[1] = mQueryEndObj;
 
 		glDeleteQueries(2, queries);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void GLTimerQuery::begin()
@@ -28,15 +33,22 @@ namespace BansheeEngine
 		glQueryCounter(mQueryStartObj, GL_TIMESTAMP);
 
 		setActive(true);
+		mEndIssued = false;
 	}
 
 	void GLTimerQuery::end()
 	{
 		glQueryCounter(mQueryEndObj, GL_TIMESTAMP);
+
+		mEndIssued = true;
+		mFinalized = false;
 	}
 
 	bool GLTimerQuery::isReady() const
 	{
+		if (!mEndIssued)
+			return false;
+
 		GLint done = 0;
 		glGetQueryObjectiv(mQueryEndObj, GL_QUERY_RESULT_AVAILABLE, &done);
 

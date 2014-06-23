@@ -1,5 +1,6 @@
 #include "BsD3D11VertexBuffer.h"
 #include "BsD3D11Device.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -13,6 +14,18 @@ namespace BansheeEngine
 
 	void* D3D11VertexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
+#if BS_PROFILING_ENABLED
+		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_VertexBuffer);
+		}
+
+		if (options == GBL_READ_WRITE || options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_DISCARD || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_VertexBuffer);
+		}
+#endif
+
 		return mBuffer->lock(offset, length, options);
 	}
 
@@ -21,14 +34,16 @@ namespace BansheeEngine
 		mBuffer->unlock();
 	}
 
-	void D3D11VertexBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
+	void D3D11VertexBuffer::readData(UINT32 offset, UINT32 length, void* dest)
 	{
-		mBuffer->readData(offset, length, pDest);
+		mBuffer->readData(offset, length, dest);
+		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_VertexBuffer);
 	}
 
-	void D3D11VertexBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags)
+	void D3D11VertexBuffer::writeData(UINT32 offset, UINT32 length, const void* source, BufferWriteType writeFlags)
 	{
-		mBuffer->writeData(offset, length, pSource, writeFlags);
+		mBuffer->writeData(offset, length, source, writeFlags);
+		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_VertexBuffer);
 	}
 
 	void D3D11VertexBuffer::copyData(HardwareBuffer& srcBuffer, UINT32 srcOffset, 
@@ -42,6 +57,7 @@ namespace BansheeEngine
 		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(D3D11HardwareBuffer::BT_VERTEX, 
 			mUsage, 1, mSizeInBytes, std::ref(mDevice), mSystemMemory, mStreamOut);
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexBuffer);
 		VertexBuffer::initialize_internal();
 	}
 
@@ -50,6 +66,7 @@ namespace BansheeEngine
 		if(mBuffer != nullptr)
 			bs_delete<PoolAlloc>(mBuffer);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexBuffer);
 		VertexBuffer::destroy_internal();
 	}
 }

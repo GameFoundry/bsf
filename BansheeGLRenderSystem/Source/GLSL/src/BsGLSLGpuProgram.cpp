@@ -6,6 +6,7 @@
 #include "BsGLSLParamParser.h"
 #include "BsHardwareBufferManager.h"
 #include "BsGLSLGpuProgramRTTI.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -131,6 +132,7 @@ namespace BansheeEngine
 			}
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 		GpuProgram::initialize_internal();
 	}
 
@@ -142,6 +144,7 @@ namespace BansheeEngine
 			mGLHandle = 0;
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
 		GpuProgram::destroy_internal();
 	}
 

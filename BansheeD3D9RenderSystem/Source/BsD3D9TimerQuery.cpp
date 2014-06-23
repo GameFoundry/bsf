@@ -1,5 +1,6 @@
 #include "BsD3D9TimerQuery.h"
 #include "BsD3D9RenderSystem.h"
+#include "BsRenderStats.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
@@ -9,11 +10,15 @@ namespace BansheeEngine
 		mEndQuery(nullptr), mDisjointQuery(nullptr), mTimeDelta(0.0f), mDevice(nullptr)
 	{
 		createQuery();
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	D3D9TimerQuery::~D3D9TimerQuery()
 	{
 		releaseQuery();
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void D3D9TimerQuery::createQuery()
@@ -89,6 +94,9 @@ namespace BansheeEngine
 	{
 		if (!isQueryValid()) // Possibly device reset, in which case query is considered done if issued
 			return mQueryIssued;
+
+		if (!mQueryIssued)
+			return false;
 
 		BOOL queryData;
 		return mDisjointQuery->GetData(&queryData, sizeof(BOOL), 0) == S_OK;

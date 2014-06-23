@@ -1,5 +1,6 @@
 #include "BsD3D9OcclusionQuery.h"
 #include "BsD3D9RenderSystem.h"
+#include "BsRenderStats.h"
 #include "BsMath.h"
 
 namespace BansheeEngine
@@ -25,11 +26,14 @@ namespace BansheeEngine
 		{
 			BS_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
 		}
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	void D3D9OcclusionQuery::releaseQuery()
 	{
 		SAFE_RELEASE(mQuery);
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void D3D9OcclusionQuery::begin()
@@ -55,6 +59,9 @@ namespace BansheeEngine
 	{
 		if (mQuery == nullptr)
 			return mQueryIssued; // If we lost the query, return as ready if it was ever issued
+
+		if (!mQueryIssued)
+			return false;
 
 		BOOL queryData;
 		return mQuery->GetData(&queryData, sizeof(BOOL), 0) == S_OK;

@@ -8,6 +8,7 @@
 #include "BsHardwareBufferManager.h"
 #include "BsD3D11HLSLParamParser.h"
 #include "BsD3D11GpuProgramRTTI.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -55,14 +56,17 @@ namespace BansheeEngine
 
 		mProgramId = GlobalProgramId++;
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
+
 		GpuProgram::initialize_internal();
 	}
 
 	void D3D11GpuProgram::destroy_internal()
 	{
 		mMicrocode.clear();
-
 		mInputDeclaration = nullptr;
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
 
 		GpuProgram::destroy_internal();
 	}

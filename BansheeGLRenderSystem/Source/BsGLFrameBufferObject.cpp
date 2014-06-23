@@ -2,6 +2,7 @@
 #include "BsGLPixelFormat.h"
 #include "BsGLPixelBuffer.h"
 #include "BsGLRenderTexture.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -11,11 +12,14 @@ namespace BansheeEngine
 
         for(UINT32 x = 0; x < BS_MAX_MULTIPLE_RENDER_TARGETS; ++x)
             mColor[x].buffer = nullptr;
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_FrameBufferObject);
     }
 
     GLFrameBufferObject::~GLFrameBufferObject()
     {
-        glDeleteFramebuffersEXT(1, &mFB);        
+        glDeleteFramebuffersEXT(1, &mFB);    
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_FrameBufferObject);
     }
 
     void GLFrameBufferObject::bindSurface(UINT32 attachment, const GLSurfaceDesc &target)

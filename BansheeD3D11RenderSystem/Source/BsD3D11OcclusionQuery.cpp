@@ -1,12 +1,13 @@
 #include "BsD3D11OcclusionQuery.h"
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
+#include "BsRenderStats.h"
 #include "BsMath.h"
 
 namespace BansheeEngine
 {
 	D3D11OcclusionQuery::D3D11OcclusionQuery(bool binary)
-		:OcclusionQuery(binary), mContext(nullptr), mQuery(nullptr), mNumSamples(0), mFinalized(false)
+		:OcclusionQuery(binary), mContext(nullptr), mQuery(nullptr), mNumSamples(0), mFinalized(false), mQueryEndCalled(false)
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -20,12 +21,16 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to create an occlusion query.");
 
 		mContext = device.getImmediateContext();
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	D3D11OcclusionQuery::~D3D11OcclusionQuery()
 	{
 		if (mQuery != nullptr)
 			mQuery->Release();
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void D3D11OcclusionQuery::begin()
@@ -33,16 +38,24 @@ namespace BansheeEngine
 		mContext->Begin(mQuery);
 
 		mNumSamples = 0;
+		mQueryEndCalled = false;
+		
 		setActive(true);
 	}
 
 	void D3D11OcclusionQuery::end()
 	{
 		mContext->End(mQuery);
+
+		mQueryEndCalled = true;
+		mFinalized = false;
 	}
 
 	bool D3D11OcclusionQuery::isReady() const
 	{
+		if (!mQueryEndCalled)
+			return false;
+
 		if (mBinary)
 		{
 			BOOL anySamples = FALSE;

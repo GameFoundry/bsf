@@ -4,6 +4,7 @@
 #include "BsException.h"
 #include "BsBitwise.h"
 #include "BsRenderSystem.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -215,6 +216,18 @@ namespace BansheeEngine
 	PixelData D3D9PixelBuffer::lockImpl(PixelVolume lockBox, GpuLockOptions options)
 	{	
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
+
+#if BS_PROFILING_ENABLED
+		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
+		}
+
+		if (options == GBL_READ_WRITE || options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_DISCARD || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
+		}
+#endif
 
 		DWORD flags = 0;
 		switch(options)

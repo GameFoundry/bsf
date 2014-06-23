@@ -1,13 +1,14 @@
 #include "BsD3D11TimerQuery.h"
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
+#include "BsRenderStats.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
 {
 	D3D11TimerQuery::D3D11TimerQuery()
 		:mFinalized(false), mContext(nullptr), mBeginQuery(nullptr), 
-		mEndQuery(nullptr), mDisjointQuery(nullptr), mTimeDelta(0.0f)
+		mEndQuery(nullptr), mDisjointQuery(nullptr), mTimeDelta(0.0f), mQueryEndCalled(false)
 	{
 		D3D11RenderSystem* rs = static_cast<D3D11RenderSystem*>(RenderSystem::instancePtr());
 		D3D11Device& device = rs->getPrimaryDevice();
@@ -37,6 +38,7 @@ namespace BansheeEngine
 		}
 
 		mContext = device.getImmediateContext();
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	D3D11TimerQuery::~D3D11TimerQuery()
@@ -49,6 +51,8 @@ namespace BansheeEngine
 
 		if(mDisjointQuery != nullptr)
 			mDisjointQuery->Release();
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void D3D11TimerQuery::begin()
@@ -56,6 +60,8 @@ namespace BansheeEngine
 		mContext->Begin(mDisjointQuery);
 		mContext->End(mBeginQuery);
 
+		mQueryEndCalled = false;
+		
 		setActive(true);
 	}
 
@@ -63,10 +69,16 @@ namespace BansheeEngine
 	{
 		mContext->End(mEndQuery);
 		mContext->End(mDisjointQuery);
+
+		mQueryEndCalled = true;
+		mFinalized = false;
 	}
 
 	bool D3D11TimerQuery::isReady() const
 	{
+		if (!mQueryEndCalled)
+			return false;
+
 		D3D11_QUERY_DATA_TIMESTAMP_DISJOINT disjointData;
 		return mContext->GetData(mDisjointQuery, &disjointData, sizeof(disjointData), 0) == S_OK;
 	}

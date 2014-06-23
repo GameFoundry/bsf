@@ -2,6 +2,7 @@
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
 #include "BsD3D11Mappings.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -96,12 +97,16 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Cannot create sampler state.\nError Description:" + errorDescription);
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_SamplerState);
+
 		SamplerState::initialize_internal();
 	}
 
 	void D3D11SamplerState::destroy_internal()
 	{
 		SAFE_RELEASE(mSamplerState);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SamplerState);
 
 		SamplerState::destroy_internal();
 	}

@@ -3,6 +3,7 @@
 #include "BsD3D11Device.h"
 #include "BsD3D11Texture.h"
 #include "BsUtil.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -26,6 +27,7 @@ namespace BansheeEngine
 		else
 			mSRV = createSRV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_ResourceView);
 		TextureView::initialize_internal();
 	}
 
@@ -36,6 +38,7 @@ namespace BansheeEngine
 		SAFE_RELEASE(mDSV);
 		SAFE_RELEASE(mRTV);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_ResourceView);
 		TextureView::destroy_internal();
 	}
 

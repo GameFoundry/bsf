@@ -49,11 +49,22 @@ namespace BansheeEngine
 	typedef std::shared_ptr<D3D9RenderWindow> D3D9RenderWindowPtr;
 	typedef std::shared_ptr<D3D9Texture> D3D9TexturePtr;
 
+	/**
+	 * @brief	Type IDs used for RTTI.
+	 */
 	enum TypeID_D3D9
 	{
 		TID_D3D9_GpuProgram = 10000,
 		TID_D3D9_GpuVertexProgram = 10001,
 		TID_D3D9_GpuFragmentProgram = 10002
+	};
+
+	/**
+	 * @brief	DirectX 9 specific types to track resource statistics for.
+	 */
+	enum D3D9RenderStatResourceType
+	{
+		RenderStatObject_VertexDeclaration = 100
 	};
 
 #if (BS_PLATFORM == BS_PLATFORM_WIN32) && !defined(BS_STATIC_LIB)

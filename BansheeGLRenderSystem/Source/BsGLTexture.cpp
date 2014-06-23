@@ -2,12 +2,12 @@
 #include "BsGLSupport.h"
 #include "BsGLPixelFormat.h"
 #include "BsGLPixelBuffer.h"
-
 #include "BsException.h"
 #include "BsBitwise.h"
 #include "BsCoreThread.h"
 #include "BsTextureManager.h"
 #include "BsGLRenderTexture.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -150,6 +150,7 @@ namespace BansheeEngine
 		}
 #endif
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
 		Texture::initialize_internal();
 	}
 
@@ -160,6 +161,7 @@ namespace BansheeEngine
 
 		clearBufferViews();
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
 		Texture::destroy_internal();
 	}
 

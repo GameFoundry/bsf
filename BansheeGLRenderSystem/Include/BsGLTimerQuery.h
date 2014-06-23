@@ -47,6 +47,7 @@ namespace BansheeEngine
 		GLuint mQueryStartObj;
 		GLuint mQueryEndObj;
 		bool mFinalized;
+		bool mEndIssued;
 
 		float mTimeDelta;
 	};

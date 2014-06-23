@@ -9,6 +9,7 @@
 #include "BsD3D11DriverList.h"
 #include "BsD3D11Driver.h"
 #include "BsD3D11VideoModeInfo.h"
+#include "BsRenderStats.h"
 #include "BsInput.h"
 #include "BsException.h"
 
@@ -255,6 +256,7 @@ namespace BansheeEngine
 		mClosed = true;
 
 		SAFE_RELEASE(mSwapChain);
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_SwapChain);
 
 		if (mHWnd && !mIsExternal)
 		{
@@ -647,6 +649,8 @@ namespace BansheeEngine
 
 		if (FAILED(hr))
 			BS_EXCEPT(RenderingAPIException, "Unable to create swap chain");
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_SwapChain);
 	}
 
 	void D3D11RenderWindow::createSizeDependedD3DResources()
@@ -720,14 +724,14 @@ namespace BansheeEngine
 	{
 		if (mDevice.getD3D11Device() == nullptr)
 		{
-			BS_EXCEPT(RenderingAPIException, "D3D11Device is NULL!");
+			BS_EXCEPT(RenderingAPIException, "D3D11Device is null.");
 		}
 
 		IDXGIDevice* pDXGIDevice = nullptr;
 		HRESULT hr = mDevice.getD3D11Device()->QueryInterface(__uuidof(IDXGIDevice), (void**)&pDXGIDevice);
 
 		if(FAILED(hr))
-			BS_EXCEPT(RenderingAPIException, "Unable to query a DXGIDevice");
+			BS_EXCEPT(RenderingAPIException, "Unable to query a DXGIDevice.");
 
 		return pDXGIDevice;
 	}

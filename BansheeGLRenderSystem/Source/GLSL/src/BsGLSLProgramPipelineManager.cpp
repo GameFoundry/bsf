@@ -1,5 +1,6 @@
 #include "BsGLSLProgramPipelineManager.h"
 #include "BsGLSLGpuProgram.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -28,6 +29,15 @@ namespace BansheeEngine
 	{
 		return a.vertexProgKey == b.vertexProgKey && a.fragmentProgKey == b.fragmentProgKey && a.geometryProgKey == b.geometryProgKey &&
 			a.hullProgKey == b.hullProgKey && a.domainProgKey == b.domainProgKey;
+	}
+
+	GLSLProgramPipelineManager::~GLSLProgramPipelineManager()
+	{
+		for (auto& pipeline : mPipelines)
+		{
+			glDeleteProgramPipelines(1, &pipeline.second.glHandle);
+			BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_PipelineObject);
+		}
 	}
 
 	const GLSLProgramPipeline* GLSLProgramPipelineManager::getPipeline(GLSLGpuProgram* vertexProgram, GLSLGpuProgram* fragmentProgram, 
@@ -75,6 +85,7 @@ namespace BansheeEngine
 
 			mPipelines[key] = newPipeline;
 
+			BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_PipelineObject);
 			return &mPipelines[key];
 		}
 		else

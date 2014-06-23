@@ -28,6 +28,7 @@
 #include "BsCoreThread.h"
 #include "BsD3D9QueryManager.h"
 #include "BsDebug.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -234,7 +235,7 @@ namespace BansheeEngine
 		for (unsigned int nStage=0; nStage < 8; ++nStage)
 			setTextureStageState(nStage, D3DTSS_TEXCOORDINDEX, nStage);
 
-		mRenderStats.numGpuProgramBinds++;
+		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 
 		RenderSystem::bindGpuProgram(prg);
 	}
@@ -262,7 +263,7 @@ namespace BansheeEngine
 			break;
 		};
 
-		mRenderStats.numGpuProgramBinds++;
+		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 
 		RenderSystem::unbindGpuProgram(gptype);
 	}
@@ -427,7 +428,7 @@ namespace BansheeEngine
 			bs_free<ScratchAlloc>(curBufferData.second);
 		}
 
-		mRenderStats.numGpuParamBufferBinds++;
+		BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 	}
 
 	void D3D9RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr& tex)
@@ -476,8 +477,8 @@ namespace BansheeEngine
 					setSamplerState(static_cast<DWORD>(unit), D3DSAMP_SRGBTEXTURE, FALSE);
 				}
 
-				mRenderStats.numTextureBinds++;
-				mRenderStats.numSamplerBinds++;
+				BS_INC_RENDER_STAT(NumTextureBinds);
+				BS_INC_RENDER_STAT(NumSamplerBinds);
 			}
 		}
 		else
@@ -491,7 +492,7 @@ namespace BansheeEngine
 					BS_EXCEPT(RenderingAPIException, str);
 				}
 
-				mRenderStats.numTextureBinds++;
+				BS_INC_RENDER_STAT(NumTextureBinds);
 			}
 
 			hr = setTextureStageState(static_cast<DWORD>(unit), D3DTSS_COLOROP, D3DTOP_DISABLE);
@@ -542,7 +543,7 @@ namespace BansheeEngine
 		// Set border color
 		setTextureBorderColor(unit, state->getBorderColor());
 
-		mRenderStats.numSamplerBinds++;
+		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
 	void D3D9RenderSystem::setBlendState(const BlendStatePtr& blendState)
@@ -568,7 +569,7 @@ namespace BansheeEngine
 		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 
-		mRenderStats.numBlendStateChanges++;
+		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
 	void D3D9RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
@@ -587,7 +588,7 @@ namespace BansheeEngine
 
 		setAntialiasedLineEnable(rasterizerState->getAntialiasedLineEnable());
 
-		mRenderStats.numRasterizerStateChanges++;
+		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
 	void D3D9RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
@@ -614,7 +615,7 @@ namespace BansheeEngine
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);
 
-		mRenderStats.numDepthStencilStateChanges++;
+		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
 	void D3D9RenderSystem::setTextureMipmapBias(UINT16 unit, float bias)
@@ -1067,7 +1068,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to setDepthStencil : " + msg);
 		}
 
-		mRenderStats.numRenderTargetChanges++;
+		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
 	void D3D9RenderSystem::setViewport(Viewport vp)
@@ -1181,7 +1182,7 @@ namespace BansheeEngine
 			if (FAILED(hr))
 				BS_EXCEPT(RenderingAPIException, "Unable to set D3D9 stream source for buffer binding");
 
-			mRenderStats.numVertexBufferBinds++;
+			BS_INC_RENDER_STAT(NumVertexBufferBinds);
 		}
 	}
 
@@ -1195,7 +1196,7 @@ namespace BansheeEngine
 		if (FAILED(hr))
 			BS_EXCEPT(RenderingAPIException, "Failed to set index buffer");
 
-		mRenderStats.numIndexBufferBinds++;
+		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
 	void D3D9RenderSystem::setDrawOperation(DrawOperationType op)
@@ -1217,9 +1218,9 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to DrawPrimitive : " + msg);
 		}
 
-		mRenderStats.numDrawCalls++;
-		mRenderStats.numVertices += vertexCount;
-		mRenderStats.numPrimitives += primCount;
+		BS_INC_RENDER_STAT(NumDrawCalls);
+		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
+		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
 	void D3D9RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
@@ -1242,9 +1243,9 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Failed to DrawIndexedPrimitive : " + msg);
 		}
 
-		mRenderStats.numDrawCalls++;
-		mRenderStats.numVertices += vertexCount;
-		mRenderStats.numPrimitives += primCount;
+		BS_INC_RENDER_STAT(NumDrawCalls);
+		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
+		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
 	void D3D9RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -1390,7 +1391,7 @@ namespace BansheeEngine
 			}
 		}
 
-		mRenderStats.numClears++;
+		BS_INC_RENDER_STAT(NumClears);
 	}
 
 	IDirect3D9*	D3D9RenderSystem::getDirect3D9()

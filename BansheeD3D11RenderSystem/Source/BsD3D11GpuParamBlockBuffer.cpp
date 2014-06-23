@@ -2,6 +2,7 @@
 #include "BsD3D11HardwareBuffer.h"
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -23,6 +24,8 @@ namespace BansheeEngine
 		else
 			BS_EXCEPT(InternalErrorException, "Invalid gpu param block usage.");
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuParamBuffer);
+
 		GpuParamBlockBuffer::initialize_internal();
 	}
 
@@ -30,6 +33,8 @@ namespace BansheeEngine
 	{
 		if(mBuffer != nullptr)
 			bs_delete<PoolAlloc>(mBuffer);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuParamBuffer);
 
 		GpuParamBlockBuffer::destroy_internal();
 	}
@@ -42,10 +47,14 @@ namespace BansheeEngine
 	void D3D11GpuParamBlockBuffer::writeData(const UINT8* data)
 	{
 		mBuffer->writeData(0, mSize, data, BufferWriteType::Discard);
+
+		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuParamBuffer);
 	}
 
 	void D3D11GpuParamBlockBuffer::readData(UINT8* data) const
 	{
 		mBuffer->readData(0, mSize, data);
+
+		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_GpuParamBuffer);
 	}
 }

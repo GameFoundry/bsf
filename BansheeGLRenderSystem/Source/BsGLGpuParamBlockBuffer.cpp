@@ -1,4 +1,5 @@
 #include "BsGLGpuParamBlockBuffer.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -21,6 +22,7 @@ namespace BansheeEngine
 
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuParamBuffer);
 		GpuParamBlockBuffer::initialize_internal();
 	}
 
@@ -28,6 +30,7 @@ namespace BansheeEngine
 	{
 		glDeleteBuffers(1, &mGLHandle);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuParamBuffer);
 		GpuParamBlockBuffer::destroy_internal();
 	}
 
@@ -36,6 +39,8 @@ namespace BansheeEngine
 		glBindBuffer(GL_UNIFORM_BUFFER, mGLHandle);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0 , mSize, data);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuParamBuffer);
 	}
 
 	void GLGpuParamBlockBuffer::readData(UINT8* data) const
@@ -43,5 +48,7 @@ namespace BansheeEngine
 		glBindBuffer(GL_UNIFORM_BUFFER, mGLHandle);
 		glGetBufferSubData(GL_UNIFORM_BUFFER, 0 , mSize, (GLvoid*)data);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_GpuParamBuffer);
 	}
 }

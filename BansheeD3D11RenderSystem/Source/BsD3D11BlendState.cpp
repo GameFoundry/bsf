@@ -2,6 +2,7 @@
 #include "BsD3D11Mappings.h"
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -43,12 +44,16 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Cannot create blend state.\nError Description:" + errorDescription);
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_BlendState);
+
 		BlendState::initialize_internal();
 	}
 
 	void D3D11BlendState::destroy_internal()
 	{
 		SAFE_RELEASE(mBlendState);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_BlendState);
 
 		BlendState::destroy_internal();
 	}

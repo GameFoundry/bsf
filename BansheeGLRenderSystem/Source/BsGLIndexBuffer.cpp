@@ -1,5 +1,6 @@
 #include "BsGLIndexBuffer.h"
 #include "BsGLHardwareBufferManager.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine 
@@ -26,6 +27,7 @@ namespace BansheeEngine
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mSizeInBytes, NULL, 
 			GLHardwareBufferManager::getGLUsage(mUsage));
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
 		IndexBuffer::initialize_internal();
 	}
 
@@ -33,6 +35,7 @@ namespace BansheeEngine
 	{
 		glDeleteBuffers(1, &mBufferId);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
 		IndexBuffer::destroy_internal();
 	}
 
@@ -44,6 +47,18 @@ namespace BansheeEngine
             BS_EXCEPT(InternalErrorException, 
                 "Invalid attempt to lock an index buffer that has already been locked");
         }
+
+#if BS_PROFILING_ENABLED
+		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_IndexBuffer);
+		}
+
+		if (options == GBL_READ_WRITE || options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_DISCARD || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_IndexBuffer);
+		}
+#endif
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mBufferId);
 

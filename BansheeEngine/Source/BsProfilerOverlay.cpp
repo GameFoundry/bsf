@@ -282,8 +282,8 @@ namespace BansheeEngine
 
 	const UINT32 ProfilerOverlay::MAX_DEPTH = 4;
 
-	ProfilerOverlay::ProfilerOverlay(const ViewportPtr& target)
-		:mIsShown(false), mType(ProfilerOverlayType::CPUSamples)
+	ProfilerOverlay::ProfilerOverlay(const HSceneObject& parent, const ViewportPtr& target)
+		:Component(parent), mIsShown(false), mType(ProfilerOverlayType::CPUSamples)
 	{
 		setTarget(target);
 	}
@@ -394,7 +394,7 @@ namespace BansheeEngine
 		mGPUClearsStr = HString(L"__ProfOvClears", L"Clears: {0}");
 		mGPUVerticesStr = HString(L"__ProfOvVertices", L"Num. vertices: {0}");
 		mGPUPrimitivesStr = HString(L"__ProfOvPrimitives", L"Num. primitives: {0}");
-		mGPUSamplesStr = HString(L"__ProfOvSamples", L"Samples: {0}");
+		mGPUSamplesStr = HString(L"__ProfOvSamples", L"Samples drawn: {0}");
 		mGPUBlendStateChangesStr = HString(L"__ProfOvBSChanges", L"Blend state changes: {0}");
 		mGPURasterStateChangesStr = HString(L"__ProfOvRSChanges", L"Rasterizer state changes: {0}");
 		mGPUDepthStencilStateChangesStr = HString(L"__ProfOvDSSChanges", L"Depth/stencil state changes: {0}");
@@ -438,24 +438,37 @@ namespace BansheeEngine
 
 		updateCPUSampleAreaSizes();
 		updateGPUSampleAreaSizes();
+
+		if (!mIsShown)
+			hide();
+		else
+		{
+			if (mType == ProfilerOverlayType::CPUSamples)
+				show(ProfilerOverlayType::CPUSamples);
+			else
+				show(ProfilerOverlayType::GPUSamples);
+		}
 	}
 
 	void ProfilerOverlay::show(ProfilerOverlayType type)
 	{
-		if(mIsShown && mType == type)
-			return;
-
 		if (type == ProfilerOverlayType::CPUSamples)
 		{
 			mCPUBasicAreaLabels->enable();
 			mCPUPreciseAreaLabels->enable();
 			mCPUBasicAreaContents->enable();
 			mCPUPreciseAreaContents->enable();
+			mGPUAreaFrameContents->disable();
+			mGPUAreaFrameSamples->disable();
 		}
 		else
 		{
 			mGPUAreaFrameContents->enable();
 			mGPUAreaFrameSamples->enable();
+			mCPUBasicAreaLabels->disable();
+			mCPUPreciseAreaLabels->disable();
+			mCPUBasicAreaContents->disable();
+			mCPUPreciseAreaContents->disable();
 		}
 
 		mType = type;
@@ -464,9 +477,6 @@ namespace BansheeEngine
 
 	void ProfilerOverlay::hide()
 	{
-		if(!mIsShown)
-			return;
-
 		mCPUBasicAreaLabels->disable();
 		mCPUPreciseAreaLabels->disable();
 		mCPUBasicAreaContents->disable();

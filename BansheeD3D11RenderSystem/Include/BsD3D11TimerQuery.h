@@ -36,6 +36,7 @@ namespace BansheeEngine
 
 	private:
 		bool mFinalized;
+		bool mQueryEndCalled;
 		float mTimeDelta;
 
 		ID3D11Query* mBeginQuery;

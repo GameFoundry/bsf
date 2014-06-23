@@ -75,6 +75,7 @@ namespace BansheeEngine
 	class GUIDropDownHitBox;
 	class RenderableProxy;
 	class RenderableHandler;
+	class ProfilerOverlay;
 
 	// 2D
 	class TextSprite;
@@ -98,6 +99,7 @@ namespace BansheeEngine
 	typedef GameObjectHandle<GUIWidget> HGUIWidget;
 	typedef GameObjectHandle<Camera> HCamera;
 	typedef GameObjectHandle<Renderable> HRenderable;
+	typedef GameObjectHandle<ProfilerOverlay> HProfilerOverlay;
 
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
 

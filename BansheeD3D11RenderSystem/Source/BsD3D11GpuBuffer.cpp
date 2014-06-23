@@ -3,6 +3,8 @@
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11HardwareBuffer.h"
 #include "BsD3D11Device.h"
+#include "BsD3D11Mappings.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -40,6 +42,8 @@ namespace BansheeEngine
 		mBuffer = bs_new<D3D11HardwareBuffer, PoolAlloc>(bufferType, mUsage, mElementCount, mElementSize, 
 			d3d11rs->getPrimaryDevice(), false, false, mRandomGpuWrite, mUseCounter);
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuBuffer);
+
 		GpuBuffer::initialize_internal();
 	}
 
@@ -47,11 +51,25 @@ namespace BansheeEngine
 	{
 		bs_delete<PoolAlloc>(mBuffer);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuBuffer);
+
 		GpuBuffer::destroy_internal();
 	}
 
 	void* D3D11GpuBuffer::lock(UINT32 offset, UINT32 length, GpuLockOptions options)
 	{
+#if BS_PROFILING_ENABLED
+		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_GpuBuffer);
+		}
+
+		if (options == GBL_READ_WRITE || options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_DISCARD || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuBuffer);
+		}
+#endif
+
 		return mBuffer->lock(offset, length, options);
 	}
 
@@ -62,11 +80,15 @@ namespace BansheeEngine
 
 	void D3D11GpuBuffer::readData(UINT32 offset, UINT32 length, void* pDest)
 	{
+		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_GpuBuffer);
+
 		mBuffer->readData(offset, length, pDest);
 	}
 
 	void D3D11GpuBuffer::writeData(UINT32 offset, UINT32 length, const void* pSource, BufferWriteType writeFlags)
 	{
+		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_GpuBuffer);
+
 		mBuffer->writeData(offset, length, pSource, writeFlags);
 	}
 

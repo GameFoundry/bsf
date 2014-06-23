@@ -3,6 +3,7 @@
 #include "BsException.h"
 #include "BsD3D9RenderSystem.h"
 #include "BsD3D9ResourceManager.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -17,6 +18,7 @@ namespace BansheeEngine
 	{
 		releaseDeclaration();
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexDeclaration);
 		VertexDeclaration::destroy_internal();
 	}
 
@@ -88,6 +90,8 @@ namespace BansheeEngine
 			bs_deleteN<PoolAlloc>(d3delems, (UINT32)(mElementList.size() + 1));
 
 			mMapDeviceToDeclaration[pCurDevice] = lpVertDecl;
+
+			BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexDeclaration);
 		}
 
 		// Declaration already exits.

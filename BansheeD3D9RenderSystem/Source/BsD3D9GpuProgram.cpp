@@ -9,6 +9,7 @@
 #include "BsGpuProgramManager.h"
 #include "BsD3D9HLSLParamParser.h"
 #include "BsD3D9GpuProgramRTTI.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -195,6 +196,7 @@ namespace BansheeEngine
 			SAFE_RELEASE(constTable);
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_GpuProgram);
 		GpuProgram::initialize_internal();
 	}
 
@@ -202,6 +204,7 @@ namespace BansheeEngine
 	{
 		SAFE_RELEASE(mMicrocode);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_GpuProgram);
 		GpuProgram::destroy_internal();
 	}
 

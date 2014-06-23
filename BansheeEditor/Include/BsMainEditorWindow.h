@@ -22,6 +22,7 @@ namespace BansheeEngine
 	protected:
 		GUIMenuBar* mMenuBar;
 		DockManager* mDockManager;
+		HProfilerOverlay mProfilerOverlay;
 
 		virtual void resized();
 

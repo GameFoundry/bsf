@@ -3,6 +3,7 @@
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
 #include "BsUtil.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -17,6 +18,8 @@ namespace BansheeEngine
 	{
 		SAFE_RELEASE(mSRV);
 		SAFE_RELEASE(mUAV);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_ResourceView);
 	}
 
 	void D3D11GpuBufferView::initialize(GpuBufferPtr buffer, GPU_BUFFER_DESC& desc)
@@ -33,6 +36,8 @@ namespace BansheeEngine
 		}
 		else
 			mSRV = createSRV(d3d11GpuBuffer, desc.firstElement, desc.elementWidth, desc.numElements);
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_ResourceView);
 	}
 
 	ID3D11ShaderResourceView* D3D11GpuBufferView::createSRV(D3D11GpuBuffer* buffer, UINT32 firstElement, UINT32 elementWidth, UINT32 numElements)

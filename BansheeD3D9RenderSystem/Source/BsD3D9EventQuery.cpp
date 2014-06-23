@@ -2,6 +2,7 @@
 #include "BsD3D9RenderSystem.h"
 #include "BsD3D9ResourceManager.h"
 #include "BsD3D9Device.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -26,11 +27,15 @@ namespace BansheeEngine
 		{
 			BS_EXCEPT(RenderingAPIException, "Failed to create an Event query.");
 		}
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	void D3D9EventQuery::releaseQuery()
 	{
 		SAFE_RELEASE(mQuery);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void D3D9EventQuery::begin()

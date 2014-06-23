@@ -5,6 +5,7 @@
 #include "BsD3D9RenderSystem.h"
 #include "BsD3D9Device.h"
 #include "BsD3D9ResourceManager.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -37,6 +38,7 @@ namespace BansheeEngine
 			}
 		}	
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_IndexBuffer);
 		IndexBuffer::initialize_internal();
 	}
 
@@ -59,12 +61,25 @@ namespace BansheeEngine
 		if(mSystemMemoryBuffer != nullptr)
 			bs_free(mSystemMemoryBuffer);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_IndexBuffer);
 		IndexBuffer::destroy_internal();
 	}
 
     void* D3D9IndexBuffer::lockImpl(UINT32 offset, UINT32 length, GpuLockOptions options)
     {		
 		D3D9_DEVICE_ACCESS_CRITICAL_SECTION
+
+#if BS_PROFILING_ENABLED
+		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_IndexBuffer);
+		}
+
+		if (options == GBL_READ_WRITE || options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_DISCARD || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_IndexBuffer);
+		}
+#endif
 
 		if (options != GBL_READ_ONLY)
 		{

@@ -23,7 +23,7 @@ namespace BansheeEngine
 
 		UINT32 numModes = 0;
 
-		HRESULT hr = output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &numModes, 0);
+		HRESULT hr = output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, 0, &numModes, nullptr);
 		if (FAILED(hr))
 		{
 			SAFE_RELEASE(output);

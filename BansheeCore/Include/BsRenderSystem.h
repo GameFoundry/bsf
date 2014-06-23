@@ -6,7 +6,6 @@
 #include "BsString.h"
 
 #include "BsSamplerState.h"
-#include "BsRenderStats.h"
 #include "BsCommandQueue.h"
 #include "BsDrawOps.h"
 #include "BsRenderSystemCapabilities.h"
@@ -323,14 +322,6 @@ namespace BansheeEngine
 		 */
 		virtual float getMaximumDepthInputValue() = 0;
 
-		/**
-		 * @brief	Returns an object containing various rendering statistics.
-		 *			
-		 * @note	Do not modify the returned state unless you know what you are doing, it will
-		 *			change the actual internal object.
-		 */
-		RenderStats& getRenderStats() { return mRenderStats; }
-
 		/************************************************************************/
 		/* 							INTERNAL METHODS				        	*/
 		/************************************************************************/
@@ -376,7 +367,6 @@ namespace BansheeEngine
 
 		RenderTargetPtr mActiveRenderTarget;
 
-		RenderStats mRenderStats;
 		DriverVersion mDriverVersion;
 		CullingMode mCullingMode;
 		UINT16 mDisabledTexUnitsFrom;

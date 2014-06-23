@@ -1,17 +1,21 @@
 #include "BsGLOcclusionQuery.h"
 #include "BsMath.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
 	GLOcclusionQuery::GLOcclusionQuery(bool binary)
-		:OcclusionQuery(binary), mQueryObj(0), mNumSamples(0), mFinalized(false)
+		:OcclusionQuery(binary), mQueryObj(0), 
+		mNumSamples(0), mFinalized(false), mEndIssued(false)
 	{
 		glGenQueries(1, &mQueryObj);
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	GLOcclusionQuery::~GLOcclusionQuery()
 	{
 		glDeleteQueries(1, &mQueryObj);
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void GLOcclusionQuery::begin()
@@ -19,16 +23,23 @@ namespace BansheeEngine
 		glBeginQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED, mQueryObj);
 
 		mNumSamples = 0;
+		mEndIssued = false;
 		setActive(true);
 	}
 
 	void GLOcclusionQuery::end()
 	{
 		glEndQuery(mBinary ? GL_ANY_SAMPLES_PASSED : GL_SAMPLES_PASSED);
+
+		mEndIssued = true;
+		mFinalized = false;
 	}
 
 	bool GLOcclusionQuery::isReady() const
 	{
+		if (!mEndIssued)
+			return false;
+
 		GLint done = 0;
 		glGetQueryObjectiv(mQueryObj, GL_QUERY_RESULT_AVAILABLE, &done);
 

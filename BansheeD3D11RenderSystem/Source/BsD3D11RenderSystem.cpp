@@ -24,6 +24,7 @@
 #include "BsD3D11QueryManager.h"
 #include "BsDebug.h"
 #include "BsException.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -217,7 +218,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
 
-		mRenderStats.numSamplerBinds++;
+		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
 	void D3D11RenderSystem::setBlendState(const BlendStatePtr& blendState)
@@ -227,7 +228,7 @@ namespace BansheeEngine
 		D3D11BlendState* d3d11BlendState = static_cast<D3D11BlendState*>(const_cast<BlendState*>(blendState.get()));
 		mDevice->getImmediateContext()->OMSetBlendState(d3d11BlendState->getInternal(), nullptr, 0xFFFFFFFF);
 
-		mRenderStats.numBlendStateChanges++;
+		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
 	void D3D11RenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
@@ -237,7 +238,7 @@ namespace BansheeEngine
 		D3D11RasterizerState* d3d11RasterizerState = static_cast<D3D11RasterizerState*>(const_cast<RasterizerState*>(rasterizerState.get()));
 		mDevice->getImmediateContext()->RSSetState(d3d11RasterizerState->getInternal());
 
-		mRenderStats.numRasterizerStateChanges++;
+		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
 	void D3D11RenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
@@ -247,7 +248,7 @@ namespace BansheeEngine
 		D3D11DepthStencilState* d3d11RasterizerState = static_cast<D3D11DepthStencilState*>(const_cast<DepthStencilState*>(depthStencilState.get()));
 		mDevice->getImmediateContext()->OMSetDepthStencilState(d3d11RasterizerState->getInternal(), stencilRefValue);
 
-		mRenderStats.numDepthStencilStateChanges++;
+		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
 	void D3D11RenderSystem::setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr)
@@ -291,7 +292,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
 
-		mRenderStats.numTextureBinds++;
+		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
 	void D3D11RenderSystem::disableTextureUnit(GpuProgramType gptype, UINT16 texUnit)
@@ -360,7 +361,7 @@ namespace BansheeEngine
 
 		mDevice->getImmediateContext()->IASetVertexBuffers(index, numBuffers, dx11buffers, strides, offsets);
 
-		mRenderStats.numVertexBufferBinds++;
+		BS_INC_RENDER_STAT(NumVertexBufferBinds);
 	}
 
 	void D3D11RenderSystem::setIndexBuffer(const IndexBufferPtr& buffer)
@@ -379,7 +380,7 @@ namespace BansheeEngine
 
 		mDevice->getImmediateContext()->IASetIndexBuffer(indexBuffer->getD3DIndexBuffer(), indexFormat, 0);
 
-		mRenderStats.numIndexBufferBinds++;
+		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
 	void D3D11RenderSystem::setVertexDeclaration(VertexDeclarationPtr vertexDeclaration)
@@ -449,7 +450,7 @@ namespace BansheeEngine
 		if (mDevice->hasError())
 			BS_EXCEPT(RenderingAPIException, "Failed to bindGpuProgram : " + mDevice->getErrorDescription());
 
-		mRenderStats.numGpuProgramBinds++;
+		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
 	void D3D11RenderSystem::unbindGpuProgram(GpuProgramType gptype)
@@ -481,7 +482,7 @@ namespace BansheeEngine
 			BS_EXCEPT(InvalidParametersException, "Unsupported gpu program type: " + toString(gptype));
 		}
 
-		mRenderStats.numGpuProgramBinds++;
+		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
 	void D3D11RenderSystem::bindGpuParams(GpuProgramType gptype, GpuParamsPtr bindableParams)
@@ -550,7 +551,7 @@ namespace BansheeEngine
 				break;
 			};
 
-			mRenderStats.numGpuParamBufferBinds++;
+			BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 		}
 
 		if (mDevice->hasError())
@@ -570,9 +571,11 @@ namespace BansheeEngine
 			LOGWRN(mDevice->getErrorDescription());
 #endif
 
-		mRenderStats.numDrawCalls++;
-		mRenderStats.numVertices += vertexCount;
-		mRenderStats.numPrimitives += vertexCountToPrimCount(mActiveDrawOp, vertexCount);
+		UINT32 primCount = vertexCountToPrimCount(mActiveDrawOp, vertexCount);
+
+		BS_INC_RENDER_STAT(NumDrawCalls);
+		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
+		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
 	void D3D11RenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
@@ -588,9 +591,11 @@ namespace BansheeEngine
 			LOGWRN(mDevice->getErrorDescription());
 #endif
 
-		mRenderStats.numDrawCalls++;
-		mRenderStats.numVertices += vertexCount;
-		mRenderStats.numPrimitives += vertexCountToPrimCount(mActiveDrawOp, indexCount);
+		UINT32 primCount = vertexCountToPrimCount(mActiveDrawOp, vertexCount);
+
+		BS_INC_RENDER_STAT(NumDrawCalls);
+		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
+		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
 	void D3D11RenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -620,7 +625,7 @@ namespace BansheeEngine
 		if (!clearEntireTarget)
 		{
 			D3D11RenderUtility::instance().drawClearQuad(buffers, color, depth, stencil);
-			mRenderStats.numClears++;
+			BS_INC_RENDER_STAT(NumClears);
 		}
 		else
 			clearRenderTarget(buffers, color, depth, stencil);
@@ -682,7 +687,7 @@ namespace BansheeEngine
 				mDevice->getImmediateContext()->ClearDepthStencilView(depthStencilView, clearFlag, depth, (UINT8)stencil);
 		}
 
-		mRenderStats.numClears++;
+		BS_INC_RENDER_STAT(NumClears);
 	}
 
 	void D3D11RenderSystem::setRenderTarget(RenderTargetPtr target)
@@ -713,7 +718,7 @@ namespace BansheeEngine
 
 		bs_deleteN<ScratchAlloc>(views, maxRenderTargets);
 
-		mRenderStats.numRenderTargetChanges++;
+		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
 	void D3D11RenderSystem::setClipPlanesImpl(const PlaneList& clipPlanes)

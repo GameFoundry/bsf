@@ -6,28 +6,58 @@
 #include "BsCoreThread.h"
 #include "BsException.h"
 #include "BsAsyncOp.h"
+#include "BsRenderStats.h"
 #include "BsDebug.h"
 
 namespace BansheeEngine
 {
 	D3D11Texture::D3D11Texture()
-		: Texture()
-		, m1DTex(nullptr)
-		, m2DTex(nullptr)
-		, m3DTex(nullptr)
-		, mTex(nullptr)
-		, mShaderResourceView(nullptr)
-		, mStagingBuffer(nullptr)
-		, mLockedSubresourceIdx(-1)
-		, mLockedForReading(false)
-		, mStaticBuffer(nullptr)
-	{
-
-	}
+		: Texture(), m1DTex(nullptr), m2DTex(nullptr), m3DTex(nullptr), 
+		mTex(nullptr), mShaderResourceView(nullptr), mStagingBuffer(nullptr), 
+		mLockedSubresourceIdx(-1), mLockedForReading(false), mStaticBuffer(nullptr)
+	{ }
 
 	D3D11Texture::~D3D11Texture()
+	{ }
+
+	void D3D11Texture::initialize_internal()
 	{
-			
+		THROW_IF_NOT_CORE_THREAD;
+
+		switch (getTextureType())
+		{
+		case TEX_TYPE_1D:
+			create1DTex();
+			break;
+		case TEX_TYPE_2D:
+		case TEX_TYPE_CUBE_MAP:
+			create2DTex();
+			break;
+		case TEX_TYPE_3D:
+			create3DTex();
+			break;
+		default:
+			destroy_internal();
+			BS_EXCEPT(RenderingAPIException, "Unknown texture type");
+		}
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
+		Texture::initialize_internal();
+	}
+
+	void D3D11Texture::destroy_internal()
+	{
+		SAFE_RELEASE(mTex);
+		SAFE_RELEASE(mShaderResourceView);
+		SAFE_RELEASE(m1DTex);
+		SAFE_RELEASE(m2DTex);
+		SAFE_RELEASE(m3DTex);
+		SAFE_RELEASE(mStagingBuffer);
+
+		clearBufferViews();
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
+		Texture::destroy_internal();
 	}
 
 	void D3D11Texture::copyImpl(TexturePtr& target)
@@ -47,6 +77,18 @@ namespace BansheeEngine
 
 	PixelData D3D11Texture::lockImpl(GpuLockOptions options, UINT32 mipLevel, UINT32 face)
 	{
+#if BS_PROFILING_ENABLED
+		if (options == GBL_READ_ONLY || options == GBL_READ_WRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
+		}
+
+		if (options == GBL_READ_WRITE || options == GBL_WRITE_ONLY || options == GBL_WRITE_ONLY_DISCARD || options == GBL_WRITE_ONLY_NO_OVERWRITE)
+		{
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
+		}
+#endif
+
 		UINT32 mipWidth = mWidth >> mipLevel;
 		UINT32 mipHeight = mHeight >> mipLevel;
 		UINT32 mipDepth = mDepth >> mipLevel;
@@ -143,50 +185,13 @@ namespace BansheeEngine
 				String errorDescription = device.getErrorDescription();
 				BS_EXCEPT(RenderingAPIException, "D3D11 device cannot map texture\nError Description:" + errorDescription);
 			}
+
+			BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
 		}
 		else
 		{
 			BS_EXCEPT(RenderingAPIException, "Trying to write into a buffer with unsupported usage: " + toString(mUsage));
 		}
-	}
-
-	void D3D11Texture::initialize_internal()
-	{
-		THROW_IF_NOT_CORE_THREAD;
-
-		// load based on tex.type
-		switch (getTextureType())
-		{
-			case TEX_TYPE_1D:
-				create1DTex();
-				break;
-			case TEX_TYPE_2D:
-			case TEX_TYPE_CUBE_MAP:
-				create2DTex();
-				break;
-			case TEX_TYPE_3D:
-				create3DTex();
-				break;
-			default:
-				destroy_internal();
-				BS_EXCEPT(RenderingAPIException, "Unknown texture type");
-		}
-
-		Texture::initialize_internal();
-	}
-
-	void D3D11Texture::destroy_internal()
-	{
-		SAFE_RELEASE(mTex);
-		SAFE_RELEASE(mShaderResourceView);
-		SAFE_RELEASE(m1DTex);
-		SAFE_RELEASE(m2DTex);
-		SAFE_RELEASE(m3DTex);
-		SAFE_RELEASE(mStagingBuffer);
-
-		clearBufferViews();
-
-		Texture::destroy_internal();
 	}
 
 	void D3D11Texture::create1DTex()
@@ -225,9 +230,9 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::getUsage(mUsage);
+			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)mUsage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags(mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)mUsage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
 			UINT32 numMips		= (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
@@ -340,9 +345,9 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::getUsage(mUsage);
+			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)mUsage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags(mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)mUsage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
 			UINT32 numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > mWidth) ? 0 : mNumMipmaps + 1;
@@ -486,9 +491,9 @@ namespace BansheeEngine
 		}
 		else
 		{
-			desc.Usage			= D3D11Mappings::getUsage(mUsage);
+			desc.Usage			= D3D11Mappings::getUsage((GpuBufferUsage)mUsage);
 			desc.BindFlags		= D3D11_BIND_SHADER_RESOURCE;
-			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags(mUsage);
+			desc.CPUAccessFlags = D3D11Mappings::getAccessFlags((GpuBufferUsage)mUsage);
 
 			// Determine total number of mipmaps including main one (d3d11 convention)
 			UINT numMips = (mNumMipmaps == MIP_UNLIMITED || (1U << mNumMipmaps) > std::max(std::max(mWidth, mHeight), mDepth)) ? 0 : mNumMipmaps + 1;

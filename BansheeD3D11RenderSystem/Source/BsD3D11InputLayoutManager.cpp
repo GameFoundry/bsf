@@ -4,6 +4,7 @@
 #include "BsD3D11Device.h"
 #include "BsD3D11GpuProgram.h"
 #include "BsHardwareBufferManager.h"
+#include "BsRenderStats.h"
 #include "BsDebug.h"
 #include "BsUtil.h"
 
@@ -48,6 +49,7 @@ namespace BansheeEngine
 			bs_delete<PoolAlloc>(firstElem->second);
 
 			mInputLayoutMap.erase(firstElem);
+			BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_InputLayout);
 		}
 	}
 
@@ -124,6 +126,8 @@ namespace BansheeEngine
 		pair.vertexProgramId = vertexProgram.getProgramId();
 
 		mInputLayoutMap[pair] = newEntry;
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_InputLayout);
 	}
 
 	void D3D11InputLayoutManager::removeLeastUsed()
@@ -150,6 +154,7 @@ namespace BansheeEngine
 			bs_delete<PoolAlloc>(inputLayoutIter->second);
 
 			mInputLayoutMap.erase(inputLayoutIter);
+			BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_InputLayout);
 
 			elemsRemoved++;
 			if(elemsRemoved >= NUM_ELEMENTS_TO_PRUNE)

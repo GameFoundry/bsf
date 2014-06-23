@@ -4,6 +4,7 @@
 #include "BsGLSLGpuProgram.h"
 #include "BsGLHardwareBufferManager.h"
 #include "BsUtil.h"
+#include "BsRenderStats.h"
 
 #define VBO_BUFFER_OFFSET(i) ((char *)NULL + (i))
 
@@ -178,6 +179,7 @@ namespace BansheeEngine
 
 		auto iter = mVAObjects.insert(wantedVAO);
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_VertexArrayObject);
 		return *iter.first;
 	}
 
@@ -192,5 +194,7 @@ namespace BansheeEngine
 
 		glDeleteVertexArrays(1, &vao.mHandle);
 		bs_free(vao.mAttachedBuffers);
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_VertexArrayObject);
 	}
 }

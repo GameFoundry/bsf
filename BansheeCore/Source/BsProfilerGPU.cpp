@@ -1,5 +1,5 @@
 #include "BsProfilerGPU.h"
-#include "BsRenderSystem.h"
+#include "BsRenderStats.h"
 #include "BsTimerQuery.h"
 #include "BsOcclusionQuery.h"
 #include "BsException.h"
@@ -70,11 +70,15 @@ namespace BansheeEngine
 
 	UINT32 ProfilerGPU::getNumAvailableReports()
 	{
+		BS_LOCK_MUTEX(mMutex);
+
 		return (UINT32)mReadyReports.size();
 	}
 
 	GPUProfilerReport ProfilerGPU::getNextReport()
 	{
+		BS_LOCK_MUTEX(mMutex);
+
 		if (mReadyReports.empty())
 			BS_EXCEPT(InvalidStateException, "No reports are available.")
 
@@ -97,7 +101,10 @@ namespace BansheeEngine
 				GPUProfilerReport report = resolveFrame(frame);
 				mUnresolvedFrames.pop();
 
-				mReadyReports.push(report);
+				{
+					BS_LOCK_MUTEX(mMutex);
+					mReadyReports.push(report);
+				}
 			}
 			else
 				break;
@@ -158,7 +165,7 @@ namespace BansheeEngine
 
 	void ProfilerGPU::beginSampleInternal(ActiveSample& sample)
 	{
-		sample.startStats = RenderSystem::instance().getRenderStats();
+		sample.startStats = RenderStats::instance().getData();
 		sample.activeTimeQuery = getTimerQuery();
 		sample.activeTimeQuery->begin();
 
@@ -168,7 +175,7 @@ namespace BansheeEngine
 
 	void ProfilerGPU::endSampleInternal(ActiveSample& sample)
 	{
-		sample.endStats = RenderSystem::instance().getRenderStats();
+		sample.endStats = RenderStats::instance().getData();
 		sample.activeOcclusionQuery->end();
 		sample.activeTimeQuery->end();
 	}

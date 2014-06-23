@@ -143,18 +143,30 @@ namespace BansheeEngine
 		 */
 		virtual void onShutDown() {}
 
+		/**
+		 * @brief	Returns a singleton instance of this module. Throws an exception
+		 *			if module is not yet initialized.
+		 */
 		static T*& _instance()
 		{
 			static T* inst = nullptr;
 			return inst;
 		}
 
+		/**
+		 * @brief	Checks has the Module been shut down.
+		 *			
+		 * @note	If module was never even started, this will return false.
+		 */
 		static bool& isDestroyed()
 		{
 			static bool inst = false;
 			return inst;
 		}
 
+		/**
+		 * @brief	Checks has the Module been started up.
+		 */
 		static bool& isShutDown()
 		{
 			static bool inst = true;

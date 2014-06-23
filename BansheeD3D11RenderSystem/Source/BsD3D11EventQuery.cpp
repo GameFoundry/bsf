@@ -1,6 +1,7 @@
 #include "BsD3D11EventQuery.h"
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
+#include "BsRenderStats.h"
 #include "BsException.h"
 
 namespace BansheeEngine
@@ -22,6 +23,8 @@ namespace BansheeEngine
 		}
 
 		mContext = device.getImmediateContext();
+
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	D3D11EventQuery::~D3D11EventQuery()
@@ -30,6 +33,8 @@ namespace BansheeEngine
 		{
 			mQuery->Release();
 		}
+
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void D3D11EventQuery::begin()

@@ -9,6 +9,7 @@
 #include "BsD3D9Device.h"
 #include "BsD3D9DeviceManager.h"
 #include "BsD3D9ResourceManager.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -34,6 +35,7 @@ namespace BansheeEngine
 			createInternalResources(d3d9Device);
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Texture);
 		Texture::initialize_internal();
 	}
 
@@ -61,6 +63,7 @@ namespace BansheeEngine
 
 		clearBufferViews();
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Texture);
 		Texture::destroy_internal();
 	}
 

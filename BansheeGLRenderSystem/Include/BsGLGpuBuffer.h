@@ -52,6 +52,11 @@ namespace BansheeEngine
 		void initialize_internal();	
 
 		/**
+		 * @copydoc GpuBuffer::destroy_internal
+		 */
+		void destroy_internal();	
+
+		/**
 		 * @copydoc GpuBuffer::createView
 		 */
 		virtual GpuBufferView* createView();

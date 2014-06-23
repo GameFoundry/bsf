@@ -5,6 +5,7 @@
 #include "BsException.h"
 #include "BsBitwise.h"
 #include "BsGLRenderTexture.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -267,6 +268,8 @@ namespace BansheeEngine
 		glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, 0);
 		glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+		BS_INC_RENDER_STAT_CAT(ResWrite, RenderStatObject_Texture);
 	}
 
 	void GLTextureBuffer::download(const PixelData &data)
@@ -315,6 +318,8 @@ namespace BansheeEngine
 			glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
 			glPixelStorei(GL_PACK_ALIGNMENT, 4);
 		}
+
+		BS_INC_RENDER_STAT_CAT(ResRead, RenderStatObject_Texture);
 	}
 
 	void GLTextureBuffer::bindToFramebuffer(GLenum attachment, UINT32 zoffset)

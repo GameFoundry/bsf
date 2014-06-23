@@ -46,6 +46,7 @@ namespace BansheeEngine
 	private:
 		GLuint mQueryObj;
 		bool mFinalized;
+		bool mEndIssued;
 
 		UINT32 mNumSamples;
 	};

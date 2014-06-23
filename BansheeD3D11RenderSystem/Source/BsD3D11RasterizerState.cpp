@@ -2,6 +2,7 @@
 #include "BsD3D11RenderSystem.h"
 #include "BsD3D11Device.h"
 #include "BsD3D11Mappings.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -39,6 +40,7 @@ namespace BansheeEngine
 			BS_EXCEPT(RenderingAPIException, "Cannot create rasterizer state.\nError Description:" + errorDescription);
 		}
 
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_RasterizerState);
 		RasterizerState::initialize_internal();
 	}
 
@@ -46,6 +48,7 @@ namespace BansheeEngine
 	{
 		SAFE_RELEASE(mRasterizerState);
 
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_RasterizerState);
 		RasterizerState::destroy_internal();
 	}
 }

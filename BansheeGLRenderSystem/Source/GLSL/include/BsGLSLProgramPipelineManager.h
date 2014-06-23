@@ -23,6 +23,8 @@ namespace BansheeEngine
 	class GLSLProgramPipelineManager
 	{
 	public:
+		~GLSLProgramPipelineManager();
+
 		/**
 		 * @brief	Creates or returns an existing pipeline that uses the provided combination of GPU programs. Provide
 		 *			null for unused programs.

@@ -11,6 +11,7 @@
 #include "BsCoreThread.h"
 #include "BsMesh.h"
 #include "BsProfilerCPU.h"
+#include "BsRenderStats.h"
 
 using namespace std::placeholders;
 
@@ -272,7 +273,7 @@ namespace BansheeEngine {
 		{
 			target->swapBuffers();
 
-			mRenderStats.numPresents++;
+			BS_INC_RENDER_STAT(NumPresents);
 		}
 	}
 

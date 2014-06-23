@@ -25,9 +25,22 @@ namespace BansheeEngine
 	typedef std::shared_ptr<GLGpuParamBlock> GLGpuParamBlockPtr;
 	typedef std::shared_ptr<GLSLGpuProgram> GLSLGpuProgramPtr;
 
+	/**
+	 * @brief	Type IDs used for RTTI.
+	 */
 	enum TypeID_D3D9
 	{
 		TID_GL_GLSLGpuProgram = 11000
+	};
+
+	/**
+	 * @brief	OpenGL specific types to track resource statistics for.
+	 */
+	enum GLRenderStatResourceType
+	{
+		RenderStatObject_PipelineObject = 100,
+		RenderStatObject_FrameBufferObject,
+		RenderStatObject_VertexArrayObject
 	};
 }
 

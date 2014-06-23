@@ -51,6 +51,9 @@ namespace BansheeEngine
 	class D3D11GpuBuffer;
 	class D3D11RenderUtility;
 
+	/**
+	 * @brief	Type IDs used for RTTI.
+	 */
 	enum TypeID_D3D11
 	{
 		TID_D3D11_GpuProgram = 12000,
@@ -60,6 +63,20 @@ namespace BansheeEngine
 		TID_D3D11_GpuHullProgram = 12004,
 		TID_D3D11_GpuDomainProgram = 12005,
 		TID_D3D11_GpuComputeProgram = 12006
+	};
+
+	/**
+	 * @brief	DirectX 11 specific types to track resource statistics for.
+	 */
+	enum D3D11RenderStatResourceType
+	{
+		RenderStatObject_DepthStencilState = 100,
+		RenderStatObject_RasterizerState,
+		RenderStatObject_BlendState,
+		RenderStatObject_SamplerState,
+		RenderStatObject_InputLayout,
+		RenderStatObject_ResourceView,
+		RenderStatObject_SwapChain
 	};
 
 	typedef Vector<char*> HLSLMicroCode;

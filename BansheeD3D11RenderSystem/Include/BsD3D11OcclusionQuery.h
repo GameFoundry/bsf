@@ -40,6 +40,7 @@ namespace BansheeEngine
 		ID3D11Query* mQuery;
 		ID3D11DeviceContext* mContext;
 		bool mFinalized;
+		bool mQueryEndCalled;
 
 		UINT32 mNumSamples;
 

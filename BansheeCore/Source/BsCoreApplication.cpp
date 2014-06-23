@@ -37,6 +37,7 @@
 #include "BsThreadPool.h"
 #include "BsTaskScheduler.h"
 #include "BsUUID.h"
+#include "BsRenderStats.h"
 
 #include "BsMaterial.h"
 #include "BsShader.h"
@@ -61,6 +62,7 @@ namespace BansheeEngine
 		ThreadPool::startUp<TThreadPool<ThreadBansheePolicy>>((numWorkerThreads));
 		TaskScheduler::startUp();
 		TaskScheduler::instance().removeWorker();
+		RenderStats::startUp();
 		CoreThread::startUp();
 		StringTable::startUp();
 		DeferredCallManager::startUp();
@@ -122,6 +124,7 @@ namespace BansheeEngine
 		StringTable::shutDown();
 
 		CoreThread::shutDown();
+		RenderStats::shutDown();
 		TaskScheduler::shutDown();
 		ThreadPool::shutDown();
 		ProfilingManager::shutDown();
@@ -175,7 +178,6 @@ namespace BansheeEngine
 
 			gCoreThread().queueCommand(&Platform::_coreUpdate);
 			gCoreThread().submitAccessors();
-			gCoreThread().queueCommand(std::bind(&ProfilerGPU::_update, ProfilerGPU::instancePtr()));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::endCoreProfiling, this));
 			gCoreThread().queueCommand(std::bind(&CoreApplication::frameRenderingFinishedCallback, this));
 
@@ -206,10 +208,14 @@ namespace BansheeEngine
 	void CoreApplication::beginCoreProfiling()
 	{
 		gProfilerCPU().beginThread("Core");
+		ProfilerGPU::instance().beginFrame();
 	}
 
 	void CoreApplication::endCoreProfiling()
 	{
+		ProfilerGPU::instance().endFrame();
+		ProfilerGPU::instance()._update();
+
 		gProfilerCPU().endThread();
 		gProfiler()._updateCore();
 	}

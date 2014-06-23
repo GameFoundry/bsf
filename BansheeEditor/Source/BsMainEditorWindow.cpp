@@ -77,14 +77,12 @@ namespace BansheeEngine
 		AABox dbgBox(Vector3(-300, -200, 1000), Vector3(300, 300, 1500));
 		//DrawHelper3D::instance().drawAABox(sceneCamera, dbgBox, Color::Green, 250.0f);
 
-		ProfilerOverlay::startUp(sceneCamera->getViewport());
-		ProfilerOverlay::instance().show(ProfilerOverlayType::CPUSamples);
+		mProfilerOverlay = mSceneObject->addComponent<ProfilerOverlay>(sceneCamera->getViewport());
+		mProfilerOverlay->show(ProfilerOverlayType::CPUSamples);
 	}
 
 	MainEditorWindow::~MainEditorWindow()
 	{
-		ProfilerOverlay::shutDown();
-
 		GUIElement::destroy(mDockManager);
 		bs_delete(mMenuBar);
 	}
@@ -111,6 +109,5 @@ namespace BansheeEngine
 	void MainEditorWindow::update()
 	{
 		mDockManager->update();
-		//PROFILE_CALL(ProfilerOverlay::instance().update(), "ProfilerOverlay");
 	}
 }

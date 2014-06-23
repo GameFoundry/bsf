@@ -23,6 +23,7 @@
 #include "BsCoreThread.h"
 #include "BsGLQueryManager.h"
 #include "BsDebug.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine 
 {
@@ -303,7 +304,7 @@ namespace BansheeEngine
 
 			blockBinding++;
 
-			mRenderStats.numGpuParamBufferBinds++;
+			BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 		}
 
 		bool hasBoundAtLeastOne = false;
@@ -388,7 +389,7 @@ namespace BansheeEngine
 		}
 
 		if (hasBoundAtLeastOne)
-			mRenderStats.numGpuParamBufferBinds++;
+			BS_INC_RENDER_STAT(NumGpuParamBufferBinds);
 
 		if(uniformBufferData != nullptr)
 		{
@@ -424,7 +425,7 @@ namespace BansheeEngine
 
 		activateGLTextureUnit(0);
 
-		mRenderStats.numTextureBinds++;
+		BS_INC_RENDER_STAT(NumTextureBinds);
 	}
 
 	void GLRenderSystem::setSamplerState(GpuProgramType gptype, UINT16 unit, const SamplerStatePtr& state)
@@ -451,7 +452,7 @@ namespace BansheeEngine
 		// Set border color
 		setTextureBorderColor(unit, state->getBorderColor());
 
-		mRenderStats.numSamplerBinds++;
+		BS_INC_RENDER_STAT(NumSamplerBinds);
 	}
 
 	void GLRenderSystem::setBlendState(const BlendStatePtr& blendState)
@@ -477,7 +478,7 @@ namespace BansheeEngine
 		UINT8 writeMask = blendState->getRenderTargetWriteMask(0);
 		setColorBufferWriteEnabled((writeMask & 0x1) != 0, (writeMask & 0x2) != 0, (writeMask & 0x4) != 0, (writeMask & 0x8) != 0);
 
-		mRenderStats.numBlendStateChanges++;
+		BS_INC_RENDER_STAT(NumBlendStateChanges);
 	}
 
 	void GLRenderSystem::setRasterizerState(const RasterizerStatePtr& rasterizerState)
@@ -492,7 +493,7 @@ namespace BansheeEngine
 
 		setScissorTestEnable(rasterizerState->getScissorEnable());
 
-		mRenderStats.numRasterizerStateChanges++;
+		BS_INC_RENDER_STAT(NumRasterizerStateChanges);
 	}
 
 	void GLRenderSystem::setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue)
@@ -518,7 +519,7 @@ namespace BansheeEngine
 		// Set stencil ref value
 		setStencilRefValue(stencilRefValue);
 
-		mRenderStats.numDepthStencilStateChanges++;
+		BS_INC_RENDER_STAT(NumDepthStencilStateChanges);
 	}
 
 	void GLRenderSystem::setViewport(Viewport vp)
@@ -586,7 +587,7 @@ namespace BansheeEngine
 			}
 		}
 
-		mRenderStats.numRenderTargetChanges++;
+		BS_INC_RENDER_STAT(NumRenderTargetChanges);
 	}
 
 	void GLRenderSystem::beginFrame()
@@ -649,9 +650,11 @@ namespace BansheeEngine
 
 		endDraw();
 
-		mRenderStats.numDrawCalls++;
-		mRenderStats.numVertices += vertexCount;
-		mRenderStats.numPrimitives += vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
+		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
+
+		BS_INC_RENDER_STAT(NumDrawCalls);
+		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
+		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
 	}
 
 	void GLRenderSystem::drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount)
@@ -674,10 +677,13 @@ namespace BansheeEngine
 
 		endDraw();
 
-		mRenderStats.numDrawCalls++;
-		mRenderStats.numVertices += vertexCount;
-		mRenderStats.numPrimitives += vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
-		mRenderStats.numIndexBufferBinds++;
+		UINT32 primCount = vertexCountToPrimCount(mCurrentDrawOperation, vertexCount);
+
+		BS_INC_RENDER_STAT(NumDrawCalls);
+		BS_ADD_RENDER_STAT(NumVertices, vertexCount);
+		BS_ADD_RENDER_STAT(NumPrimitives, primCount);
+
+		BS_INC_RENDER_STAT(NumIndexBufferBinds);
 	}
 
 	void GLRenderSystem::setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom)
@@ -802,7 +808,7 @@ namespace BansheeEngine
 			glStencilMask(mStencilWriteMask);
 		}
 
-		mRenderStats.numClears++;
+		BS_INC_RENDER_STAT(NumClears);
 	}
 
 	/************************************************************************/
@@ -1325,8 +1331,8 @@ namespace BansheeEngine
 		const GLVertexArrayObject& vao = GLVertexArrayObjectManager::instance().getVAO(mCurrentVertexProgram, mBoundVertexDeclaration, mBoundVertexBuffers);
 		glBindVertexArray(vao.getGLHandle()); 
 
-		mRenderStats.numVertexBufferBinds++;
-		mRenderStats.numGpuProgramBinds++;
+		BS_INC_RENDER_STAT(NumVertexBufferBinds);
+		BS_INC_RENDER_STAT(NumGpuProgramBinds);
 	}
 
 	void GLRenderSystem::endDraw()

@@ -1,4 +1,5 @@
 #include "BsGLEventQuery.h"
+#include "BsRenderStats.h"
 
 namespace BansheeEngine
 {
@@ -6,11 +7,13 @@ namespace BansheeEngine
 		:mQueryObj(0)
 	{
 		glGenQueries(1, &mQueryObj);
+		BS_INC_RENDER_STAT_CAT(ResCreated, RenderStatObject_Query);
 	}
 
 	GLEventQuery::~GLEventQuery()
 	{
 		glDeleteQueries(1, &mQueryObj);
+		BS_INC_RENDER_STAT_CAT(ResDestroyed, RenderStatObject_Query);
 	}
 
 	void GLEventQuery::begin()
