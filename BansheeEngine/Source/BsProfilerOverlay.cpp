@@ -239,7 +239,7 @@ namespace BansheeEngine
 			UINT32 excessEntries = (UINT32)rows.size() - curIdx;
 			for (UINT32 i = 0; i < excessEntries; i++)
 			{
-				layout.removeChildAt(layout.getNumChildren() - i - 1); // -1 because last element is flexible space and we want to skip it
+				layout.removeChildAt(layout.getNumChildren() - i); 
 
 				ProfilerOverlay::GPUSampleRow& row = rows[curIdx + i];
 
@@ -258,10 +258,10 @@ namespace BansheeEngine
 
 				ProfilerOverlay::GPUSampleRow& newRow = rows.back();
 
-				newRow.name = HString(L"Name");
+				newRow.name = HString(L"{1}");
 				newRow.time = HString(L"{0}");
 
-				newRow.layout = &layout.insertLayoutX(layout.getNumChildren() - 1); // Insert before flexible space
+				newRow.layout = &layout.insertLayoutX(layout.getNumChildren());
 
 				GUILabel* nameLabel = GUILabel::create(newRow.name, GUIOptions(GUIOption::fixedWidth(100)));
 				GUILabel* timeLabel = GUILabel::create(newRow.time, GUIOptions(GUIOption::fixedWidth(100)));
@@ -274,6 +274,7 @@ namespace BansheeEngine
 			}
 
 			ProfilerOverlay::GPUSampleRow& row = rows[curIdx];
+			row.name.setParameter(0, toWString(name));
 			row.time.setParameter(0, toWString(timeMs));
 
 			curIdx++;
@@ -384,7 +385,23 @@ namespace BansheeEngine
 		mGPUAreaFrameSamples = GUIArea::create(*mWidget, 0, 0);
 		mGPULayoutFrameContentsLeft = &mGPUAreaFrameContents->getLayout().addLayoutY();
 		mGPULayoutFrameContentsRight = &mGPUAreaFrameContents->getLayout().addLayoutY();
-		mGPULayoutSamples = &mGPUAreaFrameSamples->getLayout().addLayoutY();
+
+		GUILayout& gpuSamplesMain = mGPUAreaFrameSamples->getLayout().addLayoutY();
+
+		GUILayout& gpuSampleTitle = gpuSamplesMain.addLayoutY();
+		mGPULayoutSamples = &gpuSamplesMain.addLayoutY();
+		gpuSamplesMain.addFlexibleSpace();
+
+		HString gpuSamplesStr(L"__ProfOvGPUSamples", L"Samples");
+		gpuSampleTitle.addElement(GUILabel::create(gpuSamplesStr));
+		gpuSampleTitle.addSpace(20);
+
+		GUILayout& gpuSampleTitleRow = gpuSampleTitle.addLayoutX();
+
+		HString gpuSamplesNameStr(L"__ProfOvGPUSampName", L"Name");
+		HString gpuSamplesTimeStr(L"__ProfOvGPUSampTime", L"Time");
+		gpuSampleTitleRow.addElement(GUILabel::create(gpuSamplesNameStr, GUIOptions(GUIOption::fixedWidth(100))));
+		gpuSampleTitleRow.addElement(GUILabel::create(gpuSamplesTimeStr, GUIOptions(GUIOption::fixedWidth(100))));
 
 		mGPUFrameNumStr = HString(L"__ProfOvFrame", L"Frame #{0}");
 		mGPUTimeStr = HString(L"__ProfOvTime", L"Time: {0}ms");

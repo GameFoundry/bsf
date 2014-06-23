@@ -172,7 +172,7 @@ namespace BansheeEngine
 	private:
 		ActiveFrame mActiveFrame;
 		bool mIsFrameActive;
-		UINT32 mNumActiveSamples;
+		Stack<UINT32> mActiveSampleIndexes;
 
 		Queue<ActiveFrame> mUnresolvedFrames;
 		Queue<GPUProfilerReport> mReadyReports;

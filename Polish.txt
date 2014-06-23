@@ -1,7 +1,6 @@
 Polish TODO:
  - Finish basic example, get a model rendering on screen
  - Fix FBX importer so proper number of vertices show
- - Finish and test GPU profiler
  - Test and fix full-screen transitions
  - Add virtual input axes
  - Compress and generate mips for texture on input (testing NVTT stuff)
@@ -16,11 +15,6 @@ Polish TODO:
 -----------------
 
 There's still a crash regarding an uninitialized mCachedPtr on a C# class when shutting down. Attempt to find consistent repro steps.
-
-Finish GPUProfiler:
- - Resource writes/reads/creation/destruction is not currently increased in RenderStats
-   - Make RenderStats global so resources can more easily access those methods.
- - Test overlay and add title labels for samples
 
  ---------------------------
 

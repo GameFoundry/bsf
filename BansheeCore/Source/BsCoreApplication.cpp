@@ -209,10 +209,14 @@ namespace BansheeEngine
 	{
 		gProfilerCPU().beginThread("Core");
 		ProfilerGPU::instance().beginFrame();
+		ProfilerGPU::instance().beginSample("DBG1");
+		ProfilerGPU::instance().beginSample("DBG2");
 	}
 
 	void CoreApplication::endCoreProfiling()
 	{
+		ProfilerGPU::instance().endSample("DBG2");
+		ProfilerGPU::instance().endSample("DBG1");
 		ProfilerGPU::instance().endFrame();
 		ProfilerGPU::instance()._update();
 

@@ -7,7 +7,7 @@
 namespace BansheeEngine
 {
 	ProfilerGPU::ProfilerGPU()
-		:mNumActiveSamples(0), mIsFrameActive(false)
+		:mIsFrameActive(false)
 	{ }
 
 	void ProfilerGPU::beginFrame()
@@ -25,7 +25,7 @@ namespace BansheeEngine
 
 	void ProfilerGPU::endFrame()
 	{
-		if (mNumActiveSamples > 0)
+		if (mActiveSampleIndexes.size() > 0)
 			BS_EXCEPT(InvalidStateException, "Attempting to end a frame while a sample is active.");
 
 		if (!mIsFrameActive)
@@ -47,15 +47,17 @@ namespace BansheeEngine
 
 		sample.sampleName = name;
 		beginSampleInternal(sample);
-		mNumActiveSamples++;
+
+		mActiveSampleIndexes.push((UINT32)mActiveFrame.samples.size() - 1);
 	}
 
 	void ProfilerGPU::endSample(const ProfilerString& name)
 	{
-		if (mNumActiveSamples == 0)
+		if (mActiveSampleIndexes.size() == 0)
 			return;
 
-		ActiveSample& sample = mActiveFrame.samples.back();
+		UINT32 lastSampleIdx = mActiveSampleIndexes.top();
+		ActiveSample& sample = mActiveFrame.samples[lastSampleIdx];
 		if (sample.sampleName != name)
 		{
 			String errorStr = "Attempting to end a sample that doesn't match. Got: " + 
@@ -65,7 +67,7 @@ namespace BansheeEngine
 		}
 
 		endSampleInternal(sample);
-		mNumActiveSamples--;
+		mActiveSampleIndexes.pop();
 	}
 
 	UINT32 ProfilerGPU::getNumAvailableReports()

@@ -383,7 +383,7 @@ namespace BansheeEngine
 				newClipRect.clip(clipRect);
 				element->_updateLayoutInternal(offset.x, offset.y, elemWidth, elemHeight, newClipRect, widgetDepth, areaDepth);
 
-				mActualHeight = std::max(mActualHeight, elemHeight);
+				mActualHeight = std::max(height, elemHeight);
 			}
 			else if(child->_getType() == GUIElementBase::Type::Layout)
 			{
@@ -394,7 +394,7 @@ namespace BansheeEngine
 				layout->_updateLayoutInternal(x + xOffset, y, elemWidth, height, newClipRect, widgetDepth, areaDepth);
 
 				UINT32 childHeight = layout->_getActualHeight();
-				mActualHeight = std::max(mActualHeight, childHeight);
+				mActualHeight = std::max(height, childHeight);
 
 				// It's possible all elements didn't fit in the child layout size we provided, in which case adjust our measurements
 				elemWidth = layout->_getActualWidth();
