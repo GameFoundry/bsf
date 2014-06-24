@@ -6,8 +6,8 @@
 namespace BansheeEngine
 {
 	/**
-	* @copydoc OcclusionQuery
-	*/
+	 * @copydoc OcclusionQuery
+	 */
 	class BS_D3D11_EXPORT D3D11OcclusionQuery : public OcclusionQuery
 	{
 	public:
@@ -15,27 +15,32 @@ namespace BansheeEngine
 		~D3D11OcclusionQuery();
 
 		/**
-		* @copydoc OcclusionQuery::begin
-		*/
+		 * @copydoc OcclusionQuery::begin
+		 */
 		virtual void begin();
 
 		/**
-		* @copydoc OcclusionQuery::end
-		*/
+		 * @copydoc OcclusionQuery::end
+		 */
 		virtual void end();
 
 		/**
-		* @copydoc OcclusionQuery::isReady
-		*/
+		 * @copydoc OcclusionQuery::isReady
+		 */
 		virtual bool isReady() const;
 
 		/**
-		* @copydoc OcclusionQuery::getNumFragments
-		*/
+		 * @copydoc OcclusionQuery::getNumFragments
+		 */
 		virtual UINT32 getNumSamples();
 
 	private:
 		friend class QueryManager;
+
+		/**
+		 * @brief	Resolves query results after it is ready.
+		 */
+		void finalize();
 
 		ID3D11Query* mQuery;
 		ID3D11DeviceContext* mContext;
@@ -43,7 +48,5 @@ namespace BansheeEngine
 		bool mQueryEndCalled;
 
 		UINT32 mNumSamples;
-
-		void finalize();
 	};
 }

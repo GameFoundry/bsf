@@ -321,12 +321,6 @@ namespace BansheeEngine
 		 */
 		D3DPRIMITIVETYPE getD3D9PrimitiveType() const;
 
-		/**
-		 * @brief	Check whether or not filtering is supported for the precise texture format requested
-		 *			with the given usage options.
-		 */
-        bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
-
 		/************************************************************************/
 		/* 							Sampler states                     			*/
 		/************************************************************************/

@@ -10,10 +10,35 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT TEXTURE_VIEW_DESC
 	{
+		/**
+		 * First mip level of the parent texture the view binds (0 - base level). 
+		 * This applied to all array slices specified below.
+		 */
 		UINT32 mostDetailMip;
+
+		/**
+		 * Number of mip levels to bind to the view. 
+		 * This applied to all array slices specified below.
+		 */
 		UINT32 numMips;
+
+		/**
+		 * First array slice the view binds to. This will be array index for 
+		 * 1D and 2D array textures, texture slice index for 3D textures, and 
+		 * face index for cube textures(cube index * 6).
+ 		 */
 		UINT32 firstArraySlice;
+
+		/**
+		 * Number of array slices to bind tot he view. This will be number of
+		 * array elements for 1D and 2D array textures, number of slices for 3D textures,
+		 * and number of cubes for cube textures.
+		 */
 		UINT32 numArraySlices;
+
+		/**
+		 *	Type of texture view.
+		 */
 		GpuViewUsage usage;
 	};
 

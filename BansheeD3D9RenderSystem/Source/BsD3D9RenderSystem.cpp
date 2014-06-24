@@ -2080,66 +2080,6 @@ namespace BansheeEngine
 		}
 	}
 
-	bool D3D9RenderSystem::checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage)
-	{
-		// Gets D3D format
-		D3DFORMAT d3dPF = D3D9Mappings::_getPF(format);
-		if (d3dPF == D3DFMT_UNKNOWN)
-			return false;
-
-		for (UINT32 i = 0; i < mDeviceManager->getDeviceCount(); ++i)
-		{
-			D3D9Device* currDevice = mDeviceManager->getDevice(i);
-			const D3D9RenderWindow* currDevicePrimaryWindow = currDevice->getPrimaryWindow();
-			IDirect3DSurface9* pSurface = currDevicePrimaryWindow->_getRenderSurface();
-			D3DSURFACE_DESC srfDesc;
-
-			// Get surface desc
-			if (FAILED(pSurface->GetDesc(&srfDesc)))
-				return false;
-
-			// Calculate usage
-			DWORD d3dusage = D3DUSAGE_QUERY_FILTER;
-			if (usage & TU_RENDERTARGET) 
-				d3dusage |= D3DUSAGE_RENDERTARGET;
-			if (usage & TU_DEPTHSTENCIL) 
-				d3dusage |= D3DUSAGE_DEPTHSTENCIL;
-			if (usage & TU_DYNAMIC)
-				d3dusage |= D3DUSAGE_DYNAMIC;
-
-			// Detect resource type
-			D3DRESOURCETYPE rtype;
-			switch(ttype)
-			{
-			case TEX_TYPE_1D:
-			case TEX_TYPE_2D:
-				rtype = D3DRTYPE_TEXTURE;
-				break;
-			case TEX_TYPE_3D:
-				rtype = D3DRTYPE_VOLUMETEXTURE;
-				break;
-			case TEX_TYPE_CUBE_MAP:
-				rtype = D3DRTYPE_CUBETEXTURE;
-				break;
-			default:
-				return false;
-			}
-
-			HRESULT hr = mpD3D->CheckDeviceFormat(
-				currDevice->getAdapterNumber(),
-				currDevice->getDeviceType(),
-				srfDesc.Format,
-				d3dusage,
-				rtype,
-				d3dPF);
-
-			if (FAILED(hr))
-				return false;
-		}
-
-		return true;		
-	}
-
 	String D3D9RenderSystem::getErrorDescription(long errorNumber) const
 	{
 		const String errMsg = DXGetErrorDescription(errorNumber);

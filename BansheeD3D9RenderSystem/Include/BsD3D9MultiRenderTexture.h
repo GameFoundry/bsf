@@ -6,7 +6,7 @@
 namespace BansheeEngine
 {
 	/**
-	 * @brief	DirectX 9 implementation of a multi-render texture.
+	 * @brief	DirectX 9 implementation of a render texture with multiple color surfaces.
 	 */
 	class BS_D3D9_EXPORT D3D9MultiRenderTexture : public MultiRenderTexture
 	{

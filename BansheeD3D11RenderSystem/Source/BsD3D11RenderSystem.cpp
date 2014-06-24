@@ -836,8 +836,7 @@ namespace BansheeEngine
 		// Adapter details
 		const DXGI_ADAPTER_DESC& adapterID = mActiveD3DDriver->getAdapterIdentifier();
 
-		// determine vendor
-		// Full list of vendors here: http://www.pcidatabase.com/vendors.php?sort=id
+		// Determine vendor
 		switch(adapterID.VendorId)
 		{
 		case 0x10DE:
@@ -876,11 +875,6 @@ namespace BansheeEngine
 		rsc->setCapability(RSC_PERSTAGECONSTANT);
 
 		return rsc;
-	}
-
-	void D3D11RenderSystem::initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps)
-	{
-		// Do nothing
 	}
 
 	void D3D11RenderSystem::determineMultisampleSettings(UINT32 multisampleCount, const String& multisampleHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc)
@@ -983,11 +977,6 @@ namespace BansheeEngine
 			}
 
 		} // while !ok
-	}
-
-	bool D3D11RenderSystem::checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage)
-	{
-		return true;
 	}
 
 	VertexElementType D3D11RenderSystem::getColorVertexElementType() const

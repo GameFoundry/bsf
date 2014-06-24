@@ -6,6 +6,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	DirectX 11 implementation of a vertex buffer.
+	 */
 	class BS_D3D11_EXPORT D3D11VertexBuffer : public VertexBuffer
 	{
 	public:
@@ -34,6 +37,9 @@ namespace BansheeEngine
 	protected: 
 		friend class D3D11HardwareBufferManager;
 
+		/**
+		 * @copydoc	VertexBuffer::VertexBuffer
+		 */
 		D3D11VertexBuffer(D3D11Device& device, UINT32 vertexSize, UINT32 numVertices, 
 			GpuBufferUsage usage, bool useSystemMem, bool streamOut);
 

@@ -5,13 +5,16 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Render window implementation for Windows and DirectX 11.
+	 */
 	class BS_D3D11_EXPORT D3D11RenderWindow : public RenderWindow
 	{
 	public:
 		~D3D11RenderWindow();
 
 		/**
-		 * @copydoc RenderWindow::reposition
+		 * @copydoc RenderWindow::move
 		 */
 		void move(INT32 left, INT32 top);
 
@@ -85,32 +88,61 @@ namespace BansheeEngine
 		 */
 		bool requiresTextureFlipping() const { return false; }
 
+		/**
+		 * @copydoc	RenderWindow::_windowMovedOrResized
+		 */
 		void _windowMovedOrResized();
 
+		/**
+		 * @brief	Returns presentation parameters used for creating the window swap chain.
+		 */
 		DXGI_SWAP_CHAIN_DESC* _getPresentationParameters() { return &mSwapChainDesc; }
+
+		/**
+		 * @brief	Returns internal window handle.
+		 */
 		HWND _getWindowHandle() const { return mHWnd; }
 
 	protected:
 		friend class D3D11RenderWindowManager;
+
+		/**
+		 * @copydoc	RenderWindow::RenderWindow
+		 */
 		D3D11RenderWindow(const RENDER_WINDOW_DESC& desc, D3D11Device& device, IDXGIFactory* DXGIFactory);
 
+		/**
+		 * @brief	Creates internal resources dependent on window size.
+		 */
 		void createSizeDependedD3DResources();
+
+		/**
+		 * @brief	Destroys internal resources dependent on window size.
+		 */
 		void destroySizeDependedD3DResources();
 
+		/**
+		 * @brief	Queries the current DXGI device. Make sure to release the returned object when done with it.
+		 */
 		IDXGIDevice* queryDxgiDevice(); 
 
-		bool checkMultiSampleQuality(UINT32 SampleCount, UINT32 *outQuality, DXGI_FORMAT format);
-
+		/**
+		 * @brief	Creates a swap chain for the window.
+		 */
 		void createSwapChain();
+
+		/**
+		 * @brief	Resizes all buffers attached to the swap chain to the specified size.
+		 */
 		void resizeSwapChainBuffers(UINT32 width, UINT32 height);
 		
 		/**
-		 * @copydoc RenderWindow::initialize_internal().
+		 * @copydoc RenderWindow::initialize_internal
 		 */
 		void initialize_internal();
 
 		/**
-		 * @copydoc RenderWindow::destroy_internal().
+		 * @copydoc RenderWindow::destroy_internal
 		 */
 		void destroy_internal();
 	protected:

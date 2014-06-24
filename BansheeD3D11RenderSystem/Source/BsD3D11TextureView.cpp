@@ -19,11 +19,11 @@ namespace BansheeEngine
 		D3D11Texture* d3d11Texture = static_cast<D3D11Texture*>(mOwnerTexture.get());
 
 		if((mDesc.usage & GVU_RANDOMWRITE) != 0)
-			mUAV = createUAV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
+			mUAV = createUAV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
 		else if((mDesc.usage & GVU_RENDERTARGET) != 0)
-			mRTV = createRTV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
+			mRTV = createRTV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
 		else if((mDesc.usage & GVU_DEPTHSTENCIL) != 0)
-			mDSV = createDSV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
+			mDSV = createDSV(d3d11Texture, mDesc.mostDetailMip, mDesc.firstArraySlice, mDesc.numArraySlices);
 		else
 			mSRV = createSRV(d3d11Texture, mDesc.mostDetailMip, mDesc.numMips, mDesc.firstArraySlice, mDesc.numArraySlices);
 
@@ -94,7 +94,7 @@ namespace BansheeEngine
 	}
 
 	ID3D11RenderTargetView* D3D11TextureView::createRTV(D3D11Texture* texture, 
-		UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices)
+		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
@@ -102,18 +102,18 @@ namespace BansheeEngine
 		switch(texture->getTextureType())
 		{
 		case TEX_TYPE_1D:
-			desc.Texture1D.MipSlice = mostDetailMip;
+			desc.Texture1D.MipSlice = mipSlice;
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			desc.Texture2D.MipSlice = mostDetailMip;
+			desc.Texture2D.MipSlice = mipSlice;
 			if(texture->getMultisampleCount() > 0)
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
 			else
 				desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 			break;
 		case TEX_TYPE_3D:
-			desc.Texture3D.MipSlice = mostDetailMip;
+			desc.Texture3D.MipSlice = mipSlice;
 			desc.Texture3D.FirstWSlice = firstArraySlice;
 			desc.Texture3D.WSize = numArraySlices;
 			desc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE3D;
@@ -139,7 +139,7 @@ namespace BansheeEngine
 	}
 
 	ID3D11UnorderedAccessView* D3D11TextureView::createUAV(D3D11Texture* texture,
-		UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices)
+		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_UNORDERED_ACCESS_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
@@ -147,15 +147,15 @@ namespace BansheeEngine
 		switch(texture->getTextureType())
 		{
 		case TEX_TYPE_1D:
-			desc.Texture1D.MipSlice = mostDetailMip;
+			desc.Texture1D.MipSlice = mipSlice;
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			desc.Texture2D.MipSlice = mostDetailMip;
+			desc.Texture2D.MipSlice = mipSlice;
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
 			break;
 		case TEX_TYPE_3D:
-			desc.Texture3D.MipSlice = mostDetailMip;
+			desc.Texture3D.MipSlice = mipSlice;
 			desc.Texture3D.FirstWSlice = firstArraySlice;
 			desc.Texture3D.WSize = numArraySlices;
 			desc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE3D;
@@ -181,7 +181,7 @@ namespace BansheeEngine
 	}
 
 	ID3D11DepthStencilView* D3D11TextureView::createDSV(D3D11Texture* texture, 
-		UINT32 mostDetailMip, UINT32 numMips, UINT32 firstArraySlice, UINT32 numArraySlices)
+		UINT32 mipSlice, UINT32 firstArraySlice, UINT32 numArraySlices)
 	{
 		D3D11_DEPTH_STENCIL_VIEW_DESC desc;
 		ZeroMemory(&desc, sizeof(desc));
@@ -189,11 +189,11 @@ namespace BansheeEngine
 		switch(texture->getTextureType())
 		{
 		case TEX_TYPE_1D:
-			desc.Texture1D.MipSlice = mostDetailMip;
+			desc.Texture1D.MipSlice = mipSlice;
 			desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE1D;
 			break;
 		case TEX_TYPE_2D:
-			desc.Texture2D.MipSlice = mostDetailMip;
+			desc.Texture2D.MipSlice = mipSlice;
 			if(texture->getMultisampleCount() > 0)
 				desc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2DMS;
 			else

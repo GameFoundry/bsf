@@ -35,6 +35,11 @@ namespace BansheeEngine
 		virtual float getTimeMs();
 
 	private:
+		/**
+		 * @brief	Resolve timing information after the query has finished.
+		 */
+		void finalize();
+
 		bool mFinalized;
 		bool mQueryEndCalled;
 		float mTimeDelta;
@@ -43,7 +48,5 @@ namespace BansheeEngine
 		ID3D11Query* mEndQuery;
 		ID3D11Query* mDisjointQuery;
 		ID3D11DeviceContext* mContext;
-
-		void finalize();
 	};
 }

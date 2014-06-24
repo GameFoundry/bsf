@@ -9,27 +9,41 @@ namespace BansheeEngine
 {
 	const String SystemName = "BansheeD3D9RenderSystem";
 
+	/**
+	 * @brief	Handles creation of the DX9 render system.
+	 */
 	class D3D9RenderSystemFactory : public RenderSystemFactory
 	{
-		public:
-			virtual void create();
-			virtual const String& name() const { return SystemName; }
+	public:
+		/**
+		 * @copydoc	RenderSystemFactory::create
+		 */
+		virtual void create();
 
-		private:
-			class InitOnStart
-			{
-				public:
-					InitOnStart() 
-					{ 
-						static RenderSystemFactoryPtr newFactory;
-						if(newFactory == nullptr)
-						{
-							newFactory = bs_shared_ptr<D3D9RenderSystemFactory>();
-							RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
-						}
+		/**
+		 * @copydoc	RenderSystemFactory::name
+		 */
+		virtual const String& name() const { return SystemName; }
+
+	private:
+
+		/**
+		 * @brief	Registers the factory with the render system manager when constructed.
+		 */
+		class InitOnStart
+		{
+			public:
+				InitOnStart() 
+				{ 
+					static RenderSystemFactoryPtr newFactory;
+					if(newFactory == nullptr)
+					{
+						newFactory = bs_shared_ptr<D3D9RenderSystemFactory>();
+						RenderSystemManager::instance().registerRenderSystemFactory(newFactory);
 					}
-			};
+				}
+		};
 
-			static InitOnStart initOnStart; // Makes sure factory is registered on program start
+		static InitOnStart initOnStart; // Makes sure factory is registered on program start
 	};
 }

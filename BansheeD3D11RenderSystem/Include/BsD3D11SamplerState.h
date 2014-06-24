@@ -5,6 +5,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	DirectX 11 implementation of a sampler state. Wraps a DX11
+	 *			sampler state object.
+	 */
 	class BS_D3D11_EXPORT D3D11SamplerState : public SamplerState
 	{
 	public:
@@ -17,12 +21,12 @@ namespace BansheeEngine
 		D3D11SamplerState();
 
 		/**
-		 * @copydoc SamplerState::initialize_internal().
+		 * @copydoc SamplerState::initialize_internal
 		 */
 		void initialize_internal();
 
 		/**
-		 * @copydoc SamplerState::destroy_internal().
+		 * @copydoc SamplerState::destroy_internal
 		 */
 		void destroy_internal();
 

@@ -55,7 +55,7 @@ namespace BansheeEngine
 		bool isVSync() const { return mVSync; }
 
 		/**
-		 * @copydoc RenderWindow::reposition
+		 * @copydoc RenderWindow::move
 		 */
 		void move(INT32 left, INT32 top);
 

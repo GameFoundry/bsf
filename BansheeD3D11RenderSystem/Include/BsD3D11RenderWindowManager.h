@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @copydoc	RenderWindowManager
+	 */
 	class BS_D3D11_EXPORT D3D11RenderWindowManager : public RenderWindowManager
 	{
 	public:
@@ -12,7 +15,7 @@ namespace BansheeEngine
 
 	protected:
 		/**
-		 * @copydoc RenderWindowManager::createImpl()
+		 * @copydoc RenderWindowManager::createImpl
 		 */
 		RenderWindowPtr createImpl(RENDER_WINDOW_DESC& desc, RenderWindowPtr parentWindow);
 

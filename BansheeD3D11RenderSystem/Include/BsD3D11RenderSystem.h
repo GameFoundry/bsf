@@ -5,6 +5,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Implementation of a render system using DirectX 11. Provides abstracted
+	 *			access to various low level DX11 methods.
+	 */
 	class BS_D3D11_EXPORT D3D11RenderSystem : public RenderSystem
 	{
 	public:
@@ -12,49 +16,108 @@ namespace BansheeEngine
 		~D3D11RenderSystem();
 
 		/**
-		 * @copydoc RenderSystem::getName()
+		 * @copydoc RenderSystem::getName
 		 */
 		const String& getName() const;
 		
 		/**
-		 * @copydoc RenderSystem::getShadingLanguageName()
+		 * @copydoc RenderSystem::getShadingLanguageName
 		 */
 		const String& getShadingLanguageName() const;
 
+		/**
+		 * @copydoc	RenderSystem::setBlendState
+		 */
 		void setBlendState(const BlendStatePtr& blendState);
+
+		/**
+		 * @copydoc	RenderSystem::setRasterizerState
+		 */
 		void setRasterizerState(const RasterizerStatePtr& rasterizerState);
+
+		/**
+		 * @copydoc	RenderSystem::setDepthStencilState
+		 */
 		void setDepthStencilState(const DepthStencilStatePtr& depthStencilState, UINT32 stencilRefValue);
 
+		/**
+		 * @copydoc	RenderSystem::setSamplerState
+		 */
 		void setSamplerState(GpuProgramType gptype, UINT16 texUnit, const SamplerStatePtr& samplerState);
+
+		/**
+		 * @copydoc	RenderSystem::setTexture
+		 */
 		void setTexture(GpuProgramType gptype, UINT16 unit, bool enabled, const TexturePtr &texPtr);
+
+		/**
+		 * @copydoc	RenderSystem::disableTextureUnit
+		 */
 		void disableTextureUnit(GpuProgramType gptype, UINT16 texUnit);
 
+		/**
+		 * @copydoc	RenderSystem::beginFrame
+		 */
 		void beginFrame();
+
+		/**
+		 * @copydoc	RenderSystem::endFrame
+		 */
 		void endFrame();
 
 		/**
-		 * @copydoc RenderSystem::clearRenderTarget()
+		 * @copydoc RenderSystem::clearRenderTarget
 		 */
 		void clearRenderTarget(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
 		/**
-		 * @copydoc RenderSystem::clearViewport()
+		 * @copydoc RenderSystem::clearViewport
 		 */
 		void clearViewport(UINT32 buffers, const Color& color = Color::Black, float depth = 1.0f, UINT16 stencil = 0);
 
+		/**
+		 * @copydoc	RenderSystem::setRenderTarget
+		 */
 		void setRenderTarget(RenderTargetPtr target);
+
+		/**
+		 * @copydoc	RenderSystem::setViewport
+		 */
 		void setViewport(Viewport vp);
+
+		/**
+		 * @copydoc	RenderSystem::setScissorRect
+		 */
 		void setScissorRect(UINT32 left, UINT32 top, UINT32 right, UINT32 bottom);
 
+		/**
+		 * @copydoc	RenderSystem::setVertexBuffers
+		 */
 		void setVertexBuffers(UINT32 index, VertexBufferPtr* buffers, UINT32 numBuffers);
+
+		/**
+		 * @copydoc	RenderSystem::setIndexBuffer
+		 */
 		void setIndexBuffer(const IndexBufferPtr& buffer);
+
+		/**
+		 * @copydoc	RenderSystem::setVertexDeclaration
+		 */
 		void setVertexDeclaration(VertexDeclarationPtr vertexDeclaration);
+
+		/**
+		 * @copydoc	RenderSystem::setDrawOperation
+		 */
 		void setDrawOperation(DrawOperationType op);
 
-		/** @copydoc RenderSystem::draw() */
+		/**
+		 * @copydoc	RenderSystem::draw
+		 */
 		void draw(UINT32 vertexOffset, UINT32 vertexCount);
 
-		/** @copydoc RenderSystem::drawIndexed() */
+		/**
+		 * @copydoc	RenderSystem::drawIndexed
+		 */
 		void drawIndexed(UINT32 startIndex, UINT32 indexCount, UINT32 vertexOffset, UINT32 vertexCount);
 
 		/** 
@@ -72,30 +135,67 @@ namespace BansheeEngine
 		 */
 		void bindGpuParams(GpuProgramType gptype, GpuParamsPtr params);
 		
+		/**
+		 * @copydoc	RenderSystem::setClipPlanesImpl
+		 */
 		void setClipPlanesImpl(const PlaneList& clipPlanes);
 
-		RenderSystemCapabilities* createRenderSystemCapabilities() const;
-		void initialiseFromRenderSystemCapabilities(RenderSystemCapabilities* caps);
-
+		/**
+		 * @copydoc	RenderSystem::convertProjectionMatrix
+		 */
 		void convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram = false);
+
+		/**
+		 * @copydoc	RenderSystem::getColorVertexElementType
+		 */
 		VertexElementType getColorVertexElementType() const;
+
+		/**
+		 * @copydoc	RenderSystem::getHorizontalTexelOffset
+		 */
 		float getHorizontalTexelOffset();
+
+		/**
+		 * @copydoc	RenderSystem::getVerticalTexelOffset
+		 */
 		float getVerticalTexelOffset();
+
+		/**
+		 * @copydoc	RenderSystem::getMinimumDepthInputValue
+		 */
 		float getMinimumDepthInputValue();
+
+		/**
+		 * @copydoc	RenderSystem::getMaximumDepthInputValue
+		 */
 		float getMaximumDepthInputValue();
 
 		/************************************************************************/
 		/* 				Internal use by DX11 RenderSystem only                  */
 		/************************************************************************/
 
+		/**
+		 * @brief	Determines DXGI multisample settings from the provided parameters.
+		 *
+		 * @param	multisampleCount	Number of requested samples.
+		 * @param	multisampleHint		String describing an optional hint to which multisample method to use.
+		 * @param	format				Pixel format used by the render target.
+		 * @param	outputSampleDesc	Output structure that will contain the requested multisample settings.
+		 */
 		void determineMultisampleSettings(UINT32 multisampleCount, const String& multisampleHint, DXGI_FORMAT format, DXGI_SAMPLE_DESC* outputSampleDesc);
-		bool checkTextureFilteringSupported(TextureType ttype, PixelFormat format, int usage);
 
+		/**
+		 * @brief	Returns the main DXGI factory object.
+		 */
 		IDXGIFactory* getDXGIFactory() const { return mDXGIFactory; }
+
+		/**
+		 * @brief	Returns the primary DX11 device object.
+		 */
 		D3D11Device& getPrimaryDevice() const { return *mDevice; }
 		
 		/**
-		 * @brief	Returns a total number of outputs (e.g. monitors), across all adapters.
+		 * @brief	Returns information describing all available drivers.
 		 */
 		D3D11DriverList* getDriverList() const { return mDriverList; }
 
@@ -103,12 +203,12 @@ namespace BansheeEngine
 		friend class D3D11RenderSystemFactory;
 
 		/**
-		 * @copydoc	RenderSystem::initialize_internal().
+		 * @copydoc	RenderSystem::initialize_internal
 		 */
 		void initialize_internal(AsyncOp& asyncOp);
 
 		/**
-		 * @copydoc	RenderSystem::destroy_internal().
+		 * @copydoc	RenderSystem::destroy_internal
 		 */
         void destroy_internal();
 
@@ -119,6 +219,12 @@ namespace BansheeEngine
 		 *			Applies the input layout to the pipeline.
 		 */
 		void applyInputLayout();
+
+		/**
+		 * @brief	Creates and populates a set of render system capabilities describing which functionality
+		 *			is available.
+		 */
+		RenderSystemCapabilities* createRenderSystemCapabilities() const;
 
 	private:
 		IDXGIFactory* mDXGIFactory;

@@ -49,7 +49,7 @@ namespace BansheeEngine
 		bool isClosed() const;
 
 		/**
-		 * @copydoc RenderWindow::reposition
+		 * @copydoc RenderWindow::move
 		 */
 		void move(INT32 left, INT32 top);
 

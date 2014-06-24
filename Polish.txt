@@ -3,6 +3,8 @@ Polish TODO:
  - Fix FBX importer so proper number of vertices show
  - Test and fix full-screen transitions
  - Add virtual input axes
+   - Update Input so it can return multiple joystick and mouse axes
+   - Add better smoothing (look into UE4)
  - Compress and generate mips for texture on input (testing NVTT stuff)
  - Add frustum culling and sorting code
  - Finalize example
@@ -11,6 +13,29 @@ Polish TODO:
  - Add license text to all files
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
  - (HIGHLY OPTIONAL) Make a Getting Started guide, along with the example project. Or just finish up the manual.
+
+ Input:
+ Modify Input so it  has:
+ - getHorizonalAxis(Device, Index)
+ - getVerticalAxis(Device, Index)
+
+Where Device is Mouse, Gamepad, etc.
+Index is index of the device (e.g. 1 and 2 if two Gamepads are connected)
+
+Then in VirtualInput I should add VirtualAxis
+ - Represented by device, axis index and optionally other properties
+ - Virtual axes are registered with InputConfiguration same as virtual buttons
+
+Rename Joystick -> Gamepad
+
+OIS has getNumberOfDevices and listFreeDevices that I don't currently use. I should use that for Gamepad input.
+
+Optional VirtualInput axis data
+ - Axis sensitivity
+ - Axis invert
+ - Dead zone, exponent (See UE4 PlayerInput.cpp MassageAxisInput)
+ - Should smoothing be part of this as well? Probably, especially if I plan to add fake axes like keyboard ones
+  - See http://www.flipcode.com/archives/Smooth_Mouse_Filtering.shtml
 
 -----------------
 

@@ -735,12 +735,4 @@ namespace BansheeEngine
 
 		return pDXGIDevice;
 	}
-
-	bool D3D11RenderWindow::checkMultiSampleQuality(UINT32 SampleCount, UINT32 *outQuality, DXGI_FORMAT format)
-	{
-		if (SUCCEEDED(mDevice.getD3D11Device()->CheckMultisampleQualityLevels(format, SampleCount, outQuality)))
-			return true;
-		else
-			return false;
-	}
 }
