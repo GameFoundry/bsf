@@ -1,5 +1,6 @@
 #include "BsVirtualInput.h"
 #include "BsInput.h"
+#include "BsMath.h"
 #include "BsTime.h"
 
 using namespace std::placeholders;
@@ -56,6 +57,33 @@ namespace BansheeEngine
 			return iterFind->second.state == ButtonState::On || iterFind->second.state == ButtonState::ToggledOn;
 
 		return false;
+	}
+
+	float VirtualInput::getAxisValue(const VirtualAxis& axis) const
+	{
+		VIRTUAL_AXIS_DESC axisDesc;
+		if (mInputConfiguration->_getAxis(axis, axisDesc))
+		{
+			float axisValue = gInput().getAxisValue(axisDesc.device, axisDesc.type, axisDesc.deviceIndex, axisDesc.smooth);
+
+			if (axisDesc.deadZone > 0.0f)
+			{
+				// Scale to [-1, 1] range after removing the dead zone
+				if (axisValue > 0)
+					axisValue = std::max(0.f, axisValue - axisDesc.deadZone) / (1.0f - axisDesc.deadZone);
+				else
+					axisValue = -std::max(0.f, -axisValue - axisDesc.deadZone) / (1.0f - axisDesc.deadZone);
+			}
+
+			axisValue = Math::clamp(axisValue * axisDesc.sensitivity, -1.0f, 1.0f);
+
+			if (axisDesc.invert)
+				axisValue = -axisValue;
+
+			return axisValue;
+		}
+
+		return 0.0f;
 	}
 
 	void VirtualInput::update()
@@ -132,7 +160,7 @@ namespace BansheeEngine
 		{
 			VirtualButton btn;
 			VIRTUAL_BUTTON_DESC btnDesc;
-			if(mInputConfiguration->getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
+			if(mInputConfiguration->_getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
 			{
 				ButtonData& data = mCachedStates[btn.buttonIdentifier];
 
@@ -162,7 +190,7 @@ namespace BansheeEngine
 		{
 			VirtualButton btn;
 			VIRTUAL_BUTTON_DESC btnDesc;
-			if(mInputConfiguration->getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
+			if(mInputConfiguration->_getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
 			{
 				ButtonData& data = mCachedStates[btn.buttonIdentifier];
 

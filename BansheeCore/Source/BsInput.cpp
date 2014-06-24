@@ -197,6 +197,12 @@ namespace BansheeEngine
 		return mSmoothVerticalAxis;
 	}
 
+	float Input::getAxisValue(AxisDevice device, AxisType type, UINT32 deviceIdx, bool smooth)
+	{
+		// TODO
+		return 0.0f;
+	}
+
 	bool Input::isButtonHeld(ButtonCode button) const
 	{
 		return mKeyState[button & 0x0000FFFF] == ButtonState::On || mKeyState[button & 0x0000FFFF] == ButtonState::ToggledOn;

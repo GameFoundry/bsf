@@ -27,6 +27,21 @@ namespace BansheeEngine
 		bool repeatable;
 	};
 
+	struct VIRTUAL_AXIS_DESC
+	{
+		VIRTUAL_AXIS_DESC();
+		VIRTUAL_AXIS_DESC(AxisType type, AxisDevice device, float deadZone = 0.0001f, UINT32 deviceIndex = 0, 
+			float sensitivity = 1.0f, bool invert = false, bool smooth = true);
+
+		float deadZone;
+		float sensitivity;
+		bool invert;
+		bool smooth;
+		AxisDevice device;
+		AxisType type;
+		UINT32 deviceIndex;
+	};
+
 	/**
 	 * @brief	Identifier for a virtual button. 
 	 * 			
@@ -54,13 +69,55 @@ namespace BansheeEngine
 		static UINT32 NextButtonId;
 	};
 
+	/**
+	 * @brief	Identifier for a virtual axis. 
+	 * 			
+	 * @note	Primary purpose of this class is to avoid expensive string compare (i.e. axis names),
+	 * 			and instead use a unique axis identifier for compare. Generally you want to create 
+	 * 			one of these using the axis name, and then store it for later use. 
+	 * 			
+	 *			This class is not thread safe and should only be used on the sim thread.
+	 */
+	class BS_EXPORT VirtualAxis
+	{
+	public:
+		VirtualAxis();
+		VirtualAxis(const String& name);
+
+		UINT32 axisIdentifier;
+
+		bool operator== (const VirtualAxis& rhs) const
+		{
+			return (axisIdentifier == rhs.axisIdentifier);
+		}
+
+	private:
+		static Map<String, UINT32> UniqueAxisIds;
+		static UINT32 NextAxisId;
+	};
+
 	class BS_EXPORT InputConfiguration
 	{
+		static const int MAX_NUM_DEVICES_PER_TYPE = 8;
+		static const int MAX_NUM_DEVICES = (UINT32)AxisDevice::Count * MAX_NUM_DEVICES_PER_TYPE;
+
 		struct VirtualButtonData
 		{
 			String name;
 			VirtualButton button;
 			VIRTUAL_BUTTON_DESC desc;
+		};
+
+		struct VirtualAxisData
+		{
+			String name;
+			VirtualAxis axis;
+			VIRTUAL_AXIS_DESC desc;
+		};
+
+		struct DeviceAxisData
+		{
+			VirtualAxisData axes[(UINT32)AxisType::Count];
 		};
 
 	public:
@@ -69,14 +126,17 @@ namespace BansheeEngine
 		void registerButton(const String& name, ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
 		void unregisterButton(const String& name);
 
+		void registerAxis(const String& name, const VIRTUAL_AXIS_DESC& desc);
+		void unregisterAxis(const String& name);
+
 		void setRepeatInterval(UINT64 milliseconds) { mRepeatInterval = milliseconds; }
 		UINT64 getRepeatInterval() const { return mRepeatInterval; }
 
-		bool getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const;
-
-		// TODO - registerAxis
+		bool _getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const;
+		bool _getAxis(const VirtualAxis& axis, VIRTUAL_AXIS_DESC& axisDesc) const;
 	private:
 		Vector<VirtualButtonData> mButtons[BC_Count];
+		Vector<VirtualAxisData> mAxes;
 
 		UINT64 mRepeatInterval;
 	};

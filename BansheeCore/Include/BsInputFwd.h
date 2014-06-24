@@ -374,4 +374,28 @@ namespace BansheeEngine
 	private:
 		mutable bool mIsUsed;
 	};
+
+	/**
+	 * @brief	Types of input devices that can return analog axis data.
+	 */
+	enum class AxisDevice
+	{
+		Mouse,
+		Gamepad,
+		Count // Keep at end
+	};
+
+	/**
+	 * @brief	Common input axis types.
+	 */
+	enum class AxisType
+	{
+		MainX, /**< Mouse X, Gamepad left stick X */
+		MainY, /**< Mouse Y, Gamepad left stick Y */
+		RightStickX, /**< Gamepad right stick X */
+		RightStickY, /**< Gamepad right stick Y */
+		LeftTrigger, /**< Gamepad left trigger */
+		RightTrigger, /**< Gamepad right trigger */
+		Count // Keep at end
+	};
 }

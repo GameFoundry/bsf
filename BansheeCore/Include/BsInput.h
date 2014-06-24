@@ -103,6 +103,16 @@ namespace BansheeEngine
 		float getVerticalAxis() const;
 
 		/**
+		 * @brief	Returns value of the specified input axis in range [-1.0, 1.0].
+		 *
+		 * @param	device		Device from which to query the axis.
+		 * @param	type		Type of axis to query.
+		 * @param	deviceIdx	Index of the device in case more than one is hooked up.
+		 * @param	smooth		Should the returned value be smoothed.
+		 */
+		float getAxisValue(AxisDevice device, AxisType type, UINT32 deviceIdx = 0, bool smooth = false);
+
+		/**
 		 * @brief	Query if the provided button is currently being held (this frame or previous frames).
 		 */
 		bool isButtonHeld(ButtonCode keyCode) const;

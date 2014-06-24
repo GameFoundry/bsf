@@ -5,12 +5,26 @@ namespace BansheeEngine
 	Map<String, UINT32> VirtualButton::UniqueButtonIds;
 	UINT32 VirtualButton::NextButtonId = 0;
 
+	Map<String, UINT32> VirtualAxis::UniqueAxisIds;
+	UINT32 VirtualAxis::NextAxisId = 0;
+
 	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC()
 		:buttonCode(BC_0), modifiers(VButtonModifier::None), repeatable(false)
 	{ }
 
 	VIRTUAL_BUTTON_DESC::VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, VButtonModifier modifiers, bool repeatable)
 		:buttonCode(buttonCode), modifiers(modifiers), repeatable(repeatable)
+	{ }
+
+	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC()
+		: type(AxisType::MainX), device(AxisDevice::Mouse), deviceIndex(0), deadZone(0.0001f),
+		sensitivity(1.0f), invert(false), smooth(true)
+	{ }
+
+	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC(AxisType type, AxisDevice device, float deadZone, UINT32 deviceIndex, 
+		float sensitivity, bool invert, bool smooth)
+		:type(type), device(device), deadZone(deadZone), deviceIndex(deviceIndex), sensitivity(sensitivity),
+		invert(invert), smooth(smooth)
 	{ }
 
 	VirtualButton::VirtualButton()
@@ -27,6 +41,23 @@ namespace BansheeEngine
 		{
 			buttonIdentifier = NextButtonId;
 			UniqueButtonIds[name] = NextButtonId++;
+		}
+	}
+
+	VirtualAxis::VirtualAxis()
+		:axisIdentifier(0)
+	{ }
+
+	VirtualAxis::VirtualAxis(const String& name)
+	{
+		auto findIter = UniqueAxisIds.find(name);
+
+		if (findIter != UniqueAxisIds.end())
+			axisIdentifier = findIter->second;
+		else
+		{
+			axisIdentifier = NextAxisId;
+			UniqueAxisIds[name] = NextAxisId++;
 		}
 	}
 
@@ -84,7 +115,31 @@ namespace BansheeEngine
 		}
 	}
 
-	bool InputConfiguration::getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const
+	void InputConfiguration::registerAxis(const String& name, const VIRTUAL_AXIS_DESC& desc)
+	{
+		VirtualAxis axis(name);
+
+		if (axis.axisIdentifier >= (UINT32)mAxes.size())
+			mAxes.resize(axis.axisIdentifier + 1);
+
+		mAxes[axis.axisIdentifier].name = name;
+		mAxes[axis.axisIdentifier].desc = desc;
+		mAxes[axis.axisIdentifier].axis = axis;
+	}
+
+	void InputConfiguration::unregisterAxis(const String& name)
+	{
+		for (UINT32 i = 0; i < (UINT32)mAxes.size(); i++)
+		{
+			if (mAxes[i].name == name)
+			{
+				mAxes.erase(mAxes.begin() + i);
+				i--;
+			}
+		}
+	}
+
+	bool InputConfiguration::_getButton(ButtonCode code, UINT32 modifiers, VirtualButton& btn, VIRTUAL_BUTTON_DESC& btnDesc) const
 	{
 		const Vector<VirtualButtonData>& btnData = mButtons[code & 0x0000FFFF];
 
@@ -99,5 +154,14 @@ namespace BansheeEngine
 		}
 
 		return false;
+	}
+
+	bool InputConfiguration::_getAxis(const VirtualAxis& axis, VIRTUAL_AXIS_DESC& axisDesc) const
+	{
+		if (axis.axisIdentifier >= (UINT32)mAxes.size())
+			return false;
+
+		axisDesc = mAxes[axis.axisIdentifier].desc;
+		return true;
 	}
 }

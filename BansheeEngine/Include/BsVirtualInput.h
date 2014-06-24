@@ -42,6 +42,8 @@ namespace BansheeEngine
 		bool isButtonUp(const VirtualButton& button) const;
 		bool isButtonHeld(const VirtualButton& button) const;
 
+		float getAxisValue(const VirtualAxis& axis) const;
+
 		void update();
 
 		Event<void(const VirtualButton&)> onButtonDown;
