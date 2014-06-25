@@ -4,6 +4,7 @@
 #include "BsRenderWindow.h"
 #include "BsTime.h"
 #include "BsMath.h"
+#include "BsDebug.h"
 
 namespace BansheeEngine
 {
@@ -17,7 +18,8 @@ namespace BansheeEngine
 	{
 		ButtonCode bc = InputHandlerOIS::gamepadButtonToButtonCode(button);
 
-		mParentHandler->onButtonDown(mGamepadIdx, bc, 0); // TODO - No timestamps
+		// Note: No timestamps for gamepad buttons, but they shouldn't be used for anything anyway
+		mParentHandler->onButtonDown(mGamepadIdx, bc, 0);
 		return true;
 	}
 
@@ -25,7 +27,8 @@ namespace BansheeEngine
 	{
 		ButtonCode bc = InputHandlerOIS::gamepadButtonToButtonCode(button);
 
-		mParentHandler->onButtonUp(mGamepadIdx, bc, 0); // TODO - No timestamps
+		// Note: No timestamps for gamepad buttons, but they shouldn't be used for anything anyway
+		mParentHandler->onButtonUp(mGamepadIdx, bc, 0);
 		return true;
 	}
 
@@ -38,10 +41,12 @@ namespace BansheeEngine
 		INT32 axisAbs = arg.state.mAxes[axis].abs;
 
 		RawAxisState axisState;
-		axisState.rel = ((axisRel + OIS::JoyStick::MIN_AXIS) / axisRange) * 2.0f - 1.0f;
-		axisState.abs = ((axisAbs + OIS::JoyStick::MIN_AXIS) / axisRange) * 2.0f - 1.0f;
+		axisState.rel = ((axisRel + Math::abs((float)OIS::JoyStick::MIN_AXIS)) / axisRange) * 2.0f - 1.0f;
+		axisState.abs = ((axisAbs + Math::abs((float)OIS::JoyStick::MIN_AXIS)) / axisRange) * 2.0f - 1.0f;
 
 		mParentHandler->onAxisMoved(mGamepadIdx, axisState, (UINT32)axis);
+
+		LOGWRN(toString(axis) + " - " + toString(axisState.abs));
 
 		return true;
 	}
@@ -94,6 +99,8 @@ namespace BansheeEngine
 
 			gamepadData.gamepad = static_cast<OIS::JoyStick*>(mInputManager->createInputObject(OIS::OISJoyStick, true));
 			gamepadData.listener = bs_new<GamepadEventListener>(this, i);
+
+			gamepadData.gamepad->setEventCallback(gamepadData.listener);
 		}
 
 		// OIS reports times since system start but we use time since program start
@@ -206,7 +213,34 @@ namespace BansheeEngine
 
 	ButtonCode InputHandlerOIS::gamepadButtonToButtonCode(INT32 joystickCode)
 	{
-		// TODO
-		return BC_0;
+		switch (joystickCode)
+		{
+		case 0:
+			return BC_GAMEPAD_A;
+		case 1:
+			return BC_GAMEPAD_B;
+		case 2:
+			return BC_GAMEPAD_X;
+		case 3:
+			return BC_GAMEPAD_Y;
+		case 4:
+			return BC_GAMEPAD_LB;
+		case 5:
+			return BC_GAMEPAD_RB;
+		case 6:
+			return BC_GAMEPAD_BACK;
+		case 7:
+			return BC_GAMEPAD_START;
+		case 8:
+			return BC_GAMEPAD_BTN1;
+		case 9:
+			return BC_GAMEPAD_RS;
+		case 10:
+			return BC_GAMEPAD_BTN2;
+		case 11:
+			return BC_GAMEPAD_LS;
+		}
+
+		return (ButtonCode)(BC_GAMEPAD_BTN3 + (joystickCode - 11));
 	}
 }

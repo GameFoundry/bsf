@@ -15,8 +15,7 @@ Polish TODO:
 Rebuild OIS with XINPUT support (OIS_WIN32_XINPUT_SUPPORT)
 Rename CamelotOIS to BansheeOIS
 
-TODO - How do I convert joystick buttons to in-engine button codes?
-TODO - I don't have timestamps for joystick buttons
+OIS doesn't report D-pad as buttons
 
 Mouse sensitivity/sampling rate/whatever needs to be tweaked
  - Use DirectInput DIPROPRANGE and SetProperty/GetProperty?
@@ -24,6 +23,7 @@ Mouse sensitivity/sampling rate/whatever needs to be tweaked
 Add smoothing
   - See http://www.flipcode.com/archives/Smooth_Mouse_Filtering.shtml or UE4 implementation
   - UE4 seems to receive multiple mouse samples per frame. I only sample input once per frame
+    - Actually OIS seems to receive multiple samples too, but it just accumulates them automatically
 
 -----------------
 

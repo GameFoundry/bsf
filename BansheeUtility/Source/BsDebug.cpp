@@ -6,31 +6,51 @@
 #include "BsDataStream.h"
 #include "BsPath.h"
 
+#if BS_PLATFORM == BS_PLATFORM_WIN32 && BS_COMPILER == BS_COMPILER_MSVC
+#include <windows.h>
+
+void logToIDEConsole(const BansheeEngine::String& message)
+{
+	OutputDebugString(message.c_str());
+	OutputDebugString("\n");
+}
+#else
+void logToIDEConsole(const BansheeEngine::String& message)
+{
+	// Do nothing
+}
+#endif
+
 namespace BansheeEngine
 {
 	void Debug::logDebug(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalDebug");
+		logToIDEConsole(msg);
 	}
 
 	void Debug::logInfo(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalInfo");
+		logToIDEConsole(msg);
 	}
 
 	void Debug::logWarning(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalWarning");
+		logToIDEConsole(msg);
 	}
 
 	void Debug::logError(const String& msg)
 	{
 		mLog.logMsg(msg, "GlobalError");
+		logToIDEConsole(msg);
 	}
 
 	void Debug::log(const String& msg, const String& channel)
 	{
 		mLog.logMsg(msg, channel);
+		logToIDEConsole(msg);
 	}
 
 	void Debug::writeAsBMP(UINT8* rawPixels, UINT32 bytesPerPixel, UINT32 width, UINT32 height, const Path& filePath, bool overwrite) const
