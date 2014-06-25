@@ -8,36 +8,90 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	List box GUI element which when active opens a drop down
+	 *			selection with provided elements.
+	 */
 	class BS_EXPORT GUIListBox : public GUIButtonBase
 	{
 	public:
+		/**
+		 * Returns type name of the GUI element used for finding GUI element styles. 
+		 */
 		static const String& getGUITypeName();
 
+		/**
+		 * @brief	Creates a new listbox with the provided elements.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
 		static GUIListBox* create(const Vector<HString>& elements, const String& styleName = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new listbox with the provided elements.
+		 *
+		 * @param	elements		Elements to display in the list box.
+		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
+		 *							GUI layout. This will override any similar options set by style.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
 		static GUIListBox* create(const Vector<HString>& elements, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
+		/**
+		 * @brief	Changes the list box elements.
+		 */
 		void setElements(const Vector<HString>& elements);
 
+		/**
+		 * @copydoc	GUIButtonBase::getElementType
+		 */
 		virtual ElementType getElementType() const { return ElementType::ListBox; }
 
+		/**
+		 * @brief	Triggered whenever user selects a new element in the list box. Returned index
+		 *			maps to the element in the elements array that the list box was initialized with.
+		 */
 		Event<void(UINT32)> onSelectionChanged;
 	protected:
 		~GUIListBox();
 
 	private:
+		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUILayoutOptions& layoutOptions);
+
+		/**
+		 * @copydoc	GUIButtonBase::mouseEvent
+		 */
+		virtual bool mouseEvent(const GUIMouseEvent& ev);
+
+		/**
+		 * @brief	Triggered when user clicks on an element.
+		 */
+		void elementSelected(UINT32 idx);
+
+		/**
+		 * @brief	Opens the list box drop down menu.
+		 */
+		void openListBox();
+
+		/**
+		 * @brief	Closes the list box drop down menu.
+		 */
+		void closeListBox();
+
+		/**
+		 * @brief	Called when the list box drop down menu is closed
+		 *			by external influence.
+		 */
+		void onListBoxClosed();
+
+	private:
 		UINT32 mSelectedIdx;
 		Vector<HString> mElements;
 		bool mIsListBoxOpen;
-
-		GUIListBox(const String& styleName, const Vector<HString>& elements, const GUILayoutOptions& layoutOptions);
-
-		virtual bool mouseEvent(const GUIMouseEvent& ev);
-
-		void elementSelected(UINT32 idx);
-
-		void openListBox();
-		void closeListBox();
-
-		void onListBoxClosed();
 	};
 }

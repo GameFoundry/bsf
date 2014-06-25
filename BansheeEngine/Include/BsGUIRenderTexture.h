@@ -14,20 +14,42 @@ namespace BansheeEngine
 	class BS_EXPORT GUIRenderTexture : public GUITexture
 	{
 	public:
+		/**
+		 * Returns type name of the GUI element used for finding GUI element styles. 
+		 */
 		static const String& getGUITypeName();
 
+		/**
+		 * @brief	Creates a new element with the provided render texture.
+		 *
+		 * @param	texture			Render texture to display.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
 		static GUIRenderTexture* create(const RenderTexturePtr& texture, const String& styleName = StringUtil::BLANK);
+
+		/**
+		 * @brief	Creates a new element with the provided render texture.
+		 *
+		 * @param	texture			Render texture to display.
+		 * @param	layoutOptions	Options that allows you to control how is the element positioned in
+		 *							GUI layout. This will override any similar options set by style.
+		 * @param	styleName		Optional style to use for the element. Style will be retrieved
+		 *							from GUISkin of the GUIWidget the element is used on. If not specified
+		 *							default style is used.
+		 */
 		static GUIRenderTexture* create(const RenderTexturePtr& texture, const GUIOptions& layoutOptions, const String& styleName = StringUtil::BLANK);
 
 	protected:
-		const RenderTexture* mSourceTexture;
-
 		GUIRenderTexture(const String& styleName, const RenderTexturePtr& texture, const GUILayoutOptions& layoutOptions);
 		virtual ~GUIRenderTexture();
 
 		/**
-		 * @copydoc GUIElement::updateRenderElementsInternal()
+		 * @copydoc GUIElement::updateRenderElementsInternal
 		 */
 		virtual void updateRenderElementsInternal();
+
+		const RenderTexture* mSourceTexture;
 	};
 }

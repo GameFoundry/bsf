@@ -5,6 +5,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Container for data about a GUI element material.
+	 */
 	struct GUIMaterialInfo
 	{
 		HMaterial material;

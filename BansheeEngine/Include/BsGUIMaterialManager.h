@@ -39,11 +39,26 @@ namespace BansheeEngine
 		 */
 		void releaseMaterial(const GUIMaterialInfo& material) const;
 
+		/**
+		 * @brief	Attempts to find an existing text material with the specified color and tint. Returns null
+		 *			if one cannot be found.
+		 */
 		const GUIMaterialInfo* findExistingTextMaterial(const HTexture& texture, const Color& tint) const;
+
+		/**
+		 * @brief	Attempts to find an existing image material with the specified color and tint. Returns null
+		 *			if one cannot be found.
+		 */
 		const GUIMaterialInfo* findExistingImageMaterial(const HTexture& texture, const Color& tint) const;
 
+		/**
+		 * @brief	Releases all internal materials, whether they are used or not.
+		 */
 		void forceReleaseAllMaterials();
 	private:
+		/**
+		 * @brief	Contains data about a GUI material and its usage count.
+		 */
 		struct GUIMaterial
 		{
 			GUIMaterial()
