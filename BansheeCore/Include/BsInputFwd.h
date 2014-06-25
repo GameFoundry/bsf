@@ -241,6 +241,7 @@ namespace BansheeEngine
 
 		ButtonCode buttonCode; /**< Button code this event is referring to. */
 		UINT64 timestamp; /**< Timestamp in ticks when the event happened. */
+		UINT32 deviceIdx; /**< Index of the device that the event happened on. */
 
 		/**
 		 * @brief	Query is the pressed button a keyboard button.
@@ -309,7 +310,7 @@ namespace BansheeEngine
 		}
 
 		Vector2I screenPos; /**< Screen position where the input event occurred. */
-		bool buttonStates[PointerEventButton::Count]; /**< States of the pointer buttons (e.g. mouse buttons). */
+		bool buttonStates[(UINT32)PointerEventButton::Count]; /**< States of the pointer buttons (e.g. mouse buttons). */
 		PointerEventButton button; /**< Button that triggered the pointer event. Might be irrelevant 
 										depending on event type. (e.g. move events don't correspond to a button. */
 		PointerEventType type; /**< Type of the pointer event. */
@@ -337,7 +338,7 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Type of special input command types.
+	 * @brief	Types of special input commands.
 	 */
 	enum class InputCommandType
 	{
@@ -376,10 +377,11 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Types of input devices that can return analog axis data.
+	 * @brief	Types of input devices.
 	 */
-	enum class AxisDevice
+	enum class InputDevice
 	{
+		Keyboard,
 		Mouse,
 		Gamepad,
 		Count // Keep at end
@@ -388,10 +390,13 @@ namespace BansheeEngine
 	/**
 	 * @brief	Common input axis types.
 	 */
-	enum class AxisType
+	enum class InputAxis
 	{
-		MainX, /**< Mouse X, Gamepad left stick X */
-		MainY, /**< Mouse Y, Gamepad left stick Y */
+		MouseX, /**< Mouse axis X. */
+		MouseY, /**< Mouse axis Y. */
+		MouseZ, /**< Mouse wheel/scroll axis. */
+		LeftStickX, /**< Gamepad left stick X */
+		LeftStickY, /**<  Gamepad left stick Y */
 		RightStickX, /**< Gamepad right stick X */
 		RightStickY, /**< Gamepad right stick Y */
 		LeftTrigger, /**< Gamepad left trigger */

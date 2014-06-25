@@ -224,11 +224,9 @@ namespace BansheeEngine
 	{
 		String name = pluginName;
 #if BS_PLATFORM == BS_PLATFORM_LINUX
-		// dlopen() does not add .so to the filename, like windows does for .dll
 		if (name.substr(name.length() - 3, 3) != ".so")
 			name += ".so";
 #elif BS_PLATFORM == BS_PLATFORM_APPLE
-		// dlopen() does not add .dylib to the filename, like windows does for .dll
 		if (name.substr(name.length() - 6, 6) != ".dylib")
 			name += ".dylib";
 #elif BS_PLATFORM == BS_PLATFORM_WIN32

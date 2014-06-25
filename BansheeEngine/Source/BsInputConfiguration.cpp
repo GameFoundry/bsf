@@ -17,14 +17,11 @@ namespace BansheeEngine
 	{ }
 
 	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC()
-		: type(AxisType::MainX), device(AxisDevice::Mouse), deviceIndex(0), deadZone(0.0001f),
-		sensitivity(1.0f), invert(false), smooth(true)
+		: type(InputAxis::MouseX), deadZone(0.0001f), sensitivity(1.0f), invert(false), smooth(true)
 	{ }
 
-	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC(AxisType type, AxisDevice device, float deadZone, UINT32 deviceIndex, 
-		float sensitivity, bool invert, bool smooth)
-		:type(type), device(device), deadZone(deadZone), deviceIndex(deviceIndex), sensitivity(sensitivity),
-		invert(invert), smooth(smooth)
+	VIRTUAL_AXIS_DESC::VIRTUAL_AXIS_DESC(InputAxis type, float deadZone, float sensitivity, bool invert, bool smooth)
+		:type(type), deadZone(deadZone), sensitivity(sensitivity), invert(invert), smooth(smooth)
 	{ }
 
 	VirtualButton::VirtualButton()

@@ -77,7 +77,7 @@ namespace BansheeEngine
 		mOnPointerDoubleClick = gInput().onPointerDoubleClick.connect(std::bind(&GUIManager::onPointerDoubleClick, this, _1));
 		mOnTextInputConn = gInput().onCharInput.connect(std::bind(&GUIManager::onTextInput, this, _1)); 
 		mOnInputCommandConn = gInput().onInputCommand.connect(std::bind(&GUIManager::onInputCommandEntered, this, _1)); 
-		mOnVirtualButtonDown = VirtualInput::instance().onButtonDown.connect(std::bind(&GUIManager::onVirtualButtonDown, this, _1));
+		mOnVirtualButtonDown = VirtualInput::instance().onButtonDown.connect(std::bind(&GUIManager::onVirtualButtonDown, this, _1, _2));
 
 		mWindowGainedFocusConn = RenderWindowManager::instance().onFocusGained.connect(std::bind(&GUIManager::onWindowFocusGained, this, _1));
 		mWindowLostFocusConn = RenderWindowManager::instance().onFocusLost.connect(std::bind(&GUIManager::onWindowFocusLost, this, _1));
@@ -1074,7 +1074,7 @@ namespace BansheeEngine
 		}		
 	}
 
-	void GUIManager::onVirtualButtonDown(const VirtualButton& button)
+	void GUIManager::onVirtualButtonDown(const VirtualButton& button, UINT32 deviceIdx)
 	{
 		mVirtualButtonEvent.setButton(button);
 		

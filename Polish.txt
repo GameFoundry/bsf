@@ -12,20 +12,18 @@ Polish TODO:
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
  - (HIGHLY OPTIONAL) Make a Getting Started guide, along with the example project. Or just finish up the manual.
 
-Rename Joystick -> Gamepad
-OIS has getNumberOfDevices and listFreeDevices that I don't currently use. I should use that for Gamepad input.
-
-Refactor Input so that axis state isn't received in integers but in [-1.0, 1.0] float range
-Refactor input so X and Y axes are received separately
-Refactor OIS input so it properly weights Mouse state according to MouseState.width, MouseState.height
 Rebuild OIS with XINPUT support (OIS_WIN32_XINPUT_SUPPORT)
 Rename CamelotOIS to BansheeOIS
-Add Joystick support to OIS input handler and make sure the axes are properly weighed in OISJoystick::MIN_AXIS, OISJoystick::MAX_AXIS range.
+
+TODO - How do I convert joystick buttons to in-engine button codes?
+TODO - I don't have timestamps for joystick buttons
+
+Mouse sensitivity/sampling rate/whatever needs to be tweaked
+ - Use DirectInput DIPROPRANGE and SetProperty/GetProperty?
+
 Add smoothing
   - See http://www.flipcode.com/archives/Smooth_Mouse_Filtering.shtml or UE4 implementation
-
-Ensure that all button methods accept a DeviceIdx so that multiple joysticks can work.
- - When button events are triggered from Input and VirtualInput include device type and index in them
+  - UE4 seems to receive multiple mouse samples per frame. I only sample input once per frame
 
 -----------------
 

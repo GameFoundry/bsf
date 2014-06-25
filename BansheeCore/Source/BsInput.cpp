@@ -12,23 +12,14 @@ namespace BansheeEngine
 	const int Input::HISTORY_BUFFER_SIZE = 10; // Size of buffer used for input smoothing
 	const float Input::WEIGHT_MODIFIER = 0.5f;
 
+	Input::DeviceData::DeviceData()
+	{
+		for (int i = 0; i < BC_Count; i++)
+			keyStates[i] = ButtonState::Off;
+	}
+
 	Input::Input()
-		:mSmoothHorizontalAxis(0.0f), mSmoothVerticalAxis(0.0f), mCurrentBufferIdx(0), mMouseLastRel(0, 0), mRawInputHandler(nullptr)
 	{ 
-		mHorizontalHistoryBuffer = bs_newN<float>(HISTORY_BUFFER_SIZE);
-		mVerticalHistoryBuffer = bs_newN<float>(HISTORY_BUFFER_SIZE);
-		mTimesHistoryBuffer = bs_newN<float>(HISTORY_BUFFER_SIZE);
-
-		for(int i = 0; i < HISTORY_BUFFER_SIZE; i++)
-		{
-			mHorizontalHistoryBuffer[i] = 0.0f;
-			mVerticalHistoryBuffer[i] = 0.0f;
-			mTimesHistoryBuffer[i] = 0.0f;
-		}
-
-		for(int i = 0; i < BC_Count; i++)
-			mKeyState[i] = ButtonState::Off;
-
 		mOSInputHandler = bs_shared_ptr<OSInputHandler>();
 
 		mOSInputHandler->onCharInput.connect(std::bind(&Input::charInput, this, _1));
@@ -42,11 +33,7 @@ namespace BansheeEngine
 	}
 
 	Input::~Input()
-	{
-		bs_deleteN(mHorizontalHistoryBuffer, HISTORY_BUFFER_SIZE);
-		bs_deleteN(mVerticalHistoryBuffer, HISTORY_BUFFER_SIZE);
-		bs_deleteN(mTimesHistoryBuffer, HISTORY_BUFFER_SIZE);
-	}
+	{ }
 
 	void Input::_registerRawInputHandler(std::shared_ptr<RawInputHandler> inputHandler)
 	{
@@ -56,10 +43,10 @@ namespace BansheeEngine
 
 			if(mRawInputHandler != nullptr)
 			{
-				mRawInputHandler->onButtonDown.connect(std::bind(&Input::buttonDown, this, _1, _2));
-				mRawInputHandler->onButtonUp.connect(std::bind(&Input::buttonUp, this, _1, _2));
+				mRawInputHandler->onButtonDown.connect(std::bind(&Input::buttonDown, this, _1, _2, _3));
+				mRawInputHandler->onButtonUp.connect(std::bind(&Input::buttonUp, this, _1, _2, _3));
 
-				mRawInputHandler->onAxisMoved.connect(std::bind(&Input::axisMoved, this, _1, _2));
+				mRawInputHandler->onAxisMoved.connect(std::bind(&Input::axisMoved, this, _1, _2, _3));
 			}
 		}
 	}
@@ -68,12 +55,16 @@ namespace BansheeEngine
 	{
 		// Toggle states only remain active for a single frame before they are transitioned
 		// into permanent state
-		for(UINT32 i = 0; i < BC_Count; i++)
+
+		for (auto& deviceData : mDevices)
 		{
-			if(mKeyState[i] == ButtonState::ToggledOff)
-				mKeyState[i] = ButtonState::Off;
-			else if(mKeyState[i] == ButtonState::ToggledOn)
-				mKeyState[i] = ButtonState::On;
+			for (UINT32 i = 0; i < BC_Count; i++)
+			{
+				if (deviceData.keyStates[i] == ButtonState::ToggledOff)
+					deviceData.keyStates[i] = ButtonState::Off;
+				else if (deviceData.keyStates[i] == ButtonState::ToggledOn)
+					deviceData.keyStates[i] = ButtonState::On;
+			}
 		}
 
 		if(mRawInputHandler == nullptr)
@@ -92,7 +83,7 @@ namespace BansheeEngine
 		else
 			mOSInputHandler->_update();
 
-		updateSmoothInput();
+		// TODO - Perform smoothing
 	}
 
 	void Input::inputWindowChanged(RenderWindow& win)
@@ -104,62 +95,68 @@ namespace BansheeEngine
 			mOSInputHandler->_inputWindowChanged(win);
 	}
 
-	void Input::buttonDown(ButtonCode code, UINT64 timestamp)
+	void Input::buttonDown(UINT32 deviceIdx, ButtonCode code, UINT64 timestamp)
 	{
-		mKeyState[code & 0x0000FFFF] = ButtonState::ToggledOn;
+		while (deviceIdx >= (UINT32)mDevices.size())
+			mDevices.push_back(DeviceData());
+
+		mDevices[deviceIdx].keyStates[code & 0x0000FFFF] = ButtonState::ToggledOn;
 
 		if(!onButtonDown.empty())
 		{
 			ButtonEvent btnEvent;
 			btnEvent.buttonCode = code;
 			btnEvent.timestamp = timestamp;
+			btnEvent.deviceIdx = deviceIdx;
 
 			onButtonDown(btnEvent);
 		}
 	}
 
-	void Input::buttonUp(ButtonCode code, UINT64 timestamp)
+	void Input::buttonUp(UINT32 deviceIdx, ButtonCode code, UINT64 timestamp)
 	{
-		mKeyState[code & 0x0000FFFF] = ButtonState::ToggledOff;
+		while (deviceIdx >= (UINT32)mDevices.size())
+			mDevices.push_back(DeviceData());
+
+		mDevices[deviceIdx].keyStates[code & 0x0000FFFF] = ButtonState::ToggledOff;
 
 		if(!onButtonUp.empty())
 		{
 			ButtonEvent btnEvent;
 			btnEvent.buttonCode = code;
 			btnEvent.timestamp = timestamp;
+			btnEvent.deviceIdx = deviceIdx;
 
 			onButtonUp(btnEvent);
 		}
 	}
 
-	void Input::axisMoved(const RawAxisState& state, RawInputAxis axis)
+	void Input::axisMoved(UINT32 deviceIdx, const RawAxisState& state, UINT32 axis)
 	{
-		if(axis == RawInputAxis::Mouse_XY)
-			mMouseLastRel = Vector2I(-state.rel.x, -state.rel.y);
+		while (deviceIdx >= (UINT32)mDevices.size())
+			mDevices.push_back(DeviceData());
 
-		mAxes[(int)axis] = state;
+		Vector<RawAxisState>& axes = mDevices[deviceIdx].axes;
+		while (axis >= (UINT32)axes.size())
+			axes.push_back(RawAxisState());
+
+		mDevices[deviceIdx].axes[axis] = state;
 	}
 
 	void Input::cursorMoved(const PointerEvent& event)
 	{
-		mMouseAbsPos = event.screenPos;
-
 		if(!onPointerMoved.empty())
 			onPointerMoved(event);
 	}
 
 	void Input::cursorPressed(const PointerEvent& event)
 	{
-		mMouseAbsPos = event.screenPos;
-
 		if(!onPointerPressed.empty())
 			onPointerPressed(event);
 	}
 
 	void Input::cursorReleased(const PointerEvent& event)
 	{
-		mMouseAbsPos = event.screenPos;
-
 		if(!onPointerReleased.empty())
 			onPointerReleased(event);
 	}
@@ -187,70 +184,43 @@ namespace BansheeEngine
 		}
 	}
 
-	float Input::getHorizontalAxis() const
+	float Input::getAxisValue(UINT32 type, UINT32 deviceIdx, bool smooth) const
 	{
-		return mSmoothHorizontalAxis;
+		if (deviceIdx >= (UINT32)mDevices.size())
+			return 0.0f;
+
+		// TODO - Smooth parameter is ignored
+
+		const Vector<RawAxisState>& axes = mDevices[deviceIdx].axes;
+		if (type >= (UINT32)axes.size())
+			return 0.0f;
+
+		return axes[type].abs;
 	}
 
-	float Input::getVerticalAxis() const
+	bool Input::isButtonHeld(ButtonCode button, UINT32 deviceIdx) const
 	{
-		return mSmoothVerticalAxis;
+		if (deviceIdx >= (UINT32)mDevices.size())
+			return false;
+
+		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::On || 
+			mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn;
 	}
 
-	float Input::getAxisValue(AxisDevice device, AxisType type, UINT32 deviceIdx, bool smooth)
+	bool Input::isButtonUp(ButtonCode button, UINT32 deviceIdx) const
 	{
-		// TODO
-		return 0.0f;
+		if (deviceIdx >= (UINT32)mDevices.size())
+			return false;
+
+		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOff;
 	}
 
-	bool Input::isButtonHeld(ButtonCode button) const
+	bool Input::isButtonDown(ButtonCode button, UINT32 deviceIdx) const
 	{
-		return mKeyState[button & 0x0000FFFF] == ButtonState::On || mKeyState[button & 0x0000FFFF] == ButtonState::ToggledOn;
-	}
+		if (deviceIdx >= (UINT32)mDevices.size())
+			return false;
 
-	bool Input::isButtonUp(ButtonCode button) const
-	{
-		return mKeyState[button & 0x0000FFFF] == ButtonState::ToggledOff;
-	}
-
-	bool Input::isButtonDown(ButtonCode button) const
-	{
-		return mKeyState[button & 0x0000FFFF] == ButtonState::ToggledOn;
-	}
-
-	void Input::updateSmoothInput()
-	{
-		float currentTime = gTime().getTime();
-
-		mHorizontalHistoryBuffer[mCurrentBufferIdx] = (float)mMouseLastRel.x;
-		mVerticalHistoryBuffer[mCurrentBufferIdx] = (float)mMouseLastRel.y;
-		mTimesHistoryBuffer[mCurrentBufferIdx] = currentTime;
-
-		int i = 0;
-		int idx = mCurrentBufferIdx;
-		float currentWeight = 1.0f;
-		float horizontalTotal = 0.0f;
-		float verticalTotal = 0.0f;
-		while(i < HISTORY_BUFFER_SIZE)
-		{
-			float timeWeight = 1.0f - (currentTime - mTimesHistoryBuffer[idx]) * 10.0f;
-			if(timeWeight < 0.0f)
-				timeWeight = 0.0f;
-
-			horizontalTotal += mHorizontalHistoryBuffer[idx] * currentWeight * timeWeight;
-			verticalTotal += mVerticalHistoryBuffer[idx] * currentWeight * timeWeight;
-
-			currentWeight *= WEIGHT_MODIFIER;
-			idx = (idx + 1) % HISTORY_BUFFER_SIZE;
-			i++;
-		}
-
-		mCurrentBufferIdx = (mCurrentBufferIdx + 1) % HISTORY_BUFFER_SIZE;
-
-		mSmoothHorizontalAxis = Math::clamp(horizontalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
-		mSmoothVerticalAxis = Math::clamp(verticalTotal / HISTORY_BUFFER_SIZE, -1.0f, 1.0f);
-
-		mMouseLastRel = Vector2I(0, 0);
+		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn;
 	}
 
 	Input& gInput()

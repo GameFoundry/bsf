@@ -197,7 +197,7 @@ namespace BansheeEngine
 		void onPointerDoubleClick(const PointerEvent& event);
 		void onTextInput(const TextInputEvent& event);
 		void onInputCommandEntered(InputCommandType commandType);
-		void onVirtualButtonDown(const VirtualButton& button);
+		void onVirtualButtonDown(const VirtualButton& button, UINT32 deviceIdx);
 
 		void onMouseDragEnded(const PointerEvent& event, DragCallbackInfo& dragInfo);
 

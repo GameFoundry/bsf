@@ -8,6 +8,7 @@
 #include "BsInput.h"
 #include "BsGUIWidget.h"
 #include "BsGUILayout.h"
+#include "BsCursor.h"
 
 using namespace std::placeholders;
 
@@ -233,7 +234,7 @@ namespace BansheeEngine
 
 			newWindow->widgets().add(*draggedWidget);
 
-			Vector2I mousePos = Input::instance().getCursorPosition();
+			Vector2I mousePos = Cursor::instance().getScreenPosition();
 			newWindow->setPosition(mousePos.x, mousePos.y);
 		}
 	}

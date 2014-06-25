@@ -30,16 +30,13 @@ namespace BansheeEngine
 	struct VIRTUAL_AXIS_DESC
 	{
 		VIRTUAL_AXIS_DESC();
-		VIRTUAL_AXIS_DESC(AxisType type, AxisDevice device, float deadZone = 0.0001f, UINT32 deviceIndex = 0, 
-			float sensitivity = 1.0f, bool invert = false, bool smooth = true);
+		VIRTUAL_AXIS_DESC(InputAxis type, float deadZone = 0.0001f, float sensitivity = 1.0f, bool invert = false, bool smooth = true);
 
 		float deadZone;
 		float sensitivity;
 		bool invert;
 		bool smooth;
-		AxisDevice device;
-		AxisType type;
-		UINT32 deviceIndex;
+		InputAxis type;
 	};
 
 	/**
@@ -99,7 +96,7 @@ namespace BansheeEngine
 	class BS_EXPORT InputConfiguration
 	{
 		static const int MAX_NUM_DEVICES_PER_TYPE = 8;
-		static const int MAX_NUM_DEVICES = (UINT32)AxisDevice::Count * MAX_NUM_DEVICES_PER_TYPE;
+		static const int MAX_NUM_DEVICES = (UINT32)InputDevice::Count * MAX_NUM_DEVICES_PER_TYPE;
 
 		struct VirtualButtonData
 		{
@@ -117,7 +114,7 @@ namespace BansheeEngine
 
 		struct DeviceAxisData
 		{
-			VirtualAxisData axes[(UINT32)AxisType::Count];
+			VirtualAxisData axes[(UINT32)InputAxis::Count];
 		};
 
 	public:

@@ -77,8 +77,8 @@ namespace BansheeEngine
 
 		if(camRotating)
 		{
-			mYaw += Degree(gInput().getHorizontalAxis() * ROTATION_SPEED);
-			mPitch += Degree(gInput().getVerticalAxis() * ROTATION_SPEED);
+			mYaw += Degree(gInput().getAxisValue(InputDevice::Mouse, InputAxis::MainX) * ROTATION_SPEED);
+			mPitch += Degree(gInput().getAxisValue(InputDevice::Mouse, InputAxis::MainY) * ROTATION_SPEED);
 
 			Quaternion yRot;
 			yRot.fromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));

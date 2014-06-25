@@ -14,34 +14,12 @@ namespace BansheeEngine
 	 */
 	struct RawAxisState
 	{
-		Vector2I rel;
-		Vector2I abs;
-	};
+		RawAxisState()
+		 :rel(0.0f), abs(0.0f)
+		{ }
 
-	/**
-	 * @brief	Different types of input axes.
-	 */
-	enum class RawInputAxis
-	{
-		Mouse_XY,
-		Mouse_Z,
-		Joy_1,
-		Joy_2,
-		Joy_3,
-		Joy_4,
-		Joy_5,
-		Joy_6,
-		Joy_7,
-		Joy_8,
-		Joy_9,
-		Joy_10,
-		Joy_11,
-		Joy_12,
-		Joy_13,
-		Joy_14,
-		Joy_15,
-		Joy_16,
-		Count
+		float rel;
+		float abs;
 	};
 
 	/**
@@ -59,22 +37,23 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Triggered when user presses a button. Parameters
-		 * 			include button code of the pressed button, and a timestamp of
-		 * 			the button press event.
+		 * 			include device index, button code of the pressed button, 
+		 *			and a timestamp of the button press event.
 		 */
-		Event<void(ButtonCode, UINT64)> onButtonDown;
+		Event<void(UINT32, ButtonCode, UINT64)> onButtonDown;
 
 		/**
 		 * @brief	Triggered when user releases a button. Parameters
-		 * 			include button code of the released button, and a timestamp of
-		 * 			the button release event.
+		 * 			include device index, button code of the released button, 
+		 *			and a timestamp of the button release event.
 		 */
-		Event<void(ButtonCode, UINT64)> onButtonUp;
+		Event<void(UINT32, ButtonCode, UINT64)> onButtonUp;
 
 		/**
 		 * @brief	Triggered whenever the specified axis state changes.
+		 *			Parameters include device index, axis state data, and axis type.
 		 */
-		Event<void(const RawAxisState&, RawInputAxis)> onAxisMoved;
+		Event<void(UINT32, const RawAxisState&, UINT32)> onAxisMoved;
 
 		/**
 		 * @brief	Called once per frame. Capture input here if needed.

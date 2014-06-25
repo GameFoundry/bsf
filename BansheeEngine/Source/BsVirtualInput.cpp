@@ -25,46 +25,60 @@ namespace BansheeEngine
 	{
 		mInputConfiguration = input;
 
-		mCachedStates.clear(); // Note: Technically this is slightly wrong as it will
+		// Note: Technically this is slightly wrong as it will
 		// "forget" any buttons currently held down, but shouldn't matter much in practice.
+		for (auto& deviceData : mDevices)
+			deviceData.cachedStates.clear(); 
 	}
 
-	bool VirtualInput::isButtonDown(const VirtualButton& button) const
+	bool VirtualInput::isButtonDown(const VirtualButton& button, UINT32 deviceIdx) const
 	{
-		auto iterFind = mCachedStates.find(button.buttonIdentifier);
+		if (deviceIdx >= (UINT32)mDevices.size())
+			return false;
 
-		if(iterFind != mCachedStates.end())
+		const Map<UINT32, ButtonData>& cachedStates = mDevices[deviceIdx].cachedStates;
+		auto iterFind = cachedStates.find(button.buttonIdentifier);
+
+		if (iterFind != cachedStates.end())
 			return iterFind->second.state == ButtonState::ToggledOn;
 		
 		return false;
 	}
 
-	bool VirtualInput::isButtonUp(const VirtualButton& button) const
+	bool VirtualInput::isButtonUp(const VirtualButton& button, UINT32 deviceIdx) const
 	{
-		auto iterFind = mCachedStates.find(button.buttonIdentifier);
+		if (deviceIdx >= (UINT32)mDevices.size())
+			return false;
 
-		if(iterFind != mCachedStates.end())
+		const Map<UINT32, ButtonData>& cachedStates = mDevices[deviceIdx].cachedStates;
+		auto iterFind = cachedStates.find(button.buttonIdentifier);
+
+		if (iterFind != cachedStates.end())
 			return iterFind->second.state == ButtonState::ToggledOff;
 
 		return false;
 	}
 
-	bool VirtualInput::isButtonHeld(const VirtualButton& button) const
+	bool VirtualInput::isButtonHeld(const VirtualButton& button, UINT32 deviceIdx) const
 	{
-		auto iterFind = mCachedStates.find(button.buttonIdentifier);
+		if (deviceIdx >= (UINT32)mDevices.size())
+			return false;
 
-		if(iterFind != mCachedStates.end())
+		const Map<UINT32, ButtonData>& cachedStates = mDevices[deviceIdx].cachedStates;
+		auto iterFind = cachedStates.find(button.buttonIdentifier);
+
+		if (iterFind != cachedStates.end())
 			return iterFind->second.state == ButtonState::On || iterFind->second.state == ButtonState::ToggledOn;
 
 		return false;
 	}
 
-	float VirtualInput::getAxisValue(const VirtualAxis& axis) const
+	float VirtualInput::getAxisValue(const VirtualAxis& axis, UINT32 deviceIdx) const
 	{
 		VIRTUAL_AXIS_DESC axisDesc;
 		if (mInputConfiguration->_getAxis(axis, axisDesc))
 		{
-			float axisValue = gInput().getAxisValue(axisDesc.device, axisDesc.type, axisDesc.deviceIndex, axisDesc.smooth);
+			float axisValue = gInput().getAxisValue((UINT32)axisDesc.type, deviceIdx, axisDesc.smooth);
 
 			if (axisDesc.deadZone > 0.0f)
 			{
@@ -88,12 +102,15 @@ namespace BansheeEngine
 
 	void VirtualInput::update()
 	{
-		for(auto& state : mCachedStates)
+		for (auto& deviceData : mDevices)
 		{
-			if(state.second.state == ButtonState::ToggledOff)
-				state.second.state = ButtonState::Off;
-			else if(state.second.state == ButtonState::ToggledOn)
-				state.second.state = ButtonState::On;
+			for (auto& state : deviceData.cachedStates)
+			{
+				if (state.second.state == ButtonState::ToggledOff)
+					state.second.state = ButtonState::Off;
+				else if (state.second.state == ButtonState::ToggledOn)
+					state.second.state = ButtonState::On;
+			}
 		}
 
 		bool hasEvents = true;
@@ -110,12 +127,12 @@ namespace BansheeEngine
 				if(event.state == ButtonState::On)
 				{
 					if(!onButtonDown.empty())
-						onButtonDown(event.button);
+						onButtonDown(event.button, event.deviceIdx);
 				}
 				else if(event.state == ButtonState::Off)
 				{
 					if(!onButtonUp.empty())
-						onButtonUp(event.button);
+						onButtonUp(event.button, event.deviceIdx);
 				}
 
 				mEvents.pop();
@@ -123,27 +140,33 @@ namespace BansheeEngine
 
 			// Queue up any repeatable events
 			hasEvents = false;
-			
-			for(auto& state : mCachedStates)
+
+			for (auto& deviceData : mDevices)
 			{
-				if(state.second.state != ButtonState::On)
-					continue;
-
-				if(!state.second.allowRepeat)
-					continue;
-
-				UINT64 diff = currentTime - state.second.timestamp;
-				if(diff >= repeatInternal)
+				for (auto& state : deviceData.cachedStates)
 				{
-					state.second.timestamp += repeatInternal;
+					if (state.second.state != ButtonState::On)
+						continue;
 
-					VirtualButtonEvent event;
-					event.button = state.second.button;
-					event.state = ButtonState::On;
+					if (!state.second.allowRepeat)
+						continue;
 
-					mEvents.push(event);
-					hasEvents = true;
-				}				
+					UINT64 diff = currentTime - state.second.timestamp;
+					if (diff >= repeatInternal)
+					{
+						state.second.timestamp += repeatInternal;
+
+						VirtualButtonEvent event;
+						event.button = state.second.button;
+						event.state = ButtonState::On;
+						event.deviceIdx = 0;
+
+						mEvents.push(event);
+						hasEvents = true;
+					}
+				}
+
+				break; // Only repeat the first device. Repeat only makes sense for keyboard which there is only one of.
 			}
 		}
 	}
@@ -162,7 +185,11 @@ namespace BansheeEngine
 			VIRTUAL_BUTTON_DESC btnDesc;
 			if(mInputConfiguration->_getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
 			{
-				ButtonData& data = mCachedStates[btn.buttonIdentifier];
+				while (event.deviceIdx >= (UINT32)mDevices.size())
+					mDevices.push_back(DeviceData());
+
+				Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+				ButtonData& data = cachedStates[btn.buttonIdentifier];
 
 				data.button = btn;
 				data.state = ButtonState::ToggledOn;
@@ -172,6 +199,7 @@ namespace BansheeEngine
 				VirtualButtonEvent virtualEvent;
 				virtualEvent.button = btn;
 				virtualEvent.state = ButtonState::On;
+				virtualEvent.deviceIdx = event.deviceIdx;
 
 				mEvents.push(virtualEvent);
 			}
@@ -192,7 +220,11 @@ namespace BansheeEngine
 			VIRTUAL_BUTTON_DESC btnDesc;
 			if(mInputConfiguration->_getButton(event.buttonCode, mActiveModifiers, btn, btnDesc))
 			{
-				ButtonData& data = mCachedStates[btn.buttonIdentifier];
+				while (event.deviceIdx >= (UINT32)mDevices.size())
+					mDevices.push_back(DeviceData());
+
+				Map<UINT32, ButtonData>& cachedStates = mDevices[event.deviceIdx].cachedStates;
+				ButtonData& data = cachedStates[btn.buttonIdentifier];
 
 				data.button = btn;
 				data.state = ButtonState::ToggledOff;
@@ -202,6 +234,7 @@ namespace BansheeEngine
 				VirtualButtonEvent virtualEvent;
 				virtualEvent.button = btn;
 				virtualEvent.state = ButtonState::Off;
+				virtualEvent.deviceIdx = event.deviceIdx;
 
 				mEvents.push(virtualEvent);
 			}

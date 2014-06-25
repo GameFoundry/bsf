@@ -72,7 +72,7 @@ namespace BansheeEngine
 		fullscreen = !fullscreen;
 	}
 
-	void buttonUp(const VirtualButton& button)
+	void buttonUp(const VirtualButton& button, UINT32 deviceIdx)
 	{
 		if (button == toggleCPUProfilerBtn)
 		{

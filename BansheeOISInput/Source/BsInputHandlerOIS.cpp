@@ -3,9 +3,49 @@
 #include "OIS/OISException.h"
 #include "BsRenderWindow.h"
 #include "BsTime.h"
+#include "BsMath.h"
 
 namespace BansheeEngine
 {
+	const UINT32 InputHandlerOIS::MOUSE_SENSITIVITY = 1;
+
+	GamepadEventListener::GamepadEventListener(InputHandlerOIS* parentHandler, UINT32 joystickIdx)
+		:mParentHandler(parentHandler), mGamepadIdx(joystickIdx)
+	{ }
+
+	bool GamepadEventListener::buttonPressed(const OIS::JoyStickEvent& arg, int button)
+	{
+		ButtonCode bc = InputHandlerOIS::gamepadButtonToButtonCode(button);
+
+		mParentHandler->onButtonDown(mGamepadIdx, bc, 0); // TODO - No timestamps
+		return true;
+	}
+
+	bool GamepadEventListener::buttonReleased(const OIS::JoyStickEvent& arg, int button)
+	{
+		ButtonCode bc = InputHandlerOIS::gamepadButtonToButtonCode(button);
+
+		mParentHandler->onButtonUp(mGamepadIdx, bc, 0); // TODO - No timestamps
+		return true;
+	}
+
+	bool GamepadEventListener::axisMoved(const OIS::JoyStickEvent& arg, int axis)
+	{
+		// Move axis values into [-1.0f, 1.0f] range
+		float axisRange = Math::abs((float)OIS::JoyStick::MAX_AXIS) + Math::abs((float)OIS::JoyStick::MIN_AXIS);
+
+		INT32 axisRel = arg.state.mAxes[axis].rel;
+		INT32 axisAbs = arg.state.mAxes[axis].abs;
+
+		RawAxisState axisState;
+		axisState.rel = ((axisRel + OIS::JoyStick::MIN_AXIS) / axisRange) * 2.0f - 1.0f;
+		axisState.abs = ((axisAbs + OIS::JoyStick::MIN_AXIS) / axisRange) * 2.0f - 1.0f;
+
+		mParentHandler->onAxisMoved(mGamepadIdx, axisState, (UINT32)axis);
+
+		return true;
+	}
+
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
 		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0)
 	{
@@ -34,25 +74,47 @@ namespace BansheeEngine
 			std::cout << e.eText << std::endl;
 		}
 
-		mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
-		mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));
+		if (mInputManager->getNumberOfDevices(OIS::OISKeyboard) > 0)
+		{
+			mKeyboard = static_cast<OIS::Keyboard*>(mInputManager->createInputObject(OIS::OISKeyboard, true));
+			mKeyboard->setEventCallback(this);
+		}
+
+		if (mInputManager->getNumberOfDevices(OIS::OISMouse) > 0)
+		{
+			mMouse = static_cast<OIS::Mouse*>(mInputManager->createInputObject(OIS::OISMouse, true));
+			mMouse->setEventCallback(this);
+		}
+
+		UINT32 numGamepads = mInputManager->getNumberOfDevices(OIS::OISJoyStick);
+		for (UINT32 i = 0; i < numGamepads; i++)
+		{
+			mGamepads.push_back(GamepadData());
+			GamepadData& gamepadData = mGamepads.back();
+
+			gamepadData.gamepad = static_cast<OIS::JoyStick*>(mInputManager->createInputObject(OIS::OISJoyStick, true));
+			gamepadData.listener = bs_new<GamepadEventListener>(this, i);
+		}
 
 		// OIS reports times since system start but we use time since program start
 		mTimestampClockOffset = gTime().getStartTimeMs();
-
-		mMouse->setEventCallback(this);
-		mKeyboard->setEventCallback(this);
 	}
 
 	InputHandlerOIS::~InputHandlerOIS()
 	{
 		if(mInputManager)
 		{		
-			if(mMouse)
+			if(mMouse != nullptr)
 				mInputManager->destroyInputObject(mMouse);
 
-			if(mKeyboard)
+			if(mKeyboard != nullptr)
 				mInputManager->destroyInputObject(mKeyboard);
+
+			for (auto& gamepadData : mGamepads)
+			{
+				mInputManager->destroyInputObject(gamepadData.gamepad);
+				bs_delete(gamepadData.listener);
+			}
 
 			OIS::InputManager::destroyInputSystem(mInputManager);
 			mInputManager = nullptr;
@@ -61,8 +123,16 @@ namespace BansheeEngine
 
 	void InputHandlerOIS::_update()
 	{
-		mMouse->capture();
-		mKeyboard->capture();
+		if (mMouse != nullptr)
+			mMouse->capture();
+
+		if (mKeyboard != nullptr)
+			mKeyboard->capture();
+
+		for (auto& gamepadData : mGamepads)
+		{
+			gamepadData.gamepad->capture();
+		}
 	}
 
 	void InputHandlerOIS::_inputWindowChanged(const RenderWindow& win)
@@ -77,54 +147,66 @@ namespace BansheeEngine
 
 	bool InputHandlerOIS::keyPressed(const OIS::KeyEvent &arg)
 	{
-		onButtonDown(keyCodeToButtonCode(arg.key), arg.timestamp - mTimestampClockOffset);
+		onButtonDown(0, keyCodeToButtonCode(arg.key), arg.timestamp - mTimestampClockOffset);
 		return true;
 	}
 
 	bool InputHandlerOIS::keyReleased(const OIS::KeyEvent& arg)
 	{
-		onButtonUp(keyCodeToButtonCode(arg.key), arg.timestamp - mTimestampClockOffset);
+		onButtonUp(0, keyCodeToButtonCode(arg.key), arg.timestamp - mTimestampClockOffset);
 		return true;
 	}
 
 	bool InputHandlerOIS::mouseMoved(const OIS::MouseEvent& arg)
 	{
-		RawAxisState xyState;
-		xyState.abs = Vector2I(arg.state.X.abs, arg.state.Y.abs);
-		xyState.rel = Vector2I(arg.state.X.rel, arg.state.Y.rel);
+		RawAxisState xState;
+		xState.rel = Math::clamp(arg.state.X.rel / (float)MOUSE_SENSITIVITY, -1.0f, 1.0f);
+		xState.abs = xState.rel; // Abs value irrelevant for mouse
+		
+		onAxisMoved(0, xState, (UINT32)InputAxis::MouseX);
 
-		onAxisMoved(xyState, RawInputAxis::Mouse_XY);
+		RawAxisState yState;
+		yState.rel = Math::clamp(arg.state.Y.rel / (float)MOUSE_SENSITIVITY, -1.0f, 1.0f);
+		yState.abs = yState.rel; // Abs value irrelevant for mouse
+
+		onAxisMoved(0, yState, (UINT32)InputAxis::MouseY);
 
 		RawAxisState zState;
-		zState.abs = Vector2I(arg.state.Z.abs, 0);
-		zState.rel = Vector2I(arg.state.Z.rel, 0);
+		zState.abs = (float)arg.state.Z.abs;
+		zState.rel = (float)arg.state.Z.rel;
 
-		onAxisMoved(zState, RawInputAxis::Mouse_Z);
+		onAxisMoved(0, zState, (UINT32)InputAxis::MouseZ);
 
 		return true;
 	}
 
 	bool InputHandlerOIS::mousePressed(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		onButtonDown(mouseButtonToButtonCode(id), arg.timestamp - mTimestampClockOffset);
+		onButtonDown(0, mouseButtonToButtonCode(id), arg.timestamp - mTimestampClockOffset);
 
 		return true;
 	}
 
 	bool InputHandlerOIS::mouseReleased(const OIS::MouseEvent& arg, OIS::MouseButtonID id)
 	{
-		onButtonUp(mouseButtonToButtonCode(id), arg.timestamp - mTimestampClockOffset);
+		onButtonUp(0, mouseButtonToButtonCode(id), arg.timestamp - mTimestampClockOffset);
 
 		return true;
 	}
 
-	ButtonCode InputHandlerOIS::keyCodeToButtonCode(OIS::KeyCode keyCode) const
+	ButtonCode InputHandlerOIS::keyCodeToButtonCode(OIS::KeyCode keyCode)
 	{
 		return (ButtonCode)keyCode;
 	}
 
-	ButtonCode InputHandlerOIS::mouseButtonToButtonCode(OIS::MouseButtonID mouseBtn) const
+	ButtonCode InputHandlerOIS::mouseButtonToButtonCode(OIS::MouseButtonID mouseBtn)
 	{
 		return (ButtonCode)(((int)mouseBtn + BC_NumKeys) | 0x80000000);
+	}
+
+	ButtonCode InputHandlerOIS::gamepadButtonToButtonCode(INT32 joystickCode)
+	{
+		// TODO
+		return BC_0;
 	}
 }

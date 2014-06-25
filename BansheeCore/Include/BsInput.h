@@ -29,6 +29,17 @@ namespace BansheeEngine
 			ToggledOff /**< Button has been released this frame. */
 		};
 
+		/**
+		 * @brief	Contains axis and device data per device
+		 */
+		struct DeviceData
+		{
+			DeviceData();
+
+			Vector<RawAxisState> axes;
+			ButtonState keyStates[BC_Count];
+		};
+
 	public:
 		Input();
 		~Input();
@@ -89,75 +100,58 @@ namespace BansheeEngine
 		void _update();
 
 		/**
-		 * @brief	Returns smoothed mouse/joystick input in the horizontal axis.
-		 *
-		 * @return	The horizontal axis value ranging [-1.0f, 1.0f].
-		 */
-		float getHorizontalAxis() const;
-
-		/**
-		 * @brief	Returns smoothed mouse/joystick input in the vertical axis.
-		 *
-		 * @return	The vertical axis value ranging [-1.0f, 1.0f].
-		 */
-		float getVerticalAxis() const;
-
-		/**
 		 * @brief	Returns value of the specified input axis in range [-1.0, 1.0].
 		 *
-		 * @param	device		Device from which to query the axis.
-		 * @param	type		Type of axis to query.
-		 * @param	deviceIdx	Index of the device in case more than one is hooked up.
+		 * @param	type		Type of axis to query. Usually a type from InputAxis but can be a custom value.
+		 * @param	deviceIdx	Index of the device in case more than one is hooked up (0 - primary).
 		 * @param	smooth		Should the returned value be smoothed.
 		 */
-		float getAxisValue(AxisDevice device, AxisType type, UINT32 deviceIdx = 0, bool smooth = false);
+		float getAxisValue(UINT32 type, UINT32 deviceIdx = 0, bool smooth = false) const;
 
 		/**
 		 * @brief	Query if the provided button is currently being held (this frame or previous frames).
+		 *
+		 * @param	keyCode		Code of the button to query.
+		 * @param	deviceIdx	Device to query the button on (0 - primary).
 		 */
-		bool isButtonHeld(ButtonCode keyCode) const;
+		bool isButtonHeld(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
 
 		/**
 		 * @brief	Query if the provided button is currently being released (one true for one frame).
+		 *
+		 * @param	keyCode		Code of the button to query.
+		 * @param	deviceIdx	Device to query the button on (0 - primary).
 		 */
-		bool isButtonUp(ButtonCode keyCode) const;
+		bool isButtonUp(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
 
 		/**
 		 * @brief	Query if the provided button is currently being pressed (one true for one frame).
+		 *
+		 * @param	keyCode		Code of the button to query.
+		 * @param	deviceIdx	Device to query the button on (0 - primary).
 		 */
-		bool isButtonDown(ButtonCode keyCode) const;
+		bool isButtonDown(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
+
+	private:
+		/**
+		 * @brief	Triggered by input handler when a button is pressed.
+		 */
+		void buttonDown(UINT32 deviceIdx, ButtonCode code, UINT64 timestamp);
 
 		/**
-		 * @brief	Returns mouse cursor position.
+		 * @brief	Triggered by input handler when a button is released.
 		 */
-		Vector2I getCursorPosition() const { return mMouseAbsPos; }
-	private:
-		std::shared_ptr<RawInputHandler> mRawInputHandler;
-		std::shared_ptr<OSInputHandler> mOSInputHandler;
+		void buttonUp(UINT32 deviceIdx, ButtonCode code, UINT64 timestamp);
 
-		float mSmoothHorizontalAxis;
-		float mSmoothVerticalAxis;
-
-		float* mHorizontalHistoryBuffer;
-		float* mVerticalHistoryBuffer;
-		float* mTimesHistoryBuffer;
-		int	mCurrentBufferIdx;
-
-		Vector2I mMouseLastRel;
-		Vector2I mMouseAbsPos;
-
-		RawAxisState mAxes[RawInputAxis::Count];
-		ButtonState mKeyState[BC_Count];
-
-		void buttonDown(ButtonCode code, UINT64 timestamp);
-		void buttonUp(ButtonCode code, UINT64 timestamp);
-
+		/**
+		 * @brief	Triggered by input handler when a single character is input.
+		 */
 		void charInput(UINT32 chr);
 
 		/**
-		 * @brief	Raw mouse/joystick axis input.
+		 * @brief	Triggered by input handler when a mouse/joystick axis is moved.
 		 */
-		void axisMoved(const RawAxisState& state, RawInputAxis axis);
+		void axisMoved(UINT32 deviceIdx, const RawAxisState& state, UINT32 axis);
 
 		/**
 		 * @brief	Cursor movement as OS reports it. Used for screen cursor position.
@@ -185,14 +179,15 @@ namespace BansheeEngine
 		void inputCommandEntered(InputCommandType commandType);
 
 		/**
-		 * @brief	Updates the axis input values that need smoothing.
-		 */
-		void updateSmoothInput();
-
-		/**
 		 * @brief	Called when window in focus changes, as reported by the OS.
 		 */
 		void inputWindowChanged(RenderWindow& win);
+
+	private:
+		std::shared_ptr<RawInputHandler> mRawInputHandler;
+		std::shared_ptr<OSInputHandler> mOSInputHandler;
+
+		Vector<DeviceData> mDevices;
 
 		/************************************************************************/
 		/* 								STATICS		                      		*/
