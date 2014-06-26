@@ -22,14 +22,14 @@ namespace BansheeEngine
 		:GUIButtonBase(styleName, content, layoutOptions), mIsToggled(false), mToggleGroup(nullptr)
 	{
 		if(toggleGroup != nullptr)
-			toggleGroup->add(this);
+			toggleGroup->_add(this);
 	}
 
 	GUIToggle::~GUIToggle()
 	{
 		if(mToggleGroup != nullptr)
 		{
-			mToggleGroup->remove(this);
+			mToggleGroup->_remove(this);
 		}
 	}
 

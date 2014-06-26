@@ -16,7 +16,7 @@ namespace BansheeEngine
 		mThis = sharedPtr;
 	}
 
-	void GUIToggleGroup::add(GUIToggle* toggle)
+	void GUIToggleGroup::_add(GUIToggle* toggle)
 	{
 		auto iterFind = std::find(begin(mButtons), end(mButtons), toggle);
 		if(iterFind != end(mButtons))
@@ -26,7 +26,7 @@ namespace BansheeEngine
 		toggle->_setToggleGroup(mThis.lock());
 	}
 
-	void GUIToggleGroup::remove(GUIToggle* toggle)
+	void GUIToggleGroup::_remove(GUIToggle* toggle)
 	{
 		auto sharedPtr = mThis.lock(); // Make sure we keep a reference because calling _setToggleGroup(nullptr) 
 		                               // may otherwise clear the last reference and cause us to destruct
