@@ -25,6 +25,8 @@ namespace BansheeEngine
 		UINT64 layer;
 
 		Any rendererData;
+		RenderableHandler* handler;
+		RenderableType renderableType;
 
 	private:
 		bool mBoundsDirty;
@@ -37,7 +39,6 @@ namespace BansheeEngine
 
 		Vector<RenderableElement*> renderableElements;
 
-		RenderableHandler* handler;
 		RenderableType renderableType;
 	};
 }

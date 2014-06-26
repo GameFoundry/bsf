@@ -66,4 +66,9 @@ namespace BansheeEngine
 		Queue<VirtualButtonEvent> mEvents;
 		UINT32 mActiveModifiers;
 	};
+
+	/**
+	 * @copydoc	VirtualInput
+	 */
+	BS_EXPORT VirtualInput& gVirtualInput();
 }

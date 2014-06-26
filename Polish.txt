@@ -12,6 +12,8 @@ Polish TODO:
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
  - (HIGHLY OPTIONAL) Make a Getting Started guide, along with the example project. Or just finish up the manual.
 
+ Model triangles are inverted.
+
 Rebuild OIS with XINPUT support (OIS_WIN32_XINPUT_SUPPORT)
 Rename CamelotOIS to BansheeOIS
 
@@ -24,6 +26,8 @@ Add smoothing
   - See http://www.flipcode.com/archives/Smooth_Mouse_Filtering.shtml or UE4 implementation
   - UE4 seems to receive multiple mouse samples per frame. I only sample input once per frame
     - Actually OIS seems to receive multiple samples too, but it just accumulates them automatically
+
+Scale input by FOV like in UE4?
 
 -----------------
 

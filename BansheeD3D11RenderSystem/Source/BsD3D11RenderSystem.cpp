@@ -984,7 +984,7 @@ namespace BansheeEngine
 		return VET_COLOR_ABGR;
 	}
 
-	void D3D11RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram /*= false */)
+	void D3D11RenderSystem::convertProjectionMatrix(const Matrix4& matrix, Matrix4& dest, bool forGpuProgram)
 	{
 		dest = matrix;
 

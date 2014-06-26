@@ -24,12 +24,10 @@ namespace BansheeEngine
     {
 		setName("Camera");
 
-		updateView();
-		updateFrustum();
-        invalidateFrustum();
+		mViewMatrix = Matrix4::ZERO;
+		mProjMatrixRS = Matrix4::ZERO;
 
-        mViewMatrix = Matrix4::ZERO;
-        mProjMatrixRS = Matrix4::ZERO;
+        invalidateFrustum();
 
 		target->synchronize();
 		mViewport = bs_shared_ptr<Viewport, PoolAlloc>(target, left, top, width, height);
@@ -559,6 +557,7 @@ namespace BansheeEngine
 
     void Camera::invalidateFrustum() const
     {
+		mRecalcFrustum = true;
 		mRecalcFrustumPlanes = true;
     }
 
@@ -567,7 +566,7 @@ namespace BansheeEngine
 		CameraProxyPtr proxy = bs_shared_ptr<CameraProxy>();
 		proxy->layer = mLayers;
 		proxy->priority = mPriority;
-		proxy->projMatrix = getProjectionMatrixRS();
+		proxy->projMatrix = getProjectionMatrix();
 		proxy->viewMatrix = getViewMatrix();
 		proxy->viewport = mViewport->clone();
 		proxy->ignoreSceneRenderables = mIgnoreSceneRenderables;

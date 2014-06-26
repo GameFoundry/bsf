@@ -16,7 +16,7 @@ namespace BansheeEngine
 		{
 			GpuParamBlockBufferPtr perObjectParamBuffer;
 
-			bool hasWVPParam;
+			bool hasWVPParam = false;
 			GpuParamMat4 wvpParam;
 
 			Vector<MaterialProxy::BufferBindInfo> perObjectBuffers;
@@ -24,9 +24,9 @@ namespace BansheeEngine
 
 		LitTexRenderableHandler();
 
-		void initializeProxy(const RenderableProxyPtr& proxy);
+		void initializeRenderElem(RenderableElement* element);
 
-		void bindPerObjectBuffers(const RenderableProxyPtr& renderable, const RenderableElement* element);
+		void bindPerObjectBuffers(const RenderableElement* element);
 
 		void updateGlobalBuffers(float time);
 		void updatePerObjectBuffers(RenderableElement* element, const Matrix4& wvpMatrix);

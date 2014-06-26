@@ -55,6 +55,20 @@ namespace BansheeEngine
         updateArea();
     }
 
+	void Viewport::setRequiresClear(bool colorClear, bool depthClear, bool stencilClear)
+	{
+		mRequiresColorClear = colorClear;
+		mRequiresDepthClear = depthClear;
+		mRequiresStencilClear = stencilClear;
+	}
+
+	void Viewport::setClearValues(const Color& clearColor, float clearDepth, UINT16 clearStencil)
+	{
+		mClearColor = clearColor;
+		mDepthClearValue = clearDepth;
+		mStencilClearValue = clearStencil;
+	}
+
 	Viewport Viewport::clone()
 	{
 		return *this;

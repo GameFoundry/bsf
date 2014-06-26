@@ -240,4 +240,9 @@ namespace BansheeEngine
 			}
 		}
 	}
+
+	VirtualInput& gVirtualInput()
+	{
+		return VirtualInput::instance();
+	}
 }

@@ -79,9 +79,7 @@ namespace BansheeEngine
 		Vector<RenderableProxyPtr> mDeletedRenderableProxies;
 		Vector<CameraProxyPtr> mDeletedCameraProxies;
 
-		UnorderedMap<UINT64, RenderableProxyPtr> mRenderableProxies;
 		UnorderedMap<UINT64, CameraProxyPtr> mCameraProxies;
-
 		Vector<RenderTargetData> mRenderTargets;
 
 		Vector<RenderableElement*> mRenderableElements;

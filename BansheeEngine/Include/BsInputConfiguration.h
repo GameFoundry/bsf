@@ -17,7 +17,7 @@ namespace BansheeEngine
 		ShiftCtrlAlt = 0x07
 	};
 
-	struct VIRTUAL_BUTTON_DESC
+	struct BS_EXPORT VIRTUAL_BUTTON_DESC
 	{
 		VIRTUAL_BUTTON_DESC();
 		VIRTUAL_BUTTON_DESC(ButtonCode buttonCode, VButtonModifier modifiers = VButtonModifier::None, bool repeatable = false);
@@ -27,16 +27,16 @@ namespace BansheeEngine
 		bool repeatable;
 	};
 
-	struct VIRTUAL_AXIS_DESC
+	struct BS_EXPORT VIRTUAL_AXIS_DESC
 	{
 		VIRTUAL_AXIS_DESC();
-		VIRTUAL_AXIS_DESC(InputAxis type, float deadZone = 0.0001f, float sensitivity = 1.0f, bool invert = false, bool smooth = true);
+		VIRTUAL_AXIS_DESC(UINT32 type, float deadZone = 0.0001f, float sensitivity = 1.0f, bool invert = false, bool smooth = true);
 
 		float deadZone;
 		float sensitivity;
 		bool invert;
 		bool smooth;
-		InputAxis type;
+		UINT32 type;
 	};
 
 	/**

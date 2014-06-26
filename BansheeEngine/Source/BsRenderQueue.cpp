@@ -16,13 +16,12 @@ namespace BansheeEngine
 		mSortedRenderElements.clear();
 	}
 
-	void RenderQueue::add(const RenderableProxyPtr& renderable, RenderableElement* element, const Vector3& worldPosForSort)
+	void RenderQueue::add(RenderableElement* element, const Vector3& worldPosForSort)
 	{
 		// TODO - Make sure RenderQueueElements are cached so we dont allocate memory for them every frame
 		mRenderElements.push_back(RenderQueueElement());
 
 		RenderQueueElement& renderOp = mRenderElements.back();
-		renderOp.renderable = renderable;
 		renderOp.renderElem = element;
 		renderOp.material = element->material;
 		renderOp.mesh = element->mesh;
@@ -35,7 +34,6 @@ namespace BansheeEngine
 		mRenderElements.push_back(RenderQueueElement());
 
 		RenderQueueElement& renderOp = mRenderElements.back();
-		renderOp.renderable = nullptr;
 		renderOp.renderElem = nullptr;
 		renderOp.material = material;
 		renderOp.mesh = mesh;
@@ -53,7 +51,6 @@ namespace BansheeEngine
 				mSortedRenderElements.push_back(RenderQueueElement());
 
 				RenderQueueElement& sortedElem = mSortedRenderElements.back();
-				sortedElem.renderable = renderElem.renderable;
 				sortedElem.renderElem = renderElem.renderElem;
 				sortedElem.material = renderElem.material;
 				sortedElem.mesh = renderElem.mesh;

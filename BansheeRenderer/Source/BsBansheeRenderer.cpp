@@ -75,23 +75,17 @@ namespace BansheeEngine
 			mWorldTransforms.push_back(element->worldTransform);
 			mWorldBounds.push_back(element->calculateWorldBounds());
 
+			element->renderableType = proxy->renderableType;
+			if (proxy->renderableType == RenType_LitTextured)
+				element->handler = mLitTexHandler;
+			else
+				element->handler = nullptr;
+
+			if (element->handler != nullptr)
+				element->handler->initializeRenderElem(element);
+
 			element->id = (UINT32)(mRenderableElements.size() - 1);
 		}
-
-		// Find and set up renderer buffers and parameters
-		static auto paramsMatch = [](const GpuParamDataDesc& a, const GpuParamDataDesc& b)
-		{
-			return a.gpuMemOffset == b.gpuMemOffset && a.elementSize == b.elementSize &&
-				a.arraySize == b.arraySize && a.arrayElementStride == b.arrayElementStride;
-		};
-
-		if (proxy->renderableType == RenType_LitTextured)
-			proxy->handler = mLitTexHandler;
-		else
-			proxy->handler = nullptr;
-
-		if (proxy->handler != nullptr)
-			proxy->handler->initializeProxy(proxy);
 	}
 
 	void BansheeRenderer::removeRenderableProxy(RenderableProxyPtr proxy)
@@ -431,11 +425,12 @@ namespace BansheeEngine
 		if (!cameraProxy.ignoreSceneRenderables)
 		{
 			// Update per-object param buffers and queue render elements
-			for (auto& proxy : mRenderableProxies)
-			{
-				for (auto& renderElem : proxy.second->renderableElements)
+				for (auto& renderElem : mRenderableElements)
 				{
-					if (proxy.second->renderableType == RenType_LitTextured)
+					if (renderElem->handler != nullptr)
+						renderElem->handler->bindPerObjectBuffers(renderElem);
+
+					if (renderElem->renderableType == RenType_LitTextured)
 					{
 						Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[renderElem->id];;
 						mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
@@ -447,9 +442,8 @@ namespace BansheeEngine
 					}
 
 					// TODO - Do frustum culling
-					renderQueue->add(proxy.second, renderElem, mWorldBounds[renderElem->id].getSphere().getCenter());
+					renderQueue->add(renderElem, mWorldBounds[renderElem->id].getSphere().getCenter());
 				}
-			}
 		}
 
 		renderQueue->sort();
@@ -458,9 +452,6 @@ namespace BansheeEngine
 		for(auto iter = sortedRenderElements.begin(); iter != sortedRenderElements.end(); ++iter)
 		{
 			MaterialProxyPtr materialProxy = iter->material;
-
-			if (iter->renderable != nullptr && iter->renderable->handler != nullptr)
-				iter->renderable->handler->bindPerObjectBuffers(iter->renderable, iter->renderElem);
 
 			setPass(materialProxy, iter->passIdx);
 			draw(*iter->mesh);

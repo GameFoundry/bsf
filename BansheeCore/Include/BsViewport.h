@@ -84,24 +84,26 @@ namespace BansheeEngine
 		const RectI& getArea() const { return mArea; }
 
 		/**
+		 * @brief	Activates or deactivates clears for color, depth or stencil buffers.
+		 *			Buffers will be cleared before rendering to this viewport is performed.
+		 */
+		void setRequiresClear(bool colorClear, bool depthClear, bool stencilClear);
+
+		/**
+		 * @brief	Sets values to clear color, depth and stencil buffers to.
+		 */
+		void setClearValues(const Color& clearColor, float clearDepth = 0.0f, UINT16 clearStencil = 0);
+
+		/**
 		 * @brief	Returns the color to clear the viewport color buffers to.
 		 */
 		const Color& getClearColor() const { return mClearColor; }
-
-		/**
-		 * @brief	Sets the color to clear the viewport color buffers to.
-		 */
-		void setClearColor(const Color& clearColor) { mClearColor = clearColor; }
 
 		/**
 		 * @brief	Returns the value to clear the viewport depth buffers to.
 		 */
 		float getClearDepthValue() const { return mDepthClearValue; }
 
-		/**
-		 * @brief	Sets the value to clear the viewport depth buffer to.
-		 */
-		void setClearDepthValue(float value) { mDepthClearValue = value; }
 
 		/**
 		 * @brief	Returns the value to clear the viewport stencil buffer to.
@@ -109,19 +111,9 @@ namespace BansheeEngine
 		UINT16 getClearStencilValue() const { return mStencilClearValue; }
 
 		/**
-		 * @brief	Sets the value to clear the viewport stencil buffer to.
-		 */
-		void setStencilClearValue(UINT16 value) { mStencilClearValue = value; }
-
-		/**
 		 * @brief	Returns true if viewport requires color clear before rendering.
 		 */
 		bool getRequiresColorClear() const { return mRequiresColorClear; }
-
-		/**
-		 * @brief	Determines should viewport color buffer be cleared before rendering.
-		 */
-		void setRequiresColorClear(bool requiresClear) { mRequiresColorClear = requiresClear; }
 
 		/**
 		 * @brief	Returns true if viewport requires depth clear before rendering.
@@ -129,19 +121,9 @@ namespace BansheeEngine
 		bool getRequiresDepthClear() const { return mRequiresDepthClear; }
 
 		/**
-		 * @brief	Determines should viewport depth buffer be cleared before rendering.
-		 */
-		void setRequiresDepthClear(bool requiresClear) { mRequiresDepthClear = requiresClear; }
-
-		/**
 		 * @brief	Returns true if viewport requires stencil clear before rendering.
 		 */
 		bool getRequiresStencilClear() const { return mRequiresStencilClear; }
-
-		/**
-		 * @brief	Determines should viewport stencil buffer be cleared before rendering.
-		 */
-		void setRequiresStencilClear(bool requiresClear) { mRequiresStencilClear = requiresClear; }
 
 		/**
 		 * @brief	Makes an exact copy of this viewport.

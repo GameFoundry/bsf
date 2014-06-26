@@ -96,7 +96,7 @@ namespace BansheeEngine
 		}
 
 		mInternalData->mParamBlockBuffers[iterFind->second.slot] = paramBlockBuffer;
-		mInternalData->mParamBlocks[iterFind->second.slot] = paramBlockBuffer->getParamBlock();
+		mInternalData->mParamBlocks[iterFind->second.slot] = paramBlockBuffer != nullptr ? paramBlockBuffer->getParamBlock() : nullptr;
 
 		markCoreDirty();
 	}

@@ -450,7 +450,7 @@ namespace BansheeEngine
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUVertexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUIndexBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
-		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBufferBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
+		mGPULayoutFrameContentsRight->addElement(GUILabel::create(mGPUGPUProgramBindsStr, GUIOptions(GUIOption::fixedWidth(200))));
 		mGPULayoutFrameContentsRight->addFlexibleSpace();
 
 		updateCPUSampleAreaSizes();

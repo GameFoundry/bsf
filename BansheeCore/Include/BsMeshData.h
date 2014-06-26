@@ -277,8 +277,6 @@ namespace BansheeEngine
 
 		UINT32 mDescBuilding;
 
-		UINT8* mData;
-
 		UINT32 mNumVertices;
 		UINT32 mNumIndices;
 		IndexBuffer::IndexType mIndexType;

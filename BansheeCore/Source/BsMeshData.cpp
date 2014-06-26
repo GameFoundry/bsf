@@ -12,13 +12,13 @@
 namespace BansheeEngine
 {
 	MeshData::MeshData(UINT32 numVertices, UINT32 numIndexes, const VertexDataDescPtr& vertexData, IndexBuffer::IndexType indexType)
-	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType), mData(nullptr)
+	   :mNumVertices(numVertices), mNumIndices(numIndexes), mVertexData(vertexData), mIndexType(indexType)
 	{
 		allocateInternalBuffer();
 	}
 
 	MeshData::MeshData()
-		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT), mData(nullptr)
+		:mNumVertices(0), mNumIndices(0), mIndexType(IndexBuffer::IT_32BIT)
 	{ }
 
 	MeshData::~MeshData()
@@ -116,8 +116,6 @@ namespace BansheeEngine
 
 			for(UINT32 j = 0; j < numIndices; j++)
 				idxPtr[j] = srcData[j] + vertexOffset;
-
-			subMeshes.push_back(SubMesh(indexOffset, numIndices, DOT_TRIANGLE_LIST));
 
 			indexOffset += numIndices;
 			idxPtr += numIndices;

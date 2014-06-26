@@ -27,6 +27,9 @@
 #include "BsSceneObject.h"
 #include "BsCoreThread.h"
 #include "BsProfilerOverlay.h"
+#include "BsRenderer.h"
+
+#include "CameraFlyer.h"
 
 namespace BansheeEngine
 {
@@ -141,7 +144,9 @@ namespace BansheeEngine
 		// Create material
 		ShaderPtr exampleShader = Shader::create("ExampleShader");
 
-		exampleShader->addParameter("matViewProjection", "matViewProjection", GPDT_MATRIX_4X4);
+		// Set up shader parameters and renderer semantics
+		exampleShader->setParamBlockAttribs("PerObject", true, GPBU_DYNAMIC, RBS_PerObject);
+		exampleShader->addParameter("matWorldViewProj", "matWorldViewProj", GPDT_MATRIX_4X4, RPS_WorldViewProjTfrm);
 		exampleShader->addParameter("samp", "samp", GPOT_SAMPLER2D);
 		exampleShader->addParameter("tex", "tex", GPOT_TEXTURE2D);
 
@@ -163,21 +168,31 @@ namespace BansheeEngine
 		HSceneObject sceneCameraSO = SceneObject::create("SceneCamera");
 
 		RenderWindowPtr window = gApplication().getPrimaryWindow();
-		sceneCamera = sceneCameraSO->addComponent<Camera>(window, 0.0f, 0.0f, 1.0f, 1.0f);
+		sceneCamera = sceneCameraSO->addComponent<Camera>(window);
 
 		sceneCamera->setPriority(1);
-		sceneCameraSO->setPosition(Vector3(0, 50, 1240));
-		sceneCameraSO->lookAt(Vector3(0, 50, -300));
+		sceneCameraSO->setPosition(Vector3(40.0f, 30.0f, 230.0f));
+		sceneCameraSO->lookAt(Vector3(0, 0, 0));
 		sceneCamera->setNearClipDistance(5);
 		sceneCamera->setAspectRatio(resolutionWidth / (float)resolutionHeight); // TODO - This needs to get called whenever resolution changes
+
+		sceneCameraSO->addComponent<CameraFlyer>();
 
 		// Register input configuration
 		auto inputConfig = VirtualInput::instance().getConfiguration();
 
 		inputConfig->registerButton("Forward", BC_W);
+		inputConfig->registerButton("Back", BC_S);
 		inputConfig->registerButton("Left", BC_A);
 		inputConfig->registerButton("Right", BC_D);
-		inputConfig->registerButton("Back", BC_S);
+		inputConfig->registerButton("Forward", BC_UP);
+		inputConfig->registerButton("Back", BC_BACK);
+		inputConfig->registerButton("Left", BC_LEFT);
+		inputConfig->registerButton("Right", BC_RIGHT);
+		inputConfig->registerButton("FastMove", BC_LSHIFT);
+		inputConfig->registerButton("RotateCam", BC_MOUSE_RIGHT);
+		inputConfig->registerAxis("Horizontal", VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseX));
+		inputConfig->registerAxis("Vertical", VIRTUAL_AXIS_DESC((UINT32)InputAxis::MouseY));
 
 		inputConfig->registerButton("CPUProfilerOverlay", BC_F1);
 		inputConfig->registerButton("GPUProfilerOverlay", BC_F2);
@@ -187,14 +202,13 @@ namespace BansheeEngine
 
 		VirtualInput::instance().onButtonUp.connect(&buttonUp);
 
-		// TODO - Add vertical/horizontal axes here
-
 		HSceneObject exampleSO = SceneObject::create("Example");
 
 		HCamera guiCamera = exampleSO->addComponent<Camera>(window);
 		guiCamera->setNearClipDistance(5);
 		guiCamera->setAspectRatio(1.0f);
 		guiCamera->setIgnoreSceneRenderables(true);
+		guiCamera->getViewport()->setRequiresClear(false, false, false);
 
 		HGUIWidget gui = exampleSO->addComponent<GUIWidget>(guiCamera->getViewport().get());
 		gui->setDepth(128);
