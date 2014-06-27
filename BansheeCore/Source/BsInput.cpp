@@ -184,12 +184,10 @@ namespace BansheeEngine
 		}
 	}
 
-	float Input::getAxisValue(UINT32 type, UINT32 deviceIdx, bool smooth) const
+	float Input::getAxisValue(UINT32 type, UINT32 deviceIdx) const
 	{
 		if (deviceIdx >= (UINT32)mDevices.size())
 			return 0.0f;
-
-		// TODO - Smooth parameter is ignored
 
 		const Vector<RawAxisState>& axes = mDevices[deviceIdx].axes;
 		if (type >= (UINT32)axes.size())
@@ -221,6 +219,11 @@ namespace BansheeEngine
 			return false;
 
 		return mDevices[deviceIdx].keyStates[button & 0x0000FFFF] == ButtonState::ToggledOn;
+	}
+
+	void Input::setMouseSmoothing(bool enable)
+	{
+		mRawInputHandler->setMouseSmoothing(enable);
 	}
 
 	Input& gInput()

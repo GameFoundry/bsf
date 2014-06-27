@@ -62,6 +62,7 @@ Reminders:
   - std::function allocates memory but I have no got way of using custom allocators as I'd have to wrap std::bind and that seems non-trivial
   - Add a TaskScheduler profiler that neatly shows time slices of each task and on which thread they are run on
   - Add support for BC6H and BC7 file format compression
+  - D-Pad on non-XInput devices will not be handled properly by the Input system because OIS reports it separately from other buttons (Simple to fix)
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

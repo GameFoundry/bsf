@@ -2,6 +2,9 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Available cursor types.
+	 */
 	enum class CursorType
 	{
 		Arrow,
@@ -21,13 +24,10 @@ namespace BansheeEngine
 
 	/**
 	 * @brief	Contains a basic sent of renderable types that may be supported by a renderer.
-	 *			These can be used as a guide and renderer plugins can use their own types as needed.
+	 *			These can be used just as a guide since renderer plugins can use their own types as needed.
 	 */
 	enum RenderableType
 	{
-		RenType_UnlitUntextured,
-		RenType_UnlitTextured,
 		RenType_LitTextured
-		// TODO - Add more types as I improve the Renderer with advanced techniques
 	};
 }

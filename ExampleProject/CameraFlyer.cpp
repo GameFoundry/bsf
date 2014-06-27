@@ -14,7 +14,7 @@ namespace BansheeEngine
 	const float CameraFlyer::TOP_SPEED = 130.0f;
 	const float CameraFlyer::ACCELERATION = 10.0f;
 	const float CameraFlyer::FAST_MODE_MULTIPLIER = 2.0f;
-	const float CameraFlyer::ROTATION_SPEED = 0.5f; // Degrees/pixel
+	const float CameraFlyer::ROTATION_SPEED = 360.0f; // Degrees/second
 
 	CameraFlyer::CameraFlyer(const HSceneObject& parent)
 		:Component(parent), mPitch(0.0f), mYaw(0.0f), mLastButtonState(false)
@@ -59,6 +59,8 @@ namespace BansheeEngine
 		if (goingRight) direction += SO()->getRight();
 		if (goingLeft) direction -= SO()->getRight();
 
+		float frameDelta = gTime().getFrameDelta();
+
 		if (direction.squaredLength() != 0)
 		{
 			direction.normalize();
@@ -67,7 +69,7 @@ namespace BansheeEngine
 			if (fastMove)
 				multiplier = FAST_MODE_MULTIPLIER;
 
-			mCurrentSpeed = Math::clamp(mCurrentSpeed + ACCELERATION * gTime().getFrameDelta(), START_SPEED, TOP_SPEED);
+			mCurrentSpeed = Math::clamp(mCurrentSpeed + ACCELERATION * frameDelta, START_SPEED, TOP_SPEED);
 			mCurrentSpeed *= multiplier;
 		}
 		else
@@ -79,13 +81,13 @@ namespace BansheeEngine
 		if (mCurrentSpeed > tooSmall)
 		{
 			Vector3 velocity = direction * mCurrentSpeed;
-			SO()->move(velocity * gTime().getFrameDelta());
+			SO()->move(velocity * frameDelta);
 		}
 
 		if (camRotating)
 		{
-			mYaw += Degree(gVirtualInput().getAxisValue(mHorizontalAxis) * ROTATION_SPEED);
-			mPitch += Degree(gVirtualInput().getAxisValue(mVerticalAxis) * ROTATION_SPEED);
+			mYaw += Degree(gVirtualInput().getAxisValue(mHorizontalAxis) * ROTATION_SPEED * frameDelta);
+			mPitch += Degree(gVirtualInput().getAxisValue(mVerticalAxis) * ROTATION_SPEED * frameDelta);
 
 			Quaternion yRot;
 			yRot.fromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
@@ -97,7 +99,5 @@ namespace BansheeEngine
 
 			SO()->setRotation(camRot);
 		}
-
-		LOGWRN(toString(SO()->getPosition()));
 	}
 }

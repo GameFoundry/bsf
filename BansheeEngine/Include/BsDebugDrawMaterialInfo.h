@@ -5,11 +5,19 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Contains data required for setting up and rendering with 
+	 *			material used for debug 2D clip space object rendering.
+	 */
 	struct DebugDraw2DClipSpaceMatInfo
 	{
 		HMaterial material;
 	};
 
+	/**
+	 * @brief	Contains data required for setting up and rendering with 
+	 *			material used for debug 2D screen space object rendering.
+	 */
 	struct DebugDraw2DScreenSpaceMatInfo
 	{
 		HMaterial material;
@@ -17,6 +25,10 @@ namespace BansheeEngine
 		GpuParamFloat invViewportHeight;
 	};
 
+	/**
+	 * @brief	Contains data required for setting up and rendering with 
+	 *			material used for debug 3D object rendering.
+	 */
 	struct DebugDraw3DMatInfo
 	{
 		HMaterial material;

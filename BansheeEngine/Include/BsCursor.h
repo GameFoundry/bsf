@@ -14,6 +14,9 @@ namespace BansheeEngine
 	 */
 	class BS_EXPORT Cursor : public Module<Cursor>
 	{
+		/**
+		 * @brief	Internal container for data about a single cursor icon.
+		 */
 		struct CustomIcon
 		{
 			CustomIcon() {}
@@ -111,12 +114,19 @@ namespace BansheeEngine
 		void clearCursorIcon(CursorType type);
 
 	private:
+		/**
+		 * @brief	Restores the default cursor icon for the specified cursor type.
+		 */
+		void restoreCursorIcon(CursorType type);
+
+		/**
+		 * @brief	Sends the cursor image to the OS, making it active.
+		 */
+		void updateCursorImage();
+
 		UnorderedMap<String, UINT32> mCustomIconNameToId;
 		UnorderedMap<UINT32, CustomIcon> mCustomIcons;
 		UINT32 mNextUniqueId;
 		INT32 mActiveCursorId;
-
-		void restoreCursorIcon(CursorType type);
-		void updateCursorImage();
 	};
 }

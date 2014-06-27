@@ -118,12 +118,43 @@ namespace BansheeEngine
 	private:
 		friend class GamepadEventListener;
 
-		static const UINT32 MOUSE_SENSITIVITY; /**< Converts arbitrary mouse axis range to [-1, 1] range. */
+		/**
+		 * @brief	Smooths the input mouse axis value. Smoothing makes the changes to
+		 *			the axis more gradual depending on previous values.
+		 *
+		 * @param	value	Value to smooth.
+		 * @param	idx		Index of the mouse axis to smooth, 0 - horizontal, 1 - vertical.
+		 *
+		 * @returns	Smoothed value.
+		 */
+		float smoothMouse(float value, UINT32 idx);
+
+		/**
+		 * @brief	Default dots per inch reported by the mouse. 
+		 *
+		 * @note	This should be retrieved from the mouse driver but I am not aware of any decent 
+		 *			way of doing it. What this means is that if the user has a mouse with a different 
+		 *			DPI then he will need to adjust sensitivity.
+		 */
+		static const UINT32 MOUSE_DPI;
+
+		/**
+		 * @brief	How much does the user need to move the mouse in order to max out the mouse axis
+		 *			(either positive or negative), in inches.
+		 */
+		static const float MOUSE_MAX;
 
 		OIS::InputManager* mInputManager;
 		OIS::Mouse*	mMouse;
 		OIS::Keyboard* mKeyboard;
 		Vector<GamepadData> mGamepads;
+
+		float mTotalMouseSamplingTime[2];
+		UINT32 mTotalMouseNumSamples[2];
+		float mMouseZeroTime[2];
+		INT32 mMouseSampleAccumulator[2];
+		float mMouseSmoothedAxis[2];
+		UINT32 mLastMouseUpdateFrame;
 
 		UINT64 mTimestampClockOffset;
 	};

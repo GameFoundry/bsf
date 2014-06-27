@@ -32,7 +32,10 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT RawInputHandler
 	{
 	public:
-		RawInputHandler() {}
+		RawInputHandler()
+			:mMouseSmoothingEnabled(false) 
+		{}
+
 		virtual ~RawInputHandler() {}
 
 		/**
@@ -70,5 +73,14 @@ namespace BansheeEngine
 		 * @note	Internal method.
 		 */
 		virtual void _inputWindowChanged(const RenderWindow& win) {}
+
+		/**
+		 * @brief	Enables or disables mouse smoothing. Smoothing makes the changes to
+		 *			mouse axes more gradual.
+		 */
+		void setMouseSmoothing(bool enabled) { mMouseSmoothingEnabled = enabled; }
+
+	protected:
+		bool mMouseSmoothingEnabled;
 	};
 }

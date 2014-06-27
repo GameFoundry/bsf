@@ -78,7 +78,7 @@ namespace BansheeEngine
 		VIRTUAL_AXIS_DESC axisDesc;
 		if (mInputConfiguration->_getAxis(axis, axisDesc))
 		{
-			float axisValue = gInput().getAxisValue((UINT32)axisDesc.type, deviceIdx, axisDesc.smooth);
+			float axisValue = gInput().getAxisValue((UINT32)axisDesc.type, deviceIdx);
 
 			if (axisDesc.deadZone > 0.0f)
 			{

@@ -2,7 +2,6 @@ Polish TODO:
  - Finish basic example, get a model rendering on screen
  - Fix FBX importer so proper number of vertices show
  - Test and fix full-screen transitions
- - Add virtual input axes
  - Compress and generate mips for texture on input (testing NVTT stuff)
  - Add frustum culling and sorting code
  - Finalize example
@@ -14,20 +13,8 @@ Polish TODO:
 
  Model triangles are inverted.
 
-Rebuild OIS with XINPUT support (OIS_WIN32_XINPUT_SUPPORT)
-Rename CamelotOIS to BansheeOIS
-
-OIS doesn't report D-pad as buttons
-
-Mouse sensitivity/sampling rate/whatever needs to be tweaked
- - Use DirectInput DIPROPRANGE and SetProperty/GetProperty?
-
-Add smoothing
-  - See http://www.flipcode.com/archives/Smooth_Mouse_Filtering.shtml or UE4 implementation
-  - UE4 seems to receive multiple mouse samples per frame. I only sample input once per frame
-    - Actually OIS seems to receive multiple samples too, but it just accumulates them automatically
-
-Scale input by FOV like in UE4?
+Re-test gamepad buttons now that XInput is active
+ CameraFlyer is broken and doesn't rotate around Y properly (e.g. looking up will cause it to roll instead of yaw)
 
 -----------------
 

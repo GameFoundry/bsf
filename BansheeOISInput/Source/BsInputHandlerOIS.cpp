@@ -8,7 +8,8 @@
 
 namespace BansheeEngine
 {
-	const UINT32 InputHandlerOIS::MOUSE_SENSITIVITY = 1;
+	const UINT32 InputHandlerOIS::MOUSE_DPI = 800;
+	const float InputHandlerOIS::MOUSE_MAX = 0.05f;
 
 	GamepadEventListener::GamepadEventListener(InputHandlerOIS* parentHandler, UINT32 joystickIdx)
 		:mParentHandler(parentHandler), mGamepadIdx(joystickIdx)
@@ -52,8 +53,20 @@ namespace BansheeEngine
 	}
 
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
-		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0)
+		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0),
+		mLastMouseUpdateFrame(0)
 	{
+		mMouseSampleAccumulator[0] = 0;
+		mMouseSampleAccumulator[1] = 0;
+		mTotalMouseSamplingTime[0] = 1.0f / 125.0f; // Use 125Hz as initial pooling rate for mice
+		mTotalMouseSamplingTime[1] = 1.0f / 125.0f;
+		mTotalMouseNumSamples[0] = 1;
+		mTotalMouseNumSamples[1] = 1;
+		mMouseSmoothedAxis[0] = 0.0f;
+		mMouseSmoothedAxis[1] = 0.0f;
+		mMouseZeroTime[0] = 0.0f;
+		mMouseZeroTime[1] = 0.0f;
+
 		OIS::ParamList pl;
 		std::ostringstream windowHndStr;
 		windowHndStr << hWnd;
@@ -128,6 +141,46 @@ namespace BansheeEngine
 		}
 	}
 
+	float InputHandlerOIS::smoothMouse(float value, UINT32 idx)
+	{
+		UINT32 sampleCount = 1;
+
+		float deltaTime = gTime().getFrameDelta();
+		if (deltaTime < 0.25f)
+		{
+			float secondsPerSample = mTotalMouseSamplingTime[idx] / mTotalMouseNumSamples[idx];
+
+			if (value == 0.0f)
+			{
+				mMouseZeroTime[idx] += deltaTime;
+				if (mMouseZeroTime[idx] < secondsPerSample)
+					value = mMouseSmoothedAxis[idx] * deltaTime / secondsPerSample;
+				else
+					mMouseSmoothedAxis[idx] = 0;
+			}
+			else
+			{
+				mMouseZeroTime[idx] = 0;
+				if (mMouseSmoothedAxis[idx] != 0)
+				{
+					if (deltaTime < secondsPerSample * (sampleCount + 1))
+						value = value * deltaTime / (secondsPerSample * sampleCount);
+					else
+						sampleCount = Math::roundToInt(deltaTime / secondsPerSample);
+				}
+
+				mMouseSmoothedAxis[idx] = value / sampleCount;
+			}
+		}
+		else
+		{
+			mMouseSmoothedAxis[idx] = 0.0f;
+			mMouseZeroTime[idx] = 0.0f;
+		}
+
+		return value;
+	}
+
 	void InputHandlerOIS::_update()
 	{
 		if (mMouse != nullptr)
@@ -140,6 +193,39 @@ namespace BansheeEngine
 		{
 			gamepadData.gamepad->capture();
 		}
+
+		float rawXValue = 0.0f;
+		float rawYValue = 0.0f;
+
+		// Smooth mouse axes if needed
+		if (mMouseSmoothingEnabled)
+		{
+			rawXValue = smoothMouse((float)mMouseSampleAccumulator[0], 0);
+			rawYValue = smoothMouse((float)mMouseSampleAccumulator[1], 1);
+		}
+		else
+		{
+			rawXValue = (float)mMouseSampleAccumulator[0];
+			rawYValue = (float)mMouseSampleAccumulator[1];
+		}
+
+		mMouseSampleAccumulator[0] = 0;
+		mMouseSampleAccumulator[1] = 0;
+
+		// Move the axis values in [-1.0, 1.0] range.
+		float maxAxis = MOUSE_DPI * MOUSE_MAX;
+
+		RawAxisState xState;
+		xState.rel = -Math::clamp(rawXValue / maxAxis, -1.0f, 1.0f);
+		xState.abs = xState.rel; // Abs value irrelevant for mouse
+
+		onAxisMoved(0, xState, (UINT32)InputAxis::MouseX);
+
+		RawAxisState yState;
+		yState.rel = -Math::clamp(rawYValue / maxAxis, -1.0f, 1.0f);
+		yState.abs = yState.rel; // Abs value irrelevant for mouse
+		
+		onAxisMoved(0, yState, (UINT32)InputAxis::MouseY);
 	}
 
 	void InputHandlerOIS::_inputWindowChanged(const RenderWindow& win)
@@ -166,17 +252,24 @@ namespace BansheeEngine
 
 	bool InputHandlerOIS::mouseMoved(const OIS::MouseEvent& arg)
 	{
-		RawAxisState xState;
-		xState.rel = Math::clamp(arg.state.X.rel / (float)MOUSE_SENSITIVITY, -1.0f, 1.0f);
-		xState.abs = xState.rel; // Abs value irrelevant for mouse
-		
-		onAxisMoved(0, xState, (UINT32)InputAxis::MouseX);
+		mMouseSampleAccumulator[0] += arg.state.X.rel;
+		mMouseSampleAccumulator[1] += arg.state.Y.rel;
 
-		RawAxisState yState;
-		yState.rel = Math::clamp(arg.state.Y.rel / (float)MOUSE_SENSITIVITY, -1.0f, 1.0f);
-		yState.abs = yState.rel; // Abs value irrelevant for mouse
+		mTotalMouseNumSamples[0] += Math::roundToInt(Math::abs((float)arg.state.X.rel));
+		mTotalMouseNumSamples[1] += Math::roundToInt(Math::abs((float)arg.state.Y.rel));
 
-		onAxisMoved(0, yState, (UINT32)InputAxis::MouseY);
+		// Update sample times used for determining sampling rate. But only if something was
+		// actually sampled, and only if this isn't the first non-zero sample.
+		if (mLastMouseUpdateFrame != gTime().getCurrentFrameNumber())
+		{
+			if (arg.state.X.rel != 0 && !Math::approxEquals(mMouseSmoothedAxis[0], 0.0f))
+				mTotalMouseSamplingTime[0] += gTime().getFrameDelta();
+
+			if (arg.state.Y.rel != 0 && !Math::approxEquals(mMouseSmoothedAxis[1], 0.0f))
+				mTotalMouseSamplingTime[1] += gTime().getFrameDelta();
+
+			mLastMouseUpdateFrame = gTime().getCurrentFrameNumber();
+		}
 
 		RawAxisState zState;
 		zState.abs = (float)arg.state.Z.abs;

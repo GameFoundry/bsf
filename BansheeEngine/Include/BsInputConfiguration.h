@@ -30,12 +30,11 @@ namespace BansheeEngine
 	struct BS_EXPORT VIRTUAL_AXIS_DESC
 	{
 		VIRTUAL_AXIS_DESC();
-		VIRTUAL_AXIS_DESC(UINT32 type, float deadZone = 0.0001f, float sensitivity = 1.0f, bool invert = false, bool smooth = true);
+		VIRTUAL_AXIS_DESC(UINT32 type, float deadZone = 0.0001f, float sensitivity = 1.0f, bool invert = false);
 
 		float deadZone;
 		float sensitivity;
 		bool invert;
-		bool smooth;
 		UINT32 type;
 	};
 

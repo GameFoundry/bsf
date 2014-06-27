@@ -10,28 +10,86 @@ namespace BansheeEngine
 {
 	// TODO - Currently this class will always import resources, but it would be better if it first
 	// checks for a pre-processed asset and only import it if that doesn't exist
+	/**
+	 * @brief	Holds references to built-in resources used by the core engine.
+	 */
 	class BS_EXPORT BuiltinResources : public BansheeEngine::Module<BuiltinResources>
 	{
 	public:
 		BuiltinResources();
 		~BuiltinResources();
 
+		/**
+		 * @brief	Returns the default skin used by engine GUI elements.
+		 */
 		const GUISkin& getGUISkin() const { return mSkin; }
 
+		/**
+		 * @brief	Returns a small entirely white texture.
+		 */
 		const HSpriteTexture getWhiteSpriteTexture() const { return mWhiteSpriteTexture; }
 
+		/**
+		 * @brief	Returns image data for an arrow cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorArrow(Vector2I& hotSpot);
+
+		/**
+		 * @brief	Returns image data for an arrow with dragged object cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorArrowDrag(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for a wait cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorWait(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for an "I" beam cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorIBeam(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for a NESW resize cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorSizeNESW(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for a NS resize cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorSizeNS(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for a NWSE resize cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorSizeNWSE(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for a WE resize cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorSizeWE(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for a deny cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorDeny(Vector2I& hotSpot);
+		
+		/**
+		 * @brief	Returns image data for a move left-right cursor, along with its hotspot.
+		 */
 		const PixelData& getCursorMoveLeftRight(Vector2I& hotSpot);
 
 	private:
+		/**
+		 * @brief	Loads a GUI skin texture with the specified filename.
+		 */
+		static HSpriteTexture getSkinTexture(const WString& name);
+
+		/**
+		 * @brief	Loads a cursor texture with the specified filename.
+		 */
+		static HTexture getCursorTexture(const WString& name);
+
 		GUISkin mSkin;
 
 		PixelDataPtr mCursorArrow;
@@ -138,8 +196,5 @@ namespace BansheeEngine
 		static const Vector2I CursorSizeNSHotspot;
 		static const Vector2I CursorSizeNWSEHotspot;
 		static const Vector2I CursorSizeWEHotspot;
-
-		static HSpriteTexture getSkinTexture(const WString& name);
-		static HTexture getCursorTexture(const WString& name);
 	};
 }

@@ -129,7 +129,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Debug;./Dependencies/lib/x86/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;CamelotOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -144,7 +144,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Debug;./Dependencies/lib/x64/Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;CamelotOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -165,7 +165,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/Release;./Dependencies/lib/x86/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;CamelotOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -186,7 +186,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/x86/$(Configuration);../Dependencies/lib/x86/DebugRelease;./Dependencies/lib/x86/DebugRelease</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;CamelotOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\x86\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -207,7 +207,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/Release;./Dependencies/lib/x64/Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;CamelotOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>
@@ -228,7 +228,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>../lib/$(Platform)/$(Configuration);../Dependencies/lib/x64/DebugRelease;./Dependencies/lib/x64/DebugRelease</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;CamelotOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BansheeCore.lib;BansheeUtility.lib;BansheeOIS.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ImportLibrary>..\lib\$(Platform)\$(Configuration)\$(TargetName).lib</ImportLibrary>
     </Link>
   </ItemDefinitionGroup>

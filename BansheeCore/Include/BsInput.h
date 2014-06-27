@@ -104,9 +104,8 @@ namespace BansheeEngine
 		 *
 		 * @param	type		Type of axis to query. Usually a type from InputAxis but can be a custom value.
 		 * @param	deviceIdx	Index of the device in case more than one is hooked up (0 - primary).
-		 * @param	smooth		Should the returned value be smoothed.
 		 */
-		float getAxisValue(UINT32 type, UINT32 deviceIdx = 0, bool smooth = false) const;
+		float getAxisValue(UINT32 type, UINT32 deviceIdx = 0) const;
 
 		/**
 		 * @brief	Query if the provided button is currently being held (this frame or previous frames).
@@ -131,6 +130,12 @@ namespace BansheeEngine
 		 * @param	deviceIdx	Device to query the button on (0 - primary).
 		 */
 		bool isButtonDown(ButtonCode keyCode, UINT32 deviceIdx = 0) const;
+
+		/**
+		 * @brief	Enables or disables mouse smoothing. Smoothing makes the changes to
+		 *			mouse axes more gradual.
+		 */
+		void setMouseSmoothing(bool enabled);
 
 	private:
 		/**
