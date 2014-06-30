@@ -100,7 +100,7 @@ namespace BansheeEngine
 		return 0.0f;
 	}
 
-	void VirtualInput::update()
+	void VirtualInput::_update()
 	{
 		for (auto& deviceData : mDevices)
 		{

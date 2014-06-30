@@ -4,6 +4,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Rectangle represented in the form of offsets
+	 *			from some parent rectangle.
+	 */
 	struct RectOffset
 	{
 		RectOffset()

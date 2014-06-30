@@ -22,21 +22,30 @@ namespace BansheeEngine
 	};
 
 	/**
-	 * @brief	Render objects determines rendering order of objects contained within it. Normally the rendering
-	 * 			order is determined by object material, and can influence rendering of transparent or opaque objects,
+	 * @brief	Render objects determines rendering order of objects contained within it. Rendering order 
+	 *			is determined by object material, and can influence rendering of transparent or opaque objects,
 	 * 			or be used to improve performance by grouping similar objects together.
-	 * 			
-	 *			You need to provide your own implementation of the render queue sorting method. Likely the sorting method
-	 *			will need to be closely tied to the renderer used.
 	 */
-	// TODO UNDOCUMENTED
 	class BS_EXPORT RenderQueue
 	{
 	public:
 		RenderQueue();
 
+		/**
+		 * @brief	Adds a new entry to the render queue.
+		 *
+		 * @param	element			Renderable element to add to the queue.
+		 * @param	worldPosForSort	World position that will be used for distance sorting of the object.
+		 */
 		void add(RenderableElement* element, const Vector3& worldPosForSort);
 
+		/**
+		 * @brief	Adds a new entry to the render queue.
+		 *
+		 * @param	material	Material that will be used for rendering the object.
+		 * @param	mesh		Mesh representing the geometry of the object.
+		 * @param	worldPosForSort	World position that will be used for distance sorting of the object.
+		 */
 		void add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, const Vector3& worldPosForSort);
 
 		/**

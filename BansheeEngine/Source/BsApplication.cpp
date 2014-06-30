@@ -97,7 +97,7 @@ namespace BansheeEngine
 	{
 		CoreApplication::update();
 
-		VirtualInput::instance().update();
+		VirtualInput::instance()._update();
 		PROFILE_CALL(GUIManager::instance().update(), "GUI");
 	}
 

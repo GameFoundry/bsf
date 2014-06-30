@@ -88,9 +88,24 @@ namespace BansheeEngine
 		 */
 		void _markCoreClean();
 
-		// TODO UNDOCUMENTED
+		/**
+		 * @brief	Creates a new core proxy from the currently set Renderable data. Core proxies ensure
+		 *			that the core thread has all the necessary Renderable data, while avoiding the need
+		 *			to manage Renderable itself on the core thread.
+		 *
+		 * @note	You generally need to update the core thread with a new proxy whenever core 
+		 *			dirty flag is set.
+		 */
 		RenderableProxyPtr _createProxy() const;
+
+		/**
+		 * @brief	Returns the currently active proxy object, if any.
+		 */
 		RenderableProxyPtr _getActiveProxy() const { return mActiveProxy; }
+
+		/**
+		 * @brief	Changes the currently active proxy object. 
+		 */
 		void _setActiveProxy(const RenderableProxyPtr& proxy) { mActiveProxy = proxy; }
 
 	private:

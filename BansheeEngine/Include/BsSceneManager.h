@@ -5,6 +5,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Manages active SceneObjects and provides ways for querying
+	 *			and updating them or their components.
+	 */
 	class BS_EXPORT SceneManager : public CoreSceneManager
 	{
 	public:
@@ -37,5 +41,8 @@ namespace BansheeEngine
 		Event<void(const HCamera&)> onCameraRemoved;
 	};
 
+	/**
+	 * @copydoc	SceneManager
+	 */
 	BS_EXPORT SceneManager& gBsSceneManager();
 }

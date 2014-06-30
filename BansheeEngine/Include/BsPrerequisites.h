@@ -103,6 +103,9 @@ namespace BansheeEngine
 
 	typedef ResourceHandle<SpriteTexture> HSpriteTexture;
 
+	/**
+	 * @brief	RTTI types.
+	 */
 	enum TypeID_Banshee
 	{
 		TID_Camera = 30000,

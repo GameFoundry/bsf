@@ -329,14 +329,19 @@ namespace BansheeEngine
 		 *			that the core thread has all the necessary data, while avoiding the need
 		 *			to manage Camera itself on the core thread.
 		 *
-		 * @note	Sim thread only. 
-		 *			You generally need to update the core thread with a new proxy whenever core 
+		 * @note	You generally need to update the core thread with a new proxy whenever core 
 		 *			dirty flag is set.
 		 */
 		CameraProxyPtr _createProxy() const;
 
-		// TODO UNDOCUMENTED
+		/**
+		 * @brief	Returns the currently active proxy object, if any.
+		 */
 		CameraProxyPtr _getActiveProxy() const { return mActiveProxy; }
+
+		/**
+		 * @brief	Changes the currently active proxy object. 
+		 */
 		void _setActiveProxy(const CameraProxyPtr& proxy) { mActiveProxy = proxy; }
 
 	protected:
