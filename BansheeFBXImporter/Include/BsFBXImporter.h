@@ -67,6 +67,11 @@ namespace BansheeEngine
 		 */
 		MeshDataPtr parseMesh(FbxMesh* mesh, Vector<SubMesh>& subMeshes, bool createTangentsIfMissing = true);
 
+		/**
+		 * @brief	Computes world transform matrix for the specified FBX node.
+		 */
+		FbxAMatrix computeWorldTransform(FbxNode* node);
+
 	private:
 		Vector<WString> mExtensions;
 	};

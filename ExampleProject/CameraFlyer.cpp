@@ -16,6 +16,17 @@ namespace BansheeEngine
 	const float CameraFlyer::FAST_MODE_MULTIPLIER = 2.0f;
 	const float CameraFlyer::ROTATION_SPEED = 360.0f; // Degrees/second
 
+	Degree wrapAngle(Degree angle)
+	{
+		if (angle.valueDegrees() < -360.0f)
+			angle += Degree(360.0f);
+
+		if (angle.valueDegrees() > 360.0f)
+			angle -= Degree(360.0f);
+
+		return angle;
+	}
+
 	CameraFlyer::CameraFlyer(const HSceneObject& parent)
 		:Component(parent), mPitch(0.0f), mYaw(0.0f), mLastButtonState(false)
 	{
@@ -53,13 +64,32 @@ namespace BansheeEngine
 			mLastButtonState = camRotating;
 		}
 
+		float frameDelta = gTime().getFrameDelta();
+		if (camRotating)
+		{
+			mYaw += Degree(gVirtualInput().getAxisValue(mHorizontalAxis) * ROTATION_SPEED * frameDelta);
+			mPitch += Degree(gVirtualInput().getAxisValue(mVerticalAxis) * ROTATION_SPEED * frameDelta);
+
+			mYaw = wrapAngle(mYaw);
+			mPitch = wrapAngle(mPitch);
+
+			Quaternion yRot;
+			yRot.fromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
+
+			Quaternion xRot;
+			xRot.fromAxisAngle(Vector3::UNIT_X, Radian(mPitch));
+
+			Quaternion camRot = yRot * xRot;
+			camRot.normalize();
+
+			SO()->setRotation(camRot);
+		}
+
 		Vector3 direction = Vector3::ZERO;
 		if (goingForward) direction += SO()->getForward();
 		if (goingBack) direction -= SO()->getForward();
 		if (goingRight) direction += SO()->getRight();
 		if (goingLeft) direction -= SO()->getRight();
-
-		float frameDelta = gTime().getFrameDelta();
 
 		if (direction.squaredLength() != 0)
 		{
@@ -82,22 +112,6 @@ namespace BansheeEngine
 		{
 			Vector3 velocity = direction * mCurrentSpeed;
 			SO()->move(velocity * frameDelta);
-		}
-
-		if (camRotating)
-		{
-			mYaw += Degree(gVirtualInput().getAxisValue(mHorizontalAxis) * ROTATION_SPEED * frameDelta);
-			mPitch += Degree(gVirtualInput().getAxisValue(mVerticalAxis) * ROTATION_SPEED * frameDelta);
-
-			Quaternion yRot;
-			yRot.fromAxisAngle(Vector3::UNIT_Y, Radian(mYaw));
-
-			Quaternion xRot;
-			xRot.fromAxisAngle(yRot.xAxis(), Radian(mPitch));
-
-			Quaternion camRot = xRot * yRot;
-
-			SO()->setRotation(camRot);
 		}
 	}
 }

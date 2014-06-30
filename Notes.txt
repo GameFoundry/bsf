@@ -63,6 +63,9 @@ Reminders:
   - Add a TaskScheduler profiler that neatly shows time slices of each task and on which thread they are run on
   - Add support for BC6H and BC7 file format compression
   - D-Pad on non-XInput devices will not be handled properly by the Input system because OIS reports it separately from other buttons (Simple to fix)
+  - Possible improvement: I can only update entire Mesh at once with writeSubresource
+  - Possible improvement: I keep bounds for the entire mesh and not per-submesh
+  - Possible improvement: I don't serialize Mesh bounds and they are recalculated whenever a mesh is loaded
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

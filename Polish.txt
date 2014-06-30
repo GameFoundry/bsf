@@ -1,53 +1,30 @@
 Polish TODO:
- - Finish basic example, get a model rendering on screen
- - Fix FBX importer so proper number of vertices show
- - Test and fix full-screen transitions
- - Compress and generate mips for texture on input (testing NVTT stuff)
- - Add frustum culling and sorting code
- - Finalize example
- - Perform optimizations as needed to get reasonable performance
+ - Add frustum culling
+ - Implement RenderQueue sorting with support for sort type, priority and separable pass
+    - Use a hash list(containing type, queue, layer, etc.) for faster sorting
+ - Finalize example with resolution settings and proper GUI
+ - Finish documentation (BansheeEngine + TODO UNDOCUMENTED)
 
  - Add license text to all files
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
- - (HIGHLY OPTIONAL) Make a Getting Started guide, along with the example project. Or just finish up the manual.
-
- Model triangles are inverted.
 
 Re-test gamepad buttons now that XInput is active
- CameraFlyer is broken and doesn't rotate around Y properly (e.g. looking up will cause it to roll instead of yaw)
 
 -----------------
 
-There's still a crash regarding an uninitialized mCachedPtr on a C# class when shutting down. Attempt to find consistent repro steps.
-
- ---------------------------
-
- Make hierarchical documentation. Organize stuff based on type. Once I actually generate the documentation add Doxygen grouping tags (or whatever they're called)
-
- ---------------------------
-
- Fullscreen stuff:
-
-I should be able to specify resolution when going to windowed mode
- - I have a feeling DX9 might start crashing once I resize to sub-fullscreen res and go back to FS - test it
-
- Add VSync toggle to RenderWindow if it doesn't already exist.
- Test creating a fullscreen window on window creation.
-
-DISREGARD MONITOR INDEX ON DX9
- - It's not trivial and its not worth wasting time on a deprecated system
- - Seems I would need to destroy the device and then recreate it using the new adapter index
-
- -----------------------------
-
-Refactor GUIElement & GUIElementBase
- - Sprite rendering methods should probably be marked as internal (possibly others too)
-  - A lot could be made private
- - Has two methods for retrieveing ElementType
- - getVisibleBounds doesn't make sense
-
- To document:
-  - Finish up BansheeEngine
-  - DX11, DX9
-
-Editor and script stuff should be removed from release version
+Not so critical
+  - I have a feeling DX9 might start crashing once I resize to sub-fullscreen res and go back to FS - test it
+  - Add VSync toggle to RenderWindow if it doesn't already exist.
+  - Test creating a fullscreen window on window creation.
+  - Refactor GUIElement & GUIElementBase
+     - Sprite rendering methods should probably be marked as internal (possibly others too)
+       - A lot could be made private
+     - Has two methods for retrieveing ElementType
+     - getVisibleBounds doesn't make sense
+  - Make hierarchical documentation. Organize stuff based on type. Once I actually generate the documentation add Doxygen grouping tags (or whatever they're called)
+  - There's still a crash regarding an uninitialized mCachedPtr on a C# class when shutting down. Attempt to find consistent repro steps.
+  - Make a Getting Started guide, along with the example project. Or just finish up the manual.
+  - Compress and generate mips for texture on input (testing NVTT stuff)
+  - Perform optimizations as needed to get reasonable performance
+  - Consider removing SceneManager from Core? I two scene manager base classes.
+  - GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.

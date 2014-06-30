@@ -144,6 +144,8 @@ namespace BansheeEngine
 				case FbxNodeAttribute::eMesh:
 					{
 						FbxMesh* mesh = static_cast<FbxMesh*>(attrib);
+						mesh->RemoveBadPolygons();
+
 						if(!mesh->IsTriangleMesh())
 						{
 							FbxGeometryConverter geomConverter(manager);
@@ -195,94 +197,94 @@ namespace BansheeEngine
 		}
 
 		// Find out which vertex attributes exist
-		bool allByControlPoint = true;
-
 		bool hasColor = mesh->GetElementVertexColorCount() > 0;
-		FbxGeometryElement::EMappingMode lColorMappingMode = FbxGeometryElement::eNone;
+		const FbxGeometryElementVertexColor* colorElement = nullptr;
+		FbxGeometryElement::EMappingMode colorMappingMode = FbxGeometryElement::eNone;
+		FbxGeometryElement::EReferenceMode colorRefMode = FbxGeometryElement::eDirect;
 
 		if(hasColor)
 		{
-			lColorMappingMode = mesh->GetElementVertexColor(0)->GetMappingMode();
-			if (lColorMappingMode == FbxGeometryElement::eNone)
-			{
+			colorElement = mesh->GetElementVertexColor(0);
+			colorMappingMode = colorElement->GetMappingMode();
+			colorRefMode = colorElement->GetReferenceMode();
+
+			if (colorMappingMode == FbxGeometryElement::eNone)
 				hasColor = false;
-			}
-			if (hasColor && lColorMappingMode != FbxGeometryElement::eByControlPoint)
-			{
-				allByControlPoint = false;
-			}
 		}
 
 		bool hasNormal = mesh->GetElementNormalCount() > 0;
-		FbxGeometryElement::EMappingMode lNormalMappingMode = FbxGeometryElement::eNone;
+		const FbxGeometryElementNormal* normalElement = nullptr;
+		FbxGeometryElement::EMappingMode normalMappingMode = FbxGeometryElement::eNone;
+		FbxGeometryElement::EReferenceMode normalRefMode = FbxGeometryElement::eDirect;
 
 		if (hasNormal)
 		{
-			lNormalMappingMode = mesh->GetElementNormal(0)->GetMappingMode();
-			if (lNormalMappingMode == FbxGeometryElement::eNone)
-			{
+			normalElement = mesh->GetElementNormal(0);
+			normalMappingMode = normalElement->GetMappingMode();
+			normalRefMode = normalElement->GetReferenceMode();
+
+			if (normalMappingMode == FbxGeometryElement::eNone)
 				hasNormal = false;
-			}
-			if (hasNormal && lNormalMappingMode != FbxGeometryElement::eByControlPoint)
-			{
-				allByControlPoint = false;
-			}
 		}
 
 		bool hasTangent = mesh->GetElementTangentCount() > 0;
-		FbxGeometryElement::EMappingMode lTangentMappingMode = FbxGeometryElement::eNone;
+		const FbxGeometryElementTangent* tangentElement = nullptr;
+		FbxGeometryElement::EMappingMode tangentMappingMode = FbxGeometryElement::eNone;
+		FbxGeometryElement::EReferenceMode tangentRefMode = FbxGeometryElement::eDirect;
 
 		if (hasTangent)
 		{
-			lTangentMappingMode = mesh->GetElementTangent(0)->GetMappingMode();
-			if (lTangentMappingMode == FbxGeometryElement::eNone)
-			{
+			tangentElement = mesh->GetElementTangent(0);
+			tangentMappingMode = tangentElement->GetMappingMode();
+			tangentRefMode = tangentElement->GetReferenceMode();
+
+			if (tangentMappingMode == FbxGeometryElement::eNone)
 				hasTangent = false;
-			}
-			if (hasTangent && lTangentMappingMode != FbxGeometryElement::eByControlPoint)
-			{
-				allByControlPoint = false;
-			}
 		}
 
 		bool hasBitangent = mesh->GetElementBinormalCount() > 0;
-		FbxGeometryElement::EMappingMode lBitangentMappingMode = FbxGeometryElement::eNone;
+		const FbxGeometryElementBinormal* bitangentElement = nullptr;
+		FbxGeometryElement::EMappingMode bitangentMappingMode = FbxGeometryElement::eNone;
+		FbxGeometryElement::EReferenceMode bitangentRefMode = FbxGeometryElement::eDirect;
 
 		if (hasBitangent)
 		{
-			lBitangentMappingMode = mesh->GetElementBinormal(0)->GetMappingMode();
-			if (lBitangentMappingMode == FbxGeometryElement::eNone)
-			{
+			bitangentElement = mesh->GetElementBinormal(0);
+			bitangentMappingMode = bitangentElement->GetMappingMode();
+			bitangentRefMode = bitangentElement->GetReferenceMode();
+
+			if (bitangentMappingMode == FbxGeometryElement::eNone)
 				hasBitangent = false;
-			}
-			if (hasBitangent && lBitangentMappingMode != FbxGeometryElement::eByControlPoint)
-			{
-				allByControlPoint = false;
-			}
 		}
 
 		bool hasUV0 = mesh->GetElementUVCount() > 0;
-		FbxGeometryElement::EMappingMode lUVMappingMode0 = FbxGeometryElement::eNone;
+		const FbxGeometryElementUV* UVElement0 = nullptr;
+		FbxGeometryElement::EMappingMode UVMappingMode0 = FbxGeometryElement::eNone;
+		FbxGeometryElement::EReferenceMode UVRefMode0 = FbxGeometryElement::eDirect;
+
 		if (hasUV0)
 		{
-			lUVMappingMode0 = mesh->GetElementUV(0)->GetMappingMode();
-			if (lUVMappingMode0 == FbxGeometryElement::eNone)
-				hasUV0 = false;
+			UVElement0 = mesh->GetElementUV(0);
+			UVMappingMode0 = UVElement0->GetMappingMode();
+			UVRefMode0 = UVElement0->GetReferenceMode();
 
-			if (hasUV0 && lUVMappingMode0 != FbxGeometryElement::eByControlPoint)
-				allByControlPoint = false;
+			if (UVMappingMode0 == FbxGeometryElement::eNone)
+				hasUV0 = false;
 		}
 
 		bool hasUV1 = mesh->GetElementUVCount() > 1;
-		FbxGeometryElement::EMappingMode lUVMappingMode1 = FbxGeometryElement::eNone;
+		const FbxGeometryElementUV* UVElement1 = nullptr;
+		FbxGeometryElement::EMappingMode UVMappingMode1 = FbxGeometryElement::eNone;
+		FbxGeometryElement::EReferenceMode UVRefMode1 = FbxGeometryElement::eDirect;
+
 		if (hasUV1)
 		{
-			lUVMappingMode1 = mesh->GetElementUV(1)->GetMappingMode();
-			if (lUVMappingMode1 == FbxGeometryElement::eNone)
-				hasUV1 = false;
+			UVElement1 = mesh->GetElementUV(1);
+			UVMappingMode1 = UVElement1->GetMappingMode();
+			UVRefMode1 = UVElement1->GetReferenceMode();
 
-			if (hasUV1 && lUVMappingMode1 != FbxGeometryElement::eByControlPoint)
-				allByControlPoint = false;
+			if (UVMappingMode1 == FbxGeometryElement::eNone)
+				hasUV1 = false;
 		}
 
 		// Create tangents if needed
@@ -290,13 +292,8 @@ namespace BansheeEngine
 			mesh->GenerateTangentsData(0, false);
 
 		// Calculate number of vertices and indexes
-		const int lPolygonCount = mesh->GetPolygonCount();
-
-		int lPolygonVertexCount = mesh->GetControlPointsCount();
-		if (!allByControlPoint)
-			lPolygonVertexCount = lPolygonCount * 3;
-
-		UINT32 vertexCount = lPolygonVertexCount;
+		int polygonCount = mesh->GetPolygonCount();
+		UINT32 vertexCount = 0;
 
 		VertexDataDescPtr vertexDesc = bs_shared_ptr<VertexDataDesc>();
 
@@ -314,75 +311,79 @@ namespace BansheeEngine
 		if(hasBitangent)
 			vertexDesc->addVertElem(VET_FLOAT3, VES_BITANGENT);
 
-		FbxStringList lUVNames;
-		mesh->GetUVSetNames(lUVNames);
-		const char * lUVName0 = NULL;
-		if (hasUV0 && lUVNames.GetCount() > 0)
-		{
+		if (hasUV0)
 			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 0);
-			lUVName0 = lUVNames[0];
-		}
 
-		const char * lUVName1 = NULL;
-		if (hasUV1 && lUVNames.GetCount() > 1)
-		{
+		if (hasUV1)
 			vertexDesc->addVertElem(VET_FLOAT2, VES_TEXCOORD, 1);
-			lUVName1 = lUVNames[1];
-		}
 
 		// Count the polygon count of each material
-		FbxLayerElementArrayTemplate<int>* lMaterialIndice = NULL;
-		FbxGeometryElement::EMappingMode lMaterialMappingMode = FbxGeometryElement::eNone;
+		FbxLayerElementArrayTemplate<int>* materialElementArray = NULL;
+		FbxGeometryElement::EMappingMode materialMappingMode = FbxGeometryElement::eNone;
 
+		Set<UINT32> uniqueIndices;
 		UINT32 numIndices = 0;
 		if (mesh->GetElementMaterial())
 		{
-			lMaterialIndice = &mesh->GetElementMaterial()->GetIndexArray();
-			lMaterialMappingMode = mesh->GetElementMaterial()->GetMappingMode();
-			if (lMaterialIndice && lMaterialMappingMode == FbxGeometryElement::eByPolygon)
+			materialElementArray = &mesh->GetElementMaterial()->GetIndexArray();
+			materialMappingMode = mesh->GetElementMaterial()->GetMappingMode();
+			if (materialElementArray && materialMappingMode == FbxGeometryElement::eByPolygon)
 			{
-				FBX_ASSERT(lMaterialIndice->GetCount() == lPolygonCount);
-				if (lMaterialIndice->GetCount() == lPolygonCount)
+				FBX_ASSERT(materialElementArray->GetCount() == polygonCount);
+				if (materialElementArray->GetCount() == polygonCount)
 				{
 					// Count the faces of each material
-					for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
+					for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
 					{
-						const UINT32 lMaterialIndex = (UINT32)lMaterialIndice->GetAt(lPolygonIndex);
-						if (subMeshes.size() < lMaterialIndex + 1)
+						const UINT32 materialIndex = (UINT32)materialElementArray->GetAt(polygonIndex);
+						if (subMeshes.size() < materialIndex + 1)
 						{
-							subMeshes.resize(lMaterialIndex + 1);
+							subMeshes.resize(materialIndex + 1);
 						}
 
-						subMeshes[lMaterialIndex].indexCount += 3;
+						subMeshes[materialIndex].indexCount += 3;
 					}
 
 					// Record the offsets and allocate index arrays
-					const int lMaterialCount = (const int)subMeshes.size();
-					int lOffset = 0;
-					for (int lIndex = 0; lIndex < lMaterialCount; ++lIndex)
+					UINT32 materialCount = (UINT32)subMeshes.size();
+					int offset = 0;
+					for (UINT32 i = 0; i < materialCount; ++i)
 					{
-						subMeshes[lIndex].indexOffset = lOffset;
-						lOffset += subMeshes[lIndex].indexCount;
+						subMeshes[i].indexOffset = offset;
+						offset += subMeshes[i].indexCount;
 
-						numIndices += subMeshes[lIndex].indexCount;
+						numIndices += subMeshes[i].indexCount;
 					}
-					FBX_ASSERT(lOffset == lPolygonCount * 3);
+					FBX_ASSERT(offset == polygonCount * 3);
 				}
 			}
 		}
 
-		// All faces will use the same material.
 		if (subMeshes.size() == 0)
 		{
-			numIndices = lPolygonCount * 3;
+			numIndices = polygonCount * 3;
 
 			subMeshes.resize(1);
-			subMeshes[0].indexCount = lPolygonCount * 3;
+			subMeshes[0].indexCount = polygonCount * 3;
 		}
 
+		// Count number of unique vertices
+		for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
+		{
+			for (int vertexIndex = 0; vertexIndex < 3; ++vertexIndex)
+			{
+				const int controlPointIndex = mesh->GetPolygonVertex(polygonIndex, vertexIndex);
+				if (uniqueIndices.find(controlPointIndex) == uniqueIndices.end())
+				{
+					uniqueIndices.insert(controlPointIndex);
+					vertexCount++;
+				}
+			}
+		}
+
+		// Allocate the array memory for all vertices and indices
 		MeshDataPtr meshData = bs_shared_ptr<MeshData, ScratchAlloc>(vertexCount, numIndices, vertexDesc);
 
-		// Allocate the array memory, by control point or by polygon vertex.
 		VertexElemIter<Vector3> positions = meshData->getVec3DataIter(VES_POSITION);
 
 		VertexElemIter<UINT32> colors;
@@ -402,165 +403,22 @@ namespace BansheeEngine
 			bitangents = meshData->getVec3DataIter(VES_BITANGENT);
 
 		VertexElemIter<Vector2> uv0;
-		if (hasUV0 && lUVNames.GetCount() > 0)
-		{
+		if (hasUV0)
 			uv0 = meshData->getVec2DataIter(VES_TEXCOORD, 0);
-			lUVName0 = lUVNames[0];
-		}
 
 		VertexElemIter<Vector2> uv1;
-		if (hasUV1 && lUVNames.GetCount() > 1)
-		{
+		if (hasUV1)
 			uv1 = meshData->getVec2DataIter(VES_TEXCOORD, 1);
-			lUVName1 = lUVNames[1];
-		}
 
-		// Populate the array with vertex attribute, if by control point.
-		const FbxVector4 * lControlPoints = mesh->GetControlPoints();
-		FbxVector4 lCurrentVertex;
-		FbxVector4 lCurrentNormal;
-		FbxVector2 lCurrentUV;
+		// Get node transform
+		FbxAMatrix worldTransform;
+		FbxAMatrix worldTransformIT;
+		worldTransform = computeWorldTransform(mesh->GetNode());
+		worldTransformIT = worldTransform.Inverse();
+		worldTransformIT = worldTransformIT.Transpose();
 
-		const FbxGeometryElementVertexColor * lColorElement = NULL;
-		if (hasColor)
-			lColorElement = mesh->GetElementVertexColor(0);
-
-		const FbxGeometryElementTangent * lTangentElement = NULL;
-		if (hasTangent)
-			lTangentElement = mesh->GetElementTangent(0);
-
-		const FbxGeometryElementBinormal * lBitangentElement = NULL;
-		if (hasBitangent)
-			lBitangentElement = mesh->GetElementBinormal(0);
-
-		if (allByControlPoint)
-		{
-			const FbxGeometryElementNormal * lNormalElement = NULL;
-			if (hasNormal)
-				lNormalElement = mesh->GetElementNormal(0);
-
-			const FbxGeometryElementUV * lUVElement0 = NULL;
-			if (hasUV0)
-				lUVElement0 = mesh->GetElementUV(0);
-
-			const FbxGeometryElementUV * lUVElement1 = NULL;
-			if (hasUV1)
-				lUVElement1 = mesh->GetElementUV(1);
-
-			for (int lIndex = 0; lIndex < lPolygonVertexCount; ++lIndex)
-			{
-				// Save the vertex position.
-				lCurrentVertex = lControlPoints[lIndex];
-
-				Vector3 curPosValue;
-				curPosValue[0] = static_cast<float>(lCurrentVertex[0]);
-				curPosValue[1] = static_cast<float>(lCurrentVertex[1]);
-				curPosValue[2] = static_cast<float>(lCurrentVertex[2]);
-
-				positions.addValue(curPosValue);
-
-				// Save vertex color
-				if(hasColor)
-				{
-					int lColorIndex = lIndex;
-					if (lColorElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-						lColorIndex = lColorElement->GetIndexArray().GetAt(lIndex);
-
-					FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
-
-					Color curColorValue;
-					curColorValue[0] = static_cast<float>(lCurrentColor[0]);
-					curColorValue[1] = static_cast<float>(lCurrentColor[1]);
-					curColorValue[2] = static_cast<float>(lCurrentColor[2]);
-					curColorValue[3] = static_cast<float>(lCurrentColor[3]);
-
-					UINT32 color32 = curColorValue.getAsRGBA();
-					colors.addValue(color32);
-				}
-
-				// Save the normal.
-				if (hasNormal)
-				{
-					int lNormalIndex = lIndex;
-					if (lNormalElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-						lNormalIndex = lNormalElement->GetIndexArray().GetAt(lIndex);
-
-					lCurrentNormal = lNormalElement->GetDirectArray().GetAt(lNormalIndex);
-
-					Vector3 curNormalValue;
-					curNormalValue[0] = static_cast<float>(lCurrentNormal[0]);
-					curNormalValue[1] = static_cast<float>(lCurrentNormal[1]);
-					curNormalValue[2] = static_cast<float>(lCurrentNormal[2]);
-
-					normals.addValue(curNormalValue);
-				}
-
-				// Save the tangent.
-				if (hasTangent)
-				{
-					int lTangentIndex = lIndex;
-					if (lTangentElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-						lTangentIndex = lTangentElement->GetIndexArray().GetAt(lIndex);
-
-					FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
-
-					Vector3 curTangentValue;
-					curTangentValue[0] = static_cast<float>(lCurrentTangent[0]);
-					curTangentValue[1] = static_cast<float>(lCurrentTangent[1]);
-					curTangentValue[2] = static_cast<float>(lCurrentTangent[2]);
-
-					tangents.addValue(curTangentValue);
-				}
-
-				// Save the bitangent.
-				if (hasBitangent)
-				{
-					int lBitangentIndex = lIndex;
-					if (lBitangentElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-						lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lIndex);
-
-					FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
-
-					Vector3 curBitangentValue;
-					curBitangentValue[0] = static_cast<float>(lCurrentBitangent[0]);
-					curBitangentValue[1] = static_cast<float>(lCurrentBitangent[1]);
-					curBitangentValue[2] = static_cast<float>(lCurrentBitangent[2]);
-
-					bitangents.addValue(curBitangentValue);
-				}
-
-				// Save the UV.
-				if (hasUV0)
-				{
-					int lUVIndex = lIndex;
-					if (lUVElement0->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-						lUVIndex = lUVElement0->GetIndexArray().GetAt(lIndex);
-
-					lCurrentUV = lUVElement0->GetDirectArray().GetAt(lUVIndex);
-
-					Vector2 curUV0Value;
-					curUV0Value[0] = static_cast<float>(lCurrentUV[0]);
-					curUV0Value[1] = static_cast<float>(lCurrentUV[1]);
-
-					uv0.addValue(curUV0Value);
-				}
-
-				if (hasUV1)
-				{
-					int lUVIndex = lIndex;
-					if (lUVElement1->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-						lUVIndex = lUVElement1->GetIndexArray().GetAt(lIndex);
-
-					lCurrentUV = lUVElement1->GetDirectArray().GetAt(lUVIndex);
-
-					Vector2 curUV1Value;
-					curUV1Value[0] = static_cast<float>(lCurrentUV[0]);
-					curUV1Value[1] = static_cast<float>(lCurrentUV[1]);
-
-					uv1.addValue(curUV1Value);
-				}
-			}
-		}
+		// Populate the mesh data with vertex attributes and indices
+		const FbxVector4* controlPoints = mesh->GetControlPoints();
 
 		Vector<UINT32> indexOffsetPerSubmesh;
 		indexOffsetPerSubmesh.resize(subMeshes.size(), 0);
@@ -573,47 +431,56 @@ namespace BansheeEngine
 			indices[i] = meshData->getIndices32() + subMeshes[i].indexOffset;
 		}
 
-		UINT32 lVertexCount = 0;
-		for (int lPolygonIndex = 0; lPolygonIndex < lPolygonCount; ++lPolygonIndex)
+		Map<UINT32, UINT32> indexMap;
+
+		UINT32 curVertexCount = 0;
+		for (int polygonIndex = 0; polygonIndex < polygonCount; ++polygonIndex)
 		{
 			// The material for current face.
 			int lMaterialIndex = 0;
-			if (lMaterialIndice && lMaterialMappingMode == FbxGeometryElement::eByPolygon)
+			if (materialElementArray && materialMappingMode == FbxGeometryElement::eByPolygon)
 			{
-				lMaterialIndex = lMaterialIndice->GetAt(lPolygonIndex);
+				lMaterialIndex = materialElementArray->GetAt(polygonIndex);
 			}
 
 			// Where should I save the vertex attribute index, according to the material
-			int lIndexOffset = subMeshes[lMaterialIndex].indexOffset + indexOffsetPerSubmesh[lMaterialIndex];
-			for (int lVerticeIndex = 0; lVerticeIndex < 3; ++lVerticeIndex)
+			int indexOffset = subMeshes[lMaterialIndex].indexOffset + indexOffsetPerSubmesh[lMaterialIndex];
+			for (int vertexIndex = 0; vertexIndex < 3; ++vertexIndex)
 			{
-				const int lControlPointIndex = mesh->GetPolygonVertex(lPolygonIndex, lVerticeIndex);
+				int controlPointIndex = mesh->GetPolygonVertex(polygonIndex, vertexIndex);
+				int triangleIndex = indexOffset + (2 - vertexIndex);
 
-				if (allByControlPoint)
+				auto findIter = indexMap.find(controlPointIndex);
+				if (findIter != indexMap.end())
 				{
-					indices[lMaterialIndex][lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lControlPointIndex);
+					indices[lMaterialIndex][triangleIndex] = static_cast<unsigned int>(findIter->second);
 				}
-				// Populate the array with vertex attribute, if by polygon vertex.
 				else
 				{
-					indices[lMaterialIndex][lIndexOffset + lVerticeIndex] = static_cast<unsigned int>(lVertexCount);
-
-					lCurrentVertex = lControlPoints[lControlPointIndex];
+					indices[lMaterialIndex][triangleIndex] = static_cast<unsigned int>(curVertexCount);
+					FbxVector4 currentVertex = controlPoints[controlPointIndex];
+					currentVertex = worldTransform.MultT(currentVertex);
 
 					Vector3 curPosValue;
-					curPosValue[0] = static_cast<float>(lCurrentVertex[0]);
-					curPosValue[1] = static_cast<float>(lCurrentVertex[1]);
-					curPosValue[2] = static_cast<float>(lCurrentVertex[2]);
+					curPosValue[0] = static_cast<float>(currentVertex[0]);
+					curPosValue[1] = static_cast<float>(currentVertex[1]);
+					curPosValue[2] = static_cast<float>(currentVertex[2]);
 
 					positions.addValue(curPosValue);
+					indexMap[controlPointIndex] = curVertexCount;
+					++curVertexCount;
 
-					if(hasColor)
+					if (hasColor)
 					{
-						int lColorIndex = lIndexOffset + lVerticeIndex; // TODO - Is this right?
-						if (lColorElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-							lColorIndex = lColorElement->GetIndexArray().GetAt(lColorIndex);
+						int colorIdx = indexOffset + vertexIndex;
 
-						FbxColor lCurrentColor = lColorElement->GetDirectArray().GetAt(lColorIndex);
+						if (colorMappingMode == FbxLayerElement::eByControlPoint)
+							colorIdx = controlPointIndex;
+
+						if (colorRefMode == FbxLayerElement::eIndexToDirect)
+							colorIdx = colorElement->GetIndexArray().GetAt(colorIdx);
+
+						FbxColor lCurrentColor = colorElement->GetDirectArray().GetAt(colorIdx);
 
 						Color curColorValue;
 						curColorValue[0] = static_cast<float>(lCurrentColor[0]);
@@ -627,79 +494,129 @@ namespace BansheeEngine
 
 					if (hasNormal)
 					{
-						mesh->GetPolygonVertexNormal(lPolygonIndex, lVerticeIndex, lCurrentNormal);
+						int normalIdx = indexOffset + vertexIndex;
+
+						if (normalMappingMode == FbxLayerElement::eByControlPoint)
+							normalIdx = controlPointIndex;
+
+						if (normalRefMode == FbxLayerElement::eIndexToDirect)
+							normalIdx = normalElement->GetIndexArray().GetAt(normalIdx);
+
+						FbxVector4 currentNormal = normalElement->GetDirectArray().GetAt(normalIdx);
+						currentNormal = worldTransformIT.MultT(currentNormal);
 
 						Vector3 curNormalValue;
-						curNormalValue[0] = static_cast<float>(lCurrentNormal[0]);
-						curNormalValue[1] = static_cast<float>(lCurrentNormal[1]);
-						curNormalValue[2] = static_cast<float>(lCurrentNormal[2]);
+						curNormalValue[0] = static_cast<float>(currentNormal[0]);
+						curNormalValue[1] = static_cast<float>(currentNormal[1]);
+						curNormalValue[2] = static_cast<float>(currentNormal[2]);
 
 						normals.addValue(curNormalValue);
 					}
 
 					if (hasTangent)
 					{
-						int lTangentIndex = lIndexOffset + lVerticeIndex; // TODO - Is this right?
-						if (lTangentElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-							lTangentIndex = lTangentElement->GetIndexArray().GetAt(lTangentIndex);
+						int tangentIdx = indexOffset + vertexIndex;
 
-						FbxVector4 lCurrentTangent = lTangentElement->GetDirectArray().GetAt(lTangentIndex);
+						if (tangentMappingMode == FbxLayerElement::eByControlPoint)
+							tangentIdx = controlPointIndex;
+
+						if (tangentRefMode == FbxLayerElement::eIndexToDirect)
+							tangentIdx = tangentElement->GetIndexArray().GetAt(tangentIdx);
+
+						FbxVector4 currentTangent = tangentElement->GetDirectArray().GetAt(tangentIdx);
+						currentTangent = worldTransformIT.MultT(currentTangent);
 
 						Vector3 curTangentValue;
-						curTangentValue[0] = static_cast<float>(lCurrentTangent[0]);
-						curTangentValue[1] = static_cast<float>(lCurrentTangent[1]);
-						curTangentValue[2] = static_cast<float>(lCurrentTangent[2]);
+						curTangentValue[0] = static_cast<float>(currentTangent[0]);
+						curTangentValue[1] = static_cast<float>(currentTangent[1]);
+						curTangentValue[2] = static_cast<float>(currentTangent[2]);
 
 						tangents.addValue(curTangentValue);
 					}
 
 					if (hasBitangent)
 					{
-						int lBitangentIndex = lIndexOffset + lVerticeIndex; // TODO - Is this right?
-						if (lBitangentElement->GetReferenceMode() == FbxLayerElement::eIndexToDirect)
-							lBitangentIndex = lBitangentElement->GetIndexArray().GetAt(lBitangentIndex);
+						int bitangentIdx = indexOffset + vertexIndex;
 
-						FbxVector4 lCurrentBitangent = lBitangentElement->GetDirectArray().GetAt(lBitangentIndex);
+						if (bitangentMappingMode == FbxLayerElement::eByControlPoint)
+							bitangentIdx = controlPointIndex;
+
+						if (bitangentRefMode == FbxLayerElement::eIndexToDirect)
+							bitangentIdx = bitangentElement->GetIndexArray().GetAt(bitangentIdx);
+
+						FbxVector4 currentBitangent = bitangentElement->GetDirectArray().GetAt(bitangentIdx);
+						currentBitangent = worldTransformIT.MultT(currentBitangent);
 
 						Vector3 curBitangentValue;
-						curBitangentValue[0] = static_cast<float>(lCurrentBitangent[0]);
-						curBitangentValue[1] = static_cast<float>(lCurrentBitangent[1]);
-						curBitangentValue[2] = static_cast<float>(lCurrentBitangent[2]);
+						curBitangentValue[0] = static_cast<float>(currentBitangent[0]);
+						curBitangentValue[1] = static_cast<float>(currentBitangent[1]);
+						curBitangentValue[2] = static_cast<float>(currentBitangent[2]);
 
 						bitangents.addValue(curBitangentValue);
 					}
 
 					if (hasUV0)
 					{
-						bool unmapped = false;
-						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName0, lCurrentUV, unmapped);
+						int uv0Idx = indexOffset + vertexIndex;
+
+						if (UVMappingMode0 == FbxLayerElement::eByControlPoint)
+							uv0Idx = controlPointIndex;
+
+						if (UVRefMode0 == FbxLayerElement::eIndexToDirect)
+							uv0Idx = UVElement0->GetIndexArray().GetAt(uv0Idx);
+
+						FbxVector4 currentUV = UVElement0->GetDirectArray().GetAt(uv0Idx);
 
 						Vector2 curUV0Value;
-						curUV0Value[0] = static_cast<float>(lCurrentUV[0]);
-						curUV0Value[1] = static_cast<float>(lCurrentUV[1]);
+						curUV0Value[0] = static_cast<float>(currentUV[0]);
+						curUV0Value[1] = 1.0f - static_cast<float>(currentUV[1]);
 
 						uv0.addValue(curUV0Value);
 					}
 
 					if (hasUV1)
 					{
-						bool unmapped = false;
-						mesh->GetPolygonVertexUV(lPolygonIndex, lVerticeIndex, lUVName1, lCurrentUV, unmapped);
+						int uv1Idx = indexOffset + vertexIndex;
+
+						if (UVMappingMode1 == FbxLayerElement::eByControlPoint)
+							uv1Idx = controlPointIndex;
+
+						if (UVRefMode1 == FbxLayerElement::eIndexToDirect)
+							uv1Idx = UVElement1->GetIndexArray().GetAt(uv1Idx);
+
+						FbxVector4 currentUV = UVElement1->GetDirectArray().GetAt(uv1Idx);
 
 						Vector2 curUV1Value;
-						curUV1Value[0] = static_cast<float>(lCurrentUV[0]);
-						curUV1Value[1] = static_cast<float>(lCurrentUV[1]);
+						curUV1Value[0] = static_cast<float>(currentUV[0]);
+						curUV1Value[1] = 1.0f - static_cast<float>(currentUV[1]);
 
 						uv1.addValue(curUV1Value);
 					}
 				}
-
-				++lVertexCount;
 			}
 
 			indexOffsetPerSubmesh[lMaterialIndex] += 3;
 		}
 
 		return meshData;
+	}
+
+	FbxAMatrix FBXImporter::computeWorldTransform(FbxNode* node)
+	{
+		FbxVector4 translation = node->GetGeometricTranslation(FbxNode::eSourcePivot);
+		FbxVector4 rotation = node->GetGeometricRotation(FbxNode::eSourcePivot);
+		FbxVector4 scaling = node->GetGeometricScaling(FbxNode::eSourcePivot);
+
+		FbxAMatrix localTransform;
+		localTransform.SetT(translation);
+		localTransform.SetR(rotation);
+		localTransform.SetS(scaling);
+
+		FbxAMatrix& globalTransform = node->EvaluateGlobalTransform();
+
+		FbxAMatrix worldTransform;
+		worldTransform = globalTransform * localTransform;
+
+		return worldTransform;
 	}
 }
