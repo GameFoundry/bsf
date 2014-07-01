@@ -12,6 +12,7 @@
 #include "BsRay.h"
 #include "BsComponent.h"
 #include "BsCameraProxy.h"
+#include "BsConvexVolume.h"
 
 namespace BansheeEngine 
 {
@@ -179,42 +180,9 @@ namespace BansheeEngine
 		virtual bool isCustomProjectionMatrixEnabled() const { return mCustomProjMatrix; }
 
 		/** 
-		 * @brief	Returns all frustum planes in an array.
-		 *
-		 * @note	Planes will be in order as specified by FrustumPlane enum.
+		 * @brief	Returns a convex volume representing the visible area of the camera.
          */
-        virtual const Plane* getFrustumPlanes() const;
-
-		/** 
-		 * @brief	Returns one of the planes forming the camera frustum in world space.
-		 *
-		 * @param	plane	Index of the plane to retrieve from FrustumPlane enum.
-         */
-        virtual const Plane& getFrustumPlane(UINT16 plane) const;
-
-        /** 
-		 * @brief	Tests whether the given bounding box is visible in the frustum.
-		 *
-		 * @param	bound		Bounding box to check in world space.
-		 * @param	culledBy	(optional)	Exact frustum plane which culled the bounding box.
-         */
-        virtual bool isVisible(const AABox& bound, FrustumPlane* culledBy = 0) const;
-
-        /** 
-		 * @brief	Tests whether the given sphere is visible in the frustum.
-		 *
-		 * @param	bound		Sphere to check in world space.
-		 * @param	culledBy	(optional)	Exact frustum plane which culled the sphere.
-         */
-        virtual bool isVisible(const Sphere& bound, FrustumPlane* culledBy = 0) const;
-
-        /** 
-		 * @brief	Tests whether the given vertex is visible in the frustum.
-		 *
-		 * @param	vert		Vertex to check in world space.
-		 * @param	culledBy	(optional)	Exact frustum plane which culled the vertex.
-         */
-        virtual bool isVisible(const Vector3& vert, FrustumPlane* culledBy = nullptr) const;
+        virtual const ConvexVolume& getFrustum() const;
 
 		/**
 		 * @brief	Returns the bounding of the frustum.
@@ -407,7 +375,7 @@ namespace BansheeEngine
 		mutable Matrix4 mProjMatrix; /**< Cached projection matrix that determines how are 3D points projected to a 2D viewport. */
 		mutable Matrix4 mViewMatrix; /**< Cached view matrix that determines camera position/orientation. */
 
-		mutable Plane mFrustumPlanes[6]; /**< Main clipping planes describing cameras visible area. */
+		mutable ConvexVolume mFrustum; /**< Main clipping planes describing cameras visible area. */
 		mutable bool mRecalcFrustum; /**< Should frustum be recalculated. */
 		mutable bool mRecalcFrustumPlanes; /**< Should frustum planes be recalculated. */
 		mutable float mLeft, mRight, mTop, mBottom; /**< Frustum extents. */

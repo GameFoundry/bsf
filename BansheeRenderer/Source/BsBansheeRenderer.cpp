@@ -425,25 +425,35 @@ namespace BansheeEngine
 		if (!cameraProxy.ignoreSceneRenderables)
 		{
 			// Update per-object param buffers and queue render elements
-				for (auto& renderElem : mRenderableElements)
+			for (auto& renderElem : mRenderableElements)
+			{
+				if (renderElem->handler != nullptr)
+					renderElem->handler->bindPerObjectBuffers(renderElem);
+
+				if (renderElem->renderableType == RenType_LitTextured)
 				{
-					if (renderElem->handler != nullptr)
-						renderElem->handler->bindPerObjectBuffers(renderElem);
-
-					if (renderElem->renderableType == RenType_LitTextured)
-					{
-						Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[renderElem->id];;
-						mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
-					}
-
-					for (auto& param : renderElem->material->params)
-					{
-						param->updateHardwareBuffers();
-					}
-
-					// TODO - Do frustum culling
-					renderQueue->add(renderElem, mWorldBounds[renderElem->id].getSphere().getCenter());
+					Matrix4 worldViewProjMatrix = viewProjMatrix * mWorldTransforms[renderElem->id];;
+					mLitTexHandler->updatePerObjectBuffers(renderElem, worldViewProjMatrix);
 				}
+
+				for (auto& param : renderElem->material->params)
+				{
+					param->updateHardwareBuffers();
+				}
+
+				// Do frustum culling
+				// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
+				// methods use vector operations, as it is trivial to update them.
+				const Sphere& boundingSphere = mWorldBounds[renderElem->id].getSphere();
+				if (cameraProxy.frustum.intersects(boundingSphere))
+				{
+					// More precise with the box
+					const AABox& boundingBox = mWorldBounds[renderElem->id].getBox();
+
+					if (cameraProxy.frustum.intersects(boundingBox))
+						renderQueue->add(renderElem, boundingSphere.getCenter());
+				}
+			}
 		}
 
 		renderQueue->sort();

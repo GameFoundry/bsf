@@ -1,5 +1,4 @@
 Polish TODO:
- - Add frustum culling
  - Implement RenderQueue sorting with support for sort type, priority and separable pass
     - Use a hash list(containing type, queue, layer, etc.) for faster sorting
  - Finalize example with resolution settings and proper GUI

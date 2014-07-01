@@ -243,6 +243,9 @@
     <ClInclude Include="Include\BsBounds.h">
       <Filter>Header Files\Math</Filter>
     </ClInclude>
+    <ClInclude Include="Include\BsConvexVolume.h">
+      <Filter>Header Files\Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsThreadPool.cpp">
@@ -381,6 +384,9 @@
       <Filter>Source Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="Source\BsBounds.cpp">
+      <Filter>Source Files\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BsConvexVolume.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
   </ItemGroup>

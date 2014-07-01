@@ -99,101 +99,12 @@ namespace BansheeEngine
 		return mViewMatrix;
 	}
 
-	const Plane* Camera::getFrustumPlanes() const
+	const ConvexVolume& Camera::getFrustum() const
 	{
 		// Make any pending updates to the calculated frustum planes
 		updateFrustumPlanes();
 
-		return mFrustumPlanes;
-	}
-
-	const Plane& Camera::getFrustumPlane(UINT16 plane) const
-	{
-		// Make any pending updates to the calculated frustum planes
-		updateFrustumPlanes();
-
-		return mFrustumPlanes[plane];
-	}
-
-	bool Camera::isVisible(const AABox& bound, FrustumPlane* culledBy) const
-	{
-		// Make any pending updates to the calculated frustum planes
-		updateFrustumPlanes();
-
-		// For each plane, see if all points are on the negative side
-		// If so, object is not visible
-		for (int plane = 0; plane < 6; ++plane)
-		{
-			// Skip far plane if infinite view frustum
-			if (plane == FRUSTUM_PLANE_FAR && mFarDist == 0)
-				continue;
-
-			Plane::Side side = mFrustumPlanes[plane].getSide(bound);
-			if (side == Plane::NEGATIVE_SIDE)
-			{
-				// ALL corners on negative side therefore out of view
-				if (culledBy)
-					*culledBy = (FrustumPlane)plane;
-
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool Camera::isVisible(const Vector3& vert, FrustumPlane* culledBy) const
-	{
-		// Make any pending updates to the calculated frustum planes
-		updateFrustumPlanes();
-
-		// For each plane, see if all points are on the negative side
-		// If so, object is not visible
-		for (int plane = 0; plane < 6; ++plane)
-		{
-			// Skip far plane if infinite view frustum
-			if (plane == FRUSTUM_PLANE_FAR && mFarDist == 0)
-				continue;
-
-			if (mFrustumPlanes[plane].getSide(vert) == Plane::NEGATIVE_SIDE)
-			{
-				// ALL corners on negative side therefore out of view
-				if (culledBy)
-					*culledBy = (FrustumPlane)plane;
-
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool Camera::isVisible(const Sphere& sphere, FrustumPlane* culledBy) const
-	{
-		// Make any pending updates to the calculated frustum planes
-		updateFrustumPlanes();
-
-		// For each plane, see if sphere is on negative side
-		// If so, object is not visible
-		for (int plane = 0; plane < 6; ++plane)
-		{
-			// Skip far plane if infinite view frustum
-			if (plane == FRUSTUM_PLANE_FAR && mFarDist == 0)
-				continue;
-
-			// If the distance from sphere center to plane is negative, and 'more negative' 
-			// than the radius of the sphere, sphere is outside frustum
-			if (mFrustumPlanes[plane].getDistance(sphere.getCenter()) < -sphere.getRadius())
-			{
-				// ALL corners on negative side therefore out of view
-				if (culledBy)
-					*culledBy = (FrustumPlane)plane;
-
-				return false;
-			}
-		}
-
-		return true;
+		return mFrustum;
 	}
 
 	void Camera::calcProjectionParameters(float& left, float& right, float& bottom, float& top) const
@@ -394,44 +305,46 @@ namespace BansheeEngine
 
 		if (mRecalcFrustumPlanes)
 		{
+			Vector<Plane> frustumPlanes(6);
 			Matrix4 combo = mProjMatrix * mViewMatrix;
 
-			mFrustumPlanes[FRUSTUM_PLANE_LEFT].normal.x = combo[3][0] + combo[0][0];
-			mFrustumPlanes[FRUSTUM_PLANE_LEFT].normal.y = combo[3][1] + combo[0][1];
-			mFrustumPlanes[FRUSTUM_PLANE_LEFT].normal.z = combo[3][2] + combo[0][2];
-			mFrustumPlanes[FRUSTUM_PLANE_LEFT].d = combo[3][3] + combo[0][3];
+			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.x = combo[3][0] + combo[0][0];
+			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.y = combo[3][1] + combo[0][1];
+			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.z = combo[3][2] + combo[0][2];
+			frustumPlanes[FRUSTUM_PLANE_LEFT].d = combo[3][3] + combo[0][3];
 
-			mFrustumPlanes[FRUSTUM_PLANE_RIGHT].normal.x = combo[3][0] - combo[0][0];
-			mFrustumPlanes[FRUSTUM_PLANE_RIGHT].normal.y = combo[3][1] - combo[0][1];
-			mFrustumPlanes[FRUSTUM_PLANE_RIGHT].normal.z = combo[3][2] - combo[0][2];
-			mFrustumPlanes[FRUSTUM_PLANE_RIGHT].d = combo[3][3] - combo[0][3];
+			frustumPlanes[FRUSTUM_PLANE_RIGHT].normal.x = combo[3][0] - combo[0][0];
+			frustumPlanes[FRUSTUM_PLANE_RIGHT].normal.y = combo[3][1] - combo[0][1];
+			frustumPlanes[FRUSTUM_PLANE_RIGHT].normal.z = combo[3][2] - combo[0][2];
+			frustumPlanes[FRUSTUM_PLANE_RIGHT].d = combo[3][3] - combo[0][3];
 
-			mFrustumPlanes[FRUSTUM_PLANE_TOP].normal.x = combo[3][0] - combo[1][0];
-			mFrustumPlanes[FRUSTUM_PLANE_TOP].normal.y = combo[3][1] - combo[1][1];
-			mFrustumPlanes[FRUSTUM_PLANE_TOP].normal.z = combo[3][2] - combo[1][2];
-			mFrustumPlanes[FRUSTUM_PLANE_TOP].d = combo[3][3] - combo[1][3];
+			frustumPlanes[FRUSTUM_PLANE_TOP].normal.x = combo[3][0] - combo[1][0];
+			frustumPlanes[FRUSTUM_PLANE_TOP].normal.y = combo[3][1] - combo[1][1];
+			frustumPlanes[FRUSTUM_PLANE_TOP].normal.z = combo[3][2] - combo[1][2];
+			frustumPlanes[FRUSTUM_PLANE_TOP].d = combo[3][3] - combo[1][3];
 
-			mFrustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.x = combo[3][0] + combo[1][0];
-			mFrustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.y = combo[3][1] + combo[1][1];
-			mFrustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.z = combo[3][2] + combo[1][2];
-			mFrustumPlanes[FRUSTUM_PLANE_BOTTOM].d = combo[3][3] + combo[1][3];
+			frustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.x = combo[3][0] + combo[1][0];
+			frustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.y = combo[3][1] + combo[1][1];
+			frustumPlanes[FRUSTUM_PLANE_BOTTOM].normal.z = combo[3][2] + combo[1][2];
+			frustumPlanes[FRUSTUM_PLANE_BOTTOM].d = combo[3][3] + combo[1][3];
 
-			mFrustumPlanes[FRUSTUM_PLANE_NEAR].normal.x = combo[3][0] + combo[2][0];
-			mFrustumPlanes[FRUSTUM_PLANE_NEAR].normal.y = combo[3][1] + combo[2][1];
-			mFrustumPlanes[FRUSTUM_PLANE_NEAR].normal.z = combo[3][2] + combo[2][2];
-			mFrustumPlanes[FRUSTUM_PLANE_NEAR].d = combo[3][3] + combo[2][3];
+			frustumPlanes[FRUSTUM_PLANE_NEAR].normal.x = combo[3][0] + combo[2][0];
+			frustumPlanes[FRUSTUM_PLANE_NEAR].normal.y = combo[3][1] + combo[2][1];
+			frustumPlanes[FRUSTUM_PLANE_NEAR].normal.z = combo[3][2] + combo[2][2];
+			frustumPlanes[FRUSTUM_PLANE_NEAR].d = combo[3][3] + combo[2][3];
 
-			mFrustumPlanes[FRUSTUM_PLANE_FAR].normal.x = combo[3][0] - combo[2][0];
-			mFrustumPlanes[FRUSTUM_PLANE_FAR].normal.y = combo[3][1] - combo[2][1];
-			mFrustumPlanes[FRUSTUM_PLANE_FAR].normal.z = combo[3][2] - combo[2][2];
-			mFrustumPlanes[FRUSTUM_PLANE_FAR].d = combo[3][3] - combo[2][3];
+			frustumPlanes[FRUSTUM_PLANE_FAR].normal.x = combo[3][0] - combo[2][0];
+			frustumPlanes[FRUSTUM_PLANE_FAR].normal.y = combo[3][1] - combo[2][1];
+			frustumPlanes[FRUSTUM_PLANE_FAR].normal.z = combo[3][2] - combo[2][2];
+			frustumPlanes[FRUSTUM_PLANE_FAR].d = combo[3][3] - combo[2][3];
 
-			for(int i=0; i<6; i++ ) 
+			for(UINT32 i = 0; i < 6; i++) 
 			{
-				float length = mFrustumPlanes[i].normal.normalize();
-				mFrustumPlanes[i].d /= length;
+				float length = frustumPlanes[i].normal.normalize();
+				frustumPlanes[i].d /= length;
 			}
 
+			mFrustum = ConvexVolume(frustumPlanes);
 			mRecalcFrustumPlanes = false;
 		}
 	}
@@ -569,6 +482,7 @@ namespace BansheeEngine
 		proxy->projMatrix = getProjectionMatrix();
 		proxy->viewMatrix = getViewMatrix();
 		proxy->viewport = mViewport->clone();
+		proxy->frustum = mFrustum;
 		proxy->ignoreSceneRenderables = mIgnoreSceneRenderables;
 
 		return proxy;

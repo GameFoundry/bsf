@@ -2,6 +2,7 @@
 
 #include "BsCorePrerequisites.h"
 #include "BsViewport.h"
+#include "BsConvexVolume.h"
 #include "BsMatrix4.h"
 
 namespace BansheeEngine
@@ -16,6 +17,7 @@ namespace BansheeEngine
 		INT32 priority;
 		UINT64 layer;
 		bool ignoreSceneRenderables;
+		ConvexVolume frustum;
 
 		RenderQueuePtr renderQueue;
 	};
