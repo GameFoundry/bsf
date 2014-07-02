@@ -1,6 +1,4 @@
 Polish TODO:
- - Implement RenderQueue sorting with support for sort type, priority and separable pass
-    - Use a hash list(containing type, queue, layer, etc.) for faster sorting
  - Finalize example with resolution settings and proper GUI
  - Finish documentation (BansheeEngine + TODO UNDOCUMENTED)
 
@@ -8,6 +6,7 @@ Polish TODO:
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
 
 Re-test gamepad buttons now that XInput is active
+Test frustum culling
 
 -----------------
 
@@ -27,3 +26,4 @@ Not so critical
   - Perform optimizations as needed to get reasonable performance
   - Consider removing SceneManager from Core? I two scene manager base classes.
   - GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.
+  - Add separable pass sorting to RenderQueue

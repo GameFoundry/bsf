@@ -54,17 +54,28 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Returns	a parameter block buffer which is used for caching 
-		 *			the parameter information on the CPU. Essentially a CPU
-		 *			copy of the GPU buffer.
+		 *			the parameter information on the sim thread. Essentially a
+		 *			sim thread copy of the GPU buffer.
 		 *
 		 * @note	Sim thread only.
 		 */
 		GpuParamBlockPtr getParamBlock() const { return mParamBlock; }
 
-		// TODO UNDOCUMENTED
+		/**
+		 * @brief	Returns	a parameter block buffer which is used for caching 
+		 *			the parameter information on the core thread. Essentially a CPU
+		 *			core thread copy of the GPU buffer.
+		 *
+		 * @note	Core thread only.
+		 */
 		// TODO - Keeping a core param block along with a sim param block is redundant in some cases,
 		// as it might not be used (e.g. if gpu param block buffer is only accessed from core thread)
 		GpuParamBlockPtr getCoreParamBlock() const { return mCoreParamBlock; }
+
+		/**
+		 * @brief	Sets a reference to a core thread CPU buffer that may be used for buffering
+		 *			parameter data on the core thread, before actually writing it to the buffer.
+		 */
 		void setCoreParamBlock(const GpuParamBlockPtr& paramBlock) { mCoreParamBlock = paramBlock; }
 
 	protected:

@@ -358,6 +358,23 @@ namespace BansheeEngine
         }
 
         /**
+         * @brief	Transform a plane by this matrix.
+         * 			
+         * @note	Matrix must be affine.
+         */
+        Plane multiply3x4(const Plane& p) const
+        {
+			Vector4 localNormal(p.normal.x, p.normal.y, p.normal.z, 0.0f);
+			Vector4 localPoint = localNormal * p.d;
+
+			Vector4 worldNormal = inverse().transpose().multiply3x4(localNormal);
+			Vector4 worldPoint = multiply3x4(localPoint);
+
+			float d = worldNormal.dot(worldPoint);
+			return Plane(worldNormal.x, worldNormal.y, worldNormal.z, d);
+        }
+
+        /**
          * @brief	Transform a 3D vector by this matrix.  
          *
          * @note	w component of the vector is assumed to be 1. After transformation all components

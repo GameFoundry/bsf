@@ -349,16 +349,38 @@ namespace BansheeEngine
 
 		if (mNumVertices > 0)
 		{
-			Vector3 curPosition = *(Vector3*)verticesPtr;
-			Sphere initialSphere(curPosition, 0.0f);
-			AABox initialBox(curPosition, curPosition);
+			Vector3 accum;
+			Vector3 min;
+			Vector3 max;
 
-			bounds.setBounds(initialBox, initialSphere);
+			Vector3 curPosition = *(Vector3*)verticesPtr;
+			accum = curPosition;
+			min = curPosition;
+			max = curPosition;
+
 			for (UINT32 i = 1; i < mNumVertices; i++)
 			{
-				Vector3 curPosition = *(Vector3*)(verticesPtr + stride * i);
-				bounds.merge(curPosition);
+				curPosition = *(Vector3*)(verticesPtr + stride * i);
+				accum += curPosition;
+				min = Vector3::min(min, curPosition);
+				max = Vector3::max(max, curPosition);
 			}
+
+			Vector3 center = accum / (float)mNumVertices;
+			float radiusSqrd = 0.0f;
+
+			for (UINT32 i = 0; i < mNumVertices; i++)
+			{
+				curPosition = *(Vector3*)(verticesPtr + stride * i);
+				float dist = center.squaredDistance(curPosition);
+
+				if (dist > radiusSqrd)
+					radiusSqrd = dist;
+			}
+
+			float radius = Math::sqrt(radiusSqrd);
+
+			bounds = Bounds(AABox(min, max), Sphere(center, radius));
 		}
 
 		return bounds;

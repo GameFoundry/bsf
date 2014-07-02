@@ -170,9 +170,18 @@ namespace BansheeEngine
 		}
 	}
 
-	void BansheeRenderer::updateCameraProxy(CameraProxyPtr proxy, Matrix4 viewMatrix)
+	void BansheeRenderer::updateCameraProxy(CameraProxyPtr proxy, Matrix4 worldMatrix, Matrix4 viewMatrix)
 	{
 		proxy->viewMatrix = viewMatrix;
+
+		const Vector<Plane>& frustumPlanes = proxy->frustum.getPlanes();
+		Vector<Plane> worldPlanes;
+		for (auto& plane : frustumPlanes)
+		{
+			worldPlanes.push_back(worldMatrix.multiply3x4(plane));
+		}
+
+		proxy->worldFrustum = ConvexVolume(worldPlanes);
 	}
 
 	void BansheeRenderer::renderableRemoved(const HRenderable& renderable)
@@ -288,7 +297,7 @@ namespace BansheeEngine
 				CameraProxyPtr proxy = camera->_getActiveProxy();
 				assert(proxy != nullptr);
 
-				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateCameraProxy, this, proxy, camera->getViewMatrix()));
+				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateCameraProxy, this, proxy, camera->SO()->getWorldTfrm(), camera->getViewMatrix()));
 
 				dirtySceneObjects.push_back(camera->SO());
 			}
@@ -341,7 +350,8 @@ namespace BansheeEngine
 				MaterialProxyPtr materialProxy = drawOp.material->_getActiveProxy();
 				MeshProxyPtr meshProxy = drawOp.mesh->_getActiveProxy(drawOp.submeshIdx);
 
-				renderQueue->add(materialProxy, meshProxy, drawOp.worldPosition);
+				float distanceToCamera = (camera->SO()->getPosition() - drawOp.worldPosition).length();
+				renderQueue->add(materialProxy, meshProxy, distanceToCamera);
 			}
 
 			gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::addToRenderQueue, this, camera->_getActiveProxy(), renderQueue));
@@ -353,12 +363,7 @@ namespace BansheeEngine
 	void BansheeRenderer::addToRenderQueue(CameraProxyPtr proxy, RenderQueuePtr renderQueue)
 	{
 		RenderQueuePtr cameraRenderQueue = proxy->renderQueue;
-
-		const Vector<RenderQueueElement>& queueElements = renderQueue->getElements();
-		for (auto& queueElement : queueElements)
-		{
-			cameraRenderQueue->add(queueElement.material, queueElement.mesh, queueElement.worldPosition);
-		}
+		cameraRenderQueue->add(*renderQueue);
 	}
 
 	void BansheeRenderer::updateMaterialProxy(MaterialProxyPtr proxy, Vector<MaterialProxy::ParamsBindInfo> dirtyParams)
@@ -445,13 +450,17 @@ namespace BansheeEngine
 				// TODO - This is bound to be a bottleneck at some point. When it is ensure that intersect
 				// methods use vector operations, as it is trivial to update them.
 				const Sphere& boundingSphere = mWorldBounds[renderElem->id].getSphere();
-				if (cameraProxy.frustum.intersects(boundingSphere))
+				if (cameraProxy.worldFrustum.intersects(boundingSphere))
 				{
 					// More precise with the box
 					const AABox& boundingBox = mWorldBounds[renderElem->id].getBox();
 
-					if (cameraProxy.frustum.intersects(boundingBox))
-						renderQueue->add(renderElem, boundingSphere.getCenter());
+					if (cameraProxy.worldFrustum.intersects(boundingBox))
+					{
+						float distanceToCamera = (cameraProxy.worldPosition - boundingBox.getCenter()).length();
+
+						renderQueue->add(renderElem, distanceToCamera);
+					}
 				}
 			}
 		}

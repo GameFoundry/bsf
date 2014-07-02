@@ -18,13 +18,8 @@ namespace BansheeEngine
 
 	void Sphere::merge(const Vector3& point)
 	{
-		Vector3 newCenter = (mCenter + point) * 0.5f;
-
-		float newRadiusA = newCenter.distance(mCenter) + getRadius();
-		float newRadiusB = newCenter.distance(point);
-
-		mCenter = newCenter;
-		mRadius = std::max(newRadiusA, newRadiusB);
+		float dist = point.distance(mCenter);
+		mRadius = std::max(mRadius, dist);
 	}
 
 	void Sphere::transform(const Matrix4& matrix)

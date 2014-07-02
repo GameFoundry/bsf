@@ -12,6 +12,7 @@ namespace BansheeEngine
 	class BS_UTILITY_EXPORT ConvexVolume
 	{
 	public:
+		ConvexVolume() {}
 		ConvexVolume(const Vector<Plane>& planes);
 
 		/**
@@ -25,6 +26,11 @@ namespace BansheeEngine
 		 *			This will return true if the sphere is fully inside the volume.
 		 */
 		bool intersects(const Sphere& sphere) const;
+
+		/**
+		 * @brief	Returns the internal set of planes that represent the volume.
+		 */
+		const Vector<Plane> getPlanes() const { return mPlanes; }
 
 	private:
 		Vector<Plane> mPlanes;

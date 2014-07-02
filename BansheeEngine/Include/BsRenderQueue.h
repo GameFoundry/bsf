@@ -17,7 +17,6 @@ namespace BansheeEngine
 		RenderableElement* renderElem;
 		MaterialProxyPtr material;
 		MeshProxyPtr mesh;
-		Vector3 worldPosition;
 		UINT32 passIdx;
 	};
 
@@ -28,6 +27,18 @@ namespace BansheeEngine
 	 */
 	class BS_EXPORT RenderQueue
 	{
+		/**
+		 * @brief	Data used for renderable elemnt sorting.
+		 */
+		struct SortData
+		{
+			RenderQueueElement element;
+			QueueSortType sortType;
+			UINT32 seqIdx;
+			UINT32 priority;
+			float distFromCamera;
+		};
+
 	public:
 		RenderQueue();
 
@@ -35,18 +46,23 @@ namespace BansheeEngine
 		 * @brief	Adds a new entry to the render queue.
 		 *
 		 * @param	element			Renderable element to add to the queue.
-		 * @param	worldPosForSort	World position that will be used for distance sorting of the object.
+		 * @param	distFromCamera	Distance of this object from the camera. Used for distance sorting.
 		 */
-		void add(RenderableElement* element, const Vector3& worldPosForSort);
+		void add(RenderableElement* element, float distFromCamera);
 
 		/**
 		 * @brief	Adds a new entry to the render queue.
 		 *
-		 * @param	material	Material that will be used for rendering the object.
-		 * @param	mesh		Mesh representing the geometry of the object.
-		 * @param	worldPosForSort	World position that will be used for distance sorting of the object.
+		 * @param	material		Material that will be used for rendering the object.
+		 * @param	mesh			Mesh representing the geometry of the object.
+		 * @param	distFromCamera	Distance of this object from the camera. Used for distance sorting.
 		 */
-		void add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, const Vector3& worldPosForSort);
+		void add(const MaterialProxyPtr& material, const MeshProxyPtr& mesh, float distFromCamera);
+
+		/**
+		 * @brief	Adds new entries from the provided render queue to this queue.
+		 */
+		void add(const RenderQueue& renderQueue);
 
 		/**
 		 * @brief	Clears all render operations from the queue.
@@ -59,18 +75,18 @@ namespace BansheeEngine
 		virtual void sort();
 
 		/**
-		 * @brief	Returns internal list of render elements (unsorted).
-		 */
-		const Vector<RenderQueueElement>& getElements() const { return mRenderElements; }
-
-		/**
 		 * @brief	Returns a list of sorted render elements. Caller must ensure
 		 * 			"sort" is called before this method.
 		 */
 		const Vector<RenderQueueElement>& getSortedElements() const;
 
 	protected:
-		Vector<RenderQueueElement> mRenderElements;
+		/**
+		 * @brief	Callback used for sorting elements.
+		 */
+		static bool elementSorter(const SortData&, const SortData&);
+
+		Set<SortData, std::function<bool(const SortData&, const SortData&)>> mRenderElements;
 		Vector<RenderQueueElement> mSortedRenderElements;
 	};
 }

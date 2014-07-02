@@ -7,7 +7,9 @@
 
 namespace BansheeEngine
 {
-	// TODO UNDOCUMENTED
+	/**
+	 * @brief	Contains Camera data used by the Renderer.
+	 */
 	class BS_CORE_EXPORT CameraProxy
 	{
 	public:
@@ -18,6 +20,8 @@ namespace BansheeEngine
 		UINT64 layer;
 		bool ignoreSceneRenderables;
 		ConvexVolume frustum;
+		ConvexVolume worldFrustum;
+		Vector3 worldPosition;
 
 		RenderQueuePtr renderQueue;
 	};

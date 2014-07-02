@@ -29,6 +29,8 @@ namespace BansheeEngine
 			if (dist > pushOut)
 				return false;
 		}
+
+		return true;
 	}
 
 	bool ConvexVolume::intersects(const Sphere& sphere) const

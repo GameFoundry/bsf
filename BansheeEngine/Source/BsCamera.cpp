@@ -482,8 +482,9 @@ namespace BansheeEngine
 		proxy->projMatrix = getProjectionMatrix();
 		proxy->viewMatrix = getViewMatrix();
 		proxy->viewport = mViewport->clone();
-		proxy->frustum = mFrustum;
+		proxy->frustum = getFrustum();
 		proxy->ignoreSceneRenderables = mIgnoreSceneRenderables;
+		proxy->worldPosition = SO()->getWorldPosition();
 
 		return proxy;
 	}
