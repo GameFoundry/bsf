@@ -46,6 +46,11 @@ namespace BansheeEngine
         Side getSide(const AABox& box) const;
 
         /**
+		 * @brief	Returns the side where the sphere is. The flag BOTH_SIDE indicates an intersecting sphere.
+         */
+		Side getSide(const Sphere& sphere) const;
+
+        /**
          * @brief	Returns a distance from point to plane.
          *
 		 * @note	The sign of the return value is positive if the point is on the 

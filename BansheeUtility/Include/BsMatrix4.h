@@ -366,11 +366,14 @@ namespace BansheeEngine
         {
 			Vector4 localNormal(p.normal.x, p.normal.y, p.normal.z, 0.0f);
 			Vector4 localPoint = localNormal * p.d;
+			localPoint.w = 1.0f;
 
-			Vector4 worldNormal = inverse().transpose().multiply3x4(localNormal);
+			Matrix4 itMat = inverse().transpose();
+			Vector4 worldNormal = itMat.multiply3x4(localNormal);
 			Vector4 worldPoint = multiply3x4(localPoint);
 
 			float d = worldNormal.dot(worldPoint);
+
 			return Plane(worldNormal.x, worldNormal.y, worldNormal.z, d);
         }
 

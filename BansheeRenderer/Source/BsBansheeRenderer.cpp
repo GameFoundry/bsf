@@ -170,9 +170,10 @@ namespace BansheeEngine
 		}
 	}
 
-	void BansheeRenderer::updateCameraProxy(CameraProxyPtr proxy, Matrix4 worldMatrix, Matrix4 viewMatrix)
+	void BansheeRenderer::updateCameraProxy(CameraProxyPtr proxy, Vector3 worldPosition, Matrix4 worldMatrix, Matrix4 viewMatrix)
 	{
 		proxy->viewMatrix = viewMatrix;
+		proxy->worldPosition = worldPosition;
 
 		const Vector<Plane>& frustumPlanes = proxy->frustum.getPlanes();
 		Vector<Plane> worldPlanes;
@@ -297,7 +298,8 @@ namespace BansheeEngine
 				CameraProxyPtr proxy = camera->_getActiveProxy();
 				assert(proxy != nullptr);
 
-				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateCameraProxy, this, proxy, camera->SO()->getWorldTfrm(), camera->getViewMatrix()));
+				gCoreAccessor().queueCommand(std::bind(&BansheeRenderer::updateCameraProxy, this, 
+					proxy, camera->SO()->getWorldPosition(), camera->SO()->getWorldTfrm(), camera->getViewMatrix()));
 
 				dirtySceneObjects.push_back(camera->SO());
 			}

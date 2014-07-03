@@ -80,6 +80,21 @@ namespace BansheeEngine
 		return Plane::BOTH_SIDE;
 	}
 
+	Plane::Side Plane::getSide(const Sphere& sphere) const
+	{
+		// Calculate the distance between box centre and the plane
+		float dist = getDistance(sphere.getCenter());
+		float radius = sphere.getRadius();
+
+		if (dist < -radius)
+			return Plane::NEGATIVE_SIDE;
+
+		if (dist > +radius)
+			return Plane::POSITIVE_SIDE;
+
+		return Plane::BOTH_SIDE;
+	}
+
 	Vector3 Plane::projectVector(const Vector3& point) const
 	{
 		// We know plane normal is unit length, so use simple method

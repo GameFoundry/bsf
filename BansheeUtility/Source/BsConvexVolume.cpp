@@ -17,16 +17,13 @@ namespace BansheeEngine
 
 		for (auto& plane : mPlanes)
 		{
-			float dist = center.x * plane.normal.x;
-			dist += center.y * plane.normal.y;
-			dist += center.z * plane.normal.z;
-			dist = dist - plane.d;
+			float dist = center.dot(plane.normal) - plane.d;
 
-			float pushOut = absExtents.x * Math::abs(plane.normal.x);
-			pushOut += absExtents.y * Math::abs(plane.normal.y);
-			pushOut += absExtents.z * Math::abs(plane.normal.z);
+			float effectiveRadius = absExtents.x * Math::abs(plane.normal.x);
+			effectiveRadius += absExtents.y * Math::abs(plane.normal.y);
+			effectiveRadius += absExtents.z * Math::abs(plane.normal.z);
 
-			if (dist > pushOut)
+			if (dist < -effectiveRadius)
 				return false;
 		}
 
@@ -40,12 +37,9 @@ namespace BansheeEngine
 
 		for (auto& plane : mPlanes)
 		{
-			float dist = center.x * plane.normal.x;
-			dist += center.y * plane.normal.y;
-			dist += center.z * plane.normal.z;
-			dist = dist - plane.d;
+			float dist = center.dot(plane.normal) - plane.d;
 
-			if (dist > radius)
+			if (dist < -radius)
 				return false;
 		}
 

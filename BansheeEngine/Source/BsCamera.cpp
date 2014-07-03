@@ -300,13 +300,12 @@ namespace BansheeEngine
 
 	void Camera::updateFrustumPlanes() const
 	{
-		updateView();
 		updateFrustum();
 
 		if (mRecalcFrustumPlanes)
 		{
 			Vector<Plane> frustumPlanes(6);
-			Matrix4 combo = mProjMatrix * mViewMatrix;
+			Matrix4 combo = mProjMatrix;
 
 			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.x = combo[3][0] + combo[0][0];
 			frustumPlanes[FRUSTUM_PLANE_LEFT].normal.y = combo[3][1] + combo[0][1];
@@ -341,7 +340,7 @@ namespace BansheeEngine
 			for(UINT32 i = 0; i < 6; i++) 
 			{
 				float length = frustumPlanes[i].normal.normalize();
-				frustumPlanes[i].d /= length;
+				frustumPlanes[i].d /= -length;
 			}
 
 			mFrustum = ConvexVolume(frustumPlanes);

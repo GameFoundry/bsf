@@ -103,13 +103,14 @@ namespace BansheeEngine
 		 * @brief	Updates an existing camera proxy with new data. This includes data that changes
 		 *			often. For other data it is best to remove old proxy and add new one.
 		 *
-		 * @param	proxy	Proxy to update.
-		 * @param	camera	World transform matrix of the camera.
-		 * @param	camera	View transform matrix of the camera.
+		 * @param	proxy			Proxy to update.
+		 * @param	worldPosition	World position of the camera.
+		 * @param	worldMatrix		World transform matrix of the camera.
+		 * @param	viewMatrix		View transform matrix of the camera.
 		 *
 		 * @note	Core thread only.
 		 */
-		void updateCameraProxy(CameraProxyPtr proxy, Matrix4 worldMatrix, Matrix4 viewMatrix);
+		void updateCameraProxy(CameraProxyPtr proxy, Vector3 worldPosition, Matrix4 worldMatrix, Matrix4 viewMatrix);
 
 		/**
 		 * @brief	Adds a new set of objects to the cameras render queue.
