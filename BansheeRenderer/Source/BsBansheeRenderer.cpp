@@ -149,6 +149,8 @@ namespace BansheeEngine
 
 			std::sort(begin(cameras), end(cameras), cameraComparer);
 		}
+
+		proxy->calcWorldFrustum();
 	}
 
 	void BansheeRenderer::removeCameraProxy(CameraProxyPtr proxy)
@@ -174,15 +176,8 @@ namespace BansheeEngine
 	{
 		proxy->viewMatrix = viewMatrix;
 		proxy->worldPosition = worldPosition;
-
-		const Vector<Plane>& frustumPlanes = proxy->frustum.getPlanes();
-		Vector<Plane> worldPlanes;
-		for (auto& plane : frustumPlanes)
-		{
-			worldPlanes.push_back(worldMatrix.multiply3x4(plane));
-		}
-
-		proxy->worldFrustum = ConvexVolume(worldPlanes);
+		proxy->worldMatrix = worldMatrix;
+		proxy->calcWorldFrustum();
 	}
 
 	void BansheeRenderer::renderableRemoved(const HRenderable& renderable)

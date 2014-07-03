@@ -13,9 +13,12 @@ namespace BansheeEngine
 	class BS_CORE_EXPORT CameraProxy
 	{
 	public:
+		void calcWorldFrustum();
+
 		Viewport viewport;
 		Matrix4 viewMatrix;
 		Matrix4 projMatrix;
+		Matrix4 worldMatrix;
 		INT32 priority;
 		UINT64 layer;
 		bool ignoreSceneRenderables;

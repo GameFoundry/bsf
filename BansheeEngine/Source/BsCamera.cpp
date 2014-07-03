@@ -480,6 +480,7 @@ namespace BansheeEngine
 		proxy->priority = mPriority;
 		proxy->projMatrix = getProjectionMatrix();
 		proxy->viewMatrix = getViewMatrix();
+		proxy->worldMatrix = SO()->getWorldTfrm();
 		proxy->viewport = mViewport->clone();
 		proxy->frustum = getFrustum();
 		proxy->ignoreSceneRenderables = mIgnoreSceneRenderables;
