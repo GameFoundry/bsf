@@ -40,7 +40,7 @@ namespace BansheeEngine
 		 * @param	renderSystem		Render system to use.
 		 * @param	renderer			Renderer to use.
 		 */
-		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer);
+		static void startUp(RENDER_WINDOW_DESC& primaryWindowDesc, RenderSystemPlugin renderSystem, RendererPlugin renderer = RendererPlugin::Default);
 
 		/**
 		 * @brief	Returns the primary viewport of the application.

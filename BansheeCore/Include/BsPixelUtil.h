@@ -242,6 +242,7 @@ namespace BansheeEngine
 
 		/**
 		 * @brief	Generates mip-maps from the provided source data using the specified compression options.
+		 *			Returned list includes the base level.
 		 *
 		 * @returns	A list of calculated mip-map data. First entry is the largest mip and other follow in
 		 *			order from largest to smallest.

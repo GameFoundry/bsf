@@ -79,12 +79,6 @@ namespace BansheeEngine
 
 		const PixelData& pixelData = static_cast<const PixelData&>(data);
 
-		if(pixelData.getWidth() != getWidth() || pixelData.getHeight() != getHeight() || 
-			pixelData.getDepth() != getDepth() || pixelData.getFormat() != getFormat())
-		{
-			BS_EXCEPT(RenderingAPIException, "Provided buffer is not of valid dimensions or format in order to write to this texture.");
-		}
-
 		UINT32 face = 0;
 		UINT32 mip = 0;
 		mapFromSubresourceIdx(subresourceIdx, face, mip);

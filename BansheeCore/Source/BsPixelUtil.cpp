@@ -1709,15 +1709,18 @@ namespace BansheeEngine
 		UINT32 curHeight = src.getHeight();
 		for (UINT32 i = 0; i < numMips; i++)
 		{
+			argbMipBuffers.push_back(bs_shared_ptr<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
+			argbMipBuffers.back()->allocateInternalBuffer();
+
 			if (curWidth > 1) 
 				curWidth = curWidth / 2;
 
 			if (curHeight > 1)
 				curHeight = curHeight / 2;
-
-			argbMipBuffers.push_back(bs_shared_ptr<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
-			argbMipBuffers.back()->allocateInternalBuffer();
 		}
+
+		argbMipBuffers.push_back(bs_shared_ptr<PixelData>(curWidth, curHeight, 1, PF_A8R8G8B8));
+		argbMipBuffers.back()->allocateInternalBuffer();
 
 		NVTTMipmapOutputHandler outputHandler(argbMipBuffers);
 
@@ -1740,6 +1743,8 @@ namespace BansheeEngine
 
 			bulkPixelConversion(*argbBuffer, *outputBuffer);
 			argbBuffer->freeInternalBuffer();
+
+			outputMipBuffers.push_back(outputBuffer);
 		}
 
 		return outputMipBuffers;
