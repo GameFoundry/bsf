@@ -136,7 +136,7 @@ namespace BansheeEngine
 			TextureImportOptions* importOptions = static_cast<TextureImportOptions*>(textureImportOptions.get());
 
 			// We want the texture to be compressed, just a basic non-alpha format
-			//importOptions->setFormat(PF_BC1);
+			importOptions->setFormat(PF_BC1);
 
 			// We want maximum number of mipmaps to be generated
 			importOptions->setGenerateMipmaps(true);

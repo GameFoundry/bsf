@@ -1358,7 +1358,7 @@ namespace BansheeEngine
 			{
 				CompressionOptions co;
 				co.format = dst.getFormat();
-				dst = *compress(src, co);
+				compress(src, dst, co);
 
 				return;
 			}
@@ -1613,7 +1613,7 @@ namespace BansheeEngine
 		}
 	}
 
-	PixelDataPtr PixelUtil::compress(const PixelData& src, const CompressionOptions& options)
+	void PixelUtil::compress(const PixelData& src, PixelData& dst, const CompressionOptions& options)
 	{
 		if (!isCompressed(options.format))
 			BS_EXCEPT(InvalidParametersException, "Wanted format is not a compressed format.");
@@ -1627,20 +1627,16 @@ namespace BansheeEngine
 
 		PixelFormat pf = options.format;
 
-		// TODO - Get rid of this limitation? Maybe it works without it with no additional changes.
-		if (!isValidExtent(src.getWidth(), src.getHeight(), 1, pf))
-			BS_EXCEPT(InvalidParametersException, "Source texture dimensions must be divisible by 4.");
-
 		if (isCompressed(src.getFormat()))
 			BS_EXCEPT(InvalidParametersException, "Source data cannot be compressed.");
 
-		PixelData argbData(src.getWidth(), src.getHeight(), 1, PF_A8R8G8B8);
-		argbData.allocateInternalBuffer();
-		bulkPixelConversion(src, argbData);
+		PixelData bgraData(src.getWidth(), src.getHeight(), 1, PF_B8G8R8A8);
+		bgraData.allocateInternalBuffer();
+		bulkPixelConversion(src, bgraData);
 
 		nvtt::InputOptions io;
 		io.setTextureLayout(nvtt::TextureType_2D, src.getWidth(), src.getHeight());
-		io.setMipmapData(argbData.getData(), src.getWidth(), src.getHeight());
+		io.setMipmapData(bgraData.getData(), src.getWidth(), src.getHeight());
 		io.setMipmapGeneration(false);
 		io.setAlphaMode(toNVTTAlphaMode(options.alphaMode));
 		io.setNormalMap(options.isNormalMap);
@@ -1654,10 +1650,7 @@ namespace BansheeEngine
 		co.setFormat(toNVTTFormat(options.format));
 		co.setQuality(toNVTTQuality(options.quality));
 		
-		PixelDataPtr outputPixelData = bs_shared_ptr<PixelData>(src.getWidth(), src.getHeight(), 1, pf);
-		outputPixelData->allocateInternalBuffer();
-
-		NVTTCompressOutputHandler outputHandler(outputPixelData->getData(), outputPixelData->getConsecutiveSize());
+		NVTTCompressOutputHandler outputHandler(dst.getData(), dst.getConsecutiveSize());
 
 		nvtt::OutputOptions oo;
 		oo.setOutputHeader(false);
@@ -1666,8 +1659,6 @@ namespace BansheeEngine
 		nvtt::Compressor compressor;
 		if (!compressor.process(io, co, oo))
 			BS_EXCEPT(InternalErrorException, "Compressing failed.");
-
-		return outputPixelData;
 	}
 
 	Vector<PixelDataPtr> PixelUtil::genMipmaps(const PixelData& src, const MipMapGenOptions& options)

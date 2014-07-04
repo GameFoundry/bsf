@@ -310,7 +310,7 @@ namespace BansheeEngine
 			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
 
 		/**
-		 * @copydoc	create
+		 * @copydoc	create(TextureType, UINT32, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use "create" for normal usage.
 		 */
@@ -319,7 +319,7 @@ namespace BansheeEngine
 			bool hwGammaCorrection = false, UINT32 multisampleCount = 0, const String& multisampleHint = StringUtil::BLANK);
 
 		/**
-		 * @copydoc	create
+		 * @copydoc	create(TextureType, UINT32, UINT32, int, PixelFormat, int, bool, UINT32, const String&)
 		 *
 		 * @note	Internal method. Creates a texture pointer without a handle. Use "create" for normal usage.
 		 */

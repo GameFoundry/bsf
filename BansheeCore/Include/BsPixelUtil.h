@@ -238,7 +238,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Compresses the provided data using the specified compression options. 
 		 */
-		static PixelDataPtr compress(const PixelData& src, const CompressionOptions& options);
+		static void compress(const PixelData& src, PixelData& dst, const CompressionOptions& options);
 
 		/**
 		 * @brief	Generates mip-maps from the provided source data using the specified compression options.
