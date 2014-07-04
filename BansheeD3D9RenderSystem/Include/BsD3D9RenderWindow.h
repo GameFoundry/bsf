@@ -72,7 +72,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc RenderWindow::copyContentsToMemory
 		 */
-		void copyToMemory(const PixelData &dst, FrameBuffer buffer);
+		void copyToMemory(PixelData &dst, FrameBuffer buffer);
 
 		/**
 		 * @copydoc RenderWindow::requiresTextureFlipping

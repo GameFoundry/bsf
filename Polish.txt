@@ -1,12 +1,15 @@
 Polish TODO:
  - Finalize example with resolution settings and proper GUI
+ - Add an example model
+ - Test release build
 
  - Add license text to all files
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
 
 Re-test gamepad buttons now that XInput is active
-Test frustum culling
 
+!!!BUG!!! - When I change parent I don't update individual local position/rotation/scale on scene object
+I don't have a way of setting world pos/rot directly on SOs
 -----------------
 
 Not so critical
@@ -23,6 +26,7 @@ Not so critical
   - Make a Getting Started guide, along with the example project. Or just finish up the manual.
   - Compress and generate mips for texture on input (testing NVTT stuff)
   - Perform optimizations as needed to get reasonable performance
-  - Consider removing SceneManager from Core? I two scene manager base classes.
+  - Consider removing SceneManager from Core? I have two scene manager base classes.
   - GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.
   - Add separable pass sorting to RenderQueue
+  - DDS file import

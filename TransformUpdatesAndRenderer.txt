@@ -1,8 +1,0 @@
-Renderer should have its own set of bounds and transforms (and an Oct-Tree for culling)
- - Updated at the end of frame from actual SceneObjects (if they changed)
- - See UE4: RendererScene
- - For Octree see Scene->PrimitiveOctree
-   - See GenericOCtree.inl for OCtree implementation
- - Also see SceneVisibility, especially FrustumCull method
- - IMPORTANT: UE4 PrimitiveInfo and View (and View.PrimitiveVisibilityMap) seems like a good way to deal with the renderer.
-   Those are resized only before frame (during SceneObject updates) and can be quickly iterated, read and updated by the renderer after

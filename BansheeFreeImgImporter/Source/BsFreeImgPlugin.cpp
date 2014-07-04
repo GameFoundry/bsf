@@ -11,7 +11,8 @@ namespace BansheeEngine
 
 	extern "C" BS_FREEIMG_EXPORT void* loadPlugin()
 	{
-		FreeImgImporter::startUp();
+		FreeImgImporter* importer = bs_new<FreeImgImporter>();
+		Importer::instance()._registerAssetImporter(importer);
 
 		return nullptr;
 	}

@@ -466,7 +466,7 @@ namespace BansheeEngine
 		return Vector2I(pos.x, pos.y);
 	}
 
-	void D3D9RenderWindow::copyToMemory(const PixelData &dst, FrameBuffer buffer)
+	void D3D9RenderWindow::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

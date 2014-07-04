@@ -23,26 +23,15 @@ Reminders:
     - Asset postprocessor? Imports a regular mesh using normal importers and then postprocesses it into a specialized format?
   - Load texture mips separately so we can unload HQ textures from far away objects (like UE3)
   - Add Unified shader so I can easily switch between HLSL and GLSL shaders (they need same parameters usually, just different code)
-    - Maybe just add support for Cg and force everyone to use that? - I'd like to be able to just switch out renderer in a single location and that everything keeps on working without 
-	  further modifications.
+    - UE4 has GLSL/HLSL shader cross compiler, so something similar
   - Remove HardwarePixelBuffer (DX11 doesn't use it, and DX9 and OpenGL textures can be rewritten so they have its methods internally)
-  - Multihead device
-  - Don't forget to check out Unity DX11 documentation on how to implement DX11 features (http://docs.unity3d.com/Documentation/Manual/DirectX11.html)
-  - Go to Game Engine Architecture book and make a list of Utility systems we will need (Config files, Parsers, File I/O etc)
-  - Go to GEA book and read about resource managers before implementing them
-    - Actually I should re-read most of the chapers in the book, or all of it
-  - OpenGL non-Win32 window files haven't been properly parsed or tested
-    - Since I probably can't compile them, try adding them to VS and see what intellisense says?
-  - Textures and all other buffers keep a copy of their data in system memory. If there are memory constraints we might need a way to avoid this.
   - Make sure my Log system uses XML + HTML
   - There is an issue that custom-UIs won't have their mesh shared. For example most game UIs will be advanced and will 
    likely use on GUIWidget per element. However currently I only perform batching within a single widget which 
    doesn't help in the mentioned case.
-  - Later add InputMap class in which you can bind certain actions (like move left, fire, etc.) to Keyboard, Joystick or Mouse buttons.
-    - Also ensure button combinations are possible. e.g. on keyboard I might want to press F1 to open debug menu, but on joystick it might be A+B+X
+  - Input: Allow combinations like A+B+X on joystick to be a virtual key
   - Add a field that tracks % of resource deserialization in BinarySerializer
   - Add GL Texture buffers (They're equivalent to DX11 buffers) - http://www.opengl.org/wiki/Buffer_Texture
-  - Instead of doing setThisPtr on every CoreGpuObject, use intrusive shared_ptr instead?
   - I should consider creating two special Mesh types:
      StreamMesh - constantly updated by CPU and read by GPU
      ReadMesh - written by GPU and easily read by CPU
@@ -66,6 +55,7 @@ Reminders:
   - Possible improvement: I can only update entire Mesh at once with writeSubresource
   - Possible improvement: I keep bounds for the entire mesh and not per-submesh
   - Possible improvement: I don't serialize Mesh bounds and they are recalculated whenever a mesh is loaded
+  - Add better mip map and compression options to the texture importer. Right now I'm ignoring a lot of the options even though I support them.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.
@@ -100,42 +90,6 @@ More detailed thought out system descriptions:
 	 - In inspector they can be expanded as children of the main resource, but cannot be directly modified?
 	 - Deleting the main resource deletes the children too
 
-<<<<SceneManager/SceneObject>>>>
-Two major parts:
-SceneObject update:
- - Just takes care of updating world/local transforms
-  - Transforms are only updated when requested
- - Marking a transform dirty will also mark it dirty in the SceneManager
- - Only SceneObjects that have an Interactable type component (Renderer, Collider, etc.) will reside in SceneManager
-
-SceneManager maintains a list of world matrices, bounds and primitives
- - We can query them for various collision (ray, frustum, etc.)
- - Internally they likely use BVH or oct-tree
- - Uses a binary-tree (unlike SceneObject hierarchy which is n-ary), which is laid out neatly in memory for quick traversal.
-   - What happens when object is removed/added? Tree keeps on growing, empty nodes have their space always reserved. Possibly add a method that can reduce tree size when enough empty nodes exist. 
-     Adding a node might increase tree size which will involve a memcpy while we increase the size.
- - (Updating an object is SceneManager should optionally transfer its world matrix to its owner object as well)
-
-This separation should work fine, as scripts requesting transforms is unlikely to be something that done often. Or not nearly as much as frustum culling and raycasting will be.
-
-How will Physics update objects (and when?)
- - It's unlikely there will be a massive amount of rigidbodies in the scene, so updating them should not be a huge matter of performance. 
-   Calling setTransform after physics simulation update (and before SceneManager update) should work fine.
-
-Updating children dirty whenever setPos/rot/tfrm is called is potentially slow. Can it be avoided?
- - Then again such updates will only be done from the simulation thread, usually from scripts so its unlikely they will be many of them
-
-Do I separate SceneObject and Transform?
- - I don' think I need to
-
-Make sure to let the user know SceneManager only gets updated after simulation, so changes to objects wont be applied right away. 
-(See that he doesn't transform something and call Raycast just so it fails)
- - It is unlikely functionality when query results are needed right after transform will be used much. 
-   So it is acceptable to implement it like this. We might add SceneManager::forceUpdate method in case it is not acceptable.
-
-!!!BUG!!! - When I change parent I don't update individual local position/rotation/scale on scene object
- - Also I don't have a way of setting world pos/rot directly
-
 <<<<Reducing render state changes>>>>
  - Transparent objects get sorted back to front, always
  - Opaque objects I can choose between front to back, no sort or back to front
@@ -161,14 +115,6 @@ Questions/Notes:
  5. This guy: http://home.comcast.net/~tom_forsyth/blog.wiki.html#%5B%5BRenderstate%20change%20costs%5D%5D (who's a driver programmer) sorts all opaque objects based on shader/state
     into buckets, and then orders elements in these bucks in front to back order. This gives him best of two worlds, early z rejection and low state changes.
 
-<<<<Input System>>>>
- - Input is currently ignoring all axes except for mouse axes
- - Remove/Improve smoothing
- - Add ability to get raw or smoothed axis input for any axis (currently you can only get mouse X and Y axes)
- - Allow the user to map axes to custom keys. e.g. Left/right axis can have A and D keys where A returns -1, and D 1
- - Add a way to handle multiple devices (e.g. 2 or more joysticks)
- - Hook up OIS joystick callbacks and test joysticks
-
 <<<<DirectDraw>>>>
  - Used for quickly drawing something, usually for debug and editor purposes.
  - It consists of methods like: DrawLine, DrawPolygon, DrawCube, DrawSphere, etc.
@@ -178,71 +124,6 @@ Questions/Notes:
  - Example uses for it: 
     - Drawing GUI element bounds when debugging GUI
     - Drawing a wireframe selection effect when a mesh is selected in the scene
-
-<<<<Multithreaded memory allocator>>>>
- - Singlethreaded implementation from Game Engine Gems 2 book
- - Small and medium allocators separate for each thread. Memory overhead should be minimal considering how small the pages are. But performance benefits are great.
- - Large allocator just uses some simple form of page allocation and reuse, using atomics?
- - Must ensure that memory allocated on one thread can only be freed from that thread
- - How do I easily tell which allocator to call based on current thread? Require a thread ID with each alloc/dealloc?
- - Need to think this through more
- 
-<<<<More on memory allocator>>>>
- - Regarding potentially often allocating large amounts of memory:
-  - Ignore this for now. Allocating large amounts (16K+ of memory often probably won't be the case). This will only happen when modifying textures or meshes and I can assume there won't be many of such updates.
-    - (But there will be multiple such updates per frame when it comes to GUI meshes for example)
-  - However I should implement allocation counter in my allocator so I can know if I have a bottleneck.
-  - For those allocations that do hit this limit I should implement a FrameAllocator. Memory is allocated during simulation step and the entire block is cleared when the frame ends.
-   - Allocations like copying MeshData, PixelData, PassParams, etc. when queing commands for render thread should all be using this.
-   - Problem with such allocator is safety
-  - Allocations that are created and deleted in a single function should use a Stack allocator
-
-<<<<Resource changes and reimport>>>>
-Use case example:
- - User reimports a .gpuproginc file
-   - Dependencies are held by CoreGpuObjectManager. Objects are required to register/unregister
-      their dependencies in their methods manually.
- - Editor calls SomeClass::reimport(handle) after it detects a change 
-   - this will load a new resource, release the old one and assign the new one to Handle without changing the GUID
-   - In order to make it thread safe force all threads to finish what they're doing and pause them until the switch is done
-     - Should be okay considering this should only happen in edit-mode so performance isn't imperative
-   - reimport is recursively called on all dependant objects as well.
-
-<<<<Handle multithreaded object management>>>:
- - Make everything that is possible immutable. Once created it cant be changed.
-  - Example are shaders, state objects and similar
- - Things like Textures, Vertex, Index buffers, GpuParams may be changed
-  - Make Vertex/Index buffers and similar only accesible from render thread. Higher level classes like meshes can have deferred methods
-  - TODO - How to handle the remaining actually deferred methods? Like Textures?
-
-DirectX11 supports concurrent drawing and resource creation so all my resource updates should be direct calls to DX methods (I'll need a deferred context?)
- - DX9 doesn't so creating/updating resources should wait for render thread?
-  - Although these are sync points which kill the whole concept of separate render thread
-  - Updating via copy then? (DX11 driver does it internally if resource is used anyway)
- - OpenGL? No idea, need to study GL contexts
- - Although it seems DX11 also copies data when mapping/unmapping or updating on a non-immediate context. So maybe copy is the solution?
-
-So final solution:
- - Copy all data that will be updated on a deferred context
-  - Make deferred context have a scratch buffer it can use for storing temporary copied data
- - Immediate context will execute all commands right away
-  - This applies when rendering thread calls resource create/update internally
-  - Or when other thread blocks and waits for rendering thread
- - Create a simple distinction so user knows when is something executed deferred and when immediate?
-  - Move resource update/create methods to DeferredContext?
-    - Not ALL methods need to be moved, only those that are resource heavy
-    - Smaller methods may remain and always stay async, but keep internal state?
- - Resource creation on DX11 should be direct though, without a queue (especially if we manage to populate a resource in the same step)
- - Remove & replace internal data copying in GpuParamBlock (or just use a allocator instead of new())
-
-A POSSIBLY BETTER SOLUTION THAN COPYING ALL THE DATA?
-Classes derive from ISharedMemoryBuffer
- - For example PixelData, used when setting texture pixels
- - They have lock, unlock & clone methods
-  - Users can choose whether they want to lock themselves out from modifying the class, or clone it, before passing it to a threaded method
- - Downside is that I need to do this for every class that will be used in threaded methods
- - Upside is that I think that is how DX handles its buffers at the moment
-
 
 <<<<RenderSystem needed modifications>>>>
   - Texture resource views (Specifying just a subresource of a texture as a shader parameter)
@@ -269,6 +150,7 @@ Classes derive from ISharedMemoryBuffer
   - Sample mask when setting blend state (DX11, check if equivalent exists in GL)
   - RGBA blend factor when setting blend state(DX11, check if equivalent exists in GL)
   - HLSL9/HLSL11/GLSL/Cg shaders need preprocessor defines & includes
+  - DirectX11 supports concurrent drawing and resource creation so all my resource updates should be direct calls to DX methods (I'll need a deferred context?)
   - One camera -> one task (thread) approach for multithreading
    - Also make sure to run off a thread pool (WorkQueue class already exists that provides needed interface)
   - The way I handle rendering currently is to discard simulation results if gpu thread isn't finished.

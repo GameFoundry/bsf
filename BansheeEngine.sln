@@ -6,13 +6,11 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E5A-615A-4C06-B2DF-0D8D9390DE02}"
 	ProjectSection(SolutionItems) = preProject
 		CSharpWrap.txt = CSharpWrap.txt
-		Dependencies.txt = Dependencies.txt
 		DrawHelper.txt = DrawHelper.txt
 		EditorWindowDock.txt = EditorWindowDock.txt
 		GameGUI.txt = GameGUI.txt
 		GameObjectSerialization.txt = GameObjectSerialization.txt
 		Inspector.txt = Inspector.txt
-		MonoIntegrationGuide.txt = MonoIntegrationGuide.txt
 		Notes.txt = Notes.txt
 		Opts.txt = Opts.txt
 		Polish.txt = Polish.txt
@@ -21,7 +19,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Notes", "_Notes", "{1D081E
 		SpriteTexture.txt = SpriteTexture.txt
 		TODO.txt = TODO.txt
 		TODODoc.txt = TODODoc.txt
-		TransformUpdatesAndRenderer.txt = TransformUpdatesAndRenderer.txt
 		TreeView.txt = TreeView.txt
 		UndoRedo.txt = UndoRedo.txt
 	EndProjectSection
@@ -178,6 +175,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BansheeD3D11RenderSystem", 
 	ProjectSection(ProjectDependencies) = postProject
 		{9B21D41C-516B-43BF-9B10-E99B599C7589} = {9B21D41C-516B-43BF-9B10-E99B599C7589}
 		{CC7F9445-71C9-4559-9976-FF0A64DCB582} = {CC7F9445-71C9-4559-9976-FF0A64DCB582}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Guides", "Guides", "{4259680D-8A9B-4C17-B75B-CA29482AB299}"
+	ProjectSection(SolutionItems) = preProject
+		Dependencies.txt = Dependencies.txt
+		MonoIntegrationGuide.txt = MonoIntegrationGuide.txt
 	EndProjectSection
 EndProject
 Global
@@ -627,6 +630,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{4259680D-8A9B-4C17-B75B-CA29482AB299} = {1D081E5A-615A-4C06-B2DF-0D8D9390DE02}
 		{4F05EF0A-B8DE-424B-8848-6ECEE9D99912} = {32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}
 		{41CC18CE-139E-45A5-A9AA-336CBA2E1521} = {32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}
 		{08975177-4A13-4EE7-BB21-3BB92FB3F3CC} = {32E4E2B7-1B4D-4B06-AD87-57CEE00BC247}

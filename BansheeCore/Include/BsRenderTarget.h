@@ -136,7 +136,7 @@ namespace BansheeEngine
 		 *
 		 * @note	Core thread only.
 		 */
-		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
+		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO) = 0;
 
 		/**
 		 * @brief	Does the texture need to be vertically flipped because of different screen space coordinate systems.

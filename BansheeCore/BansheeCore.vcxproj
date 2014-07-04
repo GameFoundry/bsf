@@ -349,6 +349,8 @@
     <ClInclude Include="Include\BsGpuProgIncludeImporter.h" />
     <ClInclude Include="Include\BsShaderProxy.h" />
     <ClInclude Include="Include\BsSubMesh.h" />
+    <ClInclude Include="Include\BsTextureImportOptions.h" />
+    <ClInclude Include="Include\BsTextureImportOptionsRTTI.h" />
     <ClInclude Include="Include\BsTextureView.h" />
     <ClInclude Include="Include\BsTextData.h" />
     <ClInclude Include="Include\BsTimerQuery.h" />
@@ -468,6 +470,7 @@
     <ClCompile Include="Source\BsQueryManager.cpp" />
     <ClCompile Include="Source\BsRenderer.cpp" />
     <ClCompile Include="Source\BsResourceManifest.cpp" />
+    <ClCompile Include="Source\BsTextureImportOptions.cpp" />
     <ClCompile Include="Source\BsTextureView.cpp" />
     <ClCompile Include="Source\BsTextData.cpp" />
     <ClCompile Include="Source\BsTimerQuery.cpp" />

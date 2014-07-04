@@ -3,9 +3,9 @@
 #include "BsDebug.h"
 #include "BsDataStream.h"
 #include "BsPath.h"
-#include "BsTextureData.h"
 #include "BsTextureManager.h"
 #include "BsTexture.h"
+#include "BsTextureImportOptions.h"
 #include "BsFileSystem.h"
 #include "BsCoreApplication.h"
 #include "BsCoreThread.h"
@@ -120,28 +120,54 @@ namespace BansheeEngine
 		}
 	}
 
+	ImportOptionsPtr FreeImgImporter::createImportOptions() const
+	{
+		return bs_shared_ptr<TextureImportOptions, ScratchAlloc>();
+	}
+
 	ResourcePtr FreeImgImporter::import(const Path& filePath, ConstImportOptionsPtr importOptions)
 	{
+		const TextureImportOptions* textureImportOptions = static_cast<const TextureImportOptions*>(importOptions.get());
+
 		DataStreamPtr fileData = FileSystem::openFile(filePath, true);
 
-		TextureDataPtr imgData = importRawImage(fileData);
+		PixelDataPtr imgData = importRawImage(fileData);
 		if(imgData == nullptr || imgData->getData() == nullptr)
 			return nullptr;
 
+		UINT32 numMips = 0;
+		if (textureImportOptions->getGenerateMipmaps())
+		{
+			UINT32 maxPossibleMip = PixelUtil::getMaxMipmaps(imgData->getWidth(), imgData->getHeight(), imgData->getDepth(), imgData->getFormat());
+			if (textureImportOptions->getMaxMip() == 0)
+			{
+				numMips = maxPossibleMip;
+			}
+			else
+			{
+				numMips = std::min(maxPossibleMip, textureImportOptions->getMaxMip());
+			}
+		}
+
 		TexturePtr newTexture = Texture::_createPtr(TEX_TYPE_2D, 
-			imgData->getWidth(), imgData->getHeight(), imgData->getNumMipmaps(), imgData->getFormat());
+			imgData->getWidth(), imgData->getHeight(), numMips, textureImportOptions->getFormat());
+
+		Vector<PixelDataPtr> mipLevels;
+		if (numMips > 0)
+			mipLevels = PixelUtil::genMipmaps(*imgData, MipMapGenOptions());
+
+		mipLevels.insert(mipLevels.begin(), imgData);
 
 		newTexture->synchronize(); // TODO - Required due to a bug in allocateSubresourceBuffer
-
-		for(UINT32 mip = 0; mip <= imgData->getNumMipmaps(); ++mip)
+		for (UINT32 mip = 0; mip < (UINT32)mipLevels.size(); ++mip)
 		{
 			UINT32 subresourceIdx = newTexture->mapToSubresourceIdx(0, mip);
-			PixelDataPtr src = newTexture->allocateSubresourceBuffer(subresourceIdx);
+			PixelDataPtr dst = newTexture->allocateSubresourceBuffer(subresourceIdx);
 
-			imgData->getPixels(mip, *src);
+			PixelUtil::bulkPixelConversion(*mipLevels[mip], *dst);
 
-			src->_lock();
-			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, src, false, _1));
+			dst->_lock();
+			gCoreThread().queueReturnCommand(std::bind(&RenderSystem::writeSubresource, RenderSystem::instancePtr(), newTexture, subresourceIdx, dst, false, _1));
 		}
 
 		fileData->close();
@@ -152,7 +178,7 @@ namespace BansheeEngine
 		return newTexture;
 	}
 
-	TextureDataPtr FreeImgImporter::importRawImage(DataStreamPtr fileData)
+	PixelDataPtr FreeImgImporter::importRawImage(DataStreamPtr fileData)
 	{
 		if(fileData->size() > std::numeric_limits<UINT32>::max())
 		{
@@ -162,7 +188,6 @@ namespace BansheeEngine
 		UINT32 magicLen = std::min((UINT32)fileData->size(), 32u);
 		UINT8 magicBuf[32];
 		fileData->read(magicBuf, magicLen);
-		// return to start
 		fileData->seek(0);
 
 		WString fileExtension = magicNumToExtension(magicBuf, magicLen);
@@ -310,7 +335,8 @@ namespace BansheeEngine
 		UINT32 size = dstPitch * height;
 
 		// Bind output buffer
-		TextureDataPtr texData = bs_shared_ptr<TextureData, ScratchAlloc>(width, height, size, format, 1, 0, 0);
+		PixelDataPtr texData = bs_shared_ptr<PixelData>(width, height, 1, format);
+		texData->allocateInternalBuffer();
 		UINT8* output = texData->getData();
 
 		UINT8* pSrc;

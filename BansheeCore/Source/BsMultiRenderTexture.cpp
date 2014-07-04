@@ -146,7 +146,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void MultiRenderTexture::copyToMemory(const PixelData &dst, FrameBuffer buffer)
+	void MultiRenderTexture::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}

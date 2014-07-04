@@ -120,7 +120,7 @@ namespace BansheeEngine
 		}
 	}
 
-	void RenderTexture::copyToMemory( const PixelData &dst, FrameBuffer buffer /*= FB_AUTO */ )
+	void RenderTexture::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		throw std::exception("The method or operation is not implemented.");
 	}

@@ -136,7 +136,7 @@ namespace BansheeEngine
 		/**
 		 * @brief	Copies contents of the back or depth/stencil buffer in to the provided object.
 		 */
-		void copyContentsToMemory(const D3D9RenderWindow* window, const PixelData &dst, RenderTarget::FrameBuffer buffer);
+		void copyContentsToMemory(const D3D9RenderWindow* window, PixelData &dst, RenderTarget::FrameBuffer buffer);
 
 		/**
 		 * @brief	Resets bound pipeline states/streams to null.

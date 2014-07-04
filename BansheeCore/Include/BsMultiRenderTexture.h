@@ -56,7 +56,7 @@ namespace BansheeEngine
 		void throwIfBuffersDontMatch() const;
 
 		// TODO - Not implemented
-		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO);
+		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
 
 	protected:
 		Vector<TextureViewPtr> mColorSurfaces;

@@ -90,7 +90,7 @@ namespace BansheeEngine
 		/**
 		 * @copydoc	RenderTarget::copyToMemory
 		 */
-		virtual void copyToMemory(const PixelData &dst, FrameBuffer buffer = FB_AUTO);
+		virtual void copyToMemory(PixelData &dst, FrameBuffer buffer = FB_AUTO);
 
 	protected:
 		TextureViewPtr mColorSurface;

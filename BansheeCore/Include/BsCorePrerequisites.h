@@ -295,7 +295,8 @@ namespace BansheeEngine
 		TID_GameObjectHandleBase = 1066,
 		TID_ResourceManifest = 1067,
 		TID_ResourceManifestEntry = 1068,
-		TID_EmulatedParamBlock = 1069
+		TID_EmulatedParamBlock = 1069,
+		TID_TextureImportOptions = 1070
 	};
 }
 

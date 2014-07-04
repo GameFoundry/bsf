@@ -29,12 +29,10 @@
   <ItemGroup>
     <ClInclude Include="Include\BsFreeImgImporter.h" />
     <ClInclude Include="Include\BsFreeImgPrerequisites.h" />
-    <ClInclude Include="Include\BsTextureData.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BsFreeImgImporter.cpp" />
     <ClCompile Include="Source\BsFreeImgPlugin.cpp" />
-    <ClCompile Include="Source\BsTextureData.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{122B7A22-0C62-4B35-B661-EBF3F394EA79}</ProjectGuid>

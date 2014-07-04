@@ -1033,7 +1033,7 @@ namespace BansheeEngine
 	}
 
 	void D3D9Device::copyContentsToMemory(const D3D9RenderWindow* renderWindow, 
-		const PixelData &dst, RenderTarget::FrameBuffer buffer)
+		PixelData &dst, RenderTarget::FrameBuffer buffer)
 	{
 		RenderWindowToResorucesIterator it = getRenderWindowIterator(renderWindow);
 		RenderWindowResources* resources = it->second;

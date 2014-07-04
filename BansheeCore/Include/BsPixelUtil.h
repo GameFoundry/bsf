@@ -6,21 +6,6 @@
 namespace BansheeEngine 
 {
 	/**
-	 * @brief	Available compression formats.
-	 */
-	enum class CompressedFormat
-	{
-		BC1, /**< PF_BC1 */
-		BC1a, /**< PF_BC1a */
-		BC2, /**< PF_BC2 */
-		BC3, /**< PF_BC3 */
-		BC4, /**< PF_BC4 */
-		BC5, /**< PF_BC5 */
-		BC6H, /**< PF_BC6H */
-		BC7 /**< PF_BC7 */
-	};
-
-	/**
 	 * @brief	Available types of texture compression quality.
 	 */
 	enum class CompressionQuality
@@ -66,7 +51,7 @@ namespace BansheeEngine
 	 */
 	struct CompressionOptions
 	{
-		CompressedFormat format = CompressedFormat::BC1;
+		PixelFormat format = PF_BC1;
 		AlphaMode alphaMode = AlphaMode::None;
 		bool isNormalMap = false;
 		bool isSRGB = false;
@@ -248,7 +233,7 @@ namespace BansheeEngine
 		 * @brief	Converts pixels from one format to another. Provided pixel data objects
 		 *			must have previously allocated buffers of adequate size and their sizes must match.
 		 */
-        static void bulkPixelConversion(const PixelData& src, const PixelData& dst);
+        static void bulkPixelConversion(const PixelData& src, PixelData& dst);
 
 		/**
 		 * @brief	Compresses the provided data using the specified compression options. 
@@ -268,7 +253,7 @@ namespace BansheeEngine
 		 *			Provided pixel data objects must have previously allocated buffers of adequate size. You may
 		 *			also provided a filtering method to use when scaling.
 		 */
-		static void scale(const PixelData& src, const PixelData& dst, Filter filter = FILTER_LINEAR);
+		static void scale(const PixelData& src, PixelData& dst, Filter filter = FILTER_LINEAR);
 
 		/**
 		 * @brief	Applies gamma correction to the pixels in the provided buffer.

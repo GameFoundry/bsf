@@ -477,7 +477,7 @@ namespace BansheeEngine
 		RenderWindow::getCustomAttribute(name, pData);
 	}
 
-	void D3D11RenderWindow::copyToMemory(const PixelData &dst, FrameBuffer buffer)
+	void D3D11RenderWindow::copyToMemory(PixelData &dst, FrameBuffer buffer)
 	{
 		THROW_IF_NOT_CORE_THREAD;
 

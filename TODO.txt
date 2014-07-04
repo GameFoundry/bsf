@@ -9,8 +9,6 @@ Optimization notes:
 
 A lot of stuff is still using GSyncedMainCA but it should be using gMainCA - Find and replace
 
-TODO: Viewport can be modified from the sim thread, but is used on the core thread without any syncronization mechanisms. Maybe add a method that returns VIEWPORT_DATA, and have that used on the core thread.
-
 I still re-create GUIWidget mesh every frame instead of just updating it.
 
 I call waitUntilLoaded too many times. Sometimes 5-6 times in a single function. Each of those calls will be extremely slow.
@@ -39,9 +37,7 @@ TextBox needed elements:
 
 -----------
 
- - My test model is rendering back faces. I need to flip them.
-  - Although more than likely I am loading the model incorrectly since it works in Unity?
-  - I probably want to determine front faces based on normals
+Maybe determine mesh front faces based on normals?
 
 Immediate TODO:
  - A way to update mesh buffers without recreating vertex/index buffers (Setting data currently does exactly that)
@@ -54,11 +50,6 @@ Other:
 
 ----------------------------------------------------------------------------------------------
 Medium priority:
- - Mesh loading:
-  - Example Freefall mesh has one index per vertex, and there are 17k+ vertices. I think I need a post-process step that optimizes them.
-  - Imported FBX meshes are too big
- - Ogre performed special DDS loading. I removed that. I'm not sure if I'll need to re-add it?
- - My log is not thread safe yet it is being called from multiple threads.
  - RTTI:
      When defining RTTIType like so: 
       RTTIType<D3D9HLSLProgram, HighLevelGpuProgram, D3D9HLSLProgramRTTI>
@@ -73,21 +64,14 @@ Medium priority:
 
 ----------------------------------------------------------------------------------------------
 Low priority TODO
- - Mesh loading:
-  - Sub-meshes aren't being transformed by world matrices of their nodes
  - Remove template from RTTIType and move it to IReflectable? This way i can hopefully move GetRTTITypeStatic and GetRTTIType to IReflectable so I don't
    need to manually implement those for every method.
  - Viewport needs to be updated when I call RenderTarget::setFullscreen/finishSwitchingFullscreen/updateWindowRect/windowMovedOrResized. Currently it's not
- - D3D9Texture::createTextureResources is commented out at the moment. It gets called on device reset, and at that point I should reload texture resources.
-  - I should probably keep all resources by DX managed. OpenGL apparently keeps a mirror of all its resources anyway.
- - Device reset and resource re-loading in general
- - Fix up WorkQueue as it doesn't lock when initializing, to make sure threads are actually started before returning
  - CPU reading or writing to a render texture in OpenGL is not supported. (CmGLHardwarePixelBuffer::upload/download). 
  - When saving a resource, make sure resource is properly loaded before saving
    - Add doc to Resources::save that says it will block until render thread updates the resource
    - Add documentation that tells the user that reading a resource non-async will block the thread and execute all queued render commands first
    - Remove Response handlers from Resources
-- Cg doesn't work. Either remove it or get it to work
 - System is not yet ready for multiple rendering contexts
 - When serializing/deserializing derived classes, deserialization is done from most derived to base, while it should probably be done the other way around.
 - Because GLSL introspection API is built around basic types I don't support structs or arrays of objects: 
@@ -96,16 +80,11 @@ Low priority TODO
   - Arrays of objects aren't supported in HLSL or GLSL because of limited GLSL introspection
     - I might need to add an exception thrown if user tries to use them
   - Structs aren't supported in GLSL for introspection reasons
- - Go through pixel formats and removed unused ones: L8, L16, A4L4, and many others
  - Having shared_ptrs used in RenderSystem and CommandQueue can cause potential performance problems. Dozends of thousands of shared
     pointers may be getting queued in command queue per frame, in a slightly more complex scene, which will most certainly cause performance problems
     due to thread safety and atomics used by shared_ptr. However I still need some guarantee that objects queued in RenderSystem won't be destroyed
 	by the sim. thread.
   - A way to bind buffers to a Pass, while specifying buffer range
-  - Better creation of PrimaryWindow
-    - RENDERWINDOWDESC accepts a "externalWindow" flag and an "externalHandle" so when creating the primary window with RenderSystem::initialize we don't always need to create a new window
-    - Actually new OpenGL seems to support creating context without a window with the help of wglCreateContextAttribsARB and wglMakeCurrent:
-  - OpenGL render window no longer looks for a monitor index
   - Material RTTI should also serialize shared buffers (they need to be made into a resource)
     - BE CAREFUL on how this will be implemented. Likely it will have much of the same interface as a material and/or GpuParams
   - queueGpuCommand is handled weird. shared_ptr isn't used for setting (this) parameter, and could be optimized out by the compiler
@@ -113,15 +92,11 @@ Low priority TODO
   - Resources::unload will deadlock if the resource isn't being loaded!
     - Maybe re-think how I handle ResourceHandle.isCreated?
   - Check D3D9/D3D11/GL resource usages. DX11 reports many unreleased objects. I'm guessing DX9 will as well. Not sure how to check OpenGL.
- - onMovedOrResized is still used by Viewport while that same callback is offered by RenderWindowManager. There is no need to have them in both places.
  - Texture "ScaleToFit" will cause the texture to repeat instead of clipping the image. e.g. a 50x20 texture placed on an 50x100 area will repeat 5x
  - When writing to mesh vertex buffer in Mesh::writeSubresource that requires a color flip I need to create a temporary copy of the 
     entire buffer. It would be better to handle this differently. Same thing happens in MeshHeap
  - OpenGL also supports texture views using glTextureView but so far I only use them in DX11
  - I don't have a way to set Texture filtering or wrap modes, default ones are always set on initialization
- - Module does need to be fixed for multi-threading. If it is created on one thread and used on another, a race condition could occurr. But do I use modules on two different threads?
-   - I will with Debug, and probably others
-   - Making the shutdown/destroy variables atomic should be enough
 ----------------------------------------------------------------------------------------------
 Optional:
  - Need better handling for shader techniques. Some Materials are able to run on all renderers yet I can only specify one. This is problematic

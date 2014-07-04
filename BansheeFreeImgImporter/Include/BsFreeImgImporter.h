@@ -6,6 +6,10 @@
 
 namespace BansheeEngine
 {
+	/**
+	 * @brief	Importer implementation that handles various import for various
+	 *			image formats using the FreeImg library.
+	 */
 	class FreeImgImporter : public SpecificImporter
 	{
 		struct RawImageData;
@@ -15,31 +19,36 @@ namespace BansheeEngine
 		virtual ~FreeImgImporter();
 
 		/**
-		 * @brief	Should only be called by the plugin when its being loaded.
+		 * @copydoc	SpecificImporter::isExtensionSupported
 		 */
-		static void startUp()
-		{
-			static FreeImgImporter* importer = nullptr;
-			if(importer == nullptr)
-			{
-				importer = bs_new<FreeImgImporter>();
-				Importer::instance()._registerAssetImporter(importer);
-			}
-		}
-
-		/** Inherited from SpecificImporter */
 		virtual bool isExtensionSupported(const WString& ext) const;
 
-		/** Inherited from SpecificImporter */
+		/**
+		 * @copydoc	SpecificImporter::isMagicNumberSupported
+		 */
 		virtual bool isMagicNumberSupported(const UINT8* magicNumPtr, UINT32 numBytes) const; 
 
-		/** Inherited from SpecificImporter */
+		/**
+		 * @copydoc	SpecificImporter::import
+		 */
 		virtual ResourcePtr import(const Path& filePath, ConstImportOptionsPtr importOptions);
+
+		/**
+		 * @copydoc SpecificImporter::createImportOptions
+		 */
+		virtual ImportOptionsPtr createImportOptions() const;
 	private:
+		/**
+		 * @brief	Converts a magic number into an extension name.
+		 */
+		WString magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
+
+		/**
+		 * @brief	Imports an image from the provided data stream.
+		 */
+		PixelDataPtr importRawImage(DataStreamPtr fileData);
+
 		Vector<WString> mExtensions;
 		UnorderedMap<WString, int> mExtensionToFID;
-
-		WString magicNumToExtension(const UINT8* magic, UINT32 maxBytes) const;
-		TextureDataPtr importRawImage(DataStreamPtr fileData);
 	};
 }

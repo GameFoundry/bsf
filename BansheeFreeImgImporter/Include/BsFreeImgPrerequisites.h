@@ -17,9 +17,3 @@
 #else
 #    define BS_FREEIMG_EXPORT
 #endif
-
-namespace BansheeEngine
-{
-	class TextureData;
-	typedef std::shared_ptr<TextureData> TextureDataPtr;
-}

@@ -868,21 +868,21 @@ namespace BansheeEngine
 		UINT8* bufferEnd;
 	};
 
-	nvtt::Format toNVTTFormat(CompressedFormat format)
+	nvtt::Format toNVTTFormat(PixelFormat format)
 	{
 		switch (format)
 		{
-		case CompressedFormat::BC1:
+		case PF_BC1:
 			return nvtt::Format_BC1;
-		case CompressedFormat::BC1a:
+		case PF_BC1a:
 			return nvtt::Format_BC1a;
-		case CompressedFormat::BC2:
+		case PF_BC2:
 			return nvtt::Format_BC2;
-		case CompressedFormat::BC3:
+		case PF_BC3:
 			return nvtt::Format_BC3;
-		case CompressedFormat::BC4:
+		case PF_BC4:
 			return nvtt::Format_BC4;
-		case CompressedFormat::BC5:
+		case PF_BC5:
 			return nvtt::Format_BC5;
 		}
 
@@ -938,33 +938,6 @@ namespace BansheeEngine
 
 		// Unknown alpha mode
 		return nvtt::WrapMode_Mirror;
-	}
-
-
-	PixelFormat toPixelFormat(CompressedFormat format)
-	{
-		switch (format)
-		{
-		case CompressedFormat::BC1:
-			return PF_BC1;
-		case CompressedFormat::BC1a:
-			return PF_BC1a;
-		case CompressedFormat::BC2:
-			return PF_BC2;
-		case CompressedFormat::BC3:
-			return PF_BC3;
-		case CompressedFormat::BC4:
-			return PF_BC4;
-		case CompressedFormat::BC5:
-			return PF_BC5;
-		case CompressedFormat::BC6H:
-			return PF_BC6H;
-		case CompressedFormat::BC7:
-			return PF_BC7;
-		}
-
-		// Unknown format
-		return PF_BC3;
 	}
 
     UINT32 PixelUtil::getNumElemBytes(PixelFormat format)
@@ -1353,14 +1326,14 @@ namespace BansheeEngine
         }
     }
 
-    void PixelUtil::bulkPixelConversion(const PixelData &src, const PixelData &dst)
+    void PixelUtil::bulkPixelConversion(const PixelData &src, PixelData &dst)
     {
         assert(src.getWidth() == dst.getWidth() &&
 			   src.getHeight() == dst.getHeight() &&
 			   src.getDepth() == dst.getDepth());
 
-		// Check for compressed formats, we don't support decompression, compression or recoding
-		if(PixelUtil::isCompressed(src.getFormat()) || PixelUtil::isCompressed(dst.getFormat()))
+		// Check for compressed formats, we don't support decompression
+		if(PixelUtil::isCompressed(src.getFormat()))
 		{
 			if(src.getFormat() == dst.getFormat())
 			{
@@ -1370,6 +1343,24 @@ namespace BansheeEngine
 			else
 			{
 				BS_EXCEPT(NotImplementedException, "This method can not be used to compress or decompress images");
+			}
+		}
+
+		// Check for compression
+		if (PixelUtil::isCompressed(dst.getFormat()))
+		{
+			if (src.getFormat() == dst.getFormat())
+			{
+				memcpy(dst.getData(), src.getData(), src.getConsecutiveSize());
+				return;
+			}
+			else
+			{
+				CompressionOptions co;
+				co.format = dst.getFormat();
+				dst = *compress(src, co);
+
+				return;
 			}
 		}
 
@@ -1478,7 +1469,7 @@ namespace BansheeEngine
         }
     }
 
-	void PixelUtil::scale(const PixelData& src, const PixelData& scaled, Filter filter)
+	void PixelUtil::scale(const PixelData& src, PixelData& scaled, Filter filter)
 	{
 		assert(PixelUtil::isAccessible(src.getFormat()));
 		assert(PixelUtil::isAccessible(scaled.getFormat()));
@@ -1624,14 +1615,17 @@ namespace BansheeEngine
 
 	PixelDataPtr PixelUtil::compress(const PixelData& src, const CompressionOptions& options)
 	{
+		if (!isCompressed(options.format))
+			BS_EXCEPT(InvalidParametersException, "Wanted format is not a compressed format.");
+
 		// Note: NVTT site has implementations for these two formats for when I decide to add them
-		if (options.format == CompressedFormat::BC6H || options.format == CompressedFormat::BC7)
+		if (options.format == PF_BC6H || options.format == PF_BC7)
 			BS_EXCEPT(InvalidParametersException, "Specified formats are not yet supported.");
 
 		if (src.getDepth() != 1)
 			BS_EXCEPT(InvalidParametersException, "3D textures are not supported.");
 
-		PixelFormat pf = toPixelFormat(options.format);
+		PixelFormat pf = options.format;
 
 		// TODO - Get rid of this limitation? Maybe it works without it with no additional changes.
 		if (!isValidExtent(src.getWidth(), src.getHeight(), 1, pf))
