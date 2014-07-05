@@ -143,6 +143,11 @@ namespace BansheeEngine
 		 * @param	localizedName	Localized string with the name.
 		 */
 		void setLocalizedName(const WString& menuItemLabel, const HString& localizedName);
+
+		/**
+		 * @brief	Returns data used for initializing a drop down list, for all elements.
+		 */
+		GUIDropDownData getDropDownData() const;
 	protected:
 		/**
 		 * @brief	Adds a menu item at the specified path, as a normal button or as a separator.
@@ -153,11 +158,6 @@ namespace BansheeEngine
 		 * @brief	Return drop down data for the specified menu.
 		 */
 		GUIDropDownData getDropDownDataInternal(const GUIMenuItem& menu) const;
-
-		/**
-		 * @brief	Returns data used for initializing a drop down list, for all elements.
-		 */
-		GUIDropDownData getDropDownData() const;
 
 		GUIMenuItem mRootElement;
 		UnorderedMap<WString, HString> mLocalizedEntryNames;

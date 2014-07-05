@@ -2,12 +2,12 @@ Polish TODO:
  - Finalize example with resolution settings and proper GUI
   - Ensure that going fullscreen and windowed works fine
  - Add an example model
- - Test release build
  - Test if example shuts down fine
 
  - Add license text to all files
 
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
+  - Name the branch BansheeEnginePreview
   - Before I branch make a separate solution with example only projects
   - Also remove all non-example code (e.g. plugin loading and similar)
   - This is so I can then merge that code back in that branch when ready
