@@ -309,31 +309,39 @@ namespace BansheeEngine
 		switch (joystickCode)
 		{
 		case 0:
-			return BC_GAMEPAD_A;
+			return BC_GAMEPAD_DPAD_UP;
 		case 1:
-			return BC_GAMEPAD_B;
+			return BC_GAMEPAD_DPAD_DOWN;
 		case 2:
-			return BC_GAMEPAD_X;
+			return BC_GAMEPAD_DPAD_LEFT;
 		case 3:
-			return BC_GAMEPAD_Y;
+			return BC_GAMEPAD_DPAD_RIGHT;
 		case 4:
-			return BC_GAMEPAD_LB;
-		case 5:
-			return BC_GAMEPAD_RB;
-		case 6:
-			return BC_GAMEPAD_BACK;
-		case 7:
 			return BC_GAMEPAD_START;
-		case 8:
-			return BC_GAMEPAD_BTN1;
-		case 9:
+		case 5:
+			return BC_GAMEPAD_BACK;
+		case 6:
+			return BC_GAMEPAD_LS;
+		case 7:
 			return BC_GAMEPAD_RS;
+		case 8:
+			return BC_GAMEPAD_LB;
+		case 9:
+			return BC_GAMEPAD_RB;
 		case 10:
-			return BC_GAMEPAD_BTN2;
+			return BC_GAMEPAD_BTN1;
 		case 11:
 			return BC_GAMEPAD_LS;
+		case 12:
+			return BC_GAMEPAD_A;
+		case 13:
+			return BC_GAMEPAD_B;
+		case 14:
+			return BC_GAMEPAD_X;
+		case 15:
+			return BC_GAMEPAD_Y;
 		}
 
-		return (ButtonCode)(BC_GAMEPAD_BTN3 + (joystickCode - 11));
+		return (ButtonCode)(BC_GAMEPAD_BTN1 + (joystickCode - 15));
 	}
 }

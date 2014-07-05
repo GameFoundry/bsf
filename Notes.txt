@@ -56,6 +56,10 @@ Reminders:
   - Possible improvement: I keep bounds for the entire mesh and not per-submesh
   - Possible improvement: I don't serialize Mesh bounds and they are recalculated whenever a mesh is loaded
   - Add better mip map and compression options to the texture importer. Right now I'm ignoring a lot of the options even though I support them.
+  - Add separable pass sorting to RenderQueue
+  - DDS file import
+  - Make hierarchical documentation. Organize stuff based on type. Once I actually generate the documentation add Doxygen grouping tags (or whatever they're called)
+  - Make a Getting Started guide, along with the example project. Or just finish up the manual.
 
 Potential optimizations:
  - bulkPixelConversion is EXTREMELY poorly unoptimized. Each pixel it calls a separate method that does redudant operations every pixel.

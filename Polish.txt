@@ -1,11 +1,22 @@
 Polish TODO:
  - Finalize example with resolution settings and proper GUI
+  - Ensure that going fullscreen and windowed works fine
  - Add an example model
  - Test release build
  - Test if example shuts down fine
 
  - Add license text to all files
+
  - Make a separate release branch with no editor/script stuff, and without .txt files and other development data
+  - Before I branch make a separate solution with example only projects
+  - Also remove all non-example code (e.g. plugin loading and similar)
+  - This is so I can then merge that code back in that branch when ready
+  - For other stuff I need to delete, use git permanent delete
+
+ - Add a .zip with dependencies
+ - Add a .zip with source and dependencies
+ - Test checking out source and extracting dependencies and see if it compiles
+ - Test compiling on another PC
 
 Re-test gamepad buttons now that XInput is active
 
@@ -22,12 +33,8 @@ Not so critical
        - A lot could be made private
      - Has two methods for retrieveing ElementType
      - getVisibleBounds doesn't make sense
-  - Make hierarchical documentation. Organize stuff based on type. Once I actually generate the documentation add Doxygen grouping tags (or whatever they're called)
   - There's still a crash regarding an uninitialized mCachedPtr on a C# class when shutting down. Attempt to find consistent repro steps.
-  - Make a Getting Started guide, along with the example project. Or just finish up the manual.
-  - Compress and generate mips for texture on input (testing NVTT stuff)
   - Perform optimizations as needed to get reasonable performance
   - Consider removing SceneManager from Core? I have two scene manager base classes.
   - GpuParamBlockBuffer and GpuParams::cloneForCore are very clumsy in how they deal in keeping two separate param blocks. Rethink this a bit.
-  - Add separable pass sorting to RenderQueue
-  - DDS file import
+  - Test texture compression and mip generation with DX9 and OpenGL

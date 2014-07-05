@@ -38,7 +38,7 @@ namespace BansheeEngine
 	UINT32 resolutionHeight = 720;
 
 	/**
-	 * Imports all of ours assets and prepares GameObject that handle the example logic.
+	 * Imports all of our assets and prepares GameObject that handle the example logic.
 	 */
 	void setUpExample();
 
@@ -73,7 +73,7 @@ int CALLBACK WinMain(
 
 	// Initializes the application with primary window defined as above and DirectX 11 render system.
 	// You may use other render systems than DirectX 11, however this example for simplicity only uses DirectX 11.
-	// If you wanted other render systems you would need to create separate shaders for them and import them above
+	// If you wanted other render systems you would need to create separate shaders for them and import them
 	// along with (or replace) the DX11 ones.
 	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
 
@@ -134,9 +134,6 @@ namespace BansheeEngine
 		if (rtti_is_of_type<TextureImportOptions>(textureImportOptions))
 		{
 			TextureImportOptions* importOptions = static_cast<TextureImportOptions*>(textureImportOptions.get());
-
-			// We want the texture to be compressed, just a basic non-alpha format
-			importOptions->setFormat(PF_BC1);
 
 			// We want maximum number of mipmaps to be generated
 			importOptions->setGenerateMipmaps(true);
@@ -218,7 +215,7 @@ namespace BansheeEngine
 		TechniquePtr technique = exampleShader->addTechnique(RenderSystemDX11, RendererDefault);
 
 		// Add a new pass to the technique. Each technique can have multiple passes that allow you to render the same
-		// object multiple times using different shaders.
+		// object multiple times using different GPU programs.
 		PassPtr pass = technique->addPass();
 		pass->setVertexProgram(exampleVertexGPUProg);
 		pass->setFragmentProgram(exampleFragmentGPUProg);
@@ -351,11 +348,11 @@ namespace BansheeEngine
 		// make the depth mid-range as there are no other widgets.
 		gui->setDepth(128);
 
-		// GUI skin defines how are all child elements of the GUI widget renderer. It contains all their styles
+		// GUI skin defines how are all child elements of the GUI widget renderered. It contains all their styles
 		// and default layout properties. We use the default skin that comes built into Banshee.
 		gui->setSkin(BuiltinResources::instance().getGUISkin());
 
-		// Create a GUI area that is used for displaying messages about buttons for toggling profiler overlays.
+		// Create a GUI area that is used for displaying messages about toggling profiler overlays.
 		// This area will stretch the entire surface of its parent widget, even if the widget is resized.
 		GUIArea* topArea = GUIArea::createStretchedXY(*gui, 0, 0, 0, 0);
 
@@ -367,7 +364,7 @@ namespace BansheeEngine
 		topLayout.addElement(GUILabel::create(HString(L"Press F1 to toggle CPU profiler overlay")));
 		topLayout.addElement(GUILabel::create(HString(L"Press F2 to toggle GPU profiler overlay")));
 
-		// Add a flexible space that fills up any remaining area in the area, making the two labels above be aligned
+		// Add a flexible space that fills up any remaining area in the layout, making the two labels above be aligned
 		// to the top of the GUI widget (and the screen).
 		topLayout.addFlexibleSpace();
 
