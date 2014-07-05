@@ -102,6 +102,39 @@ namespace BansheeEngine
 		markTfrmDirty();
 	}
 
+	void SceneObject::setWorldPosition(const Vector3& position)
+	{
+		if (mParent != nullptr)
+		{
+			Vector3 invScale = mParent->getWorldScale();
+			if (invScale.x != 0) invScale.x = 1.0f / invScale.x;
+			if (invScale.y != 0) invScale.y = 1.0f / invScale.y;
+			if (invScale.z != 0) invScale.z = 1.0f / invScale.z;
+
+			Quaternion invRotation = mParent->getWorldRotation().inverse();
+
+			mPosition = invRotation.rotate(position - mParent->getWorldPosition()) *  invScale;
+		}
+		else
+			mPosition = position;
+
+		markTfrmDirty();
+	}
+
+	void SceneObject::setWorldRotation(const Quaternion& rotation)
+	{
+		if (mParent != nullptr)
+		{
+			Quaternion invRotation = mParent->getWorldRotation().inverse();
+
+			mRotation = invRotation * rotation;
+		}
+		else
+			mRotation = rotation;
+
+		markTfrmDirty();
+	}
+
 	const Vector3& SceneObject::getWorldPosition() const
 	{ 
 		if(!mIsCachedWorldTfrmUpToDate)
@@ -262,7 +295,7 @@ namespace BansheeEngine
 
 			// Update scale
 			const Vector3& parentScale = mParent->getWorldScale();
-			// Scale own position by parent scale, NB just combine
+			// Scale own position by parent scale, just combine
 			// as equivalent axes, no shearing
 			mWorldScale = parentScale * mScale;
 

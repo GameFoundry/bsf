@@ -2005,8 +2005,6 @@ namespace BansheeEngine
 			// no integer params allowed
 			rsc->setFragmentProgramConstantIntCount(0);
 			// float params, always 4D
-			// NB in ps_1_x these are actually stored as fixed point values,
-			// but they are entered as floats
 			rsc->setFragmentProgramConstantFloatCount(8);
 			break;
 		case 2:

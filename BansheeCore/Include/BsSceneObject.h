@@ -46,17 +46,22 @@ namespace BansheeEngine
 		/************************************************************************/
 	public:
 		/**
-		 * @brief	Sets local position of the object.
+		 * @brief	Sets the local position of the object.
 		 */
 		void setPosition(const Vector3& position);
 
 		/**
-		 * @brief	Gets local position of the object.
+		 * @brief	Gets the local position of the object.
 		 */
 		const Vector3& getPosition() const { return mPosition; }
 
 		/**
-		 * @brief	Gets world position of the object.
+		 * @brief	Sets the world position of the object.
+		 */
+		void setWorldPosition(const Vector3& position);
+
+		/**
+		 * @brief	Gets the world position of the object.
 		 *
 		 * @note	Performance warning: This might involve updating the transforms if the transform is dirty.
 		 */
@@ -71,6 +76,11 @@ namespace BansheeEngine
 		 * @brief	Gets the local rotation of the object.
 		 */
 		const Quaternion& getRotation() const { return mRotation; }
+
+		/**
+		 * @brief	Sets the world rotation of the object.
+		 */
+		void setWorldRotation(const Quaternion& rotation);
 
 		/**
 		 * @brief	Gets world rotation of the object.

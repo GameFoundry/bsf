@@ -18,10 +18,6 @@ Polish TODO:
  - Test checking out source and extracting dependencies and see if it compiles
  - Test compiling on another PC
 
-Re-test gamepad buttons now that XInput is active
-
-!!!BUG!!! - When I change parent I don't update individual local position/rotation/scale on scene object
-I don't have a way of setting world pos/rot directly on SOs
 -----------------
 
 Not so critical

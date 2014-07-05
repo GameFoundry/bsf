@@ -191,7 +191,6 @@ namespace BansheeEngine
 
 
 			// Register the window class
-			// NB allow 4 bytes of window data for D3D9RenderWindow pointer
 			WNDCLASS wc = { 0, PlatformWndProc::_win32WndProc, 0, 0, hInst,
 				LoadIcon(0, IDI_APPLICATION), LoadCursor(NULL, IDC_ARROW),
 				(HBRUSH)GetStockObject(BLACK_BRUSH), 0, "D3D9Wnd" };
