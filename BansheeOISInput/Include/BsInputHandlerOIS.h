@@ -161,7 +161,7 @@ namespace BansheeEngine
 		INT32 mMouseSampleAccumulator[2];
 		float mMouseSmoothedAxis[2];
 		UINT32 mLastMouseUpdateFrame;
-		bool mMouseSamplesObsolete;
+		float mMouseSampleCounter;
 
 		UINT64 mTimestampClockOffset;
 	};

@@ -18,10 +18,26 @@ Polish TODO:
  - Test checking out source and extracting dependencies and see if it compiles
  - Test compiling on another PC
 
+Automatically release resources on shutdown instead of forcing the user to manually call unload() and set handles to nullptr.
+ - e.g. just invalidate all handles automatically
+
 Input issues:
  - I cannot have input of 1 one frame and input of 0 another. This happens when frames are too short. I might need to add very short smoothing times?
  - I cannot have input set to 1 during the entire frame if the frame is very long and user just moved the mouse a bit.
    - This might be even more of an issue with joystick axes as I currently have no mechanism of knowing what % of the frame are they being moved.
+ - Maybe: Ability to define input sampling rate. Input sampling then runs on its own thread at 120/240/etc/Hz. Every frame the collected values are averaged.
+   - This could be a part of OIS. Mouse sampling should already be doing something similar.
+   - I can't think of ANY other way gamepad axes can work with long frame times, other than this approach
+   - Check DirectInput::Poll
+   - And DirectInput::GetDeviceState to get immediate mouse data
+     - Check if this state is an absolute value, difference from last call or what.
+   - Potentially also GetRawInputData as I might be able to use that instead of windows messages
+ - Probably remove UE4 smoothing as I'm not even sure what it does
+
+Problem with current OIS mouse approach is that if I call capture() too often, no new sampling data is available 
+but the mouse might still be moving and it just reports 0. Which is wrong if the mouse is moving.
+ - These is no way around this if querying the state too quickly. I can either keep the current system and remember
+   last 5-10ms of input and average that, or I can use the above solution with polling which should have the similar effect.
 
 -----------------
 

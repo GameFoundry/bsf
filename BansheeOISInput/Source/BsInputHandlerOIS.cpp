@@ -53,7 +53,7 @@ namespace BansheeEngine
 
 	InputHandlerOIS::InputHandlerOIS(unsigned int hWnd)
 		:mInputManager(nullptr), mKeyboard(nullptr), mMouse(nullptr), mTimestampClockOffset(0),
-		mLastMouseUpdateFrame(0), mMouseSamplesObsolete(true)
+		mLastMouseUpdateFrame(0), mMouseSampleCounter(0.0f)
 	{
 		mMouseSampleAccumulator[0] = 0;
 		mMouseSampleAccumulator[1] = 0;
@@ -193,6 +193,13 @@ namespace BansheeEngine
 			gamepadData.gamepad->capture();
 		}
 
+		// We limit mouse sampling to at least 6ms interval because lower values might cause
+		// incorrect 0-sized samples to be introduced as DirectInput is not able to sample
+		// the mouse quick enough, which might cause jitter in the movement.
+		mMouseSampleCounter += gTime().getFrameDelta();
+		if (mMouseSampleCounter < 0.006f)
+			return;
+
 		float rawXValue = 0.0f;
 		float rawYValue = 0.0f;
 
@@ -208,17 +215,20 @@ namespace BansheeEngine
 			rawYValue = (float)mMouseSampleAccumulator[1];
 		}
 
-		mMouseSamplesObsolete = true;
+		mMouseSampleAccumulator[0] = 0;
+		mMouseSampleAccumulator[1] = 0;
 
 		// Scale by time so that we are framerate independant: rawXValue = rawXValue * (MOUSE_MAX_TIME / gTime().getFrameDelta());
 		// Scale to valid [-1.0, 1.0] range: rawXValue / (MOUSE_DPI * MOUSE_MAX)
 		// This is just the combination of the two:
 
-		float axisScale = ((MOUSE_DPI * MOUSE_MAX) / MOUSE_MAX_TIME) * gTime().getFrameDelta();
+		float axisScale = ((MOUSE_DPI * MOUSE_MAX) / MOUSE_MAX_TIME) * mMouseSampleCounter;
 
 		RawAxisState xState;
 		xState.rel = -Math::clamp(rawXValue / axisScale, -1.0f, 1.0f);
 		xState.abs = xState.rel; // Abs value irrelevant for mouse
+
+		LOGWRN(toString(xState.rel));
 
 		onAxisMoved(0, xState, (UINT32)InputAxis::MouseX);
 
@@ -227,6 +237,8 @@ namespace BansheeEngine
 		yState.abs = yState.rel; // Abs value irrelevant for mouse
 		
 		onAxisMoved(0, yState, (UINT32)InputAxis::MouseY);
+
+		mMouseSampleCounter = 0.0f;
 	}
 
 	void InputHandlerOIS::_inputWindowChanged(const RenderWindow& win)
@@ -253,14 +265,6 @@ namespace BansheeEngine
 
 	bool InputHandlerOIS::mouseMoved(const OIS::MouseEvent& arg)
 	{
-		if (mMouseSamplesObsolete)
-		{
-			mMouseSampleAccumulator[0] = 0;
-			mMouseSampleAccumulator[1] = 0;
-
-			mMouseSamplesObsolete = false;
-		}
-
 		mMouseSampleAccumulator[0] += arg.state.X.rel;
 		mMouseSampleAccumulator[1] += arg.state.Y.rel;
 

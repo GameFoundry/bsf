@@ -84,14 +84,14 @@ int CALLBACK WinMain(
 	Application::startUp(renderWindowDesc, RenderSystemPlugin::DX11);
 
 	// Imports all of ours assets and prepares GameObject that handle the example logic.
-	//setUpExample();
+	setUpExample();
 	
 	// Runs the main loop that does most of the work. This method will exit when user closes the main
 	// window or exits in some other way.
 	Application::instance().runMainLoop();
 
 	// Perform cleanup
-	//shutDownExample();
+	shutDownExample();
 
 	Application::shutDown();
 
