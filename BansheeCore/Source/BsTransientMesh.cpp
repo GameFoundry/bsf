@@ -60,11 +60,12 @@ namespace BansheeEngine
 		MeshProxyPtr coreProxy = bs_shared_ptr<MeshProxy>();
 		coreProxy->mesh = std::static_pointer_cast<MeshBase>(getThisPtr());
 		coreProxy->subMesh = mSubMeshes[0];
+		coreProxy->submeshIdx = subMeshIdx;
 
 		// Note: Not calculating bounds for transient meshes yet
 		// (No particular reason, I just didn't bother)
 		coreProxy->bounds = Bounds(); 
-
+		
 		return coreProxy;
 	}
 }

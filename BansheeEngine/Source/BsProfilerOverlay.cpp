@@ -291,9 +291,6 @@ namespace BansheeEngine
 
 	ProfilerOverlay::~ProfilerOverlay()
 	{
-		if(mIsShown)
-			hide();
-
 		if(mTarget != nullptr)
 			mTargetResizedConn.disconnect();
 

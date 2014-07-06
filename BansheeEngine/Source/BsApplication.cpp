@@ -54,15 +54,20 @@ namespace BansheeEngine
 		BuiltinResources::startUp();
 		Cursor::startUp();
 
+#if BS_VER == BS_VER_DEV
 		loadPlugin("BansheeMono", &mMonoPlugin);
 		loadPlugin("SBansheeEngine", &mSBansheeEnginePlugin); // Scripting interface
+#endif
 	}
 
 	Application::~Application()
 	{
 		ScriptManager::instance().destroy();
+
+#if BS_VER == BS_VER_DEV
 		unloadPlugin(mSBansheeEnginePlugin);
 		unloadPlugin(mMonoPlugin);
+#endif
 
 		Cursor::shutDown();
 		BuiltinResources::shutDown();

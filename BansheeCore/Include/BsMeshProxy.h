@@ -11,8 +11,9 @@ namespace BansheeEngine
 	 */
 	struct BS_CORE_EXPORT MeshProxy
 	{
-		MeshBasePtr mesh;
+		std::weak_ptr<MeshBase> mesh;
 		SubMesh subMesh;
 		Bounds bounds;
+		UINT32 submeshIdx;
 	};
 }

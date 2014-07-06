@@ -555,7 +555,13 @@ namespace BansheeEngine
 		THROW_IF_NOT_CORE_THREAD;
 
 		RenderSystem& rs = RenderSystem::instance();
-		MeshBasePtr mesh = meshProxy.mesh;
+		MeshBasePtr mesh;
+
+		if (!meshProxy.mesh.expired())
+			mesh = meshProxy.mesh.lock(); 
+		else
+			return;
+
 		std::shared_ptr<VertexData> vertexData = mesh->_getVertexData();
 
 		rs.setVertexDeclaration(vertexData->vertexDeclaration);

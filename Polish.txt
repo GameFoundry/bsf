@@ -1,6 +1,7 @@
 Polish TODO:
  - Finalize example with resolution settings and proper GUI
   - Ensure that going fullscreen and windowed works fine
+ - Mouse movement is release build is too slow
  - Add an example model
  - Test if example shuts down fine
 
@@ -17,6 +18,8 @@ Polish TODO:
  - Add a .zip with source and dependencies
  - Test checking out source and extracting dependencies and see if it compiles
  - Test compiling on another PC
+
+Transient meshes never get released. I'm assuming its circular reference MeshBase and MeshProxy have to each-other. Figure out a way to resolve it properly.
 
 -----------------
 

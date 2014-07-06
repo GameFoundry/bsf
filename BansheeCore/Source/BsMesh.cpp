@@ -392,6 +392,7 @@ namespace BansheeEngine
 		coreProxy->mesh = std::static_pointer_cast<MeshBase>(getThisPtr());
 		coreProxy->bounds = mBounds;
 		coreProxy->subMesh = getSubMesh(subMeshIdx);
+		coreProxy->submeshIdx = subMeshIdx;
 
 		return coreProxy;
 	}
